@@ -14,20 +14,25 @@ services:
   redis:
     image: redis:7-alpine
     ports: ['6379:6379']
-  minio:
-    image: minio/minio:latest
-    command: server /data --console-address :9001
+  # Stockage S3 local. MinIO a retiré minio/minio de Docker Hub (et l'image Quay renvoie 401) :
+  # on utilise la build Chainguard du même serveur MinIO, même API S3. Voir docs/decisions.md D-009.
+  s3:
+    image: cgr.dev/chainguard/minio:latest
+    command: ['server', '/data', '--console-address', ':9001']
     environment:
       MINIO_ROOT_USER: blowy-local
       MINIO_ROOT_PASSWORD: blowy-local-secret
     ports: ['9000:9000', '9001:9001']
-    volumes: ['minio:/data']
+    volumes: ['s3:/data']
+  # Émulateur Firebase Auth : optionnel (le mode local utilise LocalAuthProvider).
+  # Activer avec : docker compose -f infra/compose.yaml --profile firebase up -d
   firebase-auth-emulator:
-    image: node:22-alpine
+    profiles: ['firebase']
+    image: eclipse-temurin:21-jre
     working_dir: /emu
-    command: sh -c "npx -y firebase-tools@latest emulators:start --only auth --project demo-blowy"
+    command: sh -c "apt-get update -qq && apt-get install -y -qq nodejs npm >/dev/null && npx -y firebase-tools@latest emulators:start --only auth --project demo-blowy"
     volumes: ['./firebase:/emu']
     ports: ['9099:9099']
 volumes:
   pg: {}
-  minio: {}
+  s3: {}

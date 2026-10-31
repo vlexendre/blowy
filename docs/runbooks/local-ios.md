@@ -22,7 +22,7 @@ pnpm setup:local        # crée les .env locaux à partir des .env.example, sans
 
 ## 2. Lancer les services et la base
 ```bash
-pnpm infra:up           # Postgres 5432, Redis 6379, MinIO 9000/9001, émulateur Firebase Auth 9099
+pnpm infra:up           # Postgres 5432, Redis 6379, S3 (MinIO Chainguard) 9000/9001 ; émulateur Firebase : --profile firebase
 pnpm db:migrate         # applique les migrations Prisma
 pnpm db:seed            # données fictives : Alex/Nino, L./Suzie, M./Gaston, S./Pia, Quartier…
 ```
@@ -66,6 +66,6 @@ En local, la connexion passe par le fournisseur d'authentification local ou l'é
 
 ## Réinitialiser les données de test
 ```bash
-pnpm infra:down && docker volume rm blowy-local_pg   # base locale uniquement
+pnpm infra:down && docker volume rm blowy-local_pg   # base locale uniquement (préfère `docker compose -f infra/compose.yaml down -v` pour tout effacer)
 pnpm infra:up && pnpm db:migrate && pnpm db:seed
 ```

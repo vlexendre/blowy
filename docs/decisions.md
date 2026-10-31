@@ -10,6 +10,7 @@ Format : ID · décision · conséquence visible. Les arbitrages produit §5.x d
 - **D-005 Exception « tout TypeScript »** : code Swift (extension WidgetKit via expo-widgets / config plugin) et Kotlin (widget Android) autorisés uniquement pour les widgets.
 - **D-006 Stockage local** : MinIO en compose ; dans les environnements sans Docker (CI cloud de ce dépôt), adaptateur `FsObjectStorage` de test, interdit en production.
 - **D-007 Design** : maquette de référence « V4 finale » importée dans `design/v4-reference` (pages + 81 assets). Les jetons (`packages/design-tokens`) en sont extraits ; la palette diffère légèrement des valeurs de départ du prompt (crème `#FFF7EC`, encre `#16110D`, citron `#C8F542`, violet `#7C3AED`) — la maquette fait foi, contrastes testés.
+- **D-009 Stockage S3 local** : `minio/minio` n'est plus publié sur Docker Hub (constaté le 2026-11-01 : « pull access denied »). Le compose utilise `cgr.dev/chainguard/minio` (même serveur, même API S3). En production, n'importe quel S3 privé ; l'adaptateur ne dépend que de l'API S3. L'émulateur Firebase passe en profil optionnel `firebase` (il exige Java).
 - **D-008 Prisma/IDs** : UUID v7 générés côté application.
 
 ## Arbitrages produit (P-5.x)
