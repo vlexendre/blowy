@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Arbre du lien — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.node{display:flex;align-items:center;gap:12px;padding:6px 0;position:relative}
+@keyframes pop{0%{transform:translateX(-12px);opacity:0}100%{transform:none;opacity:1}}
+.pop{animation:pop .5s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(255,90,60,.5),0 4px 0 #C4341B}70%{box-shadow:0 0 0 10px rgba(255,90,60,0),0 4px 0 #C4341B}}
+.now{animation:ring 1.6s infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.bob{animation:bob 2s ease-in-out infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 52px 18px 22px; position: relative">
+
+  <div style="display: flex; align-items: center; gap: 10px">
+    <a href="V4-Nid.dc.html" aria-label="Retour au nid" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <h1 class="d" style="margin: 0; font-size: 34px; white-space: nowrap">LIEN AVEC L.</h1>
+    <span class="chip" style="margin-left: auto; background: #16110D; color: #C8F542">340 / 500 XP</span>
+  </div>
+
+  <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+    <button type="button" onClick="{{toAmi}}" style="min-height: 44px; border-radius: 14px; border: 0; cursor: pointer; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 800; background: {{amiBg}}; color: {{amiFg}}; box-shadow: 0 4px 0 {{amiSh}}">BRANCHE AMI</button>
+    <button type="button" onClick="{{toPlus}}" style="min-height: 44px; border-radius: 14px; border: 0; cursor: pointer; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 800; background: {{plusBg}}; color: {{plusFg}}; box-shadow: 0 4px 0 {{plusSh}}">BRANCHE PLUS</button>
+  </div>
+  <span style="margin-top: 8px; font-size: 11px; font-weight: 600; color: #8A7E70; text-align: center; white-space: nowrap">{{note}}</span>
+
+  <div style="margin-top: 8px; position: relative; display: flex; flex-direction: column">
+    <span style="position: absolute; left: 23px; top: 24px; bottom: 24px; width: 4px; border-radius: 4px; background: #EEDFCB"></span>
+    <span style="position: absolute; left: 23px; top: 24px; height: 120px; width: 4px; border-radius: 4px; background: {{accent}}"></span>
+    <sc-for list="{{levels}}" as="l" hint-placeholder-count="7">
+      <a href="{{l.href}}" class="node pop" style="animation-delay: {{l.dl}}">
+        <span class="{{l.cls}}" style="width: 50px; height: 50px; border-radius: 16px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; background: {{l.bg}}; box-shadow: 0 4px 0 {{l.sh}}; position: relative"><img src="{{l.img}}" alt="" aria-hidden="true" style="width: 34px; height: 34px; object-fit: contain; opacity: {{l.op}}; filter: {{l.gray}}"></span>
+        <span style="display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0">
+          <span class="d" style="font-size: 19px; color: {{l.tc}}; white-space: nowrap">{{l.n}} · {{l.title}}</span>
+          <span style="font-size: 12px; font-weight: 500; color: #6B6259; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{l.sub}}</span>
+        </span>
+        <span style="font-size: 11px; font-weight: 800; color: {{l.xpc}}; white-space: nowrap">{{l.xp}}</span>
+      </a>
+    </sc-for>
+  </div>
+
+  <a href="V4-Paywall.dc.html" style="margin-top: auto; display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #4C1D95, #7C3AED); color: #fff; border-radius: 18px; padding: 10px 14px; box-shadow: 0 4px 0 #2E1065; white-space: nowrap">
+    <img src="/_blob/aac4cbc74b93b66bb9d51fa6c26eac83" alt="" aria-hidden="true" class="bob" style="width: 32px; height: 32px; object-fit: contain">
+    <span style="display: flex; flex-direction: column; flex: 1 1 auto"><span class="d" style="font-size: 17px">Week-end XP ×2</span><span style="font-size: 11px; font-weight: 600; color: #D6CCF5">Inclus avec Blowy+</span></span>
+    <span class="chip" style="background: #C8F542; color: #16110D">ACTIVER</span>
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { b: 'plus' }; }
+  renderVals() {
+    const B = '/_blob/';
+    const plus = this.state.b === 'plus';
+    const accent = plus ? '#FF3D7F' : '#7DA11A';
+    const common = [
+      { n: 1, title: 'Le rendez-vous', sub: 'Nino et Suzie se rencontrent', img: B + '305ba56fa88f24706f7f7b30debf3ac8', st: 'done', xp: '0' },
+      { n: 2, title: 'Ils jouent ensemble', sub: 'Les pets s’apprivoisent', img: B + '8fc3e7d178e7c719ae293dd9137eb55b', st: 'done', xp: '150' },
+      { n: 3, title: 'Emménager', sub: 'Exclusif · voix débloquée', img: B + 'c2c65dd197729e0df734406f7bb5566f', st: 'now', xp: '500', href: 'V4-Emmenager.dc.html' }
+    ];
+    const ami = [
+      { n: 4, title: 'Sa photo', sub: 'Visible d’un coup', img: B + 'b814d56f802de552fcbccae85fd104dd', xp: '900' },
+      { n: 5, title: 'Quête en vrai', sub: 'Les pets vous lancent un défi IRL', img: B + 'e68877cdff5027b443148940d70104af', xp: '1 400' },
+      { n: 6, title: 'Inséparables', sub: 'L. entre dans ton Quartier', img: B + '5b715883c3cee0f81513bcb890081ba0', xp: '2 000', href: 'V4-Quartier.dc.html' }
+    ];
+    const pl = [
+      { n: 4, title: 'Visage flou', sub: 'Il se précise à chaque échange', img: B + 'a19b0b8ee0743659ab8c9f0963f513c7', xp: '900' },
+      { n: 5, title: 'La révélation', sub: 'Vos visages, en même temps', img: B + '01eb765937b39b565f2a9a4f446f785c', xp: '1 400', href: 'V4-Revelation.dc.html' },
+      { n: 6, title: 'Premier rendez-vous IRL', sub: 'Lieu public · ange gardien', img: B + '1ce3e6d22daeb94d1bcda86bda596745', xp: '2 000', href: 'V4-RdvIRL.dc.html' },
+      { n: 7, title: 'L’œuf', sub: 'Vos pets font un bébé', img: B + '91f6b98ff14927c1220e81e1a0f40196', xp: '3 000', href: 'V4-Oeuf.dc.html' }
+    ];
+    const levels = common.concat(plus ? pl : ami).map((l, i) => {
+      const st = l.st || 'next';
+      return { ...l, href: l.href || '#', dl: (i * .06) + 's', cls: st === 'now' ? 'now' : '',
+        bg: st === 'done' ? accent : (st === 'now' ? '#FF5A3C' : '#fff'), sh: st === 'done' ? '#16110D' : (st === 'now' ? '#C4341B' : '#EEDFCB'),
+        op: st === 'next' ? .5 : 1, gray: st === 'next' ? 'grayscale(1)' : 'none', tc: st === 'next' ? '#8A7E70' : '#16110D',
+        xp: st === 'done' ? '✓' : l.xp + ' XP', xpc: st === 'done' ? accent : (st === 'now' ? '#FF5A3C' : '#B5A898') };
+    });
+    return { levels, accent,
+      toAmi: () => this.setState({ b: 'ami' }), toPlus: () => this.setState({ b: 'plus' }),
+      amiBg: plus ? '#fff' : '#C8F542', amiFg: '#16110D', amiSh: plus ? '#EEDFCB' : '#16110D',
+      plusBg: plus ? '#FF3D7F' : '#fff', plusFg: plus ? '#fff' : '#16110D', plusSh: plus ? '#B81F55' : '#EEDFCB',
+      note: plus ? 'Ouverte : vous avez tous deux choisi « Plus ».' : 'Par défaut si vos intentions diffèrent.' };
+  }
+}
+</script>
+</body>
+</html>

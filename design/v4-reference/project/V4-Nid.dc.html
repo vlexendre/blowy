@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Le nid — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 10px 5px 6px;font-size:14px;font-weight:800;white-space:nowrap;font-family:'Bricolage Grotesque',sans-serif}
+.act{min-height:46px;border-radius:16px;border:0;cursor:pointer;background:#fff;box-shadow:0 4px 0 #EEDFCB;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;color:#16110D;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.act:active{transform:translateY(3px);box-shadow:none}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9A8E80}
+.nav a.on{color:#16110D}
+.nav a.on span{background:#C8F542}
+.nav span{width:42px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-10px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+.sq2{animation:sq 2.8s cubic-bezier(.3,0,.2,1) -1.1s infinite;transform-origin:50% 100%}
+@keyframes bubble{0%{transform:scale(0) translateY(10px);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+.bubble{animation:bubble .45s cubic-bezier(.2,1.4,.4,1) both;transform-origin:50% 100%}
+@keyframes hearts{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:1}100%{transform:translateY(-70px) scale(1.1);opacity:0}}
+.hearts{animation:hearts 1.6s ease-out infinite}
+@keyframes grow{from{width:0}}
+.grow{animation:grow 1.3s cubic-bezier(.2,.8,.2,1) .3s both}
+@keyframes sheen{0%{transform:translateX(-120%)}100%{transform:translateX(420%)}}
+.sheen{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.7),rgba(255,255,255,0));animation:sheen 2.6s ease-in-out 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,60,.55)}70%{box-shadow:0 0 0 8px rgba(255,90,60,0)}}
+.pulse{animation:pulse 1.8s infinite}
+@keyframes flick{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.12) rotate(3deg)}}
+.flick{animation:flick 1.2s ease-in-out infinite}
+.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -10px 18px rgba(255,255,255,.2),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
+.gnav::before{content:'';position:absolute;left:22px;right:22px;top:1px;height:44%;border-radius:30px 30px 60% 60%;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#5E544A;transition:background .3s}
+.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85));box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(125,161,26,.25),0 6px 14px rgba(125,161,26,.35)}
+.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#FF3D7F;color:#fff;font-size:9px;font-weight:800;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.gnav .pls{position:absolute;top:4px;left:calc(50% + 4px);height:15px;padding:0 5px;border-radius:999px;background:#7C3AED;color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;display:flex;align-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+@keyframes walk{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(40px) translateY(-8px)}40%{transform:translateX(80px) translateY(0)}60%{transform:translateX(120px) translateY(-8px)}80%{transform:translateX(160px) translateY(0)}100%{transform:translateX(196px) translateY(0)}}
+.walk{animation:walk 1.6s linear both}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.dash{animation:dash .6s linear infinite}
+@keyframes fadein{from{opacity:0}}
+.fadein{animation:fadein .25s ease both}
+.lg{position:absolute;top:2px;right:-6px;display:flex;align-items:center;gap:3px;height:28px;padding:0 8px 0 6px;border-radius:999px;background:#16110D;color:#FFB347;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;box-shadow:0 3px 0 #000;z-index:3}
+@keyframes fr{0%,24.9%{opacity:1}25%,100%{opacity:0}}
+.fr{opacity:0;animation:fr .56s steps(1) infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <div class="pop" style="padding: 52px 16px 0; display: flex; align-items: center; justify-content: space-between">
+    <a href="V4-Serie.dc.html" class="chip" style="background: #fff; box-shadow: 0 3px 0 #EEDFCB; color: #FF5A3C"><img src="/_blob/c45fb30245137def689cd259ded2caa6" alt="" aria-hidden="true" class="flick" style="width: 24px; height: 24px; object-fit: contain">8</a>
+    <a href="V4-Boutique.dc.html" class="chip" style="background: #fff; box-shadow: 0 3px 0 #EEDFCB; color: #C97A12"><img src="/_blob/79c80e7b551bb0b08bbbac244350b5ec" alt="" aria-hidden="true" style="width: 22px; height: 22px; object-fit: contain">340</a>
+    <a href="V4-Fiche.dc.html" class="chip" style="background: #16110D; color: #C8F542"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="width: 22px; height: 22px; object-fit: contain">Nino</a>
+    <a href="V4-Chats.dc.html" aria-label="Messages, 3 nouveaux" style="position: relative; width: 40px; height: 40px; border-radius: 14px; background: #fff; box-shadow: 0 3px 0 #EEDFCB; display: flex; align-items: center; justify-content: center"><img src="/_blob/f22ec297b35d3fd95af3a884388d70a4" alt="" aria-hidden="true" style="width: 26px; height: 26px; object-fit: contain"><span style="position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; border-radius: 999px; background: #FF3D7F; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center">3</span></a>
+  </div>
+
+  <!-- Rendez-vous switcher -->
+  <div class="pop" style="animation-delay: .05s; margin: 12px 16px 0; display: flex; gap: 6px; align-items: center">
+    <sc-for list="{{rdvs}}" as="r" hint-placeholder-count="3">
+      <button type="button" onClick="{{r.pick}}" style="display: flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 10px 0 4px; border-radius: 999px; border: 0; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 800; background: {{r.bg}}; color: {{r.fg}}; box-shadow: 0 3px 0 {{r.sh}}; white-space: nowrap"><img src="{{r.img}}" alt="" aria-hidden="true" style="width: 28px; height: 28px; object-fit: contain">{{r.label}}</button>
+    </sc-for>
+    <a href="V4-Match.dc.html" aria-label="Voir tous les rendez-vous" style="margin-left: auto; width: 36px; height: 36px; border-radius: 50%; background: #fff; box-shadow: 0 3px 0 #EEDFCB; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#FF5A3C" stroke-width="3" stroke-linecap="round"/></svg></a>
+  </div>
+
+  <!-- 3D stage with two pets -->
+  <div class="pop" style="animation-delay: .1s; margin: 10px 16px 0; height: 380px; border-radius: 30px; position: relative; overflow: hidden; background: #FFC07A url({{bg}}) center / cover; box-shadow: 0 6px 0 #D9773F; transition: background .6s">
+    <span style="position: absolute; top: 14px; right: 14px; text-align: right; color: #fff; background: rgba(22,17,13,.55); border-radius: 16px; padding: 8px 12px"><span class="d" style="display: block; font-size: 24px">{{place}}</span><span style="font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .9">{{guest}}</span></span>
+    <img src="/_blob/8fc3e7d178e7c719ae293dd9137eb55b" alt="" aria-hidden="true" style="position: absolute; left: {{ballLeft}}; bottom: 30px; width: 38px; height: 38px; object-fit: contain; transition: left .9s cubic-bezier(.2,.9,.3,1)">
+
+    <div style="opacity: {{soloOp}}; position: absolute; bottom: 26px; left: {{meLeft}}; width: 160px; transition: left 1s cubic-bezier(.3,1.2,.4,1); display: flex; flex-direction: column; align-items: center">
+      <sc-if value="{{hasBubble}}" hint-placeholder-val="{{true}}"><div class="bubble" style="position: relative; margin-bottom: 6px; background: #16110D; color: #fff; border-radius: 12px; padding: 6px 10px; font-size: 12px; font-weight: 700; white-space: nowrap">{{bubble}}<span style="position: absolute; left: 50%; bottom: -5px; width: 10px; height: 10px; margin-left: -5px; background: #16110D; transform: rotate(45deg)"></span></div></sc-if>
+      <div style="position: relative"><sc-if value="{{hearts}}" hint-placeholder-val="{{false}}"><img src="/_blob/01eb765937b39b565f2a9a4f446f785c" alt="" aria-hidden="true" class="hearts" style="position: absolute; left: 30px; top: -10px; width: 70px; height: 70px; object-fit: contain"></sc-if><a href="V4-Classement.dc.html" class="lg" aria-label="Ligue Corail : Nino est 7e"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6v4H9z" stroke="#FFB347" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>7ᵉ</a><img src="{{meImg}}" alt="{{meAlt}}" class="sq" style="width: 156px; height: 156px; object-fit: contain; display: block; transform: scaleX({{meFlip}})"></div>
+      <span style="width: 90px; height: 12px; margin-top: -8px; border-radius: 50%; background: rgba(90,30,0,.25); filter: blur(3px)"></span>
+    </div>
+    <div style="opacity: {{soloOp}}; position: absolute; bottom: 26px; left: {{otherLeft}}; width: 146px; transition: left 1.1s cubic-bezier(.3,1.2,.4,1); display: flex; flex-direction: column; align-items: center">
+      <div style="position: relative"><sc-if value="{{hearts}}" hint-placeholder-val="{{false}}"><img src="/_blob/01eb765937b39b565f2a9a4f446f785c" alt="" aria-hidden="true" class="hearts" style="animation-delay: .4s; position: absolute; left: 26px; top: -10px; width: 64px; height: 64px; object-fit: contain"></sc-if><img src="{{otherImg}}" alt="{{otherAlt}}" class="sq2" style="width: 138px; height: 138px; object-fit: contain; display: block; transform: scaleX(-1)"></div>
+      <span style="width: 80px; height: 12px; margin-top: -8px; border-radius: 50%; background: rgba(90,30,0,.25); filter: blur(3px)"></span>
+    </div>
+    <sc-if value="{{hearts}}" hint-placeholder-val="{{false}}"><img src="/_blob/9d3531b7aae7386869f6d025761d4d0c" alt="Nino et {{who}} se font un câlin" class="bubble" style="position: absolute; left: 50%; bottom: 20px; width: 300px; margin-left: -150px; object-fit: contain"><img src="/_blob/01eb765937b39b565f2a9a4f446f785c" alt="" aria-hidden="true" class="hearts" style="position: absolute; left: 50%; bottom: 190px; width: 80px; height: 80px; margin-left: -40px"></sc-if>
+    <sc-if value="{{moving}}" hint-placeholder-val="{{false}}">
+      <div class="fadein" style="position: absolute; inset: 0; z-index: 5; background: linear-gradient(160deg, rgba(22,17,13,.94), rgba(46,27,61,.94)); color: #fff; display: flex; flex-direction: column; padding: 22px 18px">
+        <span style="font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #C8F542">Nino va retrouver</span>
+        <span class="d" style="font-size: 46px; white-space: nowrap; margin-top: 4px">{{movPet}}</span>
+        <span style="font-size: 13px; font-weight: 600; color: #D9CFC4; margin-top: 4px">{{movPlace}} · {{movLeft}} garde sa place</span>
+        <svg aria-hidden="true" width="322" height="20" viewBox="0 0 322 20" style="position: absolute; left: 18px; bottom: 58px"><path class="dash" d="M10 10 H312" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-dasharray="4 8" stroke-linecap="round"/></svg>
+        <div class="walk" role="img" aria-label="Nino en route" style="position: absolute; width: 96px; height: 96px; left: 16px; bottom: 50px"><img src="/_blob/5abcd1aed359e64c3b7048a8e4993e73" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: 0s"><img src="/_blob/dfe1eb7d7dc7e125ad67a3c3bf109145" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: .14s"><img src="/_blob/41b3b5fe5c7ca973404c507cf78e8c17" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: .28s"><img src="/_blob/47704e57588ba5efa65b91837b076cf3" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: .42s"></div>
+        <img src="{{movImg}}" alt="" aria-hidden="true" style="position: absolute; right: 14px; bottom: 54px; width: 84px; height: 84px; object-fit: contain; transform: scaleX(-1)">
+      </div>
+    </sc-if>
+    <span style="position: absolute; bottom: 10px; left: 12px; background: rgba(22,17,13,.8); color: #fff; border-radius: 999px; padding: 4px 9px; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap">3D · glisse · pince · tourne</span>
+  </div>
+
+  <div class="pop" style="animation-delay: .14s; margin: 12px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+    <button type="button" class="act" onClick="{{call}}">Appeler</button>
+    <button type="button" class="act" onClick="{{hug}}">Câlin à deux</button>
+    <button type="button" class="act" onClick="{{play}}">Jouer</button>
+  </div>
+
+  <a href="V4-Lien.dc.html" class="pop" style="animation-delay: .2s; margin: 12px 16px 0; background: #16110D; color: #fff; border-radius: 20px; padding: 11px 14px; display: flex; flex-direction: column; gap: 7px; box-shadow: 0 4px 0 #000">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; white-space: nowrap"><span class="d" style="font-size: 18px">Lien avec {{who}}</span><span style="font-size: 11px; font-weight: 700; color: #BDB2A6">{{lienTxt}}</span></div>
+    <div style="height: 10px; border-radius: 999px; background: #2E2620; overflow: hidden"><div class="grow" style="position: relative; overflow: hidden; height: 100%; width: {{lienW}}; border-radius: 999px; background: linear-gradient(90deg, #FF5A3C, #FF3D7F, #7C3AED); transition: width .6s"><span class="sheen"></span></div></div>
+  </a>
+
+  <div class="pop" style="animation-delay: .26s; margin: 12px 16px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+    <a href="V4-Preuve.dc.html" style="background: #FF5A3C; color: #fff; border-radius: 18px; padding: 9px 12px; box-shadow: 0 4px 0 #C4341B; display: flex; align-items: center; gap: 8px; white-space: nowrap"><img src="/_blob/8fc3e7d178e7c719ae293dd9137eb55b" alt="" aria-hidden="true" style="width: 28px; height: 28px; object-fit: contain"><span style="display: flex; flex-direction: column"><span class="d" style="font-size: 16px">Mission</span><span style="font-size: 11px; font-weight: 700; opacity: .9">Bouger · 2/3</span></span></a>
+    <a href="V4-Chat.dc.html" style="position: relative; background: #fff; border-radius: 18px; padding: 9px 12px; box-shadow: 0 4px 0 #EEDFCB; display: flex; align-items: center; gap: 8px; white-space: nowrap"><span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(145deg, #A78BFA, #FF7A9C); filter: blur(1.5px)"></span><span style="display: flex; flex-direction: column"><span class="d" style="font-size: 16px">Écrire à {{who}}</span><span style="font-size: 11px; font-weight: 700; color: #7C3AED">{{chatSub}}</span></span><span class="pulse" style="position: absolute; top: 9px; right: 9px; width: 10px; height: 10px; border-radius: 50%; background: #FF5A3C"></span></a>
+  </div>
+  <div aria-hidden="true" style="flex: 0 0 96px; margin-top: auto"></div>
+  <nav aria-label="Navigation" class="gnav">
+    <a href="V4-Nid.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" stroke="currentColor" stroke-width="2.2" fill="currentColor" stroke-linejoin="round"/></svg>Nid</a>
+    <a href="V4-Chats.dc.html"><span class="bdg">4</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Chats</a>
+    <a href="V4-Carte.dc.html"><span class="pls">PLUS</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" fill="currentColor"/></svg>Carte</a>
+    <a href="V4-Quartier.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V11l5-4 5 4v10M13 21V8l4-3 4 3v13M3 21h18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Quartier</a>
+    <a href="V4-Profil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Profil</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { moving: null, rdv: 0, me: 14, other: 200, img: 'idle', bubble: 'Suzie me pique ma balle.', hearts: false, calls: 0, ball: 150, flip: 1 }; }
+  renderVals() {
+    const B = '/_blob/';
+    const ME = { idle: '630cf503134679d62afe62d88edbda8d', angry: '6400a21ac28aa2e7573e83d25780b210', love: '1ce3e6d22daeb94d1bcda86bda596745', sporty: '7bbc8c67ffec185c67f57ffbd3d2bb28', happy: '2dd74281b0d1e96cdc17f174113da343' };
+    const R = [
+      { pet: 'Suzie', who: 'L.', img: B + '305ba56fa88f24706f7f7b30debf3ac8', place: 'Chez Suzie', bg: '/_blob/e35db709aaa2e9bac81cd209308c10e9', lvl: 'Niv. 2 · 340 / 500 · niv. 3 : emménager', w: '68%', wallA: '#FF7A9C', wallB: '#FF9A6B', chat: 'il y a 4 min' },
+      { pet: 'Gaston', who: 'M.', img: B + 'b9a1dfc49373cf092fdb8a912c875adf', place: 'Au parc', bg: '/_blob/cab5bc8c4ee78b8407867114c3b77374', lvl: 'Niv. 1 · 120 / 200', w: '60%', wallA: '#FFB347', wallB: '#FFD36E', chat: 'à toi de répondre' },
+      { pet: 'Pia', who: 'S.', img: B + '8a35794ced023a499838ce341afd6ac4', place: 'Au café', bg: '/_blob/e013f9231c8392b5479fabfe1dbe62a2', lvl: 'Niv. 1 · 40 / 200', w: '20%', wallA: '#22D3EE', wallB: '#7DD8C0', chat: 'nouveau rendez-vous' }
+    ];
+    const s = this.state, cur = R[s.rdv];
+    const rdvs = R.map((r, i) => { const on = s.rdv === i; return { img: r.img, label: r.pet + ' · ' + r.who, bg: on ? '#16110D' : '#fff', fg: on ? '#fff' : '#16110D', sh: on ? '#000' : '#EEDFCB', pick: () => { if (i === s.rdv || s.moving !== null) return; this.setState({ moving: i }); setTimeout(() => this.setState({ moving: null, rdv: i, me: 14, other: 200, img: 'idle', bubble: i === 0 ? 'Suzie me pique ma balle.' : 'C’est qui, ' + R[i].pet + ' ?', hearts: false, calls: 0, ball: 150, flip: 1 }), 1700); } }; });
+    const call = () => { const n = s.calls + 1; if (n === 1) this.setState({ calls: n, me: 196, other: 20, flip: -1, img: 'angry', bubble: 'Non. Je suis avec ' + cur.pet + '.', hearts: false }); else this.setState({ calls: n, me: 14, other: 200, flip: 1, img: 'happy', bubble: 'Bon. J’arrive.', hearts: false }); };
+    const hug = () => this.setState({ me: 86, other: 160, flip: 1, img: 'love', bubble: '+4 XP · câlin à deux', hearts: true });
+    const play = () => this.setState({ me: 110, other: 208, img: 'sporty', bubble: 'À moi la balle !', hearts: false, ball: 290, flip: 1 });
+    return {
+      rdvs, call, hug, play, who: cur.who, place: cur.place, bg: cur.bg, soloOp: s.hearts ? 0 : 1, guest: 'Nino & ' + cur.pet + ' (' + cur.who + ')', moving: s.moving !== null, movPet: s.moving !== null ? R[s.moving].pet.toUpperCase() : '', movPlace: s.moving !== null ? R[s.moving].place : '', movImg: s.moving !== null ? R[s.moving].img : '', movLeft: cur.pet, lienTxt: cur.lvl, lienW: cur.w, chatSub: cur.chat, wallA: cur.wallA, wallB: cur.wallB,
+      meLeft: s.me + 'px', otherLeft: s.other + 'px', ballLeft: s.ball + 'px', meFlip: s.flip,
+      meImg: B + ME[s.img], meAlt: 'Ton Nino, humeur ' + s.img, otherImg: cur.img, otherAlt: cur.pet + ', le pet de ' + cur.who,
+      hasBubble: !!s.bubble, bubble: s.bubble, hearts: s.hearts
+    };
+  }
+}
+</script>
+</body>
+</html>

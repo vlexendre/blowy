@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Chez Inès — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;white-space:nowrap;box-sizing:border-box;width:100%}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.b1{background:#FF5A3C;color:#fff;box-shadow:0 5px 0 #C4341B}
+.b2{background:#16110D;color:#fff;box-shadow:0 5px 0 #000}
+.bl{background:#C8F542;color:#16110D;box-shadow:0 5px 0 #16110D}
+.ghost{min-height:44px;border:0;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:inherit;display:flex;align-items:center;justify-content:center;width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.card{background:#fff;border-radius:22px;box-shadow:0 4px 0 #EEDFCB;color:#16110D}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.back{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .6s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+.sq2{animation:sq 2.8s cubic-bezier(.3,0,.2,1) -1.1s infinite;transform-origin:50% 100%}
+@keyframes wob{0%,100%{transform:rotate(0)}15%{transform:rotate(-8deg)}30%{transform:rotate(7deg)}45%{transform:rotate(-3deg)}60%{transform:rotate(0)}}
+.wob{animation:wob 2.2s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes glow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.95;transform:scale(1.1)}}
+.glow{animation:glow 2s ease-in-out infinite}
+@keyframes bounce{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+.bounce{animation:bounce .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.15)}}
+.dr{animation:drift 10s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,245,66,.7)}70%{box-shadow:0 0 0 10px rgba(200,245,66,0)}}
+.pulse{animation:pulse 1.8s infinite}
+
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; position: relative; display: flex; flex-direction: column; background: #FFF7EC">
+
+  <div style="padding: 52px 16px 16px; background: linear-gradient(170deg, #7C3AED, #A78BFA); color: #fff; border-radius: 0 0 30px 30px; box-shadow: 0 5px 0 #4C1D95; position: relative; overflow: hidden">
+    <div class="blob" style="width: 200px; height: 200px; top: -60px; right: -60px; background: #22D3EE; opacity: .6"></div>
+    <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative"><a href="V4-Quartier.dc.html" aria-label="Retour au Quartier" class="back" style="background: rgba(255,255,255,.18)"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="chip" style="background: #16110D; color: #C8F542">Amie · 112 jours</span></div>
+    <div class="pop" style="animation-delay: .05s; margin-top: 10px; display: flex; align-items: flex-end; justify-content: space-between; position: relative"><span class="d" style="font-size: 46px; white-space: nowrap">CHEZ INÈS</span><span style="font-size: 12px; font-weight: 700; color: #EDE4FF; padding-bottom: 6px">Nino est en visite</span></div>
+    <div class="pop" style="animation-delay: .1s; margin-top: 8px; height: 170px; border-radius: 24px; background: #EDE4FF url(/_blob/2f8386933282a5c1edf5d677719227da) center / cover; position: relative; overflow: hidden">
+      <sc-if value="{{bubble}}" hint-placeholder-val="{{true}}"><span class="bounce" style="position: absolute; left: 50%; top: 12px; transform: translateX(-50%); background: #16110D; color: #fff; border-radius: 12px; padding: 6px 10px; font-size: 12px; font-weight: 700; white-space: nowrap">{{bubble}}</span></sc-if>
+      <img src="{{meImg}}" alt="Nino en visite" class="sq" style="position: absolute; left: 30px; bottom: 6px; width: 120px; height: 120px; object-fit: contain">
+      <img src="/_blob/36951927ea94071fec4b8e25ae8db21b" alt="Bibi, le pet d'Inès" class="sq2" style="position: absolute; right: 30px; bottom: 6px; width: 112px; height: 112px; object-fit: contain; transform: scaleX(-1)">
+      <sc-if value="{{gift}}" hint-placeholder-val="{{false}}"><img src="{{giftImg}}" alt="" aria-hidden="true" class="bounce" style="position: absolute; left: 170px; bottom: 30px; width: 44px; height: 44px; object-fit: contain"></sc-if>
+    </div>
+  </div>
+  <div class="pop" style="animation-delay: .14s; margin: 12px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+    <sc-for list="{{acts}}" as="a" hint-placeholder-count="3"><button type="button" onClick="{{a.go}}" style="min-height: 52px; border-radius: 16px; border: 0; cursor: pointer; background: #fff; box-shadow: 0 4px 0 #EEDFCB; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; color: #16110D; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"><img src="{{a.img}}" alt="" aria-hidden="true" style="width: 24px; height: 24px; object-fit: contain">{{a.t}}</button></sc-for>
+  </div>
+  <a href="V4-RdvIRL.dc.html" class="pop" style="animation-delay: .18s; margin: 10px 16px 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 18px; background: #16110D; color: #fff; box-shadow: 0 4px 0 #000"><span style="width: 32px; height: 32px; border-radius: 50%; background: #C8F542; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z" fill="#16110D"/></svg></span><span style="font-size: 13px; font-weight: 700; flex: 1 1 auto">Inès est ton ange gardien samedi</span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <div style="margin: 12px 16px 0; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; overflow: hidden">
+    <sc-for list="{{msgs}}" as="m" hint-placeholder-count="3"><div style="display: flex; justify-content: {{m.side}}"><span style="max-width: 260px; padding: 9px 12px; border-radius: 16px; font-size: 13px; font-weight: 600; line-height: 1.35; background: {{m.bg}}; color: {{m.fg}}">{{m.t}}</span></div></sc-for>
+  </div>
+  <div style="margin: 10px 16px 24px; display: flex; gap: 8px">
+    <span style="flex: 1 1 auto; min-height: 48px; border-radius: 16px; background: #fff; box-shadow: 0 3px 0 #EEDFCB; display: flex; align-items: center; padding: 0 14px; font-size: 14px; font-weight: 600; color: #9A8E80">Écrire à Inès…</span>
+    <button type="button" onClick="{{send}}" aria-label="Envoyer" style="width: 48px; height: 48px; border-radius: 16px; border: 0; cursor: pointer; background: #FF5A3C; box-shadow: 0 4px 0 #C4341B; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-6z" fill="#fff"/></svg></button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { b: 'Bibi ! On joue ?', img: 'happy', gift: null, sent: false }; }
+  renderVals() {
+    const s = this.state, I = { happy: '/_blob/2dd74281b0d1e96cdc17f174113da343', love: '/_blob/1ce3e6d22daeb94d1bcda86bda596745', sport: '/_blob/7bbc8c67ffec185c67f57ffbd3d2bb28' };
+    const M = [['Inès', 'Bibi a adopté le bonnet de Nino, désolée.'], ['moi', 'Il peut le garder, c’est son parrain.'], ['Inès', 'Samedi je veille sur toi. Envoie un signe à 19:45 !']];
+    if (s.sent) M.push(['moi', 'Promis. Merci mille fois.']);
+    return {
+      bubble: s.b, meImg: I[s.img], gift: !!s.gift, giftImg: s.gift,
+      acts: [['Nourrir', '/_blob/807ab4046db8f6967d2ea99431998605', () => this.setState({ b: 'Bibi adore les cookies.', img: 'happy', gift: '/_blob/807ab4046db8f6967d2ea99431998605' })], ['Offrir', '/_blob/db4476a91272a51245c1e0f226b5e1c4', () => this.setState({ b: '+10 amitié · cadeau livré', img: 'love', gift: '/_blob/db4476a91272a51245c1e0f226b5e1c4' })], ['Jouer', '/_blob/8fc3e7d178e7c719ae293dd9137eb55b', () => this.setState({ b: 'Match nul. Revanche ?', img: 'sport', gift: '/_blob/8fc3e7d178e7c719ae293dd9137eb55b' })]].map(([t, img, go]) => ({ t, img, go })),
+      msgs: M.slice(-3).map(([w, t]) => ({ t, side: w === 'moi' ? 'flex-end' : 'flex-start', bg: w === 'moi' ? '#16110D' : '#fff', fg: w === 'moi' ? '#fff' : '#16110D' })),
+      send: () => this.setState({ sent: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

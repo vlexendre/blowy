@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Carte — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.glass{background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.45));backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 1px #fff,0 12px 30px rgba(22,17,13,.18)}
+.pin{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;cursor:pointer;font-family:'Inter',sans-serif}
+.pin .dot{width:58px;height:58px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 rgba(22,17,13,.18);transition:transform .25s cubic-bezier(.2,1.4,.4,1)}
+.pin:hover .dot{transform:scale(1.08)}
+.flt{min-height:34px;padding:0 14px;border-radius:999px;border:0;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;white-space:nowrap}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border-radius:16px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .6s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes radar{0%{transform:scale(.3);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+.radar{position:absolute;left:50%;top:50%;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;border:3px solid #FF5A3C;background:radial-gradient(circle,rgba(255,90,60,.18),rgba(255,90,60,0) 70%);animation:radar 2.6s cubic-bezier(.2,.6,.3,1) infinite;pointer-events:none}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.fl{animation:float 2.6s ease-in-out infinite}
+@keyframes sheet{0%{transform:translateY(40px);opacity:0}100%{transform:none;opacity:1}}
+.sheet{animation:sheet .4s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -10px 18px rgba(255,255,255,.2),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
+.gnav::before{content:'';position:absolute;left:22px;right:22px;top:1px;height:44%;border-radius:30px 30px 60% 60%;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#5E544A;transition:background .3s}
+.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85));box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(125,161,26,.25),0 6px 14px rgba(125,161,26,.35)}
+.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#FF3D7F;color:#fff;font-size:9px;font-weight:800;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.gnav .pls{position:absolute;top:4px;left:calc(50% + 4px);height:15px;padding:0 5px;border-radius:999px;background:#7C3AED;color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;display:flex;align-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFE9CF; overflow: hidden; position: relative">
+
+  <!-- Stylised map -->
+  <div style="position: absolute; inset: 0; filter: {{mapBlur}}; transition: filter .4s">
+    <img src="/_blob/b28967e790c537b9b4fe8e616c17e71e" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 390px; height: 844px; object-fit: cover">
+
+    <!-- You -->
+    <div style="position: absolute; left: 195px; top: 420px; width: 0; height: 0">
+      <span class="radar"></span><span class="radar" style="animation-delay: 1.3s"></span>
+      <div style="position: absolute; left: -40px; top: -60px; width: 80px; display: flex; flex-direction: column; align-items: center">
+        <img src="/_blob/2dd74281b0d1e96cdc17f174113da343" alt="Ton Nino, au centre de la carte" class="sq" style="width: 80px; height: 80px; object-fit: contain">
+        <span class="chip" style="background: #16110D; color: #fff; margin-top: -4px">Toi · Nino</span>
+      </div>
+    </div>
+
+    <sc-for list="{{pets}}" as="p" hint-placeholder-count="5">
+      <button type="button" class="pin fl" onClick="{{p.pick}}" aria-label="{{p.aria}}" style="left: {{p.x}}; top: {{p.y}}; animation-delay: {{p.dl}}">
+        <span class="dot" style="outline: {{p.ring}}"><img src="{{p.img}}" alt="" aria-hidden="true" style="width: 46px; height: 46px; object-fit: contain"></span>
+        <span class="chip" style="background: {{p.cbg}}; color: {{p.cfg}}">{{p.dist}}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <!-- Header -->
+  <div class="glass pop" style="position: absolute; left: 14px; right: 14px; top: 50px; border-radius: 26px; padding: 12px 14px; z-index: 10">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; flex-direction: column; gap: 3px"><span class="d" style="font-size: 30px; white-space: nowrap">AUTOUR DE TOI</span><span style="font-size: 11px; font-weight: 700; color: #6B6259; white-space: nowrap">12 pets · positions floutées à 500 m</span></div>
+      <span class="chip" style="background: linear-gradient(135deg, #7C3AED, #FF3D7F); color: #fff; box-shadow: 0 3px 0 #4C1D95">BLOWY+</span>
+    </div>
+    <div style="margin-top: 10px; display: flex; gap: 6px">
+      <sc-for list="{{filters}}" as="f" hint-placeholder-count="3">
+        <button type="button" class="flt" onClick="{{f.pick}}" style="background: {{f.bg}}; color: {{f.fg}}">{{f.t}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- Selected pet sheet -->
+  <sc-if value="{{hasSel}}" hint-placeholder-val="{{true}}">
+    <div class="sheet" style="position: absolute; left: 14px; right: 14px; bottom: 102px; z-index: 20; background: #fff; border-radius: 26px; padding: 14px; box-shadow: 0 6px 0 #EEDFCB, 0 18px 40px rgba(22,17,13,.18); display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 12px; padding-right: 28px">
+        <span style="width: 64px; height: 64px; border-radius: 20px; background: {{sel.tint}}; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="{{sel.img}}" alt="" aria-hidden="true" class="sq" style="width: 54px; height: 54px; object-fit: contain"></span>
+        <span style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; min-width: 0"><span class="d" style="font-size: 26px">{{sel.name}}</span><span style="font-size: 12px; font-weight: 600; color: #6B6259; white-space: nowrap">{{sel.sub}}</span></span>
+        <span style="display: flex; flex-direction: column; align-items: flex-end"><span class="d" style="font-size: 30px; color: #FF5A3C">{{sel.pc}}</span><span style="font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #8A7E70">vision</span></span>
+        <button type="button" onClick="{{close}}" aria-label="Fermer" style="position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: #F2E6D6; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="#16110D" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+      </div>
+      <div style="display: flex; gap: 6px"><sc-for list="{{sel.tags}}" as="t" hint-placeholder-count="3"><span class="chip" style="background: #FFF1E0; color: #9A5A00">{{t.t}}</span></sc-for></div>
+      <sc-if value="{{notSent}}" hint-placeholder-val="{{true}}">
+        <button type="button" class="btn" onClick="{{hello}}" style="background: #FF5A3C; color: #fff; box-shadow: 0 5px 0 #C4341B">Nino va dire bonjour</button>
+        <span style="font-size: 11px; font-weight: 600; color: #8A7E70; text-align: center">Nino a 3 / 3 rendez-vous : {{sel.name}} prendra la prochaine place libre.</span>
+      </sc-if>
+      <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 10px; background: #F4FFD6; border-radius: 16px; padding: 10px 12px"><img src="/_blob/7bbc8c67ffec185c67f57ffbd3d2bb28" alt="" aria-hidden="true" style="width: 36px; height: 36px; object-fit: contain"><span style="font-size: 13px; font-weight: 700; line-height: 1.35">Nino est parti saluer {{sel.name}}. Réponse ce soir.</span></div>
+        <a href="V4-Match.dc.html" class="btn" style="background: #16110D; color: #fff; box-shadow: 0 5px 0 #000">Voir ses rendez-vous</a>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- Locked (free plan) -->
+  <sc-if value="{{locked}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 25; display: flex; align-items: center; justify-content: center; padding: 0 22px">
+      <div class="pop" style="width: 100%; background: linear-gradient(160deg, #16110D, #2E1B3D); color: #fff; border-radius: 30px; padding: 22px 18px; box-shadow: 0 6px 0 #000; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; position: relative; overflow: hidden">
+        <img src="/_blob/dd0fe6f14de3fb055838988612c51642" alt="Nino en lunettes de soleil" class="sq" style="width: 110px; height: 110px; object-fit: contain">
+        <span class="d" style="font-size: 38px; white-space: nowrap">12 PETS ICI.</span>
+        <span style="font-size: 14px; font-weight: 600; line-height: 1.45; color: #D9CFC4">Vois qui vit à côté de chez toi et envoie Nino dire bonjour. La carte est réservée à Blowy+.</span>
+        <a href="V4-Paywall.dc.html" class="btn" style="width: 100%; margin-top: 4px; background: #C8F542; color: #16110D; box-shadow: 0 5px 0 #7DA11A">Débloquer la carte</a>
+        <span style="font-size: 11px; font-weight: 700; color: #BDB2A6">Essai gratuit 3 jours · sans engagement</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <nav aria-label="Navigation" class="gnav">
+    <a href="V4-Nid.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Nid</a>
+    <a href="V4-Chats.dc.html"><span class="bdg">4</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Chats</a>
+    <a href="V4-Carte.dc.html" class="on" aria-current="page"><span class="pls">PLUS</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" stroke="currentColor" stroke-width="2.2" fill="currentColor" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" fill="#C8F542"/></svg>Carte</a>
+    <a href="V4-Quartier.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V11l5-4 5 4v10M13 21V8l4-3 4 3v13M3 21h18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Quartier</a>
+    <a href="V4-Profil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Profil</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"plus":{"editor":"boolean","default":true,"section":"Démo"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sel: 0, f: 0, sent: {} }; }
+  renderVals() {
+    const B = '/_blob/';
+    const plus = this.props.plus ?? true;
+    const P = [
+      { name: 'Pistache', who: 'J.', img: B + '8e015999580149e064272e9e8baa7c98', x: '52px', y: '330px', dist: '300 m', pc: '91 %', tint: '#EDE4FF', tags: ['Gourmand', 'Artiste', 'Plus'], k: 'plus' },
+      { name: 'Nougat', who: 'R.', img: B + '36951927ea94071fec4b8e25ae8db21b', x: '290px', y: '232px', dist: '650 m', pc: '79 %', tint: '#FFF1C9', tags: ['Sportif', 'Drôle', 'Ami'], k: 'ami' },
+      { name: 'Kiwi', who: 'E.', img: B + 'ac18b7adeb76bf7b1fd8b34231b411c3', x: '36px', y: '560px', dist: '1,2 km', pc: '88 %', tint: '#DDF8E8', tags: ['Scientifique', 'Calme', 'Plus'], k: 'plus' },
+      { name: 'Ziggy', who: 'N.', img: B + '5b715883c3cee0f81513bcb890081ba0', x: '296px', y: '520px', dist: '900 m', pc: '73 %', tint: '#FFE3DC', tags: ['Fêtard', 'Gentil', 'Ami'], k: 'ami' },
+      { name: 'Praline', who: 'C.', img: B + 'b937725c85e347b3e8d14da846b2e63a', x: '176px', y: '196px', dist: '1,8 km', pc: '84 %', tint: '#FFE0EC', tags: ['Rêveur', 'Gentil', 'Plus'], k: 'plus' }
+    ];
+    const s = this.state, F = ['Tous', 'Plus', 'Ami'], fk = [null, 'plus', 'ami'][s.f];
+    const pets = P.map((p, i) => ({ i, p })).filter(o => !fk || o.p.k === fk).map(({ i, p }) => {
+      const on = s.sel === i;
+      return { img: p.img, x: p.x, y: p.y, dist: p.dist, dl: (i * 0.4) + 's', aria: p.name + ', à ' + p.dist, ring: on ? '4px solid #FF5A3C' : '0', cbg: on ? '#FF5A3C' : '#16110D', cfg: '#fff', pick: () => this.setState({ sel: i }) };
+    });
+    const cur = s.sel !== null ? P[s.sel] : P[0];
+    const visible = s.sel !== null && (!fk || cur.k === fk);
+    return {
+      pets, locked: !plus, mapBlur: plus ? 'none' : 'blur(7px) saturate(.8)',
+      filters: F.map((t, i) => ({ t, bg: s.f === i ? '#16110D' : 'rgba(255,255,255,.8)', fg: s.f === i ? '#fff' : '#16110D', pick: () => this.setState({ f: i }) })),
+      hasSel: plus && visible, sel: { name: cur.name, img: cur.img, pc: cur.pc, tint: cur.tint, tags: cur.tags.map(t => ({ t })), sub: 'à ' + cur.dist + ' · le pet de ' + cur.who },
+      sent: !!s.sent[s.sel], notSent: !s.sent[s.sel],
+      hello: () => this.setState({ sent: Object.assign({}, s.sent, { [s.sel]: true }) }),
+      close: () => this.setState({ sel: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

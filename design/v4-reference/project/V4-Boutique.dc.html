@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Boutique — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9A8E80}
+.nav a.on{color:#16110D}
+.nav a.on span{background:#C8F542}
+.nav span{width:42px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .55s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) translateY(-3px)}}
+.wob{animation:wob 2.4s ease-in-out infinite}
+@keyframes spin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+.coin{animation:spin 2.4s ease-in-out infinite}
+@keyframes shine{0%{transform:translateX(-150%) skewX(-20deg)}100%{transform:translateX(450%) skewX(-20deg)}}
+.shine{position:absolute;top:0;bottom:0;width:25%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));animation:shine 3s ease-in-out 1s infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <div class="pop" style="padding: 52px 16px 0; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 10px"><a href="V4-Nid.dc.html" aria-label="Retour au nid" style="width: 40px; height: 40px; border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; box-shadow: 0 3px 0 #EEDFCB"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a><h1 class="d" style="margin: 0; font-size: 40px">BOUTIQUE</h1></div>
+    <span class="chip" style="background: #fff; box-shadow: 0 3px 0 #EEDFCB; font-size: 15px; font-family: 'Bricolage Grotesque', sans-serif; color: #C97A12"><img src="/_blob/79c80e7b551bb0b08bbbac244350b5ec" alt="" aria-hidden="true" class="coin" style="width: 22px; height: 22px; object-fit: contain">340</span>
+  </div>
+
+  <a href="V4-Paywall.dc.html" class="pop" style="animation-delay: .06s; margin: 12px 16px 0; position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #4C1D95, #7C3AED 60%, #FF3D7F); color: #fff; border-radius: 22px; padding: 12px 14px; box-shadow: 0 5px 0 #2E1065">
+    <span class="shine"></span>
+    <img src="/_blob/dd0fe6f14de3fb055838988612c51642" alt="" aria-hidden="true" class="wob" style="width: 56px; height: 56px; object-fit: contain">
+    <span style="display: flex; flex-direction: column; flex: 1 1 auto; white-space: nowrap"><span class="d" style="font-size: 22px">BLOWY+</span><span style="font-size: 11px; font-weight: 600; color: #E3DBFF">+200 pièces / mois · coloc inclus</span></span>
+    <span class="chip" style="background: #C8F542; color: #16110D">ESSAI 3 J</span>
+  </a>
+
+  <div class="pop" style="animation-delay: .12s; margin: 12px 16px 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" onClick="{{t.pick}}" style="min-height: 38px; border-radius: 12px; border: 0; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 800; background: {{t.bg}}; color: {{t.fg}}; box-shadow: 0 3px 0 {{t.sh}}">{{t.l}}</button></sc-for>
+  </div>
+
+  <div style="margin: 12px 16px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; flex: 1 1 auto; min-height: 0; overflow: hidden; align-content: start">
+    <sc-for list="{{items}}" as="it" hint-placeholder-count="4">
+      <div class="pop" style="animation-delay: {{it.dl}}; position: relative; background: #fff; border-radius: 20px; padding: 10px; box-shadow: 0 4px 0 #EEDFCB; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center">
+        <sc-if value="{{it.hasTag}}" hint-placeholder-val="{{false}}"><span class="chip" style="position: absolute; top: -8px; left: 8px; background: {{it.tagBg}}; color: {{it.tagFg}}; font-size: 9px">{{it.tag}}</span></sc-if>
+        <span style="width: 64px; height: 64px; border-radius: 18px; background: {{it.tint}}; display: flex; align-items: center; justify-content: center"><img src="{{it.img}}" alt="" aria-hidden="true" class="wob" style="width: 48px; height: 48px; object-fit: contain"></span>
+        <span class="d" style="font-size: 16px; white-space: nowrap">{{it.name}}</span>
+        <span style="font-size: 11px; font-weight: 600; color: #8A7E70; white-space: nowrap">{{it.sub}}</span>
+        <button type="button" aria-label="{{it.aria}}" style="margin-top: 2px; width: 100%; min-height: 36px; border-radius: 12px; border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 800; background: {{it.bBg}}; color: {{it.bFg}}; box-shadow: 0 3px 0 {{it.bSh}}">{{it.price}}</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 0 }; }
+  renderVals() {
+    const B = '/_blob/';
+    const coinBtn = (n) => ({ price: n + ' pièces', bBg: n <= 340 ? '#16110D' : '#F4EADC', bFg: n <= 340 ? '#FFB347' : '#8A7E70', bSh: n <= 340 ? '#000' : '#E3D6C3' });
+    const euroBtn = (p) => ({ price: p, bBg: '#FF5A3C', bFg: '#fff', bSh: '#C4341B' });
+    const T = [
+      [
+        { name: 'Gel de série', sub: 'Sauve un jour raté', img: B + '47cd8823563859e529f6a0d3915927a5', tint: '#DDF8FC', ...coinBtn(200), tag: 'POPULAIRE', tagBg: '#22D3EE', tagFg: '#16110D' },
+        { name: 'Boost d’éclosion', sub: 'Matche sans attendre', img: B + '0f4c821c65c238a4172050f8b900fb63', tint: '#FFE3D9', ...coinBtn(300) },
+        { name: 'Œuf rare', sub: 'Suzie ou Pia', img: B + 'ac18b7adeb76bf7b1fd8b34231b411c3', tint: '#EDE4FF', ...coinBtn(500), tag: 'RARE', tagBg: '#7C3AED', tagFg: '#fff' },
+        { name: 'XP ×2 · 1 h', sub: 'Pour vous deux', img: B + 'aac4cbc74b93b66bb9d51fa6c26eac83', tint: '#FFF1C9', ...coinBtn(150) }
+      ],
+      [
+        { name: 'Casque', sub: 'Mode concert', img: B + 'df63957d57e3f5480c282f874f9f0d49', tint: '#EDE4FF', ...coinBtn(120) },
+        { name: 'Bonnet', sub: 'Saison froide', img: B + '415595cd339741eb78d244ec9c118344', tint: '#FFE3D9', ...coinBtn(80) },
+        { name: 'Couronne', sub: 'Série de 30 jours', img: B + 'fe9020e943658648906f4aa1f8e4ff85', tint: '#FFF1C9', price: 'À débloquer', bBg: '#F4EADC', bFg: '#8A7E70', bSh: '#E3D6C3' },
+        { name: 'Sac à dos', sub: 'Pour les quêtes IRL', img: B + 'e68877cdff5027b443148940d70104af', tint: '#E8F9C8', ...coinBtn(150) }
+      ],
+      [
+        { name: '100 pièces', sub: 'Un petit plaisir', img: B + '79c80e7b551bb0b08bbbac244350b5ec', tint: '#FFF1C9', ...euroBtn('1,99 €') },
+        { name: '550 pièces', sub: '+10 % offerts', img: B + '79c80e7b551bb0b08bbbac244350b5ec', tint: '#FFE3D9', ...euroBtn('7,99 €'), tag: 'POPULAIRE', tagBg: '#FF3D7F', tagFg: '#fff' },
+        { name: '1 200 pièces', sub: '+20 % offerts', img: B + 'db4476a91272a51245c1e0f226b5e1c4', tint: '#E8F9C8', ...euroBtn('14,99 €'), tag: 'MEILLEURE OFFRE', tagBg: '#C8F542', tagFg: '#16110D' },
+        { name: 'Cadeau à L.', sub: '150 pièces pour elle', img: B + 'db4476a91272a51245c1e0f226b5e1c4', tint: '#FDE6EE', ...euroBtn('2,99 €') }
+      ]
+    ];
+    const tabs = ['Essentiels', 'Tenues', 'Pièces'].map((l, i) => { const on = this.state.tab === i; return { l, bg: on ? '#16110D' : '#fff', fg: on ? '#fff' : '#16110D', sh: on ? '#000' : '#EEDFCB', pick: () => this.setState({ tab: i }) }; });
+    const items = T[this.state.tab].map((it, i) => ({ ...it, dl: (i * 0.06) + 's', hasTag: !!it.tag, tag: it.tag || '', tagBg: it.tagBg || '#fff', tagFg: it.tagFg || '#16110D', aria: 'Acheter ' + it.name + ', ' + it.price }));
+    return { tabs, items };
+  }
+}
+</script>
+</body>
+</html>

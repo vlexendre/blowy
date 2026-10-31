@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Chat — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.me{align-self:flex-end;max-width:270px;background:linear-gradient(135deg,#FF3D7F,#FF5A3C);color:#fff;border-radius:20px 20px 6px 20px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #C4341B}
+.them{align-self:flex-start;max-width:270px;background:#fff;border-radius:20px 20px 20px 6px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #EEDFCB}
+.mi{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border-radius:12px;font-size:14px;font-weight:700;white-space:nowrap}
+@keyframes msg{0%{transform:translateY(12px) scale(.95);opacity:0}100%{transform:none;opacity:1}}
+.msg{animation:msg .45s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes chipin{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.xp{animation:chipin .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes peek{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
+.peek{animation:peek 2.2s ease-in-out infinite}
+@keyframes menu{0%{transform:scale(.8) translateY(-10px);opacity:0}100%{transform:none;opacity:1}}
+.menu{animation:menu .25s cubic-bezier(.2,1.3,.3,1) both;transform-origin:100% 0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <div style="padding: 52px 14px 12px; background: linear-gradient(160deg, #4C1D95, #7C3AED); color: #fff; border-radius: 0 0 28px 28px; display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 2; box-shadow: 0 5px 0 #2E1065">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <a href="V4-Chats.dc.html" aria-label="Retour aux chats" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="V4-Lien.dc.html" style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0">
+        <span aria-label="L., visage masqué" style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(145deg, #22D3EE, #FF7A9C); border: 2px solid #fff; filter: blur(1.5px); flex: 0 0 auto"></span>
+        <span style="display: flex; flex-direction: column; white-space: nowrap"><span class="d" style="font-size: 22px">L.</span><span style="font-size: 11px; font-weight: 700; color: #D6CCF5">Lien niv. 2 · voir l'arbre ›</span></span>
+      </a>
+      <button type="button" onClick="{{toggle}}" aria-label="Options" style="width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(255,255,255,.16); cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.2" fill="#fff"/><circle cx="12" cy="12" r="2.2" fill="#fff"/><circle cx="19" cy="12" r="2.2" fill="#fff"/></svg></button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="flex: 1 1 auto; height: 8px; border-radius: 999px; background: rgba(255,255,255,.2); overflow: hidden"><div style="height: 100%; width: {{lienW}}; border-radius: 999px; background: #C8F542; transition: width .8s cubic-bezier(.2,1,.3,1)"></div></div>
+      <span style="font-size: 11px; font-weight: 800; white-space: nowrap">{{lien}} / 500 XP</span>
+    </div>
+    <sc-if value="{{menu}}" hint-placeholder-val="{{false}}">
+      <div class="menu" style="position: absolute; top: 96px; right: 14px; width: 220px; background: #fff; color: #16110D; border-radius: 16px; padding: 6px; box-shadow: 0 16px 40px rgba(0,0,0,.25)">
+        <a href="V4-Fiche.dc.html" class="mi">Voir la fiche de Nino</a>
+        <a href="V4-Rupture.dc.html" class="mi">Partir proprement</a>
+        <a href="V4-Signaler.dc.html" class="mi" style="color: #D92D2D">Signaler ou bloquer</a>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 14px 14px; display: flex; flex-direction: column; gap: 8px">
+    <span class="chip msg" style="align-self: center; background: #fff; box-shadow: 0 2px 0 #EEDFCB; color: #7C3AED"><img src="/_blob/8fc3e7d178e7c719ae293dd9137eb55b" alt="" aria-hidden="true" style="width: 16px; height: 16px">Tu as fait ta mission · +6</span>
+    <div class="them msg" style="animation-delay: .1s">Nino m'a boudé·e ce matin parce que j'ai couru sans lui.</div>
+    <div class="me msg" style="animation-delay: .2s">Normal, tu l'as nourri de ta course, pas de ta présence.</div>
+    <div class="them msg" style="animation-delay: .3s">Petit, je courais avec mon grand-père le dimanche. C'est pour ça que j'ai mis « rando ».</div>
+    <span class="chip xp" style="animation-delay: .6s; align-self: flex-start; background: #FF3D7F; color: #fff">+8 XP · souvenir partagé</span>
+    <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+      <div class="me msg">{{question}}</div>
+      <span class="chip xp" style="animation-delay: .3s; align-self: flex-end; background: #C8F542">+5 XP · vraie question</span>
+    </sc-if>
+    <sc-if value="{{notSent}}" hint-placeholder-val="{{true}}">
+      <div class="msg" style="animation-delay: .5s; margin-top: auto; display: flex; gap: 8px; align-items: flex-end">
+        <img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" class="peek" style="width: 54px; height: 54px; object-fit: contain; flex: 0 0 auto">
+        <div style="flex: 1 1 auto; background: #16110D; color: #fff; border-radius: 20px 20px 20px 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 0 #000">
+          <span style="font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #C8F542">Nino te souffle</span>
+          <span style="font-size: 15px; font-weight: 600; line-height: 1.35">{{question}}</span>
+          <div style="display: flex; gap: 6px">
+            <button type="button" onClick="{{send}}" style="min-height: 36px; padding: 0 14px; border-radius: 12px; border: 0; background: #C8F542; color: #16110D; cursor: pointer; font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 800; box-shadow: 0 3px 0 #7DA11A">ENVOYER</button>
+            <button type="button" onClick="{{next}}" style="min-height: 36px; padding: 0 14px; border-radius: 12px; border: 0; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700">Une autre</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="padding: 10px 12px 24px; display: flex; align-items: center; gap: 8px">
+    <button type="button" aria-label="Note vocale, débloquée au niveau 3" style="width: 46px; height: 46px; border-radius: 14px; border: 2px dashed #C9B8A2; background: transparent; display: flex; align-items: center; justify-content: center; cursor: not-allowed"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="3" fill="#B5A898"/><path d="M8 10V8a4 4 0 0 1 8 0v2" stroke="#B5A898" stroke-width="2.2" fill="none"/></svg></button>
+    <label for="m" style="position: absolute; left: -9999px">Message</label>
+    <input id="m" type="text" placeholder="Écrire à L.…" style="flex: 1 1 auto; min-width: 0; height: 46px; border-radius: 14px; border: 2px solid #16110D; background: #fff; padding: 0 14px; font-family: 'Inter', sans-serif; font-size: 14px; box-shadow: 0 3px 0 #16110D">
+    <button type="button" aria-label="Envoyer" style="width: 46px; height: 46px; border-radius: 14px; border: 0; background: #FF5A3C; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 3px 0 #C4341B"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2-7z" fill="currentColor"/></svg></button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { q: 0, sent: false, menu: false }; }
+  renderVals() {
+    const Q = ['Qu’est-ce qu’il t’apprenait, ton grand-père, pendant ces courses ?', 'Quel est le dernier truc qui t’a rendu·e fier·e ?', 'Si Nino avait ton pire défaut, ce serait lequel ?'];
+    const lien = this.state.sent ? 353 : 348;
+    return {
+      question: Q[this.state.q], sent: this.state.sent, notSent: !this.state.sent, menu: this.state.menu,
+      toggle: () => this.setState({ menu: !this.state.menu }),
+      send: () => this.setState({ sent: true }), next: () => this.setState({ q: (this.state.q + 1) % Q.length }),
+      lien, lienW: (lien / 5) + '%'
+    };
+  }
+}
+</script>
+</body>
+</html>

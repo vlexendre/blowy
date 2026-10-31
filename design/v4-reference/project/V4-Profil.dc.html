@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Profil — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.card{background:#fff;border-radius:20px;box-shadow:0 4px 0 #EEDFCB}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#9A8E80}
+.nav a.on{color:#16110D}
+.nav a.on span{background:#C8F542}
+.nav span{width:42px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .55s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gear:hover svg{animation:spin 1.2s linear infinite}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -10px 18px rgba(255,255,255,.2),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
+.gnav::before{content:'';position:absolute;left:22px;right:22px;top:1px;height:44%;border-radius:30px 30px 60% 60%;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#5E544A;transition:background .3s}
+.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85));box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(125,161,26,.25),0 6px 14px rgba(125,161,26,.35)}
+.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#FF3D7F;color:#fff;font-size:9px;font-weight:800;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.gnav .pls{position:absolute;top:4px;left:calc(50% + 4px);height:15px;padding:0 5px;border-radius:999px;background:#7C3AED;color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;display:flex;align-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <div style="position: relative; overflow: hidden; padding: 52px 16px 16px; background: linear-gradient(160deg, #16110D, #2E1B3D); color: #fff; border-radius: 0 0 30px 30px; box-shadow: 0 5px 0 #000">
+    <div class="blob" style="width: 220px; height: 220px; top: -50px; right: -60px; background: #FF5A3C; opacity: .6"></div>
+    <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative">
+      <span class="d" style="font-size: 26px">blowy<span style="color: #FF5A3C">.</span></span>
+      <a href="V4-Reglages.dc.html" class="gear" aria-label="Réglages" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" stroke="#fff" stroke-width="2.2" fill="none"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></a>
+    </div>
+    <div class="pop" style="animation-delay: .06s; margin-top: 12px; display: flex; align-items: center; gap: 14px; position: relative">
+      <div style="position: relative; width: 76px; height: 76px; border-radius: 24px; background: linear-gradient(145deg, #FFB347, #FF5A3C); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #C4341B"><span class="d" style="font-size: 40px">A</span><span aria-label="Selfie vérifié" style="position: absolute; right: -6px; bottom: -6px; width: 26px; height: 26px; border-radius: 50%; background: #C8F542; border: 3px solid #16110D; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" stroke="#16110D" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span class="d" style="font-size: 34px">Alex, 28</span>
+        <span style="font-size: 12px; font-weight: 600; color: #D9CFC4">Paris · membre depuis octobre</span>
+        <a href="V4-Abonnement.dc.html" class="chip" style="align-self: flex-start; background: #C8F542; color: #16110D">BLOWY+ · ESSAI J-2 ›</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 12px 16px 0; display: flex; flex-direction: column; gap: 10px; flex: 1 1 auto; min-height: 0; overflow: hidden">
+    <div class="pop" style="animation-delay: .12s; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+      <a href="V4-Serie.dc.html" class="card" style="padding: 10px 4px; text-align: center"><span class="d" style="font-size: 24px; color: #FF5A3C; display: block">8</span><span style="font-size: 10px; font-weight: 800">série</span></a>
+      <a href="V4-Lien.dc.html" class="card" style="padding: 10px 4px; text-align: center"><span class="d" style="font-size: 24px; color: #7C3AED; display: block">1 488</span><span style="font-size: 10px; font-weight: 800">XP</span></a>
+      <a href="V4-Boutique.dc.html" class="card" style="padding: 10px 4px; text-align: center"><span class="d" style="font-size: 24px; color: #C97A12; display: block">340</span><span style="font-size: 10px; font-weight: 800">pièces</span></a>
+      <a href="V4-Classement.dc.html" class="card" style="padding: 10px 4px; text-align: center"><span class="d" style="font-size: 24px; display: block">7ᵉ</span><span style="font-size: 10px; font-weight: 800">ligue</span></a>
+      <div class="card" style="padding: 10px 4px; text-align: center"><span class="d" style="font-size: 24px; color: #7DA11A; display: block">98%</span><span style="font-size: 10px; font-weight: 800">fiabilité</span></div>
+    </div>
+
+    <a href="V4-Fiche.dc.html" class="card pop" style="animation-delay: .18s; display: flex; align-items: center; gap: 12px; padding: 10px 14px; white-space: nowrap">
+      <img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" class="sq" style="width: 54px; height: 54px; object-fit: contain">
+      <span style="display: flex; flex-direction: column; flex: 1 1 auto"><span class="d" style="font-size: 20px">Mon pet : Nino</span><span style="font-size: 12px; font-weight: 600; color: #6B6259">Chez Suzie en ce moment · 3 rendez-vous</span></span>
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#16110D" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+
+    <a href="V4-Story.dc.html" class="pop" style="animation-delay: .24s; display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 20px; background: linear-gradient(135deg, #FF3D7F, #FF5A3C); color: #fff; box-shadow: 0 4px 0 #C4341B; white-space: nowrap">
+      <img src="/_blob/7bbc8c67ffec185c67f57ffbd3d2bb28" alt="" aria-hidden="true" style="width: 54px; height: 54px; object-fit: contain">
+      <span style="display: flex; flex-direction: column; flex: 1 1 auto"><span class="d" style="font-size: 20px">Ma vision card</span><span style="font-size: 12px; font-weight: 600; opacity: .9">Sportif, gentil, Beaux-Arts</span></span>
+      <span class="chip" style="background: #16110D; color: #C8F542">PARTAGER</span>
+    </a>
+
+    <div class="card pop" style="animation-delay: .3s; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><span class="d" style="font-size: 20px">Parrains de Nino</span><span style="font-size: 11px; font-weight: 700; color: #8A7E70">3 / 5</span></div>
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span style="width: 40px; height: 40px; border-radius: 50%; background: #22D3EE; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800">I</span>
+        <span style="width: 40px; height: 40px; border-radius: 50%; background: #FFB347; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800">M</span>
+        <span style="width: 40px; height: 40px; border-radius: 50%; background: #C8F542; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800">T</span>
+        <button type="button" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 0; background: #16110D; color: #fff; cursor: pointer; font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 800; box-shadow: 0 3px 0 #000; white-space: nowrap">INVITER · +50 pièces</button>
+      </div>
+    </div>
+  </div>
+  <div aria-hidden="true" style="flex: 0 0 96px; margin-top: auto"></div>
+  <nav aria-label="Navigation" class="gnav">
+    <a href="V4-Nid.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Nid</a>
+    <a href="V4-Chats.dc.html"><span class="bdg">4</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Chats</a>
+    <a href="V4-Carte.dc.html"><span class="pls">PLUS</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" fill="currentColor"/></svg>Carte</a>
+    <a href="V4-Quartier.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V11l5-4 5 4v10M13 21V8l4-3 4 3v13M3 21h18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Quartier</a>
+    <a href="V4-Profil.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2.2" fill="currentColor"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" stroke="currentColor" stroke-width="2.2" fill="currentColor" stroke-linecap="round"/></svg>Profil</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

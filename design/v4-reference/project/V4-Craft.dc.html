@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Crafte ton pet — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.b1{background:#FF5A3C;color:#fff;box-shadow:0 5px 0 #C4341B}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:5px 12px 5px 5px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.07)}
+.tag b{width:22px;height:22px;border-radius:50%;background:#16110D;color:#C8F542;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-12px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}70%{transform:translateY(-3px)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+@keyframes swap{0%{transform:scale(.6) rotate(-10deg);opacity:0}60%{transform:scale(1.1) rotate(3deg);opacity:1}100%{transform:scale(1)}}
+.swap{animation:swap .5s cubic-bezier(.2,1.3,.3,1) both}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:linear-gradient(90deg,#FF5A3C,#FFB347,#7C3AED)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid #16110D;margin-top:-8px;box-shadow:0 3px 0 #16110D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 56px 22px 26px; position: relative">
+  <div class="blob" style="width: 280px; height: 280px; top: 120px; right: -140px; background: #FFB347; opacity: .55"></div>
+
+  <div class="pop" style="display: flex; align-items: center; gap: 10px; position: relative">
+    <a href="V4-Welcome.dc.html" aria-label="Retour" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <span class="tag" style="flex: 1 1 auto"><b>01</b>Son caractère<span style="margin-left: auto; width: 70px; height: 6px; border-radius: 999px; background: #EEDFCB; overflow: hidden"><i style="display: block; height: 100%; width: 14%; background: #FF5A3C"></i></span></span>
+    <span class="chip" style="background: #16110D; color: #C8F542">+20 XP</span>
+  </div>
+
+  <h1 class="d pop" style="animation-delay: .06s; margin: 18px 0 0; font-size: 46px; white-space: nowrap; position: relative">TON PET SERA…</h1>
+
+  <div class="pop" style="animation-delay: .12s; margin-top: 12px; height: 228px; border-radius: 28px; position: relative; overflow: hidden; background: linear-gradient(170deg, #FF3D7F 0%, #FF5A3C 45%, #FFB347 100%); box-shadow: 0 6px 0 #C4341B; display: flex; align-items: flex-end; justify-content: center">
+    <div class="blob" style="width: 200px; height: 200px; top: -60px; left: -40px; background: #FFE36E; opacity: .7"></div>
+    <span style="position: absolute; left: 50%; bottom: 16px; width: 130px; height: 16px; margin-left: -65px; border-radius: 50%; background: rgba(80,10,0,.28); filter: blur(4px)"></span>
+    <div class="sq" style="position: relative; margin-bottom: 18px"><img src="{{petImg}}" alt="{{petAlt}}" class="swap" style="width: 176px; height: 176px; object-fit: contain; display: block"></div>
+    <span class="chip" style="position: absolute; top: 12px; left: 12px; background: #16110D; color: #fff; font-size: 10px; letter-spacing: .1em; text-transform: uppercase">3D · fais-le tourner</span>
+    <span class="chip" style="position: absolute; top: 12px; right: 12px; background: #fff">{{summary}}</span>
+  </div>
+
+  <div class="pop" style="animation-delay: .18s; margin-top: 12px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; position: relative">
+    <sc-for list="{{species}}" as="s" hint-placeholder-count="4">
+      <button type="button" onClick="{{s.pick}}" aria-label="{{s.aria}}" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; border-radius: 16px; cursor: pointer; border: 0; background: {{s.bg}}; color: {{s.fg}}; box-shadow: 0 4px 0 {{s.sh}}; font-family: 'Inter', sans-serif">
+        <img src="{{s.img}}" alt="" aria-hidden="true" style="width: 40px; height: 40px; object-fit: contain">
+        <span style="font-size: 11px; font-weight: 700">{{s.name}}</span>
+        <sc-if value="{{s.locked}}" hint-placeholder-val="{{false}}"><span style="position: absolute; top: -6px; right: -4px; background: #7C3AED; color: #fff; border-radius: 999px; padding: 2px 6px; font-size: 9px; font-weight: 800">PLUS</span></sc-if>
+      </button>
+    </sc-for>
+  </div>
+
+  <div class="pop" style="animation-delay: .24s; margin-top: 12px; display: flex; flex-direction: column; gap: 2px; position: relative">
+    <sc-for list="{{traits}}" as="t" hint-placeholder-count="4">
+      <div style="display: flex; flex-direction: column">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; white-space: nowrap"><span style="color: {{t.lc}}">{{t.left}}</span><span style="color: {{t.rc}}">{{t.right}}</span></div>
+        <label style="position: absolute; left: -9999px" for="{{t.id}}">{{t.left}} ou {{t.right}}</label>
+        <input id="{{t.id}}" type="range" min="0" max="100" value="{{t.val}}" onChange="{{t.change}}">
+      </div>
+    </sc-for>
+  </div>
+
+  <a href="V4-Vie.dc.html" class="btn b1 pop" style="animation-delay: .3s; margin-top: auto; position: relative">Continuer<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sp: 'claude', v: { kind: 25, sport: 22, sci: 60, home: 70 } }; }
+  renderVals() {
+    const B = '/_blob/';
+    const SP = [
+      { id: 'claude', name: 'Nino', img: B + '630cf503134679d62afe62d88edbda8d', locked: false },
+      { id: 'bibi', name: 'Gaston', img: B + 'b9a1dfc49373cf092fdb8a912c875adf', locked: false },
+      { id: 'luma', name: 'Suzie', img: B + '305ba56fa88f24706f7f7b30debf3ac8', locked: true },
+      { id: 'miso', name: 'Pia', img: B + '8a35794ced023a499838ce341afd6ac4', locked: true }
+    ];
+    const v = this.state.v;
+    const species = SP.map((s) => { const on = this.state.sp === s.id; return { ...s, aria: s.name + (s.locked ? ', espèce Blowy+' : ''), bg: on ? '#16110D' : '#fff', fg: on ? '#fff' : '#16110D', sh: on ? '#000' : '#EEDFCB', pick: () => this.setState({ sp: s.id }) }; });
+    const T = [
+      { id: 'kind', left: 'Gentil', right: 'Espiègle' },
+      { id: 'sport', left: 'Sportif', right: 'Contemplatif' },
+      { id: 'sci', left: 'Scientifique', right: 'Artiste' },
+      { id: 'home', left: 'Casanier', right: 'Aventurier' }
+    ];
+    const traits = T.map((t) => { const val = v[t.id]; return { ...t, val, lc: val < 50 ? '#16110D' : '#B5A898', rc: val >= 50 ? '#16110D' : '#B5A898', change: (e) => this.setState({ v: { ...this.state.v, [t.id]: Number(e.target.value) } }) }; });
+    const cur = SP.find((s) => s.id === this.state.sp);
+    let petImg = cur.img;
+    if (this.state.sp === 'claude') {
+      if (v.sport < 35) petImg = B + '7bbc8c67ffec185c67f57ffbd3d2bb28';
+      else if (v.kind < 30) petImg = B + '1ce3e6d22daeb94d1bcda86bda596745';
+      else if (v.kind > 75) petImg = B + 'dd0fe6f14de3fb055838988612c51642';
+      else if (v.sport > 75) petImg = B + '4e3a02633d0d3eb2833939785019cfc8';
+    }
+    const w = (x, a, b) => x < 50 ? a : b;
+    const summary = w(v.sport, 'Sportif', 'Rêveur') + ' · ' + w(v.kind, 'gentil', 'espiègle');
+    return { species, traits, petImg, petAlt: cur.name + ', ' + summary, summary };
+  }
+}
+</script>
+</body>
+</html>

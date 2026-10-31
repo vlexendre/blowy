@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Fiche de Nino — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.card{background:#fff;border-radius:22px;box-shadow:0 4px 0 #EEDFCB}
+.g{height:10px;border-radius:999px;background:#F4EADC;overflow:hidden}
+.g i{display:block;height:100%;border-radius:999px;animation:grow 1.2s cubic-bezier(.2,.8,.2,1) .4s both}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
+@keyframes grow{from{width:0}}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .55s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-10px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+@keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(255,90,60,.5),0 4px 0 #C4341B}70%{box-shadow:0 0 0 8px rgba(255,90,60,0),0 4px 0 #C4341B}}
+.now{animation:ring 1.6s infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <div style="position: relative; overflow: hidden; background: linear-gradient(170deg, #FF3D7F 0%, #FF5A3C 50%, #FFB347 110%); padding: 52px 16px 16px; border-radius: 0 0 30px 30px; box-shadow: 0 5px 0 #C4341B; color: #fff">
+    <div class="blob" style="width: 200px; height: 200px; bottom: -60px; left: -40px; background: #FFE36E; opacity: .7"></div>
+    <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative">
+      <a href="V4-Nid.dc.html" aria-label="Retour au nid" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="V4-Story.dc.html" class="chip" style="background: #16110D; color: #fff">Partager sa vision card</a>
+    </div>
+    <div style="margin-top: 6px; display: flex; align-items: center; gap: 10px; position: relative">
+      <img src="/_blob/053c40b0481e691b9cd32c04228d302c" alt="Nino bébé" class="sq pop" style="width: 120px; height: 120px; object-fit: contain">
+      <div class="pop" style="animation-delay: .1s; display: flex; flex-direction: column; gap: 4px">
+        <span class="d" style="font-size: 46px">Nino</span>
+        <span style="font-size: 12px; font-weight: 700; opacity: .95; white-space: nowrap">Né le 31 oct. · bébé · niv. 2</span>
+        <div style="display: flex; gap: 4px"><span class="chip" style="background: #fff; color: #FF3D7F">Dramatique</span><span class="chip" style="background: rgba(255,255,255,.25); color: #fff">Sportif</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 12px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <div class="card pop" style="animation-delay: .15s; padding: 12px 14px; display: flex; flex-direction: column; gap: 9px">
+      <sc-for list="{{stats}}" as="s" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 10px"><img src="{{s.img}}" alt="" aria-hidden="true" style="width: 26px; height: 26px; object-fit: contain"><span style="width: 64px; font-size: 12px; font-weight: 800">{{s.l}}</span><div class="g" style="flex: 1 1 auto"><i style="width: {{s.w}}; background: {{s.c}}"></i></div><span style="width: 36px; text-align: right; font-size: 12px; font-weight: 800">{{s.w}}</span></div>
+      </sc-for>
+    </div>
+
+    <div class="card pop" style="animation-delay: .22s; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><span class="d" style="font-size: 20px">Évolution</span><span style="font-size: 11px; font-weight: 700; color: #8A7E70">selon votre lien</span></div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{evo}}" as="e" hint-placeholder-count="4">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span class="{{e.cls}}" style="width: 58px; height: 58px; border-radius: 18px; background: {{e.bg}}; box-shadow: 0 4px 0 {{e.sh}}; display: flex; align-items: center; justify-content: center"><img src="{{e.img}}" alt="" aria-hidden="true" style="width: 42px; height: 42px; object-fit: contain; filter: {{e.f}}"></span><span style="font-size: 11px; font-weight: 800; color: {{e.tc}}">{{e.l}}</span></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="card pop" style="animation-delay: .29s; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><span class="d" style="font-size: 20px">Garde-robe</span><a href="V4-Boutique.dc.html" style="font-size: 12px; font-weight: 800; color: #FF5A3C">Boutique ›</a></div>
+      <div style="display: flex; gap: 8px">
+        <span style="width: 54px; height: 54px; border-radius: 16px; background: #C8F542; box-shadow: 0 3px 0 #16110D; display: flex; align-items: center; justify-content: center"><img src="/_blob/415595cd339741eb78d244ec9c118344" alt="Casquette, portée" style="width: 38px; height: 38px; object-fit: contain"></span>
+        <span style="width: 54px; height: 54px; border-radius: 16px; background: #F4EADC; display: flex; align-items: center; justify-content: center"><img src="/_blob/0aab81f3b21c416369cdfa4be1f82186" alt="Lunettes" style="width: 38px; height: 38px; object-fit: contain"></span>
+        <span style="width: 54px; height: 54px; border-radius: 16px; background: #F4EADC; display: flex; align-items: center; justify-content: center"><img src="/_blob/a19b0b8ee0743659ab8c9f0963f513c7" alt="Nœud, offert par L." style="width: 38px; height: 38px; object-fit: contain"></span>
+        <span style="width: 54px; height: 54px; border-radius: 16px; border: 2px dashed #D8C8B2; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #8A7E70">+5</span>
+      </div>
+    </div>
+
+    <div class="card pop" style="animation-delay: .36s; padding: 12px 14px; display: flex; gap: 6px; flex-wrap: wrap">
+      <span class="chip" style="background: #FFF1C9">Aime : la pizza</span><span class="chip" style="background: #FFF1C9">les câlins du soir</span><span class="chip" style="background: #16110D; color: #FF3D7F">Déteste : attendre</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const B = '/_blob/';
+    const stats = [
+      { l: 'Faim', w: '64%', c: 'linear-gradient(90deg,#FF3D7F,#FF5A3C)', img: B + 'e960886b57fbe867bdc53cabc1871af4' },
+      { l: 'Humeur', w: '82%', c: 'linear-gradient(90deg,#22D3EE,#7C3AED)', img: B + '576e77a090a90ec046ebd6763d8368b5' },
+      { l: 'Santé', w: '95%', c: 'linear-gradient(90deg,#C8F542,#7DA11A)', img: B + '1994dbaa8f626d4c11d577fb11a0adb1' }
+    ];
+    const E = [
+      { l: 'Œuf', img: B + '88923ef63daaddbe4dfafedabd4dfac9', st: 'done' },
+      { l: 'Bébé', img: B + '053c40b0481e691b9cd32c04228d302c', st: 'now' },
+      { l: 'Ado', img: B + '630cf503134679d62afe62d88edbda8d', st: 'next' },
+      { l: 'Adulte', img: B + '324d5cda19268d638327ee8b96c2a8d5', st: 'next' }
+    ];
+    const evo = E.map((e) => ({ ...e, cls: e.st === 'now' ? 'now' : '', bg: e.st === 'now' ? '#FF5A3C' : (e.st === 'done' ? '#C8F542' : '#F4EADC'), sh: e.st === 'now' ? '#C4341B' : (e.st === 'done' ? '#16110D' : '#E3D6C3'), f: e.st === 'next' ? 'grayscale(1) opacity(.45)' : 'none', tc: e.st === 'next' ? '#8A7E70' : '#16110D' }));
+    return { stats, evo };
+  }
+}
+</script>
+</body>
+</html>

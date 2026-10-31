@@ -1,0 +1,33 @@
+name: blowy-local
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: blowy
+      POSTGRES_PASSWORD: blowy
+      POSTGRES_DB: blowy
+    ports: ['5432:5432']
+    volumes: ['pg:/var/lib/postgresql/data', './postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U blowy']
+      interval: 5s
+  redis:
+    image: redis:7-alpine
+    ports: ['6379:6379']
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: blowy-local
+      MINIO_ROOT_PASSWORD: blowy-local-secret
+    ports: ['9000:9000', '9001:9001']
+    volumes: ['minio:/data']
+  firebase-auth-emulator:
+    image: node:22-alpine
+    working_dir: /emu
+    command: sh -c "npx -y firebase-tools@latest emulators:start --only auth --project demo-blowy"
+    volumes: ['./firebase:/emu']
+    ports: ['9099:9099']
+volumes:
+  pg: {}
+  minio: {}

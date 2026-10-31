@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Supprimer le compte — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.lose{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;font-size:13px;font-weight:700;border-top:1px solid #F4EADC;white-space:nowrap}
+.lose:first-child{border-top:0}
+@keyframes pop{0%{transform:translateY(14px) scale(.96);opacity:0}60%{transform:translateY(-2px) scale(1.01);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .5s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes wave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.wave{animation:wave 1.2s ease-in-out infinite;transform-origin:50% 100%}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 52px 18px 24px; position: relative">
+
+  <sc-if value="{{s0}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <a href="V4-Reglages.dc.html" aria-label="Retour aux réglages" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1 class="d" style="margin: 0; font-size: 32px; white-space: nowrap">SUPPRIMER LE COMPTE</h1>
+    </div>
+
+    <div class="pop" style="margin-top: 14px; display: flex; align-items: center; gap: 12px">
+      <img src="/_blob/664bf0396d78edcba988d2aa674ae77b" alt="Nino, triste" style="width: 80px; height: 80px; object-fit: contain">
+      <span style="font-size: 14px; font-weight: 600; line-height: 1.4; color: #5A5047">On respecte ton choix. Voilà ce qui disparaîtra, pour que tu décides en connaissance de cause.</span>
+    </div>
+
+    <div class="pop" style="animation-delay: .06s; margin-top: 12px; background: #fff; border-radius: 20px; box-shadow: 0 4px 0 #EEDFCB; overflow: hidden">
+      <div class="lose"><span style="width: 8px; height: 8px; border-radius: 50%; background: #D92D2D"></span>Ta série de 8 jours et tes 1 488 XP</div>
+      <div class="lose"><span style="width: 8px; height: 8px; border-radius: 50%; background: #D92D2D"></span>Tes 340 pièces et ta garde-robe</div>
+      <div class="lose"><span style="width: 8px; height: 8px; border-radius: 50%; background: #D92D2D"></span>Tes messages et tes photos</div>
+      <div class="lose"><span style="width: 8px; height: 8px; border-radius: 50%; background: #7DA11A"></span>Nino reste avec L., il ne meurt pas</div>
+    </div>
+
+    <span class="pop" style="animation-delay: .1s; margin-top: 14px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #8A7E70">Pourquoi tu pars ? (facultatif)</span>
+    <div class="pop" style="animation-delay: .12s; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px">
+      <sc-for list="{{reasons}}" as="r" hint-placeholder-count="5"><button type="button" onClick="{{r.pick}}" class="chip" style="border: 0; cursor: pointer; min-height: 36px; font-family: 'Inter', sans-serif; background: {{r.bg}}; color: {{r.fg}}; box-shadow: 0 3px 0 {{r.sh}}">{{r.l}}</button></sc-for>
+    </div>
+
+    <div class="pop" style="animation-delay: .16s; margin-top: 14px; display: flex; align-items: center; gap: 10px; background: #E8F9C8; border-radius: 18px; padding: 12px 14px">
+      <span style="font-size: 13px; font-weight: 600; line-height: 1.4">Besoin d'air ? Tu peux <strong>mettre en pause</strong> 2 semaines : ta série et Nino t'attendent.</span>
+    </div>
+
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+      <button type="button" onClick="{{pause}}" class="btn" style="background: #16110D; color: #fff; box-shadow: 0 5px 0 #000">Mettre en pause</button>
+      <button type="button" onClick="{{del}}" class="btn" style="background: #fff; color: #D92D2D; box-shadow: 0 5px 0 #F0C9C9">Supprimer définitivement</button>
+      <span style="font-size: 11px; font-weight: 500; color: #A79C90; text-align: center">Ton abonnement Blowy+ sera résilié en même temps.</span>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{paused}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center">
+      <img src="/_blob/4e3a02633d0d3eb2833939785019cfc8" alt="Nino dort en t'attendant" class="pop" style="width: 180px; height: 180px; object-fit: contain">
+      <h2 class="d pop" style="animation-delay: .1s; margin: 0; font-size: 40px">EN PAUSE.</h2>
+      <p class="pop" style="animation-delay: .16s; margin: 0; font-size: 14px; font-weight: 500; line-height: 1.5; color: #5A5047; max-width: 300px">Nino fait la sieste jusqu'au 14 novembre. L. est prévenue. Ta série est gelée.</p>
+    </div>
+    <a href="V4-Reglages.dc.html" class="btn pop" style="animation-delay: .24s; background: #C8F542; color: #16110D; box-shadow: 0 5px 0 #16110D">Retour aux réglages</a>
+  </sc-if>
+
+  <sc-if value="{{deleted}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center">
+      <img src="/_blob/2dd74281b0d1e96cdc17f174113da343" alt="Nino te dit au revoir" class="wave pop" style="width: 180px; height: 180px; object-fit: contain">
+      <h2 class="d pop" style="animation-delay: .1s; margin: 0; font-size: 44px">AU REVOIR.</h2>
+      <p class="pop" style="animation-delay: .16s; margin: 0; font-size: 14px; font-weight: 500; line-height: 1.5; color: #5A5047; max-width: 300px">Ton compte et tes données seront effacés sous 30 jours. Merci d'avoir élevé Nino avec nous.</p>
+    </div>
+    <a href="V4-Welcome.dc.html" class="btn pop" style="animation-delay: .24s; background: #FF5A3C; color: #fff; box-shadow: 0 5px 0 #C4341B">Fermer</a>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { st: 'ask', r: -1 }; }
+  renderVals() {
+    const L = ['J’ai rencontré quelqu’un', 'Pas assez de matchs', 'Trop cher', 'Trop de notifs', 'Autre'];
+    const reasons = L.map((l, i) => { const on = this.state.r === i; return { l, bg: on ? '#16110D' : '#fff', fg: on ? '#fff' : '#16110D', sh: on ? '#000' : '#EEDFCB', pick: () => this.setState({ r: i }) }; });
+    const st = this.state.st;
+    return { reasons, s0: st === 'ask', paused: st === 'paused', deleted: st === 'deleted', pause: () => this.setState({ st: 'paused' }), del: () => this.setState({ st: 'deleted' }) };
+  }
+}
+</script>
+</body>
+</html>

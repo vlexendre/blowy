@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Offre unique — claude.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#fff}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.b2{background:#16110D;color:#fff;box-shadow:0 5px 0 #000}
+.bl{background:transparent;color:inherit;min-height:44px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-transform:none;box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.cap{display:inline-block;background:#16110D;color:#fff;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes slam{0%{transform:scale(2.4) rotate(-14deg);opacity:0}60%{transform:scale(.92) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-6deg)}}
+.slam{animation:slam .6s cubic-bezier(.2,1.3,.3,1) .3s both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-12px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 1.8s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+@keyframes tick{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.tick{animation:tick 1s ease-in-out infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(170deg, #FF3D7F 0%, #FF5A3C 50%, #FFB347 110%); display: flex; flex-direction: column; overflow: hidden; padding: 56px 22px 22px; position: relative">
+  <div class="blob" style="width: 320px; height: 320px; top: 220px; left: -160px; background: #FFE36E; opacity: .6"></div>
+
+  <span class="chip pop" style="align-self: flex-start; background: #16110D; color: #C8F542; position: relative">Offre unique · une seule fois</span>
+  <h1 class="d pop" style="animation-delay: .08s; margin: 16px 0 0; font-size: 62px; white-space: nowrap; position: relative">ATTENDS.</h1>
+  <span class="d pop" style="animation-delay: .14s; font-size: 30px; white-space: nowrap; color: #16110D; position: relative">CLAUDE A NÉGOCIÉ POUR TOI.</span>
+
+  <div style="margin-top: 14px; position: relative; height: 270px; display: flex; align-items: center; justify-content: center">
+    <img src="/_blob/3d012c3092c5a7c8d123a4c153c8b27b" alt="Claude en lunettes de soleil, négociateur" class="sq" style="width: 220px; height: 220px; object-fit: contain">
+    <div class="slam" style="position: absolute; right: 0; top: 10px; width: 128px; height: 128px; border-radius: 50%; background: #C8F542; color: #16110D; box-shadow: 0 6px 0 #16110D; display: flex; flex-direction: column; align-items: center; justify-content: center">
+      <span class="d" style="font-size: 50px">−60%</span><span style="font-size: 11px; font-weight: 800">LA 1ʳᵉ ANNÉE</span>
+    </div>
+  </div>
+
+  <div class="pop" style="animation-delay: .4s; background: #fff; color: #16110D; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 5px 0 #C4341B; position: relative">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; white-space: nowrap"><span class="d" style="font-size: 24px">Claude+ Annuel</span><span style="font-size: 14px; font-weight: 600; color: #8A7E70; text-decoration: line-through">59,88 €</span></div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; white-space: nowrap"><span style="font-size: 13px; font-weight: 600; color: #5A5047">Soit 2 € par mois, coloc inclus</span><span class="d" style="font-size: 34px; color: #FF5A3C">23,99 €</span></div>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #C4341B; white-space: nowrap"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" stroke="#C4341B" stroke-width="2.4" fill="none"/><path d="M12 9v4l2 2M9 2h6" stroke="#C4341B" stroke-width="2.4" stroke-linecap="round"/></svg>Expire dans <span class="tick" style="display: inline-block">{{timer}}</span></div>
+  </div>
+
+  <div class="pop" style="animation-delay: .5s; margin-top: auto; display: flex; flex-direction: column; gap: 4px; position: relative">
+    <a href="V3-Match.dc.html" class="btn b2">Prendre l'offre</a>
+    <a href="V3-Match.dc.html" class="btn bl" style="color: #16110D">Non merci, 1 rendez-vous me suffit</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { s: 600 }; }
+  componentDidMount() { this.t = setInterval(() => this.setState({ s: Math.max(0, this.state.s - 1) }), 1000); }
+  componentWillUnmount() { clearInterval(this.t); }
+  renderVals() { const s = this.state.s; return { timer: String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0') }; }
+}
+</script>
+</body>
+</html>

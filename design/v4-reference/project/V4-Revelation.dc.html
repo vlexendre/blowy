@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>La révélation — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#fff}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes peek{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-8px) rotate(5deg)}}
+.peek{animation:peek 2s ease-in-out infinite}
+@keyframes burst{0%{transform:scale(.3);opacity:0}40%{opacity:1}100%{transform:scale(1.3);opacity:0}}
+.burst{animation:burst 1.6s ease-out both}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.15)}}
+.dr1{animation:drift 10s ease-in-out infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(170deg, #B81F55 0%, #FF3D7F 45%, #FF7A45 110%); display: flex; flex-direction: column; overflow: hidden; padding: 52px 22px 24px; position: relative">
+  <div class="blob dr1" style="width: 340px; height: 340px; top: 240px; left: -170px; background: #7C3AED; opacity: .5"></div>
+
+  <div class="pop" style="display: flex; align-items: center; gap: 10px; position: relative">
+    <a href="V4-Lien.dc.html" aria-label="Retour à l'arbre" style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <span class="chip" style="background: #16110D; color: #C8F542">Niveau 5 · branche Plus</span>
+  </div>
+
+  <h1 class="d pop" style="animation-delay: .08s; margin: 18px 0 0; font-size: 50px; white-space: nowrap; position: relative">VOUS VOUS ÊTES</h1>
+  <span class="d pop" style="animation-delay: .14s; font-size: 50px; white-space: nowrap; color: #16110D; position: relative">LIVRÉS.</span>
+
+  <div class="pop" style="animation-delay: .2s; margin-top: 18px; align-self: center; position: relative; width: 270px; height: 330px">
+    <sc-if value="{{open}}" hint-placeholder-val="{{false}}"><img src="/_blob/1d55b7feef97164488a7c1bc584a6daf" alt="" aria-hidden="true" class="burst" style="position: absolute; left: -70px; top: -60px; width: 410px; height: 410px; object-fit: contain"></sc-if>
+    <div aria-label="{{label}}" style="position: absolute; inset: 0; border-radius: 30px; overflow: hidden; background: linear-gradient(160deg, #F3C7B2 0%, #D9897A 45%, #6E3B57 100%); border: 5px solid #fff; box-shadow: 0 8px 0 #16110D; filter: blur({{blur}}); transition: filter 1.4s cubic-bezier(.2,.8,.2,1)">
+      <svg aria-hidden="true" width="260" height="320" viewBox="0 0 260 320"><circle cx="130" cy="130" r="58" fill="#F8DCCB"/><path d="M72 118 C72 64 188 64 188 118 C182 90 158 80 130 80 C102 80 78 90 72 118 Z" fill="#3B2230"/><path d="M36 320 C46 240 214 240 224 320 Z" fill="#2A1B2E"/></svg>
+      <span class="chip" style="position: absolute; left: 12px; bottom: 12px; background: rgba(0,0,0,.4)">[Photo de L.]</span>
+    </div>
+    <img src="/_blob/1ce3e6d22daeb94d1bcda86bda596745" alt="" aria-hidden="true" class="peek" style="position: absolute; right: -40px; bottom: -34px; width: 120px; height: 120px; object-fit: contain">
+  </div>
+
+  <div class="pop" style="animation-delay: .3s; margin-top: 40px; display: flex; align-items: center; gap: 10px; position: relative; white-space: nowrap">
+    <span style="width: 28px; height: 28px; border-radius: 50%; background: #C8F542; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" stroke="#16110D" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span style="font-size: 14px; font-weight: 700">L. a accepté</span>
+    <span class="chip" style="margin-left: auto; background: rgba(22,17,13,.35)">{{mine}}</span>
+  </div>
+  <p class="pop" style="animation-delay: .34s; margin: 6px 0 0; font-size: 12px; font-weight: 600; opacity: .9; position: relative">Les deux visages se révèlent en même temps, ou pas du tout.</p>
+
+  <sc-if value="{{closed}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{reveal}}" class="btn pop" style="animation-delay: .4s; margin-top: auto; background: #16110D; color: #fff; box-shadow: 0 5px 0 #000; position: relative">Révéler mon visage aussi</button></sc-if>
+  <sc-if value="{{open}}" hint-placeholder-val="{{false}}"><a href="V4-Story.dc.html" class="pop" style="position: relative; align-self: center; margin-top: auto; min-height: 36px; display: flex; align-items: center; font-size: 13px; font-weight: 800; color: #fff">Partager le moment ›</a><a href="V4-Chat.dc.html" class="btn pop" style="margin-top: 6px; background: #C8F542; color: #16110D; box-shadow: 0 5px 0 #16110D; position: relative">Écrire à L.</a></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { open: false }; }
+  renderVals() { const o = this.state.open; return { open: o, closed: !o, blur: o ? '0px' : '22px', label: o ? 'Photo de L., révélée' : 'Photo de L., floutée', mine: o ? 'Toi aussi ✓' : 'À toi', reveal: () => this.setState({ open: true }) }; }
+}
+</script>
+</body>
+</html>

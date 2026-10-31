@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Activité — claude.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8A7E70}
+@keyframes pop{0%{transform:translateX(-14px);opacity:0}100%{transform:none;opacity:1}}
+.pop{animation:pop .45s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes ring{0%,100%{transform:rotate(0)}10%{transform:rotate(14deg)}20%{transform:rotate(-12deg)}30%{transform:rotate(6deg)}40%{transform:rotate(0)}}
+.ring{animation:ring 2.4s ease-in-out infinite;transform-origin:50% 10%}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 52px 16px 20px; position: relative">
+
+  <div style="display: flex; align-items: center; gap: 10px">
+    <a href="V3-Nid.dc.html" aria-label="Retour au nid" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <h1 class="d" style="margin: 0; font-size: 38px">ACTIVITÉ</h1>
+    <img src="/_blob/3dd2c4f13c7495be19daeb811544ecb8" alt="" aria-hidden="true" class="ring" style="margin-left: auto; width: 40px; height: 40px; object-fit: contain">
+  </div>
+
+  <span class="lbl" style="margin-top: 16px">Aujourd'hui</span>
+  <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px">
+    <sc-for list="{{today}}" as="n" hint-placeholder-count="4">
+      <a href="{{n.href}}" class="pop" style="animation-delay: {{n.dl}}; position: relative; display: flex; align-items: center; gap: 12px; background: {{n.bg}}; color: {{n.fg}}; border-radius: 18px; padding: 10px 12px; box-shadow: 0 4px 0 {{n.sh}}">
+        <span style="width: 44px; height: 44px; border-radius: 14px; background: {{n.tint}}; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="{{n.img}}" alt="" aria-hidden="true" style="width: 34px; height: 34px; object-fit: contain"></span>
+        <span style="display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0"><span style="font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{n.t}}</span><span style="font-size: 12px; font-weight: 500; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{n.s}}</span></span>
+        <span style="font-size: 11px; font-weight: 700; opacity: .6; white-space: nowrap">{{n.when}}</span>
+      </a>
+    </sc-for>
+  </div>
+
+  <span class="lbl" style="margin-top: 16px">Cette semaine</span>
+  <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px">
+    <sc-for list="{{week}}" as="n" hint-placeholder-count="3">
+      <a href="{{n.href}}" class="pop" style="animation-delay: {{n.dl}}; display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 18px; padding: 10px 12px; box-shadow: 0 4px 0 #EEDFCB">
+        <span style="width: 44px; height: 44px; border-radius: 14px; background: {{n.tint}}; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="{{n.img}}" alt="" aria-hidden="true" style="width: 34px; height: 34px; object-fit: contain"></span>
+        <span style="display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0"><span style="font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{n.t}}</span><span style="font-size: 12px; font-weight: 500; color: #6B6259; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{n.s}}</span></span>
+        <span style="font-size: 11px; font-weight: 700; color: #8A7E70; white-space: nowrap">{{n.when}}</span>
+      </a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const B = '/_blob/';
+    const today = [
+      { t: 'L. t’a écrit', s: '« Qu’est-ce qui t’a rendu fier cette semaine ? »', when: '4 min', href: 'V3-Chat.dc.html', img: B + '697958afe45799d90842bed8dda48439', tint: '#EDE4FF', bg: '#16110D', fg: '#fff', sh: '#000' },
+      { t: 'L. a posté sa preuve', s: 'Mission duo réussie · +12 XP', when: '1 h', href: 'V3-Nid.dc.html', img: B + '41623539ac72618ce178e12d96d42211', tint: '#FFE3D9', bg: '#fff', fg: '#16110D', sh: '#EEDFCB' },
+      { t: 'Claude a un petit creux', s: 'Faim à 64 % · une pomme suffit', when: '2 h', href: 'V3-Preuve.dc.html', img: B + '373191b36214bfd04cbbc1f26b771a01', tint: '#FFF1C9', bg: '#fff', fg: '#16110D', sh: '#EEDFCB' },
+      { t: 'Vous êtes 7ᵉ de la Ligue Corail', s: 'Encore 22 XP pour passer 6ᵉ', when: '5 h', href: 'V3-Classement.dc.html', img: B + 'acb8ae37d50c3c811f116d093d136140', tint: '#E8F9C8', bg: '#fff', fg: '#16110D', sh: '#EEDFCB' }
+    ].map((n, i) => ({ ...n, dl: (i * 0.06) + 's' }));
+    const week = [
+      { t: 'Ta série est en danger', s: 'Un gel a sauvé le 15 octobre', when: 'mar.', href: 'V3-Serie.dc.html', img: B + '97fdfaa58fb89eed6f2c294043167814', tint: '#FFE3D9' },
+      { t: 'Inès veut devenir marraine', s: 'Elle offre un nœud à Claude', when: 'lun.', href: 'V3-Fiche.dc.html', img: B + '1defd4a1483a03db93fc96c7d6adad94', tint: '#FDE6EE' },
+      { t: 'Niveau 2 atteint', s: 'Vous avez nommé Claude ensemble', when: 'dim.', href: 'V3-Lien.dc.html', img: B + '37c34f705a2c727579c7c807beaa1da6', tint: '#EDE4FF' }
+    ].map((n, i) => ({ ...n, dl: (0.3 + i * 0.06) + 's' }));
+    return { today, week };
+  }
+}
+</script>
+</body>
+</html>

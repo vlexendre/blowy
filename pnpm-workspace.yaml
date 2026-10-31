@@ -1,0 +1,16 @@
+packages:
+  - apps/*
+  - packages/*
+  - tooling/*
+
+# Expo/React Native et Metro supportent les liens pnpm isolés depuis SDK 54+,
+# mais certains modules natifs restent sensibles : le mobile utilise node-linker hoisted
+# via apps/mobile/.npmrc si nécessaire (voir docs/decisions.md D-004).
+onlyBuiltDependencies:
+  - "@prisma/engines"
+  - prisma
+  - esbuild
+  - sharp
+  - "@nestjs/core"
+  - protobufjs
+  - "@firebase/util"

@@ -1,0 +1,50 @@
+{
+  "name": "@blowy/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "dev": "tsx watch src/main.ts",
+    "dev:worker": "tsx watch src/worker.ts",
+    "start": "node dist/main.js",
+    "start:worker": "node dist/worker.js",
+    "test": "vitest run --project unit",
+    "test:integration": "vitest run --project integration"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1161.0",
+    "@aws-sdk/s3-request-presigner": "^3.1161.0",
+    "@blowy/api-contract": "workspace:*",
+    "@blowy/content": "workspace:*",
+    "@blowy/database": "workspace:*",
+    "@blowy/domain": "workspace:*",
+    "@blowy/matching": "workspace:*",
+    "@blowy/pet-engine": "workspace:*",
+    "@blowy/tuning": "workspace:*",
+    "@nestjs/common": "^12.3.2",
+    "@nestjs/core": "^12.3.2",
+    "@nestjs/platform-express": "^12.3.2",
+    "@nestjs/platform-socket.io": "^12.3.2",
+    "@nestjs/websockets": "^12.3.2",
+    "bullmq": "^6.5.3",
+    "firebase-admin": "^14.5.0",
+    "ioredis": "^6.0.0",
+    "pino": "^10.4.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "socket.io": "^4.8.4",
+    "uuid": "^14.0.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^12.3.2",
+    "@types/node": "^22.19.0",
+    "socket.io-client": "^4.8.4",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

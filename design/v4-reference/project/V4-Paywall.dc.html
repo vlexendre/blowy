@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Blowy+ — Paywall</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#fff}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.bl{background:transparent;color:inherit;min-height:40px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-transform:none;box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.15)}}
+.dr1{animation:drift 10s ease-in-out infinite}.dr2{animation:drift 12s ease-in-out -5s infinite reverse}
+@keyframes wobble{0%,100%{transform:rotate(0)}10%{transform:rotate(-9deg)}20%{transform:rotate(8deg)}30%{transform:rotate(-4deg)}40%{transform:rotate(0)}}
+.wobble{animation:wobble 2s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes shine{0%{transform:translateX(-150%) skewX(-20deg)}100%{transform:translateX(400%) skewX(-20deg)}}
+.shine{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));animation:shine 2.6s ease-in-out 1s infinite}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}
+.bump{animation:bump .4s cubic-bezier(.2,1.4,.4,1)}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(170deg, #1B0B3B 0%, #4C1D95 55%, #7C3AED 120%); display: flex; flex-direction: column; overflow: hidden; padding: 52px 20px 18px; position: relative">
+  <div class="blob dr1" style="width: 320px; height: 320px; top: -80px; right: -130px; background: #FF3D7F; opacity: .55"></div>
+  <div class="blob dr2" style="width: 300px; height: 300px; top: 330px; left: -160px; background: #FFB347; opacity: .35"></div>
+
+  <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative">
+    <div class="d" style="font-size: 26px">blowy<span style="color: #FF5A3C">.</span><span style="margin-left: 6px; font-size: 13px; background: #C8F542; color: #16110D; border-radius: 6px; padding: 3px 7px; vertical-align: middle">PLUS</span></div>
+    <a href="V4-Match.dc.html" aria-label="Fermer" style="width: 36px; height: 36px; border-radius: 12px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></a>
+  </div>
+
+  <div class="pop" style="animation-delay: .08s; margin-top: 14px; display: flex; align-items: center; gap: 12px; position: relative">
+    <img src="/_blob/2dd74281b0d1e96cdc17f174113da343" alt="Ton Nino, tout juste né" class="wobble" style="width: 96px; height: 104px; object-fit: contain; flex: 0 0 auto">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span class="d" style="font-size: 34px; white-space: nowrap">3 PETS VEULENT</span>
+      <span class="d" style="font-size: 34px; white-space: nowrap; color: #C8F542">LE RENCONTRER.</span>
+    </div>
+  </div>
+
+  <div class="pop" style="animation-delay: .14s; margin-top: 12px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 18px; padding: 10px 12px; position: relative">
+    <span aria-hidden="true" style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(145deg, #A78BFA, #FF7A9C); filter: blur(2px); flex: 0 0 auto"></span>
+    <span style="display: flex; flex-direction: column; flex: 1 1 auto; white-space: nowrap"><span style="font-size: 14px; font-weight: 700">Meilleure vision : 87 %</span><span style="font-size: 12px; color: #D6CCF5">Gratuit : 1 rendez-vous, dimanche</span></span>
+    <span class="chip" style="background: #16110D; color: #FFB347; font-size: 13px">{{countdown}}</span>
+  </div>
+
+  <div class="pop" style="animation-delay: .2s; margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; position: relative">
+    <sc-for list="{{perks}}" as="p" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border-radius: 14px; padding: 8px 10px">
+        <img src="{{p.img}}" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain; flex: 0 0 auto">
+        <span style="font-size: 12px; font-weight: 700; line-height: 1.2">{{p.t}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="pop" style="animation-delay: .28s; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; position: relative">
+    <sc-for list="{{plans}}" as="pl" hint-placeholder-count="3">
+      <button type="button" onClick="{{pl.pick}}" style="position: relative; display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 14px; border-radius: 18px; border: 0; cursor: pointer; background: {{pl.bg}}; color: {{pl.fg}}; box-shadow: 0 4px 0 {{pl.sh}}; font-family: 'Inter', sans-serif; white-space: nowrap">
+        <span style="display: flex; flex-direction: column; flex: 1 1 auto"><span style="font-size: 14px; font-weight: 800">{{pl.label}}</span><span style="font-size: 11px; font-weight: 600; opacity: .7">{{pl.sub}}</span></span>
+        <span class="d" style="font-size: 22px">{{pl.price}}</span>
+        <sc-if value="{{pl.badge}}" hint-placeholder-val="{{true}}"><span style="position: absolute; top: -9px; left: 14px; background: #C8F542; color: #16110D; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 800">−70 % · 3 JOURS OFFERTS</span></sc-if>
+      </button>
+    </sc-for>
+  </div>
+
+  <div class="pop" style="animation-delay: .36s; margin-top: auto; display: flex; flex-direction: column; gap: 4px; position: relative">
+    <a href="V4-Match.dc.html" class="btn" style="position: relative; overflow: hidden; background: #C8F542; color: #16110D; box-shadow: 0 5px 0 #7DA11A"><span class="shine"></span>{{cta}}</a>
+    <span style="text-align: center; font-size: 11px; font-weight: 500; color: #D6CCF5; margin-top: 4px; white-space: nowrap">{{terms}}</span>
+    <button type="button" class="btn bl" onClick="{{later}}">Plus tard</button>
+  </div>
+  <sc-if value="{{offer}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 30; background: rgba(22,17,13,.6); display: flex; align-items: flex-end">
+      <div class="pop" style="width: 100%; box-sizing: border-box; background: #FFF7EC; color: #16110D; border-radius: 30px 30px 0 0; padding: 18px 20px 28px; position: relative; display: flex; flex-direction: column; gap: 8px">
+        <span style="align-self: center; width: 40px; height: 5px; border-radius: 999px; background: #E3D3BE"></span>
+        <img src="/_blob/dd0fe6f14de3fb055838988612c51642" alt="Nino fier de son coup" style="position: absolute; right: 12px; top: -84px; width: 130px; height: 130px; object-fit: contain">
+        <span style="align-self: flex-start; background: #16110D; color: #C8F542; border-radius: 999px; padding: 5px 10px; font-size: 11px; font-weight: 800">OFFRE UNIQUE · CE SOIR</span>
+        <span class="d" style="font-size: 50px">ATTENDS.</span>
+        <span style="font-size: 14px; font-weight: 600; color: #5A5047">Nino a négocié pour toi : Blowy+ à −60 % la première année.</span>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px"><span style="font-size: 13px; font-weight: 600; color: #8A7E70"><s>59,88 €</s> · soit 2 € / mois</span><span class="d" style="font-size: 38px; color: #FF5A3C">23,99 €</span></div>
+        <a href="V4-Match.dc.html" class="btn" style="background: #FF5A3C; color: #fff; box-shadow: 0 5px 0 #C4341B">Prendre l'offre</a>
+        <a href="V4-Match.dc.html" style="text-align: center; min-height: 40px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #5A5047">Non merci, 1 rendez-vous me suffit</a>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { offer: false, plan: 'year', s: 2 * 86400 + 14 * 3600 + 22 * 60 }; }
+  componentDidMount() { this.t = setInterval(() => this.setState({ s: this.state.s - 1 }), 1000); }
+  componentWillUnmount() { clearInterval(this.t); }
+  renderVals() {
+    const B = '/_blob/';
+    const s = this.state.s, d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    const perks = [
+      { img: B + '01eb765937b39b565f2a9a4f446f785c', t: '3 rendez-vous à la fois' },
+      { img: B + 'ac18b7adeb76bf7b1fd8b34231b411c3', t: 'La carte des pets' },
+      { img: B + 'c45fb30245137def689cd259ded2caa6', t: '2 gels de série / mois' },
+      { img: B + '01eb765937b39b565f2a9a4f446f785c', t: 'Ton coloc inclus' }
+    ];
+    const P = [
+      { id: 'year', label: 'Annuel', sub: '59,88 € facturés par an', price: '4,99 €/m', badge: true },
+      { id: 'month', label: 'Mensuel', sub: 'Sans engagement', price: '14,99 €', badge: false },
+      { id: 'week', label: 'Hebdo', sub: 'Pour tester', price: '6,99 €', badge: false }
+    ];
+    const plans = P.map((p) => { const on = this.state.plan === p.id; return { offer: this.state.offer, later: () => this.setState({ offer: true }), ...p, bg: on ? '#fff' : 'rgba(255,255,255,.1)', fg: on ? '#16110D' : '#fff', sh: on ? '#C8F542' : 'rgba(0,0,0,.25)', pick: () => this.setState({ plan: p.id }) }; });
+    const y = this.state.plan === 'year';
+    return {
+      perks, plans,
+      countdown: d + 'j ' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0'),
+      cta: y ? 'Essayer 3 jours gratuits' : 'Les rencontrer maintenant',
+      terms: y ? 'Gratuit 3 jours, puis 59,88 €/an. Annulable à tout moment.' : 'Renouvellement auto. Annulable à tout moment.'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Partir proprement — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8A7E70}
+@keyframes pop{0%{transform:translateY(14px) scale(.96);opacity:0}60%{transform:translateY(-2px) scale(1.01);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .5s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes wave{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.wave{animation:wave 1.4s ease-in-out infinite;transform-origin:50% 100%}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 52px 18px 24px; position: relative">
+
+  <sc-if value="{{form}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <a href="V4-Chat.dc.html" aria-label="Retour au chat" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1 class="d" style="margin: 0; font-size: 34px; white-space: nowrap">PARTIR PROPREMENT</h1>
+    </div>
+    <p class="pop" style="margin: 10px 0 0; font-size: 14px; font-weight: 500; line-height: 1.45; color: #5A5047">Un message, et c'est fini. Ta fiabilité reste intacte. Ghoster, c'est elle qui baisse.</p>
+
+    <span class="lbl" style="margin-top: 14px">Ton dernier mot à L.</span>
+    <div class="pop" style="animation-delay: .06s; margin-top: 8px; display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{msgs}}" as="m" hint-placeholder-count="3">
+        <button type="button" onClick="{{m.pick}}" style="text-align: left; width: 100%; padding: 12px 14px; border-radius: 16px; border: 0; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; background: {{m.bg}}; color: {{m.fg}}; box-shadow: 0 3px 0 {{m.sh}}">{{m.t}}</button>
+      </sc-for>
+    </div>
+
+    <div class="pop" style="animation-delay: .12s; margin-top: 14px; display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 18px; padding: 10px 14px; box-shadow: 0 3px 0 #EEDFCB">
+      <img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="width: 44px; height: 44px; object-fit: contain">
+      <span style="font-size: 13px; font-weight: 600; line-height: 1.4">Nino rentre chez toi, Suzie chez L. Chacun garde son pet et ses souvenirs.</span>
+    </div>
+
+    <button type="button" onClick="{{send}}" class="btn" style="margin-top: auto; background: #16110D; color: #fff; box-shadow: 0 5px 0 #000">Envoyer et partir</button>
+  </sc-if>
+
+  <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center">
+      <img src="/_blob/e0d561e722e93324dcf864bd3bfde16f" alt="Nino rentre à la maison avec sa valise" class="wave pop" style="width: 180px; height: 180px; object-fit: contain">
+      <h2 class="d pop" style="animation-delay: .1s; margin: 0; font-size: 40px">C'EST CLASSE.</h2>
+      <p class="pop" style="animation-delay: .16s; margin: 0; font-size: 14px; font-weight: 500; line-height: 1.5; color: #5A5047; max-width: 300px">L. a reçu ton mot. Nino est rentré à la maison, ses autres rendez-vous continuent.</p>
+      <span class="chip pop" style="animation-delay: .22s; background: #C8F542">Fiabilité : 98 % · intacte</span>
+    </div>
+    <a href="V4-Match.dc.html" class="btn pop" style="animation-delay: .3s; background: #FF5A3C; color: #fff; box-shadow: 0 5px 0 #C4341B">Ses autres rendez-vous</a>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { m: 0, k: 0, sent: false }; }
+  renderVals() {
+    const M = ['Merci pour ces jours avec Nino. Je sens que nos chemins se séparent, je préfère te le dire.', 'Je n’ai plus assez de temps pour bien m’en occuper. Prends soin de toi.', 'Ce n’était pas le bon moment pour moi. Merci d’avoir été là.'];
+    const msgs = M.map((t, i) => { const on = this.state.m === i; return { t, bg: on ? '#16110D' : '#fff', fg: on ? '#fff' : '#16110D', sh: on ? '#000' : '#EEDFCB', pick: () => this.setState({ m: i }) }; });
+    return { msgs, form: !this.state.sent, sent: this.state.sent, send: () => this.setState({ sent: true }) };
+  }
+}
+</script>
+</body>
+</html>

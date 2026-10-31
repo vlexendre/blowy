@@ -1,0 +1,1766 @@
+{
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "Alerte.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "11 · Alerte — Claude va mal",
+   "w": 390,
+   "x": 940,
+   "y": 1928
+  },
+  "Bilan.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "12 · Bilan du jour (célébration)",
+   "w": 390,
+   "x": 1410,
+   "y": 1928
+  },
+  "Boutique.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "10 · Boutique",
+   "w": 390,
+   "x": 470,
+   "y": 1928
+  },
+  "Chat.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "07 · Chat co-parents",
+   "w": 390,
+   "x": 940,
+   "y": 964
+  },
+  "Engagement.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "04b · Engagement (rythme réaliste)",
+   "w": 390,
+   "x": 1880,
+   "y": 0
+  },
+  "Main.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "05 · Accueil (pet)",
+   "w": 390,
+   "x": 0,
+   "y": 964
+  },
+  "Matching.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "03 · Matchmaking",
+   "w": 390,
+   "x": 940,
+   "y": 0
+  },
+  "Naissance.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "04 · Naissance",
+   "w": 390,
+   "x": 1410,
+   "y": 0
+  },
+  "Partage.dc.html": {
+   "h": 693,
+   "page": "v1",
+   "radius": 24,
+   "title": "13 · Carte à partager (story 9:16)",
+   "w": 390,
+   "x": 1880,
+   "y": 1928
+  },
+  "Paywall.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "04c · Paywall — Claude Plus",
+   "w": 390,
+   "x": 2350,
+   "y": 0
+  },
+  "Pet.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "09 · Fiche de Claude",
+   "w": 390,
+   "x": 0,
+   "y": 1928
+  },
+  "Profil.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "02 · Ton profil",
+   "w": 390,
+   "x": 470,
+   "y": 0
+  },
+  "S1-Hero.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "1 · Transforme ta vie sociale en jeu",
+   "w": 430,
+   "x": 0,
+   "y": 0
+  },
+  "S2-Premiers-pas.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "2 · Ton pet fait les premiers pas",
+   "w": 430,
+   "x": 480,
+   "y": 0
+  },
+  "S3-Pas-de-swipe.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "3 · Pas de swipe",
+   "w": 430,
+   "x": 960,
+   "y": 0
+  },
+  "S4-Vision.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "4 · Crafte ta vision",
+   "w": 430,
+   "x": 1440,
+   "y": 0
+  },
+  "S5-Niveaux.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "5 · Parlez, montez de niveau",
+   "w": 430,
+   "x": 1920,
+   "y": 0
+  },
+  "S6-Bebe.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "6 · Du premier mot au premier bébé",
+   "w": 430,
+   "x": 2400,
+   "y": 0
+  },
+  "S7-Carte.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "7 · Vois qui vit à côté (Blowy+)",
+   "w": 430,
+   "x": 2880,
+   "y": 0
+  },
+  "S8-Quartier.dc.html": {
+   "h": 932,
+   "is_interactive": true,
+   "page": "store",
+   "radius": 36,
+   "title": "8 · Ta bande, ton Quartier",
+   "w": 430,
+   "x": 3360,
+   "y": 0
+  },
+  "Soins.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "06 · Prendre soin",
+   "w": 390,
+   "x": 470,
+   "y": 964
+  },
+  "Streak.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "08 · Streak",
+   "w": 390,
+   "x": 1410,
+   "y": 964
+  },
+  "V2-Chat.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "B3 · Chat + Claude wingman",
+   "w": 390,
+   "x": 940,
+   "y": 964
+  },
+  "V2-Craft.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "A2 · Crafte ton pet",
+   "w": 390,
+   "x": 470,
+   "y": 0
+  },
+  "V2-Garde.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "B6 · Anti-ghost : la garde",
+   "w": 390,
+   "x": 2350,
+   "y": 964
+  },
+  "V2-Intention.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "A5 · Ami ou plus — en secret",
+   "w": 390,
+   "x": 1880,
+   "y": 0
+  },
+  "V2-Lien.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "B4 · L'arbre du lien",
+   "w": 390,
+   "x": 1410,
+   "y": 964
+  },
+  "V2-Manifeste.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "A1 · Manifeste",
+   "w": 390,
+   "x": 0,
+   "y": 0
+  },
+  "V2-Match.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "A6 · Le match de visions",
+   "w": 390,
+   "x": 2350,
+   "y": 0
+  },
+  "V2-Mission.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "A4 · Sa mission (preuve IRL)",
+   "w": 390,
+   "x": 1410,
+   "y": 0
+  },
+  "V2-Nid.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "B1 · Le nid (pet 3D)",
+   "w": 390,
+   "x": 0,
+   "y": 964
+  },
+  "V2-Preuve.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "B2 · Preuve du jour",
+   "w": 390,
+   "x": 470,
+   "y": 964
+  },
+  "V2-Revelation.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "B5 · La révélation",
+   "w": 390,
+   "x": 1880,
+   "y": 964
+  },
+  "V2-Vie.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v2",
+   "radius": 40,
+   "title": "A3 · Sa vie, plus tard",
+   "w": 390,
+   "x": 940,
+   "y": 0
+  },
+  "V2-Vision.dc.html": {
+   "h": 693,
+   "page": "v2",
+   "radius": 24,
+   "title": "C1 · Vision card (viral)",
+   "w": 390,
+   "x": 0,
+   "y": 1928
+  },
+  "V3-Abonnement.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "27 · Gérer l'abonnement",
+   "w": 390,
+   "x": 940,
+   "y": 4576
+  },
+  "V3-Activite.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "23 · Activité",
+   "w": 390,
+   "x": 1880,
+   "y": 3432
+  },
+  "V3-Ami.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "45 · Chez un ami du Quartier",
+   "w": 390,
+   "x": 3760,
+   "y": 6864
+  },
+  "V3-Bebe.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "43 · Naissance du bébé · garde alternée",
+   "w": 390,
+   "x": 2820,
+   "y": 6864
+  },
+  "V3-Boutique.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "21 · Boutique",
+   "w": 390,
+   "x": 940,
+   "y": 3432
+  },
+  "V3-Bravo.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "15 · Preuve validée",
+   "w": 390,
+   "x": 940,
+   "y": 2288
+  },
+  "V3-Campus.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "46 · Ligue des quartiers / écoles",
+   "w": 390,
+   "x": 4230,
+   "y": 6864
+  },
+  "V3-Carte.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "36 · Carte des pets (Claude+)",
+   "w": 390,
+   "x": 2350,
+   "y": 5720
+  },
+  "V3-Chat.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "16 · Chat + wingman",
+   "w": 390,
+   "x": 1410,
+   "y": 2288
+  },
+  "V3-Chats.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "35 · Chats — toutes les conversations",
+   "w": 390,
+   "x": 1880,
+   "y": 5720
+  },
+  "V3-Classement.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "19 · Ligue (badge sur le pet)",
+   "w": 390,
+   "x": 0,
+   "y": 3432
+  },
+  "V3-Compte.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "06 · Ton compte",
+   "w": 390,
+   "x": 2350,
+   "y": 0
+  },
+  "V3-Confidentialite.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "28 · Confidentialité & sécurité",
+   "w": 390,
+   "x": 1410,
+   "y": 4576
+  },
+  "V3-Connexion.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "37 · Reconnexion",
+   "w": 390,
+   "x": 0,
+   "y": 6864
+  },
+  "V3-Craft.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "02 · Crafte ton pet",
+   "w": 390,
+   "x": 470,
+   "y": 0
+  },
+  "V3-Eclosion.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "09 · Naissance de ton pet",
+   "w": 390,
+   "x": 940,
+   "y": 1144
+  },
+  "V3-Emmenager.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "41 · Emménager (niveau 3, exclusif)",
+   "w": 390,
+   "x": 1880,
+   "y": 6864
+  },
+  "V3-Fiche.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "22 · Fiche du pet",
+   "w": 390,
+   "x": 1410,
+   "y": 3432
+  },
+  "V3-Garde.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "31 · L'autre est parti·e — ton pet rentre",
+   "w": 390,
+   "x": 0,
+   "y": 5720
+  },
+  "V3-Intention.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "05 · Ami ou plus",
+   "w": 390,
+   "x": 1880,
+   "y": 0
+  },
+  "V3-Lien.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "17 · Arbre du lien",
+   "w": 390,
+   "x": 1880,
+   "y": 2288
+  },
+  "V3-Match.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "12 · Ses rendez-vous (multi-match)",
+   "w": 390,
+   "x": 2350,
+   "y": 1144
+  },
+  "V3-Mission.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "04 · Sa mission",
+   "w": 390,
+   "x": 1410,
+   "y": 0
+  },
+  "V3-Nid.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "13 · Le nid — deux pets cohabitent",
+   "w": 390,
+   "x": 0,
+   "y": 2288
+  },
+  "V3-Notifs.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "08 · Notifications",
+   "w": 390,
+   "x": 470,
+   "y": 1144
+  },
+  "V3-Oeuf.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "34 · Couver l'œuf — questions à deux",
+   "w": 390,
+   "x": 1410,
+   "y": 5720
+  },
+  "V3-Offre.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "11 · Offre unique (downsell)",
+   "w": 390,
+   "x": 1880,
+   "y": 1144
+  },
+  "V3-Paywall.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "10 · Paywall — ses rendez-vous",
+   "w": 390,
+   "x": 1410,
+   "y": 1144
+  },
+  "V3-Preuve.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "14 · Mission du jour",
+   "w": 390,
+   "x": 470,
+   "y": 2288
+  },
+  "V3-Profil.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "25 · Profil",
+   "w": 390,
+   "x": 0,
+   "y": 4576
+  },
+  "V3-Quartier.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "33 · Le Quartier (amis)",
+   "w": 390,
+   "x": 940,
+   "y": 5720
+  },
+  "V3-RdvIRL.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "42 · Rendez-vous IRL + ange gardien",
+   "w": 390,
+   "x": 2350,
+   "y": 6864
+  },
+  "V3-Reglages.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "26 · Réglages",
+   "w": 390,
+   "x": 470,
+   "y": 4576
+  },
+  "V3-Revelation.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "18 · Révélation",
+   "w": 390,
+   "x": 2350,
+   "y": 2288
+  },
+  "V3-Rupture.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "30 · Partir proprement",
+   "w": 390,
+   "x": 2350,
+   "y": 4576
+  },
+  "V3-Serie.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "20 · Ta série",
+   "w": 390,
+   "x": 470,
+   "y": 3432
+  },
+  "V3-Signaler.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "29 · Signaler / bloquer",
+   "w": 390,
+   "x": 1880,
+   "y": 4576
+  },
+  "V3-Story.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "44 · Story à partager (9:16)",
+   "w": 390,
+   "x": 3290,
+   "y": 6864
+  },
+  "V3-Supprimer.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "32 · Supprimer le compte",
+   "w": 390,
+   "x": 470,
+   "y": 5720
+  },
+  "V3-Verif.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "07 · Selfie & photos cachées",
+   "w": 390,
+   "x": 0,
+   "y": 1144
+  },
+  "V3-Vide.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "40 · Aucun rendez-vous · recherche",
+   "w": 390,
+   "x": 1410,
+   "y": 6864
+  },
+  "V3-Vie.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "03 · Sa vie",
+   "w": 390,
+   "x": 940,
+   "y": 0
+  },
+  "V3-Vision.dc.html": {
+   "h": 693,
+   "page": "v3",
+   "radius": 24,
+   "title": "24 · Vision card (partage)",
+   "w": 390,
+   "x": 2350,
+   "y": 3432
+  },
+  "V3-Vote.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "38 · Tes amis votent (onboarding viral)",
+   "w": 390,
+   "x": 470,
+   "y": 6864
+  },
+  "V3-Welcome.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "01 · Bienvenue",
+   "w": 390,
+   "x": 0,
+   "y": 0
+  },
+  "V3-Widget.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v3",
+   "radius": 40,
+   "title": "39 · Widgets & notif écran d'accueil",
+   "w": 390,
+   "x": 940,
+   "y": 6864
+  },
+  "V4-Abonnement.dc.html": {
+   "x": 940,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "36 · Abonnement",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Ami.dc.html": {
+   "x": 1410,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "31 · Chez un ami",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Bebe.dc.html": {
+   "x": 3290,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "25 · Naissance du bébé",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Boutique.dc.html": {
+   "x": 2350,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "17 · Boutique",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Bravo.dc.html": {
+   "x": 940,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "14 · Mission validée",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Carte.dc.html": {
+   "x": 1880,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "32 · Carte (Blowy+)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Chat.dc.html": {
+   "x": 470,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "19 · Conversation",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Chats.dc.html": {
+   "x": 0,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "18 · Chats · où est Nino",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Classement.dc.html": {
+   "x": 2350,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "33 · Ligues pets / amis / quartiers",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Compte.dc.html": {
+   "x": 2820,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "07 · Compte (après l'aha)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Confidentialite.dc.html": {
+   "x": 1410,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "37 · Confidentialité",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Craft.dc.html": {
+   "x": 940,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "03 · Crafte ton pet (4 espèces)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Eclosion.dc.html": {
+   "x": 2350,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "06 · Naissance de Nino (aha)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Emmenager.dc.html": {
+   "x": 1410,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "21 · Emménager (exclusif)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Fiche.dc.html": {
+   "x": 1880,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "16 · Fiche & évolution",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Intention.dc.html": {
+   "x": 1880,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "05 · Ami ou plus",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Lien.dc.html": {
+   "x": 940,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "20 · Arbre du Lien",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Match.dc.html": {
+   "x": 4230,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "10 · Ses 3 rendez-vous",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Nid.dc.html": {
+   "x": 0,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "12 · Le nid (accueil)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Oeuf.dc.html": {
+   "x": 2820,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "24 · Couver l'œuf",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Paywall.dc.html": {
+   "x": 3760,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "09 · Paywall + offre −60 %",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Preuve.dc.html": {
+   "x": 470,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "13 · Mission en photo",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Profil.dc.html": {
+   "x": 0,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "34 · Profil",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Quartier.dc.html": {
+   "x": 940,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "30 · Le Quartier",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-RdvIRL.dc.html": {
+   "x": 2350,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "23 · 1er rendez-vous + ange gardien",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Reglages.dc.html": {
+   "x": 470,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "35 · Réglages",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Revelation.dc.html": {
+   "x": 1880,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "22 · Révélation",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Rupture.dc.html": {
+   "x": 3760,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "26 · Partir proprement",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Serie.dc.html": {
+   "x": 1410,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "15 · Série + gel",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Signaler.dc.html": {
+   "x": 1880,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "38 · Signaler",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Story.dc.html": {
+   "x": 0,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "28 · Partager · NGL, vision, moments",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Supprimer.dc.html": {
+   "x": 2350,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "39 · Supprimer le compte",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Verif.dc.html": {
+   "x": 3290,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "08 · Selfie vérifié",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Vide.dc.html": {
+   "x": 4230,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "27 · Aucun rendez-vous (+ départ de L.)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Vie.dc.html": {
+   "x": 1410,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "04 · Sa vision (4 questions, carte qui se remplit)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Welcome.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "01 · Bienvenue",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "Welcome.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "page": "v1",
+   "radius": 40,
+   "title": "01 · Bienvenue",
+   "w": 390,
+   "x": 0,
+   "y": 0
+  },
+  "V4-Invite.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "02 · Arrivée par un lien (accueil perso)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "V4-Notifs.dc.html": {
+   "x": 4700,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "11 · Notifs au bon moment",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "W-Repondre.dc.html": {
+   "x": 470,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "29 · WEB · l'ami répond (sans l'app)",
+   "radius": 40,
+   "page": "v4",
+   "is_interactive": true
+  },
+  "B-Logo.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1200,
+   "h": 470,
+   "title": "Logo · fond transparent",
+   "radius": 0,
+   "page": "brand",
+   "is_interactive": true
+  },
+  "B-Lien.dc.html": {
+   "x": 0,
+   "y": 600,
+   "w": 1200,
+   "h": 630,
+   "title": "Aperçu de lien (1200 × 630)",
+   "radius": 0,
+   "page": "brand",
+   "is_interactive": true
+  },
+  "B-Icones.dc.html": {
+   "x": 0,
+   "y": 1360,
+   "w": 1160,
+   "h": 560,
+   "title": "Icônes d'app (Nino, Suzie)",
+   "radius": 0,
+   "page": "brand",
+   "is_interactive": true
+  },
+  "B-Splash.dc.html": {
+   "x": 1360,
+   "y": 0,
+   "w": 1170,
+   "h": 2532,
+   "title": "Splash (1170 × 2532)",
+   "radius": 0,
+   "page": "brand",
+   "is_interactive": true
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-10-31T14:56:00Z",
+  "v": 1
+ },
+ "designSystems": [],
+ "launch": {
+  "page": "v4",
+  "view": "canvas"
+ },
+ "noteOrder": [
+  "t1",
+  "s1",
+  "s2",
+  "v2t1",
+  "v2t2",
+  "v2t3",
+  "v2s1",
+  "v2s2",
+  "v2s3",
+  "v2s4",
+  "v2s5",
+  "v3t0",
+  "v3t1",
+  "v3t2",
+  "v3t3",
+  "v3t4",
+  "v3t5",
+  "v3s1",
+  "v3s2",
+  "v3s3",
+  "v3s4",
+  "v3s5",
+  "v3s6",
+  "v3s7",
+  "v3t6",
+  "v3s8",
+  "st1",
+  "v4t0",
+  "v4t1",
+  "v4t2",
+  "v4t3",
+  "v4t4",
+  "v4s1",
+  "v4s2",
+  "v4s3",
+  "v4s4",
+  "br1"
+ ],
+ "notes": {
+  "s1": {
+   "fill": "orange",
+   "page": "v1",
+   "text": "Flow démo : scanner le QR → Bienvenue → Profil → Matching → Naissance → Engagement → Paywall (skippable) → Accueil. Le reste est navigable depuis la barre du bas.",
+   "w": 300,
+   "x": 2820,
+   "y": 0
+  },
+  "s2": {
+   "fill": "purple",
+   "page": "v1",
+   "text": "Règle d'or : chaque action d'un parent est visible chez l'autre en < 2 s (bandeau « Léa vient de… »). C'est ce qui rend le co-élevage réel.",
+   "w": 300,
+   "x": 2820,
+   "y": 964
+  },
+  "st1": {
+   "page": "store",
+   "text": "LA VISION À PORTER\nOn ne vend pas une app de rencontre : on vend une vie sociale qui devient un jeu.\nArc des 8 captures : promesse (jeu) → le pet agit pour toi → pas de swipe → ta vision → progression → récompense ultime (bébé) → premium (carte) → tes amis.\nExport App Store : 430×932 pt = 1290×2796 px (iPhone 6,7\").",
+   "w": 520,
+   "x": 0,
+   "y": -300
+  },
+  "t1": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v1",
+   "text": "1 · Onboarding — 60 secondes jusqu'au match",
+   "w": 240,
+   "x": 0,
+   "y": -300
+  },
+  "v2s1": {
+   "fill": "orange",
+   "page": "v2",
+   "text": "LE HACK\nOn ne matche pas des profils, on matche des visions. Chacun crafte le pet qu'il voudrait élever (caractère, école, vie, mission). Ces choix projettent tes valeurs sans que tu aies à te vendre. Deux visions proches = un match.",
+   "w": 320,
+   "x": 2820,
+   "y": 0
+  },
+  "v2s2": {
+   "fill": "green",
+   "page": "v2",
+   "text": "POURQUOI ON REVIENT (même si le match est moyen)\n1. La mission IRL : une preuve photo par jour (sport, cuisine…) nourrit le pet. Tu reviens pour toi.\n2. Le pet 3D a son caractère : il boude, refuse de venir, réagit à vos messages.\n3. La révélation : le visage de l'autre se dévoile avec le lien.",
+   "w": 320,
+   "x": 2820,
+   "y": 420
+  },
+  "v2s3": {
+   "fill": "purple",
+   "page": "v2",
+   "text": "LE LIEN (score de proximité)\n+ réciprocité (vous répondez tous les deux)\n+ profondeur (vraies questions, souvenirs partagés)\n+ régularité\n+ missions faites le même jour\n+ se voir en vrai (check-in commun, ×3)\n− monologues, ghosting\nLe lien fait grandir le pet ET débloque les niveaux.",
+   "w": 320,
+   "x": 2820,
+   "y": 964
+  },
+  "v2s4": {
+   "fill": "pink",
+   "page": "v2",
+   "text": "AMI OU PLUS\nChacun choisit en secret. Si les deux disent « Plus », la branche romantique s'ouvre (photo floue → nette → rendez-vous proposé par Claude). Sinon, branche Ami, sans que personne ne soit rejeté.",
+   "w": 320,
+   "x": 2820,
+   "y": 1400
+  },
+  "v2s5": {
+   "fill": "teal",
+   "page": "v2",
+   "text": "BOUCLE VIRALE\nAvant même de matcher, tu partages ta Vision card (« le pet que j'élèverais »). Les amis peuvent devenir parrain·e du pet et lui offrir des cadeaux : chaque couple recrute ses proches.",
+   "w": 320,
+   "x": 470,
+   "y": 1928
+  },
+  "v2t1": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v2",
+   "text": "A · Onboarding — tu ne te décris pas, tu imagines",
+   "w": 240,
+   "x": 0,
+   "y": -300
+  },
+  "v2t2": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v2",
+   "text": "B · La boucle — le pet grandit avec votre lien",
+   "w": 240,
+   "x": 0,
+   "y": 823
+  },
+  "v2t3": {
+   "kind": "title1",
+   "maxW": 1800,
+   "page": "v2",
+   "text": "C · Viralité",
+   "w": 240,
+   "x": 0,
+   "y": 1628
+  },
+  "v3s1": {
+   "fill": "orange",
+   "page": "v3",
+   "text": "PARCOURS\nBienvenue → crafte ton pet → sa vie → sa mission → intention secrète → compte → selfie → notifications → TON PET NAÎT (il est à toi) → PAYWALL (3 pets veulent le rencontrer) → (refus) offre unique → ses rendez-vous → nid.",
+   "w": 320,
+   "x": 2820,
+   "y": 0
+  },
+  "v3s2": {
+   "fill": "pink",
+   "page": "v3",
+   "text": "MONÉTISATION\n1. Paywall juste après la naissance du pet : gratuit = 1 rendez-vous le dimanche, Claude+ = 3 rendez-vous en même temps, tout de suite.\n2. Downsell −60 % si refus.\n3. Claude+ couvre aussi ton coloc.\n4. Pièces : gel de série, boost de rendez-vous, œufs rares, tenues, cadeaux.",
+   "w": 320,
+   "x": 2820,
+   "y": 1144
+  },
+  "v3s3": {
+   "fill": "green",
+   "page": "v3",
+   "text": "LA BOUCLE\nNid → mission du jour (preuve photo) → célébration (+XP, série +1) → chat (le wingman souffle des questions, le Lien monte) → niveaux débloqués → révélation.",
+   "w": 320,
+   "x": 2820,
+   "y": 2288
+  },
+  "v3s4": {
+   "fill": "purple",
+   "page": "v3",
+   "text": "3 COMPTEURS\nSérie (perso, flamme) · Pièces cœur (monnaie) · Lien (XP du duo, fait grandir le pet et classe le duo dans sa ligue hebdo).",
+   "w": 320,
+   "x": 2820,
+   "y": 3432
+  },
+  "v3s5": {
+   "fill": "teal",
+   "page": "v3",
+   "text": "SÉCURITÉ\nSelfie vérifié obligatoire. Signaler/bloquer accessible depuis le chat. Partir proprement en un message. Ghoster baisse la fiabilité. Suppression du compte en 2 étapes, sans piège.",
+   "w": 320,
+   "x": 2820,
+   "y": 4576
+  },
+  "v3s6": {
+   "fill": "orange",
+   "page": "v3",
+   "text": "MODÈLE À DEUX PETS\nChacun a SON pet (sa vision incarnée, il ne meurt jamais avec une rupture).\nRendez-vous : ton pet rencontre jusqu'à 3 pets (1 en gratuit).\nNiveau 3 du Lien : emménager = exclusif.\nBranche Plus : visages → rendez-vous IRL → les pets font un ŒUF (le pet commun se mérite).\nBranche Ami : inséparables → entrée dans le Quartier.\nQuartier = tes vrais amis, séparé du dating.",
+   "w": 320,
+   "x": 2820,
+   "y": 5720
+  },
+  "v3s7": {
+   "fill": "green",
+   "page": "v3",
+   "text": "COHABITATIONS : LES RÈGLES UX\n1. Ton pet est toujours le même, toujours à gauche, toujours visible.\n2. Il est à UN endroit à la fois (Où est Claude).\n3. Changer de conv = « Claude va retrouver X » : il se déplace, l'autre pet garde sa place.\n4. Chaque rendez-vous a son lieu (chez Luma, au parc, au café) jusqu'à emménager.\n5. Ceux qui attendent Claude le montrent (« Gaston attend · 2 h ») : raison de revenir.\nNavbar flottante liquid glass : Nid · Chats · Carte (Plus) · Quartier · Profil. La Ligue = badge sur le pet.",
+   "w": 320,
+   "x": 2820,
+   "y": 6120
+  },
+  "v3s8": {
+   "page": "v3",
+   "text": "BOUCLES VIRALES\n1. Onboarding : tes amis votent ta vision (lien sans compte → ils rejoignent ton Quartier).\n2. Moments partageables en story 9:16 : emménager, révélation, naissance (lien de parrainage incrusté).\n3. Ligue des quartiers / écoles : on invite pour faire gagner son quartier.\n4. Widget + notifs « Gaston attend Claude » : rétention quotidienne.\nSÉCURITÉ : ange gardien du Quartier au 1er rendez-vous IRL, check-in, sortie de secours, position floutée.",
+   "w": 320,
+   "x": 4700,
+   "y": 6864
+  },
+  "v3t0": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v3",
+   "text": "A · Onboarding — imagine, puis paie pour voir",
+   "w": 240,
+   "x": 0,
+   "y": -260
+  },
+  "v3t1": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v3",
+   "text": "B · Naissance, paywall, rendez-vous",
+   "w": 240,
+   "x": 0,
+   "y": 884
+  },
+  "v3t2": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v3",
+   "text": "C · La boucle quotidienne",
+   "w": 240,
+   "x": 0,
+   "y": 2028
+  },
+  "v3t3": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v3",
+   "text": "D · Compétition, série, boutique",
+   "w": 240,
+   "x": 0,
+   "y": 3172
+  },
+  "v3t4": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v3",
+   "text": "E · Profil, réglages, sécurité",
+   "w": 240,
+   "x": 0,
+   "y": 4316
+  },
+  "v3t5": {
+   "kind": "title1",
+   "maxW": 2740,
+   "page": "v3",
+   "text": "F · Fins de parcours, Quartier, œuf",
+   "w": 240,
+   "x": 0,
+   "y": 5460
+  },
+  "v3t6": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v3",
+   "text": "G · Moments clés, sécurité, croissance",
+   "w": 240,
+   "x": 0,
+   "y": 6604
+  },
+  "v4s1": {
+   "page": "v4",
+   "text": "V4 · CE QUI A CHANGÉ\n46 → 37 écrans. Fusionnés : Offre → sheet du Paywall · Garde → bandeau de Vide · Vision → Partager · Campus → onglet Quartiers du classement · Activité → Chats · Connexion → Compte · Notifs → demande en contexte · Mission → défaut + choix dans la mission · Widget → page Store.\nCasting : ton pet = Nino (raton). L. = Suzie (lapine). M. = Gaston (capybara). S. = Pia (pigeonne). Le bébé ressemble à Suzie.\nNav : Nid · Chats · Carte · Quartier · Profil (5 max).",
+   "w": 360,
+   "x": 5800,
+   "y": 0
+  },
+  "v4s2": {
+   "fill": "green",
+   "page": "v4",
+   "text": "BONNES PRATIQUES APPLIQUÉES\n1. Valeur avant compte : le pet naît AVANT l'inscription (Duolingo, délai d'inscription).\n2. Paywall dans l'onboarding juste après l'aha + sur chaque feature verrouillée : carte, 3 rendez-vous, indices NGL, XP ×2 (RevenueCat).\n3. Que du positif : réponses anonymes en mots prédéfinis (leçon TBH / Gas).\n4. Boucle NGL : lien en story Insta → réponses → elles nourrissent la vision → on repartage.\n5. Lancement dense : quartier par quartier, école par école (ligues).",
+   "w": 360,
+   "x": 5800,
+   "y": 1144
+  },
+  "v4s3": {
+   "fill": "orange",
+   "page": "v4",
+   "text": "POINTS DE PAIEMENT (5, pas plus)\n• Paywall onboarding (essai 3 j) + offre −60 % si « plus tard »\n• Rendez-vous 2 et 3 verrouillés (Match)\n• Carte des pets\n• Indices « qui a écrit ? » (Partager)\n• Pièces : gel de série, boost de rendez-vous, garde-robe (Boutique)",
+   "w": 360,
+   "x": 5800,
+   "y": 2288
+  },
+  "v4t0": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v4",
+   "text": "A · Onboarding — de l'aha au paiement",
+   "w": 240,
+   "x": 0,
+   "y": -260
+  },
+  "v4t1": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v4",
+   "text": "B · Boucle quotidienne",
+   "w": 240,
+   "x": 0,
+   "y": 884
+  },
+  "v4t2": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v4",
+   "text": "C · Rendez-vous & relation",
+   "w": 240,
+   "x": 0,
+   "y": 2028
+  },
+  "v4t3": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v4",
+   "text": "D · Social & viral — la boucle NGL",
+   "w": 240,
+   "x": 0,
+   "y": 3172
+  },
+  "v4t4": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v4",
+   "text": "E · Compte & sécurité",
+   "w": 240,
+   "x": 0,
+   "y": 4316
+  },
+  "v4s4": {
+   "x": 5800,
+   "y": 3432,
+   "w": 360,
+   "fill": "green",
+   "page": "v4",
+   "text": "LA BOUCLE VIRALE, DE BOUT EN BOUT\n1. Alex poste « Décris-moi en 3 mots » en story (Partager).\n2. Un ami clique : page web, il choisit 3 mots gentils, sans app.\n3. « Crée ton pet » → accueil perso « Alex t'attend dans son Quartier » + 100 pièces.\n4. Alex reçoit les mots (Chats › Quartier), répond en story → nouvelle vague.\n5. « Qui a écrit ? » = Blowy+."
+  },
+  "br1": {
+   "x": 0,
+   "y": -320,
+   "w": 520,
+   "fill": "yellow",
+   "page": "brand",
+   "text": "MARQUE BLOWY\nLe pack livré disait encore « claude. » : logo, aperçu de lien et splash sont refaits ici en « blowy. ». Exporter chaque planche en PNG depuis le canvas.\nÀ faire côté illustration : la version vectorielle SVG du logo « blowy. » (Bricolage Grotesque 800, point citron #C8F542, signature « pets & potes » en 600)."
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Welcome.dc.html",
+  "Profil.dc.html",
+  "Matching.dc.html",
+  "Naissance.dc.html",
+  "Engagement.dc.html",
+  "Paywall.dc.html",
+  "Soins.dc.html",
+  "Chat.dc.html",
+  "Streak.dc.html",
+  "Pet.dc.html",
+  "Boutique.dc.html",
+  "Alerte.dc.html",
+  "Bilan.dc.html",
+  "Partage.dc.html",
+  "V2-Manifeste.dc.html",
+  "V2-Craft.dc.html",
+  "V2-Vie.dc.html",
+  "V2-Mission.dc.html",
+  "V2-Intention.dc.html",
+  "V2-Match.dc.html",
+  "V2-Nid.dc.html",
+  "V2-Preuve.dc.html",
+  "V2-Chat.dc.html",
+  "V2-Lien.dc.html",
+  "V2-Revelation.dc.html",
+  "V2-Garde.dc.html",
+  "V2-Vision.dc.html",
+  "V3-Welcome.dc.html",
+  "V3-Craft.dc.html",
+  "V3-Vie.dc.html",
+  "V3-Mission.dc.html",
+  "V3-Intention.dc.html",
+  "V3-Compte.dc.html",
+  "V3-Verif.dc.html",
+  "V3-Notifs.dc.html",
+  "V3-Paywall.dc.html",
+  "V3-Offre.dc.html",
+  "V3-Eclosion.dc.html",
+  "V3-Match.dc.html",
+  "V3-Nid.dc.html",
+  "V3-Preuve.dc.html",
+  "V3-Bravo.dc.html",
+  "V3-Chat.dc.html",
+  "V3-Lien.dc.html",
+  "V3-Revelation.dc.html",
+  "V3-Classement.dc.html",
+  "V3-Serie.dc.html",
+  "V3-Boutique.dc.html",
+  "V3-Fiche.dc.html",
+  "V3-Activite.dc.html",
+  "V3-Vision.dc.html",
+  "V3-Profil.dc.html",
+  "V3-Reglages.dc.html",
+  "V3-Abonnement.dc.html",
+  "V3-Confidentialite.dc.html",
+  "V3-Signaler.dc.html",
+  "V3-Rupture.dc.html",
+  "V3-Garde.dc.html",
+  "V3-Supprimer.dc.html",
+  "V3-Quartier.dc.html",
+  "V3-Oeuf.dc.html",
+  "V3-Chats.dc.html",
+  "V3-Carte.dc.html",
+  "V3-Connexion.dc.html",
+  "V3-Vote.dc.html",
+  "V3-Widget.dc.html",
+  "V3-Vide.dc.html",
+  "V3-Emmenager.dc.html",
+  "V3-RdvIRL.dc.html",
+  "V3-Bebe.dc.html",
+  "V3-Story.dc.html",
+  "V3-Ami.dc.html",
+  "V3-Campus.dc.html",
+  "S1-Hero.dc.html",
+  "S2-Premiers-pas.dc.html",
+  "S3-Pas-de-swipe.dc.html",
+  "S4-Vision.dc.html",
+  "S5-Niveaux.dc.html",
+  "S6-Bebe.dc.html",
+  "S7-Carte.dc.html",
+  "S8-Quartier.dc.html",
+  "V4-Welcome.dc.html",
+  "V4-Craft.dc.html",
+  "V4-Vie.dc.html",
+  "V4-Intention.dc.html",
+  "V4-Eclosion.dc.html",
+  "V4-Compte.dc.html",
+  "V4-Verif.dc.html",
+  "V4-Paywall.dc.html",
+  "V4-Match.dc.html",
+  "V4-Nid.dc.html",
+  "V4-Preuve.dc.html",
+  "V4-Bravo.dc.html",
+  "V4-Serie.dc.html",
+  "V4-Fiche.dc.html",
+  "V4-Boutique.dc.html",
+  "V4-Chats.dc.html",
+  "V4-Chat.dc.html",
+  "V4-Lien.dc.html",
+  "V4-Emmenager.dc.html",
+  "V4-Revelation.dc.html",
+  "V4-RdvIRL.dc.html",
+  "V4-Oeuf.dc.html",
+  "V4-Bebe.dc.html",
+  "V4-Rupture.dc.html",
+  "V4-Vide.dc.html",
+  "V4-Story.dc.html",
+  "V4-Quartier.dc.html",
+  "V4-Ami.dc.html",
+  "V4-Carte.dc.html",
+  "V4-Classement.dc.html",
+  "V4-Profil.dc.html",
+  "V4-Reglages.dc.html",
+  "V4-Abonnement.dc.html",
+  "V4-Confidentialite.dc.html",
+  "V4-Signaler.dc.html",
+  "V4-Supprimer.dc.html",
+  "V4-Invite.dc.html",
+  "V4-Notifs.dc.html",
+  "W-Repondre.dc.html",
+  "B-Logo.dc.html",
+  "B-Lien.dc.html",
+  "B-Icones.dc.html",
+  "B-Splash.dc.html"
+ ],
+ "pages": [
+  {
+   "id": "v1",
+   "name": "V1 — Tamagotchi"
+  },
+  {
+   "id": "v2",
+   "name": "V2 — Dating"
+  },
+  {
+   "id": "v3",
+   "name": "V3 — App complète"
+  },
+  {
+   "id": "v4",
+   "name": "V4 — Finale (39 écrans)"
+  },
+  {
+   "id": "store",
+   "name": "App Store — la vision"
+  },
+  {
+   "id": "brand",
+   "name": "Marque Blowy"
+  }
+ ],
+ "title": "Claude — Design de l'app"
+}

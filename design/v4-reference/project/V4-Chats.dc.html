@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Chats — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:10.5px;font-weight:800;white-space:nowrap}
+.row{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:10px 12px;border-radius:22px;border:0;background:#fff;box-shadow:0 4px 0 #EEDFCB;cursor:pointer;text-align:left;font-family:'Inter',sans-serif;color:#16110D}
+.row:active{transform:translateY(3px);box-shadow:none}
+.seg{flex:1 1 0;min-height:40px;border-radius:14px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;white-space:nowrap}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .6s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-6px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.2s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,245,66,.7)}70%{box-shadow:0 0 0 8px rgba(200,245,66,0)}}
+.pulse{animation:pulse 1.8s infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.dash{animation:dash .7s linear infinite}
+@keyframes walk{0%{transform:translateX(0) translateY(0)}12.5%{transform:translateX(30px) translateY(-10px)}25%{transform:translateX(60px) translateY(0)}37.5%{transform:translateX(90px) translateY(-10px)}50%{transform:translateX(120px) translateY(0)}62.5%{transform:translateX(150px) translateY(-10px)}75%{transform:translateX(180px) translateY(0)}87.5%{transform:translateX(205px) translateY(-10px)}100%{transform:translateX(226px) translateY(0)}}
+.walk{animation:walk 1.7s linear both}
+@keyframes fadein{from{opacity:0}}
+.fadein{animation:fadein .3s ease both}
+@keyframes bounce{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
+.bounce{animation:bounce .5s cubic-bezier(.2,1.4,.4,1) both}
+.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -10px 18px rgba(255,255,255,.2),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
+.gnav::before{content:'';position:absolute;left:22px;right:22px;top:1px;height:44%;border-radius:30px 30px 60% 60%;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#5E544A;transition:background .3s}
+.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85));box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(125,161,26,.25),0 6px 14px rgba(125,161,26,.35)}
+.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#FF3D7F;color:#fff;font-size:9px;font-weight:800;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.gnav .pls{position:absolute;top:4px;left:calc(50% + 4px);height:15px;padding:0 5px;border-radius:999px;background:#7C3AED;color:#fff;font-size:8px;font-weight:800;letter-spacing:.04em;display:flex;align-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+@keyframes fr{0%,24.9%{opacity:1}25%,100%{opacity:0}}
+.fr{opacity:0;animation:fr .56s steps(1) infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; position: relative">
+  <div class="blob" style="width: 240px; height: 240px; top: -80px; right: -80px; background: #FF3D7F; opacity: .25"></div>
+
+  <div class="pop" style="padding: 52px 16px 0; display: flex; align-items: center; justify-content: space-between; position: relative">
+    <h1 class="d" style="margin: 0; font-size: 44px">CHATS</h1>
+    <a href="V4-Match.dc.html" class="chip" style="font-size: 12px; padding: 8px 12px; background: #16110D; color: #C8F542; box-shadow: 0 3px 0 #000">3 / 3 rendez-vous</a>
+  </div>
+
+  <div class="pop" style="animation-delay: .04s; margin: 12px 16px 0; display: flex; gap: 6px; background: #F2E6D6; border-radius: 18px; padding: 4px">
+    <button type="button" class="seg" onClick="{{tabRdv}}" style="background: {{segA}}; color: {{segAc}}; box-shadow: {{segAs}}">Rendez-vous · 3</button>
+    <button type="button" class="seg" onClick="{{tabAmis}}" style="background: {{segB}}; color: {{segBc}}; box-shadow: {{segBs}}">Quartier · 4</button>
+  </div>
+
+  <sc-if value="{{isRdv}}" hint-placeholder-val="{{true}}">
+    <!-- Where is Nino -->
+    <div class="pop" style="animation-delay: .08s; margin: 12px 16px 0; background: #16110D; color: #fff; border-radius: 24px; padding: 12px 14px 12px; box-shadow: 0 5px 0 #000; position: relative; overflow: hidden">
+      <div class="blob" style="width: 160px; height: 160px; bottom: -80px; left: -40px; background: #7C3AED; opacity: .6"></div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; position: relative">
+        <span style="font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #C8F542">Où est Nino</span>
+        <span style="font-size: 11px; font-weight: 700; color: #BDB2A6">un seul endroit à la fois</span>
+      </div>
+      <div style="position: relative; height: 104px; margin-top: 4px">
+        <svg aria-hidden="true" width="330" height="20" viewBox="0 0 330 20" style="position: absolute; left: 0; top: 52px"><path class="dash" d="M30 10 H300" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-dasharray="4 8" stroke-linecap="round"/></svg>
+        <sc-for list="{{spots}}" as="p" hint-placeholder-count="4">
+          <div style="position: absolute; left: {{p.x}}; top: 0; width: 64px; display: flex; flex-direction: column; align-items: center">
+            <div style="height: 34px; display: flex; align-items: flex-end"><sc-if value="{{p.here}}" hint-placeholder-val="{{false}}"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="Nino est ici" class="sq" style="width: 38px; height: 38px; object-fit: contain"></sc-if></div>
+            <div class="{{p.cls}}" style="width: 46px; height: 46px; border-radius: 50%; background: {{p.bg}}; border: 3px solid {{p.ring}}; display: flex; align-items: center; justify-content: center; box-sizing: border-box"><img src="{{p.img}}" alt="" aria-hidden="true" style="width: 34px; height: 34px; object-fit: contain"></div>
+            <span style="margin-top: 5px; font-size: 11px; font-weight: 800; white-space: nowrap; color: {{p.fg}}">{{p.label}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin: 12px 16px 0; display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+        <sc-if value="{{r.here}}" hint-placeholder-val="{{true}}">
+          <a href="V4-Chat.dc.html" class="row pop" style="animation-delay: {{r.dl}}; outline: 3px solid #C8F542"><span style="position: relative; width: 64px; height: 52px; flex: 0 0 auto"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="position: absolute; left: 0; top: 14px; width: 38px; height: 38px; object-fit: contain; opacity: {{r.meOp}}"><img src="{{r.img}}" alt="" aria-hidden="true" style="position: absolute; left: 20px; top: 0; width: 46px; height: 46px; object-fit: contain"></span><span style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; min-width: 0"><span style="display: flex; justify-content: space-between; align-items: baseline"><span class="d" style="font-size: 19px; white-space: nowrap">{{r.name}}</span><span style="font-size: 11px; font-weight: 700; color: #8A7E70">{{r.t}}</span></span><span style="font-size: 12px; font-weight: 600; color: #6B6259; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.msg}}</span><span class="chip" style="align-self: flex-start; background: {{r.stBg}}; color: {{r.stFg}}">{{r.status}}</span></span><span style="min-width: 22px; height: 22px; border-radius: 999px; background: #FF3D7F; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">{{r.n}}</span></a>
+        </sc-if>
+        <sc-if value="{{r.away}}" hint-placeholder-val="{{false}}">
+          <button type="button" class="row pop" onClick="{{r.go}}" style="animation-delay: {{r.dl}}"><span style="position: relative; width: 64px; height: 52px; flex: 0 0 auto"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="position: absolute; left: 0; top: 14px; width: 38px; height: 38px; object-fit: contain; opacity: {{r.meOp}}"><img src="{{r.img}}" alt="" aria-hidden="true" style="position: absolute; left: 20px; top: 0; width: 46px; height: 46px; object-fit: contain"></span><span style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; min-width: 0"><span style="display: flex; justify-content: space-between; align-items: baseline"><span class="d" style="font-size: 19px; white-space: nowrap">{{r.name}}</span><span style="font-size: 11px; font-weight: 700; color: #8A7E70">{{r.t}}</span></span><span style="font-size: 12px; font-weight: 600; color: #6B6259; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.msg}}</span><span class="chip" style="align-self: flex-start; background: {{r.stBg}}; color: {{r.stFg}}">{{r.status}}</span></span><span style="min-width: 22px; height: 22px; border-radius: 999px; background: #FF3D7F; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">{{r.n}}</span></button>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <a href="V4-Emmenager.dc.html" class="pop" style="animation-delay: .3s; margin: 10px 16px 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 18px; border: 2px dashed #E3D3BE">
+      <img src="/_blob/db4476a91272a51245c1e0f226b5e1c4" alt="" aria-hidden="true" style="width: 34px; height: 34px; object-fit: contain">
+      <span style="font-size: 12px; font-weight: 600; line-height: 1.4; color: #5A5047">Au niveau 3, Nino emménage avec un seul pet. Les autres rendez-vous reçoivent un mot gentil.</span>
+    </a>
+  </sc-if>
+
+  <sc-if value="{{isAmis}}" hint-placeholder-val="{{false}}">
+    <div style="margin: 12px 16px 0; display: flex; flex-direction: column; gap: 8px">
+      <a href="V4-Quartier.dc.html" class="row pop" style="background: linear-gradient(135deg, #C8F542, #7DD8C0); box-shadow: 0 4px 0 #7DA11A">
+        <span style="position: relative; width: 58px; height: 46px; flex: 0 0 auto"><img src="/_blob/36951927ea94071fec4b8e25ae8db21b" alt="" aria-hidden="true" style="position: absolute; left: 0; top: 4px; width: 34px; height: 34px; object-fit: contain"><img src="/_blob/ac18b7adeb76bf7b1fd8b34231b411c3" alt="" aria-hidden="true" style="position: absolute; left: 14px; top: 10px; width: 34px; height: 34px; object-fit: contain"><img src="/_blob/8e015999580149e064272e9e8baa7c98" alt="" aria-hidden="true" style="position: absolute; left: 26px; top: 2px; width: 34px; height: 34px; object-fit: contain"></span>
+        <span style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; min-width: 0"><span class="d" style="font-size: 19px; white-space: nowrap">La bande du quartier</span><span style="font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Tom : on finit le défi ce soir ?</span></span>
+        <span class="chip" style="background: #16110D; color: #C8F542">14 / 20</span>
+      </a>
+      <sc-for list="{{friends}}" as="f" hint-placeholder-count="3">
+        <a href="V4-Ami.dc.html" class="row pop" style="animation-delay: {{f.dl}}">
+          <span style="width: 46px; height: 46px; border-radius: 50%; background: {{f.tint}}; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="{{f.img}}" alt="" aria-hidden="true" style="width: 36px; height: 36px; object-fit: contain"></span>
+          <span style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; min-width: 0"><span style="display: flex; justify-content: space-between; align-items: baseline"><span class="d" style="font-size: 19px">{{f.n}}</span><span style="font-size: 11px; font-weight: 700; color: #8A7E70">{{f.t}}</span></span><span style="font-size: 12px; font-weight: 600; color: #6B6259; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{f.msg}}</span></span>
+        </a>
+      </sc-for>
+      <a href="V4-Story.dc.html" class="row pop" style="animation-delay: .27s; background: linear-gradient(135deg, #7C3AED, #FF3D7F); color: #fff; box-shadow: 0 4px 0 #4C1D95"><span class="d" style="width: 46px; height: 46px; border-radius: 50%%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 22px; flex: 0 0 auto">?</span><span style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; min-width: 0"><span class="d" style="font-size: 19px">3 mots anonymes</span><span style="font-size: 12px; font-weight: 600; opacity: .9">« drôle », « loyal », « beau sourire »</span></span><span style="min-width: 22px; height: 22px; border-radius: 999px; background: #C8F542; color: #16110D; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">3</span></a>
+      <span style="margin-top: 4px; font-size: 12px; font-weight: 600; color: #8A7E70; text-align: center">Tes amis ne sont pas des rendez-vous : pas de Lien, pas de match.</span>
+    </div>
+  </sc-if>
+
+  <div aria-hidden="true" style="flex: 0 0 96px; margin-top: auto"></div>
+  <nav aria-label="Navigation" class="gnav">
+    <a href="V4-Nid.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Nid</a>
+    <a href="V4-Chats.dc.html" class="on" aria-current="page"><span class="bdg">4</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="currentColor" stroke-linejoin="round"/></svg>Chats</a>
+    <a href="V4-Carte.dc.html"><span class="pls">PLUS</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" fill="currentColor"/></svg>Carte</a>
+    <a href="V4-Quartier.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V11l5-4 5 4v10M13 21V8l4-3 4 3v13M3 21h18" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Quartier</a>
+    <a href="V4-Profil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Profil</a>
+  </nav>
+
+  <!-- Travel overlay -->
+  <sc-if value="{{moving}}" hint-placeholder-val="{{false}}">
+    <div class="fadein" style="position: absolute; inset: 0; z-index: 60; background: linear-gradient(170deg, #1B2A6B 0%, #4C1D95 55%, #FF3D7F 130%); color: #fff; display: flex; flex-direction: column; padding: 120px 22px 40px; box-sizing: border-box">
+      <div class="blob" style="width: 300px; height: 300px; top: 300px; right: -150px; background: #22D3EE; opacity: .4"></div>
+      <span style="font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #C8F542; position: relative">{{movKicker}}</span>
+      <span class="d" style="font-size: 64px; margin-top: 6px; white-space: nowrap; position: relative">{{movPet}}</span>
+      <span style="margin-top: 10px; font-size: 15px; font-weight: 600; line-height: 1.45; color: #E3DBFF; position: relative">{{movTxt}}</span>
+      <div style="position: relative; margin-top: 60px; height: 160px">
+        <svg aria-hidden="true" width="346" height="20" viewBox="0 0 346 20" style="position: absolute; left: 0; bottom: 18px"><path class="dash" d="M10 10 H336" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-dasharray="4 8" stroke-linecap="round"/></svg>
+        <img src="{{fromImg}}" alt="" aria-hidden="true" style="position: absolute; left: -4px; bottom: 26px; width: 70px; height: 70px; object-fit: contain; opacity: .55">
+        <sc-if value="{{walking}}" hint-placeholder-val="{{true}}"><div class="walk" role="img" aria-label="Nino en route" style="position: absolute; width: 110px; height: 110px; left: 0; bottom: 22px"><img src="/_blob/5abcd1aed359e64c3b7048a8e4993e73" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: 0s"><img src="/_blob/dfe1eb7d7dc7e125ad67a3c3bf109145" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: .14s"><img src="/_blob/41b3b5fe5c7ca973404c507cf78e8c17" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: .28s"><img src="/_blob/47704e57588ba5efa65b91837b076cf3" alt="" aria-hidden="true" class="fr" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; animation-delay: .42s"></div></sc-if>
+        <sc-if value="{{arrived}}" hint-placeholder-val="{{false}}"><img src="/_blob/2dd74281b0d1e96cdc17f174113da343" alt="Nino est arrivé" class="bounce" style="position: absolute; left: 196px; bottom: 22px; width: 110px; height: 110px; object-fit: contain"></sc-if>
+        <img src="{{toImg}}" alt="" aria-hidden="true" class="sq" style="position: absolute; right: -6px; bottom: 26px; width: 92px; height: 92px; object-fit: contain; transform: scaleX(-1)">
+      </div>
+      <sc-if value="{{arrived}}" hint-placeholder-val="{{false}}">
+        <div class="bounce" style="margin-top: auto; display: flex; flex-direction: column; gap: 10px; position: relative">
+          <a href="V4-Chat.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 58px; border-radius: 18px; background: #C8F542; color: #16110D; box-shadow: 0 5px 0 #16110D; font-family: 'Bricolage Grotesque', sans-serif; font-size: 19px; font-weight: 800; text-transform: uppercase; white-space: nowrap">Écrire à {{movWho}}</a>
+          <button type="button" onClick="{{close}}" style="min-height: 48px; border-radius: 16px; border: 0; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 800; white-space: nowrap">Rester sur les chats</button>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 'rdv', cur: 0, from: 0, moving: null, arrived: false }; }
+  renderVals() {
+    const B = '/_blob/';
+    const R = [
+      { pet: 'Suzie', who: 'L.', img: B + '305ba56fa88f24706f7f7b30debf3ac8', place: 'chez Suzie', msg: 'Suzie a encore volé la balle de Nino.', t: '4 min', n: 1, lvl: 'Niv. 2', wait: '' },
+      { pet: 'Gaston', who: 'M.', img: B + 'b9a1dfc49373cf092fdb8a912c875adf', place: 'au parc', msg: 'Ta mission photo ? Gaston veut voir.', t: '2 h', n: 2, lvl: 'Niv. 1', wait: 'Gaston attend Nino · 2 h' },
+      { pet: 'Pia', who: 'S.', img: B + '8a35794ced023a499838ce341afd6ac4', place: 'au café', msg: 'Pia propose un premier défi.', t: 'hier', n: 1, lvl: 'Niv. 1', wait: 'Pia n’a jamais vu Nino' }
+    ];
+    const s = this.state;
+    const go = (i) => { if (s.moving !== null) return; this.setState({ moving: i, from: s.cur, arrived: false }); setTimeout(() => this.setState({ cur: i, arrived: true }), 1750); };
+    const rows = R.map((r, i) => {
+      const here = s.cur === i;
+      return {
+        here, away: !here, go: () => go(i), dl: (0.12 + i * 0.05) + 's', img: r.img, name: r.pet + ' · ' + r.who, msg: r.msg, t: r.t, n: r.n,
+        status: here ? 'Nino est ici · ' + r.lvl : (r.wait || r.lvl), stBg: here ? '#C8F542' : (i === 2 ? '#DDF8FC' : '#FFE7C2'), stFg: here ? '#16110D' : (i === 2 ? '#0E7490' : '#9A5A00'),
+        meOp: here ? '1' : '.35'
+      };
+    });
+    const spots = [{ label: 'Chez toi', img: B + 'c2c65dd197729e0df734406f7bb5566f' }].concat(R.map(r => ({ label: r.pet, img: r.img })))
+      .map((p, k) => { const here = (s.cur + 1) === k; return { label: p.label, img: p.img, here, x: (k * 88) + 'px', bg: here ? '#C8F542' : '#2E2620', ring: here ? '#fff' : '#4A3F36', fg: here ? '#C8F542' : '#BDB2A6', cls: here ? 'pulse' : '' }; });
+    const friends = [
+      { n: 'Inès', img: B + '36951927ea94071fec4b8e25ae8db21b', tint: '#FFF1C9', t: '12 min', msg: 'Bibi a offert un cookie à Nino.', dl: '.12s' },
+      { n: 'Tom', img: B + 'ac18b7adeb76bf7b1fd8b34231b411c3', tint: '#DDF8E8', t: '1 h', msg: 'Miso a faim, tu passes ?', dl: '.17s' },
+      { n: 'Maya', img: B + '8e015999580149e064272e9e8baa7c98', tint: '#EDE4FF', t: 'hier', msg: '41 jours de série. Battez-moi.', dl: '.22s' }
+    ];
+    const rdv = s.tab === 'rdv', m = s.moving !== null ? R[s.moving] : R[0];
+    return {
+      isRdv: rdv, isAmis: !rdv, rows, spots, friends,
+      tabRdv: () => this.setState({ tab: 'rdv' }), tabAmis: () => this.setState({ tab: 'amis' }),
+      segA: rdv ? '#fff' : 'transparent', segAc: rdv ? '#16110D' : '#8A7E70', segAs: rdv ? '0 3px 0 #E3D3BE' : 'none',
+      segB: rdv ? 'transparent' : '#fff', segBc: rdv ? '#8A7E70' : '#16110D', segBs: rdv ? 'none' : '0 3px 0 #E3D3BE',
+      moving: s.moving !== null, walking: !s.arrived, arrived: s.arrived,
+      movKicker: s.arrived ? 'Nino est arrivé' : 'Nino va retrouver', movPet: m.pet.toUpperCase(), movWho: m.who,
+      movTxt: s.arrived ? 'Nino est ' + m.place + ' avec ' + m.pet + '. ' + R[s.from].pet + ' l’attend à sa place, rien n’est perdu.' : 'Il quitte ' + R[s.from].pet + ' pour aller ' + m.place + '. Ton pet ne peut être qu’à un endroit à la fois.',
+      fromImg: R[s.from].img, toImg: m.img,
+      close: () => this.setState({ moving: null, arrived: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

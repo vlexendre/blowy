@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_USER: blowy, POSTGRES_PASSWORD: blowy, POSTGRES_DB: blowy_test }
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U blowy" --health-interval 5s
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+    env:
+      BLOWY_ENV: test
+      DATABASE_URL: postgresql://blowy:blowy@localhost:5432/blowy_test
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Migrations sur base vierge
+        run: pnpm db:migrate:deploy
+      - run: pnpm test:integration
+      - name: Audit de secrets
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+  # Builds natifs iOS/Android : nécessitent EAS + credentials (non disponibles ici).
+  # Voir docs/runbooks/native-builds.md — statut explicite, jamais déduit du succès TypeScript.

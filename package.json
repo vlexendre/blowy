@@ -1,0 +1,40 @@
+{
+  "name": "blowy",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Blowy — application sociale où les pets se rencontrent avant les humains.",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.12 <23"
+  },
+  "scripts": {
+    "setup:local": "node tooling/scripts/setup-local.mjs",
+    "infra:up": "docker compose -f infra/compose.yaml up -d",
+    "infra:down": "docker compose -f infra/compose.yaml down",
+    "db:generate": "pnpm --filter @blowy/database run generate",
+    "db:migrate": "pnpm --filter @blowy/database run migrate:dev",
+    "db:migrate:deploy": "pnpm --filter @blowy/database run migrate:deploy",
+    "db:seed": "pnpm --filter @blowy/database run seed",
+    "dev": "turbo run dev --filter=@blowy/api --filter=@blowy/admin --filter=@blowy/web",
+    "dev:mobile": "pnpm --filter @blowy/mobile run start",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:integration": "turbo run test:integration --concurrency=1",
+    "test:e2e:web": "turbo run test:e2e --filter=@blowy/web --filter=@blowy/admin",
+    "test:e2e:mobile": "pnpm --filter @blowy/mobile run test:e2e",
+    "simulate:balance": "pnpm --filter @blowy/pet-engine run simulate",
+    "build": "turbo run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10",
+    "eslint": "^10.14.0",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.0.5"
+  }
+}

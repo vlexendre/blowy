@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Bienvenue — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.b1{background:#FF5A3C;color:#fff;box-shadow:0 5px 0 #C4341B}
+.b2{background:#16110D;color:#fff;box-shadow:0 5px 0 #000}
+.b3{background:#fff;color:#16110D;box-shadow:0 5px 0 #E8D9C4}
+.bl{background:transparent;color:inherit;min-height:44px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-transform:none;box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+.cap{display:inline-block;background:#16110D;color:#fff;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-12px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}70%{transform:translateY(-3px)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.15)}}
+.dr1{animation:drift 10s ease-in-out infinite}.dr2{animation:drift 12s ease-in-out -5s infinite reverse}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,173,106,.5)}70%{box-shadow:0 0 0 7px rgba(46,173,106,0)}}
+.pulse{animation:pulse 1.8s infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.orb{animation:orbit 24s linear infinite}.cnt{animation:orbit 24s linear infinite reverse}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 56px 22px 26px; position: relative">
+  <div class="blob dr1" style="width: 300px; height: 300px; top: -60px; right: -110px; background: #FFB347; opacity: .8"></div>
+  <div class="blob dr2" style="width: 320px; height: 320px; top: 360px; left: -150px; background: #FF3D7F; opacity: .45"></div>
+  <div class="blob dr1" style="width: 280px; height: 280px; bottom: -90px; right: -90px; background: #C8F542; opacity: .55"></div>
+
+  <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative">
+    <div style="display: flex; align-items: baseline; gap: 8px"><div class="d" style="font-size: 32px">blowy<span style="color: #FF5A3C">.</span></div><span style="font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #8A7E70">pets &amp; potes</span></div>
+    <span class="chip pulse" style="background: #fff; box-shadow: 0 2px 0 rgba(0,0,0,.07)"><span style="width: 7px; height: 7px; border-radius: 50%; background: #2EAD6A"></span>{{online}} en ligne</span>
+  </div>
+
+  <div style="margin-top: 26px; display: flex; flex-direction: column; gap: 4px; position: relative">
+    <span class="d pop" style="animation-delay: .08s; font-size: 56px; white-space: nowrap">ÉLÈVE TON <span style="display: inline-block; background: #16110D; color: #fff; border-radius: 16px; padding: 0 12px 6px; transform: rotate(-3deg); box-shadow: 0 5px 0 #FF5A3C">PET.</span></span>
+    <span class="d pop" style="animation-delay: .16s; margin-top: 6px; font-size: 56px; white-space: nowrap; color: #FF5A3C">RENCONTRE</span>
+    <span class="pop" style="animation-delay: .24s; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; background: #C8F542; border-radius: 14px; padding: 2px 12px 6px; transform: rotate(-2deg); box-shadow: 0 4px 0 #16110D">
+      <span class="d" style="font-size: 29px; white-space: nowrap">DE NOUVELLES PERSONNES.</span>
+    </span>
+  </div>
+
+  <div class="pop" style="animation-delay: .36s; flex: 1 1 auto; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center">
+    <div class="orb" style="position: absolute; width: 270px; height: 270px; border-radius: 50%; border: 2px dashed rgba(22,17,13,.15)">
+      <span class="cnt chip" style="position: absolute; top: -14px; left: 50%; margin-left: -36px; background: #16110D; color: #fff">gentil</span>
+      <span class="cnt chip" style="position: absolute; top: 50%; right: -50px; margin-top: -14px; background: #fff; box-shadow: 0 2px 0 rgba(0,0,0,.08)">Beaux-Arts</span>
+      <span class="cnt chip" style="position: absolute; bottom: -14px; left: 50%; margin-left: -36px; background: #FF5A3C; color: #fff">sportif</span>
+      <span class="cnt chip" style="position: absolute; top: 50%; left: -40px; margin-top: -14px; background: #fff; box-shadow: 0 2px 0 rgba(0,0,0,.08)">curieux</span>
+    </div>
+    <img src="/_blob/2dd74281b0d1e96cdc17f174113da343" alt="Nino le raton" class="sq" style="position: relative; width: 190px; height: 190px; object-fit: contain"><img src="/_blob/bbb22b42d36399583200635059710253" alt="Suzie la lapine" class="sq" style="position: absolute; right: 2px; bottom: 6px; width: 104px; height: 104px; object-fit: contain; animation-delay: -.6s"><img src="/_blob/e10a7fce2dc7e3ce8d3382f9d3069bc8" alt="Gaston le capybara" class="sq" style="position: absolute; left: 0; bottom: 4px; width: 100px; height: 100px; object-fit: contain; animation-delay: -1.2s"><img src="/_blob/f2467eee400607a7ee6bd4c0c17498dc" alt="Pia la pigeonne" class="sq" style="position: absolute; left: 8px; top: 0; width: 84px; height: 84px; object-fit: contain; animation-delay: -1.8s">
+  </div>
+
+  <div class="pop" style="animation-delay: .44s; display: flex; justify-content: center; position: relative; margin-bottom: 14px"><span class="cap">Ton pet se fait des potes. Tu suis le mouvement.</span></div>
+
+  <div class="pop" style="animation-delay: .52s; display: flex; flex-direction: column; gap: 6px; position: relative">
+    <a href="V4-Craft.dc.html" class="btn b1">Commencer<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="V4-Nid.dc.html" class="btn bl">J'ai déjà un compte · Apple</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"online":{"editor":"int","default":3143,"min":0,"max":999999,"section":"Démo"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { n: 0 }; }
+  componentDidMount() { const T = this.props.online ?? 3143, s = Date.now(); this.t = setInterval(() => { const k = Math.min(1, (Date.now() - s) / 1300); this.setState({ n: Math.round(T * (1 - Math.pow(1 - k, 3))) }); if (k >= 1) clearInterval(this.t); }, 30); }
+  componentWillUnmount() { clearInterval(this.t); }
+  renderVals() { return { online: this.state.n.toLocaleString('fr-FR') }; }
+}
+</script>
+</body>
+</html>
