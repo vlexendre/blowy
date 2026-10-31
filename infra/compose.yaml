@@ -22,7 +22,9 @@ services:
     environment:
       MINIO_ROOT_USER: blowy-local
       MINIO_ROOT_PASSWORD: blowy-local-secret
-    ports: ['9000:9000', '9001:9001']
+    # Ports hôte 9100/9101 par défaut (9000 est souvent déjà pris : autre MinIO, Portainer, php-fpm…).
+    # Surchargeables : BLOWY_S3_PORT=9000 BLOWY_S3_CONSOLE_PORT=9001 pnpm infra:up
+    ports: ['${BLOWY_S3_PORT:-9100}:9000', '${BLOWY_S3_CONSOLE_PORT:-9101}:9001']
     volumes: ['s3:/data']
   # Émulateur Firebase Auth : optionnel (le mode local utilise LocalAuthProvider).
   # Activer avec : docker compose -f infra/compose.yaml --profile firebase up -d

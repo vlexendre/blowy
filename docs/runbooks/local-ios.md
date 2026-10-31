@@ -22,7 +22,7 @@ pnpm setup:local        # crée les .env locaux à partir des .env.example, sans
 
 ## 2. Lancer les services et la base
 ```bash
-pnpm infra:up           # Postgres 5432, Redis 6379, S3 (MinIO Chainguard) 9000/9001 ; émulateur Firebase : --profile firebase
+pnpm infra:up           # Postgres 5432, Redis 6379, S3 (MinIO Chainguard) 9100/9101 ; émulateur Firebase : --profile firebase
 pnpm db:migrate         # applique les migrations Prisma
 pnpm db:seed            # données fictives : Alex/Nino, L./Suzie, M./Gaston, S./Pia, Quartier…
 ```
