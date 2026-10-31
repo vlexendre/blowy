@@ -18,6 +18,18 @@ apps/admin   (Next 16, back-office)   ─┘                                    
 - **Temps** : UTC en base, timezone IANA par utilisateur et timezone stable par relation/œuf/saison.
 - **Adaptateurs** (`packages/ai`, `apps/api/src/integrations`) : interface + implémentation production réelle + implémentation locale déterministe ; sélection par configuration validée au démarrage ; production refuse les adaptateurs locaux.
 
+## Clean architecture & patterns (consigne utilisateur du 2026-11-01)
+**Backend — par module** `apps/api/src/modules/<m>/` :
+`domain/` (entités, règles, erreurs ; délègue au moteur pur ; aucune dépendance Nest/Prisma) → `application/` (un use case par commande/requête + ports en interfaces) → `infrastructure/` (adapters Prisma/fournisseurs) → `interface/` (controllers REST, gateways WS, mappers DTO). Dépendances uniquement vers l'intérieur ; `<m>.module.ts` = composition root.
+Briques transverses écrites une seule fois dans `src/shared/` : CommandBus (idempotence, transaction, verrous ordonnés, outbox), UnitOfWork, Clock/RandomSource injectables, guard d'auth, pipe Zod, mapper d'erreurs, pagination.
+Patterns : Command, Repository + Unit of Work, Ports & Adapters, Strategy (politiques, choix d'adaptateur par environnement), Outbox/Observer (interdomaine).
+
+**Mobile — atomic design + features** :
+`packages/ui-mobile/src/{atoms,molecules,organisms,templates}` (un niveau n'importe que les niveaux inférieurs) ; écrans `apps/mobile/app/**` fins = template + organismes + hook ; aucun composant de présentation ni StyleSheet dupliqué dans un écran.
+`apps/mobile/src/features/<f>/{api,model,ui}` avec index public ; `src/core/ports/*` (Auth, Purchases, Notifications, Location, Storage) + adapters réel/local injectés par Provider.
+
+**Moteur** : `reduce` = dispatcher vers un registre de `ActionHandler` (Command/Strategy) ; aucune constante hors `@blowy/tuning`.
+
 ## Frontières de packages
 | Package | Peut dépendre de | Interdit |
 |---|---|---|
