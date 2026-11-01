@@ -19,6 +19,7 @@ import {
   PetScene,
   RelationSwitcher,
   StatChip,
+  StatusPill,
   TabScreenTemplate,
   UnavailableState,
   petAccessibilityLabel,
@@ -33,7 +34,7 @@ import { useNetwork } from '../../../core/network/network';
 import { pendingCount } from '../../../core/offline/queue';
 import { useOfflineQueue } from '../../../core/offline/store';
 import { formatTime, t, tDynamic } from '../../../i18n';
-import { actionAvailability, gaugeRows, petLabelWords, speciesName, useMyPet, usePetActions, type PetActionKind } from '../../pets';
+import { actionAvailability, gaugeRows, petLabelWords, speciesName, useMovePet, useMyPet, usePetActions, type PetActionKind } from '../../pets';
 import { linkProgress, useRelationships } from '../../relationships';
 import { useWalletBalance } from '../../economy';
 import { useTodayMission } from '../../social';
@@ -61,6 +62,7 @@ export function NestScreen() {
   const [selected, setSelected] = useState<string | null>(params.relationship ?? null);
   const rel: RelationshipView | null = dates.find((r) => r.id === selected) ?? dates[0] ?? null;
   const actions = usePetActions(pet.data?.id ?? null, rel?.id ?? null);
+  const move = useMovePet();
   const [reaction, setReaction] = useState<{ pose: 'AFFECTIONATE' | 'LEAP' | 'JOYFUL' | 'PROUD' | 'SURPRISED'; effect: 'hearts' | 'confetti' | null } | null>(null);
 
   const state = viewStateOf(pet);
@@ -68,7 +70,12 @@ export function NestScreen() {
   if (state !== 'ready' || !pet.data) {
     return (
       <TabScreenTemplate testID="screen-nest">
-        <UnavailableState title={t('common.unavailableTitle')} message={state === 'offline' ? t('common.offline') : t('common.unavailableBody')} actionLabel={t('common.retry')} onAction={() => void pet.refetch()} />
+        <UnavailableState
+          title={state === 'unavailable' ? t('common.unavailableTitle') : t('common.errorTitle')}
+          message={state === 'offline' ? t('common.offline') : state === 'unavailable' ? t('common.unavailableBody') : t('common.errorBody')}
+          actionLabel={t('common.retry')}
+          onAction={() => void pet.refetch()}
+        />
       </TabScreenTemplate>
     );
   }
@@ -121,11 +128,16 @@ export function NestScreen() {
         <RelationSwitcher
           items={dates.map((r) => ({ id: r.id, label: r.otherPet.name, spritePath: resolveSprite(r.otherPet.species, r.otherPet.stage, 'PRESENTATION').path, accessibilityLabel: t('nest.link', { name: r.otherPet.name }) }))}
           activeId={rel?.id ?? null}
-          onSelect={setSelected}
+          onSelect={(id) => {
+            setSelected(id);
+            // Changer de rendez-vous fait voyager le pet (lieu unique) — commande serveur.
+            if (pet.data && online && id !== rel?.id) move.mutate({ petId: pet.data.id, relationshipId: id });
+          }}
           allLabel={t('nest.allDates')}
           onAll={() => router.push(paths.chats)}
         />
       ) : null}
+      {move.isPending && rel ? <StatusPill kind="pending" label={`${t('nest.goTo', { pet: me.name })} ${rel.otherPet.name}`} /> : null}
       <PetScene
         backgroundPath={scenePath(scene.scene)}
         height={360}

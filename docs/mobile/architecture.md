@@ -58,7 +58,5 @@ local, annulation des envois sur blocage, backoff), `core/offline/optimistic.ts`
 confirmé/corrigé, réponses périmées ignorées), `core/realtime/cursor.ts` (dédup, curseur par room).
 Le pet reste figé au dernier état serveur (`stateAsOf` affiché) ; aucune jauge n'est inventée.
 
-Transport : `core/api/http.ts` (en attendant `@blowy/api-client`) — Bearer, Idempotency-Key,
-erreurs structurées ; une route absente côté API devient `NOT_IMPLEMENTED` → état « indisponible ».
-**Bascule vers @blowy/api-client** : remplacer `createHttp` dans `services.tsx` par le client de C
-(même interface `Http`), sans toucher aux features.
+Transport : `@blowy/api-client` via `core/api/client.ts` (`BlowyClient` + `raw`) — Bearer, Idempotency-Key,
+erreurs structurées (`core/api/errors.ts`) ; une route absente côté API → état « indisponible ».

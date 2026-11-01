@@ -559,7 +559,8 @@
       "plus": "Plus",
       "mine": "Ton choix : {choice}",
       "deadline": "Résultat {when}",
-      "none": "Pas de vote en cours."
+      "none": "Pas de vote en cours.",
+      "downgrade": "Repasser en Ami (immédiat, sans vote)"
     },
     "reveal": {
       "title": "Révélation",
@@ -743,5 +744,25 @@
   "widget": {
     "waiting": "{other} attend {mine} au lieu de rendez-vous",
     "empty": "Crée ton pet sur Blowy"
+  },
+  "devLogin": {
+    "title": "Connexion de développement",
+    "lead": "Comptes de démonstration du seed local. Indisponible en production.",
+    "badge": "Mode local · API {url}",
+    "custom": "Autre clé locale",
+    "customHint": "Une clé inconnue crée un nouveau compte (onboarding).",
+    "connect": "Se connecter",
+    "failed": "Connexion impossible. L’API locale répond-elle sur {url} ?",
+    "entry": "Connexion de développement (comptes de démo)",
+    "desc": {
+      "alex": "Alex · Nino · rendez-vous avec Suzie (L.) au niveau 2",
+      "l": "L. · Suzie · rendez-vous avec Alex",
+      "m": "M. · Gaston",
+      "s": "S. · Pia",
+      "friends": "Quartier et bande d’Alex",
+      "test": "Compte de test vérifié",
+      "unverified": "Compte de test non vérifié",
+      "solo": "Zone sans autres pets (attente honnête)"
+    }
   }
 }

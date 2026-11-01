@@ -3,12 +3,10 @@
  * le message reste en attente, jamais distribué avant modération), « Afficher quand même »,
  * suggestion du pet (jamais envoyée automatiquement), temps réel via rooms.
  */
-import { ConversationListSchema, MessagePageSchema, MessageViewSchema, type MessageView } from '@blowy/api-contract';
+import type { MessageView } from '@blowy/api-contract';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { z } from 'zod';
-import { isNetworkError, type Http } from '../../../core/api/http';
-import { routes } from '../../../core/api/routes';
+import { isNetworkError } from '../../../core/api/errors';
 import { registerSender } from '../../../core/offline/runner';
 import { pendingForScope } from '../../../core/offline/queue';
 import { useOfflineQueue } from '../../../core/offline/store';
@@ -17,26 +15,13 @@ import { useServices } from '../../../core/providers/services';
 import { useSession } from '../../../core/session/session-store';
 import { useRealtimeRoom } from '../../../core/realtime/provider';
 import type { LocalOutgoing } from '../model/messages';
-
-export function createConversationsRepository(http: Http) {
-  return {
-    list: () => http.request({ method: 'GET', path: routes.conversations.list }, ConversationListSchema),
-    messages: (id: string, cursor: string | null) => http.request({ method: 'GET', path: routes.conversations.messages(id, cursor) }, MessagePageSchema),
-    send: (commandId: string, id: string, clientMessageId: string, body: string) =>
-      http.request({ method: 'POST', path: routes.conversations.send(id), body: { clientMessageId, body }, commandId }, MessageViewSchema),
-    read: (commandId: string, id: string, seq: number) => http.request({ method: 'POST', path: routes.conversations.read(id), body: { seq }, commandId }, z.unknown()),
-    /** Révélation d'un placeholder averti : contrat à publier par C (renvoie le message avec body). */
-    reveal: (commandId: string, messageId: string) => http.request({ method: 'POST', path: routes.conversations.reveal(messageId), commandId }, MessageViewSchema),
-    /** Suggestions du pet : contrat attendu (agent E) `{ items: { text: string }[] }`. */
-    suggestions: (id: string) => http.request({ method: 'GET', path: routes.conversations.suggestions(id) }, z.object({ items: z.array(z.object({ text: z.string() })) })),
-  };
-}
+import { createConversationsRepository } from './conversations.repository';
 
 export const convKeys = { list: ['conversations'] as const, messages: (id: string) => ['conversations', id, 'messages'] as const };
 
 function useRepo() {
-  const { http } = useServices();
-  return useMemo(() => createConversationsRepository(http), [http]);
+  const { api } = useServices();
+  return useMemo(() => createConversationsRepository(api), [api]);
 }
 
 export function useConversations() {

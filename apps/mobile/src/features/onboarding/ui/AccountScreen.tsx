@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { AuthNotConfiguredError } from '../../../core/adapters/auth';
-import { ApiCallError } from '../../../core/api/http';
+import { BlowyApiError } from '../../../core/api/errors';
 import { useServices } from '../../../core/providers/services';
 import { useSession } from '../../../core/session/session-store';
 import { t, tDynamic } from '../../../i18n';
@@ -58,7 +58,7 @@ export function AccountScreen() {
       if (req) await record.mutateAsync(req);
       nav.next();
     } catch (e) {
-      setError(e instanceof ApiCallError && e.code === 'AGE_RESTRICTED' ? t('onboarding.account.underage') : t('onboarding.account.failed'));
+      setError(e instanceof BlowyApiError && e.code === 'AGE_RESTRICTED' ? t('onboarding.account.underage') : t('onboarding.account.failed'));
     }
   };
 

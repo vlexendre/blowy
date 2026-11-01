@@ -50,9 +50,9 @@ function Bootstrap({ children, onReady }: { children: ReactNode; onReady: () => 
 }
 
 function Purchases({ children }: { children: ReactNode }) {
-  const { http, newCommandId } = useServices();
+  const { api: blowy, newCommandId } = useServices();
   const userId = useSession((s) => s.userId);
-  const api = useMemo(() => createPurchasesApi((req) => http.raw(req)), [http]);
+  const api = useMemo(() => createPurchasesApi((req) => blowy.raw(req)), [blowy]);
   const port = useMemo(
     () =>
       selectPurchasesAdapter(

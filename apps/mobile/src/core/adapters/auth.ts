@@ -29,13 +29,15 @@ export class LocalAuthAdapter implements AuthPort {
     return ['local'];
   }
 
-  async signIn(): Promise<AuthCredential> {
+  /** `localKey` = compte de démo du seed (alex, l, m…) ; sinon clé stable propre à l'appareil (nouveau compte). */
+  async signIn(_kind: AuthProviderKind, localKey?: string): Promise<AuthCredential> {
+    if (localKey) return { provider: 'local', credential: localKey };
     let key = await this.storage.getItem(LOCAL_KEY);
     if (!key) {
       key = `dev-${Crypto.randomUUID().slice(0, 18)}`;
       await this.storage.setItem(LOCAL_KEY, key);
     }
-    return { provider: 'local', credential: `local:${key}` };
+    return { provider: 'local', credential: key };
   }
 
   async signOut(): Promise<void> {

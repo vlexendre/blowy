@@ -9,11 +9,13 @@
     "android": "expo run:android",
     "typecheck": "tsc --noEmit",
     "lint": "eslint app src",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "test:e2e": "maestro test e2e/maestro",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "test:api": "vitest run -c vitest.integration.config.mts"
   },
   "dependencies": {
+    "@blowy/api-client": "workspace:*",
     "@blowy/api-contract": "workspace:*",
     "@blowy/content": "workspace:*",
     "@blowy/design-tokens": "workspace:*",

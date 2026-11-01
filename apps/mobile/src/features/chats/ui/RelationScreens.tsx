@@ -27,7 +27,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
-import { isUnavailable } from '../../../core/api/http';
+import { isUnavailable } from '../../../core/api/errors';
 import { paths, type RelationScreen } from '../../../core/navigation/paths';
 import { useNetwork } from '../../../core/network/network';
 import { formatRelative, t, tDynamic } from '../../../i18n';
@@ -135,6 +135,8 @@ function Vote({ rel }: { rel: RelationshipView }) {
           <StatusPill kind="info" label={t('relation.vote.deadline', { when: formatRelative(round.deadlineAt) })} />
         </>
       )}
+      {rel.branch === 'PLUS' ? <Button label={t('relation.vote.downgrade')} variant="secondary" disabled={!online} loading={cmd.downgrade.isPending} onPress={() => void cmd.downgrade.mutateAsync()} /> : null}
+      <CommandError error={cmd.downgrade.error} />
     </DetailScreenTemplate>
   );
 }
@@ -144,15 +146,18 @@ function Reveal({ rel }: { rel: RelationshipView }) {
   const me = useMe();
   const online = useNetwork((s) => s.online);
   const never = me.data?.privacy.photoPreference === 'NEVER';
+  // La révélation est une offre de consentement PHOTO_REVEAL proposée par le serveur au bon niveau.
   const offer = rel.pendingOffers.find((o) => o.scope === 'PHOTO_REVEAL');
-  const allowed = rel.capabilities.includes('PHOTO_CLEAR') || rel.capabilities.includes('PHOTO_BLURRED') || !!offer;
+  const accepted = offer?.myDecision === 'ACCEPT' || cmd.respond.isSuccess;
   return (
     <DetailScreenTemplate title={t('relation.reveal.title')} lead={t('relation.reveal.lead')} onBack={back} backLabel={t('common.back')} testID="screen-reveal">
-      <CommandError error={cmd.reveal.error} />
+      <CommandError error={cmd.respond.error} />
       {never ? <Banner message={t('relation.reveal.never')} tone="cream" icon="lock" /> : null}
-      {offer?.myDecision === 'ACCEPT' || cmd.reveal.isSuccess ? <StatusPill kind="pending" label={t('relation.reveal.waiting')} /> : null}
-      {!never && allowed && offer?.myDecision !== 'ACCEPT' && !cmd.reveal.isSuccess ? <Button label={t('relation.reveal.cta')} variant="violet" disabled={!online} loading={cmd.reveal.isPending} onPress={() => void cmd.reveal.mutateAsync()} /> : null}
-      {!allowed ? <StatusPill kind="info" label={tDynamic('link.state.locked')} /> : null}
+      {accepted ? <StatusPill kind="pending" label={t('relation.reveal.waiting')} /> : null}
+      {!never && offer && !accepted ? (
+        <Button label={t('relation.reveal.cta')} variant="violet" disabled={!online} loading={cmd.respond.isPending} onPress={() => void cmd.respond.mutateAsync({ offerId: offer.id, decision: 'ACCEPT', version: offer.version })} />
+      ) : null}
+      {!offer && !accepted ? <StatusPill kind="info" label={tDynamic('link.state.locked')} /> : null}
     </DetailScreenTemplate>
   );
 }

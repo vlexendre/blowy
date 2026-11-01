@@ -2,34 +2,34 @@
  * Feature matching : propositions (GET /v1/matches) et acceptation
  * (POST /v1/match-proposals/:id/accept, réseau obligatoire). Contrats C.
  */
-import { AcceptProposalResultSchema, MatchFeedSchema } from '@blowy/api-contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 export { ProposalCard } from './ui/ProposalCard';
-import type { Http } from '../../core/api/http';
-import { routes } from '../../core/api/routes';
+export { createMatchingRepository } from './api/matching.repository';
+import { createMatchingRepository } from './api/matching.repository';
 import { useServices } from '../../core/providers/services';
 import { useSession } from '../../core/session/session-store';
-
-export function createMatchingRepository(http: Http) {
-  return {
-    feed: () => http.request({ method: 'GET', path: routes.matching.feed }, MatchFeedSchema),
-    accept: (commandId: string, id: string) => http.request({ method: 'POST', path: routes.matching.accept(id), commandId }, AcceptProposalResultSchema),
-  };
-}
 
 export const matchKeys = { feed: ['matches'] as const };
 
 export function useMatchFeed() {
-  const { http } = useServices();
-  const repo = useMemo(() => createMatchingRepository(http), [http]);
+  const { api } = useServices();
+  const repo = useMemo(() => createMatchingRepository(api), [api]);
   const signedIn = useSession((s) => s.status === 'signedIn');
   return useQuery({ queryKey: matchKeys.feed, queryFn: repo.feed, enabled: signedIn });
 }
 
+/** Premier lot d'onboarding (POST /v1/matches/onboarding-batch) : remplace le flux en cache. */
+export function useOnboardingBatch() {
+  const { api } = useServices();
+  const repo = useMemo(() => createMatchingRepository(api), [api]);
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: () => repo.onboardingBatch(), onSuccess: (feed) => qc.setQueryData(matchKeys.feed, feed) });
+}
+
 export function useAcceptProposal() {
-  const { http, newCommandId } = useServices();
-  const repo = useMemo(() => createMatchingRepository(http), [http]);
+  const { api, newCommandId } = useServices();
+  const repo = useMemo(() => createMatchingRepository(api), [api]);
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (proposalId: string) => repo.accept(newCommandId(), proposalId),

@@ -11,8 +11,8 @@ import { useSession } from '../../core/session/session-store';
 import { createPurchasesApi } from '../purchases';
 
 function useEconomyApi() {
-  const { http } = useServices();
-  return useMemo(() => createPurchasesApi((req) => http.raw(req)), [http]);
+  const { api } = useServices();
+  return useMemo(() => createPurchasesApi((req) => api.raw(req)), [api]);
 }
 
 export function useWalletBalance() {

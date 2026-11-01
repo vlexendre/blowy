@@ -25,7 +25,7 @@ import {
 } from '@blowy/ui-mobile';
 import { router } from 'expo-router';
 import { View } from 'react-native';
-import { isUnavailable } from '../../../core/api/http';
+import { isUnavailable } from '../../../core/api/errors';
 import { useNetwork } from '../../../core/network/network';
 import { hasKey, t, tDynamic } from '../../../i18n';
 import { useCatalog, useEconomyCommands, useWalletBalance } from '../../economy';

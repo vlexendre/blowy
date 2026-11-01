@@ -8,6 +8,8 @@ const EnvSchema = z.object({
   apiUrl: z.string().url(),
   wsUrl: z.string().url(),
   blowyEnv: z.enum(['local', 'test', 'staging', 'production']),
+  /** Mode d'auth annoncé : `local` (LocalAuthProvider de l'API, comptes de démo) ou `firebase`. */
+  authMode: z.enum(['local', 'firebase']),
   revenueCatIosKey: z.string().optional(),
   revenueCatAndroidKey: z.string().optional(),
   firebase: z.object({ apiKey: z.string().optional(), projectId: z.string().optional(), appId: z.string().optional() }),
@@ -19,8 +21,9 @@ const blank = (v: string | undefined) => (v && v.length > 0 ? v : undefined);
 export function readEnv(source: Record<string, string | undefined>): AppEnv {
   return EnvSchema.parse({
     apiUrl: source.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
-    wsUrl: source.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000',
+    wsUrl: source.EXPO_PUBLIC_WS_URL ?? source.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
     blowyEnv: source.EXPO_PUBLIC_BLOWY_ENV ?? 'local',
+    authMode: source.EXPO_PUBLIC_AUTH_MODE ?? 'local',
     revenueCatIosKey: blank(source.EXPO_PUBLIC_REVENUECAT_IOS_KEY),
     revenueCatAndroidKey: blank(source.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY),
     firebase: {
@@ -35,6 +38,7 @@ export const env: AppEnv = readEnv({
   EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
   EXPO_PUBLIC_WS_URL: process.env.EXPO_PUBLIC_WS_URL,
   EXPO_PUBLIC_BLOWY_ENV: process.env.EXPO_PUBLIC_BLOWY_ENV,
+  EXPO_PUBLIC_AUTH_MODE: process.env.EXPO_PUBLIC_AUTH_MODE,
   EXPO_PUBLIC_REVENUECAT_IOS_KEY: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
   EXPO_PUBLIC_REVENUECAT_ANDROID_KEY: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY,
   EXPO_PUBLIC_FIREBASE_API_KEY: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -43,3 +47,6 @@ export const env: AppEnv = readEnv({
 });
 
 export const isProduction = env.blowyEnv === 'production';
+
+/** Connexion locale (comptes de démo du seed) : jamais en production, quel que soit le réglage. */
+export const localAuthEnabled = (e: Pick<AppEnv, 'blowyEnv' | 'authMode'>): boolean => e.blowyEnv !== 'production' && e.authMode === 'local';

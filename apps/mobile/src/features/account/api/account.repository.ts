@@ -1,50 +1,33 @@
 /**
- * Repository compte (pattern Repository) : seul point d'accès HTTP de la feature.
- * Routes livrées par C : /v1/auth/sessions, /v1/me, /v1/preferences/*, /v1/consents,
- * /v1/verifications, /v1/pauses, /v1/me/onboarding/complete.
+ * Repository compte (pattern Repository) : délègue à BlowyClient (routes et DTO de C).
+ * Routes hors client (devices, exports, suppression) via `api.raw` — contrats à publier.
  */
-import {
-  ConsentStateSchema,
-  DeviceSessionListSchema,
-  SelfProfileSchema,
-  SessionSchema,
-  VerificationViewSchema,
-  type MatchPreferences,
-  type PrivacySettings,
-  type RecordConsentsRequest,
-  type UpdateProfileRequest,
-} from '@blowy/api-contract';
-import { Platform } from 'react-native';
-import { z } from 'zod';
-import type { Http } from '../../../core/api/http';
-import { routes } from '../../../core/api/routes';
+import type { MatchPreferences, PrivacySettings, RecordConsentsRequest, UpdateProfileRequest } from '@blowy/api-contract';
+import type { Api } from '../../../core/api/client';
+import { rawRoutes } from '../../../core/api/routes';
 import type { AuthCredential } from '../../../core/ports/auth';
 
-const CommandAck = z.unknown();
+export type DevicePlatform = 'ios' | 'android' | 'web' | 'other';
 
-export function createAccountRepository(http: Http) {
+/** `platform` injecté (Platform.OS côté app) : le repository reste pur et testable sous Node. */
+export function createAccountRepository({ client, raw }: Api, platform: DevicePlatform) {
   return {
-    signIn: (c: AuthCredential, appVersion: string) =>
-      http.request(
-        { method: 'POST', path: routes.auth.sessions, body: { provider: c.provider, credential: c.credential, device: { platform: Platform.OS === 'ios' || Platform.OS === 'android' ? Platform.OS : 'other', appVersion } } },
-        SessionSchema,
-      ),
-    signOut: () => http.raw({ method: 'DELETE', path: routes.auth.current }),
-    sessions: () => http.request({ method: 'GET', path: routes.auth.sessions }, DeviceSessionListSchema),
-    me: () => http.request({ method: 'GET', path: routes.me.self }, SelfProfileSchema),
-    updateProfile: (commandId: string, body: UpdateProfileRequest) => http.request({ method: 'PATCH', path: routes.me.self, body, commandId }, SelfProfileSchema),
-    putPreferences: (commandId: string, body: MatchPreferences) => http.request({ method: 'PUT', path: routes.me.preferences, body, commandId }, SelfProfileSchema),
-    putPrivacy: (commandId: string, body: PrivacySettings) => http.request({ method: 'PUT', path: routes.me.privacy, body, commandId }, SelfProfileSchema),
-    consents: () => http.request({ method: 'GET', path: routes.me.consents }, ConsentStateSchema),
-    recordConsents: (commandId: string, body: RecordConsentsRequest) => http.request({ method: 'POST', path: routes.me.consents, body, commandId }, ConsentStateSchema),
-    startVerification: (commandId: string) => http.request({ method: 'POST', path: routes.me.verifications, body: { kind: 'SELFIE_QUALITY' }, commandId }, VerificationViewSchema),
-    completeOnboarding: (commandId: string) => http.request({ method: 'POST', path: routes.me.completeOnboarding, commandId }, SelfProfileSchema),
-    startPause: (commandId: string, days: number) => http.request({ method: 'POST', path: routes.me.pauses, body: { days }, commandId }, CommandAck),
-    endPause: (commandId: string, id: string) => http.request({ method: 'DELETE', path: routes.me.pause(id), commandId }, CommandAck),
-    /** Contrat non publié (§13 /devices, /exports, /deletion-requests) : corps minimal, demande à C. */
-    registerDevice: (commandId: string, pushToken: string) => http.request({ method: 'POST', path: routes.me.devices, body: { pushToken, platform: Platform.OS }, commandId }, CommandAck),
-    requestExport: (commandId: string) => http.request({ method: 'POST', path: routes.me.exports, commandId }, CommandAck),
-    requestDeletion: (commandId: string) => http.request({ method: 'POST', path: routes.me.deletionRequests, commandId }, CommandAck),
+    signIn: (c: AuthCredential, appVersion: string) => client.auth.signIn({ provider: c.provider, credential: c.credential, device: { platform, appVersion } }),
+    signOut: () => client.auth.logout(),
+    sessions: () => client.auth.sessions(),
+    me: () => client.me.get(),
+    updateProfile: (commandId: string, body: UpdateProfileRequest) => client.me.update(body, { commandId }),
+    putPreferences: (commandId: string, body: MatchPreferences) => client.me.setMatchPreferences(body, { commandId }),
+    putPrivacy: (commandId: string, body: PrivacySettings) => client.me.setPrivacy(body, { commandId }),
+    consents: () => client.me.consents(),
+    recordConsents: (commandId: string, body: RecordConsentsRequest) => client.me.recordConsents(body, { commandId }),
+    startVerification: (commandId: string) => client.me.startVerification('SELFIE_QUALITY', { commandId }),
+    completeOnboarding: (commandId: string) => client.me.completeOnboarding({ commandId }),
+    startPause: (commandId: string, days: number) => client.me.startPause({ days }, { commandId }),
+    endPause: (commandId: string, id: string) => client.me.endPause(id, { commandId }),
+    registerDevice: (commandId: string, pushToken: string) => raw({ method: 'POST', path: rawRoutes.me.devices, body: { pushToken, platform }, commandId }),
+    requestExport: (commandId: string) => raw({ method: 'POST', path: rawRoutes.me.exports, commandId }),
+    requestDeletion: (commandId: string) => raw({ method: 'POST', path: rawRoutes.me.deletionRequests, commandId }),
   };
 }
 export type AccountRepository = ReturnType<typeof createAccountRepository>;

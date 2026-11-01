@@ -28,6 +28,7 @@ Assets : `docs/mobile/assets-inventory.md` (généré).
 | Écran (maquette) | Route |
 |---|---|
 | Aiguillage / reprise onboarding | `/` (app/index.tsx) |
+| Connexion de développement (comptes de démo, local uniquement) | `/dev-login` |
 | Accueil (V4-Welcome) / invitation (V4-Invite) | `/welcome`, `/invite/[code]` |
 | Choix du pet + 4 curseurs (V4-Craft) | `/species` |
 | Vision ×4 + carte (V4-Vie) | `/vision/[step]` (school, sunday, passions, limit) |
@@ -99,12 +100,53 @@ safe-area-context, svg — mêmes spécificateurs que l'app (instances uniques v
 - Reanimated 4 / GH 3 : API hooks v3 (`usePanGesture`, `usePinchGesture`, `useSimultaneousGestures`) — vérifiées
   par tsc et bundling, pas sur appareil.
 
+## Intégration V1 (2026-11-01, après 766145b)
+
+**Bascule `@blowy/api-client`** : `src/core/api/client.ts` (`createApi` → `BlowyClient` + `raw` sur le même
+`HttpTransport`, 401 → purge de session) ; `src/core/api/errors.ts` (route absente / réseau / réessayable
+sur `BlowyApiError`). Mon client minimal `core/api/http.ts` est **supprimé**. `core/api/routes.ts` ne contient
+plus que les routes non couvertes par BlowyClient (devices, exports, suppression, reports/blocks, social V3,
+suggestions). G : `createPurchasesApi` reçoit `api.raw` (même jeton / Idempotency-Key).
+
+**Hooks alignés sur les routes réelles de C** (repositories purs, sans React Native, dans `features/*/api/*.repository.ts`) :
+| Hook | Méthode BlowyClient → route |
+|---|---|
+| useMyPet / useCreatePet / usePetActions / **useMovePet** (nouveau, changement de rendez-vous au Nid) | `pets.mine` `GET /v1/pets/mine` · `pets.create` · `pets.act` · `pets.move` |
+| useMatchFeed / **useOnboardingBatch** (nouveau, écran « Ses rendez-vous ») / useAcceptProposal | `GET /v1/matches` · `POST /v1/matches/onboarding-batch` · `POST /v1/match-proposals/:id/accept` |
+| useRelationshipCommands | `move-in`, `consents/respond` (emménager **et révélation PHOTO_REVEAL** : pas de route dédiée), `branch/ballot`, **`branch/downgrade`** (bouton « Repasser en Ami »), `leave`, `pause` |
+| useConversation | `messages` (curseur), `send {clientMessageId=commandId, body}`, `read`, `revealWarned` `POST /v1/messages/:id/reveal` |
+| useMe & co | `me.*`, `auth.*` (inchangés côté écrans) |
+
+**Connexion de développement** : `features/account/ui/DevLoginScreen.tsx`, route `/dev-login`, entrée sur l'accueil.
+Comptes du seed (`model/demo-accounts.ts`) : alex, l, m, s, ines, tom, maya, test.a–d, solo + clé libre (nouveau compte).
+Visible seulement si `localAuthEnabled(env)` = `EXPO_PUBLIC_AUTH_MODE=local` **et** `EXPO_PUBLIC_BLOWY_ENV≠production`
+(testé) ; sinon l'adaptateur Firebase est utilisé et la route redirige. L'API n'expose pas son `AUTH_PROVIDER` :
+**demande à C** d'ajouter `authProvider` à `GET /v1/healthz` (ou une route publique de config) pour ne plus dépendre
+de la variable mobile. `/` redirige vers le Nid si le profil serveur est `onboarded`.
+
+**Vérification réelle contre l'API locale** (base `blowy_verify`, `node dist/main.js` PORT=3999 + `node dist/worker.js`,
+arrêtés ensuite par `kill <PID>`) :
+- `pnpm --filter @blowy/mobile test:api` → **3 fichiers, 12 tests passés** (exécuté 2 fois) avec les repositories mobiles réels :
+  - `journey` : login alex → me (onboardé, ≥18) → pets/mine (Nino) → FEED (APPLIED/NO_GAIN ; rejeu même commandId = même version)
+    → matches → relationships (Suzie) → conversations → envoi : **PENDING_MODERATION puis PUBLISHED par le worker** ;
+    renvoi même clientMessageId = même message ;
+  - `onboarding` : compte neuf → AGE_RESTRICTED pour un mineur → profil, consentements versionnés, préférences,
+    Suzie sans droit → **Gaston créé, vision conservée**, vérification, fin d'onboarding, lot d'onboarding ;
+  - `realtime` : `RealtimeClient` mobile sur `/v1/ws` reçoit le message de L. via `sync` → `resync` (curseur, dédup).
+  Logs API : 37 requêtes réelles sur les routes ci-dessus.
+- `pnpm --filter @blowy/mobile typecheck` → OK ; `test` → **63 tests** (intégration exclue par défaut) ;
+  `@blowy/sprites test` 14 ; `@blowy/ui-mobile` typecheck + 7 tests ; `npx eslint apps/mobile packages/ui-mobile packages/sprites` → 0.
+- `expo install --check` à jour ; `expo export` iOS **et** Android OK (Hermes 7,6 Mo).
+- Runbook mis à jour : `docs/runbooks/local-ios.md` (comptes de démo, worker, `test:api`).
+
+Restent « indisponibles » (endpoints non livrés, inchangé) : reports/blocks (E), série/ligue/missions/Quartier/œuf (G/V3),
+devices/exports/suppression, suggestions. La file hors ligne conserve BLOCK/REPORT jusqu'à leur livraison.
+
 ## Demandes
 - **C** : (1) monter les contrôleurs pets, matching, relationships, conversations conformes aux contrats ;
   (2) confirmer les chemins de commandes relation (`/move-in`, `/consent`, `/branch`, `/reveal`, `/leave`, `/pause`)
   et conversation (`/read`, `/v1/messages/:id/reveal`) ; (3) renvoyer `detailsSafe.reason='ROUTE_NOT_FOUND'`
-  pour les routes inconnues (aujourd'hui détecté via le message « Cannot GET ») ; (4) publier `@blowy/api-client`
-  (le mobile basculera dans `core/providers/services.tsx`) ; (5) DTO `/v1/devices` (jeton push) ; (6) exposer la
+  pour les routes inconnues (aujourd'hui détecté via le message « Cannot GET ») ; (4) ~~api-client~~ fait ; exposer `authProvider` dans `/v1/healthz` ; (5) DTO `/v1/devices` (jeton push) ; (6) exposer la
   série (`streakLength`) dans une lecture (me ou wallet) ; (7) seed local avec relations de démo.
 - **E** : `api-contract/trust.ts` pour `POST /v1/reports` `{relationshipId|null, conversationId|null, category}`
   et `POST /v1/blocks` `{relationshipId|null, conversationId|null}` (corps utilisés côté mobile, à confirmer),

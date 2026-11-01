@@ -1,6 +1,6 @@
 # Tester Blowy en local sur simulateur iOS
 
-> **État au 2026-11-01 00:35** : l'agent mobile construit encore l'app. Le dossier `apps/mobile/app` n'existe pas encore ; la configuration Expo (`app.config.ts`) et le fichier `.env.example` non plus. L'API n'est pas encore démarrable. Cette procédure deviendra exécutable à l'intégration de la vague V1 ; ce document sera mis à jour avec les identifiants de démo réels du seed.
+> **État au 2026-11-01 (intégration V1)** : app Expo, API et worker intégrés. Le parcours « connexion alex → Nid → action → conversation → message modéré » est vérifié contre l'API locale par `pnpm --filter @blowy/mobile test:api` (12 tests réels). Le build natif iOS n'a pas été compilé dans l'environnement de CI de l'agent (pas de Xcode) : `expo prebuild` et le bundling JS iOS passent.
 
 ## Prérequis (Mac)
 - macOS récent + **Xcode** (version supportée par Expo SDK 58) avec un simulateur iOS installé (Xcode › Settings › Components).
@@ -29,15 +29,20 @@ pnpm db:seed            # données fictives : Alex/Nino, L./Suzie, M./Gaston, S.
 
 ## 3. Lancer le backend
 ```bash
-pnpm dev                # API HTTP/WS sur http://localhost:3000 (+ admin et web)
-curl http://localhost:3000/v1/healthz/ready
+pnpm --filter @blowy/api dev        # API HTTP/WS sur http://localhost:3000 (AUTH_PROVIDER=local par défaut)
+curl http://localhost:3000/v1/readyz
+# Worker (modération des messages, ticks, lots) dans un autre terminal :
+cd apps/api && pnpm build && node dist/worker.js
 ```
+Sans worker, les messages restent « En vérification » (PENDING_MODERATION) : c'est voulu, rien n'est distribué avant modération.
 
 ## 4. Lancer l'app sur le simulateur
-Dans `apps/mobile/.env` :
+Dans `apps/mobile/.env` (copie de `.env.example`) :
 ```
 EXPO_PUBLIC_API_URL=http://localhost:3000
-EXPO_PUBLIC_WS_URL=ws://localhost:3000
+EXPO_PUBLIC_WS_URL=http://localhost:3000
+EXPO_PUBLIC_BLOWY_ENV=local
+EXPO_PUBLIC_AUTH_MODE=local
 ```
 Le simulateur iOS partage le réseau du Mac : `localhost` fonctionne. Sur un iPhone physique, mets l'IP locale du Mac à la place.
 
@@ -46,12 +51,32 @@ pnpm --filter @blowy/mobile ios
 ```
 Cette commande lance `expo run:ios`. Elle génère le projet natif (`ios/`), installe les pods, compile le *dev client*, ouvre le simulateur et démarre Metro. La première compilation prend plusieurs minutes ; les suivantes peuvent se faire avec `pnpm dev:mobile`, qui démarre seulement Metro.
 
-En local, la connexion passe par le fournisseur d'authentification local ou l'émulateur Firebase. Pas besoin de compte Apple.
+En local, la connexion passe par le fournisseur d'authentification local de l'API (pas besoin de compte Apple).
+
+## 4 bis. Comptes de démo
+Sur l'écran d'accueil, touche **« Connexion de développement (comptes de démo) »** (affiché seulement si `EXPO_PUBLIC_AUTH_MODE=local` et jamais quand `EXPO_PUBLIC_BLOWY_ENV=production`), puis choisis un compte :
+
+| Clé | Contenu du seed |
+|---|---|
+| `alex` | Alex, 28 ans, pet **Nino** ; rendez-vous avec Suzie (L.) au niveau 2, conversation, mission en analyse |
+| `l` | L., pet **Suzie** ; l'autre côté du rendez-vous d'Alex |
+| `m`, `s` | M. (Gaston), S. (Pia) |
+| `ines`, `tom`, `maya` | Quartier et bande d'Alex |
+| `test.a`, `test.c`, `test.d` | comptes de test vérifiés |
+| `test.b` | compte **non vérifié** (pas de propositions) |
+| `solo` | zone sans autres pets (attente honnête) |
+
+Une autre clé (champ « Autre clé locale ») crée un **nouveau compte** et lance l'onboarding complet. Les mêmes clés fonctionnent en `curl` : `POST /v1/auth/sessions {"provider":"local","credential":"alex"}`.
+
+Vérification automatisée du parcours mobile ↔ API (API + worker démarrés, base seedée) :
+```bash
+BLOWY_API_URL=http://localhost:3000 pnpm --filter @blowy/mobile test:api
+```
 
 ## 5. Tester une rencontre à deux
 1. Liste les simulateurs avec `xcrun simctl list devices`, puis démarre un deuxième appareil, par exemple `xcrun simctl boot "iPhone 17"`.
 2. Lance l'app sur cet appareil : `cd apps/mobile && npx expo run:ios --device "iPhone 17"`.
-3. Connecte-toi avec deux comptes de démo différents, un par simulateur.
+3. Connecte-toi avec deux comptes de démo différents, un par simulateur (par exemple `alex` et `l` : ils partagent déjà un rendez-vous et une conversation).
 4. Suis le parcours : onboarding → vérification démo → proposition → double acceptation → chat → mission.
 
 ## Ce qui fonctionne en local et ce qui ne fonctionne pas

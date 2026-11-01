@@ -1,5 +1,8 @@
 import { Chip, OnboardingStepTemplate, PetRenderer, space } from '@blowy/ui-mobile';
+import { router } from 'expo-router';
 import { View } from 'react-native';
+import { env, localAuthEnabled } from '../../../core/config/env';
+import { paths } from '../../../core/navigation/paths';
 import { t } from '../../../i18n';
 import { useOnboarding } from '../model/store';
 import { useOnboardingNav } from './useOnboardingNav';
@@ -25,13 +28,17 @@ export function WelcomeScreen() {
         </View>
       }
       cta={{ label: t('onboarding.welcome.cta'), onPress: () => nav.go('species'), testID: 'welcome-start' }}
-      secondary={{
-        label: t('onboarding.welcome.haveAccount'),
-        onPress: () => {
-          patch({ step: 'account' });
-          nav.go('account');
-        },
-      }}
+      secondary={
+        localAuthEnabled(env)
+          ? { label: t('devLogin.entry'), onPress: () => router.push(paths.devLogin), testID: 'welcome-dev-login' }
+          : {
+              label: t('onboarding.welcome.haveAccount'),
+              onPress: () => {
+                patch({ step: 'account' });
+                nav.go('account');
+              },
+            }
+      }
     />
   );
 }

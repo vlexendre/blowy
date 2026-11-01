@@ -3,6 +3,7 @@ import type { MatchPreferences, PrivacySettings, RecordConsentsRequest, UpdatePr
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
 import { useServices } from '../../../core/providers/services';
 import { useSession } from '../../../core/session/session-store';
 import type { AuthProviderKind } from '../../../core/ports/auth';
@@ -11,8 +12,8 @@ import { createAccountRepository } from './account.repository';
 export const accountKeys = { me: ['me'] as const, consents: ['consents'] as const, sessions: ['sessions'] as const };
 
 export function useAccountRepository() {
-  const { http } = useServices();
-  return useMemo(() => createAccountRepository(http), [http]);
+  const { api } = useServices();
+  return useMemo(() => createAccountRepository(api, Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web' ? Platform.OS : 'other'), [api]);
 }
 
 export function useMe() {
@@ -26,8 +27,8 @@ export function useSignIn() {
   const { auth, secrets } = useServices();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (kind: AuthProviderKind) => {
-      const cred = await auth.signIn(kind);
+    mutationFn: async (arg: AuthProviderKind | { kind: 'local'; demoKey: string }) => {
+      const cred = typeof arg === 'string' ? await auth.signIn(arg) : await auth.signIn('local', arg.demoKey);
       const session = await repo.signIn(cred, Constants.expoConfig?.version ?? '0.0.0');
       await useSession.getState().save(secrets, session);
       await qc.invalidateQueries({ queryKey: accountKeys.me });

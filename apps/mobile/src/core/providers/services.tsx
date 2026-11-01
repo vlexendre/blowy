@@ -8,13 +8,13 @@ import Constants from 'expo-constants';
 import * as Crypto from 'expo-crypto';
 import { FirebaseAuthAdapter, LocalAuthAdapter } from '../adapters/auth';
 import { asyncStorageAdapter, createExpoNotificationsAdapter, expoCameraAdapter, expoHapticsAdapter, expoLocationAdapter, secureStoreAdapter } from '../adapters/native';
-import { createHttp, type Http } from '../api/http';
-import { env, isProduction } from '../config/env';
+import { createApi, type Api } from '../api/client';
+import { env, isProduction, localAuthEnabled } from '../config/env';
 import type { AuthPort, CameraPermissionPort, HapticsPort, LocationPort, NotificationsPort, SecretStoragePort, StoragePort } from '../ports';
 import { currentToken, useSession } from '../session/session-store';
 
 export interface Services {
-  http: Http;
+  api: Api;
   auth: AuthPort;
   storage: StoragePort;
   secrets: SecretStoragePort;
@@ -27,17 +27,18 @@ export interface Services {
 
 export function createServices(): Services {
   const projectId = (Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined)?.eas?.projectId;
-  const http = createHttp({
+  const newCommandId = () => Crypto.randomUUID();
+  const api = createApi({
     baseUrl: env.apiUrl,
     getToken: currentToken,
+    newCommandId,
     onUnauthenticated: () => void useSession.getState().clear(secureStoreAdapter),
   });
-  // Auth : Firebase (Apple/Google) quand configuré ; sinon LocalAuthProvider de l'API hors production.
-  // Le pont Firebase (SDK) n'est pas encore installé : voir docs/agents/handoffs/D.md.
-  const firebaseConfigured = !!(env.firebase.apiKey && env.firebase.projectId);
-  const auth: AuthPort = firebaseConfigured || isProduction ? new FirebaseAuthAdapter(null, isProduction) : new LocalAuthAdapter(asyncStorageAdapter);
+  // Auth : LocalAuthProvider de l'API seulement si EXPO_PUBLIC_AUTH_MODE=local hors production ;
+  // sinon Firebase (Apple/Google) — pont SDK à brancher (docs/agents/handoffs/D.md).
+  const auth: AuthPort = localAuthEnabled(env) ? new LocalAuthAdapter(asyncStorageAdapter) : new FirebaseAuthAdapter(null, isProduction);
   return {
-    http,
+    api,
     auth,
     storage: asyncStorageAdapter,
     secrets: secureStoreAdapter,
@@ -45,7 +46,7 @@ export function createServices(): Services {
     location: expoLocationAdapter,
     haptics: expoHapticsAdapter,
     camera: expoCameraAdapter,
-    newCommandId: () => Crypto.randomUUID(),
+    newCommandId,
   };
 }
 

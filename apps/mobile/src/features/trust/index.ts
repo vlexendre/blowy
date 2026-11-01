@@ -6,9 +6,8 @@
 import type { ReportCategory } from '@blowy/domain';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
-import { z } from 'zod';
-import type { Http } from '../../core/api/http';
-import { routes } from '../../core/api/routes';
+import type { Api } from '../../core/api/client';
+import { rawRoutes } from '../../core/api/routes';
 import { registerSender } from '../../core/offline/runner';
 import { drainQueue } from '../../core/offline/runner';
 import { useOfflineQueue } from '../../core/offline/store';
@@ -22,18 +21,18 @@ export interface ReportInput {
   alsoBlock: boolean;
 }
 
-export function createTrustRepository(http: Http) {
-  const ack = z.unknown();
+/** Contrats E non publiés : corps proposés, réponse ignorée (seul le succès compte). */
+export function createTrustRepository({ raw }: Api) {
   return {
-    report: (cid: string, body: { relationshipId: string | null; conversationId: string | null; category: ReportCategory }) => http.request({ method: 'POST', path: routes.trust.reports, body, commandId: cid }, ack),
-    block: (cid: string, body: { relationshipId: string | null; conversationId: string | null }) => http.request({ method: 'POST', path: routes.trust.blocks, body, commandId: cid }, ack),
+    report: (cid: string, body: { relationshipId: string | null; conversationId: string | null; category: ReportCategory }) => raw({ method: 'POST', path: rawRoutes.trust.reports, body, commandId: cid }),
+    block: (cid: string, body: { relationshipId: string | null; conversationId: string | null }) => raw({ method: 'POST', path: rawRoutes.trust.blocks, body, commandId: cid }),
   };
 }
 
 /** Enregistre les senders BLOCK/REPORT (montés une fois au niveau racine). */
 export function useTrustSenders() {
-  const { http } = useServices();
-  const repo = useMemo(() => createTrustRepository(http), [http]);
+  const { api } = useServices();
+  const repo = useMemo(() => createTrustRepository(api), [api]);
   useEffect(() => {
     const a = registerSender('BLOCK', (c) => repo.block(c.commandId, c.payload as { relationshipId: string | null; conversationId: string | null }).then(() => undefined));
     const b = registerSender('REPORT', (c) => repo.report(c.commandId, c.payload as { relationshipId: string | null; conversationId: string | null; category: ReportCategory }).then(() => undefined));

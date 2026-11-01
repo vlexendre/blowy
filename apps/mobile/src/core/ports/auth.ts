@@ -18,6 +18,7 @@ export interface AuthPort {
   readonly mode: IntegrationMode;
   /** Fournisseurs réellement disponibles sur cet appareil/cette build. */
   available(): Promise<readonly AuthProviderKind[]>;
-  signIn(kind: AuthProviderKind): Promise<AuthCredential>;
+  /** `localKey` : compte de démo choisi (LocalAuthProvider uniquement). */
+  signIn(kind: AuthProviderKind, localKey?: string): Promise<AuthCredential>;
   signOut(): Promise<void>;
 }

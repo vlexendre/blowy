@@ -7,7 +7,7 @@ import { GENDERS, type Gender } from '@blowy/domain';
 import { Banner, Chip, NumberStepper, OnboardingStepTemplate, SectionTitle, Surface, space } from '@blowy/ui-mobile';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { isUnavailable } from '../../../core/api/http';
+import { isUnavailable } from '../../../core/api/errors';
 import { t, tDynamic } from '../../../i18n';
 import { useMe, useSavePreferences } from '../../account';
 import { useCreatePet } from '../../pets';

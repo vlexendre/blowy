@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Share, View } from 'react-native';
-import { isUnavailable } from '../../../core/api/http';
+import { isUnavailable } from '../../../core/api/errors';
 import { paths } from '../../../core/navigation/paths';
 import { useServices } from '../../../core/providers/services';
 import { t } from '../../../i18n';

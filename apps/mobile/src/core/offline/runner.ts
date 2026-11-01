@@ -3,7 +3,7 @@
  * Chaque type de commande est envoyé par un « sender » enregistré par sa feature (pattern
  * Command) : le runner ne connaît pas les routes. Le même commandId est réutilisé à chaque essai.
  */
-import { ApiCallError } from '../api/http';
+import { errorCode, isRetryable } from '../api/errors';
 import { nextToSend, type QueuedCommand, type QueuedKind } from './queue';
 import { queueSnapshot, useOfflineQueue } from './store';
 
@@ -40,8 +40,8 @@ export async function drainQueue(isOnline: () => boolean, now: () => number = Da
         dispatch({ type: 'confirmed', commandId: cmd.commandId, corrected: !!(r && r.corrected) });
         settleListeners.forEach((l) => l(cmd, true));
       } catch (e) {
-        const retryable = e instanceof ApiCallError ? e.retryable || e.code === 'NETWORK' : true;
-        dispatch({ type: 'failed', commandId: cmd.commandId, error: e instanceof ApiCallError ? e.code : 'UNKNOWN', retryable, now: now() });
+        const retryable = isRetryable(e);
+        dispatch({ type: 'failed', commandId: cmd.commandId, error: errorCode(e), retryable, now: now() });
         if (!retryable) settleListeners.forEach((l) => l(cmd, false));
         if (retryable) return; // backoff : on attend le prochain réveil
       }

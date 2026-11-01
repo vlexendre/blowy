@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readEnv } from './env';
+import { localAuthEnabled, readEnv } from './env';
 
 describe('env', () => {
   it('défauts locaux, clés vides = absentes', () => {
@@ -9,5 +9,10 @@ describe('env', () => {
   });
   it('URL invalide refusée au démarrage', () => {
     expect(() => readEnv({ EXPO_PUBLIC_API_URL: 'pas-une-url' })).toThrow();
+  });
+  it('connexion locale jamais en production', () => {
+    expect(localAuthEnabled({ blowyEnv: 'local', authMode: 'local' })).toBe(true);
+    expect(localAuthEnabled({ blowyEnv: 'production', authMode: 'local' })).toBe(false);
+    expect(localAuthEnabled({ blowyEnv: 'local', authMode: 'firebase' })).toBe(false);
   });
 });

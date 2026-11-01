@@ -3,7 +3,7 @@
  * absente) et petits utilitaires pour présenter l'état d'une requête de façon honnête.
  */
 import { QueryClient } from '@tanstack/react-query';
-import { ApiCallError, isNetworkError, isUnavailable } from './http';
+import { isNetworkError, isRetryable, isUnavailable } from './errors';
 
 export function createQueryClient(): QueryClient {
   return new QueryClient({
@@ -11,7 +11,7 @@ export function createQueryClient(): QueryClient {
       queries: {
         staleTime: 30_000,
         gcTime: 24 * 3_600_000,
-        retry: (count, e) => (e instanceof ApiCallError ? e.retryable && count < 2 : count < 2),
+        retry: (count, e) => isRetryable(e) && !isUnavailable(e) && count < 2,
         networkMode: 'offlineFirst',
       },
       mutations: { retry: false, networkMode: 'online' },

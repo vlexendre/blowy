@@ -5,7 +5,7 @@
 import type { CreatePrimaryPetRequest, PetActionResult } from '@blowy/api-contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { isNetworkError } from '../../../core/api/http';
+import { isNetworkError } from '../../../core/api/errors';
 import { reduceOptimistic, type OptimisticState } from '../../../core/offline/optimistic';
 import { onSettled, registerSender } from '../../../core/offline/runner';
 import { useOfflineQueue } from '../../../core/offline/store';
@@ -18,8 +18,8 @@ import { createPetsRepository } from './pets.repository';
 export const petKeys = { mine: ['pets', 'mine'] as const };
 
 export function usePetsRepository() {
-  const { http } = useServices();
-  return useMemo(() => createPetsRepository(http), [http]);
+  const { api } = useServices();
+  return useMemo(() => createPetsRepository(api), [api]);
 }
 
 export function useMyPet() {
@@ -35,6 +35,24 @@ export function useCreatePet() {
   return useMutation({
     mutationFn: (body: CreatePrimaryPetRequest) => repo.create(newCommandId(), body),
     onSuccess: (pet) => qc.setQueryData(petKeys.mine, pet),
+  });
+}
+
+/**
+ * Déplacement du pet vers le lieu d'un rendez-vous (commande serveur dédupliquée) : « Nino va
+ * retrouver Suzie ». Réseau requis ; le pet ne part jamais seul hors ligne.
+ */
+export function useMovePet() {
+  const repo = usePetsRepository();
+  const { newCommandId } = useServices();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ petId, relationshipId }: { petId: string; relationshipId: string | null }) =>
+      repo.move(newCommandId(), petId, relationshipId ? { destination: 'DATE_SPOT', relationshipId } : { destination: 'HOME' }),
+    onSuccess: (pet) => {
+      qc.setQueryData(petKeys.mine, pet);
+      void qc.invalidateQueries({ queryKey: ['relationships'] });
+    },
   });
 }
 

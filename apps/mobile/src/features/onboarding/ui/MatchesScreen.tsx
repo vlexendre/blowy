@@ -3,11 +3,12 @@
  * `emptyReason`. Gratuit : une place ; les autres affichées verrouillées → paywall.
  */
 import { Banner, EmptyState, LoadingState, OnboardingStepTemplate } from '@blowy/ui-mobile';
+import { useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 import { paths } from '../../../core/navigation/paths';
 import { viewStateOf } from '../../../core/api/query';
 import { formatRelative, t, tDynamic } from '../../../i18n';
-import { ProposalCard, unlockedIndexes, useAcceptProposal, useMatchFeed } from '../../matching';
+import { ProposalCard, unlockedIndexes, useAcceptProposal, useMatchFeed, useOnboardingBatch } from '../../matching';
 import { speciesName } from '../../pets';
 import { useOnboarding } from '../model/store';
 import { useOnboardingNav } from './useOnboardingNav';
@@ -19,6 +20,14 @@ export function MatchesScreen() {
   const nav = useOnboardingNav('matches');
   const feed = useMatchFeed();
   const accept = useAcceptProposal();
+  const batch = useOnboardingBatch();
+  const askedBatch = useRef(false);
+  useEffect(() => {
+    // Lot d'onboarding demandé une seule fois si le flux est vide (le serveur dit honnêtement pourquoi sinon).
+    if (askedBatch.current || !feed.data || feed.data.items.length > 0) return;
+    askedBatch.current = true;
+    batch.mutate();
+  }, [feed.data, batch]);
   const state = viewStateOf(feed, (x) => (x as { items: unknown[] }).items.length === 0);
   const name = d.petName.trim() || speciesName(d.species);
   const items = feed.data?.items ?? [];

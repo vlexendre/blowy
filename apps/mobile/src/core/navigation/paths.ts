@@ -27,6 +27,7 @@ export const paths = {
   profile: '/profile',
   profileScreen: (s: ProfileScreen) => `/profile/${s}` as const,
   paywall: '/paywall',
+  devLogin: '/dev-login',
 } as const;
 
 export type RelationScreen = 'move-in' | 'vote' | 'reveal' | 'irl' | 'egg' | 'birth' | 'custody' | 'leave' | 'pause';

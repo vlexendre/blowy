@@ -5,16 +5,15 @@
  * Aucun schéma inventé : la réponse est gardée `unknown` et n'est jamais rendue comme donnée.
  */
 import { useQuery } from '@tanstack/react-query';
-import { z } from 'zod';
-import { routes } from '../../../core/api/routes';
+import { rawRoutes as routes } from '../../../core/api/routes';
 import { useServices } from '../../../core/providers/services';
 import { useSession } from '../../../core/session/session-store';
 
 /** Sonde d'endpoint : seul l'état (disponible ou non) est exploité tant que le DTO n'est pas publié. */
 function useEndpointProbe(key: string, path: string) {
-  const { http } = useServices();
+  const { api } = useServices();
   const signedIn = useSession((s) => s.status === 'signedIn');
-  return useQuery({ queryKey: ['probe', key], queryFn: () => http.request({ method: 'GET', path }, z.unknown()), enabled: signedIn, retry: false, staleTime: 5 * 60_000 });
+  return useQuery({ queryKey: ['probe', key], queryFn: () => api.raw({ method: 'GET', path }), enabled: signedIn, retry: false, staleTime: 5 * 60_000 });
 }
 
 export const useFriends = () => useEndpointProbe('friends', routes.social.friends);
