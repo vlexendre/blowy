@@ -1,0 +1,747 @@
+{
+  "common": {
+    "back": "Retour",
+    "close": "Fermer",
+    "continue": "Continuer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "later": "Plus tard",
+    "loading": "Chargement…",
+    "yes": "Oui",
+    "no": "Non",
+    "pending": "En attente de confirmation",
+    "confirmed": "Confirmé",
+    "corrected": "Corrigé par le serveur",
+    "failed": "Échec",
+    "offline": "Hors ligne. Ton pet reste figé à son dernier état connu.",
+    "offlineQueued": "{count} action(s) en attente d’envoi",
+    "stateAsOf": "État du {time}",
+    "demoMode": "Démo locale · aucune transaction réelle",
+    "unavailableTitle": "Pas encore disponible",
+    "unavailableBody": "Cette fonction arrive bientôt sur le serveur. Rien n’est simulé ici.",
+    "errorTitle": "Oups, ça n’a pas marché",
+    "errorBody": "Vérifie ta connexion puis réessaie.",
+    "requiresNetwork": "Cette action demande une connexion : elle doit être validée par le serveur.",
+    "help": "Aide · appeler le 17",
+    "helpHint": "Appelle la police (17). Fonctionne même sans réseau Blowy.",
+    "brand": "blowy.",
+    "unknownValue": "—",
+    "unknownValueA11y": "valeur indisponible"
+  },
+  "tabs": {
+    "nest": "Nid",
+    "chats": "Chats",
+    "map": "Carte",
+    "neighborhood": "Quartier",
+    "profile": "Profil",
+    "plus": "PLUS",
+    "unread": "{count} non lus"
+  },
+  "species": {
+    "GASTON": "Gaston",
+    "PIA": "Pia",
+    "NINO": "Nino",
+    "SUZIE": "Suzie",
+    "kind": {
+      "GASTON": "le capybara",
+      "PIA": "la pigeonne",
+      "NINO": "le raton laveur",
+      "SUZIE": "la lapine"
+    },
+    "premiumA11y": "{name}, espèce Blowy+"
+  },
+  "stage": {
+    "BABY": "Bébé",
+    "YOUNG": "Jeune",
+    "ADULT": "Adulte"
+  },
+  "pose": {
+    "PRESENTATION": "tranquille",
+    "JOYFUL": "joyeux",
+    "SAD": "triste",
+    "SICK": "malade",
+    "ASLEEP": "endormi",
+    "HUNGRY": "affamé",
+    "POUTING": "boudeur",
+    "PROUD": "fier",
+    "SURPRISED": "surpris",
+    "AFFECTIONATE": "affectueux",
+    "LEAP": "fait un bond",
+    "DANCE": "danse"
+  },
+  "overlay": {
+    "sick": "malade",
+    "sleep": "endormi",
+    "hungry": "affamé",
+    "sad": "triste"
+  },
+  "pet": {
+    "withOther": "avec {name}",
+    "walkingTo": "en route vers {place}",
+    "tapHint": "Touche pour le faire réagir",
+    "gauge": {
+      "satiety": "Faim",
+      "energy": "Énergie",
+      "mood": "Humeur",
+      "health": "Santé",
+      "value": "{value} / 100",
+      "critical": "Critique"
+    }
+  },
+  "accessory": {
+    "headphones": "casque",
+    "beanie": "bonnet",
+    "crown": "couronne",
+    "sunglasses": "lunettes de soleil",
+    "backpack": "sac à dos",
+    "flower": "fleur",
+    "balloon": "ballon",
+    "mug": "tasse",
+    "book": "livre",
+    "trophy": "trophée",
+    "gift": "cadeau",
+    "ball": "balle"
+  },
+  "vision": {
+    "axis": {
+      "kindMischief": {
+        "left": "Gentil",
+        "right": "Espiègle"
+      },
+      "sportyContemplative": {
+        "left": "Sportif",
+        "right": "Contemplatif"
+      },
+      "scienceArt": {
+        "left": "Scientifique",
+        "right": "Artiste"
+      },
+      "homeAdventure": {
+        "left": "Casanier",
+        "right": "Aventurier"
+      }
+    },
+    "axisA11y": "{left} ou {right}",
+    "axisValue": {
+      "strongLeft": "très {left}",
+      "left": "plutôt {left}",
+      "balanced": "entre les deux",
+      "right": "plutôt {right}",
+      "strongRight": "très {right}"
+    },
+    "school": {
+      "BEAUX_ARTS": "Beaux-Arts",
+      "POLYTECHNIQUE": "Polytechnique",
+      "CIRQUE": "École du cirque",
+      "AUTODIDACTE": "Autodidacte"
+    },
+    "sunday": {
+      "BRUNCH": "Brunch",
+      "MUSEE": "Musée",
+      "RANDO": "Rando",
+      "CANAPE": "Grasse mat’ au canapé"
+    },
+    "passion": {
+      "SPORT": "Sport",
+      "MUSIQUE": "Concerts",
+      "CUISINE": "Cuisine",
+      "CINEMA": "Cinéma",
+      "JEUX": "Jeux vidéo",
+      "LECTURE": "Lecture",
+      "ART": "Poterie & art",
+      "VOYAGE": "Voyage",
+      "NATURE": "Nature",
+      "DANSE": "Danse"
+    },
+    "limit": {
+      "GHOSTER": "Ghoster",
+      "MENTIR": "Mentir",
+      "RETARD": "Être en retard",
+      "JUGER": "Juger"
+    },
+    "card": {
+      "school": "École",
+      "sunday": "Dimanche",
+      "passions": "Passions",
+      "limit": "Jamais",
+      "pending": "à venir"
+    }
+  },
+  "onboarding": {
+    "stepOf": "Étape {index} sur {count}",
+    "welcome": {
+      "eyebrow": "pets & potes",
+      "title": "Élève ton pet. Rencontre de nouvelles personnes.",
+      "lead": "Ton pet se fait des potes. Tu suis le mouvement.",
+      "cta": "Commencer",
+      "haveAccount": "J’ai déjà un compte"
+    },
+    "invite": {
+      "eyebrow": "Invité·e par {name}",
+      "title": "{name} t’attend dans son Quartier.",
+      "lead": "La maison d’à côté est libre. Crée ton pet, il emménage ce soir.",
+      "reward": "{name} t’offre {coins} pièces, versées quand ton pet est activé.",
+      "cta": "Créer mon pet",
+      "invalid": "Ce lien d’invitation n’est plus valable. Tu peux quand même créer ton pet.",
+      "unavailable": "Impossible de vérifier l’invitation pour l’instant. Ton code est gardé : il sera vérifié après la création de ton compte."
+    },
+    "species": {
+      "eyebrow": "Son caractère",
+      "title": "Ton pet sera…",
+      "lead": "Choisis une espèce, puis règle son caractère.",
+      "premiumNote": "{name} est réservée à Blowy+. Tu peux la prévisualiser ; l’adoption sera confirmée après l’abonnement. Sinon, tu garderas ta vision avec Gaston ou Nino.",
+      "nameLabel": "Son prénom",
+      "namePlaceholder": "Nino",
+      "nameError": "Donne-lui un prénom (24 caractères max)."
+    },
+    "vision": {
+      "school": {
+        "title": "Il irait à l’école…",
+        "lead": "Une seule réponse. Fie-toi à ton instinct."
+      },
+      "sunday": {
+        "title": "Son dimanche idéal ?",
+        "lead": "Celui qu’il passerait avec toi."
+      },
+      "passions": {
+        "title": "Ses passions.",
+        "lead": "4 maximum. C’est ce qui fait matcher les pets.",
+        "count": "{count} / 4"
+      },
+      "limit": {
+        "title": "Il ne fera jamais…",
+        "lead": "Sa limite. Elle est visible par les autres pets."
+      },
+      "cardTitle": "C’est sa vision"
+    },
+    "intention": {
+      "eyebrow": "Entre nous",
+      "title": "Tu cherches…",
+      "secret": "Secret. L’autre ne le saura que si vous avez choisi pareil. Sinon : branche Ami, personne n’est rejeté.",
+      "FRIENDS_ONE": {
+        "title": "Un·e ami·e",
+        "sub": "en duo"
+      },
+      "FRIENDS_GROUP": {
+        "title": "Plusieurs ami·es",
+        "sub": "une bande de 3 à 5 pets"
+      },
+      "OPEN_TO_MORE": {
+        "title": "Plus si affinités",
+        "sub": "ami·e d’abord, plus si vous le choisissez tous les deux"
+      },
+      "LET_IT_HAPPEN": {
+        "title": "Je laisse venir",
+        "sub": "on verra bien"
+      }
+    },
+    "hatch": {
+      "incubating": "Ça couve…",
+      "incubatingLead": "Ton œuf prend ta vision au chaud.",
+      "moving": "Ça bouge !",
+      "born": "C’est un {species} !",
+      "bornLead": "Il est à toi. Pour toujours.",
+      "tapEgg": "Touche l’œuf pour l’aider",
+      "cta": "Garder {name} pour de vrai",
+      "eggA11y": "Œuf de {name}, {taps} touches sur 3"
+    },
+    "account": {
+      "eyebrow": "Ton compte",
+      "title": "Garde {name}.",
+      "lead": "Pas de mot de passe. Ton e-mail peut rester masqué.",
+      "apple": "Continuer avec Apple",
+      "google": "Continuer avec Google",
+      "local": "Compte de développement local",
+      "localNote": "Mode local : connexion via LocalAuthProvider de l’API (refusé en production).",
+      "terms": "En continuant, tu acceptes les conditions et la politique de confidentialité. 18 ans minimum.",
+      "birthTitle": "Ta date de naissance",
+      "birthLead": "Pour vérifier que tu as 18 ans. Seul ton âge (ou une tranche) sera visible.",
+      "birthLabel": "Date de naissance (JJ/MM/AAAA)",
+      "birthInvalid": "Date invalide. Format attendu : JJ/MM/AAAA.",
+      "underage": "Blowy est réservé aux personnes majeures. Ton pet reste sur cet appareil, mais tu ne peux pas créer de compte.",
+      "genderLabel": "Ton genre (déclaré, jamais déduit)",
+      "consentTerms": "J’accepte les conditions d’utilisation",
+      "consentPrivacy": "J’accepte la politique de confidentialité",
+      "consentModeration": "J’accepte l’analyse automatique des messages pour ma sécurité (obligatoire pour discuter)",
+      "consentRequired": "Ces accords sont nécessaires pour discuter. Sans eux, ton pet est conservé mais le chat reste fermé.",
+      "providerUnavailable": "Connexion {provider} non configurée sur cette version. Réessaie plus tard.",
+      "failed": "Connexion impossible. Réessaie."
+    },
+    "gender": {
+      "WOMAN": "Femme",
+      "MAN": "Homme",
+      "NON_BINARY": "Non-binaire",
+      "UNDISCLOSED": "Je préfère ne pas le dire"
+    },
+    "preferences": {
+      "eyebrow": "Tes rencontres",
+      "title": "Qui ton pet rencontre",
+      "lead": "Valeurs par défaut affichées, modifiables à tout moment dans ton profil.",
+      "age": "Âge : {min} – {max} ans",
+      "ageMin": "Âge minimum",
+      "ageMax": "Âge maximum",
+      "distance": "Distance : {km} km",
+      "genders": "Genres que tu veux rencontrer",
+      "allGenders": "Tous genres",
+      "zone": "Zone de lancement",
+      "zoneHint": "Position approximative uniquement, demandée plus tard pour la carte.",
+      "decrease": "Diminuer",
+      "increase": "Augmenter"
+    },
+    "verify": {
+      "eyebrow": "Sécurité",
+      "title": "Prouve que t’es toi",
+      "lead": "Selfie vérifié = badge de confiance. Il n’est jamais réutilisé comme photo de profil.",
+      "start": "Lancer le selfie",
+      "cameraDenied": "Accès à l’appareil photo refusé. Tu peux l’autoriser dans les Réglages pour te faire vérifier.",
+      "openSettings": "Ouvrir les Réglages",
+      "status": {
+        "NOT_STARTED": "Pas encore vérifié·e",
+        "PENDING": "Vérification en cours…",
+        "NEEDS_RETRY": "Photo pas assez nette : réessaie avec plus de lumière.",
+        "HUMAN_REVIEW": "Un humain vérifie ton selfie (24 h max).",
+        "VERIFIED": "Vérifié·e",
+        "REJECTED": "Vérification refusée. Contacte le support.",
+        "EXPIRED": "Vérification expirée : refais un selfie."
+      },
+      "demoBadge": "Badge de démonstration (local) — pas une vérification d’âge",
+      "photos": "Tes photos",
+      "photosHidden": "Cachées jusqu’au niveau 4, et seulement avec ton accord",
+      "skip": "Je le ferai plus tard",
+      "skipNote": "Sans selfie vérifié, pas de rendez-vous proposés."
+    },
+    "paywall": {
+      "titleInterest": "{count} pets veulent le rencontrer.",
+      "titleDiscover": "{count} rencontres à découvrir.",
+      "titleGeneric": "Plus de rencontres, plus de jeu.",
+      "benefits": {
+        "dates": "3 rendez-vous à la fois",
+        "map": "La carte des pets",
+        "freeze": "2 gels de série / mois",
+        "partner": "Ton coloc inclus"
+      },
+      "free": "Gratuit : 1 rendez-vous à la fois",
+      "cta": "Les rencontrer maintenant",
+      "trialLine": "Essai {period} gratuit, puis {price}",
+      "introLine": "{price} pendant {period}",
+      "perMonth": "soit {price} / mois",
+      "continueFree": "Continuer gratuitement",
+      "restore": "Restaurer mes achats",
+      "legal": "Renouvellement automatique. Annulable à tout moment dans les réglages du store.",
+      "noOfferings": "Aucune offre disponible pour l’instant sur ce store.",
+      "unavailable": "Les achats ne sont pas disponibles sur cette version.",
+      "laterTitle": "Attends.",
+      "laterLead": "Une offre réservée existe pour toi sur le store.",
+      "laterCta": "Prendre l’offre",
+      "laterDecline": "Non merci, 1 rendez-vous me suffit",
+      "premiumFallback": "Sans abonnement, {species} n’est pas adoptable : choisis Gaston ou Nino, ta vision est conservée.",
+      "period": {
+        "WEEKLY": "Hebdomadaire",
+        "MONTHLY": "Mensuel",
+        "ANNUAL": "Annuel",
+        "OTHER": "Offre"
+      }
+    },
+    "matches": {
+      "title": "{name} a {count} rendez-vous.",
+      "titleOne": "{name} a un rendez-vous.",
+      "score": "Vision : {score} %",
+      "accept": "Les faire se rencontrer",
+      "accepted": "Accepté · en attente de l’autre",
+      "locked": "Débloquer avec Blowy+",
+      "freeQuota": "Gratuit · 1 / 1",
+      "expires": "Expire {when}",
+      "levelHint": "Au niveau 3 du Lien, ton pet peut emménager avec l’un d’eux. Là, ça devient exclusif.",
+      "empty": {
+        "NOT_VERIFIED": "Fais vérifier ton selfie pour recevoir des propositions.",
+        "NO_PRIMARY_PET": "Ton pet n’est pas encore enregistré.",
+        "ZONE_EMPTY": "Pas encore assez de pets dans ta zone. On te prévient dès qu’il y en a.",
+        "NO_CAPACITY": "Toutes tes places de rendez-vous sont prises.",
+        "EXCLUSIVE": "Tu as emménagé : pas de nouveaux rendez-vous.",
+        "WAITING_NEXT_BATCH": "Prochaines propositions {when}.",
+        "PAUSED": "Tu es en pause : pas de propositions pendant ce temps.",
+        "NONE": "Aucune proposition pour le moment."
+      },
+      "goNest": "Aller au Nid"
+    },
+    "notifications": {
+      "eyebrow": "Premier rendez-vous lancé",
+      "title": "On te prévient ?",
+      "lead": "Ton pet ne peut pas te prévenir sans toi. 3 notifs max par jour, jamais après 23 h.",
+      "allow": "Me prévenir",
+      "denied": "Notifications refusées. Tu peux les activer plus tard dans les Réglages."
+    },
+    "resume": "On reprend où tu t’étais arrêté·e."
+  },
+  "nest": {
+    "a11yScene": "{place}. {pets}.",
+    "gestureHint": "glisse · pince",
+    "streak": "Série : {days} jours",
+    "coins": "{coins} pièces · ouvrir la boutique",
+    "petChip": "Fiche de {name}",
+    "league": "Ligue : {name} est {rank}ᵉ",
+    "leagueUnknown": "Ligue de {name}",
+    "allDates": "Voir tous les rendez-vous",
+    "home": "Chez toi",
+    "dateSpot": "Lieu de rendez-vous",
+    "sharedHome": "Chez vous",
+    "partnerHere": "{name} est là",
+    "partnerOut": "{name} est sorti·e",
+    "alone": "{name} est seul·e à la maison",
+    "goTo": "{pet} va retrouver",
+    "keepsPlace": "{name} garde sa place",
+    "actions": {
+      "CALL": "Appeler",
+      "HUG": "Câlin à deux",
+      "PLAY": "Jouer",
+      "FEED": "Nourrir",
+      "HEAL": "Soigner"
+    },
+    "actionNeedsPartner": "Il faut que vos deux pets soient au même endroit.",
+    "outcome": {
+      "APPLIED": "Fait !",
+      "NO_GAIN": "Fait, sans gain (plafond du jour atteint)",
+      "REFUSED": "{name} a dit non. Réessaie, il finira par céder.",
+      "MOVED": "{name} arrive."
+    },
+    "gain": "+{xp} XP Lien",
+    "link": "Lien avec {name}",
+    "linkProgress": "Niv. {level} · {xp} / {next}",
+    "linkMax": "Niv. {level} · max",
+    "mission": "Mission",
+    "missionUnavailable": "Mission du jour bientôt",
+    "write": "Écrire à {name}",
+    "noDate": "Aucun rendez-vous en cours",
+    "findDates": "Trouver des rendez-vous",
+    "welcomeBack": "{name} t’attendait."
+  },
+  "fiche": {
+    "title": "Fiche de {name}",
+    "stage": "Stade",
+    "xp": "XP du pet",
+    "species": "Espèce",
+    "wardrobe": "Garde-robe",
+    "wardrobeEmpty": "Aucun accessoire pour l’instant. La boutique arrive.",
+    "evolution": "Évolution",
+    "vision": "Sa vision",
+    "share": "Partager sa vision"
+  },
+  "shop": {
+    "title": "Boutique",
+    "balance": "{coins} pièces",
+    "buy": "Acheter · {price} pièces",
+    "owned": "Possédé",
+    "insufficient": "Pas assez de pièces",
+    "confirmed": "Achat confirmé par le serveur"
+  },
+  "streak": {
+    "title": "Ta série",
+    "days": "{days} jours",
+    "freeze": "Utiliser un gel",
+    "freezeHint": "Protège un seul jour manqué.",
+    "freezes": "{count} gel(s) disponible(s)"
+  },
+  "mission": {
+    "title": "Mission du jour",
+    "proof": "Prendre la photo",
+    "private": "Ta preuve reste privée : l’autre voit seulement que la mission est validée.",
+    "validated": "Mission validée !"
+  },
+  "chats": {
+    "title": "Chats",
+    "datesSection": "Rendez-vous",
+    "neighborhoodSection": "Quartier",
+    "groupsSection": "Bandes",
+    "petHere": "{pet} est ici",
+    "petAway": "{pet} est ailleurs",
+    "unread": "{count} nouveau(x)",
+    "paused": "En pause",
+    "legacy": "Relation héritée",
+    "empty": "Pas encore de conversation.",
+    "neighborhoodEmpty": "Invite tes amis dans ton Quartier.",
+    "groupsEmpty": "Pas de bande pour l’instant."
+  },
+  "chat": {
+    "placeholder": "Écris à {name}…",
+    "send": "Envoyer",
+    "status": {
+      "sending": "Envoi…",
+      "queued": "En attente de réseau",
+      "PENDING_MODERATION": "En vérification",
+      "PUBLISHED": "Envoyé",
+      "WARNED": "Message masqué : il peut contenir quelque chose de sensible.",
+      "QUARANTINED": "Retenu pour vérification",
+      "REJECTED": "Non envoyé : contraire aux règles",
+      "HUMAN_REVIEW": "En revue humaine",
+      "PROCESSING_FAILED": "Échec de vérification",
+      "WITHDRAWN": "Retiré"
+    },
+    "showAnyway": "Afficher quand même",
+    "closed": "Cette conversation est fermée.",
+    "cannotSend": "Tu ne peux plus écrire ici.",
+    "consentNeeded": "Accepte l’analyse de sécurité des messages pour discuter.",
+    "menu": "Options de la conversation",
+    "report": "Signaler",
+    "block": "Bloquer",
+    "leave": "Partir proprement",
+    "pause": "Mettre en pause",
+    "tree": "Arbre du Lien",
+    "blockConfirm": "Bloquer {name} ? La relation se termine et vos pets ne se reverront jamais. Aucun message de départ n’est demandé.",
+    "blockedPending": "Bloqué localement · en attente de confirmation du serveur",
+    "hiddenLocally": "Conversation masquée en attente de confirmation",
+    "suggestion": "{pet} te souffle :",
+    "useSuggestion": "Utiliser",
+    "loadOlder": "Messages plus anciens",
+    "system": {
+      "relationship.started": "Vos pets se sont rencontrés.",
+      "relationship.moved_in": "Vos pets ont emménagé ensemble.",
+      "relationship.left": "L’autre personne est partie proprement."
+    }
+  },
+  "link": {
+    "title": "Arbre du Lien",
+    "levels": {
+      "1": {
+        "title": "Le rendez-vous",
+        "sub": "Chat, Nid partagé au lieu attitré"
+      },
+      "2": {
+        "title": "Ils jouent ensemble",
+        "sub": "Câlin à deux, cadeaux"
+      },
+      "3": {
+        "title": "Emménager",
+        "sub": "Exclusif · voix débloquée · choix de branche"
+      },
+      "4": {
+        "title": "Photo / visage flou",
+        "sub": "Ami : photos d’un coup · Plus : flou qui se précise"
+      },
+      "5": {
+        "title": "Quête / révélation",
+        "sub": "Plus : visages révélés en même temps"
+      },
+      "6": {
+        "title": "Inséparables / en vrai",
+        "sub": "Ami : entrée au Quartier · Plus : rendez-vous public + ange gardien"
+      },
+      "7": {
+        "title": "L’œuf",
+        "sub": "Plus : couvaison, bébé commun"
+      }
+    },
+    "xp": "{xp} XP",
+    "state": {
+      "reached": "Atteint",
+      "current": "En cours",
+      "locked": "Verrouillé",
+      "consent-needed": "Accord des deux requis",
+      "not-in-branch": "Hors de votre branche"
+    }
+  },
+  "relation": {
+    "moveIn": {
+      "title": "Emménager",
+      "lead": "Vos pets vivent ensemble. C’est exclusif : tes autres rendez-vous reçoivent un mot gentil et se terminent. Le Quartier, les bandes et la coparentalité restent possibles.",
+      "propose": "Proposer d’emménager",
+      "accept": "Accepter",
+      "decline": "Pas maintenant",
+      "waiting": "Proposition envoyée · en attente de l’autre",
+      "done": "Vous avez emménagé !",
+      "notYet": "Disponible au niveau 3 du Lien."
+    },
+    "vote": {
+      "title": "Ami ou plus ?",
+      "lead": "Ton choix est secret. Plus ne s’ouvre que si vous l’avez choisi tous les deux. Sinon : branche Ami, et personne ne sait ce que l’autre avait choisi.",
+      "friend": "Ami·e",
+      "plus": "Plus",
+      "mine": "Ton choix : {choice}",
+      "deadline": "Résultat {when}",
+      "none": "Pas de vote en cours."
+    },
+    "reveal": {
+      "title": "Révélation",
+      "lead": "Vos visages, en même temps. Seulement si vous appuyez tous les deux.",
+      "cta": "Je veux révéler",
+      "waiting": "Ton accord est enregistré. Rien n’est montré tant que l’autre n’a pas accepté.",
+      "never": "Ta préférence est « jamais » : aucune photo ne sera montrée."
+    },
+    "irl": {
+      "title": "Premier rendez-vous en vrai",
+      "lead": "Lieu public choisi par les pets. Ton ange gardien voit ta position pendant 3 h maximum, si tu l’actives.",
+      "guardian": "Choisir un ange gardien",
+      "checkIn": "Check-in « Tout va bien ? »",
+      "help": "Bouton d’aide",
+      "locationAlways": "Partage de position en arrière-plan (3 h max)"
+    },
+    "egg": {
+      "title": "Couver l’œuf",
+      "lead": "3 nuits, 4 questions par nuit. Répondez sans voir la réponse de l’autre."
+    },
+    "birth": {
+      "title": "Naissance",
+      "lead": "Tapotez l’œuf en même temps. Le prénom se vote à deux."
+    },
+    "custody": {
+      "title": "Garde alternée",
+      "lead": "Une semaine chez l’un, une semaine chez l’autre."
+    },
+    "leave": {
+      "title": "Partir proprement",
+      "lead": "Un message pré-écrit est envoyé. Ta fiabilité reste intacte. Ton pet rentre chez lui avec ses niveaux, sa tenue et ses souvenirs.",
+      "reasonOptional": "Raison (facultative, jamais transmise)",
+      "cta": "Partir proprement",
+      "done": "C’est fait. {pet} est rentré à la maison."
+    },
+    "pause": {
+      "title": "Mettre en pause",
+      "lead": "Jusqu’à 14 jours. Les compteurs sont gelés, sans pénalité.",
+      "days": "{days} jours",
+      "cta": "Mettre en pause"
+    },
+    "noDates": {
+      "title": "{pet} cherche.",
+      "lead": "{pet} est rentré : il garde ses niveaux, sa tenue et ses souvenirs.",
+      "next": "Prochaines propositions à 21 h."
+    }
+  },
+  "social": {
+    "neighborhood": {
+      "title": "Le Quartier",
+      "lead": "Tes vrais amis et leurs pets.",
+      "invite": "Inviter un ami",
+      "feed": "Nourrir son pet",
+      "visit": "Rendre visite"
+    },
+    "friend": {
+      "title": "Chez {name}"
+    },
+    "map": {
+      "title": "Carte",
+      "consentTitle": "Apparaître sur la carte ?",
+      "consentLead": "Ta position est floutée à 500 m. Tu peux ne pas apparaître. Tu verras les pets proches seulement avec Blowy+.",
+      "consentYes": "Partager ma zone approximative",
+      "consentNo": "Ne pas apparaître",
+      "denied": "Localisation refusée : la carte reste masquée. Tout le reste fonctionne.",
+      "plusRequired": "La carte des pets proches est réservée à Blowy+."
+    },
+    "league": {
+      "title": "Ligues",
+      "pets": "Pets",
+      "friends": "Amis",
+      "neighborhoods": "Quartiers"
+    },
+    "share": {
+      "title": "Partager",
+      "lead": "La carte de partage ne prouve pas une publication : aucune récompense pour « avoir posté »."
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "age": "{age} ans",
+    "ageRange": "Tranche {range}",
+    "reliability": "Fiabilité : {value} %",
+    "verified": "Vérifié·e",
+    "notVerified": "Non vérifié·e",
+    "account": "Compte",
+    "settings": "Réglages",
+    "subscription": "Abonnement",
+    "privacy": "Confidentialité",
+    "notifications": "Notifications",
+    "report": "Signaler un problème",
+    "delete": "Supprimer mon compte",
+    "pause": "Mettre en pause",
+    "matching": "Préférences de rencontre",
+    "vision": "Vision de mon pet",
+    "logout": "Se déconnecter",
+    "support": "Aide et support",
+    "export": "Exporter mes données",
+    "sessions": "Appareils connectés"
+  },
+  "settings": {
+    "title": "Réglages",
+    "reduceMotion": "Réduire les animations",
+    "reduceMotionSystem": "Suit le réglage d’accessibilité du système",
+    "haptics": "Retours haptiques",
+    "language": "Langue : français",
+    "aiSuggestions": "Suggestions du pet (IA, facultatif)",
+    "aiNarration": "Humeurs du pet basées sur la conversation (IA, facultatif)"
+  },
+  "privacy": {
+    "title": "Confidentialité",
+    "photos": "Mes photos",
+    "photosFrom4": "À partir du niveau 4, avec mon accord",
+    "photosNever": "Jamais",
+    "age": "Âge affiché",
+    "ageExact": "Âge exact",
+    "ageRange": "Tranche d’âge",
+    "map": "Apparaître sur la carte (zone floutée à 500 m)",
+    "blocked": "Personnes bloquées"
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "none": "Pas d’abonnement Blowy+.",
+    "active": "Blowy+ actif",
+    "source": "Source : {source}",
+    "until": "Jusqu’au {date}",
+    "manageStore": "Gérer dans le store",
+    "cancelInfo": "L’annulation se fait dans les réglages de ton App Store / Google Play. Blowy ne peut pas l’annuler à ta place.",
+    "restore": "Restaurer mes achats",
+    "upgrade": "Découvrir Blowy+"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "messages": "Messages des personnes",
+    "waiting": "« X attend Y »",
+    "streak": "Série en danger (22 h)",
+    "neighborhood": "Événements du Quartier",
+    "mission": "Rappels de mission",
+    "guardian": "Alertes ange gardien / sécurité",
+    "quiet": "Jamais entre 23 h et 8 h · 3 par jour maximum",
+    "lockScreen": "Aucun contenu intime sur l’écran verrouillé",
+    "osDenied": "Les notifications sont désactivées dans les réglages du téléphone.",
+    "openSettings": "Ouvrir les Réglages"
+  },
+  "report": {
+    "title": "Signaler",
+    "lead": "L’autre personne n’est pas prévenue. Traitement sous 24 h (objectif).",
+    "category": {
+      "FAKE_PROFILE": "Faux profil",
+      "INAPPROPRIATE": "Messages déplacés",
+      "HARASSMENT": "Harcèlement",
+      "MONEY_REQUEST": "Demande d’argent",
+      "MINOR": "Personne mineure",
+      "SAFETY": "Je ne me sens pas en sécurité",
+      "OTHER": "Autre"
+    },
+    "alsoBlock": "Bloquer aussi cette personne",
+    "submit": "Envoyer le signalement",
+    "queued": "Signalement enregistré. Il sera envoyé en priorité dès le retour du réseau.",
+    "sent": "Signalement envoyé. Merci."
+  },
+  "delete": {
+    "title": "Supprimer mon compte",
+    "lead": "Ce qui se passe :",
+    "items": {
+      "data": "Tes données personnelles et médias privés sont supprimés.",
+      "relations": "Tes relations se terminent sans message de départ, sans baisse de fiabilité.",
+      "children": "Un bébé partagé reste à l’autre parent, sans aucune donnée te concernant.",
+      "subscription": "Un abonnement store doit être annulé dans le store : la suppression ne l’arrête pas."
+    },
+    "export": "Exporter mes données d’abord (48 h)",
+    "confirmLabel": "Tape SUPPRIMER pour confirmer",
+    "confirmWord": "SUPPRIMER",
+    "cta": "Supprimer définitivement",
+    "requiresNetwork": "La suppression demande une connexion.",
+    "requested": "Demande enregistrée."
+  },
+  "deeplink": {
+    "unknown": "Ce lien ne mène nulle part. Retour au Nid."
+  },
+  "widget": {
+    "waiting": "{other} attend {mine} au lieu de rendez-vous",
+    "empty": "Crée ton pet sur Blowy"
+  }
+}

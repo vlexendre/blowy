@@ -1,0 +1,45 @@
+/**
+ * Variables publiques (EXPO_PUBLIC_*), lues statiquement pour que Metro les inline.
+ * Validées par Zod au démarrage : une URL invalide échoue tôt plutôt qu'en plein écran.
+ */
+import { z } from 'zod';
+
+const EnvSchema = z.object({
+  apiUrl: z.string().url(),
+  wsUrl: z.string().url(),
+  blowyEnv: z.enum(['local', 'test', 'staging', 'production']),
+  revenueCatIosKey: z.string().optional(),
+  revenueCatAndroidKey: z.string().optional(),
+  firebase: z.object({ apiKey: z.string().optional(), projectId: z.string().optional(), appId: z.string().optional() }),
+});
+export type AppEnv = z.infer<typeof EnvSchema>;
+
+const blank = (v: string | undefined) => (v && v.length > 0 ? v : undefined);
+
+export function readEnv(source: Record<string, string | undefined>): AppEnv {
+  return EnvSchema.parse({
+    apiUrl: source.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
+    wsUrl: source.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:3000',
+    blowyEnv: source.EXPO_PUBLIC_BLOWY_ENV ?? 'local',
+    revenueCatIosKey: blank(source.EXPO_PUBLIC_REVENUECAT_IOS_KEY),
+    revenueCatAndroidKey: blank(source.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY),
+    firebase: {
+      apiKey: blank(source.EXPO_PUBLIC_FIREBASE_API_KEY),
+      projectId: blank(source.EXPO_PUBLIC_FIREBASE_PROJECT_ID),
+      appId: blank(source.EXPO_PUBLIC_FIREBASE_APP_ID),
+    },
+  });
+}
+
+export const env: AppEnv = readEnv({
+  EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
+  EXPO_PUBLIC_WS_URL: process.env.EXPO_PUBLIC_WS_URL,
+  EXPO_PUBLIC_BLOWY_ENV: process.env.EXPO_PUBLIC_BLOWY_ENV,
+  EXPO_PUBLIC_REVENUECAT_IOS_KEY: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY,
+  EXPO_PUBLIC_REVENUECAT_ANDROID_KEY: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY,
+  EXPO_PUBLIC_FIREBASE_API_KEY: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  EXPO_PUBLIC_FIREBASE_PROJECT_ID: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  EXPO_PUBLIC_FIREBASE_APP_ID: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+});
+
+export const isProduction = env.blowyEnv === 'production';

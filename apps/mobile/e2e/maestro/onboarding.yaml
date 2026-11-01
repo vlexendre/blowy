@@ -1,0 +1,97 @@
+# NON EXÉCUTÉ : pas de simulateur/appareil dans l'environnement de développement (2026-11-01).
+# Prérequis : development build installé (APP_VARIANT=development), API locale avec
+# LocalAuthProvider (BLOWY_ENV=local), EXPO_PUBLIC_API_URL joignable depuis l'appareil.
+appId: app.blowy
+---
+- clearState
+- launchApp
+- assertVisible:
+    id: "screen-welcome"
+- tapOn:
+    id: "welcome-start"
+- assertVisible:
+    id: "screen-species"
+- tapOn:
+    id: "species-NINO"
+- tapOn:
+    id: "pet-name"
+- inputText: "Nino"
+- hideKeyboard
+- tapOn:
+    id: "species-continue"
+# Vision : école, dimanche, passions (≤4), limite — la carte se remplit
+- tapOn:
+    id: "option-BEAUX_ARTS"
+- tapOn:
+    id: "vision-continue"
+- tapOn:
+    id: "option-BRUNCH"
+- tapOn:
+    id: "vision-continue"
+- tapOn:
+    id: "option-SPORT"
+- tapOn:
+    id: "option-MUSIQUE"
+- tapOn:
+    id: "vision-continue"
+- tapOn:
+    id: "option-GHOSTER"
+- tapOn:
+    id: "vision-continue"
+# Intention privée
+- tapOn:
+    id: "intention-OPEN_TO_MORE"
+- tapOn:
+    id: "intention-continue"
+# Reprise : relancer l'app ramène à l'éclosion
+- stopApp
+- launchApp
+- assertVisible:
+    id: "screen-hatch"
+- tapOn:
+    id: "hatch-egg"
+- tapOn:
+    id: "hatch-egg"
+- tapOn:
+    id: "hatch-egg"
+- tapOn:
+    id: "hatch-continue"
+# Compte local (LocalAuthProvider de l'API)
+- assertVisible:
+    id: "screen-account"
+- tapOn:
+    id: "account-local"
+- tapOn:
+    id: "birthdate"
+- inputText: "14/03/1998"
+- hideKeyboard
+- tapOn:
+    id: "gender-UNDISCLOSED"
+- tapOn:
+    id: "consent-terms"
+- tapOn:
+    id: "consent-privacy"
+- tapOn:
+    id: "consent-moderation"
+- tapOn:
+    id: "account-continue"
+- tapOn:
+    id: "preferences-continue"
+# Vérification : on remet à plus tard
+- tapOn:
+    id: "verify-skip"
+# Paywall : continuer gratuitement est toujours accessible
+- assertVisible:
+    id: "screen-paywall"
+- tapOn:
+    id: "paywall-skip"
+- assertVisible:
+    id: "screen-matches"
+- tapOn:
+    id: "matches-continue"
+- assertVisible:
+    id: "screen-notifications"
+- tapOn:
+    id: "notif-later"
+- assertVisible:
+    id: "screen-nest"

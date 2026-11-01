@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "jsx": "react-jsx",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "customConditions": ["react-native"],
+    "moduleDetection": "force",
+    "noEmit": true,
+    "allowJs": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": ["src"]
+}

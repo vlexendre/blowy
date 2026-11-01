@@ -7,6 +7,7 @@ export const MESSAGE_STATUSES = [
   'REJECTED',
   'HUMAN_REVIEW',
   'PROCESSING_FAILED',
+  'WITHDRAWN',
 ] as const;
 export type MessageStatus = (typeof MESSAGE_STATUSES)[number];
 
@@ -18,6 +19,7 @@ export const HIDDEN_FROM_RECIPIENT: readonly MessageStatus[] = [
   'REJECTED',
   'HUMAN_REVIEW',
   'PROCESSING_FAILED',
+  'WITHDRAWN',
 ];
 
 export type ModerationAction = 'ALLOW' | 'WARN' | 'QUARANTINE' | 'REJECT' | 'HUMAN_REVIEW';

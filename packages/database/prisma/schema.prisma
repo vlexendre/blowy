@@ -1,0 +1,2518 @@
+// =============================================================================
+// BLOWY — schéma PostgreSQL (propriétaire unique : agent C, cf. AGENTS.md)
+// Conventions :
+//  - UUID v7 générés côté application (D-008) ; colonnes `@db.Uuid`.
+//  - UTC partout (`timestamptz`) ; timezone IANA dans des colonnes texte dédiées.
+//  - XP en milli-points entiers, pièces en entiers ; axes de vision en millièmes [-1000,1000].
+//  - onDelete explicite sur chaque relation. Les utilisateurs ne sont jamais supprimés
+//    physiquement par l'application (suppression = anonymisation + statut DELETED),
+//    d'où `Restrict` par défaut vers User ; les contenus privés purgeables sont en
+//    tables séparées (MessageContent, IncubationAnswer, BranchBallot, SafetyLocationPoint).
+//  - Contraintes non exprimables en Prisma (CHECK, index partiels) :
+//    prisma/migrations/*_constraints/migration.sql
+// =============================================================================
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------------
+// Énumérations
+// -----------------------------------------------------------------------------
+
+enum UserStatus {
+  ACTIVE
+  RESTRICTED
+  SUSPENDED
+  BANNED
+  DELETED
+}
+
+enum AuthProviderKind {
+  FIREBASE
+  LOCAL
+}
+
+enum Gender {
+  WOMAN
+  MAN
+  NON_BINARY
+  UNDISCLOSED
+}
+
+enum Intention {
+  FRIENDS_ONE
+  FRIENDS_GROUP
+  OPEN_TO_MORE
+  LET_IT_HAPPEN
+}
+
+enum PhotoPreference {
+  FROM_LEVEL_4_WITH_CONSENT
+  NEVER
+}
+
+enum AgeDisplay {
+  EXACT
+  RANGE
+}
+
+enum VerificationStatus {
+  NOT_STARTED
+  PENDING
+  NEEDS_RETRY
+  HUMAN_REVIEW
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+enum VerificationKind {
+  SELFIE_QUALITY
+  SELFIE_HUMAN_REVIEW
+  LIVENESS
+  IDENTITY_AGE
+}
+
+enum VerificationProvenance {
+  PROVIDER
+  STAFF
+  LOCAL_DEMO
+}
+
+enum Species {
+  GASTON
+  PIA
+  NINO
+  SUZIE
+}
+
+enum Stage {
+  BABY
+  YOUNG
+  ADULT
+}
+
+enum PetKind {
+  PRIMARY
+  CHILD
+}
+
+enum PetOwnershipRole {
+  OWNER
+  COPARENT
+}
+
+enum VirtualLocationKind {
+  HOME
+  DATE_SPOT
+  SHARED_HOME
+  FRIEND_HOME
+  GROUP_LOCAL
+  CUSTODY_HOME
+}
+
+enum RelationshipContextType {
+  DATE
+  NEIGHBORHOOD
+  GROUP
+  COPARENT
+}
+
+enum RelationshipStatus {
+  ACTIVE
+  MOVED_IN
+  PAUSED
+  LEGACY
+  ENDED
+}
+
+enum Branch {
+  UNDECIDED
+  FRIEND
+  PLUS
+}
+
+enum EndReason {
+  CLEAN_LEAVE
+  SILENCE_14D
+  MOVED_IN_ELSEWHERE
+  BLOCK
+  REPORT_SAFETY_EXIT
+  ACCOUNT_DELETED
+  TRANSFERRED_TO_NEIGHBORHOOD
+  MODERATION
+}
+
+enum ConsentScope {
+  MOVE_IN
+  BRANCH_VOTE
+  PHOTO_REVEAL
+  PHOTO_ORIGINAL
+  IRL_DATE
+  EGG
+  TRANSFER_TO_NEIGHBORHOOD
+}
+
+enum ConsentSessionStatus {
+  OPEN
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  SUPERSEDED
+  CANCELLED
+}
+
+enum ConsentDecision {
+  ACCEPT
+  DECLINE
+}
+
+enum BallotChoice {
+  FRIEND
+  PLUS
+}
+
+enum BranchRoundStatus {
+  OPEN
+  RESOLVED
+  EXPIRED
+}
+
+enum EventVisibility {
+  PARTICIPANTS
+  ACTOR_ONLY
+  SYSTEM
+}
+
+enum MatchBatchStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum MatchProposalKind {
+  STRONG
+  DISCOVERY
+  ONBOARDING
+}
+
+enum MatchProposalStatus {
+  OPEN
+  ACCEPTED
+  EXPIRED
+  INVALIDATED
+}
+
+enum ConversationKind {
+  DATE
+  NEIGHBORHOOD
+  GROUP
+  COPARENT
+}
+
+enum MessageKind {
+  TEXT
+  VOICE
+  SYSTEM
+}
+
+enum MessageStatus {
+  DRAFT_LOCAL
+  PENDING_MODERATION
+  PUBLISHED
+  WARNED
+  QUARANTINED
+  REJECTED
+  HUMAN_REVIEW
+  PROCESSING_FAILED
+  WITHDRAWN
+}
+
+enum ModerationAction {
+  ALLOW
+  WARN
+  QUARANTINE
+  REJECT
+  HUMAN_REVIEW
+}
+
+enum DecisionSource {
+  DETERMINISTIC
+  AUTO
+  HUMAN
+}
+
+enum ModerationSubjectType {
+  MESSAGE
+  MEDIA
+  MISSION_SUBMISSION
+  BIRTH_NAME
+  PROFILE
+  ANONYMOUS_RESPONSE
+  USER
+}
+
+enum CaseStatus {
+  OPEN
+  ASSIGNED
+  RESOLVED
+  ESCALATED
+}
+
+enum AppealStatus {
+  OPEN
+  UPHELD
+  OVERTURNED
+}
+
+enum MediaPurpose {
+  PROFILE_PHOTO
+  MISSION_PROOF
+  VOICE_MESSAGE
+  VERIFICATION_SELFIE
+  CHAT_IMAGE
+}
+
+enum MediaStatus {
+  UPLOAD_PENDING
+  QUARANTINE
+  PROCESSING
+  READY
+  REJECTED
+  PURGED
+}
+
+enum MediaDerivativeKind {
+  NORMALIZED
+  THUMBNAIL
+  BLURRED
+  TRANSCRIPT
+}
+
+enum AIJobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  DEAD_LETTER
+}
+
+enum MissionDefinitionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MissionSubmissionStatus {
+  UPLOADED
+  PENDING_ANALYSIS
+  CONSISTENT
+  INCONSISTENT
+  UNCERTAIN
+  HUMAN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum MissionAwardKind {
+  BASE
+  COMPLEMENT
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACTIVE
+  WITHDRAWN
+}
+
+enum GroupStatus {
+  FORMING
+  ACTIVE
+  UNDERSIZED
+  ARCHIVED
+}
+
+enum GroupMemberStatus {
+  INVITED
+  ACTIVE
+  LEFT
+  REMOVED
+}
+
+enum ReferralClaimStatus {
+  PENDING_ACTIVATION
+  REWARDED
+  REJECTED
+}
+
+enum LedgerReason {
+  MISSION_REWARD
+  STREAK_MILESTONE
+  REFERRAL_REFERRER
+  REFERRAL_REFEREE
+  NEIGHBORHOOD_FEED
+  MONTHLY_BENEFIT
+  STORE_PURCHASE
+  CATALOG_PURCHASE
+  LEAGUE_REWARD
+  SHARE_CARD_CREATED
+  STAFF_CORRECTION
+  REFUND_REVERSAL
+  BOOST_NOT_CONSUMED_REFUND
+}
+
+enum LedgerSource {
+  SYSTEM
+  STORE
+  CATALOG
+  STAFF
+  SUBSCRIPTION
+  MISSION
+  STREAK
+  REFERRAL
+  SOCIAL
+  LEAGUE
+}
+
+enum InventoryStatus {
+  OWNED
+  ACTIVE
+  CONSUMED
+  EXPIRED
+  REFUNDED
+}
+
+enum StreakFreezeSource {
+  CATALOG_PURCHASE
+  MONTHLY_BENEFIT
+  STAFF_GRANT
+}
+
+enum StreakFreezeStatus {
+  AVAILABLE
+  CONSUMED
+  EXPIRED
+  REVOKED
+}
+
+enum BillingProviderKind {
+  REVENUECAT
+  LOCAL_DEMO
+}
+
+enum BillingEnvironment {
+  PRODUCTION
+  SANDBOX
+  LOCAL_DEMO
+}
+
+enum CatalogItemKind {
+  STREAK_FREEZE
+  VISIBILITY_BOOST
+  RARE_EGG_COSMETIC
+  ACCESSORY
+  DECORATION
+  GIFT
+}
+
+enum StoreProductKind {
+  SUBSCRIPTION
+  CONSUMABLE_COINS
+}
+
+enum StoreTransactionStatus {
+  CREDITED
+  REFUNDED
+  RECORDED
+}
+
+enum SubscriptionState {
+  NONE
+  TRIAL
+  ACTIVE
+  GRACE_PERIOD
+  CANCELLED_PENDING_EXPIRY
+  EXPIRED
+  REFUNDED
+  REVOKED
+}
+
+enum EntitlementSource {
+  STORE_SUBSCRIPTION
+  DERIVED_PARTNER
+  STAFF_GRANT
+  LOCAL_DEMO
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
+enum LeagueKind {
+  PETS
+  FRIENDS
+  NEIGHBORHOODS
+  GROUPS
+}
+
+enum LeagueSeasonStatus {
+  OPEN
+  FINALIZING
+  FINALIZED
+}
+
+enum EggStatus {
+  INCUBATING
+  READY_TO_HATCH
+  HATCHED
+}
+
+enum IncubationNightStatus {
+  OPEN
+  COMPLETED
+  CATCH_UP
+  VALIDATED
+}
+
+enum CoparentStatus {
+  ACTIVE
+  BLOCKED_INDEPENDENT
+  GONE
+}
+
+enum ReportCategory {
+  FAKE_PROFILE
+  INAPPROPRIATE
+  HARASSMENT
+  MONEY_REQUEST
+  MINOR
+  SAFETY
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  IN_REVIEW
+  ACTIONED
+  DISMISSED
+}
+
+enum ReliabilityReason {
+  GHOSTING_72H
+  DAILY_RESPONSIVE
+  STAFF_CORRECTION
+}
+
+enum SafetyDateStatus {
+  PROPOSED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  CONFIRMED_AFTER
+}
+
+enum GuardianInvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REVOKED
+  EXPIRED
+}
+
+enum CheckInStatus {
+  SCHEDULED
+  OK
+  HELP_REQUESTED
+  MISSED
+}
+
+enum JobStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum NotificationCategory {
+  HUMAN_MESSAGE
+  REAL_WAIT
+  STREAK
+  NEIGHBORHOOD
+  MISSION
+  MATCH
+  SAFETY
+  SYSTEM
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  SUPPRESSED
+  FAILED
+}
+
+enum ConfigKind {
+  TUNING
+  CONTENT
+}
+
+enum ExportStatus {
+  REQUESTED
+  RUNNING
+  READY
+  EXPIRED
+  FAILED
+}
+
+enum DeletionStatus {
+  REQUESTED
+  REVOKING
+  PURGING
+  COMPLETED
+}
+
+enum CommandStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum StaffRole {
+  support
+  moderator
+  trust_lead
+  content_manager
+  finance
+  analyst
+  admin
+}
+
+// -----------------------------------------------------------------------------
+// Compte
+// -----------------------------------------------------------------------------
+
+/// Zone de lancement (Paris 11e, campus…). Timezone stable pour le lot de matching.
+model Zone {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  code      String   @unique
+  name      String
+  timezone  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  users        User[]
+  matchBatches MatchBatch[]
+  dailyMissions DailyMission[]
+}
+
+model User {
+  id             String     @id @default(uuid(7)) @db.Uuid
+  status         UserStatus @default(ACTIVE)
+  /// Email fourni par le fournisseur d'auth ; jamais exposé dans un DTO public.
+  email          String?
+  emailVerified  Boolean    @default(false)
+  /// Date de naissance déclarée (contrôle 18+ serveur). Jamais exposée brute.
+  birthDate      DateTime?  @db.Date
+  timezone       String     @default("Europe/Paris")
+  zoneId         String?    @db.Uuid
+  reliability    Int        @default(100)
+  /// Identité fictive (seed local). Jamais true en production.
+  isFictional    Boolean    @default(false)
+  onboardedAt    DateTime?  @db.Timestamptz(3)
+  lastActiveAt   DateTime?  @db.Timestamptz(3)
+  createdAt      DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt      DateTime?  @db.Timestamptz(3)
+  version        Int        @default(0)
+
+  zone                Zone?                 @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  authIdentities      AuthIdentity[]
+  deviceSessions      DeviceSession[]
+  profile             Profile?
+  matchPreferences    MatchPreferences?
+  privacySettings     PrivacySettings?
+  processingConsents  ProcessingConsent[]
+  pausePeriods        PausePeriod[]
+  verificationSessions VerificationSession[]
+  primaryPet          Pet?                  @relation("PrimaryPet")
+  petOwnerships       PetOwnership[]
+  relationshipSides   RelationshipSide[]
+  consentResponses    ConsentResponse[]
+  branchBallots       BranchBallot[]
+  matchAcceptances    MatchAcceptance[]
+  matchExposures      MatchExposure[]
+  conversationMembers ConversationMember[]
+  messages            Message[]
+  messageReceipts     MessageReceipt[]
+  suggestions         Suggestion[]
+  mediaAssets         MediaAsset[]
+  appeals             Appeal[]
+  missionSubmissions  MissionSubmission[]
+  missionParticipants MissionParticipant[]
+  missionAwards       MissionAward[]
+  groupMembers        GroupMember[]
+  referralLinks       ReferralLink[]
+  referralsMade       ReferralClaim[]       @relation("Referrer")
+  referralReceived    ReferralClaim?        @relation("Referee")
+  anonymousResponses  AnonymousResponse[]
+  reputation          ReputationAggregate?
+  wallet              Wallet?
+  inventory           InventoryItem[]
+  storeTransactions   StoreTransaction[]
+  subscriptions       Subscription[]
+  entitlements        EntitlementGrant[]    @relation("EntitlementHolder")
+  grantedEntitlements EntitlementGrant[]    @relation("EntitlementGrantor")
+  monthlyBenefits     MonthlyBenefitGrant[]
+  streak              Streak?
+  streakFreezes       StreakFreeze[]
+  incubationAnswers   IncubationAnswer[]
+  birthVotes          BirthVote[]
+  coparentLinks       CoparentLink[]
+  custodyHeld         CustodySchedule[]
+  blocksMade          Block[]               @relation("Blocker")
+  blocksReceived      Block[]               @relation("Blocked")
+  reportsMade         Report[]              @relation("Reporter")
+  reportsReceived     Report[]              @relation("Reported")
+  reliabilityEvents   ReliabilityEvent[]
+  guardianInvitationsSent GuardianInvitation[] @relation("GuardianSharer")
+  guardianInvitationsRecv GuardianInvitation[] @relation("GuardianGuardian")
+  safetyCheckIns      SafetyCheckIn[]
+  notifications       Notification[]
+  notificationPrefs   NotificationPreference[]
+  dataExports         DataExport[]
+  deletionRequests    DeletionRequest[]
+  staffRoles          StaffRoleAssignment[]
+  friendshipsLow      Friendship[]          @relation("FriendLow")
+  friendshipsHigh     Friendship[]          @relation("FriendHigh")
+  petCareEvents       PetCareEvent[]
+  contributionEvents  ContributionEvent[]
+  projectionEntries   ProjectionEntry[]
+  commandRecords      CommandRecord[]
+
+  @@index([zoneId, status])
+  @@index([lastActiveAt])
+}
+
+model AuthIdentity {
+  id            String           @id @default(uuid(7)) @db.Uuid
+  userId        String           @db.Uuid
+  provider      AuthProviderKind
+  /// Identifiant stable du fournisseur (uid Firebase, clé locale déterministe).
+  subject       String
+  /// Fournisseur de connexion d'origine (apple.com, google.com, local…).
+  signInProvider String?
+  email         String?
+  emailVerified Boolean          @default(false)
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+  lastSeenAt    DateTime?        @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, subject])
+  @@index([userId])
+}
+
+model DeviceSession {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  userId       String    @db.Uuid
+  /// Empreinte SHA-256 du jeton de session opaque (le jeton n'est jamais stocké).
+  tokenHash    String    @unique
+  deviceLabel  String?
+  platform     String?
+  appVersion   String?
+  pushToken    String?
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  lastUsedAt   DateTime  @default(now()) @db.Timestamptz(3)
+  expiresAt    DateTime  @db.Timestamptz(3)
+  revokedAt    DateTime? @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+}
+
+model StaffRoleAssignment {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  role      StaffRole
+  grantedBy String?   @db.Uuid
+  mfaEnrolled Boolean @default(false)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+}
+
+model Profile {
+  userId      String   @id @db.Uuid
+  /// Prénom ou initiale affichable (pas d'identité civile).
+  displayName String
+  gender      Gender   @default(UNDISCLOSED)
+  publicSlug  String?  @unique
+  slugEnabled Boolean  @default(true)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MatchPreferences {
+  userId          String    @id @db.Uuid
+  ageMin          Int       @default(18)
+  ageMax          Int       @default(35)
+  maxDistanceKm   Int       @default(5)
+  /// Genres recherchés ; vide = indifférent.
+  seekingGenders  Gender[]
+  intention       Intention @default(LET_IT_HAPPEN)
+  /// Cellule approximative (≥ 500 m) choisie ou calculée serveur ; jamais exposée.
+  areaCellLat     Float?
+  areaCellLng     Float?
+  /// Précision annoncée en mètres (zone manuelle = précision faible).
+  areaPrecisionM  Int?
+  /// Élargissement consenti en zone vide.
+  widenConsented  Boolean   @default(false)
+  updatedAt       DateTime  @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PrivacySettings {
+  userId          String          @id @db.Uuid
+  photoPreference PhotoPreference @default(FROM_LEVEL_4_WITH_CONSENT)
+  ageDisplay      AgeDisplay      @default(RANGE)
+  mapVisible      Boolean         @default(false)
+  updatedAt       DateTime        @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Consentements de traitement versionnés (append-only : la ligne la plus récente fait foi).
+model ProcessingConsent {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @db.Uuid
+  /// ex. TERMS, PRIVACY, AI_MODERATION (nécessaire au social), AI_SUGGESTIONS (facultatif)
+  purpose   String
+  version   String
+  granted   Boolean
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose, createdAt])
+}
+
+/// Pause globale (contextId null) ou par relation. ≤ 14 j par période (contrôle applicatif + CHECK).
+model PausePeriod {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  contextId String?   @db.Uuid
+  startsAt  DateTime  @db.Timestamptz(3)
+  endsAt    DateTime  @db.Timestamptz(3)
+  endedAt   DateTime? @db.Timestamptz(3)
+  /// Clé de période de quota (ex. 2026-Q4).
+  periodKey String
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  user    User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  context RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: Cascade)
+
+  @@index([userId, endsAt])
+  @@index([contextId, endsAt])
+}
+
+model VerificationSession {
+  id          String                 @id @default(uuid(7)) @db.Uuid
+  userId      String                 @db.Uuid
+  kind        VerificationKind
+  provenance  VerificationProvenance
+  status      VerificationStatus     @default(PENDING)
+  providerRef String?
+  verifiedAt  DateTime?              @db.Timestamptz(3)
+  expiresAt   DateTime?              @db.Timestamptz(3)
+  createdAt   DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provenance, providerRef])
+  @@index([userId, status])
+}
+
+// -----------------------------------------------------------------------------
+// Pets
+// -----------------------------------------------------------------------------
+
+model Pet {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  kind           PetKind
+  species        Species
+  stage          Stage    @default(BABY)
+  name           String
+  /// Renseigné seulement pour un pet principal : garantit « un pet principal par user ».
+  primaryOwnerId String?  @unique @db.Uuid
+  matchable      Boolean  @default(true)
+  petXpMilli     Int      @default(0)
+  engineVersion  String
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  version        Int      @default(0)
+
+  primaryOwner    User?            @relation("PrimaryPet", fields: [primaryOwnerId], references: [id], onDelete: Restrict)
+  ownerships      PetOwnership[]
+  vision          PetVision?
+  state           PetState?
+  appearance      PetAppearance?
+  location        VirtualLocation?
+  careEvents      PetCareEvent[]
+  pairsLow        PetPair[]        @relation("PairLow")
+  pairsHigh       PetPair[]        @relation("PairHigh")
+  relationshipSides RelationshipSide[]
+  proposalsLow    MatchProposal[]  @relation("ProposalPetLow")
+  proposalsHigh   MatchProposal[]  @relation("ProposalPetHigh")
+  childData       ChildPetData?
+  eggBorn         Egg?             @relation("EggChild")
+  custody         CustodySchedule?
+}
+
+model PetOwnership {
+  id        String           @id @default(uuid(7)) @db.Uuid
+  petId     String           @db.Uuid
+  userId    String           @db.Uuid
+  role      PetOwnershipRole
+  createdAt DateTime         @default(now()) @db.Timestamptz(3)
+  endedAt   DateTime?        @db.Timestamptz(3)
+
+  pet  Pet  @relation(fields: [petId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([petId, userId])
+  @@index([userId])
+}
+
+/// Vision : axes en millièmes [-1000,1000] (CHECK). Sens dans @blowy/domain.
+model PetVision {
+  petId                String   @id @db.Uuid
+  kindMischief         Int
+  sportyContemplative  Int
+  scienceArt           Int
+  homeAdventure        Int
+  school               String
+  sunday               String
+  passions             String[]
+  limit                String
+  contentVersion       String
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+/// État officiel du pet (projection du moteur). `engineState` = snapshot sérialisé versionné.
+model PetState {
+  petId           String    @id @db.Uuid
+  satiety         Float
+  energy          Float
+  mood            Float
+  health          Float
+  lowSatietySince DateTime? @db.Timestamptz(3)
+  /// Instant jusqu'auquel le temps a été intégré (ticks / rattrapage paresseux).
+  advancedTo      DateTime  @db.Timestamptz(3)
+  engineVersion   String
+  tuningVersion   String
+  engineState     Json
+  /// Graine serveur persistée (non choisissable par le client) + compteur de tirages.
+  rngSeed         String
+  rngCounter      Int       @default(0)
+  /// Dernier appel refusé (règle « jamais deux refus consécutifs »).
+  lastCallRefused Boolean   @default(false)
+  version         Int       @default(0)
+  updatedAt       DateTime  @updatedAt @db.Timestamptz(3)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([advancedTo])
+}
+
+model PetAppearance {
+  petId       String   @id @db.Uuid
+  variant     String   @default("default")
+  accessories Json     @default("[]")
+  layers      Json?
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+/// Lieu virtuel unique par pet (PK = petId).
+model VirtualLocation {
+  petId     String              @id @db.Uuid
+  kind      VirtualLocationKind @default(HOME)
+  contextId String?             @db.Uuid
+  since     DateTime            @db.Timestamptz(3)
+  version   Int                 @default(0)
+
+  pet     Pet                  @relation(fields: [petId], references: [id], onDelete: Cascade)
+  context RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: SetNull)
+
+  @@index([contextId])
+}
+
+model PetCareEvent {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  petId       String   @db.Uuid
+  actorUserId String?  @db.Uuid
+  action      String
+  contextId   String?  @db.Uuid
+  commandId   String?  @db.Uuid
+  occurredAt  DateTime @db.Timestamptz(3)
+  effects     Json
+  engineVersion String
+  tuningVersion String
+
+  pet   Pet   @relation(fields: [petId], references: [id], onDelete: Cascade)
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([petId, occurredAt])
+}
+
+// -----------------------------------------------------------------------------
+// Relations (graphe de pets)
+// -----------------------------------------------------------------------------
+
+/// Paire canonique : petLowId < petHighId (CHECK). Une paire n'est jamais sa propre paire.
+model PetPair {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  petLowId  String   @db.Uuid
+  petHighId String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  petLow   Pet                   @relation("PairLow", fields: [petLowId], references: [id], onDelete: Restrict)
+  petHigh  Pet                   @relation("PairHigh", fields: [petHighId], references: [id], onDelete: Restrict)
+  contexts RelationshipContext[]
+  groupPairStates GroupPairState[]
+
+  @@unique([petLowId, petHighId])
+  @@index([petHighId])
+}
+
+/// Contexte relationnel sur une paire (rendez-vous, Quartier, bande, coparent).
+/// Un seul contexte non terminé par (paire, type) — index partiel SQL.
+model RelationshipContext {
+  id            String                  @id @default(uuid(7)) @db.Uuid
+  pairId        String                  @db.Uuid
+  type          RelationshipContextType
+  status        RelationshipStatus      @default(ACTIVE)
+  branch        Branch                  @default(UNDECIDED)
+  /// Affinité figée au match [0,100].
+  affinity      Int
+  xpMilli       Int                     @default(0)
+  eligibleLevel Int                     @default(1)
+  reachedLevel  Int                     @default(1)
+  complicity    Float                   @default(20)
+  tension       Float                   @default(0)
+  /// Lieu attitré (clé de contenu : café, parc…).
+  dateSpotKey   String?
+  /// Timezone stable de la relation (jour de récompense, œuf).
+  timezone      String
+  /// Relation au-delà de la capacité après expiration premium (P-5.13).
+  legacy        Boolean                 @default(false)
+  movedInAt     DateTime?               @db.Timestamptz(3)
+  startedAt     DateTime                @db.Timestamptz(3)
+  endedAt       DateTime?               @db.Timestamptz(3)
+  endReason     EndReason?
+  lastEventSeq  Int                     @default(0)
+  version       Int                     @default(0)
+  engineVersion String
+  tuningVersion String
+  createdAt     DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime                @updatedAt @db.Timestamptz(3)
+
+  pair             PetPair              @relation(fields: [pairId], references: [id], onDelete: Restrict)
+  sides            RelationshipSide[]
+  consentSessions  ConsentSession[]
+  branchRounds     BranchRound[]
+  events           RelationshipEvent[]
+  memories         Memory[]
+  contributions    ContributionEvent[]
+  dailyCounters    RelationshipDailyCounter[]
+  conversation     Conversation?
+  pauses           PausePeriod[]
+  petsHere         VirtualLocation[]
+  proposal         MatchProposal?
+  missionSubmissions MissionSubmission[]
+  missionParticipants MissionParticipant[]
+  missionRewardContexts MissionRewardContext[]
+  eggs             Egg[]
+  safetyDates      SafetyDate[]
+  reports          Report[]
+  entitlementGrants EntitlementGrant[]
+
+  @@index([pairId, type, status])
+  @@index([status, type])
+}
+
+/// Côté orienté d'une relation (envie, attente, contributions, pause, exclusivité).
+model RelationshipSide {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  contextId         String    @db.Uuid
+  userId            String    @db.Uuid
+  petId             String    @db.Uuid
+  desire            Float     @default(40)
+  /// Début de l'attente réelle (pet présent au lieu partagé, l'autre absent).
+  waitingSince      DateTime? @db.Timestamptz(3)
+  /// Ce côté doit une réponse depuis (message humain publié de l'autre sans réponse).
+  replyOwedSince    DateTime? @db.Timestamptz(3)
+  /// Message qui a ouvert l'épisode de dette de réponse (clé d'unicité ghosting).
+  replyOwedEpisode  String?   @db.Uuid
+  /// Durée de pause cumulée à déduire des délais relationnels (ms).
+  pausedMsInEpisode BigInt    @default(0)
+  /// Exclusivité des rendez-vous (index unique partiel sur userId WHERE exclusive).
+  exclusive         Boolean   @default(false)
+  active            Boolean   @default(true)
+  joinedAt          DateTime  @db.Timestamptz(3)
+  leftAt            DateTime? @db.Timestamptz(3)
+
+  context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+  user    User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  pet     Pet                 @relation(fields: [petId], references: [id], onDelete: Restrict)
+
+  @@unique([contextId, userId])
+  @@index([userId, active])
+  @@index([replyOwedSince])
+}
+
+/// Offre de consentement versionnée (emménagement, photo, œuf…). Un ancien accord n'est
+/// jamais réutilisable : (contextId, scope, version) unique et `subjectRef` pour les médias.
+model ConsentSession {
+  id          String               @id @default(uuid(7)) @db.Uuid
+  contextId   String               @db.Uuid
+  scope       ConsentScope
+  version     Int
+  subjectRef  String?
+  proposedBy  String               @db.Uuid
+  status      ConsentSessionStatus @default(OPEN)
+  expiresAt   DateTime             @db.Timestamptz(3)
+  resolvedAt  DateTime?            @db.Timestamptz(3)
+  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+
+  context   RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+  responses ConsentResponse[]
+
+  @@unique([contextId, scope, version])
+  @@index([status, expiresAt])
+}
+
+model ConsentResponse {
+  id        String          @id @default(uuid(7)) @db.Uuid
+  sessionId String          @db.Uuid
+  userId    String          @db.Uuid
+  decision  ConsentDecision
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+
+  session ConsentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+}
+
+/// Ronde de vote de branche ; seul `result` est publié après collecte des deux ou échéance.
+model BranchRound {
+  id         String            @id @default(uuid(7)) @db.Uuid
+  contextId  String            @db.Uuid
+  roundNo    Int
+  status     BranchRoundStatus @default(OPEN)
+  deadlineAt DateTime          @db.Timestamptz(3)
+  result     Branch?
+  resolvedAt DateTime?         @db.Timestamptz(3)
+  createdAt  DateTime          @default(now()) @db.Timestamptz(3)
+
+  context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+  ballots BranchBallot[]
+
+  @@unique([contextId, roundNo])
+  @@index([status, deadlineAt])
+}
+
+/// Vote secret : table séparée, jamais sérialisée vers un autre utilisateur ni le journal.
+model BranchBallot {
+  id        String       @id @default(uuid(7)) @db.Uuid
+  roundId   String       @db.Uuid
+  userId    String       @db.Uuid
+  choice    BallotChoice
+  createdAt DateTime     @default(now()) @db.Timestamptz(3)
+
+  round BranchRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, userId])
+}
+
+/// Journal append-only séquencé par relation. Aucun contenu privé brut (références seulement).
+model RelationshipEvent {
+  id          String          @id @default(uuid(7)) @db.Uuid
+  contextId   String          @db.Uuid
+  seq         Int
+  type        String
+  actorUserId String?         @db.Uuid
+  visibility  EventVisibility @default(PARTICIPANTS)
+  payload     Json
+  engineVersion String?
+  tuningVersion String?
+  occurredAt  DateTime        @db.Timestamptz(3)
+
+  context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+
+  @@unique([contextId, seq])
+  @@index([contextId, occurredAt])
+}
+
+model Memory {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  contextId   String    @db.Uuid
+  kind        String
+  refEventId  String?   @db.Uuid
+  data        Json
+  sensitive   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  deletedAt   DateTime? @db.Timestamptz(3)
+
+  context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+
+  @@index([contextId, createdAt])
+}
+
+/// Contributions humaines valides (facteur k sur 7 jours). Dédupliquées par `dedupKey`.
+model ContributionEvent {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  contextId  String   @db.Uuid
+  userId     String   @db.Uuid
+  kind       String
+  weight     Int
+  dedupKey   String   @unique
+  occurredAt DateTime @db.Timestamptz(3)
+
+  context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+  user    User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([contextId, occurredAt])
+}
+
+/// Compteurs de plafonds par jour de relation (XP messages, câlins, jeux…).
+model RelationshipDailyCounter {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  contextId  String   @db.Uuid
+  /// Jour de relation (YYYY-MM-DD dans la timezone de la relation).
+  relDay     String
+  counterKey String
+  count      Int      @default(0)
+  xpMilli    Int      @default(0)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+
+  context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+
+  @@unique([contextId, relDay, counterKey])
+}
+
+// -----------------------------------------------------------------------------
+// Matching
+// -----------------------------------------------------------------------------
+
+model MatchBatch {
+  id           String           @id @default(uuid(7)) @db.Uuid
+  zoneId       String           @db.Uuid
+  /// Date locale de la zone (YYYY-MM-DD) — un lot par zone et par jour (+ lots onboarding).
+  localDate    String
+  kind         String           @default("DAILY")
+  status       MatchBatchStatus @default(RUNNING)
+  algoVersion  String
+  tuningVersion String
+  stats        Json?
+  startedAt    DateTime         @db.Timestamptz(3)
+  finishedAt   DateTime?        @db.Timestamptz(3)
+
+  zone      Zone            @relation(fields: [zoneId], references: [id], onDelete: Restrict)
+  proposals MatchProposal[]
+
+  @@unique([zoneId, localDate, kind])
+}
+
+/// Proposition entre deux pets (paire canonique). Un seul OPEN par paire (index partiel).
+model MatchProposal {
+  id          String              @id @default(uuid(7)) @db.Uuid
+  batchId     String              @db.Uuid
+  petLowId    String              @db.Uuid
+  petHighId   String              @db.Uuid
+  userLowId   String              @db.Uuid
+  userHighId  String              @db.Uuid
+  kind        MatchProposalKind
+  /// Score public de vision [0,100] (jamais falsifié par la priorité d'exposition).
+  visionScore Int
+  rankScore   Float
+  breakdown   Json
+  status      MatchProposalStatus @default(OPEN)
+  expiresAt   DateTime            @db.Timestamptz(3)
+  contextId   String?             @unique @db.Uuid
+  createdAt   DateTime            @default(now()) @db.Timestamptz(3)
+  resolvedAt  DateTime?           @db.Timestamptz(3)
+
+  batch       MatchBatch           @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  petLow      Pet                  @relation("ProposalPetLow", fields: [petLowId], references: [id], onDelete: Restrict)
+  petHigh     Pet                  @relation("ProposalPetHigh", fields: [petHighId], references: [id], onDelete: Restrict)
+  context     RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: SetNull)
+  acceptances MatchAcceptance[]
+  exposures   MatchExposure[]
+
+  @@index([userLowId, status])
+  @@index([userHighId, status])
+  @@index([status, expiresAt])
+}
+
+model MatchAcceptance {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  proposalId String   @db.Uuid
+  userId     String   @db.Uuid
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  proposal MatchProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+}
+
+model MatchExposure {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  proposalId String   @db.Uuid
+  userId     String   @db.Uuid
+  shownAt    DateTime @db.Timestamptz(3)
+
+  proposal MatchProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// Messages
+// -----------------------------------------------------------------------------
+
+model Conversation {
+  id         String           @id @default(uuid(7)) @db.Uuid
+  kind       ConversationKind
+  contextId  String?          @unique @db.Uuid
+  groupId    String?          @unique @db.Uuid
+  /// Séquence des messages visibles (publiés) — ordre d'affichage.
+  lastSeq    Int              @default(0)
+  createdAt  DateTime         @default(now()) @db.Timestamptz(3)
+  closedAt   DateTime?        @db.Timestamptz(3)
+
+  context  RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: Restrict)
+  group    Group?               @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  members  ConversationMember[]
+  messages Message[]
+  suggestions Suggestion[]
+  signals  ConversationSignal[]
+}
+
+model ConversationMember {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  conversationId String    @db.Uuid
+  userId         String    @db.Uuid
+  joinedAt       DateTime  @db.Timestamptz(3)
+  /// Perte d'accès (départ, blocage, suppression) : plus aucune lecture/diffusion.
+  revokedAt      DateTime? @db.Timestamptz(3)
+  lastReadSeq    Int       @default(0)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId, revokedAt])
+}
+
+model Message {
+  id              String        @id @default(uuid(7)) @db.Uuid
+  conversationId  String        @db.Uuid
+  authorUserId    String?       @db.Uuid
+  clientMessageId String?
+  kind            MessageKind   @default(TEXT)
+  status          MessageStatus @default(PENDING_MODERATION)
+  /// Séquence attribuée à la publication seulement (null tant que non visible).
+  seq             Int?
+  mediaId         String?       @db.Uuid
+  /// Clé de modèle d'un message système pré-écrit (ex. system.leave.clean).
+  systemTemplate  String?
+  policyVersion   String?
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  publishedAt     DateTime?     @db.Timestamptz(3)
+  decidedAt       DateTime?     @db.Timestamptz(3)
+  /// L'aller-retour XP a été évalué (idempotence de l'attribution).
+  exchangeEvaluatedAt DateTime? @db.Timestamptz(3)
+
+  conversation Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author       User?              @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+  content      MessageContent?
+  receipts     MessageReceipt[]
+  decisions    ModerationDecision[]
+
+  @@unique([authorUserId, clientMessageId])
+  @@unique([conversationId, seq])
+  @@index([conversationId, createdAt])
+  @@index([status, createdAt])
+}
+
+/// Corps privé purgeable, séparé du journal.
+model MessageContent {
+  messageId String    @id @db.Uuid
+  body      String
+  purgedAt  DateTime? @db.Timestamptz(3)
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+model MessageReceipt {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  messageId   String    @db.Uuid
+  userId      String    @db.Uuid
+  deliveredAt DateTime? @db.Timestamptz(3)
+  readAt      DateTime? @db.Timestamptz(3)
+  /// « Afficher quand même » d'un message WARNED.
+  revealedAt  DateTime? @db.Timestamptz(3)
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+}
+
+model Suggestion {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  conversationId String    @db.Uuid
+  userId         String    @db.Uuid
+  items          Json
+  source         String
+  windowKey      String
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  invalidatedAt  DateTime? @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId, windowKey])
+}
+
+model ConversationSignal {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  conversationId String   @db.Uuid
+  tone           String
+  evidenceEventIds String[]
+  proposedReaction String?
+  confidence     Float
+  expiresAt      DateTime @db.Timestamptz(3)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, expiresAt])
+}
+
+// -----------------------------------------------------------------------------
+// Médias / IA / modération
+// -----------------------------------------------------------------------------
+
+model MediaAsset {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  ownerUserId   String       @db.Uuid
+  purpose       MediaPurpose
+  status        MediaStatus  @default(UPLOAD_PENDING)
+  storageKey    String       @unique
+  mimeType      String?
+  bytes         Int?
+  width         Int?
+  height        Int?
+  durationMs    Int?
+  sha256        String?
+  retentionClass String
+  contextId     String?      @db.Uuid
+  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
+  finalizedAt   DateTime?    @db.Timestamptz(3)
+  purgeAfter    DateTime?    @db.Timestamptz(3)
+  purgedAt      DateTime?    @db.Timestamptz(3)
+
+  owner       User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  derivatives MediaDerivative[]
+
+  @@index([ownerUserId, purpose])
+  @@index([sha256])
+  @@index([purgeAfter])
+}
+
+model MediaDerivative {
+  id         String              @id @default(uuid(7)) @db.Uuid
+  assetId    String              @db.Uuid
+  kind       MediaDerivativeKind
+  storageKey String              @unique
+  width      Int?
+  height     Int?
+  createdAt  DateTime            @default(now()) @db.Timestamptz(3)
+
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetId, kind])
+}
+
+model AIJob {
+  id            String      @id @default(uuid(7)) @db.Uuid
+  kind          String
+  subjectType   String
+  subjectId     String      @db.Uuid
+  /// Hash contenu + version prompt + périmètre d'accès (cache/idempotence).
+  dedupKey      String      @unique
+  status        AIJobStatus @default(QUEUED)
+  provider      String
+  model         String?
+  promptVersion String?
+  attempts      Int         @default(0)
+  lastErrorCode String?
+  durationMs    Int?
+  inputTokens   Int?
+  outputTokens  Int?
+  costMicros    Int?
+  createdAt     DateTime    @default(now()) @db.Timestamptz(3)
+  finishedAt    DateTime?   @db.Timestamptz(3)
+  cancelledAt   DateTime?   @db.Timestamptz(3)
+
+  result AIResult?
+
+  @@index([status, createdAt])
+  @@index([subjectType, subjectId])
+}
+
+model AIResult {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  jobId     String   @unique @db.Uuid
+  output    Json
+  validated Boolean
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  job AIJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+/// Décision de modération (append-only, `supersedesId` pour une correction).
+model ModerationDecision {
+  id            String                @id @default(uuid(7)) @db.Uuid
+  subjectType   ModerationSubjectType
+  subjectId     String                @db.Uuid
+  messageId     String?               @db.Uuid
+  action        ModerationAction
+  source        DecisionSource
+  policyVersion String
+  provider      String?
+  reasonCode    String
+  signals       Json?
+  decidedById   String?               @db.Uuid
+  supersedesId  String?               @db.Uuid
+  createdAt     DateTime              @default(now()) @db.Timestamptz(3)
+
+  message Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([subjectType, subjectId, createdAt])
+}
+
+model ModerationCase {
+  id           String                @id @default(uuid(7)) @db.Uuid
+  subjectType  ModerationSubjectType
+  subjectId    String                @db.Uuid
+  status       CaseStatus            @default(OPEN)
+  priority     Int                   @default(2)
+  reasonCode   String
+  reportId     String?               @db.Uuid
+  assignedToId String?               @db.Uuid
+  dueAt        DateTime              @db.Timestamptz(3)
+  resolvedAt   DateTime?             @db.Timestamptz(3)
+  createdAt    DateTime              @default(now()) @db.Timestamptz(3)
+
+  report  Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  appeals Appeal[]
+
+  @@index([status, priority, dueAt])
+  @@index([subjectType, subjectId])
+}
+
+model Appeal {
+  id        String       @id @default(uuid(7)) @db.Uuid
+  caseId    String       @db.Uuid
+  userId    String       @db.Uuid
+  status    AppealStatus @default(OPEN)
+  createdAt DateTime     @default(now()) @db.Timestamptz(3)
+  resolvedAt DateTime?   @db.Timestamptz(3)
+
+  case ModerationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// Missions
+// -----------------------------------------------------------------------------
+
+model MissionDefinition {
+  id              String                  @id @default(uuid(7)) @db.Uuid
+  key             String
+  version         Int
+  status          MissionDefinitionStatus @default(DRAFT)
+  titleKey        String
+  criteria        Json
+  accessibleAlternative String?
+  linkXpMilli     Int
+  petXpMilli      Int
+  coins           Int
+  createdAt       DateTime                @default(now()) @db.Timestamptz(3)
+  publishedAt     DateTime?               @db.Timestamptz(3)
+
+  dailyMissions DailyMission[]
+
+  @@unique([key, version])
+}
+
+model DailyMission {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  definitionId String   @db.Uuid
+  zoneId       String   @db.Uuid
+  day          String
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  definition  MissionDefinition    @relation(fields: [definitionId], references: [id], onDelete: Restrict)
+  zone        Zone                 @relation(fields: [zoneId], references: [id], onDelete: Restrict)
+  submissions MissionSubmission[]
+  participants MissionParticipant[]
+  rewardContexts MissionRewardContext[]
+
+  @@unique([zoneId, day])
+}
+
+model MissionSubmission {
+  id             String                  @id @default(uuid(7)) @db.Uuid
+  dailyMissionId String                  @db.Uuid
+  userId         String                  @db.Uuid
+  contextId      String?                 @db.Uuid
+  mediaId        String?                 @db.Uuid
+  status         MissionSubmissionStatus @default(UPLOADED)
+  /// Horodatage serveur d'acceptation du dépôt (jamais l'heure client).
+  submittedAt    DateTime                @db.Timestamptz(3)
+  serverDay      String
+  decidedAt      DateTime?               @db.Timestamptz(3)
+  reasonCode     String?
+
+  dailyMission DailyMission         @relation(fields: [dailyMissionId], references: [id], onDelete: Restrict)
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  context      RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: SetNull)
+  awards       MissionAward[]
+
+  @@index([userId, serverDay])
+  @@index([status])
+}
+
+model MissionParticipant {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  dailyMissionId String   @db.Uuid
+  contextId      String   @db.Uuid
+  userId         String   @db.Uuid
+  validatedAt    DateTime? @db.Timestamptz(3)
+
+  dailyMission DailyMission        @relation(fields: [dailyMissionId], references: [id], onDelete: Restrict)
+  context      RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+  user         User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([dailyMissionId, contextId, userId])
+}
+
+/// Contexte figé (k, multiplicateur, version de règles) pour la récompense commune.
+model MissionRewardContext {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  contextId      String   @db.Uuid
+  dailyMissionId String   @db.Uuid
+  relDay         String
+  kMilli         Int
+  affinityMultMilli Int
+  rulesVersion   String
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+
+  context      RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
+  dailyMission DailyMission        @relation(fields: [dailyMissionId], references: [id], onDelete: Restrict)
+
+  @@unique([contextId, dailyMissionId, relDay])
+}
+
+model MissionAward {
+  id           String           @id @default(uuid(7)) @db.Uuid
+  /// Clé d'unicité : une récompense par clé (ex. mission:<ctx>:<daily>:<user>:BASE).
+  rewardKey    String           @unique
+  userId       String           @db.Uuid
+  submissionId String           @db.Uuid
+  kind         MissionAwardKind
+  linkXpMilli  Int
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+
+  user       User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  submission MissionSubmission @relation(fields: [submissionId], references: [id], onDelete: Restrict)
+}
+
+// -----------------------------------------------------------------------------
+// Social
+// -----------------------------------------------------------------------------
+
+/// Amitié Quartier : paire canonique d'utilisateurs (userLowId < userHighId, CHECK).
+model Friendship {
+  id          String           @id @default(uuid(7)) @db.Uuid
+  userLowId   String           @db.Uuid
+  userHighId  String           @db.Uuid
+  status      FriendshipStatus @default(PENDING)
+  invitedById String           @db.Uuid
+  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
+  acceptedAt  DateTime?        @db.Timestamptz(3)
+  endedAt     DateTime?        @db.Timestamptz(3)
+
+  userLow  User @relation("FriendLow", fields: [userLowId], references: [id], onDelete: Restrict)
+  userHigh User @relation("FriendHigh", fields: [userHighId], references: [id], onDelete: Restrict)
+
+  @@unique([userLowId, userHighId])
+  @@index([userHighId])
+}
+
+model Group {
+  id         String      @id @default(uuid(7)) @db.Uuid
+  name       String
+  status     GroupStatus @default(FORMING)
+  localKey   String?
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+  archivedAt DateTime?   @db.Timestamptz(3)
+
+  members      GroupMember[]
+  pairStates   GroupPairState[]
+  conversation Conversation?
+}
+
+model GroupMember {
+  id        String            @id @default(uuid(7)) @db.Uuid
+  groupId   String            @db.Uuid
+  userId    String            @db.Uuid
+  status    GroupMemberStatus @default(INVITED)
+  joinedAt  DateTime?         @db.Timestamptz(3)
+  leftAt    DateTime?         @db.Timestamptz(3)
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model GroupPairState {
+  id         String @id @default(uuid(7)) @db.Uuid
+  groupId    String @db.Uuid
+  pairId     String @db.Uuid
+  complicity Float  @default(20)
+
+  group Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  pair  PetPair @relation(fields: [pairId], references: [id], onDelete: Restrict)
+
+  @@unique([groupId, pairId])
+}
+
+model ReferralLink {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  code      String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  claims ReferralClaim[]
+}
+
+/// Un parrainage par filleul (refereeUserId unique) ; auto-parrainage interdit (CHECK).
+model ReferralClaim {
+  id             String              @id @default(uuid(7)) @db.Uuid
+  linkId         String              @db.Uuid
+  referrerUserId String              @db.Uuid
+  refereeUserId  String              @unique @db.Uuid
+  status         ReferralClaimStatus @default(PENDING_ACTIVATION)
+  claimedAt      DateTime            @db.Timestamptz(3)
+  rewardedAt     DateTime?           @db.Timestamptz(3)
+
+  link     ReferralLink @relation(fields: [linkId], references: [id], onDelete: Restrict)
+  referrer User         @relation("Referrer", fields: [referrerUserId], references: [id], onDelete: Restrict)
+  referee  User         @relation("Referee", fields: [refereeUserId], references: [id], onDelete: Restrict)
+}
+
+model AnonymousResponse {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  targetUserId     String    @db.Uuid
+  words            String[]
+  /// Hash du jeton anti-rejeu visiteur (pas d'IP brute).
+  visitorTokenHash String
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+  hiddenAt         DateTime? @db.Timestamptz(3)
+  reportedAt       DateTime? @db.Timestamptz(3)
+
+  target User @relation(fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@unique([targetUserId, visitorTokenHash])
+  @@index([targetUserId, createdAt])
+}
+
+model ReputationAggregate {
+  userId      String   @id @db.Uuid
+  wordCounts  Json
+  respondents Int      @default(0)
+  /// Composante M du matching [0,1000] ; 500 neutre.
+  scoreMilli  Int      @default(500)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// -----------------------------------------------------------------------------
+// Économie (modèles finalisés par C selon la demande de l'agent G ; module applicatif = G)
+// -----------------------------------------------------------------------------
+
+/// Solde ≥ 0 (CHECK SQL). Projection du ledger, mise à jour sous verrou (SELECT … FOR UPDATE).
+model Wallet {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @unique @db.Uuid
+  balance   Int      @default(0)
+  version   Int      @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  entries LedgerEntry[]
+}
+
+/// Écritures append-only (trigger SQL refuse UPDATE/DELETE). Corrections = contre-écritures.
+model LedgerEntry {
+  id              String       @id @default(uuid(7)) @db.Uuid
+  walletId        String       @db.Uuid
+  userId          String       @db.Uuid
+  /// Signé, CHECK amount <> 0.
+  amount          Int
+  balanceAfter    Int
+  reason          LedgerReason
+  source          LedgerSource
+  idempotencyKey  String       @unique
+  causeType       String
+  causeId         String?
+  /// Au plus une contre-écriture par écriture.
+  reversesEntryId String?      @unique @db.Uuid
+  actorUserId     String?      @db.Uuid
+  note            String?
+  metadata        Json         @default("{}")
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+
+  wallet     Wallet       @relation(fields: [walletId], references: [id], onDelete: Restrict)
+  reverses   LedgerEntry? @relation("LedgerReversal", fields: [reversesEntryId], references: [id], onDelete: Restrict)
+  reversedBy LedgerEntry? @relation("LedgerReversal")
+
+  @@index([walletId, createdAt(sort: Desc), id(sort: Desc)])
+}
+
+/// id = slug stable ('streak_freeze', 'visibility_boost', 'egg_rare_aurora'…). CHECK priceCoins > 0.
+model CatalogItem {
+  id           String          @id
+  kind         CatalogItemKind
+  priceCoins   Int
+  active       Boolean         @default(true)
+  perUserLimit Int?
+  stockLimit   Int?
+  soldCount    Int             @default(0)
+  metadata     Json            @default("{}")
+  version      Int             @default(1)
+  createdAt    DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime        @updatedAt @db.Timestamptz(3)
+
+  inventory InventoryItem[]
+}
+
+model InventoryItem {
+  id            String          @id @default(uuid(7)) @db.Uuid
+  userId        String          @db.Uuid
+  catalogItemId String
+  status        InventoryStatus @default(OWNED)
+  acquiredAt    DateTime        @db.Timestamptz(3)
+  activatedAt   DateTime?       @db.Timestamptz(3)
+  consumedAt    DateTime?       @db.Timestamptz(3)
+  consumedRef   String?
+  expiresAt     DateTime?       @db.Timestamptz(3)
+  ledgerEntryId String?         @unique @db.Uuid
+  commandId     String
+  metadata      Json            @default("{}")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  catalogItem  CatalogItem   @relation(fields: [catalogItemId], references: [id], onDelete: Restrict)
+  streakFreeze StreakFreeze?
+
+  @@index([userId, catalogItemId, status])
+  @@index([status, expiresAt])
+}
+
+/// id = identifiant produit store. Aucun prix stocké : il vient du store.
+model StoreProduct {
+  id            String           @id
+  kind          StoreProductKind
+  coinsAmount   Int?
+  entitlementId String?
+  active        Boolean          @default(true)
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+}
+
+/// UNIQUE (provider, environment, storeTransactionId) = « crédité une seule fois ».
+model StoreTransaction {
+  id                  String                 @id @default(uuid(7)) @db.Uuid
+  userId              String                 @db.Uuid
+  provider            BillingProviderKind
+  environment         BillingEnvironment
+  store               String
+  storeTransactionId  String
+  productId           String
+  kind                StoreProductKind
+  purchasedAt         DateTime               @db.Timestamptz(3)
+  status              StoreTransactionStatus @default(RECORDED)
+  coinsCredited       Int                    @default(0)
+  ledgerEntryId       String?                @unique @db.Uuid
+  refundLedgerEntryId String?                @unique @db.Uuid
+  refundedAt          DateTime?              @db.Timestamptz(3)
+  createdAt           DateTime               @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, environment, storeTransactionId])
+  @@index([userId])
+}
+
+model Subscription {
+  id                    String              @id @default(uuid(7)) @db.Uuid
+  userId                String              @db.Uuid
+  provider              BillingProviderKind
+  environment           BillingEnvironment
+  entitlementId         String
+  productId             String?
+  store                 String?
+  state                 SubscriptionState
+  periodType            String?
+  originalTransactionId String?
+  startedAt             DateTime?           @db.Timestamptz(3)
+  currentPeriodEndsAt   DateTime?           @db.Timestamptz(3)
+  gracePeriodEndsAt     DateTime?           @db.Timestamptz(3)
+  cancelledAt           DateTime?           @db.Timestamptz(3)
+  refundedAt            DateTime?           @db.Timestamptz(3)
+  revokedAt             DateTime?           @db.Timestamptz(3)
+  /// event_timestamp_ms du dernier événement appliqué (ordre / désordre).
+  lastProviderEventAt   DateTime?           @db.Timestamptz(3)
+  lastReconciledAt      DateTime?           @db.Timestamptz(3)
+  version               Int                 @default(0)
+  createdAt             DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime            @updatedAt @db.Timestamptz(3)
+
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  entitlements    EntitlementGrant[]
+  monthlyBenefits MonthlyBenefitGrant[]
+
+  @@unique([userId, provider, environment, entitlementId])
+  @@index([state, currentPeriodEndsAt])
+}
+
+/// Droit actif. Un droit DERIVED_PARTNER porte derivedFromUserId + relationshipId et n'est
+/// jamais lui-même source d'un autre droit (non transitif — contrôle applicatif G + CHECK).
+/// UNIQUE partiel (beneficiary, entitlement, source, subscription, relationship) WHERE revokedAt IS NULL (SQL).
+model EntitlementGrant {
+  id                String             @id @default(uuid(7)) @db.Uuid
+  beneficiaryUserId String             @db.Uuid
+  entitlementId     String
+  source            EntitlementSource
+  environment       BillingEnvironment
+  subscriptionId    String?            @db.Uuid
+  derivedFromUserId String?            @db.Uuid
+  relationshipId    String?            @db.Uuid
+  startsAt          DateTime           @db.Timestamptz(3)
+  endsAt            DateTime?          @db.Timestamptz(3)
+  revokedAt         DateTime?          @db.Timestamptz(3)
+  revokeReason      String?
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+
+  beneficiary  User                 @relation("EntitlementHolder", fields: [beneficiaryUserId], references: [id], onDelete: Restrict)
+  derivedFrom  User?                @relation("EntitlementGrantor", fields: [derivedFromUserId], references: [id], onDelete: Restrict)
+  subscription Subscription?        @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+  relationship RelationshipContext? @relation(fields: [relationshipId], references: [id], onDelete: Restrict)
+
+  @@index([beneficiaryUserId, revokedAt])
+  @@index([derivedFromUserId])
+}
+
+model MonthlyBenefitGrant {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  userId         String   @db.Uuid
+  /// 'YYYY-MM' UTC — un versement par titulaire et par période.
+  period         String
+  subscriptionId String   @db.Uuid
+  ledgerEntryId  String   @unique @db.Uuid
+  freezesGranted Int
+  coinsGranted   Int
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  subscription  Subscription   @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+  streakFreezes StreakFreeze[]
+
+  @@unique([userId, period])
+}
+
+/// Traitement de webhook idempotent : (provider, providerEventId) unique.
+model ProviderWebhookEvent {
+  id              String             @id @default(uuid(7)) @db.Uuid
+  provider        String
+  providerEventId String
+  environment     BillingEnvironment
+  eventType       String
+  appUserId       String?
+  eventTimestamp  DateTime           @db.Timestamptz(3)
+  receivedAt      DateTime           @default(now()) @db.Timestamptz(3)
+  processedAt     DateTime?          @db.Timestamptz(3)
+  status          WebhookStatus      @default(RECEIVED)
+  attempts        Int                @default(0)
+  lastError       String?
+  payload         Json
+
+  @@unique([provider, providerEventId])
+  @@index([status, receivedAt])
+}
+
+// -----------------------------------------------------------------------------
+// Progression
+// -----------------------------------------------------------------------------
+
+model Streak {
+  userId           String   @id @db.Uuid
+  length           Int      @default(0)
+  longestLength    Int      @default(0)
+  /// 'YYYY-MM-DD' calendrier serveur.
+  lastQualifiedDay String?
+  /// Max(jour qualifié, jour protégé par gel).
+  lastCoveredDay   String?
+  timeZone         String
+  calendarVersion  Int      @default(1)
+  version          Int      @default(0)
+  updatedAt        DateTime @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// UNIQUE partiel (userId, protectedDay) WHERE protectedDay IS NOT NULL (SQL).
+model StreakFreeze {
+  id                    String             @id @default(uuid(7)) @db.Uuid
+  userId                String             @db.Uuid
+  source                StreakFreezeSource
+  status                StreakFreezeStatus @default(AVAILABLE)
+  grantedAt             DateTime           @db.Timestamptz(3)
+  consumedAt            DateTime?          @db.Timestamptz(3)
+  protectedDay          String?
+  inventoryItemId       String?            @unique @db.Uuid
+  monthlyBenefitGrantId String?            @db.Uuid
+  expiresAt             DateTime?          @db.Timestamptz(3)
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inventoryItem       InventoryItem?       @relation(fields: [inventoryItemId], references: [id], onDelete: Restrict)
+  monthlyBenefitGrant MonthlyBenefitGrant? @relation(fields: [monthlyBenefitGrantId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status])
+}
+
+model LeagueSeason {
+  id          String             @id @default(uuid(7)) @db.Uuid
+  kind        LeagueKind
+  tier        Int                @default(1)
+  weekKey     String
+  timezone    String
+  status      LeagueSeasonStatus @default(OPEN)
+  endsAt      DateTime           @db.Timestamptz(3)
+  finalizedAt DateTime?          @db.Timestamptz(3)
+
+  memberships LeagueMembership[]
+  rewards     LeagueReward[]
+
+  @@unique([kind, tier, weekKey])
+}
+
+model LeagueMembership {
+  id          String @id @default(uuid(7)) @db.Uuid
+  seasonId    String @db.Uuid
+  subjectType String
+  subjectId   String @db.Uuid
+  points      Int    @default(0)
+
+  season LeagueSeason  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  scores LeagueScore[]
+
+  @@unique([seasonId, subjectType, subjectId])
+  @@index([seasonId, points])
+}
+
+model LeagueScore {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  membershipId String   @db.Uuid
+  eventKey     String   @unique
+  points       Int
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  membership LeagueMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+}
+
+model LeagueReward {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  seasonId    String   @db.Uuid
+  subjectType String
+  subjectId   String   @db.Uuid
+  rank        Int
+  coins       Int
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  season LeagueSeason @relation(fields: [seasonId], references: [id], onDelete: Restrict)
+
+  @@unique([seasonId, subjectType, subjectId])
+}
+
+// -----------------------------------------------------------------------------
+// Famille
+// -----------------------------------------------------------------------------
+
+model Egg {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  contextId      String    @db.Uuid
+  status         EggStatus @default(INCUBATING)
+  timezone       String
+  warmthRaw      Int       @default(0)
+  nightsValidated Int      @default(0)
+  seed           String
+  /// Naissance unique : un seul pet enfant par œuf.
+  childPetId     String?   @unique @db.Uuid
+  readyAt        DateTime? @db.Timestamptz(3)
+  hatchedAt      DateTime? @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+
+  context   RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Restrict)
+  childPet  Pet?                @relation("EggChild", fields: [childPetId], references: [id], onDelete: Restrict)
+  nights    IncubationNight[]
+  birthVotes BirthVote[]
+  childData ChildPetData?
+
+  @@index([contextId])
+}
+
+model IncubationNight {
+  id             String                @id @default(uuid(7)) @db.Uuid
+  eggId          String                @db.Uuid
+  /// Identifiant logique unique de la nuit (1..n).
+  logicalIndex   Int
+  status         IncubationNightStatus @default(OPEN)
+  opensAt        DateTime              @db.Timestamptz(3)
+  closesAt       DateTime              @db.Timestamptz(3)
+  validatedOnRelDay String?
+  warmthGained   Int                   @default(0)
+
+  egg     Egg                @relation(fields: [eggId], references: [id], onDelete: Cascade)
+  answers IncubationAnswer[]
+
+  @@unique([eggId, logicalIndex])
+  @@index([status, closesAt])
+}
+
+/// Réponse secrète ; révélée ensemble quand les deux ont répondu.
+model IncubationAnswer {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  nightId     String   @db.Uuid
+  questionKey String
+  userId      String   @db.Uuid
+  answer      String
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  night IncubationNight @relation(fields: [nightId], references: [id], onDelete: Cascade)
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([nightId, questionKey, userId])
+}
+
+model BirthVote {
+  id               String   @id @default(uuid(7)) @db.Uuid
+  eggId            String   @db.Uuid
+  userId           String   @db.Uuid
+  name             String
+  moderationStatus String   @default("PENDING")
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
+
+  egg  Egg  @relation(fields: [eggId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eggId, userId])
+}
+
+model ChildPetData {
+  petId         String @id @db.Uuid
+  eggId         String @unique @db.Uuid
+  inheritedAxes Json
+  bodyFromPetId String? @db.Uuid
+  detailFromPetId String? @db.Uuid
+  seed          String
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+  egg Egg @relation(fields: [eggId], references: [id], onDelete: Restrict)
+}
+
+model CustodySchedule {
+  id                  String    @id @default(uuid(7)) @db.Uuid
+  childPetId          String    @unique @db.Uuid
+  timezone            String
+  currentHolderUserId String?   @db.Uuid
+  weekKey             String
+  operationalOverride Boolean   @default(false)
+  transferredAt       DateTime? @db.Timestamptz(3)
+
+  childPet      Pet   @relation(fields: [childPetId], references: [id], onDelete: Cascade)
+  currentHolder User? @relation(fields: [currentHolderUserId], references: [id], onDelete: SetNull)
+}
+
+model CoparentLink {
+  id         String         @id @default(uuid(7)) @db.Uuid
+  childPetId String         @db.Uuid
+  userId     String         @db.Uuid
+  status     CoparentStatus @default(ACTIVE)
+  /// Projection de soin indépendante (après blocage) — figée puis propre à ce parent.
+  independentProjection Json?
+  createdAt  DateTime       @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([childPetId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// Confiance / sécurité
+// -----------------------------------------------------------------------------
+
+model Block {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  blockerId String   @db.Uuid
+  blockedId String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId])
+}
+
+model Report {
+  id             String         @id @default(uuid(7)) @db.Uuid
+  reporterId     String         @db.Uuid
+  reportedUserId String         @db.Uuid
+  contextId      String?        @db.Uuid
+  category       ReportCategory
+  safetyExit     Boolean        @default(false)
+  status         ReportStatus   @default(OPEN)
+  subjectRef     String?
+  createdAt      DateTime       @default(now()) @db.Timestamptz(3)
+
+  reporter User                 @relation("Reporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  reported User                 @relation("Reported", fields: [reportedUserId], references: [id], onDelete: Restrict)
+  context  RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: SetNull)
+  cases    ModerationCase[]
+
+  @@index([reportedUserId, status])
+}
+
+/// Une pénalité par épisode : unique (userId, reason, episodeKey).
+model ReliabilityEvent {
+  id          String            @id @default(uuid(7)) @db.Uuid
+  userId      String            @db.Uuid
+  contextId   String?           @db.Uuid
+  reason      ReliabilityReason
+  delta       Int
+  episodeKey  String
+  correctedById String?         @db.Uuid
+  correctsEventId String?       @db.Uuid
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, reason, episodeKey])
+}
+
+model SafetyDate {
+  id           String           @id @default(uuid(7)) @db.Uuid
+  contextId    String           @db.Uuid
+  placeRef     String
+  scheduledAt  DateTime         @db.Timestamptz(3)
+  status       SafetyDateStatus @default(PROPOSED)
+  confirmations Json            @default("{}")
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+
+  context     RelationshipContext  @relation(fields: [contextId], references: [id], onDelete: Restrict)
+  invitations GuardianInvitation[]
+  checkIns    SafetyCheckIn[]
+}
+
+model GuardianInvitation {
+  id             String                   @id @default(uuid(7)) @db.Uuid
+  safetyDateId   String                   @db.Uuid
+  sharerUserId   String                   @db.Uuid
+  guardianUserId String                   @db.Uuid
+  status         GuardianInvitationStatus @default(PENDING)
+  expiresAt      DateTime                 @db.Timestamptz(3)
+  createdAt      DateTime                 @default(now()) @db.Timestamptz(3)
+
+  safetyDate SafetyDate     @relation(fields: [safetyDateId], references: [id], onDelete: Cascade)
+  sharer     User           @relation("GuardianSharer", fields: [sharerUserId], references: [id], onDelete: Cascade)
+  guardian   User           @relation("GuardianGuardian", fields: [guardianUserId], references: [id], onDelete: Cascade)
+  shares     LocationShare[]
+}
+
+model LocationShare {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  invitationId String    @db.Uuid
+  startsAt     DateTime  @db.Timestamptz(3)
+  /// ≤ 3 h après startsAt (CHECK).
+  endsAt       DateTime  @db.Timestamptz(3)
+  revokedAt    DateTime? @db.Timestamptz(3)
+
+  invitation GuardianInvitation  @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  points     SafetyLocationPoint[]
+}
+
+/// Positions de sécurité : stockage séparé, rétention minimale (purge job).
+model SafetyLocationPoint {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  shareId    String   @db.Uuid
+  lat        Float
+  lng        Float
+  accuracyM  Int?
+  recordedAt DateTime @db.Timestamptz(3)
+
+  share LocationShare @relation(fields: [shareId], references: [id], onDelete: Cascade)
+
+  @@index([shareId, recordedAt])
+}
+
+model SafetyCheckIn {
+  id           String        @id @default(uuid(7)) @db.Uuid
+  safetyDateId String        @db.Uuid
+  userId       String        @db.Uuid
+  dueAt        DateTime      @db.Timestamptz(3)
+  status       CheckInStatus @default(SCHEDULED)
+  respondedAt  DateTime?     @db.Timestamptz(3)
+
+  safetyDate SafetyDate @relation(fields: [safetyDateId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, dueAt])
+}
+
+// -----------------------------------------------------------------------------
+// Exploitation
+// -----------------------------------------------------------------------------
+
+/// Idempotence des commandes : (actorId, operation, commandId) unique.
+model CommandRecord {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  actorId     String        @db.Uuid
+  operation   String
+  commandId   String        @db.Uuid
+  payloadHash String
+  status      CommandStatus @default(IN_PROGRESS)
+  result      Json?
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  completedAt DateTime?     @db.Timestamptz(3)
+
+  actor User @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@unique([actorId, operation, commandId])
+  @@index([createdAt])
+}
+
+/// Journal d'événements métier générique (agrégats hors relation : pet, user…).
+model DomainEvent {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  aggregateType String
+  aggregateId   String   @db.Uuid
+  seq           Int
+  type          String
+  actorUserId   String?  @db.Uuid
+  payload       Json
+  occurredAt    DateTime @db.Timestamptz(3)
+
+  @@unique([aggregateType, aggregateId, seq])
+  @@index([occurredAt])
+}
+
+/// Outbox transactionnelle : écrite dans la même transaction que l'effet métier.
+model OutboxEvent {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  topic         String
+  aggregateType String
+  aggregateId   String    @db.Uuid
+  payload       Json
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  availableAt   DateTime  @default(now()) @db.Timestamptz(3)
+  publishedAt   DateTime? @db.Timestamptz(3)
+  attempts      Int       @default(0)
+  lastError     String?
+
+  @@index([publishedAt, availableAt])
+}
+
+/// Effet consommateur appliqué une seule fois : PK (consumer, eventId).
+model ConsumerDeduplication {
+  consumer    String
+  eventId     String   @db.Uuid
+  processedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@id([consumer, eventId])
+}
+
+/// Projection par destinataire (curseur WS opaque, aucune trace des événements privés omis).
+model ProjectionEntry {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  recipientId String   @db.Uuid
+  seq         Int
+  sourceEventId String @db.Uuid
+  room        String
+  type        String
+  aggregateId String   @db.Uuid
+  payload     Json
+  occurredAt  DateTime @db.Timestamptz(3)
+
+  recipient User @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([recipientId, seq])
+  @@unique([recipientId, sourceEventId])
+  @@index([recipientId, room, seq])
+}
+
+/// Compteur de séquence de projection par destinataire.
+model ProjectionCursor {
+  recipientId String @id @db.Uuid
+  lastSeq     Int    @default(0)
+}
+
+model JobExecution {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  /// Clé métier d'unicité (ex. matching:<zone>:<date>).
+  jobKey     String    @unique
+  jobName    String
+  status     JobStatus @default(RUNNING)
+  startedAt  DateTime  @db.Timestamptz(3)
+  finishedAt DateTime? @db.Timestamptz(3)
+  stats      Json?
+  error      String?
+
+  @@index([jobName, startedAt])
+}
+
+model Notification {
+  id         String               @id @default(uuid(7)) @db.Uuid
+  userId     String               @db.Uuid
+  category   NotificationCategory
+  dedupKey   String
+  groupKey   String?
+  templateKey String
+  data       Json
+  status     NotificationStatus   @default(QUEUED)
+  localDay   String
+  createdAt  DateTime             @default(now()) @db.Timestamptz(3)
+  sentAt     DateTime?            @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dedupKey])
+  @@index([userId, localDay, status])
+}
+
+model NotificationPreference {
+  id       String               @id @default(uuid(7)) @db.Uuid
+  userId   String               @db.Uuid
+  category NotificationCategory
+  enabled  Boolean              @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+}
+
+/// Versions immuables de tuning/contenu (replay, rollback).
+model ConfigVersion {
+  id               String     @id @default(uuid(7)) @db.Uuid
+  kind             ConfigKind
+  version          String
+  payload          Json
+  authorId         String?    @db.Uuid
+  activatedAt      DateTime?  @db.Timestamptz(3)
+  minClientVersion String?
+  createdAt        DateTime   @default(now()) @db.Timestamptz(3)
+
+  @@unique([kind, version])
+  @@index([kind, activatedAt])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  actorUserId String?  @db.Uuid
+  actorRole   String?
+  action      String
+  targetType  String
+  targetId    String?
+  reason      String?
+  data        Json?
+  requestId   String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([targetType, targetId])
+  @@index([actorUserId, createdAt])
+}
+
+model DataExport {
+  id          String       @id @default(uuid(7)) @db.Uuid
+  userId      String       @db.Uuid
+  status      ExportStatus @default(REQUESTED)
+  storageKey  String?
+  requestedAt DateTime     @default(now()) @db.Timestamptz(3)
+  readyAt     DateTime?    @db.Timestamptz(3)
+  expiresAt   DateTime?    @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+model DeletionRequest {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  userId      String         @db.Uuid
+  status      DeletionStatus @default(REQUESTED)
+  requestedAt DateTime       @default(now()) @db.Timestamptz(3)
+  completedAt DateTime?      @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+}

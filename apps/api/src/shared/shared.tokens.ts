@@ -1,0 +1,20 @@
+/** Point d'entrée des jetons d'injection transverses (une seule définition). */
+export { APP_CONFIG } from '../config/env.js';
+export { CLOCK, RANDOM } from './application/clock.js';
+export { UNIT_OF_WORK } from './application/unit-of-work.js';
+export { COMMAND_BUS, IDEMPOTENCY_STORE } from './application/command-bus.js';
+export { ENTITLEMENTS_READER } from './application/ports/entitlements-reader.port.js';
+export { RELATIONSHIP_READER } from './application/ports/relationship-reader.port.js';
+export { BLOCK_READER } from './application/ports/block-reader.port.js';
+export { REALTIME_PUBLISHER } from './application/ports/realtime.port.js';
+export { DB } from './infrastructure/prisma/prisma.service.js';
+export { LOGGER } from './infrastructure/logging/logger.js';
+export { SESSION_RESOLVER } from './interface/auth.guard.js';
+export const REDIS = Symbol('Redis');
+export { EVENT_PUBLISHER } from './application/event-publisher.js';
+export { PROJECTION_READER, PROJECTION_WRITER } from './application/projection.js';
+export { PARTICIPATION_READER } from './application/ports/participation.reader.js';
+export { ENGINE_GATEWAY } from './application/ports/engine.gateway.js';
+export { RELATIONSHIP_CREATOR } from './application/ports/relationship-creator.port.js';
+export { LINK_PROGRESS_PORT } from './application/ports/link-progress.port.js';
+export { SHARED_ACTION_PORT } from './application/ports/shared-action.port.js';

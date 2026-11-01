@@ -15,7 +15,7 @@
     "db:migrate": "pnpm --filter @blowy/database run migrate:dev",
     "db:migrate:deploy": "pnpm --filter @blowy/database run migrate:deploy",
     "db:seed": "pnpm --filter @blowy/database run seed",
-    "dev": "turbo run dev --filter=@blowy/api --filter=@blowy/admin --filter=@blowy/web",
+    "dev": "turbo run dev --filter=@blowy/api",
     "dev:mobile": "pnpm --filter @blowy/mobile run start",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
@@ -26,7 +26,9 @@
     "simulate:balance": "pnpm --filter @blowy/pet-engine run simulate",
     "build": "turbo run build",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "dev:all": "turbo run dev --filter=@blowy/api --filter=@blowy/admin --filter=@blowy/web",
+    "dev:worker": "pnpm --filter @blowy/api run dev:worker"
   },
   "devDependencies": {
     "@eslint/js": "^10",

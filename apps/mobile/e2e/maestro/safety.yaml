@@ -1,0 +1,22 @@
+# NON EXÉCUTÉ : pas de simulateur. Bloquer hors ligne : masquage local immédiat + priorité de synchro.
+appId: app.blowy
+---
+- launchApp
+- tapOn:
+    id: "tab-chats"
+- tapOn:
+    id: "chat-row-.*"
+- setAirplaneMode: enabled
+- tapOn:
+    id: "chat-menu"
+- tapOn:
+    id: "menu-block"
+- tapOn:
+    id: "confirm-block"
+- assertVisible: "Bloqué localement · en attente de confirmation du serveur"
+- setAirplaneMode: disabled
+# Bouton d'aide indépendant de l'API (ouvre le composeur téléphonique)
+- tapOn:
+    id: "chat-menu"
+- assertVisible:
+    id: "menu-help"

@@ -1,0 +1,49 @@
+# NON EXÉCUTÉ : pas de simulateur/appareil dans l'environnement de développement (2026-11-01).
+# Prérequis : compte local onboardé (onboarding.yaml), API locale avec pets/relationships montés
+# et données de démonstration (seed C). Si l'endpoint pets n'est pas livré, l'écran affiche
+# « Pas encore disponible » : le flux s'arrête à cette assertion.
+appId: app.blowy
+---
+- launchApp
+- assertVisible:
+    id: "screen-nest"
+- assertVisible:
+    id: "nest-scene"
+# Action personnelle : pending puis confirmation serveur
+- tapOn:
+    id: "action-FEED"
+- assertVisible: "En attente de confirmation"
+- extendedWaitUntil:
+    notVisible: "En attente de confirmation"
+    timeout: 10000
+# Hors ligne : soins mis en file (mode avion requis sur l'appareil)
+- setAirplaneMode: enabled
+- tapOn:
+    id: "action-HEAL"
+- assertVisible:
+    id: "offline-banner"
+- setAirplaneMode: disabled
+# Fiche et boutique
+- tapOn:
+    id: "nest-fiche"
+- assertVisible:
+    id: "screen-fiche"
+- tapOn:
+    id: "header-back"
+- tapOn:
+    id: "nest-coins"
+- assertVisible:
+    id: "screen-shop"
+- tapOn:
+    id: "header-back"
+# Onglets
+- tapOn:
+    id: "tab-chats"
+- assertVisible:
+    id: "screen-chats"
+- tapOn:
+    id: "tab-profile"
+- assertVisible:
+    id: "screen-profile"
+- tapOn:
+    id: "tab-nest"

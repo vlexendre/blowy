@@ -7,12 +7,15 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src test",
-    "dev": "tsx watch src/main.ts",
-    "dev:worker": "tsx watch src/worker.ts",
-    "start": "node dist/main.js",
-    "start:worker": "node dist/worker.js",
+    "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
+    "dev:worker": "tsx watch --env-file-if-exists=.env src/worker.ts",
+    "start": "node --env-file-if-exists=.env dist/main.js",
+    "start:worker": "node --env-file-if-exists=.env dist/worker.js",
     "test": "vitest run --project unit",
-    "test:integration": "vitest run --project integration"
+    "test:integration": "vitest run --project integration",
+    "predev": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --output-logs=errors-only",
+    "predev:worker": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --output-logs=errors-only",
+    "pretest:integration": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --output-logs=errors-only"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",
@@ -41,7 +44,10 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^12.3.2",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.19.0",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.1",
     "socket.io-client": "^4.8.4",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",

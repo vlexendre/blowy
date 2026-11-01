@@ -1,0 +1,136 @@
+/**
+ * Transactions et verrouillage ordonné.
+ *
+ * Ordre global imposé (anti-deadlock) : users → pets → relations → wallets ;
+ * à l'intérieur d'une classe, tri lexicographique des identifiants.
+ * Les verrous sont pris par `SELECT … FOR UPDATE` dans la transaction courante.
+ */
+import { Prisma } from './generated/prisma/client.js';
+import type { Db } from './client.js';
+
+export type Tx = Prisma.TransactionClient;
+
+export const LOCK_ORDER = ['User', 'Pet', 'RelationshipContext', 'Wallet'] as const;
+export type LockClass = (typeof LOCK_ORDER)[number];
+
+/** Colonne de clé verrouillée par classe. */
+const LOCK_KEY: Record<LockClass, string> = {
+  User: 'id',
+  Pet: 'id',
+  RelationshipContext: 'id',
+  Wallet: 'userId',
+};
+
+export class LockOrderViolation extends Error {
+  constructor(prev: LockClass, next: LockClass) {
+    super(`Ordre de verrouillage violé : ${next} après ${prev}`);
+  }
+}
+
+/**
+ * Verrouilleur d'une transaction : refuse de reprendre une classe antérieure
+ * (garantit l'ordre global même si un use case l'oublie).
+ */
+export class OrderedLocker {
+  private lastIndex = -1;
+  private readonly held = new Set<string>();
+
+  constructor(private readonly tx: Tx) {}
+
+  async lock(cls: LockClass, ids: readonly string[]): Promise<void> {
+    const idx = LOCK_ORDER.indexOf(cls);
+    if (idx < this.lastIndex) throw new LockOrderViolation(LOCK_ORDER[this.lastIndex]!, cls);
+    const todo = [...new Set(ids)].filter((id) => !this.held.has(`${cls}:${id}`)).sort();
+    if (idx === this.lastIndex && todo.length > 0) {
+      // Même classe reprise plus tard : autorisé uniquement si tous les nouveaux ids sont > aux précédents.
+      const maxHeld = [...this.held].filter((k) => k.startsWith(`${cls}:`)).map((k) => k.slice(cls.length + 1)).sort().at(-1);
+      if (maxHeld && todo[0]! < maxHeld) {
+        throw new LockOrderViolation(cls, cls);
+      }
+    }
+    this.lastIndex = Math.max(this.lastIndex, idx);
+    if (todo.length === 0) return;
+    const key = LOCK_KEY[cls];
+    await this.tx.$queryRawUnsafe(
+      `SELECT 1 FROM "${cls}" WHERE "${key}" = ANY($1::uuid[]) ORDER BY "${key}" FOR UPDATE`,
+      todo,
+    );
+    for (const id of todo) this.held.add(`${cls}:${id}`);
+  }
+
+  users(ids: readonly string[]) {
+    return this.lock('User', ids);
+  }
+  pets(ids: readonly string[]) {
+    return this.lock('Pet', ids);
+  }
+  relationships(ids: readonly string[]) {
+    return this.lock('RelationshipContext', ids);
+  }
+  wallets(userIds: readonly string[]) {
+    return this.lock('Wallet', userIds);
+  }
+}
+
+const RETRYABLE_PG = new Set(['40001', '40P01']); // serialization_failure, deadlock_detected
+
+/** Détecte deadlock / échec de sérialisation (via adapter pg ou erreur Prisma P2034). */
+export function isRetryableTxError(err: unknown): boolean {
+  let cur: unknown = err;
+  for (let depth = 0; depth < 6 && cur; depth++) {
+    const e = cur as { code?: unknown; cause?: unknown; meta?: { code?: unknown } };
+    if (e.code === 'P2034') return true;
+    if (typeof e.code === 'string' && RETRYABLE_PG.has(e.code)) return true;
+    if (e.meta && typeof e.meta.code === 'string' && RETRYABLE_PG.has(e.meta.code)) return true;
+    const msg = (cur as Error).message;
+    if (typeof msg === 'string' && /deadlock detected|could not serialize access/i.test(msg)) return true;
+    cur = e.cause;
+  }
+  return false;
+}
+
+/** Violation d'unicité (P2002 ou 23505). */
+export function isUniqueViolation(err: unknown): boolean {
+  let cur: unknown = err;
+  for (let depth = 0; depth < 6 && cur; depth++) {
+    const e = cur as { code?: unknown; cause?: unknown };
+    if (e.code === 'P2002' || e.code === '23505') return true;
+    const msg = (cur as Error).message;
+    if (typeof msg === 'string' && /unique constraint|duplicate key/i.test(msg)) return true;
+    cur = e.cause;
+  }
+  return false;
+}
+
+export interface TxOptions {
+  maxAttempts?: number;
+  isolationLevel?: Prisma.TransactionIsolationLevel;
+  timeoutMs?: number;
+}
+
+/**
+ * Exécute `fn` dans une transaction avec retry borné (deadlock/sérialisation)
+ * et backoff exponentiel court. `fn` doit être pure vis-à-vis de l'extérieur
+ * (aucun appel réseau sous verrou).
+ */
+export async function runInTransaction<T>(
+  db: Db,
+  fn: (tx: Tx, locker: OrderedLocker) => Promise<T>,
+  opts: TxOptions = {},
+): Promise<T> {
+  const max = opts.maxAttempts ?? 4;
+  let attempt = 0;
+  for (;;) {
+    attempt++;
+    try {
+      return await db.$transaction((tx) => fn(tx, new OrderedLocker(tx)), {
+        isolationLevel: opts.isolationLevel ?? Prisma.TransactionIsolationLevel.ReadCommitted,
+        timeout: opts.timeoutMs ?? 15_000,
+        maxWait: 10_000,
+      });
+    } catch (err) {
+      if (attempt >= max || !isRetryableTxError(err)) throw err;
+      await new Promise((r) => setTimeout(r, 15 * 2 ** attempt + Math.floor(attempt * 7)));
+    }
+  }
+}

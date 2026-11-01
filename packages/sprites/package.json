@@ -9,16 +9,23 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./sources": {
+      "types": "./dist/data/asset-sources.d.ts",
+      "default": "./dist/data/asset-sources.js"
+    },
+    "./assets/*": "./assets/*"
   },
   "files": [
-    "dist"
+    "dist",
+    "assets"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "scan": "python3 -I scripts/scan_assets.py"
   },
   "dependencies": {
     "@blowy/domain": "workspace:*"

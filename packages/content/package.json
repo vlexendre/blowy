@@ -9,22 +9,28 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./locales/fr.json": "./locales/fr.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "locales"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json && tsx scripts/write-locales.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p scripts/tsconfig.json",
     "lint": "eslint src",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "locales": "tsx scripts/write-locales.ts"
   },
   "dependencies": {
     "@blowy/domain": "workspace:*",
+    "@blowy/tuning": "workspace:*",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/node": "22.20.5",
+    "tsx": "4.23.15",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
   }

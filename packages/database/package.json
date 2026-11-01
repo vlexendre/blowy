@@ -17,12 +17,14 @@
   "scripts": {
     "generate": "prisma generate",
     "build": "prisma generate && tsc -p tsconfig.json",
-    "typecheck": "prisma generate && tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src",
+    "typecheck": "prisma generate && tsc -p tsconfig.json --noEmit && tsc -p tsconfig.seed.json",
+    "lint": "eslint src --ignore-pattern src/generated",
     "test": "vitest run --passWithNoTests",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
-    "seed": "tsx src/seed/index.ts"
+    "seed": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --output-logs=errors-only && tsx src/seed/index.ts",
+    "migrate:test": "DATABASE_URL=${DATABASE_URL_TEST:-postgresql://blowy:blowy@localhost:5432/blowy_test} prisma migrate deploy",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "7.10.1",
