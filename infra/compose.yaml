@@ -6,14 +6,16 @@ services:
       POSTGRES_USER: blowy
       POSTGRES_PASSWORD: blowy
       POSTGRES_DB: blowy
-    ports: ['5432:5432']
+    # Surchargeable si un Postgres natif (Homebrew, Postgres.app) occupe déjà 5432 :
+    # BLOWY_PG_PORT=5433 pnpm infra:up  puis  DATABASE_URL=postgresql://blowy:blowy@localhost:5433/blowy
+    ports: ['${BLOWY_PG_PORT:-5432}:5432']
     volumes: ['pg:/var/lib/postgresql/data', './postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro']
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U blowy']
       interval: 5s
   redis:
     image: redis:7-alpine
-    ports: ['6379:6379']
+    ports: ['${BLOWY_REDIS_PORT:-6379}:6379']
   # Stockage S3 local. MinIO a retiré minio/minio de Docker Hub (et l'image Quay renvoie 401) :
   # on utilise la build Chainguard du même serveur MinIO, même API S3. Voir docs/decisions.md D-009.
   s3:
