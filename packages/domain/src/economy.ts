@@ -10,7 +10,8 @@ export type LedgerReason =
   | 'LEAGUE_REWARD'
   | 'SHARE_CARD_CREATED'
   | 'STAFF_CORRECTION'
-  | 'REFUND_REVERSAL';
+  | 'REFUND_REVERSAL'
+  | 'BOOST_NOT_CONSUMED_REFUND';
 
 export type EntitlementKey =
   | 'PLUS_DATE_SLOTS'
