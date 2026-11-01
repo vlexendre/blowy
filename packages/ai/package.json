@@ -1,0 +1,36 @@
+{
+  "name": "@blowy/ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "IA serveur Blowy (SERVER-ONLY) : interfaces, adaptateurs OpenAI réels et locaux déterministes, prompts versionnés, politique, évaluations.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "eval:live": "tsx src/eval/live.ts"
+  },
+  "dependencies": {
+    "@blowy/content": "workspace:*",
+    "openai": "7.47.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

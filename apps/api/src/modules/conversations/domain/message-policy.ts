@@ -20,6 +20,16 @@ export function canTransition(from: MessageStatus, to: MessageStatus): boolean {
   return TRANSITIONS[from].includes(to);
 }
 
+/**
+ * Décision HUMAINE (correction, recours) : depuis tout statut décidé vers une issue décidée ;
+ * retrait seulement d'un contenu visible. Jamais vers PENDING/DRAFT ; WITHDRAWN est final.
+ */
+export function canHumanTransition(from: MessageStatus, to: MessageStatus): boolean {
+  if (from === 'WITHDRAWN' || from === to) return false;
+  if (to === 'WITHDRAWN') return from === 'PUBLISHED' || from === 'WARNED';
+  return ['PUBLISHED', 'WARNED', 'QUARANTINED', 'REJECTED'].includes(to);
+}
+
 export function statusForAction(a: ModerationAction): MessageStatus {
   switch (a) {
     case 'ALLOW':

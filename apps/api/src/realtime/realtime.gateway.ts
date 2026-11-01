@@ -20,7 +20,8 @@ import type { Logger } from '../shared/infrastructure/logging/logger.js';
 export const RT_CHANNEL = 'blowy:rt';
 
 export interface RtMessage {
-  kind: 'deliver' | 'revoke';
+  /** disconnect (agent E) : suppression de compte / suspension → toutes les sockets fermées. */
+  kind: 'deliver' | 'revoke' | 'disconnect';
   recipients: string[];
   rooms?: string[];
 }
@@ -81,6 +82,15 @@ export class RealtimeGateway {
   }
 
   async handleRt(m: RtMessage): Promise<void> {
+    if (m.kind === 'disconnect') {
+      for (const u of m.recipients) {
+        for (const s of await this.io.in(`user:${u}`).fetchSockets()) {
+          s.emit('access.revoked', { room: `user:${u}` });
+          s.disconnect(true);
+        }
+      }
+      return;
+    }
     if (m.kind === 'revoke') {
       for (const u of m.recipients) for (const room of m.rooms ?? []) await this.revokeRooms(u, [room]);
       return;

@@ -14,6 +14,7 @@ export interface MessageRow {
   createdAt: Date;
   publishedAt: Date | null;
   revealedByViewer: boolean;
+  mediaId: string | null;
 }
 
 export interface ConversationRow {
@@ -32,11 +33,17 @@ export interface ConversationRepository {
   close(scope: TxScope, id: string): Promise<void>;
   revokeMember(scope: TxScope, id: string, userId: string): Promise<void>;
   findByClientId(scope: TxScope, authorId: string, clientMessageId: string): Promise<MessageRow | null>;
-  insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string }): Promise<void>;
+  insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string; kind?: 'TEXT' | 'VOICE'; mediaId?: string | null }): Promise<void>;
+  /** Marque l'aller-retour XP comme évalué ; false si déjà fait (aucune XP multiple sur correction). */
+  claimExchange(scope: TxScope, messageId: string): Promise<boolean>;
+  /** Messages publiés/warned récents (fenêtre de contexte, pseudonymisation par l'appelant). */
+  recentVisible(conversationId: string, beforeCreatedAt: Date, limit: number): Promise<{ id: string; authorUserId: string | null; body: string | null; createdAt: Date }[]>;
   insertSystem(scope: TxScope, m: { id: string; conversationId: string; template: string }): Promise<number>;
   loadMessage(scope: TxScope | null, id: string, viewerId?: string): Promise<MessageRow | null>;
   setStatus(scope: TxScope, id: string, status: MessageStatus, publish: boolean): Promise<number | null>;
-  recordDecision(scope: TxScope, d: { messageId: string; action: string; source: string; policyVersion: string; provider: string; reasonCode: string; signals?: Record<string, number> | undefined }): Promise<void>;
+  recordDecision(scope: TxScope, d: { messageId: string; action: string; source: string; policyVersion: string; provider: string; reasonCode: string; signals?: Record<string, number> | undefined; decidedById?: string | null }): Promise<void>;
+  /** Purge du corps (retrait, suppression de compte). */
+  purgeBody(scope: TxScope, messageId: string): Promise<void>;
   /** Messages lisibles par le viewer, ordre décroissant, pagination par curseur createdAt/id. */
   page(conversationId: string, viewerId: string, before: { createdAt: Date; id: string } | null, limit: number): Promise<MessageRow[]>;
   /** Dernier message humain PUBLIÉ avant `seq` (aller-retour). */

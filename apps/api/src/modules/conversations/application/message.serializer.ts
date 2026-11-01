@@ -20,5 +20,7 @@ export function toMessageView(m: MessageRow, viewerId: string): MessageView | nu
     seq: m.seq,
     createdAt: m.createdAt.toISOString(),
     publishedAt: m.publishedAt?.toISOString() ?? null,
+    // Vocal : référence média seulement si le corps serait livré (ACL revérifiée au téléchargement).
+    mediaId: m.kind === 'VOICE' && !warnedHidden ? m.mediaId : null,
   };
 }

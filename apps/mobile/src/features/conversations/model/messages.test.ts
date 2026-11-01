@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { bubbleFor, mergeMessages } from './messages';
 
 const m = (o: Partial<MessageView>): MessageView => ({
-  id: 'm1', conversationId: 'c', clientMessageId: null, kind: 'TEXT', mine: false, status: 'PUBLISHED', body: 'salut', systemTemplate: null, warned: false, seq: 1, createdAt: '2026-11-01T10:00:00Z', publishedAt: null, ...o,
+  id: 'm1', conversationId: 'c', clientMessageId: null, kind: 'TEXT', mine: false, status: 'PUBLISHED', body: 'salut', systemTemplate: null, warned: false, seq: 1, createdAt: '2026-11-01T10:00:00Z', publishedAt: null, mediaId: null, ...o,
 });
 
 describe('messages', () => {

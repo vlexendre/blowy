@@ -31,6 +31,8 @@ export const MessageViewSchema = z.object({
   seq: z.number().int().nullable(),
   createdAt: IsoDateTimeSchema,
   publishedAt: IsoDateTimeSchema.nullable(),
+  /** Message vocal : média servi par GET /v1/media/:id/content?variant=audio (ACL à chaque accès). Ajout agent E. */
+  mediaId: UuidSchema.nullable().default(null),
 });
 export type MessageView = z.infer<typeof MessageViewSchema>;
 

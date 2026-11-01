@@ -17,6 +17,7 @@ type MsgWith = {
   publishedAt: Date | null;
   content: { body: string; purgedAt: Date | null } | null;
   receipts?: { revealedAt: Date | null }[];
+  mediaId?: string | null;
 };
 
 function toMsg(m: MsgWith): MessageRow {
@@ -33,6 +34,7 @@ function toMsg(m: MsgWith): MessageRow {
     createdAt: m.createdAt,
     publishedAt: m.publishedAt,
     revealedByViewer: !!m.receipts?.some((r) => r.revealedAt),
+    mediaId: m.mediaId ?? null,
   };
 }
 
@@ -69,10 +71,20 @@ export class PrismaConversationRepository implements ConversationRepository {
     return m ? toMsg(m) : null;
   }
 
-  async insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string }) {
+  async insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string; kind?: 'TEXT' | 'VOICE'; mediaId?: string | null }) {
     await txOf(scope).message.create({
-      data: { id: m.id, conversationId: m.conversationId, authorUserId: m.authorId, clientMessageId: m.clientMessageId, kind: 'TEXT', status: 'PENDING_MODERATION', createdAt: scope.now, content: { create: { body: m.body } } },
+      data: { id: m.id, conversationId: m.conversationId, authorUserId: m.authorId, clientMessageId: m.clientMessageId, kind: m.kind ?? 'TEXT', mediaId: m.mediaId ?? null, status: 'PENDING_MODERATION', createdAt: scope.now, ...(m.kind === 'VOICE' ? {} : { content: { create: { body: m.body } } }) },
     });
+  }
+
+  async claimExchange(scope: TxScope, messageId: string) {
+    const n = await txOf(scope).message.updateMany({ where: { id: messageId, exchangeEvaluatedAt: null }, data: { exchangeEvaluatedAt: scope.now } });
+    return n.count === 1;
+  }
+
+  async recentVisible(conversationId: string, beforeCreatedAt: Date, limit: number) {
+    const rows = await this.db.message.findMany({ where: { conversationId, kind: 'TEXT', status: { in: ['PUBLISHED', 'WARNED'] }, createdAt: { lt: beforeCreatedAt } }, include: { content: true }, orderBy: { createdAt: 'desc' }, take: limit });
+    return rows.reverse().map((m) => ({ id: m.id, authorUserId: m.authorUserId, body: m.content && !m.content.purgedAt ? m.content.body : null, createdAt: m.createdAt }));
   }
 
   private async nextSeq(scope: TxScope, conversationId: string): Promise<number> {
@@ -101,8 +113,12 @@ export class PrismaConversationRepository implements ConversationRepository {
 
   async recordDecision(scope: TxScope, d: Parameters<ConversationRepository['recordDecision']>[1]) {
     await txOf(scope).moderationDecision.create({
-      data: { id: uuidv7(scope.now.getTime()), subjectType: 'MESSAGE', subjectId: d.messageId, messageId: d.messageId, action: d.action as never, source: d.source as never, policyVersion: d.policyVersion, provider: d.provider, reasonCode: d.reasonCode, signals: (d.signals ?? undefined) as object | undefined, createdAt: scope.now },
+      data: { id: uuidv7(scope.now.getTime()), subjectType: 'MESSAGE', subjectId: d.messageId, messageId: d.messageId, action: d.action as never, source: d.source as never, policyVersion: d.policyVersion, provider: d.provider, reasonCode: d.reasonCode, signals: (d.signals ?? undefined) as object | undefined, decidedById: d.decidedById ?? null, createdAt: scope.now },
     });
+  }
+
+  async purgeBody(scope: TxScope, messageId: string) {
+    await txOf(scope).messageContent.updateMany({ where: { messageId, purgedAt: null }, data: { body: '', purgedAt: scope.now } });
   }
 
   async page(conversationId: string, viewerId: string, before: { createdAt: Date; id: string } | null, limit: number) {

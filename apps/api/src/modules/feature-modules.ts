@@ -5,5 +5,9 @@ import { EconomyModule } from './economy/economy.module.js';
 import { MatchingModule } from './matching/matching.module.js';
 import { PetsModule } from './pets/pets.module.js';
 import { RelationshipsModule } from './relationships/relationships.module.js';
+import { MediaModule } from './media/media.module.js';
+import { TrustModule } from './trust/trust.module.js';
+import { SocialModule } from './social/social.module.js';
+import { AdminModule } from './admin/admin.module.js';
 
-export const FEATURE_MODULES: Type[] = [PetsModule, RelationshipsModule, ConversationsModule, MatchingModule, EconomyModule];
+export const FEATURE_MODULES: Type[] = [PetsModule, RelationshipsModule, ConversationsModule, MatchingModule, EconomyModule, TrustModule, MediaModule, SocialModule, AdminModule];

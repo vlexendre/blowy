@@ -12,6 +12,7 @@ import { AppError, Errors } from '../../../shared/domain/errors.js';
 import { socialAllowed, type ConsentFact } from '../../users/domain/consents.js';
 import { toMessageView } from './message.serializer.js';
 import type { ConversationRepository } from './ports/conversation.repository.js';
+import type { VoiceMessageGate } from './ports/moderation.gateway.js';
 
 export interface ConsentFacts {
   listConsents(userId: string): Promise<ConsentFact[]>;
@@ -27,9 +28,17 @@ export class SendMessageUseCase {
     private readonly consents: ConsentFacts,
     private readonly random: RandomSource,
     private readonly now: () => Date,
+    private readonly voiceGate: VoiceMessageGate | null = null,
   ) {}
 
-  async execute(actorId: string, conversationId: string, commandId: string, req: SendMessageRequest) {
+  /** Message vocal (§9.2) : mêmes contrôles + porte média (≥ N3, droit VOICE, type/durée vérifiés). */
+  async executeVoice(actorId: string, conversationId: string, commandId: string, req: { clientMessageId: string; mediaId: string }) {
+    if (!this.voiceGate) throw new AppError('NOT_CONFIGURED', 'Messages vocaux indisponibles');
+    await this.voiceGate.assertCanSend(actorId, conversationId, req.mediaId);
+    return this.execute(actorId, conversationId, commandId, { clientMessageId: req.clientMessageId, body: '' }, req.mediaId);
+  }
+
+  async execute(actorId: string, conversationId: string, commandId: string, req: SendMessageRequest, voiceMediaId: string | null = null) {
     const conv = await this.repo.load(null, conversationId);
     const me = conv?.members.find((m) => m.userId === actorId && !m.revokedAt);
     if (!conv || !me) throw Errors.notFound('Conversation');
@@ -42,9 +51,9 @@ export class SendMessageUseCase {
 
     const { result } = await this.bus.execute({
       actorId,
-      operation: 'conversations.send_message',
+      operation: voiceMediaId ? 'conversations.send_voice' : 'conversations.send_message',
       commandId,
-      payload: { conversationId, ...req },
+      payload: { conversationId, ...req, ...(voiceMediaId ? { mediaId: voiceMediaId } : {}) },
       handle: async (scope) => {
         // Déduplication par clientMessageId (double tap / renvoi hors ligne avec autre commandId).
         const dup = await this.repo.findByClientId(scope, actorId, req.clientMessageId);
@@ -53,7 +62,7 @@ export class SendMessageUseCase {
           return toMessageView(dup, actorId)!;
         }
         const id = this.random.uuid();
-        await this.repo.insertPending(scope, { id, conversationId, authorId: actorId, clientMessageId: req.clientMessageId, body: req.body });
+        await this.repo.insertPending(scope, { id, conversationId, authorId: actorId, clientMessageId: req.clientMessageId, body: req.body, kind: voiceMediaId ? 'VOICE' : 'TEXT', mediaId: voiceMediaId });
         await scope.outbox.emit({ topic: 'message.submitted', aggregateType: 'Message', aggregateId: id, payload: { messageId: id, conversationId } });
         return toMessageView((await this.repo.loadMessage(scope, id, actorId))!, actorId)!;
       },

@@ -29,6 +29,8 @@ COPY --from=builder --chown=blowy /repo/${APP_DIR}/.next/standalone ./
 COPY --from=builder --chown=blowy /repo/${APP_DIR}/.next/static ./${APP_DIR}/.next/static
 COPY --from=builder --chown=blowy /repo/${APP_DIR}/public ./${APP_DIR}/public
 USER blowy
-ENV APP_DIR=${APP_DIR}
+ENV APP_DIR=${APP_DIR} HOSTNAME=0.0.0.0 PORT=3000
+# Variables serveur uniquement (aucun NEXT_PUBLIC_*) : web → WEB_API_URL, APPLE_TEAM_ID,
+# ANDROID_SHA256_FINGERPRINTS, APP_STORE_URL, PLAY_STORE_URL ; admin → ADMIN_API_URL ; BLOWY_ENV.
 EXPOSE 3000
 CMD ["sh", "-c", "node ${APP_DIR}/server.js"]

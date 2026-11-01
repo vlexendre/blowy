@@ -13,13 +13,16 @@
     "start:worker": "node --env-file-if-exists=.env dist/worker.js",
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "predev": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --output-logs=errors-only",
-    "predev:worker": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --output-logs=errors-only",
-    "pretest:integration": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --output-logs=errors-only"
+    "predev": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --output-logs=errors-only",
+    "predev:worker": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --output-logs=errors-only",
+    "pretest:integration": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --output-logs=errors-only",
+    "staff:roles": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-roles.cli.ts",
+    "staff:totp": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-totp-dev.cli.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",
     "@aws-sdk/s3-request-presigner": "^3.1161.0",
+    "@blowy/ai": "workspace:*",
     "@blowy/api-contract": "workspace:*",
     "@blowy/content": "workspace:*",
     "@blowy/database": "workspace:*",
@@ -38,6 +41,7 @@
     "pino": "^10.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "sharp": "0.35.5",
     "socket.io": "^4.8.4",
     "uuid": "^14.0.3",
     "zod": "^4.6.7"

@@ -7,6 +7,9 @@ import 'reflect-metadata';
 import type { INestApplication } from '@nestjs/common';
 import { createDb, truncateAll, type Db } from '@blowy/database';
 import { randomUUID } from 'node:crypto';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { loadConfig } from '../../src/config/env.js';
 import { buildApp } from '../../src/bootstrap.js';
 import { buildWorkerGraph, type WorkerGraph } from '../../src/jobs/worker-runtime.js';
@@ -20,13 +23,16 @@ export interface Harness {
   clock: FixedClock;
   worker: WorkerGraph;
   baseUrl: string;
+  storageRoot: string;
   close(): Promise<void>;
   reset(): Promise<void>;
   drain(): Promise<number>;
 }
 
-export async function startHarness(start = new Date('2026-11-02T10:00:00Z')): Promise<Harness> {
-  const config = loadConfig({ BLOWY_ENV: 'test', DATABASE_URL: TEST_DB_URL, LOG_LEVEL: 'silent', AUTH_PROVIDER: 'local', RATE_LIMIT_PER_MINUTE: '100000', BILLING_PROVIDER: 'local_demo' } as NodeJS.ProcessEnv);
+export async function startHarness(start = new Date('2026-11-02T10:00:00Z'), env: Record<string, string> = {}): Promise<Harness> {
+  // Stockage FS de test isolé par harnais (agent E) ; surcharges d'environnement possibles.
+  const storageRoot = mkdtempSync(path.join(tmpdir(), 'blowy-media-'));
+  const config = loadConfig({ BLOWY_ENV: 'test', DATABASE_URL: TEST_DB_URL, LOG_LEVEL: 'silent', AUTH_PROVIDER: 'local', RATE_LIMIT_PER_MINUTE: '100000', BILLING_PROVIDER: 'local_demo', STORAGE_DRIVER: 'fs', STORAGE_FS_ROOT: storageRoot, PUBLIC_API_URL: 'http://127.0.0.1', ...env } as NodeJS.ProcessEnv);
   process.env.BILLING_PROVIDER ??= 'local_demo';
   process.env.BLOWY_ENV ??= 'test';
   const db = createDb({ connectionString: TEST_DB_URL, max: 20 });
@@ -41,6 +47,7 @@ export async function startHarness(start = new Date('2026-11-02T10:00:00Z')): Pr
     clock,
     worker,
     baseUrl: `http://127.0.0.1:${addr.port}`,
+    storageRoot,
     async close() {
       await app.close();
       await db.$disconnect();

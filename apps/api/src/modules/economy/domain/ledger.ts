@@ -119,4 +119,6 @@ export const LedgerKeys = {
   monthlyBenefit: (userId: string, period: string) => `monthly:${userId}:${period}`,
   boostRefund: (inventoryItemId: string) => `boost-refund:${inventoryItemId}`,
   staffCorrection: (actorUserId: string, commandId: string) => `staff:${actorUserId}:${commandId}`,
+  /** Parrainage (P-5.9) : une écriture par claim et par côté, quel que soit le nombre de livraisons. */
+  referral: (claimId: string, side: 'referrer' | 'referee') => `referral:${claimId}:${side}`,
 } as const;

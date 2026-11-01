@@ -8,10 +8,11 @@ const ids = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is str
 /** Effet outbox : `realtime.deliver` / `realtime.revoke` → Redis pub/sub (au moins une fois). */
 export class RealtimeRelayEffect implements OutboxEffect {
   readonly name = 'realtime.relay';
-  readonly topics = ['realtime.deliver', 'realtime.revoke'] as const;
+  readonly topics = ['realtime.deliver', 'realtime.revoke', 'realtime.disconnect'] as const;
   constructor(private readonly publish: (m: RtMessage) => Promise<void>) {}
   async run(e: OutboxEnvelope): Promise<void> {
     if (e.topic === 'realtime.deliver') await this.publish({ kind: 'deliver', recipients: ids(e.payload.recipients) });
+    else if (e.topic === 'realtime.disconnect') await this.publish({ kind: 'disconnect', recipients: [e.aggregateId] });
     else await this.publish({ kind: 'revoke', recipients: [e.aggregateId], rooms: ids(e.payload.rooms) });
   }
 }

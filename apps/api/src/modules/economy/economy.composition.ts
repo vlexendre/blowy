@@ -33,7 +33,8 @@ import { PrismaLedgerRepository } from './infrastructure/prisma/prisma-ledger.re
 import { PrismaCatalogRepository } from './infrastructure/prisma/prisma-catalog.repository.js';
 import { PrismaEntitlementRepository } from './infrastructure/prisma/prisma-entitlement.repository.js';
 import { PrismaBillingRecordRepository, PrismaUserDirectory } from './infrastructure/prisma/prisma-billing-record.repository.js';
-import { EconomyRelationshipConsumer } from './interface/economy-outbox.consumer.js';
+import { EconomyReferralRewardConsumer, EconomyRelationshipConsumer } from './interface/economy-outbox.consumer.js';
+import { GrantReferralRewardUseCase } from './application/use-cases/referral-reward.use-case.js';
 import { EconomyJobs } from './interface/economy.jobs.js';
 
 export interface EconomyDeps {
@@ -107,7 +108,8 @@ export function composeEconomy(deps: EconomyDeps) {
     consumeBoost: new ConsumeBoostUseCase(uow, catalog),
     localDemo: new LocalDemoPurchaseUseCase(provider, provider instanceof LocalDemoBillingProvider ? (provider as LocalDemoControl) : null, records, sync),
     admin: new AdminEconomyUseCases(bus, ledger, records, processWebhook, reconcile),
-    outboxConsumers: [new EconomyRelationshipConsumer(relationshipEntitlements)],
+    referralReward: new GrantReferralRewardUseCase(ledger),
+    outboxConsumers: [new EconomyRelationshipConsumer(relationshipEntitlements), new EconomyReferralRewardConsumer(new GrantReferralRewardUseCase(ledger))],
     jobs: new EconomyJobs(monthly, periodic, derivedExpiry, boostRefund, processWebhook, records),
   };
 }

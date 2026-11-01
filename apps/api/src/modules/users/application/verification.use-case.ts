@@ -5,15 +5,23 @@ import { AppError } from '../../../shared/domain/errors.js';
 import type { UserProfileRepository } from './ports/user-profile.repository.js';
 import type { VerificationGateway } from './ports/verification.gateway.js';
 
+/** Démarrage délégué au module trust (agent E : Veriff réel / démo / non configuré). */
+export interface VerificationStarter {
+  execute(actorId: string, commandId: string, kind: 'SELFIE_QUALITY' | 'LIVENESS' | 'IDENTITY_AGE'): Promise<unknown>;
+}
+export const VERIFICATION_STARTER = Symbol.for('blowy.trust.verificationStarter');
+
 export class StartVerificationUseCase {
   constructor(
     private readonly bus: CommandBus,
     private readonly repo: UserProfileRepository,
     private readonly gateway: VerificationGateway,
     private readonly random: RandomSource,
+    private readonly delegate: VerificationStarter | null = null,
   ) {}
 
   async execute(actorId: string, commandId: string, kind: 'SELFIE_QUALITY' | 'LIVENESS' | 'IDENTITY_AGE') {
+    if (this.delegate) return this.delegate.execute(actorId, commandId, kind);
     if (this.gateway.mode === 'NOT_CONFIGURED') throw new AppError('NOT_CONFIGURED', 'Vérification non configurée');
     return this.bus.execute({
       actorId,

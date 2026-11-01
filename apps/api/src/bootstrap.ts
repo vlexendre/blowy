@@ -17,6 +17,7 @@ import type { ProjectionReader } from './shared/application/projection.js';
 import { CONVERSATION_REPOSITORY, type ConversationRepository } from './modules/conversations/application/ports/conversation.repository.js';
 import type { Logger } from './shared/infrastructure/logging/logger.js';
 import { requestIdMiddleware } from './shared/interface/request-id.middleware.js';
+import { rawBodyMiddleware } from './shared/interface/raw-body.middleware.js';
 import { MemoryRateLimiter, RedisRateLimiter, rateLimitMiddleware } from './shared/interface/rate-limit.js';
 
 export interface BuildOptions {
@@ -26,7 +27,7 @@ export interface BuildOptions {
 }
 
 export async function buildApp(opts: BuildOptions): Promise<INestApplication> {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(opts), { logger: false, bufferLogs: false });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(opts), { logger: false, bufferLogs: false, rawBody: true });
   const logger = app.get<Logger>(LOGGER);
   app.set('trust proxy', 1);
   app.disable('x-powered-by');
@@ -34,7 +35,11 @@ export async function buildApp(opts: BuildOptions): Promise<INestApplication> {
   app.use(requestIdMiddleware(logger));
   const limiter = opts.redis ? new RedisRateLimiter(opts.redis) : new MemoryRateLimiter();
   app.use(rateLimitMiddleware(limiter, opts.config.RATE_LIMIT_PER_MINUTE));
+  // Corps brut conservé pour l'authentification HMAC des webhooks (Veriff signe le corps brut).
+  // `rawBody: true` (NestFactory) conserve le corps brut : authentification HMAC des webhooks (Veriff).
   app.useBodyParser('json', { limit: '64kb' });
+  // Upload média : octets bruts uniquement sur la route d'upload (taille max contrôlée par session).
+  app.use('/v1/media/uploads/', rawBodyMiddleware(26 * 1024 * 1024));
   app.enableShutdownHooks();
   return app;
 }

@@ -28,6 +28,7 @@ export interface UserAggregate {
     kind: 'SELFIE_QUALITY' | 'SELFIE_HUMAN_REVIEW' | 'LIVENESS' | 'IDENTITY_AGE' | null;
     provenance: 'PROVIDER' | 'STAFF' | 'LOCAL_DEMO' | null;
     expiresAt: Date | null;
+    sessionUrl?: string | null;
   };
   activePause: { id: string; contextId: string | null; startsAt: Date; endsAt: Date } | null;
 }

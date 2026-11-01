@@ -12,7 +12,7 @@ import { USER_PROFILE_REPOSITORY, type UserProfileRepository } from './applicati
 import { VERIFICATION_GATEWAY, type VerificationGateway } from './application/ports/verification.gateway.js';
 import { UpdateProfileUseCase } from './application/update-profile.use-case.js';
 import { UpdatePreferencesUseCase, UpdatePrivacyUseCase } from './application/update-settings.use-case.js';
-import { StartVerificationUseCase } from './application/verification.use-case.js';
+import { StartVerificationUseCase, VERIFICATION_STARTER, type VerificationStarter } from './application/verification.use-case.js';
 import { LocalDemoVerificationGateway, NotConfiguredVerificationGateway } from './infrastructure/local-demo-verification.gateway.js';
 import { PrismaUserProfileRepository } from './infrastructure/prisma-user-profile.repository.js';
 import { MeController } from './interface/me.controller.js';
@@ -37,9 +37,13 @@ type R = UserProfileRepository;
     { provide: GetConsentsQuery, useFactory: (r: R) => new GetConsentsQuery(r), inject: [USER_PROFILE_REPOSITORY] },
     { provide: StartPauseUseCase, useFactory: (b: CommandBus, r: R, rnd: RandomSource) => new StartPauseUseCase(b, r, rnd), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY, RANDOM] },
     { provide: EndPauseUseCase, useFactory: (b: CommandBus, r: R) => new EndPauseUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
-    { provide: StartVerificationUseCase, useFactory: (b: CommandBus, r: R, v: VerificationGateway, rnd: RandomSource) => new StartVerificationUseCase(b, r, v, rnd), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY, VERIFICATION_GATEWAY, RANDOM] },
+    {
+      provide: StartVerificationUseCase,
+      useFactory: (b: CommandBus, r: R, v: VerificationGateway, rnd: RandomSource, d: VerificationStarter | null) => new StartVerificationUseCase(b, r, v, rnd, d ?? null),
+      inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY, VERIFICATION_GATEWAY, RANDOM, { token: VERIFICATION_STARTER, optional: true }],
+    },
     { provide: CompleteOnboardingUseCase, useFactory: (b: CommandBus, r: R) => new CompleteOnboardingUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
   ],
-  exports: [StartPauseUseCase, USER_PROFILE_REPOSITORY],
+  exports: [StartPauseUseCase, USER_PROFILE_REPOSITORY, VERIFICATION_GATEWAY, GetSelfProfileQuery, RecordConsentsUseCase],
 })
 export class UsersModule {}

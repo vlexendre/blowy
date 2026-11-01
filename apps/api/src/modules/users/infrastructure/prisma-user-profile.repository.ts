@@ -52,7 +52,7 @@ export class PrismaUserProfileRepository implements UserProfileRepository {
         mapVisible: u.privacySettings?.mapVisible ?? false,
       },
       verification: v
-        ? { status: v.status === 'VERIFIED' && !verified ? 'EXPIRED' : v.status, kind: v.kind, provenance: v.provenance, expiresAt: v.expiresAt }
+        ? { status: v.status === 'VERIFIED' && !verified ? 'EXPIRED' : v.status, kind: v.kind, provenance: v.provenance, expiresAt: v.expiresAt, sessionUrl: v.status === 'PENDING' || v.status === 'NEEDS_RETRY' ? v.providerSessionUrl : null }
         : { status: 'NOT_STARTED', kind: null, provenance: null, expiresAt: null },
       activePause: p ? { id: p.id, contextId: p.contextId, startsAt: p.startsAt, endsAt: p.endsAt } : null,
     };

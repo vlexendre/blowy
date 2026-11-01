@@ -6,7 +6,9 @@ import {
   MessageViewSchema,
   PageQuerySchema,
   SendMessageRequestSchema,
+  SendVoiceMessageRequestSchema,
   UuidSchema,
+  type SendVoiceMessageRequest,
   type PageQuery,
   type SendMessageRequest,
 } from '@blowy/api-contract';
@@ -42,6 +44,12 @@ export class ConversationsController {
   @Post('conversations/:id/messages')
   async post(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Param('id', Id) id: string, @Body(new ZodPipe(SendMessageRequestSchema)) body: SendMessageRequest) {
     return MessageViewSchema.parse(await this.send.execute(u.userId, id, cid, body));
+  }
+
+  /** Message vocal (agent E) : média VOICE_MESSAGE finalisé ; publié seulement après transcription + modération. */
+  @Post('conversations/:id/voice-messages')
+  async postVoice(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Param('id', Id) id: string, @Body(new ZodPipe(SendVoiceMessageRequestSchema)) body: SendVoiceMessageRequest) {
+    return MessageViewSchema.parse(await this.send.executeVoice(u.userId, id, cid, body));
   }
 
   @Post('conversations/:id/read')

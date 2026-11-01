@@ -37,6 +37,8 @@ export const VerificationViewSchema = z.object({
   /** LOCAL_DEMO = badge de démonstration, jamais « majorité vérifiée ». */
   mode: IntegrationModeSchema,
   expiresAt: IsoDateTimeSchema.nullable(),
+  /** Lien de reprise de la session fournisseur (titulaire seulement ; ajout agent E). */
+  sessionUrl: z.string().url().nullable().default(null),
 });
 export type VerificationView = z.infer<typeof VerificationViewSchema>;
 

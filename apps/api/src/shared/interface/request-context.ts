@@ -7,4 +7,6 @@ export type { AuthenticatedUser };
 export interface BlowyRequest extends Request {
   requestId?: string;
   user?: AuthenticatedUser;
+  /** Corps brut (webhooks signés uniquement). */
+  rawBody?: Buffer;
 }

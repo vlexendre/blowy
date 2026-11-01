@@ -14,6 +14,8 @@ import { RealtimeRelayEffect, redisPublish } from './realtime/redis-realtime.pub
 import { createLogger } from './shared/infrastructure/logging/logger.js';
 import { createRedis } from './shared/infrastructure/redis/redis.js';
 import { DB } from './shared/shared.tokens.js';
+import { AI_TASK_QUEUE } from './shared/application/ports/ai.port.js';
+import type { SwitchableAiTaskQueue } from './shared/infrastructure/ai/ai-task-queue.js';
 
 const config = loadConfig();
 const log = createLogger(config.LOG_LEVEL, { entry: 'worker' });
@@ -24,6 +26,9 @@ const graph = buildWorkerGraph(ctx, [new RealtimeRelayEffect(redisPublish(redis)
 
 // Jobs récurrents : file BullMQ « blowy-jobs » ; chaque job a un scheduler idempotent.
 const connection = { url: config.REDIS_URL };
+// Tâches IA : file BullMQ dédiée « blowy-ai » (timeout/retries/backoff/concurrence bornée, échecs conservés).
+const aiQueue = ctx.get<SwitchableAiTaskQueue>(AI_TASK_QUEUE);
+aiQueue.attachBullMq(connection, 4);
 const queue = new Queue('blowy-jobs', { connection });
 for (const j of graph.jobs) await queue.upsertJobScheduler(j.name, { every: j.everyMs }, { name: j.name });
 const byName = new Map(graph.jobs.map((j) => [j.name, j]));
@@ -62,6 +67,7 @@ for (const sig of ['SIGTERM', 'SIGINT'] as const) {
     void (async () => {
       await worker.close();
       await queue.close();
+      await aiQueue.close();
       await running;
       await ctx.close();
       await redis.quit();

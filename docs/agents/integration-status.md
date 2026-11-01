@@ -8,6 +8,13 @@
 | 2026-11-01 | C backend + D mobile + G | ✅ intégré 766145b | A : api build/typecheck OK ; api test 42/42 ; integration 33/33 ×2 ; migrate deploy + seed base vierge ; API+worker démarrés, readyz, login alex, /me, /pets/mine, /relationships, /subscriptions/me ; mobile typecheck, 63/63 ; sprites 14/14 ; eslint 0 |
 | 2026-11-01 | B moteur/matching/tuning/content | ✅ intégré c68b416 | A : tests 6+9+8+62, simulateur 12 s, eslint 0, api typecheck + 42/42 |
 | 2026-11-01 | V2 lancée : E (IA/médias/confiance), F (admin/web), D (branchement mobile↔API réelle) | en cours | — |
+| 2026-11-01 | E IA/médias/confiance/vérification/RGPD + F admin/web/ui-web/social | ✅ intégré sur main | A : build+typecheck 30/30 tâches (api, admin, web, ui-web, ai…) ; mobile typecheck (fixture `mediaId` corrigée) ; tests unitaires 28/28 tâches (api 58, ai 48, mobile 63, pet-engine 62…) ; vitest admin/web exclut e2e ; integration 59/59 ×2 ; migrate deploy + seed base vierge, diff schéma nul ; API démarrée : readyz, login alex, /me, /pets/mine, /relationships, /subscriptions/me 200, /admin sans session 401 ; eslint 17/17. Non vérifié : Docker, Firebase staff, OpenAI/Veriff réels, MinIO |
+
+## Suites V2 (E/F)
+- [ ] G : consommer `mission.proof_validated` ; job de suggestions IA automatiques (notifications).
+- [ ] B : exporter `simulate` de `@blowy/pet-engine` (simulateur admin) ; moteur lisant le tuning publié au lieu de `DEFAULT_TUNING`.
+- [ ] C : tables propres pour sessions staff / anti-rejeu TOTP / statut ConfigVersion (contournements F) ; port `RelationshipCorrections` ; relecture des ajouts E dans env/bootstrap/realtime/worker.
+- [ ] Web : challenge anti-bot, deferred deep link (repli actuel : code d'invitation).
 
 ## Points à régler avant merge V1 → main
 - [x] Tests d'intégration instables au 1er passage (privacy, idor, journey, idempotency : « profile 400 zoneCode ») — C.

@@ -24,6 +24,7 @@ export function toSelfProfile(u: UserAggregate, now: Date, verificationMode: 'LI
       provenance: u.verification.provenance,
       mode: u.verification.provenance === 'LOCAL_DEMO' ? 'LOCAL_DEMO' : u.verification.provenance ? 'LIVE' : verificationMode,
       expiresAt: u.verification.expiresAt?.toISOString() ?? null,
+      sessionUrl: u.verification.sessionUrl ?? null,
     },
     activePause: u.activePause
       ? { id: u.activePause.id, relationshipId: u.activePause.contextId, startsAt: u.activePause.startsAt.toISOString(), endsAt: u.activePause.endsAt.toISOString() }

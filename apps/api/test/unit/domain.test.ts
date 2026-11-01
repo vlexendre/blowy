@@ -24,7 +24,7 @@ describe('règles de domaine backend', () => {
     for (const s of ['PENDING_MODERATION', 'QUARANTINED', 'REJECTED', 'HUMAN_REVIEW', 'PROCESSING_FAILED'] as const) expect(visibleToRecipient(s)).toBe(false);
   });
   it('sérialiseur : destinataire ne reçoit jamais un message masqué ; warned sans corps', () => {
-    const base = { id: 'm', conversationId: 'c', authorUserId: 'a', clientMessageId: 'x', kind: 'TEXT' as const, seq: 1, systemTemplate: null, body: 'secret', createdAt: new Date(), publishedAt: null, revealedByViewer: false };
+    const base = { id: 'm', conversationId: 'c', authorUserId: 'a', clientMessageId: 'x', kind: 'TEXT' as const, seq: 1, systemTemplate: null, body: 'secret', createdAt: new Date(), publishedAt: null, revealedByViewer: false, mediaId: null };
     expect(toMessageView({ ...base, status: 'PENDING_MODERATION' }, 'b')).toBeNull();
     expect(toMessageView({ ...base, status: 'REJECTED' }, 'b')).toBeNull();
     expect(toMessageView({ ...base, status: 'WARNED' }, 'b')!.body).toBeNull();

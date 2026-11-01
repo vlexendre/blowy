@@ -295,8 +295,17 @@ enum MediaStatus {
 enum MediaDerivativeKind {
   NORMALIZED
   THUMBNAIL
+  /// Flou fort (source ≤ 24 px) — Plus N4.
   BLURRED
   TRANSCRIPT
+  /// Flou intermédiaire (source ≤ 48 px), toujours sans détail facial exploitable.
+  BLURRED_MEDIUM
+}
+
+/// Portée d'un média (agent E) : privé par défaut ; partage volontaire dans une relation.
+enum MediaVisibility {
+  PRIVATE
+  SHARED_WITH_CONTEXT
 }
 
 enum AIJobStatus {
@@ -843,6 +852,11 @@ model VerificationSession {
   providerRef String?
   verifiedAt  DateTime?              @db.Timestamptz(3)
   expiresAt   DateTime?              @db.Timestamptz(3)
+  /// Lien de session fournisseur (reprise) ; jamais exposé à un tiers.
+  providerSessionUrl String?
+  decisionCode Int?
+  reasonCode  String?
+  lastProviderEventAt DateTime?      @db.Timestamptz(3)
   createdAt   DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
 
@@ -1449,13 +1463,41 @@ model MediaAsset {
   finalizedAt   DateTime?    @db.Timestamptz(3)
   purgeAfter    DateTime?    @db.Timestamptz(3)
   purgedAt      DateTime?    @db.Timestamptz(3)
+  /// Session d'upload (agent E) : échéance, taille max et type déclaré (le type réel est vérifié).
+  uploadExpiresAt DateTime?  @db.Timestamptz(3)
+  maxBytes      Int?
+  declaredMime  String?
+  visibility    MediaVisibility @default(PRIVATE)
+  /// Contenu soupçonné sensible (protection des mineurs) : accès spécialisé uniquement.
+  restricted    Boolean      @default(false)
+  rejectReason  String?
+  retentionVersion String?
 
   owner       User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
   derivatives MediaDerivative[]
+  accessTokens MediaAccessToken[]
 
   @@index([ownerUserId, purpose])
   @@index([sha256])
   @@index([purgeAfter])
+  @@index([status, uploadExpiresAt])
+}
+
+/// Jeton court et révocable de livraison d'un média (empreinte seulement ; ACL revérifiée à chaque usage).
+model MediaAccessToken {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  assetId    String    @db.Uuid
+  viewerId   String    @db.Uuid
+  variant    String
+  tokenHash  String    @unique
+  expiresAt  DateTime  @db.Timestamptz(3)
+  revokedAt  DateTime? @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([viewerId, revokedAt])
 }
 
 model MediaDerivative {
@@ -1492,11 +1534,30 @@ model AIJob {
   createdAt     DateTime    @default(now()) @db.Timestamptz(3)
   finishedAt    DateTime?   @db.Timestamptz(3)
   cancelledAt   DateTime?   @db.Timestamptz(3)
+  /// Auteur des contenus traités (invalidation sur retrait de consentement / suppression).
+  userId        String?     @db.Uuid
+  /// Relation concernée (invalidation sur blocage / fin).
+  contextId     String?     @db.Uuid
+  policyVersion String?
+  cancelReason  String?
 
   result AIResult?
 
   @@index([status, createdAt])
   @@index([subjectType, subjectId])
+  @@index([userId, status])
+  @@index([contextId, status])
+}
+
+/// Compteurs de plafonds IA (utilisateur/relation/global par jour UTC) : nombre d'appels et coût estimé.
+model AIUsageCounter {
+  key        String   @id
+  day        String
+  count      Int      @default(0)
+  costMicros Int      @default(0)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([day])
 }
 
 model AIResult {
@@ -1505,6 +1566,8 @@ model AIResult {
   output    Json
   validated Boolean
   createdAt DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime? @db.Timestamptz(3)
+  invalidatedAt DateTime? @db.Timestamptz(3)
 
   job AIJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }
@@ -1542,6 +1605,10 @@ model ModerationCase {
   dueAt        DateTime              @db.Timestamptz(3)
   resolvedAt   DateTime?             @db.Timestamptz(3)
   createdAt    DateTime              @default(now()) @db.Timestamptz(3)
+  /// Dossier à accès spécialisé (protection des mineurs) : aucun contenu dans les vues ordinaires.
+  restricted   Boolean               @default(false)
+  /// Personne concernée par le dossier (jamais le signaleur).
+  subjectUserId String?              @db.Uuid
 
   report  Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
   appeals Appeal[]
@@ -2233,6 +2300,8 @@ model Report {
   safetyExit     Boolean        @default(false)
   status         ReportStatus   @default(OPEN)
   subjectRef     String?
+  /// Précision libre du signaleur (privée, purgeable ; jamais montrée au signalé).
+  note           String?
   createdAt      DateTime       @default(now()) @db.Timestamptz(3)
 
   reporter User                 @relation("Reporter", fields: [reporterId], references: [id], onDelete: Restrict)
@@ -2499,6 +2568,9 @@ model DataExport {
   requestedAt DateTime     @default(now()) @db.Timestamptz(3)
   readyAt     DateTime?    @db.Timestamptz(3)
   expiresAt   DateTime?    @db.Timestamptz(3)
+  /// Nonce du lien de téléchargement (rotation = révocation).
+  downloadNonce String?
+  error       String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2511,8 +2583,38 @@ model DeletionRequest {
   status      DeletionStatus @default(REQUESTED)
   requestedAt DateTime       @default(now()) @db.Timestamptz(3)
   completedAt DateTime?      @db.Timestamptz(3)
+  /// Purge des données personnelles en ligne (après révocation immédiate).
+  purgeAfter  DateTime?      @db.Timestamptz(3)
+  /// Échéance documentée d'effacement des sauvegardes (rotation).
+  backupPurgeAfter DateTime? @db.Timestamptz(3)
+  stats       Json?
 
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 
+  @@index([status])
+}
+
+/// Évaluation d'une preuve de mission (agent E) : adéquation visible ≠ modération ≠ récompense.
+/// `rewardKey` unique : l'événement de récompense `mission.proof_validated` n'est émis qu'une fois.
+model MissionProofAssessment {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  mediaId      String    @unique @db.Uuid
+  userId       String    @db.Uuid
+  contextId    String?   @db.Uuid
+  missionKey   String
+  /// Horodatage serveur d'acceptation du dépôt (jamais l'heure client).
+  submittedAt  DateTime  @db.Timestamptz(3)
+  serverDay    String
+  /// PENDING | CONSISTENT | INCONSISTENT | UNCERTAIN | HUMAN_REVIEW | APPROVED | REJECTED
+  status       String
+  assessment   Json?
+  promptVersion String?
+  rewardKey    String?   @unique
+  rewardEmittedAt DateTime? @db.Timestamptz(3)
+  decidedAt    DateTime? @db.Timestamptz(3)
+  decidedById  String?   @db.Uuid
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, serverDay])
   @@index([status])
 }

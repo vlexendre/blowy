@@ -1,0 +1,133 @@
+# Handoff — agent F (admin / web public) — 2026-11-01
+
+Je n'ai fait aucune opération git. Je n'ai modifié ni le schéma Prisma ni aucune migration.
+
+## Fichiers livrés
+- **API, module admin** (`apps/api/src/modules/admin/`, clean architecture)
+  - `domain/` : `permissions.ts` (matrice action × rôle, step-up), `totp.ts` (RFC 6238 + secret dérivé), `staff-tokens.ts` (jeton d'attente MFA, empreinte de session à séparation de domaine, CSRF, masquage d'email), `content-rules.ts` (variables allowlistées, diff JSON), `mission-rules.ts`.
+  - `application/` : `admin-command.ts` (une seule exécution : autorisation → step-up → CommandBus → AuditLog), `ports/admin.ports.ts` (ré-exporte les ports de E), `use-cases/staff-auth.use-cases.ts`, `backoffice.use-cases.ts` (§18.1–18.13), `admin-social.use-cases.ts`.
+  - `infrastructure/` : repositories Prisma (staff, audit, utilisateurs, pets/relations, ConfigVersion, missions, outbox), modèles de lecture (dashboard/matching/social/IA/ops), `redrive-guard.ts`, `tuning-simulator.ts`, `staff-identity.verifier.ts`, `admin-config.ts`.
+  - `interface/` : `http/admin-guard.ts`, `http/admin.controllers.ts` ; `cli/staff-roles.cli.ts` (grant/revoke/reset-mfa/list) et `cli/staff-totp-dev.cli.ts` (local/test seulement).
+  - `admin.module.ts`.
+  - Tests : `__tests__/{admin.int.test.ts, domain.test.ts, staff-client.ts}`.
+- **API, module social** (`apps/api/src/modules/social/`, uniquement réponses anonymes et parrainage, qui n'existaient pas) : domain (`anonymous.ts`, `referral.ts`), application (ports, `anonymous.use-cases.ts`, `referral.use-cases.ts`), infrastructure Prisma, interface (contrôleurs publics et authentifiés, effet outbox et job d'activation), `social.module.ts`, `__tests__/social.int.test.ts`.
+- **Economy** (propriété temporaire accordée par l'orchestrateur, cet ajout seulement) :
+  - `application/use-cases/referral-reward.use-case.ts` ;
+  - `EconomyReferralRewardConsumer` dans `interface/economy-outbox.consumer.ts` ;
+  - `LedgerKeys.referral` ;
+  - `SOCIAL_TOPICS` et `ECONOMY_TOPICS.REFERRAL_REWARDED` dans `economy-events.ts` ;
+  - enregistrement du consommateur dans `economy.composition.ts` (`outboxConsumers`, `referralReward`).
+- **Fichiers de C, modifiés au minimum** :
+  - `modules/feature-modules.ts` : ajout de `SocialModule` et `AdminModule` ;
+  - `jobs/worker-runtime.ts` : ajout des effets `SOCIAL_OUTBOX_EFFECTS` et des jobs `SOCIAL_JOBS` ;
+  - `apps/api/package.json` : scripts `staff:roles` et `staff:totp`.
+- **Contrats** : `packages/api-contract/src/{admin,public,referrals}.ts` et 3 lignes d'export dans `index.ts` (le dist est reconstruit).
+- **`packages/ui-web`** (atomic design : atoms → molecules → organisms → templates)
+  - jetons CSS générés depuis `@blowy/design-tokens` (`scripts/write-tokens-css.mjs`) ;
+  - `styles.css`, la seule feuille de style ;
+  - seuls composants client : `organisms/client.tsx` (ActionForm, WordPicker).
+- **`apps/admin`** (Next 16.4.3, App Router, server components, proxy.ts, output standalone, port 3001)
+  - `src/lib/{api,actions,config,nav}.ts` ;
+  - `src/components/{admin,fields}.tsx` ;
+  - `app/(auth)/login{,/mfa}` ;
+  - `app/(staff)/` : dashboard, users, users/[id], pets/[id], relationships/[id], moderation, moderation/[id], verification, missions, content, tuning, tuning/[id], matching, economy, social, ai, ops, audit, account, loading, error ;
+  - Playwright (`playwright.config.ts`, `e2e/admin.spec.ts`).
+- **`apps/web`** (Next 16.4.3, port 3002)
+  - pages : `/`, `/[slug]` (+ action), `/[slug]/envoye`, `/invite/[token]`, `/support`, `/confidentialite`, `/conditions`, 404 ;
+  - `robots.ts`, `wellknown/*` (AASA et assetlinks, via rewrites) ;
+  - `proxy.ts` (CSP à nonce et cookie visiteur), `scripts/copy-sprites.mjs`, `content/legal.tsx` ;
+  - e2e (`describe.spec.ts`, `perf.spec.ts`).
+- **Dépendances ajoutées** (avec flock) : next 16.4.3, react et react-dom 19.3.0, @types/react et @types/react-dom 19.3.0, @playwright/test 1.64.1, typescript ~6.0.3, vitest ^5.0.5, @types/node (admin, web) ; @types/react, react et react-dom en dev (ui-web) ; `@blowy/content` (web).
+- **Infra** : `infra/docker/next.Dockerfile` reçoit `HOSTNAME=0.0.0.0 PORT=3000`. Je n'ai pas pu construire l'image : il n'y a pas de démon Docker ici.
+- **Docs** : `docs/admin/{README,e2e}.md`, `docs/web/{README,performance,e2e}.md`, ce fichier.
+
+## Tests exécutés (résultats réels)
+- `pnpm --filter @blowy/api test` : **7 fichiers, 58 tests OK**, dont `admin/__tests__/domain.test.ts` (vecteur RFC TOTP, permissions, jetons, contenus, mots, invitation).
+- `pnpm --filter @blowy/api test:integration` : **12 fichiers, 59 tests OK** sur `blowy_test`. Mes fichiers en font partie :
+  - `admin.int.test.ts` (8 tests) :
+    - un non-staff, un bearer mobile, une session staff présentée au guard mobile, un appel sans CSRF, un rôle interdit (analyst sur users/modération/économie, finance sur le contexte de dossier) et une session révoquée sont tous refusés ;
+    - un code TOTP rejoué est refusé ;
+    - tuning : brouillon refusé à content_manager, puis diff, publication refusée sans step-up, publication avec step-up auditée, double validation (même commandId) rejouée, rollback par nouvelle version avec historique conservé (ACTIVE/SUPERSEDED) ;
+    - économie : correction STAFF_CORRECTION via ADMIN_ECONOMY avec step-up, rejeu sans doublon, interdite sur soi ;
+    - vrai dossier modéré : message publié, signalé, file sans le signaleur, décision REJECT refusée au support et acceptée du modérateur (décision HUMAN et audit), puis recours de l'auteur résolu UPHELD ;
+    - sanction SUSPEND refusée au modérateur et sans step-up, appliquée par trust_lead ;
+    - mission : bornes de récompense, version publiée immuable (412), v2 créée ;
+    - réparation de relation : seul le niveau éligible change, avec un événement de correction.
+  - `social.int.test.ts` (4 tests) :
+    - réponses anonymes : 12 mots seulement, refus d'un mot hors liste, de 4 mots, d'un doublon et d'une liste vide, champ libre ignoré ; jeton rejoué (409), jeton d'une autre cible (412) et jeton expiré (412) refusés ; rechargement → ALREADY_ANSWERED ; un seul répondant compté ;
+    - quotas et page : quota visiteur (11e réponse → 429), pas d'empreinte visiteur dans la vue du propriétaire, indices = « aucun », signalement qui retire de la réputation et émet un événement outbox, page désactivée → 404 ;
+    - parrainage : signature falsifiée détectée, auto-parrainage refusé (403), claim sans récompense, second claim refusé (409), aucune pièce avant la première action, puis +100/+100 au ledger ; rejeu forcé du consommateur → toujours 2 écritures et 1 `referral_rewarded` ;
+    - un compte onboardé avant le lien est refusé (412).
+- `npx tsc --noEmit` : api, admin, web, ui-web et api-contract sans erreur. `next build` : admin (21 routes) et web (11 routes) OK, sortie standalone produite.
+- `npx eslint` sur apps/admin, apps/web, packages/ui-web, modules/admin, social et economy, et sur les contrats : 0 erreur.
+- **Playwright** (le navigateur Chromium 156 s'est installé dans `/opt/pw-browsers`) :
+  - web : 5/5 ;
+  - admin : 2/2 (MFA → dashboard → tuning → modération ; analyst refusé sur /users).
+- **Démarrage réel** :
+  - API `node dist/main.js` (PORT 3998) sur `blowy_verify` : `/v1/readyz` ok. J'ai d'abord dû appliquer la migration `20261101013448_trust_media_ai` de E (`prisma migrate deploy`, en avant uniquement) : elle manquait sur cette base ;
+  - `next start` des deux apps ;
+  - curl du web : `/demo-alex` 200 (12 mots, jeton), `/support` 200, `/inconnu-xyz` 404, `/admin` (réservé) 404, AASA et assetlinks JSON, en-têtes CSP et cookie `blowy_v` présents ;
+  - curl de l'admin : `/` 307 → `/login`, `/login` 200 ; les 25 routes GET `/v1/admin/*` répondent 200 avec une session admin, et les 16 pages admin se rendent avec la session sans aucun état d'erreur ;
+  - `pnpm --filter @blowy/{admin,web} dev` : « Ready » sur 3001 et 3002 ; le graphe `turbo dev:all` contient api, admin et web ;
+  - tous ces processus ont été arrêtés par PID.
+- **Performance** : LCP médian **400 ms** (Pixel 7, RTT 150 ms, 1,6 Mbit/s, CPU ×4, cache vide), 134 Ko de JS ; protocole et limites dans `docs/web/performance.md`. Non mesuré : navigateur intégré d'une app sociale sur appareil réel.
+
+## Décisions
+- **Sessions staff** : je réutilise `DeviceSession` (`platform='staff-admin'`) avec une empreinte `HMAC("staff:"+jeton)`. Le résolveur mobile ne peut donc jamais les valider, et le dépôt staff ignore les autres lignes.
+- **TOTP** :
+  - le secret est dérivé (`HMAC(STAFF_MFA_KEY, userId:génération)`) et jamais stocké ;
+  - la génération est le nombre d'entrées d'audit `staff.mfa.enrollment_started` ;
+  - « enrôlé » correspond à `StaffRoleAssignment.mfaEnrolled` ;
+  - l'anti-rejeu passe par `CommandRecord(operation='staff.totp_step')` ;
+  - le step-up est une entrée d'audit `staff.step_up` valable 5 minutes.
+- **BFF** : les cookies HttpOnly, SameSite=Strict (Secure hors local) sont posés par Next ; Next transmet les en-têtes à l'API. Mutation générique `mutate` limitée à `/v1/admin/*` ; Idempotency-Key fixé au rendu ; step-up demandé inline.
+- **Sanctions de compte, modération, vérification, IA** : déléguées aux ports de E (`Symbol.for`, injection optionnelle → 501 « service non branché » si absents). Comme E l'exige, les sanctions sont réservées à trust_lead et admin.
+- **Rôles du tuning** : écriture et publication réservées à admin ; content_manager n'a que la lecture.
+- **Tuning et contenus dans `ConfigVersion`** :
+  - « active » = `activatedAt` le plus récent ;
+  - l'archivage est noté dans le payload, faute de colonne de statut ;
+  - un rollback crée une nouvelle version copiée de la cible.
+- **Réparation de relation** : recalcul du seul niveau éligible via `EngineGateway.levelFor`, plus un événement SYSTEM.
+- **Redrive outbox** : liste blanche par topic avec contrôle de l'état actuel (message encore PENDING, auteur actif…) ; les topics `realtime.*` ne sont jamais rejoués.
+- **Anti-rejeu des réponses anonymes** : nonce dans `CommandRecord(actor=cible, 'social.anon_form_nonce')`. L'empreinte visiteur est `HMAC(PUBLIC_LINK_SECRET, cible:jeton)` ; l'IP n'est jamais stockée.
+- **Parrainage** :
+  - le refus pour « compte existant » porte sur un onboarding terminé avant le lien (`User.createdAt` est posé par la base, pas par l'horloge applicative) ;
+  - activation déclenchée par les événements utiles, avec un job de rattrapage ;
+  - montants lus dans `tuning.coins.referral`.
+- **Écran de confirmation web** : pas de promesse de « 100 pièces » (la page d'une personne n'est pas une invitation) ; seule `/invite/<token>` mentionne la récompense, et la conditionne à l'activation.
+- **CSP** : nonce et `strict-dynamic` ; `style-src-attr 'unsafe-inline'` est autorisé pour les attributs `style` (ils ne peuvent pas exécuter de script).
+
+## Limites / non fait
+- **Simulateur 60 jours** : « indisponible ». `@blowy/pet-engine` n'exporte pas `simulate` (src/simulate est exclu du build).
+- **Le runtime n'applique pas le tuning publié** : `EngineGateway` lit encore `DEFAULT_TUNING`. La publication est bien versionnée et auditée, et l'UI le signale (`runtimeConsumesPublished: false`).
+- **Données non instrumentées** :
+  - revenu en euros : NOT_INSTRUMENTED (montants non stockés) ;
+  - rétention Jn : approchée via `lastActiveAt` (dernière activité, pas un historique quotidien) — c'est indiqué dans la définition ;
+  - budgets et quotas IA : non configurés (texte explicite).
+- **Résultat de simulation** : non affiché (bouton présent, simulateur indisponible).
+- **Web public** :
+  - pas de challenge anti-bot (aucun fournisseur) ni de deferred deep link (le code de repli est explicite) ;
+  - AASA et assetlinks exigent `APPLE_TEAM_ID` et `ANDROID_SHA256_FINGERPRINTS` en production (404 sinon).
+- **Non vérifié** : image Docker (pas de démon) ; vrai login Firebase staff (nécessite projet et clé).
+- **Seeds** : les comptes staff du seed n'ont pas de MFA. L'enrôlement se fait à la première connexion ; en dev, `staff:totp` affiche le code.
+
+## Demandes aux autres propriétaires
+- **C (schéma)** : proposer pour la V2 :
+  - `StaffSession` (ou `DeviceSession.kind`) et `StaffMfa(userId, secretEnc, confirmedAt, lastStep)` ;
+  - `ConfigVersion.status` (DRAFT/ACTIVE/ARCHIVED) et une colonne de statut active unique par type ;
+  - une table `AnonymousFormNonce(targetUserId, nonceHash, expiresAt)` pour remplacer mes usages de `CommandRecord`.
+  - **C (ports)** : exposer un port `RelationshipCorrections` pour remplacer mon écriture directe, limitée, de `eligibleLevel` et `RelationshipEvent` dans `PrismaPetAdminRepository.correctEligible`.
+  - **C (dev)** : ajouter `STAFF_SESSION_SECRET`, `STAFF_MFA_KEY`, `PUBLIC_LINK_SECRET`, `PUBLIC_WEB_ORIGIN` à `apps/api/.env.example`.
+- **B** :
+  - exporter `simulate` (et `SimulationReport`) depuis `@blowy/pet-engine` ;
+  - verser au tuning les quotas anonymes (50/cible/jour, 10/visiteur/jour, 30 jetons/h) et la TTL d'invitation (30 j) ;
+  - brancher le tuning actif publié (`ConfigVersion TUNING`) dans `engine.factory.ts` avec C.
+- **E** : interface consommée telle quelle. Le consommateur `social.anonymous_response_reported` → dossier ANONYMOUS_RESPONSE est confirmé par E.
+- **G** : ma contribution à economy se limite au cas d'usage et au consommateur de parrainage (clé `referral:<claimId>:<side>`). À relire.
+- **D (mobile)** :
+  - routes disponibles :
+    - parrainage : `POST /v1/referrals/link`, `POST /v1/referrals/claim {ref}` (jeton ou code court), `GET /v1/referrals/me`, `GET /v1/referrals/:ref` ;
+    - réponses reçues : `GET /v1/me/anonymous-responses`, `POST /v1/me/anonymous-responses/:id/{hide,report}`, `GET /v1/me/anonymous-responses/:id/hints` ;
+    - page publique : `PUT /v1/me/public-page` ;
+  - schémas dans `@blowy/api-contract` (`referrals.ts`, `public.ts`).
+- **A (racine)** : `dev:all` fonctionne désormais (les apps existent). Le lockfile a été mis à jour avec les dépendances listées plus haut.

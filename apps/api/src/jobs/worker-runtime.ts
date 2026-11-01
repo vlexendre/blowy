@@ -2,6 +2,8 @@
  * Graphe du worker (sans HTTP) : relais outbox (consommateurs + effets), jobs récurrents.
  * Partagé par worker.ts et les tests d'intégration (même code, aucune duplication).
  */
+import { SOCIAL_JOBS, SOCIAL_OUTBOX_EFFECTS } from '../modules/social/social.module.js';
+import type { SocialJob } from '../modules/social/interface/social.consumers.js';
 import type { INestApplicationContext } from '@nestjs/common';
 import type { Db } from '@blowy/database';
 import type { OutboxConsumer, OutboxEffect } from '../shared/application/outbox-consumer.js';
@@ -20,6 +22,8 @@ import { BranchVoteUseCase } from '../modules/relationships/application/branch-v
 import { ReliabilityJob } from '../modules/relationships/application/reliability.use-case.js';
 import { RelationshipConsumers } from '../modules/relationships/infrastructure/relationship.consumers.js';
 import { hourKey, quarterKey, type RecurringJob } from './scheduler.js';
+import { TRUST_JOBS, TRUST_OUTBOX } from '../modules/trust/trust.module.js';
+import { MEDIA_JOBS } from '../modules/media/media.module.js';
 
 export interface WorkerGraph {
   dispatcher: OutboxDispatcher;
@@ -30,12 +34,14 @@ export function buildWorkerGraph(ctx: INestApplicationContext, extraEffects: Out
   const db = ctx.get<Db>(DB);
   const uow = ctx.get<UnitOfWork>(UNIT_OF_WORK);
   const logger = ctx.get<Logger>(LOGGER);
-  const consumers: OutboxConsumer[] = [...ctx.get<OutboxConsumer[]>(ECONOMY_OUTBOX_CONSUMERS), ...ctx.get(RelationshipConsumers).list()];
-  const effects: OutboxEffect[] = [new MessageModerationEffect(ctx.get(ModerateMessageUseCase)), ...extraEffects];
+  const trust = ctx.get<{ consumers: OutboxConsumer[]; effects: OutboxEffect[] }>(TRUST_OUTBOX);
+  const consumers: OutboxConsumer[] = [...ctx.get<OutboxConsumer[]>(ECONOMY_OUTBOX_CONSUMERS), ...ctx.get(RelationshipConsumers).list(), ...trust.consumers];
+  const effects: OutboxEffect[] = [new MessageModerationEffect(ctx.get(ModerateMessageUseCase)), ...trust.effects, ...ctx.get<OutboxEffect[]>(SOCIAL_OUTBOX_EFFECTS), ...extraEffects];
   const dispatcher = new OutboxDispatcher(db, uow, consumers, effects, logger);
   const matching = ctx.get(RunMatchingBatchUseCase);
   const matchingRepo = ctx.get<MatchingRepository>(MATCHING_REPOSITORY);
   const jobs: RecurringJob[] = [
+    ...ctx.get<SocialJob[]>(SOCIAL_JOBS).map((j): RecurringJob => ({ name: j.name, everyMs: j.everyMs, run: () => j.run() })),
     { name: 'pets.tick', everyMs: 15 * 60_000, windowKey: quarterKey, run: (now) => ctx.get(TickPetsUseCase).execute(now) },
     { name: 'matching.daily', everyMs: 15 * 60_000, run: (now) => matching.runDueZones(now) },
     {
@@ -46,6 +52,9 @@ export function buildWorkerGraph(ctx: INestApplicationContext, extraEffects: Out
     { name: 'relationships.reliability', everyMs: 60 * 60_000, windowKey: hourKey, run: (now) => ctx.get(ReliabilityJob).run(now) },
     { name: 'relationships.branch_deadlines', everyMs: 15 * 60_000, run: (now) => ctx.get(BranchVoteUseCase).resolveDue(now) },
     ...ctx.get<EconomyJobs>(ECONOMY_JOBS).list().map((j): RecurringJob => ({ name: j.name, everyMs: j.everyMs, run: () => j.run() })),
+    // Agent E : purge médias (rétention versionnée) et comptes supprimés.
+    ...ctx.get<RecurringJob[]>(MEDIA_JOBS).map((j) => ({ ...j, windowKey: hourKey })),
+    ...ctx.get<RecurringJob[]>(TRUST_JOBS).map((j) => ({ ...j, windowKey: hourKey })),
   ];
   return { dispatcher, jobs };
 }

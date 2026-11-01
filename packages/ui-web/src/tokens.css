@@ -1,0 +1,40 @@
+/* Généré par scripts/write-tokens-css.mjs depuis @blowy/design-tokens — ne pas éditer. */
+:root {
+  --c-cream: #FFF7EC;
+  --c-cream-deep: #F4EADC;
+  --c-cream-shadow: #EEDFCB;
+  --c-ink: #16110D;
+  --c-ink-soft: #5A5047;
+  --c-muted: #8A7E70;
+  --c-muted-light: #A79C90;
+  --c-white: #FFFFFF;
+  --c-coral: #FF5A3C;
+  --c-coral-shadow: #C4341B;
+  --c-pink: #FF3D7F;
+  --c-pink-shadow: #B81F55;
+  --c-mango: #FFB347;
+  --c-sun: #FFE36E;
+  --c-sun-shadow: #C97A12;
+  --c-lime: #C8F542;
+  --c-violet: #7C3AED;
+  --c-violet-deep: #4C1D95;
+  --c-violet-shadow: #2E1065;
+  --c-violet-light: #EDE4FF;
+  --c-cyan: #22D3EE;
+  --c-danger: #D92D2D;
+  --c-success: #2E9E4F;
+  --s-xxs: 4px;
+  --s-xs: 6px;
+  --s-sm: 8px;
+  --s-md: 12px;
+  --s-lg: 16px;
+  --s-xl: 22px;
+  --s-xxl: 32px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 24px;
+  --r-xxl: 30px;
+  --r-pill: 999px;
+  --touch: 44px;
+}
