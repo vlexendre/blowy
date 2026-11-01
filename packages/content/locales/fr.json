@@ -151,6 +151,7 @@
   "line.waiting.071": "J’attends {autrePet}. Je ne suis pas pressé.",
   "line.waiting.072": "Si {autrePet} tarde, je déplace tout {lieu}.",
   "line.waiting.073": "J’ai déjà préparé le terrain de jeu {lieu}.",
+  "memory.gift": "Un cadeau dans la maison",
   "memory.joint_mission": "Mission à deux",
   "mission.board_game": "Partie de jeu",
   "mission.board_game.alternative": "Capture d’un jeu de mots ou de logique sur téléphone",

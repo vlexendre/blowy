@@ -30,6 +30,7 @@ export function buildFrLocale(): Record<string, string> {
     ...PET_LINES.map((l) => [l.key, l.fr] as [string, string]),
     ...[...DEPARTURE_TEMPLATES, ...NOTIFICATION_TEMPLATES].map((t) => [t.key, t.fr] as [string, string]),
     ['memory.joint_mission', 'Mission à deux'],
+    ['memory.gift', 'Un cadeau dans la maison'],
   ];
   assertUniqueKeys(pairs.map(([k]) => k));
   return Object.fromEntries(pairs.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
