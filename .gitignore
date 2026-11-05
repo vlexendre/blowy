@@ -19,3 +19,4 @@ playwright-report/
 test-results/
 apps/api/storage/
 .local/
+dump.rdb

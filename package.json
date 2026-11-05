@@ -28,7 +28,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "dev:all": "turbo run dev --filter=@blowy/api --filter=@blowy/admin --filter=@blowy/web",
-    "dev:worker": "pnpm --filter @blowy/api run dev:worker"
+    "dev:worker": "pnpm --filter @blowy/api run dev:worker",
+    "qa:visual": "pnpm --filter @blowy/qa run visual"
   },
   "devDependencies": {
     "@eslint/js": "^10",

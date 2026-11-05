@@ -17,7 +17,9 @@
     "predev:worker": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --output-logs=errors-only",
     "pretest:integration": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --output-logs=errors-only",
     "staff:roles": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-roles.cli.ts",
-    "staff:totp": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-totp-dev.cli.ts"
+    "staff:totp": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-totp-dev.cli.ts",
+    "test:journeys": "vitest run --config test/journeys/vitest.config.ts",
+    "pretest:journeys": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --filter=@blowy/api-client --output-logs=errors-only"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",
@@ -47,6 +49,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@blowy/api-client": "workspace:*",
     "@nestjs/testing": "^12.3.2",
     "@types/express": "^5.0.6",
     "@types/node": "^22.19.0",

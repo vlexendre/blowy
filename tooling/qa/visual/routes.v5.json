@@ -1,0 +1,27 @@
+{
+  "$comment": "Correspondance pour design/v5/renders (maquettes V5 en cours). Même format que routes.v4.json ; à remplir quand les rendus V5 existent.",
+  "refs": "design/v5/renders",
+  "demoDraft": {
+    "step": "welcome",
+    "species": "NINO",
+    "petName": "Nino",
+    "axes": {
+      "kindMischief": 0.6,
+      "sportyContemplative": -0.2,
+      "scienceArt": 0.4,
+      "homeAdventure": 0.5
+    },
+    "school": null,
+    "sunday": null,
+    "passions": [],
+    "limit": null,
+    "intention": null,
+    "hatched": false,
+    "petCreated": false,
+    "invite": null,
+    "premiumDeclined": false,
+    "notificationsAsked": false,
+    "completed": false
+  },
+  "screens": []
+}

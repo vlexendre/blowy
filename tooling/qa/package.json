@@ -1,0 +1,17 @@
+{
+  "name": "@blowy/qa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Banc QA visuel : capture de l'app (Expo web) et comparaison pixel aux maquettes V4.",
+  "scripts": {
+    "visual": "node visual/run.mjs",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "pixelmatch": "^7.1.0",
+    "playwright": "1.64.1",
+    "pngjs": "^7.0.0",
+    "vitest": "^5.0.5"
+  }
+}

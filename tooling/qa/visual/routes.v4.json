@@ -1,0 +1,338 @@
+{
+  "$comment": "Correspondance écran de maquette → route de l app pour design/v4-reference/renders. Voir tooling/qa/visual/screens.mjs pour le format.",
+  "refs": "design/v4-reference/renders",
+  "demoDraft": {
+    "step": "welcome",
+    "species": "NINO",
+    "petName": "Nino",
+    "axes": {
+      "kindMischief": 0.6,
+      "sportyContemplative": -0.2,
+      "scienceArt": 0.4,
+      "homeAdventure": 0.5
+    },
+    "school": null,
+    "sunday": null,
+    "passions": [],
+    "limit": null,
+    "intention": null,
+    "hatched": false,
+    "petCreated": false,
+    "invite": null,
+    "premiumDeclined": false,
+    "notificationsAsked": false,
+    "completed": false
+  },
+  "screens": [
+    {
+      "ref": "V4-Welcome",
+      "title": "01 · Bienvenue",
+      "target": "mobile",
+      "route": "/welcome",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          244,
+          50,
+          132,
+          40
+        ]
+      ]
+    },
+    {
+      "ref": "V4-Invite",
+      "title": "02 · Arrivée par un lien (accueil perso)",
+      "target": "mobile",
+      "route": "/invite/{inviteCode}",
+      "account": null,
+      "draft": true
+    },
+    {
+      "ref": "V4-Craft",
+      "title": "03 · Crafte ton pet (4 espèces)",
+      "target": "mobile",
+      "route": "/species",
+      "account": null,
+      "draft": true
+    },
+    {
+      "ref": "V4-Vie",
+      "title": "04 · Sa vision (4 questions, carte qui se remplit)",
+      "target": "mobile",
+      "route": "/vision/school",
+      "account": null,
+      "draft": true,
+      "note": "1re des 4 questions (route dynamique /vision/[step])"
+    },
+    {
+      "ref": "V4-Intention",
+      "title": "05 · Ami ou plus",
+      "target": "mobile",
+      "route": "/intention",
+      "account": null,
+      "draft": true
+    },
+    {
+      "ref": "V4-Eclosion",
+      "title": "06 · Naissance de Nino (aha)",
+      "target": "mobile",
+      "route": "/hatch",
+      "account": null,
+      "draft": true
+    },
+    {
+      "ref": "V4-Compte",
+      "title": "07 · Compte (après l'aha)",
+      "target": "mobile",
+      "route": "/account",
+      "account": null,
+      "draft": true
+    },
+    {
+      "ref": "V4-Verif",
+      "title": "08 · Selfie vérifié",
+      "target": "mobile",
+      "route": "/verify",
+      "account": "test.b",
+      "draft": true,
+      "note": "compte non vérifié (test.b)"
+    },
+    {
+      "ref": "V4-Paywall",
+      "title": "09 · Paywall + offre −60 %",
+      "target": "mobile",
+      "route": "/paywall-step",
+      "account": "alex",
+      "draft": true,
+      "masks": [
+        [
+          280,
+          232,
+          96,
+          34
+        ]
+      ]
+    },
+    {
+      "ref": "V4-Match",
+      "title": "10 · Ses 3 rendez-vous",
+      "target": "mobile",
+      "route": "/matches",
+      "account": "alex",
+      "draft": true
+    },
+    {
+      "ref": "V4-Notifs",
+      "title": "11 · Notifs au bon moment",
+      "target": "mobile",
+      "route": "/notifications",
+      "account": "alex",
+      "draft": true
+    },
+    {
+      "ref": "V4-Nid",
+      "title": "12 · Le nid (accueil)",
+      "target": "mobile",
+      "route": "/nest",
+      "account": "alex",
+      "maskText": [
+        "^état du "
+      ]
+    },
+    {
+      "ref": "V4-Preuve",
+      "title": "13 · Mission en photo",
+      "target": "mobile",
+      "route": "/nest/mission",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Bravo",
+      "title": "14 · Mission validée",
+      "target": null,
+      "route": null,
+      "account": "alex",
+      "note": "aucune route : célébration de mission validée non implémentée"
+    },
+    {
+      "ref": "V4-Serie",
+      "title": "15 · Série + gel",
+      "target": "mobile",
+      "route": "/nest/streak",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Fiche",
+      "title": "16 · Fiche & évolution",
+      "target": "mobile",
+      "route": "/nest/fiche",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Boutique",
+      "title": "17 · Boutique",
+      "target": "mobile",
+      "route": "/nest/shop",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Chats",
+      "title": "18 · Chats · où est Nino",
+      "target": "mobile",
+      "route": "/chats",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Chat",
+      "title": "19 · Conversation",
+      "target": "mobile",
+      "route": "/chats/{conversationId}",
+      "account": "alex",
+      "maskText": [
+        "^\\d{1,2}:\\d{2}$"
+      ]
+    },
+    {
+      "ref": "V4-Lien",
+      "title": "20 · Arbre du Lien",
+      "target": "mobile",
+      "route": "/chats/link/{relationshipId}",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Emmenager",
+      "title": "21 · Emménager (exclusif)",
+      "target": "mobile",
+      "route": "/chats/relation/{relationshipId}/move-in",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Revelation",
+      "title": "22 · Révélation",
+      "target": "mobile",
+      "route": "/chats/relation/{relationshipId}/reveal",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-RdvIRL",
+      "title": "23 · 1er rendez-vous + ange gardien",
+      "target": "mobile",
+      "route": "/chats/relation/{relationshipId}/irl",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Oeuf",
+      "title": "24 · Couver l'œuf",
+      "target": "mobile",
+      "route": "/chats/relation/{relationshipId}/egg",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Bebe",
+      "title": "25 · Naissance du bébé",
+      "target": "mobile",
+      "route": "/chats/relation/{relationshipId}/birth",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Rupture",
+      "title": "26 · Partir proprement",
+      "target": "mobile",
+      "route": "/chats/relation/{relationshipId}/leave",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Vide",
+      "title": "27 · Aucun rendez-vous (+ départ de L.)",
+      "target": "mobile",
+      "route": "/chats/no-dates",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Story",
+      "title": "28 · Partager · NGL, vision, moments",
+      "target": "mobile",
+      "route": "/neighborhood/share",
+      "account": "alex"
+    },
+    {
+      "ref": "W-Repondre",
+      "title": "29 · WEB · l'ami répond (sans l'app)",
+      "target": "web",
+      "route": "/{publicSlug}",
+      "account": null
+    },
+    {
+      "ref": "V4-Quartier",
+      "title": "30 · Le Quartier",
+      "target": "mobile",
+      "route": "/neighborhood",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Ami",
+      "title": "31 · Chez un ami",
+      "target": "mobile",
+      "route": "/neighborhood/friend/ines",
+      "account": "alex",
+      "note": "aucun endpoint ami : l’identifiant n’est utilisé que pour le testID"
+    },
+    {
+      "ref": "V4-Carte",
+      "title": "32 · Carte (Blowy+)",
+      "target": "mobile",
+      "route": "/map",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Classement",
+      "title": "33 · Ligues pets / amis / quartiers",
+      "target": "mobile",
+      "route": "/nest/league",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Profil",
+      "title": "34 · Profil",
+      "target": "mobile",
+      "route": "/profile",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Reglages",
+      "title": "35 · Réglages",
+      "target": "mobile",
+      "route": "/profile/settings",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Abonnement",
+      "title": "36 · Abonnement",
+      "target": "mobile",
+      "route": "/profile/subscription",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Confidentialite",
+      "title": "37 · Confidentialité",
+      "target": "mobile",
+      "route": "/profile/privacy",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Signaler",
+      "title": "38 · Signaler",
+      "target": "mobile",
+      "route": "/profile/report?relationshipId={relationshipId}",
+      "account": "alex"
+    },
+    {
+      "ref": "V4-Supprimer",
+      "title": "39 · Supprimer le compte",
+      "target": "mobile",
+      "route": "/profile/delete",
+      "account": "alex"
+    }
+  ]
+}
