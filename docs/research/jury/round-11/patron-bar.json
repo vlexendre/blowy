@@ -1,0 +1,664 @@
+{
+  "member": "patron-bar",
+  "global": 9,
+  "criteria": {
+    "comprehension": 10,
+    "cognitive": 10,
+    "desire": 10,
+    "meet": 10,
+    "safety": 10,
+    "virality": 9,
+    "money": 9,
+    "visual": 10
+  },
+  "screens": {
+    "L-Contrat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Article 1 : la variante « Lieu d’activité (atelier, salle, terrain) : réserve les places du créneau ; chaque participant règle l’activité sur place, au prix affiché dans l’app, encaissé par le lieu » suit « Aucune animation » sans le lever, alors que Lille dit « Encadré par le lieu ». Article 3 : une place d’atelier réservée et non honorée me rapporte 4,16 € HT (ou 3 €) quand l’atelier vaut 25 € et que j’ai sorti la matière.",
+      "fix": "Article 1 : « Bar : aucune animation… / Lieu d’activité : l’activité est encadrée par le lieu… ». Article 3 : ligne « Activité réservée non honorée » (règle explicite : due par le participant, ou compensée à N € HT, ou rien, mais écrit)."
+    },
+    "L-Creneaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Accueil-duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner-ambiance": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Amorcage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Amorcage-solo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Cartes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chargement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confirmation-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confirmation-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Dispos-semaines": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh-proposition": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh-rdv": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh-visages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Groupe-calme": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Invite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-dimanche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-jeudi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pas-encore": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pas-encore-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Rencontrer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Revelation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Rue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-banlieue": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Bloc : 12 € » : fait. Même gabarit bar : « cartes de questions sur la table », « table Blowy » dans une salle de bloc.",
+      "fix": "« Pendant » et « Tu arrives » propres à la salle de bloc."
+    },
+    "V5-Sortie-complete": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-lille": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-lyon": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Foot à 5 : 9 € sur place, à régler au lieu » : fait. Mais « Pendant : Des cartes de questions sur la table, si vous voulez. Personne n’anime. » et « Tu arrives : table Blowy » sur un five ; ma Confirmation dit « Terrain 2, chevalet orange au bord ».",
+      "fix": "« Pendant » et « Tu arrives » propres au terrain (comme Lille l’a eu pour l’atelier)."
+    },
+    "V5-Sortie-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Team": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-weekend": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Verif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ville-bordeaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ville-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Welcome": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Contrat : article 1 en deux variantes exclusives (bar / lieu d’activité) ; article 3 : règle écrite pour une activité réservée non honorée.",
+    "Spec : `activityDetail` porte le prix et qui l’encaisse (aujourd’hui `{key, label, durationMinutes, ledBy?}`, aucun prix ; §2 dit encore « sans animation, consommation non incluse » pour tous les lieux).",
+    "Sortie-lyon et Sortie-banlieue : « Pendant » et « Tu arrives » du five et du bloc."
+  ],
+  "tenIf": "Maquettes : 10 quand le contrat ne dit plus « Aucune animation » à un lieu d’activité, qu’une activité réservée non honorée a sa ligne en article 3 (et dans §6.5), que la spec porte le prix de l’activité, et que le five et le bloc ont leur propre « Pendant ». Terrain à part : premier relevé au centime."
+}

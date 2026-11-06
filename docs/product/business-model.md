@@ -44,6 +44,8 @@ Ce tableau ne tient compte que de la contribution avant postes V5.6 (7,59 €) ;
 | **Contribution avant astreinte, tous postes** | | ≈ 7,59 − 0,34 − 0,30 − 1,15 − 1,10 ≈ **4,70 €** |
 **Point mort national retenu : ≈ 128 sorties de groupe par jour** (600 / 4,70), soit ≈ 640 participants ; les rendez-vous Duo n'y entrent pas (ils ne rapportent rien et leur coût marginal est nul tant que l'astreinte n'est pas saturée, voir ci-dessous). L'astreinte est dimensionnée pour un rappel humain en ≈ 5 min pendant une sortie (`safety.helpCallbackTargetMinutes`) : dimensionnement détaillé ci-dessous.
 
+**Activités payantes (atelier, five, bloc)** : le prix de l'activité est **prépayé dans l'app avec la place** et reversé intégralement au lieu pour chaque place confirmée, honorée ou non (flux neutre pour Blowy, hors frais de paiement ≈ 1,5 %). Le lieu d'activité ne perd donc jamais le coût d'une place réservée.
+
 Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; une place offerte de moins par groupe ajoute ≈ 3,84 €.
 
 ### Dimensionnement de l'astreinte (hypothèses, à mesurer)
@@ -54,7 +56,7 @@ Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; 
 - Duo : un rendez-vous Duo compte comme une sortie de 2 personnes pour l'astreinte (même taux de 2 %) ; il ne rapporte rien, il est donc un coût d'acquisition et de rétention.
 - Volume Duo (hypothèse) : 1 rendez-vous Duo pour 5 sorties de groupe. **Coût d'un Duo** : ≈ 0 € de coût marginal (astreinte fixe, pas de compensation lieu, vérification déjà faite) ; il consomme ≈ 0,4 sortie de groupe de capacité d'astreinte (2 personnes au lieu de 5). Avec ce volume, la saturation de 2 personnes passe de ≈ 1 125 à ≈ 1 040 sorties de groupe par jour.
 - Sortie qui ne se forme pas à la confirmation (« Blowy annule ») : hypothèse 2 % des sorties en ville active, 10 % en ville d'amorçage ; coût = 3 € HT par place réservée + remboursement (déjà compté dans « Autres postes » au taux moyen de 2 %).
-- **Coût d'une ville d'amorçage** (hypothèses) : ≈ 600 € fixes (2 jours d'ops pour signer 1 à 2 lieux) + ≈ 19 € de revenu non encaissé par 1re sortie (5 × 3,84 €) + un taux « Blowy annule » de 10 % au lieu de 2 % (≈ + 0,9 € par sortie). Aucune astreinte en plus (mutualisée) ; le coût propre est la 1re sortie offerte de chaque participant (≈ 3,84 € de revenu non encaissé par personne) et le temps ops pour signer 1–2 lieux.
+- **Coût d'une ville d'amorçage** (hypothèses) : ≈ 600 € fixes (2 jours d'ops pour signer 1 à 2 lieux) + ≈ 19 € de revenu non encaissé par 1re sortie (5 × 3,84 €) + un surcoût « Blowy annule » de (10 % − 2 %) × (3 × 3 € + 6,19 €) ≈ 1,22 € par sortie, dont ≈ 0,72 € de compensations et remboursements au-delà du taux moyen déjà compté. **Exemple Bordeaux** : 600 € + 12 premières sorties × (19 € + 1,22 €) ≈ **843 €** pour les 4 premières semaines (12 sorties, ≈ 60 personnes), à comparer au coût d'acquisition payant de 60 personnes vérifiées. Aucune astreinte en plus (mutualisée) ; le coût propre est la 1re sortie offerte de chaque participant (≈ 3,84 € de revenu non encaissé par personne) et le temps ops pour signer 1–2 lieux.
 Ces chiffres sont des hypothèses : le test de 8 semaines doit mesurer le taux réel de demandes et le temps de traitement.
 
 ## Ce que le test de 8 semaines doit mesurer
