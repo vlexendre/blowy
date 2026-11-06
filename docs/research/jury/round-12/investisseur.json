@@ -1,0 +1,664 @@
+{
+  "member": "investisseur",
+  "global": 9,
+  "criteria": {
+    "comprehension": 10,
+    "cognitive": 10,
+    "desire": 9,
+    "meet": 10,
+    "safety": 10,
+    "virality": 9,
+    "money": 9,
+    "visual": 10
+  },
+  "screens": {
+    "L-Contrat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "L-Creneaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Accueil-duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner-ambiance": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Amorcage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Amorcage-solo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Cartes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chargement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confirmation-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Confirmation-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Dispos-semaines": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh-proposition": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh-rdv": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Duo-hh-visages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Groupe-calme": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Invite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Débit de 16,99 € dont 12 € de bloc « reversés intégralement » au lieu : les ≈ 0,18 € de frais sur la part bloc (et 0,25 € par transaction pour une place offerte qui ne paie que l’activité) restent à Blowy et ne sont dans aucune ligne de business-model.",
+      "fix": "Ligne « Activités prépayées » dans « Une sortie de 5 personnes » : part des sorties à activité (hypothèse), frais par sortie (atelier ≈ 2,38 €, bloc ≈ 1,40 €, five ≈ 1,18 €), contribution et point mort recalculés ; ou frais déduits du reversement, écrit au contrat."
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ta banque a refusé le paiement de 4,99 €. » pour la place du jeu. 19 nov. que V5-Paiement facture 16,99 € (place + bloc 12 €). Régression du tour 12.",
+      "fix": "« Ta banque a refusé le paiement de 16,99 € (place 4,99 € + bloc 12 €). » ; même règle check-facts que pour Paiement-ok."
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Récapitulatif « Place · jeu. 19 nov. 4,99 € » alors que V5-Paiement débite 16,99 € pour la même sortie (« Place de sortie 4,99 € » + « Bloc d’escalade, payé avec ta place 12 € ») : le reçu ne correspond pas au paiement. Régression du tour 12 (Paiement modifié, écran suivant non suivi).",
+      "fix": "Lignes « Place · jeu. 19 nov. 4,99 € », « Bloc d’escalade 12 € », « Total 16,99 € » ; « Si la sortie n’a pas lieu : place et bloc remboursés automatiquement » ; règle check-facts Paiement → Paiement-ok."
+    },
+    "V5-Partage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-dimanche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-jeudi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Partage-ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pas-encore": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pas-encore-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Rencontrer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Revelation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Rue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-lille": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Sortie-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« 1re sortie offerte · Aucune carte demandée » : faux pour une 1re sortie d’activité, et c’est l’hypothèse « 2 places sur 5 offertes » sans friction du modèle qui change (la 1re sortie d’atelier coûte 25 € et une carte).",
+      "fix": "Tarifs corrigé ; business-model : conversion de la 1re sortie séparée bar (0 €, sans carte) / activité (carte + prix), à mesurer au test."
+    },
+    "V5-Team": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Trouvee-weekend": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Verif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ville-bordeaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Ville-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "V5-Welcome": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Chiffrer les frais de paiement de la part activité (atelier ≈ 2,38 €, bloc ≈ 1,40 €, five ≈ 1,18 € par sortie) avec une part de sorties à activité, puis recalculer contribution et point mort.",
+    "Écrire le statut fiscal du flux activité (encaissement au nom et pour le compte du lieu, hors chiffre d’affaires Blowy) et l’aligner sur « TTC reversé » (spec) / « (HT) » (contrat).",
+    "Conversion de la 1re sortie séparée bar / activité (carte requise) ; Tarifs et reçus à 16,99 € alignés."
+  ],
+  "tenIf": "Documents : 10 quand business-model chiffre les frais de la part activité dans la contribution (ou les fait porter au lieu, écrit au contrat), donne le point mort recalculé et écrit le statut TVA du flux activité. Terrain à part (inchangé)."
+}
