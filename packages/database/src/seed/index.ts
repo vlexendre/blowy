@@ -8,6 +8,7 @@ import { DEFAULT_TUNING } from '@blowy/tuning';
 import { createDb, type Db } from '../client.js';
 import { truncateAll } from '../reset.js';
 import { sid } from './ids.js';
+import { seedV5 } from './v5.js';
 
 const env = process.env.BLOWY_ENV ?? 'local';
 if (env === 'production' || env === 'staging') {
@@ -333,6 +334,8 @@ const db = createDb({ connectionString: process.env.DATABASE_URL ?? 'postgresql:
 const now = new Date(Math.floor(Date.now() / HOUR) * HOUR);
 try {
   await seed(db, now);
+  const v5 = await seedV5(db, now);
+  console.warn(`Seed V5 OK : comptes ${v5.accounts.join(', ')} ; sortie de la semaine d'Alex ${v5.outingId}`);
   console.warn(`Seed OK (${PEOPLE.length} personnes fictives, ${STAFF.length} comptes staff). Connexion locale : provider=local, credential=alex | l | m | s | ines | tom | maya | test.a … staff.admin`);
 } catch (err) {
   console.error('Seed échoué :', err);

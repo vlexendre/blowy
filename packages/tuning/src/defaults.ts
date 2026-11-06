@@ -24,7 +24,8 @@ import {
 } from './defaults-v5.js';
 
 /** V5 : `tuning-2026.12.0` (sections sorties, composition, duo, votes, souvenirs, paiements, sécurité). */
-export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.0';
+/** V5.2 : `tuning-2026.12.1` (visages révélés startsAt − 3 h, concept-v5.2 C.8). */
+export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.1';
 
 export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   version: DEFAULT_TUNING_VERSION,

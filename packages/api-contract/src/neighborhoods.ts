@@ -41,6 +41,11 @@ export const WaitlistProgressSchema = z.object({
   estimatedLaunchAt: IsoDateTimeSchema.optional(),
   /** V5.1 (B.7) : une team de 3 vérifiés peut déclencher une sortie d'amorçage. */
   seedingAvailable: z.boolean(),
+  /**
+   * V5.2 (A.2) : « sur tes créneaux, il manque N personnes pour la sortie du <date> » (vrais
+   * nombres : demandes vérifiées compatibles avec le créneau). Absent si aucun créneau proposé.
+   */
+  nextOutingGap: z.object({ missing: z.number().int().nonnegative(), startsAt: IsoDateTimeSchema }).optional(),
 });
 
 /** `GET /v1/me/neighborhood` et réponse de `PUT`. */

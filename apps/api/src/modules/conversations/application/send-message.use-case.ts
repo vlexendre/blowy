@@ -5,6 +5,7 @@
  * Le destinataire ne reçoit RIEN à ce stade.
  */
 import type { SendMessageRequest } from '@blowy/api-contract';
+import { DEFAULT_TUNING } from '@blowy/tuning';
 import type { CommandBus } from '../../../shared/application/command-bus.js';
 import type { RandomSource } from '../../../shared/application/clock.js';
 import type { BlockReader } from '../../../shared/application/ports/block-reader.port.js';
@@ -19,6 +20,12 @@ export interface ConsentFacts {
 }
 
 const MAX_PER_MINUTE = 20;
+
+/** Réponse « 3 mots » (spec-v5 §2.7) : ≤ 3 mots, ≤ 40 caractères (`outings.chat`). */
+export function threeWordsAnswerOk(body: string): boolean {
+  const t = body.trim();
+  return t.length > 0 && t.length <= DEFAULT_TUNING.outings.chat.threeWordsMaxChars && t.split(/\s+/).length <= DEFAULT_TUNING.outings.chat.threeWordsMaxTokens;
+}
 
 const clientMessageIdReused = () =>
   new AppError('IDEMPOTENCY_CONFLICT', 'Ce clientMessageId a déjà servi pour un autre contenu', { detailsSafe: { reason: 'CLIENT_MESSAGE_ID_REUSED' } });
@@ -46,6 +53,9 @@ export class SendMessageUseCase {
     const me = conv?.members.find((m) => m.userId === actorId && !m.revokedAt);
     if (!conv || !me) throw Errors.notFound('Conversation');
     if (conv.closedAt) throw Errors.precondition('CONVERSATION_CLOSED');
+    // V5 (§2.7) : chat de groupe pré-sortie = texte uniquement ; réponses « 3 mots » bornées.
+    if (conv.kind === 'OUTING' && voiceMediaId) throw Errors.precondition('MEDIA_NOT_ALLOWED');
+    if (req.promptId && !threeWordsAnswerOk(req.body)) throw Errors.validation({ field: 'body', reason: 'THREE_WORDS_MAX' });
     for (const other of conv.members.filter((m) => m.userId !== actorId)) {
       if (await this.blocks.isBlockedBetween(actorId, other.userId)) throw new AppError('BLOCKED', 'Conversation indisponible');
     }
@@ -73,7 +83,7 @@ export class SendMessageUseCase {
           return toMessageView(dup, actorId)!;
         }
         const id = this.random.uuid();
-        await this.repo.insertPending(scope, { id, conversationId, authorId: actorId, clientMessageId: req.clientMessageId, body: req.body, kind: voiceMediaId ? 'VOICE' : 'TEXT', mediaId: voiceMediaId });
+        await this.repo.insertPending(scope, { id, conversationId, authorId: actorId, clientMessageId: req.clientMessageId, body: req.body, kind: voiceMediaId ? 'VOICE' : 'TEXT', mediaId: voiceMediaId, promptId: req.promptId ?? null });
         await scope.outbox.emit({ topic: 'message.submitted', aggregateType: 'Message', aggregateId: id, payload: { messageId: id, conversationId } });
         return toMessageView((await this.repo.loadMessage(scope, id, actorId))!, actorId)!;
       },

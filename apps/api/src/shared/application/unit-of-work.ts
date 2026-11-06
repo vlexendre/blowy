@@ -4,10 +4,15 @@
  * la portée et en extraient le client transactionnel.
  */
 export interface AggregateLocks {
-  /** Ordre imposé : users → pets → relationships → wallets (sinon erreur). */
+  /** Ordre imposé : users → pets → relationships → neighborhoods → teams → outings → friendships → duos → wallets (sinon erreur). */
   users(ids: readonly string[]): Promise<void>;
   pets(ids: readonly string[]): Promise<void>;
   relationships(ids: readonly string[]): Promise<void>;
+  neighborhoods(ids: readonly string[]): Promise<void>;
+  teams(ids: readonly string[]): Promise<void>;
+  outings(ids: readonly string[]): Promise<void>;
+  friendships(ids: readonly string[]): Promise<void>;
+  duos(ids: readonly string[]): Promise<void>;
   wallets(userIds: readonly string[]): Promise<void>;
 }
 

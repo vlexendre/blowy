@@ -204,6 +204,7 @@ enum MatchProposalKind {
   STRONG
   DISCOVERY
   ONBOARDING
+  DUO_LANE
 }
 
 enum MatchProposalStatus {
@@ -218,6 +219,9 @@ enum ConversationKind {
   NEIGHBORHOOD
   GROUP
   COPARENT
+  OUTING
+  DUO
+  BAND
 }
 
 enum MessageKind {
@@ -418,6 +422,7 @@ enum StreakFreezeStatus {
 enum BillingProviderKind {
   REVENUECAT
   LOCAL_DEMO
+  STRIPE
 }
 
 enum BillingEnvironment {
@@ -511,6 +516,9 @@ enum ReportCategory {
   MINOR
   SAFETY
   OTHER
+  OUTING_THREAT
+  IRL_BEHAVIOR
+  ON_SITE_INCIDENT
 }
 
 enum ReportStatus {
@@ -524,6 +532,11 @@ enum ReliabilityReason {
   GHOSTING_72H
   DAILY_RESPONSIVE
   STAFF_CORRECTION
+  OUTING_ATTENDED
+  OUTING_NO_SHOW
+  OUTING_LATE_CANCEL
+  DUO_NO_SHOW
+  RELIABILITY_PAUSE
 }
 
 enum SafetyDateStatus {
@@ -564,6 +577,11 @@ enum NotificationCategory {
   MATCH
   SAFETY
   SYSTEM
+  OUTING
+  VOTE
+  CONNECTION
+  DUO
+  RELIABILITY
 }
 
 enum NotificationStatus {
@@ -607,6 +625,7 @@ enum StaffRole {
   finance
   analyst
   admin
+  ops
 }
 
 // -----------------------------------------------------------------------------
@@ -622,111 +641,129 @@ model Zone {
   active    Boolean  @default(true)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
 
-  users        User[]
-  matchBatches MatchBatch[]
+  users         User[]
+  matchBatches  MatchBatch[]
   dailyMissions DailyMission[]
+  neighborhoods Neighborhood[]
+  teams         Team[]
 }
 
 model User {
-  id             String     @id @default(uuid(7)) @db.Uuid
-  status         UserStatus @default(ACTIVE)
+  id                    String     @id @default(uuid(7)) @db.Uuid
+  status                UserStatus @default(ACTIVE)
   /// Email fourni par le fournisseur d'auth ; jamais exposé dans un DTO public.
-  email          String?
-  emailVerified  Boolean    @default(false)
+  email                 String?
+  emailVerified         Boolean    @default(false)
   /// Date de naissance déclarée (contrôle 18+ serveur). Jamais exposée brute.
-  birthDate      DateTime?  @db.Date
-  timezone       String     @default("Europe/Paris")
-  zoneId         String?    @db.Uuid
-  reliability    Int        @default(100)
+  birthDate             DateTime?  @db.Date
+  timezone              String     @default("Europe/Paris")
+  zoneId                String?    @db.Uuid
+  /// V5 : quartier (au plus un) ; changement limité par `neighborhoods.changeCooldownDays`.
+  neighborhoodId        String?    @db.Uuid
+  neighborhoodChangedAt DateTime?  @db.Timestamptz(3)
+  reliability           Int        @default(100)
   /// Identité fictive (seed local). Jamais true en production.
-  isFictional    Boolean    @default(false)
-  onboardedAt    DateTime?  @db.Timestamptz(3)
-  lastActiveAt   DateTime?  @db.Timestamptz(3)
-  createdAt      DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime   @updatedAt @db.Timestamptz(3)
-  deletedAt      DateTime?  @db.Timestamptz(3)
-  version        Int        @default(0)
+  isFictional           Boolean    @default(false)
+  onboardedAt           DateTime?  @db.Timestamptz(3)
+  lastActiveAt          DateTime?  @db.Timestamptz(3)
+  createdAt             DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime   @updatedAt @db.Timestamptz(3)
+  deletedAt             DateTime?  @db.Timestamptz(3)
+  version               Int        @default(0)
 
-  zone                Zone?                 @relation(fields: [zoneId], references: [id], onDelete: SetNull)
-  authIdentities      AuthIdentity[]
-  deviceSessions      DeviceSession[]
-  profile             Profile?
-  matchPreferences    MatchPreferences?
-  privacySettings     PrivacySettings?
-  processingConsents  ProcessingConsent[]
-  pausePeriods        PausePeriod[]
-  verificationSessions VerificationSession[]
-  primaryPet          Pet?                  @relation("PrimaryPet")
-  petOwnerships       PetOwnership[]
-  relationshipSides   RelationshipSide[]
-  consentResponses    ConsentResponse[]
-  branchBallots       BranchBallot[]
-  matchAcceptances    MatchAcceptance[]
-  matchExposures      MatchExposure[]
-  conversationMembers ConversationMember[]
-  messages            Message[]
-  messageReceipts     MessageReceipt[]
-  suggestions         Suggestion[]
-  mediaAssets         MediaAsset[]
-  appeals             Appeal[]
-  missionSubmissions  MissionSubmission[]
-  missionParticipants MissionParticipant[]
-  missionAwards       MissionAward[]
-  groupMembers        GroupMember[]
-  referralLinks       ReferralLink[]
-  referralsMade       ReferralClaim[]       @relation("Referrer")
-  referralReceived    ReferralClaim?        @relation("Referee")
-  anonymousResponses  AnonymousResponse[]
-  reputation          ReputationAggregate?
-  wallet              Wallet?
-  inventory           InventoryItem[]
-  storeTransactions   StoreTransaction[]
-  subscriptions       Subscription[]
-  entitlements        EntitlementGrant[]    @relation("EntitlementHolder")
-  grantedEntitlements EntitlementGrant[]    @relation("EntitlementGrantor")
-  monthlyBenefits     MonthlyBenefitGrant[]
-  streak              Streak?
-  streakFreezes       StreakFreeze[]
-  incubationAnswers   IncubationAnswer[]
-  birthVotes          BirthVote[]
-  coparentLinks       CoparentLink[]
-  custodyHeld         CustodySchedule[]
-  blocksMade          Block[]               @relation("Blocker")
-  blocksReceived      Block[]               @relation("Blocked")
-  reportsMade         Report[]              @relation("Reporter")
-  reportsReceived     Report[]              @relation("Reported")
-  reliabilityEvents   ReliabilityEvent[]
-  guardianInvitationsSent GuardianInvitation[] @relation("GuardianSharer")
-  guardianInvitationsRecv GuardianInvitation[] @relation("GuardianGuardian")
-  safetyCheckIns      SafetyCheckIn[]
-  notifications       Notification[]
-  notificationPrefs   NotificationPreference[]
-  dataExports         DataExport[]
-  deletionRequests    DeletionRequest[]
-  staffRoles          StaffRoleAssignment[]
-  friendshipsLow      Friendship[]          @relation("FriendLow")
-  friendshipsHigh     Friendship[]          @relation("FriendHigh")
-  petCareEvents       PetCareEvent[]
-  contributionEvents  ContributionEvent[]
-  projectionEntries   ProjectionEntry[]
-  commandRecords      CommandRecord[]
+  zone                    Zone?                        @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  neighborhood            Neighborhood?                @relation("UserNeighborhood", fields: [neighborhoodId], references: [id], onDelete: SetNull)
+  waitlistEntry           WaitlistEntry?
+  outingPreferences       OutingPreferences?
+  acceptableNeighborhoods UserAcceptableNeighborhood[]
+  slotAvailability        UserSlotAvailability[]
+  weeksOff                UserWeekOff[]
+  teamMemberships         TeamMember[]
+  outingRequests          OutingRequest[]
+  outingSeats             OutingSeat[]
+  reliabilityStat         ReliabilityStat?
+  duosLow                 Duo[]                        @relation("DuoLow")
+  duosHigh                Duo[]                        @relation("DuoHigh")
+  authIdentities          AuthIdentity[]
+  deviceSessions          DeviceSession[]
+  profile                 Profile?
+  matchPreferences        MatchPreferences?
+  privacySettings         PrivacySettings?
+  processingConsents      ProcessingConsent[]
+  pausePeriods            PausePeriod[]
+  verificationSessions    VerificationSession[]
+  primaryPet              Pet?                         @relation("PrimaryPet")
+  petOwnerships           PetOwnership[]
+  relationshipSides       RelationshipSide[]
+  consentResponses        ConsentResponse[]
+  branchBallots           BranchBallot[]
+  matchAcceptances        MatchAcceptance[]
+  matchExposures          MatchExposure[]
+  conversationMembers     ConversationMember[]
+  messages                Message[]
+  messageReceipts         MessageReceipt[]
+  suggestions             Suggestion[]
+  mediaAssets             MediaAsset[]
+  appeals                 Appeal[]
+  missionSubmissions      MissionSubmission[]
+  missionParticipants     MissionParticipant[]
+  missionAwards           MissionAward[]
+  groupMembers            GroupMember[]
+  referralLinks           ReferralLink[]
+  referralsMade           ReferralClaim[]              @relation("Referrer")
+  referralReceived        ReferralClaim?               @relation("Referee")
+  anonymousResponses      AnonymousResponse[]
+  reputation              ReputationAggregate?
+  wallet                  Wallet?
+  inventory               InventoryItem[]
+  storeTransactions       StoreTransaction[]
+  subscriptions           Subscription[]
+  entitlements            EntitlementGrant[]           @relation("EntitlementHolder")
+  grantedEntitlements     EntitlementGrant[]           @relation("EntitlementGrantor")
+  monthlyBenefits         MonthlyBenefitGrant[]
+  streak                  Streak?
+  streakFreezes           StreakFreeze[]
+  incubationAnswers       IncubationAnswer[]
+  birthVotes              BirthVote[]
+  coparentLinks           CoparentLink[]
+  custodyHeld             CustodySchedule[]
+  blocksMade              Block[]                      @relation("Blocker")
+  blocksReceived          Block[]                      @relation("Blocked")
+  reportsMade             Report[]                     @relation("Reporter")
+  reportsReceived         Report[]                     @relation("Reported")
+  reliabilityEvents       ReliabilityEvent[]
+  guardianInvitationsSent GuardianInvitation[]         @relation("GuardianSharer")
+  guardianInvitationsRecv GuardianInvitation[]         @relation("GuardianGuardian")
+  safetyCheckIns          SafetyCheckIn[]
+  notifications           Notification[]
+  notificationPrefs       NotificationPreference[]
+  dataExports             DataExport[]
+  deletionRequests        DeletionRequest[]
+  staffRoles              StaffRoleAssignment[]
+  friendshipsLow          Friendship[]                 @relation("FriendLow")
+  friendshipsHigh         Friendship[]                 @relation("FriendHigh")
+  petCareEvents           PetCareEvent[]
+  contributionEvents      ContributionEvent[]
+  projectionEntries       ProjectionEntry[]
+  commandRecords          CommandRecord[]
 
   @@index([zoneId, status])
   @@index([lastActiveAt])
+  @@index([neighborhoodId])
 }
 
 model AuthIdentity {
-  id            String           @id @default(uuid(7)) @db.Uuid
-  userId        String           @db.Uuid
-  provider      AuthProviderKind
+  id             String           @id @default(uuid(7)) @db.Uuid
+  userId         String           @db.Uuid
+  provider       AuthProviderKind
   /// Identifiant stable du fournisseur (uid Firebase, clé locale déterministe).
-  subject       String
+  subject        String
   /// Fournisseur de connexion d'origine (apple.com, google.com, local…).
   signInProvider String?
-  email         String?
-  emailVerified Boolean          @default(false)
-  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
-  lastSeenAt    DateTime?        @db.Timestamptz(3)
+  email          String?
+  emailVerified  Boolean          @default(false)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  lastSeenAt     DateTime?        @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -735,18 +772,18 @@ model AuthIdentity {
 }
 
 model DeviceSession {
-  id           String    @id @default(uuid(7)) @db.Uuid
-  userId       String    @db.Uuid
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @db.Uuid
   /// Empreinte SHA-256 du jeton de session opaque (le jeton n'est jamais stocké).
-  tokenHash    String    @unique
-  deviceLabel  String?
-  platform     String?
-  appVersion   String?
-  pushToken    String?
-  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
-  lastUsedAt   DateTime  @default(now()) @db.Timestamptz(3)
-  expiresAt    DateTime  @db.Timestamptz(3)
-  revokedAt    DateTime? @db.Timestamptz(3)
+  tokenHash   String    @unique
+  deviceLabel String?
+  platform    String?
+  appVersion  String?
+  pushToken   String?
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  lastUsedAt  DateTime  @default(now()) @db.Timestamptz(3)
+  expiresAt   DateTime  @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -754,13 +791,13 @@ model DeviceSession {
 }
 
 model StaffRoleAssignment {
-  id        String    @id @default(uuid(7)) @db.Uuid
-  userId    String    @db.Uuid
-  role      StaffRole
-  grantedBy String?   @db.Uuid
-  mfaEnrolled Boolean @default(false)
-  createdAt DateTime  @default(now()) @db.Timestamptz(3)
-  revokedAt DateTime? @db.Timestamptz(3)
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @db.Uuid
+  role        StaffRole
+  grantedBy   String?   @db.Uuid
+  mfaEnrolled Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -780,21 +817,30 @@ model Profile {
 }
 
 model MatchPreferences {
-  userId          String    @id @db.Uuid
-  ageMin          Int       @default(18)
-  ageMax          Int       @default(35)
-  maxDistanceKm   Int       @default(5)
+  userId           String            @id @db.Uuid
+  ageMin           Int               @default(18)
+  ageMax           Int               @default(35)
+  maxDistanceKm    Int               @default(5)
   /// Genres recherchés ; vide = indifférent.
-  seekingGenders  Gender[]
-  intention       Intention @default(LET_IT_HAPPEN)
+  seekingGenders   Gender[]
+  intention        Intention         @default(LET_IT_HAPPEN)
   /// Cellule approximative (≥ 500 m) choisie ou calculée serveur ; jamais exposée.
-  areaCellLat     Float?
-  areaCellLng     Float?
+  areaCellLat      Float?
+  areaCellLng      Float?
   /// Précision annoncée en mètres (zone manuelle = précision faible).
-  areaPrecisionM  Int?
+  areaPrecisionM   Int?
   /// Élargissement consenti en zone vide.
-  widenConsented  Boolean   @default(false)
-  updatedAt       DateTime  @updatedAt @db.Timestamptz(3)
+  widenConsented   Boolean           @default(false)
+  /// V5.1 (C.11, F.17) — intentions SECRÈTES (jamais exposées) ; null = non renseigné (V4).
+  lookingFor       LookingFor?
+  storySeriousness StorySeriousness?
+  kidsSomeday      KidsSomeday?
+  meetingMode      MeetingMode?
+  /// « Qui je veux rencontrer » en groupe ; vide = tout le monde.
+  meetGenders      Gender[]          @default([])
+  /// Révèle l'orientation (art. 9) : exige le consentement SENSITIVE_PREFERENCES ; effacé au retrait.
+  romanceGenders   Gender[]          @default([])
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -804,6 +850,8 @@ model PrivacySettings {
   photoPreference PhotoPreference @default(FROM_LEVEL_4_WITH_CONSENT)
   ageDisplay      AgeDisplay      @default(RANGE)
   mapVisible      Boolean         @default(false)
+  /// V5 (§9.3) : icône et notifications neutres.
+  discreetMode    Boolean         @default(false)
   updatedAt       DateTime        @updatedAt @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -844,21 +892,21 @@ model PausePeriod {
 }
 
 model VerificationSession {
-  id          String                 @id @default(uuid(7)) @db.Uuid
-  userId      String                 @db.Uuid
-  kind        VerificationKind
-  provenance  VerificationProvenance
-  status      VerificationStatus     @default(PENDING)
-  providerRef String?
-  verifiedAt  DateTime?              @db.Timestamptz(3)
-  expiresAt   DateTime?              @db.Timestamptz(3)
+  id                  String                 @id @default(uuid(7)) @db.Uuid
+  userId              String                 @db.Uuid
+  kind                VerificationKind
+  provenance          VerificationProvenance
+  status              VerificationStatus     @default(PENDING)
+  providerRef         String?
+  verifiedAt          DateTime?              @db.Timestamptz(3)
+  expiresAt           DateTime?              @db.Timestamptz(3)
   /// Lien de session fournisseur (reprise) ; jamais exposé à un tiers.
-  providerSessionUrl String?
-  decisionCode Int?
-  reasonCode  String?
-  lastProviderEventAt DateTime?      @db.Timestamptz(3)
-  createdAt   DateTime               @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
+  providerSessionUrl  String?
+  decisionCode        Int?
+  reasonCode          String?
+  lastProviderEventAt DateTime?              @db.Timestamptz(3)
+  createdAt           DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime               @updatedAt @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -884,21 +932,23 @@ model Pet {
   createdAt      DateTime @default(now()) @db.Timestamptz(3)
   version        Int      @default(0)
 
-  primaryOwner    User?            @relation("PrimaryPet", fields: [primaryOwnerId], references: [id], onDelete: Restrict)
-  ownerships      PetOwnership[]
-  vision          PetVision?
-  state           PetState?
-  appearance      PetAppearance?
-  location        VirtualLocation?
-  careEvents      PetCareEvent[]
-  pairsLow        PetPair[]        @relation("PairLow")
-  pairsHigh       PetPair[]        @relation("PairHigh")
+  primaryOwner      User?              @relation("PrimaryPet", fields: [primaryOwnerId], references: [id], onDelete: Restrict)
+  ownerships        PetOwnership[]
+  vision            PetVision?
+  state             PetState?
+  appearance        PetAppearance?
+  location          VirtualLocation?
+  careEvents        PetCareEvent[]
+  pairsLow          PetPair[]          @relation("PairLow")
+  pairsHigh         PetPair[]          @relation("PairHigh")
   relationshipSides RelationshipSide[]
-  proposalsLow    MatchProposal[]  @relation("ProposalPetLow")
-  proposalsHigh   MatchProposal[]  @relation("ProposalPetHigh")
-  childData       ChildPetData?
-  eggBorn         Egg?             @relation("EggChild")
-  custody         CustodySchedule?
+  proposalsLow      MatchProposal[]    @relation("ProposalPetLow")
+  proposalsHigh     MatchProposal[]    @relation("ProposalPetHigh")
+  childData         ChildPetData?
+  eggBorn           Egg?               @relation("EggChild")
+  custody           CustodySchedule?
+  memories          PetMemory[]
+  accessories       PetAccessory[]
 }
 
 model PetOwnership {
@@ -918,17 +968,17 @@ model PetOwnership {
 
 /// Vision : axes en millièmes [-1000,1000] (CHECK). Sens dans @blowy/domain.
 model PetVision {
-  petId                String   @id @db.Uuid
-  kindMischief         Int
-  sportyContemplative  Int
-  scienceArt           Int
-  homeAdventure        Int
-  school               String
-  sunday               String
-  passions             String[]
-  limit                String
-  contentVersion       String
-  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  petId               String   @id @db.Uuid
+  kindMischief        Int
+  sportyContemplative Int
+  scienceArt          Int
+  homeAdventure       Int
+  school              String
+  sunday              String
+  passions            String[]
+  limit               String
+  contentVersion      String
+  updatedAt           DateTime @updatedAt @db.Timestamptz(3)
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
@@ -951,6 +1001,8 @@ model PetState {
   rngCounter      Int       @default(0)
   /// Dernier appel refusé (règle « jamais deux refus consécutifs »).
   lastCallRefused Boolean   @default(false)
+  /// V5 : état du moteur `reduceV5` (souvenirs, accessoires) ; null tant que non migré.
+  engineStateV5   Json?
   version         Int       @default(0)
   updatedAt       DateTime  @updatedAt @db.Timestamptz(3)
 
@@ -984,14 +1036,14 @@ model VirtualLocation {
 }
 
 model PetCareEvent {
-  id          String   @id @default(uuid(7)) @db.Uuid
-  petId       String   @db.Uuid
-  actorUserId String?  @db.Uuid
-  action      String
-  contextId   String?  @db.Uuid
-  commandId   String?  @db.Uuid
-  occurredAt  DateTime @db.Timestamptz(3)
-  effects     Json
+  id            String   @id @default(uuid(7)) @db.Uuid
+  petId         String   @db.Uuid
+  actorUserId   String?  @db.Uuid
+  action        String
+  contextId     String?  @db.Uuid
+  commandId     String?  @db.Uuid
+  occurredAt    DateTime @db.Timestamptz(3)
+  effects       Json
   engineVersion String
   tuningVersion String
 
@@ -1012,9 +1064,9 @@ model PetPair {
   petHighId String   @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz(3)
 
-  petLow   Pet                   @relation("PairLow", fields: [petLowId], references: [id], onDelete: Restrict)
-  petHigh  Pet                   @relation("PairHigh", fields: [petHighId], references: [id], onDelete: Restrict)
-  contexts RelationshipContext[]
+  petLow          Pet                   @relation("PairLow", fields: [petLowId], references: [id], onDelete: Restrict)
+  petHigh         Pet                   @relation("PairHigh", fields: [petHighId], references: [id], onDelete: Restrict)
+  contexts        RelationshipContext[]
   groupPairStates GroupPairState[]
 
   @@unique([petLowId, petHighId])
@@ -1053,25 +1105,25 @@ model RelationshipContext {
   createdAt     DateTime                @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime                @updatedAt @db.Timestamptz(3)
 
-  pair             PetPair              @relation(fields: [pairId], references: [id], onDelete: Restrict)
-  sides            RelationshipSide[]
-  consentSessions  ConsentSession[]
-  branchRounds     BranchRound[]
-  events           RelationshipEvent[]
-  memories         Memory[]
-  contributions    ContributionEvent[]
-  dailyCounters    RelationshipDailyCounter[]
-  conversation     Conversation?
-  pauses           PausePeriod[]
-  petsHere         VirtualLocation[]
-  proposal         MatchProposal?
-  missionSubmissions MissionSubmission[]
-  missionParticipants MissionParticipant[]
+  pair                  PetPair                    @relation(fields: [pairId], references: [id], onDelete: Restrict)
+  sides                 RelationshipSide[]
+  consentSessions       ConsentSession[]
+  branchRounds          BranchRound[]
+  events                RelationshipEvent[]
+  memories              Memory[]
+  contributions         ContributionEvent[]
+  dailyCounters         RelationshipDailyCounter[]
+  conversation          Conversation?
+  pauses                PausePeriod[]
+  petsHere              VirtualLocation[]
+  proposal              MatchProposal?
+  missionSubmissions    MissionSubmission[]
+  missionParticipants   MissionParticipant[]
   missionRewardContexts MissionRewardContext[]
-  eggs             Egg[]
-  safetyDates      SafetyDate[]
-  reports          Report[]
-  entitlementGrants EntitlementGrant[]
+  eggs                  Egg[]
+  safetyDates           SafetyDate[]
+  reports               Report[]
+  entitlementGrants     EntitlementGrant[]
 
   @@index([pairId, type, status])
   @@index([status, type])
@@ -1110,16 +1162,16 @@ model RelationshipSide {
 /// Offre de consentement versionnée (emménagement, photo, œuf…). Un ancien accord n'est
 /// jamais réutilisable : (contextId, scope, version) unique et `subjectRef` pour les médias.
 model ConsentSession {
-  id          String               @id @default(uuid(7)) @db.Uuid
-  contextId   String               @db.Uuid
-  scope       ConsentScope
-  version     Int
-  subjectRef  String?
-  proposedBy  String               @db.Uuid
-  status      ConsentSessionStatus @default(OPEN)
-  expiresAt   DateTime             @db.Timestamptz(3)
-  resolvedAt  DateTime?            @db.Timestamptz(3)
-  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+  id         String               @id @default(uuid(7)) @db.Uuid
+  contextId  String               @db.Uuid
+  scope      ConsentScope
+  version    Int
+  subjectRef String?
+  proposedBy String               @db.Uuid
+  status     ConsentSessionStatus @default(OPEN)
+  expiresAt  DateTime             @db.Timestamptz(3)
+  resolvedAt DateTime?            @db.Timestamptz(3)
+  createdAt  DateTime             @default(now()) @db.Timestamptz(3)
 
   context   RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
   responses ConsentResponse[]
@@ -1175,16 +1227,16 @@ model BranchBallot {
 
 /// Journal append-only séquencé par relation. Aucun contenu privé brut (références seulement).
 model RelationshipEvent {
-  id          String          @id @default(uuid(7)) @db.Uuid
-  contextId   String          @db.Uuid
-  seq         Int
-  type        String
-  actorUserId String?         @db.Uuid
-  visibility  EventVisibility @default(PARTICIPANTS)
-  payload     Json
+  id            String          @id @default(uuid(7)) @db.Uuid
+  contextId     String          @db.Uuid
+  seq           Int
+  type          String
+  actorUserId   String?         @db.Uuid
+  visibility    EventVisibility @default(PARTICIPANTS)
+  payload       Json
   engineVersion String?
   tuningVersion String?
-  occurredAt  DateTime        @db.Timestamptz(3)
+  occurredAt    DateTime        @db.Timestamptz(3)
 
   context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
 
@@ -1193,14 +1245,14 @@ model RelationshipEvent {
 }
 
 model Memory {
-  id          String    @id @default(uuid(7)) @db.Uuid
-  contextId   String    @db.Uuid
-  kind        String
-  refEventId  String?   @db.Uuid
-  data        Json
-  sensitive   Boolean   @default(false)
-  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
-  deletedAt   DateTime? @db.Timestamptz(3)
+  id         String    @id @default(uuid(7)) @db.Uuid
+  contextId  String    @db.Uuid
+  kind       String
+  refEventId String?   @db.Uuid
+  data       Json
+  sensitive  Boolean   @default(false)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  deletedAt  DateTime? @db.Timestamptz(3)
 
   context RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
 
@@ -1244,17 +1296,17 @@ model RelationshipDailyCounter {
 // -----------------------------------------------------------------------------
 
 model MatchBatch {
-  id           String           @id @default(uuid(7)) @db.Uuid
-  zoneId       String           @db.Uuid
+  id            String           @id @default(uuid(7)) @db.Uuid
+  zoneId        String           @db.Uuid
   /// Date locale de la zone (YYYY-MM-DD) — un lot par zone et par jour (+ lots onboarding).
-  localDate    String
-  kind         String           @default("DAILY")
-  status       MatchBatchStatus @default(RUNNING)
-  algoVersion  String
+  localDate     String
+  kind          String           @default("DAILY")
+  status        MatchBatchStatus @default(RUNNING)
+  algoVersion   String
   tuningVersion String
-  stats        Json?
-  startedAt    DateTime         @db.Timestamptz(3)
-  finishedAt   DateTime?        @db.Timestamptz(3)
+  stats         Json?
+  startedAt     DateTime         @db.Timestamptz(3)
+  finishedAt    DateTime?        @db.Timestamptz(3)
 
   zone      Zone            @relation(fields: [zoneId], references: [id], onDelete: Restrict)
   proposals MatchProposal[]
@@ -1322,21 +1374,28 @@ model MatchExposure {
 // -----------------------------------------------------------------------------
 
 model Conversation {
-  id         String           @id @default(uuid(7)) @db.Uuid
-  kind       ConversationKind
-  contextId  String?          @unique @db.Uuid
-  groupId    String?          @unique @db.Uuid
+  id           String           @id @default(uuid(7)) @db.Uuid
+  kind         ConversationKind
+  contextId    String?          @unique @db.Uuid
+  groupId      String?          @unique @db.Uuid
+  /// V5 : chat de groupe d'une sortie, chat d'un duo, chat d'un lien de bande (au plus un contexte, CHECK).
+  outingId     String?          @unique @db.Uuid
+  duoId        String?          @unique @db.Uuid
+  friendshipId String?          @unique @db.Uuid
   /// Séquence des messages visibles (publiés) — ordre d'affichage.
-  lastSeq    Int              @default(0)
-  createdAt  DateTime         @default(now()) @db.Timestamptz(3)
-  closedAt   DateTime?        @db.Timestamptz(3)
+  lastSeq      Int              @default(0)
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+  closedAt     DateTime?        @db.Timestamptz(3)
 
-  context  RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: Restrict)
-  group    Group?               @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  members  ConversationMember[]
-  messages Message[]
+  context     RelationshipContext? @relation(fields: [contextId], references: [id], onDelete: Restrict)
+  group       Group?               @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  outing      Outing?              @relation(fields: [outingId], references: [id], onDelete: Restrict)
+  duo         Duo?                 @relation(fields: [duoId], references: [id], onDelete: Restrict)
+  friendship  Friendship?          @relation(fields: [friendshipId], references: [id], onDelete: Restrict)
+  members     ConversationMember[]
+  messages    Message[]
   suggestions Suggestion[]
-  signals  ConversationSignal[]
+  signals     ConversationSignal[]
 }
 
 model ConversationMember {
@@ -1356,26 +1415,28 @@ model ConversationMember {
 }
 
 model Message {
-  id              String        @id @default(uuid(7)) @db.Uuid
-  conversationId  String        @db.Uuid
-  authorUserId    String?       @db.Uuid
-  clientMessageId String?
-  kind            MessageKind   @default(TEXT)
-  status          MessageStatus @default(PENDING_MODERATION)
+  id                  String        @id @default(uuid(7)) @db.Uuid
+  conversationId      String        @db.Uuid
+  authorUserId        String?       @db.Uuid
+  clientMessageId     String?
+  kind                MessageKind   @default(TEXT)
+  status              MessageStatus @default(PENDING_MODERATION)
   /// Séquence attribuée à la publication seulement (null tant que non visible).
-  seq             Int?
-  mediaId         String?       @db.Uuid
+  seq                 Int?
+  mediaId             String?       @db.Uuid
   /// Clé de modèle d'un message système pré-écrit (ex. system.leave.clean).
-  systemTemplate  String?
-  policyVersion   String?
-  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
-  publishedAt     DateTime?     @db.Timestamptz(3)
-  decidedAt       DateTime?     @db.Timestamptz(3)
+  systemTemplate      String?
+  /// V5 : réponse « 3 mots » à une question soufflée du pet (§2.7).
+  promptId            String?
+  policyVersion       String?
+  createdAt           DateTime      @default(now()) @db.Timestamptz(3)
+  publishedAt         DateTime?     @db.Timestamptz(3)
+  decidedAt           DateTime?     @db.Timestamptz(3)
   /// L'aller-retour XP a été évalué (idempotence de l'attribution).
-  exchangeEvaluatedAt DateTime? @db.Timestamptz(3)
+  exchangeEvaluatedAt DateTime?     @db.Timestamptz(3)
 
-  conversation Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  author       User?              @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+  conversation Conversation         @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author       User?                @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
   content      MessageContent?
   receipts     MessageReceipt[]
   decisions    ModerationDecision[]
@@ -1427,14 +1488,14 @@ model Suggestion {
 }
 
 model ConversationSignal {
-  id             String   @id @default(uuid(7)) @db.Uuid
-  conversationId String   @db.Uuid
-  tone           String
+  id               String   @id @default(uuid(7)) @db.Uuid
+  conversationId   String   @db.Uuid
+  tone             String
   evidenceEventIds String[]
   proposedReaction String?
-  confidence     Float
-  expiresAt      DateTime @db.Timestamptz(3)
-  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  confidence       Float
+  expiresAt        DateTime @db.Timestamptz(3)
+  createdAt        DateTime @default(now()) @db.Timestamptz(3)
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
@@ -1446,35 +1507,35 @@ model ConversationSignal {
 // -----------------------------------------------------------------------------
 
 model MediaAsset {
-  id            String       @id @default(uuid(7)) @db.Uuid
-  ownerUserId   String       @db.Uuid
-  purpose       MediaPurpose
-  status        MediaStatus  @default(UPLOAD_PENDING)
-  storageKey    String       @unique
-  mimeType      String?
-  bytes         Int?
-  width         Int?
-  height        Int?
-  durationMs    Int?
-  sha256        String?
-  retentionClass String
-  contextId     String?      @db.Uuid
-  createdAt     DateTime     @default(now()) @db.Timestamptz(3)
-  finalizedAt   DateTime?    @db.Timestamptz(3)
-  purgeAfter    DateTime?    @db.Timestamptz(3)
-  purgedAt      DateTime?    @db.Timestamptz(3)
+  id               String          @id @default(uuid(7)) @db.Uuid
+  ownerUserId      String          @db.Uuid
+  purpose          MediaPurpose
+  status           MediaStatus     @default(UPLOAD_PENDING)
+  storageKey       String          @unique
+  mimeType         String?
+  bytes            Int?
+  width            Int?
+  height           Int?
+  durationMs       Int?
+  sha256           String?
+  retentionClass   String
+  contextId        String?         @db.Uuid
+  createdAt        DateTime        @default(now()) @db.Timestamptz(3)
+  finalizedAt      DateTime?       @db.Timestamptz(3)
+  purgeAfter       DateTime?       @db.Timestamptz(3)
+  purgedAt         DateTime?       @db.Timestamptz(3)
   /// Session d'upload (agent E) : échéance, taille max et type déclaré (le type réel est vérifié).
-  uploadExpiresAt DateTime?  @db.Timestamptz(3)
-  maxBytes      Int?
-  declaredMime  String?
-  visibility    MediaVisibility @default(PRIVATE)
+  uploadExpiresAt  DateTime?       @db.Timestamptz(3)
+  maxBytes         Int?
+  declaredMime     String?
+  visibility       MediaVisibility @default(PRIVATE)
   /// Contenu soupçonné sensible (protection des mineurs) : accès spécialisé uniquement.
-  restricted    Boolean      @default(false)
-  rejectReason  String?
+  restricted       Boolean         @default(false)
+  rejectReason     String?
   retentionVersion String?
 
-  owner       User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
-  derivatives MediaDerivative[]
+  owner        User               @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  derivatives  MediaDerivative[]
   accessTokens MediaAccessToken[]
 
   @@index([ownerUserId, purpose])
@@ -1485,14 +1546,14 @@ model MediaAsset {
 
 /// Jeton court et révocable de livraison d'un média (empreinte seulement ; ACL revérifiée à chaque usage).
 model MediaAccessToken {
-  id         String    @id @default(uuid(7)) @db.Uuid
-  assetId    String    @db.Uuid
-  viewerId   String    @db.Uuid
-  variant    String
-  tokenHash  String    @unique
-  expiresAt  DateTime  @db.Timestamptz(3)
-  revokedAt  DateTime? @db.Timestamptz(3)
-  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  id        String    @id @default(uuid(7)) @db.Uuid
+  assetId   String    @db.Uuid
+  viewerId  String    @db.Uuid
+  variant   String
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
 
   asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
@@ -1561,12 +1622,12 @@ model AIUsageCounter {
 }
 
 model AIResult {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  jobId     String   @unique @db.Uuid
-  output    Json
-  validated Boolean
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  expiresAt DateTime? @db.Timestamptz(3)
+  id            String    @id @default(uuid(7)) @db.Uuid
+  jobId         String    @unique @db.Uuid
+  output        Json
+  validated     Boolean
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  expiresAt     DateTime? @db.Timestamptz(3)
   invalidatedAt DateTime? @db.Timestamptz(3)
 
   job AIJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -1594,21 +1655,21 @@ model ModerationDecision {
 }
 
 model ModerationCase {
-  id           String                @id @default(uuid(7)) @db.Uuid
-  subjectType  ModerationSubjectType
-  subjectId    String                @db.Uuid
-  status       CaseStatus            @default(OPEN)
-  priority     Int                   @default(2)
-  reasonCode   String
-  reportId     String?               @db.Uuid
-  assignedToId String?               @db.Uuid
-  dueAt        DateTime              @db.Timestamptz(3)
-  resolvedAt   DateTime?             @db.Timestamptz(3)
-  createdAt    DateTime              @default(now()) @db.Timestamptz(3)
+  id            String                @id @default(uuid(7)) @db.Uuid
+  subjectType   ModerationSubjectType
+  subjectId     String                @db.Uuid
+  status        CaseStatus            @default(OPEN)
+  priority      Int                   @default(2)
+  reasonCode    String
+  reportId      String?               @db.Uuid
+  assignedToId  String?               @db.Uuid
+  dueAt         DateTime              @db.Timestamptz(3)
+  resolvedAt    DateTime?             @db.Timestamptz(3)
+  createdAt     DateTime              @default(now()) @db.Timestamptz(3)
   /// Dossier à accès spécialisé (protection des mineurs) : aucun contenu dans les vues ordinaires.
-  restricted   Boolean               @default(false)
+  restricted    Boolean               @default(false)
   /// Personne concernée par le dossier (jamais le signaleur).
-  subjectUserId String?              @db.Uuid
+  subjectUserId String?               @db.Uuid
 
   report  Report?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
   appeals Appeal[]
@@ -1618,12 +1679,12 @@ model ModerationCase {
 }
 
 model Appeal {
-  id        String       @id @default(uuid(7)) @db.Uuid
-  caseId    String       @db.Uuid
-  userId    String       @db.Uuid
-  status    AppealStatus @default(OPEN)
-  createdAt DateTime     @default(now()) @db.Timestamptz(3)
-  resolvedAt DateTime?   @db.Timestamptz(3)
+  id         String       @id @default(uuid(7)) @db.Uuid
+  caseId     String       @db.Uuid
+  userId     String       @db.Uuid
+  status     AppealStatus @default(OPEN)
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+  resolvedAt DateTime?    @db.Timestamptz(3)
 
   case ModerationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
   user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -1636,18 +1697,18 @@ model Appeal {
 // -----------------------------------------------------------------------------
 
 model MissionDefinition {
-  id              String                  @id @default(uuid(7)) @db.Uuid
-  key             String
-  version         Int
-  status          MissionDefinitionStatus @default(DRAFT)
-  titleKey        String
-  criteria        Json
+  id                    String                  @id @default(uuid(7)) @db.Uuid
+  key                   String
+  version               Int
+  status                MissionDefinitionStatus @default(DRAFT)
+  titleKey              String
+  criteria              Json
   accessibleAlternative String?
-  linkXpMilli     Int
-  petXpMilli      Int
-  coins           Int
-  createdAt       DateTime                @default(now()) @db.Timestamptz(3)
-  publishedAt     DateTime?               @db.Timestamptz(3)
+  linkXpMilli           Int
+  petXpMilli            Int
+  coins                 Int
+  createdAt             DateTime                @default(now()) @db.Timestamptz(3)
+  publishedAt           DateTime?               @db.Timestamptz(3)
 
   dailyMissions DailyMission[]
 
@@ -1661,10 +1722,10 @@ model DailyMission {
   day          String
   createdAt    DateTime @default(now()) @db.Timestamptz(3)
 
-  definition  MissionDefinition    @relation(fields: [definitionId], references: [id], onDelete: Restrict)
-  zone        Zone                 @relation(fields: [zoneId], references: [id], onDelete: Restrict)
-  submissions MissionSubmission[]
-  participants MissionParticipant[]
+  definition     MissionDefinition      @relation(fields: [definitionId], references: [id], onDelete: Restrict)
+  zone           Zone                   @relation(fields: [zoneId], references: [id], onDelete: Restrict)
+  submissions    MissionSubmission[]
+  participants   MissionParticipant[]
   rewardContexts MissionRewardContext[]
 
   @@unique([zoneId, day])
@@ -1693,10 +1754,10 @@ model MissionSubmission {
 }
 
 model MissionParticipant {
-  id             String   @id @default(uuid(7)) @db.Uuid
-  dailyMissionId String   @db.Uuid
-  contextId      String   @db.Uuid
-  userId         String   @db.Uuid
+  id             String    @id @default(uuid(7)) @db.Uuid
+  dailyMissionId String    @db.Uuid
+  contextId      String    @db.Uuid
+  userId         String    @db.Uuid
   validatedAt    DateTime? @db.Timestamptz(3)
 
   dailyMission DailyMission        @relation(fields: [dailyMissionId], references: [id], onDelete: Restrict)
@@ -1708,14 +1769,14 @@ model MissionParticipant {
 
 /// Contexte figé (k, multiplicateur, version de règles) pour la récompense commune.
 model MissionRewardContext {
-  id             String   @id @default(uuid(7)) @db.Uuid
-  contextId      String   @db.Uuid
-  dailyMissionId String   @db.Uuid
-  relDay         String
-  kMilli         Int
+  id                String   @id @default(uuid(7)) @db.Uuid
+  contextId         String   @db.Uuid
+  dailyMissionId    String   @db.Uuid
+  relDay            String
+  kMilli            Int
   affinityMultMilli Int
-  rulesVersion   String
-  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  rulesVersion      String
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
 
   context      RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Cascade)
   dailyMission DailyMission        @relation(fields: [dailyMissionId], references: [id], onDelete: Restrict)
@@ -1743,17 +1804,23 @@ model MissionAward {
 
 /// Amitié Quartier : paire canonique d'utilisateurs (userLowId < userHighId, CHECK).
 model Friendship {
-  id          String           @id @default(uuid(7)) @db.Uuid
-  userLowId   String           @db.Uuid
-  userHighId  String           @db.Uuid
-  status      FriendshipStatus @default(PENDING)
-  invitedById String           @db.Uuid
-  createdAt   DateTime         @default(now()) @db.Timestamptz(3)
-  acceptedAt  DateTime?        @db.Timestamptz(3)
-  endedAt     DateTime?        @db.Timestamptz(3)
+  id             String           @id @default(uuid(7)) @db.Uuid
+  userLowId      String           @db.Uuid
+  userHighId     String           @db.Uuid
+  status         FriendshipStatus @default(PENDING)
+  invitedById    String           @db.Uuid
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  acceptedAt     DateTime?        @db.Timestamptz(3)
+  endedAt        DateTime?        @db.Timestamptz(3)
+  /// V5 (§2.11) : lien de bande ; null = amitié Quartier V4.
+  origin         BandOrigin?
+  sourceOutingId String?          @db.Uuid
+  sourceDuoId    String?          @db.Uuid
+  endedReason    String?
 
-  userLow  User @relation("FriendLow", fields: [userLowId], references: [id], onDelete: Restrict)
-  userHigh User @relation("FriendHigh", fields: [userHighId], references: [id], onDelete: Restrict)
+  conversation Conversation?
+  userLow      User          @relation("FriendLow", fields: [userLowId], references: [id], onDelete: Restrict)
+  userHigh     User          @relation("FriendHigh", fields: [userHighId], references: [id], onDelete: Restrict)
 
   @@unique([userLowId, userHighId])
   @@index([userHighId])
@@ -1773,12 +1840,12 @@ model Group {
 }
 
 model GroupMember {
-  id        String            @id @default(uuid(7)) @db.Uuid
-  groupId   String            @db.Uuid
-  userId    String            @db.Uuid
-  status    GroupMemberStatus @default(INVITED)
-  joinedAt  DateTime?         @db.Timestamptz(3)
-  leftAt    DateTime?         @db.Timestamptz(3)
+  id       String            @id @default(uuid(7)) @db.Uuid
+  groupId  String            @db.Uuid
+  userId   String            @db.Uuid
+  status   GroupMemberStatus @default(INVITED)
+  joinedAt DateTime?         @db.Timestamptz(3)
+  leftAt   DateTime?         @db.Timestamptz(3)
 
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -2166,38 +2233,38 @@ model LeagueReward {
 // -----------------------------------------------------------------------------
 
 model Egg {
-  id             String    @id @default(uuid(7)) @db.Uuid
-  contextId      String    @db.Uuid
-  status         EggStatus @default(INCUBATING)
-  timezone       String
-  warmthRaw      Int       @default(0)
-  nightsValidated Int      @default(0)
-  seed           String
+  id              String    @id @default(uuid(7)) @db.Uuid
+  contextId       String    @db.Uuid
+  status          EggStatus @default(INCUBATING)
+  timezone        String
+  warmthRaw       Int       @default(0)
+  nightsValidated Int       @default(0)
+  seed            String
   /// Naissance unique : un seul pet enfant par œuf.
-  childPetId     String?   @unique @db.Uuid
-  readyAt        DateTime? @db.Timestamptz(3)
-  hatchedAt      DateTime? @db.Timestamptz(3)
-  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  childPetId      String?   @unique @db.Uuid
+  readyAt         DateTime? @db.Timestamptz(3)
+  hatchedAt       DateTime? @db.Timestamptz(3)
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
 
-  context   RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Restrict)
-  childPet  Pet?                @relation("EggChild", fields: [childPetId], references: [id], onDelete: Restrict)
-  nights    IncubationNight[]
+  context    RelationshipContext @relation(fields: [contextId], references: [id], onDelete: Restrict)
+  childPet   Pet?                @relation("EggChild", fields: [childPetId], references: [id], onDelete: Restrict)
+  nights     IncubationNight[]
   birthVotes BirthVote[]
-  childData ChildPetData?
+  childData  ChildPetData?
 
   @@index([contextId])
 }
 
 model IncubationNight {
-  id             String                @id @default(uuid(7)) @db.Uuid
-  eggId          String                @db.Uuid
+  id                String                @id @default(uuid(7)) @db.Uuid
+  eggId             String                @db.Uuid
   /// Identifiant logique unique de la nuit (1..n).
-  logicalIndex   Int
-  status         IncubationNightStatus @default(OPEN)
-  opensAt        DateTime              @db.Timestamptz(3)
-  closesAt       DateTime              @db.Timestamptz(3)
+  logicalIndex      Int
+  status            IncubationNightStatus @default(OPEN)
+  opensAt           DateTime              @db.Timestamptz(3)
+  closesAt          DateTime              @db.Timestamptz(3)
   validatedOnRelDay String?
-  warmthGained   Int                   @default(0)
+  warmthGained      Int                   @default(0)
 
   egg     Egg                @relation(fields: [eggId], references: [id], onDelete: Cascade)
   answers IncubationAnswer[]
@@ -2236,12 +2303,12 @@ model BirthVote {
 }
 
 model ChildPetData {
-  petId         String @id @db.Uuid
-  eggId         String @unique @db.Uuid
-  inheritedAxes Json
-  bodyFromPetId String? @db.Uuid
+  petId           String  @id @db.Uuid
+  eggId           String  @unique @db.Uuid
+  inheritedAxes   Json
+  bodyFromPetId   String? @db.Uuid
   detailFromPetId String? @db.Uuid
-  seed          String
+  seed            String
 
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
   egg Egg @relation(fields: [eggId], references: [id], onDelete: Restrict)
@@ -2261,13 +2328,13 @@ model CustodySchedule {
 }
 
 model CoparentLink {
-  id         String         @id @default(uuid(7)) @db.Uuid
-  childPetId String         @db.Uuid
-  userId     String         @db.Uuid
-  status     CoparentStatus @default(ACTIVE)
+  id                    String         @id @default(uuid(7)) @db.Uuid
+  childPetId            String         @db.Uuid
+  userId                String         @db.Uuid
+  status                CoparentStatus @default(ACTIVE)
   /// Projection de soin indépendante (après blocage) — figée puis propre à ce parent.
   independentProjection Json?
-  createdAt  DateTime       @default(now()) @db.Timestamptz(3)
+  createdAt             DateTime       @default(now()) @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 
@@ -2314,15 +2381,15 @@ model Report {
 
 /// Une pénalité par épisode : unique (userId, reason, episodeKey).
 model ReliabilityEvent {
-  id          String            @id @default(uuid(7)) @db.Uuid
-  userId      String            @db.Uuid
-  contextId   String?           @db.Uuid
-  reason      ReliabilityReason
-  delta       Int
-  episodeKey  String
-  correctedById String?         @db.Uuid
-  correctsEventId String?       @db.Uuid
-  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  id              String            @id @default(uuid(7)) @db.Uuid
+  userId          String            @db.Uuid
+  contextId       String?           @db.Uuid
+  reason          ReliabilityReason
+  delta           Int
+  episodeKey      String
+  correctedById   String?           @db.Uuid
+  correctsEventId String?           @db.Uuid
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2330,13 +2397,13 @@ model ReliabilityEvent {
 }
 
 model SafetyDate {
-  id           String           @id @default(uuid(7)) @db.Uuid
-  contextId    String           @db.Uuid
-  placeRef     String
-  scheduledAt  DateTime         @db.Timestamptz(3)
-  status       SafetyDateStatus @default(PROPOSED)
-  confirmations Json            @default("{}")
-  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+  id            String           @id @default(uuid(7)) @db.Uuid
+  contextId     String           @db.Uuid
+  placeRef      String
+  scheduledAt   DateTime         @db.Timestamptz(3)
+  status        SafetyDateStatus @default(PROPOSED)
+  confirmations Json             @default("{}")
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
 
   context     RelationshipContext  @relation(fields: [contextId], references: [id], onDelete: Restrict)
   invitations GuardianInvitation[]
@@ -2352,9 +2419,9 @@ model GuardianInvitation {
   expiresAt      DateTime                 @db.Timestamptz(3)
   createdAt      DateTime                 @default(now()) @db.Timestamptz(3)
 
-  safetyDate SafetyDate     @relation(fields: [safetyDateId], references: [id], onDelete: Cascade)
-  sharer     User           @relation("GuardianSharer", fields: [sharerUserId], references: [id], onDelete: Cascade)
-  guardian   User           @relation("GuardianGuardian", fields: [guardianUserId], references: [id], onDelete: Cascade)
+  safetyDate SafetyDate      @relation(fields: [safetyDateId], references: [id], onDelete: Cascade)
+  sharer     User            @relation("GuardianSharer", fields: [sharerUserId], references: [id], onDelete: Cascade)
+  guardian   User            @relation("GuardianGuardian", fields: [guardianUserId], references: [id], onDelete: Cascade)
   shares     LocationShare[]
 }
 
@@ -2366,7 +2433,7 @@ model LocationShare {
   endsAt       DateTime  @db.Timestamptz(3)
   revokedAt    DateTime? @db.Timestamptz(3)
 
-  invitation GuardianInvitation  @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  invitation GuardianInvitation    @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   points     SafetyLocationPoint[]
 }
 
@@ -2462,15 +2529,15 @@ model ConsumerDeduplication {
 
 /// Projection par destinataire (curseur WS opaque, aucune trace des événements privés omis).
 model ProjectionEntry {
-  id          String   @id @default(uuid(7)) @db.Uuid
-  recipientId String   @db.Uuid
-  seq         Int
-  sourceEventId String @db.Uuid
-  room        String
-  type        String
-  aggregateId String   @db.Uuid
-  payload     Json
-  occurredAt  DateTime @db.Timestamptz(3)
+  id            String   @id @default(uuid(7)) @db.Uuid
+  recipientId   String   @db.Uuid
+  seq           Int
+  sourceEventId String   @db.Uuid
+  room          String
+  type          String
+  aggregateId   String   @db.Uuid
+  payload       Json
+  occurredAt    DateTime @db.Timestamptz(3)
 
   recipient User @relation(fields: [recipientId], references: [id], onDelete: Cascade)
 
@@ -2500,17 +2567,17 @@ model JobExecution {
 }
 
 model Notification {
-  id         String               @id @default(uuid(7)) @db.Uuid
-  userId     String               @db.Uuid
-  category   NotificationCategory
-  dedupKey   String
-  groupKey   String?
+  id          String               @id @default(uuid(7)) @db.Uuid
+  userId      String               @db.Uuid
+  category    NotificationCategory
+  dedupKey    String
+  groupKey    String?
   templateKey String
-  data       Json
-  status     NotificationStatus   @default(QUEUED)
-  localDay   String
-  createdAt  DateTime             @default(now()) @db.Timestamptz(3)
-  sentAt     DateTime?            @db.Timestamptz(3)
+  data        Json
+  status      NotificationStatus   @default(QUEUED)
+  localDay    String
+  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+  sentAt      DateTime?            @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2561,16 +2628,16 @@ model AuditLog {
 }
 
 model DataExport {
-  id          String       @id @default(uuid(7)) @db.Uuid
-  userId      String       @db.Uuid
-  status      ExportStatus @default(REQUESTED)
-  storageKey  String?
-  requestedAt DateTime     @default(now()) @db.Timestamptz(3)
-  readyAt     DateTime?    @db.Timestamptz(3)
-  expiresAt   DateTime?    @db.Timestamptz(3)
+  id            String       @id @default(uuid(7)) @db.Uuid
+  userId        String       @db.Uuid
+  status        ExportStatus @default(REQUESTED)
+  storageKey    String?
+  requestedAt   DateTime     @default(now()) @db.Timestamptz(3)
+  readyAt       DateTime?    @db.Timestamptz(3)
+  expiresAt     DateTime?    @db.Timestamptz(3)
   /// Nonce du lien de téléchargement (rotation = révocation).
   downloadNonce String?
-  error       String?
+  error         String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2578,16 +2645,16 @@ model DataExport {
 }
 
 model DeletionRequest {
-  id          String         @id @default(uuid(7)) @db.Uuid
-  userId      String         @db.Uuid
-  status      DeletionStatus @default(REQUESTED)
-  requestedAt DateTime       @default(now()) @db.Timestamptz(3)
-  completedAt DateTime?      @db.Timestamptz(3)
+  id               String         @id @default(uuid(7)) @db.Uuid
+  userId           String         @db.Uuid
+  status           DeletionStatus @default(REQUESTED)
+  requestedAt      DateTime       @default(now()) @db.Timestamptz(3)
+  completedAt      DateTime?      @db.Timestamptz(3)
   /// Purge des données personnelles en ligne (après révocation immédiate).
-  purgeAfter  DateTime?      @db.Timestamptz(3)
+  purgeAfter       DateTime?      @db.Timestamptz(3)
   /// Échéance documentée d'effacement des sauvegardes (rotation).
-  backupPurgeAfter DateTime? @db.Timestamptz(3)
-  stats       Json?
+  backupPurgeAfter DateTime?      @db.Timestamptz(3)
+  stats            Json?
 
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 
@@ -2597,24 +2664,716 @@ model DeletionRequest {
 /// Évaluation d'une preuve de mission (agent E) : adéquation visible ≠ modération ≠ récompense.
 /// `rewardKey` unique : l'événement de récompense `mission.proof_validated` n'est émis qu'une fois.
 model MissionProofAssessment {
-  id           String    @id @default(uuid(7)) @db.Uuid
-  mediaId      String    @unique @db.Uuid
-  userId       String    @db.Uuid
-  contextId    String?   @db.Uuid
-  missionKey   String
+  id              String    @id @default(uuid(7)) @db.Uuid
+  mediaId         String    @unique @db.Uuid
+  userId          String    @db.Uuid
+  contextId       String?   @db.Uuid
+  missionKey      String
   /// Horodatage serveur d'acceptation du dépôt (jamais l'heure client).
-  submittedAt  DateTime  @db.Timestamptz(3)
-  serverDay    String
+  submittedAt     DateTime  @db.Timestamptz(3)
+  serverDay       String
   /// PENDING | CONSISTENT | INCONSISTENT | UNCERTAIN | HUMAN_REVIEW | APPROVED | REJECTED
-  status       String
-  assessment   Json?
-  promptVersion String?
-  rewardKey    String?   @unique
+  status          String
+  assessment      Json?
+  promptVersion   String?
+  rewardKey       String?   @unique
   rewardEmittedAt DateTime? @db.Timestamptz(3)
-  decidedAt    DateTime? @db.Timestamptz(3)
-  decidedById  String?   @db.Uuid
-  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  decidedAt       DateTime? @db.Timestamptz(3)
+  decidedById     String?   @db.Uuid
+  createdAt       DateTime  @default(now()) @db.Timestamptz(3)
 
   @@index([userId, serverDay])
   @@index([status])
+}
+
+// =============================================================================
+// V5 — « Ton pet te trouve une bande » (spec-v5 §2, §8 ; concept-v5.1)
+// Migrations : *_v5_enums (valeurs ajoutées) puis *_v5_outings (tables, colonnes, CHECK,
+// index partiels). Contraintes non exprimables en Prisma : dans la migration SQL.
+// =============================================================================
+
+enum NeighborhoodStatus {
+  WAITLIST
+  LIVE
+  PAUSED
+  CLOSED
+}
+
+enum VenueStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum ActivityKind {
+  DRINK_COFFEE
+  BRUNCH
+  CLIMBING
+  WORKSHOP
+  GAMES
+  EXHIBITION
+}
+
+enum LookingFor {
+  FRIENDS
+  STORY
+  BOTH
+}
+
+enum StorySeriousness {
+  SERIOUS
+  SEE_HOW_IT_GOES
+}
+
+enum KidsSomeday {
+  YES
+  NO
+  DONT_KNOW
+}
+
+enum MeetingMode {
+  GROUP
+  DUO
+  BOTH
+}
+
+enum TeamStatus {
+  FORMING
+  ACTIVE
+  DISSOLVED
+}
+
+enum OutingRequestStatus {
+  OPEN
+  PLACED
+  UNPLACED
+  WITHDRAWN
+}
+
+enum UnplacedReason {
+  POOL_TOO_SMALL
+  NO_COMPATIBLE_GROUP
+  NO_SLOT_CAPACITY
+  TEAM_INCOMPATIBLE
+}
+
+enum CompositionRunKind {
+  WEEKLY
+  RERUN
+  SEEDING
+}
+
+enum CompositionRunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum OutingStatus {
+  PROPOSED
+  FORMING
+  CONFIRMED
+  CHECKIN_OPEN
+  DONE
+  CANCELLED
+}
+
+enum OutingCancelReason {
+  UNDERSIZED
+  VENUE_UNAVAILABLE
+  STAFF
+  NEIGHBORHOOD_CLOSED
+  SAFETY
+}
+
+enum SeatStatus {
+  INVITED
+  HELD
+  CONFIRMED
+  CHECKED_IN
+  ATTENDED
+  NO_SHOW
+  DECLINED
+  EXPIRED
+  CANCELLED
+}
+
+enum SeatFunding {
+  FREE_FIRST
+  PLUS_INCLUDED
+  CREDIT
+  PAID
+  STAFF_COMP
+}
+
+enum SeatCancelKind {
+  EARLY
+  LATE
+  SAFETY_EXIT
+  SYSTEM_REMOVAL
+  ACCOUNT_DELETED
+}
+
+enum RefundState {
+  NONE
+  PENDING
+  REFUNDED
+  RECREDITED
+  NOT_ELIGIBLE
+}
+
+enum CheckInMethod {
+  GEO
+  VENUE_CODE
+  STAFF
+}
+
+enum CheckInResult {
+  ACCEPTED
+  TOO_FAR
+  LOW_ACCURACY
+  CODE_INVALID
+}
+
+enum AccuracyBucket {
+  LE_50
+  LE_150
+  GT_150
+}
+
+enum VoteChoice {
+  FRIEND
+  PLUS
+  NO
+}
+
+enum ConnectionKind {
+  FRIEND
+  PLUS
+}
+
+enum BandOrigin {
+  OUTING_VOTE
+  DUO_VOTE
+  PLUS_ONE
+  LEGACY_V4
+}
+
+enum DuoOrigin {
+  LANE
+  OUTING_VOTE
+}
+
+enum DuoStatus {
+  EXCHANGE
+  UNLOCKED
+  DATE_PROPOSED
+  DATE_CONFIRMED
+  AFTER_VOTE
+  TOGETHER
+  EXPIRED
+  CLOSED
+  LEFT
+}
+
+enum AttendanceDisputeStatus {
+  OPEN
+  ACCEPTED
+  REJECTED
+}
+
+enum PetMemoryKind {
+  HATCHED
+  OUTING_LIVED
+  DUO_DATE_LIVED
+  BAND_NEW_MEMBER
+  PROMISE_KEPT
+  EGG
+}
+
+enum AccessorySource {
+  MEMORY
+  PLUS_MONTHLY
+  REFERRAL
+  STAFF
+}
+
+/// Quartier (spec-v5 §2.1). La ville = `Zone` (fuseau, amorçage par ville fermée, V5.1 B.7).
+model Neighborhood {
+  id                String             @id @default(uuid(7)) @db.Uuid
+  slug              String             @unique
+  name              String
+  /// Nom de ville affiché (« Paris », « Lyon », « Saint-Denis »).
+  city              String
+  cityZoneId        String             @db.Uuid
+  timezone          String
+  status            NeighborhoodStatus @default(WAITLIST)
+  densityThreshold  Int                @default(120)
+  /// Date estimée honnête (V5.1 B.6), saisie par ops ; jamais inventée.
+  estimatedLaunchAt DateTime?          @db.Timestamptz(3)
+  launchedAt        DateTime?          @db.Timestamptz(3)
+  pausedAt          DateTime?          @db.Timestamptz(3)
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+  version           Int                @default(0)
+
+  cityZone      Zone                         @relation(fields: [cityZoneId], references: [id], onDelete: Restrict)
+  slotTemplates NeighborhoodSlotTemplate[]
+  venues        Venue[]
+  residents     User[]                       @relation("UserNeighborhood")
+  waitlist      WaitlistEntry[]
+  requests      OutingRequest[]
+  outings       Outing[]
+  acceptedBy    UserAcceptableNeighborhood[]
+
+  @@index([cityZoneId, status])
+}
+
+/// Créneau type hebdomadaire d'un quartier (heure murale du quartier) et son activité (V5.1 D.13–D.14).
+model NeighborhoodSlotTemplate {
+  id             String       @id @default(uuid(7)) @db.Uuid
+  neighborhoodId String       @db.Uuid
+  isoWeekday     Int
+  /// Minutes depuis minuit, heure locale du quartier (ex. 19 h 30 = 1170).
+  localMinute    Int
+  activity       ActivityKind
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+
+  neighborhood Neighborhood           @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
+  availability UserSlotAvailability[]
+
+  @@unique([neighborhoodId, isoWeekday, localMinute])
+}
+
+/// Lieu partenaire (spec-v5 §2.3). Adresse et coordonnées révélées aux seuls confirmés au verrouillage.
+model Venue {
+  id                String         @id @default(uuid(7)) @db.Uuid
+  neighborhoodId    String         @db.Uuid
+  name              String
+  addressLine       String
+  postalCode        String
+  city              String
+  /// Coordonnées servant au check-in uniquement ; jamais une distance affichée.
+  lat               Float
+  lng               Float
+  offerKey          String
+  photoUrl          String?
+  activities        ActivityKind[]
+  /// Tables-sorties simultanées par créneau.
+  tablesPerSlot     Int            @default(1)
+  status            VenueStatus    @default(ACTIVE)
+  accessibilityTags String[]
+  /// Référence du secret HMAC du code de repli (le secret est dérivé côté serveur ; jamais en clair ici).
+  checkinSecretRef  String
+  /// Visible staff ops uniquement.
+  staffContact      String?
+  createdAt         DateTime       @default(now()) @db.Timestamptz(3)
+
+  neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Restrict)
+  slots        VenueSlot[]
+  outings      Outing[]
+
+  @@index([neighborhoodId, status])
+}
+
+model VenueSlot {
+  id              String       @id @default(uuid(7)) @db.Uuid
+  venueId         String       @db.Uuid
+  startsAt        DateTime     @db.Timestamptz(3)
+  activity        ActivityKind
+  capacityOutings Int
+  reservedOutings Int          @default(0)
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+
+  venue   Venue    @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  outings Outing[]
+
+  @@unique([venueId, startsAt])
+  @@index([startsAt])
+}
+
+/// Liste d'attente (spec-v5 §2.2) : une seule entrée par personne, AUCUNE position individuelle.
+model WaitlistEntry {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  userId           String    @unique @db.Uuid
+  neighborhoodId   String    @db.Uuid
+  joinedAt         DateTime  @db.Timestamptz(3)
+  notifiedLaunchAt DateTime? @db.Timestamptz(3)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
+
+  @@index([neighborhoodId])
+}
+
+/// Préférences de sortie V5.1 (D.13–D.14, C.10, B.8). Déclaratives ; jamais de géolocalisation.
+model OutingPreferences {
+  userId           String         @id @db.Uuid
+  groupAgeMin      Int
+  groupAgeMax      Int
+  /// Vide = toutes les activités.
+  activities       ActivityKind[]
+  maxTravelMinutes Int            @default(30)
+  updatedAt        DateTime       @updatedAt @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserAcceptableNeighborhood {
+  userId         String @db.Uuid
+  neighborhoodId String @db.Uuid
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
+
+  @@id([userId, neighborhoodId])
+  @@index([neighborhoodId])
+}
+
+model UserSlotAvailability {
+  userId         String @db.Uuid
+  slotTemplateId String @db.Uuid
+
+  user         User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slotTemplate NeighborhoodSlotTemplate @relation(fields: [slotTemplateId], references: [id], onDelete: Cascade)
+
+  @@id([userId, slotTemplateId])
+}
+
+/// Semaines off (garde alternée…), clé `YYYY-Www` (CHECK format).
+model UserWeekOff {
+  userId  String @db.Uuid
+  weekKey String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, weekKey])
+}
+
+/// Team « Viens avec ta team » (V5.1 B.7) : 1 à 3 personnes d'une même ville, unité indivisible.
+model Team {
+  id          String     @id @default(uuid(7)) @db.Uuid
+  cityZoneId  String     @db.Uuid
+  createdById String     @db.Uuid
+  status      TeamStatus @default(FORMING)
+  /// Code d'invitation aléatoire (lien partagé) ; jamais un identifiant interne.
+  inviteCode  String     @unique
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  dissolvedAt DateTime?  @db.Timestamptz(3)
+  version     Int        @default(0)
+
+  cityZone Zone         @relation(fields: [cityZoneId], references: [id], onDelete: Restrict)
+  members  TeamMember[]
+
+  @@index([cityZoneId, status])
+}
+
+/// Membre de team : au plus une team active par personne (index unique partiel `leftAt IS NULL`).
+model TeamMember {
+  id       String    @id @default(uuid(7)) @db.Uuid
+  teamId   String    @db.Uuid
+  userId   String    @db.Uuid
+  joinedAt DateTime  @db.Timestamptz(3)
+  leftAt   DateTime? @db.Timestamptz(3)
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([userId])
+}
+
+/// Demande hebdo (spec-v5 §2.4) : une par personne et par semaine.
+model OutingRequest {
+  id             String              @id @default(uuid(7)) @db.Uuid
+  userId         String              @db.Uuid
+  neighborhoodId String              @db.Uuid
+  weekKey        String
+  slotStartsAt   DateTime[]          @db.Timestamptz(3)
+  teamId         String?             @db.Uuid
+  status         OutingRequestStatus @default(OPEN)
+  /// Code de diagnostic staff (jamais montré tel quel à l'utilisateur).
+  unplacedReason UnplacedReason?
+  missedWeeks    Int                 @default(0)
+  createdAt      DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime            @updatedAt @db.Timestamptz(3)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, weekKey])
+  @@index([neighborhoodId, weekKey, status])
+}
+
+/// Lot de composition (diagnostic) : stats agrégées, aucun identifiant de préférence.
+model CompositionRun {
+  id            String               @id @default(uuid(7)) @db.Uuid
+  /// `zone:<zoneId>` (hebdo, par ville) ; `zone:<zoneId>@<fenêtre>` (amorçage).
+  scopeKey      String
+  weekKey       String
+  kind          CompositionRunKind
+  status        CompositionRunStatus @default(RUNNING)
+  algoVersion   String
+  tuningVersion String
+  seed          String
+  stats         Json?
+  startedAt     DateTime             @db.Timestamptz(3)
+  finishedAt    DateTime?            @db.Timestamptz(3)
+
+  outings Outing[]
+
+  @@unique([scopeKey, weekKey, kind])
+}
+
+/// Sortie (spec-v5 §2.5). Instants figés à la création (versions tuning tracées).
+model Outing {
+  id               String              @id @default(uuid(7)) @db.Uuid
+  neighborhoodId   String              @db.Uuid
+  weekKey          String
+  kind             CompositionRunKind  @default(WEEKLY)
+  venueSlotId      String              @db.Uuid
+  venueId          String              @db.Uuid
+  activity         ActivityKind
+  startsAt         DateTime            @db.Timestamptz(3)
+  endsAt           DateTime            @db.Timestamptz(3)
+  status           OutingStatus        @default(PROPOSED)
+  capacity         Int
+  composedAt       DateTime            @db.Timestamptz(3)
+  acceptDeadline   DateTime            @db.Timestamptz(3)
+  lockAt           DateTime            @db.Timestamptz(3)
+  photoRevealAt    DateTime            @db.Timestamptz(3)
+  checkinOpensAt   DateTime            @db.Timestamptz(3)
+  checkinClosesAt  DateTime            @db.Timestamptz(3)
+  votesCloseAt     DateTime            @db.Timestamptz(3)
+  /// Dépouillement fait (résultats publiés à date fixe, V5.1 A.4).
+  votesClosedAt    DateTime?           @db.Timestamptz(3)
+  /// Bulletins purgés (rétention §8.5).
+  ballotsPurgedAt  DateTime?           @db.Timestamptz(3)
+  cancelReason     OutingCancelReason?
+  cancelledAt      DateTime?           @db.Timestamptz(3)
+  compositionRunId String?             @db.Uuid
+  tuningVersion    String
+  algoVersion      String
+  createdAt        DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime            @updatedAt @db.Timestamptz(3)
+  version          Int                 @default(0)
+
+  neighborhood   Neighborhood    @relation(fields: [neighborhoodId], references: [id], onDelete: Restrict)
+  venueSlot      VenueSlot       @relation(fields: [venueSlotId], references: [id], onDelete: Restrict)
+  venue          Venue           @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  compositionRun CompositionRun? @relation(fields: [compositionRunId], references: [id], onDelete: SetNull)
+  seats          OutingSeat[]
+  votes          OutingVote[]
+  conversation   Conversation?
+
+  @@index([status, lockAt])
+  @@index([neighborhoodId, weekKey])
+}
+
+/// Place (spec-v5 §2.6). Une place active par personne et par semaine (index unique partiel).
+model OutingSeat {
+  id             String          @id @default(uuid(7)) @db.Uuid
+  outingId       String          @db.Uuid
+  userId         String          @db.Uuid
+  weekKey        String
+  teamId         String?         @db.Uuid
+  status         SeatStatus      @default(INVITED)
+  funding        SeatFunding?
+  /// Référence du paiement (T3 : Payment.id ; LOCAL_DEMO : `local_demo:<seatId>`).
+  paymentRef     String?
+  /// Référence du crédit consommé (T3).
+  creditRef      String?
+  holdExpiresAt  DateTime?       @db.Timestamptz(3)
+  acceptDeadline DateTime        @db.Timestamptz(3)
+  invitedAt      DateTime        @db.Timestamptz(3)
+  confirmedAt    DateTime?       @db.Timestamptz(3)
+  respondedAt    DateTime?       @db.Timestamptz(3)
+  cancelledAt    DateTime?       @db.Timestamptz(3)
+  checkedInAt    DateTime?       @db.Timestamptz(3)
+  cancelKind     SeatCancelKind?
+  refundState    RefundState     @default(NONE)
+  refundRef      String?
+  version        Int             @default(0)
+
+  outing          Outing                 @relation(fields: [outingId], references: [id], onDelete: Restrict)
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  checkIn         OutingCheckIn?
+  knowsSomeone    KnowsSomeoneRequest?
+  checkInAttempts OutingCheckInAttempt[]
+  dispute         AttendanceDispute?
+
+  @@unique([outingId, userId])
+  @@index([outingId, status])
+  @@index([status, holdExpiresAt])
+  @@index([userId, status])
+}
+
+/// Check-in accepté (§2.8) — AUCUNE position stockée (pas de colonne lat/lng).
+model OutingCheckIn {
+  seatId    String        @id @db.Uuid
+  method    CheckInMethod
+  createdAt DateTime      @db.Timestamptz(3)
+
+  seat OutingSeat @relation(fields: [seatId], references: [id], onDelete: Cascade)
+}
+
+/// Essais de check-in (comptage des essais de code) : résultat et précision par tranche seulement.
+model OutingCheckInAttempt {
+  id             String          @id @default(uuid(7)) @db.Uuid
+  seatId         String          @db.Uuid
+  method         CheckInMethod
+  result         CheckInResult
+  accuracyBucket AccuracyBucket?
+  createdAt      DateTime        @db.Timestamptz(3)
+
+  seat OutingSeat @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  @@index([seatId, method])
+}
+
+/// Bulletin de vote d'après (§2.10, V5.1 A). Table séparée, jamais jointe dans une projection
+/// d'autrui ; purgée `votes.ballotRetentionDays` après la clôture.
+model OutingVote {
+  id           String     @id @default(uuid(7)) @db.Uuid
+  outingId     String     @db.Uuid
+  voterUserId  String     @db.Uuid
+  targetUserId String     @db.Uuid
+  choice       VoteChoice
+  createdAt    DateTime   @db.Timestamptz(3)
+  updatedAt    DateTime   @db.Timestamptz(3)
+
+  outing Outing @relation(fields: [outingId], references: [id], onDelete: Cascade)
+
+  @@unique([outingId, voterUserId, targetUserId])
+  @@index([outingId])
+}
+
+/// Accord mutuel révélé (résultat durable du dépouillement ; jamais un « non »).
+model ConnectionReveal {
+  id           String         @id @default(uuid(7)) @db.Uuid
+  sourceKind   String
+  sourceId     String         @db.Uuid
+  userLowId    String         @db.Uuid
+  userHighId   String         @db.Uuid
+  result       ConnectionKind
+  revealedAt   DateTime       @db.Timestamptz(3)
+  friendshipId String?        @db.Uuid
+  duoId        String?        @db.Uuid
+
+  @@unique([sourceKind, sourceId, userLowId, userHighId])
+  @@index([userLowId])
+  @@index([userHighId])
+}
+
+/// Duo (spec-v5 §2.12) — créé ici par un accord « plus » (OUTING_VOTE) ; voie Duo : T5 (C2).
+model Duo {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  userLowId      String    @db.Uuid
+  userHighId     String    @db.Uuid
+  origin         DuoOrigin
+  status         DuoStatus
+  exchangeEndsAt DateTime? @db.Timestamptz(3)
+  dateDeadline   DateTime? @db.Timestamptz(3)
+  messagesLow    Int       @default(0)
+  messagesHigh   Int       @default(0)
+  datesAttended  Int       @default(0)
+  sourceOutingId String?   @db.Uuid
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+  version        Int       @default(0)
+
+  userLow      User          @relation("DuoLow", fields: [userLowId], references: [id], onDelete: Restrict)
+  userHigh     User          @relation("DuoHigh", fields: [userHighId], references: [id], onDelete: Restrict)
+  conversation Conversation?
+
+  @@index([userLowId])
+  @@index([userHighId])
+}
+
+/// Fiabilité « venu·e à N sorties sur M » (§2.14, V5.1 E.16) — projection idempotente.
+model ReliabilityStat {
+  userId          String    @id @db.Uuid
+  attended        Int       @default(0)
+  noShows         Int       @default(0)
+  /// Annulations après verrouillage (V5.1 : comptées comme absence).
+  lateCancels     Int       @default(0)
+  /// Absences de l'épisode courant (remis à zéro après une pause).
+  episodeAbsences Int       @default(0)
+  lastAbsenceAt   DateTime? @db.Timestamptz(3)
+  pausedUntil     DateTime? @db.Timestamptz(3)
+  pauseEpisode    Int       @default(0)
+  updatedAt       DateTime  @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Contestation d'absence (§2.14) ; résolution staff (T6).
+model AttendanceDispute {
+  id           String                  @id @default(uuid(7)) @db.Uuid
+  seatId       String                  @unique @db.Uuid
+  userId       String                  @db.Uuid
+  /// Note privée (purge 1 an après résolution).
+  note         String
+  status       AttendanceDisputeStatus @default(OPEN)
+  resolvedById String?                 @db.Uuid
+  createdAt    DateTime                @db.Timestamptz(3)
+  resolvedAt   DateTime?               @db.Timestamptz(3)
+
+  seat OutingSeat @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+}
+
+/// Souvenir du pet (§2.13) : jamais perdu ; `dedupKey` = `<kind>:<refId>:<petId>`.
+model PetMemory {
+  id        String        @id @default(uuid(7)) @db.Uuid
+  petId     String        @db.Uuid
+  kind      PetMemoryKind
+  refType   String
+  refId     String        @db.Uuid
+  dedupKey  String        @unique
+  data      Json
+  createdAt DateTime      @db.Timestamptz(3)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId, createdAt(sort: Desc), id(sort: Desc)])
+}
+
+/// Accessoire gagné (jamais acheté) ; `accessoryId` = clé `@blowy/content`.
+model PetAccessory {
+  id          String          @id @default(uuid(7)) @db.Uuid
+  petId       String          @db.Uuid
+  accessoryId String
+  source      AccessorySource
+  unlockedAt  DateTime        @db.Timestamptz(3)
+  equipped    Boolean         @default(false)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@unique([petId, accessoryId])
+}
+
+enum KnowsSomeoneStatus {
+  AUTO_ACCEPTED
+  IN_REVIEW
+  ACCEPTED
+  REJECTED
+  COUNTED_AS_CANCEL
+}
+
+/// V5.2 (C.10) « Je connais quelqu'un ici » : signalement PRIVÉ (jamais montré à la personne visée),
+/// une demande par place ; 1 par mois et par personne (au-delà : annulation).
+model KnowsSomeoneRequest {
+  id           String             @id @default(uuid(7)) @db.Uuid
+  seatId       String             @unique @db.Uuid
+  userId       String             @db.Uuid
+  targetUserId String             @db.Uuid
+  status       KnowsSomeoneStatus
+  createdAt    DateTime           @db.Timestamptz(3)
+  resolvedAt   DateTime?          @db.Timestamptz(3)
+
+  seat OutingSeat @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

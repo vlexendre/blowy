@@ -15,6 +15,7 @@ import { RealtimeGateway } from './realtime/realtime.gateway.js';
 import type { SessionResolver } from './shared/interface/auth.guard.js';
 import type { ParticipationReader } from './shared/application/ports/participation.reader.js';
 import type { ProjectionReader } from './shared/application/projection.js';
+import { OUTING_ROOMS, type OutingRooms } from './modules/outings/outings.module.js';
 import { CONVERSATION_REPOSITORY, type ConversationRepository } from './modules/conversations/application/ports/conversation.repository.js';
 import type { Logger } from './shared/infrastructure/logging/logger.js';
 import { requestIdMiddleware } from './shared/interface/request-id.middleware.js';
@@ -57,6 +58,7 @@ export function attachRealtime(app: INestApplication, corsOrigins: string[]): Re
         return !!c && c.members.some((m) => m.userId === userId && !m.revokedAt);
       },
     },
+    outings: app.get<OutingRooms>(OUTING_ROOMS),
     projections: app.get<ProjectionReader>(PROJECTION_READER),
     logger: app.get<Logger>(LOGGER),
     corsOrigins,

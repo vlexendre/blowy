@@ -24,6 +24,8 @@ import { RelationshipConsumers } from '../modules/relationships/infrastructure/r
 import { hourKey, quarterKey, type RecurringJob } from './scheduler.js';
 import { TRUST_JOBS, TRUST_OUTBOX } from '../modules/trust/trust.module.js';
 import { MEDIA_JOBS } from '../modules/media/media.module.js';
+import { NEIGHBORHOODS_JOBS } from '../modules/neighborhoods/neighborhoods.module.js';
+import { OUTINGS_JOBS } from '../modules/outings/outings.module.js';
 
 export interface WorkerGraph {
   dispatcher: OutboxDispatcher;
@@ -55,6 +57,9 @@ export function buildWorkerGraph(ctx: INestApplicationContext, extraEffects: Out
     // Agent E : purge médias (rétention versionnée) et comptes supprimés.
     ...ctx.get<RecurringJob[]>(MEDIA_JOBS).map((j) => ({ ...j, windowKey: hourKey })),
     ...ctx.get<RecurringJob[]>(TRUST_JOBS).map((j) => ({ ...j, windowKey: hourKey })),
+    // V5 (spec-v5 §7.8) : créneaux, composition hebdo, amorçage, cycle de vie des sorties, rétention.
+    ...ctx.get<RecurringJob[]>(NEIGHBORHOODS_JOBS),
+    ...ctx.get<RecurringJob[]>(OUTINGS_JOBS),
   ];
   return { dispatcher, jobs };
 }

@@ -1,0 +1,192 @@
+/**
+ * Projecteur par acteur de la sortie — applique STRICTEMENT le tableau §3.1 de la spec, amendé par
+ * V5.1 (visages et lieu révélés ensemble au verrouillage, aperçu anonyme avant « Je viens », votes
+ * publiés à la clôture). Tout ce qui n'est pas autorisé est ABSENT du JSON (pas de `null` révélateur).
+ * Jamais : intentions, genres recherchés, votes d'autrui, âge exact, financement d'autrui, absence,
+ * motif d'annulation d'autrui, personne bloquée.
+ */
+import { ageBracketBounds, ageBracketOf, publicCancelReason, reliabilityDisplay, type RefundMode } from '@blowy/domain';
+import type { OutingMemberView, OutingView } from '@blowy/api-contract';
+import type { OutingFacts, SeatFacts } from './facts.js';
+import { countsAsConfirmed, isPending, refundModeFor, type CancelPreview } from './seat-policy.js';
+
+/** Où en est le lecteur, d'après l'état de la sortie ET de sa propre place. */
+export type ViewerPhase = 'INVITED' | 'PRE_LOCK' | 'LOCKED' | 'CHECKIN' | 'VOTING' | 'AFTER' | 'INACTIVE';
+
+const CHAT_READ_AFTER_CLOSE_MS = 7 * 86_400_000;
+
+export function viewerPhase(o: OutingFacts, mine: SeatFacts, now: Date): ViewerPhase {
+  if (o.status === 'CANCELLED') return 'INACTIVE';
+  if (isPending(mine.status) && (o.status === 'PROPOSED' || o.status === 'FORMING')) return 'INVITED';
+  if (mine.status === 'CONFIRMED' || mine.status === 'CHECKED_IN') {
+    if (o.status === 'PROPOSED' || o.status === 'FORMING') return 'PRE_LOCK';
+    if (o.status === 'CONFIRMED') return now >= o.photoRevealAt ? 'LOCKED' : 'PRE_LOCK';
+    if (o.status === 'CHECKIN_OPEN') return 'CHECKIN';
+  }
+  if (o.status === 'DONE' && mine.status === 'ATTENDED') return !o.votesClosedAt && now < o.votesCloseAt ? 'VOTING' : 'AFTER';
+  return 'INACTIVE';
+}
+
+export interface ViewerContext {
+  now: Date;
+  /** Blocage dans un sens ou l'autre avec le lecteur. */
+  blocked: ReadonlySet<string>;
+  /** Liens actifs du lecteur (bande, duo) : « liens seulement » après la clôture. */
+  linked: ReadonlySet<string>;
+  /** Photos émises pour les seules personnes autorisées (`photoEligible`). */
+  photos: ReadonlyMap<string, { mediaId: string; url: string }>;
+  cancelPreview?: CancelPreview;
+  /** V5.2 (B.5–B.6) : pour un lecteur qui cherche une histoire seulement (calculé par `storyMatchFor`). */
+  storyMatch?: 'AT_LEAST_TWO' | 'FRIENDS_ONLY';
+}
+
+/** Personnes dont la photo est visible par le lecteur (révélation simultanée au verrouillage). */
+export function photoEligible(viewerId: string, o: OutingFacts, now: Date, linked: ReadonlySet<string>): string[] {
+  const mine = o.seats.find((s) => s.userId === viewerId);
+  if (!mine) return [];
+  const phase = viewerPhase(o, mine, now);
+  const others = o.seats.filter((s) => s.userId !== viewerId);
+  if (phase === 'LOCKED' || phase === 'CHECKIN') return others.filter((s) => s.status === 'CONFIRMED' || s.status === 'CHECKED_IN').map((s) => s.userId);
+  if (phase === 'VOTING') return others.filter((s) => s.status === 'ATTENDED').map((s) => s.userId);
+  if (phase === 'AFTER') return others.filter((s) => s.status === 'ATTENDED' && linked.has(s.userId)).map((s) => s.userId);
+  return [];
+}
+
+function reliabilityOf(s: SeatFacts) {
+  const r = reliabilityDisplay(s.person.reliability.attended, s.person.reliability.noShows, s.person.reliability.lateCancels);
+  return r === 'NEWCOMER' ? ('NEWCOMER' as const) : r;
+}
+
+function refundOf(s: SeatFacts): RefundMode {
+  if (s.refundState === 'RECREDITED') return 'CREDIT';
+  if (s.refundState === 'PENDING' || s.refundState === 'REFUNDED') return refundModeFor(s.funding) === 'CARD' ? 'CARD' : 'CREDIT';
+  return 'NONE';
+}
+
+export function projectOutingFor(viewerId: string, o: OutingFacts, ctx: ViewerContext): OutingView | null {
+  const mine = o.seats.find((s) => s.userId === viewerId);
+  if (!mine) return null;
+  const now = ctx.now;
+  const phase = viewerPhase(o, mine, now);
+  const others = o.seats.filter((s) => s.userId !== viewerId && !ctx.blocked.has(s.userId));
+  const inMyTeam = (s: SeatFacts) => !!mine.teamId && s.teamId === mine.teamId;
+  const base = (s: SeatFacts): OutingMemberView => ({ userId: s.userId, pet: s.person.pet, threeWords: s.person.threeWords.slice(0, 3) as OutingMemberView['threeWords'], ...(inMyTeam(s) ? { inMyTeam: true as const } : {}) });
+  const photo = (s: SeatFacts) => {
+    const p = ctx.photos.get(s.userId);
+    return p ? { photo: p } : {};
+  };
+  // V5.2 (C.9) : tranche de la grille FIXE, jamais l'âge exact ni une tranche centrée.
+  const identity = (s: SeatFacts) => ({ firstName: s.person.firstName, ageRange: ageBracketOf(s.person.age), reliability: reliabilityOf(s) });
+
+  let members: OutingMemberView[] = [];
+  switch (phase) {
+    case 'INVITED':
+      // Pets seulement (invités + confirmés) : ni prénom, ni âge, ni photo, ni lieu.
+      members = others.filter((s) => isPending(s.status) || countsAsConfirmed(s.status)).map(base);
+      break;
+    case 'PRE_LOCK':
+    case 'LOCKED':
+    case 'CHECKIN': {
+      const revealed = phase !== 'PRE_LOCK';
+      for (const s of others) {
+        if (s.status === 'CONFIRMED' || s.status === 'CHECKED_IN') {
+          members.push({ ...base(s), ...identity(s), ...(revealed ? photo(s) : {}), ...(phase === 'CHECKIN' && s.status === 'CHECKED_IN' ? { arrived: true as const } : {}) });
+        } else if (isPending(s.status) && phase === 'PRE_LOCK') {
+          members.push(base(s));
+        } else if (s.status === 'CANCELLED' && s.confirmedAt) {
+          // « X ne pourra pas venir » — sans motif, sans financement.
+          members.push({ ...base(s), firstName: s.person.firstName, notComing: true });
+        }
+      }
+      break;
+    }
+    case 'VOTING':
+      members = others.filter((s) => s.status === 'ATTENDED').map((s) => ({ ...base(s), ...identity(s), ...photo(s) }));
+      break;
+    case 'AFTER':
+      members = others.filter((s) => s.status === 'ATTENDED' && ctx.linked.has(s.userId)).map((s) => ({ ...base(s), firstName: s.person.firstName, ...photo(s) }));
+      break;
+    case 'INACTIVE':
+      members = [];
+  }
+
+  const confirmedCount = o.seats.filter((s) => s.status === 'CONFIRMED' || s.status === 'CHECKED_IN').length;
+  const showCount = phase === 'INVITED' || phase === 'PRE_LOCK' || phase === 'LOCKED' || phase === 'CHECKIN';
+  const chatOpen = phase === 'PRE_LOCK' || phase === 'LOCKED' || phase === 'CHECKIN' || phase === 'VOTING' || (phase === 'AFTER' && now.getTime() < o.votesCloseAt.getTime() + CHAT_READ_AFTER_CLOSE_MS);
+
+  const view: OutingView = {
+    id: o.id,
+    status: o.status,
+    weekKey: o.weekKey,
+    neighborhood: { name: o.neighborhoodName },
+    startsAt: o.startsAt.toISOString(),
+    endsAt: o.endsAt.toISOString(),
+    capacity: o.capacity,
+    activity: o.activity,
+    ...(phase === 'INVITED' ? { preview: previewOf(o) } : {}),
+    ...(showCount ? { confirmedCount } : {}),
+    mySeat: {
+      status: mine.status,
+      ...(mine.funding ? { funding: mine.funding } : {}),
+      ...(mine.status === 'HELD' && mine.holdExpiresAt ? { holdExpiresAt: mine.holdExpiresAt.toISOString() } : {}),
+      ...(mine.status === 'INVITED' ? { acceptDeadline: mine.acceptDeadline.toISOString() } : {}),
+      ...(ctx.cancelPreview && (mine.status === 'CONFIRMED' || mine.status === 'HELD') && now < o.startsAt ? { cancelPreview: ctx.cancelPreview } : {}),
+    },
+    timeline: {
+      acceptDeadline: o.acceptDeadline.toISOString(),
+      lockAt: o.lockAt.toISOString(),
+      photoRevealAt: o.photoRevealAt.toISOString(),
+      checkinOpensAt: o.checkinOpensAt.toISOString(),
+      checkinClosesAt: o.checkinClosesAt.toISOString(),
+      votesCloseAt: o.votesCloseAt.toISOString(),
+    },
+    // I-O4 : lieu exact seulement à partir du verrouillage et si MA place est confirmée.
+    ...((o.status === 'CONFIRMED' || o.status === 'CHECKIN_OPEN') && (mine.status === 'CONFIRMED' || mine.status === 'CHECKED_IN')
+      ? {
+          venue: {
+            name: o.venue.name,
+            address: o.venue.address,
+            offerLabel: o.venue.offerLabel,
+            ...(o.venue.photoUrl ? { photoUrl: o.venue.photoUrl } : {}),
+            bookingName: 'Blowy',
+            lat: o.venue.lat,
+            lng: o.venue.lng,
+          },
+        }
+      : {}),
+    members,
+    ...(chatOpen && o.conversationId ? { conversationId: o.conversationId } : {}),
+    ...(phase === 'VOTING' ? { votes: { open: true, closesAt: o.votesCloseAt.toISOString() } } : phase === 'AFTER' ? { votes: { open: false, closesAt: o.votesCloseAt.toISOString() } } : {}),
+    ...(o.status === 'CANCELLED' && o.cancelReason ? { cancelled: { reason: publicCancelReason(o.cancelReason), refund: refundOf(mine) } } : {}),
+    ...(ctx.storyMatch && (phase === 'INVITED' || phase === 'PRE_LOCK' || phase === 'LOCKED' || phase === 'CHECKIN') ? { storyMatch: ctx.storyMatch } : {}),
+    ...(phase === 'LOCKED' && o.status === 'CONFIRMED' && mine.status === 'CONFIRMED' && now < o.startsAt ? { knowsSomeoneAvailable: true as const } : {}),
+  };
+  return view;
+}
+
+/** Aperçu anonyme (V5.1 C.10) : taille, âges min–max, genres agrégés, nombre de teams. */
+export function previewOf(o: OutingFacts) {
+  const active = o.seats.filter((s) => isPending(s.status) || countsAsConfirmed(s.status));
+  // V5.2 (C.9) : union des tranches de la grille fixe — jamais un âge exact.
+  const brackets = active.map((s) => ageBracketBounds(ageBracketOf(s.person.age)));
+  const genders: Partial<Record<'WOMAN' | 'MAN' | 'NON_BINARY' | 'UNDISCLOSED', number>> = {};
+  for (const s of active) genders[s.person.gender] = (genders[s.person.gender] ?? 0) + 1;
+  const teamSizes = new Map<string, number>();
+  for (const s of active) if (s.teamId) teamSizes.set(s.teamId, (teamSizes.get(s.teamId) ?? 0) + 1);
+  return {
+    size: active.length,
+    ageMin: Math.min(...brackets.map((b) => b[0])),
+    ageMax: Math.max(...brackets.map((b) => b[1])),
+    genders,
+    teams: [...teamSizes.values()].filter((n) => n >= 2).length,
+  };
+}
+
+/**
+ * V5.2 (B.5) : « au moins 2 personnes du groupe cherchent aussi une histoire compatible avec la
+ * tienne » — calculé pour le seul lecteur, d'après SES intentions ; jamais qui.
+ */
+export function storyMatchFor(viewer: { seeksRomance: boolean }, compatibleOthers: number): 'AT_LEAST_TWO' | 'FRIENDS_ONLY' | undefined {
+  if (!viewer.seeksRomance) return undefined;
+  return compatibleOthers >= 2 ? 'AT_LEAST_TWO' : 'FRIENDS_ONLY';
+}

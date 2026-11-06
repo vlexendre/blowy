@@ -5,6 +5,8 @@ export const CURRENT_CONSENT_VERSIONS = {
   AI_MODERATION: '2026-11',
   AI_SUGGESTIONS: '2026-11',
   AI_NARRATION: '2026-11',
+  /** V5 : genres recherchés (orientation, art. 9) ; retrait = intentions romance effacées. */
+  SENSITIVE_PREFERENCES: '2026-11',
 } as const;
 export type ProcessingPurpose = keyof typeof CURRENT_CONSENT_VERSIONS;
 export const REQUIRED_SOCIAL: readonly ProcessingPurpose[] = ['TERMS', 'PRIVACY', 'AI_MODERATION'];
@@ -30,4 +32,10 @@ export function socialAllowed(facts: readonly ConsentFact[]): boolean {
     const f = latest.get(p);
     return !!f && f.granted && f.version === CURRENT_CONSENT_VERSIONS[p];
   });
+}
+
+/** Consentement explicite courant à une finalité (ex. SENSITIVE_PREFERENCES). */
+export function consentGranted(facts: readonly ConsentFact[], purpose: ProcessingPurpose): boolean {
+  const f = latestByPurpose(facts).get(purpose);
+  return !!f && f.granted && f.version === CURRENT_CONSENT_VERSIONS[purpose];
 }

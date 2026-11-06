@@ -2,7 +2,8 @@
 import { z } from 'zod';
 import { IsoDateTimeSchema } from './core/common.js';
 
-export const PROCESSING_PURPOSES = ['TERMS', 'PRIVACY', 'AI_MODERATION', 'AI_SUGGESTIONS', 'AI_NARRATION'] as const;
+/** V5 : + SENSITIVE_PREFERENCES (genres recherchés, art. 9 RGPD — consentement explicite et révocable, V5.1 G.20). */
+export const PROCESSING_PURPOSES = ['TERMS', 'PRIVACY', 'AI_MODERATION', 'AI_SUGGESTIONS', 'AI_NARRATION', 'SENSITIVE_PREFERENCES'] as const;
 export const ProcessingPurposeSchema = z.enum(PROCESSING_PURPOSES);
 /** Finalités nécessaires au flux social (sans elles : pet conservé, chat bloqué et expliqué). */
 export const REQUIRED_SOCIAL_PURPOSES = ['TERMS', 'PRIVACY', 'AI_MODERATION'] as const;

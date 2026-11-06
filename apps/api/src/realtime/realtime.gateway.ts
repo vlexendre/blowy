@@ -2,6 +2,7 @@
  * Gateway Socket.IO v1 (diffusion seulement ; REST porte les écritures).
  *  - authenticate : jeton de session (handshake auth.token ou événement) → user room `user:<id>` ;
  *  - join : room conversation/relation SEULEMENT si appartenance active (vérifiée serveur) ;
+ *    V5 : `outing:<id>` (place confirmée / présente pendant les votes) et `duo:<id>` (duo actif) ;
  *  - heartbeat : ack horodaté ;
  *  - resync : entrées de projection du destinataire après son curseur opaque (aucun trou
  *    dû à un événement privé : la séquence est propre au destinataire).
@@ -63,6 +64,8 @@ export class RealtimeGateway {
       sessions: SessionResolver;
       participation: ParticipationReader;
       conversations: ConversationMembership;
+      /** V5 : salles `outing:<id>` (places confirmées) et `duo:<id>` (membres d'un duo actif), revalidées à chaque jointure. */
+      outings?: { outing(userId: string, outingId: string): Promise<boolean>; duo(userId: string, duoId: string): Promise<boolean> };
       projections: ProjectionReader;
       logger: Logger;
       corsOrigins: string[];
@@ -178,7 +181,17 @@ export class RealtimeGateway {
       }
       const [kind, id] = parsed.data.room.split(':') as [string, string];
       const allowed =
-        kind === 'user' ? id === userId : kind === 'conversation' ? await this.deps.conversations.isActiveMember(userId, id) : kind === 'relationship' ? !!(await this.deps.participation.get(userId, id)) : false;
+        kind === 'user'
+          ? id === userId
+          : kind === 'conversation'
+            ? await this.deps.conversations.isActiveMember(userId, id)
+            : kind === 'relationship'
+              ? !!(await this.deps.participation.get(userId, id))
+              : kind === 'outing'
+                ? !!(await this.deps.outings?.outing(userId, id))
+                : kind === 'duo'
+                  ? !!(await this.deps.outings?.duo(userId, id))
+                  : false;
       if (!allowed) return ack?.({ ok: false, code: 'NOT_FOUND' });
       await socket.join(parsed.data.room);
       ack?.({ ok: true });

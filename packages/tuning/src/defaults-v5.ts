@@ -45,9 +45,13 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     requestClosesHourLocal: 12,
     inviteTtlHours: 24,
     lockHourLocal: 18,
-    photoRevealHourLocal: 9,
+    /**
+     * V5.2 (C.8) : lieu à la veille 18 h, VISAGES 3 h avant le début. Avec l'heure murale à 23 h,
+     * min(jour J 23 h, startsAt − 3 h) = startsAt − 3 h pour toute sortie (paramètres seuls, moteur inchangé).
+     */
+    photoRevealHourLocal: 23,
     photoRevealMinBeforeStartHours: 3,
-    photoRevealAtLock: true,
+    photoRevealAtLock: false,
     checkinOpensBeforeMinutes: 30,
     checkinClosesAfterMinutes: 90,
     inviteReminderBeforeHours: 4,

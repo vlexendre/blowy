@@ -125,17 +125,18 @@ export class PrismaMatchingRepository implements MatchingRepository {
 
   async load(scope: TxScope | null, id: string): Promise<ProposalRow | null> {
     const p = await this.c(scope).matchProposal.findUnique({ where: { id }, include: { acceptances: { select: { userId: true } } } });
-    return p ? { ...p, acceptedBy: p.acceptances.map((a) => a.userId) } : null;
+    // V5 : les propositions DUO_LANE (voie Duo, C2) ne passent pas par le flux V4.
+    return p && p.kind !== 'DUO_LANE' ? { ...p, kind: p.kind, acceptedBy: p.acceptances.map((a) => a.userId) } : null;
   }
 
   async forUser(userId: string, at: Date) {
     const rows = await this.db.matchProposal.findMany({
-      where: { status: 'OPEN', expiresAt: { gt: at }, OR: [{ userLowId: userId }, { userHighId: userId }] },
+      where: { status: 'OPEN', expiresAt: { gt: at }, kind: { not: 'DUO_LANE' }, OR: [{ userLowId: userId }, { userHighId: userId }] },
       include: { acceptances: { where: { userId }, select: { userId: true } } },
       orderBy: [{ rankScore: 'desc' }, { id: 'asc' }],
     });
     // Seule ma propre acceptation est chargée (jamais celle de l'autre).
-    return rows.map((p) => ({ ...p, acceptedBy: p.acceptances.map((a) => a.userId) }));
+    return rows.flatMap((p) => (p.kind === 'DUO_LANE' ? [] : [{ ...p, kind: p.kind, acceptedBy: p.acceptances.map((a) => a.userId) }]));
   }
 
   async accept(scope: TxScope, proposalId: string, userId: string) {

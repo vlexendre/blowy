@@ -190,3 +190,26 @@ export interface OutingCompositionPreview {
   /** Nombre de teams (≥ 2 personnes venant ensemble). */
   teams: number;
 }
+
+// ---------------------------------------------------------------- V5.2 (C.9) : grille d'âge fixe
+/**
+ * Grille d'âge FIXE (jamais centrée sur la personne, jamais d'âge exact) : 18–21, 22–25, 26–29,
+ * 30–34, 35–39, 40–44, 45–49, 50+. Remplace `AGE_RANGES` pour l'affichage V5.2 (ajout rétrocompatible).
+ */
+export const AGE_BRACKETS_V52 = ['18_21', '22_25', '26_29', '30_34', '35_39', '40_44', '45_49', '50_PLUS'] as const;
+export type AgeBracketV52 = (typeof AGE_BRACKETS_V52)[number];
+const BRACKET_BOUNDS: Readonly<Record<AgeBracketV52, readonly [number, number]>> = {
+  '18_21': [18, 21],
+  '22_25': [22, 25],
+  '26_29': [26, 29],
+  '30_34': [30, 34],
+  '35_39': [35, 39],
+  '40_44': [40, 44],
+  '45_49': [45, 49],
+  '50_PLUS': [50, 99],
+};
+export function ageBracketOf(age: number): AgeBracketV52 {
+  return AGE_BRACKETS_V52.find((b) => age <= BRACKET_BOUNDS[b][1]) ?? '50_PLUS';
+}
+/** Bornes d'une tranche (aperçu du groupe = union des tranches, jamais les âges exacts). */
+export const ageBracketBounds = (b: AgeBracketV52): readonly [number, number] => BRACKET_BOUNDS[b];

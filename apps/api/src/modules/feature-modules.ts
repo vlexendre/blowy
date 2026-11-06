@@ -9,5 +9,7 @@ import { MediaModule } from './media/media.module.js';
 import { TrustModule } from './trust/trust.module.js';
 import { SocialModule } from './social/social.module.js';
 import { AdminModule } from './admin/admin.module.js';
+import { NeighborhoodsModule } from './neighborhoods/neighborhoods.module.js';
+import { OutingsModule } from './outings/outings.module.js';
 
-export const FEATURE_MODULES: Type[] = [PetsModule, RelationshipsModule, ConversationsModule, MatchingModule, EconomyModule, TrustModule, MediaModule, SocialModule, AdminModule];
+export const FEATURE_MODULES: Type[] = [PetsModule, RelationshipsModule, ConversationsModule, MatchingModule, EconomyModule, TrustModule, MediaModule, SocialModule, AdminModule, NeighborhoodsModule, OutingsModule];

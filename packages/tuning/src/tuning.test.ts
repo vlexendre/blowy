@@ -3,7 +3,7 @@ import { DEFAULT_TUNING, OUTINGS_V5, parseTuning, safeParseTuning, coinRewards }
 
 describe('tuning', () => {
   it('DEFAULT_TUNING passe le schéma', () => {
-    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.0');
+    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.1');
   });
   it('est gelé', () => {
     expect(Object.isFrozen(DEFAULT_TUNING.gauges.initial)).toBe(true);

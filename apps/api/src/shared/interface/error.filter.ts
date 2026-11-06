@@ -3,7 +3,7 @@
  * Les erreurs inattendues sont journalisées (sans contenu sensible) et renvoyées en INTERNAL.
  */
 import { Catch, HttpException, type ArgumentsHost, type ExceptionFilter } from '@nestjs/common';
-import type { ApiError, ErrorCode } from '@blowy/api-contract';
+import type { ApiError, ApiErrorCode as ErrorCode } from '@blowy/api-contract';
 import type { Response } from 'express';
 import { ZodError } from 'zod';
 import { AppError } from '../domain/errors.js';
@@ -16,6 +16,7 @@ const HTTP_TO_CODE: Record<number, ErrorCode> = {
   403: 'FORBIDDEN',
   404: 'NOT_FOUND',
   409: 'CONFLICT',
+  410: 'GONE',
   429: 'RATE_LIMITED',
 };
 

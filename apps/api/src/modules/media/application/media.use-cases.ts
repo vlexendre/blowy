@@ -7,6 +7,7 @@
  * vision mission) → READY | REJECTED | revue. Accès : ACL à CHAQUE lecture, jeton court
  * révocable, no-store. Aucun téléchargement d'URL fournie par l'utilisateur.
  */
+import type { OutingRevealReader } from '../../../shared/application/ports/outing-photos.port.js';
 import { createHash } from 'node:crypto';
 import { MISSIONS } from '@blowy/content';
 import type { ModerationPipeline } from '@blowy/ai';
@@ -315,6 +316,7 @@ export class MediaAccessService {
   constructor(
     private readonly repo: MediaRepository,
     private readonly clock: Clock,
+    private readonly outingReveal: OutingRevealReader | null = null,
   ) {}
 
   private relationInput(f: RelationFacts) {
@@ -340,6 +342,7 @@ export class MediaAccessService {
       originalAccepted: relationOk ? await this.repo.acceptedConsent(relationOk.id, 'PHOTO_ORIGINAL') : false,
       voiceDeliverable: a.purpose === 'VOICE_MESSAGE' && !isOwner ? await this.repo.voiceDeliverableTo(a.id, viewerId) : false,
       isCurrentProfilePhoto: current?.id === a.id,
+      outingReveal: !isOwner && current?.id === a.id && this.outingReveal ? await this.outingReveal.canSeeProfilePhoto(viewerId, a.ownerUserId, this.clock.now()) : false,
     });
   }
 }

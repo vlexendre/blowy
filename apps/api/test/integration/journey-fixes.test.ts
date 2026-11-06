@@ -215,7 +215,9 @@ describe('B2 / B9 — page publique « 3 mots »', () => {
     const on = await alex.call('PUT', '/v1/me/public-page', { enabled: true });
     expect(on.status).toBe(200);
     expect(on.body.enabled).toBe(true);
-    expect(on.body.slug).toMatch(/^elodie-marie-[a-z0-9]{6}$/);
+    // V5.2 (D.13) : slug aléatoire, jamais le prénom.
+    expect(on.body.slug).toMatch(/^m[a-z0-9]{8}$/);
+    expect(on.body.slug).not.toMatch(/elodie|marie/);
     expect(on.body.url).toMatch(new RegExp(`/${on.body.slug}$`));
     expect(JSON.stringify(on.body)).not.toContain(alex.userId);
     expect((await alex.call('GET', '/v1/me/anonymous-responses')).body.page).toMatchObject({ slug: on.body.slug, enabled: true });

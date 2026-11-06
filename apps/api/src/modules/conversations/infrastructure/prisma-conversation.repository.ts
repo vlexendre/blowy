@@ -71,9 +71,9 @@ export class PrismaConversationRepository implements ConversationRepository {
     return m ? toMsg(m) : null;
   }
 
-  async insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string; kind?: 'TEXT' | 'VOICE'; mediaId?: string | null }) {
+  async insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string; kind?: 'TEXT' | 'VOICE'; mediaId?: string | null; promptId?: string | null }) {
     await txOf(scope).message.create({
-      data: { id: m.id, conversationId: m.conversationId, authorUserId: m.authorId, clientMessageId: m.clientMessageId, kind: m.kind ?? 'TEXT', mediaId: m.mediaId ?? null, status: 'PENDING_MODERATION', createdAt: scope.now, ...(m.kind === 'VOICE' ? {} : { content: { create: { body: m.body } } }) },
+      data: { id: m.id, conversationId: m.conversationId, authorUserId: m.authorId, clientMessageId: m.clientMessageId, kind: m.kind ?? 'TEXT', mediaId: m.mediaId ?? null, promptId: m.promptId ?? null, status: 'PENDING_MODERATION', createdAt: scope.now, ...(m.kind === 'VOICE' ? {} : { content: { create: { body: m.body } } }) },
     });
   }
 

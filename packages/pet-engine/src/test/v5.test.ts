@@ -174,9 +174,11 @@ describe('calendrier V5', () => {
     const i = outingInstants({ startsAtMs, composedAtMs: Date.UTC(2026, 10, 17, 11), tz: 'Europe/Paris', tuning: T });
     const iso = (ms: number) => new Date(ms).toISOString();
     expect(iso(i.lockAtMs)).toBe('2026-11-18T17:00:00.000Z');
-    // V5.1 : visages révélés au verrouillage, avec le lieu
-    expect(iso(i.photoRevealAtMs)).toBe(iso(i.lockAtMs));
-    const spec = outingInstants({ startsAtMs, composedAtMs: Date.UTC(2026, 10, 17, 11), tz: 'Europe/Paris', tuning: { ...T, outings: { ...T.outings, cycle: { ...T.outings.cycle, photoRevealAtLock: false } } } });
+    // V5.2 (C.8) : visages révélés 3 h avant le début (lieu la veille 18 h)
+    expect(iso(i.photoRevealAtMs)).toBe('2026-11-19T15:30:00.000Z');
+    const atLock = outingInstants({ startsAtMs, composedAtMs: Date.UTC(2026, 10, 17, 11), tz: 'Europe/Paris', tuning: { ...T, outings: { ...T.outings, cycle: { ...T.outings.cycle, photoRevealAtLock: true } } } });
+    expect(iso(atLock.photoRevealAtMs)).toBe(iso(i.lockAtMs));
+    const spec = outingInstants({ startsAtMs, composedAtMs: Date.UTC(2026, 10, 17, 11), tz: 'Europe/Paris', tuning: { ...T, outings: { ...T.outings, cycle: { ...T.outings.cycle, photoRevealHourLocal: 9 } } } });
     expect(iso(spec.photoRevealAtMs)).toBe('2026-11-19T08:00:00.000Z');
     expect(cancelKindAt(i.lockAtMs - 1, i.lockAtMs)).toBe('EARLY');
     expect(cancelKindAt(i.lockAtMs, i.lockAtMs)).toBe('LATE');

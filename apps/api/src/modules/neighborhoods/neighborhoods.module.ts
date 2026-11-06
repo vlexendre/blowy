@@ -1,0 +1,31 @@
+/** Composition root du module `neighborhoods` (quartiers, liste d'attente, créneaux des lieux). */
+import { Global, Module } from '@nestjs/common';
+import type { Db } from '@blowy/database';
+import { DEFAULT_TUNING } from '@blowy/tuning';
+import type { CommandBus } from '../../shared/application/command-bus.js';
+import type { Clock } from '../../shared/application/clock.js';
+import { CLOCK, COMMAND_BUS, DB } from '../../shared/shared.tokens.js';
+import type { RecurringJob } from '../../jobs/scheduler.js';
+import { NeighborhoodsUseCases } from './application/neighborhoods.use-cases.js';
+import { NEIGHBORHOODS_REPOSITORY, type NeighborhoodsRepository } from './application/ports/neighborhoods.repository.js';
+import { PrismaNeighborhoodsRepository } from './infrastructure/prisma-neighborhoods.repository.js';
+import { NeighborhoodsController } from './interface/neighborhoods.controller.js';
+
+export const NEIGHBORHOODS_JOBS = Symbol('NeighborhoodsJobs');
+const dayKey = (d: Date) => d.toISOString().slice(0, 10);
+
+@Global()
+@Module({
+  controllers: [NeighborhoodsController],
+  providers: [
+    { provide: NEIGHBORHOODS_REPOSITORY, useFactory: (db: Db) => new PrismaNeighborhoodsRepository(db), inject: [DB] },
+    { provide: NeighborhoodsUseCases, useFactory: (r: NeighborhoodsRepository, b: CommandBus, c: Clock) => new NeighborhoodsUseCases(r, b, c, DEFAULT_TUNING), inject: [NEIGHBORHOODS_REPOSITORY, COMMAND_BUS, CLOCK] },
+    {
+      provide: NEIGHBORHOODS_JOBS,
+      useFactory: (r: NeighborhoodsRepository): RecurringJob[] => [{ name: 'neighborhoods.generate_slots', everyMs: 24 * 3_600_000, windowKey: dayKey, run: (now) => r.generateSlots(now, 1) }],
+      inject: [NEIGHBORHOODS_REPOSITORY],
+    },
+  ],
+  exports: [NEIGHBORHOODS_JOBS, NeighborhoodsUseCases],
+})
+export class NeighborhoodsModule {}

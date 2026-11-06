@@ -18,6 +18,8 @@ import { ReadMessagesQuery } from './application/read-messages.query.js';
 import { MarkReadUseCase, RevealWarnedUseCase } from './application/reveal-warned.use-case.js';
 import { SendMessageUseCase, type ConsentFacts } from './application/send-message.use-case.js';
 import { ConversationAdminAdapter } from './infrastructure/conversation-admin.adapter.js';
+import { PrismaGroupChat } from './infrastructure/prisma-group-chat.js';
+import { GROUP_CHAT_PORT } from '../../shared/application/ports/group-chat.port.js';
 import { LocalModerationGateway, UnavailableModerationGateway } from './infrastructure/local-moderation.gateway.js';
 import { PrismaConversationRepository } from './infrastructure/prisma-conversation.repository.js';
 import { ConversationsController } from './interface/conversations.controller.js';
@@ -39,6 +41,7 @@ type R = ConversationRepository;
     { provide: CONVERSATION_REPOSITORY, useFactory: (db: Db) => new PrismaConversationRepository(db), inject: [DB] },
     { provide: MODERATION_GATEWAY, useFactory: selectModeration, inject: [APP_CONFIG, { token: AI_MODERATION_GATEWAY, optional: true }] },
     { provide: CONVERSATION_ADMIN, useFactory: (r: R) => new ConversationAdminAdapter(r), inject: [CONVERSATION_REPOSITORY] },
+    { provide: GROUP_CHAT_PORT, useFactory: (db: Db, r: R) => new PrismaGroupChat(db, r), inject: [DB, CONVERSATION_REPOSITORY] },
     {
       provide: SendMessageUseCase,
       useFactory: (b: CommandBus, r: R, bl: BlockReader, c: ConsentFacts, rnd: RandomSource, clock: Clock, vg: VoiceMessageGate | null) => new SendMessageUseCase(b, r, bl, c, rnd, () => clock.now(), vg ?? null),
@@ -53,6 +56,6 @@ type R = ConversationRepository;
     { provide: RevealWarnedUseCase, useFactory: (b: CommandBus, r: R) => new RevealWarnedUseCase(b, r), inject: [COMMAND_BUS, CONVERSATION_REPOSITORY] },
     { provide: MarkReadUseCase, useFactory: (b: CommandBus, r: R) => new MarkReadUseCase(b, r), inject: [COMMAND_BUS, CONVERSATION_REPOSITORY] },
   ],
-  exports: [CONVERSATION_ADMIN, ModerateMessageUseCase, CONVERSATION_REPOSITORY, MODERATION_GATEWAY],
+  exports: [GROUP_CHAT_PORT, CONVERSATION_ADMIN, ModerateMessageUseCase, CONVERSATION_REPOSITORY, MODERATION_GATEWAY],
 })
 export class ConversationsModule {}

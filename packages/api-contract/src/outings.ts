@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import {
   ACTIVITY_KINDS,
+  AGE_BRACKETS_V52,
   AGE_RANGES,
   CHECKIN_RESULTS,
   OUTING_PUBLIC_CANCEL_REASONS,
@@ -31,7 +32,8 @@ export const RefundStateSchema = z.enum(REFUND_STATES);
 export const RefundModeSchema = z.enum(REFUND_MODES);
 export const VoteChoiceSchema = z.enum(VOTE_CHOICES);
 export const MutualConnectionSchema = z.enum(['FRIEND', 'PLUS']);
-export const AgeRangeSchema = z.enum(AGE_RANGES);
+/** V5.1 `AGE_RANGES` + V5.2 grille fixe `AGE_BRACKETS_V52` (le serveur émet la grille V5.2). */
+export const AgeRangeSchema = z.enum([...new Set<string>([...AGE_RANGES, ...AGE_BRACKETS_V52])] as [string, ...string[]]);
 export const PaymentProviderSchema = z.enum(['STRIPE', 'LOCAL_DEMO']);
 
 /** Motifs métier (`detailsSafe.reason`) des échecs du module `outings`. */
@@ -60,6 +62,7 @@ export const OUTING_FAILURE_REASONS = [
   'MEDIA_NOT_ALLOWED',
   'TEAM_INVALID',
   'WEEK_OFF',
+  'KNOWS_SOMEONE_NOT_AVAILABLE',
   // 409
   'WEEKLY_QUOTA_USED',
   'DISPUTE_EXISTS',
@@ -218,6 +221,14 @@ export const OutingViewSchema = z
     conversationId: UuidSchema.optional(),
     votes: z.object({ open: z.boolean(), closesAt: IsoDateTimeSchema }).strict().optional(),
     cancelled: z.object({ reason: z.enum(OUTING_PUBLIC_CANCEL_REASONS), refund: RefundModeSchema }).strict().optional(),
+    /**
+     * V5.2 (B.5–B.6), seulement pour un lecteur qui cherche une histoire, avant/pendant la sortie :
+     * `AT_LEAST_TWO` = au moins 2 personnes du groupe cherchent une histoire compatible (jamais qui) ;
+     * `FRIENDS_ONLY` = « cette semaine, sortie potes uniquement pour toi ».
+     */
+    storyMatch: z.enum(['AT_LEAST_TWO', 'FRIENDS_ONLY']).optional(),
+    /** V5.2 (C.10) : « je connais quelqu'un ici » possible (visages révélés, avant le début). */
+    knowsSomeoneAvailable: z.literal(true).optional(),
   })
   .strict();
 export type OutingView = z.infer<typeof OutingViewSchema>;
@@ -244,6 +255,16 @@ export const SeatCancelRequestSchema = z.object({ kind: z.enum(SEAT_CANCEL_REQUE
 export type SeatCancelRequest = z.infer<typeof SeatCancelRequestSchema>;
 export const SeatCancelResponseSchema = SeatCancelPreviewSchema;
 export type SeatCancelResponse = z.infer<typeof SeatCancelResponseSchema>;
+
+// ---------------------------------------------------------------- « je connais quelqu'un ici » (V5.2 C.10)
+/**
+ * `POST /v1/outings/:id/seat/knows-someone` : signalement PRIVÉ (jamais montré à la personne visée).
+ * Lien réel déjà connu dans l'app (bande, duo, blocage) → déplacement sans pénalité (`MOVED`) ;
+ * sinon examen humain (`IN_REVIEW`). Au-delà d'une fois par mois : c'est une annulation (`COUNTED_AS_CANCEL`).
+ */
+export const KnowsSomeoneRequestSchema = z.object({ userId: UuidSchema });
+export type KnowsSomeoneRequest = z.infer<typeof KnowsSomeoneRequestSchema>;
+export const KnowsSomeoneResponseSchema = z.object({ status: z.enum(['MOVED', 'IN_REVIEW', 'COUNTED_AS_CANCEL']) }).strict();
 
 // ---------------------------------------------------------------- check-in (§2.8) — partagé avec les RDV duo
 /**

@@ -71,6 +71,11 @@ export interface AccessFacts {
   voiceDeliverable: boolean;
   /** Profil courant du propriétaire (seule la photo de profil active est révélable). */
   isCurrentProfilePhoto: boolean;
+  /**
+   * V5 (spec-v5 §3.1, V5.1 E.16) : le lecteur partage avec le propriétaire une sortie dont les visages
+   * sont révélés (verrouillage), ou un lien de bande / duo. Fourni par `outings` (OUTING_REVEAL).
+   */
+  outingReveal?: boolean;
 }
 
 export type AccessDecision = { allow: true; variant: MediaVariant } | { allow: false; reason: string };
@@ -100,6 +105,9 @@ export function decideAccess(f: AccessFacts): AccessDecision {
       return clear && f.revealAccepted && f.ownerPhotoPreference !== 'NEVER' ? { allow: true, variant: f.variant === 'audio' ? 'thumbnail' : f.variant } : { allow: true, variant: 'blurred_medium' };
     }
     case 'PROFILE_PHOTO': {
+      // V5 : révélation simultanée en sortie (ou lien de bande/duo) — photo courante seulement ;
+      // « Jamais » l'emporte toujours.
+      if (f.outingReveal && f.isCurrentProfilePhoto && f.ownerPhotoPreference !== 'NEVER' && f.variant !== 'audio') return { allow: true, variant: f.variant };
       const r = f.relation;
       if (!r || !r.participants.includes(f.viewerId) || !r.participants.includes(a.ownerUserId)) return deny('NO_RELATION');
       if (!f.isCurrentProfilePhoto) return deny('NOT_CURRENT');

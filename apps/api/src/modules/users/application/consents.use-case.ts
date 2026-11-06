@@ -1,6 +1,7 @@
 /** Consentements de traitement versionnés : enregistrement (commande) et lecture (requête). */
 import type { ConsentState, RecordConsentsRequest } from '@blowy/api-contract';
 import type { CommandBus } from '../../../shared/application/command-bus.js';
+import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { Errors } from '../../../shared/domain/errors.js';
 import { CURRENT_CONSENT_VERSIONS, latestByPurpose, socialAllowed } from '../domain/consents.js';
 import type { UserProfileRepository } from './ports/user-profile.repository.js';
@@ -9,6 +10,7 @@ export class RecordConsentsUseCase {
   constructor(
     private readonly bus: CommandBus,
     private readonly repo: UserProfileRepository,
+    private readonly sensitive: { clearSensitive(scope: TxScope, userId: string): Promise<void> } | null = null,
   ) {}
   execute(actorId: string, commandId: string, req: RecordConsentsRequest) {
     for (const i of req.items) {
@@ -23,6 +25,8 @@ export class RecordConsentsUseCase {
       handle: async (scope) => {
         await this.repo.appendConsents(scope, actorId, req.items);
         const withdrawn = req.items.filter((i) => !i.granted).map((i) => i.purpose);
+        // V5 : retrait du consentement art. 9 → genres romance effacés immédiatement.
+        if (withdrawn.includes('SENSITIVE_PREFERENCES') && this.sensitive) await this.sensitive.clearSensitive(scope, actorId);
         if (withdrawn.length) {
           // Retrait : annule jobs/caches IA de cet auteur (consommé par l'agent E).
           await scope.outbox.emit({ topic: 'user.consent_withdrawn', aggregateType: 'User', aggregateId: actorId, payload: { purposes: withdrawn } });

@@ -50,7 +50,7 @@ describe('onboarding', () => {
     expect(petCreationRequest({ ...complete, species: 'PIA' }, true)?.species).toBe('PIA');
   });
   it('consentements versionnés à partir de l’état serveur', () => {
-    const r = consentsRequest({ items: [], currentVersions: { TERMS: '3', PRIVACY: '2', AI_MODERATION: '1', AI_SUGGESTIONS: '1', AI_NARRATION: '1' }, socialAllowed: false }, { terms: true, privacy: true, moderation: false });
+    const r = consentsRequest({ items: [], currentVersions: { TERMS: '3', PRIVACY: '2', AI_MODERATION: '1', AI_SUGGESTIONS: '1', AI_NARRATION: '1', SENSITIVE_PREFERENCES: '1' }, socialAllowed: false }, { terms: true, privacy: true, moderation: false });
     expect(r?.items).toEqual([
       { purpose: 'TERMS', version: '3', granted: true },
       { purpose: 'PRIVACY', version: '2', granted: true },

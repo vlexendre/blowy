@@ -1,3 +1,7 @@
+import { DEFAULT_TUNING } from '@blowy/tuning';
+import { PREFERENCES_V5_REPOSITORY, type PreferencesV5Repository } from './application/ports/preferences-v5.repository.js';
+import { PreferencesV5UseCases } from './application/preferences-v5.use-cases.js';
+import { PrismaPreferencesV5Repository } from './infrastructure/prisma-preferences-v5.repository.js';
 import { Global, Module } from '@nestjs/common';
 import type { Db } from '@blowy/database';
 import type { AppConfig } from '../../config/env.js';
@@ -33,7 +37,13 @@ type R = UserProfileRepository;
     { provide: UpdateProfileUseCase, useFactory: (b: CommandBus, r: R) => new UpdateProfileUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
     { provide: UpdatePreferencesUseCase, useFactory: (b: CommandBus, r: R) => new UpdatePreferencesUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
     { provide: UpdatePrivacyUseCase, useFactory: (b: CommandBus, r: R) => new UpdatePrivacyUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
-    { provide: RecordConsentsUseCase, useFactory: (b: CommandBus, r: R) => new RecordConsentsUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
+    { provide: PREFERENCES_V5_REPOSITORY, useFactory: (db: Db) => new PrismaPreferencesV5Repository(db), inject: [DB] },
+    { provide: RecordConsentsUseCase, useFactory: (b: CommandBus, r: R, p: PreferencesV5Repository) => new RecordConsentsUseCase(b, r, p), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY, PREFERENCES_V5_REPOSITORY] },
+    {
+      provide: PreferencesV5UseCases,
+      useFactory: (p: PreferencesV5Repository, r: R, b: CommandBus, c: Clock) => new PreferencesV5UseCases(p, r, b, c, DEFAULT_TUNING),
+      inject: [PREFERENCES_V5_REPOSITORY, USER_PROFILE_REPOSITORY, COMMAND_BUS, CLOCK],
+    },
     { provide: GetConsentsQuery, useFactory: (r: R) => new GetConsentsQuery(r), inject: [USER_PROFILE_REPOSITORY] },
     { provide: StartPauseUseCase, useFactory: (b: CommandBus, r: R, rnd: RandomSource) => new StartPauseUseCase(b, r, rnd), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY, RANDOM] },
     { provide: EndPauseUseCase, useFactory: (b: CommandBus, r: R) => new EndPauseUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },

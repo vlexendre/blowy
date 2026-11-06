@@ -1,4 +1,5 @@
 /** Composition root media (agent E). */
+import { OUTING_REVEAL_READER, PHOTO_TOKEN_ISSUER, type OutingRevealReader, type PhotoTokenIssuer } from '../../shared/application/ports/outing-photos.port.js';
 import { Global, Module, type OnModuleInit, Inject } from '@nestjs/common';
 import { ModerationPipeline } from '@blowy/ai';
 import type { Db } from '@blowy/database';
@@ -56,7 +57,20 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
       useFactory: (r: TrustRepository, u: UnitOfWork): Cases => ({ open: (c) => u.run(async (scope) => void (await r.openCase(scope, { ...c, dueAt: caseDueAt(scope.now, c.priority) }))) }),
       inject: [TRUST_REPOSITORY, UNIT_OF_WORK],
     },
-    { provide: MediaAccessService, useFactory: (r: M, c: Clock) => new MediaAccessService(r, c), inject: [MEDIA_REPOSITORY, CLOCK] },
+    {
+      provide: MediaAccessService,
+      useFactory: (r: M, c: Clock, o: OutingRevealReader | null) => new MediaAccessService(r, c, o ?? null),
+      inject: [MEDIA_REPOSITORY, CLOCK, { token: OUTING_REVEAL_READER, optional: true }],
+    },
+    {
+      // V5 : jetons photo des sorties (consommé par `outings`).
+      provide: PHOTO_TOKEN_ISSUER,
+      useFactory: (r: M, t: CreateAccessTokenUseCase): PhotoTokenIssuer => ({
+        currentProfilePhotoId: async (userId) => (await r.currentProfilePhoto(userId))?.id ?? null,
+        issue: (viewerId, mediaId) => t.execute(viewerId, mediaId, 'thumbnail', undefined).then((x) => x.url, () => null),
+      }),
+      inject: [MEDIA_REPOSITORY, CreateAccessTokenUseCase],
+    },
     { provide: CreateUploadUseCase, useFactory: (b: CommandBus, r: M, rnd: RandomSource, cfg: AppConfig, c: Clock) => new CreateUploadUseCase(b, r, rnd, cfg.PUBLIC_API_URL, c), inject: [COMMAND_BUS, MEDIA_REPOSITORY, RANDOM, APP_CONFIG, CLOCK] },
     { provide: ReceiveUploadUseCase, useFactory: (r: M, s: ObjectStorage, c: Clock) => new ReceiveUploadUseCase(r, s, c), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, CLOCK] },
     {
@@ -110,7 +124,7 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
     { provide: PurgeMediaJob, useFactory: (r: M, s: ObjectStorage) => new PurgeMediaJob(r, s), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE] },
     { provide: MEDIA_JOBS, useFactory: (p: PurgeMediaJob) => [{ name: 'media.purge', everyMs: 60 * 60_000, run: (now: Date) => p.run(now) }], inject: [PurgeMediaJob] },
   ],
-  exports: [MEDIA_REPOSITORY, VOICE_MESSAGE_GATE, VOICE_TRANSCRIBER, SUBJECT_DECISION_PORT, PurgeMediaJob, MEDIA_JOBS, ProcessImageUseCase, AssessMissionProofUseCase, MediaAccessService],
+  exports: [PHOTO_TOKEN_ISSUER, MEDIA_REPOSITORY, VOICE_MESSAGE_GATE, VOICE_TRANSCRIBER, SUBJECT_DECISION_PORT, PurgeMediaJob, MEDIA_JOBS, ProcessImageUseCase, AssessMissionProofUseCase, MediaAccessService],
 })
 export class MediaModule implements OnModuleInit {
   constructor(

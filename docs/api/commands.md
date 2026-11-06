@@ -43,3 +43,27 @@ Règles communes à **toutes** les commandes (implémentées une fois dans `shar
 | `relationships.reliability` | 1 h | `…:<heure>` ; `ReliabilityEvent(user, reason, episode)` unique | −8 une fois par épisode après 72 h ; clôture silence 14 j |
 | `relationships.branch_deadlines` | 15 min | ronde RESOLVED | échéance commune → Ami si deux PLUS non réunis |
 | `economy.*` (agent G) | voir module economy | — | — |
+
+## V5 (T2) — quartiers, sorties, teams (agent C, 2026-11-06 ; concept-v5.2 intégré)
+Ordre des verrous étendu : users → pets → relationships → neighborhoods → teams → outings → friendships → duos → wallets (`packages/database/src/tx.ts`).
+
+| Opération | Route | Effets / événements | Échecs spécifiques |
+|---|---|---|---|
+| (requête) | `GET /v1/neighborhoods?q=` | LIVE + WAITLIST | — |
+| `me.set_neighborhood` | `PUT /v1/me/neighborhood` | quartier, liste d'attente (si non LIVE), quartiers acceptables | 412 `NEIGHBORHOOD_CHANGE_TOO_SOON {availableAt}`, `ACTIVE_SEAT_EXISTS`, `NEIGHBORHOOD_CLOSED` |
+| (requête) | `GET /v1/me/neighborhood` | `waitlist {verifiedCount, nextOutingGap{missing,startsAt}}` (V5.2) | — |
+| `me.update_intentions` | `PUT/GET /v1/preferences/intentions` | intentions secrètes (lecture : soi seul) | 403 `CONSENT_REQUIRED {purpose: SENSITIVE_PREFERENCES}` |
+| `me.update_outing_preferences` | `PUT/GET /v1/preferences/outings` | âges, créneaux, semaines off, activités, quartiers | 412 `NEIGHBORHOOD_NOT_FOUND`, `SLOT_TEMPLATE_NOT_FOUND` |
+| (requête) | `GET /v1/outings/week` | semaine pertinente (place à venir, sinon fenêtre ouverte, sinon suivante) | — |
+| `outings.request` / `withdraw_request` | `PUT/DELETE /v1/outings/requests/:weekKey` | demande (team auto) | 412 `NEIGHBORHOOD_NOT_LIVE` (pause/fermé seulement, V5.2), `VERIFICATION_REQUIRED`, `PHOTO_REQUIRED`, `RELIABILITY_PAUSED`, `REQUEST_WINDOW_CLOSED`, `WEEK_OFF`, `ONBOARDING_INCOMPLETE`, `ALREADY_PLACED` ; 409 `WEEKLY_QUOTA_USED` |
+| (requête) | `GET /v1/outings/:id` | `OutingView` projeté par acteur (§3.1 + V5.1/V5.2) | 404 |
+| `outings.seat.accept` | `POST /v1/outings/:id/seat/accept` | FREE_FIRST → PLUS_INCLUDED → LOCAL_DEMO (hors prod) ; FORMING + chat à 4 ; `outing.seat_updated`, `outing.updated` | 412 `SEAT_NOT_INVITED`, `OUTING_NOT_OPEN`, `INVITATION_EXPIRED`, `PHOTO_REQUIRED`… ; 503 `PROVIDER_UNAVAILABLE` |
+| `outings.seat.decline` / `cancel` (+ `GET …/cancel-preview`) | `POST /v1/outings/:id/seat/{decline,cancel}` | avant les visages : recrédit ; après : absence (V5.2 C.8) ; sécurité : remboursée | 412 `SEAT_NOT_ACTIVE`, `OUTING_STARTED` |
+| `outings.seat.knows_someone` | `POST /v1/outings/:id/seat/knows-someone {userId}` | lien connu → `MOVED` sans pénalité ; sinon `IN_REVIEW` ; 2ᵉ fois / 30 j → `COUNTED_AS_CANCEL` | 412 `KNOWS_SOMEONE_NOT_AVAILABLE` |
+| `outings.check_in` | `POST /v1/outings/:id/check-in` | position jamais stockée ; `outing.checkin_updated` | 412 `CHECKIN_NOT_OPEN`, `CHECKIN_TOO_FAR`, `CHECKIN_LOW_ACCURACY`, `CHECKIN_CODE_INVALID {attemptsLeft}` ; 429 |
+| `outings.vote.submit` | `PUT /v1/outings/:id/votes {choices}` | bulletins (aucun événement) | 404, 412 `VOTE_WINDOW_CLOSED`, `VOTE_TARGET_NOT_ATTENDEE` |
+| `attendance.dispute` | `POST /v1/outings/:id/attendance/dispute` | contestation | 412 `NOT_NO_SHOW`, `DISPUTE_WINDOW_CLOSED` ; 409 `DISPUTE_EXISTS` |
+| `teams.create` / `join` / `leave` | `POST /v1/teams`, `/v1/teams/join`, `/v1/teams/:id/leave` ; `GET /v1/teams/mine` | team 1–3, lien d'invitation | 409 `ALREADY_IN_TEAM`, `TEAM_FULL` ; 412 `TEAM_INVITE_INVALID`, `NOT_SAME_CITY`, `TEAM_LOCKED_IN_OUTING` |
+| (requêtes) | `GET /v1/outings/:id/votes`, `/v1/outings/history`, `/v1/me/reliability`, `/v1/band` | projections du lecteur | 404 |
+
+Jobs V5 : `outings.compose` (5 min, `CompositionRun(zone, weekKey, WEEKLY)` unique), `outings.seeding` (15 min), `outings.lifecycle` (5 min : invitations échues, backfill, verrou J-1 18 h, check-in, clôture, dépouillement), `outings.purge` (horaire : bulletins 7 j, lecture chat 7 j, corps 90 j), `neighborhoods.generate_slots` (quotidien). Salles WS : `outing:<id>` (place confirmée / présente pendant les votes), `duo:<id>`.

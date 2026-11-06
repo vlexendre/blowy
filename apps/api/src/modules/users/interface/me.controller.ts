@@ -9,6 +9,12 @@ import {
   StartVerificationRequestSchema,
   UpdateProfileRequestSchema,
   UuidSchema,
+  IntentionsV5Schema,
+  UpdateIntentionsV5RequestSchema,
+  OutingPreferencesV5Schema,
+  UpdateOutingPreferencesV5RequestSchema,
+  type IntentionsV5Dto,
+  type OutingPreferencesV5Dto,
   type MatchPreferences,
   type PrivacySettings,
   type RecordConsentsRequest,
@@ -26,6 +32,7 @@ import { EndPauseUseCase, StartPauseUseCase } from '../application/pause.use-cas
 import { UpdateProfileUseCase } from '../application/update-profile.use-case.js';
 import { UpdatePreferencesUseCase, UpdatePrivacyUseCase } from '../application/update-settings.use-case.js';
 import { StartVerificationUseCase } from '../application/verification.use-case.js';
+import { PreferencesV5UseCases } from '../application/preferences-v5.use-cases.js';
 
 @Controller('v1')
 export class MeController {
@@ -40,7 +47,30 @@ export class MeController {
     @Inject(EndPauseUseCase) private readonly endPause: EndPauseUseCase,
     @Inject(StartVerificationUseCase) private readonly startVerification: StartVerificationUseCase,
     @Inject(CompleteOnboardingUseCase) private readonly completeOnboarding: CompleteOnboardingUseCase,
+    @Inject(PreferencesV5UseCases) private readonly prefsV5: PreferencesV5UseCases,
   ) {}
+
+  /** V5.1 : intentions secrètes (lecture par la personne elle-même seulement). */
+  @Get('preferences/intentions')
+  async getIntentions(@CurrentUser() u: AuthenticatedUser) {
+    return IntentionsV5Schema.parse(await this.prefsV5.intentions(u.userId));
+  }
+
+  @Put('preferences/intentions')
+  async putIntentions(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(UpdateIntentionsV5RequestSchema)) body: IntentionsV5Dto) {
+    return IntentionsV5Schema.parse(await this.prefsV5.saveIntentions(u.userId, body, cid));
+  }
+
+  /** V5.1 : préférences de sortie (âges, disponibilités, semaines off, activités, quartiers, trajet). */
+  @Get('preferences/outings')
+  async getOutingPrefs(@CurrentUser() u: AuthenticatedUser) {
+    return OutingPreferencesV5Schema.parse(await this.prefsV5.outingPreferences(u.userId));
+  }
+
+  @Put('preferences/outings')
+  async putOutingPrefs(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(UpdateOutingPreferencesV5RequestSchema)) body: OutingPreferencesV5Dto) {
+    return OutingPreferencesV5Schema.parse(await this.prefsV5.saveOutingPreferences(u.userId, body, cid));
+  }
 
   @Get('me')
   async me(@CurrentUser() u: AuthenticatedUser) {

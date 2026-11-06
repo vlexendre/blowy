@@ -19,7 +19,7 @@ export interface MessageRow {
 
 export interface ConversationRow {
   id: string;
-  kind: 'DATE' | 'NEIGHBORHOOD' | 'GROUP' | 'COPARENT';
+  kind: 'DATE' | 'NEIGHBORHOOD' | 'GROUP' | 'COPARENT' | 'OUTING' | 'DUO' | 'BAND';
   contextId: string | null;
   lastSeq: number;
   closedAt: Date | null;
@@ -33,7 +33,7 @@ export interface ConversationRepository {
   close(scope: TxScope, id: string): Promise<void>;
   revokeMember(scope: TxScope, id: string, userId: string): Promise<void>;
   findByClientId(scope: TxScope, authorId: string, clientMessageId: string): Promise<MessageRow | null>;
-  insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string; kind?: 'TEXT' | 'VOICE'; mediaId?: string | null }): Promise<void>;
+  insertPending(scope: TxScope, m: { id: string; conversationId: string; authorId: string; clientMessageId: string; body: string; kind?: 'TEXT' | 'VOICE'; mediaId?: string | null; promptId?: string | null }): Promise<void>;
   /** Marque l'aller-retour XP comme évalué ; false si déjà fait (aucune XP multiple sur correction). */
   claimExchange(scope: TxScope, messageId: string): Promise<boolean>;
   /** Messages publiés/warned récents (fenêtre de contexte, pseudonymisation par l'appelant). */

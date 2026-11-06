@@ -1,3 +1,6 @@
+import { DEFAULT_TUNING } from '@blowy/tuning';
+import { PET_MEMORY_PORT } from '../../shared/application/ports/pet-memory.port.js';
+import { PrismaPetMemory } from './infrastructure/prisma-pet-memory.js';
 import { Global, Module } from '@nestjs/common';
 import { PET_PROFILE_READER } from '../../shared/application/ports/pet-profile.reader.js';
 import { EnginePetProfileReader } from './infrastructure/pet-profile.reader.js';
@@ -45,9 +48,10 @@ export const PETS_PROVIDERS = [
     useFactory: (u: UnitOfWork, r: R, t: PetTimeService, e: EngineGateway) => new TickPetsUseCase(u, r, t, e.params.lazyCatchUpAfterDays),
     inject: [UNIT_OF_WORK, PET_REPOSITORY, PetTimeService, ENGINE_GATEWAY],
   },
+  { provide: PET_MEMORY_PORT, useFactory: () => new PrismaPetMemory(DEFAULT_TUNING) },
   { provide: PET_PROFILE_READER, useFactory: (r: R, t: PetTimeService, e: EngineGateway) => new EnginePetProfileReader(r, t, e), inject: [PET_REPOSITORY, PetTimeService, ENGINE_GATEWAY] },
 ];
 
 @Global()
-@Module({ controllers: [PetsController], providers: PETS_PROVIDERS, exports: [TickPetsUseCase, GetPetQuery, PET_REPOSITORY, PET_PROFILE_READER] })
+@Module({ controllers: [PetsController], providers: PETS_PROVIDERS, exports: [PET_MEMORY_PORT, TickPetsUseCase, GetPetQuery, PET_REPOSITORY, PET_PROFILE_READER] })
 export class PetsModule {}

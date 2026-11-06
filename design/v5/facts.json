@@ -1,36 +1,66 @@
 {
-  "_doc": "Source unique des chiffres et dates de la démo V5. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie. Dates réelles 2026 (jour de semaine vérifié).",
+  "_doc": "Source unique des chiffres et dates de la démo V5.2. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, grille d'âge, phrases dérivées, cartes de partage, slugs, vocabulaire).",
   "aujourdhui": { "iso": "2026-11-09", "label": "lundi 9 novembre" },
-  "toi": { "prenom": "Alex", "age": 28, "tranche": "26–30 ans", "pronom": "il", "pet": "Nino", "trancheGroupeSouhaitee": "24–32 ans", "intention": "Les deux", "format": "Les deux", "quartier": "Paris 11e", "quartiersAcceptes": ["Paris 11e", "Paris 10e", "Paris 20e"], "trajetMax": "30 min" },
-  "villesOuvertes": ["Paris 11e", "Lyon 4e · Croix-Rousse"],
-  "villeFermee": { "nom": "Saint-Denis", "verifies": 87, "seuil": 120, "ouvertureEstimee": "mars 2027", "procheOuverte": "Paris 11e", "trajet": "25 min en RER D + métro" },
-  "teamAmorcage": { "seuil": 3, "membres": 2, "membresNoms": ["Mehdi", "Yacine"] },
-  "groupe": { "taille": 5, "autres": 4, "ages": "26–31 ans", "femmes": 2, "hommes": 3, "enTeam": 2, "chatLabel": "4 + toi" },
+  "grilleAges": [[18, 21], [22, 25], [26, 29], [30, 34], [35, 39], [40, 44], [45, 49], [50, 99]],
+  "toi": { "prenom": "Alex", "tranche": "26–29 ans", "pronom": "il", "pet": "Nino", "trancheGroupeSouhaitee": "26–34 ans", "quartier": "Paris 11e", "quartiersAcceptes": ["Paris 11e", "Paris 10e", "Paris 20e"] },
+  "villesOuvertes": ["Paris 11e", "Lyon 4e"],
+  "villeAttente": { "nom": "Nantes", "verifies": 87, "manquent": 2, "sortieIso": "2026-11-21", "sortie": "samedi 21 novembre", "sortieCourt": "sam. 21 nov.", "creneau": "15 h – 17 h" },
+  "amorcage": { "ville": "Lille", "team": 3, "attente": 2, "iso": "2026-11-28", "jour": "samedi 28 novembre", "court": "sam. 28 nov.", "heure": "15 h – 17 h", "activite": "Atelier céramique", "lieu": "La Fabrique", "quartier": "Lille-Wazemmes", "ages": "22–29 ans" },
+  "groupe": { "taille": 5, "team": 1, "nouvelles": 3, "chatLabel": "4 + toi", "ages": "26–34 ans", "femmes": 2, "hommes": 3, "garantieHistoire": 2 },
   "membres": [
-    { "prenom": "Léa", "initiale": "L.", "pet": "Suzie", "espece": "lapine", "pronom": "elle", "tranche": "26–30 ans" },
-    { "prenom": "Malo", "initiale": "M.", "pet": "Gaston", "espece": "capybara", "pronom": "il", "tranche": "26–30 ans" },
-    { "prenom": "Sarah", "initiale": "S.", "pet": "Pia", "espece": "pigeonne", "pronom": "elle", "tranche": "26–30 ans" },
-    { "prenom": "Tom", "initiale": "T.", "pet": "Pépite", "espece": "lutin", "pronom": "il", "tranche": "31–35 ans", "team": true }
+    { "prenom": "Léa", "initiale": "L.", "pet": "Suzie", "pronom": "elle", "tranche": "26–29 ans" },
+    { "prenom": "Malo", "initiale": "M.", "pet": "Gaston", "pronom": "il", "tranche": "26–29 ans" },
+    { "prenom": "Sarah", "initiale": "S.", "pet": "Pia", "pronom": "elle", "tranche": "26–29 ans" },
+    { "prenom": "Tom", "initiale": "T.", "pet": "Pépite", "pronom": "il", "tranche": "30–34 ans", "team": true }
   ],
+  "tiers": ["Léa", "Malo", "Sarah", "Tom", "Jade", "Nils", "Sam", "Yacine"],
+  "petsDesAutres": ["bbb22b42d36399583200635059710253", "305ba56fa88f24706f7f7b30debf3ac8", "50c0f31840970939368c74de19d91da8", "e10a7fce2dc7e3ce8d3382f9d3069bc8", "36951927ea94071fec4b8e25ae8db21b", "b9a1dfc49373cf092fdb8a912c875adf", "f2467eee400607a7ee6bd4c0c17498dc", "8a35794ced023a499838ce341afd6ac4", "4f1732e4d646fcfb4437f97947c175f0", "76e13d29027c25245f735f122d3f7eda", "de9f340fe1fc57e17ae7a8a461afc52a"],
   "sortie1": {
-    "iso": "2026-11-12", "jour": "jeudi 12 novembre", "court": "jeu. 12 nov.", "heure": "19 h 30", "fin": "21 h 30",
+    "iso": "2026-11-12T19:30", "jour": "jeudi 12 novembre", "court": "jeu. 12 nov.", "heure": "19 h 30", "fin": "21 h 30",
     "activite": "Jeux de société", "typeLieu": "un bar à jeux du 11e", "lieu": "Café des Oiseaux", "adresse": "12 rue Oberkampf, Paris 11e", "metro": "Parmentier (ligne 3)", "table": "Table Blowy, chevalet orange au fond", "code": "4827",
-    "confirmationIso": "2026-11-11", "confirmation": "mercredi 11 novembre, 18 h", "confirmationCourt": "mer. 11 nov. 18 h",
-    "composition": "lundi 9 novembre, 21 h",
-    "votesCloseIso": "2026-11-15", "votesClose": "dimanche 15 novembre, 21 h 30", "votesCloseCourt": "dim. 15 nov. 21 h 30"
+    "compositionIso": "2026-11-09T21:00", "composition": "lundi 9 novembre, 21 h",
+    "lieuIso": "2026-11-11T18:00", "lieuQuand": "mercredi 11 novembre, 18 h", "lieuCourt": "mer. 11 nov. 18 h",
+    "visagesIso": "2026-11-12T16:30", "visagesQuand": "jeudi 12 novembre, 16 h 30", "visagesCourt": "jeu. 12 nov. 16 h 30",
+    "votesCloseIso": "2026-11-15T21:30", "votesClose": "dimanche 15 novembre, 21 h 30", "votesCloseCourt": "dim. 15 nov. 21 h 30"
   },
-  "sortie2": { "iso": "2026-11-19", "jour": "jeudi 19 novembre", "court": "jeu. 19 nov.", "heure": "19 h 30", "activite": "Bloc d'escalade", "typeLieu": "une salle de bloc du 11e", "confirmationIso": "2026-11-18", "confirmationCourt": "mer. 18 nov. 18 h" },
-  "prix": { "premiere": "offerte", "place": "4,99 €", "plus": "9,99 €", "deuxPlaces": "9,98 €", "troisPlaces": "14,97 €", "conso": "non incluse : chacun paie ce qu'il boit", "autorises": ["4,99 €", "9,99 €", "9,98 €", "14,97 €", "0,00 €"] },
-  "abonnement": { "statut": "Gratuit", "abonne": false },
+  "sortie2": { "iso": "2026-11-19T19:30", "jour": "jeudi 19 novembre", "court": "jeu. 19 nov.", "activite": "Bloc d'escalade", "typeLieu": "une salle de bloc du 11e", "lieuIso": "2026-11-18T18:00", "lieuCourt": "mer. 18 nov. 18 h" },
+  "prix": { "premiere": "offerte", "place": "4,99 €", "plus": "9,99 €", "autorises": ["4,99 €", "9,99 €", "9,98 €", "14,97 €", "0,00 €"], "duoGratuit": 1 },
+  "abonnement": { "statut": "Gratuit", "fournisseur": "Apple Pay" },
   "duos": {
-    "jade": { "prenom": "Jade", "initiale": "J.", "pet": "Caramel", "pronom": "elle", "tranche": "24–28 ans", "debutIso": "2026-11-11", "debut": "mercredi 11 novembre, 21 h", "deblocageIso": "2026-11-13", "deblocage": "vendredi 13 novembre, 21 h", "deblocageCourt": "ven. 13 nov. 21 h", "rdvIso": "2026-11-17", "rdv": "mardi 17 novembre, 19 h", "rdvCourt": "mar. 17 nov. 19 h", "rdvLieu": "Le Comptoir Gabriel", "rdvAvantIso": "2026-11-18", "rdvAvant": "mer. 18 nov." },
-    "nils": { "prenom": "Nils", "initiale": "N.", "pet": "Biscuit", "pronom": "il", "tranche": "28–32 ans", "type": "Nouveaux potes" },
-    "lea": { "rdvIso": "2026-11-21", "rdv": "samedi 21 novembre, 15 h", "rdvCourt": "sam. 21 nov. 15 h", "rdvLieu": "Expo Atelier des Lumières" }
+    "jade": { "prenom": "Jade", "initiale": "J.", "pet": "Caramel", "pronom": "elle", "tranche": "26–29 ans",
+      "debutIso": "2026-11-08T21:00", "debut": "dimanche 8 novembre, 21 h",
+      "deblocageIso": "2026-11-10T21:00", "deblocage": "mardi 10 novembre, 21 h", "deblocageCourt": "mar. 10 nov. 21 h",
+      "rdvIso": "2026-11-14T15:00", "rdv": "samedi 14 novembre, 15 h", "rdvCourt": "sam. 14 nov. 15 h", "rdvLieu": "Le Comptoir Gabriel" },
+    "nils": { "prenom": "Nils", "initiale": "N.", "pet": "Biscuit", "pronom": "il", "tranche": "30–34 ans" },
+    "lea": { "rdvIso": "2026-11-21T15:00", "rdv": "samedi 21 novembre, 15 h", "rdvCourt": "sam. 21 nov. 15 h", "rdvLieu": "Parc des Buttes-Chaumont" }
   },
-  "bande": { "noms": ["Tom", "Sarah"], "taille": 2 },
+  "bande": { "avantVote": ["Tom"], "apresVote": ["Tom", "Sarah"] },
   "souvenirs": 3,
   "fiabilite": "1 sortie sur 1",
-  "ange": { "prenom": "Sam", "canal": "SMS", "url": "blowy.app/a/7Qm2xK9fPz4Lw8vR", "expire": "vendredi 13 novembre, 0 h 30" },
-  "sla": { "signalementSortie": "1 h", "alerte": "5 min", "equipe": "18 h – 2 h, les soirs de sortie" },
-  "notifs": { "propositionsParSemaine": 1 }
+  "ange": { "prenom": "Sam", "url": "blowy.app/a/7Qm2xK9fPz4Lw8vR", "expire": "vendredi 13 novembre, 0 h 30" },
+  "slugs": { "troisMots": "blowy.app/m/k7f2q", "invitation": "blowy.app/i/r8Tz4w", "ville": "blowy.app/v/paris-11" },
+  "sla": { "signalementSortie": "1 h", "aide": "5 min" },
+  "chronologie": [
+    ["duos.jade.debutIso", "duos.jade.deblocageIso"], ["duos.jade.deblocageIso", "duos.jade.rdvIso"],
+    ["sortie1.compositionIso", "sortie1.lieuIso"], ["sortie1.lieuIso", "sortie1.visagesIso"], ["sortie1.visagesIso", "sortie1.iso"], ["sortie1.iso", "sortie1.votesCloseIso"],
+    ["sortie1.votesCloseIso", "duos.lea.rdvIso"], ["sortie2.lieuIso", "sortie2.iso"], ["aujourdhui.iso", "villeAttente.sortieIso"], ["aujourdhui.iso", "amorcage.iso"]
+  ],
+  "evenements": {
+    "duoJade": { "iso": "2026-11-08T21:00", "passe": ["J\\. a répondu", "Caramel a répondu"] },
+    "visagesJade": { "iso": "2026-11-10T21:00", "passe": ["Jade a ajouté", "Transcription"], "futur": ["[Vv]isages mar\\. 10 nov"] },
+    "lieuSortie1": { "iso": "2026-11-11T18:00", "passe": ["Café des Oiseaux", "12 rue Oberkampf"], "futur": ["[Ll]ieu : mer\\. 11 nov", "[Ll]ieu mer\\. 11 nov"] },
+    "visagesSortie1": { "iso": "2026-11-12T16:30", "passe": ["LES VISAGES SONT LÀ", "Visages vérifiés"], "futur": ["[Vv]isages : jeu\\. 12 nov", "[Vv]isages jeu\\. 12 nov"] },
+    "sortie1": { "iso": "2026-11-12T19:30", "passe": ["SORTIE VÉCUE", "ON ÉTAIT 5", "Rencontrée à ta sortie"] },
+    "votes1": { "iso": "2026-11-15T21:30", "passe": ["TES ACCORDS", "rejoint ta bande", "PAS D’ACCORD"] }
+  },
+  "ecrans": {
+    "V5-Trouvee": "2026-11-09T21:05", "V5-Trouvee-potes": "2026-11-09T21:05", "V5-Sortie": "2026-11-09T21:10", "V5-Sortie-inscrit": "2026-11-09T21:15",
+    "V5-Accueil": "2026-11-09T22:00", "V5-Accueil-discret": "2026-11-09T22:00", "V5-Accueil-duo": "2026-11-09T22:00", "V5-Chats": "2026-11-09T22:00",
+    "V5-Groupe": "2026-11-10T19:00", "V5-Lien": "2026-11-09T22:00", "V5-Lien-debloque": "2026-11-10T21:05", "V5-RdvDuo": "2026-11-10T21:10",
+    "V5-Confirmation": "2026-11-11T18:05", "V5-Revelation": "2026-11-12T16:35", "V5-Checkin": "2026-11-12T19:28", "V5-Checkin-ok": "2026-11-12T19:40",
+    "V5-Souvenir": "2026-11-12T21:40", "V5-Partage": "2026-11-13T10:00", "V5-Partage-confirmation": "2026-11-11T18:10", "V5-Partage-checkin": "2026-11-12T19:40",
+    "V5-Apres": "2026-11-13T09:00", "V5-Apres-resultats": "2026-11-15T21:30", "V5-Apres-aucun": "2026-11-15T21:30",
+    "V5-Bande": "2026-11-15T22:00", "V5-Rue": "2026-11-15T22:00", "V5-Chat": "2026-11-15T22:00", "V5-RdvDuo-lea": "2026-11-15T22:10", "V5-Fiche": "2026-11-15T22:00", "V5-Profil": "2026-11-15T22:00",
+    "V5-Paiement": "2026-11-16T10:00", "V5-Paiement-ok": "2026-11-16T10:01", "V5-Paiement-echec": "2026-11-16T10:01", "V5-Duo": "2026-11-09T22:00"
+  }
 }

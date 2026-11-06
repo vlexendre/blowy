@@ -1,7 +1,8 @@
 /**
  * Transactions et verrouillage ordonné.
  *
- * Ordre global imposé (anti-deadlock) : users → pets → relations → wallets ;
+ * Ordre global imposé (anti-deadlock) : users → pets → relations → quartiers → teams → sorties →
+ * liens de bande → duos → wallets (V5, spec-v5 §1) ;
  * à l'intérieur d'une classe, tri lexicographique des identifiants.
  * Les verrous sont pris par `SELECT … FOR NO KEY UPDATE` dans la transaction courante :
  * exclusifs entre commandes, mais compatibles avec le `FOR KEY SHARE` implicite des INSERT
@@ -14,7 +15,7 @@ import type { Db } from './client.js';
 
 export type Tx = Prisma.TransactionClient;
 
-export const LOCK_ORDER = ['User', 'Pet', 'RelationshipContext', 'Wallet'] as const;
+export const LOCK_ORDER = ['User', 'Pet', 'RelationshipContext', 'Neighborhood', 'Team', 'Outing', 'Friendship', 'Duo', 'Wallet'] as const;
 export type LockClass = (typeof LOCK_ORDER)[number];
 
 /** Colonne de clé verrouillée par classe. */
@@ -22,6 +23,11 @@ const LOCK_KEY: Record<LockClass, string> = {
   User: 'id',
   Pet: 'id',
   RelationshipContext: 'id',
+  Neighborhood: 'id',
+  Team: 'id',
+  Outing: 'id',
+  Friendship: 'id',
+  Duo: 'id',
   Wallet: 'userId',
 };
 
@@ -70,6 +76,21 @@ export class OrderedLocker {
   }
   relationships(ids: readonly string[]) {
     return this.lock('RelationshipContext', ids);
+  }
+  neighborhoods(ids: readonly string[]) {
+    return this.lock('Neighborhood', ids);
+  }
+  teams(ids: readonly string[]) {
+    return this.lock('Team', ids);
+  }
+  outings(ids: readonly string[]) {
+    return this.lock('Outing', ids);
+  }
+  friendships(ids: readonly string[]) {
+    return this.lock('Friendship', ids);
+  }
+  duos(ids: readonly string[]) {
+    return this.lock('Duo', ids);
   }
   wallets(userIds: readonly string[]) {
     return this.lock('Wallet', userIds);
