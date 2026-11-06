@@ -108,7 +108,7 @@ for (const f of files) {
     // b) texte rogné par un ancêtre qui masque son débordement ; c) texte collé au bord d'un fond coloré
     const pageBg = getComputedStyle(document.querySelector('x-dc > div, body > div') || document.body).backgroundColor;
     for (const n of visibleText) {
-      const el = n.parentElement; if (hiddenEl(el) || el.closest('[aria-hidden="true"], .gnav, input, svg')) continue;
+      const el = n.parentElement; if (hiddenEl(el) || el.closest('[aria-hidden="true"], .gnav, input, svg, [data-miniature]')) continue; // miniature = image réduite d’une carte déjà auditée en taille réelle
       out.nLayout++;
       const rects = textRect(n); if (!rects.length) continue;
       const tr = { left: Math.min(...rects.map((q) => q.left)), right: Math.max(...rects.map((q) => q.right)), top: Math.min(...rects.map((q) => q.top)), bottom: Math.max(...rects.map((q) => q.bottom)) };

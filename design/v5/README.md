@@ -1,20 +1,21 @@
-# Maquettes V5.5 « Ton pet te trouve une bande »
+# Maquettes V5.6 « Ton pet te trouve une bande »
 
-Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de six documents, du plus ancien au plus récent :
+Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de sept documents, du plus ancien au plus récent :
 
 - `docs/product/concept-v5.md` ;
 - `concept-v5.1.md` ;
 - `concept-v5.2.md` ;
 - `concept-v5.3.md` ;
 - `concept-v5.4.md` ;
-- **`docs/product/concept-v5.5.md`** (sections A–E), qui prime sur tous les autres.
+- `concept-v5.5.md` ;
+- **`docs/product/concept-v5.6.md`** (A règles uniques, B finitions), qui prime sur tous les autres.
 
-Le tour 6 répond au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
+Le tour 7 répond au jury tour 6 (`docs/research/jury/round-6/`, bloquant trust-safety : la sortie pour sécurité n'est jamais limitée ni non remboursée). Le tour 6 répondait au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
 
 ## Contenu
 
-- **97 artboards** dans `project/` :
-  - 91 écrans d'app et 3 pages web, en 390 × 844 ;
+- **104 artboards** dans `project/` :
+  - 98 écrans d'app et 3 pages web, en 390 × 844 ;
   - **3 écrans côté lieu** (web admin) en 1280 × 800 : `L-Effectif`, `L-Creneaux`, `L-Contrat`.
 - **`project/canvas.json`** : la page « v5 — Bande » compte 10 rangées (A, B, B', C à H, L), avec des titres de 01 à 62 (variantes en b, c, d…), plus 4 notes.
 - **`facts.json`** : source unique des chiffres, dates et règles. Il contient :
@@ -24,15 +25,48 @@ Le tour 6 répond au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rend
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **97 fichiers, 6 039 vérifications, 0 contradiction**.
+  - Résultat : **104 fichiers, 6 925 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **97 écrans, 1 423 textes, 538 cibles, 1 462 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **104 écrans, 1 520 textes, 564 cibles, 1 569 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Les miniatures de « Mes cartes » (`data-miniature`, images réduites de cartes auditées en taille réelle) sont exclues des contrôles de mise en page.
   - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
   - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
 - **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x).
   - Commande : `DESIGN_ROOT=design/v5 NODE_PATH=$(npm root -g) node design/v5/render-v5.mjs .local/dc-runtime.js design/v5/renders [filtre]`.
-  - Les 97 rendus de `renders/` ont été relus.
+  - Les 104 rendus de `renders/` ont été régénérés ; tous les écrans modifiés ou nouveaux ont été relus en planches.
+
+### Contrôles ajoutés au tour 7 (`check-facts`)
+
+1. **Une seule formulation par règle** : `facts.regles` donne la phrase canonique (sécurité, « je connais quelqu'un ici », imprévu, annulation, fiabilité, astreinte, rappel, Blowy+ « dès la 3e », annulation par Blowy) ; `facts.reglesSignatures` donne le motif qui repère la règle. Dès qu'un écran évoque une règle, la phrase canonique doit y figurer mot pour mot (la date de la veille est normalisée en « la veille 18 h »).
+2. **Bannis** : « soirs de sortie », « position en continu », « Photo fournie par le lieu », « Rentable à partir de ».
+3. **Âge du persona** (`facts.personas`) : « Toi · tranche » correspond au persona de l'écran (26–29 ans par défaut, 22–25 à Saint-Denis, 18–21 à Bordeaux) ; une sortie annoncée « en NN–NN ans » contient la tranche du persona.
+4. « Mes cartes » montre les mêmes liens que les cartes : exclu du contrôle « un lien par carte ».
+
+## Suivi jury tour 6 (concept-v5.6)
+
+- [x] **Bloquant trust-safety** : la sortie pour sécurité est « toujours possible, sans pénalité, place remboursée », jamais comptée dans l'imprévu ; même phrase sur Sortie, Fiche, Confirmation, Tarifs, Les visages, Groupe-menu, Check-in fait.
+- [x] A1 sécurité / « je connais quelqu'un ici » (1 fois par mois, remboursée) : phrases canoniques partout.
+- [x] A2 imprévu : « 1 fois par mois, sans pénalité, place non remboursée », sous le bouton de Les visages.
+- [x] A3 fiabilité visible par toi seul : Fiche, Réglages.
+- [x] A4 Blowy+ « Rentable dès la 3e sortie du mois » : Abonnement.
+- [x] A5 astreinte « pendant toute ta sortie » ; plus aucun « soirs de sortie » (Groupe-menu, Signaler corrigés) ni « position en continu » (Ange : « ta position n'est jamais demandée ») ; W-Ange-aide sur la phrase canonique.
+- [x] A6 délais réels : Chargement (« jeudi : réponse lundi 21 h ; samedi : mercredi 21 h »), Chats-vide renvoie vers Chargement, Pas-encore « mardi à 21 h ».
+- [x] A7 Confidentialité : lignes « Ton duo » et « Ton ange gardien ».
+- [x] B8 grille d'âge complète (Affiner-âge, 8 tranches, 30–34 coché) ; Affiner résume exactement ; Saint-Denis 22–25 ; Bordeaux 18–25 pour le persona 18–21.
+- [x] B9 Nantes : Ville, Pas-encore, Trouvée, Sortie.
+- [x] B10 duo homme-homme : proposition (« Un pigeon · K. »), duo, visages (Karim, pet pigeon), rendez-vous Café Longchamp avec astreinte.
+- [x] B11 « Pas encore » : quand on est prévenu + voie Duo.
+- [x] B12 illustrations distinctes (Paris, Lyon, Saint-Denis, Nantes), légende « Illustration · la photo du lieu arrive la veille ».
+- [x] B13 semaines off : « un week-end sur deux » / « une semaine sur deux », à partir du sam. 14 nov., dates calculées ; « J'en ai déjà » dans l'horizon enfants.
+- [x] B14 Thomas : « Je ne le sens pas · imprévu, aucune raison demandée » ; ambiance « plutôt calme » cochée et dite sur la Trouvée (« Lieu calme, comme demandé dans Affiner »).
+- [x] B15 Accueil-duo reformulé (« jeudi 12 novembre · 19 h 30 · facultatif »).
+- [x] B16 Mes cartes : 9 vraies miniatures ; Ma bande et Dimanche distinctes ; vidéo 5 s.
+- [x] B17 partage retiré de Confirmation et de « Pas d'accord cette fois » ; secondaire sur Les visages.
+- [x] B18 relevé lieu en HT (4,16 € HT / 3 € HT, total 7,16 € HT), « place réservée », message d'accueil du lieu (L-Effectif ; annoncé dans le chat du groupe à la révélation) ; contrat en HT.
+- [x] B19 coupures (Saint‑Denis, « ≈ 17 min », « tous les deux », « déc.… ») ; « Lieu révélé » dans Chats ; Chats-vide.
+- [x] B20 Lyon : « Et la semaine d'après : mar. 24 nov. · 19 h 30 · Atelier céramique, Lyon 1er ».
+- [x] Écrans signalés non corrigés au tour 6 : Accueil-duo, Groupe-menu, Signaler, Affiner-âge, Mes cartes — vérifiés un par un sur les rendus.
 
 ### Contrôles ajoutés au tour 6 (`check-facts`)
 
@@ -298,6 +332,19 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 **sortie** · **groupe** (5 personnes) · **venir avec quelqu'un** / **tes proches** (« team » ne reste que dans des textes secondaires, jamais dans un titre ou un bouton) · **nouvelles personnes** · **à découvrir** · **bande** · **Ta rue** · **duo** (pet + initiale avant le double oui) · **confirmation** (veille 18 h : lieu, prénoms, pets) · **visages** (J −3 h) · **besoin d'aide** · **check-in**, **code du chevalet** · **ange gardien** · **pause** · **mode discret** · **fiabilité** · **souvenir** · **accord** · **Partir proprement** · **place** (Apple Pay) · **Blowy+** (abonnement aux sorties, Apple Pay) · vote **Amitié / Plus / Non**.
 
 ## Textes clés (i18n)
+
+Phrases canoniques (V5.6, une par règle, à reprendre mot pour mot) :
+
+- `regles.securite` : « Pour ta sécurité : toujours possible, sans pénalité, place remboursée. »
+- `regles.connais` : « « Je connais quelqu’un ici » : 1 fois par mois, place remboursée. »
+- `regles.imprevu` : « Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée. »
+- `regles.annulation` : « Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. »
+- `regles.fiabilite` : « Ta fiabilité (venu à N sorties sur M) n’est visible que par toi. »
+- `regles.astreinte` : « Une personne de l’équipe est joignable pendant toute ta sortie. »
+- `regles.rappel` : « Une personne de l’équipe répond en moins d’1 h pendant toute ta sortie. »
+- `regles.blowyPlus` : « Rentable dès la 3e sortie du mois. »
+- `regles.blowyAnnule` : « Sortie annulée par Blowy à la confirmation ou après : 3 € HT par place réservée, versés au lieu. »
+
 
 | Clé | Texte |
 |---|---|

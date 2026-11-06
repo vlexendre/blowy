@@ -1,5 +1,5 @@
 {
-  "_doc": "Source unique des chiffres et dates de la démo V5.5. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, calendrier, grille d'âge, garantie jamais affichée, phrases dérivées, cartes et liens, vocabulaire).",
+  "_doc": "Source unique des chiffres et dates de la démo V5.6. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, calendrier, grille d'âge, garantie jamais affichée, phrases dérivées, cartes et liens, vocabulaire).",
   "aujourdhui": {
     "iso": "2026-11-09",
     "label": "lundi 9 novembre"
@@ -196,7 +196,8 @@
       "0,00 €",
       "3 €",
       "7,99 €",
-      "4,16 €"
+      "4,16 €",
+      "7,16 €"
     ],
     "compensationOfferte": "3 €",
     "blowyPlusVia": "Apple Pay",
@@ -414,7 +415,6 @@
     "V5-Souvenir": "2026-11-12T21:40",
     "V5-Partage": "2026-11-13T10:00",
     "V5-Partage-confirmation": "2026-11-11T18:10",
-    "V5-Partage-checkin": "2026-11-12T16:40",
     "V5-Apres": "2026-11-13T09:00",
     "V5-Apres-resultats": "2026-11-15T21:30",
     "V5-Apres-aucun": "2026-11-15T21:30",
@@ -464,7 +464,7 @@
     "hommes": 3,
     "lieu": "Le Five Croix-Rousse",
     "adresse": "12 rue d’Austerlitz, Lyon 4e",
-    "suivante": "mar. 24 nov. · Atelier céramique",
+    "suivante": "mar. 24 nov. · 19 h 30 · Atelier céramique, Lyon 1er",
     "metro": "Croix-Rousse (ligne C)",
     "table": "Terrain 2, chevalet orange au bord"
   },
@@ -495,7 +495,7 @@
     "ange"
   ],
   "annulation": {
-    "regle": "Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée).",
+    "regle": "Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Pour ta sécurité : toujours possible, sans pénalité, place remboursée. « Je connais quelqu’un ici » : 1 fois par mois, place remboursée. Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
     "fichiers": [
       "V5-Sortie",
       "V5-Fiche",
@@ -506,7 +506,7 @@
   "lieuRelevé": {
     "mois": "novembre",
     "placesVides": 2,
-    "montant": "7,99 €",
+    "montantHT": "7,16 €",
     "versement": "5 décembre"
   },
   "banlieue": {
@@ -519,7 +519,7 @@
     "court": "jeu. 19 nov.",
     "activite": "Bloc d'escalade",
     "typeLieu": "une salle de bloc du 18e",
-    "ages": "22–29 ans",
+    "ages": "22–25 ans",
     "femmes": 2,
     "hommes": 3,
     "lieuCourt": "mer. 18 nov. 18 h",
@@ -538,7 +538,7 @@
     "couverture": "tous les créneaux, sorties et rendez-vous Duo",
     "sla": "5 min"
   },
-  "blowyAnnule": "Sortie confirmée puis annulée par Blowy : 3 € par place prévue, versés au lieu.",
+  "blowyAnnule": "Sortie annulée par Blowy à la confirmation ou après : 3 € HT par place réservée, versés au lieu.",
   "indicateurs": {
     "seuil": 10,
     "bordeaux18_25": "environ 40 inscrits ont entre 18 et 25 ans",
@@ -548,5 +548,63 @@
   "sortieAnnulee": {
     "quand": "mer. 11 nov. à 18 h"
   },
-  "agendaTitre": "Rendez-vous · 19 h 30"
+  "agendaTitre": "Rendez-vous · 19 h 30",
+  "regles": {
+    "securite": "Pour ta sécurité : toujours possible, sans pénalité, place remboursée.",
+    "connais": "« Je connais quelqu’un ici » : 1 fois par mois, place remboursée.",
+    "imprevu": "Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
+    "annulation": "Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence.",
+    "fiabilite": "Ta fiabilité (venu à N sorties sur M) n’est visible que par toi.",
+    "astreinte": "Une personne de l’équipe est joignable pendant toute ta sortie.",
+    "rappel": "Une personne de l’équipe répond en moins d’1 h pendant toute ta sortie.",
+    "blowyPlus": "Rentable dès la 3e sortie du mois.",
+    "blowyAnnule": "Sortie annulée par Blowy à la confirmation ou après : 3 € HT par place réservée, versés au lieu."
+  },
+  "reglesSignatures": {
+    "securite": "[Pp]our ta sécurité",
+    "connais": "[Jj]e connais quelqu’un ici » :",
+    "imprevu": "[Ii]mprévu[^.]{0,40}(?:fois|pénalité|rembours)",
+    "annulation": "[Aa]nnulation gratuite jusqu",
+    "fiabilite": "fiabilit[^.]{0,60}(?:visible|voit|voient)",
+    "astreinte": "équipe est joignable",
+    "rappel": "équipe répond en moins",
+    "blowyPlus": "[Rr]entable",
+    "blowyAnnule": "annulée par Blowy"
+  },
+  "personas": {
+    "default": "26–29 ans",
+    "V5-Confirmation-banlieue": "22–25 ans",
+    "V5-Attente": "18–21 ans"
+  },
+  "attente": {
+    "ages": "18–25 ans"
+  },
+  "nantes": {
+    "quartier": "Nantes centre",
+    "trajet": "12 min",
+    "iso": "2026-11-19T19:30",
+    "jour": "jeudi 19 novembre",
+    "court": "jeu. 19 nov.",
+    "activite": "Verre ou café",
+    "typeLieu": "un bar calme de Bouffay",
+    "lieuCourt": "mer. 18 nov. 18 h",
+    "visagesCourt": "jeu. 19 nov. 16 h 30",
+    "ages": "26–34 ans",
+    "femmes": 3,
+    "hommes": 2,
+    "lieu": "Le Lieu Unique",
+    "adresse": "2 quai Ferdinand-Favre, Nantes",
+    "metro": "Duchesse Anne (tram 1)",
+    "table": "Table Blowy, chevalet orange",
+    "indicateur": "une vingtaine de personnes cherchent une histoire compatible avec la tienne",
+    "prevenu": "mardi à 21 h"
+  },
+  "duoHH": {
+    "initiale": "K.",
+    "espece": "Un pigeon",
+    "rdvLieu": "Café Longchamp",
+    "rdvQuartier": "Marseille 1er",
+    "rdvCourt": "sam. 14 nov. 19 h"
+  },
+  "lieuAccueil": "Table au fond à gauche, sous la lampe verte. Demandez Sami au comptoir. Bonne soirée !"
 }

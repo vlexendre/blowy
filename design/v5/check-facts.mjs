@@ -7,6 +7,8 @@
 // + V5.4 : aucun signal de compatibilité, règle d'annulation unique (imprévu 1×/trimestre), carte Duo = pet + initiale, 3 duos actifs, Blowy+ jamais en achat intégré, liens ≥ 8 / 12 caractères.
 // + V5.5 : astreinte sur tous les créneaux (aucune plage horaire), rendez-vous Duo en lieu partenaire, check-in par code, carte Duo sans nom de pet,
 //   indicateurs de ville ≥ 10 et arrondis, imprévu 1 fois par mois.
+// + V5.6 : une phrase canonique par règle (facts.regles / reglesSignatures), « soirs de sortie », « position en continu » et « Photo fournie par le lieu » bannis,
+//   âge du persona (facts.personas) cohérent avec « Toi · tranche » et la tranche annoncée de sa sortie.
 // Usage : node design/v5/check-facts.mjs [filtre]   (code de sortie 1 s'il y a une contradiction)
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -165,11 +167,11 @@ for (const f of files) {
     if (own && key !== own) push(f, `lien « ${sl} » (${key}) sur la carte « ${own} » : un lien par carte`);
     if (!own && /Partage/.test(f)) push(f, `carte sans lien attribué dans facts.slugParFichier`);
     if (F.slugsPrives.includes(key) && />Story</.test(html)) { checks++; push(f, `lien privé « ${sl} » publiable en Story`); }
-    seenSlug[sl] = seenSlug[sl] || new Set(); seenSlug[sl].add(base);
+    if (base !== 'V5-Cartes') { seenSlug[sl] = seenSlug[sl] || new Set(); seenSlug[sl].add(base); } // Mes cartes = miniatures des mêmes cartes
   }
 
   // 15. V5.4 · Règle d'annulation unique : texte canonique (la date peut remplacer « la veille 18 h ») sur les écrans désignés
-  const norm = (x) => x.replace(/jusqu’(?:à|au) (?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} [a-zéû]+\. 18 h\./g, 'jusqu’à la veille 18 h.');
+  const norm = (x) => x.replace(/jusqu’(?:à|au) (?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} [a-zéû]+\. 18 h(\.| ;)/g, 'jusqu’à la veille 18 h$1');
   if (F.annulation.fichiers.includes(base)) { checks++; if (!norm(t).includes(F.annulation.regle)) push(f, 'règle d’annulation : texte canonique absent'); }
   for (const m of t.matchAll(/[^.]*1 fois par (mois|trimestre)[^.]*/g)) { checks++; if (m[1] === 'mois' && !/connais quelqu|[Ii]mprévu/.test(m[0])) push(f, `« 1 fois par mois » hors « je connais quelqu’un ici » : « ${m[0].trim().slice(0, 60)} »`); if (m[1] === 'trimestre' && !/[Ii]mprévu/.test(m[0])) push(f, `« 1 fois par trimestre » hors imprévu`); }
   // 16. Carte de proposition Duo : pet + initiale seulement avant le double oui
@@ -192,8 +194,17 @@ for (const f of files) {
   for (const m of t.matchAll(/(\d+) (personnes vérifiées|inscrits|personnes cherchent)/g)) { checks++; const n = Number(m[1]); const before = t.slice(Math.max(0, m.index - 12), m.index); if (n === taille) continue; if (n < F.indicateurs.seuil || n % 10 !== 0 || !/environ\s*$/i.test(before)) push(f, `indicateur « ${m[0]} » : ≥ ${F.indicateurs.seuil}, arrondi, précédé de « environ »`); }
   for (const m of t.matchAll(/[^.]*histoire compatible avec la tienne[^.]*/g)) { checks++; if (!/À [A-ZÉ][\wé-]+(?: \d+e)?,/.test(m[0]) || !/(dizaine|quinzaine|vingtaine|trentaine|quarantaine|cinquantaine|centaine|environ)/.test(m[0])) push(f, `« histoire compatible » hors indicateur de ville arrondi : « ${m[0].trim().slice(0, 70)} »`); }
 
+  // 24. V5.6 · Une seule formulation par règle : dès qu'une règle est évoquée, sa phrase canonique (facts.regles) est présente mot pour mot
+  for (const [k, sig] of Object.entries(F.reglesSignatures)) {
+    if (new RegExp(sig).test(t)) { checks++; if (!norm(t).includes(F.regles[k])) push(f, `règle « ${k} » formulée autrement que « ${F.regles[k].slice(0, 50)}… »`); }
+  }
+  // 25. Âge du persona ↔ tranche de sa sortie
+  { const pt = F.personas[base] || F.personas.default;
+    for (const m of t.matchAll(/Toi · (\d{2}–\d{2} ans)/g)) { checks++; if (m[1] !== pt) push(f, `« Toi · ${m[1]} » : le persona de cet écran a ${pt}`); }
+    for (const m of t.matchAll(/en (\d{2})–(\d{2}) ans/g)) { checks++; const r = parseRange(pt); if (Number(m[1]) > r[0] || Number(m[2]) < r[1]) push(f, `sortie « en ${m[1]}–${m[2]} ans » qui n’inclut pas le persona (${pt})`); } }
+
   // 10. Vocabulaire unique et promesses fausses
-  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie'];
+  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie', 'soirs de sortie', 'position en continu', 'Photo fournie par le lieu', 'Rentable à partir de'];
   for (const w of banned) {
     checks++;
     if (new RegExp(`(?<![\\w-])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`).test(t)) push(f, `terme interdit « ${w} »`);
