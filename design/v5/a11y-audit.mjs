@@ -113,6 +113,21 @@ for (const f of files) {
       for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.textContent.trim() || hiddenEl(n.parentElement)) continue; const rg = document.createRange(); rg.selectNodeContents(n);
         for (const q of rg.getClientRects()) if (q.width > 0 && (q.bottom > vr.bottom + 1 || q.right > vr.right + 1 || q.top < vr.top - 1)) { out.layout.push(`texte rogné dans la vignette ${v.getAttribute('data-video-vignette')} « ${n.textContent.trim().slice(0, 30)} »`); break; } }
     }
+    // b1) Tour 11 · texte trop proche d'un filet (bordure haute ou basse d'un ancêtre) : moins de 4 px
+    for (const n of visibleText) {
+      const el = n.parentElement; if (hiddenEl(el) || el.closest('[aria-hidden="true"], .gnav, input, svg, [data-miniature], button')) continue;
+      const rects = textRect(n); if (!rects.length) continue;
+      const top = Math.min(...rects.map((q) => q.top)), bot = Math.max(...rects.map((q) => q.bottom));
+      for (let e = el, k = 0; e && e !== document.body && k < 4; e = e.parentElement, k++) {
+        const cs = getComputedStyle(e); const r = e.getBoundingClientRect();
+        const bt = parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none', bb = parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomStyle !== 'none';
+        if (!bt && !bb) continue;
+        if (r.height > 300) break;
+        const gt = top - (r.top + parseFloat(cs.borderTopWidth)), gb = (r.bottom - parseFloat(cs.borderBottomWidth)) - bot;
+        if ((bt && gt < 4) || (bb && gb < 4)) { out.layout.push(`texte trop proche d’un filet (${Math.round(Math.min(bt ? gt : 99, bb ? gb : 99))} px) « ${n.textContent.trim().slice(0, 40)} »`); }
+        break;
+      }
+    }
     // b) texte rogné par un ancêtre qui masque son débordement ; c) texte collé au bord d'un fond coloré
     const pageBg = getComputedStyle(document.querySelector('x-dc > div, body > div') || document.body).backgroundColor;
     for (const n of visibleText) {

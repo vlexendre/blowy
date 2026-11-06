@@ -242,6 +242,10 @@ for (const f of files) {
   if (base === 'V5-Confidentialite') { checks++; if (!t.includes(F.duoSpec216)) push(f, 'phrase Duo de la spec §2.16 absente'); }
   // 42. Le jalon de la veille 18 h s'appelle « Confirmation »
   for (const w of ['lieu révélé', 'Lieu révélé', 'à la révélation', 'Lieu et prénoms le', 'Lieu et prénoms ·', 'Le lieu de jeudi est arrivé']) { checks++; if (t.includes(w)) push(f, `jalon de la veille 18 h nommé « ${w} » : écrire « Confirmation »`); }
+  // 43. Tour 11 · activité payante : son prix là où « Chacun paie » apparaît ; « intéressant dès la 3e » une seule fois
+  for (const a of Object.values(F.activitePrix)) if (a.ecrans.includes(base)) { checks++; if (!t.includes(a.phrase)) push(f, `prix de l’activité absent : « ${a.phrase} »`); }
+  { checks++; const k = (t.match(/[Ii]ntéressant dès la 3e/g) || []).length; if (k > 1) push(f, `« intéressant dès la 3e » écrit ${k} fois`); }
+  { checks++; if (/[Pp]our qu’elle ait lieu/i.test(t)) push(f, '« Pour qu’elle ait lieu » : écrire « Pour sortir plus tôt »'); }
   // 33. V5.8 · heure de la frise = heure de la carte de sortie
   { const carte = t.match(/(\d{1,2} h(?: \d\d)?) – \d{1,2} h/); for (const m of t.matchAll(/(\d{1,2} h(?: \d\d)?) La sortie\b/g)) { checks++; if (carte && m[1] !== carte[1]) push(f, `frise « ${m[0]} » ≠ carte « ${carte[0]} »`); } }
   // 34. Aucune sortie promise avant composition (écrans d'attente et de remplacement)

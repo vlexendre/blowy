@@ -203,7 +203,10 @@
       "7,99 €",
       "4,16 €",
       "7,16 €",
-      "0 €"
+      "0 €",
+      "25 €",
+      "9 €",
+      "12 €"
     ],
     "compensationOfferte": "3 €",
     "blowyPlusVia": "Apple Pay",
@@ -844,5 +847,30 @@
     "V5-RdvDuo",
     "V5-Chat"
   ],
-  "duoSpec216": "Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux."
+  "duoSpec216": "Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux.",
+  "activitePrix": {
+    "lille": {
+      "prix": "25 €",
+      "phrase": "Atelier : 25 € sur place, à régler au lieu.",
+      "ecrans": [
+        "V5-Sortie-lille",
+        "V5-Amorcage",
+        "V5-Amorcage-solo"
+      ]
+    },
+    "lyon": {
+      "prix": "9 €",
+      "phrase": "Foot à 5 : 9 € sur place, à régler au lieu.",
+      "ecrans": [
+        "V5-Sortie-lyon"
+      ]
+    },
+    "banlieue": {
+      "prix": "12 €",
+      "phrase": "Bloc : 12 € sur place, à régler au lieu.",
+      "ecrans": [
+        "V5-Sortie-banlieue"
+      ]
+    }
+  }
 }

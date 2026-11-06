@@ -27,10 +27,10 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **107 fichiers, 9 711 vérifications, 0 contradiction**.
+  - Résultat : **107 fichiers, 9 935 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **107 écrans, 1 730 textes, 595 cibles, 1 815 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **107 écrans, 1 728 textes, 595 cibles, 1 813 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
   - Les miniatures de « Mes cartes » (`data-miniature`, images réduites de cartes auditées en taille réelle) sont exclues des contrôles de mise en page.
   - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
   - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
@@ -47,6 +47,13 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
 5. **Fiabilité** : toute mention (« fiabilité », « sortie honorée », « Venu à N sortie ») est suivie de « visible par toi seulement ».
 6. **Tranche des personas dans leur groupe** : « 5 personnes · NN–NN ans » contient la tranche du persona de l'écran ; chaque membre du groupe de Lyon a sa tranche (`facts.groupesTranches`).
 7. **Ratons des écrans d'échec** (`facts.ecransEchec`) : 64 pt au plus (`facts.ratonMax`).
+
+## Suivi tour 11 (vu dans les PNG rendus)
+
+- [x] V5-Attente : intertitre « Pour sortir plus tôt » (check-facts bannit « Pour qu’elle ait lieu »).
+- [x] V5-Abonnement : « intéressant dès la 3e sortie du mois » une seule fois (la rangée « Blowy+ » est retirée ; check-facts compte les occurrences).
+- [x] Prix des activités payantes (`facts.activitePrix`) à côté de « Chacun paie ce qu’il boit » : « Atelier : 25 € sur place, à régler au lieu. » (Sortie-lille, Amorçage, Amorçage-solo), « Foot à 5 : 9 € … » (Sortie-lyon), « Bloc : 12 € … » (Sortie-banlieue) ; contrôlé. L-Contrat, article 1 : variante « Lieu d’activité (atelier, salle, terrain) ».
+- [x] Confidentialité : lignes à 10 pt de marge haute et basse. a11y-audit a un contrôle « texte trop proche d’un filet » (< 4 px d’une bordure haute ou basse) ; avant correction il signalait 3 lignes (0, 0 et 2 px), après : 0 sur les 107 écrans.
 
 ## Suivi tour 10 (utilisateurs)
 
