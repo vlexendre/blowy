@@ -18,14 +18,23 @@ packages/sprites          Manifest typé des sprites, repli de pose, inventaire,
 
 ## Atomic design (packages/ui-mobile/src)
 
-`foundations` (jetons → thème RN, a11y, moteur de respiration, injection des sources d'images)
-→ `atoms` (Text, Icon, Pressable3D, Button, Surface, Chip, Badge, ProgressBar, Sprite, IconButton,
-Slider, TextField, Toggle, Dot) → `molecules` (Gauge, ListRow, ActionTile, StatChip, ProgressDots,
+`foundations` (jetons → thème RN, a11y, moteur de respiration, injection des sources d'images,
+typographie fidèle `typography.ts`, moteur de keyframes CSS `keyframes.ts` + horloge
+`motion-clock.tsx` live/rest/frozen, halos `blur.ts`, marges d'écran `layout.ts`)
+→ `atoms` (Text, DisplayText, Label, Caption, Stamp, Card, Blob, PopIn, Icon, Pressable3D, Button,
+Surface, Chip, Badge, ProgressBar, Sprite, IconButton, Slider, TextField, Toggle, Dot ; résolveurs
+de style purs `atoms/styles.ts`) → `molecules` (Gauge, ListRow, ActionTile, StatChip, ProgressDots,
 MessageBubble, OptionCard, Banner, Header, SectionTitle, KeyValue, LabeledSlider, StatusPill,
-NumberStepper) → `organisms` (PetRenderer, PetScene, TabBar, ActionGrid, GaugePanel, LinkCard,
+NumberStepper, PetSprite, OrbitRing) → `organisms` (PetRenderer, PetScene, TabBar, ActionGrid, GaugePanel, LinkCard,
 Sheet, ChatThread, Composer, LinkTree, MissionCard, PaywallOffer, VisionCard, StateViews,
 PetCarousel, RelationSwitcher) → `templates` (OnboardingStep, TabScreen, DetailScreen,
-ModalSheet, Celebration, EmptyState, ChatScreen).
+ModalSheet, Celebration, EmptyState, ChatScreen, ScreenTemplate).
+
+Langage visuel relevé valeur par valeur (CSS maquette → RN) : `docs/design/design-language.md`.
+Polices : instances statiques Bricolage (opsz/wdth figés) + Inter générées par
+`apps/mobile/scripts/fonts/build-fonts.py` → `assets/fonts/`, chargées par `app/_layout.tsx`.
+Route interne `/(dev)/kitchen-sink` (`EXPO_PUBLIC_BLOWY_ENV=local` seulement) : V4-Welcome
+reproduit avec les seuls composants (`?t=2550` fige les animations, `?view=catalog`).
 
 Règle : un niveau n'importe jamais un niveau supérieur — `packages/ui-mobile/eslint.config.mjs`
 (`no-restricted-imports` par dossier ; vérifié par une sonde). Barrel `index.ts` par niveau.
