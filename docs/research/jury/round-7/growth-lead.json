@@ -1,0 +1,646 @@
+{
+ "member": "growth-lead",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 9,
+  "safety": 9,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Une sortie dès 5 personnes, partout » : promesse d'acquisition que business-model finance à 134 sorties/jour au niveau national (≈ 670 participants/jour) ; avant ce volume, chaque sortie coûte.",
+   "fix": "Garder, mais le test de 8 semaines doit mesurer le volume national, pas Paris 11e seul."
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Environ 60 inscrits » : la spec compte des personnes **vérifiées** actives (`facts` : 64 vérifiées) ; un inscrit sans selfie ne forme pas de sortie (T6, non traité).",
+   "fix": "« Environ 60 personnes vérifiées »."
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 8,
+   "blocking": false,
+   "issue": "5e tour : « À deux, par écrit » et « Groupe et duo » à égalité avec « En petit groupe » au 5/9 ; la voie Duo n'invite personne (pas de « venir avec », pas de carte), donc chaque inscrit qui la prend sort du canal viral.",
+   "fix": "Duo proposé après la 1re sortie vécue, ou A/B mesuré sur cet écran."
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste. « Lieu calme, comme demandé dans Affiner » sur la 1re Trouvée, avant qu'Affiner existe pour Alex ; invitation toujours en lien texte sous le bouton.",
+   "fix": "Retirer la phrase ; invitation en carte."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Et la semaine d'après : mar. 24 nov. · 19 h 30 · Atelier céramique, Lyon 1er » : composée le sam. 21 nov. 21 h au plus tôt. Si elle n'a pas lieu, promesse cassée dans la ville d'amorçage (T6, aggravé : heure et quartier ajoutés).",
+   "fix": "« Prochaine composition sam. 21 nov. 21 h, sur tes créneaux »."
+  },
+  "V5-Sortie-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« On te prévient mardi à 21 h » codé en dur (D-075 l'interdit) ; « La voie Duo » est l'issue proposée, pas « inviter quelqu'un de compatible ».",
+   "fix": "Jour calculé ; mesurer la part qui choisit « Sortir quand même »."
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« mardi à 21 h » alors que le jeudi de Nantes se compose le lundi 21 h (V5-Trouvee-nantes) : deux heures pour Camille.",
+   "fix": "Jour calculé depuis le créneau."
+  },
+  "V5-Sortie": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Parrainage clair. Bouton « GARDER LA PLACE DE TOM (30 MIN) » plein bord (T6, non traité).",
+   "fix": "Libellé court."
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« lun. 21:00 · Une sortie pour toi cette semaine » : juste pour le jeudi seulement ; Alex a aussi le samedi (Réglages).",
+   "fix": "Deux exemples ou l'heure du 1er créneau."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Si elles arrivent d'ici le jeu. 19 nov., elle a lieu » : le sam. 21 nov. est composé le mer. 18 nov. 21 h ; quelqu'un qui recrute le jeudi pense avoir sauvé la sortie et elle n'a pas lieu. C'est l'écran qui pousse à inviter : la date fausse casse la boucle.",
+   "fix": "« d'ici le mer. 18 nov. 21 h »."
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« On te propose jeu. 19 nov., Bloc d'escalade, salle du 11e » le 9 nov., une semaine avant sa composition (lun. 16 nov. 21 h) : le moteur ne peut pas tenir cette offre telle quelle.",
+   "fix": "« Ton créneau du jeu. 19 nov. est retenu : réponse lun. 16 nov. 21 h »."
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même proposition datée (jeu. 19 nov., activité, quartier) avant composition.",
+   "fix": "Idem."
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Partage retiré (Sarah), photo du lieu annoncée honnêtement.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Vidéo 5 s » sans aperçu avant export.",
+   "fix": "Aperçu jouable."
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Trouve ta sortie » au lieu de « Viens jeudi prochain », verres dessinés sans légende : réglé.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Porte ouverte : carte distincte de « Ma bande ».",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Voir le jeu. 19 nov. » : même sortie promise avant composition.",
+   "fix": "Idem."
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Idem : pas d'aperçu.",
+   "fix": "Aperçu jouable."
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Neuf vraies miniatures, slugs visibles : réglé (T6 n° 2). « Chaque carte s'exporte en vidéo » faux pour 3 mots et Inviter.",
+   "fix": "Corriger la phrase ; « Vidéo 5 s » sur 3 mots."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Seule carte publique sans « Vidéo 5 s ».",
+   "fix": "Ajouter."
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Et toi, tu sors où ? » sans le slug d'attribution visible : la page 3 mots est le seul point d'entrée d'un non-inscrit qui ne dit pas qu'elle compte pour le parrainage d'Alex.",
+   "fix": "« Alex t'offre ta 1re sortie » si le parrainage s'applique."
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Rentable dès la 3e sortie du mois », spec alignée.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Heure calculée par créneau (jeudi → lundi 21 h, samedi → mercredi 21 h) : réglé (T6 n° 1).",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Voir quand arrive ma proposition » : réglé.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la boucle hebdo sur cet écran.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Aucune date proposée avant la composition : Attente (« d'ici le mer. 18 nov. 21 h »), Pas-encore (jour calculé), Trouvée-Lyon, Sortie-complete, Sortie-annulee et Pas d'accord annoncent le créneau retenu et l'heure de réponse, pas une sortie déjà décrite.",
+  "Duo sorti du 5/9 (proposé après la 1re sortie vécue), ou A/B mesuré : chaque inscrit passe d'abord par le canal qui invite.",
+  "Lancer le test de 8 semaines avec l'attribution par slug (E16) et publier : Welcome → 1re sortie, chute au selfie, inscrits vérifiés par sortie vécue, part des 1res sorties venues par un lien."
+ ],
+ "tenIf": "Je mets 10 si le test de 8 semaines mesure dans le 11e Welcome → 1re sortie vécue ≥ 25 % et une chute au selfie < 30 %, si chaque sortie vécue produit ≥ 0,3 inscrit vérifié attribué par slug, si le parrainage « sortie offerte » est mesuré, si Bordeaux passe de « il manque 2 » à une sortie vécue en moins de 3 semaines, et si aucun écran ne promet une date ou une sortie que la composition J − 3 21 h ne garantit pas (Attente, Pas-encore, Trouvée-Lyon, propositions de remplacement)."
+}

@@ -1,0 +1,646 @@
+{
+ "member": "trust-safety",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 9,
+  "safety": 8,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Empreintes comparées puis effacées, opt-in, désactivable.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Pas-encore": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« seulement dans un chat à deux, après vos deux oui » : réglé.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« moins d'1 h pendant toute ta sortie » et « Pour ta sécurité : toujours possible » : réglé. « Quitter la sortie » ne montre pas le choix « pour ma sécurité » qui rend la place remboursée.",
+   "fix": "Feuille « Quitter » avec les trois cas, sécurité en premier."
+  },
+  "V5-Attente": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Fiabilité intacte, Tom prévenu. Compensation lieu « à la confirmation » contredit spec §2.6 (aucune compensation à `lockAt`).",
+   "fix": "Trancher en spec."
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle juste (sécurité hors quota, remboursée). Mais à 18 h, le seul bouton est « Je connais quelqu'un ici · examiné en privé » : rien pour « un prénom m'inquiète » sans connaître la personne, et la limite « 1 fois par mois » sans suite.",
+   "fix": "Bouton « Je ne veux pas y aller pour ma sécurité » → `seat.cancel {kind:SAFETY}` ; suite « au-delà » sur la ligne connais."
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "À J − 3 h, voir un visage qui fait peur n'a que deux boutons : « Je connais quelqu'un ici » (quota) et « Je ne le sens pas · imprévu » (place **non remboursée**). La sortie pour sécurité, promise juste en dessous, n'a pas de bouton ; or « partir mal à l'aise » sur place est remboursé : on pousse à venir pour repartir. « Les captures sont détectées et signalées » reste absolu.",
+   "fix": "Troisième bouton « Je ne viens pas, pour ma sécurité » (remboursé, sans pénalité, sans motif à donner, revue humaine) ; « Les captures d'écran iOS sont signalées à l'équipe »."
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ta position n'est jamais demandée » : réglé. Liste « Ton ange verra seulement » encore propre à l'écran, au lieu de la ligne « Ton ange gardien » de Confidentialité.",
+   "fix": "Reprendre mot pour mot la ligne de Confidentialité."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« · lieu public » accolé au Café des Oiseaux : vague pour un ange qui doit agir.",
+   "fix": "« bar partenaire, table Blowy »."
+  },
+  "W-Ange-aide": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« appelle Alex sous 5 min » : aucun `[T]` en spec (60 min partout), aucun effectif dans business-model (2 personnes × 12 h pour toute la France, deux alertes simultanées = un des deux attend). Et « pendant toute **ta** sortie » sur la page de l'ange, qui ne sort pas.",
+   "fix": "`[T] safety.alertCallbackMinutes = 5` en spec, effectif d'astreinte dimensionné sur ce délai ; « pendant toute la sortie d'Alex »."
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code seul, position jamais demandée.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partir mal à l'aise compte comme une sortie pour ta sécurité » : bon. Mais cette règle n'existe que sur place, pas avant (voir Les visages).",
+   "fix": "Même bouton avant l'arrivée."
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Espèce + initiale : bon. « le prénom, aux visages » contredit spec §2.13 / §3.2 (prénom dès `EXCHANGE`) : un dev montrera le prénom 48 h plus tôt que promis.",
+   "fix": "Spec alignée sur l'écran (prénom aux visages)."
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Étape 3 « lieu partenaire, heure couverte » : réglé.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Espèce + initiale, rien d'autre.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« les captures sont détectées et signalées » : absolu (Android, 2e téléphone).",
+   "fix": "« Les captures d'écran iOS sont signalées à l'équipe »."
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une personne de l'équipe est joignable pendant toute ta sortie » sur un rendez-vous à deux : concept A.5 et glossaire spec disent « ta sortie ou ton rendez-vous » ; la promesse ne nomme pas le moment où elle s'applique.",
+   "fix": "Phrase canonique « pendant tout ton rendez-vous » pour les écrans Duo, contrôlée par check-facts."
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une personne de l'équipe est joignable pendant toute ta sortie » sur un rendez-vous à deux : concept A.5 et glossaire spec disent « ta sortie ou ton rendez-vous » ; la promesse ne nomme pas le moment où elle s'applique.",
+   "fix": "Phrase canonique « pendant tout ton rendez-vous » pour les écrans Duo, contrôlée par check-facts."
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une personne de l'équipe est joignable pendant toute ta sortie » sur un rendez-vous à deux : concept A.5 et glossaire spec disent « ta sortie ou ton rendez-vous » ; la promesse ne nomme pas le moment où elle s'applique.",
+   "fix": "Phrase canonique « pendant tout ton rendez-vous » pour les écrans Duo, contrôlée par check-facts."
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Partir sans message · si tu ne te sens pas en sécurité » : bon.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Fiabilité privée : réglé, spec §2.15 alignée. Reste la ligne connais sans suite ; et le code expose encore la fiabilité (E24 à faire).",
+   "fix": "Suite « au-delà » ; fermer E24 avant toute bêta."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« « Je connais quelqu'un ici » : 1 fois par mois, place remboursée » s'arrête là : la 2e rencontre d'un ex dans le mois lit qu'elle n'a plus de recours, alors que concept A.1 / spec §2.7 (D-073) en font une sortie pour sécurité.",
+   "fix": "Ajouter « au-delà : c'est une sortie pour ta sécurité, examinée par l'équipe, sans pénalité » à `facts.regles.connais`."
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lignes Duo et Ange : réglé. Manquent « fiabilité : toi seul » (alors que c'est la donnée la plus sensible côté réputation), « contacts évités » et « cartes de partage » exigés par spec §2.16.",
+   "fix": "Trois lignes de plus, générées depuis §3."
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« moins d'1 h pendant toute ta sortie » : réglé. « Être rappelé » dans l'encart rouge « En danger maintenant ? » mélange l'urgence (17/112) et un rappel à 1 h, sans renvoyer au bouton « Besoin d'aide » (5 min sur W-Ange-aide).",
+   "fix": "Dans l'encart rouge : « Pendant la sortie : Besoin d'aide (appui long) » ; le rappel 1 h sous l'encart."
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« l'équipe rappelle sous 1 h » pour un participant qui menace en salle : le lieu n'a pas de canal rapide propre.",
+   "fix": "Bouton « incident en cours » = même file que « Besoin d'aide »."
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui limite, retarde ou fasse payer une sortie pour sécurité sur cet écran.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Art. 3 ne nomme ni la sortie pour sécurité ni l'imprévu : une place payée quittée pour sécurité est « payée » au sens du contrat (4,16 € HT) mais vaut 3 € HT en spec §6.5 ; et le code ne compense rien (E22).",
+   "fix": "Art. 3 : « sortie pour raison de sécurité, retrait, je connais quelqu'un : 3 € HT par Blowy » ; fermer E22."
+  }
+ },
+ "top3": [
+  "Un bouton « Je ne viens pas, pour ma sécurité » (remboursé, sans motif, revue humaine) sur Les visages, Confirmation et la feuille « Quitter », pour que la règle affichée ait une porte d'entrée avant l'arrivée.",
+  "Un seul jeu de délais : `[T]` pour l'alerte (5 min) et le rappel (1 h) en spec, effectif d'astreinte dimensionné sur 5 min dans business-model, « pendant tout ton rendez-vous » sur les écrans Duo, « pendant la sortie d'Alex » sur la page de l'ange.",
+  "Fermer E22, E23, E24 (compensation sécurité, « je connais quelqu'un » hors quota = absence dans le code, fiabilité exposée) et écrire la suite « au-delà » de la ligne « je connais quelqu'un » ; contrat lieu art. 3 qui nomme la sortie pour sécurité."
+ ],
+ "tenIf": "Je mets 10 si la sortie pour sécurité a un bouton à chaque moment où on peut vouloir partir (Les visages, Confirmation, Quitter, sur place), remboursée et sans motif ; si chaque délai d'intervention affiché (5 min, 1 h) a sa valeur `[T]` en spec et son effectif chiffré ; si les écrans Duo disent « ton rendez-vous » ; si Confidentialité a les lignes fiabilité, contacts évités et cartes ; et si E22, E23 et E24 sont fermés dans le code."
+}

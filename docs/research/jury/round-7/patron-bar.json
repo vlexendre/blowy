@@ -1,0 +1,646 @@
+{
+ "member": "patron-bar",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 9,
+  "safety": 9,
+  "virality": 8,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Le lieu partenaire vous écrira ici à la révélation » : bien annoncé. Mais la spec n'a aucun champ ni route pour ce message (§2.3, §10.2) : rien ne garantit qu'il sera codé.",
+   "fix": "Champ `Venue.welcomeMessage` + envoi à `lockAt` en spec."
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "—",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le client lit « à la confirmation ou après : 3 € HT par place réservée » : je touche donc quelque chose quand ça tombe à 18 h. La spec §2.6 et §6.5 dit 0 (« avant la confirmation »), la phrase de la spec dit « sortie confirmée ». Je ne sais pas laquelle Blowy appliquera.",
+   "fix": "Spec alignée sur l'écran et le contrat."
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Illustration · la photo du lieu arrive la veille » : honnête. Mon message d'accueil (« Demandez Sami ») n'apparaît pas ici, à 18 h, alors que L-Effectif dit « envoyé avec la confirmation ».",
+   "fix": "Bloc « Message du lieu » sous l'adresse."
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "SMS au référent, « son personnel n'intervient pas à la place de l'équipe » : clair pour moi.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Pas de chevalet ? Demande au comptoir la table Blowy » : mon personnel sait quoi faire.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 4 sur 5 arrivés » : la même présence doit arriver sur mon relevé, pas seulement « 1 absence ».",
+   "fix": "Présences horodatées dans le relevé détaillé."
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Idem au Café Longchamp.",
+   "fix": "Idem."
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Table à deux au Comptoir Gabriel : bon ; même règle de compensation côté lieu ; business-model dit l'inverse (« sans compensation, 0 € »).",
+   "fix": "Business-model aligné."
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Idem au Café Ginette.",
+   "fix": "Idem."
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« son prix hors taxes est reversé au lieu (3 € HT si offerte ou Blowy+) » : réglé.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« le lieu reçoit 3 € HT » : réglé.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me concerne en tant que lieu sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Relevé en HT (4,16 + 3 = 7,16 € HT, TVA en sus) et « place réservée » : réglé. Mais « Relevé de novembre » commence au **jeu. 29 oct.** : mon comptable ne rapproche pas. « Effectif de la semaine » ne montre que jeudi, alors que j'ai ouvert mardi, samedi, dimanche et une table de 2. « l'équipe rappelle sous 1 h » pour un refus de payer en plein service. Le message d'accueil est bien là, mais je ne vois pas ce que le client en reçoit.",
+   "fix": "Mois calendaire (ou période écrite) ; chaque créneau ouvert de la semaine avec « aucune table » si vide ; rappel < 15 min pour un incident en salle ; aperçu « ce que voient vos clients »."
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Tables de 2 comprises dans le plafond, même règle : réglé.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Art. 3 garde « 4,99 € TTC (4,16 € HT) » et ne nomme ni l'imprévu ni la sortie pour sécurité : un client payant qui part pour sa sécurité est « payé » au sens du contrat (4,16 €) mais la spec me donne 3 € HT ; et le code ne me verse rien dans ce cas (E22).",
+   "fix": "« 4,16 € HT si payée ; 3 € HT si offerte, Blowy+, imprévu remboursé ou non, sortie pour sécurité, je connais quelqu'un » ; E22 fermé."
+  }
+ },
+ "top3": [
+  "Contrat art. 3 et relevé qui nomment chaque cas (absence, imprévu, sortie pour sécurité, je connais quelqu'un, Blowy annule à 18 h) avec son montant HT, identiques à la spec §6.5, et E22 fermé.",
+  "Effectif de la semaine sur tous mes créneaux ouverts (tables de 2 comprises, « aucune table » si vide) et relevé sur une période juste.",
+  "Mon message d'accueil en spec (champ, envoi à 18 h) et visible sur la Confirmation du client ; une ligne « incident en salle » rappelée en moins de 15 min."
+ ],
+ "tenIf": "Je mets 10 si mon relevé couvre exactement la période annoncée et retombe sur le contrat au centime, si le contrat, le relevé, l'écran client et la spec disent le même montant HT pour chaque cas (y compris sortie pour sécurité et sortie tombée à 18 h), si mon message d'accueil est en spec et s'affiche sur la Confirmation, et si l'effectif montre tous mes créneaux de la semaine."
+}

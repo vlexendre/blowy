@@ -1,0 +1,646 @@
+{
+ "member": "ux-cognitif",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 9,
+  "meet": 9,
+  "safety": 9,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« De 18 à 60 ans et plus » alors que la grille partout s'arrête à « 50 ans et plus ».",
+   "fix": "« De 18 à 50 ans et plus »."
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Trois formats à égalité au 5/9 (« Groupe et duo · les deux, sans priorité ») : une décision de plus dans un onboarding de 9 questions.",
+   "fix": "Défaut « En petit groupe », Duo proposé après la 1re sortie."
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« déc. … », week-end sur deux daté : réglé.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Lieu calme, comme demandé dans Affiner » : Alex arrive ici juste après le 9/9, il n'a jamais vu Affiner (écran 26, « plus tard ») ; « ≈ 8 min depuis Paris 11e » pour un bar du 11e (T6, non traité).",
+   "fix": "Retirer la phrase de la 1re Trouvée (ou « Lieu calme, comme tu l'as choisi » si l'ambiance est demandée dans le parcours) ; « dans ton quartier » sous 10 min."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Et la semaine d'après : mar. 24 nov. · 19 h 30 · Atelier céramique » annoncé avant la composition de cette semaine-là : promesse que la règle J − 3 ne permet pas.",
+   "fix": "« Prochaine composition : sam. 21 nov. 21 h »."
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« On te prévient mardi à 21 h pour la semaine prochaine » : jour codé en dur (`facts.nantes.prevenu`), alors que spec §1.1/§2.4 calcule l'état honnête le vendredi 21 h W−1 et D-075 interdit le jour générique.",
+   "fix": "Jour calculé depuis `requestOpensAt`."
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même « mardi à 21 h » ; or le créneau de Camille à Nantes est le jeudi (composé le lundi 21 h, V5-Trouvee-nantes) : deux heures pour la même personne.",
+   "fix": "Jour calculé."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« GARDER LA PLACE DE TOM (30 MIN) » toujours plein bord (≈ 8 pt de marge), T6 non traité.",
+   "fix": "« Garder sa place 30 min »."
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Lieu révélé mer. 11 nov. 18 h » : réglé.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« seulement dans un chat à deux, après vos deux oui » : réglé.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une règle, une version : réglé.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Si elles arrivent d'ici le jeu. 19 nov., elle a lieu » pour le sam. 21 nov. : la composition est le mer. 18 nov. 21 h (J − 3). Deux dates pour le même verrou.",
+   "fix": "« d'ici le mer. 18 nov. 21 h »."
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La phrase canonique « à la confirmation ou après : 3 € HT » couvre enfin ce cas ; mais spec §2.6 / §6.5 dit l'inverse (rien à `lockAt` si < 4, phrase « sortie confirmée »).",
+   "fix": "Spec alignée sur l'écran."
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Résumé exact (30–34 coché, ambiance calme).",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique : réglé. « ≈ 8 min depuis Paris 11e » pour le 11e. Pas de « message du lieu » à 18 h alors que le chat l'annonce « à la révélation ».",
+   "fix": "Trajet « dans ton quartier » ; afficher le message d'accueil ici."
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Je ne le sens pas » = imprévu non remboursé ; « partir mal à l'aise » (Check-in fait) = sécurité remboursée. Deux étiquettes presque synonymes, deux règles opposées : l'utilisateur ne peut pas prédire laquelle s'applique.",
+   "fix": "Un seul vocabulaire : « Je ne viens pas, pour ma sécurité » (remboursé) / « Imprévu » (non remboursé), les deux sur cet écran."
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Liste « Ton ange verra seulement » encore propre à l'écran (2e source « qui voit quoi »).",
+   "fix": "Reprendre la ligne « Ton ange gardien » de Confidentialité, mot pour mot."
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sous 5 min » ici, « moins d'1 h » sur Signaler et Réglages, 60 en spec : trois chiffres d'aide sans dire lequel vaut pour quoi. « pendant toute ta sortie » adressé à l'ange.",
+   "fix": "« Alerte : rappel sous 5 min » / « Signalement : sous 1 h », les deux en `[T]` ; « la sortie d'Alex »."
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran sans défaut coché ; spec §2.11 : « **Non par défaut** » (T6, non traité).",
+   "fix": "Spec §2.11 : « aucune pastille cochée ; sans réponse = non à la clôture »."
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« le prénom, aux visages » ; spec §2.13 et §3.2 : prénom dès `EXCHANGE`. Deux versions.",
+   "fix": "Spec alignée."
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Étape 3 unique avec Duo-hh : réglé.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« joignable pendant toute ta **sortie** » sur un rendez-vous : un mot pour un autre concept (concept A.5 : « ta sortie ou ton rendez-vous »).",
+   "fix": "« pendant tout ton rendez-vous »."
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« joignable pendant toute ta **sortie** » sur un rendez-vous : un mot pour un autre concept (concept A.5 : « ta sortie ou ton rendez-vous »).",
+   "fix": "« pendant tout ton rendez-vous »."
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« joignable pendant toute ta **sortie** » sur un rendez-vous : un mot pour un autre concept (concept A.5 : « ta sortie ou ton rendez-vous »).",
+   "fix": "« pendant tout ton rendez-vous »."
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Neuf vraies miniatures : réglé. « Chaque carte … s'exporte en vidéo de 5 s » est faux pour « 3 mots » et « Inviter ».",
+   "fix": "« Les cartes publiques s'exportent en vidéo de 5 s »."
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle unique, mot pour mot, lisible : bien. Mais « « Je connais quelqu'un ici » : 1 fois par mois » laisse sans réponse « et la 2e fois ? » ; et elle ne correspond pas au texte que spec §2.7 dit « affiché à l'identique partout ».",
+   "fix": "Suite « au-delà : sortie pour ta sécurité » ; spec §2.7 recopie `facts.annulation.regle`."
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Rentable dès la 3e sortie du mois », spec §6.2 alignée.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Mes quartiers » retiré, trajet seul : réglé.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Duo et Ange : réglé. Pas de ligne fiabilité, contacts évités, cartes (spec §2.16) : pas encore « la » liste.",
+   "fix": "Trois lignes générées depuis §3."
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« moins d'1 h pendant toute ta sortie » : réglé. Le chiffre 1 h coexiste avec 5 min (W-Ange-aide) sans distinction alerte/rappel.",
+   "fix": "Légende commune des deux délais."
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Jour calculé par créneau (jeudi → lundi, samedi → mercredi) : réglé.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Voir quand arrive ma proposition » : réglé.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Un seul mot (« place réservée ») et une base (HT) : réglé. « Relevé de novembre » qui liste le jeu. 29 oct.",
+   "fix": "Période du relevé juste (« 29 oct. – 25 nov. ») ou mois calendaire."
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire constant, rien à mémoriser.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 4,99 € TTC (4,16 € HT) » puis « 3 € HT » : une base de plus que nécessaire ; imprévu et sécurité non nommés.",
+   "fix": "« 4,16 € HT » seul ; nommer imprévu et sécurité."
+  }
+ },
+ "top3": [
+  "Spec §2.7, §2.11, §2.13, §6.5, §10.2 recopient `facts.regles` (annulation, vote sans défaut, prénom aux visages, « à la confirmation ou après », « ton rendez-vous »), et check-facts compare aussi la spec.",
+  "Deux étiquettes, deux règles, partout : « Pour ma sécurité » (remboursé) et « Imprévu » (non remboursé) ; « Je ne le sens pas » et « mal à l'aise » rangés explicitement dans l'une des deux.",
+  "Plus aucune date en dur : Attente (mer. 18 nov. 21 h), Pas-encore (jour calculé), Trouvée-Lyon (pas de sortie promise avant sa composition), Trouvée sans « comme demandé dans Affiner » ; puis un 2e test 5 secondes sur Chats, Chargement et Les visages."
+ ],
+ "tenIf": "Je mets 10 si un diff automatique écrans ↔ spec-v5 ne trouve plus aucune règle à deux versions (annulation, vote, prénom du duo, « Blowy annule », astreinte de rendez-vous, délais 5 min / 1 h), si les écrans n'utilisent que deux étiquettes pour annuler après 18 h (sécurité / imprévu), si Confidentialité est la seule liste « qui voit quoi » (V5-Ange y renvoie ; fiabilité, contacts, cartes compris), si aucune date de composition n'est écrite en dur, et si un 2e test 5 secondes répond juste sur Chats, Chargement et Les visages."
+}
