@@ -1,0 +1,322 @@
+{
+  "member": "createrice-tiktok",
+  "global": 5,
+  "criteria": {
+    "comprehension": 7,
+    "cognitive": 7,
+    "desire": 6,
+    "meet": 6,
+    "safety": 6,
+    "virality": 4,
+    "money": 5,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Le meilleur plan d'ouverture : titre géant + pets. « 5 personnes » avec 4 pets visibles : un commentaire le relèvera.",
+      "fix": "5 pets pour 5 personnes ; version animée 6 s exportable (les pets qui tournent)."
+    },
+    "V5-Invite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« ALEX T'EMMÈNE À SA SORTIE » : je pourrais faire « je vous emmène à ma sortie » avec un lien en bio. Mais le lien est nominatif à un créneau ; mes 180 k abonnés ne sont pas tous dans le 11e.",
+      "fix": "Lien créatrice : « Viens à une sortie dans ton quartier » qui route vers la liste d'attente si fermé."
+    },
+    "V5-Craft": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 3D · fais-le tourner » : filmable ; mais 4 curseurs Gentil/Espiègle à l'écran, personne ne regarde ça.",
+      "fix": "Écran de choix d'espèce plein cadre, curseurs ailleurs."
+    },
+    "V5-Vie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« IL IRAIT À L'ÉCOLE… Polytechnique / École du cirque » : marrant 3 s, mais ça ne dit rien de l'app.",
+      "fix": "Une question « signature » filmable (« ton dimanche idéal en 3 mots »)."
+    },
+    "V5-Intention": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« DES AMI·ES / PLUS, SI AFFINITÉS » : bon pour le storytime, mais je ne filmerai jamais ce que je coche.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Sobre, inclusif ; rien à filmer.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Idem.",
+      "fix": "—"
+    },
+    "V5-Toi-quartier": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Paris 11e · Lyon 4e » : 90 % de mon audience est hors zone ; la vidéo génère de la frustration.",
+      "fix": "Un écran « ton quartier ouvre quand… » partageable."
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« ÇA COUVE… » : bon micro-moment, mais pas d'export vidéo.",
+      "fix": "Bouton « Enregistrer l'éclosion » (6 s, 9:16, filigrane)."
+    },
+    "V5-Eclosion-ne": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« C'EST UN NINO ! » = son tendance possible ; CTA « Garder Nino pour de vrai » bizarre en voix off.",
+      "fix": "CTA « Créer mon compte »."
+    },
+    "V5-Compte": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« GARDE NINO. » : rien à filmer.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "LE plan n°1 de ma vidéo : « NINO T'A TROUVÉ UNE BANDE. » + 4 pets + date. Aucun bouton pour l'exporter proprement (sans barre d'état ni prénoms).",
+      "fix": "Bouton « Partager » qui génère la carte 9:16 sans initiales."
+    },
+    "V5-Sortie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Fiche d'info, peu filmable ; le carré « +1 un·e ami·e » est la seule accroche.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Tu y vas » minuscule en haut à droite : pas de moment de célébration à filmer.",
+      "fix": "Animation « Tu y vas ! » plein écran 1 s."
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« Les 6 places sont prises » avec 4 personnes : si je filme ça, les commentaires me tombent dessus.",
+      "fix": "Corriger."
+    },
+    "V5-Sortie-annulee": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Le café a dû fermer jeudi » : contenu « l'app m'a plantée » garanti.",
+      "fix": "Message neutre et une alternative concrète le même soir si possible."
+    },
+    "V5-Verif": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« PROUVE QUE T'ES TOI » : ton agressif, j'aurais honte de le lire à voix haute.",
+      "fix": "« Un selfie pour que tout le monde soit vrai »."
+    },
+    "V5-Notifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Les 3 notifs exemples sont un bon plan « voilà ce qui va se passer ».",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Le salon de Nino (canapé rouge, panier de jouets) fait app pour enfants dans une vidéo ; la carte « Jeudi · 19 h 30 » est la vraie info et elle est en bas.",
+      "fix": "Carte sortie en héros, Nino plus petit."
+    },
+    "V5-Attente": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« PAS DE SORTIE CETTE SEMAINE. » + jauge 212/300 : contenu « aidez-moi à ouvrir le 20e » faisable.",
+      "fix": "Partager la jauge en story avec lien."
+    },
+    "V5-Chats": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien de filmable (messages des autres).",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ton dimanche idéal, en 3 mots » + les chips des autres : super plan, et sans visages. Mais les réponses des autres ne m'appartiennent pas.",
+      "fix": "Export « mes 3 mots » seuls (carte jolie)."
+    },
+    "V5-Revelation": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Le moment le plus fort de l'app et je ne peux rien montrer : visages, prénoms, adresse.",
+      "fix": "Version « réaction » : écran flouté avec « Les visages sont là » pour filmer ma tête, sans les leurs."
+    },
+    "V5-Ange": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Sam recevra / jamais » : contenu « safety tips » utile pour mon audience féminine.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon contenu « j'ai mis ma coloc en ange gardien » ; adresse à flouter.",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Pas filmable, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Gros bouton fluo « JE SUIS LÀ » sur violet avec Nino : plan parfait de « j'arrive ».",
+      "fix": "Haptique + petite animation au tap, filmable."
+    },
+    "V5-Checkin-ok": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« C'EST PARTI. » bien ; les prénoms Léa/Malo/Sarah à l'écran m'empêchent de filmer.",
+      "fix": "Masquage des prénoms en mode capture."
+    },
+    "V5-Souvenir": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« +1 SOUVENIR · SORTIE VÉCUE. » : bon plan de fin ; « +1 » blanc sur jaune illisible à l'écran.",
+      "fix": "Contraste ; animation exportable."
+    },
+    "V5-Apres": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« ALORS, JEUDI ? » + 3 gros boutons Ami·e / Plus / Non : c'est THE format storytime… mais la carte « Léa, 27 » est au milieu.",
+      "fix": "Mode capture qui remplace la carte par le pet seul."
+    },
+    "V5-Apres-resultats": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« 2 ACCORDS. » est le plan de fin idéal, avec prénoms et pastilles : non filmable.",
+      "fix": "Version partageable « 2 accords » avec pets seulement."
+    },
+    "V5-Bande": {
+      "score": 7,
+      "blocking": false,
+      "issue": "La rue des pets (maisons colorées) est jolie à filmer ; les prénoms en dessous gênent.",
+      "fix": "Mode capture sans prénoms."
+    },
+    "V5-Chat": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Messages privés : jamais à l'écran.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« TÊTE-À-TÊTE, SI TU PRÉFÈRES. » + « 84 % de vision » : ça ressemble à toutes les apps de dating ; mon audience a déjà vu ça.",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Trois étapes, pas une de plus » : bonne phrase pour une vidéo explicative.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 4,
+      "blocking": false,
+      "issue": "Visage + vocal d'une autre personne : interdit à l'écran.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Rien de filmable.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Rien de filmable.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« UN ŒUF, POUR RIRE ? » : sans contexte, mes abonnés vont croire que l'app fait des bébés virtuels avec ses dates. Gênant.",
+      "fix": "Ne jamais l'exposer dans les écrans partageables."
+    },
+    "V5-Rupture": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« PARTIR PROPREMENT » : bon thème de vidéo anti-ghosting ; « Merci pour ces jours avec Nino » sonne faux.",
+      "fix": "Messages plus humains."
+    },
+    "V5-Story": {
+      "score": 3,
+      "blocking": true,
+      "issue": "Seul l'onglet Question est rendu ; « ngl, mais en mieux » + « Anonyme » : je ne poste pas un clone de NGL ; icônes « IG / TT / SC » en lettres = faux logos ; la story « Sortie » qui m'intéresse n'existe pas à l'écran.",
+      "fix": "Retirer NGL ; rendre la story Sortie (« On était 5 au café ») en 9:16 avec sticker lien ; vrais logos."
+    },
+    "W-Repondre": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Les chips « drôle / loyal·e / solaire » sont mignonnes ; « beau sourire » rend la chose ambiguë ; page sombre jolie.",
+      "fix": "Retirer les mots physiques."
+    },
+    "V5-Profil": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ma vision card · Sportif, gentil, Beaux-Arts » : je ne vois pas la carte, donc je ne sais pas si elle est jolie.",
+      "fix": "Aperçu plein écran de la carte avant partage."
+    },
+    "V5-Fiche": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Souvenirs en tuiles : mignon ; « Venu à 1 sortie sur 1 » ne marche pas pour moi (« venue »).",
+      "fix": "Accord en genre."
+    },
+    "V5-Boutique": {
+      "score": 4,
+      "blocking": false,
+      "issue": "Lunettes/Bonnet/Fleur à 2,99 € alors que la fleur et le bonnet sont des « souvenirs qui ne s'achètent pas » sur la Fiche : on se fera épingler en commentaire.",
+      "fix": "Ne pas vendre ce qu'on dit ne pas vendre."
+    },
+    "V5-Reglages": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien à filmer.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Ne donne ni plus de sorties, ni plus de visibilité » : honnête, je peux le dire en vidéo ; mais je ne vois pas pourquoi s'abonner.",
+      "fix": "Un bénéfice simple à dire en 3 mots."
+    },
+    "V5-Confidentialite": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon pour une vidéo « safety » mais austère.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien à filmer ; doit exister.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Merci d'avoir élevé Nino avec nous » : touchant, mais fait jeu pour enfants.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Un « mode capture » : un bouton qui génère des cartes 9:16 propres (sans barre d'état, sans prénoms, sans visages, filigrane blowy.) pour Trouvée, Check-in, Souvenir, Après et Résultats, et la story Sortie enfin rendue.",
+    "Retirer tout ce qui fait honte à l'écran : « ngl, mais en mieux », « PROUVE QUE T'ES TOI », faux logos « IG/TT/SC », accessoires vendus qui contredisent « ne s'achètent pas », salon enfantin en tête d'Accueil.",
+    "Un lien créatrice qui marche hors du 11e : la vidéo renvoie vers « ouvre ton quartier » avec la jauge, pour que 180 k vues ne deviennent pas 179 k personnes frustrées."
+  ],
+  "tenIf": "Je mets 10 si je peux tourner la série « mardi → dimanche » entièrement depuis des exports de l'app, sans flouter un seul visage ou prénom, sans afficher d'élément copié de NGL, avec un lien qui sert à quelqu'un hors du 11e, et si la carte « 2 accords » existe en version pets seulement."
+}

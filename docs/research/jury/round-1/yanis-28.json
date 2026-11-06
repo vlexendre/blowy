@@ -1,0 +1,322 @@
+{
+ "member": "yanis-28",
+ "global": 4,
+ "criteria": {
+  "comprehension": 7,
+  "cognitive": 7,
+  "desire": 6,
+  "meet": 3,
+  "safety": 5,
+  "virality": 6,
+  "money": 7,
+  "visual": 6
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Toujours aucun visage humain, aucune grille de torses : c'est l'anti-Grindr. Mais rien ne me dit que c'est pour moi aussi, et la pastille « Paris 11e · Lyon 4e » m'apprend que Marseille n'existe pas.",
+   "fix": "Une ligne « Tous genres, toutes orientations » sous la promesse, et la liste des villes à venir."
+  },
+  "V5-Invite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Invité par un pote, l'offre est claire et il n'y a plus de pièces. « 3 autres personnes du quartier » : je ne sais pas si le groupe sera mixte ou pas.",
+   "fix": "« Nino compose le groupe selon ce que chacun cherche » (une ligne)."
+  },
+  "V5-Craft": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Les 4 espèces sont gratuites (reproche V4 réglé) et l'écran est agréable.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Vie": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Les passions restent génériques (Foot, Poterie, Mode…) : pas de « Soirées », de « Volley », d'« Engagement asso ». Et « C'est ce qui compose ton groupe » : mon groupe est formé sur cette liste pauvre.",
+   "fix": "Élargir la liste et ajouter « Autre : j'écris »."
+  },
+  "V5-Intention": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le choix multiple et « Ton groupe ne voit jamais ce que tu cherches » : exactement ce qu'il me faut. Mais la promesse est cassée deux écrans plus loin (V5-Apres).",
+   "fix": "Tenir la promesse (voir V5-Apres)."
+  },
+  "V5-Toi": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le genre est demandé, avec Non-binaire et « Autre mot ? Je l'écris » : mon reproche V4 n° 1 est réglé. Mais « Un homme » est présélectionné, et le pronom se déduit du genre : si j'écris « autre mot », quel pronom voit le groupe ?",
+   "fix": "Aucune présélection et le pronom choisi séparément (il / elle / iel / prénom seul)."
+  },
+  "V5-Toi-plus": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Des femmes » est présélectionné : l'hétérosexualité par défaut, à un tap distrait d'être apparié comme hétéro. Choix unique : impossible de cocher « hommes + personnes non-binaires ».",
+   "fix": "Rien de présélectionné et un choix multiple (femmes / hommes / personnes non-binaires)."
+  },
+  "V5-Toi-quartier": {
+   "score": 2,
+   "blocking": true,
+   "issue": "Marseille n'existe pas, donc « Ailleurs · liste d'attente », et je l'apprends après avoir créé mon pet. « ouvert · près de toi » sous Paris 11e alors que le sous-titre dit « Jamais ta position » : comment l'appli sait-elle que je suis près ?",
+   "fix": "Demander la ville en premier, dire d'où vient « près de toi » (ou le retirer) et annoncer une date pour Marseille."
+  },
+  "V5-Eclosion": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Mignon, et rien de compromettant si quelqu'un regarde mon écran.",
+   "fix": "Touche pour passer."
+  },
+  "V5-Eclosion-ne": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Il part te trouver une bande » : bien.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Compte": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Ton prénom vient d'Apple » : mon vrai prénom ira à 3 inconnus de mon quartier, et rien sur cet écran ne permet de le changer.",
+   "fix": "Un champ « Prénom affiché » modifiable ici, avec une ligne d'explication."
+  },
+  "V5-Trouvee": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Les pronoms visibles (« il », « elle ») règlent la surprise de genre de la V4. Mais le groupe est « il, elle, il, elle » : la mixité est pensée pour des hétéros. En « plus », je ne vois qu'un seul homme (M.), et rien ne dit qu'un « plus » est même possible pour moi dans ce groupe.",
+   "fix": "Garantir (sans dire qui) qu'au moins une personne du groupe est compatible en « plus », ou proposer des sorties hommes-hommes en option, invisibles hors du groupe."
+  },
+  "V5-Sortie": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Lieu public partenaire, ange gardien, annulation, prix : solide. Rien ne dit si le lieu partenaire est sûr pour un groupe où l'on peut être gay.",
+   "fix": "« Lieux partenaires signataires d'une charte anti-discrimination » sur la ligne du lieu."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Sortie-complete": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Les 6 places sont prises » alors que le groupe affiché compte 4 personnes, moi compris ; « gardé » contre « Prendre jeudi 20 ».",
+   "fix": "Un effectif unique et un seul état (réservé ou à confirmer)."
+  },
+  "V5-Sortie-annulee": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Le café a dû fermer » puis « Même café » pour la suivante.",
+   "fix": "Un autre lieu, nommé."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le selfie montré à personne et les photos cachées jusqu'au matin : toujours le meilleur point pour moi.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Notifs": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le mode discret est mentionné, mais l'exemple affiche le contenu d'un message sur l'écran verrouillé (« L. a écrit dans ton groupe : « Team brunch… » »). Par défaut, ma mère le lit.",
+   "fix": "Mode discret activé par défaut, contenu masqué tant que je ne l'ai pas désactivé."
+  },
+  "V5-Accueil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Rien de compromettant à l'écran, et une seule carte principale.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Attente": {
+   "score": 3,
+   "blocking": true,
+   "issue": "C'est mon écran à Marseille : une jauge « 212 / 300 », aucune date, et une seule action, recruter. Je peux inviter mes potes queer, mais sans savoir quand ça ouvre ni si le pool d'hommes qui cherchent des hommes suffira.",
+   "fix": "Une date estimée et un seuil par type de groupe (« il manque 40 hommes qui cherchent des hommes »), sans jauge globale."
+  },
+  "V5-Chats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rien n'est public » en en-tête : bien. « Jeudi · 4 + toi » ne correspond pas aux 3 autres membres affichés partout ailleurs.",
+   "fix": "Aligner l'effectif."
+  },
+  "V5-Groupe": {
+   "score": 4,
+   "blocking": false,
+   "issue": "C'est là qu'une remarque homophobe arriverait en premier, et l'en-tête n'a ni signalement, ni blocage, ni « Quitter le groupe ».",
+   "fix": "Un menu « … » : Signaler, Bloquer (sans être remis dans la même sortie), Quitter sans pénalité."
+  },
+  "V5-Revelation": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Mon visage est montré à 3 voisins du quartier le matin. Si je reconnais quelqu'un de mon immeuble, ma seule sortie est « Je ne peux plus venir · prévenir le groupe », qui m'expose et touche peut-être ma fiabilité.",
+   "fix": "« Je connais quelqu'un ici » : retrait silencieux, sans pénalité, et cette personne n'est plus jamais dans mes groupes."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "N'importe quel contact, par SMS ou WhatsApp, hors de l'appli : ma demande V4 est réglée. La liste « jamais ton groupe, tes messages » est rassurante.",
+   "fix": "Rien de bloquant."
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Si Maman est mon ange, elle voit un café et un horaire, rien sur le groupe : parfait. L'URL « alex-k7r » contient mon prénom.",
+   "fix": "Un identifiant d'URL sans prénom."
+  },
+  "W-Ange-alerte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair, avec le 17. C'est la réponse directe aux guets-apens.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La position vérifiée une fois et jamais montrée : le contraire de la carte V4.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Checkin-ok": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Malo · en route » : l'appli diffuse au groupe un statut de déplacement que personne n'a choisi de partager. Et le groupe reste en pets après la révélation des visages.",
+   "fix": "Seulement « là » ou rien, et les visages pour se reconnaître."
+  },
+  "V5-Souvenir": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Partager la story · sans visages ni prénoms » : la leçon de la V4 est retenue.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Apres": {
+   "score": 2,
+   "blocking": true,
+   "issue": "Le bouton « Plus » n'apparaît que si les préférences sont compatibles. Pour moi, homme qui cherche des hommes, voir « Plus » sur la carte de Malo m'apprend que Malo cherche des hommes ET a coché « plus ». C'est un outing par l'interface, qui contredit « Ton groupe ne voit jamais ce que tu cherches » (V5-Intention).",
+   "fix": "Les 3 boutons pour tout le monde, toujours, et le filtrage des « plus » incompatibles en silence au calcul des accords."
+  },
+  "V5-Apres-resultats": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Tout le monde a voté » + « 2 accords » dans un groupe de 3 : je déduis qui m'a dit non, alors que la règle promet « Personne n'apprend jamais un « non » ».",
+   "fix": "Résultats à heure fixe (dimanche 21 h 30), sans annoncer que tout le monde a voté."
+  },
+  "V5-Bande": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Mes potes et ceux rencontrés en sortie, avec « ange gardien possible » : c'est le cœur qui me parle. Mais Tom a le même pigeon que Sarah, et la rue montre 4 maisons pour « 5 personnes ».",
+   "fix": "Un pet par personne et un compte juste."
+  },
+  "V5-Chat": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le menu contient Signaler, Partir proprement et le vocal. Mais tout le casting du duo est hétéro (Alex/Léa) : je n'ai aucune preuve visuelle qu'un duo homme-homme est prévu.",
+   "fix": "Un artboard de duo de même genre dans les maquettes."
+  },
+  "V5-Duo": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Jade « elle », N. « elle » : toutes les propositions de la maquette sont hétéros. À Marseille, combien d'hommes en voie Duo ? « 3e place libre. Nino te propose quelqu'un lundi » : je n'ai aucune idée de la densité.",
+   "fix": "Montrer un état « peu de monde près de toi pour l'instant » honnête, et une maquette avec un duo de même genre."
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rien ne se débloque si un seul des deux parle » : le consentement est symétrique.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Lien-debloque": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La révélation simultanée avec la voix : bien.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-RdvDuo": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Le kit de sécurité est complet. Mais le rendez-vous est proposé « Sam. 15 nov. · 18 h » alors que les visages se débloquent samedi 20 h : je proposerais un rendez-vous à quelqu'un dont je ne connais pas le visage.",
+   "fix": "Seulement des créneaux après le déblocage."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Même kit, mais « Mar. 18 nov. » tombe un mercredi en 2026.",
+   "fix": "Dates justes."
+  },
+  "V5-Oeuf": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Pas d'exclusivité, pas de garde, pas d'obligation » : le script hétéro de la V4 est désamorcé. Ça reste un clin d'œil parental qui ne me parle pas.",
+   "fix": "Le garder facultatif, invisible par défaut."
+  },
+  "V5-Rupture": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Les messages viennent de la V4 (« bien m'en occuper », « ces jours avec Nino »).",
+   "fix": "Réécrire pour des gens qui se sont vus."
+  },
+  "V5-Story": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Les modèles Naissance et « On s'est vus » ont disparu : mon reproche V4 d'outing est réglé. Mais le badge « ngl, mais en mieux » cite une appli sanctionnée par la FTC.",
+   "fix": "Retirer « ngl »."
+  },
+  "W-Repondre": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Sans installation, « Je ne dirai à personne que c'est toi » : bien.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Profil": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Paris 11e · il · selfie vérifié » : qui voit cette ligne ? Le groupe, la bande, les duos ? Ce n'est pas dit.",
+   "fix": "« Visible par : ton groupe et ta bande » sous la ligne."
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "La fiabilité « visible par ton groupe » : d'accord, c'est anti-ghosting.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Boutique": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Des accessoires à 2,99 € : j'en achèterais. « Ne s'achète jamais : plus de visibilité » : enfin.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Reglages": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Mode discret » est désactivé par défaut, et le même réglage existe aussi dans Confidentialité.",
+   "fix": "Activé par défaut, un seul endroit."
+  },
+  "V5-Abonnement": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Plus de rétention « L. continue d'en profiter » (reproche V4 réglé), et l'annulation tient en un tap. « Historique 0,00 € à ce jour » contre « Prochain prélèvement 19,99 € » : incohérent.",
+   "fix": "Annoncer l'essai gratuit s'il existe."
+  },
+  "V5-Confidentialite": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Mode discret » et « Masquer mon âge exact » sont désactivés par défaut : la confidentialité n'est toujours pas maximale par défaut (reproche V4 non réglé). Il n'y a aucun réglage sur qui voit mon pronom.",
+   "fix": "Réglages les plus protecteurs par défaut, et une ligne « Mon pronom : visible par mon groupe »."
+  },
+  "V5-Signaler": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Propos haineux, LGBTphobie » a été ajouté (reproche V4 réglé). Il manque toujours « Menace d'outing / chantage », et on n'y accède que depuis un duo, pas depuis le chat de groupe.",
+   "fix": "Ajouter le motif et une entrée depuis V5-Groupe et V5-Revelation."
+  },
+  "V5-Supprimer": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Liste honnête, pause proposée. Le raton qui pleure est de trop.",
+   "fix": "Mascotte neutre."
+  }
+ },
+ "top3": [
+  "V5-Apres : 3 boutons pour tout le monde, filtrage silencieux, pas de « Tout le monde a voté » ; personne ne doit pouvoir déduire une orientation ou un « non » depuis l'interface.",
+  "Composition des groupes pensée aussi pour les gays : au moins une personne compatible en « plus » garantie (sans dire qui), sorties hommes-hommes en option, et Marseille avec un seuil de densité honnête.",
+  "Confidentialité par défaut : aucune réponse présélectionnée, mode discret activé, prénom affiché modifiable, signaler/quitter depuis le chat de groupe avec un motif « menace d'outing », plus de statut « en route »."
+ ],
+ "tenIf": "Je mets 10 si aucun écran ne permet de deviner l'orientation, l'intention ou le « non » d'un membre du groupe, si l'onboarding n'a aucune réponse présélectionnée et protège par défaut, si à Marseille Nino me garantit un groupe où un « plus » est possible pour un homme qui aime les hommes, et si je peux signaler ou quitter depuis le chat de groupe avec un motif « menace d'outing »."
+}

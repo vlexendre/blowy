@@ -1,0 +1,322 @@
+{
+  "member": "ux-cognitif",
+  "global": 5,
+  "criteria": {
+    "comprehension": 7,
+    "cognitive": 5,
+    "desire": 6,
+    "meet": 6,
+    "safety": 6,
+    "virality": 5,
+    "money": 6,
+    "visual": 5
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Une action principale ; mais 5 étiquettes flottantes (jeudi 19 h 30, un café du 11e, 5 personnes, Paris 11e · Lyon 4e, Ami·e ou plus) + 4 pets = trop de points d'ancrage ; « PETS & POTES » gris clair sur crème (contraste insuffisant).",
+      "fix": "Garder titre + 1 légende + CTA ; regrouper les 3 chips d'orbite en une ligne « Jeudi 19 h 30 · un café du 11e · 5 personnes » ; tagline ≥ 4,5:1."
+    },
+    "V5-Invite": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Sous-titre blanc 15 pt sur dégradé orange (« Jeudi 19 h 30, Paris 11e… ») ~2,8:1 ; CTA « Créer mon pet » ne correspond pas au titre (« t'emmène à sa sortie ») : modèle mental cassé.",
+      "fix": "Texte sur aplat ou ombre portée ≥ 4,5:1 ; CTA qui reprend le verbe du titre (« Venir avec Alex »)."
+    },
+    "V5-Craft": {
+      "score": 5,
+      "blocking": false,
+      "issue": "8 décisions (4 espèces, 4 curseurs) sur un écran ; libellés non sélectionnés « Espiègle », « Contemplatif », « Scientifique », « Casanier » en gris ~#B8AFA5 sur crème (≈ 2:1) ; curseurs sans valeur textuelle pour VoiceOver.",
+      "fix": "Une décision par écran (Hick) ; libellés ≥ 4,5:1 ; curseurs à 3 crans avec valeur annoncée (« plutôt gentil »)."
+    },
+    "V5-Vie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Une question, 4 tuiles : bien. Mais barre 1/4 + « 0 % » + 6 bulles « ? » : trois indicateurs de progrès différents ; « 6 ? » pour 4 questions.",
+      "fix": "Un seul indicateur (« 1 sur 4 ») ; retirer 0 % et les bulles."
+    },
+    "V5-Intention": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Cases à cocher en haut à droite des cartes (cible ~32 pt visible), les deux cochées par défaut ; texte blanc sur rose (« Seulement si c'est réciproque ») ~3:1.",
+      "fix": "Toute la carte = cible ; rien de coché ; texte foncé sur rose ou rose plus sombre."
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "3 choix + « Autre mot ? Je l'écris » : conforme. Double progression (barre 04 + points).",
+      "fix": "Retirer les points ; annoncer « question 1 sur 3 » à VoiceOver."
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Clair ; « Secret. En amitié, c'est tout le monde. » demande une relecture.",
+      "fix": "« Personne ne le voit. Pour l'amitié, tu rencontres tout le monde. »"
+    },
+    "V5-Toi-quartier": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Paris 11e · ouvert · près de toi » contredit la ligne au-dessus « Jamais ta position » : l'utilisateur se demande s'il a été géolocalisé.",
+      "fix": "Retirer « près de toi »."
+    },
+    "V5-Eclosion": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Écran sans action ni durée annoncée ; « Ton œuf » réutilise le mot « œuf » qui désigne plus tard un clin d'œil de duo (un mot = deux concepts).",
+      "fix": "« Nino arrive… » ; réserver « œuf » au clin d'œil ou l'inverse ; respecter « Réduire les animations »."
+    },
+    "V5-Eclosion-ne": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Garder Nino pour de vrai » ne dit pas qu'on va créer un compte ; badge « Né » en haut droit sans fonction.",
+      "fix": "CTA « Créer mon compte » ; supprimer le badge."
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Hiérarchie Apple > Google > téléphone claire ; « 18 ans minimum » 11 pt gris clair.",
+      "fix": "Mention d'âge ≥ 13 pt contrastée."
+    },
+    "V5-Trouvee": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bonne carte ; mais « 19 H 30 » en capitales condensées (lecture dyslexie), chip « jamais ghoster » rose sur noir ~3:1, ligne « Ta 1re sortie est offerte » blanche sur orange (~2,3:1) ; carré « +1 » sans libellé d'action.",
+      "fix": "Heure en casse normale ; contrastes ≥ 4,5:1 ; « + Emmener un·e ami·e » comme libellé."
+    },
+    "V5-Sortie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Une action, informations groupées ; « Ange gardien · n'importe quel contact » ressemble à une ligne tappable sans l'être (pas de chevron).",
+      "fix": "Chevron + action, ou style non interactif."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Identique à 95 % à Sortie : l'état changé est un pill vert en haut à droite, facile à rater (cécité au changement).",
+      "fix": "Bandeau d'état pleine largeur « Tu y vas » sous le titre."
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": true,
+      "issue": "« Les 6 places sont prises » + un groupe de 4 dont je fais partie : l'utilisateur ne peut pas comprendre s'il y va ou non.",
+      "fix": "Ne montrer que la sortie de jeudi 20 et la raison exacte ; retirer la carte grisée du 13."
+    },
+    "V5-Sortie-annulee": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Heure barrée : bon signal ; mais « Lieu exact mercredi à 18 h » et « visages jeudi à 9 h » restent affichés sur une sortie annulée.",
+      "fix": "Masquer toute échéance d'une sortie annulée."
+    },
+    "V5-Verif": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Titre « PROUVE QUE T'ES TOI » touche presque le bord droit (~10 px) : risque de coupe en grande taille de police ; aucun état d'échec du selfie (lumière, visage non détecté).",
+      "fix": "Titre sur 2 lignes ; écran d'erreur dédié avec consigne et réessai."
+    },
+    "V5-Notifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Pré-prompt exemplaire (exemples réels, limites, mode discret).",
+      "fix": "Garder ; ajouter un état « Refusé » qui explique comment réactiver."
+    },
+    "V5-Accueil": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Promis « aucun compteur » : il y en a 4 (cloche 2, « 3 messages », « 3 souvenirs », onglet 3) ; le salon décoratif occupe ~40 % au-dessus de la ligne de flottaison, la carte sortie arrive à 720 px.",
+      "fix": "Carte sortie en premier ; un seul badge (messages) ; illustration ≤ 25 %."
+    },
+    "V5-Attente": {
+      "score": 7,
+      "blocking": false,
+      "issue": "État vide réussi : explication, progression, une action. Texte gris sur brun foncé dans la carte (« Tu es dans la liste… ») ~3:1.",
+      "fix": "Contraste ; dire ce qui se passe à 300 (« on t'écrit »)."
+    },
+    "V5-Chats": {
+      "score": 6,
+      "blocking": false,
+      "issue": "3 sections nettes ; badges incohérents (3 + 1 ≠ 3) ; « Caramel · J. » mélange pet et initiale, on ne sait pas qui parle.",
+      "fix": "Badge onglet = somme ; « J. (Caramel) » ou pet en sous-titre."
+    },
+    "V5-Groupe": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon brise-glace ; « 4 + toi » faux ; initiales « L., M., S. » + pets différents = mémoriser 3 correspondances prénom/pet/espèce ; pas d'accès visible à Signaler/Quitter.",
+      "fix": "Montrer « L. · Suzie (lapin) » une fois dans un en-tête ; menu « … » avec Signaler/Quitter."
+    },
+    "V5-Revelation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Titre bicolore « LES VISAGES / SONT LÀ » (blanc + noir sur rose) fragmente la lecture ; légende blanche sur rose ~2,6:1 avec l'adresse, info critique du jour.",
+      "fix": "Titre monochrome ; adresse dans une carte blanche avec bouton « Itinéraire »."
+    },
+    "V5-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Exemplaire : une question, 3 choix, liste « reçoit / ne reçoit jamais ».",
+      "fix": "Ajouter l'état « lien envoyé » et « Sam a ouvert le lien »."
+    },
+    "W-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Lisible sans app ; « 21:30 · Tout va bien attendu » en gris clair, information clé peu contrastée.",
+      "fix": "Contraste ; bouton « Appeler Alex » déjà bien placé."
+    },
+    "W-Ange-alerte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Deux actions claires, ordre juste ; blanc sur rouge OK pour le titre.",
+      "fix": "Ajouter « Lire l'adresse au 17 » (texte à dicter)."
+    },
+    "V5-Checkin": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Gros bouton : bien ; « Alerte discrète » = lien texte rouge ~15 pt en bas, cible < 44 pt probable ; aucun état « position trop loin » ni repli code (spec §2.8 `VENUE_CODE`).",
+      "fix": "Alerte en bouton 44 pt ; écran d'échec « Pas encore sur place ? Entre le code du chevalet »."
+    },
+    "V5-Checkin-ok": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Malo · en route » affirme un fait inconnu ; « Faux appel » et « Alerte » côte à côte, même taille : risque de tap accidentel sur l'alerte.",
+      "fix": "« Pas encore là » ; séparer l'alerte (confirmation par appui long)."
+    },
+    "V5-Souvenir": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« +1 SOUVENIR » blanc sur jaune (~1,5:1) : illisible ; « venu » non inclusif.",
+      "fix": "Texte foncé ; « venu·e » ou formulation neutre (« présent·e à 1 sortie sur 1 »)."
+    },
+    "V5-Apres": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Une personne, 3 boutons, couleurs + texte (daltonisme OK) ; aucun « Passer / je ne sais pas » ; pas d'annulation du dernier vote visible.",
+      "fix": "Ajouter « Pas d'avis » et « Modifier » jusqu'à la révélation (spec §2.10)."
+    },
+    "V5-Apres-resultats": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Lien « Écrire à Léa » dans la carte + CTA identique en bas : doublon ; texte blanc sur rose dans la carte Léa.",
+      "fix": "Un seul CTA ; contraste."
+    },
+    "V5-Bande": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« 5 personnes » vs 4 pets dans la rue ; Tom et Sarah ont tous deux un pigeon : confusion visuelle.",
+      "fix": "Rue = liste ; empêcher deux pets identiques côte à côte ou ajouter une couleur d'accessoire."
+    },
+    "V5-Chat": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Souffleur utile ; bandeau « Proposer un rendez-vous · avant le 20 nov. » crée une échéance (contraire à la spec pour un duo issu d'une sortie).",
+      "fix": "Retirer la date."
+    },
+    "V5-Duo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Deux CTA de verbes différents pour la même nature d'action (« Ouvrir · visages samedi 20 h » / « Les faire se rencontrer ») ; % de vision sans explication ; frise 3 étapes en bas déconnectée des cartes.",
+      "fix": "Un seul verbe ; légende du % au 1er affichage ; frise en tête."
+    },
+    "V5-Lien": {
+      "score": 7,
+      "blocking": false,
+      "issue": "3 étapes visibles : excellent pour la mémoire de travail.",
+      "fix": "Garder."
+    },
+    "V5-Lien-debloque": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Légende blanche sur rose ; lecteur vocal sans transcription (accessibilité sourds/malentendants).",
+      "fix": "Transcription automatique du vocal ; contraste."
+    },
+    "V5-RdvDuo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Date proposée (sam. 15 nov. 18 h) antérieure au déblocage des visages (samedi 20 h) ; « Actif » ressemble à un bouton mais n'est pas un interrupteur.",
+      "fix": "Bloquer les créneaux avant déblocage ; vrais interrupteurs ou texte simple."
+    },
+    "V5-RdvDuo-lea": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Même structure, cohérente.",
+      "fix": "Idem sur « Actif »."
+    },
+    "V5-Oeuf": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Deux boutons de poids égal : bien ; liste blanche sur rose foncé lisible.",
+      "fix": "Garder."
+    },
+    "V5-Rupture": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Premier message présélectionné ; pas de texte libre ; « Ghoster, c'est elle qui baisse » contredit la définition de la fiabilité (présences).",
+      "fix": "Rien de présélectionné ; option « J'écris mon mot » ; corriger la phrase."
+    },
+    "V5-Story": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Seul l'onglet Question est rendu ; chip floutée « ??? » illisible ; icônes réseaux « IG / TT / SC » en lettres, pas en logos reconnaissables.",
+      "fix": "Rendre les 3 états ; logos officiels avec libellé."
+    },
+    "W-Repondre": {
+      "score": 6,
+      "blocking": false,
+      "issue": "11 chips, 3 à choisir : OK ; CTA désactivé gris foncé sur violet (on ne voit pas qu'il est désactivé ni pourquoi).",
+      "fix": "Texte d'aide « choisis 3 mots » sur le CTA désactivé."
+    },
+    "V5-Profil": {
+      "score": 6,
+      "blocking": false,
+      "issue": "3 chiffres ; « 1 / 1 sorties où tu es venu » non inclusif et syntaxe lourde.",
+      "fix": "« 1 sortie sur 1 »."
+    },
+    "V5-Fiche": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Souvenirs « ils ne s'achètent pas » avec fleur et bonnet = mêmes icônes que les accessoires vendus en Boutique ; barre de fiabilité à 6 segments suggère un objectif de 6.",
+      "fix": "Iconographie distincte souvenirs/accessoires ; pas de barre segmentée."
+    },
+    "V5-Boutique": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Lisible ; « Ne s'achète jamais : les souvenirs » à côté d'une Fleur à 2,99 € identique au souvenir d'Inès.",
+      "fix": "Icônes différentes ; pas de vente à l'unité (spec D-020)."
+    },
+    "V5-Reglages": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Groupes clairs ; Ange gardien avec icône « ! » (avertissement) et non bouclier.",
+      "fix": "Icône bouclier comme ailleurs."
+    },
+    "V5-Abonnement": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Clair ; « Historique 0,00 € à ce jour » alors qu'une place est consommée et un prélèvement prévu.",
+      "fix": "Historique réel."
+    },
+    "V5-Confidentialite": {
+      "score": 6,
+      "blocking": false,
+      "issue": "11 lignes, 3 interrupteurs ; « Mes photos se révèlent » utilise « photos » alors que le reste dit « visages ».",
+      "fix": "Un mot : visages."
+    },
+    "V5-Signaler": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Motif présélectionné « Messages déplacés » ; aucune confirmation avant envoi.",
+      "fix": "Aucun motif par défaut ; récapitulatif avant envoi."
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Conséquences listées, pause proposée : bien ; « Les 3 souvenirs » faux (4 ailleurs).",
+      "fix": "Valeur dynamique."
+    }
+  },
+  "top3": [
+    "Une seule source de vérité pour les chiffres affichés (taille du groupe, souvenirs, duos, badges, dates) et un test automatique qui compare les maquettes entre elles avant chaque tour.",
+    "Passe WCAG 2.2 AA complète : tous les textes sur dégradé ≥ 4,5:1 (Invite, Trouvée, Révélation, Lien-débloqué, Souvenir, Intention), cibles ≥ 44 pt pour « Alerte discrète », « Pas cette semaine », cases d'Intention, et alternative au point médian pour les lecteurs d'écran.",
+    "Dessiner les états manquants : check-in refusé + code du lieu, selfie raté, paiement refusé, hors ligne, chats vides, bande vide ; et réduire le glossaire visible (fusionner « voie Duo » et « duo », réserver « œuf » à un seul usage)."
+  ],
+  "tenIf": "Je mets 10 si aucune donnée ne se contredit entre deux écrans, si chaque écran passe WCAG 2.2 AA (contraste, cibles 44 pt, ordre de lecture VoiceOver testé avec le point médian), si les 6 états d'erreur/vides cités existent, et si un test 5 secondes sur 5 personnes donne la bonne réponse à « que se passe-t-il jeudi ? » sur Trouvée, Sortie et Accueil."
+}

@@ -1,0 +1,322 @@
+{
+  "member": "patron-bar",
+  "global": 4,
+  "criteria": {
+    "comprehension": 7,
+    "cognitive": 7,
+    "desire": 5,
+    "meet": 6,
+    "safety": 5,
+    "virality": 5,
+    "money": 3,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« jeudi 19 h 30 · un café du 11e · 5 personnes » vendu comme LA promesse : c'est mon créneau le plus plein de la semaine.",
+      "fix": "Afficher des créneaux variés (« mardi, mercredi ou dimanche ») selon les lieux partenaires."
+    },
+    "V5-Invite": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ta 1re sortie est offerte, boisson comprise » : offerte par qui ? Si c'est moi qui paie la boisson, non.",
+      "fix": "Mention interne claire : la 1re place est payée au lieu par Blowy, comme les autres."
+    },
+    "V5-Craft": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Vie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Intention": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Plus, si affinités » : des couples qui se forment chez moi, très bien, ça revient.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Toi-quartier": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Paris 11e · ouvert » : combien de lieux partenaires derrière ? Si je suis seul, je prends toutes les sorties un jeudi.",
+      "fix": "Répartir les sorties entre lieux et me laisser plafonner (spec `capacityOutings`)."
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Eclosion-ne": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 18 ans minimum » : bien, je sers de l'alcool ; mais c'est déclaratif.",
+      "fix": "Âge vérifié avant la 1re sortie, sinon mon serveur doit contrôler les pièces d'identité."
+    },
+    "V5-Trouvee": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Groupe de 4 affiché, « 5 personnes » ailleurs : je ne sais pas combien de couverts dresser.",
+      "fix": "Effectif figé envoyé au lieu à J-1 18 h."
+    },
+    "V5-Sortie": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Inclus : 1 boisson · le quiz de Nino » et « 2 h » : vous engagez ma carte et mon temps de table sans dire quelle boisson ni qui anime ; « Un café du 11e » sans aucune contrepartie de visibilité pour moi.",
+      "fix": "Liste de boissons fixée au contrat (soft au même rang), quiz 100 % sur téléphone et silencieux, mon nom affiché dès le verrouillage avec photo."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien pour moi ; l'inscription ne me prévient pas.",
+      "fix": "Compteur de places confirmées visible côté lieu en temps réel."
+    },
+    "V5-Sortie-complete": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Les 6 places sont prises » : 6 à ma table un jeudi, avec 4 affichés : quel est le vrai plafond ?",
+      "fix": "Plafond par table convenu avec moi (6 max)."
+    },
+    "V5-Sortie-annulee": {
+      "score": 3,
+      "blocking": true,
+      "issue": "« Le café a dû fermer jeudi » : vous mettez la faute sur moi devant mes futurs clients, et vous les renvoyez « même café » la semaine d'après.",
+      "fix": "Message neutre (« La sortie est déplacée ») ; préavis contractuel 72 h ; si Blowy annule à moins de 24 h, la table est payée."
+    },
+    "V5-Verif": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Selfie vérifié : moins de risques d'embrouille chez moi.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Le lieu exact de jeudi est arrivé » mercredi 18 h : il faut que je l'aie su avant eux.",
+      "fix": "Confirmation au lieu à J-1 12 h."
+    },
+    "V5-Accueil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Paris 20e pas encore ouvert » : vous ouvrez un quartier sans compter les lieux, seulement les inscrits.",
+      "fix": "Seuil d'ouverture = inscrits **et** lieux signés."
+    },
+    "V5-Chats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Quelqu'un connaît le café ? » : bonne occasion de me présenter (2 lignes, une photo) à la veille.",
+      "fix": "Message du lieu au verrouillage : « Bienvenue au Café des Oiseaux, table au fond à gauche »."
+    },
+    "V5-Revelation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ce soir 19 h 30 : Café des Oiseaux, 12 rue Oberkampf » : 4 personnes qui me cherchent sans savoir quelle table.",
+      "fix": "« Table Blowy, chevalet orange au fond »."
+    },
+    "V5-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Un proche connaît l'adresse : c'est rassurant pour moi aussi.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Mon adresse et le créneau sur une page web : OK, c'est un lieu public.",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 3,
+      "blocking": true,
+      "issue": "« Le lieu partenaire et l'équipe blowy. sont prévenus » : prévenus comment, et pour faire quoi ? Mon serveur n'est pas agent de sécurité ; s'il intervient mal, c'est ma responsabilité.",
+      "fix": "Protocole écrit d'une page signé avec moi, appel d'un humain Blowy à mon numéro, et l'équipe Blowy appelle le 17, pas mon staff."
+    },
+    "V5-Checkin": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Check-in par position à 150 m (spec) : dans la rue Oberkampf, le bar d'à côté valide aussi.",
+      "fix": "Code à 4 chiffres sur le chevalet de ma table (spec `VENUE_CODE`) comme méthode principale."
+    },
+    "V5-Checkin-ok": {
+      "score": 4,
+      "blocking": true,
+      "issue": "« Ta boisson est au comptoir, au nom de Nino » + « Le quiz de Nino démarre à 20 h » : mon serveur doit connaître le nom de 5 animaux par groupe et lancer un quiz. Non.",
+      "fix": "QR ou code à scanner par mon serveur (liste des boissons, une seule fois par place) ; quiz sur les téléphones, sans moi."
+    },
+    "V5-Souvenir": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Jeudi 13 nov. · Café des Oiseaux » sur un souvenir : bien, mon nom reste.",
+      "fix": "Lien vers ma fiche (horaires, carte)."
+    },
+    "V5-Apres": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Vous pourrez revenir ensemble à une sortie » : bien, des habitués.",
+      "fix": "Proposer de revenir **chez moi** hors sortie (« le café de votre sortie est ouvert jusqu'à 2 h »)."
+    },
+    "V5-Bande": {
+      "score": 6,
+      "blocking": false,
+      "issue": "La bande qui revient ensemble : clients récurrents potentiels, mais rien ne les ramène dans un lieu partenaire.",
+      "fix": "« Retrouver ta bande au Café des Oiseaux » avec une offre lieu (sans paiement Blowy)."
+    },
+    "V5-Chat": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Revanche autour d'un vrai café ? » : le duo va ailleurs, pas forcément chez un partenaire.",
+      "fix": "Suggestion de lieux partenaires dans le raccourci rendez-vous."
+    },
+    "V5-Duo": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Rendez-vous à deux · lieu public partenaire » : vous m'engagez sans réservation.",
+      "fix": "Partenaire = table réservée et confirmée par moi, sinon écrire « lieu public suggéré »."
+    },
+    "V5-Lien-debloque": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 4,
+      "blocking": true,
+      "issue": "« Nino et Caramel proposent Café des Oiseaux · Sam. 15 nov. · 18 h » : samedi 18 h je refuse les tables de 2 sans réservation ; gratuit pour vous, bancal pour moi.",
+      "fix": "Créneaux duo limités à mes disponibilités publiées ; réservation transmise à mon outil ; sinon pas le mot « partenaire »."
+    },
+    "V5-RdvDuo-lea": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Mardi 18 nov. 19 h : créneau creux, parfait ; mais même problème de réservation.",
+      "fix": "Idem : réservation transmise et confirmée."
+    },
+    "V5-Oeuf": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Story « Sortie » non rendue ; si elle dit « On était 5 au café », sans mon nom, je ne gagne rien.",
+      "fix": "Option « citer le lieu » (avec mon logo) après la sortie, sans visages."
+    },
+    "W-Repondre": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Souvenir « Café des Oiseaux · 13 nov. » : bien ; fiabilité : vos absents me coûtent des couverts.",
+      "fix": "Côté lieu : être payé sur les confirmés, pas sur les présents."
+    },
+    "V5-Boutique": {
+      "score": 3,
+      "blocking": true,
+      "issue": "« 1 place · boisson incluse · 12 € » : aucune ligne ne dit ce que touche le lieu ; Blowy+ à 19,99 € « 2 places » : est-ce que mes places sont payées pareil quand elles sont incluses dans l'abonnement ?",
+      "fix": "Contrat : prix fixe HT par place confirmée, identique quel que soit le financement (offerte, Blowy+, payée), payé chaque semaine."
+    },
+    "V5-Reglages": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Places de sortie incluses 1 / 2 ce mois » : si l'abonné ne vient pas, ma table est vide.",
+      "fix": "Idem : payé sur confirmés."
+    },
+    "V5-Confidentialite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien qui me concerne.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Aucun motif pour un incident dans mon établissement (bagarre, ivresse, dégradation) ; je ne peux pas non plus signaler un client Blowy.",
+      "fix": "Motifs « incident sur place » et canal lieu → Blowy pour signaler un participant."
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ta place de jeudi est remboursée » : et ma table ?",
+      "fix": "Si suppression après J-1 18 h : place due au lieu."
+    }
+  },
+  "top3": [
+    "Un contrat lieu visible dans le produit : créneaux choisis par le lieu (hors coup de feu), effectif figé envoyé à J-1 18 h, prix HT par place **confirmée** (pas présente) identique quel que soit le financement, paiement hebdomadaire, préavis 72 h et message d'annulation neutre.",
+    "Un mode comptoir : code ou QR par place pour servir la boisson d'une liste fermée (soft au même rang), chevalet « Table Blowy » avec code de check-in, quiz uniquement sur les téléphones.",
+    "Un protocole d'alerte écrit et une astreinte Blowy joignable pendant les créneaux, où c'est Blowy (pas mon serveur) qui appelle le 17 ; et des rendez-vous à deux qui passent par une vraie réservation ou n'utilisent pas le mot « partenaire »."
+  ],
+  "tenIf": "Je mets 10 si j'ai devant moi un contrat d'une page et un écran lieu qui disent : mes créneaux, mon plafond de tables, l'effectif à J-1 18 h, 6 € HT minimum par place confirmée payés chaque semaine (même si la personne ne vient pas), une liste de boissons fermée servie sur code, zéro animation pour mon staff, une astreinte Blowy en cas d'alerte, 72 h de préavis dans les deux sens, et mon nom et ma photo affichés aux participants dès la veille."
+}

@@ -1,0 +1,322 @@
+{
+  "member": "hugo-25",
+  "global": 5,
+  "criteria": {
+    "comprehension": 6,
+    "cognitive": 8,
+    "desire": 6,
+    "meet": 6,
+    "safety": 8,
+    "virality": 3,
+    "money": 7,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« TON PET TE TROUVE UNE BANDE » + « PETS & POTES » : je lis « appli d'amis ». Le « ou plus » est en légende 15 px au-dessus du bouton",
+      "fix": "titre qui dit les deux (« Rencontre du monde en vrai. Ami·e ou plus. ») ; supprimer « PETS & POTES »"
+    },
+    "V5-Invite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "cette fois c'est clair, c'est « sa sortie » et pas un signal ambigu. L'écran est câblé sur « Jeudi 19 h 30, Paris 11e » : une invitation venue de Lyon dira-t-elle Croix-Rousse ?",
+      "fix": "ville et quartier venant de la sortie de l'invitant ; âge moyen du groupe"
+    },
+    "V5-Craft": {
+      "score": 7,
+      "blocking": false,
+      "issue": "4 espèces gratuites, plus de PLUS : réglé. Je ne sais pas si les curseurs pèsent dans la composition du groupe",
+      "fix": "une ligne « Nino s'en sert pour former ton groupe », ou rien"
+    },
+    "V5-Vie": {
+      "score": 5,
+      "blocking": false,
+      "issue": "le quiz « Polytechnique / École du cirque » est inchangé et censé composer mon groupe ; dans les passions, tout le monde coche brunch et concerts ; rien sur la salle ou les jeux",
+      "fix": "passions élargies (salle, jeux vidéo, escalade, foot…) ; question « un jeudi soir idéal »"
+    },
+    "V5-Intention": {
+      "score": 8,
+      "blocking": false,
+      "issue": "je coche les deux, c'est secret : parfait pour moi qui ne veux pas paraître lourd. Rien ne dit combien de femmes il y aura dans mon groupe",
+      "fix": "« Groupes équilibrés : 2 à 3 femmes, 2 à 3 hommes »"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "simple, « pour équilibrer les groupes » m'explique pourquoi on demande. « Autre mot » en lien gris",
+      "fix": "« Autre mot » en 4e carte"
+    },
+    "V5-Toi-plus": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Des femmes », parfait. Mais si « Plus » n'apparaît que sur les cartes compatibles, en voyant « Plus » sous Léa je saurai qu'elle cherche des hommes en plus : l'info que l'Intention promettait secrète",
+      "fix": "Ami·e/Plus/Non toujours affichés ; la compatibilité est gérée en silence"
+    },
+    "V5-Toi-quartier": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Lyon 4e · Croix-Rousse · ouvert ». Je vis à la Guillotière : 25 min de tram un jeudi après le boulot, et « près de toi » n'est écrit que pour Paris 11e",
+      "fix": "dire le temps d'accès (« métro C ») ; ouvrir Lyon 7e ; une maquette lyonnaise"
+    },
+    "V5-Eclosion": {
+      "score": 6,
+      "blocking": false,
+      "issue": "joli, mais je veux voir la sortie, pas un œuf qui couve",
+      "fix": "1,5 s maximum, qu'on peut passer d'un tap"
+    },
+    "V5-Eclosion-ne": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« GARDER NINO POUR DE VRAI » : le raton qui me supplie, c'est exactement le côté gamin que je ne veux pas montrer",
+      "fix": "« Créer mon compte »"
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Apple ou Google, rapide. « Garde-moi pour de vrai. 1 tap. » encore. Mon âge n'est jamais demandé, alors que la Révélation affiche « Malo, 29 »",
+      "fix": "date de naissance ici"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "je comprends tout : jeudi 19 h 30, 2 « elle », 2 « il », personne ne me juge sur une photo. Pas d'âges ; et si j'amène un pote au « +1 », on sera 3 mecs ?",
+      "fix": "fourchette d'âge ; « +1 : Nino garde l'équilibre du groupe »"
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "fiche nette, annulation claire, « 1 boisson · le quiz de Nino » : une activité, pas un entretien d'embauche à 5. Je ne sais pas ce qu'est le quiz (durée, en équipe ?)",
+      "fix": "une ligne « quiz par équipes, 30 min »"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "clair ; le bouton du chat n'annonce pas les 3 messages qui m'attendent",
+      "fix": "« Ouvrir le chat · 3 messages »"
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« Les 6 places sont prises », mais mon groupe est affiché avec moi dedans ; « Nino t'a gardé jeudi 20 » et le bouton « Prendre jeudi 20 » : j'ai une place ou pas ? Et 6, alors qu'ailleurs on dit 5",
+      "fix": "une seule taille ; retirer la carte groupe ; CTA « Confirmer jeudi 20 »"
+    },
+    "V5-Sortie-annulee": {
+      "score": 5,
+      "blocking": false,
+      "issue": "bonne règle (remboursé, fiabilité intacte, prioritaire). Mais « Le café a dû fermer », puis « Même café, nouveau groupe »",
+      "fix": "« nouveau lieu annoncé mercredi »"
+    },
+    "V5-Verif": {
+      "score": 4,
+      "blocking": false,
+      "issue": "selfie de vérification, pas de séduction : bien. Mais c'est ici que je mets les 2 photos que tout le groupe verra à 9 h, et il n'y a ni conseil ni exemple : mon point faible de V4 est ignoré. Le titre touche le bord droit",
+      "fix": "3 conseils (lumière, visage net, une photo en activité) et un aperçu « voilà ce que verra ton groupe » ; marge du titre"
+    },
+    "V5-Notifs": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« L. a écrit dans ton groupe : « Team brunch » » sur mon écran verrouillé en pleine réunion : non. Le mode discret est cité mais ne s'active pas ici",
+      "fix": "interrupteur « Mode discret » sur cet écran"
+    },
+    "V5-Accueil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "la carte « Ta sortie · 3 messages » est claire. Mais la moitié haute, c'est un raton sur un canapé rose : exactement ce que voit mon voisin dans le tram",
+      "fix": "scène réduite ou masquable ; la carte sortie en premier"
+    },
+    "V5-Attente": {
+      "score": 7,
+      "blocking": false,
+      "issue": "honnête, une seule action. Mais la jauge 212/300 dépend de mes invitations, et je n'inviterai pas mes potes sur une « appli de pet »",
+      "fix": "ouvrir la voie Duo pendant l'attente ; dire ce que fait l'équipe pour ouvrir"
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "clair, « Rien n'est public ». « Jeudi · 4 + toi » ne colle pas avec les 3 autres de la Révélation",
+      "fix": "compter juste"
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 3 mots » me sauve la première phrase, je n'ai pas à briser la glace seul. Aucun menu (signaler, quitter)",
+      "fix": "menu « … » en en-tête"
+    },
+    "V5-Revelation": {
+      "score": 3,
+      "blocking": true,
+      "issue": "mon pire moment : à 9 h, tout le groupe voit mes photos, et juste dessous « Je ne peux plus venir · prévenir le groupe » en 1 tap. Rien ne dit que ça compte comme absence (la règle de fiabilité parle de mercredi 18 h). C'est un swipe à gauche, en direct, le jour même",
+      "fix": "après 9 h, annuler = absence, écrit sous le lien ; ou révéler les visages au check-in, sur place"
+    },
+    "V5-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "n'importe quel contact, je peux mettre mon frère. Je n'en ai pas besoin, mais ça rassure les filles, donc tant mieux pour moi",
+      "fix": "marquer « facultatif » pour qui n'en veut pas"
+    },
+    "W-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair et sobre, l'encart blowy discret. Rien à redire de mon côté",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair : appeler Alex, puis le 17. « L'équipe blowy est prévenue » sans dire ce qu'elle fait",
+      "fix": "délai d'intervention de l'équipe écrit"
+    },
+    "V5-Checkin": {
+      "score": 7,
+      "blocking": false,
+      "issue": "un seul geste, clair. Le gros raton dans le bouton « JE SUIS LÀ », sorti au milieu du café devant le groupe",
+      "fix": "bouton sobre (sans raton) quand le mode discret est actif"
+    },
+    "V5-Checkin-ok": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ta boisson est au comptoir, au nom de Nino » : je dois aller dire « c'est pour Nino » au barman devant tout le monde. Le quiz à 20 h, par contre : parfait",
+      "fix": "boisson au prénom ou code à montrer"
+    },
+    "V5-Souvenir": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« +1 souvenir », le côté jeu me plaît. Mais « Nino grandit avec tes souvenirs » et je ne vois aucun changement sur Nino",
+      "fix": "montrer ce qui a changé (taille, tenue) ou ne pas le promettre"
+    },
+    "V5-Apres": {
+      "score": 3,
+      "blocking": true,
+      "issue": "pour Léa, je dois choisir Ami·e OU Plus. Si je dis Plus et qu'elle dit Ami·e, « plus unilatéral = rien » : je perds aussi l'amie. Soit je mens et je vote Ami·e, soit je risque tout : c'est la friendzone en double peine. Et voir ou non le bouton Plus révèle qui cherche des hommes",
+      "fix": "« Plus » vaut au moins « ami·e », écrit sous les boutons ; Ami·e/Plus/Non toujours affichés"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "lisible, je sais quoi faire (« Écrire à Léa »). « Le reste reste secret » maladroit",
+      "fix": "« Tout le reste reste secret »"
+    },
+    "V5-Bande": {
+      "score": 6,
+      "blocking": false,
+      "issue": "les « amis invités », je n'en aurai pas : ma bande, ce sera les gens rencontrés en sortie. La rue a 4 maisons et pas de Tom ; deux pigeons, deux lapins",
+      "fix": "ranger d'abord les gens rencontrés en sortie ; une maison par personne ; des pets qu'on distingue"
+    },
+    "V5-Chat": {
+      "score": 7,
+      "blocking": false,
+      "issue": "le souffleur m'aide, et « vous vous êtes vus jeudi » me rassure. Mais si j'envoie la question de Nino, Léa voit-elle qu'elle est soufflée ? Et « avant le 20 nov. » : sinon quoi ?",
+      "fix": "« ENVOYER » pré-remplit le champ (je modifie) ; écrire ce qui se passe après le 20"
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "voie Duo gratuite, 3 max, aucun cadenas : réglé. Mais « 84 % de vision », c'est du flan ; et après « Les faire se rencontrer », N. doit-elle accepter ? Si c'est moi qui like et elle qui trie, c'est Tinder",
+      "fix": "« proposé à vous deux, ça s'ouvre si vous dites oui tous les deux » ; retirer le %"
+    },
+    "V5-Lien": {
+      "score": 9,
+      "blocking": false,
+      "issue": "3 étapes datées : un verre en 7 jours, enfin. « avant le 22 nov. » ici, « avant J+7 » sur Duo",
+      "fix": "une seule formule de date"
+    },
+    "V5-Lien-debloque": {
+      "score": 7,
+      "blocking": false,
+      "issue": "visage et voix en même temps, c'est juste. Mais c'est le 2e moment où elle juge mon physique, sans que j'aie eu le moindre conseil photo avant",
+      "fix": "lien « Améliorer mes photos » avant le déblocage"
+    },
+    "V5-RdvDuo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "lieu proposé et modifiable : je n'ai pas à choisir un bar nul. Qui paie ? Je ne veux pas revivre le resto où c'est moi, d'office",
+      "fix": "une ligne « Chacun sa boisson »"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 8,
+      "blocking": false,
+      "issue": "même écran, mais il repropose le café de la sortie de groupe",
+      "fix": "un autre lieu par défaut"
+    },
+    "V5-Oeuf": {
+      "score": 4,
+      "blocking": false,
+      "issue": "je ne l'ouvrirai jamais, mais si Léa me l'envoie, je ne sais pas quoi répondre sans la vexer. C'est le « gamin » dont j'ai peur",
+      "fix": "désactivé par défaut, à activer par les deux dans les Réglages"
+    },
+    "V5-Rupture": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Partir proprement, toujours ma fonction préférée. Mais « Je n'ai plus assez de temps pour bien m'en occuper » parle du pet, pas de Léa ; et « Ghoster fait baisser la fiabilité » alors que la fiabilité compte les présences aux sorties",
+      "fix": "messages humains ; une seule définition de la fiabilité"
+    },
+    "V5-Story": {
+      "score": 4,
+      "blocking": false,
+      "issue": "aucun de ces modèles ne sortira de mon téléphone. Il n'y a rien pour un mec qui ne poste jamais",
+      "fix": "un modèle « On a gagné le quiz de Nino » (score, équipe), à envoyer dans un groupe WhatsApp plutôt qu'en story"
+    },
+    "W-Repondre": {
+      "score": 7,
+      "blocking": false,
+      "issue": "je répondrais si une collègue me l'envoie. Bouton désactivé illisible (gris sur violet foncé)",
+      "fix": "contraste du bouton désactivé"
+    },
+    "V5-Profil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "3 chiffres qui comptent, dont « sorties où tu es venu ». « 5 personnes dans ta bande » est faux (4)",
+      "fix": "compter juste"
+    },
+    "V5-Fiche": {
+      "score": 7,
+      "blocking": false,
+      "issue": "fiabilité visible : bien, ça me protège de ceux qui ne viennent jamais. La barre à 6 segments, c'est une série déguisée",
+      "fix": "retirer la barre"
+    },
+    "V5-Boutique": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ne s'achète jamais : plus de visibilité, aller plus vite » : je respire. 12 € la place boisson incluse, oui. Blowy+ à 19,99 € pour 2 places à 12 € = 4 € d'économie",
+      "fix": "Blowy+ = 4 places/mois à environ 35 €, ou pas de Blowy+"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "propre. Mode discret OFF par défaut, alors que c'est la première chose que j'activerais",
+      "fix": "proposer le mode discret dès l'onboarding"
+    },
+    "V5-Abonnement": {
+      "score": 6,
+      "blocking": false,
+      "issue": "annulation visible, aucune culpabilisation : réglé. Mais « 0,00 € à ce jour » avec « 1 / 2 ce mois » et un prélèvement le 3 déc. : ça sent l'essai qui bascule sans le dire",
+      "fix": "état cohérent ; si c'est un essai, l'écrire avec sa date de fin"
+    },
+    "V5-Confidentialite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "clair et cohérent. Pas de réglage pour masquer le raton (icône, Accueil) en dehors du mode discret",
+      "fix": "mode discret qui masque aussi la scène de l'Accueil"
+    },
+    "V5-Signaler": {
+      "score": 7,
+      "blocking": false,
+      "issue": "correct ; « Bloquer » = plus jamais dans mes sorties, bien. Il manque « annule ou ne vient jamais », ce qui me coûte une soirée",
+      "fix": "motif « absences répétées »"
+    },
+    "V5-Supprimer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ton abonnement Blowy+ sera résilié en même temps » : faux pour un abonnement App Store, et je me suis déjà fait avoir comme ça",
+      "fix": "« Résilie dans Réglages › Abonnements » + lien direct"
+    }
+  },
+  "top3": [
+    "Fermer la porte du désistement au physique : après la révélation de 9 h, annuler compte comme une absence, et c'est écrit sous le lien. Ou bien les visages se révèlent au check-in, sur place. Et ajouter de vrais conseils photo à l'écran Verif.",
+    "Vote : « Plus » vaut au moins « ami·e », écrit en clair sous les boutons, et les 3 boutons sont toujours affichés. Je peux dire « plus » sans risquer de perdre l'amitié, et sans que personne ne devine ce que cherchent les autres.",
+    "Assumer « ami·e ou plus » dès le Welcome (supprimer « PETS & POTES ») et me laisser cacher le raton : mode discret proposé à l'onboarding, scène de l'Accueil réduite, boisson à mon prénom plutôt qu'« au nom de Nino », maquettes à Lyon."
+  ],
+  "tenIf": "Je mets 10 si, en deux semaines à Lyon, je fais deux sorties avec deux ou trois femmes de 23 à 30 ans par groupe. Si personne n'a pu annuler gratuitement après avoir vu ma tête. Si un « plus » non réciproque me laisse au moins l'amitié. Et si rien dans l'appli ne m'oblige à dire « Nino » à voix haute ou à montrer un raton à mes potes."
+}

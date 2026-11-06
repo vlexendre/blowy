@@ -1,0 +1,322 @@
+{
+ "member": "camille-31",
+ "global": 5,
+ "criteria": {
+  "comprehension": 6,
+  "cognitive": 7,
+  "desire": 5,
+  "meet": 3,
+  "safety": 8,
+  "virality": 3,
+  "money": 6,
+  "visual": 6
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« TON PET TE TROUVE UNE BANDE » + « pets & potes » : en 5 s je lis « appli d'amitié ». L'amour tient dans le bandeau noir du bas (« Ami·e ou plus ? »). La pastille « Paris 11e · Lyon 4e » me dit en plus que Nantes n'existe pas.",
+   "fix": "Assumer les deux intentions dans le titre (« Des ami·es ou plus, en vrai, cette semaine »), retirer « pets & potes » et afficher « Bientôt : Nantes, … » sous la pastille."
+  },
+  "V5-Invite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Clair et sans pièces : l'invitation sonne enfin sincère. Mais « 3 autres personnes du quartier vous rejoignent » fait 5 personnes, alors que la fiche de sortie n'en montre que 4 (Toi, L., M., S.).",
+   "fix": "Un seul effectif partout, le même que sur V5-Sortie."
+  },
+  "V5-Craft": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« 2 min en tout » : honnête. Mais régler Gentil/Espiègle et Scientifique/Artiste sur un raton reste du temps perdu pour moi. Je ne sais pas à quoi ça sert dans la composition du groupe.",
+   "fix": "Mettre un lien « Passer, je règlerai plus tard » et dire en une ligne si les curseurs comptent pour le groupe."
+  },
+  "V5-Vie": {
+   "score": 3,
+   "blocking": false,
+   "issue": "Toujours Beaux-Arts / Polytechnique / École du cirque, et la phrase « C'est ce qui compose ton groupe » : mes groupes sont donc formés sur « Brunch » et « Poterie ». Toujours rien sur le projet de vie. C'est le reproche n° 3 de la V4, non traité.",
+   "fix": "Ajouter une 5e question, secrète et utilisée seulement pour le « plus » : « Enfants : oui, d'ici X ans / non / je ne sais pas »."
+  },
+  "V5-Intention": {
+   "score": 4,
+   "blocking": true,
+   "issue": "Le choix multiple et la disparition de « Je laisse venir » règlent un reproche V4. Mais « PLUS, SI AFFINITÉS » reste la formule floue que je fuis : rien ne distingue « histoire sérieuse » de « on verra ». Et la tranche d'âge a disparu de tout le parcours (la V4 avait au moins 24–34).",
+   "fix": "Sous « Plus » : deux cases secrètes, « une histoire sérieuse » / « on verra ». Puis une tranche d'âge souhaitée. Les deux servent à composer le groupe, sans rien afficher."
+  },
+  "V5-Toi": {
+   "score": 7,
+   "blocking": false,
+   "issue": "On me demande enfin mon genre (reproche V4 réglé). Mais « Un homme » est présélectionné : une femme pressée qui tape « Continuer » s'enregistre comme homme.",
+   "fix": "Aucune option présélectionnée ; « Continuer » grisé tant que rien n'est choisi."
+  },
+  "V5-Toi-plus": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Des femmes » est présélectionné, même piège. Et il n'y a aucune tranche d'âge : je peux tomber sur un homme de 22 ans au café.",
+   "fix": "Retirer la présélection et ajouter sur cet écran « entre __ et __ ans » (secret)."
+  },
+  "V5-Toi-quartier": {
+   "score": 2,
+   "blocking": true,
+   "issue": "Nantes n'est pas dans la liste, donc je choisis « Ailleurs · liste d'attente du quartier ». On me l'apprend après la création du pet, à l'étape 04, et pas au premier écran. « ouvert · près de toi » laisse entendre que l'appli connaît ma position, alors que le texte au-dessus dit « Jamais ta position ».",
+   "fix": "Demander la ville en 1er écran. Pour une ville fermée, afficher une date d'ouverture estimée avant de me faire créer quoi que ce soit, et remplacer « près de toi » par « ton choix »."
+  },
+  "V5-Eclosion": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Environ 4 s d'animation imposée (« ÇA COUVE… »), sans bouton pour passer.",
+   "fix": "Toucher l'écran fait éclore tout de suite."
+  },
+  "V5-Eclosion-ne": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« GARDER NINO POUR DE VRAI » : on m'attache à un raton avant de me demander un compte. Je reconnais la technique.",
+   "fix": "Libellé neutre : « Créer mon compte »."
+  },
+  "V5-Compte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Apple, Google, téléphone, 18 ans : rapide. « GARDE NINO. » : le compte sert donc à garder un raton, pas à réserver ma place jeudi.",
+   "fix": "Titre « Ta place t'attend » avec la sortie en rappel."
+  },
+  "V5-Trouvee": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Un vrai créneau dans la semaine au lieu de « niveau 6, 2 000 XP » : énorme progrès. Mais « JEUDI 13 NOVEMBRE » est un vendredi en 2026, et je gère des plannings. Le groupe compte 2 « il » et 2 « elle » : pour moi, un seul homme possible (M.), dont je ne connais ni l'âge ni l'intention.",
+   "fix": "Corriger toutes les dates (jeudi 12 / jeudi 19 nov.). Afficher la tranche d'âge du groupe (« 29–34 ans »)."
+  },
+  "V5-Sortie": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Prix, inclus, ange gardien et annulation jusqu'à mercredi 18 h : tout est lisible. Mais le créneau est imposé (jeudi 19 h 30, 2 h), et la seule alternative est « Pas cette semaine ». « le quiz de Nino » dans un café, à 31 ans, me gêne.",
+   "fix": "Proposer 2 créneaux au choix dans la semaine, et rendre le quiz facultatif ou le renommer (« une question pour lancer la soirée »)."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair : « Tu y vas », chat, ange gardien.",
+   "fix": "Ajouter « Ajouter à mon agenda » : sans ça, je l'oublie entre deux comités."
+  },
+  "V5-Sortie-complete": {
+   "score": 3,
+   "blocking": false,
+   "issue": "« Les 6 places sont prises » alors que le bloc « Ton groupe » montre 4 personnes, moi comprise. « Nino t'a gardé la sortie de jeudi 20 », puis un CTA « PRENDRE JEUDI 20 » : la place est-elle gardée ou reste-t-elle à prendre ? Et le 20 novembre 2026 est un vendredi.",
+   "fix": "Titre « Pas de place cette fois », retirer « Ton groupe », et choisir : réservé automatiquement OU à confirmer."
+  },
+  "V5-Sortie-annulee": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Le café a dû fermer jeudi », puis « Même café, nouveau groupe » pour la suivante : contradiction. « Ta place est remboursée » alors qu'elle était offerte.",
+   "fix": "« Ta 1re sortie reste offerte » et un autre lieu pour la suivante."
+  },
+  "V5-Verif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le selfie après « Je viens » et les photos révélées le matin (environ 10 h avant) règlent mon reproche V4 (niveau 4). Il me manque une ligne qui dise si les photos des autres sont vérifiées contre leur selfie.",
+   "fix": "« Les photos de chacun sont comparées à son selfie »."
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "3 notifications par jour au maximum, et des exemples utiles (lieu, visages).",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Accueil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "La carte « TA SORTIE » répond à la seule question qui compte. « Tes duos · 1 en cours · 2 libres » transforme les duos en cases à remplir. « 3 souvenirs » ici, mais « 4 souvenirs » sur le Profil.",
+   "fix": "« Tes duos : Jade » sans compter les places libres ; un seul chiffre de souvenirs."
+  },
+  "V5-Attente": {
+   "score": 2,
+   "blocking": true,
+   "issue": "C'est mon écran, à Nantes. La seule action proposée est d'inviter mes amies pour faire monter « 212 / 300 », sans aucune date. Mes amies ont 31 ans et des enfants : la jauge ne bougera pas. Je désinstalle ici.",
+   "fix": "Une date d'ouverture estimée et une alternative pendant l'attente (voie Duo dans les lieux partenaires déjà ouverts, ou une ville proche), plutôt qu'une jauge."
+  },
+  "V5-Chats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Trois sections nettes. Mais « Jeudi · 4 + toi » annonce 5 personnes, alors qu'on m'en montre 4.",
+   "fix": "Aligner l'effectif."
+  },
+  "V5-Groupe": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Le brise-glace marche pour un groupe. Mais aucun menu dans l'en-tête : pas de signalement, et pas de « Quitter » si je vois que ça ne colle pas.",
+   "fix": "Ajouter un menu « … » (Signaler, Quitter la sortie)."
+  },
+  "V5-Revelation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Les visages, prénoms, âges et l'adresse arrivent le matin, en même temps pour tous : c'est juste. La carte « Toi » porte la lettre « T » au lieu de « A ».",
+   "fix": "L'initiale de l'utilisateur, pas celle de « Toi »."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "N'importe quel contact par SMS : mon reproche V4 (« je n'ai pas d'amies dans l'appli ») est réglé. La liste « reçoit / jamais » est exemplaire.",
+   "fix": "Montrer l'aperçu du SMS envoyé à Sam."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ma sœur comprendrait en 10 s. On attend « Tout va bien » à 21:30 et le SMS part à 22 h : le délai de 30 min n'est pas expliqué.",
+   "fix": "« On attend 30 min avant de te prévenir »."
+  },
+  "W-Ange-alerte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair, avec deux boutons d'appel. « L'équipe blowy. est prévenue » : à 21:04 un jeudi, qui répond ?",
+   "fix": "Préciser « équipe joignable de 18 h à 2 h » (ou la vraie plage)."
+  },
+  "V5-Checkin": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Un seul gros bouton, et la promesse sur la position tient en une ligne.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Checkin-ok": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Les visages ont été révélés le matin, mais ici le groupe s'affiche en pets : comment je reconnais Léa dans le café ? « Malo · en route » : l'appli sait donc où en est Malo.",
+   "fix": "Afficher les visages et un repère de table (« table du fond, Nino sur la table »), et ne montrer que « là / pas encore là »."
+  },
+  "V5-Souvenir": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« +1 SOUVENIR », des confettis, pour un café : c'est surdimensionné. Le bouton « Voter en secret » arrive au bon moment.",
+   "fix": "Réduire la célébration et mettre le vote en titre."
+  },
+  "V5-Apres": {
+   "score": 7,
+   "blocking": false,
+   "issue": "3 votes en une minute, une échéance fixe : efficace. Mais « Plus » est absent sur la carte de Malo, donc j'apprends quelque chose de lui, alors que l'intention promettait « Ton groupe ne voit jamais ce que tu cherches ».",
+   "fix": "Les 3 boutons pour tout le monde, et filtrer en silence au moment du calcul des accords."
+  },
+  "V5-Apres-resultats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le résultat est lisible et l'action est claire (« Écrire à Léa »).",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Bande": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Une bande d'amis invités, ce n'est pas mon objectif. En plus, Tom a le pigeon de Sarah et l'en-tête dit « 5 personnes » alors que la rue en montre 4.",
+   "fix": "Un pet par personne, et un compte juste."
+  },
+  "V5-Chat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "XP retirés, rendez-vous proposé « avant le 20 nov. » : c'est le rythme que je demandais. Mais Nino me souffle encore « ton grand-père, au marché ». Rien ne m'aide à aborder les sujets de fond.",
+   "fix": "Un jeu de questions soufflées « projet » (« Où tu te vois dans 3 ans ? »), proposé au 2e jour du duo."
+  },
+  "V5-Duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "48 h → visages → rendez-vous avant J+7, pas d'exclusivité, 3 places gratuites : c'est presque exactement ma condition V4. Mais les cartes montrent « brunch · poterie · jamais ghoster · 84 % de vision » et toujours aucune compatibilité de projet.",
+   "fix": "Un badge « projet compatible » calculé sur les réponses secrètes, sans dévoiler les réponses."
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Trois étapes, des dates fixes, « Rien ne se débloque si un seul des deux parle » : c'est clair.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Lien-debloque": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Visages et voix révélés en même temps : élégant, et cette fois au bon moment.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-RdvDuo": {
+   "score": 4,
+   "blocking": false,
+   "issue": "On propose « Sam. 15 nov. · 18 h » alors que les visages se débloquent « samedi 20 h » (V5-Lien) : un rendez-vous fixé avant même de s'être vus. Et le 15 novembre 2026 est un dimanche.",
+   "fix": "Proposer seulement des créneaux postérieurs au déblocage, avec la bonne date."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le même kit de sécurité, mais « Mar. 18 nov. » tombe un mercredi.",
+   "fix": "Corriger les jours de la semaine."
+  },
+  "V5-Oeuf": {
+   "score": 4,
+   "blocking": false,
+   "issue": "Mieux caché, et les deux boutons ont le même poids. Mais un œuf à tapoter à deux, dans une appli où je cherche un père pour mes enfants, reste de mauvais goût pour moi.",
+   "fix": "Le désactiver par défaut pour les duos « plus », ou le supprimer."
+  },
+  "V5-Rupture": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Le principe est excellent. Mais les messages viennent de la V4 : « Merci pour ces jours avec Nino », « Je n'ai plus assez de temps pour bien m'en occuper » (s'occuper du raton ?). On s'est vus en vrai.",
+   "fix": "Réécrire pour deux adultes (« Merci pour ce verre, je ne sens pas d'étincelle »)."
+  },
+  "V5-Story": {
+   "score": 3,
+   "blocking": false,
+   "issue": "Je ne posterai rien. Le badge « ngl, mais en mieux » cite NGL, une appli sanctionnée par la FTC en 2024 pour de faux messages anonymes : pas l'association que je veux.",
+   "fix": "Retirer la référence NGL."
+  },
+  "W-Repondre": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Gentil et sans installation. « le meilleur pote » est le seul mot non inclusif de la liste.",
+   "fix": "« le meilleur ami·e » ou « la personne qu'on appelle »."
+  },
+  "V5-Profil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "3 chiffres, c'est sobre. Mais « 4 souvenirs » ici, contre 3 sur l'Accueil et sur Supprimer.",
+   "fix": "Un seul chiffre."
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Venu à 1 sortie sur 1 », « visible par ton groupe » : c'est la donnée que je regarde chez un homme. La barre à 6 segments n'est pas expliquée.",
+   "fix": "Retirer la barre ou dire ce qu'elle mesure."
+  },
+  "V5-Boutique": {
+   "score": 7,
+   "blocking": false,
+   "issue": "12 € boisson incluse, c'est honnête et c'est le prix d'un verre. Mais Blowy+ à 19,99 € pour 2 places (2 × 12 € = 24 €) ne me fait gagner que 4 € et un bonnet. Il ne vend pas ce que je paierais (une sélection sur le projet).",
+   "fix": "Afficher le prix par sortie (« ≈ 10 € la sortie ») ; un Blowy+ qui apporte du temps gagné (débrief, créneau au choix), sans vendre de visibilité."
+  },
+  "V5-Reglages": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Blowy+ · gratuit · voir » alors que l'écran Abonnement montre un abonnement actif. Aucune entrée « Mettre en pause ».",
+   "fix": "Un statut cohérent et une entrée « Pause »."
+  },
+  "V5-Abonnement": {
+   "score": 6,
+   "blocking": false,
+   "issue": "L'offre de rétention à −50 % a disparu : reproche V4 réglé. Mais « Places 1 / 2 ce mois » et « Prochain prélèvement 3 déc. · 19,99 € » cohabitent avec « Historique : 0,00 € à ce jour » : soit un essai gratuit non annoncé, soit une erreur.",
+   "fix": "Écrire « 1er mois offert » si c'est le cas."
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Les règles de révélation sont lisibles, et les « Niveau 3/4 » de la V4 ont disparu.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Les motifs sont clairs, avec 17/112. Il manque « comportement pendant la sortie ».",
+   "fix": "Ajouter ce motif."
+  },
+  "V5-Supprimer": {
+   "score": 7,
+   "blocking": false,
+   "issue": "La pause est proposée et la liste est honnête. Mais « Les 3 souvenirs » contredit les 4 du Profil, et « Ta place de jeudi est remboursée » ne colle pas à une sortie offerte. Le raton qui pleure est de trop.",
+   "fix": "Chiffres justes et mascotte neutre."
+  }
+ },
+ "top3": [
+  "Qualifier le « plus » en secret : « histoire sérieuse / on verra », enfants (oui, d'ici X ans / non) et tranche d'âge, utilisés pour composer les groupes et la voie Duo, jamais affichés.",
+  "Ouvrir Nantes, ou sinon me donner une date et une alternative (voie Duo dans un lieu partenaire) au lieu d'une jauge de parrainage, et demander la ville au 1er écran.",
+  "Remettre la logistique d'aplomb : vrais jours de la semaine, un seul effectif (4, 5 ou 6), rendez-vous duo postérieur au déblocage, 2 créneaux au choix et « Ajouter à mon agenda »."
+ ],
+ "tenIf": "Je mets 10 si, à Nantes, je peux dire en secret « histoire sérieuse, enfants d'ici 3 ans, hommes de 30 à 40 ans », si Nino me place chaque semaine, sur l'un de deux créneaux que je choisis, dans un groupe où au moins 2 hommes répondent à ces critères, et si la voie Duo m'indique « projet compatible » avant les 48 h, le tout sans une seule date fausse."
+}

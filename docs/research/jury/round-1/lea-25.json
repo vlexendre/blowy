@@ -1,0 +1,322 @@
+{
+  "member": "lea-25",
+  "global": 6,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 8,
+    "desire": 7,
+    "meet": 7,
+    "safety": 7,
+    "virality": 5,
+    "money": 6,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« PETS & POTES » collé au logo contredit « Ami·e ou plus ? » ; le raton en hoodie occupe 60 % de l'écran que ma collègue voit par-dessus mon épaule",
+      "fix": "supprimer « PETS & POTES », monter « Ami·e ou plus » dans le titre, réduire le raton au profit d'une table de 5"
+    },
+    "V5-Invite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« 3 autres personnes du quartier vous rejoignent » : ni âge ni genres, alors que c'est la première chose que je veux savoir",
+      "fix": "ajouter une ligne « groupe de 5 · 25–32 ans · au moins 2 femmes » sous l'offre"
+    },
+    "V5-Craft": {
+      "score": 7,
+      "blocking": false,
+      "issue": "4 espèces gratuites, plus d'XP : réglé. Mais rien ne dit à quoi servent les 4 curseurs Gentil/Espiègle… : ça ressemble à du décor",
+      "fix": "une phrase « Nino montre ça à ton groupe » ou supprimer les curseurs"
+    },
+    "V5-Vie": {
+      "score": 4,
+      "blocking": false,
+      "issue": "même quiz qu'en V4 (« Polytechnique / École du cirque », « Il ne fera jamais : Ghoster ») et c'est censé « composer ton groupe » ; aucune question sur le sérieux ou le rythme ; seul écran sans pastille d'étape (01, 03, 04, 05 ailleurs), jauge « 0 % » gratuite",
+      "fix": "remplacer « l'école » par « Ce que tu cherches vraiment » et « Un jeudi soir idéal » ; ajouter la pastille « 02 »"
+    },
+    "V5-Intention": {
+      "score": 9,
+      "blocking": false,
+      "issue": "les deux cases et le bloc Secret sont justes ; rien ne me permet de dire que, côté amitié, je veux surtout des filles",
+      "fix": "sous « Des ami·es » : option « plutôt des filles » qui pèse sur la composition du groupe"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair, pronom seul visible ; « Autre mot ? Je l'écris » en lien gris peu visible",
+      "fix": "en faire une 4e carte"
+    },
+    "V5-Toi-plus": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Plus n'est proposé qu'entre personnes compatibles » : un homme qui voit le bouton Plus sur ma carte apprend que je cherche des hommes en « plus ». Le mot « Secret » de la même ligne devient faux",
+      "fix": "toujours afficher Ami·e/Plus/Non ; un « plus » incompatible est traité en silence comme « ami·e »"
+    },
+    "V5-Toi-quartier": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Paris 11e · ouvert · près de toi » parfait ; mais aucun écran ne demande l'âge des gens avec qui je veux sortir",
+      "fix": "ajouter un 4e point « Âge du groupe » (fourchette, ±4 ans par défaut)"
+    },
+    "V5-Eclosion": {
+      "score": 6,
+      "blocking": false,
+      "issue": "écran violet « Ça couve… » sans action, entre deux étapes utiles, alors que l'onboarding promet « 2 min en tout »",
+      "fix": "animation de 1,5 s maximum, qu'on peut passer d'un tap"
+    },
+    "V5-Eclosion-ne": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« GARDER NINO POUR DE VRAI » : petit chantage affectif pour me faire créer un compte",
+      "fix": "« Créer mon compte · 1 tap »"
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "date de naissance demandée nulle part, alors que la Révélation affiche « Léa, 27 » ; « 18 ans minimum » en gris 11 px, sans contrôle",
+      "fix": "date de naissance obligatoire ici, âge estimé au selfie avant la 1re sortie"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "4 avatars + « +1 », alors que le Welcome promet 5 et que Sortie-complète parle de « 6 places » ; pas d'âges ; « Ta 1re sortie est offerte » en blanc pâle sur orange, illisible",
+      "fix": "un seul chiffre partout ; « 25–29 ans » sous les pets ; texte du bas en encre pleine"
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "fiche complète (lieu public, ange, annulation, prix) ; il manque l'âge et la répartition du groupe, et le prix pour mon +1",
+      "fix": "ligne « Groupe : 25–29 ans · 2 elle · 2 il » ; « +1 : sa 1re sortie est offerte aussi »"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Choisir mon ange gardien » n'est qu'un lien gris sous le CTA, alors que pour moi c'est l'étape n° 2",
+      "fix": "rangée « Ange gardien : à choisir » avec un point orange dans la liste"
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": false,
+      "issue": "contradiction : « Les 6 places sont prises », mais la carte « Ton groupe » me montre dedans (Toi, L., M., S.) ; « Nino t'a gardé jeudi 20 » et le bouton « Prendre jeudi 20 » : réservé ou pas ?",
+      "fix": "retirer la carte groupe ; « Jeudi 13 est complet. Jeudi 20 : une place t'attend » ; CTA « Confirmer jeudi 20 »"
+    },
+    "V5-Sortie-annulee": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« Le café a dû fermer jeudi », puis « Même café, nouveau groupe » pour la suivante ; « Ta place est remboursée » alors qu'elle était offerte",
+      "fix": "« nouveau lieu annoncé mercredi » ; « ta sortie offerte reste offerte »"
+    },
+    "V5-Verif": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« le selfie… n'est montré à personne » : bien. Mais je ne sais pas ce qu'il vérifie (identité ? âge ? ressemblance avec mes 2 photos ?) ; le titre touche le bord droit",
+      "fix": "une ligne « on compare ton selfie à tes photos et on estime ton âge » ; titre sur 2 lignes, marge de 20 px"
+    },
+    "V5-Notifs": {
+      "score": 6,
+      "blocking": false,
+      "issue": "l'exemple montré, « L. a écrit dans ton groupe : « Team brunch, évidemment. » », c'est exactement ce que je ne veux pas voir sur mon écran verrouillé en réunion ; le mode discret est cité mais ne s'active pas d'ici",
+      "fix": "un interrupteur « Mode discret » sur cet écran, et les exemples en version neutre"
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "bonne hiérarchie, une carte noire « Ta sortie ». Le salon du raton prend le tiers du haut pour rien ; « Tes duos · 1 en cours · 2 libres » alors que V5-Duo montre 1 en cours, 1 proposé et 1 libre",
+      "fix": "scène réduite à 120 px ; même compteur que l'écran Duo"
+    },
+    "V5-Attente": {
+      "score": 8,
+      "blocking": false,
+      "issue": "honnête, une seule action. « 212 / 300 inscrit·es » : rien ne dit si l'ouverture tient compte de l'équilibre femmes/hommes",
+      "fix": "« Ouverture à 300 inscrit·es, dont au moins 40 % de femmes »"
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "3 sections claires, « Rien n'est public » ; « Jeudi · 4 + toi » est faux : la Révélation montre 3 personnes plus moi",
+      "fix": "« Jeudi · 3 + toi »"
+    },
+    "V5-Groupe": {
+      "score": 4,
+      "blocking": true,
+      "issue": "le brise-glace « Ton dimanche idéal, en 3 mots » marche. Mais l'en-tête n'a aucun menu « … » : je ne peux ni signaler un message, ni quitter, ni couper les notifs d'un groupe de 3 inconnus avant de les voir en vrai",
+      "fix": "menu « … » : Signaler un message · Bloquer · Quitter la sortie · Silence"
+    },
+    "V5-Revelation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "visages, âges, adresse exacte : enfin. Mais « Je ne peux plus venir » est à 1 tap sous les visages, sans dire si ça compte comme absence (la règle parle de « mercredi 18 h ») ; rien pour signaler « ce n'est pas la personne du selfie »",
+      "fix": "sous le lien : « Annuler maintenant compte comme une absence » ; ajouter « Signaler un profil »"
+    },
+    "V5-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "ce que je demandais en V4 : Maman par WhatsApp, Sam par SMS, liste « reçoit / jamais ». Rien ne rappelle mon ange par défaut des Réglages",
+      "fix": "mention « Par défaut : Sam » + case « toujours lui »"
+    },
+    "W-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "limpide pour ma mère : lieu, 19:32, 21:30, SMS à 22 h. Il manque un bouton « Je n'arrive pas à joindre Léa »",
+      "fix": "bouton secondaire qui déclenche la même chaîne que l'alerte"
+    },
+    "W-Ange-alerte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair : appeler Alex, le 17. « L'équipe blowy est prévenue » ne dit pas ce qu'elle fait ni en combien de temps ; le « dernier lieu connu » est le check-in de 19:32, pas l'endroit où j'étais à 21:04",
+      "fix": "délai d'intervention de l'équipe écrit ; position prise au moment de l'alerte"
+    },
+    "V5-Checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "gros bouton et une phrase de confidentialité claire. « Alerte discrète » écrite en rouge vif, ce n'est pas discret",
+      "fix": "libellé « Besoin d'aide » en gris, l'alerte reste à 2 taps"
+    },
+    "V5-Checkin-ok": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ta boisson est au comptoir, au nom de Nino » : je dois dire « Nino » au barman. Pendant la soirée, aucun moyen de signaler quelqu'un",
+      "fix": "boisson au prénom de chacun ou code à montrer ; 3e bouton discret « Signaler »"
+    },
+    "V5-Souvenir": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« +1 SOUVENIR » en pixel art géant juste après une vraie soirée : on retombe dans le jeu. Le bon geste (« Voter en secret ») est bien en CTA",
+      "fix": "titre « Sortie vécue », et « +1 souvenir » en sous-ligne"
+    },
+    "V5-Apres": {
+      "score": 3,
+      "blocking": true,
+      "issue": "un seul choix par personne : Ami·e OU Plus. Avec la règle « plus unilatéral = rien », si je dis Plus à Malo et qu'il dit Ami·e, on n'a même pas l'amitié, et l'écran ne le dit pas. En plus, voir ou non le bouton Plus sur une carte révèle si l'autre cherche « plus » avec mon genre",
+      "fix": "« Plus » vaut au moins « ami·e » (repli automatique), écrit sous les boutons ; Ami·e/Plus/Non toujours visibles pour tout le monde"
+    },
+    "V5-Apres-resultats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair, 2 cartes, rien d'autre ; « Le reste reste secret » sonne maladroit",
+      "fix": "« Tout le reste reste secret »"
+    },
+    "V5-Bande": {
+      "score": 6,
+      "blocking": false,
+      "issue": "la liste avec la provenance est utile ; la rue n'a que 4 maisons (pas de Tom) ; Tom et Sarah ont tous les deux un pigeon, Maya et Léa un lapin : le pet ne permet plus de reconnaître qui que ce soit ; « 5 personnes » me compte moi",
+      "fix": "rue à 5 maisons ou pas de rue ; « 4 personnes » ; une couleur ou une tenue propre à chaque pet"
+    },
+    "V5-Chat": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Proposer un rendez-vous · avant le 20 nov. » : et le 21 ? Si le duo se ferme, c'est un compte à rebours déguisé. « ENVOYER » envoie toujours la phrase de Nino en mon nom",
+      "fix": "écrire ce qui se passe après le 20 ; « ENVOYER » remplacé par « Utiliser », qui pré-remplit le champ"
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« 84 % de vision », « 79 % » : un pourcentage tiré d'un quiz de 4 questions, je n'y crois pas plus qu'en V4 ; deux CTA de styles différents (orange « Ouvrir », noir « Les faire se rencontrer ») pour un geste presque identique",
+      "fix": "remplacer le % par 2 points communs ; un seul style de CTA"
+    },
+    "V5-Lien": {
+      "score": 9,
+      "blocking": false,
+      "issue": "3 étapes datées, « rien ne se débloque si un seul parle » : c'est ma demande V4. Mais « avant le 22 nov. » ici, « avant J+7 » sur l'écran Duo",
+      "fix": "une seule façon d'écrire la date"
+    },
+    "V5-Lien-debloque": {
+      "score": 9,
+      "blocking": false,
+      "issue": "visage + voix en même temps à 48 h : exactement ça. Seule sa voix (0:12 · Jade) est montrée : je ne sais pas si elle a reçu la mienne",
+      "fix": "afficher les deux vocaux"
+    },
+    "V5-RdvDuo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "lieu modifiable, ange = n'importe qui, check-in : V4 réglé. Rien ne dit qui paie la boisson",
+      "fix": "ligne « Chacun sa boisson » (ou « boisson incluse · 12 € »)"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 8,
+      "blocking": false,
+      "issue": "les pets reproposent le Café des Oiseaux, là où on vient de se voir à 5 : aucun intérêt pour un tête-à-tête",
+      "fix": "proposer par défaut un autre lieu que celui de la sortie"
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "facultatif, après 2 rencontres, les deux réponses pèsent pareil : mieux. Mais je ne veux pas qu'un mec me l'envoie",
+      "fix": "désactivé par défaut, à activer par les deux dans les Réglages"
+    },
+    "V5-Rupture": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Merci pour ces jours avec Nino » après un vrai rendez-vous ; « Je n'ai plus assez de temps pour bien m'en occuper » est un reste de la V4, quand il fallait nourrir le pet ; « Ghoster, c'est elle qui baisse » alors que la fiabilité compte les présences aux sorties",
+      "fix": "messages humains (« J'ai passé un bon moment, mais je ne sens pas d'étincelle ») ; une seule définition de la fiabilité"
+    },
+    "V5-Story": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Décris-moi en 3 mots », je le poste. Mais le logo « blowy » en haut de chaque modèle : mes 900 abonnés vont chercher et tomber sur « ou plus »",
+      "fix": "option « sans logo » (seule l'URL reste, en petit)"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "fluide, aucun compte à créer. Le bouton désactivé « ENVOYER À NINO », gris foncé sur violet foncé, est presque invisible",
+      "fix": "bouton désactivé en blanc à 40 %, avec « choisis 3 mots »"
+    },
+    "V5-Profil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "3 chiffres utiles ; « 5 personnes dans ta bande » alors que V5-Bande en liste 4 ; mes photos n'apparaissent nulle part, même pour moi",
+      "fix": "compter juste ; afficher mes 2 photos (visibles par moi seule)"
+    },
+    "V5-Fiche": {
+      "score": 7,
+      "blocking": false,
+      "issue": "fiabilité claire, « visible par ton groupe ». Mais la barre à 6 segments fixe un objectif implicite, et les accessoires sont vendus 2,99 € alors que le concept dit « accessoires non achetables »",
+      "fix": "retirer la barre ; trancher entre accessoires gagnés et accessoires vendus"
+    },
+    "V5-Boutique": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ne s'achète jamais : … » est honnête ; 12 € boisson comprise, je paie. Blowy+ à 19,99 € pour 2 places (24 €) + un accessoire : 4 € d'écart, et 43,99 €/mois si je sors chaque jeudi",
+      "fix": "Blowy+ = toutes les sorties du mois à prix réduit, ou supprimer Blowy+"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "propre, « Genre et qui je rencontre » présent ; mode discret OFF par défaut, jamais proposé avant",
+      "fix": "proposer le mode discret dans l'onboarding (écran Notifs)"
+    },
+    "V5-Abonnement": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Historique de facturation : 0,00 € à ce jour » avec « 1 / 2 ce mois » et un prélèvement le 3 déc. : essai caché ou bug ? Ailleurs (Réglages « gratuit », Profil « découvrir ») je ne suis pas abonnée",
+      "fix": "un état cohérent ; si c'est un essai, l'écrire avec sa date de fin"
+    },
+    "V5-Confidentialite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Qui voit quoi » en 2 lignes, position « jamais montrée · check-in seul » : cohérent avec le reste ; rien n'avertit que le bouton Plus du vote révèle quelque chose",
+      "fix": "corriger le vote (voir Après) plutôt qu'ajouter un avertissement"
+    },
+    "V5-Signaler": {
+      "score": 5,
+      "blocking": false,
+      "issue": "mes demandes V4 sont ignorées : pas de « Comportement pendant la sortie », ni de « Photos non sollicitées », ni de « Ne ressemble pas à son selfie » ; « répond en moins de 24 h » après un incident en vrai, c'est long",
+      "fix": "ajouter ces 3 motifs ; « réponse en 1 h pour ce qui s'est passé en sortie »"
+    },
+    "V5-Supprimer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "la pause de 2 semaines est bien. Mais « Ton abonnement Blowy+ sera résilié en même temps » est faux : l'app ne peut pas résilier un abonnement App Store, Apple demande de dire à l'utilisateur de le faire lui-même ; « Les 3 souvenirs » contre 4 sur la Fiche",
+      "fix": "« Pense à résilier dans Réglages › Abonnements » + lien ; chiffre juste"
+    }
+  },
+  "top3": [
+    "Réparer le vote d'après-sortie : Ami·e / Plus / Non toujours affichés pour tout le monde, et « Plus » vaut au moins « ami·e » si l'autre a dit « ami·e », écrit sous les boutons. Plus de fuite d'intention ni d'orientation, plus d'amitié perdue.",
+    "Mettre la sécurité partout où il y a des inconnus : menu Signaler / Bloquer / Quitter dans le chat de groupe, sur la Révélation et au Check-in ; motifs « comportement pendant la sortie », « photos non sollicitées », « ne ressemble pas à son selfie » ; date de naissance demandée et âge vérifié au selfie.",
+    "Montrer la composition avant de dire « Je viens » : fourchette d'âge et répartition (« 25–29 ans · 2 elle · 2 il ») sur Trouvée et Sortie, une option « plutôt des filles » en amitié, et un seul chiffre de groupe (5) sur tous les écrans."
+  ],
+  "tenIf": "Je mets 10 si, en deux semaines, je vais à deux sorties dans le 11e avec des gens de 25 à 32 ans, dont au moins deux femmes, et que je vois tout ça avant de dire « Je viens ». Si mon vote « plus » ne révèle rien à personne et ne me fait jamais perdre une amitié. Si chaque écran où il y a des inconnus a un bouton Signaler. Et si je n'ai jamais à dire « Nino » au barman, ni à recevoir un œuf d'un mec."
+}

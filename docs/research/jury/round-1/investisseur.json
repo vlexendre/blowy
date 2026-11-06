@@ -1,0 +1,322 @@
+{
+  "member": "investisseur",
+  "global": 4,
+  "criteria": {
+    "comprehension": 7,
+    "cognitive": 6,
+    "desire": 6,
+    "meet": 6,
+    "safety": 7,
+    "virality": 5,
+    "money": 3,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Positionnement clair ; « Paris 11e · Lyon 4e » assume le lancement par densité : bon signal de discipline. Le mascot-first reste le risque perception n°1.",
+      "fix": "A/B test store : capture « 5 inconnu·es, un café, jeudi » avec vraies photos de lieux vs mascotte."
+    },
+    "V5-Invite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Boucle +1 = CAC quasi nul si conversion > 30 % ; coût = une place offerte (~6 € de lieu).",
+      "fix": "Instrumenter conversion invité → présent ; plafonner les 1res offertes par inviteur pour éviter l'abus."
+    },
+    "V5-Craft": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Temps d'onboarding investi dans un avatar qui ne sert pas la sortie.",
+      "fix": "Mesurer la chute ; couper si > 10 %."
+    },
+    "V5-Vie": {
+      "score": 5,
+      "blocking": false,
+      "issue": "4 questions « école imaginaire » : le signal de matching est faible face à un questionnaire de type Timeleft (personnalité, budget, langues).",
+      "fix": "Remplacer au moins 2 questions par des signaux prédictifs d'affinité (rythme de vie, sujets, budget de sortie)."
+    },
+    "V5-Intention": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Double intention ami/plus = TAM élargi (amitié + rencontre) : bon.",
+      "fix": "Mesurer la part « plus » par genre dès J1 (équilibre)."
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Données de genre nécessaires à l'équilibre : bien.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bien.",
+      "fix": "—"
+    },
+    "V5-Toi-quartier": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Deux quartiers seulement : bonne discipline, mais « Ailleurs » doit capturer la demande pour choisir le 3e quartier.",
+      "fix": "Saisie libre du quartier → carte de chaleur de la demande (outil de décision d'ouverture)."
+    },
+    "V5-Eclosion": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Coût de temps sans valeur mesurable.",
+      "fix": "—"
+    },
+    "V5-Eclosion-ne": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Idem.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "SSO : bon pour la conversion.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Moment « aha » dès J0 : c'est là que se joue l'activation.",
+      "fix": "Instrumenter Trouvée → Je viens comme métrique d'activation."
+    },
+    "V5-Sortie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Le prix n'apparaît jamais pour la 2e sortie : l'utilisateur découvrira 12 € après avoir pris l'habitude gratuite.",
+      "fix": "Afficher « ensuite 12 € ou Blowy+ » dès la 1re, honnêteté = rétention payante plus prévisible."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien de nouveau.",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« 6 places prises » avec un groupe de 4 affiché : symptôme d'un modèle de capacité pas encore pensé (sur-réservation ? backfill ?).",
+      "fix": "Aligner sur la spec (pas de surréservation, backfill)."
+    },
+    "V5-Sortie-annulee": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Remboursement + priorité : bon pour la confiance ; chaque annulation coûte la 1re offerte et un lieu mécontent.",
+      "fix": "Suivre le taux d'annulation par lieu (KPI ops)."
+    },
+    "V5-Verif": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Mur selfie placé après l'engagement : bon compromis conversion/sécurité.",
+      "fix": "Taux de chute ici = KPI hebdo."
+    },
+    "V5-Notifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Opt-in contextuel : bon.",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Pas de raison de revenir entre deux sorties hors messages ; l'Accueil est un tableau de bord, pas une boucle.",
+      "fix": "Un contenu léger hebdo (la question des pets du lundi à la bande) pour J+3."
+    },
+    "V5-Attente": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Liste d'attente agrégée : bon outil de lancement ; seuil 300 affiché vs 120 dans la spec.",
+      "fix": "Un seul seuil."
+    },
+    "V5-Chats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bande + duos = rétention entre sorties, si les chats vivent.",
+      "fix": "Mesurer % de bandes avec ≥ 1 message à J+7."
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Brise-glace de pets : le seul usage du pet qui a une valeur produit mesurable (réduction des no-shows ?).",
+      "fix": "Test : no-show avec/sans brise-glace."
+    },
+    "V5-Revelation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Révélation simultanée : différenciant vs Timeleft (visages au resto) ; risque de no-show de dernière minute après révélation.",
+      "fix": "Mesurer les désistements entre 9 h et 19 h 30."
+    },
+    "V5-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Différenciation sécurité + canal d'acquisition gratuit.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Page web sans app : acquisition passive.",
+      "fix": "Instrumenter « Découvrir › »."
+    },
+    "W-Ange-alerte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Responsabilité juridique : chaque alerte mal gérée est un risque réputationnel majeur.",
+      "fix": "Astreinte humaine budgétée dans le P&L."
+    },
+    "V5-Checkin": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Check-in = donnée de présence fiable, base de la fiabilité et du paiement lieu.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Quiz de Nino et boisson « au nom de Nino » : complexité ops chez le lieu.",
+      "fix": "Simplifier côté lieu."
+    },
+    "V5-Souvenir": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Le pet qui grandit est un faible moteur de rétention pour des 25–35 ans.",
+      "fix": "Mesurer l'ouverture de la Fiche après sortie ; sinon réduire le pet au brise-glace."
+    },
+    "V5-Apres": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Le vote mutuel est la mécanique de valeur (crée bande et duos) ; copiable en un sprint.",
+      "fix": "Investir dans la qualité de composition (taux d'accords) plutôt que dans l'UI du vote."
+    },
+    "V5-Apres-resultats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 2 ACCORDS » : métrique de valeur par sortie.",
+      "fix": "KPI : accords mutuels par présent."
+    },
+    "V5-Bande": {
+      "score": 6,
+      "blocking": false,
+      "issue": "La bande est de la rétention seulement si elle ressort ensemble ; aucune mécanique « sortie de bande » (re-groupe).",
+      "fix": "Sortie « avec ta bande + 2 nouveaux » : rétention + réensemencement du vivier."
+    },
+    "V5-Chat": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Duo issu de sortie : bonne valeur romance sans app de swipe.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 4,
+      "blocking": false,
+      "issue": "La voie Duo = une app de rencontre de plus, en concurrence frontale avec Hinge ; dilue l'équipe et le message.",
+      "fix": "Sortir la voie Duo du MVP ; la réintroduire si la demande « tête-à-tête » est mesurée."
+    },
+    "V5-Lien": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Même remarque.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Même remarque.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "RDV gratuit dans un lieu « partenaire » : coût ops sans revenu.",
+      "fix": "Payant (place duo) ou hors partenariat."
+    },
+    "V5-RdvDuo-lea": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Duo né d'une sortie : la meilleure conversion romance du produit.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Gadget ; ne crée pas de valeur mesurable.",
+      "fix": "Garder en bonus tardif, zéro investissement."
+    },
+    "V5-Rupture": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon pour la marque (anti-ghosting).",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Story Question = acquisition hors cible (amis d'amis partout en France) ; story Sortie (locale) absente des rendus.",
+      "fix": "Prioriser la story Sortie avec lien quartier."
+    },
+    "W-Repondre": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon coefficient de diffusion mais trafic non qualifié géographiquement.",
+      "fix": "Qualifier le quartier avant l'install."
+    },
+    "V5-Profil": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« 1 / 1 sorties » : bonne métrique de confiance.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Fiabilité visible = discipline des no-shows, levier marge (lieux payés sur confirmés).",
+      "fix": "—"
+    },
+    "V5-Boutique": {
+      "score": 3,
+      "blocking": true,
+      "issue": "Accessoires vendus 2,99 € (contre la spec D-020 : non achetables) ; Blowy+ 19,99 € = 2 × 12 € − 4 € : aucune raison forte de s'abonner ; pas de prix pour les +1.",
+      "fix": "Clarifier un seul modèle : place à l'unité + abonnement avec un bénéfice qui ne vend pas de vitesse (ex. une place +1 offerte chaque mois, sans aucune priorité de créneau) ; retirer la vente d'accessoires."
+    },
+    "V5-Reglages": {
+      "score": 7,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Honnête à l'écran ; l'état de rétention « −50 % » reste dans le code ; « Historique 0,00 € » contredit l'usage.",
+      "fix": "Supprimer ; historique réel."
+    },
+    "V5-Confidentialite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Export RGPD sous 48 h : bon signal pour la due diligence.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Couverture IRL insuffisante = risque réputationnel (un seul incident médiatisé tue un quartier).",
+      "fix": "Budget T&S dédié dans le plan."
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Motifs de départ = données de churn utiles.",
+      "fix": "« Pas assez de sorties » → signal de liquidité par quartier."
+    }
+  },
+  "top3": [
+    "Un P&L par sortie et par quartier rendu explicite (prix place, part lieu, 1re offerte, Stripe, astreinte) et un Blowy+ qui a une raison d'exister (par ex. une place +1 offerte par mois) ; supprimer la vente d'accessoires.",
+    "Recentrer le MVP sur la sortie de groupe : voie Duo hors MVP, et une mécanique de rétention de bande (« ta bande + 2 nouveaux ») qui ralentit l'épuisement du vivier imposé par `MET_BEFORE`.",
+    "Rendre visibles les KPI qui comptent dans le produit et l'admin : taux de placement, activation Trouvée → Je viens, chute au selfie, 2e sortie à 21 j, accords par présent, inscrits par sortie vécue."
+  ],
+  "tenIf": "Je mets 10 si une cohorte de 8 semaines dans un quartier montre ≥ 40 % de 2e sortie payante sous 21 jours, ≥ 25 % d'actifs à M2, ≥ 0,3 inscrit vérifié par sortie vécue, une contribution positive par sortie après coût lieu, et si l'équipe peut m'expliquer pourquoi Timeleft ou Tinder Events ne peuvent pas répliquer la densité de quartier et la couche confiance en 6 mois."
+}

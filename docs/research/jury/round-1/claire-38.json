@@ -1,0 +1,322 @@
+{
+ "member": "Claire, 38 ans, Lyon",
+ "global": 4,
+ "criteria": {
+  "comprehension": 7,
+  "cognitive": 7,
+  "desire": 5,
+  "meet": 3,
+  "safety": 8,
+  "virality": 2,
+  "money": 6,
+  "visual": 7
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« PETS & POTES », titre géant, mascottes : on dirait une appli pour étudiants. Rien ne dit que ce soit aussi pour des gens de 35-45 ans ni pour l'amitié entre adultes.",
+   "fix": "Une ligne d'âge ou de public (« de 25 à 50 ans, des groupes de ton âge ») et un visuel moins enfantin."
+  },
+  "V5-Invite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Rassurant si c'est une amie qui m'invite. Mais « Jeudi 19 h 30 » fixé d'avance : si c'est ma semaine avec mon fils, je ne peux pas.",
+   "fix": "Proposer « Ce jeudi ou le suivant » dès l'invitation."
+  },
+  "V5-Craft": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Choisir un raton et 4 curseurs : je me sens un peu ridicule. « 2 min en tout », d'accord.",
+   "fix": "Laisser « Passer, Nino choisit pour moi »."
+  },
+  "V5-Vie": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Il irait à l'école… École du cirque » : jeu plaisant mais je ne vois pas le lien avec trouver des gens. La barre affiche « 1/4 » et pas l'étape 02 annoncée ailleurs.",
+   "fix": "Dire en sous-titre pourquoi ça compte (« pour te mettre avec des gens qui te ressemblent ») et unifier l'en-tête d'étape."
+  },
+  "V5-Intention": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pouvoir cocher amis ET plus, en secret : exactement ce qu'il me faut. J'aurais aimé pouvoir dire « surtout des amies ».",
+   "fix": "Une précision facultative « en amitié : plutôt des femmes / tout le monde »."
+  },
+  "V5-Toi": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair et respectueux.",
+   "fix": "RAS."
+  },
+  "V5-Toi-plus": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Je peux dire « des hommes », mais rien sur l'âge. À 38 ans, je ne veux pas d'un groupe de 25 ans.",
+   "fix": "Ajouter une tranche d'âge pour le groupe (ex. « 32-45 ») ici, modifiable dans les Réglages."
+  },
+  "V5-Toi-quartier": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Lyon 4e · Croix-Rousse » : un seul quartier pour toute la ville. J'habite le 7e. Et « près de toi » est écrit sous Paris 11e alors qu'on me promet « Jamais ta position ».",
+   "fix": "Dire « tu peux venir d'un autre arrondissement » et retirer « près de toi »."
+  },
+  "V5-Eclosion": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Joli, mais un écran d'attente de plus.",
+   "fix": "Le fusionner avec l'écran suivant."
+  },
+  "V5-Eclosion-ne": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Attendrissant. « Garder Nino pour de vrai » : je ne comprends pas que ça veut dire « créer un compte ».",
+   "fix": "« Créer mon compte » en clair."
+  },
+  "V5-Compte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas de mot de passe, e-mail masqué : très bien.",
+   "fix": "RAS."
+  },
+  "V5-Trouvee": {
+   "score": 5,
+   "blocking": true,
+   "issue": "Jeudi 13 novembre 19 h 30, sans choix. Si c'est ma semaine avec mon fils, toute la promesse tombe. « jamais ghoster » en commun : du jargon. Aucune indication d'âge du groupe.",
+   "fix": "Me laisser déclarer mes disponibilités une fois (« les semaines paires », « jeudi ou samedi midi ») et afficher « âges 34-42 » dans la carte du groupe."
+  },
+  "V5-Sortie": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Tout est là (inclus, ange gardien, annulation jusqu'à mercredi 18 h). Mais un créneau unique « 19 h 30 · 2 h » et pas d'autre jour.",
+   "fix": "Au moins 2 créneaux par semaine (dont un week-end en journée)."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Tu y vas », clair. Je chercherais un rappel pour réserver la baby-sitter.",
+   "fix": "Ajouter « ajouter à mon calendrier »."
+  },
+  "V5-Sortie-complete": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Les 6 places sont prises » alors que le groupe affiché fait 4 personnes, dont moi. Je ne comprends pas si j'ai une place.",
+   "fix": "Me retirer du groupe affiché et dire « tu n'as pas de place ce jeudi »."
+  },
+  "V5-Sortie-annulee": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Ton juste. Mais « Ta place est remboursée » pour une 1re sortie offerte, et la carte annulée garde « Lieu exact mercredi à 18 h ».",
+   "fix": "Adapter le texte à la sortie offerte, masquer les infos devenues fausses."
+  },
+  "V5-Verif": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« PROUVE QUE T'ES TOI » est agressif et collé au bord droit. Le sous-texte est rassurant (« il n'est montré à personne »). « Tes photos » arrive sans explication.",
+   "fix": "Titre « Vérifions que c'est toi », et dire combien de photos sont nécessaires."
+  },
+  "V5-Notifs": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Mode discret : textes neutres » : essentiel pour moi. Mais l'exemple affiché montre justement un texte non discret (« L. a écrit dans ton groupe »).",
+   "fix": "Montrer à côté l'aperçu discret (ex. « Nouveau message »)."
+  },
+  "V5-Accueil": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Une sortie, ma bande, mes duos : lisible. « Tes duos : 1 en cours · 2 libres » ne correspond pas à `V5-Duo` (1 en cours, 1 proposé, 1 libre).",
+   "fix": "Mêmes chiffres partout."
+  },
+  "V5-Attente": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Clair, mais l'unique action est « Inviter des ami·es » : je ne vais pas recruter mes amies pour une appli dont j'ai honte.",
+   "fix": "Autre action possible : « Préviens-moi » simplement, sans culpabiliser."
+  },
+  "V5-Chats": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Trois sections simples, « Rien n'est public » rassure. « Jeudi · 4 + toi » alors que le groupe compte 3 personnes + moi.",
+   "fix": "Corriger le compte."
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le chat avant de se voir et la question « dimanche idéal en 3 mots » : c'est ce qui me rendrait moins timide le jour J.",
+   "fix": "RAS ; peut-être une 2e question soufflée le mercredi."
+  },
+  "V5-Revelation": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Léa 27, Malo 29, Sarah 26 : j'aurais 10 ans de plus que tout le monde. Ça me ferait annuler.",
+   "fix": "Composer par tranche d'âge et l'afficher avant l'inscription."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Choisir ma sœur par SMS, liste claire de ce qu'elle reçoit et ne reçoit jamais. Parfait.",
+   "fix": "RAS."
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Ma sœur comprendra sans appli. L'encart publicitaire en bas est discret.",
+   "fix": "RAS."
+  },
+  "W-Ange-alerte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Sobre et direct.",
+   "fix": "RAS."
+  },
+  "V5-Checkin": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Un seul bouton, position non partagée.",
+   "fix": "RAS."
+  },
+  "V5-Checkin-ok": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Voir qui est déjà là m'aiderait à entrer. « Faux appel » pour partir : rassurant.",
+   "fix": "RAS."
+  },
+  "V5-Souvenir": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« +1 SOUVENIR » géant : trop enfantin pour moi. La fiabilité ici me donne l'impression d'être notée.",
+   "fix": "Ton plus sobre, fiabilité ailleurs."
+  },
+  "V5-Apres": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le vote secret, une personne à la fois, « Personne n'apprend jamais un non » : c'est ce qui me soulage le plus.",
+   "fix": "RAS."
+  },
+  "V5-Apres-resultats": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Clair. L'état « aucun accord » n'est pas maquetté, alors que c'est celui que je redoute.",
+   "fix": "Maquetter « pas d'accord cette fois » avec un ton doux."
+  },
+  "V5-Bande": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« 5 personnes » mais 4 maisons ; le pigeon de Tom est celui de Sarah, le lapin de Maya celui de Léa. Je m'y perds.",
+   "fix": "Un personnage par personne, le bon nombre."
+  },
+  "V5-Chat": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le souffleur aide une timide. « avant le 20 nov. » me met une échéance que je ne tiendrai pas si c'est ma semaine avec mon fils.",
+   "fix": "Échéance qui tient compte de mes disponibilités."
+  },
+  "V5-Duo": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« 84 % de vision », « Les faire se rencontrer » : on revient à l'appli de rencontre classique dont j'ai peur.",
+   "fix": "Présenter la voie Duo comme option calme, sans pourcentage."
+  },
+  "V5-Lien": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Trois étapes, pas une de plus » : rassurant.",
+   "fix": "RAS."
+  },
+  "V5-Lien-debloque": {
+   "score": 6,
+   "blocking": false,
+   "issue": "L'étape s'appelle « Visages et voix » et montre un vocal : rien ne dit si je dois enregistrer le mien. Très intimidant, et je ne savais pas qu'il y aurait de la voix.",
+   "fix": "Voix facultative, ou prévenue dès l'étape 1."
+  },
+  "V5-RdvDuo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lieu public, ange gardien, check-in : sécurité au rendez-vous à deux, très bien.",
+   "fix": "Proposer aussi un créneau en journée."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même chose.",
+   "fix": "Idem."
+  },
+  "V5-Oeuf": {
+   "score": 4,
+   "blocking": false,
+   "issue": "À 38 ans avec un enfant, « un œuf, pour rire » avec quelqu'un que j'ai vu deux fois me met mal à l'aise.",
+   "fix": "Pouvoir le désactiver définitivement dans les Réglages."
+  },
+  "V5-Rupture": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Je n'ai plus assez de temps pour bien m'en occuper » : on dirait qu'on parle d'un animal, pas d'une personne. Reste d'ancienne version.",
+   "fix": "Réécrire les messages pour une personne."
+  },
+  "V5-Story": {
+   "score": 3,
+   "blocking": false,
+   "issue": "Partager « Décris-moi en 3 mots » ou « On était 5 au café » sur Instagram où sont mes collègues : jamais. Et « On était 5 » est faux, nous étions 4.",
+   "fix": "Proposer d'abord l'invitation privée d'une amie (lien direct, sans story)."
+  },
+  "W-Repondre": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Gentil. Bouton désactivé illisible (gris foncé sur violet).",
+   "fix": "Bouton désactivé plus contrasté."
+  },
+  "V5-Profil": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Mon prénom, mon âge et « Paris 11e » en haut : rien ne dit qui voit cette page. « Ma vision card · PARTAGER » en rose vif : je n'y toucherai pas.",
+   "fix": "Indiquer « visible par : toi seule »."
+  },
+  "V5-Fiche": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Fiabilité · visible par ton groupe » : si je rate une sortie parce que mon fils est malade, tout le groupe le voit.",
+   "fix": "Absence pour raison familiale prévenue = sans effet, et fiabilité non affichée par défaut."
+  },
+  "V5-Boutique": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Honnête. Mais Blowy+ (2 places par mois) ne correspond pas à quelqu'un qui ne peut sortir qu'une semaine sur deux, et les places n'ont pas de durée de validité affichée.",
+   "fix": "Dire si les places non utilisées se reportent."
+  },
+  "V5-Reglages": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Blowy+ · gratuit · voir » contredit l'abonnement actif de `V5-Abonnement`. Pas de réglage « mes disponibilités ».",
+   "fix": "Ajouter « Mes disponibilités » et un état d'abonnement unique."
+  },
+  "V5-Abonnement": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Prochain prélèvement 3 déc. · 19,99 € » mais « Historique 0,00 € à ce jour » : je ne comprends pas ce que j'ai payé.",
+   "fix": "Historique cohérent."
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Mode discret » et « Masquer mon âge exact » existent : bien. Mais le mode discret est désactivé par défaut alors qu'il protège les gens comme moi.",
+   "fix": "Proposer le mode discret pendant l'onboarding."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair, avec « en danger immédiat ? 17 ou 112 ».",
+   "fix": "RAS."
+  },
+  "V5-Supprimer": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Mettre en pause » en bouton noir principal, « Supprimer définitivement » en second : un peu de rétention. « 3 souvenirs » alors que le profil en annonce 4.",
+   "fix": "Deux boutons de même poids, bons chiffres."
+  }
+ },
+ "top3": [
+  "Des disponibilités déclarées une fois (semaines paires/impaires, au moins un créneau de week-end en journée) pour que Nino ne me propose que des sorties que je peux tenir, sans « Pas cette semaine » culpabilisant.",
+  "Des groupes par tranche d'âge choisie (ex. 32-45), affichée sur `V5-Trouvee` avant que je m'inscrive.",
+  "Un ton et une identité pour adultes, et la discrétion par défaut : mode discret proposé à l'onboarding, aucune incitation à poster en story, invitation privée d'une amie à la place."
+ ],
+ "tenIf": "Je mets 10 si, en 2 semaines dont une avec mon fils, Nino me propose une sortie un soir où je suis libre, avec des gens de 32 à 45 ans, que personne autour de moi ne peut savoir que j'utilise l'appli, et que je peux venir avec une amie sans rien poster nulle part."
+}

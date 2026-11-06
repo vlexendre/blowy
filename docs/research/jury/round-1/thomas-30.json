@@ -1,0 +1,322 @@
+{
+ "member": "Thomas, 30 ans, Paris",
+ "global": 3,
+ "criteria": {
+  "comprehension": 7,
+  "cognitive": 6,
+  "desire": 3,
+  "meet": 2,
+  "safety": 4,
+  "virality": 2,
+  "money": 5,
+  "visual": 7
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 4,
+   "blocking": true,
+   "issue": "« 5 personnes », « jeudi 19 h 30 », « un café » : la seule promesse est le groupe. Aucune mention d'un tête-à-tête ou d'un groupe plus petit. Je ferme ici.",
+   "fix": "Une 2e porte visible dès le Welcome : « Plutôt à deux ? Voie Duo, par écrit d'abord »."
+  },
+  "V5-Invite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Venir avec un ami que je connais déjà : c'est ce qui me ferait tenter un groupe. Bien.",
+   "fix": "Préciser « Alex sera à côté de toi » / mêmes horaires d'arrivée."
+  },
+  "V5-Craft": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Choisir un pet sans montrer ma tête : confortable pour moi.",
+   "fix": "RAS."
+  },
+  "V5-Vie": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Questions ludiques, pas de jugement. L'en-tête « 1/4 » rompt la numérotation d'étapes (01, —, 03, 04, 05).",
+   "fix": "Numérotation unique."
+  },
+  "V5-Intention": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Deux choix seulement : amis / plus. Il manque l'axe qui compte pour moi : « en groupe » ou « à deux ». L'onboarding ne me demande jamais comment je supporte de rencontrer.",
+   "fix": "Une question « Comment tu préfères rencontrer ? Petit groupe · À deux, par écrit d'abord · Les deux »."
+  },
+  "V5-Toi": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Respectueux, « Autre mot ? Je l'écris » est bien vu.",
+   "fix": "RAS."
+  },
+  "V5-Toi-plus": {
+   "score": 5,
+   "blocking": false,
+   "issue": "J'indique « Des hommes ». Le texte « « Plus » n'est proposé qu'entre personnes compatibles » me fait comprendre que la présence du bouton dira quelque chose sur les autres (voir `V5-Apres`).",
+   "fix": "Ne pas rendre la compatibilité déductible (voir correction de `V5-Apres`)."
+  },
+  "V5-Toi-quartier": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Paris 11e · ouvert · près de toi » : « près de toi » implique que vous connaissez ma position, juste sous « Jamais ta position ».",
+   "fix": "Retirer « près de toi »."
+  },
+  "V5-Eclosion": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Inoffensif.",
+   "fix": "RAS."
+  },
+  "V5-Eclosion-ne": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Il part te trouver une bande » : encore le groupe comme seule issue.",
+   "fix": "« Il part te trouver des gens »."
+  },
+  "V5-Compte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Propre.",
+   "fix": "RAS."
+  },
+  "V5-Trouvee": {
+   "score": 3,
+   "blocking": true,
+   "issue": "« Nino t'a trouvé une bande » : on me met d'office dans un groupe de 4 inconnus avec une date. Aucun lien vers la voie Duo ni vers un format plus petit. Le seul ajout possible est « +1 un·e ami·e », très bien mais caché sous la forme d'une case pointillée.",
+   "fix": "Sous la carte, une sortie de secours explicite : « Le groupe, c'est trop ? Essaie à deux » → `V5-Duo` ; et « +1 un ami » libellé en clair."
+  },
+  "V5-Sortie": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Je sais quand, combien de temps (2 h), ce qui est inclus. Je ne sais pas comment ça se passe : on est assis ensemble ? qui accueille ? « le quiz de Nino » = activité imposée devant des inconnus.",
+   "fix": "Un déroulé minute par minute (« 19 h 30 accueil au comptoir, table réservée au nom de Nino, quiz facultatif à 20 h, partir quand tu veux »)."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Ouvrir le chat du groupe » : bien, l'écrit avant l'oral, c'est ce qu'il me faut.",
+   "fix": "RAS."
+  },
+  "V5-Sortie-complete": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Les 6 places sont prises » alors que j'apparais dans le groupe de 4 affiché. Contradiction = je ne sais pas si je suis attendu.",
+   "fix": "Retirer « Toi » et corriger le nombre."
+  },
+  "V5-Sortie-annulee": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Ta place est remboursée » sur une sortie offerte ; la carte affiche encore les échéances (« Lieu exact mercredi à 18 h »).",
+   "fix": "Texte et carte cohérents avec l'annulation."
+  },
+  "V5-Verif": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Le selfie non montré me va. Titre « PROUVE QUE T'ES TOI » collé au bord droit (~10 px). « Tes photos » sans dire combien ni pourquoi.",
+   "fix": "Titre sur 2 lignes, nombre de photos explicite."
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 3 notifs max par jour, jamais après 23 h » : très bien pour moi.",
+   "fix": "RAS."
+  },
+  "V5-Accueil": {
+   "score": 6,
+   "blocking": false,
+   "issue": "La sortie domine l'écran ; « Tes duos » est une petite tuile à droite. « 1 en cours · 2 libres » contredit `V5-Duo` (1 en cours, 1 proposé, 1 libre).",
+   "fix": "Si mon choix est « à deux », inverser la hiérarchie ; chiffres cohérents."
+  },
+  "V5-Attente": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Seule action : inviter des amis. Rien à faire seul en attendant.",
+   "fix": "Proposer la voie Duo en attendant l'ouverture."
+  },
+  "V5-Chats": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Clair. « Jeudi · 4 + toi » alors que le groupe est L., M., S. + toi.",
+   "fix": "Corriger."
+  },
+  "V5-Groupe": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le brise-glace écrit est le meilleur écran pour moi. Mais je ne sais pas qui est qui : initiales + pets, alors que l'anxiété vient de l'inconnu.",
+   "fix": "Permettre une ligne de présentation écrite par chacun (« je suis plutôt calme ») avant le jour J."
+  },
+  "V5-Revelation": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Les visages arrivent à 9 h le jour même, 10 h avant la sortie : je découvre avec qui je passe la soirée trop tard pour m'y préparer, et l'option visible est « Je ne peux plus venir · prévenir le groupe », donc une annulation publique.",
+   "fix": "Révélation la veille au soir (pour tous), et désistement silencieux sans pénalité jusqu'au matin."
+  },
+  "V5-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Choisir n'importe quel contact, liste explicite : bien.",
+   "fix": "RAS."
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Page claire.",
+   "fix": "RAS."
+  },
+  "W-Ange-alerte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Direct.",
+   "fix": "RAS."
+  },
+  "V5-Checkin": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Gros bouton, position ponctuelle : bien. « Alerte discrète » rouge sans dire ce qu'elle déclenche.",
+   "fix": "Une ligne : « Prévient Sam et l'équipe, sans bruit »."
+  },
+  "V5-Checkin-ok": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Le quiz de Nino démarre à 20 h » : activité de groupe imposée, exactement ce qui me fait fuir. « Malo · en route » : chacun voit qui manque.",
+   "fix": "Quiz facultatif annoncé comme tel ; ne pas afficher « en route »."
+  },
+  "V5-Souvenir": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Récompense correcte, mais la fiabilité affichée ici me rappelle que mes absences seront comptées.",
+   "fix": "Fiabilité hors de l'écran de récompense."
+  },
+  "V5-Apres": {
+   "score": 2,
+   "blocking": true,
+   "issue": "Le bouton « Plus » n'apparaît que si les préférences sont compatibles (README : absent pour Malo). Donc si je vois « Plus » sur Malo, j'apprends qu'il accepte des hommes ; s'il voit « Plus » sur moi, il apprend que je suis gay ou bi. Fuite d'orientation dans un groupe d'inconnus.",
+   "fix": "Toujours afficher les 3 boutons pour tout le monde ; un « Plus » incompatible est simplement compté comme « Ami·e » ou rien, sans le dire."
+  },
+  "V5-Apres-resultats": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Clair. L'état « 0 accord » n'existe pas, alors que c'est celui que mon anxiété anticipe.",
+   "fix": "Maquetter l'état vide avec un ton neutre."
+  },
+  "V5-Bande": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« 5 personnes » pour 4 maisons ; Tom et Sarah ont le même pigeon, Maya et Léa le même lapin.",
+   "fix": "Données cohérentes."
+  },
+  "V5-Chat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Chat écrit, souffleur, vocal optionnel ici : idéal pour moi.",
+   "fix": "RAS."
+  },
+  "V5-Duo": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Le bon format pour moi, mais j'y arrive seulement via la tuile « Tes duos » de l'Accueil. « Les faire se rencontrer » avec un cœur et « 84 % de vision » cadrent tout en drague, pas en amitié.",
+   "fix": "Rendre la voie Duo accessible dès l'onboarding et proposer « Duo amical »."
+  },
+  "V5-Lien": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Rien ne se débloque si un seul des deux parle » : rassurant. Mais « parle » : écrire suffit-il ?",
+   "fix": "« si un seul des deux écrit »."
+  },
+  "V5-Lien-debloque": {
+   "score": 3,
+   "blocking": true,
+   "issue": "« Visages et voix » : l'étape 2 tourne autour d'un vocal (« 0:12 · Jade ») et rien ne dit si je dois en envoyer un ni si je peux m'en passer. Pour un anxieux social qui a choisi l'écrit, la voix imposée ferme la porte. Rien ne prévenait à l'étape 1.",
+   "fix": "Voix facultative : visages seuls si l'un des deux ne veut pas de vocal, et le dire dès `V5-Lien`."
+  },
+  "V5-RdvDuo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Lieu public, ange gardien, check-in : bien. « Changer de lieu ou d'heure » rassure.",
+   "fix": "RAS."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Idem.",
+   "fix": "Idem."
+  },
+  "V5-Oeuf": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Optionnel, deux boutons égaux. Ça ne me concerne pas.",
+   "fix": "RAS."
+  },
+  "V5-Rupture": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Je n'ai plus assez de temps pour bien m'en occuper » / « Merci pour ces jours avec Nino » : textes de la V4 qui parlent du pet, pas de la personne.",
+   "fix": "Réécrire pour une personne."
+  },
+  "V5-Story": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Décris-moi en 3 mots » : demander des compliments en public me paralyse. « On était 5 au café… 5 inconnu·es » : faux, on était 4.",
+   "fix": "Proposer un partage privé (lien à un ami)."
+  },
+  "W-Repondre": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Bouton « Envoyer à Nino » désactivé gris foncé sur fond violet foncé : contraste insuffisant.",
+   "fix": "Contraste AA."
+  },
+  "V5-Profil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Sobre. « sorties où tu es venu » : le reste de l'appli écrit « venu·e ».",
+   "fix": "Cohérence d'écriture."
+  },
+  "V5-Fiche": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« Fiabilité · visible par ton groupe » + « 2 absences sans prévenir : une semaine de pause » : je vais annuler par anxiété, et ce sera affiché aux inconnus.",
+   "fix": "Fiabilité privée ; un désistement prévenu, même le jour même, ne compte pas comme absence."
+  },
+  "V5-Boutique": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Honnête (« Ne s'achète jamais »). Mais les accessoires sont vendus 2,99 € alors que le concept dit « accessoires non achetables », et le bonnet est aussi un souvenir dans `V5-Fiche`.",
+   "fix": "Trancher : accessoires gagnés OU vendus, pas les deux."
+  },
+  "V5-Reglages": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Blowy+ · gratuit · voir » contredit `V5-Abonnement` (actif). Aucun réglage « format : groupe / à deux ».",
+   "fix": "Ajouter le format préféré ; un état d'abonnement unique."
+  },
+  "V5-Abonnement": {
+   "score": 5,
+   "blocking": false,
+   "issue": "Places « 1 / 2 ce mois » mais « Historique 0,00 € à ce jour » : incohérent.",
+   "fix": "Historique juste."
+  },
+  "V5-Confidentialite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Bien structuré. Rien sur la visibilité de mon orientation (qui peut la déduire).",
+   "fix": "Ligne « Ton orientation : jamais montrée, jamais déductible »."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Motif « LGBTphobie » présent, blocage = plus jamais dans la même sortie : bien.",
+   "fix": "RAS."
+  },
+  "V5-Supprimer": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Les 3 souvenirs » contre 4 au Profil ; « Ton abonnement Blowy+ sera résilié en même temps » alors qu'il est géré par l'App Store.",
+   "fix": "Chiffre juste et lien vers la résiliation du store."
+  }
+ },
+ "top3": [
+  "Supprimer la fuite d'orientation dans `V5-Apres` : les 3 boutons pour tout le monde, la compatibilité gérée en silence côté serveur.",
+  "Faire de la voie Duo une vraie 2e porte dès le Welcome et l'Intention (« à deux, par écrit d'abord »), avec une version amicale, et la voix facultative dans `V5-Lien-debloque`.",
+  "Rendre le groupe supportable pour un anxieux : déroulé précis de la soirée, quiz facultatif, visages la veille au soir, désistement prévenu sans effet sur une fiabilité qui reste privée."
+ ],
+ "tenIf": "Je mets 10 si je peux choisir « à deux, par écrit d'abord » dès l'onboarding, rencontrer un homme ou un ami en 2 semaines sans jamais envoyer de vocal ni faire de quiz devant des inconnus, et si rien dans l'appli ne permet à quelqu'un de déduire mon orientation."
+}

@@ -1,0 +1,322 @@
+{
+  "member": "ines-21",
+  "global": 4,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 8,
+    "desire": 5,
+    "meet": 2,
+    "safety": 5,
+    "virality": 7,
+    "money": 4,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 7,
+      "blocking": false,
+      "issue": "compris en 2 s, mignon. Le badge vert « Paris 11e · Lyon 4e » se lit comme une simple étiquette, pas comme « chez toi, pas encore »",
+      "fix": "dire sur le store et ici : « Ouvert : Paris 11e, Lyon 4e · ailleurs : liste d'attente »"
+    },
+    "V5-Invite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "si une pote m'envoie ça, j'y vais direct. Mais l'écran promet « Jeudi 19 h 30, Paris 11e » : que voit-on si la pote est elle-même sur liste d'attente ?",
+      "fix": "variante « Rejoins la liste de Bordeaux avec Alex : vous sortirez ensemble à l'ouverture »"
+    },
+    "V5-Craft": {
+      "score": 8,
+      "blocking": false,
+      "issue": "la lapine gratuite, merci. Mais après cet écran, le pet ne fait plus rien : ni jeu, ni visite",
+      "fix": "garder une petite boucle cosy (déco, visite dans la bande)"
+    },
+    "V5-Vie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "rapide et drôle, mais c'est le même quiz qu'en V4 ; « Polytechnique » comme marqueur social, bof ; rien sur l'âge ni sur ce que j'aime faire (concerts, expos, jeux)",
+      "fix": "question « Tu sors plutôt… » (concert, expo, bar à jeux, café) qui choisit le type de sortie"
+    },
+    "V5-Intention": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Une bande dans ton quartier, qui grandit à chaque sortie » : c'est ce que je demandais ; le « plus » en option, parfait",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "non-binaire et « Autre mot » : inclusif sans en faire trop. « Autre mot » en lien gris",
+      "fix": "« Autre mot » en carte"
+    },
+    "V5-Toi-plus": {
+      "score": 3,
+      "blocking": true,
+      "issue": "je coche « Tout le monde ». Mais « Plus n'est proposé qu'entre personnes compatibles » : si une fille voit le bouton Plus sur ma carte, elle sait que je suis ouverte aux femmes. Si c'est quelqu'un de ma fac, je suis outée, et ma famille ne le sait pas. La phrase commence par « Secret. »",
+      "fix": "toujours afficher Ami·e/Plus/Non ; la compatibilité est gérée en silence côté serveur, pour que « Secret » dise vrai"
+    },
+    "V5-Toi-quartier": {
+      "score": 2,
+      "blocking": true,
+      "issue": "Bordeaux n'existe pas : « Ailleurs · liste d'attente ». J'ai fait 4 écrans pour apprendre que je n'aurai rien",
+      "fix": "demander la ville au 1er écran (ou le dire sur le store) ; pour « Ailleurs », une vraie offre d'attente (voie Duo locale, sortie d'amorçage)"
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "mignon, je regarde volontiers ; un peu long",
+      "fix": "passer d'un tap"
+    },
+    "V5-Eclosion-ne": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Il part te trouver une bande » : dans une ville fermée, c'est une promesse fausse",
+      "fix": "texte adapté : « Il t'inscrit sur la liste de Bordeaux »"
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "rapide. On ne me demande jamais mon âge : comment Nino évite-t-il de me mettre avec des gens de 29 ans ?",
+      "fix": "date de naissance + fourchette d'âge souhaitée"
+    },
+    "V5-Trouvee": {
+      "score": 6,
+      "blocking": false,
+      "issue": "clair, mais aucun âge affiché : c'est à la Révélation que j'apprendrai qu'ils ont 26, 27 et 29 ans",
+      "fix": "fourchette d'âge visible (« 20–24 ans ») sous les pets"
+    },
+    "V5-Sortie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "12 € la place après la 1re, soit 48 € par mois si je vais à tous les jeudis : impossible avec mon budget. Et toujours « un café », alors que je voulais concerts, expos, jeux",
+      "fix": "tarif étudiant ; types de sortie annoncés (bar à jeux, expo, karaoké)"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "clair ; « Choisir mon ange gardien » est trop discret",
+      "fix": "rangée dans la liste"
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": false,
+      "issue": "« Les 6 places sont prises », mais j'apparais dans « Ton groupe » ; « gardé » + « Prendre jeudi 20 » : je ne sais pas si j'ai ma place",
+      "fix": "retirer le groupe ; « Confirmer jeudi 20 »"
+    },
+    "V5-Sortie-annulee": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Le café a dû fermer » puis « Même café, nouveau groupe »",
+      "fix": "« nouveau lieu mercredi »"
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "selfie que personne ne voit, je fais ça tous les jours sur BeReal ; photos cachées jusqu'au matin : j'adore. Le titre touche le bord droit",
+      "fix": "marge du titre"
+    },
+    "V5-Notifs": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« L. a écrit dans ton groupe… » qui s'affiche pendant le dîner chez mes parents : non. Le mode discret n'est pas activable ici",
+      "fix": "interrupteur « Mode discret » ici, activé par défaut si on coche « plus »"
+    },
+    "V5-Accueil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "vivant et clair. Mais à Bordeaux, mon Accueil sera l'écran Attente, pas celui-ci",
+      "fix": "voir Attente"
+    },
+    "V5-Attente": {
+      "score": 4,
+      "blocking": false,
+      "issue": "c'est mon écran d'accueil pour des semaines : une seule action (inviter), Nino qui dort, et « Ta bande » vide. Rien ne me fait revenir à J+7 ; pas de date ni de chiffre pour Bordeaux",
+      "fix": "en attente : voie Duo ouverte dans la ville, une « sortie zéro » organisée dès 30 inscrit·es, jauge et classement des villes proches de l'ouverture"
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "clair, « Rien n'est public ». « 4 + toi » faux (3 + toi)",
+      "fix": "compter juste"
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ton dimanche idéal, en 3 mots », c'est exactement mon humour. Mais aucun menu pour signaler un message ou quitter le groupe",
+      "fix": "menu « … » : Signaler · Bloquer · Quitter"
+    },
+    "V5-Revelation": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Léa, 27 · Malo, 29 · Sarah, 26 » : à 21 ans, je serais la petite sœur du groupe. Et juste en dessous, « Je ne peux plus venir », c'est tentant",
+      "fix": "âges annoncés dès Trouvée ; groupes composés par tranche d'âge"
+    },
+    "V5-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "ma coloc par SMS, sans installer l'appli : parfait",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair pour ma coloc, encart blowy discret",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "clair, le 17 en bouton ; rien sur ce que fait l'équipe",
+      "fix": "délai d'intervention de l'équipe"
+    },
+    "V5-Checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Personne ne la voit » : bien. Le raton dans le bouton, ça me fait rire",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "quiz à 20 h, boisson au comptoir : c'est structuré, j'aime. Rien pour signaler quelqu'un pendant la soirée",
+      "fix": "bouton « Signaler » discret"
+    },
+    "V5-Souvenir": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« +1 souvenir » avec la tasse : mignon. Mais les souvenirs ne servent à rien (pas de déco, pas de visite)",
+      "fix": "souvenirs posés dans la maison de la bande"
+    },
+    "V5-Apres": {
+      "score": 3,
+      "blocking": true,
+      "issue": "c'est là que la fuite a lieu : si « Plus » apparaît sur la carte de Sarah, j'apprends qu'elle est ouverte aux femmes, et elle l'apprend de moi. Et je dois choisir entre Ami·e et Plus : voter Plus peut me faire perdre l'amie",
+      "fix": "Ami·e/Plus/Non toujours visibles ; « Plus » vaut au moins « ami·e »"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Sarah rejoint ta bande » : c'est mon objectif, bien présenté",
+      "fix": "—"
+    },
+    "V5-Bande": {
+      "score": 6,
+      "blocking": false,
+      "issue": "la rue aux maisons, c'est ce qui reste de l'Animal Crossing que j'aimais, mais on ne peut plus rien y faire ; Tom n'a pas de maison ; deux pigeons, deux lapins",
+      "fix": "visite chez un·e ami·e, petit défi de bande (« venir à 3 jeudi ») ; une maison et un pet distincts par personne"
+    },
+    "V5-Chat": {
+      "score": 7,
+      "blocking": false,
+      "issue": "le souffleur est utile ; « avant le 20 nov. », petite pression qui n'explique pas la suite",
+      "fix": "dire ce qui se passe après le 20"
+    },
+    "V5-Duo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "je ne veux pas de tête-à-tête, mais si je l'active : « 84 % de vision » sorti d'un quiz ; et je ne sais pas si la voie Duo marche à Bordeaux pendant l'attente",
+      "fix": "dire si le Duo est ouvert hors quartier ; retirer le %"
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "3 étapes claires ; dates écrites de deux façons (22 nov. / J+7)",
+      "fix": "une seule formule"
+    },
+    "V5-Lien-debloque": {
+      "score": 7,
+      "blocking": false,
+      "issue": "visage + voix en même temps : bien. Seule sa voix est montrée",
+      "fix": "afficher les deux vocaux"
+    },
+    "V5-RdvDuo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "lieu modifiable : je connais Bordeaux mieux qu'un raton, réglé ; qui paie n'est pas dit",
+      "fix": "« Chacun sa boisson »"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 8,
+      "blocking": false,
+      "issue": "repropose le café de la sortie",
+      "fix": "un autre lieu par défaut"
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "facultatif et « pour rire » : ok, je ne l'utiliserai pas",
+      "fix": "off par défaut"
+    },
+    "V5-Rupture": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Je n'ai plus assez de temps pour bien m'en occuper » parle du pet, c'est un reste de la V4 ; « Ghoster fait baisser la fiabilité » alors qu'elle compte les présences",
+      "fix": "messages humains ; une seule définition"
+    },
+    "V5-Story": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 3 mots », je le poste ; « On était 5 au café », sans visages, ça me va. L'onglet « Viens à une sortie avec moi ? » ne sert à rien à Bordeaux",
+      "fix": "modèle « Aide-moi à ouvrir Bordeaux · 212/300 »"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "rien à installer, je réponds. La fin « Alex t'emmène à sa prochaine sortie » est fausse si Alex est sur liste d'attente ; le bouton désactivé est illisible",
+      "fix": "fin adaptée à la ville ; contraste"
+    },
+    "V5-Profil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "3 chiffres ; « 5 personnes dans ta bande » faux (4)",
+      "fix": "compter juste"
+    },
+    "V5-Fiche": {
+      "score": 7,
+      "blocking": false,
+      "issue": "fiabilité visible : ok. Accessoires vendus 2,99 € alors que le concept dit qu'ils ne s'achètent pas",
+      "fix": "trancher, et le dire"
+    },
+    "V5-Boutique": {
+      "score": 5,
+      "blocking": false,
+      "issue": "12 € la place, 19,99 €/mois : rien pour les étudiant·es ; les accessoires à 2,99 €, j'en prendrais un",
+      "fix": "tarif étudiant (place à 6–8 €) ; accessoires assumés comme cosmétiques"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "propre ; mode discret OFF par défaut",
+      "fix": "proposé à l'onboarding"
+    },
+    "V5-Abonnement": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« 0,00 € à ce jour » sur un abonnement actif, et « gratuit » dans les Réglages",
+      "fix": "état cohérent"
+    },
+    "V5-Confidentialite": {
+      "score": 6,
+      "blocking": false,
+      "issue": "clair et cohérent, sauf sur le seul point qui m'importe : rien n'empêche le vote de révéler mon orientation, et il n'y a pas de réglage « mon orientation ne se déduit jamais »",
+      "fix": "corriger le vote ; écrire la règle ici"
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Propos haineux, LGBTphobie » ajouté : merci. Il manque « A révélé mon orientation / outing »",
+      "fix": "motif « outing »"
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "pause de 2 semaines : bien. « Abonnement résilié en même temps » : faux pour l'App Store ; « 3 souvenirs » contre 4 ailleurs",
+      "fix": "lien vers la résiliation du store ; chiffre juste"
+    }
+  },
+  "top3": [
+    "Donner une vraie vie aux villes fermées. Dire la ville avant l'installation (store, Welcome). Pour « Ailleurs » : voie Duo ouverte, « sortie zéro » organisée par l'équipe dès 30 inscrit·es, et une story « Aide-moi à ouvrir Bordeaux · 212/300 ». C'est mon seul levier, et il serait viral.",
+    "Ne jamais laisser deviner l'orientation : Ami·e/Plus/Non toujours affichés, compatibilité gérée en silence, et la règle écrite dans Confidentialité. Ajouter le motif « outing » dans Signaler.",
+    "Me mettre avec des gens de mon âge, à mon prix : date de naissance demandée, groupes composés par tranche d'âge (20–24 ans) et fourchette visible dès Trouvée, tarif étudiant sur la place, et des sorties autres que le café (bar à jeux, expo)."
+  ],
+  "tenIf": "Je mets 10 si, en deux semaines à Bordeaux, je fais deux sorties (café, bar à jeux ou expo) avec des gens de 20 à 25 ans, pour moins de 8 € la place. Si personne ne peut deviner que je suis bi à cause d'un bouton. Et si la rue de ma bande me laisse encore jouer un peu entre deux jeudis."
+}

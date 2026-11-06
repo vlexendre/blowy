@@ -1,0 +1,322 @@
+{
+  "member": "growth-lead",
+  "global": 5,
+  "criteria": {
+    "comprehension": 7,
+    "cognitive": 6,
+    "desire": 6,
+    "meet": 6,
+    "safety": 7,
+    "virality": 5,
+    "money": 4,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bon hook, mais le chip « Paris 11e · Lyon 4e » ne dit pas quoi faire si je suis ailleurs ; « 5 personnes » alors que l'orbite montre 4 pets.",
+      "fix": "Afficher « Ton quartier n'est pas ouvert ? Fais-le ouvrir » sous le CTA (entrée directe dans la liste d'attente) et aligner 5 pets = 5 personnes."
+    },
+    "V5-Invite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Le meilleur écran d'acquisition, mais CTA « Créer mon pet » au lieu de l'objet du désir (la place jeudi) ; 35 % de l'écran est vide sous l'encart boisson ; pas d'avertissement qu'il faudra un selfie + photo.",
+      "fix": "CTA « Prendre ma place jeudi » ; montrer le compte à faire (« 2 min + selfie ») ; ajouter le visage/prénom d'Alex (déjà vérifié) pour la preuve sociale."
+    },
+    "V5-Craft": {
+      "score": 6,
+      "blocking": false,
+      "issue": "4 espèces + 4 curseurs = 8 décisions en écran 1 ; le « 3D · fais-le tourner » coûte du temps sans servir la sortie.",
+      "fix": "Une espèce + un tap ; curseurs déplacés après la 1re sortie (« affine Nino »)."
+    },
+    "V5-Vie": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Il irait à l'école… Polytechnique / École du cirque » : pour un public venu par TikTok, ça sent le quiz ; 4 écrans de plus avant toute valeur.",
+      "fix": "Réduire à 2 questions max avant Trouvée, le reste dans le chat de groupe (les pets demandent)."
+    },
+    "V5-Intention": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Clair, mais les deux cases semblent cochées par défaut ; « Entre nous » en étape 03 alors qu'il n'y a pas de 02 visible.",
+      "fix": "Rien de coché par défaut ; numérotation cohérente."
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Une question, 3 choix : bien. Double indicateur (barre 04 + 3 points) inutile.",
+      "fix": "Un seul indicateur de progression."
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Clair et secret. Rien de viral ici, normal.",
+      "fix": "Garder ; masquer l'écran si « Plus » n'a pas été coché."
+    },
+    "V5-Toi-quartier": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ailleurs → liste d'attente » est noyé en 3e choix gris ; c'est pourtant ton moteur d'acquisition hors Paris 11e. « près de toi » sous Paris 11e suggère une géoloc.",
+      "fix": "« Ailleurs » ouvre une saisie d'arrondissement/quartier avec jauge immédiate et « invite 3 voisins pour ouvrir » ; retirer « près de toi »."
+    },
+    "V5-Eclosion": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Animation sans action : 3–4 s de funnel en plus, aucun partage.",
+      "fix": "Proposer « filmer l'éclosion » (vidéo 6 s exportable avec watermark blowy.) : c'est un format TikTok natif."
+    },
+    "V5-Eclosion-ne": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Garder Nino pour de vrai » = créer un compte, wording ambigu ; pas de partage du pet né.",
+      "fix": "CTA « Créer mon compte » + bouton secondaire « Partager Nino » (carte 9:16)."
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Apple/Google/téléphone : bon. « Garde Nino » infantilise un peu ; 18 ans en petit gris.",
+      "fix": "Garder les SSO ; « Ton compte · 18 ans et plus » lisible."
+    },
+    "V5-Trouvee": {
+      "score": 7,
+      "blocking": false,
+      "issue": "LE moment screenshot (« Nino t'a trouvé une bande », pets, date) et il n'y a aucun bouton partager ; le « +1 un·e ami·e » est un carré pointillé sans texte d'action.",
+      "fix": "Bouton « Partager ma bande » (carte 9:16 sans prénoms) + carré +1 étiqueté « Emmène quelqu'un · gratuit pour sa 1re »."
+    },
+    "V5-Sortie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Fiche complète, mais aucune preuve sociale (combien de sorties ce jeudi dans le 11e ?) et le +1 n'explique pas que l'ami·e a aussi sa 1re offerte.",
+      "fix": "Ligne « 12 sorties ce jeudi dans le 11e » (vrais chiffres) ; +1 : « sa 1re sortie est offerte aussi »."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Copie quasi exacte de Sortie : l'état « Tu y vas » est un pill vert en haut à droite, rien ne célèbre l'engagement.",
+      "fix": "Bandeau « Tu y vas ! » + « Dis-le à un·e ami·e qui pourrait venir » (lien +1 pré-rempli)."
+    },
+    "V5-Sortie-complete": {
+      "score": 4,
+      "blocking": false,
+      "issue": "Incohérent : « Les 6 places sont prises » alors que le groupe affiché fait 4 ; un utilisateur qui voit « complet » sans comprendre décroche.",
+      "fix": "Écrire la vraie raison (« ta demande est arrivée après la composition ») et ne pas afficher un groupe dont on ne fait pas partie."
+    },
+    "V5-Sortie-annulee": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon ton (remboursée, prioritaire), mais la carte affiche encore « Lieu exact mercredi à 18 h · visages jeudi à 9 h ».",
+      "fix": "Retirer les infos périmées ; ajouter « Préviens ton +1 » si invité."
+    },
+    "V5-Verif": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Mur de friction placé juste après « Je viens » : bonne place, mais « 30 s » sous-estime (selfie + 2 photos).",
+      "fix": "Annoncer « 1 min · selfie + 1 photo » ; mesurer la chute à cet écran comme KPI n°1."
+    },
+    "V5-Notifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bon pré-prompt contextuel (« Ton groupe va écrire »).",
+      "fix": "Garder ; ajouter « tu sauras quand ton quartier ouvre » pour les inscrits en liste d'attente."
+    },
+    "V5-Accueil": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Le +1 est en 4e position (bandeau pointillé bas) ; 40 % de l'écran est un salon décoratif.",
+      "fix": "Réduire l'illustration à 25 %, remonter « Emmène un·e ami·e jeudi » juste sous la carte sortie."
+    },
+    "V5-Attente": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Jauge 212/300 + CTA unique : bon. Mais pas de date estimée, pas de partage de la jauge, et 300 contredit le seuil de 120 vérifiés de la spec (§12 q.10).",
+      "fix": "Afficher le vrai seuil, « il manque 88 voisin·es », et un partage « Fais ouvrir Paris 20e » avec l'image de la jauge."
+    },
+    "V5-Chats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Clair. « Inès : qui vient jeudi avec Alex ? » montre une boucle bande → +1 : excellent.",
+      "fix": "Mettre en avant cette boucle : bouton « Inviter Inès à jeudi » dans la ligne Ta bande."
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Brise-glace « 3 mots » = rétention avant J ; « 4 + toi » alors que 3 pets visibles.",
+      "fix": "Corriger le compte ; ajouter un 2e prompt automatique la veille pour éviter le chat mort."
+    },
+    "V5-Revelation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Moment fort mais privé ; rien de partageable sans outing des autres.",
+      "fix": "Proposer « Partager : J'ai rendez-vous ce soir avec 3 inconnu·es » (pets seulement)."
+    },
+    "V5-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bonne boucle d'acquisition déguisée en sécurité ; « Maman par WhatsApp » parfait.",
+      "fix": "Ajouter « Sam ne verra que ça » en haut, garder."
+    },
+    "W-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "L'encart « Découvrir › » en bas est discret et juste. Pas de lien vers le quartier (Sam habite peut-être le 11e).",
+      "fix": "Encart « Il y a des sorties à Paris 11e jeudi · 1re offerte » si même ville ; sinon liste d'attente de son quartier."
+    },
+    "W-Ange-alerte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Aucun marketing ici, c'est juste.",
+      "fix": "Ne rien ajouter."
+    },
+    "V5-Checkin": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Gros bouton clair.",
+      "fix": "Rien côté growth."
+    },
+    "V5-Checkin-ok": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Malo en route » : statut inventé (la spec ne montre que « arrivé·e ») ; aucun moment de groupe à capturer.",
+      "fix": "« Photo de table » optionnelle sans visages (les mains + les boissons) partageable plus tard."
+    },
+    "V5-Souvenir": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bon pic émotionnel, mais le partage est relégué en lien texte sous « Voter en secret ».",
+      "fix": "Après le vote, revenir ici avec « Partager la story » en CTA principal ; pré-générer la carte 9:16."
+    },
+    "V5-Apres": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Mécanique de vote propre ; c'est le moment où l'on a le plus envie d'en parler (« j'ai voté plus… »).",
+      "fix": "Rien à partager ici (secret) ; mais afficher « Ta prochaine sortie : jeudi 20 » après le dernier vote."
+    },
+    "V5-Apres-resultats": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« 2 ACCORDS. » est le vrai moment screenshot de l'app et il n'a pas de partage anonymisé ; double CTA « Écrire à Léa ».",
+      "fix": "Carte partageable « +1 dans ma bande » (pets seulement, sans prénoms) ; un seul CTA."
+    },
+    "V5-Bande": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Viens jeudi avec quelqu'un » : bonne relance ; « 5 personnes » vs 4 pets dans la rue (Tom absent).",
+      "fix": "Corriger ; mettre un bouton +1 par ligne (« Venir jeudi avec Inès »)."
+    },
+    "V5-Chat": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Proposer un rendez-vous · avant le 20 nov. » : une échéance qui n'existe pas pour un duo né d'une sortie (spec §12 q.14).",
+      "fix": "Retirer l'échéance ; garder le raccourci."
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "La voie Duo cannibalise la sortie (le produit viral) et ressemble à n'importe quelle app de rencontre ; « 84 % de vision » est la seule chose screenshotable.",
+      "fix": "Placer la voie Duo derrière la 1re sortie vécue ; mesurer si elle fait baisser le taux de +1."
+    },
+    "V5-Lien": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Clair ; pas de boucle.",
+      "fix": "Rien côté growth."
+    },
+    "V5-Lien-debloque": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Moment fort privé.",
+      "fix": "Rien à partager (visages)."
+    },
+    "V5-RdvDuo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "RDV « Sam. 15 nov. · 18 h » alors que les visages se débloquent « samedi 20 h » : on propose un rendez-vous avant de s'être vus.",
+      "fix": "Contraindre la proposition après le déblocage."
+    },
+    "V5-RdvDuo-lea": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Même écran, cohérent.",
+      "fix": "Rien côté growth."
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Clin d'œil mignon, potentiel TikTok (« on a un œuf ») mais caché dans un menu.",
+      "fix": "Une fois éclos, carte partageable des deux pets (avec double consentement)."
+    },
+    "V5-Rupture": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Ghoster, c'est elle qui baisse » est faux (la fiabilité compte les présences) : une promesse fausse se voit vite sur les réseaux.",
+      "fix": "Corriger le texte."
+    },
+    "V5-Story": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Seul l'onglet Question est rendu ; la story « Sortie » (« On était 5 au café ») — la plus forte pour l'acquisition locale — n'est pas montrée ; « ngl, mais en mieux » associe la marque à NGL (sanctionnée par la FTC en 2024 pour de faux messages anonymes).",
+      "fix": "Rendre les 3 onglets ; retirer la référence NGL ; ajouter un sticker lien « Viens jeudi · Paris 11e » sur la story Sortie."
+    },
+    "W-Repondre": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Boucle Gas-like efficace : chips positifs, 3 choix, envoi. Fin « Alex t'emmène à sa prochaine sortie » = bon pont vers l'IRL.",
+      "fix": "Ajouter le quartier de la personne (« tu es dans le 11e ? ») avant de pousser l'install, sinon CAC gaspillé hors zone."
+    },
+    "V5-Profil": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Vision card à partager : bon ; mais rien ne dit ce que l'autre recevra.",
+      "fix": "Aperçu de la carte avant partage."
+    },
+    "V5-Fiche": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Souvenirs = preuve d'usage ; « Partager sa vision card » en haut doublonne le Profil.",
+      "fix": "Un seul point d'entrée de partage."
+    },
+    "V5-Boutique": {
+      "score": 4,
+      "blocking": false,
+      "issue": "Accessoires vendus 2,99 € à l'unité alors que la spec (D-020) les déclare non achetables ; Blowy+ 19,99 € pour 2 places à 12 € = 4 € d'économie.",
+      "fix": "Retirer l'achat d'accessoires ; Blowy+ avec une vraie raison (ex. +1 offert chaque mois à un·e ami·e : c'est aussi de l'acquisition)."
+    },
+    "V5-Reglages": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien côté growth.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 4,
+      "blocking": false,
+      "issue": "L'état « Avant de partir… −50 % pendant 3 mois. L. continue d'en profiter aussi. » est toujours dans la source : s'il fuite en prod, c'est un bad buzz garanti.",
+      "fix": "Supprimer le bloc du fichier."
+    },
+    "V5-Confidentialite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien côté growth.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien côté growth.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Bon (pause proposée) ; aucun « pourquoi » exploitable pour le quartier (« pas assez de sorties » doit alimenter la densité).",
+      "fix": "Si « Pas assez de sorties » : proposer la liste d'attente d'un quartier voisin."
+    }
+  },
+  "top3": [
+    "Un vrai moment de partage post-sortie : carte 9:16 générée automatiquement (pets du groupe, café, « On était 5 jeudi soir, Paris 11e », lien « viens jeudi ») en CTA principal du Souvenir et des Résultats, avec un tracking K par source.",
+    "Faire du +1 le geste central : étiqueter le carré pointillé (« Emmène quelqu'un · sa 1re est offerte »), le mettre en 2e position de l'Accueil, et permettre le +1 depuis chaque ligne de la Bande.",
+    "Cold start chiffré par quartier : afficher le vrai seuil (spec : 120 vérifiés), « il manque N voisin·es », partage de la jauge, et « Ailleurs » qui ouvre une liste d'attente nominative dès l'onboarding."
+  ],
+  "tenIf": "Je mets 10 si, sur un test de 4 semaines dans le 11e, le funnel montré est mesuré (Welcome → 1re sortie vécue ≥ 25 %, chute au selfie < 30 %), si chaque sortie vécue produit au moins 0,3 nouvel inscrit vérifié dans le même quartier (+1 + story + ange gardien), et si le partage post-sortie est un CTA principal qui ne montre ni visage ni prénom."
+}

@@ -1,0 +1,94 @@
+# Jury V5 · tour 1 · Léa, 25 ans, Paris 11e
+
+> Femme hétéro, chargée de com' dans une agence du 11e. Hinge (et Hinge+ un mois sur trois), Instagram, TikTok, BeReal. Ce qui m'use : les conversations qui meurent, le stress du premier rendez-vous. Je veux quelqu'un de sérieux et deux ou trois nouvelles copines dans le quartier. Matériel lu : les 50 rendus V5, les textes des `.dc.html`, le README V5, le concept V5 et mon rapport V4.
+
+**Verdict.** Pour la première fois, cette appli me fait sortir un jeudi dans mon quartier avec un vrai filet de sécurité. Je l'installerais. Mais le vote d'après-sortie peut dévoiler ce que je cherche et me faire perdre une amitié possible, il n'y a aucun bouton signaler dans le chat de groupe, et une dizaine de chiffres se contredisent d'un écran à l'autre : pas encore une appli à laquelle je confie mes jeudis.
+
+**Note globale : 6/10**
+
+| Critère | Note | Pourquoi |
+|---|---|---|
+| Compréhension (5 s) | 8 | « Ton pet te trouve une bande. En vrai, cette semaine. » + jeudi 19 h 30 · un café du 11e · 5 personnes : compris en 3 s. Mais « PETS & POTES » à côté du logo dit « amis seulement », et le « ou plus » n'est qu'une légende en bas. |
+| Charge cognitive | 8 | Une question par écran à l'onboarding, une carte principale à l'Accueil, vocabulaire tenu (sortie, groupe, bande, duo). Ce qui coûte : la taille du groupe change selon l'écran (4, 5, 6) et deux états se contredisent (Sortie complète, Sortie annulée). |
+| Envie (J0 / J+1 / J+7 / J+30) | 7 | J0 oui si une copine m'envoie l'Invite. J+1 : le chat du groupe et le « 3 mots ». J+7 : la sortie a eu lieu, donc oui. J+30 : seulement si les groupes ont mon âge et assez de femmes, et rien ne me le garantit à l'écran. |
+| Vraie rencontre en 2 semaines | 7 | Dans le 11e, j'ai une vraie sortie le jeudi 13, avec lieu, heure et groupe. En 2 semaines, 2 sorties sont réalistes. Ce qui baisse la note : n'importe qui peut annuler en un tap après avoir vu les visages à 9 h, et aucune fourchette d'âge n'est garantie. |
+| Sécurité et confiance | 7 | Lieu public partenaire, lieu exact la veille, ange gardien choisi parmi n'importe quels contacts par simple lien, check-in, faux appel, alerte : c'est exactement ce que je fais à la main. Mais le chat de groupe n'a aucun menu signaler/quitter, le bouton « Plus » trahit l'intention et l'orientation des autres, et l'âge n'est jamais demandé. |
+| Viralité / distribution | 5 | Je posterais « Décris-moi en 3 mots », mais pas avec le logo blowy en gros en haut du modèle. Le +1 « Emmène un·e ami·e jeudi » marche vraiment pour moi, c'est la meilleure boucle. Le moment « screenshot » serait l'écran « 2 accords », mais je ne peux pas le partager. |
+| Argent | 6 | 12 € boisson comprise, remboursée si la sortie saute : c'est honnête et je paie. Blowy+ à 19,99 € pour 2 places (24 €) plus un bonnet ne sert à rien. L'écran Abonnement affiche « 0,00 € à ce jour » sur un abonnement actif, et Supprimer promet de résilier un abonnement App Store, ce que l'app ne peut pas faire. |
+| Finition visuelle | 7 | Système cohérent, typo forte, bons contrastes presque partout. Mais le titre « PROUVE QUE T'ES TOI » touche le bord droit, « Ta 1re sortie est offerte » est presque illisible (blanc pâle sur orange), le bouton désactivé de W-Repondre disparaît dans le fond, et les visages sont encore des initiales. |
+
+## Mes reproches V4 : où on en est
+
+- Réglé : le paywall, le compte à rebours, les XP, les séries, la faim et la carte « à 300 m » ont disparu. L'ange gardien peut être n'importe quel contact, par simple lien. Je peux changer le lieu du rendez-vous à deux. En duo, visage et voix arrivent à 48 h. Je peux cocher ami·e ET plus. Le genre et « qui je rencontre » sont demandés clairement. Les groupes existent enfin pour me faire de nouvelles copines.
+- Pas réglé : le quiz de Vie est le même qu'en V4 (« Polytechnique / École du cirque »). Le souffleur envoie toujours sa phrase en mon nom en un tap. Le logo blowy reste en gros sur la story. Signaler n'a toujours ni « comportement pendant le rendez-vous », ni « photos non sollicitées », et la réponse prend 24 h. L'œuf existe encore.
+- Nouveau problème : le vote après la sortie. Selon que le bouton « Plus » apparaît ou non sur une carte, on devine ce que les autres cherchent. Et un « plus » qui n'est pas réciproque fait perdre l'amitié.
+
+## Écran par écran
+
+Format : note · ce qui empêche le 10 → correction attendue.
+
+- **V5-Welcome** · 7/10 · « PETS & POTES » collé au logo contredit « Ami·e ou plus ? » ; le raton en hoodie occupe 60 % de l'écran que ma collègue voit par-dessus mon épaule → supprimer « PETS & POTES », monter « Ami·e ou plus » dans le titre, réduire le raton au profit d'une table de 5
+- **V5-Invite** · 8/10 · « 3 autres personnes du quartier vous rejoignent » : ni âge ni genres, alors que c'est la première chose que je veux savoir → ajouter une ligne « groupe de 5 · 25–32 ans · au moins 2 femmes » sous l'offre
+- **V5-Craft** · 7/10 · 4 espèces gratuites, plus d'XP : réglé. Mais rien ne dit à quoi servent les 4 curseurs Gentil/Espiègle… : ça ressemble à du décor → une phrase « Nino montre ça à ton groupe » ou supprimer les curseurs
+- **V5-Vie** · 4/10 · même quiz qu'en V4 (« Polytechnique / École du cirque », « Il ne fera jamais : Ghoster ») et c'est censé « composer ton groupe » ; aucune question sur le sérieux ou le rythme ; seul écran sans pastille d'étape (01, 03, 04, 05 ailleurs), jauge « 0 % » gratuite → remplacer « l'école » par « Ce que tu cherches vraiment » et « Un jeudi soir idéal » ; ajouter la pastille « 02 »
+- **V5-Intention** · 9/10 · les deux cases et le bloc Secret sont justes ; rien ne me permet de dire que, côté amitié, je veux surtout des filles → sous « Des ami·es » : option « plutôt des filles » qui pèse sur la composition du groupe
+- **V5-Toi** · 9/10 · clair, pronom seul visible ; « Autre mot ? Je l'écris » en lien gris peu visible → en faire une 4e carte
+- **V5-Toi-plus** · 5/10 · « Plus n'est proposé qu'entre personnes compatibles » : un homme qui voit le bouton Plus sur ma carte apprend que je cherche des hommes en « plus ». Le mot « Secret » de la même ligne devient faux → toujours afficher Ami·e/Plus/Non ; un « plus » incompatible est traité en silence comme « ami·e »
+- **V5-Toi-quartier** · 8/10 · « Paris 11e · ouvert · près de toi » parfait ; mais aucun écran ne demande l'âge des gens avec qui je veux sortir → ajouter un 4e point « Âge du groupe » (fourchette, ±4 ans par défaut)
+- **V5-Eclosion** · 6/10 · écran violet « Ça couve… » sans action, entre deux étapes utiles, alors que l'onboarding promet « 2 min en tout » → animation de 1,5 s maximum, qu'on peut passer d'un tap
+- **V5-Eclosion-ne** · 6/10 · « GARDER NINO POUR DE VRAI » : petit chantage affectif pour me faire créer un compte → « Créer mon compte · 1 tap »
+- **V5-Compte** · 7/10 · date de naissance demandée nulle part, alors que la Révélation affiche « Léa, 27 » ; « 18 ans minimum » en gris 11 px, sans contrôle → date de naissance obligatoire ici, âge estimé au selfie avant la 1re sortie
+- **V5-Trouvee** · 8/10 · 4 avatars + « +1 », alors que le Welcome promet 5 et que Sortie-complète parle de « 6 places » ; pas d'âges ; « Ta 1re sortie est offerte » en blanc pâle sur orange, illisible → un seul chiffre partout ; « 25–29 ans » sous les pets ; texte du bas en encre pleine
+- **V5-Sortie** · 8/10 · fiche complète (lieu public, ange, annulation, prix) ; il manque l'âge et la répartition du groupe, et le prix pour mon +1 → ligne « Groupe : 25–29 ans · 2 elle · 2 il » ; « +1 : sa 1re sortie est offerte aussi »
+- **V5-Sortie-inscrit** · 8/10 · « Choisir mon ange gardien » n'est qu'un lien gris sous le CTA, alors que pour moi c'est l'étape n° 2 → rangée « Ange gardien : à choisir » avec un point orange dans la liste
+- **V5-Sortie-complete** · 4/10 · contradiction : « Les 6 places sont prises », mais la carte « Ton groupe » me montre dedans (Toi, L., M., S.) ; « Nino t'a gardé jeudi 20 » et le bouton « Prendre jeudi 20 » : réservé ou pas ? → retirer la carte groupe ; « Jeudi 13 est complet. Jeudi 20 : une place t'attend » ; CTA « Confirmer jeudi 20 »
+- **V5-Sortie-annulee** · 4/10 · « Le café a dû fermer jeudi », puis « Même café, nouveau groupe » pour la suivante ; « Ta place est remboursée » alors qu'elle était offerte → « nouveau lieu annoncé mercredi » ; « ta sortie offerte reste offerte »
+- **V5-Verif** · 7/10 · « le selfie… n'est montré à personne » : bien. Mais je ne sais pas ce qu'il vérifie (identité ? âge ? ressemblance avec mes 2 photos ?) ; le titre touche le bord droit → une ligne « on compare ton selfie à tes photos et on estime ton âge » ; titre sur 2 lignes, marge de 20 px
+- **V5-Notifs** · 6/10 · l'exemple montré, « L. a écrit dans ton groupe : « Team brunch, évidemment. » », c'est exactement ce que je ne veux pas voir sur mon écran verrouillé en réunion ; le mode discret est cité mais ne s'active pas d'ici → un interrupteur « Mode discret » sur cet écran, et les exemples en version neutre
+- **V5-Accueil** · 8/10 · bonne hiérarchie, une carte noire « Ta sortie ». Le salon du raton prend le tiers du haut pour rien ; « Tes duos · 1 en cours · 2 libres » alors que V5-Duo montre 1 en cours, 1 proposé et 1 libre → scène réduite à 120 px ; même compteur que l'écran Duo
+- **V5-Attente** · 8/10 · honnête, une seule action. « 212 / 300 inscrit·es » : rien ne dit si l'ouverture tient compte de l'équilibre femmes/hommes → « Ouverture à 300 inscrit·es, dont au moins 40 % de femmes »
+- **V5-Chats** · 8/10 · 3 sections claires, « Rien n'est public » ; « Jeudi · 4 + toi » est faux : la Révélation montre 3 personnes plus moi → « Jeudi · 3 + toi »
+- **V5-Groupe** · 4/10 · **BLOQUANT** · le brise-glace « Ton dimanche idéal, en 3 mots » marche. Mais l'en-tête n'a aucun menu « … » : je ne peux ni signaler un message, ni quitter, ni couper les notifs d'un groupe de 3 inconnus avant de les voir en vrai → menu « … » : Signaler un message · Bloquer · Quitter la sortie · Silence
+- **V5-Revelation** · 7/10 · visages, âges, adresse exacte : enfin. Mais « Je ne peux plus venir » est à 1 tap sous les visages, sans dire si ça compte comme absence (la règle parle de « mercredi 18 h ») ; rien pour signaler « ce n'est pas la personne du selfie » → sous le lien : « Annuler maintenant compte comme une absence » ; ajouter « Signaler un profil »
+- **V5-Ange** · 9/10 · ce que je demandais en V4 : Maman par WhatsApp, Sam par SMS, liste « reçoit / jamais ». Rien ne rappelle mon ange par défaut des Réglages → mention « Par défaut : Sam » + case « toujours lui »
+- **W-Ange** · 9/10 · limpide pour ma mère : lieu, 19:32, 21:30, SMS à 22 h. Il manque un bouton « Je n'arrive pas à joindre Léa » → bouton secondaire qui déclenche la même chaîne que l'alerte
+- **W-Ange-alerte** · 9/10 · clair : appeler Alex, le 17. « L'équipe blowy est prévenue » ne dit pas ce qu'elle fait ni en combien de temps ; le « dernier lieu connu » est le check-in de 19:32, pas l'endroit où j'étais à 21:04 → délai d'intervention de l'équipe écrit ; position prise au moment de l'alerte
+- **V5-Checkin** · 9/10 · gros bouton et une phrase de confidentialité claire. « Alerte discrète » écrite en rouge vif, ce n'est pas discret → libellé « Besoin d'aide » en gris, l'alerte reste à 2 taps
+- **V5-Checkin-ok** · 7/10 · « Ta boisson est au comptoir, au nom de Nino » : je dois dire « Nino » au barman. Pendant la soirée, aucun moyen de signaler quelqu'un → boisson au prénom de chacun ou code à montrer ; 3e bouton discret « Signaler »
+- **V5-Souvenir** · 7/10 · « +1 SOUVENIR » en pixel art géant juste après une vraie soirée : on retombe dans le jeu. Le bon geste (« Voter en secret ») est bien en CTA → titre « Sortie vécue », et « +1 souvenir » en sous-ligne
+- **V5-Apres** · 3/10 · **BLOQUANT** · un seul choix par personne : Ami·e OU Plus. Avec la règle « plus unilatéral = rien », si je dis Plus à Malo et qu'il dit Ami·e, on n'a même pas l'amitié, et l'écran ne le dit pas. En plus, voir ou non le bouton Plus sur une carte révèle si l'autre cherche « plus » avec mon genre → « Plus » vaut au moins « ami·e » (repli automatique), écrit sous les boutons ; Ami·e/Plus/Non toujours visibles pour tout le monde
+- **V5-Apres-resultats** · 9/10 · clair, 2 cartes, rien d'autre ; « Le reste reste secret » sonne maladroit → « Tout le reste reste secret »
+- **V5-Bande** · 6/10 · la liste avec la provenance est utile ; la rue n'a que 4 maisons (pas de Tom) ; Tom et Sarah ont tous les deux un pigeon, Maya et Léa un lapin : le pet ne permet plus de reconnaître qui que ce soit ; « 5 personnes » me compte moi → rue à 5 maisons ou pas de rue ; « 4 personnes » ; une couleur ou une tenue propre à chaque pet
+- **V5-Chat** · 7/10 · « Proposer un rendez-vous · avant le 20 nov. » : et le 21 ? Si le duo se ferme, c'est un compte à rebours déguisé. « ENVOYER » envoie toujours la phrase de Nino en mon nom → écrire ce qui se passe après le 20 ; « ENVOYER » remplacé par « Utiliser », qui pré-remplit le champ
+- **V5-Duo** · 6/10 · « 84 % de vision », « 79 % » : un pourcentage tiré d'un quiz de 4 questions, je n'y crois pas plus qu'en V4 ; deux CTA de styles différents (orange « Ouvrir », noir « Les faire se rencontrer ») pour un geste presque identique → remplacer le % par 2 points communs ; un seul style de CTA
+- **V5-Lien** · 9/10 · 3 étapes datées, « rien ne se débloque si un seul parle » : c'est ma demande V4. Mais « avant le 22 nov. » ici, « avant J+7 » sur l'écran Duo → une seule façon d'écrire la date
+- **V5-Lien-debloque** · 9/10 · visage + voix en même temps à 48 h : exactement ça. Seule sa voix (0:12 · Jade) est montrée : je ne sais pas si elle a reçu la mienne → afficher les deux vocaux
+- **V5-RdvDuo** · 9/10 · lieu modifiable, ange = n'importe qui, check-in : V4 réglé. Rien ne dit qui paie la boisson → ligne « Chacun sa boisson » (ou « boisson incluse · 12 € »)
+- **V5-RdvDuo-lea** · 8/10 · les pets reproposent le Café des Oiseaux, là où on vient de se voir à 5 : aucun intérêt pour un tête-à-tête → proposer par défaut un autre lieu que celui de la sortie
+- **V5-Oeuf** · 6/10 · facultatif, après 2 rencontres, les deux réponses pèsent pareil : mieux. Mais je ne veux pas qu'un mec me l'envoie → désactivé par défaut, à activer par les deux dans les Réglages
+- **V5-Rupture** · 5/10 · « Merci pour ces jours avec Nino » après un vrai rendez-vous ; « Je n'ai plus assez de temps pour bien m'en occuper » est un reste de la V4, quand il fallait nourrir le pet ; « Ghoster, c'est elle qui baisse » alors que la fiabilité compte les présences aux sorties → messages humains (« J'ai passé un bon moment, mais je ne sens pas d'étincelle ») ; une seule définition de la fiabilité
+- **V5-Story** · 6/10 · « Décris-moi en 3 mots », je le poste. Mais le logo « blowy » en haut de chaque modèle : mes 900 abonnés vont chercher et tomber sur « ou plus » → option « sans logo » (seule l'URL reste, en petit)
+- **W-Repondre** · 8/10 · fluide, aucun compte à créer. Le bouton désactivé « ENVOYER À NINO », gris foncé sur violet foncé, est presque invisible → bouton désactivé en blanc à 40 %, avec « choisis 3 mots »
+- **V5-Profil** · 7/10 · 3 chiffres utiles ; « 5 personnes dans ta bande » alors que V5-Bande en liste 4 ; mes photos n'apparaissent nulle part, même pour moi → compter juste ; afficher mes 2 photos (visibles par moi seule)
+- **V5-Fiche** · 7/10 · fiabilité claire, « visible par ton groupe ». Mais la barre à 6 segments fixe un objectif implicite, et les accessoires sont vendus 2,99 € alors que le concept dit « accessoires non achetables » → retirer la barre ; trancher entre accessoires gagnés et accessoires vendus
+- **V5-Boutique** · 7/10 · « Ne s'achète jamais : … » est honnête ; 12 € boisson comprise, je paie. Blowy+ à 19,99 € pour 2 places (24 €) + un accessoire : 4 € d'écart, et 43,99 €/mois si je sors chaque jeudi → Blowy+ = toutes les sorties du mois à prix réduit, ou supprimer Blowy+
+- **V5-Reglages** · 8/10 · propre, « Genre et qui je rencontre » présent ; mode discret OFF par défaut, jamais proposé avant → proposer le mode discret dans l'onboarding (écran Notifs)
+- **V5-Abonnement** · 5/10 · « Historique de facturation : 0,00 € à ce jour » avec « 1 / 2 ce mois » et un prélèvement le 3 déc. : essai caché ou bug ? Ailleurs (Réglages « gratuit », Profil « découvrir ») je ne suis pas abonnée → un état cohérent ; si c'est un essai, l'écrire avec sa date de fin
+- **V5-Confidentialite** · 9/10 · « Qui voit quoi » en 2 lignes, position « jamais montrée · check-in seul » : cohérent avec le reste ; rien n'avertit que le bouton Plus du vote révèle quelque chose → corriger le vote (voir Après) plutôt qu'ajouter un avertissement
+- **V5-Signaler** · 5/10 · mes demandes V4 sont ignorées : pas de « Comportement pendant la sortie », ni de « Photos non sollicitées », ni de « Ne ressemble pas à son selfie » ; « répond en moins de 24 h » après un incident en vrai, c'est long → ajouter ces 3 motifs ; « réponse en 1 h pour ce qui s'est passé en sortie »
+- **V5-Supprimer** · 6/10 · la pause de 2 semaines est bien. Mais « Ton abonnement Blowy+ sera résilié en même temps » est faux : l'app ne peut pas résilier un abonnement App Store, Apple demande de dire à l'utilisateur de le faire lui-même ; « Les 3 souvenirs » contre 4 sur la Fiche → « Pense à résilier dans Réglages › Abonnements » + lien ; chiffre juste
+
+## Les 3 changements qui feraient monter ma note le plus
+
+1. Réparer le vote d'après-sortie : Ami·e / Plus / Non toujours affichés pour tout le monde, et « Plus » vaut au moins « ami·e » si l'autre a dit « ami·e », écrit sous les boutons. Plus de fuite d'intention ni d'orientation, plus d'amitié perdue.
+2. Mettre la sécurité partout où il y a des inconnus : menu Signaler / Bloquer / Quitter dans le chat de groupe, sur la Révélation et au Check-in ; motifs « comportement pendant la sortie », « photos non sollicitées », « ne ressemble pas à son selfie » ; date de naissance demandée et âge vérifié au selfie.
+3. Montrer la composition avant de dire « Je viens » : fourchette d'âge et répartition (« 25–29 ans · 2 elle · 2 il ») sur Trouvée et Sortie, une option « plutôt des filles » en amitié, et un seul chiffre de groupe (5) sur tous les écrans.
+
+## Je mets 10 si…
+
+Je mets 10 si, en deux semaines, je vais à deux sorties dans le 11e avec des gens de 25 à 32 ans, dont au moins deux femmes, et que je vois tout ça avant de dire « Je viens ». Si mon vote « plus » ne révèle rien à personne et ne me fait jamais perdre une amitié. Si chaque écran où il y a des inconnus a un bouton Signaler. Et si je n'ai jamais à dire « Nino » au barman, ni à recevoir un œuf d'un mec.
+
+## Sources
+
+- [Apple, Offering account deletion in your app (les abonnements continuent : prévenir l'utilisateur)](https://developer.apple.com/support/offering-account-deletion-in-your-app)
+- [Brief marché 2026 (Hinge, Timeleft, Amata)](../../brief-marche-2026.md)
