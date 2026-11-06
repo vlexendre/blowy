@@ -145,7 +145,8 @@ describe('paiements V5 (Stripe simulé)', () => {
     expect((await h.db.outing.findUniqueOrThrow({ where: { id: outingId } })).status).toBe('CONFIRMED');
     // V5.3 B.6 : après la confirmation (veille 18 h), annuler = absence, sans remboursement.
     const c3 = await p3.call('POST', `/v1/outings/${outingId}/seat/cancel`, { kind: 'CANT_MAKE_IT' });
-    expect(c3.body).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
+    // V5.4 (B.8) : l'aperçu dit aussi qu'il reste un « imprévu » ce mois-ci (non utilisé ici : annulation tardive ordinaire).
+    expect(c3.body).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true, emergencyAvailable: true });
     const c4 = await p4.call('POST', `/v1/outings/${outingId}/seat/cancel`, { kind: 'CANT_MAKE_IT' });
     expect(c4.body.countsAsAbsence).toBe(true);
     await h.drain();
@@ -159,8 +160,11 @@ describe('paiements V5 (Stripe simulé)', () => {
     // La 1ʳᵉ offerte est rendue à p5, pas à p3 (absence).
     expect((await p5.call('GET', '/v1/outing-credits')).body.available).toEqual([{ kind: 'FREE_FIRST', count: 1 }]);
     expect((await p3.call('GET', '/v1/outing-credits')).body.available).toEqual([]);
-    // Pas de compensation lieu : la sortie n'a pas eu lieu.
-    expect(await journal('VENUE_COMPENSATION')).toHaveLength(0);
+    // V5.4 (C.12) : Blowy annule une sortie déjà confirmée (manque de participants) → le lieu reçoit 3 € par place
+    // réservée à la confirmation (p1, p3, p4, p5 — les deux annulations tardives comprises), une écriture par place.
+    const comp = await journal('VENUE_COMPENSATION');
+    expect(comp).toHaveLength(4);
+    expect(comp.every((e) => JSON.stringify(e.payload).includes('BLOWY_CANCELLED') && JSON.stringify(e.payload).includes('300'))).toBe(true);
   });
 
   it('crédits (dépréciés, D-042) : un ancien lot rendu redevient un lot 90 j ; un lot consommé une seule fois sous concurrence', async () => {
@@ -184,6 +188,64 @@ describe('paiements V5 (Stripe simulé)', () => {
     const res = await Promise.all([fund(uuidv7()), fund(uuidv7())]);
     expect(res.map((r) => (r.kind === 'FUNDED' ? r.funding : r.kind)).sort()).toEqual(['CREDIT', 'HOLD']);
     expect((await u.call('GET', '/v1/outing-credits')).body.available).toEqual([{ kind: 'FREE_FIRST', count: 1 }]);
-    expect((await u.call('GET', '/v1/me/allowances')).body).toMatchObject({ firstOutingFree: true, plus: { active: false }, duos: { maxActive: 1 }, credits: 0, provider: 'STRIPE' });
+    expect((await u.call('GET', '/v1/me/allowances')).body).toMatchObject({ firstOutingFree: true, plus: { active: false }, duos: { maxActive: 3 }, credits: 0, provider: 'STRIPE' });
+  });
+
+  it('V5.4 C.10 : Blowy+ = abonnement Stripe Billing (Apple Pay) — actif seulement au webhook signé ; ordre ; résiliation en app ; IAP désactivé', async () => {
+    const u = ps[1]!;
+    const sub = async () => (await u.call('GET', '/v1/subscriptions/me')).body;
+    // Produits : plus aucun produit store ; Blowy+ via Stripe Billing, Duo jamais « illimité ».
+    const prod = (await u.call('GET', '/v1/purchases/products')).body;
+    expect(prod.products).toEqual([]);
+    expect(prod.plus).toMatchObject({ billing: 'STRIPE_BILLING', duoUnlimited: false, monthlyPriceCents: 999 });
+    // Checkout : abonnement Stripe `default_incomplete`, secret client de la 1ʳᵉ facture ; double tap = un seul abonnement.
+    const cid = randomUUID();
+    const [c1, c2] = await Promise.all([u.call('POST', '/v1/subscriptions/plus/checkout', {}, { commandId: cid }), u.call('POST', '/v1/subscriptions/plus/checkout', {}, { commandId: cid })]);
+    expect(c1.status, JSON.stringify(c1.body)).toBe(200);
+    expect(c1.body).toMatchObject({ provider: 'STRIPE', clientSecret: expect.stringMatching(/_secret_mock$/), subscriptionId: expect.stringMatching(/^sub_mock_/) });
+    expect(c2.body.subscriptionId).toBe(c1.body.subscriptionId);
+    expect(stripe.subscriptions.size).toBe(1);
+    const created = stripe.calledOn('/v1/subscriptions')[0]!;
+    expect(created.params.get('payment_behavior')).toBe('default_incomplete');
+    expect(created.params.get('items[0][price]')).toBe('price_blowyPlusMock');
+    expect(created.params.get('metadata[purpose]')).toBe('PLUS');
+    expect(created.idempotencyKey).toBe(`plus-sub:${u.userId}:${cid}`);
+    // Aucun droit tant que Stripe n'a pas confirmé le paiement (webhook signé).
+    expect((await sub()).v5Entitlements).toEqual([]);
+    expect((await u.call('GET', '/v1/me/allowances')).body.plus.active).toBe(false);
+    const subId = c1.body.subscriptionId as string;
+    const end = new Date(h.clock.now().getTime() + 30 * 86_400_000);
+    const t0 = h.clock.now();
+    expect((await postWebhook(h.baseUrl, stripe.subscriptionEvent(subId, 'customer.subscription.created', 'incomplete', new Date(t0.getTime() + 10_000), end))).body?.status).toBe('ACCEPTED');
+    expect((await sub()).v5Entitlements).toEqual([]);
+    const active = stripe.subscriptionEvent(subId, 'customer.subscription.updated', 'active', new Date(t0.getTime() + 20_000), end);
+    expect((await postWebhook(h.baseUrl, active)).body?.status).toBe('ACCEPTED');
+    expect((await postWebhook(h.baseUrl, active)).body?.status).toBe('DUPLICATE');
+    const s1 = await sub();
+    expect(s1).toMatchObject({ state: 'ACTIVE', store: 'stripe', willRenew: true });
+    expect(s1.v5Entitlements).toEqual([{ key: 'PLUS_INCLUDED_OUTINGS', expiresAt: end.toISOString().replace(/\.\d{3}Z$/, '.000Z') }]);
+    // Blowy+ = sorties seulement : aucun effet sur les duos (3 pour tous).
+    expect((await u.call('GET', '/v1/me/allowances')).body).toMatchObject({ plus: { active: true, duoUnlimited: false }, duos: { maxActive: 3 } });
+    expect((await u.call('POST', '/v1/subscriptions/plus/checkout', {})).body.detailsSafe?.reason).toBe('PLUS_ALREADY_ACTIVE');
+    // Un événement plus ancien (désordre de livraison) ne fait pas reculer l'état.
+    expect((await postWebhook(h.baseUrl, stripe.subscriptionEvent(subId, 'customer.subscription.updated', 'incomplete', new Date(t0.getTime() + 15_000), end, 'evt_old'))).body?.status).toBe('IGNORED');
+    expect((await sub()).state).toBe('ACTIVE');
+    // Résiliation EN APP (hors store) : `cancel_at_period_end`, droits gardés jusqu'à l'échéance.
+    const cancel = await u.call('POST', '/v1/subscriptions/plus/cancel', {});
+    expect(cancel.status, JSON.stringify(cancel.body)).toBe(200);
+    expect(cancel.body.state).toBe('CANCELLED_PENDING_EXPIRY');
+    expect(stripe.calledOn(`/v1/subscriptions/${subId}`)[0]!.params.get('cancel_at_period_end')).toBe('true');
+    expect((await postWebhook(h.baseUrl, stripe.subscriptionEvent(subId, 'customer.subscription.updated', 'active', new Date(t0.getTime() + 30_000), end))).body?.status).toBe('ACCEPTED');
+    expect(await sub()).toMatchObject({ state: 'CANCELLED_PENDING_EXPIRY', willRenew: false });
+    expect((await u.call('GET', '/v1/me/allowances')).body.plus.active).toBe(true);
+    // Fin de l'abonnement : plus de droit.
+    expect((await postWebhook(h.baseUrl, stripe.subscriptionEvent(subId, 'customer.subscription.deleted', 'canceled', new Date(t0.getTime() + 40_000), end))).body?.status).toBe('ACCEPTED');
+    expect(await sub()).toMatchObject({ state: 'EXPIRED', v5Entitlements: [] });
+    expect((await u.call('POST', '/v1/subscriptions/plus/cancel', {})).body.detailsSafe?.reason).toBe('PLUS_NOT_ACTIVE');
+    // L'achat intégré Blowy+ est désactivé : `/v1/purchases/sync` ne contacte aucun store et n'accorde rien.
+    expect((await u.call('POST', '/v1/purchases/sync', { entitlements: ['blowy_plus'] })).body.subscription.v5Entitlements).toEqual([]);
+    // Aucun secret client ni identifiant de paiement dans le journal des webhooks.
+    const stored = JSON.stringify(await h.db.providerWebhookEvent.findMany({ where: { provider: 'stripe' } }));
+    expect(stored).not.toMatch(/pi_inv_\d+_secret/);
   });
 });

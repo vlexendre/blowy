@@ -22,6 +22,13 @@ export interface OutingCandidate {
   neighborhoodIds: string[];
   /** Activités préférées (V5.1 D.14) ; [] = toutes. */
   activities: ActivityKind[];
+  /** V5.5 (D-055) : ambiance souhaitée ; absente = `ANY` (peu importe). */
+  ambiance?: 'CALM' | 'LIVELY' | 'ANY';
+  /**
+   * V5.6 (E11, D-060) : « Âge pour une histoire » — tranches FIXES de la grille (`AGE_BRACKETS_V52`) acceptées
+   * pour une histoire ; vide/absent = repli sur `groupAge`. Secret : n'agit que sur `storyCompatible`.
+   */
+  storyAgeBrackets?: readonly string[];
   /** Team (V5.1 B.7) : 1–3 personnes composées comme une unité indivisible ; null = seul·e. */
   teamId: string | null;
   attendance: { attended: number; noShows: number };
@@ -34,6 +41,11 @@ export interface CompositionFacts {
   blockedPairs: ReadonlySet<string>;
   /** Déjà co-présents, lien de bande (même retiré), duo, proposition Duo refusée < 90 j. */
   metPairs: ReadonlySet<string>;
+  /**
+   * V5.4 (A.6, D-049) : paires « je connais cette personne » issues de l'opt-in « éviter les personnes que
+   * je connais » (comparaison de jetons de numéros, §4.5). Contrainte DURE hors team ; jamais révélée.
+   */
+  knownContactPairs?: ReadonlySet<string>;
 }
 
 export interface SlotOffer {
@@ -44,6 +56,8 @@ export interface SlotOffer {
   startsAtMs: number;
   /** Tables-sorties encore réservables sur ce créneau. */
   remainingOutings: number;
+  /** V5.5 (D-055) : ambiance du lieu ; absente/null = convient à tous. */
+  ambiance?: 'CALM' | 'LIVELY' | null;
 }
 
 export interface ComposeInput {

@@ -2,11 +2,12 @@
  * Thème natif dérivé de @blowy/design-tokens. Aucune couleur n'est écrite en dur ailleurs
  * dans ui-mobile ou apps/mobile : tout passe par `color`, `tone` et `textStyle`.
  */
-import { alpha, blob, color, font, glass, hardShadow, keyframes, layout, motion, press, radii, radius, shadow3d, space, textSpec, touch, type } from '@blowy/design-tokens';
+import { alpha, blob, color, font, glass, hardShadow, keyframes, layout, motion, press, radii, radius, shadow3d, space, textSpec, touch, type, v5, v5Alpha, v5Gradient, v5Portraits } from '@blowy/design-tokens';
 import { bodyFamily, bodyFont, displayFamily, displayFont, strongFamily, strongFont } from './typography';
 import type { TextStyle, ViewStyle } from 'react-native';
 
-export { alpha, blob, color, glass, keyframes, layout, motion, press, radii, radius, shadow3d, space, textSpec, touch };
+export { alpha, blob, color, glass, keyframes, layout, motion, press, radii, radius, shadow3d, space, textSpec, touch, v5, v5Alpha, v5Gradient, v5Portraits };
+export type { V5Color, V5Gradient, V5PortraitKey } from '@blowy/design-tokens';
 
 /**
  * Familles chargées par l'app (instances statiques générées, voir foundations/typography.ts).

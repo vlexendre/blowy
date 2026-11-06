@@ -36,6 +36,7 @@ export default async function ContratPage() {
                 <VenueLabel>Signé le {longDate(c.signed.at)}</VenueLabel>
                 <span className="bw-v-d bw-v-card__title">{c.venue.name}</span>
                 <VenueText>{c.venue.address}</VenueText>
+                <VenueText>{c.countersigned ? `Contre-signé par Blowy le ${longDate(c.countersigned.at)}${c.inForce ? ' · en vigueur' : ''}` : 'En attente de la signature de Blowy'}</VenueText>
               </div>
               <a href="/lieu/contrat/pdf" className="bw-v-btn" download>
                 Télécharger le PDF

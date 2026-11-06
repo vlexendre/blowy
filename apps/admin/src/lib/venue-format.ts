@@ -30,6 +30,8 @@ export function longDate(iso: string, tz = TZ_DEFAULT): string {
 }
 
 export const ACTIVITY_LABEL: Record<string, string> = {
+  /** V5.6 (E13) : rendez-vous Duo au lieu. */
+  DUO_TABLE: 'Table de 2 (Duo)',
   GAMES: 'Jeux de société',
   DRINK_COFFEE: 'Verre ou café',
   BRUNCH: 'Brunch',

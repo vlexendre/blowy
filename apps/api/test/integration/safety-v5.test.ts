@@ -23,7 +23,7 @@ import { SAFETY_JOBS } from '../../src/modules/safety/safety.module.js';
 import { GUARDIAN_PUSH_SENDER } from '../../src/modules/safety/application/ports/safety.ports.js';
 import type { RecordingPushSender } from '../../src/modules/safety/infrastructure/web-push.sender.js';
 import type { RecurringJob } from '../../src/jobs/scheduler.js';
-import { onboard, startHarness, TestClient, type Harness } from './harness.js';
+import { onboard, startHarness, TestClient, venueCodeOf, type Harness } from './harness.js';
 import { raw, synthImage, uploadMedia } from './e-helpers.js';
 
 let h: Harness;
@@ -178,7 +178,7 @@ describe('safety V5 (intégration)', () => {
     expect(st.body).toMatchObject({ active: true, support: { humanResponseMinutes: 60, staffedNow: true }, activeGuardianLinks: 3, maxGuardianLinks: 3 });
     expect((await lea.call('POST', '/v1/safety/ok', { subject: subject() })).status).toBe(200);
     await run('outings.lifecycle', T.checkin);
-    expect((await lea.call('POST', `/v1/outings/${outingId}/check-in`, { method: 'GEO', lat: 48.8649, lng: 2.3707, accuracyM: 20 })).status).toBe(200);
+    expect((await lea.call('POST', `/v1/outings/${outingId}/check-in`, { code: await venueCodeOf(h, outingId) })).status).toBe(200);
     const v = (await pub(token)).json();
     expect(v.active).toBe(true);
     expect(v.timeline.map((e: any) => e.type)).toEqual(['OK', 'CHECKED_IN']);
@@ -191,9 +191,13 @@ describe('safety V5 (intégration)', () => {
     // Seul l'endpoint est gardé (aucune clé).
     expect(Object.keys((await h.db.guardianPushSubscription.findFirstOrThrow({ where: { guardianLinkId: linkId } })) as object).sort()).toEqual(['createdAt', 'endpoint', 'guardianLinkId', 'id', 'purgeAfter']);
     await at(T.alert);
-    const a = await lea.call('POST', '/v1/safety/alerts', { subject: subject(), position: { lat: 48.86491, lng: 2.37071, accuracyM: 18 } });
+    // V5.6 (E14) : une position envoyée par un ancien client est refusée explicitement (400), jamais ignorée en silence.
+    const before = await h.db.safetyAlert.count();
+    expect((await lea.call('POST', '/v1/safety/alerts', { subject: subject(), position: { lat: 48.86491, lng: 2.37071, accuracyM: 18 } })).status).toBe(400);
+    expect(await h.db.safetyAlert.count()).toBe(before);
+    const a = await lea.call('POST', '/v1/safety/alerts', { subject: subject() });
     expect(a.status, JSON.stringify(a.body)).toBe(200);
-    expect(a.body).toMatchObject({ emergencyNumbers: ['112', '17'], humanResponseMinutes: 60 });
+    expect(a.body).toMatchObject({ emergencyNumbers: ['112', '17'], humanResponseMinutes: 60, callbackTargetMinutes: 5 });
     alertId = a.body.alertId;
     await h.drain();
     const c = await h.db.moderationCase.findFirstOrThrow({ where: { subjectType: 'SAFETY_ALERT', subjectId: alertId } });
@@ -333,7 +337,9 @@ describe('blocage pendant une sortie, signalements V5, « je connais quelqu\'un 
     const r = await adminTrust().resolveKnowsSomeone(staff.trust, seat.id, { accept: true, reason: 'Ex-compagne, conflit confirmé', commandId: randomUUID() });
     expect(r.status).toBe('MOVED');
     await h.drain();
-    expect(await h.db.outingSeat.findUniqueOrThrow({ where: { id: seat.id } })).toMatchObject({ status: 'CANCELLED', cancelKind: 'SYSTEM_REMOVAL' });
+    // V5.6 (A.1, E18) : « je connais quelqu'un » = sortie pour raison de sécurité (déplacement si un autre groupe du
+    // créneau a une place ; sinon retrait remboursé, sans pénalité).
+    expect(await h.db.outingSeat.findUniqueOrThrow({ where: { id: seat.id } })).toMatchObject({ status: 'CANCELLED', cancelKind: 'SAFETY_EXIT' });
     expect((await tom.call('GET', '/v1/me/reliability')).body.total).toBe(0);
     expect((await h.db.moderationCase.findUniqueOrThrow({ where: { id: c.id } })).status).toBe('RESOLVED');
     expect((await h.db.knowsSomeoneRequest.findFirstOrThrow({ where: { seatId: seat.id } })).status).toBe('ACCEPTED');
@@ -386,12 +392,12 @@ describe('« Je pars, mal à l\'aise » (V5.3 B.9)', () => {
     const pl = await paul.call('POST', '/v1/safety/guardian-links', { subject: { kind: 'OUTING', id: g.id } });
     await run('outings.lifecycle', T.locked);
     await run('outings.lifecycle', T.checkin);
-    expect((await rose.call('POST', `/v1/outings/${g.id}/check-in`, { method: 'GEO', lat: 48.8649, lng: 2.3707, accuracyM: 20 })).status).toBe(200);
+    expect((await rose.call('POST', `/v1/outings/${g.id}/check-in`, { code: await venueCodeOf(h, g.id) })).status).toBe(200);
     // Après le check-in, pendant la sortie : toujours possible.
     h.clock.set(new Date('2026-11-19T18:40:00Z'));
     const r = await rose.call('POST', '/v1/safety/leave', { subject: { kind: 'OUTING', id: g.id }, notifyGuardian: true });
     expect(r.status, JSON.stringify(r.body)).toBe(200);
-    expect(r.body).toEqual({ left: true, guardianNotified: true, humanResponseMinutes: 60 });
+    expect(r.body).toEqual({ left: true, guardianNotified: true, humanResponseMinutes: 60, callbackTargetMinutes: 5 });
     await h.drain();
     expect(await h.db.outingSeat.findFirstOrThrow({ where: { outingId: g.id, userId: rose.userId } })).toMatchObject({ status: 'CANCELLED', cancelKind: 'SAFETY_EXIT' });
     expect((await rose.call('GET', '/v1/me/reliability')).body.total).toBe(0);

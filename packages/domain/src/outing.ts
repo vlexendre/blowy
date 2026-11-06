@@ -70,14 +70,15 @@ export const SEAT_TRANSITIONS: Readonly<Record<SeatStatus, readonly SeatStatus[]
 };
 export const canTransitionSeat = (from: SeatStatus, to: SeatStatus): boolean => SEAT_TRANSITIONS[from].includes(to);
 
-export const SEAT_FUNDINGS = ['FREE_FIRST', 'PLUS_INCLUDED', 'CREDIT', 'PAID', 'STAFF_COMP'] as const;
+/** V5.5 (D-064) : `REFERRAL_FREE` = sortie offerte par parrainage (≤ 1 par mois). */
+export const SEAT_FUNDINGS = ['FREE_FIRST', 'PLUS_INCLUDED', 'CREDIT', 'PAID', 'STAFF_COMP', 'REFERRAL_FREE'] as const;
 export type SeatFunding = (typeof SEAT_FUNDINGS)[number];
 
 /**
  * V5.1 (E.16) : `EARLY` = avant le verrouillage (veille 18 h) → recrédit ; `LATE` = après le
  * verrouillage → comptée comme une ABSENCE, sans remboursement (sauf `SAFETY_EXIT`).
  */
-export const SEAT_CANCEL_KINDS = ['EARLY', 'LATE', 'SAFETY_EXIT', 'SYSTEM_REMOVAL', 'ACCOUNT_DELETED'] as const;
+export const SEAT_CANCEL_KINDS = ['EARLY', 'LATE', 'SAFETY_EXIT', 'SYSTEM_REMOVAL', 'ACCOUNT_DELETED', 'EMERGENCY'] as const;
 export type SeatCancelKind = (typeof SEAT_CANCEL_KINDS)[number];
 
 export const REFUND_STATES = ['NONE', 'PENDING', 'REFUNDED', 'RECREDITED', 'NOT_ELIGIBLE'] as const;
@@ -95,6 +96,22 @@ export type RefundMode = (typeof REFUND_MODES)[number];
 /** Annulation demandée par l'utilisateur (§7.2). */
 export const SEAT_CANCEL_REQUEST_KINDS = ['CANT_MAKE_IT', 'SAFETY'] as const;
 export type SeatCancelRequestKind = (typeof SEAT_CANCEL_REQUEST_KINDS)[number];
+
+/**
+ * V5.4 (B.8), V5.5 (D-056) : annulation d'une SORTIE demandée par la personne — en plus, « imprévu » (raison
+ * personnelle) après la confirmation : `[T] outings.emergencyCancelsPerMonth` (1) par 30 j glissants, sans
+ * effet de fiabilité ; la place n'est pas remboursée (le lieu est compensé comme pour une absence) ;
+ * au-delà du quota = annulation tardive normale. Les RDV duo gardent `SEAT_CANCEL_REQUEST_KINDS`.
+ */
+/** V5.5 (D-055) : ambiance d'un lieu (CALM/LIVELY) ou souhaitée (ANY = peu importe). */
+export const AMBIANCES = ['CALM', 'LIVELY', 'ANY'] as const;
+export type Ambiance = (typeof AMBIANCES)[number];
+/** V5.5 (D-061) : demande « normale » ou « sortir quand même, en amitié » cette semaine (état honnête). */
+export const OUTING_REQUEST_MODES = ['NORMAL', 'FRIENDS_THIS_WEEK'] as const;
+export type OutingRequestMode = (typeof OUTING_REQUEST_MODES)[number];
+
+export const OUTING_CANCEL_REQUEST_KINDS = ['CANT_MAKE_IT', 'SAFETY', 'EMERGENCY'] as const;
+export type OutingCancelRequestKind = (typeof OUTING_CANCEL_REQUEST_KINDS)[number];
 
 // ---------------------------------------------------------------- check-in (§2.8, D-023)
 export const CHECKIN_METHODS = ['GEO', 'VENUE_CODE', 'STAFF'] as const;

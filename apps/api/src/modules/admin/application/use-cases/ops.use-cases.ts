@@ -23,6 +23,8 @@ import type {
   AdminVenueDetail,
   AdminVenueIncident,
   AdminVenueRow,
+  AdminOnCallPlanning,
+  AdminTravelTimeRow,
 } from '@blowy/api-contract';
 import { REPORT_CATEGORIES_V5_ADMIN } from '@blowy/api-contract';
 import type { Tuning } from '@blowy/tuning';
@@ -31,7 +33,8 @@ import type { OutingAdminPort } from '../../../../shared/application/ports/outin
 import type { UnitOfWork } from '../../../../shared/application/unit-of-work.js';
 import { AppError, Errors } from '../../../../shared/domain/errors.js';
 import { can } from '../../domain/permissions.js';
-import { firstNameOnly, periodOf, reduceVenuePartner, VENUE_INCIDENT_SLA_MINUTES, weeklySchedule } from '../../domain/venue-partner.js';
+import { firstNameOnly, periodOf, reduceVenuePartner, VENUE_CONTRACT_VERSION, VENUE_INCIDENT_SLA_MINUTES, weeklySchedule } from '../../domain/venue-partner.js';
+import { intervalCovered, ONCALL_MARGIN_BEFORE_MS } from '../../../../shared/application/ports/oncall-coverage.port.js';
 import { authorize, type AdminActor, type AdminCommandRunner } from '../admin-command.js';
 import type { AdminTrustPort } from '../ports/admin.ports.js';
 import type { OpsConfigWriter, OpsReadModel, VenueCompensationLedger, VenueFacts, VenuePartnerStore, VenueSessionRepository } from '../ports/ops.ports.js';
@@ -122,6 +125,8 @@ export class OpsV5UseCases {
   // ------------------------------------------------------------------ lieux
   private async venueRow(v: VenueFacts): Promise<AdminVenueRow & { state: ReturnType<typeof reduceVenuePartner> }> {
     const state = reduceVenuePartner(await this.store.load(null, v.id));
+    const signed = await this.store.contractOf(v.id);
+    const welcome = await this.writer.welcomeOf(v.id);
     return {
       id: v.id,
       name: v.name,
@@ -130,7 +135,11 @@ export class OpsV5UseCases {
       activities: v.activities as AdminVenueRow['activities'],
       tablesPerSlot: v.tablesPerSlot,
       address: `${v.addressLine}, ${v.postalCode} ${v.venueCity}`,
-      contract: state.contract ? { version: state.contract.version, signedAt: state.contract.signedAt.toISOString(), signerName: state.contract.signerName } : null,
+      contract: state.contract
+        ? { version: state.contract.version, signedAt: state.contract.signedAt.toISOString(), signerName: state.contract.signerName, countersignedAt: signed?.blowySignedAt?.toISOString() ?? null, countersignerName: signed?.blowySignerName ?? null, inForce: !!signed?.blowySignedAt && state.contract.version === VENUE_CONTRACT_VERSION }
+        : null,
+      ambiance: signed?.ambiance === 'CALM' || signed?.ambiance === 'LIVELY' ? signed.ambiance : null,
+      welcomeMessage: welcome.text,
       partners: state.partners.size,
       state,
     };
@@ -251,6 +260,122 @@ export class OpsV5UseCases {
           changed = true;
         }
         return { result: { userId, granted: b.grant, changed }, auditData: { partnerUserId: userId } };
+      },
+    });
+  }
+
+  // ------------------------------------------------------------------ V5.6 (E15) : contrat bilatéral
+  async countersignContract(a: AdminActor, venueId: string, b: { signerName: string; reason: string }, commandId: string) {
+    if (!(await this.reads.venue(venueId))) throw Errors.notFound('Lieu');
+    return this.runner.run(a, {
+      permission: 'venues.contract_countersign',
+      operation: 'venue.contract_countersigned',
+      commandId,
+      payload: { venueId, signerName: b.signerName },
+      reason: b.reason,
+      target: { type: 'Venue', id: venueId },
+      handle: async (scope) => {
+        const r = await this.store.countersign(scope, venueId, b.signerName);
+        if (!r) throw Errors.precondition('CONTRACT_NOT_SIGNED_BY_VENUE');
+        if (r.version !== VENUE_CONTRACT_VERSION) throw Errors.precondition('CONTRACT_VERSION_OUTDATED', { current: VENUE_CONTRACT_VERSION });
+        return { result: { version: r.version, venueSignedAt: r.venueSignedAt.toISOString(), blowySignedAt: r.blowySignedAt.toISOString(), inForce: true }, auditData: { version: r.version } };
+      },
+    });
+  }
+
+  // ------------------------------------------------------------------ V5.6 (E12) : planning d'astreinte
+  async onCallPlanning(a: AdminActor, q: { timezone?: string; from?: string; days: number }): Promise<AdminOnCallPlanning> {
+    authorize(a, 'oncall.read');
+    const from = q.from ? new Date(q.from) : this.clock.now();
+    const to = new Date(from.getTime() + q.days * 86_400_000);
+    const shifts = await this.writer.onCallShifts({ ...(q.timezone ? { timezone: q.timezone } : {}), from: new Date(from.getTime() - 86_400_000), to: new Date(to.getTime() + 86_400_000) });
+    const byTz = new Map<string, { startsAt: Date; endsAt: Date }[]>();
+    for (const s of shifts) byTz.set(s.timezone, [...(byTz.get(s.timezone) ?? []), s]);
+    const durationMs = this.tuning.outings.durationMinutes * 60_000;
+    const uncovered = (await this.writer.publishedSlots(from, to, q.timezone))
+      .filter((sl) => !intervalCovered(byTz.get(sl.timezone) ?? [], new Date(sl.startsAt.getTime() - ONCALL_MARGIN_BEFORE_MS), new Date(sl.startsAt.getTime() + durationMs)))
+      .map((sl) => ({ venueSlotId: sl.venueSlotId, startsAt: sl.startsAt.toISOString(), timezone: sl.timezone }));
+    return {
+      shifts: shifts.filter((s) => s.endsAt > from && s.startsAt < to).map((s) => ({ id: s.id, timezone: s.timezone, startsAt: s.startsAt.toISOString(), endsAt: s.endsAt.toISOString(), teamLabel: s.teamLabel, hasPhoneRef: !!s.phoneRef })),
+      uncoveredSlots: uncovered,
+    };
+  }
+
+  async createOnCallShift(a: AdminActor, b: { timezone: string; startsAt: string; endsAt: string; teamLabel: string; phoneRef?: string | null; reason: string }, commandId: string) {
+    const startsAt = new Date(b.startsAt);
+    const endsAt = new Date(b.endsAt);
+    if (!(endsAt > startsAt) || endsAt.getTime() - startsAt.getTime() > 24 * 3_600_000) throw Errors.precondition('ONCALL_SHIFT_INVALID');
+    try {
+      new Intl.DateTimeFormat('en-US', { timeZone: b.timezone });
+    } catch {
+      throw Errors.precondition('ONCALL_TIMEZONE_INVALID');
+    }
+    return this.runner.run(a, {
+      permission: 'oncall.write',
+      operation: 'oncall.shift_created',
+      commandId,
+      payload: { timezone: b.timezone, startsAt: b.startsAt, endsAt: b.endsAt, teamLabel: b.teamLabel },
+      reason: b.reason,
+      target: { type: 'SafetyOnCallShift', id: null },
+      handle: async (scope) => {
+        const id = this.random.uuid();
+        await this.writer.createOnCallShift(scope, { id, timezone: b.timezone, startsAt, endsAt, teamLabel: b.teamLabel, phoneRef: b.phoneRef ?? null });
+        return { result: { id }, auditData: { timezone: b.timezone } };
+      },
+    });
+  }
+
+  async deleteOnCallShift(a: AdminActor, id: string, reason: string, commandId: string) {
+    return this.runner.run(a, {
+      permission: 'oncall.write',
+      operation: 'oncall.shift_deleted',
+      commandId,
+      payload: { id },
+      reason,
+      target: { type: 'SafetyOnCallShift', id },
+      handle: async (scope) => {
+        if (!(await this.writer.deleteOnCallShift(scope, id))) throw Errors.notFound('Tour d’astreinte');
+        // Les créneaux qui perdent leur couverture sont retirés ou escaladés par `neighborhoods.oncall_watch`.
+        return { result: { id, deleted: true }, auditData: {} };
+      },
+    });
+  }
+
+  // ------------------------------------------------------------------ V5.6 (E11) : temps de trajet
+  async travelTimes(a: AdminActor, neighborhoodId: string): Promise<AdminTravelTimeRow[]> {
+    authorize(a, 'neighborhoods.read');
+    return this.writer.travelTimes(neighborhoodId);
+  }
+
+  async setNeighborhoodCenter(a: AdminActor, id: string, b: { lat: number; lng: number; reason: string }, commandId: string) {
+    if (!(await this.writer.neighborhoodExists(id))) throw Errors.notFound('Quartier');
+    return this.runner.run(a, {
+      permission: 'neighborhoods.write',
+      operation: 'neighborhood.center',
+      commandId,
+      payload: { id, lat: b.lat, lng: b.lng },
+      reason: b.reason,
+      target: { type: 'Neighborhood', id },
+      handle: async (scope) => {
+        await this.writer.setNeighborhoodCenter(scope, id, { lat: b.lat, lng: b.lng });
+        return { result: { ok: true }, auditData: {} };
+      },
+    });
+  }
+
+  async upsertTravelTime(a: AdminActor, b: { fromNeighborhoodId: string; toNeighborhoodId: string; minutes: number; symmetric: boolean; reason: string }, commandId: string) {
+    if (!(await this.writer.neighborhoodExists(b.fromNeighborhoodId)) || !(await this.writer.neighborhoodExists(b.toNeighborhoodId))) throw Errors.notFound('Quartier');
+    return this.runner.run(a, {
+      permission: 'neighborhoods.write',
+      operation: 'neighborhood.travel_time',
+      commandId,
+      payload: { from: b.fromNeighborhoodId, to: b.toNeighborhoodId, minutes: b.minutes, symmetric: b.symmetric },
+      reason: b.reason,
+      target: { type: 'Neighborhood', id: b.fromNeighborhoodId },
+      handle: async (scope) => {
+        await this.writer.upsertTravelTime(scope, { fromNeighborhoodId: b.fromNeighborhoodId, toNeighborhoodId: b.toNeighborhoodId, minutes: b.minutes });
+        if (b.symmetric && b.fromNeighborhoodId !== b.toNeighborhoodId) await this.writer.upsertTravelTime(scope, { fromNeighborhoodId: b.toNeighborhoodId, toNeighborhoodId: b.fromNeighborhoodId, minutes: b.minutes });
+        return { result: { ok: true }, auditData: { minutes: b.minutes } };
       },
     });
   }
@@ -439,13 +564,14 @@ export class OpsV5UseCases {
   async compensations(a: AdminActor, q: { period?: string; venueId?: string }): Promise<AdminVenueCompensationView> {
     authorize(a, 'venue_compensations.read');
     if (!this.ledger) throw notWired('Journal économique');
-    const period = q.period ?? periodOf(this.clock.now());
     const venues = (await this.reads.venues()).filter((v) => !q.venueId || v.id === q.venueId);
+    // V5.7 (E28) : mois civil — du lieu demandé, sinon de Paris (fuseau de référence de la finance).
+    const period = q.period ?? periodOf(this.clock.now(), venues.length === 1 ? venues[0]!.timezone : 'Europe/Paris');
     const entries: AdminVenueCompensationView['entries'] = [];
     for (const v of venues) {
       const rows = await this.ledger.forVenue(v.id);
       const reversedSeats = new Set(rows.filter((r) => r.cause === 'REVERSAL').map((r) => r.seatId));
-      for (const r of rows.filter((x) => periodOf(x.at) === period)) {
+      for (const r of rows.filter((x) => periodOf(x.at, v.timezone) === period)) {
         entries.push({ seatId: r.seatId, outingId: r.outingId, venueId: v.id, venueName: v.name, amountCents: r.amountCents, currency: 'EUR', cause: r.cause, basis: r.basis, at: r.at.toISOString(), period, reversed: r.cause !== 'REVERSAL' && reversedSeats.has(r.seatId) });
       }
     }

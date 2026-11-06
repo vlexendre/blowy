@@ -7,6 +7,8 @@
 export interface MessageAuthorView {
   pet: { name: string; species: string };
   firstName?: string;
+  /** V5.7 (E32, D-084) : badge « calme » choisi par l'auteur (seule préférence jamais montrée au groupe). */
+  calm?: true;
 }
 export interface MessageAuthorResolver {
   /** `null` si la conversation n'est pas un chat de sortie (DUO, BAND, V4 : aucun auteur ajouté). */

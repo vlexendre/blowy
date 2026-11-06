@@ -25,6 +25,8 @@ export class CompleteOnboardingUseCase {
         if (!u.preferences) missing.push('preferences');
         if (!u.zoneCode) missing.push('zone');
         if (!socialAllowed(await this.repo.listConsents(actorId))) missing.push('consents');
+        // V5.4 (A.5) : « Discret » ou « Normal », choisi explicitement (aucun défaut présélectionné).
+        if (!u.privacy.discreetModeChosen) missing.push('discreetMode');
         if (missing.length) throw Errors.precondition('ONBOARDING_INCOMPLETE', { missing });
         if (!u.onboardedAt) {
           await this.repo.markOnboarded(scope, actorId);

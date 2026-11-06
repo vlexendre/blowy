@@ -152,11 +152,13 @@ describe('règles pures', () => {
     expect(refundOutcome('PLUS_INCLUDED', 'OUTING_CANCELLED', { plusActive: false })).toBe('NONE');
     expect(refundOutcome('FREE_FIRST', 'OUTING_CANCELLED', { plusActive: false })).toBe('NONE');
   });
-  it('compensation lieu (V5.3 C.11) : prix de la place si payée, 3 € si offerte ; rien si la sortie n’a pas eu lieu', () => {
+  it('compensation lieu (V5.5 D-067, HT) : prix HT de la place si payée (4,99 € TTC → 4,16 € HT), 3 € HT sinon ; rien si la sortie n’a pas eu lieu', () => {
     const p = { seatPriceCents: 499, venueCompensationFreeSeatCents: 300 };
-    expect(venueCompensationAmount('PAID', 499, p)).toEqual({ amountCents: 499, basis: 'SEAT_PRICE' });
-    expect(venueCompensationAmount('CREDIT', null, p)).toEqual({ amountCents: 499, basis: 'SEAT_PRICE' });
-    expect(venueCompensationAmount('FREE_FIRST', null, p)).toEqual({ amountCents: 300, basis: 'FREE_SEAT' });
+    expect(venueCompensationAmount('PAID', 499, p)).toEqual({ amountCents: 416, basis: 'SEAT_PRICE', taxBasis: 'HT' });
+    expect(venueCompensationAmount('CREDIT', null, p)).toEqual({ amountCents: 416, basis: 'SEAT_PRICE', taxBasis: 'HT' });
+    expect(venueCompensationAmount('FREE_FIRST', null, p)).toEqual({ amountCents: 300, basis: 'FREE_SEAT', taxBasis: 'HT' });
+    expect(venueCompensationAmount('REFERRAL_FREE', null, p)).toEqual({ amountCents: 300, basis: 'FREE_SEAT', taxBasis: 'HT' });
+    expect(venueCompensationCause({ cancelKind: 'EMERGENCY', outingStatus: 'CONFIRMED' })).toBe('EMERGENCY');
     expect(venueCompensationCause({ attended: false, outingStatus: 'DONE' })).toBe('NO_SHOW');
     expect(venueCompensationCause({ cancelKind: 'LATE', outingStatus: 'CONFIRMED' })).toBe('LATE_CANCEL');
     expect(venueCompensationCause({ cancelKind: 'EARLY', outingStatus: 'CONFIRMED' })).toBeNull();

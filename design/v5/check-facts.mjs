@@ -11,6 +11,8 @@
 //   âge du persona (facts.personas) cohérent avec « Toi · tranche » et la tranche annoncée de sa sortie.
 // + V5.7 : échéances dérivées du calendrier (composition J−3 21 h, confirmation veille 18 h, aucune date hors facts.json), « personnes vérifiées »,
 //   pets propres à chaque groupe, aucun partage sur Les visages, TTC client / HT lieu, Tarifs = contrat, « ton rendez-vous » / « la sortie d’Alex ».
+// + V5.8 : frise = carte, aucune sortie promise avant composition, prénom du duo au double oui, tournures uniques (« quand vous avez dit oui tous les deux »,
+//   « intéressant dès la 3e sortie du mois », « ≈ N min depuis <quartier> »), fiabilité « visible par toi seulement », tranche des personas, ratons ≤ 64 pt sur les échecs.
 // Usage : node design/v5/check-facts.mjs [filtre]   (code de sortie 1 s'il y a une contradiction)
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -63,6 +65,7 @@ const JL = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'same
 const court = (d) => `${JC[d.getUTCDay()]} ${d.getUTCDate()} ${MC[d.getUTCMonth()]}`;
 const COMPOS = new Set(), CONFIRMS = new Set(), JOURS_COMPO = new Set();
 for (const iso of F.calendrier.sorties) { const d = new Date(iso.slice(0, 10) + 'T12:00:00Z'); const c = new Date(d - 3 * 864e5), v = new Date(d - 864e5); COMPOS.add(court(c)); CONFIRMS.add(court(v)); JOURS_COMPO.add(JL[c.getUTCDay()]); }
+const SORTIES_COURT = new Set(F.calendrier.sorties.map((i) => court(new Date(i.slice(0, 10) + 'T12:00:00Z'))));
 const DATES_FACTS = new Set([...COMPOS, ...CONFIRMS, ...F.calendrier.sorties.map((i) => court(new Date(i.slice(0, 10) + 'T12:00:00Z')))]);
 for (const m of JSON.stringify(F).replace(/[\u00a0\u202f]/g, ' ').matchAll(/\b(?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} (?:oct|nov|déc)\./g)) DATES_FACTS.add(m[0]);
 
@@ -232,6 +235,28 @@ for (const f of files) {
   else { checks++; if (/\bHT\b|hors taxes/.test(t)) push(f, 'montant HT sur un écran client (TTC côté client)'); }
   // 31. Tarifs = contrat = écran client : mêmes phrases canoniques
   if (base === 'V5-Tarifs' || base === 'L-Contrat') for (const k of F.tarifsContrat) { checks++; if (!norm(t).includes(F.regles[k])) push(f, `phrase canonique « ${k} » absente (Tarifs = contrat)`); }
+  // 33. V5.8 · heure de la frise = heure de la carte de sortie
+  { const carte = t.match(/(\d{1,2} h(?: \d\d)?) – \d{1,2} h/); for (const m of t.matchAll(/(\d{1,2} h(?: \d\d)?) La sortie\b/g)) { checks++; if (carte && m[1] !== carte[1]) push(f, `frise « ${m[0]} » ≠ carte « ${carte[0]} »`); } }
+  // 34. Aucune sortie promise avant composition (écrans d'attente et de remplacement)
+  if (F.ecransAttente[base]) { const ok = F.ecransAttente[base];
+    for (const ph of ['une sortie a lieu le', 'Nino te propose le', 'Ta prochaine sortie', 'On te propose', 'La semaine prochaine, sur un de tes créneaux']) { checks++; if (t.includes(ph)) push(f, `sortie promise avant composition : « ${ph} »`); }
+    for (const sen of t.split(/(?<=[.!?])\s+/)) for (const m of sen.matchAll(/\b(?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} (?:nov|déc)\./g)) { if (ok.includes(m[0]) || !SORTIES_COURT.has(m[0])) continue; checks++; if (!/si un groupe se forme|reste ouvert|réponse le|ton créneau|Ton créneau|Garder/.test(sen)) push(f, `« ${m[0]} » promis sans « si un groupe se forme » : « ${sen.trim().slice(0, 60)} »`); } }
+  // 35. Prénom du duo : seulement quand vous avez dit oui tous les deux
+  if (F.ecransAvantOui[base]) for (const p of F.ecransAvantOui[base]) { checks++; if (t.includes(p)) push(f, `prénom « ${p} » avant le double oui`); }
+  // 36. Tournures uniques
+  for (const m of t.matchAll(/oui tous les deux/g)) { checks++; if (!t.slice(Math.max(0, m.index - 20), m.index).endsWith('vous avez dit ')) push(f, '« oui tous les deux » hors de « quand vous avez dit oui tous les deux »'); }
+  for (const m of t.matchAll(/intéressant dès la 3e[^.]*/g)) { checks++; if (!m[0].startsWith('intéressant dès la 3e sortie du mois')) push(f, `« ${m[0]} » : écrire « intéressant dès la 3e sortie du mois »`); }
+  for (const m of t.matchAll(/≈ \d+ min(?: (\S+) ([^·.,;)]+))?/g)) { checks++; if (m[1] !== 'depuis' || !F.quartiers.some((q) => (m[2] || '').replace(/\u2011/g, '-').trim().startsWith(q))) push(f, `trajet « ${m[0].trim()} » : écrire « ≈ N min depuis <ton quartier> »`); }
+  // 37. Fiabilité toujours suivie de « visible par toi seulement »
+  for (const m of t.matchAll(/[Ff]iabilité|sortie honorée|Venu à \d+ sortie/g)) { checks++; if (!t.slice(m.index, m.index + 220).includes('visible par toi seulement')) push(f, `« ${m[0]} » sans « visible par toi seulement »`); }
+  // 38. Tranche de chaque persona dans son groupe
+  { const pt = parseRange(F.personas[base] || F.personas.default);
+    for (const m of t.matchAll(/5 personnes · (\d{2})–(\d{2}) ans/g)) { checks++; if (Number(m[1]) > pt[0] || Number(m[2]) < pt[1]) push(f, `groupe « ${m[1]}–${m[2]} ans » qui n’inclut pas le persona`); }
+    const g = F.groupeParFichier[base] && F.groupesTranches[F.groupeParFichier[base]];
+    if (g) for (const [nom, tr] of Object.entries(g)) { const m = t.match(new RegExp(nom + ' · (\\d{2}–\\d{2} ans)')); checks++; if (m && m[1] !== tr) push(f, `${nom} · ${m[1]} : sa tranche est ${tr}`); } }
+  // 39. Ratons des écrans d'échec : ${F.ratonMax} pt au plus
+  if (F.ecransEchec.includes(base)) for (const m of html.matchAll(/<img src="[^"]*?([0-9a-f]{32})"[^>]*?width: (\d+)px/g)) { if (!F.ninoBlobs.includes(m[1])) continue; checks++; if (Number(m[2]) > F.ratonMax) push(f, `raton de ${m[2]} pt sur un écran d’échec (max ${F.ratonMax})`); }
+
   // 32. Rendez-vous Duo : « pendant tout ton rendez-vous » ; page ange : « la sortie d’Alex »
   if (F.ecransRdv.includes(base)) { checks++; if (!t.includes(F.regles.astreinteRdv) || /toute ta sortie/.test(t)) push(f, 'rendez-vous Duo : écrire « pendant tout ton rendez-vous »'); }
   if (F.ecransAnge.includes(base)) { checks++; if (/toute ta sortie|ta sortie\b/.test(t)) push(f, 'page de l’ange : « la sortie d’Alex », jamais « ta sortie »'); }
@@ -241,7 +266,7 @@ for (const f of files) {
     for (const m of t.matchAll(/en (\d{2})–(\d{2}) ans/g)) { checks++; const r = parseRange(pt); if (Number(m[1]) > r[0] || Number(m[2]) < r[1]) push(f, `sortie « en ${m[1]}–${m[2]} ans » qui n’inclut pas le persona (${pt})`); } }
 
   // 10. Vocabulaire unique et promesses fausses
-  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie', 'soirs de sortie', 'position en continu', 'Photo fournie par le lieu', 'Rentable à partir de', 'inscrits', 'arrive la veille', 'Pigeonne', 'Une proposition pour vous deux', 'sur M)'];
+  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie', 'soirs de sortie', 'position en continu', 'Photo fournie par le lieu', 'Rentable à partir de', 'inscrits', 'arrive la veille', 'Pigeonne', 'Une proposition pour vous deux', 'sur M)', 'vos deux oui', 'double oui', 'dans ton quartier', 'Rentable', 'prénom, aux visages', 'prénom et ton visage aux visages', 'décrivent Alex', 'vidéo 1 s'];
   for (const w of banned) {
     checks++;
     if (new RegExp(`(?<![\\w-])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`).test(t)) push(f, `terme interdit « ${w} »`);

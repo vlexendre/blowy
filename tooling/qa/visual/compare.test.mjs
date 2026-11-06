@@ -91,7 +91,10 @@ describe('configuration', () => {
     const v4 = loadRoutes(routesFileFor());
     expect(v4.screens).toHaveLength(39);
     expect(new Set(v4.screens.map((s) => s.ref)).size).toBe(39);
-    expect(loadRoutes(routesFileFor('design/v5/renders')).screens).toEqual([]);
+    const v5 = loadRoutes(routesFileFor('design/v5/renders')).screens;
+    expect(v5.length).toBeGreaterThan(0);
+    expect(new Set(v5.map((s) => s.ref)).size).toBe(v5.length); // une référence = une route
+    for (const s of v5) expect(s.ref).toMatch(/^(V5|W|L)-/);
   });
 });
 

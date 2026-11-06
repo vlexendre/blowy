@@ -4,8 +4,9 @@ import { DEFAULT_TUNING } from '@blowy/tuning';
 import { storyFriendsOnly } from '@blowy/matching/groups';
 import { OutingViewSchema } from '@blowy/api-contract';
 import type { OutingFacts, SeatFacts } from '../domain/facts.js';
-import { photoEligible, previewOf, projectOutingFor, storyMatchFor, viewerPhase, type ViewerContext } from '../domain/visibility.js';
-import { cancelPreview, refundModeOfState } from '../domain/seat-policy.js';
+import { photoEligible, previewOf, projectOutingFor, viewerPhase, type ViewerContext } from '../domain/visibility.js';
+import { cancelPreview, emergencyAvailable, emergencyWindowStart, refundModeOfState } from '../domain/seat-policy.js';
+import { isWeekOff } from '../domain/week.js';
 import { EMPTY_RELIABILITY, isPaused, recordAbsence } from '../domain/reliability.js';
 import { resolveOutingVotes, voteTargets, type Attendee } from '../domain/votes.js';
 import { codeMatches, distanceMeters, geoCheckIn, venueCode } from '../domain/checkin.js';
@@ -62,7 +63,7 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
     const v = projectOutingFor(id(1), outing('PROPOSED', seats), ctx(new Date(T0.getTime() - 72 * H)))!;
     OutingViewSchema.parse(v);
     expect(v.members).toHaveLength(4);
-    expect(v.members.every((m) => !m.firstName && !m.ageRange && !m.photo && !m.reliability)).toBe(true);
+    expect(v.members.every((m) => !m.firstName && !m.ageRange && !m.photo && !('reliability' in m))).toBe(true);
     expect(v.venue).toBeUndefined();
     expect(v.conversationId).toBeUndefined();
     expect(v.preview).toMatchObject({ size: 5, genders: { WOMAN: 3, MAN: 2 } });
@@ -79,7 +80,7 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
     OutingViewSchema.parse(v);
     const p3 = v.members.find((m) => m.userId === id(3))!;
     expect(p3.pet.name).toBe('Pet3');
-    expect(v.members.every((m) => !m.firstName && !m.ageRange && !m.reliability && !m.photo)).toBe(true);
+    expect(v.members.every((m) => !m.firstName && !m.ageRange && !('reliability' in m) && !m.photo)).toBe(true);
     expect(v.venue).toBeUndefined();
     expect(v.conversationId).toBe(id(7));
     expect(leaks(v, ['P3', 'P4', 'Café'])).toEqual([]);
@@ -91,7 +92,9 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
     OutingViewSchema.parse(v);
     expect(v.venue).toMatchObject({ name: 'Café des Oiseaux', bookingName: 'Blowy' });
     // V5.3 B.7 : à la confirmation, prénoms + tranches + fiabilité (pas encore les visages).
-    expect(v.members.find((m) => m.userId === id(3))).toMatchObject({ firstName: 'P3', ageRange: '26_29', reliability: { attended: 1, total: 1 } });
+    expect(v.members.find((m) => m.userId === id(3))).toMatchObject({ firstName: 'P3', ageRange: '26_29' });
+    // V5.6 (D-076, E24) : jamais la fiabilité d'autrui, dans aucune phase.
+    expect(v.members.some((m) => 'reliability' in m)).toBe(false);
     expect(v.members.some((m) => m.photo)).toBe(false);
     expect(v.members.find((m) => m.userId === id(5))).toMatchObject({ notComing: true });
     expect(v.members.find((m) => m.userId === id(1))).toBeUndefined();
@@ -128,27 +131,29 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
     expect(viewerPhase(outing('DONE', s), s[2]!, T0)).toBe('INACTIVE');
   });
 
-  it('« histoire » : seul le cas négatif « potes uniquement » sort ; la garantie positive jamais ; rien pour qui ne cherche pas', () => {
-    expect(storyMatchFor({ seeksRomance: true }, false)).toBeUndefined();
-    expect(storyMatchFor({ seeksRomance: true }, true)).toBe('FRIENDS_ONLY');
-    expect(storyMatchFor({ seeksRomance: false }, false)).toBeUndefined();
-  });
-
-  it('« histoire » : garantie de @blowy/matching (genres réciproques, tranches fixes, hors team, bloqué·es retiré·es en amont)', () => {
-    const p = (userId: string, gender: 'WOMAN' | 'MAN', romance: boolean, romanceGenders: Array<'WOMAN' | 'MAN'>, teamId: string | null = null, age = 28) => ({
+  it('V5.4 A.1 : aucun signal de compatibilité dans la vue, à aucune phase, quelle que soit la garantie', () => {
+    // La garantie reste calculée par @blowy/matching (usage interne à la composition)…
+    const p = (userId: string, gender: 'WOMAN' | 'MAN', romance: boolean, romanceGenders: Array<'WOMAN' | 'MAN'>) => ({
       userId,
-      teamId,
-      seeks: { gender, seeks: { friends: true, romance }, meetGenders: [], romanceGenders, age, groupAge: { min: 24, max: 32 } },
+      teamId: null,
+      seeks: { gender, seeks: { friends: true, romance }, meetGenders: [], romanceGenders, age: 28, groupAge: { min: 24, max: 32 } },
     });
-    const lea = p('lea', 'WOMAN', true, ['MAN']);
-    const group = [lea, p('hugo', 'MAN', true, ['WOMAN']), p('malo', 'MAN', false, []), p('ines', 'WOMAN', false, []), p('sarah', 'WOMAN', true, ['MAN'])];
-    expect(storyMatchFor({ seeksRomance: true }, storyFriendsOnly(group, DEFAULT_TUNING).get('lea')!)).toBe('FRIENDS_ONLY');
-    const two = [...group, p('tom', 'MAN', true, ['WOMAN'])];
-    expect(storyFriendsOnly(two, DEFAULT_TUNING).get('lea')).toBe(false);
-    expect(storyMatchFor({ seeksRomance: true }, storyFriendsOnly(two, DEFAULT_TUNING).get('lea')!)).toBeUndefined();
-    // Tom venu en team avec Léa ne compte pas ; un homme hors des tranches souhaitées non plus
-    expect(storyFriendsOnly([...group, p('tom', 'MAN', true, ['WOMAN'])].map((x) => (x.userId === 'tom' || x.userId === 'lea' ? { ...x, teamId: 'T' } : x)), DEFAULT_TUNING).get('lea')).toBe(true);
-    expect(storyFriendsOnly([...group, p('paul', 'MAN', true, ['WOMAN'], null, 40)], DEFAULT_TUNING).get('lea')).toBe(true);
+    const group = [p('lea', 'WOMAN', true, ['MAN']), p('hugo', 'MAN', true, ['WOMAN']), p('malo', 'MAN', false, [])];
+    expect(storyFriendsOnly(group, DEFAULT_TUNING).get('lea')).toBe(true);
+    // …mais aucun projecteur ne l'expose : ni `storyMatch`, ni mot-clé de compatibilité, à chaque phase.
+    const SIGNAL = /storyMatch|FRIENDS_ONLY|AT_LEAST_TWO|friendsOnly|guarantee|garantie|compatib|entre amis/i;
+    const phases: Array<[Parameters<typeof outing>[0], ReturnType<typeof seat>[], Date]> = [
+      ['PROPOSED', [seat(2, 'INVITED'), seat(3, 'CONFIRMED')], T0],
+      ['FORMING', [seat(2, 'CONFIRMED'), seat(3, 'CONFIRMED')], T0],
+      ['CONFIRMED', [seat(2, 'CONFIRMED'), seat(3, 'CONFIRMED')], new Date(T0.getTime() + H)],
+      ['DONE', [seat(2, 'ATTENDED'), seat(3, 'ATTENDED')], new Date(T0.getTime() + 3 * H)],
+    ];
+    for (const [status, seats, now] of phases) {
+      const v = projectOutingFor(id(2), outing(status, seats), ctx(now));
+      expect(v).not.toBeNull();
+      expect(JSON.stringify(v)).not.toMatch(SIGNAL);
+      expect(Object.keys(v!)).not.toContain('storyMatch');
+    }
   });
 });
 
@@ -161,6 +166,29 @@ describe('annulation (V5.3 B.6, D-042, D-043)', () => {
     expect(cancelPreview({ funding: 'PLUS_INCLUDED', now: before, revealAt: lockAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'EARLY', refund: 'NONE', countsAsAbsence: false });
     expect(cancelPreview({ funding: 'FREE_FIRST', now: lockAt, revealAt: lockAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
     expect(cancelPreview({ funding: 'PAID', now: T0, revealAt: lockAt, kind: 'SAFETY' })).toEqual({ cancelKind: 'SAFETY_EXIT', refund: 'CARD', countsAsAbsence: false });
+  });
+  it('V5.4 B.8 « imprévu » : après la confirmation, 1 par mois (V5.5), aucune absence, place non remboursée ; au-delà ou avant = règle normale', () => {
+    const after = new Date(lockAt.getTime() + 1);
+    expect(cancelPreview({ funding: 'PAID', now: after, revealAt: lockAt, kind: 'EMERGENCY', emergencyAvailable: true })).toEqual({ cancelKind: 'EMERGENCY', refund: 'NONE', countsAsAbsence: false, emergencyAvailable: true });
+    expect(cancelPreview({ funding: 'PAID', now: after, revealAt: lockAt, kind: 'EMERGENCY', emergencyAvailable: false })).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true, emergencyAvailable: false });
+    // Avant la confirmation : annulation gratuite ordinaire (l'imprévu n'est pas consommé).
+    expect(cancelPreview({ funding: 'PAID', now: new Date(lockAt.getTime() - 1), revealAt: lockAt, kind: 'EMERGENCY', emergencyAvailable: true })).toEqual({ cancelKind: 'EARLY', refund: 'CARD', countsAsAbsence: false });
+    // L'aperçu « je ne peux pas venir » après la confirmation dit s'il reste un imprévu.
+    expect(cancelPreview({ funding: 'FREE_FIRST', now: after, revealAt: lockAt, kind: 'CANT_MAKE_IT', emergencyAvailable: true })).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true, emergencyAvailable: true });
+    expect(emergencyAvailable(0, 1)).toBe(true);
+    expect(emergencyAvailable(1, 1)).toBe(false);
+    expect(emergencyAvailable(0, 0)).toBe(false);
+  });
+  it('V5.5 D-056 : fenêtre glissante de 30 jours (« 1 par mois »)', () => {
+    expect(emergencyWindowStart(new Date('2026-11-19T18:30:00Z'), 30).toISOString()).toBe('2026-10-20T18:30:00.000Z');
+  });
+  it('V5.4 B.9 / V5.5 : « une semaine sur deux » à partir d’une semaine (garde alternée)', () => {
+    expect(isWeekOff('2026-W48', [], '2026-W48')).toBe(true);
+    expect(isWeekOff('2026-W49', [], '2026-W48')).toBe(false);
+    expect(isWeekOff('2026-W50', [], '2026-W48')).toBe(true);
+    expect(isWeekOff('2026-W47', [], '2026-W48')).toBe(false);
+    expect(isWeekOff('2027-W01', [], '2026-W53')).toBe(false);
+    expect(isWeekOff('2026-W47', ['2026-W47'], null)).toBe(true);
   });
   it('vue « annulée » : jamais « remboursé·e » pour une place offerte', () => {
     expect(refundModeOfState('FREE_FIRST', 'RECREDITED')).toBe('STAYS_FREE');

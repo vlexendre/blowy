@@ -3,6 +3,7 @@
  * proposition → double acceptation → chat réel (modération) → progression du Lien.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { v4Batch, v4Feed } from './fixtures.js';
 import { onboard, startHarness, TestClient, type Harness } from './harness.js';
 
 let h: Harness;
@@ -24,7 +25,10 @@ describe('parcours n°1 — de l’onboarding au chat', () => {
     expect(me.body).not.toHaveProperty('email');
 
     // Premier lot d'onboarding : proposition réelle entre les deux.
-    const feed = await alice.call('POST', '/v1/matches/onboarding-batch', {});
+    // V5.6 (E20) : le flux V4 est retiré côté HTTP.
+    expect((await alice.call('GET', '/v1/matches')).status).toBe(410);
+    expect((await alice.call('POST', '/v1/matches/onboarding-batch', {})).status).toBe(410);
+    const feed = await v4Batch(h, alice);
     expect(feed.status).toBe(201);
     expect(feed.body.items).toHaveLength(1);
     const proposal = feed.body.items[0];
@@ -34,7 +38,7 @@ describe('parcours n°1 — de l’onboarding au chat', () => {
     // Double acceptation.
     const acc1 = await alice.call('POST', `/v1/match-proposals/${proposal.id}/accept`, {});
     expect(acc1.body).toEqual({ status: 'WAITING_OTHER', relationshipId: null });
-    const bobFeed = await bob.call('GET', '/v1/matches');
+    const bobFeed = await v4Feed(h, bob);
     expect(bobFeed.body.items[0].acceptedByMe).toBe(false); // jamais l'état de l'autre
     const acc2 = await bob.call('POST', `/v1/match-proposals/${proposal.id}/accept`, {});
     expect(acc2.body.status).toBe('MATCHED');

@@ -4,14 +4,15 @@
  * produits, droits), port `DuoAllowanceReader`.
  */
 import type { EntitlementKey } from '@blowy/domain';
+import type { VenueCompensationBasis, VenueCompensationCause } from '@blowy/api-contract';
 import type { Clock } from '../../../../shared/application/clock.js';
 import type { LoggerPort } from '../../../../shared/application/logger.port.js';
 import type { DuoAllowanceReader } from '../../../../shared/application/ports/duo-allowance.port.js';
 import type { OutboxConsumer, OutboxEnvelope } from '../../../../shared/application/outbox-consumer.js';
 import type { TxScope, UnitOfWork } from '../../../../shared/application/unit-of-work.js';
 import { AppError } from '../../../../shared/domain/errors.js';
-import { EUR, LedgerKeys, summarizeLots, venueCompensationAmount, venueCompensationCause, type PaymentsParams } from '../../domain/index.js';
-import type { EconomyJournal, JournalEntry, PaymentProvider, SeatDirectory } from './ports.js';
+import { blowyCancelCompensated, EUR, LedgerKeys, summarizeLots, venueCompensationAmount, venueCompensationCause, type PaymentsParams } from '../../domain/index.js';
+import type { EconomyJournal, JournalEntry, PaymentProvider, ReferralFreeStore, SeatDirectory } from './ports.js';
 import { plusActive, type EconomySeatFunding } from './seat-funding.service.js';
 import type { HandleStripeWebhookUseCase } from './stripe-webhook.use-case.js';
 
@@ -67,7 +68,8 @@ export class ProcessRefundsUseCase {
  */
 export class VenueCompensationConsumer implements OutboxConsumer {
   readonly name = 'economy.venue_compensation';
-  readonly topics = ['outing.attendance_recorded', 'outing.seat_cancelled'] as const;
+  // V5.7 (E27, D-081) : la table Duo est à 0 € pour le lieu, sans garantie — aucun sujet `duo.*` ici.
+  readonly topics = ['outing.attendance_recorded', 'outing.seat_cancelled', 'outing.venue_cancel_compensation_due'] as const;
   constructor(
     private readonly journal: EconomyJournal,
     private readonly seats: SeatDirectory,
@@ -75,6 +77,7 @@ export class VenueCompensationConsumer implements OutboxConsumer {
   ) {}
 
   async handle(scope: TxScope, event: OutboxEnvelope): Promise<void> {
+    if (event.topic === 'outing.venue_cancel_compensation_due') return this.blowyCancelled(scope, event);
     const seatId = typeof event.payload.seatId === 'string' ? event.payload.seatId : null;
     if (!seatId) return;
     const seat = await this.seats.seat(seatId);
@@ -83,10 +86,12 @@ export class VenueCompensationConsumer implements OutboxConsumer {
       attended: event.topic === 'outing.attendance_recorded' ? event.payload.attended === true : undefined,
       cancelKind: event.topic === 'outing.seat_cancelled' ? String(event.payload.cancelKind ?? '') : null,
       outingStatus: seat.outingStatus,
+      cancelledAfterLock: seat.cancelledAfterLock === true,
     });
     if (!cause) return;
     const paid = seat.funding === 'PAID' ? ((await this.journal.byRef(scope, 'PAYMENT_SUCCEEDED', 'seatId', seatId))[0]?.amount ?? null) : null;
-    const { amountCents, basis } = venueCompensationAmount(seat.funding, paid, this.params());
+    // V5.6 (E22) : sortie pour raison de sécurité = 3 € HT versés par Blowy (la place est remboursée à la personne).
+    const { amountCents, basis, taxBasis } = cause === 'SAFETY' ? { amountCents: this.params().venueCompensationFreeSeatCents, basis: 'SAFETY' as const, taxBasis: 'HT' as const } : venueCompensationAmount(seat.funding, paid, this.params());
     await this.journal.append(scope, {
       key: LedgerKeys.venueCompensation(seatId),
       kind: 'VENUE_COMPENSATION',
@@ -94,9 +99,39 @@ export class VenueCompensationConsumer implements OutboxConsumer {
       userId: null,
       amount: amountCents,
       unit: 'EUR_CENTS',
-      refs: { seatId, outingId: seat.outingId, venueId: seat.venueId, cause, basis, funding: seat.funding, currency: EUR },
+      refs: { seatId, outingId: seat.outingId, venueId: seat.venueId, cause, basis, taxBasis, funding: seat.funding, currency: EUR },
     });
   }
+
+  /**
+   * V5.4 (C.12) : Blowy annule une sortie confirmée → 3 € par place réservée (même clé par place que la
+   * compensation d'absence : jamais deux écritures pour une place).
+   */
+  async blowyCancelled(scope: TxScope, event: OutboxEnvelope): Promise<void> {
+    const p = event.payload as Partial<VenueCancelCompensationPayload>;
+    if (typeof p.outingId !== 'string' || typeof p.venueId !== 'string' || !Array.isArray(p.seatIds)) return;
+    if (!blowyCancelCompensated({ wasConfirmed: true, reason: String(event.payload.reason ?? '') })) return;
+    const amountCents = this.params().venueCompensationBlowyCancelCents;
+    for (const seatId of p.seatIds) {
+      if (typeof seatId !== 'string') continue;
+      await this.journal.append(scope, {
+        key: LedgerKeys.venueCompensation(seatId),
+        kind: 'VENUE_COMPENSATION',
+        account: `venue:${p.venueId}`,
+        userId: null,
+        amount: amountCents,
+        unit: 'EUR_CENTS',
+        refs: { seatId, outingId: p.outingId, venueId: p.venueId, cause: 'BLOWY_CANCELLED', basis: 'BLOWY_CANCELLED', taxBasis: 'HT', currency: EUR },
+      });
+    }
+  }
+}
+
+export interface VenueCancelCompensationPayload {
+  outingId: string;
+  venueId: string;
+  /** Places encore réservées (confirmées) au moment où Blowy annule — une écriture par place. */
+  seatIds: string[];
 }
 
 /** Contre-écriture de la compensation (présence corrigée par le staff, T6) : une seule fois. */
@@ -121,8 +156,8 @@ export const venueCompensationView = (e: JournalEntry) => ({
   venueId: String(e.refs.venueId),
   amountCents: e.amount,
   currency: EUR,
-  cause: String(e.refs.cause) as 'NO_SHOW' | 'LATE_CANCEL' | 'REVERSAL',
-  basis: String(e.refs.basis) as 'SEAT_PRICE' | 'FREE_SEAT',
+  cause: String(e.refs.cause) as VenueCompensationCause,
+  basis: String(e.refs.basis) as VenueCompensationBasis,
   at: e.at.toISOString(),
 });
 
@@ -156,7 +191,16 @@ export class PaymentsQueries implements DuoAllowanceReader {
     private readonly keysOf: KeysOf,
     private readonly params: () => PaymentsParams,
     private readonly clock: Clock,
+    private readonly referralFree: ReferralFreeStore | null = null,
   ) {}
+
+  /** V5.5 (D-064) : `GET /v1/referrals/me` — prochaine sortie offerte par parrainage, et ce mois-ci. */
+  async referralStatus(userId: string) {
+    const now = this.clock.now();
+    if (!this.referralFree) return { nextOutingFree: false, thisMonthUsed: false };
+    const [avail, used] = await Promise.all([this.referralFree.available(null, userId), this.referralFree.usedThisPeriod(userId, await this.referralFree.periodOf(null, userId, now))]);
+    return { nextOutingFree: !!avail, thisMonthUsed: used };
+  }
 
   async credits(userId: string) {
     const now = this.clock.now();
@@ -168,7 +212,9 @@ export class PaymentsQueries implements DuoAllowanceReader {
 
   async maxActiveDuos(userId: string, at: Date): Promise<number | null> {
     const p = this.params();
-    return p.plusDuoUnlimited && plusActive(await this.keysOf(userId, at)) ? null : p.freeActiveDuos;
+    // V5.4 (C.11) : Duo gratuit pour TOUS, plafond anti-spam commun ; Blowy+ sans effet sur les duos.
+    void at;
+    return p.freeActiveDuos;
   }
 
   async allowances(userId: string) {
@@ -178,8 +224,8 @@ export class PaymentsQueries implements DuoAllowanceReader {
     const active = plusActive(keys);
     return {
       firstOutingFree: p.firstOutingFree && !usedFree,
-      plus: { active, includesAllOutings: p.plusIncludesAllOutings, duoUnlimited: p.plusDuoUnlimited },
-      duos: { maxActive: p.plusDuoUnlimited && active ? null : p.freeActiveDuos },
+      plus: { active, includesAllOutings: p.plusIncludesAllOutings, duoUnlimited: false },
+      duos: { maxActive: p.freeActiveDuos },
       credits: lots.length,
       provider: this.provider?.kind ?? null,
     };
@@ -188,8 +234,9 @@ export class PaymentsQueries implements DuoAllowanceReader {
   productsV5() {
     const p = this.params();
     return {
-      seat: { amountCents: p.seatPriceCents, currency: EUR, consumptionIncluded: false as const, firstOutingFree: p.firstOutingFree },
-      plus: { priceLabel: null, includesAllOutings: p.plusIncludesAllOutings, includedOutingsPerMonth: 0, duoUnlimited: p.plusDuoUnlimited, monthlyPriceCents: p.plusMonthlyPriceCents, currency: EUR },
+      seat: { amountCents: p.seatPriceCents, currency: EUR, consumptionIncluded: false as const, firstOutingFree: p.firstOutingFree, taxBasis: 'TTC' as const },
+      // V5.4 (C.10–C.11) : abonnement aux sorties via Stripe Billing ; Duo gratuit pour tous (jamais « illimité »).
+      plus: { priceLabel: null, includesAllOutings: p.plusIncludesAllOutings, includedOutingsPerMonth: 0, duoUnlimited: false, billing: p.plusBilling, monthlyPriceCents: p.plusMonthlyPriceCents, currency: EUR },
       provider: this.provider?.kind ?? ('LOCAL_DEMO' as const),
       duo: { freeMaxActive: p.freeActiveDuos },
     };

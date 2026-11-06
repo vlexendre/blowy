@@ -1,5 +1,4 @@
-/** API publique de la feature pets. */
+/** API publique de la feature pets (V5 : souvenirs, accessoires ; plus de jauges). */
 export * from './api/hooks';
-export * from './model/actions';
-export * from './model/presentation';
-export { createPetsRepository } from './api/pets.repository';
+export { MyPetSchema, createPetsRepository, type MyPet } from './api/pets.repository';
+export * from './model/art';

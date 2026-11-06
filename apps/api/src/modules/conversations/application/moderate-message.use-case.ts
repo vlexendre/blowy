@@ -85,6 +85,7 @@ export class ModerateMessageUseCase {
       // V5 chat de sortie : auteur signé par son pet (prénom après la confirmation), calculé par destinataire.
       const authorsByViewer = new Map<string, ReadonlyMap<string, MessageAuthorView> | null>();
       if (conv.kind === 'OUTING' && this.authors) for (const r of recipients) authorsByViewer.set(r.userId, await this.authors.authorsFor(conv.id, r.userId, scope.now));
+      const maskPhones = !(await this.repo.facesRevealed(scope, conv.id, scope.now));
       await this.events.publish(scope, {
         sourceEventId: messageId,
         type: visibleToRecipient(finalStatus) ? (finalStatus === 'WARNED' ? 'message.warned' : 'message.published') : 'message.status',
@@ -92,7 +93,7 @@ export class ModerateMessageUseCase {
         room: `conversation:${conv.id}`,
         recipients: recipients
           .filter((m) => m.userId === msg.authorUserId || visibleToRecipient(finalStatus))
-          .map((m) => ({ userId: m.userId, payload: { message: toMessageView(published, m.userId, authorsByViewer.get(m.userId) ?? null) } })),
+          .map((m) => ({ userId: m.userId, payload: { message: toMessageView(published, m.userId, authorsByViewer.get(m.userId) ?? null, maskPhones) } })),
       });
       // Une correction tardive ne réattribue jamais l'XP : `exchangeEvaluatedAt` est réclamé une seule fois.
       if (countsForExchange(finalStatus) && seq !== null && conv.contextId && msg.authorUserId && !closed && (await this.repo.claimExchange(scope, messageId))) {

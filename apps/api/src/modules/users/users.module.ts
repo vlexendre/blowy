@@ -20,6 +20,24 @@ import { StartVerificationUseCase, VERIFICATION_STARTER, type VerificationStarte
 import { LocalDemoVerificationGateway, NotConfiguredVerificationGateway } from './infrastructure/local-demo-verification.gateway.js';
 import { PrismaUserProfileRepository } from './infrastructure/prisma-user-profile.repository.js';
 import { MeController } from './interface/me.controller.js';
+import { ContactAvoidanceController } from './interface/contact-avoidance.controller.js';
+import { CONTACT_AVOIDANCE_REPOSITORY, ContactAvoidanceUseCases, PHONE_VERIFIER, type ContactAvoidanceRepository, type PhoneVerifier } from './application/contact-avoidance.use-cases.js';
+import { PrismaContactAvoidanceRepository } from './infrastructure/prisma-contact-avoidance.repository.js';
+import { FirebasePhoneVerifier, LocalDemoPhoneVerifier } from './infrastructure/phone-verifiers.js';
+import { deriveDigestKey, deriveOprfKey } from './domain/contact-avoidance.js';
+
+/** V5.4 (A.6) : vérification du numéro — Firebase (production) ; démo locale hors production seulement. */
+function selectPhoneVerifier(cfg: AppConfig): PhoneVerifier | null {
+  const kind = cfg.PHONE_VERIFICATION_PROVIDER ?? (cfg.isProduction ? 'firebase' : 'local_demo');
+  if (kind === 'local_demo') return cfg.isProduction ? null : new LocalDemoPhoneVerifier(cfg.isProduction);
+  return cfg.FIREBASE_PROJECT_ID ? new FirebasePhoneVerifier(cfg.FIREBASE_PROJECT_ID) : null;
+}
+
+/** V5.4 (A.6) : clés OPRF dérivées du secret dédié ; en production sans secret → fonction indisponible (503). */
+function contactAvoidanceKeys(cfg: AppConfig) {
+  const secret = cfg.CONTACT_AVOIDANCE_SECRET ?? (cfg.isProduction ? null : `${cfg.SESSION_SECRET}|contact-avoidance`);
+  return secret ? { oprfKey: deriveOprfKey(secret), digestKey: deriveDigestKey(secret) } : null;
+}
 
 /** Strategy : vérification démo en local/test ; Veriff (agent E) sinon, absent = NOT_CONFIGURED. */
 function selectVerification(cfg: AppConfig): VerificationGateway {
@@ -29,7 +47,7 @@ function selectVerification(cfg: AppConfig): VerificationGateway {
 type R = UserProfileRepository;
 @Global()
 @Module({
-  controllers: [MeController],
+  controllers: [MeController, ContactAvoidanceController],
   providers: [
     { provide: USER_PROFILE_REPOSITORY, useFactory: (db: Db) => new PrismaUserProfileRepository(db), inject: [DB] },
     { provide: VERIFICATION_GATEWAY, useFactory: selectVerification, inject: [APP_CONFIG] },
@@ -51,6 +69,13 @@ type R = UserProfileRepository;
       provide: StartVerificationUseCase,
       useFactory: (b: CommandBus, r: R, v: VerificationGateway, rnd: RandomSource, d: VerificationStarter | null) => new StartVerificationUseCase(b, r, v, rnd, d ?? null),
       inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY, VERIFICATION_GATEWAY, RANDOM, { token: VERIFICATION_STARTER, optional: true }],
+    },
+    { provide: CONTACT_AVOIDANCE_REPOSITORY, useFactory: (db: Db) => new PrismaContactAvoidanceRepository(db), inject: [DB] },
+    { provide: PHONE_VERIFIER, useFactory: selectPhoneVerifier, inject: [APP_CONFIG] },
+    {
+      provide: ContactAvoidanceUseCases,
+      useFactory: (r: ContactAvoidanceRepository, b: CommandBus, v: PhoneVerifier | null, cfg: AppConfig) => new ContactAvoidanceUseCases(r, b, v, contactAvoidanceKeys(cfg)),
+      inject: [CONTACT_AVOIDANCE_REPOSITORY, COMMAND_BUS, PHONE_VERIFIER, APP_CONFIG],
     },
     { provide: CompleteOnboardingUseCase, useFactory: (b: CommandBus, r: R) => new CompleteOnboardingUseCase(b, r), inject: [COMMAND_BUS, USER_PROFILE_REPOSITORY] },
   ],

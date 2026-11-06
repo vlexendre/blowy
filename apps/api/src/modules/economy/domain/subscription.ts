@@ -9,7 +9,8 @@ import type { SubscriptionState } from '@blowy/domain';
  * est TOUJOURS déclenchée et remplace l'état par celui du fournisseur.
  */
 export type BillingEnvironment = 'PRODUCTION' | 'SANDBOX' | 'LOCAL_DEMO';
-export type BillingProviderKind = 'REVENUECAT' | 'LOCAL_DEMO';
+/** V5.4 (C.10) : `STRIPE` = Blowy+ via Stripe Billing (abonnement aux sorties, hors store). */
+export type BillingProviderKind = 'REVENUECAT' | 'LOCAL_DEMO' | 'STRIPE';
 
 export const ACTIVE_STATES: ReadonlySet<SubscriptionState> = new Set(['TRIAL', 'ACTIVE', 'GRACE_PERIOD', 'CANCELLED_PENDING_EXPIRY']);
 /** États « payants » ouvrant les bénéfices mensuels (l'essai gratuit n'en ouvre pas). */

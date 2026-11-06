@@ -1,3 +1,4 @@
+import type { ShareCardKind } from '@blowy/api-contract';
 import type { Species } from '@blowy/domain';
 import type { TxScope } from '../../../../shared/application/unit-of-work.js';
 
@@ -65,3 +66,30 @@ export interface SocialConfig {
   allowLocalDemoVerification: boolean;
 }
 export const SOCIAL_CONFIG = Symbol('SocialConfig');
+
+/** V5.6 (E16) : lien de partage. */
+export interface ShareLinkRow {
+  id: string;
+  slug: string;
+  ownerUserId: string;
+  cardKind: ShareCardKind;
+  subjectRef: string | null;
+  clickCount: number;
+  attributedSignups: number;
+  attributedFirstOutings: number;
+  createdAt: Date;
+  expiresAt: Date;
+}
+
+export interface ShareLinkRepository {
+  create(scope: TxScope, l: Omit<ShareLinkRow, 'clickCount' | 'attributedSignups' | 'attributedFirstOutings'>): Promise<boolean>;
+  bySlug(slug: string): Promise<ShareLinkRow | null>;
+  ofOwner(userId: string, limit: number): Promise<ShareLinkRow[]>;
+  click(slug: string): Promise<void>;
+  /** Inscription attribuée (une seule par personne) ; renvoie vrai si nouvelle. */
+  attribute(userId: string, shareLinkId: string, at: Date): Promise<boolean>;
+  /** 1ʳᵉ sortie vécue d'une personne attribuée (une seule fois). */
+  firstOuting(userId: string, at: Date): Promise<boolean>;
+  purgeExpired(before: Date): Promise<number>;
+}
+export const SHARE_LINK_REPOSITORY = Symbol('ShareLinkRepository');

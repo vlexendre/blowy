@@ -3,21 +3,25 @@
  * des maquettes, testées sous Node (styles.test.ts). Les composants ne font que les appliquer.
  */
 import type { TextStyle, ViewStyle } from 'react-native';
-import { alpha, color, hard, radii, shadow3d, textSpec, tone, touch, type Tone } from '../foundations/theme';
+import { alpha, color, hard, radii, shadow3d, textSpec, tone, touch, v5, type Tone } from '../foundations/theme';
 import { bodyFont, displayFont, strongFont } from '../foundations/typography';
 
 export type StampTone = 'ink' | 'lime';
-export type ButtonVariant = 'b1' | 'b2' | 'b3' | 'lime' | 'link' | 'ghost' | 'danger' | 'violet' | 'primary' | 'secondary' | 'dark';
-export type ButtonSize = 'lg' | 'md' | 'sm';
+/** V5 : `b1` corail #D93A1C (AA) ; `b1v4` = corail V4 (#FF5A3C, témoin de la fondation) ; `bdis` = `.bdis`. */
+export type ButtonVariant = 'b1' | 'b1v4' | 'b2' | 'b3' | 'lime' | 'bdis' | 'link' | 'ghost' | 'danger' | 'violet' | 'primary' | 'secondary' | 'dark';
+/** `lg` = `.btn` V5 (56 px, 19 px) ; `v4` = `.btn` V4 (56 px, 18 px). */
+export type ButtonSize = 'lg' | 'v4' | 'md' | 'sm';
 
 export const captionBox: ViewStyle = { alignSelf: 'center', backgroundColor: color.ink, borderRadius: radii.caption, paddingVertical: 9, paddingHorizontal: 13 };
 
-type Solid = 'b1' | 'b2' | 'b3' | 'lime' | 'danger' | 'violet';
+type Solid = 'b1' | 'b1v4' | 'b2' | 'b3' | 'lime' | 'bdis' | 'danger' | 'violet';
 const ALIAS: Partial<Record<ButtonVariant, Solid>> = { primary: 'b1', dark: 'b2', secondary: 'b3' };
 
 /** Fond, encre, ombre d'une variante pleine (valeurs exactes de la maquette). */
 export const BUTTON_SURFACE: Record<Solid, { bg: string; fg: string; shadow: string }> = {
-  b1: { bg: color.coral, fg: color.white, shadow: shadow3d.b1.color },
+  b1: { bg: v5.coralBtn, fg: v5.white, shadow: v5.coralBtnShadow },
+  b1v4: { bg: color.coral, fg: color.white, shadow: shadow3d.b1.color },
+  bdis: { bg: v5.disabledBg, fg: v5.inkSoft, shadow: 'transparent' },
   b2: { bg: color.ink, fg: color.white, shadow: shadow3d.b2.color },
   b3: { bg: color.white, fg: color.ink, shadow: shadow3d.b3.color },
   lime: { bg: color.lime, fg: color.ink, shadow: shadow3d.bl.color },
@@ -25,8 +29,8 @@ export const BUTTON_SURFACE: Record<Solid, { bg: string; fg: string; shadow: str
   violet: { bg: tone.violet.bg, fg: tone.violet.fg, shadow: tone.violet.shadow },
 };
 
-const HEIGHT: Record<ButtonSize, number> = { lg: 56, md: 48, sm: 44 };
-const FONT: Record<ButtonSize, number> = { lg: 18, md: 16, sm: 15 };
+const HEIGHT: Record<ButtonSize, number> = { lg: 56, v4: 56, md: 48, sm: 44 };
+const FONT: Record<ButtonSize, number> = { lg: 19, v4: 18, md: 16, sm: 15 };
 
 export function resolveButton(variant: ButtonVariant, size: ButtonSize = 'lg'): { kind: 'solid' | 'text'; box: ViewStyle; text: TextStyle; surface?: { bg: string; fg: string; shadow: string } } {
   if (variant === 'link' || variant === 'ghost') {
@@ -34,7 +38,7 @@ export function resolveButton(variant: ButtonVariant, size: ButtonSize = 'lg'): 
     return {
       kind: 'text',
       box: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: variant === 'link' ? 20 : 0 },
-      text: { ...bodyFont(sp.size, sp.weight, sp.letterSpacingEm), color: color.ink },
+      text: { ...bodyFont(sp.size, sp.weight, variant === 'ghost' ? 0 : sp.letterSpacingEm), color: color.ink },
     };
   }
   const surface = BUTTON_SURFACE[ALIAS[variant] ?? (variant as Solid)];

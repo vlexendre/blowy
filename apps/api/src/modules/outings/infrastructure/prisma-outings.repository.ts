@@ -16,14 +16,15 @@ import type { OutingFacts } from '../domain/facts.js';
 import type { ReliabilityState } from '../domain/reliability.js';
 import type { Attendee } from '../domain/votes.js';
 import type { BandLinkRow, CandidateMeta, CompositionScope, NewOuting, OutingRow, OutingsRepository, RequestRow, RequesterFacts, SeatRow, TeamRow, WeekSlot } from '../application/ports/outings.repository.js';
-import { CANDIDATE_INCLUDE, compositionFacts, toCandidate, verifiedSet } from './candidates.js';
+import { travelFrom } from './travel-times.js';
+import { CANDIDATE_INCLUDE, withTravel, compositionFacts, toCandidate, verifiedSet } from './candidates.js';
 import { ageOf, loadPersons, petCardOf, PERSON_INCLUDE, personOf } from './person-facts.js';
 
 const ACTIVE = ACTIVE_SEAT_STATUSES as unknown as ('INVITED' | 'HELD' | 'CONFIRMED' | 'CHECKED_IN' | 'ATTENDED' | 'NO_SHOW')[];
 const DAY = 86_400_000;
 const offerLabel = (key: string) => VENUE_OFFERS.find((o) => o.key === key || o.id === key)?.fr ?? '';
 
-const seatRow = (s: { id: string; outingId: string; userId: string; weekKey: string; teamId: string | null; status: SeatRow['status']; funding: SeatRow['funding']; acceptDeadline: Date; holdExpiresAt: Date | null; confirmedAt: Date | null; cancelKind: SeatRow['cancelKind']; refundState: SeatRow['refundState'] }): SeatRow => ({
+const seatRow = (s: { id: string; outingId: string; userId: string; weekKey: string; teamId: string | null; status: SeatRow['status']; funding: SeatRow['funding']; acceptDeadline: Date; holdExpiresAt: Date | null; confirmedAt: Date | null; cancelKind: SeatRow['cancelKind']; refundState: SeatRow['refundState']; cancelledAt?: Date | null }): SeatRow => ({
   id: s.id,
   outingId: s.outingId,
   userId: s.userId,
@@ -36,9 +37,10 @@ const seatRow = (s: { id: string; outingId: string; userId: string; weekKey: str
   confirmedAt: s.confirmedAt,
   cancelKind: s.cancelKind,
   refundState: s.refundState,
+  cancelledAt: s.cancelledAt ?? null,
 });
 
-const reqRow = (r: { id: string; userId: string; weekKey: string; status: OutingRequestStatus; slotStartsAt: Date[]; teamId: string | null; missedWeeks: number; createdAt: Date }): RequestRow => ({ id: r.id, userId: r.userId, weekKey: r.weekKey, status: r.status, slotStartsAt: r.slotStartsAt, teamId: r.teamId, missedWeeks: r.missedWeeks, createdAt: r.createdAt });
+const reqRow = (r: { id: string; userId: string; weekKey: string; status: OutingRequestStatus; slotStartsAt: Date[]; teamId: string | null; missedWeeks: number; createdAt: Date; mode?: 'NORMAL' | 'FRIENDS_THIS_WEEK' }): RequestRow => ({ id: r.id, userId: r.userId, weekKey: r.weekKey, status: r.status, slotStartsAt: r.slotStartsAt, teamId: r.teamId, missedWeeks: r.missedWeeks, mode: r.mode ?? 'NORMAL', createdAt: r.createdAt });
 
 export class PrismaOutingsRepository implements OutingsRepository {
   constructor(
@@ -61,6 +63,7 @@ export class PrismaOutingsRepository implements OutingsRepository {
         acceptableNeighborhoods: { select: { neighborhoodId: true } },
         slotAvailability: { select: { slotTemplateId: true } },
         weeksOff: { select: { weekKey: true } },
+        outingPreferences: { select: { alternateWeeksOffFrom: true, alternateWeekendsOffFrom: true, maxTravelMinutes: true } },
         teamMemberships: { where: { leftAt: null }, select: { teamId: true } },
         reliabilityStat: true,
       },
@@ -78,6 +81,9 @@ export class PrismaOutingsRepository implements OutingsRepository {
       acceptableNeighborhoodIds: u.acceptableNeighborhoods.map((a) => a.neighborhoodId),
       availableSlotTemplateIds: u.slotAvailability.map((a) => a.slotTemplateId),
       weeksOff: u.weeksOff.map((w) => w.weekKey),
+      everyOtherWeekOffFrom: u.outingPreferences?.alternateWeeksOffFrom ?? null,
+      everyOtherWeekendOffFrom: u.outingPreferences?.alternateWeekendsOffFrom ?? null,
+      maxTravelMinutes: u.outingPreferences?.maxTravelMinutes ?? 30,
       activeTeamId: u.teamMemberships[0]?.teamId ?? null,
       reliability: u.reliabilityStat ? this.relOf(u.reliabilityStat) : null,
     };
@@ -230,11 +236,11 @@ export class PrismaOutingsRepository implements OutingsRepository {
   }
 
   // ------------------------------------------------------------------ demandes
-  async upsertRequest(scope: TxScope, r: { id: string; userId: string; neighborhoodId: string; weekKey: string; slotStartsAt: Date[]; teamId: string | null; missedWeeks: number }) {
+  async upsertRequest(scope: TxScope, r: { id: string; userId: string; neighborhoodId: string; weekKey: string; slotStartsAt: Date[]; teamId: string | null; missedWeeks: number; mode?: 'NORMAL' | 'FRIENDS_THIS_WEEK' }) {
     const row = await txOf(scope).outingRequest.upsert({
       where: { userId_weekKey: { userId: r.userId, weekKey: r.weekKey } },
-      create: { ...r, status: 'OPEN', createdAt: scope.now },
-      update: { neighborhoodId: r.neighborhoodId, slotStartsAt: r.slotStartsAt, teamId: r.teamId, missedWeeks: r.missedWeeks, status: 'OPEN', unplacedReason: null },
+      create: { ...r, mode: r.mode ?? 'NORMAL', status: 'OPEN', createdAt: scope.now },
+      update: { neighborhoodId: r.neighborhoodId, slotStartsAt: r.slotStartsAt, teamId: r.teamId, missedWeeks: r.missedWeeks, ...(r.mode ? { mode: r.mode } : {}), status: 'OPEN', unplacedReason: null },
     });
     return reqRow(row);
   }
@@ -277,7 +283,7 @@ export class PrismaOutingsRepository implements OutingsRepository {
     return out;
   }
 
-  async runExists(scopeKey: string, weekKey: string, kind: 'WEEKLY' | 'SEEDING') {
+  async runExists(scopeKey: string, weekKey: string, kind: 'WEEKLY' | 'SEEDING' | 'ROLLING') {
     return (await this.db.compositionRun.count({ where: { scopeKey, weekKey, kind } })) > 0;
   }
 
@@ -295,8 +301,10 @@ export class PrismaOutingsRepository implements OutingsRepository {
   }
 
   async slotOffers(neighborhoodIds: string[], from: Date, to: Date): Promise<SlotOffer[]> {
-    const rows = await this.db.venueSlot.findMany({ where: { startsAt: { gt: from, lt: to }, venue: { neighborhoodId: { in: neighborhoodIds }, status: 'ACTIVE' } }, include: { venue: { select: { neighborhoodId: true } } }, orderBy: [{ startsAt: 'asc' }, { id: 'asc' }] });
-    return rows.filter((r) => r.reservedOutings < r.capacityOutings).map((r) => ({ venueSlotId: r.id, venueId: r.venueId, neighborhoodId: r.venue.neighborhoodId, activity: r.activity, startsAtMs: r.startsAt.getTime(), remainingOutings: r.capacityOutings - r.reservedOutings }));
+    const rows = await this.db.venueSlot.findMany({ where: { startsAt: { gt: from, lt: to }, venue: { neighborhoodId: { in: neighborhoodIds }, status: 'ACTIVE' } }, include: { venue: { select: { neighborhoodId: true, ambiance: true } } }, orderBy: [{ startsAt: 'asc' }, { id: 'asc' }] });
+    return rows
+      .filter((r) => r.reservedOutings < r.capacityOutings)
+      .map((r) => ({ venueSlotId: r.id, venueId: r.venueId, neighborhoodId: r.venue.neighborhoodId, activity: r.activity, startsAtMs: r.startsAt.getTime(), remainingOutings: r.capacityOutings - r.reservedOutings, ...(r.venue.ambiance && r.venue.ambiance !== 'ANY' ? { ambiance: r.venue.ambiance } : {}) }));
   }
 
   /** Restriction conservatoire (B4) : personne visée par un dossier « mineur » non résolu. */
@@ -316,15 +324,18 @@ export class PrismaOutingsRepository implements OutingsRepository {
     const users = await this.db.user.findMany({ where: { id: { in: ids }, status: 'ACTIVE', onboardedAt: { not: null } }, include: CANDIDATE_INCLUDE });
     const [verified, restricted, busy] = await Promise.all([verifiedSet(this.db, ids, at), this.restricted(ids), this.activeSeatUsers(ids, [weekKey])]);
     const candidates: OutingCandidate[] = [];
+    const travel: { candidate: OutingCandidate; home: string | null; maxTravelMinutes: number }[] = [];
     const meta: CandidateMeta[] = [];
     for (const r of requests) {
       const u = users.find((x) => x.id === r.userId);
       if (!u || restricted.has(u.id) || busy.has(u.id) || (u.reliabilityStat?.pausedUntil && u.reliabilityStat.pausedUntil > at)) continue;
-      const c = toCandidate(u, { at, verified: verified.has(u.id), slotStartsAtMs: r.slotStartsAt.map((d) => d.getTime()), homeNeighborhoodId: r.neighborhoodId, missedWeeks: r.missedWeeks, requestedAt: r.createdAt, tuning: this.tuning });
+      const c = toCandidate(u, { at, verified: verified.has(u.id), slotStartsAtMs: r.slotStartsAt.map((d) => d.getTime()), homeNeighborhoodId: r.neighborhoodId, missedWeeks: r.missedWeeks, requestedAt: r.createdAt, tuning: this.tuning, mode: r.mode });
+      if (c) travel.push({ candidate: c, home: r.neighborhoodId, maxTravelMinutes: u.outingPreferences?.maxTravelMinutes ?? 30 });
       if (!c) continue;
       candidates.push(c);
       meta.push({ userId: u.id, requestId: r.id, teamId: c.teamId });
     }
+    await withTravel(this.db, travel);
     return { candidates, meta };
   }
 
@@ -353,10 +364,10 @@ export class PrismaOutingsRepository implements OutingsRepository {
     return compositionFacts(this.db, userIds);
   }
 
-  async createRun(scope: TxScope, r: { id: string; scopeKey: string; weekKey: string; kind: 'WEEKLY' | 'SEEDING'; algoVersion: string; tuningVersion: string; seed: string }) {
+  async createRun(scope: TxScope, r: { id: string; scopeKey: string; weekKey: string; kind: 'WEEKLY' | 'SEEDING' | 'ROLLING'; algoVersion: string; tuningVersion: string; seed: string; slotDate?: string | null }) {
     const n = await txOf(scope).$executeRaw`
-      INSERT INTO "CompositionRun" (id, "scopeKey", "weekKey", kind, status, "algoVersion", "tuningVersion", seed, "startedAt")
-      VALUES (${r.id}::uuid, ${r.scopeKey}, ${r.weekKey}, ${r.kind}::"CompositionRunKind", 'RUNNING', ${r.algoVersion}, ${r.tuningVersion}, ${r.seed}, ${scope.now})
+      INSERT INTO "CompositionRun" (id, "scopeKey", "weekKey", kind, status, "algoVersion", "tuningVersion", seed, "startedAt", "slotDate")
+      VALUES (${r.id}::uuid, ${r.scopeKey}, ${r.weekKey}, ${r.kind}::"CompositionRunKind", 'RUNNING', ${r.algoVersion}, ${r.tuningVersion}, ${r.seed}, ${scope.now}, ${r.slotDate ?? null}::date)
       ON CONFLICT ("scopeKey", "weekKey", kind) DO NOTHING`;
     return n === 1;
   }
@@ -455,6 +466,8 @@ export class PrismaOutingsRepository implements OutingsRepository {
       pool.push(c);
       meta.push({ userId: r.userId, requestId: r.id, teamId: null });
     }
+    // V5.6 (E11) : le backfill applique aussi le trajet max (lieux de quartiers atteignables).
+    await withTravel(this.db, pool.map((c) => ({ candidate: c, home: requests.find((r) => r.userId === c.profile.userId)?.neighborhoodId ?? null, maxTravelMinutes: users.find((u) => u.id === c.profile.userId)?.outingPreferences?.maxTravelMinutes ?? 30 })));
     return { members, pool, meta, slot: { startsAtMs: o.startsAt.getTime(), neighborhoodId: o.neighborhoodId, activity: o.activity } };
   }
 
@@ -490,6 +503,15 @@ export class PrismaOutingsRepository implements OutingsRepository {
     return txOf(scope).knowsSomeoneRequest.count({ where: { userId, createdAt: { gt: since } } });
   }
 
+  async emergencyCancelsSince(scope: TxScope | null, userId: string, since: Date) {
+    return this.c(scope).outingSeat.count({ where: { userId, status: 'CANCELLED', cancelKind: 'EMERGENCY', cancelledAt: { gte: since } } });
+  }
+
+  async outingTimezone(scope: TxScope | null, outingId: string) {
+    const o = await this.c(scope).outing.findUnique({ where: { id: outingId }, select: { neighborhood: { select: { timezone: true } } } });
+    return o?.neighborhood.timezone ?? 'Europe/Paris';
+  }
+
   // ------------------------------------------------------------------ T4 (safety)
   async activeSeatsOf(scope: TxScope, userId: string) {
     const rows = await txOf(scope).outingSeat.findMany({
@@ -523,18 +545,74 @@ export class PrismaOutingsRepository implements OutingsRepository {
     await txOf(scope).attendanceDispute.update({ where: { id }, data: { status, resolvedById: staffUserId, resolvedAt: scope.now } });
   }
 
-  async createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'COUNTED_AS_CANCEL' }) {
-    await txOf(scope).knowsSomeoneRequest.create({ data: { ...r, createdAt: scope.now, ...(r.status === 'IN_REVIEW' ? {} : { resolvedAt: scope.now }) } });
+  async createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'SAFETY_REVIEW' }) {
+    await txOf(scope).knowsSomeoneRequest.create({ data: { ...r, createdAt: scope.now, ...(r.status === 'IN_REVIEW' || r.status === 'SAFETY_REVIEW' ? {} : { resolvedAt: scope.now }) } });
+  }
+
+  async siblingOutings(scope: TxScope, outing: OutingRow) {
+    const tx = txOf(scope);
+    const nb = await tx.neighborhood.findUnique({ where: { id: outing.neighborhoodId }, select: { cityZoneId: true } });
+    const rows = await tx.outing.findMany({
+      where: { id: { not: outing.id }, startsAt: outing.startsAt, status: 'CONFIRMED', ...(nb ? { neighborhood: { cityZoneId: nb.cityZoneId } } : { neighborhoodId: outing.neighborhoodId }) },
+      orderBy: { id: 'asc' },
+      select: { id: true, venueId: true, capacity: true, acceptDeadline: true, seats: { where: { status: { in: ['CONFIRMED', 'CHECKED_IN'] } }, select: { userId: true, user: { select: { profile: { select: { gender: true } } } } } } },
+    });
+    return rows.map((o) => ({ outingId: o.id, venueId: o.venueId, capacity: o.capacity, acceptDeadline: o.acceptDeadline, members: o.seats.map((s) => ({ userId: s.userId, gender: s.user.profile?.gender ?? null })) }));
+  }
+
+  async genderOf(scope: TxScope, userId: string) {
+    return (await txOf(scope).profile.findUnique({ where: { userId }, select: { gender: true } }))?.gender ?? null;
+  }
+
+  async relocateSeat(scope: TxScope, i: { seatId: string; toOutingId: string; newSeatId: string; acceptDeadline: Date }) {
+    const tx = txOf(scope);
+    const s = await tx.outingSeat.findUniqueOrThrow({ where: { id: i.seatId } });
+    // Ordre imposé par les index uniques partiels (une place active par semaine, une référence par place).
+    await tx.outingSeat.update({ where: { id: s.id }, data: { status: 'CANCELLED', cancelKind: 'SAFETY_EXIT', refundState: 'NONE', cancelledAt: scope.now, paymentRef: null, creditRef: null, version: { increment: 1 } } });
+    const live = await tx.outingSeat.count({ where: { outingId: i.toOutingId, status: { in: ['INVITED', 'HELD', 'CONFIRMED', 'CHECKED_IN'] } } });
+    await tx.outing.updateMany({ where: { id: i.toOutingId, capacity: { lt: live + 1 } }, data: { capacity: live + 1 } });
+    await tx.outingSeat.create({
+      data: { id: i.newSeatId, outingId: i.toOutingId, userId: s.userId, weekKey: s.weekKey, teamId: null, status: 'CONFIRMED', funding: s.funding, paymentRef: s.paymentRef, creditRef: s.creditRef, acceptDeadline: i.acceptDeadline, invitedAt: scope.now, respondedAt: scope.now, confirmedAt: scope.now },
+    });
+    return i.newSeatId;
+  }
+
+  async outingViewExtras(outingId: string, viewerId: string) {
+    const [o, u] = await Promise.all([
+      this.db.outing.findUnique({ where: { id: outingId }, select: { neighborhoodId: true, venueId: true, activity: true, venue: { select: { ambiance: true } } } }),
+      this.db.user.findUnique({ where: { id: viewerId }, select: { neighborhoodId: true, outingPreferences: { select: { activities: true } } } }),
+    ]);
+    if (!o) return null;
+    const amb = o.venue.ambiance;
+    return { venueId: o.venueId, venueAmbiance: amb === 'CALM' || amb === 'LIVELY' ? amb : null, neighborhoodId: o.neighborhoodId, activity: o.activity, viewerHome: u?.neighborhoodId ?? null, viewerActivities: u?.outingPreferences?.activities ?? [] };
+  }
+
+  async venueWelcomeMessage(venueId: string) {
+    return (await this.db.venue.findUnique({ where: { id: venueId }, select: { welcomeMessage: true } }))?.welcomeMessage ?? null;
+  }
+
+  async reachableNeighborhoods(home: string, maxMinutes: number) {
+    return [...(await travelFrom(this.db, home)).entries()].filter(([, t]) => t.minutes <= maxMinutes).map(([id]) => id);
+  }
+
+  async travelMinutes(from: string, to: string) {
+    return (await travelFrom(this.db, from)).get(to)?.minutes ?? null;
+  }
+
+  async travelEstimate(from: string, to: string) {
+    return (await travelFrom(this.db, from)).get(to) ?? null;
   }
 
   async knownRelation(a: string, b: string) {
     const [lo, hi] = a < b ? [a, b] : [b, a];
-    const [f, d, bl] = await Promise.all([
+    const [f, d, bl, av] = await Promise.all([
       this.db.friendship.count({ where: { userLowId: lo, userHighId: hi } }),
       this.db.duo.count({ where: { userLowId: lo, userHighId: hi } }),
       this.db.block.count({ where: { OR: [{ blockerId: a, blockedId: b }, { blockerId: b, blockedId: a }] } }),
+      // V5.4 (A.6) : paire « contacts évités » (spec §2.7 : examen automatique).
+      this.db.avoidPair.count({ where: { userLowId: lo, userHighId: hi } }),
     ]);
-    return f + d + bl > 0;
+    return f + d + bl + av > 0;
   }
 
   private async seeksOf(scope: TxScope | null, outingId: string, statuses: ('INVITED' | 'HELD' | 'CONFIRMED' | 'CHECKED_IN' | 'ATTENDED')[], at: Date): Promise<Attendee[]> {

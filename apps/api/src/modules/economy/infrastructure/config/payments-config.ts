@@ -19,6 +19,8 @@ const EnvSchema = z.object({
   STRIPE_API_VERSION: z.string().regex(/^\d{4}-\d{2}-\d{2}(\.[a-z]+)?$/).optional(),
   STRIPE_TIMEOUT_MS: z.coerce.number().int().min(500).max(30_000).default(8_000),
   STRIPE_WEBHOOK_TOLERANCE_SECONDS: z.coerce.number().int().min(30).max(600).default(300),
+  /** V5.4 (C.10) : prix Stripe Billing de Blowy+ (`price_…`, 9,99 €/mois) ; absent → Blowy+ indisponible (503). */
+  STRIPE_PLUS_PRICE_ID: z.string().regex(/^price_[A-Za-z0-9_]{4,}$/, 'format de prix Stripe invalide').optional(),
 });
 
 export type PaymentsConfig =
@@ -27,7 +29,7 @@ export type PaymentsConfig =
   | {
       env: string;
       provider: 'stripe';
-      stripe: { secretKey: string; webhookSecret: string; baseUrl: string; apiVersion: string | null; timeoutMs: number; toleranceSeconds: number; livemode: boolean };
+      stripe: { secretKey: string; webhookSecret: string; baseUrl: string; apiVersion: string | null; timeoutMs: number; toleranceSeconds: number; livemode: boolean; plusPriceId: string | null };
     };
 
 export class PaymentsConfigError extends Error {}
@@ -60,6 +62,7 @@ export function loadPaymentsConfig(env: NodeJS.ProcessEnv = process.env): Paymen
       timeoutMs: c.STRIPE_TIMEOUT_MS,
       toleranceSeconds: c.STRIPE_WEBHOOK_TOLERANCE_SECONDS,
       livemode,
+      plusPriceId: c.STRIPE_PLUS_PRICE_ID ?? null,
     },
   };
 }

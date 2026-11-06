@@ -79,6 +79,11 @@ const NEW_PEOPLE: (V5Person & { nb: 'paris' | 'lyon' | 'sd' })[] = [
 ];
 
 export async function seedV5(db: Db, now: Date): Promise<{ accounts: string[]; outingId: string }> {
+  // V5.5 (D-058) : astreinte mutualisée (fuseau Europe/Paris), 9 h → 2 h chaque jour sur 9 semaines (démo).
+  const day0 = Math.floor(now.getTime() / 86_400_000) - 7;
+  await db.safetyOnCallShift.createMany({
+    data: Array.from({ length: 63 }, (_, i) => ({ timezone: 'Europe/Paris', startsAt: new Date((day0 + i) * 86_400_000 + 8 * 3_600_000), endsAt: new Date((day0 + i + 1) * 86_400_000 + 1 * 3_600_000), teamLabel: 'Astreinte Blowy (démo)' })),
+  });
   const uid = (k: string) => sid(`user:${k}`);
   const pid = (k: string) => sid(`pet:${k}`);
 
@@ -140,7 +145,7 @@ export async function seedV5(db: Db, now: Date): Promise<{ accounts: string[]; o
         createdAt: new Date(now.getTime() - 20 * DAY),
         authIdentities: { create: { provider: 'LOCAL', subject: p.key, signInProvider: 'local', email: `${p.key}@local.blowy.invalid` } },
         profile: { create: { displayName: p.name, gender: p.gender } },
-        privacySettings: { create: {} },
+        privacySettings: { create: { discreetModeChosenAt: new Date('2026-11-01T09:00:00Z') } },
         matchPreferences: { create: { ageMin: 18, ageMax: 45, seekingGenders: p.romance, intention: p.looking === 'FRIENDS' ? 'FRIENDS_GROUP' : 'OPEN_TO_MORE', lookingFor: p.looking, meetingMode: p.key === 'jade' ? 'DUO' : 'BOTH', romanceGenders: p.romance, storySeriousness: p.looking === 'FRIENDS' ? null : 'SEE_HOW_IT_GOES' } },
         outingPreferences: { create: { groupAgeMin: Math.max(18, p.age - 5), groupAgeMax: p.age + 5, activities: [], maxTravelMinutes: 30 } },
         acceptableNeighborhoods: { create: { neighborhoodId: NB[p.nb] } },

@@ -6,8 +6,15 @@
  *  - planning hebdomadaire affiché au lieu et capacité effective d'un créneau ;
  *  - projection de l'effectif : **prénoms seulement**, à partir de la confirmation (veille 18 h).
  */
+import { civilMonthOf } from '@blowy/domain';
 
-export const VENUE_CONTRACT_VERSION = 'contrat-lieu-2026.11';
+/**
+ * V5.7 (D-079, D-081) : le contrat nomme les quatre cas (raison de sécurité, imprévu, « Blowy annule », table Duo 0 €).
+ * V5.6 (E15) : contrat BILATÉRAL d'une page — signé par le lieu puis contre-signé par Blowy (`blowySignedAt`),
+ * clause de responsabilité, table de 2 (Duo), sortie pour raison de sécurité compensée 3 € HT (nouvelle version à signer).
+ * V5.4 (C.12) : 3 € par place réservée si Blowy annule une sortie confirmée.
+ */
+export const VENUE_CONTRACT_VERSION = 'contrat-lieu-2026.12.3';
 /** Préavis pour fermer un créneau (dans les deux sens), contrat clause 5. */
 export const VENUE_NOTICE_HOURS = 72;
 /** Plafond technique de tables simultanées (CHECK applicatif ; `VenueSlot.capacityOutings ≤ plafond`). */
@@ -18,11 +25,11 @@ export const VENUE_POLICY_WEEKS = 3;
 export const VENUE_INCIDENT_SLA_MINUTES = 60;
 
 export const VENUE_CONTRACT_CLAUSES: readonly { n: number; title: string; body: string }[] = [
-  { n: 1, title: 'Ce que fait le lieu', body: 'Réserve une table « Blowy » avec le chevalet orange sur les créneaux choisis. Aucune animation. Chacun commande et paie ce qu’il consomme.' },
-  { n: 2, title: 'Ce que fait Blowy', body: 'Compose les groupes, vérifie l’âge et l’identité de chaque participant, envoie l’effectif la veille à 18 h, tient une astreinte de 18 h à 2 h.' },
-  { n: 3, title: 'Argent', body: 'Blowy ne prend aucune commission sur vos ventes. Une place non honorée après la confirmation vous est reversée : 4,99 € (place payée) ou 3 € (1re sortie offerte).' },
-  { n: 4, title: 'Sécurité', body: 'Charte anti-discrimination signée. Le personnel n’intervient pas à la place de Blowy ; il appelle l’astreinte ou le 17.' },
-  { n: 5, title: 'Durée', body: 'Sans engagement. Préavis de 72 h pour un créneau, 30 jours pour le contrat.' },
+  { n: 1, title: 'Ce que fait le lieu', body: 'Réserve une table « Blowy » avec le chevalet orange sur les créneaux choisis, y compris les tables de 2 (Duo) annoncées dans l’effectif. Aucune animation. Chacun commande et paie ce qu’il consomme.' },
+  { n: 2, title: 'Ce que fait Blowy', body: 'Compose les groupes, vérifie l’âge et l’identité de chaque participant, envoie l’effectif la veille à 18 h (prénoms seulement), tient une astreinte joignable pendant toute la sortie ou le rendez-vous.' },
+  { n: 3, title: 'Argent', body: 'Blowy ne prend aucune commission sur vos ventes. Montants hors taxe, relevé mensuel détaillé par soirée (mois civil). Raison de sécurité : 3 € HT versés par Blowy. Imprévu : la place vous est reversée (4,16 € HT si payée, sinon 3 € HT). Blowy annule une sortie confirmée, à toute heure après la confirmation : 3 € HT par place réservée. Table Duo : 0 €, sans garantie.' },
+  { n: 4, title: 'Responsabilités', body: 'Blowy répond de la sélection et de la vérification des participants et de l’astreinte. Le lieu répond du service et de la sécurité de son établissement. Le personnel n’intervient pas à la place de Blowy ; il appelle l’astreinte ou le 17. Charte anti-discrimination signée.' },
+  { n: 5, title: 'Durée', body: 'Sans engagement. Préavis de 72 h pour un créneau, 30 jours pour le contrat. Le contrat est en vigueur une fois signé par le lieu et par Blowy.' },
 ];
 
 export type IncidentMotive = 'BEHAVIOR' | 'REFUSED_TO_PAY' | 'OTHER';
@@ -173,6 +180,8 @@ export type VenueTableStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'DONE';
 
 export interface RosterOutingFacts {
   outingId: string;
+  /** V5.6 (E13) : `DUO` = table de 2 (RDV Duo) ; absent = table Blowy d'un groupe. */
+  kind?: 'GROUP' | 'DUO';
   status: string;
   startsAt: Date;
   endsAt: Date;
@@ -211,6 +220,7 @@ export function projectVenueTable(o: RosterOutingFacts, now: Date, code: (starts
   const revealed = (status === 'CONFIRMED' || status === 'DONE') && now >= o.lockAt;
   return {
     outingId: o.outingId,
+    ...(o.kind === 'DUO' ? { kind: 'DUO' as const } : {}),
     startsAt: o.startsAt.toISOString(),
     endsAt: o.endsAt.toISOString(),
     lockAt: o.lockAt.toISOString(),
@@ -222,5 +232,17 @@ export function projectVenueTable(o: RosterOutingFacts, now: Date, code: (starts
   };
 }
 
-/** Période comptable `YYYY-MM` (UTC). */
-export const periodOf = (d: Date) => d.toISOString().slice(0, 7);
+/** Période comptable `YYYY-MM` — V5.7 (E28) : mois civil dans le fuseau du lieu (UTC par défaut). */
+export const periodOf = (d: Date, timeZone = 'UTC') => civilMonthOf(d, timeZone);
+
+/**
+ * V5.7 (E30, D-080) : message d'accueil du lieu — texte seul, ≤ `[T] venues.welcomeMessageMaxChars`, sans lien ni
+ * numéro de téléphone (règles déterministes, avant la modération). `null`/vide = retirer le message.
+ */
+export type WelcomeMessageIssue = 'TOO_LONG' | 'CONTAINS_LINK' | 'CONTAINS_PHONE';
+export function welcomeMessageIssue(text: string, maxChars: number): WelcomeMessageIssue | null {
+  if ([...text].length > maxChars) return 'TOO_LONG';
+  if (/(https?:\/\/|www\.|\b[a-z0-9-]+\.(fr|com|net|org|io|be|ch|eu|app|co)\b|@)/i.test(text)) return 'CONTAINS_LINK';
+  if (/(\+?\d[\s.\-()]?){8,}/.test(text)) return 'CONTAINS_PHONE';
+  return null;
+}

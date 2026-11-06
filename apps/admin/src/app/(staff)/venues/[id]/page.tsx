@@ -19,6 +19,9 @@ export default async function VenuePage({ params }: { params: Promise<{ id: stri
                 ['Activités', v.activities.join(', ')],
                 ['Plafond', `${v.tablesPerSlot} table(s) par créneau`],
                 ['Contrat', v.contract ? `${v.contract.version} · signé ${when(v.contract.signedAt)} par ${v.contract.signerName}` : 'non signé'],
+                ['Contre-signature Blowy', v.contract?.countersignedAt ? `${when(v.contract.countersignedAt)} par ${v.contract.countersignerName ?? 'Blowy'}${v.contract.inForce ? ' · en vigueur' : ' · version à re-signer'}` : 'en attente'],
+                ['Ambiance', v.ambiance === 'CALM' ? 'plutôt calme' : v.ambiance === 'LIVELY' ? 'plutôt animé' : 'convient à tous'],
+                ['Message d’accueil', v.welcomeMessage ?? '—'],
                 ['Photo', v.photoUrl ?? '—'],
                 ['Contact (ops)', v.staffContact ?? '—'],
                 ['Partenaires', v.partnerAccounts.map((p) => p.displayName).join(', ') || '—'],
@@ -57,11 +60,18 @@ export default async function VenuePage({ params }: { params: Promise<{ id: stri
                 <TextField id="t" name="f.tablesPerSlot:int" label="Plafond de tables" type="number" defaultValue={v.tablesPerSlot} />
                 <SelectField id="s" name="f.status" label="Statut" options={[['ACTIVE', 'ACTIVE'], ['PAUSED', 'PAUSED'], ['ARCHIVED', 'ARCHIVED']]} />
                 <TextField id="p" name="f.photoUrl:nullable" label="URL de la photo (vérifiée)" defaultValue={v.photoUrl ?? ''} />
+                <SelectField id="am" name="f.ambiance:nullable" label="Ambiance" options={[['', 'convient à tous'], ['CALM', 'plutôt calme'], ['LIVELY', 'plutôt animé']]} />
                 <ReasonField id="r1" />
               </Mutation>
               <Mutation endpoint={`/v1/admin/venues/${v.id}/rotate-secret`} label="Renouveler le secret du code (step-up)" ok="Secret renouvelé : nouveau code du chevalet." revalidate={`/venues/${v.id}`} variant="danger" confirm="L’ancien code du chevalet ne fonctionnera plus. Continuer ?">
                 <ReasonField id="r2" />
               </Mutation>
+              {v.contract && !v.contract.countersignedAt ? (
+                <Mutation endpoint={`/v1/admin/venues/${v.id}/contract/countersign`} label="Contre-signer le contrat (step-up)" ok="Contrat contre-signé : en vigueur." revalidate={`/venues/${v.id}`}>
+                  <TextField id="cs" name="f.signerName" label="Nom du signataire Blowy" required />
+                  <ReasonField id="r4" />
+                </Mutation>
+              ) : null}
               <Mutation endpoint={`/v1/admin/venues/${v.id}/partners`} label="Accès partenaire (step-up)" ok="Accès mis à jour." revalidate={`/venues/${v.id}`}>
                 <SelectField id="pp" name="f.provider" label="Fournisseur" options={[['firebase', 'Firebase'], ['local', 'Local (dev)']]} />
                 <TextField id="ps" name="f.subject" label="Identifiant (uid)" required />

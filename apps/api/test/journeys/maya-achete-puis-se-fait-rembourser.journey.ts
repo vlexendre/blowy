@@ -8,7 +8,7 @@
  *  - achat d'une place (4,99 €) avec double tap / renvoi de la même commande : payée une seule fois ;
  *  - annulation AVANT la confirmation (J-1 18 h) : remboursement CARTE intégral, une seule fois — jamais un
  *    crédit 90 j (D-042) ; sa 1ʳᵉ sortie offerte reste disponible ;
- *  - Blowy+ (achat intégré, démo) : droits V5 `PLUS_INCLUDED_OUTINGS` + `PLUS_UNLIMITED_DUOS` ; quota hebdo
+ *  - Blowy+ (V5.4 : abonnement aux sorties, démo) : droit V5 `PLUS_INCLUDED_OUTINGS` ; quota hebdo
  *    inchangé ; webhook store refusé sans secret ; expiration : droits retirés, rien d'autre ne bouge ;
  *  - pièces, gels, boost, accessoires vendus : 410 RETIRED_IN_V5.
  */
@@ -42,9 +42,9 @@ describe('Économie (V5)', () => {
     expect((await sub()).state).toBe('NONE');
     expect((await sub()).v5Entitlements).toEqual([]);
     const prods = (await maya.call('GET', '/v1/purchases/products')).data;
-    expect(prods).toMatchObject({ seat: { amountCents: 499, currency: 'EUR', consumptionIncluded: false, firstOutingFree: true }, plus: { monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: true }, duo: { freeMaxActive: 1 } });
+    expect(prods).toMatchObject({ seat: { amountCents: 499, currency: 'EUR', consumptionIncluded: false, firstOutingFree: true }, plus: { monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: false, billing: 'STRIPE_BILLING' }, duo: { freeMaxActive: 3 } });
     expect(prods.products.some((p: any) => p.kind === 'CONSUMABLE_COINS')).toBe(false);
-    expect(await allowances()).toMatchObject({ firstOutingFree: true, duos: { maxActive: 1 }, plus: { active: false } });
+    expect(await allowances()).toMatchObject({ firstOutingFree: true, duos: { maxActive: 3 }, plus: { active: false } });
   });
 
   S.step('Triche : un /purchases/sync avec un corps forgé n’accorde rien', async () => {
@@ -103,13 +103,13 @@ describe('Économie (V5)', () => {
     expect((await maya.call('GET', '/v1/me/reliability')).data).toMatchObject({ total: 0 });
   });
 
-  S.step('Blowy+ (achat intégré, démo) : droits V5 « toutes les sorties » + « duos illimités » ; quota hebdo inchangé', async () => {
+  S.step('Blowy+ (V5.4 : abonnement aux sorties, démo) : droit V5 « toutes les sorties » seulement ; Duo inchangé ; quota hebdo inchangé', async () => {
     const r = await maya.call('POST', '/v1/purchases/local-demo', { action: 'SUBSCRIBE', productId: 'blowy_plus_monthly' });
     expect(r.ok, JSON.stringify(r.data)).toBe(true);
     const s = await sub();
     expect(s).toMatchObject({ mode: 'LOCAL_DEMO', state: 'ACTIVE' });
-    expect(s.v5Entitlements.map((e: any) => e.key).sort()).toEqual(['PLUS_INCLUDED_OUTINGS', 'PLUS_UNLIMITED_DUOS']);
-    expect(await allowances()).toMatchObject({ plus: { active: true }, duos: { maxActive: null } });
+    expect(s.v5Entitlements.map((e: any) => e.key).sort()).toEqual(['PLUS_INCLUDED_OUTINGS']);
+    expect(await allowances()).toMatchObject({ plus: { active: true }, duos: { maxActive: 3 } });
     // Une sortie par semaine pour tout le monde, abonné·e compris (non achetable) : sa demande de la semaine est
     // déjà placée → 409 même dans la fenêtre de demande.
     await at(w, CYCLE.monday);
@@ -136,12 +136,12 @@ describe('Économie (V5)', () => {
     expect(rs.map((r) => `${r.status} ${r.data?.detailsSafe?.reason}`)).toEqual(Array(4).fill('410 RETIRED_IN_V5'));
   });
 
-  S.step('Fin de Blowy+ (expiration démo) : droits V5 retirés, retour à 1 duo gratuit ; rien d’autre ne bouge', async () => {
+  S.step('Fin de Blowy+ (expiration démo) : droits V5 retirés ; Duo inchangé (3 pour tous) ; rien d’autre ne bouge', async () => {
     const r = await maya.call('POST', '/v1/purchases/local-demo', { action: 'EXPIRE' });
     expect(r.ok, JSON.stringify(r.data)).toBe(true);
     const s = await sub();
     expect(s.entitlements).toHaveLength(0);
     expect(s.v5Entitlements).toEqual([]);
-    expect(await allowances()).toMatchObject({ plus: { active: false }, duos: { maxActive: 1 }, firstOutingFree: true });
+    expect(await allowances()).toMatchObject({ plus: { active: false }, duos: { maxActive: 3 }, firstOutingFree: true });
   });
 });

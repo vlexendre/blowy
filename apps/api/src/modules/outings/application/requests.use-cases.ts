@@ -7,13 +7,14 @@ import { createHash } from 'node:crypto';
 import { DAY_MS } from '@blowy/domain';
 import type { OutingRequestView, OutingWeekView, PutOutingRequest } from '@blowy/api-contract';
 import { slotLabelKey } from '@blowy/content';
-import { mondayOfWeek, outingInstants, requestWindow, weekKeyOf } from '@blowy/pet-engine';
+import { composeAtOf, mondayOfWeek, requestWindow, weekKeyOf } from '@blowy/pet-engine';
 import type { Tuning } from '@blowy/tuning';
 import type { CommandBus } from '../../../shared/application/command-bus.js';
 import type { Clock, RandomSource } from '../../../shared/application/clock.js';
 import { AppError, Errors } from '../../../shared/domain/errors.js';
 import { isPaused } from '../domain/reliability.js';
-import { weekPhase } from '../domain/week.js';
+import { isWeekendOff, isWeekOff, weekPhase } from '../domain/week.js';
+import { storyCompatible, type OutingCandidate } from '@blowy/matching/groups';
 import type { OutingsRepository, RequestRow, RequesterFacts, WeekSlot } from './ports/outings.repository.js';
 
 const toView = (r: RequestRow): OutingRequestView => ({
@@ -21,6 +22,7 @@ const toView = (r: RequestRow): OutingRequestView => ({
   status: r.status,
   slotStartsAt: r.slotStartsAt.slice(0, 3).map((d) => d.toISOString()),
   ...(r.teamId ? { teamId: r.teamId } : {}),
+  ...(r.mode === 'FRIENDS_THIS_WEEK' ? { mode: 'FRIENDS_THIS_WEEK' as const } : {}),
   createdAt: r.createdAt.toISOString(),
 });
 
@@ -57,10 +59,18 @@ export class OutingRequestsUseCases {
   async slotsFor(r: RequesterFacts, weekKey: string, now: Date): Promise<WeekSlot[]> {
     const nb = r.neighborhood;
     if (!nb) return [];
-    const ids = r.acceptableNeighborhoodIds.length ? r.acceptableNeighborhoodIds : [nb.id];
+    const base = r.acceptableNeighborhoodIds.length ? r.acceptableNeighborhoodIds : [nb.id];
+    // V5.6 (E11) : + quartiers dans le trajet max (temps de trajet maintenu par ops).
+    const reach = await this.repo.reachableNeighborhoods(nb.id, r.maxTravelMinutes ?? 30);
+    const ids = [...new Set([...base, ...(reach.length ? [nb.id, ...reach] : [])])];
     const all = await this.repo.weekSlots(ids, weekKey, nb.timezone);
     const chosen = r.availableSlotTemplateIds.length ? all.filter((s) => r.availableSlotTemplateIds.includes(s.templateId)) : all;
-    return chosen.filter((s) => outingInstants({ startsAtMs: s.startsAt.getTime(), composedAtMs: now.getTime(), tz: nb.timezone, tuning: this.tuning }).lockAtMs > now.getTime());
+    // V5.5 (D-053) : créneaux du mardi au dimanche, demandables jusqu'à LEUR composition (J − 3 21 h).
+    const cycle = this.tuning.outings.cycle;
+    const days = cycle.slotIsoWeekdays;
+    // V5.6 (B.13) : « un week-end sur deux » retire les créneaux du week-end de cette semaine-là.
+    const weekendOff = isWeekendOff(weekKey, r.everyOtherWeekendOffFrom);
+    return chosen.filter((s) => days.includes(s.isoWeekday) && !(weekendOff && cycle.weekendIsoWeekdays.includes(s.isoWeekday)) && composeAtOf(s.startsAt.getTime(), nb.timezone, this.tuning) > now.getTime());
   }
 
   /**
@@ -102,7 +112,33 @@ export class OutingRequestsUseCases {
       ...(seat && seat.status !== 'DECLINED' && seat.status !== 'EXPIRED' ? { myOutingId: seat.outingId } : {}),
       priorityNextWeek: request?.status === 'UNPLACED' || systemCancelled,
       ...(paused && r.reliability?.pausedUntil ? { pausedUntil: r.reliability.pausedUntil.toISOString() } : {}),
+      ...(await this.honestState(userId, r, weekKey, request, seat, now)),
     };
+  }
+
+  /**
+   * V5.5 (D-061, D-053) : prochaine composition qui me concerne, et état honnête « histoire » — pour qui cherche
+   * une histoire (demande NORMAL, OPEN, aucune place cette semaine) : vivier `storyCompatible` sur MES créneaux
+   * de la semaine (demandes de la ville, avant toute composition) < `[T] storyGuarantee.minCompatible`. Le seul
+   * résultat est un booléen sur moi ; rien sur un groupe, rien après composition, aucune personne désignée.
+   */
+  private async honestState(userId: string, r: RequesterFacts, weekKey: string, request: RequestRow | null, seat: { status: string } | null, now: Date) {
+    const nb = r.neighborhood;
+    if (!nb || !request || request.status !== 'OPEN') return {};
+    const mine = request.slotStartsAt.map((d) => d.getTime()).filter((t) => composeAtOf(t, nb.timezone, this.tuning) > now.getTime());
+    if (mine.length === 0) return {};
+    const composeAt = new Date(Math.min(...mine.map((t) => composeAtOf(t, nb.timezone, this.tuning))));
+    if (seat && ['INVITED', 'HELD', 'CONFIRMED', 'CHECKED_IN'].includes(seat.status)) return { composeAt: composeAt.toISOString() };
+    if (request.mode === 'FRIENDS_THIS_WEEK') return { composeAt: composeAt.toISOString() };
+    const scope = (await this.repo.liveScopes()).find((s) => s.neighborhoodIds.includes(nb.id));
+    if (!scope) return { composeAt: composeAt.toISOString() };
+    const { candidates } = await this.repo.weeklyCandidates(scope, weekKey, now);
+    const me = candidates.find((c) => c.profile.userId === userId);
+    if (!me || !me.seeks.romance) return { composeAt: composeAt.toISOString() };
+    const slots = new Set(mine);
+    const prof = (c: OutingCandidate) => ({ gender: c.profile.gender, seeks: c.seeks, meetGenders: c.meetGenders, romanceGenders: c.romanceGenders, age: c.profile.age, groupAge: c.groupAge });
+    const pool = candidates.filter((c) => c.profile.userId !== userId && (!me.teamId || c.teamId !== me.teamId) && c.slotStartsAtMs.some((t) => slots.has(t)) && storyCompatible(prof(me), prof(c))).length;
+    return { composeAt: composeAt.toISOString(), ...(pool < this.tuning.outings.composition.storyGuarantee.minCompatible ? { storyFeasibility: 'NOT_ENOUGH_ON_SLOTS' as const } : {}) };
   }
 
   async put(userId: string, weekKey: string, body: PutOutingRequest, commandId: string): Promise<OutingRequestView> {
@@ -120,8 +156,11 @@ export class OutingRequestsUseCases {
     if (isPaused(r.reliability, now)) throw Errors.precondition('RELIABILITY_PAUSED', { until: r.reliability!.pausedUntil!.toISOString() });
     const w = requestWindow(weekKey, nb.timezone, this.tuning);
     if (now.getTime() < w.opensAtMs || now.getTime() >= w.closesAtMs) throw Errors.precondition('REQUEST_WINDOW_CLOSED');
-    if (r.weeksOff.includes(weekKey)) throw Errors.precondition('WEEK_OFF');
+    // V5.4 (B.9) : semaines cochées ou « une semaine sur deux » (garde alternée).
+    if (isWeekOff(weekKey, r.weeksOff, r.everyOtherWeekOffFrom)) throw Errors.precondition('WEEK_OFF');
     const offered = await this.slotsFor(r, weekKey, now);
+    // V5.5 (D-053) : plus aucun créneau encore à composer cette semaine → la demande est close.
+    if (offered.length === 0 && !body.slotStartsAt) throw Errors.precondition('REQUEST_WINDOW_CLOSED');
     const wanted = body.slotStartsAt ? body.slotStartsAt.map((s) => new Date(s)) : offered.map((s) => s.startsAt);
     if (wanted.length === 0 || wanted.some((d) => !offered.some((o) => o.startsAt.getTime() === d.getTime()))) throw Errors.validation({ field: 'slotStartsAt', reason: 'SLOT_NOT_OFFERED' });
     if (body.teamId && body.teamId !== r.activeTeamId) throw Errors.precondition('TEAM_INVALID');
@@ -130,7 +169,7 @@ export class OutingRequestsUseCases {
       actorId: userId,
       operation: 'outings.request',
       commandId,
-      payload: { weekKey, slotStartsAt: slotStartsAt.map((d) => d.toISOString()), teamId: r.activeTeamId },
+      payload: { weekKey, slotStartsAt: slotStartsAt.map((d) => d.toISOString()), teamId: r.activeTeamId, mode: body.mode ?? null },
       handle: async (scope) => {
         await scope.lock.users([userId]);
         const seat = await this.repo.seatOfWeek(scope, userId, weekKey);
@@ -138,7 +177,7 @@ export class OutingRequestsUseCases {
         const prev = await this.repo.request(scope, userId, weekKey);
         if (prev?.status === 'PLACED') throw new AppError('CONFLICT', 'Une sortie par semaine', { detailsSafe: { reason: 'WEEKLY_QUOTA_USED' } });
         const missedWeeks = await this.repo.missedWeeksBefore(scope, userId, weekKey);
-        const row = await this.repo.upsertRequest(scope, { id: prev?.id ?? this.random.uuid(), userId, neighborhoodId: nb.id, weekKey, slotStartsAt, teamId: r.activeTeamId, missedWeeks });
+        const row = await this.repo.upsertRequest(scope, { id: prev?.id ?? this.random.uuid(), userId, neighborhoodId: nb.id, weekKey, slotStartsAt, teamId: r.activeTeamId, missedWeeks, ...(body.mode ? { mode: body.mode } : {}) });
         await scope.outbox.emit({ topic: 'outing.requested', aggregateType: 'User', aggregateId: userId, payload: { weekKey } });
         return toView(row);
       },

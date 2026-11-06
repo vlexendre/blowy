@@ -38,7 +38,9 @@ export interface ConversationRepository {
   claimExchange(scope: TxScope, messageId: string): Promise<boolean>;
   /** Messages publiés/warned récents (fenêtre de contexte, pseudonymisation par l'appelant). */
   recentVisible(conversationId: string, beforeCreatedAt: Date, limit: number): Promise<{ id: string; authorUserId: string | null; body: string | null; createdAt: Date }[]>;
-  insertSystem(scope: TxScope, m: { id: string; conversationId: string; template: string }): Promise<number>;
+  /** V5.8 (§3) : visages révélés dans ce chat ? (sortie : `photoRevealAt` passé ; duo : débloqué ; autres : oui). */
+  facesRevealed(scope: TxScope | null, conversationId: string, at: Date): Promise<boolean>;
+  insertSystem(scope: TxScope, m: { id: string; conversationId: string; template: string; body?: string }): Promise<number>;
   loadMessage(scope: TxScope | null, id: string, viewerId?: string): Promise<MessageRow | null>;
   setStatus(scope: TxScope, id: string, status: MessageStatus, publish: boolean): Promise<number | null>;
   recordDecision(scope: TxScope, d: { messageId: string; action: string; source: string; policyVersion: string; provider: string; reasonCode: string; signals?: Record<string, number> | undefined; decidedById?: string | null }): Promise<void>;

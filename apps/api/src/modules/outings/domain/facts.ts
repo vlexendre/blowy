@@ -13,6 +13,8 @@ export interface PersonFacts {
   reliability: { attended: number; noShows: number; lateCancels: number };
   pet: PetCard;
   threeWords: string[];
+  /** V5.7 (E32) : « Montrer au groupe : je préfère le calme » (opt-in). */
+  calmBadge?: boolean;
 }
 
 export interface SeatFacts {

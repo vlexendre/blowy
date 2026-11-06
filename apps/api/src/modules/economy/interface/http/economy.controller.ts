@@ -14,6 +14,7 @@ import {
   AllowancesViewSchema,
   OutingCreditsViewSchema,
   PlusCheckoutResponseSchema,
+  PlusCancelResponseSchema,
   ProductsResponseV5Schema,
   StripeWebhookAckSchema,
   STRIPE_SIGNATURE_HEADER,
@@ -101,7 +102,9 @@ export class EconomyController {
   async products() {
     const list = (await this.records.listStoreProducts()).filter((p) => p.active && p.kind === 'SUBSCRIPTION');
     void StoreProductsResponseSchema;
-    return ProductsResponseV5Schema.parse({ mode: this.provider.mode, products: list.map((p) => ({ id: p.id, kind: p.kind, coinsAmount: p.coinsAmount })), ...this.graph.payments.queries.productsV5() });
+    // V5.4 (C.10) : plus aucun produit store quand Blowy+ passe par Stripe Billing (achat intégré désactivé).
+    const iap = this.graph.payments.params().plusBilling === 'IN_APP_PURCHASE';
+    return ProductsResponseV5Schema.parse({ mode: this.provider.mode, products: iap ? list.map((p) => ({ id: p.id, kind: p.kind, coinsAmount: p.coinsAmount })) : [], ...this.graph.payments.queries.productsV5() });
   }
 
   /** `GET /v1/outing-credits` : 1ʳᵉ offerte disponible + lots de crédit (type, nombre, échéance). */
@@ -110,17 +113,33 @@ export class EconomyController {
     return OutingCreditsViewSchema.parse(await this.graph.payments.queries.credits(u.userId));
   }
 
-  /** `GET /v1/me/allowances` : 1ʳᵉ offerte, Blowy+, duos actifs autorisés (1 gratuit, illimité Blowy+), crédits. */
+  /** `GET /v1/me/allowances` : 1ʳᵉ offerte, Blowy+, duos actifs autorisés (V5.4 : 3 pour tous), crédits. */
   @Get('me/allowances')
   async allowances(@CurrentUser() u: AuthenticatedUser) {
     return AllowancesViewSchema.parse(await this.graph.payments.queries.allowances(u.userId));
   }
 
-  /** `POST /v1/subscriptions/plus/checkout` : session Stripe Checkout (Apple Pay) ; 501 sans fournisseur. */
+  /**
+   * `POST /v1/subscriptions/plus/checkout` — V5.4 (C.10) : abonnement Stripe Billing (Apple Pay / carte via
+   * PaymentSheet) ; Blowy+ n'est actif qu'au webhook signé. 503 `PLUS_UNAVAILABLE` sans prix configuré.
+   */
   @Post('subscriptions/plus/checkout')
   @HttpCode(200)
   async plusCheckout(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string) {
     return PlusCheckoutResponseSchema.parse(await this.graph.payments.plusCheckout.execute(u.userId, cid));
+  }
+
+  /** V5.5 (D-064) : parrainage — ma prochaine sortie est-elle offerte (1ʳᵉ sortie vécue d'un·e filleul·e, ≤ 1 par mois) ? */
+  @Get('me/referral-reward')
+  async referralReward(@CurrentUser() u: AuthenticatedUser) {
+    return this.graph.payments.queries.referralStatus(u.userId);
+  }
+
+  /** V5.4 (C.10) : résiliation EN APP (abonnement Stripe, hors store) à l'échéance ; 412 `PLUS_NOT_ACTIVE`. */
+  @Post('subscriptions/plus/cancel')
+  @HttpCode(200)
+  async plusCancel(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string) {
+    return PlusCancelResponseSchema.parse(await this.graph.payments.plus.cancel(u.userId, cid));
   }
 
   /** Le corps (s'il existe) est volontairement ignoré : seule la session détermine l'appUserID. */

@@ -60,6 +60,7 @@ export const FILTER_BY_REASON: Readonly<Record<ExclusionReason, CandidateFilter>
   LIMIT_GHOSTER: both((s, o, i) => (s.vision.limit === 'GHOSTER' && failsGhosterLimit(o, i.tuning) ? 'LIMIT_GHOSTER' : null)),
   BLOCKED_OR_REPORTED: (i) => (i.facts.blockedOrReported ? 'BLOCKED_OR_REPORTED' : null),
   MET_BEFORE: (i) => (i.facts.metBefore ? 'MET_BEFORE' : null),
+  KNOWN_CONTACT: (i) => (i.facts.knownContact ? 'KNOWN_CONTACT' : null),
   PROPOSAL_QUOTA: (i) => (i.facts.pendingProposals.some((n) => n >= i.tuning.matching.maxPendingProposals) ? 'PROPOSAL_QUOTA' : null),
 };
 
@@ -98,6 +99,7 @@ export const PAIR_FILTER_REASONS: readonly ExclusionReason[] = [
   'AGE_PREFERENCE',
   'MEET_GENDER',
   'BLOCKED_OR_REPORTED',
+  'KNOWN_CONTACT',
   'MET_BEFORE',
   'LIMIT_GHOSTER',
 ];

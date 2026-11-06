@@ -13,7 +13,7 @@ export async function GET() {
   const pdf = onePagePdf(`Contrat d’une page — ${c.venue.name}`, [
     { text: 'blowy. lieu — Contrat d’une page', size: 20, bold: true },
     { text: `${c.venue.name} · ${c.venue.address}`, size: 11, gapBefore: 6 },
-    { text: `Version ${c.version}${c.signed ? ` · signé le ${longDate(c.signed.at)} par ${c.signed.signerName}` : ' · non signé'}`, size: 10, gapBefore: 2 },
+    { text: `Version ${c.version}${c.signed ? ` · signé le ${longDate(c.signed.at)} par ${c.signed.signerName}` : ' · non signé'}${c.countersigned ? ` · contre-signé par Blowy le ${longDate(c.countersigned.at)}` : ''}`, size: 10, gapBefore: 2 },
     ...c.clauses.flatMap((k) => [
       { text: `${k.n}. ${k.title}`, size: 13, bold: true, gapBefore: 14 },
       { text: k.body, size: 11, gapBefore: 2 },

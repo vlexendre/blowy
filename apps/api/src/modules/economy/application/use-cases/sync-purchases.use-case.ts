@@ -12,9 +12,12 @@ export class SyncPurchasesUseCase {
   constructor(
     private readonly reconcile: ReconcileCustomerUseCase,
     private readonly view: GetMySubscriptionQuery,
+    /** V5.4 (C.10) : faux quand Blowy+ passe par Stripe Billing — aucun appel au store, état serveur renvoyé tel quel. */
+    private readonly iapEnabled: () => boolean = () => true,
   ) {}
 
   async execute(userId: string): Promise<{ subscription: SubscriptionView; consumablesCredited: number }> {
+    if (!this.iapEnabled()) return { subscription: await this.view.execute(userId), consumablesCredited: 0 };
     const r = await this.reconcile.execute(userId);
     return { subscription: await this.view.execute(userId), consumablesCredited: r.consumablesCredited };
   }

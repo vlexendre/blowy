@@ -94,6 +94,9 @@ import {
   type VenueSessionRepository,
 } from './application/ports/ops.ports.js';
 import { OpsV5UseCases } from './application/use-cases/ops.use-cases.js';
+import { randomUUID } from 'node:crypto';
+import { MODERATION_GATEWAY, type ModerationGateway } from '../conversations/application/ports/moderation.gateway.js';
+import type { VenueTextModeration } from './application/ports/ops.ports.js';
 import { VenuePartnerAuthService, VenuePartnerUseCases, type VenueIdentityVerifier } from './application/use-cases/venue-partner.use-cases.js';
 import { JournalVenueCompensationLedger, PrismaOpsConfigWriter, PrismaOpsReadModel, PrismaVenuePartnerStore } from './infrastructure/prisma-ops.repositories.js';
 import { PrismaVenueSessionRepository } from './infrastructure/prisma-venue-sessions.repository.js';
@@ -173,7 +176,7 @@ const providers: Provider[] = [
   { provide: AdminSocialUseCases, useFactory: (s: SocialModerationPort, run: AdminCommandRunner) => new AdminSocialUseCases(s, run), inject: [SOCIAL_MODERATION, AdminCommandRunner] },
   // ---- V5 (T6)
   { provide: OPS_READ_MODEL, useFactory: (db: Db) => new PrismaOpsReadModel(db), inject: [DB] },
-  { provide: OPS_CONFIG_WRITER, useFactory: () => new PrismaOpsConfigWriter() },
+  { provide: OPS_CONFIG_WRITER, useFactory: (db: Db) => new PrismaOpsConfigWriter(db), inject: [DB] },
   { provide: VENUE_PARTNER_STORE, useFactory: (db: Db) => new PrismaVenuePartnerStore(db), inject: [DB] },
   { provide: VENUE_SESSION_REPOSITORY, useFactory: (db: Db) => new PrismaVenueSessionRepository(db), inject: [DB] },
   // Lecture du journal de G (adapter de G, lecture + contre-écriture exportée par G) — aucune écriture directe.
@@ -199,9 +202,9 @@ const providers: Provider[] = [
   },
   {
     provide: VenuePartnerUseCases,
-    useFactory: (au: VenuePartnerAuthService, r: OpsReadModel, st: VenuePartnerStore, w: OpsConfigWriter, l: VenueCompensationLedger, o: OutingAdminPort | undefined, b: CommandBus, a: AuditLog, c: Clock, rnd: RandomSource) =>
-      new VenuePartnerUseCases(au, r, st, w, l, o ?? null, b, a, c, rnd, DEFAULT_TUNING),
-    inject: [VenuePartnerAuthService, OPS_READ_MODEL, VENUE_PARTNER_STORE, OPS_CONFIG_WRITER, VENUE_COMPENSATION_LEDGER, optional(OUTING_ADMIN_PORT), COMMAND_BUS, AUDIT_LOG, CLOCK, RANDOM],
+    useFactory: (au: VenuePartnerAuthService, r: OpsReadModel, st: VenuePartnerStore, w: OpsConfigWriter, l: VenueCompensationLedger, o: OutingAdminPort | undefined, b: CommandBus, a: AuditLog, c: Clock, rnd: RandomSource, m: ModerationGateway | undefined) =>
+      new VenuePartnerUseCases(au, r, st, w, l, o ?? null, b, a, c, rnd, DEFAULT_TUNING, m ? venueTextModeration(m) : null),
+    inject: [VenuePartnerAuthService, OPS_READ_MODEL, VENUE_PARTNER_STORE, OPS_CONFIG_WRITER, VENUE_COMPENSATION_LEDGER, optional(OUTING_ADMIN_PORT), COMMAND_BUS, AUDIT_LOG, CLOCK, RANDOM, optional(MODERATION_GATEWAY)],
   },
   VenuePartnerGuard,
   {
@@ -213,3 +216,13 @@ const providers: Provider[] = [
 
 @Module({ controllers: [AdminAuthController, AdminController, AdminOpsController, VenuePartnerController], providers, exports: [STAFF_REPOSITORY, AUDIT_LOG, ADMIN_JOBS] })
 export class AdminModule {}
+
+/** V5.7 (E30) : le message d'accueil est modéré comme un message (même passerelle que les conversations). */
+function venueTextModeration(m: ModerationGateway): VenueTextModeration {
+  return {
+    async moderate(i) {
+      const v = await m.moderateText({ text: i.text, conversationId: i.venueId, authorId: i.authorId, messageId: randomUUID() });
+      return v.action === 'ALLOW' ? 'ALLOW' : 'REJECT';
+    },
+  };
+}

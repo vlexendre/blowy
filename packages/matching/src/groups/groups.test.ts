@@ -7,6 +7,7 @@ import { population, prng } from '../simulate/population.js';
 import {
   PairTable,
   acceptsSlot,
+  ambianceAccepts,
   backfillCandidate,
   composeOutings,
   composeSeedingOutings,
@@ -481,5 +482,97 @@ describe('jamais plus de 3 du même genre (D-039, V5.3 A.2) — contrainte dure'
     const members = p.candidates.slice(0, 4);
     const pick = backfillCandidate({ outingMembers: members, slot: p.slots[0]!, pool: p.candidates.slice(4), facts: noFacts(), seed: SEED, tuning: lowT });
     expect(pick).toBe(p.candidates[5]!.profile.userId);
+  });
+});
+
+describe('KNOWN_CONTACT — « éviter les personnes que je connais » (V5.4 A.6, D-049)', () => {
+  it('deux personnes liées par une paire évitée ne sont jamais dans le même groupe ; symétrique ; hors team seulement', () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 6 }), (seed) => {
+        const p = population({ n: 60, seed, times: [Date.UTC(2026, 10, 19, 18)], blockedPairs: 0, metPairs: 0 });
+        const base = compose(p);
+        // On marque comme « connues » toutes les paires d'un groupe composé sans la règle.
+        const g = base.groups[0];
+        if (!g) return;
+        const known = new Set<string>();
+        for (const a of g.memberUserIds) for (const b of g.memberUserIds) if (a < b) known.add(pairKey(a, b));
+        const r = composeOutings({ candidates: p.candidates, facts: { ...p.facts, knownContactPairs: known }, slots: p.slots, seed: SEED, tuning: T });
+        const teamOf = new Map(p.candidates.map((c) => [c.profile.userId, c.teamId]));
+        for (const x of r.groups)
+          for (const a of x.memberUserIds)
+            for (const b of x.memberUserIds) {
+              if (a >= b) continue;
+              const sameTeam = teamOf.get(a) !== null && teamOf.get(a) === teamOf.get(b);
+              if (!sameTeam) expect(known.has(pairKey(a, b))).toBe(false);
+            }
+      }),
+      { numRuns: 25, seed: 54 },
+    );
+  });
+  it('pairExclusion = KNOWN_CONTACT dans les deux sens ; backfill ne fait jamais entrer une personne connue', () => {
+    const p = population({ n: 30, seed: 'kc', times: [Date.UTC(2026, 10, 19, 18)], blockedPairs: 0, metPairs: 0, teamShare: 0 });
+    const [a, b] = p.candidates;
+    const facts = { ...noFacts(), knownContactPairs: new Set([pairKey(a!.profile.userId, b!.profile.userId)]) };
+    expect(pairExclusion(a!, b!, facts, T)).toBe('KNOWN_CONTACT');
+    expect(pairExclusion(b!, a!, facts, T)).toBe('KNOWN_CONTACT');
+    // Backfill : une personne qui serait choisie sans la paire évitée ne l'est plus avec.
+    let checked = 0;
+    for (const slot of p.slots)
+      for (const m of p.candidates)
+        for (const c of p.candidates) {
+          if (m === c || checked > 3) continue;
+          if (backfillCandidate({ outingMembers: [m], slot, pool: [c], facts: noFacts(), seed: SEED, tuning: T }) !== c.profile.userId) continue;
+          const kf = { ...noFacts(), knownContactPairs: new Set([pairKey(m.profile.userId, c.profile.userId)]) };
+          expect(backfillCandidate({ outingMembers: [m], slot, pool: [c], facts: kf, seed: SEED, tuning: T })).toBeNull();
+          checked++;
+        }
+    expect(checked).toBeGreaterThan(0);
+  });
+});
+
+describe('ambiance (V5.5 D-055) — contrainte dure au lieu', () => {
+  it('« plutôt calme » jamais dans un lieu animé (et inversement) ; « peu importe » partout ; lieu sans ambiance = tous', () => {
+    expect(ambianceAccepts('CALM', 'LIVELY')).toBe(false);
+    expect(ambianceAccepts('LIVELY', 'CALM')).toBe(false);
+    expect(ambianceAccepts('CALM', 'CALM')).toBe(true);
+    expect(ambianceAccepts('ANY', 'LIVELY')).toBe(true);
+    expect(ambianceAccepts(undefined, 'CALM')).toBe(true);
+    expect(ambianceAccepts('CALM', null)).toBe(true);
+  });
+  it('composition : chaque membre est dans un lieu compatible avec son ambiance', () => {
+    const p = population({ n: 60, seed: 'amb', times: [Date.UTC(2026, 10, 19, 18)], blockedPairs: 0, metPairs: 0 });
+    const amb = ['CALM', 'LIVELY', 'ANY'] as const;
+    const candidates = p.candidates.map((c, i) => ({ ...c, ambiance: amb[i % 3] }));
+    const slots = p.slots.flatMap((s, i) => [{ ...s, ambiance: 'CALM' as const, venueSlotId: `${s.venueSlotId}-c${i}` }, { ...s, ambiance: 'LIVELY' as const, venueSlotId: `${s.venueSlotId}-l${i}` }]);
+    const r = composeOutings({ candidates, facts: p.facts, slots, seed: SEED, tuning: T });
+    expect(r.groups.length).toBeGreaterThan(0);
+    for (const g of r.groups) {
+      const slot = slots.find((s) => s.venueSlotId === g.venueSlotId)!;
+      for (const u of g.memberUserIds) expect(ambianceAccepts(candidates.find((c) => c.profile.userId === u)!.ambiance, slot.ambiance)).toBe(true);
+    }
+  });
+});
+
+describe('V5.6 (E11) — « Âge pour une histoire » et mélange d’ambiances', () => {
+  const base = { gender: 'WOMAN' as const, seeks: { friends: false, romance: true }, meetGenders: [], romanceGenders: ['MAN' as const], age: 27, groupAge: { min: 22, max: 40 } };
+  const him = { gender: 'MAN' as const, seeks: { friends: false, romance: true }, meetGenders: [], romanceGenders: ['WOMAN' as const], age: 36, groupAge: { min: 22, max: 40 } };
+  it('storyCompatible : les tranches « histoire » remplacent la tranche de groupe quand elles sont renseignées', () => {
+    expect(storyCompatible(base, him)).toBe(true);
+    expect(storyCompatible({ ...base, storyAgeBrackets: ['26_29', '30_34'] }, him)).toBe(false); // 36 ans = 35_39
+    expect(storyCompatible({ ...base, storyAgeBrackets: ['35_39'] }, him)).toBe(true);
+    expect(storyCompatible(base, { ...him, storyAgeBrackets: ['22_25'] })).toBe(false); // 27 ans = 26_29
+  });
+  it('PairTable.story applique la même règle ; la pénalité d’ambiance baisse l’objectif d’un groupe mélangé', () => {
+    const p = population({ n: 12, seed: 'story-brackets', times: [Date.UTC(2026, 10, 19, 18)], blockedPairs: 0, metPairs: 0 });
+    const cands = p.candidates.slice(0, 5);
+    const P0 = new PairTable(cands, noFacts(), T);
+    const members = [0, 1, 2, 3, 4];
+    const same = evaluateGroup(members, new PairTable(cands.map((c) => ({ ...c, ambiance: 'CALM' as const })), noFacts(), T), T).objectiveMilli;
+    const mixed = evaluateGroup(members, new PairTable(cands.map((c, i) => ({ ...c, ambiance: i < 2 ? ('LIVELY' as const) : ('CALM' as const) })), noFacts(), T), T).objectiveMilli;
+    expect(same - mixed).toBe(2 * (T.outings.composition.lambdaAmbiance ?? 0));
+    expect(evaluateGroup(members, P0, T).objectiveMilli).toBe(same);
+    // Restreindre les tranches « histoire » de tous à une tranche absente rend toute paire non compatible « histoire ».
+    const none = new PairTable(cands.map((c) => ({ ...c, storyAgeBrackets: ['50_PLUS'] })), noFacts(), T);
+    for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) if (i !== j && cands[j]!.profile.age < 50) expect(none.story(i, j)).toBe(false);
   });
 });

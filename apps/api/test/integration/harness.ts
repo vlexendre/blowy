@@ -89,6 +89,13 @@ export class TestClient {
   }
 }
 
+/** V5.5 (D-062) : code du chevalet d'une sortie (check-in par code uniquement). */
+export async function venueCodeOf(h: Harness, outingId: string): Promise<string> {
+  const { OUTING_ADMIN_PORT } = await import('../../src/shared/application/ports/outing-admin.port.js');
+  const o = await h.db.outing.findUniqueOrThrow({ where: { id: outingId }, include: { venue: { select: { checkinSecretRef: true } } } });
+  return h.app.get<{ venueCode(ref: string, at: Date): string }>(OUTING_ADMIN_PORT, { strict: false }).venueCode(o.venue.checkinSecretRef, o.startsAt);
+}
+
 export const VISION = {
   axes: { kindMischief: 0.2, sportyContemplative: -0.1, scienceArt: 0.3, homeAdventure: 0.4 },
   school: 'AUTODIDACTE',
@@ -109,6 +116,8 @@ export async function onboard(c: TestClient, key: string, o: { gender: 'WOMAN' |
   ok(await c.call('POST', '/v1/consents', { items: ['TERMS', 'PRIVACY', 'AI_MODERATION'].map((purpose) => ({ purpose, version: '2026-11', granted: true })) }), 'consents');
   const pet = ok(await c.call('POST', '/v1/pets', { name: `Pet-${key}`, species: o.species ?? 'NINO', vision: VISION }), 'pet');
   ok(await c.call('POST', '/v1/verifications', { kind: 'SELFIE_QUALITY' }), 'verify');
+  // V5.4 (A.5) : « Discret » / « Normal » choisi explicitement avant la fin de l'onboarding.
+  ok(await c.call('PUT', '/v1/preferences/privacy', { discreetMode: false }), 'discreet');
   ok(await c.call('POST', '/v1/me/onboarding/complete', {}), 'complete');
   return { petId: pet.id as string };
 }

@@ -89,13 +89,23 @@ export function evaluateGroup(members: readonly number[], P: PairTable, t: Tunin
   const romCov = seekers > 0 ? Math.floor((1000 * covered) / seekers) : 0;
   const storyCov = c.storyGuarantee.enabled && seekers > 0 ? Math.floor((1000 * guaranteed) / seekers) : 0;
   const friendFit = pairs > 0 ? Math.floor((1000 * friendPairs) / pairs) : 0;
+  // V5.6 (§4.3) : mélange calme/animé dans un groupe — pénalité douce par membre minoritaire (le lieu reste un filtre dur).
+  let calm = 0;
+  let lively = 0;
+  for (let x = 0; x < s; x++) {
+    const amb = P.ambiance[members[x]!];
+    if (amb === 1) calm++;
+    else if (amb === 2) lively++;
+  }
+  const ambianceMismatch = Math.min(calm, lively);
   const objectiveMilli =
     meanMilli +
     Math.floor((c.lambdaRomance * romCov) / 1000) +
     Math.floor((c.lambdaFriend * friendFit) / 1000) +
     Math.floor((c.storyGuarantee.lambdaGuarantee * storyCov) / 1000) -
     Math.floor((c.lambdaGender * imbalance) / 1000) -
-    c.lambdaSize * Math.max(0, c.targetSize - s);
+    c.lambdaSize * Math.max(0, c.targetSize - s) -
+    (c.lambdaAmbiance ?? 0) * ambianceMismatch;
   return { objectiveMilli, pairMinScore: pairs > 0 ? minW : 0, sumW, pairs, romanceSeekers: seekers, romanceCovered: covered, genderImbalancePermille: imbalance, romanceOnlyCovered, storyGuaranteed: guaranteed, genderCapOk };
 }
 

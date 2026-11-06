@@ -14,6 +14,8 @@ import type {
   PlusTuningSchema,
   PreferencesTuningSchema,
   PricingTuningSchema,
+  ReferralV5TuningSchema,
+  CityInsightsTuningSchema,
   ReliabilityV5TuningSchema,
   SafetyTuningSchema,
   VenuesTuningSchema,
@@ -25,7 +27,7 @@ type Out<S extends z.ZodType> = z.output<S>;
 /** Gelé : ces objets servent aussi de valeurs par défaut Zod (partagées par référence). */
 const frozen = <T>(v: T): T => deepFreeze(v);
 
-export const NEIGHBORHOODS_V5: Out<typeof NeighborhoodsTuningSchema> = frozen({ defaultDensityThreshold: 120, changeCooldownDays: 7 });
+export const NEIGHBORHOODS_V5: Out<typeof NeighborhoodsTuningSchema> = frozen({ changeCooldownDays: 7 });
 
 export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
   minSizeToForm: 4,
@@ -38,10 +40,16 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
   paymentHoldMinutes: 15,
   backfillInviteTtlHours: 12,
   disputeWindowDays: 7,
+  /** V5.5 (D-056) : un « imprévu » par mois (30 j glissants). */
+  emergencyCancelsPerMonth: 1,
+  emergencyWindowDays: 30,
+  /** V5.6 (A.1) : « je connais quelqu'un » = 1 déplacement par 30 j ; au-delà, sortie pour raison de sécurité examinée. */
+  knowsSomeoneMovesPerMonth: 1,
+  knowsSomeoneWindowDays: 30,
   cycle: {
-    /** Demande lundi 9 h → mardi 12 h (heure du quartier), D-012. */
-    requestOpensIsoWeekday: 1,
-    requestOpensHourLocal: 9,
+    /** V5.5 (D-053) : demande de la semaine W ouverte le vendredi 21 h de W−1 ; fermeture = composition du dernier jour. */
+    requestOpensIsoWeekday: 5,
+    requestOpensHourLocal: 21,
     requestClosesIsoWeekday: 2,
     requestClosesHourLocal: 12,
     inviteTtlHours: 24,
@@ -57,6 +65,13 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     checkinClosesAfterMinutes: 90,
     inviteReminderBeforeHours: 4,
     lastCallBeforeHours: 3,
+    /** V5.5 (D-053) : composition à J − 3, 21 h, par jour de créneau (mardi → dimanche). */
+    composeDaysBefore: 3,
+    composeHourLocal: 21,
+    requestOpensWeeksBefore: 1,
+    slotIsoWeekdays: [2, 3, 4, 5, 6, 7],
+    /** V5.6 (B.13) : « un week-end sur deux » = vendredi, samedi, dimanche. */
+    weekendIsoWeekdays: [5, 6, 7],
   },
   composition: {
     algoVersion: 'groups-2026.12.2',
@@ -76,6 +91,8 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     maxTeamSize: 3,
     /** V5.2 (B.5–B.6) : ≥ 2 personnes compatibles « histoire » dans le groupe, sinon « potes uniquement ». */
     storyGuarantee: { enabled: true, minCompatible: 2, lambdaGuarantee: 16000 },
+    /** V5.6 (§4.3) : mélange calme/animé = pénalité douce par membre minoritaire. HYPOTHÈSE de calibrage. */
+    lambdaAmbiance: 200,
   },
   /** V5.1 (B.7) : team de 3 vérifiés + une autre team (≥ 2) ; jusqu'à 6 (3 + 3). */
   seeding: { triggerTeamSize: 3, minPartnerTeamSize: 2, maxSize: 6 },
@@ -94,8 +111,8 @@ export const VOTES_V5: Out<typeof VotesTuningSchema> = frozen({
 });
 
 export const DUO_V5: Out<typeof DuoTuningSchema> = frozen({
+  /** V5.5 (D-054) : Duo gratuit pour tous, 3 duos actifs au plus (anti-spam). */
   maxActive: 3,
-  maxActiveFree: 1,
   maxOpenProposals: 3,
   exchangeHours: 48,
   dateDeadlineDays: 7,
@@ -107,6 +124,7 @@ export const DUO_V5: Out<typeof DuoTuningSchema> = frozen({
   proposalTtlHours: 48,
   dailyRunHour: 21,
   declinedCooldownDays: 90,
+  dateLockHourLocal: 18,
 });
 
 export const RELIABILITY_V5: Out<typeof ReliabilityV5TuningSchema> = frozen({ noShowWindowDays: 90, noShowsToPause: 2, pauseDays: 7 });
@@ -139,13 +157,15 @@ export const ACCESSORIES_V5: Out<typeof AccessoriesTuningSchema> = frozen({
   /** Réaction cosmétique (check-in, révélation, brise-glace). HYPOTHÈSE */
   reactionTtlMs: 4000,
   referralAccessoryId: 'kite_referral',
-  plusMonthlyAccessoryIds: ['hat_beret', 'bow_tie', 'backpack_mini', 'umbrella_yellow', 'headphones', 'bandana_green'],
 });
 
 /** V5.1 (H.23) : 4,99 € la place (conso non incluse), 1ʳᵉ sortie offerte. */
 export const PRICING_V5: Out<typeof PricingTuningSchema> = frozen({ seat: { amountCents: 499, currency: 'EUR' }, firstOutingFree: true });
-/** V5.1 (H.23) : Blowy+ 9,99 €/mois, toutes les sorties incluses + Duo illimité ; aucun accessoire vendu (accessoires uniquement gagnés). */
-export const PLUS_V5: Out<typeof PlusTuningSchema> = frozen({ monthlyPriceCents: 999, includesAllOutings: true, includedOutingsPerMonth: 0, duoUnlimited: true, includesMonthlyAccessory: false });
+/**
+ * V5.4 (C.10–C.11) : Blowy+ 9,99 €/mois = abonnement aux SORTIES uniquement (toutes tes sorties), payé par
+ * Apple Pay / carte via Stripe Billing ; le Duo est gratuit pour tous ; aucun accessoire vendu.
+ */
+export const PLUS_V5: Out<typeof PlusTuningSchema> = frozen({ monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: false, billing: 'STRIPE_BILLING' });
 export const CREDITS_V5: Out<typeof CreditsTuningSchema> = frozen({ refundCreditValidityDays: 90 });
 
 export const SAFETY_V5: Out<typeof SafetyTuningSchema> = frozen({
@@ -163,10 +183,13 @@ export const SAFETY_V5: Out<typeof SafetyTuningSchema> = frozen({
   uncomfortableLeaveWindowDays: 90,
   uneasyLeaveRecontactThreshold: 3,
   humanResponseMinutes: 60,
+  /** V5.7 (D-078) : rappel humain visé en 5 min pendant une sortie (astreinte dimensionnée en conséquence). */
+  helpCallbackTargetMinutes: 5,
 });
 
 /** V5.3 C.11 / D-045 : 3 € versés par Blowy pour une place offerte/incluse non honorée (place payée : son prix). */
-export const VENUES_V5: Out<typeof VenuesTuningSchema> = frozen({ compensationUnpaidSeatCents: 300 });
+/** V5.4 (C.12) : 3 € par place réservée si Blowy annule une sortie confirmée. */
+export const VENUES_V5: Out<typeof VenuesTuningSchema> = frozen({ compensationUnpaidSeatCents: 300, compensationBlowyCancelSeatCents: 300, welcomeMessageMaxChars: 280 });
 
 export const NOTIFICATIONS_V5: Out<typeof NotificationsV5TuningSchema> = frozen({
   maxPerDay: 3,
@@ -178,6 +201,11 @@ export const NOTIFICATIONS_V5: Out<typeof NotificationsV5TuningSchema> = frozen(
   transactionalKeys: ['outing.checkin_open', 'outing.cancelled', 'outing.refund_done', 'duo.checkin_open'],
   maxOutingProposalsPerWeek: 1,
 });
+
+/** V5.5 (D-064) : une sortie offerte par parrainage et par mois au plus. */
+export const REFERRAL_V5: Out<typeof ReferralV5TuningSchema> = frozen({ maxFreePerMonth: 1 });
+/** V5.5 (D-059) : ≥ 10, photographie gardée 30 j. */
+export const CITY_INSIGHTS_V5: Out<typeof CityInsightsTuningSchema> = frozen({ minCount: 10, snapshotRetentionDays: 30 });
 
 export const PREFERENCES_V5: Out<typeof PreferencesTuningSchema> = frozen({ groupAgeDefaultDelta: 4, maxNeighborhoods: 5, maxWeeksOffAhead: 12 });
 

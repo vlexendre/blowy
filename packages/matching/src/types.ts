@@ -36,6 +36,8 @@ export interface PairFacts {
   distanceKm: number;
   blockedOrReported: boolean;
   metBefore: boolean;
+  /** V5.4 (A.6, D-049) : paire issue de « éviter les personnes que je connais » (symétrique, jamais révélée). */
+  knownContact?: boolean;
   /** Propositions en cours (entrantes + sortantes) pour chacun. */
   pendingProposals: [number, number];
 }
@@ -70,4 +72,6 @@ export type ExclusionReason =
   | 'PROPOSAL_QUOTA'
   | 'SELF'
   /** V5 : genre hors de « qui je veux rencontrer ». */
-  | 'MEET_GENDER';
+  | 'MEET_GENDER'
+  /** V5.4 (A.6) : « éviter les personnes que je connais » (spec §4.2 `KNOWN_CONTACT`). */
+  | 'KNOWN_CONTACT';

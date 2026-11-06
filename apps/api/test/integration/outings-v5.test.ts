@@ -13,7 +13,7 @@ import { uuidv7 } from '@blowy/database';
 import { OutingViewSchema } from '@blowy/api-contract';
 import { OUTINGS_JOBS } from '../../src/modules/outings/outings.module.js';
 import type { RecurringJob } from '../../src/jobs/scheduler.js';
-import { onboard, startHarness, TestClient, type Harness } from './harness.js';
+import { onboard, startHarness, TestClient, venueCodeOf, type Harness } from './harness.js';
 
 let h: Harness;
 const T = {
@@ -115,8 +115,10 @@ describe('outings V5 (intégration)', () => {
     v = await view(p1);
     expect(v.status).toBe('CONFIRMED');
     expect(v.venue.name).toBe('Café IT');
-    // À la confirmation (J-1 18 h) : prénoms + tranches + fiabilité des confirmé·es, toujours sans visage.
-    expect(v.members.filter((m: any) => m.firstName && m.ageRange && m.reliability).map((m: any) => m.userId).sort()).toEqual([p2.userId, p3.userId, p4.userId].sort());
+    // À la confirmation (J-1 18 h) : prénoms + tranches des confirmé·es, toujours sans visage ; V5.6 (E24) :
+    // jamais la fiabilité d'autrui (visible par soi seulement).
+    expect(v.members.filter((m: any) => m.firstName && m.ageRange).map((m: any) => m.userId).sort()).toEqual([p2.userId, p3.userId, p4.userId].sort());
+    expect(v.members.some((m: any) => 'reliability' in m)).toBe(false);
     expect(v.members.some((m: any) => m.photo)).toBe(false);
     const v5 = await view(p5);
     expect(v5.mySeat.status).toBe('EXPIRED');
@@ -128,7 +130,11 @@ describe('outings V5 (intégration)', () => {
     expect(await h.app.get<any>((await import('../../src/shared/application/ports/outing-photos.port.js')).OUTING_REVEAL_READER).canSeeProfilePhoto(p5.userId, p1.userId, T.faces)).toBe(false);
     // Check-in et clôture : p4 absent·e.
     await run('outings.lifecycle', T.checkin);
-    for (const p of [p1, p2, p3]) expect((await p.call('POST', `/v1/outings/${outingId}/check-in`, { method: 'GEO', lat: 48.8649, lng: 2.3707, accuracyM: 20 })).status).toBe(200);
+    // V5.5 (D-062) : toute position est refusée (400) ; seul le code du chevalet est accepté.
+    expect((await p1.call('POST', `/v1/outings/${outingId}/check-in`, { method: 'GEO', lat: 48.8649, lng: 2.3707, accuracyM: 20 })).status).toBe(400);
+    expect((await p1.call('POST', `/v1/outings/${outingId}/check-in`, { code: '0000', lat: 48.8649 })).status).toBe(400);
+    const code = await venueCodeOf(h, outingId);
+    for (const p of [p1, p2, p3]) expect((await p.call('POST', `/v1/outings/${outingId}/check-in`, { code })).status).toBe(200);
     await run('outings.lifecycle', T.done);
     v = await view(p1);
     expect(v.members.map((m: any) => m.userId).sort()).toEqual([p2.userId, p3.userId].sort());

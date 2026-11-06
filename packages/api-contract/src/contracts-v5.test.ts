@@ -95,8 +95,8 @@ describe('OutingView (§3.1, §7.5)', () => {
     expect(OutingCompositionPreviewSchema.safeParse({ ...preview, firstNames: ['Léa'] }).success).toBe(false);
   });
   it('après photoRevealAt : prénom, tranche d’âge, fiabilité, photo, arrivée, lieu', () => {
-    const member = { userId: U(2), pet, threeWords: [], firstName: 'Léa', ageRange: '25_29', reliability: { attended: 3, total: 4 }, photo: { mediaId: U(9), url: 'https://media.blowy.test/t/abc' }, arrived: true };
-    const v = { ...base, status: 'CHECKIN_OPEN', confirmedCount: 5, mySeat: { status: 'CHECKED_IN', funding: 'FREE_FIRST' }, venue: { name: 'Le Comptoir', address: '1 rue X', offerLabel: 'Une boisson', lat: 48.86, lng: 2.38 }, members: [member, { userId: U(3), pet, threeWords: [], firstName: 'Max', reliability: 'NEWCOMER', notComing: true }], conversationId: U(7) };
+    const member = { userId: U(2), pet, threeWords: [], firstName: 'Léa', ageRange: '25_29', photo: { mediaId: U(9), url: 'https://media.blowy.test/t/abc' }, arrived: true };
+    const v = { ...base, status: 'CHECKIN_OPEN', confirmedCount: 5, mySeat: { status: 'CHECKED_IN', funding: 'FREE_FIRST' }, venue: { name: 'Le Comptoir', address: '1 rue X', offerLabel: 'Une boisson' }, members: [member, { userId: U(3), pet, threeWords: [], firstName: 'Max', notComing: true }], conversationId: U(7) };
     expect(OutingViewSchema.safeParse(v).success).toBe(true);
   });
   it('aucun champ hors contrat : financement d’autrui, absence, intentions, genre refusés', () => {
@@ -125,8 +125,10 @@ describe('commandes V5', () => {
     expect(PutOutingRequestSchema.safeParse({ slotStartsAt: [] }).success).toBe(false);
     expect(PutOutingRequestSchema.safeParse({ slotStartsAt: [T(1), T(1)] }).success).toBe(false);
   });
-  it('check-in GEO ou code à 4 chiffres', () => {
-    expect(CheckInRequestSchema.safeParse({ method: 'GEO', lat: 48.8, lng: 2.3, accuracyM: 20 }).success).toBe(true);
+  it('check-in par code à 4 chiffres uniquement (V5.5 : aucune position acceptée)', () => {
+    expect(CheckInRequestSchema.safeParse({ method: 'GEO', lat: 48.8, lng: 2.3, accuracyM: 20 }).success).toBe(false);
+    expect(CheckInRequestSchema.safeParse({ code: '0421', lat: 48.8, lng: 2.3 }).success).toBe(false);
+    expect(CheckInRequestSchema.safeParse({ code: '0421' }).success).toBe(true);
     expect(CheckInRequestSchema.safeParse({ method: 'VENUE_CODE', code: '0421' }).success).toBe(true);
     expect(CheckInRequestSchema.safeParse({ method: 'VENUE_CODE', code: '42' }).success).toBe(false);
     expect(CheckInRequestSchema.safeParse({ method: 'STAFF' }).success).toBe(false);
@@ -175,7 +177,7 @@ describe('commandes V5', () => {
     expect(SendMessageRequestSchema.safeParse({ clientMessageId: 'abcdefgh', body: 'salut' }).success).toBe(true);
   });
   it('vue duo : progression d’échange de moi seul (0..1)', () => {
-    const d = { id: U(1), status: 'EXCHANGE', origin: 'LANE', other: { firstName: 'Léa', pet, reliability: 'NEWCOMER' }, exchange: { endsAt: T(5), mineCount: 1, unlockProgress: 0.5 }, conversationId: U(2) };
+    const d = { id: U(1), status: 'EXCHANGE', origin: 'LANE', other: { firstName: 'Léa', pet }, exchange: { endsAt: T(5), mineCount: 1, unlockProgress: 0.5 }, conversationId: U(2) };
     expect(DuoViewSchema.safeParse(d).success).toBe(true);
     expect(DuoViewSchema.safeParse({ ...d, exchange: { ...d.exchange, theirCount: 2 } }).success).toBe(false);
   });

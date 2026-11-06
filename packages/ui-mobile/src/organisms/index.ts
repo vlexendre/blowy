@@ -15,3 +15,5 @@ export * from './VisionCard';
 export * from './StateViews';
 export * from './PetCarousel';
 export * from './RelationSwitcher';
+export * from './v5';
+export * from './share';

@@ -37,6 +37,6 @@ export interface SafetyStaffPort {
   /** Décision d'un dossier existant (`decide`) sur un sujet SAFETY_ALERT : alerte HANDLED. */
   onCaseDecided(subjectType: string, subjectId: string, staffUserId: string): Promise<void>;
   /** « Je connais quelqu'un » en examen : accepté → retrait sans pénalité ; refusé → place gardée. */
-  resolveKnowsSomeone(seatId: string, accept: boolean, staffUserId: string, commandId: string): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' }>;
+  resolveKnowsSomeone(seatId: string, accept: boolean, staffUserId: string, commandId: string): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' | 'REVIEWED' }>;
 }
 export const SAFETY_STAFF_PORT = Symbol.for('blowy.safety.staff');

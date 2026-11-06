@@ -67,7 +67,7 @@ a{color:inherit;text-decoration:none}
     <a href="V5-Chat.dc.html" aria-label="Retour au chat" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     <h1 class="d" style="margin: 0; font-size: 32px; white-space: nowrap; flex: 1 1 auto; min-width: 0">PARTIR PROPREMENT</h1>
   </div>
-    <p style="margin: 10px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: #5A5047">Un message, et le duo se ferme. Léa ne peut plus t’écrire. Ta fiabilité ne compte que les sorties : elle ne bouge pas.</p>
+    <p style="margin: 10px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: #5A5047">Un message, et le duo se ferme. Léa ne peut plus t’écrire. Ta fiabilité ne compte que les sorties, elle ne bouge pas, et reste visible par toi seulement.</p>
     <span class="lbl" style="margin-top: 14px">Ton dernier mot à Léa</span>
     <div role="radiogroup" aria-label="Message" style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px">
       <sc-for list="{{msgs}}" as="m" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}" style="text-align: left; width: 100%; min-height: 48px; padding: 12px 14px; border-radius: 16px; border: 0; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.4; background: {{m.bg}}; color: {{m.fg}}; box-shadow: 0 3px 0 {{m.sh}}">{{m.t}}</button></sc-for>

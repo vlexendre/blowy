@@ -29,10 +29,14 @@ export interface SafetyTuningSlice {
   humanResponseMinutes?: number;
   uneasyLeaveRecontactThreshold?: number;
   uncomfortableLeaveWindowDays?: number;
+  /** V5.7 (E31, D-078) : rappel humain visé pendant une sortie (« en quelques minutes »). */
+  helpCallbackTargetMinutes?: number;
 }
 
 /** Réponse humaine visée (`[T] safety.humanResponseMinutes`, 60 par défaut). */
 export const humanResponseMinutes = (t: Pick<SafetyTuningSlice, 'humanResponseMinutes'>): number => t.humanResponseMinutes ?? HUMAN_RESPONSE_MINUTES;
+/** V5.7 (E31) : objectif de rappel humain (`[T] safety.helpCallbackTargetMinutes`, 5) ; la SLA dossier reste `humanResponseMinutes`. */
+export const helpCallbackTargetMinutes = (t: Pick<SafetyTuningSlice, 'helpCallbackTargetMinutes'>): number => t.helpCallbackTargetMinutes ?? 5;
 
 /** Faits d'un sujet (sortie ou RDV duo) du point de vue de son propriétaire. */
 export interface SubjectFacts {

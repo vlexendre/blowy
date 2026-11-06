@@ -24,6 +24,8 @@ export interface SeeksProfile {
   /** V5.1 (A.1) : âges appliqués en silence au dépouillement quand fournis. */
   age?: number;
   groupAge?: { min: number; max: number };
+  /** V5.6 (E11) : tranches acceptées pour une histoire (vide/absent = repli `groupAge`). */
+  storyAgeBrackets?: readonly string[];
 }
 
 const ageOk = (s: SeeksProfile, o: SeeksProfile) => s.groupAge === undefined || o.age === undefined || (o.age >= s.groupAge.min && o.age <= s.groupAge.max);
@@ -35,6 +37,7 @@ export function romanceCompatible(a: SeeksProfile, b: SeeksProfile): boolean {
 
 /** La tranche fixe (V5.2 C.9) de `o` recoupe-t-elle la tranche d'âge souhaitée par `s` ? (inconnu → oui) */
 const bracketOk = (s: SeeksProfile, o: SeeksProfile) => {
+  if (o.age !== undefined && s.storyAgeBrackets && s.storyAgeBrackets.length > 0) return s.storyAgeBrackets.includes(ageBracketOf(o.age));
   if (s.groupAge === undefined || o.age === undefined) return true;
   const [lo, hi] = ageBracketBounds(ageBracketOf(o.age));
   return lo <= s.groupAge.max && hi >= s.groupAge.min;
@@ -118,6 +121,11 @@ export class PairTable {
   readonly team: Int32Array;
   private readonly bracketLo: Int16Array;
   private readonly bracketHi: Int16Array;
+  /** V5.6 : tranche fixe de chacun (clé de la grille) et tranches « histoire » acceptées (vide = repli `groupAge`). */
+  private readonly bracketKey: readonly string[];
+  private readonly storyBrackets: readonly (ReadonlySet<string> | null)[];
+  /** V5.6 (§4.3) : ambiance souhaitée (0 = peu importe, 1 = calme, 2 = animé) — pénalité douce de mélange. */
+  readonly ambiance: Int8Array;
   private readonly romanceMask: Int32Array;
   private readonly profiles: MatchProfile[];
   private readonly cache: Int16Array;
@@ -144,6 +152,9 @@ export class PairTable {
     this.team = Int32Array.from(cands, (c) => (c.teamId === null ? -1 : (teams.get(c.teamId) ?? (teams.set(c.teamId, teams.size), teams.size - 1))));
     this.bracketLo = Int16Array.from(cands, (c) => ageBracketBounds(ageBracketOf(c.profile.age))[0]);
     this.bracketHi = Int16Array.from(cands, (c) => ageBracketBounds(ageBracketOf(c.profile.age))[1]);
+    this.bracketKey = cands.map((c) => ageBracketOf(c.profile.age));
+    this.storyBrackets = cands.map((c) => (c.storyAgeBrackets && c.storyAgeBrackets.length > 0 ? new Set(c.storyAgeBrackets) : null));
+    this.ambiance = Int8Array.from(cands, (c) => (c.ambiance === 'CALM' ? 1 : c.ambiance === 'LIVELY' ? 2 : 0));
     this.profiles = cands.map(filterProfileOf);
     this.cache = new Int16Array(n * n).fill(UNKNOWN);
     this.tStar = groupScoringTuning(tuning);
@@ -153,7 +164,7 @@ export class PairTable {
   exclusion(i: number, j: number): ExclusionReason | null {
     const key = pairKey(this.ids[i]!, this.ids[j]!);
     const exempt = this.exemptPairs.has(key);
-    const facts: PairFacts = { distanceKm: 0, blockedOrReported: this.facts.blockedPairs.has(key), metBefore: !exempt && this.facts.metPairs.has(key), pendingProposals: [0, 0] };
+    const facts: PairFacts = { distanceKm: 0, blockedOrReported: this.facts.blockedPairs.has(key), metBefore: !exempt && this.facts.metPairs.has(key), knownContact: !exempt && (this.facts.knownContactPairs?.has(key) ?? false), pendingProposals: [0, 0] };
     return firstExclusion({ a: this.profiles[i]!, b: this.profiles[j]!, facts, tuning: this.tuning }, PAIR_FILTERS);
   }
 
@@ -190,7 +201,11 @@ export class PairTable {
     if (!this.rom(i, j) || (this.team[i]! >= 0 && this.team[i] === this.team[j])) return false;
     const a = this.cands[i]!.groupAge;
     const b = this.cands[j]!.groupAge;
-    return this.bracketLo[j]! <= a.max && this.bracketHi[j]! >= a.min && this.bracketLo[i]! <= b.max && this.bracketHi[i]! >= b.min;
+    const sa = this.storyBrackets[i];
+    const sb = this.storyBrackets[j];
+    const iAcceptsJ = sa ? sa.has(this.bracketKey[j]!) : this.bracketLo[j]! <= a.max && this.bracketHi[j]! >= a.min;
+    const jAcceptsI = sb ? sb.has(this.bracketKey[i]!) : this.bracketLo[i]! <= b.max && this.bracketHi[i]! >= b.min;
+    return iAcceptsJ && jAcceptsI;
   }
 
   candidate(i: number): OutingCandidate {

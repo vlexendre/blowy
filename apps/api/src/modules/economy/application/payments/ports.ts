@@ -20,9 +20,17 @@ export interface ProviderRefund {
   readonly status: 'SUCCEEDED' | 'PENDING';
 }
 
+/** V5.4 (C.10) : abonnement Blowy+ créé chez le fournisseur (Stripe Billing), en attente du 1ᵉʳ paiement. */
+export interface PlusSubscriptionIntent {
+  readonly customerRef: string;
+  readonly subscriptionRef: string;
+  /** Secret client de la 1ʳᵉ facture (PaymentSheet / Apple Pay) ; null si rien à payer. Jamais journalisé. */
+  readonly clientSecret: string | null;
+}
+
 /**
- * Port fournisseur des PLACES (Strategy) : StripePaymentProvider en production, LocalDemoPaymentProvider en
- * local. Blowy+ n'en fait pas partie (V5.3 C.10 : achat intégré, RevenueCat = `BillingProvider`).
+ * Port fournisseur des PLACES et, depuis V5.4 (C.10), de Blowy+ (Stripe Billing) — Strategy :
+ * StripePaymentProvider en production, LocalDemoPaymentProvider en local (Blowy+ démo via la démo locale).
  */
 export interface PaymentProvider {
   readonly kind: PaymentProviderKind;
@@ -31,6 +39,10 @@ export interface PaymentProvider {
   readonly confirmsImmediately: boolean;
   createSeatIntent(i: { seatId: string; userId: string; amountCents: number; currency: 'EUR'; idempotencyKey: string }): Promise<SeatIntent>;
   refund(i: { providerPaymentId: string; seatId: string; amountCents: number; idempotencyKey: string }): Promise<ProviderRefund>;
+  /** V5.4 (C.10) : crée (ou retrouve, clé idempotente) l'abonnement Blowy+ ; absent = fournisseur sans abonnement. */
+  createPlusSubscription?(i: { userId: string; customerRef: string | null; priceId: string; idempotencyKey: string }): Promise<PlusSubscriptionIntent>;
+  /** V5.4 (C.10) : résiliation à l'échéance (`cancel_at_period_end`). */
+  cancelPlusSubscription?(i: { subscriptionRef: string; idempotencyKey: string }): Promise<void>;
 }
 export const PAYMENT_PROVIDER = Symbol('PaymentProvider');
 
@@ -110,6 +122,8 @@ export interface SeatFacts {
   readonly status: SeatStatus;
   readonly funding: SeatFunding | null;
   readonly cancelKind: string | null;
+  /** V5.6 (E22) : la place a été annulée après `lockAt` (table réservée au lieu). */
+  readonly cancelledAfterLock?: boolean;
 }
 
 export interface SeatDirectory {
@@ -118,3 +132,17 @@ export interface SeatDirectory {
   usedFreeFirst(userId: string): Promise<boolean>;
 }
 export const SEAT_DIRECTORY = Symbol('SeatDirectory');
+
+/** V5.5 (D-064) : sorties offertes par parrainage (port ; adaptateur Prisma `ReferralReward`). */
+export interface ReferralFreeStore {
+  /** Accorde au parrain une sortie offerte : au plus 1 par mois (`period`) et jamais plus d'une en attente. */
+  grant(scope: TxScope, i: { referrerUserId: string; refereeUserId: string; period: string }): Promise<boolean>;
+  available(scope: TxScope | null, userId: string): Promise<{ id: string } | null>;
+  usedThisPeriod(userId: string, period: string): Promise<boolean>;
+  /** V5.7 (E28) : mois civil `YYYY-MM` de la personne (son fuseau). */
+  periodOf(scope: TxScope | null, userId: string, at: Date): Promise<string>;
+  consume(scope: TxScope, rewardId: string, seatId: string): Promise<boolean>;
+  /** « Reste offerte » (annulation gratuite, sortie annulée) : la récompense redevient disponible. */
+  release(scope: TxScope, seatId: string): Promise<boolean>;
+}
+

@@ -6,3 +6,4 @@ export * from './streak-freeze.js';
 export * from './subscription.js';
 export * from './entitlements.js';
 export * from './payments.js';
+export * from './plus-billing.js';

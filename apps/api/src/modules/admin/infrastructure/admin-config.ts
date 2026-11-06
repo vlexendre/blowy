@@ -26,7 +26,7 @@ const Schema = z.object({
   VENUE_SESSION_TTL_MINUTES: z.coerce.number().int().min(15).max(8 * 60).default(120),
   VENUE_IDLE_TIMEOUT_MINUTES: z.coerce.number().int().min(5).max(60).default(15),
   VENUE_ONCALL_PHONE: z.string().trim().min(6).max(30).optional(),
-  VENUE_ONCALL_HOURS: z.string().trim().min(3).max(80).default('18 h – 2 h, chaque soir de sortie'),
+  VENUE_ONCALL_HOURS: z.string().trim().min(3).max(80).default('pendant toute la sortie ou le rendez-vous'),
 });
 
 export interface AdminConfig {

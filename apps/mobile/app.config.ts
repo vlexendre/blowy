@@ -102,6 +102,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-splash-screen', { image: './assets/images/splash-pet.png', imageWidth: 200, backgroundColor: CREAM, resizeMode: 'contain' }],
     'expo-secure-store',
     'expo-apple-authentication',
+    // Apple Pay via Stripe PaymentSheet (places + Blowy+, V5.4 §C10) ; identifiant marchand public.
+    ['@stripe/stripe-react-native', { merchantIdentifier: process.env.EXPO_PUBLIC_APPLE_MERCHANT_ID ?? 'merchant.app.blowy', enableGooglePay: true }],
     ['expo-notifications', { icon: './assets/images/notification-icon.png', color: CORAL, defaultChannel: 'default' }],
     [
       'expo-location',

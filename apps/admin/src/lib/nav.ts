@@ -16,6 +16,9 @@ export const NAV: (NavItem & { perm: string })[] = [
   // V5 (§10.1) : exploitation des sorties.
   { href: '/neighborhoods', label: 'Villes et quartiers', perm: 'neighborhoods.read' },
   { href: '/venues', label: 'Lieux', perm: 'venues.read' },
+  // V5.6 (E11, E12)
+  { href: '/travel-times', label: 'Temps de trajet', perm: 'neighborhoods.read' },
+  { href: '/oncall', label: 'Astreinte', perm: 'oncall.read' },
   { href: '/outings', label: 'Sorties', perm: 'outings.read' },
   { href: '/knows-someone', label: 'Je connais quelqu’un', perm: 'knows_someone.read' },
   { href: '/attendance', label: 'Présences et pauses', perm: 'attendance.read' },

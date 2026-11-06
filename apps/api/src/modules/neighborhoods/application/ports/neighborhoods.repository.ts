@@ -30,6 +30,15 @@ export interface NeighborhoodsRepository {
    */
   slotDemand(userId: string, weekKey: string, at: Date): Promise<{ startsAt: Date; others: number }[]>;
   /** Génère les créneaux des lieux actifs (idempotent par (venueId, startsAt)). */
-  generateSlots(at: Date, weeksAhead: number): Promise<number>;
+  /**
+   * Crée les créneaux des lieux pour les semaines à venir — V5.6 (E12) : seulement ceux que `covered` accepte
+   * (astreinte couvrant le créneau, du check-in à la fin prévue) ; sans `covered`, tous.
+   */
+  generateSlots(at: Date, weeksAhead: number, covered?: (timezone: string, startsAt: Date) => Promise<boolean>): Promise<number>;
+  /**
+   * V5.6 (E12, §10.1) : créneaux publiés à venir qui ont perdu leur couverture — retirés s'ils n'ont aucune
+   * sortie, sinon signalés aux ops (outbox `ops.oncall_coverage_lost`, une fois par créneau).
+   */
+  watchCoverage(at: Date, horizonDays: number, covered: (timezone: string, startsAt: Date) => Promise<boolean>): Promise<{ removed: number; escalated: number }>;
 }
 export const NEIGHBORHOODS_REPOSITORY = Symbol('NeighborhoodsRepository');

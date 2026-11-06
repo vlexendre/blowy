@@ -22,6 +22,8 @@ import { APP_CONFIG, BLOCK_READER, CLOCK, COMMAND_BUS, DB, ENTITLEMENTS_READER, 
 import { MESSAGE_AUTHOR_RESOLVER } from '../../shared/application/ports/message-author.port.js';
 import type { BlockReader } from '../../shared/application/ports/block-reader.port.js';
 import { PrismaMessageAuthors } from './infrastructure/message-authors.js';
+import { ONCALL_COVERAGE, type OnCallCoverage } from '../../shared/application/ports/oncall-coverage.port.js';
+import { selectOnCallCoverage } from '../../shared/infrastructure/oncall/prisma-oncall-coverage.js';
 import { hourKey, type RecurringJob } from '../../jobs/scheduler.js';
 import { loadAdminConfig } from '../admin/infrastructure/admin-config.js';
 import { isPaused } from './domain/reliability.js';
@@ -45,6 +47,9 @@ import { SEAT_PAYMENT_SINK, type SeatPaymentSink } from '../../shared/applicatio
 const ECONOMY_SEAT_FUNDING = Symbol.for('blowy.economy.seat_funding');
 import { PrismaOutingsRepository } from './infrastructure/prisma-outings.repository.js';
 import { OutingsController, TeamsController } from './interface/outings.controller.js';
+import { OnCallController } from './interface/oncall.controller.js';
+import { CityInsightsController } from './interface/city-insights.controller.js';
+import { CityInsights } from './infrastructure/city-insights.js';
 
 export const OUTINGS_TUNING = Symbol('OutingsTuning');
 export const OUTINGS_JOBS = Symbol('OutingsJobs');
@@ -60,8 +65,12 @@ type R = OutingsRepository;
 
 @Global()
 @Module({
-  controllers: [OutingsController, TeamsController],
+  controllers: [OutingsController, TeamsController, OnCallController, CityInsightsController],
   providers: [
+    // V5.5 (D-059) : indicateurs de ville (photographie quotidienne).
+    { provide: CityInsights, useFactory: (db: Db, t: Tuning, cfg: AppConfig) => new CityInsights(db, t, cfg.MEDIA_TOKEN_SECRET ?? cfg.SESSION_SECRET), inject: [DB, OUTINGS_TUNING, APP_CONFIG] },
+    // V5.5 (D-058) : couverture d'astreinte (aussi consommée par connections pour les RDV duo).
+    { provide: ONCALL_COVERAGE, useFactory: (db: Db, cfg: AppConfig) => selectOnCallCoverage(db, cfg), inject: [DB, APP_CONFIG] },
     { provide: OUTINGS_TUNING, useValue: DEFAULT_TUNING },
     { provide: OUTINGS_REPOSITORY, useFactory: (db: Db, t: Tuning) => new PrismaOutingsRepository(db, t), inject: [DB, OUTINGS_TUNING] },
     // V5 (§2.8) : auteurs du chat de sortie signés par leur pet (prénom à la confirmation), lu par `conversations`.
@@ -105,8 +114,8 @@ type R = OutingsRepository;
     },
     {
       provide: OutingJobs,
-      useFactory: (r: R, u: UnitOfWork, l: OutingLifecycle, ch: GroupChatPort, e: OutingEvents, rnd: RandomSource, t: Tuning) => new OutingJobs(r, u, l, ch, e, rnd, t),
-      inject: [OUTINGS_REPOSITORY, UNIT_OF_WORK, OutingLifecycle, GROUP_CHAT_PORT, OutingEvents, RANDOM, OUTINGS_TUNING],
+      useFactory: (r: R, u: UnitOfWork, l: OutingLifecycle, ch: GroupChatPort, e: OutingEvents, rnd: RandomSource, t: Tuning, oc: OnCallCoverage) => new OutingJobs(r, u, l, ch, e, rnd, t, oc),
+      inject: [OUTINGS_REPOSITORY, UNIT_OF_WORK, OutingLifecycle, GROUP_CHAT_PORT, OutingEvents, RANDOM, OUTINGS_TUNING, ONCALL_COVERAGE],
     },
     // T4 (agent E) : retrait système au blocage et décision « je connais quelqu'un » (port, ajout minimal).
     { provide: OUTING_SAFETY_PORT, useFactory: (r: R, s: SeatUseCases) => new OutingSafetyService(r, s), inject: [OUTINGS_REPOSITORY, SeatUseCases] },
@@ -129,17 +138,20 @@ type R = OutingsRepository;
     { provide: OUTING_ROOMS, useFactory: (r: R, c: Clock): OutingRooms => ({ outing: (u, id) => r.outingRoomMember(u, id, c.now()), duo: (u, id) => r.duoRoomMember(u, id) }), inject: [OUTINGS_REPOSITORY, CLOCK] },
     {
       provide: OUTINGS_JOBS,
-      useFactory: (j: OutingJobs, req: OutingRequestsUseCases): RecurringJob[] => [
+      useFactory: (j: OutingJobs, req: OutingRequestsUseCases, ci: CityInsights): RecurringJob[] => [
+        // V5.5 (D-059) : photographie quotidienne des indicateurs de ville (idempotente par jour).
+        { name: 'neighborhoods.city_insights', everyMs: 60 * MIN, windowKey: hourKey, run: (now) => ci.snapshot(now) },
         // D-052 : demande hebdo automatique depuis les créneaux cochés (pendant la fenêtre de demande).
         { name: 'outings.auto_requests', everyMs: 60 * MIN, windowKey: hourKey, run: (now) => req.autoRequests(now) },
-        { name: 'outings.compose', everyMs: 5 * MIN, run: (now) => j.composeWeekly(now) },
+        // V5.5 (D-053) : composition glissante par (ville, jour) à J − 3 21 h.
+        { name: 'outings.compose', everyMs: 5 * MIN, run: (now) => j.composeRolling(now) },
         { name: 'outings.seeding', everyMs: 15 * MIN, run: (now) => j.composeSeeding(now) },
         { name: 'outings.lifecycle', everyMs: 5 * MIN, run: (now) => j.lifecycleSweep(now) },
         { name: 'outings.purge', everyMs: 60 * MIN, windowKey: hourKey, run: (now) => j.purge(now) },
       ],
-      inject: [OutingJobs, OutingRequestsUseCases],
+      inject: [OutingJobs, OutingRequestsUseCases, CityInsights],
     },
   ],
-  exports: [MESSAGE_AUTHOR_RESOLVER, SEAT_PAYMENT_SINK, OUTING_SAFETY_PORT, OUTING_ADMIN_PORT, OUTING_REVEAL_READER, OUTING_ROOMS, RELIABILITY_PORT, OUTINGS_JOBS, OUTINGS_REPOSITORY, OutingJobs, OutingLifecycle],
+  exports: [ONCALL_COVERAGE, MESSAGE_AUTHOR_RESOLVER, SEAT_PAYMENT_SINK, OUTING_SAFETY_PORT, OUTING_ADMIN_PORT, OUTING_REVEAL_READER, OUTING_ROOMS, RELIABILITY_PORT, OUTINGS_JOBS, OUTINGS_REPOSITORY, OutingJobs, OutingLifecycle],
 })
 export class OutingsModule {}

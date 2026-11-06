@@ -14,6 +14,7 @@
  */
 import { createHmac } from 'node:crypto';
 import { VenueRosterViewSchema, type VenueContractView, type VenueMe, type VenueRosterView, type VenueScheduleView, type VenueStatementView } from '@blowy/api-contract';
+import { localDayKey, mondayOfWeek, wallToUtc, weekKeyOf } from '@blowy/pet-engine';
 import type { Tuning } from '@blowy/tuning';
 import type { CommandBus } from '../../../../shared/application/command-bus.js';
 import type { Clock, RandomSource } from '../../../../shared/application/clock.js';
@@ -34,11 +35,13 @@ import {
   VENUE_NOTICE_HOURS,
   VENUE_POLICY_WEEKS,
   weeklySchedule,
+  welcomeMessageIssue,
   type VenuePartnerEvent,
   type VenuePartnerState,
 } from '../../domain/venue-partner.js';
 import type { AuditLog } from '../ports/admin.ports.js';
-import type { OpsConfigWriter, OpsReadModel, VenueCompensationLedger, VenueFacts, VenuePartnerStore, VenueSessionRepository } from '../ports/ops.ports.js';
+import type { OpsConfigWriter, OpsReadModel, VenueCompensationLedger, VenueFacts, VenuePartnerStore, VenueSessionRepository, VenueTextModeration } from '../ports/ops.ports.js';
+import { VENUE_WELCOME_TEMPLATE } from '@blowy/content';
 
 export const VENUE_PARTNER_ROLE = 'venue_partner';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -218,7 +221,36 @@ export class VenuePartnerUseCases {
     private readonly clock: Clock,
     private readonly random: RandomSource,
     private readonly tuning: Tuning,
+    private readonly moderation: VenueTextModeration | null = null,
   ) {}
+
+  /** V5.7 (E30, D-080) : message d'accueil — lu par le lieu avec son modèle prérempli. */
+  async welcome(ctx: VenuePartnerContext, venueId?: string) {
+    const v = await this.venueOf(ctx, venueId);
+    const w = await this.writer.welcomeOf(v.id);
+    return { text: w.text, updatedAt: w.updatedAt?.toISOString() ?? null, template: VENUE_WELCOME_TEMPLATE.fr, maxChars: this.tuning.venues.welcomeMessageMaxChars, visibleFrom: 'CONFIRMATION' as const };
+  }
+
+  /**
+   * V5.7 (E30) : écrit (ou retire, `text: null`) le message d'accueil. Règles déterministes (longueur, lien, téléphone)
+   * puis modération comme un message ; refus → 412 `WELCOME_MESSAGE_REJECTED {issue}`. Montré aux seules places
+   * confirmées à partir de la confirmation (fiche Confirmation + message système du lieu dans le chat).
+   */
+  async setWelcome(ctx: VenuePartnerContext, venueId: string | undefined, b: { text: string | null }, commandId: string) {
+    const text = b.text?.trim() ? b.text.trim() : null;
+    const v = await this.venueOf(ctx, venueId);
+    if (text) {
+      const issue = welcomeMessageIssue(text, this.tuning.venues.welcomeMessageMaxChars);
+      if (issue) throw Errors.precondition('WELCOME_MESSAGE_REJECTED', { issue });
+      if (!this.moderation) throw new AppError('PROVIDER_UNAVAILABLE', 'Modération indisponible', { retryable: true, detailsSafe: { reason: 'MODERATION_UNAVAILABLE' } });
+      const verdict = await this.moderation.moderate({ text, venueId: v.id, authorId: ctx.userId });
+      if (verdict !== 'ALLOW') throw Errors.precondition('WELCOME_MESSAGE_REJECTED', { issue: 'MODERATION' });
+    }
+    return this.mutate(ctx, v.id, 'welcome_message_set', commandId, { length: text?.length ?? 0 }, async (scope) => {
+      await this.writer.setWelcome(scope, v.id, text);
+      return { text };
+    });
+  }
 
   /** Lieu du partenaire (sinon 404 identique : jamais d'information sur un lieu d'autrui). */
   private async venueOf(ctx: VenuePartnerContext, venueId: string | undefined): Promise<VenueFacts> {
@@ -242,13 +274,25 @@ export class VenuePartnerUseCases {
   async roster(ctx: VenuePartnerContext, venueId?: string): Promise<VenueRosterView> {
     const v = await this.venueOf(ctx, venueId);
     const now = this.clock.now();
-    const outings = await this.reads.venueOutings(v.id, new Date(now.getTime() - 6 * 3_600_000), new Date(now.getTime() + 8 * DAY));
+    // V5.7 (E29) : semaine civile en cours + suivante (fuseau du lieu), tous les jours de créneaux — « aucune table » compris.
+    const monday = mondayOfWeek(weekKeyOf(now.getTime(), v.timezone));
+    const from = new Date(wallToUtc(monday, 0, v.timezone));
+    const to = new Date(wallToUtc(monday + 14, 0, v.timezone));
+    const outings = await this.reads.venueOutings(v.id, from, to);
     const code = (startsAt: Date) => (this.outings ? this.outings.venueCode(v.checkinSecretRef, startsAt) : '0000');
+    const tables = outings.map((o) => projectVenueTable(o, now, code));
+    const slotDays = new Set((await this.reads.templatesOf(v.neighborhoodId)).filter((t) => t.active).map((t) => t.isoWeekday));
+    const dayOf = (iso: string) => localDayKey(new Date(iso).getTime(), v.timezone);
+    const days = Array.from({ length: 14 }, (_, i) => monday + i)
+      .map((d) => ({ date: new Date(d * 86_400_000).toISOString().slice(0, 10), isoWeekday: ((((d + 3) % 7) + 7) % 7) + 1 }))
+      .filter((d) => slotDays.has(d.isoWeekday) || tables.some((t) => dayOf(t.startsAt) === d.date))
+      .map((d) => ({ ...d, tables: tables.filter((t) => t.status !== 'CANCELLED' && dayOf(t.startsAt) === d.date).length }));
     const view = {
       venue: { ...this.venueRef(v), timezone: v.timezone },
       onCall: this.auth.onCall(),
       tablesPerSlot: v.tablesPerSlot,
-      tables: outings.map((o) => projectVenueTable(o, now, code)),
+      tables,
+      days,
     };
     // Frontière stricte : un champ imprévu (âge, pet, identifiant…) fait échouer la réponse.
     return VenueRosterViewSchema.parse(view);
@@ -331,12 +375,16 @@ export class VenuePartnerUseCases {
   async contract(ctx: VenuePartnerContext, venueId?: string): Promise<VenueContractView> {
     const v = await this.venueOf(ctx, venueId);
     const state = reduceVenuePartner(await this.store.load(null, v.id));
+    const c = await this.store.contractOf(v.id);
     return {
       venue: { ...this.venueRef(v), address: `${v.addressLine}, ${v.venueCity} ${v.postalCode.startsWith('75') ? `${Number(v.postalCode.slice(3))}e` : ''}`.trim().replace(/,\s*$/, '') },
       onCall: this.auth.onCall(),
       version: VENUE_CONTRACT_VERSION,
       clauses: [...VENUE_CONTRACT_CLAUSES],
       signed: state.contract ? { at: state.contract.signedAt.toISOString(), signerName: state.contract.signerName, version: state.contract.version } : null,
+      // V5.6 (E15) : contrat bilatéral — en vigueur quand le lieu ET Blowy ont signé la version courante.
+      countersigned: c?.blowySignedAt ? { at: c.blowySignedAt.toISOString(), signerName: c.blowySignerName ?? 'Blowy' } : null,
+      inForce: !!(c?.blowySignedAt && c.contractVersion === VENUE_CONTRACT_VERSION && state.contract?.version === VENUE_CONTRACT_VERSION),
     };
   }
 
@@ -351,27 +399,52 @@ export class VenuePartnerUseCases {
   /** Relevé mensuel : agrégé par sortie, sans prénom ni financement individuel. */
   async statement(ctx: VenuePartnerContext, venueId: string | undefined, period: string | undefined): Promise<VenueStatementView> {
     const v = await this.venueOf(ctx, venueId);
-    const p = period ?? periodOf(this.clock.now());
-    const rows = this.ledger ? (await this.ledger.forVenue(v.id)).filter((r) => periodOf(r.at) === p) : [];
-    const byOuting = new Map<string, { seats: Set<string>; amountCents: number }>();
+    // V5.7 (E28) : mois civil du fuseau du lieu.
+    const p = period ?? periodOf(this.clock.now(), v.timezone);
+    const rows = this.ledger ? (await this.ledger.forVenue(v.id)).filter((r) => periodOf(r.at, v.timezone) === p) : [];
+    const byOuting = new Map<string, { seats: Set<string>; amountCents: number; blowy: boolean; absences: Set<string>; emergencies: Set<string>; safety: Set<string> }>();
     for (const r of rows) {
-      const cur = byOuting.get(r.outingId) ?? { seats: new Set<string>(), amountCents: 0 };
+      const cur = byOuting.get(r.outingId) ?? { seats: new Set<string>(), amountCents: 0, blowy: false, absences: new Set<string>(), emergencies: new Set<string>(), safety: new Set<string>() };
       cur.amountCents += r.amountCents;
+      if (r.cause === 'BLOWY_CANCELLED') cur.blowy = true;
+      if (r.cause === 'NO_SHOW' || r.cause === 'LATE_CANCEL') cur.absences.add(r.seatId);
+      if (r.cause === 'EMERGENCY') cur.emergencies.add(r.seatId);
+      if (r.cause === 'SAFETY') cur.safety.add(r.seatId);
+      if (r.cause === 'REVERSAL') {
+        cur.absences.delete(r.seatId);
+        cur.emergencies.delete(r.seatId);
+        cur.safety.delete(r.seatId);
+      }
       if (r.cause !== 'REVERSAL') cur.seats.add(r.seatId);
       else cur.seats.delete(r.seatId);
       byOuting.set(r.outingId, cur);
     }
-    const starts = await this.reads.outingsStart([...byOuting.keys()]);
-    const lines = [...byOuting].map(([outingId, l]) => ({ outingId, startsAt: starts.get(outingId)?.toISOString() ?? null, seats: l.seats.size, amountCents: l.amountCents })).sort((a, b) => (a.startsAt ?? '').localeCompare(b.startsAt ?? ''));
-    return { venue: this.venueRef(v), onCall: this.auth.onCall(), period: p, totalCents: lines.reduce((s, l) => s + l.amountCents, 0), lines };
+    // V5.5 (D-067) : une ligne par soirée — y compris les soirées sans compensation du mois (places, présences).
+    const summaries = await this.reads.outingSummaries(v.id, p, v.timezone);
+    // Une sortie annulée n'apparaît que si Blowy l'a annulée après la confirmation (ligne de compensation).
+    for (const [id, sm] of summaries) if (!byOuting.has(id) && !sm.cancelled) byOuting.set(id, { seats: new Set(), amountCents: 0, blowy: false, absences: new Set(), emergencies: new Set(), safety: new Set() });
+    const lines = [...byOuting]
+      .map(([outingId, l]) => {
+        const sm = summaries.get(outingId);
+        return { outingId, startsAt: sm?.startsAt.toISOString() ?? null, reservedSeats: sm?.reserved ?? l.seats.size, attended: sm?.attended ?? 0, absences: l.absences.size, emergencies: l.emergencies.size, safetyExits: l.safety.size, seats: l.seats.size, amountCents: l.amountCents, ...(l.blowy ? { cancelledByBlowy: true as const } : {}), ...(sm?.duoTable ? { duoTable: true as const } : {}) };
+      })
+      .sort((a, b) => (a.startsAt ?? '').localeCompare(b.startsAt ?? ''));
+    return { venue: this.venueRef(v), onCall: this.auth.onCall(), period: p, taxBasis: 'HT' as const, totalCents: lines.reduce((s, l) => s + l.amountCents, 0), lines };
   }
 
+  /**
+   * « Signaler un participant » (V5.4 C.12) depuis l'espace lieu : droits `venue_partner` sur CE lieu (garde
+   * dédiée + `venueOf`), sortie du lieu, à partir de la confirmation seulement, désignation par le PRÉNOM
+   * (seule donnée que le lieu possède) ; 404 identique sinon. Le dossier part à l'équipe (file ops/trust) par
+   * l'outbox `venue.participant_reported` (identifiants seulement, ni prénom ni note).
+   */
   reportIncident(ctx: VenuePartnerContext, venueId: string | undefined, b: { outingId: string; firstName: string; motive: 'BEHAVIOR' | 'REFUSED_TO_PAY' | 'OTHER'; note: string }, commandId: string) {
     return this.mutate(ctx, venueId, 'incident_reported', commandId, { ...b }, async (scope, v) => {
-      const seat = await this.reads.seatOfFirstName(v.id, b.outingId, b.firstName);
+      const seat = await this.reads.seatOfFirstName(v.id, b.outingId, b.firstName, scope.now);
       if (!seat) throw Errors.notFound('Participant');
       const id = this.random.uuid();
       await this.store.append(scope, v.id, { type: 'INCIDENT_REPORTED', id, outingId: b.outingId, firstName: b.firstName.trim(), motive: b.motive, note: b.note, seatId: seat.seatId, userId: seat.userId }, ctx.userId);
+      await scope.outbox.emit({ topic: 'venue.participant_reported', aggregateType: 'Venue', aggregateId: v.id, payload: { incidentId: id, venueId: v.id, outingId: b.outingId, seatId: seat.seatId, motive: b.motive } });
       return { id };
     });
   }

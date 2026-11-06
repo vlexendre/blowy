@@ -49,12 +49,18 @@ export class OutingSafetyService implements OutingSafetyPort {
 
   async knowsSomeoneUnderReview(scope: TxScope | null, seatId: string) {
     const k = await this.repo.knowsSomeoneBySeat(scope, seatId);
-    return k && k.status === 'IN_REVIEW' ? { userId: k.userId, outingId: k.outingId, targetUserId: k.targetUserId } : null;
+    return k && (k.status === 'IN_REVIEW' || k.status === 'SAFETY_REVIEW') ? { userId: k.userId, outingId: k.outingId, targetUserId: k.targetUserId } : null;
   }
 
   async resolveKnowsSomeone(scope: TxScope, i: { seatId: string; accept: boolean }) {
     const k = await this.repo.knowsSomeoneBySeat(scope, i.seatId);
-    if (!k || k.status !== 'IN_REVIEW') return null;
+    if (!k || (k.status !== 'IN_REVIEW' && k.status !== 'SAFETY_REVIEW')) return null;
+    // V5.6 (E23) : la personne est déjà partie (sortie pour raison de sécurité, remboursée) ; l'examen humain
+    // ne change rien pour elle — il qualifie seulement le signalement (suite éventuelle côté sécurité).
+    if (k.status === 'SAFETY_REVIEW') {
+      await this.repo.setKnowsSomeoneStatus(scope, k.id, i.accept ? 'ACCEPTED' : 'REJECTED');
+      return { status: 'REVIEWED' as const };
+    }
     if (!i.accept) {
       await this.repo.setKnowsSomeoneStatus(scope, k.id, 'REJECTED');
       return { status: 'REJECTED' as const };
@@ -65,7 +71,8 @@ export class OutingSafetyService implements OutingSafetyPort {
     const seat = await this.repo.seat(scope, outingId, k.userId);
     const outing = await this.repo.outing(scope, outingId);
     if (!seat || !outing || seat.status !== 'CONFIRMED' || scope.now >= outing.startsAt) return { status: 'ACCEPTED_TOO_LATE' as const };
-    await this.seats.systemRemove(scope, seat, outing);
+    // V5.6 (E18) : déplacement vers un autre groupe du créneau si possible, sinon retrait remboursé.
+    await this.seats.relocateOrRemove(scope, seat, outing);
     return { status: 'MOVED' as const };
   }
 }

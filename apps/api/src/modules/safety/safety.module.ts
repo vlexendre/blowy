@@ -28,7 +28,7 @@ import { BLOCK_SAFETY_HOOK } from '../../shared/application/ports/block-hook.por
 import { GUARDIAN_METADATA_RETENTION_DAYS } from './domain/guardian.js';
 import { PrismaSafetyRepository } from './infrastructure/prisma-safety.repository.js';
 import { PrismaSubjectReader } from './infrastructure/prisma-subject-reader.js';
-import { AlertAckConsumer, GuardianPushEffect, GuardianRevocationConsumer, KnowsSomeoneReviewConsumer, UneasyLeaveConsumer } from './infrastructure/safety.consumers.js';
+import { AlertAckConsumer, OnCallCoverageLostConsumer, VenueIncidentConsumer, GuardianPushEffect, GuardianRevocationConsumer, KnowsSomeoneReviewConsumer, UneasyLeaveConsumer } from './infrastructure/safety.consumers.js';
 import { DisabledPushSender, RecordingPushSender, VapidPushSender } from './infrastructure/web-push.sender.js';
 import { PublicGuardianController, SafetyController } from './interface/safety.controller.js';
 
@@ -85,7 +85,7 @@ function selectPushSender(cfg: AppConfig, clock: Clock): GuardianPushSender {
     {
       provide: SAFETY_OUTBOX,
       useFactory: (s: SafetyUseCases, sr: SubjectReader, k: SafetyCaseSink, p: GuardianPushSender): { consumers: OutboxConsumer[]; effects: OutboxEffect[] } => ({
-        consumers: [new GuardianRevocationConsumer(s, sr), new KnowsSomeoneReviewConsumer(k, sr), new AlertAckConsumer(s), new UneasyLeaveConsumer(s, sr)],
+        consumers: [new GuardianRevocationConsumer(s, sr), new KnowsSomeoneReviewConsumer(k, sr), new AlertAckConsumer(s), new UneasyLeaveConsumer(s, sr), new VenueIncidentConsumer(k, sr), new OnCallCoverageLostConsumer(k)],
         effects: [new GuardianPushEffect(s, p)],
       }),
       inject: [SafetyUseCases, SUBJECT_READER, SAFETY_CASE_SINK, GUARDIAN_PUSH_SENDER],

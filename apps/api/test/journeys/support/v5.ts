@@ -9,6 +9,7 @@ import { uuidv7 } from '@blowy/database';
 import { Person, type PersonSpec } from './actor.js';
 import { synthImage, upload } from './media.js';
 import type { World } from './world.js';
+import { OUTING_ADMIN_PORT } from '../../../src/shared/application/ports/outing-admin.port.js';
 
 /** Cycle de référence (heure de Paris = UTC+1 en novembre). */
 export const CYCLE = {
@@ -83,7 +84,19 @@ export const week = (p: Person) => p.call('GET', '/v1/outings/week');
 export const outing = (p: Person, id: string) => p.call('GET', `/v1/outings/${id}`);
 export const request = (p: Person, body: unknown = {}) => p.call('PUT', `/v1/outings/requests/${CYCLE.weekKey}`, body);
 export const accept = (p: Person, id: string, key = randomUUID()) => p.call('POST', `/v1/outings/${id}/seat/accept`, { funding: 'AUTO' }, key);
-export const checkIn = (p: Person, id: string, pos = { ...VENUE, accuracyM: 25 }) => p.call('POST', `/v1/outings/${id}/check-in`, { method: 'GEO', ...pos });
+/** V5.5 (D-062) : code du chevalet de la sortie (celui que montre l'espace lieu) — seul moyen de check-in. */
+export async function venueCodeOf(w: World, outingId: string): Promise<string> {
+  const o = await w.db.outing.findUniqueOrThrow({ where: { id: outingId }, include: { venue: { select: { checkinSecretRef: true } } } });
+  const port = w.app.get<{ venueCode(ref: string, at: Date): string }>(OUTING_ADMIN_PORT, { strict: false });
+  return port.venueCode(o.venue.checkinSecretRef, o.startsAt);
+}
+/** V5.5 (D-062) : code du chevalet d'un RDV duo (table de 2). */
+export async function duoCodeOf(w: World, dateId: string): Promise<string> {
+  const d = await w.db.duoDate.findUniqueOrThrow({ where: { id: dateId }, include: { venue: { select: { checkinSecretRef: true } } } });
+  return w.app.get<{ venueCode(ref: string, at: Date): string }>(OUTING_ADMIN_PORT, { strict: false }).venueCode(d.venue.checkinSecretRef, d.startsAt);
+}
+/** Check-in au code du chevalet (V5.5) ; `code` explicite pour tester un mauvais code. */
+export const checkIn = async (p: Person, id: string, code?: string) => p.call('POST', `/v1/outings/${id}/check-in`, { code: code ?? (await venueCodeOf(p.world, id)) });
 export const votes = (p: Person, id: string) => p.call('GET', `/v1/outings/${id}/votes`);
 export const vote = (p: Person, id: string, choices: Record<string, 'FRIEND' | 'PLUS' | 'NO'>) => p.call('PUT', `/v1/outings/${id}/votes`, { choices });
 

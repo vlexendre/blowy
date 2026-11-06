@@ -106,7 +106,7 @@ describe('réponses anonymes « 3 mots »', () => {
 });
 
 describe('parrainage', () => {
-  it('pas d’auto-parrainage, pas de récompense au clic/claim, +100/+100 une seule fois après activation', async () => {
+  it('pas d’auto-parrainage, pas de récompense au clic/claim ; V5.5 : prochaine sortie offerte au parrain, une seule fois après activation', async () => {
     const referrer = new TestClient(h);
     await onboard(referrer, 'ref.alex', { gender: 'MAN', seeking: ['WOMAN'] });
     const link = await referrer.call('POST', '/v1/referrals/link', {});
@@ -149,20 +149,19 @@ describe('parrainage', () => {
     await h.drain();
     await h.drain();
 
-    const entries = await h.db.ledgerEntry.findMany();
-    expect(entries.map((e) => [e.userId, e.reason, e.amount]).sort((x, y) => String(x[1]).localeCompare(String(y[1])))).toEqual([
-      [referee.userId, 'REFERRAL_REFEREE', 100],
-      [referrer.userId, 'REFERRAL_REFERRER', 100],
-    ]);
+    // V5.5 (D-064) : plus de pièces — la récompense est la PROCHAINE SORTIE OFFERTE du parrain (≤ 1 par mois).
+    expect(await h.db.ledgerEntry.count()).toBe(0);
+    expect(await h.db.referralReward.findMany({ select: { referrerUserId: true, refereeUserId: true, consumedSeatId: true } })).toEqual([{ referrerUserId: referrer.userId, refereeUserId: referee.userId, consumedSeatId: null }]);
     expect((await referee.call('GET', '/v1/referrals/me')).body.status).toBe('REWARDED');
+    expect((await referrer.call('GET', '/v1/me/referral-reward')).body).toEqual({ nextOutingFree: true, thisMonthUsed: true });
 
     // Rejeu : événement remis en file + job d'activation → aucune nouvelle écriture.
     await h.db.outboxEvent.updateMany({ where: { topic: 'referral.activated' }, data: { publishedAt: null } });
     await h.db.consumerDeduplication.deleteMany({ where: { consumer: 'economy.referral_reward' } });
     await h.drain();
     await h.drain();
-    expect(await h.db.ledgerEntry.count()).toBe(2);
-    expect(await h.db.outboxEvent.count({ where: { topic: 'economy.referral_rewarded' } })).toBe(1);
+    expect(await h.db.referralReward.count()).toBe(1);
+    expect(await h.db.outboxEvent.count({ where: { topic: 'referral.next_outing_free' } })).toBe(1);
   });
 
   it('un compte existant avant le lien ne peut pas être parrainé rétroactivement', async () => {

@@ -18,6 +18,17 @@ export type StorySeriousness = (typeof STORY_SERIOUSNESS)[number];
 /** Facultatif : « enfants un jour ». */
 export const KIDS_SOMEDAY = ['YES', 'NO', 'DONT_KNOW'] as const;
 export type KidsSomeday = (typeof KIDS_SOMEDAY)[number];
+/** V5.5 (D-060) / V5.6 (B.13) : horizon enfants (remplace `KIDS_SOMEDAY`), dont « j'en ai déjà ». Secret. */
+export const KIDS_HORIZONS = ['IN_1_2_YEARS', 'IN_3_5_YEARS', 'NO_PLAN', 'DONT_KNOW', 'HAS_ALREADY'] as const;
+export type KidsHorizon = (typeof KIDS_HORIZONS)[number];
+/** Repli : ancien `kidsSomeday` → horizon (lecture des profils V5.1). */
+export function kidsHorizonOf(h: KidsHorizon | null | undefined, legacy: KidsSomeday | null | undefined): KidsHorizon | null {
+  if (h) return h;
+  if (legacy === 'YES') return 'IN_3_5_YEARS';
+  if (legacy === 'NO') return 'NO_PLAN';
+  if (legacy === 'DONT_KNOW') return 'DONT_KNOW';
+  return null;
+}
 
 /** « Comment tu préfères rencontrer ? » En petit groupe / À deux, par écrit d'abord / Les deux. */
 export const MEETING_MODES = ['GROUP', 'DUO', 'BOTH'] as const;
@@ -80,11 +91,20 @@ export function intentionsIssues(i: Pick<IntentionsV5, 'lookingFor' | 'romanceGe
  * Indice « projet compatible » en Duo (F.18) : les deux cherchent une histoire, même sérieux, et
  * « enfants un jour » concordant (ou non renseigné / « je ne sais pas » d'un côté). Jamais les sous-choix eux-mêmes.
  */
-export function projectCompatible(a: Pick<IntentionsV5, 'lookingFor' | 'storySeriousness' | 'kidsSomeday'>, b: Pick<IntentionsV5, 'lookingFor' | 'storySeriousness' | 'kidsSomeday'>): boolean {
+export function projectCompatible(
+  a: Pick<IntentionsV5, 'lookingFor' | 'storySeriousness' | 'kidsSomeday'> & { kidsHorizon?: KidsHorizon | null },
+  b: Pick<IntentionsV5, 'lookingFor' | 'storySeriousness' | 'kidsSomeday'> & { kidsHorizon?: KidsHorizon | null },
+): boolean {
   if (!seeksOf(a.lookingFor).romance || !seeksOf(b.lookingFor).romance) return false;
   if (a.storySeriousness === null || a.storySeriousness !== b.storySeriousness) return false;
-  const k = (x: KidsSomeday | null) => x === null || x === 'DONT_KNOW';
-  return k(a.kidsSomeday) || k(b.kidsSomeday) || a.kidsSomeday === b.kidsSomeday;
+  // V5.6 (E11) : horizon enfants (repli sur l'ancien `kidsSomeday`). Concordant si l'un ne sait pas, si les deux
+  // en veulent (1–2 ans ou 3–5 ans), si aucun n'en prévoit ; « j'en ai déjà » ne ferme rien.
+  const ha = kidsHorizonOf(a.kidsHorizon ?? null, a.kidsSomeday);
+  const hb = kidsHorizonOf(b.kidsHorizon ?? null, b.kidsSomeday);
+  const open = (h: KidsHorizon | null) => h === null || h === 'DONT_KNOW' || h === 'HAS_ALREADY';
+  if (open(ha) || open(hb)) return true;
+  const family = (h: KidsHorizon) => (h === 'NO_PLAN' ? 'NO' : 'WANTS');
+  return family(ha!) === family(hb!);
 }
 
 /**
@@ -102,5 +122,5 @@ export function mapLegacyIntention(intention: Intention, seekingGenders: readonl
 }
 
 /** Étapes manquantes de l'onboarding V5.1 (`ONBOARDING_INCOMPLETE {missing}`). Ville/quartier d'abord (B.5). */
-export const ONBOARDING_STEPS_V5 = ['NEIGHBORHOOD', 'BIRTH_DATE', 'PET', 'VISION', 'SEEKS', 'MEETING_MODE', 'GENDER', 'SOCIAL_CONSENTS'] as const;
+export const ONBOARDING_STEPS_V5 = ['NEIGHBORHOOD', 'BIRTH_DATE', 'PET', 'VISION', 'SEEKS', 'MEETING_MODE', 'GENDER', 'SOCIAL_CONSENTS', 'DISCREET_MODE'] as const;
 export type OnboardingStepV5 = (typeof ONBOARDING_STEPS_V5)[number];

@@ -3,6 +3,7 @@
  * absente) et petits utilitaires pour présenter l'état d'une requête de façon honnête.
  */
 import { QueryClient } from '@tanstack/react-query';
+import { isClockFrozen } from '../clock';
 import { isNetworkError, isRetryable, isUnavailable } from './errors';
 
 export function createQueryClient(): QueryClient {
@@ -11,7 +12,8 @@ export function createQueryClient(): QueryClient {
       queries: {
         staleTime: 30_000,
         gcTime: 24 * 3_600_000,
-        retry: (count, e) => isRetryable(e) && !isUnavailable(e) && count < 2,
+        // Mode démo local (horloge figée) : aucun nouvel essai, l'état affiché est immédiat.
+        retry: (count, e) => !isClockFrozen() && isRetryable(e) && !isUnavailable(e) && count < 2,
         networkMode: 'offlineFirst',
       },
       mutations: { retry: false, networkMode: 'online' },

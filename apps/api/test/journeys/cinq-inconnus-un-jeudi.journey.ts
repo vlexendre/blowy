@@ -11,7 +11,7 @@ import type { Person } from './support/actor.js';
 import { Observers } from './support/observers.js';
 import { story } from './support/story.js';
 import { startWorld, type World } from './support/world.js';
-import { accept, at, checkIn, city, CYCLE, leaksIn, outing, vote, votes, v5Person, type City } from './support/v5.js';
+import { accept, at, checkIn, city, CYCLE, leaksIn, outing, vote, votes, v5Person, type City, venueCodeOf } from './support/v5.js';
 
 let w: World;
 let c: City;
@@ -55,9 +55,11 @@ describe('Cinq inconnus un jeudi', () => {
     expect(v.members).toHaveLength(4);
     expect(v.members.some((m: any) => m.firstName || m.photo || m.ageRange)).toBe(false);
     expect(v.venue).toBeUndefined();
-    // V5.2 B.6 : un seul homme cherchant une histoire compatible (Hugo) → « potes uniquement » pour Léa.
-    expect(v.storyMatch).toBe('FRIENDS_ONLY');
-    expect((await outing(malo, outingId)).data.storyMatch).toBeUndefined();
+    // V5.4 A.1 : un seul homme cherchant une histoire compatible (Hugo) — la garantie n'est pas tenue pour Léa,
+    // mais AUCUNE vue ne le dit plus (ni « sortie entre amis pour toi », ni `storyMatch`) : rien qui désigne quelqu'un.
+    expect(Object.keys(v)).not.toContain('storyMatch');
+    expect(JSON.stringify(v)).not.toMatch(/storyMatch|FRIENDS_ONLY|entre amis|compatib/i);
+    expect(Object.keys((await outing(malo, outingId)).data)).not.toContain('storyMatch');
     expect(leaksIn(v, ['Malo', 'Sarah', 'Hugo', 'Inès'])).toEqual([]);
   });
 
@@ -121,12 +123,14 @@ describe('Cinq inconnus un jeudi', () => {
     }
   });
 
-  S.step('Check-in : position ponctuelle jamais renvoyée ; trop loin refusé sans distance ; « arrivé·e » visible au groupe', async () => {
+  S.step('Check-in par le code du chevalet UNIQUEMENT (V5.5 D-062) : position refusée, mauvais code refusé ; « arrivé·e » visible au groupe', async () => {
     await at(w, CYCLE.checkin);
     await w.runJob('outings.lifecycle');
-    const far = await checkIn(malo, outingId, { lat: 48.9, lng: 2.4, accuracyM: 20 });
-    expect(far.status).toBe(412);
-    expect(far.data.detailsSafe).toEqual({ reason: 'CHECKIN_TOO_FAR' });
+    const geo = await malo.call('POST', `/v1/outings/${outingId}/check-in`, { method: 'GEO', lat: 48.9, lng: 2.4, accuracyM: 20 });
+    expect(geo.status).toBe(400);
+    const good = await venueCodeOf(w, outingId);
+    const bad = await checkIn(malo, outingId, good === '0000' ? '0001' : '0000');
+    expect([bad.status, bad.data.detailsSafe?.reason]).toEqual([412, 'CHECKIN_CODE_INVALID']);
     obs.mark();
     for (const p of all) expect((await checkIn(p, outingId)).data).toEqual({ result: 'ACCEPTED' });
     await w.drain();

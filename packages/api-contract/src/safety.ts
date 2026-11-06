@@ -50,13 +50,19 @@ export const GuardianLinkListSchema = z.object({
 
 // ---------------------------------------------------------------- « tout va bien », alertes
 export const SafetyOkRequestSchema = z.object({ subject: SafetySubjectSchema });
-export const RaiseAlertRequestSchema = z.object({ subject: SafetySubjectSchema, position: AlertPositionSchema.optional() });
+/**
+ * V5.6 (E14, D-062/D-074) : aucune position n'est demandée ni acceptée — un ancien client qui en envoie une reçoit
+ * un 400 explicite (`.strict()`), au lieu d'une position ignorée en silence.
+ */
+export const RaiseAlertRequestSchema = z.object({ subject: SafetySubjectSchema }).strict();
 export type RaiseAlertRequest = z.infer<typeof RaiseAlertRequestSchema>;
 export const RaiseAlertResponseSchema = z.object({
   alertId: UuidSchema,
   emergencyNumbers: EmergencyNumbersSchema,
   /** Engagement affiché : réponse humaine en moins de N minutes pendant les créneaux de sortie (V5.1 G.19). */
   humanResponseMinutes: z.number().int().positive().optional(),
+  /** V5.7 (E31) : rappel humain visé (« Quelqu'un de l'équipe te rappelle en quelques minutes. ») ; SLA dossier = `humanResponseMinutes`. */
+  callbackTargetMinutes: z.number().int().positive().optional(),
 });
 export type RaiseAlertResponse = z.infer<typeof RaiseAlertResponseSchema>;
 export const ResolveAlertRequestSchema = z.object({ status: z.literal('SAFE') });
@@ -92,7 +98,7 @@ export type SafetyStatusView = z.infer<typeof SafetyStatusViewSchema>;
  */
 export const UneasyLeaveRequestSchema = z.object({ subject: SafetySubjectSchema, notifyGuardian: z.boolean().default(false) });
 export type UneasyLeaveRequest = z.infer<typeof UneasyLeaveRequestSchema>;
-export const UneasyLeaveResponseSchema = z.object({ left: z.literal(true), guardianNotified: z.boolean(), humanResponseMinutes: z.number().int().positive() }).strict();
+export const UneasyLeaveResponseSchema = z.object({ left: z.literal(true), guardianNotified: z.boolean(), humanResponseMinutes: z.number().int().positive(), callbackTargetMinutes: z.number().int().positive().optional() }).strict();
 
 // ---------------------------------------------------------------- page publique du proche
 export const GuardianPageViewSchema = z

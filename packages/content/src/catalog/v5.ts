@@ -163,6 +163,10 @@ export const NOTIFICATION_TITLES: I18nEntry[] = [
 ];
 export const NOTIFICATION_TEMPLATES_V5: NotificationTemplateV5[] = [
   n('outing.request_open', 'OUTING', '{pet} est prêt·e à te trouver une bande cette semaine. Choisis tes créneaux.'),
+  // V5.6 (E26) : délai calculé depuis la composition J − 3 21 h du jour concerné (jamais « lundi 21 h » générique).
+  n('outing.request_answer_at', 'OUTING', '{pet} cherche ta sortie de {jour} : réponse {moment}.'),
+  // V5.5 (D-064) : parrainage = prochaine sortie offerte.
+  n('referral.next_outing_free', 'SYSTEM', 'Une personne que tu as invitée a vécu sa première sortie : ta prochaine sortie est offerte.'),
   n('outing.request_last_call', 'OUTING', 'Les demandes de la semaine ferment à {heure}. {pet} attend tes créneaux.'),
   n('outing.invited', 'OUTING', '{pet} t’a trouvé une bande pour {jour}.'),
   n('outing.invite_reminder', 'OUTING', 'Ta bande de {jour} attend ta réponse.'),
@@ -170,7 +174,7 @@ export const NOTIFICATION_TEMPLATES_V5: NotificationTemplateV5[] = [
   n('outing.formed', 'OUTING', 'Ta bande de {jour} est formée : le chat est ouvert.'),
   n('outing.venue_revealed', 'OUTING', 'Ta bande est confirmée : rendez-vous demain à {heure} au {lieu}, les visages sont visibles.', 'Rappel pour demain à {heure}.'),
   // V5.3 B.7–B.8 (T8) : confirmation J-1 18 h (lieu + groupe, sans visages) puis visages à J − 3 h.
-  n('outing.confirmed', 'OUTING', 'Ta sortie de {jour} est confirmée : {heure} au {lieu}. Les prénoms de ta bande sont visibles ; une annulation compte désormais comme une absence.', 'Rappel pour demain à {heure}.'),
+  n('outing.confirmed', 'OUTING', 'Ta sortie de {jour} est confirmée : {heure} au {lieu}. Les prénoms de ta bande sont visibles. Annuler compte maintenant comme une absence, sauf ton imprévu du mois ou une raison de sécurité ; l’équipe Blowy est joignable pendant toute ta sortie.', 'Rappel pour demain à {heure}.'),
   n('outing.faces', 'OUTING', 'Les visages de ta bande sont visibles. À tout à l’heure, {heure} au {lieu}.', 'Rappel pour {heure}.'),
   n('outing.today', 'OUTING', 'C’est aujourd’hui, à {heure} au {lieu}.', 'Rappel pour aujourd’hui à {heure}.'),
   n('outing.seeding_invited', 'OUTING', 'Ta team et une autre team de la ville sortent {jour} : réponds pour confirmer.'),
@@ -201,3 +205,64 @@ export const NOTIFICATION_TEMPLATES_V5: NotificationTemplateV5[] = [
   n('neighborhood.launched', 'SYSTEM', 'Le quartier {quartier} est lancé : les premières sorties arrivent.'),
   n('pet.memory', 'IN_APP', '{pet} a un nouveau souvenir.', 'Tu as du nouveau.', { inAppOnly: true }),
 ];
+
+// ---------------------------------------------------------------- V5.6 (concept-v5.6 §A) : règles uniques
+/**
+ * Une règle = une seule formulation, identique à la spec (§1, §2.15, §6, §10). Les écrans et notifications
+ * reprennent ces clés ; aucun autre texte ne reformule la règle.
+ */
+export const RULES_V56: I18nEntry[] = [
+  { id: 'safety_exit', key: 'rule.safety_exit', fr: 'Sortie pour raison de sécurité (mal à l’aise, je connais quelqu’un ici, menace, incident) : toujours possible, sans limite et sans pénalité, ta place est remboursée. Le lieu est compensé par Blowy.' },
+  { id: 'emergency', key: 'rule.emergency', fr: 'Imprévu : 1 fois par mois, sans effet sur ta fiabilité, place non remboursée.' },
+  { id: 'cancel_after_lock', key: 'rule.cancel_after_lock', fr: 'Après la confirmation, annuler compte comme une absence, sauf ton imprévu du mois ou une sortie pour raison de sécurité.' },
+  { id: 'knows_someone', key: 'rule.knows_someone', fr: 'Je connais quelqu’un ici : 1 déplacement par mois. Au-delà, c’est une sortie pour raison de sécurité, examinée par une personne de l’équipe, toujours sans pénalité et remboursée.' },
+  { id: 'reliability', key: 'rule.reliability', fr: 'Ta fiabilité (« venu·e à {nombre} sorties ») n’est visible que par toi.' },
+  { id: 'oncall', key: 'rule.oncall', fr: 'L’équipe Blowy est joignable pendant toute ta sortie ou ton rendez-vous. Aucune position n’est partagée : seulement le lieu et l’heure.' },
+  { id: 'plus_breakeven', key: 'rule.plus_breakeven', fr: 'Blowy+ est rentable dès la 3ᵉ sortie du mois.' },
+];
+
+const DAY_FR = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+/** Moment de la journée d'une heure locale (« matin », « après-midi », « soir »). */
+const momentOf = (hour: number): string => (hour < 12 ? 'matin' : hour < 18 ? 'après-midi' : 'soir');
+
+/**
+ * V5.6 (E26) : la promesse de délai d'un écran, calculée depuis les vrais instants (jamais « lundi 21 h »
+ * générique). `slotIsoWeekday` = jour du créneau ; `composeIsoWeekday`/`composeHourLocal` = composition
+ * (J − 3 21 h) dans le fuseau de la ville. Ex. samedi → « Nino cherche ta sortie de samedi : réponse mercredi soir. »
+ */
+export function answerAtFr(i: { pet: string; slotIsoWeekday: number; composeIsoWeekday: number; composeHourLocal: number }): string {
+  const day = (d: number) => DAY_FR[Math.min(7, Math.max(1, d)) - 1]!;
+  return `${i.pet} cherche ta sortie de ${day(i.slotIsoWeekday)} : réponse ${day(i.composeIsoWeekday)} ${momentOf(i.composeHourLocal)}.`;
+}
+/** Même calcul à partir d'instants (UTC) et du fuseau de la ville. */
+export function answerAtFromInstants(pet: string, slotStartsAt: Date, composeAt: Date, timeZone: string): string {
+  const wd = (d: Date) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short' }).format(d)) + 1;
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', hourCycle: 'h23' }).format(composeAt));
+  return answerAtFr({ pet, slotIsoWeekday: wd(slotStartsAt), composeIsoWeekday: wd(composeAt), composeHourLocal: hour });
+}
+
+// ---------------------------------------------------------------- V5.7 (concept-v5.7 §A–C, spec §2.7) : phrases canoniques
+/**
+ * Trois sorties distinctes (Les visages, Confirmation) et la règle d'annulation : texte IDENTIQUE mot pour mot sur
+ * l'écran client, Tarifs, le contrat lieu et les pages web. « Je ne le sens pas » = imprévu (libellé tel quel).
+ */
+export const RULES_V57: I18nEntry[] = [
+  { id: 'safety_exit', key: 'rule.v57.safety_exit', fr: 'Tu peux partir à tout moment pour ta sécurité : sans pénalité, ta place est remboursée.' },
+  { id: 'knows_someone', key: 'rule.v57.knows_someone', fr: 'Une fois par mois, on te change de groupe ou on te rembourse. Au-delà, l’équipe regarde avec toi : ce n’est jamais une absence.' },
+  { id: 'emergency', key: 'rule.v57.emergency', fr: 'Une fois par mois, sans pénalité. Ta place n’est pas remboursée.' },
+  { id: 'emergency_label', key: 'rule.v57.emergency_label', fr: 'Je ne le sens pas' },
+  { id: 'cancel', key: 'rule.v57.cancel', fr: 'Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf raison de sécurité, « je connais quelqu’un ici » ou imprévu.' },
+  { id: 'help_callback', key: 'rule.v57.help_callback', fr: 'Quelqu’un de l’équipe te rappelle en quelques minutes.' },
+  { id: 'oncall_duo', key: 'rule.v57.oncall_duo', fr: 'Une personne de l’équipe est joignable pendant tout ton rendez-vous.' },
+  { id: 'oncall_guardian_outing', key: 'rule.v57.oncall_guardian_outing', fr: 'Une personne de l’équipe est joignable pendant toute la sortie de {prenom}.' },
+  { id: 'oncall_guardian_duo', key: 'rule.v57.oncall_guardian_duo', fr: 'Une personne de l’équipe est joignable pendant tout le rendez-vous de {prenom}.' },
+  { id: 'reliability_self', key: 'rule.v57.reliability_self', fr: 'Visible par toi seulement.' },
+  { id: 'plus_pricing', key: 'rule.v57.plus_pricing', fr: 'Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie.' },
+  { id: 'verified_people', key: 'rule.v57.verified_people', fr: '{nombre} personnes vérifiées' },
+  { id: 'duo_table_venue', key: 'rule.v57.duo_table_venue', fr: 'Table Duo : 0 €, sans garantie.' },
+  { id: 'calm_badge', key: 'rule.v57.calm_badge', fr: 'Montrer au groupe : je préfère le calme' },
+  { id: 'replacement_answer', key: 'rule.v57.replacement_answer', fr: 'Si un groupe se forme, réponse {moment}.' },
+];
+
+/** V5.7 (E30, D-080) : modèle du message d'accueil prérempli dans l'espace lieu (le lieu le complète). */
+export const VENUE_WELCOME_TEMPLATE: I18nEntry = { id: 'welcome_template', key: 'venue.welcome.template', fr: 'Bienvenue chez {lieu} ! Votre table Blowy vous attend {repere}. Demandez {responsable} si besoin.' };

@@ -15,6 +15,9 @@ export const RETIRED_V4_ROUTES = [
   { method: 'POST', path: '/v1/streak-freezes/use' },
   { method: 'POST', path: '/v1/catalog/:itemId/purchase' },
   { method: 'GET', path: '/v1/me/anonymous-responses/:id/hints' },
+  // V5.6 (E20) : flux de propositions V4 — le mobile V5 n'y fait plus appel.
+  { method: 'GET', path: '/v1/matches' },
+  { method: 'POST', path: '/v1/matches/onboarding-batch' },
 ] as const;
 /** Familles retirées en bloc (préfixes) : missions, ligues, carte, fil du Quartier. */
 export const RETIRED_V4_ROUTE_PREFIXES = ['/v1/missions', '/v1/leagues', '/v1/map', '/v1/neighborhood-feed'] as const;

@@ -1,23 +1,20 @@
 /**
  * Composition racine des providers (une seule fois, dans app/_layout.tsx) :
  * zones sûres → gestes → a11y → sprites → services (DI) → TanStack Query → temps réel →
- * achats (agent G) → bootstrap (hydratation file/onboarding/session, senders, réseau).
+ * bootstrap (RevenueCat retiré en V5.4 : Blowy+ passe par Stripe) (hydratation file/onboarding/session, senders, réseau).
  */
-import { A11yPrefsProvider, SpriteSourceProvider } from '@blowy/ui-mobile';
+import { A11yPrefsProvider, LoadingState, SpriteSourceProvider } from '@blowy/ui-mobile';
+import { t } from '../../i18n';
 import { ASSET_SOURCES } from '@blowy/sprites/sources';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Platform } from 'react-native';
+import { useEffect, useState, type ReactNode } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { createPurchasesApi, PurchasesProvider, selectPurchasesAdapter } from '../../features/purchases';
 import { useMessageSender } from '../../features/conversations';
-import { useOnboarding } from '../../features/onboarding/model/store';
-import { usePetActionSender } from '../../features/pets';
+import { useOnboarding } from '../../features/onboarding';
 import { useTrustSenders } from '../../features/trust';
-import { useWidgetSync } from '../../widgets/useWidgetSync';
+import { useDevicePrefs } from '../../features/settings';
 import { createQueryClient } from '../api/query';
-import { env } from '../config/env';
 import { useNetwork, isOnlineNow } from '../network/network';
 import { drainQueue } from '../offline/runner';
 import { useOfflineQueue } from '../offline/store';
@@ -26,14 +23,15 @@ import { useSession } from '../session/session-store';
 import { ServicesProvider, useServices } from './services';
 
 function Bootstrap({ children, onReady }: { children: ReactNode; onReady: () => void }) {
-  const { storage, secrets } = useServices();
-  usePetActionSender();
+  const { storage, secrets, demo } = useServices();
   useMessageSender();
   useTrustSenders();
-  useWidgetSync();
 
   useEffect(() => {
-    void Promise.all([useSession.getState().restore(secrets), useOfflineQueue.getState().hydrate(storage), useOnboarding.getState().hydrate(storage)]).then(() => {
+    void Promise.all([useSession.getState().restore(secrets), useOfflineQueue.getState().hydrate(storage), useOnboarding.getState().hydrate(storage), useDevicePrefs.getState().hydrate(storage)]).then(() => {
+      // Mode démo local : brouillon d'onboarding de la maquette (jamais hors `local`).
+      if (demo?.draft) useOnboarding.getState().patch(demo.draft);
+      if (demo?.devicePrefs) useDevicePrefs.getState().set(demo.devicePrefs);
       onReady();
       void drainQueue(isOnlineNow);
     });
@@ -44,31 +42,19 @@ function Bootstrap({ children, onReady }: { children: ReactNode; onReady: () => 
       stopNet();
       clearInterval(timer);
     };
-  }, [storage, secrets, onReady]);
+  }, [storage, secrets, onReady, demo]);
 
-  return <>{children}</>;
+  return <SessionGate>{children}</SessionGate>;
 }
 
-function Purchases({ children }: { children: ReactNode }) {
-  const { api: blowy, newCommandId } = useServices();
-  const userId = useSession((s) => s.userId);
-  const api = useMemo(() => createPurchasesApi((req) => blowy.raw(req)), [blowy]);
-  const port = useMemo(
-    () =>
-      selectPurchasesAdapter(
-        { platform: Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web', iosKey: env.revenueCatIosKey, androidKey: env.revenueCatAndroidKey, blowyEnv: env.blowyEnv },
-        api,
-        newCommandId,
-      ),
-    [api, newCommandId],
-  );
-  // En production sans clé : pas d'adaptateur → achats indisponibles (jamais de fausse transaction).
-  if (!port) return <>{children}</>;
-  return (
-    <PurchasesProvider port={port} api={api} userId={userId}>
-      {children}
-    </PurchasesProvider>
-  );
+/**
+ * Aucun écran (donc aucune requête) avant la restauration de la session : une ouverture à froid
+ * sur une route profonde ne part plus sans jeton (correctif T7, voir session-store).
+ */
+function SessionGate({ children }: { children: ReactNode }) {
+  const status = useSession((s) => s.status);
+  if (status === 'unknown') return <LoadingState label={t('common.loading')} />;
+  return <>{children}</>;
 }
 
 export function AppProviders({ children, onReady }: { children: ReactNode; onReady: () => void }) {
@@ -81,9 +67,7 @@ export function AppProviders({ children, onReady }: { children: ReactNode; onRea
             <ServicesProvider>
               <QueryClientProvider client={queryClient}>
                 <RealtimeProvider>
-                  <Purchases>
                     <Bootstrap onReady={onReady}>{children}</Bootstrap>
-                  </Purchases>
                 </RealtimeProvider>
               </QueryClientProvider>
             </ServicesProvider>

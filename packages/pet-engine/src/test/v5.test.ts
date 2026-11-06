@@ -15,6 +15,7 @@ import {
   poseForV5,
   reduceV5,
   requestWindow,
+  composeAtOf,
   weekKeyOf,
   type EffectV5,
   type PetEventV5,
@@ -163,11 +164,23 @@ describe('calendrier V5', () => {
       }),
     );
   });
-  it('fenêtre de demande lundi 9 h → mardi 12 h (heure de Paris)', () => {
+  it('V5.5 (D-053) : demande ouverte vendredi 21 h de W−1 ; composition J − 3 21 h par jour ; fermeture = composition du dimanche', () => {
     expect(mondayOfWeek('2026-W47')).toBe(Math.floor(Date.UTC(2026, 10, 16) / 86_400_000));
     const w = requestWindow('2026-W47', 'Europe/Paris', T);
-    expect(new Date(w.opensAtMs).toISOString()).toBe('2026-11-16T08:00:00.000Z');
-    expect(new Date(w.closesAtMs).toISOString()).toBe('2026-11-17T11:00:00.000Z');
+    expect(new Date(w.opensAtMs).toISOString()).toBe('2026-11-13T20:00:00.000Z'); // ven. 13, 21 h Paris
+    expect(new Date(w.closesAtMs).toISOString()).toBe('2026-11-19T20:00:00.000Z'); // jeu. 19, 21 h (pour dim. 22)
+    const iso = (ms: number) => new Date(ms).toISOString();
+    // Jeudi 19 → lundi 16, 21 h ; mardi 17 → samedi 14, 21 h.
+    expect(iso(composeAtOf(Date.UTC(2026, 10, 19, 18, 30), 'Europe/Paris', T))).toBe('2026-11-16T20:00:00.000Z');
+    expect(iso(composeAtOf(Date.UTC(2026, 10, 17, 18, 30), 'Europe/Paris', T))).toBe('2026-11-14T20:00:00.000Z');
+    // Pour CHAQUE jour de créneau : composition < fin d'invitation (J−2 21 h) < confirmation (J−1 18 h).
+    for (let d = 17; d <= 22; d++) {
+      const startsAtMs = Date.UTC(2026, 10, d, 18, 30);
+      const composedAtMs = composeAtOf(startsAtMs, 'Europe/Paris', T);
+      const i = outingInstants({ startsAtMs, composedAtMs, tz: 'Europe/Paris', tuning: T });
+      expect(composedAtMs).toBeLessThan(i.acceptDeadlineMs);
+      expect(i.acceptDeadlineMs).toBeLessThan(i.lockAtMs);
+    }
   });
   it('instants d’une sortie (jeudi 19 h 30) et passage à l’heure d’été', () => {
     const startsAtMs = Date.UTC(2026, 10, 19, 18, 30); // jeu. 19 h 30 Paris

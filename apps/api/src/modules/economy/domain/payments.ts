@@ -70,6 +70,7 @@ export function summarizeLots(lots: readonly CreditLot[]): { kind: CreditLot['ki
 // ------------------------------------------------------------------ financement d'une place
 export type FundingChoice =
   | { kind: 'FREE_FIRST' }
+  | { kind: 'REFERRAL_FREE' }
   | { kind: 'PLUS_INCLUDED' }
   | { kind: 'CREDIT'; lot: CreditLot }
   | { kind: 'PAY' };
@@ -78,9 +79,11 @@ export type FundingChoice =
  * « Je viens » : 1ʳᵉ sortie offerte, puis Blowy+ (toutes les sorties incluses), puis un crédit, sinon
  * paiement de la place. `mode=PAY` = la personne choisit explicitement de payer (aucun crédit pris).
  */
-export function chooseFunding(i: { mode: 'AUTO' | 'PAY'; freeFirstAvailable: boolean; plusActive: boolean; plusIncludesAllOutings: boolean; lots: readonly CreditLot[] }): FundingChoice {
+export function chooseFunding(i: { mode: 'AUTO' | 'PAY'; freeFirstAvailable: boolean; plusActive: boolean; plusIncludesAllOutings: boolean; lots: readonly CreditLot[]; referralFreeAvailable?: boolean }): FundingChoice {
   if (i.mode === 'PAY') return { kind: 'PAY' };
   if (i.freeFirstAvailable) return { kind: 'FREE_FIRST' };
+  // V5.5 (D-064) : sortie offerte par parrainage, après la 1ʳᵉ offerte et avant Blowy+.
+  if (i.referralFreeAvailable) return { kind: 'REFERRAL_FREE' };
   if (i.plusActive && i.plusIncludesAllOutings) return { kind: 'PLUS_INCLUDED' };
   const lot = i.lots[0];
   return lot ? { kind: 'CREDIT', lot } : { kind: 'PAY' };
@@ -130,11 +133,29 @@ export function refundOutcome(funding: SeatFunding | null, cause: RefundCause, c
  * annulation après la confirmation. Écriture comptable interne (aucun paiement réel). Pas de
  * compensation si la sortie n'a pas eu lieu, ni pour un départ remboursé (sécurité, retrait système).
  */
-export function venueCompensationCause(i: { attended?: boolean; cancelKind?: string | null; outingStatus: string }): 'NO_SHOW' | 'LATE_CANCEL' | null {
+export function venueCompensationCause(i: { attended?: boolean; cancelKind?: string | null; outingStatus: string; cancelledAfterLock?: boolean }): 'NO_SHOW' | 'LATE_CANCEL' | 'EMERGENCY' | 'SAFETY' | null {
   if (i.outingStatus === 'CANCELLED') return null;
+  // V5.6 (A.1, E22) : sortie pour raison de sécurité APRÈS la confirmation (la table était réservée), y compris
+  // après le check-in ou « je connais quelqu'un » : la personne est remboursée, Blowy verse 3 € HT au lieu.
+  // V5.7 (§6.5) : idem pour un retrait système (blocage, « je connais quelqu'un » retiré) après la confirmation.
+  if ((i.cancelKind === 'SAFETY_EXIT' || i.cancelKind === 'SYSTEM_REMOVAL') && i.cancelledAfterLock === true) return 'SAFETY';
   if (i.attended === false) return 'NO_SHOW';
   if (i.cancelKind === 'LATE') return 'LATE_CANCEL';
+  // V5.4 (B.8) : « imprévu » après la confirmation — sans effet de fiabilité pour la personne, mais le lieu
+  // est compensé exactement comme pour une absence (place non remboursée).
+  if (i.cancelKind === 'EMERGENCY') return 'EMERGENCY';
   return null;
+}
+
+/**
+ * V5.4 (C.12) : Blowy annule une sortie DÉJÀ CONFIRMÉE (manque de participants après la confirmation,
+ * staff, quartier fermé, sécurité) → le lieu reçoit `[T] venues.compensationBlowyCancelSeatCents` (3 €) par
+ * place réservée. Jamais quand le lieu est la cause (`VENUE_UNAVAILABLE`), jamais avant la confirmation.
+ */
+export const BLOWY_CANCEL_COMPENSATED_REASONS: ReadonlySet<string> = new Set(['UNDERSIZED', 'STAFF', 'NEIGHBORHOOD_CLOSED', 'SAFETY']);
+/** V5.7 (D-079) : à toute heure après la confirmation et quel que soit le motif interne ; seule exception : le lieu est la cause. */
+export function blowyCancelCompensated(i: { wasConfirmed: boolean; reason: string }): boolean {
+  return i.wasConfirmed && i.reason !== 'VENUE_UNAVAILABLE';
 }
 
 /**
@@ -142,10 +163,15 @@ export function venueCompensationCause(i: { attended?: boolean; cancelKind?: str
  * (carte, ou crédit issu d'une place payée) ; sinon (1ʳᵉ offerte, Blowy+, staff) Blowy verse le
  * forfait « place offerte » (3 €, tuning).
  */
-export function venueCompensationAmount(funding: SeatFunding | null, paidCents: number | null, p: Pick<PaymentsParams, 'seatPriceCents' | 'venueCompensationFreeSeatCents'>): { amountCents: number; basis: 'SEAT_PRICE' | 'FREE_SEAT' } {
-  if (funding === 'PAID' || funding === 'CREDIT') return { amountCents: cents(paidCents ?? p.seatPriceCents), basis: 'SEAT_PRICE' };
-  return { amountCents: cents(p.venueCompensationFreeSeatCents), basis: 'FREE_SEAT' };
+export function venueCompensationAmount(funding: SeatFunding | null, paidCents: number | null, p: Pick<PaymentsParams, 'seatPriceCents' | 'venueCompensationFreeSeatCents'>): { amountCents: number; basis: 'SEAT_PRICE' | 'FREE_SEAT'; taxBasis: 'HT' } {
+  // V5.5 (D-067) : compensations exprimées HORS TAXE — la place payée est reversée à son prix HT (4,99 € TTC → 4,16 € HT).
+  if (funding === 'PAID' || funding === 'CREDIT') return { amountCents: excludingVat(paidCents ?? p.seatPriceCents), basis: 'SEAT_PRICE', taxBasis: 'HT' };
+  return { amountCents: cents(p.venueCompensationFreeSeatCents), basis: 'FREE_SEAT', taxBasis: 'HT' };
 }
+
+/** V5.5 (D-067) : TVA 20 % — montant HT (centimes entiers, arrondi au centime) d'un montant TTC. */
+export const VAT_RATE_PERMILLE = 200;
+export const excludingVat = (ttcCents: number): number => cents(Math.round((cents(ttcCents) * 1000) / (1000 + VAT_RATE_PERMILLE)));
 
 // ------------------------------------------------------------------ paramètres (depuis @blowy/tuning)
 /** Paramètres V5 (lus du tuning ; valeurs absentes du tuning : `PENDING_PAYMENTS_TUNING`, demandées à B). */
@@ -166,4 +192,8 @@ export interface PaymentsParams {
   readonly freeActiveDuos: number;
   /** V5.3 C.11 : versé par Blowy au lieu pour une place OFFERTE non honorée (3 €). Place payée : son prix. */
   readonly venueCompensationFreeSeatCents: number;
+  /** V5.4 (C.12) : par place réservée, si Blowy annule une sortie confirmée (3 €). */
+  readonly venueCompensationBlowyCancelCents: number;
+  /** V5.4 (C.10) : canal de vente de Blowy+ (`STRIPE_BILLING` ; l'achat intégré RevenueCat est désactivé). */
+  readonly plusBilling: 'STRIPE_BILLING' | 'IN_APP_PURCHASE';
 }

@@ -12,7 +12,7 @@ import { afterAll, beforeAll, describe, expect } from 'vitest';
 import type { Person } from './support/actor.js';
 import { story } from './support/story.js';
 import { startWorld, type World } from './support/world.js';
-import { at, city, leaksIn, v5Person, VENUE, type City } from './support/v5.js';
+import { at, city, leaksIn, v5Person, type City, duoCodeOf } from './support/v5.js';
 
 let w: World;
 let paris: City;
@@ -29,10 +29,10 @@ const T = {
   lane: new Date('2026-11-16T20:05:00Z'), // lun. 21 h 05 Paris : lot quotidien
   wedBefore: new Date('2026-11-18T19:30:00Z'), // 47 h 25 après l'accord
   wedAfter: new Date('2026-11-18T20:20:00Z'), // > 48 h
-  dateStarts: '2026-11-19T18:30:00.000Z', // jeu. 19 h 30 Paris
-  checkin: new Date('2026-11-19T18:20:00Z'),
-  dateDone: new Date('2026-11-19T20:05:00Z'),
-  votesClosed: new Date('2026-11-22T20:10:00Z'),
+  dateStarts: '2026-11-20T18:30:00.000Z', // V5.6 (E13) : ven. 19 h 30 Paris — un RDV (table de 2) se confirme au plus tard la veille 18 h
+  checkin: new Date('2026-11-20T18:20:00Z'),
+  dateDone: new Date('2026-11-20T20:05:00Z'),
+  votesClosed: new Date('2026-11-23T20:10:00Z'),
 };
 /** Valeurs secrètes qui ne doivent jamais sortir vers autrui. */
 const SECRET = ['SERIOUS', 'SEE_HOW_IT_GOES', 'STORY', '"BOTH"', '"GROUP"', '"WOMAN"', '"MAN"', 'romance', 'orientation', 'messagesHigh', 'messagesLow', 'myChoice":"PLUS', 'passedBy'];
@@ -87,9 +87,9 @@ describe('Voie Duo', () => {
     const c = (await lane(camille)).data;
     expect(t.items).toHaveLength(1);
     expect(c.items.map((i: any) => i.proposalId)).toEqual([t.items[0].proposalId]);
-    expect(t.items[0]).toMatchObject({ pet: { name: 'Luciole' }, otherInitial: 'C', acceptedByMe: false });
-    expect(JSON.stringify(t.items[0])).not.toContain('Camille');
-    expect(c.items[0]).toMatchObject({ pet: { name: 'Fusain' }, otherInitial: 'T' });
+    expect(t.items[0]).toMatchObject({ species: expect.any(String), otherInitial: 'C', acceptedByMe: false });
+    expect(JSON.stringify(t.items[0])).not.toMatch(/Camille|Luciole/); // V5.5 D-068 : jamais le nom du pet
+    expect(c.items[0]).toMatchObject({ species: expect.any(String), otherInitial: 'T' });
     expect((await lane(hugo)).data.items).toEqual([]);
     expect((await lane(zoe)).data.items).toEqual([]);
     expect((await lane(ines)).data.items).toHaveLength(1);
@@ -115,8 +115,10 @@ describe('Voie Duo', () => {
     convId = v.conversationId;
     expect(await thomas.phone.join(`duo:${duoId}`)).toBe(true);
     expect(await camille.phone.join(`duo:${duoId}`)).toBe(true);
-    // Gratuit : 1 duo actif ; Thomas n'a plus de nouvelle proposition possible.
-    expect((await lane(thomas)).data.emptyReason).toBe('LIMIT_REACHED');
+    // V5.4 (C.11) : Duo gratuit pour tous, jusqu'à 3 duos actifs — un duo en cours ne bloque plus la voie.
+    const tl = (await lane(thomas)).data;
+    expect(tl.emptyReason).not.toBe('LIMIT_REACHED');
+    expect(tl.quota).toMatchObject({ maxActive: 3, freeMaxActive: 3, unlimited: false });
     // À Lille, Inès et Malo disent oui aussi.
     const p2 = (await lane(ines)).data.items[0].proposalId;
     await ines.call('POST', `/v1/duo-lane/proposals/${p2}/accept`, {});
@@ -194,12 +196,13 @@ describe('Voie Duo', () => {
     expect((await duo(thomas)).data.status).toBe('DATE_CONFIRMED');
   });
 
-  S.step('Check-in au lieu (position jamais renvoyée) ; trop loin refusé sans distance', async () => {
+  S.step('Check-in au lieu par le code du chevalet (V5.5 D-062) : aucune position acceptée', async () => {
     await at(w, T.checkin);
-    const far = await thomas.call('POST', `/v1/duos/${duoId}/dates/${dateId}/check-in`, { method: 'GEO', lat: 48.9, lng: 2.4, accuracyM: 20 });
-    expect([far.status, far.data.detailsSafe?.reason]).toEqual([412, 'CHECKIN_TOO_FAR']);
-    expect(JSON.stringify(far.data)).not.toMatch(/distance|meters|lat/);
-    for (const p of [thomas, camille]) expect((await p.call('POST', `/v1/duos/${duoId}/dates/${dateId}/check-in`, { method: 'GEO', ...VENUE, accuracyM: 25 })).data).toEqual({ result: 'ACCEPTED' });
+    const geo = await thomas.call('POST', `/v1/duos/${duoId}/dates/${dateId}/check-in`, { method: 'GEO', lat: 48.9, lng: 2.4, accuracyM: 20 });
+    expect(geo.status).toBe(400);
+    expect(JSON.stringify(geo.data)).not.toMatch(/distance|meters/);
+    const code = await duoCodeOf(w, dateId);
+    for (const p of [thomas, camille]) expect((await p.call('POST', `/v1/duos/${duoId}/dates/${dateId}/check-in`, { code })).data).toEqual({ result: 'ACCEPTED' });
   });
 
   S.step('Après le RDV : bulletins secrets (aucun événement à la saisie), PLUS/PLUS → ensemble à la clôture', async () => {

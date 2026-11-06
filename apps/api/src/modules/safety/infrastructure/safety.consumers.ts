@@ -4,6 +4,7 @@
  *  - `outing.cancelled` → tous les liens de la sortie révoqués ;
  *  - `privacy.deletion_requested` → tous les liens de la personne révoqués ;
  *  - `outing.knows_someone_review` → dossier staff « je connais quelqu'un » (réponse < 1 h) ;
+ *  - `venue.participant_reported` → dossier « incident sur place » ; `ops.oncall_coverage_lost` → escalade ops ;
  *  - `safety.alert_raised` → accusé WS (transactionnel) puis Web Push sans contenu (effet externe).
  */
 import type { OutboxConsumer, OutboxEffect, OutboxEnvelope } from '../../../shared/application/outbox-consumer.js';
@@ -49,6 +50,39 @@ export class KnowsSomeoneReviewConsumer implements OutboxConsumer {
     const seat = await this.subjects.seatOwner(seatId);
     // Sujet = la place (subjectType OUTING) ; la personne visée n'est jamais révélée au demandeur.
     await this.cases.open(scope, { subjectType: 'OUTING', subjectId: seatId, subjectUserId: seat?.userId ?? null, reasonCode: 'KNOWS_SOMEONE_REVIEW', priority: 1, dueInMinutes: HUMAN_RESPONSE_MINUTES });
+  }
+}
+
+/**
+ * V5.6 : « Signaler un participant » depuis l'espace lieu → dossier staff « incident sur place » (le lieu est
+ * rappelé sous 1 h). Identifiants seulement : ni prénom, ni note dans l'événement.
+ */
+export class VenueIncidentConsumer implements OutboxConsumer {
+  readonly name = 'safety.venue_incident';
+  readonly topics = ['venue.participant_reported'];
+  constructor(
+    private readonly cases: SafetyCaseSink,
+    private readonly subjects: SubjectReader,
+  ) {}
+  async handle(scope: TxScope, e: OutboxEnvelope) {
+    const seatId = str(e.payload.seatId);
+    if (!seatId) return;
+    const seat = await this.subjects.seatOwner(seatId);
+    await this.cases.open(scope, { subjectType: 'OUTING', subjectId: seatId, subjectUserId: seat?.userId ?? null, reasonCode: 'ON_SITE_INCIDENT', priority: 2, dueInMinutes: HUMAN_RESPONSE_MINUTES });
+  }
+}
+
+/**
+ * V5.6 (E12, §10.1) : un créneau publié avec une sortie a perdu sa couverture d'astreinte → escalade ops prioritaire
+ * (un dossier par sortie du créneau).
+ */
+export class OnCallCoverageLostConsumer implements OutboxConsumer {
+  readonly name = 'safety.oncall_coverage_lost';
+  readonly topics = ['ops.oncall_coverage_lost'];
+  constructor(private readonly cases: SafetyCaseSink) {}
+  async handle(scope: TxScope, e: OutboxEnvelope) {
+    const ids = Array.isArray(e.payload.outingIds) ? e.payload.outingIds.filter((x): x is string => typeof x === 'string') : [];
+    for (const outingId of ids) await this.cases.open(scope, { subjectType: 'OUTING', subjectId: outingId, subjectUserId: null, reasonCode: 'ONCALL_COVERAGE_LOST', priority: 1, dueInMinutes: HUMAN_RESPONSE_MINUTES });
   }
 }
 

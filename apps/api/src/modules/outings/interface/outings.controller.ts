@@ -37,6 +37,7 @@ import {
   type SubmitOutingVotesRequest,
 } from '@blowy/api-contract';
 import { z } from 'zod';
+import { OUTING_CANCEL_REQUEST_KINDS, type OutingCancelRequestKind } from '@blowy/domain';
 import type { Clock } from '../../../shared/application/clock.js';
 import { CLOCK } from '../../../shared/shared.tokens.js';
 import { CommandId, CurrentUser } from '../../../shared/interface/decorators.js';
@@ -48,7 +49,7 @@ import { SeatUseCases } from '../application/seats.use-cases.js';
 import { TeamUseCases } from '../application/teams.use-cases.js';
 
 const Id = new ZodPipe(UuidSchema);
-const CancelPreviewQuery = z.object({ kind: z.enum(['CANT_MAKE_IT', 'SAFETY']).default('CANT_MAKE_IT') });
+const CancelPreviewQuery = z.object({ kind: z.enum(OUTING_CANCEL_REQUEST_KINDS).default('CANT_MAKE_IT') });
 
 @Controller('v1')
 export class OutingsController {
@@ -97,7 +98,7 @@ export class OutingsController {
   }
 
   @Get('outings/:id/seat/cancel-preview')
-  async cancelPreview(@CurrentUser() u: AuthenticatedUser, @Param('id', Id) id: string, @Query(new ZodPipe(CancelPreviewQuery)) q: { kind: 'CANT_MAKE_IT' | 'SAFETY' }) {
+  async cancelPreview(@CurrentUser() u: AuthenticatedUser, @Param('id', Id) id: string, @Query(new ZodPipe(CancelPreviewQuery)) q: { kind: OutingCancelRequestKind }) {
     return SeatCancelResponseSchema.parse(await this.seats.preview(u.userId, id, q.kind, this.clock.now()));
   }
 

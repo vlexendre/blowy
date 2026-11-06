@@ -13,7 +13,7 @@ import { pairKey, seeksOf, type ConnectionKind } from '@blowy/domain';
 import { romanceCompatible } from '@blowy/matching/groups';
 import type { OutboxConsumer, OutboxEnvelope } from '../../../shared/application/outbox-consumer.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
-import { canMoveDuo, checkinWindow, EXPIRED_READ_ONLY_MS, exchangeOutcome, localDateHour, resolveDuoVote, restingStatus } from '../domain/duo-policy.js';
+import { canMoveDuo, checkinWindow, EXPIRED_READ_ONLY_MS, exchangeOutcome, localDateHour, resolveDuoVote, restingStatus, duoDateLockAt } from '../domain/duo-policy.js';
 import { selectLanePairs, type LaneCandidate } from '../domain/lane.js';
 import type { ConnectionsDeps } from './deps.js';
 import type { DuoUseCases } from './duos.use-cases.js';
@@ -76,6 +76,14 @@ export class DuoLifecycle {
         return 'DATE_LAPSED';
       }
       if (date?.status === 'CONFIRMED' && now >= checkinWindow(date.startsAt, this.x.tuning).closesAt) return this.closeDate(scope, d, date.id);
+      // V5.6 (E13) : à la veille 18 h, la table de 2 entre dans l'effectif du lieu (prénoms + code).
+      if (date?.status === 'CONFIRMED' && !date.reservationLockedAt) {
+        const venue = await this.repo.venue(date.venueId);
+        if (venue && now >= duoDateLockAt(date.startsAt, venue.timezone, this.x.tuning)) {
+          await this.repo.updateDate(scope, date.id, { reservationLockedAt: now });
+          return 'DATE_RESERVED';
+        }
+      }
       if (date?.status === 'DONE' && date.votesCloseAt && !date.votesClosedAt && now >= date.votesCloseAt) return this.closeVotes(scope, d, date.id);
       if (d.origin === 'LANE' && d.dateDeadline && now >= d.dateDeadline && (d.status === 'UNLOCKED' || d.status === 'DATE_PROPOSED') && d.datesAttended === 0 && !d.together) {
         await this.x.ending.end(scope, d, 'EXPIRED', 'system.duo.exchange_expired', null);

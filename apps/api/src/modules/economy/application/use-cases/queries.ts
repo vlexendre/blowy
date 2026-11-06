@@ -66,7 +66,8 @@ export class GetMySubscriptionQuery {
   async execute(userId: string): Promise<SubscriptionView> {
     const now = this.clock.now();
     const [subs, grants] = await Promise.all([this.repo.listSubscriptions(userId), this.repo.listLiveGrants(userId, now)]);
-    const accepted = subs.filter((s) => this.state.accepted.has(s.environment) && s.provider === this.provider.kind);
+    // V5.4 (C.10) : Blowy+ via Stripe Billing compte comme l'abonnement du fournisseur configuré.
+    const accepted = subs.filter((s) => this.state.accepted.has(s.environment) && (s.provider === this.provider.kind || s.provider === 'STRIPE'));
     const main = accepted.sort((a, b) => (b.currentPeriodEndsAt?.getTime() ?? 0) - (a.currentPeriodEndsAt?.getTime() ?? 0))[0] ?? null;
     const keys = await this.state.keysOf(userId, now);
     const entitlements: SubscriptionView['entitlements'] = liveAcceptedGrants(grants, now, this.state.accepted).flatMap((g) =>
@@ -79,7 +80,7 @@ export class GetMySubscriptionQuery {
       productId: main?.productId ?? null,
       store: main?.store ?? null,
       currentPeriodEndsAt: main ? (effectiveEndsAt(main)?.toISOString() ?? null) : null,
-      willRenew: main?.state === 'ACTIVE' || main?.state === 'TRIAL',
+      willRenew: main?.state === 'ACTIVE' || main?.state === 'TRIAL' || main?.state === 'GRACE_PERIOD',
       lastReconciledAt: main?.lastReconciledAt?.toISOString() ?? null,
       dateSlots: dateSlotsFor(keys, this.params.current()),
       entitlements,

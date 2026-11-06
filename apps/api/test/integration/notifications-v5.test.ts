@@ -141,7 +141,7 @@ describe('notifications V5 (intégration)', () => {
   it('J-1 18 h : confirmation avec lieu et heure (texte neutre en mode discret) ; visages à J − 3 h, pas avant', async () => {
     await run(OUTINGS_JOBS, 'outings.lifecycle', T.locked);
     await plan(T.locked);
-    expect(pushesOf(ps[1]!, 'outing.confirmed')).toEqual([expect.objectContaining({ body: 'Ta sortie de jeudi est confirmée : 19 h 30 au Café des Oiseaux. Les prénoms de ta bande sont visibles ; une annulation compte désormais comme une absence.' })]);
+    expect(pushesOf(ps[1]!, 'outing.confirmed')).toEqual([expect.objectContaining({ body: 'Ta sortie de jeudi est confirmée : 19 h 30 au Café des Oiseaux. Les prénoms de ta bande sont visibles. Annuler compte maintenant comme une absence, sauf ton imprévu du mois ou une raison de sécurité ; l’équipe Blowy est joignable pendant toute ta sortie.' })]);
     const lea = pushesOf(ps[0]!).at(-1)!;
     expect(lea).toMatchObject({ title: 'Rappel', body: 'Rappel pour demain à 19 h 30.' });
     expect(JSON.stringify(pushesOf(ps[0]!))).not.toMatch(/Café|Oiseaux|sortie|bande|Hugo|Pet-notif/);

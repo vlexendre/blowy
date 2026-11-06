@@ -59,7 +59,11 @@ export interface AdminVenueRow {
   activities: (typeof ACTIVITY_KINDS_V5)[number][];
   tablesPerSlot: number;
   address: string;
-  contract: { version: string; signedAt: string; signerName: string } | null;
+  contract: { version: string; signedAt: string; signerName: string; /** V5.6 (E15) */ countersignedAt?: string | null; countersignerName?: string | null; inForce?: boolean } | null;
+  /** V5.6 (E11) : ambiance du lieu (null = convient à tous). */
+  ambiance?: 'CALM' | 'LIVELY' | null;
+  /** V5.7 (E30) : message d'accueil (lecture staff, modération). */
+  welcomeMessage?: string | null;
   partners: number;
 }
 export interface AdminVenueSchedule {
@@ -118,6 +122,8 @@ export const VenueUpdateRequestSchema = z.object({
   tablesPerSlot: z.number().int().min(1).max(6).optional(),
   status: z.enum(['ACTIVE', 'PAUSED', 'ARCHIVED']).optional(),
   staffContact: z.string().trim().max(200).nullable().optional(),
+  /** V5.6 (E11, §10.1) : ambiance du lieu (null = convient à tous). */
+  ambiance: z.enum(['CALM', 'LIVELY']).nullable().optional(),
   reason: ReasonSchema,
 });
 export const VenuePartnerAccessRequestSchema = z.object({
@@ -168,6 +174,46 @@ export const OutingListQuerySchema = z.object({
 });
 export const OutingCancelRequestSchema = z.object({ kind: z.enum(['STAFF', 'VENUE_UNAVAILABLE']), reason: ReasonSchema });
 export const ReasonOnlyRequestSchema = z.object({ reason: ReasonSchema });
+
+// ---------------------------------------------------------------- V5.6 (E12, E15, E11) : astreinte, contrat, trajets
+/** Planning d'astreinte (trust_lead + ops) : un tour par fuseau, jamais un numéro en clair (`phoneRef`). */
+export const OnCallShiftCreateRequestSchema = z
+  .object({
+    timezone: z.string().trim().min(3).max(64),
+    startsAt: z.string().datetime({ offset: true }),
+    endsAt: z.string().datetime({ offset: true }),
+    teamLabel: z.string().trim().min(2).max(60),
+    phoneRef: z.string().trim().max(120).nullable().optional(),
+    reason: ReasonSchema,
+  })
+  .strict();
+export const OnCallShiftListQuerySchema = z.object({ timezone: z.string().trim().min(3).max(64).optional(), from: z.string().datetime({ offset: true }).optional(), days: z.coerce.number().int().min(1).max(62).default(14) });
+export interface AdminOnCallShiftRow {
+  id: string;
+  timezone: string;
+  startsAt: string;
+  endsAt: string;
+  teamLabel: string;
+  hasPhoneRef: boolean;
+}
+export interface AdminOnCallPlanning {
+  shifts: AdminOnCallShiftRow[];
+  /** Trous de couverture sur la fenêtre demandée (créneaux publiés non couverts). */
+  uncoveredSlots: { venueSlotId: string; startsAt: string; timezone: string }[];
+}
+/** Contre-signature Blowy du contrat bilatéral (admin, step-up). */
+export const VenueCountersignRequestSchema = z.object({ signerName: z.string().trim().min(2).max(80), reason: ReasonSchema }).strict();
+/** V5.6 (E11) : centre du quartier (sert à estimer un trajet sans valeur ops ; jamais la position d'une personne). */
+export const NeighborhoodCenterRequestSchema = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180), reason: ReasonSchema }).strict();
+/** Temps de trajet typique entre quartiers (ops), dans les deux sens si `symmetric`. */
+export const TravelTimeUpsertRequestSchema = z
+  .object({ fromNeighborhoodId: z.string().uuid(), toNeighborhoodId: z.string().uuid(), minutes: z.number().int().min(1).max(240), symmetric: z.boolean().default(true), reason: ReasonSchema })
+  .strict();
+export interface AdminTravelTimeRow {
+  fromNeighborhoodId: string;
+  toNeighborhoodId: string;
+  minutes: number;
+}
 
 // ---------------------------------------------------------------- « Je connais quelqu'un »
 export interface AdminKnowsSomeoneRow {
@@ -247,8 +293,8 @@ export interface AdminVenueCompensationRow {
   venueName: string;
   amountCents: number;
   currency: 'EUR';
-  cause: 'NO_SHOW' | 'LATE_CANCEL' | 'REVERSAL';
-  basis: 'SEAT_PRICE' | 'FREE_SEAT';
+  cause: 'NO_SHOW' | 'LATE_CANCEL' | 'EMERGENCY' | 'SAFETY' | 'BLOWY_CANCELLED' | 'REVERSAL';
+  basis: 'SEAT_PRICE' | 'FREE_SEAT' | 'BLOWY_CANCELLED' | 'SAFETY';
   at: string;
   period: string;
   reversed: boolean;

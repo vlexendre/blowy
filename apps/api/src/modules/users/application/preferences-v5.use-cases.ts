@@ -54,8 +54,9 @@ export class PreferencesV5UseCases {
   async outingPreferences(userId: string): Promise<OutingPreferencesV5Dto> {
     const p = await this.repo.outingPreferences(userId);
     if (p) return p;
-    const age = await this.repo.ageOf(userId, this.clock.now());
-    return { groupAge: defaultGroupAge(age ?? 25, this.tuning), availableSlotTemplateIds: [], weeksOff: [], activities: [], neighborhoodIds: [], maxTravelMinutes: 30 };
+    // V5.6 : rien d'enregistré → valeurs par défaut (jamais 400) ; quartier de la personne s'il est connu.
+    const [age, home] = await Promise.all([this.repo.ageOf(userId, this.clock.now()), this.repo.homeNeighborhood(userId)]);
+    return { groupAge: defaultGroupAge(age ?? 25, this.tuning), availableSlotTemplateIds: [], weeksOff: [], activities: [], neighborhoodIds: home ? [home] : [], maxTravelMinutes: 30, everyOtherWeekOffFrom: null, everyOtherWeekendOffFrom: null, ambiance: 'ANY', showCalmBadge: false };
   }
 
   async saveOutingPreferences(userId: string, p: OutingPreferencesV5Dto, commandId: string) {

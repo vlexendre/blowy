@@ -62,11 +62,14 @@ export interface OpsReadModel {
   /** Sorties d'un lieu sur une fenêtre (effectif) : statuts et prénoms bruts, rien d'autre. */
   venueOutings(venueId: string, from: Date, to: Date): Promise<RosterOutingFacts[]>;
   outingsStart(ids: string[]): Promise<Map<string, Date>>;
+  /** V5.5 (D-067) : soirées confirmées du lieu sur le mois (`YYYY-MM`, UTC) — places réservées et présences (agrégats). */
+  outingSummaries(venueId: string, period: string, timeZone?: string): Promise<Map<string, { startsAt: Date; reserved: number; attended: number; cancelled: boolean; duoTable?: boolean }>>;
   displayNames(userIds: string[]): Promise<Map<string, string>>;
   userIdByIdentity(provider: 'FIREBASE' | 'LOCAL', subject: string): Promise<string | null>;
   userStatus(userId: string): Promise<{ status: string; displayName: string } | null>;
   /** Place confirmée d'une sortie d'un lieu, retrouvée par prénom (signalement du lieu). */
-  seatOfFirstName(venueId: string, outingId: string, firstName: string): Promise<{ seatId: string; userId: string } | null>;
+  /** Participant confirmé·e d'une sortie DU LIEU, par prénom, seulement à partir de la confirmation (`lockAt ≤ at`). */
+  seatOfFirstName(venueId: string, outingId: string, firstName: string, at?: Date): Promise<{ seatId: string; userId: string } | null>;
 }
 export const OPS_READ_MODEL = Symbol('OpsReadModel');
 
@@ -82,7 +85,28 @@ export interface OpsConfigWriter {
   applySlotPolicy(scope: TxScope, venueId: string, from: Date, to: Date, capacityFor: (slot: { startsAt: Date; isoWeekday: number; localDate: string; capacity: number; reserved: number; exists: boolean }) => number | null): Promise<{ changed: number }>;
   /** Sorties actives d'un lieu à une date locale (fermeture exceptionnelle). */
   activeOutingsOn(scope: TxScope, venueId: string, localDate: string): Promise<{ id: string; status: string; startsAt: Date }[]>;
+  // V5.6 (E12) : planning d'astreinte (par fuseau).
+  onCallShifts(q: { timezone?: string; from: Date; to: Date }): Promise<{ id: string; timezone: string; startsAt: Date; endsAt: Date; teamLabel: string; phoneRef: string | null }[]>;
+  createOnCallShift(scope: TxScope, s: { id: string; timezone: string; startsAt: Date; endsAt: Date; teamLabel: string; phoneRef: string | null }): Promise<void>;
+  deleteOnCallShift(scope: TxScope, id: string): Promise<boolean>;
+  /** Créneaux publiés (à venir) d'une fenêtre, avec le fuseau de leur ville. */
+  publishedSlots(from: Date, to: Date, timezone?: string): Promise<{ venueSlotId: string; startsAt: Date; timezone: string }[]>;
+  // V5.6 (E11) : temps de trajet entre quartiers.
+  travelTimes(neighborhoodId: string): Promise<{ fromNeighborhoodId: string; toNeighborhoodId: string; minutes: number }[]>;
+  upsertTravelTime(scope: TxScope, t: { fromNeighborhoodId: string; toNeighborhoodId: string; minutes: number }): Promise<void>;
+  neighborhoodExists(id: string): Promise<boolean>;
+  setNeighborhoodCenter(scope: TxScope, id: string, c: { lat: number; lng: number }): Promise<void>;
+  // V5.7 (E30) : message d'accueil du lieu.
+  welcomeOf(venueId: string): Promise<{ text: string | null; updatedAt: Date | null }>;
+  setWelcome(scope: TxScope, venueId: string, text: string | null): Promise<void>;
 }
+/** V5.7 (E30) : modération du message d'accueil (adaptateur du `ModerationGateway` des conversations). */
+export interface VenueTextModeration {
+  /** `ALLOW` publiable ; `REJECT` refusé ; lève en cas de panne (une panne ne vaut jamais approbation). */
+  moderate(i: { text: string; venueId: string; authorId: string }): Promise<'ALLOW' | 'REJECT'>;
+}
+export const VENUE_TEXT_MODERATION = Symbol('VenueTextModeration');
+
 export const OPS_CONFIG_WRITER = Symbol('OpsConfigWriter');
 
 /**
@@ -99,12 +123,15 @@ export interface VenuePartnerStore {
   partnerMfa(userId: string): Promise<{ generation: number; enrolled: boolean }>;
   startPartnerEnrollment(scope: TxScope, userId: string): Promise<number>;
   confirmPartnerEnrollment(scope: TxScope, userId: string): Promise<void>;
+  /** V5.6 (E15) : contre-signature Blowy ; null si le lieu n'a pas encore signé. */
+  countersign(scope: TxScope, venueId: string, signerName: string): Promise<{ version: string; venueSignedAt: Date; blowySignedAt: Date } | null>;
+  contractOf(venueId: string): Promise<{ contractVersion: string | null; contractSignedAt: Date | null; contractSignerName: string | null; blowySignedAt: Date | null; blowySignerName: string | null; ambiance?: 'CALM' | 'LIVELY' | 'ANY' | null } | null>;
 }
 export const VENUE_PARTNER_STORE = Symbol('VenuePartnerStore');
 
 /** Compensations lieu (journal économique de G, lecture + contre-écriture). */
 export interface VenueCompensationLedger {
-  forVenue(venueId: string): Promise<{ seatId: string; outingId: string; venueId: string; amountCents: number; cause: 'NO_SHOW' | 'LATE_CANCEL' | 'REVERSAL'; basis: 'SEAT_PRICE' | 'FREE_SEAT'; at: Date }[]>;
+  forVenue(venueId: string): Promise<{ seatId: string; outingId: string; venueId: string; amountCents: number; cause: 'NO_SHOW' | 'LATE_CANCEL' | 'EMERGENCY' | 'SAFETY' | 'BLOWY_CANCELLED' | 'REVERSAL'; basis: 'SEAT_PRICE' | 'FREE_SEAT' | 'BLOWY_CANCELLED' | 'SAFETY'; at: Date }[]>;
   reverse(scope: TxScope, seatId: string): Promise<boolean>;
 }
 export const VENUE_COMPENSATION_LEDGER = Symbol('VenueCompensationLedger');

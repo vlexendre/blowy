@@ -86,14 +86,23 @@ export class OutingLifecycle {
     if (mode === 'CARD') return this.funding.refundCard(scope, { userId: seat.userId, seatId: seat.id, paymentRef, cause });
     // Déprécié (D-042) : un ancien lot de crédit consommé est rendu par l'économie.
     if (mode === 'CREDIT' && seat.funding && this.funding.refundCredit) return this.funding.refundCredit(scope, { userId: seat.userId, seatId: seat.id, funding: seat.funding, cause });
+    // V5.5 (D-064) : sortie offerte par parrainage → la récompense redevient disponible.
+    if (seat.funding === 'REFERRAL_FREE' && this.funding.refundCredit) return this.funding.refundCredit(scope, { userId: seat.userId, seatId: seat.id, funding: seat.funding, cause });
     // 1ʳᵉ sortie : « reste offerte » (RECREDITED → `usedFreeFirst` ne la compte plus) ; Blowy+ : rien à rendre.
     return mode === 'CREDIT' || mode === 'STAYS_FREE' ? ('RECREDITED' as const) : ('NONE' as const);
   }
 
-  async cancelOuting(scope: TxScope, outing: OutingRow, reason: OutingCancelReason) {
+  async cancelOuting(scope: TxScope, outing: OutingRow, reason: OutingCancelReason, opts: { atConfirmation?: boolean } = {}) {
     const seats = await this.repo.seats(scope, outing.id);
     const conv = await this.chat.conversationOfOuting(scope, outing.id);
     const affected: string[] = [];
+    // V5.4 (C.12) : places RÉSERVÉES (effectif envoyé au lieu à la confirmation) quand Blowy annule une sortie
+    // déjà confirmée : places encore confirmées + places annulées après la confirmation (tardive, imprévu) —
+    // celles-ci ne sont plus compensées comme absences puisque la sortie n'a pas lieu.
+    // V5.8 (§2) : un groupe incomplet À la confirmation (veille 18 h) = « Blowy annule » — les places confirmées
+    // (« Je viens ») étaient l'effectif du lieu : remboursées, et 3 € HT par place réservée au lieu.
+    const wasConfirmed = outing.status === 'CONFIRMED' || outing.status === 'CHECKIN_OPEN' || opts.atConfirmation === true;
+    const reserved = wasConfirmed ? seats.filter((s) => s.status === 'CONFIRMED' || s.status === 'CHECKED_IN' || (s.status === 'CANCELLED' && (s.cancelKind === 'LATE' || s.cancelKind === 'EMERGENCY' || (s.cancelKind === 'SAFETY_EXIT' && !!s.cancelledAt && s.cancelledAt >= outing.lockAt)))).map((s) => s.id) : [];
     for (const s of seats) {
       if (!(isPending(s.status) || s.status === 'CONFIRMED' || s.status === 'CHECKED_IN')) continue;
       const refundState = countsAsConfirmed(s.status) ? await this.refundFully(scope, s) : 'NONE';
@@ -107,6 +116,11 @@ export class OutingLifecycle {
     await this.repo.releaseVenueSlot(scope, outing.id);
     if (conv) await this.chat.close(scope, conv);
     await scope.outbox.emit({ topic: 'outing.cancelled', aggregateType: 'Outing', aggregateId: outing.id, payload: { outingId: outing.id, reason, userIds: affected } });
+    // V5.4 (C.12) : le lieu est compensé (3 € par place réservée) si Blowy annule une sortie confirmée pour un
+    // motif qui ne vient pas du lieu ; la règle (motifs, montant) est appliquée par `economy`.
+    if (reserved.length > 0 && reason !== 'VENUE_UNAVAILABLE') {
+      await scope.outbox.emit({ topic: 'outing.venue_cancel_compensation_due', aggregateType: 'Outing', aggregateId: outing.id, payload: { outingId: outing.id, venueId: outing.venueId, reason, seatIds: reserved } });
+    }
   }
 
   // ------------------------------------------------------------------ transitions temporelles (job)
@@ -144,12 +158,15 @@ export class OutingLifecycle {
     }
     const confirmed = this.confirmedIds(seats);
     if (confirmed.length < this.tuning.outings.minSizeToLock) {
-      await this.cancelOuting(scope, o, 'UNDERSIZED');
+      await this.cancelOuting(scope, o, 'UNDERSIZED', { atConfirmation: true });
       return 'CANCELLED';
     }
     await this.repo.setOutingStatus(scope, o.id, 'CONFIRMED');
     const conv = await this.chat.conversationOfOuting(scope, o.id);
     if (conv) await this.chat.postSystem(scope, conv, 'icebreaker.lock');
+    // V5.7 (E30, D-080) : message d'accueil du lieu publié au chat à la confirmation (aucun texte générique s'il est absent).
+    const welcome = await this.repo.venueWelcomeMessage(o.venueId);
+    if (conv && welcome) await this.chat.postSystem(scope, conv, 'system.venue_welcome', welcome);
     // Lieu et visages révélés en même temps, à tous les confirmés (V5.1 E.16).
     await this.events.updated(scope, o.id, confirmed, { status: 'CONFIRMED', confirmedCount: confirmed.length, changed: 'VENUE' });
     await scope.outbox.emit({ topic: 'outing.locked', aggregateType: 'Outing', aggregateId: o.id, payload: { outingId: o.id } });

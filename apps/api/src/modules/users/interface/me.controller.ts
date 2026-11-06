@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put } from '
 import {
   ConsentStateSchema,
   MatchPreferencesSchema,
-  PrivacySettingsSchema,
+  UpdatePrivacyV5RequestSchema,
   RecordConsentsRequestSchema,
   SelfProfileSchema,
   StartPauseRequestSchema,
@@ -11,12 +11,12 @@ import {
   UuidSchema,
   IntentionsV5Schema,
   UpdateIntentionsV5RequestSchema,
-  OutingPreferencesV5Schema,
+  OutingPreferencesV5ViewSchema,
   UpdateOutingPreferencesV5RequestSchema,
   type IntentionsV5Dto,
   type OutingPreferencesV5Dto,
   type MatchPreferences,
-  type PrivacySettings,
+  type UpdatePrivacyV5Request,
   type RecordConsentsRequest,
   type StartPauseRequest,
   type UpdateProfileRequest,
@@ -64,12 +64,12 @@ export class MeController {
   /** V5.1 : préférences de sortie (âges, disponibilités, semaines off, activités, quartiers, trajet). */
   @Get('preferences/outings')
   async getOutingPrefs(@CurrentUser() u: AuthenticatedUser) {
-    return OutingPreferencesV5Schema.parse(await this.prefsV5.outingPreferences(u.userId));
+    return OutingPreferencesV5ViewSchema.parse(await this.prefsV5.outingPreferences(u.userId));
   }
 
   @Put('preferences/outings')
   async putOutingPrefs(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(UpdateOutingPreferencesV5RequestSchema)) body: OutingPreferencesV5Dto) {
-    return OutingPreferencesV5Schema.parse(await this.prefsV5.saveOutingPreferences(u.userId, body, cid));
+    return OutingPreferencesV5ViewSchema.parse(await this.prefsV5.saveOutingPreferences(u.userId, body, cid));
   }
 
   @Get('me')
@@ -90,7 +90,7 @@ export class MeController {
   }
 
   @Put('preferences/privacy')
-  async putPrivacy(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(PrivacySettingsSchema)) body: PrivacySettings) {
+  async putPrivacy(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(UpdatePrivacyV5RequestSchema)) body: UpdatePrivacyV5Request) {
     await this.updatePrivacy.execute(u.userId, cid, body);
     return this.me(u);
   }

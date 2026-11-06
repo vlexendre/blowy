@@ -14,8 +14,11 @@ export interface GroupChatPort {
   addMember(scope: TxScope, conversationId: string, userId: string): Promise<void>;
   /** Retire l'accès (lecture comprise). */
   revokeMember(scope: TxScope, conversationId: string, userId: string): Promise<void>;
-  /** Message système publié (clé de gabarit `@blowy/content`, rendu côté client). */
-  postSystem(scope: TxScope, conversationId: string, template: string): Promise<{ messageId: string; seq: number }>;
+  /**
+   * Message système publié (clé de gabarit `@blowy/content`, rendu côté client). V5.7 (E30) : `body` seulement pour
+   * le message d'accueil du lieu (`system.venue_welcome`, texte écrit par le lieu et modéré).
+   */
+  postSystem(scope: TxScope, conversationId: string, template: string, body?: string): Promise<{ messageId: string; seq: number }>;
   /** Fermeture en écriture (lecture encore possible pour les membres non révoqués). */
   close(scope: TxScope, conversationId: string): Promise<void>;
   conversationOfOuting(scope: TxScope | null, outingId: string): Promise<string | null>;

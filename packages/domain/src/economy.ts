@@ -39,8 +39,12 @@ export type SubscriptionState =
 // ---- V5 (spec-v5 §6, D-018–D-020) ----
 /** @deprecated V4 : remplacé par `EntitlementKeyV5` (D-020 : carte, indices, espèces premium, XP×2 retirés). */
 export type EntitlementKeyV4 = EntitlementKey;
-/** Droits V5 de Blowy+ (spec §6.3) : toutes les sorties incluses + duos illimités ; l'accessoire mensuel est mort (D-041). */
-export const ENTITLEMENT_KEYS_V5 = ['PLUS_INCLUDED_OUTINGS', 'PLUS_UNLIMITED_DUOS'] as const;
+/**
+ * Droits V5 de Blowy+ (spec §6.3) : V5.4 (C.10–C.11) — Blowy+ = abonnement aux SORTIES uniquement (Stripe
+ * Billing) ; le Duo est gratuit pour tous (plafond anti-spam commun) : `PLUS_UNLIMITED_DUOS` n'existe plus.
+ * L'accessoire mensuel est mort (D-041).
+ */
+export const ENTITLEMENT_KEYS_V5 = ['PLUS_INCLUDED_OUTINGS'] as const;
 export type EntitlementKeyV5 = (typeof ENTITLEMENT_KEYS_V5)[number];
 
 export const CREDIT_KINDS = ['FREE_FIRST', 'PLUS_INCLUDED', 'REFUND_CREDIT', 'STAFF_GRANT'] as const;
@@ -62,3 +66,12 @@ export const PAYMENT_PURPOSES = ['SEAT'] as const;
 export type PaymentPurpose = (typeof PAYMENT_PURPOSES)[number];
 
 export type CurrencyCode = 'EUR';
+
+/**
+ * V5.7 (E28) : mois CIVIL `YYYY-MM` dans un fuseau IANA (relevé du lieu dans le fuseau du lieu, « 1 sortie offerte
+ * par mois » dans celui de la personne) — jamais le mois UTC.
+ */
+export function civilMonthOf(at: Date, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit' }).formatToParts(at);
+  return `${parts.find((p) => p.type === 'year')!.value}-${parts.find((p) => p.type === 'month')!.value}`;
+}

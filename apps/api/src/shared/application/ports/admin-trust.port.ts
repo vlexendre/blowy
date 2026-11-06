@@ -134,7 +134,7 @@ export interface AdminTrustPort {
   /** Prise en charge : alerte HANDLED + dossier résolu (motif obligatoire, idempotent). trust_lead / admin. */
   handleSafetyAlert(actor: StaffActor, alertId: string, input: { reason: string; commandId: string }): Promise<StaffSafetyAlertView>;
   /** « Je connais quelqu'un » en examen (sujet = place) : accepté → retrait sans pénalité ; refusé → place gardée. support / trust_lead / admin. */
-  resolveKnowsSomeone(actor: StaffActor, seatId: string, input: { accept: boolean; reason: string; commandId: string }): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' }>;
+  resolveKnowsSomeone(actor: StaffActor, seatId: string, input: { accept: boolean; reason: string; commandId: string }): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' | 'REVIEWED' }>;
 }
 
 export const ADMIN_MODERATION = Symbol.for('blowy.admin.moderation');

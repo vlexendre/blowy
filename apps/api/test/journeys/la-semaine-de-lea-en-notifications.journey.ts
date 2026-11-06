@@ -99,7 +99,7 @@ describe('La semaine de Léa en notifications', () => {
 
   S.step('Mercredi 18 h (confirmation) : lieu et heure, rappel que l’annulation compte ; Léa envoie un lien à Maud', async () => {
     await tick(CYCLE.locked);
-    expect(bodies(lea!).at(-1)).toBe('Ta sortie de jeudi est confirmée : 19 h 30 au Café Paris 11e. Les prénoms de ta bande sont visibles ; une annulation compte désormais comme une absence.');
+    expect(bodies(lea!).at(-1)).toBe('Ta sortie de jeudi est confirmée : 19 h 30 au Café Paris 11e. Les prénoms de ta bande sont visibles. Annuler compte maintenant comme une absence, sauf ton imprévu du mois ou une raison de sécurité ; l’équipe Blowy est joignable pendant toute ta sortie.');
     const link = await lea!.call('POST', '/v1/safety/guardian-links', { subject: { kind: 'OUTING', id: outingId }, label: 'Maud' });
     expect(link.ok, JSON.stringify(link.data)).toBe(true);
     guardianToken = (link.data.url as string).split('/ange/')[1]!;

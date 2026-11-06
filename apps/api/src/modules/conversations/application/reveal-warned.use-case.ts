@@ -22,7 +22,7 @@ export class RevealWarnedUseCase {
         if (!msg || !conv || !me || msg.authorUserId === actorId || (msg.status !== 'WARNED' && msg.status !== 'PUBLISHED')) throw Errors.notFound('Message');
         if (msg.status !== 'WARNED') throw Errors.precondition('NOT_WARNED');
         await this.repo.markRevealed(scope, messageId, actorId);
-        return toMessageView((await this.repo.loadMessage(scope, messageId, actorId))!, actorId)!;
+        return toMessageView((await this.repo.loadMessage(scope, messageId, actorId))!, actorId, null, !(await this.repo.facesRevealed(scope, conv.id, scope.now)))!;
       },
     });
     return result;

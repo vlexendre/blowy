@@ -62,3 +62,27 @@ export const NeighborhoodStatusViewSchema = z
   })
   .strict();
 export type NeighborhoodStatusView = z.infer<typeof NeighborhoodStatusViewSchema>;
+
+// ============================================================================ V5.5 (D-059) indicateurs de ville
+/** Valeur arrondie (≥ 10) ou « pas encore assez de monde pour te le dire ». */
+export const CityApproxSchema = z.union([
+  z.object({ notEnough: z.literal(true) }).strict(),
+  z.object({ approx: z.enum(['A_DOZEN', 'ABOUT_TWENTY', 'ABOUT_THIRTY', 'ABOUT', 'MORE_THAN_100']), value: z.number().int().positive().optional(), label: z.string() }).strict(),
+]);
+/**
+ * `GET /v1/me/city-insights` : toujours au niveau de la VILLE (jamais du groupe ni du créneau), d'après la
+ * photographie quotidienne (`asOf`) ; `storyCompatible` seulement pour qui cherche une histoire.
+ */
+export const CityInsightsViewSchema = z
+  .object({
+    asOf: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+    storyCompatible: CityApproxSchema.optional(),
+    ageBrackets: z.array(
+      z.union([
+        z.object({ bracket: z.string(), notEnough: z.literal(true) }).strict(),
+        z.object({ bracket: z.string(), approx: z.enum(['A_DOZEN', 'ABOUT_TWENTY', 'ABOUT_THIRTY', 'ABOUT', 'MORE_THAN_100']), value: z.number().int().positive().optional(), label: z.string() }).strict(),
+      ]),
+    ),
+  })
+  .strict();
+export type CityInsightsView = z.infer<typeof CityInsightsViewSchema>;

@@ -11,7 +11,7 @@ import { buildWorkerGraph, type WorkerGraph } from '../../src/jobs/worker-runtim
 import type { RealtimeGateway } from '../../src/realtime/realtime.gateway.js';
 import { RealtimeRelayEffect } from '../../src/realtime/redis-realtime.publisher.js';
 import { onboard, startHarness, TestClient, type Harness } from './harness.js';
-import { matchedPair } from './fixtures.js';
+import { matchedPair, v4Batch } from './fixtures.js';
 
 const DAY = 86_400_000;
 let h: Harness;
@@ -243,7 +243,7 @@ describe('B4 — signaler toute personne qu’on a pu voir', () => {
     // Un tiers qui n'a jamais vu Paul ne peut pas le désigner (anti-IDOR).
     expect((await stranger.call('POST', '/v1/reports', { target: { petId: paulPet }, category: 'MINOR' })).status).toBe(404);
 
-    const feed = await clara.call('POST', '/v1/matches/onboarding-batch', {});
+    const feed = await v4Batch(h, clara);
     expect(feed.body.items.some((i: any) => i.otherPet.id === paulPet)).toBe(true);
     const r = await clara.call('POST', '/v1/reports', { target: { petId: paulPet }, category: 'MINOR', note: 'il dit avoir 16 ans' });
     expect(r.status).toBe(201);
@@ -254,7 +254,7 @@ describe('B4 — signaler toute personne qu’on a pu voir', () => {
     expect((await clara.call('POST', '/v1/blocks', { target: { petId: paulPet } })).status).toBeLessThan(300);
 
     await onboard(nadia, 'fix.nadia', { gender: 'WOMAN', seeking: ['MAN'] });
-    const fn = await nadia.call('POST', '/v1/matches/onboarding-batch', {});
+    const fn = await v4Batch(h, nadia);
     expect(fn.body.items.some((i: any) => i.otherPet.id === paulPet)).toBe(false);
     expect(JSON.stringify((await paul.call('GET', '/v1/me')).body)).not.toMatch(/MINOR|report|clara/i);
   });

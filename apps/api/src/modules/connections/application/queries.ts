@@ -5,7 +5,7 @@
  * la seule information sur l'autre est l'intérêt mutuel (le duo existe) et l'indice booléen
  * « projet compatible » quand les sous-choix secrets concordent.
  */
-import { isDuoTerminal, PET_MEMORY_KINDS, projectCompatible, reliabilityDisplay, seeksOf, SPECIES, type PetMemoryKind } from '@blowy/domain';
+import { isDuoTerminal, PET_MEMORY_KINDS, projectCompatible, seeksOf, SPECIES, type PetMemoryKind } from '@blowy/domain';
 import type { DuoDateView, DuoLaneProposalView, DuoView, PetMemoryView, StreetView } from '@blowy/api-contract';
 import { romanceCompatible } from '@blowy/matching/groups';
 import { Errors } from '../../../shared/domain/errors.js';
@@ -18,7 +18,7 @@ import { isMember, otherOf } from './duos.use-cases.js';
 import type { DuoDateRow, DuoRow, MemoryRow } from './ports/connections.repository.js';
 
 const HOUR = 3_600_000;
-type Feed = { items: DuoLaneProposalView[]; emptyReason: 'NONE' | 'LANE_DISABLED' | 'NOT_VERIFIED' | 'PHOTO_REQUIRED' | 'PAUSED' | 'LIMIT_REACHED' | 'WAITING_NEXT_BATCH' | null; nextBatchAt: string | null; quota: { freeMaxActive: number; unlimited: boolean } };
+type Feed = { items: DuoLaneProposalView[]; emptyReason: 'NONE' | 'LANE_DISABLED' | 'NOT_VERIFIED' | 'PHOTO_REQUIRED' | 'PAUSED' | 'LIMIT_REACHED' | 'WAITING_NEXT_BATCH' | null; nextBatchAt: string | null; quota: { maxActive: number; active: number; freeMaxActive: number; unlimited: false } };
 
 export class ConnectionQueries {
   constructor(
@@ -85,7 +85,7 @@ export class ConnectionQueries {
         firstName: p?.firstName ?? '',
         pet: p?.pet ?? { name: 'Un pet', species: 'NINO', equipped: [], traits: [] },
         ...(photo ? { photo } : {}),
-        reliability: reliabilityDisplay(p?.reliability.attended ?? 0, p?.reliability.noShows ?? 0, p?.reliability.lateCancels ?? 0),
+        // V5.6 (D-076, E24) : jamais la fiabilité de l'autre.
       },
       ...(exchange ? { exchange } : {}),
       ...(showDeadline ? { dateDeadline: d.dateDeadline!.toISOString() } : {}),
@@ -153,16 +153,18 @@ export class ConnectionQueries {
       const o = r.userLowId === userId ? r.userHighId : r.userLowId;
       const p = persons.get(o);
       if (!p || blocked.has(o)) return [];
-      // V5.3 (A.3) : pet + initiale seulement avant le double « oui ».
-      const initial = [...p.firstName.trim()][0]?.toLocaleUpperCase('fr-FR');
-      return [{ proposalId: r.id, pet: p.pet, visionScore: r.visionScore, expiresAt: r.expiresAt.toISOString(), acceptedByMe: r.acceptedBy.includes(userId), ...(initial ? { otherInitial: initial } : {}) }];
+      // V5.4 (A.3) : pet (sans traits) + initiale UNIQUEMENT avant le double « oui » : ni tranche, ni pronom,
+      // ni activités, ni intention, ni score.
+      const initial = [...p.firstName.trim()][0]?.toLocaleUpperCase('fr-FR') ?? '·';
+      // V5.5 (D-068) : espèce (illustration générique) + initiale, jamais le nom du pet.
+      return [{ proposalId: r.id, species: p.pet.species, otherInitial: initial, expiresAt: r.expiresAt.toISOString(), acceptedByMe: r.acceptedBy.includes(userId) }];
     });
     const mode = seeks.get(userId)?.meetingMode ?? null;
     const enabled = mode === 'DUO' || mode === 'BOTH';
     let emptyReason: Feed['emptyReason'] = null;
     if (items.length === 0) emptyReason = !enabled ? 'LANE_DISABLED' : !verified ? 'NOT_VERIFIED' : !photo ? 'PHOTO_REQUIRED' : paused ? 'PAUSED' : active >= capacity ? 'LIMIT_REACHED' : 'WAITING_NEXT_BATCH';
-    // §7.3 : quota exposé (1 gratuit / illimité) ; aucun argument commercial.
-    return { items, emptyReason, nextBatchAt: enabled ? this.nextRun(now, tz).toISOString() : null, quota: { freeMaxActive: this.x.tuning.duo.maxActiveFree, unlimited: capacity === Number.POSITIVE_INFINITY } };
+    // V5.4 (C.11) : Duo gratuit pour tous, plafond commun ; aucun argument commercial.
+    return { items, emptyReason, nextBatchAt: enabled ? this.nextRun(now, tz).toISOString() : null, quota: { maxActive: Number.isFinite(capacity) ? capacity : this.x.tuning.duo.maxActive, active, freeMaxActive: Number.isFinite(capacity) ? capacity : this.x.tuning.duo.maxActive, unlimited: false as const } };
   }
 
   private nextRun(now: Date, tz: string): Date {

@@ -2,7 +2,8 @@
 /**
  * V5 T5 — intégration `connections` (vraie base, vrai graphe Nest, horloge contrôlée) :
  *  - duo né d'une sortie (accord « plus ») : débloqué d'emblée, sans échéance 48 h / J+7 ;
- *  - « passer » silencieux ; double accord concurrent → un seul duo ; 1 duo actif gratuit (409) ;
+ *  - « passer » silencieux ; double accord concurrent → un seul duo ; V5.4 : Duo gratuit pour tous, 3 actifs (409 au 4ᵉ) ;
+ *  - V5.4 A.3 : proposition avant le double oui = pet + initiale UNIQUEMENT ;
  *  - blocage → duo CLOSED silencieux + accès révoqué, lien de bande retiré ;
  *  - « partir proprement » de la bande : 412 au 2ᵉ appel, chat fermé ;
  *  - « Ta rue » : cadeau d'un accessoire GAGNÉ seulement ; jamais la bande d'autrui ;
@@ -63,6 +64,13 @@ describe('connections V5 (intégration)', () => {
     await run('duos.lane', LANE);
     const fa = (await a.call('GET', '/v1/duo-lane')).body;
     expect(fa.items).toHaveLength(1);
+    // V5.4 (A.3) : avant le double « oui », le pet (sans traits) et l'initiale — rien d'autre.
+    // V5.5 (D-068) : espèce (illustration générique) + initiale — jamais le nom du pet.
+    expect(Object.keys(fa.items[0]).sort()).toEqual(['acceptedByMe', 'expiresAt', 'otherInitial', 'proposalId', 'species']);
+    expect(JSON.stringify(fa.items)).not.toContain('Pet-itc2b');
+    expect(fa.items[0].otherInitial).toMatch(/^.$/u);
+    const pj = JSON.stringify(fa.items);
+    for (const k of ['ageRange', 'visionScore', 'traits', 'lookingFor', 'pronoun', 'activities', 'reliability', 'firstName']) expect(pj).not.toContain(k);
     expect((await g.call('GET', '/v1/duo-lane')).body).toMatchObject({ items: [], emptyReason: 'LANE_DISABLED' });
     const pid = fa.items[0].proposalId;
     expect(await h.db.matchProposal.count({ where: { kind: 'DUO_LANE', OR: [{ userLowId: g.userId }, { userHighId: g.userId }] } })).toBe(0);
@@ -79,14 +87,25 @@ describe('connections V5 (intégration)', () => {
     DuoViewSchema.parse((await a.call('GET', `/v1/duos/${ok[0]!.body.duoId}`)).body);
   });
 
-  it('1 duo actif gratuit : une autre proposition acceptée → 409 DUO_LIMIT_REACHED', async () => {
+  it('V5.4 C.11 : Duo gratuit pour tous, 3 duos actifs au plus — un 4ᵉ accord → 409 DUO_LIMIT_REACHED {upgrade:false}', async () => {
     c = await person('itc2c', 'WOMAN');
+    // `a` a déjà 1 duo (avec b) ; deux de plus (voie Duo, en échange) → 3 actifs = plafond commun.
+    const extra: string[] = [];
+    for (const k of ['itc2x', 'itc2y']) {
+      const x = await person(k, 'WOMAN');
+      const [l, hgh] = lo(a.userId, x.userId);
+      extra.push((await h.db.duo.create({ data: { id: uuidv7(), userLowId: l, userHighId: hgh, origin: 'LANE', status: 'EXCHANGE', exchangeEndsAt: new Date(LANE.getTime() + 48 * 3_600_000) } })).id);
+    }
+    expect((await a.call('GET', '/v1/duo-lane')).body.quota).toEqual({ maxActive: 3, active: 3, freeMaxActive: 3, unlimited: false });
     const batch = await h.db.matchBatch.findFirstOrThrow({ where: { kind: 'DUO_LANE' } });
     const [pa, pc] = await Promise.all([h.db.pet.findUniqueOrThrow({ where: { primaryOwnerId: a.userId } }), h.db.pet.findUniqueOrThrow({ where: { primaryOwnerId: c.userId } })]);
     const [pl, ph] = pa.id < pc.id ? [pa, pc] : [pc, pa];
     const p = await h.db.matchProposal.create({ data: { batchId: batch.id, petLowId: pl.id, petHighId: ph.id, userLowId: pl.primaryOwnerId!, userHighId: ph.primaryOwnerId!, kind: 'DUO_LANE', visionScore: 70, rankScore: 70, breakdown: {}, expiresAt: new Date(LANE.getTime() + 48 * 3_600_000) } });
     const r = await a.call('POST', `/v1/duo-lane/proposals/${p.id}/accept`, {});
-    expect([r.status, r.body.detailsSafe?.reason]).toEqual([409, 'DUO_LIMIT_REACHED']);
+    expect([r.status, r.body.detailsSafe?.reason, r.body.detailsSafe?.upgrade]).toEqual([409, 'DUO_LIMIT_REACHED', false]);
+    // Blowy+ ne change rien au plafond (V5.4 : abonnement aux sorties seulement).
+    expect((await a.call('GET', '/v1/me/allowances')).body.duos).toEqual({ maxActive: 3 });
+    await h.db.duo.deleteMany({ where: { id: { in: extra } } });
     // Passer : silencieux, la proposition reste ouverte chez l'autre.
     expect((await c.call('POST', `/v1/duo-lane/proposals/${p.id}/pass`, {})).body).toEqual({ status: 'PASSED' });
     expect((await c.call('GET', '/v1/duo-lane')).body.items).toEqual([]);

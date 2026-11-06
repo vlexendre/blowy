@@ -30,6 +30,12 @@ export interface RequesterFacts {
   acceptableNeighborhoodIds: string[];
   availableSlotTemplateIds: string[];
   weeksOff: string[];
+  /** V5.4 (B.9) : « une semaine sur deux » à partir de cette semaine ISO ; null = non. */
+  everyOtherWeekOffFrom: string | null;
+  /** V5.6 (B.13) : « un week-end sur deux » à partir de cette semaine ISO. */
+  everyOtherWeekendOffFrom?: string | null;
+  /** V5.6 (E11) : trajet max déclaré (20 / 30 / 45 min). */
+  maxTravelMinutes?: number;
   activeTeamId: string | null;
   reliability: ReliabilityState | null;
 }
@@ -50,6 +56,8 @@ export interface RequestRow {
   slotStartsAt: Date[];
   teamId: string | null;
   missedWeeks: number;
+  /** V5.5 (D-061). */
+  mode?: 'NORMAL' | 'FRIENDS_THIS_WEEK';
   createdAt: Date;
 }
 
@@ -66,6 +74,8 @@ export interface SeatRow {
   confirmedAt: Date | null;
   cancelKind: SeatCancelKind | null;
   refundState: RefundState;
+  /** V5.6 (E22) : date d'annulation (compensation lieu d'une sortie de sécurité après la confirmation). */
+  cancelledAt?: Date | null;
 }
 
 export interface OutingRow {
@@ -173,7 +183,7 @@ export interface OutingsRepository {
   duoRoomMember(userId: string, duoId: string): Promise<boolean>;
 
   // ------------------------------------------------------------ demandes
-  upsertRequest(scope: TxScope, r: { id: string; userId: string; neighborhoodId: string; weekKey: string; slotStartsAt: Date[]; teamId: string | null; missedWeeks: number }): Promise<RequestRow>;
+  upsertRequest(scope: TxScope, r: { id: string; userId: string; neighborhoodId: string; weekKey: string; slotStartsAt: Date[]; teamId: string | null; missedWeeks: number; mode?: 'NORMAL' | 'FRIENDS_THIS_WEEK' }): Promise<RequestRow>;
   setRequestStatus(scope: TxScope, id: string, status: OutingRequestStatus, unplacedReason?: UnplacedReason | null): Promise<void>;
   /** Semaines manquées consécutives (non placé·e, sortie annulée par Blowy) avant `weekKey`. */
   missedWeeksBefore(scope: TxScope, userId: string, weekKey: string): Promise<number>;
@@ -182,14 +192,14 @@ export interface OutingsRepository {
   liveScopes(): Promise<CompositionScope[]>;
   /** Villes sans quartier LIVE ayant au moins une team ACTIVE (amorçage). */
   seedingScopes(): Promise<CompositionScope[]>;
-  runExists(scopeKey: string, weekKey: string, kind: 'WEEKLY' | 'SEEDING'): Promise<boolean>;
+  runExists(scopeKey: string, weekKey: string, kind: 'WEEKLY' | 'SEEDING' | 'ROLLING'): Promise<boolean>;
   /** Génère (idempotent) les créneaux des lieux actifs pour une semaine. */
   ensureVenueSlots(neighborhoodIds: string[], weekKey: string, timezone: string): Promise<number>;
   slotOffers(neighborhoodIds: string[], from: Date, to: Date): Promise<SlotOffer[]>;
   weeklyCandidates(scope: CompositionScope, weekKey: string, at: Date): Promise<{ candidates: OutingCandidate[]; meta: CandidateMeta[] }>;
   seedingCandidates(scope: CompositionScope, offers: SlotOffer[], at: Date): Promise<{ candidates: OutingCandidate[]; meta: CandidateMeta[] }>;
   compositionFacts(userIds: string[]): Promise<CompositionFacts>;
-  createRun(scope: TxScope, r: { id: string; scopeKey: string; weekKey: string; kind: 'WEEKLY' | 'SEEDING'; algoVersion: string; tuningVersion: string; seed: string }): Promise<boolean>;
+  createRun(scope: TxScope, r: { id: string; scopeKey: string; weekKey: string; kind: 'WEEKLY' | 'SEEDING' | 'ROLLING'; algoVersion: string; tuningVersion: string; seed: string; slotDate?: string | null }): Promise<boolean>;
   finishRun(scope: TxScope, id: string, stats: Record<string, unknown>): Promise<void>;
   /** Réserve une table sur le créneau (garde de capacité) ; false si plein. */
   reserveVenueSlot(scope: TxScope, venueSlotId: string): Promise<boolean>;
@@ -241,9 +251,35 @@ export interface OutingsRepository {
   /** Intentions (moteur seulement) des places actives : compatibilité « histoire » du lecteur. */
   seeksOfActiveSeats(outingId: string, at: Date): Promise<Attendee[]>;
   knowsSomeoneSince(scope: TxScope, userId: string, since: Date): Promise<number>;
-  createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'COUNTED_AS_CANCEL' }): Promise<void>;
+  /** V5.4 (B.8) : « imprévus » (places `CANCELLED/EMERGENCY`) de la personne depuis `since`. */
+  emergencyCancelsSince(scope: TxScope | null, userId: string, since: Date): Promise<number>;
+  /** Fuseau IANA du quartier d'une sortie. */
+  outingTimezone(scope: TxScope | null, outingId: string): Promise<string>;
+  createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'SAFETY_REVIEW' }): Promise<void>;
   /** Lien réel déjà connu dans l'app : amitié/bande (même V4 ou retirée), duo, blocage. */
   knownRelation(a: string, b: string): Promise<boolean>;
+  /** V5.6 (E11) : quartiers atteignables depuis `home` en ≤ `maxMinutes` (table `NeighborhoodTravelTime`). */
+  reachableNeighborhoods(home: string, maxMinutes: number): Promise<string[]>;
+  /** V5.7 (E30) : message d'accueil du lieu (null = aucun). */
+  venueWelcomeMessage(venueId: string): Promise<string | null>;
+  /** V5.6 (§7.5) : contexte de la vue sortie (ambiance et quartier du lieu ; quartier et activités du lecteur). */
+  outingViewExtras(outingId: string, viewerId: string): Promise<{ venueId: string; venueAmbiance: 'CALM' | 'LIVELY' | null; neighborhoodId: string; activity: string; viewerHome: string | null; viewerActivities: string[] } | null>;
+  /** V5.6 (E11) : temps de trajet typique de `from` vers `to` (null si inconnu). */
+  travelMinutes(from: string, to: string): Promise<number | null>;
+  /** Idem, en disant s'il s'agit d'une estimation (pas de ligne ops). */
+  travelEstimate(from: string, to: string): Promise<{ minutes: number; estimated: boolean } | null>;
+  /**
+   * V5.6 (E18) : autres groupes CONFIRMÉS du même créneau (même heure, même ville) — pour déplacer une
+   * personne qui connaît quelqu'un. Membres vivants avec leur genre (contrainte ≤ 3 du même genre).
+   */
+  siblingOutings(scope: TxScope, outing: OutingRow): Promise<{ outingId: string; venueId: string; capacity: number; acceptDeadline: Date; members: { userId: string; gender: string | null }[] }[]>;
+  genderOf(scope: TxScope, userId: string): Promise<string | null>;
+  /**
+   * V5.6 (E18) : déplace une place confirmée vers un autre groupe (même financement, mêmes références de
+   * paiement/crédit) : l'ancienne place passe `CANCELLED` / `SAFETY_EXIT` sans remboursement (rien n'est perdu),
+   * la nouvelle est `CONFIRMED`. Renvoie l'identifiant de la nouvelle place.
+   */
+  relocateSeat(scope: TxScope, i: { seatId: string; toOutingId: string; newSeatId: string; acceptDeadline: Date }): Promise<string>;
 
   // ------------------------------------------------------------ T4 (safety, ajout minimal)
   /** Places non terminales d'une personne dans des sorties non terminées (retrait système). */

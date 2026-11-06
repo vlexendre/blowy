@@ -5,12 +5,13 @@
  * (Idempotency-Key), revalidée sous verrous (users → pets → friendships → duos) ; toute réponse
  * ne contient que ce que le lecteur a le droit de voir.
  */
-import { accuracyBucket, isDuoTerminal, seeksOf, type DateResponse, type SeatCancelRequestKind, type VoteChoice } from '@blowy/domain';
+import { isDuoTerminal, seeksOf, type DateResponse, type SeatCancelRequestKind, type VoteChoice } from '@blowy/domain';
 import type { AcceptDuoProposalResult, CheckInRequest } from '@blowy/api-contract';
+import { ONCALL_MARGIN_BEFORE_MS } from '../../../shared/application/ports/oncall-coverage.port.js';
 import { AppError, Errors } from '../../../shared/domain/errors.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
-import { codeMatches, geoCheckIn, venueCode } from '../../outings/domain/checkin.js';
-import { canMoveDuo, checkinWindow, DATE_DURATION_MS, dateInRange, duoCapacity, eggActive, eggEligible, isLateCancel, isUnlocked, localMinuteOf, restingStatus, voteOptionsFor } from '../domain/duo-policy.js';
+import { codeMatches, venueCode } from '../../outings/domain/checkin.js';
+import { canMoveDuo, checkinWindow, DATE_DURATION_MS, dateInRange, duoCapacity, eggActive, eggEligible, isLateCancel, isUnlocked, localMinuteOf, restingStatus, voteOptionsFor, duoDateLockAt } from '../domain/duo-policy.js';
 import type { ConnectionsDeps } from './deps.js';
 import type { DuoDateRow, DuoRow } from './ports/connections.repository.js';
 
@@ -32,11 +33,12 @@ export class DuoUseCases {
 
   /**
    * Duos actifs autorisés (V5.2 H.25, D-041) : lu du port `DUO_ALLOWANCE` d'economy (1 gratuit, illimité
-   * Blowy+) ; sans port, `tuning.duo.maxActiveFree` (ou illimité si Blowy+ via les droits).
+   * Blowy+) ; sans port, `tuning.duo.maxActive` (ou illimité si Blowy+ via les droits).
    */
   async capacity(userId: string, at: Date): Promise<number> {
-    if (this.x.allowance) return (await this.x.allowance.maxActiveDuos(userId, at)) ?? Number.POSITIVE_INFINITY;
-    return duoCapacity(await this.hasPlus(userId, at), this.x.tuning.duo.maxActiveFree);
+    // V5.4 (C.11) : plafond commun (3), Blowy+ sans effet ; le port economy reste la source (tuning).
+    if (this.x.allowance) return (await this.x.allowance.maxActiveDuos(userId, at)) ?? this.x.tuning.duo.maxActive;
+    return duoCapacity(false, this.x.tuning.duo.maxActive);
   }
 
   // ------------------------------------------------------------------ voie Duo
@@ -144,6 +146,11 @@ export class DuoUseCases {
 
   async proposeDate(userId: string, duoId: string, req: { venueId: string; startsAt: string }, commandId: string): Promise<DuoDateRow> {
     const venue = await this.repo.venue(req.venueId);
+    // V5.5 (D-058) : jamais de rendez-vous hors des heures d'astreinte (lecture hors transaction).
+    if (venue && this.x.oncall) {
+      const at = new Date(req.startsAt);
+      if (!(await this.x.oncall.covered(venue.timezone, new Date(at.getTime() - ONCALL_MARGIN_BEFORE_MS), new Date(at.getTime() + DATE_DURATION_MS)))) throw Errors.precondition('OUTSIDE_ONCALL_HOURS');
+    }
     const { result } = await this.x.bus.execute({
       actorId: userId,
       operation: 'duos.date.propose',
@@ -159,6 +166,8 @@ export class DuoUseCases {
         if (!venue || !allowed.some((v) => v.id === venue.id)) throw Errors.precondition('VENUE_NOT_IN_NEIGHBORHOOD');
         const startsAt = new Date(req.startsAt);
         if (!dateInRange({ origin: d.origin, dateDeadline: d.dateDeadline, startsAt, localMinute: localMinuteOf(startsAt, venue.timezone), now: scope.now }, this.x.tuning)) throw Errors.precondition('DATE_OUT_OF_RANGE');
+        // V5.6 (E13) : table de 2 au lieu — confirmée au plus tard la veille 18 h (effectif du lieu).
+        if (scope.now >= duoDateLockAt(startsAt, venue.timezone, this.x.tuning)) throw Errors.precondition('DUO_DATE_TOO_LATE');
         const live = await this.repo.liveDate(scope, duoId);
         if (live && (live.status === 'CONFIRMED' || live.proposedByUserId === userId)) throw Errors.precondition('DATE_ALREADY_PROPOSED');
         // Contre-proposition : l'ancienne proposition de l'autre est remplacée.
@@ -191,7 +200,11 @@ export class DuoUseCases {
         if (date.proposedByUserId === userId) throw Errors.precondition('OWN_PROPOSAL');
         if (decision === 'ACCEPT') {
           if (await this.x.reliability.isPaused(scope, userId, scope.now)) throw Errors.precondition('RELIABILITY_PAUSED');
-          await this.repo.updateDate(scope, dateId, { status: 'CONFIRMED' });
+          // V5.6 (E13) : confirmation au plus tard la veille 18 h (sinon la table n'est pas dans l'effectif du lieu).
+          const venue = await this.repo.venue(date.venueId);
+          if (venue && scope.now >= duoDateLockAt(date.startsAt, venue.timezone, this.x.tuning)) throw Errors.precondition('DUO_DATE_TOO_LATE');
+          const venueSlotId = await this.repo.venueSlotAt(date.venueId, date.startsAt);
+          await this.repo.updateDate(scope, dateId, { status: 'CONFIRMED', ...(venueSlotId ? { venueSlotId } : {}) });
           await this.repo.updateDuo(scope, duoId, { status: 'DATE_CONFIRMED' });
           await this.x.events.duoUpdated(scope, duoId, [d.userLowId, d.userHighId], 'DATE_CONFIRMED', 'DATE');
           await scope.outbox.emit({ topic: 'duo.date_confirmed', aggregateType: 'DuoDate', aggregateId: dateId, payload: { duoId, duoDateId: dateId, userIds: [d.userLowId, d.userHighId] } });
@@ -225,7 +238,8 @@ export class DuoUseCases {
         const back = restingStatus(d.together);
         await this.repo.updateDuo(scope, duoId, { status: back });
         await this.x.events.duoUpdated(scope, duoId, [d.userLowId, d.userHighId], back, 'DATE');
-        await scope.outbox.emit({ topic: 'duo.date_cancelled', aggregateType: 'DuoDate', aggregateId: dateId, payload: { duoId, duoDateId: dateId, userIds: [d.userLowId, d.userHighId] } });
+        // V5.6 (E13) : après l'entrée dans l'effectif du lieu, la table de 2 est compensée (3 € HT) — `economy`.
+        await scope.outbox.emit({ topic: 'duo.date_cancelled', aggregateType: 'DuoDate', aggregateId: dateId, payload: { duoId, duoDateId: dateId, userIds: [d.userLowId, d.userHighId], cancelledByUserId: userId, afterReservation: !!date.reservationLockedAt, safety: kind === 'SAFETY' } });
         return (await this.repo.date(scope, dateId))!;
       },
     });
@@ -235,8 +249,8 @@ export class DuoUseCases {
   async checkIn(userId: string, duoId: string, dateId: string, req: CheckInRequest, commandId: string): Promise<{ result: 'ACCEPTED' }> {
     const pre = await this.repo.date(null, dateId);
     const venue = pre ? await this.repo.venue(pre.venueId) : null;
-    // L'empreinte d'idempotence ne contient jamais la position.
-    const payload = req.method === 'GEO' ? { duoId, dateId, method: 'GEO', tap: commandId } : { duoId, dateId, method: 'VENUE_CODE', code: req.code };
+    // V5.5 (D-062) : code du chevalet uniquement (aucune position, jamais).
+    const payload = { duoId, dateId, method: 'VENUE_CODE', code: req.code };
     type Outcome = { ok: true } | { ok: false; reason: string; attemptsLeft?: number };
     const { result } = await this.x.bus.execute<typeof payload, Outcome>({
       actorId: userId,
@@ -251,11 +265,7 @@ export class DuoUseCases {
         if (mine) return { ok: true };
         const w = checkinWindow(date.startsAt, this.x.tuning);
         if (date.status !== 'CONFIRMED' || scope.now < w.opensAt || scope.now >= w.closesAt) throw Errors.precondition('CHECKIN_NOT_OPEN');
-        if (req.method === 'GEO') {
-          const r = geoCheckIn(req, venue, this.x.tuning);
-          await this.repo.recordCheckInAttempt(scope, { dateId, userId, method: 'GEO', result: r, accuracyBucket: accuracyBucket(req.accuracyM) });
-          if (r !== 'ACCEPTED') return { ok: false, reason: r === 'TOO_FAR' ? 'CHECKIN_TOO_FAR' : 'CHECKIN_LOW_ACCURACY' };
-        } else {
+        {
           const max = this.x.tuning.safety.venueCodeMaxAttempts;
           const used = await this.repo.checkInAttempts(scope, dateId, userId, 'VENUE_CODE');
           if (used >= max) throw new AppError('RATE_LIMITED', 'Trop d’essais de code', { detailsSafe: { reason: 'CHECKIN_CODE_INVALID', attemptsLeft: 0 } });

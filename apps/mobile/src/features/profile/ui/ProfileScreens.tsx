@@ -1,253 +1,241 @@
 /**
- * Profil et compte : profil (âge exact ou tranche, fiabilité, vérification), réglages,
- * confidentialité, notifications, préférences de rencontre, signaler, supprimer (un seul
- * écran de décision lisible, sans succession de rétention).
+ * 45 · Profil (V5-Profil) · 46 · Fiche du pet (V5-Fiche : souvenirs, fiabilité privée, accessoires
+ * gagnés — rien ne se vend). Souvenirs : `GET /v1/pets/mine/memories` (contrat publié, route non
+ * servie par l'API au 2026-11-06 → « indisponible »).
  */
-import type { PhotoPreference, ReportCategory } from '@blowy/domain';
-import {
-  Banner,
-  Button,
-  DetailScreenTemplate,
-  KeyValue,
-  ListRow,
-  LoadingState,
-  OptionCard,
-  PetRenderer,
-  SectionTitle,
-  StatusPill,
-  Surface,
-  TabScreenTemplate,
-  TextField,
-  Toggle,
-  petAccessibilityLabel,
-  space,
-  useA11yPrefs,
-} from '@blowy/ui-mobile';
-import { useQuery } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Linking, View } from 'react-native';
-import { paths, type ProfileScreen } from '../../../core/navigation/paths';
-import { useNetwork } from '../../../core/network/network';
-import { useServices } from '../../../core/providers/services';
-import { t, tDynamic } from '../../../i18n';
-import { useGlobalPause, useMe, useRequestDeletion, useRequestExport, useSavePrivacy, useSignOut } from '../../account';
-import { petLabelWords, useMyPet } from '../../pets';
-import { SubscriptionScreen } from '../../subscription';
-import { callEmergency, useSafetyActions } from '../../trust';
-import { REPORT_CATEGORIES_ORDER, ageRange } from '../model/report';
+import type { PetMemoryView } from '@blowy/api-contract';
+import { ageBracketOf } from '@blowy/domain';
+import { BackButton, BodyText, CardV5, DisplayText, Glyph, IconAction, PopIn, Portrait, Sprite, TabScreen, Tap, Frame, v5, v5Alpha, v5Gradient } from '@blowy/ui-mobile';
+import { router } from 'expo-router';
+import { View } from 'react-native';
+import { civil } from '../../../core/format/dates';
+import { paths } from '../../../core/navigation/paths';
+import { useTabs } from '../../../core/navigation/tabs';
+import { t } from '../../../i18n';
+import { useMe, useMyNeighborhood } from '../../account';
+import { useBand } from '../../band';
+import { bracketLabel, useReliability } from '../../outings';
+import { petSprite, useMemories, useMyPet } from '../../pets';
+import { UnavailableNote } from '../../system';
 
-const back = () => router.back();
+const PRONOUN: Record<string, string> = { MAN: 'il', WOMAN: 'elle', NON_BINARY: 'iel', UNDISCLOSED: '' };
 
-export function ProfileHomeScreen() {
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <CardV5 style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 6, alignItems: 'center', gap: 4 }}>
+      <DisplayText size={26} heading={false}>
+        {value}
+      </DisplayText>
+      <BodyText size={12} weight={700} lh={1.25} color={v5.inkSoft} align="center">
+        {label}
+      </BodyText>
+    </CardV5>
+  );
+}
+
+export function ProfileScreen() {
+  const nav = useTabs('profile');
   const me = useMe();
+  const hood = useMyNeighborhood();
+  const rel = useReliability();
+  const band = useBand();
   const pet = useMyPet();
-  const signOut = useSignOut();
-  if (me.isLoading) return <LoadingState label={t('common.loading')} />;
+  const memories = useMemories();
   const m = me.data;
-  const items: { key: ProfileScreen; icon: 'gear' | 'star' | 'lock' | 'bell' | 'flag' | 'heart'; label: string }[] = [
-    { key: 'preferences', icon: 'heart', label: t('profile.matching') },
-    { key: 'settings', icon: 'gear', label: t('profile.settings') },
-    { key: 'subscription', icon: 'star', label: t('profile.subscription') },
-    { key: 'privacy', icon: 'lock', label: t('profile.privacy') },
-    { key: 'notifications', icon: 'bell', label: t('profile.notifications') },
-    { key: 'report', icon: 'flag', label: t('profile.report') },
-  ];
+  const sub = [m ? PRONOUN[m.gender] : '', m?.age ? bracketLabel(ageBracketOf(m.age)) : '', hood.data?.neighborhood?.name ?? '', m?.verification.status === 'VERIFIED' ? t('profile.verified') : ''].filter(Boolean).join(' · ');
+  const memCount = memories.data?.items.length;
   return (
-    <TabScreenTemplate title={t('profile.title')} testID="screen-profile">
-      {pet.data ? (
-        <View style={{ alignItems: 'center' }}>
-          <PetRenderer species={pet.data.species} stage={pet.data.stage} pose={pet.data.pose} bodyHeight={130} accessibilityLabel={petAccessibilityLabel({ name: pet.data.name, pose: pet.data.pose }, petLabelWords)} onTap={() => router.push(paths.fiche)} />
+    <TabScreen nav={nav} pad={[0, 16, 26]} testID="profile">
+      <PopIn style={{ marginHorizontal: -16, paddingTop: 52, paddingHorizontal: 16, paddingBottom: 16, backgroundColor: v5.ink, borderBottomLeftRadius: 34, borderBottomRightRadius: 34, boxShadow: [{ offsetX: 0, offsetY: 5, blurRadius: 0, spreadDistance: 0, color: v5.black }] }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <DisplayText size={26} color={v5.white}>
+            {t('brand.name')}
+            <DisplayText size={26} color={v5.coralBright} heading={false}>
+              .
+            </DisplayText>
+          </DisplayText>
+          <IconAction glyph="gear" glyphSize={20} label={t('profile.settings')} background={v5Alpha.white16} glyphColor={v5.white} onPress={() => router.push(paths.settings)} />
         </View>
-      ) : null}
-      {m ? (
-        <Surface style={{ gap: space.xs }}>
-          {m.displayName ? <KeyValue label={t('profile.account')} value={m.displayName} /> : null}
-          {m.age !== null ? <KeyValue label={t('privacy.age')} value={m.privacy.ageDisplay === 'EXACT' ? t('profile.age', { age: m.age }) : t('profile.ageRange', { range: ageRange(m.age) })} /> : null}
-          <KeyValue label={t('profile.reliability', { value: '' }).replace(/\s*:\s*%?$/, '')} value={`${m.reliability} %`} />
-          <StatusPill kind={m.verification.status === 'VERIFIED' ? 'confirmed' : 'info'} label={m.verification.status === 'VERIFIED' ? t('profile.verified') : t('profile.notVerified')} />
-        </Surface>
-      ) : null}
-      <Surface padding="sm">
-        {items.map((i) => (
-          <ListRow key={i.key} icon={i.icon} title={i.label} onPress={() => router.push(paths.profileScreen(i.key))} testID={`profile-${i.key}`} />
-        ))}
-        <ListRow icon="pause" title={t('profile.pause')} onPress={() => router.push(paths.profileScreen('settings'))} />
-        <ListRow icon="phone" title={t('common.help')} subtitle={t('common.helpHint')} onPress={() => void callEmergency()} />
-        <ListRow icon="back" title={t('profile.logout')} onPress={() => void signOut.mutateAsync().then(() => router.replace(paths.root))} />
-        <ListRow icon="close" title={t('profile.delete')} destructive onPress={() => router.push(paths.profileScreen('delete'))} testID="profile-delete" />
-      </Surface>
-    </TabScreenTemplate>
+        <View style={{ marginTop: 14, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <View accessible accessibilityRole="image" accessibilityLabel={t('profile.faceA11y')} style={{ width: 80, height: 80 }}>
+            <Portrait who="alex" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 26 }} />
+            {m?.verification.status === 'VERIFIED' ? (
+              <View style={{ position: 'absolute', right: -6, bottom: -6, width: 28, height: 28, borderRadius: 14, backgroundColor: v5.lime, borderWidth: 3, borderColor: v5.ink, alignItems: 'center', justifyContent: 'center' }}>
+                <Glyph name="check" size={14} color={v5.ink} />
+              </View>
+            ) : null}
+          </View>
+          <View style={{ gap: 4, flexShrink: 1 }}>
+            <DisplayText size={38} color={v5.white}>
+              {m?.displayName ?? ''}
+            </DisplayText>
+            <BodyText size={13} weight={600} color={v5.mist}>
+              {sub}
+            </BodyText>
+            {m && PRONOUN[m.gender] ? (
+              <Tap onPress={() => router.push(paths.onboarding('gender'))} accessibilityRole="link" pressDepth={0} style={{ minHeight: 44, justifyContent: 'center' }}>
+                <BodyText size={12} weight={800} color={v5.lime}>
+                  {t('profile.pronoun', { p: PRONOUN[m.gender] ?? '' })}
+                </BodyText>
+              </Tap>
+            ) : null}
+          </View>
+        </View>
+        <BodyText size={12} weight={600} color={v5.mist} style={{ marginTop: 10 }}>
+          {t('profile.groupSees')}
+        </BodyText>
+      </PopIn>
+      <PopIn delayMs={40} style={{ marginTop: 14, flexDirection: 'row', gap: 8 }}>
+        <Stat value={rel.data ? t('profile.reliability', { a: rel.data.attended, b: rel.data.total }) : '–'} label={t('profile.reliabilityLabel')} />
+        <Stat value={String(band.data?.items.length ?? 0)} label={t('profile.bandLabel')} />
+        <Stat value={memCount === undefined ? '–' : String(memCount)} label={t('profile.memoriesLabel', { pet: pet.data?.name ?? '' })} />
+      </PopIn>
+      <CardV5 onPress={() => router.push(paths.pet)} style={{ marginTop: 12, paddingVertical: 10, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Sprite path={petSprite(pet.data?.species ?? 'NINO')} size={54} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <DisplayText size={22} heading={false}>
+            {pet.data?.name ?? ''}
+          </DisplayText>
+          <BodyText size={12} weight={600} color={v5.inkSoft}>
+            {memCount === undefined ? t('profile.petSubNoMemories') : t('profile.petSub', { n: memCount })}
+          </BodyText>
+        </View>
+        <Glyph name="chevron" size={14} />
+      </CardV5>
+      <CardV5 onPress={() => router.push(paths.refine)} style={{ marginTop: 10, paddingVertical: 10, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View style={{ width: 54, height: 54, borderRadius: 16, backgroundColor: v5.lime, alignItems: 'center', justifyContent: 'center' }}>
+          <Sprite path={petSprite(pet.data?.species ?? 'NINO', 'dance')} size={44} />
+        </View>
+        <View style={{ flex: 1, gap: 2 }}>
+          <DisplayText size={22} heading={false}>
+            {t('profile.refine')}
+          </DisplayText>
+          <BodyText size={12} weight={600} color={v5.inkSoft}>
+            {t('profile.refineSub')}
+          </BodyText>
+        </View>
+        <Glyph name="chevron" size={14} />
+      </CardV5>
+      <CardV5 onPress={() => router.push(paths.plus)} style={{ marginTop: 10, paddingHorizontal: 14, minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <BodyText size={15} weight={800}>
+          {t('profile.plus')}
+        </BodyText>
+        <BodyText size={12} weight={600} color={v5.grey} style={{ marginLeft: 'auto' }}>
+          {t('profile.plusValue')}
+        </BodyText>
+        <Glyph name="chevron" size={14} />
+      </CardV5>
+      <CardV5 onPress={() => router.push(paths.cards)} style={{ marginTop: 10, paddingHorizontal: 14, minHeight: 56, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <Glyph name="share" size={18} />
+        <BodyText size={15} weight={800}>
+          {t('profile.cards')}
+        </BodyText>
+        <BodyText size={12} weight={600} color={v5.grey} style={{ marginLeft: 'auto' }}>
+          {t('profile.cardsValue')}
+        </BodyText>
+        <Glyph name="chevron" size={14} />
+      </CardV5>
+    </TabScreen>
   );
 }
 
-function SettingsScreen() {
-  const { reduceMotion } = useA11yPrefs();
-  const pause = useGlobalPause();
-  const online = useNetwork((s) => s.online);
+const MEMORY_SPRITE: Record<string, string> = { OUTING_LIVED: 'accessories/ball.webp', HATCHED: 'eggs/egg-nino.webp', DUO_DATE_LIVED: 'effects/hearts.webp', PROMISE_KEPT: 'effects/spark.webp', EGG: 'eggs/egg-shared.webp' };
+const MEMORY_TILE = [v5.peach, v5.lime, v5.greenPale] as const;
+
+function memoryLabel(m: PetMemoryView): string {
+  if (m.kind === 'BAND_NEW_MEMBER') return t('pet.memory.band', { pet: m.data.otherPetName ?? '' });
+  if (m.kind === 'OUTING_LIVED') return t('pet.memory.outing', { venue: m.data.venueName ?? '' });
+  return t(`pet.memory.${m.kind}` as never);
+}
+
+export function PetSheetScreen() {
+  const pet = useMyPet();
+  const memories = useMemories();
+  const rel = useReliability();
+  const items = [...(memories.data?.items ?? [])].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).slice(-3);
   return (
-    <DetailScreenTemplate title={t('settings.title')} onBack={back} backLabel={t('common.back')} testID="screen-settings">
-      <Surface padding="sm">
-        <ListRow title={t('settings.reduceMotion')} subtitle={t('settings.reduceMotionSystem')} trailing={<StatusPill kind={reduceMotion ? 'confirmed' : 'info'} label={reduceMotion ? t('common.yes') : t('common.no')} />} />
-        <ListRow title={t('settings.language')} />
-        <ListRow title={t('profile.sessions')} />
-      </Surface>
-      <SectionTitle label={t('relation.pause.title')} />
-      <Surface style={{ gap: space.sm }}>
-        <ListRow title={t('relation.pause.lead')} />
-        {pause.isSuccess ? <StatusPill kind="confirmed" label={t('chats.paused')} /> : null}
-        <Button label={t('relation.pause.cta')} variant="secondary" disabled={!online} loading={pause.isPending} onPress={() => void pause.mutateAsync(7)} />
-      </Surface>
-    </DetailScreenTemplate>
+    <Frame pad={[0, 16, 24]} testID="pet-sheet">
+      <PopIn style={{ marginHorizontal: -16, paddingTop: 52, paddingHorizontal: 16, paddingBottom: 16, backgroundImage: v5Gradient.mango, borderBottomLeftRadius: 34, borderBottomRightRadius: 34, boxShadow: [{ offsetX: 0, offsetY: 5, blurRadius: 0, spreadDistance: 0, color: v5.rust }] }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <BackButton onPress={() => (router.canGoBack() ? router.back() : router.replace(paths.profile))} label={t('common.back')} />
+          <Tap onPress={() => router.push(paths.story)} accessibilityRole="link" pressDepth={0} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, paddingHorizontal: 14, borderRadius: 999, backgroundColor: v5.ink }}>
+            <Glyph name="share" size={14} color={v5.white} />
+            <BodyText size={12} weight={800} color={v5.white}>
+              {t('pet.share', { pet: pet.data?.name ?? '' })}
+            </BodyText>
+          </Tap>
+        </View>
+        <View style={{ marginTop: 6, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Sprite path="nino/baby/presentation.webp" size={120} />
+          <View style={{ gap: 6, flexShrink: 1 }}>
+            <DisplayText size={50}>{pet.data?.name ?? ''}</DisplayText>
+            <BodyText size={14} weight={700}>
+              {t('pet.wears')}
+            </BodyText>
+          </View>
+        </View>
+      </PopIn>
+      <PopIn delayMs={60} style={{ marginTop: 14 }}>
+        <CardV5 style={{ padding: 14, gap: 12 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <DisplayText size={24} heading={false}>
+              {memories.data ? t('pet.memories', { n: memories.data.items.length }) : t('pet.memoriesTitle')}
+            </DisplayText>
+            <BodyText size={12} weight={700} color={v5.grey}>
+              {t('pet.earned')}
+            </BodyText>
+          </View>
+          {memories.data ? (
+            <View style={{ flexDirection: 'row', gap: 6 }}>
+              {items.map((m, i) => {
+                const c = civil(m.createdAt);
+                return (
+                  <View key={m.id} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
+                    <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: MEMORY_TILE[i % 3], borderWidth: 3, borderStyle: 'dashed', borderColor: v5Alpha.ink25, alignItems: 'center', justifyContent: 'center' }}>
+                      <Sprite path={m.data.otherPetSpecies ? petSprite(m.data.otherPetSpecies) : (MEMORY_SPRITE[m.kind] ?? null)} size={46} />
+                    </View>
+                    <BodyText size={12} weight={800} lh={1.2} align="center">
+                      {memoryLabel(m)}
+                    </BodyText>
+                    <BodyText size={12} weight={600} color={v5.grey}>
+                      {`${c.day} ${['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'][c.month - 1]}`}
+                    </BodyText>
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <UnavailableNote what={t('pet.memoriesTitle')} />
+          )}
+        </CardV5>
+      </PopIn>
+      <CardV5 style={{ marginTop: 12, padding: 14, gap: 8 }}>
+        <DisplayText size={24} heading={false}>
+          {t('pet.reliability')}
+        </DisplayText>
+        <BodyText size={16} weight={800}>
+          {rel.data ? t('pet.came', { a: rel.data.attended, b: rel.data.total }) : '–'}
+        </BodyText>
+        <BodyText size={13} weight={600} lh={1.45} color={v5.inkSoft}>
+          {t('pet.reliabilityNote')}
+        </BodyText>
+      </CardV5>
+      <CardV5 style={{ marginTop: 12, paddingVertical: 12, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <DisplayText size={20} heading={false}>
+          {t('pet.accessories')}
+        </DisplayText>
+        <View style={{ marginLeft: 'auto', flexDirection: 'row', gap: 6 }}>
+          <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: v5.lime, alignItems: 'center', justifyContent: 'center' }}>
+            <Sprite path="accessories/sunglasses.webp" size={34} />
+          </View>
+          <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: v5.sand, alignItems: 'center', justifyContent: 'center', opacity: 0.6 }}>
+            <Glyph name="lock" size={20} color={v5.inkSoft} color2={v5.sand} />
+          </View>
+        </View>
+      </CardV5>
+      <BodyText size={12} weight={600} color={v5.inkSoft} style={{ marginTop: 6 }}>
+        {t('pet.next', { n: (memories.data?.items.length ?? 0) + 1 })}
+      </BodyText>
+    </Frame>
   );
 }
-
-function PrivacyScreen() {
-  const me = useMe();
-  const save = useSavePrivacy();
-  const p = me.data?.privacy;
-  if (!p) return <LoadingState label={t('common.loading')} />;
-  const setPhoto = (photoPreference: PhotoPreference) => void save.mutateAsync({ ...p, photoPreference });
-  return (
-    <DetailScreenTemplate title={t('privacy.title')} onBack={back} backLabel={t('common.back')} testID="screen-privacy">
-      <SectionTitle label={t('privacy.photos')} />
-      <OptionCard title={t('privacy.photosFrom4')} selected={p.photoPreference === 'FROM_LEVEL_4_WITH_CONSENT'} onPress={() => setPhoto('FROM_LEVEL_4_WITH_CONSENT')} />
-      <OptionCard title={t('privacy.photosNever')} selected={p.photoPreference === 'NEVER'} onPress={() => setPhoto('NEVER')} />
-      <SectionTitle label={t('privacy.age')} />
-      <OptionCard title={t('privacy.ageExact')} selected={p.ageDisplay === 'EXACT'} onPress={() => void save.mutateAsync({ ...p, ageDisplay: 'EXACT' })} />
-      <OptionCard title={t('privacy.ageRange')} selected={p.ageDisplay === 'RANGE'} onPress={() => void save.mutateAsync({ ...p, ageDisplay: 'RANGE' })} />
-      <Surface padding="sm">
-        <ListRow title={t('privacy.map')} trailing={<Toggle value={p.mapVisible} onValueChange={(mapVisible) => void save.mutateAsync({ ...p, mapVisible })} accessibilityLabel={t('privacy.map')} />} />
-      </Surface>
-    </DetailScreenTemplate>
-  );
-}
-
-function NotificationsSettingsScreen() {
-  const { notifications } = useServices();
-  const perm = useQuery({ queryKey: ['notifications', 'perm'], queryFn: () => notifications.getPermission() });
-  const cats = ['messages', 'waiting', 'streak', 'neighborhood', 'mission', 'guardian'] as const;
-  return (
-    <DetailScreenTemplate title={t('notifications.title')} lead={t('notifications.quiet')} onBack={back} backLabel={t('common.back')} testID="screen-notifications-settings">
-      {perm.data === 'denied' ? <Banner message={t('notifications.osDenied')} actionLabel={t('notifications.openSettings')} onAction={() => void Linking.openSettings()} /> : null}
-      <Surface padding="sm">
-        {cats.map((c) => (
-          <ListRow key={c} title={tDynamic(`notifications.${c}`)} subtitle={t('common.unavailableTitle')} />
-        ))}
-      </Surface>
-      <StatusPill kind="info" label={t('notifications.lockScreen')} />
-    </DetailScreenTemplate>
-  );
-}
-
-function ReportScreen() {
-  const params = useLocalSearchParams<{ conversationId?: string; relationshipId?: string }>();
-  const safety = useSafetyActions();
-  const online = useNetwork((s) => s.online);
-  const [category, setCategory] = useState<ReportCategory | null>(null);
-  const [alsoBlock, setAlsoBlock] = useState(true);
-  const [sent, setSent] = useState(false);
-  const target = { conversationId: params.conversationId || null, relationshipId: params.relationshipId || null };
-  return (
-    <DetailScreenTemplate
-      title={t('report.title')}
-      lead={t('report.lead')}
-      onBack={back}
-      backLabel={t('common.back')}
-      testID="screen-report"
-      footer={
-        <Button
-          label={t('report.submit')}
-          variant="danger"
-          disabled={!category || sent}
-          onPress={() => {
-            if (!category) return;
-            safety.report({ ...target, category, alsoBlock });
-            setSent(true);
-          }}
-          testID="report-submit"
-        />
-      }
-    >
-      {sent ? <Banner message={online ? t('report.sent') : t('report.queued')} tone="success" icon="check" live /> : null}
-      <Button label={t('common.help')} variant="secondary" icon="phone" onPress={() => void callEmergency()} accessibilityHint={t('common.helpHint')} />
-      {REPORT_CATEGORIES_ORDER.map((c) => (
-        <OptionCard key={c} title={tDynamic(`report.category.${c}`)} selected={category === c} onPress={() => setCategory(c)} testID={`report-${c}`} />
-      ))}
-      {target.conversationId || target.relationshipId ? <OptionCard mode="checkbox" title={t('report.alsoBlock')} selected={alsoBlock} onPress={() => setAlsoBlock((v) => !v)} /> : null}
-    </DetailScreenTemplate>
-  );
-}
-
-function DeleteScreen() {
-  const exp = useRequestExport();
-  const del = useRequestDeletion();
-  const online = useNetwork((s) => s.online);
-  const [word, setWord] = useState('');
-  const ok = word.trim().toUpperCase() === t('delete.confirmWord');
-  return (
-    <DetailScreenTemplate
-      title={t('delete.title')}
-      lead={t('delete.lead')}
-      onBack={back}
-      backLabel={t('common.back')}
-      testID="screen-delete"
-      footer={<Button label={t('delete.cta')} variant="danger" disabled={!ok || !online} loading={del.isPending} onPress={() => void del.mutateAsync()} testID="delete-confirm" />}
-    >
-      {!online ? <Banner message={t('delete.requiresNetwork')} /> : null}
-      {del.isSuccess ? <Banner message={t('delete.requested')} tone="success" icon="check" live /> : null}
-      {del.isError || exp.isError ? <Banner message={t('common.unavailableBody')} tone="danger" /> : null}
-      <Surface padding="sm">
-        {(['data', 'relations', 'children', 'subscription'] as const).map((k) => (
-          <ListRow key={k} icon="check" title={tDynamic(`delete.items.${k}`)} />
-        ))}
-      </Surface>
-      <Button label={t('delete.export')} variant="secondary" disabled={!online} loading={exp.isPending} onPress={() => void exp.mutateAsync()} />
-      <TextField label={t('delete.confirmLabel')} value={word} onChangeText={setWord} autoCapitalize="characters" testID="delete-word" />
-    </DetailScreenTemplate>
-  );
-}
-
-function PreferencesEditScreen() {
-  const me = useMe();
-  const prefs = me.data?.preferences;
-  return (
-    <DetailScreenTemplate title={t('profile.matching')} onBack={back} backLabel={t('common.back')}>
-      {prefs ? (
-        <Surface style={{ gap: space.xs }}>
-          <KeyValue label={t('onboarding.preferences.ageMin')} value={String(prefs.ageMin)} />
-          <KeyValue label={t('onboarding.preferences.ageMax')} value={String(prefs.ageMax)} />
-          <KeyValue label={t('onboarding.preferences.distance', { km: prefs.maxDistanceKm })} value={`${prefs.maxDistanceKm} km`} />
-          <KeyValue label={t('onboarding.preferences.genders')} value={prefs.seekingGenders.map((g) => tDynamic(`onboarding.gender.${g}`)).join(', ')} />
-        </Surface>
-      ) : (
-        <LoadingState label={t('common.loading')} />
-      )}
-      <Button label={t('profile.vision')} variant="secondary" onPress={() => router.push(paths.fiche)} />
-    </DetailScreenTemplate>
-  );
-}
-
-/** Routeur des sous-écrans du profil. */
-export function ProfileScreenRouter() {
-  const { screen } = useLocalSearchParams<{ screen: ProfileScreen }>();
-  switch (screen) {
-    case 'settings':
-      return <SettingsScreen />;
-    case 'privacy':
-      return <PrivacyScreen />;
-    case 'notifications':
-      return <NotificationsSettingsScreen />;
-    case 'report':
-      return <ReportScreen />;
-    case 'delete':
-      return <DeleteScreen />;
-    case 'subscription':
-      return <SubscriptionScreen />;
-    case 'preferences':
-      return <PreferencesEditScreen />;
-    default:
-      return <ProfileHomeScreen />;
-  }
-}
-

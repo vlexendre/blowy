@@ -33,8 +33,11 @@ export class ReadMessagesQuery {
     const page = rows.slice(0, limit);
     const last = page.at(-1);
     const authors = conv.kind === 'OUTING' && this.authors && this.now ? await this.authors.authorsFor(conversationId, userId, this.now()) : null;
+    // V5.8 (§3) : numéros masqués pour les destinataires tant que les visages ne sont pas révélés.
+    // Sans horloge injectée : prudence, masqué.
+    const mask = this.now ? !(await this.repo.facesRevealed(null, conversationId, this.now())) : true;
     return {
-      items: page.map((m) => toMessageView(m, userId, authors)).filter((m): m is MessageView => m !== null),
+      items: page.map((m) => toMessageView(m, userId, authors, mask)).filter((m): m is MessageView => m !== null),
       nextCursor: hasMore && last ? encodeCursor([last.createdAt.getTime(), last.id]) : null,
     };
   }

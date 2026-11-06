@@ -6,8 +6,8 @@
  *   tard / doublon → remboursement intégral automatique (journal, exécuté par `economy.refunds`).
  * - `payment_intent.payment_failed` : journalisé ; la place reste HELD jusqu'à l'échéance du hold.
  * - `charge.refunded` / `refund.*` réussis : remboursement réglé (idempotent).
- * Blowy+ n'est PAS facturé par Stripe (V5.3 C.10 : achat intégré via RevenueCat) : les événements
- * d'abonnement Stripe sont ignorés.
+ * - V5.4 (C.10) : `customer.subscription.created|updated|deleted` (métadonnée `purpose=PLUS`) → état
+ *   Blowy+ (Stripe Billing) ; c'est le SEUL chemin qui accorde Blowy+ hors démo locale.
  * Une erreur de traitement répond 500 : Stripe relivre, l'événement `FAILED` est repris.
  */
 import type { Clock } from '../../../../shared/application/clock.js';
@@ -18,6 +18,8 @@ import type { BillingRecordRepository } from '../ports/billing-record.repository
 import type { UserDirectory } from '../ports/economy-config.port.js';
 import type { EconomyJournal, SignedWebhookVerifier, VerifiedProviderEvent } from './ports.js';
 import type { EconomySeatFunding } from './seat-funding.service.js';
+import { readStripeSubscription } from '../../domain/index.js';
+import type { PlusBillingUseCases } from './plus-billing.use-cases.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const str = (v: unknown): string | null => (typeof v === 'string' && v.length > 0 ? v : null);
@@ -39,6 +41,8 @@ export class HandleStripeWebhookUseCase {
     private readonly users: UserDirectory,
     private readonly params: () => PaymentsParams,
     private readonly clock: Clock,
+    /** V5.4 (C.10) : Blowy+ via Stripe Billing (résolu tardivement : évite un cycle de composition). */
+    private readonly plus: () => PlusBillingUseCases | null = () => null,
   ) {}
 
   async execute(rawBody: Buffer | undefined, signature: string | undefined): Promise<StripeWebhookResult> {
@@ -122,6 +126,14 @@ export class HandleStripeWebhookUseCase {
         await scope.lock.users([userId]);
         await this.journal.append(scope, { key: LedgerKeys.paymentFailed(e.id), kind: 'PAYMENT_FAILED', account: `user:${userId}`, userId, amount: num(o.amount) ?? this.params().seatPriceCents, unit: 'EUR_CENTS', refs: { seatId: str(m.seatId), providerPaymentId: pi } });
         return 'PROCESSED';
+      }
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted': {
+        const plus = this.plus();
+        const snap = readStripeSubscription(o);
+        if (!plus || !snap || str(m.purpose) !== 'PLUS') return 'IGNORED';
+        return plus.applyStripeSubscription(scope, userId, snap, e.createdAt, e.type === 'customer.subscription.deleted', e.livemode);
       }
       case 'charge.refunded':
       case 'refund.created':

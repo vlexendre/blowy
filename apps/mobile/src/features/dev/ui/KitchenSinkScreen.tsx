@@ -94,7 +94,7 @@ function WelcomeReplica() {
       </PopIn>
 
       <PopIn delayMs={520} style={{ gap: 6 }}>
-        <Button variant="b1" label={t('devKitchen.cta')} icon="arrow" iconPosition="trailing" />
+        <Button variant="b1v4" size="v4" label={t('devKitchen.cta')} icon="arrow" iconPosition="trailing" />
         <Button variant="link" label={t('devKitchen.account')} />
       </PopIn>
     </ScreenTemplate>
@@ -107,7 +107,7 @@ function Catalog() {
       <View style={{ gap: 18 }}>
         <DisplayText size={40}>{t('devKitchen.catalog')}</DisplayText>
         <Label>b1 · b2 · b3 · lime · link · ghost</Label>
-        <Button variant="b1" label={t('devKitchen.cta')} icon="arrow" iconPosition="trailing" />
+        <Button variant="b1v4" size="v4" label={t('devKitchen.cta')} icon="arrow" iconPosition="trailing" />
         <Button variant="b2" label={t('devKitchen.cta')} />
         <Button variant="b3" label={t('devKitchen.cta')} />
         <Button variant="lime" label={t('devKitchen.cta')} />

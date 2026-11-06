@@ -32,7 +32,7 @@ function Slot({ tables, tz, first }: { tables: VenueTable[]; tz: string; first: 
           </span>
         </div>
         <div className="bw-v-summary__side">
-          <VenueChip>{plural(tables.length, 'table', 'tables')} · chevalet orange</VenueChip>
+          <VenueChip>{plural(tables.length, 'table', 'tables')}{tables.some((t) => t.kind === 'DUO') ? ' (dont table de 2)' : ''} · chevalet orange</VenueChip>
           <span className="bw-v-summary__note">{ACTIVITY_LABEL[t0.activity] ?? 'Sortie'} · aucune animation</span>
         </div>
       </div>
@@ -76,8 +76,20 @@ export default async function EffectifPage() {
       <VenueHeader title="EFFECTIF DE LA SEMAINE">Ce que vous recevez la veille à 18 h : nombre, table, prénoms. Aucune autre donnée.</VenueHeader>
       <VenueColumns
         main={
-          slots.length ? (
-            slots.map((s, i) => <Slot key={s[0]!.startsAt} tables={s} tz={tz} first={i === 0} />)
+          slots.length || (r.data.days ?? []).length ? (
+            <>
+              {slots.map((s, i) => <Slot key={s[0]!.startsAt} tables={s} tz={tz} first={i === 0} />)}
+              {(r.data.days ?? [])
+                .filter((d) => d.tables === 0)
+                .map((d) => (
+                  <div key={d.date} className="bw-v-card bw-v-summary">
+                    <div className="bw-v-summary__main">
+                      <VenueLabel>{dayLabel(`${d.date}T12:00:00Z`)}</VenueLabel>
+                      <span className="bw-v-soft">Aucune table</span>
+                    </div>
+                  </div>
+                ))}
+            </>
           ) : (
             <div className="bw-v-card bw-v-summary">
               <div className="bw-v-summary__main">
@@ -91,7 +103,7 @@ export default async function EffectifPage() {
         aside={
           <>
             <VenueSideCard title="Si une place reste vide" href="/lieu/releve">
-              <VenueText relaxed>Après la confirmation, une place non honorée vous est reversée : 4,99 € si elle était payée, 3 € si elle était offerte. Virement le lundi.</VenueText>
+              <VenueText relaxed>Après la confirmation, une place non honorée vous est reversée : 4,16 € HT si elle était payée, 3 € HT si elle était offerte. Raison de sécurité : 3 € HT versés par Blowy. Blowy annule une sortie confirmée, à toute heure après la confirmation : 3 € HT par place réservée. Table Duo : 0 €, sans garantie. Relevé mensuel.</VenueText>
             </VenueSideCard>
             <VenueSideCard title="Signaler un participant" href="/lieu/signaler" gap="sm">
               <VenueText>Comportement, refus de payer : l’équipe rappelle sous 1 h.</VenueText>

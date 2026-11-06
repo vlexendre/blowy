@@ -22,7 +22,7 @@ export interface UserAggregate {
     intention: 'FRIENDS_ONE' | 'FRIENDS_GROUP' | 'OPEN_TO_MORE' | 'LET_IT_HAPPEN';
     widenConsented: boolean;
   } | null;
-  privacy: { photoPreference: 'FROM_LEVEL_4_WITH_CONSENT' | 'NEVER'; ageDisplay: 'EXACT' | 'RANGE'; mapVisible: boolean };
+  privacy: { photoPreference: 'FROM_LEVEL_4_WITH_CONSENT' | 'NEVER'; ageDisplay: 'EXACT' | 'RANGE'; mapVisible: boolean; discreetMode: boolean; discreetModeChosen: boolean };
   verification: {
     status: 'NOT_STARTED' | 'PENDING' | 'NEEDS_RETRY' | 'HUMAN_REVIEW' | 'VERIFIED' | 'REJECTED' | 'EXPIRED';
     kind: 'SELFIE_QUALITY' | 'SELFIE_HUMAN_REVIEW' | 'LIVENESS' | 'IDENTITY_AGE' | null;
@@ -46,7 +46,8 @@ export interface UserProfileRepository {
   zoneExists(code: string): Promise<boolean>;
   patchProfile(scope: TxScope, userId: string, patch: ProfilePatch): Promise<void>;
   savePreferences(scope: TxScope, userId: string, prefs: NonNullable<UserAggregate['preferences']>): Promise<void>;
-  savePrivacy(scope: TxScope, userId: string, privacy: UserAggregate['privacy']): Promise<void>;
+  /** Mise à jour partielle (V5) ; `discreetMode` fourni = choix explicite (V5.4 A.5, horodaté). */
+  savePrivacy(scope: TxScope, userId: string, privacy: Partial<Pick<UserAggregate['privacy'], 'photoPreference' | 'ageDisplay' | 'mapVisible' | 'discreetMode'>>): Promise<void>;
   appendConsents(scope: TxScope, userId: string, items: { purpose: string; version: string; granted: boolean }[]): Promise<void>;
   listConsents(userId: string): Promise<ConsentFact[]>;
   pausesInPeriod(scope: TxScope, userId: string, periodKey: string): Promise<(PauseSpan & { id: string; contextId: string | null })[]>;

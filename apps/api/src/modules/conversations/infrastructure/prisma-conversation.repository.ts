@@ -92,9 +92,21 @@ export class PrismaConversationRepository implements ConversationRepository {
     return lastSeq;
   }
 
-  async insertSystem(scope: TxScope, m: { id: string; conversationId: string; template: string }) {
+  async facesRevealed(scope: TxScope | null, conversationId: string, at: Date) {
+    const c = await this.c(scope).conversation.findUnique({ where: { id: conversationId }, select: { outing: { select: { photoRevealAt: true } }, duo: { select: { status: true, exchangeEndsAt: true, endedAt: true } } } });
+    if (c?.outing) return at >= c.outing.photoRevealAt;
+    if (c?.duo) {
+      if (c.duo.status === 'EXCHANGE') return false;
+      // Duo terminé à la fin de l'échange (jamais débloqué) : les visages n'ont jamais été révélés.
+      const endedAtExchange = !!c.duo.exchangeEndsAt && !!c.duo.endedAt && c.duo.endedAt.getTime() <= c.duo.exchangeEndsAt.getTime() + 3_600_000;
+      return !(['EXPIRED', 'CLOSED', 'LEFT'].includes(c.duo.status) && endedAtExchange);
+    }
+    return true;
+  }
+
+  async insertSystem(scope: TxScope, m: { id: string; conversationId: string; template: string; body?: string }) {
     const seq = await this.nextSeq(scope, m.conversationId);
-    await txOf(scope).message.create({ data: { id: m.id, conversationId: m.conversationId, kind: 'SYSTEM', status: 'PUBLISHED', systemTemplate: m.template, seq, createdAt: scope.now, publishedAt: scope.now } });
+    await txOf(scope).message.create({ data: { id: m.id, conversationId: m.conversationId, kind: 'SYSTEM', status: 'PUBLISHED', systemTemplate: m.template, seq, createdAt: scope.now, publishedAt: scope.now, ...(m.body ? { content: { create: { body: m.body } } } : {}) } });
     return seq;
   }
 

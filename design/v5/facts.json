@@ -465,7 +465,7 @@
     "typeLieu": "un five de la Croix-Rousse",
     "lieuCourt": "lun. 16 nov. 18 h",
     "visagesCourt": "mar. 17 nov. 16 h 30",
-    "ages": "26–34 ans",
+    "ages": "22–29 ans",
     "femmes": 2,
     "hommes": 3,
     "lieu": "Le Five Croix-Rousse",
@@ -569,36 +569,45 @@
     "fiabilite": "Ta fiabilité est visible par toi seulement.",
     "astreinte": "Une personne de l’équipe est joignable pendant toute ta sortie.",
     "rappel": "Un signalement reçoit une réponse de l’équipe en moins d’1 h pendant toute ta sortie.",
-    "blowyPlus": "Rentable dès la 3e sortie du mois.",
+    "blowyPlus": "Intéressant dès la 3e sortie du mois.",
     "blowyAnnule": "Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy.",
     "astreinteRdv": "Une personne de l’équipe est joignable pendant tout ton rendez-vous.",
     "astreinteAnge": "Une personne de l’équipe est joignable pendant toute la sortie d’Alex.",
     "aide": "Quelqu’un de l’équipe te rappelle en quelques minutes.",
     "aideAnge": "Quelqu’un de l’équipe rappelle Alex en quelques minutes.",
-    "blowyPlusDeux": "Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie.",
+    "blowyPlusDeux": "Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie du mois.",
     "placeVide": "Place laissée vide après la veille 18 h : le lieu est toujours payé ; par la place du participant en cas d’imprévu ou d’absence, par Blowy si elle est remboursée (sécurité, « je connais quelqu’un ici ») ou offerte.",
     "captures": "Les captures d’écran iOS sont signalées à l’équipe.",
-    "aideLieu": "Quelqu’un de l’équipe vous rappelle en quelques minutes."
+    "aideLieu": "Quelqu’un de l’équipe vous rappelle en quelques minutes.",
+    "numero": "Les numéros restent masqués jusqu’aux visages.",
+    "deuxOui": "quand vous avez dit oui tous les deux"
   },
   "reglesSignatures": {
     "securite": "[Pp]our ta sécurité",
     "connais": "[Jj]e connais quelqu’un ici » :",
     "imprevu": "[Ii]mprévu[^.;]{0,30}(?:fois par mois|sans pénalité|non rembours)",
     "annulation": "[Aa]nnulation gratuite jusqu",
-    "fiabilite": "fiabilit[^.]{0,60}(?:visible|voit|voient)",
+    "fiabilite": "[Tt]a fiabilité est",
     "astreinte": "équipe est joignable",
     "rappel": "signalement reçoit une réponse|répond en moins",
-    "blowyPlus": "[Rr]entable",
+    "blowyPlus": "[Rr]entable|[Ii]ntéressant dès",
     "blowyAnnule": "annulée par Blowy",
     "aide": "rappelle?[^.]{0,20}en quelques minutes|sous 5 min",
     "blowyPlusDeux": "2 fois par mois \\?",
     "placeVide": "[Pp]lace (?:laissée )?vide après",
-    "captures": "captures? (?:d’écran )?(?:iOS )?(?:sont|est) (?:détectées|signalées)"
+    "captures": "captures? (?:d’écran )?(?:iOS )?(?:sont|est) (?:détectées|signalées)",
+    "numero": "numéros?[^.]{0,30}(?:masqué|bloqué)"
   },
   "personas": {
     "default": "26–29 ans",
     "V5-Confirmation-banlieue": "22–25 ans",
-    "V5-Attente": "18–21 ans"
+    "V5-Attente": "18–21 ans",
+    "V5-Confirmation-lyon": "22–25 ans",
+    "V5-Trouvee-lyon": "22–25 ans",
+    "V5-Sortie-lyon": "22–25 ans",
+    "V5-Trouvee-weekend": "35–39 ans",
+    "V5-Trouvee-banlieue": "22–25 ans",
+    "V5-Sortie-banlieue": "22–25 ans"
   },
   "attente": {
     "ages": "18–25 ans"
@@ -642,6 +651,10 @@
       "aide",
       "aideAnge",
       "aideLieu"
+    ],
+    "blowyPlus": [
+      "blowyPlus",
+      "blowyPlusDeux"
     ]
   },
   "ecransRdv": [
@@ -679,16 +692,32 @@
       "2026-11-17T19:30",
       "2026-11-19T19:30",
       "2026-11-21T19:30",
-      "2026-11-24T19:30"
+      "2026-11-24T19:30",
+      "2026-11-28T15:00"
     ]
   },
   "weekendLibre": {
-    "iso": "2026-11-21T19:30",
+    "iso": "2026-11-21T15:00",
     "court": "sam. 21 nov.",
     "jour": "samedi 21 novembre",
     "composition": "mer. 18 nov. 21 h",
     "lieuCourt": "ven. 20 nov. 18 h",
-    "motif": "Un week-end sur deux · à partir du sam. 14 nov."
+    "visagesCourt": "sam. 21 nov. 12 h",
+    "motif": "Un week-end sur deux · à partir du sam. 14 nov.",
+    "ville": "Lyon",
+    "quartier": "Lyon 3e",
+    "trajet": "14 min",
+    "activite": "Atelier cuisine",
+    "typeLieu": "un atelier de la Guillotière",
+    "ages": "35–44 ans",
+    "femmes": 3,
+    "hommes": 2,
+    "lieu": "La Cuisine d’à côté",
+    "adresse": "21 rue de Marseille, Lyon 7e",
+    "metro": "Guillotière (ligne D)",
+    "table": "Table Blowy, chevalet orange",
+    "heure": "15 h",
+    "fin": "17 h"
   },
   "groupes": {
     "paris": {
@@ -702,7 +731,7 @@
       "Toi": "Nino",
       "Bastien": "Biscotte",
       "Clara": "Moka",
-      "Hugo": "Filou",
+      "Théo": "Filou",
       "Nour": "Praline"
     },
     "banlieue": {
@@ -718,7 +747,8 @@
     },
     "lille": {
       "Toi": "Nino",
-      "Jules": "Pruneau"
+      "Jules": "Pruneau",
+      "Lou": "Cannelle"
     }
   },
   "groupeParFichier": {
@@ -728,5 +758,68 @@
     "V5-Trouvee-nantes": "nantes",
     "V5-Sortie-nantes": "nantes"
   },
-  "lieuMontants": "Montants : 4,16 € HT pour une place payée ; 3 € HT pour une place offerte, dans Blowy+ ou remboursée (sécurité, « je connais quelqu’un ici ») ; 3 € HT par place réservée si Blowy annule ; table Duo : 0 € HT, sans garantie."
+  "lieuMontants": "Montants : 4,16 € HT pour une place payée ; 3 € HT pour une place offerte, dans Blowy+ ou remboursée (sécurité, « je connais quelqu’un ici ») ; 3 € HT par place réservée si Blowy annule ; table Duo : 0 € HT, sans garantie.",
+  "groupesTranches": {
+    "lyon": {
+      "Toi": "22–25 ans",
+      "Bastien": "22–25 ans",
+      "Clara": "26–29 ans",
+      "Théo": "26–29 ans",
+      "Nour": "22–25 ans"
+    }
+  },
+  "ecransAttente": {
+    "V5-Attente": [],
+    "V5-Pas-encore": [],
+    "V5-Pas-encore-nantes": [],
+    "V5-Sortie-annulee": [
+      "jeu. 12 nov."
+    ],
+    "V5-Sortie-complete": [
+      "jeu. 12 nov."
+    ],
+    "V5-Apres-aucun": [],
+    "V5-Trouvee-lyon": [
+      "mar. 17 nov.",
+      "lun. 16 nov."
+    ]
+  },
+  "ecransAvantOui": {
+    "V5-Duo-hh-proposition": [
+      "Karim"
+    ]
+  },
+  "quartiers": [
+    "Paris 11e",
+    "Lyon 7e",
+    "Saint-Denis",
+    "Nantes centre",
+    "Lille-Wazemmes",
+    "Lyon 3e",
+    "Nantes centre"
+  ],
+  "ecransEchec": [
+    "V5-Verif-echec",
+    "V5-Erreur-age",
+    "V5-Paiement-echec",
+    "V5-Erreur-reseau",
+    "V5-Notifs-refus",
+    "W-Repondre"
+  ],
+  "ratonMax": 64,
+  "ninoBlobs": [
+    "2dd74281b0d1e96cdc17f174113da343",
+    "720b7f4943a2e2b24c83fb1d80811c8d",
+    "7bbc8c67ffec185c67f57ffbd3d2bb28",
+    "1ce3e6d22daeb94d1bcda86bda596745",
+    "630cf503134679d62afe62d88edbda8d",
+    "1ac37b10961012498dcb18570be5f2f7",
+    "a34df3bc40d182eda5da48721a461d0f",
+    "dd0fe6f14de3fb055838988612c51642",
+    "664bf0396d78edcba988d2aa674ae77b",
+    "4e3a02633d0d3eb2833939785019cfc8",
+    "e0d561e722e93324dcf864bd3bfde16f",
+    "47704e57588ba5efa65b91837b076cf3",
+    "dfe1eb7d7dc7e125ad67a3c3bf109145"
+  ]
 }

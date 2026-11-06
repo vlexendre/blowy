@@ -3,6 +3,28 @@
  * position dans une file : « prioritaire la semaine prochaine » seulement.
  */
 import type { OutingRequestStatus, OutingWeekPhase, SeatStatus } from '@blowy/domain';
+import { mondayOfWeek } from '@blowy/pet-engine';
+
+/**
+ * V5.4 (B.9) : semaine off — cochée à la main, ou « une semaine sur deux » (garde alternée) à partir de
+ * `everyOtherFrom` (cette semaine-là est off, puis une sur deux). Avant `everyOtherFrom` : rien.
+ */
+export function isWeekOff(weekKey: string, weeksOff: readonly string[], everyOtherFrom: string | null): boolean {
+  if (weeksOff.includes(weekKey)) return true;
+  if (!everyOtherFrom) return false;
+  const delta = mondayOfWeek(weekKey) - mondayOfWeek(everyOtherFrom);
+  return delta >= 0 && (delta / 7) % 2 === 0;
+}
+
+/**
+ * V5.6 (B.13) : « un week-end sur deux » à partir de `everyOtherFrom` (le week-end de cette semaine-là est off,
+ * puis un sur deux) — seuls les créneaux des jours `weekendIsoWeekdays` (ven., sam., dim.) sont retirés.
+ */
+export function isWeekendOff(weekKey: string, everyOtherFrom: string | null | undefined): boolean {
+  if (!everyOtherFrom) return false;
+  const delta = mondayOfWeek(weekKey) - mondayOfWeek(everyOtherFrom);
+  return delta >= 0 && (delta / 7) % 2 === 0;
+}
 
 export function weekPhase(i: {
   neighborhoodLive: boolean;

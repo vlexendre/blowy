@@ -76,10 +76,11 @@ describe('Triangle (V5)', () => {
       const n = (g: string) => genders.filter((x) => x.gender === g).length;
       expect(Math.max(n('WOMAN'), n('MAN')), `groupe ${o.id}`).toBeLessThanOrEqual(3);
     }
-    // Une seule personne n'est pas placée (prioritaire la semaine suivante).
+    // Une seule personne n'est pas placée jeudi. Composition glissante (V5.5, J − 3 21 h jour par jour) :
+    // elle reste candidate pour samedi (composé mercredi 21 h) et ne passe « non placée » qu'après son dernier jour.
     const unplaced = people.filter((p) => !outings.some((o) => o.seats.some((s) => s.userId === p.userId)));
     expect(unplaced).toHaveLength(1);
-    expect((await w.db.outingRequest.findFirstOrThrow({ where: { userId: unplaced[0]!.userId, weekKey: CYCLE.weekKey } })).status).toBe('UNPLACED');
+    expect((await w.db.outingRequest.findFirstOrThrow({ where: { userId: unplaced[0]!.userId, weekKey: CYCLE.weekKey } })).status).toBe('OPEN');
   });
 
   S.step('L’autre groupe ne voit jamais Inès (ni son pet ni son identifiant), à aucun moment', async () => {

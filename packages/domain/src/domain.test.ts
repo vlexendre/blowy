@@ -77,6 +77,12 @@ describe('domaine V5', () => {
     expect(projectCompatible(a, { ...a, kidsSomeday: 'NO' })).toBe(false);
     expect(projectCompatible(a, { ...a, storySeriousness: 'SEE_HOW_IT_GOES' })).toBe(false);
     expect(projectCompatible(a, { ...a, lookingFor: 'FRIENDS' })).toBe(false);
+    // V5.6 (E11) : horizon enfants (prioritaire sur l'ancien champ), « j'en ai déjà » ne ferme rien.
+    const h = { lookingFor: 'STORY' as const, storySeriousness: 'SERIOUS' as const, kidsSomeday: null };
+    expect(projectCompatible({ ...h, kidsHorizon: 'IN_1_2_YEARS' }, { ...h, kidsHorizon: 'IN_3_5_YEARS' })).toBe(true);
+    expect(projectCompatible({ ...h, kidsHorizon: 'IN_1_2_YEARS' }, { ...h, kidsHorizon: 'NO_PLAN' })).toBe(false);
+    expect(projectCompatible({ ...h, kidsHorizon: 'HAS_ALREADY' }, { ...h, kidsHorizon: 'NO_PLAN' })).toBe(true);
+    expect(projectCompatible({ ...a, kidsHorizon: 'NO_PLAN' }, { ...h, kidsHorizon: 'NO_PLAN' })).toBe(true);
   });
   it('poses V5 sans faim/santé, rôle ops', () => {
     expect(PET_POSES_V5).not.toContain('SICK');

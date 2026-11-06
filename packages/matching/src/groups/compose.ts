@@ -37,11 +37,16 @@ const cmpStr = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byId = (a: OutingCandidate, b: OutingCandidate) => cmpStr(a.profile.userId, b.profile.userId);
 
 /** Clé de classe : instant (zéro-paddé pour un tri chronologique) × quartier × activité. */
-export const slotClassKey = (o: Pick<SlotOffer, 'startsAtMs' | 'neighborhoodId' | 'activity'>): string => `${String(o.startsAtMs).padStart(15, '0')}|${o.neighborhoodId}|${o.activity}`;
+/** Classe de créneau (heure, quartier, activité ; V5.5 : + ambiance du lieu — `-` = convient à tous). */
+export const slotClassKey = (o: Pick<SlotOffer, 'startsAtMs' | 'neighborhoodId' | 'activity'> & { ambiance?: SlotOffer['ambiance'] }): string =>
+  `${String(o.startsAtMs).padStart(15, '0')}|${o.neighborhoodId}|${o.activity}${o.ambiance ? `|${o.ambiance}` : ''}`;
 
 /** Une personne peut-elle aller sur cette classe de créneau ? */
-export const acceptsSlot = (c: OutingCandidate, o: Pick<SlotOffer, 'startsAtMs' | 'neighborhoodId' | 'activity'>): boolean =>
-  c.slotStartsAtMs.includes(o.startsAtMs) && c.neighborhoodIds.includes(o.neighborhoodId) && (c.activities.length === 0 || c.activities.includes(o.activity));
+/** V5.5 (D-055) : contrainte DURE au lieu — `CALM` jamais dans un lieu `LIVELY` et inversement ; `ANY` partout. */
+export const ambianceAccepts = (wanted: OutingCandidate['ambiance'], venue: SlotOffer['ambiance']): boolean => !wanted || wanted === 'ANY' || !venue || wanted === venue;
+
+export const acceptsSlot = (c: OutingCandidate, o: Pick<SlotOffer, 'startsAtMs' | 'neighborhoodId' | 'activity'> & { ambiance?: SlotOffer['ambiance'] }): boolean =>
+  c.slotStartsAtMs.includes(o.startsAtMs) && c.neighborhoodIds.includes(o.neighborhoodId) && (c.activities.length === 0 || c.activities.includes(o.activity)) && ambianceAccepts(c.ambiance, o.ambiance);
 
 /** Ordre total de priorité (§4.4.2). Payer ou Blowy+ ne change rien : ces données n'existent pas ici. */
 export function priorityCompare(seed: string) {

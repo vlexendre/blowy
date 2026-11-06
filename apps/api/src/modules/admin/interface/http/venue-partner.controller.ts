@@ -3,7 +3,7 @@
  * (bearer mobile) et le cookie staff ; session lieu via en-tête `x-blowy-venue-session` (BFF) ou
  * cookie `blowy_venue` ; CSRF lié à la session sur toute méthode non sûre.
  */
-import { Body, Controller, createParamDecorator, Delete, Get, HttpCode, Inject, Injectable, Post, Put, Query, SetMetadata, UseGuards, type CanActivate, type ExecutionContext } from '@nestjs/common';
+import { Body, Controller, createParamDecorator, Delete, Get, HttpCode, Inject, Injectable, Param, Post, Put, Query, SetMetadata, UseGuards, type CanActivate, type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import {
   VENUE_CSRF_HEADER,
@@ -15,6 +15,8 @@ import {
   VenueContractSignRequestSchema,
   VenueDayRequestSchema,
   VenueIncidentRequestSchema,
+  VenueParticipantReportRequestSchema,
+  VenueWelcomeRequestSchema,
   VenueLoginRequestSchema,
   VenueMfaRequestSchema,
   VenuePhotoRequestSchema,
@@ -135,9 +137,29 @@ export class VenuePartnerController {
   sign(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>, @CommandId() cid: string, @Body(q(VenueContractSignRequestSchema)) b: z.infer<typeof VenueContractSignRequestSchema>) {
     return this.venue.sign(p, x.venueId, b, cid);
   }
+  /** V5.7 (E30) : message d'accueil du lieu. */
+  @Get('welcome-message')
+  welcome(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>) {
+    return this.venue.welcome(p, x.venueId);
+  }
+  @Put('welcome-message')
+  setWelcome(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>, @CommandId() cid: string, @Body(q(VenueWelcomeRequestSchema)) b: z.infer<typeof VenueWelcomeRequestSchema>) {
+    return this.venue.setWelcome(p, x.venueId, b, cid);
+  }
   @Get('statement')
   statement(@Partner() p: VenuePartnerContext, @Query(q(StatementQuery)) x: z.infer<typeof StatementQuery>) {
     return this.venue.statement(p, x.venueId, x.period);
+  }
+  /** V5.4 (C.12) : « Signaler un participant » — sortie dans le chemin, participant désigné par son prénom. */
+  @Post('outings/:outingId/participant-reports')
+  participantReport(
+    @Partner() p: VenuePartnerContext,
+    @Param('outingId', q(z.string().uuid())) outingId: string,
+    @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>,
+    @CommandId() cid: string,
+    @Body(q(VenueParticipantReportRequestSchema)) b: z.infer<typeof VenueParticipantReportRequestSchema>,
+  ) {
+    return this.venue.reportIncident(p, x.venueId, { ...b, outingId }, cid);
   }
   @Post('incidents')
   incident(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>, @CommandId() cid: string, @Body(q(VenueIncidentRequestSchema)) b: z.infer<typeof VenueIncidentRequestSchema>) {

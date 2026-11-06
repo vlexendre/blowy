@@ -1,6 +1,6 @@
 /** Contrats /v1/me, /v1/preferences, /v1/verifications, /v1/pauses (propriétaire : agent C). */
 import { z } from 'zod';
-import { ACTIVITY_KINDS, GENDERS, INTENTIONS, KIDS_SOMEDAY, LOOKING_FOR, MEETING_MODES, ONBOARDING_STEPS_V5, STORY_SERIOUSNESS, TRAVEL_MINUTES, VERIFICATION_STATUSES } from '@blowy/domain';
+import { ACTIVITY_KINDS, AGE_BRACKETS_V52, AMBIANCES, GENDERS, INTENTIONS, KIDS_HORIZONS, KIDS_SOMEDAY, LOOKING_FOR, MEETING_MODES, ONBOARDING_STEPS_V5, STORY_SERIOUSNESS, TRAVEL_MINUTES, VERIFICATION_STATUSES } from '@blowy/domain';
 import { IntegrationModeSchema, IsoDateTimeSchema, UuidSchema } from './core/common.js';
 
 export const GenderSchema = z.enum(GENDERS);
@@ -63,7 +63,8 @@ export const SelfProfileSchema = z.object({
   onboarded: z.boolean(),
   primaryPetId: UuidSchema.nullable(),
   preferences: MatchPreferencesSchema.nullable(),
-  privacy: PrivacySettingsSchema,
+  /** V5.4 (A.5) : + `discreetMode` et `discreetModeChosen` (choix explicite fait à l'onboarding). */
+  privacy: PrivacySettingsSchema.extend({ discreetMode: z.boolean().optional(), discreetModeChosen: z.boolean().optional() }),
   verification: VerificationViewSchema,
   activePause: PauseViewSchema.nullable(),
   isFictional: z.boolean(),
@@ -96,6 +97,8 @@ export const StartVerificationRequestSchema = z.object({
 export const LookingForSchema = z.enum(LOOKING_FOR);
 export const StorySeriousnessSchema = z.enum(STORY_SERIOUSNESS);
 export const KidsSomedaySchema = z.enum(KIDS_SOMEDAY);
+export const KidsHorizonSchema = z.enum(KIDS_HORIZONS);
+export const AgeBracketV52Schema = z.enum(AGE_BRACKETS_V52);
 export const MeetingModeSchema = z.enum(MEETING_MODES);
 export const ActivityKindSchema = z.enum(ACTIVITY_KINDS);
 const uniq = (a: readonly unknown[]) => new Set(a).size === a.length;
@@ -109,15 +112,20 @@ export const IntentionsV5Schema = z
   .object({
     lookingFor: LookingForSchema,
     storySeriousness: StorySeriousnessSchema.nullable(),
+    /** @deprecated V5.5 (D-060) : remplacé par `kidsHorizon` (gardé pour les anciens clients ; null accepté). */
     kidsSomeday: KidsSomedaySchema.nullable(),
+    /** V5.6 (E11) : horizon enfants, dont « j'en ai déjà » (secret). Absent = inchangé. */
+    kidsHorizon: KidsHorizonSchema.nullable().optional(),
+    /** V5.6 (E11) : « Âge pour une histoire » — tranches de la grille ; vide = repli sur la tranche de groupe. Absent = inchangé. */
+    storyAgeBrackets: z.array(AgeBracketV52Schema).max(AGE_BRACKETS_V52.length).optional(),
     meetingMode: MeetingModeSchema,
     /** « Qui je veux rencontrer » en groupe ; vide = tout le monde. */
     meetGenders: z.array(GenderSchema).max(4),
     romanceGenders: z.array(GenderSchema).max(4),
   })
   .refine((p) => p.lookingFor === 'FRIENDS' || p.romanceGenders.length > 0, { message: 'romanceGenders requis', path: ['romanceGenders'] })
-  .refine((p) => p.lookingFor !== 'FRIENDS' || (p.storySeriousness === null && p.kidsSomeday === null), { message: 'sous-choix réservés à « une histoire »', path: ['storySeriousness'] })
-  .refine((p) => uniq(p.meetGenders) && uniq(p.romanceGenders), { message: 'genre en double' });
+  .refine((p) => p.lookingFor !== 'FRIENDS' || (p.storySeriousness === null && p.kidsSomeday === null && (p.kidsHorizon ?? null) === null && (p.storyAgeBrackets ?? []).length === 0), { message: 'sous-choix réservés à « une histoire »', path: ['storySeriousness'] })
+  .refine((p) => uniq(p.meetGenders) && uniq(p.romanceGenders) && uniq(p.storyAgeBrackets ?? []), { message: 'genre ou tranche en double' });
 export type IntentionsV5Dto = z.infer<typeof IntentionsV5Schema>;
 /** `PUT /v1/preferences/intentions` (lecture : `GET`, titulaire seulement). */
 export const UpdateIntentionsV5RequestSchema = IntentionsV5Schema;
@@ -135,8 +143,25 @@ export const OutingPreferencesV5Schema = z.object({
   neighborhoodIds: z.array(UuidSchema).min(1).max(5).refine(uniq, { message: 'quartier en double' }),
   /** 20 / 30 / 45 min (`TRAVEL_MINUTES`). */
   maxTravelMinutes: z.number().int().refine((m) => (TRAVEL_MINUTES as readonly number[]).includes(m), { message: 'trajet : 20, 30 ou 45 min' }),
+  /**
+   * V5.4 (B.9) : garde alternée — « une semaine sur deux » à partir de cette semaine ISO (elle-même off),
+   * en plus des semaines cochées à la main. `null` / absent = non. Jamais montré à personne d'autre.
+   */
+  /** V5.5 (D-055) : « plutôt calme » / « plutôt animé » / « peu importe » (défaut). Contrainte au lieu. */
+  ambiance: z.enum(AMBIANCES).optional(),
+  everyOtherWeekOffFrom: z.string().regex(/^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/).nullable().optional(),
+  /** V5.6 (B.13) : « un week-end sur deux » à partir de cette semaine ISO (son week-end — ven., sam., dim. — est off). */
+  everyOtherWeekendOffFrom: z.string().regex(/^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/).nullable().optional(),
+  /** V5.7 (E32, D-084) : « Montrer au groupe : je préfère le calme » (badge sur le pet) ; défaut false. */
+  showCalmBadge: z.boolean().optional(),
 });
 export type OutingPreferencesV5Dto = z.infer<typeof OutingPreferencesV5Schema>;
+/**
+ * V5.6 : vue `GET /v1/preferences/outings` — identique, mais `neighborhoodIds` peut être vide (rien encore
+ * enregistré : valeurs par défaut, jamais 400).
+ */
+export const OutingPreferencesV5ViewSchema = OutingPreferencesV5Schema.extend({ neighborhoodIds: z.array(UuidSchema).max(5) });
+export type OutingPreferencesV5View = z.infer<typeof OutingPreferencesV5ViewSchema>;
 /** `PUT /v1/preferences/outings`. */
 export const UpdateOutingPreferencesV5RequestSchema = OutingPreferencesV5Schema;
 
@@ -151,9 +176,45 @@ export const UpdatePrivacyV5RequestSchema = PrivacySettingsV5Schema.partial().ex
   /** @deprecated V4, ignoré. */
   mapVisible: z.boolean().optional(),
 });
+export type UpdatePrivacyV5Request = z.infer<typeof UpdatePrivacyV5RequestSchema>;
 
 export const OnboardingStepV5Schema = z.enum(ONBOARDING_STEPS_V5);
 /** `412 ONBOARDING_INCOMPLETE {missing}` (V5.1 : ville/quartier d'abord, intentions, mode). */
 export const OnboardingIncompleteDetailsSchema = z.object({ reason: z.literal('ONBOARDING_INCOMPLETE'), missing: z.array(OnboardingStepV5Schema).min(1) });
 
 export const PREFERENCES_FAILURE_REASONS_V5 = ['PHOTO_REQUIRED', 'ONBOARDING_INCOMPLETE', 'NEIGHBORHOOD_NOT_FOUND', 'SLOT_TEMPLATE_NOT_FOUND'] as const;
+
+// ============================================================================ V5.4 (concept-v5.4 A.6, D-049, spec §4.5)
+/**
+ * « Éviter les personnes que je connais » — opt-in, proposé avant la 1ʳᵉ composition (`askBeforeFirstOuting`).
+ * Protocole `oprf-p256-v1` (aucun numéro ni empreinte en clair côté serveur) :
+ *  1. l'appareil normalise chaque contact en E.164 et le projette sur la courbe P-256 :
+ *     `P = H2C(e164)` (essai-incrément : x = SHA-256("blowy-contact-v1|" + e164 + "|" + i), y pair) ;
+ *  2. il tire UN sel aléatoire par personne et par lot, `r`, et envoie `B = r·P` (compressé, base64url) :
+ *     `POST /v1/me/contact-avoidance/evaluate {blinded[]}` → `{evaluated[]}` = x(k·B) (clé serveur `k`) ;
+ *  3. il retire son sel : `T = x(r⁻¹·(k·B)) = x(k·P)` (jeton 32 octets, base64url) et envoie les jetons :
+ *     `POST /v1/me/contact-avoidance/contacts {tokens[]}` → `{accepted}` (aucun retour de correspondance) ;
+ *  4. le serveur compare `HMAC(clé, T)` aux numéros vérifiés enregistrés (`PhoneIdentity`), garde seulement
+ *     les paires à éviter (`AvoidPair`), jette tout le reste immédiatement (jamais stocké ni journalisé).
+ * Le serveur ne voit jamais ni le numéro, ni `H2C(e164)` (seulement `r·P`, indistinguable d'un point aléatoire).
+ */
+export const CONTACT_AVOIDANCE_PROTOCOL = 'oprf-p256-v1' as const;
+export const CONTACT_AVOIDANCE_MAX_BATCH = 2000;
+const b64url = (min: number, max: number) => z.string().regex(/^[A-Za-z0-9_-]+$/).min(min).max(max);
+export const ContactAvoidanceStatusSchema = z
+  .object({
+    status: z.enum(['NOT_ASKED', 'DECLINED', 'ENABLED']),
+    /** Vrai tant que la question n'a pas reçu de réponse et qu'aucune sortie n'a été proposée (V5.4 A.6). */
+    askBeforeFirstOuting: z.boolean(),
+    protocol: z.object({ version: z.literal(CONTACT_AVOIDANCE_PROTOCOL), maxBatch: z.number().int().positive() }).strict(),
+  })
+  .strict();
+export type ContactAvoidanceStatus = z.infer<typeof ContactAvoidanceStatusSchema>;
+/** `POST /v1/me/contact-avoidance` : accepte, enregistre son propre numéro VÉRIFIÉ (jeton du fournisseur d'auth). */
+export const EnableContactAvoidanceRequestSchema = z.object({ phoneVerificationToken: z.string().min(8).max(4096) }).strict();
+/** `POST /v1/me/contact-avoidance/evaluate`. */
+export const ContactAvoidanceEvaluateRequestSchema = z.object({ blinded: z.array(b64url(44, 44)).min(1).max(CONTACT_AVOIDANCE_MAX_BATCH) }).strict();
+export const ContactAvoidanceEvaluateResponseSchema = z.object({ evaluated: z.array(b64url(43, 43)) }).strict();
+/** `POST /v1/me/contact-avoidance/contacts`. */
+export const ContactAvoidanceContactsRequestSchema = z.object({ tokens: z.array(b64url(43, 43)).min(1).max(CONTACT_AVOIDANCE_MAX_BATCH) }).strict();
+export const ContactAvoidanceContactsResponseSchema = z.object({ accepted: z.number().int().nonnegative() }).strict();

@@ -71,6 +71,18 @@ const RawEnvSchema = z.object({
   WEB_PUSH_VAPID_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9_-]{86,88}$/).optional(),
   WEB_PUSH_VAPID_PRIVATE_KEY: z.string().regex(/^[A-Za-z0-9_-]{42,44}$/).optional(),
   WEB_PUSH_SUBJECT: z.string().regex(/^(mailto:|https:\/\/)/).optional(),
+  /**
+   * V5.4 (A.6) : secret de l'OPRF « éviter les personnes que je connais » (clé k et clé de condensé dérivées).
+   * Absent en production → fonction indisponible (503) ; hors production, dérivé de SESSION_SECRET.
+   */
+  CONTACT_AVOIDANCE_SECRET: z.string().min(32).optional(),
+  /** V5.4 (A.6) : vérification du numéro (`firebase` = ID token avec `phone_number` ; `local_demo` hors prod). */
+  PHONE_VERIFICATION_PROVIDER: z.enum(['firebase', 'local_demo']).optional(),
+  /**
+   * V5.5 (D-058) : astreinte. `enforce` = aucun créneau/sortie/RDV hors `SafetyOnCallShift` (défaut en production) ;
+   * `dev_open` = tout couvert (local/test par défaut, interdit en production).
+   */
+  ONCALL_COVERAGE: z.enum(['enforce', 'dev_open']).optional(),
   RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(120),
   WORKER_OUTBOX_POLL_MS: z.coerce.number().int().min(50).default(500),
   ENABLE_SCHEDULERS: bool,
@@ -105,6 +117,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     if (!c.FIREBASE_PROJECT_ID) violations.push('FIREBASE_PROJECT_ID requis');
     if (c.MODERATION_PROVIDER === 'local') violations.push('MODERATION_PROVIDER=local interdit en production');
     if (c.VERIFICATION_PROVIDER === 'local_demo') violations.push('VERIFICATION_PROVIDER=local_demo interdit en production');
+    if (c.ONCALL_COVERAGE === 'dev_open') violations.push('ONCALL_COVERAGE=dev_open interdit en production');
+    if (c.PHONE_VERIFICATION_PROVIDER === 'local_demo') violations.push('PHONE_VERIFICATION_PROVIDER=local_demo interdit en production');
     if (c.AI_PROVIDER === 'local') violations.push('AI_PROVIDER=local interdit en production');
     if (c.STORAGE_DRIVER === 'fs') violations.push('STORAGE_DRIVER=fs interdit en production');
     if (!c.MEDIA_TOKEN_SECRET) violations.push('MEDIA_TOKEN_SECRET requis');

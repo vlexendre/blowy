@@ -11,12 +11,13 @@ import type { UnitOfWork } from '../../shared/application/unit-of-work.js';
 import { MemoryRateLimiter, RedisRateLimiter } from '../../shared/interface/rate-limit.js';
 import { APP_CONFIG, CLOCK, COMMAND_BUS, DB, RANDOM, REDIS, UNIT_OF_WORK } from '../../shared/shared.tokens.js';
 import type { AppConfig } from '../../config/env.js';
-import { ANONYMOUS_REPOSITORY, REFERRAL_REPOSITORY, SOCIAL_CONFIG, SOCIAL_QUOTA, type AnonymousRepository, type QuotaCounter, type ReferralRepository, type SocialConfig } from './application/ports/social.ports.js';
+import { ANONYMOUS_REPOSITORY, REFERRAL_REPOSITORY, SHARE_LINK_REPOSITORY, SOCIAL_CONFIG, SOCIAL_QUOTA, type AnonymousRepository, type QuotaCounter, type ReferralRepository, type ShareLinkRepository, type SocialConfig } from './application/ports/social.ports.js';
+import { ShareLinksUseCases } from './application/use-cases/share-links.use-cases.js';
 import { AnonymousResponsesUseCases } from './application/use-cases/anonymous.use-cases.js';
 import { ReferralUseCases } from './application/use-cases/referral.use-cases.js';
-import { PrismaAnonymousRepository, PrismaReferralRepository, RateLimiterQuota } from './infrastructure/prisma-social.repositories.js';
+import { PrismaAnonymousRepository, PrismaReferralRepository, PrismaShareLinkRepository, RateLimiterQuota } from './infrastructure/prisma-social.repositories.js';
 import { PublicSocialController, SocialController } from './interface/social.controllers.js';
-import { ReferralActivationEffect, socialJobs } from './interface/social.consumers.js';
+import { ReferralActivationEffect, ShareAttributionEffect, socialJobs } from './interface/social.consumers.js';
 import { loadAdminConfig } from '../admin/infrastructure/admin-config.js';
 import { SOCIAL_MODERATION } from '../admin/application/use-cases/admin-social.use-cases.js';
 
@@ -48,10 +49,16 @@ export const SOCIAL_JOBS = Symbol('SocialJobs');
       useFactory: (r: ReferralRepository, b: CommandBus, u: UnitOfWork, c: Clock, rnd: RandomSource, cfg: SocialConfig) => new ReferralUseCases(r, b, u, c, rnd, cfg),
       inject: [REFERRAL_REPOSITORY, COMMAND_BUS, UNIT_OF_WORK, CLOCK, RANDOM, SOCIAL_CONFIG],
     },
+    { provide: SHARE_LINK_REPOSITORY, useFactory: (db: Db) => new PrismaShareLinkRepository(db), inject: [DB] },
+    {
+      provide: ShareLinksUseCases,
+      useFactory: (r: ShareLinkRepository, ref: ReferralUseCases, b: CommandBus, c: Clock, rnd: RandomSource, cfg: SocialConfig) => new ShareLinksUseCases(r, ref, b, c, rnd, cfg),
+      inject: [SHARE_LINK_REPOSITORY, ReferralUseCases, COMMAND_BUS, CLOCK, RANDOM, SOCIAL_CONFIG],
+    },
     { provide: SOCIAL_MODERATION, useFactory: (a: AnonymousResponsesUseCases) => ({ staffHide: a.staffHide.bind(a) }), inject: [AnonymousResponsesUseCases] },
-    { provide: SOCIAL_OUTBOX_EFFECTS, useFactory: (r: ReferralUseCases) => [new ReferralActivationEffect(r)], inject: [ReferralUseCases] },
-    { provide: SOCIAL_JOBS, useFactory: (r: ReferralUseCases) => socialJobs(r), inject: [ReferralUseCases] },
+    { provide: SOCIAL_OUTBOX_EFFECTS, useFactory: (r: ReferralUseCases, sh: ShareLinksUseCases) => [new ReferralActivationEffect(r), new ShareAttributionEffect(sh)], inject: [ReferralUseCases, ShareLinksUseCases] },
+    { provide: SOCIAL_JOBS, useFactory: (r: ReferralUseCases, sh: ShareLinksUseCases) => socialJobs(r, sh), inject: [ReferralUseCases, ShareLinksUseCases] },
   ],
-  exports: [SOCIAL_MODERATION, SOCIAL_OUTBOX_EFFECTS, SOCIAL_JOBS, ReferralUseCases, AnonymousResponsesUseCases],
+  exports: [SOCIAL_MODERATION, SOCIAL_OUTBOX_EFFECTS, SOCIAL_JOBS, ReferralUseCases, AnonymousResponsesUseCases, ShareLinksUseCases],
 })
 export class SocialModule {}

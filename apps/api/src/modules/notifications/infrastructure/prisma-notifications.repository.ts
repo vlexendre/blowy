@@ -173,6 +173,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
   }
 
   async setDiscreetMode(scope: TxScope, userId: string, on: boolean): Promise<void> {
-    await txOf(scope).privacySettings.upsert({ where: { userId }, create: { userId, discreetMode: on }, update: { discreetMode: on } });
+    // V5.4 (A.5) : un réglage explicite compte comme le choix « Discret » / « Normal ».
+    await txOf(scope).privacySettings.upsert({ where: { userId }, create: { userId, discreetMode: on, discreetModeChosenAt: scope.now }, update: { discreetMode: on, discreetModeChosenAt: scope.now } });
   }
 }

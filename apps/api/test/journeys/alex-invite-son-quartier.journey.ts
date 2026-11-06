@@ -146,7 +146,7 @@ describe('Quartier', () => {
     expect((await wallet(alex)).balance).toBe(0);
   });
 
-  S.step('V5 : ils sortent ensemble un jeudi soir (composition, « Je viens », check-in) — la 1ʳᵉ sortie vécue active chaque parrainage, une seule fois', async () => {
+  S.step('V5 : ils sortent ensemble un jeudi soir (composition, « Je viens », check-in) — la 1ʳᵉ sortie vécue active chaque parrainage, une seule sortie offerte par mois', async () => {
     outingId = await formOuting(w, [alex, ...friends, nina!]);
     await at(w, CYCLE.locked);
     await w.runJob('outings.lifecycle');
@@ -157,17 +157,19 @@ describe('Quartier', () => {
     await w.runJob('outings.lifecycle');
     await w.drain();
     await w.drain();
+    // V5.5 (D-064) : plus de pièces. Chaque parrainage passe REWARDED, mais la récompense est la
+    // PROCHAINE SORTIE OFFERTE du parrain, au plus une par mois : trois filleuls → une seule sortie offerte.
     for (const p of friends) {
-      expect((await wallet(p)).balance, p.name).toBe(100);
+      expect((await wallet(p)).balance, p.name).toBe(0);
       expect((await p.call('GET', '/v1/referrals/me')).data.status).toBe('REWARDED');
     }
-    expect((await wallet(alex)).balance).toBe(300);
-    const hist = (await wallet(alex)).history.items.map((e: any) => e.reason);
-    expect(hist.filter((r: string) => r === 'REFERRAL_REFERRER')).toHaveLength(3);
+    expect((await wallet(alex)).balance).toBe(0);
+    expect(await w.db.referralReward.count({ where: { referrerUserId: alex.userId } })).toBe(1);
+    expect((await alex.call('GET', '/v1/me/referral-reward')).data).toEqual({ nextOutingFree: true, thisMonthUsed: true });
     // Rejeu du filet d'activation : aucun doublon ; Nina (sans lien) ne crédite personne.
     await w.runJob('social.referral_activation');
     await w.drain();
-    expect((await wallet(alex)).balance).toBe(300);
+    expect(await w.db.referralReward.count()).toBe(1);
     expect((await wallet(nina!)).balance).toBe(0);
   });
 

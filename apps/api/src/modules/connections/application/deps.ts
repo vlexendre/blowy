@@ -1,4 +1,5 @@
 /** Dépendances partagées des services `connections` (ports seulement ; composition dans le module). */
+import type { OnCallCoverage } from '../../../shared/application/ports/oncall-coverage.port.js';
 import type { Tuning } from '@blowy/tuning';
 import type { Clock, RandomSource } from '../../../shared/application/clock.js';
 import type { CommandBus } from '../../../shared/application/command-bus.js';
@@ -34,4 +35,6 @@ export interface ConnectionsDeps {
   tuning: Tuning;
   /** Secret HMAC d'un lieu (code de repli du check-in), dérivé côté serveur. */
   secretOf(ref: string): string;
+  /** V5.5 (D-058) : astreinte — aucun RDV hors des heures couvertes (absent = tout couvert, tests). */
+  oncall?: OnCallCoverage | null;
 }

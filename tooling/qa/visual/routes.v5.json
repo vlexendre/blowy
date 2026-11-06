@@ -1,27 +1,866 @@
 {
-  "$comment": "Correspondance pour design/v5/renders (maquettes V5 en cours). Même format que routes.v4.json ; à remplir quand les rendus V5 existent.",
+  "$comment": "Correspondance maquettes V5.3 (design/v5/renders) → routes de l'app (T7, agent D). Chaque route porte ?demo=<scénario> : mode démo LOCAL (apps/mobile/src/core/demo, EXPO_PUBLIC_BLOWY_ENV=local seulement) — fixtures conformes aux contrats @blowy/api-contract, horloge figée à l'instant de la maquette (facts.json › ecrans). Masques documentés dans docs/agents/handoffs/V5-T7.md. Les écrans L-* (web lieu) et W-* (web public) ne sont pas mobiles.",
   "refs": "design/v5/renders",
-  "demoDraft": {
-    "step": "welcome",
-    "species": "NINO",
-    "petName": "Nino",
-    "axes": {
-      "kindMischief": 0.6,
-      "sportyContemplative": -0.2,
-      "scienceArt": 0.4,
-      "homeAdventure": 0.5
+  "demoDraft": null,
+  "screens": [
+    {
+      "ref": "V5-Welcome",
+      "title": "01 · Bienvenue",
+      "target": "mobile",
+      "route": "/welcome?demo=welcome",
+      "account": null,
+      "draft": false
     },
-    "school": null,
-    "sunday": null,
-    "passions": [],
-    "limit": null,
-    "intention": null,
-    "hatched": false,
-    "petCreated": false,
-    "invite": null,
-    "premiumDeclined": false,
-    "notificationsAsked": false,
-    "completed": false
-  },
-  "screens": []
+    {
+      "ref": "V5-Ville",
+      "title": "02 · Tu sors où ? (1/9)",
+      "target": "mobile",
+      "route": "/start/city?demo=ville",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Ville-bordeaux",
+      "title": "02b · Bordeaux, aucune sortie encore",
+      "target": "mobile",
+      "route": "/start/city?demo=ville-bordeaux",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Toi",
+      "title": "03 · Date de naissance (2/9)",
+      "target": "mobile",
+      "route": "/start/birthdate?demo=naissance",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Genre",
+      "title": "04 · Tu es… (3/9)",
+      "target": "mobile",
+      "route": "/start/gender?demo=genre",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Pet",
+      "title": "05 · Ton pet (4/9)",
+      "target": "mobile",
+      "route": "/start/pet?demo=pet",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Rencontrer",
+      "title": "06 · Comment rencontrer (5/9)",
+      "target": "mobile",
+      "route": "/start/meet?demo=rencontrer",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Intention",
+      "title": "07 · Tu cherches (6/9)",
+      "target": "mobile",
+      "route": "/start/looking?demo=intention",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Consentement",
+      "title": "08 · Consentement, si histoire (7/9)",
+      "target": "mobile",
+      "route": "/start/consent?demo=consentement",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Toi-plus",
+      "title": "09 · Pour une histoire (8/9)",
+      "target": "mobile",
+      "route": "/start/story?demo=histoire",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Dispos",
+      "title": "10 · Créneaux, semaines, trajet (9/9)",
+      "target": "mobile",
+      "route": "/start/slots?demo=creneaux",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Dispos-semaines",
+      "title": "10a · Une semaine sur deux, cochée",
+      "target": "mobile",
+      "route": "/settings/weeks?from=onboarding&demo=semaines",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Eviter",
+      "title": "10b · Éviter les personnes que tu connais (facultatif)",
+      "target": "mobile",
+      "route": "/settings/avoid?from=onboarding&demo=eviter",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Erreur-age",
+      "title": "10c · Moins de 18 ans",
+      "target": "mobile",
+      "route": "/start/age?demo=age",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Trouvee",
+      "title": "11 · Nino t’a trouvé une sortie",
+      "target": "mobile",
+      "route": "/found?demo=trouvee",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Trouvee-lyon",
+      "title": "11b · Lyon 7e → Lyon 4e, mardi",
+      "target": "mobile",
+      "route": "/found?demo=trouvee-lyon",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie-lyon",
+      "title": "11c · Sortie à Lyon",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000102?demo=sortie-lyon",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Confirmation-lyon",
+      "title": "11d · Lyon : lieu et prénoms la veille",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000102/confirmation?demo=confirmation-lyon",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Trouvee-banlieue",
+      "title": "11e · Saint-Denis → Paris 18e",
+      "target": "mobile",
+      "route": "/found?demo=trouvee-banlieue",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie-banlieue",
+      "title": "11f · Sortie à Paris 18e",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000106?demo=sortie-banlieue",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Confirmation-banlieue",
+      "title": "11g · Paris 18e : lieu et prénoms, avec Yacine",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000106/confirmation?demo=confirmation-banlieue",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Pas-encore",
+      "title": "11h · Cette semaine, pas encore (Marseille)",
+      "target": "mobile",
+      "route": "/not-yet?demo=pas-encore",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Ville-nantes",
+      "title": "11i · Nantes : ta ville",
+      "target": "mobile",
+      "route": "/start/city?demo=ville-nantes",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Trouvee-nantes",
+      "title": "11j · Nantes : sortie trouvée",
+      "target": "mobile",
+      "route": "/found?demo=trouvee-nantes",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie-nantes",
+      "title": "11k · Nantes : ta sortie",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000107?demo=sortie-nantes",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Pas-encore-nantes",
+      "title": "11l · Nantes : pas encore, voie Duo",
+      "target": "mobile",
+      "route": "/not-yet?demo=pas-encore-nantes",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie",
+      "title": "12 · Fiche de sortie",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101?demo=sortie",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette 390×1021 : seuls les 844 premiers px sont capturés (bas masqué)"
+    },
+    {
+      "ref": "V5-Team",
+      "title": "13 · Viens avec quelqu’un",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/team?demo=team",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage-invitation",
+      "title": "13b · Invitation personnelle (message)",
+      "target": "mobile",
+      "route": "/share/invitation?demo=partage-invitation",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Invite",
+      "title": "13c · Le proche arrive par le lien",
+      "target": "mobile",
+      "route": "/invite/r8Tz4w?demo=invite",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Compte",
+      "title": "14 · Ta place : compte, discret ou normal",
+      "target": "mobile",
+      "route": "/account?demo=compte",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Verif",
+      "title": "15 · Selfie vérifié",
+      "target": "mobile",
+      "route": "/verify?demo=verif",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Notifs",
+      "title": "16 · Notifications",
+      "target": "mobile",
+      "route": "/notifications?demo=notifs",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie-inscrit",
+      "title": "17 · Tu y vas",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101?demo=inscrit",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Accueil",
+      "title": "18 · Accueil",
+      "target": "mobile",
+      "route": "/home?demo=accueil",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Accueil-discret",
+      "title": "18b · Accueil, mode discret",
+      "target": "mobile",
+      "route": "/home?demo=accueil-discret",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Accueil-duo",
+      "title": "18c · Accueil, format à deux",
+      "target": "mobile",
+      "route": "/home?demo=accueil-duo",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Pause",
+      "title": "19 · Pause en 1 tap",
+      "target": "mobile",
+      "route": "/settings/pause?demo=pause",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Chats",
+      "title": "20 · Chats",
+      "target": "mobile",
+      "route": "/chats?demo=accueil",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Groupe",
+      "title": "21 · Chat du groupe",
+      "target": "mobile",
+      "route": "/chat/00000000-0000-4000-8000-000000000201?demo=groupe",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Groupe-menu",
+      "title": "21b · Signaler, bloquer, quitter",
+      "target": "mobile",
+      "route": "/chat/00000000-0000-4000-8000-000000000201/menu?demo=groupe",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Attente",
+      "title": "22 · Bordeaux : il manque 2 personnes, daté",
+      "target": "mobile",
+      "route": "/waitlist?demo=attente",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage-ville",
+      "title": "22b · Carte « Aide Bordeaux à sortir »",
+      "target": "mobile",
+      "route": "/share/ville?demo=partage-ville",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Amorcage",
+      "title": "23 · Lille : toi et 2 proches",
+      "target": "mobile",
+      "route": "/seeding?demo=amorcage",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Amorcage-solo",
+      "title": "23b · Lille en solo",
+      "target": "mobile",
+      "route": "/seeding?solo=1&demo=amorcage-solo",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie-complete",
+      "title": "24 · Pas de place cette fois",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/full?demo=complete",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Sortie-annulee",
+      "title": "25 · Sortie annulée",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/cancelled?demo=annulee",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Affiner",
+      "title": "26 · Affiner plus tard",
+      "target": "mobile",
+      "route": "/settings/refine?demo=affiner",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Affiner-histoire",
+      "title": "26b · Affiner : histoire, horizon",
+      "target": "mobile",
+      "route": "/settings/refine/story?demo=affiner-histoire",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Affiner-age",
+      "title": "26c · Âge pour une histoire",
+      "target": "mobile",
+      "route": "/settings/refine/age?demo=affiner-age",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Affiner-ambiance",
+      "title": "26d · Ambiance",
+      "target": "mobile",
+      "route": "/settings/refine/ambiance?demo=affiner",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Confirmation",
+      "title": "27 · Veille 18 h : lieu, photo, prénoms, pets",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/confirmation?demo=confirmation",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage-confirmation",
+      "title": "27b · Carte « cette semaine je sors »",
+      "target": "mobile",
+      "route": "/share/confirmation?demo=partage-confirmation",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Revelation",
+      "title": "28 · J −3 h : les visages",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/faces?demo=visages",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Partage-checkin",
+      "title": "28b · Carte « je sors ce soir »",
+      "target": "mobile",
+      "route": "/share/checkin?demo=partage-checkin",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Ange",
+      "title": "29 · Ange gardien",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/guardian?demo=ange",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Checkin",
+      "title": "31 · Check-in par code",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/checkin?demo=checkin",
+      "account": null,
+      "draft": false,
+      "maskText": [
+        "^Jeudi 19:28$"
+      ]
+    },
+    {
+      "ref": "V5-Checkin-ok",
+      "title": "31b · Check-in fait",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/checked-in?demo=checkin-ok",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Souvenir",
+      "title": "32 · Sortie vécue : voter",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/memory?demo=souvenir",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Apres",
+      "title": "33 · Vote secret",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/vote?demo=vote",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Apres-resultats",
+      "title": "34 · Tes accords : partager la soirée",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/results?demo=resultats",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage-jeudi",
+      "title": "34a · Carte « Alors, jeudi ? » (sans votes)",
+      "target": "mobile",
+      "route": "/share/jeudi?demo=vote",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage",
+      "title": "34b · Carte « on était 5 »",
+      "target": "mobile",
+      "route": "/share/soiree?demo=partage-soiree",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage-dimanche",
+      "title": "34c · Carte « ma bande s’agrandit »",
+      "target": "mobile",
+      "route": "/share/dimanche?demo=partage-dimanche",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Apres-aucun",
+      "title": "34d · Pas d’accord cette fois",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000101/results?demo=resultats-aucun",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Bande",
+      "title": "35 · Ta bande",
+      "target": "mobile",
+      "route": "/band?demo=bande",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Partage-bande",
+      "title": "35b · Carte « Ma bande » (mode capture)",
+      "target": "mobile",
+      "route": "/share/bande?demo=bande",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Rue",
+      "title": "36 · Ta rue",
+      "target": "mobile",
+      "route": "/band/street?demo=bande",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Duo",
+      "title": "37 · Voie Duo : espèce et initiale avant le oui",
+      "target": "mobile",
+      "route": "/duo?demo=duo",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Lien",
+      "title": "38 · Duo : vous écrivez",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000401?demo=lien",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Duo-hh-proposition",
+      "title": "38a · Duo homme-homme : proposition (un pigeon · K.)",
+      "target": "mobile",
+      "route": "/duo/proposal?demo=duo-hh-proposition",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Duo-hh",
+      "title": "38b · Duo homme-homme : vous écrivez",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000404?demo=duo-hh",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Duo-hh-visages",
+      "title": "38c · Duo homme-homme : les visages",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000404?demo=duo-hh-visages",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Duo-hh-rdv",
+      "title": "38d · Duo homme-homme : rendez-vous à Marseille",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000404/date?demo=duo-hh-rdv",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Lien-debloque",
+      "title": "38b · Les visages",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000401?demo=lien-debloque",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-RdvDuo",
+      "title": "39 · Rendez-vous à deux",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000401/date?demo=rdvduo",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Chat",
+      "title": "40 · Duo après une sortie",
+      "target": "mobile",
+      "route": "/chat/00000000-0000-4000-8000-000000000205?demo=chat",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-RdvDuo-lea",
+      "title": "40b · Rendez-vous, table à deux (lieu partenaire)",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000403/date?demo=rdvduo-lea",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Oeuf",
+      "title": "41 · Clin d’œil",
+      "target": "mobile",
+      "route": "/duo/00000000-0000-4000-8000-000000000403/egg?demo=oeuf",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Rupture",
+      "title": "42 · Partir proprement",
+      "target": "mobile",
+      "route": "/band/leave?duo=00000000-0000-4000-8000-000000000403&demo=rupture",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Cartes",
+      "title": "43 · Mes cartes",
+      "target": "mobile",
+      "route": "/profile/cards?demo=story",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Story",
+      "title": "43b · Décris-moi en 3 mots",
+      "target": "mobile",
+      "route": "/profile/story?demo=story",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Profil",
+      "title": "45 · Profil",
+      "target": "mobile",
+      "route": "/profile?demo=profil",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Fiche",
+      "title": "46 · Nino : souvenirs, fiabilité privée",
+      "target": "mobile",
+      "route": "/profile/pet?demo=fiche",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Tarifs",
+      "title": "47 · Tarifs",
+      "target": "mobile",
+      "route": "/settings/pricing?demo=tarifs",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Abonnement",
+      "title": "48 · Blowy+ : sorties, Apple Pay",
+      "target": "mobile",
+      "route": "/settings/plus?demo=abonnement",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Paiement",
+      "title": "49 · Place : Apple Pay",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000104/pay?demo=paiement",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Paiement-ok",
+      "title": "49b · Place payée",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000104/pay-ok?demo=paiement-ok",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Reglages",
+      "title": "50 · Réglages",
+      "target": "mobile",
+      "route": "/settings?demo=reglages",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Confidentialite",
+      "title": "51 · Confidentialité",
+      "target": "mobile",
+      "route": "/settings/privacy?demo=confidentialite",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Signaler",
+      "title": "52 · Signaler",
+      "target": "mobile",
+      "route": "/settings/report?outing=00000000-0000-4000-8000-000000000101&user=00000000-0000-4000-8000-000000000002&demo=signaler",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Supprimer",
+      "title": "53 · Supprimer le compte",
+      "target": "mobile",
+      "route": "/settings/delete?demo=supprimer",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Chargement",
+      "title": "54 · Chargement",
+      "target": "mobile",
+      "route": "/home?demo=chargement",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Erreur-reseau",
+      "title": "55 · Pas de connexion",
+      "target": "mobile",
+      "route": "/home?demo=hors-ligne",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Paiement-echec",
+      "title": "56 · Paiement refusé",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000104/pay-failed?demo=paiement-echec",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Verif-echec",
+      "title": "57 · Selfie non vérifié",
+      "target": "mobile",
+      "route": "/verify/failed?demo=verif",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Notifs-refus",
+      "title": "58 · Notifications refusées",
+      "target": "mobile",
+      "route": "/notifications/refused?demo=notifs",
+      "account": null,
+      "draft": false
+    },
+    {
+      "ref": "V5-Chats-vide",
+      "title": "59 · Chats vides",
+      "target": "mobile",
+      "route": "/chats?demo=chats-vide",
+      "account": null,
+      "draft": false
+    }
+  ]
 }

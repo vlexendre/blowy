@@ -16,8 +16,8 @@ const accessoryId = z.string().regex(/^[a-z0-9_]{1,48}$/);
 const memoryKind = z.enum(PET_MEMORY_KINDS);
 
 export const NeighborhoodsTuningSchema = z.object({
-  /** Vérifiés en attente requis pour lancer un quartier (surcharge admin possible). */
-  defaultDensityThreshold: posInt,
+  /** @deprecated V5.5 (E21) : seuil 120 mort (aucune ville fermée) ; gardé optionnel pour relire les versions publiées. */
+  defaultDensityThreshold: posInt.optional(),
   changeCooldownDays: posInt,
 });
 
@@ -38,6 +38,15 @@ export const OutingCycleTuningSchema = z.object({
   checkinClosesAfterMinutes: posInt,
   inviteReminderBeforeHours: posInt,
   lastCallBeforeHours: posInt,
+  /** V5.5 (D-053) : composition glissante à J − `composeDaysBefore`, `composeHourLocal` h (heure de la ville), par jour de créneau. */
+  composeDaysBefore: posInt.default(3),
+  composeHourLocal: hour.default(21),
+  /** V5.5 : la demande de la semaine W s'ouvre `requestOpensWeeksBefore` semaine(s) avant, au jour/heure `requestOpens*`. */
+  requestOpensWeeksBefore: nonNegInt.default(0),
+  /** V5.5 : jours ISO où des créneaux sont proposés (mardi → dimanche). */
+  slotIsoWeekdays: z.array(isoWeekday).min(1).default([2, 3, 4, 5, 6, 7]),
+  /** V5.6 (B.13) : jours ISO d'un « week-end » pour le motif « un week-end sur deux » (vendredi soir → dimanche). */
+  weekendIsoWeekdays: z.array(isoWeekday).min(1).default([5, 6, 7]),
 });
 
 /**
@@ -76,6 +85,8 @@ export const CompositionTuningSchema = z.object({
   maxTeamSize: z.number().int().min(1).max(3),
   /** V5.2 (B.5) ; absent d'un payload antérieur → défauts. */
   storyGuarantee: StoryGuaranteeTuningSchema.default(STORY_GUARANTEE_DEFAULTS),
+  /** V5.6 (E11, §4.3) : pénalité douce par membre dont l'ambiance (CALM/LIVELY) diffère de la majorité du groupe. */
+  lambdaAmbiance: nonNegInt.default(200),
 });
 
 /** Sortie d'amorçage (V5.1 B.7) : dans une ville fermée, une team de `triggerTeamSize` vérifiés + une autre team. */
@@ -108,6 +119,19 @@ export const OutingsTuningSchema = z.object({
   paymentHoldMinutes: posInt,
   backfillInviteTtlHours: posInt,
   disputeWindowDays: posInt,
+  /**
+   * V5.5 (D-056, amende V5.4 B.8) : « imprévu » (toute raison personnelle) après la confirmation, N fois par
+   * fenêtre glissante de `emergencyWindowDays` (30 j = « 1 par mois ») : aucun effet de fiabilité, place non
+   * remboursée, lieu compensé comme une absence. Au-delà : 412 `EMERGENCY_QUOTA`. 0 = désactivé.
+   */
+  emergencyCancelsPerMonth: nonNegInt.default(1),
+  emergencyWindowDays: posInt.default(30),
+  /**
+   * V5.6 (A.1, E23) : « je connais quelqu'un ici » = N déplacements par fenêtre de `knowsSomeoneWindowDays`.
+   * Au-delà : sortie pour raison de sécurité (remboursée, sans pénalité) examinée par un humain.
+   */
+  knowsSomeoneMovesPerMonth: nonNegInt.default(1),
+  knowsSomeoneWindowDays: posInt.default(30),
   cycle: OutingCycleTuningSchema,
   composition: CompositionTuningSchema,
   seeding: SeedingTuningSchema,
@@ -127,10 +151,13 @@ export const VotesTuningSchema = z.object({
 });
 
 export const DuoTuningSchema = z.object({
-  /** @deprecated (V5.2 H.25) : ancien plafond commun ; lu comme `maxOpenProposals` par les versions antérieures. */
+  /**
+   * V5.5 (D-054) : le Duo est GRATUIT POUR TOUS ; plafond anti-spam commun de N duos actifs (proposition
+   * ouverte ou duo voie Duo non terminal), identique avec ou sans Blowy+.
+   */
   maxActive: posInt,
-  /** V5.2 H.25 / D-041 : gratuit = 1 duo actif (proposition ouverte ou duo voie Duo non terminal) ; Blowy+ illimité. */
-  maxActiveFree: posInt.default(1),
+  /** @deprecated V5.6 (E21) : remplacé par `maxActive` (identique pour tous) ; gardé optionnel pour relire les versions publiées. */
+  maxActiveFree: posInt.optional(),
   /** Garde-fou qualitatif (Blowy+ compris) : ≤ N propositions DUO_LANE ouvertes à la fois. */
   maxOpenProposals: posInt.default(3),
   exchangeHours: posInt,
@@ -145,6 +172,8 @@ export const DuoTuningSchema = z.object({
   dailyRunHour: hour,
   /** Une proposition DUO_LANE refusée/expirée exclut la paire pendant ce délai (MET_BEFORE). */
   declinedCooldownDays: posInt,
+  /** V5.6 (E13) : un RDV Duo au lieu partenaire (table de 2) est confirmé au plus tard la veille à cette heure locale (effectif du lieu). */
+  dateLockHourLocal: hour.default(18),
 });
 
 export const ReliabilityV5TuningSchema = z.object({
@@ -168,7 +197,8 @@ export const AccessoriesTuningSchema = z.object({
   reactionTtlMs: posInt,
   /** Accessoires accordés par une source externe (D-031, Blowy+ mensuel). */
   referralAccessoryId: accessoryId,
-  plusMonthlyAccessoryIds: z.array(accessoryId).min(1),
+  /** @deprecated V5.4 (E21) : aucun accessoire Blowy+ ; gardé optionnel pour relire les versions publiées. */
+  plusMonthlyAccessoryIds: z.array(accessoryId).optional(),
 });
 
 export const PricingTuningSchema = z.object({
@@ -183,12 +213,19 @@ export const PlusTuningSchema = z.object({
   monthlyPriceCents: posInt,
   /** Toutes les sorties incluses (dans la limite du quota hebdomadaire, identique pour tous). */
   includesAllOutings: z.boolean(),
-  /** Utilisé seulement si `includesAllOutings = false`. */
-  includedOutingsPerMonth: nonNegInt,
-  /** Duo illimité (sinon `duo.maxActive`). */
+  /** @deprecated V5.4 (E21) : Blowy+ inclut toutes les sorties ; gardé optionnel pour relire les versions publiées. */
+  includedOutingsPerMonth: nonNegInt.optional(),
+  /** @deprecated V5.4 (C.11) : le Duo est gratuit pour tous, plafond commun `duo.maxActiveFree` ; toujours `false`. */
   duoUnlimited: z.boolean(),
   /** `false` si la revue iOS exige l'IAP pour la part numérique (accessoire). */
-  includesMonthlyAccessory: z.boolean(),
+  /** @deprecated V5.4 (E21) : aucun accessoire Blowy+. */
+  includesMonthlyAccessory: z.boolean().optional(),
+  /**
+   * V5.4 (C.10) : canal de vente de Blowy+. `STRIPE_BILLING` = abonnement aux sorties payé par Apple Pay /
+   * carte via Stripe Billing (service consommé hors de l'app, aucune fonction numérique) ;
+   * `IN_APP_PURCHASE` = ancien achat intégré RevenueCat (code gardé, désactivé en V5.4).
+   */
+  billing: z.enum(['STRIPE_BILLING', 'IN_APP_PURCHASE']).default('STRIPE_BILLING'),
 });
 
 export const CreditsTuningSchema = z.object({ refundCreditValidityDays: posInt });
@@ -197,6 +234,14 @@ export const CreditsTuningSchema = z.object({ refundCreditValidityDays: posInt }
 export const VenuesTuningSchema = z.object({
   /** Place offerte ou incluse (1ʳᵉ sortie, Blowy+, staff) ou départ de sécurité après la confirmation : Blowy verse 3 €. */
   compensationUnpaidSeatCents: posInt,
+  /**
+   * V5.4 (C.12) : si BLOWY annule une sortie déjà confirmée (manque de participants ou motif interne), le
+   * lieu reçoit ce montant par place réservée (places encore confirmées à l'annulation). Pas si le lieu
+   * est la cause (`VENUE_UNAVAILABLE`). Relevé mensuel (`economy.venue_compensations`).
+   */
+  compensationBlowyCancelSeatCents: posInt.default(300),
+  /** V5.7 (E30, D-080) : message d'accueil du lieu — longueur maximale (texte seul). */
+  welcomeMessageMaxChars: posInt.default(280),
 });
 
 export const SafetyTuningSchema = z.object({
@@ -217,6 +262,8 @@ export const SafetyTuningSchema = z.object({
   uneasyLeaveRecontactThreshold: posInt.default(3),
   /** Réponse humaine visée à un « besoin d'aide » (affichée seulement si une astreinte est planifiée). */
   humanResponseMinutes: posInt.default(60),
+  /** V5.7 (E31, D-078) : objectif de RAPPEL humain pendant une sortie ou un RDV (« en quelques minutes ») ; la SLA du dossier reste `humanResponseMinutes`. */
+  helpCallbackTargetMinutes: posInt.default(5),
 });
 
 export const NOTIFICATION_PRIORITY_V5 = ['SAFETY', 'OUTING_TRANSACTIONAL', 'HUMAN_MESSAGE', 'CONNECTION', 'VOTE', 'DUO', 'OUTING_MARKETING', 'SYSTEM'] as const;
@@ -237,6 +284,11 @@ export const NotificationsV5TuningSchema = z.object({
 });
 
 /** Préférences de sortie V5.1 (B.8, C.10, D.13). */
+/** V5.5 (D-064) : parrainage = prochaine sortie offerte. */
+export const ReferralV5TuningSchema = z.object({ maxFreePerMonth: nonNegInt });
+/** V5.5 (D-059) : indicateurs de ville — affichés seulement à partir de `minCount`, arrondis ; photographie quotidienne. */
+export const CityInsightsTuningSchema = z.object({ minCount: posInt, snapshotRetentionDays: posInt });
+
 export const PreferencesTuningSchema = z.object({
   /** Tranche d'âge souhaitée par défaut : âge ± delta. */
   groupAgeDefaultDelta: posInt,

@@ -181,7 +181,7 @@ export class PrismaOpsReadModel implements OpsReadModel {
   }
 
   async knowsSomeoneQueue() {
-    const rows = await this.db.knowsSomeoneRequest.findMany({ where: { status: 'IN_REVIEW' }, orderBy: { createdAt: 'asc' }, take: 100, include: { seat: { select: { outingId: true, outing: { select: { startsAt: true } }, user: { select: { profile: { select: { displayName: true } } } } } } } });
+    const rows = await this.db.knowsSomeoneRequest.findMany({ where: { status: { in: ['IN_REVIEW', 'SAFETY_REVIEW'] } }, orderBy: { createdAt: 'asc' }, take: 100, include: { seat: { select: { outingId: true, outing: { select: { startsAt: true } }, user: { select: { profile: { select: { displayName: true } } } } } } } });
     const targets = await this.displayNames(rows.map((r) => r.targetUserId));
     return rows.map((r) => ({
       seatId: r.seatId,
@@ -223,7 +223,46 @@ export class PrismaOpsReadModel implements OpsReadModel {
       orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
       select: { id: true, status: true, startsAt: true, endsAt: true, lockAt: true, activity: true, seats: { orderBy: [{ id: 'asc' }], select: { status: true, teamId: true, user: { select: { profile: { select: { displayName: true } } } } } } },
     });
-    return rows.map((o) => ({ outingId: o.id, status: o.status, startsAt: o.startsAt, endsAt: o.endsAt, lockAt: o.lockAt, activity: String(o.activity), seats: o.seats.map((s) => ({ status: s.status, firstName: s.user.profile?.displayName ?? null, teamKey: s.teamId })) }));
+    const groups: RosterOutingFacts[] = rows.map((o) => ({ outingId: o.id, status: o.status, startsAt: o.startsAt, endsAt: o.endsAt, lockAt: o.lockAt, activity: String(o.activity), seats: o.seats.map((s) => ({ status: s.status, firstName: s.user.profile?.displayName ?? null, teamKey: s.teamId })) }));
+    // V5.6 (E13) : tables de 2 (Duo) — dans l'effectif dès leur entrée (veille 18 h), prénoms seulement.
+    const dates = await this.db.duoDate.findMany({
+      where: { venueId, startsAt: { gte: from, lt: to }, status: { in: ['CONFIRMED', 'DONE', 'CANCELLED'] }, reservationLockedAt: { not: null } },
+      orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
+      select: { id: true, status: true, startsAt: true, endsAt: true, reservationLockedAt: true, checkinLowAt: true, checkinHighAt: true, duo: { select: { userLowId: true, userHighId: true } } },
+    });
+    const names = await this.displayNames(dates.flatMap((d) => [d.duo.userLowId, d.duo.userHighId]));
+    const duoTables: RosterOutingFacts[] = dates.map((d) => ({
+      outingId: d.id,
+      kind: 'DUO' as const,
+      status: d.status === 'CONFIRMED' ? 'CONFIRMED' : d.status === 'DONE' ? 'DONE' : 'CANCELLED',
+      startsAt: d.startsAt,
+      endsAt: d.endsAt,
+      lockAt: d.reservationLockedAt!,
+      activity: 'DUO_TABLE',
+      seats: [d.duo.userLowId, d.duo.userHighId].map((u) => ({ status: 'CONFIRMED', firstName: names.get(u) ?? null, teamKey: d.id })),
+    }));
+    return [...groups, ...duoTables].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime() || a.outingId.localeCompare(b.outingId));
+  }
+
+  async outingSummaries(venueId: string, period: string, timeZone = 'UTC') {
+    const [y, m] = period.split('-').map(Number) as [number, number];
+    // V5.7 (E28) : bornes du mois civil dans le fuseau du lieu.
+    const from = new Date(wallToUtc(Date.UTC(y, m - 1, 1) / 86_400_000, 0, timeZone));
+    const to = new Date(wallToUtc(Date.UTC(y, m, 1) / 86_400_000, 0, timeZone));
+    const rows = await this.db.outing.findMany({
+      where: { venueId, startsAt: { gte: from, lt: to }, OR: [{ status: { in: ['CONFIRMED', 'CHECKIN_OPEN', 'DONE'] } }, { status: 'CANCELLED', seats: { some: { confirmedAt: { not: null } } } }] },
+      select: { id: true, startsAt: true, lockAt: true, status: true, seats: { select: { status: true, confirmedAt: true, cancelledAt: true } } },
+    });
+    const out = new Map<string, { startsAt: Date; reserved: number; attended: number; cancelled: boolean; duoTable?: boolean }>();
+    for (const o of rows) {
+      // Places de l'effectif envoyé au lieu à la confirmation : confirmées, et pas annulées avant la veille 18 h.
+      const reserved = o.seats.filter((s) => s.confirmedAt && (!s.cancelledAt || s.cancelledAt >= o.lockAt)).length;
+      out.set(o.id, { startsAt: o.startsAt, reserved, attended: o.seats.filter((s) => s.status === 'ATTENDED').length, cancelled: o.status === 'CANCELLED' });
+    }
+    // V5.6 (E13) : tables de 2 (Duo) entrées dans l'effectif — 2 places réservées.
+    const dates = await this.db.duoDate.findMany({ where: { venueId, startsAt: { gte: from, lt: to }, reservationLockedAt: { not: null } }, select: { id: true, startsAt: true, status: true, checkinLowAt: true, checkinHighAt: true } });
+    for (const d of dates) out.set(d.id, { startsAt: d.startsAt, reserved: 2, attended: Number(!!d.checkinLowAt) + Number(!!d.checkinHighAt), cancelled: false, duoTable: true });
+    return out;
   }
 
   async outingsStart(ids: string[]) {
@@ -246,8 +285,9 @@ export class PrismaOpsReadModel implements OpsReadModel {
     return u ? { status: u.status, displayName: u.profile?.displayName ?? 'Partenaire' } : null;
   }
 
-  async seatOfFirstName(venueId: string, outingId: string, firstName: string) {
-    const o = await this.db.outing.findFirst({ where: { id: outingId, venueId }, select: { seats: { where: { status: { in: [...CONFIRMED_LIKE] } }, select: { id: true, userId: true, user: { select: { profile: { select: { displayName: true } } } } } } } });
+  async seatOfFirstName(venueId: string, outingId: string, firstName: string, at?: Date) {
+    // V5.4 (C.12) : le lieu ne connaît les prénoms qu'à partir de la confirmation (veille 18 h) — avant, rien.
+    const o = await this.db.outing.findFirst({ where: { id: outingId, venueId, ...(at ? { lockAt: { lte: at }, status: { not: 'CANCELLED' } } : {}) }, select: { seats: { where: { status: { in: [...CONFIRMED_LIKE] } }, select: { id: true, userId: true, user: { select: { profile: { select: { displayName: true } } } } } } } });
     const want = firstName.trim().toLocaleLowerCase('fr');
     const s = o?.seats.find((x) => (x.user.profile?.displayName ?? '').trim().split(/\s+/)[0]?.toLocaleLowerCase('fr') === want);
     return s ? { seatId: s.id, userId: s.userId } : null;
@@ -258,6 +298,55 @@ export class PrismaOpsReadModel implements OpsReadModel {
 const localDateOfDay = (day: number) => new Date(day * DAY).toISOString().slice(0, 10);
 
 export class PrismaOpsConfigWriter implements OpsConfigWriter {
+  constructor(private readonly db?: Db) {}
+
+  private reader(): Db {
+    if (!this.db) throw new Error('PrismaOpsConfigWriter : lecture sans base');
+    return this.db;
+  }
+
+  async onCallShifts(q: { timezone?: string; from: Date; to: Date }) {
+    return this.reader().safetyOnCallShift.findMany({ where: { ...(q.timezone ? { timezone: q.timezone } : {}), endsAt: { gt: q.from }, startsAt: { lt: q.to } }, orderBy: [{ timezone: 'asc' }, { startsAt: 'asc' }], select: { id: true, timezone: true, startsAt: true, endsAt: true, teamLabel: true, phoneRef: true } });
+  }
+
+  async createOnCallShift(scope: TxScope, s: { id: string; timezone: string; startsAt: Date; endsAt: Date; teamLabel: string; phoneRef: string | null }) {
+    await txOf(scope).safetyOnCallShift.create({ data: { ...s, createdAt: scope.now } });
+  }
+
+  async deleteOnCallShift(scope: TxScope, id: string) {
+    return (await txOf(scope).safetyOnCallShift.deleteMany({ where: { id } })).count > 0;
+  }
+
+  async publishedSlots(from: Date, to: Date, timezone?: string) {
+    const rows = await this.reader().venueSlot.findMany({ where: { startsAt: { gte: from, lt: to }, ...(timezone ? { venue: { neighborhood: { timezone } } } : {}) }, orderBy: { startsAt: 'asc' }, take: 2000, select: { id: true, startsAt: true, venue: { select: { neighborhood: { select: { timezone: true } } } } } });
+    return rows.map((r) => ({ venueSlotId: r.id, startsAt: r.startsAt, timezone: r.venue.neighborhood.timezone }));
+  }
+
+  async travelTimes(neighborhoodId: string) {
+    return this.reader().neighborhoodTravelTime.findMany({ where: { OR: [{ fromNeighborhoodId: neighborhoodId }, { toNeighborhoodId: neighborhoodId }] }, orderBy: [{ fromNeighborhoodId: 'asc' }, { toNeighborhoodId: 'asc' }], select: { fromNeighborhoodId: true, toNeighborhoodId: true, minutes: true } });
+  }
+
+  async upsertTravelTime(scope: TxScope, t: { fromNeighborhoodId: string; toNeighborhoodId: string; minutes: number }) {
+    await txOf(scope).neighborhoodTravelTime.upsert({ where: { fromNeighborhoodId_toNeighborhoodId: { fromNeighborhoodId: t.fromNeighborhoodId, toNeighborhoodId: t.toNeighborhoodId } }, create: { id: uuidv7(scope.now.getTime()), ...t, updatedAt: scope.now }, update: { minutes: t.minutes, updatedAt: scope.now } });
+  }
+
+  async welcomeOf(venueId: string) {
+    const v = await this.reader().venue.findUnique({ where: { id: venueId }, select: { welcomeMessage: true, welcomeMessageUpdatedAt: true } });
+    return { text: v?.welcomeMessage ?? null, updatedAt: v?.welcomeMessageUpdatedAt ?? null };
+  }
+
+  async setWelcome(scope: TxScope, venueId: string, text: string | null) {
+    await txOf(scope).venue.update({ where: { id: venueId }, data: { welcomeMessage: text, welcomeMessageUpdatedAt: scope.now } });
+  }
+
+  async setNeighborhoodCenter(scope: TxScope, id: string, c: { lat: number; lng: number }) {
+    await txOf(scope).neighborhood.update({ where: { id }, data: { centerLat: c.lat, centerLng: c.lng } });
+  }
+
+  async neighborhoodExists(id: string) {
+    return (await this.reader().neighborhood.count({ where: { id } })) > 0;
+  }
+
   async setNeighborhoodStatus(scope: TxScope, id: string, status: 'LIVE' | 'WAITLIST' | 'PAUSED' | 'CLOSED', estimatedLaunchAt: Date | null | undefined) {
     const tx = txOf(scope);
     const cur = await tx.neighborhood.findUniqueOrThrow({ where: { id }, select: { status: true, launchedAt: true } });
@@ -336,7 +425,15 @@ export class PrismaOpsConfigWriter implements OpsConfigWriter {
 }
 
 // ------------------------------------------------------------------ magasin d'événements du lieu
+/**
+ * V5.6 (E19) : journal append-only dédié `VenuePartnerEvent` + projections relationnelles écrites dans la
+ * MÊME transaction (`VenuePartnerAccess`, `VenueWeekday`, `VenueClosure`, `VenueIncident`, contrat sur `Venue`,
+ * `VenuePartnerMfa`). Les anciens événements `DomainEvent` (aggregateType `venue.partner*`) ont été recopiés
+ * par la migration `20261107120100_v5_6` et ne sont plus lus.
+ */
+/** @deprecated V5.6 (E19) : ancien stockage provisoire, recopié par la migration. */
 export const VENUE_PARTNER_AGGREGATE = 'venue.partner';
+/** @deprecated V5.6 (E19). */
 export const VENUE_PARTNER_USER_AGGREGATE = 'venue.partner_user';
 
 type EvRow = { seq: number; occurredAt: Date; type: string; payload: unknown };
@@ -347,59 +444,89 @@ export class PrismaVenuePartnerStore implements VenuePartnerStore {
 
   async load(scope: TxScope | null, venueId: string) {
     const c = scope ? txOf(scope) : this.db;
-    const rows = await c.domainEvent.findMany({ where: { aggregateType: VENUE_PARTNER_AGGREGATE, aggregateId: venueId }, orderBy: { seq: 'asc' }, select: { seq: true, occurredAt: true, type: true, payload: true } });
+    const rows = await c.venuePartnerEvent.findMany({ where: { venueId }, orderBy: { seq: 'asc' }, select: { seq: true, occurredAt: true, type: true, payload: true } });
     return rows.map(toStored);
   }
 
-  /** L'appelant tient le verrou du quartier du lieu : la séquence est sérialisée ; l'unicité la garantit. */
+  /** L'appelant tient le verrou du quartier du lieu : la séquence est sérialisée ; l'unicité (venueId, seq) la garantit. */
   async append(scope: TxScope, venueId: string, event: VenuePartnerEvent, actorUserId: string | null) {
     const tx = txOf(scope);
-    const last = await tx.domainEvent.findFirst({ where: { aggregateType: VENUE_PARTNER_AGGREGATE, aggregateId: venueId }, orderBy: { seq: 'desc' }, select: { seq: true } });
+    const last = await tx.venuePartnerEvent.findFirst({ where: { venueId }, orderBy: { seq: 'desc' }, select: { seq: true } });
     const seq = (last?.seq ?? 0) + 1;
     const { type, ...payload } = event;
-    await tx.domainEvent.create({ data: { id: uuidv7(scope.now.getTime()), aggregateType: VENUE_PARTNER_AGGREGATE, aggregateId: venueId, seq, type, actorUserId, payload: payload as never, occurredAt: scope.now } });
+    await tx.venuePartnerEvent.create({ data: { id: uuidv7(scope.now.getTime()), venueId, seq, type, actorUserId, payload: payload as never, occurredAt: scope.now } });
+    await this.project(scope, venueId, event);
     return seq;
   }
 
+  /** Projections (même transaction que l'événement). */
+  private async project(scope: TxScope, venueId: string, e: VenuePartnerEvent) {
+    const tx = txOf(scope);
+    const now = scope.now;
+    switch (e.type) {
+      case 'ACCESS_GRANTED':
+        await tx.venuePartnerAccess.upsert({ where: { venueId_userId: { venueId, userId: e.userId } }, create: { venueId, userId: e.userId, grantedAt: now }, update: { grantedAt: now, revokedAt: null } });
+        break;
+      case 'ACCESS_REVOKED':
+        await tx.venuePartnerAccess.updateMany({ where: { venueId, userId: e.userId }, data: { revokedAt: now } });
+        break;
+      case 'CONTRACT_SIGNED':
+        await tx.venue.update({ where: { id: venueId }, data: { contractVersion: e.version, contractSignedAt: now, contractSignerName: e.signerName, blowySignedAt: null, blowySignerName: null } });
+        break;
+      case 'DAY_SET':
+        await tx.venueWeekday.upsert({ where: { venueId_isoWeekday: { venueId, isoWeekday: e.isoWeekday } }, create: { venueId, isoWeekday: e.isoWeekday, open: e.open, tables: e.tables, note: e.note, updatedAt: now }, update: { open: e.open, tables: e.tables, note: e.note, updatedAt: now } });
+        break;
+      case 'CLOSURE_ADDED':
+        await tx.venueClosure.create({ data: { id: uuidv7(now.getTime()), venueId, date: e.date, note: e.note, createdAt: now } });
+        break;
+      case 'INCIDENT_REPORTED':
+        await tx.venueIncident.create({ data: { id: e.id, venueId, outingId: e.outingId, firstName: e.firstName, motive: e.motive, note: e.note, seatId: e.seatId ?? null, userId: e.userId ?? null, createdAt: now } });
+        break;
+      case 'PHOTO_CHANGE_REQUESTED':
+        break;
+    }
+  }
+
   async venuesOf(userId: string) {
-    const rows = await this.db.domainEvent.findMany({ where: { aggregateType: VENUE_PARTNER_AGGREGATE, type: { in: ['ACCESS_GRANTED', 'ACCESS_REVOKED'] }, payload: { path: ['userId'], equals: userId } }, orderBy: [{ aggregateId: 'asc' }, { seq: 'asc' }], select: { aggregateId: true, type: true } });
-    const state = new Map<string, boolean>();
-    for (const r of rows) state.set(r.aggregateId, r.type === 'ACCESS_GRANTED');
-    return [...state].filter(([, on]) => on).map(([id]) => id);
+    const rows = await this.db.venuePartnerAccess.findMany({ where: { userId, revokedAt: null }, orderBy: { venueId: 'asc' }, select: { venueId: true } });
+    return rows.map((r) => r.venueId);
   }
 
   async incidents() {
-    const rows = await this.db.domainEvent.findMany({ where: { aggregateType: VENUE_PARTNER_AGGREGATE, type: 'INCIDENT_REPORTED' }, orderBy: { occurredAt: 'desc' }, take: 200, select: { aggregateId: true, occurredAt: true, type: true, payload: true, seq: true } });
-    return rows.map((r) => ({ venueId: r.aggregateId, at: r.occurredAt, event: toStored(r).event as Extract<VenuePartnerEvent, { type: 'INCIDENT_REPORTED' }> }));
+    const rows = await this.db.venueIncident.findMany({ orderBy: { createdAt: 'desc' }, take: 200 });
+    return rows.map((r) => ({
+      venueId: r.venueId,
+      at: r.createdAt,
+      event: { type: 'INCIDENT_REPORTED' as const, id: r.id, outingId: r.outingId, firstName: r.firstName, motive: r.motive as Extract<VenuePartnerEvent, { type: 'INCIDENT_REPORTED' }>['motive'], note: r.note, ...(r.seatId ? { seatId: r.seatId } : {}), ...(r.userId ? { userId: r.userId } : {}) },
+    }));
   }
 
   async partnerMfa(userId: string) {
-    const rows = await this.db.domainEvent.findMany({ where: { aggregateType: VENUE_PARTNER_USER_AGGREGATE, aggregateId: userId }, orderBy: { seq: 'asc' }, select: { type: true } });
-    let generation = 0;
-    let enrolled = false;
-    for (const r of rows) {
-      if (r.type === 'MFA_ENROLLMENT_STARTED') {
-        generation += 1;
-        enrolled = false;
-      } else if (r.type === 'MFA_ENROLLED') enrolled = true;
-    }
-    return { generation, enrolled };
-  }
-
-  private async appendUser(scope: TxScope, userId: string, type: string) {
-    const tx = txOf(scope);
-    const last = await tx.domainEvent.findFirst({ where: { aggregateType: VENUE_PARTNER_USER_AGGREGATE, aggregateId: userId }, orderBy: { seq: 'desc' }, select: { seq: true } });
-    await tx.domainEvent.create({ data: { id: uuidv7(scope.now.getTime()), aggregateType: VENUE_PARTNER_USER_AGGREGATE, aggregateId: userId, seq: (last?.seq ?? 0) + 1, type, actorUserId: userId, payload: {}, occurredAt: scope.now } });
+    const r = await this.db.venuePartnerMfa.findUnique({ where: { userId } });
+    return { generation: r?.generation ?? 0, enrolled: !!r?.enrolledAt };
   }
 
   async startPartnerEnrollment(scope: TxScope, userId: string) {
     await scope.lock.users([userId]);
-    await this.appendUser(scope, userId, 'MFA_ENROLLMENT_STARTED');
-    return (await txOf(scope).domainEvent.count({ where: { aggregateType: VENUE_PARTNER_USER_AGGREGATE, aggregateId: userId, type: 'MFA_ENROLLMENT_STARTED' } }));
+    const r = await txOf(scope).venuePartnerMfa.upsert({ where: { userId }, create: { userId, generation: 1, enrolledAt: null, updatedAt: scope.now }, update: { generation: { increment: 1 }, enrolledAt: null, updatedAt: scope.now } });
+    return r.generation;
   }
 
   async confirmPartnerEnrollment(scope: TxScope, userId: string) {
-    await this.appendUser(scope, userId, 'MFA_ENROLLED');
+    await txOf(scope).venuePartnerMfa.update({ where: { userId }, data: { enrolledAt: scope.now, updatedAt: scope.now } });
+  }
+
+  /** V5.6 (E15) : contre-signature Blowy du contrat bilatéral (staff). */
+  async countersign(scope: TxScope, venueId: string, signerName: string) {
+    const v = await txOf(scope).venue.findUnique({ where: { id: venueId }, select: { contractVersion: true, contractSignedAt: true } });
+    if (!v?.contractSignedAt || !v.contractVersion) return null;
+    await txOf(scope).venue.update({ where: { id: venueId }, data: { blowySignedAt: scope.now, blowySignerName: signerName } });
+    return { version: v.contractVersion, venueSignedAt: v.contractSignedAt, blowySignedAt: scope.now };
+  }
+
+  async contractOf(venueId: string) {
+    const v = await this.db.venue.findUnique({ where: { id: venueId }, select: { contractVersion: true, contractSignedAt: true, contractSignerName: true, blowySignedAt: true, blowySignerName: true, ambiance: true } });
+    return v ?? null;
   }
 }
 

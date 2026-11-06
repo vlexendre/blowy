@@ -7,6 +7,11 @@
 import { Body, Controller, Get, HttpCode, Inject, Param, Post, Put, Query, Req } from '@nestjs/common';
 import {
   ClaimReferralRequestSchema,
+  CreateShareLinkRequestSchema,
+  PublicShareViewSchema,
+  ShareLinkListSchema,
+  ShareLinkViewSchema,
+  ShareSlugSchema,
   InvitePreviewSchema,
   InviteRefSchema,
   OwnAnonymousResponsesSchema,
@@ -21,13 +26,14 @@ import {
   type SubmitAnonymousResponseRequest,
 } from '@blowy/api-contract';
 import type { z } from 'zod';
-import { AppError } from '../../../shared/domain/errors.js';
+import { AppError, Errors } from '../../../shared/domain/errors.js';
 import { Public } from '../../../shared/interface/auth.guard.js';
 import { CommandId, CurrentUser } from '../../../shared/interface/decorators.js';
 import type { AuthenticatedUser, BlowyRequest } from '../../../shared/interface/request-context.js';
 import { ZodPipe } from '../../../shared/interface/zod.pipe.js';
 import { AnonymousResponsesUseCases } from '../application/use-cases/anonymous.use-cases.js';
 import { ReferralUseCases } from '../application/use-cases/referral.use-cases.js';
+import { ShareLinksUseCases } from '../application/use-cases/share-links.use-cases.js';
 import { SOCIAL_QUOTA, type QuotaCounter } from '../application/ports/social.ports.js';
 
 const Slug = new ZodPipe(PublicSlugSchema);
@@ -45,6 +51,7 @@ export class PublicSocialController {
     @Inject(AnonymousResponsesUseCases) private readonly anon: AnonymousResponsesUseCases,
     @Inject(ReferralUseCases) private readonly referrals: ReferralUseCases,
     @Inject(SOCIAL_QUOTA) private readonly quota: QuotaCounter,
+    @Inject(ShareLinksUseCases) private readonly shares: ShareLinksUseCases,
   ) {}
 
   private async throttle(req: BlowyRequest, bucket: string, max: number) {
@@ -65,6 +72,13 @@ export class PublicSocialController {
     return SubmitAnonymousResponseResultSchema.parse(await this.anon.submit(slug, b));
   }
 
+  /** V5.6 (E16) : page publique d'un lien de partage `/s/<slug>` (clic compté, rien gardé du visiteur). */
+  @Get('s/:slug')
+  async share(@Param('slug', new ZodPipe(ShareSlugSchema)) slug: string, @Req() req: BlowyRequest) {
+    await this.throttle(req, 'share', 60);
+    return PublicShareViewSchema.parse(await this.shares.resolve(slug));
+  }
+
   @Get('invites/:ref')
   async invite(@Param('ref', new ZodPipe(InviteRefSchema)) ref: string, @Req() req: BlowyRequest) {
     await this.throttle(req, 'invite', 60);
@@ -77,7 +91,20 @@ export class SocialController {
   constructor(
     @Inject(AnonymousResponsesUseCases) private readonly anon: AnonymousResponsesUseCases,
     @Inject(ReferralUseCases) private readonly referrals: ReferralUseCases,
+    @Inject(ShareLinksUseCases) private readonly shares: ShareLinksUseCases,
   ) {}
+
+  /** V5.6 (E16) : un nouveau lien unique à chaque carte partagée. */
+  @Post('share-links')
+  @HttpCode(200)
+  async createShare(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(CreateShareLinkRequestSchema)) b: z.infer<typeof CreateShareLinkRequestSchema>) {
+    return ShareLinkViewSchema.parse(await this.shares.create(u.userId, b, cid));
+  }
+
+  @Get('me/share-links')
+  async myShares(@CurrentUser() u: AuthenticatedUser) {
+    return ShareLinkListSchema.parse(await this.shares.mine(u.userId));
+  }
 
   @Get('me/anonymous-responses')
   async own(@CurrentUser() u: AuthenticatedUser, @Query(new ZodPipe(PageQuerySchema)) q: { cursor?: string; limit: number }) {
@@ -117,7 +144,13 @@ export class SocialController {
 
   @Post('referrals/claim')
   @HttpCode(200)
-  claim(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(ClaimReferralRequestSchema)) b: z.infer<typeof ClaimReferralRequestSchema>) {
+  async claim(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(ClaimReferralRequestSchema)) b: z.infer<typeof ClaimReferralRequestSchema>) {
+    // V5.6 (E16) : `ref` peut être le slug d'un lien de partage (`/s/<slug>`) — attribution, puis code de parrainage.
+    if (ShareSlugSchema.safeParse(b.ref).success) {
+      const code = await this.shares.attributeSignup(u.userId, b.ref);
+      if (!code) throw Errors.precondition('INVITE_INVALID');
+      return this.referrals.claim(u.userId, code, cid);
+    }
     return this.referrals.claim(u.userId, b.ref, cid);
   }
 

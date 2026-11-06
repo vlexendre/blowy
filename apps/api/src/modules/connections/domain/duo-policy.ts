@@ -9,6 +9,7 @@
  *  - duo né d'une sortie (accord « plus » mutuel) : sans horloge 48 h / J+7 (D-017) ;
  *  - œuf (T9) : drapeau seulement, désactivé par défaut, actif seulement si les deux l'activent.
  */
+import { localParts, wallToUtc } from '@blowy/pet-engine';
 import { DUO_TRANSITIONS, isDuoTerminal, type ConnectionKind, type DuoStatus, type VoteChoice } from '@blowy/domain';
 import type { Tuning } from '@blowy/tuning';
 
@@ -17,7 +18,8 @@ const HOUR = 60 * MIN;
 const DAY = 24 * HOUR;
 
 /** V5.2 H.25 : un duo actif gratuit (toutes origines). Blowy+ : illimité. Demande à B : `duo.freeActiveDuos`. */
-export const FREE_ACTIVE_DUOS = 1;
+/** V5.4 (C.11) : Duo gratuit pour tous, plafond anti-spam commun (repli si le tuning manque). */
+export const FREE_ACTIVE_DUOS = 3;
 /** Un rendez-vous dure ~2 h (fin indicative, page du proche). */
 export const DATE_DURATION_MS = 2 * HOUR;
 /** Pas de rendez-vous proposé moins de 2 h à l'avance (le proche et l'autre doivent pouvoir s'organiser). */
@@ -87,6 +89,14 @@ export function checkinWindow(startsAt: Date, t: Tuning): { opensAt: Date; close
   return { opensAt: new Date(startsAt.getTime() - t.outings.cycle.checkinOpensBeforeMinutes * MIN), closesAt: new Date(startsAt.getTime() + t.outings.cycle.checkinClosesAfterMinutes * MIN) };
 }
 
+/**
+ * V5.6 (E13, §2.13) : un RDV Duo au lieu partenaire est une TABLE DE 2, confirmée au plus tard la veille à
+ * `[T] duo.dateLockHourLocal` (18 h, heure du lieu) pour figurer dans l'effectif envoyé au lieu.
+ */
+export function duoDateLockAt(startsAt: Date, timezone: string, t: Tuning): Date {
+  return new Date(wallToUtc(localParts(startsAt.getTime(), timezone).day - 1, (t.duo.dateLockHourLocal ?? 18) * 60, timezone));
+}
+
 export const isLateCancel = (startsAt: Date, now: Date): boolean => startsAt.getTime() - now.getTime() < LATE_CANCEL_MS;
 
 /** Choix proposés au votant : dépend de lui seul (aucune fuite sur l'autre). */
@@ -105,8 +115,11 @@ export function resolveDuoVote(a: VoteChoice | undefined, b: VoteChoice | undefi
 export const eggEligible = (d: { status: DuoStatus; datesAttended: number }, t: Tuning): boolean => d.status === 'TOGETHER' && d.datesAttended >= t.egg.minDuoDates;
 export const eggActive = (d: { eggOptInLow: boolean; eggOptInHigh: boolean }): boolean => d.eggOptInLow && d.eggOptInHigh;
 
-/** Capacité de duos actifs : 1 gratuit, illimité avec Blowy+. */
-export const duoCapacity = (plus: boolean, free: number = FREE_ACTIVE_DUOS): number => (plus ? Number.POSITIVE_INFINITY : free);
+/**
+ * Capacité de duos actifs. V5.4 (C.11) : le Duo est gratuit pour TOUS, même plafond anti-spam avec ou sans
+ * Blowy+ (Blowy+ ne contient plus aucune fonction numérique) — `plus` est ignoré.
+ */
+export const duoCapacity = (_plus: boolean, free: number = FREE_ACTIVE_DUOS): number => free;
 
 /** Minute locale d'un instant dans un fuseau IANA. */
 export function localMinuteOf(at: Date, timezone: string): number {

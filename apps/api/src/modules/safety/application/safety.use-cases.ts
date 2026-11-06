@@ -14,7 +14,7 @@ import type { Clock, RandomSource } from '../../../shared/application/clock.js';
 import { userRoom, type EventPublisher } from '../../../shared/application/event-publisher.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { AppError, Errors } from '../../../shared/domain/errors.js';
-import { guardianWindow, humanResponseMinutes, inWindow, linkServable, normalizeLabel, projectGuardianPage, supportStaffed, type SafetyTuningSlice, type SubjectFacts } from '../domain/guardian.js';
+import { guardianWindow, helpCallbackTargetMinutes, humanResponseMinutes, inWindow, linkServable, normalizeLabel, projectGuardianPage, supportStaffed, type SafetyTuningSlice, type SubjectFacts } from '../domain/guardian.js';
 import type { OutingSafetyPort } from '../../../shared/application/ports/outing-safety.port.js';
 import type { GuardianPushSender, SafetyCaseSink, SafetyRateLimiter, SafetyRepository, SubjectReader } from './ports/safety.ports.js';
 
@@ -123,7 +123,7 @@ export class SafetyUseCases {
    * Fonctionne même hors fenêtre et même si la place a été retirée : on ne refuse JAMAIS une demande
    * d'aide d'une personne qui a (eu) une place confirmée dans ce sujet.
    */
-  async raiseAlert(userId: string, commandId: string, req: { subject: Subject; position?: { lat: number; lng: number; accuracyM: number } | undefined }) {
+  async raiseAlert(userId: string, commandId: string, req: { subject: Subject }) {
     const { result } = await this.bus.execute({
       actorId: userId,
       operation: 'safety.alert.raise',
@@ -147,7 +147,7 @@ export class SafetyUseCases {
         return { alertId: id };
       },
     });
-    return { alertId: result.alertId, emergencyNumbers: [...EMERGENCY], humanResponseMinutes: humanResponseMinutes(this.tuning) };
+    return { alertId: result.alertId, emergencyNumbers: [...EMERGENCY], humanResponseMinutes: humanResponseMinutes(this.tuning), callbackTargetMinutes: helpCallbackTargetMinutes(this.tuning) };
   }
 
   async resolveAlert(userId: string, commandId: string, alertId: string) {
@@ -245,7 +245,7 @@ export class SafetyUseCases {
         await this.repo.upsertUneasyLeave(scope, { id: this.random.uuid(), userId, outingId: s.id, seatId: r.seatId, notifyGuardian: req.notifyGuardian });
         const notified = req.notifyGuardian && (await this.repo.countActiveLinks(scope, userId, s.kind, s.id, scope.now)) > 0;
         if (notified) await scope.outbox.emit({ topic: 'safety.guardian_notify', aggregateType: 'User', aggregateId: userId, payload: { userId, subjectKind: s.kind, subjectId: s.id, reason: 'LEFT' } });
-        return { left: true as const, guardianNotified: notified, humanResponseMinutes: humanResponseMinutes(this.tuning) };
+        return { left: true as const, guardianNotified: notified, humanResponseMinutes: humanResponseMinutes(this.tuning), callbackTargetMinutes: helpCallbackTargetMinutes(this.tuning) };
       },
     });
     return result;

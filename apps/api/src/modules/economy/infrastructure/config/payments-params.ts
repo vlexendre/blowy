@@ -12,8 +12,11 @@ export function paymentsParamsFromTuning(t: Tuning): PaymentsParams {
     plusIncludesAllOutings: t.plus.includesAllOutings,
     plusDuoUnlimited: t.plus.duoUnlimited,
     // tuning-2026.12.3 (B, publié par l'alignement V5) : plus de valeurs en attente côté API.
-    freeActiveDuos: t.duo.maxActiveFree,
+    freeActiveDuos: t.duo.maxActive,
     venueCompensationFreeSeatCents: t.venues.compensationUnpaidSeatCents,
+    // tuning-2026.12.4 (V5.4).
+    venueCompensationBlowyCancelCents: t.venues.compensationBlowyCancelSeatCents,
+    plusBilling: t.plus.billing,
   };
 }
 

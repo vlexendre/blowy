@@ -1,5 +1,7 @@
 {
   "title": "V5 : Inès ne peut être proposée que dans un seul groupe par semaine (I-O2), double tap, backfill",
-  "notes": [],
+  "notes": [
+    "Backfill : 4 places actives après le départ (aucun·e non placé·e compatible sur ce créneau)."
+  ],
   "absents": []
 }

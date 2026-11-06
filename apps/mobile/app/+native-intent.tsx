@@ -11,6 +11,6 @@ export function redirectSystemPath({ path }: { path: string; initial: boolean })
     const url = /^[a-z][a-z0-9+.-]*:/i.test(path) ? path : `https://blowy.app${path.startsWith('/') ? '' : '/'}${path}`;
     return resolveIncomingUrl(url);
   } catch {
-    return '/nest';
+    return '/home';
   }
 }

@@ -1,6 +1,6 @@
-# Maquettes V5.7 « Ton pet te trouve une bande »
+# Maquettes V5.8 « Ton pet te trouve une bande »
 
-Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de huit documents, du plus ancien au plus récent :
+Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de neuf documents, du plus ancien au plus récent :
 
 - `docs/product/concept-v5.md` ;
 - `concept-v5.1.md` ;
@@ -9,9 +9,10 @@ Ces maquettes servent de référence pixel-perfect au développement. Les règle
 - `concept-v5.4.md` ;
 - `concept-v5.5.md` ;
 - `concept-v5.6.md` ;
-- **`docs/product/concept-v5.7.md`** (A–G), qui prime sur tous les autres.
+- `concept-v5.7.md` ;
+- **`docs/product/concept-v5.8.md`** (règles 1–7, corrections 8–15), qui prime sur tous les autres.
 
-Le tour 8 répond au jury tour 7 (`docs/research/jury/round-7/`, 15 membres à 9, zéro bloquant : chaque « ce qui empêche le 10 » est traité ci-dessous). Le tour 7 répondait au jury tour 6 (`docs/research/jury/round-6/`, bloquant trust-safety : la sortie pour sécurité n'est jamais limitée ni non remboursée). Le tour 6 répondait au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
+Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi et Thomas à 10, les autres à 9, zéro bloquant). Le tour 8 répondait au jury tour 7 (`docs/research/jury/round-7/`, 15 membres à 9, zéro bloquant : chaque « ce qui empêche le 10 » est traité ci-dessous). Le tour 7 répondait au jury tour 6 (`docs/research/jury/round-6/`, bloquant trust-safety : la sortie pour sécurité n'est jamais limitée ni non remboursée). Le tour 6 répondait au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
 
 ## Contenu
 
@@ -26,7 +27,7 @@ Le tour 8 répond au jury tour 7 (`docs/research/jury/round-7/`, 15 membres à 9
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **106 fichiers, 8 069 vérifications, 0 contradiction**.
+  - Résultat : **106 fichiers, 9 066 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
   - Résultat : **106 écrans, 1 647 textes, 583 cibles, 1 702 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
@@ -36,6 +37,35 @@ Le tour 8 répond au jury tour 7 (`docs/research/jury/round-7/`, 15 membres à 9
 - **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x ; les écrans lieu défilent au-delà de 800 px et le canvas prend leur hauteur rendue).
   - Commande : `DESIGN_ROOT=design/v5 NODE_PATH=$(npm root -g) node design/v5/render-v5.mjs .local/dc-runtime.js design/v5/renders [filtre]`.
   - Les 106 rendus de `renders/` ont été régénérés ; tous les écrans modifiés ou nouveaux ont été relus en planches.
+
+### Contrôles ajoutés au tour 9 (`check-facts`)
+
+1. **Frise = carte** : l'heure du jalon « La sortie » est celle de la carte (« 15 h – 17 h » à Lille).
+2. **Aucune sortie promise avant composition** (`facts.ecransAttente` : Attente, Pas-encore, Sortie annulée, Sortie complète, Pas d'accord, Trouvée-Lyon) : phrases interdites (« une sortie a lieu le », « Nino te propose le », « Ta prochaine sortie », « On te propose ») et toute date de sortie dans une phrase avec « si un groupe se forme », « reste ouvert » ou « réponse le ».
+3. **Prénom du duo au double oui** : aucun prénom sur la proposition (`facts.ecransAvantOui`) ; « le prénom, aux visages » banni.
+4. **Tournures uniques** : « oui tous les deux » seulement dans « quand vous avez dit oui tous les deux » ; « intéressant dès la 3e sortie du mois » ; « ≈ N min depuis <quartier de facts.quartiers> » ; « vos deux oui », « double oui », « dans ton quartier », « Rentable » bannis ; numéros : « Les numéros restent masqués jusqu'aux visages. »
+5. **Fiabilité** : toute mention (« fiabilité », « sortie honorée », « Venu à N sortie ») est suivie de « visible par toi seulement ».
+6. **Tranche des personas dans leur groupe** : « 5 personnes · NN–NN ans » contient la tranche du persona de l'écran ; chaque membre du groupe de Lyon a sa tranche (`facts.groupesTranches`).
+7. **Ratons des écrans d'échec** (`facts.ecransEchec`) : 64 pt au plus (`facts.ratonMax`).
+
+## Suivi jury tour 8 (concept-v5.8)
+
+- [x] R1 prénom du duo au double oui : V5-Duo, Duo-hh-proposition, Confidentialité (« ta carte et ton prénom quand vous avez dit oui tous les deux ; ton visage, aux visages »).
+- [x] R2 sortie tombée à la confirmation = « Blowy annule », 3 € HT par place réservée : écran client, Tarifs et contrat disent la même chose (la spec et le code restent à aligner hors maquettes).
+- [x] R3 numéros : « Les numéros restent masqués jusqu'aux visages. » dans le chat du groupe, le menu, le chat avec J. et le chat avec K. (même ligne « Messages filtrés »).
+- [x] R4 fiabilité « visible par toi seulement » : Profil (tuile et en-tête), Fiche, Confidentialité, Sortie annulée, Rupture.
+- [x] R5 Blowy+ : « Intéressant dès la 3e sortie du mois » ; l'écran Blowy+ reprend « Tu sors 2 fois par mois ? Paie à la place. »
+- [x] R6 trajet « ≈ 8 min depuis Paris 11e » partout (Trouvée, Confirmation, Sortie, Tu y vas).
+- [x] R7 « quand vous avez dit oui tous les deux » : Duo, Chats vide, Confidentialité, Consentement, RdvDuo.
+- [x] 8 Lille : frise à 15 h ; Amorçage (avec Jules et Lou) et Amorçage-solo au gabarit commun de Sortie, comme V5-Sortie-lille.
+- [x] 9 Attente (« si un groupe se forme pour le ven. 13 nov., réponse le mar. 10 nov. 21 h » ; « ton créneau du sam. 28 nov. reste ouvert ») et Trouvée-Lyon (« Ton créneau du mar. 24 nov. : si un groupe se forme… »).
+- [x] 10 promesse « vidéo 1 s » retirée ; vignettes 0 s · titre, 2,5 s · dessin, 5 s · lien, visiblement différentes.
+- [x] 11 W-Repondre « comment ses proches le décrivent », ratons de 56 et 64 pt ; écrans d'échec en pastille de 64 pt ; raton du Welcome assis à la 5e place.
+- [x] 12 Lyon : Hugo (persona, 22–25) dans un groupe 22–29 ans, le membre « Hugo » devient Théo ; Trouvée-weekend = proposition de Claire à Lyon, 35–44 ans, sam. 21 nov. 15 h.
+- [x] 13 Duo-hh-rdv au gabarit RdvDuo (3 tuiles d'ange, autre lieu ou autre heure, astreinte « pendant tout ton rendez-vous ») ; ligne « Messages filtrés » dans le chat avec K.
+- [x] 14 contrat : article 3 en liste HT au vouvoiement, règles client en annexe ; effectif : semaine suivante (17–21 nov.) ajoutée.
+- [x] 15 Ta bande : titre détaché du liseré du banc.
+- [x] Fiche : « Venu à 1 sortie sur 1 » reste affiché, suivi de « Ta fiabilité est visible par toi seulement. » (le README V5.7 disait à tort « plus de N sur M » : il s'agit de la formule générique « N sur M », remplacée par les vrais chiffres).
 
 ### Contrôles ajoutés au tour 8 (`check-facts`)
 
@@ -371,7 +401,7 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 
 ## Textes clés (i18n)
 
-Phrases canoniques (V5.7, une par règle, à reprendre mot pour mot) :
+Phrases canoniques (V5.8, une par règle, à reprendre mot pour mot) :
 
 - `regles.securite` : « Pour ta sécurité : toujours possible, sans pénalité, place remboursée. »
 - `regles.connais` : « « Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité. »
@@ -380,16 +410,18 @@ Phrases canoniques (V5.7, une par règle, à reprendre mot pour mot) :
 - `regles.fiabilite` : « Ta fiabilité est visible par toi seulement. »
 - `regles.astreinte` : « Une personne de l’équipe est joignable pendant toute ta sortie. »
 - `regles.rappel` : « Un signalement reçoit une réponse de l’équipe en moins d’1 h pendant toute ta sortie. »
-- `regles.blowyPlus` : « Rentable dès la 3e sortie du mois. »
+- `regles.blowyPlus` : « Intéressant dès la 3e sortie du mois. »
 - `regles.blowyAnnule` : « Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy. »
 - `regles.astreinteRdv` : « Une personne de l’équipe est joignable pendant tout ton rendez-vous. »
 - `regles.astreinteAnge` : « Une personne de l’équipe est joignable pendant toute la sortie d’Alex. »
 - `regles.aide` : « Quelqu’un de l’équipe te rappelle en quelques minutes. »
 - `regles.aideAnge` : « Quelqu’un de l’équipe rappelle Alex en quelques minutes. »
-- `regles.blowyPlusDeux` : « Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie. »
+- `regles.blowyPlusDeux` : « Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie du mois. »
 - `regles.placeVide` : « Place laissée vide après la veille 18 h : le lieu est toujours payé ; par la place du participant en cas d’imprévu ou d’absence, par Blowy si elle est remboursée (sécurité, « je connais quelqu’un ici ») ou offerte. »
 - `regles.captures` : « Les captures d’écran iOS sont signalées à l’équipe. »
 - `regles.aideLieu` : « Quelqu’un de l’équipe vous rappelle en quelques minutes. »
+- `regles.numero` : « Les numéros restent masqués jusqu’aux visages. »
+- `regles.deuxOui` : « quand vous avez dit oui tous les deux »
 
 
 | Clé | Texte |

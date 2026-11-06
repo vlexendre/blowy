@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_TUNING } from '@blowy/tuning';
 import type { MatchProfile } from '@blowy/matching';
-import { canMoveDuo, checkinWindow, dateInRange, duoCapacity, eggActive, eggEligible, exchangeOutcome, isLateCancel, isUnlocked, localDateHour, localMinuteOf, resolveDuoVote, restingStatus, unlockProgress, voteOptionsFor } from '../domain/duo-policy.js';
+import { canMoveDuo, checkinWindow, dateInRange, duoCapacity, duoDateLockAt, eggActive, eggEligible, exchangeOutcome, isLateCancel, isUnlocked, localDateHour, localMinuteOf, resolveDuoVote, restingStatus, unlockProgress, voteOptionsFor } from '../domain/duo-policy.js';
 import { laneCompatible, selectLanePairs, type LaneCandidate } from '../domain/lane.js';
 import { memoryView } from '../application/queries.js';
 
@@ -73,8 +73,10 @@ describe('après-RDV : min, PLUS exige la compatibilité réciproque', () => {
 
 describe('capacité (V5.2 H.25) et œuf (drapeau T9)', () => {
   it('1 duo actif gratuit, illimité Blowy+', () => {
-    expect(duoCapacity(false)).toBe(1);
-    expect(duoCapacity(true)).toBe(Number.POSITIVE_INFINITY);
+    // V5.4 (C.11) : gratuit pour tous, 3 actifs, Blowy+ sans effet.
+    expect(duoCapacity(false)).toBe(3);
+    expect(duoCapacity(true)).toBe(3);
+    expect(duoCapacity(true, 3)).toBe(3);
   });
   it('œuf : TOGETHER + 2 RDV vécus ; actif seulement si les deux', () => {
     expect(eggEligible({ status: 'TOGETHER', datesAttended: 1 }, t)).toBe(false);
@@ -134,5 +136,12 @@ describe('« Ta rue » : décor = souvenirs, jamais de donnée d’autrui non vi
     const v = memoryView({ id: '00000000-0000-7000-8000-000000000001', kind: 'OUTING_LIVED', data: { weekKey: '2026-W47', venueName: 'Café', pets: 5, species: ['NINO', 'X'], secret: 'jamais' }, createdAt: at });
     expect(v[0]).toMatchObject({ kind: 'OUTING_LIVED', labelKey: 'memory.outing_lived', data: { weekKey: '2026-W47', venueName: 'Café', petCount: 5, speciesPresent: ['NINO'] } });
     expect(JSON.stringify(v)).not.toContain('jamais');
+  });
+});
+
+describe('V5.6 (E13) — table de 2 au lieu partenaire', () => {
+  it('confirmée au plus tard la veille à 18 h, heure du lieu (y compris au changement d’heure)', () => {
+    expect(duoDateLockAt(new Date('2026-11-19T18:30:00Z'), 'Europe/Paris', DEFAULT_TUNING).toISOString()).toBe('2026-11-18T17:00:00.000Z');
+    expect(duoDateLockAt(new Date('2026-03-30T17:30:00Z'), 'Europe/Paris', DEFAULT_TUNING).toISOString()).toBe('2026-03-29T16:00:00.000Z');
   });
 });

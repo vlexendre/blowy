@@ -14,7 +14,7 @@ import { useNetwork } from '../../../core/network/network';
 import { useServices } from '../../../core/providers/services';
 import { useSession } from '../../../core/session/session-store';
 import { useRealtimeRoom } from '../../../core/realtime/provider';
-import type { LocalOutgoing } from '../model/messages';
+import { mergeMessages, type LocalOutgoing } from '../model/messages';
 import { createConversationsRepository } from './conversations.repository';
 
 export const convKeys = { list: ['conversations'] as const, messages: (id: string) => ['conversations', id, 'messages'] as const };
@@ -100,7 +100,9 @@ export function useConversation(conversationId: string) {
     [repo, newCommandId],
   );
 
-  return { pages, server, local, revealed, send, reveal, hidden: queue.hiddenScopes.includes(conversationId) };
+  /** Affichage chronologique (serveur + envois locaux non encore reconnus). */
+  const messages = useMemo(() => [...mergeMessages(server, local, revealed)].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [server, local, revealed]);
+  return { pages, server, local, revealed, messages, send, reveal, hidden: queue.hiddenScopes.includes(conversationId) };
 }
 
 export function useSuggestions(conversationId: string, enabled: boolean) {

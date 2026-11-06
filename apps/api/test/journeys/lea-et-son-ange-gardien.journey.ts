@@ -97,7 +97,9 @@ describe('Léa et son ange gardien', () => {
 
   S.step('Léa demande de l\'aide (position jointe) : Maud voit l\'alerte, le lieu et l\'heure — jamais de position ; Léa reçoit l\'accusé', async () => {
     await w.advance(30 * 60_000);
-    const r = await lea!.call('POST', '/v1/safety/alerts', { subject: subject(), position: { lat: 48.86493, lng: 2.37069, accuracyM: 12 } });
+    // V5.6 (E14) : aucune position acceptée — un ancien client qui en joint une reçoit un 400 explicite.
+    expect((await lea!.call('POST', '/v1/safety/alerts', { subject: subject(), position: { lat: 48.86493, lng: 2.37069, accuracyM: 12 } })).status).toBe(400);
+    const r = await lea!.call('POST', '/v1/safety/alerts', { subject: subject() });
     expect(r.ok, JSON.stringify(r.data)).toBe(true);
     expect(r.data).toMatchObject({ emergencyNumbers: ['112', '17'], humanResponseMinutes: 60 });
     alertId = r.data.alertId;

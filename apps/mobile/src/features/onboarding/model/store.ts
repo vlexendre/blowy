@@ -1,9 +1,9 @@
-/** Brouillon d'onboarding persistant (repris à la relance de l'app). */
+/** Brouillon d'onboarding V5 persistant (repris à la relance ; jamais envoyé avant le compte). */
 import { create } from 'zustand';
 import type { StoragePort } from '../../../core/ports/storage';
 import { initialDraft, type OnboardingDraft } from './flow';
 
-const KEY = 'blowy.onboarding.draft.v1';
+export const ONBOARDING_DRAFT_KEY = 'blowy.onboarding.v5';
 let storage: StoragePort | null = null;
 
 interface OnboardingStore extends OnboardingDraft {
@@ -23,13 +23,13 @@ export const useOnboarding = create<OnboardingStore>((set, get) => ({
   hydrated: false,
   patch(p) {
     set(p);
-    void storage?.setItem(KEY, JSON.stringify(pickDraft(get())));
+    void storage?.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(pickDraft(get())));
   },
   async hydrate(s) {
     storage = s;
-    const raw = await s.getItem(KEY);
     let saved: Partial<OnboardingDraft>;
     try {
+      const raw = await s.getItem(ONBOARDING_DRAFT_KEY);
       saved = raw ? (JSON.parse(raw) as Partial<OnboardingDraft>) : {};
     } catch {
       saved = {};
@@ -38,6 +38,6 @@ export const useOnboarding = create<OnboardingStore>((set, get) => ({
   },
   reset() {
     set({ ...initialDraft });
-    void storage?.removeItem(KEY);
+    void storage?.removeItem(ONBOARDING_DRAFT_KEY);
   },
 }));

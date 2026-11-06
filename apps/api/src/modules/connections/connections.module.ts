@@ -37,6 +37,8 @@ import { ConnectionQueries } from './application/queries.js';
 import { PrismaConnectionsRepository } from './infrastructure/prisma-connections.repository.js';
 import { ConnectionsController } from './interface/connections.controller.js';
 
+import { ONCALL_COVERAGE, type OnCallCoverage } from '../../shared/application/ports/oncall-coverage.port.js';
+
 export const CONNECTIONS_TUNING = Symbol('ConnectionsTuning');
 export const CONNECTIONS_DEPS = Symbol('ConnectionsDeps');
 export const CONNECTIONS_JOBS = Symbol('ConnectionsJobs');
@@ -54,12 +56,12 @@ const MIN = 60_000;
     { provide: DuoEnding, useFactory: (r: ConnectionsRepository, c: GroupChatPort, e: DuoEvents) => new DuoEnding(r, c, e), inject: [CONNECTIONS_REPOSITORY, GROUP_CHAT_PORT, DuoEvents] },
     {
       provide: CONNECTIONS_DEPS,
-      useFactory: (repo: ConnectionsRepository, bus: CommandBus, uow: UnitOfWork, chat: GroupChatPort, memories: PetMemoryPort, reliability: ReliabilityPort, photos: PhotoTokenIssuer, entitlements: EntitlementsReader | null, blocks: BlockReader, events: DuoEvents, ending: DuoEnding, random: RandomSource, clock: Clock, tuning: Tuning, cfg: AppConfig, allowance: DuoAllowanceReader | null): ConnectionsDeps => {
+      useFactory: (repo: ConnectionsRepository, bus: CommandBus, uow: UnitOfWork, chat: GroupChatPort, memories: PetMemoryPort, reliability: ReliabilityPort, photos: PhotoTokenIssuer, entitlements: EntitlementsReader | null, blocks: BlockReader, events: DuoEvents, ending: DuoEnding, random: RandomSource, clock: Clock, tuning: Tuning, cfg: AppConfig, allowance: DuoAllowanceReader | null, oncall: OnCallCoverage | null): ConnectionsDeps => {
         // Secret d'un lieu = HMAC(base serveur, référence du lieu) — même dérivation que les sorties.
         const base = cfg.MEDIA_TOKEN_SECRET ?? cfg.SESSION_SECRET;
-        return { repo, bus, uow, chat, memories, reliability, photos, entitlements: entitlements ?? null, allowance: allowance ?? null, blocks, events, ending, random, clock, tuning, secretOf: (ref) => createHmac('sha256', base).update(`venue-checkin:${ref}`).digest('hex') };
+        return { repo, bus, uow, chat, memories, reliability, photos, entitlements: entitlements ?? null, allowance: allowance ?? null, blocks, events, ending, random, clock, tuning, oncall: oncall ?? null, secretOf: (ref) => createHmac('sha256', base).update(`venue-checkin:${ref}`).digest('hex') };
       },
-      inject: [CONNECTIONS_REPOSITORY, COMMAND_BUS, UNIT_OF_WORK, GROUP_CHAT_PORT, PET_MEMORY_PORT, RELIABILITY_PORT, PHOTO_TOKEN_ISSUER, { token: ENTITLEMENTS_READER, optional: true }, BLOCK_READER, DuoEvents, DuoEnding, RANDOM, CLOCK, CONNECTIONS_TUNING, APP_CONFIG, { token: DUO_ALLOWANCE, optional: true }],
+      inject: [CONNECTIONS_REPOSITORY, COMMAND_BUS, UNIT_OF_WORK, GROUP_CHAT_PORT, PET_MEMORY_PORT, RELIABILITY_PORT, PHOTO_TOKEN_ISSUER, { token: ENTITLEMENTS_READER, optional: true }, BLOCK_READER, DuoEvents, DuoEnding, RANDOM, CLOCK, CONNECTIONS_TUNING, APP_CONFIG, { token: DUO_ALLOWANCE, optional: true }, { token: ONCALL_COVERAGE, optional: true }],
     },
     { provide: DuoUseCases, useFactory: (x: ConnectionsDeps) => new DuoUseCases(x), inject: [CONNECTIONS_DEPS] },
     { provide: DuoLifecycle, useFactory: (x: ConnectionsDeps, d: DuoUseCases) => new DuoLifecycle(x, d), inject: [CONNECTIONS_DEPS, DuoUseCases] },

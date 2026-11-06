@@ -15,3 +15,4 @@ export * from './StatusPill';
 export * from './NumberStepper';
 export * from './PetSprite';
 export * from './OrbitRing';
+export * from './v5';

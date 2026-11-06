@@ -15,7 +15,8 @@ import {
   OUTING_WEEK_PHASES,
   REFUND_MODES,
   REFUND_STATES,
-  SEAT_CANCEL_REQUEST_KINDS,
+  OUTING_CANCEL_REQUEST_KINDS,
+  OUTING_REQUEST_MODES,
   SEAT_FUNDINGS,
   SEAT_STATUSES,
   VOTE_CHOICES,
@@ -65,6 +66,8 @@ export const OUTING_FAILURE_REASONS = [
   'MEDIA_NOT_ALLOWED',
   'TEAM_INVALID',
   'WEEK_OFF',
+  /** V5.5 (D-056) : « imprévu » déjà utilisé dans les 30 derniers jours. */
+  'EMERGENCY_QUOTA',
   'KNOWS_SOMEONE_NOT_AVAILABLE',
   // 409
   'WEEKLY_QUOTA_USED',
@@ -82,6 +85,8 @@ export const OutingRequestViewSchema = z.object({
   slotStartsAt: z.array(IsoDateTimeSchema).min(1).max(3),
   /** Demande faite avec ma team (V5.1 B.7). */
   teamId: UuidSchema.optional(),
+  /** V5.5 (D-061) : `FRIENDS_THIS_WEEK` = « sortir quand même, en amitié » cette semaine. */
+  mode: z.enum(OUTING_REQUEST_MODES).optional(),
   createdAt: IsoDateTimeSchema,
 });
 export type OutingRequestView = z.infer<typeof OutingRequestViewSchema>;
@@ -98,6 +103,14 @@ export const OutingWeekViewSchema = z.object({
   /** Non placé·e la semaine précédente : prioritaire (jamais une position). */
   priorityNextWeek: z.boolean(),
   pausedUntil: IsoDateTimeSchema.optional(),
+  /**
+   * V5.5 (D-061) : état honnête, pour moi seul·e qui cherche une histoire, calculé sur la VILLE et MES créneaux
+   * AVANT toute composition : pas encore assez de personnes compatibles → je peux sortir en amitié
+   * (`mode: FRIENDS_THIS_WEEK`) ou attendre. Ne désigne personne ; jamais après la composition.
+   */
+  storyFeasibility: z.literal('NOT_ENOUGH_ON_SLOTS').optional(),
+  /** V5.5 (D-053) : prochaine composition qui me concerne (J − 3 21 h du plus proche de mes créneaux). */
+  composeAt: IsoDateTimeSchema.optional(),
 });
 export type OutingWeekView = z.infer<typeof OutingWeekViewSchema>;
 
@@ -109,13 +122,19 @@ export type OutingWeekView = z.infer<typeof OutingWeekViewSchema>;
 export const PutOutingRequestSchema = z.object({
   slotStartsAt: z.array(IsoDateTimeSchema).min(1).max(7).refine((a) => new Set(a).size === a.length, { message: 'créneau en double' }).optional(),
   teamId: UuidSchema.optional(),
+  /** V5.5 (D-061) : « sortir quand même, en amitié » cette semaine (après l'état honnête). */
+  mode: z.enum(OUTING_REQUEST_MODES).optional(),
 });
 export type PutOutingRequest = z.infer<typeof PutOutingRequestSchema>;
 
 // ---------------------------------------------------------------- vue de sortie (§7.5)
-export const SeatCancelKindResultSchema = z.enum(['EARLY', 'LATE', 'SAFETY_EXIT']);
-/** V5.1 (E.16) : après le verrouillage, annuler = absence (sans remboursement, sauf motif sécurité). */
-export const SeatCancelPreviewSchema = z.object({ cancelKind: SeatCancelKindResultSchema, refund: RefundModeSchema, countsAsAbsence: z.boolean() });
+export const SeatCancelKindResultSchema = z.enum(['EARLY', 'LATE', 'SAFETY_EXIT', 'EMERGENCY']);
+/**
+ * V5.1 (E.16) : après le verrouillage, annuler = absence (sans remboursement, sauf motif sécurité).
+ * V5.4 (B.8) : `EMERGENCY` (« imprévu », 1 par trimestre) après la confirmation = aucune absence, place non
+ * remboursée (`refund: NONE`) ; `emergencyAvailable` dit au lecteur (lui seul) s'il lui reste son imprévu du trimestre.
+ */
+export const SeatCancelPreviewSchema = z.object({ cancelKind: SeatCancelKindResultSchema, refund: RefundModeSchema, countsAsAbsence: z.boolean(), emergencyAvailable: z.boolean().optional() });
 export type SeatCancelPreview = z.infer<typeof SeatCancelPreviewSchema>;
 
 export const MySeatViewSchema = z
@@ -151,11 +170,23 @@ export const OutingVenueViewSchema = z
     photoUrl: z.string().url().optional(),
     /** Nom de la réservation au lieu (« Blowy »), jamais le pet (G.22). */
     bookingName: z.string().optional(),
-    lat: z.number().min(-90).max(90),
-    lng: z.number().min(-180).max(180),
+    // V5.5 (D-062) : `lat`/`lng` retirés (check-in par code uniquement, aucune position côté client).
+    /** V5.6 (E11) : trajet typique depuis MON quartier (« ≈ 25 min »), seulement si la table de trajets le connaît. */
+    travelMinutes: z.number().int().positive().optional(),
+    /** Le trajet est une estimation (aucune valeur ops : centres de quartier, jamais une position). */
+    travelEstimated: z.literal(true).optional(),
+    /** V5.7 (E30, D-080) : message d'accueil écrit par le lieu — places confirmées, à partir de la confirmation. */
+    welcomeMessage: z.string().max(280).optional(),
+    /** V5.6 (B.14) : ambiance du lieu (« lieu calme » / « lieu animé ») ; absente = convient à tous. */
+    ambiance: z.enum(['CALM', 'LIVELY']).optional(),
   })
   .strict();
 
+/**
+ * V5.6 (D-076, E24) : la fiabilité n'est visible que par soi (`GET /v1/me/reliability`) ; ce schéma ne
+ * figure plus dans aucune vue d'autrui (membres de sortie, bande, duo). Gardé exporté pour compatibilité.
+ * @deprecated
+ */
 export const MemberReliabilitySchema = z.union([z.object({ attended: z.number().int().nonnegative(), total: z.number().int().positive() }).strict(), z.literal('NEWCOMER')]);
 
 export const ActivityKindSchemaV5 = z.enum(ACTIVITY_KINDS);
@@ -189,10 +220,11 @@ export const OutingMemberViewSchema = z
     threeWords: z.array(ThreeWordSchema).max(3),
     firstName: z.string().optional(),
     ageRange: AgeRangeSchema.optional(),
-    reliability: MemberReliabilitySchema.optional(),
     photo: RevealedPhotoSchema.optional(),
     /** Membre de ma team (V5.1). */
     inMyTeam: z.literal(true).optional(),
+    /** V5.7 (E32, D-084) : « je préfère le calme » choisi par la personne (opt-in), à partir de FORMING. */
+    calm: z.literal(true).optional(),
     /** Seulement pendant CHECKIN_OPEN. */
     arrived: z.literal(true).optional(),
     /** « X ne pourra pas venir » (sans motif). */
@@ -224,14 +256,15 @@ export const OutingViewSchema = z
     conversationId: UuidSchema.optional(),
     votes: z.object({ open: z.boolean(), closesAt: IsoDateTimeSchema }).strict().optional(),
     cancelled: z.object({ reason: z.enum(OUTING_PUBLIC_CANCEL_REASONS), refund: RefundModeSchema }).strict().optional(),
-    /**
-     * V5.3 A.1 / D-038 : seulement pour le lecteur qui cherche une histoire et pour qui la garantie
-     * n'a pas pu être tenue : « Cette semaine, sortie entre amis pour toi » (sans chiffre). La garantie
-     * positive n'est JAMAIS exposée (l'ancien `AT_LEAST_TWO` est retiré du contrat).
-     */
-    storyMatch: z.literal('FRIENDS_ONLY').optional(),
+    // V5.4 A.1 : plus AUCUN signal de compatibilité (`storyMatch` / « sortie entre amis pour toi » retiré :
+    // sa présence ou son absence, croisée avec la composition, désignerait quelqu'un). La garantie reste
+    // appliquée en silence par la composition. Vue `.strict()` : un tel champ ferait échouer le contrat.
     /** V5.2 (C.10) : « je connais quelqu'un ici » possible (visages révélés, avant le début). */
     knowsSomeoneAvailable: z.literal(true).optional(),
+    /** V5.6 (§7.5) : `YOU` si l'activité est l'une de MES activités cochées ; sinon « choisie selon le lieu et vos envies ». */
+    activityChosenBy: z.enum(['YOU', 'VENUE_AND_GROUP']).optional(),
+    /** V5.6 (§7.5, D-058) : une sortie n'existe que sous astreinte — toujours `covered: true`. */
+    oncall: z.object({ covered: z.literal(true) }).strict().optional(),
   })
   .strict();
 export type OutingView = z.infer<typeof OutingViewSchema>;
@@ -254,7 +287,7 @@ export const SeatAcceptResponseSchema = z.object({
 export type SeatAcceptResponse = z.infer<typeof SeatAcceptResponseSchema>;
 
 /** `POST /v1/outings/:id/seat/cancel` ; aperçu sans effet : `GET …/seat/cancel-preview` (même réponse). */
-export const SeatCancelRequestSchema = z.object({ kind: z.enum(SEAT_CANCEL_REQUEST_KINDS) });
+export const SeatCancelRequestSchema = z.object({ kind: z.enum(OUTING_CANCEL_REQUEST_KINDS) });
 export type SeatCancelRequest = z.infer<typeof SeatCancelRequestSchema>;
 export const SeatCancelResponseSchema = SeatCancelPreviewSchema;
 export type SeatCancelResponse = z.infer<typeof SeatCancelResponseSchema>;
@@ -267,17 +300,21 @@ export type SeatCancelResponse = z.infer<typeof SeatCancelResponseSchema>;
  */
 export const KnowsSomeoneRequestSchema = z.object({ userId: UuidSchema });
 export type KnowsSomeoneRequest = z.infer<typeof KnowsSomeoneRequestSchema>;
-export const KnowsSomeoneResponseSchema = z.object({ status: z.enum(['MOVED', 'IN_REVIEW', 'COUNTED_AS_CANCEL']) }).strict();
+/**
+ * V5.6 (A.1, E18, E23) : `MOVED` = déplacé·e vers un autre groupe du créneau (`newOutingId`) ou, faute de place,
+ * retiré·e sans pénalité et remboursé·e ; `IN_REVIEW` = examen humain (lien inconnu) ; `SAFETY_REVIEW` = au-delà
+ * d'1 déplacement par mois : sortie pour raison de sécurité (remboursée, sans pénalité) examinée par un humain.
+ * `COUNTED_AS_CANCEL` n'est plus jamais renvoyé (gardé pour les anciens clients).
+ */
+export const KnowsSomeoneResponseSchema = z.object({ status: z.enum(['MOVED', 'IN_REVIEW', 'SAFETY_REVIEW', 'COUNTED_AS_CANCEL']), newOutingId: UuidSchema.optional() }).strict();
 
 // ---------------------------------------------------------------- check-in (§2.8) — partagé avec les RDV duo
 /**
- * Une position ponctuelle au tap (jamais stockée, jamais de distance renvoyée), ou le code à
- * 4 chiffres affiché au lieu.
+ * V5.5 (D-062) : check-in **par le code à 4 chiffres du chevalet UNIQUEMENT** (sorties et RDV duo). Plus
+ * aucune géolocalisation, ni demandée ni acceptée : tout champ de position (`lat`, `lng`, `accuracyM`,
+ * `method: 'GEO'`) → 400 `VALIDATION_FAILED` (contrat `.strict()`).
  */
-export const CheckInRequestSchema = z.discriminatedUnion('method', [
-  z.object({ method: z.literal('GEO'), lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180), accuracyM: z.number().min(0).max(100_000) }),
-  z.object({ method: z.literal('VENUE_CODE'), code: z.string().regex(/^\d{4}$/) }),
-]);
+export const CheckInRequestSchema = z.object({ method: z.literal('VENUE_CODE').optional(), code: z.string().regex(/^\d{4}$/) }).strict();
 export type CheckInRequest = z.infer<typeof CheckInRequestSchema>;
 export const CheckInResponseSchema = z.object({ result: z.literal('ACCEPTED') });
 export const CheckInResultSchema = z.enum(CHECKIN_RESULTS);

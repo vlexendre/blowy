@@ -18,11 +18,13 @@ export interface SpriteProps {
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
   contentFit?: 'contain' | 'cover';
+  /** `object-position` (photos recadrées), ex. `{ top: '35%', left: '50%' }`. */
+  contentPosition?: { top?: string; left?: string };
   /** Initiale affichée dans le placeholder. */
   placeholderInitial?: string;
 }
 
-export function Sprite({ path, size, height, flip, accessibilityLabel, style, contentFit = 'contain', placeholderInitial }: SpriteProps) {
+export function Sprite({ path, size, height, flip, accessibilityLabel, style, contentFit = 'contain', contentPosition, placeholderInitial }: SpriteProps) {
   const source = useSpriteSource(path);
   const h = height ?? size;
   const a11y = accessibilityLabel ? { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel } : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const };
@@ -37,7 +39,7 @@ export function Sprite({ path, size, height, flip, accessibilityLabel, style, co
   }
   return (
     <View {...a11y} style={[{ width: size, height: h }, flip && styles.flip, style]}>
-      <Image source={source} style={StyleSheet.absoluteFill} contentFit={contentFit} transition={0} cachePolicy="memory-disk" />
+      <Image source={source} style={StyleSheet.absoluteFill} contentFit={contentFit} contentPosition={contentPosition as never} transition={0} cachePolicy="memory-disk" />
     </View>
   );
 }

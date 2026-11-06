@@ -34,6 +34,6 @@ export interface OutingSafetyPort {
    * Décision humaine sur un « je connais quelqu'un » en examen : accepté → retrait sans pénalité
    * (remboursé, prioritaire) si la sortie n'a pas commencé ; refusé → la place reste.
    */
-  resolveKnowsSomeone(scope: TxScope, i: { seatId: string; accept: boolean }): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' } | null>;
+  resolveKnowsSomeone(scope: TxScope, i: { seatId: string; accept: boolean }): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' | 'REVIEWED' } | null>;
 }
 export const OUTING_SAFETY_PORT = Symbol.for('blowy.outings.safety');

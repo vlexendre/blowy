@@ -10,6 +10,11 @@ import {
   OutingCancelRequestSchema,
   OutingListQuerySchema,
   ReasonOnlyRequestSchema,
+  OnCallShiftCreateRequestSchema,
+  OnCallShiftListQuerySchema,
+  TravelTimeUpsertRequestSchema,
+  NeighborhoodCenterRequestSchema,
+  VenueCountersignRequestSchema,
   SafetyAlertReadQuerySchema,
   SafetyListQuerySchema,
   SlotTemplateRequestSchema,
@@ -73,6 +78,40 @@ export class AdminOpsController {
   @Post('venues/:id/partners')
   partners(@Staff() s: AdminActor, @Param('id', Id) id: string, @CommandId() cid: string, @Body(q(VenuePartnerAccessRequestSchema)) b: z.infer<typeof VenuePartnerAccessRequestSchema>) {
     return this.ops.partnerAccess(s, id, b, cid);
+  }
+
+  // V5.6 (E15) : contrat bilatéral — contre-signature Blowy.
+  @Post('venues/:id/contract/countersign')
+  countersign(@Staff() s: AdminActor, @Param('id', Id) id: string, @CommandId() cid: string, @Body(q(VenueCountersignRequestSchema)) b: z.infer<typeof VenueCountersignRequestSchema>) {
+    return this.ops.countersignContract(s, id, b, cid);
+  }
+
+  // V5.6 (E12) : planning d'astreinte.
+  @Get('oncall/shifts')
+  onCall(@Staff() s: AdminActor, @Query(q(OnCallShiftListQuerySchema)) x: z.infer<typeof OnCallShiftListQuerySchema>) {
+    return this.ops.onCallPlanning(s, x);
+  }
+  @Post('oncall/shifts')
+  createShift(@Staff() s: AdminActor, @CommandId() cid: string, @Body(q(OnCallShiftCreateRequestSchema)) b: z.infer<typeof OnCallShiftCreateRequestSchema>) {
+    return this.ops.createOnCallShift(s, b, cid);
+  }
+  @Post('oncall/shifts/:id/delete')
+  deleteShift(@Staff() s: AdminActor, @Param('id', Id) id: string, @CommandId() cid: string, @Body(q(ReasonOnlyRequestSchema)) b: { reason: string }) {
+    return this.ops.deleteOnCallShift(s, id, b.reason, cid);
+  }
+
+  // V5.6 (E11) : temps de trajet entre quartiers.
+  @Get('neighborhoods/:id/travel-times')
+  travelTimes(@Staff() s: AdminActor, @Param('id', Id) id: string) {
+    return this.ops.travelTimes(s, id);
+  }
+  @Put('neighborhoods/:id/center')
+  center(@Staff() s: AdminActor, @Param('id', Id) id: string, @CommandId() cid: string, @Body(q(NeighborhoodCenterRequestSchema)) b: z.infer<typeof NeighborhoodCenterRequestSchema>) {
+    return this.ops.setNeighborhoodCenter(s, id, b, cid);
+  }
+  @Post('travel-times')
+  upsertTravelTime(@Staff() s: AdminActor, @CommandId() cid: string, @Body(q(TravelTimeUpsertRequestSchema)) b: z.infer<typeof TravelTimeUpsertRequestSchema>) {
+    return this.ops.upsertTravelTime(s, b, cid);
   }
 
   // Sorties

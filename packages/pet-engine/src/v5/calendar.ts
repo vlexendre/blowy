@@ -26,13 +26,28 @@ export function mondayOfWeek(weekKey: WeekKey): number {
   return jan4 - (isoWeekdayOfDay(jan4) - 1) + 7 * (Number(m[2]) - 1);
 }
 
-/** Fenêtre de demande d'une semaine (lundi 9 h → mardi 12 h, heure du quartier). */
+/**
+ * V5.5 (D-053) : instant de composition d'un jour de créneau = J − `composeDaysBefore` à `composeHourLocal` h
+ * (heure de la ville). `day` = numéro de jour local du créneau.
+ */
+export const composeAtOfDay = (day: number, tz: string, t: Tuning): number => wallToUtc(day - t.outings.cycle.composeDaysBefore, t.outings.cycle.composeHourLocal * 60, tz);
+
+/** Instant de composition du créneau qui commence à `startsAtMs`. */
+export const composeAtOf = (startsAtMs: number, tz: string, t: Tuning): number => composeAtOfDay(localParts(startsAtMs, tz).day, tz, t);
+
+/**
+ * Fenêtre de demande d'une semaine (V5.5, D-053) : ouverture le `requestOpensIsoWeekday` à `requestOpensHourLocal` h
+ * de la semaine W − `requestOpensWeeksBefore` (vendredi 21 h de W−1) ; fermeture à la composition du DERNIER
+ * jour de créneau de la semaine (dimanche → jeudi 21 h). Un créneau n'est demandable que jusqu'à sa propre
+ * composition (`composeAtOf`).
+ */
 export function requestWindow(weekKey: WeekKey, tz: string, t: Tuning): { opensAtMs: number; closesAtMs: number } {
   const c = t.outings.cycle;
   const monday = mondayOfWeek(weekKey);
+  const lastDay = Math.max(...c.slotIsoWeekdays);
   return {
-    opensAtMs: wallToUtc(monday + c.requestOpensIsoWeekday - 1, c.requestOpensHourLocal * 60, tz),
-    closesAtMs: wallToUtc(monday + c.requestClosesIsoWeekday - 1, c.requestClosesHourLocal * 60, tz),
+    opensAtMs: wallToUtc(monday - 7 * c.requestOpensWeeksBefore + c.requestOpensIsoWeekday - 1, c.requestOpensHourLocal * 60, tz),
+    closesAtMs: composeAtOfDay(monday + lastDay - 1, tz, t),
   };
 }
 

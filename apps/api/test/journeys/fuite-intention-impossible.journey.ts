@@ -26,7 +26,8 @@ beforeAll(async () => {
 afterAll(async () => w?.close());
 
 /** V5.2 B + jury tour 3 : ni libellé positif, ni champ de garantie, dans aucune vue HTTP/WS. */
-const GUARANTEE = /AT_LEAST_TWO|guarantee|garantie|friendsOnly|storyCompatible/i;
+// V5.4 A.1 : plus aucun signal de compatibilité, ni positif ni négatif (« entre amis pour toi » retiré).
+const GUARANTEE = /AT_LEAST_TWO|guarantee|garantie|friendsOnly|storyCompatible|storyMatch|FRIENDS_ONLY|entre amis/i;
 
 /** Marqueurs secrets propres à ce parcours (valeurs de sous-choix, genres recherchés). */
 const SECRET = ['SERIOUS', 'SEE_HOW_IT_GOES', 'DONT_KNOW', 'STORY', 'BOTH', '"FRIENDS"', '1996-', '1997-', '1999-'];
@@ -78,7 +79,7 @@ describe('Fuite zéro', () => {
     expect(await stranger.phone.join(`outing:${outingId}`)).toBe(false);
   });
 
-  S.step('« Histoire » : Alice a la garantie (Bruno, David) appliquée par la composition mais jamais affichée ; Chloé ne voit rien', async () => {
+  S.step('« Histoire » : Alice a la garantie (Bruno, David) appliquée par la composition mais jamais affichée ; Chloé ne voit rien (V5.4 A.1 : aucun signal, positif ou négatif)', async () => {
     const [alice, , chloe] = people;
     expect((await outing(alice!, outingId)).data.storyMatch).toBeUndefined();
     expect(JSON.stringify((await outing(alice!, outingId)).data)).not.toMatch(GUARANTEE);

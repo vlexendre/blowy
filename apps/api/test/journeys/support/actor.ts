@@ -35,6 +35,8 @@ export interface PersonSpec {
   vision?: Vision;
   ageMin?: number;
   ageMax?: number;
+  /** V5.4 (A.5) : choix « Discret » / « Normal » à l’onboarding (défaut des parcours : Normal). */
+  discreetMode?: boolean;
 }
 
 export const DEFAULT_VISION: Vision = {
@@ -214,6 +216,8 @@ export class Person {
     const pet = await this.client.pets.create({ name: s.petName ?? `${s.displayName}-pet`, species: s.species ?? 'NINO', vision: (s.vision ?? DEFAULT_VISION) as any });
     this.petId = pet.id;
     await this.client.me.startVerification('SELFIE_QUALITY');
+    // V5.4 (A.5) : choix explicite « Discret » / « Normal » (aucun défaut).
+    await this.client.me.setPrivacy({ discreetMode: s.discreetMode ?? false });
     await this.client.me.completeOnboarding();
   }
 

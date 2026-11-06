@@ -54,6 +54,8 @@ const dateRow = (d: DateRecord): DuoDateRow => ({
   votesClosedAt: d.votesClosedAt,
   cancelledByUserId: d.cancelledByUserId,
   lateCancel: d.lateCancel,
+  reservationLockedAt: (d.reservationLockedAt as Date | null | undefined) ?? null,
+  venueSlotId: (d.venueSlotId as string | null | undefined) ?? null,
 });
 
 type VenueRecord = { id: string; name: string; addressLine: string; postalCode: string; city: string; neighborhoodId: string; lat: number; lng: number; checkinSecretRef: string; neighborhood: { timezone: string } };
@@ -126,6 +128,7 @@ export class PrismaConnectionsRepository implements ConnectionsRepository {
         OR EXISTS (SELECT 1 FROM "DuoDate" x WHERE x."duoId" = d.id AND (
              (x.status = 'PROPOSED' AND x."startsAt" <= ${at})
           OR (x.status = 'CONFIRMED' AND x."startsAt" + make_interval(mins => ${this.tuning.outings.cycle.checkinClosesAfterMinutes}) <= ${at})
+          OR (x.status = 'CONFIRMED' AND x."reservationLockedAt" IS NULL AND x."startsAt" <= ${new Date(at.getTime() + 31 * 3_600_000)})
           OR (x.status = 'DONE' AND x."votesCloseAt" <= ${at} AND x."votesClosedAt" IS NULL)))
       ORDER BY d.id LIMIT ${limit}`;
     return rows.map((r) => r.id);
@@ -168,7 +171,11 @@ export class PrismaConnectionsRepository implements ConnectionsRepository {
     await txOf(scope).duoDate.create({ data: { ...d, status: 'PROPOSED', createdAt: scope.now, updatedAt: scope.now } });
   }
 
-  async updateDate(scope: TxScope, dateId: string, patch: Partial<Pick<DuoDateRow, 'status' | 'checkinLowAt' | 'checkinHighAt' | 'votesCloseAt' | 'votesClosedAt' | 'cancelledByUserId' | 'lateCancel'>> & { ballotsPurgedAt?: Date }) {
+  async venueSlotAt(venueId: string, startsAt: Date) {
+    return (await this.db.venueSlot.findUnique({ where: { venueId_startsAt: { venueId, startsAt } }, select: { id: true } }))?.id ?? null;
+  }
+
+  async updateDate(scope: TxScope, dateId: string, patch: Partial<Pick<DuoDateRow, 'status' | 'checkinLowAt' | 'checkinHighAt' | 'votesCloseAt' | 'votesClosedAt' | 'cancelledByUserId' | 'lateCancel' | 'reservationLockedAt' | 'venueSlotId'>> & { ballotsPurgedAt?: Date }) {
     await txOf(scope).duoDate.update({ where: { id: dateId }, data: { ...patch, updatedAt: scope.now, version: { increment: 1 } } });
   }
 
@@ -297,6 +304,8 @@ export class PrismaConnectionsRepository implements ConnectionsRepository {
         lookingFor,
         storySeriousness: p?.storySeriousness ?? null,
         kidsSomeday: p?.kidsSomeday ?? null,
+        kidsHorizon: p?.kidsHorizon ?? null,
+        storyAgeBrackets: p?.storyAgeBrackets ?? [],
         meetingMode: p?.meetingMode ?? null,
         meetGenders: (p?.meetGenders ?? []) as Gender[],
         romanceGenders: seeksOf(lookingFor).romance ? ((p?.romanceGenders ?? []) as Gender[]) : [],
@@ -339,7 +348,8 @@ export class PrismaConnectionsRepository implements ConnectionsRepository {
   async laneExcludedPairs(userIds: string[], since: Date) {
     const facts = await compositionFacts(this.db, userIds);
     const recent = await this.db.matchProposal.findMany({ where: { userLowId: { in: userIds }, userHighId: { in: userIds }, OR: [{ status: 'OPEN' }, { kind: 'DUO_LANE', createdAt: { gte: since } }] }, select: { userLowId: true, userHighId: true } });
-    return new Set([...facts.blockedPairs, ...facts.metPairs, ...recent.map((r) => pairKey(r.userLowId, r.userHighId))]);
+    // V5.4 (A.6) : une personne « connue » (contacts évités) n'est jamais proposée en Duo non plus.
+    return new Set([...facts.blockedPairs, ...facts.metPairs, ...(facts.knownContactPairs ?? []), ...recent.map((r) => pairKey(r.userLowId, r.userHighId))]);
   }
 
   async openLaneProposalCount(scope: TxScope | null, userId: string, at: Date) {

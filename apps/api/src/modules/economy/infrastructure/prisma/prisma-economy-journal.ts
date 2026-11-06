@@ -88,8 +88,8 @@ export class PrismaSeatDirectory {
   constructor(private readonly db: Db) {}
 
   async seat(seatId: string) {
-    const s = await this.db.outingSeat.findUnique({ where: { id: seatId }, select: { id: true, userId: true, outingId: true, status: true, funding: true, cancelKind: true, outing: { select: { venueId: true, status: true } } } });
-    return s ? { seatId: s.id, userId: s.userId, outingId: s.outingId, venueId: s.outing.venueId, outingStatus: s.outing.status, status: s.status, funding: s.funding, cancelKind: s.cancelKind } : null;
+    const s = await this.db.outingSeat.findUnique({ where: { id: seatId }, select: { id: true, userId: true, outingId: true, status: true, funding: true, cancelKind: true, cancelledAt: true, outing: { select: { venueId: true, status: true, lockAt: true } } } });
+    return s ? { seatId: s.id, userId: s.userId, outingId: s.outingId, venueId: s.outing.venueId, outingStatus: s.outing.status, status: s.status, funding: s.funding, cancelKind: s.cancelKind, cancelledAfterLock: !!s.cancelledAt && s.cancelledAt >= s.outing.lockAt } : null;
   }
 
   async usedFreeFirst(userId: string) {

@@ -3,7 +3,7 @@ import { DEFAULT_TUNING, OUTINGS_V5, parseTuning, safeParseTuning, coinRewards }
 
 describe('tuning', () => {
   it('DEFAULT_TUNING passe le schéma', () => {
-    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.3');
+    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.7');
   });
   it('V5.2 B : garantie « pour toi » (seuil 2, activable) ; défauts appliqués à un payload sans la section', () => {
     expect(DEFAULT_TUNING.outings.composition.storyGuarantee).toEqual({ enabled: true, minCompatible: 2, lambdaGuarantee: 16000 });
@@ -63,11 +63,11 @@ describe('tuning V5', () => {
     expect(t.votes.windowHours).toBe(72);
     expect(t.duo.maxActive).toBe(3);
     expect(t.safety.checkinRadiusMeters).toBe(150);
-    expect(t.neighborhoods.defaultDensityThreshold).toBe(120);
+    expect(t.neighborhoods.defaultDensityThreshold).toBeUndefined(); // E21 : seuil 120 mort
     // V5.1
     expect(t.outings.composition.targetSize).toBe(5);
     expect(t.pricing.seat.amountCents).toBe(499);
-    expect(t.plus).toMatchObject({ monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: true, includesMonthlyAccessory: false });
+    expect(t.plus).toMatchObject({ monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: false, billing: 'STRIPE_BILLING' });
     expect(t.votes.revealMode).toBe('AT_CLOSE');
     expect(t.preferences.groupAgeDefaultDelta).toBe(4);
   });
@@ -93,5 +93,82 @@ describe('tuning V5', () => {
     const d = clone();
     d.accessories.maxEquipped = 4;
     expect(safeParseTuning(d).success).toBe(false);
+  });
+});
+
+describe('tuning V5.4 (concept-v5.4)', () => {
+  it('Duo gratuit pour tous (3 actifs), Blowy+ = sorties via Stripe Billing, imprévu 1 par mois (V5.5), 3 € si Blowy annule', () => {
+    const t = DEFAULT_TUNING;
+    expect(t.duo.maxActive).toBe(3);
+    expect(t.plus.duoUnlimited).toBe(false);
+    expect(t.plus.billing).toBe('STRIPE_BILLING');
+    expect(t.outings.emergencyCancelsPerMonth).toBe(1);
+    expect(t.outings.emergencyWindowDays).toBe(30);
+    expect(t.venues).toEqual({ compensationUnpaidSeatCents: 300, compensationBlowyCancelSeatCents: 300, welcomeMessageMaxChars: 280 });
+  });
+  it('un payload V5.3 sans les champs V5.4 reste lisible (défauts)', () => {
+    const v53 = clone();
+    delete v53.outings.emergencyCancelsPerMonth;
+    delete v53.plus.billing;
+    delete v53.venues.compensationBlowyCancelSeatCents;
+    const p = parseTuning({ ...v53, version: 'tuning-2026.12.3' });
+    expect(p.outings.emergencyCancelsPerMonth).toBe(1);
+    expect(p.plus.billing).toBe('STRIPE_BILLING');
+    expect(p.venues.compensationBlowyCancelSeatCents).toBe(300);
+  });
+});
+
+describe('tuning V5.5 (concept-v5.5)', () => {
+  it('composition J − 3 21 h, demande vendredi 21 h W−1, créneaux mar.→dim., parrainage 1/mois, indicateurs ≥ 10', () => {
+    const c = DEFAULT_TUNING.outings.cycle;
+    expect([c.composeDaysBefore, c.composeHourLocal, c.requestOpensWeeksBefore, c.requestOpensIsoWeekday, c.requestOpensHourLocal]).toEqual([3, 21, 1, 5, 21]);
+    expect(c.slotIsoWeekdays).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(DEFAULT_TUNING.referral.maxFreePerMonth).toBe(1);
+    expect(DEFAULT_TUNING.cityInsights.minCount).toBe(10);
+  });
+});
+
+describe('tuning V5.6 (concept-v5.6)', () => {
+  it('« je connais quelqu\'un » 1 déplacement / 30 j, week-end ven.→dim., pénalité d\'ambiance, RDV Duo confirmé la veille 18 h', () => {
+    const t = DEFAULT_TUNING;
+    expect(t.version).toBe('tuning-2026.12.7');
+    expect([t.outings.knowsSomeoneMovesPerMonth, t.outings.knowsSomeoneWindowDays]).toEqual([1, 30]);
+    expect(t.outings.cycle.weekendIsoWeekdays).toEqual([5, 6, 7]);
+    expect(t.outings.composition.lambdaAmbiance).toBeGreaterThan(0);
+    expect(t.duo.dateLockHourLocal).toBe(18);
+  });
+  it('E21 : champs morts absents des défauts, mais une version publiée qui les porte reste lisible', () => {
+    const t = DEFAULT_TUNING;
+    expect(t.duo.maxActiveFree).toBeUndefined();
+    expect(t.plus.includedOutingsPerMonth).toBeUndefined();
+    expect(t.plus.includesMonthlyAccessory).toBeUndefined();
+    expect(t.accessories.plusMonthlyAccessoryIds).toBeUndefined();
+    const old = clone();
+    old.duo.maxActiveFree = 1;
+    old.plus.includedOutingsPerMonth = 0;
+    old.plus.includesMonthlyAccessory = false;
+    old.accessories.plusMonthlyAccessoryIds = ['hat_beret'];
+    old.neighborhoods.defaultDensityThreshold = 120;
+    delete old.outings.knowsSomeoneMovesPerMonth;
+    delete old.outings.cycle.weekendIsoWeekdays;
+    delete old.outings.composition.lambdaAmbiance;
+    delete old.duo.dateLockHourLocal;
+    const p = parseTuning({ ...old, version: 'tuning-2026.12.5' });
+    expect(p.outings.knowsSomeoneMovesPerMonth).toBe(1);
+    expect(p.outings.cycle.weekendIsoWeekdays).toEqual([5, 6, 7]);
+    expect(p.duo.dateLockHourLocal).toBe(18);
+  });
+});
+
+describe('tuning V5.7 (concept-v5.7)', () => {
+  it('rappel humain visé en 5 min (SLA dossier 60 inchangée) ; message d’accueil ≤ 280 caractères', () => {
+    expect(DEFAULT_TUNING.safety.helpCallbackTargetMinutes).toBe(5);
+    expect(DEFAULT_TUNING.safety.humanResponseMinutes).toBe(60);
+    expect(DEFAULT_TUNING.venues.welcomeMessageMaxChars).toBe(280);
+    const old = clone();
+    delete old.safety.helpCallbackTargetMinutes;
+    delete old.venues.welcomeMessageMaxChars;
+    const p = parseTuning({ ...old, version: 'tuning-2026.12.6' });
+    expect([p.safety.helpCallbackTargetMinutes, p.venues.welcomeMessageMaxChars]).toEqual([5, 280]);
   });
 });

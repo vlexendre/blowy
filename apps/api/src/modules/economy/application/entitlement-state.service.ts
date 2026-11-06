@@ -8,6 +8,7 @@ import {
   isActiveState,
   planDerivedGrant,
   type BillingEnvironment,
+  type BillingProviderKind,
   type DerivedSubscriptionState,
   type SubscriptionRecord,
 } from '../domain/index.js';
@@ -22,14 +23,19 @@ import { ECONOMY_TOPICS, type PlusCapacityReducedPayload } from './economy-event
  * Précondition : l'appelant a verrouillé l'utilisateur (scope.lock.users) dans la portée.
  */
 export class EntitlementStateService {
+  private readonly acceptedAll: ReadonlySet<BillingEnvironment>;
   constructor(
     private readonly repo: EntitlementRepository,
     private readonly provider: BillingProvider,
     private readonly params: EconomyParamsProvider,
-  ) {}
+    /** V5.4 (C.10) : environnements acceptés pour Blowy+ via Stripe Billing (celui du fournisseur de paiement). */
+    stripeAccepted: ReadonlySet<BillingEnvironment> = new Set(),
+  ) {
+    this.acceptedAll = new Set([...provider.acceptedEnvironments, ...stripeAccepted]);
+  }
 
   get accepted(): ReadonlySet<BillingEnvironment> {
-    return this.provider.acceptedEnvironments;
+    return this.acceptedAll;
   }
 
   async keysOf(userId: string, at: Date, scope?: TxScope): Promise<Set<EntitlementKey>> {
@@ -45,10 +51,12 @@ export class EntitlementStateService {
     userId: string,
     state: DerivedSubscriptionState,
     marker: { reconciledAt: Date } | { eventAt: Date },
+    /** V5.4 (C.10) : `STRIPE` pour Blowy+ via Stripe Billing (sinon le fournisseur store/démo configuré). */
+    providerKind: BillingProviderKind = this.provider.kind,
   ): Promise<SubscriptionRecord> {
     const sub = await this.repo.upsertSubscription(scope, {
       userId,
-      provider: this.provider.kind,
+      provider: providerKind,
       environment: state.environment,
       entitlementId: BLOWY_PLUS_ENTITLEMENT,
       state: state.state,
@@ -65,7 +73,7 @@ export class EntitlementStateService {
       return sub;
     }
     if (isActiveState(state.state)) {
-      await this.repo.upsertOwnGrant(scope, sub, effectiveEndsAt(state), this.provider.kind === 'LOCAL_DEMO' ? 'LOCAL_DEMO' : 'STORE_SUBSCRIPTION');
+      await this.repo.upsertOwnGrant(scope, sub, effectiveEndsAt(state), providerKind === 'LOCAL_DEMO' ? 'LOCAL_DEMO' : 'STORE_SUBSCRIPTION');
     } else {
       await this.repo.revokeOwnGrants(scope, sub.id, state.state);
     }

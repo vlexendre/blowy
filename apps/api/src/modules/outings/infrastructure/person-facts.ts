@@ -10,6 +10,7 @@ export const PERSON_INCLUDE = {
   primaryPet: { select: { name: true, species: true, stage: true, vision: { select: { school: true, sunday: true, passions: true } }, state: { select: { engineStateV5: true } } } },
   reliabilityStat: { select: { attended: true, noShows: true, lateCancels: true } },
   reputation: { select: { wordCounts: true } },
+  outingPreferences: { select: { showCalmBadge: true } },
 } satisfies Prisma.UserInclude;
 
 type PersonRow = Prisma.UserGetPayload<{ include: typeof PERSON_INCLUDE }>;
@@ -43,6 +44,7 @@ export function personOf(u: PersonRow, at: Date): PersonFacts {
     reliability: { attended: u.reliabilityStat?.attended ?? 0, noShows: u.reliabilityStat?.noShows ?? 0, lateCancels: u.reliabilityStat?.lateCancels ?? 0 },
     pet: petCardOf(u.primaryPet),
     threeWords: threeWordsOf(u.reputation?.wordCounts),
+    calmBadge: u.outingPreferences?.showCalmBadge ?? false,
   };
 }
 

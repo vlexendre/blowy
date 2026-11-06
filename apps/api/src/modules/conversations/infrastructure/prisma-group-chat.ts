@@ -45,9 +45,9 @@ export class PrismaGroupChat implements GroupChatPort {
     return this.repo.revokeMember(scope, conversationId, userId);
   }
 
-  async postSystem(scope: TxScope, conversationId: string, template: string) {
+  async postSystem(scope: TxScope, conversationId: string, template: string, body?: string) {
     const messageId = uuidv7(scope.now.getTime());
-    const seq = await this.repo.insertSystem(scope, { id: messageId, conversationId, template });
+    const seq = await this.repo.insertSystem(scope, { id: messageId, conversationId, template, ...(body ? { body } : {}) });
     return { messageId, seq };
   }
 

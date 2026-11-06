@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { onboard, startHarness, TestClient, VISION, type Harness } from './harness.js';
-import { matchedPair } from './fixtures.js';
+import { matchedPair, v4Batch } from './fixtures.js';
 
 let h: Harness;
 beforeAll(async () => {
@@ -49,7 +49,7 @@ describe('idempotence des commandes', () => {
     const b = new TestClient(h);
     await onboard(a, 'idem.pa', { gender: 'WOMAN', seeking: ['MAN'] });
     await onboard(b, 'idem.pb', { gender: 'MAN', seeking: ['WOMAN'] });
-    const feed = await a.call('POST', '/v1/matches/onboarding-batch', {});
+    const feed = await v4Batch(h, a);
     const bPet = (await b.call('GET', '/v1/pets/mine')).body.id;
     const p = feed.body.items.find((i: { otherPet: { id: string } }) => i.otherPet.id === bPet);
     await a.call('POST', `/v1/match-proposals/${p.id}/accept`, {});

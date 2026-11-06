@@ -5,7 +5,7 @@ const shadowOf = (s: { boxShadow?: unknown }) => (s.boxShadow as Array<{ offsetY
 
 describe('Button (.btn .b1 .b2 .b3 .bl)', () => {
   it('surfaces et ombres exactes', () => {
-    expect(BUTTON_SURFACE.b1).toEqual({ bg: '#FF5A3C', fg: '#FFFFFF', shadow: '#C4341B' });
+    expect(BUTTON_SURFACE.b1).toEqual({ bg: '#D93A1C', fg: '#FFFFFF', shadow: '#9E2510' });
     expect(BUTTON_SURFACE.b2).toEqual({ bg: '#16110D', fg: '#FFFFFF', shadow: '#000000' });
     expect(BUTTON_SURFACE.b3).toEqual({ bg: '#FFFFFF', fg: '#16110D', shadow: '#E8D9C4' });
     expect(BUTTON_SURFACE.lime).toEqual({ bg: '#C8F542', fg: '#16110D', shadow: '#16110D' });
@@ -15,8 +15,8 @@ describe('Button (.btn .b1 .b2 .b3 .bl)', () => {
     expect(resolveButton('dark').surface).toEqual(BUTTON_SURFACE.b2);
     expect(resolveButton('secondary').surface).toEqual(BUTTON_SURFACE.b3);
   });
-  it('typo : Bricolage largeur normale 18 px, capitales, .01em ; lien : Inter 13 px 700', () => {
-    expect(resolveButton('b1').text).toMatchObject({ fontFamily: 'BricolageGrotesque-B18', fontSize: 18, letterSpacing: 0.18, textTransform: 'uppercase' });
+  it('typo : Bricolage largeur normale 19 px (maquettes V5), capitales, .01em ; lien : Inter 13 px 700', () => {
+    expect(resolveButton('b1').text).toMatchObject({ fontFamily: 'BricolageGrotesque-B19', fontSize: 19, letterSpacing: 0.19, textTransform: 'uppercase' });
     expect(resolveButton('b1').box).toMatchObject({ minHeight: 56, paddingHorizontal: 20, gap: 10 });
     expect(resolveButton('link').text).toMatchObject({ fontFamily: 'Inter-700', fontSize: 13 });
     expect(resolveButton('link').box.minHeight).toBe(44);

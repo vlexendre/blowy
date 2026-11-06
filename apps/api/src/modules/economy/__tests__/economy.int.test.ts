@@ -16,6 +16,7 @@ import type { EconomyConfig } from '../infrastructure/config/economy-config.js';
 import { RevenueCatBillingProvider } from '../infrastructure/revenuecat/revenuecat-billing.provider.js';
 import { NoopReconcileScheduler } from '../infrastructure/reconcile-scheduler.js';
 import { TEST_PARAMS } from './fixtures.js';
+import { defaultPaymentsParams } from '../infrastructure/config/payments-params.js';
 
 const URL = process.env.DATABASE_URL_TEST ?? 'postgresql://blowy:blowy@localhost:5432/blowy_test';
 const WEBHOOK_SECRET = 'Bearer test-webhook-secret-0123456789abcdef';
@@ -136,6 +137,8 @@ beforeEach(() => {
     provider: new RevenueCatBillingProvider({ ...config.revenueCat!, isProduction: false }, rc.fetch, () => clock.now()),
     scheduler: new NoopReconcileScheduler(),
     params: { current: () => TEST_PARAMS },
+    // V5.4 (C.10) : ces tests couvrent l'achat intégré RevenueCat (code gardé, désactivé par défaut) — on le réactive ici.
+    paymentsParams: () => ({ ...defaultPaymentsParams(), plusBilling: 'IN_APP_PURCHASE' }),
   });
 });
 

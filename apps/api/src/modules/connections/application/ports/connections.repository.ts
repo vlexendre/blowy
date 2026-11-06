@@ -4,7 +4,7 @@
  * `MatchProposal`). Lectures seules ailleurs : messages publiés d'un chat DUO (compteurs), souvenirs
  * du pet (« Ta rue »), intentions (moteur seulement — jamais exposées).
  */
-import type { ConnectionKind, DuoDateStatus, DuoOrigin, DuoStatus, Gender, KidsSomeday, LookingFor, MeetingMode, PetMemoryKind, StorySeriousness, VoteChoice } from '@blowy/domain';
+import type { ConnectionKind, DuoDateStatus, DuoOrigin, DuoStatus, Gender, KidsHorizon, KidsSomeday, LookingFor, MeetingMode, PetMemoryKind, StorySeriousness, VoteChoice } from '@blowy/domain';
 import type { PersonFacts } from '../../../outings/domain/facts.js';
 import type { TxScope } from '../../../../shared/application/unit-of-work.js';
 import type { LaneCandidate } from '../../domain/lane.js';
@@ -43,6 +43,9 @@ export interface DuoDateRow {
   votesClosedAt: Date | null;
   cancelledByUserId: string | null;
   lateCancel: boolean;
+  /** V5.6 (E13) : table de 2 entrée dans l'effectif du lieu (veille 18 h) ; null = pas encore. */
+  reservationLockedAt?: Date | null;
+  venueSlotId?: string | null;
 }
 
 export interface VenueRow {
@@ -76,6 +79,10 @@ export interface SeeksFacts {
   lookingFor: LookingFor;
   storySeriousness: StorySeriousness | null;
   kidsSomeday: KidsSomeday | null;
+  /** V5.6 (E11) : horizon enfants (indice « projet compatible »). */
+  kidsHorizon?: KidsHorizon | null;
+  /** V5.6 (E11) : « Âge pour une histoire ». */
+  storyAgeBrackets?: string[];
   meetingMode: MeetingMode | null;
   meetGenders: Gender[];
   romanceGenders: Gender[];
@@ -130,7 +137,9 @@ export interface ConnectionsRepository {
   currentDate(scope: TxScope | null, duoId: string): Promise<DuoDateRow | null>;
   liveDate(scope: TxScope | null, duoId: string): Promise<DuoDateRow | null>;
   createDate(scope: TxScope, d: { id: string; duoId: string; proposedByUserId: string; venueId: string; startsAt: Date; endsAt: Date }): Promise<void>;
-  updateDate(scope: TxScope, dateId: string, patch: Partial<Pick<DuoDateRow, 'status' | 'checkinLowAt' | 'checkinHighAt' | 'votesCloseAt' | 'votesClosedAt' | 'cancelledByUserId' | 'lateCancel'>> & { ballotsPurgedAt?: Date }): Promise<void>;
+  updateDate(scope: TxScope, dateId: string, patch: Partial<Pick<DuoDateRow, 'status' | 'checkinLowAt' | 'checkinHighAt' | 'votesCloseAt' | 'votesClosedAt' | 'cancelledByUserId' | 'lateCancel' | 'reservationLockedAt' | 'venueSlotId'>> & { ballotsPurgedAt?: Date }): Promise<void>;
+  /** V5.6 (E13) : créneau publié du lieu à cette heure (table de 2 rattachée), s'il existe. */
+  venueSlotAt(venueId: string, startsAt: Date): Promise<string | null>;
   venue(venueId: string): Promise<VenueRow | null>;
   /** Lieux partenaires actifs des quartiers de ces personnes. */
   venuesFor(userIds: string[]): Promise<VenueRow[]>;

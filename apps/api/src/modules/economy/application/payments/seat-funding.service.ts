@@ -12,7 +12,7 @@ import type { TxScope, UnitOfWork } from '../../../../shared/application/unit-of
 import type { FundingDecision, SeatFundingPort, SeatPaymentView, SeatRefundCause } from '../../../outings/application/ports/seat-funding.port.js';
 import { availableLots, chooseFunding, EUR, LedgerKeys, refundOutcome, type CreditMovement, type PaymentsParams } from '../../domain/index.js';
 import { providerUnavailable } from '../../domain/errors.js';
-import type { EconomyJournal, JournalEntry, PaymentProvider } from './ports.js';
+import type { EconomyJournal, JournalEntry, PaymentProvider, ReferralFreeStore } from './ports.js';
 
 const DAY = 86_400_000;
 type KeysOf = (userId: string, at: Date, scope?: TxScope) => Promise<ReadonlySet<EntitlementKey>>;
@@ -36,6 +36,8 @@ export class EconomySeatFunding implements SeatFundingPort {
     private readonly provider: PaymentProvider | null,
     private readonly keysOf: KeysOf,
     private readonly params: () => PaymentsParams,
+    /** V5.5 (D-064) : sorties offertes par parrainage ; absent = aucune (tests). */
+    private readonly referral: ReferralFreeStore | null = null,
   ) {}
 
   async lots(scope: TxScope | null, userId: string, now: Date) {
@@ -46,8 +48,11 @@ export class EconomySeatFunding implements SeatFundingPort {
     const p = this.params();
     const keys = await this.keysOf(i.userId, scope.now, scope);
     const lots = i.mode === 'AUTO' ? await this.lots(scope, i.userId, scope.now) : [];
-    const choice = chooseFunding({ mode: i.mode, freeFirstAvailable: i.freeFirstAvailable, plusActive: plusActive(keys), plusIncludesAllOutings: p.plusIncludesAllOutings, lots });
+    const reward = i.mode === 'AUTO' && !i.freeFirstAvailable && this.referral ? await this.referral.available(scope, i.userId) : null;
+    const choice = chooseFunding({ mode: i.mode, freeFirstAvailable: i.freeFirstAvailable, plusActive: plusActive(keys), plusIncludesAllOutings: p.plusIncludesAllOutings, lots, referralFreeAvailable: !!reward });
     if (choice.kind === 'FREE_FIRST' || choice.kind === 'PLUS_INCLUDED') return { kind: 'FUNDED', funding: choice.kind, paymentRef: null, creditRef: null, payment: null };
+    // V5.5 (D-064) : verrou users tenu par l'appelant ; la place consomme la récompense une seule fois (clé unique).
+    if (choice.kind === 'REFERRAL_FREE' && reward && (await this.referral!.consume(scope, reward.id, i.seatId))) return { kind: 'FUNDED', funding: 'REFERRAL_FREE', paymentRef: null, creditRef: null, payment: null };
     if (choice.kind === 'CREDIT') {
       // Verrou users tenu par l'appelant ; la clé unique par lot interdit toute double consommation.
       for (const lot of lots) {
@@ -134,6 +139,11 @@ export class EconomySeatFunding implements SeatFundingPort {
   }
 
   async refundCredit(scope: TxScope, i: { userId: string; seatId: string; funding: SeatFunding; cause: SeatRefundCause }): Promise<'RECREDITED'> {
+    // V5.5 (D-064) : une sortie offerte par parrainage « reste offerte » (la récompense redevient disponible).
+    if (i.funding === 'REFERRAL_FREE') {
+      await this.referral?.release(scope, i.seatId);
+      return 'RECREDITED';
+    }
     const keys = await this.keysOf(i.userId, scope.now, scope);
     if (refundOutcome(i.funding, i.cause, { plusActive: plusActive(keys) }) === 'REFUND_CREDIT') await this.grantRefundCredit(scope, i.userId, i.seatId);
     return 'RECREDITED';

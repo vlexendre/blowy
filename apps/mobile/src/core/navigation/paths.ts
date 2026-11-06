@@ -1,43 +1,90 @@
 /**
- * Chemins Expo Router centralisés + résolution des liens entrants (universels, notifications,
- * widget). Logique pure, testée : un lien inconnu retombe sur le Nid.
+ * Chemins Expo Router V5 centralisés + résolution des liens entrants (universels, notifications).
+ * Logique pure, testée : un lien inconnu retombe sur l'Accueil. Correspondance écran de maquette
+ * → route : tooling/qa/visual/routes.v5.json.
  */
-import type { OnboardingStep } from '../../features/onboarding/model/flow';
+import type { OnboardingStep } from '../../features/onboarding';
+
+const e = encodeURIComponent;
 
 export const paths = {
   root: '/',
-  onboarding: (step: OnboardingStep) => (step === 'paywall' ? '/paywall-step' : `/${step}`) as `/${string}`,
-  vision: (step: 'school' | 'sunday' | 'passions' | 'limit') => `/vision/${step}` as const,
-  invite: (code: string) => `/invite/${encodeURIComponent(code)}` as const,
-  nest: '/nest',
-  fiche: '/nest/fiche',
-  shop: '/nest/shop',
-  streak: '/nest/streak',
-  mission: '/nest/mission',
-  league: '/nest/league',
+  onboarding: (step: OnboardingStep) =>
+    (step === 'welcome' ? '/welcome' : `/start/${step}`) as `/${string}`,
+  welcome: '/welcome',
+  ageBlocked: '/start/age',
+  account: '/account',
+  verify: '/verify',
+  verifyFailed: '/verify/failed',
+  notifications: '/notifications',
+  notificationsRefused: '/notifications/refused',
+  found: '/found',
+  waitlist: '/waitlist',
+  notYet: '/not-yet',
+  seeding: '/seeding',
+  outing: (id: string) => `/outing/${e(id)}` as const,
+  outingStep: (id: string, step: OutingStep) => `/outing/${e(id)}/${step}` as const,
+  pay: (id: string) => `/outing/${e(id)}/pay` as const,
+  home: '/home',
   chats: '/chats',
-  conversation: (id: string) => `/chats/${encodeURIComponent(id)}` as const,
-  linkTree: (relationshipId: string) => `/chats/link/${encodeURIComponent(relationshipId)}` as const,
-  relation: (relationshipId: string, screen: RelationScreen) => `/chats/relation/${encodeURIComponent(relationshipId)}/${screen}` as const,
-  noDates: '/chats/no-dates',
-  map: '/map',
-  neighborhood: '/neighborhood',
-  friend: (id: string) => `/neighborhood/friend/${encodeURIComponent(id)}` as const,
-  share: '/neighborhood/share',
+  chat: (conversationId: string) => `/chat/${e(conversationId)}` as const,
+  chatMenu: (conversationId: string) => `/chat/${e(conversationId)}/menu` as const,
+  band: '/band',
+  street: '/band/street',
+  leave: '/band/leave',
+  duoLane: '/duo',
+  duoChoice: '/duo/choice',
+  duoProposal: (id: string) => `/duo/proposal?id=${e(id)}` as const,
+  duo: (id: string) => `/duo/${e(id)}` as const,
+  duoDate: (id: string) => `/duo/${e(id)}/date` as const,
+  duoEgg: (id: string) => `/duo/${e(id)}/egg` as const,
   profile: '/profile',
-  profileScreen: (s: ProfileScreen) => `/profile/${s}` as const,
-  paywall: '/paywall',
+  pet: '/profile/pet',
+  story: '/profile/story',
+  cards: '/profile/cards',
+  settings: '/settings',
+  pause: '/settings/pause',
+  weeks: '/settings/weeks',
+  refine: '/settings/refine',
+  refineStory: '/settings/refine/story',
+  refineAmbiance: '/settings/refine/ambiance',
+  refineAge: '/settings/refine/age',
+  avoid: '/settings/avoid',
+  privacy: '/settings/privacy',
+  report: '/settings/report',
+  deleteAccount: '/settings/delete',
+  pricing: '/settings/pricing',
+  plus: '/settings/plus',
+  plusOk: '/settings/plus/ok',
+  share: (card: ShareCard) => `/share/${card}` as const,
+  invite: (code: string) => `/invite/${e(code)}` as const,
+  offline: '/offline',
   devLogin: '/dev-login',
 } as const;
 
-export type RelationScreen = 'move-in' | 'vote' | 'reveal' | 'irl' | 'egg' | 'birth' | 'custody' | 'leave' | 'pause';
-export type ProfileScreen = 'account' | 'settings' | 'subscription' | 'privacy' | 'notifications' | 'report' | 'delete' | 'preferences';
+export type OutingStep =
+  | 'team'
+  | 'confirmation'
+  | 'faces'
+  | 'guardian'
+  | 'checkin'
+  | 'checked-in'
+  | 'memory'
+  | 'vote'
+  | 'results'
+  | 'pay'
+  | 'pay-ok'
+  | 'pay-failed'
+  | 'cancelled'
+  | 'full';
+export type ShareCard =
+  'invitation' | 'confirmation' | 'checkin' | 'jeudi' | 'soiree' | 'dimanche' | 'bande' | 'ville';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Traduit une URL entrante (https://blowy.app/..., blowy://...) en route interne.
- * Formats : /invite/<code> · /r/<code> · /c/<conversationId> · /nest · /widget/pet · /widget/date/<relationshipId>.
+ * Formats : /i/<code> (invitation personnelle) · /team/<code> · /c/<conversationId> · /o/<outingId>.
  */
 export function resolveIncomingUrl(url: string): string {
   let pathname: string;
@@ -45,24 +92,19 @@ export function resolveIncomingUrl(url: string): string {
     const u = new URL(url);
     pathname = u.protocol.startsWith('http') ? u.pathname : `/${u.host}${u.pathname}`;
   } catch {
-    return paths.nest;
+    return paths.home;
   }
-  const parts = pathname.split('/').filter(Boolean);
-  const [head, a, b] = parts;
+  const [head, a] = pathname.split('/').filter(Boolean);
   switch (head) {
+    case 'i':
+    case 'team':
     case 'invite':
-    case 'r':
       return a && /^[A-Za-z0-9_-]{4,64}$/.test(a) ? paths.invite(a) : paths.root;
     case 'c':
-      return a && UUID.test(a) ? paths.conversation(a) : paths.chats;
-    case 'widget':
-      if (a === 'date' && b && UUID.test(b)) return `${paths.nest}?relationship=${b}`;
-      return paths.nest;
-    case 'nest':
-      return paths.nest;
-    case 'streak':
-      return paths.streak;
+      return a && UUID.test(a) ? paths.chat(a) : paths.chats;
+    case 'o':
+      return a && UUID.test(a) ? paths.outing(a) : paths.home;
     default:
-      return paths.nest;
+      return paths.home;
   }
 }

@@ -11,7 +11,7 @@ import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { decodeCursor, pageFrom } from '../../../shared/application/pagination.js';
 import { txOf } from '../../../shared/infrastructure/prisma/prisma-unit-of-work.js';
 import { aggregateWords } from '../domain/anonymous.js';
-import type { AnonymousRepository, QuotaCounter, ReferralRepository } from '../application/ports/social.ports.js';
+import type { AnonymousRepository, QuotaCounter, ReferralRepository, ShareLinkRepository, ShareLinkRow } from '../application/ports/social.ports.js';
 
 function uuidFromKey(key: string): string {
   const h = createHash('sha256').update(key).digest('hex');
@@ -201,5 +201,61 @@ export class RateLimiterQuota implements QuotaCounter {
   constructor(private readonly limiter: { hit(key: string, windowSec: number): Promise<number> }) {}
   hit(key: string, windowSec: number) {
     return this.limiter.hit(`social:${key}`, windowSec);
+  }
+}
+
+// ------------------------------------------------------------------ V5.6 (E16) : liens de partage
+export class PrismaShareLinkRepository implements ShareLinkRepository {
+  constructor(private readonly db: Db) {}
+
+  async create(scope: TxScope, l: Omit<ShareLinkRow, 'clickCount' | 'attributedSignups' | 'attributedFirstOutings'>) {
+    const tx = txOf(scope);
+    try {
+      await tx.$executeRaw`SAVEPOINT share_create`;
+      await tx.shareLink.create({ data: { ...l } });
+      await tx.$executeRaw`RELEASE SAVEPOINT share_create`;
+      return true;
+    } catch (err) {
+      await tx.$executeRaw`ROLLBACK TO SAVEPOINT share_create`;
+      if ((err as { code?: string }).code === 'P2002') return false;
+      throw err;
+    }
+  }
+
+  async bySlug(slug: string) {
+    return (await this.db.shareLink.findUnique({ where: { slug } })) as ShareLinkRow | null;
+  }
+
+  async ofOwner(userId: string, limit: number) {
+    return (await this.db.shareLink.findMany({ where: { ownerUserId: userId }, orderBy: { createdAt: 'desc' }, take: limit })) as ShareLinkRow[];
+  }
+
+  async click(slug: string) {
+    await this.db.shareLink.updateMany({ where: { slug }, data: { clickCount: { increment: 1 } } });
+  }
+
+  async attribute(userId: string, shareLinkId: string, at: Date) {
+    return this.db.$transaction(async (tx) => {
+      const n = await tx.$executeRaw`INSERT INTO "ShareAttribution" (id, "shareLinkId", "userId", "createdAt") VALUES (${uuidv7(at.getTime())}::uuid, ${shareLinkId}::uuid, ${userId}::uuid, ${at}) ON CONFLICT ("userId") DO NOTHING`;
+      if (n > 0) await tx.shareLink.update({ where: { id: shareLinkId }, data: { attributedSignups: { increment: 1 } } });
+      return n > 0;
+    });
+  }
+
+  async firstOuting(userId: string, at: Date) {
+    return this.db.$transaction(async (tx) => {
+      const a = await tx.shareAttribution.findUnique({ where: { userId } });
+      if (!a || a.firstOutingAt) return false;
+      const n = await tx.shareAttribution.updateMany({ where: { userId, firstOutingAt: null }, data: { firstOutingAt: at } });
+      if (n.count > 0) await tx.shareLink.update({ where: { id: a.shareLinkId }, data: { attributedFirstOutings: { increment: 1 } } });
+      return n.count > 0;
+    });
+  }
+
+  async purgeExpired(before: Date) {
+    const old = await this.db.shareLink.findMany({ where: { expiresAt: { lte: before } }, select: { id: true }, take: 1000 });
+    if (old.length === 0) return 0;
+    await this.db.shareAttribution.deleteMany({ where: { shareLinkId: { in: old.map((o) => o.id) } } });
+    return (await this.db.shareLink.deleteMany({ where: { id: { in: old.map((o) => o.id) } } })).count;
   }
 }

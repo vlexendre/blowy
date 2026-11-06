@@ -50,6 +50,8 @@ export class PrismaUserProfileRepository implements UserProfileRepository {
         photoPreference: u.privacySettings?.photoPreference ?? 'FROM_LEVEL_4_WITH_CONSENT',
         ageDisplay: u.privacySettings?.ageDisplay ?? 'RANGE',
         mapVisible: u.privacySettings?.mapVisible ?? false,
+        discreetMode: u.privacySettings?.discreetMode ?? false,
+        discreetModeChosen: !!u.privacySettings?.discreetModeChosenAt,
       },
       verification: v
         ? { status: v.status === 'VERIFIED' && !verified ? 'EXPIRED' : v.status, kind: v.kind, provenance: v.provenance, expiresAt: v.expiresAt, sessionUrl: v.status === 'PENDING' || v.status === 'NEEDS_RETRY' ? v.providerSessionUrl : null }
@@ -87,8 +89,9 @@ export class PrismaUserProfileRepository implements UserProfileRepository {
     await txOf(scope).matchPreferences.upsert({ where: { userId }, create: { userId, ...prefs }, update: prefs });
   }
 
-  async savePrivacy(scope: TxScope, userId: string, privacy: UserAggregate['privacy']): Promise<void> {
-    await txOf(scope).privacySettings.upsert({ where: { userId }, create: { userId, ...privacy }, update: privacy });
+  async savePrivacy(scope: TxScope, userId: string, privacy: Partial<Pick<UserAggregate['privacy'], 'photoPreference' | 'ageDisplay' | 'mapVisible' | 'discreetMode'>>): Promise<void> {
+    const data = { ...privacy, ...(privacy.discreetMode !== undefined ? { discreetModeChosenAt: scope.now } : {}) };
+    await txOf(scope).privacySettings.upsert({ where: { userId }, create: { userId, ...data }, update: data });
   }
 
   async appendConsents(scope: TxScope, userId: string, items: { purpose: string; version: string; granted: boolean }[]): Promise<void> {

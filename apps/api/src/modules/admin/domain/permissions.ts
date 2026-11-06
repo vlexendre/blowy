@@ -72,6 +72,10 @@ export const PERMISSIONS = [
   'reports_v5.read',
   'venue_compensations.read',
   'venue_compensations.reverse',
+  // ---- V5.6 (E12, E15) ----
+  'oncall.read',
+  'oncall.write',
+  'venues.contract_countersign',
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
@@ -82,6 +86,8 @@ const OPS_V5: Permission[] = [
   'neighborhoods.read', 'neighborhoods.write', 'venues.read', 'venues.write', 'venues.secret_rotate', 'venues.partner_access',
   'outings.read', 'outings.cancel', 'outings.seat_remove', 'knows_someone.read', 'knows_someone.decide',
   'attendance.read', 'attendance.correct', 'reliability.pause_lift', 'reports_v5.read', 'venue_compensations.read', 'moderation.read',
+  // V5.6 (§10.1) : planning d'astreinte (trust_lead + ops).
+  'oncall.read', 'oncall.write',
 ];
 
 export const ROLE_PERMISSIONS: Record<StaffRole, readonly Permission[]> = {
@@ -94,6 +100,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, readonly Permission[]> = {
     'moderation.sanction', 'verification.read', 'verification.review', 'social.read', 'social.anonymous.moderate', 'matching.read', 'audit.read', 'ai.read',
     // V5 : sécurité (besoin d'aide, lecture de position motivée et auditée), présences et litiges.
     'outings.read', 'knows_someone.read', 'attendance.read', 'attendance.correct', 'reliability.pause_lift', 'safety.read', 'safety.position', 'safety.handle', 'reports_v5.read',
+    'oncall.read', 'oncall.write',
   ],
   content_manager: [...READ_BASE, 'missions.read', 'missions.write', 'missions.publish', 'content.read', 'content.write', 'content.publish', 'tuning.read'],
   finance: [...READ_BASE, 'users.read', 'economy.read', 'economy.correct', 'economy.redrive', 'venue_compensations.read', 'venue_compensations.reverse'],
@@ -125,6 +132,7 @@ export const STEP_UP_PERMISSIONS: ReadonlySet<Permission> = new Set<Permission>(
   'venues.secret_rotate',
   'venues.partner_access',
   'venue_compensations.reverse',
+  'venues.contract_countersign',
 ]);
 
 /** Lectures V5 qui exigent une justification écrite (≥ 10 caractères), auditée avec le motif. */

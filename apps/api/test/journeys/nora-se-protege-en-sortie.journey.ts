@@ -144,7 +144,7 @@ describe('Nora se protège en sortie', () => {
     await at(w, CYCLE.checkin);
     await w.runJob('outings.lifecycle');
     const r = await camille!.call('POST', '/v1/safety/leave', { subject: { kind: 'OUTING', id: outingId }, notifyGuardian: false });
-    expect(r.data).toEqual({ left: true, guardianNotified: false, humanResponseMinutes: 60 });
+    expect(r.data).toEqual({ left: true, guardianNotified: false, humanResponseMinutes: 60, callbackTargetMinutes: 5 });
     await w.drain();
     expect((await camille!.call('GET', '/v1/me/reliability')).data.total).toBe(0);
     const seat = await w.db.outingSeat.findFirstOrThrow({ where: { outingId, userId: camille!.userId } });

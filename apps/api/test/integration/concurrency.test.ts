@@ -4,7 +4,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { onboard, startHarness, TestClient, type Harness } from './harness.js';
-import { matchUsers, setLevel } from './fixtures.js';
+import { matchUsers, setLevel, v4Batch } from './fixtures.js';
 
 let h: Harness;
 beforeAll(async () => {
@@ -25,7 +25,7 @@ describe('concurrence', () => {
     await onboard(hub, 'cc.hub', { gender: 'WOMAN', seeking: ['MAN'] });
     await onboard(x, 'cc.x', { gender: 'MAN', seeking: ['WOMAN'] });
     await onboard(y, 'cc.y', { gender: 'MAN', seeking: ['WOMAN'] });
-    const feed = await hub.call('POST', '/v1/matches/onboarding-batch', {});
+    const feed = await v4Batch(h, hub);
     expect(feed.body.items.length).toBe(2);
     // x et y acceptent d'abord ; hub accepte les deux en même temps (chacune = seconde acceptation).
     for (const p of feed.body.items) {

@@ -19,11 +19,9 @@ export default function RootLayout() {
     <AppProviders onReady={onReady}>
       <StatusBar style="dark" />
       <DeepLinkHandler />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.cream } }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.cream }, animation: 'none' }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(onboarding)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
         <Stack.Screen name="(dev)" />
       </Stack>
     </AppProviders>

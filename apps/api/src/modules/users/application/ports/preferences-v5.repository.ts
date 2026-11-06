@@ -14,5 +14,7 @@ export interface PreferencesV5Repository {
   /** Créneaux types actifs appartenant aux quartiers donnés, parmi `ids`. */
   slotTemplatesIn(ids: string[], neighborhoodIds: string[]): Promise<string[]>;
   ageOf(userId: string, at: Date): Promise<number | null>;
+  /** V5.6 : quartier de la personne (défaut des préférences de sortie). */
+  homeNeighborhood(userId: string): Promise<string | null>;
 }
 export const PREFERENCES_V5_REPOSITORY = Symbol('PreferencesV5Repository');

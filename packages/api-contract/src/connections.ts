@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { BAND_LINK_STATUSES, BAND_ORIGINS, CONNECTION_SOURCES, DATE_RESPONSES, DUO_DATE_STATUSES, DUO_ORIGINS, DUO_STATUSES, SEAT_CANCEL_REQUEST_KINDS } from '@blowy/domain';
 import { IsoDateTimeSchema, UuidSchema, pageOf } from './core/common.js';
 import { AccessoryIdSchema, PetCardSchema, PetMemoryViewSchema } from './pets.js';
-import { MemberReliabilitySchema, MutualConnectionSchema, RevealedPhotoSchema, VoteChoiceSchema } from './outings.js';
+import { MutualConnectionSchema, RevealedPhotoSchema, VoteChoiceSchema } from './outings.js';
 
 export const BandOriginSchema = z.enum(BAND_ORIGINS);
 export const BandLinkStatusSchema = z.enum(BAND_LINK_STATUSES);
@@ -34,6 +34,8 @@ export const CONNECTION_FAILURE_REASONS = [
   'DUO_NOT_UNLOCKED',
   'DATE_ALREADY_PROPOSED',
   'VENUE_NOT_IN_NEIGHBORHOOD',
+  /** V5.6 (E13) : table de 2 confirmée au plus tard la veille 18 h (effectif du lieu). */
+  'DUO_DATE_TOO_LATE',
   'DATE_OUT_OF_RANGE',
   'DATE_NOT_PROPOSED',
   'OWN_PROPOSAL',
@@ -61,7 +63,6 @@ export const BandMemberViewSchema = z
     linkId: UuidSchema,
     user: z.object({ id: UuidSchema, firstName: z.string(), photo: RevealedPhotoSchema.optional() }).strict(),
     pet: PetCardSchema,
-    reliability: MemberReliabilitySchema,
     conversationId: UuidSchema,
     origin: BandOriginSchema,
     since: IsoDateTimeSchema,
@@ -102,7 +103,7 @@ export const DuoViewSchema = z
     status: DuoStatusSchema,
     origin: DuoOriginSchema,
     other: z
-      .object({ firstName: z.string(), pet: PetCardSchema, photo: RevealedPhotoSchema.optional(), reliability: MemberReliabilitySchema })
+      .object({ firstName: z.string(), pet: PetCardSchema, photo: RevealedPhotoSchema.optional() })
       .strict(),
     /** Voie Duo en EXCHANGE uniquement (texte d'abord ; visages débloqués à 48 h si les deux ont écrit ; vocal facultatif). Progression = la mienne seulement. */
     exchange: z.object({ endsAt: IsoDateTimeSchema, mineCount: z.number().int().nonnegative(), unlockProgress: z.number().min(0).max(1) }).strict().optional(),
@@ -119,15 +120,18 @@ export type DuoView = z.infer<typeof DuoViewSchema>;
 export const DuoListSchema = z.object({ items: z.array(DuoViewSchema) });
 
 /** `GET /v1/matches` (V5) : propositions DUO_LANE ouvertes (≤ 3 actives). */
+/**
+ * V5.5 (D-068, amende V5.4 A.3) : carte de proposition Duo avant le double « oui » = **espèce du pet (illustration
+ * générique) + initiale**, rien d'autre — jamais le nom du pet, ses accessoires ou traits, ni tranche, pronom,
+ * activités, intention, score. Prénom et carte complète après le double oui.
+ */
 export const DuoLaneProposalViewSchema = z
   .object({
     proposalId: UuidSchema,
-    pet: PetCardSchema,
-    visionScore: z.number().int().min(0).max(100),
+    species: PetCardSchema.shape.species,
+    otherInitial: z.string().min(1).max(2),
     expiresAt: IsoDateTimeSchema,
     acceptedByMe: z.boolean(),
-    /** V5.3 (A.3) : avant le double « oui », seulement le pet et l'initiale (prénom et carte complète après). */
-    otherInitial: z.string().min(1).max(2).optional(),
   })
   .strict();
 export type DuoLaneProposalView = z.infer<typeof DuoLaneProposalViewSchema>;
@@ -135,8 +139,8 @@ export const DuoLaneFeedSchema = z.object({
   items: z.array(DuoLaneProposalViewSchema),
   emptyReason: z.enum(['NONE', 'LANE_DISABLED', 'NOT_VERIFIED', 'PHOTO_REQUIRED', 'PAUSED', 'LIMIT_REACHED', 'WAITING_NEXT_BATCH']).nullable(),
   nextBatchAt: IsoDateTimeSchema.nullable(),
-  /** §7.3 (V5.2 H.25) : 1 duo actif gratuit ; `unlimited` = Blowy+ (aucun argument commercial ici). */
-  quota: z.object({ freeMaxActive: z.number().int().positive(), unlimited: z.boolean() }).strict().optional(),
+  /** V5.4 (C.11) : Duo gratuit pour tous, au plus `freeMaxActive` (3) duos actifs ; `unlimited` toujours `false`. */
+  quota: z.object({ maxActive: z.number().int().positive(), active: z.number().int().nonnegative(), freeMaxActive: z.number().int().positive(), unlimited: z.literal(false) }).strict().optional(),
 });
 
 /** `POST /v1/match-proposals/:id/accept` (branche DUO_LANE) : au 2ᵉ accord, `Duo(EXCHANGE)`. */

@@ -1,5 +1,5 @@
 /** Hooks TanStack Query de la feature compte. */
-import type { MatchPreferences, PrivacySettings, RecordConsentsRequest, UpdateProfileRequest } from '@blowy/api-contract';
+import type { MatchPreferences, PrivacySettings, RecordConsentsRequest, UpdateProfileRequest, PrivacySettingsV5, IntentionsV5Dto, OutingPreferencesV5Dto } from '@blowy/api-contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { useMemo } from 'react';
@@ -118,4 +118,49 @@ export function useRequestExport() {
 export function useRequestDeletion() {
   const repo = useAccountRepository();
   return useCommand((id, _: void) => repo.requestDeletion(id));
+}
+
+// ---------------------------------------------------------------- V5 (spec-v5 §7.1)
+export const accountKeysV5 = { neighborhood: ['me', 'neighborhood'] as const, intentions: ['me', 'intentions'] as const, outingPrefs: ['me', 'outing-prefs'] as const };
+
+export function useMyNeighborhood() {
+  const repo = useAccountRepository();
+  const signedIn = useSession((s) => s.status === 'signedIn');
+  return useQuery({ queryKey: accountKeysV5.neighborhood, queryFn: repo.myNeighborhood, enabled: signedIn });
+}
+
+export function useOutingPreferences() {
+  const repo = useAccountRepository();
+  const signedIn = useSession((s) => s.status === 'signedIn');
+  return useQuery({ queryKey: accountKeysV5.outingPrefs, queryFn: repo.outingPreferences, enabled: signedIn, retry: false });
+}
+
+export function useIntentions() {
+  const repo = useAccountRepository();
+  const signedIn = useSession((s) => s.status === 'signedIn');
+  return useQuery({ queryKey: accountKeysV5.intentions, queryFn: repo.intentions, enabled: signedIn, retry: false });
+}
+
+export function useSavePrivacyV5() {
+  const repo = useAccountRepository();
+  const qc = useQueryClient();
+  return useCommand((id, body: Partial<PrivacySettingsV5>) => repo.putPrivacyV5(id, body), () => void qc.invalidateQueries({ queryKey: accountKeys.me }));
+}
+
+export function useSaveIntentions() {
+  const repo = useAccountRepository();
+  const qc = useQueryClient();
+  return useCommand((id, body: IntentionsV5Dto) => repo.putIntentions(id, body), () => void qc.invalidateQueries({ queryKey: accountKeysV5.intentions }));
+}
+
+export function useSaveOutingPreferences() {
+  const repo = useAccountRepository();
+  const qc = useQueryClient();
+  return useCommand((id, body: OutingPreferencesV5Dto) => repo.putOutingPreferences(id, body), () => void qc.invalidateQueries({ queryKey: accountKeysV5.outingPrefs }));
+}
+
+/** Indicateurs de ville (V5.5 D-059) : arrondis, jamais du groupe ; 404 → « indisponible ». */
+export function useCityInsights() {
+  const repo = useAccountRepository();
+  return useQuery({ queryKey: ['me', 'city-insights'] as const, queryFn: repo.cityInsights, enabled: useSession((s) => s.status === 'signedIn'), retry: false });
 }

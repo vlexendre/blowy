@@ -9,7 +9,7 @@ import { afterAll, beforeAll, describe, expect } from 'vitest';
 import type { Person } from './support/actor.js';
 import { story } from './support/story.js';
 import { startWorld, type World } from './support/world.js';
-import { at, city, CYCLE, formOuting, leaksIn, outing, v5Person, type City } from './support/v5.js';
+import { at, city, CYCLE, formOuting, leaksIn, outing, v5Person, type City, checkIn } from './support/v5.js';
 
 let w: World;
 let c: City;
@@ -60,12 +60,12 @@ describe('Annulation', () => {
   });
 
   S.step('Après la confirmation, avant les visages : l’aperçu dit déjà « absence » (V5.3 B.6)', async () => {
-    expect((await preview(dan!)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
+    expect((await preview(dan!)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true, emergencyAvailable: true });
   });
 
   S.step('Après la révélation des visages : Cléo annule → ABSENCE, aucun remboursement (« 0 sortie sur 1 »)', async () => {
     await at(w, CYCLE.faces);
-    expect((await preview(cleo!)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
+    expect((await preview(cleo!)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true, emergencyAvailable: true });
     const r = await cancel(cleo!);
     expect(r.data.countsAsAbsence).toBe(true);
     await w.drain();
@@ -95,7 +95,7 @@ describe('Annulation', () => {
   S.step('Eva ne fait pas le check-in : absence à la clôture ; elle ne voit plus personne du groupe', async () => {
     await at(w, CYCLE.checkin);
     await w.runJob('outings.lifecycle');
-    expect((await ana!.call('POST', `/v1/outings/${outingId}/check-in`, { method: 'GEO', lat: 48.8649, lng: 2.3707, accuracyM: 30 })).ok).toBe(true);
+    expect((await checkIn(ana!, outingId)).ok).toBe(true);
     await at(w, CYCLE.done);
     await w.runJob('outings.lifecycle');
     expect((await eva!.call('GET', '/v1/me/reliability')).data).toMatchObject({ attended: 0, total: 1 });

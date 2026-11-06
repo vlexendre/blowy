@@ -20,6 +20,8 @@ import {
   SafetyTuningSchema,
   VenuesTuningSchema,
   VotesTuningSchema,
+  ReferralV5TuningSchema,
+  CityInsightsTuningSchema,
 } from './schema-v5.js';
 import {
   ACCESSORIES_V5,
@@ -38,6 +40,8 @@ import {
   SAFETY_V5,
   VENUES_V5,
   VOTES_V5,
+  REFERRAL_V5,
+  CITY_INSIGHTS_V5,
 } from './defaults-v5.js';
 
 const prob = z.number().min(0).max(1);
@@ -231,6 +235,9 @@ export const TuningSchema = z
     safety: SafetyTuningSchema.default(SAFETY_V5),
     venues: VenuesTuningSchema.default(VENUES_V5),
     preferences: PreferencesTuningSchema.default(PREFERENCES_V5),
+    /** V5.5 (D-064, D-059). */
+    referral: ReferralV5TuningSchema.default(REFERRAL_V5),
+    cityInsights: CityInsightsTuningSchema.default(CITY_INSIGHTS_V5),
   })
   .superRefine((t, ctx) => {
     const w = t.matching.weights;
@@ -265,7 +272,7 @@ function v5Issues(t: {
   const m = t.memories;
   if (m.promiseMilestones.some((v, i) => i > 0 && v <= (m.promiseMilestones[i - 1] ?? 0))) out.push('souvenirs : paliers de promesse non croissants');
   if (m.stageThresholds.YOUNG >= m.stageThresholds.ADULT) out.push('souvenirs : seuil YOUNG ≥ ADULT');
-  const unlockIds = [...m.accessoryUnlocks.map((u) => u.accessoryId), ...m.kindUnlocks.map((u) => u.accessoryId), t.accessories.referralAccessoryId, ...t.accessories.plusMonthlyAccessoryIds];
+  const unlockIds = [...m.accessoryUnlocks.map((u) => u.accessoryId), ...m.kindUnlocks.map((u) => u.accessoryId), t.accessories.referralAccessoryId, ...(t.accessories.plusMonthlyAccessoryIds ?? [])];
   if (new Set(unlockIds).size !== unlockIds.length) out.push('accessoires : un accessoire a plusieurs sources (non achetables, gagnés une fois)');
   if (new Set(t.notifications.v5.priority).size !== t.notifications.v5.priority.length) out.push('notifications V5 : priorités en double');
   return out;

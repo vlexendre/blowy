@@ -28,7 +28,10 @@
     "helpHint": "Appelle la police (17). Fonctionne même sans réseau Blowy.",
     "brand": "blowy.",
     "unknownValue": "—",
-    "unknownValueA11y": "valeur indisponible"
+    "unknownValueA11y": "valeur indisponible",
+    "on": "activé",
+    "off": "désactivé",
+    "unavailableShort": "indisponible pour l’instant"
   },
   "tabs": {
     "nest": "Nid",
@@ -88,7 +91,27 @@
       "health": "Santé",
       "value": "{value} / 100",
       "critical": "Critique"
-    }
+    },
+    "share": "Partager {pet} seul",
+    "wears": "porte ce qu’il gagne avec tes souvenirs",
+    "memories": "{n} souvenirs",
+    "memoriesTitle": "Souvenirs",
+    "earned": "gagnés, jamais achetés",
+    "memory": {
+      "band": "{pet} rejoint ta bande",
+      "outing": "Sortie au {venue}",
+      "HATCHED": "Éclosion",
+      "DUO_DATE_LIVED": "Rendez-vous en duo",
+      "PROMISE_KEPT": "Promesse tenue",
+      "EGG": "Un œuf à deux",
+      "OUTING_LIVED": "Une sortie",
+      "BAND_NEW_MEMBER": "Ta bande grandit"
+    },
+    "reliability": "Fiabilité",
+    "came": "Venu à {a} sortie sur {b}",
+    "reliabilityNote": "Toi seul vois ce chiffre. Ton groupe n’en voit rien, ni chiffre ni badge. Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre). Un départ « mal à l’aise » ne compte jamais.",
+    "accessories": "Accessoires",
+    "next": "Le prochain accessoire arrive avec ton {n}e souvenir. Rien ne se vend."
   },
   "accessory": {
     "headphones": "casque",
@@ -450,18 +473,76 @@
     "validated": "Mission validée !"
   },
   "chats": {
-    "title": "Chats",
+    "title": "CHATS",
     "datesSection": "Rendez-vous",
     "neighborhoodSection": "Quartier",
     "groupsSection": "Bandes",
     "petHere": "{pet} est ici",
     "petAway": "{pet} est ailleurs",
-    "unread": "{count} nouveau(x)",
+    "unread": "{n} non lus",
     "paused": "En pause",
     "legacy": "Relation héritée",
-    "empty": "Pas encore de conversation.",
+    "empty": {
+      "title": "Rien pour l’instant.",
+      "body": "Le chat de ton groupe s’ouvre dès que tu dis « Je viens » à une sortie. Ton duo, dès que vous dites oui tous les deux.",
+      "cta": "Voir ma proposition",
+      "duo": "Ouvrir la voie Duo"
+    },
     "neighborhoodEmpty": "Invite tes amis dans ton Quartier.",
-    "groupsEmpty": "Pas de bande pour l’instant."
+    "groupsEmpty": "Pas de bande pour l’instant.",
+    "private": "Rien n’est public",
+    "sectionOuting": "Ta sortie",
+    "sectionBand": "Ta bande",
+    "sectionDuos": "Tes duos",
+    "outingTitle": "{day} · {n} + toi",
+    "venueChip": "Lieu {lock}",
+    "facesChip": "Visages {when}",
+    "noMessage": "Pas encore de message",
+    "duoAnswered": "{name} a répondu à ta question.",
+    "origin": {
+      "PLUS_ONE": "Venu avec toi",
+      "OUTING_VOTE": "Rencontrée à ta sortie",
+      "DUO_VOTE": "Rencontré en duo",
+      "LEGACY_V4": "Bande"
+    },
+    "backA11y": "Retour aux chats",
+    "seeOuting": "voir la sortie ›",
+    "moderated": "Messages modérés · pas de numéro ni de réseau, sauf entre accords mutuels",
+    "writeGroup": "Écrire au groupe…",
+    "writeGroupA11y": "Message au groupe",
+    "send": "Envoyer",
+    "nothingRequired": "Rien d’obligatoire avant {day}.",
+    "ice": {
+      "label": "Les pets demandent",
+      "question": "Ton dimanche idéal, en 3 mots ? Facultatif."
+    },
+    "menu": {
+      "title": "Le groupe de {day}",
+      "a11y": "Options du groupe",
+      "report": "Signaler un message ou une personne",
+      "block": "Bloquer quelqu’un",
+      "leave": "Quitter la sortie",
+      "mute": "Couper les notifications du groupe",
+      "note": "Personne ne sait qui a signalé. Pendant les soirs de sortie, une personne de l’équipe répond en moins d’1 h. Quitter est gratuit jusqu’au {lock}. Pour ta sécurité, toujours."
+    },
+    "faceOf": "Visage de {name}",
+    "duoAfterOuting": "Duo · vus en sortie",
+    "duoLane": "Duo · par écrit",
+    "bandSub": "Ta bande",
+    "report": "Signaler",
+    "duoMenuA11y": "Options : partir proprement, clin d’œil, vocal",
+    "proposeDate": "Proposer un rendez-vous à deux",
+    "writeTo": "Écrire à {name}…",
+    "writeToA11y": "Message à {name}",
+    "closed": "Cette conversation est fermée.",
+    "idea": {
+      "label": "Une idée de question",
+      "q1": "Tu te vois où dans 3 ans ?",
+      "use": "L’utiliser",
+      "next": "Une autre"
+    },
+    "venueWelcome": "Le mot du lieu",
+    "calm": "préfère le calme"
   },
   "chat": {
     "placeholder": "Écris à {name}…",
@@ -643,8 +724,8 @@
     "title": "Profil",
     "age": "{age} ans",
     "ageRange": "Tranche {range}",
-    "reliability": "Fiabilité : {value} %",
-    "verified": "Vérifié·e",
+    "reliability": "{a} / {b}",
+    "verified": "selfie vérifié",
     "notVerified": "Non vérifié·e",
     "account": "Compte",
     "settings": "Réglages",
@@ -659,7 +740,21 @@
     "logout": "Se déconnecter",
     "support": "Aide et support",
     "export": "Exporter mes données",
-    "sessions": "Appareils connectés"
+    "sessions": "Appareils connectés",
+    "faceA11y": "Ta photo de profil, vérifiée",
+    "groupSees": "Ton groupe voit : prénom, pronom, tranche d’âge, et ton visage le jour J, 3 h avant. Le reste, toi seul.",
+    "reliabilityLabel": "sortie\nhonorée",
+    "bandLabel": "dans ta\nbande",
+    "memoriesLabel": "souvenirs\nde {pet}",
+    "petSub": "{n} souvenirs · fiabilité",
+    "petSubNoMemories": "souvenirs · fiabilité",
+    "refine": "Affiner plus tard",
+    "refineSub": "questions facultatives, quand tu veux",
+    "plus": "Blowy+",
+    "plusValue": "Gratuit · voir",
+    "cards": "Mes cartes",
+    "cardsValue": "3 mots, invitation…",
+    "pronoun": "Pronom « {p} » · modifier ›"
   },
   "settings": {
     "title": "Réglages",
@@ -790,5 +885,1302 @@
     },
     "catalog": "Catalogue des composants",
     "welcome": "V4-Welcome"
+  },
+  "brand": {
+    "name": "blowy"
+  },
+  "tabs5": {
+    "home": "Accueil",
+    "chats": "Chats",
+    "band": "Bande",
+    "profile": "Profil",
+    "unread": "{n} messages non lus"
+  },
+  "species5": {
+    "NINO": "Raton",
+    "SUZIE": "Lapine",
+    "GASTON": "Capybara",
+    "PIA": "Pigeonne",
+    "LUTIN": "Lutin"
+  },
+  "system": {
+    "loading": {
+      "title": "Nino compose ton groupe…",
+      "body": "Ça prend quelques secondes. Rien à faire."
+    },
+    "offline": {
+      "title": "PAS DE CONNEXION.",
+      "body": "Ta sortie est bien enregistrée. Ce que tu vois date de ta dernière connexion.",
+      "tip": "Sur place sans réseau ? Le code du chevalet marche hors ligne. En danger : 17 ou 112.",
+      "retry": "Réessayer"
+    },
+    "error": {
+      "title": "ÇA N’A PAS MARCHÉ.",
+      "body": "Rien n’est perdu. Réessaie dans un instant."
+    },
+    "unavailable": "{what} : pas encore disponible. Rien n’est inventé en attendant."
+  },
+  "onb": {
+    "stepA11y": "Étape {n} sur {total} : {label}",
+    "chooseOne": "Choisis une réponse",
+    "welcome": {
+      "badge": "18 ans et plus · selfie vérifié",
+      "title1": "DES AMITIÉS, ",
+      "title2": "OU PLUS.",
+      "stamp": "EN VRAI, CETTE SEMAINE.",
+      "body": "Ton pet te trouve une sortie à 5 dans ta ville, sur tes créneaux. Ce que tu cherches reste secret.",
+      "everywhere": "Toutes orientations · en groupe ou à deux. De 18 à 60 ans et plus, des groupes de ton âge. Une sortie dès 5 personnes, partout.",
+      "start": "Commencer",
+      "haveAccount": "J'ai déjà un compte",
+      "tableA11y": "Une table de 5"
+    },
+    "city": {
+      "tag": "Ta ville",
+      "title": "TU SORS OÙ ?",
+      "intro": "Ta ville ou ton quartier. On ne demande jamais ta position : c'est toi qui choisis.",
+      "inputA11y": "Ville ou quartier",
+      "placeholder": "Paris 11e, Lyon, Lille…",
+      "live": "des sorties chaque semaine",
+      "waitlist": "sorties dès 5 personnes compatibles",
+      "travelHint": "Ton trajet maximum ? On te le demande avec tes créneaux.",
+      "waitTitle": "À {city} aussi, on sort.",
+      "waitBody": "Une sortie se forme dès que 5 personnes compatibles partagent un créneau. Continue : on te dit, après tes créneaux, quand la tienne peut avoir lieu.",
+      "idle": "Écris ta ville"
+    },
+    "birthdate": {
+      "tag": "Ta date de naissance",
+      "title": "TA DATE DE NAISSANCE.",
+      "intro": "18 ans et plus. Ton groupe voit une tranche (« 26–29 ans »), jamais ton âge. Vérifiée au selfie.",
+      "day": "Jour",
+      "month": "Mois",
+      "year": "Année",
+      "idle": "Entre ta date"
+    },
+    "gender": {
+      "tag": "Tu es",
+      "title": "TU ES…",
+      "intro": "Ton groupe voit ton pronom et le nombre de femmes et d’hommes du groupe, jamais qui.",
+      "note": "Pronom modifiable dans ton profil. « Non-binaire » et « Autre » ne sont jamais comptés dans « femmes » ou « hommes ».",
+      "options": {
+        "WOMAN": {
+          "t": "Une femme",
+          "s": "pronom « elle »"
+        },
+        "MAN": {
+          "t": "Un homme",
+          "s": "pronom « il »"
+        },
+        "NON_BINARY": {
+          "t": "Non-binaire",
+          "s": "pronom « iel »"
+        },
+        "UNDISCLOSED": {
+          "t": "Autre, ou je préfère ne pas dire",
+          "s": "prénom seul, compté à part"
+        }
+      }
+    },
+    "pet": {
+      "tag": "Ton pet",
+      "title": "CHOISIS TON PET.",
+      "intro": "Ton groupe voit ton pet avant ton visage. Il pose les questions pour briser la glace. Tous gratuits.",
+      "random": "Choisis pour moi",
+      "idle": "Choisis un pet",
+      "soon": "{name}, bientôt disponible"
+    },
+    "meet": {
+      "tag": "Comment rencontrer",
+      "title": "TU PRÉFÈRES RENCONTRER…",
+      "note": "Si tu choisis le petit groupe, aucun duo ne t’est proposé à l’inscription.",
+      "options": {
+        "GROUP": {
+          "t": "En petit groupe",
+          "s": "une sortie à 5, sur tes créneaux"
+        },
+        "DUO": {
+          "t": "À deux, par écrit",
+          "s": "en amitié ou plus ; le vocal n’est jamais obligatoire"
+        },
+        "BOTH": {
+          "t": "Groupe et duo",
+          "s": "les deux, sans priorité"
+        }
+      }
+    },
+    "looking": {
+      "tag": "Tu cherches",
+      "title": "TU CHERCHES…",
+      "secretStrong": "Personne ne le voit, ni ne peut le deviner.",
+      "secret": "Nino en tient compte en silence.",
+      "options": {
+        "FRIENDS": {
+          "t": "De nouvelles amitiés",
+          "s": "tu rencontres tout le monde"
+        },
+        "STORY": {
+          "t": "Une histoire",
+          "s": "un écran de consentement d’abord"
+        },
+        "BOTH": {
+          "t": "Amitiés et histoire",
+          "s": "un écran de consentement d’abord"
+        }
+      }
+    },
+    "consent": {
+      "tag": "Ton accord",
+      "title": "AVANT LA QUESTION SENSIBLE, TON ACCORD.",
+      "intro": "Tu as choisi « une histoire ». L’écran suivant demande qui tu veux rencontrer : ça peut révéler ton orientation. La loi protège cette donnée (RGPD, article 9).",
+      "l1": "Elle sert seulement à composer tes groupes et tes duos.",
+      "l2": "Personne ne la voit ni ne peut la deviner : ni ton groupe, ni ta bande, ni le lieu.",
+      "l3": "Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux.",
+      "l4": "Tu retires ton accord quand tu veux, dans Confidentialité : on efface la réponse.",
+      "accept": "J’accepte",
+      "friendsOnly": "Amitié seulement",
+      "note": "« Amitié seulement » : tu vas aux sorties, sans cette question."
+    },
+    "story": {
+      "tag": "Une histoire",
+      "title": "POUR UNE HISTOIRE, TU VEUX RENCONTRER…",
+      "intro": "Une ou plusieurs cases. Pour l’amitié, tu rencontres tout le monde.",
+      "options": {
+        "WOMAN": "Des femmes",
+        "MAN": "Des hommes",
+        "NON_BINARY": "Des personnes non-binaires"
+      },
+      "l1": "Nino en tient compte pour composer tes groupes, sans jamais le montrer à personne.",
+      "l2": "Après une sortie, tout le monde voit les mêmes 3 réponses : amitié, plus, non. La compatibilité se calcule en silence."
+    },
+    "slots": {
+      "tag": "Tes créneaux",
+      "title": "QUAND ES-TU LIBRE ?",
+      "intro": "Les créneaux des lieux de ta ville. Une proposition par semaine au plus.",
+      "idle": "Coche au moins un créneau",
+      "weeksOff": "Certaines semaines je ne suis pas dispo (garde, travail)",
+      "travelLabel": "Trajet maximum · 30 min par défaut",
+      "travel": "{m} min",
+      "travelSoon": "{m} min, bientôt disponible",
+      "options": {
+        "tue_evening": {
+          "t": "Mardi soir",
+          "h": "19 h 30 – 21 h 30"
+        },
+        "thu_evening": {
+          "t": "Jeudi soir",
+          "h": "19 h 30 – 21 h 30"
+        },
+        "fri_evening": {
+          "t": "Vendredi soir",
+          "h": "20 h – 22 h"
+        },
+        "sat_afternoon": {
+          "t": "Samedi après-midi",
+          "h": "15 h – 17 h"
+        },
+        "sun_brunch": {
+          "t": "Dimanche brunch",
+          "h": "11 h – 13 h"
+        }
+      }
+    },
+    "age": {
+      "back": "Retour à l’accueil",
+      "title": "BLOWY EST RÉSERVÉ AUX 18 ANS ET PLUS.",
+      "body": "On a supprimé ce que tu as saisi. L’âge est de toute façon vérifié au selfie.",
+      "ok": "Compris",
+      "retry": "Erreur de date ? Nouvelle saisie dans 24 h"
+    }
+  },
+  "petName": {
+    "NINO": "Nino",
+    "SUZIE": "Suzie",
+    "GASTON": "Gaston",
+    "PIA": "Pia"
+  },
+  "activity": {
+    "DRINK_COFFEE": "Verre ou café",
+    "BRUNCH": "Brunch",
+    "CLIMBING": "Bloc d'escalade",
+    "WORKSHOP": "Atelier",
+    "GAMES": "Jeux de société",
+    "EXHIBITION": "Expo"
+  },
+  "found": {
+    "shareA11y": "Aperçu de la carte « cette semaine je sors », sans visages ni prénoms",
+    "title": "{pet} T’A TROUVÉ UNE SORTIE.",
+    "see": "Voir la sortie",
+    "withSomeone": "Venir avec quelqu’un que tu connais",
+    "otherSlot": "Voir un autre créneau",
+    "friendsOnlyStrong": "Cette semaine, sortie entre amis pour toi.",
+    "friendsOnly": "On te le dit avant que tu choisisses.",
+    "awayChip": "{home} · trajet max {m} min",
+    "awayTitle": "{pet} T’A TROUVÉ UNE SORTIE À {city}.",
+    "awayComposition": "{size} personnes, toi compris · {ages} ans · {genders}",
+    "awaySchedule": "Lieu et prénoms le {lock}, visages le {faces}. Annulation gratuite jusqu’au {lock}.",
+    "activityChosen": "Activité choisie selon le lieu et vos envies",
+    "titleV55": "{pet} (TON PET) T’A TROUVÉ UNE SORTIE.",
+    "awayTitleV55": "UNE SORTIE À {city}, TROUVÉE PAR {pet}.",
+    "chip": "{home} · trajet max {m} min",
+    "subtitle": "Pour rencontrer de nouvelles personnes, en vrai, à 5.",
+    "footerFree": "Lieu et prénoms le {lock}. Annulation gratuite jusque-là. Ta 1re sortie est offerte.",
+    "footer": "Lieu et prénoms le {lock}. Annulation gratuite jusque-là.",
+    "inviteV55": "Inviter quelqu’un à venir avec toi",
+    "calmAsked": "Lieu calme, comme demandé dans Affiner."
+  },
+  "outing": {
+    "title": "TA SORTIE",
+    "menuA11y": "Options : signaler, bloquer, quitter",
+    "scheduleNote": "Lieu et prénoms : {lock} · visages : {faces}",
+    "group": {
+      "label": "Ton groupe",
+      "me": "Toi",
+      "unknown": "?",
+      "unknownA11y": "Personne à découvrir la veille",
+      "rule": "Jamais plus de 3 personnes du même genre dans un groupe."
+    },
+    "how": {
+      "title": "Comment ça se passe",
+      "arrive": "Tu arrives : table Blowy, chevalet orange. Tu tapes son code à 4 chiffres dans l’app : c’est ton check‑in.",
+      "duringWhen": "Pendant",
+      "during": "Des cartes de questions sur la table, si vous voulez. Personne n’anime.",
+      "leaveWhen": "Quand tu veux",
+      "leave": "Tu pars quand tu veux. Chacun paie ce qu’il boit."
+    },
+    "free": "Offerte",
+    "freeSub": "Ensuite {price} la place. Aucune carte demandée aujourd’hui.",
+    "paid": "{price} la place",
+    "paidSub": "Apple Pay. Remboursée si la sortie n’a pas lieu.",
+    "teamComes": "{name} vient",
+    "teamPlaces": "+ {n} place",
+    "teamInvite": "Venir avec quelqu’un",
+    "cancelRule": "Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre).",
+    "acceptFree": "Je viens · offerte",
+    "acceptPaid": "Je viens · {price}",
+    "decline": "Pas cette semaine",
+    "going": {
+      "title": "Tu y vas.",
+      "sub": "Rien d’autre à faire avant {lock}."
+    },
+    "guardian": "Ange gardien",
+    "optional": "facultatif",
+    "groupChat": "Chat du groupe",
+    "messages": "{n} messages",
+    "addCalendar": "Ajouter à mon agenda",
+    "cancelFree": "Annuler · gratuit jusqu’au {lock} · voir la règle",
+    "ms": {
+      "lock": "Lieu et prénoms · annulation gratuite jusque-là",
+      "faces": "Les visages",
+      "outing": "La sortie"
+    },
+    "rulesSummary": "Règles d’annulation ›",
+    "rules": "Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée).",
+    "acceptV55": "Je viens",
+    "priceFree": "Offerte (ta 1re sortie) · ensuite {price}",
+    "pricePaid": "{price} la place · Apple Pay",
+    "teamComesV55": "{name} vient avec toi",
+    "teamFresh": "{n} nouvelles personnes",
+    "calendarTitle": "Titre dans ton agenda : « Rendez-vous · {time} »",
+    "cancelFreeV55": "Annuler · gratuit jusqu’au {lock}",
+    "travelFrom": "≈ {minutes} min depuis {home}",
+    "travel": "≈ {minutes} min de trajet",
+    "chosenByVenue": "Activité choisie selon le lieu et vos envies"
+  },
+  "team": {
+    "title": "VIENS AVEC QUELQU’UN.",
+    "intro": "Seul ou avec 1 ou 2 proches : vous êtes dans le même groupe de 5, avec de nouvelles personnes.",
+    "verified": "vérifié",
+    "notVerified": "selfie à faire",
+    "add": "Si quelqu’un veut venir",
+    "addA11y": "Inviter un 2e proche",
+    "l1": "Leur 1re sortie est offerte.",
+    "l2": "Chacun passe le selfie vérifié et entre dans la tranche d’âge du groupe.",
+    "l3": "Nino garde l’équilibre : jamais plus de 3 personnes du même genre dans un groupe.",
+    "done": "C’est bon, on est {n}",
+    "solo": "Je viens seul",
+    "inviteOther": "Inviter quelqu’un d’autre"
+  },
+  "account": {
+    "tag": "Ta place, gardée 30 min",
+    "title": "TA PLACE, EN 1 TAP.",
+    "intro": "Un compte sans mot de passe. Ton e-mail reste masqué.",
+    "displayName": "Prénom affiché",
+    "namePlaceholder": "Ton prénom",
+    "discreet": "Je préfère la discrétion",
+    "discreetShort": "Mode discret",
+    "discreetOn": "Activé : icône « Agenda », notifications neutres",
+    "discreetOff": "Désactivé : icône blowy., notifications normales",
+    "apple": "Continuer avec Apple",
+    "google": "Continuer avec Google",
+    "phone": "Avec mon numéro de téléphone",
+    "hold": "Modifiable à tout moment. Âge vérifié au selfie juste après.",
+    "submitFailed": "Compte créé, mais ces étapes n’ont pas pu être enregistrées : {steps}. Rien n’est perdu sur ton téléphone ; réessaie.",
+    "steps": {
+      "profile": "profil",
+      "neighborhood": "quartier",
+      "consents": "accords",
+      "intentions": "ce que tu cherches",
+      "privacy": "mode discret",
+      "pet": "ton pet",
+      "complete": "fin de l’inscription"
+    },
+    "discreetChoose": "Choisis maintenant : icône et notifications neutres, ou normales. Modifiable dans Réglages.",
+    "normal": "Normal",
+    "discreetOpt": "Discret",
+    "appearsAs": "Sur ton téléphone, blowy. apparaît…",
+    "modeA11y": "Mode d’affichage",
+    "discreetSub": "icône « Agenda », notifications « Rappel », aucun pet",
+    "normalSub": "icône blowy., notifications avec ton pet",
+    "chooseMode": "Discret ou normal ?"
+  },
+  "verify": {
+    "back": "Retour à la sortie",
+    "chip": "Avant ta 1re sortie · 1 min",
+    "title": "VÉRIFIONS QUE C’EST TOI.",
+    "intro": "Ta place est gardée 30 min. Un selfie en mouvement : on vérifie que tu es une vraie personne, que tu as 18 ans et plus, et que tu ressembles à tes photos. Les photos de chacun sont comparées à son selfie. Le selfie n’est montré à personne, puis supprimé sous 30 jours.",
+    "start": "Lancer le selfie",
+    "face": "Ton visage",
+    "faceHint": "1 à 3 photos de ton visage",
+    "photoA11y": "Photo 1 ajoutée, ta photo ici",
+    "photoHere": "ta photo ici",
+    "add": "Ajouter une photo",
+    "tip1": "Lumière de face, visage net",
+    "tip2": "Toi seul sur la photo, sans lunettes de soleil",
+    "tip3": "Une photo en train de faire quelque chose",
+    "groupSees": "Ton groupe verra ton visage le jour J, 3 h avant la sortie, avec : « {name} · ta tranche d’âge ».",
+    "failed": {
+      "title": "ON N’A PAS PU VÉRIFIER.",
+      "body": "Ton visage n’était pas assez net. Ça arrive souvent le soir.",
+      "t1": "Mets-toi face à une fenêtre ou une lampe",
+      "t2": "Enlève casquette et lunettes",
+      "t3": "Tiens le téléphone à hauteur des yeux",
+      "id": "Après 3 essais, ou si ton âge est incertain, on te propose une pièce d’identité. Une personne la regarde, puis on la supprime.",
+      "retry": "Réessayer",
+      "team": "Écrire à l’équipe"
+    }
+  },
+  "notif": {
+    "reserved": "Ta place est réservée",
+    "title": "ON TE PRÉVIENT, SANS SPAM.",
+    "intro": "Une proposition par semaine au plus, les messages de ton groupe, le lieu la veille. Jamais le contenu d’un message. Jamais après 23 h.",
+    "discreetOff": "Mode discret : désactivé",
+    "discreetOffSub": "activé, ce serait « Rappel », icône « Agenda », aucun pet",
+    "discreetOn": "Mode discret : activé",
+    "discreetOnSub": "« Rappel », icône « Agenda », aucun pet",
+    "lockScreen": "Sur ton écran verrouillé",
+    "n1When": "blowy. · mer. 18:00",
+    "n1": "Le lieu de jeudi est arrivé.",
+    "n2When": "blowy. · maintenant",
+    "n2": "Nouveau message dans ton groupe.",
+    "n3When": "blowy. · lun. 21:00",
+    "n3": "Une sortie pour toi cette semaine.",
+    "neutral": "Rappel.",
+    "allow": "Me prévenir",
+    "later": "Plus tard",
+    "refused": {
+      "title": "NOTIFICATIONS REFUSÉES. PAS DE SOUCI.",
+      "body": "Tu verras tout en ouvrant l’app. Le lieu et les prénoms arrivent le {lock}, les visages le {faces} : pense à ouvrir l’app.",
+      "bodyNoOuting": "Tu verras tout en ouvrant l’app.",
+      "howTitle": "Pour les réactiver",
+      "how": "Réglages de l’iPhone › Notifications › blowy."
+    }
+  },
+  "home": {
+    "pause": "Mettre en pause mes sorties",
+    "petA11y": "{name}, ta fiche",
+    "labelGoing": "Ta sortie · tu y vas",
+    "labelInvited": "Nino t’a trouvé une sortie",
+    "venueAt": "Lieu : {lock}",
+    "facesAt": "Visages : {faces}",
+    "answerBefore": "Réponds avant mercredi midi",
+    "seeOuting": "Voir la sortie",
+    "noOuting": "Cette semaine",
+    "noOutingTitle": "Pas encore de sortie",
+    "teamComes": "{names} vient avec toi",
+    "band": "Ta bande",
+    "bandEmpty": "elle se forme en sortie",
+    "duo": "Ton duo",
+    "duoEmpty": "voie Duo",
+    "duoFaces": "{name} · visages {when}",
+    "shrinkPet": "Réduire le pet",
+    "petLine": {
+      "GAMES": "{day}, on joue.",
+      "CLIMBING": "{day}, on grimpe.",
+      "WORKSHOP": "{day}, on crée.",
+      "BRUNCH": "{day}, brunch.",
+      "DRINK_COFFEE": "{day}, on trinque.",
+      "EXHIBITION": "{day}, on flâne."
+    },
+    "discreet": {
+      "agenda": "Agenda",
+      "next": "Prochain rendez-vous",
+      "details": "Détails {lock}",
+      "on": "Mode discret activé",
+      "body": "Icône « Agenda », onglets neutres, Face ID à l’ouverture.",
+      "off": "Désactiver dans Confidentialité ›"
+    },
+    "duoHome": {
+      "label": "Ton duo · par écrit",
+      "sub": "Un nouveau message · visages {when}",
+      "lane": "Voie Duo",
+      "laneSub": "Gratuit : jusqu’à 3 duos actifs.",
+      "group": "Ta sortie de la semaine",
+      "groupSub": "{day} · avec quelqu’un que tu connais, si tu veux"
+    }
+  },
+  "pause": {
+    "title": "PAUSE",
+    "subtitle": "Une pause, sans rien perdre.",
+    "body": "Aucune proposition, aucune notification. Ta bande et tes duos restent là.",
+    "bodyOuting": "Aucune proposition, aucune notification. Ta bande et tes duos restent là. Ta sortie du {day} reste prévue : tu peux l’annuler gratuitement jusqu’au {lock}.",
+    "w1": "1 semaine",
+    "w2": "2 semaines",
+    "open": "Jusqu’à ce que je revienne",
+    "cta": "Mettre en pause",
+    "idle": "Choisis une durée"
+  },
+  "words": {
+    "DROLE": "drôle",
+    "LOYAL": "loyal",
+    "SOLAIRE": "solaire",
+    "CURIEUX": "curieux",
+    "BIENVEILLANT": "bienveillant",
+    "CREATIF": "créatif",
+    "COURAGEUX": "courageux",
+    "APAISANT": "apaisant",
+    "GENEREUX": "généreux",
+    "INSPIRANT": "inspirant",
+    "FIABLE": "fiable",
+    "PETILLANT": "pétillant"
+  },
+  "waitlist": {
+    "verified": "À {city} : {n} personnes vérifiées",
+    "missing": "IL MANQUE {n} PERSONNES POUR TA SORTIE DU {day}.",
+    "noGap": "PAS ENCORE DE SORTIE SUR TES CRÉNEAUX.",
+    "body": "Créneau du {weekday}, {hours}. Une seule notification quand elle a lieu.",
+    "bodyNoGap": "Une sortie se forme dès que 5 personnes compatibles partagent un créneau. Une seule notification.",
+    "helpLabel": "Pour qu’elle ait lieu",
+    "addSlot": "Ajouter un créneau",
+    "addSlotSub": "Plus tu as de créneaux, plus vite elle a lieu",
+    "share": "Partager « Aide {city} à sortir »",
+    "shareSub": "Une carte sans chiffre ni prénom",
+    "team": "Venir avec quelqu’un",
+    "teamSub": "Ça compte dans le groupe ; sa 1re sortie est offerte",
+    "insight": "À {city}, {label} inscrits ont entre {a} et {b} ans",
+    "slot": "Créneau du {weekday}, {hours}.",
+    "ifArrive": "Si elles arrivent d’ici le {by}, elle a lieu, en {ages} ans.",
+    "otherwise": "Sinon, {pet} te propose le {day}, même créneau. Une seule notification.",
+    "alsoA": "Tu peux aussi ",
+    "alsoInvite": "inviter une personne",
+    "alsoOr": " ou ",
+    "alsoShare": "partager la carte de {city}"
+  },
+  "seeding": {
+    "title": "TA SORTIE À {city}",
+    "soloTitle": "{city}, EN SOLO",
+    "happens": "Elle a lieu",
+    "oneNotif": "Une notification, cette semaine",
+    "headline": "Toi et {n} proches, + {others} personnes de {city}.",
+    "soloHeadline": "Tu viens seul. Les 4 autres aussi.",
+    "body": "Pas besoin d’attendre que {city} « ouvre » : 5 personnes vérifiées sur un même créneau suffisent. Le lieu est nommé la veille à 18 h, comme partout.",
+    "soloBody": "Sur ton créneau du {weekday}, une activité que tu as cochée. Personne ne se connaît : tout le monde arrive seul.",
+    "when": "Quand",
+    "activity": "Activité",
+    "place": "Lieu",
+    "placeValue": "{place} · nommé le {lock}",
+    "group": "Groupe",
+    "teamRule": "Les {others} autres personnes savent que {team} personnes viennent ensemble. Jamais plus de 3 personnes du même genre dans un groupe.",
+    "soloRule": "Jamais plus de 3 personnes du même genre dans un groupe. Dire non ne change rien pour la semaine suivante.",
+    "seeSolo": "Voir la même sortie en venant seul",
+    "no": "Non merci"
+  },
+  "later": {
+    "cancelledChip": "Annulée",
+    "cancelledTitle": "LA SORTIE DE {weekday} N’AURA PAS LIEU.",
+    "reason": {
+      "UNDERSIZED": "Pas assez de confirmations pour former un bon groupe. Ça arrive, ce n’est la faute de personne.",
+      "VENUE": "Le lieu ne peut pas nous accueillir. Ça arrive, ce n’est la faute de personne.",
+      "OTHER": "Elle ne peut pas avoir lieu. Ce n’est la faute de personne."
+    },
+    "refundCard": "Ta place est remboursée sur ta carte.",
+    "firstStaysFree": "Ta 1re sortie reste offerte.",
+    "noCharge": "Rien ne t’est facturé.",
+    "reliability": "Ta fiabilité ne bouge pas.",
+    "teamWarned": "{name}, qui venait avec toi, est prévenu.",
+    "proposeLabel": "On te propose",
+    "nextLabel": "La semaine prochaine, sur un de tes créneaux",
+    "nextSub": "{place} · nouveau groupe · lieu annoncé {lock}",
+    "noNext": "Pas encore de proposition : on te prévient, une seule fois.",
+    "fullTitle": "PAS DE PLACE CETTE FOIS.",
+    "fullBody": "Ta réponse est arrivée après la composition des groupes du {day}. Tu n’as rien à faire, rien n’est perdu.",
+    "fullNote": "Rien n’est réservé sans ton accord. Ta 1re sortie reste offerte.",
+    "yes": "Oui, le {day}",
+    "no": "Non merci"
+  },
+  "confirm": {
+    "title": "LIEU CONFIRMÉ",
+    "back": "Retour au groupe",
+    "when": "{day} · {time}{table}",
+    "table": " · Table {name}, chevalet orange au fond",
+    "photoNote": "Photo fournie par le lieu · partenaire, signataire de la charte anti-discrimination.",
+    "groupLabel": "Ton groupe · sans visages jusqu’à J −3 h",
+    "withYou": "vient avec toi",
+    "knows": "Je connais quelqu’un ici · examiné en privé, sans pénalité",
+    "facesSoon": "Les visages arrivent {faces}, 3 h avant. Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre).",
+    "guardian": "Choisir un ange gardien",
+    "share": "Partager « cette semaine, je sors »",
+    "revealed": "{lock} · lieu révélé",
+    "photoCaption": "Photo fournie par le lieu",
+    "tableNote": "Table {name}, chevalet orange au fond",
+    "rulesSummary": "Règles d’annulation et imprévu ›",
+    "shareWeek": "Partager ma semaine",
+    "photos": "Changer mes photos"
+  },
+  "faces": {
+    "title": "LES VISAGES",
+    "chip": "{when} · 3 h avant",
+    "verified": "selfie vérifié",
+    "watermark": "vu par {name} · vu par {name}",
+    "a11y": "Visage de {name}, filigrane à ton prénom",
+    "note": "Ton prénom est en filigrane sur chaque visage ; les captures sont détectées et signalées. Les autres voient ta carte : « {name} · ta tranche d’âge ».",
+    "tonight": "À ce soir",
+    "knows": "Je connais quelqu’un ici · examiné en privé, sans pénalité",
+    "share": "Partager « je sors ce soir »",
+    "cantComeSub": "imprévu, aucune raison demandée",
+    "cantComeRule": "Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée. Pour ta sécurité : toujours possible, sans pénalité, place remboursée.",
+    "cantCome": "Je ne peux plus venir · imprévu sans pénalité 1 fois par mois, sinon absence"
+  },
+  "checkin": {
+    "weekday": "Jeudi",
+    "title": "TU ES LÀ ?",
+    "table": "Table Blowy, chevalet orange au fond",
+    "instructions": "Tape le code à 4 chiffres écrit sur le chevalet orange.",
+    "codeA11y": "Code du chevalet, 4 chiffres",
+    "noStand": "Pas de chevalet ? Demande au comptoir la table Blowy.",
+    "invalid": "Ce code ne correspond pas. Vérifie le chevalet et réessaie.",
+    "geo": "Plutôt vérifier ma position une fois ›",
+    "validate": "Valider le code",
+    "noPosition": "Ta position n’est jamais demandée.",
+    "fourDigits": "Tape les 4 chiffres du chevalet."
+  },
+  "checkedIn": {
+    "chip": "Check-in {time}",
+    "title": "C’EST PARTI.",
+    "count": "{n} sur {size} arrivés",
+    "phoneAway": "Range ton téléphone : la soirée est à la table. Cartes de questions sur la table, si vous voulez.",
+    "guardianKnows": "{name} sait que tu es arrivé",
+    "okAtEnd": "« Tout va bien ? » à la fin",
+    "leave": "Je pars, mal à l’aise · sans pénalité",
+    "leaveNote": "Ton départ prévient l’équipe (et ton ange). Répété 3 fois, quelqu’un te rappelle.",
+    "fakeCall": "Faux appel",
+    "help": "Besoin d’aide",
+    "helpSub": "appui long 2 s · sans bruit",
+    "end": "Fin de soirée ›"
+  },
+  "guardian": {
+    "title": "ANGE GARDIEN",
+    "back": "Retour à la sortie",
+    "intro": "Facultatif, pour cette sortie seulement. N’importe qui, sans installer l’app : la personne reçoit un lien.",
+    "other": "Un autre contact",
+    "otherNote": "dans ton répertoire",
+    "seesLabel": "Ton ange verra seulement",
+    "s1": "L’heure et le lieu de ta sortie",
+    "s2": "« {name} est arrivé », au check-in",
+    "s3": "Ton « tout va bien » à la fin, ou ta demande d’aide",
+    "never": "Jamais ton groupe, tes messages, ta position en continu",
+    "expiry": "Le lien est secret et expire 3 h après la fin. Tu peux le retirer sans que la personne soit prévenue.",
+    "send": "Envoyer le lien à {name}",
+    "thisContact": "ce contact",
+    "choose": "Choisis un contact",
+    "none": "Pas d’ange gardien cette fois",
+    "message": "{name} sort ce soir avec Blowy. Si tu veux, suis la soirée ici : {url}"
+  },
+  "memory": {
+    "title": "SORTIE VÉCUE.",
+    "body": "Un souvenir de plus pour {pet}. Il se pose dans Ta rue.",
+    "secret": "Vote secret. Tu ne vois que tes propres accords. Tu ne sauras jamais qui a dit non ou n’a pas voté. Vote jusqu’au {close}.",
+    "vote": "Voter en secret",
+    "share": "Partager la soirée · ni visages ni prénoms"
+  },
+  "vote": {
+    "secretUntil": "Secret · jusqu’au {close}",
+    "title": "ALORS, {weekday} ?",
+    "plusStrong": "« Plus » vaut au moins « amitié ».",
+    "plus": "Sans réponse, c’est « non », sans rien afficher. Tu ne sauras jamais qui a dit non ou n’a pas voté.",
+    "problem": "Un problème ?",
+    "groupA11y": "Ton vote pour {name}",
+    "FRIEND": "Amitié",
+    "PLUS": "Plus",
+    "NO": "Non",
+    "alreadyBand": "{name} est déjà dans ta bande.",
+    "save": "Enregistrer mes votes",
+    "editable": "Modifiable, résultats le {close}."
+  },
+  "results": {
+    "title": "TES ACCORDS.",
+    "intro": "Tu ne vois que les tiens. Tu ne sauras jamais qui a dit non ou n’a pas voté.",
+    "plusBoth": "Vous avez dit plus tous les deux",
+    "friend": "Amitié",
+    "plusBody": "Un chat à deux s’ouvre. Un rendez-vous, si vous voulez.",
+    "friendBody": "{name} rejoint ta bande. Vous pourrez revenir ensemble au {venue}.",
+    "share": "Partager la soirée",
+    "writeTo": "Écrire à {name}",
+    "bandGrows": "Ma bande s’agrandit ›",
+    "noneTitle": "PAS D’ACCORD CETTE FOIS.",
+    "noneBody": "C’est fréquent après une 1re sortie. Personne ne sait ce que tu as voté. Tu ne sauras jamais qui a dit non ou n’a pas voté. Tu as passé une soirée, et {pet} a un souvenir.",
+    "nextWeek": "La semaine prochaine : un nouveau groupe. Jamais les mêmes personnes, sauf ta bande si tu l’invites.",
+    "seeNext": "Voir le {day}",
+    "seeNextGeneric": "Voir la prochaine sortie",
+    "home": "Retour à l’accueil",
+    "shareShort": "Partager la soirée"
+  },
+  "band": {
+    "title": "TA BANDE",
+    "count": "{n} dans ta bande",
+    "metAt": "Rencontrée à ta sortie du {day}",
+    "cameWith": "Venu avec toi à ta 1re sortie",
+    "options": "Options pour {name} : partir proprement, bloquer",
+    "outing": "Sortie de bande",
+    "outingSub": "Toi, {names} + 2 personnes du quartier",
+    "empty": "Ta bande se forme en sortie : quand vous dites « amitié » tous les deux, la personne la rejoint.",
+    "street": "Ta rue · là où vivent vos pets"
+  },
+  "street": {
+    "back": "Retour à ta bande",
+    "title": "TA RUE",
+    "intro": "Les pets de ta bande vivent ici. Tes {n} souvenirs décorent la rue. Aucune notification, rien à entretenir.",
+    "a11y": "Les maisons de {names}, et {n} souvenirs dans la rue",
+    "optional": "Si tu veux · facultatif",
+    "give": "Offrir tes lunettes gagnées à {pet}",
+    "giveCta": "Offrir",
+    "given": "{pet} les porte. {name} le verra en passant, sans notification."
+  },
+  "traits": {},
+  "duo": {
+    "steps": {
+      "write": "{n} · Écrire",
+      "faces": "{n} · Visages",
+      "date": "{n} · Rendez-vous"
+    },
+    "laneTitle": "VOIE DUO",
+    "storyCompatible": "pour une histoire · projet compatible",
+    "friendship": "en amitié",
+    "activeFaces": "Ton duo actif · visages {when}",
+    "beforeYes": "{initial} ne voit ta carte qu’après ton oui. Prénom et carte complète : seulement si vous dites oui tous les deux.",
+    "sayYes": "Dire oui…",
+    "notNow": "Pas cette fois",
+    "limit": "Jusqu’à 3 duos actifs, gratuits pour tout le monde.",
+    "orGroup": "Ou viens jeudi en groupe ›",
+    "choiceTitle": "UN 4E DUO ?",
+    "choiceIntro": "Tu as déjà 3 duos actifs, le maximum pour garder chaque échange vivant. Pour dire oui à {n}, choisis :",
+    "closeWith": "Fermer le duo avec {a}",
+    "closeWithSub": "Avec un dernier mot, proprement. Gratuit.",
+    "goPlus": "Passer à Blowy+",
+    "goPlusSub": "9,99 € par mois, achat intégré : duos sans limite et toutes tes sorties.",
+    "keepLater": "Garder {n} pour plus tard",
+    "keepLaterSub": "La proposition reste 7 jours.",
+    "withTitle": "DUO AVEC {name}",
+    "backLane": "Retour à la voie Duo",
+    "t1": "1 · Vous écrivez",
+    "t1Text": "Depuis {since}. Vous avez écrit tous les deux.",
+    "t1Compatible": "Projet compatible : activé par vous deux.",
+    "ongoing": "en cours",
+    "t2": "2 · Les visages",
+    "t2Text": "{when}, en même temps. Un vocal si vous voulez.",
+    "t3": "3 · Un rendez-vous",
+    "t3Text": "Quand vous voulez. {pet} en propose pendant 7 jours, ensuite le duo reste ouvert.",
+    "between": "Entre {pair}",
+    "filtered": "Messages filtrés : liens, numéros et photos bloqués avant les visages. Signaler est toujours en haut à droite.",
+    "answer": "Répondre à {name}",
+    "leaveClean": "Partir proprement",
+    "facesChip": "{when} · en même temps",
+    "yourFace": "Visage de toi",
+    "voiceOptional": "Un vocal, si {name} et toi le voulez. Jamais obligatoire. Lecture dans l’app seulement.",
+    "proposeDate": "Proposer un rendez-vous",
+    "dateTitle": "RENDEZ-VOUS",
+    "afterOuting": "Après la sortie",
+    "step3": "Duo · étape 3",
+    "publicPlace": "Lieu public · gratuit",
+    "partner": "Lieu partenaire · table confirmée par {name}",
+    "noVenue": "Lieu à choisir",
+    "otherPlace": "Choisir ensemble un autre lieu ou une autre heure",
+    "guardian": "Ange gardien · facultatif",
+    "nobody": "Personne",
+    "dateL1": "Check-in sur place, besoin d’aide et faux appel, comme en sortie.",
+    "dateL2": "Tu peux partir à tout moment.",
+    "dateL3": "Rendez-vous gratuit. {name} doit accepter le créneau.",
+    "proposeTo": "Proposer à {name}",
+    "openBoth": "Duo ouvert : vous avez dit oui tous les deux",
+    "facesWhen": "Visages {when}",
+    "proposalTitle": "{species} · {initial}",
+    "speciesIndef": {
+      "NINO": "Un raton",
+      "SUZIE": "Une lapine",
+      "GASTON": "Un capybara",
+      "PIA": "Un pigeon"
+    },
+    "proposalSub": "Une proposition pour vous deux",
+    "beforeYesV55": "Avant vos deux oui, chacun ne voit que l’espèce du pet et l’initiale de l’autre. Le reste de la carte, après ; le prénom, aux visages.",
+    "sayYesV55": "Dire oui",
+    "limitV55": "Gratuit : jusqu’à 3 duos actifs. Une proposition reste 48 h.",
+    "insight": "À {city}, {label} cherchent une histoire compatible avec la tienne.",
+    "dateTooLate": "Choisis un jour à partir de demain soir : le lieu reçoit sa table la veille à 18 h.",
+    "proposeFailed": "Pas envoyé. Réessaie dans un instant.",
+    "proposalScreenTitle": "UNE PROPOSITION",
+    "proposalScreenSub": "voie Duo · pour toi seul",
+    "guardianLater": "Ange gardien facultatif, choisi par toi.",
+    "mustAccept": "{name} doit accepter le créneau."
+  },
+  "egg": {
+    "title": "CLIN D’ŒIL",
+    "headline": "Un œuf pour vos deux pets. Désactivé par défaut.",
+    "body": "Juste pour rire, après 2 rendez-vous. Il n’apparaît que si vous l’activez tous les deux, chacun de son côté. Personne ne l’envoie à l’autre, et personne ne sait qui l’a activé en premier.",
+    "want": "Je veux bien un œuf avec {name}",
+    "wantSub": "pas d’exclusivité, aucune obligation",
+    "wantA11y": "Œuf avec {name}",
+    "never": "Ne jamais me le proposer",
+    "neverSub": "pour tous tes duos",
+    "back": "Retour au chat"
+  },
+  "leave": {
+    "title": "PARTIR PROPREMENT",
+    "back": "Retour au chat",
+    "intro": "Un message, et le duo se ferme. {name} ne peut plus t’écrire. Ta fiabilité ne compte que les sorties : elle ne bouge pas.",
+    "lastWord": "Ton dernier mot à {name}",
+    "w1": "J’ai passé un bon moment avec toi, mais je ne sens pas d’étincelle. Je préfère te le dire.",
+    "w2": "Je traverse une période chargée, je ne suis pas disponible pour la suite. Merci pour ce moment.",
+    "w3": "Merci pour le rendez-vous. Je ne pense pas qu’on aille plus loin, je te souhaite le meilleur.",
+    "own": "J’écris mon propre mot…",
+    "send": "Envoyer et partir",
+    "choose": "Choisis un message",
+    "unsafe": "Partir sans message · si tu ne te sens pas en sécurité",
+    "doneTitle": "C’EST FAIT, ET C’EST CLASSE.",
+    "doneBody": "{name} a reçu ton mot. Ta bande et tes sorties continuent."
+  },
+  "settings5": {
+    "title": "RÉGLAGES",
+    "pause": "Faire une pause",
+    "pauseValue": "1 tap",
+    "outings": "Mes sorties",
+    "slots": "Mes créneaux",
+    "slotShort": {
+      "tue_evening": "mar. soir",
+      "thu_evening": "jeu. soir",
+      "fri_evening": "ven. soir",
+      "sat_afternoon": "sam. après-midi",
+      "sun_brunch": "dim. brunch"
+    },
+    "toChoose": "à choisir",
+    "hoods": "Mes quartiers",
+    "hoodsValue": "{name} + {n}",
+    "format": "Format et voie Duo",
+    "formatValue": "{mode}",
+    "mode": {
+      "GROUP": "en groupe",
+      "DUO": "en duo",
+      "BOTH": "groupe et duo"
+    },
+    "petSize": "Taille du pet sur l’Accueil",
+    "petLarge": "grand · réduire",
+    "petSmall": "petit · agrandir",
+    "refine": "Affiner plus tard",
+    "refineValue": "âge du groupe, questions",
+    "notifications": "Notifications",
+    "proposals": "Propositions",
+    "proposalsValue": "{n} par semaine au plus",
+    "messages": "Messages",
+    "messagesOn": "Notifications de messages, activées",
+    "messagesOff": "Notifications de messages, désactivées",
+    "account": "Compte et sécurité",
+    "privacy": "Confidentialité",
+    "privacyValue": "mode discret, éviter mes contacts",
+    "guardian": "Ange gardien",
+    "guardianValue": "choisi à chaque sortie",
+    "pricing": "Blowy+ et tarifs",
+    "leave": "Partir proprement",
+    "leaveValue": "bande ou duo",
+    "help": "Aide (non urgent)",
+    "helpValue": "réponse sous 24 h",
+    "logout": "Se déconnecter",
+    "delete": "Supprimer mon compte",
+    "weeksOff": "Semaines sans moi",
+    "weeksOffValue": "aucune · une semaine sur deux possible",
+    "weeksAlternate": "une semaine sur deux"
+  },
+  "privacy5": {
+    "title": "CONFIDENTIALITÉ",
+    "who": "Qui voit quoi",
+    "group": "Ton groupe",
+    "groupWhat": "prénom, pronom, tranche d’âge, pet, nombre de femmes et d’hommes ; le lieu la veille 18 h, les visages le jour J 3 h avant",
+    "venue": "Le lieu",
+    "venueWhat": "ton prénom et ton pet, la veille à 18 h, effacés après la sortie",
+    "band": "Ta bande",
+    "bandWhat": "la même chose, et vos messages",
+    "nobody": "Personne",
+    "nobodyWhat": "tes votes, ta position, ton âge exact, ce que tu cherches ; l’indice « projet compatible » seulement si vous l’activez tous les deux en duo",
+    "promise": "Ton orientation et ce que tu cherches ne sont montrés à personne. Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui.",
+    "discretion": "Réglages de discrétion",
+    "discreet": "Mode discret",
+    "discreetOff": "tu as choisi « normal » à l’inscription · discret : icône « Agenda », notifications « Rappel »",
+    "discreetOn": "activé · icône « Agenda », notifications « Rappel »",
+    "discreetA11yOn": "Mode discret, activé",
+    "discreetA11yOff": "Mode discret, désactivé",
+    "previews": "Masquer les aperçus de messages",
+    "previewsOn": "activé · sur l’écran verrouillé",
+    "previewsOff": "désactivé · sur l’écran verrouillé",
+    "previewsA11yOn": "Masquer les aperçus de messages, activé",
+    "previewsA11yOff": "Masquer les aperçus de messages, désactivé",
+    "avoid": "Éviter les personnes que je connais",
+    "avoidValue": "désactivé · expliquer",
+    "sensitive": "Données sensibles (art. 9)",
+    "consentGiven": "Accord donné le {day}",
+    "consentNone": "Aucun accord donné",
+    "consentWhat": "qui tu veux rencontrer, type d’histoire",
+    "withdraw": "Retirer mon accord et effacer ces réponses",
+    "retention": "Ce qu’on garde, et combien de temps",
+    "selfie": "Selfie de vérification",
+    "selfieValue": "supprimé sous 30 jours",
+    "votes": "Votes",
+    "votesValue": "effacés 7 jours après les résultats",
+    "position": "Position",
+    "positionValue": "jamais demandée ; en cas de demande d’aide, seul le lieu de la sortie est envoyé",
+    "export": "Télécharger mes données",
+    "exportValue": "sous 48 h",
+    "exportAsked": "demandé · sous 48 h"
+  },
+  "report5": {
+    "title": "SIGNALER",
+    "danger": "En danger maintenant ?",
+    "police": "police",
+    "urgences": "urgences",
+    "sms": "par SMS",
+    "violences": "violences",
+    "callA11y": "Appeler le {n}, {what}",
+    "callback": "Être rappelé par l’équipe · moins d’1 h les soirs de sortie",
+    "callbackAsked": "C’est demandé : l’équipe te rappelle",
+    "group": {
+      "during": "Pendant la sortie",
+      "messages": "Messages et comportement"
+    },
+    "reason": {
+      "unwantedTouch": "Geste ou contact non voulu",
+      "sexualPressure": "Pression sexuelle",
+      "followed": "M’a suivi ou attendu après",
+      "notSelfie": "Ne ressemble pas à ses photos",
+      "minor": "Semble avoir moins de 18 ans",
+      "onSite": "Incident sur place (lieu, personnel, autre client)",
+      "outingThreat": "Menace d’outing ou chantage",
+      "hate": "Propos haineux, LGBTphobie",
+      "unsolicitedPhotos": "Photos non sollicitées",
+      "money": "Demande d’argent, arnaque",
+      "harassment": "Harcèlement",
+      "noShows": "Absences répétées",
+      "other": "Autre chose"
+    },
+    "block": "Bloquer aussi : plus jamais dans la même sortie",
+    "capture": "+ Ajouter une capture (facultatif)",
+    "captureA11y": "Ajouter une capture, pas encore disponible",
+    "anonymous": "On ne dit jamais à la personne qui l’a signalée. Dans un duo, elle peut s’en douter : on la bloque d’abord, on vérifie ensuite.",
+    "send": "Relire et envoyer",
+    "pick": "Choisis un motif",
+    "noTarget": "Signale depuis la sortie, le chat ou le duo concerné",
+    "sent": "Envoyé. L’équipe s’en occupe."
+  },
+  "delete5": {
+    "title": "SUPPRIMER",
+    "intro": "On respecte ton choix. Voilà ce qui disparaît.",
+    "why": "Pourquoi tu pars ? · facultatif",
+    "reason": {
+      "few": "Pas assez de monde",
+      "met": "J’ai rencontré quelqu’un",
+      "notForMe": "Pas pour moi"
+    },
+    "memories": "Les {n} souvenirs de {pet}",
+    "band": "Ta bande ({n})",
+    "bandDuo": "Ta bande ({n}) et ton duo",
+    "messages": "Tes messages et tes photos",
+    "seat": "Ta place du {day} : remboursée, avant la confirmation de la veille",
+    "subscription": "Abonnement",
+    "subscriptionNone": "Tu n’as pas Blowy+ aujourd’hui. Si c’était le cas, il serait résilié avec le compte, sans autre démarche (Apple Pay).",
+    "subscriptionActive": "Ton Blowy+ s’arrête avec ton compte, sans frais pour le mois suivant.",
+    "legal": "Tes données sont effacées sous 30 jours. Les signalements et la vérification d’identité sont gardés le temps exigé par la loi.",
+    "pause": "Pause",
+    "confirm": "Supprimer"
+  },
+  "refine5": {
+    "title": "AFFINER",
+    "intro": "Tout est facultatif. Rien n’est montré à ton groupe.",
+    "outings": "Tes sorties",
+    "activities": "Activités",
+    "topics": "Sujets de conversation",
+    "weeks": "Semaines sans moi",
+    "alternate": "une semaine sur deux",
+    "weeksN": "{n} semaines",
+    "none": "aucune",
+    "travel": "Trajet maximum",
+    "minutes": "{m} min",
+    "groupAge": "Âge de ton groupe",
+    "ages": "{a}–{b} ans",
+    "meetings": "Rencontres",
+    "story": "Une histoire plutôt…",
+    "secret": "secret",
+    "storyAge": "Âge pour une histoire",
+    "likeGroup": "comme le groupe",
+    "avoid": "Éviter les personnes que je connais",
+    "toDecide": "à décider",
+    "toChoose": "à choisir",
+    "introV55": "Tes questions de rencontre, toutes facultatives. Rien n’est montré à ton groupe. Créneaux, semaines off et trajet sont dans Réglages.",
+    "ambiance": "Ambiance",
+    "ambianceValue": {
+      "CALM": "plutôt calme",
+      "LIVELY": "plutôt animé",
+      "ANY": "peu importe"
+    },
+    "petChooses": "{pet} choisit",
+    "storySection": "Une histoire · secret",
+    "storyV55": "Plutôt sérieuse, ou on verra"
+  },
+  "story5": {
+    "title": "UNE HISTOIRE",
+    "covered": "Couvert par ton accord du {day}",
+    "tone": "Plutôt une histoire…",
+    "toneOpt": {
+      "SERIOUS": "Sérieuse",
+      "SEE_HOW_IT_GOES": "On verra"
+    },
+    "kids": "Des enfants : horizon",
+    "kidsOpt": {
+      "YES": "Oui",
+      "ALREADY": "J’en ai déjà",
+      "NO": "Non",
+      "DONT_KNOW": "Je ne sais pas"
+    },
+    "note1": "Ça sert à composer tes groupes. En duo, l’indice « projet compatible » n’apparaît que si vous l’avez activé tous les deux.",
+    "note2": "Jamais montré. Effacé si tu retires ton accord.",
+    "save": "Enregistrer",
+    "horizonOpt": {
+      "IN_1_2_YEARS": "Dans 1 à 2 ans",
+      "IN_3_5_YEARS": "Dans 3 à 5 ans",
+      "HAS_ALREADY": "J’en ai déjà",
+      "NO_PLAN": "Pas de projet",
+      "DONT_KNOW": "Je ne sais pas"
+    }
+  },
+  "avoid5": {
+    "title": "ÉVITER LES PERSONNES QUE TU CONNAIS ?",
+    "headline": "Ne jamais tomber sur quelqu’un de ton répertoire.",
+    "intro": "Ni dans ton groupe, ni en duo : ta collègue, ton ex, ton voisin. À décider maintenant, avant que Nino compose ton 1er groupe.",
+    "l1": "Ton téléphone transforme chaque numéro en empreinte chiffrée. On compare seulement les empreintes.",
+    "l2": "Aucun carnet d’adresses n’est envoyé ni gardé. Personne n’est prévenu.",
+    "l3": "Désactivable à tout moment dans Confidentialité.",
+    "off": "Rien n’est activé sans ton oui. iOS te demandera l’accès aux contacts juste après.",
+    "unavailable": "Pas encore disponible : l’accès aux contacts n’est pas demandé tant que Blowy ne peut pas comparer les empreintes. On te le reproposera.",
+    "yes": "Oui, éviter",
+    "notNow": "Pas maintenant",
+    "continue": "Continuer",
+    "tag": "Facultatif · avant ton 1er groupe",
+    "no": "Non merci"
+  },
+  "pricing": {
+    "title": "TARIFS",
+    "first": "1re sortie",
+    "offered": "offerte",
+    "firstText": "Aucune carte demandée.",
+    "seat": "Place de sortie",
+    "seatText": "Apple Pay. Consommation non incluse. Annulée avant la veille 18 h, ou sortie qui n’a pas lieu : remboursée.",
+    "duo": "Duo",
+    "free": "gratuit",
+    "duoText": "Jusqu’à {n} duos actifs.",
+    "plus": "Blowy+",
+    "perMonth": "{price} par mois",
+    "plusText": "Toutes tes sorties, 1 par semaine. Apple Pay, sans engagement.",
+    "venue": "Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre). Une place vide après la veille est reversée au lieu (3 € si elle était offerte ou dans Blowy+).",
+    "never": "Jamais à vendre : de la visibilité, de la priorité.",
+    "accessories": "Les accessoires de ton pet se gagnent avec les souvenirs.",
+    "seePlus": "Voir Blowy+"
+  },
+  "plus": {
+    "title": "BLOWY+",
+    "perMonth": "par mois",
+    "allOutings": "Toutes tes sorties, 1 par semaine",
+    "applePay": "Payé avec Apple Pay, comme les places",
+    "noCommitment": "Un abonnement aux sorties, payé avec Apple Pay. Sans engagement, résiliable ici à tout moment. Les duos restent gratuits pour tout le monde.",
+    "status": "Ton statut",
+    "active": "Blowy+",
+    "free": "Gratuit",
+    "duos": "Duo",
+    "duosValue": "gratuit pour tous · {n} actifs",
+    "breakEven": "Rentable à partir de",
+    "breakEvenValue": "{n} sorties par mois",
+    "fair": "Même règle d’annulation que pour une place. Si tu ne viens pas après la veille 18 h, le lieu reçoit 3 €.",
+    "subscribe": "S’abonner avec Apple Pay",
+    "already": "Blowy+ est actif",
+    "footer": "{price} par mois · sans engagement",
+    "okTitle": "C’EST ACTIVÉ.",
+    "okText": "Toutes tes sorties sont incluses, une par semaine.",
+    "okRow": "Blowy+",
+    "okCancel": "Résilier",
+    "okCancelValue": "à tout moment, dans Réglages",
+    "month": "Tes sorties ce mois",
+    "monthValue": "{n} sortie(s)",
+    "cancel": "Résilier · fin à l’échéance",
+    "cancelled": "Résilié · actif jusqu’à l’échéance"
+  },
+  "pay": {
+    "sheetA11y": "Paiement Apple Pay (démonstration locale)",
+    "applePay": "Apple Pay",
+    "cancel": "Annuler",
+    "card": "Carte",
+    "cardWord": "carte",
+    "demoCard": "Démo locale · aucun débit",
+    "total": "Total",
+    "confirm": "Payer avec Face ID",
+    "seatTitle": "Place de sortie · blowy.",
+    "seatNote": "Consommation non incluse. Remboursée automatiquement si la sortie n’a pas lieu. En mode discret, ton relevé affiche « BLW Réservation ».",
+    "plusLine": "Blowy+ · 1 mois",
+    "plusTitle": "Blowy+ · blowy.",
+    "plusSub": "abonnement mensuel · sans engagement",
+    "plusNote": "Toutes tes sorties, une par semaine. Résiliable à tout moment. En mode discret, ton relevé affiche « BLW Réservation ».",
+    "unavailable": "Paiement indisponible pour l’instant. Rien n’a été débité.",
+    "plusNotYet": "Blowy+ par Apple Pay n’est pas encore ouvert. Rien n’a été débité.",
+    "declinedPlus": "Ta banque a refusé le paiement. Rien n’a été débité.",
+    "okTitle": "C’EST PAYÉ.",
+    "okText": "Ta place du {day} est payée. Lieu du groupe : {lock}.",
+    "okSeat": "Place · {day}",
+    "okWith": "Payé avec",
+    "okReceipt": "Reçu",
+    "okReceiptValue": "par e-mail, objet neutre en mode discret",
+    "okIfNot": "Si la sortie n’a pas lieu",
+    "okIfNotValue": "remboursée automatiquement",
+    "home": "Retour à l’accueil",
+    "failedHeader": "PAIEMENT",
+    "failedTitle": "LE PAIEMENT N’EST PAS PASSÉ.",
+    "failedText": "Ta banque a refusé le paiement de {price}. Rien n’a été débité. Ta place du {day} reste gardée {min} minutes.",
+    "failedTextNoHold": "Ta banque a refusé le paiement de {price}. Rien n’a été débité. Ta place du {day} reste gardée un moment.",
+    "retry": "Réessayer",
+    "otherCard": "Payer avec une autre carte",
+    "skip": "Ne pas venir cette fois"
+  },
+  "share5": {
+    "noLink": "lien indisponible",
+    "preview": "Aperçu de la carte : {title}",
+    "common": {
+      "noOthers": "Ni visages, ni prénoms, ni pets des autres"
+    },
+    "action": {
+      "story": "Story",
+      "message": "Message",
+      "save": "Enregistrer",
+      "textLink": "Texte + lien",
+      "copy": "Copier le lien",
+      "copied": "Lien copié"
+    },
+    "invitation": {
+      "header": "Inviter quelqu’un",
+      "title": "VIENS AVEC MOI {day}.",
+      "text": "Une sortie à {n}, {activity}, {hood}. Ta 1re est offerte. On sera dans le même groupe.",
+      "textGeneric": "Une sortie à 5, près de chez toi. Ta 1re est offerte.",
+      "cta": "Ta place {day}",
+      "ctaGeneric": "Ta place",
+      "linkOnSend": "lien créé à l’envoi",
+      "n1": "Lien personnel : une personne, une seule fois · jamais en story",
+      "n2": "Par message seulement, jamais en story",
+      "titleGeneric": "VIENS AVEC MOI.",
+      "r1": "{when}",
+      "r2": "Lieu public, nommé la veille",
+      "r3": "Selfie vérifié pour tous"
+    },
+    "confirmation": {
+      "header": "Partager ma semaine",
+      "title": "CETTE SEMAINE, JE SORS AVEC {n} NOUVELLES PERSONNES.",
+      "text": "{pet} a composé le groupe. Je raconte après.",
+      "cta": "Trouve ta sortie",
+      "n2": "Sans jour par défaut · « Demain » en option",
+      "secret": "lieu secret",
+      "week": "Cette semaine",
+      "tomorrow": "Demain",
+      "titleTomorrow": "DEMAIN, JE SORS AVEC {n} NOUVELLES PERSONNES."
+    },
+    "checkin": {
+      "header": "Je sors ce soir",
+      "title": "JE SORS CE SOIR.",
+      "text": "Avec des gens que je ne connais pas encore.",
+      "table": "la table du soir, quelque part",
+      "cta": "Toi aussi",
+      "n1": "Ni lieu, ni quartier, ni heure · proposée avant la sortie",
+      "n2": "Proposée avant la sortie, jamais pendant"
+    },
+    "soiree": {
+      "header": "Partager la soirée",
+      "title": "ON ÉTAIT {n}.",
+      "text": "{n} nouvelles personnes, présentées par nos pets.",
+      "textWithFriend": "{n} nouvelles personnes et un proche, présentés par nos pets.",
+      "cta": "Viens jeudi prochain",
+      "n2": "Citer le lieu : possible à partir du {when}",
+      "n2Generic": "Citer le lieu : possible le lendemain",
+      "table": "{n} verres, 1 table"
+    },
+    "dimanche": {
+      "header": "Ma bande s’agrandit",
+      "title": "MA BANDE S’AGRANDIT.",
+      "text": "Les résultats sont tombés. Le reste est secret, c’est la règle.",
+      "cta": "Trouve ta bande",
+      "n1": "Aucun chiffre, aucun pet identifiable",
+      "n2": "Publiable seulement après les résultats"
+    },
+    "ville": {
+      "header": "Aide {city} à sortir",
+      "title": "AIDE {city} À SORTIR.",
+      "text": "Des sorties à 5, dès 5 personnes sur un même créneau. Inscris-toi et on sort.",
+      "cta": "Sors à {city}",
+      "n1": "Aucun chiffre personnel, aucun prénom",
+      "n2": "Lien public propre à cette carte"
+    },
+    "noLogoOn": "Sans logo, activé",
+    "noLogoOff": "Sans logo, désactivé",
+    "capture": "Mode capture : ni prénoms, ni votes, ni pets des autres",
+    "jeudi": {
+      "header": "Alors, jeudi ?",
+      "title": "ALORS, JEUDI ?",
+      "text": "J’ai voté. Résultats dimanche. Je ne dirai rien.",
+      "cta": "Toi aussi"
+    },
+    "bande": {
+      "header": "Ma bande",
+      "title": "MA BANDE.",
+      "text": "Des gens rencontrés en vrai, à 5. Sans prénoms, c’est la règle.",
+      "cta": "Toi aussi"
+    }
+  },
+  "story3": {
+    "header": "Décris-moi en 3 mots",
+    "title": "DÉCRIS-MOI EN 3 MOTS.",
+    "text": "Que des mots gentils, choisis dans une liste. Je vois les mots, pas qui les a choisis.",
+    "for": "3 mots pour {name}",
+    "noLogo": "Sans logo blowy.",
+    "others": "Autres cartes ›",
+    "footer": "Lien réservé aux 18 ans et plus · désactivable à tout moment"
+  },
+  "invite5": {
+    "chip": "Invitation personnelle",
+    "title": "ON T’EMMÈNE À UNE SORTIE.",
+    "l1": "Ta 1re sortie est offerte. Ensuite 4,99 € la place, ou rien si tu ne reviens pas.",
+    "l2": "Il faut 2 min + un selfie vérifié (18 ans et plus).",
+    "l3": "Ce lien t’a été envoyé par message, à toi seul : il ne marche qu’une fois.",
+    "come": "Venir à la sortie",
+    "no": "Pas pour moi",
+    "titleNamed": "{name} T’EMMÈNE À SA SORTIE.",
+    "comeWith": "Venir avec {name}"
+  },
+  "cards5": {
+    "title": "MES CARTES",
+    "intro": "Chaque carte a son propre lien. Aucune ne montre un visage, un prénom ou le pet de quelqu’un d’autre. Aucun rappel.",
+    "confirmation": {
+      "t": "Cette semaine, je sors",
+      "s": "dès la Trouvée"
+    },
+    "checkin": {
+      "t": "Je sors ce soir",
+      "s": "jeudi, avant"
+    },
+    "soiree": {
+      "t": "On était 5",
+      "s": "vendredi"
+    },
+    "dimanche": {
+      "t": "Ma bande s’agrandit",
+      "s": "dimanche"
+    },
+    "ville": {
+      "t": "Aide ta ville",
+      "s": "si ta ville attend"
+    },
+    "story": {
+      "t": "3 mots",
+      "s": "quand tu veux"
+    },
+    "invitation": {
+      "t": "Inviter",
+      "s": "par message"
+    },
+    "jeudi": {
+      "t": "Alors, jeudi ?",
+      "s": "après la sortie"
+    },
+    "bande": {
+      "t": "Ma bande",
+      "s": "quand tu veux"
+    }
+  },
+  "weeks5": {
+    "title": "SEMAINES OFF",
+    "toggle": "Certaines semaines je ne suis pas dispo",
+    "from": "Une semaine sur deux, à partir de",
+    "fromA11y": "Première semaine sans toi",
+    "since": "dès {day}",
+    "without": "Sans toi : {list}",
+    "note": "Nino ne te propose rien ces semaines-là. Modifiable dans Réglages › Semaines off.",
+    "oneByOne": "Plutôt choisir mes semaines une par une ›",
+    "save": "Enregistrer"
+  },
+  "notYet": {
+    "chip": "{city} · tes créneaux",
+    "title": "CETTE SEMAINE, PAS ENCORE.",
+    "body": "Cette semaine, pas encore assez de personnes compatibles avec ce que tu cherches sur tes créneaux. Tu peux sortir quand même (en amitié) ou attendre la semaine prochaine.",
+    "how": "Calculé pour ta ville et tes créneaux, avant toute composition : ça ne dit rien de personne.",
+    "inCity": "À {city}",
+    "notEnough": "Pas encore assez de monde pour te le dire en chiffres.",
+    "unavailable": "Indicateur de ville pas encore disponible.",
+    "friends": "Sortir quand même, en amitié",
+    "wait": "Attendre la semaine prochaine"
+  },
+  "ambiance": {
+    "title": "AMBIANCE",
+    "intro": "Plutôt calme ou plutôt animé ? Nino en tient compte pour le groupe et le choix du lieu.",
+    "opt": {
+      "CALM": "Plutôt calme",
+      "LIVELY": "Plutôt animé",
+      "ANY": "Peu importe"
+    },
+    "note": "Personne ne voit ta réponse.",
+    "save": "Enregistrer",
+    "calmBadge": "Montrer au groupe : je préfère le calme",
+    "calmBadgeSub": "Un petit badge sur ton pet. Rien d’autre n’est montré."
+  },
+  "storyAge": {
+    "title": "ÂGE, HISTOIRE",
+    "intro": "Pour une histoire, tu préfères rencontrer des personnes de…",
+    "opt": {
+      "22_25": "22–⁠25 ans",
+      "26_29": "26–⁠29 ans",
+      "30_34": "30–⁠34 ans",
+      "35_39": "35–⁠39 ans",
+      "18_21": "18–⁠21 ans",
+      "40_44": "40–⁠44 ans",
+      "45_49": "45–⁠49 ans",
+      "50_PLUS": "50 ans et plus"
+    },
+    "note": "Secret. Utilisé seulement pour composer tes groupes et pour l’indice « projet compatible » en duo. Une ou plusieurs tranches.",
+    "save": "Enregistrer",
+    "unavailable": "Pas encore enregistrable : rien n’est envoyé tant que Blowy ne sait pas le garder secret.",
+    "introV55": "Pour une histoire, tu préfères rencontrer des personnes de… Une ou plusieurs tranches.",
+    "groupA11y": "Tranches d’âge",
+    "checked": "Coché : {list}",
+    "noteV55": "Secret. Utilisé seulement pour composer tes groupes et pour l’indice « projet compatible » en duo.",
+    "friendsOnly": "Ces tranches ne servent que si tu cherches aussi une histoire.",
+    "failed": "Pas enregistré. Réessaie dans un instant."
+  },
+  "knows": {
+    "title": "Je connais quelqu’un ici",
+    "who": "Qui ? (jamais dit à la personne)",
+    "noFaces": "Les visages ne sont pas encore révélés.",
+    "send": "Envoyer en privé",
+    "failed": "Pas envoyé. Réessaie dans un instant.",
+    "openNew": "Voir ma nouvelle sortie",
+    "outcome": {
+      "moved": "C’est fait : tu changes de groupe, même créneau, sans pénalité.",
+      "removed": "Plus de place dans un autre groupe : tu es retiré·e sans pénalité, place remboursée.",
+      "review": "Une personne de l’équipe regarde, en privé. Rien n’est montré à la personne.",
+      "safety": "Tu es parti·e pour raison de sécurité : remboursé·e, sans pénalité. Une personne de l’équipe regarde avec toi."
+    }
   }
 }

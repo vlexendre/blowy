@@ -17,6 +17,8 @@ import {
   OUTINGS_V5,
   PLUS_V5,
   PREFERENCES_V5,
+  REFERRAL_V5,
+  CITY_INSIGHTS_V5,
   PRICING_V5,
   RELIABILITY_V5,
   SAFETY_V5,
@@ -28,7 +30,11 @@ import {
 /** V5.2 : `tuning-2026.12.1` (visages révélés startsAt − 3 h, concept-v5.2 C.8). */
 /** V5.2 : `tuning-2026.12.2` (garantie « pour toi » : composition.storyGuarantee, algo groups-2026.12.1). */
 /** V5.3 : `tuning-2026.12.3` (composition.maxSameGender = 3 dur, duo.maxActiveFree/maxOpenProposals, venues.compensationUnpaidSeatCents = 300, safety.uncomfortableLeaveWindowDays/uneasyLeaveRecontactThreshold/humanResponseMinutes ; algo groups-2026.12.2). */
-export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.3';
+/** V5.4 : `tuning-2026.12.4` (duo.maxActiveFree = 3 pour tous, plus.duoUnlimited = false, plus.billing = STRIPE_BILLING, venues.compensationBlowyCancelSeatCents = 300, outings.emergencyCancelsPerQuarter = 1). */
+/** V5.5 : `tuning-2026.12.5` (composition J − 3 21 h glissante, demande ouverte vendredi 21 h W−1, créneaux mar.→dim., imprévu 1 par 30 j, referral.maxFreePerMonth = 1, cityInsights.minCount = 10). */
+/** V5.6 : `tuning-2026.12.6` (outings.knowsSomeoneMovesPerMonth = 1, cycle.weekendIsoWeekdays, composition.lambdaAmbiance, duo.dateLockHourLocal = 18 ; champs morts optionnels : duo.maxActiveFree, plus.includedOutingsPerMonth/includesMonthlyAccessory, accessories.plusMonthlyAccessoryIds, neighborhoods.defaultDensityThreshold). */
+/** V5.7 : `tuning-2026.12.7` (safety.helpCallbackTargetMinutes = 5, venues.welcomeMessageMaxChars = 280). */
+export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.7';
 
 export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   version: DEFAULT_TUNING_VERSION,
@@ -235,4 +241,6 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   safety: SAFETY_V5,
   venues: VENUES_V5,
   preferences: PREFERENCES_V5,
+  referral: REFERRAL_V5,
+  cityInsights: CITY_INSIGHTS_V5,
 });

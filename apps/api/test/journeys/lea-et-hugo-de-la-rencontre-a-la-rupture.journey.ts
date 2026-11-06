@@ -12,7 +12,7 @@ import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { Person } from './support/actor.js';
 import { story } from './support/story.js';
 import { startWorld, type World } from './support/world.js';
-import { at, city, v5Person, VENUE, type City } from './support/v5.js';
+import { at, city, v5Person, type City, duoCodeOf } from './support/v5.js';
 
 let w: World;
 let paris: City;
@@ -30,10 +30,10 @@ const T = {
   tuesday: new Date('2026-11-17T12:00:00Z'),
   wedBefore: new Date('2026-11-18T19:30:00Z'),
   wedAfter: new Date('2026-11-18T20:20:00Z'),
-  dateStarts: '2026-11-19T18:30:00.000Z',
-  checkin: new Date('2026-11-19T18:20:00Z'),
-  dateDone: new Date('2026-11-19T20:05:00Z'),
-  votesClosed: new Date('2026-11-22T20:10:00Z'),
+  dateStarts: '2026-11-20T18:30:00.000Z', // V5.6 (E13) : ven. 19 h 30 — un RDV (table de 2) se confirme au plus tard la veille 18 h
+  checkin: new Date('2026-11-20T18:20:00Z'),
+  dateDone: new Date('2026-11-20T20:05:00Z'),
+  votesClosed: new Date('2026-11-23T20:10:00Z'),
 };
 const duo = (p: Person) => p.call('GET', `/v1/duos/${duoId}`);
 const lane = (p: Person) => p.call('GET', '/v1/duo-lane');
@@ -56,7 +56,7 @@ describe('Léa & Hugo (V5)', () => {
     const me = await lea.client.me.get();
     expect(me.onboarded).toBe(true);
     expect(me.verification.mode).toBe('LOCAL_DEMO'); // badge de démonstration, jamais « majorité vérifiée »
-    expect((await lane(lea)).data).toMatchObject({ items: [], emptyReason: 'WAITING_NEXT_BATCH', quota: { freeMaxActive: 1, unlimited: false } });
+    expect((await lane(lea)).data).toMatchObject({ items: [], emptyReason: 'WAITING_NEXT_BATCH', quota: { maxActive: 3, freeMaxActive: 3, unlimited: false } });
   });
 
   S.step('Lot de 21 h : Hugo est proposé à Léa — son pet et son initiale seulement, un score de vision ; Hugo voit la même proposition', async () => {
@@ -64,9 +64,9 @@ describe('Léa & Hugo (V5)', () => {
     const l = (await lane(lea)).data.items;
     expect(l).toHaveLength(1);
     proposalId = l[0].proposalId;
-    expect(l[0]).toMatchObject({ pet: { name: 'Gaston' }, otherInitial: 'H', acceptedByMe: false });
-    expect(l[0].visionScore).toBeGreaterThanOrEqual(0);
-    expect(l[0].visionScore).toBeLessThanOrEqual(100);
+    expect(l[0]).toMatchObject({ species: expect.any(String), otherInitial: 'H', acceptedByMe: false });
+    // V5.4 (A.3) : pet + initiale UNIQUEMENT avant le double oui — ni score, ni traits, ni tranche.
+    expect(Object.keys(l[0]).sort()).toEqual(['acceptedByMe', 'expiresAt', 'otherInitial', 'proposalId', 'species']);
     expect(JSON.stringify(l[0])).not.toMatch(/Hugo|birth|email|userId|STORY|BOTH|WOMAN|MAN/);
     expect((await lane(hugo)).data.items.map((i: any) => i.proposalId)).toEqual([proposalId]);
   });
@@ -165,7 +165,7 @@ describe('Léa & Hugo (V5)', () => {
   S.step('Le lendemain, chacun écrit encore ; à 47 h rien ne change (déblocage à 48 h, jamais avant)', async () => {
     await at(w, T.tuesday);
     await lea.say(convId, 'Le Café Paris 11e, ça te dit ?', 'lea-msg-0002');
-    await hugo.say(convId, 'Parfait, jeudi soir ?', 'hugo-msg-0004');
+    await hugo.say(convId, 'Parfait, vendredi soir ?', 'hugo-msg-0004');
     await w.drain();
     await job('duos.lifecycle', T.wedBefore);
     const v = (await duo(lea)).data;
@@ -190,7 +190,7 @@ describe('Léa & Hugo (V5)', () => {
     expect((await hugo.call('POST', `/v1/duos/${duoId}/dates/${dateId}/respond`, { decision: 'ACCEPT' })).data.status).toBe('CONFIRMED');
     await at(w, T.checkin);
     for (const x of [lea, hugo]) {
-      const r = await x.call('POST', `/v1/duos/${duoId}/dates/${dateId}/check-in`, { method: 'GEO', ...VENUE, accuracyM: 25 });
+      const r = await x.call('POST', `/v1/duos/${duoId}/dates/${dateId}/check-in`, { code: await duoCodeOf(w, dateId) });
       expect(r.data).toEqual({ result: 'ACCEPTED' });
     }
   });

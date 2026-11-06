@@ -5,7 +5,7 @@
  * contestation d'absence. Toutes passent par le CommandBus (idempotence, transaction, verrous
  * users → pets → outings) ; aucun appel réseau sous verrou.
  */
-import { accuracyBucket, type SeatCancelKind, type SeatCancelRequestKind, type VoteChoice } from '@blowy/domain';
+import { type OutingCancelRequestKind, type SeatCancelKind, type VoteChoice } from '@blowy/domain';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import type { CheckInRequest, SeatAcceptResponse } from '@blowy/api-contract';
 import type { Tuning } from '@blowy/tuning';
@@ -13,9 +13,9 @@ import type { CommandBus } from '../../../shared/application/command-bus.js';
 import type { RandomSource } from '../../../shared/application/clock.js';
 import type { GroupChatPort } from '../../../shared/application/ports/group-chat.port.js';
 import { AppError, Errors } from '../../../shared/domain/errors.js';
-import { codeMatches, geoCheckIn, venueCode } from '../domain/checkin.js';
+import { codeMatches, venueCode } from '../domain/checkin.js';
 import { isPaused } from '../domain/reliability.js';
-import { cancelPreview, refundModeFor, refundStateFor, type CancelPreview } from '../domain/seat-policy.js';
+import { cancelPreview, emergencyAvailable, emergencyWindowStart, refundModeFor, refundStateFor, type CancelPreview } from '../domain/seat-policy.js';
 import { voteTargets } from '../domain/votes.js';
 import type { OutingLifecycle } from './lifecycle.service.js';
 import type { OutingEvents } from './outing-events.js';
@@ -110,14 +110,23 @@ export class SeatUseCases {
     return result;
   }
 
-  async preview(userId: string, outingId: string, kind: SeatCancelRequestKind, now: Date): Promise<CancelPreview> {
+  /** V5.5 (D-056) : reste-t-il à la personne son « imprévu » (1 par 30 j glissants) ? */
+  async emergencyLeft(scope: TxScope | null, userId: string, outingId: string, now: Date): Promise<boolean> {
+    void outingId;
+    const per = this.tuning.outings.emergencyCancelsPerMonth;
+    if (per <= 0) return false;
+    return emergencyAvailable(await this.repo.emergencyCancelsSince(scope, userId, emergencyWindowStart(now, this.tuning.outings.emergencyWindowDays)), per);
+  }
+
+  async preview(userId: string, outingId: string, kind: OutingCancelRequestKind, now: Date): Promise<CancelPreview> {
     const [seat, outing] = await Promise.all([this.repo.seat(null, outingId, userId), this.repo.outing(null, outingId)]);
     if (!seat || !outing) throw Errors.notFound('Sortie');
     if (seat.status !== 'CONFIRMED' && seat.status !== 'HELD' && seat.status !== 'CHECKED_IN') throw Errors.precondition('SEAT_NOT_ACTIVE');
-    return cancelPreview({ funding: seat.funding, now, revealAt: outing.lockAt, kind });
+    const afterLock = now >= outing.lockAt && kind !== 'SAFETY';
+    return cancelPreview({ funding: seat.funding, now, revealAt: outing.lockAt, kind, ...(afterLock ? { emergencyAvailable: await this.emergencyLeft(null, userId, outingId, now) } : {}) });
   }
 
-  async cancel(userId: string, outingId: string, kind: SeatCancelRequestKind, commandId: string): Promise<CancelPreview> {
+  async cancel(userId: string, outingId: string, kind: OutingCancelRequestKind, commandId: string): Promise<CancelPreview> {
     const { result } = await this.bus.execute({
       actorId: userId,
       operation: 'outings.seat.cancel',
@@ -132,7 +141,13 @@ export class SeatUseCases {
         const active = seat.status === 'CONFIRMED' || seat.status === 'HELD' || (kind === 'SAFETY' && seat.status === 'CHECKED_IN');
         if (!active) throw Errors.precondition('SEAT_NOT_ACTIVE');
         if (kind !== 'SAFETY' && scope.now >= outing.startsAt) throw Errors.precondition('OUTING_STARTED');
-        const p = cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.lockAt, kind });
+        // V5.4 (B.8) : le quota d'« imprévu » est relu sous le verrou de la personne (deux annulations simultanées → une seule).
+        const afterLock = scope.now >= outing.lockAt && kind !== 'SAFETY';
+        const left = afterLock ? await this.emergencyLeft(scope, userId, outingId, scope.now) : undefined;
+        // V5.5 (spec §7.2) : un « imprévu » hors quota est REFUSÉ (412 EMERGENCY_QUOTA) — la personne choisit alors
+        // en connaissance de cause d'annuler (absence) ; jamais de bascule silencieuse.
+        if (kind === 'EMERGENCY' && afterLock && left === false) throw Errors.precondition('EMERGENCY_QUOTA');
+        const p = cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.lockAt, kind, ...(left !== undefined ? { emergencyAvailable: left } : {}) });
         await this.cancelIn(scope, seat, outing, p);
         return p;
       },
@@ -155,12 +170,14 @@ export class SeatUseCases {
   private async cancelIn(scope: TxScope, seat: SeatRow, outing: OutingRow, p: CancelPreview, cancelKind: SeatCancelKind = p.cancelKind) {
     const outingId = outing.id;
     const userId = seat.userId;
-    const refundable = !p.countsAsAbsence;
+    // V5.4 (B.8) : un « imprévu » n'est pas une absence mais la place n'est pas remboursée (NOT_ELIGIBLE).
+    const refundable = !p.countsAsAbsence && p.cancelKind !== 'EMERGENCY';
     let refundState = refundStateFor(p.refund, refundable);
     // T3 (G) + D-042 : carte remboursée intégralement (place payée), 1ʳᵉ offerte qui reste offerte, lot rendu (crédit déprécié).
     const cause = cancelKind === 'SYSTEM_REMOVAL' ? 'SYSTEM_REMOVAL' : p.cancelKind === 'SAFETY_EXIT' ? 'SAFETY_EXIT' : 'USER_EARLY';
     if (refundable && p.refund === 'CARD') refundState = await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null, cause });
     else if (refundable && p.refund === 'CREDIT' && seat.funding && this.funding.refundCredit) refundState = await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
+    else if (refundable && seat.funding === 'REFERRAL_FREE' && this.funding.refundCredit) refundState = await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
     await this.repo.updateSeat(scope, seat.id, { status: 'CANCELLED', cancelKind, refundState, cancelledAt: scope.now });
     const conv = await this.chat.conversationOfOuting(scope, outingId);
     if (conv) await this.chat.revokeMember(scope, conv, userId);
@@ -169,23 +186,32 @@ export class SeatUseCases {
     // V5.1 E.16 / V5.2 C.8 : après la révélation des visages, annuler = absence (sauf sécurité).
     if (p.countsAsAbsence) await this.lifecycle.absence(scope, userId, 'LATE_CANCEL', seat.id);
     await scope.outbox.emit({ topic: 'outing.seat_cancelled', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { outingId, seatId: seat.id, cancelKind } });
-    const seats = await this.repo.seats(scope, outingId);
+    await this.afterLeave(scope, outing);
+  }
+
+  /** Après un départ : sortie sous le seuil avant `startsAt − n h` → annulée ; sinon le groupe est prévenu. */
+  private async afterLeave(scope: TxScope, outing: OutingRow) {
+    const seats = await this.repo.seats(scope, outing.id);
     const confirmed = seats.filter((s) => s.status === 'CONFIRMED' || s.status === 'CHECKED_IN').map((s) => s.userId);
     const undersizeLimit = outing.startsAt.getTime() - this.tuning.outings.cancelUndersizedBeforeStartHours * 3_600_000;
     if (outing.status === 'CONFIRMED' && confirmed.length < this.tuning.outings.minSizeToHold && scope.now.getTime() < undersizeLimit) {
       await this.lifecycle.cancelOuting(scope, outing, 'UNDERSIZED');
     } else {
-      await this.events.updated(scope, outingId, confirmed, { status: outing.status, confirmedCount: confirmed.length, changed: 'MEMBERS' });
+      await this.events.updated(scope, outing.id, confirmed, { status: outing.status, confirmedCount: confirmed.length, changed: 'MEMBERS' });
     }
   }
 
   /**
-   * « Je connais quelqu'un ici » (V5.2 C.10) : signalement PRIVÉ après la révélation des visages,
-   * avant le début. Lien réel déjà connu (bande/amitié, duo, blocage) → retrait sans pénalité,
-   * remboursé, prioritaire la semaine suivante (`MOVED`) ; sinon examen humain (`IN_REVIEW`, T6).
-   * Une fois par mois : au-delà, c'est une annulation (absence).
+   * « Je connais quelqu'un ici » (V5.2 C.10, V5.6 A.1) : signalement PRIVÉ, après la confirmation, avant le
+   * début. Jamais une absence, jamais compté dans l'imprévu.
+   *  - dans le quota (`[T] outings.knowsSomeoneMovesPerMonth` par fenêtre glissante) et lien réel déjà connu
+   *    (bande, duo, blocage, contacts évités) → DÉPLACEMENT vers un autre groupe confirmé du même créneau si
+   *    une place compatible existe (E18), sinon retrait sans pénalité, remboursé, prioritaire (`MOVED`) ;
+   *  - dans le quota, lien inconnu → examen humain (`IN_REVIEW`) ;
+   *  - au-delà du quota (E23) → sortie pour raison de sécurité : retrait immédiat, remboursé, sans pénalité,
+   *    examinée par un humain (`SAFETY_REVIEW`). Plus jamais `COUNTED_AS_CANCEL`.
    */
-  async knowsSomeone(userId: string, outingId: string, targetUserId: string, commandId: string): Promise<{ status: 'MOVED' | 'IN_REVIEW' | 'COUNTED_AS_CANCEL' }> {
+  async knowsSomeone(userId: string, outingId: string, targetUserId: string, commandId: string): Promise<{ status: 'MOVED' | 'IN_REVIEW' | 'SAFETY_REVIEW'; newOutingId?: string }> {
     const { result } = await this.bus.execute({
       actorId: userId,
       operation: 'outings.seat.knows_someone',
@@ -201,17 +227,21 @@ export class SeatUseCases {
         // V5.3 B.7 (T4) : ouvert dès la confirmation (statut CONFIRMED = verrouillage J-1 18 h), avant le début.
         const open = seat.status === 'CONFIRMED' && outing.status === 'CONFIRMED' && scope.now >= outing.lockAt && scope.now < outing.startsAt;
         if (!open || !target || targetUserId === userId || (target.status !== 'CONFIRMED' && target.status !== 'CHECKED_IN')) throw Errors.precondition('KNOWS_SOMEONE_NOT_AVAILABLE');
-        const recent = await this.repo.knowsSomeoneSince(scope, userId, new Date(scope.now.getTime() - 30 * 86_400_000));
-        if (recent > 0) {
-          await this.repo.createKnowsSomeone(scope, { id: this.random.uuid(), seatId: seat.id, userId, targetUserId, status: 'COUNTED_AS_CANCEL' });
-          await this.cancelIn(scope, seat, outing, cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.lockAt, kind: 'CANT_MAKE_IT' }));
-          return { status: 'COUNTED_AS_CANCEL' as const };
+        // Un seul signalement par place (rejeu ou double envoi) : on renvoie l'état déjà enregistré.
+        const prior = await this.repo.knowsSomeoneBySeat(scope, seat.id);
+        if (prior) return { status: prior.status === 'SAFETY_REVIEW' ? ('SAFETY_REVIEW' as const) : prior.status === 'IN_REVIEW' ? ('IN_REVIEW' as const) : ('MOVED' as const) };
+        const o = this.tuning.outings;
+        const recent = await this.repo.knowsSomeoneSince(scope, userId, new Date(scope.now.getTime() - o.knowsSomeoneWindowDays * 86_400_000));
+        if (recent >= o.knowsSomeoneMovesPerMonth) {
+          await this.repo.createKnowsSomeone(scope, { id: this.random.uuid(), seatId: seat.id, userId, targetUserId, status: 'SAFETY_REVIEW' });
+          await this.systemRemove(scope, seat, outing, 'SAFETY_EXIT');
+          await scope.outbox.emit({ topic: 'outing.knows_someone_review', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { seatId: seat.id } });
+          return { status: 'SAFETY_REVIEW' as const };
         }
         if (await this.repo.knownRelation(userId, targetUserId)) {
           await this.repo.createKnowsSomeone(scope, { id: this.random.uuid(), seatId: seat.id, userId, targetUserId, status: 'AUTO_ACCEPTED' });
-          // Retrait système neutre : remboursé intégralement, aucune fiabilité, prioritaire la semaine suivante.
-          await this.cancelIn(scope, seat, outing, { cancelKind: 'SAFETY_EXIT', refund: refundModeFor(seat.funding), countsAsAbsence: false }, 'SYSTEM_REMOVAL');
-          return { status: 'MOVED' as const };
+          const newOutingId = await this.relocateOrRemove(scope, seat, outing);
+          return { status: 'MOVED' as const, ...(newOutingId ? { newOutingId } : {}) };
         }
         await this.repo.createKnowsSomeone(scope, { id: this.random.uuid(), seatId: seat.id, userId, targetUserId, status: 'IN_REVIEW' });
         await scope.outbox.emit({ topic: 'outing.knows_someone_review', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { seatId: seat.id } });
@@ -221,11 +251,49 @@ export class SeatUseCases {
     return result;
   }
 
+  /**
+   * V5.6 (E18) : déplace la personne vers un autre groupe CONFIRMÉ du même créneau (place libre, ≤ 3 du même
+   * genre, aucun lien connu avec ses membres) ; sinon retrait sans pénalité, remboursé (`SAFETY_EXIT`).
+   * Verrous users → outings tenus par l'appelant (les sorties cibles sont verrouillées ici, après).
+   * Renvoie la sortie d'arrivée, ou null si la personne a été retirée.
+   */
+  async relocateOrRemove(scope: TxScope, seat: SeatRow, outing: OutingRow): Promise<string | null> {
+    const maxSame = this.tuning.outings.composition.maxSameGender;
+    const gender = await this.repo.genderOf(scope, seat.userId);
+    for (const sib of await this.repo.siblingOutings(scope, outing)) {
+      // Une sortie admet 4 à 6 personnes (`[T] outings.maxSize`) : la table s'agrandit d'une place si besoin.
+      if (sib.members.length >= this.tuning.outings.maxSize || sib.members.some((m) => m.userId === seat.userId)) continue;
+      if (gender && sib.members.filter((m) => m.gender === gender).length >= maxSame) continue;
+      let known = false;
+      for (const m of sib.members) if (await this.repo.knownRelation(seat.userId, m.userId)) { known = true; break; }
+      if (known) continue;
+      await scope.lock.outings([sib.outingId]);
+      await this.repo.relocateSeat(scope, { seatId: seat.id, toOutingId: sib.outingId, newSeatId: this.random.uuid(), acceptDeadline: sib.acceptDeadline });
+      // Ancien groupe : « ne pourra pas venir » (aucun motif) ; nouveau groupe : un membre de plus.
+      const conv = await this.chat.conversationOfOuting(scope, outing.id);
+      if (conv) await this.chat.revokeMember(scope, conv, seat.userId);
+      await this.events.revoke(scope, seat.userId, outing.id, conv);
+      // Même lieu (autre table du créneau) : la place reste occupée chez lui, rien à compenser ; autre lieu : la table
+      // réservée perd une place → compensation 3 € HT (E22).
+      await scope.outbox.emit({ topic: 'outing.seat_cancelled', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { outingId: outing.id, seatId: seat.id, cancelKind: sib.venueId === outing.venueId ? 'MOVED' : 'SAFETY_EXIT' } });
+      const dest = await this.chat.conversationOfOuting(scope, sib.outingId);
+      if (dest) await this.chat.addMember(scope, dest, seat.userId);
+      const destSeats = (await this.repo.seats(scope, sib.outingId)).filter((x) => x.status === 'CONFIRMED' || x.status === 'CHECKED_IN').map((x) => x.userId);
+      await this.events.seatUpdated(scope, sib.outingId, seat.userId, { status: 'CONFIRMED', refundState: 'NONE' });
+      await this.events.updated(scope, sib.outingId, destSeats, { status: 'CONFIRMED', confirmedCount: destSeats.length, changed: 'MEMBERS' });
+      await scope.outbox.emit({ topic: 'outing.seat_moved', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { fromOutingId: outing.id, toOutingId: sib.outingId, userId: seat.userId } });
+      await this.afterLeave(scope, outing);
+      return sib.outingId;
+    }
+    await this.systemRemove(scope, seat, outing, 'SAFETY_EXIT');
+    return null;
+  }
+
   async checkIn(userId: string, outingId: string, req: CheckInRequest, commandId: string): Promise<{ result: 'ACCEPTED' }> {
     const venue = await this.repo.venueSecretRef(outingId);
     if (!venue) throw Errors.notFound('Sortie');
-    // Le payload mémorisé (idempotence) ne contient jamais la position : seulement une empreinte du tap.
-    const payload = req.method === 'GEO' ? { outingId, method: 'GEO', tap: commandId } : { outingId, method: 'VENUE_CODE', code: req.code };
+    // V5.5 (D-062) : code du chevalet uniquement — aucune position n'est demandée ni acceptée.
+    const payload = { outingId, method: 'VENUE_CODE', code: req.code };
     const { result } = await this.bus.execute<typeof payload, CheckInOutcome>({
       actorId: userId,
       operation: 'outings.check_in',
@@ -240,11 +308,7 @@ export class SeatUseCases {
         if (seat.status === 'CHECKED_IN') return { ok: true };
         if (seat.status !== 'CONFIRMED') throw Errors.precondition('SEAT_NOT_ACTIVE');
         if (outing.status !== 'CHECKIN_OPEN' || scope.now < outing.checkinOpensAt || scope.now >= outing.checkinClosesAt) throw Errors.precondition('CHECKIN_NOT_OPEN');
-        if (req.method === 'GEO') {
-          const r = geoCheckIn(req, venue, this.tuning);
-          await this.repo.recordCheckInAttempt(scope, { seatId: seat.id, method: 'GEO', result: r, accuracyBucket: accuracyBucket(req.accuracyM) });
-          if (r !== 'ACCEPTED') return { ok: false, reason: r === 'TOO_FAR' ? 'CHECKIN_TOO_FAR' : 'CHECKIN_LOW_ACCURACY' };
-        } else {
+        {
           const max = this.tuning.safety.venueCodeMaxAttempts;
           const used = await this.repo.checkInAttempts(scope, seat.id, 'VENUE_CODE');
           if (used >= max) throw new AppError('RATE_LIMITED', 'Trop d’essais de code', { detailsSafe: { reason: 'CHECKIN_CODE_INVALID', attemptsLeft: 0 } });
@@ -252,7 +316,7 @@ export class SeatUseCases {
           await this.repo.recordCheckInAttempt(scope, { seatId: seat.id, method: 'VENUE_CODE', result: ok ? 'ACCEPTED' : 'CODE_INVALID', accuracyBucket: null });
           if (!ok) return { ok: false, reason: 'CHECKIN_CODE_INVALID', attemptsLeft: max - used - 1 };
         }
-        await this.repo.recordCheckIn(scope, seat.id, req.method);
+        await this.repo.recordCheckIn(scope, seat.id, 'VENUE_CODE');
         await this.repo.updateSeat(scope, seat.id, { status: 'CHECKED_IN', checkedInAt: scope.now });
         const seats = await this.repo.seats(scope, outingId);
         await this.events.checkinUpdated(scope, outingId, seats.filter((s) => s.status === 'CONFIRMED' || s.status === 'CHECKED_IN').map((s) => s.userId), userId);

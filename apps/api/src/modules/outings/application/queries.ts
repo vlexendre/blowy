@@ -9,10 +9,9 @@ import type { Clock } from '../../../shared/application/clock.js';
 import type { PhotoTokenIssuer } from '../../../shared/application/ports/outing-photos.port.js';
 import { Errors } from '../../../shared/domain/errors.js';
 import { isPaused } from '../domain/reliability.js';
-import { cancelPreview } from '../domain/seat-policy.js';
-import { storyFriendsOnly } from '@blowy/matching/groups';
+import { cancelPreview, emergencyAvailable, emergencyWindowStart } from '../domain/seat-policy.js';
 import type { Tuning } from '@blowy/tuning';
-import { photoEligible, projectOutingFor, storyMatchFor } from '../domain/visibility.js';
+import { photoEligible, projectOutingFor } from '../domain/visibility.js';
 import { voteTargets } from '../domain/votes.js';
 import type { OutingsRepository } from './ports/outings.repository.js';
 
@@ -44,23 +43,41 @@ export class OutingQueries {
     const [blocked, linked] = await Promise.all([this.repo.blockedAmong(viewerId, others), this.repo.linkedAmong(viewerId, others)]);
     const eligible = photoEligible(viewerId, facts, now, linked).filter((u) => !blocked.has(u));
     const photos = await this.issuePhotos(viewerId, eligible);
-    const preview = mine.status === 'CONFIRMED' || mine.status === 'HELD' ? cancelPreview({ funding: mine.funding, now, revealAt: facts.lockAt, kind: 'CANT_MAKE_IT' }) : undefined;
-    const storyMatch = await this.storyMatch(viewerId, outingId, now, blocked);
-    const view = projectOutingFor(viewerId, facts, { now, blocked, linked, photos, ...(preview ? { cancelPreview: preview } : {}), ...(storyMatch ? { storyMatch } : {}) });
+    // V5.4 (B.8) : après la confirmation, l'aperçu dit au lecteur seul s'il lui reste son « imprévu » du mois (30 j glissants).
+    const afterLock = now >= facts.lockAt;
+    const emergency = afterLock && mine.status === 'CONFIRMED' ? await this.emergencyLeft(viewerId, facts.timezone, now) : undefined;
+    const preview = mine.status === 'CONFIRMED' || mine.status === 'HELD' ? cancelPreview({ funding: mine.funding, now, revealAt: facts.lockAt, kind: 'CANT_MAKE_IT', ...(emergency !== undefined ? { emergencyAvailable: emergency } : {}) }) : undefined;
+    // V5.4 (A.1) : plus aucun signal de compatibilité dans la vue (ni `storyMatch`, ni « sortie entre amis pour
+    // toi ») ; la garantie « histoire possible » reste appliquée en silence par la composition.
+    const view = projectOutingFor(viewerId, facts, { now, blocked, linked, photos, ...(preview ? { cancelPreview: preview } : {}) });
     if (!view) throw Errors.notFound('Sortie');
-    return view;
+    return this.withExtras(view, outingId, viewerId);
   }
 
   /**
-   * V5.2 (B.5–B.6) : garantie « pour toi » de `@blowy/matching/groups` (même règle que la
-   * composition : genres réciproques, tranches fixes, intention, hors team), appliquée au groupe
-   * ACTUEL (places actives, personnes bloquées retirées) — seul le booléen du lecteur sort.
+   * V5.6 (§7.5, E11) : activité choisie par moi ou « selon le lieu et vos envies », astreinte (toujours couverte),
+   * et — seulement avec le lieu (dès la confirmation) — l'ambiance du lieu et le trajet typique depuis mon quartier.
    */
-  private async storyMatch(viewerId: string, outingId: string, now: Date, blocked: ReadonlySet<string>) {
-    const people = (await this.repo.seeksOfActiveSeats(outingId, now)).filter((p) => p.userId === viewerId || !blocked.has(p.userId));
-    const me = people.find((p) => p.userId === viewerId);
-    if (!me) return undefined;
-    return storyMatchFor({ seeksRomance: me.seeks.seeks.romance }, storyFriendsOnly(people, this.tuning).get(viewerId) ?? true);
+  private async withExtras(view: OutingView, outingId: string, viewerId: string): Promise<OutingView> {
+    const x = await this.repo.outingViewExtras(outingId, viewerId);
+    if (!x) return view;
+    const out: OutingView = { ...view, activityChosenBy: x.viewerActivities.includes(x.activity) ? 'YOU' : 'VENUE_AND_GROUP', oncall: { covered: true } };
+    if (out.venue) {
+      const t = x.viewerHome && x.viewerHome !== x.neighborhoodId ? await this.repo.travelEstimate(x.viewerHome, x.neighborhoodId) : null;
+      const minutes = t?.minutes ?? null;
+      // V5.7 (E30) : `venue` n'existe que pour une place confirmée à partir de la confirmation — même règle pour l'accueil.
+      const welcome = await this.repo.venueWelcomeMessage(x.venueId);
+      out.venue = { ...out.venue, ...(minutes ? { travelMinutes: minutes, ...(t?.estimated ? { travelEstimated: true as const } : {}) } : {}), ...(x.venueAmbiance ? { ambiance: x.venueAmbiance } : {}), ...(welcome ? { welcomeMessage: welcome } : {}) };
+    }
+    return out;
+  }
+
+  private async emergencyLeft(userId: string, timezone: string, now: Date): Promise<boolean> {
+    // V5.5 (D-056) : 1 « imprévu » par 30 j glissants (le fuseau ne compte plus).
+    void timezone;
+    const per = this.tuning.outings.emergencyCancelsPerMonth;
+    if (per <= 0) return false;
+    return emergencyAvailable(await this.repo.emergencyCancelsSince(null, userId, emergencyWindowStart(now, this.tuning.outings.emergencyWindowDays)), per);
   }
 
   /** Écran « après la sortie » : présents seulement ; mes bulletins ; mes accords à la clôture. */
@@ -123,8 +140,7 @@ export class OutingQueries {
     return {
       items: visible.map((r) => {
         const photo = photos.get(r.otherUserId);
-        const rel = reliabilityDisplay(r.person.reliability.attended, r.person.reliability.noShows, r.person.reliability.lateCancels);
-        return { linkId: r.linkId, user: { id: r.otherUserId, firstName: r.person.firstName, ...(photo ? { photo } : {}) }, pet: r.person.pet, reliability: rel, conversationId: r.conversationId!, origin: r.origin, since: r.since.toISOString() };
+        return { linkId: r.linkId, user: { id: r.otherUserId, firstName: r.person.firstName, ...(photo ? { photo } : {}) }, pet: r.person.pet, conversationId: r.conversationId!, origin: r.origin, since: r.since.toISOString() };
       }),
       nextCursor: null,
     };

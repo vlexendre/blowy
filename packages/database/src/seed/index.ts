@@ -92,7 +92,7 @@ async function seed(db: Db, now: Date): Promise<void> {
         createdAt: new Date(now.getTime() - 30 * DAY),
         authIdentities: { create: { provider: 'LOCAL', subject: p.key, signInProvider: 'local', email: `${p.key}@local.blowy.invalid` } },
         profile: { create: { displayName: p.name, gender: p.gender, publicSlug: `demo-${p.key.replace('.', '-')}` } },
-        privacySettings: { create: {} },
+        privacySettings: { create: { discreetModeChosenAt: new Date('2026-11-01T09:00:00Z') } },
         matchPreferences: {
           create: { ageMin: 18, ageMax: 40, maxDistanceKm: 5, seekingGenders: p.seeking, intention: p.intention ?? 'LET_IT_HAPPEN', areaCellLat: 48.8589, areaCellLng: 2.3800, areaPrecisionM: 500 },
         },

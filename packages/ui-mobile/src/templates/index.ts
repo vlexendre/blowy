@@ -7,3 +7,4 @@ export * from './CelebrationTemplate';
 export * from './EmptyStateTemplate';
 export * from './ChatScreenTemplate';
 export * from './ScreenTemplate';
+export * from './v5';

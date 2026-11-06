@@ -10,7 +10,7 @@
  *  - Ben ne vient pas → absence ; compensation lieu : prix de la place payée (4,99 €) pour Ben, 3 € versés
  *    par Blowy pour la place offerte de Cléo ;
  *  - personne ne voit jamais le financement d'un·e autre ; Blowy+ s'achète en app (démo locale) :
- *    duos illimités, sortie suivante incluse ; boost/gels/pièces/accessoires vendus → 410.
+ *    sorties incluses (V5.4 : Duo gratuit pour tous, 3 actifs), sortie suivante incluse ; boost/gels/pièces/accessoires vendus → 410.
  */
 import { afterAll, beforeAll, describe, expect } from 'vitest';
 import type { Person } from './support/actor.js';
@@ -60,12 +60,12 @@ describe('Inès paie sa place', () => {
     await w.runJob('outings.compose');
     outingId = S.need((await week(ines!)).data.myOutingId, 'sortie composée');
     const products = (await ines!.call('GET', '/v1/purchases/products')).data;
-    expect(products).toMatchObject({ seat: { amountCents: 499, currency: 'EUR', consumptionIncluded: false, firstOutingFree: true }, plus: { monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: true }, provider: 'STRIPE', duo: { freeMaxActive: 1 } });
+    expect(products).toMatchObject({ seat: { amountCents: 499, currency: 'EUR', consumptionIncluded: false, firstOutingFree: true }, plus: { monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: false, billing: 'STRIPE_BILLING' }, provider: 'STRIPE', duo: { freeMaxActive: 3 } });
     expect(products.products.some((p: any) => p.kind === 'CONSUMABLE_COINS')).toBe(false);
   });
 
   S.step('Inès dit « Je viens » : sa 1ʳᵉ sortie est offerte, aucun paiement', async () => {
-    expect((await ines!.call('GET', '/v1/me/allowances')).data).toMatchObject({ firstOutingFree: true, duos: { maxActive: 1 }, provider: 'STRIPE' });
+    expect((await ines!.call('GET', '/v1/me/allowances')).data).toMatchObject({ firstOutingFree: true, duos: { maxActive: 3 }, provider: 'STRIPE' });
     const r = await accept(ines!, 'AUTO');
     expect(r.data.seat).toEqual({ status: 'CONFIRMED', funding: 'FREE_FIRST' });
     expect(r.data.payment).toBeUndefined();
@@ -129,7 +129,7 @@ describe('Inès paie sa place', () => {
     await at(w, CYCLE.locked);
     await w.runJob('outings.lifecycle');
     expect((await outing(ines!, outingId)).data.status).toBe('CONFIRMED');
-    expect((await cleo!.call('GET', `/v1/outings/${outingId}/seat/cancel-preview`)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
+    expect((await cleo!.call('GET', `/v1/outings/${outingId}/seat/cancel-preview`)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true, emergencyAvailable: true });
     expect((await cleo!.call('POST', `/v1/outings/${outingId}/seat/cancel`, { kind: 'CANT_MAKE_IT' })).data.countsAsAbsence).toBe(true);
     await w.drain();
     expect(await seat(cleo!)).toMatchObject({ status: 'CANCELLED', cancelKind: 'LATE', refundState: 'NOT_ELIGIBLE' });
@@ -145,22 +145,27 @@ describe('Inès paie sa place', () => {
     await w.runJob('outings.lifecycle');
     expect(await seat(ben!)).toMatchObject({ status: 'NO_SHOW', refundState: 'NONE' });
     const comp = await w.db.domainEvent.findMany({ where: { aggregateType: 'economy.journal', type: 'VENUE_COMPENSATION' } });
-    const mine = comp.map((e) => e.payload as any).filter((p) => p.account === `venue:${c.venueId}`);
+    const mine = comp.map((e) => e.payload as any).filter((p) => p.account === `venue:${c.venueId}` && p.refs.outingId === outingId);
     expect(mine.map((p) => [p.refs.cause, p.refs.basis, p.amount]).sort()).toEqual([
       ['LATE_CANCEL', 'FREE_SEAT', 300],
-      ['NO_SHOW', 'SEAT_PRICE', 499],
+      // V5.5 (D-067) : compensation HT (4,99 € TTC → 4,16 € HT).
+      ['NO_SHOW', 'SEAT_PRICE', 416],
     ]);
     // Rejouer l'outbox n'écrit rien de plus (une compensation par place).
     await w.drain();
     expect(await w.db.domainEvent.count({ where: { aggregateType: 'economy.journal', type: 'VENUE_COMPENSATION' } })).toBe(comp.length);
   });
 
-  S.step('Hugo prend Blowy+ dans l’app (démo locale) : duos illimités ; Inès reste à 1 duo actif', async () => {
+  S.step('Hugo prend Blowy+ (V5.4 : abonnement aux sorties via Stripe Billing, Apple Pay) : actif au webhook signé ; aucun effet sur les duos', async () => {
     const r = await hugo!.call('POST', '/v1/subscriptions/plus/checkout');
-    expect(r.data).toMatchObject({ provider: 'LOCAL_DEMO' });
-    expect((await hugo!.call('GET', '/v1/me/allowances')).data).toMatchObject({ plus: { active: true, includesAllOutings: true, duoUnlimited: true }, duos: { maxActive: null } });
+    expect(r.data).toMatchObject({ provider: 'STRIPE', clientSecret: expect.any(String), subscriptionId: expect.stringMatching(/^sub_/) });
+    // Rien tant que Stripe n'a pas confirmé le 1ᵉʳ paiement.
+    expect((await hugo!.call('GET', '/v1/me/allowances')).data.plus.active).toBe(false);
+    const ev = stripe.subscriptionEvent(r.data.subscriptionId, 'customer.subscription.updated', 'active', w.clock.now(), new Date(w.clock.now().getTime() + 30 * 86_400_000));
+    expect((await postWebhook(w.baseUrl, ev)).body?.status).toBe('ACCEPTED');
+    expect((await hugo!.call('GET', '/v1/me/allowances')).data).toMatchObject({ plus: { active: true, includesAllOutings: true, duoUnlimited: false }, duos: { maxActive: 3 } });
     expect((await hugo!.call('POST', '/v1/subscriptions/plus/checkout')).data.detailsSafe.reason).toBe('PLUS_ALREADY_ACTIVE');
-    expect((await ines!.call('GET', '/v1/me/allowances')).data).toMatchObject({ firstOutingFree: false, plus: { active: false }, duos: { maxActive: 1 } });
+    expect((await ines!.call('GET', '/v1/me/allowances')).data).toMatchObject({ firstOutingFree: false, plus: { active: false }, duos: { maxActive: 3 } });
   });
 
   S.step('Ce qui disparaît en V5 répond 410 : gels, boost, accessoires vendus, packs de pièces', async () => {

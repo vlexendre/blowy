@@ -27,6 +27,8 @@ const NAMES = ['Alex Martin', 'Tom', 'Léa', 'Malo', 'Sarah'];
 let nbId = '';
 let venueId = '';
 const users: string[] = [];
+/** V5.4 (C.12) : sortie confirmée annulée par Blowy (ops) — compensée 3 € par place réservée. */
+let blowyCancelledId = '';
 
 async function person(key: string, displayName: string) {
   const c = new TestClient(h);
@@ -104,6 +106,15 @@ describe('back-office V5 : sorties', () => {
     expect(seats.every((s) => s.status === 'CANCELLED' && s.cancelKind === 'SYSTEM_REMOVAL')).toBe(true);
     // Aucune fiabilité touchée par une annulation Blowy.
     expect(await h.db.reliabilityEvent.count({ where: { userId: { in: users } } })).toBe(0);
+    // V5.4 (C.12) : Blowy annule une sortie CONFIRMÉE → le lieu reçoit 3 € par place réservée (5 places), une fois.
+    blowyCancelledId = o.id;
+    await h.drain();
+    const comp = await h.db.domainEvent.findMany({ where: { aggregateType: 'economy.journal', type: 'VENUE_COMPENSATION' } });
+    const mine = comp.filter((e) => (e.payload as any).refs?.outingId === o.id || (e.payload as any).outingId === o.id || JSON.stringify(e.payload).includes(o.id));
+    expect(mine).toHaveLength(5);
+    expect(mine.every((e) => JSON.stringify(e.payload).includes('BLOWY_CANCELLED'))).toBe(true);
+    await h.drain();
+    expect((await h.db.domainEvent.findMany({ where: { aggregateType: 'economy.journal', type: 'VENUE_COMPENSATION' } })).filter((e) => JSON.stringify(e.payload).includes(o.id))).toHaveLength(5);
     // Seconde annulation : refusée (déjà terminale).
     const late = await ops.call('POST', `/v1/admin/outings/${o.id}/cancel`, { kind: 'STAFF', reason: 'lieu inondé' });
     expect(late.status).toBe(412);
@@ -212,6 +223,28 @@ describe('espace lieu partenaire', () => {
     const reports = await ops.call('GET', '/v1/admin/reports-v5');
     expect(reports.status).toBe(200);
     expect(reports.body.venues[0]).toMatchObject({ firstName: 'Tom', motive: 'REFUSED_TO_PAY', overdue: false });
+
+    // V5.4 (C.12) « Signaler un participant » (route dédiée) : prénom seulement, sortie DU lieu, après la confirmation.
+    const rep = await p.call('POST', `/v1/venue/outings/${confirmed.id}/participant-reports`, { firstName: 'Léa', motive: 'BEHAVIOR', note: 'propos déplacés au comptoir' });
+    expect(rep.status, JSON.stringify(rep.body)).toBe(201);
+    expect(Object.keys(rep.body.result ?? rep.body)).toEqual(['id']);
+    expect((await p.call('POST', `/v1/venue/outings/${confirmed.id}/participant-reports`, { firstName: 'Inconnu', motive: 'OTHER', note: 'personne de ce nom' })).status).toBe(404);
+    expect((await p.call('POST', `/v1/venue/outings/${randomUUID()}/participant-reports`, { firstName: 'Léa', motive: 'OTHER', note: 'autre sortie inconnue' })).status).toBe(404);
+    // Aucune autre donnée acceptée (contrat strict) ; aucune session staff / mobile.
+    expect((await p.call('POST', `/v1/venue/outings/${confirmed.id}/participant-reports`, { firstName: 'Léa', motive: 'OTHER', note: 'champ en trop', userId: users[2] })).status).toBe(400);
+    expect((await ops.raw('POST', `/v1/venue/outings/${confirmed.id}/participant-reports`, { firstName: 'Léa', motive: 'OTHER', note: 'session staff' }, { 'x-blowy-venue-session': ops.session, 'idempotency-key': randomUUID() })).status).toBe(401);
+    expect((await ops.call('GET', '/v1/admin/reports-v5')).body.venues.some((v: any) => v.firstName === 'Léa' && v.motive === 'BEHAVIOR')).toBe(true);
+    // L'outbox vers l'équipe ne porte que des identifiants (ni prénom ni note).
+    const ob = await h.db.outboxEvent.findMany({ where: { topic: 'venue.participant_reported' } });
+    expect(ob.length).toBeGreaterThanOrEqual(1);
+    for (const e of ob) expect(JSON.stringify(e.payload)).not.toMatch(/Léa|Tom|comptoir|payer/);
+
+    // V5.4 (C.12) : relevé MENSUEL agrégé par sortie (aucun prénom ni financement) ; la sortie annulée par Blowy y figure.
+    const st = await p.call('GET', '/v1/venue/statement?period=2026-11');
+    expect(st.status, JSON.stringify(st.body)).toBe(200);
+    expect(st.body.lines.find((l: any) => l.outingId === blowyCancelledId)).toMatchObject({ seats: 5, reservedSeats: 5, attended: 0, amountCents: 1500, cancelledByBlowy: true });
+    expect(st.body.taxBasis).toBe('HT');
+    for (const k of ['firstName', 'userId', 'funding', 'Alex']) expect(JSON.stringify(st.body)).not.toContain(k);
 
     // Fermeture exceptionnelle le jour de la sortie : annulation VENUE_UNAVAILABLE, remboursée.
     const close = await p.call('POST', '/v1/venue/schedule/closures', { date: '2026-11-12', note: 'dégât des eaux' });
