@@ -1,5 +1,5 @@
 {
-  "_doc": "Source unique des chiffres et dates de la démo V5.3. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, calendrier, grille d'âge, garantie jamais affichée, phrases dérivées, cartes et liens, vocabulaire).",
+  "_doc": "Source unique des chiffres et dates de la démo V5.4. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, calendrier, grille d'âge, garantie jamais affichée, phrases dérivées, cartes et liens, vocabulaire).",
   "aujourdhui": {
     "iso": "2026-11-09",
     "label": "lundi 9 novembre"
@@ -194,17 +194,20 @@
       "9,98 €",
       "14,97 €",
       "0,00 €",
-      "3 €"
+      "3 €",
+      "7,99 €"
     ],
-    "duoGratuit": 1,
     "compensationOfferte": "3 €",
-    "blowyPlusVia": "achat intégré",
-    "placeVia": "Apple Pay"
+    "blowyPlusVia": "Apple Pay",
+    "placeVia": "Apple Pay",
+    "compensationAnnulationBlowy": "3 €",
+    "duosActifsMax": 3
   },
   "abonnement": {
     "statut": "Gratuit",
-    "fournisseur": "achat intégré",
-    "places": "Apple Pay"
+    "fournisseur": "Apple Pay",
+    "places": "Apple Pay",
+    "contenu": "sorties"
   },
   "duos": {
     "jade": {
@@ -256,13 +259,13 @@
     "expire": "vendredi 13 novembre, 0 h 30"
   },
   "slugs": {
-    "troisMots": "blowy.app/m/k7f2q",
-    "invitation": "blowy.app/i/r8Tz4w",
-    "confirmation": "blowy.app/s/Hq3vT8",
-    "checkin": "blowy.app/s/pL7c2N",
-    "soiree": "blowy.app/s/Zx9mQ4",
-    "dimanche": "blowy.app/s/aR5kW1",
-    "ville": "blowy.app/v/bD8nY3",
+    "troisMots": "blowy.app/m/k7f2qX9w",
+    "invitation": "blowy.app/i/r8Tz4wQm2LpV",
+    "confirmation": "blowy.app/s/Hq3vT8aJ",
+    "checkin": "blowy.app/s/pL7c2NxR",
+    "soiree": "blowy.app/s/Zx9mQ4tB",
+    "dimanche": "blowy.app/s/aR5kW1eP",
+    "ville": "blowy.app/v/bD8nY3sK",
     "ange": "blowy.app/a/7Qm2xK9fPz4Lw8vR"
   },
   "sla": {
@@ -321,6 +324,10 @@
     [
       "amorcage.lieuIso",
       "amorcage.iso"
+    ],
+    [
+      "aujourdhui.iso",
+      "lilleSolo.iso"
     ]
   ],
   "evenements": {
@@ -417,8 +424,7 @@
     "V5-Duo": "2026-11-09T22:00",
     "V5-Partage-dimanche": "2026-11-15T21:35",
     "V5-Team": "2026-11-09T21:08",
-    "V5-Compte": "2026-11-09T21:12",
-    "V5-Trouvee-amis": "2026-11-09T21:05"
+    "V5-Compte": "2026-11-09T21:12"
   },
   "accord": {
     "iso": "2026-11-09T20:50",
@@ -426,12 +432,12 @@
   },
   "lilleSolo": {
     "ville": "Lille",
-    "iso": "2026-11-28",
-    "court": "sam. 28 nov.",
+    "iso": "2026-11-14",
+    "court": "sam. 14 nov.",
     "heure": "15 h – 17 h",
     "activite": "Atelier céramique",
     "typeLieu": "un atelier de Wazemmes",
-    "lieuCourt": "ven. 27 nov. 18 h",
+    "lieuCourt": "ven. 13 nov. 18 h",
     "ages": "26–34 ans",
     "femmes": 3,
     "hommes": 2
@@ -449,7 +455,10 @@
     "visagesCourt": "mar. 17 nov. 16 h 30",
     "ages": "22–29 ans",
     "femmes": 2,
-    "hommes": 3
+    "hommes": 3,
+    "lieu": "Le Mêlée Café",
+    "adresse": "4 rue d’Austerlitz, Lyon 4e",
+    "suivante": "mar. 24 nov. · Atelier céramique"
   },
   "slugParFichier": {
     "V5-Partage-confirmation": "confirmation",
@@ -466,5 +475,47 @@
   },
   "slugsPrives": [
     "invitation"
-  ]
+  ],
+  "slugLongueur": {
+    "public": 8,
+    "nominatif": 12
+  },
+  "slugsNominatifs": [
+    "invitation",
+    "ange"
+  ],
+  "annulation": {
+    "regle": "Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre).",
+    "fichiers": [
+      "V5-Sortie",
+      "V5-Fiche",
+      "V5-Confirmation",
+      "V5-Tarifs"
+    ]
+  },
+  "lieuRelevé": {
+    "mois": "novembre",
+    "placesVides": 2,
+    "montant": "7,99 €",
+    "versement": "5 décembre"
+  },
+  "banlieue": {
+    "ville": "Saint-Denis",
+    "sortieQuartier": "Paris 18e",
+    "trajet": "17 min",
+    "trajetMax": "20 min",
+    "iso": "2026-11-19T19:30",
+    "jour": "jeudi 19 novembre",
+    "court": "jeu. 19 nov.",
+    "activite": "Bloc d'escalade",
+    "typeLieu": "une salle de bloc du 18e",
+    "ages": "22–25 ans",
+    "femmes": 2,
+    "hommes": 3,
+    "lieuCourt": "mer. 18 nov. 18 h"
+  },
+  "proposition": {
+    "quand": "lundi 21 h",
+    "court": "lun. 21 h"
+  }
 }

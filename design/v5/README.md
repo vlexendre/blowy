@@ -1,20 +1,21 @@
-# Maquettes V5.3 « Ton pet te trouve une bande »
+# Maquettes V5.4 « Ton pet te trouve une bande »
 
-Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de quatre documents, du plus ancien au plus récent :
+Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de cinq documents, du plus ancien au plus récent :
 
 - `docs/product/concept-v5.md` ;
 - `concept-v5.1.md` ;
 - `concept-v5.2.md` ;
-- **`docs/product/concept-v5.3.md`** (sections A–F), qui prime sur les trois autres.
+- `concept-v5.3.md` ;
+- **`docs/product/concept-v5.4.md`** (sections A–D), qui prime sur tous les autres.
 
-Le tour 4 répond au jury tour 3 (`docs/research/jury/round-3/`) : le bloquant de la garantie et les défauts relevés écran par écran.
+Le tour 5 répond au jury tour 4 (`docs/research/jury/round-4/`, zéro bloquant) : plus aucun signal de compatibilité, une seule règle par sujet et les finitions relevées écran par écran.
 
 ## Contenu
 
-- **86 artboards** dans `project/` :
-  - 80 écrans d'app et 3 pages web, en 390 × 844 ;
+- **88 artboards** dans `project/` :
+  - 82 écrans d'app et 3 pages web, en 390 × 844 ;
   - **3 écrans côté lieu** (web admin) en 1280 × 800 : `L-Effectif`, `L-Creneaux`, `L-Contrat`.
-- **`project/canvas.json`** : la page « v5 — Bande » compte 10 rangées (A, B, B', C à H, L), avec des titres de 01 à 62, plus 4 notes.
+- **`project/canvas.json`** : la page « v5 — Bande » compte 10 rangées (A, B, B', C à H, L), avec des titres de 01 à 62 (variantes en b, c, d…), plus 4 notes.
 - **`facts.json`** : source unique des chiffres, dates et règles. Il contient :
   - le calendrier B : `annulationGratuiteIso` = lieu de la veille à 18 h ;
   - l'heure de l'accord (art. 9), avant tout duo ;
@@ -22,13 +23,25 @@ Le tour 4 répond au jury tour 3 (`docs/research/jury/round-3/`) : le bloquant d
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **86 fichiers, 3 549 vérifications, 0 contradiction**.
+  - Résultat : **88 fichiers, 4 958 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **86 écrans, 1 207 textes, 469 cibles, 1 255 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **88 écrans, 1 257 textes, 486 cibles, 1 286 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
 - **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x).
   - Commande : `DESIGN_ROOT=design/v5 NODE_PATH=$(npm root -g) node design/v5/render-v5.mjs .local/dc-runtime.js design/v5/renders [filtre]`.
-  - Les 86 rendus de `renders/` ont été relus un par un.
+  - Les 88 rendus de `renders/` ont été relus.
+
+### Contrôles ajoutés au tour 5 (`check-facts`)
+
+1. **Aucun signal de compatibilité** : sont bannis « sortie entre amis », « entre amis pour toi », « une histoire est possible », « vous vous plaisez » et « Personne ne le voit, ni ne peut le deviner ».
+2. **Règle d'annulation unique** :
+   - le texte canonique de `facts.annulation.regle` est présent sur Sortie, Fiche, Confirmation et Tarifs (une date peut remplacer « la veille 18 h ») ;
+   - « 1 fois par mois » n'apparaît qu'avec « je connais quelqu'un ici », et « 1 fois par trimestre » qu'avec l'imprévu.
+3. **Carte Duo** : avant le double oui, ni tranche, ni type, ni activités de N.
+4. **Duos** : toute mention « N duos actifs » vaut 3 ; « duos illimités » et « duos sans limite » sont bannis.
+5. **Blowy+** : il n'est jamais en achat intégré (terme banni), et l'écran Blowy+ dit « Apple Pay » et ne vend que des sorties.
+6. **Liens** : au moins 8 caractères pour un lien public, 12 pour un lien nominatif.
+7. **Contrôle des contrôles** : sur des copies piégées, check-facts a bien relevé le bandeau « entre amis », la tranche et le type sur la carte Duo, la règle d'annulation modifiée et Blowy+ en achat intégré.
 
 ### Contrôles ajoutés au tour 4
 
@@ -106,8 +119,8 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 - **Lyon** : Lyon 7e vers Lyon 4e (18 min), mar. 17 nov., Foot à 5.
 - **Argent** :
   - places en Apple Pay ;
-  - Blowy+ 9,99 €/mois en **achat intégré**, résiliable dans Réglages de l'iPhone › Abonnements, rentable dès 3 sorties par mois ;
-  - une place vide après la veille 18 h : 4,99 € reversés au lieu, 3 € si elle était offerte.
+  - Blowy+ 9,99 €/mois : abonnement aux sorties, payé avec **Apple Pay**, résiliable dans l'app, rentable dès 3 sorties par mois ; Duo gratuit, 3 duos actifs au plus ;
+  - une place vide après la veille 18 h : 4,99 € reversés au lieu, 3 € si elle était offerte ou dans Blowy+ ; 3 € par place si Blowy annule une sortie confirmée ; relevé mensuel.
 - **Liens** :
   - `s/Hq3vT8` : cette semaine ;
   - `s/pL7c2N` : ce soir ;
@@ -118,7 +131,47 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
   - `m/k7f2q` : 3 mots ;
   - `a/…` : ange gardien.
 
-## Changements du tour 4 (concept-v5.3)
+## Changements du tour 5 (concept-v5.4)
+
+- **A. Confidentialité** :
+  - le bandeau « entre amis » est supprimé avec son écran ;
+  - promesse générale sur Intention, Pour une histoire et Confidentialité : « Si tu cherches une histoire, Blowy compose tes groupes pour qu'elle soit possible. Il ne te dira jamais avec qui. » ;
+  - proposition Duo : pet et initiale seulement ;
+  - phrase « vous avez dit oui tous les deux » ;
+  - Confidentialité : ligne « Le lieu : ton prénom et ton pet, la veille à 18 h » ;
+  - mode discret choisi à l'inscription (« Discret » ou « Normal », aucun présélectionné) ;
+  - écran « Éviter les personnes que tu connais » dans le parcours, avant la Trouvée ;
+  - Welcome : « Toutes orientations · en groupe ou à deux », de 18 à 60 ans et plus, une table de 5.
+- **B. Imprévus** :
+  - une seule règle, écrite sur Sortie, Confirmation, Fiche, Tarifs et Sortie à Lyon ;
+  - imprévu une fois par trimestre (lien sur Les visages) ;
+  - « une semaine sur deux » expliqué sous les créneaux, avec la ligne « Semaines sans moi » dans Réglages.
+- **C. Argent** :
+  - Blowy+ est un abonnement aux sorties, payé avec Apple Pay et résiliable dans l'app ;
+  - Duo gratuit, jusqu'à 3 duos actifs (l'écran « Un 2e duo ? » est supprimé) ;
+  - lieu : 3 € par place si Blowy annule une sortie confirmée, relevé mensuel (novembre : 2 places vides, 7,99 €, versés le 5 décembre), bouton « Signaler un participant », SMS en cas de demande d'aide à sa table ;
+  - contrat avec un article Données ; tables à deux dans la grille.
+- **D. Finitions** :
+  - « selfie à faire » au lieu de « vérifié » (Team) ;
+  - temps de trajet sur toutes les Trouvées, et Saint-Denis vers Paris 18e ;
+  - Lyon complet : Trouvée, Sortie, Confirmation, et la sortie de la semaine suivante ;
+  - Lille en solo dans 5 jours, formulation épicène ;
+  - Résultats : « Écrire à Léa » en action principale ;
+  - « Partager Nino seul » ;
+  - nouvel écran « Mes cartes » ;
+  - Profil : « 1 / 1 » sur une ligne, pronom modifiable ;
+  - interrupteurs de l'œuf liés ;
+  - « Un jeu de cartes ? On est pile 5 ! » ;
+  - Trouvée sur fond crème, raton réduit, activité « choisie selon le lieu et vos envies » ;
+  - les « ? » du groupe portent une légende unique ;
+  - insécables pour « 3 hommes », « du 11e », « toi compris », « check-in » ;
+  - pages web sans villes codées en dur ;
+  - case « J'ai 18 ans ou plus » ;
+  - Chargement : « ta proposition arrive lundi à 21 h » ;
+  - cartes « Cette semaine » (enveloppe scellée, choix « Demain » dessiné), « Je sors ce soir » (vert canard, chevalet) et « On était 5 » (5 verres, interrupteur « Sans logo ») : couleur et composition propres ;
+  - invitation sans mascotte, avec « Texte + lien ».
+
+## Changements du tour 4 (concept-v5.3, pour mémoire)
 
 - **A. Confidentialité** :
   - plus aucune garantie affichée ;
@@ -130,7 +183,7 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
   - une seule règle partout : « Annulation gratuite jusqu'au mer. 11 nov. 18 h, autant de fois que nécessaire » ;
   - Confirmation avec la liste des prénoms et pets, plus « Je connais quelqu'un ici » ;
   - « Je pars, mal à l'aise » : sans pénalité, l'équipe est prévenue, rappel au bout de 3 fois.
-- **C. Argent** : Blowy+ en achat intégré, places en Apple Pay, compensation du lieu dite au client (Tarifs) et au lieu (L-Effectif, L-Contrat).
+- **C. Argent** (tour 4, remplacé au tour 5 : Blowy+ passe en Apple Pay) : Blowy+ en achat intégré, places en Apple Pay, compensation du lieu dite au client (Tarifs) et au lieu (L-Effectif, L-Contrat).
 - **D. Onboarding** :
   - 9 écrans avant la Trouvée, une question chacun : Ville, Naissance, Genre, Pet, Rencontrer, Tu cherches, Consentement, Pour une histoire, Créneaux ;
   - les créneaux incluent les semaines d'absence et le trajet maximum (30 min par défaut) ;
@@ -164,17 +217,20 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 
 | Sujet | Décision | Pourquoi |
 |---|---|---|
+| Éviter | Écran facultatif sans numéro d'étape, entre Créneaux et Trouvée. | A.6 le veut avant la 1re composition ; il ne compte pas dans « ≤ 9 questions » car il n'en pose pas pour composer. |
+| Mode discret de la démo | Alex a choisi « Normal » : Notifications montre l'icône blowy., Confidentialité dit « tu as choisi normal ». | Les exemples sont fidèles à l'état choisi. |
 | Compte | Il est demandé après « Je viens », pas avant la Trouvée. | Il permet de tenir « ≤ 9 écrans, une question chacun » sans rien fusionner. La place est gardée 30 min. |
 | Consentement | Il compte comme une étape (7/9) même s'il n'apparaît que pour « histoire ». | La pastille avance de façon régulière. Le parcours « amitiés » saute les étapes 7 et 8. |
 | Trajet maximum | Il est sur l'écran des créneaux, avec 30 min présélectionné. | D.14 demande un défaut affiché ; c'est la seule présélection de l'onboarding. |
 | Vote | Aucun état par défaut. « Sans réponse, c'est non, sans rien afficher. » | Le jury lisait le « Non » en contour comme un choix. |
 | Vote et résultats | Les vignettes gardent l'initiale sur un dégradé. | Ce sont des listes jouables en Play (holes texte seulement). Les portraits sont sur Les visages, Lien, Chat, Profil et Vérif. |
+| Tarif étudiant | Non maquetté. | Hors concept-v5.4 ; à trancher dans business-model. |
 | Lien de la carte du jeudi | « Je sors ce soir » est proposé depuis Les visages (16 h 40), pas depuis le Check-in. | A.5 et « Range ton téléphone ». |
 | Taille du pet | Le lien est sur l'Accueil, le réglage dans Réglages. | Un seul réglage (F.23). |
 
 ## Vocabulaire (un mot = un concept)
 
-**sortie** · **groupe** (5 personnes) · **venir avec quelqu'un** / **tes proches** (« team » ne reste que dans des textes secondaires, jamais dans un titre ou un bouton) · **nouvelles personnes** · **à découvrir** · **bande** · **Ta rue** · **duo** (en amitié / pour une histoire) · **confirmation** (veille 18 h : lieu, prénoms, pets) · **visages** (J −3 h) · **besoin d'aide** · **check-in**, **code du chevalet** · **ange gardien** · **pause** · **mode discret** · **fiabilité** · **souvenir** · **accord** · **Partir proprement** · **place** (Apple Pay) · **Blowy+** (achat intégré) · vote **Amitié / Plus / Non**.
+**sortie** · **groupe** (5 personnes) · **venir avec quelqu'un** / **tes proches** (« team » ne reste que dans des textes secondaires, jamais dans un titre ou un bouton) · **nouvelles personnes** · **à découvrir** · **bande** · **Ta rue** · **duo** (pet + initiale avant le double oui) · **confirmation** (veille 18 h : lieu, prénoms, pets) · **visages** (J −3 h) · **besoin d'aide** · **check-in**, **code du chevalet** · **ange gardien** · **pause** · **mode discret** · **fiabilité** · **souvenir** · **accord** · **Partir proprement** · **place** (Apple Pay) · **Blowy+** (abonnement aux sorties, Apple Pay) · vote **Amitié / Plus / Non**.
 
 ## Textes clés (i18n)
 
@@ -182,17 +238,18 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 |---|---|
 | compo.regle | Règle de chaque groupe : jamais plus de 3 personnes du même genre dans un groupe. |
 | compo.inconnu | à découvrir |
-| trouvee.amis | Cette semaine, sortie entre amis pour toi. On te le dit avant que tu choisisses. |
-| sortie.annulation | Annulation gratuite jusqu’au {veille 18 h}, autant de fois que nécessaire. Ensuite, c’est une absence : le lieu a reçu l’effectif. |
+| promesse | Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui. |
+| annulation | Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre). |
+| compte.mode | Sur ton téléphone, blowy. apparaît… Discret / Normal |
 | confirmation.groupe | Ton groupe · sans visages jusqu’à J −3 h — {prénom} · {tranche} · {pet} |
 | revelation.captures | Ton prénom est en filigrane sur chaque visage ; les captures sont détectées et signalées. |
 | team.title | Viens avec quelqu’un. |
 | invite.lien | Ce lien t’a été envoyé par message, à toi seul : il ne marche qu’une fois. |
 | attente | Il manque {n} personnes pour ta sortie du {jour}. … Sinon, Nino te propose le {date}, même créneau. |
 | carte.confirmation / checkin / soiree / dimanche / ville / invitation | Cette semaine, je sors avec 3 nouvelles personnes. / Je sors ce soir. / On était 5. / Ma bande s’agrandit. / Aide {ville} à sortir. / Viens avec moi. |
-| duo.limite | Gratuit : 1 duo actif. Blowy+ : sans limite. · Ou viens jeudi en groupe › |
-| duo.avantOui | N. ne voit ta carte qu’après ton oui. Prénom et carte complète : seulement si vous dites oui tous les deux. |
-| abonnement | Achat intégré, résiliable à tout moment dans Réglages de l’iPhone › Abonnements. |
+| duo.limite | Gratuit : jusqu’à 3 duos actifs. Une proposition reste 48 h. · Ou viens jeudi en groupe › |
+| duo.avantOui | Avant vos deux oui, chacun ne voit que le pet et l’initiale de l’autre. Le reste de la carte, après ; le prénom, aux visages. |
+| abonnement | Un abonnement aux sorties, payé avec Apple Pay. Sans engagement, résiliable ici à tout moment. Les duos restent gratuits pour tout le monde. |
 | tarifs.lieu | Le lieu ne prend rien sur ta place. Si ta place reste vide après la confirmation de la veille, son prix est reversé au lieu (3 € si elle était offerte). |
 | eviter | Ton téléphone transforme chaque numéro en empreinte chiffrée. On compare seulement les empreintes. |
 | ange.aide | Alex a besoin d’aide. · Lieu de la sortie · pas de position |
