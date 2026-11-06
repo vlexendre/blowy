@@ -41,21 +41,17 @@ describe('fiabilité / ghosting', () => {
     expect(await reliability(m.b.userId)).toBe(92);
   });
 
-  it('pause d’un côté : pas de pénalité ; départ propre : aucune pénalité', async () => {
+  it('pause par relation retirée (V5, 410 — la pause V5 est globale, POST /v1/pauses) ; départ propre : aucune pénalité', async () => {
     const m = await matchedPair(h, 'gh2');
     const job = h.app.get(ReliabilityJob);
     await m.a.call('POST', `/v1/conversations/${m.convId}/messages`, { clientMessageId: 'gh2-msg-0001', body: 'Coucou' });
     await h.drain();
     const pause = await m.b.call('POST', `/v1/relationships/${m.relId}/pause`, { days: 7 });
-    expect(pause.status).toBe(201);
-    expect(pause.body.paused).toBe(true);
-    h.clock.advance(100 * HOUR);
-    await job.run(h.clock.now());
-    expect(await reliability(m.b.userId)).toBe(100);
+    expect([pause.status, pause.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
 
     const leave = await m.b.call('POST', `/v1/relationships/${m.relId}/leave`, { reason: 'CLEAN_LEAVE' });
     expect(leave.body.status).toBe('ENDED');
-    h.clock.advance(200 * HOUR);
+    h.clock.advance(300 * HOUR);
     await job.run(h.clock.now());
     expect(await reliability(m.b.userId)).toBe(100);
     // Message système pré-écrit présenté comme tel.

@@ -7,7 +7,8 @@
  * Aucun DTO ne contient l'identité d'un signaleur, un vote privé, une date de naissance,
  * un email ni le contenu d'un dossier à accès restreint (protection des mineurs).
  */
-export type StaffRole = 'support' | 'moderator' | 'trust_lead' | 'content_manager' | 'finance' | 'analyst' | 'admin';
+/** V5 (T6) : + `ops` (StaffRoleV5). */
+export type StaffRole = 'support' | 'moderator' | 'trust_lead' | 'content_manager' | 'finance' | 'analyst' | 'admin' | 'ops';
 
 export interface StaffActor {
   staffUserId: string;

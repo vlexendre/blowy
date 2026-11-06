@@ -17,11 +17,13 @@ export const CreateUploadRequestSchema = z
     bytes: z.number().int().min(1).max(25 * 1024 * 1024),
     /** Relation concernée : requis pour VOICE_MESSAGE, facultatif pour MISSION_PROOF. */
     relationshipId: UuidSchema.optional(),
+    /** V5 (D-051) : vocal d'un duo débloqué — conversation DUO visée (alternative à `relationshipId`, vérifiée à l'envoi). */
+    conversationId: UuidSchema.optional(),
     /** Mission visée (clé éditoriale @blowy/content) : requis pour MISSION_PROOF. */
     missionKey: z.string().regex(/^[a-z0-9_]{2,40}$/).optional(),
   })
   .refine((r) => r.purpose !== 'MISSION_PROOF' || !!r.missionKey, { message: 'missionKey requis', path: ['missionKey'] })
-  .refine((r) => r.purpose !== 'VOICE_MESSAGE' || !!r.relationshipId, { message: 'relationshipId requis', path: ['relationshipId'] });
+  .refine((r) => r.purpose !== 'VOICE_MESSAGE' || !!r.relationshipId || !!r.conversationId, { message: 'relationshipId ou conversationId requis', path: ['relationshipId'] });
 export type CreateUploadRequest = z.infer<typeof CreateUploadRequestSchema>;
 
 export const UploadSessionSchema = z.object({

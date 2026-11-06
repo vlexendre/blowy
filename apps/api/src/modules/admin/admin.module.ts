@@ -77,6 +77,31 @@ import { AuthProvidersStaffVerifier } from './infrastructure/staff-identity.veri
 import { createTuningSimulator } from './infrastructure/tuning-simulator.js';
 import { AdminGuard } from './interface/http/admin-guard.js';
 import { AdminAuthController, AdminController } from './interface/http/admin.controllers.js';
+// ---- V5 (T6) : back-office des sorties et espace lieu partenaire
+import { OUTING_ADMIN_PORT, type OutingAdminPort } from '../../shared/application/ports/outing-admin.port.js';
+import { PrismaEconomyJournal } from '../economy/infrastructure/prisma/prisma-economy-journal.js';
+import type { RecurringJob } from '../../jobs/scheduler.js';
+import {
+  OPS_CONFIG_WRITER,
+  OPS_READ_MODEL,
+  VENUE_COMPENSATION_LEDGER,
+  VENUE_PARTNER_STORE,
+  VENUE_SESSION_REPOSITORY,
+  type OpsConfigWriter,
+  type OpsReadModel,
+  type VenueCompensationLedger,
+  type VenuePartnerStore,
+  type VenueSessionRepository,
+} from './application/ports/ops.ports.js';
+import { OpsV5UseCases } from './application/use-cases/ops.use-cases.js';
+import { VenuePartnerAuthService, VenuePartnerUseCases, type VenueIdentityVerifier } from './application/use-cases/venue-partner.use-cases.js';
+import { JournalVenueCompensationLedger, PrismaOpsConfigWriter, PrismaOpsReadModel, PrismaVenuePartnerStore } from './infrastructure/prisma-ops.repositories.js';
+import { PrismaVenueSessionRepository } from './infrastructure/prisma-venue-sessions.repository.js';
+import { AdminOpsController } from './interface/http/ops.controller.js';
+import { VenuePartnerController, VenuePartnerGuard } from './interface/http/venue-partner.controller.js';
+
+/** Jobs du module admin (worker) : re-matérialisation quotidienne de la politique de créneaux des lieux. */
+export const ADMIN_JOBS = Symbol('AdminJobs');
 
 const optional = (token: symbol) => ({ token, optional: true });
 
@@ -146,7 +171,45 @@ const providers: Provider[] = [
   },
   { provide: AuditUseCases, useFactory: (a: AuditLog) => new AuditUseCases(a), inject: [AUDIT_LOG] },
   { provide: AdminSocialUseCases, useFactory: (s: SocialModerationPort, run: AdminCommandRunner) => new AdminSocialUseCases(s, run), inject: [SOCIAL_MODERATION, AdminCommandRunner] },
+  // ---- V5 (T6)
+  { provide: OPS_READ_MODEL, useFactory: (db: Db) => new PrismaOpsReadModel(db), inject: [DB] },
+  { provide: OPS_CONFIG_WRITER, useFactory: () => new PrismaOpsConfigWriter() },
+  { provide: VENUE_PARTNER_STORE, useFactory: (db: Db) => new PrismaVenuePartnerStore(db), inject: [DB] },
+  { provide: VENUE_SESSION_REPOSITORY, useFactory: (db: Db) => new PrismaVenueSessionRepository(db), inject: [DB] },
+  // Lecture du journal de G (adapter de G, lecture + contre-écriture exportée par G) — aucune écriture directe.
+  { provide: VENUE_COMPENSATION_LEDGER, useFactory: (db: Db) => new JournalVenueCompensationLedger(new PrismaEconomyJournal(db)), inject: [DB] },
+  {
+    provide: OpsV5UseCases,
+    useFactory: (r: OpsReadModel, w: OpsConfigWriter, st: VenuePartnerStore, se: VenueSessionRepository, l: VenueCompensationLedger, o: OutingAdminPort | undefined, t: AdminTrustPort | undefined, run: AdminCommandRunner, u: UnitOfWork, c: Clock, rnd: RandomSource) =>
+      new OpsV5UseCases(r, w, st, se, l, o ?? null, t ?? null, run, u, c, rnd, DEFAULT_TUNING),
+    inject: [OPS_READ_MODEL, OPS_CONFIG_WRITER, VENUE_PARTNER_STORE, VENUE_SESSION_REPOSITORY, VENUE_COMPENSATION_LEDGER, optional(OUTING_ADMIN_PORT), optional(ADMIN_TRUST), AdminCommandRunner, UNIT_OF_WORK, CLOCK, RANDOM],
+  },
+  {
+    provide: VenuePartnerAuthService,
+    useFactory: (v: StaffIdentityVerifier, r: OpsReadModel, st: VenuePartnerStore, se: VenueSessionRepository, a: AuditLog, u: UnitOfWork, c: Clock, rnd: RandomSource, cfg: AdminConfig) =>
+      new VenuePartnerAuthService(v as VenueIdentityVerifier, r, st, se, a, u, c, rnd, {
+        staffSessionSecret: cfg.staffSessionSecret,
+        staffMfaKey: cfg.staffMfaKey,
+        sessionTtlMs: cfg.venueSessionTtlMs,
+        idleTimeoutMs: cfg.venueIdleTimeoutMs,
+        onCallPhone: cfg.venueOnCallPhone,
+        onCallHours: cfg.venueOnCallHours,
+      }),
+    inject: [STAFF_IDENTITY_VERIFIER, OPS_READ_MODEL, VENUE_PARTNER_STORE, VENUE_SESSION_REPOSITORY, AUDIT_LOG, UNIT_OF_WORK, CLOCK, RANDOM, ADMIN_CONFIG],
+  },
+  {
+    provide: VenuePartnerUseCases,
+    useFactory: (au: VenuePartnerAuthService, r: OpsReadModel, st: VenuePartnerStore, w: OpsConfigWriter, l: VenueCompensationLedger, o: OutingAdminPort | undefined, b: CommandBus, a: AuditLog, c: Clock, rnd: RandomSource) =>
+      new VenuePartnerUseCases(au, r, st, w, l, o ?? null, b, a, c, rnd, DEFAULT_TUNING),
+    inject: [VenuePartnerAuthService, OPS_READ_MODEL, VENUE_PARTNER_STORE, OPS_CONFIG_WRITER, VENUE_COMPENSATION_LEDGER, optional(OUTING_ADMIN_PORT), COMMAND_BUS, AUDIT_LOG, CLOCK, RANDOM],
+  },
+  VenuePartnerGuard,
+  {
+    provide: ADMIN_JOBS,
+    useFactory: (ops: OpsV5UseCases): RecurringJob[] => [{ name: 'venues.apply_slot_policy', everyMs: 24 * 3_600_000, windowKey: (d: Date) => d.toISOString().slice(0, 10), run: () => ops.applyAllVenuePolicies() }],
+    inject: [OpsV5UseCases],
+  },
 ];
 
-@Module({ controllers: [AdminAuthController, AdminController], providers, exports: [STAFF_REPOSITORY, AUDIT_LOG] })
+@Module({ controllers: [AdminAuthController, AdminController, AdminOpsController, VenuePartnerController], providers, exports: [STAFF_REPOSITORY, AUDIT_LOG, ADMIN_JOBS] })
 export class AdminModule {}

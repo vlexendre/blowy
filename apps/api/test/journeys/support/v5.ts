@@ -56,6 +56,11 @@ const ok = <T>(r: { ok: boolean; status: number; data: T; code: string | null },
 export async function v5Person(w: World, spec: V5Spec, c: City): Promise<Person> {
   const p = new Person(w, spec);
   await p.onboard();
+  return v5Setup(p, spec, c);
+}
+
+/** Complète une personne déjà onboardée (V4) pour les sorties V5 : quartier, intentions, photo, téléphone WS. */
+export async function v5Setup(p: Person, spec: V5Spec, c: City): Promise<Person> {
   ok(await p.call('PUT', '/v1/me/neighborhood', { neighborhoodId: c.neighborhoodId }), 'quartier');
   const story = spec.looking !== 'FRIENDS';
   if (story) ok(await p.call('POST', '/v1/consents', { items: [{ purpose: 'SENSITIVE_PREFERENCES', version: '2026-11', granted: true }] }), 'consentement art. 9');

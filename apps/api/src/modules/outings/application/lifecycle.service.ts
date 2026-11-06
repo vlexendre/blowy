@@ -84,9 +84,10 @@ export class OutingLifecycle {
   async refundFully(scope: TxScope, seat: SeatRow, paymentRef: string | null = null, cause: 'OUTING_CANCELLED' | 'SYSTEM_REMOVAL' | 'SAFETY_EXIT' | 'ACCOUNT_DELETED' = 'OUTING_CANCELLED') {
     const mode = refundModeFor(seat.funding);
     if (mode === 'CARD') return this.funding.refundCard(scope, { userId: seat.userId, seatId: seat.id, paymentRef, cause });
-    // T3 (G) : un lot de crédit consommé (ou Blowy+ échu) est rendu par l'économie.
+    // Déprécié (D-042) : un ancien lot de crédit consommé est rendu par l'économie.
     if (mode === 'CREDIT' && seat.funding && this.funding.refundCredit) return this.funding.refundCredit(scope, { userId: seat.userId, seatId: seat.id, funding: seat.funding, cause });
-    return mode === 'CREDIT' ? ('RECREDITED' as const) : ('NONE' as const);
+    // 1ʳᵉ sortie : « reste offerte » (RECREDITED → `usedFreeFirst` ne la compte plus) ; Blowy+ : rien à rendre.
+    return mode === 'CREDIT' || mode === 'STAYS_FREE' ? ('RECREDITED' as const) : ('NONE' as const);
   }
 
   async cancelOuting(scope: TxScope, outing: OutingRow, reason: OutingCancelReason) {

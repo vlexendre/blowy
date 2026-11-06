@@ -151,8 +151,8 @@ export class PrismaSafetyRepository implements SafetyRepository {
     await tx.safetyUneasyLeave.create({ data: { ...l, createdAt: scope.now } });
     return true;
   }
-  async uneasyLeaveCount(scope: TxScope, userId: string) {
-    return txOf(scope).safetyUneasyLeave.count({ where: { userId } });
+  async uneasyLeaveCount(scope: TxScope, userId: string, since?: Date) {
+    return txOf(scope).safetyUneasyLeave.count({ where: { userId, ...(since ? { createdAt: { gte: since } } : {}) } });
   }
 
   // ------------------------------------------------------------------ rétention (§8.5)

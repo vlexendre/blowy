@@ -21,25 +21,28 @@ describe('autorisations objet', () => {
 
     const checks = await Promise.all([
       eve.call('GET', `/v1/pets/${m.aPet}`),
-      eve.call('POST', `/v1/pets/${m.aPet}/actions`, { action: 'FEED' }),
-      eve.call('POST', `/v1/pets/${m.aPet}/move`, { destination: 'HOME' }),
-      eve.call('POST', `/v1/pets/${evePet}/move`, { destination: 'DATE_SPOT', relationshipId: m.relId }),
       eve.call('GET', `/v1/relationships/${m.relId}`),
       eve.call('POST', `/v1/relationships/${m.relId}/leave`, {}),
-      eve.call('POST', `/v1/relationships/${m.relId}/branch/ballot`, { choice: 'PLUS' }),
       eve.call('GET', `/v1/conversations/${m.convId}/messages`),
       eve.call('POST', `/v1/conversations/${m.convId}/messages`, { clientMessageId: 'eve-intrude-1', body: 'coucou' }),
       eve.call('POST', `/v1/messages/${msgId}/reveal`, {}),
     ]);
     for (const r of checks) expect(r.status, JSON.stringify(r.body)).toBe(404);
+    // V5 (§7.7) : gestes, déplacements et vote de branche retirés — 410 identique pour tous, sans rien révéler de l'objet.
+    const retired = await Promise.all([
+      eve.call('POST', `/v1/pets/${m.aPet}/actions`, { action: 'FEED' }),
+      eve.call('POST', `/v1/pets/${m.aPet}/move`, { destination: 'HOME' }),
+      eve.call('POST', `/v1/pets/${evePet}/move`, { destination: 'DATE_SPOT', relationshipId: m.relId }),
+      eve.call('POST', `/v1/relationships/${m.relId}/branch/ballot`, { choice: 'PLUS' }),
+      m.a.call('POST', `/v1/pets/${m.bPet}/actions`, { action: 'FEED' }),
+    ]);
+    for (const r of retired) expect([r.status, r.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
 
     // Un partenaire voit le profil PUBLIC du pet de l'autre (pas les jauges ni le lieu).
     const pub = await m.b.call('GET', `/v1/pets/${m.aPet}`);
     expect(pub.status).toBe(200);
     expect(pub.body).not.toHaveProperty('gauges');
     expect(pub.body).not.toHaveProperty('location');
-    // Le pet de B ne peut pas être actionné par A.
-    expect((await m.a.call('POST', `/v1/pets/${m.bPet}/actions`, { action: 'FEED' })).status).toBe(404);
     // Sans jeton : 401 structuré.
     const anon = new TestClient(h);
     const r = await anon.call('GET', '/v1/me');

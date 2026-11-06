@@ -1,0 +1,538 @@
+{
+ "member": "hugo-25",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 9,
+  "safety": 9,
+  "virality": 8,
+  "money": 8,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 8,
+   "blocking": false,
+   "issue": "5 mascottes en file, raton à capuche au centre, 300 px de vide au-dessus : la table de 5 demandée au tour 3 n'est pas faite ; « Partout dès 5 personnes. » plus vague qu'avant",
+   "fix": "Table de 5 en silhouettes, mascottes réduites ; « une sortie dès 5 personnes compatibles »"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Démo 100 % parisienne (11e, 10e) ; le parcours Lyon saute directement à la Trouvée",
+   "fix": "Variante « Lyon 7e · des sorties chaque semaine »"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Honnête, chiffré",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 26– » en fin de ligne, « 29 ans » à la ligne suivante",
+   "fix": "Insécable"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Choisis pour moi » : je n'ai plus à choisir un animal",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Groupe et duo » : réglé",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Égalité des boutons",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Dimanche 11 h – 13 h pour qui finit tard, trajet 30 min par défaut",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Règle écrite : réglé. Raton qui saute sur 120 px en tête ; 4 « à découvrir » collés à 5 pt ; « Règle de chaque groupe … dans un groupe »",
+   "fix": "Raton seulement dans la vignette « Toi » ; une légende unique ; règle sans redite"
+  },
+  "V5-Trouvee-amis": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même raton en tête",
+   "fix": "Idem"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Enfin Lyon : Guillotière → Croix-Rousse 18 min, 22–29 ans, règle écrite, calendrier. Mais un seul écran : ni fiche, ni confirmation, ni 2e sortie à Lyon ; en-tête différent de Paris (pas de logo, pas de « Ton groupe »)",
+   "fix": "Au moins Sortie et Confirmation lyonnaises ; même gabarit"
+  },
+  "V5-Sortie": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une seule règle, déroulé clair",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Règle chiffrée",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Raton plein cadre sur l'invitation que j'envoie à un pote de la salle (T3) ; seulement « Message » et « Copier le lien », pas de « Texte + lien » comme les autres cartes",
+   "fix": "Variante sans mascotte ; « Texte + lien »"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le raton qui salue en tête d'une invitation reçue d'un pote (T3)",
+   "fix": "Logo seul, ou le pet de celui qui invite en petit"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Après « Je viens »",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Portrait et « ta photo ici » ; mais « avec : « Toi · 26–29 ans » » alors que les autres verront « Alex · 26–29 ans »",
+   "fix": "Écrire ce que les autres verront"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Cohérent",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Trois lignes, tout est là",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Réduire le pet » : réglé. « du / 11e » coupé ; 200 px vides",
+   "fix": "Insécable ; resserrer"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien dans le tram",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La carte « Voie Duo » répète les tarifs (T3)",
+   "fix": "Action au lieu d'explication"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "1 tap, annulation rappelée",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Codenames, si on est 5 ! » alors qu'on est 5 (3e tour)",
+   "fix": "Texte juste"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Pour ta sécurité, toujours. » : fragment",
+   "fix": "Phrase complète"
+  },
+  "V5-Attente": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Daté, sinon sam. 28 nov.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Sobre, sans mascotte : c'est ce que je posterais",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« 2 femmes, 3 hommes » écrit",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Tom, ton pote » : le vocabulaire dit « proche »",
+   "fix": "« Tom, venu avec toi »"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« à / décider » cassé sur deux lignes",
+   "fix": "Insécable"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Explication simple, opt-in",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Prénoms, tranches, pets la veille : exactement ce que je voulais. « Je connais quelqu'un ici » sans le « 1 fois par mois » de Les visages",
+   "fix": "Même libellé"
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Texte + lien » : réglé. Même image que « On était 5 » (table ovale, 4 blobs, raton)",
+   "fix": "Composition propre, raton optionnel"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Portraits : réglé. Toujours pas de lien « améliorer mes photos » avant ce moment (T2, T3) ; ombre de « À CE SOIR » collée à la carte suivante",
+   "fix": "Lien vers mes photos jusqu'à 16 h 30 ; 12 px d'écart"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Sans lieu ni heure, avant la sortie",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Facultatif",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Paris 11e, Lyon 4e ; et dans ta ville dès 5 personnes » : relevé au tour 3, pas corrigé, et faux pour moi qui sors depuis Lyon 7e",
+   "fix": "Phrase du Welcome"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code d'abord",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Répété 3 fois, quelqu'un te rappelle » : mon garde-fou",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Raton plein écran après une vraie soirée (T2, T3)",
+   "fix": "Raton réduit, visuel du lieu ou de la table"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Plus d'état par défaut, légende propre",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Écrire à Léa » clair",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même image que la carte « cette semaine » ; blobs + raton",
+   "fix": "Composition propre ; « Texte + lien » est là, c'est déjà mieux"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Distincte, mais encore le raton au milieu de silhouettes",
+   "fix": "Silhouettes seules"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Sans humiliation",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Un seul accès par ligne",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Facultatif et caché derrière une ligne ; « Offrir tes lunettes à Pépite » : pas pour moi, mais ça ne gêne pas",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La carte de N. montre « 30–34 ans · il · musique live, volley » avant son oui, alors que A.3 dit pet + initiale ; rien ne dit que N. a déjà dit oui",
+   "fix": "Pet + initiale, ou « N. a dit oui »"
+  },
+  "V5-Duo-choix": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 1 duo actif » m'empêche de dire oui à N., mais Alex a déjà J. et Léa en gratuit",
+   "fix": "Règle écrite pour les duos nés d'une sortie"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ma carte à côté de celle de Jade : réglé. Pas de lien « changer mes photos » avant ce moment (T2, T3)",
+   "fix": "Lien vers mes photos avant mer. 21 h 30"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Chacun sa boisson",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bandeau violet permanent (T3)",
+   "fix": "Repliable"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Gratuit",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Désactivé",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Humain",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas pour moi : carte violette, raton ; facultatif",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "État envoyé : « Paris 11e et Lyon 4e »",
+   "fix": "Phrase du Welcome"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Portrait : réglé. « 1 sur 1 / sortie où tu / es venu » sur trois lignes",
+   "fix": "« 1 sortie · 1 présence »"
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Une absence prévenue avant les visages … ne compte jamais » : l'ancienne règle, alors que partout ailleurs annuler après la veille 18 h compte comme une absence",
+   "fix": "« Une annulation avant la veille 18 h… »"
+  },
+  "V5-Tarifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ne s'achète jamais : plus de visibilité, aller plus vite » (T3) ; « Duo gratuit · 1 duo actif à la fois » que l'histoire d'Alex ne respecte pas",
+   "fix": "« Jamais à vendre : visibilité, priorité » ; règle des duos précise"
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Rentable à partir de 3 sorties par mois » revenu, achat intégré",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Taille du pet, trajet, Duo",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La dernière ligne de « Personne » touche le bas de sa carte",
+   "fix": "8 px de marge"
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Absences répétées », marge réglée",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Honnête",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Conseils concrets",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le texte parle du duo, le seul bouton mène à la proposition de groupe (T3)",
+   "fix": "Lien Duo"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Le lieu sait juste nos prénoms",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« coup de feu, fermé » déborde vers « aucune sortie »",
+   "fix": "« fermé »"
+  },
+  "L-Contrat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une page",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Lyon au-delà d'un écran : Sortie, Confirmation (prénoms, tranches, pets) et une 2e sortie à Lyon, avec le même gabarit que Paris ; et le pied de W-Ange / W-Repondre aligné sur « Partout dès 5 personnes compatibles ».",
+  "Le raton à sa place : réduit sur Welcome, Trouvée et Souvenir, absent de l'invitation personnelle (avec « Texte + lien »), une composition propre pour « On était 5 » ; et un lien « changer mes photos » avant chaque révélation.",
+  "Zéro contradiction d'argent et de règles : limite « 1 duo actif gratuit » tenue ou expliquée (J. et Léa), Fiche alignée sur la veille 18 h, carte de N. réduite à pet + initiale, Tarifs reformulé."
+ ],
+ "tenIf": "Je mets 10 si je vois à Lyon deux sorties en deux semaines (pas un seul écran), si le raton n'est plus jamais imposé en grand là où je ne l'ai pas choisi (invitation, Trouvée, Souvenir), si je peux changer mes photos avant Les visages, et si la règle « 1 duo gratuit » est vraie dans l'histoire qu'on me montre. Le reste (visages, équilibre écrit avant « Je viens », retrait discret fermé, rentabilité de Blowy+) est fait."
+}

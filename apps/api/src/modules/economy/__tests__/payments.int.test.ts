@@ -163,14 +163,14 @@ describe('paiements V5 (Stripe simulé)', () => {
     expect(await journal('VENUE_COMPENSATION')).toHaveLength(0);
   });
 
-  it('crédits : annulation perso d’une place payée → crédit 90 j ; un lot consommé une seule fois sous concurrence', async () => {
+  it('crédits (dépréciés, D-042) : un ancien lot rendu redevient un lot 90 j ; un lot consommé une seule fois sous concurrence', async () => {
     const g = h.app.get<EconomyGraph>(ECONOMY_GRAPH);
     const uow = h.app.get<UnitOfWork>(UNIT_OF_WORK);
     const u = ps[0]!;
     const fakeSeat = uuidv7();
     const run = <T>(f: (s: TxScope) => Promise<T>) => uow.run(f);
-    // Annulation perso avant confirmation d'une place payée (D-019) : crédit 90 j, pas de carte.
-    expect(await run((s) => g.payments.seatFunding.refundCard(s, { userId: u.userId, seatId: fakeSeat, paymentRef: null, cause: 'USER_EARLY' }))).toBe('RECREDITED');
+    // D-042 : une place payée n'est plus jamais transformée en crédit ; seul un ancien lot consommé est rendu.
+    expect(await run((s) => g.payments.seatFunding.refundCredit(s, { userId: u.userId, seatId: fakeSeat, funding: 'CREDIT', cause: 'OUTING_CANCELLED' }))).toBe('RECREDITED');
     // p1 a payé sa place (mode PAY) : sa 1ʳᵉ sortie offerte reste disponible, à côté du crédit.
     const credits = (await u.call('GET', '/v1/outing-credits')).body.available;
     expect(credits.map((c: any) => c.kind)).toEqual(['FREE_FIRST', 'REFUND_CREDIT']);

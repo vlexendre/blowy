@@ -33,10 +33,12 @@ export const NeighborhoodSearchQuerySchema = z.object({ q: z.string().trim().max
 export const SetNeighborhoodRequestSchema = z.object({ neighborhoodId: UuidSchema });
 export type SetNeighborhoodRequest = z.infer<typeof SetNeighborhoodRequestSchema>;
 
-/** Progression d'un quartier non lancé : vérifiés en attente / seuil (compté, jamais gonflé). */
+/**
+ * Écran d'attente d'un quartier pas encore ouvert : vérifiés de la ville (compté, jamais gonflé) et écart
+ * réel « il manque N ». D-035 : plus de seuil de densité exposé (`threshold` retiré, indicateur admin seulement).
+ */
 export const WaitlistProgressSchema = z.object({
   verifiedCount: z.number().int().nonnegative(),
-  threshold: z.number().int().positive(),
   /** V5.1 (B.6) : date estimée honnête (absente si non estimable). */
   estimatedLaunchAt: IsoDateTimeSchema.optional(),
   /** V5.1 (B.7) : une team de 3 vérifiés peut déclencher une sortie d'amorçage. */

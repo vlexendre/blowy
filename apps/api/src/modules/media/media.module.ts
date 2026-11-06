@@ -92,7 +92,22 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
     { provide: PhotoRevealUseCase, useFactory: (b: CommandBus, r: M, rnd: RandomSource, c: Clock) => new PhotoRevealUseCase(b, r, rnd, c), inject: [COMMAND_BUS, MEDIA_REPOSITORY, RANDOM, CLOCK] },
     {
       provide: VOICE_MESSAGE_GATE,
-      useFactory: (r: M, db: Db, c: Clock) => new VoiceGateService(r, { conversationContext: async (id) => (await db.conversation.findUnique({ where: { id }, select: { contextId: true } }))?.contextId ?? null }, c),
+      useFactory: (r: M, db: Db, c: Clock) =>
+        new VoiceGateService(
+          r,
+          {
+            conversationContext: async (id) => (await db.conversation.findUnique({ where: { id }, select: { contextId: true } }))?.contextId ?? null,
+            // V5 (D-051) : vocal facultatif dans un duo débloqué (statuts après les visages), conversation ouverte.
+            duoVoiceOpen: async (id, userId) => {
+              const conv = await db.conversation.findUnique({ where: { id }, select: { kind: true, duoId: true, closedAt: true, members: { where: { userId }, select: { revokedAt: true } } } });
+              if (!conv || conv.kind !== 'DUO' || !conv.duoId) return null;
+              if (conv.closedAt || !conv.members[0] || conv.members[0].revokedAt) return false;
+              const d = await db.duo.findUnique({ where: { id: conv.duoId }, select: { status: true } });
+              return !!d && ['UNLOCKED', 'DATE_PROPOSED', 'DATE_CONFIRMED', 'AFTER_VOTE', 'TOGETHER'].includes(d.status);
+            },
+          },
+          c,
+        ),
       inject: [MEDIA_REPOSITORY, DB, CLOCK],
     },
     { provide: VOICE_TRANSCRIBER, useFactory: (r: M, s: ObjectStorage, ai: AiServices) => new VoiceTranscriptionService(r, s, ai), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, AI_SERVICES] },

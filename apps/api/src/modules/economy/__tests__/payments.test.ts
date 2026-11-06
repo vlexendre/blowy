@@ -146,10 +146,10 @@ describe('règles pures', () => {
     expect(refundOutcome('PAID', 'OUTING_CANCELLED', { plusActive: false })).toBe('CARD');
     expect(refundOutcome('PAID', 'LATE_PAYMENT', { plusActive: false })).toBe('CARD');
     expect(refundOutcome('PAID', 'SAFETY_EXIT', { plusActive: false })).toBe('CARD');
-    expect(refundOutcome('PAID', 'USER_EARLY', { plusActive: false })).toBe('REFUND_CREDIT');
+    expect(refundOutcome('PAID', 'USER_EARLY', { plusActive: false })).toBe('CARD'); // D-042 : plus de crédit 90 j
     expect(refundOutcome('CREDIT', 'OUTING_CANCELLED', { plusActive: false })).toBe('REFUND_CREDIT');
     expect(refundOutcome('PLUS_INCLUDED', 'OUTING_CANCELLED', { plusActive: true })).toBe('NONE');
-    expect(refundOutcome('PLUS_INCLUDED', 'OUTING_CANCELLED', { plusActive: false })).toBe('REFUND_CREDIT');
+    expect(refundOutcome('PLUS_INCLUDED', 'OUTING_CANCELLED', { plusActive: false })).toBe('NONE');
     expect(refundOutcome('FREE_FIRST', 'OUTING_CANCELLED', { plusActive: false })).toBe('NONE');
   });
   it('compensation lieu (V5.3 C.11) : prix de la place si payée, 3 € si offerte ; rien si la sortie n’a pas eu lieu', () => {

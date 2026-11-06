@@ -1,14 +1,5 @@
 {
-  "title": "Économie : achat démo, triche, dépenses concurrentes, remboursement",
-  "notes": [
-    "Dépenses concurrentes : 0/2 réussies, refus 410 GONE.",
-    "Boost non consommé : pas de remboursement après 8 jours d’horloge — le job economy.refund_expired_boosts ignore l’horloge du monde (run() sans `now`), il n’est donc testable qu’en temps réel.",
-    "Webhook RevenueCat en BILLING_PROVIDER=local_demo : achat + remboursement acceptés (200) mais ignorés (transaction non enregistrée, solde 0 → 0). Aucune action REFUND dans /purchases/local-demo : le remboursement n’est testable qu’avec le fournisseur RevenueCat réel/sandbox."
-  ],
-  "absents": [
-    {
-      "name": "Remboursement d’un achat (pièces ou Blowy+) en démo locale : contre-écriture REFUND_REVERSAL, droits retirés",
-      "why": "LOCAL_DEMO n’expose que SUBSCRIBE/CANCEL/EXPIRE/BUY_COINS ; webhooks ignorés dans ce mode (couvert seulement par les tests unitaires/intégration du module économie)"
-    }
-  ]
+  "title": "V5 : place payée, remboursement carte avant la confirmation, Blowy+ en achat intégré (démo), V4 retiré",
+  "notes": [],
+  "absents": []
 }

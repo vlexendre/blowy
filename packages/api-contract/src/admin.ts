@@ -7,7 +7,7 @@
  * de vote privé, d'identité de signaleur ou de répondant anonyme, ni de position.
  */
 import { z } from 'zod';
-import { STAFF_ROLES, type StaffRole } from '@blowy/domain';
+import { STAFF_ROLES_V5 as STAFF_ROLES, type StaffRoleV5 as StaffRole } from '@blowy/domain';
 
 export const STAFF_SESSION_COOKIE = 'blowy_staff';
 export const STAFF_PENDING_COOKIE = 'blowy_staff_pending';

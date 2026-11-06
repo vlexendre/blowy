@@ -1,0 +1,538 @@
+{
+ "member": "patron-bar",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 9,
+  "safety": 8,
+  "virality": 8,
+  "money": 7,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 6 lieux partenaires » au 11e : la charge est répartie.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 3 lieux partenaires » avant de promettre : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Les créneaux des lieux de ta ville » ; mardi, samedi, dimanche proposés.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mon nom caché jusqu'à la veille.",
+   "fix": "—"
+  },
+  "V5-Trouvee-amis": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Un mardi, hors coup de feu : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Annulation gratuite jusqu'au mer. 11 nov. 18 h… Ensuite, c'est une absence : le lieu a reçu l'effectif » : effectif et annulation alignés, ma demande n°2 T3 réglée. « Chacun paie ce qu'il boit », « Personne n'anime ».",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Même règle, même heure.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« jusqu'au mer. 11 nov. 18 h » : aligné.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Aucun message du lieu à la confirmation (« table au fond à gauche ») (T3).",
+   "fix": "Message de bienvenue du lieu à 18 h."
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Quitter est gratuit jusqu'au mer. 11 nov. 18 h » : aligné.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 3 lieux partenaires » à Bordeaux : réglé.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu nommé la veille, « comme partout ».",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Pas assez de confirmations » : connu au plus tard à la veille 18 h. Ma table était bloquée ; le contrat promet 72 h de préavis « dans les deux sens » et ne prévoit rien quand Blowy annule pour sous-effectif.",
+   "fix": "Règle écrite : sortie annulée par Blowy après J −3 j → 3 € par place prévue au lieu (ou forfait), dans L-Contrat et business-model."
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Nom, adresse, métro, table, chevalet, « Photo fournie par le lieu » ; l'image reste l'illustration commune (la même que pour Le Comptoir Gabriel). « Je connais quelqu'un ici » : si accepté après 18 h, ma table perd une place sans compensation (spec §6.5 l'exclut).",
+   "fix": "Vraie photo dans la maquette (ou cadre « photo du lieu ») ; « je connais quelqu'un » accepté après 18 h → 3 € au lieu."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Je ne peux plus venir · compte comme une absence » : ma table est protégée.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Le personnel du lieu n'intervient pas à ta place » ; l'astreinte appelle Alex, pas le gérant : je ne sais pas qu'une demande d'aide a lieu chez moi.",
+   "fix": "SMS au référent du lieu : « demande d'aide à la table Blowy, l'équipe gère »."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Demande au comptoir la table Blowy » : mon staff doit être briefé ; aucune fiche staff.",
+   "fix": "Fiche staff d'une page dans l'espace lieu."
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Range ton téléphone » : bon pour moi.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Café des Oiseaux » sur le souvenir.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Vous pourrez revenir ensemble au Café des Oiseaux » : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Citer le lieu : possible à partir du ven. 13 nov. 9 h 30 » : visibilité gratuite.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Sortie de bande… au Café des Oiseaux » : des habitués.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Duo-choix": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« table confirmée par Le Comptoir Gabriel », « Rendez-vous gratuit », samedi 15 h ; L-Creneaux dit « les tables à deux suivent la même règle de compensation », mais aucune ligne « tables à deux » dans ma grille de créneaux ni dans mon plafond. Illustration identique au Café des Oiseaux.",
+   "fix": "Ligne « Tables à deux » par créneau dans L-Creneaux, comptée dans le plafond ; photo propre au lieu."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Parc public : aucune table bloquée.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Le lieu ne prend rien sur ta place. Si ta place reste vide… son prix est reversé au lieu (3 € si elle était offerte) » : ma demande T3 réglée. Et une place Blowy+ ?",
+   "fix": "« (3 € si elle était offerte ou incluse dans Blowy+) »."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Un habitué Blowy+ ne paie pas sa place ; s'il ne vient pas, je touche 3 € ou 4,99 € ? Pas dit au client.",
+   "fix": "Règle Blowy+ écrite ici aussi."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Consommation non incluse » au paiement.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Incident sur place (lieu, personnel, autre client) ».",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« remboursée, avant la confirmation de la veille » : ma table n'est pas lésée.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Le code du chevalet marche hors ligne » : mon sous-sol est couvert.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui me concerne directement ; côté client, rien ne gêne mon service.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Enfin : effectif arrêté mer. 18 h, table, chevalet, prénoms, astreinte, compensation, ma photo. Mais : « Virement le lundi » alors que la spec prévoit un relevé mensuel (et aucun relevé n'est affiché) ; aucune vue des présences après la soirée (comment je vérifie qu'une place était vide ?) ; « Signaler un participant » sans bouton ni numéro.",
+   "fix": "Bloc « Ce mois-ci : 3 places vides, 12,98 € » avec détail par soirée ; présences à J +1 ; bouton « Signaler » (motifs + rappel sous 1 h)."
+  },
+  "L-Creneaux": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Créneaux hors coup de feu, plafond, préavis 72 h dans les deux sens : ma liste T3. Les tables à deux n'y sont pas ; « coup de feu, fermé » déborde de sa colonne.",
+   "fix": "Ligne tables à deux ; libellé dans la colonne état."
+  },
+  "L-Contrat": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Une page, cinq articles, astreinte, zéro animation, charte, préavis : ma demande n°1 T3. Manquent : places Blowy+ (« 3 € (1re sortie offerte) » seulement), annulation par Blowy pour sous-effectif (< 72 h, rien prévu), « je connais quelqu'un » accepté après 18 h, données des participants (prénoms : durée, interdiction de recontact), responsabilité/assurance, signataire Blowy.",
+   "fix": "Article 3 complété (offerte ou Blowy+ : 3 € ; sortie annulée par Blowy après J −3 j : 3 € par place) ; article 6 données ; signature des deux parties."
+  }
+ },
+ "top3": [
+  "Compléter l'article Argent : place Blowy+ vide = 3 € ; sortie annulée par Blowy après J −3 j (sous-effectif) = 3 € par place prévue ; « je connais quelqu'un » accepté après 18 h = 3 € ; chiffrer ces lignes dans business-model.",
+  "Relevé dans L-Effectif (places vides du mois, montants, date de virement unique, cohérente avec la spec) et présences à J +1 pour vérifier ; bouton « Signaler un participant ».",
+  "Ligne « tables à deux » dans L-Creneaux, comptée dans le plafond ; alerte au référent du lieu lors d'une demande d'aide ; fiche staff d'une page."
+ ],
+ "tenIf": "Je mets 10 si le contrat d'une page couvre toutes les places vides après la confirmation (payée, offerte, Blowy+, annulation par Blowy, retrait « je connais quelqu'un »), si l'espace lieu me montre un relevé vérifiable (présences, montants, date de virement unique) et mes tables à deux dans ma grille, si je suis prévenu d'une demande d'aide à ma table, et si ma vraie photo est celle que voient les participants à 18 h."
+}

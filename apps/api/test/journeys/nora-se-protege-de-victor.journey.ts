@@ -144,20 +144,24 @@ describe('Sécurité', () => {
       paul.call('POST', `/v1/conversations/${convId}/messages`, { clientMessageId: 'paul-idor-01', body: 'coucou' }),
       paul.call('POST', `/v1/conversations/${convId}/read`, { seq: 1 }),
       paul.call('GET', `/v1/pets/${nora.petId}`),
-      paul.call('POST', `/v1/pets/${nora.petId}/actions`, { action: 'FEED' }),
-      paul.call('POST', `/v1/pets/${nora.petId}/move`, { destination: 'HOME' }),
       paul.call('GET', `/v1/media/${noraPhoto}`),
       paul.call('POST', `/v1/media/${noraPhoto}/access-tokens`, { variant: 'thumbnail', relationshipId: relId }),
       paul.call('POST', `/v1/media/${noraPhoto}/share`, { relationshipId: relId, shared: true }),
-      paul.call('GET', `/v1/relationships/${relId}/photo-reveal?scope=PHOTO_REVEAL`),
       paul.call('POST', `/v1/relationships/${relId}/leave`, { reason: 'CLEAN_LEAVE' }),
-      paul.call('POST', `/v1/relationships/${relId}/branch/ballot`, { choice: 'PLUS' }),
       paul.call('POST', '/v1/blocks', { target: { relationshipId: relId } }),
       paul.call('POST', '/v1/reports', { target: { petId: nora.petId }, category: 'OTHER' }),
       paul.call('GET', `/v1/conversations/${convId}/signal`),
     ]);
     const leaks = tries.map((t, i) => [i, t.status] as const).filter(([, s]) => s !== 404);
     expect(leaks, `réponses non-404 : ${JSON.stringify(leaks)}`).toEqual([]);
+    // V5 (§7.7) : gestes, déplacements, révélation photo et vote de branche V4 retirés — 410 identique, rien sur l'objet.
+    const retired = await Promise.all([
+      paul.call('POST', `/v1/pets/${nora.petId}/actions`, { action: 'FEED' }),
+      paul.call('POST', `/v1/pets/${nora.petId}/move`, { destination: 'HOME' }),
+      paul.call('GET', `/v1/relationships/${relId}/photo-reveal?scope=PHOTO_REVEAL`),
+      paul.call('POST', `/v1/relationships/${relId}/branch/ballot`, { choice: 'PLUS' }),
+    ]);
+    expect(retired.map((r) => `${r.status} ${r.data?.detailsSafe?.reason}`)).toEqual(Array(4).fill('410 RETIRED_IN_V5'));
     expect((await look(paul, noraPhoto, 'thumbnail', relId)).status).toBe(404);
     const ws = await paul.device('paul-phone');
     expect(await ws.join(`conversation:${convId}`)).toBe(false);

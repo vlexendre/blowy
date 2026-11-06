@@ -111,15 +111,15 @@ describe('Léa et son ange gardien', () => {
     for (const p of [hugo!, ines!, malo!, sarah!]) expect(JSON.stringify((await p.call('GET', `/v1/outings/${outingId}`)).data)).not.toMatch(/alert|SAFETY|aide/i);
   });
 
-  S.step('Le staff : trust_lead voit l\'alerte dans la file (échéance 1 h), la position seulement sur lecture motivée et auditée', async () => {
+  S.step('Le staff : trust_lead voit l\'alerte dans la file (échéance 1 h) sur lecture motivée et auditée — aucune position n\'a été collectée (D-050)', async () => {
     const t = w.app.get<AdminTrustPort>(ADMIN_TRUST);
     const list = await t.listSafetyAlerts(trustLead, { status: 'OPEN', limit: 20 });
     const item = list.items.find((a) => a.id === alertId)!;
-    expect(item).toMatchObject({ userId: lea!.userId, positionAttached: true, overdue: false });
+    expect(item).toMatchObject({ userId: lea!.userId, positionAttached: false, overdue: false });
     expect(new Date(item.slaDueAt).getTime() - new Date(item.createdAt).getTime()).toBe(3_600_000);
     await expect(t.listSafetyAlerts({ staffUserId: trustLead.staffUserId, roles: ['support'] }, { limit: 5 })).rejects.toMatchObject({ code: 'FORBIDDEN' });
     const d = await t.getSafetyAlert(trustLead, alertId, { justification: 'Rappel de Léa par l’astreinte' });
-    expect(d.position).toEqual({ lat: 48.86493, lng: 2.37069, accuracyM: 12 });
+    expect(d.position).toBeNull();
     const cases = await w.app.get<AdminModerationPort>(ADMIN_MODERATION).listCases({ staffUserId: trustLead.staffUserId, roles: ['moderator'] }, { status: 'OPEN', subjectType: 'SAFETY_ALERT', limit: 20 });
     expect(cases.items.find((x) => x.subjectId === alertId)).toMatchObject({ priority: 1 });
     await t.handleSafetyAlert(trustLead, alertId, { reason: 'Léa rappelée, raccompagnée', commandId: randomUUID() });

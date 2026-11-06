@@ -20,13 +20,15 @@ import {
   PRICING_V5,
   RELIABILITY_V5,
   SAFETY_V5,
+  VENUES_V5,
   VOTES_V5,
 } from './defaults-v5.js';
 
 /** V5 : `tuning-2026.12.0` (sections sorties, composition, duo, votes, souvenirs, paiements, sécurité). */
 /** V5.2 : `tuning-2026.12.1` (visages révélés startsAt − 3 h, concept-v5.2 C.8). */
 /** V5.2 : `tuning-2026.12.2` (garantie « pour toi » : composition.storyGuarantee, algo groups-2026.12.1). */
-export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.2';
+/** V5.3 : `tuning-2026.12.3` (composition.maxSameGender = 3 dur, duo.maxActiveFree/maxOpenProposals, venues.compensationUnpaidSeatCents = 300, safety.uncomfortableLeaveWindowDays/uneasyLeaveRecontactThreshold/humanResponseMinutes ; algo groups-2026.12.2). */
+export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.3';
 
 export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   version: DEFAULT_TUNING_VERSION,
@@ -231,5 +233,6 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   plus: PLUS_V5,
   credits: CREDITS_V5,
   safety: SAFETY_V5,
+  venues: VENUES_V5,
   preferences: PREFERENCES_V5,
 });

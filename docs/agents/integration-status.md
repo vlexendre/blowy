@@ -15,6 +15,22 @@
 - [ ] Mobile : barre d'onglets visible sur les écrans de pile ; Bricolage chargée en largeur normale au lieu de font-stretch 85 % (UI-fondation).
 - [ ] Seed : Alex à 0 pièce (maquette 340), pet qui paraît malade — à refaire pour la V5.
 
+## V5 — état des tranches (alignement C, 2026-11-06, `docs/agents/handoffs/V5-alignement.md`)
+| Tranche | État | Preuve |
+|---|---|---|
+| T0 contrats + T1 moteur | ✅ (+ `maxSameGender` dur, `tuning-2026.12.3`, `groups-2026.12.2`) | matching 35/35, tuning/domain/pet-engine verts |
+| T2 sorties (C) | ✅ aligné V5.3 : prénoms à `lockAt`, annulation gratuite carte / reste offerte, `storyMatch` littéral, motifs renommés, demande auto, auteurs du chat par le pet, export RGPD V5 | api unit 148/148 ; intégration 109/109 ×2 |
+| T3 paiements (G) | ✅ (D-042 appliqué : plus de crédit 90 j ; paramètres lus du tuning ; `v5Entitlements`) | parcours `ines-paie-sa-place`, `maya-achete…` (V5) |
+| T4 sécurité (E) | ✅ (position d'alerte jamais stockée, seuils `[T]`) | `safety-v5`, parcours J9/J10 |
+| T5 liens (C2) | ✅ (`DUO_ALLOWANCE`, `quota`, vocal facultatif en duo débloqué) | `connections-v5`, parcours `thomas…`, `lea-et-hugo…` (V5) |
+| Retrait V4 (§7.7) | ✅ 410 `RETIRED_IN_V5` actifs (middleware avant auth) ; parcours V4 réécrits en V5 | `test/unit/retired-routes.test.ts` ; parcours **160 ✅ / 0 ❌ / 4 ⛔** |
+| Schéma | ✅ migration additive `20261106180000_v5_align` (index journal `DomainEvent`) | migrate deploy + seed base vierge, diff vide |
+| Turbo complet `--concurrency=4` | 62/66 ; échecs hors backend en cours : `mobile#lint`, `mobile#test`, `ui-mobile#test`, `qa#test` | `pnpm turbo run build typecheck test lint --concurrency=4 --continue` |
+
+- [ ] D : `mobile#lint` (3 erreurs), `mobile#test` (`core/navigation/paths.test.ts`), `ui-mobile#test` (`atoms/styles.test.ts`) — travaux mobile en cours.
+- [ ] A/H : `qa#test` (`tooling/qa/visual/compare.test.mjs`, route `/verify/failed`).
+- [ ] Restes V5 : accessoire de parrainage (au lieu des pièces V4), « je connais quelqu'un » → déplacement vers un autre groupe, `KNOWN_CONTACT`, tables `Payment`/`VenueCompensation` quand la finance (F) en aura besoin.
+
 ## Suites V2 (E/F)
 - [ ] G : consommer `mission.proof_validated` ; job de suggestions IA automatiques (notifications).
 - [ ] B : exporter `simulate` de `@blowy/pet-engine` (simulateur admin) ; moteur lisant le tuning publié au lieu de `DEFAULT_TUNING`.

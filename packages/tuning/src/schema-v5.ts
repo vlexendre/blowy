@@ -66,7 +66,10 @@ export const CompositionTuningSchema = z.object({
   lambdaFriend: nonNegInt,
   lambdaGender: nonNegInt,
   lambdaSize: nonNegInt,
+  /** @deprecated D-039 : remplacé par la contrainte dure `maxSameGender` (gardé pour relire les payloads). */
   maxGenderSharePermille: permille,
+  /** D-039 / V5.3 A.2 : jamais plus de N personnes du même genre (contrainte dure ; exception : groupe non mixte demandé). */
+  maxSameGender: z.number().int().min(2).max(6).default(3),
   repairToleranceMilli: nonNegInt,
   maxSwapIterations: nonNegInt,
   /** V5.1 (B.7) : une team (1–3 personnes) est une unité indivisible. */
@@ -124,7 +127,12 @@ export const VotesTuningSchema = z.object({
 });
 
 export const DuoTuningSchema = z.object({
+  /** @deprecated (V5.2 H.25) : ancien plafond commun ; lu comme `maxOpenProposals` par les versions antérieures. */
   maxActive: posInt,
+  /** V5.2 H.25 / D-041 : gratuit = 1 duo actif (proposition ouverte ou duo voie Duo non terminal) ; Blowy+ illimité. */
+  maxActiveFree: posInt.default(1),
+  /** Garde-fou qualitatif (Blowy+ compris) : ≤ N propositions DUO_LANE ouvertes à la fois. */
+  maxOpenProposals: posInt.default(3),
   exchangeHours: posInt,
   dateDeadlineDays: posInt,
   minMessagesEachToUnlock: posInt,
@@ -185,6 +193,12 @@ export const PlusTuningSchema = z.object({
 
 export const CreditsTuningSchema = z.object({ refundCreditValidityDays: posInt });
 
+/** V5.3 C.11 / D-045 : compensation du lieu pour une place non honorée après la confirmation. */
+export const VenuesTuningSchema = z.object({
+  /** Place offerte ou incluse (1ʳᵉ sortie, Blowy+, staff) ou départ de sécurité après la confirmation : Blowy verse 3 €. */
+  compensationUnpaidSeatCents: posInt,
+});
+
 export const SafetyTuningSchema = z.object({
   checkinRadiusMeters: posInt,
   checkinMaxAccuracyMeters: posInt,
@@ -197,6 +211,12 @@ export const SafetyTuningSchema = z.object({
   alertsPerHour: posInt,
   removalAbuseThreshold: posInt,
   removalAbuseWindowDays: posInt,
+  /** V5.3 B.9 : fenêtre de comptage des « je pars, mal à l'aise ». */
+  uncomfortableLeaveWindowDays: posInt.default(90),
+  /** Au N-ième départ « mal à l'aise » dans la fenêtre, un humain recontacte la personne. */
+  uneasyLeaveRecontactThreshold: posInt.default(3),
+  /** Réponse humaine visée à un « besoin d'aide » (affichée seulement si une astreinte est planifiée). */
+  humanResponseMinutes: posInt.default(60),
 });
 
 export const NOTIFICATION_PRIORITY_V5 = ['SAFETY', 'OUTING_TRANSACTIONAL', 'HUMAN_MESSAGE', 'CONNECTION', 'VOTE', 'DUO', 'OUTING_MARKETING', 'SYSTEM'] as const;

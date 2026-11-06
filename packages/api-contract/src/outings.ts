@@ -39,7 +39,10 @@ export const PaymentProviderSchema = z.enum(['STRIPE', 'LOCAL_DEMO']);
 /** Motifs métier (`detailsSafe.reason`) des échecs du module `outings`. */
 export const OUTING_FAILURE_REASONS = [
   // 412
-  'NEIGHBORHOOD_NOT_LIVE',
+  /** V5.2 A.1 : seuls `PAUSED`/`CLOSED` refusent (remplace `NEIGHBORHOOD_NOT_LIVE`). */
+  'NEIGHBORHOOD_UNAVAILABLE',
+  /** §2.4 / §2.16 : 18+ vérifié (estimation d'âge au selfie, document si doute) avant la 1ʳᵉ sortie. */
+  'AGE_VERIFICATION_REQUIRED',
   'VERIFICATION_REQUIRED',
   'PHOTO_REQUIRED',
   'RELIABILITY_PAUSED',
@@ -222,11 +225,11 @@ export const OutingViewSchema = z
     votes: z.object({ open: z.boolean(), closesAt: IsoDateTimeSchema }).strict().optional(),
     cancelled: z.object({ reason: z.enum(OUTING_PUBLIC_CANCEL_REASONS), refund: RefundModeSchema }).strict().optional(),
     /**
-     * V5.2 (B.5–B.6), seulement pour un lecteur qui cherche une histoire, avant/pendant la sortie :
-     * `AT_LEAST_TWO` = au moins 2 personnes du groupe cherchent une histoire compatible (jamais qui) ;
-     * `FRIENDS_ONLY` = « cette semaine, sortie potes uniquement pour toi ».
+     * V5.3 A.1 / D-038 : seulement pour le lecteur qui cherche une histoire et pour qui la garantie
+     * n'a pas pu être tenue : « Cette semaine, sortie entre amis pour toi » (sans chiffre). La garantie
+     * positive n'est JAMAIS exposée (l'ancien `AT_LEAST_TWO` est retiré du contrat).
      */
-    storyMatch: z.enum(['AT_LEAST_TWO', 'FRIENDS_ONLY']).optional(),
+    storyMatch: z.literal('FRIENDS_ONLY').optional(),
     /** V5.2 (C.10) : « je connais quelqu'un ici » possible (visages révélés, avant le début). */
     knowsSomeoneAvailable: z.literal(true).optional(),
   })

@@ -20,6 +20,7 @@ import { CONVERSATION_REPOSITORY, type ConversationRepository } from './modules/
 import type { Logger } from './shared/infrastructure/logging/logger.js';
 import { requestIdMiddleware } from './shared/interface/request-id.middleware.js';
 import { rawBodyMiddleware } from './shared/interface/raw-body.middleware.js';
+import { retiredRoutesMiddleware } from './shared/interface/retired-routes.middleware.js';
 import { MemoryRateLimiter, RedisRateLimiter, rateLimitMiddleware } from './shared/interface/rate-limit.js';
 
 export interface BuildOptions {
@@ -35,6 +36,8 @@ export async function buildApp(opts: BuildOptions): Promise<INestApplication> {
   app.disable('x-powered-by');
   app.enableCors({ origin: opts.config.corsOrigins.length ? opts.config.corsOrigins : false, credentials: false });
   app.use(requestIdMiddleware(logger));
+  // spec-v5 §7.7 : routes V4 retirées → 410 GONE {reason:"RETIRED_IN_V5"}, avant auth et rate limit.
+  app.use(retiredRoutesMiddleware());
   const clock = app.get<Clock>(CLOCK);
   const limiter = opts.redis ? new RedisRateLimiter(opts.redis, clock) : new MemoryRateLimiter(clock);
   app.use(rateLimitMiddleware(limiter, opts.config.RATE_LIMIT_PER_MINUTE));

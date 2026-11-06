@@ -1,0 +1,538 @@
+{
+ "member": "growth-lead",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 8,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« DES AMITIÉS, OU PLUS. EN VRAI, CETTE SEMAINE. » + « Partout dès 5 personnes » : promesse et portée en un plan. Toujours aucune preuve sociale chiffrée ; ~220 px vides entre texte et pets.",
+   "fix": "Une ligne réelle « N sorties cette semaine à Paris 11e »."
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« des sorties chaque semaine · 6 lieux partenaires » : preuve d'offre.",
+   "fix": "Ajouter le nombre de sorties de la semaine."
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 64 personnes vérifiées. 3 lieux partenaires » + règle des 5 : garde l'inscrit hors zone. Toujours rien sur « venir avec quelqu'un » ici (T3).",
+   "fix": "« Viens avec quelqu'un : il compte dans les 5 » dès cet écran."
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une question, rapide.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une question ; 9 écrans au lieu de 8 : coût de funnel assumé (D.13).",
+   "fix": "Mesurer la chute 2/9 → 3/9."
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Activités sorties de l'écran : bon pour le funnel. Toujours aucun export « mon pet ».",
+   "fix": "« Partager mon pet » (9:16) après le choix."
+  },
+  "V5-Rencontrer": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« À deux, par écrit » et « Groupe et duo » à égalité avec « En petit groupe » à 5/9 : la voie sans invitation reste au point de décision (T3, non retenu).",
+   "fix": "Duo proposé après la 1re sortie vécue ; à défaut, mesurer le taux de « venir avec quelqu'un » par réponse."
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une question, « Personne ne le voit » rassure.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Amitié seulement » de même poids : bon pour la confiance.",
+   "fix": "Tracer le taux par bouton."
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une question. CTA « Choisis une réponse » alors que c'est « une ou plusieurs cases ».",
+   "fix": "« Coche au moins une case »."
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Semaines off + trajet 30 min par défaut : réglé.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Nouvelle saisie dans 24 h » : ne pollue pas la base.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lien secondaire « Venir avec quelqu'un que tu connais » : ma demande T3 réglée. Mais l'activité « Jeux de société » n'a jamais été demandée (voir outils, n° 7).",
+   "fix": "Activité par défaut annoncée (« Nino choisit l'activité, change-la dans Affiner »)."
+  },
+  "V5-Trouvee-amis": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Dit la vérité avant le choix ; secondaire « Voir un autre créneau » au lieu de « Venir avec quelqu'un ».",
+   "fix": "Même secondaire que Trouvée ; mesurer l'acceptation de cette variante."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deuxième ville vivante, trajet affiché : preuve que « partout » existe.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Tom vient · + 1 place » sur une ligne : réglé.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Leur 1re sortie est offerte » : argument clair.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lien personnel `i/r8Tz4w`, « Par message seulement, jamais en story » : réglé (ma demande n°1 T3). « Copier le lien » réouvre la porte à la Story, mais le lien ne marche qu'une fois.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ce lien t'a été envoyé par message, à toi seul : il ne marche qu'une fois » : enfin vrai.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Compte après « Je viens », place gardée 30 min : la bonne place dans le funnel.",
+   "fix": "Mesurer la chute Je viens → Compte."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ta place est gardée 30 min » : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« lun. 21:00 Une sortie pour toi cette semaine » ; la spec compose « mardi 12 h » (outils n° 2) : l'heure du rendez-vous hebdo, base de la rétention, n'est pas fixée.",
+   "fix": "Une seule heure de proposition dans spec, notifs et Sortie-complete."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ligne « Tom vient · + 1 place » réglée.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Tom vient avec toi » discret ; « Réduire le pet ».",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Au format à deux, la sortie de groupe reste 3e carte, « facultatif » (T3, non réglé) : l'Accueil pousse le canal qui n'amène personne.",
+   "fix": "Sortie (avec « venir avec quelqu'un ») en tête, même au format à deux."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Date, échéance, « Partager « Aide Bordeaux à sortir » » et « Venir avec quelqu'un » : mes deux demandes T3 réglées.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lien public propre `v/bD8nY3`, sans chiffre ni prénom : la boucle hors zone existe.",
+   "fix": "Pré-remplir la ville sur la page d'arrivée."
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toi + 2 proches + 2 Lillois, daté : le moteur d'amorçage est maquetté.",
+   "fix": "Afficher « 19 jours après ton inscription »."
+  },
+  "V5-Amorcage-solo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Solo maquetté (Sarah) ; « une activité que tu as cochée » alors qu'aucune activité n'est demandée (outils n° 7) ; « Tu viens seul » au masculin.",
+   "fix": "« Tu viens sans personne » ; activité expliquée."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Relance « Oui, le 19 » ; « Tom, ton pote » contredit « proches ».",
+   "fix": "« Tom est prévenu »."
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Explication claire, opt-in : ne freine pas l'inscription.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager « cette semaine, je sors » » au pic d'attente.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Slug propre `s/Hq3vT8` : ma demande n°1 T3 réglée. « Sans jour par défaut · « Demain » en option » : l'option n'est pas dessinée.",
+   "fix": "Dessiner le choix (sans jour / demain)."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager « je sors ce soir », sans lieu ni heure » au bon moment (16 h 40).",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Visuel propre (chevalet orange), slug `s/pL7c2N` : réglé.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Boucle d'acquisition déguisée en sécurité.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Encart « Voir › » sous « Ce lien ne m'est pas destiné ».",
+   "fix": "Pré-remplir la ville du proche."
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« J'y suis » retiré de l'écran sous stress : réglé.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Vote principal, partage secondaire, comme décidé en E.17 ; le vrai CTA de partage est sur Résultats.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« PARTAGER LA SOIRÉE » en bouton principal au pic émotionnel + « Ma bande s'agrandit › » : ma demande n°2 T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Slug `s/Zx9mQ4` ; même composition (Nino + 4 pastilles autour d'une table) que la carte du mercredi, seule la couleur change.",
+   "fix": "Un objet propre au vendredi."
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Carte du dimanche rendue, sans chiffre ni pet identifiable, slug `s/aR5kW1`.",
+   "fix": "Proposer aussi « Pas d'accord cette fois » en carte neutre (« 1 soirée, 3 nouvelles personnes »)."
+  },
+  "V5-Apres-aucun": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Relance « Voir le jeu. 19 nov. » ; aucune carte pour 0 accord : la moitié des 1res sorties n'a pas de sortie virale.",
+   "fix": "Carte « On était 5 » proposée ici aussi."
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Sortie de bande au Café des Oiseaux : rétention + lieu.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Geste facultatif, zéro notification.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ou viens jeudi en groupe › » à côté de la limite : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Duo-choix": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Passer à Blowy+ » propre ; « La proposition reste 7 jours » contre 48 h dans la spec.",
+   "fix": "Une seule durée."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Autres cartes › » ouvre un sélecteur jamais dessiné (T2, T3) ; slug `m/k7f2q` à 5 caractères contre « ≥ 8 » dans la spec.",
+   "fix": "Dessiner le sélecteur ; slug ≥ 8."
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Chips droites ; « Voir ma ville » qualifie la ville.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Mes cartes › » existe mais ouvre un écran non dessiné.",
+   "fix": "Dessiner « Mes cartes » (6 cartes, chacune avec son lien)."
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager Nino » nommé : réglé.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Pourquoi tu pars ? · facultatif » : ma demande T3 réglée (signal de densité).",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Nino compose ton groupe… quelques secondes » : composition instantanée, contraire à la composition hebdo (outils n° 2).",
+   "fix": "Dire ce qui se passe vraiment (« Nino cherche sur tes créneaux… »)."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Côté lieu dessiné : la densité d'offre devient vendable.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Plafond et créneaux hors coup de feu : capacité lisible pour piloter l'acquisition par créneau.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Contrat d'une page : on peut signer 5 lieux par quartier.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Trancher l'heure de composition (une seule, dans spec, Notifs, Sortie-complete, Chargement) et instrumenter l'entonnoir Welcome → 1re sortie vécue par étape (9 écrans + Compte + Selfie).",
+  "Sortir le Duo du point de décision : Rencontrer à deux réponses (« petit groupe » / « petit groupe + duo après ma 1re sortie »), Accueil-duo avec la sortie en tête.",
+  "Dessiner « Mes cartes » (6 cartes et leur lien), le sélecteur de Story, et une carte pour « Pas d'accord cette fois »."
+ ],
+ "tenIf": "Je mets 10 si le test de 8 semaines prévu dans business-model mesure dans le 11e Welcome → 1re sortie vécue ≥ 25 % et une chute au selfie < 30 %, si chaque sortie vécue produit ≥ 0,3 inscrit vérifié attribué par slug (invitation, mer., jeu., ven., dim., ville, ange, 3 mots), si Bordeaux passe de « il manque 2 » à une sortie vécue en moins de 3 semaines, et si l'heure de la proposition hebdo est la même partout."
+}

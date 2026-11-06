@@ -4,7 +4,7 @@
  * → enrôlement TOTP → session (en-têtes équivalents aux cookies du BFF) + CSRF + step-up.
  */
 import { randomUUID } from 'node:crypto';
-import type { StaffRole } from '@blowy/domain';
+import type { StaffRoleV5 as StaffRole } from '@blowy/domain';
 import type { Harness } from '../../../../test/integration/harness.js';
 import { TestClient } from '../../../../test/integration/harness.js';
 import { PrismaUnitOfWork } from '../../../shared/infrastructure/prisma/prisma-unit-of-work.js';

@@ -94,10 +94,10 @@ export const holdExpired = (holdExpiresAt: Date | null, now: Date) => holdExpire
  * Cause d'un remboursement, vue par l'économie :
  * - `OUTING_CANCELLED` : la sortie n'a pas lieu (sous-effectif, lieu, staff, quartier) ;
  * - `SYSTEM_REMOVAL` / `SAFETY_EXIT` : retrait système ou de sécurité ;
- * - `USER_EARLY` : annulation personnelle AVANT la révélation des visages (V5.2 C.8) ;
+ * - `USER_EARLY` : annulation personnelle AVANT la confirmation (J-1 18 h, V5.3 B.6) ;
  * - `LATE_PAYMENT` : paiement arrivé après l'échéance du hold, place pleine ou sortie close ;
  * - `ACCOUNT_DELETED` : suppression du compte avec une place active.
- * L'annulation après la révélation des visages et l'absence ne remboursent rien (jamais appelées ici).
+ * L'annulation après la confirmation et l'absence ne remboursent rien (jamais appelées ici).
  */
 export type RefundCause = 'OUTING_CANCELLED' | 'SYSTEM_REMOVAL' | 'SAFETY_EXIT' | 'USER_EARLY' | 'LATE_PAYMENT' | 'ACCOUNT_DELETED';
 
@@ -107,14 +107,15 @@ export type RefundOutcome = 'CARD' | 'REFUND_CREDIT' | 'NONE';
 export function refundOutcome(funding: SeatFunding | null, cause: RefundCause, ctx: { plusActive: boolean }): RefundOutcome {
   switch (funding) {
     case 'PAID':
-      // Annulation perso ≥ seuil : crédit 90 j (remboursement carte sur demande au support). Le reste : carte.
-      return cause === 'USER_EARLY' ? 'REFUND_CREDIT' : 'CARD';
+      // V5.3 B.6 / D-042 : toujours la carte (annulation avant la confirmation comprise) ; plus de crédit 90 j.
+      return 'CARD';
     case 'CREDIT':
       // Recrédit : le lot consommé est rendu sous forme d'un nouveau lot (validité 90 j).
       return cause === 'ACCOUNT_DELETED' ? 'NONE' : 'REFUND_CREDIT';
     case 'PLUS_INCLUDED':
-      // Abonné·e toujours actif·ve : rien à rendre (toutes les sorties sont incluses) ; sinon crédit 90 j.
-      return cause === 'ACCOUNT_DELETED' || ctx.plusActive ? 'NONE' : 'REFUND_CREDIT';
+      // D-042 : place incluse dans Blowy+ → sans objet (aucun crédit émis, même si l'abonnement a pris fin).
+      void ctx;
+      return 'NONE';
     case 'FREE_FIRST':
       // Dérivé des places : une 1ʳᵉ offerte recréditée redevient disponible (aucune écriture).
       return 'NONE';

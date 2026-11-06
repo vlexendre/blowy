@@ -3,9 +3,15 @@ import { decodeCursor, encodeCursor } from '../../../shared/application/paginati
 import { Errors } from '../../../shared/domain/errors.js';
 import { toMessageView } from './message.serializer.js';
 import type { ConversationRepository } from './ports/conversation.repository.js';
+import type { MessageAuthorResolver } from '../../../shared/application/ports/message-author.port.js';
 
 export class ReadMessagesQuery {
-  constructor(private readonly repo: ConversationRepository) {}
+  constructor(
+    private readonly repo: ConversationRepository,
+    private readonly authors: MessageAuthorResolver | null = null,
+    /** Horloge injectée (requise si `authors` est fourni). */
+    private readonly now: (() => Date) | null = null,
+  ) {}
 
   async conversations(userId: string): Promise<ConversationView[]> {
     const rows = await this.repo.listForUser(userId);
@@ -26,8 +32,9 @@ export class ReadMessagesQuery {
     const hasMore = rows.length > limit;
     const page = rows.slice(0, limit);
     const last = page.at(-1);
+    const authors = conv.kind === 'OUTING' && this.authors && this.now ? await this.authors.authorsFor(conversationId, userId, this.now()) : null;
     return {
-      items: page.map((m) => toMessageView(m, userId)).filter((m): m is MessageView => m !== null),
+      items: page.map((m) => toMessageView(m, userId, authors)).filter((m): m is MessageView => m !== null),
       nextCursor: hasMore && last ? encodeCursor([last.createdAt.getTime(), last.id]) : null,
     };
   }

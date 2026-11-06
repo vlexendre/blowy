@@ -16,6 +16,7 @@ import type {
   PricingTuningSchema,
   ReliabilityV5TuningSchema,
   SafetyTuningSchema,
+  VenuesTuningSchema,
   VotesTuningSchema,
 } from './schema-v5.js';
 import { deepFreeze } from './freeze.js';
@@ -58,7 +59,7 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     lastCallBeforeHours: 3,
   },
   composition: {
-    algoVersion: 'groups-2026.12.1',
+    algoVersion: 'groups-2026.12.2',
     /** V5.1 : groupe de 5 (dont toi). */
     targetSize: 5,
     minPairScore: 35,
@@ -69,6 +70,7 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     lambdaGender: 10000,
     lambdaSize: 1500,
     maxGenderSharePermille: 670,
+    maxSameGender: 3,
     repairToleranceMilli: 2000,
     maxSwapIterations: 200,
     maxTeamSize: 3,
@@ -93,6 +95,8 @@ export const VOTES_V5: Out<typeof VotesTuningSchema> = frozen({
 
 export const DUO_V5: Out<typeof DuoTuningSchema> = frozen({
   maxActive: 3,
+  maxActiveFree: 1,
+  maxOpenProposals: 3,
   exchangeHours: 48,
   dateDeadlineDays: 7,
   minMessagesEachToUnlock: 2,
@@ -156,7 +160,13 @@ export const SAFETY_V5: Out<typeof SafetyTuningSchema> = frozen({
   alertsPerHour: 10,
   removalAbuseThreshold: 3,
   removalAbuseWindowDays: 30,
+  uncomfortableLeaveWindowDays: 90,
+  uneasyLeaveRecontactThreshold: 3,
+  humanResponseMinutes: 60,
 });
+
+/** V5.3 C.11 / D-045 : 3 € versés par Blowy pour une place offerte/incluse non honorée (place payée : son prix). */
+export const VENUES_V5: Out<typeof VenuesTuningSchema> = frozen({ compensationUnpaidSeatCents: 300 });
 
 export const NOTIFICATIONS_V5: Out<typeof NotificationsV5TuningSchema> = frozen({
   maxPerDay: 3,

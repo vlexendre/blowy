@@ -22,6 +22,11 @@ const Schema = z.object({
   STAFF_IDLE_TIMEOUT_MINUTES: z.coerce.number().int().min(5).max(120).default(30),
   PUBLIC_WEB_ORIGIN: z.string().url().default('http://localhost:3002'),
   INVITE_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
+  // Espace lieu partenaire (V5 §10.2) : sessions COURTES, astreinte affichée.
+  VENUE_SESSION_TTL_MINUTES: z.coerce.number().int().min(15).max(8 * 60).default(120),
+  VENUE_IDLE_TIMEOUT_MINUTES: z.coerce.number().int().min(5).max(60).default(15),
+  VENUE_ONCALL_PHONE: z.string().trim().min(6).max(30).optional(),
+  VENUE_ONCALL_HOURS: z.string().trim().min(3).max(80).default('18 h – 2 h, chaque soir de sortie'),
 });
 
 export interface AdminConfig {
@@ -35,7 +40,15 @@ export interface AdminConfig {
   inviteTtlDays: number;
   /** Cookies `Secure` exigés (tout sauf local/test). */
   secureCookies: boolean;
+  venueSessionTtlMs: number;
+  venueIdleTimeoutMs: number;
+  /** Numéro d'astreinte affiché aux lieux ; null en production s'il n'est pas configuré (jamais inventé). */
+  venueOnCallPhone: string | null;
+  venueOnCallHours: string;
 }
+
+/** Numéro d'astreinte de démonstration (local/test uniquement). */
+const LOCAL_ONCALL_PHONE = '01 84 80 12 34';
 
 export class AdminConfigError extends Error {}
 
@@ -61,6 +74,10 @@ export function loadAdminConfig(env: NodeJS.ProcessEnv = process.env): AdminConf
     publicWebOrigin: c.PUBLIC_WEB_ORIGIN,
     inviteTtlDays: c.INVITE_TTL_DAYS,
     secureCookies: !isLocal,
+    venueSessionTtlMs: c.VENUE_SESSION_TTL_MINUTES * 60_000,
+    venueIdleTimeoutMs: c.VENUE_IDLE_TIMEOUT_MINUTES * 60_000,
+    venueOnCallPhone: c.VENUE_ONCALL_PHONE ?? (isLocal ? LOCAL_ONCALL_PHONE : null),
+    venueOnCallHours: c.VENUE_ONCALL_HOURS,
   };
 }
 

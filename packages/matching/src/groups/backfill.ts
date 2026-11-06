@@ -24,7 +24,7 @@ export function backfillCandidate(i: BackfillInput): string | null {
   for (let k = members.length; k < all.length; k++) {
     if (!compatibleWith([k], members, P)) continue;
     const ev = evaluateGroup([...members, k], P, t);
-    if (!ev.romanceOnlyCovered) continue;
+    if (!ev.romanceOnlyCovered || !ev.genderCapOk) continue;
     if (!best || ev.objectiveMilli > best.j) best = { k, j: ev.objectiveMilli };
     else if (ev.objectiveMilli === best.j) {
       const a = all[k]!;

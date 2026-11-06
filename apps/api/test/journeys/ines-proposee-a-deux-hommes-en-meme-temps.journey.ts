@@ -1,174 +1,141 @@
-/* eslint-disable @typescript-eslint/no-explicit-any -- vues JSON */
 /**
- * Histoire 2 — Le triangle. Inès est proposée en même temps à Karim et à Théo.
- * Gratuit : un seul rendez-vous ; Blowy+ (démo locale) : trois. Puis Inès arrive au niveau 3 avec
- * les deux et propose d'emménager aux deux : ils acceptent à la même seconde. Une seule
- * exclusivité doit naître ; l'autre reçoit un mot gentil pré-écrit. Que voit chacun ?
+ * Histoire 2 (V5) — « Inès proposée deux fois la même semaine ? Jamais. » Remplace le Triangle V4
+ * (Inès proposée en même temps à Karim et à Théo, emménagement concurrent) : en V5, la même intention
+ * — une personne qui pourrait aller dans deux groupes la même semaine — est tenue par l'invariant I-O2
+ * (une place active par personne et par semaine, index partiel en base) et par la composition.
+ * Onze personnes compatibles à Paris 11e cochent les deux créneaux (jeudi soir, samedi après-midi) :
+ *  - la composition forme deux groupes ; Inès est dans UN seul, l'autre groupe ne la voit jamais ;
+ *  - double tap « Je viens » depuis ses deux téléphones (même clé, puis clés différentes en parallèle) :
+ *    une seule place confirmée, une seule 1ʳᵉ sortie offerte consommée ;
+ *  - une 2ᵉ demande la même semaine est refusée (409 WEEKLY_QUOTA_USED) ; une 2ᵉ place forcée en base est
+ *    refusée par l'index ; l'autre groupe ne reçoit aucun événement la concernant ;
+ *  - Karim (autre groupe) libère sa place : le backfill choisit la personne non placée, jamais Inès ;
+ *  - jamais plus de 3 personnes du même genre dans chaque groupe (D-039).
  */
 import { afterAll, beforeAll, describe, expect } from 'vitest';
-import { attempt, cast, type Person } from './support/actor.js';
-import { forceLevel } from './support/fixtures.js';
+import { randomUUID } from 'node:crypto';
+import { uuidv7 } from '@blowy/database';
+import type { Person } from './support/actor.js';
 import { story } from './support/story.js';
 import { startWorld, type World } from './support/world.js';
+import { at, city, CYCLE, outing, request, v5Person, week, type City } from './support/v5.js';
 
 let w: World;
+let c: City;
 let ines: Person;
-let karim: Person;
-let theo: Person;
-let pK = '';
-let pT = '';
-let relK = '';
-let relT = '';
-const S = story('triangle', 'Triangle : Inès, Karim et Théo (créneaux, Blowy+, exclusivité)');
+let people: Person[] = [];
+let mine = '';
+let other = '';
+const S = story('triangle', 'V5 : Inès ne peut être proposée que dans un seul groupe par semaine (I-O2), double tap, backfill');
+
+const seatsOf = (p: Person) => w.db.outingSeat.findMany({ where: { userId: p.userId, weekKey: CYCLE.weekKey } });
+const outingOf = async (p: Person) => (await week(p)).data.myOutingId as string | undefined;
 
 beforeAll(async () => {
-  w = await startWorld('J_TRIANGLE');
+  w = await startWorld('J_TRIANGLE', CYCLE.monday);
+  c = await city(w, { slug: 'j-paris-tri', name: 'Paris 11e', city: 'Paris', status: 'LIVE' });
 });
 afterAll(async () => w?.close());
 
-describe('Triangle', () => {
-  S.step('Inès, Karim et Théo s’inscrivent dans le même quartier', async () => {
-    [ines, karim, theo] = await cast(w, [
-      { key: 'ines', displayName: 'Inès', gender: 'WOMAN', seeking: ['MAN'], intention: 'OPEN_TO_MORE', species: 'NINO', petName: 'Nina' },
-      { key: 'karim', displayName: 'Karim', gender: 'MAN', seeking: ['WOMAN'], species: 'GASTON', petName: 'Gus' },
-      { key: 'theo', displayName: 'Théo', gender: 'MAN', seeking: ['WOMAN'], species: 'NINO', petName: 'Tino' },
-    ]);
-    for (const p of [ines, karim, theo]) await p.device(`${p.spec.key}-phone`);
+describe('Triangle (V5)', () => {
+  S.step('Onze personnes vérifiées (6 femmes, 5 hommes) cochent les deux créneaux de la semaine', async () => {
+    const specs: Array<[string, string, 'WOMAN' | 'MAN']> = [
+      ['ines', 'Inès', 'WOMAN'],
+      ['karim', 'Karim', 'MAN'],
+      ['theo', 'Théo', 'MAN'],
+      ['lina', 'Lina', 'WOMAN'],
+      ['maud', 'Maud', 'WOMAN'],
+      ['nour', 'Nour', 'WOMAN'],
+      ['eva', 'Eva', 'WOMAN'],
+      ['jade', 'Jade', 'WOMAN'],
+      ['paul', 'Paul', 'MAN'],
+      ['sacha', 'Sacha', 'MAN'],
+      ['yann', 'Yann', 'MAN'],
+    ];
+    people = [];
+    for (const [k, n, g] of specs) people.push(await v5Person(w, { key: `tri.${k}`, displayName: n, gender: g, seeking: [], looking: 'FRIENDS', petName: `Pet-${n}` }, c));
+    ines = people[0]!;
+    await at(w, CYCLE.monday);
+    for (const p of people) expect((await request(p)).ok, p.name).toBe(true);
+    // Les deux créneaux (jeu. 19 h 30, sam. 15 h) sont proposés à chacun.
+    expect((await w.db.outingRequest.findFirstOrThrow({ where: { userId: ines.userId, weekKey: CYCLE.weekKey } })).slotStartsAt).toHaveLength(2);
   });
 
-  S.step('Inès reçoit son premier lot : Karim et Théo ; chacun d’eux voit Inès, sans savoir qu’elle est proposée à l’autre', async () => {
-    const feed = await ines.client.matching.requestOnboardingBatch();
-    pK = feed.items.find((i) => i.otherPet.id === karim.petId)?.id ?? '';
-    pT = feed.items.find((i) => i.otherPet.id === theo.petId)?.id ?? '';
-    expect(pK, JSON.stringify(feed)).toBeTruthy();
-    expect(pT).toBeTruthy();
-    const fk = await karim.client.matching.feed();
-    const ft = await theo.client.matching.feed();
-    expect(fk.items.map((i) => i.id)).toContain(pK);
-    expect(ft.items.map((i) => i.id)).toContain(pT);
-    expect(JSON.stringify(fk)).not.toContain(theo.petId);
-    expect(JSON.stringify(ft)).not.toContain(karim.petId);
-  });
-
-  S.step('En gratuit, l’app annonce honnêtement « 1 rendez-vous » à Inès', async () => {
-    const sub = await ines.call('GET', '/v1/subscriptions/me');
-    expect(sub.data.dateSlots).toBe(1);
-    expect(sub.data.state).toBe('NONE');
-  });
-
-  S.step('Inès accepte les deux ; Karim accepte → match. Théo accepte ensuite → refus de capacité, sans apprendre qu’Inès a quelqu’un', async () => {
-    await ines.client.matching.accept(pK);
-    const second = await attempt(() => ines.client.matching.accept(pT));
-    if (!second.ok) S.note(`Inès (gratuit) ne peut même pas « accepter » la 2e proposition : ${second.status} ${second.code}.`);
-    const rk = await karim.client.matching.accept(pK);
-    expect(rk.status).toBe('MATCHED');
-    relK = rk.relationshipId!;
-    const rt = await attempt(() => theo.client.matching.accept(pT));
-    expect(rt.ok).toBe(false);
-    expect(rt.status).toBe(409);
-    expect(rt.code).toBe('CAPACITY_EXCEEDED');
-    const leaked = JSON.stringify(rt.data);
-    if (/OTHER|PARTNER|COUNTERPART/i.test(leaked)) S.note(`Théo reçoit un motif qui révèle que c’est l’AUTRE qui est complet (${leaked}) : il déduit qu’Inès a déjà un rendez-vous.`);
-    // Que voit Théo ensuite ? La proposition reste-t-elle « acceptée » sans issue ?
-    const ft = await theo.client.matching.feed();
-    const still = ft.items.find((i) => i.id === pT);
-    const row = await w.db.matchProposal.findUnique({ where: { id: pT } });
-    if (still) S.note(`Après le refus « Cette rencontre n’est plus disponible », Théo voit toujours la proposition d’Inès (acceptedByMe=${still.acceptedByMe}, statut en base ${row?.status}) : le passage à INVALIDATED est fait DANS la transaction qui lève ensuite l’erreur → annulé par le rollback. Théo peut retaper « accepter » indéfiniment.`);
-    expect(still, 'proposition « plus disponible » toujours affichée').toBeUndefined();
-  });
-
-  S.step('Inès passe Blowy+ (démo locale étiquetée) : 3 rendez-vous ; Théo réessaie → match', async () => {
-    const sub = await ines.call('POST', '/v1/purchases/local-demo', { action: 'SUBSCRIBE', productId: 'blowy_plus_monthly' });
-    expect(sub.ok, JSON.stringify(sub.data)).toBe(true);
-    expect(sub.data.subscription).toMatchObject({ mode: 'LOCAL_DEMO', state: 'ACTIVE', dateSlots: 3 });
-    // Si l'ancienne proposition est encore ouverte, Théo réessaie ; sinon Inès redemande un lot.
-    let pid = pT;
-    if ((await w.db.matchProposal.findUnique({ where: { id: pT } }))?.status !== 'OPEN') {
-      const f = await ines.client.matching.requestOnboardingBatch();
-      pid = S.need(f.items.find((i) => i.otherPet.id === theo.petId)?.id, 'nouvelle proposition Inès↔Théo');
-      await ines.client.matching.accept(pid);
+  S.step('Composition : deux groupes ; Inès est dans un seul (une seule place cette semaine), l’autre lui répond 404', async () => {
+    await at(w, CYCLE.composed);
+    await w.runJob('outings.compose');
+    const outings = await w.db.outing.findMany({ where: { weekKey: CYCLE.weekKey, neighborhoodId: c.neighborhoodId }, include: { seats: true } });
+    expect(outings).toHaveLength(2);
+    expect((await seatsOf(ines)).length).toBe(1);
+    mine = S.need(await outingOf(ines), 'sortie d’Inès');
+    other = outings.find((o) => o.id !== mine)!.id;
+    expect((await outing(ines, other)).status).toBe(404);
+    // D-039 : jamais plus de 3 personnes du même genre dans un groupe.
+    for (const o of outings) {
+      const genders = await w.db.profile.findMany({ where: { userId: { in: o.seats.map((s) => s.userId) } }, select: { gender: true } });
+      const n = (g: string) => genders.filter((x) => x.gender === g).length;
+      expect(Math.max(n('WOMAN'), n('MAN')), `groupe ${o.id}`).toBeLessThanOrEqual(3);
     }
-    const rt = await attempt(() => theo.client.matching.accept(pid));
-    expect(rt.ok, JSON.stringify(rt.data)).toBe(true);
-    expect((rt.data as any).status).toBe('MATCHED');
-    relT = (rt.data as any).relationshipId;
-    const list = await ines.client.relationships.list();
-    expect(list.items.map((r) => r.id).sort()).toEqual([relK, relT].sort());
-    // Chaque téléphone suit sa (ses) relation(s), comme l'app.
-    for (const [p, id] of [[ines, relK], [ines, relT], [karim, relK], [theo, relT]] as const) expect(await p.phone.join(`relationship:${id}`)).toBe(true);
+    // Une seule personne n'est pas placée (prioritaire la semaine suivante).
+    const unplaced = people.filter((p) => !outings.some((o) => o.seats.some((s) => s.userId === p.userId)));
+    expect(unplaced).toHaveLength(1);
+    expect((await w.db.outingRequest.findFirstOrThrow({ where: { userId: unplaced[0]!.userId, weekKey: CYCLE.weekKey } })).status).toBe('UNPLACED');
   });
 
-  S.step('Karim ne voit rien de Théo et inversement (relations, pets, conversations)', async () => {
-    const kl = await karim.client.relationships.list();
-    expect(kl.items).toHaveLength(1);
-    expect(JSON.stringify(kl)).not.toContain(theo.petId);
-    expect((await karim.call('GET', `/v1/pets/${theo.petId}`)).status).toBe(404);
-    expect((await theo.call('GET', `/v1/relationships/${relK}`)).status).toBe(404);
-    const convK = (await karim.client.relationships.get(relK)).conversationId!;
-    expect((await theo.call('GET', `/v1/conversations/${convK}/messages`)).status).toBe(404);
-  });
-
-  S.step('Inès emmène son pet au rendez-vous de Karim : Théo ne voit qu’un « absent », jamais où il est', async () => {
-    await ines.client.pets.move(ines.petId, { destination: 'DATE_SPOT', relationshipId: relK });
-    await w.drain();
-    const vt = await theo.client.relationships.get(relT);
-    expect(vt.otherPresence).toBe('OUT');
-    expect(JSON.stringify(vt)).not.toContain(relK);
-    expect(JSON.stringify(theo.phone.events)).not.toContain(relK);
-  });
-
-  S.step('[raccourci : niveau 3 avec les deux] Inès propose d’emménager aux deux ; Karim et Théo acceptent à la même seconde → une seule exclusivité', async () => {
-    await forceLevel(w, relK, 3);
-    await forceLevel(w, relT, 3);
-    const a = await attempt(() => ines.client.relationships.proposeMoveIn(relK));
-    const b = await attempt(() => ines.client.relationships.proposeMoveIn(relT));
-    expect(a.ok, JSON.stringify(a.data)).toBe(true);
-    if (!b.ok) S.note(`Inès ne peut pas proposer d’emménager à deux personnes à la fois (${b.status} ${b.code}).`);
-    const offK = (await karim.client.relationships.get(relK)).pendingOffers.find((o) => o.scope === 'MOVE_IN');
-    const offT = b.ok ? (await theo.client.relationships.get(relT)).pendingOffers.find((o) => o.scope === 'MOVE_IN') : null;
-    const results = await Promise.all([
-      attempt(() => karim.client.relationships.respondOffer(relK, { offerId: offK!.id, decision: 'ACCEPT', version: offK!.version })),
-      offT ? attempt(() => theo.client.relationships.respondOffer(relT, { offerId: offT.id, decision: 'ACCEPT', version: offT.version })) : Promise.resolve(null),
-    ]);
-    await w.drain();
-    const statuses = await Promise.all([relK, relT].map(async (id) => (await ines.call('GET', `/v1/relationships/${id}`)).data?.status ?? 'GONE'));
-    expect(statuses.filter((s) => s === 'MOVED_IN')).toHaveLength(1);
-    const exclusive = await w.db.relationshipSide.count({ where: { userId: ines.userId, exclusive: true, active: true } });
-    expect(exclusive).toBe(1);
-    S.note(`Course d’emménagement : réponses ${results.map((r) => (r ? (r.ok ? (r.data as any).status : `${r.status} ${r.code}`) : '—')).join(' / ')} ; statuts finaux ${statuses.join(' / ')}.`);
-  });
-
-  S.step('Le perdant voit la fin de son rendez-vous avec le mot gentil pré-écrit (message système, pas la voix d’Inès)', async () => {
-    const kStatus = (await ines.call('GET', `/v1/relationships/${relK}`)).data?.status;
-    const [loser, loserRel] = kStatus === 'MOVED_IN' ? [theo, relT] : [karim, relK];
-    const lv = await loser.client.relationships.list(true);
-    expect(lv.items.find((r) => r.id === loserRel)?.status).toBe('ENDED');
-    const conv = lv.items.find((r) => r.id === loserRel)?.conversationId;
-    const m = conv ? await attempt(() => loser.client.conversations.messages(conv)) : null;
-    if (!m?.ok) S.note('Le perdant de l’emménagement ne peut pas lire le message système « moved_in_elsewhere » : la conversation lui renvoie 404 dès la fin de la relation. Le « mot gentil » promis par le cahier des charges n’est donc jamais lisible.');
-    else {
-      const sys = (m.data as any).items.filter((x: any) => x.kind === 'SYSTEM');
-      expect(sys.some((x: any) => x.systemTemplate === 'system.leave.moved_in_elsewhere')).toBe(true);
+  S.step('L’autre groupe ne voit jamais Inès (ni son pet ni son identifiant), à aucun moment', async () => {
+    const others = people.filter((p) => p !== ines);
+    for (const p of others) {
+      const id = await outingOf(p);
+      if (id !== other) continue;
+      const v = (await outing(p, other)).data;
+      expect(JSON.stringify(v)).not.toContain(ines.userId);
+      expect(JSON.stringify(v)).not.toContain('Pet-Inès');
     }
-    expect(await loser.phone.waitFor((e) => e.type === 'relationship.ended', 600)).toBeTruthy();
   });
 
-  S.step('Inès emménagée : plus aucune nouvelle proposition, même avec 3 créneaux Blowy+', async () => {
-    const f = await ines.client.matching.feed();
-    expect(f.items.filter((i) => !i.acceptedByMe)).toHaveLength(0);
-    if (f.emptyReason !== 'EXCLUSIVE') S.note(`Inès emménagée voit « ${f.emptyReason} » (attends le prochain lot) au lieu de « EXCLUSIVE » : l’app lui fait attendre un lot qui ne viendra jamais.`);
-    expect(f.emptyReason).toBe('EXCLUSIVE');
-    const again = await ines.client.matching.requestOnboardingBatch().catch((e) => e);
-    expect(JSON.stringify(again)).not.toMatch(/"kind":"(STRONG|DISCOVERY|ONBOARDING)"/);
+  S.step('Double tap depuis deux téléphones : une seule place confirmée, une seule 1ʳᵉ sortie offerte', async () => {
+    await ines.device('ines-ipad');
+    const key = randomUUID();
+    const [a, b] = await Promise.all([ines.call('POST', `/v1/outings/${mine}/seat/accept`, { funding: 'AUTO' }, key), ines.call('POST', `/v1/outings/${mine}/seat/accept`, { funding: 'AUTO' }, key)]);
+    expect([a, b].some((r) => r.ok)).toBe(true);
+    const [x, y] = await Promise.all([ines.call('POST', `/v1/outings/${mine}/seat/accept`, { funding: 'AUTO' }), ines.call('POST', `/v1/outings/${mine}/seat/accept`, { funding: 'AUTO' })]);
+    expect([x, y].every((r) => r.ok), JSON.stringify([x.data, y.data])).toBe(true);
+    const seats = await seatsOf(ines);
+    expect(seats).toHaveLength(1);
+    expect(seats[0]).toMatchObject({ status: 'CONFIRMED', funding: 'FREE_FIRST' });
+    expect(await w.db.outingSeat.count({ where: { userId: ines.userId, funding: 'FREE_FIRST' } })).toBe(1);
   });
 
-  S.step('Le gagnant reçoit les droits Blowy+ dérivés d’Inès (partenaire emménagé), non transférables', async () => {
-    const kStatus = (await ines.call('GET', `/v1/relationships/${relK}`)).data?.status;
-    const winner = kStatus === 'MOVED_IN' ? karim : theo;
+  S.step('Une 2ᵉ demande la même semaine est refusée ; une 2ᵉ place forcée en base est refusée par l’index (I-O2)', async () => {
+    // Après la composition, la fenêtre est close (412) ; et même ouverte, une place active = 409 WEEKLY_QUOTA_USED.
+    const r = await request(ines);
+    expect([409, 412]).toContain(r.status);
+    await at(w, CYCLE.monday);
+    const early = await request(ines);
+    expect([early.status, early.data.detailsSafe?.reason]).toEqual([409, 'WEEKLY_QUOTA_USED']);
+    await at(w, CYCLE.composed);
+    const o = await w.db.outing.findUniqueOrThrow({ where: { id: other } });
+    await expect(
+      w.db.outingSeat.create({ data: { id: uuidv7(), outingId: other, userId: ines.userId, weekKey: CYCLE.weekKey, status: 'INVITED', acceptDeadline: o.acceptDeadline, invitedAt: w.clock.now() } }),
+    ).rejects.toThrow();
+    expect((await seatsOf(ines)).length).toBe(1);
+  });
+
+  S.step('Un membre de l’autre groupe libère sa place : le backfill invite la personne non placée, jamais Inès', async () => {
+    const seat = await w.db.outingSeat.findFirstOrThrow({ where: { outingId: other, status: 'INVITED' }, orderBy: { userId: 'asc' } });
+    const leaver = people.find((p) => p.userId === seat.userId)!;
+    const d = await leaver.call('POST', `/v1/outings/${other}/seat/decline`, {});
+    expect(d.ok, JSON.stringify(d.data)).toBe(true);
+    await w.runJob('outings.lifecycle');
     await w.drain();
-    const sub = await winner.call('GET', '/v1/subscriptions/me');
-    expect(sub.data.entitlements.some((e: any) => e.source === 'DERIVED_PARTNER' && e.derivedFromUserId === ines.userId)).toBe(true);
-    expect(sub.data.dateSlots).toBe(3);
-    expect(sub.data.state).toBe('NONE'); // pas un 2e abonnement
+    const after = await w.db.outingSeat.findMany({ where: { outingId: other, status: { in: ['INVITED', 'HELD', 'CONFIRMED'] } } });
+    expect(after.some((s) => s.userId === ines.userId)).toBe(false);
+    expect((await seatsOf(ines)).length).toBe(1);
+    if (after.length < 5) S.note(`Backfill : ${after.length} places actives après le départ (aucun·e non placé·e compatible sur ce créneau).`);
+  });
+
+  S.step('Inès ne reçoit aucun événement sur l’autre groupe ; sa salle WS y est refusée', async () => {
+    for (const d of ines.devices) expect(d.events.some((e) => JSON.stringify(e.payload ?? {}).includes(other))).toBe(false);
+    expect(await ines.phone.join(`outing:${other}`)).toBe(false);
   });
 });

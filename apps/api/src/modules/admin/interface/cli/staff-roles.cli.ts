@@ -11,7 +11,7 @@
  * En production, `--provider local` est refusé.
  */
 import { createDb } from '@blowy/database';
-import { STAFF_ROLES, type StaffRole } from '@blowy/domain';
+import { STAFF_ROLES_V5 as STAFF_ROLES, type StaffRoleV5 as StaffRole } from '@blowy/domain';
 import { loadConfig } from '../../../../config/env.js';
 import { PrismaUnitOfWork } from '../../../../shared/infrastructure/prisma/prisma-unit-of-work.js';
 import { SystemClock } from '../../../../shared/infrastructure/system-clock.js';

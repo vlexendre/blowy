@@ -85,6 +85,11 @@ function checkInvariants(p: Pop, r: CompositionResult, sizes: [number, number] =
       expect(g.friendsOnly[m.profile.userId]).toBe(expected);
       expect(story.get(m.profile.userId)).toBe(expected);
     }
+    // D-039 : jamais plus de `maxSameGender` personnes du même genre, sauf groupe non mixte demandé par tous.
+    const counts = new Map<string, number>();
+    for (const m of members) if (m.profile.gender !== 'UNDISCLOSED') counts.set(m.profile.gender, (counts.get(m.profile.gender) ?? 0) + 1);
+    const nonMixed = members.every((m) => m.meetGenders.length === 1 && m.meetGenders[0] === members[0]!.meetGenders[0]);
+    if (!nonMixed) expect(Math.max(0, ...counts.values())).toBeLessThanOrEqual(T.outings.composition.maxSameGender);
     expect(g.teamCount).toBe(new Set(members.filter((m) => m.teamId && members.filter((o) => o.teamId === m.teamId).length > 1).map((m) => m.teamId)).size);
   });
   // teams indivisibles : tous ensemble, ou tous non placés
@@ -146,7 +151,8 @@ describe('composeOutings — propriétés', () => {
         const offer = { ...p.slots[0]!, remainingOutings: 1 };
         const cands: OutingCandidate[] = Array.from({ length: 6 }, (_, i) => ({
           ...structuredClone(base),
-          profile: { ...structuredClone(base.profile), userId: `c${i}`, petId: `p${i}`, vision: { ...base.profile.vision, limit: 'MENTIR' } },
+          // D-039 : genres alternés (6 clones du même genre ne formeraient aucun groupe).
+          profile: { ...structuredClone(base.profile), userId: `c${i}`, petId: `p${i}`, gender: i % 2 ? 'WOMAN' : 'MAN', vision: { ...base.profile.vision, limit: 'MENTIR' } },
           meetGenders: [],
           groupAge: { min: 18, max: 99 },
           slotStartsAtMs: [offer.startsAtMs],
@@ -399,5 +405,81 @@ describe('règles romance / voie Duo', () => {
     expect(ev1.genderImbalancePermille).toBe(0);
     expect(ev2.genderImbalancePermille).toBe(1000 - T.outings.composition.maxGenderSharePermille);
     expect(ev1.objectiveMilli - ev2.objectiveMilli).toBe(Math.floor((T.outings.composition.lambdaGender * ev2.genderImbalancePermille) / 1000));
+  });
+});
+
+describe('jamais plus de 3 du même genre (D-039, V5.3 A.2) — contrainte dure', () => {
+  const at = Date.UTC(2026, 10, 19, 18, 30);
+  /** Personnes homogènes (tout le monde compatible) dont on fixe le genre et « qui je veux rencontrer ». */
+  const people = (genders: Array<'WOMAN' | 'MAN' | 'UNDISCLOSED'>, meet: Array<'WOMAN' | 'MAN'> = [], seed = 'g') => {
+    const p = population({ n: genders.length, seed, times: [at], romanceShare: 0, restrictedMeetShare: 0, teamShare: 0, blockedPairs: 0, metPairs: 0 });
+    const candidates = p.candidates.map((c, i) => ({
+      ...c,
+      profile: { ...c.profile, gender: genders[i]!, vision: { ...c.profile.vision, limit: 'MENTIR' as const } },
+      meetGenders: meet,
+      groupAge: { min: 18, max: 99 },
+      activities: [],
+      neighborhoodIds: [p.slots[0]!.neighborhoodId],
+      slotStartsAtMs: [p.slots[0]!.startsAtMs],
+    }));
+    return { ...p, candidates, slots: [{ ...p.slots[0]!, startsAtMs: p.slots[0]!.startsAtMs, remainingOutings: 4 }], facts: noFacts() };
+  };
+  const lowT = { ...T, outings: { ...T.outings, composition: { ...T.outings.composition, minPairScore: 0 } } };
+  const run = (p: ReturnType<typeof people>, t = lowT) => composeOutings({ candidates: p.candidates, facts: p.facts, slots: p.slots, seed: SEED, tuning: t });
+  const maxSame = (p: ReturnType<typeof people>, ids: string[]) => {
+    const m = new Map<string, number>();
+    for (const id of ids) {
+      const g = p.candidates.find((c) => c.profile.userId === id)!.profile.gender;
+      if (g !== 'UNDISCLOSED') m.set(g, (m.get(g) ?? 0) + 1);
+    }
+    return Math.max(0, ...m.values());
+  };
+
+  it('5 femmes seulement (mixité par défaut) : aucun groupe (4 du même genre serait déjà trop)', () => {
+    const r = run(people(['WOMAN', 'WOMAN', 'WOMAN', 'WOMAN', 'WOMAN']));
+    expect(r.groups).toEqual([]);
+    expect(r.unplaced).toHaveLength(5);
+  });
+
+  it('4 femmes + 2 hommes : groupe de 5 = 3 femmes + 2 hommes (jamais 4 femmes)', () => {
+    const p = people(['WOMAN', 'WOMAN', 'WOMAN', 'WOMAN', 'MAN', 'MAN']);
+    const r = run(p);
+    expect(r.groups).toHaveLength(1);
+    expect(r.groups[0]!.memberUserIds).toHaveLength(5);
+    expect(maxSame(p, r.groups[0]!.memberUserIds)).toBe(3);
+  });
+
+  it('« UNDISCLOSED » ne forme pas un genre commun', () => {
+    const p = people(['UNDISCLOSED', 'UNDISCLOSED', 'UNDISCLOSED', 'UNDISCLOSED', 'WOMAN']);
+    expect(run(p).groups).toHaveLength(1);
+  });
+
+  it('exception : groupe non mixte demandé (tous « je veux rencontrer des femmes ») → 5 femmes admis', () => {
+    const p = people(['WOMAN', 'WOMAN', 'WOMAN', 'WOMAN', 'WOMAN'], ['WOMAN']);
+    const r = run(p);
+    expect(r.groups).toHaveLength(1);
+    expect(r.groups[0]!.memberUserIds).toHaveLength(5);
+    const ev = evaluateGroup([0, 1, 2, 3, 4], new PairTable(p.candidates, noFacts(), lowT), lowT);
+    expect(ev.genderCapOk).toBe(true);
+    // Une seule personne qui n'a pas restreint suffit à retirer l'exception.
+    const mixed = p.candidates.map((c, i) => (i === 0 ? { ...c, meetGenders: [] } : c));
+    expect(evaluateGroup([0, 1, 2, 3, 4], new PairTable(mixed, noFacts(), lowT), lowT).genderCapOk).toBe(false);
+  });
+
+  it('amorçage team de 3 femmes + team de 3 femmes : refusé ; team de 3 femmes + team de 2 hommes : accepté', () => {
+    const tag = (p: ReturnType<typeof people>, teams: string[]) => ({ ...p, candidates: p.candidates.map((c, i) => ({ ...c, teamId: teams[i]! })) });
+    const six = tag(people(['WOMAN', 'WOMAN', 'WOMAN', 'WOMAN', 'WOMAN', 'WOMAN']), ['A', 'A', 'A', 'B', 'B', 'B']);
+    expect(composeSeedingOutings({ candidates: six.candidates, facts: six.facts, slots: six.slots, seed: SEED, tuning: lowT }).groups).toEqual([]);
+    const ok = tag(people(['WOMAN', 'WOMAN', 'WOMAN', 'MAN', 'MAN']), ['A', 'A', 'A', 'B', 'B']);
+    const r = composeSeedingOutings({ candidates: ok.candidates, facts: ok.facts, slots: ok.slots, seed: SEED, tuning: lowT });
+    expect(r.groups).toHaveLength(1);
+    expect(maxSame(ok, r.groups[0]!.memberUserIds)).toBe(3);
+  });
+
+  it('backfill : ne fait jamais entrer une 4ᵉ personne du même genre', () => {
+    const p = people(['WOMAN', 'WOMAN', 'WOMAN', 'MAN', 'WOMAN', 'MAN']);
+    const members = p.candidates.slice(0, 4);
+    const pick = backfillCandidate({ outingMembers: members, slot: p.slots[0]!, pool: p.candidates.slice(4), facts: noFacts(), seed: SEED, tuning: lowT });
+    expect(pick).toBe(p.candidates[5]!.profile.userId);
   });
 });

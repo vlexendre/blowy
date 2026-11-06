@@ -30,13 +30,22 @@ export class DuoUseCases {
     return (await this.x.entitlements.activeKeys(userId, at)).has('PLUS_MONTHLY_BENEFITS');
   }
 
+  /**
+   * Duos actifs autorisés (V5.2 H.25, D-041) : lu du port `DUO_ALLOWANCE` d'economy (1 gratuit, illimité
+   * Blowy+) ; sans port, `tuning.duo.maxActiveFree` (ou illimité si Blowy+ via les droits).
+   */
+  async capacity(userId: string, at: Date): Promise<number> {
+    if (this.x.allowance) return (await this.x.allowance.maxActiveDuos(userId, at)) ?? Number.POSITIVE_INFINITY;
+    return duoCapacity(await this.hasPlus(userId, at), this.x.tuning.duo.maxActiveFree);
+  }
+
   // ------------------------------------------------------------------ voie Duo
   async acceptProposal(userId: string, proposalId: string, commandId: string): Promise<AcceptDuoProposalResult> {
     const pre = await this.repo.laneProposal(null, proposalId);
     if (!pre || (pre.userLowId !== userId && pre.userHighId !== userId) || pre.passedBy.includes(userId)) throw Errors.notFound('Proposition');
     const otherId = pre.userLowId === userId ? pre.userHighId : pre.userLowId;
     const now0 = this.x.clock.now();
-    const [plusMe, plusOther, photoMe, photoOther] = await Promise.all([this.hasPlus(userId, now0), this.hasPlus(otherId, now0), this.x.photos.currentProfilePhotoId(userId), this.x.photos.currentProfilePhotoId(otherId)]);
+    const [plusMe, plusOther, photoMe, photoOther] = await Promise.all([this.capacity(userId, now0), this.capacity(otherId, now0), this.x.photos.currentProfilePhotoId(userId), this.x.photos.currentProfilePhotoId(otherId)]);
     const { result } = await this.x.bus.execute({
       actorId: userId,
       operation: 'duos.accept_proposal',
@@ -83,9 +92,9 @@ export class DuoUseCases {
     return m === 'DUO' || m === 'BOTH';
   }
 
-  private async canDuo(scope: TxScope, userId: string, plus: boolean, photo: string | null): Promise<boolean> {
+  private async canDuo(scope: TxScope, userId: string, capacity: number, photo: string | null): Promise<boolean> {
     try {
-      await this.assertCanDuo(scope, userId, plus, photo);
+      await this.assertCanDuo(scope, userId, capacity, photo);
       return true;
     } catch {
       return false;
@@ -93,11 +102,12 @@ export class DuoUseCases {
   }
 
   /** Vérification, photo, pause, capacité (1 duo actif gratuit ; illimité Blowy+). */
-  private async assertCanDuo(scope: TxScope, userId: string, plus: boolean, photo: string | null) {
-    if (!(await this.repo.verified(scope, userId, scope.now))) throw Errors.precondition('VERIFICATION_REQUIRED');
+  private async assertCanDuo(scope: TxScope, userId: string, capacity: number, photo: string | null) {
+    if (!(await this.repo.verified(scope, userId, scope.now))) throw Errors.precondition('AGE_VERIFICATION_REQUIRED');
     if (!photo) throw Errors.precondition('PHOTO_REQUIRED');
     if (await this.x.reliability.isPaused(scope, userId, scope.now)) throw Errors.precondition('RELIABILITY_PAUSED');
-    if ((await this.repo.activeDuoCount(scope, userId)) >= duoCapacity(plus)) throw new AppError('CONFLICT', 'Un duo est déjà en cours', { detailsSafe: { reason: 'DUO_LIMIT_REACHED' } });
+    // §7.3 : `{upgrade:false}` — aucun argument commercial dans l'erreur ; l'écran explique le quota.
+    if ((await this.repo.activeDuoCount(scope, userId)) >= capacity) throw new AppError('CONFLICT', 'Un duo est déjà en cours', { detailsSafe: { reason: 'DUO_LIMIT_REACHED', upgrade: false } });
   }
 
   async passProposal(userId: string, proposalId: string, commandId: string) {

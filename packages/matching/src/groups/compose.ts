@@ -188,7 +188,11 @@ export function composeOutings(input: ComposeInput): CompositionResult {
   const maxSize = Math.min(t.outings.maxSize, comp.targetSize);
   const placed = new Uint8Array(units.length);
   const groups: WorkGroup[] = [];
-  const valid = (members: readonly number[]) => members.length >= minSize && members.length <= maxSize && evaluateGroup(members, P, t).romanceOnlyCovered;
+  const valid = (members: readonly number[]) => {
+    if (members.length < minSize || members.length > maxSize) return false;
+    const ev = evaluateGroup(members, P, t);
+    return ev.romanceOnlyCovered && ev.genderCapOk;
+  };
 
   // ---- 3. glouton
   const build = (seedUnit: Unit, classKey: string): { units: Unit[]; members: number[]; objective: number } => {
@@ -201,7 +205,10 @@ export function composeOutings(input: ComposeInput): CompositionResult {
       let bestTie = 0;
       for (const u of pool) {
         if (members.length + u.members.length > maxSize) continue;
-        const j = evaluateGroup([...members, ...u.members], P, t).objectiveMilli;
+        const ev = evaluateGroup([...members, ...u.members], P, t);
+        // D-039 : un ajout qui dépasserait le plafond de genre n'est jamais choisi (exception non mixte incluse dans `genderCapOk`).
+        if (!ev.genderCapOk) continue;
+        const j = ev.objectiveMilli;
         const tie = fnv1a(`${input.seed}|${seedUnit.key}|${u.key}`);
         if (j > bestJ || (j === bestJ && tie < bestTie)) {
           best = u;
@@ -243,7 +250,7 @@ export function composeOutings(input: ComposeInput): CompositionResult {
       if (!u.classes.includes(g.classKey) || g.members.length + u.members.length > maxSize) return;
       if (!compatibleWith(u.members, g.members, P)) return;
       const ev = evaluateGroup([...g.members, ...u.members], P, t);
-      if (!ev.romanceOnlyCovered) return;
+      if (!ev.romanceOnlyCovered || !ev.genderCapOk) return;
       const delta = ev.objectiveMilli - g.objective;
       if (delta >= -comp.repairToleranceMilli && delta > bestDelta) {
         bestG = gi;
@@ -279,7 +286,7 @@ export function composeOutings(input: ComposeInput): CompositionResult {
           if (!compatibleWith(v.members, rest1, P) || !compatibleWith(u.members, rest2, P)) continue;
           const e1 = evaluateGroup([...rest1, ...v.members], P, t);
           const e2 = evaluateGroup([...rest2, ...u.members], P, t);
-          if (!e1.romanceOnlyCovered || !e2.romanceOnlyCovered) continue;
+          if (!e1.romanceOnlyCovered || !e2.romanceOnlyCovered || !e1.genderCapOk || !e2.genderCapOk) continue;
           const delta = e1.objectiveMilli + e2.objectiveMilli - g1.objective - g2.objective;
           if (delta > 0 && (!best || delta > best.delta)) best = { g1, g2, u, v, j1: e1.objectiveMilli, j2: e2.objectiveMilli, delta };
         }
@@ -319,7 +326,7 @@ export function composeSeedingOutings(input: ComposeInput): CompositionResult {
       if (a.members.length + b.members.length < t.outings.minSizeToForm || !compatibleWith(b.members, a.members, P)) continue;
       const members = [...a.members, ...b.members];
       const ev = evaluateGroup(members, P, t);
-      if (!ev.romanceOnlyCovered) continue;
+      if (!ev.romanceOnlyCovered || !ev.genderCapOk) continue;
       const tie = fnv1a(`${input.seed}|${a.key}|${b.key}`);
       for (const classKey of a.classes) {
         if (!b.classes.includes(classKey) || remainingOf(offers, classKey) <= 0) continue;

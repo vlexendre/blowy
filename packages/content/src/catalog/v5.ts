@@ -169,6 +169,9 @@ export const NOTIFICATION_TEMPLATES_V5: NotificationTemplateV5[] = [
   n('outing.unplaced', 'OUTING', 'Pas de sortie cette semaine, tu es prioritaire la prochaine.'),
   n('outing.formed', 'OUTING', 'Ta bande de {jour} est formée : le chat est ouvert.'),
   n('outing.venue_revealed', 'OUTING', 'Ta bande est confirmée : rendez-vous demain à {heure} au {lieu}, les visages sont visibles.', 'Rappel pour demain à {heure}.'),
+  // V5.3 B.7–B.8 (T8) : confirmation J-1 18 h (lieu + groupe, sans visages) puis visages à J − 3 h.
+  n('outing.confirmed', 'OUTING', 'Ta sortie de {jour} est confirmée : {heure} au {lieu}. Les prénoms de ta bande sont visibles ; une annulation compte désormais comme une absence.', 'Rappel pour demain à {heure}.'),
+  n('outing.faces', 'OUTING', 'Les visages de ta bande sont visibles. À tout à l’heure, {heure} au {lieu}.', 'Rappel pour {heure}.'),
   n('outing.today', 'OUTING', 'C’est aujourd’hui, à {heure} au {lieu}.', 'Rappel pour aujourd’hui à {heure}.'),
   n('outing.seeding_invited', 'OUTING', 'Ta team et une autre team de la ville sortent {jour} : réponds pour confirmer.'),
   n('team.member_joined', 'SYSTEM', '{prenom} a rejoint ta team.'),

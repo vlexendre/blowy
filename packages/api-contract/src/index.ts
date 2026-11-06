@@ -30,3 +30,7 @@ export * from './safety.js';
 export * from './payments.js';
 export * from './events-v5.js';
 export * from './teams.js';
+// V5 T6 (agent F) : back-office V5 et espace lieu partenaire.
+export * from './admin-v5.js';
+export * from './venue.js';
+export * from './notifications.js';

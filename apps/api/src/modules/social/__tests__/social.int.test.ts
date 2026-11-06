@@ -9,6 +9,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { randomBytes } from 'node:crypto';
 import { onboard, startHarness, TestClient, type Harness } from '../../../../test/integration/harness.js';
+import { ReferralUseCases } from '../application/use-cases/referral.use-cases.js';
 
 let h: Harness;
 beforeAll(async () => {
@@ -92,7 +93,8 @@ describe('réponses anonymes « 3 mots »', () => {
     expect(JSON.stringify(own.body)).not.toMatch(/visitor/i);
     const id = own.body.items[0].id;
     const hints = await t.call('GET', `/v1/me/anonymous-responses/${id}/hints`);
-    expect(hints.body).toEqual({ available: false, hints: [], reason: 'NO_CONSENTED_DATA' });
+    // V5 (§7.7) : « Qui a écrit ? » est retiré — 410 RETIRED_IN_V5, aucun indice possible.
+    expect([hints.status, hints.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
     expect((await t.call('POST', `/v1/me/anonymous-responses/${id}/report`, {})).status).toBe(201);
     expect((await h.db.reputationAggregate.findUniqueOrThrow({ where: { userId: t.userId } })).respondents).toBe(0);
     expect(await h.db.outboxEvent.count({ where: { topic: 'social.anonymous_response_reported' } })).toBe(1);
@@ -139,8 +141,11 @@ describe('parrainage', () => {
     await referee.call('POST', '/v1/verifications', { kind: 'SELFIE_QUALITY' });
     await h.drain();
     expect(await h.db.ledgerEntry.count()).toBe(0); // pas encore de première action
-    const act = await referee.call('POST', `/v1/pets/${pet.body.id}/actions`, { action: 'FEED' });
-    expect(act.status).toBeLessThan(300);
+    // V5 : les gestes de soin sont retirés (410) ; la 1ʳᵉ action valide V5 est la 1ʳᵉ sortie vécue (parcours
+    // `alex-invite-son-quartier`). Ici, raccourci de test documenté : un soin déjà enregistré (historique V4) compte.
+    expect((await referee.call('POST', `/v1/pets/${pet.body.id}/actions`, { action: 'FEED' })).status).toBe(410);
+    await h.db.petCareEvent.create({ data: { petId: pet.body.id, actorUserId: referee.userId, action: 'FEED', occurredAt: h.clock.now(), effects: {}, engineVersion: 'test', tuningVersion: 'test' } });
+    await h.app.get(ReferralUseCases).activatePending(); // job `social.referral_activation` (filet)
     await h.drain();
     await h.drain();
 

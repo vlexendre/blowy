@@ -5,7 +5,7 @@ import { storyFriendsOnly } from '@blowy/matching/groups';
 import { OutingViewSchema } from '@blowy/api-contract';
 import type { OutingFacts, SeatFacts } from '../domain/facts.js';
 import { photoEligible, previewOf, projectOutingFor, storyMatchFor, viewerPhase, type ViewerContext } from '../domain/visibility.js';
-import { cancelPreview } from '../domain/seat-policy.js';
+import { cancelPreview, refundModeOfState } from '../domain/seat-policy.js';
 import { EMPTY_RELIABILITY, isPaused, recordAbsence } from '../domain/reliability.js';
 import { resolveOutingVotes, voteTargets, type Attendee } from '../domain/votes.js';
 import { codeMatches, distanceMeters, geoCheckIn, venueCode } from '../domain/checkin.js';
@@ -74,15 +74,15 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
     expect([p.ageMin, p.ageMax]).toEqual([26, 34]); // âges 26..30 → 26–29 et 30–34
   });
 
-  it('confirmé·e avant le verrouillage : prénoms + tranche + fiabilité des confirmés ; pas de photo ni de lieu', () => {
+  it('confirmé·e avant la confirmation (FORMING) : pets seulement — ni prénom, ni tranche, ni fiabilité, ni photo, ni lieu (V5.3 B.7)', () => {
     const v = projectOutingFor(id(2), outing('FORMING', seats), ctx(new Date(T0.getTime() - 48 * H)))!;
     OutingViewSchema.parse(v);
     const p3 = v.members.find((m) => m.userId === id(3))!;
-    expect(p3).toMatchObject({ firstName: 'P3', ageRange: '26_29', reliability: { attended: 1, total: 1 } });
-    expect(p3.photo).toBeUndefined();
-    expect(v.members.find((m) => m.userId === id(1))!.firstName).toBeUndefined();
+    expect(p3.pet.name).toBe('Pet3');
+    expect(v.members.every((m) => !m.firstName && !m.ageRange && !m.reliability && !m.photo)).toBe(true);
     expect(v.venue).toBeUndefined();
     expect(v.conversationId).toBe(id(7));
+    expect(leaks(v, ['P3', 'P4', 'Café'])).toEqual([]);
   });
 
   it('verrouillé (J-1 18 h) : lieu révélé aux confirmés, visages pas encore (startsAt − 3 h, V5.2)', () => {
@@ -90,6 +90,8 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
     const v = projectOutingFor(id(2), outing('CONFIRMED', locked), ctx(new Date(T0.getTime() - 20 * H)))!;
     OutingViewSchema.parse(v);
     expect(v.venue).toMatchObject({ name: 'Café des Oiseaux', bookingName: 'Blowy' });
+    // V5.3 B.7 : à la confirmation, prénoms + tranches + fiabilité (pas encore les visages).
+    expect(v.members.find((m) => m.userId === id(3))).toMatchObject({ firstName: 'P3', ageRange: '26_29', reliability: { attended: 1, total: 1 } });
     expect(v.members.some((m) => m.photo)).toBe(false);
     expect(v.members.find((m) => m.userId === id(5))).toMatchObject({ notComing: true });
     expect(v.members.find((m) => m.userId === id(1))).toBeUndefined();
@@ -150,13 +152,20 @@ describe('projection par acteur (§3.1, V5.1, V5.2)', () => {
   });
 });
 
-describe('annulation (V5.1 E.16, V5.2 C.8)', () => {
-  const revealAt = new Date(T0.getTime() - 3 * H);
-  it('avant les visages : remboursable ; après : absence sans remboursement ; sécurité : remboursée, aucun effet', () => {
-    // D-019 (T3) : place payée annulée avant les visages → crédit 90 j, pas la carte.
-    expect(cancelPreview({ funding: 'PAID', now: new Date(revealAt.getTime() - 1), revealAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'EARLY', refund: 'CREDIT', countsAsAbsence: false });
-    expect(cancelPreview({ funding: 'FREE_FIRST', now: revealAt, revealAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
-    expect(cancelPreview({ funding: 'PAID', now: T0, revealAt, kind: 'SAFETY' })).toEqual({ cancelKind: 'SAFETY_EXIT', refund: 'CARD', countsAsAbsence: false });
+describe('annulation (V5.3 B.6, D-042, D-043)', () => {
+  const lockAt = new Date(T0.getTime() - 24.5 * H);
+  it('avant la confirmation : gratuite (carte / reste offerte / rien pour Blowy+) ; après : absence ; sécurité : remboursée', () => {
+    const before = new Date(lockAt.getTime() - 1);
+    expect(cancelPreview({ funding: 'PAID', now: before, revealAt: lockAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'EARLY', refund: 'CARD', countsAsAbsence: false });
+    expect(cancelPreview({ funding: 'FREE_FIRST', now: before, revealAt: lockAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'EARLY', refund: 'STAYS_FREE', countsAsAbsence: false });
+    expect(cancelPreview({ funding: 'PLUS_INCLUDED', now: before, revealAt: lockAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'EARLY', refund: 'NONE', countsAsAbsence: false });
+    expect(cancelPreview({ funding: 'FREE_FIRST', now: lockAt, revealAt: lockAt, kind: 'CANT_MAKE_IT' })).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
+    expect(cancelPreview({ funding: 'PAID', now: T0, revealAt: lockAt, kind: 'SAFETY' })).toEqual({ cancelKind: 'SAFETY_EXIT', refund: 'CARD', countsAsAbsence: false });
+  });
+  it('vue « annulée » : jamais « remboursé·e » pour une place offerte', () => {
+    expect(refundModeOfState('FREE_FIRST', 'RECREDITED')).toBe('STAYS_FREE');
+    expect(refundModeOfState('PAID', 'REFUNDED')).toBe('CARD');
+    expect(refundModeOfState('PLUS_INCLUDED', 'NONE')).toBe('NONE');
   });
 });
 

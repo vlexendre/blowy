@@ -62,7 +62,7 @@ export class SeatUseCases {
         if (outing.status !== 'PROPOSED' && outing.status !== 'FORMING') throw Errors.precondition('OUTING_NOT_OPEN');
         if (scope.now >= seat.acceptDeadline || scope.now >= outing.lockAt) throw Errors.precondition('INVITATION_EXPIRED');
         const r = await this.repo.requester(scope, userId, scope.now);
-        if (!r?.verified) throw Errors.precondition('VERIFICATION_REQUIRED');
+        if (!r?.verified) throw Errors.precondition('AGE_VERIFICATION_REQUIRED');
         if (!r.hasPhoto) throw Errors.precondition('PHOTO_REQUIRED');
         if (isPaused(r.reliability, scope.now)) throw Errors.precondition('RELIABILITY_PAUSED', { until: r.reliability!.pausedUntil!.toISOString() });
         const decision = await this.funding.fund(scope, { userId, seatId: seat.id, outingId, mode, freeFirstAvailable: this.tuning.pricing.firstOutingFree && !(await this.repo.usedFreeFirst(scope, userId)) });
@@ -157,12 +157,10 @@ export class SeatUseCases {
     const userId = seat.userId;
     const refundable = !p.countsAsAbsence;
     let refundState = refundStateFor(p.refund, refundable);
-    // T3 (G) : cause du remboursement → carte, crédit 90 j (annulation perso payée) ou recrédit du lot.
+    // T3 (G) + D-042 : carte remboursée intégralement (place payée), 1ʳᵉ offerte qui reste offerte, lot rendu (crédit déprécié).
     const cause = cancelKind === 'SYSTEM_REMOVAL' ? 'SYSTEM_REMOVAL' : p.cancelKind === 'SAFETY_EXIT' ? 'SAFETY_EXIT' : 'USER_EARLY';
     if (refundable && p.refund === 'CARD') refundState = await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null, cause });
-    else if (refundable && p.refund === 'CREDIT' && seat.funding && this.funding.refundCredit) {
-      refundState = seat.funding === 'PAID' ? await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null, cause }) : await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
-    }
+    else if (refundable && p.refund === 'CREDIT' && seat.funding && this.funding.refundCredit) refundState = await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
     await this.repo.updateSeat(scope, seat.id, { status: 'CANCELLED', cancelKind, refundState, cancelledAt: scope.now });
     const conv = await this.chat.conversationOfOuting(scope, outingId);
     if (conv) await this.chat.revokeMember(scope, conv, userId);

@@ -15,62 +15,27 @@ beforeAll(async () => {
 });
 afterAll(async () => h?.close());
 
-async function moveIn(m: Awaited<ReturnType<typeof matchedPair>>) {
-  await setLevel(h, m.relId, 3);
-  await m.a.call('POST', `/v1/relationships/${m.relId}/move-in`, {});
-  const off = (await m.b.call('GET', `/v1/relationships/${m.relId}`)).body.pendingOffers[0];
-  const r = await m.b.call('POST', `/v1/relationships/${m.relId}/consents/respond`, { offerId: off.id, decision: 'ACCEPT', version: off.version });
-  expect(r.body.status).toBe('MOVED_IN');
-}
-
 const deepHas = (o: unknown, needle: string): boolean => JSON.stringify(o).includes(needle);
 
 describe('votes secrets', () => {
-  it('ne révèle jamais le vote de l’autre ; ne publie que la branche résultante', async () => {
+  // V5 : le vote de branche V4 et l'emménagement sont retirés (§7.7). Le vote secret V5 (bulletins groupés,
+  // aucun événement à la saisie, dépouillement unique à la clôture) est couvert par `outings-v5.test.ts`
+  // et le parcours `fuite-intention-impossible`.
+  it('vote de branche et emménagement V4 : 410 RETIRED_IN_V5, rien n’est écrit ni projeté', async () => {
     const m = await matchedPair(h, 'vote');
-    await moveIn(m);
-    await h.drain();
-    const bBefore = await m.b.call('GET', `/v1/relationships/${m.relId}`);
+    await setLevel(h, m.relId, 3);
     const projBefore = await h.db.projectionEntry.count({ where: { recipientId: m.b.userId } });
-
-    const cast = await m.a.call('POST', `/v1/relationships/${m.relId}/branch/ballot`, { choice: 'PLUS' });
-    expect(cast.status).toBe(201);
-    expect(cast.body.openBranchRound.myChoice).toBe('PLUS'); // l'auteur voit son propre choix
+    const rs = [
+      await m.a.call('POST', `/v1/relationships/${m.relId}/move-in`, {}),
+      await m.a.call('POST', `/v1/relationships/${m.relId}/branch/ballot`, { choice: 'PLUS' }),
+      await m.a.call('POST', `/v1/relationships/${m.relId}/consents/respond`, { offerId: m.relId, decision: 'ACCEPT', version: 1 }),
+    ];
+    for (const r of rs) expect([r.status, r.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
     await h.drain();
-
-    const bAfter = await m.b.call('GET', `/v1/relationships/${m.relId}`);
-    expect(bAfter.body.openBranchRound.myChoice).toBeNull();
-    expect(bAfter.body.branch).toBe('UNDECIDED');
-    expect(bAfter.body.viewVersion).toBe(bBefore.body.viewVersion); // aucune avance visible
-    expect(deepHas(bAfter.body, 'PLUS')).toBe(false);
     expect(await h.db.projectionEntry.count({ where: { recipientId: m.b.userId } })).toBe(projBefore);
-    const bProjections = await h.db.projectionEntry.findMany({ where: { recipientId: m.b.userId } });
-    expect(deepHas(bProjections, 'ballot')).toBe(false);
-    // Le journal relationnel ne contient pas le vote individuel.
-    const events = await h.db.relationshipEvent.findMany({ where: { contextId: m.relId } });
-    expect(events.some((e) => /ballot|vote_cast/i.test(e.type))).toBe(false);
-
-    // B vote Ami → résultat Ami publié aux deux, sans dire qui a voté quoi.
-    await m.b.call('POST', `/v1/relationships/${m.relId}/branch/ballot`, { choice: 'FRIEND' });
-    await h.drain();
-    const aView = await m.a.call('GET', `/v1/relationships/${m.relId}`);
     const bView = await m.b.call('GET', `/v1/relationships/${m.relId}`);
-    expect(aView.body.branch).toBe('FRIEND');
-    expect(bView.body.branch).toBe('FRIEND');
-    expect(aView.body.openBranchRound).toBeNull();
-    const last = await h.db.projectionEntry.findMany({ where: { recipientId: { in: [m.a.userId, m.b.userId] } }, orderBy: { seq: 'desc' }, take: 2 });
-    for (const e of last) expect(deepHas(e.payload, 'PLUS')).toBe(false);
-  });
-
-  it('échéance commune : un seul vote → Ami à l’échéance', async () => {
-    const m = await matchedPair(h, 'vote2');
-    await moveIn(m);
-    await m.a.call('POST', `/v1/relationships/${m.relId}/branch/ballot`, { choice: 'PLUS' });
-    h.clock.advance(73 * 3_600_000);
-    const { BranchVoteUseCase } = await import('../../src/modules/relationships/application/branch-vote.use-case.js');
-    expect(await h.app.get(BranchVoteUseCase).resolveDue(h.clock.now())).toBeGreaterThanOrEqual(1);
-    expect((await m.b.call('GET', `/v1/relationships/${m.relId}`)).body.branch).toBe('FRIEND');
-    h.clock.advance(-73 * 3_600_000);
+    expect(bView.body.branch).toBe('UNDECIDED');
+    expect(deepHas(bView.body, 'PLUS')).toBe(false);
   });
 });
 

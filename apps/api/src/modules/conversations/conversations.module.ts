@@ -8,6 +8,7 @@ import type { BlockReader } from '../../shared/application/ports/block-reader.po
 import type { LinkProgressPort } from '../../shared/application/ports/link-progress.port.js';
 import type { UnitOfWork } from '../../shared/application/unit-of-work.js';
 import type { Logger } from '../../shared/infrastructure/logging/logger.js';
+import { MESSAGE_AUTHOR_RESOLVER, type MessageAuthorResolver } from '../../shared/application/ports/message-author.port.js';
 import { APP_CONFIG, BLOCK_READER, CLOCK, COMMAND_BUS, DB, EVENT_PUBLISHER, LINK_PROGRESS_PORT, LOGGER, RANDOM, UNIT_OF_WORK } from '../../shared/shared.tokens.js';
 import { CONVERSATION_ADMIN } from '../relationships/application/ports/relationship-side-effects.port.js';
 import { USER_PROFILE_REPOSITORY } from '../users/application/ports/user-profile.repository.js';
@@ -49,10 +50,11 @@ type R = ConversationRepository;
     },
     {
       provide: ModerateMessageUseCase,
-      useFactory: (u: UnitOfWork, r: R, m: ModerationGateway, e: EventPublisher, l: LinkProgressPort, log: Logger, cs: ModerationCaseSink | null) => new ModerateMessageUseCase(u, r, m, e, l, log, cs ?? null),
-      inject: [UNIT_OF_WORK, CONVERSATION_REPOSITORY, MODERATION_GATEWAY, EVENT_PUBLISHER, LINK_PROGRESS_PORT, LOGGER, { token: MODERATION_CASE_SINK, optional: true }],
+      useFactory: (u: UnitOfWork, r: R, m: ModerationGateway, e: EventPublisher, l: LinkProgressPort, log: Logger, cs: ModerationCaseSink | null, a: MessageAuthorResolver | null) => new ModerateMessageUseCase(u, r, m, e, l, log, cs ?? null, a ?? null),
+      inject: [UNIT_OF_WORK, CONVERSATION_REPOSITORY, MODERATION_GATEWAY, EVENT_PUBLISHER, LINK_PROGRESS_PORT, LOGGER, { token: MODERATION_CASE_SINK, optional: true }, { token: MESSAGE_AUTHOR_RESOLVER, optional: true }],
     },
-    { provide: ReadMessagesQuery, useFactory: (r: R) => new ReadMessagesQuery(r), inject: [CONVERSATION_REPOSITORY] },
+    // V5 (§2.8) : auteurs du chat de sortie signés par leur pet (port fourni par `outings`, facultatif).
+    { provide: ReadMessagesQuery, useFactory: (r: R, a: MessageAuthorResolver | null, c: Clock) => new ReadMessagesQuery(r, a ?? null, () => c.now()), inject: [CONVERSATION_REPOSITORY, { token: MESSAGE_AUTHOR_RESOLVER, optional: true }, CLOCK] },
     { provide: RevealWarnedUseCase, useFactory: (b: CommandBus, r: R) => new RevealWarnedUseCase(b, r), inject: [COMMAND_BUS, CONVERSATION_REPOSITORY] },
     { provide: MarkReadUseCase, useFactory: (b: CommandBus, r: R) => new MarkReadUseCase(b, r), inject: [COMMAND_BUS, CONVERSATION_REPOSITORY] },
   ],

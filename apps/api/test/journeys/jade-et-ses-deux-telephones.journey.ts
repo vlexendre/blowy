@@ -6,7 +6,7 @@
  */
 import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
-import { attempt, cast, Device, type Person } from './support/actor.js';
+import { cast, Device, type Person } from './support/actor.js';
 import { story } from './support/story.js';
 import { MIN, startWorld, type World } from './support/world.js';
 
@@ -76,27 +76,28 @@ describe('Concurrence', () => {
     expect(theirs).toHaveLength(1);
   });
 
-  S.step('Rejeu d’une commande (même Idempotency-Key) : même résultat, aucun gain doublé ; payload différent → 409', async () => {
+  S.step('Rejeu d’une commande (même Idempotency-Key) depuis les deux appareils : même résultat ; payload différent → 409', async () => {
+    // V5 : les gestes de soin sont retirés (410) ; l'idempotence est vérifiée sur une commande V5 (intentions secrètes).
+    expect((await jade.call('POST', `/v1/pets/${jade.petId}/actions`, { action: 'FEED' })).status).toBe(410);
     const cid = randomUUID();
-    const a = await jade.client.pets.act(jade.petId, { action: 'FEED' }, { commandId: cid });
-    const b = await jade.client.pets.act(jade.petId, { action: 'FEED' }, { commandId: cid });
-    expect(b.pet.version).toBe(a.pet.version);
-    expect((await jade.client.pets.mine()).version).toBe(a.pet.version);
-    const c = await attempt(() => jade.client.pets.act(jade.petId, { action: 'HEAL' }, { commandId: cid }));
-    expect(c.status).toBe(409);
-    expect(c.code).toBe('IDEMPOTENCY_CONFLICT');
+    const intent = (meetingMode: 'GROUP' | 'BOTH') => ({ lookingFor: 'FRIENDS', storySeriousness: null, kidsSomeday: null, meetingMode, meetGenders: [], romanceGenders: [] });
+    const body = intent('GROUP');
+    const [a, b] = await Promise.all([jade.call('PUT', '/v1/preferences/intentions', body, cid), jade.call('PUT', '/v1/preferences/intentions', body, cid)]);
+    expect([a, b].some((r) => r.ok), JSON.stringify([a.data, b.data])).toBe(true);
+    const again = await jade.call('PUT', '/v1/preferences/intentions', body, cid);
+    expect(again.ok).toBe(true);
+    expect(JSON.stringify(again.data)).toBe(JSON.stringify((a.ok ? a : b).data));
+    const c = await jade.call('PUT', '/v1/preferences/intentions', intent('BOTH'), cid);
+    expect([c.status, c.code]).toEqual([409, 'IDEMPOTENCY_CONFLICT']);
   });
 
-  S.step('Déplacements simultanés depuis les deux appareils : un seul lieu officiel, aucun refus', async () => {
+  S.step('Déplacements simultanés depuis les deux appareils (V4 retiré) : 410 des deux côtés, aucun état mixte', async () => {
     const [a, b] = await Promise.all([
-      attempt(() => jade.client.pets.move(jade.petId, { destination: 'DATE_SPOT', relationshipId: relId })),
-      attempt(() => jade.client.pets.move(jade.petId, { destination: 'HOME' })),
+      jade.call('POST', `/v1/pets/${jade.petId}/move`, { destination: 'DATE_SPOT', relationshipId: relId }),
+      jade.call('POST', `/v1/pets/${jade.petId}/move`, { destination: 'HOME' }),
     ]);
-    expect(a.ok && b.ok, `${a.status} ${a.code} / ${b.status} ${b.code}`).toBe(true);
-    const loc = (await jade.client.pets.mine()).location;
-    const last = [a, b].map((x) => (x.data as any)?.location?.kind);
-    expect(last).toContain(loc.kind); // le lieu officiel est l'un des deux, jamais un état mixte
-    expect(await w.db.virtualLocation.count({ where: { petId: jade.petId } })).toBe(1);
+    expect([a.status, b.status]).toEqual([410, 410]);
+    expect((await jade.client.pets.mine()).id).toBe(jade.petId);
   });
 
   S.step('L’iPad passe hors ligne ; Omar envoie 3 messages ; l’iPhone les reçoit en direct', async () => {

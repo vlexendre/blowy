@@ -95,6 +95,22 @@ export class PrismaOutingsRepository implements OutingsRepository {
       .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
   }
 
+  async autoRequestCandidates(weekKey: string, limit: number) {
+    const rows = await this.db.user.findMany({
+      where: {
+        status: 'ACTIVE',
+        onboardedAt: { not: null },
+        neighborhood: { status: { in: ['LIVE', 'WAITLIST'] } },
+        slotAvailability: { some: {} },
+        outingRequests: { none: { weekKey } },
+      },
+      select: { id: true },
+      orderBy: { id: 'asc' },
+      take: limit,
+    });
+    return rows.map((r) => r.id);
+  }
+
   async request(scope: TxScope | null, userId: string, weekKey: string) {
     const r = await this.c(scope).outingRequest.findUnique({ where: { userId_weekKey: { userId, weekKey } } });
     return r ? reqRow(r) : null;
@@ -490,6 +506,21 @@ export class PrismaOutingsRepository implements OutingsRepository {
 
   async setKnowsSomeoneStatus(scope: TxScope, id: string, status: 'ACCEPTED' | 'REJECTED') {
     await txOf(scope).knowsSomeoneRequest.update({ where: { id }, data: { status, resolvedAt: scope.now } });
+  }
+
+  // T6 (admin ops) : lecture d'une place par id, contestations (ajout minimal).
+  async seatById(scope: TxScope | null, seatId: string) {
+    const s = await this.c(scope).outingSeat.findUnique({ where: { id: seatId } });
+    return s ? seatRow(s) : null;
+  }
+
+  async dispute(scope: TxScope | null, id: string) {
+    const d = await this.c(scope).attendanceDispute.findUnique({ where: { id }, select: { id: true, seatId: true, userId: true, status: true } });
+    return d ?? null;
+  }
+
+  async setDisputeStatus(scope: TxScope, id: string, status: 'ACCEPTED' | 'REJECTED', staffUserId: string) {
+    await txOf(scope).attendanceDispute.update({ where: { id }, data: { status, resolvedById: staffUserId, resolvedAt: scope.now } });
   }
 
   async createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'COUNTED_AS_CANCEL' }) {

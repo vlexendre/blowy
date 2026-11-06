@@ -66,7 +66,8 @@ export interface SafetyRepository {
   // ---- « je pars, mal à l'aise » (V5.3 B.9)
   /** Crée la trace (une par place) ; `notifyGuardian` n'est jamais rétrogradé. Renvoie true si créée. */
   upsertUneasyLeave(scope: TxScope, l: { id: string; userId: string; outingId: string; seatId: string; notifyGuardian: boolean }): Promise<boolean>;
-  uneasyLeaveCount(scope: TxScope, userId: string): Promise<number>;
+  /** Départs « mal à l'aise » depuis `since` (fenêtre `[T] safety.uncomfortableLeaveWindowDays`). */
+  uneasyLeaveCount(scope: TxScope, userId: string, since?: Date): Promise<number>;
   // ---- rétention
   purgeAlertPositions(now: Date): Promise<number>;
   purgePushSubscriptions(now: Date): Promise<number>;

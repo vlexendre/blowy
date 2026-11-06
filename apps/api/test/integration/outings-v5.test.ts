@@ -104,16 +104,19 @@ describe('outings V5 (intégration)', () => {
     expect(v.venue).toBeUndefined();
     for (const p of [p1, p2, p3, p4]) expect((await p.call('POST', `/v1/outings/${outingId}/seat/accept`, { funding: 'AUTO' })).status).toBe(200);
     await h.drain();
-    // Confirmé·e : prénoms des confirmés, pas p5 (invitée) ; pas de lieu ni de photo.
+    // Confirmé·e avant la confirmation (V5.3 B.7) : pets seulement — ni prénom, ni tranche, ni fiabilité, ni lieu, ni photo.
     v = await view(p1);
     expect(v.status).toBe('FORMING');
-    expect(v.members.filter((m: any) => m.firstName)).toHaveLength(3);
-    expect(v.members.find((m: any) => m.userId === p5.userId).firstName).toBeUndefined();
+    expect(v.members).toHaveLength(4);
+    expect(v.members.every((m: any) => !m.firstName && !m.ageRange && !m.reliability && !m.photo)).toBe(true);
+    expect(v.venue).toBeUndefined();
     // p5 ne répond pas : invitation expirée au verrouillage ; elle ne voit plus rien.
     await run('outings.lifecycle', T.locked);
     v = await view(p1);
     expect(v.status).toBe('CONFIRMED');
     expect(v.venue.name).toBe('Café IT');
+    // À la confirmation (J-1 18 h) : prénoms + tranches + fiabilité des confirmé·es, toujours sans visage.
+    expect(v.members.filter((m: any) => m.firstName && m.ageRange && m.reliability).map((m: any) => m.userId).sort()).toEqual([p2.userId, p3.userId, p4.userId].sort());
     expect(v.members.some((m: any) => m.photo)).toBe(false);
     const v5 = await view(p5);
     expect(v5.mySeat.status).toBe('EXPIRED');
@@ -195,5 +198,29 @@ describe('outings V5 (intégration)', () => {
     expect(JSON.stringify(seen.members)).not.toMatch(/knows|KNOWS|SYSTEM_REMOVAL/);
     const r2 = await ps2[2]!.call('POST', `/v1/outings/${id}/seat/knows-someone`, { userId: ps2[3]!.userId });
     expect(r2.body).toEqual({ status: 'IN_REVIEW' });
+  });
+
+  it('demande hebdo automatique (D-052) : créée depuis les créneaux cochés, une seule fois ; jamais recréée après un retrait', async () => {
+    const W49 = new Date('2026-11-30T09:30:00Z');
+    const auto = await person('ita1', 'WOMAN');
+    const quitter = await person('ita2', 'MAN');
+    const none = await person('ita3', 'WOMAN'); // aucun créneau coché → rien
+    const tpl = await h.db.neighborhoodSlotTemplate.findFirstOrThrow({ where: { neighborhoodId: nbId } });
+    for (const p of [auto, quitter]) {
+      const r = await p.call('PUT', '/v1/preferences/outings', { groupAge: { min: 20, max: 40 }, availableSlotTemplateIds: [tpl.id], weeksOff: [], activities: [], neighborhoodIds: [nbId], maxTravelMinutes: 30 });
+      expect(r.status, JSON.stringify(r.body)).toBe(200);
+    }
+    const autoJob = () => h.app.get<RecurringJob[]>(OUTINGS_JOBS).find((j) => j.name === 'outings.auto_requests')!;
+    h.clock.set(W49);
+    await autoJob().run(W49);
+    await autoJob().run(W49);
+    expect(await h.db.outingRequest.count({ where: { userId: auto.userId, weekKey: '2026-W49' } })).toBe(1);
+    expect((await auto.call('GET', '/v1/outings/week')).body).toMatchObject({ weekKey: '2026-W49', phase: 'REQUEST_OPEN' });
+    expect((await h.db.outingRequest.findFirstOrThrow({ where: { userId: auto.userId, weekKey: '2026-W49' } })).status).toBe('OPEN');
+    expect(await h.db.outingRequest.count({ where: { userId: none.userId, weekKey: '2026-W49' } })).toBe(0);
+    // Retrait volontaire : le job ne la recrée jamais.
+    expect((await quitter.call('DELETE', '/v1/outings/requests/2026-W49')).status).toBe(200);
+    await autoJob().run(new Date(W49.getTime() + 3_600_000));
+    expect((await h.db.outingRequest.findFirstOrThrow({ where: { userId: quitter.userId, weekKey: '2026-W49' } })).status).toBe('WITHDRAWN');
   });
 });

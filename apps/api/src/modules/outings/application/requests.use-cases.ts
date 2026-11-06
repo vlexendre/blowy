@@ -3,6 +3,7 @@
  * cochées dans les quartiers acceptables (semaines off exclues) ; une team est composée comme une
  * unité ; quota 1 place / semaine NON achetable (index unique partiel, 409 WEEKLY_QUOTA_USED).
  */
+import { createHash } from 'node:crypto';
 import { DAY_MS } from '@blowy/domain';
 import type { OutingRequestView, OutingWeekView, PutOutingRequest } from '@blowy/api-contract';
 import { slotLabelKey } from '@blowy/content';
@@ -22,6 +23,12 @@ const toView = (r: RequestRow): OutingRequestView => ({
   ...(r.teamId ? { teamId: r.teamId } : {}),
   createdAt: r.createdAt.toISOString(),
 });
+
+/** Identifiant de commande déterministe (UUID v8 dérivé) d'une demande automatique : rejouer ne crée rien. */
+export function autoCommandId(weekKey: string, userId: string): string {
+  const h = createHash('sha256').update(`outings.auto_request:${weekKey}:${userId}`).digest('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-8${h.slice(13, 16)}-${((parseInt(h[16]!, 16) & 0x3) | 0x8).toString(16)}${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
 
 export const previousWeekKey = (weekKey: string, tz: string) => weekKeyOf(mondayOfWeek(weekKey) * DAY_MS - 3 * DAY_MS, tz);
 
@@ -106,9 +113,9 @@ export class OutingRequestsUseCases {
     if (missing.includes('NEIGHBORHOOD')) throw Errors.precondition('ONBOARDING_INCOMPLETE', { missing });
     const nb = r.neighborhood!;
     // V5.2 (A.1) : plus de quartier « fermé » — une sortie se forme partout dès 5 personnes compatibles.
-    if (!openForOutings(nb.status)) throw Errors.precondition('NEIGHBORHOOD_NOT_LIVE');
+    if (!openForOutings(nb.status)) throw Errors.precondition('NEIGHBORHOOD_UNAVAILABLE');
     if (missing.length) throw Errors.precondition('ONBOARDING_INCOMPLETE', { missing });
-    if (!r.verified) throw Errors.precondition('VERIFICATION_REQUIRED');
+    if (!r.verified) throw Errors.precondition('AGE_VERIFICATION_REQUIRED');
     if (!r.hasPhoto) throw Errors.precondition('PHOTO_REQUIRED');
     if (isPaused(r.reliability, now)) throw Errors.precondition('RELIABILITY_PAUSED', { until: r.reliability!.pausedUntil!.toISOString() });
     const w = requestWindow(weekKey, nb.timezone, this.tuning);
@@ -137,6 +144,39 @@ export class OutingRequestsUseCases {
       },
     });
     return result;
+  }
+
+  /**
+   * D-052 (§2.4, job `outings.auto_requests`) : la demande hebdo est créée AUTOMATIQUEMENT depuis les créneaux
+   * cochés, pendant la fenêtre de demande de la semaine — sauf semaine off, pause, place active, vérification
+   * ou photo manquantes (mêmes préconditions que `PUT`, silencieusement ignorées). Idempotent : commande
+   * dérivée de `(semaine, personne)`, et une demande existante (même retirée) n'est jamais recréée.
+   */
+  async autoRequests(now: Date, limit = 500): Promise<{ created: number; skipped: number }> {
+    let created = 0;
+    let skipped = 0;
+    const weeks = new Set<string>();
+    for (const scope of await this.repo.liveScopes()) {
+      const wk = weekKeyOf(now.getTime(), scope.timezone);
+      const w = requestWindow(wk, scope.timezone, this.tuning);
+      if (now.getTime() >= w.opensAtMs && now.getTime() < w.closesAtMs) weeks.add(wk);
+    }
+    for (const weekKey of weeks) {
+      for (const userId of await this.repo.autoRequestCandidates(weekKey, limit)) {
+        const r = await this.repo.requester(null, userId, now);
+        if (!r?.neighborhood || weekKeyOf(now.getTime(), r.neighborhood.timezone) !== weekKey) {
+          skipped++;
+          continue;
+        }
+        try {
+          await this.put(userId, weekKey, {}, autoCommandId(weekKey, userId));
+          created++;
+        } catch {
+          skipped++; // précondition non remplie (pause, semaine off, place active…) : rien à faire cette semaine
+        }
+      }
+    }
+    return { created, skipped };
   }
 
   async withdraw(userId: string, weekKey: string, commandId: string): Promise<{ withdrawn: true }> {

@@ -1,11 +1,5 @@
 {
-  "title": "Triangle : Inès, Karim et Théo (créneaux, Blowy+, exclusivité)",
-  "notes": [
-    "Théo reçoit un motif qui révèle que c’est l’AUTRE qui est complet ({\"code\":\"CAPACITY_EXCEEDED\",\"message\":\"Cette rencontre n’est plus disponible\",\"detailsSafe\":{\"reason\":\"OTHER_UNAVAILABLE\"},\"requestId\":\"47264a69-2f1c-4c98-aee7-db3d7365858d\",\"retryable\":false}) : il déduit qu’Inès a déjà un rendez-vous.",
-    "Après le refus « Cette rencontre n’est plus disponible », Théo voit toujours la proposition d’Inès (acceptedByMe=false, statut en base OPEN) : le passage à INVALIDATED est fait DANS la transaction qui lève ensuite l’erreur → annulé par le rollback. Théo peut retaper « accepter » indéfiniment.",
-    "Course d’emménagement : réponses MOVED_IN / 412 PRECONDITION_FAILED ; statuts finaux MOVED_IN / ENDED.",
-    "Le perdant de l’emménagement ne peut pas lire le message système « moved_in_elsewhere » : la conversation lui renvoie 404 dès la fin de la relation. Le « mot gentil » promis par le cahier des charges n’est donc jamais lisible.",
-    "Inès emménagée voit « WAITING_NEXT_BATCH » (attends le prochain lot) au lieu de « EXCLUSIVE » : l’app lui fait attendre un lot qui ne viendra jamais."
-  ],
+  "title": "V5 : Inès ne peut être proposée que dans un seul groupe par semaine (I-O2), double tap, backfill",
+  "notes": [],
   "absents": []
 }

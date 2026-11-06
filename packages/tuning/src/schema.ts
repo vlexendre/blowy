@@ -18,6 +18,7 @@ import {
   PricingTuningSchema,
   ReliabilityV5TuningSchema,
   SafetyTuningSchema,
+  VenuesTuningSchema,
   VotesTuningSchema,
 } from './schema-v5.js';
 import {
@@ -35,6 +36,7 @@ import {
   PRICING_V5,
   RELIABILITY_V5,
   SAFETY_V5,
+  VENUES_V5,
   VOTES_V5,
 } from './defaults-v5.js';
 
@@ -227,6 +229,7 @@ export const TuningSchema = z
     plus: PlusTuningSchema.default(PLUS_V5),
     credits: CreditsTuningSchema.default(CREDITS_V5),
     safety: SafetyTuningSchema.default(SAFETY_V5),
+    venues: VenuesTuningSchema.default(VENUES_V5),
     preferences: PreferencesTuningSchema.default(PREFERENCES_V5),
   })
   .superRefine((t, ctx) => {

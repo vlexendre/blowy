@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ENTITLEMENT_KEYS_V5 } from '@blowy/domain';
 import { IntegrationModeSchema, IsoDateTimeSchema, PageQuerySchema, UuidSchema, pageOf } from './core/common.js';
 
 /**
@@ -94,6 +95,8 @@ export const SubscriptionMeResponseSchema = z.object({
       derivedFromUserId: UuidSchema.nullable(),
     }),
   ),
+  /** V5 (§6.3, §11.4-8) : droits fonctionnels de Blowy+ — `PLUS_INCLUDED_OUTINGS`, `PLUS_UNLIMITED_DUOS`. */
+  v5Entitlements: z.array(z.object({ key: z.enum(ENTITLEMENT_KEYS_V5), expiresAt: IsoDateTimeSchema.nullable() })).optional(),
 });
 export type SubscriptionMeResponse = z.infer<typeof SubscriptionMeResponseSchema>;
 

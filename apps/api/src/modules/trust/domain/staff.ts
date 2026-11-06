@@ -1,5 +1,5 @@
 /** Permissions staff par action (revérifiées côté serveur ; le module admin vérifie aussi). */
-import type { StaffRole } from '@blowy/domain';
+import type { StaffRoleV5 as StaffRole } from '@blowy/domain';
 
 export type StaffAction =
   | 'cases.list'
@@ -19,7 +19,7 @@ export type StaffAction =
   | 'safety.knows_someone';
 
 const MATRIX: Record<StaffAction, readonly StaffRole[]> = {
-  'cases.list': ['support', 'moderator', 'trust_lead', 'admin'],
+  'cases.list': ['support', 'moderator', 'trust_lead', 'admin', 'ops'],
   'cases.read': ['moderator', 'trust_lead', 'admin'],
   'cases.assign': ['moderator', 'trust_lead', 'admin'],
   'cases.decide': ['moderator', 'trust_lead', 'admin'],
@@ -29,13 +29,14 @@ const MATRIX: Record<StaffAction, readonly StaffRole[]> = {
   'appeals.resolve': ['moderator', 'trust_lead', 'admin'],
   'verifications.list': ['support', 'trust_lead', 'admin'],
   'verifications.review': ['trust_lead', 'admin'],
-  'reports.list': ['support', 'moderator', 'trust_lead', 'admin'],
+  'reports.list': ['support', 'moderator', 'trust_lead', 'admin', 'ops'],
   'privacy.list': ['support', 'trust_lead', 'admin'],
   'ai.list': ['analyst', 'trust_lead', 'admin'],
   'ai.operate': ['trust_lead', 'admin'],
   // V5 (spec §3.2, §10) : alerte + position jointe = trust_lead seulement (et admin).
   'safety.alerts': ['trust_lead', 'admin'],
-  'safety.knows_someone': ['support', 'trust_lead', 'admin'],
+  // T6 (F) : + ops (spec-v5 §10.1 « je connais quelqu'un » : support, ops).
+  'safety.knows_someone': ['support', 'trust_lead', 'admin', 'ops'],
 };
 
 export function staffCan(roles: readonly StaffRole[], action: StaffAction): boolean {

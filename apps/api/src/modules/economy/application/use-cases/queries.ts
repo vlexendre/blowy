@@ -1,4 +1,4 @@
-import type { EntitlementKey } from '@blowy/domain';
+import { ENTITLEMENT_KEYS_V5, type EntitlementKey, type EntitlementKeyV5 } from '@blowy/domain';
 import type { EntitlementsReader } from '../../../../shared/application/ports/entitlements-reader.port.js';
 import type { Clock } from '../../../../shared/application/clock.js';
 import { dateSlotsFor, effectiveEndsAt, keysOfGrant, liveAcceptedGrants, type CatalogItem, type LedgerEntry } from '../../domain/index.js';
@@ -46,6 +46,8 @@ export interface SubscriptionView {
   lastReconciledAt: string | null;
   dateSlots: number;
   entitlements: { key: EntitlementKey; source: string; endsAt: string | null; derivedFromUserId: string | null }[];
+  /** V5 (§6.3) : droits de Blowy+ dérivés de l'entitlement `blowy_plus` (titulaire, abonnement actif). */
+  v5Entitlements: { key: EntitlementKeyV5; expiresAt: string | null }[];
 }
 
 /**
@@ -81,6 +83,7 @@ export class GetMySubscriptionQuery {
       lastReconciledAt: main?.lastReconciledAt?.toISOString() ?? null,
       dateSlots: dateSlotsFor(keys, this.params.current()),
       entitlements,
+      v5Entitlements: keys.has('PLUS_MONTHLY_BENEFITS') ? ENTITLEMENT_KEYS_V5.map((key) => ({ key, expiresAt: main ? (effectiveEndsAt(main)?.toISOString() ?? null) : null })) : [],
     };
   }
 }

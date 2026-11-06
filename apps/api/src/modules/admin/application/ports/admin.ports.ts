@@ -2,7 +2,7 @@
  * Ports du module admin (implémentés en infrastructure). Les ports de modération / vérification
  * appartiennent à l'agent E (shared/application/ports/admin-trust.port.ts) et sont ré-exportés ici.
  */
-import type { StaffRole } from '@blowy/domain';
+import type { StaffRoleV5 as StaffRole } from '@blowy/domain';
 import type {
   AdminAuditRow,
   AdminConfigVersionRow,

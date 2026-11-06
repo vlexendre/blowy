@@ -1,0 +1,538 @@
+{
+ "member": "ux-cognitif",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 9,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lisible en 5 s ; ~220 px vides entre le texte et les pets (y≈660–870 @2x).",
+   "fix": "Remonter les pets."
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une question, pastille 1/9, barre proportionnelle ; « trajet : on te le demande avec tes créneaux » annonce la suite.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "État honnête, une action ; « Continue : on te dit, après tes créneaux, quand la tienne peut avoir lieu » : bon.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Date seule : ma demande n°1 T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Une question ; règle de comptage dite sous les choix.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Pet seul (activités sorties) ; « Choisis pour moi » réduit la décision.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une question, 3 réponses distinctes (« Groupe et duo » remplace le double « Les deux ») : réglé.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une question ; « Amitiés et histoire » et « Une histoire » portent le même sous-titre.",
+   "fix": "Sous-titres différents (« groupes mixtes amitié + histoire »)."
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Boutons de même poids ; « AMITIÉ SEULEMENT » tient dans son bouton : réglé.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une ou plusieurs cases » mais CTA désactivé « CHOISIS UNE RÉPONSE » (singulier).",
+   "fix": "« Coche au moins une case »."
+  },
+  "V5-Dispos": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Trois décisions sur un écran (créneaux, semaines off, trajet) ; deux ont un défaut, la case « Certaines semaines » ne dit pas ce qui se passe ensuite (un écran ? Affiner ?).",
+   "fix": "« … tu les choisiras dans Affiner » sous la case."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Nouvelle saisie dans 24 h » : réglé. Raton souriant sur un refus (T2, T3).",
+   "fix": "Pose neutre."
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Répond à « que se passe-t-il jeudi ? » ; « toi / compris » orphelin ; « Jeux de société » sorti de nulle part (aucune activité demandée).",
+   "fix": "Insécable « toi compris » ; dire d'où vient l'activité."
+  },
+  "V5-Trouvee-amis": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même structure ; « toi / compris » orphelin.",
+   "fix": "Insécable."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 2 femmes, 3 / hommes » coupé ; ordre des segments différent de Trouvée (« toi compris » au milieu).",
+   "fix": "Même ordre partout : « 5 personnes · tranche · f/h, toi compris »."
+  },
+  "V5-Sortie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lignes team réglées. « check- / in. » coupé sur 2 lignes et « 4 / chiffres » orphelin dans « Comment ça se passe » ; colonne de libellés de 200 px pour 3 mots.",
+   "fix": "Colonne gauche 120 px, insécables « 4 chiffres », pas de césure dans « check-in »."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux actions, deux promesses claires.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ce lien… ne marche qu'une fois » : un seul sens pour « lien personnel ».",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ordre réglé (après « Je viens »). « Je préfère la discrétion » ici et « Mode discret » dans Notifs : deux noms, deux endroits pour le même interrupteur.",
+   "fix": "Un seul libellé « Mode discret »."
+  },
+  "V5-Verif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« photos » ×3 dans un paragraphe (T3) ; « ta photo ici » clair.",
+   "fix": "« Tes photos » défini une fois."
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Interrupteur à l'état réel ; « lun. 21:00 » contre « mardi 12 h » (spec) contre « quelques secondes » (Chargement) : on ne peut pas mémoriser quand arrive la proposition.",
+   "fix": "Une seule heure, dite une fois."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Carte « Ton duo » : « mer. / 21 h 30 » coupé (l'outil ne voit pas « mer. » sans numéro).",
+   "fix": "« mer. 11 nov. 21 h 30 » insécable."
+  },
+  "V5-Accueil-discret": {
+   "score": 8,
+   "blocking": false,
+   "issue": "60 % de vide ; explication toujours dépliée (T3).",
+   "fix": "Repliable après la 1re vue."
+  },
+  "V5-Accueil-duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Trois cartes, la sortie en 3e « facultatif » : la hiérarchie dit le contraire de « Ta sortie » ailleurs.",
+   "fix": "Même ordre que l'Accueil."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Pour ta sécurité, toujours. » en phrase séparée : réglé.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Tableau modèle ; « 2 femmes, 3 / hommes » coupé.",
+   "fix": "Insécable."
+  },
+  "V5-Amorcage-solo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Tu viens seul » au masculin (persona Sarah) ; « une activité que tu as cochée » (aucune case d'activité n'existe).",
+   "fix": "Formulation épicène ; activité cohérente."
+  },
+  "V5-Sortie-complete": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« composition… (lundi 9 novembre, 21 h) » : 3e version de l'heure de composition.",
+   "fix": "Une seule heure."
+  },
+  "V5-Sortie-annulee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Tom, ton pote, est prévenu » : « pote » hors glossaire (« proches »).",
+   "fix": "« Tom est prévenu »."
+  },
+  "V5-Affiner": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« à / décider » coupé sur 2 lignes ; « Activités · à choisir » alors que l'app propose déjà des activités.",
+   "fix": "« à décider » insécable ; « Activités · Nino choisit » tant que vide."
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une décision, conséquences en 3 lignes.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Liste prénom · tranche · pet lisible ; « Je connais quelqu'un ici · examiné en privé, sans pénalité » sans « 1 fois par mois », que Révélation ajoute.",
+   "fix": "Même libellé aux deux endroits."
+  },
+  "V5-Partage-confirmation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« « Demain » en option » : option non dessinée.",
+   "fix": "Dessiner le choix."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "4 actions mais hiérarchisées (principal, ligne, lien, rose) ; libellé « 1 fois par mois » différent de Confirmation.",
+   "fix": "Un libellé."
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "4 actions sous stress (au lieu de 5), « J'y suis » retiré : réglé. Les 4 coches « arrivés » : aria non vérifiable sur le rendu.",
+   "fix": "aria « 4 sur 5 arrivés » sur le groupe."
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« SORTIE VÉCUE. » monochrome : réglé.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Légende à distance de l'ombre ; aucun état par défaut : réglés.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Composition propre (pastilles en ligne).",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Souvenirs dans la scène (réglé), mais la vignette du café est collée comme un timbre carré sur le trottoir (y≈1035–1125 @2x), sans ombre ni échelle.",
+   "fix": "Objet dessiné à l'échelle de la rue (enseigne, banc)."
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« DIRE OUI… » ouvre un choix : réglé. Carte N. : 4 informations (tranche, pronom, activités, intention) alors que la règle dit « pet et initiale » : le texte sous la carte contredit la carte.",
+   "fix": "Carte N. = pet + initiale + « en amitié »."
+  },
+  "V5-Duo-choix": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Trois options claires ; « 7 jours » contre « 48 h » (spec).",
+   "fix": "Une durée."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 21 h 30 » sur une ligne : réglé.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Les deux interrupteurs restent indépendants (T2, T3, non réglé) : « Ne jamais » activé laisse « Je veux bien » actif.",
+   "fix": "« Ne jamais » grise le premier."
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Autres cartes › » vers un sélecteur jamais dessiné (T2, T3) ; « Sans logo blowy. » : chip ou interrupteur ? état illisible.",
+   "fix": "Dessiner le sélecteur ; interrupteur avec état."
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Chips droites : réglé.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« 1 sur 1 / sortie où tu / es venu » sur 3 lignes (T3, non réglé) ; « Mes cartes › » vers un écran non dessiné.",
+   "fix": "« 1 sortie sur 1 » ; dessiner Mes cartes."
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Une absence prévenue avant les visages… ne compte jamais » : règle d'absence contraire à Sortie (« Ensuite, c'est une absence ») et à Confirmation (« Annuler maintenant compte comme une absence »).",
+   "fix": "« Une annulation avant la veille 18 h, ou un retrait pour ta sécurité, ne compte jamais »."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Légende à distance de l'ombre : réglé.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Format et voie Duo » : un seul réglage : réglé.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lisible ; « Qui voit quoi » oublie le lieu (prénom la veille).",
+   "fix": "Ligne « Le lieu : ton prénom, la veille 18 h »."
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Padding du rappel et case neutre : réglés.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Quelques secondes » contredit la composition hebdo.",
+   "fix": "Texte vrai."
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« 10 min. » sur une ligne : réglé.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Hiérarchie claire ; « Signaler un participant » est une carte sans bouton ni numéro : on ne sait pas comment signaler. « prénoms seulement » à côté d'icônes de pets.",
+   "fix": "Bouton « Signaler » ; retirer les pets ou dire « prénoms et pets »."
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Grille lisible ; « coup de feu, fermé » déborde dans la colonne des tables.",
+   "fix": "Libellé dans la colonne état."
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "5 articles, une page.",
+   "fix": "Signataire Blowy visible."
+  }
+ },
+ "top3": [
+  "Une seule règle d'absence (Fiche alignée sur « après la veille 18 h ») et une seule heure de proposition (spec, Notifs, Sortie-complete, Chargement) ; ajouter les deux à check-facts.",
+  "Solder les 8 défauts listés (5 césures, « 1 sortie sur 1 », interrupteurs de l'Oeuf, sélecteur de Story) et étendre l'audit aux jours sans numéro (« mer. » + heure) et aux césures de mots composés.",
+  "Faire le test 5 secondes sur 5 personnes (Trouvée, Sortie, Accueil) et publier les réponses dans le dépôt."
+ ],
+ "tenIf": "Je mets 10 si aucune règle n'a deux versions (absence, heure de proposition, carte de duo avant le oui, durée d'une proposition), si les défauts de pixel listés ici sont à zéro sur les 86 rendus, si check-facts couvre ces règles, et si un test 5 secondes sur 5 personnes répond juste à « que se passe-t-il jeudi ? » sur Trouvée, Sortie et Accueil."
+}

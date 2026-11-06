@@ -173,7 +173,11 @@ export class HandleStripeWebhookUseCase {
       unit: 'EUR_CENTS',
       refs: { seatId: i.seatId, providerPaymentId: i.providerPaymentId, refundId: i.refundId },
     });
-    if (inserted) await this.sink().refundSettled(scope, { seatId: i.seatId, userId: i.userId, refundRef: i.refundId });
+    if (inserted) {
+      await this.sink().refundSettled(scope, { seatId: i.seatId, userId: i.userId, refundRef: i.refundId });
+      // T8 : notification « remboursement effectué » (identifiants seulement).
+      await scope.outbox.emit({ topic: 'economy.refund_settled', aggregateType: 'OutingSeat', aggregateId: i.seatId, payload: { seatId: i.seatId, userId: i.userId } });
+    }
     return inserted;
   }
 }

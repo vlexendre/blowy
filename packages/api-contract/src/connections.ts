@@ -26,6 +26,8 @@ export const CONNECTION_FAILURE_REASONS = [
   'ALREADY_LEFT',
   'ALREADY_CLOSED',
   'PROPOSAL_NOT_OPEN',
+  /** §2.16 : 18+ vérifié avant le 1ᵉʳ duo. */
+  'AGE_VERIFICATION_REQUIRED',
   'VERIFICATION_REQUIRED',
   'PHOTO_REQUIRED',
   'RELIABILITY_PAUSED',
@@ -133,6 +135,8 @@ export const DuoLaneFeedSchema = z.object({
   items: z.array(DuoLaneProposalViewSchema),
   emptyReason: z.enum(['NONE', 'LANE_DISABLED', 'NOT_VERIFIED', 'PHOTO_REQUIRED', 'PAUSED', 'LIMIT_REACHED', 'WAITING_NEXT_BATCH']).nullable(),
   nextBatchAt: IsoDateTimeSchema.nullable(),
+  /** §7.3 (V5.2 H.25) : 1 duo actif gratuit ; `unlimited` = Blowy+ (aucun argument commercial ici). */
+  quota: z.object({ freeMaxActive: z.number().int().positive(), unlimited: z.boolean() }).strict().optional(),
 });
 
 /** `POST /v1/match-proposals/:id/accept` (branche DUO_LANE) : au 2ᵉ accord, `Duo(EXCHANGE)`. */

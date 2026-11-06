@@ -10,7 +10,7 @@
  */
 import { createHash } from 'node:crypto';
 import type { Db } from '@blowy/database';
-import type { StaffRole } from '@blowy/domain';
+import type { StaffRoleV5 as StaffRole } from '@blowy/domain';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { txOf } from '../../../shared/infrastructure/prisma/prisma-unit-of-work.js';
 import type { StaffAccount, StaffMfaState, StaffRepository, StaffSessionRecord } from '../application/ports/admin.ports.js';

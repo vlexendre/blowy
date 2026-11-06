@@ -21,10 +21,12 @@ export function proxy(request: NextRequest) {
     "frame-ancestors 'none'",
   ].join('; ');
   const { pathname } = request.nextUrl;
-  const isAuth = pathname.startsWith('/login');
-  if (!isAuth && !request.cookies.get('blowy_staff')) {
+  // Espace lieu partenaire : cookie et page de connexion DISTINCTS du back-office staff.
+  const venue = pathname === '/lieu' || pathname.startsWith('/lieu/');
+  const isAuth = venue ? pathname.startsWith('/lieu/login') : pathname.startsWith('/login');
+  if (!isAuth && !request.cookies.get(venue ? 'blowy_venue' : 'blowy_staff')) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    url.pathname = venue ? '/lieu/login' : '/login';
     url.search = '';
     return NextResponse.redirect(url);
   }
@@ -38,5 +40,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [{ source: '/((?!_next/static|_next/image|favicon.ico).*)', missing: [{ type: 'header', key: 'next-router-prefetch' }] }],
+  matcher: [{ source: '/((?!_next/static|_next/image|favicon.ico|fonts/|lieu/img/).*)', missing: [{ type: 'header', key: 'next-router-prefetch' }] }],
 };

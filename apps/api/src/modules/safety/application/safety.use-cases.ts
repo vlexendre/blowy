@@ -14,7 +14,7 @@ import type { Clock, RandomSource } from '../../../shared/application/clock.js';
 import { userRoom, type EventPublisher } from '../../../shared/application/event-publisher.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { AppError, Errors } from '../../../shared/domain/errors.js';
-import { HUMAN_RESPONSE_MINUTES, guardianWindow, inWindow, linkServable, normalizeLabel, projectGuardianPage, supportStaffed, type SafetyTuningSlice, type SubjectFacts } from '../domain/guardian.js';
+import { guardianWindow, humanResponseMinutes, inWindow, linkServable, normalizeLabel, projectGuardianPage, supportStaffed, type SafetyTuningSlice, type SubjectFacts } from '../domain/guardian.js';
 import type { OutingSafetyPort } from '../../../shared/application/ports/outing-safety.port.js';
 import type { GuardianPushSender, SafetyCaseSink, SafetyRateLimiter, SafetyRepository, SubjectReader } from './ports/safety.ports.js';
 
@@ -128,8 +128,8 @@ export class SafetyUseCases {
       actorId: userId,
       operation: 'safety.alert.raise',
       commandId,
-      // La position n'entre jamais dans l'empreinte mémorisée : seulement le fait qu'elle soit jointe.
-      payload: { subject: req.subject, withPosition: !!req.position },
+      // D-050 / V5.3 A.4 : la position n'est JAMAIS collectée (champ du contrat ignoré, rien n'est stocké ni mémorisé).
+      payload: { subject: req.subject },
       handle: async (scope) => {
         await scope.lock.users([userId]);
         const s = await this.subjectOf(userId, req.subject, scope);
@@ -137,17 +137,17 @@ export class SafetyUseCases {
         const recent = await this.repo.alertsCountSince(scope, userId, new Date(scope.now.getTime() - 3_600_000));
         if (recent >= this.tuning.alertsPerHour) throw new AppError('RATE_LIMITED', 'Trop d’alertes en une heure : appelle le 112', { detailsSafe: { reason: 'ALERT_RATE_LIMITED', emergencyNumbers: [...EMERGENCY] } });
         const id = this.random.uuid();
-        const position = req.position ? { lat: req.position.lat, lng: req.position.lng, accuracyM: Math.round(req.position.accuracyM) } : null;
-        await this.repo.createAlert(scope, { id, userId, subjectKind: s.kind, subjectId: s.id, position, positionPurgeAfter: position ? new Date(scope.now.getTime() + this.tuning.alertPositionRetentionHours * 3_600_000) : null });
+        // D-050 : le lieu de la sortie et l'heure suffisent — aucune position, même jointe par un ancien client.
+        await this.repo.createAlert(scope, { id, userId, subjectKind: s.kind, subjectId: s.id, position: null, positionPurgeAfter: null });
         // File staff prioritaire : dossier SAFETY_ALERT, priorité 1, échéance = engagement affiché.
-        const caseId = await this.cases.open(scope, { subjectType: 'SAFETY_ALERT', subjectId: id, subjectUserId: userId, reasonCode: 'SAFETY_ALERT', priority: 1, dueInMinutes: HUMAN_RESPONSE_MINUTES });
+        const caseId = await this.cases.open(scope, { subjectType: 'SAFETY_ALERT', subjectId: id, subjectUserId: userId, reasonCode: 'SAFETY_ALERT', priority: 1, dueInMinutes: humanResponseMinutes(this.tuning) });
         await this.repo.setAlertCase(scope, id, caseId);
         // Effets hors transaction : Web Push au proche abonné, notification SAFETY (T8), accusé WS.
         await scope.outbox.emit({ topic: 'safety.alert_raised', aggregateType: 'SafetyAlert', aggregateId: id, payload: { alertId: id, userId, subjectKind: s.kind, subjectId: s.id } });
         return { alertId: id };
       },
     });
-    return { alertId: result.alertId, emergencyNumbers: [...EMERGENCY], humanResponseMinutes: HUMAN_RESPONSE_MINUTES };
+    return { alertId: result.alertId, emergencyNumbers: [...EMERGENCY], humanResponseMinutes: humanResponseMinutes(this.tuning) };
   }
 
   async resolveAlert(userId: string, commandId: string, alertId: string) {
@@ -186,7 +186,7 @@ export class SafetyUseCases {
       activeFrom: w.activeFrom.toISOString(),
       expiresAt: w.expiresAt.toISOString(),
       active: f.confirmed && !f.cancelled && inWindow(w, now),
-      support: { humanResponseMinutes: HUMAN_RESPONSE_MINUTES, staffedNow: supportStaffed(w, now) },
+      support: { humanResponseMinutes: humanResponseMinutes(this.tuning), staffedNow: supportStaffed(w, now) },
       activeGuardianLinks: links,
       maxGuardianLinks: this.tuning.maxGuardianLinksPerSubject,
       ...(lastOk ? { lastOkAt: lastOk.toISOString() } : {}),
@@ -245,7 +245,7 @@ export class SafetyUseCases {
         await this.repo.upsertUneasyLeave(scope, { id: this.random.uuid(), userId, outingId: s.id, seatId: r.seatId, notifyGuardian: req.notifyGuardian });
         const notified = req.notifyGuardian && (await this.repo.countActiveLinks(scope, userId, s.kind, s.id, scope.now)) > 0;
         if (notified) await scope.outbox.emit({ topic: 'safety.guardian_notify', aggregateType: 'User', aggregateId: userId, payload: { userId, subjectKind: s.kind, subjectId: s.id, reason: 'LEFT' } });
-        return { left: true as const, guardianNotified: notified, humanResponseMinutes: HUMAN_RESPONSE_MINUTES };
+        return { left: true as const, guardianNotified: notified, humanResponseMinutes: humanResponseMinutes(this.tuning) };
       },
     });
     return result;
@@ -254,8 +254,9 @@ export class SafetyUseCases {
   /** Consommateur `outing.seat_cancelled` (SAFETY_EXIT) : trace + message staff ; 3ᵉ départ → recontact humain. */
   async onUneasyLeave(scope: TxScope, i: { userId: string; outingId: string; seatId: string }) {
     await this.repo.upsertUneasyLeave(scope, { id: this.random.uuid(), ...i, notifyGuardian: false });
-    await this.cases.open(scope, { subjectType: 'OUTING', subjectId: i.seatId, subjectUserId: i.userId, reasonCode: 'UNEASY_LEAVE', priority: 2, dueInMinutes: HUMAN_RESPONSE_MINUTES });
-    if ((await this.repo.uneasyLeaveCount(scope, i.userId)) >= 3) {
+    await this.cases.open(scope, { subjectType: 'OUTING', subjectId: i.seatId, subjectUserId: i.userId, reasonCode: 'UNEASY_LEAVE', priority: 2, dueInMinutes: humanResponseMinutes(this.tuning) });
+    const since = new Date(scope.now.getTime() - (this.tuning.uncomfortableLeaveWindowDays ?? 90) * 86_400_000);
+    if ((await this.repo.uneasyLeaveCount(scope, i.userId, since)) >= (this.tuning.uneasyLeaveRecontactThreshold ?? 3)) {
       await this.cases.open(scope, { subjectType: 'USER', subjectId: i.userId, subjectUserId: i.userId, reasonCode: 'UNEASY_LEAVE_RECONTACT', priority: 2, dueInMinutes: 24 * 60 });
     }
   }

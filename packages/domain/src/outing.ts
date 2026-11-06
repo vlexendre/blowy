@@ -83,8 +83,13 @@ export type SeatCancelKind = (typeof SEAT_CANCEL_KINDS)[number];
 export const REFUND_STATES = ['NONE', 'PENDING', 'REFUNDED', 'RECREDITED', 'NOT_ELIGIBLE'] as const;
 export type RefundState = (typeof REFUND_STATES)[number];
 
-/** Mode de remboursement annoncé à l'utilisateur (§7.2 `seat.cancel`). */
-export const REFUND_MODES = ['CARD', 'CREDIT', 'NONE'] as const;
+/**
+ * Mode de remboursement annoncé à l'utilisateur (§7.2 `seat.cancel`, D-042) : `CARD` = remboursement carte
+ * intégral (place payée) ; `STAYS_FREE` = la 1ʳᵉ sortie « reste offerte » (jamais « remboursé·e ») ;
+ * `NONE` = rien à rendre (Blowy+, absence). `CREDIT` = déprécié : seulement une place financée par un
+ * ancien lot de crédit (le lot est rendu) ; plus jamais émis pour une place payée.
+ */
+export const REFUND_MODES = ['CARD', 'STAYS_FREE', 'CREDIT', 'NONE'] as const;
 export type RefundMode = (typeof REFUND_MODES)[number];
 
 /** Annulation demandée par l'utilisateur (§7.2). */

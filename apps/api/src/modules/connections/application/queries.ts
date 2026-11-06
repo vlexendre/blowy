@@ -10,7 +10,7 @@ import type { DuoDateView, DuoLaneProposalView, DuoView, PetMemoryView, StreetVi
 import { romanceCompatible } from '@blowy/matching/groups';
 import { Errors } from '../../../shared/domain/errors.js';
 import type { OutingsRepository } from '../../outings/application/ports/outings.repository.js';
-import { checkinWindow, duoCapacity, EXPIRED_READ_ONLY_MS, eggActive, eggEligible, isUnlocked, localDateHour, unlockProgress, voteOptionsFor } from '../domain/duo-policy.js';
+import { checkinWindow, EXPIRED_READ_ONLY_MS, eggActive, eggEligible, isUnlocked, localDateHour, unlockProgress, voteOptionsFor } from '../domain/duo-policy.js';
 import { seeksProfileOf } from './duo-lifecycle.js';
 import type { ConnectionsDeps } from './deps.js';
 import type { DuoUseCases } from './duos.use-cases.js';
@@ -18,7 +18,7 @@ import { isMember, otherOf } from './duos.use-cases.js';
 import type { DuoDateRow, DuoRow, MemoryRow } from './ports/connections.repository.js';
 
 const HOUR = 3_600_000;
-type Feed = { items: DuoLaneProposalView[]; emptyReason: 'NONE' | 'LANE_DISABLED' | 'NOT_VERIFIED' | 'PHOTO_REQUIRED' | 'PAUSED' | 'LIMIT_REACHED' | 'WAITING_NEXT_BATCH' | null; nextBatchAt: string | null };
+type Feed = { items: DuoLaneProposalView[]; emptyReason: 'NONE' | 'LANE_DISABLED' | 'NOT_VERIFIED' | 'PHOTO_REQUIRED' | 'PAUSED' | 'LIMIT_REACHED' | 'WAITING_NEXT_BATCH' | null; nextBatchAt: string | null; quota: { freeMaxActive: number; unlimited: boolean } };
 
 export class ConnectionQueries {
   constructor(
@@ -136,14 +136,14 @@ export class ConnectionQueries {
   // ------------------------------------------------------------------ voie Duo
   async feed(userId: string): Promise<Feed> {
     const now = this.x.clock.now();
-    const [rows, seeks, verified, photo, paused, active, plus, tz] = await Promise.all([
+    const [rows, seeks, verified, photo, paused, active, capacity, tz] = await Promise.all([
       this.repo.laneProposalsFor(userId, now),
       this.repo.seeks([userId], now),
       this.repo.verified(null, userId, now),
       this.x.photos.currentProfilePhotoId(userId),
       this.x.reliability.isPaused(null, userId, now),
       this.repo.activeDuoCount(null, userId),
-      this.duos.hasPlus(userId, now),
+      this.duos.capacity(userId, now),
       this.repo.timezoneOf(userId),
     ]);
     const mine = rows.filter((r) => !r.passedBy.includes(userId));
@@ -160,8 +160,9 @@ export class ConnectionQueries {
     const mode = seeks.get(userId)?.meetingMode ?? null;
     const enabled = mode === 'DUO' || mode === 'BOTH';
     let emptyReason: Feed['emptyReason'] = null;
-    if (items.length === 0) emptyReason = !enabled ? 'LANE_DISABLED' : !verified ? 'NOT_VERIFIED' : !photo ? 'PHOTO_REQUIRED' : paused ? 'PAUSED' : active >= duoCapacity(plus) ? 'LIMIT_REACHED' : 'WAITING_NEXT_BATCH';
-    return { items, emptyReason, nextBatchAt: enabled ? this.nextRun(now, tz).toISOString() : null };
+    if (items.length === 0) emptyReason = !enabled ? 'LANE_DISABLED' : !verified ? 'NOT_VERIFIED' : !photo ? 'PHOTO_REQUIRED' : paused ? 'PAUSED' : active >= capacity ? 'LIMIT_REACHED' : 'WAITING_NEXT_BATCH';
+    // §7.3 : quota exposé (1 gratuit / illimité) ; aucun argument commercial.
+    return { items, emptyReason, nextBatchAt: enabled ? this.nextRun(now, tz).toISOString() : null, quota: { freeMaxActive: this.x.tuning.duo.maxActiveFree, unlimited: capacity === Number.POSITIVE_INFINITY } };
   }
 
   private nextRun(now: Date, tz: string): Date {

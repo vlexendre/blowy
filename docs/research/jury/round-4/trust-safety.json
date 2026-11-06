@@ -1,0 +1,538 @@
+{
+ "member": "trust-safety",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 9,
+  "safety": 8,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« 18 ans et plus · selfie vérifié », « Ce que tu cherches reste secret ».",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« On ne demande jamais ta position » : tenu.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Date avant toute donnée sensible ; tranche jamais l'âge.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ton groupe voit… le nombre de femmes et d'hommes du groupe, jamais qui » : juste, mais c'est ce décompte qui alimente le canal auxiliaire (voir Trouvée).",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Personne ne le voit, ni ne peut le deviner » : promesse absolue, que le message « entre amis » de Trouvée-amis affaiblit par son absence (outils n° 6).",
+   "fix": "Tenir la promesse par la règle de composition (voir Trouvée) ou l'adoucir (« personne ne le voit »)."
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Avant la question sensible ; « Une seule exception : la personne avec qui tu as un duo » : mais une proposition de duo montre déjà l'intention de l'autre avant tout duo (voir V5-Duo).",
+   "fix": "« … ou à qui Nino te propose en duo, après ton oui »."
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Plus aucune garantie chiffrée : réglé.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Garantie retirée : mon bloquant T3 est levé. Reste un canal à 1 bit : l'absence du bandeau « sortie entre amis pour toi » (affiché seulement si la garantie échoue) dit qu'une personne compatible est là. Avec « 2 femmes » : l'une des deux (k = 2). Avec une seule personne du genre recherché (1 f, 3 h, 1 non-binaire, permis) : elle, exactement.",
+   "fix": "Règle moteur testée : sans bandeau « entre amis », au moins 2 personnes du genre recherché dans le groupe ; sinon bandeau forcé. Ajouter le cas 1 f / 3 h / 1 nb aux tests (spec §4)."
+  },
+  "V5-Trouvee-amis": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Visible pour l'intéressé seul, sans chiffre : conforme à A.1.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu et prénoms à J −1 18 h, visages J −3 h : calendrier B tenu.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une seule règle d'annulation ; composition sans garantie.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Selfie et tranche pour chacun ; règle d'équilibre générale.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Par message seulement, jamais en story » : ma demande T2-T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Promesse « une fois, à toi seul » enfin vraie.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Vivacité, 18+, 30 j ; « ta photo ici ».",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aperçus masqués, discret à l'état réel.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« pas de numéro ni de réseau avant jeudi » : et après jeudi ? (T3, non réglé).",
+   "fix": "« Levé seulement entre accords mutuels »."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Les 2 autres personnes savent que 3 personnes viennent ensemble » + composition : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Composition et règle affichées.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Éviter… à décider » : plus d'import silencieux.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Empreintes sur l'appareil, opt-in. « On compare seulement les empreintes » : un hash de numéro à 10 chiffres se renverse par force brute.",
+   "fix": "Dire « empreintes salées, comparées côté serveur puis effacées » ou PSI ; ne pas écrire « chiffrée »."
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Prénoms, tranches, pets à J −1 18 h, sans visages : B.7 tenu.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Cette semaine », sans jour par défaut : réglé.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Les captures sont détectées et signalées » (au lieu de « bloquées ») + filigrane : réglé.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ni lieu, ni quartier, ni heure », « jamais pendant » : réglé. « Ce soir » reste un calendrier public d'Alex.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Jamais… ta position en continu » cohérent avec la page d'aide.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Lieu de la sortie · pas de position » : mon point T3 réglé. Si Alex a déjà tapé « Je pars, mal à l'aise », le lieu affiché n'est plus là où il est.",
+   "fix": "Si départ enregistré : « Alex a quitté le lieu à 20 h 52 » au-dessus de l'adresse."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Code d'abord, position une fois en option.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Je pars, mal à l'aise · sans pénalité », rappel à 3 fois : B.9 tenu ; partage retiré.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Aucun état par défaut, « Un problème ? » par personne.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Sans chiffre ni pet. Proposée aussi quand le seul accord est « plus » ? Alors « ma bande s'agrandit » est faux ou révèle un accord.",
+   "fix": "Carte proposée seulement s'il y a un accord « amitié »."
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Carte N. avant tout oui : « 30–34 ans · il · musique live, volley · en amitié ». V5.3 A.3 et spec §5 : « seulement le pet et l'initiale ». Pour une proposition « pour une histoire », cette carte dirait à Alex l'intention et l'orientation de N. avant que N. ait dit oui, contre la phrase exacte de Consentement (« une seule exception : la personne avec qui tu as un duo »). check-facts ne vérifie que le prénom.",
+   "fix": "Avant le double oui : pet + initiale + score ; intention et tranche après ; règle dans check-facts."
+  },
+  "V5-Duo-choix": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« N. n'en sait rien » : bon. « 7 jours » contre 48 h (spec).",
+   "fix": "Une durée."
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Depuis lundi 9 novembre, 21 h 30 », après l'accord de 20 h 50 : ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Filigrane, vocal facultatif.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu public, ange facultatif.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Slug `m/k7f2q` (5 caractères) lié à « 3 mots pour Alex » : ≈ 60 millions de valeurs en base36, énumérable ; spec : ≥ 8.",
+   "fix": "Slug ≥ 8 (≥ 12 pour les liens nominatifs), rate limit sur `/m/`."
+  },
+  "W-Repondre": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 18 ans et plus » reste un badge, pas une déclaration (T3, non réglé).",
+   "fix": "Case « J'ai 18 ans ou plus » avant les mots."
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ton groupe voit : prénom, pronom, tranche… » ; ne cite pas le pet ni le lieu.",
+   "fix": "Même liste que Confidentialité corrigée."
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Une absence prévenue avant les visages… ne compte jamais » : règle V5.2, contraire à la spec (D-043). Un utilisateur qui s'y fie annule mer. 20 h, prend une absence et une pause de fiabilité qu'il croyait impossible.",
+   "fix": "« Une annulation avant la veille 18 h… ne compte jamais »."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« BLW Réservation » en mode discret : bon.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Position réglée (« seul le lieu de la sortie est envoyé »). Mais « Qui voit quoi » oublie un destinataire : le lieu reçoit ton prénom la veille (L-Effectif). Le nombre f/h du groupe et le pet non plus.",
+   "fix": "Ligne « Le lieu : ton prénom, la veille 18 h, rien d'autre » ; ligne Groupe complétée (pet, nombre f/h)."
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rappel lisible, « Bloquer aussi » neutre, 114, 3919.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Signalements gardés le temps légal.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code hors ligne + 17/112.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune donnée au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« prénoms seulement… Aucune autre donnée » mais pets affichés ; base légale de la transmission au lieu non dite (sous-traitance ? intérêt légitime ?). « Signaler un participant » sans bouton.",
+   "fix": "Pets retirés ou annoncés ; clause données au contrat ; bouton Signaler avec motifs."
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de sensible.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas de clause données (le lieu reçoit des prénoms et le code ; durée de conservation ? interdiction de recontacter ?).",
+   "fix": "Article 6 « Données : prénoms effacés après la sortie, aucun recontact »."
+  }
+ },
+ "top3": [
+  "Carte de proposition de duo réduite à pet + initiale (+ score), intention et tranche après le double oui ; test check-facts sur V5-Duo au-delà du prénom.",
+  "Règle moteur et test : pas de bandeau « entre amis » ⇒ au moins 2 personnes du genre recherché dans le groupe (cas 1 f / 3 h / 1 nb couvert) ; Intention adoucie si la règle n'est pas tenue.",
+  "Confidentialité complète (le lieu reçoit ton prénom la veille ; ton groupe voit ton pet et le nombre f/h), clause données au contrat lieu, Fiche corrigée, slugs ≥ 8 (≥ 12 pour les liens nominatifs), case 18+ sur W-Repondre."
+ ],
+ "tenIf": "Je mets 10 si un audit croisé des 86 écrans, de spec-v5 et du contrat lieu contre « Qui voit quoi » ne trouve aucune donnée déductible au-delà de la promesse (carte de duo avant le oui, bit « entre amis » quand une seule personne du genre recherché est là, prénom transmis au lieu non déclaré), si chaque règle de sécurité ou de fiabilité n'a qu'une version (absence, durée d'une proposition), et si aucun lien nominatif n'est énumérable."
+}

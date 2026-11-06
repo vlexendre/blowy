@@ -5,7 +5,7 @@
  * commit (`prepareIntent`, idempotente `seat:<seatId>` côté fournisseur), confirmation par webhook.
  * LOCAL_DEMO (hors production) : confirmation immédiate étiquetée, sans débit réel.
  * Remboursements (§6.4) : carte → demande journalisée, exécutée par le job `economy.refunds` hors
- * verrou ; crédit → nouveau lot 90 j. Une place ne produit qu'un remboursement (clés uniques).
+ * verrou ; ancien lot de crédit consommé → rendu (déprécié, D-042). Une place ne produit qu'un remboursement (clés uniques).
  */
 import type { EntitlementKey, SeatFunding } from '@blowy/domain';
 import type { TxScope, UnitOfWork } from '../../../../shared/application/unit-of-work.js';
@@ -100,11 +100,8 @@ export class EconomySeatFunding implements SeatFundingPort {
   }
 
   async refundCard(scope: TxScope, i: { userId: string; seatId: string; paymentRef: string | null; cause?: SeatRefundCause }): Promise<'REFUNDED' | 'PENDING' | 'RECREDITED'> {
+    // D-042 : une place payée est toujours remboursée sur la carte (plus de crédit 90 j).
     const cause = i.cause ?? 'OUTING_CANCELLED';
-    if (refundOutcome('PAID', cause, { plusActive: false }) === 'REFUND_CREDIT') {
-      await this.grantRefundCredit(scope, i.userId, i.seatId);
-      return 'RECREDITED';
-    }
     const paid = (await this.journal.byRef(scope, 'PAYMENT_SUCCEEDED', 'seatId', i.seatId))[0] ?? null;
     return this.requestCardRefund(scope, { userId: i.userId, seatId: i.seatId, providerPaymentId: paid ? String(paid.refs.providerPaymentId) : (i.paymentRef ?? `unknown:${i.seatId}`), amountCents: paid?.amount ?? this.params().seatPriceCents, cause });
   }
@@ -122,7 +119,7 @@ export class EconomySeatFunding implements SeatFundingPort {
       refs: { seatId: i.seatId, providerPaymentId: i.providerPaymentId, cause: i.cause },
     });
     if (!local) return 'PENDING';
-    await this.journal.append(scope, {
+    const settled = await this.journal.append(scope, {
       key: LedgerKeys.refundSettled(i.providerPaymentId),
       kind: 'REFUND_SETTLED',
       account: `user:${i.userId}`,
@@ -131,6 +128,8 @@ export class EconomySeatFunding implements SeatFundingPort {
       unit: 'EUR_CENTS',
       refs: { seatId: i.seatId, providerPaymentId: i.providerPaymentId, refundId: `local_demo_refund:${i.seatId}` },
     });
+    // T8 : « Ton remboursement est effectué » (consommé par notifications ; jamais de montant ni de carte).
+    if (settled.inserted) await scope.outbox.emit({ topic: 'economy.refund_settled', aggregateType: 'OutingSeat', aggregateId: i.seatId, payload: { seatId: i.seatId, userId: i.userId } });
     return 'REFUNDED';
   }
 

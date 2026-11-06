@@ -35,6 +35,11 @@ export const MessageViewSchema = z.object({
   publishedAt: IsoDateTimeSchema.nullable(),
   /** Message vocal : média servi par GET /v1/media/:id/content?variant=audio (ACL à chaque accès). Ajout agent E. */
   mediaId: UuidSchema.nullable().default(null),
+  /**
+   * V5 (§2.8, V5.3 B.7) : chat de sortie seulement, messages d'autrui — signé par le pet de l'auteur avant la
+   * confirmation (J-1 18 h), puis pet + prénom. Absent ailleurs (DUO, BAND, V4) et pour mes propres messages.
+   */
+  author: z.object({ pet: z.object({ name: z.string(), species: z.string() }).strict(), firstName: z.string().optional() }).strict().optional(),
 });
 export type MessageView = z.infer<typeof MessageViewSchema>;
 

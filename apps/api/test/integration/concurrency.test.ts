@@ -1,6 +1,6 @@
 /**
  * §21 n°3 : deux acceptations simultanées n'excèdent pas la capacité (1 slot gratuit) ;
- * deux emménagements concurrents ne créent qu'une exclusivité.
+ * V5 : l'emménagement est retiré (410) ; voir connections-v5 pour l'équivalent duo.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { onboard, startHarness, TestClient, type Harness } from './harness.js';
@@ -39,45 +39,15 @@ describe('concurrence', () => {
     expect(await liveDates(hub.userId)).toBe(1);
   });
 
-  it('deux emménagements concurrents : une seule exclusivité', async () => {
-    // P (Blowy+ démo : 3 slots) a deux rendez-vous N3 : avec Q et avec R.
+  it('V5 : emménagement concurrent retiré (410, aucune exclusivité créée) — l’équivalent V5 « deux accords simultanés → un seul duo, 1 duo gratuit » est couvert par connections-v5', async () => {
     const p = new TestClient(h);
     const q = new TestClient(h);
-    const r = new TestClient(h);
     await onboard(p, 'mv.p', { gender: 'WOMAN', seeking: ['MAN'] });
-    await h.db.entitlementGrant.create({ data: { beneficiaryUserId: p.userId, entitlementId: 'blowy_plus', source: 'LOCAL_DEMO', environment: 'LOCAL_DEMO', startsAt: new Date('2026-01-01') } });
     await onboard(q, 'mv.q', { gender: 'MAN', seeking: ['WOMAN'] });
     const relQ = await matchUsers(h, p, q);
-    await onboard(r, 'mv.r', { gender: 'MAN', seeking: ['WOMAN'] });
-    const relR = await matchUsers(h, r, p);
     await setLevel(h, relQ, 3);
-    await setLevel(h, relR, 3);
-    // Q et R proposent ; P accepte les deux simultanément.
-    const oq = await q.call('POST', `/v1/relationships/${relQ}/move-in`, {});
-    const or = await r.call('POST', `/v1/relationships/${relR}/move-in`, {});
-    expect(oq.status).toBe(201);
-    expect(or.status).toBe(201);
-    const offer = (rel: { pendingOffers: { id: string; version: number; scope: string }[] }) => rel.pendingOffers.find((o) => o.scope === 'MOVE_IN')!;
-    const offQ = offer((await p.call('GET', `/v1/relationships/${relQ}`)).body);
-    const offR = offer((await p.call('GET', `/v1/relationships/${relR}`)).body);
-    const [aq, ar] = await Promise.all([
-      p.call('POST', `/v1/relationships/${relQ}/consents/respond`, { offerId: offQ.id, decision: 'ACCEPT', version: offQ.version }),
-      p.call('POST', `/v1/relationships/${relR}/consents/respond`, { offerId: offR.id, decision: 'ACCEPT', version: offR.version }),
-    ]);
-    const ok = [aq, ar].filter((x) => x.status === 201 && x.body.status === 'MOVED_IN');
-    expect(ok).toHaveLength(1);
-    const loser = [aq, ar].find((x) => x !== ok[0])!;
-    expect(loser.status).toBe(412);
-    expect(await h.db.relationshipSide.count({ where: { userId: p.userId, exclusive: true, active: true } })).toBe(1);
-    // L'autre rendez-vous a été clôturé avec un message système pré-écrit.
-    const movedRel = ok[0] === aq ? relQ : relR;
-    const otherRel = movedRel === relQ ? relR : relQ;
-    const closed = await h.db.relationshipContext.findUniqueOrThrow({ where: { id: otherRel }, include: { conversation: { include: { messages: true } } } });
-    expect(closed.status).toBe('ENDED');
-    expect(closed.endReason).toBe('MOVED_IN_ELSEWHERE');
-    expect(closed.conversation!.messages.some((m) => m.systemTemplate === 'system.leave.moved_in_elsewhere')).toBe(true);
-    // Les pets emménagés sont à la maison commune.
-    const loc = await h.db.virtualLocation.findUniqueOrThrow({ where: { petId: (await p.call('GET', '/v1/pets/mine')).body.id } });
-    expect(loc).toMatchObject({ kind: 'SHARED_HOME', contextId: movedRel });
+    const [a, b] = await Promise.all([q.call('POST', `/v1/relationships/${relQ}/move-in`, {}), p.call('POST', `/v1/relationships/${relQ}/move-in`, {})]);
+    for (const r of [a, b]) expect([r.status, r.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
+    expect(await h.db.relationshipSide.count({ where: { userId: p.userId, exclusive: true, active: true } })).toBe(0);
   });
 });

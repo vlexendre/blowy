@@ -15,6 +15,7 @@ import { DuoViewSchema } from '@blowy/api-contract';
 import { CONNECTIONS_JOBS } from '../../src/modules/connections/connections.module.js';
 import type { RecurringJob } from '../../src/jobs/scheduler.js';
 import { onboard, startHarness, TestClient, type Harness } from './harness.js';
+import { raw, uploadMedia, wavBytes } from './e-helpers.js';
 
 let h: Harness;
 const MONDAY = new Date('2026-11-16T09:30:00Z');
@@ -91,6 +92,25 @@ describe('connections V5 (intégration)', () => {
     expect((await c.call('GET', '/v1/duo-lane')).body.items).toEqual([]);
     expect((await a.call('GET', '/v1/duo-lane')).body.items.map((i: any) => i.proposalId)).toContain(p.id);
     expect(await h.db.projectionEntry.count({ where: { recipientId: a.userId, aggregateId: p.id } })).toBe(0);
+  });
+
+  it('vocal en duo (D-051) : jamais pendant l’échange (412 VOICE_LOCKED) ; facultatif une fois les visages débloqués', async () => {
+    const duo = await h.db.duo.findFirstOrThrow({ where: { OR: [{ userLowId: a.userId }, { userHighId: a.userId }], origin: 'LANE' } });
+    const conv = await h.db.conversation.findFirstOrThrow({ where: { duoId: duo.id } });
+    const v1 = await uploadMedia(h, a, { purpose: 'VOICE_MESSAGE', mimeType: 'audio/wav', bytes: wavBytes(), conversationId: conv.id });
+    expect(v1.view.status).toBe('READY');
+    const locked = await a.call('POST', `/v1/conversations/${conv.id}/voice-messages`, { clientMessageId: 'duo-voice-locked', mediaId: v1.id });
+    expect([locked.status, locked.body.detailsSafe?.reason]).toEqual([412, 'VOICE_LOCKED']);
+    // Fixture : visages débloqués (le passage à 48 h est couvert par le parcours `thomas-prend-la-voie-duo`).
+    await h.db.duo.update({ where: { id: duo.id }, data: { status: 'UNLOCKED' } });
+    const sent = await a.call('POST', `/v1/conversations/${conv.id}/voice-messages`, { clientMessageId: 'duo-voice-ok-01', mediaId: v1.id });
+    expect(sent.status, JSON.stringify(sent.body)).toBe(201);
+    await h.drain();
+    const theirs = (await b.call('GET', `/v1/conversations/${conv.id}/messages`)).body.items.find((m: any) => m.kind === 'VOICE');
+    expect(theirs).toMatchObject({ kind: 'VOICE', status: 'PUBLISHED', mediaId: v1.id });
+    // Un tiers (c) ne peut ni envoyer dans ce duo ni y lire le vocal.
+    expect((await raw(h, c, 'GET', `/v1/media/${v1.id}/content?variant=audio`)).status).toBe(404);
+    await h.db.duo.update({ where: { id: duo.id }, data: { status: 'EXCHANGE' } });
   });
 
   it('duo né d’une sortie : débloqué, sans échéance ; œuf refusé hors éligibilité puis actif à deux', async () => {

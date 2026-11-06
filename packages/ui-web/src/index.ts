@@ -8,3 +8,4 @@ export * from './molecules/index';
 export * from './organisms/index';
 export * from './organisms/client';
 export * from './templates/index';
+export * from './templates/venue';

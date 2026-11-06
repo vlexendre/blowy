@@ -18,7 +18,10 @@ import { OUTING_REVEAL_READER, PHOTO_TOKEN_ISSUER, type OutingRevealReader, type
 import { PET_MEMORY_PORT, type PetMemoryPort } from '../../shared/application/ports/pet-memory.port.js';
 import { RELIABILITY_PORT, type ReliabilityPort } from '../../shared/application/ports/reliability.port.js';
 import type { UnitOfWork } from '../../shared/application/unit-of-work.js';
-import { APP_CONFIG, CLOCK, COMMAND_BUS, DB, ENTITLEMENTS_READER, EVENT_PUBLISHER, RANDOM, UNIT_OF_WORK } from '../../shared/shared.tokens.js';
+import { APP_CONFIG, BLOCK_READER, CLOCK, COMMAND_BUS, DB, ENTITLEMENTS_READER, EVENT_PUBLISHER, RANDOM, UNIT_OF_WORK } from '../../shared/shared.tokens.js';
+import { MESSAGE_AUTHOR_RESOLVER } from '../../shared/application/ports/message-author.port.js';
+import type { BlockReader } from '../../shared/application/ports/block-reader.port.js';
+import { PrismaMessageAuthors } from './infrastructure/message-authors.js';
 import { hourKey, type RecurringJob } from '../../jobs/scheduler.js';
 import { loadAdminConfig } from '../admin/infrastructure/admin-config.js';
 import { isPaused } from './domain/reliability.js';
@@ -32,6 +35,8 @@ import { OutingRequestsUseCases } from './application/requests.use-cases.js';
 import { SeatUseCases } from './application/seats.use-cases.js';
 import { OutingSafetyService } from './application/safety-port.service.js';
 import { OUTING_SAFETY_PORT } from '../../shared/application/ports/outing-safety.port.js';
+import { OUTING_ADMIN_PORT } from '../../shared/application/ports/outing-admin.port.js';
+import { OutingAdminService, venueSecretFrom } from './application/admin-port.service.js';
 import { TeamUseCases } from './application/teams.use-cases.js';
 import { LocalSeatFunding } from './infrastructure/local-seat-funding.js';
 import { OutingsSeatPaymentSink } from './infrastructure/seat-payment-sink.js';
@@ -59,6 +64,8 @@ type R = OutingsRepository;
   providers: [
     { provide: OUTINGS_TUNING, useValue: DEFAULT_TUNING },
     { provide: OUTINGS_REPOSITORY, useFactory: (db: Db, t: Tuning) => new PrismaOutingsRepository(db, t), inject: [DB, OUTINGS_TUNING] },
+    // V5 (§2.8) : auteurs du chat de sortie signés par leur pet (prénom à la confirmation), lu par `conversations`.
+    { provide: MESSAGE_AUTHOR_RESOLVER, useFactory: (db: Db, b: BlockReader) => new PrismaMessageAuthors(db, b), inject: [DB, BLOCK_READER] },
     {
       provide: SEAT_FUNDING,
       // T3 (G) : financement réel fourni par `economy` (crédits, Stripe, remboursements) ; repli T2 si absent.
@@ -103,6 +110,12 @@ type R = OutingsRepository;
     },
     // T4 (agent E) : retrait système au blocage et décision « je connais quelqu'un » (port, ajout minimal).
     { provide: OUTING_SAFETY_PORT, useFactory: (r: R, s: SeatUseCases) => new OutingSafetyService(r, s), inject: [OUTINGS_REPOSITORY, SeatUseCases] },
+    // T6 (agent F) : exploitation staff / lieu partenaire (annulation, retrait, contestations, pause, code du chevalet).
+    {
+      provide: OUTING_ADMIN_PORT,
+      useFactory: (r: R, l: OutingLifecycle, s: SeatUseCases, cfg: AppConfig) => new OutingAdminService(r, l, s, venueSecretFrom(cfg.MEDIA_TOKEN_SECRET ?? cfg.SESSION_SECRET)),
+      inject: [OUTINGS_REPOSITORY, OutingLifecycle, SeatUseCases, APP_CONFIG],
+    },
     { provide: OUTING_REVEAL_READER, useFactory: (r: R): OutingRevealReader => ({ canSeeProfilePhoto: (v, o, at) => r.photoRevealAllowed(v, o, at) }), inject: [OUTINGS_REPOSITORY] },
     // T5 (C2) : fiabilité des RDV duo, écrite ici (seul écrivain de ReliabilityStat).
     {
@@ -116,15 +129,17 @@ type R = OutingsRepository;
     { provide: OUTING_ROOMS, useFactory: (r: R, c: Clock): OutingRooms => ({ outing: (u, id) => r.outingRoomMember(u, id, c.now()), duo: (u, id) => r.duoRoomMember(u, id) }), inject: [OUTINGS_REPOSITORY, CLOCK] },
     {
       provide: OUTINGS_JOBS,
-      useFactory: (j: OutingJobs): RecurringJob[] => [
+      useFactory: (j: OutingJobs, req: OutingRequestsUseCases): RecurringJob[] => [
+        // D-052 : demande hebdo automatique depuis les créneaux cochés (pendant la fenêtre de demande).
+        { name: 'outings.auto_requests', everyMs: 60 * MIN, windowKey: hourKey, run: (now) => req.autoRequests(now) },
         { name: 'outings.compose', everyMs: 5 * MIN, run: (now) => j.composeWeekly(now) },
         { name: 'outings.seeding', everyMs: 15 * MIN, run: (now) => j.composeSeeding(now) },
         { name: 'outings.lifecycle', everyMs: 5 * MIN, run: (now) => j.lifecycleSweep(now) },
         { name: 'outings.purge', everyMs: 60 * MIN, windowKey: hourKey, run: (now) => j.purge(now) },
       ],
-      inject: [OutingJobs],
+      inject: [OutingJobs, OutingRequestsUseCases],
     },
   ],
-  exports: [SEAT_PAYMENT_SINK, OUTING_SAFETY_PORT, OUTING_REVEAL_READER, OUTING_ROOMS, RELIABILITY_PORT, OUTINGS_JOBS, OUTINGS_REPOSITORY, OutingJobs, OutingLifecycle],
+  exports: [MESSAGE_AUTHOR_RESOLVER, SEAT_PAYMENT_SINK, OUTING_SAFETY_PORT, OUTING_ADMIN_PORT, OUTING_REVEAL_READER, OUTING_ROOMS, RELIABILITY_PORT, OUTINGS_JOBS, OUTINGS_REPOSITORY, OutingJobs, OutingLifecycle],
 })
 export class OutingsModule {}

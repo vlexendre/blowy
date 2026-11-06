@@ -46,7 +46,6 @@ export class NeighborhoodsUseCases {
     return {
       ...(best ? { nextOutingGap: { missing: best.missing, startsAt: best.startsAt.toISOString() } } : {}),
       verifiedCount: await this.repo.verifiedWaiting(nb.id, now),
-      threshold: nb.densityThreshold,
       ...(nb.estimatedLaunchAt && nb.estimatedLaunchAt > now ? { estimatedLaunchAt: nb.estimatedLaunchAt.toISOString() } : {}),
       seedingAvailable: true,
     };

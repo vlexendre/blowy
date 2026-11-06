@@ -1,6 +1,7 @@
 /**
  * Objectif de groupe J(G) en milli-points ENTIERS (spec-v5 §4.3) :
  *   J = 1000·mean(w) + λr·romCov‰/1000 + λf·friendFit‰/1000 − λg·genderImb‰/1000 − λs·(cible − |G|)
+ * + contrainte dure `genderCapOk` (D-039 : ≤ `maxSameGender` du même genre, exception non mixte demandée).
  * Les λ multiplient des parts (‰ ramenées à 1) ; tout est arrondi vers le bas : aucune dérive flottante.
  */
 import { GENDERS } from '@blowy/domain';
@@ -19,7 +20,15 @@ export interface GroupEvaluation {
   storyGuaranteed: number;
   /** Tout membre « romance seulement » a ≥ 1 personne rom-compatible dans le groupe. */
   romanceOnlyCovered: boolean;
+  /**
+   * D-039 / V5.3 A.2 — contrainte DURE : jamais plus de `maxSameGender` (3) personnes du même genre
+   * (`UNDISCLOSED` n'est pas un genre commun), sauf groupe non mixte demandé (tous les membres ont
+   * restreint « qui je veux rencontrer » au même genre unique).
+   */
+  genderCapOk: boolean;
 }
+
+const UNDISCLOSED = GENDERS.indexOf('UNDISCLOSED');
 
 const genderCounts = new Int32Array(GENDERS.length);
 
@@ -65,6 +74,11 @@ export function evaluateGroup(members: readonly number[], P: PairTable, t: Tunin
       if (n >= minStory) guaranteed++;
     }
   }
+  let maxSame = 0;
+  for (let g = 0; g < genderCounts.length; g++) if (g !== UNDISCLOSED && genderCounts[g]! > maxSame) maxSame = genderCounts[g]!;
+  let nonMixedRequested = s > 0 && P.meetOnly[members[0]!]! >= 0;
+  for (let x = 1; x < s && nonMixedRequested; x++) if (P.meetOnly[members[x]!] !== P.meetOnly[members[0]!]) nonMixedRequested = false;
+  const genderCapOk = maxSame <= c.maxSameGender || nonMixedRequested;
   let imbalance = 0;
   if (s > 0 && (seekers > 0 || allMeetEmpty)) {
     let max = 0;
@@ -82,7 +96,7 @@ export function evaluateGroup(members: readonly number[], P: PairTable, t: Tunin
     Math.floor((c.storyGuarantee.lambdaGuarantee * storyCov) / 1000) -
     Math.floor((c.lambdaGender * imbalance) / 1000) -
     c.lambdaSize * Math.max(0, c.targetSize - s);
-  return { objectiveMilli, pairMinScore: pairs > 0 ? minW : 0, sumW, pairs, romanceSeekers: seekers, romanceCovered: covered, genderImbalancePermille: imbalance, romanceOnlyCovered, storyGuaranteed: guaranteed };
+  return { objectiveMilli, pairMinScore: pairs > 0 ? minW : 0, sumW, pairs, romanceSeekers: seekers, romanceCovered: covered, genderImbalancePermille: imbalance, romanceOnlyCovered, storyGuaranteed: guaranteed, genderCapOk };
 }
 
 /** V5.2 B : « potes uniquement » par membre (index → booléen), même règle que `storyFriendsOnly`. */

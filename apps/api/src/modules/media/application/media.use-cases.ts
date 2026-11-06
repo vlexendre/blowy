@@ -57,7 +57,7 @@ export class CreateUploadUseCase {
     private readonly publicUrl: string,
     private readonly clock: Clock,
   ) {}
-  async execute(userId: string, commandId: string, req: { purpose: MediaPurpose; mimeType: string; bytes: number; relationshipId?: string | undefined; missionKey?: string | undefined }) {
+  async execute(userId: string, commandId: string, req: { purpose: MediaPurpose; mimeType: string; bytes: number; relationshipId?: string | undefined; conversationId?: string | undefined; missionKey?: string | undefined }) {
     const kind = kindOf(req.purpose);
     if (kind === 'image' && !req.mimeType.startsWith('image/')) throw Errors.validation({ reason: 'MIME_PURPOSE_MISMATCH' });
     if (kind === 'voice' && !req.mimeType.startsWith('audio/')) throw Errors.validation({ reason: 'MIME_PURPOSE_MISMATCH' });
@@ -504,7 +504,14 @@ export class PhotoRevealUseCase {
 export class VoiceGateService {
   constructor(
     private readonly repo: MediaRepository,
-    private readonly db: { conversationContext(conversationId: string): Promise<string | null> },
+    private readonly db: {
+      conversationContext(conversationId: string): Promise<string | null>;
+      /**
+       * V5 (§2.13, D-051) : conversation DUO — `true` si le duo est débloqué (visages à 48 h) et la conversation
+       * ouverte à l'auteur ; `false` pendant l'échange ou après la fin ; `null` si ce n'est pas un duo.
+       */
+      duoVoiceOpen?(conversationId: string, userId: string): Promise<boolean | null>;
+    },
     private readonly clock: Clock,
   ) {}
   async assertCanSend(actorId: string, conversationId: string, mediaId: string) {
@@ -512,6 +519,13 @@ export class VoiceGateService {
     if (!a || a.ownerUserId !== actorId || a.purpose !== 'VOICE_MESSAGE') throw Errors.notFound('Média');
     if (a.status !== 'READY') throw Errors.precondition('MEDIA_NOT_READY');
     if (await this.repo.voiceAlreadyUsed(mediaId)) throw Errors.conflict('MEDIA_ALREADY_SENT');
+    // V5 duo : vocal FACULTATIF après le déblocage des visages (jamais une condition, jamais pendant l'échange).
+    const duo = this.db.duoVoiceOpen ? await this.db.duoVoiceOpen(conversationId, actorId) : null;
+    if (duo !== null) {
+      if (a.contextId) throw Errors.notFound('Conversation');
+      if (!duo) throw new AppError('PRECONDITION_FAILED', 'Messages vocaux non débloqués', { detailsSafe: { reason: 'VOICE_LOCKED' } });
+      return;
+    }
     const ctxId = await this.db.conversationContext(conversationId);
     if (!ctxId || (a.contextId && a.contextId !== ctxId)) throw Errors.notFound('Conversation');
     const f = await this.repo.relationFacts(null, ctxId, this.clock.now());

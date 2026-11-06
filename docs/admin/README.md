@@ -61,4 +61,26 @@ Aucune permission ne lit un vote privé ni n'impose une relation. Les ports de E
 | 18.13 | `/ops` | `ops`, `ops/outbox/dead`, `ops/outbox/:id/redrive`, `exports`, `deletions` | redrive soumis à `StateAwareRedriveGuard` (liste blanche par topic, état actuel) |
 | — | `/audit`, `/account` | `audit`, `auth/*` | AuditLog append-only |
 
+## V5 (spec-v5 §10, tranche T6)
+Rôle **`ops`** (`StaffRoleV5`) : quartiers, lieux, sorties, présences, « je connais quelqu'un », signalements V5, compensations (lecture) — jamais utilisateurs, votes, préférences, position, argent. Attribution : `staff:roles -- grant --role ops …`.
+
+| Section | UI | API `/v1/admin/…` | Permission (step-up = ⚑) |
+|---|---|---|---|
+| Villes et quartiers | `/neighborhoods` | `GET neighborhoods`, `PUT neighborhoods/:id/status`, `POST neighborhoods/:id/slot-templates` | `neighborhoods.read/write` |
+| Lieux | `/venues`, `/venues/:id` | `GET/POST venues`, `GET/PUT venues/:id`, `POST venues/:id/rotate-secret` ⚑, `POST venues/:id/partners` ⚑ | `venues.*` |
+| Sorties | `/outings`, `/outings/:id` | `GET outings`, `GET outings/:id`, `POST outings/:id/cancel` ⚑, `POST seats/:id/remove` ⚑ | `outings.*` (montants seulement si `economy.read`) |
+| Je connais quelqu'un | `/knows-someone` | `GET knows-someone`, `POST knows-someone/:seatId/decision` | `knows_someone.*` (port `ADMIN_TRUST` de E) |
+| Présences et pauses | `/attendance` | `GET attendance`, `POST attendance/disputes/:id/decision` ⚑, `POST reliability/:userId/lift-pause` ⚑ | `attendance.*`, `reliability.pause_lift` |
+| Besoin d'aide | `/safety`, `/safety/:id` | `GET safety/alerts`, `GET safety/alerts/:id?justification=` (position : **trust_lead seul**, auditée par E), `POST safety/alerts/:id/handle` | `safety.read/position/handle` |
+| Signalements V5 | `/reports-v5` | `GET reports-v5` | `reports_v5.read` |
+| Compensations lieux | `/venue-compensations` | `GET venue-compensations?period`, `POST venue-compensations/:seatId/reverse` ⚑ | `venue_compensations.*` (finance) |
+
+Mutations d'état des sorties : port `OUTING_ADMIN_PORT` (module outings, seul écrivain) dans la transaction du `CommandBus`, AuditLog dans la même transaction. Contestation acceptée → no-show corrigé, pause levée, compensation lieu contre-passée (même transaction).
+
+## Espace lieu partenaire (`/lieu`, rôle `venue_partner`, §10.2)
+- Auth **distincte** : `POST /v1/venue/auth/login` → `mfa/enroll|verify` (TOTP, secret dérivé distinct du staff) → session courte (`VENUE_SESSION_TTL_MINUTES` 120, inactivité `VENUE_IDLE_TIMEOUT_MINUTES` 15), cookies `blowy_venue*`, CSRF `x-blowy-venue-csrf`. Session staff, bearer mobile et session lieu ne sont jamais interchangeables.
+- Accès : ops/admin (step-up) depuis `/venues/:id` ou CLI `pnpm --filter @blowy/api venue:partners -- grant --venue "<nom|id>" --provider local|firebase --subject <uid> --operator … --reason …` (`list`, `revoke`, `totp` local/test).
+- Écrans (maquettes `design/v5/project/L-*`) : `/lieu/effectif` (prénoms seulement, à partir de la veille 18 h, code du chevalet), `/lieu/creneaux` (jours, plafond), `/lieu/contrat` (+ `/lieu/contrat/pdf`) ; secondaires : `/lieu/releve` (relevé mensuel agrégé), `/lieu/signaler`, `/lieu/photo`, `/lieu/reglages` (fermeture exceptionnelle → annulation `VENUE_UNAVAILABLE` remboursée, mentions, tables par jour).
+- Astreinte affichée : `VENUE_ONCALL_PHONE` (numéro de démo en local/test seulement ; absent en production → « Numéro à venir »), `VENUE_ONCALL_HOURS`.
+
 Chaque mutation : `AdminCommandRunner` → permission → step-up si sensible → `CommandBus` (Idempotency-Key, transaction) → `AuditLog` dans la même transaction ; mutations déléguées (E/G) auditées après succès. L'UI fixe l'Idempotency-Key au rendu du formulaire : une double soumission est rejouée. États explicites : chargement (`loading.tsx`), erreur (`error.tsx`), refus (403), « service non branché » (501), session expirée.

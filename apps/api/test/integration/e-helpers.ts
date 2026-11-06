@@ -25,8 +25,8 @@ export async function raw(h: Harness, c: TestClient, method: string, path: strin
 }
 
 /** Session → PUT → finalize ; renvoie la vue média après traitement (file inline). */
-export async function uploadMedia(h: Harness, c: TestClient, o: { purpose: string; mimeType: string; bytes: Buffer; relationshipId?: string; missionKey?: string }) {
-  const s = await c.call('POST', '/v1/media/uploads', { purpose: o.purpose, mimeType: o.mimeType, bytes: o.bytes.length, ...(o.relationshipId ? { relationshipId: o.relationshipId } : {}), ...(o.missionKey ? { missionKey: o.missionKey } : {}) });
+export async function uploadMedia(h: Harness, c: TestClient, o: { purpose: string; mimeType: string; bytes: Buffer; relationshipId?: string; conversationId?: string; missionKey?: string }) {
+  const s = await c.call('POST', '/v1/media/uploads', { purpose: o.purpose, mimeType: o.mimeType, bytes: o.bytes.length, ...(o.relationshipId ? { relationshipId: o.relationshipId } : {}), ...(o.conversationId ? { conversationId: o.conversationId } : {}), ...(o.missionKey ? { missionKey: o.missionKey } : {}) });
   if (s.status !== 201) throw new Error(`upload session ${s.status} ${JSON.stringify(s.body)}`);
   const put = await raw(h, c, 'PUT', `/v1/media/uploads/${s.body.mediaId}`, o.bytes, { 'content-type': 'application/octet-stream' });
   if (put.status !== 204) throw new Error(`put ${put.status} ${put.buf.toString()}`);

@@ -1,23 +1,7 @@
 {
-  "title": "Léa & Hugo : rencontre → chat → Lien → emménagement → photos → rupture",
+  "title": "V5 : Léa & Hugo — voie Duo, échange modéré, visages à 48 h, rendez-vous, départ propre",
   "notes": [
-    "Déplacement de pet : l’autre n’est pas notifié en temps réel (aucun événement WS) — le Nid ne se met à jour qu’au rechargement.",
-    "Montée du Lien vécue : ~21.4 XP/jour avec 5 jeux + 1 aller-retour de messages par jour → niveau 3 (500 XP) en ~24 jours, niveau 5 (1400 XP) en ~66 jours. Les étapes suivantes forcent le niveau (raccourci de test documenté).",
-    "Niveau 6 Plus : l’app annonce IRL_DATE + GUARDIAN dans les capacités, mais aucune route /safety-dates ni /guardian-invitations n’existe → l’utilisateur voit un palier débloqué qu’il ne peut pas utiliser.",
-    "Après une rupture, Léa ne peut plus relire la conversation (404) : le message système « départ propre » n’est jamais visible pour elle, l’historique disparaît d’un coup."
+    "Double oui : aucun événement WS sur la salle `user:` de Léa (seule la salle `duo:` le reçoit) — elle l’apprend par la notification `duo.matched` (T8) ou en rouvrant l’écran."
   ],
-  "absents": [
-    {
-      "name": "Rendez-vous en vrai : proposition de lieu public, confirmation des deux, check-in, confirmation après coup",
-      "why": "aucune route /v1/safety-dates (§11, §13)"
-    },
-    {
-      "name": "Ange gardien : invitation d’un ami du Quartier, partage de position 3 h max, révocation",
-      "why": "aucune route /v1/guardian-invitations ni partage de position (§11)"
-    },
-    {
-      "name": "Garde d’un bébé commun après rupture (alternance hebdo, transition, sécurité)",
-      "why": "aucun module œuf/bébé/garde : routes /eggs, /incubation, /children, /custody absentes (§8)"
-    }
-  ]
+  "absents": []
 }

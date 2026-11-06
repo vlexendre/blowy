@@ -6,7 +6,7 @@
  */
 import { uuidv7, type Db } from '@blowy/database';
 import type { AdminAuditRow, AdminConfigVersionRow, AdminMissionVersion, AdminPetView, AdminRelationshipView, AdminUserRow, MissionDraftRequest, PageOf } from '@blowy/api-contract';
-import type { StaffRole } from '@blowy/domain';
+import type { StaffRoleV5 as StaffRole } from '@blowy/domain';
 import type { Clock } from '../../../shared/application/clock.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { decodeCursor, pageFrom } from '../../../shared/application/pagination.js';

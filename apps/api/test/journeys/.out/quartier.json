@@ -10,10 +10,6 @@
       "why": "aucune route /v1/friends (§8, §13)"
     },
     {
-      "name": "Nourrir le pet d’un ami du Quartier (+5 amitié, +10 pièces chacun, 3/jour)",
-      "why": "aucune action de soin sur le pet d’un ami (pets/:id/actions refuse un pet non possédé)"
-    },
-    {
       "name": "Bande de 3 à 5 amis, chat de groupe, mission de groupe ≥ 3",
       "why": "aucune route /v1/groups (§8)"
     },

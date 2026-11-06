@@ -1,7 +1,8 @@
 /**
- * Règles de place (spec-v5 §2.6, V5.1 E.16, V5.2 C.8) : statuts confirmés, aperçu d'annulation et mode de
- * remboursement. `EARLY` = avant la révélation des visages → recrédit ; `LATE` = après →
- * comptée comme absence, sans remboursement ; motif sécurité → remboursé, aucun effet de fiabilité.
+ * Règles de place (spec-v5 §2.7, §6.4, V5.3 B.6, D-042, D-043) : statuts confirmés, aperçu d'annulation et
+ * mode de remboursement. `EARLY` = avant la confirmation (J-1 18 h, `lockAt`) → gratuite : carte remboursée
+ * (place payée), 1ʳᵉ sortie qui « reste offerte », rien pour Blowy+ ; `LATE` = après → absence, sans
+ * remboursement ; motif sécurité → remboursé, aucun effet de fiabilité.
  */
 import { CONFIRMED_SEAT_STATUSES, type RefundMode, type RefundState, type SeatCancelRequestKind, type SeatFunding, type SeatStatus } from '@blowy/domain';
 import { cancelKindAt } from '@blowy/pet-engine';
@@ -16,14 +17,27 @@ export const occupiesCapacity = (s: SeatStatus): boolean => isPending(s) || isCo
 /** Mode de remboursement d'un financement en cas d'annulation remboursable. */
 export function refundModeFor(funding: SeatFunding | null): RefundMode {
   if (funding === 'PAID') return 'CARD';
-  if (funding === 'FREE_FIRST' || funding === 'PLUS_INCLUDED' || funding === 'CREDIT') return 'CREDIT';
+  if (funding === 'FREE_FIRST') return 'STAYS_FREE';
+  // Déprécié (D-042) : place financée par un ancien lot de crédit → le lot est rendu.
+  if (funding === 'CREDIT') return 'CREDIT';
+  // PLUS_INCLUDED (toutes les sorties incluses), STAFF_COMP : rien à rendre.
   return 'NONE';
 }
 
-/** État de remboursement à écrire pour un mode donné (CARD : traité par le fournisseur, T3). */
+/**
+ * État de remboursement à écrire pour un mode donné (CARD : traité par le fournisseur, T3).
+ * `STAYS_FREE` → `RECREDITED` : la place offerte ne compte plus comme consommée (`usedFreeFirst`).
+ */
 export function refundStateFor(mode: RefundMode, refundable: boolean): RefundState {
   if (!refundable) return 'NOT_ELIGIBLE';
-  return mode === 'CARD' ? 'PENDING' : mode === 'CREDIT' ? 'RECREDITED' : 'NONE';
+  return mode === 'CARD' ? 'PENDING' : mode === 'CREDIT' || mode === 'STAYS_FREE' ? 'RECREDITED' : 'NONE';
+}
+
+/** Mode affiché pour une place déjà remboursée (vue `cancelled.refund`). */
+export function refundModeOfState(funding: SeatFunding | null, state: RefundState): RefundMode {
+  if (state === 'RECREDITED') return funding === 'CREDIT' ? 'CREDIT' : 'STAYS_FREE';
+  if (state === 'PENDING' || state === 'REFUNDED') return refundModeFor(funding);
+  return 'NONE';
 }
 
 export interface CancelPreview {
@@ -40,7 +54,6 @@ export interface CancelPreview {
 export function cancelPreview(i: { funding: SeatFunding | null; now: Date; revealAt: Date; kind: SeatCancelRequestKind }): CancelPreview {
   if (i.kind === 'SAFETY') return { cancelKind: 'SAFETY_EXIT', refund: refundModeFor(i.funding), countsAsAbsence: false };
   const k = cancelKindAt(i.now.getTime(), i.revealAt.getTime());
-  // D-019 (T3) : annulation personnelle d'une place payée avant les visages → crédit 90 j (carte sur demande au support).
-  const early: RefundMode = i.funding === 'PAID' ? 'CREDIT' : refundModeFor(i.funding);
-  return k === 'EARLY' ? { cancelKind: 'EARLY', refund: early, countsAsAbsence: false } : { cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true };
+  // V5.3 B.6 / D-042 : avant la confirmation, annulation gratuite — carte remboursée intégralement (plus de crédit 90 j).
+  return k === 'EARLY' ? { cancelKind: 'EARLY', refund: refundModeFor(i.funding), countsAsAbsence: false } : { cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true };
 }

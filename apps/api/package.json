@@ -18,6 +18,7 @@
     "pretest:integration": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --output-logs=errors-only",
     "staff:roles": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-roles.cli.ts",
     "staff:totp": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/staff-totp-dev.cli.ts",
+    "venue:partners": "tsx --env-file-if-exists=.env src/modules/admin/interface/cli/venue-partners.cli.ts",
     "test:journeys": "vitest run --config test/journeys/vitest.config.ts",
     "pretest:journeys": "turbo run build --filter=@blowy/domain --filter=@blowy/tuning --filter=@blowy/api-contract --filter=@blowy/database --filter=@blowy/ai --filter=@blowy/api-client --output-logs=errors-only"
   },

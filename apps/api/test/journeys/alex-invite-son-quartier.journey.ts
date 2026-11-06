@@ -3,23 +3,30 @@
  * Histoire 3 — Le Quartier d'Alex. Alex partage sa carte « Décris-moi en 3 mots » et son lien
  * d'invitation. Sam, Zoé et Malik répondent depuis le web sans compte, puis s'inscrivent avec
  * le lien (ou le code de repli). Parrainage +100/+100 une seule fois après activation.
- * Ensuite : amis du Quartier, nourrir le pet d'un ami, bande, ligue.
+ * V5 (retrait V4, §7.7) : la « 1ʳᵉ action » qui active le parrainage n'est plus un soin du pet (410) mais
+ * la 1ʳᵉ sortie vécue (spec §5, `referral.first_outing_lived`) : Alex et ses trois filleul·es sortent
+ * ensemble un jeudi soir, puis les récompenses tombent une seule fois. « Qui a écrit ? » est retiré (410).
  */
 import { afterAll, beforeAll, describe, expect } from 'vitest';
 import { Person, publicCall, visitorToken } from './support/actor.js';
 import { forcePublicSlug } from './support/fixtures.js';
 import { story } from './support/story.js';
 import { MIN, startWorld, type World } from './support/world.js';
+import { at, checkIn, city, CYCLE, formOuting, v5Person, v5Setup, type City } from './support/v5.js';
 
 let w: World;
 let alex: Person;
 const friends: Person[] = [];
 let link: any = null;
 let slug = '';
+let c: City;
+let outingId = '';
+let nina: Person | null = null;
 const S = story('quartier', 'Quartier : invitation, 3 mots anonymes, parrainage, amis, ligue');
 
 beforeAll(async () => {
-  w = await startWorld('J_QUARTIER');
+  w = await startWorld('J_QUARTIER', CYCLE.monday);
+  c = await city(w, { slug: 'j-paris-quartier', name: 'Paris 11e', city: 'Paris', status: 'LIVE' });
 });
 afterAll(async () => w?.close());
 
@@ -87,9 +94,9 @@ describe('Quartier', () => {
     const own = await alex.call('GET', '/v1/me/anonymous-responses');
     expect(own.data.items).toHaveLength(3);
     expect(JSON.stringify(own.data)).not.toMatch(/visitor|ip|fingerprint/i);
+    // V5 (§7.7) : « Qui a écrit ? » est retiré — 410, aucun indice ne peut être inventé.
     const hints = await alex.call('GET', `/v1/me/anonymous-responses/${own.data.items[0].id}/hints`);
-    expect(hints.data.available).toBe(false);
-    expect(hints.data.hints).toEqual([]);
+    expect([hints.status, hints.data.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
     const ws = alex.phone.events.filter((e) => /anonymous|response|social/.test(e.type));
     if (ws.length === 0) S.note('Réponses « 3 mots » : aucun événement temps réel ni notification pour Alex ; il ne découvre les mots qu’en ouvrant l’écran.');
   });
@@ -105,23 +112,16 @@ describe('Quartier', () => {
     friends.push(sam);
   });
 
-  S.step('Sam termine l’onboarding et nourrit son pet (1re action) → +100 pour Sam, +100 pour Alex, une seule fois', async () => {
+  S.step('Sam termine l’onboarding V5 (quartier, intentions, photo) : soigner son pet n’existe plus (410) ; toujours aucune pièce', async () => {
     const sam = S.need(friends[0], 'Sam');
     await sam.onboard();
-    expect((await wallet(sam)).balance).toBe(0); // pas encore de 1re action
-    await sam.client.pets.act(sam.petId, { action: 'FEED' });
+    await v5Setup(sam, { ...sam.spec, looking: 'FRIENDS' }, c);
+    expect((await sam.call('POST', `/v1/pets/${sam.petId}/actions`, { action: 'FEED' })).status).toBe(410);
     await w.drain();
-    await w.drain();
-    expect((await wallet(sam)).balance).toBe(100);
-    expect((await wallet(alex)).balance).toBe(100);
-    const me = await sam.call('GET', '/v1/referrals/me');
-    expect(me.data.status).toBe('REWARDED');
-    // Deuxième action, rejeu, re-claim : aucun doublon.
-    await sam.client.pets.act(sam.petId, { action: 'FEED' });
-    await w.drain();
+    expect((await wallet(sam)).balance).toBe(0);
+    expect((await wallet(alex)).balance).toBe(0);
+    expect((await sam.call('GET', '/v1/referrals/me')).data.status).toBe('PENDING_ACTIVATION');
     expect((await sam.call('POST', '/v1/referrals/claim', { ref: link.token })).status).toBe(409);
-    expect((await wallet(sam)).balance).toBe(100);
-    expect((await wallet(alex)).balance).toBe(100);
   });
 
   S.step('Alex essaie de se parrainer lui-même : refusé', async () => {
@@ -130,35 +130,59 @@ describe('Quartier', () => {
     expect([403, 412]).toContain(r.status);
   });
 
-  S.step('Zoé et Malik arrivent aussi par le lien ; Alex est crédité pour chacun (+100 × 2), chacun reçoit ses 100', async () => {
+  S.step('Zoé et Malik arrivent aussi par le lien (claims en attente) ; Nina, une voisine, s’inscrit sans lien', async () => {
     for (const key of ['zoe.q', 'malik.q']) {
       w.clock.advance(MIN);
       const p = new Person(w, { key, displayName: key === 'zoe.q' ? 'Zoé' : 'Malik', gender: key === 'zoe.q' ? 'WOMAN' : 'MAN', seeking: ['WOMAN', 'MAN'], intention: 'FRIENDS_GROUP' });
       await p.signIn();
       expect((await p.call('POST', '/v1/referrals/claim', { ref: link.token })).ok).toBe(true);
       await p.onboard();
-      await p.client.pets.act(p.petId, { action: 'FEED' });
-      await w.drain();
-      await w.drain();
-      expect((await wallet(p)).balance).toBe(100);
+      await v5Setup(p, { ...p.spec, looking: 'FRIENDS' }, c);
       friends.push(p);
+    }
+    nina = await v5Person(w, { key: 'nina.q', displayName: 'Nina', gender: 'WOMAN', seeking: [], looking: 'FRIENDS', petName: 'Plume' }, c);
+    await v5Setup(alex, { ...alex.spec, looking: 'FRIENDS' }, c);
+    await w.drain();
+    expect((await wallet(alex)).balance).toBe(0);
+  });
+
+  S.step('V5 : ils sortent ensemble un jeudi soir (composition, « Je viens », check-in) — la 1ʳᵉ sortie vécue active chaque parrainage, une seule fois', async () => {
+    outingId = await formOuting(w, [alex, ...friends, nina!]);
+    await at(w, CYCLE.locked);
+    await w.runJob('outings.lifecycle');
+    await at(w, CYCLE.checkin);
+    await w.runJob('outings.lifecycle');
+    for (const p of [alex, ...friends, nina!]) expect((await checkIn(p, outingId)).ok, p.name).toBe(true);
+    await at(w, CYCLE.done);
+    await w.runJob('outings.lifecycle');
+    await w.drain();
+    await w.drain();
+    for (const p of friends) {
+      expect((await wallet(p)).balance, p.name).toBe(100);
+      expect((await p.call('GET', '/v1/referrals/me')).data.status).toBe('REWARDED');
     }
     expect((await wallet(alex)).balance).toBe(300);
     const hist = (await wallet(alex)).history.items.map((e: any) => e.reason);
     expect(hist.filter((r: string) => r === 'REFERRAL_REFERRER')).toHaveLength(3);
+    // Rejeu du filet d'activation : aucun doublon ; Nina (sans lien) ne crédite personne.
+    await w.runJob('social.referral_activation');
+    await w.drain();
+    expect((await wallet(alex)).balance).toBe(300);
+    expect((await wallet(nina!)).balance).toBe(0);
   });
 
   S.note('Après une invitation réussie (« Alex t’attend dans son Quartier »), rien ne relie Alex et ses filleuls : aucune amitié créée, aucune route /friends. L’accueil personnalisé promet un Quartier qui n’existe pas côté API.');
   S.absent('Invitations Quartier signées/expirables, acceptation, liste d’amis, retrait discret', 'aucune route /v1/friends (§8, §13)');
-  S.absent('Nourrir le pet d’un ami du Quartier (+5 amitié, +10 pièces chacun, 3/jour)', 'aucune action de soin sur le pet d’un ami (pets/:id/actions refuse un pet non possédé)');
   S.absent('Bande de 3 à 5 amis, chat de groupe, mission de groupe ≥ 3', 'aucune route /v1/groups (§8)');
   S.absent('Ligue hebdomadaire (classement, promotion, récompense du dimanche 23 h 59)', 'aucune route /v1/league ni job de saison (§8, §17)');
 
-  S.step('Sam tente de nourrir le pet d’Alex (geste Quartier) : refusé faute de lien d’amitié', async () => {
+  S.step('Sam tente de nourrir le pet d’Alex (geste V4 retiré : 410) ; en V5, offrir un accessoire n’est possible qu’au sein de sa bande', async () => {
     const sam = S.need(friends[0], 'Sam');
     const r = await sam.call('POST', `/v1/pets/${alex.petId}/actions`, { action: 'FEED' });
-    expect(r.ok).toBe(false);
-    expect(r.status).toBe(404); // anti-IDOR : un pet d'autrui est introuvable
+    expect([r.status, r.data.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
+    const g = await sam.call('POST', '/v1/band/street/gifts', { linkId: '0190b6a2-0000-7000-8000-000000000001', accessoryId: 'scarf_red' });
+    expect(g.ok).toBe(false);
+    expect([400, 404, 412]).toContain(g.status);
   });
 
   S.step('Alex masque une réponse, en signale une autre, puis désactive sa page : le web ne la sert plus', async () => {

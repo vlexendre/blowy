@@ -3,7 +3,7 @@ import { DEFAULT_TUNING, OUTINGS_V5, parseTuning, safeParseTuning, coinRewards }
 
 describe('tuning', () => {
   it('DEFAULT_TUNING passe le schéma', () => {
-    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.2');
+    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.3');
   });
   it('V5.2 B : garantie « pour toi » (seuil 2, activable) ; défauts appliqués à un payload sans la section', () => {
     expect(DEFAULT_TUNING.outings.composition.storyGuarantee).toEqual({ enabled: true, minCompatible: 2, lambdaGuarantee: 16000 });

@@ -12,12 +12,14 @@ const userOf = (e: OutboxEnvelope): string[] => {
   if (e.aggregateType === 'User') return [e.aggregateId];
   if (typeof p['ownerId'] === 'string') return [p['ownerId']];
   if (Array.isArray(p['ownerIds'])) return p['ownerIds'].filter((x): x is string => typeof x === 'string');
+  // V5 : `outing.attendance_recorded {userId, attended}` — la 1ʳᵉ sortie vécue active le parrainage.
+  if (e.topic === 'outing.attendance_recorded' && p['attended'] === true && typeof p['userId'] === 'string') return [p['userId']];
   return [];
 };
 
 export class ReferralActivationEffect implements OutboxEffect {
   readonly name = 'social.referral_activation';
-  readonly topics = ['pet.created', 'pet.updated', 'user.verification_changed', 'user.onboarded'];
+  readonly topics = ['pet.created', 'pet.updated', 'user.verification_changed', 'user.onboarded', 'outing.attendance_recorded'];
   constructor(private readonly referrals: ReferralUseCases) {}
   async run(event: OutboxEnvelope): Promise<void> {
     for (const u of userOf(event)) await this.referrals.tryActivate(u);

@@ -1,0 +1,538 @@
+{
+ "member": "createrice-tiktok",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 8,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« DES AMITIÉS, OU PLUS. EN VRAI, CETTE SEMAINE. » : hook en un plan.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« TU SORS OÙ ? » : bon hook, rien à exporter.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« À Bordeaux aussi, on sort. » : plan « et chez vous ? ».",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Les 5 pets côte à côte : plan « lequel tu prends ? » ; toujours aucun export de mon pet.",
+   "fix": "Export 9:16 « mon pet »."
+  },
+  "V5-Rencontrer": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mon plan du lundi ; l'icône partage ne dit pas quelle carte part (T3).",
+   "fix": "Aperçu de la carte au tap."
+  },
+  "V5-Trouvee-amis": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lyon : je peux tourner hors Paris.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« VIENS AVEC MOI. » par message seulement : le lien que je publierais n'est plus celui « réservé » à un ami (ma condition T3).",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Tu y vas. » : toujours pas d'animation exportable.",
+   "fix": "Micro-animation 1 s."
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Jeudi, on joue. » dans le salon, filmable.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Ton dimanche idéal, en 3 mots ? » : super plan, mais les réponses des autres ne m'appartiennent pas (T3).",
+   "fix": "Export « mes 3 mots » seuls."
+  },
+  "V5-Groupe-menu": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Hook « il manque 2 personnes » + carte à partager : réglé.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« AIDE BORDEAUX À SORTIR. » bleu, épingle : visuel propre, postable.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Toi et 2 proches, + 2 personnes de Lille » : storytime.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Tu viens seul. Les 4 autres aussi. » : le meilleur hook solo de l'app (au féminin pour moi : « seule »).",
+   "fix": "Formulation épicène."
+  },
+  "V5-Sortie-complete": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager « cette semaine, je sors » » au bon moment.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Carte juste, lien propre ; même composition (Nino debout sur une table ovale, 4 pastilles jaune/bleu/rose/vert) que la carte du vendredi : seule la couleur de fond change. « Demain » en option, non dessiné.",
+   "fix": "Objet propre au mercredi (enveloppe, « lieu secret » scellé) ; dessiner l'option."
+  },
+  "V5-Revelation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Partager « je sors ce soir » » depuis ici (16 h 40) : logique. Toujours pas de carte « les visages sont arrivés ».",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« JE SORS CE SOIR. » + chevalet orange « Blowy » : visuel propre au jeudi, ma demande T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« TU VEILLES SUR ALEX CE SOIR. » : contenu safety ; adresse à flouter.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le code ne doit jamais être filmé ; pas de mode capture.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« SORTIE VÉCUE. » monochrome, lisible en vidéo.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« ALORS, JEUDI ? » = meilleur plan storytime, toujours sans mode capture (3 prénoms) (T2, T3).",
+   "fix": "Mode capture : silhouettes à la place des prénoms."
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« PARTAGER LA SOIRÉE » en bouton principal + « Ma bande s'agrandit › » : mon épisode du dimanche existe.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« ON ÉTAIT 5. » rouge-orange, juste ; même mise en scène que mercredi.",
+   "fix": "Un objet propre au vendredi (verres, table vue de haut)."
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« MA BANDE S'AGRANDIT. » vert, pastilles en ligne + Nino qui saute, aucun chiffre ni pet identifiable : ma demande n°1 T3 réglée.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« PAS D'ACCORD CETTE FOIS. » : contenu honnête, sans carte (T3).",
+   "fix": "Carte « 0 accord, 1 soirée »."
+  },
+  "V5-Bande": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Prénoms sous les pets.",
+   "fix": "Mode capture sans prénoms."
+  },
+  "V5-Rue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« TA RUE » : plan calme ; la vignette du café posée en timbre sur le trottoir fait bricolé à l'écran.",
+   "fix": "Objet dessiné."
+  },
+  "V5-Duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Ressemble à toutes les apps de dating.",
+   "fix": "—"
+  },
+  "V5-Duo-choix": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Messages privés.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Visage et vocal d'une autre : interdit à l'écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Messages privés.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Pas exportable, et c'est voulu.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« DÉCRIS-MOI EN 3 MOTS. » postable ; « Autres cartes › » ouvre un sélecteur jamais dessiné (T3).",
+   "fix": "Dessiner le sélecteur."
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Chips droites : moins joli en vidéo, plus lisible ; OK.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Mes cartes › » : ma demande T3 amorcée, écran non dessiné.",
+   "fix": "Dessiner « Mes cartes »."
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager Nino » : bon plan.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ne s'achète jamais : plus de visibilité » : montrable.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Honnête ; « duos sans limite » dur à expliquer en 10 s.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Nino compose ton groupe… » : 1 s de suspense filmable.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Raton embarrassé : drôle, pas gênant.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer, et c'est normal.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Côté lieu : « le bar qui reçoit 5 inconnus » est un vrai sujet, mais prénoms à l'écran.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien à filmer.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Aucune animation » : argument pour les bars que je tague.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Un objet propre au mercredi et au vendredi (enveloppe scellée « lieu secret » ; verres / table vue de haut) pour que les 6 cartes soient différentes en composition, pas seulement en couleur.",
+  "Mode capture sur V5-Apres et V5-Bande (silhouettes à la place des prénoms, aucune sélection visible).",
+  "Export vidéo 6 s (pet choisi, « Tu y vas. », chevalet du jeudi) et écran « Mes cartes » dessiné."
+ ],
+ "tenIf": "Je mets 10 si je tourne lundi → dimanche entièrement depuis des exports de l'app, sans flouter un visage, un prénom ou un lieu, avec six cartes différentes en composition (pas seulement en couleur), un mode capture sur « ALORS, JEUDI ? », et au moins un export vidéo de quelques secondes."
+}

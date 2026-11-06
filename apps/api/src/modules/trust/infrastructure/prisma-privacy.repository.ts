@@ -55,6 +55,21 @@ export class PrismaPrivacyRepository implements PrivacyRepository {
     // Seulement MES messages (corps compris) ; ceux d'autrui ne sont pas exportés.
     const messages = await this.db.message.findMany({ where: { authorUserId: userId, kind: { not: 'SYSTEM' } }, select: { conversationId: true, kind: true, status: true, createdAt: true, content: { select: { body: true, purgedAt: true } } }, orderBy: { createdAt: 'asc' } });
     const relationships = await this.db.relationshipSide.findMany({ where: { userId }, select: { context: { select: { id: true, type: true, status: true, branch: true, reachedLevel: true, startedAt: true, endedAt: true } } } });
+    // V5 (spec §8.4, demande T4) : sécurité — MES liens d'ange gardien (jamais le jeton ni son empreinte), MES
+    // alertes (sans position : jamais collectée, D-050), « tout va bien », départs « mal à l'aise », incidents signalés.
+    const [guardianLinks, alerts, okSignals, uneasyLeaves, incidents] = await Promise.all([
+      this.db.guardianLink.findMany({ where: { ownerUserId: userId }, select: { subjectKind: true, subjectId: true, label: true, activeFrom: true, expiresAt: true, revokedAt: true, viewCount: true, createdAt: true }, orderBy: { createdAt: 'asc' } }),
+      this.db.safetyAlert.findMany({ where: { userId }, select: { subjectKind: true, subjectId: true, status: true, createdAt: true, ackAt: true, resolvedAt: true }, orderBy: { createdAt: 'asc' } }),
+      this.db.safetyOkSignal.findMany({ where: { userId }, select: { subjectKind: true, subjectId: true, createdAt: true }, orderBy: { createdAt: 'asc' } }),
+      this.db.safetyUneasyLeave.findMany({ where: { userId }, select: { outingId: true, notifyGuardian: true, createdAt: true }, orderBy: { createdAt: 'asc' } }),
+      this.db.safetyIncident.findMany({ where: { reporterId: userId }, select: { outingId: true, note: true, createdAt: true }, orderBy: { createdAt: 'asc' } }),
+    ]);
+    // V5 : MES places de sortie (jamais celles d'autrui), MES bulletins encore conservés (7 j), ma fiabilité.
+    const [seats, ballots, reliabilityV5] = await Promise.all([
+      this.db.outingSeat.findMany({ where: { userId }, select: { weekKey: true, status: true, funding: true, cancelKind: true, refundState: true, invitedAt: true, outing: { select: { startsAt: true, activity: true, status: true } } }, orderBy: { invitedAt: 'asc' } }),
+      this.db.outingVote.findMany({ where: { voterUserId: userId }, select: { outingId: true, choice: true, createdAt: true } }),
+      this.db.reliabilityStat.findUnique({ where: { userId }, select: { attended: true, noShows: true, lateCancels: true, pausedUntil: true } }),
+    ]);
     return {
       account: { id: u.id, email: u.email, birthDate: u.birthDate?.toISOString().slice(0, 10) ?? null, timezone: u.timezone, createdAt: u.createdAt, onboardedAt: u.onboardedAt, reliability: u.reliability },
       profile: u.profile,
@@ -72,6 +87,8 @@ export class PrismaPrivacyRepository implements PrivacyRepository {
       anonymousWordsReceived: u.anonymousResponses,
       myMessages: messages.map((m) => ({ conversationId: m.conversationId, kind: m.kind, status: m.status, createdAt: m.createdAt, body: m.content && !m.content.purgedAt ? m.content.body : null })),
       relationships: relationships.map((r) => r.context),
+      safety: { guardianLinks, alerts, okSignals, uneasyLeaves, incidents },
+      outings: { seats, myBallots: ballots, reliability: reliabilityV5 },
     };
   }
 

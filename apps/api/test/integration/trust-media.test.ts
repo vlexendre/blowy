@@ -77,31 +77,19 @@ describe('§21 n°8 — médias : ACL, quarantaine, dérivés, IDOR', () => {
     // URL de stockage « directe » : aucune route publique ne sert le stockage.
     expect((await raw(h, new TestClient(h), 'GET', `/media/${m.a.userId}/${up.id}/normalized.jpg`)).status).toBe(404);
 
-    // Plus N4 + accords des deux : flou seulement, jamais l'original.
+    // V5 (§7.7) : la révélation photo V4 (paliers N4/N5) est retirée — 410, et aucun palier ne l'ouvre plus :
+    // la photo de profil reste inaccessible au partenaire. Les visages V5 passent par l'ACL OUTING_REVEAL
+    // (place confirmée, J − 3 h, filigrane du regardeur) — couverte par `safety-v5.test.ts`.
     await h.db.relationshipContext.update({ where: { id: m.relId }, data: { branch: 'PLUS', movedInAt: h.clock.now(), status: 'MOVED_IN' } });
-    await setLevel(h, m.relId, 4);
-    const r1 = await m.a.call('POST', `/v1/relationships/${m.relId}/photo-reveal`, { scope: 'PHOTO_REVEAL', decision: 'ACCEPT' });
-    expect(r1.body.status).toBe('OPEN');
-    expect((await raw(h, m.b, 'GET', `/v1/media/${up.id}/content?variant=blurred&relationshipId=${m.relId}`)).status).toBe(404); // un seul accord
-    const r2 = await m.b.call('POST', `/v1/relationships/${m.relId}/photo-reveal`, { scope: 'PHOTO_REVEAL', decision: 'ACCEPT' });
-    expect(r2.body).toMatchObject({ status: 'ACCEPTED', otherVariant: 'blurred' });
-    const blurred = await raw(h, m.b, 'GET', `/v1/media/${up.id}/content?variant=normalized&relationshipId=${m.relId}`);
-    expect(blurred.status).toBe(200); // variante demandée « normalized » → servie floutée
-    expect((await sharp(blurred.buf).metadata()).width).toBe(320);
-    const ownBlur = await raw(h, m.a, 'GET', `/v1/media/${up.id}/content?variant=blurred`);
-    expect(blurred.buf.equals(ownBlur.buf)).toBe(true);
-    // Original Plus N5 sans double accord : refusé.
-    expect((await m.a.call('POST', `/v1/relationships/${m.relId}/photo-reveal`, { scope: 'PHOTO_ORIGINAL', decision: 'ACCEPT' })).status).toBe(412);
-
-    // Jeton court : valide, puis révoqué par le blocage (ACL revérifiée à l'usage).
-    const tok = await m.b.call('POST', `/v1/media/${up.id}/access-tokens`, { variant: 'blurred', relationshipId: m.relId });
-    expect(tok.status).toBe(201);
-    const tokenPath = new URL(tok.body.url).pathname;
-    expect((await raw(h, new TestClient(h), 'GET', tokenPath)).status).toBe(200);
-    // Préférence « jamais » : l'emporte immédiatement sur tous les niveaux.
-    await m.a.call('PUT', '/v1/preferences/privacy', { photoPreference: 'NEVER', ageDisplay: 'RANGE', mapVisible: false });
-    expect((await raw(h, new TestClient(h), 'GET', tokenPath)).status).toBe(404);
-    expect((await raw(h, m.b, 'GET', `/v1/media/${up.id}/content?variant=blurred&relationshipId=${m.relId}`)).status).toBe(404);
+    await setLevel(h, m.relId, 5);
+    for (const r of [
+      await m.a.call('POST', `/v1/relationships/${m.relId}/photo-reveal`, { scope: 'PHOTO_REVEAL', decision: 'ACCEPT' }),
+      await m.b.call('POST', `/v1/relationships/${m.relId}/photo-reveal`, { scope: 'PHOTO_REVEAL', decision: 'ACCEPT' }),
+      await m.b.call('GET', `/v1/relationships/${m.relId}/photo-reveal?scope=PHOTO_REVEAL`),
+    ])
+      expect([r.status, r.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
+    for (const v of ['blurred', 'normalized']) expect((await raw(h, m.b, 'GET', `/v1/media/${up.id}/content?variant=${v}&relationshipId=${m.relId}`)).status).toBe(404);
+    expect((await m.b.call('POST', `/v1/media/${up.id}/access-tokens`, { variant: 'blurred', relationshipId: m.relId })).status).toBe(404);
   });
 
   it('preuve de mission privée par défaut : le partenaire ne voit ni la preuve ni le visage ; partage volontaire = flou sans droits photo', async () => {
@@ -244,9 +232,8 @@ describe('§21 n°9/10 — pipeline IA : panne ≠ approbation, injection sans e
     await m.b.call('POST', '/v1/consents/ai', { purpose: 'AI_SUGGESTIONS', version: '2026-11', granted: false });
     await h.drain();
     expect(await h.db.suggestion.count({ where: { userId: m.b.userId, invalidatedAt: null } })).toBe(0);
-    // Pause : aucune relance.
-    await m.b.call('POST', `/v1/relationships/${m.relId}/pause`, { days: 2 });
-    expect((await m.b.call('POST', '/v1/suggestions', { conversationId: m.convId })).status).toBe(412);
+    // V5 : la pause par relation est retirée (410) ; la pause V5 est globale (POST /v1/pauses).
+    expect((await m.b.call('POST', `/v1/relationships/${m.relId}/pause`, { days: 2 })).status).toBe(410);
     // Signal d'humeur : calculé seulement sur les messages d'auteurs consentants (AI_NARRATION) ; preuves revalidées.
     expect((await m.a.call('GET', `/v1/conversations/${m.convId}/signal`)).body.tone).toBe('neutral');
     await m.a.call('POST', '/v1/consents/ai', { purpose: 'AI_NARRATION', version: '2026-11', granted: true });

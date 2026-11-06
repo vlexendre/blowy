@@ -112,6 +112,8 @@ export class PairTable {
   /** romance seulement (sans amis) : doit avoir ≥ 1 rom-compatible dans son groupe. */
   readonly romanceOnly: Uint8Array;
   readonly meetEmpty: Uint8Array;
+  /** D-039 : genre unique de « qui je veux rencontrer » (−1 si aucun ou plusieurs) — exception « groupe non mixte demandé ». */
+  readonly meetOnly: Int8Array;
   /** Index de team (−1 = seul·e) : les membres d'une même team ne comptent pas pour la garantie. */
   readonly team: Int32Array;
   private readonly bracketLo: Int16Array;
@@ -136,6 +138,7 @@ export class PairTable {
     this.seeksFriends = Uint8Array.from(cands, (c) => (c.seeks.friends ? 1 : 0));
     this.romanceOnly = Uint8Array.from(cands, (c) => (c.seeks.romance && !c.seeks.friends ? 1 : 0));
     this.meetEmpty = Uint8Array.from(cands, (c) => (c.meetGenders.length === 0 ? 1 : 0));
+    this.meetOnly = Int8Array.from(cands, (c) => (c.meetGenders.length === 1 ? genderIndex(c.meetGenders[0]!) : -1));
     this.romanceMask = Int32Array.from(cands, (c) => genderMask(c.romanceGenders));
     const teams = new Map<string, number>();
     this.team = Int32Array.from(cands, (c) => (c.teamId === null ? -1 : (teams.get(c.teamId) ?? (teams.set(c.teamId, teams.size), teams.size - 1))));

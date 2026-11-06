@@ -2506,6 +2506,8 @@ model DomainEvent {
 
   @@unique([aggregateType, aggregateId, seq])
   @@index([occurredAt])
+  /// V5 (alignement) : lectures du journal économique par titulaire et nature (`economy.journal`, décision V5-alignement).
+  @@index([aggregateType, actorUserId, type])
 }
 
 /// Outbox transactionnelle : écrite dans la même transaction que l'effet métier.

@@ -4,6 +4,7 @@
  * toujours ouverte, membre non révoqué). Publication → séquence visible, projection pour
  * les destinataires, aller-retour XP via le moteur. Panne IA → PROCESSING_FAILED (jamais publié).
  */
+import type { MessageAuthorResolver, MessageAuthorView } from '../../../shared/application/ports/message-author.port.js';
 import type { EventPublisher } from '../../../shared/application/event-publisher.js';
 import type { LinkProgressPort } from '../../../shared/application/ports/link-progress.port.js';
 import type { UnitOfWork } from '../../../shared/application/unit-of-work.js';
@@ -25,6 +26,7 @@ export class ModerateMessageUseCase {
     private readonly link: LinkProgressPort,
     private readonly logger: Logger,
     private readonly cases: ModerationCaseSink | null = null,
+    private readonly authors: MessageAuthorResolver | null = null,
   ) {}
 
   async execute(messageId: string): Promise<MessageStatus | null> {
@@ -80,6 +82,9 @@ export class ModerateMessageUseCase {
       const published = (await this.repo.loadMessage(scope, messageId))!;
       // Auteur : statut de son message (toujours). Destinataires : seulement si visible.
       const recipients = conv.members.filter((m) => !m.revokedAt);
+      // V5 chat de sortie : auteur signé par son pet (prénom après la confirmation), calculé par destinataire.
+      const authorsByViewer = new Map<string, ReadonlyMap<string, MessageAuthorView> | null>();
+      if (conv.kind === 'OUTING' && this.authors) for (const r of recipients) authorsByViewer.set(r.userId, await this.authors.authorsFor(conv.id, r.userId, scope.now));
       await this.events.publish(scope, {
         sourceEventId: messageId,
         type: visibleToRecipient(finalStatus) ? (finalStatus === 'WARNED' ? 'message.warned' : 'message.published') : 'message.status',
@@ -87,7 +92,7 @@ export class ModerateMessageUseCase {
         room: `conversation:${conv.id}`,
         recipients: recipients
           .filter((m) => m.userId === msg.authorUserId || visibleToRecipient(finalStatus))
-          .map((m) => ({ userId: m.userId, payload: { message: toMessageView(published, m.userId) } })),
+          .map((m) => ({ userId: m.userId, payload: { message: toMessageView(published, m.userId, authorsByViewer.get(m.userId) ?? null) } })),
       });
       // Une correction tardive ne réattribue jamais l'XP : `exchangeEvaluatedAt` est réclamé une seule fois.
       if (countsForExchange(finalStatus) && seq !== null && conv.contextId && msg.authorUserId && !closed && (await this.repo.claimExchange(scope, messageId))) {

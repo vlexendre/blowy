@@ -163,18 +163,20 @@ export class PrismaReferralRepository implements ReferralRepository {
     const u = await tx.user.findUnique({ where: { id: userId }, select: { status: true, birthDate: true, primaryPet: { select: { id: true } }, verificationSessions: { select: { provenance: true, status: true } } } });
     if (!u) return { accountActive: false, adult: false, hasPrimaryPet: false, verifications: [], hasFirstAction: false };
     const adultBefore = new Date(Date.UTC(now.getUTCFullYear() - 18, now.getUTCMonth(), now.getUTCDate()));
-    // Première action valide : un soin/jeu enregistré par le moteur, une contribution relationnelle ou un message publié.
-    const [care, contrib, msg] = await Promise.all([
+    // Première action valide : V5 (spec §5, `referral.first_outing_lived`) une 1ʳᵉ sortie vécue (place ATTENDED) ou un
+    // message publié ; historique V4 conservé (soin/jeu déjà enregistré, contribution relationnelle).
+    const [care, contrib, msg, lived] = await Promise.all([
       tx.petCareEvent.count({ where: { actorUserId: userId }, take: 1 }),
       tx.contributionEvent.count({ where: { userId }, take: 1 }),
       tx.message.count({ where: { authorUserId: userId, status: 'PUBLISHED' }, take: 1 }),
+      tx.outingSeat.count({ where: { userId, status: 'ATTENDED' }, take: 1 }),
     ]);
     return {
       accountActive: u.status === 'ACTIVE',
       adult: !!u.birthDate && u.birthDate <= adultBefore,
       hasPrimaryPet: !!u.primaryPet,
       verifications: u.verificationSessions.map((v) => ({ provenance: v.provenance, status: v.status })),
-      hasFirstAction: care + contrib + msg > 0,
+      hasFirstAction: care + contrib + msg + lived > 0,
     };
   }
 

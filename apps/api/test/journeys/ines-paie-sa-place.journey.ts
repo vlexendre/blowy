@@ -96,7 +96,8 @@ describe('Inès paie sa place', () => {
     expect(statuses).toEqual(['ACCEPTED', 'DUPLICATE', 'DUPLICATE']);
     await w.drain();
     expect(await seat(hugo!)).toMatchObject({ status: 'CONFIRMED', funding: 'PAID', paymentRef: pi });
-    expect(await w.db.domainEvent.count({ where: { aggregateType: 'economy.journal', type: 'PAYMENT_SUCCEEDED' } })).toBe(1);
+    // Base partagée entre parcours (ordre d'exécution variable) : on compte les écritures de CE paiement.
+    expect(await w.db.domainEvent.count({ where: { aggregateType: 'economy.journal', type: 'PAYMENT_SUCCEEDED', payload: { path: ['refs', 'providerPaymentId'], equals: pi } } })).toBe(1);
     expect((await hugo!.phone.waitFor((e) => e.type === 'outing.seat_updated' && (e.payload as any)?.seat?.status === 'CONFIRMED', 1500))).toBeTruthy();
   });
 

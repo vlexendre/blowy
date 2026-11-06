@@ -2,7 +2,7 @@
 /**
  * V5 T4 (agent E) — intégration `safety` + trust V5 + media (vraie base, vrai graphe Nest, horloge) :
  *  - lien ange gardien : jeton rendu une fois (jamais en clair en base, même dans l'idempotence),
- *    limite par sujet, page du proche (lieu au verrouillage, chronologie, alerte + position), 404
+ *    limite par sujet, page du proche (lieu au verrouillage, chronologie, alerte sans position), 404
  *    identique (inconnu / révoqué / expiré / place retirée), en-têtes no-store / noindex ;
  *  - alerte « besoin d'aide » : dossier SAFETY_ALERT prioritaire (échéance 1 h), Web Push sans
  *    contenu au proche abonné, file staff (trust_lead seul, lecture auditée), résolution ;
@@ -10,7 +10,7 @@
  *    fiabilité, « ne pourra pas venir »), liens gardien révoqués, signalements V5 avec contexte ;
  *  - « je connais quelqu'un » en examen → dossier → décision staff (retrait sans pénalité) ;
  *  - visages : filigrane serveur du prénom du regardeur ; consentement art. 9 révocable + purge ;
- *  - rétention : position d'alerte gardée tant que le dossier est ouvert, purgée ensuite.
+ *  - D-050 : aucune position d'alerte n'est jamais collectée (champ ignoré).
  */
 import { createHash, randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -208,41 +208,39 @@ describe('safety V5 (intégration)', () => {
     expect(v.venue.name).toBe('Café des Oiseaux');
     expect(r.buf.toString()).not.toMatch(/48\.86|2\.37|accuracy|position/);
     expect(v.timeline.at(-1)).toEqual({ type: 'ALERT', at: T.alert.toISOString() });
-    // La position n'entre pas dans la mémoire d'idempotence.
+    // D-050 : la position envoyée par un ancien client est ignorée — rien en base, rien en mémoire d'idempotence.
+    expect(await h.db.safetyAlert.findUniqueOrThrow({ where: { id: alertId } })).toMatchObject({ lat: null, lng: null, accuracyM: null });
     const rec = await h.db.$queryRawUnsafe<{ n: bigint }[]>(`SELECT count(*)::bigint AS n FROM "CommandRecord" WHERE "result"::text LIKE '%48.86491%'`);
     expect(Number(rec[0]!.n)).toBe(0);
   });
 
-  it('staff : trust_lead seul voit la position (lecture auditée) ; le modérateur voit le dossier sans position', async () => {
+  it('staff : trust_lead seul lit l\'alerte (lecture auditée) ; aucune position n\'existe (D-050) ; le modérateur voit le dossier', async () => {
     await expect(adminTrust().listSafetyAlerts(staff.mod, { limit: 10 })).rejects.toMatchObject({ code: 'FORBIDDEN' });
     const list = await adminTrust().listSafetyAlerts(staff.trust, { status: 'OPEN', limit: 10 });
-    expect(list.items.find((x) => x.id === alertId)).toMatchObject({ positionAttached: true, overdue: false, slaDueAt: new Date(T.alert.getTime() + 3_600_000).toISOString() });
+    expect(list.items.find((x) => x.id === alertId)).toMatchObject({ positionAttached: false, overdue: false, slaDueAt: new Date(T.alert.getTime() + 3_600_000).toISOString() });
     expect(JSON.stringify(list)).not.toContain('48.86');
     await expect(adminTrust().getSafetyAlert(staff.trust, alertId, { justification: 'court' })).rejects.toMatchObject({ code: 'PRECONDITION_FAILED' });
     const d = await adminTrust().getSafetyAlert(staff.trust, alertId, { justification: 'Appel de Léa en cours (astreinte)' });
-    expect(d.position).toEqual({ lat: 48.86491, lng: 2.37071, accuracyM: 18 });
+    expect(d.position).toBeNull();
     expect(await h.db.auditLog.count({ where: { action: 'safety.alert.read', targetId: alertId } })).toBe(1);
     const cases = await adminMod().listCases(staff.mod, { status: 'OPEN', subjectType: 'SAFETY_ALERT', limit: 10 });
     const sc = cases.items.find((x) => x.subjectId === alertId)!;
     const full = await adminMod().getCase(staff.mod, sc.id);
-    expect(full.context.subject?.text).toContain('position jointe : oui');
+    expect(full.context.subject?.text).toContain('position jointe : non');
     expect(JSON.stringify(full)).not.toContain('48.86');
   });
 
-  it('résolution « je vais bien » : l\'alerte disparaît de la page, la position reste tant que le dossier est ouvert', async () => {
+  it('résolution « je vais bien » : l\'alerte disparaît de la page ; le dossier reste ouvert pour le suivi staff', async () => {
     h.clock.set(new Date(T.alert.getTime() + 5 * 60_000));
     expect((await lea.call('POST', `/v1/safety/alerts/${alertId}/resolve`, { status: 'SAFE' })).body).toEqual({ alertId, status: 'SAFE' });
     const v = (await pub(token)).json();
     expect(v.alert).toBeUndefined();
     expect(v.timeline.at(-1).type).toBe('OK');
-    // 72 h plus tard, dossier encore ouvert → position conservée ; après prise en charge → purgée.
+    // D-050 : aucune position à purger ; la purge reste sans effet sur l'alerte.
     await run('safety.purge', new Date(T.alert.getTime() + 73 * 3_600_000));
-    expect((await h.db.safetyAlert.findUniqueOrThrow({ where: { id: alertId } })).lat).not.toBeNull();
     await adminTrust().handleSafetyAlert(staff.trust, alertId, { reason: 'Rappelée, tout va bien', commandId: randomUUID() });
     await run('safety.purge', new Date(T.alert.getTime() + 74 * 3_600_000));
-    const after = await h.db.safetyAlert.findUniqueOrThrow({ where: { id: alertId } });
-    expect(after).toMatchObject({ lat: null, lng: null, accuracyM: null });
-    expect(after.positionPurgedAt).not.toBeNull();
+    expect(await h.db.safetyAlert.findUniqueOrThrow({ where: { id: alertId } })).toMatchObject({ lat: null, lng: null, accuracyM: null });
     expect((await h.db.moderationCase.findFirstOrThrow({ where: { subjectType: 'SAFETY_ALERT', subjectId: alertId } })).status).toBe('RESOLVED');
   });
 

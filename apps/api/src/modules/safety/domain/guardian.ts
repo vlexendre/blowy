@@ -25,7 +25,14 @@ export interface SafetyTuningSlice {
   alertsPerHour: number;
   removalAbuseThreshold: number;
   removalAbuseWindowDays: number;
+  /** tuning-2026.12.3 (V5.3 B.9) : défauts appliqués si une tranche antérieure est fournie. */
+  humanResponseMinutes?: number;
+  uneasyLeaveRecontactThreshold?: number;
+  uncomfortableLeaveWindowDays?: number;
 }
+
+/** Réponse humaine visée (`[T] safety.humanResponseMinutes`, 60 par défaut). */
+export const humanResponseMinutes = (t: Pick<SafetyTuningSlice, 'humanResponseMinutes'>): number => t.humanResponseMinutes ?? HUMAN_RESPONSE_MINUTES;
 
 /** Faits d'un sujet (sortie ou RDV duo) du point de vue de son propriétaire. */
 export interface SubjectFacts {

@@ -13,7 +13,7 @@ import { pairKey, seeksOf, type ConnectionKind } from '@blowy/domain';
 import { romanceCompatible } from '@blowy/matching/groups';
 import type { OutboxConsumer, OutboxEnvelope } from '../../../shared/application/outbox-consumer.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
-import { canMoveDuo, checkinWindow, duoCapacity, EXPIRED_READ_ONLY_MS, exchangeOutcome, localDateHour, resolveDuoVote, restingStatus } from '../domain/duo-policy.js';
+import { canMoveDuo, checkinWindow, EXPIRED_READ_ONLY_MS, exchangeOutcome, localDateHour, resolveDuoVote, restingStatus } from '../domain/duo-policy.js';
 import { selectLanePairs, type LaneCandidate } from '../domain/lane.js';
 import type { ConnectionsDeps } from './deps.js';
 import type { DuoUseCases } from './duos.use-cases.js';
@@ -214,9 +214,9 @@ export class DuoLifecycle {
     const t = this.x.tuning;
     const cands: LaneCandidate[] = [];
     for (const c of raw) {
-      const [photo, paused, open, activeDuos, plus] = await Promise.all([this.x.photos.currentProfilePhotoId(c.userId), this.x.reliability.isPaused(null, c.userId, now), this.repo.openLaneProposalCount(null, c.userId, now), this.repo.activeDuoCount(null, c.userId), this.duos.hasPlus(c.userId, now)]);
+      const [photo, paused, open, activeDuos, capacityOf] = await Promise.all([this.x.photos.currentProfilePhotoId(c.userId), this.x.reliability.isPaused(null, c.userId, now), this.repo.openLaneProposalCount(null, c.userId, now), this.repo.activeDuoCount(null, c.userId), this.duos.capacity(c.userId, now)]);
       const laneDuos = await this.repo.activeLaneDuoCount(null, c.userId);
-      const capacity = !photo || paused || activeDuos >= duoCapacity(plus) ? 0 : Math.max(0, t.duo.maxActive - open - laneDuos);
+      const capacity = !photo || paused || activeDuos >= capacityOf ? 0 : Math.max(0, t.duo.maxOpenProposals - open - laneDuos);
       cands.push({ ...c, capacity });
     }
     const ids = cands.map((c) => c.userId);

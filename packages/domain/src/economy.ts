@@ -39,7 +39,8 @@ export type SubscriptionState =
 // ---- V5 (spec-v5 §6, D-018–D-020) ----
 /** @deprecated V4 : remplacé par `EntitlementKeyV5` (D-020 : carte, indices, espèces premium, XP×2 retirés). */
 export type EntitlementKeyV4 = EntitlementKey;
-export const ENTITLEMENT_KEYS_V5 = ['PLUS_INCLUDED_OUTINGS', 'PLUS_MONTHLY_ACCESSORY'] as const;
+/** Droits V5 de Blowy+ (spec §6.3) : toutes les sorties incluses + duos illimités ; l'accessoire mensuel est mort (D-041). */
+export const ENTITLEMENT_KEYS_V5 = ['PLUS_INCLUDED_OUTINGS', 'PLUS_UNLIMITED_DUOS'] as const;
 export type EntitlementKeyV5 = (typeof ENTITLEMENT_KEYS_V5)[number];
 
 export const CREDIT_KINDS = ['FREE_FIRST', 'PLUS_INCLUDED', 'REFUND_CREDIT', 'STAFF_GRANT'] as const;

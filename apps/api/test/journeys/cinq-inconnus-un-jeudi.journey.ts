@@ -79,9 +79,10 @@ describe('Cinq inconnus un jeudi', () => {
     expect((await accept(ines, outingId)).ok).toBe(true);
     await w.drain();
     for (const p of all) expect(await p.phone.join(`outing:${outingId}`)).toBe(true);
+    // V5.3 B.7 : avant la confirmation, chacun·e n'est vu·e que par son pet (ni prénom, ni tranche, ni fiabilité).
     const hv = (await outing(hugo, outingId)).data;
-    expect(hv.members.find((m: any) => m.firstName === 'Léa')).toMatchObject({ ageRange: expect.any(String), reliability: 'NEWCOMER' });
-    expect(hv.members.some((m: any) => m.photo)).toBe(false);
+    expect(hv.members).toHaveLength(4);
+    expect(hv.members.some((m: any) => m.firstName || m.ageRange || m.reliability || m.photo)).toBe(false);
   });
 
   S.step('Chat de groupe : réponse « 3 mots » modérée et publiée ; plus de 3 mots refusé', async () => {
@@ -93,15 +94,25 @@ describe('Cinq inconnus un jeudi', () => {
     await w.drain();
     const msgs = await malo.messages(conv);
     expect(JSON.stringify(msgs.data)).toContain('brunch vélo soleil');
+    // §2.8 / V5.3 B.7 : avant la confirmation, le message est signé par le PET de Léa, jamais par son prénom.
+    const m = (msgs.data as any).items.find((x: any) => x.body === 'brunch vélo soleil');
+    expect(m.author).toEqual({ pet: { name: 'Suzie', species: expect.any(String) } });
+    const ev = await malo.phone.waitFor((e) => e.type === 'message.published' && (e.payload as any)?.message?.body === 'brunch vélo soleil', 500);
+    if (ev) expect((ev.payload as any).message.author).toEqual({ pet: { name: 'Suzie', species: expect.any(String) } });
   });
 
-  S.step('Veille 18 h : lieu révélé aux confirmé·es ; visages pas avant J − 3 h (V5.2), puis révélés à tous en même temps', async () => {
+  S.step('Veille 18 h : lieu, prénoms, tranches et fiabilité révélés aux confirmé·es ; visages pas avant J − 3 h, puis à tous en même temps', async () => {
     await at(w, CYCLE.locked);
     await w.runJob('outings.lifecycle');
     const v = (await outing(sarah, outingId)).data;
     expect(v.status).toBe('CONFIRMED');
     expect(v.venue).toMatchObject({ name: 'Café Paris 11e', bookingName: 'Blowy' });
+    expect(v.members.find((m: any) => m.firstName === 'Léa')).toMatchObject({ ageRange: expect.any(String), reliability: 'NEWCOMER' });
     expect(v.members.some((m: any) => m.photo)).toBe(false);
+    // À la confirmation, le chat signe aussi par le prénom.
+    const conv = v.conversationId;
+    const signed = ((await sarah.messages(conv)).data as any).items.find((x: any) => x.body === 'brunch vélo soleil');
+    expect(signed.author).toMatchObject({ pet: { name: 'Suzie' }, firstName: 'Léa' });
     await at(w, CYCLE.faces);
     for (const p of all) {
       const pv = (await outing(p, outingId)).data;

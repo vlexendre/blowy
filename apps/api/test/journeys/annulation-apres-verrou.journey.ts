@@ -43,10 +43,11 @@ describe('Annulation', () => {
   });
 
   // V5.3 B.6 : annulation gratuite jusqu'à la confirmation (veille 18 h) ; après, annuler = absence.
-  S.step('Avant la confirmation (veille 18 h) : Ben annule → recrédité, aucune absence', async () => {
-    expect((await preview(ben!)).data).toEqual({ cancelKind: 'EARLY', refund: 'CREDIT', countsAsAbsence: false });
+  S.step('Avant la confirmation (veille 18 h) : Ben annule → sa 1ʳᵉ sortie « reste offerte » (D-042), aucune absence', async () => {
+    expect((await preview(ben!)).data).toEqual({ cancelKind: 'EARLY', refund: 'STAYS_FREE', countsAsAbsence: false });
     const r = await cancel(ben!);
-    expect(r.data).toEqual({ cancelKind: 'EARLY', refund: 'CREDIT', countsAsAbsence: false });
+    expect(r.data).toEqual({ cancelKind: 'EARLY', refund: 'STAYS_FREE', countsAsAbsence: false });
+    expect((await ben!.call('GET', '/v1/outing-credits')).data.available).toEqual([{ kind: 'FREE_FIRST', count: 1 }]);
     expect((await ben!.call('GET', '/v1/me/reliability')).data).toMatchObject({ attended: 0, total: 0, newcomer: true });
     const bv = (await outing(ben!, outingId)).data;
     expect(bv.members).toEqual([]);
@@ -87,7 +88,7 @@ describe('Annulation', () => {
   S.step('Le motif sécurité reste remboursé et sans effet, même après les visages', async () => {
     expect((await preview(dan!)).data.cancelKind).toBe('LATE');
     const r = await cancel(dan!, 'SAFETY');
-    expect(r.data).toEqual({ cancelKind: 'SAFETY_EXIT', refund: 'CREDIT', countsAsAbsence: false });
+    expect(r.data).toEqual({ cancelKind: 'SAFETY_EXIT', refund: 'STAYS_FREE', countsAsAbsence: false });
     expect((await dan!.call('GET', '/v1/me/reliability')).data.total).toBe(0);
   });
 

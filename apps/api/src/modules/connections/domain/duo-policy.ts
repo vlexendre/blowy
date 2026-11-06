@@ -106,7 +106,7 @@ export const eggEligible = (d: { status: DuoStatus; datesAttended: number }, t: 
 export const eggActive = (d: { eggOptInLow: boolean; eggOptInHigh: boolean }): boolean => d.eggOptInLow && d.eggOptInHigh;
 
 /** Capacité de duos actifs : 1 gratuit, illimité avec Blowy+. */
-export const duoCapacity = (plus: boolean): number => (plus ? Number.POSITIVE_INFINITY : FREE_ACTIVE_DUOS);
+export const duoCapacity = (plus: boolean, free: number = FREE_ACTIVE_DUOS): number => (plus ? Number.POSITIVE_INFINITY : free);
 
 /** Minute locale d'un instant dans un fuseau IANA. */
 export function localMinuteOf(at: Date, timezone: string): number {

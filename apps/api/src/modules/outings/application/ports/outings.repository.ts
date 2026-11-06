@@ -146,6 +146,11 @@ export interface OutingsRepository {
   requester(scope: TxScope | null, userId: string, at: Date): Promise<RequesterFacts | null>;
   weekSlots(neighborhoodIds: string[], weekKey: string, timezone: string): Promise<WeekSlot[]>;
   request(scope: TxScope | null, userId: string, weekKey: string): Promise<RequestRow | null>;
+  /**
+   * D-052 (§2.4) : personnes actives et onboardées, avec un quartier ouvert (LIVE/WAITLIST) et au moins un
+   * créneau coché, sans demande pour `weekKey` (une demande retirée n'est jamais recréée). Triées par id.
+   */
+  autoRequestCandidates(weekKey: string, limit: number): Promise<string[]>;
   /** Place active (ou la plus récente) d'une personne pour une semaine. */
   seatOfWeek(scope: TxScope | null, userId: string, weekKey: string): Promise<SeatRow | null>;
   /** Faits complets d'une sortie (toutes les places, personnes, pets, lieu). */
@@ -245,6 +250,11 @@ export interface OutingsRepository {
   activeSeatsOf(scope: TxScope, userId: string): Promise<SeatRow[]>;
   knowsSomeoneBySeat(scope: TxScope | null, seatId: string): Promise<{ id: string; seatId: string; outingId: string; userId: string; targetUserId: string; status: string } | null>;
   setKnowsSomeoneStatus(scope: TxScope, id: string, status: 'ACCEPTED' | 'REJECTED'): Promise<void>;
+
+  // ------------------------------------------------------------ T6 (admin ops, ajout minimal par port)
+  seatById(scope: TxScope | null, seatId: string): Promise<SeatRow | null>;
+  dispute(scope: TxScope | null, id: string): Promise<{ id: string; seatId: string; userId: string; status: 'OPEN' | 'ACCEPTED' | 'REJECTED' } | null>;
+  setDisputeStatus(scope: TxScope, id: string, status: 'ACCEPTED' | 'REJECTED', staffUserId: string): Promise<void>;
 
   // ------------------------------------------------------------ teams
   teamOf(scope: TxScope | null, userId: string): Promise<TeamRow | null>;

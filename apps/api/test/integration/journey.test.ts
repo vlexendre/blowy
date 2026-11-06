@@ -46,10 +46,10 @@ describe('parcours n°1 — de l’onboarding au chat', () => {
     expect(rel.body).toMatchObject({ status: 'ACTIVE', branch: 'UNDECIDED', reachedLevel: 1, myPetHere: false, otherPresence: 'OUT' });
     const convId = rel.body.conversationId as string;
 
-    // Déplacement explicite par commande dédiée.
+    // V5 (§7.7) : le déplacement du pet est retiré (410) ; le pet ne se « promène » plus.
     const moved = await alice.call('POST', `/v1/pets/${a.petId}/move`, { destination: 'DATE_SPOT', relationshipId: relId });
-    expect(moved.body.location).toMatchObject({ kind: 'DATE_SPOT', relationshipId: relId });
-    expect((await bob.call('GET', `/v1/relationships/${relId}`)).body.otherPresence).toBe('HERE');
+    expect([moved.status, moved.body.detailsSafe?.reason]).toEqual([410, 'RETIRED_IN_V5']);
+    expect((await bob.call('GET', `/v1/relationships/${relId}`)).body.otherPresence).toBe('OUT');
 
     // Chat : pending → modération (worker) → publié ; réponse de Bob → aller-retour XP.
     const m1 = await alice.call('POST', `/v1/conversations/${convId}/messages`, { clientMessageId: 'alice-0001', body: 'Coucou Bob, ton pet a l’air drôle !' });
@@ -66,12 +66,9 @@ describe('parcours n°1 — de l’onboarding au chat', () => {
     expect(after.body.xp).toBeGreaterThan(0); // premier aller-retour (+2 +10 bonus, × k × m)
     expect(after.body.xp).toBeLessThanOrEqual(20);
 
-    // Jouer au même lieu (les deux pets présents) : XP du Lien via le moteur.
-    await bob.call('POST', `/v1/pets/${b.petId}/move`, { destination: 'DATE_SPOT', relationshipId: relId });
+    // V5 : plus de jeu de pets (410) ; le Lien ne progresse que par la conversation.
     const play = await alice.call('POST', `/v1/pets/${a.petId}/actions`, { action: 'PLAY', relationshipId: relId });
-    expect(play.status).toBe(201);
-    expect(play.body.outcome).toBe('APPLIED');
-    const final = await alice.call('GET', `/v1/relationships/${relId}`);
-    expect(final.body.xp).toBeGreaterThan(after.body.xp);
+    expect(play.status).toBe(410);
+    expect((await alice.call('GET', `/v1/relationships/${relId}`)).body.xp).toBe(after.body.xp);
   });
 });
