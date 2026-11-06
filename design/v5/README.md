@@ -16,7 +16,7 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
 
 ## Contenu
 
-- **106 artboards** dans `project/` :
+- **107 artboards** dans `project/` :
   - 100 écrans d'app et 3 pages web, en 390 × 844 ;
   - **3 écrans côté lieu** (web admin) en 1280 × 800 : `L-Effectif`, `L-Creneaux`, `L-Contrat`.
 - **`project/canvas.json`** : la page « v5 — Bande » compte 10 rangées (A, B, B', C à H, L), avec des titres de 01 à 62 (variantes en b, c, d…), plus 4 notes.
@@ -27,16 +27,16 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **106 fichiers, 9 066 vérifications, 0 contradiction**.
+  - Résultat : **107 fichiers, 9 711 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **106 écrans, 1 647 textes, 583 cibles, 1 702 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **107 écrans, 1 730 textes, 595 cibles, 1 815 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
   - Les miniatures de « Mes cartes » (`data-miniature`, images réduites de cartes auditées en taille réelle) sont exclues des contrôles de mise en page.
   - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
   - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
 - **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x ; les écrans lieu défilent au-delà de 800 px et le canvas prend leur hauteur rendue).
   - Commande : `DESIGN_ROOT=design/v5 NODE_PATH=$(npm root -g) node design/v5/render-v5.mjs .local/dc-runtime.js design/v5/renders [filtre]`.
-  - Les 106 rendus de `renders/` ont été régénérés ; tous les écrans modifiés ou nouveaux ont été relus en planches.
+  - Les 107 rendus de `renders/` ont été régénérés ; tous les écrans modifiés ou nouveaux ont été relus en planches.
 
 ### Contrôles ajoutés au tour 9 (`check-facts`)
 
@@ -47,6 +47,26 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
 5. **Fiabilité** : toute mention (« fiabilité », « sortie honorée », « Venu à N sortie ») est suivie de « visible par toi seulement ».
 6. **Tranche des personas dans leur groupe** : « 5 personnes · NN–NN ans » contient la tranche du persona de l'écran ; chaque membre du groupe de Lyon a sa tranche (`facts.groupesTranches`).
 7. **Ratons des écrans d'échec** (`facts.ecransEchec`) : 64 pt au plus (`facts.ratonMax`).
+
+## Suivi tour 10 (utilisateurs)
+
+Règle : un point n'est coché qu'après avoir été vu dans le PNG rendu.
+
+- [x] Ratons de V5-Sortie-complete (« 24 », 110 pt) et V5-Apres-aucun (« 34d », 130 pt) remplacés par une pastille de 64 pt ; vus dans les rendus. Les deux écrans (et Sortie annulée, Pas-encore, Pas-encore-nantes) sont ajoutés à `facts.ecransEchec`. Test sur une copie piégée (raton remis à 120 pt dans une copie de `project/`) : check-facts signale les deux écrans.
+- [x] V5-Bande : le banc du décor dépassait au-dessus de « TA BANDE ». Mesure dans le rendu (pixels corail du banc dans la zone du titre) : 1 760 avant, 0 après. Le titre est remonté de 16 pt et couvre le banc.
+- [x] V5-Duo-hh-proposition : même structure que V5-Duo (étapes, carte « Un pigeon · K. », encadré « À Marseille… », « Ou viens en groupe › ») ; vu dans le rendu.
+- [x] Bonus : V5-Groupe-calme, le chat du groupe avec la puce « calme » à côté du pet de M. ; vu dans le rendu.
+
+### Points des experts du tour 9 (vus dans les PNG rendus)
+
+- [x] (a) Prénom complet après le double oui : « DUO AVEC JADE », « Répondre à Jade », « Caramel · Jade », « DUO AVEC KARIM », Chats et Accueil « Jade · Caramel ». check-facts : initiale interdite sur `facts.ecransApresOui`, prénom interdit avant (`ecransAvantOui`) ; test piégé (« DUO AVEC J. ») signalé.
+- [x] (b) « quand vous avez dit oui tous les deux » réservé au duo ; rendez-vous : « réservée quand vous avez tous les deux accepté le créneau » (contrôlé).
+- [x] (c) Jalon de la veille 18 h : « Confirmation · lieu et prénoms » (frises), « Confirmation (lieu et prénoms) le … » (Trouvées), « Confirmation : lieu et prénoms » (Lieu confirmé), « à la confirmation » (chat) ; « lieu révélé », « Lieu et prénoms · », « à la révélation » bannis (test piégé signalé). Sur la puce de Chats, faute de place : « Confirmation mer. 11 nov. 18 h ».
+- [x] (d) RdvDuo, RdvDuo-lea, Duo-hh-rdv : tuile « Sam ✓ » sélectionnée (fond encre, contour citron) avant « Proposer à … ».
+- [x] (e) Confidentialité, ligne Duo = spec §2.16 : « initiale et espèce avant le double oui, puis prénom, visages à 48 h. Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. » (contrôlé).
+- [x] (f) L-Effectif : une seule puce le sam. 14 nov. 15 h (« aucune table de 5 · 1 table de 2 ») ; Lille : « L’atelier est mené par la céramiste du lieu ».
+- [x] (g) Aperçus vidéo des 8 écrans de partage : éléments révélés au fil du temps (titre entier à 0 s, dessin à 2,5 s, lien à 5 s) ; a11y-audit a un contrôle dédié `[data-video-vignette]` (carte entière dans sa vignette, aucun texte rogné), qui a d’abord trouvé le lien coupé (marge de 12 px), corrigé.
+- [x] (h) Attente : « IL MANQUE 2 PERSONNES POUR UN GROUPE LE SAMEDI 21 NOVEMBRE », « un groupe peut se former… : réponse ce soir-là » ; « elle a lieu » banni sur les écrans d’attente.
 
 ## Suivi jury tour 8 (concept-v5.8)
 
@@ -60,11 +80,11 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
 - [x] 8 Lille : frise à 15 h ; Amorçage (avec Jules et Lou) et Amorçage-solo au gabarit commun de Sortie, comme V5-Sortie-lille.
 - [x] 9 Attente (« si un groupe se forme pour le ven. 13 nov., réponse le mar. 10 nov. 21 h » ; « ton créneau du sam. 28 nov. reste ouvert ») et Trouvée-Lyon (« Ton créneau du mar. 24 nov. : si un groupe se forme… »).
 - [x] 10 promesse « vidéo 1 s » retirée ; vignettes 0 s · titre, 2,5 s · dessin, 5 s · lien, visiblement différentes.
-- [x] 11 W-Repondre « comment ses proches le décrivent », ratons de 56 et 64 pt ; écrans d'échec en pastille de 64 pt ; raton du Welcome assis à la 5e place.
+- [x] 11 W-Repondre « comment ses proches le décrivent », ratons de 56 et 64 pt ; écrans d'échec en pastille de 64 pt ; raton du Welcome assis à la 5e place. *(Coché à tort au tour 9 : Pas de place (24) et Pas d'accord (34d) gardaient 110 et 130 pt ; corrigé au tour 10.)*
 - [x] 12 Lyon : Hugo (persona, 22–25) dans un groupe 22–29 ans, le membre « Hugo » devient Théo ; Trouvée-weekend = proposition de Claire à Lyon, 35–44 ans, sam. 21 nov. 15 h.
 - [x] 13 Duo-hh-rdv au gabarit RdvDuo (3 tuiles d'ange, autre lieu ou autre heure, astreinte « pendant tout ton rendez-vous ») ; ligne « Messages filtrés » dans le chat avec K.
 - [x] 14 contrat : article 3 en liste HT au vouvoiement, règles client en annexe ; effectif : semaine suivante (17–21 nov.) ajoutée.
-- [x] 15 Ta bande : titre détaché du liseré du banc.
+- [x] 15 Ta bande : titre détaché du liseré du banc. *(Coché à tort au tour 9 : le banc dépassait au-dessus du titre ; corrigé et mesuré au tour 10.)*
 - [x] Fiche : « Venu à 1 sortie sur 1 » reste affiché, suivi de « Ta fiabilité est visible par toi seulement. » (le README V5.7 disait à tort « plus de N sur M » : il s'agit de la formule générique « N sur M », remplacée par les vrais chiffres).
 
 ### Contrôles ajoutés au tour 8 (`check-facts`)

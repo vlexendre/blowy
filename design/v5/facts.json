@@ -804,7 +804,12 @@
     "V5-Paiement-echec",
     "V5-Erreur-reseau",
     "V5-Notifs-refus",
-    "W-Repondre"
+    "W-Repondre",
+    "V5-Sortie-complete",
+    "V5-Apres-aucun",
+    "V5-Sortie-annulee",
+    "V5-Pas-encore",
+    "V5-Pas-encore-nantes"
   ],
   "ratonMax": 64,
   "ninoBlobs": [
@@ -821,5 +826,23 @@
     "e0d561e722e93324dcf864bd3bfde16f",
     "47704e57588ba5efa65b91837b076cf3",
     "dfe1eb7d7dc7e125ad67a3c3bf109145"
-  ]
+  ],
+  "duoPrenoms": {
+    "J.": "Jade",
+    "K.": "Karim"
+  },
+  "ecransApresOui": [
+    "V5-Lien",
+    "V5-Lien-debloque",
+    "V5-Duo",
+    "V5-Duo-hh",
+    "V5-Duo-hh-visages",
+    "V5-Duo-hh-rdv",
+    "V5-Chats",
+    "V5-Accueil",
+    "V5-Accueil-duo",
+    "V5-RdvDuo",
+    "V5-Chat"
+  ],
+  "duoSpec216": "Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux."
 }

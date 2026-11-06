@@ -105,6 +105,14 @@ for (const f of files) {
         }
       }
     }
+    // b0) V5.8 tour 10 · vignettes d'aperçu vidéo : la carte réduite tient entière dans sa vignette, et aucun texte visible n'y est rogné
+    for (const v of document.querySelectorAll('[data-video-vignette]')) {
+      const vr = v.getBoundingClientRect(); const card = v.firstElementChild && v.firstElementChild.firstElementChild; out.nLayout++;
+      if (card) { const cr = card.getBoundingClientRect(); if (cr.bottom > vr.bottom + 1 || cr.right > vr.right + 1) out.layout.push(`vignette vidéo rognée (${v.getAttribute('data-video-vignette')}) : carte ${Math.round(cr.width)}×${Math.round(cr.height)} dans ${Math.round(vr.width)}×${Math.round(vr.height)}`); }
+      const w = document.createTreeWalker(v, NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.textContent.trim() || hiddenEl(n.parentElement)) continue; const rg = document.createRange(); rg.selectNodeContents(n);
+        for (const q of rg.getClientRects()) if (q.width > 0 && (q.bottom > vr.bottom + 1 || q.right > vr.right + 1 || q.top < vr.top - 1)) { out.layout.push(`texte rogné dans la vignette ${v.getAttribute('data-video-vignette')} « ${n.textContent.trim().slice(0, 30)} »`); break; } }
+    }
     // b) texte rogné par un ancêtre qui masque son débordement ; c) texte collé au bord d'un fond coloré
     const pageBg = getComputedStyle(document.querySelector('x-dc > div, body > div') || document.body).backgroundColor;
     for (const n of visibleText) {
