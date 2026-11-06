@@ -24,6 +24,7 @@
     "test:e2e:web": "turbo run test:e2e --filter=@blowy/web --filter=@blowy/admin",
     "test:e2e:mobile": "pnpm --filter @blowy/mobile run test:e2e",
     "simulate:balance": "pnpm --filter @blowy/pet-engine run simulate",
+    "simulate:outings": "pnpm --filter @blowy/matching run simulate:outings",
     "build": "turbo run build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
