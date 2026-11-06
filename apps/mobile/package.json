@@ -24,8 +24,6 @@
     "@blowy/sprites": "workspace:*",
     "@blowy/tuning": "workspace:*",
     "@blowy/ui-mobile": "workspace:*",
-    "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
-    "@expo-google-fonts/inter": "^0.4.2",
     "@expo/metro-runtime": "~58.0.16",
     "@expo/ui": "~58.0.26",
     "@react-native-async-storage/async-storage": "2.2.0",

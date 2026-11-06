@@ -13,3 +13,5 @@ export * from './KeyValue';
 export * from './LabeledSlider';
 export * from './StatusPill';
 export * from './NumberStepper';
+export * from './PetSprite';
+export * from './OrbitRing';

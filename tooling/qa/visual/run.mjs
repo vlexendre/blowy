@@ -18,7 +18,7 @@
 // Prérequis : Postgres + Redis + base seedée (pnpm db:migrate && pnpm db:seed). L'API locale
 // (apps/api/dist) et le site web (apps/web/.next) sont démarrés s'ils ne répondent pas.
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { copyFile, mkdir, readFile, readdir, stat, writeFile, rm } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,7 +41,8 @@ const APP_PORT = 8081;
 /** Horloge figée côté navigateur (libellés relatifs, heures de messages). */
 const FIXED_NOW = '2026-11-06T10:00:00+01:00';
 /** Polices de l'app (app/_layout.tsx → @expo-google-fonts, TTF statiques). */
-const APP_FONTS = ['BricolageGrotesque_800ExtraBold', 'Inter_400Regular', 'Inter_600SemiBold', 'Inter_700Bold', 'Inter_800ExtraBold'];
+// Familles chargées par l'app : lues dans le fichier généré par la fondation UI (source unique).
+const APP_FONTS = [...readFileSync(resolve(ROOT, 'apps/mobile/src/core/fonts/font-files.generated.ts'), 'utf8').matchAll(/^\s*'([^']+)':\s*require\(/gm)].map((m) => m[1]);
 
 const args = parseArgs(process.argv.slice(2));
 const threshold = args.threshold ? Number(args.threshold) : DEFAULT_THRESHOLD;

@@ -2,42 +2,43 @@
  * Thème natif dérivé de @blowy/design-tokens. Aucune couleur n'est écrite en dur ailleurs
  * dans ui-mobile ou apps/mobile : tout passe par `color`, `tone` et `textStyle`.
  */
-import { color, font, glass, hardShadow, motion, radius, space, touch, type } from '@blowy/design-tokens';
+import { alpha, blob, color, font, glass, hardShadow, keyframes, layout, motion, press, radii, radius, shadow3d, space, textSpec, touch, type } from '@blowy/design-tokens';
+import { bodyFamily, bodyFont, displayFamily, displayFont, strongFamily, strongFont } from './typography';
 import type { TextStyle, ViewStyle } from 'react-native';
 
-export { color, glass, motion, radius, space, touch };
+export { alpha, blob, color, glass, keyframes, layout, motion, press, radii, radius, shadow3d, space, textSpec, touch };
 
-/** Familles chargées par expo-font (noms exportés par @expo-google-fonts). */
+/**
+ * Familles chargées par l'app (instances statiques générées, voir foundations/typography.ts).
+ * `display` = `.d` à 24 px ; préférer `displayFont(size)` qui choisit l'opsz exact.
+ */
 export const fontFamily = {
-  display: 'BricolageGrotesque_800ExtraBold',
-  bodyRegular: 'Inter_400Regular',
-  body: 'Inter_600SemiBold',
-  bodyBold: 'Inter_700Bold',
-  bodyHeavy: 'Inter_800ExtraBold',
+  display: displayFamily(24),
+  strong: strongFamily(18),
+  bodyRegular: bodyFamily(400),
+  bodyMedium: bodyFamily(500),
+  body: bodyFamily(600),
+  bodyBold: bodyFamily(700),
+  /** Les maquettes demandent 800 mais Inter n'y est chargée que jusqu'à 700 : rendu 700. */
+  bodyHeavy: bodyFamily(800),
 } as const;
 export const fontFallback = { display: font.displayFallback, body: font.bodyFallback } as const;
 
 export type TextVariant = 'displayXL' | 'displayL' | 'displayM' | 'displayS' | 'button' | 'body' | 'bodyStrong' | 'small' | 'label' | 'caption';
 
-const display = (size: number, lineHeight: number, letterSpacing: number): TextStyle => ({
-  fontFamily: fontFamily.display,
-  fontSize: size,
-  lineHeight,
-  letterSpacing,
-  textTransform: 'uppercase',
-});
+const display = (size: number): TextStyle => ({ ...displayFont(size), textTransform: 'uppercase' });
 
 /** Styles typographiques (taille de base ; la police dynamique est gérée par <Text>). */
 export const textStyle: Readonly<Record<TextVariant, TextStyle>> = {
-  displayXL: display(type.displayXL.size, type.displayXL.lineHeight, type.displayXL.letterSpacing),
-  displayL: display(type.displayL.size, type.displayL.lineHeight, type.displayL.letterSpacing),
-  displayM: display(type.displayM.size, type.displayM.lineHeight + 2, type.displayM.letterSpacing),
-  displayS: { fontFamily: fontFamily.display, fontSize: 18, lineHeight: 20, letterSpacing: -0.4 },
-  button: { fontFamily: fontFamily.display, fontSize: type.button.size, lineHeight: type.button.lineHeight, letterSpacing: type.button.letterSpacing, textTransform: 'uppercase' },
+  displayXL: display(type.displayXL.size),
+  displayL: display(type.displayL.size),
+  displayM: display(type.displayM.size),
+  displayS: { ...displayFont(18), lineHeight: 20 },
+  button: { ...strongFont(type.button.size), textTransform: 'uppercase' },
   body: { fontFamily: fontFamily.body, fontSize: type.body.size, lineHeight: type.body.lineHeight },
   bodyStrong: { fontFamily: fontFamily.bodyBold, fontSize: type.body.size, lineHeight: type.body.lineHeight },
   small: { fontFamily: fontFamily.body, fontSize: type.small.size, lineHeight: type.small.lineHeight },
-  label: { fontFamily: fontFamily.bodyHeavy, fontSize: type.label.size, lineHeight: type.label.lineHeight, letterSpacing: type.label.letterSpacing, textTransform: 'uppercase' },
+  label: { ...bodyFont(textSpec.lbl.size, textSpec.lbl.weight, textSpec.lbl.letterSpacingEm, type.label.lineHeight), textTransform: 'uppercase' },
   caption: { fontFamily: fontFamily.bodyBold, fontSize: 10, lineHeight: 13, letterSpacing: 0.6, textTransform: 'uppercase' },
 };
 

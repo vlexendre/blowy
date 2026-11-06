@@ -9,11 +9,11 @@ import { AccessibilityInfo, Platform } from 'react-native';
 export interface A11yPrefs {
   reduceMotion: boolean;
   reduceTransparency: boolean;
-  /** Verre dépoli autorisé : iOS sans réduction de transparence. Android = fond opaque. */
+  /** Verre dépoli autorisé : iOS et web (backdrop-filter) sans réduction de transparence. Android = fond opaque. */
   allowBlur: boolean;
 }
 
-const DEFAULT: A11yPrefs = { reduceMotion: false, reduceTransparency: false, allowBlur: Platform.OS === 'ios' };
+const DEFAULT: A11yPrefs = { reduceMotion: false, reduceTransparency: false, allowBlur: Platform.OS === 'ios' || Platform.OS === 'web' };
 const A11yContext = createContext<A11yPrefs>(DEFAULT);
 
 export function A11yPrefsProvider({ children, override }: { children: ReactNode; override?: Partial<A11yPrefs> }) {
@@ -34,7 +34,7 @@ export function A11yPrefsProvider({ children, override }: { children: ReactNode;
   }, []);
 
   const value = useMemo<A11yPrefs>(() => {
-    const base = { reduceMotion, reduceTransparency, allowBlur: Platform.OS === 'ios' && !reduceTransparency };
+    const base = { reduceMotion, reduceTransparency, allowBlur: (Platform.OS === 'ios' || Platform.OS === 'web') && !reduceTransparency };
     return { ...base, ...override };
   }, [reduceMotion, reduceTransparency, override]);
 

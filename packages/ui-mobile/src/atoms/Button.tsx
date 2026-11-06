@@ -1,11 +1,17 @@
-import { ActivityIndicator, StyleSheet } from 'react-native';
-import { space, tone } from '../foundations/theme';
+/**
+ * Bouton des maquettes : `.btn` (min 56 px, marges 0 20, rayon 18, Bricolage 800 largeur 100 %
+ * 18 px, capitales, interlettrage .01em, écart 10) + variantes d'ombre dure 5 px :
+ *   b1 corail / #C4341B · b2 encre / #000 · b3 blanc / #E8D9C4 · lime (`.bl` V3) / encre.
+ * `link` = `.bl` de V4-Welcome (transparent, Inter 13 px 700, min 44) ; `ghost` = `.ghost`
+ * (Inter 14 px 700, min 44). Appui : descend de 4 px et perd l'ombre.
+ */
+import { ActivityIndicator, Text as RNText, View } from 'react-native';
+import { color } from '../foundations/theme';
+import { resolveButton, type ButtonSize, type ButtonVariant } from './styles';
 import { Icon, type IconName } from './Icon';
 import { Pressable3D } from './Pressable3D';
-import { Text } from './Text';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'lime' | 'ghost' | 'dark' | 'danger' | 'violet';
-export type ButtonSize = 'lg' | 'md' | 'sm';
+export type { ButtonSize, ButtonVariant };
 
 export interface ButtonProps {
   label: string;
@@ -13,6 +19,8 @@ export interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: IconName;
+  /** Icône après le libellé (flèche « Commencer → »). */
+  iconPosition?: 'leading' | 'trailing';
   loading?: boolean;
   disabled?: boolean;
   /** Libellé vocal si différent du libellé visible. */
@@ -22,63 +30,43 @@ export interface ButtonProps {
   fullWidth?: boolean;
 }
 
-const VARIANT: Record<Exclude<ButtonVariant, 'ghost'>, keyof typeof tone> = {
-  primary: 'coral',
-  secondary: 'white',
-  lime: 'lime',
-  dark: 'ink',
-  danger: 'danger',
-  violet: 'violet',
-};
-
-const HEIGHT: Record<ButtonSize, number> = { lg: 56, md: 48, sm: 44 };
-
-/** Bouton 3D (maquette .btn/.b1/.b2/.b3) ; « fantôme » = texte souligné sans surface. */
-export function Button({ label, onPress, variant = 'primary', size = 'lg', icon, loading, disabled, accessibilityLabel, accessibilityHint, testID, fullWidth = true }: ButtonProps) {
+export function Button({ label, onPress, variant = 'b1', size = 'lg', icon, iconPosition = 'leading', loading, disabled, accessibilityLabel, accessibilityHint, testID, fullWidth = true }: ButtonProps) {
   const busy = !!loading;
-  if (variant === 'ghost') {
-    return (
-      <Pressable3D
-        background="transparent"
-        shadowColor="transparent"
-        depth={0}
-        onPress={onPress}
-        disabled={disabled || busy}
-        accessibilityLabel={accessibilityLabel ?? label}
-        accessibilityHint={accessibilityHint}
-        accessibilityState={{ disabled: !!disabled, busy }}
-        testID={testID}
-        style={[styles.row, { minHeight: HEIGHT.sm }, fullWidth && styles.full]}
-      >
-        <Text variant="bodyStrong" tone="inkSoft" style={styles.ghost}>
-          {label}
-        </Text>
-      </Pressable3D>
+  const r = resolveButton(variant, size);
+  const fg = r.surface?.fg ?? color.ink;
+  const glyph = busy ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} tint={fg} size={size === 'sm' ? 18 : 22} strokeWidth={icon === 'arrow' ? 2.8 : 2.2} /> : null;
+  const text = (
+    <RNText style={r.text} numberOfLines={1} maxFontSizeMultiplier={1.5}>
+      {label}
+    </RNText>
+  );
+  const inner =
+    iconPosition === 'trailing' ? (
+      <>
+        {text}
+        {glyph}
+      </>
+    ) : (
+      <>
+        {glyph}
+        {text}
+      </>
     );
-  }
-  const t = tone[VARIANT[variant]];
   return (
     <Pressable3D
-      background={t.bg}
-      shadowColor={t.shadow}
+      background={r.surface?.bg ?? 'transparent'}
+      shadowColor={r.surface?.shadow ?? 'transparent'}
+      depth={r.kind === 'solid' ? 5 : 0}
+      radius={18}
       onPress={onPress}
       disabled={disabled || busy}
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!disabled, busy }}
       testID={testID}
-      style={[styles.row, { minHeight: HEIGHT[size] }, fullWidth && styles.full]}
+      style={[r.box, fullWidth ? { alignSelf: 'stretch' } : null]}
     >
-      {busy ? <ActivityIndicator color={t.fg} /> : icon ? <Icon name={icon} tint={t.fg} size={size === 'sm' ? 18 : 22} /> : null}
-      <Text variant={size === 'sm' ? 'displayS' : 'button'} style={{ color: t.fg }} numberOfLines={1} adjustsFontSizeToFit>
-        {label}
-      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>{inner}</View>
     </Pressable3D>
   );
 }
-
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm, paddingHorizontal: space.xl },
-  full: { alignSelf: 'stretch' },
-  ghost: { textDecorationLine: 'underline' },
-});

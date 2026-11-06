@@ -6,3 +6,4 @@ export * from './ModalSheetTemplate';
 export * from './CelebrationTemplate';
 export * from './EmptyStateTemplate';
 export * from './ChatScreenTemplate';
+export * from './ScreenTemplate';

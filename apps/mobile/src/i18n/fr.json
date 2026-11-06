@@ -764,5 +764,31 @@
       "unverified": "Compte de test non vérifié",
       "solo": "Zone sans autres pets (attente honnête)"
     }
+  },
+  "devKitchen": {
+    "brand": "blowy",
+    "tagline": "pets & potes",
+    "online": "{count} en ligne",
+    "line1": "ÉLÈVE TON ",
+    "stamp1": "PET.",
+    "line2": "RENCONTRE",
+    "stamp2": "DE NOUVELLES PERSONNES.",
+    "traits": {
+      "kind": "gentil",
+      "art": "Beaux-Arts",
+      "sporty": "sportif",
+      "curious": "curieux"
+    },
+    "caption": "Ton pet se fait des potes. Tu suis le mouvement.",
+    "cta": "Commencer",
+    "account": "J'ai déjà un compte · Apple",
+    "pets": {
+      "nino": "Nino le raton",
+      "suzie": "Suzie la lapine",
+      "gaston": "Gaston le capybara",
+      "pia": "Pia la pigeonne"
+    },
+    "catalog": "Catalogue des composants",
+    "welcome": "V4-Welcome"
   }
 }

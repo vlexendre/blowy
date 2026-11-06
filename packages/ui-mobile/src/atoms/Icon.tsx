@@ -34,11 +34,12 @@ export const ICON_NAMES = [
   'wifiOff',
   'more',
   'share',
+  'arrow',
 ] as const;
 export type IconName = (typeof ICON_NAMES)[number];
 
 const PATHS: Record<IconName, { d: string; fill?: boolean }[]> = {
-  nest: [{ d: 'M4 11l8-7 8 7v9H4z', fill: true }],
+  nest: [{ d: 'M4 11l8-7 8 7v9H4z' }],
   chats: [{ d: 'M4 5h16v11H9l-5 4z' }],
   map: [{ d: 'M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z' }],
   neighborhood: [{ d: 'M3 21V11l5-4 5 4v10M13 21V8l4-3 4 3v13M3 21h18' }],
@@ -66,6 +67,8 @@ const PATHS: Record<IconName, { d: string; fill?: boolean }[]> = {
   wifiOff: [{ d: 'M3 3l18 18M5 9a12 12 0 0 1 5-2.6M19 9a12 12 0 0 0-3.5-2M8.5 12.5a6 6 0 0 1 7 0M12 17v.5' }],
   more: [{ d: 'M5 12h.5M12 12h.5M19 12h.5' }],
   share: [{ d: 'M12 15V4M7 9l5-5 5 5M5 14v6h14v-6' }],
+  /** Flèche du CTA « Commencer » (V4-Welcome : stroke 2.8, 22 px). */
+  arrow: [{ d: 'M5 12h14M13 6l6 6-6 6' }],
 };
 
 const EXTRA_CIRCLES: Partial<Record<IconName, { cx: number; cy: number; r: number; fill?: boolean }[]>> = {
@@ -79,16 +82,19 @@ export interface IconProps {
   size?: number;
   tint?: string;
   strokeWidth?: number;
+  /** Variante pleine (onglet actif de `.gnav` : tracés remplis, rond intérieur de la carte en `holeColor`). */
+  filled?: boolean;
+  holeColor?: string;
 }
 
-export function Icon({ name, size = 22, tint = color.ink, strokeWidth = 2.2 }: IconProps) {
+export function Icon({ name, size = 22, tint = color.ink, strokeWidth = 2.2, filled = false, holeColor = color.lime }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       {PATHS[name].map((p, i) => (
-        <Path key={i} d={p.d} stroke={tint} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" fill={p.fill ? tint : 'none'} />
+        <Path key={i} d={p.d} stroke={tint} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" fill={p.fill || filled ? tint : 'none'} />
       ))}
       {EXTRA_CIRCLES[name]?.map((c, i) => (
-        <Circle key={`c${i}`} cx={c.cx} cy={c.cy} r={c.r} stroke={tint} strokeWidth={strokeWidth} fill={c.fill ? tint : 'none'} />
+        <Circle key={`c${i}`} cx={c.cx} cy={c.cy} r={c.r} stroke={c.fill ? 'none' : tint} strokeWidth={strokeWidth} fill={filled ? (c.fill ? holeColor : tint) : c.fill ? tint : 'none'} />
       ))}
     </Svg>
   );
