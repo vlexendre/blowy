@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Éclosion, né — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#fff}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes ring{0%{transform:scale(1);opacity:.7}100%{transform:scale(3);opacity:0}}
+.r1{animation:ring 2.4s ease-out infinite}.r2{animation:ring 2.4s ease-out .8s infinite}.r3{animation:ring 2.4s ease-out 1.6s infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.orb{animation:orbit 14s linear infinite}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+.shake{animation:shake .5s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes hatch{0%{transform:scale(.4) translateY(40px);opacity:0}55%{transform:scale(1.18) translateY(-16px);opacity:1}75%{transform:scale(.94)}100%{transform:scale(1)}}
+.hatch{animation:hatch 1s cubic-bezier(.2,1.3,.3,1) both;transform-origin:50% 90%}
+@keyframes burst{0%{transform:scale(.2);opacity:0}30%{opacity:1}100%{transform:scale(1.4);opacity:0}}
+.burst{animation:burst 1.4s ease-out both}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(170deg, #1B0B3B 0%, #4C1D95 50%, #7C3AED 110%); display: flex; flex-direction: column; align-items: center; overflow: hidden; padding: 56px 22px 26px; position: relative">
+  <div class="blob" style="width: 340px; height: 340px; top: 160px; left: -180px; background: #FF3D7F; opacity: .5"></div>
+  <div class="blob" style="width: 340px; height: 340px; bottom: -100px; right: -160px; background: #22D3EE; opacity: .4"></div>
+
+  <div class="pop" style="align-self: stretch; display: flex; align-items: center; justify-content: space-between; position: relative">
+    <div class="d" style="font-size: 26px">blowy<span style="color: #FFB347">.</span></div>
+    <span class="chip" style="background: rgba(255,255,255,.14)">{{step}}</span>
+  </div>
+
+  <div style="margin-top: 60px; position: relative; width: 320px; height: 320px; display: flex; align-items: center; justify-content: center">
+    <sc-if value="{{searching}}" hint-placeholder-val="{{true}}">
+      <span class="r1" style="position: absolute; width: 110px; height: 110px; border-radius: 50%; border: 2px solid #FFB347"></span>
+      <span class="r2" style="position: absolute; width: 110px; height: 110px; border-radius: 50%; border: 2px solid #FF3D7F"></span>
+      <span class="r3" style="position: absolute; width: 110px; height: 110px; border-radius: 50%; border: 2px solid #22D3EE"></span>
+    </sc-if>
+    <sc-if value="{{cracking}}" hint-placeholder-val="{{false}}"><img src="/_blob/0f4c821c65c238a4172050f8b900fb63" alt="L'œuf tremble" class="shake" style="width: 220px; height: 240px; object-fit: contain"></sc-if>
+    <sc-if value="{{searching}}" hint-placeholder-val="{{true}}"><img src="/_blob/88923ef63daaddbe4dfafedabd4dfac9" alt="L'œuf de Nino va éclore" style="width: 130px; height: 150px; object-fit: contain"></sc-if>
+    <sc-if value="{{born}}" hint-placeholder-val="{{false}}">
+      <img src="/_blob/1d55b7feef97164488a7c1bc584a6daf" alt="" aria-hidden="true" class="burst" style="position: absolute; inset: -40px; width: 400px; height: 400px; object-fit: contain">
+      <img src="/_blob/2dd74281b0d1e96cdc17f174113da343" alt="Ton Nino vient de naître" class="hatch" style="width: 260px; height: 260px; object-fit: contain">
+    </sc-if>
+  </div>
+
+  <h1 class="d" style="margin: 30px 0 0; font-size: 46px; text-align: center; white-space: nowrap; position: relative">{{title}}</h1>
+  <p style="margin: 10px 0 0; font-size: 14px; font-weight: 600; opacity: .85; text-align: center; white-space: nowrap; position: relative">{{sub}}</p>
+
+  <sc-if value="{{born}}" hint-placeholder-val="{{false}}">
+    <a href="V5-Compte.dc.html" class="btn pop" style="margin-top: auto; align-self: stretch; background: #C8F542; color: #16110D; box-shadow: 0 5px 0 #7DA11A; position: relative">Garder Nino pour de vrai<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#16110D" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"phase":{"editor":"enum","options":["anime","ne"],"default":"ne","section":"État"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { ph: (p.phase === 'ne') ? 2 : 0 }; }
+  componentDidMount() { if (this.state.ph === 2) return; this.t1 = setTimeout(() => this.setState({ ph: 1 }), 2600); this.t2 = setTimeout(() => this.setState({ ph: 2 }), 4200); }
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); }
+  renderVals() {
+    const ph = this.state.ph;
+    const T = [
+      ['ÇA COUVE…', 'Ton œuf prend ta vision au chaud.', 'Couvaison'],
+      ['ÇA BOUGE !', 'Sportif, gentil, âme d’artiste…', 'Presque'],
+      ['C’EST UN NINO !', 'Il part te trouver une bande.', 'Né']
+    ][ph];
+    return { searching: ph === 0, cracking: ph === 1, born: ph === 2, title: T[0], sub: T[1], step: T[2] };
+  }
+}
+</script>
+</body>
+</html>

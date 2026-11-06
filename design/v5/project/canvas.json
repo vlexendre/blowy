@@ -1,0 +1,683 @@
+{
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "V5-Welcome.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "01 · Bienvenue",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Invite.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "02 · Arrivée par un lien (« viens à ma sortie »)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Craft.dc.html": {
+   "x": 940,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "03 · Ton pet (4 espèces gratuites)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Vie.dc.html": {
+   "x": 1410,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "04 · Sa vision (4 questions)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Intention.dc.html": {
+   "x": 1880,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "05 · Tu cherches (ami·es et/ou plus)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Toi.dc.html": {
+   "x": 2350,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "06 · Toi — genre",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Toi-plus.dc.html": {
+   "x": 2820,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "06b · Toi — qui en « plus »",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Toi-quartier.dc.html": {
+   "x": 3290,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "06c · Toi — quartier",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Eclosion.dc.html": {
+   "x": 3760,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "07 · Éclosion (animée)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Eclosion-ne.dc.html": {
+   "x": 4230,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "07b · Éclosion — né",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Compte.dc.html": {
+   "x": 4700,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "08 · Compte",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Trouvee.dc.html": {
+   "x": 0,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "09 · Nino t’a trouvé une bande",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Sortie.dc.html": {
+   "x": 470,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "10 · Fiche de sortie — proposée",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Sortie-inscrit.dc.html": {
+   "x": 940,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "10b · Fiche de sortie — inscrit·e",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Sortie-complete.dc.html": {
+   "x": 1410,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "10c · Fiche de sortie — complète",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Sortie-annulee.dc.html": {
+   "x": 1880,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "10d · Fiche de sortie — annulée",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Verif.dc.html": {
+   "x": 2350,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "11 · Selfie vérifié (avant la 1re sortie)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Notifs.dc.html": {
+   "x": 2820,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "12 · Notifs (rappels de sortie)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Accueil.dc.html": {
+   "x": 3290,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "13 · Accueil",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Attente.dc.html": {
+   "x": 3760,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "14 · Pas de sortie cette semaine (liste d’attente)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Chats.dc.html": {
+   "x": 4230,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "15 · Chats",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Groupe.dc.html": {
+   "x": 4700,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "16 · Chat de groupe avant la sortie",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Revelation.dc.html": {
+   "x": 0,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "17 · Les visages (jeudi 9 h)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Ange.dc.html": {
+   "x": 470,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "18 · Choisir son ange gardien",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "W-Ange.dc.html": {
+   "x": 940,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "19 · WEB · page de l’ange gardien",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "W-Ange-alerte.dc.html": {
+   "x": 1410,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "19b · WEB · ange gardien — alerte",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Checkin.dc.html": {
+   "x": 1880,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "20 · Check-in sur place",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Checkin-ok.dc.html": {
+   "x": 2350,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "20b · Check-in fait",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Souvenir.dc.html": {
+   "x": 0,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "21 · Souvenir gagné",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Apres.dc.html": {
+   "x": 470,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "22 · Vote secret (72 h)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Apres-resultats.dc.html": {
+   "x": 940,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "22b · Les accords",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Bande.dc.html": {
+   "x": 1410,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "23 · Ta bande",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Chat.dc.html": {
+   "x": 1880,
+   "y": 3432,
+   "w": 390,
+   "h": 844,
+   "title": "24 · Duo après accord (chat à deux)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Duo.dc.html": {
+   "x": 0,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "25 · Voie Duo (3 propositions)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Lien.dc.html": {
+   "x": 470,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "26 · Duo — les pets se parlent (48 h)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Lien-debloque.dc.html": {
+   "x": 940,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "26b · Duo — visages et voix",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-RdvDuo.dc.html": {
+   "x": 1410,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "27 · Rendez-vous à deux",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-RdvDuo-lea.dc.html": {
+   "x": 1880,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "27b · Rendez-vous à deux — après une sortie",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Oeuf.dc.html": {
+   "x": 2350,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "28 · Clin d’œil (facultatif)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Rupture.dc.html": {
+   "x": 2820,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "29 · Partir proprement",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Story.dc.html": {
+   "x": 0,
+   "y": 5720,
+   "w": 390,
+   "h": 844,
+   "title": "30 · Partager (3 mots, vision, sortie)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "W-Repondre.dc.html": {
+   "x": 470,
+   "y": 5720,
+   "w": 390,
+   "h": 844,
+   "title": "31 · WEB · l’ami·e répond (sans l’app)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Profil.dc.html": {
+   "x": 0,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "32 · Profil",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Fiche.dc.html": {
+   "x": 470,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "33 · Fiche de Nino (souvenirs, fiabilité)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Boutique.dc.html": {
+   "x": 940,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "34 · Boutique",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Reglages.dc.html": {
+   "x": 1410,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "35 · Réglages",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Abonnement.dc.html": {
+   "x": 1880,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "36 · Blowy+",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Confidentialite.dc.html": {
+   "x": 2350,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "37 · Confidentialité",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Signaler.dc.html": {
+   "x": 2820,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "38 · Signaler",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Supprimer.dc.html": {
+   "x": 3290,
+   "y": 6864,
+   "w": 390,
+   "h": 844,
+   "title": "39 · Supprimer le compte",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-11-06T12:00:00Z",
+  "v": 1
+ },
+ "designSystems": [],
+ "launch": {
+  "page": "v5",
+  "view": "canvas"
+ },
+ "noteOrder": [
+  "v5t0",
+  "v5t1",
+  "v5t2",
+  "v5t3",
+  "v5t4",
+  "v5t5",
+  "v5t6",
+  "v5s1",
+  "v5s2",
+  "v5s3",
+  "v5s4"
+ ],
+ "notes": {
+  "v5t0": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "A · Arrivée — 2 min, sans paywall",
+   "w": 240,
+   "x": 0,
+   "y": -260
+  },
+  "v5t1": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "B · Ta sortie de la semaine",
+   "w": 240,
+   "x": 0,
+   "y": 884
+  },
+  "v5t2": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "C · Le jour J",
+   "w": 240,
+   "x": 0,
+   "y": 2028
+  },
+  "v5t3": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "D · Après la sortie",
+   "w": 240,
+   "x": 0,
+   "y": 3172
+  },
+  "v5t4": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "E · Voie Duo",
+   "w": 240,
+   "x": 0,
+   "y": 4316
+  },
+  "v5t5": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "F · Partage — boucles virales",
+   "w": 240,
+   "x": 0,
+   "y": 5460
+  },
+  "v5t6": {
+   "kind": "title1",
+   "maxW": 4600,
+   "page": "v5",
+   "text": "G · Compte & confiance",
+   "w": 240,
+   "x": 0,
+   "y": 6604
+  },
+  "v5s1": {
+   "page": "v5",
+   "text": "V5 · « TON PET TE TROUVE UNE BANDE »\nUnité de base = la sortie (4 à 6, une par semaine, même quota pour tous). Parcours : arrivée 2 min → sortie trouvée → selfie → chat de groupe → visages jeudi 9 h → check-in + ange gardien → vote secret 72 h → bande / duo.\nCasting : toi = Alex (il), pet Nino. Groupe : L. Léa/Suzie, M. Malo/Gaston, S. Sarah/Pia. Bande : Inès/Bibi, Tom/Miso, Maya/Pompon (+ Sarah après la sortie). Voie Duo : J. Jade/Caramel. Ange gardien : Sam.\nNav : Accueil · Chats · Bande · Profil (4).",
+   "w": 380,
+   "x": 5370,
+   "y": 0
+  },
+  "v5s2": {
+   "page": "v5",
+   "text": "PROMESSES (texte identique partout)\nPhotos : cachées jusqu'au matin de la sortie, puis révélées à tout le groupe en même temps. En duo : après 48 h, si vous avez échangé tous les deux.\nLieu : exact la veille, toujours public et partenaire.\nPosition : jamais montrée, aucune carte, aucune distance ; vérifiée une seule fois au check-in.\nVotes : secrets ; seuls les accords mutuels se révèlent ; personne n'apprend un « non ».",
+   "w": 380,
+   "x": 5370,
+   "y": 1144,
+   "fill": "green"
+  },
+  "v5s3": {
+   "page": "v5",
+   "text": "ARGENT (honnête)\nGratuit : onboarding, pet, bande, chats, voie Duo, sécurité, 1re sortie offerte.\nPayant : place de sortie (prix fixe, boisson incluse, remboursée si annulée), Blowy+ mensuel (places incluses + accessoire). Prix = data-props (à fixer par test terrain).\nJamais : paywall d'onboarding, compte à rebours, offre unique, hebdo, vitesse, visibilité, souvenirs.",
+   "w": 380,
+   "x": 5370,
+   "y": 2288,
+   "fill": "orange"
+  },
+  "v5s4": {
+   "page": "v5",
+   "text": "BOUCLES VIRALES\n1. +1 dans chaque sortie : « Viens avec moi » (Invite, Sortie, Accueil, Bande).\n2. Liste d'attente du quartier qui s'ouvre en invitant (Attente).\n3. « Décris-moi en 3 mots » → page web → crée ton pet → sortie offerte.\n4. Story « On était 5 au café » (sans visages ni prénoms).\n5. Page web de l'ange gardien : un proche découvre Blowy en veillant sur toi.",
+   "w": 380,
+   "x": 5370,
+   "y": 3432,
+   "fill": "green"
+  }
+ },
+ "order": [
+  "V5-Welcome.dc.html",
+  "V5-Invite.dc.html",
+  "V5-Craft.dc.html",
+  "V5-Vie.dc.html",
+  "V5-Intention.dc.html",
+  "V5-Toi.dc.html",
+  "V5-Toi-plus.dc.html",
+  "V5-Toi-quartier.dc.html",
+  "V5-Eclosion.dc.html",
+  "V5-Eclosion-ne.dc.html",
+  "V5-Compte.dc.html",
+  "V5-Trouvee.dc.html",
+  "V5-Sortie.dc.html",
+  "V5-Sortie-inscrit.dc.html",
+  "V5-Sortie-complete.dc.html",
+  "V5-Sortie-annulee.dc.html",
+  "V5-Verif.dc.html",
+  "V5-Notifs.dc.html",
+  "V5-Accueil.dc.html",
+  "V5-Attente.dc.html",
+  "V5-Chats.dc.html",
+  "V5-Groupe.dc.html",
+  "V5-Revelation.dc.html",
+  "V5-Ange.dc.html",
+  "W-Ange.dc.html",
+  "W-Ange-alerte.dc.html",
+  "V5-Checkin.dc.html",
+  "V5-Checkin-ok.dc.html",
+  "V5-Souvenir.dc.html",
+  "V5-Apres.dc.html",
+  "V5-Apres-resultats.dc.html",
+  "V5-Bande.dc.html",
+  "V5-Chat.dc.html",
+  "V5-Duo.dc.html",
+  "V5-Lien.dc.html",
+  "V5-Lien-debloque.dc.html",
+  "V5-RdvDuo.dc.html",
+  "V5-RdvDuo-lea.dc.html",
+  "V5-Oeuf.dc.html",
+  "V5-Rupture.dc.html",
+  "V5-Story.dc.html",
+  "W-Repondre.dc.html",
+  "V5-Profil.dc.html",
+  "V5-Fiche.dc.html",
+  "V5-Boutique.dc.html",
+  "V5-Reglages.dc.html",
+  "V5-Abonnement.dc.html",
+  "V5-Confidentialite.dc.html",
+  "V5-Signaler.dc.html",
+  "V5-Supprimer.dc.html"
+ ],
+ "pages": [
+  {
+   "id": "v5",
+   "name": "v5 — Bande"
+  }
+ ],
+ "title": "Blowy — V5 « Ton pet te trouve une bande »"
+}

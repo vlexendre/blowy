@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Ta bande — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8A7E70}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.b1{background:#FF5A3C;color:#fff;box-shadow:0 5px 0 #C4341B}
+.b2{background:#16110D;color:#fff;box-shadow:0 5px 0 #000}
+.b3{background:#fff;color:#16110D;box-shadow:0 5px 0 #E8D9C4}
+.bl{background:#C8F542;color:#16110D;box-shadow:0 5px 0 #16110D}
+.ghost{min-height:44px;border:0;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:inherit;display:flex;align-items:center;justify-content:center;width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:5px 12px 5px 5px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.07)}
+.tag b{width:22px;height:22px;border-radius:50%;background:#16110D;color:#C8F542;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+.card{background:#fff;border-radius:22px;box-shadow:0 4px 0 #EEDFCB;color:#16110D}
+.grp{background:#fff;border-radius:20px;box-shadow:0 4px 0 #EEDFCB;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 14px;font-size:14px;font-weight:700;white-space:nowrap;border-top:1px solid #F4EADC}
+.row:first-child{border-top:0}
+.val{margin-left:auto;font-size:12px;font-weight:600;color:#8A7E70}
+.ico{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.chev{margin-left:6px;flex:0 0 auto}
+.cap{display:inline-block;background:#16110D;color:#fff;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+.them{align-self:flex-start;max-width:270px;background:#fff;border-radius:20px 20px 20px 6px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #EEDFCB}
+.me{align-self:flex-end;max-width:270px;background:linear-gradient(135deg,#FF3D7F,#FF5A3C);color:#fff;border-radius:20px 20px 6px 20px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #C4341B}
+.seg{flex:1 1 0;min-height:44px;border-radius:14px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;white-space:nowrap}
+.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -10px 18px rgba(255,255,255,.2),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
+.gnav::before{content:'';position:absolute;left:22px;right:22px;top:1px;height:44%;border-radius:30px 30px 60% 60%;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#5E544A;transition:background .3s}
+.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85));box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(125,161,26,.25),0 6px 14px rgba(125,161,26,.35)}
+.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#FF3D7F;color:#fff;font-size:9px;font-weight:800;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .6s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
+.sq{animation:sq 2.4s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+.sq2{animation:sq 2.8s cubic-bezier(.3,0,.2,1) -1.1s infinite;transform-origin:50% 100%}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.15)}}
+.dr{animation:drift 10s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,245,66,.7)}70%{box-shadow:0 0 0 10px rgba(200,245,66,0)}}
+.pulse{animation:pulse 1.8s infinite}
+@keyframes bounce{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+.bounce{animation:bounce .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes glow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.95;transform:scale(1.1)}}
+.glow{animation:glow 2s ease-in-out infinite}
+@keyframes peek{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
+.peek{animation:peek 2.2s ease-in-out infinite}
+@keyframes ring{0%{transform:scale(.3);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.r1{animation:ring 2.4s ease-out infinite}.r2{animation:ring 2.4s ease-out .8s infinite}
+@keyframes wob{0%,100%{transform:rotate(0)}15%{transform:rotate(-8deg)}30%{transform:rotate(7deg)}45%{transform:rotate(-3deg)}60%{transform:rotate(0)}}
+.wob{animation:wob 2.2s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes lock{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(0)}}
+.lock{animation:lock 2.6s ease-in-out infinite}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; padding: 0 16px 26px; position: relative">
+  <div class="pop" style="position: relative; height: 250px; margin: 0 -16px; overflow: hidden; background: #29D3F2; border-radius: 0 0 34px 34px; box-shadow: 0 5px 0 #7A6E64">
+    <img src="/_blob/81e6853765c3dcf424bf7dbc05fc5a82" alt="" aria-hidden="true" style="position: absolute; left: 0; bottom: 0; width: 390px; height: 254px; object-fit: cover; object-position: bottom">
+    <h1 class="d" style="position: absolute; left: 16px; top: 52px; margin: 0; font-size: 44px">TA BANDE</h1>
+    <span class="chip" style="position: absolute; right: 16px; top: 58px; background: #16110D; color: #C8F542; font-size: 12px; padding: 6px 12px">5 personnes</span>
+    <img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" class="sq" style="position: absolute; left: 22px; bottom: 50px; width: 66px; height: 66px; object-fit: contain">
+    <span class="chip" style="position: absolute; left: 26px; bottom: 14px; background: #fff; font-size: 11px">Toi</span>
+    <img src="/_blob/36951927ea94071fec4b8e25ae8db21b" alt="" aria-hidden="true" class="sq2" style="position: absolute; left: 114px; bottom: 50px; width: 66px; height: 66px; object-fit: contain">
+    <span class="chip" style="position: absolute; left: 118px; bottom: 14px; background: #fff; font-size: 11px">Inès</span>
+    <img src="/_blob/8a35794ced023a499838ce341afd6ac4" alt="" aria-hidden="true" class="sq" style="position: absolute; left: 206px; bottom: 50px; width: 66px; height: 66px; object-fit: contain">
+    <span class="chip" style="position: absolute; left: 210px; bottom: 14px; background: #fff; font-size: 11px">Sarah</span>
+    <img src="/_blob/305ba56fa88f24706f7f7b30debf3ac8" alt="" aria-hidden="true" class="sq2" style="position: absolute; left: 298px; bottom: 50px; width: 66px; height: 66px; object-fit: contain">
+    <span class="chip" style="position: absolute; left: 302px; bottom: 14px; background: #fff; font-size: 11px">Maya</span>
+  </div>
+  <div class="pop" style="animation-delay: .06s; margin-top: 14px; display: flex; flex-direction: column; gap: 8px">
+    <a href="V5-Chat.dc.html" style="display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 20px; padding: 10px 12px; box-shadow: 0 4px 0 #EEDFCB">
+      <span style="width: 50px; height: 50px; border-radius: 16px; background: #FFF1D6; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="/_blob/8a35794ced023a499838ce341afd6ac4" alt="" aria-hidden="true" style="width: 44px; height: 44px; object-fit: contain"></span>
+      <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 800">Sarah · Pia</span><span style="font-size: 12px; font-weight: 600; color: #7DA11A; white-space: nowrap">Rencontrée jeudi en sortie</span></span>
+      <span class="chip" style="margin-left: auto; background: #C8F542">nouvelle</span><svg class="chev" style="margin-left: 6px" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#16110D" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="V5-Chat.dc.html" style="display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 20px; padding: 10px 12px; box-shadow: 0 4px 0 #EEDFCB">
+      <span style="width: 50px; height: 50px; border-radius: 16px; background: #FFF1D6; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="/_blob/36951927ea94071fec4b8e25ae8db21b" alt="" aria-hidden="true" style="width: 44px; height: 44px; object-fit: contain"></span>
+      <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 800">Inès · Bibi</span><span style="font-size: 12px; font-weight: 600; color: #8A7E70; white-space: nowrap">Amie invitée · ange gardien possible</span></span>
+      <svg class="chev" style="margin-left: auto" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#16110D" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="V5-Chat.dc.html" style="display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 20px; padding: 10px 12px; box-shadow: 0 4px 0 #EEDFCB">
+      <span style="width: 50px; height: 50px; border-radius: 16px; background: #FFF1D6; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="/_blob/305ba56fa88f24706f7f7b30debf3ac8" alt="" aria-hidden="true" style="width: 44px; height: 44px; object-fit: contain"></span>
+      <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 800">Maya · Pompon</span><span style="font-size: 12px; font-weight: 600; color: #8A7E70; white-space: nowrap">Amie invitée</span></span>
+      <svg class="chev" style="margin-left: auto" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#16110D" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="V5-Chat.dc.html" style="display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 20px; padding: 10px 12px; box-shadow: 0 4px 0 #EEDFCB">
+      <span style="width: 50px; height: 50px; border-radius: 16px; background: #FFF1D6; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="/_blob/f2467eee400607a7ee6bd4c0c17498dc" alt="" aria-hidden="true" style="width: 44px; height: 44px; object-fit: contain"></span>
+      <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 800">Tom · Miso</span><span style="font-size: 12px; font-weight: 600; color: #8A7E70; white-space: nowrap">Ami invité</span></span>
+      <svg class="chev" style="margin-left: auto" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#16110D" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+  <a href="V5-Story.dc.html" class="pop" style="animation-delay: .1s; margin-top: 12px; display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #FF3D7F, #FF5A3C); color: #fff; border-radius: 22px; padding: 12px 14px; box-shadow: 0 5px 0 #C4341B">
+    <img src="/_blob/db4476a91272a51245c1e0f226b5e1c4" alt="" aria-hidden="true" style="width: 40px; height: 40px; object-fit: contain">
+    <span style="display: flex; flex-direction: column; gap: 2px"><span class="d" style="font-size: 19px">Viens jeudi avec quelqu'un</span><span style="font-size: 12px; font-weight: 600; color: #FFE3EC">De ta bande ou de tes ami·es : même groupe</span></span>
+    <span class="chip" style="margin-left: auto; background: #16110D; color: #C8F542; font-size: 12px; padding: 7px 12px">INVITER</span>
+  </a>
+  <nav aria-label="Navigation" class="gnav">
+    <a href="V5-Accueil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Accueil</a>
+    <a href="V5-Chats.dc.html"><span class="bdg">3</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Chats</a>
+    <a href="V5-Bande.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3.2" stroke="currentColor" stroke-width="2.2" fill="currentColor"/><circle cx="16.5" cy="9" r="3.2" stroke="currentColor" stroke-width="2.2" fill="currentColor"/><path d="M2.5 20c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2M12 16c1-.8 2.5-1.2 4.5-1.2 2.5 0 4.9 1.8 5.5 5.2" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Bande</a>
+    <a href="V5-Profil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Profil</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

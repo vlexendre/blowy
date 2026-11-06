@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Selfie vérifié — blowy.</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,500..800&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
+a{color:inherit;text-decoration:none}
+.d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.b1{background:#FF5A3C;color:#fff;box-shadow:0 5px 0 #C4341B}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:5px 12px 5px 5px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.07)}
+.tag b{width:22px;height:22px;border-radius:50%;background:#16110D;color:#C8F542;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
+@keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+.pop{animation:pop .65s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes scan{0%,100%{top:18%}50%{top:78%}}
+.scan{animation:scan 2.4s ease-in-out infinite}
+@keyframes ok{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.ok{animation:ok .5s cubic-bezier(.2,1.4,.4,1) both}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; overflow: hidden; padding: 56px 22px 26px; position: relative">
+  <div class="blob" style="width: 300px; height: 300px; top: 160px; left: -170px; background: #7C3AED; opacity: .25"></div>
+
+  <div class="pop" style="display: flex; align-items: center; gap: 10px; position: relative">
+    <a href="V5-Sortie.dc.html" aria-label="Retour à la sortie" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <span class="chip" style="background: #16110D; color: #C8F542">Avant ta 1re sortie · 30 s</span>
+  </div>
+
+  <h1 class="d pop" style="animation-delay: .06s; margin: 18px 0 0; font-size: 46px; white-space: nowrap; position: relative">PROUVE QUE T'ES TOI</h1>
+  <p class="pop" style="animation-delay: .1s; margin: 8px 0 0; font-size: 14px; font-weight: 500; color: #5A5047; position: relative">Tout le monde le fait avant de sortir. Le selfie sert à vérifier, il n'est montré à personne.</p>
+
+  <button type="button" onClick="{{verify}}" class="pop" style="animation-delay: .16s; margin-top: 16px; position: relative; height: 210px; border-radius: 26px; border: 0; cursor: pointer; overflow: hidden; background: linear-gradient(160deg, #2A1B3D, #16110D); box-shadow: 0 5px 0 #000; display: flex; align-items: center; justify-content: center; padding: 0">
+    <img src="/_blob/8f611de128dbe878838e0767b393b7df" alt="" aria-hidden="true" style="height: 186px; object-fit: contain; opacity: .9">
+    <sc-if value="{{todo}}" hint-placeholder-val="{{true}}"><span class="scan" style="position: absolute; left: 60px; right: 60px; height: 3px; background: #C8F542; box-shadow: 0 0 12px #C8F542"></span><span class="chip" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: #fff">Touche pour lancer le selfie</span></sc-if>
+    <sc-if value="{{done}}" hint-placeholder-val="{{false}}"><span class="ok" style="position: absolute; width: 64px; height: 64px; border-radius: 50%; background: #C8F542; display: flex; align-items: center; justify-content: center"><svg width="30" height="30" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="chip" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: #C8F542">Vérifié·e</span></sc-if>
+  </button>
+
+  <div class="pop" style="animation-delay: .22s; margin-top: 18px; display: flex; justify-content: space-between; align-items: baseline; position: relative"><span class="d" style="font-size: 22px; white-space: nowrap">Tes photos</span><span class="chip" style="background: #16110D; color: #fff; font-size: 11px">Cachées jusqu'au matin de la sortie</span></div>
+  <div class="pop" style="animation-delay: .28s; margin-top: 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; position: relative">
+    <div aria-label="Photo 1 ajoutée, floutée" style="height: 120px; border-radius: 18px; background: linear-gradient(160deg, #F3C7B2, #D9897A); filter: blur(1px); box-shadow: 0 4px 0 #E8D9C4"></div>
+    <div aria-label="Photo 2 ajoutée, floutée" style="height: 120px; border-radius: 18px; background: linear-gradient(160deg, #B9D3F0, #7C93C9); filter: blur(1px); box-shadow: 0 4px 0 #E8D9C4"></div>
+    <button type="button" aria-label="Ajouter une photo" style="height: 120px; border-radius: 18px; border: 2px dashed #C9B8A2; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#FF5A3C" stroke-width="3" stroke-linecap="round"/></svg></button>
+  </div>
+
+  <a href="V5-Notifs.dc.html" class="btn b1 pop" style="animation-delay: .34s; margin-top: auto; position: relative">Continuer<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { ok: false }; }
+  renderVals() {
+    const ok = this.state.ok;
+    return { todo: !ok, done: ok, ring: ok ? '#C8F542' : '#fff', dash: ok ? '0' : '8 8', verify: () => this.setState({ ok: !ok }) };
+  }
+}
+</script>
+</body>
+</html>
