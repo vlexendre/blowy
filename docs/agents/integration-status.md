@@ -10,6 +10,11 @@
 | 2026-11-01 | V2 lancée : E (IA/médias/confiance), F (admin/web), D (branchement mobile↔API réelle) | en cours | — |
 | 2026-11-01 | E IA/médias/confiance/vérification/RGPD + F admin/web/ui-web/social | ✅ intégré sur main | A : build+typecheck 30/30 tâches (api, admin, web, ui-web, ai…) ; mobile typecheck (fixture `mediaId` corrigée) ; tests unitaires 28/28 tâches (api 58, ai 48, mobile 63, pet-engine 62…) ; vitest admin/web exclut e2e ; integration 59/59 ×2 ; migrate deploy + seed base vierge, diff schéma nul ; API démarrée : readyz, login alex, /me, /pets/mine, /relationships, /subscriptions/me 200, /admin sans session 401 ; eslint 17/17. Non vérifié : Docker, Firebase staff, OpenAI/Veriff réels, MinIO |
 
+## V5 — bugs et points relevés par les bancs
+- [ ] Mobile : ouverture directe sur une route profonde → requêtes avant restauration du jeton → 401 → jeton effacé (constaté en web par H-visuel).
+- [ ] Mobile : barre d'onglets visible sur les écrans de pile ; Bricolage chargée en largeur normale au lieu de font-stretch 85 % (UI-fondation).
+- [ ] Seed : Alex à 0 pièce (maquette 340), pet qui paraît malade — à refaire pour la V5.
+
 ## Suites V2 (E/F)
 - [ ] G : consommer `mission.proof_validated` ; job de suggestions IA automatiques (notifications).
 - [ ] B : exporter `simulate` de `@blowy/pet-engine` (simulateur admin) ; moteur lisant le tuning publié au lieu de `DEFAULT_TUNING`.
