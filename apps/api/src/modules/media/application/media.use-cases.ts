@@ -22,7 +22,7 @@ import { AppError, Errors } from '../../../shared/domain/errors.js';
 import { relationshipDay } from '../../relationships/domain/relationship-day.js';
 import { capabilitiesOf } from '../../relationships/domain/capabilities.js';
 import { LIMITS, RETENTION_DAYS, RETENTION_VERSION, decideAccess, kindOf, purgeAfterFor, sniff, type MediaPurpose, type MediaVariant } from '../domain/media-policy.js';
-import type { AudioProbe, ImageProcessor, MediaRepository, MediaRow, RelationFacts } from './ports/media.ports.js';
+import type { AudioProbe, ImageProcessor, MediaRepository, MediaRow, RelationFacts, Watermarker } from './ports/media.ports.js';
 
 export const MEDIA_TASKS = { PROCESS_IMAGE: 'media.process_image', ASSESS_PROOF: 'media.assess_proof' } as const;
 
@@ -353,6 +353,7 @@ export class GetMediaContentQuery {
     private readonly storage: ObjectStorage,
     private readonly access: MediaAccessService,
     private readonly clock: Clock,
+    private readonly watermarker: Watermarker | null = null,
   ) {}
 
   async byToken(token: string) {
@@ -373,7 +374,12 @@ export class GetMediaContentQuery {
     if (!key) throw Errors.notFound('Média');
     const obj = await this.storage.get(key);
     if (!obj) throw Errors.notFound('Média');
-    return { bytes: obj.bytes, contentType: obj.contentType, variant: d.variant };
+    // V5.2 C.8 : visage révélé en sortie → filigrane du prénom de la personne qui regarde (jamais mis en cache).
+    if (d.watermark && this.watermarker) {
+      const w = await this.watermarker.apply(obj.bytes, await this.repo.viewerFirstName(viewerId));
+      return { bytes: w.bytes, contentType: w.contentType, variant: d.variant, watermarked: true };
+    }
+    return { bytes: obj.bytes, contentType: obj.contentType, variant: d.variant, watermarked: false };
   }
 }
 

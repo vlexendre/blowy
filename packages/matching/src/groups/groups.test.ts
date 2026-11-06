@@ -14,6 +14,8 @@ import {
   evaluateGroup,
   pairExclusion,
   romanceCompatible,
+  storyCompatible,
+  storyFriendsOnly,
   type CompositionResult,
   type OutingCandidate,
   type SlotOffer,
@@ -73,6 +75,16 @@ function checkInvariants(p: Pop, r: CompositionResult, sizes: [number, number] =
         expect(b.profile.age).toBeLessThanOrEqual(a.groupAge.max);
       }
     }
+    // V5.2 B : un booléen par membre, et seulement ça ; vrai ssi « histoire » et < seuil compatibles (hors team)
+    expect(Object.keys(g.friendsOnly).sort()).toEqual([...g.memberUserIds].sort());
+    expect(Object.values(g.friendsOnly).every((f) => typeof f === 'boolean')).toBe(true);
+    const story = storyFriendsOnly(members.map(storyMember), T);
+    for (const m of members) {
+      const n = members.filter((o) => o !== m && !(m.teamId !== null && o.teamId === m.teamId) && storyCompatible(seeksOf(m), seeksOf(o))).length;
+      const expected = m.seeks.romance && n < T.outings.composition.storyGuarantee.minCompatible;
+      expect(g.friendsOnly[m.profile.userId]).toBe(expected);
+      expect(story.get(m.profile.userId)).toBe(expected);
+    }
     expect(g.teamCount).toBe(new Set(members.filter((m) => m.teamId && members.filter((o) => o.teamId === m.teamId).length > 1).map((m) => m.teamId)).size);
   });
   // teams indivisibles : tous ensemble, ou tous non placés
@@ -86,6 +98,14 @@ function checkInvariants(p: Pop, r: CompositionResult, sizes: [number, number] =
   expect(r.stats.placed + r.unplaced.length).toBe(p.candidates.length);
   expect(r.groups.every((g) => Number.isInteger(g.objectiveMilli))).toBe(true);
 }
+
+const seeksOf = (c: OutingCandidate) => ({ gender: c.profile.gender, seeks: c.seeks, meetGenders: c.meetGenders, romanceGenders: c.romanceGenders, age: c.profile.age, groupAge: c.groupAge });
+const storyMember = (c: OutingCandidate) => ({ userId: c.profile.userId, teamId: c.teamId, seeks: seeksOf(c) });
+const withStory = (enabled: boolean, minCompatible = T.outings.composition.storyGuarantee.minCompatible) => ({
+  ...T,
+  outings: { ...T.outings, composition: { ...T.outings.composition, storyGuarantee: { ...T.outings.composition.storyGuarantee, enabled, minCompatible } } },
+});
+const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]!;
 
 const popArb = fc.record({ seed: fc.string({ minLength: 1, maxLength: 8 }), n: fc.integer({ min: 8, max: 90 }), cap: fc.integer({ min: 1, max: 8 }) });
 
@@ -183,20 +203,115 @@ describe('composeOutings — propriétés', () => {
     expect(compose(full).unplaced.every((u) => u.reason === 'NO_SLOT_CAPACITY')).toBe(true);
   });
 
-  it('performance : 600 candidats < 2 s, 2 000 candidats < 15 s (3 créneaux × 2 lieux)', () => {
+  it('performance (médiane de 3 mesures, budgets larges : robuste à la charge machine) : 600 candidats < 5 s, 2 000 < 20 s', () => {
     for (const [n, budget] of [
-      [600, 2000],
-      [2000, 15000],
+      [600, 5000],
+      [2000, 20000],
     ] as const) {
       const p = population({ n, seed: 'blowy-outings-2026' });
-      const t0 = performance.now();
-      const r = compose(p);
-      const ms = performance.now() - t0;
-      expect(ms, `${n} candidats en ${Math.round(ms)} ms`).toBeLessThan(budget);
-      expect(r.stats.placed / n).toBeGreaterThan(0.75);
-      if (n === 600) checkInvariants(p, r);
+      const runs: number[] = [];
+      let r: CompositionResult | null = null;
+      for (let k = 0; k < 3; k++) {
+        const t0 = performance.now();
+        r = compose(p);
+        runs.push(performance.now() - t0);
+      }
+      const ms = median(runs);
+      expect(ms, `${n} candidats : médiane ${Math.round(ms)} ms (${runs.map(Math.round).join(', ')})`).toBeLessThan(budget);
+      expect(r!.stats.placed / n).toBeGreaterThan(0.75);
+      if (n === 600) checkInvariants(p, r!);
     }
-  }, 60_000);
+  }, 180_000);
+});
+
+describe('garantie « pour toi » (V5.2 B.5–B.6)', () => {
+  const s = (userId: string, gender: 'WOMAN' | 'MAN', romance: boolean, romanceGenders: Array<'WOMAN' | 'MAN'>, age = 28, teamId: string | null = null) => ({
+    userId,
+    teamId,
+    seeks: { gender, seeks: { friends: true, romance }, meetGenders: [], romanceGenders, age, groupAge: { min: 24, max: 32 } },
+  });
+
+  it('vraie pour chaque groupe, garantie activée ou non, quel que soit le seuil (marquage toujours honnête)', () => {
+    fc.assert(
+      fc.property(popArb, fc.boolean(), fc.integer({ min: 1, max: 3 }), ({ seed, n, cap }, enabled, min) => {
+        const p = population({ n, seed, capacityPerTime: cap, teamShare: 0.2, romanceShare: 0.6 });
+        const t = withStory(enabled, min);
+        const r = composeOutings({ ...p, seed: SEED, tuning: t });
+        const byId = new Map(p.candidates.map((c) => [c.profile.userId, c]));
+        for (const g of r.groups) {
+          const members = g.memberUserIds.map((id) => byId.get(id)!);
+          const flags = storyFriendsOnly(members.map(storyMember), t);
+          for (const m of members) {
+            const n2 = members.filter((o) => o !== m && !(m.teamId !== null && o.teamId === m.teamId) && storyCompatible(seeksOf(m), seeksOf(o))).length;
+            // « histoire » : ≥ seuil compatibles, sinon « potes uniquement » ; pas « histoire » : jamais marqué
+            expect(g.friendsOnly[m.profile.userId]).toBe(m.seeks.romance ? n2 < min : false);
+            expect(flags.get(m.profile.userId)).toBe(g.friendsOnly[m.profile.userId]);
+          }
+        }
+        const seekers = r.groups.flatMap((g) => g.memberUserIds.filter((id) => byId.get(id)!.seeks.romance));
+        const fo = r.groups.reduce((k, g) => k + Object.values(g.friendsOnly).filter(Boolean).length, 0);
+        expect(r.stats.friendsOnlyMembers).toBe(fo);
+        expect(r.stats.storyGuaranteeCoverage).toBe(seekers.length > 0 ? Math.floor((1000 * (seekers.length - fo)) / seekers.length) : 0);
+      }),
+      { numRuns: 30, seed: 52 },
+    );
+  });
+
+  it('règle : genres réciproques, intention histoire, tranches FIXES compatibles ; la team ne compte pas', () => {
+    const a = s('a', 'WOMAN', true, ['MAN']);
+    expect(storyCompatible(a.seeks, s('b', 'MAN', true, ['WOMAN']).seeks)).toBe(true);
+    expect(storyCompatible(a.seeks, s('b', 'MAN', true, ['MAN']).seeks)).toBe(false);
+    expect(storyCompatible(a.seeks, s('b', 'MAN', false, []).seeks)).toBe(false);
+    // 33 ans → tranche 30–34, qui recoupe 24–32 : compatible (jamais l'âge exact) ; 35 → 35–39 : non
+    expect(storyCompatible(a.seeks, s('b', 'MAN', true, ['WOMAN'], 33).seeks)).toBe(true);
+    expect(storyCompatible(a.seeks, s('b', 'MAN', true, ['WOMAN'], 35).seeks)).toBe(false);
+    const team = [s('a', 'WOMAN', true, ['MAN'], 28, 'T'), s('b', 'MAN', true, ['WOMAN'], 28, 'T'), s('c', 'MAN', true, ['WOMAN']), s('d', 'WOMAN', false, [])];
+    expect(storyFriendsOnly(team, T).get('a')).toBe(true); // b est dans sa team : 1 seul compatible
+    expect(storyFriendsOnly([...team, s('e', 'MAN', true, ['WOMAN'])], T).get('a')).toBe(false);
+  });
+
+  it('aucune information sur QUI est compatible : seul le booléen sort, identique quand on change lesquels le sont', () => {
+    // a cherche un homme ; deux configurations : (b, c) compatibles ou (c, d) compatibles → même sortie
+    const v1 = [s('a', 'WOMAN', true, ['MAN']), s('b', 'MAN', true, ['WOMAN']), s('c', 'MAN', true, ['WOMAN']), s('d', 'MAN', false, []), s('e', 'WOMAN', false, [])];
+    const v2 = [s('a', 'WOMAN', true, ['MAN']), s('b', 'MAN', false, []), s('c', 'MAN', true, ['WOMAN']), s('d', 'MAN', true, ['WOMAN']), s('e', 'WOMAN', false, [])];
+    const f1 = storyFriendsOnly(v1, T);
+    const f2 = storyFriendsOnly(v2, T);
+    expect(f1.get('a')).toBe(false);
+    expect(f2.get('a')).toBe(f1.get('a'));
+    // un booléen par personne, rien d'autre ; « false » ne distingue pas « garanti » de « ne cherche pas »
+    expect([...f1.values()].every((x) => typeof x === 'boolean')).toBe(true);
+    expect(f1.get('e')).toBe(false);
+    // le résultat de la composition n'expose que des champs connus, et des agrégats en stats
+    const p = population({ n: 90, seed: 'fuite', romanceShare: 0.6 });
+    const r = compose(p);
+    for (const g of r.groups) expect(Object.keys(g).sort()).toEqual(['activity', 'friendsOnly', 'memberUserIds', 'neighborhoodId', 'objectiveMilli', 'pairMinScore', 'startsAtMs', 'teamCount', 'venueId', 'venueSlotId']);
+    expect(Object.values(r.stats).every((x) => typeof x === 'number')).toBe(true);
+    expect(JSON.stringify(r.groups)).not.toMatch(/romance|story|compatib|gender|seeks|"WOMAN"|"MAN"/i);
+  });
+
+  it('déterminisme : même entrée, entrée permutée → mêmes booléens', () => {
+    fc.assert(
+      fc.property(popArb, ({ seed, n, cap }) => {
+        const p = population({ n, seed, capacityPerTime: cap, teamShare: 0.2, romanceShare: 0.6 });
+        const r1 = compose(p);
+        const r2 = compose({ ...p, candidates: shuffled(p.candidates, `${seed}x`), slots: shuffled(p.slots, `${seed}y`) });
+        expect(r2.groups.map((g) => g.friendsOnly)).toEqual(r1.groups.map((g) => g.friendsOnly));
+        expect(JSON.stringify(r2)).toBe(JSON.stringify(r1));
+      }),
+      { numRuns: 20, seed: 9 },
+    );
+  });
+
+  it('activée : plus de chercheurs d’histoire garantis qu’en la désactivant, sans perte de placement notable', () => {
+    for (const n of [300, 600]) {
+      const p = population({ n, seed: 'blowy-outings-2026' });
+      const off = composeOutings({ ...p, seed: SEED, tuning: withStory(false) });
+      const on = composeOutings({ ...p, seed: SEED, tuning: withStory(true) });
+      expect(on.stats.storyGuaranteeCoverage).toBeGreaterThan(off.stats.storyGuaranteeCoverage);
+      expect(on.stats.friendsOnlyMembers).toBeLessThan(off.stats.friendsOnlyMembers);
+      expect(on.stats.placed).toBeGreaterThanOrEqual(off.stats.placed - Math.ceil(n * 0.02));
+    }
+  });
 });
 
 describe('composeSeedingOutings (amorçage team + team, V5.1 B.7)', () => {

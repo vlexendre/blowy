@@ -8,3 +8,5 @@ export const STORES = {
 };
 export const VISITOR_COOKIE = 'blowy_v';
 export const SENT_COOKIE = 'blowy_sent';
+/** Clé publique VAPID (publique par nature) : active le bouton « Me prévenir » de la page ange gardien. */
+export const WEB_PUSH_PUBLIC_KEY = process.env.WEB_PUSH_VAPID_PUBLIC_KEY && /^[A-Za-z0-9_-]{86,88}$/.test(process.env.WEB_PUSH_VAPID_PUBLIC_KEY) ? process.env.WEB_PUSH_VAPID_PUBLIC_KEY : null;

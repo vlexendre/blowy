@@ -15,7 +15,8 @@ export interface UserTarget {
 
 export interface CaseRow {
   id: string;
-  subjectType: 'MESSAGE' | 'MEDIA' | 'MISSION_SUBMISSION' | 'BIRTH_NAME' | 'PROFILE' | 'ANONYMOUS_RESPONSE' | 'USER';
+  /** V5 : `SAFETY_ALERT` (sujet = alerte), `OUTING` (sujet = sortie pour un incident sur place, place pour « je connais quelqu'un »). */
+  subjectType: 'MESSAGE' | 'MEDIA' | 'MISSION_SUBMISSION' | 'BIRTH_NAME' | 'PROFILE' | 'ANONYMOUS_RESPONSE' | 'USER' | 'SAFETY_ALERT' | 'OUTING';
   subjectId: string;
   subjectUserId: string | null;
   status: 'OPEN' | 'ASSIGNED' | 'RESOLVED' | 'ESCALATED';
@@ -60,6 +61,11 @@ export interface TrustRepository {
   targetFromRelationship(actorId: string, contextId: string): Promise<string | null>;
   targetFromPet(actorId: string, petId: string): Promise<string | null>;
   targetFromMessage(actorId: string, messageId: string): Promise<string | null>;
+  /** V5 : les deux ont (eu) une place dans cette sortie ; sinon null (404 neutre). */
+  targetFromOuting(actorId: string, outingId: string, userId: string): Promise<string | null>;
+  /** V5 : lieu de la sortie si l'acteur y a (eu) une place confirmée (null = sans lieu), `undefined` sinon. */
+  outingOfReporter(actorId: string, outingId: string): Promise<string | null | undefined>;
+  insertIncident(scope: TxScope, i: { id: string; reporterId: string; outingId: string; venueId: string | null; note: string | null; moderationCaseId: string }): Promise<void>;
   contextsBetween(scope: TxScope | null, a: string, b: string): Promise<{ id: string; petIds: string[]; status: string }[]>;
   // ---- blocages
   insertBlock(scope: TxScope, blockerId: string, blockedId: string): Promise<{ id: string; created: boolean }>;
@@ -67,7 +73,7 @@ export interface TrustRepository {
   /** Effets annexes du blocage (même transaction). */
   applyBlockSideEffects(scope: TxScope, a: string, b: string, contextIds: string[]): Promise<void>;
   // ---- signalements
-  insertReport(scope: TxScope, r: { id: string; reporterId: string; reportedUserId: string; contextId: string | null; category: string; safetyExit: boolean; subjectRef: string | null; note: string | null }): Promise<void>;
+  insertReport(scope: TxScope, r: { id: string; reporterId: string; reportedUserId: string; contextId: string | null; category: string; safetyExit: boolean; subjectRef: string | null; note: string | null; outingId?: string | null }): Promise<void>;
   // ---- dossiers
   openCase(scope: TxScope, c: { subjectType: CaseRow['subjectType']; subjectId: string; subjectUserId: string | null; reasonCode: string; priority: 1 | 2 | 3; restricted: boolean; reportId?: string | null; dueAt: Date }): Promise<string>;
   findOpenCase(scope: TxScope | null, subjectType: CaseRow['subjectType'], subjectId: string): Promise<CaseRow | null>;

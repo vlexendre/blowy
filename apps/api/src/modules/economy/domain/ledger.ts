@@ -121,4 +121,23 @@ export const LedgerKeys = {
   staffCorrection: (actorUserId: string, commandId: string) => `staff:${actorUserId}:${commandId}`,
   /** Parrainage (P-5.9) : une écriture par claim et par côté, quel que soit le nombre de livraisons. */
   referral: (claimId: string, side: 'referrer' | 'referee') => `referral:${claimId}:${side}`,
+  // ---- V5 (T3) : journal économique (crédits de sortie, paiements, remboursements, compensation lieu).
+  /** Un lot de crédit accordé par cause (une annulation remboursable produit au plus un lot). */
+  creditGrant: (cause: 'refund' | 'staff', ref: string) => `credit:grant:${cause}:${ref}`,
+  /** Un lot ne peut être consommé qu'UNE fois (clé unique par lot). */
+  creditConsume: (lotKey: string) => `credit:consume:${lotKey}`,
+  paymentIntent: (seatId: string) => `pay:intent:${seatId}`,
+  /** Clé d'idempotence transmise au fournisseur pour créer l'intention d'une place. */
+  providerSeatIntent: (seatId: string) => `seat:${seatId}`,
+  paymentSucceeded: (providerPaymentId: string) => `pay:succeeded:${providerPaymentId}`,
+  paymentFailed: (providerEventId: string) => `pay:failed:${providerEventId}`,
+  /** Un paiement ne produit qu'UN remboursement. */
+  refundRequested: (providerPaymentId: string) => `pay:refund:${providerPaymentId}`,
+  refundSettled: (providerPaymentId: string) => `pay:refund-settled:${providerPaymentId}`,
+  refundAttemptFailed: (providerPaymentId: string, attempt: number) => `pay:refund-failed:${providerPaymentId}:${attempt}`,
+  /** Clé d'idempotence transmise au fournisseur pour rembourser une place. */
+  providerRefund: (seatId: string) => `refund:${seatId}`,
+  venueCompensation: (seatId: string) => `venue:comp:${seatId}`,
+  venueCompensationReversal: (seatId: string) => `venue:comp-reversal:${seatId}`,
+  plusCheckout: (userId: string, commandId: string) => `plus-checkout:${userId}:${commandId}`,
 } as const;

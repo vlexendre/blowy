@@ -14,7 +14,9 @@ export type StaffAction =
   | 'reports.list'
   | 'privacy.list'
   | 'ai.list'
-  | 'ai.operate';
+  | 'ai.operate'
+  | 'safety.alerts'
+  | 'safety.knows_someone';
 
 const MATRIX: Record<StaffAction, readonly StaffRole[]> = {
   'cases.list': ['support', 'moderator', 'trust_lead', 'admin'],
@@ -31,6 +33,9 @@ const MATRIX: Record<StaffAction, readonly StaffRole[]> = {
   'privacy.list': ['support', 'trust_lead', 'admin'],
   'ai.list': ['analyst', 'trust_lead', 'admin'],
   'ai.operate': ['trust_lead', 'admin'],
+  // V5 (spec §3.2, §10) : alerte + position jointe = trust_lead seulement (et admin).
+  'safety.alerts': ['trust_lead', 'admin'],
+  'safety.knows_someone': ['support', 'trust_lead', 'admin'],
 };
 
 export function staffCan(roles: readonly StaffRole[], action: StaffAction): boolean {

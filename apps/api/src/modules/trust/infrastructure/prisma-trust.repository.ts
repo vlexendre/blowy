@@ -47,6 +47,26 @@ export class PrismaTrustRepository implements TrustRepository {
     if (m.status !== 'PUBLISHED' && m.status !== 'WARNED' && m.status !== 'WITHDRAWN') return null;
     return m.authorUserId;
   }
+  /**
+   * V5 : la personne visée a été montrée à l'acteur dans cette sortie — les deux y ont une place,
+   * l'acteur au moins confirmé·e à un moment (pas une simple invitation refusée), la cible aussi.
+   */
+  async targetFromOuting(actorId: string, outingId: string, userId: string) {
+    if (actorId === userId) return null;
+    const seats = await this.db.outingSeat.findMany({ where: { outingId, userId: { in: [actorId, userId] } }, select: { userId: true, status: true, confirmedAt: true } });
+    const seen = (s: { status: string; confirmedAt: Date | null } | undefined) => !!s && (s.confirmedAt !== null || ['CONFIRMED', 'CHECKED_IN', 'ATTENDED', 'NO_SHOW'].includes(s.status));
+    const me = seats.find((s) => s.userId === actorId);
+    const other = seats.find((s) => s.userId === userId);
+    return seen(me) && seen(other) ? userId : null;
+  }
+  async outingOfReporter(actorId: string, outingId: string) {
+    const s = await this.db.outingSeat.findUnique({ where: { outingId_userId: { outingId, userId: actorId } }, select: { status: true, confirmedAt: true, outing: { select: { venueId: true } } } });
+    if (!s || (s.confirmedAt === null && !['CONFIRMED', 'CHECKED_IN', 'ATTENDED', 'NO_SHOW'].includes(s.status))) return undefined;
+    return s.outing.venueId ?? null;
+  }
+  async insertIncident(scope: TxScope, i: { id: string; reporterId: string; outingId: string; venueId: string | null; note: string | null; moderationCaseId: string }) {
+    await txOf(scope).safetyIncident.create({ data: { ...i, createdAt: scope.now } });
+  }
   async contextsBetween(scope: TxScope | null, a: string, b: string) {
     const rows = await this.c(scope).relationshipContext.findMany({ where: { AND: [{ sides: { some: { userId: a } } }, { sides: { some: { userId: b } } }] }, select: { id: true, status: true, sides: { select: { petId: true } } } });
     return rows.map((r) => ({ id: r.id, status: r.status, petIds: r.sides.map((s) => s.petId) }));
@@ -101,7 +121,7 @@ export class PrismaTrustRepository implements TrustRepository {
   }
 
   async insertReport(scope: TxScope, r: Parameters<TrustRepository['insertReport']>[1]) {
-    await txOf(scope).report.create({ data: { id: r.id, reporterId: r.reporterId, reportedUserId: r.reportedUserId, contextId: r.contextId, category: r.category as never, safetyExit: r.safetyExit, subjectRef: r.subjectRef, note: r.note, createdAt: scope.now } });
+    await txOf(scope).report.create({ data: { id: r.id, reporterId: r.reporterId, reportedUserId: r.reportedUserId, contextId: r.contextId, category: r.category as never, safetyExit: r.safetyExit, subjectRef: r.subjectRef, note: r.note, outingId: r.outingId ?? null, createdAt: scope.now } });
   }
 
   async openCase(scope: TxScope, c: Parameters<TrustRepository['openCase']>[1]) {

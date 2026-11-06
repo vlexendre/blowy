@@ -74,21 +74,17 @@ async function until(pred: () => boolean, ms = 2000) {
 }
 
 describe('B1 — dépenses de pièces simultanées', () => {
-  it('7 achats parallèles : réponses rapides (200 ou 409 propre), solde exact, jamais de 500', async () => {
+  // V5 (D-020, T3) : pièces et objets ne se vendent plus → 410 GONE, toujours propre, jamais de 500.
+  it('7 achats parallèles : 410 GONE propres (RETIRED_IN_V5), solde inchangé, jamais de 500', async () => {
     const maya = new TestClient(h);
     await maya.signIn('fix.maya');
-    expect((await maya.call('POST', '/v1/purchases/local-demo', { action: 'BUY_COINS', productId: 'coins_500' })).status).toBe(200);
+    expect((await maya.call('POST', '/v1/purchases/local-demo', { action: 'BUY_COINS', productId: 'coins_500' })).status).toBe(410);
     const before = (await maya.call('GET', '/v1/wallet')).body.balance as number;
-    expect(before).toBe(500);
     const t0 = Date.now();
     const rs = await Promise.all(Array.from({ length: 7 }, () => maya.call('POST', '/v1/catalog/scarf_red/purchase', {})));
-    const elapsed = Date.now() - t0;
-    const ok = rs.filter((r) => r.status === 200).length;
-    expect(rs.map((r) => r.status).every((s) => s === 200 || s === 409 || s === 402)).toBe(true);
-    expect(ok).toBe(4); // 4 × 120 ≤ 500 < 5 × 120 : toutes les dépenses possibles passent, les autres sont refusées
-    expect(rs.filter((r) => r.status !== 200).every((r) => ['INSUFFICIENT_FUNDS', 'CONFLICT'].includes(r.body.code))).toBe(true);
-    expect((await maya.call('GET', '/v1/wallet')).body.balance).toBe(before - ok * 120);
-    expect(elapsed).toBeLessThan(8000);
+    expect(rs.every((r) => r.status === 410 && r.body.detailsSafe?.reason === 'RETIRED_IN_V5')).toBe(true);
+    expect((await maya.call('GET', '/v1/wallet')).body.balance).toBe(before);
+    expect(Date.now() - t0).toBeLessThan(8000);
   });
 });
 
@@ -97,13 +93,13 @@ describe('B7 / B8 — idempotence', () => {
     const u = new TestClient(h);
     await u.signIn('fix.b7');
     const cid = randomUUID();
+    // V5 : les packs de pièces sont retirés (410) ; l'idempotence se vérifie sur l'abonnement de démo.
     const [a, b] = await Promise.all([
-      u.call('POST', '/v1/purchases/local-demo', { action: 'BUY_COINS', productId: 'coins_500' }, { commandId: cid }),
-      u.call('POST', '/v1/purchases/local-demo', { action: 'BUY_COINS', productId: 'coins_500' }, { commandId: cid }),
+      u.call('POST', '/v1/purchases/local-demo', { action: 'CANCEL' }, { commandId: cid }),
+      u.call('POST', '/v1/purchases/local-demo', { action: 'CANCEL' }, { commandId: cid }),
     ]);
     expect([a.status, b.status]).toContain(200);
-    await u.call('POST', '/v1/purchases/local-demo', { action: 'BUY_COINS', productId: 'coins_500' }, { commandId: cid });
-    expect((await u.call('GET', '/v1/wallet')).body.balance).toBe(500);
+    await u.call('POST', '/v1/purchases/local-demo', { action: 'CANCEL' }, { commandId: cid });
     const conflict = await u.call('POST', '/v1/purchases/local-demo', { action: 'SUBSCRIBE', productId: 'blowy_plus_monthly' }, { commandId: cid });
     expect(conflict.status).toBe(409);
     expect(conflict.body.code).toBe('IDEMPOTENCY_CONFLICT');

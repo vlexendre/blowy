@@ -15,7 +15,8 @@ export interface StaffActor {
   requestId?: string;
 }
 
-export type CaseSubjectType = 'MESSAGE' | 'MEDIA' | 'MISSION_SUBMISSION' | 'BIRTH_NAME' | 'PROFILE' | 'ANONYMOUS_RESPONSE' | 'USER';
+/** V5 (T4) : `SAFETY_ALERT` (alerte « besoin d'aide », priorité 1, échéance 1 h) ; `OUTING` (incident sur place : sujet = sortie ; « je connais quelqu'un » : sujet = place). */
+export type CaseSubjectType = 'MESSAGE' | 'MEDIA' | 'MISSION_SUBMISSION' | 'BIRTH_NAME' | 'PROFILE' | 'ANONYMOUS_RESPONSE' | 'USER' | 'SAFETY_ALERT' | 'OUTING';
 export type CaseStatus = 'OPEN' | 'ASSIGNED' | 'RESOLVED' | 'ESCALATED';
 
 export interface StaffDecisionView {
@@ -110,6 +111,9 @@ export interface StaffAiJobView {
   createdAt: string;
 }
 
+import type { StaffSafetyAlertDetail, StaffSafetyAlertView } from './safety-staff.port.js';
+export type { StaffSafetyAlertDetail, StaffSafetyAlertView };
+
 export interface AdminTrustPort {
   listVerifications(actor: StaffActor, q: { status?: string; cursor?: string; limit: number }): Promise<Page<StaffVerificationView>>;
   /** N'accorde JAMAIS IDENTITY_AGE : approbation = SELFIE_HUMAN_REVIEW / STAFF (« selfie contrôlé »). */
@@ -121,6 +125,15 @@ export interface AdminTrustPort {
   /** Revérifie l'autorisation ACTUELLE (consentement, blocage, relation) avant réexécution. */
   retryAiJob(actor: StaffActor, jobId: string, commandId: string): Promise<StaffAiJobView>;
   cancelAiJob(actor: StaffActor, jobId: string): Promise<StaffAiJobView>;
+  // ---- V5 T4 : sécurité des sorties (section admin « Sécurité », spec-v5 §10) ----
+  /** File temps réel des alertes « besoin d'aide » (SLA affiché : réponse humaine < 1 h). trust_lead / admin. */
+  listSafetyAlerts(actor: StaffActor, q: { status?: 'OPEN' | 'SAFE' | 'HANDLED'; cursor?: string; limit: number }): Promise<Page<StaffSafetyAlertView>>;
+  /** Détail audité (position jointe incluse si non purgée) ; `justification` ≥ 10 car. obligatoire. trust_lead / admin. */
+  getSafetyAlert(actor: StaffActor, alertId: string, opts: { justification: string }): Promise<StaffSafetyAlertDetail>;
+  /** Prise en charge : alerte HANDLED + dossier résolu (motif obligatoire, idempotent). trust_lead / admin. */
+  handleSafetyAlert(actor: StaffActor, alertId: string, input: { reason: string; commandId: string }): Promise<StaffSafetyAlertView>;
+  /** « Je connais quelqu'un » en examen (sujet = place) : accepté → retrait sans pénalité ; refusé → place gardée. support / trust_lead / admin. */
+  resolveKnowsSomeone(actor: StaffActor, seatId: string, input: { accept: boolean; reason: string; commandId: string }): Promise<{ status: 'MOVED' | 'ACCEPTED_TOO_LATE' | 'REJECTED' }>;
 }
 
 export const ADMIN_MODERATION = Symbol.for('blowy.admin.moderation');

@@ -4,7 +4,7 @@
  * Le score réutilise `scoreVision` avec les poids de groupe (G = 0, distance 0 : aucune distance
  * n'est jamais calculée).
  */
-import { GENDERS, pairKey, type Gender } from '@blowy/domain';
+import { GENDERS, ageBracketBounds, ageBracketOf, pairKey, type Gender } from '@blowy/domain';
 import type { Tuning } from '@blowy/tuning';
 import type { ExclusionReason, MatchProfile, PairFacts } from '../types.js';
 import { PAIR_FILTERS, firstExclusion } from '../filters/index.js';
@@ -31,6 +31,50 @@ const ageOk = (s: SeeksProfile, o: SeeksProfile) => s.groupAge === undefined || 
 /** rom(a,b) : les deux cherchent la romance, chacun est dans les genres romance (et la tranche d'âge) de l'autre (§4.2, V5.1 A.1). */
 export function romanceCompatible(a: SeeksProfile, b: SeeksProfile): boolean {
   return a.seeks.romance && b.seeks.romance && a.romanceGenders.includes(b.gender) && b.romanceGenders.includes(a.gender) && ageOk(a, b) && ageOk(b, a);
+}
+
+/** La tranche fixe (V5.2 C.9) de `o` recoupe-t-elle la tranche d'âge souhaitée par `s` ? (inconnu → oui) */
+const bracketOk = (s: SeeksProfile, o: SeeksProfile) => {
+  if (s.groupAge === undefined || o.age === undefined) return true;
+  const [lo, hi] = ageBracketBounds(ageBracketOf(o.age));
+  return lo <= s.groupAge.max && hi >= s.groupAge.min;
+};
+
+/**
+ * V5.2 (B.5) : compatibilité « histoire » de la garantie « pour toi » — les deux cherchent une
+ * histoire, genres recherchés réciproques, et la tranche FIXE de chacun recoupe la tranche d'âge
+ * souhaitée par l'autre (jamais l'âge exact). En composition, le filtre AGE_PREFERENCE (âge exact)
+ * s'applique en plus à toute paire du groupe.
+ */
+export function storyCompatible(a: SeeksProfile, b: SeeksProfile): boolean {
+  return a.seeks.romance && b.seeks.romance && a.romanceGenders.includes(b.gender) && b.romanceGenders.includes(a.gender) && bracketOk(a, b) && bracketOk(b, a);
+}
+
+/** Une personne de la garantie : son profil d'intentions et sa team (les membres de sa team ne comptent pas). */
+export interface StoryMember {
+  userId: string;
+  teamId: string | null;
+  seeks: SeeksProfile;
+}
+
+/**
+ * V5.2 (B.5–B.6) : booléen « potes uniquement » par personne d'un groupe — vrai ssi la personne
+ * cherche une histoire et que le groupe compte moins de `minCompatible` personnes `storyCompatible`
+ * avec elle (hors sa team). Rien d'autre ne sort : ni qui, ni combien.
+ */
+export function storyFriendsOnly(members: readonly StoryMember[], t: Tuning): Map<string, boolean> {
+  const min = t.outings.composition.storyGuarantee.minCompatible;
+  const out = new Map<string, boolean>();
+  for (const m of members) {
+    if (!m.seeks.seeks.romance) {
+      out.set(m.userId, false);
+      continue;
+    }
+    let n = 0;
+    for (const o of members) if (o !== m && o.userId !== m.userId && !(m.teamId !== null && o.teamId === m.teamId) && storyCompatible(m.seeks, o.seeks)) n++;
+    out.set(m.userId, n < min);
+  }
+  return out;
 }
 
 /** Voie Duo (§4.2, mode DUO, en plus de `FILTERS`) : romance réciproque, ou amitié réciproque respectant « qui je veux rencontrer ». */
@@ -68,6 +112,10 @@ export class PairTable {
   /** romance seulement (sans amis) : doit avoir ≥ 1 rom-compatible dans son groupe. */
   readonly romanceOnly: Uint8Array;
   readonly meetEmpty: Uint8Array;
+  /** Index de team (−1 = seul·e) : les membres d'une même team ne comptent pas pour la garantie. */
+  readonly team: Int32Array;
+  private readonly bracketLo: Int16Array;
+  private readonly bracketHi: Int16Array;
   private readonly romanceMask: Int32Array;
   private readonly profiles: MatchProfile[];
   private readonly cache: Int16Array;
@@ -89,6 +137,10 @@ export class PairTable {
     this.romanceOnly = Uint8Array.from(cands, (c) => (c.seeks.romance && !c.seeks.friends ? 1 : 0));
     this.meetEmpty = Uint8Array.from(cands, (c) => (c.meetGenders.length === 0 ? 1 : 0));
     this.romanceMask = Int32Array.from(cands, (c) => genderMask(c.romanceGenders));
+    const teams = new Map<string, number>();
+    this.team = Int32Array.from(cands, (c) => (c.teamId === null ? -1 : (teams.get(c.teamId) ?? (teams.set(c.teamId, teams.size), teams.size - 1))));
+    this.bracketLo = Int16Array.from(cands, (c) => ageBracketBounds(ageBracketOf(c.profile.age))[0]);
+    this.bracketHi = Int16Array.from(cands, (c) => ageBracketBounds(ageBracketOf(c.profile.age))[1]);
     this.profiles = cands.map(filterProfileOf);
     this.cache = new Int16Array(n * n).fill(UNKNOWN);
     this.tStar = groupScoringTuning(tuning);
@@ -128,6 +180,14 @@ export class PairTable {
 
   rom(i: number, j: number): boolean {
     return this.seeksRomance[i] === 1 && this.seeksRomance[j] === 1 && (this.romanceMask[i]! & (1 << this.gender[j]!)) !== 0 && (this.romanceMask[j]! & (1 << this.gender[i]!)) !== 0;
+  }
+
+  /** `storyCompatible` sur la table (hors même team) ; même règle que la fonction exportée. */
+  story(i: number, j: number): boolean {
+    if (!this.rom(i, j) || (this.team[i]! >= 0 && this.team[i] === this.team[j])) return false;
+    const a = this.cands[i]!.groupAge;
+    const b = this.cands[j]!.groupAge;
+    return this.bracketLo[j]! <= a.max && this.bracketHi[j]! >= a.min && this.bracketLo[i]! <= b.max && this.bracketHi[i]! >= b.min;
   }
 
   candidate(i: number): OutingCandidate {

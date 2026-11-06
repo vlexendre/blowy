@@ -264,6 +264,8 @@ enum ModerationSubjectType {
   PROFILE
   ANONYMOUS_RESPONSE
   USER
+  SAFETY_ALERT
+  OUTING
 }
 
 enum CaseStatus {
@@ -519,6 +521,7 @@ enum ReportCategory {
   OUTING_THREAT
   IRL_BEHAVIOR
   ON_SITE_INCIDENT
+  REPEATED_NO_SHOW
 }
 
 enum ReportStatus {
@@ -2369,6 +2372,8 @@ model Report {
   subjectRef     String?
   /// Précision libre du signaleur (privée, purgeable ; jamais montrée au signalé).
   note           String?
+  /// V5 (spec §8.3) : sortie dans laquelle le signalement a été fait (contexte, jamais montré au signalé).
+  outingId       String?        @db.Uuid
   createdAt      DateTime       @default(now()) @db.Timestamptz(3)
 
   reporter User                 @relation("Reporter", fields: [reporterId], references: [id], onDelete: Restrict)
@@ -2377,6 +2382,7 @@ model Report {
   cases    ModerationCase[]
 
   @@index([reportedUserId, status])
+  @@index([outingId])
 }
 
 /// Une pénalité par épisode : unique (userId, reason, episodeKey).
@@ -2841,6 +2847,15 @@ enum AccuracyBucket {
   GT_150
 }
 
+enum DuoDateStatus {
+  PROPOSED
+  CONFIRMED
+  DECLINED
+  SUPERSEDED
+  CANCELLED
+  DONE
+}
+
 enum VoteChoice {
   FRIEND
   PLUS
@@ -2972,6 +2987,7 @@ model Venue {
   neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Restrict)
   slots        VenueSlot[]
   outings      Outing[]
+  duoDates     DuoDate[]
 
   @@index([neighborhoodId, status])
 }
@@ -3278,6 +3294,15 @@ model Duo {
   messagesHigh   Int       @default(0)
   datesAttended  Int       @default(0)
   sourceOutingId String?   @db.Uuid
+  /// V5 T5 (C2) : proposition voie Duo d'origine (LANE).
+  proposalId     String?   @unique @db.Uuid
+  /// A déjà été TOGETHER (retour après un RDV refusé, annulé ou non tenu).
+  together       Boolean   @default(false)
+  /// Œuf (T9) : désactivé par défaut ; actif seulement si les DEUX côtés l'ont activé.
+  eggOptInLow    Boolean   @default(false)
+  eggOptInHigh   Boolean   @default(false)
+  /// Fin (EXPIRED/CLOSED/LEFT) : la conversation reste lisible 7 j après une expiration.
+  endedAt        DateTime? @db.Timestamptz(3)
   createdAt      DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
   version        Int       @default(0)
@@ -3285,9 +3310,103 @@ model Duo {
   userLow      User          @relation("DuoLow", fields: [userLowId], references: [id], onDelete: Restrict)
   userHigh     User          @relation("DuoHigh", fields: [userHighId], references: [id], onDelete: Restrict)
   conversation Conversation?
+  dates        DuoDate[]
 
   @@index([userLowId])
   @@index([userHighId])
+  @@index([status, exchangeEndsAt])
+  @@index([status, dateDeadline])
+}
+
+/// Rendez-vous à deux (spec-v5 §2.12) — lieu public partenaire ; un seul PROPOSED/CONFIRMED par duo (index partiel).
+model DuoDate {
+  id                String        @id @default(uuid(7)) @db.Uuid
+  duoId             String        @db.Uuid
+  proposedByUserId  String        @db.Uuid
+  venueId           String        @db.Uuid
+  startsAt          DateTime      @db.Timestamptz(3)
+  endsAt            DateTime      @db.Timestamptz(3)
+  status            DuoDateStatus
+  checkinLowAt      DateTime?     @db.Timestamptz(3)
+  checkinHighAt     DateTime?     @db.Timestamptz(3)
+  votesCloseAt      DateTime?     @db.Timestamptz(3)
+  votesClosedAt     DateTime?     @db.Timestamptz(3)
+  ballotsPurgedAt   DateTime?     @db.Timestamptz(3)
+  cancelledByUserId String?       @db.Uuid
+  /// Annulation à moins de 24 h (comptée en fiabilité) — jamais montrée à l'autre.
+  lateCancel        Boolean       @default(false)
+  createdAt         DateTime      @db.Timestamptz(3)
+  updatedAt         DateTime      @db.Timestamptz(3)
+  version           Int           @default(0)
+
+  duo      Duo                     @relation(fields: [duoId], references: [id], onDelete: Cascade)
+  venue    Venue                   @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  votes    DuoVote[]
+  attempts DuoDateCheckInAttempt[]
+
+  @@index([duoId])
+  @@index([status, startsAt])
+}
+
+/// Bulletin d'après-rendez-vous (même résolution que §2.10) ; purgé 7 j après la clôture.
+model DuoVote {
+  id          String     @id @default(uuid(7)) @db.Uuid
+  duoDateId   String     @db.Uuid
+  voterUserId String     @db.Uuid
+  choice      VoteChoice
+  createdAt   DateTime   @db.Timestamptz(3)
+  updatedAt   DateTime   @db.Timestamptz(3)
+
+  duoDate DuoDate @relation(fields: [duoDateId], references: [id], onDelete: Cascade)
+
+  @@unique([duoDateId, voterUserId])
+}
+
+/// Essais de check-in d'un RDV duo (aucune position stockée : résultat et tranche de précision seulement).
+model DuoDateCheckInAttempt {
+  id             String          @id @default(uuid(7)) @db.Uuid
+  duoDateId      String          @db.Uuid
+  userId         String          @db.Uuid
+  method         CheckInMethod
+  result         CheckInResult
+  accuracyBucket AccuracyBucket?
+  createdAt      DateTime        @db.Timestamptz(3)
+
+  duoDate DuoDate @relation(fields: [duoDateId], references: [id], onDelete: Cascade)
+
+  @@index([duoDateId, userId, method])
+}
+
+/// « Passer » une proposition voie Duo : silencieux pour l'autre (la proposition expire normalement de son côté).
+model DuoLanePass {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  proposalId String   @db.Uuid
+  userId     String   @db.Uuid
+  createdAt  DateTime @db.Timestamptz(3)
+
+  @@unique([proposalId, userId])
+  @@index([userId])
+}
+
+/// « Ta rue » (V5.2 G.21, V5.3 F.24) : ordre de MES souvenirs dans le décor (action facultative, sans notification).
+model StreetArrangement {
+  userId    String   @id @db.Uuid
+  memoryIds String[] @db.Uuid
+  updatedAt DateTime @db.Timestamptz(3)
+}
+
+/// « Ta rue » : accessoire gagné offert (à montrer) au pet d'un membre de MA bande — visible seulement
+/// dans la rue du destinataire ; le donneur le garde ; aucune notification, aucun compteur.
+model StreetGift {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  fromUserId  String   @db.Uuid
+  toUserId    String   @db.Uuid
+  linkId      String   @db.Uuid
+  accessoryId String
+  createdAt   DateTime @db.Timestamptz(3)
+
+  @@unique([fromUserId, toUserId, accessoryId])
+  @@index([toUserId, createdAt])
 }
 
 /// Fiabilité « venu·e à N sorties sur M » (§2.14, V5.1 E.16) — projection idempotente.
@@ -3374,6 +3493,134 @@ model KnowsSomeoneRequest {
   resolvedAt   DateTime?          @db.Timestamptz(3)
 
   seat OutingSeat @relation(fields: [seatId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// -----------------------------------------------------------------------------
+// V5 — Sécurité (module `safety`, agent E, spec-v5 §2.9, V5.1 G, V5.2 C/H)
+// Aucune clé étrangère vers User : le module purge ses lignes lui-même (rétention §8.5).
+// -----------------------------------------------------------------------------
+
+enum GuardianSubjectKind {
+  OUTING
+  DUO_DATE
+}
+
+enum SafetyAlertStatus {
+  OPEN
+  SAFE
+  HANDLED
+}
+
+/// Lien « ange gardien » : jeton aléatoire 32 octets, seule son empreinte SHA-256 est stockée.
+/// Ni numéro ni email du proche ; ni IP ni empreinte de navigateur des lectures.
+model GuardianLink {
+  id           String              @id @default(uuid(7)) @db.Uuid
+  ownerUserId  String              @db.Uuid
+  subjectKind  GuardianSubjectKind
+  subjectId    String              @db.Uuid
+  tokenHash    String              @unique
+  label        String?
+  activeFrom   DateTime            @db.Timestamptz(3)
+  expiresAt    DateTime            @db.Timestamptz(3)
+  revokedAt    DateTime?           @db.Timestamptz(3)
+  revokeReason String?
+  lastViewedAt DateTime?           @db.Timestamptz(3)
+  viewCount    Int                 @default(0)
+  createdAt    DateTime            @db.Timestamptz(3)
+
+  push GuardianPushSubscription?
+
+  @@index([subjectKind, subjectId])
+  @@index([ownerUserId, subjectId])
+  @@index([expiresAt])
+}
+
+/// Abonnement Web Push du proche (souscrit depuis la page) : seul l'endpoint est gardé — les
+/// notifications sont SANS contenu (aucune clé de chiffrement nécessaire, donc aucune stockée).
+model GuardianPushSubscription {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  guardianLinkId String   @unique @db.Uuid
+  endpoint       String
+  createdAt      DateTime @db.Timestamptz(3)
+  purgeAfter     DateTime @db.Timestamptz(3)
+
+  link GuardianLink @relation(fields: [guardianLinkId], references: [id], onDelete: Cascade)
+}
+
+/// Alerte « besoin d'aide » : dossier SAFETY prioritaire ; position jointe seulement par choix
+/// explicite, purgée à `positionPurgeAfter` (sauf dossier ouvert → à sa clôture).
+model SafetyAlert {
+  id                 String              @id @default(uuid(7)) @db.Uuid
+  userId             String              @db.Uuid
+  subjectKind        GuardianSubjectKind
+  subjectId          String              @db.Uuid
+  status             SafetyAlertStatus   @default(OPEN)
+  lat                Float?
+  lng                Float?
+  accuracyM          Int?
+  positionPurgeAfter DateTime?           @db.Timestamptz(3)
+  positionPurgedAt   DateTime?           @db.Timestamptz(3)
+  moderationCaseId   String?             @db.Uuid
+  createdAt          DateTime            @db.Timestamptz(3)
+  ackAt              DateTime?           @db.Timestamptz(3)
+  resolvedAt         DateTime?           @db.Timestamptz(3)
+  handledById        String?             @db.Uuid
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+  @@index([subjectKind, subjectId])
+}
+
+/// « Tout va bien » (chronologie du proche).
+model SafetyOkSignal {
+  id          String              @id @default(uuid(7)) @db.Uuid
+  userId      String              @db.Uuid
+  subjectKind GuardianSubjectKind
+  subjectId   String              @db.Uuid
+  createdAt   DateTime            @db.Timestamptz(3)
+
+  @@index([subjectKind, subjectId, userId])
+}
+
+/// Retrait système (D-025) déclenché par un blocage ou un « je connais quelqu'un » accepté :
+/// trace staff (signal d'abus ≥ [T] safety.removalAbuseThreshold en 30 j), jamais exposée aux membres.
+model SafetySystemRemoval {
+  id                String   @id @default(uuid(7)) @db.Uuid
+  outingId          String   @db.Uuid
+  seatId            String   @unique @db.Uuid
+  removedUserId     String   @db.Uuid
+  triggeredByUserId String   @db.Uuid
+  cause             String
+  createdAt         DateTime @db.Timestamptz(3)
+
+  @@index([triggeredByUserId, createdAt])
+}
+
+/// Signalement « incident sur place » (lieu, personnel, autre client) SANS personne visée parmi
+/// les participants (V5.2 H.23). Note privée, purgée avec les dossiers (2 ans après clôture).
+model SafetyIncident {
+  id               String   @id @default(uuid(7)) @db.Uuid
+  reporterId       String   @db.Uuid
+  outingId         String   @db.Uuid
+  venueId          String?  @db.Uuid
+  note             String?
+  moderationCaseId String?  @db.Uuid
+  createdAt        DateTime @db.Timestamptz(3)
+
+  @@index([outingId])
+}
+
+/// « Je pars, mal à l'aise » (V5.3 B.9) : départ sans pénalité ; message staff (dossier), au gardien
+/// seulement si la personne l'a choisi ; 3 départs → recontact humain. Une ligne par place.
+model SafetyUneasyLeave {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  userId         String   @db.Uuid
+  outingId       String   @db.Uuid
+  seatId         String   @unique @db.Uuid
+  notifyGuardian Boolean  @default(false)
+  createdAt      DateTime @db.Timestamptz(3)
 
   @@index([userId, createdAt])
 }

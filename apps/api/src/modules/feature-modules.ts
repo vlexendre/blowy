@@ -11,5 +11,7 @@ import { SocialModule } from './social/social.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { NeighborhoodsModule } from './neighborhoods/neighborhoods.module.js';
 import { OutingsModule } from './outings/outings.module.js';
+import { SafetyModule } from './safety/safety.module.js';
+import { ConnectionsModule } from './connections/connections.module.js';
 
-export const FEATURE_MODULES: Type[] = [PetsModule, RelationshipsModule, ConversationsModule, MatchingModule, EconomyModule, TrustModule, MediaModule, SocialModule, AdminModule, NeighborhoodsModule, OutingsModule];
+export const FEATURE_MODULES: Type[] = [PetsModule, RelationshipsModule, ConversationsModule, MatchingModule, EconomyModule, TrustModule, MediaModule, SocialModule, AdminModule, NeighborhoodsModule, OutingsModule, SafetyModule, ConnectionsModule];

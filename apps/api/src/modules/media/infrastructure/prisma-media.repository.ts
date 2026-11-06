@@ -111,6 +111,9 @@ export class PrismaMediaRepository implements MediaRepository {
       conversationId: c.conversation?.id ?? null,
     };
   }
+  async viewerFirstName(userId: string) {
+    return (await this.db.profile.findUnique({ where: { userId }, select: { displayName: true } }))?.displayName ?? '';
+  }
   async photoPreference(userId: string) {
     return (await this.db.privacySettings.findUnique({ where: { userId } }))?.photoPreference ?? 'FROM_LEVEL_4_WITH_CONSENT';
   }

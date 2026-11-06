@@ -58,7 +58,7 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     lastCallBeforeHours: 3,
   },
   composition: {
-    algoVersion: 'groups-2026.12.0',
+    algoVersion: 'groups-2026.12.1',
     /** V5.1 : groupe de 5 (dont toi). */
     targetSize: 5,
     minPairScore: 35,
@@ -72,6 +72,8 @@ export const OUTINGS_V5: Out<typeof OutingsTuningSchema> = frozen({
     repairToleranceMilli: 2000,
     maxSwapIterations: 200,
     maxTeamSize: 3,
+    /** V5.2 (B.5–B.6) : ≥ 2 personnes compatibles « histoire » dans le groupe, sinon « potes uniquement ». */
+    storyGuarantee: { enabled: true, minCompatible: 2, lambdaGuarantee: 16000 },
   },
   /** V5.1 (B.7) : team de 3 vérifiés + une autre team (≥ 2) ; jusqu'à 6 (3 + 3). */
   seeding: { triggerTeamSize: 3, minPartnerTeamSize: 2, maxSize: 6 },

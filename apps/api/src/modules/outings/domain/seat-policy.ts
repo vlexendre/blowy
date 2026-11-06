@@ -33,11 +33,14 @@ export interface CancelPreview {
 }
 
 /**
- * V5.2 (C.8) : la bascule « annuler = absence » est la révélation des VISAGES (`photoRevealAt`,
- * startsAt − 3 h par défaut), plus le verrouillage.
+ * V5.3 (B.6, amende V5.2 C.8) : annulation gratuite jusqu'à la CONFIRMATION (veille 18 h, `lockAt`, heure
+ * où l'effectif est envoyé au lieu) ; après, annuler = absence. Les appelants passent `revealAt = lockAt`
+ * (nom conservé pour la compatibilité de `cancelKindAt`).
  */
 export function cancelPreview(i: { funding: SeatFunding | null; now: Date; revealAt: Date; kind: SeatCancelRequestKind }): CancelPreview {
   if (i.kind === 'SAFETY') return { cancelKind: 'SAFETY_EXIT', refund: refundModeFor(i.funding), countsAsAbsence: false };
   const k = cancelKindAt(i.now.getTime(), i.revealAt.getTime());
-  return k === 'EARLY' ? { cancelKind: 'EARLY', refund: refundModeFor(i.funding), countsAsAbsence: false } : { cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true };
+  // D-019 (T3) : annulation personnelle d'une place payée avant les visages → crédit 90 j (carte sur demande au support).
+  const early: RefundMode = i.funding === 'PAID' ? 'CREDIT' : refundModeFor(i.funding);
+  return k === 'EARLY' ? { cancelKind: 'EARLY', refund: early, countsAsAbsence: false } : { cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true };
 }

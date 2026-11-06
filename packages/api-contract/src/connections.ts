@@ -1,12 +1,17 @@
 /**
- * Contrats /v1/band, /v1/duos, voie Duo (/v1/matches, /v1/match-proposals) — spec-v5 §2.11–2.12,
- * §7.3, §7.6. Propriétaire : C2. On ne voit jamais la bande d'autrui ; toute fin non mutuelle
- * produit le même message neutre des deux côtés (D-017).
+ * Contrats /v1/band, /v1/duos, voie Duo — spec-v5 §2.11–2.12, §7.3, §7.6 ; V5.1 F ; V5.2 G.21, H.25.
+ * Propriétaire : C2. On ne voit jamais la bande d'autrui ; toute fin non mutuelle produit le même
+ * message neutre des deux côtés (D-017). Aucune intention, orientation ni sous-choix n'est exposé :
+ * la seule information est l'intérêt mutuel (et l'indice booléen « projet compatible »).
+ *
+ * Routes (T5) : voie Duo servie sous `/v1/duo-lane` (`GET` = `DuoLaneFeed`,
+ * `POST /v1/duo-lane/proposals/:id/accept|pass`) tant que `/v1/matches` reste le flux V4 ; à la
+ * bascule V4 → 410 (§7.7), `/v1/matches` et `/v1/match-proposals/:id/*` serviront ces mêmes schémas.
  */
 import { z } from 'zod';
 import { BAND_LINK_STATUSES, BAND_ORIGINS, CONNECTION_SOURCES, DATE_RESPONSES, DUO_DATE_STATUSES, DUO_ORIGINS, DUO_STATUSES, SEAT_CANCEL_REQUEST_KINDS } from '@blowy/domain';
 import { IsoDateTimeSchema, UuidSchema, pageOf } from './core/common.js';
-import { PetCardSchema } from './pets.js';
+import { AccessoryIdSchema, PetCardSchema, PetMemoryViewSchema } from './pets.js';
 import { MemberReliabilitySchema, MutualConnectionSchema, RevealedPhotoSchema, VoteChoiceSchema } from './outings.js';
 
 export const BandOriginSchema = z.enum(BAND_ORIGINS);
@@ -37,6 +42,10 @@ export const CONNECTION_FAILURE_REASONS = [
   'CHECKIN_TOO_FAR',
   'CHECKIN_LOW_ACCURACY',
   'CHECKIN_CODE_INVALID',
+  // T5 (ajouts) : « plus » proposé seulement si je cherche moi-même une histoire (dépend de moi seul).
+  'PLUS_NOT_OFFERED',
+  'DUO_LANE_DISABLED',
+  'ACCESSORY_NOT_UNLOCKED',
   // 409
   'DUO_LIMIT_REACHED',
 ] as const;
@@ -74,6 +83,12 @@ export const DuoDateViewSchema = z
     votesCloseAt: IsoDateTimeSchema.optional(),
     /** Mon bulletin seulement. */
     myVote: VoteChoiceSchema.optional(),
+    /** T5 : fin indicative et fenêtre de check-in (`[startsAt − 30 min, startsAt + 90 min]`). */
+    endsAt: IsoDateTimeSchema.optional(),
+    checkinOpensAt: IsoDateTimeSchema.optional(),
+    checkinClosesAt: IsoDateTimeSchema.optional(),
+    /** T5 : choix proposés à MOI (`PLUS` seulement si je cherche une histoire ; jamais déduit de l'autre). */
+    voteOptions: z.array(VoteChoiceSchema).optional(),
   })
   .strict();
 export type DuoDateView = z.infer<typeof DuoDateViewSchema>;
@@ -94,6 +109,8 @@ export const DuoViewSchema = z
     /** V5.1 (F.18) : indice « projet compatible » si les sous-choix secrets concordent (jamais les sous-choix). */
     projectCompatible: z.literal(true).optional(),
     conversationId: UuidSchema,
+    /** T5 : œuf (T9) — désactivé par défaut, actif seulement si les deux l'ont activé ; jamais le choix de l'autre seul. */
+    egg: z.object({ myOptIn: z.boolean(), active: z.boolean(), eligible: z.boolean() }).strict().optional(),
   })
   .strict();
 export type DuoView = z.infer<typeof DuoViewSchema>;
@@ -101,7 +118,15 @@ export const DuoListSchema = z.object({ items: z.array(DuoViewSchema) });
 
 /** `GET /v1/matches` (V5) : propositions DUO_LANE ouvertes (≤ 3 actives). */
 export const DuoLaneProposalViewSchema = z
-  .object({ proposalId: UuidSchema, pet: PetCardSchema, visionScore: z.number().int().min(0).max(100), expiresAt: IsoDateTimeSchema, acceptedByMe: z.boolean() })
+  .object({
+    proposalId: UuidSchema,
+    pet: PetCardSchema,
+    visionScore: z.number().int().min(0).max(100),
+    expiresAt: IsoDateTimeSchema,
+    acceptedByMe: z.boolean(),
+    /** V5.3 (A.3) : avant le double « oui », seulement le pet et l'initiale (prénom et carte complète après). */
+    otherInitial: z.string().min(1).max(2).optional(),
+  })
   .strict();
 export type DuoLaneProposalView = z.infer<typeof DuoLaneProposalViewSchema>;
 export const DuoLaneFeedSchema = z.object({
@@ -124,6 +149,47 @@ export const CastDuoVoteRequestSchema = z.object({ choice: VoteChoiceSchema });
 export type CastDuoVoteRequest = z.infer<typeof CastDuoVoteRequestSchema>;
 export const CastDuoVoteResponseSchema = z.object({ myChoice: VoteChoiceSchema }).strict();
 
+// ---------------------------------------------------------------- T5 (ajouts rétrocompatibles)
+/** `POST /v1/duo-lane/proposals/:id/pass` : silencieux pour l'autre. */
+export const PassDuoProposalResultSchema = z.object({ status: z.literal('PASSED') }).strict();
+/** `POST /v1/band/:linkId/leave` (« partir proprement ») : aucune pénalité, aucun motif. */
+export const BandLeaveResponseSchema = z.object({ linkId: UuidSchema, status: z.literal('WITHDRAWN') }).strict();
+/** `POST /v1/duos/:id/leave`. */
+export const DuoLeaveResponseSchema = z.object({ duoId: UuidSchema, status: z.literal('LEFT') }).strict();
+/** `GET /v1/duos/:id/venues` : lieux publics partenaires (quartiers des deux), pour `duos.date.propose`. */
+export const DuoVenueListSchema = z.object({ items: z.array(DuoVenueViewSchema) });
+/** `PUT /v1/duos/:id/egg` (drapeau T9 seulement) : 412 `EGG_NOT_ELIGIBLE`. */
+export const DuoEggRequestSchema = z.object({ enabled: z.boolean() });
+export const DuoEggResponseSchema = z.object({ myOptIn: z.boolean(), active: z.boolean(), eligible: z.boolean() }).strict();
+
+/**
+ * `GET /v1/band/street` — « Ta rue » (V5.2 G.21) : les pets de MA bande et un décor fait de MES
+ * souvenirs. Rien à entretenir : aucune jauge, aucun compteur d'activité, aucune notification.
+ */
+export const StreetResidentSchema = z.object({ linkId: UuidSchema, firstName: z.string(), pet: PetCardSchema }).strict();
+/** Accessoire gagné qu'un membre de ma bande a offert à mon pet (visible dans MA rue seulement). */
+export const StreetGiftViewSchema = z.object({ fromLinkId: UuidSchema, fromPetName: z.string(), accessoryId: AccessoryIdSchema, at: IsoDateTimeSchema }).strict();
+export const StreetViewSchema = z
+  .object({
+    myPet: PetCardSchema.nullable(),
+    residents: z.array(StreetResidentSchema),
+    /** Dans l'ordre que j'ai choisi (« ranger ses souvenirs »), puis les plus récents. */
+    decor: z.array(PetMemoryViewSchema).max(30),
+    /** V5.3 (F.24) : cadeaux reçus. */
+    gifts: z.array(StreetGiftViewSchema).max(30).optional(),
+  })
+  .strict();
+export type StreetView = z.infer<typeof StreetViewSchema>;
+
+/** `PUT /v1/band/street/arrangement` (V5.3 F.24, facultatif) : ordre de MES souvenirs ; inconnus ignorés. */
+export const StreetArrangementRequestSchema = z.object({ memoryIds: z.array(UuidSchema).max(30) });
+/**
+ * `POST /v1/band/street/gifts` (V5.3 F.24, facultatif) : offrir (montrer) un accessoire GAGNÉ au pet d'un
+ * membre de MA bande ; je le garde ; aucune notification. 404 lien ; 412 `ACCESSORY_NOT_UNLOCKED`.
+ */
+export const StreetGiftRequestSchema = z.object({ linkId: UuidSchema, accessoryId: AccessoryIdSchema });
+export const StreetGiftResponseSchema = z.object({ status: z.literal('GIVEN') }).strict();
+
 // ---------------------------------------------------------------- événements WS (§7.6)
 /** Aux deux seuls intéressés, au palier de révélation (jamais à l'instant du vote). */
 export const ConnectionRevealedEventSchema = z
@@ -137,4 +203,4 @@ export const ConnectionRevealedEventSchema = z
   .strict()
   .refine((e) => (e.kind === 'FRIEND' ? e.linkId !== undefined && e.duoId === undefined : e.duoId !== undefined && e.linkId === undefined), { message: 'FRIEND → linkId, PLUS → duoId' });
 export const BandUpdatedEventSchema = z.object({ linkId: UuidSchema, status: BandLinkStatusSchema });
-export const DuoUpdatedEventSchema = z.object({ duoId: UuidSchema, status: DuoStatusSchema, changed: z.enum(['STATUS', 'UNLOCKED', 'DATE', 'VOTE', 'ENDED']) });
+export const DuoUpdatedEventSchema = z.object({ duoId: UuidSchema, status: DuoStatusSchema, changed: z.enum(['STATUS', 'UNLOCKED', 'DATE', 'VOTE', 'ENDED', 'EGG']) });

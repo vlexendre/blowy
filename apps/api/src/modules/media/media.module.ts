@@ -34,10 +34,10 @@ import {
   VoiceTranscriptionService,
   emitProofValidated,
 } from './application/media.use-cases.js';
-import { AUDIO_PROBE, IMAGE_PROCESSOR, MEDIA_REPOSITORY, type AudioProbe, type ImageProcessor, type MediaRepository } from './application/ports/media.ports.js';
+import { AUDIO_PROBE, IMAGE_PROCESSOR, MEDIA_REPOSITORY, WATERMARKER, type AudioProbe, type ImageProcessor, type MediaRepository, type Watermarker } from './application/ports/media.ports.js';
 import { ContainerAudioProbe } from './infrastructure/audio-probe.js';
 import { PrismaMediaRepository } from './infrastructure/prisma-media.repository.js';
-import { SharpImageProcessor } from './infrastructure/sharp-image.processor.js';
+import { SharpImageProcessor, SharpWatermarker } from './infrastructure/sharp-image.processor.js';
 import { MediaController } from './interface/media.controller.js';
 
 export const MEDIA_JOBS = Symbol('MediaJobs');
@@ -51,6 +51,7 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
   providers: [
     { provide: MEDIA_REPOSITORY, useFactory: (db: Db, c: Clock) => new PrismaMediaRepository(db, c), inject: [DB, CLOCK] },
     { provide: IMAGE_PROCESSOR, useClass: SharpImageProcessor },
+    { provide: WATERMARKER, useClass: SharpWatermarker },
     { provide: AUDIO_PROBE, useClass: ContainerAudioProbe },
     {
       provide: CASES,
@@ -84,7 +85,7 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
       inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, AI_SERVICES, AI_TASK_QUEUE, UNIT_OF_WORK, CLOCK, CASES],
     },
     { provide: AssessMissionProofUseCase, useFactory: (r: M, s: ObjectStorage, ai: AiServices, u: UnitOfWork, cs: Cases) => new AssessMissionProofUseCase(r, s, ai, u, cs), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, AI_SERVICES, UNIT_OF_WORK, CASES] },
-    { provide: GetMediaContentQuery, useFactory: (r: M, s: ObjectStorage, a: MediaAccessService, c: Clock) => new GetMediaContentQuery(r, s, a, c), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, MediaAccessService, CLOCK] },
+    { provide: GetMediaContentQuery, useFactory: (r: M, s: ObjectStorage, a: MediaAccessService, c: Clock, w: Watermarker) => new GetMediaContentQuery(r, s, a, c, w), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, MediaAccessService, CLOCK, WATERMARKER] },
     { provide: GetMediaQuery, useFactory: (r: M) => new GetMediaQuery(r), inject: [MEDIA_REPOSITORY] },
     { provide: CreateAccessTokenUseCase, useFactory: (r: M, a: MediaAccessService, rnd: RandomSource, c: Clock, cfg: AppConfig) => new CreateAccessTokenUseCase(r, a, rnd, c, cfg.PUBLIC_API_URL), inject: [MEDIA_REPOSITORY, MediaAccessService, RANDOM, CLOCK, APP_CONFIG] },
     { provide: ShareMediaUseCase, useFactory: (b: CommandBus, r: M, c: Clock) => new ShareMediaUseCase(b, r, c), inject: [COMMAND_BUS, MEDIA_REPOSITORY, CLOCK] },

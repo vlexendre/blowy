@@ -40,8 +40,9 @@ export class OutingLifecycle {
   }
 
   // ------------------------------------------------------------------ fiabilité (verrou users tenu)
-  async absence(scope: TxScope, userId: string, kind: 'NO_SHOW' | 'LATE_CANCEL', episodeKey: string) {
-    const fresh = await this.repo.reliabilityEvent(scope, { userId, reason: kind === 'NO_SHOW' ? 'OUTING_NO_SHOW' : 'OUTING_LATE_CANCEL', episodeKey });
+  /** `duo` (T5, C2) : absence à un RDV duo — raison `DUO_NO_SHOW` (annulation tardive : même raison que les sorties). */
+  async absence(scope: TxScope, userId: string, kind: 'NO_SHOW' | 'LATE_CANCEL', episodeKey: string, duo = false) {
+    const fresh = await this.repo.reliabilityEvent(scope, { userId, reason: kind === 'NO_SHOW' ? (duo ? 'DUO_NO_SHOW' : 'OUTING_NO_SHOW') : 'OUTING_LATE_CANCEL', episodeKey });
     if (!fresh) return;
     const cur = (await this.repo.reliability(scope, userId)) ?? EMPTY_RELIABILITY;
     const { state, paused } = recordAbsence(cur, kind, scope.now, this.tuning);
@@ -50,7 +51,7 @@ export class OutingLifecycle {
     await this.events.reliabilityUpdated(scope, userId, { attended: state.attended, total: total(state), pausedUntil: state.pausedUntil });
   }
 
-  private async attendance(scope: TxScope, userId: string, episodeKey: string) {
+  async attendance(scope: TxScope, userId: string, episodeKey: string) {
     if (!(await this.repo.reliabilityEvent(scope, { userId, reason: 'OUTING_ATTENDED', episodeKey }))) return;
     const state = recordAttendance((await this.repo.reliability(scope, userId)) ?? EMPTY_RELIABILITY);
     await this.repo.saveReliability(scope, userId, state);
@@ -80,9 +81,11 @@ export class OutingLifecycle {
 
   // ------------------------------------------------------------------ annulation (verrous tenus)
   /** Rembourse une place annulée par Blowy ou par sécurité (jamais d'effet de fiabilité). */
-  async refundFully(scope: TxScope, seat: SeatRow, paymentRef: string | null = null) {
+  async refundFully(scope: TxScope, seat: SeatRow, paymentRef: string | null = null, cause: 'OUTING_CANCELLED' | 'SYSTEM_REMOVAL' | 'SAFETY_EXIT' | 'ACCOUNT_DELETED' = 'OUTING_CANCELLED') {
     const mode = refundModeFor(seat.funding);
-    if (mode === 'CARD') return this.funding.refundCard(scope, { userId: seat.userId, seatId: seat.id, paymentRef });
+    if (mode === 'CARD') return this.funding.refundCard(scope, { userId: seat.userId, seatId: seat.id, paymentRef, cause });
+    // T3 (G) : un lot de crédit consommé (ou Blowy+ échu) est rendu par l'économie.
+    if (mode === 'CREDIT' && seat.funding && this.funding.refundCredit) return this.funding.refundCredit(scope, { userId: seat.userId, seatId: seat.id, funding: seat.funding, cause });
     return mode === 'CREDIT' ? ('RECREDITED' as const) : ('NONE' as const);
   }
 

@@ -84,24 +84,25 @@ describe('HTTP /v1 économie', () => {
     const subBody = (await sub.json()) as { subscription: { mode: string; state: string; dateSlots: number } };
     expect(subBody.subscription).toMatchObject({ mode: 'LOCAL_DEMO', state: 'ACTIVE', dateSlots: 3 });
 
-    const coinsCmd = randomUUID();
-    for (let i = 0; i < 2; i++) {
-      await call('/purchases/local-demo', { method: 'POST', token: u, headers: { 'idempotency-key': coinsCmd }, body: { action: 'BUY_COINS', productId: 'coins_500' } });
-    }
+    // V5 (D-020) : pièces, gels, boost, accessoires vendus → 410 GONE (même en démo).
+    const coins = await call('/purchases/local-demo', { method: 'POST', token: u, headers: { 'idempotency-key': randomUUID() }, body: { action: 'BUY_COINS', productId: 'coins_500' } });
+    expect(coins.status).toBe(410);
+    expect(((await coins.json()) as { detailsSafe: { reason: string } }).detailsSafe.reason).toBe('RETIRED_IN_V5');
     // Sync client avec un corps falsifié : ignoré.
     await call('/purchases/sync', { method: 'POST', token: u, body: { entitlements: ['blowy_plus'], coins: 99999 } });
     const wallet = (await (await call('/wallet', { token: u })).json()) as { balance: number; history: { items: unknown[] } };
-    expect(wallet.balance).toBe(500);
-
+    expect(wallet.balance).toBe(0);
     const buy = await call('/catalog/streak_freeze/purchase', { method: 'POST', token: u, headers: { 'idempotency-key': randomUUID() } });
-    expect(buy.status).toBe(200);
-    expect(((await buy.json()) as { balance: number }).balance).toBe(300);
-    const noKey = await call('/catalog/streak_freeze/purchase', { method: 'POST', token: u });
-    expect(noKey.status).toBe(400);
+    expect(buy.status).toBe(410);
+    expect((await call('/streak-freezes/use', { method: 'POST', token: u, headers: { 'idempotency-key': randomUUID() } })).status).toBe(410);
+    const products = (await (await call('/purchases/products', { token: u })).json()) as { products: { kind: string }[]; seat: { amountCents: number }; plus: { monthlyPriceCents: number } };
+    expect(products.products.every((p) => p.kind === 'SUBSCRIPTION')).toBe(true);
+    expect(products.seat.amountCents).toBe(499);
+    expect(products.plus.monthlyPriceCents).toBe(999);
 
     const me = (await (await call('/subscriptions/me', { token: u })).json()) as { mode: string; entitlements: { key: string }[] };
     expect(me.mode).toBe('LOCAL_DEMO');
-    expect(me.entitlements.map((e) => e.key)).toContain('PLUS_MAP');
+    expect(me.entitlements.map((e) => e.key)).toContain('PLUS_MONTHLY_BENEFITS');
   });
 
   it('webhook : 401 structuré sans le bon header, 200 avec', async () => {

@@ -25,6 +25,9 @@ beforeAll(async () => {
 });
 afterAll(async () => w?.close());
 
+/** V5.2 B + jury tour 3 : ni libellé positif, ni champ de garantie, dans aucune vue HTTP/WS. */
+const GUARANTEE = /AT_LEAST_TWO|guarantee|garantie|friendsOnly|storyCompatible/i;
+
 /** Marqueurs secrets propres à ce parcours (valeurs de sous-choix, genres recherchés). */
 const SECRET = ['SERIOUS', 'SEE_HOW_IT_GOES', 'DONT_KNOW', 'STORY', 'BOTH', '"FRIENDS"', '1996-', '1997-', '1999-'];
 
@@ -40,10 +43,13 @@ async function sweep(label: string) {
       // Financement : seulement le mien.
       const others = JSON.stringify(v.data?.members ?? []);
       if (/funding|PAID|FREE_FIRST/.test(others)) problems.push(`${label} ${p.name}: financement d'autrui`);
+      // Décision jury tour 3 : la garantie « ≥ 2 compatibles » n'est JAMAIS exposée (vue entière).
+      if (GUARANTEE.test(JSON.stringify(v.data ?? null))) problems.push(`${label} ${p.name} HTTP: garantie exposée`);
     }
     for (const d of p.devices) for (const e of d.events) {
       const l = leaksIn(e.payload, SECRET);
       if (l.length) problems.push(`${label} ${p.name} WS ${e.type}: ${l.join(',')}`);
+      if (GUARANTEE.test(JSON.stringify(e ?? null))) problems.push(`${label} ${p.name} WS ${e.type}: garantie exposée`);
     }
   }
   return problems;
@@ -72,9 +78,10 @@ describe('Fuite zéro', () => {
     expect(await stranger.phone.join(`outing:${outingId}`)).toBe(false);
   });
 
-  S.step('« Histoire » : Alice voit « au moins 2 compatibles » (Bruno, David) sans savoir qui ; Chloé ne voit rien', async () => {
+  S.step('« Histoire » : Alice a la garantie (Bruno, David) appliquée par la composition mais jamais affichée ; Chloé ne voit rien', async () => {
     const [alice, , chloe] = people;
-    expect((await outing(alice!, outingId)).data.storyMatch).toBe('AT_LEAST_TWO');
+    expect((await outing(alice!, outingId)).data.storyMatch).toBeUndefined();
+    expect(JSON.stringify((await outing(alice!, outingId)).data)).not.toMatch(GUARANTEE);
     expect((await outing(chloe!, outingId)).data.storyMatch).toBeUndefined();
     expect((await alice!.call('GET', '/v1/preferences/intentions')).data).toMatchObject({ lookingFor: 'STORY', storySeriousness: 'SERIOUS' });
   });

@@ -1,0 +1,245 @@
+/* Page ange gardien (design/v5/project/W-Ange*.dc.html). Polices locales uniquement (CSP font-src 'self'). */
+.page {
+  --ink: #16110d;
+  --muted: #5a5047;
+  --soft: #6f6458;
+  --cream: #fff7ec;
+  --line: #f4eadc;
+  --shadow: #eedfcb;
+  --red: #d92d2d;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 18px 18px 24px;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+.alert {
+  background: linear-gradient(170deg, #b91c1c 0%, #991b1b 100%);
+  color: #fff;
+}
+.display {
+  font-family: 'Bricolage Grotesque', 'Arial Narrow', 'Helvetica Neue', system-ui, sans-serif;
+  font-weight: 800;
+  font-stretch: 85%;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  margin: 0;
+}
+.h1 {
+  font-size: clamp(32px, 10vw, 44px);
+}
+.intro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.mascot {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.card {
+  background: #fff;
+  color: var(--ink);
+  border-radius: 22px;
+  box-shadow: 0 4px 0 var(--shadow);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.alert .card {
+  box-shadow: 0 5px 0 #6e1010;
+}
+.venue {
+  font-size: 20px;
+  text-transform: none;
+}
+.meta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+}
+.sep {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+  margin: 0;
+}
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #c8f542;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.dotAlert {
+  background: var(--red);
+}
+.pending {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2.5px dashed #8c7b66;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+.stepPending {
+  color: var(--muted);
+}
+.lbl {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 20px;
+  border-radius: 18px;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Bricolage Grotesque', 'Arial Narrow', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.btnDark {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 5px 0 #000;
+}
+.btnWhite {
+  background: #fff;
+  color: var(--red);
+  box-shadow: 0 5px 0 #6e1010;
+}
+.btnLight {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 5px 0 var(--shadow);
+  font-size: 15px;
+}
+.btn:focus-visible,
+.link:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+.small {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--soft);
+  margin: 0;
+}
+.alert .small,
+.alert .lead {
+  color: #fff;
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: underline;
+}
+.lead {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.alertHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.alertIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 0 #6e1010;
+}
+.promo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff1d6;
+  border-radius: 18px;
+  padding: 10px 12px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.promo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.promoCta {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 800;
+  color: #c4341b;
+  white-space: nowrap;
+}
+.note {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--muted);
+  margin: 0;
+}

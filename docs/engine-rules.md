@@ -132,6 +132,20 @@ Version `groups-2026.12.0`, tuning `tuning-2026.12.0` (sections `outings`, `vote
 | 600 | 82 % | 99 (96×5, 3×4) | 59 | 85,6 % | 21 % | 43 / 58 / 7 | 165 |
 Les « sans créneau » viennent des activités synthétiques non offertes (bloc, atelier, expo). 2 000 candidats ≈ 2 s (test de performance < 15 s).
 
+### 12.1 Garantie « pour toi » (V5.2 B.5–B.6, `groups-2026.12.1`, `tuning-2026.12.2`)
+- Règle `storyCompatible(a,b)` : les deux cherchent une histoire (STORY ou BOTH), genres recherchés réciproques, la tranche **fixe** (18–21 … 50+) de chacun recoupe la tranche d'âge souhaitée par l'autre (l'âge exact s'applique en plus via AGE_PREFERENCE pour toute paire composée). Les membres de sa propre team ne comptent pas.
+- Résultat : `ComposedGroup.friendsOnly` = un booléen par membre (toutes les clés), vrai ssi la personne cherche une histoire et a < `storyGuarantee.minCompatible` (2) compatibles. Aucune autre information (ni qui, ni combien). Stats agrégées : `storyGuaranteeCoverage` (‰), `friendsOnlyMembers`. Même règle exportée pour le backend : `storyFriendsOnly(members, tuning)`.
+- Tuning `outings.composition.storyGuarantee = { enabled: true, minCompatible: 2, lambdaGuarantee: 16000 }` : `enabled` ajoute `+λ·(part ‰ des chercheurs d'histoire garantis)/1000` à J (glouton, réparation, échanges) ; le marquage est calculé même désactivé. Contrainte dure inchangée : « histoire seulement » a ≥ 1 rom-compatible.
+- Exposition (décision orchestrateur, jury tour 3) : la garantie n'est **jamais** montrée ; seul le cas négatif « cette semaine, sortie potes uniquement pour toi » (`OutingView.storyMatch = FRIENDS_ONLY`) sort, dans la seule vue de l'intéressé·e.
+- Simulateur (même seed, désactivée → activée) — 2026-11-06 :
+
+| Candidats | Placés | Score moyen | Couverture romance (≥ 1) | Garantie (≥ 2) | « Potes uniquement » | Groupes déséquilibrés |
+|---|---|---|---|---|---|---|
+| 300 | 77,3 % → 80,3 % | 57 → 55 | 85,4 → 84 % | 10,4 → 54 % | 86 → 46 | 25,5 → 32,7 % |
+| 600 | 82,2 % → 82,2 % | 60 → 58 | 82,3 → 82,5 % | 10,2 → 58,2 % | 183 → 86 | 23,2 → 20,2 % |
+| 2 000 | 85,3 % → 85,5 % | 63 → 62 | 77,7 → 79,2 % | 13,2 → 54,3 % | 643 → 343 | 25,1 → 22,7 % |
+λ testés (300/600) : 8000 → 29/44 % garantis ; 16000 → 54/58 % ; 30000–60000 → 54–61 % sans gain net (score et placement plus instables). Plafond structurel : groupes de 5, ≈ 45 % de chercheurs d'histoire dont 80 % hétéro.
+
 ## 13. Pet V5 (`@blowy/pet-engine/v5`, `engine-2026.12.0`)
 - `reduceV5(state, event, {now, seed, engineVersion, tuning})`, registre `HANDLERS_V5` : `MEMORY_RECORDED`, `ACCESSORY_GRANTED`, `ACCESSORY_EQUIP`, `REACT`. Aucune jauge, perte, gel, décroissance ni multiplicateur payant ; idempotence `recentEventIds`.
 - XP par souvenir : sortie 40, RDV duo 30, nouveau membre de bande 20, parole tenue 25 (paliers 1, 3, 5, 10, 20 → `MILESTONE_REACHED`, le backend crée le souvenir). Stades V5 : jeune 100, adulte 600 (2 sorties → jeune ; 10 sorties avec ~1 lien / 2 sorties → adulte). Un stade ne redescend jamais.

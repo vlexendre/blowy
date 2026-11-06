@@ -3,7 +3,18 @@ import { DEFAULT_TUNING, OUTINGS_V5, parseTuning, safeParseTuning, coinRewards }
 
 describe('tuning', () => {
   it('DEFAULT_TUNING passe le schéma', () => {
-    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.1');
+    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.2');
+  });
+  it('V5.2 B : garantie « pour toi » (seuil 2, activable) ; défauts appliqués à un payload sans la section', () => {
+    expect(DEFAULT_TUNING.outings.composition.storyGuarantee).toEqual({ enabled: true, minCompatible: 2, lambdaGuarantee: 16000 });
+    const t = structuredClone(DEFAULT_TUNING) as { outings: { composition: Record<string, unknown> } };
+    delete t.outings.composition.storyGuarantee;
+    expect(parseTuning(t).outings.composition.storyGuarantee).toEqual({ enabled: true, minCompatible: 2, lambdaGuarantee: 16000 });
+    const off = structuredClone(DEFAULT_TUNING) as { outings: { composition: { storyGuarantee: { enabled: boolean; minCompatible: number } } } };
+    off.outings.composition.storyGuarantee.enabled = false;
+    expect(parseTuning(off).outings.composition.storyGuarantee.enabled).toBe(false);
+    off.outings.composition.storyGuarantee.minCompatible = 0;
+    expect(safeParseTuning(off).success).toBe(false);
   });
   it('est gelé', () => {
     expect(Object.isFrozen(DEFAULT_TUNING.gauges.initial)).toBe(true);

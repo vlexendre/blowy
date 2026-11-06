@@ -10,7 +10,7 @@
 import { createHash } from 'node:crypto';
 import sharp from 'sharp';
 import { LIMITS } from '../domain/media-policy.js';
-import type { ImageProcessor, ProcessedImage } from '../application/ports/media.ports.js';
+import type { ImageProcessor, ProcessedImage, Watermarker } from '../application/ports/media.ports.js';
 
 export class SharpImageProcessor implements ImageProcessor {
   async process(input: Uint8Array): Promise<ProcessedImage> {
@@ -35,5 +35,25 @@ export class SharpImageProcessor implements ImageProcessor {
       blurredMedium: out(blurredMedium),
       sha256: createHash('sha256').update(normalized.data).digest('hex'),
     };
+  }
+}
+
+const xml = (t: string) => t.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]!);
+
+/**
+ * Filigrane du prénom du regardeur (V5.2 C.8), rendu serveur : motif diagonal semi-transparent couvrant
+ * toute l'image (un recadrage ne l'enlève pas), image ré-encodée en JPEG sans métadonnée.
+ * Le rendu du texte utilise les polices système (fontconfig) : l'image de production doit en
+ * embarquer une (ex. DejaVu Sans) — sans police, librsvg ne dessine pas le texte.
+ */
+export class SharpWatermarker implements Watermarker {
+  async apply(bytes: Uint8Array, text: string) {
+    const img = sharp(bytes, { limitInputPixels: LIMITS.image.maxPixels });
+    const { width = 320, height = 320 } = await img.metadata();
+    const label = xml(`${text.trim().slice(0, 24) || 'blowy'} · blowy`);
+    const size = Math.max(12, Math.round(Math.min(width, height) / 14));
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><defs><pattern id="w" width="${size * 9}" height="${size * 4}" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)"><text x="0" y="${size * 2}" font-family="DejaVu Sans, Inter, sans-serif" font-size="${size}" font-weight="700" fill="#ffffff" fill-opacity="0.42" stroke="#000000" stroke-opacity="0.22" stroke-width="1">${label}</text></pattern></defs><rect width="100%" height="100%" fill="url(#w)"/></svg>`;
+    const out = await img.composite([{ input: Buffer.from(svg), blend: 'over' }]).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+    return { bytes: new Uint8Array(out), contentType: 'image/jpeg' };
   }
 }

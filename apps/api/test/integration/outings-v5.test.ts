@@ -182,9 +182,10 @@ describe('outings V5 (intégration)', () => {
     // Lien connu : une ancienne amitié (V4) entre itk1 et itk2.
     const [lo, hi] = [ps2[0]!.userId, ps2[1]!.userId].sort();
     await h.db.friendship.create({ data: { userLowId: lo!, userHighId: hi!, status: 'WITHDRAWN', invitedById: lo! } });
-    await run('outings.lifecycle', new Date('2026-11-25T17:01:00Z'));
+    // V5.3 B.7 : disponible dès la confirmation (verrouillage) — refusé avant.
     const early = await ps2[0]!.call('POST', `/v1/outings/${id}/seat/knows-someone`, { userId: ps2[1]!.userId });
     expect(early.body.detailsSafe.reason).toBe('KNOWS_SOMEONE_NOT_AVAILABLE');
+    await run('outings.lifecycle', new Date('2026-11-25T17:01:00Z'));
     h.clock.set(new Date('2026-11-26T15:31:00Z'));
     const r = await ps2[0]!.call('POST', `/v1/outings/${id}/seat/knows-someone`, { userId: ps2[1]!.userId });
     expect(r.body).toEqual({ status: 'MOVED' });

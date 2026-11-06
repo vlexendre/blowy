@@ -15,6 +15,8 @@ export interface GroupEvaluation {
   romanceSeekers: number;
   romanceCovered: number;
   genderImbalancePermille: number;
+  /** V5.2 B : chercheurs d'histoire ayant ≥ `storyGuarantee.minCompatible` personnes `story`-compatibles. */
+  storyGuaranteed: number;
   /** Tout membre « romance seulement » a ≥ 1 personne rom-compatible dans le groupe. */
   romanceOnlyCovered: boolean;
 }
@@ -44,6 +46,8 @@ export function evaluateGroup(members: readonly number[], P: PairTable, t: Tunin
   let covered = 0;
   let romanceOnlyCovered = true;
   let allMeetEmpty = true;
+  let guaranteed = 0;
+  const minStory = c.storyGuarantee.minCompatible;
   genderCounts.fill(0);
   for (let x = 0; x < s; x++) {
     const a = members[x]!;
@@ -55,6 +59,11 @@ export function evaluateGroup(members: readonly number[], P: PairTable, t: Tunin
     for (let y = 0; y < s && !has; y++) if (y !== x && P.rom(a, members[y]!)) has = true;
     if (has) covered++;
     else if (P.romanceOnly[a] === 1) romanceOnlyCovered = false;
+    if (has) {
+      let n = 0;
+      for (let y = 0; y < s && n < minStory; y++) if (y !== x && P.story(a, members[y]!)) n++;
+      if (n >= minStory) guaranteed++;
+    }
   }
   let imbalance = 0;
   if (s > 0 && (seekers > 0 || allMeetEmpty)) {
@@ -64,14 +73,27 @@ export function evaluateGroup(members: readonly number[], P: PairTable, t: Tunin
   }
   const meanMilli = pairs > 0 ? Math.floor((1000 * sumW) / pairs) : 0;
   const romCov = seekers > 0 ? Math.floor((1000 * covered) / seekers) : 0;
+  const storyCov = c.storyGuarantee.enabled && seekers > 0 ? Math.floor((1000 * guaranteed) / seekers) : 0;
   const friendFit = pairs > 0 ? Math.floor((1000 * friendPairs) / pairs) : 0;
   const objectiveMilli =
     meanMilli +
     Math.floor((c.lambdaRomance * romCov) / 1000) +
-    Math.floor((c.lambdaFriend * friendFit) / 1000) -
+    Math.floor((c.lambdaFriend * friendFit) / 1000) +
+    Math.floor((c.storyGuarantee.lambdaGuarantee * storyCov) / 1000) -
     Math.floor((c.lambdaGender * imbalance) / 1000) -
     c.lambdaSize * Math.max(0, c.targetSize - s);
-  return { objectiveMilli, pairMinScore: pairs > 0 ? minW : 0, sumW, pairs, romanceSeekers: seekers, romanceCovered: covered, genderImbalancePermille: imbalance, romanceOnlyCovered };
+  return { objectiveMilli, pairMinScore: pairs > 0 ? minW : 0, sumW, pairs, romanceSeekers: seekers, romanceCovered: covered, genderImbalancePermille: imbalance, romanceOnlyCovered, storyGuaranteed: guaranteed };
+}
+
+/** V5.2 B : « potes uniquement » par membre (index → booléen), même règle que `storyFriendsOnly`. */
+export function friendsOnlyFlags(members: readonly number[], P: PairTable, t: Tuning): boolean[] {
+  const min = t.outings.composition.storyGuarantee.minCompatible;
+  return members.map((a) => {
+    if (P.seeksRomance[a] !== 1) return false;
+    let n = 0;
+    for (const b of members) if (b !== a && P.story(a, b)) n++;
+    return n < min;
+  });
 }
 
 /** `units` sont-elles toutes compatibles avec tous les `members` ? */

@@ -135,9 +135,10 @@ describe('droits', () => {
     expect(isMonthlyBenefitEligible('ACTIVE', false)).toBe(false);
     expect(monthlyPeriod(new Date('2026-11-30T23:59:59Z'))).toBe('2026-11');
   });
-  it('XP pet ×2 week-end seulement avec droit', () => {
+  it('V5 (D-020) : XP pet ×2, espèces premium, carte, indices ne sont plus accordés par Blowy+', () => {
     const k = effectiveKeys([grant({})], at, PROD);
-    expect(weekendPetXpMultiplier(k, true, TEST_PARAMS)).toBe(2);
+    expect([...k].sort()).toEqual(['PLUS_DATE_SLOTS', 'PLUS_MONTHLY_BENEFITS']);
+    expect(weekendPetXpMultiplier(k, true, TEST_PARAMS)).toBe(1);
     expect(weekendPetXpMultiplier(k, false, TEST_PARAMS)).toBe(1);
     expect(weekendPetXpMultiplier(new Set(), true, TEST_PARAMS)).toBe(1);
   });

@@ -45,6 +45,8 @@ export function rateLimitMiddleware(limiter: RateLimiter, perMinute: number) {
   return async (req: BlowyRequest, res: Response, next: NextFunction) => {
     // Sondes et webhooks fournisseurs (IP partagées, retries ; authentifiés par en-tête) exclus du limiteur par IP.
     if (req.path.endsWith('/healthz') || req.path.endsWith('/readyz') || req.path.startsWith('/v1/webhooks/')) return next();
+    // Demande d'aide (spec-v5 §7.4) : JAMAIS bloquée par le limiteur global ; limite dédiée côté module safety.
+    if (req.method === 'POST' && req.path === '/v1/safety/alerts') return next();
     try {
       const n = await limiter.hit(`ip:${req.ip ?? 'unknown'}`, 60);
       if (n > perMinute) {

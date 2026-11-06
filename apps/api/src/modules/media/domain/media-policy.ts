@@ -78,7 +78,11 @@ export interface AccessFacts {
   outingReveal?: boolean;
 }
 
-export type AccessDecision = { allow: true; variant: MediaVariant } | { allow: false; reason: string };
+/**
+ * `watermark` (V5.2 C.8) : visage révélé au titre d'une sortie → servi avec le filigrane du prénom de
+ * la personne qui regarde (rendu serveur), pour dissuader la capture et la diffusion.
+ */
+export type AccessDecision = { allow: true; variant: MediaVariant; watermark?: true } | { allow: false; reason: string };
 
 const deny = (reason: string): AccessDecision => ({ allow: false, reason });
 
@@ -107,7 +111,7 @@ export function decideAccess(f: AccessFacts): AccessDecision {
     case 'PROFILE_PHOTO': {
       // V5 : révélation simultanée en sortie (ou lien de bande/duo) — photo courante seulement ;
       // « Jamais » l'emporte toujours.
-      if (f.outingReveal && f.isCurrentProfilePhoto && f.ownerPhotoPreference !== 'NEVER' && f.variant !== 'audio') return { allow: true, variant: f.variant };
+      if (f.outingReveal && f.isCurrentProfilePhoto && f.ownerPhotoPreference !== 'NEVER' && f.variant !== 'audio') return { allow: true, variant: f.variant, watermark: true };
       const r = f.relation;
       if (!r || !r.participants.includes(f.viewerId) || !r.participants.includes(a.ownerUserId)) return deny('NO_RELATION');
       if (!f.isCurrentProfilePhoto) return deny('NOT_CURRENT');

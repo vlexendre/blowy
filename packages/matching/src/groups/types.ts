@@ -69,6 +69,13 @@ export interface ComposedGroup {
   pairMinScore: number;
   /** Teams (≥ 2 personnes) du groupe, pour l'aperçu anonyme. */
   teamCount: number;
+  /**
+   * V5.2 (B.5–B.6) : un booléen par membre (clé = userId, toutes les clés présentes) — vrai ssi la
+   * personne cherche une histoire et que le groupe compte moins de `storyGuarantee.minCompatible`
+   * personnes compatibles avec elle : « cette semaine, sortie potes uniquement pour toi ».
+   * Rien d'autre ne sort (ni qui est compatible, ni combien, ni qui cherche une histoire).
+   */
+  friendsOnly: Readonly<Record<string, boolean>>;
 }
 
 export interface CompositionStats {
@@ -81,6 +88,10 @@ export interface CompositionStats {
   romanceCoverage: number;
   /** Groupes dont la part du genre majoritaire dépasse `maxGenderSharePermille` (pénalisés). */
   genderImbalancedGroups: number;
+  /** V5.2 B : part (‰) des chercheurs d'histoire placés ayant la garantie (≥ minCompatible compatibles). */
+  storyGuaranteeCoverage: number;
+  /** V5.2 B : personnes placées marquées « potes uniquement ». */
+  friendsOnlyMembers: number;
   /** Passes d'amélioration locale effectuées. */
   iterations: number;
 }

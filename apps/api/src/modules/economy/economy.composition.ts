@@ -36,6 +36,19 @@ import { PrismaBillingRecordRepository, PrismaUserDirectory } from './infrastruc
 import { EconomyReferralRewardConsumer, EconomyRelationshipConsumer } from './interface/economy-outbox.consumer.js';
 import { GrantReferralRewardUseCase } from './application/use-cases/referral-reward.use-case.js';
 import { EconomyJobs } from './interface/economy.jobs.js';
+import type { SeatPaymentSink } from '../../shared/application/ports/seat-payment-sink.port.js';
+import type { LoggerPort } from '../../shared/application/logger.port.js';
+import type { PaymentsParams } from './domain/index.js';
+import type { PaymentProvider } from './application/payments/ports.js';
+import { EconomySeatFunding } from './application/payments/seat-funding.service.js';
+import { HandleStripeWebhookUseCase } from './application/payments/stripe-webhook.use-case.js';
+import { PaymentsQueries, PlusCheckoutUseCase, ProcessRefundsUseCase, VenueCompensationConsumer } from './application/payments/payments.use-cases.js';
+import { loadPaymentsConfig, type PaymentsConfig } from './infrastructure/config/payments-config.js';
+import { defaultPaymentsParams } from './infrastructure/config/payments-params.js';
+import { LocalDemoPaymentProvider } from './infrastructure/local-demo/local-demo-payment.provider.js';
+import { PrismaEconomyJournal, PrismaSeatDirectory } from './infrastructure/prisma/prisma-economy-journal.js';
+import { StripePaymentProvider } from './infrastructure/stripe/stripe-payment.provider.js';
+import { StripeWebhookVerifier } from './infrastructure/stripe/stripe-webhook-verifier.js';
 
 export interface EconomyDeps {
   db: Db;
@@ -48,6 +61,21 @@ export interface EconomyDeps {
   provider?: BillingProvider;
   scheduler?: ReconcileScheduler | ((reconcile: ReconcileCustomerUseCase) => ReconcileScheduler);
   params?: EconomyParamsProvider;
+  /** V5 (T3) : configuration paiements (défaut : variables d'environnement validées). */
+  payments?: PaymentsConfig;
+  paymentProvider?: PaymentProvider | null;
+  paymentsParams?: () => PaymentsParams;
+  /** Port `outings` (écrit les places) résolu tardivement : évite le cycle economy ↔ outings. */
+  seatPaymentSink?: () => SeatPaymentSink;
+  fetchImpl?: typeof fetch;
+  logger?: Pick<LoggerPort, 'warn'>;
+}
+
+/** Strategy de sélection du fournisseur de PAIEMENT (Stripe | démo locale | aucun). */
+export function selectPaymentProvider(config: PaymentsConfig, fetchImpl: typeof fetch = fetch): PaymentProvider | null {
+  if (config.provider === 'none') return null;
+  if (config.provider === 'local_demo') return new LocalDemoPaymentProvider(config.env);
+  return new StripePaymentProvider({ ...config.stripe }, fetchImpl);
 }
 
 /** Strategy de sélection du fournisseur selon la configuration validée. */
@@ -75,6 +103,8 @@ export function composeEconomy(deps: EconomyDeps) {
   const records = new PrismaBillingRecordRepository(db);
   const users = new PrismaUserDirectory(db);
 
+  const paymentsConfig = deps.payments ?? loadPaymentsConfig();
+  const paymentProvider = deps.paymentProvider !== undefined ? deps.paymentProvider : selectPaymentProvider(paymentsConfig, deps.fetchImpl);
   const state = new EntitlementStateService(entitlements, provider, params);
   const credits = new StoreCreditService(ledger, records);
   const reconcile = new ReconcileCustomerUseCase(uow, provider, entitlements, state, credits, relationships, users);
@@ -90,9 +120,29 @@ export function composeEconomy(deps: EconomyDeps) {
   const boostRefund = new RefundExpiredBoostsUseCase(uow, catalog, ledger, clock);
   const relationshipEntitlements = new RelationshipEntitlementsUseCase(entitlements, state);
 
+  // ---- V5 (T3) : paiements, crédits, remboursements, compensation lieu, Blowy+ Stripe.
+  const paymentsParams = deps.paymentsParams ?? defaultPaymentsParams;
+  const journal = new PrismaEconomyJournal(db);
+  const seats = new PrismaSeatDirectory(db);
+  const keysOf = (userId: string, at: Date, scope?: Parameters<EntitlementStateService['keysOf']>[2]) => state.keysOf(userId, at, scope);
+  const seatFunding = new EconomySeatFunding(uow, journal, paymentProvider, keysOf, paymentsParams);
+  const noSink = (): SeatPaymentSink => {
+    throw new Error('SeatPaymentSink (outings) non branché');
+  };
+  const sink = deps.seatPaymentSink ?? noSink;
+  const verifier = new StripeWebhookVerifier(paymentsConfig.provider === 'stripe' ? paymentsConfig.stripe.webhookSecret : null, paymentsConfig.provider === 'stripe' ? paymentsConfig.stripe.toleranceSeconds : 300, paymentsConfig.provider === 'stripe' && paymentsConfig.stripe.livemode);
+  const stripeWebhook = new HandleStripeWebhookUseCase(verifier, records, uow, journal, seatFunding, sink, users, paymentsParams, clock);
+  const refunds = new ProcessRefundsUseCase(uow, journal, paymentProvider, () => stripeWebhook, deps.logger ?? { warn: () => undefined });
+  const localDemoControl = provider instanceof LocalDemoBillingProvider ? (provider as LocalDemoControl) : null;
+  const localDemo = new LocalDemoPurchaseUseCase(provider, localDemoControl, records, sync, bus);
+  const localDemoPlus = localDemoControl ? async (userId: string, commandId: string) => void (await localDemo.execute(userId, commandId, { action: 'SUBSCRIBE', productId: 'blowy_plus_monthly', trial: false })) : null;
+  const plusCheckout = new PlusCheckoutUseCase(provider.mode, (u, at) => state.keysOf(u, at), localDemoPlus, clock);
+  const paymentsQueries = new PaymentsQueries(seatFunding, seats, paymentProvider, (u, at) => state.keysOf(u, at), paymentsParams, clock);
+
   return {
     provider,
     params,
+    payments: { config: paymentsConfig, provider: paymentProvider, params: paymentsParams, journal, seatFunding, stripeWebhook, refunds, plusCheckout, queries: paymentsQueries },
     repositories: { ledger, catalog, entitlements, records },
     entitlementsReader: new EconomyEntitlementsReader(state, params),
     getCatalog: new GetCatalogQuery(catalog),
@@ -106,11 +156,11 @@ export function composeEconomy(deps: EconomyDeps) {
     receiveWebhook,
     monthly,
     consumeBoost: new ConsumeBoostUseCase(uow, catalog),
-    localDemo: new LocalDemoPurchaseUseCase(provider, provider instanceof LocalDemoBillingProvider ? (provider as LocalDemoControl) : null, records, sync, bus),
+    localDemo,
     admin: new AdminEconomyUseCases(bus, ledger, records, processWebhook, reconcile),
     referralReward: new GrantReferralRewardUseCase(ledger),
-    outboxConsumers: [new EconomyRelationshipConsumer(relationshipEntitlements), new EconomyReferralRewardConsumer(new GrantReferralRewardUseCase(ledger))],
-    jobs: new EconomyJobs(monthly, periodic, derivedExpiry, boostRefund, processWebhook, records),
+    outboxConsumers: [new EconomyRelationshipConsumer(relationshipEntitlements), new EconomyReferralRewardConsumer(new GrantReferralRewardUseCase(ledger)), new VenueCompensationConsumer(journal, seats, paymentsParams)],
+    jobs: new EconomyJobs(monthly, periodic, derivedExpiry, boostRefund, processWebhook, records, refunds, stripeWebhook),
   };
 }
 export type EconomyGraph = ReturnType<typeof composeEconomy>;

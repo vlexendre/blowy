@@ -22,6 +22,7 @@ import { decodeCursor, encodeCursor } from '../../../shared/application/paginati
 import type { UnitOfWork } from '../../../shared/application/unit-of-work.js';
 import { AppError, Errors } from '../../../shared/domain/errors.js';
 import type { ModerateMessageUseCase } from '../../conversations/application/moderate-message.use-case.js';
+import type { SafetyStaffPort } from '../../../shared/application/ports/safety-staff.port.js';
 import { staffCan, validReason, type StaffAction } from '../domain/staff.js';
 import type { AiInvalidation, CaseRow, TrustRepository, VerificationRow } from './ports/trust.repository.js';
 
@@ -66,6 +67,7 @@ export class AdminModerationService implements AdminModerationPort {
     private readonly subjects: SubjectDecisionPort | null,
     private readonly clock: Clock,
     private readonly random: RandomSource,
+    private readonly safety: SafetyStaffPort | null = null,
   ) {}
 
   private async view(c: CaseRow): Promise<StaffCaseView> {
@@ -104,7 +106,7 @@ export class AdminModerationService implements AdminModerationPort {
     if ((c.subjectType === 'MEDIA' || c.subjectType === 'MISSION_SUBMISSION') && (!opts.justification || opts.justification.trim().length < 10)) throw Errors.precondition('JUSTIFICATION_REQUIRED');
     await this.guard.audit(actor, 'case.read', 'ModerationCase', c.id, opts.justification ?? null, { subjectType: c.subjectType });
     // Protection des mineurs : aucun contenu dans l'outil ordinaire, même pour le rôle habilité.
-    const context = c.restricted ? { restricted: true, subject: null, neighbours: [] } : await this.repo.caseContext(c);
+    const context = c.restricted ? { restricted: true, subject: null, neighbours: [] } : await this.contextOf(c);
     return {
       ...(await this.view(c)),
       context: {
@@ -113,6 +115,15 @@ export class AdminModerationService implements AdminModerationPort {
         neighbours: context.neighbours.map((n) => ({ ...n, createdAt: n.createdAt.toISOString() })),
       },
     };
+  }
+
+  /** Contexte V5 : alerte (résumé sans position) ; sinon contexte existant (messages voisins). */
+  private async contextOf(c: CaseRow) {
+    if (c.subjectType === 'SAFETY_ALERT' || c.subjectType === 'OUTING') {
+      const text = (await this.safety?.caseSummary(c.subjectType, c.subjectId)) ?? (c.subjectType === 'OUTING' ? `Sortie · ${c.reasonCode}` : null);
+      return { subject: { kind: c.subjectType, text, mediaVariant: null, createdAt: c.createdAt }, neighbours: [] };
+    }
+    return this.repo.caseContext(c);
   }
 
   async assign(actor: StaffActor, caseId: string, assigneeId: string | null) {
@@ -159,6 +170,9 @@ export class AdminModerationService implements AdminModerationPort {
       await this.subjects.applyMediaDecision(c.subjectId, action, staffUserId);
     } else if (c.subjectType === 'MISSION_SUBMISSION' && this.subjects) {
       await this.subjects.applyProofDecision(c.subjectId, action, staffUserId);
+    } else if (c.subjectType === 'SAFETY_ALERT' && this.safety) {
+      // Dossier d'alerte décidé dans l'outil existant : l'alerte est prise en charge (HANDLED).
+      await this.safety.onCaseDecided(c.subjectType, c.subjectId, staffUserId);
     }
     void reason;
   }
@@ -243,7 +257,44 @@ export class AdminTrustService implements AdminTrustPort {
     private readonly retry: AiRetryAuthorizer,
     private readonly random: RandomSource,
     _queue: AiTaskQueue | null,
+    private readonly safety: SafetyStaffPort | null = null,
   ) {}
+
+  private safetyPort(): SafetyStaffPort {
+    if (!this.safety) throw new AppError('NOT_CONFIGURED', 'Module sécurité absent');
+    return this.safety;
+  }
+
+  async listSafetyAlerts(actor: StaffActor, q: { status?: 'OPEN' | 'SAFE' | 'HANDLED'; cursor?: string; limit: number }) {
+    this.guard.require(actor, 'safety.alerts');
+    return this.safetyPort().listAlerts(q);
+  }
+
+  async getSafetyAlert(actor: StaffActor, alertId: string, opts: { justification: string }) {
+    this.guard.require(actor, 'safety.alerts');
+    if (!opts?.justification || opts.justification.trim().length < 10) throw Errors.precondition('JUSTIFICATION_REQUIRED');
+    const a = await this.safetyPort().getAlert(alertId);
+    if (!a) throw Errors.notFound('Alerte');
+    // Lecture d'une position : toujours auditée (motif conservé, jamais la position elle-même).
+    await this.guard.audit(actor, 'safety.alert.read', 'SafetyAlert', alertId, opts.justification, { positionAttached: a.positionAttached });
+    return a;
+  }
+
+  async handleSafetyAlert(actor: StaffActor, alertId: string, input: { reason: string; commandId: string }) {
+    this.guard.require(actor, 'safety.alerts');
+    this.guard.reason(input.reason);
+    const v = await this.safetyPort().handle(alertId, actor.staffUserId, input.commandId);
+    await this.guard.audit(actor, 'safety.alert.handle', 'SafetyAlert', alertId, input.reason);
+    return v;
+  }
+
+  async resolveKnowsSomeone(actor: StaffActor, seatId: string, input: { accept: boolean; reason: string; commandId: string }) {
+    this.guard.require(actor, 'safety.knows_someone');
+    this.guard.reason(input.reason);
+    const r = await this.safetyPort().resolveKnowsSomeone(seatId, input.accept, actor.staffUserId, input.commandId);
+    await this.guard.audit(actor, `safety.knows_someone.${input.accept ? 'accept' : 'reject'}`, 'OutingSeat', seatId, input.reason, { status: r.status });
+    return r;
+  }
 
   async listVerifications(actor: StaffActor, q: { status?: string; cursor?: string; limit: number }) {
     this.guard.require(actor, 'verifications.list');

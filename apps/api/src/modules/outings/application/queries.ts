@@ -10,7 +10,8 @@ import type { PhotoTokenIssuer } from '../../../shared/application/ports/outing-
 import { Errors } from '../../../shared/domain/errors.js';
 import { isPaused } from '../domain/reliability.js';
 import { cancelPreview } from '../domain/seat-policy.js';
-import { romanceCompatible } from '@blowy/matching/groups';
+import { storyFriendsOnly } from '@blowy/matching/groups';
+import type { Tuning } from '@blowy/tuning';
 import { photoEligible, projectOutingFor, storyMatchFor } from '../domain/visibility.js';
 import { voteTargets } from '../domain/votes.js';
 import type { OutingsRepository } from './ports/outings.repository.js';
@@ -20,6 +21,7 @@ export class OutingQueries {
     private readonly repo: OutingsRepository,
     private readonly photos: PhotoTokenIssuer,
     private readonly clock: Clock,
+    private readonly tuning: Tuning,
   ) {}
 
   private async issuePhotos(viewerId: string, userIds: string[]) {
@@ -42,20 +44,23 @@ export class OutingQueries {
     const [blocked, linked] = await Promise.all([this.repo.blockedAmong(viewerId, others), this.repo.linkedAmong(viewerId, others)]);
     const eligible = photoEligible(viewerId, facts, now, linked).filter((u) => !blocked.has(u));
     const photos = await this.issuePhotos(viewerId, eligible);
-    const preview = mine.status === 'CONFIRMED' || mine.status === 'HELD' ? cancelPreview({ funding: mine.funding, now, revealAt: facts.photoRevealAt, kind: 'CANT_MAKE_IT' }) : undefined;
+    const preview = mine.status === 'CONFIRMED' || mine.status === 'HELD' ? cancelPreview({ funding: mine.funding, now, revealAt: facts.lockAt, kind: 'CANT_MAKE_IT' }) : undefined;
     const storyMatch = await this.storyMatch(viewerId, outingId, now, blocked);
     const view = projectOutingFor(viewerId, facts, { now, blocked, linked, photos, ...(preview ? { cancelPreview: preview } : {}), ...(storyMatch ? { storyMatch } : {}) });
     if (!view) throw Errors.notFound('Sortie');
     return view;
   }
 
-  /** V5.2 (B.5) : compatibilité « histoire » comptée pour le seul lecteur (jamais qui). */
+  /**
+   * V5.2 (B.5–B.6) : garantie « pour toi » de `@blowy/matching/groups` (même règle que la
+   * composition : genres réciproques, tranches fixes, intention, hors team), appliquée au groupe
+   * ACTUEL (places actives, personnes bloquées retirées) — seul le booléen du lecteur sort.
+   */
   private async storyMatch(viewerId: string, outingId: string, now: Date, blocked: ReadonlySet<string>) {
-    const people = await this.repo.seeksOfActiveSeats(outingId, now);
+    const people = (await this.repo.seeksOfActiveSeats(outingId, now)).filter((p) => p.userId === viewerId || !blocked.has(p.userId));
     const me = people.find((p) => p.userId === viewerId);
     if (!me) return undefined;
-    const compatible = people.filter((p) => p.userId !== viewerId && !blocked.has(p.userId) && romanceCompatible(me.seeks, p.seeks)).length;
-    return storyMatchFor({ seeksRomance: me.seeks.seeks.romance }, compatible);
+    return storyMatchFor({ seeksRomance: me.seeks.seeks.romance }, storyFriendsOnly(people, this.tuning).get(viewerId) ?? true);
   }
 
   /** Écran « après la sortie » : présents seulement ; mes bulletins ; mes accords à la clôture. */

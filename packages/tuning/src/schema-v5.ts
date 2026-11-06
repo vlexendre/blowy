@@ -40,6 +40,21 @@ export const OutingCycleTuningSchema = z.object({
   lastCallBeforeHours: posInt,
 });
 
+/**
+ * V5.2 (B.5–B.6) : garantie « pour toi ». Pour toute personne dont l'intention inclut « une histoire »,
+ * le groupe contient au moins `minCompatible` personnes compatibles (genres recherchés réciproques,
+ * tranches d'âge fixes compatibles, intention histoire ; hors sa propre team), sinon la proposition
+ * est marquée « potes uniquement » pour elle. Le marquage est TOUJOURS calculé (honnêteté) ;
+ * `enabled` active l'optimisation de la composition (terme `lambdaGuarantee` de J).
+ */
+export const StoryGuaranteeTuningSchema = z.object({
+  enabled: z.boolean(),
+  minCompatible: z.number().int().min(1).max(5),
+  /** Poids (milli-points) de la part ‰ des chercheurs d'histoire garantis dans J(G). */
+  lambdaGuarantee: nonNegInt,
+});
+export const STORY_GUARANTEE_DEFAULTS: z.output<typeof StoryGuaranteeTuningSchema> = Object.freeze({ enabled: true, minCompatible: 2, lambdaGuarantee: 16000 });
+
 export const CompositionTuningSchema = z.object({
   algoVersion: z.string().regex(/^groups-\d{4}\.\d{2}\.\d+$/),
   targetSize: posInt,
@@ -56,6 +71,8 @@ export const CompositionTuningSchema = z.object({
   maxSwapIterations: nonNegInt,
   /** V5.1 (B.7) : une team (1–3 personnes) est une unité indivisible. */
   maxTeamSize: z.number().int().min(1).max(3),
+  /** V5.2 (B.5) ; absent d'un payload antérieur → défauts. */
+  storyGuarantee: StoryGuaranteeTuningSchema.default(STORY_GUARANTEE_DEFAULTS),
 });
 
 /** Sortie d'amorçage (V5.1 B.7) : dans une ville fermée, une team de `triggerTeamSize` vérifiés + une autre team. */

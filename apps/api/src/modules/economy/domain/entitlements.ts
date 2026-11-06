@@ -6,15 +6,14 @@ import type { EconomyParams } from './params.js';
 /** Identifiant d'entitlement RevenueCat (dashboard) ouvrant Blowy+. */
 export const BLOWY_PLUS_ENTITLEMENT = 'blowy_plus';
 
-/** Droits fonctionnels ouverts par Blowy+ (titulaire payant ou essai). */
-export const PLUS_KEYS: readonly EntitlementKey[] = [
-  'PLUS_DATE_SLOTS',
-  'PLUS_MAP',
-  'PLUS_HINTS',
-  'PLUS_PREMIUM_SPECIES',
-  'PLUS_WEEKEND_PET_XP',
-  'PLUS_MONTHLY_BENEFITS',
-];
+/**
+ * Droits fonctionnels ouverts par Blowy+ en V5 (D-020) : `PLUS_MONTHLY_BENEFITS` marque le titulaire
+ * payant (toutes les sorties incluses + duos illimités, lus par outings/connections) ; `PLUS_DATE_SLOTS`
+ * reste pour la lecture V4. Retirés : carte, indices, espèces premium, XP pet ×2 le week-end.
+ */
+export const PLUS_KEYS: readonly EntitlementKey[] = ['PLUS_DATE_SLOTS', 'PLUS_MONTHLY_BENEFITS'];
+/** Clés V4 retirées en V5 (jamais plus accordées). */
+export const RETIRED_PLUS_KEYS_V5: readonly EntitlementKey[] = ['PLUS_MAP', 'PLUS_HINTS', 'PLUS_PREMIUM_SPECIES', 'PLUS_WEEKEND_PET_XP'];
 
 export interface GrantRecord {
   readonly id: string;
@@ -35,7 +34,7 @@ export const isGrantLive = (g: Pick<GrantRecord, 'startsAt' | 'endsAt' | 'revoke
 
 /** Clés ouvertes par UN grant (sans contrôle de validité). */
 export function keysOfGrant(g: Pick<GrantRecord, 'source'>): readonly EntitlementKey[] {
-  if (g.source === 'DERIVED_PARTNER') return SHAREABLE_ENTITLEMENTS;
+  if (g.source === 'DERIVED_PARTNER') return SHAREABLE_ENTITLEMENTS.filter((k) => !RETIRED_PLUS_KEYS_V5.includes(k));
   if (g.source === 'STAFF_GRANT') return PLUS_KEYS.filter((k) => k !== 'PLUS_MONTHLY_BENEFITS');
   return PLUS_KEYS;
 }

@@ -13,7 +13,7 @@
 import { pairKey, type UnplacedReason } from '@blowy/domain';
 import type { Tuning } from '@blowy/tuning';
 import { fnv1a } from '../shared/hash.js';
-import { compatibleWith, evaluateGroup } from './objective.js';
+import { compatibleWith, evaluateGroup, friendsOnlyFlags } from './objective.js';
 import { PairTable } from './pairs.js';
 import type { ComposeInput, ComposedGroup, CompositionResult, CompositionStats, OutingCandidate, SlotOffer } from './types.js';
 
@@ -133,6 +133,8 @@ function finish(pr: Prepared, groups: WorkGroup[], placed: Uint8Array, iteration
   let seekers = 0;
   let covered = 0;
   let imbalanced = 0;
+  let guaranteed = 0;
+  let friendsOnlyCount = 0;
   const out: ComposedGroup[] = groups.map((g) => {
     const ev = evaluateGroup(g.members, P, t);
     sumW += ev.sumW;
@@ -140,6 +142,16 @@ function finish(pr: Prepared, groups: WorkGroup[], placed: Uint8Array, iteration
     seekers += ev.romanceSeekers;
     covered += ev.romanceCovered;
     if (ev.genderImbalancePermille > 0) imbalanced++;
+    guaranteed += ev.storyGuaranteed;
+    const flags = friendsOnlyFlags(g.members, P, t);
+    const friendsOnly: Record<string, boolean> = {};
+    g.members
+      .map((m, k) => [cands[m]!.profile.userId, flags[k]!] as const)
+      .sort((a, b) => cmpStr(a[0], b[0]))
+      .forEach(([id, f]) => {
+        friendsOnly[id] = f;
+        if (f) friendsOnlyCount++;
+      });
     return {
       venueSlotId: g.offer.venueSlotId,
       venueId: g.offer.venueId,
@@ -150,6 +162,7 @@ function finish(pr: Prepared, groups: WorkGroup[], placed: Uint8Array, iteration
       objectiveMilli: ev.objectiveMilli,
       pairMinScore: ev.pairMinScore,
       teamCount: g.units.filter((u) => u.members.length > 1).length,
+      friendsOnly,
     };
   });
   const stats: CompositionStats = {
@@ -159,6 +172,8 @@ function finish(pr: Prepared, groups: WorkGroup[], placed: Uint8Array, iteration
     meanPairScore: pairs > 0 ? Math.round(sumW / pairs) : 0,
     romanceCoverage: seekers > 0 ? Math.floor((1000 * covered) / seekers) : 0,
     genderImbalancedGroups: imbalanced,
+    storyGuaranteeCoverage: seekers > 0 ? Math.floor((1000 * guaranteed) / seekers) : 0,
+    friendsOnlyMembers: friendsOnlyCount,
     iterations,
   };
   return { algoVersion, groups: out, unplaced, stats };

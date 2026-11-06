@@ -84,6 +84,8 @@ export interface MediaRepository {
   /** Consentements ACCEPTÉS par les deux (session la plus récente du scope). */
   acceptedConsent(contextId: string, scope: 'PHOTO_REVEAL' | 'PHOTO_ORIGINAL'): Promise<boolean>;
   isBlockedBetween(a: string, b: string): Promise<boolean>;
+  /** Prénom affiché de la personne qui regarde (filigrane V5.2 C.8). */
+  viewerFirstName(userId: string): Promise<string>;
   /** Vocal livrable : message VOICE publié (ou warned révélé) dans une conversation où le lecteur est membre actif. */
   voiceDeliverableTo(mediaId: string, viewerId: string): Promise<boolean>;
   voiceAlreadyUsed(mediaId: string): Promise<boolean>;
@@ -110,6 +112,12 @@ export interface ImageProcessor {
   process(bytes: Uint8Array): Promise<ProcessedImage>;
 }
 export const IMAGE_PROCESSOR = Symbol('ImageProcessor');
+
+/** Filigrane serveur (V5.2 C.8) : texte répété en diagonale, image ré-encodée (aucune métadonnée). */
+export interface Watermarker {
+  apply(bytes: Uint8Array, text: string): Promise<{ bytes: Uint8Array; contentType: string }>;
+}
+export const WATERMARKER = Symbol('Watermarker');
 
 export interface AudioProbe {
   /** Durée réelle et format ; null si le conteneur n'est pas reconnu. */

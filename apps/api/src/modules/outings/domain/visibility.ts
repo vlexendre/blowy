@@ -36,8 +36,8 @@ export interface ViewerContext {
   /** Photos émises pour les seules personnes autorisées (`photoEligible`). */
   photos: ReadonlyMap<string, { mediaId: string; url: string }>;
   cancelPreview?: CancelPreview;
-  /** V5.2 (B.5–B.6) : pour un lecteur qui cherche une histoire seulement (calculé par `storyMatchFor`). */
-  storyMatch?: 'AT_LEAST_TWO' | 'FRIENDS_ONLY';
+  /** V5.2 (B.6) : « potes uniquement pour toi », pour le seul lecteur concerné (`storyMatchFor`) ; la garantie positive n'est jamais exposée. */
+  storyMatch?: 'FRIENDS_ONLY';
 }
 
 /** Personnes dont la photo est visible par le lecteur (révélation simultanée au verrouillage). */
@@ -159,7 +159,8 @@ export function projectOutingFor(viewerId: string, o: OutingFacts, ctx: ViewerCo
     ...(phase === 'VOTING' ? { votes: { open: true, closesAt: o.votesCloseAt.toISOString() } } : phase === 'AFTER' ? { votes: { open: false, closesAt: o.votesCloseAt.toISOString() } } : {}),
     ...(o.status === 'CANCELLED' && o.cancelReason ? { cancelled: { reason: publicCancelReason(o.cancelReason), refund: refundOf(mine) } } : {}),
     ...(ctx.storyMatch && (phase === 'INVITED' || phase === 'PRE_LOCK' || phase === 'LOCKED' || phase === 'CHECKIN') ? { storyMatch: ctx.storyMatch } : {}),
-    ...(phase === 'LOCKED' && o.status === 'CONFIRMED' && mine.status === 'CONFIRMED' && now < o.startsAt ? { knowsSomeoneAvailable: true as const } : {}),
+    // V5.3 B.7 (T4) : « je connais quelqu'un ici » dès la confirmation (verrouillage, prénoms + tranches + pets visibles).
+    ...(o.status === 'CONFIRMED' && mine.status === 'CONFIRMED' && now < o.startsAt ? { knowsSomeoneAvailable: true as const } : {}),
   };
   return view;
 }
@@ -183,10 +184,11 @@ export function previewOf(o: OutingFacts) {
 }
 
 /**
- * V5.2 (B.5) : « au moins 2 personnes du groupe cherchent aussi une histoire compatible avec la
- * tienne » — calculé pour le seul lecteur, d'après SES intentions ; jamais qui.
+ * V5.2 (B.5–B.6) + décision orchestrateur (jury tour 3) : la garantie « ≥ 2 compatibles » est
+ * appliquée par la composition mais JAMAIS exposée (avec la répartition femmes/hommes d'un petit
+ * groupe, elle permettrait de déduire l'orientation des autres). Seul le cas négatif sort, pour le
+ * seul lecteur concerné : « cette semaine, sortie potes uniquement pour toi », sans aucun chiffre.
  */
-export function storyMatchFor(viewer: { seeksRomance: boolean }, compatibleOthers: number): 'AT_LEAST_TWO' | 'FRIENDS_ONLY' | undefined {
-  if (!viewer.seeksRomance) return undefined;
-  return compatibleOthers >= 2 ? 'AT_LEAST_TWO' : 'FRIENDS_ONLY';
+export function storyMatchFor(viewer: { seeksRomance: boolean }, friendsOnly: boolean): 'FRIENDS_ONLY' | undefined {
+  return viewer.seeksRomance && friendsOnly ? 'FRIENDS_ONLY' : undefined;
 }

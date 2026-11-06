@@ -16,10 +16,12 @@ import type { EntitlementsReader } from '../../shared/application/ports/entitlem
 import { GROUP_CHAT_PORT, type GroupChatPort } from '../../shared/application/ports/group-chat.port.js';
 import { OUTING_REVEAL_READER, PHOTO_TOKEN_ISSUER, type OutingRevealReader, type PhotoTokenIssuer } from '../../shared/application/ports/outing-photos.port.js';
 import { PET_MEMORY_PORT, type PetMemoryPort } from '../../shared/application/ports/pet-memory.port.js';
+import { RELIABILITY_PORT, type ReliabilityPort } from '../../shared/application/ports/reliability.port.js';
 import type { UnitOfWork } from '../../shared/application/unit-of-work.js';
 import { APP_CONFIG, CLOCK, COMMAND_BUS, DB, ENTITLEMENTS_READER, EVENT_PUBLISHER, RANDOM, UNIT_OF_WORK } from '../../shared/shared.tokens.js';
 import { hourKey, type RecurringJob } from '../../jobs/scheduler.js';
 import { loadAdminConfig } from '../admin/infrastructure/admin-config.js';
+import { isPaused } from './domain/reliability.js';
 import { OutingJobs } from './application/jobs.js';
 import { OutingLifecycle } from './application/lifecycle.service.js';
 import { OutingEvents } from './application/outing-events.js';
@@ -28,8 +30,14 @@ import { SEAT_FUNDING, type SeatFundingPort } from './application/ports/seat-fun
 import { OutingQueries } from './application/queries.js';
 import { OutingRequestsUseCases } from './application/requests.use-cases.js';
 import { SeatUseCases } from './application/seats.use-cases.js';
+import { OutingSafetyService } from './application/safety-port.service.js';
+import { OUTING_SAFETY_PORT } from '../../shared/application/ports/outing-safety.port.js';
 import { TeamUseCases } from './application/teams.use-cases.js';
 import { LocalSeatFunding } from './infrastructure/local-seat-funding.js';
+import { OutingsSeatPaymentSink } from './infrastructure/seat-payment-sink.js';
+import { SEAT_PAYMENT_SINK, type SeatPaymentSink } from '../../shared/application/ports/seat-payment-sink.port.js';
+/** Jeton fourni par EconomyModule (T3) — `Symbol.for` : aucun import du module économie. */
+const ECONOMY_SEAT_FUNDING = Symbol.for('blowy.economy.seat_funding');
 import { PrismaOutingsRepository } from './infrastructure/prisma-outings.repository.js';
 import { OutingsController, TeamsController } from './interface/outings.controller.js';
 
@@ -53,8 +61,14 @@ type R = OutingsRepository;
     { provide: OUTINGS_REPOSITORY, useFactory: (db: Db, t: Tuning) => new PrismaOutingsRepository(db, t), inject: [DB, OUTINGS_TUNING] },
     {
       provide: SEAT_FUNDING,
-      useFactory: (e: EntitlementsReader | null, cfg: AppConfig, t: Tuning) => new LocalSeatFunding(e ?? null, !cfg.isProduction, t),
-      inject: [{ token: ENTITLEMENTS_READER, optional: true }, APP_CONFIG, OUTINGS_TUNING],
+      // T3 (G) : financement réel fourni par `economy` (crédits, Stripe, remboursements) ; repli T2 si absent.
+      useFactory: (economy: SeatFundingPort | null, e: EntitlementsReader | null, cfg: AppConfig, t: Tuning) => economy ?? new LocalSeatFunding(e ?? null, !cfg.isProduction, t),
+      inject: [{ token: ECONOMY_SEAT_FUNDING, optional: true }, { token: ENTITLEMENTS_READER, optional: true }, APP_CONFIG, OUTINGS_TUNING],
+    },
+    {
+      provide: SEAT_PAYMENT_SINK,
+      useFactory: (r: R, l: OutingLifecycle, e: OutingEvents): SeatPaymentSink => new OutingsSeatPaymentSink(r, l, e),
+      inject: [OUTINGS_REPOSITORY, OutingLifecycle, OutingEvents],
     },
     { provide: OutingEvents, useFactory: (p: EventPublisher, r: RandomSource) => new OutingEvents(p, r), inject: [EVENT_PUBLISHER, RANDOM] },
     {
@@ -76,7 +90,7 @@ type R = OutingsRepository;
       },
       inject: [OUTINGS_REPOSITORY, COMMAND_BUS, OutingLifecycle, SEAT_FUNDING, GROUP_CHAT_PORT, OutingEvents, RANDOM, OUTINGS_TUNING, APP_CONFIG],
     },
-    { provide: OutingQueries, useFactory: (r: R, p: PhotoTokenIssuer, c: Clock) => new OutingQueries(r, p, c), inject: [OUTINGS_REPOSITORY, PHOTO_TOKEN_ISSUER, CLOCK] },
+    { provide: OutingQueries, useFactory: (r: R, p: PhotoTokenIssuer, c: Clock, t: Tuning) => new OutingQueries(r, p, c, t), inject: [OUTINGS_REPOSITORY, PHOTO_TOKEN_ISSUER, CLOCK, OUTINGS_TUNING] },
     {
       provide: TeamUseCases,
       useFactory: (r: R, b: CommandBus, c: Clock, rnd: RandomSource, t: Tuning) => new TeamUseCases(r, b, c, rnd, t, loadAdminConfig().publicWebOrigin),
@@ -87,7 +101,18 @@ type R = OutingsRepository;
       useFactory: (r: R, u: UnitOfWork, l: OutingLifecycle, ch: GroupChatPort, e: OutingEvents, rnd: RandomSource, t: Tuning) => new OutingJobs(r, u, l, ch, e, rnd, t),
       inject: [OUTINGS_REPOSITORY, UNIT_OF_WORK, OutingLifecycle, GROUP_CHAT_PORT, OutingEvents, RANDOM, OUTINGS_TUNING],
     },
+    // T4 (agent E) : retrait système au blocage et décision « je connais quelqu'un » (port, ajout minimal).
+    { provide: OUTING_SAFETY_PORT, useFactory: (r: R, s: SeatUseCases) => new OutingSafetyService(r, s), inject: [OUTINGS_REPOSITORY, SeatUseCases] },
     { provide: OUTING_REVEAL_READER, useFactory: (r: R): OutingRevealReader => ({ canSeeProfilePhoto: (v, o, at) => r.photoRevealAllowed(v, o, at) }), inject: [OUTINGS_REPOSITORY] },
+    // T5 (C2) : fiabilité des RDV duo, écrite ici (seul écrivain de ReliabilityStat).
+    {
+      provide: RELIABILITY_PORT,
+      useFactory: (l: OutingLifecycle, r: R): ReliabilityPort => ({
+        recordDuoDate: (scope, i) => (i.outcome === 'ATTENDED' ? l.attendance(scope, i.userId, i.key) : l.absence(scope, i.userId, i.outcome, i.key, true)),
+        isPaused: async (scope, userId, at) => isPaused(await r.reliability(scope, userId), at),
+      }),
+      inject: [OutingLifecycle, OUTINGS_REPOSITORY],
+    },
     { provide: OUTING_ROOMS, useFactory: (r: R, c: Clock): OutingRooms => ({ outing: (u, id) => r.outingRoomMember(u, id, c.now()), duo: (u, id) => r.duoRoomMember(u, id) }), inject: [OUTINGS_REPOSITORY, CLOCK] },
     {
       provide: OUTINGS_JOBS,
@@ -100,6 +125,6 @@ type R = OutingsRepository;
       inject: [OutingJobs],
     },
   ],
-  exports: [OUTING_REVEAL_READER, OUTING_ROOMS, OUTINGS_JOBS, OUTINGS_REPOSITORY, OutingJobs, OutingLifecycle],
+  exports: [SEAT_PAYMENT_SINK, OUTING_SAFETY_PORT, OUTING_REVEAL_READER, OUTING_ROOMS, RELIABILITY_PORT, OUTINGS_JOBS, OUTINGS_REPOSITORY, OutingJobs, OutingLifecycle],
 })
 export class OutingsModule {}

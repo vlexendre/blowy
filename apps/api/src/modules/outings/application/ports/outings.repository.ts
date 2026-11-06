@@ -194,7 +194,7 @@ export interface OutingsRepository {
   createSeat(scope: TxScope, s: { id: string; outingId: string; userId: string; weekKey: string; teamId: string | null; acceptDeadline: Date }): Promise<boolean>;
 
   // ------------------------------------------------------------ places et sortie
-  updateSeat(scope: TxScope, seatId: string, data: Partial<Pick<SeatRow, 'status' | 'funding' | 'holdExpiresAt' | 'cancelKind' | 'refundState'>> & { paymentRef?: string | null; confirmedAt?: Date; respondedAt?: Date; cancelledAt?: Date; checkedInAt?: Date; refundRef?: string | null }): Promise<void>;
+  updateSeat(scope: TxScope, seatId: string, data: Partial<Pick<SeatRow, 'status' | 'funding' | 'holdExpiresAt' | 'cancelKind' | 'refundState'>> & { paymentRef?: string | null; creditRef?: string | null; confirmedAt?: Date; respondedAt?: Date; cancelledAt?: Date; checkedInAt?: Date; refundRef?: string | null }): Promise<void>;
   setOutingStatus(scope: TxScope, outingId: string, status: OutingStatus, extra?: { cancelReason?: OutingCancelReason; votesClosedAt?: Date; ballotsPurgedAt?: Date }): Promise<void>;
   /** Sorties dont une transition temporelle est due. */
   dueOutings(at: Date, limit: number): Promise<string[]>;
@@ -229,7 +229,7 @@ export interface OutingsRepository {
 
   // ------------------------------------------------------------ fiabilité
   saveReliability(scope: TxScope, userId: string, s: ReliabilityState): Promise<void>;
-  reliabilityEvent(scope: TxScope, e: { userId: string; reason: 'OUTING_ATTENDED' | 'OUTING_NO_SHOW' | 'OUTING_LATE_CANCEL' | 'RELIABILITY_PAUSE'; episodeKey: string }): Promise<boolean>;
+  reliabilityEvent(scope: TxScope, e: { userId: string; reason: 'OUTING_ATTENDED' | 'OUTING_NO_SHOW' | 'OUTING_LATE_CANCEL' | 'DUO_NO_SHOW' | 'RELIABILITY_PAUSE'; episodeKey: string }): Promise<boolean>;
   createDispute(scope: TxScope, d: { id: string; seatId: string; userId: string; note: string }): Promise<boolean>;
 
   // ------------------------------------------------------------ V5.2
@@ -239,6 +239,12 @@ export interface OutingsRepository {
   createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'COUNTED_AS_CANCEL' }): Promise<void>;
   /** Lien réel déjà connu dans l'app : amitié/bande (même V4 ou retirée), duo, blocage. */
   knownRelation(a: string, b: string): Promise<boolean>;
+
+  // ------------------------------------------------------------ T4 (safety, ajout minimal)
+  /** Places non terminales d'une personne dans des sorties non terminées (retrait système). */
+  activeSeatsOf(scope: TxScope, userId: string): Promise<SeatRow[]>;
+  knowsSomeoneBySeat(scope: TxScope | null, seatId: string): Promise<{ id: string; seatId: string; outingId: string; userId: string; targetUserId: string; status: string } | null>;
+  setKnowsSomeoneStatus(scope: TxScope, id: string, status: 'ACCEPTED' | 'REJECTED'): Promise<void>;
 
   // ------------------------------------------------------------ teams
   teamOf(scope: TxScope | null, userId: string): Promise<TeamRow | null>;

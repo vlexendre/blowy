@@ -61,6 +61,16 @@ const RawEnvSchema = z.object({
   PUBLIC_API_URL: z.string().url().default('http://localhost:3000'),
   /** Secret HMAC des jetons médias / liens d'export (défaut dérivé de SESSION_SECRET hors prod). */
   MEDIA_TOKEN_SECRET: z.string().min(32).optional(),
+  /** Origine du web public (liens ange gardien `/ange/<jeton>`, agent E T4). */
+  PUBLIC_WEB_ORIGIN: z.string().url().default('http://localhost:3002'),
+  /**
+   * Web Push du proche (page ange gardien) : paire VAPID P-256 en base64url (clé publique brute 65 o,
+   * clé privée = scalaire 32 o) + sujet `mailto:`. Absente → abonnement refusé (501), la page reste
+   * consultable. Les notifications sont sans contenu (aucune donnée envoyée au service de push).
+   */
+  WEB_PUSH_VAPID_PUBLIC_KEY: z.string().regex(/^[A-Za-z0-9_-]{86,88}$/).optional(),
+  WEB_PUSH_VAPID_PRIVATE_KEY: z.string().regex(/^[A-Za-z0-9_-]{42,44}$/).optional(),
+  WEB_PUSH_SUBJECT: z.string().regex(/^(mailto:|https:\/\/)/).optional(),
   RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(120),
   WORKER_OUTBOX_POLL_MS: z.coerce.number().int().min(50).default(500),
   ENABLE_SCHEDULERS: bool,

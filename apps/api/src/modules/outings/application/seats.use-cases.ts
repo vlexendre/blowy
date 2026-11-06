@@ -56,7 +56,9 @@ export class SeatUseCases {
         const outing = await this.repo.outing(scope, outingId);
         if (!seat || !outing) throw Errors.notFound('Sortie');
         if (seat.status === 'CONFIRMED' && seat.funding) return { seat: { status: 'CONFIRMED', funding: seat.funding } };
-        if (seat.status !== 'INVITED') throw Errors.precondition('SEAT_NOT_INVITED');
+        // T3 (G) : paiement en cours (hold non échu) → même réponse ; l'intention est rendue après commit (idempotente).
+        if (seat.status === 'HELD' && seat.holdExpiresAt && scope.now < seat.holdExpiresAt) return { seat: { status: 'HELD', holdExpiresAt: seat.holdExpiresAt.toISOString() } };
+        if (seat.status !== 'INVITED' && seat.status !== 'HELD') throw Errors.precondition('SEAT_NOT_INVITED');
         if (outing.status !== 'PROPOSED' && outing.status !== 'FORMING') throw Errors.precondition('OUTING_NOT_OPEN');
         if (scope.now >= seat.acceptDeadline || scope.now >= outing.lockAt) throw Errors.precondition('INVITATION_EXPIRED');
         const r = await this.repo.requester(scope, userId, scope.now);
@@ -65,13 +67,25 @@ export class SeatUseCases {
         if (isPaused(r.reliability, scope.now)) throw Errors.precondition('RELIABILITY_PAUSED', { until: r.reliability!.pausedUntil!.toISOString() });
         const decision = await this.funding.fund(scope, { userId, seatId: seat.id, outingId, mode, freeFirstAvailable: this.tuning.pricing.firstOutingFree && !(await this.repo.usedFreeFirst(scope, userId)) });
         if (decision.kind === 'UNAVAILABLE') throw new AppError('PROVIDER_UNAVAILABLE', 'Paiement indisponible pour le moment', { retryable: true });
-        await this.repo.updateSeat(scope, seat.id, { status: 'CONFIRMED', funding: decision.funding, paymentRef: decision.paymentRef, confirmedAt: scope.now, respondedAt: scope.now });
+        if (decision.kind === 'HOLD') {
+          // T3 (G) : place réservée pendant le paiement ; confirmée par le webhook signé du fournisseur.
+          await this.repo.updateSeat(scope, seat.id, { status: 'HELD', holdExpiresAt: decision.holdExpiresAt, respondedAt: scope.now });
+          await this.events.seatUpdated(scope, outingId, userId, { status: 'HELD', refundState: 'NONE' });
+          return { seat: { status: 'HELD', holdExpiresAt: decision.holdExpiresAt.toISOString() } };
+        }
+        await this.repo.updateSeat(scope, seat.id, { status: 'CONFIRMED', funding: decision.funding, paymentRef: decision.paymentRef, ...(decision.creditRef ? { creditRef: decision.creditRef } : {}), confirmedAt: scope.now, respondedAt: scope.now });
         await this.events.seatUpdated(scope, outingId, userId, { status: 'CONFIRMED', refundState: 'NONE' });
         await scope.outbox.emit({ topic: 'outing.seat_confirmed', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { outingId, seatId: seat.id, userId, funding: decision.funding } });
         await this.lifecycle.afterConfirm(scope, outing, userId);
         return { seat: { status: 'CONFIRMED', funding: decision.funding }, ...(decision.payment ? { payment: decision.payment } : {}) };
       },
     });
+    // T3 (G) : intention de paiement créée APRÈS commit (réseau jamais sous verrou), idempotente côté fournisseur.
+    if (result.seat.status === 'HELD' && this.funding.prepareIntent) {
+      const seat = await this.repo.seat(null, outingId, userId);
+      if (!seat) throw Errors.notFound('Sortie');
+      return { ...result, payment: await this.funding.prepareIntent({ userId, seatId: seat.id }) };
+    }
     return result;
   }
 
@@ -100,7 +114,7 @@ export class SeatUseCases {
     const [seat, outing] = await Promise.all([this.repo.seat(null, outingId, userId), this.repo.outing(null, outingId)]);
     if (!seat || !outing) throw Errors.notFound('Sortie');
     if (seat.status !== 'CONFIRMED' && seat.status !== 'HELD' && seat.status !== 'CHECKED_IN') throw Errors.precondition('SEAT_NOT_ACTIVE');
-    return cancelPreview({ funding: seat.funding, now, revealAt: outing.photoRevealAt, kind });
+    return cancelPreview({ funding: seat.funding, now, revealAt: outing.lockAt, kind });
   }
 
   async cancel(userId: string, outingId: string, kind: SeatCancelRequestKind, commandId: string): Promise<CancelPreview> {
@@ -118,12 +132,23 @@ export class SeatUseCases {
         const active = seat.status === 'CONFIRMED' || seat.status === 'HELD' || (kind === 'SAFETY' && seat.status === 'CHECKED_IN');
         if (!active) throw Errors.precondition('SEAT_NOT_ACTIVE');
         if (kind !== 'SAFETY' && scope.now >= outing.startsAt) throw Errors.precondition('OUTING_STARTED');
-        const p = cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.photoRevealAt, kind });
+        const p = cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.lockAt, kind });
         await this.cancelIn(scope, seat, outing, p);
         return p;
       },
     });
     return result;
+  }
+
+  /**
+   * Retrait système (D-025, T4) : place annulée `SYSTEM_REMOVAL`, remboursée intégralement (port de
+   * financement), sans effet de fiabilité ; le groupe voit « ne pourra pas venir ». Verrous users →
+   * outings tenus par l'appelant.
+   */
+  async systemRemove(scope: TxScope, seat: SeatRow, outing: OutingRow, cancelKind: 'SYSTEM_REMOVAL' | 'SAFETY_EXIT' = 'SYSTEM_REMOVAL'): Promise<string> {
+    // `SAFETY_EXIT` = « Je pars, mal à l'aise » (V5.3 B.9) : mêmes effets, sans pénalité.
+    await this.cancelIn(scope, seat, outing, { cancelKind: 'SAFETY_EXIT', refund: refundModeFor(seat.funding), countsAsAbsence: false }, cancelKind);
+    return (await this.repo.seat(scope, outing.id, seat.userId))?.refundState ?? 'NONE';
   }
 
   /** Annulation d'une place (verrous users → outings tenus par l'appelant). */
@@ -132,7 +157,12 @@ export class SeatUseCases {
     const userId = seat.userId;
     const refundable = !p.countsAsAbsence;
     let refundState = refundStateFor(p.refund, refundable);
-    if (refundable && p.refund === 'CARD') refundState = await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null });
+    // T3 (G) : cause du remboursement → carte, crédit 90 j (annulation perso payée) ou recrédit du lot.
+    const cause = cancelKind === 'SYSTEM_REMOVAL' ? 'SYSTEM_REMOVAL' : p.cancelKind === 'SAFETY_EXIT' ? 'SAFETY_EXIT' : 'USER_EARLY';
+    if (refundable && p.refund === 'CARD') refundState = await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null, cause });
+    else if (refundable && p.refund === 'CREDIT' && seat.funding && this.funding.refundCredit) {
+      refundState = seat.funding === 'PAID' ? await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null, cause }) : await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
+    }
     await this.repo.updateSeat(scope, seat.id, { status: 'CANCELLED', cancelKind, refundState, cancelledAt: scope.now });
     const conv = await this.chat.conversationOfOuting(scope, outingId);
     if (conv) await this.chat.revokeMember(scope, conv, userId);
@@ -170,12 +200,13 @@ export class SeatUseCases {
         const outing = await this.repo.outing(scope, outingId);
         if (!seat || !outing) throw Errors.notFound('Sortie');
         const target = await this.repo.seat(scope, outingId, targetUserId);
-        const open = seat.status === 'CONFIRMED' && outing.status === 'CONFIRMED' && scope.now >= outing.photoRevealAt && scope.now < outing.startsAt;
+        // V5.3 B.7 (T4) : ouvert dès la confirmation (statut CONFIRMED = verrouillage J-1 18 h), avant le début.
+        const open = seat.status === 'CONFIRMED' && outing.status === 'CONFIRMED' && scope.now >= outing.lockAt && scope.now < outing.startsAt;
         if (!open || !target || targetUserId === userId || (target.status !== 'CONFIRMED' && target.status !== 'CHECKED_IN')) throw Errors.precondition('KNOWS_SOMEONE_NOT_AVAILABLE');
         const recent = await this.repo.knowsSomeoneSince(scope, userId, new Date(scope.now.getTime() - 30 * 86_400_000));
         if (recent > 0) {
           await this.repo.createKnowsSomeone(scope, { id: this.random.uuid(), seatId: seat.id, userId, targetUserId, status: 'COUNTED_AS_CANCEL' });
-          await this.cancelIn(scope, seat, outing, cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.photoRevealAt, kind: 'CANT_MAKE_IT' }));
+          await this.cancelIn(scope, seat, outing, cancelPreview({ funding: seat.funding, now: scope.now, revealAt: outing.lockAt, kind: 'CANT_MAKE_IT' }));
           return { status: 'COUNTED_AS_CANCEL' as const };
         }
         if (await this.repo.knownRelation(userId, targetUserId)) {

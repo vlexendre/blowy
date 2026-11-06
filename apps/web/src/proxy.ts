@@ -1,6 +1,7 @@
 /**
  * Proxy Next 16 du web public :
  *  - CSP stricte à nonce (aucun script tiers, aucun traceur) ;
+ *  - page ange gardien `/ange/<jeton>` : sans cookie, no-store, noindex, no-referrer ;
  *  - identifiant visiteur opaque (cookie HttpOnly, 30 j) utilisé UNIQUEMENT pour l'anti-rejeu
  *    des réponses « 3 mots » : l'API n'en conserve qu'un HMAC par cible ; ni IP ni empreinte.
  */
@@ -25,6 +26,8 @@ export function proxy(request: NextRequest) {
     "img-src 'self' data:",
     "font-src 'self'",
     "connect-src 'self'",
+    // Service worker de la page ange gardien (/ange-sw.js, notifications sans contenu).
+    "worker-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -40,6 +43,14 @@ export function proxy(request: NextRequest) {
   h.set('x-blowy-visitor', visitor!);
   const res = NextResponse.next({ request: { headers: h } });
   res.headers.set('Content-Security-Policy', csp);
+  // Page ange gardien : aucun cookie (pas même l'identifiant visiteur), jamais en cache, jamais indexée,
+  // et le jeton de l'URL ne part jamais en Referer.
+  if (request.nextUrl.pathname.startsWith('/ange/')) {
+    res.headers.set('Cache-Control', 'no-store, max-age=0');
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    res.headers.set('Referrer-Policy', 'no-referrer');
+    return res;
+  }
   if (fresh) res.cookies.set(VISITOR, visitor!, { httpOnly: true, sameSite: 'lax', secure: !dev && process.env.BLOWY_ENV !== 'local' && process.env.BLOWY_ENV !== 'test', path: '/', maxAge: 30 * 86_400 });
   return res;
 }

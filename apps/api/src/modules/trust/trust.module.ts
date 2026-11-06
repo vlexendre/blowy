@@ -11,6 +11,8 @@ import type { AppConfig } from '../../config/env.js';
 import type { CommandBus } from '../../shared/application/command-bus.js';
 import type { Clock, RandomSource } from '../../shared/application/clock.js';
 import { ADMIN_MODERATION, ADMIN_TRUST } from '../../shared/application/ports/admin-trust.port.js';
+import { BLOCK_SAFETY_HOOK, type BlockSafetyHook } from '../../shared/application/ports/block-hook.port.js';
+import { SAFETY_STAFF_PORT, type SafetyStaffPort } from '../../shared/application/ports/safety-staff.port.js';
 import { AI_SERVICES, AI_TASK_QUEUE, type AiServices, type AiTaskQueue } from '../../shared/application/ports/ai.port.js';
 import { IDENTITY_VERIFICATION_PROVIDER, type IdentityVerificationProvider } from '../../shared/application/ports/identity-verification.port.js';
 import { OBJECT_STORAGE, type ObjectStorage } from '../../shared/application/ports/object-storage.port.js';
@@ -77,7 +79,11 @@ type T = TrustRepository;
       inject: [AI_SERVICES, DB, { token: VOICE_TRANSCRIBER, optional: true }, LOGGER],
     },
     { provide: TargetResolver, useFactory: (r: T) => new TargetResolver(r), inject: [TRUST_REPOSITORY] },
-    { provide: BlockService, useFactory: (r: T, rr: RelationshipRepository, l: RelationshipLifecycle, ai: AiInvalidation) => new BlockService(r, rr, l, ai), inject: [TRUST_REPOSITORY, RELATIONSHIP_REPOSITORY, RelationshipLifecycle, AI_INVALIDATION] },
+    {
+      provide: BlockService,
+      useFactory: (r: T, rr: RelationshipRepository, l: RelationshipLifecycle, ai: AiInvalidation, h: BlockSafetyHook | null) => new BlockService(r, rr, l, ai, h ?? null),
+      inject: [TRUST_REPOSITORY, RELATIONSHIP_REPOSITORY, RelationshipLifecycle, AI_INVALIDATION, { token: BLOCK_SAFETY_HOOK, optional: true }],
+    },
     { provide: BlockUserUseCase, useFactory: (b: CommandBus, t: TargetResolver, s: BlockService) => new BlockUserUseCase(b, t, s), inject: [COMMAND_BUS, TargetResolver, BlockService] },
     {
       provide: ReportUseCase,
@@ -108,12 +114,12 @@ type T = TrustRepository;
     { provide: StaffGuard, useFactory: (r: T, c: Clock) => new StaffGuard(r, c), inject: [TRUST_REPOSITORY, CLOCK] },
     {
       provide: ADMIN_MODERATION,
-      useFactory: (r: T, b: CommandBus, g: StaffGuard, m: ModerateMessageUseCase, s: SubjectDecisionPort | null, c: Clock, rnd: RandomSource) => new AdminModerationService(r, b, g, m, s ?? null, c, rnd),
-      inject: [TRUST_REPOSITORY, COMMAND_BUS, StaffGuard, ModerateMessageUseCase, { token: SUBJECT_DECISION_PORT, optional: true }, CLOCK, RANDOM],
+      useFactory: (r: T, b: CommandBus, g: StaffGuard, m: ModerateMessageUseCase, s: SubjectDecisionPort | null, c: Clock, rnd: RandomSource, sf: SafetyStaffPort | null) => new AdminModerationService(r, b, g, m, s ?? null, c, rnd, sf ?? null),
+      inject: [TRUST_REPOSITORY, COMMAND_BUS, StaffGuard, ModerateMessageUseCase, { token: SUBJECT_DECISION_PORT, optional: true }, CLOCK, RANDOM, { token: SAFETY_STAFF_PORT, optional: true }],
     },
     {
       provide: ADMIN_TRUST,
-      useFactory: (r: T, ai: AiInvalidation, b: CommandBus, u: UnitOfWork, g: StaffGuard, db: Db, rnd: RandomSource, q: AiTaskQueue) => {
+      useFactory: (r: T, ai: AiInvalidation, b: CommandBus, u: UnitOfWork, g: StaffGuard, db: Db, rnd: RandomSource, q: AiTaskQueue, sf: SafetyStaffPort | null) => {
         const retry: AiRetryAuthorizer = {
           // Redrive : état ACTUEL (auteur actif, consentement modération, relation non bloquée).
           stillAuthorized: async (j) => {
@@ -131,9 +137,9 @@ type T = TrustRepository;
             if (j.subjectType === 'MEDIA') await q.enqueue(j.kind === 'vision.mission' ? 'media.assess_proof' : 'media.process_image', j.subjectId, { mediaId: j.subjectId });
           },
         };
-        return new AdminTrustService(r, ai, b, u, g, retry, rnd, q);
+        return new AdminTrustService(r, ai, b, u, g, retry, rnd, q, sf ?? null);
       },
-      inject: [TRUST_REPOSITORY, AI_INVALIDATION, COMMAND_BUS, UNIT_OF_WORK, StaffGuard, DB, RANDOM, AI_TASK_QUEUE],
+      inject: [TRUST_REPOSITORY, AI_INVALIDATION, COMMAND_BUS, UNIT_OF_WORK, StaffGuard, DB, RANDOM, AI_TASK_QUEUE, { token: SAFETY_STAFF_PORT, optional: true }],
     },
     {
       provide: TRUST_OUTBOX,

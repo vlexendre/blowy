@@ -26,6 +26,8 @@ import { TRUST_JOBS, TRUST_OUTBOX } from '../modules/trust/trust.module.js';
 import { MEDIA_JOBS } from '../modules/media/media.module.js';
 import { NEIGHBORHOODS_JOBS } from '../modules/neighborhoods/neighborhoods.module.js';
 import { OUTINGS_JOBS } from '../modules/outings/outings.module.js';
+import { SAFETY_JOBS, SAFETY_OUTBOX } from '../modules/safety/safety.module.js';
+import { CONNECTIONS_JOBS, CONNECTIONS_OUTBOX_CONSUMERS } from '../modules/connections/connections.module.js';
 
 export interface WorkerGraph {
   dispatcher: OutboxDispatcher;
@@ -37,8 +39,10 @@ export function buildWorkerGraph(ctx: INestApplicationContext, extraEffects: Out
   const uow = ctx.get<UnitOfWork>(UNIT_OF_WORK);
   const logger = ctx.get<Logger>(LOGGER);
   const trust = ctx.get<{ consumers: OutboxConsumer[]; effects: OutboxEffect[] }>(TRUST_OUTBOX);
-  const consumers: OutboxConsumer[] = [...ctx.get<OutboxConsumer[]>(ECONOMY_OUTBOX_CONSUMERS), ...ctx.get(RelationshipConsumers).list(), ...trust.consumers];
-  const effects: OutboxEffect[] = [new MessageModerationEffect(ctx.get(ModerateMessageUseCase)), ...trust.effects, ...ctx.get<OutboxEffect[]>(SOCIAL_OUTBOX_EFFECTS), ...extraEffects];
+  // Agent E (T4) : révocations des liens gardien, dossier « je connais quelqu'un », accusé/Web Push d'alerte.
+  const safety = ctx.get<{ consumers: OutboxConsumer[]; effects: OutboxEffect[] }>(SAFETY_OUTBOX);
+  const consumers: OutboxConsumer[] = [...ctx.get<OutboxConsumer[]>(ECONOMY_OUTBOX_CONSUMERS), ...ctx.get(RelationshipConsumers).list(), ...trust.consumers, ...safety.consumers, ...ctx.get<OutboxConsumer[]>(CONNECTIONS_OUTBOX_CONSUMERS)];
+  const effects: OutboxEffect[] = [new MessageModerationEffect(ctx.get(ModerateMessageUseCase)), ...trust.effects, ...safety.effects, ...ctx.get<OutboxEffect[]>(SOCIAL_OUTBOX_EFFECTS), ...extraEffects];
   const dispatcher = new OutboxDispatcher(db, uow, consumers, effects, logger);
   const matching = ctx.get(RunMatchingBatchUseCase);
   const matchingRepo = ctx.get<MatchingRepository>(MATCHING_REPOSITORY);
@@ -60,6 +64,10 @@ export function buildWorkerGraph(ctx: INestApplicationContext, extraEffects: Out
     // V5 (spec-v5 §7.8) : créneaux, composition hebdo, amorçage, cycle de vie des sorties, rétention.
     ...ctx.get<RecurringJob[]>(NEIGHBORHOODS_JOBS),
     ...ctx.get<RecurringJob[]>(OUTINGS_JOBS),
+    // V5 T5 (C2) : cycle de vie des duos, lot quotidien de la voie Duo (21 h locale).
+    ...ctx.get<RecurringJob[]>(CONNECTIONS_JOBS),
+    // V5 T4 (agent E) : positions d'alerte 72 h, push gardien, métadonnées de liens (§8.5).
+    ...ctx.get<RecurringJob[]>(SAFETY_JOBS).map((j) => ({ ...j, windowKey: hourKey })),
   ];
   return { dispatcher, jobs };
 }

@@ -474,6 +474,24 @@ export class PrismaOutingsRepository implements OutingsRepository {
     return txOf(scope).knowsSomeoneRequest.count({ where: { userId, createdAt: { gt: since } } });
   }
 
+  // ------------------------------------------------------------------ T4 (safety)
+  async activeSeatsOf(scope: TxScope, userId: string) {
+    const rows = await txOf(scope).outingSeat.findMany({
+      where: { userId, status: { in: ['INVITED', 'HELD', 'CONFIRMED', 'CHECKED_IN'] }, outing: { status: { in: ['PROPOSED', 'FORMING', 'CONFIRMED', 'CHECKIN_OPEN'] } } },
+      orderBy: { id: 'asc' },
+    });
+    return rows.map(seatRow);
+  }
+
+  async knowsSomeoneBySeat(scope: TxScope | null, seatId: string) {
+    const r = await this.c(scope).knowsSomeoneRequest.findUnique({ where: { seatId }, select: { id: true, seatId: true, userId: true, targetUserId: true, status: true, seat: { select: { outingId: true } } } });
+    return r ? { id: r.id, seatId: r.seatId, outingId: r.seat.outingId, userId: r.userId, targetUserId: r.targetUserId, status: r.status } : null;
+  }
+
+  async setKnowsSomeoneStatus(scope: TxScope, id: string, status: 'ACCEPTED' | 'REJECTED') {
+    await txOf(scope).knowsSomeoneRequest.update({ where: { id }, data: { status, resolvedAt: scope.now } });
+  }
+
   async createKnowsSomeone(scope: TxScope, r: { id: string; seatId: string; userId: string; targetUserId: string; status: 'AUTO_ACCEPTED' | 'IN_REVIEW' | 'COUNTED_AS_CANCEL' }) {
     await txOf(scope).knowsSomeoneRequest.create({ data: { ...r, createdAt: scope.now, ...(r.status === 'IN_REVIEW' ? {} : { resolvedAt: scope.now }) } });
   }
@@ -599,7 +617,7 @@ export class PrismaOutingsRepository implements OutingsRepository {
     await txOf(scope).reliabilityStat.upsert({ where: { userId }, create: { userId, ...s, updatedAt: scope.now }, update: { ...s, updatedAt: scope.now } });
   }
 
-  async reliabilityEvent(scope: TxScope, e: { userId: string; reason: 'OUTING_ATTENDED' | 'OUTING_NO_SHOW' | 'OUTING_LATE_CANCEL' | 'RELIABILITY_PAUSE'; episodeKey: string }) {
+  async reliabilityEvent(scope: TxScope, e: { userId: string; reason: 'OUTING_ATTENDED' | 'OUTING_NO_SHOW' | 'OUTING_LATE_CANCEL' | 'DUO_NO_SHOW' | 'RELIABILITY_PAUSE'; episodeKey: string }) {
     const n = await txOf(scope).$executeRaw`
       INSERT INTO "ReliabilityEvent" (id, "userId", reason, delta, "episodeKey", "createdAt")
       VALUES (${uuidv7(scope.now.getTime())}::uuid, ${e.userId}::uuid, ${e.reason}::"ReliabilityReason", 0, ${e.episodeKey}, ${scope.now})

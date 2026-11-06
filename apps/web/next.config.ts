@@ -31,6 +31,9 @@ const config: NextConfig = {
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
         ],
       },
+      // Page ange gardien (jeton dans l'URL) : jamais en cache, jamais indexée, jamais en Referer.
+      { source: '/ange/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }, { key: 'Cache-Control', value: 'no-store, max-age=0' }, { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] },
+      { source: '/ange-sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }, { key: 'Service-Worker-Allowed', value: '/ange/' }] },
       // Assets publics seulement : cache long (noms stables, contenu versionné par le build).
       { source: '/sprites/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
     ];

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- vues JSON */
 /**
- * V5 — annulation (V5.1 E.16 amendé par V5.2 C.8) : après le verrouillage le lieu est connu mais pas
- * les visages ; annuler avant la révélation des visages = recrédit, sans effet de fiabilité ; annuler
- * après = ABSENCE (fiabilité « 0 sur 1 »), aucun remboursement ; le groupe voit seulement « X ne
+ * V5 — annulation (V5.1 E.16, V5.2 C.8 amendé par V5.3 B.6) : annuler avant la confirmation (veille
+ * 18 h) = recrédit, sans effet de fiabilité ; annuler après = ABSENCE (fiabilité « 0 sur 1 »), aucun remboursement ; le groupe voit seulement « X ne
  * pourra pas venir », jamais le motif ; la personne perd l'accès au chat et à la salle outing:.
  * Le motif sécurité reste remboursé ; une absence se conteste une seule fois.
  */
@@ -40,12 +39,11 @@ describe('Annulation', () => {
     for (const [k, n, g, pet] of specs) people.push(await v5Person(w, { key: `v5a.${k}`, displayName: n, gender: g, seeking: [], looking: 'FRIENDS', petName: pet }, c));
     [ana, ben, cleo, dan, eva] = people;
     outingId = await formOuting(w, people);
-    await at(w, CYCLE.locked);
-    await w.runJob('outings.lifecycle');
-    expect((await outing(ana!, outingId)).data.status).toBe('CONFIRMED');
+    expect((await outing(ana!, outingId)).data.status).toBe('FORMING');
   });
 
-  S.step('Entre le lieu et les visages : Ben annule → recrédité, aucune absence', async () => {
+  // V5.3 B.6 : annulation gratuite jusqu'à la confirmation (veille 18 h) ; après, annuler = absence.
+  S.step('Avant la confirmation (veille 18 h) : Ben annule → recrédité, aucune absence', async () => {
     expect((await preview(ben!)).data).toEqual({ cancelKind: 'EARLY', refund: 'CREDIT', countsAsAbsence: false });
     const r = await cancel(ben!);
     expect(r.data).toEqual({ cancelKind: 'EARLY', refund: 'CREDIT', countsAsAbsence: false });
@@ -55,6 +53,13 @@ describe('Annulation', () => {
     expect(bv.venue).toBeUndefined();
     expect(bv.conversationId).toBeUndefined();
     expect(await ben!.phone.join(`outing:${outingId}`)).toBe(false);
+    await at(w, CYCLE.locked);
+    await w.runJob('outings.lifecycle');
+    expect((await outing(ana!, outingId)).data.status).toBe('CONFIRMED');
+  });
+
+  S.step('Après la confirmation, avant les visages : l’aperçu dit déjà « absence » (V5.3 B.6)', async () => {
+    expect((await preview(dan!)).data).toEqual({ cancelKind: 'LATE', refund: 'NONE', countsAsAbsence: true });
   });
 
   S.step('Après la révélation des visages : Cléo annule → ABSENCE, aucun remboursement (« 0 sortie sur 1 »)', async () => {

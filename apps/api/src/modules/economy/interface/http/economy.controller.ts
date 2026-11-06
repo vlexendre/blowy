@@ -11,9 +11,16 @@ import {
   WalletQuerySchema,
   WalletResponseSchema,
   WebhookAckSchema,
+  AllowancesViewSchema,
+  OutingCreditsViewSchema,
+  PlusCheckoutResponseSchema,
+  ProductsResponseV5Schema,
+  StripeWebhookAckSchema,
+  STRIPE_SIGNATURE_HEADER,
   type LocalDemoPurchaseRequest,
   type PageQuery,
 } from '@blowy/api-contract';
+import { Errors } from '../../../../shared/domain/errors.js';
 import { Public } from '../../../../shared/interface/auth.guard.js';
 import { CommandId, CurrentUser } from '../../../../shared/interface/decorators.js';
 import type { AuthenticatedUser, BlowyRequest } from '../../../../shared/interface/request-context.js';
@@ -27,6 +34,10 @@ import { LocalDemoPurchaseUseCase } from '../../application/use-cases/local-demo
 import { BILLING_PROVIDER, type BillingProvider } from '../../application/ports/billing-provider.port.js';
 import { BILLING_RECORD_REPOSITORY, type BillingRecordRepository } from '../../application/ports/billing-record.repository.js';
 import { toCatalogDto, toInventoryDto, toLedgerDto } from './economy.mappers.js';
+import type { EconomyGraph } from '../../economy.composition.js';
+
+/** Jeton du graphe (défini ici pour éviter un import circulaire module ↔ contrôleur). */
+export const ECONOMY_GRAPH_TOKEN = Symbol.for('blowy.economy.graph');
 
 @Controller('v1')
 export class EconomyController {
@@ -40,6 +51,7 @@ export class EconomyController {
     @Inject(LocalDemoPurchaseUseCase) private readonly localDemo: LocalDemoPurchaseUseCase,
     @Inject(BILLING_PROVIDER) private readonly provider: BillingProvider,
     @Inject(BILLING_RECORD_REPOSITORY) private readonly records: BillingRecordRepository,
+    @Inject(ECONOMY_GRAPH_TOKEN) private readonly graph: EconomyGraph,
   ) {}
 
   @Get('catalog')
@@ -60,16 +72,20 @@ export class EconomyController {
 
   @Post('catalog/:itemId/purchase')
   @HttpCode(200)
-  async purchaseItem(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Param('itemId', new ZodPipe(CatalogItemIdParamSchema)) itemId: string) {
-    const out = await this.purchase.execute(u.userId, cid, itemId);
-    return CatalogPurchaseResponseSchema.parse({ ...out.result, replayed: out.replayed });
+  async purchaseItem(@CurrentUser() _u: AuthenticatedUser, @Param('itemId', new ZodPipe(CatalogItemIdParamSchema)) _itemId: string): Promise<never> {
+    // V5 (D-020, spec §7.7) : gels, boost, œufs rares, accessoires vendus → 410 GONE (catalogue en lecture seule).
+    void this.purchase;
+    void CatalogPurchaseResponseSchema;
+    throw Errors.gone();
   }
 
   @Post('streak-freezes/use')
   @HttpCode(200)
-  async useFreeze(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string) {
-    const out = await this.freeze.execute(u.userId, cid);
-    return UseStreakFreezeResponseSchema.parse({ ...out.result, replayed: out.replayed });
+  async useFreeze(@CurrentUser() _u: AuthenticatedUser): Promise<never> {
+    // V5 (D-020) : plus de séries ni de gels → 410 GONE.
+    void this.freeze;
+    void UseStreakFreezeResponseSchema;
+    throw Errors.gone();
   }
 
   @Get('subscriptions/me')
@@ -77,11 +93,34 @@ export class EconomyController {
     return SubscriptionMeResponseSchema.parse(await this.subscription.execute(u.userId));
   }
 
-  /** Produits connus du serveur (identifiants store + pièces). Prix = store uniquement. */
+  /**
+   * Produits (V5, compatible V4) : forme `{mode, products}` conservée — abonnements seulement, les packs
+   * de pièces ne sont plus vendus (D-020) — + place (4,99 €, 1ʳᵉ offerte), Blowy+ (9,99 €/mois), duos.
+   */
   @Get('purchases/products')
   async products() {
-    const list = (await this.records.listStoreProducts()).filter((p) => p.active);
-    return StoreProductsResponseSchema.parse({ mode: this.provider.mode, products: list.map((p) => ({ id: p.id, kind: p.kind, coinsAmount: p.coinsAmount })) });
+    const list = (await this.records.listStoreProducts()).filter((p) => p.active && p.kind === 'SUBSCRIPTION');
+    void StoreProductsResponseSchema;
+    return ProductsResponseV5Schema.parse({ mode: this.provider.mode, products: list.map((p) => ({ id: p.id, kind: p.kind, coinsAmount: p.coinsAmount })), ...this.graph.payments.queries.productsV5() });
+  }
+
+  /** `GET /v1/outing-credits` : 1ʳᵉ offerte disponible + lots de crédit (type, nombre, échéance). */
+  @Get('outing-credits')
+  async outingCredits(@CurrentUser() u: AuthenticatedUser) {
+    return OutingCreditsViewSchema.parse(await this.graph.payments.queries.credits(u.userId));
+  }
+
+  /** `GET /v1/me/allowances` : 1ʳᵉ offerte, Blowy+, duos actifs autorisés (1 gratuit, illimité Blowy+), crédits. */
+  @Get('me/allowances')
+  async allowances(@CurrentUser() u: AuthenticatedUser) {
+    return AllowancesViewSchema.parse(await this.graph.payments.queries.allowances(u.userId));
+  }
+
+  /** `POST /v1/subscriptions/plus/checkout` : session Stripe Checkout (Apple Pay) ; 501 sans fournisseur. */
+  @Post('subscriptions/plus/checkout')
+  @HttpCode(200)
+  async plusCheckout(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string) {
+    return PlusCheckoutResponseSchema.parse(await this.graph.payments.plusCheckout.execute(u.userId, cid));
   }
 
   /** Le corps (s'il existe) est volontairement ignoré : seule la session détermine l'appUserID. */
@@ -95,6 +134,8 @@ export class EconomyController {
   @Post('purchases/local-demo')
   @HttpCode(200)
   async localDemoPurchase(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(LocalDemoPurchaseRequestSchema)) body: LocalDemoPurchaseRequest) {
+    // V5 (D-020) : les pièces ne sont plus vendues, même en démo.
+    if (body.action === 'BUY_COINS') throw Errors.gone();
     return PurchasesSyncResponseSchema.parse(await this.localDemo.execute(u.userId, cid, body));
   }
 }
@@ -110,5 +151,24 @@ export class RevenueCatWebhookController {
   async revenuecat(@Req() req: BlowyRequest, @Body() body: unknown) {
     const r = await this.receive.execute(req.headers.authorization, body);
     return WebhookAckSchema.parse({ status: r.status });
+  }
+}
+
+/**
+ * Webhook Stripe public (pas de session), exclu du limiteur par IP (`/v1/webhooks/*`) : signature
+ * `Stripe-Signature` vérifiée sur le CORPS BRUT (`rawBody: true`) ; 401 sans enregistrement si
+ * invalide ; 200 `DUPLICATE` pour un rejeu ; 500 → Stripe relivre.
+ */
+@Controller('v1/webhooks')
+export class StripeWebhookController {
+  constructor(@Inject(ECONOMY_GRAPH_TOKEN) private readonly graph: EconomyGraph) {}
+
+  @Public()
+  @Post('stripe')
+  @HttpCode(200)
+  async stripe(@Req() req: BlowyRequest) {
+    const sig = req.headers[STRIPE_SIGNATURE_HEADER];
+    const r = await this.graph.payments.stripeWebhook.execute(req.rawBody, Array.isArray(sig) ? sig[0] : sig);
+    return StripeWebhookAckSchema.parse(r);
   }
 }
