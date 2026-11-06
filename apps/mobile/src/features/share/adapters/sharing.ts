@@ -8,9 +8,12 @@ import type { ComponentRef, RefObject } from 'react';
 import { Share, type View } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 
-export const shareText = async (message: string): Promise<void> => void (await Share.share({ message }).catch(() => undefined));
+export const shareText = async (message: string): Promise<void> =>
+  void (await Share.share({ message }).catch(() => undefined));
 
-export async function shareCardImage(ref: RefObject<ComponentRef<typeof View> | null>): Promise<boolean> {
+export async function shareCardImage(
+  ref: RefObject<ComponentRef<typeof View> | null>,
+): Promise<boolean> {
   try {
     if (!ref.current || !(await Sharing.isAvailableAsync())) return false;
     const uri = await captureRef(ref as never, { format: 'png', quality: 1, result: 'tmpfile' });

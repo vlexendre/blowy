@@ -72,6 +72,8 @@ export const IDS = {
   hoodNantes: id(710),
   hoodNantesBouffay: id(711),
   outingNantes: id(107),
+  outingWeekend: id(108),
+  hoodLyon3: id(712),
   propKarim: id(450),
   alert: id(801),
 } as const;
@@ -146,7 +148,8 @@ function member(phase: Phase1, o: (typeof others)[number] | 'tom'): OutingMember
       mediaId: id(900 + Number(userId.slice(-3))),
       url: `demo-portrait:${isTom ? 'tom' : o.key}`,
     };
-  if (phase === 'checkedIn') base.arrived = true;
+  // Check-in fait à 19 h 32 : 4 sur 5 arrivés (Sarah pas encore).
+  if (phase === 'checkedIn' && (isTom || o.key !== 'sarah')) base.arrived = true;
   return base;
 }
 
@@ -207,6 +210,8 @@ export function outing1(phase: Phase1): OutingView {
       bookingName: 'Blowy',
       travelMinutes: 8,
       travelEstimated: true,
+      welcomeMessage:
+        'Table au fond à gauche, sous la lampe verte. Demandez Sami au comptoir. Bonne soirée !',
     };
   }
   if (phase === 'confirmed' || phase === 'faces') v.knowsSomeoneAvailable = true;
@@ -287,9 +292,29 @@ export function me(over: Partial<SelfProfile> = {}): SelfProfile {
 export const myPet = { id: id(11), name: 'Nino', species: 'NINO', stage: 'YOUNG' } as const;
 
 export type DemoHood =
-  'paris' | 'bordeaux' | 'lyon' | 'lille' | 'saintdenis' | 'marseille' | 'nantes';
+  | 'paris'
+  | 'bordeaux'
+  | 'lyon'
+  | 'lyon3'
+  | 'lille'
+  | 'lillelive'
+  | 'saintdenis'
+  | 'marseille'
+  | 'nantes';
 
 export function neighborhood(kind: DemoHood): NeighborhoodStatusView {
+  if (kind === 'lyon3')
+    return {
+      neighborhood: { id: IDS.hoodLyon3, name: 'Lyon 3e', status: 'LIVE' },
+      isVerified: true,
+      hasPhoto: true,
+    };
+  if (kind === 'lillelive')
+    return {
+      neighborhood: { id: IDS.hoodLille, name: 'Lille-Wazemmes', status: 'LIVE' },
+      isVerified: true,
+      hasPhoto: true,
+    };
   if (kind === 'nantes')
     return {
       neighborhood: { id: IDS.hoodNantes, name: 'Nantes centre', status: 'LIVE' },
@@ -507,9 +532,18 @@ const msg = (
 export const MESSAGES = {
   outing: [
     msg(1, IDS.convOuting, false, null, paris('2026-11-09T21:00'), 'icebreaker.open'),
-    msg(2, IDS.convOuting, false, 'Team jeux, évidemment.', paris('2026-11-10T18:40')),
-    msg(3, IDS.convOuting, true, 'Je ramène le Dobble !', paris('2026-11-10T18:52')),
-    msg(4, IDS.convOuting, false, 'Calme, curieux, gourmand.', paris('2026-11-10T18:58')),
+    // Avant la confirmation, l'auteur n'est signé que par son pet (message-authors côté API).
+    {
+      ...msg(
+        2,
+        IDS.convOuting,
+        false,
+        'Team jeux, évidemment. Vous jouez à quoi ?',
+        paris('2026-11-10T18:40'),
+      ),
+      author: { pet: { name: 'Suzie', species: 'SUZIE' } },
+    },
+    msg(3, IDS.convOuting, true, 'Un jeu de cartes ? On est pile 5 !', paris('2026-11-10T18:52')),
   ],
   tom: [msg(11, IDS.convTom, false, 'Je ramène les cartes ?', paris('2026-11-14T20:10'))],
   jade: [
@@ -644,51 +678,72 @@ export function outing2(): OutingView {
   };
 }
 
-/** Sortie d'amorçage à Lille (sam. 28 nov., atelier) : avec 2 proches, ou en solo. */
-export function outingLille(solo: boolean): OutingView {
-  const mates: OutingMemberView[] = solo
-    ? []
-    : [
-        {
-          userId: id(21),
-          pet: PETS.suzie,
-          threeWords: [],
-          firstName: 'Inès',
-          ageRange: '22_25',
-          inMyTeam: true,
-        },
-        {
-          userId: id(22),
-          pet: PETS.pia,
-          threeWords: [],
-          firstName: 'Yanis',
-          ageRange: '26_29',
-          inMyTeam: true,
-        },
-      ];
+/**
+ * Lille (facts.json › amorcage, tour 9) : sam. 14 nov. 15 h – 17 h, atelier à Wazemmes, lieu et prénoms ven. 13 nov. 18 h.
+ * `mates` : proches qui viennent avec moi (Jules ; Jules et Lou ; personne).
+ */
+export function outingLille(mates: readonly string[]): OutingView {
+  const team: OutingMemberView[] = mates.map((first, i) => ({
+    userId: id(21 + i),
+    pet: [PETS.suzie, PETS.pia][i % 2]!,
+    threeWords: [],
+    firstName: first,
+    ageRange: '22_25',
+    inMyTeam: true,
+  }));
   return {
     id: IDS.outingLille,
     status: 'PROPOSED',
-    weekKey: '2026-W48',
+    weekKey: '2026-W46',
     neighborhood: { name: 'Lille · Wazemmes' },
-    startsAt: paris('2026-11-28T15:00'),
-    endsAt: paris('2026-11-28T17:00'),
+    startsAt: paris('2026-11-14T15:00'),
+    endsAt: paris('2026-11-14T17:00'),
     capacity: 5,
     activity: 'WORKSHOP',
-    preview: solo
-      ? { size: 5, ageMin: 26, ageMax: 34, genders: { WOMAN: 3, MAN: 2 }, teams: 0 }
-      : { size: 5, ageMin: 22, ageMax: 29, genders: { WOMAN: 2, MAN: 3 }, teams: 1 },
-    confirmedCount: solo ? 3 : 4,
-    mySeat: { status: 'INVITED', acceptDeadline: paris('2026-11-26T12:00') },
-    timeline: {
-      acceptDeadline: paris('2026-11-26T12:00'),
-      lockAt: paris('2026-11-27T18:00'),
-      photoRevealAt: paris('2026-11-28T12:00'),
-      checkinOpensAt: paris('2026-11-28T14:30'),
-      checkinClosesAt: paris('2026-11-28T16:30'),
-      votesCloseAt: paris('2026-12-01T17:00'),
+    preview: {
+      size: 5,
+      ageMin: 22,
+      ageMax: 29,
+      genders: { WOMAN: 2, MAN: 3 },
+      teams: team.length ? 1 : 0,
     },
-    members: mates,
+    confirmedCount: 3,
+    mySeat: { status: 'INVITED', acceptDeadline: paris('2026-11-12T12:00') },
+    timeline: {
+      acceptDeadline: paris('2026-11-12T12:00'),
+      lockAt: paris('2026-11-13T18:00'),
+      photoRevealAt: paris('2026-11-14T12:00'),
+      checkinOpensAt: paris('2026-11-14T14:30'),
+      checkinClosesAt: paris('2026-11-14T16:30'),
+      votesCloseAt: paris('2026-11-17T17:00'),
+    },
+    members: team,
+  };
+}
+
+/** Week-end libre (facts.json › weekendLibre) : Claire, Lyon 3e, sam. 21 nov. 15 h – 17 h, atelier à la Guillotière. */
+export function outingWeekend(): OutingView {
+  return {
+    id: IDS.outingWeekend,
+    status: 'PROPOSED',
+    weekKey: '2026-W47',
+    neighborhood: { name: 'Lyon · Guillotière' },
+    startsAt: paris('2026-11-21T15:00'),
+    endsAt: paris('2026-11-21T17:00'),
+    capacity: 5,
+    activity: 'WORKSHOP',
+    preview: { size: 5, ageMin: 35, ageMax: 44, genders: { WOMAN: 3, MAN: 2 }, teams: 0 },
+    confirmedCount: 2,
+    mySeat: { status: 'INVITED', acceptDeadline: paris('2026-11-19T12:00') },
+    timeline: {
+      acceptDeadline: paris('2026-11-19T12:00'),
+      lockAt: paris('2026-11-20T18:00'),
+      photoRevealAt: paris('2026-11-21T12:00'),
+      checkinOpensAt: paris('2026-11-21T14:30'),
+      checkinClosesAt: paris('2026-11-21T16:30'),
+      votesCloseAt: paris('2026-11-24T17:00'),
+    },
+    members: [],
   };
 }
 
@@ -738,7 +793,7 @@ export const leaMessages = [
     31,
     IDS.convLea,
     false,
-    'Je repense à ta partie de Codenames. Tu bluffes toujours comme ça ?',
+    'Je repense à ta partie de cartes. Tu bluffes toujours comme ça ?',
     paris('2026-11-15T21:40'),
   ),
   msg(
@@ -929,6 +984,7 @@ export function outingAway(city: AwayCity, phase: Phase1): OutingView {
           bookingName: 'Blowy',
           travelMinutes: 18,
           travelEstimated: true,
+          welcomeMessage: 'Terrain 2, au fond. Chasubles au comptoir : demandez Nico. Bon match !',
         }
       : {
           name: 'Bloc Station',
@@ -938,6 +994,7 @@ export function outingAway(city: AwayCity, phase: Phase1): OutingView {
           bookingName: 'Blowy',
           travelMinutes: 17,
           travelEstimated: true,
+          welcomeMessage: 'Chaussons prêtés à l’accueil : demandez Sofia. Bonne grimpe !',
         };
   if (v.conversationId) v.conversationId = IDS.convOuting;
   return v;
@@ -1057,13 +1114,29 @@ export const karimMessages: MessageView[] = [
   ),
 ];
 
-/** Lien de partage (V5.6) : un nouveau slug par partage ; un seul en démo. */
-export const shareLink = {
-  slug: 'shq3vt8ajk2mnpq',
-  url: 'https://blowy.app/s/shq3vt8ajk2mnpq',
-  cardKind: 'CONFIRMED' as const,
-  expiresAt: paris('2026-12-09T21:00'),
-  clickCount: 0,
-  attributedSignups: 0,
-  attributedFirstOutings: 0,
+/**
+ * Lien de partage (V5.6) : un nouveau lien par partage. `slug` au format serveur (`s` + 15 base32) ;
+ * l'URL affichée reprend les adresses courtes des maquettes (facts.json › slugs).
+ */
+const SHARE_URLS: Record<string, string> = {
+  CONFIRMED: 'https://blowy.app/s/Hq3vT8aJ',
+  HERE: 'https://blowy.app/s/pL7c2NxR',
+  EVENING: 'https://blowy.app/s/Zx9mQ4tB',
+  BAND: 'https://blowy.app/s/aR5kW1eP',
+  HELP_CITY: 'https://blowy.app/v/bD8nY3sK',
+  TEASER: 'https://blowy.app/s/Vt6pJ3dW',
+  TEAM: 'https://blowy.app/s/Kc2nB8rQ',
+  INVITE: 'https://blowy.app/i/r8Tz4wQm2LpV',
 };
+export function shareLinkFor(cardKind: keyof typeof SHARE_URLS) {
+  return {
+    slug: 'shq3vtrajk2mnpqr',
+    url: SHARE_URLS[cardKind] ?? SHARE_URLS.CONFIRMED!,
+    cardKind,
+    expiresAt: paris('2026-12-09T21:00'),
+    clickCount: 0,
+    attributedSignups: 0,
+    attributedFirstOutings: 0,
+  };
+}
+export const shareLink = shareLinkFor('CONFIRMED');

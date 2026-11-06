@@ -13,6 +13,9 @@ export function resolveMedia(url: string | undefined | null, isPrivate = true): 
     const who = url.slice('demo-portrait:'.length) as PortraitKey;
     return PORTRAITS.includes(who) ? { kind: 'portrait', who } : null;
   }
-  if (url.startsWith('demo-asset:')) return { kind: 'sprite', path: url.slice('demo-asset:'.length) };
-  return /^https:\/\//.test(url) || /^http:\/\/localhost/.test(url) ? { kind: 'uri', uri: url, private: isPrivate } : null;
+  if (url.startsWith('demo-asset:'))
+    return { kind: 'sprite', path: url.slice('demo-asset:'.length) };
+  return /^https:\/\//.test(url) || /^http:\/\/localhost/.test(url)
+    ? { kind: 'uri', uri: url, private: isPrivate }
+    : null;
 }

@@ -77,7 +77,11 @@ function world(o: WorldOpts = {}): DemoRoute[] {
     get(R.consents, W.consents),
     get(R.notificationSettings, W.notificationSettings),
     any('POST', '/v1/conversations/:id/read', { ok: true }),
-    any('POST', R.shareLinks, W.shareLink),
+    any('POST', R.shareLinks, ({ body }: { body: unknown }) =>
+      W.shareLinkFor(
+        ((body as { cardKind?: string } | undefined)?.cardKind ?? 'CONFIRMED') as 'CONFIRMED',
+      ),
+    ),
   ];
 }
 
@@ -269,7 +273,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-15T22:00'),
     world: { phase: 'closed', convs: 'sunday', band: 'after' },
     routes: [
-      get(R.duos, { items: [W.duoLea()] }),
+      get(R.duos, { items: [W.duoLea(true)] }),
       get(R.messages(W.IDS.convLea), { items: [...W.leaMessages].reverse(), nextCursor: null }),
     ],
   },
@@ -591,19 +595,42 @@ const DEFS: Record<string, Def> = {
     ],
   },
   amorcage: {
-    now: W.paris('2026-11-23T20:00'),
+    now: W.paris('2026-11-09T21:10'),
     world: { hood: 'lille' },
     routes: [
-      get(R.week, { ...W.week('invited'), myOutingId: W.IDS.outingLille }),
-      get(R.outing(W.IDS.outingLille), W.outingLille(false)),
+      get(R.week, { ...W.week('invited'), weekKey: '2026-W46', myOutingId: W.IDS.outingLille }),
+      get(R.outing(W.IDS.outingLille), W.outingLille(['Jules', 'Lou'])),
     ],
   },
   'amorcage-solo': {
-    now: W.paris('2026-11-23T20:00'),
+    now: W.paris('2026-11-09T21:10'),
     world: { hood: 'lille' },
     routes: [
-      get(R.week, { ...W.week('invited'), myOutingId: W.IDS.outingLille }),
-      get(R.outing(W.IDS.outingLille), W.outingLille(true)),
+      get(R.week, { ...W.week('invited'), weekKey: '2026-W46', myOutingId: W.IDS.outingLille }),
+      get(R.outing(W.IDS.outingLille), W.outingLille([])),
+    ],
+  },
+  'sortie-lille': {
+    now: W.paris('2026-11-09T21:10'),
+    world: { hood: 'lillelive' },
+    routes: [
+      get(R.week, { ...W.week('invited'), weekKey: '2026-W46', myOutingId: W.IDS.outingLille }),
+      get(R.outing(W.IDS.outingLille), W.outingLille(['Jules'])),
+    ],
+  },
+  'trouvee-weekend': {
+    now: W.paris('2026-11-18T21:05'),
+    world: { hood: 'lyon3' },
+    routes: [
+      get(R.me, W.me({ displayName: 'Claire' })),
+      get(R.week, { ...W.week('invited'), weekKey: '2026-W47', myOutingId: W.IDS.outingWeekend }),
+      get(R.outing(W.IDS.outingWeekend), W.outingWeekend()),
+      get(R.outingPrefs, {
+        ...W.outingPrefs,
+        ambiance: 'ANY',
+        maxTravelMinutes: 20,
+        everyOtherWeekendOffFrom: '2026-W46',
+      }),
     ],
   },
   complete: {

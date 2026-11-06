@@ -10,4 +10,12 @@ export type { NotificationsPort, NotificationPermission } from './notifications'
 export type { LocationPort, ApproxLocation, LocationPermission } from './location';
 export type { HapticsPort } from './haptics';
 export type { CameraPermissionPort } from './camera';
-export type { PurchasesPort, Offerings, StoreOffering, StorePackage, IntroOffer, PurchaseOutcome, PackagePeriod } from './purchases';
+export type {
+  PurchasesPort,
+  Offerings,
+  StoreOffering,
+  StorePackage,
+  IntroOffer,
+  PurchaseOutcome,
+  PackagePeriod,
+} from './purchases';

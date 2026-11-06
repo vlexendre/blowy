@@ -10,7 +10,11 @@ import type { Species } from '@blowy/domain';
 import { intentionsOf, parseBirthDate, type OnboardingDraft } from './flow';
 
 export interface SubmitPorts {
-  updateProfile(body: { displayName?: string; birthDate?: string; gender?: OnboardingDraft['gender'] & string }): Promise<unknown>;
+  updateProfile(body: {
+    displayName?: string;
+    birthDate?: string;
+    gender?: OnboardingDraft['gender'] & string;
+  }): Promise<unknown>;
   searchNeighborhoods(q: string): Promise<{ items: { id: string; status: string }[] }>;
   setNeighborhood(id: string): Promise<unknown>;
   consentVersions(): Promise<Record<string, string>>;
@@ -23,13 +27,18 @@ export interface SubmitPorts {
   joinTeam?(inviteRef: string): Promise<unknown>;
 }
 
-export type SubmitStep = 'profile' | 'neighborhood' | 'consents' | 'intentions' | 'privacy' | 'pet' | 'team' | 'complete';
+export type SubmitStep =
+  'profile' | 'neighborhood' | 'consents' | 'intentions' | 'privacy' | 'pet' | 'team' | 'complete';
 export interface SubmitReport {
   ok: boolean;
   failed: { step: SubmitStep; error: unknown }[];
 }
 
-export async function submitOnboarding(d: OnboardingDraft, opts: { displayName: string; discreet: boolean }, ports: SubmitPorts): Promise<SubmitReport> {
+export async function submitOnboarding(
+  d: OnboardingDraft,
+  opts: { displayName: string; discreet: boolean },
+  ports: SubmitPorts,
+): Promise<SubmitReport> {
   const failed: SubmitReport['failed'] = [];
   const run = async (step: SubmitStep, fn: () => Promise<unknown>): Promise<boolean> => {
     try {
@@ -41,7 +50,13 @@ export async function submitOnboarding(d: OnboardingDraft, opts: { displayName: 
     }
   };
   const birthDate = parseBirthDate(d.birthDate) ?? undefined;
-  await run('profile', () => ports.updateProfile({ displayName: opts.displayName.trim() || undefined, ...(birthDate ? { birthDate } : null), ...(d.gender ? { gender: d.gender } : null) }));
+  await run('profile', () =>
+    ports.updateProfile({
+      displayName: opts.displayName.trim() || undefined,
+      ...(birthDate ? { birthDate } : null),
+      ...(d.gender ? { gender: d.gender } : null),
+    }),
+  );
   await run('neighborhood', async () => {
     let hood = d.city.neighborhoodId;
     if (!hood && d.city.query.trim()) {
@@ -53,14 +68,25 @@ export async function submitOnboarding(d: OnboardingDraft, opts: { displayName: 
   });
   const consentsOk = await run('consents', async () => {
     const versions = await ports.consentVersions();
-    const items: { purpose: string; version: string; granted: boolean }[] = (['TERMS', 'PRIVACY', 'AI_MODERATION'] as const).filter((p) => versions[p]).map((p) => ({ purpose: p, version: versions[p]!, granted: true }));
-    if (d.sensitiveConsent && versions.SENSITIVE_PREFERENCES) items.push({ purpose: 'SENSITIVE_PREFERENCES', version: versions.SENSITIVE_PREFERENCES, granted: true });
+    const items: { purpose: string; version: string; granted: boolean }[] = (
+      ['TERMS', 'PRIVACY', 'AI_MODERATION'] as const
+    )
+      .filter((p) => versions[p])
+      .map((p) => ({ purpose: p, version: versions[p]!, granted: true }));
+    if (d.sensitiveConsent && versions.SENSITIVE_PREFERENCES)
+      items.push({
+        purpose: 'SENSITIVE_PREFERENCES',
+        version: versions.SENSITIVE_PREFERENCES,
+        granted: true,
+      });
     if (items.length) await ports.recordConsents(items);
   });
   const intentions = intentionsOf(d);
   if (intentions) {
     // Sans consentement enregistré, on n'envoie jamais de genres recherchés (art. 9).
-    const safe = consentsOk ? intentions : { ...intentions, lookingFor: 'FRIENDS' as const, romanceGenders: [] };
+    const safe = consentsOk
+      ? intentions
+      : { ...intentions, lookingFor: 'FRIENDS' as const, romanceGenders: [] };
     await run('intentions', () => ports.putIntentions(safe));
   }
   await run('privacy', () => ports.putPrivacy({ discreetMode: opts.discreet }));

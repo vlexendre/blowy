@@ -6,6 +6,7 @@
 import type { OutingView } from '@blowy/api-contract';
 import type { Species } from '@blowy/domain';
 import {
+  ActionCards,
   CardV5,
   GroupBlock,
   OutingHero,
@@ -16,7 +17,10 @@ import {
   type GroupSlot,
 } from '@blowy/ui-mobile';
 import { t, tDynamic } from '../../../i18n';
+import { router } from 'expo-router';
+import { paths } from '../../../core/navigation/paths';
 import { useMyNeighborhood } from '../../account';
+import { useCancelSeat } from '../api/hooks';
 import { petSprite } from '../../pets';
 import {
   compositionLine,
@@ -140,4 +144,49 @@ export function CancelRules({
   summary?: string;
 }) {
   return <RulesDisclosure summary={summary} text={t('outing.rules', { lock: schedule(o).lock })} />;
+}
+
+/**
+ * « Si tu ne viens plus » (tour 9) : sécurité (toujours, remboursée), « je connais quelqu'un ici »
+ * (si disponible), imprévu (1 fois par mois ; repli CANT_MAKE_IT quand il n'en reste plus).
+ */
+export function NotComingCards({ o }: { o: OutingView }) {
+  const cancel = useCancelSeat(o.id);
+  const home = () => router.replace(paths.home);
+  const emergencyLeft = o.mySeat.cancelPreview?.emergencyAvailable !== false;
+  return (
+    <ActionCards
+      label={t('notComing.label')}
+      items={[
+        {
+          key: 'safety',
+          danger: true,
+          title: t('notComing.safety'),
+          sub: t('notComing.safetySub'),
+          onPress: () => cancel.mutate('SAFETY', { onSuccess: home }),
+        },
+        ...(o.knowsSomeoneAvailable
+          ? [
+              {
+                key: 'knows',
+                title: t('notComing.knows'),
+                sub: t('notComing.knowsSub'),
+                onPress: () =>
+                  router.push({
+                    pathname: paths.report,
+                    params: { outing: o.id, knows: '1' },
+                  } as never),
+              },
+            ]
+          : []),
+        {
+          key: 'emergency',
+          title: t('notComing.emergency'),
+          sub: t('notComing.emergencySub'),
+          onPress: () =>
+            cancel.mutate(emergencyLeft ? 'EMERGENCY' : 'CANT_MAKE_IT', { onSuccess: home }),
+        },
+      ]}
+    />
+  );
 }

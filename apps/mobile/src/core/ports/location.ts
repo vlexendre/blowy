@@ -19,5 +19,9 @@ export interface LocationPort {
 export function blurLocation(lat: number, lng: number, meters = 500): ApproxLocation {
   const step = meters / 111_000;
   const lngStep = step / Math.max(0.2, Math.cos((lat * Math.PI) / 180));
-  return { lat: Math.round(lat / step) * step, lng: Math.round(lng / lngStep) * lngStep, accuracyMeters: meters };
+  return {
+    lat: Math.round(lat / step) * step,
+    lng: Math.round(lng / lngStep) * lngStep,
+    accuracyMeters: meters,
+  };
 }

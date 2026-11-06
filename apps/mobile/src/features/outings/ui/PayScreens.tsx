@@ -13,16 +13,35 @@ import { clock } from '../../../core/clock';
 import { civil, dayLong, dayShort, dayShortTime, timeLabel } from '../../../core/format/dates';
 import { paths } from '../../../core/navigation/paths';
 import { t, tDynamic } from '../../../i18n';
-import { clearPendingPayment, DemoPaySheet, PaidView, PayFailedView, peekPendingPayment, setPendingPayment, usePaymentPort, useProducts, type PaymentRequest } from '../../payments';
+import {
+  clearPendingPayment,
+  DemoPaySheet,
+  PaidView,
+  PayFailedView,
+  peekPendingPayment,
+  setPendingPayment,
+  usePaymentPort,
+  useProducts,
+  type PaymentRequest,
+} from '../../payments';
 import { LoadingScreen, UnavailableNote } from '../../system';
 import { outingKeys, useAcceptSeat, useOuting } from '../api/hooks';
 import { euros, placeHint, schedule, weekdayLabel } from '../model/presenters';
 
 /** Ligne Apple Pay de la place : « jeu. 19 nov. 19 h 30 · Bloc d'escalade ». */
-export const seatLine = (o: Pick<OutingView, 'startsAt' | 'activity'>) => `${dayShortTime(o.startsAt)} · ${tDynamic(`activity.${o.activity}`)}`;
+export const seatLine = (o: Pick<OutingView, 'startsAt' | 'activity'>) =>
+  `${dayShortTime(o.startsAt)} · ${tDynamic(`activity.${o.activity}`)}`;
 
 /** Requête de paiement à partir de la réponse d'acceptation (le serveur fixe le montant). */
-export function seatPaymentRequest(o: Pick<OutingView, 'startsAt' | 'activity'>, p: { provider: 'STRIPE' | 'LOCAL_DEMO'; clientSecret: string; amountCents: number; currency: string }): PaymentRequest {
+export function seatPaymentRequest(
+  o: Pick<OutingView, 'startsAt' | 'activity'>,
+  p: {
+    provider: 'STRIPE' | 'LOCAL_DEMO';
+    clientSecret: string;
+    amountCents: number;
+    currency: string;
+  },
+): PaymentRequest {
   return { ...p, label: `${t('pay.seatTitle')} · ${seatLine(o)}`, recurring: false };
 }
 
@@ -67,7 +86,10 @@ export function PayScreen() {
       if (router.canGoBack()) router.back();
       else router.replace(paths.outing(id));
     } else {
-      router.replace({ pathname: paths.outingStep(id, 'pay-failed'), params: { reason: out.reason } } as never);
+      router.replace({
+        pathname: paths.outingStep(id, 'pay-failed'),
+        params: { reason: out.reason },
+      } as never);
     }
   };
 
@@ -153,7 +175,19 @@ export function PayFailedScreen() {
   const o = outing.data;
   if (!o) return <LoadingScreen />;
   const price = products.data ? euros(products.data.seat.amountCents) : '';
-  const hold = o.mySeat.holdExpiresAt ? Math.max(0, Math.round((Date.parse(o.mySeat.holdExpiresAt) - clock.now()) / 60000)) : null;
-  const text = hold ? t('pay.failedText', { price, day: dayShort(o.startsAt), min: hold }) : t('pay.failedTextNoHold', { price, day: dayShort(o.startsAt) });
-  return <PayFailedView text={text} onBack={() => router.replace(paths.pay(id))} onRetry={() => router.replace(paths.pay(id))} onOtherCard={() => router.replace(paths.pay(id))} onSkip={() => router.replace(paths.home)} />;
+  const hold = o.mySeat.holdExpiresAt
+    ? Math.max(0, Math.round((Date.parse(o.mySeat.holdExpiresAt) - clock.now()) / 60000))
+    : null;
+  const text = hold
+    ? t('pay.failedText', { price, day: dayShort(o.startsAt), min: hold })
+    : t('pay.failedTextNoHold', { price, day: dayShort(o.startsAt) });
+  return (
+    <PayFailedView
+      text={text}
+      onBack={() => router.replace(paths.pay(id))}
+      onRetry={() => router.replace(paths.pay(id))}
+      onOtherCard={() => router.replace(paths.pay(id))}
+      onSkip={() => router.replace(paths.home)}
+    />
+  );
 }

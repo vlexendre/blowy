@@ -28,7 +28,12 @@ function Bootstrap({ children, onReady }: { children: ReactNode; onReady: () => 
   useTrustSenders();
 
   useEffect(() => {
-    void Promise.all([useSession.getState().restore(secrets), useOfflineQueue.getState().hydrate(storage), useOnboarding.getState().hydrate(storage), useDevicePrefs.getState().hydrate(storage)]).then(() => {
+    void Promise.all([
+      useSession.getState().restore(secrets),
+      useOfflineQueue.getState().hydrate(storage),
+      useOnboarding.getState().hydrate(storage),
+      useDevicePrefs.getState().hydrate(storage),
+    ]).then(() => {
       // Mode démo local : brouillon d'onboarding de la maquette (jamais hors `local`).
       if (demo?.draft) useOnboarding.getState().patch(demo.draft);
       if (demo?.devicePrefs) useDevicePrefs.getState().set(demo.devicePrefs);
@@ -67,7 +72,7 @@ export function AppProviders({ children, onReady }: { children: ReactNode; onRea
             <ServicesProvider>
               <QueryClientProvider client={queryClient}>
                 <RealtimeProvider>
-                    <Bootstrap onReady={onReady}>{children}</Bootstrap>
+                  <Bootstrap onReady={onReady}>{children}</Bootstrap>
                 </RealtimeProvider>
               </QueryClientProvider>
             </ServicesProvider>

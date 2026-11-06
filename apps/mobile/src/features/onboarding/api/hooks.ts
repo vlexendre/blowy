@@ -8,5 +8,11 @@ export function useNeighborhoodSearch(q: string) {
   const { api } = useServices();
   const repo = useMemo(() => createAccountRepository(api, 'other'), [api]);
   const query = q.trim();
-  return useQuery({ queryKey: ['neighborhoods', query], queryFn: () => repo.neighborhoods(query), enabled: query.length >= 2, retry: false, staleTime: 60_000 });
+  return useQuery({
+    queryKey: ['neighborhoods', query],
+    queryFn: () => repo.neighborhoods(query),
+    enabled: query.length >= 2,
+    retry: false,
+    staleTime: 60_000,
+  });
 }

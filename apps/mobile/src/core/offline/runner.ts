@@ -23,7 +23,10 @@ export const onSettled = (l: (cmd: QueuedCommand, ok: boolean) => void): (() => 
 
 let draining = false;
 
-export async function drainQueue(isOnline: () => boolean, now: () => number = Date.now): Promise<void> {
+export async function drainQueue(
+  isOnline: () => boolean,
+  now: () => number = Date.now,
+): Promise<void> {
   if (draining) return;
   draining = true;
   try {
@@ -41,7 +44,13 @@ export async function drainQueue(isOnline: () => boolean, now: () => number = Da
         settleListeners.forEach((l) => l(cmd, true));
       } catch (e) {
         const retryable = isRetryable(e);
-        dispatch({ type: 'failed', commandId: cmd.commandId, error: errorCode(e), retryable, now: now() });
+        dispatch({
+          type: 'failed',
+          commandId: cmd.commandId,
+          error: errorCode(e),
+          retryable,
+          now: now(),
+        });
         if (!retryable) settleListeners.forEach((l) => l(cmd, false));
         if (retryable) return; // backoff : on attend le prochain réveil
       }

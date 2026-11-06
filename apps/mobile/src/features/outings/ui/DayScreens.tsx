@@ -24,6 +24,7 @@ import {
   SectionLabel,
   Tap,
   VenueCard,
+  VenueWelcome,
   v5,
   v5Alpha,
   v5Gradient,
@@ -50,9 +51,9 @@ import {
 } from '../../safety';
 import { useDevicePrefs } from '../../settings';
 import { LoadingScreen, OfflineScreen } from '../../system';
-import { useCancelSeat, useCheckIn, useOuting } from '../api/hooks';
+import { useCheckIn, useOuting } from '../api/hooks';
 import { bracketLabel, schedule } from '../model/presenters';
-import { CancelRules, travelLine } from './parts';
+import { CancelRules, NotComingCards, travelLine } from './parts';
 
 const TILES = [v5.violetPale, v5.peachLight, v5.greenPale] as const;
 const capFirst = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
@@ -122,6 +123,7 @@ export function ConfirmationScreen() {
             action={reportAction(o)}
             pad={[52, 16, 18]}
             gap={8}
+            scroll
             testID="confirmation"
           >
             <Pill
@@ -154,22 +156,12 @@ export function ConfirmationScreen() {
             </PopIn>
             {venue?.welcomeMessage ? (
               <PopIn delayMs={60}>
-                <CardV5
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 14,
-                    backgroundColor: v5.peach,
-                    gap: 3,
-                  }}
-                >
-                  <SectionLabel>{t('chats.venueWelcome')}</SectionLabel>
-                  <BodyText size={13}>{venue.welcomeMessage}</BodyText>
-                </CardV5>
+                <VenueWelcome title={t('chats.venueWelcome')} text={venue.welcomeMessage} />
               </PopIn>
             ) : null}
             <PopIn delayMs={80}>
               <CardV5 style={{ paddingVertical: 10, paddingHorizontal: 14 }}>
-                <SectionLabel>{t('confirm.groupLabel')}</SectionLabel>
+                <SectionLabel inline>{t('confirm.groupLabel')}</SectionLabel>
                 <PersonLine
                   sprite={petSprite(pet.data?.species ?? 'NINO')}
                   tile={v5.lime}
@@ -198,31 +190,8 @@ export function ConfirmationScreen() {
                 ))}
               </CardV5>
             </PopIn>
-            {o.knowsSomeoneAvailable ? (
-              <Tap
-                onPress={() =>
-                  router.push({
-                    pathname: paths.report,
-                    params: { outing: o.id, knows: '1' },
-                  } as never)
-                }
-                accessibilityRole="link"
-                pressDepth={0}
-                style={{
-                  minHeight: 44,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 4,
-                }}
-              >
-                <BodyText size={13} weight={700} style={{ flexShrink: 1 }}>
-                  {t('confirm.knows')}
-                </BodyText>
-                <View style={{ marginLeft: 'auto' }}>
-                  <Glyph name="chevron" size={14} />
-                </View>
-              </Tap>
-            ) : null}
+            <SectionLabel style={{ marginTop: 4 }}>{t('notComing.label')}</SectionLabel>
+            <NotComingCards o={o} />
             <CancelRules o={o} summary={t('confirm.rulesSummary')} />
             <View style={{ marginTop: 'auto', gap: 4 }}>
               <Button
@@ -260,7 +229,6 @@ export function ConfirmationScreen() {
 export function FacesScreen() {
   const q = useOutingParam();
   const me = useMe();
-  const cancel = useCancelSeat(q.data?.id ?? '');
   const viewer = me.data?.displayName ?? '';
   return (
     <Guard q={q}>
@@ -319,82 +287,7 @@ export function FacesScreen() {
               label={t('faces.tonight')}
               onPress={() => router.push(paths.outingStep(o.id, 'checkin'))}
             />
-            {o.knowsSomeoneAvailable ? (
-              <Tap
-                onPress={() =>
-                  router.push({
-                    pathname: paths.report,
-                    params: { outing: o.id, knows: '1' },
-                  } as never)
-                }
-                accessibilityRole="link"
-                style={{
-                  minHeight: 48,
-                  borderRadius: 16,
-                  backgroundColor: v5.white,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 14,
-                  boxShadow: [
-                    {
-                      offsetX: 0,
-                      offsetY: 3,
-                      blurRadius: 0,
-                      spreadDistance: 0,
-                      color: v5.shadowCream,
-                    },
-                  ],
-                }}
-              >
-                <BodyText size={13} weight={700} lh={1.35} style={{ flex: 1 }}>
-                  {t('faces.knows')}
-                </BodyText>
-                <Glyph name="chevron" size={14} />
-              </Tap>
-            ) : null}
-            <Tap
-              onPress={() => router.push(paths.share('checkin'))}
-              accessibilityRole="link"
-              pressDepth={0}
-              style={{ minHeight: 44, alignItems: 'center', justifyContent: 'center' }}
-            >
-              <BodyText size={13} weight={700} color={v5.inkSoft}>
-                {t('faces.share')}
-              </BodyText>
-            </Tap>
-            <Tap
-              onPress={() =>
-                cancel.mutate(
-                  o.mySeat.cancelPreview?.emergencyAvailable === false
-                    ? 'CANT_MAKE_IT'
-                    : 'EMERGENCY',
-                  { onSuccess: () => router.replace(paths.home) },
-                )
-              }
-              accessibilityRole="button"
-              style={{
-                minHeight: 48,
-                borderRadius: 16,
-                backgroundColor: v5.dangerPale,
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 14,
-              }}
-            >
-              <BodyText size={13} weight={800} color={v5.dangerDeep} style={{ flex: 1 }}>
-                {`${ruleV57('emergency_label')} · ${t('faces.cantComeSub')}`}
-              </BodyText>
-              <Glyph name="chevron" size={14} color={v5.dangerDeep} />
-            </Tap>
-            <BodyText
-              size={12}
-              weight={600}
-              lh={1.45}
-              color={v5.inkSoft}
-              style={{ paddingHorizontal: 4 }}
-            >
-              {t('faces.cantComeRule')}
-            </BodyText>
+            <NotComingCards o={o} />
           </View>
         </DetailScreen>
       )}
@@ -591,6 +484,7 @@ function CheckedInBody({ o }: { o: OutingView }) {
   const size = o.capacity;
   const guardian = prefs.lastGuardian;
   const checkedAt = hhmm(Date.parse(o.timeline.checkinOpensAt) + 32 * 60_000);
+  const [leaving, setLeaving] = useState(false);
   return (
     <NightFrame o={o}>
       <PopIn style={{ marginTop: 12, flexDirection: 'row' }}>
@@ -707,61 +601,81 @@ function CheckedInBody({ o }: { o: OutingView }) {
       </View>
       <View style={{ flex: 1 }} />
       <View style={{ gap: 8 }}>
-        <Tap
-          onPress={() =>
-            leave.mutate(true, {
-              onSuccess: (r) => (r.callbackTargetMinutes ? undefined : router.replace(paths.home)),
-            })
-          }
-          accessibilityRole="button"
-          style={{
-            minHeight: 48,
-            borderRadius: 16,
-            backgroundColor: v5Alpha.white12,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <BodyText size={14} weight={800} color={v5.white}>
-            {t('checkedIn.leave')}
-          </BodyText>
-        </Tap>
-        {alert.data?.callbackTargetMinutes || leave.data?.callbackTargetMinutes ? (
-          <BodyText
-            size={13}
-            weight={800}
-            color={v5.lime}
-            align="center"
-            accessibilityLiveRegion="assertive"
-          >
-            {ruleV57('help_callback')}
-          </BodyText>
-        ) : (
-          <BodyText size={12} weight={600} color={v5.sandDeep} align="center">
-            {t('checkedIn.leaveNote')}
-          </BodyText>
-        )}
+        {leaving ? (
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Tap
+              onPress={() => undefined}
+              accessibilityRole="button"
+              accessibilityLabel={t('checkedIn.fakeCall')}
+              pressDepth={4}
+              style={{
+                flex: 1,
+                minHeight: 48,
+                borderRadius: 16,
+                backgroundColor: v5Alpha.white12,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+            >
+              <Glyph name="phone" size={16} color={v5.white} />
+              <BodyText size={14} weight={800} color={v5.white}>
+                {t('checkedIn.fakeCall')}
+              </BodyText>
+            </Tap>
+            <Tap
+              onPress={() =>
+                leave.mutate(true, {
+                  onSuccess: (r) =>
+                    r.callbackTargetMinutes ? undefined : router.replace(paths.home),
+                })
+              }
+              accessibilityRole="button"
+              pressDepth={4}
+              style={{
+                flex: 1,
+                minHeight: 48,
+                borderRadius: 16,
+                backgroundColor: v5Alpha.white12,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 8,
+              }}
+            >
+              <BodyText size={13} weight={800} color={v5.white} align="center">
+                {t('checkedIn.leave')}
+              </BodyText>
+            </Tap>
+          </View>
+        ) : null}
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <Tap
-            onPress={() => undefined}
+            onPress={() => setLeaving(!leaving)}
             accessibilityRole="button"
-            accessibilityLabel={t('checkedIn.fakeCall')}
+            accessibilityState={{ selected: leaving }}
+            accessibilityLabel={`${t('checkedIn.needLeave')} ${t('checkedIn.needLeaveSub')}`}
             pressDepth={4}
             style={{
               flex: 1,
               minHeight: 52,
               borderRadius: 18,
               backgroundColor: v5Alpha.white12,
-              flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 10,
             }}
           >
-            <Glyph name="phone" size={16} color={v5.white} />
-            <Text style={[strongFont(15), { color: v5.white, textTransform: 'uppercase' }]}>
-              {t('checkedIn.fakeCall')}
+            <Text
+              style={[
+                strongFont(15),
+                { color: v5.white, textTransform: 'uppercase', lineHeight: 15 },
+              ]}
+            >
+              {t('checkedIn.needLeave')}
             </Text>
+            <BodyText size={11} weight={700} color={v5.white} lh={1}>
+              {t('checkedIn.needLeaveSub')}
+            </BodyText>
           </Tap>
           <Tap
             onLongPress={() => alert.mutate()}
@@ -800,6 +714,21 @@ function CheckedInBody({ o }: { o: OutingView }) {
             </BodyText>
           </Tap>
         </View>
+        {alert.data?.callbackTargetMinutes || leave.data?.callbackTargetMinutes ? (
+          <BodyText
+            size={13}
+            weight={800}
+            color={v5.lime}
+            align="center"
+            accessibilityLiveRegion="assertive"
+          >
+            {ruleV57('help_callback')}
+          </BodyText>
+        ) : (
+          <BodyText size={12} weight={600} lh={1.4} color={v5.sandDeep} align="center">
+            {t('checkedIn.leaveNote')}
+          </BodyText>
+        )}
         <Button
           variant="ghost"
           tint={v5.sandDeep}

@@ -5,7 +5,14 @@
  */
 export interface StripeSheet {
   init(publishableKey: string, merchantIdentifier: string | undefined): Promise<void>;
-  setup(p: { clientSecret: string; label: string; amountCents: number; currency: string; recurring: boolean; testEnv: boolean }): Promise<{ error?: { code: string } }>;
+  setup(p: {
+    clientSecret: string;
+    label: string;
+    amountCents: number;
+    currency: string;
+    recurring: boolean;
+    testEnv: boolean;
+  }): Promise<{ error?: { code: string } }>;
   present(): Promise<{ error?: { code: string } }>;
   applePaySupported(): Promise<boolean>;
 }

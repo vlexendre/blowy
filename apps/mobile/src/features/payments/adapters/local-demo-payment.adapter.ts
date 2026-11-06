@@ -9,7 +9,8 @@ export class LocalDemoPaymentAdapter implements PaymentPort {
   readonly kind = 'LOCAL_DEMO' as const;
   readonly applePay = true;
   constructor(blowyEnv: string) {
-    if (blowyEnv === 'production') throw new Error('LocalDemoPaymentAdapter interdit en production');
+    if (blowyEnv === 'production')
+      throw new Error('LocalDemoPaymentAdapter interdit en production');
   }
   async pay(req: PaymentRequest): Promise<PaymentOutcome> {
     if (req.provider !== 'LOCAL_DEMO') return { status: 'FAILED', reason: 'PROVIDER_MISMATCH' };

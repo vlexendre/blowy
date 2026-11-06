@@ -41,7 +41,9 @@ function WelcomeReplica() {
         </>
       }
     >
-      <PopIn style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <PopIn
+        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8 }}>
           <DisplayText size={32}>
             {t('devKitchen.brand')}
@@ -49,7 +51,11 @@ function WelcomeReplica() {
           </DisplayText>
           <Label variant="tagline">{t('devKitchen.tagline')}</Label>
         </View>
-        <Chip label={t('devKitchen.online', { count: ONLINE.toLocaleString('fr-FR') })} dot={color.online} pulse="online" />
+        <Chip
+          label={t('devKitchen.online', { count: ONLINE.toLocaleString('fr-FR') })}
+          dot={color.online}
+          pulse="online"
+        />
       </PopIn>
 
       <View style={{ marginTop: 26, gap: 4 }}>
@@ -74,19 +80,71 @@ function WelcomeReplica() {
         </PopIn>
       </View>
 
-      <PopIn delayMs={360} style={{ flex: 1, minHeight: 0, alignItems: 'center', justifyContent: 'center' }}>
+      <PopIn
+        delayMs={360}
+        style={{ flex: 1, minHeight: 0, alignItems: 'center', justifyContent: 'center' }}
+      >
         <OrbitRing
           satellites={[
-            { key: 'kind', top: -14, left: '50%', marginLeft: -36, node: <Chip tone="ink" label={t('devKitchen.traits.kind')} /> },
-            { key: 'art', top: '50%', right: -50, marginTop: -14, node: <Chip label={t('devKitchen.traits.art')} drop="strong" /> },
-            { key: 'sporty', bottom: -14, left: '50%', marginLeft: -36, node: <Chip tone="coral" label={t('devKitchen.traits.sporty')} /> },
-            { key: 'curious', top: '50%', left: -40, marginTop: -14, node: <Chip label={t('devKitchen.traits.curious')} drop="strong" /> },
+            {
+              key: 'kind',
+              top: -14,
+              left: '50%',
+              marginLeft: -36,
+              node: <Chip tone="ink" label={t('devKitchen.traits.kind')} />,
+            },
+            {
+              key: 'art',
+              top: '50%',
+              right: -50,
+              marginTop: -14,
+              node: <Chip label={t('devKitchen.traits.art')} drop="strong" />,
+            },
+            {
+              key: 'sporty',
+              bottom: -14,
+              left: '50%',
+              marginLeft: -36,
+              node: <Chip tone="coral" label={t('devKitchen.traits.sporty')} />,
+            },
+            {
+              key: 'curious',
+              top: '50%',
+              left: -40,
+              marginTop: -14,
+              node: <Chip label={t('devKitchen.traits.curious')} drop="strong" />,
+            },
           ]}
         />
-        <PetSprite path="nino/young/joyful.webp" size={190} accessibilityLabel={t('devKitchen.pets.nino')} />
-        <PetSprite path="suzie/young/joyful.webp" size={104} right={2} bottom={6} delayMs={-600} accessibilityLabel={t('devKitchen.pets.suzie')} />
-        <PetSprite path="gaston/young/joyful.webp" size={100} left={0} bottom={4} delayMs={-1200} accessibilityLabel={t('devKitchen.pets.gaston')} />
-        <PetSprite path="pia/young/presentation.webp" size={84} left={8} top={0} delayMs={-1800} accessibilityLabel={t('devKitchen.pets.pia')} />
+        <PetSprite
+          path="nino/young/joyful.webp"
+          size={190}
+          accessibilityLabel={t('devKitchen.pets.nino')}
+        />
+        <PetSprite
+          path="suzie/young/joyful.webp"
+          size={104}
+          right={2}
+          bottom={6}
+          delayMs={-600}
+          accessibilityLabel={t('devKitchen.pets.suzie')}
+        />
+        <PetSprite
+          path="gaston/young/joyful.webp"
+          size={100}
+          left={0}
+          bottom={4}
+          delayMs={-1200}
+          accessibilityLabel={t('devKitchen.pets.gaston')}
+        />
+        <PetSprite
+          path="pia/young/presentation.webp"
+          size={84}
+          left={8}
+          top={0}
+          delayMs={-1800}
+          accessibilityLabel={t('devKitchen.pets.pia')}
+        />
       </PopIn>
 
       <PopIn delayMs={440} style={{ alignItems: 'center', marginBottom: 14 }}>
@@ -94,7 +152,13 @@ function WelcomeReplica() {
       </PopIn>
 
       <PopIn delayMs={520} style={{ gap: 6 }}>
-        <Button variant="b1v4" size="v4" label={t('devKitchen.cta')} icon="arrow" iconPosition="trailing" />
+        <Button
+          variant="b1v4"
+          size="v4"
+          label={t('devKitchen.cta')}
+          icon="arrow"
+          iconPosition="trailing"
+        />
         <Button variant="link" label={t('devKitchen.account')} />
       </PopIn>
     </ScreenTemplate>
@@ -107,7 +171,13 @@ function Catalog() {
       <View style={{ gap: 18 }}>
         <DisplayText size={40}>{t('devKitchen.catalog')}</DisplayText>
         <Label>b1 · b2 · b3 · lime · link · ghost</Label>
-        <Button variant="b1v4" size="v4" label={t('devKitchen.cta')} icon="arrow" iconPosition="trailing" />
+        <Button
+          variant="b1v4"
+          size="v4"
+          label={t('devKitchen.cta')}
+          icon="arrow"
+          iconPosition="trailing"
+        />
         <Button variant="b2" label={t('devKitchen.cta')} />
         <Button variant="b3" label={t('devKitchen.cta')} />
         <Button variant="lime" label={t('devKitchen.cta')} />
@@ -152,7 +222,8 @@ function Catalog() {
 
 export function KitchenSinkScreen() {
   const params = useLocalSearchParams<{ t?: string; view?: string }>();
-  const frozen = params.t !== undefined && Number.isFinite(Number(params.t)) ? Number(params.t) : null;
+  const frozen =
+    params.t !== undefined && Number.isFinite(Number(params.t)) ? Number(params.t) : null;
   return (
     <MotionClockProvider frozenAtMs={frozen}>
       {params.view === 'catalog' ? (

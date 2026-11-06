@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import * as W from '../../../core/demo/world';
-import { bracketLabel, compositionLine, milestones, euros, fundingKind, groupSlots, headline, outingPhase, schedule, teamMates } from './presenters';
+import {
+  bracketLabel,
+  compositionLine,
+  milestones,
+  euros,
+  fundingKind,
+  groupSlots,
+  headline,
+  outingPhase,
+  schedule,
+  teamMates,
+} from './presenters';
 
 const n = (s: string | null) => (s ?? '').replace(/[\u00A0\u202F]/g, ' ');
 
@@ -28,13 +39,19 @@ describe('présentation des sorties V5', () => {
   });
 
   it('composition V5.4 : jamais de garantie, « à découvrir »', () => {
-    expect(n(compositionLine(invited, 'found'))).toBe('5 personnes · 26–34 ans · 2 femmes, 3 hommes, toi compris · 4 personnes à découvrir la veille');
-    expect(n(compositionLine(team, 'detail'))).toBe('5 personnes · 26–34 ans · 2 femmes, 3 hommes, toi compris · Tom vient avec toi · 3 nouvelles personnes, à découvrir la veille');
+    expect(n(compositionLine(invited, 'found'))).toBe(
+      '5 personnes · 26–34 ans · 2 femmes, 3 hommes, toi compris · 4 personnes à découvrir la veille',
+    );
+    expect(n(compositionLine(team, 'detail'))).toBe(
+      '5 personnes · 26–34 ans · 2 femmes, 3 hommes, toi compris · Tom vient avec toi · 3 nouvelles personnes, à découvrir la veille',
+    );
     expect(teamMates(team).map((m) => m.firstName)).toEqual(['Tom']);
   });
 
   it('frise des 3 jalons', () => {
-    expect(milestones(invited, { lock: 'L', faces: 'V', outing: 'S' }).map((m) => n(m.when))).toEqual(['Mer. 11 nov. 18 h', 'Jeu. 12 nov. 16 h 30', 'Jeu. 12 nov. 19 h 30']);
+    expect(
+      milestones(invited, { lock: 'L', faces: 'V', outing: 'S' }).map((m) => n(m.when)),
+    ).toEqual(['Mer. 11 nov. 18 h', 'Jeu. 12 nov. 16 h 30', 'Jeu. 12 nov. 19 h 30']);
   });
 
   it('cases du groupe : moi, proches, inconnus anonymes', () => {

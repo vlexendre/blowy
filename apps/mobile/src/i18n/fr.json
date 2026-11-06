@@ -109,7 +109,7 @@
     },
     "reliability": "Fiabilité",
     "came": "Venu à {a} sortie sur {b}",
-    "reliabilityNote": "Toi seul vois ce chiffre. Ton groupe n’en voit rien, ni chiffre ni badge. Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre). Un départ « mal à l’aise » ne compte jamais.",
+    "reliabilityNote": "Ta fiabilité est visible par toi seulement. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Pour ta sécurité : toujours possible, sans pénalité, place remboursée. « Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité. Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
     "accessories": "Accessoires",
     "next": "Le prochain accessoire arrive avec ton {n}e souvenir. Rien ne se vend."
   },
@@ -507,7 +507,7 @@
     },
     "backA11y": "Retour aux chats",
     "seeOuting": "voir la sortie ›",
-    "moderated": "Messages modérés · pas de numéro ni de réseau, sauf entre accords mutuels",
+    "moderated": "Messages modérés · Les numéros restent masqués jusqu’aux visages.",
     "writeGroup": "Écrire au groupe…",
     "writeGroupA11y": "Message au groupe",
     "send": "Envoyer",
@@ -521,9 +521,9 @@
       "a11y": "Options du groupe",
       "report": "Signaler un message ou une personne",
       "block": "Bloquer quelqu’un",
-      "leave": "Quitter la sortie",
+      "leave": "Quitter la sortie · sécurité, je connais quelqu’un, imprévu",
       "mute": "Couper les notifications du groupe",
-      "note": "Personne ne sait qui a signalé. Pendant les soirs de sortie, une personne de l’équipe répond en moins d’1 h. Quitter est gratuit jusqu’au {lock}. Pour ta sécurité, toujours."
+      "note": "Personne ne sait qui a signalé. Un signalement reçoit une réponse de l’équipe en moins d’1 h pendant toute ta sortie. Quitter est gratuit jusqu’au {lock}. Pour ta sécurité : toujours possible, sans pénalité, place remboursée."
     },
     "faceOf": "Visage de {name}",
     "duoAfterOuting": "Duo · vus en sortie",
@@ -541,8 +541,10 @@
       "use": "L’utiliser",
       "next": "Une autre"
     },
-    "venueWelcome": "Le mot du lieu",
-    "calm": "préfère le calme"
+    "venueWelcome": "Message du lieu",
+    "calm": "préfère le calme",
+    "venueSoon": "Le lieu partenaire vous écrira ici à la révélation, {lock} : où s’asseoir, qui demander.",
+    "datePending": "Rendez-vous proposé · en attente de {name}"
   },
   "chat": {
     "placeholder": "Écris à {name}…",
@@ -1122,10 +1124,12 @@
     "awayTitleV55": "UNE SORTIE À {city}, TROUVÉE PAR {pet}.",
     "chip": "{home} · trajet max {m} min",
     "subtitle": "Pour rencontrer de nouvelles personnes, en vrai, à 5.",
-    "footerFree": "Lieu et prénoms le {lock}. Annulation gratuite jusque-là. Ta 1re sortie est offerte.",
-    "footer": "Lieu et prénoms le {lock}. Annulation gratuite jusque-là.",
+    "footerFree": "Lieu et prénoms le {lock}. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Ta 1re sortie est offerte.",
+    "footer": "Lieu et prénoms le {lock}. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence.",
     "inviteV55": "Inviter quelqu’un à venir avec toi",
-    "calmAsked": "Lieu calme, comme demandé dans Affiner."
+    "calmAsked": "Lieu calme, comme demandé dans Affiner.",
+    "weekendTitle": "TON WEEK-END LIBRE : UNE SORTIE À {city}.",
+    "weekendSub": "Un week-end sur deux · à partir du {from} : ce {day} est libre."
   },
   "outing": {
     "title": "TA SORTIE",
@@ -1153,7 +1157,7 @@
     "teamComes": "{name} vient",
     "teamPlaces": "+ {n} place",
     "teamInvite": "Venir avec quelqu’un",
-    "cancelRule": "Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre).",
+    "cancelRule": "Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par mois).",
     "acceptFree": "Je viens · offerte",
     "acceptPaid": "Je viens · {price}",
     "decline": "Pas cette semaine",
@@ -1168,12 +1172,12 @@
     "addCalendar": "Ajouter à mon agenda",
     "cancelFree": "Annuler · gratuit jusqu’au {lock} · voir la règle",
     "ms": {
-      "lock": "Lieu et prénoms · annulation gratuite jusque-là",
+      "lock": "Lieu et prénoms · dernier jour pour annuler",
       "faces": "Les visages",
       "outing": "La sortie"
     },
     "rulesSummary": "Règles d’annulation ›",
-    "rules": "Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée).",
+    "rules": "Annulation gratuite jusqu’à {lock} ; ensuite, c’est une absence. Pour ta sécurité : toujours possible, sans pénalité, place remboursée. « Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité. Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
     "acceptV55": "Je viens",
     "priceFree": "Offerte (ta 1re sortie) · ensuite {price}",
     "pricePaid": "{price} la place · Apple Pay",
@@ -1183,7 +1187,11 @@
     "cancelFreeV55": "Annuler · gratuit jusqu’au {lock}",
     "travelFrom": "≈ {minutes} min depuis {home}",
     "travel": "≈ {minutes} min de trajet",
-    "chosenByVenue": "Activité choisie selon le lieu et vos envies"
+    "chosenByVenue": "Activité choisie selon le lieu et vos envies",
+    "inviteSecond": "Inviter un 2e proche",
+    "inviteSecondValue": "sa 1re offerte",
+    "seedingNote": "Pas besoin d’attendre que {city} « ouvre » : 5 personnes vérifiées sur un même créneau suffisent.",
+    "declineSeeding": "Non merci"
   },
   "team": {
     "title": "VIENS AVEC QUELQU’UN.",
@@ -1425,11 +1433,11 @@
     "groupLabel": "Ton groupe · sans visages jusqu’à J −3 h",
     "withYou": "vient avec toi",
     "knows": "Je connais quelqu’un ici · examiné en privé, sans pénalité",
-    "facesSoon": "Les visages arrivent {faces}, 3 h avant. Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre).",
+    "facesSoon": "Les visages arrivent {faces}, 3 h avant. Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par mois).",
     "guardian": "Choisir un ange gardien",
     "share": "Partager « cette semaine, je sors »",
     "revealed": "{lock} · lieu révélé",
-    "photoCaption": "Photo fournie par le lieu",
+    "photoCaption": "Illustration · dans l’app, la photo du lieu",
     "tableNote": "Table {name}, chevalet orange au fond",
     "rulesSummary": "Règles d’annulation et imprévu ›",
     "shareWeek": "Partager ma semaine",
@@ -1441,7 +1449,7 @@
     "verified": "selfie vérifié",
     "watermark": "vu par {name} · vu par {name}",
     "a11y": "Visage de {name}, filigrane à ton prénom",
-    "note": "Ton prénom est en filigrane sur chaque visage ; les captures sont détectées et signalées. Les autres voient ta carte : « {name} · ta tranche d’âge ».",
+    "note": "Ton prénom est en filigrane sur chaque visage. Les captures d’écran iOS sont signalées à l’équipe. Les autres voient ta carte : « {name} · ta tranche d’âge ».",
     "tonight": "À ce soir",
     "knows": "Je connais quelqu’un ici · examiné en privé, sans pénalité",
     "share": "Partager « je sors ce soir »",
@@ -1470,11 +1478,13 @@
     "guardianKnows": "{name} sait que tu es arrivé",
     "okAtEnd": "« Tout va bien ? » à la fin",
     "leave": "Je pars, mal à l’aise · sans pénalité",
-    "leaveNote": "Ton départ prévient l’équipe (et ton ange). Répété 3 fois, quelqu’un te rappelle.",
+    "leaveNote": "Partir mal à l’aise ? Pour ta sécurité : toujours possible, sans pénalité, place remboursée.",
     "fakeCall": "Faux appel",
     "help": "Besoin d’aide",
     "helpSub": "appui long 2 s · sans bruit",
-    "end": "Fin de soirée ›"
+    "end": "Fin de soirée ›",
+    "needLeave": "Besoin de partir ?",
+    "needLeaveSub": "faux appel ou départ"
   },
   "guardian": {
     "title": "ANGE GARDIEN",
@@ -1589,7 +1599,7 @@
     "t3": "3 · Un rendez-vous",
     "t3Text": "Quand vous voulez. {pet} en propose pendant 7 jours, ensuite le duo reste ouvert.",
     "between": "Entre {pair}",
-    "filtered": "Messages filtrés : liens, numéros et photos bloqués avant les visages. Signaler est toujours en haut à droite.",
+    "filtered": "Messages filtrés. Les numéros restent masqués jusqu’aux visages. Liens et photos aussi. Signaler est toujours en haut à droite.",
     "answer": "Répondre à {name}",
     "leaveClean": "Partir proprement",
     "facesChip": "{when} · en même temps",
@@ -1600,18 +1610,18 @@
     "afterOuting": "Après la sortie",
     "step3": "Duo · étape 3",
     "publicPlace": "Lieu public · gratuit",
-    "partner": "Lieu partenaire · table confirmée par {name}",
+    "partner": "Lieu partenaire · table à deux, réservée quand vous avez dit oui tous les deux",
     "noVenue": "Lieu à choisir",
     "otherPlace": "Choisir ensemble un autre lieu ou une autre heure",
     "guardian": "Ange gardien · facultatif",
     "nobody": "Personne",
-    "dateL1": "Check-in sur place, besoin d’aide et faux appel, comme en sortie.",
+    "dateL1": "Check‑in par code, besoin d’aide et faux appel, comme en sortie. Une personne de l’équipe est joignable pendant tout ton rendez-vous.",
     "dateL2": "Tu peux partir à tout moment.",
     "dateL3": "Rendez-vous gratuit. {name} doit accepter le créneau.",
     "proposeTo": "Proposer à {name}",
-    "openBoth": "Duo ouvert : vous avez dit oui tous les deux",
+    "openBoth": "Duo ouvert quand vous avez dit oui tous les deux",
     "facesWhen": "Visages {when}",
-    "proposalTitle": "{species} · {initial}",
+    "proposalTitle": "{species} · {initial}.",
     "speciesIndef": {
       "NINO": "Un raton",
       "SUZIE": "Une lapine",
@@ -1619,16 +1629,17 @@
       "PIA": "Un pigeon"
     },
     "proposalSub": "Une proposition pour vous deux",
-    "beforeYesV55": "Avant vos deux oui, chacun ne voit que l’espèce du pet et l’initiale de l’autre. Le reste de la carte, après ; le prénom, aux visages.",
+    "beforeYesV55": "D’abord, chacun ne voit que l’espèce du pet et l’initiale de l’autre. La carte et le prénom, quand vous avez dit oui tous les deux ; le visage, aux visages.",
     "sayYesV55": "Dire oui",
     "limitV55": "Gratuit : jusqu’à 3 duos actifs. Une proposition reste 48 h.",
-    "insight": "À {city}, {label} cherchent une histoire compatible avec la tienne.",
+    "insight": "À {city}, {label} vérifiées cherchent une histoire compatible avec la tienne.",
     "dateTooLate": "Choisis un jour à partir de demain soir : le lieu reçoit sa table la veille à 18 h.",
     "proposeFailed": "Pas envoyé. Réessaie dans un instant.",
     "proposalScreenTitle": "UNE PROPOSITION",
     "proposalScreenSub": "voie Duo · pour toi seul",
     "guardianLater": "Ange gardien facultatif, choisi par toi.",
-    "mustAccept": "{name} doit accepter le créneau."
+    "mustAccept": "{name} doit accepter le créneau.",
+    "proposalSubV58": "{pet} propose un duo avec {initial}. · {initial}. n’a pas encore répondu."
   },
   "egg": {
     "title": "CLIN D’ŒIL",
@@ -1714,10 +1725,10 @@
     "venue": "Le lieu",
     "venueWhat": "ton prénom et ton pet, la veille à 18 h, effacés après la sortie",
     "band": "Ta bande",
-    "bandWhat": "la même chose, et vos messages",
+    "bandWhat": "ton prénom, ton pet, ta tranche d’âge, ta carte et vos messages",
     "nobody": "Personne",
     "nobodyWhat": "tes votes, ta position, ton âge exact, ce que tu cherches ; l’indice « projet compatible » seulement si vous l’activez tous les deux en duo",
-    "promise": "Ton orientation et ce que tu cherches ne sont montrés à personne. Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui.",
+    "promise": "Ton orientation et ce que tu cherches ne sont montrés à personne. Seule ta personne de duo le sait, quand vous avez dit oui tous les deux. Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui.",
     "discretion": "Réglages de discrétion",
     "discreet": "Mode discret",
     "discreetOff": "tu as choisi « normal » à l’inscription · discret : icône « Agenda », notifications « Rappel »",
@@ -1734,7 +1745,7 @@
     "sensitive": "Données sensibles (art. 9)",
     "consentGiven": "Accord donné le {day}",
     "consentNone": "Aucun accord donné",
-    "consentWhat": "qui tu veux rencontrer, type d’histoire",
+    "consentWhat": "qui tu veux rencontrer, type d’histoire, âge pour une histoire, horizon pour les enfants",
     "withdraw": "Retirer mon accord et effacer ces réponses",
     "retention": "Ce qu’on garde, et combien de temps",
     "selfie": "Selfie de vérification",
@@ -1745,7 +1756,16 @@
     "positionValue": "jamais demandée ; en cas de demande d’aide, seul le lieu de la sortie est envoyé",
     "export": "Télécharger mes données",
     "exportValue": "sous 48 h",
-    "exportAsked": "demandé · sous 48 h"
+    "exportAsked": "demandé · sous 48 h",
+    "reliability": "Ta fiabilité",
+    "avoided": "Contacts évités",
+    "avoidedWhat": "personne : comparés en privé, jamais montrés",
+    "cards": "Tes cartes",
+    "cardsWhat": "les personnes à qui tu les envoies : jamais un visage, un prénom ou le pet de quelqu’un d’autre",
+    "duo": "Ton duo",
+    "duoWhat": "d’abord l’espèce de ton pet et ton initiale ; ta carte et ton prénom quand vous avez dit oui tous les deux ; ton visage, aux visages",
+    "guardian": "Ton ange gardien",
+    "guardianWhat": "le lieu et l’heure de ta sortie, ton arrivée, ton « tout va bien » ou ta demande d’aide ; jamais ton groupe ni tes messages ; ta position n’est jamais demandée"
   },
   "report5": {
     "title": "SIGNALER",
@@ -1755,7 +1775,7 @@
     "sms": "par SMS",
     "violences": "violences",
     "callA11y": "Appeler le {n}, {what}",
-    "callback": "Être rappelé par l’équipe · moins d’1 h les soirs de sortie",
+    "callback": "Pendant la sortie : « Besoin d’aide » (appui long). Quelqu’un de l’équipe te rappelle en quelques minutes.",
     "callbackAsked": "C’est demandé : l’équipe te rappelle",
     "group": {
       "during": "Pendant la sortie",
@@ -1783,7 +1803,8 @@
     "send": "Relire et envoyer",
     "pick": "Choisis un motif",
     "noTarget": "Signale depuis la sortie, le chat ou le duo concerné",
-    "sent": "Envoyé. L’équipe s’en occupe."
+    "sent": "Envoyé. L’équipe s’en occupe.",
+    "delays": "Deux délais : une demande d’aide, en quelques minutes. Un signalement reçoit une réponse de l’équipe en moins d’1 h pendant toute ta sortie."
   },
   "delete5": {
     "title": "SUPPRIMER",
@@ -1892,8 +1913,8 @@
     "duoText": "Jusqu’à {n} duos actifs.",
     "plus": "Blowy+",
     "perMonth": "{price} par mois",
-    "plusText": "Toutes tes sorties, 1 par semaine. Apple Pay, sans engagement.",
-    "venue": "Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre). Une place vide après la veille est reversée au lieu (3 € si elle était offerte ou dans Blowy+).",
+    "plusText": "Toutes tes sorties, 1 par semaine. Apple Pay, sans engagement. Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie du mois.",
+    "venue": "Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Pour ta sécurité : toujours possible, sans pénalité, place remboursée. « Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité. Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée. Place laissée vide après la veille 18 h : le lieu est toujours payé ; par la place du participant en cas d’imprévu ou d’absence, par Blowy si elle est remboursée (sécurité, « je connais quelqu’un ici ») ou offerte. Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy. Quand la personne que tu invites vient à sa 1re sortie, ta prochaine sortie est offerte (1 par mois au plus).",
     "never": "Jamais à vendre : de la visibilité, de la priorité.",
     "accessories": "Les accessoires de ton pet se gagnent avec les souvenirs.",
     "seePlus": "Voir Blowy+"
@@ -2182,5 +2203,15 @@
       "review": "Une personne de l’équipe regarde, en privé. Rien n’est montré à la personne.",
       "safety": "Tu es parti·e pour raison de sécurité : remboursé·e, sans pénalité. Une personne de l’équipe regarde avec toi."
     }
-  }
+  },
+  "notComing": {
+    "label": "Si tu ne viens plus",
+    "safety": "Je ne viens pas, pour ma sécurité",
+    "safetySub": "Pour ta sécurité : toujours possible, sans pénalité, place remboursée. Sans motif à donner.",
+    "knows": "Je connais quelqu’un ici",
+    "knowsSub": "« Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité.",
+    "emergency": "Imprévu · je ne le sens pas",
+    "emergencySub": "Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée."
+  },
+  "tarifs5": {}
 }

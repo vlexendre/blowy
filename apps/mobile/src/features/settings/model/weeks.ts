@@ -9,7 +9,8 @@ const DAY = 86_400_000;
 export function nextMondays(now: number, count = 2): number[] {
   const d = new Date(now);
   const dow = (d.getUTCDay() + 6) % 7; // 0 = lundi
-  const monday = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - dow * DAY + 7 * DAY;
+  const monday =
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - dow * DAY + 7 * DAY;
   return Array.from({ length: count }, (_, i) => monday + i * 7 * DAY);
 }
 
@@ -17,10 +18,15 @@ export function nextMondays(now: number, count = 2): number[] {
 export function isoWeekKey(t: number): string {
   const d = new Date(t);
   const day = (d.getUTCDay() + 6) % 7;
-  const thursday = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - day * DAY + 3 * DAY;
+  const thursday =
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - day * DAY + 3 * DAY;
   const year = new Date(thursday).getUTCFullYear();
   const jan4 = Date.UTC(year, 0, 4);
-  const week = 1 + Math.round((thursday - (jan4 - ((new Date(jan4).getUTCDay() + 6) % 7) * DAY + 3 * DAY)) / (7 * DAY));
+  const week =
+    1 +
+    Math.round(
+      (thursday - (jan4 - ((new Date(jan4).getUTCDay() + 6) % 7) * DAY + 3 * DAY)) / (7 * DAY),
+    );
   return `${year}-W${String(week).padStart(2, '0')}`;
 }
 
@@ -29,4 +35,5 @@ export function alternateMondays(fromMonday: number, count = 13): number[] {
   return Array.from({ length: count }, (_, i) => fromMonday + i * 14 * DAY);
 }
 
-export const alternateWeekKeys = (fromMonday: number, count = 13): string[] => alternateMondays(fromMonday, count).map(isoWeekKey);
+export const alternateWeekKeys = (fromMonday: number, count = 13): string[] =>
+  alternateMondays(fromMonday, count).map(isoWeekKey);

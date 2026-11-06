@@ -218,6 +218,7 @@ function ProposalCard({
   large?: boolean;
 }) {
   const answer = useAnswerProposal();
+  const myPet = useMyPet();
   const tile = large ? 64 : 60;
   return (
     <CardV5 style={{ padding: large ? 14 : 12, gap: 10 }}>
@@ -238,11 +239,14 @@ function ProposalCard({
           <DisplayText size={22} heading={false}>
             {t('duo.proposalTitle', {
               species: tDynamic(`duo.speciesIndef.${p.species}`),
-              initial: p.otherInitial,
+              initial: p.otherInitial.replace(/\.$/, ''),
             })}
           </DisplayText>
           <BodyText size={12} weight={700} color={v5.inkSoft}>
-            {t('duo.proposalSub')}
+            {t('duo.proposalSubV58', {
+              pet: myPet.data?.name ?? '',
+              initial: p.otherInitial.replace(/\.$/, ''),
+            })}
           </BodyText>
         </View>
       </View>

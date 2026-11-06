@@ -17,7 +17,10 @@ export interface PaymentRequest {
   recurring?: boolean;
 }
 
-export type PaymentOutcome = { status: 'PAID' } | { status: 'CANCELED' } | { status: 'FAILED'; reason: 'DECLINED' | 'UNAVAILABLE' | 'PROVIDER_MISMATCH' | 'UNKNOWN' };
+export type PaymentOutcome =
+  | { status: 'PAID' }
+  | { status: 'CANCELED' }
+  | { status: 'FAILED'; reason: 'DECLINED' | 'UNAVAILABLE' | 'PROVIDER_MISMATCH' | 'UNKNOWN' };
 
 export interface PaymentPort {
   readonly kind: PaymentProvider;

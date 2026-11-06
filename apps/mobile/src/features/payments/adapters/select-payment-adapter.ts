@@ -15,8 +15,15 @@ export interface PaymentEnv {
   appleMerchantId?: string;
 }
 
-export function selectPaymentAdapter(env: PaymentEnv, sheet: StripeSheet | null): PaymentPort | null {
-  if (env.stripePublishableKey && sheet) return new StripePaymentAdapter(sheet, { publishableKey: env.stripePublishableKey, merchantIdentifier: env.appleMerchantId });
+export function selectPaymentAdapter(
+  env: PaymentEnv,
+  sheet: StripeSheet | null,
+): PaymentPort | null {
+  if (env.stripePublishableKey && sheet)
+    return new StripePaymentAdapter(sheet, {
+      publishableKey: env.stripePublishableKey,
+      merchantIdentifier: env.appleMerchantId,
+    });
   if (env.blowyEnv === 'production') return null;
   return new LocalDemoPaymentAdapter(env.blowyEnv);
 }

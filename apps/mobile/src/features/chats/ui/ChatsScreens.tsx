@@ -28,6 +28,7 @@ import {
   Sprite,
   TabScreen,
   Tap,
+  VenueWelcome,
   v5,
   v5Alpha,
   type PortraitKey,
@@ -291,24 +292,7 @@ function Messages({ id, footer }: { id: string; footer?: string }) {
       {list.map((d) => {
         if (d.kind === 'system')
           return d.body ? (
-            <View
-              key={d.key}
-              style={{
-                alignSelf: 'stretch',
-                backgroundColor: v5.peachLight,
-                borderRadius: 16,
-                paddingVertical: 10,
-                paddingHorizontal: 12,
-                gap: 2,
-              }}
-            >
-              <BodyText size={11} weight={800} ls={0.14} upper color={v5.inkSoft}>
-                {t('chats.venueWelcome')}
-              </BodyText>
-              <BodyText size={14} weight={600} lh={1.4}>
-                {d.body}
-              </BodyText>
-            </View>
+            <VenueWelcome key={d.key} title={t('chats.venueWelcome')} text={d.body} />
           ) : null;
         if (!d.body) return null;
         if (d.mine || !d.author) return <Bubble key={d.key} text={d.body} mine={d.mine} />;
@@ -360,6 +344,7 @@ function GroupChat({ c, menu }: { c: ConversationView; menu: boolean }) {
   const [draft, setDraft] = useState('');
   const members = o.data?.members ?? [];
   const lock = o.data ? schedule(o.data).lock : '';
+  const now = useNow();
   return (
     <ChatScreen
       testID="group-chat"
@@ -487,6 +472,13 @@ function GroupChat({ c, menu }: { c: ConversationView; menu: boolean }) {
       }
     >
       <IcebreakerCard o={o.data} />
+      {o.data && !o.data.venue && now < Date.parse(o.data.timeline.lockAt) ? (
+        <VenueWelcome
+          title={t('chats.venueWelcome')}
+          text={t('chats.venueSoon', { lock })}
+          quoted={false}
+        />
+      ) : null}
       <Messages
         id={c.id}
         footer={t('chats.nothingRequired', {
@@ -649,7 +641,9 @@ function PersonChat({ id, c }: { id: string; c: ConversationView | undefined }) 
             >
               <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: v5.lime }} />
               <BodyText size={14} weight={800} color={v5.white}>
-                {t('chats.proposeDate')}
+                {duo.currentDate?.status === 'PROPOSED' && duo.currentDate.proposedByMe
+                  ? t('chats.datePending', { name })
+                  : t('chats.proposeDate')}
               </BodyText>
               <View style={{ marginLeft: 'auto' }}>
                 <Glyph name="chevron" size={14} color={v5.white} />

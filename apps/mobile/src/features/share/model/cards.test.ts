@@ -10,7 +10,9 @@ describe('cartes de partage', () => {
     expect(newPeopleCount(1, 3)).toBe(0);
   });
   it('lieu citable 12 h après la fin', () => {
-    expect(new Date(venueCitableAt('2026-11-12T20:30:00.000Z')).toISOString()).toBe('2026-11-13T08:30:00.000Z');
+    expect(new Date(venueCitableAt('2026-11-12T20:30:00.000Z')).toISOString()).toBe(
+      '2026-11-13T08:30:00.000Z',
+    );
   });
   it('garde-fou de route', () => {
     expect(isShareCard('soiree')).toBe(true);

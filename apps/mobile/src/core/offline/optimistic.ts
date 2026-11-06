@@ -23,10 +23,23 @@ export type OptimisticEvent<T> =
   | { type: 'fail'; key: string; commandId: string; error: string }
   | { type: 'clear'; key: string };
 
-export function reduceOptimistic<T>(state: OptimisticState<T>, ev: OptimisticEvent<T>): OptimisticState<T> {
+export function reduceOptimistic<T>(
+  state: OptimisticState<T>,
+  ev: OptimisticEvent<T>,
+): OptimisticState<T> {
   switch (ev.type) {
     case 'start':
-      return { ...state, [ev.key]: { commandId: ev.commandId, key: ev.key, phase: 'pending', result: null, error: null, startedAt: ev.now } };
+      return {
+        ...state,
+        [ev.key]: {
+          commandId: ev.commandId,
+          key: ev.key,
+          phase: 'pending',
+          result: null,
+          error: null,
+          startedAt: ev.now,
+        },
+      };
     case 'queued': {
       const e = state[ev.key];
       return e ? { ...state, [ev.key]: { ...e, phase: 'queued' } } : state;
@@ -35,7 +48,10 @@ export function reduceOptimistic<T>(state: OptimisticState<T>, ev: OptimisticEve
       const e = state[ev.key];
       // Réponse d'une commande périmée (une autre a démarré depuis) : ignorée.
       if (!e || e.commandId !== ev.commandId) return state;
-      return { ...state, [ev.key]: { ...e, phase: ev.corrected ? 'corrected' : 'confirmed', result: ev.result } };
+      return {
+        ...state,
+        [ev.key]: { ...e, phase: ev.corrected ? 'corrected' : 'confirmed', result: ev.result },
+      };
     }
     case 'fail': {
       const e = state[ev.key];
@@ -53,7 +69,10 @@ export function reduceOptimistic<T>(state: OptimisticState<T>, ev: OptimisticEve
  * Le résultat serveur « corrige » l'affichage quand il diffère de ce que l'UI a annoncé
  * (refus du pet, gain nul car plafond atteint…).
  */
-export function isCorrection(expected: { outcome: string; gainedXp: number } | null, actual: { outcome: string; gainedXp: number }): boolean {
+export function isCorrection(
+  expected: { outcome: string; gainedXp: number } | null,
+  actual: { outcome: string; gainedXp: number },
+): boolean {
   if (!expected) return false;
   return expected.outcome !== actual.outcome || expected.gainedXp !== actual.gainedXp;
 }

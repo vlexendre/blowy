@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import type { z } from 'zod';
 import { matchRoute } from './demo-fetch';
 import { DEMO_SCENARIOS, demoScenario } from './scenarios';
+import * as W from './world';
 
 const SCHEMAS: [RegExp, z.ZodType][] = [
   [/^\/v1\/me$/, C.SelfProfileSchema],
@@ -47,7 +48,12 @@ describe('mode démo : fixtures conformes aux contrats', () => {
       const s = demoScenario(name)!;
       expect(Number.isNaN(Date.parse(s.now))).toBe(false);
       for (const r of s.routes) {
-        if (r.method !== 'GET' || typeof r.respond === 'function' || typeof r.respond === 'symbol')
+        // Écritures comprises (réponses de POST/PUT décrites) ; les gestionnaires sont testés à part.
+        if (
+          typeof r.respond === 'function' ||
+          typeof r.respond === 'symbol' ||
+          r.respond === undefined
+        )
           continue;
         const schema = SCHEMAS.find(([re]) => re.test(r.path.replace(/:[a-z]+/g, 'x')))?.[1];
         if (!schema) continue;
@@ -64,6 +70,10 @@ describe('mode démo : fixtures conformes aux contrats', () => {
     expect(matchRoute(demoScenario('accueil')!.routes, 'GET', '/v1/inconnue')).toBeNull();
   });
 
+  it('liens de partage : un par type de carte, au format du serveur', () => {
+    for (const k of C.SHARE_CARD_KINDS)
+      expect(C.ShareLinkViewSchema.safeParse(W.shareLinkFor(k)).success, k).toBe(true);
+  });
   it('scénario inconnu → null', () => {
     expect(demoScenario('nope')).toBeNull();
   });

@@ -19,10 +19,19 @@ export interface PurchasesEnv {
   blowyEnv: string;
 }
 
-export function selectPurchasesAdapter(env: PurchasesEnv, api: PurchasesApi, newCommandId: () => string): PurchasesPort | null {
-  const key = env.platform === 'ios' ? env.iosKey : env.platform === 'android' ? env.androidKey : undefined;
+export function selectPurchasesAdapter(
+  env: PurchasesEnv,
+  api: PurchasesApi,
+  newCommandId: () => string,
+): PurchasesPort | null {
+  const key =
+    env.platform === 'ios' ? env.iosKey : env.platform === 'android' ? env.androidKey : undefined;
   if (key && env.platform !== 'web') {
-    return new RevenueCatPurchasesAdapter({ apiKey: key, platform: env.platform, mode: env.blowyEnv === 'production' ? 'LIVE' : 'SANDBOX' });
+    return new RevenueCatPurchasesAdapter({
+      apiKey: key,
+      platform: env.platform,
+      mode: env.blowyEnv === 'production' ? 'LIVE' : 'SANDBOX',
+    });
   }
   if (env.blowyEnv === 'production') return null;
   return new LocalDemoPurchasesAdapter(api, newCommandId);

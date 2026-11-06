@@ -28,7 +28,10 @@ describe('polices', () => {
     expect(script).toContain(`STRONG_SIZES = [${opticalSizes.strong.join(', ')}]`);
   });
   it('les instances sont mono-graisse (aucun gras synthétique) et nommées comme la famille', () => {
-    const bin = readFileSync(join(root, 'assets/fonts/BricolageGrotesque-D56.ttf'), 'latin1' as 'utf8');
+    const bin = readFileSync(
+      join(root, 'assets/fonts/BricolageGrotesque-D56.ttf'),
+      'latin1' as 'utf8',
+    );
     expect(bin.includes('BricolageGrotesque-D56')).toBe(true);
     expect(bin.includes('fvar')).toBe(false);
   });

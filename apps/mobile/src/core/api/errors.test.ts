@@ -3,7 +3,8 @@ import { BlowyApiError, isNetworkError, isRetryable, isUnavailable } from './err
 import { createApi } from './client';
 
 const res = (status: number, body: unknown) => new Response(JSON.stringify(body), { status });
-const err = (status: number, code: string, message = 'x') => new BlowyApiError(status, { code, message, requestId: 'r', retryable: status >= 500 });
+const err = (status: number, code: string, message = 'x') =>
+  new BlowyApiError(status, { code, message, requestId: 'r', retryable: status >= 500 });
 
 describe('erreurs API', () => {
   it('route absente → indisponible ; NOT_FOUND métier non', () => {
@@ -25,10 +26,21 @@ describe('erreurs API', () => {
       onUnauthenticated: () => unauth++,
       fetch: (async (_u: string, init: RequestInit) => {
         seen = new Headers(init.headers);
-        return res(401, { code: 'UNAUTHENTICATED', message: 'x', requestId: 'r', retryable: false });
+        return res(401, {
+          code: 'UNAUTHENTICATED',
+          message: 'x',
+          requestId: 'r',
+          retryable: false,
+        });
       }) as unknown as typeof fetch,
     });
-    await expect(api.raw({ method: 'POST', path: '/v1/blocks', commandId: '0f8fad5b-d9cb-469f-a165-70867728950e' })).rejects.toBeInstanceOf(BlowyApiError);
+    await expect(
+      api.raw({
+        method: 'POST',
+        path: '/v1/blocks',
+        commandId: '0f8fad5b-d9cb-469f-a165-70867728950e',
+      }),
+    ).rejects.toBeInstanceOf(BlowyApiError);
     expect(seen!.get('authorization')).toBe('Bearer tok');
     expect(seen!.get('idempotency-key')).toBe('0f8fad5b-d9cb-469f-a165-70867728950e');
     expect(unauth).toBe(1);

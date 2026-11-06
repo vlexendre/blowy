@@ -6,15 +6,43 @@
  */
 import type { Gender, LookingFor, MeetingMode, Species } from '@blowy/domain';
 
-export const ONBOARDING_STEPS = ['welcome', 'city', 'birthdate', 'gender', 'pet', 'meet', 'looking', 'consent', 'story', 'slots'] as const;
+export const ONBOARDING_STEPS = [
+  'welcome',
+  'city',
+  'birthdate',
+  'gender',
+  'pet',
+  'meet',
+  'looking',
+  'consent',
+  'story',
+  'slots',
+] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 /** Numéro affiché (1/9…9/9) ; le consentement compte comme l'étape 7 même s'il est sauté. */
-export const STEP_NUMBER: Record<Exclude<OnboardingStep, 'welcome'>, number> = { city: 1, birthdate: 2, gender: 3, pet: 4, meet: 5, looking: 6, consent: 7, story: 8, slots: 9 };
+export const STEP_NUMBER: Record<Exclude<OnboardingStep, 'welcome'>, number> = {
+  city: 1,
+  birthdate: 2,
+  gender: 3,
+  pet: 4,
+  meet: 5,
+  looking: 6,
+  consent: 7,
+  story: 8,
+  slots: 9,
+};
 export const STEP_TOTAL = 9;
 
-export type SlotKey = 'tue_evening' | 'thu_evening' | 'fri_evening' | 'sat_afternoon' | 'sun_brunch';
-export const SLOT_KEYS: readonly SlotKey[] = ['tue_evening', 'thu_evening', 'fri_evening', 'sat_afternoon', 'sun_brunch'];
+export type SlotKey =
+  'tue_evening' | 'thu_evening' | 'fri_evening' | 'sat_afternoon' | 'sun_brunch';
+export const SLOT_KEYS: readonly SlotKey[] = [
+  'tue_evening',
+  'thu_evening',
+  'fri_evening',
+  'sat_afternoon',
+  'sun_brunch',
+];
 /** Trajets affichés par la maquette ; le contrat n'accepte que 20/30/45 (`TRAVEL_MINUTES`). */
 export const TRAVEL_CHOICES = [15, 20, 30, 45] as const;
 export type TravelChoice = (typeof TRAVEL_CHOICES)[number];
@@ -55,7 +83,8 @@ export const initialDraft: OnboardingDraft = {
   inviteRef: null,
 };
 
-export const wantsStory = (d: Pick<OnboardingDraft, 'lookingFor'>): boolean => d.lookingFor === 'STORY' || d.lookingFor === 'BOTH';
+export const wantsStory = (d: Pick<OnboardingDraft, 'lookingFor'>): boolean =>
+  d.lookingFor === 'STORY' || d.lookingFor === 'BOTH';
 
 /** Étape suivante (les étapes 7–8 n'existent que pour « histoire » ; refus du consentement → créneaux). */
 export function nextStep(step: OnboardingStep, d: OnboardingDraft): OnboardingStep | 'found' {
@@ -108,7 +137,9 @@ export function isAnswered(step: OnboardingStep, d: OnboardingDraft, now: number
       // quartier est résolu à la création du compte (suggestion choisie, sinon 1ʳᵉ correspondance).
       return d.city.neighborhoodId !== null || d.city.query.trim().length >= 2;
     case 'birthdate':
-      return parseBirthDate(d.birthDate) !== null && ageOn(parseBirthDate(d.birthDate)!, now) !== null;
+      return (
+        parseBirthDate(d.birthDate) !== null && ageOn(parseBirthDate(d.birthDate)!, now) !== null
+      );
     case 'gender':
       return d.gender !== null;
     case 'pet':
@@ -131,7 +162,8 @@ export function parseBirthDate(b: OnboardingDraft['birthDate']): string | null {
   const d = Number(b.day);
   const m = Number(b.month);
   const y = Number(b.year);
-  if (!/^\d{1,2}$/.test(b.day) || !/^\d{1,2}$/.test(b.month) || !/^\d{4}$/.test(b.year)) return null;
+  if (!/^\d{1,2}$/.test(b.day) || !/^\d{1,2}$/.test(b.month) || !/^\d{4}$/.test(b.year))
+    return null;
   const dt = new Date(Date.UTC(y, m - 1, d));
   if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -146,12 +178,29 @@ export function ageOn(civilDate: string, now: number): number | null {
   return age < 0 || age > 120 ? null : age;
 }
 
-export const isMinor = (civilDate: string, now: number): boolean => (ageOn(civilDate, now) ?? 99) < 18;
+export const isMinor = (civilDate: string, now: number): boolean =>
+  (ageOn(civilDate, now) ?? 99) < 18;
 
 /** Les intentions envoyées à l'API (`PUT /v1/preferences/intentions`) ; null si incomplètes. */
-export function intentionsOf(d: OnboardingDraft): { lookingFor: LookingFor; storySeriousness: null; kidsSomeday: null; meetingMode: MeetingMode; meetGenders: Gender[]; romanceGenders: Gender[] } | null {
+export function intentionsOf(
+  d: OnboardingDraft,
+): {
+  lookingFor: LookingFor;
+  storySeriousness: null;
+  kidsSomeday: null;
+  meetingMode: MeetingMode;
+  meetGenders: Gender[];
+  romanceGenders: Gender[];
+} | null {
   if (!d.lookingFor || !d.meetingMode) return null;
   // Consentement refusé (« amitié seulement ») : on n'envoie que l'amitié (aucune donnée art. 9).
   const lookingFor: LookingFor = wantsStory(d) && d.sensitiveConsent ? d.lookingFor : 'FRIENDS';
-  return { lookingFor, storySeriousness: null, kidsSomeday: null, meetingMode: d.meetingMode, meetGenders: [], romanceGenders: lookingFor === 'FRIENDS' ? [] : d.romanceGenders };
+  return {
+    lookingFor,
+    storySeriousness: null,
+    kidsSomeday: null,
+    meetingMode: d.meetingMode,
+    meetGenders: [],
+    romanceGenders: lookingFor === 'FRIENDS' ? [] : d.romanceGenders,
+  };
 }

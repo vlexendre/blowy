@@ -5,7 +5,10 @@ import { useServices } from '../../../core/providers/services';
 import { useSession } from '../../../core/session/session-store';
 import { createSettingsRepository } from './settings.repository';
 
-export const settingsKeys = { notifications: ['settings', 'notifications'] as const, avoidance: ['settings', 'contact-avoidance'] as const };
+export const settingsKeys = {
+  notifications: ['settings', 'notifications'] as const,
+  avoidance: ['settings', 'contact-avoidance'] as const,
+};
 
 function useRepo() {
   const { api } = useServices();
@@ -14,7 +17,11 @@ function useRepo() {
 
 export function useNotificationSettings() {
   const repo = useRepo();
-  return useQuery({ queryKey: settingsKeys.notifications, queryFn: repo.notifications, enabled: useSession((s) => s.status === 'signedIn') });
+  return useQuery({
+    queryKey: settingsKeys.notifications,
+    queryFn: repo.notifications,
+    enabled: useSession((s) => s.status === 'signedIn'),
+  });
 }
 
 export function useUpdateNotificationSettings() {
@@ -22,7 +29,8 @@ export function useUpdateNotificationSettings() {
   const { newCommandId } = useServices();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: UpdateNotificationSettingsRequest) => repo.putNotifications(newCommandId(), body),
+    mutationFn: (body: UpdateNotificationSettingsRequest) =>
+      repo.putNotifications(newCommandId(), body),
     onSuccess: (v) => qc.setQueryData(settingsKeys.notifications, v),
   });
 }
@@ -30,12 +38,20 @@ export function useUpdateNotificationSettings() {
 /** Statut « éviter les personnes que je connais » (`askBeforeFirstOuting` pilote l'onboarding). */
 export function useContactAvoidance() {
   const repo = useRepo();
-  return useQuery({ queryKey: settingsKeys.avoidance, queryFn: repo.avoidance, enabled: useSession((s) => s.status === 'signedIn'), retry: false });
+  return useQuery({
+    queryKey: settingsKeys.avoidance,
+    queryFn: repo.avoidance,
+    enabled: useSession((s) => s.status === 'signedIn'),
+    retry: false,
+  });
 }
 
 export function useDeclineContactAvoidance() {
   const repo = useRepo();
   const { newCommandId } = useServices();
   const qc = useQueryClient();
-  return useMutation({ mutationFn: () => repo.declineAvoidance(newCommandId()), onSuccess: (v) => qc.setQueryData(settingsKeys.avoidance, v) });
+  return useMutation({
+    mutationFn: () => repo.declineAvoidance(newCommandId()),
+    onSuccess: (v) => qc.setQueryData(settingsKeys.avoidance, v),
+  });
 }

@@ -4,7 +4,11 @@ import { currentToken, resetSessionForTests, shouldClearOn401, useSession } from
 
 const memory = (init: Record<string, string> = {}): SecretStoragePort => {
   const m = new Map(Object.entries(init));
-  return { get: async (k) => m.get(k) ?? null, set: async (k, v) => void m.set(k, v), remove: async (k) => void m.delete(k) } as SecretStoragePort;
+  return {
+    get: async (k) => m.get(k) ?? null,
+    set: async (k, v) => void m.set(k, v),
+    remove: async (k) => void m.delete(k),
+  } as SecretStoragePort;
 };
 
 describe('session : restauration avant les requêtes (bug du banc)', () => {
@@ -15,7 +19,14 @@ describe('session : restauration avant les requêtes (bug du banc)', () => {
 
   it('currentToken attend la restauration au lieu de répondre null', async () => {
     const pending = currentToken();
-    await useSession.getState().restore(memory({ 'blowy.session.token': 'tok', 'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2099-01-01T00:00:00Z' }) }));
+    await useSession
+      .getState()
+      .restore(
+        memory({
+          'blowy.session.token': 'tok',
+          'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2099-01-01T00:00:00Z' }),
+        }),
+      );
     await expect(pending).resolves.toBe('tok');
   });
 
@@ -27,7 +38,14 @@ describe('session : restauration avant les requêtes (bug du banc)', () => {
   });
 
   it('session expirée → déconnecté', async () => {
-    await useSession.getState().restore(memory({ 'blowy.session.token': 'tok', 'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2000-01-01T00:00:00Z' }) }));
+    await useSession
+      .getState()
+      .restore(
+        memory({
+          'blowy.session.token': 'tok',
+          'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2000-01-01T00:00:00Z' }),
+        }),
+      );
     expect(useSession.getState().status).toBe('signedOut');
   });
 });

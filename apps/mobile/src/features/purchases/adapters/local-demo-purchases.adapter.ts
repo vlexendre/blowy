@@ -4,7 +4,12 @@
  * affiche « Démo locale » à la place). L'achat appelle POST /v1/purchases/local-demo, qui passe
  * par la même réconciliation serveur que la production. Refusé par le serveur hors local_demo.
  */
-import type { Offerings, PurchaseOutcome, PurchasesPort, StorePackage } from '../model/purchases.port';
+import type {
+  Offerings,
+  PurchaseOutcome,
+  PurchasesPort,
+  StorePackage,
+} from '../model/purchases.port';
 import type { PurchasesApi } from '../api/purchases.api';
 
 const LOCAL_DEMO_PRICE_LABEL = ''; // volontairement vide : l'UI montre l'étiquette « Démo locale » (texte externalisé)
@@ -34,7 +39,13 @@ export class LocalDemoPurchasesAdapter implements PurchasesPort {
       offeringId: 'local_demo',
       productId: p.id,
       kind: p.kind === 'SUBSCRIPTION' ? 'SUBSCRIPTION' : 'CONSUMABLE',
-      period: /weekly$/.test(p.id) ? 'WEEKLY' : /monthly$/.test(p.id) ? 'MONTHLY' : /annual$/.test(p.id) ? 'ANNUAL' : 'OTHER',
+      period: /weekly$/.test(p.id)
+        ? 'WEEKLY'
+        : /monthly$/.test(p.id)
+          ? 'MONTHLY'
+          : /annual$/.test(p.id)
+            ? 'ANNUAL'
+            : 'OTHER',
       title: p.id,
       priceString: LOCAL_DEMO_PRICE_LABEL,
       price: 0,
@@ -50,7 +61,9 @@ export class LocalDemoPurchasesAdapter implements PurchasesPort {
     if (!this.userId) return { status: 'NOT_AVAILABLE', reason: 'NOT_IDENTIFIED' };
     await this.api.localDemo(
       this.newCommandId(),
-      pkg.kind === 'SUBSCRIPTION' ? { action: 'SUBSCRIBE', productId: pkg.productId, trial: false } : { action: 'BUY_COINS', productId: pkg.productId },
+      pkg.kind === 'SUBSCRIPTION'
+        ? { action: 'SUBSCRIBE', productId: pkg.productId, trial: false }
+        : { action: 'BUY_COINS', productId: pkg.productId },
     );
     this.listeners.forEach((l) => l());
     return { status: 'PURCHASED' };

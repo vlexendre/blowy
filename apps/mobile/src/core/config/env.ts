@@ -13,10 +13,17 @@ const EnvSchema = z.object({
   revenueCatIosKey: z.string().optional(),
   revenueCatAndroidKey: z.string().optional(),
   /** Clé PUBLIABLE Stripe (pk_…) : publique par construction, jamais une clé secrète (sk_/rk_ refusées). */
-  stripePublishableKey: z.string().regex(/^pk_(test|live)_/).optional(),
+  stripePublishableKey: z
+    .string()
+    .regex(/^pk_(test|live)_/)
+    .optional(),
   /** Identifiant marchand Apple Pay (merchant.…), public. */
   appleMerchantId: z.string().optional(),
-  firebase: z.object({ apiKey: z.string().optional(), projectId: z.string().optional(), appId: z.string().optional() }),
+  firebase: z.object({
+    apiKey: z.string().optional(),
+    projectId: z.string().optional(),
+    appId: z.string().optional(),
+  }),
 });
 export type AppEnv = z.infer<typeof EnvSchema>;
 
@@ -57,4 +64,5 @@ export const env: AppEnv = readEnv({
 export const isProduction = env.blowyEnv === 'production';
 
 /** Connexion locale (comptes de démo du seed) : jamais en production, quel que soit le réglage. */
-export const localAuthEnabled = (e: Pick<AppEnv, 'blowyEnv' | 'authMode'>): boolean => e.blowyEnv !== 'production' && e.authMode === 'local';
+export const localAuthEnabled = (e: Pick<AppEnv, 'blowyEnv' | 'authMode'>): boolean =>
+  e.blowyEnv !== 'production' && e.authMode === 'local';

@@ -25,4 +25,5 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
 ];
 
 /** Clé locale saisie à la main : même règle que l'API (`[a-z0-9._-]{3,64}`). */
-export const isValidLocalKey = (k: string): boolean => /^[a-z0-9._-]{1,64}$/.test(k.trim().toLowerCase());
+export const isValidLocalKey = (k: string): boolean =>
+  /^[a-z0-9._-]{1,64}$/.test(k.trim().toLowerCase());

@@ -31,7 +31,11 @@ export function useWeek() {
 
 export function useOuting(id: string | null | undefined) {
   const repo = useOutingsRepository();
-  return useQuery({ queryKey: outingKeys.outing(id ?? ''), queryFn: () => repo.outing(id!), enabled: useSignedIn() && !!id });
+  return useQuery({
+    queryKey: outingKeys.outing(id ?? ''),
+    queryFn: () => repo.outing(id!),
+    enabled: useSignedIn() && !!id,
+  });
 }
 
 /** Sortie de la semaine (ma place) : semaine → sortie. */
@@ -43,22 +47,39 @@ export function useMyOuting() {
 
 export function useVotes(id: string | null | undefined) {
   const repo = useOutingsRepository();
-  return useQuery({ queryKey: outingKeys.votes(id ?? ''), queryFn: () => repo.votes(id!), enabled: useSignedIn() && !!id });
+  return useQuery({
+    queryKey: outingKeys.votes(id ?? ''),
+    queryFn: () => repo.votes(id!),
+    enabled: useSignedIn() && !!id,
+  });
 }
 
 export function useCancelPreview(id: string | null | undefined) {
   const repo = useOutingsRepository();
-  return useQuery({ queryKey: outingKeys.preview(id ?? ''), queryFn: () => repo.cancelPreview(id!), enabled: useSignedIn() && !!id });
+  return useQuery({
+    queryKey: outingKeys.preview(id ?? ''),
+    queryFn: () => repo.cancelPreview(id!),
+    enabled: useSignedIn() && !!id,
+  });
 }
 
 export function useReliability() {
   const repo = useOutingsRepository();
-  return useQuery({ queryKey: outingKeys.reliability, queryFn: repo.reliability, enabled: useSignedIn() });
+  return useQuery({
+    queryKey: outingKeys.reliability,
+    queryFn: repo.reliability,
+    enabled: useSignedIn(),
+  });
 }
 
 export function useTeam() {
   const repo = useOutingsRepository();
-  return useQuery({ queryKey: outingKeys.team, queryFn: repo.team, enabled: useSignedIn(), retry: false });
+  return useQuery({
+    queryKey: outingKeys.team,
+    queryFn: repo.team,
+    enabled: useSignedIn(),
+    retry: false,
+  });
 }
 
 function useInvalidateOuting(id: string) {
@@ -73,7 +94,10 @@ export function useAcceptSeat(id: string) {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const invalidate = useInvalidateOuting(id);
-  return useMutation({ mutationFn: (funding: 'AUTO' | 'PAY' = 'AUTO') => repo.accept(id, newCommandId(), funding), onSuccess: invalidate });
+  return useMutation({
+    mutationFn: (funding: 'AUTO' | 'PAY' = 'AUTO') => repo.accept(id, newCommandId(), funding),
+    onSuccess: invalidate,
+  });
 }
 
 export function useDeclineSeat(id: string) {
@@ -87,41 +111,62 @@ export function useCancelSeat(id: string) {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const invalidate = useInvalidateOuting(id);
-  return useMutation({ mutationFn: (kind: 'CANT_MAKE_IT' | 'SAFETY' | 'EMERGENCY') => repo.cancel(id, kind, newCommandId()), onSuccess: invalidate });
+  return useMutation({
+    mutationFn: (kind: 'CANT_MAKE_IT' | 'SAFETY' | 'EMERGENCY') =>
+      repo.cancel(id, kind, newCommandId()),
+    onSuccess: invalidate,
+  });
 }
 
 export function useKnowsSomeone(id: string) {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const invalidate = useInvalidateOuting(id);
-  return useMutation({ mutationFn: (userId: string) => repo.knowsSomeone(id, userId, newCommandId()), onSuccess: invalidate });
+  return useMutation({
+    mutationFn: (userId: string) => repo.knowsSomeone(id, userId, newCommandId()),
+    onSuccess: invalidate,
+  });
 }
 
 export function useCheckIn(id: string) {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const invalidate = useInvalidateOuting(id);
-  return useMutation({ mutationFn: (body: CheckInRequest) => repo.checkIn(id, body, newCommandId()), onSuccess: invalidate });
+  return useMutation({
+    mutationFn: (body: CheckInRequest) => repo.checkIn(id, body, newCommandId()),
+    onSuccess: invalidate,
+  });
 }
 
 export function useSubmitVotes(id: string) {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const qc = useQueryClient();
-  return useMutation({ mutationFn: (choices: Record<string, VoteChoice>) => repo.submitVotes(id, choices, newCommandId()), onSuccess: () => void qc.invalidateQueries({ queryKey: outingKeys.votes(id) }) });
+  return useMutation({
+    mutationFn: (choices: Record<string, VoteChoice>) =>
+      repo.submitVotes(id, choices, newCommandId()),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: outingKeys.votes(id) }),
+  });
 }
 
 export function useCreateTeam() {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const qc = useQueryClient();
-  return useMutation({ mutationFn: () => repo.createTeam(newCommandId()), onSuccess: () => void qc.invalidateQueries({ queryKey: outingKeys.team }) });
+  return useMutation({
+    mutationFn: () => repo.createTeam(newCommandId()),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: outingKeys.team }),
+  });
 }
 
 /** Mes sorties passées (`GET /v1/outings/history`) : Blowy+ « tes sorties ce mois ». */
 export function useOutingHistory() {
   const repo = useOutingsRepository();
-  return useQuery({ queryKey: ['outings', 'history'] as const, queryFn: repo.history, enabled: useSignedIn() });
+  return useQuery({
+    queryKey: ['outings', 'history'] as const,
+    queryFn: repo.history,
+    enabled: useSignedIn(),
+  });
 }
 
 /** V5.5 (D-061) : « sortir quand même, en amitié » cette semaine après l'état honnête. */
@@ -129,5 +174,9 @@ export function useFriendsThisWeek() {
   const repo = useOutingsRepository();
   const { newCommandId } = useServices();
   const qc = useQueryClient();
-  return useMutation({ mutationFn: (weekKey: string) => repo.request(weekKey, { mode: 'FRIENDS_THIS_WEEK' }, newCommandId()), onSuccess: () => void qc.invalidateQueries({ queryKey: outingKeys.week }) });
+  return useMutation({
+    mutationFn: (weekKey: string) =>
+      repo.request(weekKey, { mode: 'FRIENDS_THIS_WEEK' }, newCommandId()),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: outingKeys.week }),
+  });
 }

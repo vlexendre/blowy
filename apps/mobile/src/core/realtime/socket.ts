@@ -55,7 +55,12 @@ export class RealtimeClient {
     if (!token || this.stopped) return;
     this.deps.onStatus('connecting');
     // Reconnexion gérée ici (backoff + jeton rafraîchi), pas par socket.io.
-    const s = io(this.deps.url, { path: '/v1/ws', transports: ['websocket'], auth: { token }, reconnection: false });
+    const s = io(this.deps.url, {
+      path: '/v1/ws',
+      transports: ['websocket'],
+      auth: { token },
+      reconnection: false,
+    });
     this.socket = s;
     s.on('connect', () => {
       this.attempt = 0;
@@ -84,15 +89,21 @@ export class RealtimeClient {
     const s = this.socket;
     if (!s?.connected) return Promise.resolve();
     return new Promise((resolve) => {
-      s.emit('resync', { room, sinceCursor: this.cursors.cursors[room] ?? null }, (r: { ok?: boolean; events?: unknown[] }) => {
-        if (r?.ok && Array.isArray(r.events)) {
-          const parsed = r.events.map((e) => WsEnvelopeSchema.safeParse(e)).flatMap((x) => (x.success ? [x.data] : []));
-          const { state, fresh } = applyBatch(this.cursors, room, parsed);
-          this.cursors = state;
-          if (fresh.length) this.deps.onEvents(room, fresh);
-        }
-        resolve();
-      });
+      s.emit(
+        'resync',
+        { room, sinceCursor: this.cursors.cursors[room] ?? null },
+        (r: { ok?: boolean; events?: unknown[] }) => {
+          if (r?.ok && Array.isArray(r.events)) {
+            const parsed = r.events
+              .map((e) => WsEnvelopeSchema.safeParse(e))
+              .flatMap((x) => (x.success ? [x.data] : []));
+            const { state, fresh } = applyBatch(this.cursors, room, parsed);
+            this.cursors = state;
+            if (fresh.length) this.deps.onEvents(room, fresh);
+          }
+          resolve();
+        },
+      );
     });
   }
 }

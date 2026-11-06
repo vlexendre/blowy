@@ -47,10 +47,13 @@ export const useSession = create<SessionStore>((set) => ({
     try {
       const [token, meta] = await Promise.all([secret.get(TOKEN_KEY), secret.get(META_KEY)]);
       const m = meta ? (JSON.parse(meta) as { userId: string; expiresAt: string }) : null;
-      if (token && m && new Date(m.expiresAt).getTime() > now) set({ status: 'signedIn', token, userId: m.userId, expiresAt: m.expiresAt });
-      else if (useSession.getState().status === 'unknown') set({ status: 'signedOut', token: null, userId: null, expiresAt: null });
+      if (token && m && new Date(m.expiresAt).getTime() > now)
+        set({ status: 'signedIn', token, userId: m.userId, expiresAt: m.expiresAt });
+      else if (useSession.getState().status === 'unknown')
+        set({ status: 'signedOut', token: null, userId: null, expiresAt: null });
     } catch {
-      if (useSession.getState().status === 'unknown') set({ status: 'signedOut', token: null, userId: null, expiresAt: null });
+      if (useSession.getState().status === 'unknown')
+        set({ status: 'signedOut', token: null, userId: null, expiresAt: null });
     } finally {
       resolveRestored();
     }

@@ -13,13 +13,18 @@ describe('reportRequest', () => {
     }
   });
   it('incident sur place : sortie seule acceptée, sans blocage', () => {
-    expect(reportRequest('onSite', { outingId: O }, true)).toMatchObject({ target: { outing: { id: O } }, alsoBlock: false });
+    expect(reportRequest('onSite', { outingId: O }, true)).toMatchObject({
+      target: { outing: { id: O } },
+      alsoBlock: false,
+    });
     expect(reportRequest('harassment', { outingId: O }, true)).toBeNull();
   });
   it('sans contexte : aucune cible inventée', () => {
     expect(reportRequest('other', {}, false)).toBeNull();
   });
   it('sécurité : sortie de sécurité immédiate', () => {
-    expect(reportRequest('sexualPressure', { outingId: O, userId: U }, false)?.safetyExit).toBe(true);
+    expect(reportRequest('sexualPressure', { outingId: O, userId: U }, false)?.safetyExit).toBe(
+      true,
+    );
   });
 });

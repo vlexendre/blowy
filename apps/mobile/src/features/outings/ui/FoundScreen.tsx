@@ -31,6 +31,8 @@ import { LoadingScreen, OfflineScreen } from '../../system';
 import { useMyOuting } from '../api/hooks';
 import { fundingKind, headline, schedule } from '../model/presenters';
 import { OutingGroup, travelLine } from './parts';
+import { firstOffSaturday, onFreeWeekend } from '../model/weekend';
+import { dayShort, weekdayName } from '../../../core/format/dates';
 
 export { slotTile, toStripSlots } from './parts';
 
@@ -57,6 +59,7 @@ export function FoundScreen() {
       maxTravel={prefs.data?.maxTravelMinutes}
       free={free}
       calm={prefs.data?.ambiance === 'CALM'}
+      weekendFrom={prefs.data?.everyOtherWeekendOffFrom ?? null}
     />
   );
 }
@@ -73,6 +76,7 @@ export function FoundView({
   maxTravel,
   free,
   calm,
+  weekendFrom = null,
 }: {
   o: OutingView;
   species: Species;
@@ -81,18 +85,22 @@ export function FoundView({
   maxTravel?: number;
   free: boolean;
   calm?: boolean;
+  weekendFrom?: string | null;
 }) {
   const h = headline(o, tDynamic(`activity.${o.activity}`));
   const s = schedule(o);
   const away =
     cityOf(home) !== cityOf(o.neighborhood.name) || cityOf(o.neighborhood.name) !== LAUNCH_CITY;
   const travel = travelLine(o, home);
-  const title = away
-    ? t('found.awayTitleV55', {
-        city: cityOf(o.neighborhood.name).toUpperCase(),
-        pet: petName.toUpperCase(),
-      })
-    : t('found.titleV55', { pet: petName.toUpperCase() });
+  const weekend = weekendFrom && onFreeWeekend(o.startsAt, weekendFrom) ? weekendFrom : null;
+  const title = weekend
+    ? t('found.weekendTitle', { city: cityOf(o.neighborhood.name).toUpperCase() })
+    : away
+      ? t('found.awayTitleV55', {
+          city: cityOf(o.neighborhood.name).toUpperCase(),
+          pet: petName.toUpperCase(),
+        })
+      : t('found.titleV55', { pet: petName.toUpperCase() });
   return (
     <Frame pad={[56, 18, 22]} testID={away ? 'found-away' : 'found'}>
       <PopIn
@@ -116,7 +124,7 @@ export function FoundView({
         delayMs={50}
         style={{ marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 10 }}
       >
-        {away ? null : (
+        {away && !weekend ? null : (
           <View
             style={{
               width: 40,
@@ -135,7 +143,14 @@ export function FoundView({
         </DisplayText>
       </PopIn>
       <BodyText size={13} weight={600} color={v5.inkSoft} style={{ marginTop: 6 }}>
-        {calm ? `${t('found.subtitle')} ${t('found.calmAsked')}` : t('found.subtitle')}
+        {weekend
+          ? t('found.weekendSub', {
+              from: dayShort(firstOffSaturday(weekend)),
+              day: weekdayName(o.startsAt),
+            })
+          : calm
+            ? `${t('found.subtitle')} ${t('found.calmAsked')}`
+            : t('found.subtitle')}
       </BodyText>
       <PopIn delayMs={100} style={{ marginTop: 10 }}>
         <CardV5 style={{ padding: 14, gap: 10 }}>

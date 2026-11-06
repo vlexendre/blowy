@@ -1,5 +1,13 @@
 /** Hooks TanStack Query de la feature compte. */
-import type { MatchPreferences, PrivacySettings, RecordConsentsRequest, UpdateProfileRequest, PrivacySettingsV5, IntentionsV5Dto, OutingPreferencesV5Dto } from '@blowy/api-contract';
+import type {
+  MatchPreferences,
+  PrivacySettings,
+  RecordConsentsRequest,
+  UpdateProfileRequest,
+  PrivacySettingsV5,
+  IntentionsV5Dto,
+  OutingPreferencesV5Dto,
+} from '@blowy/api-contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { useMemo } from 'react';
@@ -9,11 +17,24 @@ import { useSession } from '../../../core/session/session-store';
 import type { AuthProviderKind } from '../../../core/ports/auth';
 import { createAccountRepository } from './account.repository';
 
-export const accountKeys = { me: ['me'] as const, consents: ['consents'] as const, sessions: ['sessions'] as const };
+export const accountKeys = {
+  me: ['me'] as const,
+  consents: ['consents'] as const,
+  sessions: ['sessions'] as const,
+};
 
 export function useAccountRepository() {
   const { api } = useServices();
-  return useMemo(() => createAccountRepository(api, Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web' ? Platform.OS : 'other'), [api]);
+  return useMemo(
+    () =>
+      createAccountRepository(
+        api,
+        Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
+          ? Platform.OS
+          : 'other',
+      ),
+    [api],
+  );
 }
 
 export function useMe() {
@@ -28,7 +49,8 @@ export function useSignIn() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (arg: AuthProviderKind | { kind: 'local'; demoKey: string }) => {
-      const cred = typeof arg === 'string' ? await auth.signIn(arg) : await auth.signIn('local', arg.demoKey);
+      const cred =
+        typeof arg === 'string' ? await auth.signIn(arg) : await auth.signIn('local', arg.demoKey);
       const session = await repo.signIn(cred, Constants.expoConfig?.version ?? '0.0.0');
       await useSession.getState().save(secrets, session);
       await qc.invalidateQueries({ queryKey: accountKeys.me });
@@ -52,7 +74,10 @@ export function useSignOut() {
 }
 
 /** Commande avec commandId stable par appel logique (conservé si l'utilisateur réessaie). */
-function useCommand<TArg, TRes>(fn: (commandId: string, arg: TArg) => Promise<TRes>, onDone?: (r: TRes) => void) {
+function useCommand<TArg, TRes>(
+  fn: (commandId: string, arg: TArg) => Promise<TRes>,
+  onDone?: (r: TRes) => void,
+) {
   const { newCommandId } = useServices();
   return useMutation({ mutationFn: (arg: TArg) => fn(newCommandId(), arg), onSuccess: onDone });
 }
@@ -60,19 +85,28 @@ function useCommand<TArg, TRes>(fn: (commandId: string, arg: TArg) => Promise<TR
 export function useUpdateProfile() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: UpdateProfileRequest) => repo.updateProfile(id, body), (me) => qc.setQueryData(accountKeys.me, me));
+  return useCommand(
+    (id, body: UpdateProfileRequest) => repo.updateProfile(id, body),
+    (me) => qc.setQueryData(accountKeys.me, me),
+  );
 }
 
 export function useSavePreferences() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: MatchPreferences) => repo.putPreferences(id, body), (me) => qc.setQueryData(accountKeys.me, me));
+  return useCommand(
+    (id, body: MatchPreferences) => repo.putPreferences(id, body),
+    (me) => qc.setQueryData(accountKeys.me, me),
+  );
 }
 
 export function useSavePrivacy() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: PrivacySettings) => repo.putPrivacy(id, body), (me) => qc.setQueryData(accountKeys.me, me));
+  return useCommand(
+    (id, body: PrivacySettings) => repo.putPrivacy(id, body),
+    (me) => qc.setQueryData(accountKeys.me, me),
+  );
 }
 
 export function useConsents() {
@@ -84,25 +118,37 @@ export function useConsents() {
 export function useRecordConsents() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: RecordConsentsRequest) => repo.recordConsents(id, body), (c) => qc.setQueryData(accountKeys.consents, c));
+  return useCommand(
+    (id, body: RecordConsentsRequest) => repo.recordConsents(id, body),
+    (c) => qc.setQueryData(accountKeys.consents, c),
+  );
 }
 
 export function useStartVerification() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, _: void) => repo.startVerification(id), () => void qc.invalidateQueries({ queryKey: accountKeys.me }));
+  return useCommand(
+    (id, _: void) => repo.startVerification(id),
+    () => void qc.invalidateQueries({ queryKey: accountKeys.me }),
+  );
 }
 
 export function useCompleteOnboarding() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, _: void) => repo.completeOnboarding(id), (me) => qc.setQueryData(accountKeys.me, me));
+  return useCommand(
+    (id, _: void) => repo.completeOnboarding(id),
+    (me) => qc.setQueryData(accountKeys.me, me),
+  );
 }
 
 export function useGlobalPause() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, days: number) => repo.startPause(id, days), () => void qc.invalidateQueries({ queryKey: accountKeys.me }));
+  return useCommand(
+    (id, days: number) => repo.startPause(id, days),
+    () => void qc.invalidateQueries({ queryKey: accountKeys.me }),
+  );
 }
 
 export function useDeviceSessions() {
@@ -121,46 +167,78 @@ export function useRequestDeletion() {
 }
 
 // ---------------------------------------------------------------- V5 (spec-v5 §7.1)
-export const accountKeysV5 = { neighborhood: ['me', 'neighborhood'] as const, intentions: ['me', 'intentions'] as const, outingPrefs: ['me', 'outing-prefs'] as const };
+export const accountKeysV5 = {
+  neighborhood: ['me', 'neighborhood'] as const,
+  intentions: ['me', 'intentions'] as const,
+  outingPrefs: ['me', 'outing-prefs'] as const,
+};
 
 export function useMyNeighborhood() {
   const repo = useAccountRepository();
   const signedIn = useSession((s) => s.status === 'signedIn');
-  return useQuery({ queryKey: accountKeysV5.neighborhood, queryFn: repo.myNeighborhood, enabled: signedIn });
+  return useQuery({
+    queryKey: accountKeysV5.neighborhood,
+    queryFn: repo.myNeighborhood,
+    enabled: signedIn,
+  });
 }
 
 export function useOutingPreferences() {
   const repo = useAccountRepository();
   const signedIn = useSession((s) => s.status === 'signedIn');
-  return useQuery({ queryKey: accountKeysV5.outingPrefs, queryFn: repo.outingPreferences, enabled: signedIn, retry: false });
+  return useQuery({
+    queryKey: accountKeysV5.outingPrefs,
+    queryFn: repo.outingPreferences,
+    enabled: signedIn,
+    retry: false,
+  });
 }
 
 export function useIntentions() {
   const repo = useAccountRepository();
   const signedIn = useSession((s) => s.status === 'signedIn');
-  return useQuery({ queryKey: accountKeysV5.intentions, queryFn: repo.intentions, enabled: signedIn, retry: false });
+  return useQuery({
+    queryKey: accountKeysV5.intentions,
+    queryFn: repo.intentions,
+    enabled: signedIn,
+    retry: false,
+  });
 }
 
 export function useSavePrivacyV5() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: Partial<PrivacySettingsV5>) => repo.putPrivacyV5(id, body), () => void qc.invalidateQueries({ queryKey: accountKeys.me }));
+  return useCommand(
+    (id, body: Partial<PrivacySettingsV5>) => repo.putPrivacyV5(id, body),
+    () => void qc.invalidateQueries({ queryKey: accountKeys.me }),
+  );
 }
 
 export function useSaveIntentions() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: IntentionsV5Dto) => repo.putIntentions(id, body), () => void qc.invalidateQueries({ queryKey: accountKeysV5.intentions }));
+  return useCommand(
+    (id, body: IntentionsV5Dto) => repo.putIntentions(id, body),
+    () => void qc.invalidateQueries({ queryKey: accountKeysV5.intentions }),
+  );
 }
 
 export function useSaveOutingPreferences() {
   const repo = useAccountRepository();
   const qc = useQueryClient();
-  return useCommand((id, body: OutingPreferencesV5Dto) => repo.putOutingPreferences(id, body), () => void qc.invalidateQueries({ queryKey: accountKeysV5.outingPrefs }));
+  return useCommand(
+    (id, body: OutingPreferencesV5Dto) => repo.putOutingPreferences(id, body),
+    () => void qc.invalidateQueries({ queryKey: accountKeysV5.outingPrefs }),
+  );
 }
 
 /** Indicateurs de ville (V5.5 D-059) : arrondis, jamais du groupe ; 404 → « indisponible ». */
 export function useCityInsights() {
   const repo = useAccountRepository();
-  return useQuery({ queryKey: ['me', 'city-insights'] as const, queryFn: repo.cityInsights, enabled: useSession((s) => s.status === 'signedIn'), retry: false });
+  return useQuery({
+    queryKey: ['me', 'city-insights'] as const,
+    queryFn: repo.cityInsights,
+    enabled: useSession((s) => s.status === 'signedIn'),
+    retry: false,
+  });
 }

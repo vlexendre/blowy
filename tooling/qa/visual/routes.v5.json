@@ -239,6 +239,31 @@
       "draft": false
     },
     {
+      "ref": "V5-Sortie-lille",
+      "title": "11m · Lille : ta sortie, gabarit commun",
+      "target": "mobile",
+      "route": "/outing/00000000-0000-4000-8000-000000000103?demo=sortie-lille",
+      "account": null,
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
+    },
+    {
+      "ref": "V5-Trouvee-weekend",
+      "title": "11n · Week-end libre (garde alternée)",
+      "target": "mobile",
+      "route": "/found?demo=trouvee-weekend",
+      "account": null,
+      "draft": false
+    },
+    {
       "ref": "V5-Sortie",
       "title": "12 · Fiche de sortie",
       "target": "mobile",
@@ -387,17 +412,35 @@
       "ref": "V5-Amorcage",
       "title": "23 · Lille : toi et 2 proches",
       "target": "mobile",
-      "route": "/seeding?demo=amorcage",
+      "route": "/outing/00000000-0000-4000-8000-000000000103?demo=amorcage",
       "account": null,
-      "draft": false
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
     },
     {
       "ref": "V5-Amorcage-solo",
       "title": "23b · Lille en solo",
       "target": "mobile",
-      "route": "/seeding?solo=1&demo=amorcage-solo",
+      "route": "/outing/00000000-0000-4000-8000-000000000103?demo=amorcage-solo",
       "account": null,
-      "draft": false
+      "draft": false,
+      "masks": [
+        [
+          0,
+          844,
+          390,
+          2000
+        ]
+      ],
+      "note": "maquette plus haute que 844 : bas masqué"
     },
     {
       "ref": "V5-Sortie-complete",

@@ -24,7 +24,10 @@ export function createQueryClient(): QueryClient {
 export type ViewState = 'loading' | 'ready' | 'empty' | 'unavailable' | 'offline' | 'error';
 
 /** Réduit l'état d'une requête en état d'écran (sans jamais fabriquer de données). */
-export function viewStateOf(q: { isLoading: boolean; error: unknown; data: unknown }, isEmpty?: (d: unknown) => boolean): ViewState {
+export function viewStateOf(
+  q: { isLoading: boolean; error: unknown; data: unknown },
+  isEmpty?: (d: unknown) => boolean,
+): ViewState {
   if (q.data !== undefined && q.data !== null) return isEmpty?.(q.data) ? 'empty' : 'ready';
   if (q.isLoading) return 'loading';
   if (isUnavailable(q.error)) return 'unavailable';

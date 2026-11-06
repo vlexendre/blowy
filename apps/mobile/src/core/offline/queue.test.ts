@@ -1,7 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { backoffDelay, emptyQueue, isHidden, nextToSend, parseQueue, pendingCount, reduceQueue, statusOf, type QueueState } from './queue';
+import {
+  backoffDelay,
+  emptyQueue,
+  isHidden,
+  nextToSend,
+  parseQueue,
+  pendingCount,
+  reduceQueue,
+  statusOf,
+  type QueueState,
+} from './queue';
 
-const cmd = (id: string, kind: 'PET_ACTION' | 'SEND_MESSAGE' | 'BLOCK' | 'REPORT', scope: string | null, createdAt: number) => ({
+const cmd = (
+  id: string,
+  kind: 'PET_ACTION' | 'SEND_MESSAGE' | 'BLOCK' | 'REPORT',
+  scope: string | null,
+  createdAt: number,
+) => ({
   type: 'enqueue' as const,
   command: { commandId: id, kind, payload: {}, scope, createdAt },
 });
@@ -14,7 +29,18 @@ describe('file hors ligne', () => {
   });
 
   it('refuse les commandes qui exigent le réseau', () => {
-    expect(() => reduceQueue(emptyQueue, { type: 'enqueue', command: { commandId: 'x', kind: 'PURCHASE' as never, payload: {}, scope: null, createdAt: 1 } })).toThrow();
+    expect(() =>
+      reduceQueue(emptyQueue, {
+        type: 'enqueue',
+        command: {
+          commandId: 'x',
+          kind: 'PURCHASE' as never,
+          payload: {},
+          scope: null,
+          createdAt: 1,
+        },
+      }),
+    ).toThrow();
   });
 
   it('blocage : prioritaire, masque le scope, annule les envois en attente vers ce scope', () => {
@@ -46,12 +72,24 @@ describe('file hors ligne', () => {
   it('retry réseau : même commandId, backoff ; erreur définitive : failed', () => {
     let s = reduceQueue(emptyQueue, cmd('a', 'PET_ACTION', 'p', 0));
     s = reduceQueue(s, { type: 'sending', commandId: 'a' });
-    s = reduceQueue(s, { type: 'failed', commandId: 'a', error: 'NETWORK', retryable: true, now: 100 });
+    s = reduceQueue(s, {
+      type: 'failed',
+      commandId: 'a',
+      error: 'NETWORK',
+      retryable: true,
+      now: 100,
+    });
     expect(statusOf(s, 'a')).toBe('queued');
     expect(nextToSend(s, 100)).toBeNull();
     expect(nextToSend(s, 100 + backoffDelay(1))?.commandId).toBe('a');
     s = reduceQueue(s, { type: 'sending', commandId: 'a' });
-    s = reduceQueue(s, { type: 'failed', commandId: 'a', error: 'FORBIDDEN', retryable: false, now: 200 });
+    s = reduceQueue(s, {
+      type: 'failed',
+      commandId: 'a',
+      error: 'FORBIDDEN',
+      retryable: false,
+      now: 200,
+    });
     expect(statusOf(s, 'a')).toBe('failed');
     expect(pendingCount(s)).toBe(0);
   });

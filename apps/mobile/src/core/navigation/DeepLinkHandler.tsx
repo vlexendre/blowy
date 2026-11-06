@@ -9,6 +9,9 @@ import { resolveIncomingUrl } from './paths';
 
 export function DeepLinkHandler() {
   const { notifications } = useServices();
-  useEffect(() => notifications.onOpen((url) => router.push(resolveIncomingUrl(url) as never)), [notifications]);
+  useEffect(
+    () => notifications.onOpen((url) => router.push(resolveIncomingUrl(url) as never)),
+    [notifications],
+  );
   return null;
 }

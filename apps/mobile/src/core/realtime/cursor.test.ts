@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { applyBatch, emptyCursors, reconnectDelay, roomsToJoin } from './cursor';
 
-const ev = (id: string, cursor: string) => ({ eventId: id, type: 'message.published', aggregateId: 'a', projectionCursor: cursor, occurredAt: '2026-11-01T00:00:00Z', schemaVersion: 1, payload: {} });
+const ev = (id: string, cursor: string) => ({
+  eventId: id,
+  type: 'message.published',
+  aggregateId: 'a',
+  projectionCursor: cursor,
+  occurredAt: '2026-11-01T00:00:00Z',
+  schemaVersion: 1,
+  payload: {},
+});
 
 describe('resync par curseur', () => {
   it('avance le curseur et déduplique', () => {

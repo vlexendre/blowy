@@ -18,8 +18,10 @@ export type ReportTarget = CreateReportRequest['target'];
 
 export function createTrustRepository(api: Api) {
   return {
-    report: (cid: string, body: CreateReportRequest) => api.send('POST', routes.reports, CreateReportRequestSchema.parse(body), { commandId: cid }),
-    block: (cid: string, target: ReportTarget) => api.send('POST', routes.blocks, { target }, { commandId: cid }),
+    report: (cid: string, body: CreateReportRequest) =>
+      api.send('POST', routes.reports, CreateReportRequestSchema.parse(body), { commandId: cid }),
+    block: (cid: string, target: ReportTarget) =>
+      api.send('POST', routes.blocks, { target }, { commandId: cid }),
   };
 }
 
@@ -28,8 +30,12 @@ export function useTrustSenders() {
   const { api } = useServices();
   const repo = useMemo(() => createTrustRepository(api), [api]);
   useEffect(() => {
-    const a = registerSender('BLOCK', (c) => repo.block(c.commandId, (c.payload as { target: ReportTarget }).target));
-    const b = registerSender('REPORT', (c) => repo.report(c.commandId, c.payload as CreateReportRequest));
+    const a = registerSender('BLOCK', (c) =>
+      repo.block(c.commandId, (c.payload as { target: ReportTarget }).target),
+    );
+    const b = registerSender('REPORT', (c) =>
+      repo.report(c.commandId, c.payload as CreateReportRequest),
+    );
     return () => {
       a();
       b();
@@ -37,7 +43,8 @@ export function useTrustSenders() {
   }, [repo]);
 }
 
-const scopeOf = (t: ReportTarget): string | null => t.outing?.id ?? t.relationshipId ?? t.petId ?? t.messageId ?? null;
+const scopeOf = (t: ReportTarget): string | null =>
+  t.outing?.id ?? t.relationshipId ?? t.petId ?? t.messageId ?? null;
 
 /** Signaler / bloquer : TOUJOURS par la file (même en ligne), drain immédiat si réseau. */
 export function useSafetyActions() {
@@ -46,7 +53,16 @@ export function useSafetyActions() {
 
   const block = useCallback(
     (target: ReportTarget) => {
-      dispatch({ type: 'enqueue', command: { commandId: newCommandId(), kind: 'BLOCK', payload: { target }, scope: scopeOf(target), createdAt: clock.now() } });
+      dispatch({
+        type: 'enqueue',
+        command: {
+          commandId: newCommandId(),
+          kind: 'BLOCK',
+          payload: { target },
+          scope: scopeOf(target),
+          createdAt: clock.now(),
+        },
+      });
       haptics.warning();
       void drainQueue(isOnlineNow);
     },
@@ -56,7 +72,16 @@ export function useSafetyActions() {
   const report = useCallback(
     (r: CreateReportRequest) => {
       const now = clock.now();
-      dispatch({ type: 'enqueue', command: { commandId: newCommandId(), kind: 'REPORT', payload: r, scope: scopeOf(r.target), createdAt: now } });
+      dispatch({
+        type: 'enqueue',
+        command: {
+          commandId: newCommandId(),
+          kind: 'REPORT',
+          payload: r,
+          scope: scopeOf(r.target),
+          createdAt: now,
+        },
+      });
       void drainQueue(isOnlineNow);
     },
     [dispatch, newCommandId, clock],
@@ -67,4 +92,5 @@ export function useSafetyActions() {
 
 /** Numéro d'urgence (France) ; appel natif direct, aucune dépendance au backend. */
 export const EMERGENCY_NUMBER = '17';
-export const callEmergency = (n: string = EMERGENCY_NUMBER): Promise<void> => Linking.openURL(`tel:${n}`);
+export const callEmergency = (n: string = EMERGENCY_NUMBER): Promise<void> =>
+  Linking.openURL(`tel:${n}`);

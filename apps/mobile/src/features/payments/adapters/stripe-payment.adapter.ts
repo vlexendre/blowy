@@ -15,9 +15,11 @@ export class StripePaymentAdapter implements PaymentPort {
   ) {}
 
   private init() {
-    this.ready ??= this.sheet.init(this.opts.publishableKey, this.opts.merchantIdentifier).then(async () => {
-      this.applePay = await this.sheet.applePaySupported().catch(() => false);
-    });
+    this.ready ??= this.sheet
+      .init(this.opts.publishableKey, this.opts.merchantIdentifier)
+      .then(async () => {
+        this.applePay = await this.sheet.applePaySupported().catch(() => false);
+      });
     return this.ready;
   }
 
@@ -25,7 +27,14 @@ export class StripePaymentAdapter implements PaymentPort {
     if (req.provider !== 'STRIPE') return { status: 'FAILED', reason: 'PROVIDER_MISMATCH' };
     try {
       await this.init();
-      const setup = await this.sheet.setup({ clientSecret: req.clientSecret, label: req.label, amountCents: req.amountCents, currency: req.currency, recurring: !!req.recurring, testEnv: !this.opts.publishableKey.startsWith('pk_live_') });
+      const setup = await this.sheet.setup({
+        clientSecret: req.clientSecret,
+        label: req.label,
+        amountCents: req.amountCents,
+        currency: req.currency,
+        recurring: !!req.recurring,
+        testEnv: !this.opts.publishableKey.startsWith('pk_live_'),
+      });
       if (setup.error) return { status: 'FAILED', reason: 'UNAVAILABLE' };
       const r = await this.sheet.present();
       if (!r.error) return { status: 'PAID' };

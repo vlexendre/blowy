@@ -22,16 +22,22 @@ export const asyncStorageAdapter: StoragePort = {
 
 export const secureStoreAdapter: SecretStoragePort = {
   get: (k) => SecureStore.getItemAsync(k),
-  set: (k, v) => SecureStore.setItemAsync(k, v, { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY }),
+  set: (k, v) =>
+    SecureStore.setItemAsync(k, v, {
+      keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+    }),
   remove: (k) => SecureStore.deleteItemAsync(k),
 };
 
-const toPerm = (status: string): 'granted' | 'denied' | 'undetermined' => (status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined');
+const toPerm = (status: string): 'granted' | 'denied' | 'undetermined' =>
+  status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
 
 export function createExpoNotificationsAdapter(projectId: string | undefined): NotificationsPort {
   return {
-    getPermission: async (): Promise<NotificationPermission> => toPerm((await Notifications.getPermissionsAsync()).status),
-    requestPermission: async (): Promise<NotificationPermission> => toPerm((await Notifications.requestPermissionsAsync()).status),
+    getPermission: async (): Promise<NotificationPermission> =>
+      toPerm((await Notifications.getPermissionsAsync()).status),
+    requestPermission: async (): Promise<NotificationPermission> =>
+      toPerm((await Notifications.requestPermissionsAsync()).status),
     getPushToken: async () => {
       if (!projectId) return null;
       try {
@@ -51,9 +57,12 @@ export function createExpoNotificationsAdapter(projectId: string | undefined): N
 }
 
 export const expoLocationAdapter: LocationPort = {
-  getForegroundPermission: async (): Promise<LocationPermission> => toPerm((await Location.getForegroundPermissionsAsync()).status),
-  requestForegroundPermission: async (): Promise<LocationPermission> => toPerm((await Location.requestForegroundPermissionsAsync()).status),
-  requestBackgroundPermission: async (): Promise<LocationPermission> => toPerm((await Location.requestBackgroundPermissionsAsync()).status),
+  getForegroundPermission: async (): Promise<LocationPermission> =>
+    toPerm((await Location.getForegroundPermissionsAsync()).status),
+  requestForegroundPermission: async (): Promise<LocationPermission> =>
+    toPerm((await Location.requestForegroundPermissionsAsync()).status),
+  requestBackgroundPermission: async (): Promise<LocationPermission> =>
+    toPerm((await Location.requestBackgroundPermissionsAsync()).status),
   getApproximate: async () => {
     const p = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low });
     // Floutage AVANT toute utilisation : la position exacte ne quitte jamais l'adaptateur.
@@ -63,11 +72,16 @@ export const expoLocationAdapter: LocationPort = {
 
 export const expoHapticsAdapter: HapticsPort = {
   tap: () => void Haptics.selectionAsync().catch(() => undefined),
-  success: () => void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined),
-  warning: () => void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => undefined),
+  success: () =>
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined),
+  warning: () =>
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => undefined),
 };
 
 export const expoCameraAdapter: CameraPermissionPort = {
-  request: async () => ((await Camera.Camera.requestCameraPermissionsAsync()).status === 'granted' ? 'granted' : 'denied'),
+  request: async () =>
+    (await Camera.Camera.requestCameraPermissionsAsync()).status === 'granted'
+      ? 'granted'
+      : 'denied',
   openSettings: () => Linking.openSettings(),
 };

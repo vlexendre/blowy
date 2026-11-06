@@ -2,7 +2,16 @@
  * Connexion locale de développement : choix d'un compte de démo du seed ou clé libre
  * (nouveau compte → onboarding). Rendu uniquement si `localAuthEnabled(env)` ; sinon redirection.
  */
-import { Banner, DetailScreenTemplate, ListRow, StatusPill, Surface, TextField, Button, space } from '@blowy/ui-mobile';
+import {
+  Banner,
+  DetailScreenTemplate,
+  ListRow,
+  StatusPill,
+  Surface,
+  TextField,
+  Button,
+  space,
+} from '@blowy/ui-mobile';
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -34,16 +43,44 @@ export function DevLoginScreen({ onSignedIn }: DevLoginScreenProps) {
   };
 
   return (
-    <DetailScreenTemplate title={t('devLogin.title')} lead={t('devLogin.lead')} onBack={() => router.back()} backLabel={t('common.back')} testID="screen-dev-login" banner={error ? <Banner message={error} tone="danger" live /> : null}>
+    <DetailScreenTemplate
+      title={t('devLogin.title')}
+      lead={t('devLogin.lead')}
+      onBack={() => router.back()}
+      backLabel={t('common.back')}
+      testID="screen-dev-login"
+      banner={error ? <Banner message={error} tone="danger" live /> : null}
+    >
       <StatusPill kind="demo" label={t('devLogin.badge', { url: env.apiUrl })} />
       <Surface padding="sm">
         {DEMO_ACCOUNTS.map((a) => (
-          <ListRow key={a.key} icon="profile" title={a.key} subtitle={tDynamic(a.descKey)} onPress={() => void go(a.key)} testID={`dev-login-${a.key}`} />
+          <ListRow
+            key={a.key}
+            icon="profile"
+            title={a.key}
+            subtitle={tDynamic(a.descKey)}
+            onPress={() => void go(a.key)}
+            testID={`dev-login-${a.key}`}
+          />
         ))}
       </Surface>
       <View style={{ gap: space.sm }}>
-        <TextField label={t('devLogin.custom')} hint={t('devLogin.customHint')} value={custom} onChangeText={setCustom} autoCapitalize="none" autoCorrect={false} testID="dev-login-custom" />
-        <Button label={t('devLogin.connect')} variant="secondary" disabled={!isValidLocalKey(custom)} loading={signIn.isPending} onPress={() => void go(custom.trim().toLowerCase())} />
+        <TextField
+          label={t('devLogin.custom')}
+          hint={t('devLogin.customHint')}
+          value={custom}
+          onChangeText={setCustom}
+          autoCapitalize="none"
+          autoCorrect={false}
+          testID="dev-login-custom"
+        />
+        <Button
+          label={t('devLogin.connect')}
+          variant="secondary"
+          disabled={!isValidLocalKey(custom)}
+          loading={signIn.isPending}
+          onPress={() => void go(custom.trim().toLowerCase())}
+        />
       </View>
     </DetailScreenTemplate>
   );

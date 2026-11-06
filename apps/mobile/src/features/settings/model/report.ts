@@ -19,7 +19,11 @@ export const REPORT_REASONS = [
   { key: 'harassment', group: 'messages', category: 'HARASSMENT' },
   { key: 'noShows', group: 'messages', category: 'REPEATED_NO_SHOW' },
   { key: 'other', group: 'messages', category: 'OTHER' },
-] as const satisfies readonly { key: string; group: 'during' | 'messages'; category: ReportCategoryV52 }[];
+] as const satisfies readonly {
+  key: string;
+  group: 'during' | 'messages';
+  category: ReportCategoryV52;
+}[];
 
 export type ReportReasonKey = (typeof REPORT_REASONS)[number]['key'];
 
@@ -33,11 +37,29 @@ export interface ReportContext {
  * Requête de signalement, ou `null` si le contexte ne désigne aucune cible acceptée :
  * sortie + personne, message, ou sortie seule pour un incident sur place (contrat E).
  */
-export function reportRequest(reason: ReportReasonKey, ctx: ReportContext, alsoBlock: boolean): CreateReportRequest | null {
+export function reportRequest(
+  reason: ReportReasonKey,
+  ctx: ReportContext,
+  alsoBlock: boolean,
+): CreateReportRequest | null {
   const r = REPORT_REASONS.find((x) => x.key === reason)!;
-  const safetyExit = r.category === 'SAFETY' || r.category === 'MINOR' || r.category === 'IRL_BEHAVIOR';
-  if (ctx.messageId) return { target: { messageId: ctx.messageId }, category: r.category, safetyExit, alsoBlock };
-  if (ctx.outingId && ctx.userId) return { target: { outing: { id: ctx.outingId, userId: ctx.userId } }, category: r.category, safetyExit, alsoBlock };
-  if (ctx.outingId && r.category === 'ON_SITE_INCIDENT') return { target: { outing: { id: ctx.outingId } }, category: r.category, safetyExit: false, alsoBlock: false };
+  const safetyExit =
+    r.category === 'SAFETY' || r.category === 'MINOR' || r.category === 'IRL_BEHAVIOR';
+  if (ctx.messageId)
+    return { target: { messageId: ctx.messageId }, category: r.category, safetyExit, alsoBlock };
+  if (ctx.outingId && ctx.userId)
+    return {
+      target: { outing: { id: ctx.outingId, userId: ctx.userId } },
+      category: r.category,
+      safetyExit,
+      alsoBlock,
+    };
+  if (ctx.outingId && r.category === 'ON_SITE_INCIDENT')
+    return {
+      target: { outing: { id: ctx.outingId } },
+      category: r.category,
+      safetyExit: false,
+      alsoBlock: false,
+    };
   return null;
 }

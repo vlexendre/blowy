@@ -9,7 +9,10 @@ export interface DemoRequest {
   scenario: string;
 }
 
-export function readDemoRequest(blowyEnv: string, search: string | undefined | null): DemoRequest | null {
+export function readDemoRequest(
+  blowyEnv: string,
+  search: string | undefined | null,
+): DemoRequest | null {
   if (blowyEnv !== 'local' || !search) return null;
   const q = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
   const scenario = q.get('demo');

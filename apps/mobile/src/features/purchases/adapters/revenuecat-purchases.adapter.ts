@@ -5,8 +5,20 @@
  * checkTrialOrIntroductoryPriceEligibility (iOS), add/removeCustomerInfoUpdateListener.
  * Clé PUBLIQUE SDK uniquement (EXPO_PUBLIC_REVENUECAT_IOS_KEY / ANDROID_KEY) — jamais la clé secrète.
  */
-import Purchases, { type CustomerInfoUpdateListener, type PurchasesOffering, type PurchasesPackage } from 'react-native-purchases';
-import type { IntroOffer, Offerings, PackagePeriod, PurchaseOutcome, PurchasesPort, StoreOffering, StorePackage } from '../model/purchases.port';
+import Purchases, {
+  type CustomerInfoUpdateListener,
+  type PurchasesOffering,
+  type PurchasesPackage,
+} from 'react-native-purchases';
+import type {
+  IntroOffer,
+  Offerings,
+  PackagePeriod,
+  PurchaseOutcome,
+  PurchasesPort,
+  StoreOffering,
+  StorePackage,
+} from '../model/purchases.port';
 
 export interface RevenueCatAdapterOptions {
   apiKey: string;
@@ -16,7 +28,8 @@ export interface RevenueCatAdapterOptions {
 }
 
 // Enums exposés en membres statiques de `Purchases` en 10.16.0 (pas d'export nommé).
-const { PACKAGE_TYPE, PRODUCT_CATEGORY, PURCHASES_ERROR_CODE, INTRO_ELIGIBILITY_STATUS } = Purchases;
+const { PACKAGE_TYPE, PRODUCT_CATEGORY, PURCHASES_ERROR_CODE, INTRO_ELIGIBILITY_STATUS } =
+  Purchases;
 const PERIOD: Partial<Record<string, PackagePeriod>> = {
   [PACKAGE_TYPE.WEEKLY]: 'WEEKLY',
   [PACKAGE_TYPE.MONTHLY]: 'MONTHLY',
@@ -55,9 +68,13 @@ export class RevenueCatPurchasesAdapter implements PurchasesPort {
     this.ensureConfigured();
     const raw = await Purchases.getOfferings();
     const offerings = Object.values(raw.all);
-    const eligibility = await this.introEligibility(offerings.flatMap((o) => o.availablePackages.map((p) => p.product.identifier)));
+    const eligibility = await this.introEligibility(
+      offerings.flatMap((o) => o.availablePackages.map((p) => p.product.identifier)),
+    );
     this.packages.clear();
-    const all = offerings.map((o) => this.mapOffering(o, raw.current?.identifier === o.identifier, eligibility));
+    const all = offerings.map((o) =>
+      this.mapOffering(o, raw.current?.identifier === o.identifier, eligibility),
+    );
     return { mode: this.mode, current: all.find((o) => o.isCurrent) ?? null, all };
   }
 
@@ -70,7 +87,8 @@ export class RevenueCatPurchasesAdapter implements PurchasesPort {
       return { status: 'PURCHASED' };
     } catch (err) {
       const e = err as { code?: string; userCancelled?: boolean | null };
-      if (e.userCancelled || e.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) return { status: 'CANCELLED' };
+      if (e.userCancelled || e.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR)
+        return { status: 'CANCELLED' };
       if (e.code === PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) return { status: 'PENDING' };
       throw err;
     }
@@ -90,21 +108,33 @@ export class RevenueCatPurchasesAdapter implements PurchasesPort {
   }
 
   private ensureConfigured() {
-    if (!this.configured) throw new Error('PurchasesPort.identify(userId) doit être appelé après authentification');
+    if (!this.configured)
+      throw new Error('PurchasesPort.identify(userId) doit être appelé après authentification');
   }
 
   /** iOS : éligibilité calculée par le SDK. Android : le store ne renvoie l'offre d'essai que si éligible. */
   private async introEligibility(productIds: string[]): Promise<Record<string, boolean>> {
     if (this.opts.platform !== 'ios' || productIds.length === 0) return {};
     try {
-      const res = await Purchases.checkTrialOrIntroductoryPriceEligibility([...new Set(productIds)]);
-      return Object.fromEntries(Object.entries(res).map(([id, e]) => [id, e.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE]));
+      const res = await Purchases.checkTrialOrIntroductoryPriceEligibility([
+        ...new Set(productIds),
+      ]);
+      return Object.fromEntries(
+        Object.entries(res).map(([id, e]) => [
+          id,
+          e.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE,
+        ]),
+      );
     } catch {
       return {}; // inconnu → pas d'essai affiché (règle SDK : ne pas induire en erreur)
     }
   }
 
-  private mapOffering(o: PurchasesOffering, isCurrent: boolean, eligible: Record<string, boolean>): StoreOffering {
+  private mapOffering(
+    o: PurchasesOffering,
+    isCurrent: boolean,
+    eligible: Record<string, boolean>,
+  ): StoreOffering {
     return {
       id: o.identifier,
       isCurrent,
@@ -117,7 +147,12 @@ export class RevenueCatPurchasesAdapter implements PurchasesPort {
     };
   }
 
-  private mapPackage(id: string, offeringId: string, p: PurchasesPackage, eligible: Record<string, boolean>): StorePackage {
+  private mapPackage(
+    id: string,
+    offeringId: string,
+    p: PurchasesPackage,
+    eligible: Record<string, boolean>,
+  ): StorePackage {
     const product = p.product;
     const isSub = product.productCategory === PRODUCT_CATEGORY.SUBSCRIPTION;
     return {
@@ -130,16 +165,25 @@ export class RevenueCatPurchasesAdapter implements PurchasesPort {
       priceString: product.priceString,
       price: product.price,
       currencyCode: product.currencyCode,
-      pricePerMonthString: p.packageType === PACKAGE_TYPE.ANNUAL ? product.pricePerMonthString : null,
+      pricePerMonthString:
+        p.packageType === PACKAGE_TYPE.ANNUAL ? product.pricePerMonthString : null,
       introOffer: isSub ? this.introOf(product, eligible[product.identifier]) : null,
     };
   }
 
-  private introOf(product: PurchasesPackage['product'], iosEligible: boolean | undefined): IntroOffer | null {
+  private introOf(
+    product: PurchasesPackage['product'],
+    iosEligible: boolean | undefined,
+  ): IntroOffer | null {
     if (this.opts.platform === 'ios') {
       if (iosEligible !== true || !product.introPrice) return null;
       const ip = product.introPrice;
-      return { kind: ip.price === 0 ? 'FREE_TRIAL' : 'INTRO_PRICE', priceString: ip.priceString, period: ip.period, cycles: ip.cycles };
+      return {
+        kind: ip.price === 0 ? 'FREE_TRIAL' : 'INTRO_PRICE',
+        priceString: ip.priceString,
+        period: ip.period,
+        cycles: ip.cycles,
+      };
     }
     // Android (Play Billing) : l'option par défaut ne contient une phase gratuite/intro que si l'utilisateur y a droit.
     const opt = product.defaultOption;

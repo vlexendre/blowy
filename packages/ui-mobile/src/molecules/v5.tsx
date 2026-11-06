@@ -297,13 +297,19 @@ export function SectionLabel({
   children,
   color = v5.grey,
   style,
+  inline = false,
 }: {
   children: string;
   color?: string;
   style?: StyleProp<ViewStyle>;
+  /**
+   * `.lbl` en ligne dans une carte en bloc (maquette) : la ligne prend la hauteur de la police du parent
+   * (16 px, `line-height: normal` ≈ 19,4 px) et le texte de 11 px repose sur sa ligne de base.
+   */
+  inline?: boolean;
 }) {
   return (
-    <View style={style}>
+    <View style={[inline ? { paddingTop: 4, paddingBottom: 2 } : null, style]}>
       <BodyText size={11} weight={800} ls={0.14} upper color={color}>
         {children}
       </BodyText>

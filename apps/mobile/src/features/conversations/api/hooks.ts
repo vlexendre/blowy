@@ -17,7 +17,10 @@ import { useRealtimeRoom } from '../../../core/realtime/provider';
 import { mergeMessages, type LocalOutgoing } from '../model/messages';
 import { createConversationsRepository } from './conversations.repository';
 
-export const convKeys = { list: ['conversations'] as const, messages: (id: string) => ['conversations', id, 'messages'] as const };
+export const convKeys = {
+  list: ['conversations'] as const,
+  messages: (id: string) => ['conversations', id, 'messages'] as const,
+};
 
 function useRepo() {
   const { api } = useServices();
@@ -53,7 +56,10 @@ export function useConversation(conversationId: string) {
   const [revealed, setRevealed] = useState<ReadonlySet<string>>(new Set());
   const [revealedBodies, setRevealedBodies] = useState<Record<string, MessageView>>({});
 
-  useRealtimeRoom(`conversation:${conversationId}`, () => void qc.invalidateQueries({ queryKey: convKeys.messages(conversationId) }));
+  useRealtimeRoom(
+    `conversation:${conversationId}`,
+    () => void qc.invalidateQueries({ queryKey: convKeys.messages(conversationId) }),
+  );
 
   const pages = useInfiniteQuery({
     queryKey: convKeys.messages(conversationId),
@@ -62,7 +68,10 @@ export function useConversation(conversationId: string) {
     getNextPageParam: (p) => p.nextCursor,
   });
 
-  const server = useMemo(() => (pages.data?.pages.flatMap((p) => p.items) ?? []).map((m) => revealedBodies[m.id] ?? m), [pages.data, revealedBodies]);
+  const server = useMemo(
+    () => (pages.data?.pages.flatMap((p) => p.items) ?? []).map((m) => revealedBodies[m.id] ?? m),
+    [pages.data, revealedBodies],
+  );
 
   const local: LocalOutgoing[] = useMemo(
     () =>
@@ -78,7 +87,17 @@ export function useConversation(conversationId: string) {
   const send = useCallback(
     async (body: string) => {
       const commandId = newCommandId();
-      const enqueue = () => queue.dispatch({ type: 'enqueue', command: { commandId, kind: 'SEND_MESSAGE', payload: { conversationId, body }, scope: conversationId, createdAt: Date.now() } });
+      const enqueue = () =>
+        queue.dispatch({
+          type: 'enqueue',
+          command: {
+            commandId,
+            kind: 'SEND_MESSAGE',
+            payload: { conversationId, body },
+            scope: conversationId,
+            createdAt: Date.now(),
+          },
+        });
       if (!online) return enqueue();
       try {
         await repo.send(commandId, conversationId, commandId, body);
@@ -101,11 +120,32 @@ export function useConversation(conversationId: string) {
   );
 
   /** Affichage chronologique (serveur + envois locaux non encore reconnus). */
-  const messages = useMemo(() => [...mergeMessages(server, local, revealed)].sort((a, b) => a.createdAt.localeCompare(b.createdAt)), [server, local, revealed]);
-  return { pages, server, local, revealed, messages, send, reveal, hidden: queue.hiddenScopes.includes(conversationId) };
+  const messages = useMemo(
+    () =>
+      [...mergeMessages(server, local, revealed)].sort((a, b) =>
+        a.createdAt.localeCompare(b.createdAt),
+      ),
+    [server, local, revealed],
+  );
+  return {
+    pages,
+    server,
+    local,
+    revealed,
+    messages,
+    send,
+    reveal,
+    hidden: queue.hiddenScopes.includes(conversationId),
+  };
 }
 
 export function useSuggestions(conversationId: string, enabled: boolean) {
   const repo = useRepo();
-  return useQuery({ queryKey: ['conversations', conversationId, 'suggestions'], queryFn: () => repo.suggestions(conversationId), enabled, retry: false, staleTime: 10 * 60_000 });
+  return useQuery({
+    queryKey: ['conversations', conversationId, 'suggestions'],
+    queryFn: () => repo.suggestions(conversationId),
+    enabled,
+    retry: false,
+    staleTime: 10 * 60_000,
+  });
 }

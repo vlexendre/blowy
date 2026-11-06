@@ -54,7 +54,10 @@ export interface FirebaseBridge {
 
 export class FirebaseAuthAdapter implements AuthPort {
   readonly mode: IntegrationMode;
-  constructor(private readonly bridge: FirebaseBridge | null, live: boolean) {
+  constructor(
+    private readonly bridge: FirebaseBridge | null,
+    live: boolean,
+  ) {
     this.mode = bridge ? (live ? 'LIVE' : 'SANDBOX') : 'NOT_CONFIGURED';
   }
 
@@ -71,14 +74,22 @@ export class FirebaseAuthAdapter implements AuthPort {
       const rawNonce = Crypto.randomUUID();
       const hashed = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, rawNonce);
       const apple = await AppleAuthentication.signInAsync({
-        requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL],
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
         nonce: hashed,
       });
       if (!apple.identityToken) throw new AuthNotConfiguredError('apple');
       const idToken = await this.bridge.signInWithApple(apple.identityToken, rawNonce);
-      return { provider: 'firebase', credential: idToken, givenName: apple.fullName?.givenName ?? null };
+      return {
+        provider: 'firebase',
+        credential: idToken,
+        givenName: apple.fullName?.givenName ?? null,
+      };
     }
-    if (kind === 'google') return { provider: 'firebase', credential: await this.bridge.signInWithGoogle() };
+    if (kind === 'google')
+      return { provider: 'firebase', credential: await this.bridge.signInWithGoogle() };
     throw new AuthNotConfiguredError(kind);
   }
 

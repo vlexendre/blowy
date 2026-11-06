@@ -25,7 +25,16 @@ export interface DevicePrefs {
   avoidAsked: boolean;
 }
 
-const FIELDS = ['discreet', 'petSize', 'recentGuardians', 'lastGuardian', 'hidePreviews', 'weeksAlternate', 'discreetChosen', 'avoidAsked'] as const;
+const FIELDS = [
+  'discreet',
+  'petSize',
+  'recentGuardians',
+  'lastGuardian',
+  'hidePreviews',
+  'weeksAlternate',
+  'discreetChosen',
+  'avoidAsked',
+] as const;
 
 interface Store extends DevicePrefs {
   set(p: Partial<DevicePrefs>): void;

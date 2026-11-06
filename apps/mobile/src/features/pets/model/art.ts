@@ -5,25 +5,58 @@
  */
 import type { Species } from '@blowy/domain';
 
-export type PetMood = 'presentation' | 'joyful' | 'leap' | 'dance' | 'proud' | 'affectionate' | 'wave' | 'sad' | 'asleep' | 'surprised' | 'phone' | 'suitcase';
+export type PetMood =
+  | 'presentation'
+  | 'joyful'
+  | 'leap'
+  | 'dance'
+  | 'proud'
+  | 'affectionate'
+  | 'wave'
+  | 'sad'
+  | 'asleep'
+  | 'surprised'
+  | 'phone'
+  | 'suitcase';
 
 const DIR: Record<Species, string> = { NINO: 'nino', SUZIE: 'suzie', GASTON: 'gaston', PIA: 'pia' };
 
 /** Poses réellement dessinées par espèce (les autres retombent sur `presentation`). */
 const AVAILABLE: Record<Species, readonly PetMood[]> = {
-  NINO: ['presentation', 'joyful', 'leap', 'dance', 'proud', 'affectionate', 'wave', 'sad', 'asleep', 'surprised', 'phone', 'suitcase'],
+  NINO: [
+    'presentation',
+    'joyful',
+    'leap',
+    'dance',
+    'proud',
+    'affectionate',
+    'wave',
+    'sad',
+    'asleep',
+    'surprised',
+    'phone',
+    'suitcase',
+  ],
   SUZIE: ['presentation', 'joyful', 'leap', 'proud', 'affectionate'],
   GASTON: ['presentation', 'joyful', 'leap'],
   PIA: ['presentation', 'joyful', 'leap', 'proud'],
 };
 
 export function petSprite(species: Species, mood: PetMood = 'presentation'): string {
-  const m = AVAILABLE[species].includes(mood) ? mood : mood === 'dance' && AVAILABLE[species].includes('leap') ? 'leap' : 'presentation';
+  const m = AVAILABLE[species].includes(mood)
+    ? mood
+    : mood === 'dance' && AVAILABLE[species].includes('leap')
+      ? 'leap'
+      : 'presentation';
   return `${DIR[species]}/young/${m}.webp`;
 }
 
 /** Choix d'espèce de l'onboarding V5 (ordre des maquettes). */
-export const SPECIES_CHOICES: readonly { key: Species | 'LUTIN'; sprite: string; available: boolean }[] = [
+export const SPECIES_CHOICES: readonly {
+  key: Species | 'LUTIN';
+  sprite: string;
+  available: boolean;
+}[] = [
   { key: 'NINO', sprite: 'nino/young/presentation.webp', available: true },
   { key: 'SUZIE', sprite: 'suzie/young/presentation.webp', available: true },
   { key: 'GASTON', sprite: 'gaston/young/presentation.webp', available: true },
@@ -32,4 +65,9 @@ export const SPECIES_CHOICES: readonly { key: Species | 'LUTIN'; sprite: string;
 ];
 
 /** Fond de vignette par espèce (maquettes : Tom #FFE1C2, duo #FDE6EE…). */
-export const SPECIES_TILE: Record<Species, string> = { NINO: 'lime', SUZIE: 'rosePale', GASTON: 'peach', PIA: 'violetPale' };
+export const SPECIES_TILE: Record<Species, string> = {
+  NINO: 'lime',
+  SUZIE: 'rosePale',
+  GASTON: 'peach',
+  PIA: 'violetPale',
+};

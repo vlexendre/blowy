@@ -8,8 +8,34 @@ export const DEFAULT_TZ = 'Europe/Paris';
 
 const DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'] as const;
 const DAYS_SHORT = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'] as const;
-const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] as const;
-const MONTHS_SHORT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'] as const;
+const MONTHS = [
+  'janvier',
+  'février',
+  'mars',
+  'avril',
+  'mai',
+  'juin',
+  'juillet',
+  'août',
+  'septembre',
+  'octobre',
+  'novembre',
+  'décembre',
+] as const;
+const MONTHS_SHORT = [
+  'janv.',
+  'févr.',
+  'mars',
+  'avr.',
+  'mai',
+  'juin',
+  'juil.',
+  'août',
+  'sept.',
+  'oct.',
+  'nov.',
+  'déc.',
+] as const;
 
 export interface CivilParts {
   year: number;
@@ -24,7 +50,16 @@ const fmtCache = new Map<string, Intl.DateTimeFormat>();
 function formatter(tz: string): Intl.DateTimeFormat {
   let f = fmtCache.get(tz);
   if (!f) {
-    f = new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23', weekday: 'short' });
+    f = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hourCycle: 'h23',
+      weekday: 'short',
+    });
     fmtCache.set(tz, f);
   }
   return f;
@@ -34,8 +69,19 @@ const WD: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri
 /** Date civile dans le fuseau donné. */
 export function civil(input: string | number | Date, tz = DEFAULT_TZ): CivilParts {
   const d = input instanceof Date ? input : new Date(input);
-  const parts = Object.fromEntries(formatter(tz).formatToParts(d).map((p) => [p.type, p.value]));
-  return { year: Number(parts.year), month: Number(parts.month), day: Number(parts.day), weekday: WD[parts.weekday ?? 'Sun'] ?? 0, hour: Number(parts.hour) % 24, minute: Number(parts.minute) };
+  const parts = Object.fromEntries(
+    formatter(tz)
+      .formatToParts(d)
+      .map((p) => [p.type, p.value]),
+  );
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    weekday: WD[parts.weekday ?? 'Sun'] ?? 0,
+    hour: Number(parts.hour) % 24,
+    minute: Number(parts.minute),
+  };
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -48,7 +94,11 @@ export function timeLabel(input: string | number | Date, tz = DEFAULT_TZ): strin
 }
 
 /** « jeudi 12 novembre » (`capitalized` : « Jeudi 12 novembre »). */
-export function dayLong(input: string | number | Date, tz = DEFAULT_TZ, capitalized = false): string {
+export function dayLong(
+  input: string | number | Date,
+  tz = DEFAULT_TZ,
+  capitalized = false,
+): string {
   const c = civil(input, tz);
   const s = `${DAYS[c.weekday]} ${c.day} ${MONTHS[c.month - 1]}`;
   return nb(capitalized ? cap(s) : s);
@@ -66,7 +116,11 @@ export function dayShortTime(input: string | number | Date, tz = DEFAULT_TZ): st
 }
 
 /** « jeudi 12 novembre, 16 h 30 ». */
-export function dayLongTime(input: string | number | Date, tz = DEFAULT_TZ, capitalized = false): string {
+export function dayLongTime(
+  input: string | number | Date,
+  tz = DEFAULT_TZ,
+  capitalized = false,
+): string {
   return `${dayLong(input, tz, capitalized)}, ${timeLabel(input, tz)}`;
 }
 
@@ -76,7 +130,11 @@ export function timeRange(start: string, end: string, tz = DEFAULT_TZ): string {
 }
 
 /** Nom du jour seul (« jeudi », « Jeudi »). */
-export function weekdayName(input: string | number | Date, tz = DEFAULT_TZ, capitalized = false): string {
+export function weekdayName(
+  input: string | number | Date,
+  tz = DEFAULT_TZ,
+  capitalized = false,
+): string {
   const s = DAYS[civil(input, tz).weekday] ?? '';
   return capitalized ? cap(s) : s;
 }
@@ -85,7 +143,9 @@ export function weekdayName(input: string | number | Date, tz = DEFAULT_TZ, capi
 export function civilDayDiff(from: number, to: number, tz = DEFAULT_TZ): number {
   const a = civil(from, tz);
   const b = civil(to, tz);
-  return Math.round((Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day)) / 86_400_000);
+  return Math.round(
+    (Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day)) / 86_400_000,
+  );
 }
 
 /** Horodatage court d'une liste de conversations : « 2 min », « 1 h », « hier », « jeu. 12 nov. ». */

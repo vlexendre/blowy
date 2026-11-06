@@ -11,7 +11,10 @@ import { RealtimeClient, type RealtimeStatus } from './socket';
 
 type Listener = (events: WsEnvelope[]) => void;
 
-export const useRealtimeStatus = create<{ status: RealtimeStatus; revoked: string[] }>(() => ({ status: 'idle', revoked: [] }));
+export const useRealtimeStatus = create<{ status: RealtimeStatus; revoked: string[] }>(() => ({
+  status: 'idle',
+  revoked: [],
+}));
 
 interface Ctx {
   subscribe(room: string, l: Listener): () => void;

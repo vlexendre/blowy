@@ -3,7 +3,15 @@
  * `PurchasesProvider`, `usePurchases()`, `useOfferings()`, `useEntitlements()`, `useWallet()`.
  * Les DROITS viennent du backend (GET /v1/subscriptions/me), jamais du CustomerInfo du SDK.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SubscriptionMeResponse } from '@blowy/api-contract';
 import type { PurchasesApi } from '../api/purchases.api';
@@ -28,7 +36,12 @@ const KEYS = {
  * Monte le port choisi (RevenueCat réel ou LOCAL_DEMO) ; `userId` = identifiant Blowy de la
  * session (jamais l'email). `identify` est appelé après authentification, `reset` à la déconnexion.
  */
-export function PurchasesProvider({ port, api, userId, children }: PurchasesContextValue & { children: ReactNode }) {
+export function PurchasesProvider({
+  port,
+  api,
+  userId,
+  children,
+}: PurchasesContextValue & { children: ReactNode }) {
   const qc = useQueryClient();
   useEffect(() => {
     let cancelled = false;
@@ -64,10 +77,25 @@ function useCtx(): PurchasesContextValue {
 }
 
 /** Offerings du store (prix localisés réels) + sélection paywall (essai/−60 % seulement si réels). */
-export function useOfferings(): { offerings: Offerings | undefined; paywall: PaywallSelection | null; isLoading: boolean; error: unknown } {
+export function useOfferings(): {
+  offerings: Offerings | undefined;
+  paywall: PaywallSelection | null;
+  isLoading: boolean;
+  error: unknown;
+} {
   const { port, userId } = useCtx();
-  const q = useQuery({ queryKey: KEYS.offerings, queryFn: () => port.getOfferings(), enabled: !!userId, staleTime: 5 * 60_000 });
-  return { offerings: q.data, paywall: q.data ? selectPaywall(q.data) : null, isLoading: q.isLoading, error: q.error };
+  const q = useQuery({
+    queryKey: KEYS.offerings,
+    queryFn: () => port.getOfferings(),
+    enabled: !!userId,
+    staleTime: 5 * 60_000,
+  });
+  return {
+    offerings: q.data,
+    paywall: q.data ? selectPaywall(q.data) : null,
+    isLoading: q.isLoading,
+    error: q.error,
+  };
 }
 
 /** État d'abonnement et droits tels que décidés par le SERVEUR (mode LIVE/SANDBOX/LOCAL_DEMO inclus). */
@@ -78,8 +106,16 @@ export function useEntitlements(): {
   refresh: () => Promise<unknown>;
 } {
   const { api, userId } = useCtx();
-  const q = useQuery({ queryKey: KEYS.subscription, queryFn: () => api.subscription(), enabled: !!userId });
-  const has = useCallback((key: SubscriptionMeResponse['entitlements'][number]['key']) => !!q.data?.entitlements.some((e) => e.key === key), [q.data]);
+  const q = useQuery({
+    queryKey: KEYS.subscription,
+    queryFn: () => api.subscription(),
+    enabled: !!userId,
+  });
+  const has = useCallback(
+    (key: SubscriptionMeResponse['entitlements'][number]['key']) =>
+      !!q.data?.entitlements.some((e) => e.key === key),
+    [q.data],
+  );
   return { subscription: q.data, has, isLoading: q.isLoading, refresh: q.refetch };
 }
 
@@ -128,15 +164,31 @@ export function usePurchases() {
 export function useWallet(newCommandId: () => string) {
   const { api, userId } = useCtx();
   const qc = useQueryClient();
-  const wallet = useQuery({ queryKey: KEYS.wallet, queryFn: () => api.wallet(), enabled: !!userId });
-  const catalog = useQuery({ queryKey: ['economy', 'catalog'], queryFn: () => api.catalog(), enabled: !!userId, staleTime: 10 * 60_000 });
+  const wallet = useQuery({
+    queryKey: KEYS.wallet,
+    queryFn: () => api.wallet(),
+    enabled: !!userId,
+  });
+  const catalog = useQuery({
+    queryKey: ['economy', 'catalog'],
+    queryFn: () => api.catalog(),
+    enabled: !!userId,
+    staleTime: 10 * 60_000,
+  });
   const buy = useMutation({
-    mutationFn: ({ itemId, commandId }: { itemId: string; commandId?: string }) => api.purchaseItem(commandId ?? newCommandId(), itemId),
+    mutationFn: ({ itemId, commandId }: { itemId: string; commandId?: string }) =>
+      api.purchaseItem(commandId ?? newCommandId(), itemId),
     onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.wallet }),
   });
   const useFreeze = useMutation({
     mutationFn: (commandId?: string) => api.useStreakFreeze(commandId ?? newCommandId()),
     onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.wallet }),
   });
-  return { wallet: wallet.data, catalog: catalog.data, isLoading: wallet.isLoading, buyItem: buy.mutateAsync, useStreakFreeze: useFreeze.mutateAsync };
+  return {
+    wallet: wallet.data,
+    catalog: catalog.data,
+    isLoading: wallet.isLoading,
+    buyItem: buy.mutateAsync,
+    useStreakFreeze: useFreeze.mutateAsync,
+  };
 }

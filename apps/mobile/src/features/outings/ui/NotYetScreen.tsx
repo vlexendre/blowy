@@ -18,11 +18,21 @@ export function NotYetScreen() {
   const friends = useFriendsThisWeek();
   const city = (hood.data?.neighborhood?.name ?? '').split(/[ ·]/)[0] ?? '';
   const story = insights.data?.storyCompatible;
-  const line = !insights.data ? t('notYet.unavailable') : !story || 'notEnough' in story ? t('notYet.notEnough') : story.label;
+  const line = !insights.data
+    ? t('notYet.unavailable')
+    : !story || 'notEnough' in story
+      ? t('notYet.notEnough')
+      : story.label;
   return (
     <Frame pad={[56, 18, 22]} gap={10} testID="not-yet">
       <View style={{ flexDirection: 'row' }}>
-        <Pill label={t('notYet.chip', { city })} background={v5.white} shadow={v5.shadowCream} padding={[7, 12]} leading={<Glyph name="pin" size={12} />} />
+        <Pill
+          label={t('notYet.chip', { city })}
+          background={v5.white}
+          shadow={v5.shadowCream}
+          padding={[7, 12]}
+          leading={<Glyph name="pin" size={12} />}
+        />
       </View>
       <DisplayText size={36} lineHeight={0.92} style={{ marginTop: 16 }}>
         {t('notYet.title')}
@@ -42,8 +52,22 @@ export function NotYetScreen() {
         </BodyText>
       </CardV5>
       <View style={{ marginTop: 'auto', gap: 4 }}>
-        <Button variant="b2" label={t('notYet.friends')} loading={friends.isPending} onPress={() => week.data && friends.mutate(week.data.weekKey, { onSuccess: () => router.replace(paths.home) })} testID="not-yet-friends" />
-        <Button variant="ghost" tint={v5.ink} label={t('notYet.wait')} onPress={() => router.replace(paths.home)} />
+        <Button
+          variant="b2"
+          label={t('notYet.friends')}
+          loading={friends.isPending}
+          onPress={() =>
+            week.data &&
+            friends.mutate(week.data.weekKey, { onSuccess: () => router.replace(paths.home) })
+          }
+          testID="not-yet-friends"
+        />
+        <Button
+          variant="ghost"
+          tint={v5.ink}
+          label={t('notYet.wait')}
+          onPress={() => router.replace(paths.home)}
+        />
       </View>
     </Frame>
   );

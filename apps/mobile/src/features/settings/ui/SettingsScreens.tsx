@@ -312,7 +312,15 @@ export function PrivacyScreen() {
       <RowGroup>
         <WhoRow first who={t('privacy5.group')} what={t('privacy5.groupWhat')} />
         <WhoRow who={t('privacy5.band')} what={t('privacy5.bandWhat')} />
+        <WhoRow
+          who={t('privacy5.reliability')}
+          what={ruleV57('reliability_self').replace(/\.$/, '').toLowerCase()}
+        />
+        <WhoRow who={t('privacy5.avoided')} what={t('privacy5.avoidedWhat')} />
+        <WhoRow who={t('privacy5.cards')} what={t('privacy5.cardsWhat')} />
         <WhoRow who={t('privacy5.venue')} what={t('privacy5.venueWhat')} />
+        <WhoRow who={t('privacy5.duo')} what={t('privacy5.duoWhat')} />
+        <WhoRow who={t('privacy5.guardian')} what={t('privacy5.guardianWhat')} />
         <WhoRow who={t('privacy5.nobody')} what={t('privacy5.nobodyWhat')} />
       </RowGroup>
       <BodyText size={13} weight={700} lh={1.25} style={{ paddingHorizontal: 4 }}>
@@ -480,7 +488,7 @@ export function ReportScreen() {
           accessibilityRole="button"
           pressDepth={0}
           style={{
-            minHeight: 56,
+            minHeight: 44,
             borderRadius: 14,
             backgroundColor: 'rgba(0,0,0,0.22)',
             alignItems: 'center',
@@ -498,6 +506,15 @@ export function ReportScreen() {
           </BodyText>
         </Tap>
       </PopIn>
+      <BodyText
+        size={12}
+        weight={600}
+        lh={1.45}
+        color={v5.inkSoft}
+        style={{ paddingHorizontal: 4 }}
+      >
+        {t('report5.delays')}
+      </BodyText>
       {params.knows === '1' && params.outing ? (
         <KnowsSomeonePanel outingId={params.outing} />
       ) : null}
