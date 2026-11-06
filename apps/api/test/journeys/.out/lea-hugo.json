@@ -1,0 +1,24 @@
+{
+  "title": "Léa & Hugo : rencontre → chat → Lien → emménagement → photos → rupture",
+  "notes": [
+    "Match : aucun événement WS sur la room `user:` — la première personne qui a accepté ne découvre le match qu’en rafraîchissant (match.created n’est qu’un événement outbox, jamais projeté).",
+    "Montée du Lien vécue : ~21.4 XP/jour avec 5 jeux + 1 aller-retour de messages par jour → niveau 3 (500 XP) en ~24 jours, niveau 5 (1400 XP) en ~66 jours. Les étapes suivantes forcent le niveau (raccourci de test documenté).",
+    "Niveau 6 Plus : l’app annonce IRL_DATE + GUARDIAN dans les capacités, mais aucune route /safety-dates ni /guardian-invitations n’existe → l’utilisateur voit un palier débloqué qu’il ne peut pas utiliser.",
+    "Après une rupture, Léa ne peut plus relire la conversation (404) : le message système « départ propre » n’est jamais visible pour elle, l’historique disparaît d’un coup.",
+    "WS : `relationship.ended` est projeté dans la room de relation, mais `realtime.revoke` retire la socket de cette room dans la même vague → Léa ne reçoit jamais l’événement en direct ; elle apprend la rupture en rechargeant."
+  ],
+  "absents": [
+    {
+      "name": "Rendez-vous en vrai : proposition de lieu public, confirmation des deux, check-in, confirmation après coup",
+      "why": "aucune route /v1/safety-dates (§11, §13)"
+    },
+    {
+      "name": "Ange gardien : invitation d’un ami du Quartier, partage de position 3 h max, révocation",
+      "why": "aucune route /v1/guardian-invitations ni partage de position (§11)"
+    },
+    {
+      "name": "Garde d’un bébé commun après rupture (alternance hebdo, transition, sécurité)",
+      "why": "aucun module œuf/bébé/garde : routes /eggs, /incubation, /children, /custody absentes (§8)"
+    }
+  ]
+}

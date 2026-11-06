@@ -1,0 +1,7 @@
+{
+  "title": "Export et suppression de compte : ce que voit l’autre",
+  "notes": [
+    "Après suppression, une reconnexion avec la même identité renvoie 200 (nouveau compte vierge)."
+  ],
+  "absents": []
+}

@@ -1,0 +1,8 @@
+{
+  "title": "Concurrence : deux téléphones, idempotence, hors ligne, resync WS",
+  "notes": [
+    "Même clientMessageId avec un AUTRE texte : 200 (renvoie l’ancien message) au lieu de 409 CLIENT_MESSAGE_ID_REUSED documenté — un brouillon modifié hors ligne est perdu silencieusement.",
+    "Révocation d’une session : l’iPad ne peut plus appeler l’API mais sa socket WS reste connectée et continue de recevoir les messages (aucun `realtime.disconnect` à la révocation d’appareil)."
+  ],
+  "absents": []
+}

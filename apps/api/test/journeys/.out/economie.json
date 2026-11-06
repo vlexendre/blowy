@@ -1,0 +1,17 @@
+{
+  "title": "Économie : achat démo, triche, dépenses concurrentes, remboursement",
+  "notes": [
+    "Idempotence /purchases/local-demo : la même Idempotency-Key réutilisée avec un AUTRE payload (SUBSCRIBE au lieu de BUY_COINS) est exécutée (200, état ACTIVE) au lieu de 409 IDEMPOTENCY_CONFLICT.",
+    "Dépenses concurrentes : des achats restent bloqués > 20 s (délai client dépassé, statut 0) — attente de verrou/pool de connexions saturé.",
+    "Dépenses concurrentes : 0/7 réussies, refus 500 INTERNAL, 0 PROVIDER_UNAVAILABLE.",
+    "Dépenses concurrentes : les achats perdants renvoient 500 INTERNAL (après ~20 s de retries/attente de verrou) au lieu d’un refus propre « solde insuffisant ». Le solde reste juste, mais l’app afficherait une erreur serveur.",
+    "Gel de série : utilisation refusée (412 PRECONDITION_FAILED) — pas de série quotidienne en place à protéger.",
+    "Webhook RevenueCat en BILLING_PROVIDER=local_demo : achat + remboursement acceptés (200) mais ignorés (transaction non enregistrée, solde 1080 → 1080). Aucune action REFUND dans /purchases/local-demo : le remboursement n’est testable qu’avec le fournisseur RevenueCat réel/sandbox."
+  ],
+  "absents": [
+    {
+      "name": "Remboursement d’un achat (pièces ou Blowy+) en démo locale : contre-écriture REFUND_REVERSAL, droits retirés",
+      "why": "LOCAL_DEMO n’expose que SUBSCRIBE/CANCEL/EXPIRE/BUY_COINS ; webhooks ignorés dans ce mode (couvert seulement par les tests unitaires/intégration du module économie)"
+    }
+  ]
+}

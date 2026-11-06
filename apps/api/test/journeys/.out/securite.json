@@ -1,0 +1,14 @@
+{
+  "title": "Sécurité : harcèlement → signalement → blocage ; IDOR ; mineur",
+  "notes": [
+    "Après blocage, Victor qui tente de signaler Nora via l’ancienne relation reçoit 200.",
+    "Clara ne peut PAS signaler un profil qui lui est proposé (pet vu dans la proposition, pas encore de relation) : 404 NOT_FOUND. Le seul moyen serait d’accepter le match d’abord — signaler un mineur exige donc de « matcher » avec lui.",
+    "Date de naissance verrouillée : code PRECONDITION_FAILED / detailsSafe {\"reason\":\"BIRTHDATE_LOCKED\"} au lieu du code documenté BIRTHDATE_LOCKED (docs/api/commands.md)."
+  ],
+  "absents": [
+    {
+      "name": "Carte Blowy+ : Victor ne voit plus Nora sur la carte",
+      "why": "aucune route de carte (§11) — rien à vérifier côté API"
+    }
+  ]
+}
