@@ -13,7 +13,8 @@ import { runOnce } from './jobs/scheduler.js';
 import { RealtimeRelayEffect, redisPublish } from './realtime/redis-realtime.publisher.js';
 import { createLogger } from './shared/infrastructure/logging/logger.js';
 import { createRedis } from './shared/infrastructure/redis/redis.js';
-import { DB } from './shared/shared.tokens.js';
+import { CLOCK, DB } from './shared/shared.tokens.js';
+import type { Clock } from './shared/application/clock.js';
 import { AI_TASK_QUEUE } from './shared/application/ports/ai.port.js';
 import type { SwitchableAiTaskQueue } from './shared/infrastructure/ai/ai-task-queue.js';
 
@@ -22,6 +23,7 @@ const log = createLogger(config.LOG_LEVEL, { entry: 'worker' });
 const redis = createRedis(config.REDIS_URL);
 const ctx = await NestFactory.createApplicationContext(AppModule.forRoot({ config, redis }), { logger: false });
 const db = ctx.get<Db>(DB);
+const clock = ctx.get<Clock>(CLOCK);
 const graph = buildWorkerGraph(ctx, [new RealtimeRelayEffect(redisPublish(redis))]);
 
 // Jobs récurrents : file BullMQ « blowy-jobs » ; chaque job a un scheduler idempotent.
@@ -37,7 +39,7 @@ const worker = new Worker(
   async (job) => {
     const def = byName.get(job.name);
     if (!def) return;
-    const r = await runOnce(db, def, new Date());
+    const r = await runOnce(db, def, clock);
     log.info({ job: job.name, result: r }, 'job_done');
   },
   { connection, concurrency: 2 },
@@ -49,7 +51,7 @@ let stopping = false;
 const loop = async () => {
   while (!stopping) {
     try {
-      const n = await graph.dispatcher.drainOnce(new Date());
+      const n = await graph.dispatcher.drainOnce(clock.now());
       if (n === 0) await new Promise((r) => setTimeout(r, config.WORKER_OUTBOX_POLL_MS));
     } catch (err) {
       log.error({ err: (err as Error).message }, 'outbox_loop_error');

@@ -15,3 +15,23 @@ export type EggId = Brand<string, 'EggId'>;
 export type CommandId = Brand<string, 'CommandId'>;
 
 export const asId = <T extends Brand<string, string>>(raw: string): T => raw as T;
+
+// ---- V5 (spec-v5 §2) ----
+export type NeighborhoodId = Brand<string, 'NeighborhoodId'>;
+export type VenueId = Brand<string, 'VenueId'>;
+export type VenueSlotId = Brand<string, 'VenueSlotId'>;
+export type OutingRequestId = Brand<string, 'OutingRequestId'>;
+export type OutingId = Brand<string, 'OutingId'>;
+export type OutingSeatId = Brand<string, 'OutingSeatId'>;
+export type CompositionRunId = Brand<string, 'CompositionRunId'>;
+export type BandLinkId = Brand<string, 'BandLinkId'>;
+export type DuoId = Brand<string, 'DuoId'>;
+export type DuoDateId = Brand<string, 'DuoDateId'>;
+export type GuardianLinkId = Brand<string, 'GuardianLinkId'>;
+export type SafetyAlertId = Brand<string, 'SafetyAlertId'>;
+export type PetMemoryId = Brand<string, 'PetMemoryId'>;
+export type PaymentId = Brand<string, 'PaymentId'>;
+export type AccessoryId = Brand<string, 'AccessoryId'>;
+
+/** Clé canonique d'une paire non ordonnée « min|max » (blocages, déjà vus, votes). */
+export const pairKey = (a: string, b: string): string => (a < b ? `${a}|${b}` : `${b}|${a}`);

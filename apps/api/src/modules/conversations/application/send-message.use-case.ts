@@ -20,6 +20,9 @@ export interface ConsentFacts {
 
 const MAX_PER_MINUTE = 20;
 
+const clientMessageIdReused = () =>
+  new AppError('IDEMPOTENCY_CONFLICT', 'Ce clientMessageId a déjà servi pour un autre contenu', { detailsSafe: { reason: 'CLIENT_MESSAGE_ID_REUSED' } });
+
 export class SendMessageUseCase {
   constructor(
     private readonly bus: CommandBus,
@@ -56,9 +59,17 @@ export class SendMessageUseCase {
       payload: { conversationId, ...req, ...(voiceMediaId ? { mediaId: voiceMediaId } : {}) },
       handle: async (scope) => {
         // Déduplication par clientMessageId (double tap / renvoi hors ligne avec autre commandId).
+        // Verrou auteur : deux envois simultanés du même clientMessageId (deux appareils) sont
+        // sérialisés, le second voit le premier au lieu d'échouer sur l'unicité.
+        await scope.lock.users([actorId]);
         const dup = await this.repo.findByClientId(scope, actorId, req.clientMessageId);
         if (dup) {
-          if (dup.conversationId !== conversationId) throw Errors.conflict('CLIENT_MESSAGE_ID_REUSED');
+          // Même clientMessageId = même message : tout autre contenu (autre conversation, autre
+          // texte, autre média) est un conflit explicite, jamais un remplacement ni un doublon (B8).
+          const sameContent =
+            dup.conversationId === conversationId &&
+            (voiceMediaId ? dup.mediaId === voiceMediaId : dup.kind !== 'VOICE' && (dup.body === null || dup.body === req.body));
+          if (!sameContent) throw clientMessageIdReused();
           return toMessageView(dup, actorId)!;
         }
         const id = this.random.uuid();

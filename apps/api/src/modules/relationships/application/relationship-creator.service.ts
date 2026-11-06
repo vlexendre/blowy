@@ -4,7 +4,7 @@ import type { EngineGateway } from '../../../shared/application/ports/engine.gat
 import type { RelationshipCreator } from '../../../shared/application/ports/relationship-creator.port.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { Errors } from '../../../shared/domain/errors.js';
-import { REL_EVENTS, SYSTEM_TEMPLATES } from '../domain/relationship-events.js';
+import { SYSTEM_TEMPLATES } from '../domain/relationship-events.js';
 import type { RelationshipLifecycle } from './relationship-lifecycle.service.js';
 import type { ConversationAdmin } from './ports/relationship-side-effects.port.js';
 import type { RelationshipRepository } from './ports/relationship.repository.js';
@@ -51,7 +51,7 @@ export class RelationshipCreatorService implements RelationshipCreator {
     await this.conversations.create(scope, { id: conversationId, contextId, kind: 'DATE', memberIds: [...input.users] });
     await this.conversations.postSystemMessage(scope, conversationId, SYSTEM_TEMPLATES.MATCHED);
     const ctx = (await this.repo.load(scope, contextId))!;
-    await this.lifecycle.touched(scope, ctx, REL_EVENTS.CREATED, null);
+    await this.lifecycle.created(scope, ctx, conversationId);
     return { contextId, conversationId };
   }
 }

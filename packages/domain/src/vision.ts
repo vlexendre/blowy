@@ -48,7 +48,10 @@ export interface Vision {
   limit: Limit;
 }
 
-/** Intentions d'onboarding (arbitrage 5.7). Privées, jamais exposées. */
+/**
+ * Intentions d'onboarding (arbitrage 5.7). Privées, jamais exposées.
+ * @deprecated V5 — remplacées par `IntentionsV5` (D-014) ; conservées pour le mapping `mapLegacyIntention`.
+ */
 export const INTENTIONS = ['FRIENDS_ONE', 'FRIENDS_GROUP', 'OPEN_TO_MORE', 'LET_IT_HAPPEN'] as const;
 export type Intention = (typeof INTENTIONS)[number];
 

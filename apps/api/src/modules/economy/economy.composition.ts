@@ -106,7 +106,7 @@ export function composeEconomy(deps: EconomyDeps) {
     receiveWebhook,
     monthly,
     consumeBoost: new ConsumeBoostUseCase(uow, catalog),
-    localDemo: new LocalDemoPurchaseUseCase(provider, provider instanceof LocalDemoBillingProvider ? (provider as LocalDemoControl) : null, records, sync),
+    localDemo: new LocalDemoPurchaseUseCase(provider, provider instanceof LocalDemoBillingProvider ? (provider as LocalDemoControl) : null, records, sync, bus),
     admin: new AdminEconomyUseCases(bus, ledger, records, processWebhook, reconcile),
     referralReward: new GrantReferralRewardUseCase(ledger),
     outboxConsumers: [new EconomyRelationshipConsumer(relationshipEntitlements), new EconomyReferralRewardConsumer(new GrantReferralRewardUseCase(ledger))],

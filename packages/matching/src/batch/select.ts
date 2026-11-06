@@ -8,6 +8,7 @@ import type { ExclusionReason, MatchProfile, PairFacts, ScoreBreakdown } from '.
 import { firstExclusion } from '../filters/index.js';
 import { scoreVision } from '../score/index.js';
 import { exposureAdjustment, type ExposureStats } from './exposure.js';
+import { fnv1a } from '../shared/hash.js';
 
 export interface CandidateInput {
   profile: MatchProfile;
@@ -32,16 +33,6 @@ export interface BatchResult {
   /** Vrai nombre de candidats admissibles (jamais gonflé). */
   eligibleCount: number;
   state: 'OK' | 'EMPTY_ZONE';
-}
-
-/** Hachage FNV-1a 32 bits pour un départage déterministe. */
-function fnv1a(s: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return h >>> 0;
 }
 
 export function selectBatch(viewer: MatchProfile, candidates: readonly CandidateInput[], seed: string, t: Tuning): BatchResult {

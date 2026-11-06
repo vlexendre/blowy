@@ -1,6 +1,6 @@
 /** Contrats /v1/pets (propriétaire : agent C). */
 import { z } from 'zod';
-import { LIMITS, MAX_PASSIONS, PASSIONS, PET_POSES, SCHOOLS, SPECIES, STAGES, SUNDAYS } from '@blowy/domain';
+import { ACCESSORY_EQUIP_CAP, ACCESSORY_SOURCES, ANONYMOUS_WORDS, LIMITS, MAX_PASSIONS, PASSIONS, PET_MEMORY_KINDS, PET_POSES, SCHOOLS, SPECIES, STAGES, SUNDAYS } from '@blowy/domain';
 import { IsoDateTimeSchema, UuidSchema } from './core/common.js';
 
 export const SpeciesSchema = z.enum(SPECIES);
@@ -84,3 +84,83 @@ export const MovePetRequestSchema = z.object({
   relationshipId: UuidSchema.optional(),
 });
 export type MovePetRequest = z.infer<typeof MovePetRequestSchema>;
+
+// ============================================================================ V5 (spec-v5 §5, §7.4 « Pets »)
+// Plus de jauges ni d'actions de soin : le pet grandit avec les souvenirs (D-021).
+
+export const PetMemoryKindSchema = z.enum(PET_MEMORY_KINDS);
+export const AccessorySourceSchema = z.enum(ACCESSORY_SOURCES);
+/** Clé d'accessoire (`@blowy/content` ACCESSORIES). */
+export const AccessoryIdSchema = z.string().regex(/^[a-z0-9_]{1,48}$/);
+export const ThreeWordSchema = z.enum(ANONYMOUS_WORDS);
+
+/**
+ * Carte de pet montrée aux autres (sortie, bande, duo) : espèce, nom, accessoires portés,
+ * 3 traits de vision (clés de contenu). Aucune donnée humaine.
+ */
+export const PetCardSchema = z
+  .object({
+    name: z.string(),
+    species: SpeciesSchema,
+    stage: StageSchema.optional(),
+    equipped: z.array(AccessoryIdSchema).max(ACCESSORY_EQUIP_CAP),
+    traits: z.array(z.string().min(1).max(64)).max(3),
+  })
+  .strict();
+export type PetCard = z.infer<typeof PetCardSchema>;
+
+/** `GET /v1/pets/mine` (V5). */
+export const OwnPetViewV5Schema = z.object({
+  id: UuidSchema,
+  name: z.string(),
+  species: SpeciesSchema,
+  stage: StageSchema,
+  /** Jamais SICK / HUNGRY / SAD en V5. */
+  pose: PoseSchema.exclude(['SICK', 'HUNGRY', 'SAD']),
+  equipped: z.array(AccessoryIdSchema).max(ACCESSORY_EQUIP_CAP),
+  unlockedAccessories: z.array(AccessoryIdSchema),
+  memoryCount: z.number().int().nonnegative(),
+  /** Prochain stade et progression (‰) ; null au stade adulte. */
+  nextStageAt: z.object({ stage: StageSchema, progressPermille: z.number().int().min(0).max(1000) }).nullable(),
+  engineVersion: z.string(),
+  version: z.number().int().nonnegative(),
+});
+export type OwnPetViewV5 = z.infer<typeof OwnPetViewV5Schema>;
+
+/** Souvenir (`GET /v1/pets/mine/memories`) : jamais de donnée d'autrui non déjà visible. */
+export const PetMemoryViewSchema = z.object({
+  id: UuidSchema,
+  kind: PetMemoryKindSchema,
+  /** Clé de texte `memory.<kind>` (`@blowy/content`). */
+  labelKey: z.string(),
+  data: z
+    .object({
+      species: SpeciesSchema.optional(),
+      weekKey: z.string().optional(),
+      venueName: z.string().optional(),
+      petCount: z.number().int().nonnegative().optional(),
+      speciesPresent: z.array(SpeciesSchema).optional(),
+      otherPetName: z.string().optional(),
+      otherPetSpecies: SpeciesSchema.optional(),
+      n: z.number().int().positive().optional(),
+    })
+    .strict(),
+  createdAt: IsoDateTimeSchema,
+});
+export type PetMemoryView = z.infer<typeof PetMemoryViewSchema>;
+export const PetMemoryPageSchema = z.object({ items: z.array(PetMemoryViewSchema), nextCursor: z.string().nullable() });
+
+/** `PUT /v1/pets/mine/accessories` (`pets.equip`) ; 412 `ACCESSORY_NOT_UNLOCKED`. */
+export const EquipAccessoriesRequestSchema = z.object({
+  equipped: z.array(AccessoryIdSchema).max(ACCESSORY_EQUIP_CAP).refine((a) => new Set(a).size === a.length, { message: 'accessoire en double' }),
+});
+export type EquipAccessoriesRequest = z.infer<typeof EquipAccessoriesRequestSchema>;
+export const PET_FAILURE_REASONS_V5 = ['ACCESSORY_NOT_UNLOCKED'] as const;
+
+/** `pet.updated` (V5, salle `user:`). */
+export const PetUpdatedEventV5Schema = z.object({
+  petId: UuidSchema,
+  stage: StageSchema,
+  memoryAdded: z.object({ kind: PetMemoryKindSchema }).optional(),
+  accessoryUnlocked: AccessoryIdSchema.optional(),
+});

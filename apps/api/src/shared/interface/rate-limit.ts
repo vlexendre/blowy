@@ -4,6 +4,7 @@
  */
 import type { NextFunction, Response } from 'express';
 import type { Redis } from 'ioredis';
+import type { Clock } from '../application/clock.js';
 import { toApiError } from './error.filter.js';
 import { AppError } from '../domain/errors.js';
 import type { BlowyRequest } from './request-context.js';
@@ -15,8 +16,9 @@ export interface RateLimiter {
 
 export class MemoryRateLimiter implements RateLimiter {
   private readonly buckets = new Map<string, { n: number; until: number }>();
+  constructor(private readonly clock: Clock) {}
   async hit(key: string, windowSec: number): Promise<number> {
-    const now = Date.now();
+    const now = this.clock.now().getTime();
     const b = this.buckets.get(key);
     if (!b || b.until <= now) {
       this.buckets.set(key, { n: 1, until: now + windowSec * 1000 });
@@ -28,9 +30,12 @@ export class MemoryRateLimiter implements RateLimiter {
 }
 
 export class RedisRateLimiter implements RateLimiter {
-  constructor(private readonly redis: Redis) {}
+  constructor(
+    private readonly redis: Redis,
+    private readonly clock: Clock,
+  ) {}
   async hit(key: string, windowSec: number): Promise<number> {
-    const bucket = `rl:${key}:${Math.floor(Date.now() / (windowSec * 1000))}`;
+    const bucket = `rl:${key}:${Math.floor(this.clock.now().getTime() / (windowSec * 1000))}`;
     const res = await this.redis.multi().incr(bucket).expire(bucket, windowSec + 1).exec();
     return Number(res?.[0]?.[1] ?? 0);
   }

@@ -13,7 +13,7 @@ Vérifié par `test/unit/architecture.test.ts` (aucun import Nest/Prisma/infra d
 
 ## Briques transverses `src/shared/` (écrites une seule fois)
 - `application/command-bus.ts` — **Command** : idempotence (actorId, operation, commandId) via `CommandRecord`, IDEMPOTENCY_CONFLICT si payload différent, transaction (UnitOfWork), résultat mémorisé.
-- `application/unit-of-work.ts` + `infrastructure/prisma/prisma-unit-of-work.ts` — **Unit of Work** : `TxScope { now, lock, outbox }`, verrous ordonnés `users → pets → relationships → wallets` (`OrderedLocker`, `SELECT … FOR UPDATE`, ordre violé = erreur), retry deadlock/sérialisation borné (`@blowy/database` `runInTransaction`).
+- `application/unit-of-work.ts` + `infrastructure/prisma/prisma-unit-of-work.ts` — **Unit of Work** : `TxScope { now, lock, outbox }`, verrous ordonnés `users → pets → relationships → wallets` (`OrderedLocker`, `SELECT … FOR NO KEY UPDATE`, `lock_timeout` 4 s, ordre violé = erreur ; contention → 409 retryable), retry deadlock/sérialisation borné (`@blowy/database` `runInTransaction`).
 - `application/outbox-consumer.ts` + `infrastructure/outbox/outbox-dispatcher.ts` — **Outbox/Observer** : `OutboxConsumer` (effet transactionnel, dédupliqué par `ConsumerDeduplication`) et `OutboxEffect` (effet externe hors transaction : modération, relais WS).
 - `application/event-publisher.ts` + `projection.ts` — projection **par destinataire** (`ProjectionEntry`, séquence propre au lecteur, curseur opaque `p1:<seq>` base64url) : un événement privé omis ne crée jamais de trou.
 - `application/clock.ts` — `Clock` / `RandomSource` injectables (aucun `Date.now` dans les use cases ; tests avec `FixedClock`).

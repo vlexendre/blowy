@@ -21,6 +21,10 @@ export interface AnonymousRepository {
   listOwn(userId: string, cursor: string | undefined, limit: number): Promise<{ items: { id: string; words: string[]; createdAt: Date; hiddenAt: Date | null; reportedAt: Date | null }[]; nextCursor: string | null }>;
   ownPage(userId: string): Promise<{ slug: string | null; enabled: boolean }>;
   setPageEnabled(scope: TxScope, userId: string, enabled: boolean): Promise<{ slug: string | null }>;
+  /** Prénom affichable et slug actuel (sous verrou User de l'appelant). */
+  pageOwner(scope: TxScope, userId: string): Promise<{ displayName: string; slug: string | null } | null>;
+  /** Pose le slug s'il est libre et que l'utilisateur n'en a pas ; false si déjà pris. */
+  assignSlug(scope: TxScope, userId: string, slug: string): Promise<boolean>;
   /** Le propriétaire masque (retire) ou signale UNE de SES réponses. */
   hideOwn(scope: TxScope, userId: string, responseId: string): Promise<boolean>;
   reportOwn(scope: TxScope, userId: string, responseId: string): Promise<boolean>;

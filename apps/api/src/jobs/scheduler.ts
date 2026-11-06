@@ -5,6 +5,7 @@
  */
 import type { Db } from '@blowy/database';
 import { isUniqueViolation } from '@blowy/database';
+import type { Clock } from '../shared/application/clock.js';
 
 export interface RecurringJob {
   name: string;
@@ -14,8 +15,9 @@ export interface RecurringJob {
   run(now: Date): Promise<unknown>;
 }
 
-/** Exécute un job au plus une fois par fenêtre (JobExecution unique). */
-export async function runOnce(db: Db, job: RecurringJob, now: Date): Promise<'RAN' | 'SKIPPED'> {
+/** Exécute un job au plus une fois par fenêtre (JobExecution unique) ; heures lues sur l'horloge injectée. */
+export async function runOnce(db: Db, job: RecurringJob, clock: Clock): Promise<'RAN' | 'SKIPPED'> {
+  const now = clock.now();
   const wk = job.windowKey?.(now) ?? null;
   const jobKey = wk ? `${job.name}:${wk}` : null;
   let execId: string | null = null;
@@ -32,10 +34,10 @@ export async function runOnce(db: Db, job: RecurringJob, now: Date): Promise<'RA
   }
   try {
     const stats = await job.run(now);
-    if (execId) await db.jobExecution.update({ where: { id: execId }, data: { status: 'SUCCEEDED', finishedAt: new Date(), stats: (stats ?? null) as object } });
+    if (execId) await db.jobExecution.update({ where: { id: execId }, data: { status: 'SUCCEEDED', finishedAt: clock.now(), stats: (stats ?? null) as object } });
     return 'RAN';
   } catch (err) {
-    if (execId) await db.jobExecution.update({ where: { id: execId }, data: { status: 'FAILED', finishedAt: new Date(), error: String((err as Error).message).slice(0, 500) } });
+    if (execId) await db.jobExecution.update({ where: { id: execId }, data: { status: 'FAILED', finishedAt: clock.now(), error: String((err as Error).message).slice(0, 500) } });
     throw err;
   }
 }

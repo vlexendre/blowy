@@ -1,4 +1,5 @@
 import { isUniqueViolation, uuidv7, type Db } from '@blowy/database';
+import type { Clock } from '../../../shared/application/clock.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { txOf } from '../../../shared/infrastructure/prisma/prisma-unit-of-work.js';
 import type { AiInvalidation, CaseRow, DecisionRow, TrustRepository, VerificationRow } from '../application/ports/trust.repository.js';
@@ -17,10 +18,26 @@ export class PrismaTrustRepository implements TrustRepository {
     if (!sides.some((s) => s.userId === actorId)) return null;
     return sides.find((s) => s.userId !== actorId)?.userId ?? null;
   }
+  /**
+   * Personne propriétaire d'un pet que l'acteur a PU VOIR (signaler/bloquer partout, §19, B4) :
+   * relation partagée (même terminée), proposition de matching qui lui a été faite (quel que soit
+   * son statut), ou conversation commune (chat de groupe). Sinon null → 404 neutre (anti-IDOR).
+   */
   async targetFromPet(actorId: string, petId: string) {
-    // Seulement un pet avec lequel l'acteur partage (ou a partagé) une relation.
     const side = await this.db.relationshipSide.findFirst({ where: { petId, context: { sides: { some: { userId: actorId } } } }, select: { userId: true } });
-    return side && side.userId !== actorId ? side.userId : null;
+    if (side) return side.userId !== actorId ? side.userId : null;
+    const proposal = await this.db.matchProposal.findFirst({
+      where: { OR: [{ petLowId: petId, userHighId: actorId }, { petHighId: petId, userLowId: actorId }] },
+      select: { userLowId: true, userHighId: true, petLowId: true },
+    });
+    if (proposal) return proposal.petLowId === petId ? proposal.userLowId : proposal.userHighId;
+    const ownerId = (await this.db.pet.findUnique({ where: { id: petId }, select: { primaryOwnerId: true } }))?.primaryOwnerId;
+    if (!ownerId || ownerId === actorId) return null;
+    const shared = await this.db.conversationMember.findFirst({
+      where: { userId: ownerId, conversation: { members: { some: { userId: actorId } } } },
+      select: { id: true },
+    });
+    return shared ? ownerId : null;
   }
   async targetFromMessage(actorId: string, messageId: string) {
     const m = await this.db.message.findUnique({ where: { id: messageId }, select: { authorUserId: true, status: true, conversation: { select: { members: { select: { userId: true } } } } } });
@@ -263,31 +280,38 @@ export class PrismaTrustRepository implements TrustRepository {
 }
 
 export class PrismaAiInvalidation implements AiInvalidation {
-  constructor(private readonly db: Db) {}
+  constructor(
+    private readonly db: Db,
+    private readonly clock: Clock,
+  ) {}
   private c(scope: TxScope | null): C {
     return scope ? txOf(scope) : this.db;
+  }
+  /** Heure de la commande si transactionnelle, sinon horloge injectée (jamais l'heure système). */
+  private at(scope: TxScope | null): Date {
+    return scope?.now ?? this.clock.now();
   }
   async cancelForUser(scope: TxScope | null, userId: string, reason: string, kinds?: readonly string[]) {
     const c = this.c(scope);
     const where = { userId, ...(kinds ? { kind: { in: [...kinds] } } : {}) };
-    const n = await c.aIJob.updateMany({ where: { ...where, status: { in: ['QUEUED', 'RUNNING', 'FAILED'] } }, data: { status: 'CANCELLED', cancelledAt: new Date(), cancelReason: reason } });
+    const n = await c.aIJob.updateMany({ where: { ...where, status: { in: ['QUEUED', 'RUNNING', 'FAILED'] } }, data: { status: 'CANCELLED', cancelledAt: this.at(scope), cancelReason: reason } });
     const jobs = await c.aIJob.findMany({ where, select: { id: true } });
-    await c.aIResult.updateMany({ where: { jobId: { in: jobs.map((j) => j.id) }, invalidatedAt: null }, data: { invalidatedAt: new Date() } });
+    await c.aIResult.updateMany({ where: { jobId: { in: jobs.map((j) => j.id) }, invalidatedAt: null }, data: { invalidatedAt: this.at(scope) } });
     return n.count;
   }
   async cancelForContexts(scope: TxScope | null, contextIds: readonly string[], reason: string) {
     if (!contextIds.length) return 0;
     const c = this.c(scope);
-    const n = await c.aIJob.updateMany({ where: { contextId: { in: [...contextIds] }, status: { in: ['QUEUED', 'RUNNING', 'FAILED'] } }, data: { status: 'CANCELLED', cancelledAt: new Date(), cancelReason: reason } });
+    const n = await c.aIJob.updateMany({ where: { contextId: { in: [...contextIds] }, status: { in: ['QUEUED', 'RUNNING', 'FAILED'] } }, data: { status: 'CANCELLED', cancelledAt: this.at(scope), cancelReason: reason } });
     const jobs = await c.aIJob.findMany({ where: { contextId: { in: [...contextIds] } }, select: { id: true } });
-    await c.aIResult.updateMany({ where: { jobId: { in: jobs.map((j) => j.id) }, invalidatedAt: null }, data: { invalidatedAt: new Date() } });
+    await c.aIResult.updateMany({ where: { jobId: { in: jobs.map((j) => j.id) }, invalidatedAt: null }, data: { invalidatedAt: this.at(scope) } });
     const convs = await c.conversation.findMany({ where: { contextId: { in: [...contextIds] } }, select: { id: true } });
-    await c.suggestion.updateMany({ where: { conversationId: { in: convs.map((x) => x.id) }, invalidatedAt: null }, data: { invalidatedAt: new Date() } });
+    await c.suggestion.updateMany({ where: { conversationId: { in: convs.map((x) => x.id) }, invalidatedAt: null }, data: { invalidatedAt: this.at(scope) } });
     await c.conversationSignal.deleteMany({ where: { conversationId: { in: convs.map((x) => x.id) } } });
     return n.count;
   }
   async invalidateSuggestionsForUser(scope: TxScope | null, userId: string) {
-    await this.c(scope).suggestion.updateMany({ where: { userId, invalidatedAt: null }, data: { invalidatedAt: new Date() } });
+    await this.c(scope).suggestion.updateMany({ where: { userId, invalidatedAt: null }, data: { invalidatedAt: this.at(scope) } });
   }
   async deleteSignalsForUser(scope: TxScope | null, userId: string) {
     const convs = await this.c(scope).conversationMember.findMany({ where: { userId }, select: { conversationId: true } });
@@ -297,6 +321,6 @@ export class PrismaAiInvalidation implements AiInvalidation {
     return this.db.aIJob.findMany({ where: { ...(q.status ? { status: q.status as never } : {}), ...(q.kind ? { kind: q.kind } : {}), ...page(q.after) }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: q.limit });
   }
   async setJobStatus(id: string, status: 'QUEUED' | 'CANCELLED', reason: string | null) {
-    await this.db.aIJob.update({ where: { id }, data: { status, ...(status === 'CANCELLED' ? { cancelledAt: new Date(), cancelReason: reason } : { cancelledAt: null, cancelReason: null, attempts: 0 }) } });
+    await this.db.aIJob.update({ where: { id }, data: { status, ...(status === 'CANCELLED' ? { cancelledAt: this.clock.now(), cancelReason: reason } : { cancelledAt: null, cancelReason: null, attempts: 0 }) } });
   }
 }

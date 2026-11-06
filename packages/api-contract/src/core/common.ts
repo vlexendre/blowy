@@ -21,3 +21,9 @@ export const pageOf = <T extends z.ZodType>(item: T) =>
 /** Mode d'intégration exposé honnêtement au client (jamais « opérationnel » si simulé). */
 export const IntegrationModeSchema = z.enum(['LIVE', 'SANDBOX', 'LOCAL_DEMO', 'NOT_CONFIGURED']);
 export type IntegrationMode = z.infer<typeof IntegrationModeSchema>;
+
+/** Semaine ISO du quartier, ex. `2026-W46` (spec-v5 §1). */
+export const WeekKeySchema = z.string().regex(/^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/);
+/** Montants en centimes entiers ; le serveur fixe toujours le montant. */
+export const AmountCentsSchema = z.number().int().positive();
+export const CurrencySchema = z.enum(['EUR']);

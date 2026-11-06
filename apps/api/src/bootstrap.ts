@@ -9,7 +9,8 @@ import type { Redis } from 'ioredis';
 import { AppModule } from './app.module.js';
 import type { AppConfig } from './config/env.js';
 import type { CoreOverrides } from './shared/core.module.js';
-import { LOGGER, PARTICIPATION_READER, PROJECTION_READER, SESSION_RESOLVER } from './shared/shared.tokens.js';
+import { CLOCK, LOGGER, PARTICIPATION_READER, PROJECTION_READER, SESSION_RESOLVER } from './shared/shared.tokens.js';
+import type { Clock } from './shared/application/clock.js';
 import { RealtimeGateway } from './realtime/realtime.gateway.js';
 import type { SessionResolver } from './shared/interface/auth.guard.js';
 import type { ParticipationReader } from './shared/application/ports/participation.reader.js';
@@ -33,7 +34,8 @@ export async function buildApp(opts: BuildOptions): Promise<INestApplication> {
   app.disable('x-powered-by');
   app.enableCors({ origin: opts.config.corsOrigins.length ? opts.config.corsOrigins : false, credentials: false });
   app.use(requestIdMiddleware(logger));
-  const limiter = opts.redis ? new RedisRateLimiter(opts.redis) : new MemoryRateLimiter();
+  const clock = app.get<Clock>(CLOCK);
+  const limiter = opts.redis ? new RedisRateLimiter(opts.redis, clock) : new MemoryRateLimiter(clock);
   app.use(rateLimitMiddleware(limiter, opts.config.RATE_LIMIT_PER_MINUTE));
   // Corps brut conservé pour l'authentification HMAC des webhooks (Veriff signe le corps brut).
   // `rawBody: true` (NestFactory) conserve le corps brut : authentification HMAC des webhooks (Veriff).
@@ -58,5 +60,6 @@ export function attachRealtime(app: INestApplication, corsOrigins: string[]): Re
     projections: app.get<ProjectionReader>(PROJECTION_READER),
     logger: app.get<Logger>(LOGGER),
     corsOrigins,
+    clock: app.get<Clock>(CLOCK),
   });
 }

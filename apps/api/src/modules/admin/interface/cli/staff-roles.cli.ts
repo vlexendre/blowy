@@ -31,8 +31,9 @@ const cmd = process.argv.slice(2).find((a) => a !== '--');
 const cfg = loadConfig();
 const db = createDb({ connectionString: cfg.DATABASE_URL, max: 2 });
 const repo = new PrismaStaffRepository(db);
-const audit = new PrismaAuditLog(db);
-const uow = new PrismaUnitOfWork(db, new SystemClock());
+const clock = new SystemClock();
+const audit = new PrismaAuditLog(db, clock);
+const uow = new PrismaUnitOfWork(db, clock);
 
 try {
   if (cmd === 'list') {

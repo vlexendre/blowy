@@ -48,7 +48,7 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
 @Module({
   controllers: [MediaController],
   providers: [
-    { provide: MEDIA_REPOSITORY, useFactory: (db: Db) => new PrismaMediaRepository(db), inject: [DB] },
+    { provide: MEDIA_REPOSITORY, useFactory: (db: Db, c: Clock) => new PrismaMediaRepository(db, c), inject: [DB, CLOCK] },
     { provide: IMAGE_PROCESSOR, useClass: SharpImageProcessor },
     { provide: AUDIO_PROBE, useClass: ContainerAudioProbe },
     {
@@ -57,7 +57,7 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
       inject: [TRUST_REPOSITORY, UNIT_OF_WORK],
     },
     { provide: MediaAccessService, useFactory: (r: M, c: Clock) => new MediaAccessService(r, c), inject: [MEDIA_REPOSITORY, CLOCK] },
-    { provide: CreateUploadUseCase, useFactory: (b: CommandBus, r: M, rnd: RandomSource, cfg: AppConfig) => new CreateUploadUseCase(b, r, rnd, cfg.PUBLIC_API_URL), inject: [COMMAND_BUS, MEDIA_REPOSITORY, RANDOM, APP_CONFIG] },
+    { provide: CreateUploadUseCase, useFactory: (b: CommandBus, r: M, rnd: RandomSource, cfg: AppConfig, c: Clock) => new CreateUploadUseCase(b, r, rnd, cfg.PUBLIC_API_URL, c), inject: [COMMAND_BUS, MEDIA_REPOSITORY, RANDOM, APP_CONFIG, CLOCK] },
     { provide: ReceiveUploadUseCase, useFactory: (r: M, s: ObjectStorage, c: Clock) => new ReceiveUploadUseCase(r, s, c), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, CLOCK] },
     {
       provide: FinalizeMediaUseCase,
@@ -73,7 +73,7 @@ type Cases = { open(c: { subjectType: 'MEDIA' | 'MISSION_SUBMISSION'; subjectId:
     { provide: GetMediaContentQuery, useFactory: (r: M, s: ObjectStorage, a: MediaAccessService, c: Clock) => new GetMediaContentQuery(r, s, a, c), inject: [MEDIA_REPOSITORY, OBJECT_STORAGE, MediaAccessService, CLOCK] },
     { provide: GetMediaQuery, useFactory: (r: M) => new GetMediaQuery(r), inject: [MEDIA_REPOSITORY] },
     { provide: CreateAccessTokenUseCase, useFactory: (r: M, a: MediaAccessService, rnd: RandomSource, c: Clock, cfg: AppConfig) => new CreateAccessTokenUseCase(r, a, rnd, c, cfg.PUBLIC_API_URL), inject: [MEDIA_REPOSITORY, MediaAccessService, RANDOM, CLOCK, APP_CONFIG] },
-    { provide: ShareMediaUseCase, useFactory: (b: CommandBus, r: M) => new ShareMediaUseCase(b, r), inject: [COMMAND_BUS, MEDIA_REPOSITORY] },
+    { provide: ShareMediaUseCase, useFactory: (b: CommandBus, r: M, c: Clock) => new ShareMediaUseCase(b, r, c), inject: [COMMAND_BUS, MEDIA_REPOSITORY, CLOCK] },
     { provide: PhotoRevealUseCase, useFactory: (b: CommandBus, r: M, rnd: RandomSource, c: Clock) => new PhotoRevealUseCase(b, r, rnd, c), inject: [COMMAND_BUS, MEDIA_REPOSITORY, RANDOM, CLOCK] },
     {
       provide: VOICE_MESSAGE_GATE,

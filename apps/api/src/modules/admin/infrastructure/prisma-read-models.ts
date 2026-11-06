@@ -212,14 +212,15 @@ export class PrismaReadModels implements ReadModelsPort {
   }
 
   async ops(now: Date): Promise<Omit<OpsStatus, 'api' | 'featureFlags' | 'redis'>> {
-    const t0 = Date.now();
+    // Mesure de DURÉE (horloge monotone), pas une date métier.
+    const t0 = performance.now();
     let dbOk = true;
     try {
       await this.db.$queryRawUnsafe('SELECT 1');
     } catch {
       dbOk = false;
     }
-    const latencyMs = Date.now() - t0;
+    const latencyMs = Math.round(performance.now() - t0);
     const [pending, dead, oldest, jobs] = await Promise.all([
       this.db.outboxEvent.count({ where: { publishedAt: null, attempts: { lt: OUTBOX_MAX_ATTEMPTS } } }),
       this.db.outboxEvent.count({ where: { publishedAt: null, attempts: { gte: OUTBOX_MAX_ATTEMPTS } } }),

@@ -37,7 +37,7 @@ export const SOCIAL_JOBS = Symbol('SocialJobs');
     },
     { provide: ANONYMOUS_REPOSITORY, useFactory: (db: Db) => new PrismaAnonymousRepository(db), inject: [DB] },
     { provide: REFERRAL_REPOSITORY, useFactory: (db: Db) => new PrismaReferralRepository(db), inject: [DB] },
-    { provide: SOCIAL_QUOTA, useFactory: (r: Redis | null) => new RateLimiterQuota(r ? new RedisRateLimiter(r) : new MemoryRateLimiter()), inject: [REDIS] },
+    { provide: SOCIAL_QUOTA, useFactory: (r: Redis | null, c: Clock) => new RateLimiterQuota(r ? new RedisRateLimiter(r, c) : new MemoryRateLimiter(c)), inject: [REDIS, CLOCK] },
     {
       provide: AnonymousResponsesUseCases,
       useFactory: (r: AnonymousRepository, q: QuotaCounter, u: UnitOfWork, b: CommandBus, c: Clock, rnd: RandomSource, cfg: SocialConfig) => new AnonymousResponsesUseCases(r, q, u, b, c, rnd, cfg),

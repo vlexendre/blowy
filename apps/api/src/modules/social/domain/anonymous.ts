@@ -70,3 +70,21 @@ export function aggregateWords(responses: readonly { words: readonly string[] }[
   }
   return { wordCounts, respondents: responses.length, totalWords };
 }
+
+/**
+ * Candidat de slug public pour la page « 3 mots » : prénom normalisé (sans accents, minuscules,
+ * tirets) + suffixe aléatoire base36 (non devinable, ne révèle aucun identifiant interne).
+ * Respecte `PublicSlugSchema` (3–40 car., [a-z0-9-], pas de segment réservé grâce au suffixe).
+ */
+export function publicSlugCandidate(displayName: string, randomHex: string): string {
+  const base = displayName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 20)
+    .replace(/-+$/g, '');
+  const suffix = BigInt(`0x${randomHex || '0'}`).toString(36).padStart(6, '0').slice(-6);
+  return `${base || 'pet'}-${suffix}`;
+}

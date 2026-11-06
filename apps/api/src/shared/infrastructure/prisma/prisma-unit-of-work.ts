@@ -2,8 +2,9 @@
  * Unit of Work Prisma : transaction + verrouillage ordonné + outbox dans la même transaction.
  * Les repositories obtiennent le client transactionnel via `txOf(scope)`.
  */
-import { runInTransaction, uuidv7, type Db, type OrderedLocker, type Tx } from '@blowy/database';
+import { isContentionError, runInTransaction, uuidv7, type Db, type OrderedLocker, type Tx } from '@blowy/database';
 import type { Clock } from '../../application/clock.js';
+import { AppError } from '../../domain/errors.js';
 import type { OutboxMessage, TxScope, UnitOfWork } from '../../application/unit-of-work.js';
 
 const TX = Symbol('prismaTx');
@@ -25,8 +26,17 @@ export class PrismaUnitOfWork implements UnitOfWork {
     private readonly clock: Clock,
   ) {}
 
-  run<T>(fn: (scope: TxScope) => Promise<T>): Promise<T> {
-    return runInTransaction(this.db, (tx, locker) => fn(this.scope(tx, locker)));
+  async run<T>(fn: (scope: TxScope) => Promise<T>): Promise<T> {
+    try {
+      return await runInTransaction(this.db, (tx, locker) => fn(this.scope(tx, locker)));
+    } catch (err) {
+      // Contention persistante (verrou, pool, deadlock après retries) : refus propre et réessayable,
+      // jamais un 500 après 20 s (B1).
+      if (!(err instanceof AppError) && isContentionError(err)) {
+        throw new AppError('CONFLICT', 'Opération concurrente en cours, réessaie', { retryable: true, detailsSafe: { reason: 'CONTENTION' } });
+      }
+      throw err;
+    }
   }
 
   private scope(tx: Tx, locker: OrderedLocker): PrismaTxScope {

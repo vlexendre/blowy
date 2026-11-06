@@ -28,8 +28,8 @@ type R = MatchingRepository;
     { provide: GetMatchFeedQuery, useFactory: (r: R, p: PetProfileReader, e: EngineGateway, c: Clock) => new GetMatchFeedQuery(r, p, e, c), inject: [MATCHING_REPOSITORY, PET_PROFILE_READER, ENGINE_GATEWAY, CLOCK] },
     {
       provide: AcceptProposalUseCase,
-      useFactory: (b: CommandBus, r: R, c: RelationshipCreator, e: EntitlementsReader, bl: BlockReader) => new AcceptProposalUseCase(b, r, c, e, bl),
-      inject: [COMMAND_BUS, MATCHING_REPOSITORY, RELATIONSHIP_CREATOR, ENTITLEMENTS_READER, BLOCK_READER],
+      useFactory: (b: CommandBus, r: R, c: RelationshipCreator, e: EntitlementsReader, bl: BlockReader, clk: Clock) => new AcceptProposalUseCase(b, r, c, e, bl, clk),
+      inject: [COMMAND_BUS, MATCHING_REPOSITORY, RELATIONSHIP_CREATOR, ENTITLEMENTS_READER, BLOCK_READER, CLOCK],
     },
   ],
   exports: [RunMatchingBatchUseCase, MATCHING_REPOSITORY],

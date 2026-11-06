@@ -12,6 +12,7 @@ import {
   OwnAnonymousResponsesSchema,
   PageQuerySchema,
   PublicProfileSchema,
+  PublicPageStateSchema,
   PublicSlugSchema,
   SubmitAnonymousResponseRequestSchema,
   SubmitAnonymousResponseResultSchema,
@@ -83,9 +84,14 @@ export class SocialController {
     return OwnAnonymousResponsesSchema.parse(await this.anon.listOwn(u.userId, q.cursor, q.limit));
   }
 
+  @Get('me/public-page')
+  async getPage(@CurrentUser() u: AuthenticatedUser) {
+    return PublicPageStateSchema.parse(await this.anon.ownPage(u.userId));
+  }
+
   @Put('me/public-page')
   setPage(@CurrentUser() u: AuthenticatedUser, @CommandId() cid: string, @Body(new ZodPipe(UpdatePublicPageRequestSchema)) b: { enabled: boolean }) {
-    return this.anon.setPage(u.userId, b.enabled, cid);
+    return this.anon.setPage(u.userId, b.enabled, cid).then((r) => PublicPageStateSchema.parse(r));
   }
 
   @Post('me/anonymous-responses/:id/hide')

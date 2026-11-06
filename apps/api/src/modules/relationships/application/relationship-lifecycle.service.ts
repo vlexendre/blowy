@@ -3,7 +3,7 @@
  * (événement, message système pré-écrit, révocation des rooms, retour des pets, outbox).
  * Une seule implémentation pour leave, emménagement ailleurs, silence 14 j, blocage.
  */
-import type { EventPublisher } from '../../../shared/application/event-publisher.js';
+import { userRoom, type EventPublisher } from '../../../shared/application/event-publisher.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { REL_EVENTS, SYSTEM_TEMPLATES } from '../domain/relationship-events.js';
 import type { ConversationAdmin, PetPlacement } from './ports/relationship-side-effects.port.js';
@@ -42,12 +42,15 @@ export class RelationshipLifecycle {
     if (ctx.conversationId) await this.conversations.close(scope, ctx.conversationId);
     // La raison n'est visible que de l'acteur ; l'autre voit un départ neutre.
     const ev = await this.repo.appendEvent(scope, ctx.id, { type: REL_EVENTS.ENDED, actorUserId: actorId, visibility: 'SYSTEM', payload: { reason } });
+    // Projeté dans la room PERSONNELLE de chacun (B6) : la room `relationship:` est révoquée dans la
+    // même transaction, l'événement y serait perdu selon l'ordre du relais. `user:<id>` ne l'est
+    // jamais et le curseur de projection garantit la livraison (resync) même après coup.
     await this.events.publish(scope, {
       sourceEventId: ev.id,
       type: 'relationship.ended',
       aggregateId: ctx.id,
-      room: `relationship:${ctx.id}`,
-      recipients: ctx.sides.map((s) => ({ userId: s.userId, payload: { relationshipId: ctx.id } })),
+      room: userRoom,
+      recipients: ctx.sides.map((s) => ({ userId: s.userId, payload: { relationshipId: ctx.id, conversationId: ctx.conversationId ?? null } })),
     });
     for (const s of ctx.sides) {
       await scope.outbox.emit({ topic: 'realtime.revoke', aggregateType: 'User', aggregateId: s.userId, payload: { rooms: [`relationship:${ctx.id}`, ...(ctx.conversationId ? [`conversation:${ctx.conversationId}`] : [])] } });
@@ -57,6 +60,21 @@ export class RelationshipLifecycle {
       aggregateType: 'RelationshipContext',
       aggregateId: ctx.id,
       payload: { relationshipId: ctx.id, userIds: ctx.sides.map((s) => s.userId), reason, occurredAt: scope.now.toISOString() },
+    });
+  }
+
+  /**
+   * Nouvelle relation + conversation (match) : annoncée dans la room PERSONNELLE de chaque
+   * participant (B5) — ils ne connaissent pas encore la room `relationship:`.
+   */
+  async created(scope: TxScope, ctx: ContextRow, conversationId: string): Promise<void> {
+    const ev = await this.repo.appendEvent(scope, ctx.id, { type: REL_EVENTS.CREATED, actorUserId: null, payload: {} });
+    await this.events.publish(scope, {
+      sourceEventId: ev.id,
+      type: 'match.created',
+      aggregateId: ctx.id,
+      room: userRoom,
+      recipients: ctx.sides.map((s) => ({ userId: s.userId, payload: { relationshipId: ctx.id, conversationId } })),
     });
   }
 

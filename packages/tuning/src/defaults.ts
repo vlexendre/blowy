@@ -5,8 +5,26 @@
  */
 import type { Tuning } from './schema.js';
 import { deepFreeze } from './freeze.js';
+import {
+  ACCESSORIES_V5,
+  CREDITS_V5,
+  DUO_V5,
+  EGG_V5_ADDITIONS,
+  MATCHING_V5_ADDITIONS,
+  MEMORIES_V5,
+  NEIGHBORHOODS_V5,
+  NOTIFICATIONS_V5,
+  OUTINGS_V5,
+  PLUS_V5,
+  PREFERENCES_V5,
+  PRICING_V5,
+  RELIABILITY_V5,
+  SAFETY_V5,
+  VOTES_V5,
+} from './defaults-v5.js';
 
-export const DEFAULT_TUNING_VERSION = 'tuning-2026.11.0';
+/** V5 : `tuning-2026.12.0` (sections sorties, composition, duo, votes, souvenirs, paiements, sécurité). */
+export const DEFAULT_TUNING_VERSION = 'tuning-2026.12.0';
 
 export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   version: DEFAULT_TUNING_VERSION,
@@ -125,6 +143,7 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
     dailyRecovery: 1,
     recoveryReplyWithinHours: 24,
     silenceCloseDays: 14,
+    v5: RELIABILITY_V5,
   },
   pause: { maxDays: 14 },
   egg: {
@@ -143,6 +162,7 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
     heredityMaxDeltaPerAxis: 0.3,
     nameMaxLength: 24,
     nameSeparator: '-',
+    minDuoDates: EGG_V5_ADDITIONS.minDuoDates,
   },
   group: { min: 3, max: 5, missionMinParticipants: 3 },
   notifications: {
@@ -150,6 +170,7 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
     quietStartHour: 23,
     quietEndHour: 8,
     priority: ['HUMAN_MESSAGE', 'REAL_WAITING', 'STREAK', 'NEIGHBORHOOD', 'MISSION'],
+    v5: NOTIFICATIONS_V5,
   },
   matching: {
     weights: { C: 0.3, P: 0.25, D: 0.1, E: 0.05, R: 0.1, G: 0.1, S: 0.05, M: 0.05 },
@@ -162,6 +183,7 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
     minAge: 18,
     inactiveAfterDays: 7,
     ghosterLimitMinReliability: 70,
+    ...MATCHING_V5_ADDITIONS,
     geography: { fullScoreKm: 1 },
     /** R : nombre minimal d'événements d'activité par personne, sinon 0.5. HYPOTHÈSE */
     rhythm: { minEvents: 20, neutral: 0.5 },
@@ -196,4 +218,16 @@ export const DEFAULT_TUNING: Readonly<Tuning> = deepFreeze({
   },
   /** Carte : cellule de généralisation minimale (jamais de point exact). */
   map: { cellMinMeters: 500 },
+  // ---- V5 (spec-v5) — valeurs dans defaults-v5.ts
+  neighborhoods: NEIGHBORHOODS_V5,
+  outings: OUTINGS_V5,
+  votes: VOTES_V5,
+  duo: DUO_V5,
+  memories: MEMORIES_V5,
+  accessories: ACCESSORIES_V5,
+  pricing: PRICING_V5,
+  plus: PLUS_V5,
+  credits: CREDITS_V5,
+  safety: SAFETY_V5,
+  preferences: PREFERENCES_V5,
 });

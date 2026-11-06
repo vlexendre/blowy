@@ -7,6 +7,7 @@
 import { uuidv7, type Db } from '@blowy/database';
 import type { AdminAuditRow, AdminConfigVersionRow, AdminMissionVersion, AdminPetView, AdminRelationshipView, AdminUserRow, MissionDraftRequest, PageOf } from '@blowy/api-contract';
 import type { StaffRole } from '@blowy/domain';
+import type { Clock } from '../../../shared/application/clock.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { decodeCursor, pageFrom } from '../../../shared/application/pagination.js';
 import { txOf } from '../../../shared/infrastructure/prisma/prisma-unit-of-work.js';
@@ -28,7 +29,10 @@ const iso = (d: Date | null | undefined) => (d ? d.toISOString() : null);
 
 // ------------------------------------------------------------------ Audit
 export class PrismaAuditLog implements AuditLog {
-  constructor(private readonly db: Db) {}
+  constructor(
+    private readonly db: Db,
+    private readonly clock: Clock,
+  ) {}
 
   private data(e: AuditEntry, at: Date) {
     return {
@@ -51,7 +55,7 @@ export class PrismaAuditLog implements AuditLog {
   }
 
   async recordNow(e: AuditEntry) {
-    const row = await this.db.auditLog.create({ data: this.data(e, new Date()) });
+    const row = await this.db.auditLog.create({ data: this.data(e, this.clock.now()) });
     return row.id;
   }
 

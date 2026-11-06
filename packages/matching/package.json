@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./groups": {
+      "types": "./dist/groups/index.d.ts",
+      "default": "./dist/groups/index.js"
     }
   },
   "files": [
@@ -16,17 +20,20 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p src/simulate/tsconfig.json",
     "lint": "eslint src",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "simulate:outings": "tsx src/simulate/outings-cli.ts"
   },
   "dependencies": {
     "@blowy/domain": "workspace:*",
     "@blowy/tuning": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "22.20.5",
+    "fast-check": "^4.10.2",
+    "tsx": "4.23.15",
     "typescript": "~6.0.3",
-    "vitest": "^5.0.5",
-    "fast-check": "^4.10.2"
+    "vitest": "^5.0.5"
   }
 }

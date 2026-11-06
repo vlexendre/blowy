@@ -9,6 +9,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./v4": {
+      "types": "./dist/v4/index.d.ts",
+      "default": "./dist/v4/index.js"
+    },
+    "./v5": {
+      "types": "./dist/v5/index.d.ts",
+      "default": "./dist/v5/index.js"
     }
   },
   "files": [

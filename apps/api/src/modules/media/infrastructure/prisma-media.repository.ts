@@ -1,4 +1,5 @@
 import { isUniqueViolation, type Db } from '@blowy/database';
+import type { Clock } from '../../../shared/application/clock.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { txOf } from '../../../shared/infrastructure/prisma/prisma-unit-of-work.js';
 import type { MediaRepository, MediaRow, ProofRow, RelationFacts } from '../application/ports/media.ports.js';
@@ -8,7 +9,10 @@ const inc = { derivatives: { select: { kind: true, storageKey: true, width: true
 const toRow = (a: Record<string, unknown>) => a as unknown as MediaRow;
 
 export class PrismaMediaRepository implements MediaRepository {
-  constructor(private readonly db: Db) {}
+  constructor(
+    private readonly db: Db,
+    private readonly clock: Clock,
+  ) {}
   private c(scope: TxScope | null): C {
     return scope ? txOf(scope) : this.db;
   }
@@ -37,7 +41,7 @@ export class PrismaMediaRepository implements MediaRepository {
   }
   async supersedeProfilePhotos(userId: string, keepId: string, purgeAfter: Date) {
     await this.db.mediaAsset.updateMany({ where: { ownerUserId: userId, purpose: 'PROFILE_PHOTO', id: { not: keepId }, purgeAfter: null, status: { not: 'PURGED' } }, data: { purgeAfter } });
-    await this.db.mediaAccessToken.updateMany({ where: { revokedAt: null, asset: { ownerUserId: userId, purpose: 'PROFILE_PHOTO', id: { not: keepId } } }, data: { revokedAt: new Date() } });
+    await this.db.mediaAccessToken.updateMany({ where: { revokedAt: null, asset: { ownerUserId: userId, purpose: 'PROFILE_PHOTO', id: { not: keepId } } }, data: { revokedAt: this.clock.now() } });
   }
   async sameHashCount(ownerUserId: string, sha256: string, excludeId: string) {
     return this.db.mediaAsset.count({ where: { ownerUserId, sha256, id: { not: excludeId }, purpose: 'MISSION_PROOF' } });
@@ -58,7 +62,7 @@ export class PrismaMediaRepository implements MediaRepository {
     return this.db.mediaAccessToken.findUnique({ where: { tokenHash }, select: { id: true, assetId: true, viewerId: true, variant: true, expiresAt: true, revokedAt: true } });
   }
   async revokeTokensFor(assetId: string) {
-    await this.db.mediaAccessToken.updateMany({ where: { assetId, revokedAt: null }, data: { revokedAt: new Date() } });
+    await this.db.mediaAccessToken.updateMany({ where: { assetId, revokedAt: null }, data: { revokedAt: this.clock.now() } });
   }
 
   async createProof(scope: TxScope, p: Parameters<MediaRepository['createProof']>[1]) {

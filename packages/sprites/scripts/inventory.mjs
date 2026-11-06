@@ -55,7 +55,7 @@ out.push('');
 out.push('- Stades BÉBÉ (sauf Nino) et ADULTE (toutes espèces) : aucun dessin. Le dessin « Adulte » référencé par V4-Fiche (`324d5cda…`) n’est pas présent dans l’export.');
 out.push('- Assets référencés par la maquette mais absents de l’export : `6400a21a…` (Nino fâché), `e17f7a5a…` (alerte pet), `ba10d999…` (mission manger), `47cd8823…` (gel de série). Remplacés par des icônes vectorielles / poses existantes.');
 out.push('- Les sprites « Claude » (ancienne mascotte V1–V3 : `3d012c30…`, `4f1732e4…`, `5b3fde8a…`, `76e13d29…`, `bc9d8525…`, `c3d2f694…`, `c91c8c3f…`, `46a416be…`, `006eac88…`, `792b978a…`) ne sont pas utilisés : hors casting V4.');
-out.push('- Polices Bricolage Grotesque / Inter : fournies par `@expo-google-fonts/*` (licence OFL).');
+out.push('- Polices Bricolage Grotesque / Inter : instances statiques générées depuis `@fontsource-variable/*` (licence OFL) par `apps/mobile/scripts/fonts/build-fonts.py` → `apps/mobile/assets/fonts/`.');
 out.push('');
 writeFileSync(join(root, 'docs', 'mobile', 'assets-inventory.md'), out.join('\n'));
 process.stderr.write(`ok ${rows.length}\n`);

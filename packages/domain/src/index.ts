@@ -11,3 +11,10 @@ export * from './trust.js';
 export * from './economy.js';
 export * from './time.js';
 export * from './money.js';
+// V5 (spec-v5, D-010+)
+export * from './neighborhood.js';
+export * from './outing.js';
+export * from './connection.js';
+export * from './safety.js';
+export * from './intentions.js';
+export * from './notifications.js';

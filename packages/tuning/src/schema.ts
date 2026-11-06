@@ -5,6 +5,38 @@
  */
 import { z } from 'zod';
 import { SCHOOLS, SPECIES, SUNDAYS } from '@blowy/domain';
+import {
+  AccessoriesTuningSchema,
+  CreditsTuningSchema,
+  DuoTuningSchema,
+  MemoriesTuningSchema,
+  NeighborhoodsTuningSchema,
+  NotificationsV5TuningSchema,
+  OutingsTuningSchema,
+  PlusTuningSchema,
+  PreferencesTuningSchema,
+  PricingTuningSchema,
+  ReliabilityV5TuningSchema,
+  SafetyTuningSchema,
+  VotesTuningSchema,
+} from './schema-v5.js';
+import {
+  ACCESSORIES_V5,
+  CREDITS_V5,
+  DUO_V5,
+  EGG_V5_ADDITIONS,
+  MATCHING_V5_ADDITIONS,
+  MEMORIES_V5,
+  NEIGHBORHOODS_V5,
+  NOTIFICATIONS_V5,
+  OUTINGS_V5,
+  PLUS_V5,
+  PREFERENCES_V5,
+  PRICING_V5,
+  RELIABILITY_V5,
+  SAFETY_V5,
+  VOTES_V5,
+} from './defaults-v5.js';
 
 const prob = z.number().min(0).max(1);
 const gauge = z.number().int().min(0).max(100);
@@ -130,6 +162,8 @@ export const TuningSchema = z
       dailyRecovery: gauge,
       recoveryReplyWithinHours: posInt,
       silenceCloseDays: posInt,
+      /** V5 (§2.14) : « venu·e à N sur M », pause après absences. Défaut si payload V4. */
+      v5: ReliabilityV5TuningSchema.default(RELIABILITY_V5),
     }),
     pause: z.object({ maxDays: posInt }),
     egg: z.object({
@@ -146,6 +180,8 @@ export const TuningSchema = z
       heredityMaxDeltaPerAxis: z.number().min(0).max(1),
       nameMaxLength: posInt,
       nameSeparator: z.string().min(1).max(3),
+      /** V5 (T9) : œuf proposable à un duo TOGETHER ayant vécu ce nombre de RDV. */
+      minDuoDates: posInt.default(EGG_V5_ADDITIONS.minDuoDates),
     }),
     group: z.object({ min: posInt, max: posInt, missionMinParticipants: posInt }),
     notifications: z.object({
@@ -153,6 +189,8 @@ export const TuningSchema = z
       quietStartHour: hour,
       quietEndHour: hour,
       priority: z.array(z.enum(['HUMAN_MESSAGE', 'REAL_WAITING', 'STREAK', 'NEIGHBORHOOD', 'MISSION'])).length(5),
+      /** V5 (§9.2) : plafonds, heures calmes, priorités. */
+      v5: NotificationsV5TuningSchema.default(NOTIFICATIONS_V5),
     }),
     matching: z.object({
       weights: z.object({ C: prob, P: prob, D: prob, E: prob, R: prob, G: prob, S: prob, M: prob }),
@@ -163,6 +201,9 @@ export const TuningSchema = z
       minAge: posInt,
       inactiveAfterDays: posInt,
       ghosterLimitMinReliability: gauge,
+      /** V5 (§2.14, §4.2) : LIMIT_GHOSTER sur le ratio N/M (‰) quand M ≥ ghosterLimitMinTotal. */
+      ghosterLimitMinAttendancePermille: z.number().int().min(0).max(1000).default(MATCHING_V5_ADDITIONS.ghosterLimitMinAttendancePermille),
+      ghosterLimitMinTotal: posInt.default(MATCHING_V5_ADDITIONS.ghosterLimitMinTotal),
       geography: z.object({ fullScoreKm: z.number().positive() }),
       rhythm: z.object({ minEvents: posInt, neutral: prob }),
       reputation: z.object({ neutral: prob, minWords: posInt, saturationWords: posInt }),
@@ -175,6 +216,18 @@ export const TuningSchema = z
       }),
     }),
     map: z.object({ cellMinMeters: z.number().int().min(500) }),
+    // ---- V5 (spec-v5) : sections avec défaut, pour relire les versions publiées avant la V5.
+    neighborhoods: NeighborhoodsTuningSchema.default(NEIGHBORHOODS_V5),
+    outings: OutingsTuningSchema.default(OUTINGS_V5),
+    votes: VotesTuningSchema.default(VOTES_V5),
+    duo: DuoTuningSchema.default(DUO_V5),
+    memories: MemoriesTuningSchema.default(MEMORIES_V5),
+    accessories: AccessoriesTuningSchema.default(ACCESSORIES_V5),
+    pricing: PricingTuningSchema.default(PRICING_V5),
+    plus: PlusTuningSchema.default(PLUS_V5),
+    credits: CreditsTuningSchema.default(CREDITS_V5),
+    safety: SafetyTuningSchema.default(SAFETY_V5),
+    preferences: PreferencesTuningSchema.default(PREFERENCES_V5),
   })
   .superRefine((t, ctx) => {
     const w = t.matching.weights;
@@ -186,7 +239,34 @@ export const TuningSchema = z
     if (b.strong + b.discovery !== b.size) ctx.addIssue({ code: 'custom', message: 'lot : strong + discovery ≠ size' });
     if (t.group.min > t.group.max) ctx.addIssue({ code: 'custom', message: 'bande : min > max' });
     if (t.egg.heatCap > t.egg.nights * t.egg.questionsPerNight * t.egg.heatSame) ctx.addIssue({ code: 'custom', message: 'plafond de chaleur inatteignable' });
+    v5Issues(t).forEach((message) => ctx.addIssue({ code: 'custom', message }));
   });
+
+/** Cohérence des sections V5 (spec-v5 §2, §4, §5). */
+function v5Issues(t: {
+  outings: z.output<typeof OutingsTuningSchema>;
+  memories: z.output<typeof MemoriesTuningSchema>;
+  accessories: z.output<typeof AccessoriesTuningSchema>;
+  notifications: { v5: z.output<typeof NotificationsV5TuningSchema> };
+}): string[] {
+  const out: string[] = [];
+  const o = t.outings;
+  const w = o.composition.visionWeights;
+  const sum = w.C + w.P + w.D + w.E + w.R + w.G + w.S + w.M;
+  if (Math.abs(sum - 1) > 1e-9) out.push(`poids de vision de groupe = ${sum}, attendu 1`);
+  if (!(o.minSizeToHold <= o.minSizeToLock && o.minSizeToLock <= o.maxSize)) out.push('sorties : minSizeToHold ≤ minSizeToLock ≤ maxSize requis');
+  if (o.minSizeToLock < 4 || o.minSizeToForm < 4 || o.minSizeToForm > o.maxSize) out.push('sorties : un groupe se forme et se verrouille à 4 au moins (CHECK 4–6)');
+  if (o.composition.targetSize < 4 || o.composition.targetSize > o.maxSize) out.push('composition : targetSize hors [4, maxSize]');
+  if (o.seeding.maxSize > o.maxSize || o.seeding.triggerTeamSize + o.seeding.minPartnerTeamSize > o.seeding.maxSize) out.push('amorçage : tailles incohérentes');
+  if (o.composition.maxTeamSize >= o.minSizeToForm) out.push('composition : une team seule ne doit pas suffire à former un groupe');
+  const m = t.memories;
+  if (m.promiseMilestones.some((v, i) => i > 0 && v <= (m.promiseMilestones[i - 1] ?? 0))) out.push('souvenirs : paliers de promesse non croissants');
+  if (m.stageThresholds.YOUNG >= m.stageThresholds.ADULT) out.push('souvenirs : seuil YOUNG ≥ ADULT');
+  const unlockIds = [...m.accessoryUnlocks.map((u) => u.accessoryId), ...m.kindUnlocks.map((u) => u.accessoryId), t.accessories.referralAccessoryId, ...t.accessories.plusMonthlyAccessoryIds];
+  if (new Set(unlockIds).size !== unlockIds.length) out.push('accessoires : un accessoire a plusieurs sources (non achetables, gagnés une fois)');
+  if (new Set(t.notifications.v5.priority).size !== t.notifications.v5.priority.length) out.push('notifications V5 : priorités en double');
+  return out;
+}
 
 export type Tuning = z.infer<typeof TuningSchema>;
 export type NotificationCategory = Tuning['notifications']['priority'][number];

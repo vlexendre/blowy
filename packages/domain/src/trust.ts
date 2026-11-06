@@ -45,3 +45,12 @@ export const STAFF_ROLES = ['support', 'moderator', 'trust_lead', 'content_manag
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
 export const RELIABILITY_START = 100;
+
+// ---- V5 (D-029) ----
+/** Rôles staff V5 : + `ops` (quartiers, lieux, sorties, présences). Aucune permission ne lit un vote ni une préférence. */
+export const STAFF_ROLES_V5 = [...STAFF_ROLES, 'ops'] as const;
+export type StaffRoleV5 = (typeof STAFF_ROLES_V5)[number];
+
+/** Motifs de signalement V5.1 (G.19) : + « menace d'outing », « comportement pendant la sortie ». */
+export const REPORT_CATEGORIES_V5 = ['FAKE_PROFILE', 'INAPPROPRIATE', 'HARASSMENT', 'MONEY_REQUEST', 'MINOR', 'SAFETY', 'OUTING_THREAT', 'IRL_BEHAVIOR', 'OTHER'] as const;
+export type ReportCategoryV5 = (typeof REPORT_CATEGORIES_V5)[number];

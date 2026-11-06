@@ -13,6 +13,17 @@ import {
   SCHOOL_ENTRIES,
   SUNDAY_ENTRIES,
   assertUniqueKeys,
+  ACCESSORIES,
+  ACTIVITY_ENTRIES,
+  ICEBREAKER_MESSAGES,
+  ICEBREAKER_PROMPTS,
+  MEMORY_ENTRIES,
+  NOTIFICATION_TEMPLATES_V5,
+  NOTIFICATION_TITLES,
+  SLOT_LABELS,
+  SYSTEM_MESSAGES_V5,
+  VENUE_OFFERS,
+  VOTE_LABELS,
 } from './catalog/index.js';
 
 const SPECIES_FR: Record<keyof typeof SPECIES_LABEL_KEY, string> = { GASTON: 'Gaston', PIA: 'Pia', NINO: 'Nino', SUZIE: 'Suzie' };
@@ -29,6 +40,9 @@ export function buildFrLocale(): Record<string, string> {
     ]),
     ...PET_LINES.map((l) => [l.key, l.fr] as [string, string]),
     ...[...DEPARTURE_TEMPLATES, ...NOTIFICATION_TEMPLATES].map((t) => [t.key, t.fr] as [string, string]),
+    // V5
+    ...[...MEMORY_ENTRIES, ...ACCESSORIES, ...ICEBREAKER_MESSAGES, ...ICEBREAKER_PROMPTS, ...SYSTEM_MESSAGES_V5, ...VOTE_LABELS, ...SLOT_LABELS, ...VENUE_OFFERS, ...ACTIVITY_ENTRIES, ...NOTIFICATION_TITLES].map((e) => [e.key, e.fr] as [string, string]),
+    ...NOTIFICATION_TEMPLATES_V5.flatMap((n) => [[n.key, n.fr] as [string, string], [`${n.key}.discreet`, n.discreetFr] as [string, string]]),
     ['memory.joint_mission', 'Mission à deux'],
     ['memory.gift', 'Un cadeau dans la maison'],
   ];

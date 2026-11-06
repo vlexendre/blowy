@@ -38,8 +38,19 @@ export class PrismaMatchingRepository implements MatchingRepository {
       },
       orderBy: { id: 'asc' },
     });
+    // Restriction conservatoire (§19, B4) : une personne signalée « mineur » sort du matching tant
+    // que le dossier restreint n'est pas résolu par un modérateur.
+    const restricted = new Set(
+      (
+        await this.db.moderationCase.findMany({
+          where: { subjectUserId: { in: users.map((u) => u.id) }, restricted: true, reasonCode: 'REPORT_MINOR', status: { not: 'RESOLVED' } },
+          select: { subjectUserId: true },
+        })
+      ).map((c) => c.subjectUserId),
+    );
     const out: PoolMember[] = [];
     for (const u of users) {
+      if (restricted.has(u.id)) continue;
       const pet = u.primaryPet;
       const prefs = u.matchPreferences;
       if (!pet?.vision || !prefs || !u.birthDate || !pet.matchable) continue;

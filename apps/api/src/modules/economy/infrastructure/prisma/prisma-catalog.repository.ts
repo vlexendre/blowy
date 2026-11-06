@@ -20,7 +20,7 @@ export class PrismaCatalogRepository implements CatalogRepository {
 
   async lockItem(scope: TxScope, itemId: string): Promise<CatalogItem | null> {
     const tx = txOf(scope);
-    await tx.$queryRaw`SELECT 1 FROM "CatalogItem" WHERE id = ${itemId} FOR UPDATE`;
+    await tx.$queryRaw`SELECT 1 FROM "CatalogItem" WHERE id = ${itemId} FOR NO KEY UPDATE`;
     const r = await tx.catalogItem.findUnique({ where: { id: itemId } });
     return r ? toItem(r) : null;
   }

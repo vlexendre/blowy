@@ -12,7 +12,11 @@ export class RealtimeRelayEffect implements OutboxEffect {
   constructor(private readonly publish: (m: RtMessage) => Promise<void>) {}
   async run(e: OutboxEnvelope): Promise<void> {
     if (e.topic === 'realtime.deliver') await this.publish({ kind: 'deliver', recipients: ids(e.payload.recipients) });
-    else if (e.topic === 'realtime.disconnect') await this.publish({ kind: 'disconnect', recipients: [e.aggregateId] });
+    else if (e.topic === 'realtime.disconnect') {
+      // `sessionIds` présent : seulement les sockets de ces sessions ; absent : toutes celles du compte.
+      const sessions = ids(e.payload.sessionIds);
+      await this.publish({ kind: 'disconnect', recipients: [e.aggregateId], ...(sessions.length ? { sessions } : {}) });
+    }
     else await this.publish({ kind: 'revoke', recipients: [e.aggregateId], rooms: ids(e.payload.rooms) });
   }
 }

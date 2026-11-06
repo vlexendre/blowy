@@ -54,6 +54,7 @@ export class CreateUploadUseCase {
     private readonly repo: MediaRepository,
     private readonly random: RandomSource,
     private readonly publicUrl: string,
+    private readonly clock: Clock,
   ) {}
   async execute(userId: string, commandId: string, req: { purpose: MediaPurpose; mimeType: string; bytes: number; relationshipId?: string | undefined; missionKey?: string | undefined }) {
     const kind = kindOf(req.purpose);
@@ -64,7 +65,7 @@ export class CreateUploadUseCase {
     if (req.purpose === 'MISSION_PROOF' && !MISSIONS.some((m) => m.id === req.missionKey)) throw Errors.validation({ reason: 'UNKNOWN_MISSION' });
     let contextId: string | null = null;
     if (req.relationshipId) {
-      const f = await this.repo.relationFacts(null, req.relationshipId, new Date());
+      const f = await this.repo.relationFacts(null, req.relationshipId, this.clock.now());
       if (!f || !f.activeParticipants.includes(userId) || f.status === 'ENDED') throw Errors.notFound('Relation');
       contextId = f.id;
     }
@@ -399,12 +400,13 @@ export class ShareMediaUseCase {
   constructor(
     private readonly bus: CommandBus,
     private readonly repo: MediaRepository,
+    private readonly clock: Clock,
   ) {}
   async execute(userId: string, mediaId: string, commandId: string, req: { relationshipId: string; shared: boolean }) {
     const a = await this.repo.load(null, mediaId);
     if (!a || a.ownerUserId !== userId) throw Errors.notFound('Média');
     if (a.purpose !== 'MISSION_PROOF') throw Errors.precondition('NOT_SHAREABLE');
-    const f = await this.repo.relationFacts(null, req.relationshipId, new Date());
+    const f = await this.repo.relationFacts(null, req.relationshipId, this.clock.now());
     if (!f || f.status === 'ENDED' || !f.activeParticipants.includes(userId)) throw Errors.notFound('Relation');
     await this.bus.execute({
       actorId: userId,

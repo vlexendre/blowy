@@ -105,8 +105,8 @@ export class RevenueCatBillingProvider implements BillingProvider {
 
   constructor(
     private readonly cfg: { secretApiKey: string; baseUrl: string; acceptSandbox: boolean; timeoutMs: number; isProduction: boolean },
-    private readonly fetchImpl: typeof fetch = fetch,
-    private readonly now: () => Date = () => new Date(),
+    private readonly fetchImpl: typeof fetch,
+    private readonly now: () => Date,
   ) {
     this.acceptedEnvironments = new Set<BillingEnvironment>(cfg.acceptSandbox ? ['PRODUCTION', 'SANDBOX'] : ['PRODUCTION']);
     this.mode = cfg.isProduction ? ('LIVE' as const) : ('SANDBOX' as const);

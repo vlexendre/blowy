@@ -71,7 +71,12 @@ export const OwnAnonymousResponseSchema = z.object({
 export const OwnAnonymousResponsesSchema = z.object({
   items: z.array(OwnAnonymousResponseSchema),
   nextCursor: z.string().nullable(),
-  page: z.object({ slug: z.string().nullable(), enabled: z.boolean() }),
+  page: z.object({
+    slug: z.string().nullable(),
+    enabled: z.boolean(),
+    /** Lien public partageable (`<origine web>/<slug>`) ; absent tant qu'aucun slug n'est attribué. Ajout rétrocompatible. */
+    url: z.string().nullable().optional(),
+  }),
 });
 export type OwnAnonymousResponses = z.infer<typeof OwnAnonymousResponsesSchema>;
 
@@ -84,5 +89,9 @@ export const AnonymousHintsSchema = z.object({
 export type AnonymousHints = z.infer<typeof AnonymousHintsSchema>;
 
 export const UpdatePublicPageRequestSchema = z.object({ enabled: z.boolean() });
-export const PublicPageStateSchema = z.object({ slug: z.string().nullable(), enabled: z.boolean() });
+/**
+ * État de la page « 3 mots ». `PUT /me/public-page {enabled:true}` attribue un slug s'il n'y en a
+ * pas encore (B2). `url` : lien partageable, ajout rétrocompatible (optionnel).
+ */
+export const PublicPageStateSchema = z.object({ slug: z.string().nullable(), enabled: z.boolean(), url: z.string().nullable().optional() });
 export type PublicPageState = z.infer<typeof PublicPageStateSchema>;

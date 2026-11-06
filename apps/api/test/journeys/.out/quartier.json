@@ -2,9 +2,7 @@
   "title": "Quartier : invitation, 3 mots anonymes, parrainage, amis, ligue",
   "notes": [
     "Après une invitation réussie (« Alex t’attend dans son Quartier »), rien ne relie Alex et ses filleuls : aucune amitié créée, aucune route /friends. L’accueil personnalisé promet un Quartier qui n’existe pas côté API.",
-    "Page « 3 mots » : aucune route n’attribue de slug public à un nouvel utilisateur (PUT /me/public-page ne fait qu’activer un slug existant ; seul le seed en pose). Un vrai Alex n’a donc jamais de lien à partager → la boucle virale §15 est coupée à la source. Les étapes suivantes posent le slug en base (raccourci de test).",
-    "Réponses « 3 mots » : aucun événement temps réel ni notification pour Alex ; il ne découvre les mots qu’en ouvrant l’écran.",
-    "Page « 3 mots » désactivée : GET /public/profiles/alex-quartier répond toujours 200 (prénom + pet publics, acceptingResponses=false) ; seul l’envoi est refusé. « Désactiver ma page » ne la retire pas du web."
+    "Réponses « 3 mots » : aucun événement temps réel ni notification pour Alex ; il ne découvre les mots qu’en ouvrant l’écran."
   ],
   "absents": [
     {

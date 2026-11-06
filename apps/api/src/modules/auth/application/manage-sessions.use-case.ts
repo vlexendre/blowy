@@ -33,6 +33,8 @@ export class RevokeSessionUseCase {
       const ok = await this.sessions.revoke(scope, userId, sessionId);
       if (!ok) throw Errors.notFound('Session');
       await scope.outbox.emit({ topic: 'auth.session_revoked', aggregateType: 'User', aggregateId: userId, payload: { sessionId } });
+      // Téléphone volé / appareil retiré : ses sockets WS sont fermées immédiatement (B1bis).
+      await scope.outbox.emit({ topic: 'realtime.disconnect', aggregateType: 'User', aggregateId: userId, payload: { sessionIds: [sessionId] } });
     });
   }
 }

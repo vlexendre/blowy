@@ -28,7 +28,8 @@ import { Public } from '../../../shared/interface/auth.guard.js';
 import { CommandId, CurrentUser } from '../../../shared/interface/decorators.js';
 import type { AuthenticatedUser, BlowyRequest } from '../../../shared/interface/request-context.js';
 import { ZodPipe } from '../../../shared/interface/zod.pipe.js';
-import { APP_CONFIG } from '../../../shared/shared.tokens.js';
+import { APP_CONFIG, CLOCK } from '../../../shared/shared.tokens.js';
+import type { Clock } from '../../../shared/application/clock.js';
 import { AiConsentUseCase, ConversationSignalUseCase, SuggestionsUseCase } from '../application/ai-features.use-cases.js';
 import { BlockUserUseCase, ListBlocksQuery, ReportUseCase } from '../application/block-and-report.use-cases.js';
 import { CreateAppealUseCase, PRIVACY_REPOSITORY, RequestDeletionUseCase, RequestExportUseCase, type PrivacyRepository } from '../application/privacy.use-cases.js';
@@ -51,6 +52,7 @@ export class TrustController {
     @Inject(ConversationSignalUseCase) private readonly signals: ConversationSignalUseCase,
     @Inject(AiConsentUseCase) private readonly aiConsents: AiConsentUseCase,
     @Inject(APP_CONFIG) private readonly cfg: AppConfig,
+    @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
   @Post('reports')
@@ -76,7 +78,7 @@ export class TrustController {
 
   // ------------------------------------------------------------ export
   private exportView(e: NonNullable<Awaited<ReturnType<PrivacyRepository['loadExport']>>>) {
-    const ready = e.status === 'READY' && e.downloadNonce && e.expiresAt && e.expiresAt > new Date();
+    const ready = e.status === 'READY' && e.downloadNonce && e.expiresAt && e.expiresAt > this.clock.now();
     return ExportViewSchema.parse({ id: e.id, status: e.status, requestedAt: e.requestedAt.toISOString(), readyAt: e.readyAt?.toISOString() ?? null, expiresAt: e.expiresAt?.toISOString() ?? null, downloadUrl: ready ? `${this.cfg.PUBLIC_API_URL}/v1/exports/${e.id}/download` : null });
   }
 
@@ -95,7 +97,7 @@ export class TrustController {
   @Get('exports/:id/download')
   async download(@CurrentUser() u: AuthenticatedUser, @Param('id', Id) id: string, @Res() res: Response) {
     const e = await this.privacy.loadExport(id);
-    if (!e || e.userId !== u.userId || e.status !== 'READY' || !e.storageKey || !e.downloadNonce || !e.expiresAt || e.expiresAt <= new Date()) throw Errors.notFound('Export');
+    if (!e || e.userId !== u.userId || e.status !== 'READY' || !e.storageKey || !e.downloadNonce || !e.expiresAt || e.expiresAt <= this.clock.now()) throw Errors.notFound('Export');
     const obj = await this.storage.get(e.storageKey);
     if (!obj) throw Errors.notFound('Export');
     res.setHeader('cache-control', 'private, no-store');

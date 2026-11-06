@@ -78,13 +78,12 @@ import { createTuningSimulator } from './infrastructure/tuning-simulator.js';
 import { AdminGuard } from './interface/http/admin-guard.js';
 import { AdminAuthController, AdminController } from './interface/http/admin.controllers.js';
 
-const STARTED_AT = Date.now();
 const optional = (token: symbol) => ({ token, optional: true });
 
 const providers: Provider[] = [
   { provide: ADMIN_CONFIG, useFactory: () => loadAdminConfig() },
   { provide: STAFF_REPOSITORY, useFactory: (db: Db) => new PrismaStaffRepository(db), inject: [DB] },
-  { provide: AUDIT_LOG, useFactory: (db: Db) => new PrismaAuditLog(db), inject: [DB] },
+  { provide: AUDIT_LOG, useFactory: (db: Db, c: Clock) => new PrismaAuditLog(db, c), inject: [DB, CLOCK] },
   { provide: DASHBOARD_QUERY, useFactory: (db: Db) => new PrismaDashboardQuery(db), inject: [DB] },
   { provide: USER_ADMIN_REPOSITORY, useFactory: (db: Db) => new PrismaUserAdminRepository(db), inject: [DB] },
   { provide: PET_ADMIN_REPOSITORY, useFactory: (db: Db) => new PrismaPetAdminRepository(db), inject: [DB] },
@@ -133,7 +132,7 @@ const providers: Provider[] = [
     provide: OpsUseCases,
     useFactory: (rm: ReadModelsPort, o: OutboxAdminRepository, g: RedriveGuard, run: AdminCommandRunner, c: Clock, cfg: AppConfig, redis: unknown, engine: EngineGateway) =>
       new OpsUseCases(rm, o, g, run, c, () => ({
-        api: { version: process.env.npm_package_version ?? '0.1.0', env: cfg.BLOWY_ENV, engineVersion: engine.engineVersion, tuningVersion: engine.tuningVersion, node: process.version, uptimeSeconds: Math.round((Date.now() - STARTED_AT) / 1000) },
+        api: { version: process.env.npm_package_version ?? '0.1.0', env: cfg.BLOWY_ENV, engineVersion: engine.engineVersion, tuningVersion: engine.tuningVersion, node: process.version, uptimeSeconds: Math.round(process.uptime()) },
         redis: { configured: !!redis, ok: redis ? (redis as { status?: string }).status === 'ready' : null },
         featureFlags: [
           { key: 'AUTH_PROVIDER', value: cfg.AUTH_PROVIDER, note: 'Sélection d’adaptateur (lecture seule, configuration de déploiement).' },

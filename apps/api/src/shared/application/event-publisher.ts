@@ -6,11 +6,19 @@
 import type { ProjectionWriter } from './projection.js';
 import type { TxScope } from './unit-of-work.js';
 
+/** Room personnelle d'un destinataire : toujours rejointe par ses sockets, jamais révoquée. */
+export const userRoom = (userId: string) => `user:${userId}`;
+
 export interface VisibleEvent {
   sourceEventId: string;
   type: string;
   aggregateId: string;
-  room: string;
+  /**
+   * Room de l'entrée projetée. Une fonction donne une room PAR destinataire (ex. `userRoom`) :
+   * à utiliser pour ce qui concerne la personne elle-même (nouvelle conversation, fin de
+   * relation) — livré même si la room d'objet est révoquée dans la même vague (B5/B6).
+   */
+  room: string | ((recipientId: string) => string);
   /** Payload par destinataire (filtré : jamais de données privées d'autrui). */
   recipients: { userId: string; payload: Record<string, unknown> }[];
 }
@@ -23,7 +31,7 @@ export class EventPublisher {
       await this.projections.append(scope, {
         recipientId: r.userId,
         sourceEventId: e.sourceEventId,
-        room: e.room,
+        room: typeof e.room === 'function' ? e.room(r.userId) : e.room,
         type: e.type,
         aggregateId: e.aggregateId,
         payload: r.payload,

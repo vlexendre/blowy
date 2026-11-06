@@ -8,6 +8,8 @@ export const SendMessageRequestSchema = z.object({
   /** Identifiant client de déduplication (hors-ligne, double tap). */
   clientMessageId: z.string().min(8).max(64),
   body: z.string().trim().min(1).max(MESSAGE_MAX_CHARS),
+  /** V5 : réponse « 3 mots » à une question soufflée du pet (≤ 3 mots, ≤ 40 caractères, validé serveur). */
+  promptId: z.string().regex(/^[a-z0-9_.]{1,64}$/).optional(),
 });
 export type SendMessageRequest = z.infer<typeof SendMessageRequestSchema>;
 
@@ -40,8 +42,12 @@ export const MessagePageSchema = z.object({ items: z.array(MessageViewSchema), n
 
 export const ConversationViewSchema = z.object({
   id: UuidSchema,
-  kind: z.enum(['DATE', 'NEIGHBORHOOD', 'GROUP', 'COPARENT']),
+  /** V5 : + OUTING (chat de groupe pré-sortie), DUO, BAND (spec-v5 §2.7, §2.11–2.12). */
+  kind: z.enum(['DATE', 'NEIGHBORHOOD', 'GROUP', 'COPARENT', 'OUTING', 'DUO', 'BAND']),
   relationshipId: UuidSchema.nullable(),
+  outingId: UuidSchema.optional(),
+  duoId: UuidSchema.optional(),
+  bandLinkId: UuidSchema.optional(),
   lastSeq: z.number().int(),
   lastReadSeq: z.number().int(),
   closed: z.boolean(),
@@ -52,18 +58,5 @@ export const ConversationListSchema = z.object({ items: z.array(ConversationView
 
 export const MarkReadRequestSchema = z.object({ seq: z.number().int().min(0) });
 
-/** Événements WS v1 (type de l'enveloppe WsEnvelope). */
-export const WS_EVENT_TYPES = [
-  'message.published',
-  'message.warned',
-  'message.status',
-  'relationship.updated',
-  'relationship.ended',
-  'match.created',
-  'pet.updated',
-  'access.revoked',
-] as const;
-export type WsEventType = (typeof WS_EVENT_TYPES)[number];
-
-export const WsAuthenticateSchema = z.object({ token: z.string().min(10) });
-export const WsJoinSchema = z.object({ room: z.string().regex(/^(conversation|relationship|user):[0-9a-f-]{36}$/) });
+/** Déplacés dans `core/ws.ts` (propriétaire A, V5 : salles `outing:`/`duo:`) ; réexportés pour compatibilité. */
+export { WS_EVENT_TYPES, WsAuthenticateSchema, WsJoinSchema, type WsEventType } from './core/ws.js';

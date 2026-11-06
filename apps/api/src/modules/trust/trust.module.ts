@@ -62,7 +62,7 @@ type T = TrustRepository;
     { provide: AI_SERVICES, useFactory: (c: AppConfig, db: Db, clock: Clock) => createAiServices(c, db, clock), inject: [APP_CONFIG, DB, CLOCK] },
     { provide: AI_TASK_QUEUE, useFactory: (l: Logger) => new SwitchableAiTaskQueue(l), inject: [LOGGER] },
     { provide: TRUST_REPOSITORY, useFactory: (db: Db) => new PrismaTrustRepository(db), inject: [DB] },
-    { provide: AI_INVALIDATION, useFactory: (db: Db) => new PrismaAiInvalidation(db), inject: [DB] },
+    { provide: AI_INVALIDATION, useFactory: (db: Db, c: Clock) => new PrismaAiInvalidation(db, c), inject: [DB, CLOCK] },
     { provide: PRIVACY_REPOSITORY, useFactory: (db: Db) => new PrismaPrivacyRepository(db), inject: [DB] },
     { provide: AI_FEATURE_REPOSITORY, useFactory: (db: Db) => new PrismaAiFeatureRepository(db), inject: [DB] },
     { provide: IDENTITY_VERIFICATION_PROVIDER, useFactory: selectIdentityProvider, inject: [APP_CONFIG] },

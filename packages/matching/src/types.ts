@@ -23,6 +23,12 @@ export interface MatchProfile {
   activityByHour: number[];
   /** Mots positifs reçus, agrégés (jamais les répondants). */
   reputationWords: number;
+  /**
+   * V5 (facultatif) : « qui je veux rencontrer » en groupe (vide = tout le monde) et présences
+   * réelles (fiabilité « N sur M »). Fournis par le backend pour la composition et la voie Duo.
+   */
+  meetGenders?: Gender[];
+  attendance?: { attended: number; noShows: number };
 }
 
 /** Faits relationnels sur la paire, fournis par le backend (blocages, historique, distance). */
@@ -62,4 +68,6 @@ export type ExclusionReason =
   | 'BLOCKED_OR_REPORTED'
   | 'MET_BEFORE'
   | 'PROPOSAL_QUOTA'
-  | 'SELF';
+  | 'SELF'
+  /** V5 : genre hors de « qui je veux rencontrer ». */
+  | 'MEET_GENDER';

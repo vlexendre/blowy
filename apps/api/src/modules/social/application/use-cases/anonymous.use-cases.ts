@@ -11,7 +11,7 @@ import type { CommandBus } from '../../../../shared/application/command-bus.js';
 import type { Clock, RandomSource } from '../../../../shared/application/clock.js';
 import type { UnitOfWork } from '../../../../shared/application/unit-of-work.js';
 import { AppError, Errors } from '../../../../shared/domain/errors.js';
-import { ANONYMOUS_LIMITS, issueFormToken, normalizeWords, verifyFormToken, visitorHash, visitorQuotaKey } from '../../domain/anonymous.js';
+import { ANONYMOUS_LIMITS, issueFormToken, normalizeWords, publicSlugCandidate, verifyFormToken, visitorHash, visitorQuotaKey } from '../../domain/anonymous.js';
 import type { AnonymousRepository, QuotaCounter, SocialConfig } from '../ports/social.ports.js';
 
 export const SOCIAL_TOPICS_OUT = {
@@ -34,10 +34,13 @@ export class AnonymousResponsesUseCases {
     private readonly cfg: SocialConfig,
   ) {}
 
-  /** Profil public + jeton de formulaire à usage unique. Page désactivée/compte indisponible = 404 neutre. */
+  /**
+   * Profil public + jeton de formulaire à usage unique. Page désactivée, slug inconnu ou compte
+   * indisponible = même 404 neutre (B9 : « désactiver ma page » la retire du web).
+   */
   async publicProfile(slug: string, visitorToken: string | null): Promise<PublicProfile> {
     const t = await this.repo.findTargetBySlug(slug);
-    if (!t || t.status !== 'ACTIVE') throw unavailable();
+    if (!t || t.status !== 'ACTIVE' || !t.enabled) throw unavailable();
     if (visitorToken) {
       const n = await this.quota.hit(`anon:form:${visitorQuotaKey(this.cfg.publicLinkSecret, visitorToken)}`, 3600);
       if (n > ANONYMOUS_LIMITS.formTokensPerVisitorPerHour) throw new AppError('RATE_LIMITED', 'Trop de demandes, réessaie plus tard');
@@ -91,18 +94,40 @@ export class AnonymousResponsesUseCases {
     return {
       items: page.items.map((r) => ({ id: r.id, words: r.words as never, receivedAt: r.createdAt.toISOString(), hidden: !!r.hiddenAt, reported: !!r.reportedAt })),
       nextCursor: page.nextCursor,
-      page: own,
+      page: this.pageState(own.slug, own.enabled),
     };
   }
 
+  /** État de ma page (lecture seule : n'attribue rien). */
+  async ownPage(userId: string) {
+    const own = await this.repo.ownPage(userId);
+    return this.pageState(own.slug, own.enabled);
+  }
+
+  /**
+   * Active/désactive ma page « 3 mots ». À la première activation, attribue un slug public
+   * (prénom + suffixe aléatoire, unique) : un utilisateur réel obtient ainsi son lien (B2).
+   */
   setPage(userId: string, enabled: boolean, commandId: string) {
     return this.bus.execute({
       actorId: userId, operation: 'social.public_page.set', commandId, payload: { enabled },
       handle: async (scope) => {
+        await scope.lock.users([userId]);
+        const owner = await this.repo.pageOwner(scope, userId);
+        if (!owner) throw Errors.notFound('Profil');
+        if (enabled && !owner.slug) {
+          let assigned = false;
+          for (let i = 0; i < 5 && !assigned; i++) assigned = await this.repo.assignSlug(scope, userId, publicSlugCandidate(owner.displayName, this.random.hex(5)));
+          if (!assigned) throw new AppError('CONFLICT', 'Attribution du lien impossible, réessaie', { retryable: true });
+        }
         const r = await this.repo.setPageEnabled(scope, userId, enabled);
-        return { slug: r.slug, enabled };
+        return this.pageState(r.slug, enabled);
       },
     }).then((o) => o.result);
+  }
+
+  private pageState(slug: string | null, enabled: boolean) {
+    return { slug, enabled, url: slug ? `${this.cfg.publicWebOrigin.replace(/\/+$/, '')}/${slug}` : null };
   }
 
   hide(userId: string, responseId: string, commandId: string) {

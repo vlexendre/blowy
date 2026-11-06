@@ -23,6 +23,6 @@ export class ResolveSessionUseCase implements SessionResolver {
     if (s.userStatus === 'BANNED' || s.userStatus === 'DELETED' || s.userStatus === 'SUSPENDED') return null;
     if (!safeEqualHex(s.tokenHash, hashSessionToken(token, this.sessionSecret))) return null;
     if (now.getTime() - s.lastUsedAt.getTime() > TOUCH_EVERY_MS) await this.sessions.touch(s.id, now);
-    return { userId: s.userId, sessionId: s.id };
+    return { userId: s.userId, sessionId: s.id, expiresAt: s.expiresAt };
   }
 }

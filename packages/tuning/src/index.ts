@@ -7,6 +7,8 @@ import { deepFreeze } from './freeze.js';
 
 export { TuningSchema, GaugesSchema, type Tuning, type NotificationCategory } from './schema.js';
 export { DEFAULT_TUNING, DEFAULT_TUNING_VERSION } from './defaults.js';
+export * from './schema-v5.js';
+export * from './defaults-v5.js';
 export { clamp, clamp01, mulDivFloor, PERMILLE } from './math.js';
 export { coinRewards, catalogPrices, petXpWeekendMultiplier, type CoinRewards, type CatalogPrices } from './economy.js';
 

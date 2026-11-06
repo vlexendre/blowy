@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_TUNING, parseTuning, safeParseTuning, coinRewards } from './index.js';
+import { DEFAULT_TUNING, OUTINGS_V5, parseTuning, safeParseTuning, coinRewards } from './index.js';
 
 describe('tuning', () => {
   it('DEFAULT_TUNING passe le schéma', () => {
-    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.11.0');
+    expect(parseTuning(structuredClone(DEFAULT_TUNING)).version).toBe('tuning-2026.12.0');
   });
   it('est gelé', () => {
     expect(Object.isFrozen(DEFAULT_TUNING.gauges.initial)).toBe(true);
@@ -26,5 +26,61 @@ describe('tuning', () => {
   it('expose les constantes de pièces du brief', () => {
     expect(coinRewards(DEFAULT_TUNING)).toMatchObject({ missionDaily: 20, streakMilestoneCoins: 100, referralReferrer: 100, referralReferee: 100, neighborhoodFeed: 10 });
     expect(DEFAULT_TUNING.coins.catalog).toMatchObject({ streakFreeze: 200, visibilityBoost: 300 });
+  });
+});
+
+type Mutable = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+const clone = (): Mutable => structuredClone(DEFAULT_TUNING) as Mutable;
+
+describe('tuning V5', () => {
+  it('un payload V4 (sans sections V5) reste lisible : défauts V5 appliqués', () => {
+    const v4 = clone();
+    for (const k of ['neighborhoods', 'outings', 'votes', 'duo', 'memories', 'accessories', 'pricing', 'plus', 'credits', 'safety', 'preferences']) delete v4[k];
+    delete v4.reliability.v5;
+    delete v4.notifications.v5;
+    delete v4.matching.ghosterLimitMinAttendancePermille;
+    delete v4.egg.minDuoDates;
+    const parsed = parseTuning({ ...v4, version: 'tuning-2026.11.0' });
+    expect(parsed.outings).toEqual(OUTINGS_V5);
+    expect(parsed.reliability.v5.pauseDays).toBe(7);
+    expect(parsed.matching.ghosterLimitMinAttendancePermille).toBe(700);
+  });
+  it('valeurs de la spec (D-012, §4.3, §2.9)', () => {
+    const t = DEFAULT_TUNING;
+    expect([t.outings.minSizeToForm, t.outings.minSizeToLock, t.outings.minSizeToHold, t.outings.maxSize]).toEqual([4, 4, 3, 6]);
+    expect(t.outings.composition.visionWeights.G).toBe(0);
+    expect(t.votes.windowHours).toBe(72);
+    expect(t.duo.maxActive).toBe(3);
+    expect(t.safety.checkinRadiusMeters).toBe(150);
+    expect(t.neighborhoods.defaultDensityThreshold).toBe(120);
+    // V5.1
+    expect(t.outings.composition.targetSize).toBe(5);
+    expect(t.pricing.seat.amountCents).toBe(499);
+    expect(t.plus).toMatchObject({ monthlyPriceCents: 999, includesAllOutings: true, duoUnlimited: true, includesMonthlyAccessory: false });
+    expect(t.votes.revealMode).toBe('AT_CLOSE');
+    expect(t.preferences.groupAgeDefaultDelta).toBe(4);
+  });
+  it('refuse des poids de groupe ne sommant pas à 1 ou une géographie non nulle', () => {
+    const a = clone();
+    a.outings.composition.visionWeights.C = 0.5;
+    expect(safeParseTuning(a).success).toBe(false);
+    const b = clone();
+    b.outings.composition.visionWeights.G = 0.1;
+    b.outings.composition.visionWeights.C = 0.23;
+    expect(safeParseTuning(b).success).toBe(false);
+  });
+  it('refuse des tailles incohérentes, des paliers non croissants, un accessoire à deux sources', () => {
+    const a = clone();
+    a.outings.minSizeToHold = 5;
+    expect(safeParseTuning(a).success).toBe(false);
+    const b = clone();
+    b.memories.promiseMilestones = [1, 3, 3];
+    expect(safeParseTuning(b).success).toBe(false);
+    const c = clone();
+    c.accessories.referralAccessoryId = c.memories.accessoryUnlocks[0].accessoryId;
+    expect(safeParseTuning(c).success).toBe(false);
+    const d = clone();
+    d.accessories.maxEquipped = 4;
+    expect(safeParseTuning(d).success).toBe(false);
   });
 });

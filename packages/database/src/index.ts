@@ -9,6 +9,7 @@ export {
   LockOrderViolation,
   LOCK_ORDER,
   isRetryableTxError,
+  isContentionError,
   isUniqueViolation,
   type Tx,
   type LockClass,

@@ -80,6 +80,18 @@ export class PrismaAnonymousRepository implements AnonymousRepository {
     return { slug: p?.publicSlug ?? null, enabled: p?.slugEnabled ?? false };
   }
 
+  async pageOwner(scope: TxScope, userId: string) {
+    const p = await txOf(scope).profile.findUnique({ where: { userId }, select: { displayName: true, publicSlug: true } });
+    return p ? { displayName: p.displayName, slug: p.publicSlug } : null;
+  }
+
+  async assignSlug(scope: TxScope, userId: string, slug: string) {
+    const tx = txOf(scope);
+    if (await tx.profile.findUnique({ where: { publicSlug: slug }, select: { userId: true } })) return false;
+    const r = await tx.profile.updateMany({ where: { userId, publicSlug: null }, data: { publicSlug: slug } });
+    return r.count === 1;
+  }
+
   async setPageEnabled(scope: TxScope, userId: string, enabled: boolean) {
     const p = await txOf(scope).profile.update({ where: { userId }, data: { slugEnabled: enabled }, select: { publicSlug: true } });
     return { slug: p.publicSlug };

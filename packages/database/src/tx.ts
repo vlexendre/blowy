@@ -3,7 +3,11 @@
  *
  * Ordre global imposé (anti-deadlock) : users → pets → relations → wallets ;
  * à l'intérieur d'une classe, tri lexicographique des identifiants.
- * Les verrous sont pris par `SELECT … FOR UPDATE` dans la transaction courante.
+ * Les verrous sont pris par `SELECT … FOR NO KEY UPDATE` dans la transaction courante :
+ * exclusifs entre commandes, mais compatibles avec le `FOR KEY SHARE` implicite des INSERT
+ * qui référencent la ligne par clé étrangère (ex. `CommandRecord.actorId → User`). Avec
+ * `FOR UPDATE`, deux commandes concurrentes du même utilisateur s'interbloquaient
+ * systématiquement (chacune tenait le KEY SHARE attendu par l'autre) — bug B1.
  */
 import { Prisma } from './generated/prisma/client.js';
 import type { Db } from './client.js';
@@ -52,7 +56,7 @@ export class OrderedLocker {
     if (todo.length === 0) return;
     const key = LOCK_KEY[cls];
     await this.tx.$queryRawUnsafe(
-      `SELECT 1 FROM "${cls}" WHERE "${key}" = ANY($1::uuid[]) ORDER BY "${key}" FOR UPDATE`,
+      `SELECT 1 FROM "${cls}" WHERE "${key}" = ANY($1::uuid[]) ORDER BY "${key}" FOR NO KEY UPDATE`,
       todo,
     );
     for (const id of todo) this.held.add(`${cls}:${id}`);
@@ -73,6 +77,7 @@ export class OrderedLocker {
 }
 
 const RETRYABLE_PG = new Set(['40001', '40P01']); // serialization_failure, deadlock_detected
+const LOCK_TIMEOUT_PG = '55P03'; // lock_not_available (lock_timeout dépassé)
 
 /** Détecte deadlock / échec de sérialisation (via adapter pg ou erreur Prisma P2034). */
 export function isRetryableTxError(err: unknown): boolean {
@@ -84,6 +89,25 @@ export function isRetryableTxError(err: unknown): boolean {
     if (e.meta && typeof e.meta.code === 'string' && RETRYABLE_PG.has(e.meta.code)) return true;
     const msg = (cur as Error).message;
     if (typeof msg === 'string' && /deadlock detected|could not serialize access/i.test(msg)) return true;
+    cur = e.cause;
+  }
+  return false;
+}
+
+/**
+ * Contention non résolue : attente de verrou au-delà de `lock_timeout` (55P03), impossibilité
+ * d'obtenir une connexion/transaction à temps (P2024/P2028), ou deadlock/sérialisation après
+ * épuisement des tentatives. L'appelant la traduit en refus propre et réessayable (409).
+ */
+export function isContentionError(err: unknown): boolean {
+  if (isRetryableTxError(err)) return true;
+  let cur: unknown = err;
+  for (let depth = 0; depth < 6 && cur; depth++) {
+    const e = cur as { code?: unknown; cause?: unknown; meta?: { code?: unknown } };
+    if (e.code === LOCK_TIMEOUT_PG || e.meta?.code === LOCK_TIMEOUT_PG) return true;
+    if (e.code === 'P2024' || e.code === 'P2028') return true;
+    const msg = (cur as Error).message;
+    if (typeof msg === 'string' && /lock timeout|canceling statement due to lock timeout|Unable to start a transaction in the given time|Transaction already closed|Timed out fetching a new connection/i.test(msg)) return true;
     cur = e.cause;
   }
   return false;
@@ -104,6 +128,8 @@ export function isUniqueViolation(err: unknown): boolean {
 
 export interface TxOptions {
   maxAttempts?: number;
+  /** Attente maximale d'un verrou ligne (SET LOCAL lock_timeout) ; défaut 4 s. */
+  lockTimeoutMs?: number;
   isolationLevel?: Prisma.TransactionIsolationLevel;
   timeoutMs?: number;
 }
@@ -123,11 +149,18 @@ export async function runInTransaction<T>(
   for (;;) {
     attempt++;
     try {
-      return await db.$transaction((tx) => fn(tx, new OrderedLocker(tx)), {
-        isolationLevel: opts.isolationLevel ?? Prisma.TransactionIsolationLevel.ReadCommitted,
-        timeout: opts.timeoutMs ?? 15_000,
-        maxWait: 10_000,
-      });
+      return await db.$transaction(
+        async (tx) => {
+          // Une commande ne reste jamais bloquée derrière un verrou : au-delà, refus réessayable.
+          await tx.$executeRawUnsafe(`SET LOCAL lock_timeout = '${Math.max(1, Math.floor(opts.lockTimeoutMs ?? 4_000))}ms'`);
+          return fn(tx, new OrderedLocker(tx));
+        },
+        {
+          isolationLevel: opts.isolationLevel ?? Prisma.TransactionIsolationLevel.ReadCommitted,
+          timeout: opts.timeoutMs ?? 15_000,
+          maxWait: 5_000,
+        },
+      );
     } catch (err) {
       if (attempt >= max || !isRetryableTxError(err)) throw err;
       await new Promise((r) => setTimeout(r, 15 * 2 ** attempt + Math.floor(attempt * 7)));

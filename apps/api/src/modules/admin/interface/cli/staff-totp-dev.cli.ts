@@ -7,6 +7,7 @@
  */
 import { createDb } from '@blowy/database';
 import { loadConfig } from '../../../../config/env.js';
+import { SystemClock } from '../../../../shared/infrastructure/system-clock.js';
 import { loadAdminConfig } from '../../infrastructure/admin-config.js';
 import { PrismaStaffRepository } from '../../infrastructure/prisma-staff.repository.js';
 import { base32Encode, deriveTotpSecret, stepOf, totpAt } from '../../domain/totp.js';
@@ -27,7 +28,7 @@ try {
     console.warn(`${key} : MFA non enrôlée — se connecter à l'admin pour démarrer l'enrôlement, puis relancer.`);
   } else {
     const secret = deriveTotpSecret(loadAdminConfig().staffMfaKey, userId, st.generation);
-    console.warn(`${key} (génération ${st.generation}, ${st.enrolled ? 'confirmée' : 'à confirmer'}) secret=${base32Encode(secret)} code=${totpAt(secret, stepOf(new Date()))}`);
+    console.warn(`${key} (génération ${st.generation}, ${st.enrolled ? 'confirmée' : 'à confirmer'}) secret=${base32Encode(secret)} code=${totpAt(secret, stepOf(new SystemClock().now()))}`);
   }
 } finally {
   await db.$disconnect();

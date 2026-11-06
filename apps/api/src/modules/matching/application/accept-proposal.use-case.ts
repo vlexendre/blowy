@@ -6,6 +6,7 @@
  * Aucune notification de rejet ; la proposition n'est pas une réservation de slot.
  */
 import type { AcceptProposalResult } from '@blowy/api-contract';
+import type { Clock } from '../../../shared/application/clock.js';
 import type { CommandBus } from '../../../shared/application/command-bus.js';
 import type { BlockReader } from '../../../shared/application/ports/block-reader.port.js';
 import type { EntitlementsReader } from '../../../shared/application/ports/entitlements-reader.port.js';
@@ -20,6 +21,7 @@ export class AcceptProposalUseCase {
     private readonly creator: RelationshipCreator,
     private readonly entitlements: EntitlementsReader,
     private readonly blocks: BlockReader,
+    private readonly clock: Clock,
   ) {}
 
   async execute(actorId: string, proposalId: string, commandId: string): Promise<AcceptProposalResult> {
@@ -27,7 +29,8 @@ export class AcceptProposalUseCase {
     if (!pre || (pre.userLowId !== actorId && pre.userHighId !== actorId)) throw Errors.notFound('Proposition');
     const otherId = pre.userLowId === actorId ? pre.userHighId : pre.userLowId;
     // Lectures hors verrou (pas d'appel réseau sous verrou) ; revalidées dans la transaction.
-    const now0 = new Date();
+    // Horloge injectée (B11) : les droits Blowy+ sont évalués à l'heure métier, pas système.
+    const now0 = this.clock.now();
     const [slotsMe, slotsOther] = await Promise.all([this.entitlements.dateSlots(actorId, now0), this.entitlements.dateSlots(otherId, now0)]);
     const { result } = await this.bus.execute({
       actorId,

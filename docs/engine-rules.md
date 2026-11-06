@@ -115,3 +115,26 @@ Lot : 2 meilleures priorités + 1 découverte (score ≥ 40, HYP.), départage F
 | Sorties silencieuses (14 j) | 32,7 % |
 
 Lecture : avec le seuil 500 **inchangé**, l'objectif « 20 % au N3 en 14 jours » n'est atteint que par les paires très engagées. Deux points ralentissent la progression : la porte d'emménagement (deux oui) et les plafonds journaliers de messages (20 XP), qui bornent le gain quotidien d'une paire non assidue. Leviers à arbitrer par le produit (sans toucher au seuil) : plafond de messages, bonus du premier AR, XP de mission, ou cible révisée. Le taux de maladie élevé chez les occasionnels vient de la faim −4/h. Pistes possibles : un decay plus doux pour les nouveaux comptes ou des notifications de soin, à arbitrer.
+
+## 12. Composition des sorties V5 / V5.1 (`@blowy/matching/groups`)
+Version `groups-2026.12.0`, tuning `tuning-2026.12.0` (sections `outings`, `votes`, `duo`, `memories`, `accessories`, `pricing`, `plus`, `credits`, `safety`, `neighborhoods`, `preferences`, `reliability.v5`, `notifications.v5` ; défauts appliqués à un payload V4).
+- Entrées : `OutingCandidate` (profil, `seeks`, `meetGenders`, `romanceGenders`, `groupAge`, disponibilités `slotStartsAtMs`, `neighborhoodIds` acceptables, `activities`, `teamId`, présences, priorité). Aucun champ de paiement.
+- Filtres nommés `FILTER_BY_REASON` ; `FILTERS` (V4/Duo) et `PAIR_FILTERS` (groupe : SELF, NOT_ADULT, NOT_VERIFIED, INACTIVE_ACCOUNT, AGE_PREFERENCE sur `groupAge`, MEET_GENDER, BLOCKED_OR_REPORTED, MET_BEFORE, LIMIT_GHOSTER sur N/M ≥ 700 ‰ dès M ≥ 3) + score minimal 35. Entre membres d'une même team : seul le blocage s'applique.
+- Score de paire w = moyenne arrondie des deux `scoreVision` avec poids de groupe (G = 0, distance 0). Objectif J en milli-points entiers : `1000·mean(w) + 8000·romCov + 3000·friendFit − 10000·genderImb − 1500·(5 − |G|)` (parts en ‰/1000, arrondis vers le bas).
+- Procédure : unités = teams indivisibles (≤ 3 ; team invalide → `TEAM_INCOMPATIBLE`, jamais scindée) ; priorité missedWeeks ↓, 1ʳᵉ sortie, ancienneté, FNV-1a ; glouton par classe de créneau (instant × quartier × activité, admissible pour chaque membre) jusqu'à 5 ; réparation (ΔJ ≥ −2000) ; échanges d'unités de même taille entre groupes voisins d'une même classe (≤ 200 passes) ; motifs `POOL_TOO_SMALL` / `NO_SLOT_CAPACITY` / `NO_COMPATIBLE_GROUP` / `TEAM_INCOMPATIBLE`.
+- Amorçage (V5.1 B.7) `composeSeedingOutings` : chaque team de 3 est associée à une autre team (≥ 2), total ≤ 6.
+- Backfill : personne seule admissible sur le créneau de la sortie maximisant J.
+- Simulateur `pnpm --filter @blowy/matching simulate:outings` (seed `blowy-outings-2026`, 3 créneaux × 2 lieux/quartiers, 12 % en teams) — 2026-11-06 :
+
+| Candidats | Placés | Groupes (tailles) | Score moyen | Couverture romance | Groupes déséquilibrés | Non placés | ms |
+|---|---|---|---|---|---|---|---|
+| 300 | 79 % | 48 (45×5, 3×4) | 56 | 83,6 % | 25 % | 33 sans groupe compatible, 28 sans créneau correspondant, 2 teams | 85 |
+| 600 | 82 % | 99 (96×5, 3×4) | 59 | 85,6 % | 21 % | 43 / 58 / 7 | 165 |
+Les « sans créneau » viennent des activités synthétiques non offertes (bloc, atelier, expo). 2 000 candidats ≈ 2 s (test de performance < 15 s).
+
+## 13. Pet V5 (`@blowy/pet-engine/v5`, `engine-2026.12.0`)
+- `reduceV5(state, event, {now, seed, engineVersion, tuning})`, registre `HANDLERS_V5` : `MEMORY_RECORDED`, `ACCESSORY_GRANTED`, `ACCESSORY_EQUIP`, `REACT`. Aucune jauge, perte, gel, décroissance ni multiplicateur payant ; idempotence `recentEventIds`.
+- XP par souvenir : sortie 40, RDV duo 30, nouveau membre de bande 20, parole tenue 25 (paliers 1, 3, 5, 10, 20 → `MILESTONE_REACHED`, le backend crée le souvenir). Stades V5 : jeune 100, adulte 600 (2 sorties → jeune ; 10 sorties avec ~1 lien / 2 sorties → adulte). Un stade ne redescend jamais.
+- Accessoires gagnés uniquement (souvenirs, parrainage ; V5.1 : pas d'accessoire mensuel Blowy+ par défaut), ≤ 3 portés. Pose : réaction (TTL 4 s) > nuit locale (ASLEEP) > JOYFUL ; jamais SICK/HUNGRY/SAD.
+- Migration V4 → V5 : stade et XP conservés, seul souvenir HATCHED. Moteur V4 déprécié sous `@blowy/pet-engine/v4` (toujours réexporté à la racine pour compatibilité).
+- Calendrier : `weekKeyOf`, `requestWindow` (lun. 9 h → mar. 12 h), `outingInstants` (verrouillage la veille 18 h ; V5.1 : visages révélés au verrouillage ; check-in −30/+90 min ; votes +72 h), `cancelKindAt` (avant verrouillage = EARLY, après = LATE compté comme absence), `defaultGroupAge` (± 4 ans).
