@@ -1,0 +1,472 @@
+{
+  "member": "growth-lead",
+  "global": 8,
+  "criteria": {
+    "comprehension": 9,
+    "cognitive": 8,
+    "desire": 8,
+    "meet": 8,
+    "safety": 8,
+    "virality": 7,
+    "money": 8,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Hook juste, « Partout : une sortie se forme dès 5 personnes » ne ferme plus aucune ville. Aucune preuve sociale chiffrée ; 220 px vides entre texte et pets (y≈830–1050 @2x).",
+      "fix": "Une ligne réelle « N sorties cette semaine à Paris 11e » à la place du vide."
+    },
+    "V5-Ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« 6 lieux partenaires » = preuve d'offre ; « Paris 10e · sorties dès 5 personnes compatibles » juste.",
+      "fix": "Ajouter le nombre de sorties de la semaine."
+    },
+    "V5-Ville-nantes": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« 87 personnes vérifiées » + règle des 5 : garde l'inscrit hors zone. Aucune mention de la team ici, alors que c'est le levier n°1 de Nantes.",
+      "fix": "« Viens avec des potes : ils comptent » dès cet écran."
+    },
+    "V5-Toi": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Deux réponses sur un écran, mais rapide : bon pour le funnel.",
+      "fix": "—"
+    },
+    "V5-Pet": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Pet + activités : un écran de moins. Le pet choisi n'est exportable nulle part.",
+      "fix": "« Partager mon pet » (9:16) après le choix."
+    },
+    "V5-Rencontrer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« À deux, par écrit » à égalité avec « En petit groupe » dès 4/8 : la voie sans invitation capte ceux qui auraient amené une team ; Welcome (« Ou un tête-à-tête ») et Trouvée la reproposent.",
+      "fix": "Duo proposé après la 1re sortie vécue ; mesurer le taux de team par choix."
+    },
+    "V5-Consentement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Seulement pour « histoire » : réglé. « Potes seulement » de même poids : bon pour la confiance, à tracer.",
+      "fix": "Taux par bouton dans le tableau de bord."
+    },
+    "V5-Toi-plus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Une question, garantie expliquée.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Une proposition par semaine au plus » : rythme tenable.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "SSO 1 tap, discrétion OFF par défaut : Accueil avec pet, donc filmable.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair, ne pollue pas la base.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "8 écrans avant cette valeur (T2 : 15) : ma demande n°1 réglée. Le seul lien secondaire sous le CTA est « Plutôt à deux ? Essayer la voie Duo » : fuite vers le canal non viral.",
+      "fix": "Lien secondaire « Venir avec un pote » ; Duo dans le menu."
+    },
+    "V5-Trouvee-potes": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Dit la vérité avant le choix : évite la déception post-sortie, donc le churn.",
+      "fix": "Mesurer l'acceptation de cette variante contre Trouvée."
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Tom vient avec toi · + 1 place pour un pote » présent : réglé. La ligne casse en 2 × 2 lignes (« Tom vient avec / toi », « + 1 place pour un / pote »).",
+      "fix": "Une ligne : « Tom vient · + 1 place »."
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Selfie = KPI n°1 du funnel ; toujours rien qui dise que la place est tenue pendant ce temps.",
+      "fix": "« Ta place est gardée 30 min »."
+    },
+    "V5-Notifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ta place est réservée » en tête : renforcement.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Même ligne team cassée sur 2 × 2 lignes.",
+      "fix": "Une ligne."
+    },
+    "V5-Team": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Leur 1re sortie est offerte » + règles d'équilibre : argument d'invitation clair.",
+      "fix": "—"
+    },
+    "V5-Invite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Écran d'arrivée de l'invité (ma demande T2) : réglé et bon. Mais « Lien à usage unique, réservé à toi » est faux : le même `blowy.app/i/r8Tz4w` est imprimé sur 4 cartes publiques.",
+      "fix": "Lien de team nominatif à usage unique ; slug public distinct, par carte, pour l'attribution."
+    },
+    "V5-Accueil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« + Inviter » réduit à « Tom vient avec toi » : discret et utile. « mar. 10 / nov. » coupé.",
+      "fix": "Espace insécable."
+    },
+    "V5-Accueil-discret": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Désormais un choix, pas l'état par défaut : réglé.",
+      "fix": "—"
+    },
+    "V5-Accueil-duo": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Au format à deux, la sortie de groupe devient « facultatif » en 3e carte : l'Accueil pousse le canal qui n'amène personne.",
+      "fix": "Garder la sortie (avec la team) en tête, même au format à deux."
+    },
+    "V5-Pause": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Évite la désinstallation.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ton pote · venu en team » : la team est visible.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Brise-glace 3 mots : rétention avant jeudi.",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien côté croissance.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Il manque 2 personnes » + « Venir avec 1 ou 2 potes » en 1re action : le moteur d'amorçage existe. Plus aucun partage public (la carte ville a été supprimée) : seule la team reste.",
+      "fix": "Bouton secondaire « Partager : il manque 2 personnes à Nantes » (carte sans tiers)."
+    },
+    "V5-Amorcage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Date, lieu, team de 3 + 2 : ma condition T2 « sortie d'amorçage en moins de 3 semaines » est maquettée (sam. 28 nov.). Reste à la mesurer.",
+      "fix": "Indiquer « 19 jours après ton inscription » pour fixer l'attente."
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Relance immédiate « Oui, le 19 ».",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Relance immédiate, team prévenue.",
+      "fix": "—"
+    },
+    "V5-Affiner": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Sous-choix sortis du funnel : réglé.",
+      "fix": "—"
+    },
+    "V5-Affiner-histoire": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Hors funnel : réglé.",
+      "fix": "—"
+    },
+    "V5-Confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Partager « demain je sors » » en secondaire, au pic d'attente.",
+      "fix": "—"
+    },
+    "V5-Partage-confirmation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Carte juste et le meilleur hook (« Je raconte vendredi »). Même lien que les 3 autres cartes : aucune attribution par source.",
+      "fix": "Slug par carte (mer., jeu., ven., invitation)."
+    },
+    "V5-Revelation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Privé, normal.",
+      "fix": "—"
+    },
+    "V5-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Boucle d'acquisition déguisée en sécurité.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Encart sous « Ce lien ne m'est pas destiné » + « Voir › » : réglé.",
+      "fix": "Pré-remplir la ville du proche."
+    },
+    "W-Ange-aide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aucun marketing : juste.",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Code d'abord : fiabilise la présence, donc la rétention.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« « J'y suis » » à côté de « Besoin d'aide » : poster pendant la soirée contredit « Range ton téléphone ».",
+      "fix": "Proposer « J'y suis » avant le check-in ou à la fin."
+    },
+    "V5-Partage-checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Exportable ; 40 % de dégradé vide (y≈500–870) ; même illustration que mercredi et vendredi : en Story, les 3 jours se ressemblent.",
+      "fix": "Un visuel par moment (chevalet orange le jeudi)."
+    },
+    "V5-Souvenir": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Partager la soirée » est redescendu en lien gris sous « Voter en secret » : ma demande n°1 du tour 1 (CTA principal au pic émotionnel) est défaite.",
+      "fix": "Après « Enregistrer mes votes », écran de confirmation avec « Partager la soirée » en CTA principal."
+    },
+    "V5-Partage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« 3 nouvelles personnes et un pote » : chiffre juste, réglé. Même lien que les autres cartes.",
+      "fix": "Slug propre à cette carte."
+    },
+    "V5-Apres": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Un écran, un CTA.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "La carte d'accords a été supprimée au lieu d'être anonymisée : le moment « on a matché » n'a plus de sortie virale.",
+      "fix": "Carte « +1 dans ma bande » sans pet ni prénom, publiable après accord des deux."
+    },
+    "V5-Apres-aucun": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Relance « Voir le jeu. 19 nov. ».",
+      "fix": "—"
+    },
+    "V5-Bande": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« + Inviter » par ligne et Sortie de bande : réglé.",
+      "fix": "—"
+    },
+    "V5-Rue": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Calme, zéro notification : bon pour la rétention de ceux qui fuient les jauges ; aucune boucle.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 7,
+      "blocking": false,
+      "issue": "La limite « 1 duo actif » pousse vers Blowy+, jamais vers la sortie de groupe.",
+      "fix": "« Ou viens jeudi en groupe » à côté de la limite."
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Privé : pas de boucle, normal.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Privé.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Privé.",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Privé ; duo né d'une sortie = meilleure rétention.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Privé.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Gadget hors boucle.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Sortie propre = moins de désinstallations après un duo raté.",
+      "fix": "—"
+    },
+    "V5-Partage-invitation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« VIENS AVEC MOI. » sans tiers, Message en 1er : réglé. « Ta place jeudi » reste publiable en Story : la place de team part au premier inconnu, souvent hors quartier.",
+      "fix": "Message seulement pour une place ; lien nominatif."
+    },
+    "V5-Story": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Slug aléatoire : réglé.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Voir ma ville » qualifie la ville.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Décris-moi en 3 mots » en ligne de profil.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Partager » en haut de Nino : on ne sait pas quelle carte part.",
+      "fix": "« Partager Nino » + aperçu."
+    },
+    "V5-Tarifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Prix montrables en vidéo.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Honnête ; la ligne sous le bouton est mangée par son ombre.",
+      "fix": "16 px de marge."
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Toujours aucune question « pourquoi tu pars » (signal de densité perdu).",
+      "fix": "Une question facultative."
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Réessai guidé : limite la chute au selfie.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ajouter à mon agenda » rattrape le refus.",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien qui freine l'acquisition ou la rétention ici.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Un lien par usage et par source : team = nominatif à usage unique (rend vrai l'écran Invite), cartes publiques = slug distinct par carte (mer., jeu., ven., 3 mots, ange) pour mesurer le 0,3 par canal.",
+    "Remettre « Partager la soirée » en CTA principal juste après « Enregistrer mes votes », et redonner une sortie virale aux accords (carte sans pet ni prénom, après accord des deux).",
+    "Retirer la voie Duo des points de décision du funnel (Welcome « Ou un tête-à-tête », Rencontrer, lien secondaire de Trouvée) et la proposer après la 1re sortie ; mesurer le taux de team par cohorte."
+  ],
+  "tenIf": "Je mets 10 si le test de 8 semaines prévu dans business-model mesure dans le 11e Welcome → 1re sortie vécue ≥ 25 % et une chute au selfie < 30 %, si chaque sortie vécue produit ≥ 0,3 inscrit vérifié attribué par source (team, carte mer., carte jeu., carte ven., ange, 3 mots), si Nantes ou Lille passe de « il manque N » à une sortie vécue en moins de 3 semaines grâce aux teams, et si chaque lien imprimé dit vrai (usage unique ou public, jamais les deux)."
+}

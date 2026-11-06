@@ -1,0 +1,472 @@
+{
+ "member": "lea-25",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 8,
+  "meet": 8,
+  "safety": 8,
+  "virality": 8,
+  "money": 8,
+  "visual": 7
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Promesse et « Partout dès 5 personnes » réglés. Le bas de l'écran est une parade de 5 mascottes, raton à capuche au centre ; rien ne montre une vraie table",
+   "fix": "Silhouettes d'une table de 5, mascottes réduites"
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Statut sur chaque quartier, pas de géolocalisation : réglé",
+   "fix": "—"
+  },
+  "V5-Ville-nantes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas ma ville. « On te dit, après tes créneaux, quand la tienne peut avoir lieu » renvoie 6 écrans plus loin",
+   "fix": "Donner ici la prochaine date possible"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Date et genre sur un écran, tranche expliquée, « jamais qui » : parfait",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Tu ne dis jamais son nom au bar » est incompréhensible au 3e écran, avant de savoir ce qu'est une sortie",
+   "fix": "Retirer la phrase ; c'est expliqué sur la fiche Sortie"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux questions sur un écran, et deux cartes « Les deux » qui ne veulent pas dire la même chose",
+   "fix": "Libellés distincts : « Groupe et duo », « Potes et histoire »"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Égalité des boutons réglée. « POTES SEULEMENT » touche les bords de son bouton (≈ 3 px de marge)",
+   "fix": "Boutons empilés pleine largeur, ou libellé plus court"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La garantie « au moins 2 compatibles » est là ; rien sur l'équilibre femmes/hommes du groupe pour l'amitié",
+   "fix": "Reprendre ici « jamais plus de 3 du même genre »"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours aucun indice d'affluence par créneau (demande du tour 2)",
+   "fix": "« Plus de chances » sur les créneaux les plus remplis"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Prénom affiché, discrétion avec état réel : réglé",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Compris » en principal, « Erreur de date ? » discret : réglé",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La règle « jamais plus de 3 du même genre » n'est pas écrite ici, là où je décide. Les 3 cases « ? » sont toutes légendées « nouvelle » alors que l'une est un homme",
+   "fix": "Ligne « Toujours au moins 2 femmes et 2 hommes » sous la composition ; légende neutre « à découvrir »"
+  },
+  "V5-Trouvee-potes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Honnête et dit avant le choix. « Un autre créneau, ou la voie Duo » met deux actions dans un seul lien",
+   "fix": "Deux liens distincts"
+  },
+  "V5-Sortie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Annulation gratuite jusqu'à l'arrivée des visages » puis « Un imprévu prévenu avant : sans effet, une fois par mois » : deux règles qui se contredisent",
+   "fix": "Une seule règle : « Gratuit jusqu'au jeu. 12 nov. 16 h 30, sans limite » ou la limite écrite partout"
+  },
+  "V5-Verif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La vignette « Ton visage » est un dégradé violet, et l'aperçu est une ligne de texte « Toi · 26–29 ans » ; je ne vois pas ma carte telle que le groupe la verra",
+   "fix": "Aperçu réel : ma photo, ma tranche, le filigrane"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "État réel du mode discret, exemples d'écran verrouillé : réglé",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ajouter à mon agenda » ne montre toujours pas le titre de l'événement (tour 2)",
+   "fix": "Afficher le titre (« Jeux · 11e », sans « blowy »)"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "La règle chiffrée que je demandais : « jamais plus de 3 du même genre »",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Âge et taille du groupe : réglé ; la composition femmes/hommes manque",
+   "fix": "Ajouter « 2 femmes, 3 hommes » ou la règle"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mode discret désactivé par défaut, donc cohérent. La scène du raton sur canapé prend 300 px sans aucune action",
+   "fix": "La réduire ou la rendre masquable"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Agenda », « Notes », « Contacts » : réglé",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La carte « Voie Duo » répète les tarifs au lieu d'une action",
+   "fix": "La retirer ou la remplacer par « Voir les propositions »"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours pas « Personne ne voit que tu es en pause » (tour 2)",
+   "fix": "Ajouter la phrase"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pastille vert vif « Lieu mer. 11 nov. 18 h » plus visible que le message (tour 2)",
+   "fix": "Pastille grise"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Codenames, si on est 5 ! » alors qu'on est 5 (tour 2, non corrigé)",
+   "fix": "Texte de démo juste"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« … est gratuit » puis « ; pour ta sécurité, toujours » : le point-virgule commence une ligne",
+   "fix": "Espace insécable avant « ; »"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas ma ville ; honnête et actionnable. « Si tu l'as activée » : la carte ne dit pas l'état réel de ma voie Duo",
+   "fix": "Afficher l'état (« activée » / « l'activer »)"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas ma ville ; daté, lieu confirmé. « + 2 nouvelles personnes » ne dit pas leur genre alors que la règle l'impose",
+   "fix": "Écrire la composition"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Heure de composition écrite : réglé",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours pas l'heure à laquelle j'ai été prévenue (tour 2)",
+   "fix": "« Annulée lun. 9 nov. 21 h »"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« En amitié, plutôt… » existe enfin, mais en 7e ligne d'un écran facultatif, jamais proposé ailleurs",
+   "fix": "Raccourci « Plutôt des femmes ? » depuis Trouvée"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Couvert par l'accord, usage écrit, rien de présélectionné",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Adresse, métro, charte : bien. Illustration générique au lieu de la photo du lieu promise (H.24)",
+   "fix": "Photo réelle de la façade"
+  },
+  "V5-Partage-confirmation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« DEMAIN, JE SORS AVEC 3 NOUVELLES PERSONNES » posté mercredi : mes 900 abonnés savent que jeudi soir je suis avec des inconnus. Au tour 2, je demandais une version sans jour",
+   "fix": "« Cette semaine » par défaut, « Demain » en option"
+  },
+  "V5-Revelation": {
+   "score": 6,
+   "blocking": false,
+   "issue": "3e tour avec des lettres L, M, S, T sur dégradé sous le titre « LES VISAGES ». « Les captures d'écran sont bloquées » est faux face à un 2e téléphone",
+   "fix": "Vraies photos (même floutées) dans la maquette ; « Captures bloquées, et ton prénom en filigrane identifie toute photo »"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de présélectionné. Pas de « comme la dernière fois », choix assumé",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Le lien « Ce lien ne m'est pas destiné » passe avant l'encart : réglé",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Besoin d'aide », 17, position du moment, délai de 5 min : parfait",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Demande au comptoir la table Blowy » : le nom de l'appli dit au barman (tour 2)",
+   "fix": "« la table au chevalet orange »"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Range ton téléphone » juste au-dessus d'un bouton « J'y suis » qui m'invite à poster",
+   "fix": "Retirer « J'y suis » de cet écran"
+  },
+  "V5-Partage-checkin": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« J'Y SUIS. Une sortie à 5 à Paris 11e, ce soir. » publié en direct : tout le monde sait où et quand je suis avec des inconnus. C'est l'inverse de la règle du lieu secret",
+   "fix": "Supprimer la carte, ou ne la rendre publiable qu'après la fin de la sortie"
+  },
+  "V5-Souvenir": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le raton géant reste le seul visuel de ma soirée (tour 2). « SORTIE » en dégradé olive sur jaune se lit moins bien que « VÉCUE »",
+   "fix": "Visuel du lieu ; titre en encre pleine"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu bloqué jusqu'au lendemain 9 h 30 : réglé. Pas d'option « Sans logo » ici, alors qu'elle existe sur « 3 mots »",
+   "fix": "Même option"
+  },
+  "V5-Apres": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le contour noir épais de « Non » se lit comme un bouton choisi : l'écran affiche encore Non / Non / Non. La légende « Modifiable, résultats… » passe sous l'ombre du bouton",
+   "fix": "Aucun état visuel par défaut ; légende 12 px plus bas"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Seulement mes accords, une action : parfait",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« sauf ta bande si tu l'invites » : réglé",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux « + Inviter » identiques sur chaque ligne ; l'accès à Ta rue est une ligne nue",
+   "fix": "Un seul « Inviter à une sortie »"
+  },
+  "V5-Rue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mignon et sans corvée. Les 3 souvenirs sont rangés sous la rue, pas dedans ; une grande bande verte vide",
+   "fix": "Poser les souvenirs dans le décor"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La carte dit « avec N. », le pied dit « Dire oui à Nils » : prénom complet avant les visages. « 3 · Un rendez-/vous » se casse sur 4 lignes",
+   "fix": "« N. » partout ; libellé « 3 · Rendez-vous »"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Nino en propose pendant 7 jours, ensuite le duo reste ouvert » : réglé",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« J » et « A » en lettres sous le titre « LES VISAGES »",
+   "fix": "Photos dans la maquette"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Table confirmée, ange sans présélection, Jade accepte : parfait",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bandeau violet « Proposer un rendez-vous » toujours permanent (tour 2)",
+   "fix": "Repliable après un premier refus"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Lieu public, gratuit, autre lieu possible",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Désactivé, jamais envoyé",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Messages humains, sortie sans message si danger",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Tom retiré : réglé. Mais Invite promet « Lien à usage unique, réservé à toi », alors que ce même lien `r8Tz4w` part ici en Story",
+   "fix": "Un lien par destinataire en Message ; un lien distinct pour la Story"
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La puce « Sans logo blowy. » ne dit pas si elle est active",
+   "fix": "Interrupteur avec état"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "10 mots, accordés, bouton lisible",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Toujours mon initiale « A » sur violet au lieu de mes photos (tour 2, non traité)",
+   "fix": "Mes 1 à 3 photos, visibles par moi seule"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager » en haut : partager quoi ? (tour 2)",
+   "fix": "« Partager Nino »"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ne s'achète jamais : plus de visibilité, aller plus vite » se lit de travers",
+   "fix": "« Jamais à vendre : de la visibilité, de la priorité »"
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La légende « 9,99 € par mois · résiliable ici » chevauche l'ombre du bouton ; « rentable dès la 3e sortie » a disparu",
+   "fix": "Légende décalée ; remettre le calcul"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair, 4,99 €, remboursement écrit",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Plus de relance Blowy+ : réglé",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Aide (non urgent) · réponse sous 24 h » sans rappeler le < 1 h de sécurité (tour 2)",
+   "fix": "« Sécurité : < 1 h les soirs de sortie » sur la même ligne"
+  },
+  "V5-Confidentialite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Phrase exacte, exception du duo, interrupteurs à l'état réel",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Dans la pastille « Être rappelé… », « de sortie » colle au bord gauche ; la case « Bloquer aussi » a un contour rouge qui ressemble à une erreur",
+   "fix": "Marge intérieure ; contour neutre"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Honnête, Apple Pay",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code hors ligne, 17 / 112",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien débité, place gardée 30 min",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours pas la durée de conservation de la pièce d'identité (tour 2)",
+   "fix": "« supprimée sous 24 h »"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Ajouter à mon agenda » en premier : réglé",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le README annonce la voie Duo sur cet écran ; il n'y a qu'un bouton",
+   "fix": "Lien « ou la voie Duo »"
+  }
+ },
+ "top3": [
+  "Montrer de vrais visages (même floutés) dans Les visages (sortie et duo), mon Profil et un aperçu de ma carte à Verif : c'est le 3e tour que je le demande.",
+  "Ne jamais annoncer en direct où je suis : supprimer ou différer la carte « J'y suis », et mettre « Cette semaine » par défaut sur « Demain, je sors ».",
+  "Écrire « jamais plus de 3 du même genre » sur Trouvée et la fiche Sortie, avec un raccourci « Plutôt des femmes ? », et nettoyer les contradictions : annulation gratuite contre « une fois par mois », « Nils » contre « N. », lien « à usage unique » posté en Story."
+ ],
+ "tenIf": "Je mets 10 si Les visages montrent de vrais visages, si Trouvée me garantit l'équilibre femmes/hommes avant « Je viens », et si aucune carte ne dit en direct où je suis. Le reste de ma condition du tour 2 est rempli : tranches fixes, aucune carte qui contredit son filtre, préférence d'amitié, deux sorties en deux semaines dans le 11e."
+}

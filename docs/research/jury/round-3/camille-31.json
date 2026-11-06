@@ -1,0 +1,472 @@
+{
+ "member": "camille-31",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 8,
+  "meet": 7,
+  "safety": 9,
+  "virality": 5,
+  "money": 8,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partout : une sortie se forme dès 5 personnes compatibles » : Nantes est incluse. Le pied de page en 3 phrases reste dense.",
+   "fix": "Garder une phrase : « Partout, dès 5 personnes compatibles. Dès 18 ans, tous genres. »"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ville d'abord, aucune position. « Paris 10e · sorties dès 5 personnes compatibles » : clair.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Ville-nantes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« À Nantes aussi, on sort. 87 personnes vérifiées » : mon reproche n° 1 est traité. Je ne sais pas combien de ces 87 cherchent une histoire.",
+   "fix": "Ajouter « dont N cherchent une histoire » si N ≥ 20 (pas identifiant)."
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Tranche expliquée, « jamais qui ». « déduit de ta réponse » : le pronom n'est plus choisi à part.",
+   "fix": "Laisser choisir le pronom ici (elle / il / iel / prénom seul)."
+  },
+  "V5-Pet": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pet + activités fusionnés sans surcharge ; « Tu sors plutôt » : réglé. 10 chips + 5 pets sur un écran.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux questions claires, « Une histoire » ouvre le consentement. « Choisis tes 2 réponses » en bouton grisé : un peu scolaire.",
+   "fix": "« Réponds aux 2 questions »."
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Avant la question sensible, phrase F exacte, boutons à poids égal : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Toi-plus": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La garantie « au moins 2 » est écrite ici. Aucun âge propre à l'histoire.",
+   "fix": "Ligne facultative « Pour une histoire, plutôt : 30–34 / 35–39 ans » (grille fixe)."
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Créneaux avec horaires réels, « Semaines off : plus tard ».",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Crayon sur « Prénom affiché » : réglé. Discrétion désactivée par défaut, libellé fidèle.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Compris » / « Erreur de date ? » : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Garantie écrite, date, composition : ce que je demandais. Les 3 places « nouvelle » au féminin alors que l'une est un homme.",
+   "fix": "Libellé neutre sous les « ? » (« à découvrir »)."
+  },
+  "V5-Trouvee-potes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "On me le dit avant « Je viens » : honnête. « Un autre créneau, ou la voie Duo » ne dit pas lequel.",
+   "fix": "Nommer le prochain créneau où une histoire est possible (« sam. 21 nov. »)."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu et visages datés, prix, annulation, garantie. « Tom vient avec toi · + 1 place pour un pote » coupé sur 2 lignes à droite.",
+   "fix": "Mettre « + 1 place » sous le prénom."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Les photos de chacun sont comparées à son selfie » : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "1 par semaine, jamais après 23 h, exemples réels. Mode discret désactivé par défaut, donc « blowy. » sur l'écran verrouillé.",
+   "fix": "Rappeler ici que l'interrupteur est à 1 tap (c'est le cas) : rien de bloquant."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ajouter à mon agenda » en principal, « Rien d'autre à faire avant mer. 11 nov. 18 h ».",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« C'est bon, on est 2 » en principal ; la team ne prend pas la place des personnes compatibles : écrit.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Invite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair et honnête (« ou rien si tu ne reviens pas »).",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Accueil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Encart « + Inviter » supprimé : réglé. « Ton duo · J. · visages mar. 10 / nov. » coupé entre 10 et nov.",
+   "fix": "Espace insécable entre jour et mois partout."
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Propre, état réel affiché.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Accueil-duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Format à deux lisible, sortie de groupe facultative. Même coupure « mar. 10 / nov. 21 h ».",
+   "fix": "Espace insécable."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien n'est perdu, sortie prévue rappelée.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Effectifs justes, « Ton pote · venu en team ».",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Modéré, facultatif, Codenames. Rien à redire de mon côté.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Signaler, Bloquer, Quitter, gratuit avant les visages.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Date, manque exact, 3 actions utiles dont « Avec le vendredi soir, ta sortie a lieu cette semaine ». La voie Duo nantaise n'a ni chiffre ni lieu, et rien ne dit si la garantie histoire vaudra le 21.",
+   "fix": "« Voie Duo à Nantes : N personnes cherchent une histoire compatible » + rappel de la garantie sur la sortie du 21."
+  },
+  "V5-Amorcage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Sortie datée, lieu, activité : exemplaire pour une ville sans quartier ouvert. Lieu nommé 19 jours avant, contre la règle « veille 18 h ».",
+   "fix": "Lieu annoncé la veille comme ailleurs, ou expliquer l'exception (atelier réservé)."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours juste.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Neutre, Tom prévenu.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Affiner": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Tout facultatif, au bon endroit. « Âge de ton groupe » unique pour amitié et histoire.",
+   "fix": "Ajouter « Âge pour une histoire » sous « Une histoire plutôt… »."
+  },
+  "V5-Affiner-histoire": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Sérieuse / enfants (avec « J'en ai déjà ») : bien. Pas d'horizon, et il promet un « indice projet compatible » en duo qu'aucun écran Duo n'affiche.",
+   "fix": "Remettre l'indice dans V5-Duo et V5-Lien ; horizon facultatif (« d'ici 2 / 5 ans »)."
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu, métro, chevalet, charte anti-discrimination.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Partage-confirmation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Aucun tiers, lieu secret. Je ne la posterai pas.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Filigrane, captures bloquées, retrait examiné sans pénalité, tranches fixes : réglé.",
+   "fix": "Montrer un vrai rendu photo pour valider la lisibilité du filigrane."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune présélection, ce que voit l'ange est listé.",
+   "fix": "Rien de bloquant."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair, « Ce lien ne m'est pas destiné » visible.",
+   "fix": "Rien de bloquant."
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Simple et actionnable. Toujours pas les horaires de l'équipe (« sous 5 min » : à 3 h du matin aussi ?).",
+   "fix": "Ajouter la plage horaire de l'équipe."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Code d'abord, position en option.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Checkin-ok": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sans effet sur moi », « Range ton téléphone » : réglé. 5 actions restent visibles.",
+   "fix": "Regrouper Faux appel / Je pars sous « Besoin de partir ? »."
+  },
+  "V5-Partage-checkin": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« J'y suis. Une sortie à 5 à Paris 11e, ce soir » : je ne poste pas ma sortie en direct.",
+   "fix": "Rien de bloquant (facultatif)."
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Voter d'abord, phrase vraie sur le non.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Partage": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Silhouettes génériques, chiffres justes (« 3 nouvelles personnes et un pote »).",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Apres": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Non par défaut en contour, « Un problème ? » par ligne. Légende toujours collée à l'ombre du bouton.",
+   "fix": "Décaler la légende de 12 pt."
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Seulement mes accords, phrase vraie.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« sauf ta bande si tu l'invites » : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Bande": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Tom « venu en team », Sarah datée. Deux « + Inviter » par ligne.",
+   "fix": "Un seul « Inviter à une sortie » en bas."
+  },
+  "V5-Rue": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Calme, sans notification. Pas pour moi, mais facultatif.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Duo": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« projet compatible » a disparu (il y était au tour 2). « N. » sur la carte mais « Dire oui à Nils » dans la légende. Toujours aucun chiffre de densité.",
+   "fix": "Remettre l'indice « projet compatible », écrire « N. » partout avant le oui mutuel."
+  },
+  "V5-Lien": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Étapes datées, modération. Plus d'indice « projet compatible » ; « 21 / h. » coupé.",
+   "fix": "Indice à l'étape 1 ; espace insécable."
+  },
+  "V5-Lien-debloque": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Visages simultanés, vocal facultatif, filigrane.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Table confirmée par le lieu, ange sans présélection.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Chat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le « plus » n'est plus dans le fil. Question projet toujours en 2e.",
+   "fix": "Question projet en 1re pour un duo « une histoire »."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu public gratuit, date juste.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Oeuf": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Désactivé, interrupteurs à l'état réel.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Messages d'adultes.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Partage-invitation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« VIENS AVEC MOI. » sans tiers : réglé. Je l'enverrais par message à une amie.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Story": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Lien aléatoire : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "W-Repondre": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« décrivent Alex » : neutre.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ton groupe voit… » + « Affiner plus tard » visible.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Fiche": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Fiabilité privée. Bouton « Partager » en haut alors que la fiche montre « Tom rejoint ta bande », « Sarah rejoint ta bande » et leurs pets.",
+   "fix": "Dire ce que « Partager » exporte (sans prénoms ni pets des autres)."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ligne Duo gratuite, Apple Pay, rien ne s'achète en visibilité.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Honnête. Légende « 9,99 € par mois · résiliable ici en 1 tap » collée à l'ombre du bouton.",
+   "fix": "Espacer la légende."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair, remboursement écrit.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Plus de relance Blowy+ : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Voie Duo en texte, Aide non urgente, mode discret en état.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Phrase F exacte, interrupteurs fidèles, Duo sorti du bloc : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Incident sur place », « Bloquer aussi » décoché.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Honnête, Apple Pay.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Chargement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Code hors ligne, 17/112.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien débité, place gardée.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mascotte neutre : réglé.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« pense à ouvrir l'app » + agenda.",
+   "fix": "Rien de bloquant."
+  },
+  "V5-Chats-vide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Dit quoi faire.",
+   "fix": "Rien de bloquant."
+  }
+ },
+ "top3": [
+  "Voie Duo à Nantes avec un chiffre honnête (« N personnes cherchent une histoire compatible ») et un lieu public nantais ; dire sur V5-Attente si la sortie du 21 respecte la garantie histoire.",
+  "Une tranche d'âge propre à l'histoire (grille fixe, ex. 30–34 / 35–39) et un horizon facultatif pour les enfants, pris en compte dans la garantie « au moins 2 ».",
+  "Remettre l'indice « projet compatible » dans V5-Duo et V5-Lien (promis par Affiner-histoire), « N. » partout avant le oui mutuel, et corriger légendes collées et coupures « 10 / nov. »."
+ ],
+ "tenIf": "Je mets 10 si, à Nantes, je peux dire en secret « histoire sérieuse, enfants d'ici 3 ans, hommes de 30 à 39 ans », si chaque sortie proposée sur un créneau coché m'assure (sans dire qui) qu'au moins deux hommes répondent à ces critères, et si, tant qu'il manque du monde, la voie Duo m'affiche un nombre réel de personnes compatibles à Nantes avec un indice « projet compatible » et un lieu public nantais."
+}

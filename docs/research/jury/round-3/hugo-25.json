@@ -1,0 +1,472 @@
+{
+ "member": "hugo-25",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 8,
+  "meet": 8,
+  "safety": 8,
+  "virality": 7,
+  "money": 9,
+  "visual": 7
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Titre et « Partout dès 5 » réglés. La 1re chose qu'un pote voit par-dessus mon épaule : 5 mascottes en file, raton à capuche au centre",
+   "fix": "Une table de 5 en silhouettes, mascottes réduites"
+  },
+  "V5-Ville": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Démo encore 100 % parisienne (11e, 10e) ; rien sur une saisie « Lyon 7e » avec trajet vers le 4e",
+   "fix": "Maquette Lyon 7e avec temps de trajet"
+  },
+  "V5-Ville-nantes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Honnête. Pas mon cas, mais c'est ce que je verrais à la Guillotière ?",
+   "fix": "Le dire pour Lyon aussi"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Date, genre, « jamais qui » : parfait",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Foot et bloc présents : réglé. Mais choisir un animal en plein écran reste obligatoire avant de voir une sortie",
+   "fix": "« Choisir plus tard » possible"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux cartes « Les deux » sur le même écran, avec deux sens",
+   "fix": "Libellés distincts"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Égalité réglée ; « POTES SEULEMENT » touche les bords du bouton",
+   "fix": "Boutons empilés"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Mêmes 3 réponses pour tout le monde, garantie de 2 compatibles",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours aucun créneau du midi pour qui finit tard",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Prénom modifiable, Apple / Google / téléphone",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Compris » en principal : réglé",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "2 femmes, 3 hommes avec Tom, mais la règle « jamais plus de 3 du même genre » n'est pas écrite ici ; raton qui saute sur 200 px",
+   "fix": "Règle sous la composition ; raton réduit"
+  },
+  "V5-Trouvee-potes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Dit avant que je choisisse : honnête. Un seul lien pour deux actions",
+   "fix": "Deux liens"
+  },
+  "V5-Sortie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Annulation gratuite jusqu'aux visages » puis « une fois par mois » : laquelle ? Rien sur la durée d'une partie",
+   "fix": "Une seule règle écrite ; « parties de 20 min »"
+  },
+  "V5-Verif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "L'aperçu est une ligne de texte « Toi · 26–29 ans » ; vignette violette vide, je ne vois pas ce que verra le groupe",
+   "fix": "Aperçu visuel de ma carte avec ma photo"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Expéditeur « blowy. » cohérent avec le mode discret désactivé",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ange, team et chat en 3 lignes",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "La règle chiffrée que je demandais",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Âge et groupe : bien. Le raton qui salue en tête d'une invitation que j'envoie à un pote de la salle",
+   "fix": "Invitation sans mascotte"
+  },
+  "V5-Accueil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Scène raton sur canapé rose, 300 px, toujours là par défaut (tour 2)",
+   "fix": "Masquable"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui me trahit dans le tram",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La carte « Voie Duo » répète les tarifs",
+   "fix": "Action au lieu d'explication"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "1 tap, la sortie reste prévue, annulation gratuite rappelée",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Compteurs justes, « Ton pote · venu en team »",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Codenames, si on est 5 ! » alors qu'on est 5",
+   "fix": "Texte juste"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Un « ; » orphelin en début de ligne",
+   "fix": "Espace insécable"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas mon cas. « Si tu l'as activée » ne dit pas l'état de ma voie Duo",
+   "fix": "État réel"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Exactement ce qu'il faut à Lyon avec deux potes. Si nous sommes 3 mecs, « + 2 nouvelles personnes » doit dire 2 femmes, la règle l'impose",
+   "fix": "Écrire la composition"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair, neutre",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Quartiers et trajet · 30 min » : enfin. Mais aucune maquette du choix Guillotière → Croix-Rousse",
+   "fix": "Écran de trajet avec Lyon"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Couvert par l'accord, usage écrit",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Illustration générique au lieu d'une photo du lieu",
+   "fix": "Photo"
+  },
+  "V5-Partage-confirmation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Carte violette, blobs et raton : je ne la posterai pas, et il n'y a pas de version texte",
+   "fix": "Version texte pour Message"
+  },
+  "V5-Revelation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mon point n° 1 du tour 2 est réglé (examiné, 1 fois par mois, absence sinon). Restent les lettres sur dégradé là où on promet des visages",
+   "fix": "Photos dans la maquette"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Facultatif, rien présélectionné",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code d'abord, position une fois en option",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Je pars, mal à l'aise · sans effet sur moi » : nécessaire, mais rien ne dit que les départs répétés sont revus (tour 2)",
+   "fix": "« L'équipe revoit les départs répétés » en petit"
+  },
+  "V5-Partage-checkin": {
+   "score": 6,
+   "blocking": false,
+   "issue": "L'écran d'avant dit « Range ton téléphone », celui-ci me propose de poster une story en pleine soirée",
+   "fix": "Supprimer ou proposer après la fin"
+  },
+  "V5-Souvenir": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Raton plein écran après une vraie soirée (tour 2)",
+   "fix": "Visuel du lieu ou de la table"
+  },
+  "V5-Partage": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Blobs + raton : gamin ; pas de version texte (tour 2)",
+   "fix": "Version texte pour WhatsApp"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Non » en contour épais : on dirait que j'ai déjà refusé tout le monde ; légende rognée par l'ombre du bouton",
+   "fix": "Aucun état par défaut ; légende décalée"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Écrire à Léa » : clair",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Sans humiliation",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux « + Inviter » identiques",
+   "fix": "Un seul"
+  },
+  "V5-Rue": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Joli, inutile pour moi ; caché derrière une ligne, donc ça ne me gêne pas",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« avec N. » sur la carte, « Dire oui à Nils » en bas ; « 3 · Un rendez-/vous » cassé sur 4 lignes",
+   "fix": "« N. » partout ; libellé court"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ce qui se passe après 7 jours est écrit : réglé",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lettres J et A ; toujours pas de lien « améliorer mes photos » avant ce moment de jugement (tour 2)",
+   "fix": "Photos ; lien vers mes photos avant mar. 21 h"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Chacun sa boisson, table confirmée",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bandeau violet permanent",
+   "fix": "Repliable"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Parc, gratuit : plus de question de prix",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Ne jamais me le proposer » : coché",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Humain",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Plus de prénom, Message en premier : réglé. Invite dit « Lien à usage unique, réservé à toi », or le même lien part en Story",
+   "fix": "Un lien par destinataire"
+  },
+  "V5-Story": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Pas pour moi ; facultatif, ça ne me gêne plus",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le pied dit encore « Paris 11e et Lyon 4e » comme des villes à part",
+   "fix": "Même phrase que le Welcome"
+  },
+  "V5-Profil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Initiale « A » au lieu de mes photos",
+   "fix": "Mes photos"
+  },
+  "V5-Fiche": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« grandit avec tes souvenirs » sans rien montrer qui grandit (tour 2)",
+   "fix": "Montrer le changement ou retirer"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ne s'achète jamais : plus de visibilité, aller plus vite » se lit de travers",
+   "fix": "Reformuler"
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rentable à partir de 3 sorties » a disparu ; légende sous le bouton rognée",
+   "fix": "Remettre le calcul ; décaler"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Pause en tête, trajet, Duo",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Cohérent",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Absences répétées » ajouté : réglé. « de sortie » collé au bord de la pastille de rappel",
+   "fix": "Marge"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Honnête",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code hors ligne",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Conseils concrets",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Agenda en premier",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une seule action alors que le README promet la voie Duo",
+   "fix": "Lien Duo"
+  }
+ },
+ "top3": [
+  "Lyon pour de vrai : un parcours maquetté Guillotière → sorties à la Croix-Rousse ou dans le 7e, avec le trajet, les créneaux et une composition lyonnaise.",
+  "Visages et photos : vraies photos dans Les visages, aperçu visuel de ma carte à Verif, lien « améliorer mes photos » avant chaque révélation ; et la règle « jamais plus de 3 du même genre » écrite sur Trouvée et la fiche Sortie.",
+  "Le raton à sa place : réduit sur Welcome, Trouvée et Souvenir, absent de l'invitation, et une version texte de chaque carte pour WhatsApp ; plus « l'équipe revoit les départs répétés » au check-in."
+ ],
+ "tenIf": "Je mets 10 si je vois, à Lyon, deux sorties en deux semaines avec la règle d'équilibre écrite avant « Je viens », même avec un pote. Si Les visages montrent des visages et que je vois ma propre carte avant. Et si le raton n'est jamais imposé en grand là où je ne l'ai pas choisi. Le retrait discret est fermé : c'est fait."
+}

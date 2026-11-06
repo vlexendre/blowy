@@ -1,0 +1,472 @@
+{
+  "member": "investisseur",
+  "global": 7,
+  "criteria": {
+    "comprehension": 9,
+    "cognitive": 7,
+    "desire": 8,
+    "meet": 8,
+    "safety": 8,
+    "virality": 7,
+    "money": 6,
+    "visual": 8
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ou un tête-à-tête, par écrit d'abord » : le Duo reste dans la promesse principale ; deux produits à financer.",
+      "fix": "Promesse = la sortie ; Duo après."
+    },
+    "V5-Ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "6 lieux partenaires au 11e : début d'actif défendable.",
+      "fix": "—"
+    },
+    "V5-Ville-nantes": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Partout dès 5 personnes » : bonne thèse de liquidité ; la marge d'une ville sans lieu signé est inconnue.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Pet": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Rencontrer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Duo à égalité dès 4/8 : je le voulais hors MVP ; il est gardé, gratuit, et c'est l'avantage de Blowy+.",
+      "fix": "Duo après la 1re sortie vécue."
+    },
+    "V5-Consentement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Trouvee-potes": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ensuite 4,99 € la place » annoncé avant : honnête.",
+      "fix": "—"
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Team": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Invite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Invité : 1re offerte, coût lieu nul, vérification ≈ 1 € : CAC d'invitation bas.",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Accueil-duo": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Un Accueil complet pour le format à deux : coût d'un 2e produit.",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« La voie Duo, à Nantes » : du dating en ligne dans une ville sans lieu ; hors thèse.",
+      "fix": "Retirer le Duo des villes sans sortie."
+    },
+    "V5-Amorcage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Amorçage daté dans un lieu qui a confirmé : la thèse « partout dès 5 » devient testable.",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ta 1re sortie reste offerte » : le coût d'acquisition s'allonge à chaque annulation.",
+      "fix": "Mesurer le taux d'annulation par ville."
+    },
+    "V5-Affiner": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Affiner-histoire": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Confirmation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Lieu signataire d'une charte : actif.",
+      "fix": "—"
+    },
+    "V5-Partage-confirmation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Même slug `r8Tz4w` sur toutes les cartes : impossible d'attribuer une inscription à une carte, donc l'indicateur « 0,3 inscrit par sortie » ne se mesure pas par canal.",
+      "fix": "Slug par carte."
+    },
+    "V5-Revelation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Annuler après les visages = absence : protège la présence.",
+      "fix": "—"
+    },
+    "V5-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "W-Ange-aide": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Une personne de l'équipe appelle Alex sous 5 min » : astreinte humaine sur tous les créneaux ; le P&L la met à 0,50 € par participant (2,50 € par sortie) : il faut ~40 sorties par soir et par équipe pour payer une personne.",
+      "fix": "Coût d'astreinte par soir et par ville, pas par participant."
+    },
+    "V5-Checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Code du chevalet : présence vérifiable, donc fiabilité et compensation lieu calculables.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Partage-checkin": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Même slug `r8Tz4w` sur toutes les cartes : impossible d'attribuer une inscription à une carte, donc l'indicateur « 0,3 inscrit par sortie » ne se mesure pas par canal.",
+      "fix": "Slug par carte."
+    },
+    "V5-Souvenir": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Partage": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Même slug `r8Tz4w` sur toutes les cartes : impossible d'attribuer une inscription à une carte, donc l'indicateur « 0,3 inscrit par sortie » ne se mesure pas par canal.",
+      "fix": "Slug par carte."
+    },
+    "V5-Apres": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Accords = rétention ; le chat Léa ouvre un duo gratuit.",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Bande": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Rue": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Gratuit : 1 duo actif. Blowy+ : sans limite » : le différenciateur payant est une fonction numérique dans l'app. App Store 3.1.1 impose l'achat intégré pour débloquer une fonction ; 3.1.3(e) n'exempte que les biens et services consommés hors de l'app. Blowy+ payé par Apple Pay/Stripe est fragile en revue.",
+      "fix": "Blowy+ = sorties seulement ; duos illimités hors abonnement, ou en achat intégré avec la commission chiffrée."
+    },
+    "V5-Lien": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Modération de chat sans revenu.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Idem.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« table confirmée par Le Comptoir Gabriel », « Rendez-vous gratuit » : coût ops et compensation possible, revenu nul.",
+      "fix": "« Lieu suggéré » sans réservation tant que le Duo n'a pas prouvé sa valeur."
+    },
+    "V5-Chat": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Duo né d'une sortie : la meilleure conversion romance.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Lieu public, zéro coût.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Partage-invitation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Même slug `r8Tz4w` sur toutes les cartes : impossible d'attribuer une inscription à une carte, donc l'indicateur « 0,3 inscrit par sortie » ne se mesure pas par canal.",
+      "fix": "Slug nominatif pour la team."
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Lisible. Blowy+ « toutes tes sorties (1 par semaine) » à 9,99 € = ~2,30 € la sortie pour un habitué contre 4,99 € : les meilleurs clients paient le moins. « Les places incluses ne se reportent pas » suppose un quota que le libellé nie.",
+      "fix": "Chiffrer la cannibalisation dans business-model ; un libellé de quota cohérent."
+    },
+    "V5-Abonnement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Résiliable ici en 1 tap », sans « Restaurer » : un seul canal à l'écran, réglé. Risque achat intégré (voir Duo).",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Place payée par Apple Pay/Stripe = service consommé hors app : défendable.",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Reçu, remboursement automatique.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Format » et « Voie Duo » : le Duo a deux réglages.",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Position · jamais stockée » contredit la page d'aide : risque réputationnel.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rappel humain < 1 h les soirs de sortie : à budgéter par soir.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Aucun motif de départ collecté (T2).",
+      "fix": "Une question facultative."
+    },
+    "V5-Chargement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de bloquant pour le modèle sur cet écran.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Refaire le P&L : compensation lieu comptée (≈ 6 € par sortie à 8 % d'absence), annulations gratuites après l'effectif lieu, astreinte par soir et par ville, commission de paiement selon le canal retenu ; puis fixer le prix ou la règle d'absence qui rend la contribution positive.",
+    "Mettre spec-v5 au niveau de concept-v5.2 (4,99 € / 9,99 €, Blowy+ sans crédits ni accessoire, `duo.maxActive` 1, plus de seuil 120 ni `NEIGHBORHOOD_NOT_LIVE`, annulation jusqu'aux visages, `photoRevealAt`) : aujourd'hui, l'équipe qui code depuis la spec construit un autre produit.",
+    "Trancher Blowy+ face à Apple : avantage payant = sorties (service hors app, Stripe défendable) ; duos illimités hors abonnement ou en achat intégré chiffré ; et retirer le Duo des points d'entrée tant que la cohorte n'a pas prouvé la 2e sortie payante."
+  ],
+  "tenIf": "Je mets 10 si la cohorte de 8 semaines de business-model montre ≥ 40 % de 2e sortie payante sous 21 jours, ≥ 25 % d'actifs à M2, ≥ 0,3 inscrit vérifié par sortie vécue attribué par source, une contribution positive par sortie après compensation lieu réelle, astreinte par soir et commission de paiement, au moins 5 lieux sous contrat par quartier ouvert, et si spec, concept et écrans décrivent le même produit."
+}

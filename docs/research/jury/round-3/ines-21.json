@@ -1,0 +1,472 @@
+{
+ "member": "ines-21",
+ "global": 7,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 7,
+  "meet": 7,
+  "safety": 8,
+  "virality": 7,
+  "money": 8,
+  "visual": 7
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partout : une sortie dès 5 personnes compatibles » : enfin pour moi. Les pages web disent encore « Paris 11e, Lyon 4e »",
+   "fix": "Même phrase partout"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair, sans géolocalisation ; Bordeaux n'est pas maquetté",
+   "fix": "Variante Bordeaux"
+  },
+  "V5-Ville-nantes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "C'est ce que je verrais à Bordeaux : honnête. « 87 personnes vérifiées » ne dit pas combien ont mon âge (18–21 ou 22–25)",
+   "fix": "« dont N de ta tranche d'âge »"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Non-binaire, « Un autre mot », « jamais qui »",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Lapine gratuite, expo, atelier, balade",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Deux « Les deux » avec deux sens",
+   "fix": "Libellés distincts"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "L'exception du duo est enfin écrite : réglé. « POTES SEULEMENT » touche les bords du bouton",
+   "fix": "Boutons empilés"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Mêmes 3 réponses pour tout le monde, compatibilité en silence",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Mardi et jeudi soir pour moi : ça marche",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La discrétion est désactivée par défaut alors que ma famille ne sait rien ; il faut que j'y pense",
+   "fix": "Oui / non à choisir, sans défaut"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Compris » en principal",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Les 3 cases « ? » sont toutes légendées « nouvelle » alors que le groupe compte un homme parmi elles",
+   "fix": "Légende neutre « à découvrir »"
+  },
+  "V5-Trouvee-potes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Dit avant le choix, sans dire pourquoi moi. Un seul lien pour deux actions",
+   "fix": "Deux liens"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Annulation gratuite jusqu'aux visages » contre « une fois par mois »",
+   "fix": "Une seule règle"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ce que vérifie le selfie, suppression sous 30 jours : bien. Vignette violette vide",
+   "fix": "Aperçu de ma carte"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mode discret désactivé par défaut ; « blowy. » sur l'écran verrouillé au dîner chez mes parents",
+   "fix": "Le proposer activé à qui a choisi « une histoire »"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ma coloc, 1re offerte, règle d'équilibre",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lien « à usage unique, réservé à toi », or le même lien part en Story ailleurs",
+   "fix": "Un lien par personne"
+  },
+  "V5-Accueil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La scène du pet n'est toujours qu'un décor (« Jeudi, on joue. »), rien à toucher (tour 2)",
+   "fix": "Un geste léger relié aux souvenirs"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Parfait si ma mère prend mon téléphone",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La carte « Voie Duo » ne sert qu'à rappeler les tarifs",
+   "fix": "Action"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Partiels : 1 tap",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Codenames, si on est 5 ! » alors qu'on est 5",
+   "fix": "Texte juste"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Un « ; » orphelin en début de ligne",
+   "fix": "Espace insécable"
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mon écran à Bordeaux : chiffré et actionnable, enfin. Mais aucune échéance si les 2 personnes n'arrivent jamais ; « Avec le vendredi soir, ta sortie a lieu cette semaine » sans date ; « Si tu l'as activée » au lieu de l'état réel",
+   "fix": "Date précise (« ven. 13 nov. 20 h ») ; « sinon, au plus tard le … » ; état réel du Duo"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Date, lieu, atelier céramique : ma demande du tour 2. Et après ? Rien sur la sortie suivante",
+   "fix": "« Ensuite : une sortie par semaine sur tes créneaux si… »"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ton neutre",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Éviter mes contacts · désactivé », en dernière ligne d'un écran facultatif : c'est la protection qui m'évite une fille de ma fac en duo",
+   "fix": "La proposer au Consentement, activée par défaut pour « une histoire »"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Enfants facultatif, couvert par l'accord",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Charte anti-discrimination écrite",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Je poste. « Demain » dit à tous le soir où je sors",
+   "fix": "« Cette semaine » au choix"
+  },
+  "V5-Revelation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Je connais quelqu'un ici », examiné et sans pénalité : parfait pour la fac. Visages en lettres",
+   "fix": "Photos"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ma coloc par SMS",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pied « Paris 11e, Lyon 4e ; et dans ta ville dès 5 personnes » : deux discours",
+   "fix": "Phrase du Welcome"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair pour ma coloc",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code d'abord, pas de position",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« 4 sur 5 arrivés » sans dire qui",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Drôle, mais « Paris 11e, ce soir » en direct dit où je suis pendant la sortie",
+   "fix": "Publiable seulement après la fin"
+  },
+  "V5-Souvenir": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rien à entretenir » + raton : le souvenir ne sert toujours à rien sur cet écran (tour 2)",
+   "fix": "Le voir se poser dans Ta rue"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu cité seulement le lendemain : bien",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Non » en contour épais ressemble à un choix ; légende rognée",
+   "fix": "Aucun état par défaut"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Sarah rejoint ta bande » : mon objectif",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Neutre",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ta rue » réduite à une ligne nue sous les cartes : je ne l'aurais pas trouvée",
+   "fix": "Vignette de la rue"
+  },
+  "V5-Rue": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Ma demande du tour 2 à moitié faite : 3 tuiles carrées sur une bande verte vide, pas de maisons, les 3 souvenirs rangés en dessous et pas dans la rue, « Rien à faire »",
+   "fix": "Souvenirs posés dans le décor, une maison par pet, un geste sans notification (taper un pet = votre souvenir commun)"
+  },
+  "V5-Duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Proposé à vous deux » : J. voit ma carte (« elle », âge, goûts) avant qu'on ait dit oui ; l'exception écrite ne couvre que « la personne avec qui tu as un duo ». « avec N. » mais « Dire oui à Nils »",
+   "fix": "Ma carte n'apparaît chez l'autre qu'après mon oui ; « Éviter mes contacts » activé par défaut ; « N. » partout"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "La suite après 7 jours est écrite",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lettres J et A",
+   "fix": "Photos"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Lieu modifiable, chacun sa boisson",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« L'utiliser » pré-remplit",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Parc gratuit : parfait pour mon budget",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Désactivé",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Humain",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Plus de prénom : réglé. Pas de version « rejoins ma team à Bordeaux » qui remplacerait la carte de ville supprimée",
+   "fix": "Carte « il manque 2 personnes à Bordeaux, viens »"
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Mots gentils, sans logo possible",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Des sorties à 5 à Paris 11e et Lyon 4e. Ailleurs, dès 5 personnes » : deux classes de villes",
+   "fix": "Phrase du Welcome"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Initiale « A » au lieu de mes photos",
+   "fix": "Mes photos"
+  },
+  "V5-Fiche": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Accessoire au 4e souvenir : mieux. À 2 sorties par mois, ça fait encore 2 mois",
+   "fix": "Petits gains plus fréquents, gratuits"
+  },
+  "V5-Tarifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas de tarif étudiant (tour 2)",
+   "fix": "Blowy+ étudiant"
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas de tarif étudiant ; légende sous le bouton rognée",
+   "fix": "Tarif étudiant ; légende décalée"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Pause, Duo, trajet",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La phrase exacte est vraie pour le vote et pour un duo ouvert, pas pour une proposition de Duo vue avant le double oui",
+   "fix": "Écrire la règle de la proposition, ou la changer"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Menace d'outing », « LGBTphobie » : top. « de sortie » collé au bord de la pastille",
+   "fix": "Marge"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Honnête",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Clair",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Conseils utiles",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Pas culpabilisant",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas de lien vers la voie Duo, pourtant annoncé",
+   "fix": "Lien Duo"
+  }
+ },
+ "top3": [
+  "Rendre la voie Duo vraiment muette sur mon orientation : ma carte n'apparaît chez l'autre qu'après mon oui (ou la proposition ne dit pas si c'est amitié ou plus), et « Éviter mes contacts » proposé au Consentement, activé par défaut.",
+  "Attente sans flou : une date précise pour chaque levier, une échéance (« sinon, au plus tard le … »), le nombre de personnes de ma tranche d'âge, la 2e sortie après l'amorçage, et une carte « il manque 2 personnes à Bordeaux » pour remplacer celle qui a été supprimée.",
+  "Ta rue vivante, sans corvée : souvenirs posés dans le décor, une maison par pet, un geste ; et un tarif étudiant sur Blowy+."
+ ],
+ "tenIf": "Je mets 10 si, à Bordeaux, l'écran d'attente me donne une date et une échéance, et qu'une 2e sortie suit la sortie d'amorçage avec des 18–25 ans. Si aucune proposition de Duo ne montre ma carte avant mon oui, avec « Éviter mes contacts » activé par défaut. Et si Ta rue me donne un petit geste entre deux jeudis. Le prix (4,99 €) et le vote sont déjà bons."
+}

@@ -1,0 +1,472 @@
+{
+  "member": "patron-bar",
+  "global": 7,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 8,
+    "desire": 7,
+    "meet": 8,
+    "safety": 8,
+    "virality": 7,
+    "money": 5,
+    "visual": 8
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Paris 11e · 6 lieux partenaires » : la charge est répartie, ma demande T2.",
+      "fix": "—"
+    },
+    "V5-Ville-nantes": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Une sortie se forme dès 5 personnes » à Nantes : chez qui ? Aucun lieu nantais nommé ni signé.",
+      "fix": "« Nino choisit parmi N lieux partenaires à Nantes », ou pas de promesse sans lieu."
+    },
+    "V5-Toi": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Pet": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Rencontrer": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Consentement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Les créneaux des lieux de ta ville » : enfin dit. Mardi soir et dimanche brunch proposés ; toute la démo reste un jeudi 19 h 30.",
+      "fix": "Montrer un mardi dans la démo."
+    },
+    "V5-Compte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mon nom caché jusqu'à la veille : logique.",
+      "fix": "—"
+    },
+    "V5-Trouvee-potes": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Sortie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Chacun paie ce qu'il boit », « Personne n'anime », code du chevalet : réglé. « Annulation gratuite jusqu'à l'arrivée des visages (jeu. 12 nov. 16 h 30) » alors que H.24 me donne l'effectif à J −1 18 h : pendant 22 h 30, ma table fond gratuitement.",
+      "fix": "Effectif lieu figé à J −3 h, ou compensation de toute place annulée après mer. 18 h."
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Le client reçoit le lieu mer. 18 h ; moi, l'effectif : rien de dessiné (admin V5.3).",
+      "fix": "Écran ou SMS lieu « 5 confirmés, table au fond »."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Annuler · gratuit jusqu'à jeu. 12 nov. 16 h 30 » : même trou entre mon effectif et l'annulation gratuite.",
+      "fix": "Idem Sortie."
+    },
+    "V5-Team": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Des potes qui viennent ensemble consomment plus.",
+      "fix": "—"
+    },
+    "V5-Invite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Accueil-duo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Tu peux l'annuler gratuitement jusqu'à l'arrivée des visages » : même trou.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Aucun message du lieu à la confirmation (« table au fond à gauche »).",
+      "fix": "Message de bienvenue du lieu."
+    },
+    "V5-Groupe-menu": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Dès que 5 personnes compatibles sont là, Nino choisit le lieu » : dans une ville où aucun lieu n'est signé, qui reçoit 5 inconnus un samedi 15 h ?",
+      "fix": "Lieux signés affichés avant de promettre une sortie."
+    },
+    "V5-Amorcage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Le lieu a confirmé la table » + La Fabrique, Lille-Wazemmes : exactement ce que je voulais pour l'amorçage.",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Pas assez de confirmations » : et la table bloquée chez moi ? (règle lieu absente, normal côté client).",
+      "fix": "—"
+    },
+    "V5-Affiner": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Affiner-histoire": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Confirmation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Nom, adresse, métro, table, chevalet, charte : bien. L'image est une illustration générique (la même que pour Le Comptoir Gabriel), pas la photo de mon bar promise en H.24.",
+      "fix": "Vraie photo fournie par le lieu."
+    },
+    "V5-Partage-confirmation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Revelation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Je ne peux plus venir · compte comme une absence » : ma table est protégée après 16 h 30.",
+      "fix": "—"
+    },
+    "V5-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mon adresse sur une page web : lieu public, OK.",
+      "fix": "—"
+    },
+    "W-Ange-aide": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Le personnel du lieu n'intervient pas à ta place » : clair pour mon staff. Mais personne ne prévient le gérant qu'une demande d'aide a lieu à sa table.",
+      "fix": "Alerte au référent du lieu + numéro d'astreinte Blowy."
+    },
+    "V5-Checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Code du chevalet en méthode principale : ma demande T2, réglée. « Demande au comptoir la table Blowy » : mon staff doit être briefé (rien de prévu).",
+      "fix": "Fiche staff d'une page."
+    },
+    "V5-Checkin-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Range ton téléphone : la soirée est à la table » : bon pour moi.",
+      "fix": "—"
+    },
+    "V5-Partage-checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Souvenir": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Café des Oiseaux » sur le souvenir.",
+      "fix": "—"
+    },
+    "V5-Partage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Citer le lieu » après coup : de la visibilité pour moi.",
+      "fix": "—"
+    },
+    "V5-Apres": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Vous pourrez revenir ensemble à une sortie » : pas forcément chez moi.",
+      "fix": "« Retrouvez-vous au Café des Oiseaux »."
+    },
+    "V5-Apres-aucun": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Bande": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Sortie de bande : des habitués potentiels, sans lieu proposé.",
+      "fix": "Proposer le lieu de leur 1re sortie."
+    },
+    "V5-Rue": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Lieu partenaire · table confirmée par Le Comptoir Gabriel » : réglé. Mais « Rendez-vous gratuit » un samedi 15 h : que gagne le lieu, et si personne ne vient ? Les 15 € valent-ils pour une table à deux ?",
+      "fix": "Règle duo au contrat (forfait), ou « lieu suggéré » sans réservation."
+    },
+    "V5-Chat": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Parc public : aucune table bloquée.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Partage-invitation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien ne dit au client que le lieu ne touche rien sur les 4,99 €, ni qu'il est dédommagé si une place reste vide.",
+      "fix": "« Le lieu ne prend pas de commission ; il est dédommagé si ta place réservée reste vide »."
+    },
+    "V5-Abonnement": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Blowy+ : un habitué paie ~2,30 € la sortie ; même table chez moi, même compensation à financer.",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Consommation non incluse » au paiement : pas de malentendu au comptoir.",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Incident sur place (lieu, personnel, autre client) » : réglé. Moi, je ne peux toujours rien signaler (canal lieu → équipe renvoyé en V5.3).",
+      "fix": "Canal lieu, même par SMS."
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ta place du jeu. 19 nov. : remboursée » : si la suppression a lieu après mer. 18 h, ma table reste vide et le client est remboursé.",
+      "fix": "Après le lieu révélé : compensation lieu explicite."
+    },
+    "V5-Chargement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Le code du chevalet marche hors ligne » : mon sous-sol sans réseau est couvert.",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien qui me concerne ; ma note plafonne tant que le côté lieu n'existe pas.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Dessiner le côté lieu, même une page web : contrat d'une page, créneaux, plafond de tables, effectif, compensation, astreinte, canal de signalement, photo.",
+    "Aligner effectif et annulation : effectif lieu figé à J −3 h (quand l'annulation devient une absence), ou compensation de chaque place annulée après mer. 18 h ; et une règle écrite pour les tables à deux du Duo.",
+    "Ma vraie photo la veille (pas l'illustration commune au Café des Oiseaux et au Comptoir Gabriel) et des lieux signés nommés avant de promettre une sortie à Nantes."
+  ],
+  "tenIf": "Je mets 10 si j'ai devant moi un contrat d'une page et un écran lieu qui disent : mes créneaux (hors coup de feu), mon plafond de tables, l'effectif au moment où l'annulation cesse d'être gratuite, 15 € par place vide financés sans dépendre des seuls absents payants, la même règle pour les tables à deux, zéro animation, un numéro d'astreinte Blowy, 72 h de préavis dans les deux sens, un canal pour signaler un participant, et ma vraie photo affichée la veille."
+}
