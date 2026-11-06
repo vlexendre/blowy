@@ -1,0 +1,550 @@
+{
+ "member": "ux-cognitif",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 9,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« J'ai déjà un compte » en apostrophe droite, « Commencer » juste au-dessus en typographie courbe ailleurs.",
+   "fix": "’ partout ; règle dans check-facts."
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« c'est toi qui choisis » : apostrophe droite.",
+   "fix": "’."
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même apostrophe droite ; « on te dit, après tes créneaux » : clair.",
+   "fix": "’."
+  },
+  "V5-Toi": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« (« 26– / 29 ans ») » coupé à la ligne (relevé par mon script, pas par a11y-audit).",
+   "fix": "Insécable autour du tiret de plage ; ajouter « nn–nn » à l'audit."
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Répond à « que se passe-t-il jeudi ? ». « ≈ 8 min / depuis Paris 11e » sur deux lignes, acceptable.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Gabarit différent de la Trouvée Paris (pas de raton, pas d'« Activité choisie… », pas de partage, ordre des blocs) : on réapprend l'écran.",
+   "fix": "Un gabarit unique."
+  },
+  "V5-Sortie-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Tableau sec sans groupe ni « Comment ça se passe » : deux écrans « Ta sortie » différents selon la ville.",
+   "fix": "Même écran que V5-Sortie."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas de pets nommés, pas de « Je connais quelqu'un ici », pas de métro ; « Le Mêlée Café » pour « Foot à 5 · un five de la Croix-Rousse ».",
+   "fix": "Même gabarit que la Confirmation Paris ; lieu cohérent avec l'activité."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même écart de gabarit ; titre « Une sortie à 17 min de chez toi » sans « Nino t'a trouvé ».",
+   "fix": "Un gabarit unique."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le bouton principal est gelé sur « DISCRET OU NORMAL ? », mais « Avec mon numéro de téléphone » reste actif sans choix ; et le même choix revient en interrupteur sur Notifs.",
+   "fix": "Même garde sur les deux sorties ; un seul endroit pour ce choix."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Mode discret : désactivé / activé, ce serait « Rappel »… » : 2e décision sur le même sujet un écran après Compte, libellé en deux états.",
+   "fix": "Retirer l'interrupteur ; rappeler le choix en une ligne avec « modifier dans Confidentialité »."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« voir la / règle » coupé ; sinon modèle.",
+   "fix": "Insécable."
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Explication toujours dépliée (T3, T4).",
+   "fix": "Repliable après la 1re vue."
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« sauf entre accords mutuels » dans un chat de groupe : quand, et entre qui ?",
+   "fix": "« … levé seulement dans un chat à deux, après vos deux oui »."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ta réponse est arrivée après la composition (lundi 21 h) » : on ne peut pas répondre avant de recevoir la proposition, qui arrive à 21 h.",
+   "fix": "Dire ce qui était en retard (« Tes créneaux sont arrivés après… »)."
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Semaines sans moi » et « Trajet maximum » ici, dans Réglages et dans Créneaux ; « Éviter » ici et dans Confidentialité : un réglage, trois adresses.",
+   "fix": "Affiner = questions de rencontre seulement ; le reste dans Réglages."
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Lien « Partager « cette semaine, je sors » » rendu sous le cadre (868 > 844 px), bouton collé au bas. « Annulation gratuite jusqu'à mer. 11 nov. 18 h » affiché à… mer. 18 h : information morte.",
+   "fix": "« Annuler maintenant compte comme une absence, sauf… » ; ajouter « Imprévu » ; lien dans le cadre."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Imprévu » ici seulement : entre mer. 18 h et jeu. 16 h 30, aucune entrée.",
+   "fix": "Même ligne sur la Confirmation."
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« son personnel n'intervient pas à ta place » adressé à l'ange : à la place de qui ?",
+   "fix": "« … à la place de l'équipe blowy. »."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 5 verres, 1 table » écrit dans le dessin : le dessin a besoin d'une légende.",
+   "fix": "Dessin lisible sans texte."
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Carte réglée. « Dire oui » à une proposition dont on ne sait pas si c'est en amitié ou pour une histoire.",
+   "fix": "Rappeler « selon ce que tu cherches » (son propre choix, sans rien dire de N.)."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Interrupteurs liés (T2→T4 réglé).",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Cette semaine, je sors · mercredi » alors que la Trouvée la propose lundi ; pastilles de couleur sans aperçu.",
+   "fix": "Vignettes et date juste."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« il » deux fois (ligne d'identité et « Pronom « il » · modifier ») ; « Ton groupe voit : prénom, pronom, tranche d'âge, et ton visage » oublie le pet que Pet (4/9) annonce.",
+   "fix": "Une seule mention du pronom ; une seule liste « qui voit quoi »."
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Règle juste ; paragraphe de 7 lignes.",
+   "fix": "Règle repliée derrière « voir la règle »."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Bloc d'escalade » : apostrophe droite (aussi Sortie-annulee, Sortie-complete, Trouvee-banlieue).",
+   "fix": "’."
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Doublons avec Affiner ; « Semaines sans / moi » coupé face à une valeur sur deux lignes.",
+   "fix": "Libellé « Semaines off » ou valeur courte."
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Ligne « Ton groupe » sans pet ni nombre f/h (Genre et Pet les annoncent) : 3e version de la liste. « Position : jamais demandée » contre Check-in « Plutôt vérifier ma position une fois ».",
+   "fix": "Liste unique reprise partout ; « Position : une fois au check-in si tu le choisis, jamais gardée »."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Motif « Ne ressemble pas à son selfie » : le selfie n'est montré à personne (Verif).",
+   "fix": "« Ne ressemble pas à ses photos »."
+  },
+  "V5-Supprimer": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ta bande (2) et ton duo » : Alex a deux duos (J., Léa).",
+   "fix": "« Tes duos (2) »."
+  },
+  "V5-Chargement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rien à faire d'ici / là. » : « là. » orphelin.",
+   "fix": "Insécable « d'ici là »."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Voir ma proposition » alors qu'il n'y en a peut-être pas encore (Chargement : lundi 21 h).",
+   "fix": "« Voir quand arrive ma proposition »."
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Hiérarchie claire, bouton Signaler.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Six articles lisibles en 30 s.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Une seule source pour chaque règle hors écrans aussi : spec-v5 en V5.4 (heure, duos, Blowy+, bandeau retiré) et une liste unique « qui voit quoi » reprise sur Pet, Genre, Profil et Confidentialité (pet, nombre f/h, position au check-in).",
+  "Solder les défauts que les outils ne voient pas (Confirmation hors cadre, « 26–29 » coupé, « là. » orphelin, apostrophes droites, « il » ×2, gabarits Lyon/Saint-Denis, Sortie-complete) et ajouter à a11y-audit le contrôle « texte hors artboard » et « plage coupée » (`scratchpad/jury-r5-experts/overflow.mjs` le fait en une minute).",
+  "Un réglage = un endroit (Affiner ≠ Réglages, discret choisi une fois), puis faire enfin le test 5 secondes sur 5 personnes."
+ ],
+ "tenIf": "Je mets 10 si aucune règle n'a deux versions entre écrans et spec (heure, duos, position, « qui voit quoi »), si chaque réglage n'a qu'une adresse, si les défauts listés ici sont à zéro sur les 88 rendus et si les outils détectent désormais texte hors cadre et plages coupées, et si un test 5 secondes sur 5 personnes répond juste à « que se passe-t-il jeudi ? » sur Trouvée, Sortie et Accueil."
+}

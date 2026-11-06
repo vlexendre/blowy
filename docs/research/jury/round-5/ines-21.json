@@ -1,0 +1,550 @@
+{
+ "member": "ines-21",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 7,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Table de 5 et « Toutes orientations · en groupe ou à deux. De 18 à 60 ans et plus » : réglé. Le raton reste debout au centre de la table, 4 blobs anonymes autour ; ~90 px de vide entre le texte et l'illustration.",
+   "fix": "Raton assis à la table comme les autres, illustration remontée de 60 px."
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 64 personnes vérifiées » : combien de 18–25 ? 3e tour que je le demande.",
+   "fix": "« dont N de 18–25 ans » (arrondi, seuil non identifiant)."
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : pronom avec chaque réponse, « jamais comptés dans femmes ou hommes », pronom modifiable (et le lien existe sur Profil).",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Personne ne voit ta réponse » + promesse générale : la promesse impossible a disparu. « Il ne te dira jamais avec qui » reste invérifiable pour l'utilisateur.",
+   "fix": "Lien « comment ? » vers une explication courte (règle de composition, sans chiffre)."
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « vous avez dit oui tous les deux », sortie « Amitié seulement » à égalité.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Promesse générale à la place de la garantie : honnête mais rien ne me dit, semaine par semaine, si elle a pu être tenue.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Une semaine sur deux (tu choisis la 1re) » écrit sous la case, mais la case est décochée et l'état coché (choix de la 1re semaine) n'est toujours pas dessiné.",
+   "fix": "Maquetter l'état coché : « une semaine sur deux, à partir du … » + semaines une par une."
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Exactement : avant mon 1er groupe, rien sans mon oui, mon ex de L1 ne sera pas là.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Seule Trouvée sans la ligne « Lieu et prénoms le mer. 11 nov. 18 h. Annulation gratuite jusque-là. » que Lyon et Saint-Denis ont ; raton de ~100 px collé au titre ; tiers inférieur vide (≈ 300 px).",
+   "fix": "Ajouter la même ligne de calendrier que Trouvee-lyon, raton en pastille 40 px ou retiré."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Trajet, règle, sortie suivante (mar. 24 nov.) : réglé. « 3 hommes » plus coupé. La 2e sortie n'est qu'une ligne de texte sans heure ni quartier.",
+   "fix": "« mar. 24 nov. · 19 h 30 · Atelier céramique · Lyon 1er »."
+  },
+  "V5-Sortie-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Gabarit appauvri par rapport à Paris : ni groupe (pets et « ? »), ni « Comment ça se passe », ni ligne prix « Offerte · ensuite 4,99 € ».",
+   "fix": "Même gabarit que V5-Sortie, données de Lyon."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Photo fournie par le lieu » sous… un ballon dessiné ; pas de pets en face des prénoms (Paris les a) ; ni « Je connais quelqu'un ici », ni règle d'annulation, ni carte à partager.",
+   "fix": "Même gabarit que V5-Confirmation (photo du lieu, pets, « Je connais quelqu'un ici »)."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Une sortie à 17 min de chez toi », 22–25 ans, Saint-Denis → 18e : exactement ce qu'il fallait. Pas de Sortie/Confirmation de cette sortie, ni Yacine compté dans le groupe.",
+   "fix": "Dessiner la variante « Yacine vient avec toi » et la Sortie de banlieue."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une seule règle, lisible. Pas de temps de trajet sur la fiche (la Trouvée a « ≈ 8 min »).",
+   "fix": "« ≈ 8 min depuis Paris 11e » dans le bloc noir."
+  },
+  "V5-Team": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« selfie à faire » précédé d'une coche verte ✓ (qui se lit « fait ») ; « C'est bon, on est 2 » actif alors que ni toi ni Tom n'avez fait le selfie.",
+   "fix": "Icône horloge ou cercle vide pour « selfie à faire » ; bouton actif, mais libellé « Garder la place de Tom »."
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : plus de mascotte, « Texte + lien », lien long nominatif, « jamais en story ».",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le raton qui salue (≈ 180 px) ouvre toujours la page reçue par le proche.",
+   "fix": "Retirer la mascotte de la page d'invitation reçue, comme sur la carte envoyée."
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « Discret » / « Normal », aucun présélectionné, bouton grisé « Discret ou normal ? ».",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ton groupe verra ton visage … avec : « Toi · 26–29 ans » » alors que Les visages dit « Les autres voient ta carte : « Alex · 26–29 ans » » : relevé au tour 4, inchangé.",
+   "fix": "« avec : « Alex · 26–29 ans » »."
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : cohérent avec le choix « Normal » (pet sur l'écran verrouillé).",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ajouter à mon agenda » ne montre toujours pas le titre de l'événement créé (discret ?).",
+   "fix": "Sous-ligne « titre : Rendez-vous · 19 h 30 »."
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Tuile duo datée, « du 11e » insécable : réglé. Raton + canapé occupent 230 px de l'écran principal.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Jeudi 12 novembre · avec quelqu'un que tu connais, si tu veux » : phrase bancale (on croit que la sortie est « avec quelqu'un que tu connais »).",
+   "fix": "« Jeudi 12 novembre · facultatif »."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours pas « Personne ne voit que tu es en pause » (demandé depuis T2).",
+   "fix": "Ajouter cette phrase sous le titre."
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pastille citron « Lieu mer. 11 nov. 18 h » plus voyante que le message.",
+   "fix": "Pastille grise."
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Un jeu de cartes ? On est pile 5 ! » : réglé. Toujours aucun moyen de dire « plutôt calme / plutôt bavard ».",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mon écran. « Si elles arrivent d'ici jeudi » : lequel ? Et pas un mot de ma tranche d'âge pour la sortie du 21.",
+   "fix": "« d'ici le jeu. 19 nov. » + tranche prévue."
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "La carte que je posterais pour Bordeaux : propre, sans prénom.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "sam. 28 nov. = 19 jours après l'inscription ; groupe 22–29 ans alors que la version solo du même créneau est 26–34 ans.",
+   "fix": "Date ≤ 14 jours ; tranche cohérente avec la version solo."
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Tu viens sans personne. Les 4 autres aussi. » : c'est épicène et rassurant.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Raton de 150 px sur un écran de refus ; bon contenu.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Tom est prévenu » : réglé. Toujours pas l'heure de l'annulation (demandée T2, T3, T4).",
+   "fix": "« Annulée lun. 9 nov. 21 h »."
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Semaines sans moi · aucune » sans « une semaine sur deux possible » (que Réglages dit) ; « Âge pour une histoire » : écran toujours pas dessiné.",
+   "fix": "Même sous-texte que Réglages ; maquetter l'écran Âge pour une histoire."
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas d'horizon (« d'ici 3 ans ») pour les enfants.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pets, « Je connais quelqu'un ici (1 fois par mois) » et règle unique : réglé. Pas de temps de trajet à côté du métro ; 7 blocs avant le bouton.",
+   "fix": "« ≈ 8 min depuis Paris 11e »."
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : enveloppe scellée, « Demain » dessiné, lien propre.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Imprévu ajouté, quota aligné sur Confirmation. Mais 5 actions sous « À CE SOIR » (2 retraits, 1 imprévu, 1 partage, 1 absence).",
+   "fix": "Regrouper « Je connais quelqu'un » / « Imprévu » / « Autre raison » sous « Je ne peux plus venir »."
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : vert canard, chevalet, aucune info de lieu.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : pied « partout dès 5 personnes », plus de villes codées.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : 2 boutons, « Partir mal à l'aise : sans pénalité ».",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Raton plein écran (≈ 330 px) après une vraie soirée : 4e tour.",
+   "fix": "Souvenir de la soirée (table, verres) au lieu de la mascotte."
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Écrire à Léa » en action principale : réglé. « VOUS AVEZ DIT PLUS TOUS LES / DEUX » : « DEUX » seul sur sa ligne.",
+   "fix": "Insécable « tous les deux » ou titre raccourci."
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : 5 verres, interrupteur « Sans logo ».",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Raton en grand au milieu de 3 blobs : seule carte où il revient.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Mon petit geste entre deux jeudis, sans notification.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Symétrique enfin : pet et initiale, le reste après les deux oui.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : prénom « J. » cohérent avec « le prénom, aux visages ».",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le Comptoir Gabriel, Paris 11e, « chacun sa boisson » : pas de lieu à mi-chemin.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bandeau « Proposer un rendez-vous à deux » toujours permanent en tête du chat.",
+   "fix": "Le replier après un premier refus ou un rendez-vous fixé."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : interrupteurs liés.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bonne idée (tout au même endroit). Deux pastilles violettes presque identiques (« Cette semaine » et « Décris-moi »).",
+   "fix": "Pastille de « Décris-moi » d'une autre teinte."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Raton en grand sur la carte ; « Autres cartes › » mène enfin quelque part (Mes cartes).",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : case « J'ai 18 ans ou plus », plus de ville codée.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « 1 / 1 » sur une ligne, pronom modifiable.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : règle unique alignée, « Partager Nino seul ».",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 7,
+   "blocking": false,
+   "issue": "4,99 € la place, 9,99 € Blowy+ : toujours aucun tarif étudiant (T2 → T5).",
+   "fix": "Place étudiante à 3,99 € ou Blowy+ étudiant."
+  },
+  "V5-Abonnement": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Rentable à partir de 3 sorties par mois » : avec mes partiels j'en fais 2. Pas pour moi, et pas de prix étudiant.",
+   "fix": "Blowy+ étudiant ou formule 2 sorties."
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Semaines sans moi · une semaine sur deux possible » : réglé. « Aide (non urgent) · réponse sous 24 h » sans rappeler le « < 1 h » des soirs de sortie.",
+   "fix": "« Urgent un soir de sortie : < 1 h › »."
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le lieu reçoit prénom et pet : écrit. La ligne « Ton groupe » oublie toujours le pet et le décompte femmes/hommes.",
+   "fix": "« prénom, pronom, pet, tranche, nombre de femmes et d'hommes »."
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Rien à faire d'ici / là. » : « là. » seul sur la dernière ligne.",
+   "fix": "Insécable « d'ici là »."
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pièce d'identité « puis on la supprime » : toujours sans délai.",
+   "fix": "« supprimée sous 48 h »."
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « Ouvrir la voie Duo » ajouté.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien vu de mon côté (côté lieu).",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien vu de mon côté (côté lieu).",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien vu de mon côté (côté lieu).",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Bordeaux pour mon âge : « dont N de 18–25 ans » sur Ville-bordeaux et Attente, et la tranche prévue pour la sortie du sam. 21 nov.",
+  "Dater l'échéance : « Si elles arrivent d'ici le jeu. 19 nov. ».",
+  "Un tarif étudiant (place ou Blowy+), affiché sur Tarifs et Abonnement."
+ ],
+ "tenIf": "Je mets 10 si Bordeaux me montre combien de 18–25 ans sont inscrits et quelle tranche aura ma sortie du 21, avec une échéance datée, et s'il existe un prix étudiant. Le Duo muet dans les deux sens et Éviter avant mon 1er groupe sont faits."
+}

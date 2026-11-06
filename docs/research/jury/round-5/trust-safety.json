@@ -1,0 +1,550 @@
+{
+ "member": "trust-safety",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 9,
+  "safety": 8,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Toutes orientations · en groupe ou à deux » : réglé.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« On ne demande jamais ta position » : vrai pour l'inscription ; à nuancer dans Confidentialité.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« jamais qui » ; « Autre » compté à part : juste.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Promesse générale, sans absolu : mon T4 levé.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une seule exception : la personne avec qui tu as un duo » ; or une simple proposition de duo dit déjà à un chercheur « histoire seulement » que l'autre lui est compatible, avant tout oui (voir Duo).",
+   "fix": "L'écrire, ou n'envoyer la proposition qu'à la 2e personne après le oui de la 1re."
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Promesse alignée.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Aucun carnet d'adresses n'est envoyé ni gardé » ; spec §4.5 : chaque numéro part en SHA-256 non salé (un numéro français se retrouve par force brute en minutes). Les tiers ne sont pas informés.",
+   "fix": "« Ton carnet part sous forme d'empreintes, comparées puis effacées aussitôt » ; sel serveur ou PSI ; mention des tiers dans la politique."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bandeau supprimé : mon canal à 1 bit est fermé à l'écran. La spec le décrit encore (§3, §12 n° 8) : un dev le reconstruira.",
+   "fix": "Retirer le bandeau de la spec et de `D-038`."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Pas de « Je connais quelqu'un ici » : l'issue sans pénalité disparaît dans la ville d'amorçage, où le vivier est petit et les chances de connaître quelqu'un plus grandes.",
+   "fix": "Même bloc que la Confirmation Paris."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« pas de numéro ni de réseau, sauf entre accords mutuels » dans le chat de GROUPE : après la sortie, un numéro posté là est lu par les 5, accord ou pas.",
+   "fix": "Filtre levé seulement dans un chat à deux."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« une personne de l'équipe répond en moins d'1 h » « pendant les soirs de sortie » : honnête.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Samedi 15 h – 17 h à Bordeaux : même question d'astreinte.",
+   "fix": "Idem."
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même créneau du samedi 15 h – 17 h, même trou d'astreinte.",
+   "fix": "Idem."
+  },
+  "V5-Amorcage-solo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lille sam. 15 h – 17 h : sortie de jour, hors de l'astreinte « 18 h – 2 h » annoncée partout.",
+   "fix": "Astreinte sur chaque créneau ouvert, ou promesse d'aide affichée seulement si couverte (spec §2.10)."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Imprévu » absent entre mer. 18 h et jeu. 16 h 30 ; lien de partage sous le cadre.",
+   "fix": "Ligne « Imprévu » ici aussi."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Filigrane, captures signalées, imprévu : bon.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« équipe joignable de 18 h à 2 h, les soirs de sortie » : une demande d'aide un samedi à 15 h ne trouve personne ; « à ta place » ambigu.",
+   "fix": "Couvrir les créneaux de jour ; « à la place de l'équipe »."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Plutôt vérifier ma position une fois » : honnête ici, mais contredit Confidentialité.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Besoin d'aide · appui long 2 s » : ne dit pas qui répond de jour.",
+   "fix": "Afficher qui répond à l'heure de la sortie."
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Biscuit · N. » : le nom du pet est montré à chaque groupe (Confirmation : Pépite, Suzie, Gaston, Pia), dans la Bande, Ta rue, les chats. Quiconque a partagé une sortie avec N. le reconnaît avant le oui de N. Pour un chercheur « histoire seulement », la proposition elle-même dit que N. lui est compatible.",
+   "fix": "Avant le double oui : espèce et alias tiré au sort, jamais le nom du pet ; exclure des propositions les co-présents passés (`MET_BEFORE`) ; inférence écrite dans Consentement."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Filtres avant les visages, projet compatible « activé par vous deux » : juste.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Sam. 14 nov. 15 h : « Check-in sur place, besoin d'aide et faux appel, comme en sortie » à une heure sans astreinte.",
+   "fix": "Couvrir ou le dire."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 6,
+   "blocking": true,
+   "issue": "Parc des Buttes-Chaumont, sam. 21 nov. 15 h, « Lieu public · gratuit » : pas de chevalet, pas de personnel, pas d'astreinte avant 18 h, et la spec (§2.13) impose un lieu partenaire. « besoin d'aide… comme en sortie » est faux à cet endroit et à cette heure.",
+   "fix": "Rendez-vous en lieu partenaire seulement (tables à deux), ou promesse réduite à ce qui marche (GEO, 17)."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Slug 8 caractères, 18+ : réglé.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Case « J'ai 18 ans ou plus » : réglé.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ton groupe voit : prénom, pronom, tranche d'âge, et ton visage » : oublie le pet (et le nombre f/h).",
+   "fix": "Liste unique."
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Position : jamais demandée » est faux (check-in GEO, spec §2.9) ; « Ton groupe » sans pet ni nombre f/h ; « Personne : tes votes » alors qu'un accord mutuel est montré à l'autre.",
+   "fix": "« Position : une fois au check-in si tu le choisis, jamais gardée » ; ligne Groupe complète ; « tes votes, sauf un accord mutuel »."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ne ressemble pas à son selfie » : personne ne voit le selfie.",
+   "fix": "« Ne ressemble pas à ses photos »."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« prénoms et pets », bouton Signaler, SMS d'aide : réglé.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Samedi 15 h, dimanche 11 h ouverts sous un encart « Astreinte 18 h – 2 h ».",
+   "fix": "Astreinte par créneau ouvert."
+  },
+  "L-Contrat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« vérifie l'âge et l'identité de chaque participant » : le selfie vérifie l'âge et la ressemblance aux photos ; la pièce n'est demandée qu'après 3 échecs.",
+   "fix": "« vérifie l'âge et la ressemblance avec les photos »."
+  }
+ },
+ "top3": [
+  "Duo : avant le double oui, espèce + alias tiré au sort (jamais le nom du pet), aucune proposition entre personnes déjà co-présentes, et l'inférence « une proposition = compatible » écrite dans Consentement.",
+  "Couverture d'aide réelle : astreinte sur chaque créneau ouvert (samedi 15 h, dimanche 11 h, rendez-vous à deux) ou promesse affichée seulement si une astreinte est planifiée ; rendez-vous à deux en lieu partenaire seulement.",
+  "spec-v5 et Confidentialité alignées : bandeau « entre amis » retiré de la spec, « Position » vraie, ligne Groupe complète, Éviter honnête (empreintes salées, effacées), « Je connais quelqu'un ici » sur toutes les confirmations."
+ ],
+ "tenIf": "Je mets 10 si un audit croisé des 88 écrans, de spec-v5 et du contrat lieu contre « Qui voit quoi » ne trouve aucun quasi-identifiant avant un oui (nom de pet compris), aucune promesse d'aide affichée à une heure sans astreinte, aucune phrase absolue démentie par une fonction (position, carnet d'adresses), et si la spec ne contient plus rien que les écrans ont retiré."
+}

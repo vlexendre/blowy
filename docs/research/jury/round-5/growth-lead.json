@@ -1,0 +1,550 @@
+{
+ "member": "growth-lead",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 8,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Une sortie dès 5 personnes, partout » : promesse que V5-Ville-bordeaux (64 vérifiées, il manque 2) dément deux écrans plus loin.",
+   "fix": "« Une sortie dès 5 personnes sur un même créneau » ; mesurer Welcome → Ville par ville."
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 64 personnes vérifiées » puis « il manque 2 personnes » (Attente) : le visiteur conclut que l'app est vide ou que le problème, c'est lui.",
+   "fix": "Afficher le compte utile (« 3 personnes sur le samedi après-midi ») ou aucun chiffre."
+  },
+  "V5-Toi": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« (« 26– / 29 ans ») » coupé à la ligne : premier écran rempli, premier défaut visible.",
+   "fix": "Plage insécable."
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 7,
+   "blocking": false,
+   "issue": "3e tour : « À deux, par écrit » et « Groupe et duo » à égalité avec « En petit groupe » au 5/9. La voie Duo n'amène personne (pas de « venir avec quelqu'un », pas de carte).",
+   "fix": "Duo proposé après la 1re sortie vécue ; à défaut, A/B sur cet écran et mesure de « venir avec quelqu'un » par réponse."
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bien placé avant la 1re composition ; la demande d'accès aux contacts juste avant la Trouvée est un point de chute à mesurer.",
+   "fix": "Mesurer la chute à cet écran ; « Non merci » doit rester à égalité."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Moment lundi 21 h clair, partage en haut à droite. Mes cartes date cette carte « mercredi » alors qu'elle s'ouvre ici, lundi.",
+   "fix": "Une seule date de déblocage (lundi) dans Mes cartes."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas d'icône de partage ni « Activité choisie selon le lieu… » : gabarit différent de Paris, justement dans la ville où chaque carte compte double.",
+   "fix": "Même gabarit que la Trouvée Paris, partage compris."
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Aucune entrée de partage, pas de « Je connais quelqu'un ici » : la ville d'amorçage n'a pas sa carte du mercredi.",
+   "fix": "Même bloc que la Confirmation Paris."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une sortie à 17 min de chez toi » : bon titre pour Saint-Denis ; pas d'icône de partage.",
+   "fix": "Partage comme à Paris."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« lun. 21:00 » partout à l'écran ; la spec (§1, §7) compose « mardi 12 h » : on testera une heure, on livrera l'autre.",
+   "fix": "Spec alignée sur lundi 21 h."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La sortie est en tête (T4 réglé).",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Trois leviers (créneau, carte ville, venir avec quelqu'un) ; « Une seule notification » : bon.",
+   "fix": "Mesurer le délai « il manque 2 » → sortie vécue."
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Oui, le 19 » en un tap : la relance est là.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le lien « Partager « cette semaine, je sors » » est rendu sous le cadre (868 > 844 px) : la carte du mercredi n'a plus d'entrée visible.",
+   "fix": "Remonter le lien ; la règle d'annulation, déjà passée à 18 h, peut céder sa place."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Écrire à Léa » en principal : juste. Deux liens côte à côte (« Partager la soirée » / « Ma bande s'agrandit ») pour un même moment.",
+   "fix": "Un seul : « Ma bande s'agrandit » le dimanche."
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager « On était 5 » » : la moitié des 1res sorties a enfin sa carte.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Proposition « Biscuit · N. » sans aucun contexte : le taux de « Dire oui » sera bas, et c'est la seule voie sans invitation.",
+   "fix": "Mesurer le taux de oui ; garder « Ou viens jeudi en groupe › »."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Dessiné (ma demande T4), mais 7 pastilles de couleur sans aperçu ni lien ; « Cette semaine, je sors · mercredi » alors que la Trouvée la propose lundi.",
+   "fix": "Vignettes 9:16, lien visible, date de déblocage juste."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Et toi, tu sors où ? » après l'envoi : boucle d'acquisition propre, case 18+ ajoutée.",
+   "fix": "Attribution par slug `m/`."
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rentable à partir de 3 sorties par mois » pour un produit à 1 sortie par semaine : seuls les très réguliers paient ; part d'abonnés à mesurer.",
+   "fix": "Mesurer la part d'abonnés et leur fréquence réelle."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ta proposition arrive lundi à 21 h. » : vrai et rassurant. « là. » seul sur sa ligne.",
+   "fix": "Insécable « d'ici là »."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste pour la boucle ; rien ne freine le passage à l'étape suivante.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Hors de mon périmètre ; l'effectif fiable à 18 h est ce qui fait revenir les lieux.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Plafond et tables à deux : la capacité est lisible.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Hors de mon périmètre.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Passer `spec-v5.md` en V5.4 (lundi 21 h au §1 et au §7, 3 duos gratuits, Blowy+ hors achat intégré) : sinon on teste à l'écran une boucle que le code n'aura pas.",
+  "Duo proposé après la 1re sortie vécue (ou A/B mesuré sur Rencontrer), pour que chaque nouvel inscrit passe d'abord par le canal qui invite.",
+  "Mes cartes en vignettes avec lien et date de déblocage juste ; entrée de partage visible sur Confirmation (sous le cadre aujourd'hui), Trouvée Lyon, Trouvée Saint-Denis et Confirmation Lyon."
+ ],
+ "tenIf": "Je mets 10 si le test de 8 semaines mesure dans le 11e Welcome → 1re sortie vécue ≥ 25 % et une chute au selfie < 30 %, si chaque sortie vécue produit ≥ 0,3 inscrit vérifié attribué par slug (invitation, lun., mer., jeu., ven., dim., ville, ange, 3 mots), si Bordeaux passe de « il manque 2 » à une sortie vécue en moins de 3 semaines, et si l'heure de la proposition (lundi 21 h) est la même dans la spec, le moteur et les écrans."
+}
