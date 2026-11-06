@@ -1,6 +1,6 @@
-# Maquettes V5.6 « Ton pet te trouve une bande »
+# Maquettes V5.7 « Ton pet te trouve une bande »
 
-Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de sept documents, du plus ancien au plus récent :
+Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de huit documents, du plus ancien au plus récent :
 
 - `docs/product/concept-v5.md` ;
 - `concept-v5.1.md` ;
@@ -8,14 +8,15 @@ Ces maquettes servent de référence pixel-perfect au développement. Les règle
 - `concept-v5.3.md` ;
 - `concept-v5.4.md` ;
 - `concept-v5.5.md` ;
-- **`docs/product/concept-v5.6.md`** (A règles uniques, B finitions), qui prime sur tous les autres.
+- `concept-v5.6.md` ;
+- **`docs/product/concept-v5.7.md`** (A–G), qui prime sur tous les autres.
 
-Le tour 7 répond au jury tour 6 (`docs/research/jury/round-6/`, bloquant trust-safety : la sortie pour sécurité n'est jamais limitée ni non remboursée). Le tour 6 répondait au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
+Le tour 8 répond au jury tour 7 (`docs/research/jury/round-7/`, 15 membres à 9, zéro bloquant : chaque « ce qui empêche le 10 » est traité ci-dessous). Le tour 7 répondait au jury tour 6 (`docs/research/jury/round-6/`, bloquant trust-safety : la sortie pour sécurité n'est jamais limitée ni non remboursée). Le tour 6 répondait au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
 
 ## Contenu
 
-- **104 artboards** dans `project/` :
-  - 98 écrans d'app et 3 pages web, en 390 × 844 ;
+- **106 artboards** dans `project/` :
+  - 100 écrans d'app et 3 pages web, en 390 × 844 ;
   - **3 écrans côté lieu** (web admin) en 1280 × 800 : `L-Effectif`, `L-Creneaux`, `L-Contrat`.
 - **`project/canvas.json`** : la page « v5 — Bande » compte 10 rangées (A, B, B', C à H, L), avec des titres de 01 à 62 (variantes en b, c, d…), plus 4 notes.
 - **`facts.json`** : source unique des chiffres, dates et règles. Il contient :
@@ -25,16 +26,53 @@ Le tour 7 répond au jury tour 6 (`docs/research/jury/round-6/`, bloquant trust-
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **104 fichiers, 6 925 vérifications, 0 contradiction**.
+  - Résultat : **106 fichiers, 8 069 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **104 écrans, 1 520 textes, 564 cibles, 1 569 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **106 écrans, 1 647 textes, 583 cibles, 1 702 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
   - Les miniatures de « Mes cartes » (`data-miniature`, images réduites de cartes auditées en taille réelle) sont exclues des contrôles de mise en page.
   - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
   - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
-- **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x).
+- **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x ; les écrans lieu défilent au-delà de 800 px et le canvas prend leur hauteur rendue).
   - Commande : `DESIGN_ROOT=design/v5 NODE_PATH=$(npm root -g) node design/v5/render-v5.mjs .local/dc-runtime.js design/v5/renders [filtre]`.
-  - Les 104 rendus de `renders/` ont été régénérés ; tous les écrans modifiés ou nouveaux ont été relus en planches.
+  - Les 106 rendus de `renders/` ont été régénérés ; tous les écrans modifiés ou nouveaux ont été relus en planches.
+
+### Contrôles ajoutés au tour 8 (`check-facts`)
+
+1. **Échéances dérivées** : `facts.calendrier.sorties` liste les sorties ; « <date> 21 h » doit être une composition (J−3 21 h), « <date> 18 h » une confirmation (veille 18 h), « <jour> à 21 h » un jour de composition réel ; toute date courte affichée vient de `facts.json` (aucune date en dur).
+2. **« personnes vérifiées »**, jamais « inscrits ».
+3. **Pets propres à chaque groupe** (`facts.groupes`, `groupeParFichier`) : chaque personne affiche son pet ; aucun pet partagé entre Paris, Lyon, Saint-Denis, Nantes, Lille.
+4. **Aucun lien de partage** sur Les visages, Duo-hh-visages et Souvenir (`facts.ecransVisages`).
+5. **TTC côté client, HT côté lieu** : aucun « HT » sur un écran client ; tout montant d'un écran `L-*` est suivi de « HT ».
+6. **Tarifs = contrat = écran client** : V5-Tarifs et L-Contrat contiennent mot pour mot les phrases canoniques annulation, sécurité, connais, imprévu, place vide, Blowy annule (`facts.tarifsContrat`).
+7. **« ton rendez-vous » / « la sortie d'Alex »** : écrans de rendez-vous Duo sur `regles.astreinteRdv`, page de l'ange sans « ta sortie ».
+8. Variantes canoniques (`facts.reglesVariantes`) : astreinte (sortie, rendez-vous, ange), aide (« te rappelle », « rappelle Alex », « vous rappelle » côté lieu) ; captures (« Les captures d'écran iOS sont signalées à l'équipe. »).
+
+## Suivi jury tour 7 (concept-v5.7)
+
+- [x] A1 Les visages et Confirmation : trois sorties distinctes avec leur phrase canonique (« Je ne viens pas, pour ma sécurité », « Je connais quelqu'un ici » avec la suite « au-delà : sortie pour ta sécurité », « Imprévu · je ne le sens pas ») ; plus de partage sur Les visages ; captures « iOS, signalées à l'équipe ».
+- [x] A2 délai d'aide : `safety.helpCallbackTargetMinutes = 5` dans facts ; « Quelqu'un de l'équipe te rappelle en quelques minutes » (Signaler, W-Ange-aide, L-Effectif « incident en cours ») ; le signalement reste à 1 h, les deux délais légendés sur Signaler.
+- [x] A3 « pendant tout ton rendez-vous » (RdvDuo, RdvDuo-lea, Duo-hh-rdv) ; « pendant toute la sortie d'Alex » (W-Ange-aide) ; W-Ange « bar partenaire, table Blowy ».
+- [x] A4 Marseille : rendez-vous avec Karim, ange au choix et « Proposer un autre lieu ou une autre heure » ; filtrage identique au chat avec J.
+- [x] B5 dates calculées : Attente « d'ici le mer. 18 nov. 21 h » ; Pas-encore « si un groupe se forme pour le jeu. 19 nov., réponse le lun. 16 nov. 21 h » ; Sortie-annulée, Sortie-complète, Pas d'accord : « ton créneau », plus de sortie promise ; Trouvée-Lyon « composée le sam. 21 nov. 21 h » ; Notifs « ta sortie de jeudi ».
+- [x] B6 Ville-nantes : aucune promesse d'histoire à 1/9 (« Environ 90 personnes vérifiées, 4 lieux partenaires ») ; Pas-encore-nantes sans titres répétés.
+- [x] C7 message d'accueil du lieu sur chaque Confirmation (Paris, Lyon, Saint-Denis), annoncé dans le chat ; L-Effectif dit où les participants le voient.
+- [x] C8 relevé sur le mois civil (« 1er – 30 nov. », mar. 3 et jeu. 5 nov.) ; effectif de toute la semaine (mar., jeu., sam., table de 2, dim.) ; contrat qui nomme sécurité, imprévu, Blowy annule et table Duo 0 € HT sans garantie ; L-Créneaux aligné.
+- [x] C9 Tarifs, contrat et écrans client : mêmes phrases canoniques, contrôlées.
+- [x] D11 Tarifs : « Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie. » ; Abonnement sans HT.
+- [x] E12 aperçu vidéo 5 s en trois vignettes (0 s, 2,5 s, 5 s) sur les 7 cartes animables et sur 3 mots (« Vidéo 5 s ») ; Mes cartes : pastille « vidéo », phrase juste, « 5 s » insécable.
+- [x] E13 Souvenir : le vote d'abord, la carte arrive avec les résultats ; « Partager mes 3 mots, seuls » dans le chat ; « Tu y vas. » en vidéo 1 s dans Mes cartes.
+- [x] F14 Thomas : « Montrer au groupe : je préfère le calme », désactivé par défaut ; la phrase « comme demandé dans Affiner » est retirée de la 1re Trouvée.
+- [x] F15 Claire : V5-Trouvee-weekend (sam. 21 nov., week-end libre) ; Créneaux affiche « Un week-end sur deux · à partir du sam. 14 nov. » ; Semaines off liste les week-ends libres.
+- [x] F16 Inès : « personnes vérifiées » partout ; la Fiche n'affiche plus « N sur M ».
+- [x] F17 Hugo / Mehdi : légende « Illustration · dans l'app, la photo du lieu » ; pets propres à Lyon (Biscotte, Moka, Filou, Praline), Saint-Denis (Chouquette, Réglisse, Tic, Noisette), Nantes, Lille ; Inès de Lyon devient Clara ; raton réduit sur Welcome et W-Repondre.
+- [x] F18 Léa : « Nino propose un duo avec toi et K. » et « K. n'a pas encore répondu » ; fiabilité « visible par toi seulement » partout ; Confidentialité : lignes fiabilité, contacts évités, cartes ; V5-Ange reprend la ligne de Confidentialité mot pour mot.
+- [x] F19 voie Duo : voir ci-dessous.
+- [x] G20 doublon « X vient avec toi » retiré des 4 Sortie (rangée « Inviter un 2e proche ») ; Lille au gabarit commun (V5-Sortie-lille, frise et prix) ; éclaboussures de Souvenir retirées ; titre de Ta bande détaché du banc ; HT retiré de Sortie annulée ; « pour ta sécurité » une seule fois sur Check-in fait ; « Pigeon » partout ; Team « Garder sa place 30 min » ; Welcome « 18 à 50 ans et plus » ; « dans ton quartier (≈ 8 min) ».
+
+### Pourquoi la voie Duo reste une porte d'égale importance
+
+La voie Duo n'invite personne et sort donc de la boucle virale du groupe (growth-lead, ux-cognitif). Le choix est assumé : pour les personnes que le groupe intimide (Thomas, Yanis), le duo est la seule porte qu'elles franchissent ; la mettre après la 1re sortie les perdrait avant. L'écran Rencontrer garde les trois formats à égalité ; le test de 8 semaines mesure la part qui choisit le duo et sa conversion en sortie de groupe.
 
 ### Contrôles ajoutés au tour 7 (`check-facts`)
 
@@ -333,17 +371,25 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 
 ## Textes clés (i18n)
 
-Phrases canoniques (V5.6, une par règle, à reprendre mot pour mot) :
+Phrases canoniques (V5.7, une par règle, à reprendre mot pour mot) :
 
 - `regles.securite` : « Pour ta sécurité : toujours possible, sans pénalité, place remboursée. »
-- `regles.connais` : « « Je connais quelqu’un ici » : 1 fois par mois, place remboursée. »
+- `regles.connais` : « « Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité. »
 - `regles.imprevu` : « Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée. »
 - `regles.annulation` : « Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. »
-- `regles.fiabilite` : « Ta fiabilité (venu à N sorties sur M) n’est visible que par toi. »
+- `regles.fiabilite` : « Ta fiabilité est visible par toi seulement. »
 - `regles.astreinte` : « Une personne de l’équipe est joignable pendant toute ta sortie. »
-- `regles.rappel` : « Une personne de l’équipe répond en moins d’1 h pendant toute ta sortie. »
+- `regles.rappel` : « Un signalement reçoit une réponse de l’équipe en moins d’1 h pendant toute ta sortie. »
 - `regles.blowyPlus` : « Rentable dès la 3e sortie du mois. »
-- `regles.blowyAnnule` : « Sortie annulée par Blowy à la confirmation ou après : 3 € HT par place réservée, versés au lieu. »
+- `regles.blowyAnnule` : « Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy. »
+- `regles.astreinteRdv` : « Une personne de l’équipe est joignable pendant tout ton rendez-vous. »
+- `regles.astreinteAnge` : « Une personne de l’équipe est joignable pendant toute la sortie d’Alex. »
+- `regles.aide` : « Quelqu’un de l’équipe te rappelle en quelques minutes. »
+- `regles.aideAnge` : « Quelqu’un de l’équipe rappelle Alex en quelques minutes. »
+- `regles.blowyPlusDeux` : « Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie. »
+- `regles.placeVide` : « Place laissée vide après la veille 18 h : le lieu est toujours payé ; par la place du participant en cas d’imprévu ou d’absence, par Blowy si elle est remboursée (sécurité, « je connais quelqu’un ici ») ou offerte. »
+- `regles.captures` : « Les captures d’écran iOS sont signalées à l’équipe. »
+- `regles.aideLieu` : « Quelqu’un de l’équipe vous rappelle en quelques minutes. »
 
 
 | Clé | Texte |

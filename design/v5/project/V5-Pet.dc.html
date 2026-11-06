@@ -83,7 +83,7 @@ class Component extends DCLogic {
   constructor(p) { super(p); this.state = { sp: null }; }
   renderVals() {
     const B = '/_blob/', s = this.state;
-    const SP = [['raton', 'Raton', B + '630cf503134679d62afe62d88edbda8d'], ['lapine', 'Lapine', B + '305ba56fa88f24706f7f7b30debf3ac8'], ['capy', 'Capybara', B + 'b9a1dfc49373cf092fdb8a912c875adf'], ['pigeon', 'Pigeonne', B + '8a35794ced023a499838ce341afd6ac4'], ['lutin', 'Lutin', B + '4f1732e4d646fcfb4437f97947c175f0']];
+    const SP = [['raton', 'Raton', B + '630cf503134679d62afe62d88edbda8d'], ['lapine', 'Lapine', B + '305ba56fa88f24706f7f7b30debf3ac8'], ['capy', 'Capybara', B + 'b9a1dfc49373cf092fdb8a912c875adf'], ['pigeon', 'Pigeon', B + '8a35794ced023a499838ce341afd6ac4'], ['lutin', 'Lutin', B + '4f1732e4d646fcfb4437f97947c175f0']];
     return { species: SP.map(([id, n, i]) => { const on = s.sp === id; return { n, i, on: on ? 'true' : 'false', bg: on ? '#16110D' : '#fff', fg: on ? '#fff' : '#16110D', sh: on ? '#000' : '#EEDFCB', pick: () => this.setState({ sp: id }) }; }), ready: !!s.sp, notReady: !s.sp };
   }
 }

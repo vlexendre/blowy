@@ -176,7 +176,7 @@
    "x": 1410,
    "y": 1144,
    "w": 390,
-   "h": 844,
+   "h": 1062,
    "title": "11d · Lyon : lieu et prénoms la veille",
    "radius": 40,
    "page": "v5",
@@ -206,7 +206,7 @@
    "x": 2820,
    "y": 1144,
    "w": 390,
-   "h": 844,
+   "h": 1063,
    "title": "11g · Paris 18e : lieu et prénoms, avec Yacine",
    "radius": 40,
    "page": "v5",
@@ -262,8 +262,28 @@
    "page": "v5",
    "is_interactive": true
   },
-  "V5-Sortie.dc.html": {
+  "V5-Sortie-lille.dc.html": {
    "x": 5640,
+   "y": 1144,
+   "w": 390,
+   "h": 1069,
+   "title": "11m · Lille : ta sortie, gabarit commun",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Trouvee-weekend.dc.html": {
+   "x": 6110,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "11n · Week-end libre (garde alternée)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Sortie.dc.html": {
+   "x": 6580,
    "y": 1144,
    "w": 390,
    "h": 1069,
@@ -273,7 +293,7 @@
    "is_interactive": true
   },
   "V5-Team.dc.html": {
-   "x": 6110,
+   "x": 7050,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -283,7 +303,7 @@
    "is_interactive": true
   },
   "V5-Partage-invitation.dc.html": {
-   "x": 6580,
+   "x": 7520,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -293,7 +313,7 @@
    "is_interactive": true
   },
   "V5-Invite.dc.html": {
-   "x": 7050,
+   "x": 7990,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -303,7 +323,7 @@
    "is_interactive": true
   },
   "V5-Compte.dc.html": {
-   "x": 7520,
+   "x": 8460,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -313,7 +333,7 @@
    "is_interactive": true
   },
   "V5-Verif.dc.html": {
-   "x": 7990,
+   "x": 8930,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -323,7 +343,7 @@
    "is_interactive": true
   },
   "V5-Notifs.dc.html": {
-   "x": 8460,
+   "x": 9400,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -333,7 +353,7 @@
    "is_interactive": true
   },
   "V5-Sortie-inscrit.dc.html": {
-   "x": 8930,
+   "x": 9870,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -343,7 +363,7 @@
    "is_interactive": true
   },
   "V5-Accueil.dc.html": {
-   "x": 9400,
+   "x": 10340,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -353,7 +373,7 @@
    "is_interactive": true
   },
   "V5-Accueil-discret.dc.html": {
-   "x": 9870,
+   "x": 10810,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -363,7 +383,7 @@
    "is_interactive": true
   },
   "V5-Accueil-duo.dc.html": {
-   "x": 10340,
+   "x": 11280,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -373,7 +393,7 @@
    "is_interactive": true
   },
   "V5-Pause.dc.html": {
-   "x": 10810,
+   "x": 11750,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -383,7 +403,7 @@
    "is_interactive": true
   },
   "V5-Chats.dc.html": {
-   "x": 11280,
+   "x": 12220,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -393,7 +413,7 @@
    "is_interactive": true
   },
   "V5-Groupe.dc.html": {
-   "x": 11750,
+   "x": 12690,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -403,7 +423,7 @@
    "is_interactive": true
   },
   "V5-Groupe-menu.dc.html": {
-   "x": 12220,
+   "x": 13160,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -516,7 +536,7 @@
    "x": 0,
    "y": 3432,
    "w": 390,
-   "h": 844,
+   "h": 1062,
    "title": "27 · Veille 18 h : lieu, photo, prénoms, pets",
    "radius": 40,
    "page": "v5",
@@ -926,7 +946,7 @@
    "x": 3290,
    "y": 8008,
    "w": 390,
-   "h": 1232,
+   "h": 1436,
    "title": "51 · Confidentialité",
    "radius": 40,
    "page": "v5",
@@ -936,7 +956,7 @@
    "x": 3760,
    "y": 8008,
    "w": 390,
-   "h": 1338,
+   "h": 1401,
    "title": "52 · Signaler",
    "radius": 40,
    "page": "v5",
@@ -1016,7 +1036,7 @@
    "x": 0,
    "y": 10296,
    "w": 1280,
-   "h": 800,
+   "h": 1118,
    "title": "60 · Effectif de la veille 18 h",
    "radius": 40,
    "page": "v5",
@@ -1036,7 +1056,7 @@
    "x": 2800,
    "y": 10296,
    "w": 1280,
-   "h": 800,
+   "h": 1021,
    "title": "62 · Contrat d’une page",
    "radius": 40,
    "page": "v5",
@@ -1163,14 +1183,14 @@
    "page": "v5",
    "text": "V5.6 · RÈGLES UNIQUES\nUne phrase par règle, partout (facts.regles) : sécurité toujours possible, sans pénalité, place remboursée ; « je connais quelqu'un ici » 1 fois par mois, remboursée ; imprévu 1 fois par mois, non remboursé ; fiabilité visible par toi seul ; astreinte pendant toute ta sortie ; Blowy+ rentable dès la 3e sortie du mois · Nantes, duo homme-homme complet, Mes cartes en miniatures réelles, relevé lieu en HT.",
    "w": 380,
-   "x": 12890,
+   "x": 13830,
    "y": 0
   },
   "v5s2": {
    "page": "v5",
    "text": "CASTING (facts.json)\nAlex, il, 26–29 ans, Paris 11e, pet Nino. Aujourd'hui lun. 9 nov. (accord 20 h 50). Sortie jeu. 12 nov. 19 h 30, Café des Oiseaux : lieu et prénoms mer. 11 nov. 18 h (fin de l'annulation gratuite), visages jeu. 16 h 30. Groupe : 5 personnes, 26–34 ans, 2 femmes / 3 hommes, toi + Tom, 3 nouvelles personnes. Votes dim. 15 nov. 21 h 30. Duo Jade : début lun. 9 nov. 21 h 30, visages mer. 11 nov. 21 h 30, rendez-vous sam. 14 nov. 15 h.",
    "w": 380,
-   "x": 12890,
+   "x": 13830,
    "y": 1144,
    "fill": "green"
   },
@@ -1178,7 +1198,7 @@
    "page": "v5",
    "text": "ARGENT\n1re sortie offerte · ensuite 4,99 € la place (conso non incluse, remboursée si la sortie n'a pas lieu) · Duo gratuit pour 1 duo actif · Blowy+ 9,99 €/mois = toutes les sorties, en Apple Pay comme les places · Duo gratuit, 3 actifs au plus · place vide après la veille 18 h : 4,99 € reversés au lieu (3 € si offerte). Rien d'autre ne se vend.",
    "w": 380,
-   "x": 12890,
+   "x": 13830,
    "y": 2288,
    "fill": "orange"
   },
@@ -1186,7 +1206,7 @@
    "page": "v5",
    "text": "BOUCLES\n6 cartes, 6 liens : « cette semaine je sors » (mer.), « je sors ce soir » (jeu., sans lieu), « on était 5 » (ven.), « ma bande s'agrandit » (dim.), « aide Bordeaux à sortir », invitation personnelle par message · 3 mots · page de l'ange. check-facts vérifie lien unique et aucun tiers.",
    "w": 380,
-   "x": 12890,
+   "x": 13830,
    "y": 3432,
    "fill": "green"
   }
@@ -1218,6 +1238,8 @@
   "V5-Trouvee-nantes.dc.html",
   "V5-Sortie-nantes.dc.html",
   "V5-Pas-encore-nantes.dc.html",
+  "V5-Sortie-lille.dc.html",
+  "V5-Trouvee-weekend.dc.html",
   "V5-Sortie.dc.html",
   "V5-Team.dc.html",
   "V5-Partage-invitation.dc.html",

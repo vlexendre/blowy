@@ -9,6 +9,8 @@
 //   indicateurs de ville ≥ 10 et arrondis, imprévu 1 fois par mois.
 // + V5.6 : une phrase canonique par règle (facts.regles / reglesSignatures), « soirs de sortie », « position en continu » et « Photo fournie par le lieu » bannis,
 //   âge du persona (facts.personas) cohérent avec « Toi · tranche » et la tranche annoncée de sa sortie.
+// + V5.7 : échéances dérivées du calendrier (composition J−3 21 h, confirmation veille 18 h, aucune date hors facts.json), « personnes vérifiées »,
+//   pets propres à chaque groupe, aucun partage sur Les visages, TTC client / HT lieu, Tarifs = contrat, « ton rendez-vous » / « la sortie d’Alex ».
 // Usage : node design/v5/check-facts.mjs [filtre]   (code de sortie 1 s'il y a une contradiction)
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -54,6 +56,15 @@ const comp = parseRange(F.groupe.ages);
 const tranchesMembres = new Set(F.membres.map((m) => m.tranche).concat([F.toi.tranche]));
 const prenomsTiers = F.tiers;
 const taille = F.groupe.taille, nouvelles = taille - 1 - F.groupe.team;
+
+// V5.7 · calendrier : composition J−3 21 h, confirmation veille 18 h
+const JC = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'], MC = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const JL = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const court = (d) => `${JC[d.getUTCDay()]} ${d.getUTCDate()} ${MC[d.getUTCMonth()]}`;
+const COMPOS = new Set(), CONFIRMS = new Set(), JOURS_COMPO = new Set();
+for (const iso of F.calendrier.sorties) { const d = new Date(iso.slice(0, 10) + 'T12:00:00Z'); const c = new Date(d - 3 * 864e5), v = new Date(d - 864e5); COMPOS.add(court(c)); CONFIRMS.add(court(v)); JOURS_COMPO.add(JL[c.getUTCDay()]); }
+const DATES_FACTS = new Set([...COMPOS, ...CONFIRMS, ...F.calendrier.sorties.map((i) => court(new Date(i.slice(0, 10) + 'T12:00:00Z')))]);
+for (const m of JSON.stringify(F).replace(/[\u00a0\u202f]/g, ' ').matchAll(/\b(?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} (?:oct|nov|déc)\./g)) DATES_FACTS.add(m[0]);
 
 for (const f of files) {
   const html = readFileSync(join(dir, f), 'utf8');
@@ -185,7 +196,7 @@ for (const f of files) {
 
   // 20. V5.5 · Astreinte : jamais limitée à une plage horaire ; tout rendez-vous Duo en lieu partenaire
   for (const m of t.matchAll(/(astreinte|équipe[^.]{0,20}joignable)[^.]{0,40}?(\d{1,2}) h\s*(?:à|–|-)\s*(\d{1,2}) h/gi)) { checks++; push(f, `astreinte limitée à une plage : « ${m[0].slice(0, 60)} »`); }
-  if (/RdvDuo/.test(base)) { checks++; if (!/Lieu partenaire/.test(t)) push(f, 'rendez-vous Duo hors lieu partenaire'); checks++; if (!t.includes(F.astreinte.texte)) push(f, 'rendez-vous Duo : astreinte non dite'); }
+  if (/RdvDuo/.test(base)) { checks++; if (!/Lieu partenaire/.test(t)) push(f, 'rendez-vous Duo hors lieu partenaire'); checks++; if (!t.includes(F.astreinte.texte) && !t.includes(F.regles.astreinteRdv)) push(f, 'rendez-vous Duo : astreinte non dite'); }
   // 21. Check-in par code seulement
   if (/Checkin/.test(base)) { checks++; if (/position/i.test(t) && !/jamais demandée/.test(t)) push(f, 'check-in : aucune proposition de position'); }
   // 22. Carte Duo : jamais le nom du pet avant le double oui
@@ -196,15 +207,41 @@ for (const f of files) {
 
   // 24. V5.6 · Une seule formulation par règle : dès qu'une règle est évoquée, sa phrase canonique (facts.regles) est présente mot pour mot
   for (const [k, sig] of Object.entries(F.reglesSignatures)) {
-    if (new RegExp(sig).test(t)) { checks++; if (!norm(t).includes(F.regles[k])) push(f, `règle « ${k} » formulée autrement que « ${F.regles[k].slice(0, 50)}… »`); }
+    const variantes = (F.reglesVariantes[k] || [k]).map((v) => F.regles[v]);
+    if (new RegExp(sig).test(t)) { checks++; if (!variantes.some((v) => norm(t).includes(v))) push(f, `règle « ${k} » formulée autrement que « ${variantes[0].slice(0, 50)}… »`); }
   }
+  // 26. V5.7 · Échéances dérivées du calendrier : « <date> 21 h » = composition (J−3), « <date> 18 h » = confirmation (veille) ; jour seul « à 21 h » = jour de composition d'un créneau
+  { const tc = t.replace(/ à (\d{1,2} h)/g, ' $1');
+    for (const m of tc.matchAll(/\b((?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} (?:oct|nov|déc)\.),? (21|18) h(?! ?\d)/g)) {
+      checks++; const ok = (m[2] === '21' ? COMPOS : CONFIRMS).has(m[1]);
+      if (!ok) push(f, `échéance « ${m[0]} » non dérivée d’une sortie du calendrier (${m[2] === '21' ? 'composition J−3 21 h' : 'confirmation veille 18 h'})`); }
+    for (const m of t.matchAll(/\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche) (?:à )?21 h(?! ?\d)/g)) { checks++; if (!JOURS_COMPO.has(m[1])) push(f, `« ${m[0]} » : aucun créneau ne se compose ce jour-là`); }
+    // aucune date en dur : toute date courte vient de facts.json ou du calendrier
+    for (const m of t.matchAll(/\b(?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} (?:oct|nov|déc)\./g)) { checks++; if (!DATES_FACTS.has(m[0])) push(f, `date « ${m[0]} » absente de facts.json`); }
+  }
+  // 27. « personnes vérifiées », jamais « inscrits »
+  { checks++; if (/\binscrits?\b/.test(t)) push(f, '« inscrits » : écrire « personnes vérifiées »'); }
+  // 28. Pets propres à chaque groupe
+  if (F.groupeParFichier[base]) { const g = F.groupes[F.groupeParFichier[base]];
+    for (const [nom, pet] of Object.entries(g)) { if (nom === 'Toi') continue; checks++; const re = new RegExp(nom + ' · [^·]*?(?:· vient avec toi )?([A-ZÉ][a-zéèëï]+)(?= |$)');
+      const m = t.match(re); if (m && m[1] !== pet) push(f, `${nom} a le pet « ${m[1]} » ; son pet est ${pet}`); } }
+  // 29. Aucun lien de partage sur Les visages (et Souvenir avant le vote)
+  if (F.ecransVisages.includes(base)) { checks++; if (/href="V5-(?:Partage|Story|Cartes)/.test(html) || /\bPartager\b/.test(t)) push(f, 'lien de partage sur un écran de visages'); }
+  // 30. TTC côté client, HT côté lieu
+  if (base.startsWith('L-')) { for (const m of t.matchAll(/\d+(?:,\d\d)? €(?! HT)/g)) { checks++; push(f, `montant « ${m[0]} » sans « HT » côté lieu`); } }
+  else { checks++; if (/\bHT\b|hors taxes/.test(t)) push(f, 'montant HT sur un écran client (TTC côté client)'); }
+  // 31. Tarifs = contrat = écran client : mêmes phrases canoniques
+  if (base === 'V5-Tarifs' || base === 'L-Contrat') for (const k of F.tarifsContrat) { checks++; if (!norm(t).includes(F.regles[k])) push(f, `phrase canonique « ${k} » absente (Tarifs = contrat)`); }
+  // 32. Rendez-vous Duo : « pendant tout ton rendez-vous » ; page ange : « la sortie d’Alex »
+  if (F.ecransRdv.includes(base)) { checks++; if (!t.includes(F.regles.astreinteRdv) || /toute ta sortie/.test(t)) push(f, 'rendez-vous Duo : écrire « pendant tout ton rendez-vous »'); }
+  if (F.ecransAnge.includes(base)) { checks++; if (/toute ta sortie|ta sortie\b/.test(t)) push(f, 'page de l’ange : « la sortie d’Alex », jamais « ta sortie »'); }
   // 25. Âge du persona ↔ tranche de sa sortie
   { const pt = F.personas[base] || F.personas.default;
     for (const m of t.matchAll(/Toi · (\d{2}–\d{2} ans)/g)) { checks++; if (m[1] !== pt) push(f, `« Toi · ${m[1]} » : le persona de cet écran a ${pt}`); }
     for (const m of t.matchAll(/en (\d{2})–(\d{2}) ans/g)) { checks++; const r = parseRange(pt); if (Number(m[1]) > r[0] || Number(m[2]) < r[1]) push(f, `sortie « en ${m[1]}–${m[2]} ans » qui n’inclut pas le persona (${pt})`); } }
 
   // 10. Vocabulaire unique et promesses fausses
-  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie', 'soirs de sortie', 'position en continu', 'Photo fournie par le lieu', 'Rentable à partir de'];
+  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie', 'soirs de sortie', 'position en continu', 'Photo fournie par le lieu', 'Rentable à partir de', 'inscrits', 'arrive la veille', 'Pigeonne', 'Une proposition pour vous deux', 'sur M)'];
   for (const w of banned) {
     checks++;
     if (new RegExp(`(?<![\\w-])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`).test(t)) push(f, `terme interdit « ${w} »`);

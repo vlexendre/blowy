@@ -83,7 +83,12 @@
     "lieuCourt": "ven. 13 nov. 18 h",
     "femmes": 2,
     "hommes": 3,
-    "typeLieu": "un atelier de Wazemmes"
+    "typeLieu": "un atelier de Wazemmes",
+    "trajet": "10 min",
+    "adresse": "15 rue des Sarrazins, Lille",
+    "metro": "Gambetta (ligne 1)",
+    "visagesCourt": "sam. 14 nov. 12 h",
+    "table": "Table Blowy, chevalet orange"
   },
   "groupe": {
     "taille": 5,
@@ -197,7 +202,8 @@
       "3 €",
       "7,99 €",
       "4,16 €",
-      "7,16 €"
+      "7,16 €",
+      "0 €"
     ],
     "compensationOfferte": "3 €",
     "blowyPlusVia": "Apple Pay",
@@ -464,9 +470,10 @@
     "hommes": 3,
     "lieu": "Le Five Croix-Rousse",
     "adresse": "12 rue d’Austerlitz, Lyon 4e",
-    "suivante": "mar. 24 nov. · 19 h 30 · Atelier céramique, Lyon 1er",
+    "suivante": "mar. 24 nov.",
     "metro": "Croix-Rousse (ligne C)",
-    "table": "Terrain 2, chevalet orange au bord"
+    "table": "Terrain 2, chevalet orange au bord",
+    "suivanteComposition": "sam. 21 nov. 21 h"
   },
   "slugParFichier": {
     "V5-Partage-confirmation": "confirmation",
@@ -495,7 +502,7 @@
     "ange"
   ],
   "annulation": {
-    "regle": "Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Pour ta sécurité : toujours possible, sans pénalité, place remboursée. « Je connais quelqu’un ici » : 1 fois par mois, place remboursée. Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
+    "regle": "Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Pour ta sécurité : toujours possible, sans pénalité, place remboursée. « Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité. Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
     "fichiers": [
       "V5-Sortie",
       "V5-Fiche",
@@ -507,7 +514,12 @@
     "mois": "novembre",
     "placesVides": 2,
     "montantHT": "7,16 €",
-    "versement": "5 décembre"
+    "versement": "5 décembre",
+    "periode": "1er – 30 nov.",
+    "lignes": [
+      "mar. 3 nov.",
+      "jeu. 5 nov."
+    ]
   },
   "banlieue": {
     "ville": "Saint-Denis",
@@ -541,8 +553,8 @@
   "blowyAnnule": "Sortie annulée par Blowy à la confirmation ou après : 3 € HT par place réservée, versés au lieu.",
   "indicateurs": {
     "seuil": 10,
-    "bordeaux18_25": "environ 40 inscrits ont entre 18 et 25 ans",
-    "paris11Histoire": "une trentaine de personnes cherchent une histoire compatible avec la tienne"
+    "bordeaux18_25": "environ 40 personnes vérifiées ont entre 18 et 25 ans",
+    "paris11Histoire": "une trentaine de personnes vérifiées cherchent une histoire compatible avec la tienne"
   },
   "parrainage": "Quand la personne que tu invites vient à sa 1re sortie, ta prochaine sortie est offerte (1 par mois au plus).",
   "sortieAnnulee": {
@@ -551,25 +563,37 @@
   "agendaTitre": "Rendez-vous · 19 h 30",
   "regles": {
     "securite": "Pour ta sécurité : toujours possible, sans pénalité, place remboursée.",
-    "connais": "« Je connais quelqu’un ici » : 1 fois par mois, place remboursée.",
+    "connais": "« Je connais quelqu’un ici » : 1 fois par mois, place remboursée ; au-delà, c’est une sortie pour ta sécurité, examinée par l’équipe, sans pénalité.",
     "imprevu": "Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée.",
     "annulation": "Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence.",
-    "fiabilite": "Ta fiabilité (venu à N sorties sur M) n’est visible que par toi.",
+    "fiabilite": "Ta fiabilité est visible par toi seulement.",
     "astreinte": "Une personne de l’équipe est joignable pendant toute ta sortie.",
-    "rappel": "Une personne de l’équipe répond en moins d’1 h pendant toute ta sortie.",
+    "rappel": "Un signalement reçoit une réponse de l’équipe en moins d’1 h pendant toute ta sortie.",
     "blowyPlus": "Rentable dès la 3e sortie du mois.",
-    "blowyAnnule": "Sortie annulée par Blowy à la confirmation ou après : 3 € HT par place réservée, versés au lieu."
+    "blowyAnnule": "Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy.",
+    "astreinteRdv": "Une personne de l’équipe est joignable pendant tout ton rendez-vous.",
+    "astreinteAnge": "Une personne de l’équipe est joignable pendant toute la sortie d’Alex.",
+    "aide": "Quelqu’un de l’équipe te rappelle en quelques minutes.",
+    "aideAnge": "Quelqu’un de l’équipe rappelle Alex en quelques minutes.",
+    "blowyPlusDeux": "Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €). Blowy+ devient intéressant dès la 3e sortie.",
+    "placeVide": "Place laissée vide après la veille 18 h : le lieu est toujours payé ; par la place du participant en cas d’imprévu ou d’absence, par Blowy si elle est remboursée (sécurité, « je connais quelqu’un ici ») ou offerte.",
+    "captures": "Les captures d’écran iOS sont signalées à l’équipe.",
+    "aideLieu": "Quelqu’un de l’équipe vous rappelle en quelques minutes."
   },
   "reglesSignatures": {
     "securite": "[Pp]our ta sécurité",
     "connais": "[Jj]e connais quelqu’un ici » :",
-    "imprevu": "[Ii]mprévu[^.]{0,40}(?:fois|pénalité|rembours)",
+    "imprevu": "[Ii]mprévu[^.;]{0,30}(?:fois par mois|sans pénalité|non rembours)",
     "annulation": "[Aa]nnulation gratuite jusqu",
     "fiabilite": "fiabilit[^.]{0,60}(?:visible|voit|voient)",
     "astreinte": "équipe est joignable",
-    "rappel": "équipe répond en moins",
+    "rappel": "signalement reçoit une réponse|répond en moins",
     "blowyPlus": "[Rr]entable",
-    "blowyAnnule": "annulée par Blowy"
+    "blowyAnnule": "annulée par Blowy",
+    "aide": "rappelle?[^.]{0,20}en quelques minutes|sous 5 min",
+    "blowyPlusDeux": "2 fois par mois \\?",
+    "placeVide": "[Pp]lace (?:laissée )?vide après",
+    "captures": "captures? (?:d’écran )?(?:iOS )?(?:sont|est) (?:détectées|signalées)"
   },
   "personas": {
     "default": "26–29 ans",
@@ -596,15 +620,113 @@
     "adresse": "2 quai Ferdinand-Favre, Nantes",
     "metro": "Duchesse Anne (tram 1)",
     "table": "Table Blowy, chevalet orange",
-    "indicateur": "une vingtaine de personnes cherchent une histoire compatible avec la tienne",
-    "prevenu": "mardi à 21 h"
+    "indicateur": "une vingtaine de personnes vérifiées cherchent une histoire compatible avec la tienne",
+    "prevenu": "lun. 16 nov. 21 h"
   },
   "duoHH": {
     "initiale": "K.",
     "espece": "Un pigeon",
     "rdvLieu": "Café Longchamp",
     "rdvQuartier": "Marseille 1er",
-    "rdvCourt": "sam. 14 nov. 19 h"
+    "rdvCourt": "sam. 14 nov. 19 h",
+    "repondu": "K. n’a pas encore répondu."
   },
-  "lieuAccueil": "Table au fond à gauche, sous la lampe verte. Demandez Sami au comptoir. Bonne soirée !"
+  "lieuAccueil": "Table au fond à gauche, sous la lampe verte. Demandez Sami au comptoir. Bonne soirée !",
+  "reglesVariantes": {
+    "astreinte": [
+      "astreinte",
+      "astreinteRdv",
+      "astreinteAnge"
+    ],
+    "aide": [
+      "aide",
+      "aideAnge",
+      "aideLieu"
+    ]
+  },
+  "ecransRdv": [
+    "V5-RdvDuo",
+    "V5-RdvDuo-lea",
+    "V5-Duo-hh-rdv"
+  ],
+  "ecransAnge": [
+    "W-Ange",
+    "W-Ange-aide"
+  ],
+  "tarifsContrat": [
+    "securite",
+    "connais",
+    "imprevu",
+    "annulation",
+    "placeVide",
+    "blowyAnnule"
+  ],
+  "ecransVisages": [
+    "V5-Revelation",
+    "V5-Duo-hh-visages",
+    "V5-Souvenir"
+  ],
+  "safety": {
+    "helpCallbackTargetMinutes": 5,
+    "signalementSlaMinutes": 60
+  },
+  "calendrier": {
+    "_doc": "Toute échéance affichée se déduit d'une sortie : composition = J−3 à 21 h, confirmation = veille à 18 h.",
+    "sorties": [
+      "2026-11-12T19:30",
+      "2026-11-13T20:00",
+      "2026-11-14T15:00",
+      "2026-11-17T19:30",
+      "2026-11-19T19:30",
+      "2026-11-21T19:30",
+      "2026-11-24T19:30"
+    ]
+  },
+  "weekendLibre": {
+    "iso": "2026-11-21T19:30",
+    "court": "sam. 21 nov.",
+    "jour": "samedi 21 novembre",
+    "composition": "mer. 18 nov. 21 h",
+    "lieuCourt": "ven. 20 nov. 18 h",
+    "motif": "Un week-end sur deux · à partir du sam. 14 nov."
+  },
+  "groupes": {
+    "paris": {
+      "Toi": "Nino",
+      "Tom": "Pépite",
+      "Léa": "Suzie",
+      "Malo": "Gaston",
+      "Sarah": "Pia"
+    },
+    "lyon": {
+      "Toi": "Nino",
+      "Bastien": "Biscotte",
+      "Clara": "Moka",
+      "Hugo": "Filou",
+      "Nour": "Praline"
+    },
+    "banlieue": {
+      "Toi": "Nino",
+      "Yacine": "Chouquette",
+      "Maïa": "Réglisse",
+      "Ilyes": "Tic",
+      "Lina": "Noisette"
+    },
+    "nantes": {
+      "Toi": "Nino",
+      "Inès": "Galette"
+    },
+    "lille": {
+      "Toi": "Nino",
+      "Jules": "Pruneau"
+    }
+  },
+  "groupeParFichier": {
+    "V5-Confirmation": "paris",
+    "V5-Confirmation-lyon": "lyon",
+    "V5-Confirmation-banlieue": "banlieue",
+    "V5-Trouvee-nantes": "nantes",
+    "V5-Sortie-nantes": "nantes"
+  },
+  "lieuMontants": "Montants : 4,16 € HT pour une place payée ; 3 € HT pour une place offerte, dans Blowy+ ou remboursée (sécurité, « je connais quelqu’un ici ») ; 3 € HT par place réservée si Blowy annule ; table Duo : 0 € HT, sans garantie."
 }
