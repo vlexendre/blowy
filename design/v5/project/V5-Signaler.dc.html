@@ -89,7 +89,7 @@ a{color:inherit;text-decoration:none}
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { r: -1, block: false }; }
   renderVals() {
-    const L = [['Pendant la sortie', ['Geste ou contact non voulu', 'Pression sexuelle', 'M’a suivi ou attendu après', 'Ne ressemble pas à son selfie', 'Semble avoir moins de 18 ans', 'Incident sur place (lieu, personnel, autre client)']], ['Messages et comportement', ['Menace d’outing ou chantage', 'Propos haineux, LGBTphobie', 'Photos non sollicitées', 'Demande d’argent, arnaque', 'Harcèlement', 'Absences répétées', 'Autre chose']]];
+    const L = [['Pendant la sortie', ['Geste ou contact non voulu', 'Pression sexuelle', 'M’a suivi ou attendu après', 'Ne ressemble pas à ses photos', 'Semble avoir moins de 18 ans', 'Incident sur place (lieu, personnel, autre client)']], ['Messages et comportement', ['Menace d’outing ou chantage', 'Propos haineux, LGBTphobie', 'Photos non sollicitées', 'Demande d’argent, arnaque', 'Harcèlement', 'Absences répétées', 'Autre chose']]];
     let k = 0;
     const b = this.state.block;
     return { ready: this.state.r >= 0, notReady: this.state.r < 0, blockOn: b ? 'true' : 'false', blockBg: b ? '#16110D' : '#fff', blockMark: b ? '✓' : '', toggleBlock: () => this.setState({ block: !b }),

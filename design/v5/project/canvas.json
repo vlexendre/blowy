@@ -112,8 +112,18 @@
    "page": "v5",
    "is_interactive": true
   },
-  "V5-Eviter.dc.html": {
+  "V5-Dispos-semaines.dc.html": {
    "x": 5170,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "10a · Une semaine sur deux, cochée",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Eviter.dc.html": {
+   "x": 5640,
    "y": 0,
    "w": 390,
    "h": 844,
@@ -123,7 +133,7 @@
    "is_interactive": true
   },
   "V5-Erreur-age.dc.html": {
-   "x": 5640,
+   "x": 6110,
    "y": 0,
    "w": 390,
    "h": 844,
@@ -156,7 +166,7 @@
    "x": 940,
    "y": 1144,
    "w": 390,
-   "h": 844,
+   "h": 1069,
    "title": "11c · Sortie à Lyon",
    "radius": 40,
    "page": "v5",
@@ -182,18 +192,48 @@
    "page": "v5",
    "is_interactive": true
   },
-  "V5-Sortie.dc.html": {
+  "V5-Sortie-banlieue.dc.html": {
    "x": 2350,
    "y": 1144,
    "w": 390,
+   "h": 1069,
+   "title": "11f · Sortie à Paris 18e",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Confirmation-banlieue.dc.html": {
+   "x": 2820,
+   "y": 1144,
+   "w": 390,
    "h": 844,
+   "title": "11g · Paris 18e : lieu et prénoms, avec Yacine",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Pas-encore.dc.html": {
+   "x": 3290,
+   "y": 1144,
+   "w": 390,
+   "h": 844,
+   "title": "11h · Cette semaine, pas encore (Marseille)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Sortie.dc.html": {
+   "x": 3760,
+   "y": 1144,
+   "w": 390,
+   "h": 1069,
    "title": "12 · Fiche de sortie",
    "radius": 40,
    "page": "v5",
    "is_interactive": true
   },
   "V5-Team.dc.html": {
-   "x": 2820,
+   "x": 4230,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -203,7 +243,7 @@
    "is_interactive": true
   },
   "V5-Partage-invitation.dc.html": {
-   "x": 3290,
+   "x": 4700,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -213,7 +253,7 @@
    "is_interactive": true
   },
   "V5-Invite.dc.html": {
-   "x": 3760,
+   "x": 5170,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -223,7 +263,7 @@
    "is_interactive": true
   },
   "V5-Compte.dc.html": {
-   "x": 4230,
+   "x": 5640,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -233,7 +273,7 @@
    "is_interactive": true
   },
   "V5-Verif.dc.html": {
-   "x": 4700,
+   "x": 6110,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -243,7 +283,7 @@
    "is_interactive": true
   },
   "V5-Notifs.dc.html": {
-   "x": 5170,
+   "x": 6580,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -253,7 +293,7 @@
    "is_interactive": true
   },
   "V5-Sortie-inscrit.dc.html": {
-   "x": 5640,
+   "x": 7050,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -263,7 +303,7 @@
    "is_interactive": true
   },
   "V5-Accueil.dc.html": {
-   "x": 6110,
+   "x": 7520,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -273,7 +313,7 @@
    "is_interactive": true
   },
   "V5-Accueil-discret.dc.html": {
-   "x": 6580,
+   "x": 7990,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -283,7 +323,7 @@
    "is_interactive": true
   },
   "V5-Accueil-duo.dc.html": {
-   "x": 7050,
+   "x": 8460,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -293,7 +333,7 @@
    "is_interactive": true
   },
   "V5-Pause.dc.html": {
-   "x": 7520,
+   "x": 8930,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -303,7 +343,7 @@
    "is_interactive": true
   },
   "V5-Chats.dc.html": {
-   "x": 7990,
+   "x": 9400,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -313,7 +353,7 @@
    "is_interactive": true
   },
   "V5-Groupe.dc.html": {
-   "x": 8460,
+   "x": 9870,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -323,7 +363,7 @@
    "is_interactive": true
   },
   "V5-Groupe-menu.dc.html": {
-   "x": 8930,
+   "x": 10340,
    "y": 1144,
    "w": 390,
    "h": 844,
@@ -407,7 +447,27 @@
    "y": 2288,
    "w": 390,
    "h": 844,
-   "title": "26b · Affiner : histoire",
+   "title": "26b · Affiner : histoire, horizon",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Affiner-age.dc.html": {
+   "x": 3760,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "26c · Âge pour une histoire",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Affiner-ambiance.dc.html": {
+   "x": 4230,
+   "y": 2288,
+   "w": 390,
+   "h": 844,
+   "title": "26d · Ambiance",
    "radius": 40,
    "page": "v5",
    "is_interactive": true
@@ -532,8 +592,18 @@
    "page": "v5",
    "is_interactive": true
   },
-  "V5-Partage.dc.html": {
+  "V5-Partage-jeudi.dc.html": {
    "x": 1410,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "34a · Carte « Alors, jeudi ? » (sans votes)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Partage.dc.html": {
+   "x": 1880,
    "y": 4576,
    "w": 390,
    "h": 844,
@@ -543,7 +613,7 @@
    "is_interactive": true
   },
   "V5-Partage-dimanche.dc.html": {
-   "x": 1880,
+   "x": 2350,
    "y": 4576,
    "w": 390,
    "h": 844,
@@ -553,7 +623,7 @@
    "is_interactive": true
   },
   "V5-Apres-aucun.dc.html": {
-   "x": 2350,
+   "x": 2820,
    "y": 4576,
    "w": 390,
    "h": 844,
@@ -563,7 +633,7 @@
    "is_interactive": true
   },
   "V5-Bande.dc.html": {
-   "x": 2820,
+   "x": 3290,
    "y": 4576,
    "w": 390,
    "h": 844,
@@ -572,8 +642,18 @@
    "page": "v5",
    "is_interactive": true
   },
+  "V5-Partage-bande.dc.html": {
+   "x": 3760,
+   "y": 4576,
+   "w": 390,
+   "h": 844,
+   "title": "35b · Carte « Ma bande » (mode capture)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
   "V5-Rue.dc.html": {
-   "x": 3290,
+   "x": 4230,
    "y": 4576,
    "w": 390,
    "h": 844,
@@ -587,7 +667,7 @@
    "y": 5720,
    "w": 390,
    "h": 844,
-   "title": "37 · Voie Duo : pet et initiale avant le oui",
+   "title": "37 · Voie Duo : espèce et initiale avant le oui",
    "radius": 40,
    "page": "v5",
    "is_interactive": true
@@ -602,8 +682,18 @@
    "page": "v5",
    "is_interactive": true
   },
-  "V5-Lien-debloque.dc.html": {
+  "V5-Duo-hh.dc.html": {
    "x": 940,
+   "y": 5720,
+   "w": 390,
+   "h": 844,
+   "title": "38a · Duo homme-homme (K.)",
+   "radius": 40,
+   "page": "v5",
+   "is_interactive": true
+  },
+  "V5-Lien-debloque.dc.html": {
+   "x": 1410,
    "y": 5720,
    "w": 390,
    "h": 844,
@@ -613,7 +703,7 @@
    "is_interactive": true
   },
   "V5-RdvDuo.dc.html": {
-   "x": 1410,
+   "x": 1880,
    "y": 5720,
    "w": 390,
    "h": 844,
@@ -623,7 +713,7 @@
    "is_interactive": true
   },
   "V5-Chat.dc.html": {
-   "x": 1880,
+   "x": 2350,
    "y": 5720,
    "w": 390,
    "h": 844,
@@ -633,17 +723,17 @@
    "is_interactive": true
   },
   "V5-RdvDuo-lea.dc.html": {
-   "x": 2350,
+   "x": 2820,
    "y": 5720,
    "w": 390,
    "h": 844,
-   "title": "40b · Rendez-vous au parc",
+   "title": "40b · Rendez-vous, table à deux (lieu partenaire)",
    "radius": 40,
    "page": "v5",
    "is_interactive": true
   },
   "V5-Oeuf.dc.html": {
-   "x": 2820,
+   "x": 3290,
    "y": 5720,
    "w": 390,
    "h": 844,
@@ -653,7 +743,7 @@
    "is_interactive": true
   },
   "V5-Rupture.dc.html": {
-   "x": 3290,
+   "x": 3760,
    "y": 5720,
    "w": 390,
    "h": 844,
@@ -756,7 +846,7 @@
    "x": 2820,
    "y": 8008,
    "w": 390,
-   "h": 844,
+   "h": 1182,
    "title": "50 · Réglages",
    "radius": 40,
    "page": "v5",
@@ -766,7 +856,7 @@
    "x": 3290,
    "y": 8008,
    "w": 390,
-   "h": 844,
+   "h": 1104,
    "title": "51 · Confidentialité",
    "radius": 40,
    "page": "v5",
@@ -776,7 +866,7 @@
    "x": 3760,
    "y": 8008,
    "w": 390,
-   "h": 844,
+   "h": 1331,
    "title": "52 · Signaler",
    "radius": 40,
    "page": "v5",
@@ -1001,16 +1091,16 @@
   },
   "v5s1": {
    "page": "v5",
-   "text": "V5.4 · APRÈS LE JURY 4\nAucun signal de compatibilité (bandeau « entre amis » supprimé) ; promesse générale · proposition Duo = pet + initiale · mode discret choisi à l'inscription (Discret / Normal) · Éviter avant la 1re composition · règle d'annulation unique + imprévu 1 fois par trimestre · une semaine sur deux · Blowy+ = sorties en Apple Pay ; Duo gratuit, 3 actifs · lieu : 3 € par place si Blowy annule, relevé mensuel, Signaler · Lyon complet, Saint-Denis, Lille solo à 5 jours.",
+   "text": "V5.5 · APRÈS LE JURY 5\nAstreinte sur tous les créneaux (sorties et rendez-vous Duo, lieux partenaires seulement) · check-in par code seulement · proposition Duo = espèce + initiale · imprévu 1 fois par mois, place non remboursée · indicateurs de ville arrondis (≥ 10) · état « pas encore » · Affiner : ambiance, âge, horizon · duo homme-homme · parrainage · Lyon et Saint-Denis au gabarit de Paris · frise des 3 jalons · test des 5 secondes appliqué.",
    "w": 380,
-   "x": 9600,
+   "x": 11010,
    "y": 0
   },
   "v5s2": {
    "page": "v5",
    "text": "CASTING (facts.json)\nAlex, il, 26–29 ans, Paris 11e, pet Nino. Aujourd'hui lun. 9 nov. (accord 20 h 50). Sortie jeu. 12 nov. 19 h 30, Café des Oiseaux : lieu et prénoms mer. 11 nov. 18 h (fin de l'annulation gratuite), visages jeu. 16 h 30. Groupe : 5 personnes, 26–34 ans, 2 femmes / 3 hommes, toi + Tom, 3 nouvelles personnes. Votes dim. 15 nov. 21 h 30. Duo Jade : début lun. 9 nov. 21 h 30, visages mer. 11 nov. 21 h 30, rendez-vous sam. 14 nov. 15 h.",
    "w": 380,
-   "x": 9600,
+   "x": 11010,
    "y": 1144,
    "fill": "green"
   },
@@ -1018,7 +1108,7 @@
    "page": "v5",
    "text": "ARGENT\n1re sortie offerte · ensuite 4,99 € la place (conso non incluse, remboursée si la sortie n'a pas lieu) · Duo gratuit pour 1 duo actif · Blowy+ 9,99 €/mois = toutes les sorties, en Apple Pay comme les places · Duo gratuit, 3 actifs au plus · place vide après la veille 18 h : 4,99 € reversés au lieu (3 € si offerte). Rien d'autre ne se vend.",
    "w": 380,
-   "x": 9600,
+   "x": 11010,
    "y": 2288,
    "fill": "orange"
   },
@@ -1026,7 +1116,7 @@
    "page": "v5",
    "text": "BOUCLES\n6 cartes, 6 liens : « cette semaine je sors » (mer.), « je sors ce soir » (jeu., sans lieu), « on était 5 » (ven.), « ma bande s'agrandit » (dim.), « aide Bordeaux à sortir », invitation personnelle par message · 3 mots · page de l'ange. check-facts vérifie lien unique et aucun tiers.",
    "w": 380,
-   "x": 9600,
+   "x": 11010,
    "y": 3432,
    "fill": "green"
   }
@@ -1043,6 +1133,7 @@
   "V5-Consentement.dc.html",
   "V5-Toi-plus.dc.html",
   "V5-Dispos.dc.html",
+  "V5-Dispos-semaines.dc.html",
   "V5-Eviter.dc.html",
   "V5-Erreur-age.dc.html",
   "V5-Trouvee.dc.html",
@@ -1050,6 +1141,9 @@
   "V5-Sortie-lyon.dc.html",
   "V5-Confirmation-lyon.dc.html",
   "V5-Trouvee-banlieue.dc.html",
+  "V5-Sortie-banlieue.dc.html",
+  "V5-Confirmation-banlieue.dc.html",
+  "V5-Pas-encore.dc.html",
   "V5-Sortie.dc.html",
   "V5-Team.dc.html",
   "V5-Partage-invitation.dc.html",
@@ -1073,6 +1167,8 @@
   "V5-Sortie-annulee.dc.html",
   "V5-Affiner.dc.html",
   "V5-Affiner-histoire.dc.html",
+  "V5-Affiner-age.dc.html",
+  "V5-Affiner-ambiance.dc.html",
   "V5-Confirmation.dc.html",
   "V5-Partage-confirmation.dc.html",
   "V5-Revelation.dc.html",
@@ -1085,13 +1181,16 @@
   "V5-Souvenir.dc.html",
   "V5-Apres.dc.html",
   "V5-Apres-resultats.dc.html",
+  "V5-Partage-jeudi.dc.html",
   "V5-Partage.dc.html",
   "V5-Partage-dimanche.dc.html",
   "V5-Apres-aucun.dc.html",
   "V5-Bande.dc.html",
+  "V5-Partage-bande.dc.html",
   "V5-Rue.dc.html",
   "V5-Duo.dc.html",
   "V5-Lien.dc.html",
+  "V5-Duo-hh.dc.html",
   "V5-Lien-debloque.dc.html",
   "V5-RdvDuo.dc.html",
   "V5-Chat.dc.html",
@@ -1127,5 +1226,5 @@
    "name": "v5 — Bande"
   }
  ],
- "title": "Blowy — V5.4 « Ton pet te trouve une bande »"
+ "title": "Blowy — V5.5 « Ton pet te trouve une bande »"
 }

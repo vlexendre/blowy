@@ -1,19 +1,20 @@
-# Maquettes V5.4 « Ton pet te trouve une bande »
+# Maquettes V5.5 « Ton pet te trouve une bande »
 
-Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de cinq documents, du plus ancien au plus récent :
+Ces maquettes servent de référence pixel-perfect au développement. Les règles produit viennent de six documents, du plus ancien au plus récent :
 
 - `docs/product/concept-v5.md` ;
 - `concept-v5.1.md` ;
 - `concept-v5.2.md` ;
 - `concept-v5.3.md` ;
-- **`docs/product/concept-v5.4.md`** (sections A–D), qui prime sur tous les autres.
+- `concept-v5.4.md` ;
+- **`docs/product/concept-v5.5.md`** (sections A–E), qui prime sur tous les autres.
 
-Le tour 5 répond au jury tour 4 (`docs/research/jury/round-4/`, zéro bloquant) : plus aucun signal de compatibilité, une seule règle par sujet et les finitions relevées écran par écran.
+Le tour 6 répond au jury tour 5 (`docs/research/jury/round-5/`, bloquant : rendez-vous Duo de jour sans astreinte) et au test des 5 secondes (`docs/research/jury/test-5-secondes-r5.md`).
 
 ## Contenu
 
-- **88 artboards** dans `project/` :
-  - 82 écrans d'app et 3 pages web, en 390 × 844 ;
+- **97 artboards** dans `project/` :
+  - 91 écrans d'app et 3 pages web, en 390 × 844 ;
   - **3 écrans côté lieu** (web admin) en 1280 × 800 : `L-Effectif`, `L-Creneaux`, `L-Contrat`.
 - **`project/canvas.json`** : la page « v5 — Bande » compte 10 rangées (A, B, B', C à H, L), avec des titres de 01 à 62 (variantes en b, c, d…), plus 4 notes.
 - **`facts.json`** : source unique des chiffres, dates et règles. Il contient :
@@ -23,13 +24,26 @@ Le tour 5 répond au jury tour 4 (`docs/research/jury/round-4/`, zéro bloquant)
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **88 fichiers, 4 958 vérifications, 0 contradiction**.
+  - Résultat : **97 fichiers, 6 039 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **88 écrans, 1 257 textes, 486 cibles, 1 286 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **97 écrans, 1 423 textes, 538 cibles, 1 462 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
+  - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
 - **`render-v5.mjs`** : c'est la même logique que `tooling/design-render/render.mjs`, qui reste inchangé, mais chaque écran est rendu à sa taille (390 × 844 @2x, lieu en 1280 × 800 @1x).
   - Commande : `DESIGN_ROOT=design/v5 NODE_PATH=$(npm root -g) node design/v5/render-v5.mjs .local/dc-runtime.js design/v5/renders [filtre]`.
-  - Les 88 rendus de `renders/` ont été relus.
+  - Les 97 rendus de `renders/` ont été relus.
+
+### Contrôles ajoutés au tour 6 (`check-facts`)
+
+1. **Astreinte** : jamais restreinte à une plage horaire (« 18 h à 2 h » est banni).
+2. **Rendez-vous Duo** : toujours dans un lieu partenaire, avec la phrase d'astreinte exacte ; « Lieu public » est banni.
+3. **Check-in** : par code seulement ; « position une fois » et « vérifier ma position » sont bannis.
+4. **Carte Duo** : jamais le nom du pet de N. avant le double oui.
+5. **Indicateurs de ville** :
+   - un nombre affiché vaut au moins 10, est arrondi à la dizaine et précédé de « environ » ;
+   - « histoire compatible avec la tienne » n'apparaît que dans un indicateur de ville arrondi (« À Paris 11e, une trentaine… »).
+6. **Imprévu** : une fois par mois (« trimestre » est banni). La règle canonique est mise à jour.
 
 ### Contrôles ajoutés au tour 5 (`check-facts`)
 
@@ -131,6 +145,56 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
   - `m/k7f2q` : 3 mots ;
   - `a/…` : ange gardien.
 
+## Changements du tour 6 (concept-v5.5 et test des 5 secondes)
+
+- **Sécurité (bloquant)** :
+  - l'astreinte couvre toutes les heures de créneaux ; partout, la phrase est « Une personne de l'équipe est joignable pendant toute ta sortie. » ;
+  - le rendez-vous avec Léa passe au Café Ginette, avec une table à deux réservée après les deux oui ;
+  - check-in par code seulement ;
+  - proposition Duo : « Un capybara · N. », l'espèce et l'initiale, sans le nom du pet.
+- **Imprévu** : une fois par mois, sans pénalité, place non remboursée. Les visages n'ont plus que 3 actions : je connais quelqu'un ici, je ne peux plus venir, partager.
+- **Promesse vérifiable** :
+  - Bordeaux : « environ 40 inscrits ont entre 18 et 25 ans » ;
+  - Duo : « À Paris 11e, une trentaine de personnes cherchent une histoire compatible avec la tienne » ;
+  - nouvel état « Cette semaine, pas encore » (Marseille) ;
+  - Affiner : ambiance, âge pour une histoire, horizon pour les enfants ;
+  - duo homme-homme (V5-Duo-hh).
+- **Viralité** :
+  - parrainage : une sortie offerte, une fois par mois au plus ;
+  - partage sur Confirmation et sur les Trouvées de Lyon et Saint-Denis ;
+  - cartes « Alors, jeudi ? » et « Ma bande » en mode capture, export « Vidéo 5 s » ;
+  - « Mes cartes » en vignettes 9:16 ;
+  - « Ma bande s'agrandit » sans mascotte.
+- **Lieu** :
+  - « Blowy annule » formulé à l'identique côté client et contrat ;
+  - relevé détaillé par soirée ;
+  - contrat signé par les deux parties, avec un article Responsabilité et les montants TTC/HT ;
+  - astreinte « pendant tous vos créneaux ».
+- **Gabarit unique** : Trouvée, Sortie et Confirmation sont générées par les mêmes fonctions pour Paris, Lyon et Saint-Denis (avec Yacine). Lyon a désormais un lieu cohérent avec l'activité.
+- **Test des 5 secondes** :
+  - frise de 3 jalons sur Sortie, règles derrière « Règles d'annulation › » ;
+  - « Offerte (ta 1re sortie) · ensuite 4,99 € » sous le bouton ;
+  - « Tom vient avec toi · 3 nouvelles personnes » ;
+  - « à découvrir la veille » ;
+  - « Nino (ton pet) t'a trouvé une sortie », et « Inviter quelqu'un à venir avec toi » ;
+  - « Lieu révélé mer. 11 nov. 18 h », « Mettre en pause mes sorties » et « Taille du pet », partout où ces libellés apparaissent.
+- **Phrases de Léa** :
+  - « Personne ne voit que tu es en pause » ;
+  - « Annulée le mer. 11 nov. à 18 h » ;
+  - « Titre dans ton agenda : « Rendez-vous · 19 h 30 » » ;
+  - « supprimée sous 48 h » ;
+  - « Urgent pendant une sortie · < 1 h » ;
+  - pastille grise dans Chats ;
+  - Vérif « Alex · 26–29 ans ».
+- **Finitions** :
+  - Team : « selfie à faire » avec une horloge, bouton « Garder la place de Tom (30 min) » ;
+  - Invite et Souvenir sans grande mascotte (Souvenir : 5 verres sur une table) ;
+  - une seule liste « qui voit quoi » (Confidentialité, avec le pet et le nombre de femmes et d'hommes) ;
+  - Affiner ne garde que les questions de rencontre ;
+  - « Semaines off » coché dessiné ;
+  - « Ne ressemble pas à ses photos » ;
+  - apostrophes typographiques partout, insécables dans « 26–29 ans » et « d'ici là ».
+
 ## Changements du tour 5 (concept-v5.4)
 
 - **A. Confidentialité** :
@@ -217,6 +281,7 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 
 | Sujet | Décision | Pourquoi |
 |---|---|---|
+| Réglage du Duo par carte | La carte « Un capybara · N. » montre une illustration de l'espèce, jamais le nom. | C.3. |
 | Éviter | Écran facultatif sans numéro d'étape, entre Créneaux et Trouvée. | A.6 le veut avant la 1re composition ; il ne compte pas dans « ≤ 9 questions » car il n'en pose pas pour composer. |
 | Mode discret de la démo | Alex a choisi « Normal » : Notifications montre l'icône blowy., Confidentialité dit « tu as choisi normal ». | Les exemples sont fidèles à l'état choisi. |
 | Compte | Il est demandé après « Je viens », pas avant la Trouvée. | Il permet de tenir « ≤ 9 écrans, une question chacun » sans rien fusionner. La place est gardée 30 min. |
@@ -239,7 +304,10 @@ Les interrupteurs montrent leur état réel : ON `#3F7A0B` à droite, OFF `#8C7B
 | compo.regle | Règle de chaque groupe : jamais plus de 3 personnes du même genre dans un groupe. |
 | compo.inconnu | à découvrir |
 | promesse | Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui. |
-| annulation | Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre). |
+| annulation | Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée). |
+| astreinte | Une personne de l’équipe est joignable pendant toute ta sortie. |
+| parrainage | Quand la personne que tu invites vient à sa 1re sortie, ta prochaine sortie est offerte (1 par mois au plus). |
+| pas.encore | Cette semaine, pas encore assez de personnes compatibles avec ce que tu cherches sur tes créneaux. Tu peux sortir quand même (en amitié) ou attendre la semaine prochaine. |
 | compte.mode | Sur ton téléphone, blowy. apparaît… Discret / Normal |
 | confirmation.groupe | Ton groupe · sans visages jusqu’à J −3 h — {prénom} · {tranche} · {pet} |
 | revelation.captures | Ton prénom est en filigrane sur chaque visage ; les captures sont détectées et signalées. |

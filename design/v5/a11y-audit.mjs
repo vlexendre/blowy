@@ -1,6 +1,7 @@
 // Audit WCAG 2.2 AA des maquettes V5 : contraste du texte (calculé sur le fond réel, dégradés compris) et cibles tactiles ≥ 44 pt.
 // + mise en page, mesurée sur le DOM rendu (boîtes englobantes) : texte qui touche l'ombre d'un bouton, texte rogné par un conteneur,
 //   texte collé au bord de son fond coloré, date ou heure coupée en fin de ligne.
+// + contrôles repris de tooling/qa/layout/overflow.mjs (outil du jury) : texte hors du cadre (droite ; bas pour un écran fixe), plages « 26–29 ans » / « 3 hommes » coupées.
 // Usage : NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]
 import { createServer } from 'node:http';
 import { readFile, readdir } from 'node:fs/promises';
@@ -89,7 +90,7 @@ for (const f of files) {
     const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (tw.nextNode()) { const n = tw.currentNode; if (n.textContent.trim() && n.parentElement && n.parentElement.closest('x-dc, body')) visibleText.push(n); }
     const textRect = (n) => { const r = document.createRange(); r.selectNodeContents(n); return [...r.getClientRects()].filter((q) => q.width > 0.5); };
-    const hiddenEl = (el) => { for (let e = el; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) === 0) return true; } return false; };
+    const hiddenEl = (el) => { if (el.closest && el.closest('details:not([open])') && !el.closest('summary')) return true; for (let e = el; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) === 0) return true; } return false; };
     // a) texte qui touche l'ombre portée d'un bouton (ombre « 0 Npx 0 »)
     const btns = [...document.querySelectorAll('.btn')].filter((b) => !hiddenEl(b));
     for (const b of btns) {
@@ -128,8 +129,18 @@ for (const f of files) {
         }
       }
     }
+    // e) (repris de tooling/qa/layout/overflow.mjs) texte hors du cadre de l'artboard : à droite partout ; en bas pour un écran fixe (non défilant)
+    const fixed = document.documentElement.scrollHeight <= innerHeight + 1;
+    const H = innerHeight, Wd = document.documentElement.clientWidth;
+    for (const n of visibleText) {
+      if (hiddenEl(n.parentElement) || n.parentElement.closest('details:not([open]) > :not(summary)')) continue;
+      const rs = textRect(n); if (!rs.length) continue;
+      const bot = Math.max(...rs.map((q) => q.bottom)), right = Math.max(...rs.map((q) => q.right));
+      if (fixed && bot > H + 1) out.layout.push(`hors cadre (bas ${Math.round(bot)} > ${Math.round(H)}) « ${n.textContent.trim().slice(0, 40)} »`);
+      if (right > Wd + 1) out.layout.push(`hors cadre (droite ${Math.round(right)}) « ${n.textContent.trim().slice(0, 40)} »`);
+    }
     // d) date ou heure coupée en fin de ligne
-    const reCut = /(?:lun|mar|mer|jeu|ven|sam|dim)\.\s\d{1,2}\s(?:nov|déc)\.|\d{1,2}\sh\s\d{2}|\d{1,2}\s(?:h|min)\b|\d{1,2}\s(?:novembre|décembre)/g;
+    const reCut = /\d+\s?[–-]\u2060?\s?\d+ ?ans|\d+ (?:femmes|hommes|personnes|souvenirs|places?)|(?:lun|mar|mer|jeu|ven|sam|dim)\.\s\d{1,2}\s(?:nov|déc)\.|\d{1,2}\sh\s\d{2}|\d{1,2}\s(?:h|min)\b|\d{1,2}\s(?:novembre|décembre)/g;
     for (const n of visibleText) {
       if (hiddenEl(n.parentElement)) continue;
       for (const m of n.textContent.matchAll(reCut)) {

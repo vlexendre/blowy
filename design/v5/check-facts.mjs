@@ -5,6 +5,8 @@
 // + V5.3 : garantie jamais affichée, calendrier B (annulation gratuite jusqu'à la veille 18 h), confirmation = prénoms + tranches + pets sans visage,
 // duo sans prénom avant le oui, accord avant tout duo, un lien unique par carte, lien privé jamais en Story, « pote / team » hors titres et boutons.
 // + V5.4 : aucun signal de compatibilité, règle d'annulation unique (imprévu 1×/trimestre), carte Duo = pet + initiale, 3 duos actifs, Blowy+ jamais en achat intégré, liens ≥ 8 / 12 caractères.
+// + V5.5 : astreinte sur tous les créneaux (aucune plage horaire), rendez-vous Duo en lieu partenaire, check-in par code, carte Duo sans nom de pet,
+//   indicateurs de ville ≥ 10 et arrondis, imprévu 1 fois par mois.
 // Usage : node design/v5/check-facts.mjs [filtre]   (code de sortie 1 s'il y a une contradiction)
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -22,7 +24,7 @@ const MOIS = { janv: 0, janvier: 0, 'févr': 1, 'février': 1, mars: 2, avr: 3, 
 const JOURS = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
 const NOMS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
 
-const clean = (s) => s.replace(/&nbsp;| | /g, ' ').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/\s+/g, ' ');
+const clean = (s) => s.replace(/\u2060/g, '').replace(/&nbsp;| | /g, ' ').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/\s+/g, ' ');
 const visible = (html) => clean(html.replace(/<helmet>[\s\S]*?<\/helmet>/g, ' ').replace(/data-props='[^']*'/g, ' ').replace(/<[^>]+>/g, ' '));
 
 const problems = [];
@@ -80,7 +82,7 @@ for (const f of files) {
     if (!starts.has(a) || !ends.has(b)) push(f, `tranche « ${m[0]} » hors grille fixe`);
     if (tranchesMembres.has(m[0]) && (a < comp[0] || b > comp[1])) push(f, `tranche « ${m[0]} » hors de la composition ${F.groupe.ages}`);
   }
-  if (/\b\d{2} ans\b/.test(t.replace(/\d{2}–\d{2} ans/g, '').replace(/18 ans et plus|18 ans ou plus|moins de 18 ans|dès 18 ans|\d{2} ans et plus/g, ''))) { checks++; push(f, 'âge exact affiché (« NN ans » hors tranche)'); }
+  if (/\b\d{2} ans\b/.test(t.replace(/\d{2}–\d{2} ans/g, '').replace(/entre \d{2} et \d{2} ans|18 ans et plus|18 ans ou plus|moins de 18 ans|dès 18 ans|\d{2} ans et plus/g, ''))) { checks++; push(f, 'âge exact affiché (« NN ans » hors tranche)'); }
 
   // 4. Phrases dérivées
   // « au moins N personnes » = garantie histoire ; « N personnes du quartier » = complément d'une sortie de bande ; « il manque N » = attente.
@@ -169,7 +171,7 @@ for (const f of files) {
   // 15. V5.4 · Règle d'annulation unique : texte canonique (la date peut remplacer « la veille 18 h ») sur les écrans désignés
   const norm = (x) => x.replace(/jusqu’(?:à|au) (?:lun|mar|mer|jeu|ven|sam|dim)\. \d{1,2} [a-zéû]+\. 18 h\./g, 'jusqu’à la veille 18 h.');
   if (F.annulation.fichiers.includes(base)) { checks++; if (!norm(t).includes(F.annulation.regle)) push(f, 'règle d’annulation : texte canonique absent'); }
-  for (const m of t.matchAll(/[^.]*1 fois par (mois|trimestre)[^.]*/g)) { checks++; if (m[1] === 'mois' && !/connais quelqu/.test(m[0])) push(f, `« 1 fois par mois » hors « je connais quelqu’un ici » : « ${m[0].trim().slice(0, 60)} »`); if (m[1] === 'trimestre' && !/[Ii]mprévu/.test(m[0])) push(f, `« 1 fois par trimestre » hors imprévu`); }
+  for (const m of t.matchAll(/[^.]*1 fois par (mois|trimestre)[^.]*/g)) { checks++; if (m[1] === 'mois' && !/connais quelqu|[Ii]mprévu/.test(m[0])) push(f, `« 1 fois par mois » hors « je connais quelqu’un ici » : « ${m[0].trim().slice(0, 60)} »`); if (m[1] === 'trimestre' && !/[Ii]mprévu/.test(m[0])) push(f, `« 1 fois par trimestre » hors imprévu`); }
   // 16. Carte de proposition Duo : pet + initiale seulement avant le double oui
   if (base === 'V5-Duo') { for (const w of [F.duos.nils.tranche, F.duos.nils.type, 'musique live']) { checks++; if (t.includes(w)) push(f, `carte Duo avant le oui : « ${w} » (pet + initiale seulement)`); } }
   // 17. Duos : plafond de 3 actifs, gratuit
@@ -179,8 +181,19 @@ for (const f of files) {
   // 19. Liens : longueur minimale (énumération)
   for (const sl of slugsHere) { checks++; const key = Object.keys(F.slugs).find((k) => F.slugs[k] === sl); const id = sl.split('/').pop(); const min = F.slugsNominatifs.includes(key) ? F.slugLongueur.nominatif : F.slugLongueur.public; if (id.length < min) push(f, `lien « ${sl} » : ${min} caractères au moins`); }
 
+  // 20. V5.5 · Astreinte : jamais limitée à une plage horaire ; tout rendez-vous Duo en lieu partenaire
+  for (const m of t.matchAll(/(astreinte|équipe[^.]{0,20}joignable)[^.]{0,40}?(\d{1,2}) h\s*(?:à|–|-)\s*(\d{1,2}) h/gi)) { checks++; push(f, `astreinte limitée à une plage : « ${m[0].slice(0, 60)} »`); }
+  if (/RdvDuo/.test(base)) { checks++; if (!/Lieu partenaire/.test(t)) push(f, 'rendez-vous Duo hors lieu partenaire'); checks++; if (!t.includes(F.astreinte.texte)) push(f, 'rendez-vous Duo : astreinte non dite'); }
+  // 21. Check-in par code seulement
+  if (/Checkin/.test(base)) { checks++; if (/position/i.test(t) && !/jamais demandée/.test(t)) push(f, 'check-in : aucune proposition de position'); }
+  // 22. Carte Duo : jamais le nom du pet avant le double oui
+  if (base === 'V5-Duo') { checks++; if (new RegExp(`(?<![\\wÀ-ÿ])${F.duos.nils.pet}(?![\\wÀ-ÿ])`).test(t)) push(f, `carte Duo : nom du pet « ${F.duos.nils.pet} » avant le oui`); }
+  // 23. Indicateurs de ville : jamais au niveau du groupe, ≥ 10, arrondis
+  for (const m of t.matchAll(/(\d+) (personnes vérifiées|inscrits|personnes cherchent)/g)) { checks++; const n = Number(m[1]); const before = t.slice(Math.max(0, m.index - 12), m.index); if (n === taille) continue; if (n < F.indicateurs.seuil || n % 10 !== 0 || !/environ\s*$/i.test(before)) push(f, `indicateur « ${m[0]} » : ≥ ${F.indicateurs.seuil}, arrondi, précédé de « environ »`); }
+  for (const m of t.matchAll(/[^.]*histoire compatible avec la tienne[^.]*/g)) { checks++; if (!/À [A-ZÉ][\wé-]+(?: \d+e)?,/.test(m[0]) || !/(dizaine|quinzaine|vingtaine|trentaine|quarantaine|cinquantaine|centaine|environ)/.test(m[0])) push(f, `« histoire compatible » hors indicateur de ville arrondi : « ${m[0].trim().slice(0, 70)} »`); }
+
   // 10. Vocabulaire unique et promesses fausses
-  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'histoire compatible avec la tienne', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner'];
+  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'entre amis pour toi', 'sortie entre amis', 'une histoire est possible', 'vous vous plaisez', 'achat intégré', 'Achat intégré', 'duos sans limite', 'Duos illimités', 'duos illimités', 'n’en sait rien', 'absence prévenue avant les visages', 'Codenames', 'ton pote', 'quelques secondes', 'Paris 11e, Lyon 4e', 'Personne ne le voit, ni ne peut le deviner', 'trimestre', '18 h à 2 h', '18 h – 2 h', 'position une fois', 'vérifier ma position', 'Lieu public', 'ressemble pas à son selfie'];
   for (const w of banned) {
     checks++;
     if (new RegExp(`(?<![\\w-])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`).test(t)) push(f, `terme interdit « ${w} »`);

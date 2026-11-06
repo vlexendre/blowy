@@ -1,5 +1,5 @@
 {
-  "_doc": "Source unique des chiffres et dates de la démo V5.4. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, calendrier, grille d'âge, garantie jamais affichée, phrases dérivées, cartes et liens, vocabulaire).",
+  "_doc": "Source unique des chiffres et dates de la démo V5.5. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie (dates, chronologie, calendrier, grille d'âge, garantie jamais affichée, phrases dérivées, cartes et liens, vocabulaire).",
   "aujourdhui": {
     "iso": "2026-11-09",
     "label": "lundi 9 novembre"
@@ -71,16 +71,16 @@
     "ville": "Lille",
     "team": 3,
     "attente": 2,
-    "iso": "2026-11-28",
-    "jour": "samedi 28 novembre",
-    "court": "sam. 28 nov.",
+    "iso": "2026-11-14",
+    "jour": "samedi 14 novembre",
+    "court": "sam. 14 nov.",
     "heure": "15 h – 17 h",
     "activite": "Atelier céramique",
     "lieu": "La Fabrique",
     "quartier": "Lille-Wazemmes",
     "ages": "22–29 ans",
-    "lieuIso": "2026-11-27T18:00",
-    "lieuCourt": "ven. 27 nov. 18 h",
+    "lieuIso": "2026-11-13T18:00",
+    "lieuCourt": "ven. 13 nov. 18 h",
     "femmes": 2,
     "hommes": 3,
     "typeLieu": "un atelier de Wazemmes"
@@ -195,7 +195,8 @@
       "14,97 €",
       "0,00 €",
       "3 €",
-      "7,99 €"
+      "7,99 €",
+      "4,16 €"
     ],
     "compensationOfferte": "3 €",
     "blowyPlusVia": "Apple Pay",
@@ -233,13 +234,16 @@
       "pet": "Biscuit",
       "pronom": "il",
       "tranche": "30–34 ans",
-      "type": "en amitié"
+      "type": "en amitié",
+      "espece": "Un capybara"
     },
     "lea": {
       "rdvIso": "2026-11-21T15:00",
       "rdv": "samedi 21 novembre, 15 h",
       "rdvCourt": "sam. 21 nov. 15 h",
-      "rdvLieu": "Parc des Buttes-Chaumont"
+      "rdvLieu": "Café Ginette",
+      "rdvQuartier": "Paris 19e",
+      "rdvType": "table à deux, lieu partenaire"
     }
   },
   "bande": {
@@ -266,7 +270,9 @@
     "soiree": "blowy.app/s/Zx9mQ4tB",
     "dimanche": "blowy.app/s/aR5kW1eP",
     "ville": "blowy.app/v/bD8nY3sK",
-    "ange": "blowy.app/a/7Qm2xK9fPz4Lw8vR"
+    "ange": "blowy.app/a/7Qm2xK9fPz4Lw8vR",
+    "jeudi": "blowy.app/s/Vt6pJ3dW",
+    "bande": "blowy.app/s/Kc2nB8rQ"
   },
   "sla": {
     "signalementSortie": "1 h",
@@ -438,7 +444,7 @@
     "activite": "Atelier céramique",
     "typeLieu": "un atelier de Wazemmes",
     "lieuCourt": "ven. 13 nov. 18 h",
-    "ages": "26–34 ans",
+    "ages": "22–29 ans",
     "femmes": 3,
     "hommes": 2
   },
@@ -453,12 +459,14 @@
     "typeLieu": "un five de la Croix-Rousse",
     "lieuCourt": "lun. 16 nov. 18 h",
     "visagesCourt": "mar. 17 nov. 16 h 30",
-    "ages": "22–29 ans",
+    "ages": "26–34 ans",
     "femmes": 2,
     "hommes": 3,
-    "lieu": "Le Mêlée Café",
-    "adresse": "4 rue d’Austerlitz, Lyon 4e",
-    "suivante": "mar. 24 nov. · Atelier céramique"
+    "lieu": "Le Five Croix-Rousse",
+    "adresse": "12 rue d’Austerlitz, Lyon 4e",
+    "suivante": "mar. 24 nov. · Atelier céramique",
+    "metro": "Croix-Rousse (ligne C)",
+    "table": "Terrain 2, chevalet orange au bord"
   },
   "slugParFichier": {
     "V5-Partage-confirmation": "confirmation",
@@ -471,7 +479,9 @@
     "W-Repondre": "troisMots",
     "W-Ange": "ange",
     "W-Ange-aide": "ange",
-    "V5-Invite": "invitation"
+    "V5-Invite": "invitation",
+    "V5-Partage-jeudi": "jeudi",
+    "V5-Partage-bande": "bande"
   },
   "slugsPrives": [
     "invitation"
@@ -485,7 +495,7 @@
     "ange"
   ],
   "annulation": {
-    "regle": "Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par trimestre).",
+    "regle": "Annulation gratuite jusqu’à la veille 18 h. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée).",
     "fichiers": [
       "V5-Sortie",
       "V5-Fiche",
@@ -509,13 +519,34 @@
     "court": "jeu. 19 nov.",
     "activite": "Bloc d'escalade",
     "typeLieu": "une salle de bloc du 18e",
-    "ages": "22–25 ans",
+    "ages": "22–29 ans",
     "femmes": 2,
     "hommes": 3,
-    "lieuCourt": "mer. 18 nov. 18 h"
+    "lieuCourt": "mer. 18 nov. 18 h",
+    "lieu": "Bloc Station",
+    "adresse": "8 rue Marcadet, Paris 18e",
+    "metro": "Marcadet-Poissonniers (ligne 4)",
+    "lieuIso": "2026-11-18T18:00",
+    "proche": "Yacine"
   },
   "proposition": {
     "quand": "lundi 21 h",
     "court": "lun. 21 h"
-  }
+  },
+  "astreinte": {
+    "texte": "Une personne de l’équipe est joignable pendant toute ta sortie.",
+    "couverture": "tous les créneaux, sorties et rendez-vous Duo",
+    "sla": "5 min"
+  },
+  "blowyAnnule": "Sortie confirmée puis annulée par Blowy : 3 € par place prévue, versés au lieu.",
+  "indicateurs": {
+    "seuil": 10,
+    "bordeaux18_25": "environ 40 inscrits ont entre 18 et 25 ans",
+    "paris11Histoire": "une trentaine de personnes cherchent une histoire compatible avec la tienne"
+  },
+  "parrainage": "Quand la personne que tu invites vient à sa 1re sortie, ta prochaine sortie est offerte (1 par mois au plus).",
+  "sortieAnnulee": {
+    "quand": "mer. 11 nov. à 18 h"
+  },
+  "agendaTitre": "Rendez-vous · 19 h 30"
 }
