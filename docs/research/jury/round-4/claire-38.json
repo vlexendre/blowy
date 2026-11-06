@@ -1,0 +1,538 @@
+{
+  "member": "claire-38",
+  "global": 8,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 9,
+    "desire": 8,
+    "meet": 8,
+    "safety": 9,
+    "virality": 6,
+    "money": 9,
+    "visual": 9
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien n'indique qu'il y a des gens de 40 ans ; titre géant et 5 mascottes (tour 2 et 3).",
+      "fix": "« De 18 à 60 ans, des groupes de ton âge » ; une seule mascotte."
+    },
+    "V5-Ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Suggestions Paris 11e / 10e ; pour moi ce serait Lyon 7e / 4e.",
+      "fix": "Suggestions selon la ville tapée."
+    },
+    "V5-Ville-bordeaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Honnête. Pas mon cas.",
+      "fix": "RAS"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Respectueux. La ligne « Démo : continuer › » ne doit pas partir en production.",
+      "fix": "Retirer le lien de démo."
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Autre, ou je préfère ne pas dire » : respectueux.",
+      "fix": "RAS"
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Choisis pour moi » : merci.",
+      "fix": "RAS"
+    },
+    "V5-Rencontrer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Une question : réglé. Titre « À deux, par écrit » collé au haut de sa carte.",
+      "fix": "Même marge que les autres cartes."
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« De nouvelles amitiés », « Personne ne le voit, ni ne peut le deviner » : c'est ce que je voulais lire.",
+      "fix": "RAS"
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Amitié seulement », adulte et clair.",
+      "fix": "RAS"
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Plus de garantie : « sans jamais le montrer à personne ».",
+      "fix": "RAS"
+    },
+    "V5-Dispos": {
+      "score": 7,
+      "blocking": false,
+      "issue": "La case « Certaines semaines je ne suis pas dispo (garde, travail) » est là, mais décochée et sans suite maquettée : je ne sais pas si je pourrai dire « un week-end sur deux, semaines impaires ».",
+      "fix": "Montrer l'état coché : « Une semaine sur deux · paires / impaires » en 1 tap, et rappeler « Nino ne te propose rien ces semaines-là »."
+    },
+    "V5-Erreur-age": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Plus de garantie : réglé. Fond dégradé rose-orange criard (tour 3), 4 « à découvrir » qui se touchent.",
+      "fix": "Fond crème comme Lyon ; « ? » seul sous chaque case."
+    },
+    "V5-Trouvee-amis": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Dit avant de choisir, rien que pour moi.",
+      "fix": "RAS"
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Lyon 7e → Croix-Rousse 18 min, dates de confirmation et visages, annulation : tout ce qu'il me faut, sur fond crème.",
+      "fix": "RAS"
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Une seule règle, lisible. Mais elle s'arrête la veille 18 h : un enfant malade le jeudi matin = absence.",
+      "fix": "Un « imprévu d'enfant le jour même » sans effet, une fois par mois, avant les visages."
+    },
+    "V5-Team": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Viens avec quelqu'un » : enfin. « C'est bon, on est 2 » s'affiche avant que Tom ait fait son selfie.",
+      "fix": "Activer le bouton après le selfie de la personne invitée."
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Message d'abord, lien personnel : c'est ainsi que j'inviterais une amie.",
+      "fix": "RAS"
+    },
+    "V5-Invite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Compte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Discrétion toujours en interrupteur éteint par défaut (tour 3).",
+      "fix": "Deux boutons égaux « Discret » / « Normal »."
+    },
+    "V5-Verif": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Toi seul sur la photo », au masculin (tour 3).",
+      "fix": "« Personne d'autre sur la photo »."
+    },
+    "V5-Notifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Titre honnête : réglé. Les aperçus portent l'icône calendrier du mode discret alors qu'il est désactivé : je ne comprends plus lequel est lequel.",
+      "fix": "Icône blowy. ici, et un bouton « Activer le mode discret » en 1 tap."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ajouter à mon agenda » : la baby-sitter.",
+      "fix": "RAS"
+    },
+    "V5-Accueil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Réduire le pet » : bien. « visages mer. / 21 h 30 » sur 2 lignes.",
+      "fix": "Une ligne."
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Accueil-duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Pour ta sécurité, toujours » : rassurant.",
+      "fix": "RAS"
+    },
+    "V5-Attente": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Je ne la posterai pas, mais elle ne contient rien de moi.",
+      "fix": "RAS"
+    },
+    "V5-Amorcage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Toi et 2 proches » : adulte. « Voir la même sortie en venant seul » change de tranche et de composition.",
+      "fix": "Aligner avec `V5-Amorcage-solo`."
+    },
+    "V5-Amorcage-solo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Tout le monde arrive seul » : rassurant pour une timide.",
+      "fix": "RAS"
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Sortie-annulee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Tom, ton pote, est prévenu » : le mot que je ne voulais plus.",
+      "fix": "« Tom est prévenu »."
+    },
+    "V5-Affiner": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Semaines sans moi · aucune » : rien ne relie cette ligne à la case de l'onboarding.",
+      "fix": "Afficher ce que j'ai déclaré (« une semaine sur deux, impaires »)."
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« J'en ai déjà », indice « projet compatible » seulement si on l'active tous les deux.",
+      "fix": "RAS"
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Mon ex et les parents de l'école évités, rien envoyé : exactement ce qu'il me faut.",
+      "fix": "RAS"
+    },
+    "V5-Confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Prénoms, tranches, pets, photo du lieu : je peux repérer l'endroit et savoir si je connais quelqu'un. « Annuler maintenant compte comme une absence » : c'est le moment où mon fils peut tomber malade.",
+      "fix": "Voir `V5-Sortie`."
+    },
+    "V5-Partage-confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Lien secondaire, je ne la poste pas.",
+      "fix": "RAS"
+    },
+    "V5-Revelation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Je ne peux plus venir · compte comme une absence » en rose : à 16 h 30, ça peut encore arriver avec un enfant (tour 3).",
+      "fix": "Un « imprévu d'enfant » sans effet, une fois par mois."
+    },
+    "V5-Partage-checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Plus proposé pendant la soirée : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Je pars, mal à l'aise · sans pénalité » et l'équipe prévenue : je peux partir sans me justifier.",
+      "fix": "RAS"
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Lisible, vote d'abord.",
+      "fix": "RAS"
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Aucun bouton présélectionné, légende décollée.",
+      "fix": "RAS"
+    },
+    "V5-Apres-resultats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Partager la soirée » est maintenant le gros bouton rouge, avant « Écrire à Léa » : moi, je voudrais écrire avant de partager.",
+      "fix": "Le laisser principal, mais « Écrire à Léa » en bouton secondaire visible, pas en lien."
+    },
+    "V5-Partage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Partage-dimanche": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Silhouettes génériques, rien de moi.",
+      "fix": "RAS"
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rue": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Mignon, facultatif, sans notification.",
+      "fix": "RAS"
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« en amitié » écrit : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Duo-choix": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Lien": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Toi, non : c'est très bien comme ça ».",
+      "fix": "RAS"
+    },
+    "V5-RdvDuo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Samedi 15 h, lieu partenaire.",
+      "fix": "RAS"
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Oeuf": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Carte publique, désactivable, hors parcours.",
+      "fix": "Ne jamais la proposer en notification."
+    },
+    "W-Repondre": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Mes cartes » en bas : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Une absence prévenue avant les visages … ne compte jamais » : faux depuis que l'annulation gratuite s'arrête la veille 18 h. Laquelle croire ?",
+      "fix": "Aligner sur la règle unique."
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« BLW Réservation » sur le relevé : merci. La feuille Apple Pay affiche quand même « Place de sortie · blowy. » et le logo b.",
+      "fix": "En mode discret, « Réservation » et une icône neutre sur la feuille."
+    },
+    "V5-Paiement-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« objet neutre en mode discret » : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Toujours pas de ligne « Semaines sans moi » sous « Mes créneaux » (tour 3).",
+      "fix": "L'ajouter, avec ce que j'ai déclaré."
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "La promesse est vraie maintenant, l'indice « projet compatible » est listé.",
+      "fix": "RAS"
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Supprimer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chats-vide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Le lieu reçoit seulement les prénoms : rassurant.",
+      "fix": "RAS"
+    },
+    "L-Creneaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Samedi 15 h et dimanche 11 h ouverts : mes créneaux existent.",
+      "fix": "RAS"
+    },
+    "L-Contrat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Charte anti-discrimination signée, le personnel appelle l'astreinte.",
+      "fix": "RAS"
+    }
+  },
+  "top3": [
+    "Maquetter l'état coché de la case de `V5-Dispos` (« une semaine sur deux · paires / impaires », week-end compris) et l'afficher dans `V5-Affiner` et `V5-Reglages`.",
+    "Un « imprévu d'enfant » sans effet, une fois par mois, jusqu'aux visages (16 h 30) ; et aligner `V5-Fiche` sur la règle d'annulation.",
+    "Un Welcome qui montre des gens de 40 ans et une seule mascotte ; « Tom est prévenu » au lieu de « ton pote »."
+  ],
+  "tenIf": "Je mets 10 si je déclare mon alternance (un week-end sur deux) dès l'onboarding et que je la retrouve dans les Réglages, si Nino ne me propose rien ces week-ends-là, si un enfant malade le jour même ne compte pas comme une absence (une fois par mois), et si le Welcome me montre qu'on y trouve des gens de mon âge."
+}

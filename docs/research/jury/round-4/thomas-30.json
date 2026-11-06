@@ -1,0 +1,538 @@
+{
+  "member": "thomas-30",
+  "global": 8,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 9,
+    "desire": 8,
+    "meet": 8,
+    "safety": 9,
+    "virality": 5,
+    "money": 8,
+    "visual": 9
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ou un tête-à-tête, par écrit d'abord » a disparu (je l'avais noté 9 au tour 3) : rien ne dit qu'on peut ne pas faire de groupe.",
+      "fix": "Remettre la ligne, ou un lien « Plutôt à deux ? » sous Commencer."
+    },
+    "V5-Ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« On ne demande jamais ta position ».",
+      "fix": "RAS"
+    },
+    "V5-Ville-bordeaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Jamais qui », « Autre » compté à part.",
+      "fix": "RAS"
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rencontrer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« À deux, par écrit · en amitié ou plus » : ce que je demandais. Titre de cette carte collé à son bord haut.",
+      "fix": "Marge haute alignée."
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Personne ne le voit, ni ne peut le deviner » : maintenant vrai.",
+      "fix": "RAS"
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Promesse « ni ne peut la deviner » enfin tenue ; l'exception du duo est dite.",
+      "fix": "RAS"
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« sans jamais le montrer à personne » : la règle qui me trahissait a disparu.",
+      "fix": "RAS"
+    },
+    "V5-Dispos": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Trajet et semaines d'absence : clair.",
+      "fix": "RAS"
+    },
+    "V5-Erreur-age": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Trouvee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Plus de garantie : bloquant levé. 4 « à découvrir » serrés, presque collés.",
+      "fix": "Libellé plus court."
+    },
+    "V5-Trouvee-amis": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Dit à moi seul, sans chiffre : bien. Ce sera souvent mon cas.",
+      "fix": "RAS"
+    },
+    "V5-Trouvee-lyon": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Sortie": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Une règle, « autant de fois que nécessaire », et le calendrier « Lieu et prénoms mer. 18 h · visages jeu. 16 h 30 » : je sais ce qui arrive et quand.",
+      "fix": "RAS"
+    },
+    "V5-Team": {
+      "score": 9,
+      "blocking": false,
+      "issue": "La garantie a disparu d'ici aussi. « vérifié » affiché pour moi et Tom avant tout selfie.",
+      "fix": "« selfie à faire » tant que ce n'est pas fait."
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Invite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Compte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Verif": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ton groupe verra ton visage le jour J, 3 h avant ».",
+      "fix": "RAS"
+    },
+    "V5-Notifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Titre exact : réglé. Icônes calendrier alors que le mode discret est désactivé.",
+      "fix": "Icône blowy."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Garantie retirée.",
+      "fix": "RAS"
+    },
+    "V5-Accueil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« visages mer. / 21 h 30 » sur 2 lignes.",
+      "fix": "Une ligne."
+    },
+    "V5-Accueil-discret": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Accueil-duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Toujours « J. · Caramel » alors que nous écrivons depuis lundi, donc après un oui des deux ; `V5-Duo` dit « Prénom … seulement si vous dites oui tous les deux ».",
+      "fix": "Soit le prénom après le double oui, soit écrire « prénom aux visages »."
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Toujours rien pour dire qui est calme ou bavard (tours 1, 2 et 3) : le seul brise-glace est « Ton dimanche idéal, en 3 mots ».",
+      "fix": "Une ligne facultative « je suis plutôt… » par personne, en chips."
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Attente": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Pas pour moi.",
+      "fix": "RAS"
+    },
+    "V5-Amorcage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Même sortie, autre tranche en solo.",
+      "fix": "Aligner."
+    },
+    "V5-Amorcage-solo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« ton pote ».",
+      "fix": "« Tom est prévenu »."
+    },
+    "V5-Affiner": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Indice « projet compatible » seulement si on l'active tous les deux : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Mes collègues évités sans rien envoyer : important pour quelqu'un qui n'est pas out partout.",
+      "fix": "RAS"
+    },
+    "V5-Confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Prénoms, tranches et pets la veille, photo du lieu, « Je connais quelqu'un ici » sans pénalité : je peux me préparer. Mais « Annuler maintenant compte comme une absence » avant d'avoir vu un visage.",
+      "fix": "Désistement silencieux sans effet jusqu'à 1 h après les visages, une fois par mois."
+    },
+    "V5-Partage-confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Revelation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Visages à 16 h 30 et « Je ne peux plus venir · compte comme une absence » (tour 3). « Je connais quelqu'un ici » limité à 1 fois par mois sur cet écran, sans limite sur `V5-Confirmation`.",
+      "fix": "Même mention des deux côtés ; retrait sans effet dans l'heure qui suit les visages."
+    },
+    "V5-Partage-checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Sorti du check-in.",
+      "fix": "RAS"
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Je pars, mal à l'aise · sans pénalité », « 4 sur 5 arrivés » sans dire qui.",
+      "fix": "RAS"
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Mêmes 3 boutons pour tous, aucun présélectionné.",
+      "fix": "RAS"
+    },
+    "V5-Apres-resultats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Vous avez dit plus tous les / deux » coupé.",
+      "fix": "Raccourcir."
+    },
+    "V5-Partage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Partage-dimanche": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rue": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« en amitié » / « pour une histoire », « N. ne voit ta carte qu'après ton oui » : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Duo-choix": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« N. n'en sait rien » : rassurant.",
+      "fix": "RAS"
+    },
+    "V5-Lien": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Projet compatible : activé par vous deux », chronologie juste. Titre « Duo avec J. » : même flou sur le moment du prénom.",
+      "fix": "Voir `V5-Accueil-duo`."
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-RdvDuo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Oeuf": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Toujours angoissant, mais désactivable.",
+      "fix": "RAS"
+    },
+    "W-Repondre": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Fiche": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Une absence prévenue avant les visages … ne compte jamais » contredit `V5-Confirmation` (« Annuler maintenant compte comme une absence », la veille). Pour un anxieux, deux règles = je ne sais pas ce qui m'arrive.",
+      "fix": "« Une annulation avant la veille 18 h, un retrait pour ta sécurité ou « Je pars, mal à l'aise » ne comptent jamais »."
+    },
+    "V5-Tarifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Abonnement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien sur ce que « duos sans limite » veut dire en volume (combien de propositions par semaine ?).",
+      "fix": "« jusqu'à N propositions par semaine »."
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Reglages": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Promesse vraie, indice listé dans « Personne ».",
+      "fix": "RAS"
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Menace d'outing », « LGBTphobie », « Bloquer aussi » décoché.",
+      "fix": "RAS"
+    },
+    "V5-Supprimer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Heure des visages ajoutée.",
+      "fix": "RAS"
+    },
+    "V5-Chats-vide": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Seul bouton « Voir ma proposition » alors que j'ai choisi « à deux » (tour 3).",
+      "fix": "« Ouvrir la voie Duo » si j'ai choisi à deux."
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Le lieu ne reçoit que les prénoms : rien sur moi.",
+      "fix": "RAS"
+    },
+    "L-Creneaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Tables à deux (duos) prévues : le rendez-vous partenaire existe vraiment.",
+      "fix": "RAS"
+    },
+    "L-Contrat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Charte anti-discrimination signée, le personnel n'intervient pas à la place de Blowy.",
+      "fix": "RAS"
+    }
+  },
+  "top3": [
+    "Un retrait silencieux sans effet dans l'heure qui suit les visages (une fois par mois), et `V5-Fiche` alignée sur une seule règle d'annulation.",
+    "Remettre au Welcome « Ou un tête-à-tête, par écrit d'abord » (ou un lien « Plutôt à deux ? »), et un bouton « Ouvrir la voie Duo » dans `V5-Chats-vide`.",
+    "Une ligne facultative « je suis plutôt calme / bavard » dans `V5-Groupe`, et un moment clair pour le prénom en duo (`V5-Accueil-duo`, `V5-Lien`)."
+  ],
+  "tenIf": "Je mets 10 si aucun écran ne permet de déduire mon orientation (c'est fait), si après avoir vu les visages je peux me retirer sans effet au moins une fois par mois, si une seule règle d'annulation est écrite partout (Fiche comprise), et si le Welcome et les Chats vides me montrent que la voie à deux existe."
+}

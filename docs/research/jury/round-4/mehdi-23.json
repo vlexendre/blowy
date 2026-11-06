@@ -1,0 +1,538 @@
+{
+  "member": "mehdi-23",
+  "global": 9,
+  "criteria": {
+    "comprehension": 9,
+    "cognitive": 9,
+    "desire": 8,
+    "meet": 8,
+    "safety": 9,
+    "virality": 9,
+    "money": 9,
+    "visual": 9
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair, « Partout dès 5 personnes ». Toujours aucun exemple qui dise que la banlieue compte.",
+      "fix": "Une ligne « Paris, Saint-Denis, Lyon, Lille… » sous le pied de page."
+    },
+    "V5-Ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ton trajet maximum ? On te le demande avec tes créneaux » : réglé. Suggestions toujours Paris 11e / 10e seulement.",
+      "fix": "Suggestions selon la ville tapée (Saint-Denis, Aubervilliers…)."
+    },
+    "V5-Ville-bordeaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Honnête : 64 personnes, 3 lieux, « on te dit quand la tienne peut avoir lieu ». Mais toujours loin de Paris.",
+      "fix": "Maquetter le même cas pour une ville de petite couronne."
+    },
+    "V5-Toi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Bouton « Entre ta date » : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Une question, pronoms clairs, « jamais qui ».",
+      "fix": "RAS"
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Choisis pour moi » ajouté, phrase « tu ne dis jamais son nom » retirée.",
+      "fix": "RAS"
+    },
+    "V5-Rencontrer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Séparé de « Tu cherches » : réglé. Titre « À deux, par écrit » collé au bord haut de sa carte (≈ 4 px).",
+      "fix": "Même marge haute que « En petit groupe »."
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Personne ne le voit, ni ne peut le deviner » : maintenant vrai.",
+      "fix": "RAS"
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Amitié seulement » tient dans son bouton, deux boutons égaux.",
+      "fix": "RAS"
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« sans jamais le montrer à personne » : la garantie a disparu. C'était mon reproche.",
+      "fix": "RAS"
+    },
+    "V5-Dispos": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Trajet 15/20/30/45 min : réglé. Défaut 30 min alors que, depuis la banlieue, 30 min c'est déjà Paris.",
+      "fix": "Défaut 20 min, ou dire « depuis ta ville » sous le choix."
+    },
+    "V5-Erreur-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Plus de Tom ni de garantie : réglé. Toujours aucun temps de trajet (Lyon l'a, pas Paris). Les 4 libellés « à découvrir » se touchent (≈ 6 px entre eux).",
+      "fix": "« ≈ N min depuis ta ville » comme sur Lyon ; libellé « ? » seul ou police plus petite."
+    },
+    "V5-Trouvee-amis": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Honnête, sans chiffre. Pas mon cas.",
+      "fix": "RAS"
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« trajet max 20 min », « ≈ 18 min depuis Lyon 7e », dates : exactement ce que je veux voir. Pour Saint-Denis aussi.",
+      "fix": "RAS"
+    },
+    "V5-Sortie": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Une seule règle, « autant de fois que nécessaire » : réglé. Toujours « un bar à jeux du 11e » sans trajet.",
+      "fix": "Ajouter « ≈ N min depuis ta ville »."
+    },
+    "V5-Team": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Toi · vérifié » alors que le selfie (`V5-Verif`) arrive 2 écrans après ; « Tom · vérifié » avant même d'avoir reçu le lien (`V5-Invite` est après). « C'est bon, on est 2 » avant le selfie de Tom (signalé au tour 3).",
+      "fix": "Pastilles « selfie à faire » tant que ce n'est pas fait ; bouton « On est 2 » activé après le selfie de Tom."
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Message d'abord, « une personne, une seule fois », jamais en story.",
+      "fix": "RAS"
+    },
+    "V5-Invite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Ta 1re est offerte. Ensuite 4,99 €, ou rien si tu ne reviens pas » : parfait pour Yacine.",
+      "fix": "RAS"
+    },
+    "V5-Compte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Compte après « Je viens » : logique. Sous-texte du toggle sur 2 lignes (« notifications / normales »).",
+      "fix": "« Désactivé : icône blowy. »."
+    },
+    "V5-Verif": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Toi seul sur la photo » (tour 3).",
+      "fix": "« Personne d'autre sur la photo »."
+    },
+    "V5-Notifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Titre « sans spam » : réglé. Les 3 aperçus portent l'icône calendrier (celle du mode discret) alors que le mode est désactivé.",
+      "fix": "Icône blowy. quand le mode est désactivé."
+    },
+    "V5-Sortie-inscrit": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Agenda, annulation gratuite rappelée. Pas de trajet.",
+      "fix": "Ajouter le trajet."
+    },
+    "V5-Accueil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Réduire le pet » : bien. Tuile Ton duo : « J. · visages mer. » puis « 21 h 30 » seul sur la ligne suivante.",
+      "fix": "« J. · mer. 21 h 30 » sur une ligne."
+    },
+    "V5-Accueil-discret": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Bien fait, pas mon besoin.",
+      "fix": "RAS"
+    },
+    "V5-Accueil-duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Calme, « Une sortie en groupe, si tu veux ».",
+      "fix": "RAS"
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Venu avec toi » : plus de « pote ».",
+      "fix": "RAS"
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair. Rien d'obligatoire.",
+      "fix": "RAS"
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Phrase reformulée : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Attente": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Date, alternative le 28, vendredi qui débloque le 13, carte de ville : tout ce que je demandais pour une ville qui démarre.",
+      "fix": "RAS"
+    },
+    "V5-Partage-ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Aide Bordeaux à sortir », sans chiffre, lien propre : c'est celle que je poste.",
+      "fix": "RAS"
+    },
+    "V5-Amorcage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Lieu nommé la veille « comme partout » : réglé. « Voir la même sortie en venant seul » mène à un groupe 26–34 ans, 3 femmes 2 hommes (`V5-Amorcage-solo`) alors qu'ici c'est 22–29 ans, 2 femmes 3 hommes.",
+      "fix": "Même sortie = même tranche, ou libellé « une autre sortie en solo »."
+    },
+    "V5-Amorcage-solo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair. Incohérent avec `V5-Amorcage` (voir ci-dessus).",
+      "fix": "Aligner les tranches."
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Tom, ton pote, est prévenu » : le mot banni dans les titres reste dans le corps.",
+      "fix": "« Tom est prévenu »."
+    },
+    "V5-Affiner": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Trajet maximum · 30 min » cohérent avec l'onboarding.",
+      "fix": "RAS"
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Désactivé tant que je n'ai pas dit oui, empreintes sur le téléphone : clair.",
+      "fix": "RAS"
+    },
+    "V5-Confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Prénoms, tranches, pets la veille : je sais à qui j'ai affaire. Toujours pas « depuis ta ville : N min » à côté du métro.",
+      "fix": "Ajouter le temps de trajet."
+    },
+    "V5-Partage-confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« 3 nouvelles personnes. Lieu secret » : juste.",
+      "fix": "RAS"
+    },
+    "V5-Revelation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Toujours ma carte en texte, pas en 5e vignette.",
+      "fix": "Vignette « Toi · 26–29 ans »."
+    },
+    "V5-Partage-checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Proposée depuis Les visages, « ni lieu, ni quartier, ni heure » : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Lieu de la sortie · pas de position » : propre.",
+      "fix": "RAS"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Je pars, mal à l'aise · sans pénalité », plus de lien de partage ici.",
+      "fix": "RAS"
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« SORTIE VÉCUE » en encre : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Légende décalée de 14 px : réglé. Aucun état par défaut.",
+      "fix": "RAS"
+    },
+    "V5-Apres-resultats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Partager la soirée » en principal : ok. « Vous avez dit plus tous les deux » coupé sur 2 lignes (« LES / DEUX »).",
+      "fix": "Raccourcir : « Plus, tous les deux »."
+    },
+    "V5-Partage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« 3 nouvelles personnes et un proche » : juste.",
+      "fix": "RAS"
+    },
+    "V5-Partage-dimanche": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Sans chiffre ni pet. « Trouve ta bande » : je ne sais pas ce que ça ouvre pour celui qui clique.",
+      "fix": "« Trouve ta sortie »."
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rue": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Une action facultative, sans jauge. Je n'y reviendrai pas, mais ça ne gêne pas.",
+      "fix": "RAS"
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« en amitié » / « pour une histoire » écrits, limite écrite, « Ou viens jeudi en groupe ».",
+      "fix": "RAS"
+    },
+    "V5-Duo-choix": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Trois choix honnêtes, « N. n'en sait rien ».",
+      "fix": "RAS"
+    },
+    "V5-Lien": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Chronologie 9 nov. 21 h 30 après l'accord : réglé.",
+      "fix": "RAS"
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-RdvDuo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Toujours Le Comptoir Gabriel, Paris 11e : pour un rendez-vous à deux depuis Saint-Denis, c'est loin et payant (« chacun sa boisson »).",
+      "fix": "Lieu à mi-chemin des deux villes, ou une option gratuite comme pour Léa."
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Parc, entrée libre.",
+      "fix": "RAS"
+    },
+    "V5-Oeuf": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Story": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "W-Repondre": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Footer « Paris 11e et Lyon 4e. Ailleurs… » : ma ville reste « ailleurs ».",
+      "fix": "« Dans ta ville dès 5 personnes »."
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Mes cartes » descendu sous Blowy+.",
+      "fix": "RAS"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Une absence prévenue avant les visages … ne compte jamais » contredit la règle de partout : après mer. 18 h (avant les visages) c'est une absence.",
+      "fix": "« Une annulation avant la veille 18 h, ou un retrait pour ta sécurité, ne compte jamais »."
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Compensation du lieu dite au client : honnête.",
+      "fix": "RAS"
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Seuil de rentabilité remis, légende décollée du bouton, Réglages de l'iPhone › Abonnements.",
+      "fix": "RAS"
+    },
+    "V5-Paiement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Paiement-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Reglages": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Complet. Pas de ligne « Trajet maximum » ici, il faut passer par Affiner.",
+      "fix": "Ajouter « Trajet max · 30 min » sous « Mes quartiers »."
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Supprimer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Puce verte de « Ta place … remboursée » plus petite et décalée par rapport aux puces rouges.",
+      "fix": "Même taille et alignement."
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Visages jeu. 16 h 30 ajoutés.",
+      "fix": "RAS"
+    },
+    "V5-Chats-vide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    },
+    "L-Effectif": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Côté bar, « prénoms seulement » : rassurant pour moi.",
+      "fix": "RAS"
+    },
+    "L-Creneaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Vendredi « coup de feu, fermé » : mon vendredi soir dépendra des bars qui acceptent.",
+      "fix": "RAS"
+    },
+    "L-Contrat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "RAS",
+      "fix": "RAS"
+    }
+  },
+  "top3": [
+    "Afficher « ≈ N min depuis ta ville » sur `V5-Trouvee`, `V5-Sortie` et `V5-Confirmation` comme sur `V5-Trouvee-lyon`, et maquetter une ville de petite couronne (Saint-Denis : sortie dans un lieu de Saint-Denis, à moins de 20 min).",
+    "Corriger `V5-Team` : « selfie à faire » au lieu de « vérifié » tant que le selfie n'est pas fait (moi comme Tom), bouton « On est 2 » seulement après.",
+    "Aligner `V5-Fiche` sur la règle d'annulation (veille 18 h) et `V5-RdvDuo` sur un lieu à mi-chemin ou gratuit."
+  ],
+  "tenIf": "Je mets 10 si, depuis Saint-Denis, Nino me propose en 2 semaines une sortie datée dans un lieu nommé avec « ≈ N min depuis Saint-Denis » affiché sous mon trajet max, avec Yacine compté, pour 4,99 € maximum après la 1re, et si plus aucun écran ne marque quelqu'un « vérifié » avant son selfie."
+}
