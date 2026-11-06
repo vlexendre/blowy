@@ -1,0 +1,663 @@
+{
+  "member": "investisseur",
+  "global": 9,
+  "criteria": {
+    "comprehension": 10,
+    "cognitive": 10,
+    "desire": 9,
+    "meet": 9,
+    "safety": 10,
+    "virality": 9,
+    "money": 9,
+    "visual": 9
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville-bordeaux": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ville d'amorçage : ligne qualitative seulement (« ≈ 3,84 € par personne ») ; la sortie tombée à 18 h, désormais payée 3 € HT par place réservée (V5.8 §2), n'a ni taux par ville ni ligne de coût : à Bordeaux (≈ 60 vérifiés) ce taux sera très au-dessus des 2 % nationaux.",
+      "fix": "Ligne « Blowy annule (groupe incomplet) » avec taux par ville (amorçage vs dense) et coût d'une ville d'amorçage chiffré (sorties offertes × 5 × 3,84 + annulations × 3 €)."
+    },
+    "V5-Toi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rencontrer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Dispos": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Dispos-semaines": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Erreur-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pas-encore": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pas-encore-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-lille": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-weekend": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Team": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Invite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Compte": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Verif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-inscrit": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil-duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Groupe": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Attente": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ville d'amorçage : ligne qualitative seulement (« ≈ 3,84 € par personne ») ; la sortie tombée à 18 h, désormais payée 3 € HT par place réservée (V5.8 §2), n'a ni taux par ville ni ligne de coût : à Bordeaux (≈ 60 vérifiés) ce taux sera très au-dessus des 2 % nationaux.",
+      "fix": "Ligne « Blowy annule (groupe incomplet) » avec taux par ville (amorçage vs dense) et coût d'une ville d'amorçage chiffré (sorties offertes × 5 × 3,84 + annulations × 3 €)."
+    },
+    "V5-Partage-ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Amorcage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Amorcage-solo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ville d'amorçage : ligne qualitative seulement (« ≈ 3,84 € par personne ») ; la sortie tombée à 18 h, désormais payée 3 € HT par place réservée (V5.8 §2), n'a ni taux par ville ni ligne de coût : à Bordeaux (≈ 60 vérifiés) ce taux sera très au-dessus des 2 % nationaux.",
+      "fix": "Ligne « Blowy annule (groupe incomplet) » avec taux par ville (amorçage vs dense) et coût d'une ville d'amorçage chiffré (sorties offertes × 5 × 3,84 + annulations × 3 €)."
+    },
+    "V5-Sortie-complete": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Écran, Tarifs et contrat disent « Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy. » ; la spec §6.5 impose encore « Si Blowy annule une sortie confirmée, le lieu reçoit 3 € par place réservée. » comme « formulation identique côté client, contrat et relevé », et D-079 (§2.6) dit « déjà confirmée … Avant la confirmation : 0 € ». D-087 citée en §2.6 n'existe ni en §12 ni dans docs/decisions.md ; §13 n'a pas de révision 8.",
+      "fix": "§6.5 reprend la phrase de facts.tarifsContrat ; D-079 dit « à la confirmation ou après (groupe incomplet compris) » ; D-087 ajoutée en §12 et ligne V5.8 en §13."
+    },
+    "V5-Affiner": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-ambiance": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Revelation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Ange-aide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "business-model V5.8 : le dimensionnement ajouté (2 personnes → ≈ 450 sorties au pic, ≈ 1 125 / jour) coexiste avec l'ancienne phrase « au-delà de ≈ 300 sorties simultanées une 3e personne » ; « la majorité des sorties » puis « 40 % » ; « 450 demandes/2 % » au lieu de « 9 demandes / 2 % » ; volume Duo (RDV/jour) jamais chiffré alors qu'il consomme l'astreinte sans revenu.",
+      "fix": "Supprimer la ligne « 300 sorties simultanées », corriger « majorité » et le calcul, ajouter « N RDV Duo/jour → coût d'astreinte par RDV » et le point mort avec Duo."
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres-resultats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-jeudi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-dimanche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Lien": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-proposition": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-visages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-rdv": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-RdvDuo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "business-model V5.8 : le dimensionnement ajouté (2 personnes → ≈ 450 sorties au pic, ≈ 1 125 / jour) coexiste avec l'ancienne phrase « au-delà de ≈ 300 sorties simultanées une 3e personne » ; « la majorité des sorties » puis « 40 % » ; « 450 demandes/2 % » au lieu de « 9 demandes / 2 % » ; volume Duo (RDV/jour) jamais chiffré alors qu'il consomme l'astreinte sans revenu.",
+      "fix": "Supprimer la ligne « 300 sorties simultanées », corriger « majorité » et le calcul, ajouter « N RDV Duo/jour → coût d'astreinte par RDV » et le point mort avec Duo."
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Oeuf": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Cartes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Story": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Repondre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Fiche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Reglages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chargement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Erreur-reseau": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Verif-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chats-vide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Creneaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Contrat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Écran, Tarifs et contrat disent « Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée au lieu par Blowy. » ; la spec §6.5 impose encore « Si Blowy annule une sortie confirmée, le lieu reçoit 3 € par place réservée. » comme « formulation identique côté client, contrat et relevé », et D-079 (§2.6) dit « déjà confirmée … Avant la confirmation : 0 € ». D-087 citée en §2.6 n'existe ni en §12 ni dans docs/decisions.md ; §13 n'a pas de révision 8.",
+      "fix": "§6.5 reprend la phrase de facts.tarifsContrat ; D-079 dit « à la confirmation ou après (groupe incomplet compris) » ; D-087 ajoutée en §12 et ligne V5.8 en §13."
+    }
+  },
+  "top3": [
+    "business-model : une seule règle d'astreinte (supprimer « 300 sorties simultanées »), calcul corrigé, volume Duo/jour et son coût.",
+    "Ligne « Blowy annule (groupe incomplet) » avec taux par ville et coût chiffré d'une ville d'amorçage (Bordeaux, Lille).",
+    "Spec §6.5 / D-079 / D-087 alignés sur le contrat."
+  ],
+  "tenIf": "Documents et maquettes : 10 quand business-model n'a qu'un seuil d'astreinte cohérent, chiffre le Duo et la ville d'amorçage (y compris la sortie tombée à 18 h payée 3 € HT), et quand la spec §6.5 dit ce que disent contrat et écrans. Terrain (à part, ne retient pas le 10) : ≥ 40 % de 2e sortie payante sous 21 j, ≥ 25 % d'actifs à M2, ≥ 0,3 inscrit vérifié par sortie, contribution positive après astreinte réelle, avis juridique écrit sur Blowy+.",
+  "terrain": [
+    "≥ 40 % de 2e sortie payante sous 21 jours ; ≥ 25 % d'actifs à M2.",
+    "≥ 0,3 inscrit vérifié par sortie vécue ; contribution positive après astreinte réelle.",
+    "Taux réel de sorties tombées à 18 h par ville ; avis juridique écrit sur Blowy+ via Stripe."
+  ]
+}

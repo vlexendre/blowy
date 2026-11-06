@@ -42,16 +42,18 @@ Ce tableau ne tient compte que de la contribution avant postes V5.6 (7,59 €) ;
 | Duo à une table de 2 | gratuit, sans garantie ni compensation pour le lieu (spec et contrat alignés : 0 €) | 0 € |
 | Cannibalisation Blowy+ | un abonné qui sort 4 fois/mois rapporte 7,93/4 ≈ 1,98 € par sortie au lieu de 3,84 € | si 30 % des places passent en Blowy+ à 4 sorties/mois : ≈ − 1,10 € |
 | **Contribution avant astreinte, tous postes V5.6** | | ≈ 7,59 − 0,34 − 0,51 − 1,15 − 1,10 ≈ **4,49 €** |
-**Point mort national retenu : ≈ 134 sorties par jour** (600 / 4,49), soit ≈ 670 participants. L'astreinte est dimensionnée pour un rappel humain en ≈ 5 min pendant une sortie (`safety.helpCallbackTargetMinutes`) : à vérifier pendant le test, au-delà de ≈ 300 sorties simultanées une 3e personne est nécessaire (+ 300 €/jour).
+**Point mort national retenu : ≈ 134 sorties par jour** (600 / 4,49), soit ≈ 670 participants. L'astreinte est dimensionnée pour un rappel humain en ≈ 5 min pendant une sortie (`safety.helpCallbackTargetMinutes`) : dimensionnement détaillé ci-dessous.
 
 Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; une place offerte de moins par groupe ajoute ≈ 3,84 €.
 
 ### Dimensionnement de l'astreinte (hypothèses, à mesurer)
-- Pic : le jeudi soir, la majorité des sorties commencent entre 19 h et 20 h 30. Hypothèse : 40 % des sorties du jour sur ce créneau de 90 min.
+- Pic : le jeudi soir, entre 19 h et 20 h 30. Hypothèse : 40 % des sorties du jour commencent sur ce créneau de 90 min.
 - Demandes « besoin d'aide » ou « je pars mal à l'aise » : hypothèse 2 % des sorties ; traitement ≈ 10 min de personne chacune (rappel + suivi).
 - Une personne traite ≈ 9 demandes en 90 min. Pour tenir un rappel en ≈ 5 min, on vise ≤ 50 % d'occupation, soit ≈ 4,5 demandes par personne sur le pic.
-- Avec 2 personnes (≈ 9 demandes sur le pic) : jusqu'à ≈ 450 demandes/2 % = 450 sorties au pic, soit ≈ 1 125 sorties par jour. Au-delà, une 3e personne (+ 300 €/jour).
+- Avec 2 personnes : ≈ 9 demandes traitables sur le pic ; 9 demandes ÷ 2 % ≈ 450 sorties au pic ; 450 ÷ 40 % ≈ 1 125 sorties par jour. Au-delà, une 3e personne (+ 300 €/jour).
 - Duo : un rendez-vous Duo compte comme une sortie de 2 personnes pour l'astreinte (même taux de 2 %) ; il ne rapporte rien, il est donc un coût d'acquisition et de rétention.
+- Volume Duo (hypothèse) : 1 rendez-vous Duo pour 5 sorties de groupe ; il compte pour l'astreinte (2 % de demandes) mais pas dans le revenu.
+- Sortie qui ne se forme pas à la confirmation (« Blowy annule ») : hypothèse 2 % des sorties en ville active, 10 % en ville d'amorçage ; coût = 3 € HT par place réservée + remboursement (déjà compté dans « Autres postes » au taux moyen de 2 %).
 - Ville en amorçage : aucune astreinte en plus (mutualisée) ; le coût propre est la 1re sortie offerte de chaque participant (≈ 3,84 € de revenu non encaissé par personne) et le temps ops pour signer 1–2 lieux.
 Ces chiffres sont des hypothèses : le test de 8 semaines doit mesurer le taux réel de demandes et le temps de traitement.
 

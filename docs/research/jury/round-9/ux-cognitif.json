@@ -1,0 +1,662 @@
+{
+  "member": "ux-cognitif",
+  "global": 9,
+  "criteria": {
+    "comprehension": 10,
+    "cognitive": 9,
+    "desire": 10,
+    "meet": 10,
+    "safety": 9,
+    "virality": 10,
+    "money": 9,
+    "visual": 9
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville-bordeaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Toi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rencontrer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Dispos": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Dispos-semaines": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Erreur-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pas-encore": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pas-encore-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-lille": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Atelier céramique (Lille) : « Des cartes de questions sur la table, si vous voulez. Personne n'anime. » et « Chacun paie ce qu'il boit » : gabarit bar collé sur un atelier, qui par nature est animé et ne se paie pas à la boisson ; le contrat dit « Aucune animation ».",
+      "fix": "Variante « Pendant » par type de lieu : « L'atelier guide la séance ; vous êtes à la même table » ; « Atelier inclus / à régler sur place : N € » ; article 1 du contrat adapté aux ateliers."
+    },
+    "V5-Trouvee-weekend": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Team": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Invite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Compte": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Verif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-inscrit": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Après le double oui, l'écran garde l'initiale : « DUO AVEC J. », « Répondre à J. », « Caramel · J. Duo ouvert quand vous avez dit oui tous les deux », « DUO AVEC K. », Chats « J. · Caramel », Accueil « Ton duo J. ». Le prénom (« Jade », « Karim ») n'apparaît qu'à Les visages. Les écrans appliquent donc toujours « prénom aux visages », contre concept V5.8 §1, spec §2.13 (D-082) et la ligne Confidentialité « ton prénom quand vous avez dit oui tous les deux ».",
+      "fix": "« Duo avec Jade », « Répondre à Jade », « Jade · Caramel », « Duo avec Karim » dès le double oui ; check-facts dans les deux sens (`ecransApresOui` : prénom obligatoire, initiale interdite)."
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil-duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Après le double oui, l'écran garde l'initiale : « DUO AVEC J. », « Répondre à J. », « Caramel · J. Duo ouvert quand vous avez dit oui tous les deux », « DUO AVEC K. », Chats « J. · Caramel », Accueil « Ton duo J. ». Le prénom (« Jade », « Karim ») n'apparaît qu'à Les visages. Les écrans appliquent donc toujours « prénom aux visages », contre concept V5.8 §1, spec §2.13 (D-082) et la ligne Confidentialité « ton prénom quand vous avez dit oui tous les deux ».",
+      "fix": "« Duo avec Jade », « Répondre à Jade », « Jade · Caramel », « Duo avec Karim » dès le double oui ; check-facts dans les deux sens (`ecransApresOui` : prénom obligatoire, initiale interdite)."
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Après le double oui, l'écran garde l'initiale : « DUO AVEC J. », « Répondre à J. », « Caramel · J. Duo ouvert quand vous avez dit oui tous les deux », « DUO AVEC K. », Chats « J. · Caramel », Accueil « Ton duo J. ». Le prénom (« Jade », « Karim ») n'apparaît qu'à Les visages. Les écrans appliquent donc toujours « prénom aux visages », contre concept V5.8 §1, spec §2.13 (D-082) et la ligne Confidentialité « ton prénom quand vous avez dit oui tous les deux ».",
+      "fix": "« Duo avec Jade », « Répondre à Jade », « Jade · Caramel », « Duo avec Karim » dès le double oui ; check-facts dans les deux sens (`ecransApresOui` : prénom obligatoire, initiale interdite)."
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Le jalon de la veille 18 h a trois noms : « Lieu et prénoms » (frises), « confirmation » (Tarifs, contrat), « la révélation, mer. 11 nov. 18 h » / « Lieu révélé » (Groupe, Groupe-menu, Chats, Accueil, Confirmations).",
+      "fix": "Un seul nom à l'écran (« Lieu et prénoms ») ; « révélation » et « révélé » bannis par check-facts."
+    },
+    "V5-Groupe-menu": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Le jalon de la veille 18 h a trois noms : « Lieu et prénoms » (frises), « confirmation » (Tarifs, contrat), « la révélation, mer. 11 nov. 18 h » / « Lieu révélé » (Groupe, Groupe-menu, Chats, Accueil, Confirmations).",
+      "fix": "Un seul nom à l'écran (« Lieu et prénoms ») ; « révélation » et « révélé » bannis par check-facts."
+    },
+    "V5-Attente": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Si elles arrivent d'ici le mer. 18 nov. 21 h, elle a lieu » : promesse ferme alors que la composition peut échouer (≤ 3 du même genre, tranche) ; l'intertitre « Pour qu'elle ait lieu » coiffe « Ajouter un créneau … ven. 13 nov. », qui ne fait pas avoir lieu la sortie du 21 mais en crée une autre.",
+      "fix": "« Si 2 personnes compatibles arrivent d'ici le mer. 18 nov. 21 h, Nino la compose » ; intertitre « Pour sortir plus tôt » au-dessus du vendredi."
+    },
+    "V5-Partage-ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Amorcage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Amorcage-solo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-complete": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-annulee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-ambiance": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Le jalon de la veille 18 h a trois noms : « Lieu et prénoms » (frises), « confirmation » (Tarifs, contrat), « la révélation, mer. 11 nov. 18 h » / « Lieu révélé » (Groupe, Groupe-menu, Chats, Accueil, Confirmations).",
+      "fix": "Un seul nom à l'écran (« Lieu et prénoms ») ; « révélation » et « révélé » bannis par check-facts."
+    },
+    "V5-Partage-confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Revelation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres-resultats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-jeudi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-dimanche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Après le double oui, l'écran garde l'initiale : « DUO AVEC J. », « Répondre à J. », « Caramel · J. Duo ouvert quand vous avez dit oui tous les deux », « DUO AVEC K. », Chats « J. · Caramel », Accueil « Ton duo J. ». Le prénom (« Jade », « Karim ») n'apparaît qu'à Les visages. Les écrans appliquent donc toujours « prénom aux visages », contre concept V5.8 §1, spec §2.13 (D-082) et la ligne Confidentialité « ton prénom quand vous avez dit oui tous les deux ».",
+      "fix": "« Duo avec Jade », « Répondre à Jade », « Jade · Caramel », « Duo avec Karim » dès le double oui ; check-facts dans les deux sens (`ecransApresOui` : prénom obligatoire, initiale interdite)."
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Après le double oui, l'écran garde l'initiale : « DUO AVEC J. », « Répondre à J. », « Caramel · J. Duo ouvert quand vous avez dit oui tous les deux », « DUO AVEC K. », Chats « J. · Caramel », Accueil « Ton duo J. ». Le prénom (« Jade », « Karim ») n'apparaît qu'à Les visages. Les écrans appliquent donc toujours « prénom aux visages », contre concept V5.8 §1, spec §2.13 (D-082) et la ligne Confidentialité « ton prénom quand vous avez dit oui tous les deux ».",
+      "fix": "« Duo avec Jade », « Répondre à Jade », « Jade · Caramel », « Duo avec Karim » dès le double oui ; check-facts dans les deux sens (`ecransApresOui` : prénom obligatoire, initiale interdite)."
+    },
+    "V5-Duo-hh-proposition": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Après le double oui, l'écran garde l'initiale : « DUO AVEC J. », « Répondre à J. », « Caramel · J. Duo ouvert quand vous avez dit oui tous les deux », « DUO AVEC K. », Chats « J. · Caramel », Accueil « Ton duo J. ». Le prénom (« Jade », « Karim ») n'apparaît qu'à Les visages. Les écrans appliquent donc toujours « prénom aux visages », contre concept V5.8 §1, spec §2.13 (D-082) et la ligne Confidentialité « ton prénom quand vous avez dit oui tous les deux ».",
+      "fix": "« Duo avec Jade », « Répondre à Jade », « Jade · Caramel », « Duo avec Karim » dès le double oui ; check-facts dans les deux sens (`ecransApresOui` : prénom obligatoire, initiale interdite)."
+    },
+    "V5-Duo-hh-visages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-rdv": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« table à deux, réservée quand vous avez dit oui tous les deux » au passé, sur l'écran même où « … doit accepter le créneau » : la phrase canonique du double oui du duo sert aussi à l'accord sur le créneau, et la table n'est pas encore réservée. « Deux oui » désigne à nouveau deux moments.",
+      "fix": "« Table à deux, réservée dès que Karim accepte ce créneau » (et Jade), et réserver « quand vous avez dit oui tous les deux » au duo seul."
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-RdvDuo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« table à deux, réservée quand vous avez dit oui tous les deux » au passé, sur l'écran même où « … doit accepter le créneau » : la phrase canonique du double oui du duo sert aussi à l'accord sur le créneau, et la table n'est pas encore réservée. « Deux oui » désigne à nouveau deux moments.",
+      "fix": "« Table à deux, réservée dès que Karim accepte ce créneau » (et Jade), et réserver « quand vous avez dit oui tous les deux » au duo seul."
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-RdvDuo-lea": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« table à deux, réservée quand vous avez dit oui tous les deux » au passé, sur l'écran même où « … doit accepter le créneau » : la phrase canonique du double oui du duo sert aussi à l'accord sur le créneau, et la table n'est pas encore réservée. « Deux oui » désigne à nouveau deux moments.",
+      "fix": "« Table à deux, réservée dès que Karim accepte ce créneau » (et Jade), et réserver « quand vous avez dit oui tous les deux » au duo seul."
+    },
+    "V5-Oeuf": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Cartes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Story": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "W-Repondre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Fiche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Abonnement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Intéressant dès la 3e sortie du mois. » écrit deux fois sur le même écran (tuile « Blowy+ » puis paragraphe « … Blowy+ devient intéressant dès la 3e sortie du mois »).",
+      "fix": "Garder la phrase une fois (paragraphe), la tuile affiche « 9,99 € / mois »."
+    },
+    "V5-Paiement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Reglages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confidentialite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Seule ta personne de duo le sait, quand vous avez dit oui tous les deux. » ≠ phrase exacte de la spec §2.16 « Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. » (Confidentialité est censée être générée depuis la spec). La ligne duo promet le prénom au double oui que V5-Lien ne tient pas.",
+      "fix": "Une seule phrase, recopiée par check-facts depuis la spec ; aligner Lien, Duo, Chats, Accueil sur la ligne duo."
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chargement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Erreur-reseau": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Verif-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chats-vide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Creneaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Contrat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    }
+  },
+  "top3": [
+    "Prénom du duo dès le double oui sur Lien, Duo, Duo-hh, Chats, Accueil, Accueil-duo, et check-facts dans le sens après-oui.",
+    "« Vous avez dit oui tous les deux » réservé au duo ; « réservée dès que Karim accepte ce créneau » sur les rendez-vous.",
+    "Un seul nom pour le jalon de la veille 18 h (« Lieu et prénoms ») : bannir « révélation » / « Lieu révélé » ; phrase Confidentialité = spec §2.16 mot pour mot."
+  ],
+  "tenIf": "Maquettes : 10 quand le prénom du duo s'affiche dès le double oui partout, quand « oui tous les deux » ne désigne que le duo, quand le jalon de 18 h a un seul nom, et quand la phrase de Confidentialité est celle de la spec. Terrain (à part) : 2e test des 5 secondes sur Chats, Chargement, Les visages et le Duo (« Qui est J. ? »).",
+  "terrain": [
+    "2e test des 5 secondes sur Chats, Chargement, Les visages et Duo.",
+    "Test de compréhension de la règle d'annulation (3 sorties distinctes) sur 10 personnes."
+  ]
+}

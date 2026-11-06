@@ -1,0 +1,658 @@
+{
+ "member": "ines-21",
+ "global": 10,
+ "criteria": {
+  "comprehension": 10,
+  "cognitive": 10,
+  "desire": 10,
+  "meet": 10,
+  "safety": 10,
+  "virality": 9,
+  "money": 10,
+  "visual": 10
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Raton assis dans la 5e place (bulle lavande) de la table : réglé.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Environ 60 personnes vérifiées » : réglé.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Pigeon » partout : réglé.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Un week-end sur deux · à partir du sam. 14 nov. (ou une semaine sur deux) » : réglé.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« des 12 et 26 déc. », libres listés, lien vers la proposition du 21 : réglé.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« comme demandé dans Affiner » retiré ; rien à redire.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ligne en double retirée ; « Bastien vient avec toi » une fois.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Groupe 22–29 ans, l'homonyme devient « Théo · 26–29 ans », pets de Lyon : réglé.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Doublon retiré.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Yacine/Chouquette, pets de Saint-Denis, légende juste, message du lieu : réglé.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Plus de titre répété ; « si un groupe se forme… réponse le lun. 16 nov. 21 h ».",
+   "fix": "—"
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Environ 90 personnes vérifiées, 4 lieux » : plus aucune promesse à 1/9.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Doublon retiré.",
+   "fix": "—"
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Titre non répété, carte « L'indicateur de ta ville ».",
+   "fix": "—"
+  },
+  "V5-Sortie-lille": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Frise « Sam. 14 nov. 15 h · La sortie » = carte « 15 h – 17 h » : réglé.",
+   "fix": "—"
+  },
+  "V5-Trouvee-weekend": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Lyon 3e, atelier de la Guillotière, « 5 personnes · 35–44 ans », sam. 21 nov. 15 h : réglé.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Doublon retiré, frise et prix.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Garder sa place 30 min » tient dans le bouton.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Avec le vendredi soir : si un groupe se forme pour le ven. 13 nov., réponse le mar. 10 nov. 21 h » et « ton créneau du sam. 28 nov. reste ouvert » : réglé.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Gabarit commun (frise 15 h, « Règles d'annulation › », « Offerte (ta 1re sortie) · ensuite 4,99 € ») ; variante « Jules et Lou viennent avec toi » assumée : réglé.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Gabarit commun, frise et « ensuite 4,99 € » : réglé.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Raton toujours en grand : 110 × 110 pt (source : width 110px), ≈ 215 px de haut au rendu, au-dessus de « PAS DE PLACE CETTE FOIS ». Le README (point 11) coche « écrans d'échec en pastille de 64 pt », mais facts.ecransEchec ne liste que Verif-echec, Erreur-age, Paiement-echec, Erreur-reseau, Notifs-refus et W-Repondre : cet écran n'est pas contrôlé. Son jumeau V5-Sortie-annulee n'a aucun raton.",
+   "fix": "Pastille ≤ 64 pt (ou rien, comme Sortie annulée) et ajouter V5-Sortie-complete à facts.ecransEchec."
+  },
+  "V5-Sortie-annulee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Plus de HT : « chaque place réservée est compensée au lieu par Blowy ».",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Montrer au groupe : je préfère le calme », désactivé par défaut.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Légende juste, message du lieu, trois sorties distinctes.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Plus aucun partage ; « À ce soir » + trois sorties avec leur phrase.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« pendant toute la sortie d'Alex », « rappelle Alex en quelques minutes ».",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Partir mal à l'aise ? Pour ta sécurité : … » : une seule fois.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Éclaboussures retirées ; le vote d'abord, « La carte de la soirée arrive avec les résultats ».",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Raton encore plus grand : 130 × 130 pt (source : width 130px), ≈ 255 px de haut au rendu, au-dessus de « PAS D'ACCORD CETTE FOIS ». Même oubli : absent de facts.ecransEchec.",
+   "fix": "Pastille ≤ 64 pt et ajouter V5-Apres-aucun à facts.ecransEchec."
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Point 15 coché, mais le liseré orange du banc (≈ 65 × 6 pt) dépasse toujours juste au-dessus du bord haut de la pastille « TA BANDE », en haut à gauche.",
+   "fix": "Descendre le banc sous la ligne des pets ou le retirer du bandeau."
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« La carte et le prénom, quand vous avez dit oui tous les deux ; le visage, aux visages ».",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Toujours ≈ 550 pt vides sous la carte « Un pigeon · K. » : ni l'encadré indicateur (« À Marseille, une … de personnes vérifiées… ») ni « Ou viens jeudi en groupe › », que V5-Duo affiche en bas.",
+   "fix": "Reprendre l'encadré noir de V5-Duo avec le chiffre de Marseille et le lien groupe."
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Ligne « Messages filtrés. Les numéros restent masqués jusqu'aux visages. Liens et photos aussi. Signaler est toujours en haut à droite. » mot pour mot comme V5-Lien : réglé.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Gabarit exact de V5-RdvDuo : vignette Café Longchamp, « Choisir ensemble un autre lieu ou une autre heure », 3 tuiles Sam / Maman / Personne, « Tu peux partir à tout moment », « Rendez-vous gratuit » : réglé.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« pendant tout ton rendez-vous », vignette propre au Comptoir Gabriel.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« pendant tout ton rendez-vous ».",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« vidéo de 5 s » insécable, pastilles « vidéo ».",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Alex aimerait savoir comment ses proches le décrivent », raton ≈ 56 pt : réglé.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Tuile « 1/1 sortie honorée visible par toi seulement » et « ta fiabilité, visible par toi seulement ».",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Venu à 1 sortie sur 1 » + « visible par toi seulement » : plus de N ni de M.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Même liste que le contrat, sécurité comprise ; « Tu sors 2 fois par mois ? Paie à la place ».",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Intéressant dès la 3e sortie du mois » et « Tu sors 2 fois par mois ? Paie à la place (2 × 4,99 €) » mot pour mot comme Tarifs : réglé.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Ta bande : ton prénom, ton pet, ta tranche d'âge, ta carte et vos messages » ; fiabilité, contacts, cartes.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Quelqu'un de l'équipe te rappelle en quelques minutes » et les deux délais légendés.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Semaine entière, relevé du mois civil, message d'accueil, rappel en quelques minutes.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Table de 2, « table Duo : 0 € HT, sans garantie ».",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Sécurité, imprévu, Blowy annule, table Duo 0 € HT : même texte que Tarifs.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "(Hors condition) Pastille ≤ 64 pt sur V5-Sortie-complete et V5-Apres-aucun.",
+  "(Hors parcours) Liseré du banc de V5-Bande.",
+  "(Hors parcours) Encadré indicateur sur V5-Duo-hh-proposition."
+ ],
+ "tenIf": "C'est fait : 10. Bordeaux (Attente, carte de ville) et l'argent (Tarifs = Blowy+) disent la même chose."
+}

@@ -1,0 +1,661 @@
+{
+  "member": "createrice-tiktok",
+  "global": 9,
+  "criteria": {
+    "comprehension": 10,
+    "cognitive": 10,
+    "desire": 10,
+    "meet": 10,
+    "safety": 10,
+    "virality": 9,
+    "money": 10,
+    "visual": 9
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville-bordeaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Toi": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Genre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pet": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rencontrer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Intention": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Consentement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Dispos": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Dispos-semaines": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Eviter": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Erreur-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation-lyon": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation-banlieue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pas-encore": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Ville-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pas-encore-nantes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-lille": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Trouvee-weekend": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Team": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-invitation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Invite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Compte": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Verif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-inscrit": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Accueil-duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Pause": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Groupe": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Attente": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Amorcage": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Amorcage-solo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-complete": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Sortie-annulee": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-histoire": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-age": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Affiner-ambiance": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confirmation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-confirmation": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Revelation": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-checkin": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "W-Ange-aide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Checkin-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Souvenir": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Apres-resultats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-jeudi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Partage": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Partage-dimanche": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Apres-aucun": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Bande": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Partage-bande": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "V5-Rue": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Lien": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-proposition": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-visages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Duo-hh-rdv": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Lien-debloque": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-RdvDuo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Oeuf": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Cartes": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Aperçu 5 s : la vignette « 0 s · titre » coupe le titre (« AIDE BORDEAUX / À SORTIR » à moitié masqué, « DÉCRIS-MOI EN » sans « 3 MOTS. ») ; la vignette « 5 s · lien » est identique à 2,5 s et ne montre pas la pastille du lien (bas de carte rogné : vignette ≈ 0,73 de ratio pour une carte à 0,62). Les miniatures sont exclues de l'audit (`data-miniature`), donc aucun outil ne le voit.",
+      "fix": "Vignettes au ratio exact de la carte ; titre entier dès 0 s ; pastille « Toi aussi · blowy.app/… » visible sur la vignette 5 s ; contrôle dédié des miniatures (titre entier, lien présent à 5 s)."
+    },
+    "W-Repondre": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Profil": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Fiche": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement-ok": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Reglages": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Confidentialite": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chargement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Erreur-reseau": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Paiement-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Verif-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Notifs-refus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "V5-Chats-vide": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Effectif": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Creneaux": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    },
+    "L-Contrat": {
+      "score": 10,
+      "blocking": false,
+      "issue": "",
+      "fix": ""
+    }
+  },
+  "top3": [
+    "Vignette « 5 s · lien » avec la pastille « Toi aussi · blowy.app/… » visible.",
+    "Vignette « 0 s · titre » avec le titre entier (« AIDE BORDEAUX À SORTIR. », « DÉCRIS-MOI EN 3 MOTS. »).",
+    "Vignettes au ratio exact de la carte 9:16 et contrôle automatique des miniatures."
+  ],
+  "tenIf": "Maquettes : 10 quand les vignettes 0 s / 2,5 s / 5 s sont au ratio de la carte, avec titre entier dès 0 s et lien visible à 5 s, sur les 8 écrans de partage. Rien de terrain dans ma condition (à part : taux de clic sur le lien des vidéos exportées).",
+  "terrain": [
+    "Taux de clic sur le lien des vidéos exportées vs cartes image."
+  ]
+}
