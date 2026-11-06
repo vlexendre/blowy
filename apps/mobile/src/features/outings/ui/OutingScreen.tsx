@@ -31,7 +31,8 @@ import { seatPaymentRequest } from './PayScreens';
 import { petSprite, useMyPet } from '../../pets';
 import { LoadingScreen, OfflineScreen } from '../../system';
 import { useAcceptSeat, useCancelSeat, useDeclineSeat, useOuting } from '../api/hooks';
-import { euros, fundingKind, outingPhase, schedule, teamMates } from '../model/presenters';
+import { fundingKind, outingPhase, schedule, teamMates } from '../model/presenters';
+import { acceptPriceLine } from '../model/activity';
 import { CancelRules, HowItGoes, OutingGroup, OutingHeroV55 } from './parts';
 import { timeLabel } from '../../../core/format/dates';
 import { DetailScreen } from '@blowy/ui-mobile';
@@ -144,7 +145,6 @@ function ProposalView({ o, species }: { o: OutingView; species: Species }) {
   /** Amorçage (V5.1 B.7) : mon quartier n'est pas encore ouvert, la sortie se fait quand même à 5 vérifiés. */
   const seeding = !!hood.data?.neighborhood && hood.data.neighborhood.status !== 'LIVE';
   const seedingCity = hood.data?.neighborhood?.name.split(/[ ·-]/)[0] ?? '';
-  const price = products.data ? euros(products.data.seat.amountCents) : null;
   const free = fundingKind(o, allowances.data?.firstOutingFree) === 'free';
   const onAccept = () =>
     accept.mutate(free ? 'AUTO' : 'PAY', {
@@ -160,7 +160,7 @@ function ProposalView({ o, species }: { o: OutingView; species: Species }) {
   return (
     <DetailScreen {...headerProps(o)} pad={[52, 16, 22]} testID="outing-proposal" scroll>
       <OutingHeroV55 o={o} />
-      {seeding ? (
+      {seeding && teamMates(o).length ? (
         <PopIn delayMs={60}>
           <CardV5 style={{ paddingVertical: 12, paddingHorizontal: 14 }}>
             <BodyText size={13} weight={600} lh={1.45}>
@@ -200,9 +200,7 @@ function ProposalView({ o, species }: { o: OutingView; species: Species }) {
           testID="outing-accept"
         />
         <BodyText size={13} weight={800} align="center">
-          {free
-            ? t('outing.priceFree', { price: price ?? '' })
-            : t('outing.pricePaid', { price: price ?? '' })}
+          {acceptPriceLine(o, products.data ? products.data.seat.amountCents : null, free)}
         </BodyText>
         <Button
           variant="ghost"

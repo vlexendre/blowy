@@ -3056,6 +3056,9 @@ model Venue {
   activityTaxBasis        ActivityTaxBasis @default(TTC)
   welcomeMessage          String?
   welcomeMessageUpdatedAt DateTime?        @db.Timestamptz(3)
+  /// V5.10 (passe 5) : note de table écrite par le lieu (≤ 80 car., texte seul, modérée) ; places confirmées, dès la confirmation.
+  tableNote               String?
+  tableNoteUpdatedAt      DateTime?        @db.Timestamptz(3)
   createdAt               DateTime         @default(now()) @db.Timestamptz(3)
 
   neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Restrict)
@@ -3373,6 +3376,8 @@ model Duo {
   userLowId      String    @db.Uuid
   userHighId     String    @db.Uuid
   origin         DuoOrigin
+  /// V5.10 (passe 5) : type du duo, posé à la création seulement s'il est su des deux (vote « plus » mutuel, ou voie Duo entre deux personnes qui ne cherchent qu'une histoire / que des potes) ; null sinon.
+  kind           DuoKind?
   status         DuoStatus
   exchangeEndsAt DateTime? @db.Timestamptz(3)
   dateDeadline   DateTime? @db.Timestamptz(3)
@@ -3899,4 +3904,10 @@ model VenueIncident {
 enum ActivityTaxBasis {
   TTC
   HT
+}
+
+/// V5.10 (passe 5) : pastille du duo (« Pour une histoire » / « Pour un·e pote »).
+enum DuoKind {
+  FRIENDS
+  STORY
 }

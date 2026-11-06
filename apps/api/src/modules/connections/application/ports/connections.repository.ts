@@ -27,6 +27,8 @@ export interface DuoRow {
   proposalId: string | null;
   createdAt: Date;
   conversationId: string | null;
+  /** V5.10 (passe 5) : type du duo, su des deux (null sinon). */
+  kind?: 'FRIENDS' | 'STORY' | null;
 }
 
 export interface DuoDateRow {
@@ -118,7 +120,7 @@ export interface ConnectionsRepository {
   duosOf(userId: string, readOnlySince: Date): Promise<DuoRow[]>;
   activeDuoCount(scope: TxScope | null, userId: string): Promise<number>;
   activeLaneDuoCount(scope: TxScope | null, userId: string): Promise<number>;
-  createDuo(scope: TxScope, d: { id: string; low: string; high: string; origin: DuoOrigin; status: DuoStatus; exchangeEndsAt: Date | null; dateDeadline: Date | null; proposalId: string | null }): Promise<boolean>;
+  createDuo(scope: TxScope, d: { id: string; low: string; high: string; origin: DuoOrigin; status: DuoStatus; exchangeEndsAt: Date | null; dateDeadline: Date | null; proposalId: string | null; kind?: 'FRIENDS' | 'STORY' | null }): Promise<boolean>;
   updateDuo(scope: TxScope, duoId: string, patch: Partial<Pick<DuoRow, 'status' | 'messagesLow' | 'messagesHigh' | 'datesAttended' | 'together' | 'eggOptInLow' | 'eggOptInHigh' | 'endedAt'>>): Promise<void>;
   conversationOfDuo(scope: TxScope | null, duoId: string): Promise<string | null>;
   /** Messages humains publiés (visibles) par auteur dans le chat du duo, avant `until` si fourni. */

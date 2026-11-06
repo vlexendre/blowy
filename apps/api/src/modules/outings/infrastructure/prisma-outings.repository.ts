@@ -595,6 +595,10 @@ export class PrismaOutingsRepository implements OutingsRepository {
     return cents > 0 ? { cents, taxBasis: o.venue.activityTaxBasis } : null;
   }
 
+  async venueTableNote(venueId: string) {
+    return (await this.db.venue.findUnique({ where: { id: venueId }, select: { tableNote: true } }))?.tableNote ?? null;
+  }
+
   async venueWelcomeMessage(venueId: string) {
     return (await this.db.venue.findUnique({ where: { id: venueId }, select: { welcomeMessage: true } }))?.welcomeMessage ?? null;
   }
@@ -703,7 +707,8 @@ export class PrismaOutingsRepository implements OutingsRepository {
     const live = await tx.duo.findFirst({ where: { userLowId: d.low, userHighId: d.high, status: { notIn: ['EXPIRED', 'CLOSED', 'LEFT'] } } });
     if (live) return { id: live.id, created: false };
     // Accord « plus » issu d'une sortie : démarre UNLOCKED, sans horloge 48 h / J+7 (D-017).
-    await tx.duo.create({ data: { id: d.id, userLowId: d.low, userHighId: d.high, origin: 'OUTING_VOTE', status: 'UNLOCKED', sourceOutingId: d.outingId, createdAt: scope.now } });
+    // V5.10 (passe 5) : vote « plus » mutuel, révélé aux deux à la clôture → « Pour une histoire ».
+    await tx.duo.create({ data: { id: d.id, userLowId: d.low, userHighId: d.high, origin: 'OUTING_VOTE', kind: 'STORY', status: 'UNLOCKED', sourceOutingId: d.outingId, createdAt: scope.now } });
     return { id: d.id, created: true };
   }
 

@@ -15,6 +15,8 @@ export interface PaymentRequest {
   label: string;
   /** Abonnement : Apple Pay présente un paiement récurrent mensuel. */
   recurring?: boolean;
+  /** V5.10 : détail affiché avant le total (place si due + activité prépayée), montants du serveur. */
+  lines?: readonly { label: string; cents: number }[];
 }
 
 export type PaymentOutcome =

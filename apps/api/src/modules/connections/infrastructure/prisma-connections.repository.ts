@@ -18,7 +18,7 @@ import type { BandLinkRow, ConnectionsRepository, DuoDateRow, DuoRow, LanePropos
 const LIVE: ('EXCHANGE' | 'UNLOCKED' | 'DATE_PROPOSED' | 'DATE_CONFIRMED' | 'AFTER_VOTE' | 'TOGETHER')[] = ['EXCHANGE', 'UNLOCKED', 'DATE_PROPOSED', 'DATE_CONFIRMED', 'AFTER_VOTE', 'TOGETHER'];
 const VISIBLE_MESSAGE = ['PUBLISHED', 'WARNED'] as const;
 
-type DuoRecord = { id: string; userLowId: string; userHighId: string; origin: DuoRow['origin']; status: DuoRow['status']; exchangeEndsAt: Date | null; dateDeadline: Date | null; messagesLow: number; messagesHigh: number; datesAttended: number; together: boolean; eggOptInLow: boolean; eggOptInHigh: boolean; endedAt: Date | null; proposalId: string | null; createdAt: Date; conversation?: { id: string } | null };
+type DuoRecord = { id: string; userLowId: string; userHighId: string; origin: DuoRow['origin']; status: DuoRow['status']; exchangeEndsAt: Date | null; dateDeadline: Date | null; messagesLow: number; messagesHigh: number; datesAttended: number; together: boolean; eggOptInLow: boolean; eggOptInHigh: boolean; endedAt: Date | null; proposalId: string | null; createdAt: Date; kind?: 'FRIENDS' | 'STORY' | null; conversation?: { id: string } | null };
 const duoRow = (d: DuoRecord): DuoRow => ({
   id: d.id,
   userLowId: d.userLowId,
@@ -37,6 +37,7 @@ const duoRow = (d: DuoRecord): DuoRow => ({
   proposalId: d.proposalId,
   createdAt: d.createdAt,
   conversationId: d.conversation?.id ?? null,
+  kind: d.kind ?? null,
 });
 
 type DateRecord = DuoDateRow & Record<string, unknown>;
@@ -94,10 +95,10 @@ export class PrismaConnectionsRepository implements ConnectionsRepository {
     return this.c(scope).duo.count({ where: { origin: 'LANE', status: { in: LIVE }, OR: [{ userLowId: userId }, { userHighId: userId }] } });
   }
 
-  async createDuo(scope: TxScope, d: { id: string; low: string; high: string; origin: DuoRow['origin']; status: DuoRow['status']; exchangeEndsAt: Date | null; dateDeadline: Date | null; proposalId: string | null }) {
+  async createDuo(scope: TxScope, d: { id: string; low: string; high: string; origin: DuoRow['origin']; status: DuoRow['status']; exchangeEndsAt: Date | null; dateDeadline: Date | null; proposalId: string | null; kind?: 'FRIENDS' | 'STORY' | null }) {
     const n = await txOf(scope).$executeRaw`
-      INSERT INTO "Duo" (id, "userLowId", "userHighId", origin, status, "exchangeEndsAt", "dateDeadline", "proposalId", "createdAt", "updatedAt")
-      VALUES (${d.id}::uuid, ${d.low}::uuid, ${d.high}::uuid, ${d.origin}::"DuoOrigin", ${d.status}::"DuoStatus", ${d.exchangeEndsAt}, ${d.dateDeadline}, ${d.proposalId}::uuid, ${scope.now}, ${scope.now})
+      INSERT INTO "Duo" (id, "userLowId", "userHighId", origin, status, "exchangeEndsAt", "dateDeadline", "proposalId", kind, "createdAt", "updatedAt")
+      VALUES (${d.id}::uuid, ${d.low}::uuid, ${d.high}::uuid, ${d.origin}::"DuoOrigin", ${d.status}::"DuoStatus", ${d.exchangeEndsAt}, ${d.dateDeadline}, ${d.proposalId}::uuid, ${d.kind ?? null}::"DuoKind", ${scope.now}, ${scope.now})
       ON CONFLICT DO NOTHING`;
     return n === 1;
   }

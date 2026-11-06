@@ -105,6 +105,12 @@ export const PetCardSchema = z
     stage: StageSchema.optional(),
     equipped: z.array(AccessoryIdSchema).max(ACCESSORY_EQUIP_CAP),
     traits: z.array(z.string().min(1).max(64)).max(3),
+    /**
+     * V5.10 (passe 5) : pose du pet dans les vues de groupe (`OutingView.members[].pet`), parmi les poses V5 du domaine
+     * (jamais SICK / HUNGRY / SAD) — choisie de façon déterministe par membre, sortie et moment ; décorative, ne dit
+     * rien de la personne (ni humeur, ni fiabilité, ni présence).
+     */
+    pose: PoseSchema.exclude(['SICK', 'HUNGRY', 'SAD']).optional(),
   })
   .strict();
 export type PetCard = z.infer<typeof PetCardSchema>;

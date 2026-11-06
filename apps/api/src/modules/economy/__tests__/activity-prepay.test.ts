@@ -74,7 +74,7 @@ const seatIn = (seatId: string, mode: 'AUTO' | 'PAY' = 'AUTO', extra: Record<str
 
 describe('V5.10 — prix de l’activité (catalogue, lieu)', () => {
   it('prix du lieu sinon du catalogue ; 0 si l’activité précise ne correspond pas à la sortie', () => {
-    expect(activityPriceCentsOf({ detailKey: 'ceramics_workshop', outingActivity: 'WORKSHOP' })).toBe(3500);
+    expect(activityPriceCentsOf({ detailKey: 'ceramics_workshop', outingActivity: 'WORKSHOP' })).toBe(2500);
     expect(activityPriceCentsOf({ detailKey: 'ceramics_workshop', outingActivity: 'WORKSHOP', venuePriceCents: 4200 })).toBe(4200);
     expect(activityPriceCentsOf({ detailKey: 'ceramics_workshop', outingActivity: 'WORKSHOP', venuePriceCents: 0 })).toBe(0);
     expect(activityPriceCentsOf({ detailKey: 'ceramics_workshop', outingActivity: 'GAMES' })).toBe(0);

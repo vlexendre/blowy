@@ -135,6 +135,19 @@ export const VenueIncidentRequestSchema = z.object({
 export const VenueParticipantReportRequestSchema = VenueIncidentRequestSchema.omit({ outingId: true }).strict();
 export const VenuePhotoRequestSchema = z.object({ note: z.string().trim().min(5).max(300) });
 
+/** V5.10 (passe 5) : note de table du lieu (≤ 80 car., texte seul, sans lien ni téléphone, modérée). `null` = retirer. */
+export const VENUE_TABLE_NOTE_MAX_CHARS = 80;
+export const VenueTableNoteRequestSchema = z.object({ text: z.string().max(VENUE_TABLE_NOTE_MAX_CHARS).nullable() }).strict();
+export interface VenueTableNoteView {
+  text: string | null;
+  updatedAt: string | null;
+  /** Exemple affiché dans le champ (« Table Blowy, chevalet orange au fond »). */
+  example: string;
+  maxChars: number;
+  /** Montrée aux places confirmées à partir de la confirmation (fiche Confirmation, Check-in). */
+  visibleFrom: 'CONFIRMATION';
+}
+
 /** V5.7 (E30, D-080) : message d'accueil du lieu (texte seul, sans lien ni téléphone, modéré). `null` = retirer. */
 export const VenueWelcomeRequestSchema = z.object({ text: z.string().max(2000).nullable() }).strict();
 export interface VenueWelcomeView {

@@ -85,7 +85,9 @@ export class OutingQueries {
       const minutes = t?.minutes ?? null;
       // V5.7 (E30) : `venue` n'existe que pour une place confirmée à partir de la confirmation — même règle pour l'accueil.
       const welcome = await this.repo.venueWelcomeMessage(x.venueId);
-      out.venue = { ...out.venue, ...(minutes ? { travelMinutes: minutes, ...(t?.estimated ? { travelEstimated: true as const } : {}) } : {}), ...(x.venueAmbiance ? { ambiance: x.venueAmbiance } : {}), ...(welcome ? { welcomeMessage: welcome } : {}) };
+      // V5.10 (passe 5) : note de table — même règle que l'accueil (lieu servi = place confirmée, dès la confirmation).
+      const tableNote = (await this.repo.venueTableNote?.(x.venueId)) ?? null;
+      out.venue = { ...out.venue, ...(minutes ? { travelMinutes: minutes, ...(t?.estimated ? { travelEstimated: true as const } : {}) } : {}), ...(x.venueAmbiance ? { ambiance: x.venueAmbiance } : {}), ...(welcome ? { welcomeMessage: welcome } : {}), ...(tableNote ? { tableNote } : {}) };
     }
     return out;
   }

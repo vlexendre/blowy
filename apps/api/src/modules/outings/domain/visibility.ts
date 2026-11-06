@@ -10,6 +10,7 @@ import { ageBracketBounds, ageBracketOf, publicCancelReason, type RefundMode } f
 import type { OutingMemberView, OutingView } from '@blowy/api-contract';
 import type { OutingFacts, SeatFacts } from './facts.js';
 import { countsAsConfirmed, isPending, refundModeOfState, type CancelPreview } from './seat-policy.js';
+import { memberPose, poseMomentOf } from './member-pose.js';
 
 /**
  * Où en est le lecteur, d'après l'état de la sortie ET de sa propre place :
@@ -68,7 +69,9 @@ export function projectOutingFor(viewerId: string, o: OutingFacts, ctx: ViewerCo
   const inMyTeam = (s: SeatFacts) => !!mine.teamId && s.teamId === mine.teamId;
   // V5.7 (E32, D-084) : badge « calme » (opt-in) sur le pet, à partir de FORMING (jamais sur l'aperçu d'invitation).
   const calmVisible = o.status !== 'PROPOSED';
-  const base = (s: SeatFacts): OutingMemberView => ({ userId: s.userId, pet: s.person.pet, threeWords: s.person.threeWords.slice(0, 3) as OutingMemberView['threeWords'], ...(inMyTeam(s) ? { inMyTeam: true as const } : {}), ...(calmVisible && s.person.calmBadge ? { calm: true as const } : {}) });
+  // V5.10 (passe 5) : pose décorative déterministe par membre et par moment (jamais un signal sur la personne).
+  const moment = poseMomentOf(phase);
+  const base = (s: SeatFacts): OutingMemberView => ({ userId: s.userId, pet: { ...s.person.pet, pose: memberPose(o.id, s.userId, moment) }, threeWords: s.person.threeWords.slice(0, 3) as OutingMemberView['threeWords'], ...(inMyTeam(s) ? { inMyTeam: true as const } : {}), ...(calmVisible && s.person.calmBadge ? { calm: true as const } : {}) });
   const photo = (s: SeatFacts) => {
     const p = ctx.photos.get(s.userId);
     return p ? { photo: p } : {};

@@ -10,7 +10,7 @@
  *  - œuf (T9) : drapeau seulement, désactivé par défaut, actif seulement si les deux l'activent.
  */
 import { localParts, wallToUtc } from '@blowy/pet-engine';
-import { DUO_TRANSITIONS, isDuoTerminal, type ConnectionKind, type DuoStatus, type VoteChoice } from '@blowy/domain';
+import { DUO_TRANSITIONS, isDuoTerminal, type ConnectionKind, type DuoStatus, type LookingFor, type VoteChoice } from '@blowy/domain';
 import type { Tuning } from '@blowy/tuning';
 
 const MIN = 60_000;
@@ -134,4 +134,15 @@ export function localDateHour(at: Date, timezone: string): { date: string; hour:
   const f = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' }).formatToParts(at);
   const g = (t: string) => f.find((p) => p.type === t)?.value ?? '00';
   return { date: `${g('year')}-${g('month')}-${g('day')}`, hour: Number(g('hour')) };
+}
+
+/**
+ * V5.10 (passe 5) : type d'un duo de la voie Duo, posé seulement s'il est déductible par CHACUN de ses propres choix
+ * (§3.2 : aucune intention d'autrui révélée) — deux personnes qui ne cherchent qu'une histoire (la voie ne les apparie
+ * qu'en romance réciproque) ou que des potes. Quelqu'un cherche « les deux » → null (le type désignerait son intention).
+ */
+export function duoKindKnownToBoth(a: LookingFor | undefined, b: LookingFor | undefined): 'FRIENDS' | 'STORY' | null {
+  if (a === 'STORY' && b === 'STORY') return 'STORY';
+  if (a === 'FRIENDS' && b === 'FRIENDS') return 'FRIENDS';
+  return null;
 }

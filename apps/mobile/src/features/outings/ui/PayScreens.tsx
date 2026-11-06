@@ -25,24 +25,32 @@ import {
   type PaymentRequest,
 } from '../../payments';
 import { LoadingScreen, UnavailableNote } from '../../system';
+import { activityPrepaidLine, paymentLines } from '../model/activity';
 import { outingKeys, useAcceptSeat, useOuting } from '../api/hooks';
 import { euros, placeHint, schedule, weekdayLabel } from '../model/presenters';
 
 /** Ligne Apple Pay de la place : « jeu. 19 nov. 19 h 30 · Bloc d'escalade ». */
-export const seatLine = (o: Pick<OutingView, 'startsAt' | 'activity'>) =>
-  `${dayShortTime(o.startsAt)} · ${tDynamic(`activity.${o.activity}`)}`;
+export const seatLine = (o: Pick<OutingView, 'startsAt' | 'activity' | 'activityDetail'>) =>
+  `${dayShortTime(o.startsAt)} · ${o.activityDetail?.label ?? tDynamic(`activity.${o.activity}`)}`;
 
 /** Requête de paiement à partir de la réponse d'acceptation (le serveur fixe le montant). */
 export function seatPaymentRequest(
-  o: Pick<OutingView, 'startsAt' | 'activity'>,
+  o: Pick<OutingView, 'startsAt' | 'activity' | 'activityDetail'>,
   p: {
     provider: 'STRIPE' | 'LOCAL_DEMO';
     clientSecret: string;
     amountCents: number;
     currency: string;
+    activityCents?: number;
   },
 ): PaymentRequest {
-  return { ...p, label: `${t('pay.seatTitle')} · ${seatLine(o)}`, recurring: false };
+  const { activityCents, ...rest } = p;
+  return {
+    ...rest,
+    label: `${t('pay.seatTitle')} · ${seatLine(o)}`,
+    recurring: false,
+    lines: paymentLines(o, p.amountCents, activityCents),
+  };
 }
 
 function useOutingId() {
@@ -112,10 +120,11 @@ export function PayScreen() {
       overlay={
         demoSheet ? (
           <DemoPaySheet
-            title={t('pay.seatTitle')}
+            title={req.lines?.length === 1 ? t('pay.activityTitle') : t('pay.seatTitle')}
             sub={seatLine(o)}
+            lines={req.lines?.map((l) => ({ label: l.label, value: euros(l.cents) }))}
             total={euros(req.amountCents)}
-            note={t('pay.seatNote')}
+            note={[activityPrepaidLine(o), t('pay.seatNote')].filter(Boolean).join(' ')}
             busy={busy}
             onCancel={() => (router.canGoBack() ? router.back() : router.replace(paths.outing(id)))}
             onPay={() => void run(req)}
@@ -128,7 +137,7 @@ export function PayScreen() {
           {dayLong(o.startsAt, undefined, true)}
         </BodyText>
         <DisplayText size={28} heading={false}>
-          {`${timeLabel(o.startsAt)} · ${tDynamic(`activity.${o.activity}`)}`}
+          {`${timeLabel(o.startsAt)} · ${o.activityDetail?.label ?? tDynamic(`activity.${o.activity}`)}`}
         </DisplayText>
         <BodyText size={13} weight={600} color={v5.inkSoft}>
           {placeHint(o)}
@@ -158,6 +167,14 @@ export function PayOkScreen() {
       text={t('pay.okText', { day, lock: schedule(o).lock })}
       rows={[
         { label: t('pay.okSeat', { day }), value: price },
+        ...(o.activityDetail?.priceCents
+          ? [
+              {
+                label: t('pay.activityLine', { label: o.activityDetail.label }),
+                value: euros(o.activityDetail.priceCents),
+              },
+            ]
+          : []),
         { label: t('pay.okWith'), value: port?.applePay ? t('pay.applePay') : t('pay.cardWord') },
         { label: t('pay.okReceipt'), value: t('pay.okReceiptValue') },
         { label: t('pay.okIfNot'), value: t('pay.okIfNotValue') },

@@ -1152,7 +1152,8 @@
       "duringWhen": "Pendant",
       "during": "Des cartes de questions sur la table, si vous voulez. Personne n’anime.",
       "leaveWhen": "Quand tu veux",
-      "leave": "Tu pars quand tu veux. Chacun paie ce qu’il boit."
+      "leave": "Tu pars quand tu veux. Chacun paie ce qu’il boit.",
+      "leaveWithActivity": "Tu pars quand tu veux. {prepaid} Chacun paie ce qu’il boit."
     },
     "free": "Offerte",
     "freeSub": "Ensuite {price} la place. Aucune carte demandée aujourd’hui.",
@@ -1195,7 +1196,9 @@
     "inviteSecond": "Inviter un 2e proche",
     "inviteSecondValue": "sa 1re offerte",
     "seedingNote": "Pas besoin d’attendre que {city} « ouvre » : 5 personnes vérifiées sur un même créneau suffisent.",
-    "declineSeeding": "Non merci"
+    "declineSeeding": "Non merci",
+    "priceFreeActivity": "Place offerte (ta 1re sortie) + {short} {activity} · ensuite {price} + {activity}",
+    "pricePaidActivity": "{price} la place + {short} {activity} · Apple Pay"
   },
   "team": {
     "title": "VIENS AVEC QUELQU’UN.",
@@ -1430,7 +1433,8 @@
     "fullBodyAt": "Tes créneaux sont arrivés après la composition des groupes du {day} ({compose}). Tu n’as rien à faire, rien n’est perdu.",
     "nextSlotLabel": "Ton créneau suivant",
     "keep": "Garder le {day}",
-    "notThisTime": "Pas cette fois"
+    "notThisTime": "Pas cette fois",
+    "refundActivity": "{name} : {price} remboursés automatiquement, sur ta carte."
   },
   "confirm": {
     "title": "LIEU CONFIRMÉ",
@@ -1635,7 +1639,7 @@
       "NINO": "Un raton",
       "SUZIE": "Une lapine",
       "GASTON": "Un capybara",
-      "PIA": "Un pigeon"
+      "PIA": "Une pigeonne"
     },
     "proposalSub": "Une proposition pour vous deux",
     "beforeYesV55": "D’abord, chacun ne voit que l’espèce du pet et l’initiale de l’autre. La carte et le prénom, quand vous avez dit oui tous les deux ; le visage, aux visages.",
@@ -1732,7 +1736,7 @@
     "title": "CONFIDENTIALITÉ",
     "who": "Qui voit quoi",
     "group": "Ton groupe",
-    "groupWhat": "prénom, pronom, tranche d’âge, pet, nombre de femmes et d’hommes ; le lieu la veille 18 h, les visages le jour J 3 h avant",
+    "groupWhat": "pet, nombre de femmes et d’hommes ; prénoms, pronoms et tranches d’âge à la Confirmation (veille 18 h) ; les visages le jour J, 3 h avant",
     "venue": "Le lieu",
     "venueWhat": "ton prénom et ton pet, la veille à 18 h, effacés après la sortie",
     "band": "Ta bande",
@@ -1990,7 +1994,10 @@
     "failedTextNoHold": "Ta banque a refusé le paiement de {price}. Rien n’a été débité. Ta place du {day} reste gardée un moment.",
     "retry": "Réessayer",
     "otherCard": "Payer avec une autre carte",
-    "skip": "Ne pas venir cette fois"
+    "skip": "Ne pas venir cette fois",
+    "seatLine": "Place de sortie",
+    "activityLine": "{label}, payé avec ta place",
+    "activityTitle": "Activité · blowy."
   },
   "share5": {
     "noLink": "lien indisponible",
@@ -2233,5 +2240,33 @@
     "emergency": "Imprévu · je ne le sens pas",
     "emergencySub": "Imprévu, sans raison à donner : 1 fois par mois, sans pénalité, place non remboursée."
   },
-  "tarifs5": {}
+  "tarifs5": {},
+  "activityRows": {
+    "defaultShort": "activité",
+    "prepaid": "{name} : {price}, payé dans l’app avec ta place.",
+    "five_a_side": {
+      "short": "terrain",
+      "rule": "Foot à 5",
+      "arrive": "Tu arrives : terrain 2, chevalet orange au bord. Tu tapes son code à 4 chiffres dans l’app : c’est ton check‑in.",
+      "during": "Foot à 5 entre vous, ballon et chasubles prêtés par le lieu. Personne n’arbitre."
+    },
+    "bouldering": {
+      "short": "bloc",
+      "rule": "Bloc",
+      "arrive": "Tu arrives : à l’accueil de la salle, chevalet orange ; chaussons prêtés. Tu tapes son code à 4 chiffres dans l’app : c’est ton check‑in.",
+      "during": "Bloc en groupe, sur les voies faciles indiquées par le lieu."
+    },
+    "ceramics_workshop": {
+      "short": "atelier",
+      "rule": "Atelier",
+      "arrive": "Tu arrives : à l’atelier, chevalet orange à l’entrée. Tu tapes son code à 4 chiffres dans l’app : c’est ton check‑in.",
+      "during": "Encadré par le lieu. Vous êtes à la même table, en groupe."
+    },
+    "cooking_workshop": {
+      "short": "atelier",
+      "rule": "Atelier",
+      "arrive": "Tu arrives : à l’atelier, chevalet orange à l’entrée. Tu tapes son code à 4 chiffres dans l’app : c’est ton check‑in.",
+      "during": "Encadré par le lieu. Vous êtes à la même table, en groupe."
+    }
+  }
 }

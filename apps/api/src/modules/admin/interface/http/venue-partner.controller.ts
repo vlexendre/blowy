@@ -16,6 +16,7 @@ import {
   VenueDayRequestSchema,
   VenueIncidentRequestSchema,
   VenueParticipantReportRequestSchema,
+  VenueTableNoteRequestSchema,
   VenueWelcomeRequestSchema,
   VenueLoginRequestSchema,
   VenueMfaRequestSchema,
@@ -145,6 +146,15 @@ export class VenuePartnerController {
   @Put('welcome-message')
   setWelcome(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>, @CommandId() cid: string, @Body(q(VenueWelcomeRequestSchema)) b: z.infer<typeof VenueWelcomeRequestSchema>) {
     return this.venue.setWelcome(p, x.venueId, b, cid);
+  }
+  /** V5.10 (passe 5) : note de table du lieu. */
+  @Get('table-note')
+  tableNote(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>) {
+    return this.venue.tableNote(p, x.venueId);
+  }
+  @Put('table-note')
+  setTableNote(@Partner() p: VenuePartnerContext, @Query(q(VenueQuery)) x: z.infer<typeof VenueQuery>, @CommandId() cid: string, @Body(q(VenueTableNoteRequestSchema)) b: z.infer<typeof VenueTableNoteRequestSchema>) {
+    return this.venue.setTableNote(p, x.venueId, b, cid);
   }
   @Get('statement')
   statement(@Partner() p: VenuePartnerContext, @Query(q(StatementQuery)) x: z.infer<typeof StatementQuery>) {

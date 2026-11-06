@@ -257,14 +257,16 @@ function WhoRow({ who, what, first }: { who: string; what: string; first?: boole
         gap: 12,
         minHeight: 64,
         paddingHorizontal: 14,
+        paddingVertical: 10,
         borderTopWidth: first ? 0 : 1,
         borderTopColor: v5.line,
       }}
     >
-      <BodyText size={14} weight={700} style={{ width: 96 }}>
+      {/* Comme `.row` / `.val` des maquettes : deux colonnes à largeur de contenu qui rétrécissent ensemble. */}
+      <BodyText size={14} weight={700} style={{ flexShrink: 1 }}>
         {who}
       </BodyText>
-      <BodyText size={12} weight={600} color={v5.grey} align="right" style={{ flex: 1 }}>
+      <BodyText size={12} weight={600} color={v5.grey} align="right" style={{ marginLeft: 'auto', flexShrink: 1 }}>
         {what}
       </BodyText>
     </View>

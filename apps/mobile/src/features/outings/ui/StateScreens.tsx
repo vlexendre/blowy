@@ -37,7 +37,8 @@ import { useCityInsights, useMyNeighborhood, useOutingPreferences } from '../../
 import { useAllowances } from '../../payments';
 import { LoadingScreen } from '../../system';
 import { useAcceptSeat, useOuting, useWeek } from '../api/hooks';
-import { headline, placeHint, schedule, teamMates } from '../model/presenters';
+import { activityRuleName } from '../model/activity';
+import { euros, headline, placeHint, schedule, teamMates } from '../model/presenters';
 import { activityAccessory } from './OutingScreen';
 
 function PauseLink() {
@@ -379,6 +380,14 @@ export function OutingLaterScreen({ kind }: { kind: 'full' | 'cancelled' }) {
                     : t('later.noCharge')
               }
             />
+            {o?.activityDetail?.priceCents ? (
+              <CheckLine
+                text={t('later.refundActivity', {
+                  name: activityRuleName(o),
+                  price: euros(o.activityDetail.priceCents),
+                })}
+              />
+            ) : null}
             <CheckLine text={t('later.reliability')} />
             {mates.length ? (
               <CheckLine

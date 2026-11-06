@@ -13,7 +13,7 @@
  * transaction) + AuditLog dans la même transaction (acteur `venue_partner`).
  */
 import { createHmac } from 'node:crypto';
-import { VenueRosterViewSchema, type VenueContractView, type VenueMe, type VenueRosterView, type VenueScheduleView, type VenueStatementView } from '@blowy/api-contract';
+import { VENUE_TABLE_NOTE_MAX_CHARS, VenueRosterViewSchema, type VenueContractView, type VenueTableNoteView, type VenueMe, type VenueRosterView, type VenueScheduleView, type VenueStatementView } from '@blowy/api-contract';
 import { localDayKey, mondayOfWeek, wallToUtc, weekKeyOf } from '@blowy/pet-engine';
 import type { Tuning } from '@blowy/tuning';
 import type { CommandBus } from '../../../../shared/application/command-bus.js';
@@ -248,6 +248,35 @@ export class VenuePartnerUseCases {
     }
     return this.mutate(ctx, v.id, 'welcome_message_set', commandId, { length: text?.length ?? 0 }, async (scope) => {
       await this.writer.setWelcome(scope, v.id, text);
+      return { text };
+    });
+  }
+
+  /** V5.10 (passe 5) : note de table (« Table Blowy, chevalet orange au fond ») — lue par le lieu. */
+  async tableNote(ctx: VenuePartnerContext, venueId?: string): Promise<VenueTableNoteView> {
+    const v = await this.venueOf(ctx, venueId);
+    const n = (await this.writer.tableNoteOf?.(v.id)) ?? { text: null, updatedAt: null };
+    return { text: n.text, updatedAt: n.updatedAt?.toISOString() ?? null, example: 'Table Blowy, chevalet orange au fond', maxChars: VENUE_TABLE_NOTE_MAX_CHARS, visibleFrom: 'CONFIRMATION' };
+  }
+
+  /**
+   * V5.10 (passe 5) : écrit (ou retire) la note de table — mêmes règles que le message d'accueil (longueur, lien,
+   * téléphone, puis modération ; refus → 412 `TABLE_NOTE_REJECTED {issue}`). Montrée aux places confirmées à partir de
+   * la confirmation (`OutingView.venue.tableNote`).
+   */
+  async setTableNote(ctx: VenuePartnerContext, venueId: string | undefined, b: { text: string | null }, commandId: string) {
+    const text = b.text?.trim() ? b.text.trim().replace(/\s+/g, ' ') : null;
+    const v = await this.venueOf(ctx, venueId);
+    if (text) {
+      const issue = welcomeMessageIssue(text, VENUE_TABLE_NOTE_MAX_CHARS);
+      if (issue) throw Errors.precondition('TABLE_NOTE_REJECTED', { issue });
+      if (!this.moderation) throw new AppError('PROVIDER_UNAVAILABLE', 'Modération indisponible', { retryable: true, detailsSafe: { reason: 'MODERATION_UNAVAILABLE' } });
+      const verdict = await this.moderation.moderate({ text, venueId: v.id, authorId: ctx.userId });
+      if (verdict !== 'ALLOW') throw Errors.precondition('TABLE_NOTE_REJECTED', { issue: 'MODERATION' });
+    }
+    return this.mutate(ctx, v.id, 'table_note_set', commandId, { length: text?.length ?? 0 }, async (scope) => {
+      if (!this.writer.setTableNote) throw new AppError('NOT_CONFIGURED', 'Note de table indisponible');
+      await this.writer.setTableNote(scope, v.id, text);
       return { text };
     });
   }

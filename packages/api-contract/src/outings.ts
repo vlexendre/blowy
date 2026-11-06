@@ -177,6 +177,8 @@ export const OutingVenueViewSchema = z
     travelEstimated: z.literal(true).optional(),
     /** V5.7 (E30, D-080) : message d'accueil écrit par le lieu — places confirmées, à partir de la confirmation. */
     welcomeMessage: z.string().max(280).optional(),
+    /** V5.10 (passe 5) : note de table écrite par le lieu (« Terrain 2, chevalet orange au bord ») — mêmes règles que l'accueil. */
+    tableNote: z.string().max(80).optional(),
     /** V5.6 (B.14) : ambiance du lieu (« lieu calme » / « lieu animé ») ; absente = convient à tous. */
     ambiance: z.enum(['CALM', 'LIVELY']).optional(),
   })

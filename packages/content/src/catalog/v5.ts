@@ -164,9 +164,9 @@ const det = (id: string, kind: ActivityKind, fr: string, durationMinutes: number
 export const ACTIVITY_DETAILS: ActivityDetailEntry[] = [
   det('drinks', 'DRINK_COFFEE', 'Verre ou café', 120),
   det('board_games', 'GAMES', 'Jeux de société', 120),
-  det('bouldering', 'CLIMBING', 'Bloc d’escalade', 120, undefined, 1500),
-  det('ceramics_workshop', 'WORKSHOP', 'Atelier céramique', 120, 'Encadré par le lieu', 3500),
-  det('cooking_workshop', 'WORKSHOP', 'Atelier cuisine', 120, 'Encadré par le lieu', 3900),
+  det('bouldering', 'CLIMBING', 'Bloc d’escalade', 120, undefined, 1200),
+  det('ceramics_workshop', 'WORKSHOP', 'Atelier céramique', 120, 'Encadré par le lieu', 2500),
+  det('cooking_workshop', 'WORKSHOP', 'Atelier cuisine', 120, 'Encadré par le lieu', 2500),
   det('five_a_side', 'SPORT', 'Foot à 5', 60, undefined, 900),
   det('brunch', 'BRUNCH', 'Brunch', 120),
   det('exhibition', 'EXHIBITION', 'Expo', 90, undefined, 1200),

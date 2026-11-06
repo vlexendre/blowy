@@ -207,7 +207,9 @@
       "25 €",
       "9 €",
       "12 €",
-      "16,99 €"
+      "16,99 €",
+      "30 €",
+      "24,63 €"
     ],
     "compensationOfferte": "3 €",
     "blowyPlusVia": "Apple Pay",
@@ -466,7 +468,7 @@
     "jour": "mardi 17 novembre",
     "court": "mar. 17 nov.",
     "activite": "Foot à 5",
-    "typeLieu": "un five de la Croix-Rousse",
+    "typeLieu": "un terrain de la Croix-Rousse",
     "lieuCourt": "lun. 16 nov. 18 h",
     "visagesCourt": "mar. 17 nov. 16 h 30",
     "ages": "22–29 ans",
@@ -543,7 +545,8 @@
     "adresse": "8 rue Marcadet, Paris 18e",
     "metro": "Marcadet-Poissonniers (ligne 4)",
     "lieuIso": "2026-11-18T18:00",
-    "proche": "Yacine"
+    "proche": "Yacine",
+    "table": "À l’accueil de la salle, chevalet orange"
   },
   "proposition": {
     "quand": "lundi 21 h",
@@ -851,44 +854,61 @@
   "duoSpec216": "Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux.",
   "activitePrix": {
     "lille": {
+      "activite": "Atelier céramique",
       "prix": "25 €",
-      "phrase": "Atelier : 25 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Sortie-lille",
         "V5-Amorcage",
         "V5-Amorcage-solo"
       ],
-      "sous": "Place offerte (ta 1re sortie) + atelier 25 € · ensuite 4,99 € + 25 €",
+      "phrase": "Atelier céramique : 25 €, payé dans l’app avec ta place.",
+      "sous": "Place offerte (ta 1re sortie) + Atelier céramique : 25 € · ensuite 4,99 € + 25 €",
+      "trouvee": "Ta 1re sortie est offerte (+ Atelier céramique : 25 €, payé dans l’app).",
       "arrive": "Tu arrives : à l’atelier, chevalet orange à l’entrée. Tu tapes son code à 4 chiffres dans l’app : c’est ton check-in.",
       "pendant": "Encadré par le lieu. Vous êtes à la même table, en groupe."
     },
     "lyon": {
+      "activite": "Foot à 5",
       "prix": "9 €",
-      "phrase": "Foot à 5 : 9 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Sortie-lyon"
       ],
-      "sous": "Place offerte (ta 1re sortie) + terrain 9 € · ensuite 4,99 € + 9 €",
+      "phrase": "Foot à 5 : 9 €, payé dans l’app avec ta place.",
+      "sous": "Place offerte (ta 1re sortie) + Foot à 5 : 9 € · ensuite 4,99 € + 9 €",
+      "trouvee": "Ta 1re sortie est offerte (+ Foot à 5 : 9 €, payé dans l’app).",
       "arrive": "Tu arrives : terrain 2, chevalet orange au bord. Tu tapes son code à 4 chiffres dans l’app : c’est ton check-in.",
-      "pendant": "Foot à 5 entre vous, ballon et chasubles prêtés par le lieu. Personne n’arbitre."
+      "pendant": "Foot à 5 entre vous, ballon et chasubles prêtés par le lieu. Personne n’arbitre.",
+      "trouveeEcran": "V5-Trouvee-lyon"
     },
     "banlieue": {
+      "activite": "Bloc d’escalade",
       "prix": "12 €",
-      "phrase": "Bloc : 12 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Sortie-banlieue"
       ],
-      "sous": "Place offerte (ta 1re sortie) + bloc 12 € · ensuite 4,99 € + 12 €",
+      "phrase": "Bloc d’escalade : 12 €, payé dans l’app avec ta place.",
+      "sous": "Place offerte (ta 1re sortie) + Bloc d’escalade : 12 € · ensuite 4,99 € + 12 €",
+      "trouvee": "Ta 1re sortie est offerte (+ Bloc d’escalade : 12 €, payé dans l’app).",
       "arrive": "Tu arrives : à l’accueil de la salle, chevalet orange ; chaussons prêtés. Tu tapes son code à 4 chiffres dans l’app : c’est ton check-in.",
-      "pendant": "Bloc en groupe, sur les voies faciles indiquées par le lieu."
+      "pendant": "Bloc en groupe, sur les voies faciles indiquées par le lieu.",
+      "trouveeEcran": "V5-Trouvee-banlieue"
     },
     "paris2": {
+      "activite": "Bloc d’escalade",
       "prix": "12 €",
-      "phrase": "Bloc : 12 €, payé dans l’app avec ta place.",
+      "phrase": "Bloc d’escalade : 12 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Paiement"
       ],
-      "total": "16,99 €"
+      "total": "16,99 €",
+      "place": "4,99 €"
+    },
+    "weekend": {
+      "activite": "Atelier cuisine",
+      "prix": "30 €",
+      "ecrans": [],
+      "trouvee": "Ta 1re sortie est offerte (+ Atelier cuisine : 30 €, payé dans l’app).",
+      "trouveeEcran": "V5-Trouvee-weekend"
     }
   },
   "especes": [
@@ -943,5 +963,117 @@
     "Ilyes",
     "Lina"
   ],
-  "activiteContrat": "Activité prépayée, place confirmée, honorée ou non son prix, reversé en totalité (HT)"
+  "activiteContrat": "Activité prépayée, place confirmée, honorée ou non prix TTC de l’activité, diminué des frais de paiement (≈ 1,5 %), encaissé au nom et pour le compte du lieu ; jamais pour une place remboursée (le lieu reçoit alors la compensation de 3 € HT seule)",
+  "prixSorties": {
+    "_doc": "Modèle de prix par sortie : place (offerte ou 4,99 €), activité prépayée (prix du lieu), total débité. Chaque écran qui affiche un montant de la sortie le reprend.",
+    "jeu19-paris": {
+      "place": "4,99 €",
+      "activite": "Bloc d’escalade : 12 €",
+      "total": "16,99 €",
+      "ecrans": {
+        "V5-Paiement": [
+          "16,99 €",
+          "4,99 €",
+          "12 €"
+        ],
+        "V5-Paiement-ok": [
+          "16,99 €"
+        ],
+        "V5-Paiement-echec": [
+          "16,99 €"
+        ],
+        "V5-Supprimer": [
+          "16,99 €"
+        ]
+      }
+    },
+    "mar17-lyon": {
+      "place": "offerte",
+      "activite": "Foot à 5 : 9 €",
+      "total": "9 €",
+      "ecrans": {
+        "V5-Trouvee-lyon": [
+          "Foot à 5 : 9 €"
+        ],
+        "V5-Sortie-lyon": [
+          "Foot à 5 : 9 €"
+        ]
+      }
+    },
+    "jeu19-saintdenis": {
+      "place": "offerte",
+      "activite": "Bloc d’escalade : 12 €",
+      "total": "12 €",
+      "ecrans": {
+        "V5-Trouvee-banlieue": [
+          "Bloc d’escalade : 12 €"
+        ],
+        "V5-Sortie-banlieue": [
+          "Bloc d’escalade : 12 €"
+        ]
+      }
+    },
+    "sam14-lille": {
+      "place": "offerte",
+      "activite": "Atelier céramique : 25 €",
+      "total": "25 €",
+      "ecrans": {
+        "V5-Sortie-lille": [
+          "Atelier céramique : 25 €"
+        ],
+        "V5-Amorcage": [
+          "Atelier céramique : 25 €"
+        ],
+        "V5-Amorcage-solo": [
+          "Atelier céramique : 25 €"
+        ]
+      }
+    },
+    "sam21-claire": {
+      "place": "offerte",
+      "activite": "Atelier cuisine : 30 €",
+      "total": "30 €",
+      "ecrans": {
+        "V5-Trouvee-weekend": [
+          "Atelier cuisine : 30 €"
+        ]
+      }
+    }
+  },
+  "prixInterdits": {
+    "V5-Paiement-ok": [
+      "4,99 €"
+    ],
+    "V5-Paiement-echec": [
+      "paiement de 4,99 €"
+    ],
+    "V5-Tarifs": [
+      "Aucune carte demandée."
+    ],
+    "V5-Trouvee-lyon": [
+      "Ta 1re sortie est offerte.",
+      "un five"
+    ],
+    "V5-Trouvee-banlieue": [
+      "Ta 1re sortie est offerte."
+    ],
+    "V5-Trouvee-weekend": [
+      "Ta 1re sortie est offerte."
+    ],
+    "V5-Confirmation-banlieue": [
+      "Table Blowy"
+    ],
+    "V5-Sortie-lyon": [
+      "five"
+    ]
+  },
+  "prixRequis": {
+    "V5-Tarifs": [
+      "sauf activité payante",
+      "Ni la 1re sortie offerte ni Blowy+"
+    ],
+    "V5-Abonnement": [
+      "Activités payantes"
+    ]
+  }
 }

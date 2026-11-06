@@ -11,7 +11,7 @@ import { ONCALL_MARGIN_BEFORE_MS } from '../../../shared/application/ports/oncal
 import { AppError, Errors } from '../../../shared/domain/errors.js';
 import type { TxScope } from '../../../shared/application/unit-of-work.js';
 import { codeMatches, venueCode } from '../../outings/domain/checkin.js';
-import { canMoveDuo, checkinWindow, DATE_DURATION_MS, dateInRange, duoCapacity, eggActive, eggEligible, isLateCancel, isUnlocked, localMinuteOf, restingStatus, voteOptionsFor, duoDateLockAt } from '../domain/duo-policy.js';
+import { canMoveDuo, checkinWindow, DATE_DURATION_MS, dateInRange, duoCapacity, eggActive, eggEligible, isLateCancel, isUnlocked, localMinuteOf, restingStatus, voteOptionsFor, duoDateLockAt, duoKindKnownToBoth } from '../domain/duo-policy.js';
 import type { ConnectionsDeps } from './deps.js';
 import type { DuoDateRow, DuoRow } from './ports/connections.repository.js';
 
@@ -73,7 +73,10 @@ export class DuoUseCases {
         const [low, high] = userId < otherId ? [userId, otherId] : [otherId, userId];
         const duoId = this.x.random.uuid();
         const t = this.x.tuning.duo;
-        if (!(await this.repo.createDuo(scope, { id: duoId, low, high, origin: 'LANE', status: 'EXCHANGE', exchangeEndsAt: new Date(scope.now.getTime() + t.exchangeHours * 3_600_000), dateDeadline: new Date(scope.now.getTime() + t.dateDeadlineDays * 86_400_000), proposalId }))) {
+        // V5.10 (passe 5) : type du duo figé à la création, seulement s'il est su des deux (§3.2).
+        const seeks = await this.repo.seeks([low, high], scope.now);
+        const kind = duoKindKnownToBoth(seeks.get(low)?.lookingFor, seeks.get(high)?.lookingFor);
+        if (!(await this.repo.createDuo(scope, { id: duoId, low, high, origin: 'LANE', status: 'EXCHANGE', exchangeEndsAt: new Date(scope.now.getTime() + t.exchangeHours * 3_600_000), dateDeadline: new Date(scope.now.getTime() + t.dateDeadlineDays * 86_400_000), proposalId, kind }))) {
           // Un duo vivant existe déjà pour cette paire (né d'une sortie) : la proposition n'a plus d'objet.
           await this.repo.setLaneProposalStatus(scope, proposalId, 'INVALIDATED');
           throw Errors.precondition('PROPOSAL_NOT_OPEN');

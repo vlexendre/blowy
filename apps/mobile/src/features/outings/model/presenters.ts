@@ -203,8 +203,9 @@ export function fundingKind(
 }
 
 /** « 4,99 € » depuis des centimes entiers. */
+/** « 4,99 € », « 12 € » (montant rond sans décimales, comme les maquettes). */
 export function euros(cents: number): string {
-  const s = (cents / 100).toFixed(2).replace('.', ',');
+  const s = cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2).replace('.', ',');
   return `${s}${NBSP}€`;
 }
 

@@ -16,7 +16,8 @@ import {
   DisplayText,
   type GroupSlot,
 } from '@blowy/ui-mobile';
-import { t, tDynamic } from '../../../i18n';
+import { hasKey, t, tDynamic } from '../../../i18n';
+import { activityPrepaidLine } from '../model/activity';
 import { router } from 'expo-router';
 import { paths } from '../../../core/navigation/paths';
 import { useMyNeighborhood } from '../../account';
@@ -130,7 +131,16 @@ export function OutingHeroV55({ o, delayMs = 40 }: { o: OutingView; delayMs?: nu
 }
 
 /** « Comment ça se passe » (arrivée, pendant, départ). */
+/** Rangées « Tu arrives / Pendant » propres à l'activité (`activityDetail.key`), sinon celles du bar à jeux. */
+const rowFor = (o: OutingView, row: 'arrive' | 'during'): string | null => {
+  const key = o.activityDetail?.key;
+  return key && hasKey(`activityRows.${key}.${row}`)
+    ? tDynamic(`activityRows.${key}.${row}`)
+    : null;
+};
+
 export function HowItGoes({ o }: { o: OutingView }) {
+  const prepaid = activityPrepaidLine(o);
   return (
     <CardV5 style={{ padding: 14, gap: 10 }}>
       <DisplayText size={20} heading={false}>
@@ -138,10 +148,16 @@ export function HowItGoes({ o }: { o: OutingView }) {
       </DisplayText>
       <TimelineLine
         when={headline(o, '').hours.split(' – ')[0] ?? ''}
-        text={t('outing.how.arrive')}
+        text={rowFor(o, 'arrive') ?? t('outing.how.arrive')}
       />
-      <TimelineLine when={t('outing.how.duringWhen')} text={t('outing.how.during')} />
-      <TimelineLine when={t('outing.how.leaveWhen')} text={t('outing.how.leave')} />
+      <TimelineLine
+        when={t('outing.how.duringWhen')}
+        text={rowFor(o, 'during') ?? t('outing.how.during')}
+      />
+      <TimelineLine
+        when={t('outing.how.leaveWhen')}
+        text={prepaid ? t('outing.how.leaveWithActivity', { prepaid }) : t('outing.how.leave')}
+      />
     </CardV5>
   );
 }

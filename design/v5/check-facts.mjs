@@ -231,7 +231,7 @@ for (const f of files) {
   // 29. Aucun lien de partage sur Les visages (et Souvenir avant le vote)
   if (F.ecransVisages.includes(base)) { checks++; if (/href="V5-(?:Partage|Story|Cartes)/.test(html) || /\bPartager\b/.test(t)) push(f, 'lien de partage sur un écran de visages'); }
   // 30. TTC côté client, HT côté lieu
-  if (base.startsWith('L-')) { for (const m of t.matchAll(/\d+(?:,\d\d)? €(?! HT)/g)) { checks++; push(f, `montant « ${m[0]} » sans « HT » côté lieu`); } }
+  if (base.startsWith('L-')) { for (const m of t.matchAll(/\d+(?:,\d\d)? €(?! HT| TTC)/g)) { checks++; push(f, `montant « ${m[0]} » sans « HT » côté lieu`); } }
   else { checks++; if (/\bHT\b|hors taxes/.test(t)) push(f, 'montant HT sur un écran client (TTC côté client)'); }
   // 31. Tarifs = contrat = écran client : mêmes phrases canoniques
   if (base === 'V5-Tarifs' || base === 'L-Contrat') for (const k of F.tarifsContrat) { checks++; if (!norm(t).includes(F.regles[k])) push(f, `phrase canonique « ${k} » absente (Tarifs = contrat)`); }
@@ -262,6 +262,12 @@ for (const f of files) {
   { checks++; if (t.includes('à régler au lieu')) push(f, '« à régler au lieu » : l’activité est prépayée dans l’app'); }
   if (base === 'V5-Paiement') { checks++; if (!t.includes(F.activitePrix.paris2.total)) push(f, 'récapitulatif place + activité absent'); }
   if (base === 'L-Contrat') { checks++; if (!t.includes(F.activiteContrat)) push(f, 'clause activité prépayée absente'); }
+  // 47. Tour 13 · modèle de prix par sortie (facts.prixSorties) : chaque écran qui affiche un montant de la sortie reprend place, activité et total
+  for (const [id, sp] of Object.entries(F.prixSorties)) { if (id.startsWith('_') || !sp.ecrans[base]) continue;
+    for (const m of sp.ecrans[base]) { checks++; if (!t.includes(m)) push(f, `sortie ${id} : montant « ${m} » absent (total ${sp.total})`); } }
+  for (const w of F.prixInterdits[base] || []) { checks++; if (t.includes(w)) push(f, `« ${w} » contredit le prix de la sortie`); }
+  for (const w of F.prixRequis[base] || []) { checks++; if (!t.includes(w)) push(f, `« ${w} » absent`); }
+  for (const a of Object.values(F.activitePrix)) if (a.trouveeEcran === base) { checks++; if (!t.includes(a.trouvee)) push(f, `Trouvée sans l’activité : « ${a.trouvee} »`); }
   // 33. V5.8 · heure de la frise = heure de la carte de sortie
   { const carte = t.match(/(\d{1,2} h(?: \d\d)?) – \d{1,2} h/); for (const m of t.matchAll(/(\d{1,2} h(?: \d\d)?) La sortie\b/g)) { checks++; if (carte && m[1] !== carte[1]) push(f, `frise « ${m[0]} » ≠ carte « ${carte[0]} »`); } }
   // 34. Aucune sortie promise avant composition (écrans d'attente et de remplacement)

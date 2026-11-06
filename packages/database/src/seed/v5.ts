@@ -125,11 +125,16 @@ export async function seedV5(db: Db, now: Date): Promise<{ accounts: string[]; o
       venue('bloc-oberkampf', NB.paris, 'Bloc Oberkampf', '88 rue Saint-Maur', '75011', 'Paris', 48.8662, 2.3797, 'venue.offer.activity_spot', ['CLIMBING']),
       venue('bistrot-croix-rousse', NB.lyon, 'Le Bistrot de la Croix-Rousse', '5 place de la Croix-Rousse', '69004', 'Lyon', 45.7745, 4.8316, 'venue.offer.table_reserved', ['DRINK_COFFEE', 'BRUNCH']),
       venue('cafe-basilique', NB.sd, 'Café de la Basilique', '2 rue de la République', '93200', 'Saint-Denis', 48.9356, 2.3594, 'venue.offer.table_reserved', ['DRINK_COFFEE']),
+      // V5.10 : atelier de la ville d'amorçage — activité prépayée avec la place (25 €, design/v5/facts.json `activitePrix`).
+      venue('atelier-canal', NB.sd, 'L’Atelier du Canal', '8 quai de Seine', '93200', 'Saint-Denis', 48.9312, 2.3561, 'venue.offer.activity_spot', ['WORKSHOP']),
     ],
   });
   // V5.9 : activité précise (libellés de design/v5/facts.json).
   await db.venue.updateMany({ where: { name: 'Café des Oiseaux' }, data: { activityDetailKey: 'board_games' } });
   await db.venue.updateMany({ where: { name: 'Bloc Oberkampf' }, data: { activityDetailKey: 'bouldering' } });
+  // V5.10 : activité payante prépayée (prix du lieu) ; note de table servie à la confirmation.
+  await db.venue.updateMany({ where: { name: 'L’Atelier du Canal' }, data: { activityDetailKey: 'ceramics_workshop', activityPriceCents: 2500 } });
+  await db.venue.updateMany({ where: { name: 'Café des Oiseaux' }, data: { tableNote: 'Table Blowy, chevalet orange au fond', tableNoteUpdatedAt: now } });
 
   // ------------------------------------------------------------ personnes V5 (nouvelles)
   for (const p of NEW_PEOPLE) {

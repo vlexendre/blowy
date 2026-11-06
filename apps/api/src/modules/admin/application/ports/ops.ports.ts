@@ -102,6 +102,9 @@ export interface OpsConfigWriter {
   // V5.7 (E30) : message d'accueil du lieu.
   welcomeOf(venueId: string): Promise<{ text: string | null; updatedAt: Date | null }>;
   setWelcome(scope: TxScope, venueId: string, text: string | null): Promise<void>;
+  // V5.10 (passe 5) : note de table du lieu.
+  tableNoteOf?(venueId: string): Promise<{ text: string | null; updatedAt: Date | null }>;
+  setTableNote?(scope: TxScope, venueId: string, text: string | null): Promise<void>;
 }
 /** V5.7 (E30) : modération du message d'accueil (adaptateur du `ModerationGateway` des conversations). */
 export interface VenueTextModeration {

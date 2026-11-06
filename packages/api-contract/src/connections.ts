@@ -102,6 +102,13 @@ export const DuoViewSchema = z
     id: UuidSchema,
     status: DuoStatusSchema,
     origin: DuoOriginSchema,
+    /**
+     * V5.10 (passe 5) : pastille « Pour une histoire » / « Pour un·e pote » — servie aux DEUX membres seulement, et
+     * seulement quand chacun la sait déjà (§3.2 : aucune intention d'autrui révélée) : duo né d'un vote « plus » mutuel
+     * (`STORY`), ou voie Duo entre deux personnes qui ne cherchent QUE une histoire (`STORY`) ou QUE des potes (`FRIENDS`).
+     * Absente sinon (quelqu'un cherche « les deux » : le type désignerait son intention).
+     */
+    kind: z.enum(['FRIENDS', 'STORY']).optional(),
     other: z
       .object({ firstName: z.string(), pet: PetCardSchema, photo: RevealedPhotoSchema.optional() })
       .strict(),

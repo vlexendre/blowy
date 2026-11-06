@@ -680,6 +680,12 @@ export function outing2(): OutingView {
     endsAt: paris('2026-11-19T21:30'),
     capacity: 5,
     activity: 'CLIMBING',
+    activityDetail: {
+      key: 'bouldering',
+      label: 'Bloc d’escalade',
+      durationMinutes: 120,
+      priceCents: 1200,
+    },
     preview: { size: 5, ageMin: 26, ageMax: 34, genders: { WOMAN: 2, MAN: 3 }, teams: 0 },
     confirmedCount: 2,
     mySeat: { status: 'INVITED', acceptDeadline: paris('2026-11-18T12:00') },
@@ -717,6 +723,19 @@ export function outingLille(mates: readonly string[]): OutingView {
     endsAt: paris('2026-11-14T17:00'),
     capacity: 5,
     activity: 'WORKSHOP',
+    activityDetail: {
+      key: 'ceramics_workshop',
+      label: 'Atelier céramique',
+      durationMinutes: 120,
+      ledBy: 'Encadré par le lieu',
+      priceCents: 2500,
+    },
+    travel: {
+      minutes: 10,
+      estimated: true,
+      mode: 'TRANSIT',
+      fromNeighborhoodLabel: 'Lille-Wazemmes',
+    },
     preview: {
       size: 5,
       ageMin: 22,
@@ -940,8 +959,10 @@ export const seatAcceptPay: SeatAcceptResponse = {
   payment: {
     provider: 'LOCAL_DEMO',
     clientSecret: 'local_demo_seat',
-    amountCents: 499,
+    // Place 4,99 € + bloc 12 € prépayé (V5.10), un seul paiement.
+    amountCents: 1699,
     currency: 'EUR',
+    activityCents: 1200,
   },
 };
 
@@ -1000,8 +1021,8 @@ export function outingAway(city: AwayCity, phase: Phase1): OutingView {
     endsAt: new Date(Date.parse(SORTIE1.endsAt) + shift).toISOString(),
     activity: lyon ? 'SPORT' : 'CLIMBING',
     activityDetail: lyon
-      ? { key: 'five_a_side', label: 'Foot à 5', durationMinutes: 120 }
-      : { key: 'bouldering', label: 'Bloc d’escalade', durationMinutes: 120 },
+      ? { key: 'five_a_side', label: 'Foot à 5', durationMinutes: 120, priceCents: 900 }
+      : { key: 'bouldering', label: 'Bloc d’escalade', durationMinutes: 120, priceCents: 1200 },
     travel: lyon
       ? { minutes: 18, estimated: true, mode: 'TRANSIT', fromNeighborhoodLabel: 'Lyon 7e' }
       : {

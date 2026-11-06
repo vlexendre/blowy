@@ -18,6 +18,8 @@ const SYS = {
 } as const;
 
 export interface DemoPaySheetProps {
+  /** Détail avant la carte (place, activité prépayée). */
+  lines?: readonly { label: string; value: string }[];
   title: string;
   sub: string;
   total: string;
@@ -32,6 +34,7 @@ export function DemoPaySheet({
   sub,
   total,
   note,
+  lines,
   onPay,
   onCancel,
   busy,
@@ -127,6 +130,25 @@ export function DemoPaySheet({
               </BodyText>
             </View>
           </View>
+          {(lines ?? []).map((l) => (
+            <View
+              key={l.label}
+              style={{
+                flexDirection: 'row',
+                paddingVertical: 12,
+                paddingHorizontal: 14,
+                borderBottomWidth: 1,
+                borderBottomColor: SYS.line,
+              }}
+            >
+              <BodyText size={15} weight={400} color={SYS.black} style={{ flexShrink: 1 }}>
+                {l.label}
+              </BodyText>
+              <BodyText size={15} weight={400} color={SYS.grey} style={{ marginLeft: 'auto' }}>
+                {l.value}
+              </BodyText>
+            </View>
+          ))}
           <View
             style={{
               flexDirection: 'row',

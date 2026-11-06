@@ -343,6 +343,15 @@ export class PrismaOpsConfigWriter implements OpsConfigWriter {
     await txOf(scope).venue.update({ where: { id: venueId }, data: { welcomeMessage: text, welcomeMessageUpdatedAt: scope.now } });
   }
 
+  async tableNoteOf(venueId: string) {
+    const v = await this.reader().venue.findUnique({ where: { id: venueId }, select: { tableNote: true, tableNoteUpdatedAt: true } });
+    return { text: v?.tableNote ?? null, updatedAt: v?.tableNoteUpdatedAt ?? null };
+  }
+
+  async setTableNote(scope: TxScope, venueId: string, text: string | null) {
+    await txOf(scope).venue.update({ where: { id: venueId }, data: { tableNote: text, tableNoteUpdatedAt: scope.now } });
+  }
+
   async setNeighborhoodCenter(scope: TxScope, id: string, c: { lat: number; lng: number }) {
     await txOf(scope).neighborhood.update({ where: { id }, data: { centerLat: c.lat, centerLng: c.lng } });
   }

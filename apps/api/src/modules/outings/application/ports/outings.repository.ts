@@ -265,6 +265,8 @@ export interface OutingsRepository {
   /** V5.6 (§7.5) : contexte de la vue sortie (ambiance et quartier du lieu ; quartier et activités du lecteur). */
   outingViewExtras(outingId: string, viewerId: string): Promise<{ venueId: string; venueAmbiance: 'CALM' | 'LIVELY' | null; neighborhoodId: string; activity: string; viewerHome: string | null; viewerHomeLabel: string | null; viewerActivities: string[]; activityDetailKey: string | null; activityPriceCents?: number | null; durationMinutes: number } | null>;
   /** V5.10 : activité à prépayer avec la place (null = rien à prépayer). */
+  /** V5.10 (passe 5) : note de table du lieu (servie avec le lieu, dès la confirmation). */
+  venueTableNote?(venueId: string): Promise<string | null>;
   activityQuote?(scope: TxScope | null, outingId: string): Promise<{ cents: number; taxBasis: 'TTC' | 'HT' } | null>;
   /** V5.9 : trajet à pied estimé dans un quartier. */
   walkWithin(neighborhoodId: string): Promise<number | null>;

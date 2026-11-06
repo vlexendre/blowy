@@ -81,6 +81,8 @@ export class ConnectionQueries {
       id: d.id,
       status: d.status,
       origin: d.origin,
+      // V5.10 (passe 5) : pastille du duo — seulement si chacun la sait déjà (figée à la création), mes duos seulement.
+      ...(d.kind ? { kind: d.kind } : {}),
       other: {
         firstName: p?.firstName ?? '',
         pet: p?.pet ?? { name: 'Un pet', species: 'NINO', equipped: [], traits: [] },
