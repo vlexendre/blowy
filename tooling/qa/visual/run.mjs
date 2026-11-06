@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global process, console, Buffer, fetch, AbortSignal, setTimeout, document, localStorage */
 // Banc QA visuel Blowy : capture chaque route de l'app (Expo web, react-native-web) dans
 // Chromium 390×844 @2x, la compare au rendu de référence de la maquette et écrit
 // .local/qa/visual/{index.html,results.json,ref/,app/,diff/}.
@@ -50,6 +51,7 @@ const refsDir = resolve(ROOT, args.ref ?? args.refs ?? ROUTES.refs ?? 'design/v4
 const DEMO_DRAFT = ROUTES.demoDraft;
 const only = args.only ? new Set(String(args.only).split(',')) : null;
 const children = [];
+// eslint-disable-next-line no-console -- sortie CLI
 const log = (...m) => console.log('[qa:visual]', ...m);
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -186,7 +188,9 @@ async function capture(browser, screen, url, session) {
           localStorage.clear();
           for (const [k, v] of Object.entries(s.secure)) localStorage.setItem(`blowy.qa.secure.${k}`, v);
           if (s.draft) localStorage.setItem('blowy.onboarding.draft.v1', JSON.stringify(s.draft));
-        } catch {}
+        } catch {
+          /* stockage indisponible : capture déconnectée */
+        }
       }, seed);
     }
     const page = await ctx.newPage();

@@ -1,3 +1,4 @@
+/* global URL */
 // Serveur statique minimal pour l'export Expo web (SPA : toute route inconnue → index.html).
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';

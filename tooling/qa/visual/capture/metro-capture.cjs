@@ -1,3 +1,5 @@
+/* global require, module, __dirname */
+/* eslint-disable @typescript-eslint/no-require-imports -- configuration Metro (CommonJS) */
 // Extension Metro du banc QA visuel. Activée UNIQUEMENT si BLOWY_QA_CAPTURE=1 (voir
 // apps/mobile/metro.config.js) et n'agit que pour platform === 'web' : les builds iOS/Android
 // et tout build sans cette variable sont strictement inchangés.

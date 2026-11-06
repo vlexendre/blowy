@@ -1,3 +1,4 @@
+/* global Buffer */
 // Comparaison pixel référence ↔ capture (pixelmatch) avec masques, et score « basse
 // résolution » complémentaire (moins sensible aux décalages d'un pixel).
 import pixelmatch from 'pixelmatch';

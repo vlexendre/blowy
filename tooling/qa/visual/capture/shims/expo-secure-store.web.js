@@ -1,3 +1,4 @@
+/* global localStorage */
 // Shim de CAPTURE uniquement (BLOWY_QA_CAPTURE=1, plateforme web) : expo-secure-store n'a pas
 // d'implémentation web. Stockage en localStorage préfixé, pour que le banc puisse injecter le
 // jeton d'un compte de démo. Jamais résolu dans un build natif ni dans un build normal.
