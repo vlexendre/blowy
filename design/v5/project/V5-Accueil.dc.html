@@ -13,35 +13,38 @@
 body{margin:0;font-family:'Inter',system-ui,sans-serif;color:#16110D}
 a{color:inherit;text-decoration:none}
 .d{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-stretch:85%;letter-spacing:-.03em;line-height:.95}
-.lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8A7E70}
-.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#6F6458}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;border-radius:18px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap;box-sizing:border-box}
 .btn:active{transform:translateY(4px);box-shadow:none}
-.b1{background:#FF5A3C;color:#fff;box-shadow:0 5px 0 #C4341B}
+.b1{background:#D93A1C;color:#fff;box-shadow:0 5px 0 #9E2510}
 .b2{background:#16110D;color:#fff;box-shadow:0 5px 0 #000}
 .b3{background:#fff;color:#16110D;box-shadow:0 5px 0 #E8D9C4}
 .bl{background:#C8F542;color:#16110D;box-shadow:0 5px 0 #16110D}
-.ghost{min-height:44px;border:0;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:inherit;display:flex;align-items:center;justify-content:center;width:100%}
-.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.bdis{background:#E9DFD1;color:#5A5047;box-shadow:none;cursor:not-allowed}
+.ghost{min-height:44px;border:0;background:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:#5A5047;display:flex;align-items:center;justify-content:center;width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;white-space:nowrap}
 .tag{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:5px 12px 5px 5px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.07)}
-.tag b{width:22px;height:22px;border-radius:50%;background:#16110D;color:#C8F542;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
-.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.tag b{min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:#16110D;color:#C8F542;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.back{width:44px;height:44px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #EEDFCB;display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:0;cursor:pointer}
+.icb{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:0;cursor:pointer}
 .blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none}
 .card{background:#fff;border-radius:22px;box-shadow:0 4px 0 #EEDFCB;color:#16110D}
 .grp{background:#fff;border-radius:20px;box-shadow:0 4px 0 #EEDFCB;overflow:hidden}
-.row{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 14px;font-size:14px;font-weight:700;white-space:nowrap;border-top:1px solid #F4EADC}
+.row{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 14px;font-size:14px;font-weight:700;border-top:1px solid #F4EADC;box-sizing:border-box}
 .row:first-child{border-top:0}
-.val{margin-left:auto;font-size:12px;font-weight:600;color:#8A7E70}
+.val{margin-left:auto;font-size:12px;font-weight:600;color:#6F6458;text-align:right}
 .ico{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.chev{margin-left:6px;flex:0 0 auto}
-.cap{display:inline-block;background:#16110D;color:#fff;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+.cap{display:inline-block;background:#16110D;color:#fff;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:600}
 .them{align-self:flex-start;max-width:270px;background:#fff;border-radius:20px 20px 20px 6px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #EEDFCB}
-.me{align-self:flex-end;max-width:270px;background:linear-gradient(135deg,#FF3D7F,#FF5A3C);color:#fff;border-radius:20px 20px 6px 20px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #C4341B}
-.seg{flex:1 1 0;min-height:44px;border-radius:14px;border:0;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;white-space:nowrap}
-.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.34));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -10px 18px rgba(255,255,255,.2),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
-.gnav::before{content:'';position:absolute;left:22px;right:22px;top:1px;height:44%;border-radius:30px 30px 60% 60%;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
-.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#5E544A;transition:background .3s}
-.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85));box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(125,161,26,.25),0 6px 14px rgba(125,161,26,.35)}
-.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#FF3D7F;color:#fff;font-size:9px;font-weight:800;letter-spacing:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.me{align-self:flex-end;max-width:270px;background:linear-gradient(135deg,#C2185B,#C4341B);color:#fff;border-radius:20px 20px 6px 20px;padding:10px 14px;font-size:14px;line-height:1.4;box-shadow:0 3px 0 #8E1B10}
+.sw{margin-left:auto;width:54px;height:44px;border:0;cursor:pointer;padding:0;background:transparent;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.sw i{width:50px;height:30px;border-radius:999px;padding:3px;box-sizing:border-box;display:flex}
+.sw i b{width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.pill{min-height:44px;min-width:44px;padding:0 12px;border-radius:14px;border:0;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;white-space:nowrap}
+.gnav{position:absolute;left:14px;right:14px;bottom:18px;z-index:40;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:6px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.8));backdrop-filter:blur(22px) saturate(190%);-webkit-backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.8);box-shadow:inset 0 1px 1px rgba(255,255,255,.95),0 16px 36px rgba(22,17,13,.24),0 2px 6px rgba(22,17,13,.08);overflow:hidden}
+.gnav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:28px;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#4E453C}
+.gnav a.on{color:#16110D;background:linear-gradient(180deg,rgba(214,250,110,.95),rgba(200,245,66,.85))}
+.gnav .bdg{position:absolute;top:4px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#C2185B;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff}
 @keyframes pop{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-3px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
 .pop{animation:pop .6s cubic-bezier(.2,1.2,.3,1) both}
 @keyframes sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.96,1.05)}52%{transform:translateY(0) scale(1.05,.95)}}
@@ -49,47 +52,36 @@ a{color:inherit;text-decoration:none}
 .sq2{animation:sq 2.8s cubic-bezier(.3,0,.2,1) -1.1s infinite;transform-origin:50% 100%}
 @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.15)}}
 .dr{animation:drift 10s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,245,66,.7)}70%{box-shadow:0 0 0 10px rgba(200,245,66,0)}}
-.pulse{animation:pulse 1.8s infinite}
 @keyframes bounce{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
 .bounce{animation:bounce .55s cubic-bezier(.2,1.4,.4,1) both}
-@keyframes glow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.95;transform:scale(1.1)}}
-.glow{animation:glow 2s ease-in-out infinite}
-@keyframes peek{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
-.peek{animation:peek 2.2s ease-in-out infinite}
 @keyframes ring{0%{transform:scale(.3);opacity:.8}100%{transform:scale(1.5);opacity:0}}
 .r1{animation:ring 2.4s ease-out infinite}.r2{animation:ring 2.4s ease-out .8s infinite}
-@keyframes wob{0%,100%{transform:rotate(0)}15%{transform:rotate(-8deg)}30%{transform:rotate(7deg)}45%{transform:rotate(-3deg)}60%{transform:rotate(0)}}
-.wob{animation:wob 2.2s ease-in-out infinite;transform-origin:50% 90%}
-@keyframes lock{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(0)}}
-.lock{animation:lock 2.6s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+.sk{background:linear-gradient(90deg,#F2E6D6 0,#FBF3E8 60px,#F2E6D6 120px);background-size:400px 100%;animation:shimmer 1.4s linear infinite;border-radius:14px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </helmet>
 <div style="width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; padding: 56px 16px 26px; position: relative">
-  <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative">
-    <a href="V5-Fiche.dc.html" class="chip" style="background: #16110D; color: #C8F542; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; padding: 4px 14px 4px 6px; gap: 6px"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain">Nino</a>
-    <span class="d" style="font-size: 26px">blowy<span style="color: #FF5A3C">.</span></span>
-    <a href="V5-Notifs.dc.html" aria-label="Notifications" style="position: relative; width: 44px; height: 44px; border-radius: 14px; background: #fff; box-shadow: 0 3px 0 #EEDFCB; display: flex; align-items: center; justify-content: center"><img src="/_blob/f22ec297b35d3fd95af3a884388d70a4" alt="" aria-hidden="true" style="width: 26px; height: 26px; object-fit: contain"><span style="position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; border-radius: 999px; background: #FF3D7F; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #FFF7EC">2</span></a>
-  </div>
-  <div class="pop" style="animation-delay: .04s; margin-top: 12px; height: 236px; border-radius: 28px; position: relative; overflow: hidden; box-shadow: 0 6px 0 #E4B98F">
-    <img src="/_blob/e35db709aaa2e9bac81cd209308c10e9" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
-    <img src="/_blob/7bbc8c67ffec185c67f57ffbd3d2bb28" alt="Nino, tout content" class="sq" style="position: absolute; left: 30px; bottom: 6px; width: 150px; height: 150px; object-fit: contain">
-    <span class="cap" style="position: absolute; left: 150px; top: 108px; border-radius: 14px 14px 14px 4px">Jeudi, on sort !</span>
-    <span class="chip" style="position: absolute; right: 12px; top: 12px; background: rgba(22,17,13,.55); color: #fff">3 souvenirs</span>
-  </div>
-  <a href="V5-Sortie-inscrit.dc.html" class="pop" style="animation-delay: .08s; margin-top: 14px; background: #16110D; color: #fff; border-radius: 24px; padding: 14px; box-shadow: 0 5px 0 #000; display: flex; flex-direction: column; gap: 10px; position: relative">
-    <div style="display: flex; justify-content: space-between; align-items: center"><span class="lbl" style="color: #C8F542">Ta sortie</span><span class="chip" style="background: #FF3D7F; color: #fff">3 messages</span></div>
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px"><span class="d" style="font-size: 30px; white-space: nowrap">Jeudi · 19 h 30</span><span style="display: flex; align-items: center"><span style="width: 34px; height: 34px; border-radius: 50%; background: #C8F542; border: 2px solid #16110D; margin-left: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain"></span><span style="width: 34px; height: 34px; border-radius: 50%; background: #EEE6FF; border: 2px solid #16110D; margin-left: -8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto"><img src="/_blob/bbb22b42d36399583200635059710253" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain"></span><span style="width: 34px; height: 34px; border-radius: 50%; background: #FFF1D6; border: 2px solid #16110D; margin-left: -8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto"><img src="/_blob/e10a7fce2dc7e3ce8d3382f9d3069bc8" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain"></span><span style="width: 34px; height: 34px; border-radius: 50%; background: #DDF5EA; border: 2px solid #16110D; margin-left: -8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 auto"><img src="/_blob/8a35794ced023a499838ce341afd6ac4" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain"></span></span></div>
-    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #D9CFC4"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#C8F542" stroke-width="2.4" fill="none"/><path d="M12 7v5l3 2" stroke="#C8F542" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>Lieu exact demain à 18 h · visages jeudi à 9 h<svg class="chev" style="margin-left: auto" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="pop" style="display: flex; align-items: center; justify-content: space-between; position: relative"><a href="V5-Fiche.dc.html" class="chip" style="background: #16110D; color: #C8F542; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; padding: 4px 14px 4px 6px; min-height: 36px"><img src="/_blob/630cf503134679d62afe62d88edbda8d" alt="" aria-hidden="true" style="width: 30px; height: 30px; object-fit: contain">Nino</a><a href="V5-Pause.dc.html" style="min-height: 44px; padding: 0 14px; border-radius: 14px; background: #fff; box-shadow: 0 3px 0 #EEDFCB; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex: 0 0 auto"><rect x="6" y="5" width="4" height="14" rx="1.5" fill="#16110D"/><rect x="14" y="5" width="4" height="14" rx="1.5" fill="#16110D"/></svg>Pause</a></div>
+  <a href="V5-Sortie-inscrit.dc.html" class="pop" style="animation-delay: .04s; margin-top: 14px; background: #16110D; color: #fff; border-radius: 26px; padding: 16px; box-shadow: 0 5px 0 #000; display: flex; flex-direction: column; gap: 10px; position: relative">
+    <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 13px; font-weight: 800; color: #C8F542">Ta sortie · tu y vas</span><span class="chip" style="background: #C2185B; color: #fff">3 messages</span></div>
+    <span class="d" style="font-size: 34px">Jeudi 12 novembre</span>
+    <span style="font-size: 15px; font-weight: 700">19 h 30 · Jeux de société · un bar à jeux du 11e</span>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #E3D9CF"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex: 0 0 auto"><circle cx="12" cy="12" r="9" stroke="#C8F542" stroke-width="2.4" fill="none"/><path d="M12 7v5l3 2" stroke="#C8F542" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>Lieu et visages : mer. 11 nov. 18 h<svg style="margin-left: auto; flex: 0 0 auto" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </a>
+  <a href="V5-Team.dc.html" class="pop" style="animation-delay: .08s; margin-top: 12px; display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 #EEDFCB"><span style="width: 44px; height: 44px; border-radius: 14px; background: #FFE1C2; display: flex; align-items: center; justify-content: center; flex: 0 0 auto"><img src="/_blob/4f1732e4d646fcfb4437f97947c175f0" alt="" aria-hidden="true" style="width: 37px; height: 37px; object-fit: contain"></span><span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto"><span style="font-size: 15px; font-weight: 800">Tom vient avec toi</span><span style="font-size: 12px; font-weight: 600; color: #6F6458">Une place pour un·e 2e ami·e · sa 1re offerte</span></span><span class="chip" style="background: #16110D; color: #C8F542; min-height: 34px">+ Inviter</span></a>
   <div class="pop" style="animation-delay: .12s; margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-    <a href="V5-Bande.dc.html" style="background: #C8F542; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 #7DA11A; display: flex; flex-direction: column; gap: 4px"><span class="d" style="font-size: 22px">Ta bande</span><span style="font-size: 12px; font-weight: 700; color: #3A4A10">Inès, Tom, Maya</span></a>
-    <a href="V5-Duo.dc.html" style="background: #fff; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 #EEDFCB; display: flex; flex-direction: column; gap: 4px"><span class="d" style="font-size: 22px">Tes duos</span><span style="font-size: 12px; font-weight: 700; color: #8A7E70">1 en cours · 2 libres</span></a>
+    <a href="V5-Bande.dc.html" style="background: #fff; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 #EEDFCB; display: flex; flex-direction: column; gap: 4px"><span class="d" style="font-size: 22px">Ta bande</span><span style="font-size: 13px; font-weight: 700; color: #5A5047">Tom</span></a>
+    <a href="V5-Duo.dc.html" style="background: #fff; border-radius: 22px; padding: 12px 14px; box-shadow: 0 4px 0 #EEDFCB; display: flex; flex-direction: column; gap: 4px"><span class="d" style="font-size: 22px">Tes duos</span><span style="font-size: 13px; font-weight: 700; color: #5A5047">Jade</span></a>
   </div>
-  <a href="V5-Story.dc.html" class="pop" style="animation-delay: .16s; margin-top: 12px; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 14px; border-radius: 18px; border: 2px dashed #E3B9A6; color: #16110D; font-size: 13px; font-weight: 700"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#FF5A3C" stroke-width="3" stroke-linecap="round"/></svg>Emmène un·e ami·e jeudi, dans ton groupe<span style="margin-left: auto; color: #FF5A3C; font-weight: 800">Inviter</span></a>
+  <div class="pop" style="animation-delay: .16s; margin-top: 12px; height: 150px; border-radius: 24px; position: relative; overflow: hidden">
+    <img src="/_blob/e35db709aaa2e9bac81cd209308c10e9" alt="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+    <img src="/_blob/7bbc8c67ffec185c67f57ffbd3d2bb28" alt="Nino" class="sq" style="position: absolute; left: 20px; bottom: 0; width: 110px; height: 110px; object-fit: contain">
+    <span class="cap" style="position: absolute; left: 130px; top: 54px; border-radius: 14px 14px 14px 4px">Jeudi, on joue.</span>
+  </div>
   <nav aria-label="Navigation" class="gnav">
     <a href="V5-Accueil.dc.html" class="on" aria-current="page"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z" stroke="currentColor" stroke-width="2.2" fill="currentColor" stroke-linejoin="round"/></svg>Accueil</a>
-    <a href="V5-Chats.dc.html"><span class="bdg">3</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Chats</a>
+    <a href="V5-Chats.dc.html"><span class="bdg" aria-label="4 messages non lus">4</span><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/></svg>Chats</a>
     <a href="V5-Bande.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3.2" stroke="currentColor" stroke-width="2.2" fill="none"/><circle cx="16.5" cy="9" r="3.2" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M2.5 20c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2M12 16c1-.8 2.5-1.2 4.5-1.2 2.5 0 4.9 1.8 5.5 5.2" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Bande</a>
     <a href="V5-Profil.dc.html"><svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>Profil</a>
   </nav>

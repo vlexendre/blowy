@@ -1,0 +1,36 @@
+{
+  "_doc": "Source unique des chiffres et dates de la démo V5. Toutes les maquettes s'y conforment ; design/v5/check-facts.mjs le vérifie. Dates réelles 2026 (jour de semaine vérifié).",
+  "aujourdhui": { "iso": "2026-11-09", "label": "lundi 9 novembre" },
+  "toi": { "prenom": "Alex", "age": 28, "tranche": "26–30 ans", "pronom": "il", "pet": "Nino", "trancheGroupeSouhaitee": "24–32 ans", "intention": "Les deux", "format": "Les deux", "quartier": "Paris 11e", "quartiersAcceptes": ["Paris 11e", "Paris 10e", "Paris 20e"], "trajetMax": "30 min" },
+  "villesOuvertes": ["Paris 11e", "Lyon 4e · Croix-Rousse"],
+  "villeFermee": { "nom": "Saint-Denis", "verifies": 87, "seuil": 120, "ouvertureEstimee": "mars 2027", "procheOuverte": "Paris 11e", "trajet": "25 min en RER D + métro" },
+  "teamAmorcage": { "seuil": 3, "membres": 2, "membresNoms": ["Mehdi", "Yacine"] },
+  "groupe": { "taille": 5, "autres": 4, "ages": "26–31 ans", "femmes": 2, "hommes": 3, "enTeam": 2, "chatLabel": "4 + toi" },
+  "membres": [
+    { "prenom": "Léa", "initiale": "L.", "pet": "Suzie", "espece": "lapine", "pronom": "elle", "tranche": "26–30 ans" },
+    { "prenom": "Malo", "initiale": "M.", "pet": "Gaston", "espece": "capybara", "pronom": "il", "tranche": "26–30 ans" },
+    { "prenom": "Sarah", "initiale": "S.", "pet": "Pia", "espece": "pigeonne", "pronom": "elle", "tranche": "26–30 ans" },
+    { "prenom": "Tom", "initiale": "T.", "pet": "Pépite", "espece": "lutin", "pronom": "il", "tranche": "31–35 ans", "team": true }
+  ],
+  "sortie1": {
+    "iso": "2026-11-12", "jour": "jeudi 12 novembre", "court": "jeu. 12 nov.", "heure": "19 h 30", "fin": "21 h 30",
+    "activite": "Jeux de société", "typeLieu": "un bar à jeux du 11e", "lieu": "Café des Oiseaux", "adresse": "12 rue Oberkampf, Paris 11e", "metro": "Parmentier (ligne 3)", "table": "Table Blowy, chevalet orange au fond", "code": "4827",
+    "confirmationIso": "2026-11-11", "confirmation": "mercredi 11 novembre, 18 h", "confirmationCourt": "mer. 11 nov. 18 h",
+    "composition": "lundi 9 novembre, 21 h",
+    "votesCloseIso": "2026-11-15", "votesClose": "dimanche 15 novembre, 21 h 30", "votesCloseCourt": "dim. 15 nov. 21 h 30"
+  },
+  "sortie2": { "iso": "2026-11-19", "jour": "jeudi 19 novembre", "court": "jeu. 19 nov.", "heure": "19 h 30", "activite": "Bloc d'escalade", "typeLieu": "une salle de bloc du 11e", "confirmationIso": "2026-11-18", "confirmationCourt": "mer. 18 nov. 18 h" },
+  "prix": { "premiere": "offerte", "place": "4,99 €", "plus": "9,99 €", "deuxPlaces": "9,98 €", "troisPlaces": "14,97 €", "conso": "non incluse : chacun paie ce qu'il boit", "autorises": ["4,99 €", "9,99 €", "9,98 €", "14,97 €", "0,00 €"] },
+  "abonnement": { "statut": "Gratuit", "abonne": false },
+  "duos": {
+    "jade": { "prenom": "Jade", "initiale": "J.", "pet": "Caramel", "pronom": "elle", "tranche": "24–28 ans", "debutIso": "2026-11-11", "debut": "mercredi 11 novembre, 21 h", "deblocageIso": "2026-11-13", "deblocage": "vendredi 13 novembre, 21 h", "deblocageCourt": "ven. 13 nov. 21 h", "rdvIso": "2026-11-17", "rdv": "mardi 17 novembre, 19 h", "rdvCourt": "mar. 17 nov. 19 h", "rdvLieu": "Le Comptoir Gabriel", "rdvAvantIso": "2026-11-18", "rdvAvant": "mer. 18 nov." },
+    "nils": { "prenom": "Nils", "initiale": "N.", "pet": "Biscuit", "pronom": "il", "tranche": "28–32 ans", "type": "Nouveaux potes" },
+    "lea": { "rdvIso": "2026-11-21", "rdv": "samedi 21 novembre, 15 h", "rdvCourt": "sam. 21 nov. 15 h", "rdvLieu": "Expo Atelier des Lumières" }
+  },
+  "bande": { "noms": ["Tom", "Sarah"], "taille": 2 },
+  "souvenirs": 3,
+  "fiabilite": "1 sortie sur 1",
+  "ange": { "prenom": "Sam", "canal": "SMS", "url": "blowy.app/a/7Qm2xK9fPz4Lw8vR", "expire": "vendredi 13 novembre, 0 h 30" },
+  "sla": { "signalementSortie": "1 h", "alerte": "5 min", "equipe": "18 h – 2 h, les soirs de sortie" },
+  "notifs": { "propositionsParSemaine": 1 }
+}
