@@ -2,7 +2,9 @@
 // Contrôles : jours/dates 2026, chronologie (facts + « maintenant » de chaque écran), grille d'âge fixe et appartenance
 // des tranches à la composition, phrases dérivées (taille du groupe, nouvelles personnes, + toi), prix, compteurs,
 // prénoms et pets de tiers sur les cartes de partage, slugs publics, point médian dans boutons et titres, vocabulaire.
-// Usage : node design/v5/check-facts.mjs   (code de sortie 1 s'il y a une contradiction)
+// + V5.3 : garantie jamais affichée, calendrier B (annulation gratuite jusqu'à la veille 18 h), confirmation = prénoms + tranches + pets sans visage,
+// duo sans prénom avant le oui, accord avant tout duo, un lien unique par carte, lien privé jamais en Story, « pote / team » hors titres et boutons.
+// Usage : node design/v5/check-facts.mjs [filtre]   (code de sortie 1 s'il y a une contradiction)
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +25,7 @@ const clean = (s) => s.replace(/&nbsp;| | /g, ' ').replace(/&amp;/g, '&').rep
 const visible = (html) => clean(html.replace(/<helmet>[\s\S]*?<\/helmet>/g, ' ').replace(/data-props='[^']*'/g, ' ').replace(/<[^>]+>/g, ' '));
 
 const problems = [];
+const seenSlug = {};
 let checks = 0;
 const push = (f, msg) => problems.push(`${f} : ${msg}`);
 const t0 = (iso) => new Date(iso + (iso.length === 10 ? 'T00:00' : '') + ':00Z').getTime();
@@ -34,6 +37,9 @@ for (const [a, b] of F.chronologie) {
 }
 checks++;
 if (t0(F.sortie1.iso) - t0(F.sortie1.visagesIso) !== 3 * 3600e3) push('facts.json', 'visages de la sortie : exactement 3 h avant le début');
+
+checks++;
+if ('garantieHistoire' in F.groupe) problems.push('facts.json : la garantie ne doit plus être une donnée affichable (A.1)');
 
 // --- grille d'âge
 const G = F.grilleAges;
@@ -80,9 +86,12 @@ for (const f of files) {
   for (const m of t.matchAll(/\b(\d+)\s+personnes(?!\s+(?:vérifiées|vérifié·es|de plus|en attente|qui))/gi)) {
     checks++;
     const n = Number(m[1]), before = t.slice(Math.max(0, m.index - 40), m.index), after = t.slice(m.index + m[0].length, m.index + m[0].length + 14);
-    if (/au moins\s*$/i.test(before)) { if (n !== F.groupe.garantieHistoire) push(f, `« au moins ${m[0]} » : la garantie est de ${F.groupe.garantieHistoire}`); continue; }
     if (/^\s*du quartier/.test(after)) { const att = taille - 1 - F.bande.apresVote.length; if (n !== att) push(f, `« ${m[0]} du quartier » : ${taille} − toi − ta bande = ${att}`); continue; }
     if (/manque/i.test(before)) { if (n !== F.villeAttente.manquent) push(f, `« il manque ${m[0]} » : ${F.villeAttente.manquent} attendu`); continue; }
+    if (/^\s*du même genre/.test(after)) { if (n !== 3) push(f, `règle d'équilibre : 3 du même genre au plus`); continue; }
+    if (/Amorcage\.dc/.test(f) && /^\s*de Lille/.test(after)) { if (n !== taille - F.amorcage.team) push(f, `« ${m[0]} de Lille » : ${taille - F.amorcage.team} attendu`); continue; }
+    if (/Amorcage\.dc/.test(f) && /^\s*viennent/.test(after)) { if (n !== F.amorcage.team) push(f, `« ${m[0]} viennent ensemble » : ${F.amorcage.team} attendu`); continue; }
+    if (/à découvrir|toi compris/.test(after) || /^\s*,\s*toi compris/.test(after)) continue;
     if (n < 10 && n !== taille) push(f, `« ${m[0]} » : le groupe fait ${taille} personnes`);
   }
   const nouvAttendu = /Amorcage/.test(f) ? taille - F.amorcage.team : nouvelles;
@@ -124,14 +133,47 @@ for (const f of files) {
     if (/[a-zàâçéèêëîïôûùüÿœ]·[a-zàâçéèêëîïôûùüÿœ]/i.test(inner)) push(f, `point médian dans un bouton ou un titre : « ${inner.trim().slice(0, 50)} »`);
   }
 
+  // 9b. Vocabulaire adulte dans les titres et boutons (D.15) : jamais « pote(s) » ni « team »
+  for (const b of blocks) {
+    const inner = clean((b[2] ?? b[1]).replace(/<[^>]+>/g, ' '));
+    if (/\b(potes?|team)\b/i.test(inner)) { checks++; push(f, `« pote / team » dans un titre ou un bouton : « ${inner.trim().slice(0, 50)} »`); }
+  }
+
+  // 11. Calendrier B : toute annulation gratuite de la sortie 1 s'arrête à la confirmation de la veille 18 h
+  for (const m of t.matchAll(/[Aa]nnul\w*[^.]{0,30}?gratuit\w*[^.]{0,20}?jusqu’(?:à|au)\s+([^.,;]+)/g)) {
+    checks++;
+    const tail = m[1];
+    if (/12 nov|16 h 30|visages/.test(tail) || (/11 nov/.test(tail) && !/18 h/.test(tail))) push(f, `annulation gratuite « ${m[0].slice(0, 70)} » : jusqu’à ${F.sortie1.lieuCourt} (calendrier B)`);
+  }
+  // 12. Confirmation de la veille : prénoms + tranches + pets, jamais de visage
+  if (base === 'V5-Confirmation') {
+    for (const mb of F.membres) { checks++; if (!t.includes(mb.prenom) || !t.includes(mb.tranche) || !t.includes(mb.pet)) push(f, `confirmation : ${mb.prenom}, sa tranche et son pet attendus`); }
+    checks++; if (/Visage de/.test(html)) push(f, 'confirmation : aucun visage avant J −3 h');
+  }
+  // 13. Duo : avant le double oui, initiale seulement
+  if (base === 'V5-Duo' || base === 'V5-Duo-choix') { checks++; if (new RegExp(`(?<![\\wÀ-ÿ])${F.duos.nils.prenom}(?![\\wÀ-ÿ])`).test(t)) push(f, `prénom « ${F.duos.nils.prenom} » avant le oui mutuel`); }
+  // 14. Liens : un lien par carte, jamais réutilisé ; un lien privé jamais à côté d'une cible Story
+  const slugsHere = [...t.matchAll(/blowy\.app\/[\w-]+\/[\w-]+/g)].map((m) => m[0]);
+  const own = F.slugParFichier[base];
+  for (const sl of slugsHere) {
+    checks++;
+    const key = Object.keys(F.slugs).find((k) => F.slugs[k] === sl);
+    if (!key) { push(f, `lien « ${sl} » absent de facts.slugs`); continue; }
+    if (own && key !== own) push(f, `lien « ${sl} » (${key}) sur la carte « ${own} » : un lien par carte`);
+    if (!own && /Partage/.test(f)) push(f, `carte sans lien attribué dans facts.slugParFichier`);
+    if (F.slugsPrives.includes(key) && />Story</.test(html)) { checks++; push(f, `lien privé « ${sl} » publiable en Story`); }
+    seenSlug[sl] = seenSlug[sl] || new Set(); seenSlug[sl].add(base);
+  }
+
   // 10. Vocabulaire unique et promesses fausses
-  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'App Store', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e'];
+  const banned = ['ngl', 'XP', 'compte à rebours', 'près de toi', 'près de chez toi', 'en route', 'boisson incluse', 'Code Names', 'Restaurer mes achats', 'remboursé·e', 'Personne n’apprend jamais', 'Ta vision', 'ville fermée', 'pas encore ouvert', 'Alerte', 'alerte', 'photos la veille', 'Ami·e', 'histoire compatible avec la tienne', 'Au moins 2 personnes', 'au moins 2 personnes', 'Potes seulement', 'Nouveaux potes', 'captures d’écran sont bloquées', 'Position au moment', 'résiliable ici'];
   for (const w of banned) {
     checks++;
     if (new RegExp(`(?<![\\w-])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`).test(t)) push(f, `terme interdit « ${w} »`);
   }
 }
 
+for (const [sl, set] of Object.entries(seenSlug)) { checks++; const owners = new Set([...set].map((b) => F.slugParFichier[b] || b)); if (owners.size > 1) problems.push(`lien « ${sl} » réutilisé par ${[...set].join(', ')}`); }
 console.log(`check-facts : ${files.length} fichiers, ${checks} vérifications, ${problems.length} contradiction(s).`);
 for (const p of problems) console.log('  ✗ ' + p);
 process.exit(problems.length ? 1 : 0);

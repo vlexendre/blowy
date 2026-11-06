@@ -94,7 +94,7 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const Wd = ['drôle', 'loyal', 'solaire', 'généreux', 'malin', 'rassurant', 'créatif', 'curieux', 'bon vivant', 'la personne qu’on appelle'];
-    const R = ['-3deg', '2deg', '-1deg', '3deg', '-2deg', '1deg'];
+    const R = ['0deg', '0deg', '0deg', '0deg', '0deg', '0deg'];
     const ok = s.sel.length === 3;
     return {
       asking: !s.sent, sent: s.sent, ok, notOk: !ok, count: s.sel.length,

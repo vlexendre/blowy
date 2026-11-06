@@ -65,14 +65,14 @@ a{color:inherit;text-decoration:none}
   <div style="padding: 52px 14px 12px; background: linear-gradient(160deg, #4C1D95, #6D28D9); color: #fff; border-radius: 0 0 28px 28px; display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 2; box-shadow: 0 5px 0 #2E1065">
     <div style="display: flex; align-items: center; gap: 10px">
       <a href="V5-Chats.dc.html" aria-label="Retour aux chats" class="back" style="background: rgba(255,255,255,.18); box-shadow: none"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <span role="img" aria-label="Visage de Léa" class="d" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(160deg, #F3C7B2, #B9705F); border: 2px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; color: rgba(255,255,255,.85); flex: 0 0 auto">L</span>
+      <span role="img" aria-label="Visage de Léa" style="position: relative; width: 44px; height: 44px; border-radius: 14px; overflow: hidden; background: linear-gradient(160deg, #F3C7B2, #B9705F); border: 2px solid #fff; flex: 0 0 auto; display: block"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 96%"><path d="M14 100 Q16 70 50 68 Q84 70 86 100Z" fill="rgba(22,17,13,.28)"/><rect x="43" y="54" width="14" height="16" rx="6" fill="#E9B48F"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#E9B48F"/><path d="M27 66 Q24 20 50 16 Q76 20 73 66 L66 66 Q68 32 50 28 Q32 32 34 66Z" fill="#2E2018"/></svg></span>
       <span style="display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; white-space: nowrap"><span class="d" style="font-size: 22px">Léa</span><span style="font-size: 12px; font-weight: 700; color: #EDE6FF; overflow: hidden; text-overflow: ellipsis">Duo · vus jeudi</span></span>
       <a href="V5-Signaler.dc.html" aria-label="Signaler" class="icb" style="background: rgba(255,255,255,.18); box-shadow: none"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex: 0 0 auto"><path d="M5 21V3" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M5 4h13l-3.5 4.5L18 13H5z" fill="#fff"/></svg></a><a href="V5-Oeuf.dc.html" aria-label="Options : partir proprement, clin d’œil, vocal" class="icb" style="background: rgba(255,255,255,.18); box-shadow: none"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.2" fill="#fff"/><circle cx="12" cy="12" r="2.2" fill="#fff"/><circle cx="19" cy="12" r="2.2" fill="#fff"/></svg></a>
     </div>
     <a href="V5-RdvDuo-lea.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; border-radius: 14px; background: rgba(255,255,255,.16); font-size: 14px; font-weight: 800"><span style="width: 8px; height: 8px; border-radius: 50%; background: #C8F542"></span>Proposer un rendez-vous à deux<svg style="margin-left: auto; flex: 0 0 auto" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
   <div style="flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 14px; display: flex; flex-direction: column; gap: 8px">
-    <span style="align-self: center; font-size: 12px; font-weight: 700; color: #5A5047">Duo ouvert le dim. 15 nov. 21 h 30</span>
+    <span style="align-self: center; font-size: 12px; font-weight: 700; color: #5A5047">Duo ouvert le dim. 15 nov. 21 h 30</span>
     <div class="them">Je repense à ta partie de Codenames. Tu bluffes toujours comme ça ?</div>
     <div class="me">Seulement quand je perds. Revanche autour d’un café ?</div>
     <div class="them">Avec plaisir. Plutôt un samedi, la semaine je finis tard.</div>
@@ -96,7 +96,7 @@ a{color:inherit;text-decoration:none}
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { q: 0, used: false }; }
   renderVals() {
-    const Q = ['Qu’est-ce qui t’a fait rire jeudi ?', 'Tu te vois où dans 3 ans ?', 'Un dimanche parfait, c’est quoi pour toi ?'];
+    const Q = ['Tu te vois où dans 3 ans ?', 'Qu’est-ce qui t’a fait rire jeudi ?', 'Un dimanche parfait, c’est quoi pour toi ?'];
     return { question: Q[this.state.q], draft: this.state.used ? Q[this.state.q] : '', use: () => this.setState({ used: true }), next: () => this.setState({ q: (this.state.q + 1) % Q.length, used: false }) };
   }
 }

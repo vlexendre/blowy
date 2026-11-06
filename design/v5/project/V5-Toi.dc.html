@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Toi — blowy.</title>
+<title>Ta date de naissance — blowy.</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -64,36 +64,17 @@ a{color:inherit;text-decoration:none}
 <div style="width: 390px; height: 844px; overflow: hidden; box-sizing: border-box; background: #FFF7EC; display: flex; flex-direction: column; padding: 52px 20px 22px; position: relative">
   <div class="pop" style="display: flex; align-items: center; gap: 10px; position: relative">
     <a href="V5-Ville.dc.html" aria-label="Retour" class="back"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M12 4l-6 6 6 6" stroke="#16110D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-    <span class="tag" style="flex: 1 1 auto" aria-label="Étape 2 sur 8 : Toi"><b>2/8</b>Toi<span style="margin-left: auto; width: 70px; height: 6px; border-radius: 999px; background: #EEDFCB; overflow: hidden"><i style="display: block; height: 100%; width: 25%; background: #D93A1C"></i></span></span>
+    <span class="tag" style="flex: 1 1 auto" aria-label="Étape 2 sur 9 : Ta date de naissance"><b>2/9</b>Ta date de naissance<span style="margin-left: auto; width: 70px; height: 6px; border-radius: 999px; background: #EEDFCB; overflow: hidden"><i style="display: block; height: 100%; width: 22%; background: #D93A1C"></i></span></span>
   </div>
-  <h1 class="d pop" style="animation-delay: .06s; margin: 16px 0 0; font-size: 44px">TOI.</h1>
-  <span class="lbl" style="margin-top: 12px">Date de naissance</span>
-  <div style="margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px"><button type="button" aria-label="Jour" style="min-height: 56px; border-radius: 16px; border: 2px dashed #8C7B66; background: #fff; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #6F6458">Jour</button><button type="button" aria-label="Mois" style="min-height: 56px; border-radius: 16px; border: 2px dashed #8C7B66; background: #fff; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #6F6458">Mois</button><button type="button" aria-label="Année" style="min-height: 56px; border-radius: 16px; border: 2px dashed #8C7B66; background: #fff; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #6F6458">Année</button></div>
-  <span style="margin-top: 6px; font-size: 12px; font-weight: 600; color: #5A5047">18 ans et plus. Les autres voient une tranche (« 26–29 ans »), jamais ton âge.</span>
-  <span class="lbl" style="margin-top: 16px">Tu es</span>
-  <div role="radiogroup" aria-label="Genre" style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px">
-    <sc-for list="{{gs}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 0 16px; border-radius: 18px; border: 0; cursor: pointer; background: {{o.bg}}; color: {{o.fg}}; box-shadow: 0 4px 0 #EEDFCB; font-family: 'Inter', sans-serif"><span style="width: 22px; height: 22px; border-radius: 50%; border: 3px solid {{o.ring}}; box-sizing: border-box; background: {{o.dot}}"></span><span class="d" style="font-size: 21px">{{o.t}}</span></button></sc-for>
-    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px"><button type="button" class="pill" style="background: #fff; color: #16110D; box-shadow: 0 3px 0 #EEDFCB">Un autre mot</button><button type="button" class="pill" style="background: #fff; color: #16110D; box-shadow: 0 3px 0 #EEDFCB">Je préfère ne pas dire</button></div>
-  </div>
-  <span style="margin-top: 10px; font-size: 12px; font-weight: 600; line-height: 1.45; color: #5A5047">Ton groupe voit ton pronom ({{pronom}}, modifiable dans ton profil) et le nombre de femmes et d'hommes, jamais qui.</span>
-  <div style="margin-top: auto; position: relative">
-    <sc-if value="{{ready}}" hint-placeholder-val="{{false}}"><a href="V5-Pet.dc.html" class="btn b1">Continuer<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a></sc-if>
-    <sc-if value="{{notReady}}" hint-placeholder-val="{{true}}"><button type="button" class="btn bdis" style="width: 100%" aria-disabled="true">Ta date et ton genre</button></sc-if>
-  </div>
+  <h1 class="d pop" style="animation-delay: .06s; margin: 16px 0 0; font-size: 44px; line-height: .92">TA DATE DE NAISSANCE.</h1>
+  <p style="margin: 8px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: #5A5047">18 ans et plus. Ton groupe voit une tranche (« 26–29 ans »), jamais ton âge. Vérifiée au selfie.</p>
+  <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px"><label style="min-height: 64px; border-radius: 16px; border: 2px solid #16110D; background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 0 12px; box-shadow: 0 3px 0 #16110D"><span style="font-size: 11px; font-weight: 800; color: #5A5047">Jour</span><input type="text" inputmode="numeric" aria-label="Jour" placeholder="JJ" style="height: 30px; border: 0; outline: 0; padding: 0; font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; background: transparent; color: #16110D; width: 100%"></label><label style="min-height: 64px; border-radius: 16px; border: 2px solid #16110D; background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 0 12px; box-shadow: 0 3px 0 #16110D"><span style="font-size: 11px; font-weight: 800; color: #5A5047">Mois</span><input type="text" inputmode="numeric" aria-label="Mois" placeholder="MM" style="height: 30px; border: 0; outline: 0; padding: 0; font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; background: transparent; color: #16110D; width: 100%"></label><label style="min-height: 64px; border-radius: 16px; border: 2px solid #16110D; background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 0 12px; box-shadow: 0 3px 0 #16110D"><span style="font-size: 11px; font-weight: 800; color: #5A5047">Année</span><input type="text" inputmode="numeric" aria-label="Année" placeholder="AAAA" style="height: 30px; border: 0; outline: 0; padding: 0; font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; background: transparent; color: #16110D; width: 100%"></label></div>
+  <div style="margin-top: auto"><button type="button" class="btn bdis" style="width: 100%" aria-disabled="true">Entre ta date</button><a href="V5-Genre.dc.html" class="ghost" style="color: #5A5047">Démo : continuer ›</a></div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview": {"width": 390, "height": 844}}'>
 class Component extends DCLogic {
-  constructor(p) { super(p); this.state = { g: null }; }
-  renderVals() {
-    const s = this.state;
-    const G = [['femme', 'Une femme', 'elle'], ['homme', 'Un homme', 'il'], ['nb', 'Non-binaire', 'iel']];
-    const cur = G.find((x) => x[0] === s.g);
-    return {
-      gs: G.map(([id, t]) => ({ t, on: s.g === id ? 'true' : 'false', bg: s.g === id ? '#16110D' : '#fff', fg: s.g === id ? '#fff' : '#16110D', ring: s.g === id ? '#C8F542' : '#8C7B66', dot: s.g === id ? '#C8F542' : 'transparent', pick: () => this.setState({ g: id }) })),
-      pronom: cur ? cur[2] : 'déduit de ta réponse', ready: !!s.g, notReady: !s.g
-    };
-  }
+  renderVals() { return {}; }
 }
 </script>
 </body>
