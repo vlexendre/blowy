@@ -1,4 +1,4 @@
-# Modèle économique V5.8 — hypothèses chiffrées (à valider par un test terrain)
+# Modèle économique V5.9 — hypothèses chiffrées (à valider par un test terrain)
 
 Toutes les valeurs ci-dessous sont des **hypothèses de travail**, pas des mesures. Elles servent à décider quoi mesurer pendant le test de 8 semaines. Prix en euros TTC, TVA 20 %. Révisé après les jurys tours 3 et 4 (forfait lieu, commission Apple, astreinte en coût fixe).
 
@@ -37,12 +37,12 @@ Ce tableau ne tient compte que de la contribution avant postes V5.6 (7,59 €) ;
 |---|---|---|
 | Imprévu (1/mois) | place non remboursée, reversée au lieu comme une absence | inclus dans le taux d'absence (8 %) |
 | Sortie pour raison de sécurité | toujours remboursée, lieu compensé 3 € HT par Blowy | à 1 % des places : − 0,05 × (3,84 + 3) ≈ − 0,34 € |
-| Blowy annule une sortie confirmée | 3 € HT par place réservée au lieu + remboursement | à 2 % des sorties : − 0,02 × (5 × 3 + revenu perdu 10,32) ≈ − 0,51 € |
+| « Blowy annule » (groupe incomplet à la Confirmation, ou motif interne) | 3 € HT par place réservée au lieu + remboursement ; un groupe incomplet compte au plus 3 places réservées | à 2 % des sorties : − 0,02 × (3 × 3 € + revenu perdu de ces 3 places ≈ 6,19 €) ≈ − 0,30 € |
 | Parrainage (prochaine sortie offerte, 1/mois) | coût = une place non encaissée par filleul venu | à 0,3 filleul par sortie : − 0,3 × 3,84 ≈ − 1,15 € (c'est le coût d'acquisition, à comparer à une acquisition payante) |
 | Duo à une table de 2 | gratuit, sans garantie ni compensation pour le lieu (spec et contrat alignés : 0 €) | 0 € |
 | Cannibalisation Blowy+ | un abonné qui sort 4 fois/mois rapporte 7,93/4 ≈ 1,98 € par sortie au lieu de 3,84 € | si 30 % des places passent en Blowy+ à 4 sorties/mois : ≈ − 1,10 € |
-| **Contribution avant astreinte, tous postes V5.6** | | ≈ 7,59 − 0,34 − 0,51 − 1,15 − 1,10 ≈ **4,49 €** |
-**Point mort national retenu : ≈ 134 sorties par jour** (600 / 4,49), soit ≈ 670 participants. L'astreinte est dimensionnée pour un rappel humain en ≈ 5 min pendant une sortie (`safety.helpCallbackTargetMinutes`) : dimensionnement détaillé ci-dessous.
+| **Contribution avant astreinte, tous postes** | | ≈ 7,59 − 0,34 − 0,30 − 1,15 − 1,10 ≈ **4,70 €** |
+**Point mort national retenu : ≈ 128 sorties de groupe par jour** (600 / 4,70), soit ≈ 640 participants ; les rendez-vous Duo n'y entrent pas (ils ne rapportent rien et leur coût marginal est nul tant que l'astreinte n'est pas saturée, voir ci-dessous). L'astreinte est dimensionnée pour un rappel humain en ≈ 5 min pendant une sortie (`safety.helpCallbackTargetMinutes`) : dimensionnement détaillé ci-dessous.
 
 Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; une place offerte de moins par groupe ajoute ≈ 3,84 €.
 
@@ -52,9 +52,9 @@ Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; 
 - Une personne traite ≈ 9 demandes en 90 min. Pour tenir un rappel en ≈ 5 min, on vise ≤ 50 % d'occupation, soit ≈ 4,5 demandes par personne sur le pic.
 - Avec 2 personnes : ≈ 9 demandes traitables sur le pic ; 9 demandes ÷ 2 % ≈ 450 sorties au pic ; 450 ÷ 40 % ≈ 1 125 sorties par jour. Au-delà, une 3e personne (+ 300 €/jour).
 - Duo : un rendez-vous Duo compte comme une sortie de 2 personnes pour l'astreinte (même taux de 2 %) ; il ne rapporte rien, il est donc un coût d'acquisition et de rétention.
-- Volume Duo (hypothèse) : 1 rendez-vous Duo pour 5 sorties de groupe ; il compte pour l'astreinte (2 % de demandes) mais pas dans le revenu.
+- Volume Duo (hypothèse) : 1 rendez-vous Duo pour 5 sorties de groupe. **Coût d'un Duo** : ≈ 0 € de coût marginal (astreinte fixe, pas de compensation lieu, vérification déjà faite) ; il consomme ≈ 0,4 sortie de groupe de capacité d'astreinte (2 personnes au lieu de 5). Avec ce volume, la saturation de 2 personnes passe de ≈ 1 125 à ≈ 1 040 sorties de groupe par jour.
 - Sortie qui ne se forme pas à la confirmation (« Blowy annule ») : hypothèse 2 % des sorties en ville active, 10 % en ville d'amorçage ; coût = 3 € HT par place réservée + remboursement (déjà compté dans « Autres postes » au taux moyen de 2 %).
-- Ville en amorçage : aucune astreinte en plus (mutualisée) ; le coût propre est la 1re sortie offerte de chaque participant (≈ 3,84 € de revenu non encaissé par personne) et le temps ops pour signer 1–2 lieux.
+- **Coût d'une ville d'amorçage** (hypothèses) : ≈ 600 € fixes (2 jours d'ops pour signer 1 à 2 lieux) + ≈ 19 € de revenu non encaissé par 1re sortie (5 × 3,84 €) + un taux « Blowy annule » de 10 % au lieu de 2 % (≈ + 0,9 € par sortie). Aucune astreinte en plus (mutualisée) ; le coût propre est la 1re sortie offerte de chaque participant (≈ 3,84 € de revenu non encaissé par personne) et le temps ops pour signer 1–2 lieux.
 Ces chiffres sont des hypothèses : le test de 8 semaines doit mesurer le taux réel de demandes et le temps de traitement.
 
 ## Ce que le test de 8 semaines doit mesurer
