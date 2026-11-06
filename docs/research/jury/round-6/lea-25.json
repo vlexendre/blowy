@@ -1,0 +1,604 @@
+{
+ "member": "lea-25",
+ "global": 9,
+ "criteria": {
+  "comprehension": 10,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 9,
+  "safety": 9,
+  "virality": 9,
+  "money": 10,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le raton est toujours debout au milieu de la table de 5 (pas assis à une place) ; ~150 px vides entre le texte et l'illustration.",
+   "fix": "Raton assis à une place, illustration remontée."
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Environ 60 inscrits » : au tour 5 c'était « 64 personnes vérifiées » ; « inscrits » ne dit plus si elles ont passé le selfie. Bloc noir de 6 lignes.",
+   "fix": "« Environ 60 personnes vérifiées, dont environ 40 de 18–25 ans »."
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : la promesse a maintenant son état honnête (« Cette semaine, pas encore »).",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : la case renvoie désormais à un état coché dessiné (10a).",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une semaine sur deux, à partir de » + « dès lun. 16 nov. » (redondant) ; « Sans toi : 16, 30 nov., 14, 28 déc.…. » (point, points de suspension, point ; « Sans toi » ambigu) ; semaines du lundi, week-end inclus ou non : pas dit.",
+   "fix": "« Sans sortie : semaines du 16 nov., du 30 nov., du 14 déc.… (week-end compris) »."
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Exactement ce que je demandais : la ligne de calendrier, la 1re offerte, le raton en pastille.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Et la semaine d'après : mar. 24 nov. · Atelier céramique. » : toujours ni heure ni quartier (T5 → T6).",
+   "fix": "« mar. 24 nov. · 19 h 30 · Atelier céramique · Lyon 1er »."
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même gabarit que Paris : réglé. La ligne « Bastien vient avec toi · 3 nouvelles personnes › » répète mot pour mot la phrase du groupe 60 px au-dessus.",
+   "fix": "Supprimer la ligne, ou la transformer en statut de Bastien (« selfie fait »)."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Photo fournie par le lieu » posé sur des maisons dessinées (le décor de Ta rue), le même visuel que pour Bloc Station à Paris 18e ; pastille blanche tronquée en haut à droite de l'image.",
+   "fix": "Une vraie photo par lieu (le terrain du Five), sans élément coupé."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« une salle de bloc du 18e · ≈ » puis « 17 min » à la ligne : le « ≈ » reste seul en fin de ligne. Tranche 22–29 ans (22–25 au tour 5).",
+   "fix": "Insécable « ≈ 17 min »."
+  },
+  "V5-Sortie-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Gabarit commun : réglé. Ligne « Yacine vient avec toi · 3 nouvelles personnes › » en double avec la phrase du groupe.",
+   "fix": "Supprimer le doublon."
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Toi · 26–29 ans » au milieu de quatre « 22–25 ans » (tranche d'Alex, pas de l'habitant de Saint-Denis) ; « Photo fournie par le lieu » = les mêmes maisons dessinées qu'à Lyon ; « Saint-/Denis » coupé ; mêmes pets qu'à Paris et Lyon (Yacine a Pépite, le pet de Tom).",
+   "fix": "Tranche propre au profil, vraie photo de Bloc Station, insécable « Saint‑Denis »."
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le titre et la 1re phrase disent deux fois « Cette semaine, pas encore » ; aucune suite : ni « on te prévient dès que c'est possible », ni voie Duo ; ~330 px vides.",
+   "fix": "Retirer la redite, ajouter « On te prévient dès que c'est possible » et « En attendant : la voie Duo › »."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Frise de 3 jalons, prix sous le bouton, « Tom vient avec toi » : test des 5 secondes réglé. La ligne « Tom vient avec toi · 3 nouvelles personnes › » répète la phrase du groupe juste au-dessus.",
+   "fix": "Supprimer le doublon (l'écran fait 1 069 px)."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Horloge et « Garder la place de Tom (30 min) » : réglé. Le libellé en capitales touche presque les bords du bouton (~8 px).",
+   "fix": "Libellé plus court (« Garder sa place 30 min ») ou corps réduit."
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : plus de mascotte sur la page reçue.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Enfin « Alex · 26–29 ans » : la seule contradiction de ma condition a disparu.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « Titre dans ton agenda : « Rendez-vous · 19 h 30 » ».",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « Lieu révélé mer. 11 nov. 18 h », « Mettre en pause mes sorties », « Taille du pet », duo en 2e plan.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Jeudi 12 novembre · avec quelqu'un que tu connais, si tu veux » : inchangé, alors que concept-v5.5 E.23 demandait de le reformuler.",
+   "fix": "« Jeudi 12 novembre · 19 h 30 · facultatif »."
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "« Personne ne voit que tu es en pause » : 5 tours, mais c'est là.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Pastille grise : le message de L. passe devant. Réglé.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Pendant les soirs de sortie, une personne de l'équipe répond en moins d'1 h » : contredit « joignable pendant toute ta sortie » (sorties sam. 15 h, dim. 11 h).",
+   "fix": "« Pendant ta sortie, une personne de l'équipe répond en moins d'1 h »."
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "L'indicateur dit « environ 40 inscrits ont entre 18 et 25 ans » (avec « ans » seul sur la 2e ligne), puis la sortie du 21 « a lieu, en 26–34 ans » : le chiffre et la tranche ne parlent pas des mêmes gens.",
+   "fix": "Indicateur de la tranche de la personne, ou tranche de sortie qui l'inclut ; insécable « 25 ans »."
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même date, même tranche, même lieu que la version solo : réglé. Mais gabarit à part (tableau, ni frise, ni « Règles d'annulation › », « Je viens · offerte » sans « ensuite 4,99 € »).",
+   "fix": "Gabarit commun de Sortie."
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Cohérent avec la version « proches ». Même gabarit à part que Amorcage.",
+   "fix": "Gabarit commun de Sortie."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Raton de 150 px sur un écran de refus.",
+   "fix": "Pastille 40 px."
+  },
+  "V5-Sortie-annulee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « Annulée le mer. 11 nov. à 18 h », « Tom est prévenu ».",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Âge pour une histoire · 26–34 ans » alors que l'écran 26c ne coche que « 30–34 ans ».",
+   "fix": "Résumé = tranches cochées (« 30–34 ans »)."
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Horizon dessiné (« Dans 1 à 2 ans », « Dans 3 à 5 ans », « Pas de projet », « Je ne sais pas ») ; pas de « J'en ai déjà ».",
+   "fix": "Ajouter « J'en ai déjà »."
+  },
+  "V5-Affiner-age": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Quatre tranches seulement (22–25 → 35–39) : ni 18–21, ni 40 ans et plus, alors que le Welcome promet « de 18 à 60 ans et plus ».",
+   "fix": "Grille complète : 18–21 … 40–44, 45–49, 50 et plus."
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Trajet, pets, « Changer mes photos » : réglé. Le haut de la photo du lieu passe sous la pastille de date ; « Partager ma semaine » ajouté sous le bouton (3 liens).",
+   "fix": "Photo entière ; partage hors de la veille."
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "3 lignes sous « À ce soir » : réglé. Mais « Partager « je sors ce soir » » est glissé entre « Je connais quelqu'un ici » et « Je ne peux plus venir ».",
+   "fix": "Partage en dernier ou hors de cet écran."
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « L'équipe est joignable pendant toute la sortie ».",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : code seulement, « Ta position n'est jamais demandée ».",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Table et 5 verres, raton petit au centre : réglé. Les éclaboussures de couleur derrière la table restent criardes.",
+   "fix": "Retirer les éclaboussures."
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« VOUS AVEZ DIT PLUS TOUS LES / DEUX » : « DEUX » seul, je l'avais dans mon top 3 du tour 5.",
+   "fix": "Insécable « tous les deux »."
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : plus de mascotte.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Partager « On était 5 » » proposé sur l'écran « Pas d'accord cette fois » ; raton 130 px.",
+   "fix": "Retirer le partage de cet écran."
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le titre « TA BANDE » est posé sur le banc orange du décor.",
+   "fix": "Décaler le banc ou le titre."
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Un capybara · N. » : réglé. « Une proposition pour vous deux » ne dit toujours pas si N. a déjà répondu ; ~150 px vides avant l'encadré.",
+   "fix": "« N. ne sait pas encore que tu as vu sa carte » ou « N. n'a pas encore répondu »."
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Une seule étape dessinée (le chat). Les icônes des étapes 1 et 2 sont le raton Nino dans un duo « entre Gaston et Biscuit » ; « joignable pendant toute ta sortie » dans un chat sans sortie ; dates copiées du duo de Jade.",
+   "fix": "Proposition, visages et rendez-vous dessinés ; icônes et phrase propres à ce duo."
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Une personne de l'équipe est joignable pendant toute ta sortie » sur un rendez-vous ; vignette = même dessin que le check-in.",
+   "fix": "« pendant tout ton rendez-vous »."
+  },
+  "V5-Chat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Le bandeau « Proposer un rendez-vous à deux » est toujours collé en haut, alors que Léa vient d'écrire « Plutôt un samedi » (T2 → T6).",
+   "fix": "Le replier dès qu'une proposition est envoyée."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Café Ginette, table à deux réservée, l'équipe joignable : je préfère ça au parc.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Aucun rappel, aucune pastille » : bien. Mais les 9 vignettes 9:16 sont des dégradés vides : aucun aperçu réel (concept-v5.5 D.11).",
+   "fix": "Miniature réelle de chaque carte."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Seule carte qui garde le raton en grand.",
+   "fix": "Mots seuls, comme les autres cartes."
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Alex aimerait savoir comment ses proches décrivent Alex » (répétition).",
+   "fix": "« … comment ses proches le décrivent »."
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Le parrainage (« ta prochaine sortie offerte ») n'y figure pas ; « 3 € si elle était offerte ou dans Blowy+ » alors que le contrat ajoute « libérée par « je connais quelqu'un ici » » (place payée 4,99 €, non remboursée, 3 € au lieu : les 1,99 € ?).",
+   "fix": "Ligne parrainage ; même règle que le contrat."
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « Urgent pendant une sortie · < 1 h ».",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ton groupe » complet : réglé. « Accord donné … : qui tu veux rencontrer, type d'histoire » n'inclut ni l'âge pour une histoire ni l'horizon enfants ; « Ta bande : la même chose » (le lieu la veille, les visages : pas la bande).",
+   "fix": "Lister âge et horizon dans l'accord ; ligne bande exacte."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« moins d'1 h les soirs de sortie » : et ma sortie du dimanche à 11 h ? Partout ailleurs, c'est « pendant toute ta sortie ».",
+   "fix": "« moins d'1 h pendant ta sortie »."
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « d'ici là. » tient sur une ligne.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien : « supprimée sous 48 h ».",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien vu de mon côté (côté lieu).",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien vu de mon côté (côté lieu).",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien vu de mon côté (côté lieu).",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Une seule promesse de l'équipe : Signaler et le menu du groupe disent « pendant ta sortie », plus « les soirs de sortie ».",
+  "Insécable « tous les deux » sur Résultats (« DEUX » seul, 2e tour).",
+  "Chat avec Léa : bandeau replié après une proposition ; Accueil-duo « Jeudi 12 novembre · facultatif » ; Duo « N. n'a pas encore répondu »."
+ ],
+ "tenIf": "Je mets 10 si la promesse de l'équipe est la même partout (Signaler et le menu du groupe disent « pendant ta sortie », pas « les soirs »), si « tous les deux » tient sur une ligne et si le bandeau du chat avec Léa se replie une fois le rendez-vous proposé. Tout le reste de ma condition du tour 5 est fait."
+}

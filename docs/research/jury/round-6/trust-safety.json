@@ -1,0 +1,604 @@
+{
+ "member": "trust-safety",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 8,
+  "meet": 9,
+  "safety": 7,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Empreintes « comparées puis effacées » : réglé ; les tiers dont le numéro est traité ne sont pas mentionnés.",
+   "fix": "Mention des tiers dans la politique."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Pas-encore": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Calculé avant composition, sur la ville et les créneaux, chiffre masqué sous 10 : aucune fuite.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« pas de numéro ni de réseau, sauf entre accords mutuels » dans le chat de GROUPE : un numéro posté là est lu par les 5 (T5, non traité).",
+   "fix": "Filtre levé seulement dans un chat à deux."
+  },
+  "V5-Groupe-menu": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« moins d'1 h les soirs de sortie » : l'astreinte couvre désormais samedi 15 h, dimanche 11 h et les rendez-vous ; la phrase dit le contraire à Lille (sam. 15 h) et au duo du samedi. Et « Pour ta sécurité, toujours » contredit les 8 écrans de la règle.",
+   "fix": "« Une personne de l'équipe répond en moins d'1 h pendant toute ta sortie » ; bannir « soirs de sortie » dans check-facts."
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Fiabilité intacte, Tom prévenu : bon ; phrase lieu ambiguë (sortie jamais confirmée).",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 6,
+   "blocking": true,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »). C'est l'écran de 18 h : celui qui découvre un prénom qui l'inquiète lit que partir lui coûte sa place et un quota mensuel.",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« les captures sont détectées et signalées » : vrai pour la capture iOS, pas pour l'enregistrement d'écran Android ni un 2e téléphone ; « signalées » à qui ?",
+   "fix": "« Les captures d'écran sont signalées à l'équipe » (sans absolu)."
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Jamais … ta position en continu » : laisse entendre qu'une position ponctuelle est partagée, contre Confidentialité (« jamais demandée ») et spec §2.10 (« Aucune position, jamais »).",
+   "fix": "« Jamais ton groupe, tes messages, ta position (jamais demandée) »."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« lieu public » accolé à un bar partenaire : vrai mais vague pour un ange qui doit agir.",
+   "fix": "« bar partenaire, table Blowy »."
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« appelle Alex sous 5 min » : spec §10.1 vise ≤ 60 min, Signaler et L-Effectif disent 1 h ; une astreinte mutualisée par fuseau ne tient pas 5 min sur deux alertes simultanées, et rien ne la dimensionne.",
+   "fix": "Un SLA unique en `[T] safety` (alerte ≠ rappel) et dimensionné dans business-model."
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Code seul, « Ta position n'est jamais demandée. » : vrai et vérifiable.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Espèce + initiale : réglé. Rien n'exclut d'une proposition une personne déjà croisée en sortie (`MET_BEFORE` n'est écrit que pour les groupes).",
+   "fix": "`MET_BEFORE` aussi en Duo, écrit en spec."
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Étape 3 « Quand vous voulez » : contredit « heure couverte par l'équipe » (Duo-hh) et spec §2.13 (412 `OUTSIDE_ONCALL_HOURS`).",
+   "fix": "Texte de Duo-hh."
+  },
+  "V5-Duo-hh": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même finition que le duo F-H ; « toute ta sortie » dans un duo écrit.",
+   "fix": "« pendant ton rendez-vous »."
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Table réservée après les deux oui : réglé. Même « toute ta sortie ».",
+   "fix": "« pendant ton rendez-vous »."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Bloquant levé. Reste « pendant toute ta sortie » pour un rendez-vous.",
+   "fix": "« pendant ton rendez-vous »."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »). Et « Ton groupe n'en voit rien » (fiabilité) contre spec §3.1 / §2.13 qui l'exposent au groupe confirmé et au duo : un dev l'affichera.",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts. Spec : fiabilité « moi seul »."
+  },
+  "V5-Tarifs": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Position et ligne Groupe désormais vraies ; il manque « Ton duo » (espèce + initiale avant le double oui) et « Ton ange » : la liste unique ne couvre pas tous les acteurs.",
+   "fix": "Ajouter les deux lignes."
+  },
+  "V5-Signaler": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Dans l'encart rouge « En danger maintenant ? » : « moins d'1 h les soirs de sortie » : l'astreinte couvre désormais samedi 15 h, dimanche 11 h et les rendez-vous ; la phrase dit le contraire à Lille (sam. 15 h) et au duo du samedi.",
+   "fix": "« Une personne de l'équipe répond en moins d'1 h pendant toute ta sortie » ; bannir « soirs de sortie » dans check-facts."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien de déductible au-delà de la promesse sur cet écran.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Sortir la sécurité du quota dans la règle canonique (« toujours, remboursée, sans pénalité ») sur les 8 écrans, la spec §2.7 restant la référence, avec un contrôle check-facts.",
+  "Une seule promesse de délai, vraie à toute heure de créneau : bannir « soirs de sortie », fixer en spec le SLA alerte (W-Ange-aide « 5 min ») et rappel (1 h), et le dimensionner.",
+  "Spec et écrans d'accord sur ce que voient les autres : fiabilité privée (§3.1, §2.13), lignes Duo et Ange dans Confidentialité, « position en continu » retiré, filtre du chat de groupe."
+ ],
+ "tenIf": "Je mets 10 si un audit croisé des 97 écrans, de spec-v5 et du contrat lieu ne trouve aucune phrase qui limite, retarde ou fait payer une sortie pour sécurité, aucune promesse d'aide liée à une plage horaire autre que « pendant toute ta sortie », aucun délai d'intervention sans valeur `[T]` en spec et coût dans business-model, aucune donnée montrée par la spec que l'écran dit privée (fiabilité), et si Confidentialité couvre tous les acteurs (groupe, bande, duo, ange, lieu)."
+}

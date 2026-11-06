@@ -1,0 +1,604 @@
+{
+ "member": "createrice-tiktok",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 8,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Tu y vas. » : toujours pas de micro-animation exportable (T3–T5).",
+   "fix": "Animation 1 s exportable."
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ton dimanche idéal, en 3 mots » : les réponses des autres ne m'appartiennent pas (T3–T5).",
+   "fix": "Export « mes 3 mots » seuls."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Enveloppe scellée lisible ; pas de vidéo pour le lundi, le jour où j'annonce.",
+   "fix": "« Vidéo 5 s »."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Chevalet lisible sans légende ; pas de vidéo.",
+   "fix": "« Vidéo 5 s »."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Adresse à flouter : contenu sécurité, pas à filmer.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Les verres sont enfin dessinés ici : il faut les reprendre sur la carte du vendredi.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mon plan storytime est enfin filmable ; « Vidéo 5 s » sans aperçu ni choix de durée.",
+   "fix": "Aperçu jouable."
+  },
+  "V5-Partage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 5 verres, 1 table » écrit dans le dessin ; les 5 ronds sont les pastilles du Welcome, pas des verres (T5 non traité). « Viens jeudi prochain » : je ne peux pas promettre ça à mes abonnés.",
+   "fix": "Reprendre les verres de V5-Souvenir, sans légende ; « Trouve ta sortie »."
+  },
+  "V5-Partage-dimanche": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Même rangée de blobs que « Ma bande » (4 au lieu de 3) : deux cartes jumelles ; pas d'export vidéo pour le jour du résultat.",
+   "fix": "Un objet propre au dimanche (enveloppe ouverte, porte de Ta rue) ; « Vidéo 5 s »."
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mode capture fait ; vidéo sans aperçu.",
+   "fix": "Aperçu 5 s."
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "La voie Duo ressemble encore à une app de dating : pas mon contenu.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Messages privés, voulu.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Visage et vocal d'une autre : privé, et c'est voulu.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Messages privés, voulu.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 7,
+   "blocking": false,
+   "issue": "9 vignettes = 9 dégradés vides : je ne reconnais aucune de mes cartes, impossible de choisir la bonne en 1 s.",
+   "fix": "Miniature réelle de chaque carte."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Le bar qui reçoit 5 inconnus » : bon sujet, mais prénoms à l'écran.",
+   "fix": "Vue sans prénoms pour la presse."
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à filmer ou rien qui gêne le tournage sur cet écran.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Mes cartes avec les vraies miniatures de mes cartes.",
+  "Carte du vendredi : les verres de V5-Souvenir, sans légende ; carte du dimanche avec son propre objet.",
+  "« Vidéo 5 s » avec aperçu sur toutes les cartes publiques (lundi, jeudi, dimanche compris)."
+ ],
+ "tenIf": "Je mets 10 si je tourne lundi → dimanche entièrement depuis des exports de l'app, sans flouter, avec sept cartes dont chaque dessin se comprend sans légende et ne ressemble à aucune autre, si Mes cartes me montre ces sept cartes en miniature, et si chacune s'exporte en vidéo de 5 s avec un aperçu avant de publier."
+}

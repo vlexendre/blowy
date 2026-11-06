@@ -1,0 +1,604 @@
+{
+ "member": "ux-cognitif",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 8,
+  "meet": 8,
+  "safety": 8,
+  "virality": 9,
+  "money": 8,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Sans toi : 16, 30 nov., 14, 28 déc.... » : quatre points (abréviation + points de suspension).",
+   "fix": "« 28 déc.… »."
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »).",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »). Et la ligne « Tom vient avec toi · 3 nouvelles personnes › » répète mot pour mot la phrase du groupe 500 px plus haut.",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts. Supprimer la ligne redondante."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« GARDER LA PLACE DE TOM (30 MIN) » occupe toute la largeur du bouton (≈ 8 pt de marge).",
+   "fix": "« Garder sa place 30 min »."
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Corrections du test 5 s faites (« Lieu révélé », « Mettre en pause mes sorties », duo en second plan). Moitié basse vide (1 190 → 1 510 px).",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Lieu mer. 11 nov. 18 h » sans verbe : la correction du test 5 s (« Lieu révélé ») n'est faite que sur l'Accueil.",
+   "fix": "« Lieu révélé mer. 11 nov. 18 h » partout."
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« pas de numéro ni de réseau, sauf entre accords mutuels » dans un chat de 5 : quand, entre qui ? (T5, non traité).",
+   "fix": "« … levé seulement dans un chat à deux, après vos deux oui »."
+  },
+  "V5-Groupe-menu": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« moins d'1 h les soirs de sortie » : l'astreinte couvre désormais samedi 15 h, dimanche 11 h et les rendez-vous ; la phrase dit le contraire à Lille (sam. 15 h) et au duo du samedi. « Pour ta sécurité, toujours » contredit la règle « 1 fois par mois » des autres écrans.",
+   "fix": "« Une personne de l'équipe répond en moins d'1 h pendant toute ta sortie » ; bannir « soirs de sortie » dans check-facts."
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Bandeau « environ 40 inscrits ont entre 18 et 25 ans » au-dessus d'une sortie « en 26–34 ans » : deux tranches sans lien, on se demande laquelle est la sienne.",
+   "fix": "Indicateur de la tranche de la sortie."
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Sortie confirmée puis annulée par Blowy : 3 € » sur une sortie annulée à 18 h faute de confirmations, donc jamais confirmée : le lecteur ne sait pas si la phrase s'applique.",
+   "fix": "Phrase propre au cas affiché."
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »). « ≈ 8 min depuis Paris 11e » pour un lieu… du 11e.",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts. Trajet depuis l'adresse déclarée ou « dans ton quartier »."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Liste « Ton ange verra seulement » autonome (2e source) ; « Jamais … ta position en continu » laisse entendre une position ponctuelle.",
+   "fix": "Renvoi à Confidentialité ; « ta position (jamais demandée) »."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Écran : aucun état par défaut, « Sans réponse, c'est non » ; spec §2.11 : « **Non par défaut** ». Le dev suivra la spec.",
+   "fix": "Spec §2.11 alignée sur l'écran."
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Étape 3 « Quand vous voulez. Nino en propose pendant 7 jours » ; V5-Duo-hh, même étape : « Dans un lieu partenaire, à une heure couverte par l'équipe ». Deux versions du même jalon.",
+   "fix": "Un seul texte d'étape 3 (celui de Duo-hh)."
+  },
+  "V5-Duo-hh": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« pendant toute ta sortie » dans un duo écrit.",
+   "fix": "« pendant ton rendez-vous »."
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« joignable pendant toute ta **sortie** » sur un rendez-vous : un mot pour un autre concept.",
+   "fix": "« pendant ton rendez-vous »."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Même « toute ta sortie » sur un rendez-vous.",
+   "fix": "« pendant ton rendez-vous »."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Toi seul vois ce chiffre. Ton groupe n'en voit rien » ; spec §3.1 (Prénom, tranche, **fiabilité** ✓ dès CONFIRMED) et §2.13 (fiabilité après le double oui) disent l'inverse. Plus la règle ambiguë.",
+   "fix": "Retirer « fiabilité » des colonnes Groupe/Duo de la spec ; Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Tarifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sauf pour ta sécurité, « je connais quelqu'un ici » ou un imprévu (chacun 1 fois par mois, sans pénalité, place non remboursée) » : la parenthèse couvre aussi la sécurité (rationnée, non remboursée), contre spec §2.7 (`SAFETY_EXIT` à tout moment, remboursé) et V5-Groupe-menu (« Pour ta sécurité, toujours »). « reversée au lieu » sans dire HT.",
+   "fix": "Sortir la sécurité de la parenthèse : « Pour ta sécurité : toujours, remboursée, sans pénalité. » puis « je connais quelqu'un ici » (remboursée) et imprévu (non remboursée), 1 fois par mois chacun ; contrôle check-facts."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rentable à partir de 3 sorties par mois » (vrai : 2 × 4,99 = 9,98 < 9,99) ; spec §6.2 : « dès la 2ᵉ sortie ».",
+   "fix": "Corriger la spec."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Mes quartiers Paris 11e + 2 » à côté de « Trajet maximum 30 min » ; spec D-063 : les quartiers se déduisent du trajet. Deux réglages pour un concept.",
+   "fix": "Retirer « Mes quartiers » ou l'afficher en lecture seule."
+  },
+  "V5-Confidentialite": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Présentée comme la liste unique, elle n'a ni ligne « Ton duo » (espèce + initiale, puis prénom aux visages) ni « Ton ange gardien » ; V5-Ange garde donc sa propre liste.",
+   "fix": "Ajouter les deux lignes ; V5-Ange renvoie ici."
+  },
+  "V5-Signaler": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« moins d'1 h les soirs de sortie » : l'astreinte couvre désormais samedi 15 h, dimanche 11 h et les rendez-vous ; la phrase dit le contraire à Lille (sam. 15 h) et au duo du samedi.",
+   "fix": "« Une personne de l'équipe répond en moins d'1 h pendant toute ta sortie » ; bannir « soirs de sortie » dans check-facts."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ta proposition arrive lundi à 21 h » : vrai pour le jeudi seulement (samedi → mercredi 21 h, spec §1.1).",
+   "fix": "Jour calculé."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Voir ma proposition » alors qu'il n'y en a peut-être pas (T5, non traité).",
+   "fix": "« Voir quand arrive ma proposition »."
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« 3 € par place **réservée** » ; L-Contrat et V5-Sortie-annulee : « par place **prévue** ». Total 7,99 € = 4,99 TTC + 3 €, contrat en HT.",
+   "fix": "Un mot, une base (HT) partout."
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une action claire, vocabulaire du glossaire, rien à mémoriser.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lisible en 30 s ; « 3 € » sans base HT/TTC alors que la ligne d'avant précise « 4,16 € HT ».",
+   "fix": "« 3 € HT »."
+  }
+ },
+ "top3": [
+  "Réécrire la règle d'annulation pour que la sécurité soit hors quota et remboursée, et bannir « soirs de sortie » : une règle, une version, sur les 10 écrans concernés.",
+  "Aligner spec ↔ écrans là où ils divergent encore : fiabilité (privée), vote (aucun défaut), Blowy+ (3 sorties), quartiers (dérivés du trajet), « place prévue/réservée », étape 3 du duo.",
+  "Confidentialité vraiment unique (lignes Duo et Ange, V5-Ange y renvoie) et solder les restes : Groupe « accords mutuels », Chats-vide, Chats « Lieu révélé », Chargement calculé, « 28 déc.… »."
+ ],
+ "tenIf": "Je mets 10 si un diff automatique écrans ↔ spec-v5 ne trouve plus aucune règle à deux versions (sécurité, fiabilité, vote, Blowy+, quartiers, compensation, étape 3 du duo, délai d'1 h), si Confidentialité est la seule liste « qui voit quoi » (Duo et Ange compris), si les reliquats listés ici sont à zéro sur les 97 rendus, et si un 2e test 5 secondes répond juste sur Chats et Chargement comme sur Trouvée, Sortie et Accueil."
+}

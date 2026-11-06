@@ -1,0 +1,604 @@
+{
+ "member": "investisseur",
+ "global": 8,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 8,
+  "meet": 9,
+  "safety": 9,
+  "virality": 9,
+  "money": 6,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Une sortie dès 5 personnes, partout » + astreinte désormais promise à toute heure de créneau : business-model chiffre encore 200 € par soir **et par ville**, plage 18 h – 2 h.",
+   "fix": "Modèle d'astreinte nationale par fuseau, jour et soir, avec point mort national."
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 8,
+   "blocking": false,
+   "issue": "≈ 60 inscrits, 3 lieux : coût d'une ville d'amorçage (astreinte, vérification, lieux) absent du modèle.",
+   "fix": "Ligne « ville d'amorçage »."
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lyon en solo : même question de point mort.",
+   "fix": "Idem."
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Parrainage = prochaine sortie offerte (≈ 3,84 € nets perdus, + 3 € HT au lieu si absence) : absent du modèle.",
+   "fix": "Ligne parrainage et coût par inscrit attribué."
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Sam. 15 h – 17 h : sortie de jour couverte par l'astreinte, plage non chiffrée.",
+   "fix": "Plage de jour dans le coût d'astreinte."
+  },
+  "V5-Amorcage-solo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Idem, et 5 places offertes d'un coup (1res sorties).",
+   "fix": "CAC d'amorçage chiffré."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "3 € par place versés au lieu + 1re sortie qui reste offerte : aucune ligne « annulations par Blowy » (T5, non traité).",
+   "fix": "Taux hypothétique et coût par sortie."
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Imprévu 1 fois par mois : la place offerte ou Blowy+ non remboursée coûte 3 € HT à Blowy ; taux non modélisé.",
+   "fix": "Hypothèse de taux d'imprévu."
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« sous 5 min » : SLA qui dimensionne l'astreinte (plusieurs personnes par fuseau aux pics) ; non chiffré.",
+   "fix": "SLA et effectif d'astreinte dans le modèle."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "3 duos gratuits pour tous : modération sans revenu.",
+   "fix": "Coût de modération par duo."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Table à deux : 0 € de revenu, 3 € HT par absent, astreinte mobilisée : absent du modèle (T4, T5).",
+   "fix": "Ligne tables à deux."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Idem un samedi 15 h : plage de jour.",
+   "fix": "Idem."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« reversée au lieu » sans base : TTC ou HT selon l'écran.",
+   "fix": "HT."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Écran juste (« 3 sorties par mois ») ; spec §6.2 « dès la 2ᵉ » ; cannibalisation : à 4 sorties, 7,93 € nets = 1,98 €/sortie contre 3,84 € pour une place, et 3 € HT payés par Blowy à chaque absence ; avis juridique 3.1.3(e) non écrit.",
+   "fix": "Corriger la spec ; ligne cannibalisation ; avis écrit avant soumission."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui change l'économie unitaire sur cet écran.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Relevé 4,99 € TTC + 3 € = 7,99 € ; contrat et spec en HT : le reporting finance n'aura pas une seule base.",
+   "fix": "Tout en HT."
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Dimanche 11 h et samedi 15 h ouverts : plages d'astreinte de jour réelles.",
+   "fix": "Les chiffrer."
+  },
+  "L-Contrat": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Sans engagement, préavis 30 jours : aucun actif durable ; 3 € sans base fiscale.",
+   "fix": "Engagement minimal de créneaux ; « 3 € HT »."
+  }
+ },
+ "top3": [
+  "business-model V5.5 : astreinte nationale par fuseau (jour + soir, SLA 5 min / 1 h), tables à deux, parrainage, imprévu, annulations par Blowy, places Blowy+ vides, cannibalisation, ville d'amorçage, et point mort national.",
+  "Une seule base (HT) et un seul chiffre partout : spec §6.2 corrigée (3 sorties), L-Effectif et Tarifs en HT.",
+  "Avis juridique écrit sur Blowy+ via Stripe, puis cohorte de 8 semaines publiée."
+ ],
+ "tenIf": "Je mets 10 si la cohorte de 8 semaines montre ≥ 40 % de 2e sortie payante sous 21 jours, ≥ 25 % d'actifs à M2, ≥ 0,3 inscrit vérifié par sortie vécue attribué par slug, une contribution positive après astreinte nationale (jour et soir, au SLA affiché) et toutes les compensations (absences, imprévus, Blowy+, tables à deux, parrainage, annulations par Blowy), au moins 5 lieux sous contrat par quartier ouvert, un avis juridique écrit sur le canal de Blowy+, et si spec, concept, business-model et écrans ne divergent sur aucun chiffre ni aucune base fiscale."
+}

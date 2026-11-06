@@ -1,4 +1,4 @@
-# Modèle économique V5.4 — hypothèses chiffrées (à valider par un test terrain)
+# Modèle économique V5.6 — hypothèses chiffrées (à valider par un test terrain)
 
 Toutes les valeurs ci-dessous sont des **hypothèses de travail**, pas des mesures. Elles servent à décider quoi mesurer pendant le test de 8 semaines. Prix en euros TTC, TVA 20 %. Révisé après les jurys tours 3 et 4 (forfait lieu, commission Apple, astreinte en coût fixe).
 
@@ -22,15 +22,27 @@ Frais Stripe cités de mémoire : à revérifier sur la grille en vigueur. Le cl
 | Vérification d'âge/selfie amortie sur 4 sorties | ≈ 1 € par personne / 4 | − 1,25 € |
 | **Contribution avant astreinte** | | **≈ 7,59 €** |
 
-### Astreinte (coût fixe par soir et par ville)
-Hypothèse : 1 personne d'astreinte de 18 h à 2 h ≈ 200 € chargés par soir et par ville active.
-| Sorties le même soir dans la ville | Astreinte par sortie | Contribution par sortie |
+### Astreinte (V5.5 : toutes les heures de créneaux, mutualisée par fuseau)
+Hypothèse : couvrir toutes les heures de sorties et de rendez-vous Duo d'un fuseau (France métropolitaine) coûte ≈ 2 personnes × 12 h ≈ 600 € chargés par jour, **pour toutes les villes à la fois**.
+| Sorties par jour (toutes villes) | Astreinte par sortie | Contribution par sortie |
 |---|---|---|
-| 10 | 20,00 € | − 12,41 € |
-| 27 | 7,41 € | ≈ 0 € (point mort) |
-| 50 | 4,00 € | ≈ 3,59 € |
-| 100 | 2,00 € | ≈ 5,59 € |
-Conséquence : n'ouvrir des soirs de sortie que là où la densité dépasse le point mort (≈ 27 sorties, soit ≈ 135 participants le même soir), ou mutualiser l'astreinte entre villes (même fuseau) — à mesurer pendant le test.
+| 40 | 15,00 € | − 7,41 € |
+| 80 | 7,50 € | ≈ 0 € (point mort national) |
+| 200 | 3,00 € | ≈ 4,59 € |
+| 500 | 1,20 € | ≈ 6,39 € |
+Conséquence : le point mort se lit sur le volume **national** (≈ 80 sorties par jour, ≈ 400 participants), pas ville par ville ; une petite ville ne coûte pas d'astreinte en plus.
+
+### Autres postes (V5.4 → V5.6)
+| Poste | Règle | Effet par sortie (hypothèse) |
+|---|---|---|
+| Imprévu (1/mois) | place non remboursée, reversée au lieu comme une absence | inclus dans le taux d'absence (8 %) |
+| Sortie pour raison de sécurité | toujours remboursée, lieu compensé 3 € HT par Blowy | à 1 % des places : − 0,05 × (3,84 + 3) ≈ − 0,34 € |
+| Blowy annule une sortie confirmée | 3 € HT par place réservée au lieu + remboursement | à 2 % des sorties : − 0,02 × (5 × 3 + revenu perdu 10,32) ≈ − 0,51 € |
+| Parrainage (prochaine sortie offerte, 1/mois) | coût = une place non encaissée par filleul venu | à 0,3 filleul par sortie : − 0,3 × 3,84 ≈ − 1,15 € (c'est le coût d'acquisition, à comparer à une acquisition payante) |
+| Duo à une table de 2 | gratuit, sans garantie ni compensation pour le lieu | 0 € |
+| Cannibalisation Blowy+ | un abonné qui sort 4 fois/mois rapporte 7,93/4 ≈ 1,98 € par sortie au lieu de 3,84 € | si 30 % des places passent en Blowy+ à 4 sorties/mois : ≈ − 1,10 € |
+| **Contribution avant astreinte, tous postes V5.6** | | ≈ 7,59 − 0,34 − 0,51 − 1,15 − 1,10 ≈ **4,49 €** |
+Avec ces postes, le point mort national passe à ≈ 134 sorties par jour (600 / 4,49).
 
 Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; une place offerte de moins par groupe ajoute ≈ 3,84 €.
 
@@ -40,7 +52,8 @@ Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; 
 - ≥ 0,3 nouvel inscrit vérifié par sortie vécue (venir avec quelqu'un + cartes à lien unique + ange gardien + 3 mots), mesuré par lien.
 - Welcome → 1re sortie vécue ≥ 25 % ; chute au selfie < 30 %.
 - Taux d'absence après confirmation < 8 %.
-- Contribution par sortie positive après coûts réels.
+- Contribution par sortie positive après coûts réels (y compris sécurité, annulations Blowy, parrainage et cannibalisation Blowy+).
+- Avis juridique écrit sur le classement de Blowy+ (service consommé hors app) avant soumission App Store.
 
 ## Défendabilité (hypothèses stratégiques, pas des faits mesurés)
 - Densité par quartier et par créneau construite par les invitations (on vient avec quelqu'un), pas par l'achat média.

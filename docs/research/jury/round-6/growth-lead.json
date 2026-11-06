@@ -1,0 +1,604 @@
+{
+ "member": "growth-lead",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 8,
+  "safety": 9,
+  "virality": 9,
+  "money": 8,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Une sortie dès 5 personnes, partout » : promesse d'acquisition forte que business-model ne finance pas (astreinte encore chiffrée « par ville »).",
+   "fix": "Adosser « partout » à l'astreinte nationale chiffrée."
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Environ 60 inscrits » alors que facts.json compte 64 personnes **vérifiées** : inscrit ≠ vérifié, le chiffre utile pour former une sortie est le second.",
+   "fix": "« Environ 60 personnes vérifiées »."
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Genre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Pet": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Rencontrer": {
+   "score": 8,
+   "blocking": false,
+   "issue": "4e tour : « À deux, par écrit » à égalité avec « En petit groupe » au 5/9 ; la voie Duo n'a ni « venir avec quelqu'un » ni carte, donc aucun coefficient viral.",
+   "fix": "Duo proposé après la 1re sortie vécue, ou A/B mesuré sur cet écran."
+  },
+  "V5-Intention": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Consentement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Dispos-semaines": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Eviter": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Écran juste (5/5 au test). Moitié basse vide de 1 100 à 1 430 px : la place idéale pour « Inviter quelqu'un à venir avec toi » en carte, pas en lien texte.",
+   "fix": "Remonter l'invitation en carte."
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Et la semaine d'après : mar. 24 nov. · Atelier céramique » annoncé avant toute composition de cette semaine-là : si elle n'a pas lieu, c'est une promesse cassée dans la ville d'amorçage.",
+   "fix": "« Probablement » ou rien avant J − 3."
+  },
+  "V5-Sortie-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Confirmation-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Sortie-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Pas-encore": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Parrainage clair (« ta prochaine sortie est offerte, 1 par mois au plus ») ; bouton « GARDER LA PLACE DE TOM (30 MIN) » plein bord (≈ 8 pt de marge).",
+   "fix": "Libellé plus court."
+  },
+  "V5-Partage-invitation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Invite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« lun. 21:00 » juste pour un jeudi seulement.",
+   "fix": "Exemple daté par créneau."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Accueil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Accueil-discret": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Accueil-duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Bandeau « À Bordeaux, environ 40 inscrits ont entre 18 et 25 ans » au-dessus d'une sortie « en 26–34 ans » : le chiffre ne concerne pas la sortie affichée et laisse croire qu'on est dans la mauvaise ville.",
+   "fix": "Indicateur de la tranche de la sortie, ou aucun."
+  },
+  "V5-Partage-ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Amorcage": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Affiner": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Affiner-histoire": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Affiner-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Affiner-ambiance": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Partage-confirmation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Partage-checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Checkin-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Souvenir": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Partage-jeudi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mode capture et « Vidéo 5 s » faits ; aucun aperçu de la vidéo avant export.",
+   "fix": "Aperçu 5 s jouable."
+  },
+  "V5-Partage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lien « Viens jeudi prochain » : un inscrit du vendredi n'a pas de sortie garantie jeudi (créneaux, densité, J − 3). Dessin toujours légendé « 5 verres, 1 table ».",
+   "fix": "« Trouve ta sortie » ; verres dessinés comme sur V5-Souvenir."
+  },
+  "V5-Partage-dimanche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Partage-bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Rue": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Duo-hh": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Cartes": {
+   "score": 7,
+   "blocking": false,
+   "issue": "9 vignettes = 9 dégradés vides : ni titre dessiné, ni objet, ni lien ; concept §D.11 demande « aperçus réels ».",
+   "fix": "Miniature réelle de chaque carte + slug."
+  },
+  "V5-Story": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Fiche": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rentable à partir de 3 sorties par mois » (juste) ; spec §6.2 dit « dès la 2ᵉ » : on mesurera contre une hypothèse fausse.",
+   "fix": "Aligner la spec ; mesurer la part d'abonnés."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Chargement": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Ta proposition arrive lundi à 21 h » : Alex a « jeu. soir, sam. après-midi » (Réglages) ; le samedi est composé le mercredi 21 h (spec §1.1). Faux pour la moitié de ses créneaux.",
+   "fix": "Heure calculée : « ta prochaine proposition arrive {jour} à 21 h »."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "V5-Chats-vide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Voir ma proposition » alors qu'il n'y en a peut-être pas encore (T5, non traité).",
+   "fix": "« Voir quand arrive ma proposition »."
+  },
+  "L-Effectif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "L-Creneaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien qui freine l'acquisition sur cet écran ; le 10 dépend de mesures (taux par slug, chute au selfie) que la maquette ne peut pas montrer.",
+   "fix": "Mesurer dans le test de 8 semaines."
+  }
+ },
+ "top3": [
+  "V5-Chargement et les notifications calculés par jour de créneau (J − 3 21 h), et le moteur aligné (écart E1 fermé) : une seule heure, juste, partout.",
+  "Mes cartes avec de vraies miniatures et le slug de chacune ; « Viens jeudi prochain » remplacé par une promesse tenable.",
+  "Duo proposé après la 1re sortie vécue (ou A/B mesuré) pour que chaque nouvel inscrit passe d'abord par le canal qui invite."
+ ],
+ "tenIf": "Je mets 10 si le test de 8 semaines mesure dans le 11e Welcome → 1re sortie vécue ≥ 25 % et une chute au selfie < 30 %, si chaque sortie vécue produit ≥ 0,3 inscrit vérifié attribué par slug, si le parrainage « sortie offerte » est mesuré (part des 1res sorties venues par un lien), si Bordeaux passe de « il manque 2 » à une sortie vécue en moins de 3 semaines, et si l'heure de proposition est calculée J − 3 21 h à l'identique dans le moteur, la spec et chaque écran (Chargement compris)."
+}
