@@ -1,557 +1,476 @@
 # Spécification technique V5 — « Ton pet te trouve une bande »
 
-Statut : **référence de construction V5, révision 4 (2026-11-06) — statuts §7, §8.1, §11.2, §11.4 mis à jour par l'alignement C (`docs/agents/handoffs/V5-alignement.md`)**, alignée sur `docs/product/concept-v5.md` amendé par `concept-v5.1.md`, `concept-v5.2.md`, `concept-v5.3.md` (la plus récente gagne) et sur le code déjà livré (handoffs `V5-T0-T1.md`, `V5-T2.md`, `V5-B-garantie.md`). Décisions : `docs/decisions.md` D-010 à D-052. Historique : §13.
-Ce document ne contient aucun code de production : il fixe les noms, états, invariants, contrats et découpages. Tout chiffre marqué `[T]` est un paramètre de `@blowy/tuning` (version courante `tuning-2026.12.3`) ; aucun chiffre ne doit être codé en dur ailleurs. Les écarts entre ce document et le code existant sont listés en §11.4 (« à aligner »).
+Statut : **révision 5 (V5.5), 2026-11-06**. Sources produit, la plus récente gagne : `concept-v5.md` → `concept-v5.1.md` → `v5.2` → `v5.3` → `v5.4` → **`concept-v5.5.md`**. État du code : handoffs `V5-T0-T1`, `V5-T2`, `V5-B-garantie`, `V5-T3`, `V5-T4`, `V5-T5`, `V5-alignement`, `V5-T6`, `V5-T8`. Démo : `design/v5/facts.json`. Décisions : `docs/decisions.md` D-010 → D-070. Historique : §13.
+Aucun code de production ici : noms, états, invariants, contrats, découpage. `[T]` = paramètre de `@blowy/tuning` (version courante `tuning-2026.12.3`), jamais codé en dur ailleurs. Les écarts entre ce document et le code sont listés **en §11.4 avec leur propriétaire** ; tant qu'un écart est ouvert, c'est ce document qui dit la cible.
 
-Sommaire : 1 Glossaire · 2 Modèle de domaine · 3 Visibilité · 4 Composition · 5 Le pet · 6 Économie · 7 API /v1 et WS · 8 Schéma · 9 Notifications · 10 Admin et espace lieu · 11 Tranches · 12 Questions tranchées · 13 Historique des amendements
+Sommaire : 1 Glossaire et calendrier · 2 Modèle de domaine · 3 Visibilité · 4 Composition · 5 Pet · 6 Économie · 7 API et WS · 8 Schéma · 9 Notifications · 10 Admin, astreinte, espace lieu · 11 Tranches et écarts · 12 Questions tranchées · 13 Historique
 
 ---
 
-## 1. Glossaire et conventions
+## 1. Glossaire, conventions, calendrier
 
 | Terme | Définition |
 |---|---|
-| Semaine (`weekKey`) | Semaine ISO dans le fuseau du quartier (`2026-W46`). « Une sortie par semaine » utilise cette clé. |
-| Sortie (`Outing`) | Rencontre de **5 personnes** (dont toi ; 4 à 6 admis), dans une ville, à un lieu partenaire, sur un créneau, pour une activité. |
-| Team (« venir avec quelqu'un ») | 1 à 3 personnes qui s'inscrivent ensemble et sont composées comme une unité indivisible. Libellés d'écran : « venir avec quelqu'un », « tes proches » ; « team » reste un terme d'interface secondaire. |
-| Place (`OutingSeat`) | Participation d'une personne à une sortie. |
-| Confirmation (`lockAt`) | **Veille de la sortie à 18 h** (`[T] outings.cycle.lockHourLocal`) : l'effectif est figé et envoyé au lieu ; lieu, prénoms, tranches d'âge et pets révélés aux confirmés ; fin de l'annulation gratuite. « Confirmée » = l'état, « confirmation » = ce moment. |
-| Visages (`photoRevealAt`) | **Jour J, 3 h avant le début** (`startsAt − [T] cycle.photoRevealMinBeforeStartHours`), avec filigrane du prénom du regardeur. On dit « visages », jamais « photos », pour la révélation. |
-| Présent·e (`ATTENDED`) | Check-in validé (ou correction staff). Seuls les présents votent et sont votés. |
-| Absence | Place confirmée non honorée : pas de check-in **ou** annulation après la confirmation (hors motif sécurité). |
-| Besoin d'aide | Le bouton d'alerte (vocabulaire unique, jamais « alerte » à l'écran). |
-| Tranche d'âge | Grille fixe `18–21, 22–25, 26–29, 30–34, 35–39, 40–44, 45–49, 50+` (`AGE_BRACKETS_V52`). Jamais d'âge exact affiché. |
+| Semaine (`weekKey`) | Semaine ISO dans le fuseau de la ville (`2026-W46`). Quota : une sortie par personne et par semaine, identique pour tous, non achetable. |
+| Sortie | 5 personnes dont toi (4–6 admis ; amorçage ≤ 6), une ville, un lieu partenaire, un créneau, une activité, une ambiance. |
+| Venir avec quelqu'un (team) | 1 à 3 personnes inscrites ensemble, unité indivisible. Libellé principal « venir avec quelqu'un » / « tes proches ». |
+| Composition (`composeAt`) | **J − 3 à 21 h** (heure de la ville), glissante par jour de créneau (D-053, §1.1). |
+| Confirmation (`lockAt`) | **Veille à 18 h** : effectif figé et envoyé au lieu ; lieu, prénoms, tranches, pets révélés ; fin de l'annulation gratuite. |
+| Visages (`photoRevealAt`) | **J − 3 h**, filigranés au prénom du regardeur. |
+| Absence | Place confirmée non honorée sans motif couvert : pas de check-in, ou annulation après la confirmation hors sécurité, « je connais quelqu'un ici » et « imprévu ». |
+| Imprévu | Annulation après la confirmation pour une raison personnelle, **1 fois par mois**, sans pénalité de fiabilité, place non remboursée, lieu compensé (D-056). |
+| Besoin d'aide | Le bouton d'alerte (jamais « alerte » à l'écran). |
+| Tranche d'âge | Grille fixe 18–21, 22–25, 26–29, 30–34, 35–39, 40–44, 45–49, 50+ (`AGE_BRACKETS_V52`). Jamais d'âge exact. |
+| Astreinte | Équipe humaine joignable pendant **toutes** les heures de créneaux et de rendez-vous, mutualisée par fuseau (D-058). |
 
-Conventions héritées : UUID v7 côté application ; UTC en base + fuseau IANA du quartier ; Zod aux frontières, vues V5 en `.strict()` (un champ imprévu = échec) ; commandes via `CommandBus` (idempotence `(actorId, operation, commandId)`, transaction, verrous ordonnés, outbox) ; erreurs `{code,message,detailsSafe,requestId,retryable}` avec le motif dans `detailsSafe.reason` (ex. `412 PRECONDITION_FAILED {reason:"RELIABILITY_PAUSED"}`) ; `NOT_FOUND` pour tout objet d'autrui ; code `GONE` (410) pour les routes retirées (`API_ERROR_CODES`).
-**Ordre global des verrous V5** (implémenté dans `packages/database/src/tx.ts`) : `users → pets → relationships → neighborhoods → teams → outings → outing_seats (id croissant) → friendships → duos → wallets → outing_credit_lots`. Aucun appel réseau sous verrou.
+Conventions : UUID v7 ; UTC en base + fuseau IANA de la ville ; Zod aux frontières, vues V5 `.strict()` ; `CommandBus` (idempotence `(actorId, operation, commandId)`, transaction, verrous ordonnés, outbox) ; erreurs `{code,message,detailsSafe,requestId,retryable}` avec le motif dans `detailsSafe.reason` ; `NOT_FOUND` pour l'objet d'autrui ; `410 GONE {reason:"RETIRED_IN_V5"}` pour les routes V4 (actif, middleware avant l'authentification). Ordre des verrous (`packages/database/src/tx.ts`) : `users → pets → relationships → neighborhoods → teams → outings → outing_seats → friendships → duos → wallets → crédits`. Aucun appel réseau sous verrou.
+Montants : **prix affichés TTC** (4,99 €, 9,99 €) ; **compensations lieu exprimées HT** (TVA 20 % : 4,99 € TTC = 4,16 € HT) ; `amountCents` porte toujours le champ `taxBasis: TTC|HT`.
 
-**Calendrier d'une sortie (récapitulatif, valeurs `[T]`)**
+### 1.1 Calendrier d'une sortie (valeurs `[T] outings.cycle`)
 | Moment | Ce qui se passe |
 |---|---|
-| Permanent | la personne coche ses créneaux disponibles, ses semaines off, ses activités, ses quartiers acceptables ; la demande hebdo est créée automatiquement (§2.4) |
-| Mardi 12 h | composition de la semaine ; invitation (≤ 1 notification de proposition par semaine) avec **aperçu anonyme** |
-| +24 h | fin de l'invitation ; places libérées → backfill jusqu'à la confirmation |
-| ≥ 4 « Je viens » | sortie `FORMING`, chat de groupe ouvert, auteurs affichés **par leur pet** |
-| **J-1 18 h — confirmation** | lieu (nom, photo, adresse), prénoms, tranches, pets ; effectif « table Blowy » envoyé au lieu ; « Je connais quelqu'un ici » disponible ; **après : annuler = absence** |
-| **J − 3 h** | visages révélés en même temps à tout le groupe, filigranés |
-| J − 30 min → J + 90 min | check-in sur place ; « Je pars, mal à l'aise » toujours possible |
-| J + 90 min → + 72 h | vote d'après (un seul écran) ; résultats à la clôture uniquement |
+| Permanent | créneaux cochés, semaines off (dont « une semaine sur deux »), activités, ambiance, trajet max ; demande hebdo **automatique** |
+| Vendredi 21 h de la semaine W−1 | création des demandes de la semaine W (`requestOpensAt`) ; état honnête « histoire » calculé (§2.4) |
+| **J − 3, 21 h** | composition du jour J (tous les créneaux de ce jour, toute la ville) ; invitation (≤ 1 notification de proposition par semaine) avec aperçu anonyme |
+| J − 2, 21 h | fin de l'invitation (`[T] inviteTtlHours` 24) ; places libérées → backfill jusqu'à la confirmation |
+| dès 4 « Je viens » | `FORMING` ; chat de groupe signé par les pets |
+| **J − 1, 18 h** | **confirmation** : lieu (nom, photo, adresse, trajet estimé), prénoms, tranches, pets ; effectif « table Blowy » envoyé au lieu ; « Je connais quelqu'un ici » ouvert ; ensuite annuler = absence (sauf sécurité, « je connais quelqu'un » 1×/mois, imprévu 1×/mois) |
+| **J − 3 h** | visages, filigranés |
+| J − 30 min → J + 90 min | check-in **par code du chevalet uniquement** ; astreinte joignable ; « Je pars, mal à l'aise » |
+| → + 72 h | vote d'après sur un écran ; résultats à la clôture ; action principale « Écrire à Léa » |
+**Pourquoi J − 3 21 h** (D-053) : c'est l'heure des écrans (`facts.json` : composition « lundi 9 novembre, 21 h » pour le jeudi 12) ; elle garantit pour **chaque** jour de créneau (y compris le mardi soir des maquettes et du seed) : composition < fin d'invitation (J−2 21 h) < confirmation (J−1 18 h). Le code actuel (mardi 12 h pour toute la semaine) rend impossibles les sorties du mardi et du mercredi (confirmation antérieure à la composition) — écart E1 §11.4. Créneaux proposés du mardi au dimanche (`[T] cycle.slotIsoWeekdays = [2..7]`), jamais hors des heures d'astreinte.
 
 ---
 
 ## 2. Modèle de domaine
 
-Chaque agrégat indique son module propriétaire (seul écrivain de ses tables, §11).
+### 2.1 Ville, quartier, trajet — `neighborhoods` (livré)
+`Neighborhood(slug, name, cityZoneId, timezone, status LIVE|WAITLIST|PAUSED|CLOSED, slotTemplates)`. **Aucune ville fermée** : une sortie se forme dès que 5 personnes vérifiées compatibles partagent un créneau couvert par l'astreinte et un lieu partenaire ; le statut ne change que la fréquence et le nombre de lieux ; seuls `PAUSED`/`CLOSED` refusent (`NEIGHBORHOOD_UNAVAILABLE`). Le seuil 120 est mort.
+Ville et quartier saisis librement avec suggestions, **jamais de géolocalisation**. Trajet max déclaratif 20 / 30 / 45 min (défaut 30). **Temps de trajet** : table `NeighborhoodTravelTime(from, to, minutes)` maintenue par ops (transports en commun, valeur typique) ; sert à filtrer les lieux (`≤ maxTravelMinutes`) et à afficher « ≈ 25 min » sur Sortie et Confirmation (y compris banlieue → Paris). Les « quartiers acceptables » deviennent une dérivation de cette table (plus de saisie séparée, D-063).
 
-### 2.1 Neighborhood (quartier) et ville — module `neighborhoods` (livré T2)
-| Champ | Notes |
-|---|---|
-| id, slug, name, cityZoneId (FK `Zone` = ville), timezone | |
-| status | `LIVE \| WAITLIST \| PAUSED \| CLOSED` |
-| slotTemplates | créneaux types de la ville par activité (ex. mar. soir verre, sam. après-midi bloc, dim. brunch) |
+### 2.2 Écran d'attente et indicateurs de ville — `neighborhoods` / `outings`
+- `nextOutingGap` (livré) : « À Bordeaux : 64 personnes vérifiées. Sur tes créneaux, il manque 2 personnes pour la sortie du samedi 21 novembre. » + **une seule** invitation discrète, élargir créneaux/activités/trajet, Duo, carte « Aide Bordeaux à sortir » (sans chiffre personnel).
+- **Indicateurs de ville** (D-059, à faire) : toujours au niveau **ville**, jamais du groupe ni du créneau ; calculés sur une **photographie quotidienne** des personnes vérifiées actives (un changement de mes préférences ne modifie les chiffres qu'au lendemain : pas d'attaque par différences) ; **affichés seulement si ≥ 10**, arrondis :
+  | Vrai nombre | Affiché |
+  |---|---|
+  | < 10 | « pas encore assez de monde pour te le dire » |
+  | 10–14 | « une dizaine » · 15–24 « une vingtaine » · 25–34 « une trentaine » · 35–94 « environ N » (N arrondi à la dizaine) · ≥ 95 « plus de 100 » puis « environ N » arrondi à 50 |
+  Indicateurs : `storyCompatibleApprox` (seulement pour qui cherche une histoire : personnes de la ville qui cherchent aussi une histoire et sont réciproquement compatibles — genres recherchés, tranches pour une histoire) ; `ageBracketApprox` (inscrits vérifiés par tranche de la grille). Jamais par quartier si la ville a < 3 quartiers actifs.
 
-**Il n'y a plus de ville ni de quartier « fermé » (D-035).** Dans n'importe quelle ville, une sortie se forme dès que 5 personnes vérifiées compatibles partagent un créneau et qu'un lieu partenaire offre ce créneau. Le statut ne change que la fréquence et le choix des lieux : `LIVE` = cycle hebdo complet et plusieurs lieux ; `WAITLIST` (« pas encore ouvert ») = composition aussi active, souvent un seul lieu ; `PAUSED`/`CLOSED` = seuls statuts qui refusent les demandes (`NEIGHBORHOOD_UNAVAILABLE`). Le seuil de densité (`neighborhoods.defaultDensityThreshold` = 120) est **mort** : jamais affiché, jamais bloquant ; il ne sert qu'à un indicateur admin.
-`me.set_neighborhood` : saisie libre ville + quartier avec suggestions, **jamais de géolocalisation**, changement au plus tous les `[T] changeCooldownDays` (7) et jamais avec une place active. Quartiers acceptables : jusqu'à `[T] preferences.maxNeighborhoods` (5) ; trajet max déclaratif 20 / 30 / 45 min (défaut 30, affiché) qui ne sert qu'à suggérer des quartiers (aucun calcul de position).
+### 2.3 Venue (lieu partenaire) — `neighborhoods` + espace lieu (`admin`, livré T6)
+`name, photoMediaId, address, lat/lng (non transmis au client avant confirmation ; ne servent plus au check-in), activities, ambiance CALM|LIVELY, tableCap, reservationName 'Blowy', checkinSecretRef, status, contrat`. Consommation non incluse. Le lieu reçoit un groupe confirmé à J − 1 18 h sur ses créneaux, sans animation, avec astreinte Blowy, et des **compensations** (§6.5). Un **Duo au lieu partenaire = une table de 2**, mêmes règles (réservation confirmée la veille 18 h, effectif, code, compensation). `VenueSlot(venueId, startsAt, activity, capacityOutings, reservedOutings)`, unique `(venueId, startsAt)`, générés seulement aux heures d'astreinte.
 
-### 2.2 Écran d'attente — module `neighborhoods` / `outings`
-Quand aucune sortie n'est possible cette semaine pour la personne : écran honnête et actionnable, alimenté par `nextOutingGap` (livré T2) calculé sur les **vraies** demandes vérifiées de ses créneaux :
-« À Nantes : 87 personnes vérifiées. Sur tes créneaux, il manque 2 personnes pour la sortie du samedi 21 novembre. » + actions : venir avec quelqu'un (team), élargir créneaux / activités / quartiers, Duo si activé, carte de partage « Aide Nantes à sortir » (sans chiffre personnel). Jamais de seuil abstrait, jamais de position individuelle. Une personne non placée une semaine est **prioritaire** la suivante (`missedWeeks + 1`). `WaitlistEntry` reste utilisée pour le décompte « personnes vérifiées dans la ville ».
+### 2.4 Préférences de sortie et demande hebdo — `users` / `outings` (livré, à compléter)
+- `UserSlotAvailability`, `UserWeekOff` + **motif « une semaine sur deux à partir de la semaine W »** (`UserWeekOffPattern(userId, everyOtherFromWeekKey)`, D-057), `OutingPreferences(groupAgeMin/Max, activities[], maxTravelMinutes, ambiance CALM|LIVELY|ANY)` (ambiance D-055).
+- **Affiner « une histoire »** (secrets, D-060) : `storyAgeBrackets[]` (« Âge pour une histoire », tranches de la grille) et `kidsHorizon` (`IN_1_2_YEARS | IN_3_5_YEARS | NO_PLAN | DONT_KNOW`, remplace `kidsSomeday`) ; + `storySeriousness`. Servent à la composition et à l'indice « projet compatible » en Duo, rien d'autre.
+- `OutingRequest(userId, weekKey, slotStartsAt[], teamId?, mode NORMAL|FRIENDS_THIS_WEEK, status, missedWeeks)` créée **automatiquement** à `requestOpensAt` (vendredi 21 h de W−1) depuis les disponibilités, sauf semaine off, pause, place active ; ajustable jusqu'à la composition du jour concerné.
+- **État honnête « histoire »** (D-061, à faire) : pour qui cherche une histoire, calculé sur la **ville et ses créneaux, avant toute composition** : si le vivier `storyCompatible` sur ses créneaux de la semaine est < `[T] storyGuarantee.minCompatible` (2), la personne voit (et elle seule) : « Cette semaine, pas encore assez de personnes compatibles avec ce que tu cherches sur tes créneaux. Tu peux sortir quand même (en amitié) ou attendre la semaine prochaine. » → `mode = FRIENDS_THIS_WEEK` (composée comme « nouveaux potes » cette semaine) ou semaine off. Ne désigne personne : rien sur le groupe, rien après composition.
+- Préconditions de composition : onboarding complet ; 18+ et selfie vérifiés ; photo publiée ; pas de pause ; pas de place active cette semaine.
+- **Pause en 1 tap** (`POST /v1/pauses`).
 
-### 2.3 Venue (lieu partenaire) — module `neighborhoods`
-| Champ | Notes |
-|---|---|
-| id, neighborhoodId, name, photoMediaId, addressLine, postalCode, city | nom + photo + adresse révélés aux confirmés **à la confirmation** |
-| lat, lng | servent au check-in uniquement ; jamais envoyées avant confirmation ; jamais de distance affichée |
-| activities | `DRINK_COFFEE \| BRUNCH \| CLIMBING \| WORKSHOP \| GAMES \| EXPO` (`ACTIVITY_ENTRIES`) |
-| tableCap | plafond de tables Blowy simultanées (contrat) ; `VenueSlot.capacityOutings ≤ tableCap` |
-| reservationName | toujours « Blowy » (on ne prononce jamais le nom d'un pet au bar) |
-| status | `ACTIVE \| PAUSED \| ARCHIVED` |
-| checkinSecretRef | référence du secret servant au code de repli (§2.8) |
-| contractVersion, contractSignedAt | contrat d'une page (§10.2) |
-**Consommation non incluse** : chacun paie ce qu'il consomme au lieu. Le lieu ne reçoit pas de paiement par place : il reçoit un groupe confirmé à J-1 18 h sur ses créneaux creux, sans animation, avec une astreinte Blowy, et une **compensation** pour chaque place non honorée après confirmation (§6.5).
-`VenueSlot(venueId, startsAt, activity, capacityOutings, reservedOutings)`, unique `(venueId, startsAt)`, CHECK `0 ≤ reserved ≤ capacity`, générés par `neighborhoods.generate_slots`.
+### 2.5 Team et amorçage — `outings` (livré)
+Team 1–3 indivisible, pas de vote interne, lien `PLUS_ONE` si présents ensemble. « Vérifié » n'est jamais affiché devant une personne qui n'a pas fait son selfie. Amorçage : team de 3 vérifiés + autre team ou personnes en attente, n'importe quelle ville (`composeSeedingOutings`), soumis à la même règle d'horaire (J − 3 21 h minimum avant le créneau).
 
-### 2.4 Préférences de sortie et demande hebdo — modules `users` / `outings` (livrés T2)
-- Préférences permanentes : `UserSlotAvailability` (créneaux cochés de la ville), `UserWeekOff` (case « certaines semaines je ne suis pas dispo » → semaines off, ≤ `[T] preferences.maxWeeksOffAhead` 12), `OutingPreferences(groupAgeMin, groupAgeMax, activities[], maxTravelMinutes)`, `UserAcceptableNeighborhood`.
-- `groupAge` : curseur, défaut ± `[T] preferences.groupAgeDefaultDelta` (4) ans autour de l'âge ; comparé aux **tranches fixes** (une personne est acceptable si sa tranche recoupe l'intervalle).
-- `OutingRequest(userId, weekKey, slotStartsAt[], teamId?, status OPEN|PLACED|UNPLACED|WITHDRAWN, missedWeeks)`, unique `(userId, weekKey)`. **Créée automatiquement** chaque semaine depuis les disponibilités (sauf semaine off, pause, place active) ; `PUT /v1/outings/requests/:weekKey` reste pour ajuster/retirer.
-- Préconditions pour être composé·e : onboarding complet (§2.15) ; **18+ vérifié** et selfie vérifié valides (`LOCAL_DEMO` hors production seulement) ; photo de profil publiée ; pas de pause (fiabilité ou volontaire) ; pas de place active cette semaine (quota 1/semaine identique pour tous, non achetable).
-- **Pause en 1 tap** depuis l'Accueil : `POST /v1/pauses` existant (≤ 14 j cumulés par trimestre) suspend demandes, propositions et rappels.
-
-### 2.5 Team — module `outings` (livré T2)
-`Team(id, status FORMING|ACTIVE|DISSOLVED)`, `TeamMember(teamId, userId)` (une team active par personne, index partiel). 1 à `[T] composition.maxTeamSize` (3). Invitation par lien unique (`/team/<code>`, §2.16), l'invité·e fait son onboarding puis rejoint. Composée comme unité ; ses membres ne votent pas entre eux ; s'ils sont présents ensemble → BandLink `PLUS_ONE` (nom d'enum conservé, libellé « venu·e·s ensemble »).
-**Amorçage** (D-036) : dans toute ville, une team `ACTIVE` de 3 personnes vérifiées + une autre team (≥ 2) ou des personnes en attente sur le même créneau = une sortie (`composeSeedingOutings`, `[T] seeding`, jusqu'à 6). L'écran montre cette sortie d'amorçage avec date et lieu.
-
-### 2.6 Outing (sortie) — module `outings` (livré T2)
-| Champ | Notes |
-|---|---|
-| id, neighborhoodId, weekKey, venueSlotId, venueId, activity, startsAt, endsAt (`+ [T] durationMinutes` 120) | |
-| status | `PROPOSED → FORMING → CONFIRMED → CHECKIN_OPEN → DONE`, ou `CANCELLED` |
-| capacity | taille du groupe composé (cible `[T] composition.targetSize` 5) ; CHECK 4–6 |
-| acceptDeadline, lockAt, photoRevealAt, checkinOpensAt, checkinClosesAt, votesCloseAt | figés à la création |
-| cancelReason | `UNDERSIZED \| VENUE_UNAVAILABLE \| STAFF \| NEIGHBORHOOD_CLOSED \| SAFETY` |
-| compositionRunId, conversationId, tuningVersion, algoVersion | |
-
+### 2.6 Outing — `outings` (livré)
+Champs : `neighborhoodId, weekKey, venueSlotId, venueId, activity, ambiance, startsAt, endsAt, status, capacity, composedAt, acceptDeadline, lockAt, photoRevealAt, checkinOpensAt, checkinClosesAt, votesCloseAt, cancelReason, compositionRunId, conversationId, tuningVersion, algoVersion`.
 | De → À | Déclencheur | Garde | Effets |
 |---|---|---|---|
-| — → `PROPOSED` | composition / amorçage | groupe valide, `VenueSlot` réservé | places `INVITED` (une invitation réserve une place) ; notification d'invitation ; aperçu anonyme |
-| `PROPOSED → FORMING` | « Je viens » | `confirmed ≥ [T] minSizeToForm` (4) | chat `OUTING` ouvert aux confirmés, **auteurs affichés par leur pet** ; brise-glace |
-| relance | place déclinée/expirée | `now < lockAt` | backfill (§4.6) |
-| `FORMING → CONFIRMED` | job à `lockAt` | `confirmed ≥ [T] minSizeToLock` (4) | effectif figé et transmis au lieu (« table Blowy », prénoms) ; lieu + prénoms + tranches + pets révélés ; « Je connais quelqu'un ici » ouvert ; invitations restantes `EXPIRED` |
-| `PROPOSED/FORMING → CANCELLED` | job à `lockAt` | `confirmed < 4` | `UNDERSIZED`, remboursements (§6.4), confirmés prioritaires la semaine suivante |
-| `CONFIRMED → CANCELLED` | départs | `confirmed < [T] minSizeToHold` (3) avant `startsAt − 3 h` | remboursement des restants |
-| `CONFIRMED` (`photoRevealAt`) | job | — | visages révélés (flag, pas un statut) |
-| `CONFIRMED → CHECKIN_OPEN` | `checkinOpensAt` | — | check-in ; « arrivé·e » visible au groupe |
-| `CHECKIN_OPEN → DONE` | `checkinClosesAt` | — | `CHECKED_IN → ATTENDED`, `CONFIRMED → NO_SHOW` ; votes si `attended ≥ [T] votes.minAttendees` (2) ; souvenirs ; fiabilité ; compensations lieu |
-| `* → CANCELLED` | staff `ops` (step-up) | ≠ `DONE` | motif, remboursements |
-Invariants : I-O1 pas de surréservation ; I-O2 une place active par personne et par semaine (index partiel) ; I-O3 deux personnes liées par un blocage ou par « éviter les personnes que je connais » ne sont jamais dans la même sortie active ; I-O4 lieu, prénoms et tranches jamais projetés avant `lockAt`, visages jamais avant `photoRevealAt`, et seulement aux places `CONFIRMED` ; I-O5 une sortie `CANCELLED` ne produit ni vote ni souvenir ; l'annulation tardive qui l'a provoquée reste une absence (D-043).
+| — → `PROPOSED` | composition J − 3 21 h / amorçage | groupe valide, créneau couvert par l'astreinte, `composedAt < acceptDeadline ≤ lockAt` | places `INVITED`, aperçu anonyme |
+| → `FORMING` | « Je viens » | ≥ 4 confirmés | chat `OUTING` signé par les pets |
+| backfill | place libérée | `now < lockAt` | §4.6 |
+| → `CONFIRMED` | `lockAt` | ≥ 4 | effectif au lieu ; lieu + prénoms + tranches + pets + trajet ; « je connais quelqu'un » ouvert |
+| → `CANCELLED` | `lockAt` | < 4 | `UNDERSIZED`, remboursements |
+| `CONFIRMED → CANCELLED` | départs | < 3 avant `startsAt − 3 h` | remboursements ; lieu compensé 3 € HT par place réservée (« Blowy annule ») |
+| `CONFIRMED` (`photoRevealAt`) | | | visages |
+| → `CHECKIN_OPEN` → `DONE` | horaires | | présences, absences, votes, souvenirs, fiabilité, compensations |
+| `* → CANCELLED` | staff (step-up) | ≠ DONE | motif ; si déjà confirmée et motif interne : 3 € HT/place au lieu |
+Invariants : pas de surréservation ; une place active par personne et par semaine ; jamais ensemble deux personnes liées par un blocage ou un évitement de contacts ; lieu/prénoms/tranches jamais avant `lockAt`, visages jamais avant `photoRevealAt`, et seulement aux confirmés ; **aucun créneau, aucune sortie hors des heures d'astreinte** (I-O6, D-058).
 
-### 2.7 OutingSeat (place) — module `outings` (livré T2, financement réel T3)
-Champs : `status, funding (FREE_FIRST | PLUS_INCLUDED | PAID | STAFF_COMP ; CREDIT déprécié), creditEntryId? / paymentId?, holdExpiresAt, cancelKind, refundState, refundRef, horodatages`.
-```
-INVITED ──« Je viens »──► HELD ──paiement/droit──► CONFIRMED ──check-in──► CHECKED_IN ──DONE──► ATTENDED
-   ├─decline──► DECLINED          CONFIRMED ──DONE sans check-in──► NO_SHOW (absence)
-   └─deadline/confirmation──► EXPIRED   CONFIRMED/HELD ──annulation──► CANCELLED (cancelKind)
-```
-- Financement à « Je viens », dans l'ordre : 1ʳᵉ sortie offerte (`FREE_FIRST`, unique par personne) → Blowy+ actif (`PLUS_INCLUDED`, toutes les sorties) → `PAID` 4,99 € par Apple Pay / carte via Stripe (`HELD` pendant `[T] paymentHoldMinutes` 15, puis webhook → `CONFIRMED`). Paiement arrivé après expiration du hold ou sur sortie pleine/annulée → remboursement automatique.
-- **Annulation** (`cancelKind`) :
-  - `EARLY` : avant `lockAt` → **gratuite** : remboursement carte intégral (`PAID`), 1ʳᵉ sortie qui reste offerte (`FREE_FIRST` recrédité ; l'écran dit « ta 1ʳᵉ sortie reste offerte », jamais « remboursé·e »), `PLUS_INCLUDED` sans objet. Aucun effet de fiabilité.
-  - `LATE` : après `lockAt` → **absence** : aucun remboursement, compte dans la fiabilité, compensation lieu (§6.5).
-  - `SAFETY_EXIT` : motif sécurité à tout moment (avant ou pendant) → remboursé, aucun effet de fiabilité ; message au staff.
-  - `SYSTEM_REMOVAL` : retrait par le système (blocage, « je connais quelqu'un » accepté) → remboursé ou recrédité, prioritaire, message neutre identique à toute recomposition.
-  - `ACCOUNT_DELETED`.
-- **Retrait système au blocage** (D-025, livré E) : si A bloque B alors qu'ils partagent une sortie active, B est retiré·e (message « La composition de ta sortie a changé… »), A n'a rien à faire ; le groupe voit « X ne pourra pas venir ».
-- **« Je connais quelqu'un ici »** (livré T2) : disponible de `lockAt` à `startsAt`, privé, 1 fois par `[T]` 30 j ; examen automatique (lien connu dans l'app, blocage, évitement de contacts) sinon `IN_REVIEW` humain ; accepté → la personne qui demande est retirée sans pénalité, prioritaire, et déplacée vers un autre groupe du même créneau s'il existe une place compatible ; au-delà du quota = annulation tardive.
-- **« Je pars, mal à l'aise »** (pendant la sortie, après check-in) : toujours possible, sans pénalité (la présence reste `ATTENDED`), message au staff (et au gardien si la personne le choisit) ; au 3ᵉ en `[T] safety.uncomfortableLeaveWindowDays` (90 j), un humain recontacte la personne.
+### 2.7 OutingSeat — `outings` / `economy` (livré)
+Statuts `INVITED → HELD → CONFIRMED → CHECKED_IN → ATTENDED`, `NO_SHOW`, `DECLINED`, `EXPIRED`, `CANCELLED`. Financement à « Je viens », dans l'ordre : `FREE_FIRST` (1ʳᵉ sortie) → `REFERRAL_FREE` (parrainage, D-064) → `PLUS_INCLUDED` (Blowy+ actif) → `PAID` 4,99 € (Stripe / Apple Pay, hold 15 min).
+| `cancelKind` | Quand | Remboursement | Fiabilité | Lieu |
+|---|---|---|---|---|
+| `EARLY` | avant `lockAt` | gratuite : carte remboursée ; offerte / parrainage « reste offerte » | — | rien |
+| `LATE` | après `lockAt` | aucun | **absence** | compensé (§6.5) |
+| `EMERGENCY` (imprévu) | après `lockAt`, **1 par mois** (`[T] outings.emergencyPerMonths = 1`, fenêtre glissante 30 j) | aucun | **aucun effet** | compensé comme une absence |
+| `SAFETY_EXIT` | à tout moment | remboursée | aucun | 3 € HT par Blowy si après `lockAt` |
+| `SYSTEM_REMOVAL` | blocage, « je connais quelqu'un » accepté | remboursée / reste offerte | aucun | 3 € HT par Blowy si après `lockAt` |
+| `ACCOUNT_DELETED` | | carte remboursée | — | 3 € HT si après `lockAt` |
+Au-delà du quota d'imprévu ou de « je connais quelqu'un » : `LATE`. Règle d'annulation affichée à l'identique partout (Fiche, Sortie, Confirmation, Tarifs, contrat lieu) : « Annulation gratuite jusqu'à la veille 18 h. Ensuite, c'est une absence, sauf pour ta sécurité, « je connais quelqu'un ici » (1 fois par mois) ou un imprévu (1 fois par mois). »
+« Je connais quelqu'un ici » : de `lockAt` à `startsAt`, 1 fois par 30 j, examen auto ou humain, accepté → retrait sans pénalité, prioritaire, déplacement vers un autre groupe du créneau si possible. « Je pars, mal à l'aise » : après check-in, sans pénalité, relayé à l'astreinte (et au gardien si choisi), recontact humain au 3ᵉ en 90 j.
 
-### 2.8 GroupChat pré-sortie — `conversations` (livré T2)
-`Conversation.kind = OUTING`, ouverte au passage `FORMING`, membres = places confirmées. Texte uniquement, modération existante. **Avant la confirmation, chaque message est signé par le pet de son auteur** (nom + avatar du pet) ; à `lockAt` les prénoms apparaissent (livré : `MessageView.author`, port `MESSAGE_AUTHOR_RESOLVER` fourni par `outings`). Brise-glace du pet (`icebreaker.*`), réponses « 3 mots » (`promptId`, ≤ 3 mots / 40 caractères). Pas de vocal obligatoire nulle part. En-tête : **Signaler / Quitter** (comme sur la fiche de sortie et le duo). Écriture jusqu'à `votesCloseAt`, puis lecture 7 j, purge 90 j.
+### 2.8 Chat de groupe — `conversations` (livré)
+Ouvert à `FORMING`, signé par le pet de l'auteur avant `lockAt` (`MessageView.author {pet, firstName?}`), prénoms ensuite ; texte seul ; brise-glace ; « 3 mots » ; Signaler / Quitter en en-tête ; écriture jusqu'à la clôture des votes, lecture 7 j, purge 90 j.
 
-### 2.9 CheckIn — `outings` (livré T2) et `connections` (RDV duo)
-Fenêtre `[startsAt − 30 min, startsAt + 90 min]`. `GEO` : position ponctuelle au tap, comparée au rayon `[T] safety.checkinRadiusMeters` (150), **jamais stockée ni journalisée**, aucune distance renvoyée. `VENUE_CODE` : code à 4 chiffres sur place (dérivé HMAC), 5 essais. `STAFF` : correction auditée. Le groupe ne voit que « arrivé·e » (jamais « en route », jamais « absent·e »).
+### 2.9 Check-in — **par code uniquement** (D-062)
+Fenêtre `[startsAt − 30 min, startsAt + 90 min]`. **Seule méthode : le code à 4 chiffres du chevalet** (`VENUE_CODE`, dérivé HMAC par sortie ou table duo), 5 essais puis 429 ; correction `STAFF` auditée. **Plus aucune géolocalisation, ni demandée ni acceptée** : la phrase « Position : jamais demandée » est vraie. Le groupe ne voit que « arrivé·e ». Même règle pour les RDV Duo (table de 2 au lieu partenaire).
 
-### 2.10 GuardianLink (ange gardien) — module `safety` (livré E)
-Jeton aléatoire 32 octets, stocké haché, montré une fois ; ≤ 3 liens actifs par sujet ; page active de `startsAt − 2 h` à `endsAt + 3 h` ; partage par la feuille native (aucun numéro du proche stocké) ; Web Push optionnel souscrit depuis la page.
-Ce que voit le proche (`GET /v1/public/guardian/:token`, no-store, noindex) : prénom du propriétaire, type (sortie / rendez-vous à deux), date et heure, **nom et adresse du lieu à partir de la confirmation**, chronologie (« arrivé·e à 19 h 34 », « tout va bien », « besoin d'aide à 21 h 02 », « parti·e, mal à l'aise » si la personne l'a choisi, « terminé »), numéros d'urgence, aperçu de Blowy et lien vers la ville. **Jamais de position**, même sur « besoin d'aide » (V5.3 A.4 : le lieu de la sortie et l'heure suffisent), jamais les autres participants, le chat, Blowy+, la fiabilité.
-« Besoin d'aide » (`SafetyAlert`) → statut sur la page + Web Push + dossier `SAFETY` haute priorité (trust_lead) + écran d'urgence (112). Réponse humaine visée < 1 h pendant les créneaux de sortie ; la promesse n'est affichée que lorsqu'une astreinte est planifiée (§10.1).
+### 2.10 Ange gardien — `safety` (livré)
+Lien à jeton aléatoire haché, montré une fois, ≤ 3 par sujet, actif de −2 h à +3 h, sans compte, aucun numéro du proche stocké, Web Push optionnel. Page : prénom du propriétaire, type, date, heure, **lieu et adresse dès la confirmation**, chronologie (arrivé·e, tout va bien, besoin d'aide, parti·e mal à l'aise si choisi, terminé), numéros d'urgence, phrase « Une personne de l'équipe est joignable pendant toute la sortie », aperçu de Blowy et ville **du contexte** (jamais une ville codée en dur). **Aucune position, jamais.** « Besoin d'aide » → page + Web Push + dossier SAFETY prioritaire + astreinte + écran 112.
 
-### 2.11 Vote d'après — module `outings` (livré T2)
-`OutingVote(outingId, voterUserId, targetUserId, choice FRIEND|PLUS|NO)`, table séparée, jamais jointe à une projection d'autrui.
-- **Un seul écran** : la liste des présents, une ligne par prénom (et visage) avec 3 pastilles Ami·e / Plus / Non, **Non par défaut**. Soumission groupée `PUT /v1/outings/:id/votes {choices}`, modifiable jusqu'à la clôture.
-- **Les trois choix sont affichés pour tout le monde** (aucune option masquée, donc aucune fuite sur soi ni sur l'autre). Sous les boutons : « Si l'autre dit ami·e, vous restez ami·es. »
-- Dépouillement **unique à `votesCloseAt`** (`[T] votes.revealMode = AT_CLOSE`) : `r = min(A→B, B→A)` sur `NO < FRIEND < PLUS` ; un PLUS incompatible (genres recherchés non réciproques, tranches d'âge, intention) devient FRIEND **en silence**. `PLUS` → Duo (`OUTING_VOTE`, `UNLOCKED`) ; `FRIEND` → BandLink ; sinon rien. Pas de vote entre membres d'une même team.
-- Jamais : « tout le monde a voté », compteur de votes, progression, qui a dit non. Phrase d'écran : « Tu ne sauras jamais qui a dit non ou n'a pas voté. » Chacun ne voit que **ses propres** accords, à la clôture.
-- Bulletins purgés `[T] votes.ballotRetentionDays` (7 j) après clôture ; `ConnectionReveal` garde les résultats mutuels.
+### 2.11 Vote d'après — `outings` (livré)
+Un écran, une ligne par présent (prénom, visage), 3 pastilles Ami·e / Plus / Non pour tous, **Non par défaut**, modifiable jusqu'à la clôture ; dépouillement unique à la clôture ; `min()`, PLUS incompatible → ami·e en silence ; pas de vote dans une team ; jamais de compteur ; « Tu ne sauras jamais qui a dit non ou n'a pas voté. » Résultats : **action principale « Écrire à <prénom> »** (ouvre le chat bande ou duo), « Partager la soirée » en second. Bulletins purgés 7 j après.
 
-### 2.12 Bande et « Ta rue » — module `connections` (livré C2 ; lecture `GET /v1/band` servie par T2)
-`BandLink` = `Friendship` (paire canonique) avec `origin OUTING_VOTE|DUO_VOTE|PLUS_ONE|LEGACY_V4`. Conversation `BAND` 1:1. On ne voit jamais la bande d'autrui. « Partir proprement » (`band.leave`) : fermeture neutre, sans pénalité. Une paire liée n'est plus composée ensemble.
-**Ta rue** (`GET /v1/band/street`) : vue calme où vivent les pets de ta bande, décorée par tes souvenirs ; rien à entretenir, aucune jauge, aucune notification, aucune pastille. Actions facultatives : ranger ses souvenirs (ordre d'affichage), offrir un accessoire gagné au pet d'un membre de la bande (`pets.gift_accessory`, transfert de propriété, 1 fois par accessoire, visible dans l'app seulement).
+### 2.12 Bande et Ta rue — `connections` (livré)
+`Friendship` + chat `BAND` ; « partir proprement » ; jamais la bande d'autrui. Ta rue (`GET /v1/band/street`) : pets de la bande, souvenirs rangés, offrir un accessoire gagné ; aucune jauge, notification ni pastille. « Partager Nino » (fiche du pet) : **jamais** les pets ni prénoms de la bande.
 
-### 2.13 Duo — module `connections` (livré C2)
-Mode de rencontre à l'onboarding : **« Comment tu préfères rencontrer ? » En petit groupe / À deux, par écrit d'abord / Les deux** (`meetingMode` GROUP|DUO|BOTH). La voie Duo est active pour DUO et BOTH, désactivée pour GROUP, et **jamais proposée pendant l'onboarding** à qui a choisi GROUP.
-- **Quota** : gratuit = **1 duo actif** (proposition ouverte ou duo voie Duo non terminal) ; Blowy+ = duos illimités (garde-fou qualitatif : ≤ `[T] duo.maxOpenProposals` 3 propositions ouvertes, ≤ 1 nouvelle par jour). Les duos nés d'un vote PLUS ne comptent pas dans le quota.
-- Proposition (`MatchProposal.kind = DUO_LANE`, lot quotidien 21 h, 48 h) : **avant le double « oui », on ne voit que le pet et l'initiale de l'autre** (+ score de vision) ; après le double oui, prénom et carte complète (pet, tranche, fiabilité).
-- `EXCHANGE` (48 h, texte d'abord, sans visage ni vocal) → à `exchangeEndsAt`, si chacun a écrit ≥ `[T] duo.minMessagesEachToUnlock` (2) messages → `UNLOCKED` : visages débloqués pour les deux en même temps, vocal **facultatif** (jamais une condition). Sinon `EXPIRED` (message neutre identique).
-- Indice « projet compatible » (`projectCompatible`) seulement si les sous-choix secrets concordent (§2.15) ; jamais le détail.
-- Rendez-vous à deux : jamais avant le déblocage des visages ; lieu partenaire, avant `dateDeadline` (J+7, voie Duo seulement) ; gratuit ; check-in, ange gardien et fiabilité comme une sortie. Après le RDV (les deux présents) : vote d'après (même règle, un seul écran, résultat à la clôture) : PLUS → `TOGETHER`, FRIEND → BandLink + `CLOSED`, sinon `CLOSED` ; **même message neutre** pour toute fin non mutuelle, textes centrés sur la personne (pas sur le pet).
-- `duos.leave` à tout moment, sans pénalité. Blocage → fermeture silencieuse.
-- Œuf : uniquement si **les deux l'activent** (`eggOptInLow/High`), duo `TOGETHER` avec ≥ `[T] egg.minDuoDates` (2) RDV vécus ; jamais envoyé par l'un, jamais présenté comme objectif.
+### 2.13 Duo — `connections` (livré, à aligner)
+- `meetingMode` GROUP|DUO|BOTH ; jamais proposé dans l'onboarding à qui choisit « en petit groupe ».
+- **Gratuit pour tous, plafond anti-spam de 3 duos actifs** (`[T] duo.maxActive = 3` ; propositions ouvertes + duos voie Duo non terminaux ; les duos nés d'un vote PLUS ne comptent pas). Blowy+ ne change rien au Duo (D-054).
+- Carte de proposition avant le double oui : **espèce du pet en illustration générique + initiale** (`{species, initial}`), jamais le nom du pet, ni tranche, pronom, activités, intention, score.
+- Après le double oui : prénom, pet, tranche, fiabilité ; `EXCHANGE` 48 h texte ; à 48 h, si chacun a écrit ≥ 2 messages → `UNLOCKED` (visages simultanés, vocal facultatif) ; sinon `EXPIRED`. Indice « projet compatible » seulement (`storySeriousness`, `kidsHorizon` concordants).
+- RDV : jamais avant les visages ; **au lieu partenaire comme table de 2**, confirmé au plus tard J − 1 18 h (`[T] duo.dateLockHourLocal = 18`) pour figurer dans l'effectif ; **jamais hors des heures d'astreinte** (412 `OUTSIDE_ONCALL_HOURS`) ; check-in par code ; ange gardien ; absence = fiabilité + compensation lieu 3 € HT. Après : vote, même règle.
+- Phrase : « Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. »
+- Duo homme-homme et toutes orientations traités à l'identique (Welcome : « Toutes orientations · en groupe ou à deux »).
+- Œuf : seulement si les deux l'activent (interrupteurs liés), duo `TOGETHER` avec ≥ 2 RDV vécus.
 
-### 2.14 Memory (souvenirs du pet) — module `pets` (livré T1/T2)
-`PetMemory` (append-only) : `HATCHED`, `OUTING_LIVED`, `DUO_DATE_LIVED`, `BAND_NEW_MEMBER`, `PROMISE_KEPT` (paliers de présences 1, 3, 5, 10, 20), `EGG`. Jamais perdus. Accessoires débloqués par les souvenirs (§5).
+### 2.14 Souvenirs — `pets` (livré)
+`PetMemory` append-only ; accessoires gagnés, jamais vendus.
 
-### 2.15 Reliability (fiabilité) — module `outings` (livré T2)
-« venu·e à N sorties sur M » : `N = attended`, `M = attended + absences`, où **absence = no-show ou annulation après la confirmation** (D-043). `M = 0` → « Nouvelle·au ». 2 absences en `[T] reliability.noShowWindowDays` (90 j) → pause `[T] pauseDays` (7 j) ; compteur d'épisode remis à zéro ensuite. Jamais d'effet : blocage, signalement, sécurité, « je pars mal à l'aise », « je connais quelqu'un » accepté, annulation par Blowy, suppression de compte. Contestation sous 7 j (`attendance.dispute`), correction staff. Motif de signalement `REPEATED_NO_SHOW` côté trust.
+### 2.15 Fiabilité — `outings` (livré)
+« venu·e à N sorties sur M », absence = `NO_SHOW` ou `LATE` ; jamais : `EMERGENCY` (dans le quota), sécurité, « mal à l'aise », « je connais quelqu'un » accepté, annulation par Blowy, blocage. 2 absences / 90 j → pause 7 j. Contestation 7 j.
 
-### 2.16 Profil, intentions, âge et confidentialité — module `users` (livré T0/T2)
-- **Date de naissance à l'inscription** ; **18+ vérifié avant la 1ʳᵉ sortie ou le 1ᵉʳ duo** : estimation d'âge au selfie, document si doute (E, `VerificationKind` `IDENTITY_AGE` pour le document, jamais stocké au-delà du résultat). Écran < 18 ans : bouton principal « Compris », secondaire discret « Je me suis trompé·e ».
-- Intentions secrètes (`lookingFor` FRIENDS|STORY|BOTH ; si STORY/BOTH : `storySeriousness` « sérieuse / on verra », `kidsSomeday` facultatif) — ne servent qu'au matching et à l'indice « projet compatible » ; jamais affichées. Aucune présélection de genre ni d'intention.
-- **Consentement art. 9** (`SENSITIVE_PREFERENCES`), écran dédié, montré seulement si « une histoire », **avant** les genres recherchés (`romanceGenders`) ; retrait = effacement et retour à « nouveaux potes ». L'orientation n'est jamais stockée. `meetGenders` (« qui je veux rencontrer » en groupe).
-- Sous-choix sensibles, activités, semaines off, trajet : « Affiner plus tard » depuis le Profil, jamais avant le consentement.
-- Phrase de confidentialité exacte (tous écrans) : « Ton orientation et ce que tu cherches ne sont montrés à personne. Seule une personne avec qui tu as un duo sait que vous vous plaisez mutuellement. »
-- **Mode discret** proposé à l'onboarding (ON par défaut si « je préfère la discrétion ») : icône et notifications neutres (§9.3). Réglage « taille du pet » sur l'Accueil (client).
-- **Éviter les personnes que je connais** (D-049) : écran dédié qui explique la comparaison de numéros chiffrés ; **désactivé tant que la personne ne l'accepte pas** (aucun import silencieux). §4.2.
-- Onboarding (≤ 9 écrans avant « Trouvée », une question par écran ; ordre fixé par le design) : Welcome → Tu sors où ? → date de naissance → pet → vision → comment tu préfères rencontrer → intention → (si histoire) consentement → genres recherchés → créneaux (+ semaines off, trajet) → compte → Trouvée. `me.complete_onboarding` exige : date de naissance, ville/quartier, pet + vision, `meetingMode`, `lookingFor`, (consentement + `romanceGenders` si histoire), ≥ 1 créneau. Vérification 18+, selfie et photo sont exigés à « Je viens », pas avant.
+### 2.16 Onboarding, confidentialité, âge — `users` (livré, à compléter)
+- Une question par écran, ≤ 9 avant la Trouvée. Données requises avant composition : ville/quartier, date de naissance, pet + vision, `meetingMode`, `lookingFor`, (consentement art. 9 + genres recherchés si histoire), créneaux. **Mode discret : choix explicite « Discret » / « Normal », aucun présélectionné** (`discreetMode` nullable jusqu'au choix ; D-065). **« Éviter les personnes que je connais » proposé dans le parcours avant la 1ʳᵉ composition** (opt-in expliqué ; passer = désactivé).
+- 18+ vérifié (estimation au selfie, pièce d'identité si doute, regardée par une personne puis supprimée) avant la 1ʳᵉ sortie ou le 1ᵉʳ duo.
+- Intentions secrètes, consentement art. 9 avant les genres recherchés, orientation jamais stockée.
+- Phrases exactes : « Si tu cherches une histoire, Blowy compose tes groupes pour qu'elle soit possible. Il ne te dira jamais avec qui. » ; « Ton orientation et ce que tu cherches ne sont montrés à personne. Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. » ; Confidentialité mentionne que **le lieu reçoit les prénoms la veille à 18 h**.
+- **Une seule source « qui voit quoi »** : l'écran Confidentialité est généré depuis le tableau §3 (contenu `@blowy/content` `privacy.matrix.*`) ; chaque réglage n'existe qu'à un endroit, les autres écrans y renvoient.
 
-### 2.17 Liens de partage — module `social` (D-047)
-`ShareLink(id, slug aléatoire base36 ≥ 8, ownerUserId, cardKind, subjectRef?, createdAt, clickCount, attributedSignups, attributedFirstOutings)` : **un lien unique par carte et par personne, jamais réutilisé**, traçable (quelle carte a amené qui) ; l'écran d'invitation dit la vérité sur cet usage. `cardKind` : `INVITE` (« viens avec moi »), `CONFIRMED` (« jeudi je sors avec 4 personnes que je ne connais pas · lieu secret »), `HERE` (« Je sors ce soir », sans quartier ni heure ; lieu seulement après la sortie), `EVENING` (« on était 5 »), `BAND_GROWS` (« Ma bande s'agrandit », sans chiffre), `HELP_CITY` (« Aide Nantes à sortir »), `TEAM` (lien d'invitation de team).
-Règles des cartes (testées) : jamais le prénom d'un tiers, jamais l'espèce réelle du pet d'un autre (silhouettes génériques), jamais de lieu ni d'heure en direct, chiffres toujours justes (une team compte : « 3 nouvelles personnes »). La carte « accords » est supprimée. Page publique « 3 mots » : slug aléatoire `m` + 8 base36, jamais le prénom (livré T2).
+### 2.17 Parrainage et liens de partage — `social` (à faire)
+- **Parrainage** (D-064) : quand une personne arrivée par ton lien (`ShareAttribution`) vit sa **1ʳᵉ sortie** (`ATTENDED`), ta **prochaine sortie est offerte** : crédit `REFERRAL_FREE` (1 par mois calendaire de ton fuseau au plus, `[T] referral.maxFreePerMonth = 1`, non cumulable au-delà de 1 en attente). Pas de pièces, pas de tarif étudiant. Lieu compensé 3 € HT si absence.
+- **Liens uniques** : `ShareLink(slug aléatoire, ownerUserId, cardKind, subjectRef, clickCount, attributedSignups, attributedFirstOutings)` — un lien par carte et par personne, jamais réutilisé, traçable ; l'écran Invite dit à quoi il sert. Cartes (`cardKind`) : `INVITE`, `CONFIRMED` (« Cette semaine je sors », sans lieu), `TEASER` (« Alors, jeudi ? », sans votes), `HERE` (« Je sors ce soir », sans quartier ni heure), `EVENING` (« On était 5 · 5 verres, 1 table »), `BAND` (« Ta bande », pets génériques), `HELP_CITY`, `TEAM`. Règles testées : jamais un prénom ni l'espèce réelle d'un pet tiers, jamais lieu ou heure en direct, chiffres justes, cartes visuellement distinctes. « Mes cartes » montre les aperçus réels ; export vidéo 5 s (pets génériques) côté client. Page « 3 mots » : slug aléatoire (livré).
 
 ---
 
-## 3. Visibilité — qui voit quoi
+## 3. Visibilité — qui voit quoi (source unique, reprise par l'écran Confidentialité)
 
-Projecteurs purs par acteur (`projectOutingFor`, `projectDuoFor`, `projectGuardianPage`, livrés), vues `.strict()`, tout le non-autorisé est **absent** du JSON. Balayage `fuite-intention-impossible.journey.ts` (livré) étendu à chaque nouvel état.
+**Principe V5.4–V5.5 : aucun signal sur la compatibilité du groupe**, ni positif ni négatif, ni bandeau, ni pour soi (D-066). La garantie « histoire » reste appliquée en silence. Les seuls signaux permis sont **au niveau de la ville et de mes créneaux, avant composition** (§2.2, §2.4).
 
-### 3.1 Sortie — co-participant·e, selon l'état
-| Donnée sur une autre personne | PROPOSED (invité·e) | FORMING (confirmé·e) | CONFIRMED (dès J-1 18 h) | dès J − 3 h / CHECKIN_OPEN | DONE, présent·e (votes) | après clôture | ma place inactive |
+### 3.1 Sortie — co-participant·e selon l'état
+| Donnée sur une autre personne | PROPOSED | FORMING | CONFIRMED (J−1 18 h) | J − 3 h / check-in | DONE (votes) | après clôture | place inactive |
 |---|---|---|---|---|---|---|---|
-| **Aperçu anonyme** : taille, union des tranches (« 26–34 »), genres agrégés (« 2 femmes, 3 hommes »), nb venant avec quelqu'un | ✓ | ✓ | ✓ | ✓ | — | — | ✗ |
-| Pet (espèce, nom, accessoires, 3 traits, « 3 mots ») | ✓ | ✓ (auteur des messages) | ✓ | ✓ | ✓ | liens seulement | ✗ |
-| Prénom, tranche d'âge (grille fixe, toujours incluse dans l'aperçu) | ✗ | ✗ | ✓ | ✓ | ✓ | liens seulement | ✗ |
-| Visage (filigrane du prénom du regardeur) | ✗ | ✗ | ✗ | ✓ | ✓ | liens seulement | ✗ |
-| Fiabilité « N sur M » | ✗ | ✗ | ✓ | ✓ | ✓ | liens seulement | ✗ |
-| Ville, quartier, activité, jour, heure | ✓ | ✓ | ✓ | ✓ | ✓ | historique | ✗ |
-| Lieu (nom, photo, adresse) | ✗ | ✗ | ✓ | ✓ | ✓ nom | historique (nom) | ✗ |
-| Chat de groupe | ✗ | ✓ | ✓ | ✓ | ✓ jusqu'à clôture | lecture 7 j | ✗ |
-| « X ne pourra pas venir » | ✗ | ✓ (pet) | ✓ (prénom) | ✓ | — | — | ✗ |
-| « X est arrivé·e » | ✗ | ✗ | ✗ | ✓ pendant le check-in | ✗ | ✗ | ✗ |
-| « Cette semaine, sortie entre amis pour toi » | moi seul·e, si la garantie n'a pas pu être tenue (§4.3), sans chiffre | | | | | | |
-| Absence, motif d'annulation, retrait, « je connais quelqu'un », « je pars mal à l'aise » | jamais | | | | | | |
-| Position de check-in | jamais (non stockée) | | | | | | |
-| Votes d'autrui, compteurs, « non », « plus » | jamais ; accords mutuels : moi et l'autre seuls, à la clôture | | | | | | |
-| Garantie « ≥ 2 compatibles » (vraie ou fausse), qui est compatible | **jamais** (D-038) | | | | | | |
-| Financement, Blowy+, intentions, genres recherchés, âge exact | jamais | | | | | | |
-Règle générale affichable (pas un fait sur le groupe) : « Jamais plus de 3 personnes du même genre dans un groupe. » Personne bloquée ou évitée : jamais dans la même sortie active ; dans l'historique, données retirées pour le bloqueur.
+| Aperçu anonyme (taille, union des tranches, genres agrégés, nb venant avec quelqu'un) | ✓ | ✓ | ✓ | ✓ | — | — | ✗ |
+| Pet (espèce, nom, accessoires, 3 traits, 3 mots) | ✓ | ✓ (auteur) | ✓ | ✓ | ✓ | liens | ✗ |
+| Prénom, tranche, fiabilité | ✗ | ✗ | ✓ | ✓ | ✓ | liens | ✗ |
+| Visage filigrané | ✗ | ✗ | ✗ | ✓ | ✓ | liens | ✗ |
+| Ville, activité, ambiance, jour, heure | ✓ | ✓ | ✓ | ✓ | ✓ | historique | ✗ |
+| Lieu (nom, photo, adresse), trajet estimé | ✗ | ✗ | ✓ | ✓ | ✓ | historique | ✗ |
+| Chat | ✗ | ✓ | ✓ | ✓ | jusqu'à clôture | lecture 7 j | ✗ |
+| « ne pourra pas venir » | ✗ | ✓ (pet) | ✓ (prénom) | ✓ | — | — | ✗ |
+| « arrivé·e » | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✗ |
+| Tout signal de compatibilité du groupe (garantie, « sortie entre amis pour toi », `storyMatch`) | **jamais, pour personne** | | | | | | |
+| Absence, imprévu, motif, retrait, « je connais quelqu'un », « mal à l'aise » | jamais | | | | | | |
+| Position | jamais (jamais demandée) | | | | | | |
+| Votes, compteurs, « non » | jamais ; accords : les deux seuls, à la clôture | | | | | | |
+| Financement, Blowy+, parrainage, intentions, genres recherchés, âge exact | jamais | | | | | | |
+Règle générale affichable : « Jamais plus de 3 personnes du même genre dans un groupe. »
 
 ### 3.2 Autres acteurs
-| Donnée | Moi | Bande | Duo proposé (avant double oui) | Duo EXCHANGE | Duo UNLOCKED+ | Ange gardien | Lieu partenaire | Cartes / public | support | ops | trust_lead | finance | analyst |
+| Donnée | Moi | Bande | Duo proposé | Duo EXCHANGE | Duo UNLOCKED+ | Ange gardien | Lieu | Cartes/public | support | ops | trust_lead | finance | analyst |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Prénom | ✓ | ✓ | **initiale** | ✓ | ✓ | propriétaire seul | ✓ (liste « table Blowy », J-1 18 h) | jamais d'un tiers | ✓ | ✓ | ✓ | fiche | ✗ |
-| Pet | ✓ | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ | silhouettes génériques | ✓ | ✓ | ✓ | ✗ | agrégats |
+| Prénom | ✓ | ✓ | **initiale** | ✓ | ✓ | propriétaire | ✓ dès J−1 18 h (« table Blowy ») | jamais d'un tiers | ✓ | ✓ | ✓ | fiche | ✗ |
+| Pet | ✓ | ✓ | **espèce générique** | ✓ | ✓ | ✗ | ✗ (illustrations décoratives) | génériques | ✓ | ✓ | ✓ | ✗ | agrégats |
 | Visage | ✓ | ✓ | ✗ | ✗ | ✓ | ✗ | ✗ | jamais | modération | ✗ | ✓ | ✗ | ✗ |
 | Tranche, fiabilité | ✓ | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ | ✗ | agrégats |
-| Sortie (lieu, heure) | ✓ | ✗ | ✗ | ✗ | ✗ | la sienne, lieu dès J-1 18 h | la sienne | jamais en direct | ✓ | ✓ | ✓ | ✓ | agrégats |
-| Check-in, « tout va bien », besoin d'aide | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ (sans position) | ✗ | ✗ | ✓ | ✓ | ✓ | ✗ | agrégats |
-| Bulletins de vote | les miens | jamais pour tous les autres acteurs, staff compris | | | | | | | | | | | |
-| Intentions, genres recherchés, sous-choix | ✓ | jamais | jamais | jamais | « projet compatible » seulement | jamais | jamais | jamais | jamais | jamais | jamais | jamais | agrégats ≥ 20 |
-| Chats | membre | sa conversation | ✗ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | extrait signalé | ✗ | ✗ |
-| Paiements, Blowy+ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | compensations agrégées | ✗ | statut | ✗ | ✗ | ✓ | agrégats |
-| Contacts évités | ✗ (seulement l'effet) | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | jamais | jamais | jamais | jamais | jamais |
-Lecture staff auditée. Diagnostics de composition = codes sur identifiants, jamais les préférences.
+| Sortie (lieu, heure) | ✓ | ✗ | ✗ | ✗ | ✗ | la sienne | la sienne | jamais en direct | ✓ | ✓ | ✓ | ✓ | agrégats |
+| Check-in, tout va bien, besoin d'aide, mal à l'aise | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ (sans position) | ✗ | ✗ | ✓ | ✓ | ✓ + astreinte | ✗ | agrégats |
+| Bulletins | les miens | jamais pour tout autre acteur | | | | | | | | | | | |
+| Intentions, genres, sous-choix | ✓ | jamais | jamais | jamais | « projet compatible » | jamais | jamais | jamais | jamais | jamais | jamais | jamais | indicateurs de ville ≥ 10 arrondis |
+| Paiements, Blowy+, parrainage | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | relevé agrégé par soirée | ✗ | statut | ✗ | ✗ | ✓ | agrégats |
+| Contacts évités | effet seul | jamais pour tout autre acteur | | | | | | | | | | | |
 
-### 3.3 WS et curseurs
-Salles `user:<id>`, `outing:<id>` (places confirmées, puis présents jusqu'à la clôture), `duo:<id>`, `conversation:<id>` (livrées T2). Aucun événement à la saisie d'un vote ; `outing.votes_closed` et `connection.revealed` partent une seule fois à la clôture. Le `projectionCursor` n'avance que sur les événements visibles du destinataire.
+### 3.3 WS
+Salles `user:`, `outing:`, `duo:`, `conversation:` (livrées). Aucun événement à la saisie d'un vote ; révélations à la clôture ; curseur par projection.
 
 ---
 
-## 4. Composition des groupes (`packages/matching/src/groups`, livré T1 + garantie)
+## 4. Composition (`packages/matching/src/groups`, livré ; `algoVersion groups-2026.12.2`)
 
-Pur, déterministe (`seed = "outings|<scope>|<weekKey>|<tuningVersion>"`, FNV-1a), entiers, `algoVersion = groups-2026.12.2` (contrainte dure de genre). Le backend collecte, exécute, persiste (`CompositionRun(scope, weekKey, kind WEEKLY|SEEDING)`).
+### 4.1 Périmètre et entrées
+**Une exécution par (ville, jour de créneau) à J − 3 21 h** (`CompositionRun(scope, slotDate, kind ROLLING|SEEDING)` unique — remplace `(scope, weekKey, WEEKLY)`). Candidats : demandes `OPEN` de la semaine disponibles ce jour-là, non placées. Une personne disponible mardi et jeudi est d'abord candidate le mardi ; si elle n'est pas placée, elle reste candidate le jeudi (priorité inchangée). Entrées : profil de matching, `lookingFor` (ou `FRIENDS_THIS_WEEK`), `meetGenders`, `romanceGenders`, `storyAgeBrackets`, tranche et `groupAge`, créneaux, activités, **ambiance**, temps de trajet vers chaque lieu (`NeighborhoodTravelTime`), team, présences, priorité. Le financement n'est pas une entrée.
 
-### 4.1 Entrées
-`OutingCandidate` : profil de matching existant, `lookingFor`, `meetGenders`, `romanceGenders`, tranche d'âge (`ageBracketOf`) et `groupAge`, créneaux disponibles, activités, quartiers acceptables, `teamId`, présences, priorité (`missedWeeks`, `firstOuting`, `requestedAtMs`). `CompositionFacts` : paires bloquées, déjà vues, **évitées** (§4.2). `SlotOffer` : `venueSlotId, neighborhoodId, activity, startsAtMs, remainingOutings`. **Le financement n'est pas une entrée.**
-Périmètre : la ville (`Zone`), tous les quartiers `LIVE` ou `WAITLIST` (D-035) ; une personne ne peut être placée que sur un créneau coché, une activité choisie et un quartier acceptable.
-
-### 4.2 Contraintes dures par paire (`PAIR_FILTERS`, filtres nommés)
-`SELF`, `NOT_ADULT`, `NOT_VERIFIED`, `INACTIVE_ACCOUNT`, `AGE_PREFERENCE` (tranches fixes vs `groupAge`), `MEET_GENDER`, `BLOCKED_OR_REPORTED`, `MET_BEFORE` (déjà co-présents, lien de bande, duo, proposition duo refusée < 90 j ; sauf team), `KNOWN_CONTACT` (nouveau : paire issue de « éviter les personnes que je connais », symétrique, jamais révélée), `LIMIT_GHOSTER` (ratio de présence).
-Compatibilité « histoire » `storyCompatible(a,b)` : les deux cherchent une histoire, genres recherchés réciproques, tranche de chacun dans le `groupAge` de l'autre.
+### 4.2 Contraintes dures par paire
+`SELF`, `NOT_ADULT`, `NOT_VERIFIED`, `INACTIVE_ACCOUNT`, `AGE_PREFERENCE`, `MEET_GENDER`, `BLOCKED_OR_REPORTED`, `MET_BEFORE`, `KNOWN_CONTACT` (évitement de contacts, à faire), `LIMIT_GHOSTER`. `storyCompatible(a,b)` : les deux cherchent une histoire (et pas `FRIENDS_THIS_WEEK`), genres réciproques, tranche de chacun dans les `storyAgeBrackets` de l'autre (repli `groupAge` si non renseigné).
 
 ### 4.3 Objectif et contraintes de groupe
-- `w(a,b)` = moyenne symétrique de `scoreVision` avec `visionWeights` (G = 0, aucune distance) ; `w ≥ [T] minPairScore` (35).
-- `J(G)` = `1000·mean(w) + λr·romCov + λf·friendFit + λg_story·storyCov − λg·genderImb − λs·|5 − |G||` ; **garantie silencieuse** : `storyCov` = part des chercheurs d'histoire ayant ≥ `[T] storyGuarantee.minCompatible` (2) personnes `storyCompatible` hors team (λ 16 000). C'est un **objectif**, pas une contrainte dure (une contrainte ferait chuter le placement) ; quand elle n'est pas tenue pour quelqu'un, `friendsOnly[userId] = true` et seule cette personne voit « Cette semaine, sortie entre amis pour toi » avec, sur la même fiche, un autre créneau ou le Duo si disponibles (D-038). Mesuré : 54–58 % des chercheurs d'histoire garantis sur la population synthétique (engine-rules §12.1).
-- Contraintes dures : taille 4–6 (cible 5 ; amorçage ≤ 6) ; créneau, activité et quartier communs ; team ensemble ; un « histoire seulement » a ≥ 1 `storyCompatible` ; **jamais plus de 3 personnes du même genre** (`[T] composition.maxSameGender = 3`, D-039 — remplace la pénalité douce `maxGenderSharePermille`) ; exception : groupe dont **tous** les membres ont restreint `meetGenders` au même genre (groupe non mixte demandé) — l'écran de ces personnes dit « groupe non mixte, comme tu l'as demandé ».
-- L'aperçu anonyme est calculé sur le groupe réel, team comprise.
+`J = 1000·mean(w) + λr·romCov + λf·friendFit + λstory·storyCov − λamb·ambianceMismatch − λs·|5 − |G||` ; garantie silencieuse (≥ 2 `storyCompatible` visés, λ 16 000, objectif pas contrainte ; **aucune sortie d'information**, `friendsOnly` reste un diagnostic interne agrégé). Contraintes dures : 4–6 ; jour, créneau, activité communs ; **lieu dans le trajet max de chaque membre** ; **ambiance du lieu compatible** avec chaque membre (`CALM` jamais dans un lieu `LIVELY` et inversement ; `ANY` partout) ; team ensemble ; « histoire seulement » ≥ 1 `storyCompatible` ; **≤ 3 du même genre** (livré, exception groupe non mixte demandé). Mélange calme/animé dans un groupe : pénalité douce `[T] composition.lambdaAmbiance`.
 
 ### 4.4 Procédure
-Unités (team = unité de 1–3) → ordre de priorité (`missedWeeks` desc, `firstOuting` desc, `requestedAtMs` asc, FNV) → glouton par graine et par créneau → réparation → échanges locaux (≤ 200 passes) → non placés `POOL_TOO_SMALL | NO_COMPATIBLE_GROUP | NO_SLOT_CAPACITY | TEAM_INCOMPATIBLE` (jamais montrés tels quels ; l'écran d'attente utilise `nextOutingGap`). Amorçage : `composeSeedingOutings` toutes les 15 min hors cycle hebdo. Performance mesurée : 2 000 candidats ≈ 1,7 s.
+Glouton par graine et créneau → réparation → échanges (≤ 200 passes) → non placés (motifs internes). Amorçage : `outings.seeding` (15 min) mais une sortie d'amorçage ne peut être créée qu'au plus tard à J − 3 21 h de son créneau. Simulateur : placement 76,7 % (300) / 80,3 % (600) avec la contrainte de genre.
 
-### 4.5 « Éviter les personnes que je connais » (E + B, D-049)
-Opt-in sur écran dédié. La personne enregistre son propre numéro (vérifié par SMS via le fournisseur d'auth) → stocké seulement en `HMAC(pepper serveur, E.164)`. Ses contacts sont normalisés en E.164 et hachés **sur l'appareil** (SHA-256), envoyés en lot, transformés côté serveur en HMAC puis comparés aux numéros enregistrés ; seules les **paires à éviter** (`AvoidPair`, symétriques) sont gardées, les empreintes reçues sont jetées immédiatement (jamais stockées, jamais journalisées). Aucune des deux personnes n'est informée. Retrait du consentement = suppression des paires et du numéro.
+### 4.5 Éviter les personnes que je connais (E + B, à faire)
+Opt-in avant la 1ʳᵉ composition. Numéro propre vérifié → `HMAC(pepper, E.164)` ; contacts hachés sur l'appareil, convertis et comparés côté serveur puis **jetés** ; seules des `AvoidPair` symétriques restent, jamais révélées.
 
 ### 4.6 Backfill
-Places libérées avant la confirmation → `backfillCandidate` (même contraintes, invitation `min(now + 12 h, lockAt)`), job `outings.lifecycle`. Après la confirmation : pas de backfill (sauf déplacement « je connais quelqu'un » vers un autre groupe du créneau).
+Jusqu'à `lockAt`, invitation `min(now + 12 h, lockAt)`. Après : seulement le déplacement « je connais quelqu'un ».
 
-### 4.7 Tests exigés
-Livrés : déterminisme, permutation, blocage, tailles, team, capacité, garantie (5 tests), perf, **`maxSameGender` dur (invariant global + 6 tests : 5 femmes, 4 + 2, `UNDISCLOSED`, exception non mixte, amorçage 3 + 3, backfill)**. **À ajouter (B)** : `KNOWN_CONTACT`, invariance de `friendsOnly` à l'identité des compatibles.
+### 4.7 Tests à ajouter (B)
+Ambiance (dur au lieu, doux au groupe) ; trajet ; `KNOWN_CONTACT` ; composition glissante (une personne mardi+jeudi placée une seule fois ; même résultat quel que soit l'ordre des jours) ; `FRIENDS_THIS_WEEK`.
 
 ---
 
-## 5. Le pet en V5 (`packages/pet-engine`, livré T1)
-
-`@blowy/pet-engine/v5` : `reduceV5` sur souvenirs et accessoires, sans jauge, sans perte, sans multiplicateur payant ; `migratePetV4ToV5`. V4 isolé dans `@blowy/pet-engine/v4` (déprécié, rejeu). Stades V5 : jeune 100, adulte 600 (`[T] memories.stageThresholds`). Événements `MEMORY_RECORDED`, `ACCESSORY_GRANTED` (sources `MEMORY | REFERRAL | STAFF | GIFT` ; `PLUS_MONTHLY` mort, D-041), `ACCESSORY_EQUIP` (≤ 3), `REACT`. Poses V5 : jamais `SICK`, `HUNGRY`, `SAD`.
-Ajout (B) : événement `ACCESSORY_GIFTED {fromPetId, toPetId, accessoryId}` pour « Ta rue » (transfert, 1 fois par accessoire, bande uniquement).
-Consommateurs du module `pets` : `outing.attendance_recorded` → `OUTING_LIVED` ; `connection.revealed{FRIEND}` / `band.linked` → `BAND_NEW_MEMBER` ; `duo.date_done` → `DUO_DATE_LIVED` ; `referral.first_outing_lived` → accessoire de parrainage. Le pet n'est jamais un argument de vente ni une corvée.
+## 5. Pet (`@blowy/pet-engine/v5`, livré)
+`reduceV5` (souvenirs, accessoires, sans jauge ni perte) ; V4 isolé dans `/v4`. Accessoires gagnés : souvenirs, cadeau de la bande ; **l'accessoire de parrainage disparaît** (le parrainage offre une sortie, D-064) et `ACCESSORY_GRANTED{source:REFERRAL}` devient mort. Taille du pet sur l'Accueil : réglage client. Le pet n'est jamais nommé au bar (réservation « Blowy »).
 
 ---
 
 ## 6. Économie V5
 
-### 6.1 Ce qui reste de `apps/api/src/modules/economy`
-| Élément | Devenir |
+### 6.1 Fournisseurs (D-054)
+| Élément | V5.5 |
 |---|---|
-| RevenueCat (webhooks, réconciliation, `Subscription`, `EntitlementGrant`, états, sandbox/prod) | **gardé et central** : Blowy+ est un **achat intégré** (D-040) |
-| `LOCAL_DEMO` | gardé (achats démo hors production) |
-| Ledger pièces (`Wallet`, `LedgerEntry`) | gelé (lecture, corrections staff) ; patron réutilisé pour les crédits |
-| Boost, gels, pièces mensuelles, `DERIVED_PARTNER`, espèces premium, XP×2, accessoires vendus | retirés (410) |
-| `ProviderWebhookEvent` | gardé (+ `STRIPE`) |
+| **Places** | **Stripe** (Apple Pay / Google Pay / carte), `PaymentIntent`, hold 15 min — service consommé hors de l'app |
+| **Blowy+** | **Stripe Billing** (abonnement), payé par Apple Pay / carte — abonnement **aux sorties uniquement**, sans fonction numérique ; plus de commission Apple |
+| RevenueCat | **désactivé pour Blowy+** (code conservé, `BILLING_PROVIDER_PLUS=STRIPE`) ; webhooks RevenueCat ignorés si non configurés |
+| `LOCAL_DEMO` | gardé hors production pour places et abonnement |
+| Ledger pièces | gelé |
+| Journal économique | port `EconomyJournal` sur `DomainEvent` append-only (décision C, livré) ; tables `Payment` / `VenueCompensation` créées quand la finance en aura besoin (même port) |
+À revalider juridiquement avant soumission (règles des stores pour un abonnement à un service physique).
 
-### 6.2 Produits et prix (paramètres `[T] pricing`, `[T] plus` ; prix publics fixés par l'utilisateur)
-| Produit | Prix | Fournisseur | Contenu |
+### 6.2 Produits et prix (affichés TTC)
+| Produit | Prix | Contenu |
+|---|---|---|
+| 1ʳᵉ sortie | offerte | `FREE_FIRST` à la 1ʳᵉ vérification 18+ |
+| Sortie offerte par parrainage | offerte | `REFERRAL_FREE`, ≤ 1 par mois |
+| Place | **4,99 € TTC** (4,16 € HT), consommation non incluse | une sortie |
+| **Blowy+** | **9,99 € TTC/mois** | **toutes tes sorties** (1 par semaine, quota inchangé) ; rentable dès la 2ᵉ sortie du mois ; rien d'autre |
+| Duo | **gratuit pour tous**, ≤ 3 actifs | — |
+| Accessoires | jamais vendus | — |
+Interdits (tests de contrat) : aucun produit ne touche composition, priorité, visibilité, quota, score, votes ou Duo ; pas de paywall ni d'argument Blowy+ dans l'onboarding ; pas d'offre limitée, compte à rebours, offre hebdo, rétention, tarif étudiant. **Résiliation dans l'app** (Stripe : `POST /v1/subscriptions/plus/cancel`, effet en fin de période, sans écran de rétention).
+
+### 6.3 Droits
+`ENTITLEMENT_KEYS_V5 = [PLUS_INCLUDED_OUTINGS]` ; `PLUS_UNLIMITED_DUOS` **mort**. Source : `Subscription(provider STRIPE)` mise à jour par webhook Stripe (`customer.subscription.*`, `invoice.paid`, `invoice.payment_failed` → période de grâce), idempotent par `event.id`, réconciliation périodique. Expiration : places déjà confirmées conservées.
+
+### 6.4 Remboursements
+| Cas | `PAID` | offerte (`FREE_FIRST`, `REFERRAL_FREE`) | `PLUS_INCLUDED` |
 |---|---|---|---|
-| 1ʳᵉ sortie | **offerte** | interne (`FREE_FIRST`, unique par personne, accordé à la 1ʳᵉ vérification 18+) | — |
-| Place de sortie | **4,99 €** (`pricing.seat.amountCents = 499`), consommation **non incluse** | **Stripe PaymentIntent, Apple Pay / Google Pay / carte** (service consommé hors de l'app) ; les écrans disent « Apple Pay », jamais « App Store » | une place, remboursée si la sortie n'a pas lieu ou si annulée avant la confirmation |
-| Duo | **gratuit : 1 duo actif** | — | |
-| **Blowy+** | **9,99 €/mois** (`plus.monthlyPriceCents = 999`) | **achat intégré via RevenueCat** (contient des fonctions numériques : duos illimités) | toutes tes sorties (1 par semaine, quota inchangé) + duos illimités ; rentable dès la 2ᵉ sortie du mois ; aucun accessoire, aucune réduction de rétention |
-| Accessoires | non vendus | — | uniquement gagnés (souvenirs, parrainage, cadeau de la bande) |
-Les deux choix de fournisseur sont **à revalider juridiquement avant soumission** (D-040). Interdits (tests de contrat) : aucun produit ne touche la composition, la priorité, la visibilité, le quota hebdo, le score ou les votes ; pas de paywall ni d'argument Blowy+ dans l'onboarding ; pas d'offre limitée, de compte à rebours, d'offre hebdo, d'offre de rétention ; on ne promet jamais de résilier un abonnement depuis l'app (renvoi vers les réglages Apple / Google).
+| Blowy annule (avant ou après confirmation) | carte | reste offerte | — |
+| Annulation avant J−1 18 h | carte | reste offerte | — |
+| Retrait système, sécurité | carte | reste offerte | — |
+| Paiement tardif / sortie pleine | carte | — | — |
+| Après J−1 18 h : absence, imprévu | aucun | consommée | consommée |
+| Suppression de compte | carte | perdue | — |
+Une seule fois par place, `Idempotency-Key refund:<seatId>` ; jamais « remboursé·e » pour une place offerte.
 
-### 6.3 Paiements, droits et crédits
-- `Payment(provider STRIPE|LOCAL_DEMO, environment, providerPaymentId, purpose SEAT, seatId UNIQUE, amountCents, currency, status, refundProviderId?)`. Flux : « Je viens » → place `HELD` (tx) → `PaymentIntent` après commit (`Idempotency-Key seat:<seatId>`) → PaymentSheet → webhook `payment_intent.succeeded` (signature Stripe sur corps brut, idempotent par `event.id`) → `CONFIRMED`. Port `SeatFundingPort` (livré T2 avec `LocalSeatFunding`) ; adaptateur Stripe réel = T3.
-- Blowy+ : droit `PLUS_INCLUDED_OUTINGS` + `PLUS_UNLIMITED_DUOS` (`EntitlementKeyV5`) dérivé de l'entitlement RevenueCat `blowy_plus` par `EntitlementStateService` ; une place financée `PLUS_INCLUDED` ne consomme rien. Expiration ou remboursement Apple : places déjà confirmées conservées ; duos au-delà de 1 restent ouverts mais aucune nouvelle proposition tant que le quota gratuit est dépassé (aucun duo n'est fermé de force).
-- `OutingCreditEntry` (append-only) réduit à `FREE_FIRST` et `STAFF_GRANT` (+ recrédit de `FREE_FIRST`) ; `PLUS_INCLUDED` et `REFUND_CREDIT` ne sont plus émis (D-042).
-
-### 6.4 Remboursements automatiques
-| Cas | `PAID` | `FREE_FIRST` | `PLUS_INCLUDED` |
-|---|---|---|---|
-| Sortie annulée par Blowy (sous-effectif, lieu, staff) | remboursement carte intégral | reste offerte (recrédit) | — |
-| Annulation par la personne **avant la confirmation** (J-1 18 h) | remboursement carte intégral | reste offerte | — |
-| Retrait système (blocage, « je connais quelqu'un ») ou sécurité | remboursement carte intégral | reste offerte | — |
-| Paiement arrivé trop tard / sortie pleine | remboursement carte intégral | — | — |
-| Annulation après la confirmation, absence | **aucun** (le prix va au lieu, §6.5) | consommée | consommée |
-| Suppression de compte avec place active | remboursement carte | perdue | — |
-| Litige lieu | manuel `finance` (step-up) | recrédit manuel | — |
-Outbox `outing.seat_refund_due {seatId, mode}` → `economy` (hors verrou) → Stripe refund (`Idempotency-Key refund:<seatId>`) ; une seule fois par place ; échecs en file admin ; notification `outing.refund_done` (jamais le mot « remboursé·e » pour une place offerte).
-
-### 6.5 Compensation du lieu (D-045)
-Pour chaque place **non honorée après la confirmation** (absence ou annulation tardive ; pas les retraits système, ni sécurité, ni « je connais quelqu'un » accepté) :
-- place `PAID` → le **prix de la place (4,99 €)** est reversé au lieu ;
-- place offerte ou incluse (`FREE_FIRST`, `PLUS_INCLUDED`, `STAFF_COMP`) → Blowy verse **3 €** (`[T] venues.compensationUnpaidSeatCents = 300`) ;
-- annulation de sécurité après la confirmation → Blowy verse 3 € (le lieu n'est pas pénalisé, la personne est remboursée).
-`VenueCompensation(venueId, seatId UNIQUE, amountCents, basis PAID_SEAT|UNPAID_SEAT|SAFETY, period 'YYYY-MM', status ACCRUED|STATEMENTED|PAID)` créée à `DONE` (ou à l'annulation tardive) par `outings` via outbox `outing.venue_compensation_due` → `economy`. Relevé mensuel par lieu (§10.2) ; virement hors périmètre (facturation). Le forfait 15 € de V5.2 est abandonné. Le P&L est dans `docs/product/business-model.md`.
+### 6.5 Compensation du lieu (montants HT, D-067)
+| Cause (après la confirmation, sortie ou table Duo) | Montant au lieu |
+|---|---|
+| Absence ou imprévu, place `PAID` | **4,16 € HT** (le prix de la place hors taxe) |
+| Absence ou imprévu, place offerte / parrainage / Blowy+ / Duo | **3 € HT** versés par Blowy |
+| **Blowy annule** une sortie confirmée (sous-effectif, staff, motif interne, sécurité) | **3 € HT par place réservée** |
+| Retrait système, sécurité individuelle, « je connais quelqu'un », suppression de compte | 3 € HT par Blowy |
+| Le lieu est la cause (`VENUE_UNAVAILABLE`) | 0 |
+| Avant la confirmation | 0 |
+Formulation identique côté client, contrat et relevé : « Si Blowy annule une sortie confirmée, le lieu reçoit 3 € par place réservée. » **Relevé mensuel, détaillé par soirée** : places réservées, présences, absences, imprévus, annulations Blowy, compensation par ligne, total HT ; aucun prénom ni financement individuel ; contre-passation sur contestation acceptée. Paiement mensuel (aucun virement hebdo annoncé).
 
 ---
 
-## 7. API /v1 — commandes, requêtes, événements
+## 7. API /v1
 
-Commandes : `Idempotency-Key` obligatoire. Listes : `?cursor&limit` (keyset). Contrats Zod : `packages/api-contract/src/{neighborhoods,outings,teams,connections,safety,payments,events-v5}.ts` (livrés T0, enrichis T2). « Livré » = route existante ; « à faire » = tranche indiquée.
+Contrats : `packages/api-contract/src/{neighborhoods,outings,teams,connections,safety,payments,economy,notifications,venue,admin-v5,events-v5}.ts`. « livré » = existe ; « à aligner » / « à faire » → §11.4.
 
 ### 7.1 Ville, profil, préférences
-| Opération | Route | Payload / réponse | Échecs | État |
-|---|---|---|---|---|
-| (requête) | `GET /v1/neighborhoods?q=` | `items[{id, slug, name, city, status}]` (recherche sans accents) | — | livré |
-| `me.set_neighborhood` | `PUT /v1/me/neighborhood` | `{neighborhoodId}` | 412 `NEIGHBORHOOD_CHANGE_TOO_SOON {availableAt}`, `ACTIVE_SEAT_EXISTS` | livré |
-| (requête) | `GET /v1/me/neighborhood` | `{neighborhood, cityVerifiedCount, nextOutingGap?{missing, startsAt}, isVerified, hasPhoto}` (plus de `threshold`) | — | livré (aligné : `threshold` retiré du contrat et de la vue) |
-| `me.update_intentions` | `PUT /v1/preferences/intentions` | `{lookingFor, storySeriousness?, kidsSomeday?, meetingMode, meetGenders[], romanceGenders[]}` | 403 `CONSENT_REQUIRED {purpose:"SENSITIVE_PREFERENCES"}` | livré |
-| `me.update_outing_preferences` | `PUT /v1/preferences/outings` | `{slotTemplateIds[], weeksOff[], activities[], acceptableNeighborhoodIds[] (≤ 5), maxTravelMinutes 20\|30\|45, groupAge{min,max}}` | 400 | livré |
-| `me.update_privacy` | `PUT /v1/preferences/privacy` | `+ discreetMode` | 400 | livré |
-| `me.contacts_avoid.enable` | `POST /v1/me/contact-avoidance` | `{phoneVerificationToken}` puis `POST /v1/me/contact-avoidance/contacts {hashes[] (SHA-256 E.164, ≤ 2 000/lot)}` → `{accepted}` (aucun retour de correspondance) | 403 `CONSENT_REQUIRED {purpose:"CONTACT_AVOIDANCE"}` ; 429 | à faire (E) |
-| `me.contacts_avoid.disable` | `DELETE /v1/me/contact-avoidance` | efface numéro et paires | — | à faire (E) |
-| `me.complete_onboarding` | `POST /v1/me/onboarding/complete` | `missing` : `BIRTHDATE, CITY, PET, MEETING_MODE, LOOKING_FOR, SENSITIVE_CONSENT, ROMANCE_GENDERS, SLOTS` | 412 `ONBOARDING_INCOMPLETE` | livré, à aligner |
-| `me.start_pause` / `me.end_pause` | `POST /v1/pauses` · `DELETE /v1/pauses/:id` | pause en 1 tap | 412 `PAUSE_QUOTA_EXCEEDED` | livré |
+| Opération | Route | Notes | État |
+|---|---|---|---|
+| (req.) | `GET /v1/neighborhoods?q=` | | livré |
+| `me.set_neighborhood` | `PUT /v1/me/neighborhood` | | livré |
+| (req.) | `GET /v1/me/neighborhood` | `{neighborhood, cityVerifiedApprox, nextOutingGap?}` | à aligner (arrondi) |
+| (req.) | `GET /v1/me/city-insights` | `{storyCompatible?: {label} \| {notEnough:true}, ageBrackets[{bracket, label}]}` (≥ 10, arrondis, photographie quotidienne) | à faire |
+| `me.update_intentions` | `PUT /v1/preferences/intentions` | `+ storyAgeBrackets[], kidsHorizon` (`kidsSomeday` déprécié) | à aligner |
+| `me.update_outing_preferences` | `PUT /v1/preferences/outings` | `+ ambiance, weekOffPattern{everyOtherFromWeekKey}` ; `acceptableNeighborhoodIds` déprécié (dérivé du trajet) | à aligner |
+| `me.update_privacy` | `PUT /v1/preferences/privacy` | `discreetMode: boolean` obligatoire au 1ᵉʳ passage (null = non choisi) | à aligner |
+| `me.contacts_avoid.*` | `POST\|DELETE /v1/me/contact-avoidance`, `POST …/contacts` | | à faire |
+| `me.complete_onboarding` | `POST /v1/me/onboarding/complete` | `missing += DISCREET_CHOICE` | à aligner |
+| pause | `POST /v1/pauses`, `DELETE /v1/pauses/:id` | | livré |
 
 ### 7.2 Sorties et teams
-| Opération | Route | Payload → réponse | Échecs | État |
-|---|---|---|---|---|
-| (requête) | `GET /v1/outings/week` | `{weekKey, phase NOT_AVAILABLE\|COMPOSING\|INVITED\|IN_OUTING\|UNPLACED\|PAUSED\|QUOTA_USED\|WEEK_OFF, myOutingId?, nextOutingGap?, priorityNextWeek, pausedUntil?}` | — | livré |
-| `outings.request` / `withdraw_request` | `PUT\|DELETE /v1/outings/requests/:weekKey` | ajustement de la demande auto | 412 `NEIGHBORHOOD_UNAVAILABLE`, `AGE_VERIFICATION_REQUIRED`, `VERIFICATION_REQUIRED`, `PHOTO_REQUIRED`, `RELIABILITY_PAUSED`, `REQUEST_WINDOW_CLOSED` ; 409 `WEEKLY_QUOTA_USED` | livré (aligné ; demande créée automatiquement par `outings.auto_requests`, D-052) |
-| (requête) | `GET /v1/outings/:id` | `OutingView` (§7.5) | 404 | livré |
-| `outings.seat.accept` (« Je viens ») | `POST /v1/outings/:id/seat/accept` | → `{seat{status, funding?, holdExpiresAt?}, payment?{provider, clientSecret, amountCents:499, currency}}` | 412 `INVITATION_EXPIRED`, `SEAT_NOT_INVITED`, `AGE_VERIFICATION_REQUIRED` ; 409 `WEEKLY_QUOTA_USED` ; 503 `PROVIDER_UNAVAILABLE` | livré (démo), Stripe T3 |
-| `outings.seat.decline` | `POST …/seat/decline` | — | | livré |
-| (requête) | `GET …/seat/cancel-preview` | `{cancelKind EARLY\|LATE, refund CARD\|STAYS_FREE\|NONE, countsAsAbsence}` | | livré (aligné ; `CREDIT` ne sort plus que pour une place financée par un ancien lot, déprécié) |
-| `outings.seat.cancel` | `POST …/seat/cancel` | `{kind: CANT_MAKE_IT\|SAFETY}` | 412 `SEAT_NOT_ACTIVE`, `OUTING_STARTED` | livré |
-| `outings.seat.knows_someone` | `POST …/seat/knows-someone` | `{relation: EX\|COLLEAGUE\|CONFLICT\|OTHER}` → `{status ACCEPTED\|IN_REVIEW}` | 412 `KNOWS_SOMEONE_NOT_AVAILABLE`, `KNOWS_SOMEONE_QUOTA` | livré |
-| `outings.leave_uncomfortable` | `POST /v1/outings/:id/leave-uncomfortable` | `{notifyGuardian: bool}` → `{supportContacted:true}` | 412 `NOT_CHECKED_IN` | à faire (E, `safety`) |
-| `outings.check_in` | `POST …/check-in` | `{method GEO, lat, lng, accuracyM}` \| `{method VENUE_CODE, code}` | 412 `CHECKIN_NOT_OPEN`, `CHECKIN_TOO_FAR`, `CHECKIN_LOW_ACCURACY`, `CHECKIN_CODE_INVALID` ; 429 | livré |
-| (requête) | `GET /v1/outings/:id/votes` | `{closesAt, rows[{userId, firstName, face, pet, myChoice (défaut NO)}], results?[{userId, mutual FRIEND\|PLUS}] (après clôture)}` | 404 si non présent·e | livré |
-| `outings.votes.submit` | `PUT /v1/outings/:id/votes` | `{choices[{targetUserId, choice}]}` → `{saved:true}` | 404 ; 412 `VOTE_WINDOW_CLOSED` | livré |
-| `attendance.dispute` | `POST …/attendance/dispute` | `{note}` | 412 `DISPUTE_WINDOW_CLOSED`, `NOT_ABSENT` | livré |
-| (requêtes) | `GET /v1/outings/history`, `GET /v1/me/reliability` | | | livré |
-| teams | `GET /v1/teams/mine`, `POST /v1/teams/join {code}`, `POST /v1/teams/:id/leave`, `POST /v1/teams` (créer + lien `TEAM`) | | 409 `TEAM_FULL`, `ALREADY_IN_TEAM` | livré (création de lien unique : à aligner §2.17) |
-
-### 7.3 Bande, Ta rue, duos
 | Opération | Route | Notes | État |
 |---|---|---|---|
-| (requête) | `GET /v1/band`, `GET /v1/band/street` | Ta rue : pets de la bande + souvenirs rangés, sans compteur | livré |
-| `band.leave` | `POST /v1/band/:linkId/leave` | | livré |
-| `pets.gift_accessory` | `POST /v1/band/street/gifts {linkId, accessoryId}` | 412 `ACCESSORY_NOT_UNLOCKED` ; rejoué = idempotent | livré (C2 ; événement moteur `ACCESSORY_GIFTED` : B) |
-| `pets.arrange_memories` | `PUT /v1/band/street/arrangement {memoryIds[]}` (servi par C2, table `StreetArrangement`) | | livré (route effective ; `/v1/pets/mine/memories/order` non créée) |
-| (requête) | `GET /v1/duo-lane` | `{enabled, freeQuota:1, unlimited:bool, proposals[{id, pet, initial, visionScore, expiresAt}]}` — initiale seulement ; servi : `{items[{proposalId, pet, otherInitial, …}], emptyReason, nextBatchAt, quota{freeMaxActive, unlimited}}` | livré (aligné) |
-| `duos.proposal.accept` / `pass` | `POST /v1/duo-lane/proposals/:id/accept\|pass` | 409 `DUO_LIMIT_REACHED {upgrade:false}` (aucun argument commercial dans l'erreur ; l'écran explique le quota ; quota lu du port `DUO_ALLOWANCE`) | livré (aligné) |
-| (requêtes) | `GET /v1/duos`, `GET /v1/duos/:id`, `GET /v1/duos/:id/venues` | `DuoView` : `other{initial \| firstName, pet, face?}`, `exchange{endsAt, mineCount}`, `projectCompatible?` | livré |
-| RDV | `POST /v1/duos/:id/dates`, `…/dates/:dateId/respond\|cancel\|check-in`, `PUT …/vote` | 412 `DUO_NOT_UNLOCKED` avant les visages | livré |
-| `duos.leave` | `POST /v1/duos/:id/leave` | | livré |
-| `duos.egg.opt_in` | `PUT /v1/duos/:id/egg {optIn}` | œuf seulement si les deux | livré |
+| (req.) | `GET /v1/outings/week` | `{phase, myOutingId?, nextOutingGap?, storyFeasibility?: 'NOT_ENOUGH_ON_SLOTS' (moi seul·e, avant composition), composeAt (prochaine composition qui me concerne)}` | à aligner |
+| `outings.request` | `PUT\|DELETE /v1/outings/requests/:weekKey` | `+ mode: NORMAL\|FRIENDS_THIS_WEEK` | à aligner |
+| (req.) | `GET /v1/outings/:id` | `OutingView` §7.5 | livré, à aligner (`storyMatch` retiré, `travelMinutes`, `ambiance`) |
+| `seat.accept` / `decline` | `POST …/seat/accept\|decline` | financement + `REFERRAL_FREE` | livré, à aligner |
+| `seat.cancel` | `POST …/seat/cancel {kind: CANT_MAKE_IT\|EMERGENCY\|SAFETY}` ; `GET …/seat/cancel-preview` → `{cancelKind, refund CARD\|STAYS_FREE\|NONE, countsAsAbsence, emergencyAvailable}` | `EMERGENCY` hors quota → 412 `EMERGENCY_QUOTA` | livré (EMERGENCY), à aligner (1/mois) |
+| `seat.knows_someone` | `POST …/seat/knows-someone` | 1×/30 j | livré |
+| `outings.leave_uncomfortable` | `POST /v1/outings/:id/leave-uncomfortable` | | livré (E) |
+| `outings.check_in` | `POST …/check-in {code}` | **code seul** ; tout champ de position → 400 `VALIDATION_FAILED` | à aligner |
+| votes | `GET\|PUT /v1/outings/:id/votes` | résultats → `writeTo{conversationId}` par accord | livré, à aligner (lien d'écriture) |
+| autres | `attendance/dispute`, `history`, `me/reliability`, `/v1/teams/*` | | livré |
 
-### 7.4 Sécurité, paiements, partage
+### 7.3 Bande, duos
 | Opération | Route | Notes | État |
 |---|---|---|---|
-| ange gardien | `POST\|GET /v1/safety/guardian-links`, `DELETE …/:id`, `POST /v1/safety/ok`, `GET /v1/safety/status` | | livré |
-| besoin d'aide | `POST /v1/safety/alerts {subject}` (**sans position**), `POST …/:id/resolve` | limite dédiée 10/h, jamais le rate limit global ; un champ `position` d'un ancien client est ignoré (rien stocké, D-050) | livré (aligné) |
-| page proche | `GET /v1/public/guardian/:token`, `POST …/push` | 404 identique pour inconnu/expiré/révoqué | livré (aucune position) |
-| signalement | `POST /v1/reports` (existant) | catégories V5 : `OUTING_THREAT` (menace d'outing), `IRL_BEHAVIOR`, `ON_SITE_INCIDENT`, `REPEATED_NO_SHOW` | livré |
-| place | `GET /v1/purchases/products` | `{seat{amountCents:499, currency}, plus{storeProductId, priceLabel (du store)}, firstOutingFree}` | livré (T3) |
-| Blowy+ | achat intégré mobile (RevenueCat SDK) → `POST /v1/purchases/sync` (existant) | `GET /v1/subscriptions/me` expose `v5Entitlements[{key PLUS_INCLUDED_OUTINGS\|PLUS_UNLIMITED_DUOS, expiresAt}]` ; `GET /v1/me/allowances` | livré (T3 + alignement) |
-| webhook Stripe | `POST /v1/webhooks/stripe` | signature, idempotent | livré (T3) |
-| partage | `POST /v1/share-links {cardKind, subjectRef?}` → `{url}` (toujours un nouveau lien) · `GET /v1/public/s/:slug` (redirection + attribution) | 412 `CARD_NOT_AVAILABLE` (ex. `HERE` avant la sortie avec lieu) | à faire (F + social) |
-| pets | `GET /v1/pets/mine`, `GET /v1/pets/mine/memories`, `PUT /v1/pets/mine/accessories` | | livré |
+| bande | `GET /v1/band`, `GET /v1/band/street`, `POST /v1/band/:linkId/leave`, `POST /v1/band/:linkId/gift` | | livré / gift à faire |
+| (req.) | `GET /v1/duo-lane` | `{enabled, quota{maxActive:3, active}, proposals[{id, species, initial, expiresAt}]}` | à aligner |
+| propositions | `POST /v1/duo-lane/proposals/:id/accept\|pass` | 409 `DUO_LIMIT_REACHED` (3) | à aligner |
+| duos | `GET /v1/duos`, `/:id`, `/:id/venues` | `/venues` : lieux partenaires + créneaux **dans les heures d'astreinte** | à aligner |
+| RDV | `POST /v1/duos/:id/dates`, `…/respond\|cancel\|check-in`, `PUT …/vote` | 412 `OUTSIDE_ONCALL_HOURS`, `DATE_TOO_LATE_TO_RESERVE` (après J−1 18 h) ; check-in par code | à aligner |
+| départ, œuf | `POST /v1/duos/:id/leave`, `PUT /v1/duos/:id/egg` | | livré |
 
-### 7.5 `OutingView` (champs selon §3.1 ; contrat `.strict()` livré)
+### 7.4 Sécurité, argent, partage, notifications
+| Opération | Route | Notes | État |
+|---|---|---|---|
+| gardien | `/v1/safety/guardian-links`, `/v1/safety/ok`, `/v1/safety/status`, `/v1/public/guardian/:token(/push)` | page sans position, ville du contexte | livré |
+| besoin d'aide | `POST /v1/safety/alerts {subject}` | position refusée (400) plutôt qu'ignorée | à aligner |
+| astreinte | `GET /v1/safety/oncall?at=` (public authentifié) → `{covered:true, responseMinutes:60}` | | à faire |
+| produits | `GET /v1/purchases/products` | `{seat{amountCents:499, taxBasis:'TTC'}, plus{amountCents:999, provider:'STRIPE'}, firstOutingFree}` | à aligner |
+| Blowy+ | `POST /v1/subscriptions/plus/checkout` → `{clientSecret}` · `POST /v1/subscriptions/plus/cancel` · `GET /v1/subscriptions/me` | | à faire |
+| webhooks | `POST /v1/webhooks/stripe` (places + abonnement) | | livré (places), à étendre |
+| partage | `POST /v1/share-links {cardKind}` → nouveau lien · `GET /v1/public/s/:slug` | | à faire |
+| parrainage | `GET /v1/referrals/me` → `{nextOutingFree: bool, thisMonthUsed: bool}` | | à aligner |
+| notifications | `PUT\|DELETE /v1/me/push-token`, `GET\|PUT /v1/me/notifications/settings` | | livré |
+
+### 7.5 `OutingView`
 ```
-{ id, status, weekKey, city, neighborhood{name}, activity, startsAt, endsAt, capacity, confirmedCount,
-  preview{size, ageMin, ageMax, genders{WOMAN?,MAN?,NON_BINARY?,UNDISCLOSED?}, withSomeone},   // aperçu anonyme
-  storyMatch?: 'FRIENDS_ONLY',                                // moi seul·e, sinon absent
-  mySeat{status, funding?, holdExpiresAt?, acceptDeadline?},
-  timeline{acceptDeadline, lockAt, photoRevealAt, checkinOpensAt, checkinClosesAt, votesCloseAt},
-  venue?{name, photo, address, reservationName:'Blowy', lat, lng},   // dès lockAt
-  members[{ userId, pet{name, species, equipped, traits[3]}, threeWords[],
-            firstName?, ageRange?, reliability?, face?{url (filigrané)}, arrived?, notComing? }],
-  knowsSomeoneAvailable?, conversationId?, votes?{open, closesAt}, cancelled?{reason, refund} }
+{ id, status, weekKey, city, neighborhood{name}, activity, activityChosenBy: 'YOU'|'VENUE_AND_GROUP', ambiance,
+  startsAt, endsAt, capacity, confirmedCount, preview{size, ageMin, ageMax, genders, withSomeone},
+  mySeat{status, funding?, holdExpiresAt?, acceptDeadline?, emergencyAvailable?},
+  timeline{composedAt, acceptDeadline, lockAt, photoRevealAt, checkinOpensAt, checkinClosesAt, votesCloseAt},
+  venue?{name, photo, address, reservationName:'Blowy', travelMinutes},       // dès lockAt ; plus de lat/lng
+  oncall{covered:true},
+  members[{userId, pet, threeWords, firstName?, ageRange?, reliability?, face?, arrived?, notComing?}],
+  knowsSomeoneAvailable?, conversationId?, votes?, cancelled? }
 ```
-Visages : jetons média courts émis par `media` sur ACL `OUTING_REVEAL` (place confirmée, `now ≥ photoRevealAt`, `< votesCloseAt`), dérivé **filigrané au prénom du regardeur, généré côté serveur** (dérivé `WATERMARKED_VIEWER`, cache ≤ 24 h) ; Android `FLAG_SECURE` ; iOS : détection de capture → avertissement au regardeur, signal trust si répété.
-Aligné (C) : `storyMatch` = littéral `'FRIENDS_ONLY'` dans le contrat ; `preview` servi ; avant `lockAt`, les autres membres ne sont vus que par leur pet.
+Supprimés : `storyMatch`, `venue.lat/lng` (inutiles sans géolocalisation). `activityChosenBy = VENUE_AND_GROUP` → « activité choisie selon le lieu et vos envies ».
 
-### 7.6 Événements WS (livrés T0 dans `events-v5.ts`, ajouts marqués)
-`outing.invited`, `outing.updated {changed: STATUS|MEMBERS|VENUE|FACES}`, `outing.seat_updated`, `outing.checkin_updated`, `outing.votes_opened`, `outing.votes_closed {newBandCount, newDuoCount}` (ses accords seulement), `connection.revealed` (aux deux, à la clôture), `band.updated`, `duo.updated`, `reliability.updated`, `pet.updated`, `team.member_joined`, `safety.alert_ack`, `access.revoked`. Ajout : `outing.knows_someone_resolved {status}` (soi seulement).
+### 7.6 WS
+Livrés : `outing.*`, `connection.revealed`, `band.updated`, `duo.updated`, `reliability.updated`, `pet.updated`, `team.member_joined`, `safety.alert_ack`, `access.revoked`. Ajout : `referral.next_outing_free`.
 
-### 7.7 Déprécié (V4) — 410 `GONE {reason:"RETIRED_IN_V5"}`
-Liste dans `api-contract/src/core/retired.ts` (livré) : actions/déplacement du pet, emménager, vote de branche, révélation photo V4, gels, achats catalogue (gel, boost, œuf rare), indices, missions, ligues, carte, Quartier. **Activé** (alignement C) : middleware `apps/api/src/shared/interface/retired-routes.middleware.ts`, avant authentification et rate limit (réponse identique quel que soit l'objet) ; test unitaire « aucune route V5 couverte » ; parcours V4 réécrits en V5.
-
-### 7.8 Jobs
-`neighborhoods.generate_slots` (quotidien) · `outings.auto_requests` (horaire, pendant la fenêtre de demande : depuis les créneaux cochés, jamais recréée après un retrait — livré) · `outings.compose` (mardi 12 h, `CompositionRun` unique) · `outings.seeding` (15 min) · `outings.lifecycle` (5 min : transitions, holds, backfill) · `outings.purge` · `duos.lifecycle` · `economy.refunds`, `economy.venue_compensations` (mensuel) · `notifications.plan` (5 min).
+### 7.7 Jobs
+`outings.auto_requests` (vendredi 21 h W−1 ; aujourd'hui horaire pendant la fenêtre lundi–mardi → à aligner) · **`outings.compose`** (toutes les 5 min, exécute chaque (ville, jour) dont `composeAt = J − 3 21 h` est passé et sans run) · `outings.seeding` · `outings.lifecycle` · `outings.purge` · `neighborhoods.generate_slots` (seulement aux heures d'astreinte) · `neighborhoods.city_insights` (quotidien, photographie) · `duos.lifecycle` · `economy.*` · `notifications.plan` (60 s, livré).
 
 ---
 
 ## 8. Schéma
 
 ### 8.1 Migrations appliquées (ne jamais réécrire)
-`20261031233029_init`, `20261031233100_constraints`, `20261101013448_trust_media_ai`, **`20261106120000_v5_enums`**, **`20261106120100_v5_outings`** (quartiers, lieux, créneaux, préférences de sortie, team, demande, composition, sortie, place, check-in sans position, votes, révélations, duo, fiabilité, contestation, souvenirs, accessoires ; colonnes `User.neighborhoodId`, `MatchPreferences.lookingFor/storySeriousness/kidsSomeday/meetingMode/meetGenders/romanceGenders`, `PrivacySettings.discreetMode`, `PetState.engineStateV5`, `Conversation.outingId/duoId/friendshipId`, `Message.promptId`, `Friendship.origin…`), **`20261106130000_v5_2`** (`ON_SITE_INCIDENT`, `KnowsSomeoneRequest`), **`20261106140000_v5_safety`** (`GuardianLink`, `GuardianPushSubscription`, `SafetyAlert`, `SafetyOkSignal`, `SafetySystemRemoval`, `SafetyIncident`, `REPEATED_NO_SHOW`, `Report.outingId`), **`20261106141000_v5_3_uneasy_leave`** (`SafetyUneasyLeave`), **`20261106170000_v5_connections`** (`DuoDate`, `DuoVote`, `DuoDateCheckInAttempt`, `DuoLanePass`, `StreetArrangement`, `StreetGift`, colonnes œuf du duo), **`20261106180000_v5_align`** (index `DomainEvent(aggregateType, actorUserId, type)` du journal économique).
+`…_init`, `…_constraints`, `…_trust_media_ai`, `20261106120000_v5_enums`, `20261106120100_v5_outings`, `20261106130000_v5_2`, `20261106140000_v5_safety`, `20261106170000_v5_connections`, `20261106180000_v5_align` (index `DomainEvent`).
 
-**Journal économique (décision de l'alignement C)** : paiements, remboursements, crédits et compensations lieu restent écrits par le port `EconomyJournal` sur la table append-only `DomainEvent` (`aggregateType='economy.journal'`, clé d'idempotence → UUID dérivé, unicité `(aggregateType, aggregateId, seq)`, trigger anti-UPDATE) ; un index de lecture est ajouté. Les tables dédiées `Payment` / `VenueCompensation` (§8.2) ne seront créées que lorsqu'un lecteur relationnel en aura besoin (finance F, relevés mensuels) : l'adaptateur se remplace derrière le même port, sans changer les appelants.
-
-### 8.2 Prochaine migration proposée `…_v5_3` (additive, propriétaire C)
+### 8.2 Prochaine migration `…_v5_5` (additive, C ; enums dans un fichier séparé)
 | Objet | Contenu |
 |---|---|
-| `Venue` | colonnes `photoMediaId`, `tableCap int CHECK > 0`, `reservationName default 'Blowy'`, `contractVersion`, `contractSignedAt` (si absentes) |
-| `VenueCompensation` | `venueId, seatId UNIQUE, amountCents CHECK > 0, basis, period, status` ; INDEX (venueId, period) |
-| `VenuePartnerAccess` | `userId, venueId, role 'venue_partner'`, UNIQUE (userId, venueId) ; enum `StaffRole += venue_partner` (dans une migration d'enum séparée) |
-| `ShareLink` | `slug UNIQUE, ownerUserId, cardKind, subjectRef, clickCount, attributedSignups, attributedFirstOutings, createdAt` ; INDEX (ownerUserId, cardKind) |
-| `ShareAttribution` | `shareLinkId, userId UNIQUE` (premier lien qui a amené la personne) |
-| `PhoneIdentity` | `userId UNIQUE, phoneHmac UNIQUE, verifiedAt` |
-| `AvoidPair` | `userLowId, userHighId, createdAt`, UNIQUE, CHECK low < high — **aucune colonne de numéro ni d'empreinte de contact** |
-| `UncomfortableLeave` | `seatId\|duoDateId, userId, notifiedGuardian, createdAt` (ou réutiliser `SafetyIncident` avec un type `UNCOMFORTABLE_LEAVE` : à trancher par E selon sa table) |
-| `PetMemory` | colonne `displayOrder int?` (Ta rue) |
-| `PetAccessory` | colonnes `giftedFromPetId?`, `giftedAt?` |
-| `MediaDerivativeKind` | `+= WATERMARKED_VIEWER` |
-| `ProcessingConsent.purpose` | valeur `CONTACT_AVOIDANCE` (texte, pas d'enum) |
+| `NeighborhoodTravelTime` | `fromNeighborhoodId, toNeighborhoodId, minutes CHECK > 0`, UNIQUE (from, to) |
+| `Venue` | `ambiance CALM\|LIVELY`, `photoMediaId`, `contractVersion`, `contractSignedAt`, `contractSignerName`, `blowySignedAt` (contrat bilatéral) |
+| `OutingPreferences` | `ambiance CALM\|LIVELY\|ANY default ANY` |
+| `UserWeekOffPattern` | `userId UNIQUE, everyOtherFromWeekKey` |
+| `MatchPreferences` | `storyAgeBrackets text[]`, `kidsHorizon` ; `kidsSomeday` mort |
+| `PrivacySettings.discreetMode` | rendre nullable « non choisi » : nouvelle colonne `discreetChosenAt timestamptz` (la colonne booléenne existante reste) |
+| `OutingRequest` | `mode NORMAL\|FRIENDS_THIS_WEEK` |
+| `CompositionRun` | `slotDate date` ; nouvel index unique `(scope, slotDate, kind)` ; l'ancien unique `(scope, weekKey, kind)` reste pour les runs historiques `WEEKLY` (les nouveaux runs `ROLLING` portent `weekKey` + `slotDate`) |
+| `OutingSeat` | `funding += REFERRAL_FREE` (enum) ; `cancelKind` déjà `EMERGENCY` |
+| `SafetyOnCallShift` | `timezone, startsAt, endsAt, teamLabel, phoneRef`, INDEX (timezone, startsAt) — mutualisé par fuseau, pas par ville |
+| `ShareLink`, `ShareAttribution` | §2.17 |
+| `ReferralReward` | `referrerUserId, refereeUserId UNIQUE, period 'YYYY-MM', creditEntryId`, UNIQUE (referrerUserId, period) |
+| `PhoneIdentity`, `AvoidPair` | §4.5 |
+| `VenuePartnerAccess`, `VenuePartnerMfa`, `VenueWeekday`, `VenueClosure`, `VenueIncident` | remplacent le stockage provisoire sur `DomainEvent` (T6) |
+| `CityInsightSnapshot` | `cityZoneId, day, payload jsonb (comptes bruts, accès serveur seulement)`, UNIQUE (cityZoneId, day) ; purge 30 j |
+| `DuoDate` | `venueSlotId?`, `reservationLockedAt` (table de 2 dans l'effectif) |
 
-### 8.3 Devient mort (conservé, plus écrit)
-Liste V4 inchangée (jauges, relations DATE/NEIGHBORHOOD/GROUP, consentements V4, votes de branche, missions, séries, ligues, gels, boost, pièces mensuelles, `SafetyDate`/`GuardianInvitation`/`LocationShare`/`SafetyLocationPoint`/`SafetyCheckIn`, `User.reliability`, `MatchPreferences.intention/seekingGenders/maxDistanceKm/areaCell*/widenConsented`, `PrivacySettings.mapVisible/photoPreference`). **Nouveaux morts V5.1–V5.3** : `Neighborhood.densityThreshold` (indicateur admin seulement), colonnes de position de `SafetyAlert` (plus jamais remplies ; purge des éventuelles valeurs), `OutingCreditEntry` kinds `PLUS_INCLUDED`/`REFUND_CREDIT`, `OutingSeat.funding = CREDIT`, `OutingRequest.companionUserId` (remplacé par `teamId`), `OutingVote.revealedAt` (dépouillement unique), `MonthlyBenefitGrant`, accessoire mensuel Blowy+.
+### 8.3 Devient mort
+V4 (inchangé) + V5 : `Neighborhood.densityThreshold`, `UserAcceptableNeighborhood` (dérivé du trajet), `OutingCheckInAttempt.method = GEO` et le chemin GEO, `Venue.lat/lng` pour le check-in (gardés pour ops), `SafetyAlert` colonnes de position, `PLUS_UNLIMITED_DUOS`, Blowy+ RevenueCat (`Subscription.provider = REVENUECAT` pour Blowy+), `duo.maxActiveFree`, `MatchPreferences.kidsSomeday`, `accessories.referralAccessoryId`, `OutingView.storyMatch`, runs `WEEKLY`, tuning `cycle.requestClosesIsoWeekday/HourLocal`.
 
-### 8.4 Rétention (à reporter dans `docs/privacy/retention.md` par E)
-Position de check-in : jamais stockée. Position de « besoin d'aide » : **jamais collectée**. Bulletins : 7 j après clôture. Chat de groupe : lecture 7 j, purge 90 j. `GuardianLink` : métadonnées 30 j après expiration, push purgé à + 24 h. Empreintes de contacts : jamais stockées ; `AvoidPair` et `PhoneIdentity` : jusqu'au retrait du consentement. `ShareLink` : 13 mois (attribution agrégée ensuite). Dérivés filigranés : ≤ 24 h. Paiements et compensations : durée comptable (à valider), pseudonymisés. Intentions et genres recherchés : vie du compte sous consentement ; effacés au retrait.
+### 8.4 Rétention (E reporte dans `docs/privacy/retention.md`)
+Position : jamais demandée ni stockée. Empreintes de contacts : jamais stockées. `CityInsightSnapshot` : 30 j, jamais exposé brut. `ShareLink` : 13 mois. Le reste inchangé (bulletins 7 j, chat 7/90 j, gardien 30 j, paiements durée comptable).
 
 ---
 
-## 9. Notifications V5
+## 9. Notifications (livré T8)
+Catalogue T8 conservé. Ajustements V5.5 : `outing.invited` part à J − 3 21 h (au plus une par semaine) ; `outing.confirmed` (J−1 18 h) rappelle la règle d'annulation unique et l'astreinte ; nouveau `referral.next_outing_free` ; supprimés : tout texte de compatibilité. Rythme : 3/jour (4 le jour d'une sortie ou d'un RDV), heures calmes 23 h–8 h, rien entre deux sorties hors messages et transactionnels, rien pendant une pause. Mode discret : titre « Rappel », corps `{heure}` seul.
 
-### 9.1 Liste
-| Clé | Quand | Destinataire |
+---
+
+## 10. Admin, astreinte, espace lieu
+
+### 10.1 Staff (livré T6, compléments)
+Villes (statut, créneaux types, **temps de trajet entre quartiers**), lieux (ambiance, contrat bilatéral), sorties, « je connais quelqu'un », présences, sécurité, finance (relevés par soirée), partage (attribution agrégée), tuning, dashboard. **Astreinte** (trust_lead + ops) : planning `SafetyOnCallShift` par fuseau ; la génération des créneaux et la proposition de RDV Duo refusent toute heure non couverte ; alerte ops si un créneau publié perd sa couverture (le créneau est retiré s'il n'a pas de sortie, sinon escalade). Réponse humaine visée ≤ `[T] safety.humanResponseMinutes` (60). Le point mort de l'astreinte se calcule sur le volume national du soir (`business-model.md`).
+
+### 10.2 Espace lieu (livré T6 : royaume distinct `/lieu`, sessions et MFA propres)
+1. **Contrat bilatéral** d'une page, signé par le lieu **et** par Blowy (`contractSignedAt`, `blowySignedAt`), clause de responsabilité : Blowy = sélection, vérification, astreinte ; lieu = service et sécurité du lieu. Phrase « Si Blowy annule une sortie confirmée, le lieu reçoit 3 € par place réservée » identique au client.
+2. **Créneaux et plafond de tables** (créneaux limités aux heures d'astreinte).
+3. **Effectif de la veille 18 h** : « table Blowy », prénoms seulement, tables de 2 (Duo) comprises, code du chevalet.
+4. **Relevé** mensuel détaillé par soirée (§6.5).
+5. **Signaler un participant** (motif `ON_SITE_INCIDENT` côté trust, livré).
+
+---
+
+## 11. Tranches
+
+### 11.1 Ownership
+A domaine/core/décisions · B matching/tuning/pet-engine/content · C prisma, neighborhoods, outings, conversations, pets, users · C2 connections · G economy, notifications · E safety, trust, media, privacy · F admin, web, social (partage, parrainage) · D mobile · H parcours/QA · designer `design/v5`.
+
+### 11.2 État
+| Tranche | État | Reste (V5.5) |
 |---|---|---|
-| `outing.invited` | composition / amorçage / backfill | invité·e — **la seule notification de proposition, ≤ 1 par semaine** (`[T] maxOutingProposalsPerWeek`) |
-| `outing.seeding_invited` | sortie d'amorçage | invité·e (compte dans la même limite) |
-| `outing.invite_reminder` | `acceptDeadline − 4 h` | non répondu, une fois, sans urgence |
-| `outing.unplaced` | fin de composition | non placé·e : « tu es prioritaire la semaine prochaine » |
-| `outing.formed` | `FORMING` | confirmés |
-| `outing.confirmed` | J-1 18 h | confirmés : lieu + groupe ; rappel que l'annulation compte désormais |
-| `outing.faces` | J − 3 h | confirmés |
-| `outing.checkin_open` | J − 30 min | confirmés (transactionnel) |
-| `outing.cancelled`, `outing.composition_changed`, `outing.refund_done` | | concernés (transactionnels) |
-| `votes.opened`, `votes.reminder` (clôture − 12 h, sans dire qui a voté), `votes.closed` (ses accords ou texte neutre) | | présents |
-| `duo.matched`, `duo.unlocked`, `duo.date_*`, `duo.deadline_soon`, `duo.closed` | | concernés ; propositions duo **sans push** (visibles dans l'app) |
-| `team.member_joined` | | team |
-| `message.human` | message publié | regroupé par conversation — **seule pastille autorisée entre deux sorties** |
-| `reliability.paused` | | concerné·e, ton non culpabilisant |
-| `safety.*` | | jamais supprimées |
-| Retirées | `outing.request_open`, `outing.request_last_call` (la demande est automatique), `neighborhood.launched` (plus de ville fermée), STREAK, MISSION, MATCH V4, `duo.proposal` en push | |
-
-### 9.2 Rythme
-3/jour max (4 le jour d'une sortie, transactionnels et sécurité compris dans 4 sauf sécurité illimitée), heures calmes 23 h–8 h (sauf sécurité ; avancé à 22 h 30 ou reporté), regroupement par conversation/sortie, aucune notification ni pastille entre deux sorties hors messages reçus et transactionnels, aucune pendant une pause (sauf transactionnels de places déjà confirmées et sécurité).
-
-### 9.3 Mode discret
-Icône alternative ; push « Rappel » / « Tu as du nouveau » sans prénom, pet, lieu, ni mot « sortie »/« duo » ; contenu masqué sur écran verrouillé ; variantes `<key>.discreet` limitées à `{heure}` (livré T1).
-
----
-
-## 10. Admin et espace lieu
-
-### 10.1 Staff (`apps/admin`, rôle `ops` livré en domaine)
-| Section | Rôles | Contenu |
-|---|---|---|
-| Villes et quartiers | ops, admin | statut (`LIVE`/`WAITLIST`/`PAUSED`/`CLOSED`), créneaux types par activité, personnes vérifiées par ville (agrégats), écarts « il manque N » par créneau ; plus de bouton « lancer au seuil » |
-| Lieux | ops, admin | fiche, photo, activités, plafond de tables, créneaux, contrat (version signée), rotation du secret de code, accès partenaires |
-| Sorties | ops (support lecture) | effectif, statuts de places, check-ins, chronologie, rapport de composition (codes, couverture de la garantie agrégée), annulation (step-up), retrait d'une place (step-up) ; jamais votes, préférences, `friendsOnly` individuel |
-| « Je connais quelqu'un » | support, ops | file `IN_REVIEW`, décision, déplacement vers un autre groupe |
-| Présences et litiges | support, ops, trust_lead | contestations, corrections (step-up) |
-| Sécurité | trust_lead | « besoin d'aide » en temps réel, « je pars mal à l'aise » (3ᵉ occurrence → tâche de recontact), dossiers, **astreinte** : planning des créneaux couverts (`SafetyOnCallShift`) qui conditionne l'affichage de la promesse « réponse < 1 h » |
-| Paiements | finance | places, remboursements, échecs, **compensations lieux** (relevés mensuels), Blowy+ (RevenueCat), webhooks Stripe |
-| Partage | analyst | attribution agrégée par type de carte (K-facteur), jamais par personne nommée |
-| Tuning, contenus, modération, dashboard | existants | sections V5 ; dashboard : placement, présence, absences, accords mutuels (agrégés ≥ 20), compensations, K |
-
-### 10.2 Espace lieu partenaire (web, `apps/admin`, rôle `venue_partner`, D-046)
-Connexion distincte (MFA identique), accès limité à ses lieux (`VenuePartnerAccess`). Trois écrans :
-1. **Contrat d'une page** : conditions (groupe confirmé J-1 18 h, créneaux creux, sans animation, astreinte Blowy, compensation 4,99 € / 3 €), version, signature.
-2. **Créneaux et plafond de tables** : activer/désactiver des créneaux, plafond, fermetures exceptionnelles (une fermeture après confirmation = annulation `VENUE_UNAVAILABLE` remboursée, signalée à ops).
-3. **Effectif de la veille 18 h** : liste « table Blowy » par créneau avec **prénoms seulement** (aucune autre donnée personnelle), nombre de personnes, contact d'astreinte ; relevé mensuel des compensations.
-
----
-
-## 11. Découpage en tranches
-
-### 11.1 Ownership (inchangé sauf ajouts)
-A : `packages/domain`, `api-contract/core`, décisions · B : `matching`, `tuning`, `pet-engine`, `content` · C : `prisma`, `neighborhoods`, `outings`, `conversations`, `pets`, `users`, contrats associés, `api-client` · C2 : `connections` · G : `economy`, `notifications`, `payments` · E : `safety`, `trust`, `media`, `privacy` · F : `apps/admin`, `apps/web`, module `admin`, `social` (liens de partage) · D : `apps/mobile`, `ui-mobile`, `sprites` · H : `apps/api/test/journeys`, `docs/qa` · designer : `design/v5`.
-
-### 11.2 État et suite
-| Tranche | État (2026-11-06) | Reste à faire (V5.3) | Parcours (écrits par H, sauf mention) |
-|---|---|---|---|
-| T0 A contrats | livré | `AGE_BRACKETS_V52`, `REPORT_CATEGORIES_V5 += ON_SITE_INCIDENT, REPEATED_NO_SHOW` à valider ; `StaffRoleV5 += venue_partner`. **Fait (alignement, à valider par A)** : `ENTITLEMENT_KEYS_V5 = PLUS_INCLUDED_OUTINGS, PLUS_UNLIMITED_DUOS` ; `REFUND_MODES += STAYS_FREE` ; 410 activés | — |
-| T1 B moteur/composition | livré + garantie silencieuse + **`maxSameGender` dur** | `KNOWN_CONTACT` ; `ACCESSORY_GIFTED` ; retrait de `plus.includedOutingsPerMonth`/accessoire mensuel du schéma. **Fait (alignement, `tuning-2026.12.3`, `groups-2026.12.2`, à valider par B)** : ≤ 3 du même genre en contrainte dure + exception non mixte (tests dont amorçage 3 + 3 et backfill), `duo.maxActiveFree=1`, `duo.maxOpenProposals=3`, `venues.compensationUnpaidSeatCents=300`, `safety.uncomfortableLeaveWindowDays=90`, `uneasyLeaveRecontactThreshold=3`, `humanResponseMinutes=60` | tests §4.7 (`maxSameGender` livré) |
-| T2 C backend sorties | livré (V5.1 + V5.2) + **aligné V5.3** | « je connais quelqu'un » : déplacement vers un autre groupe du créneau ; tables `Payment`/`VenueCompensation` différées (§8.1). **Fait** : auteurs du chat de sortie signés par leur pet (`MessageView.author`, prénom à la confirmation) ; prénoms/tranches/fiabilité à `lockAt` ; annulation `EARLY` = carte / reste offerte ; `storyMatch` littéral ; `NEIGHBORHOOD_UNAVAILABLE`, `AGE_VERIFICATION_REQUIRED`, `threshold` retiré ; demande auto ; parrainage activé par la 1ʳᵉ sortie vécue ; export RGPD V5 ; ordre des souvenirs (Ta rue) | livrés par C : `cinq-inconnus-un-jeudi`, `team-de-trois-ville-pas-ouverte`, `annulation-apres-verrou`, `fuite-intention-impossible` · H : **J-a `nantes-il-manque-deux`** (ville sans quartier ouvert, écart réel, amorçage Lille en solo) · **J-b `thomas-connait-quelqu-un`** (J-1 18 h prénoms, demande acceptée et déplacement, quota) · **J-c `camille-annule-a-temps`** (annulation avant 18 h → carte remboursée / 1ʳᵉ reste offerte ; après → absence, 4,99 € au lieu) · **J-d `jamais-plus-de-trois`** (composition, genres, non mixte) |
-| T3 G paiements | livré | Stripe réel à vérifier sur appareil ; écran finance (F). **Aligné** : plus de crédit 90 j (D-042), `PLUS_INCLUDED` sans recrédit, paramètres lus du tuning (`duo.maxActiveFree`, `venues.compensationUnpaidSeatCents`), `v5Entitlements` | **J-e `ines-paie-4-99`** (hold, webhook rejoué, paiement tardif → remboursé) · **J-f `sarah-prend-blowy-plus`** (toutes sorties incluses, quota hebdo inchangé, duos illimités, expiration sans fermeture de duo, aucun effet sur composition) |
-| T4 E sécurité | livré (module `safety`, retrait système, page gardien sans position, « je pars mal à l'aise », filigrane serveur) | évitement de contacts, vérification 18+ par estimation d'âge, astreinte. **Aligné** : position d'alerte jamais stockée, seuils `[T] safety.*`, tables sécurité dans l'export RGPD | **J-g `lea-et-son-ange-gardien`** (aucune position, lieu à J-1 18 h, « mal à l'aise » relayé) · **J-h `nora-se-protege-en-sortie`** · **J-i `contacts-evites`** (deux collègues jamais composés, aucune information) |
-| T5 C2 liens | livré | `/v1/matches` V4 encore servi (non listé dans `retired.ts`). **Aligné** : initiale, déblocage à 48 h, quota via `DUO_ALLOWANCE` (`quota` dans la vue, `{upgrade:false}`), vocal facultatif en duo débloqué, Ta rue, cadeau | **J-j `yanis-voie-duo-gratuite`** (1 duo gratuit, 2ᵉ refusé, Blowy+ illimité, visages à 48 h, vocal facultatif) · **J-k `duo-qui-s-arrete`** |
-| T6 F admin/web | à faire | sections §10.1, espace lieu §10.2, page gardien web, liens de partage uniques et pages `/s/:slug`, `/team/<code>`, `/m/<slug>` | **J-l `le-bar-recoit-sa-table`** (lieu ne voit que prénoms, compensations du mois) · e2e admin |
-| T7 D mobile | en cours (design V5.3) | coder contre les contrats ci-dessus ; vocabulaire §1 ; aucune mention de la garantie | vérif visuelle + persona |
-| T8 G notifications | à faire | §9 | **J-m `camille-en-mode-discret`** (≤ 1 proposition/semaine, aucune pastille hors messages) |
-| T9 œuf | livré côté opt-in | — | **J-n `oeuf-a-deux`** |
-| transverse H | **fait (alignement C)** : parcours V4 réécrits en V5 (Triangle → une place par semaine, Maya → place payée + remboursement carte, Léa & Hugo → voie Duo, Alex → parrainage à la 1ʳᵉ sortie vécue, Jade/Nora → 410) ; 410 activés | **J-o `fuite-zero-v53`** (balayage de toutes les vues à chaque état + cartes de partage + page gardien + espace lieu), **J-p `suppression-en-pleine-semaine`** |
+| T0 A | livré | constantes V5.5 (§11.4) |
+| T1 B | livré + garantie + genre | ambiance, trajet, composition glissante, `FRIENDS_THIS_WEEK`, `storyAgeBrackets`, `cityInsights` pur, `KNOWN_CONTACT`, tuning V5.5 |
+| T2 C | livré + alignement V5.3 | calendrier J − 3 21 h, check-in par code, `storyMatch` retiré, imprévu 1/mois, préférences V5.5, migration `…_v5_5`, indicateurs, état honnête |
+| T3 G | livré (places Stripe, Blowy+ RevenueCat) | Blowy+ Stripe Billing, résiliation dans l'app, compensations HT et « Blowy annule », parrainage `REFERRAL_FREE` |
+| T4 E | livré | astreinte (planning, contrôle), alerte sans position (refus), évitement de contacts, filigrane serveur, 18+ |
+| T5 C2 | livré + quota | 3 duos pour tous, carte espèce + initiale, RDV table de 2 (lieu, astreinte, J−1 18 h, code) |
+| T6 F | livré (staff V5 + espace lieu) | contrat bilatéral, relevé par soirée, trajets, liens de partage, pages web ville du contexte |
+| T8 G | livré | ajustements §9 |
+| T7 D | en cours | coder contre §7 |
+| H | parcours V4 réécrits en V5 (alignement) | parcours V5.5 ci-dessous |
+Parcours V5.5 à écrire (H) : **`mardi-soir-a-paris`** (composition J − 3 21 h pour un mardi, confirmation après composition, invitation unique de la semaine) · **`claire-a-un-imprevu`** (imprévu après 18 h : pas de pénalité, pas de remboursement, lieu compensé ; 2ᵉ imprévu du mois = absence) · **`yanis-a-marseille`** (état honnête avant composition, « sortir en amitié », aucun signal ensuite ; indicateurs de ville < 10 masqués, ≥ 10 arrondis) · **`check-in-sans-position`** (code seul, position refusée partout, page gardien et alerte sans position) · **`duo-a-la-table-de-deux`** (3 duos gratuits, carte espèce + initiale, RDV hors astreinte refusé, table de 2 dans l'effectif, absence compensée 3 €) · **`alex-parraine-sarah`** (1ʳᵉ sortie vécue de Sarah → prochaine sortie d'Alex offerte, 1 par mois) · **`blowy-annule-jeudi`** (sortie confirmée annulée : remboursements carte, lieu 3 € HT par place, relevé par soirée) · **`blowy-plus-stripe`** (abonnement, toutes sorties, résiliation dans l'app sans rétention, Duo inchangé) · balayage **`fuite-zero-v55`** (aucun champ de compatibilité de groupe, aucune position, cartes sans tiers).
 
 ### 11.3 Règles
-Contrat publié avant implémentation ; échanges inter-modules par outbox (`outing.seat_refund_due`, `outing.venue_compensation_due`, `outing.attendance_recorded`, `connection.revealed`, `trust.block_created`, `safety.alert_raised`, `economy.payment_succeeded`, `economy.plus_state_changed`, `user.account_deleted`…). « Tranche terminée » : build, typecheck, lint, tests unitaires et d'intégration ×2, migrate + seed sur base vierge (diff nul), parcours de la tranche verts ×2, handoff, ligne dans `integration-status.md`.
+Contrat avant implémentation ; inter-modules par outbox ; « terminé » = build, typecheck, lint, unitaires, intégration ×2, migrate + seed base vierge (diff nul), parcours ×2, handoff, ligne d'intégration.
 
-### 11.4 Écarts connus code ↔ spec (statut après l'alignement C, 2026-11-06)
-1. Prénoms, tranches et fiabilité visibles dès `FORMING` → à `lockAt` (V5.3 B.7) — **aligné** (phases `PRE_LOCK`/`LOCKED`/`FACES` du projecteur ; tests domaine, intégration, parcours).
-2. Annulation `EARLY` → recrédit 90 j → remboursement carte / 1ʳᵉ reste offerte — **aligné** (`refundOutcome(PAID)=CARD`, `REFUND_MODES += STAYS_FREE`, `PLUS_INCLUDED` sans objet).
-3. `storyMatch` acceptait `AT_LEAST_TWO` — **aligné** (`z.literal('FRIENDS_ONLY')`).
-4. Pénalité de genre douce → contrainte dure ≤ 3 — **aligné** (`@blowy/matching` `genderCapOk`, `[T] composition.maxSameGender`, exception non mixte ; placement simulé 300 candidats 80,3 → 76,7 %, 600 : 82,2 → 80,3 %).
-5. Quota duo `maxActive = 3` pour tous → 1 gratuit / illimité Blowy+ — **aligné** (`DUO_ALLOWANCE` consommé par `connections`, `[T] duo.maxActiveFree`, `maxOpenProposals`).
-6. Déblocage duo dès que les deux ont écrit → à 48 h — **aligné** (C2, vérifié par parcours).
-7. `SafetyAlert` acceptait une position — **aligné** (champ ignoré, jamais stocké ; colonnes mortes, §8.3).
-8. `plus.includedOutingsPerMonth`, accessoire mensuel, `PLUS_MONTHLY_BENEFITS` → droits V5 — **aligné côté contrat** (`v5Entitlements`, `ENTITLEMENT_KEYS_V5`) ; reste B : retirer `includedOutingsPerMonth` / `plusMonthlyAccessoryIds` du schéma de tuning (valeurs neutres aujourd'hui) ; `PLUS_MONTHLY_BENEFITS` reste la clé interne qui porte Blowy+.
-9. `NEIGHBORHOOD_NOT_LIVE` → `NEIGHBORHOOD_UNAVAILABLE` ; `threshold` retiré — **aligné**.
-10. Routes 410 non activées — **aligné** (middleware, parcours V4 réécrits).
-11. Blowy+ prévu sur Stripe → achat intégré RevenueCat — **aligné** (G, T3).
-12. Auteurs « par le pet » dans le chat de groupe — **aligné** (`MessageView.author {pet, firstName?}`, prénom à partir de `lockAt`, HTTP et WS). Encore ouverts : `KNOWN_CONTACT` / évitement de contacts (E + B) ; « je connais quelqu'un » accepté sans déplacement vers un autre groupe du créneau (C) ; récompense de parrainage encore en pièces V4 (accessoire V5 via `referral.first_outing_lived` → `pets` : C + F).
+### 11.4 Écarts code ↔ spec V5.5 (propriétaire)
+| # | Écart constaté dans le code | Cible V5.5 | Propriétaire |
+|---|---|---|---|
+| E1 | **Composition hebdo mardi 12 h** (`cycle.requestClosesIsoWeekday = 2`, `requestClosesHourLocal = 12`, `jobs.composeWeekly`) pour toute la semaine ; le seed a un créneau **mardi 19 h 30** (Paris) dont la confirmation (lundi 18 h) précède la composition → `acceptDeadline = lockAt` dans le passé, sortie impossible ; les écrans disent « lundi 21 h » pour le jeudi | **Composition glissante à J − 3 21 h par (ville, jour)** ; tuning `cycle.composeDaysBefore = 3`, `cycle.composeHourLocal = 21`, `cycle.slotIsoWeekdays = [2..7]`, `requestOpens = vendredi W−1 21 h` ; garde `composedAt < acceptDeadline ≤ lockAt` ; `CompositionRun(scope, slotDate)` | B (tuning, `calendar.ts`), C (jobs, run, migration), designer (vérifier facts.json : Lyon mardi 17 → composition samedi 14, 21 h) |
+| E2 | Check-in accepte `GEO` (position comparée au rayon) | code seul ; position refusée (400) ; plus de `lat/lng` dans `OutingView` | C (outings), C2 (RDV duo), D (retirer la demande de position) |
+| E3 | `storyMatch: 'FRIENDS_ONLY'` encore servi | champ supprimé du contrat et de la vue ; `friendsOnly` interne agrégé | C (contrat + `visibility.ts`), D |
+| E4 | État honnête et indicateurs de ville absents | `storyFeasibility`, `GET /v1/me/city-insights`, photographie quotidienne, seuil 10, arrondis | B (fonctions pures), C (requêtes, job), D |
+| E5 | Quota duo : 1 gratuit / illimité Blowy+ (`DUO_ALLOWANCE`, `duo.maxActiveFree = 1`, `PLUS_UNLIMITED_DUOS`) | **3 actifs pour tous**, Blowy+ sans effet sur le Duo | C2 (connections), G (retirer le port d'economy), B (tuning `duo.maxActive = 3`), A (`ENTITLEMENT_KEYS_V5`) |
+| E6 | Carte de proposition duo : pet + initiale (nom du pet) | espèce générique + initiale, rien d'autre | C2 (vue), D |
+| E7 | Blowy+ en achat intégré RevenueCat | Stripe Billing + résiliation dans l'app ; RevenueCat désactivé pour Blowy+ | G, D (écran d'abonnement, plus de SDK RevenueCat pour Blowy+) |
+| E8 | Compensation lieu = prix TTC 4,99 € ; libellés « V5.3 » | 4,16 € HT (place payée), 3 € HT (sinon, et « Blowy annule », retraits après confirmation) ; champ `taxBasis` | G (`payments.ts`), F (relevé) |
+| E9 | Imprévu `EMERGENCY` limité 1/trimestre (V5.4) ; `facts.json` dit encore « 1 fois par trimestre » | **1 par mois** (fenêtre 30 j) | B (tuning), C (`seat-policy`), designer (facts.json, texte de règle) |
+| E10 | Parrainage récompensé en pièces V4 | `REFERRAL_FREE` : prochaine sortie offerte, ≤ 1/mois ; accessoire de parrainage mort | F (social), G (crédit), C (financement de place) |
+| E11 | Ambiance, « une semaine sur deux », `storyAgeBrackets`, `kidsHorizon`, choix discret explicite, temps de trajet : absents | §2.4, §2.16, §2.1 | C (schéma, users), B (composition), A (domaine), F (trajets en admin), D |
+| E12 | Astreinte : `VENUE_ONCALL_PHONE` seul ; créneaux et RDV non contrôlés | `SafetyOnCallShift` par fuseau ; génération et RDV refusés hors couverture ; `GET /v1/safety/oncall` | E (safety), C (generate_slots), C2 (RDV), F (planning admin) |
+| E13 | RDV Duo libres (pas de table réservée) | table de 2 au lieu, confirmée J−1 18 h, dans l'effectif, code, compensation | C2, F (effectif), G (compensation) |
+| E14 | Alerte : position d'un ancien client ignorée silencieusement | refus explicite 400 (contrat sans champ) | E |
+| E15 | Contrat lieu signé par le lieu seul ; relevé mensuel agrégé par sortie | contrat bilatéral avec clause de responsabilité ; relevé par soirée avec absences/imprévus/annulations Blowy | F, C (migration `Venue`) |
+| E16 | Liens de partage uniques, `/s/:slug`, `/team/<code>` non faits | §2.17 | F |
+| E17 | Évitement de contacts (`KNOWN_CONTACT`) non fait | §4.5, proposé avant la 1ʳᵉ composition | E, B, D |
+| E18 | « Je connais quelqu'un » accepté : retrait sans déplacement | déplacement vers un autre groupe du créneau si possible | C |
+| E19 | Données espace lieu sur `DomainEvent` (provisoire) | tables §8.2 | C (migration), F (adaptateur) |
+| E20 | `/v1/matches` (flux V4) toujours servi | ajouté à `retired.ts` quand le mobile n'y fait plus appel | A, D |
+| E21 | Tuning garde des champs morts (`plus.includedOutingsPerMonth`, `includesMonthlyAccessory`, `plusMonthlyAccessoryIds`, `duo.maxActiveFree`, `neighborhoods.defaultDensityThreshold`) | retirés (avec `.default()` pour relire les versions publiées) | B |
 
 ---
 
-## 12. Questions tranchées
+## 12. Questions tranchées (V5.5)
 | # | Question | Décision |
 |---|---|---|
-| 1 | Fournisseurs de paiement ? | Places : Stripe / Apple Pay ; Blowy+ : achat intégré RevenueCat ; à revalider juridiquement (D-040) |
-| 2 | Prix ? | 1ʳᵉ offerte, place 4,99 € conso non incluse, Blowy+ 9,99 €/mois toutes sorties + duos illimités, 1 duo gratuit (D-041) |
-| 3 | Jusqu'à quand annuler gratuitement ? | Jusqu'à la confirmation J-1 18 h ; après = absence (D-043) |
-| 4 | Remboursement en argent ou en crédit ? | Toujours sur la carte pour une place payée ; une place offerte « reste offerte » (D-042) |
-| 5 | Que voit-on à la confirmation ? | Lieu (nom, photo, adresse), prénoms, tranches, pets, fiabilité ; visages à J − 3 h, filigranés (D-044) |
-| 6 | Compensation du lieu ? | Prix de la place (4,99 €) si payée, 3 € si offerte/incluse ou sécurité (D-045) |
-| 7 | Ville fermée, seuil 120 ? | Supprimés ; sortie dès 5 compatibles ; écran « il manque N » (D-035) |
-| 8 | Garantie « ≥ 2 compatibles » affichée ? | Jamais ; seul « sortie entre amis pour toi » pour l'intéressé·e (D-038) |
-| 9 | Équilibre des genres ? | Contrainte dure ≤ 3 du même genre, exception non mixte demandée (D-039) |
-| 10 | Grille d'âge ? | Fixe 18–21 … 50+ ; jamais centrée sur la personne (D-037) |
-| 11 | Votes ? | Un écran, 3 choix pour tous, Non par défaut, résultat unique à la clôture, PLUS incompatible → ami·e en silence (D-048) |
-| 12 | Liens de partage ? | Un lien unique par carte et par personne, traçable, sans tiers (D-047) |
-| 13 | Position sur « besoin d'aide » ? | Jamais ; le lieu de la sortie et l'heure suffisent (D-050) |
-| 14 | Duo : que voit-on avant le double oui ? | Le pet et l'initiale (D-051) |
-| 15 | Espace lieu ? | Web, rôle `venue_partner`, 3 écrans, prénoms seulement (D-046) |
-| 16 | Éviter ses contacts ? | Opt-in, empreintes jamais stockées, seules les paires gardées (D-049) |
-| 17 | Demande hebdo ? | Automatique depuis les disponibilités ; plus de notification d'ouverture (D-052) |
+| 1 | Quelle heure de composition ? | **J − 3 21 h, glissante par jour de créneau** (D-053) |
+| 2 | Paiement de Blowy+ ? | Stripe Billing, comme les places ; RevenueCat désactivé (D-054) |
+| 3 | Que comprend Blowy+ ? | Toutes les sorties, rien d'autre ; Duo gratuit pour tous, 3 actifs (D-054) |
+| 4 | Signal de compatibilité ? | Aucun au niveau du groupe ; seulement ville + créneaux avant composition (D-061, D-066) |
+| 5 | Indicateurs de ville ? | ≥ 10, arrondis, photographie quotidienne (D-059) |
+| 6 | Imprévu ? | 1 par mois, sans pénalité, non remboursé, lieu compensé (D-056) |
+| 7 | Check-in ? | Code du chevalet uniquement (D-062) |
+| 8 | Astreinte ? | Toutes les heures de créneaux et RDV, mutualisée par fuseau ; aucun créneau hors couverture (D-058) |
+| 9 | Carte Duo ? | Espèce générique + initiale (D-068) |
+| 10 | Parrainage ? | Prochaine sortie offerte, 1/mois (D-064) |
+| 11 | Compensation lieu ? | 4,16 € HT si payée, 3 € HT sinon et si Blowy annule ; relevé par soirée (D-067) |
+| 12 | Contrat lieu ? | Bilatéral, clause de responsabilité (D-069) |
+| 13 | Ambiance ? | Contrainte au lieu, pénalité douce au groupe (D-055) |
+| 14 | Trajet ? | Table ops entre quartiers, affichée, filtre dur (D-063) |
+| 15 | Mode discret ? | Choix explicite, aucun présélectionné (D-065) |
+| 16 | Duo au lieu ? | Table de 2, mêmes règles qu'une sortie (D-070) |
 
 ---
 
 ## 13. Historique des amendements
 | Rév. | Date | Source | Changements |
 |---|---|---|---|
-| 1 | 2026-11-06 | `concept-v5.md` | Rédaction initiale (D-010 → D-034) : modèle, visibilité, composition, pet V5, économie (Stripe pour tout, crédits 90 j), API, schéma, notifications, admin, tranches. |
-| 2 | 2026-11-06 | `concept-v5.1.md` (jury tour 1) — intégré dans le code par T0/T1/T2 | Groupes de 5 ; team 1–3 et amorçage (remplace le +1) ; intentions `lookingFor` + sous-choix secrets + `meetingMode` ; préférences de sortie (créneaux, semaines off, activités, quartiers acceptables, trajet, `groupAge`) ; aperçu anonyme ; vote groupé sur un écran, 3 choix pour tous, Non par défaut, dépouillement à la clôture ; annulation après confirmation = absence ; prix 4,99 € conso non incluse et Blowy+ 9,99 € toutes sorties + duos illimités, accessoires jamais vendus ; motifs de signalement ; mode discret à l'onboarding. |
-| 3 | 2026-11-06 | `concept-v5.2.md` (jury tour 2) — intégré par T2 et B | Plus de ville fermée ni de seuil ; écart « il manque N » ; garantie histoire ; lieu J-1 18 h, visages J − 3 h filigranés ; grille d'âge fixe ; « je connais quelqu'un ici » ; slug « 3 mots » aléatoire ; cartes sans tiers, carte « accords » supprimée ; Ta rue ; 1 duo gratuit ; `ON_SITE_INCIDENT`. |
-| 4 | 2026-11-06 | `concept-v5.3.md` (jury tour 3) — **cette révision** | Garantie jamais affichée ; règle « jamais plus de 3 du même genre » ; duo à l'initiale avant double oui ; page gardien sans position ; carte « J'y suis » sans lieu ni heure ; annulation gratuite jusqu'à J-1 18 h ; prénoms + tranches + pets à la confirmation ; « je pars, mal à l'aise » ; Blowy+ par achat intégré, places Stripe ; compensation lieu 4,99 € / 3 € (fin du forfait 15 €) ; liens de partage uniques ; « éviter les personnes que je connais » opt-in ; espace lieu (3 écrans) ; demande hebdo automatique. Spec réécrite pour refléter l'état du code (§11.2) et lister les écarts (§11.4). Décisions D-035 → D-052. |
+| 1 | 2026-11-06 | `concept-v5.md` | Rédaction initiale (D-010 → D-034). |
+| 2 | 2026-11-06 | `concept-v5.1.md` | Groupes de 5, team, intentions V5.1, préférences de sortie, aperçu anonyme, vote groupé, annulation après confirmation = absence, prix 4,99 / 9,99. |
+| 3 | 2026-11-06 | `concept-v5.2.md` | Plus de ville fermée, écart « il manque N », garantie histoire, lieu J−1 18 h, visages J−3 h, grille d'âge fixe, « je connais quelqu'un », cartes sans tiers, Ta rue. |
+| 4 | 2026-11-06 | `concept-v5.3.md` | Garantie jamais affichée (sauf « sortie entre amis pour toi »), ≤ 3 même genre, duo à l'initiale, gardien sans position, annulation gratuite jusqu'à J−1 18 h, Blowy+ en achat intégré, compensation 4,99 / 3 €, liens uniques, évitement de contacts, espace lieu (D-035 → D-052). |
+| 5 | 2026-11-06 | **`concept-v5.4.md` + `concept-v5.5.md`** + handoffs alignement / T6 / T8 | Plus aucun signal de compatibilité (bandeau supprimé) ; indicateurs de ville ≥ 10 arrondis ; état honnête ville/créneaux ; Blowy+ via Stripe (sorties uniquement), Duo gratuit 3 actifs ; imprévu 1/mois ; ambiance ; « une semaine sur deux » ; âge et horizon pour une histoire ; check-in par code sans position ; astreinte sur toutes les heures, mutualisée ; carte Duo espèce + initiale ; parrainage = prochaine sortie offerte ; compensations HT, « Blowy annule » 3 €/place, relevé par soirée, contrat bilatéral ; Duo à la table de 2 ; temps de trajet ; mode discret explicite ; **calendrier réel de composition J − 3 21 h** (écart du code mardi 12 h) ; §11.4 réécrit (E1–E21). Décisions D-053 → D-070. |
