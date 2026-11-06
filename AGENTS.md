@@ -13,6 +13,8 @@ Lis d'abord `docs/architecture.md`, `docs/decisions.md` et ta mission dans `docs
 | `apps/api/src/modules/<m>` | Agent nommé par module |
 | `apps/mobile`, `packages/ui-mobile`, `packages/sprites` | Mobile (D) |
 
+V5 : l'ownership détaillé par tranche (T0–T9) est dans `docs/product/spec-v5.md` §11.1 et complète ce tableau. Nouveau rôle staff `ops` (quartiers, lieux, sorties, absences, litiges).
+
 ## Interdits
 - `pnpm install` / ajout de dépendance : seulement par le propriétaire du lockfile. Les autres demandent l'ajout dans leur handoff (ou l'orchestrateur leur délègue explicitement le lockfile pour la durée de la mission).
 - `git reset --hard`, `git checkout` concurrent, suppression du travail d'autrui, réécriture d'une migration appliquée.
