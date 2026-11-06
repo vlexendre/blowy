@@ -1,0 +1,472 @@
+{
+ "member": "thomas-30",
+ "global": 7,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 8,
+  "desire": 7,
+  "meet": 7,
+  "safety": 7,
+  "virality": 4,
+  "money": 6,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La 2e porte est là. Elle reste en texte courant, sans bouton propre.",
+   "fix": "Un lien « Plutôt à deux ? » sous « Commencer »."
+  },
+  "V5-Ville": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« On ne demande jamais ta position » : cohérent.",
+   "fix": "RAS."
+  },
+  "V5-Ville-fermee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Honnête ; pas mon cas.",
+   "fix": "RAS."
+  },
+  "V5-Team-amorcage": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas mon cas.",
+   "fix": "RAS."
+  },
+  "V5-Rencontrer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« À deux, par écrit » à égalité : la question que je demandais. Rien ne dit qu'un duo peut être en amitié.",
+   "fix": "« À deux, par écrit · en amitié ou plus »."
+  },
+  "V5-Intention": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair, mais posé avant le consentement.",
+   "fix": "Voir Consentement."
+  },
+  "V5-Intention-rempli": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Une histoire plutôt… secret » et « Des enfants un jour ? » sont collectés à l'étape 3, alors que `V5-Consentement` (étape 4) les présente comme « les questions suivantes ». C'est une collecte avant consentement art. 9.",
+   "fix": "Placer le consentement avant `V5-Intention`."
+  },
+  "V5-Consentement": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Texte juste sur le fond, mais au mauvais endroit, et « Ton orientation n'est jamais montrée, ni déductible » est faux dans un duo réciproque (voir Duo).",
+   "fix": "Le déplacer ; écrire « jamais montrée ; seule une personne qui a fait le même choix que toi peut la deviner »."
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Un autre mot… », pronom à part : bien.",
+   "fix": "RAS."
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« tout le monde voit les mêmes 3 boutons » : mot pour mot ma correction.",
+   "fix": "RAS."
+  },
+  "V5-Craft": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien à redire.",
+   "fix": "RAS."
+  },
+  "V5-Vie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ta vision » reste du jargon.",
+   "fix": "« Tes goûts »."
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Je sais à l'avance quand on peut me proposer quelque chose.",
+   "fix": "RAS."
+  },
+  "V5-Eclosion": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Il part te trouver des gens » : réglé.",
+   "fix": "RAS."
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Propre.",
+   "fix": "RAS."
+  },
+  "V5-Compte-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Tranche, jamais l'âge exact.",
+   "fix": "RAS."
+  },
+  "V5-Trouvee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Trop de monde ? Essaie à deux » : ma sortie de secours. Libellé coupé sur 2 lignes dans un petit bouton.",
+   "fix": "Libellé court : « Plutôt à deux »."
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Personne n'anime. Tu pars quand tu veux. » : le déroulé que je voulais.",
+   "fix": "RAS."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé.",
+   "fix": "RAS."
+  },
+  "V5-Notifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Jamais après 23 h, discret par défaut.",
+   "fix": "RAS."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Chat écrit avant le jour J.",
+   "fix": "RAS."
+  },
+  "V5-Team": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Venir avec un ami que je connais : c'est ce qui me ferait tenter un groupe.",
+   "fix": "RAS."
+  },
+  "V5-Accueil": {
+   "score": 7,
+   "blocking": false,
+   "issue": "La carte sortie domine, « Tes duos » est une petite tuile. Pour qui a choisi « À deux, par écrit », aucune variante n'est maquettée (demandé au tour 1).",
+   "fix": "Maquetter l'Accueil « duo d'abord » : duos en cours en tête, sortie en option."
+  },
+  "V5-Accueil-discret": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Utile.",
+   "fix": "RAS."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rien n'est perdu.",
+   "fix": "RAS."
+  },
+  "V5-Chats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Sections claires, comptes justes.",
+   "fix": "RAS."
+  },
+  "V5-Chats-vide": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Ne parle que du groupe (« dès que tu dis Je viens ») : pour un utilisateur Duo seul, rien.",
+   "fix": "Variante « Ouvre la voie Duo »."
+  },
+  "V5-Groupe": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le brise-glace écrit aide, mais je ne sais toujours rien de qui est calme ou bavard (présentation d'une ligne demandée au tour 1).",
+   "fix": "Une ligne facultative « je suis plutôt… » par personne."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Quitter sans pénalité pour ma sécurité, signalement anonyme.",
+   "fix": "RAS."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé.",
+   "fix": "RAS."
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé.",
+   "fix": "RAS."
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« La voie Duo, déjà ouverte » : bien pensé.",
+   "fix": "RAS."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Veille 18 h, retrait discret, captures signalées.",
+   "fix": "RAS."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Retirable sans prévenir.",
+   "fix": "RAS."
+  },
+  "W-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Jeton aléatoire, sans prénom dans l'URL.",
+   "fix": "RAS."
+  },
+  "W-Ange-alerte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair.",
+   "fix": "RAS."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Signaler en en-tête, « Besoin d'aide » expliqué.",
+   "fix": "RAS."
+  },
+  "V5-Checkin-code": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Repli rassurant.",
+   "fix": "RAS."
+  },
+  "V5-Checkin-ok": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Malo n'a pas de coche : chacun voit qui manque. Si c'est moi qui hésite devant la porte, tout le groupe le voit.",
+   "fix": "« 4 sur 5 arrivés », sans dire qui."
+  },
+  "V5-Souvenir": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Partager la soirée » en principal, vote en second.",
+   "fix": "Vote en principal."
+  },
+  "V5-Partage": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« avec 4 inconnu·es » : faux, Tom est la team d'Alex. Pour un anxieux, l'incohérence fait douter de tout le reste.",
+   "fix": "Compte juste."
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "La fuite est réglée. Footer « Modifiable, résultats… » rogné sous le bouton.",
+   "fix": "Marge sous le bouton."
+  },
+  "V5-Apres-resultats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« DUO · VOUS AVEZ DIT PLUS » : le mot « duo » sert aussi à la voie Duo. Deux sens pour un mot.",
+   "fix": "« Vous avez dit plus tous les deux » sans le mot duo, ou assumer qu'ils fusionnent."
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Neutre, exactement ce que je redoutais et c'est bien fait.",
+   "fix": "RAS."
+  },
+  "V5-Partage-accords": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« +1 DUO » : dans mon entourage, ça dit « il a matché ». C'est mon choix, mais l'écran me le propose juste après les résultats.",
+   "fix": "Pas de carte « duo » proposée par défaut."
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Cohérent.",
+   "fix": "RAS."
+  },
+  "V5-Duo": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le badge « projet compatible » sur Caramel me dit que Jade a répondu comme moi sur « sérieuse » et « enfants », que C.11 promet de ne jamais afficher. « Gratuit » ici, « sans limite » dans Blowy+ : limite non dite.",
+   "fix": "Retirer le badge ou le soumettre à un accord des deux ; écrire la limite gratuite."
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rien ne se débloque si un seul des deux écrit » : corrigé. « avant le mer. 18 nov. » : un délai, pour un anxieux, c'est une pression.",
+   "fix": "Pas de date limite au rendez-vous."
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Jade a ajouté un vocal. Toi, non : c'est très bien comme ça. » Parfait.",
+   "fix": "RAS."
+  },
+  "V5-RdvDuo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Lieu partenaire, table réservée, ange gardien, « Tu peux partir à tout moment ».",
+   "fix": "RAS."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Idem.",
+   "fix": "RAS."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Signaler visible, souffleur qui pré-remplit sans envoyer. « Code Names » → « Codenames ».",
+   "fix": "Corriger."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Personne ne l'envoie.",
+   "fix": "RAS."
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé, « Partir sans message » si insécurité.",
+   "fix": "RAS."
+  },
+  "V5-Partage-semaine": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« 4 INCONNU·ES » faux.",
+   "fix": "Compte juste."
+  },
+  "V5-Partage-invitation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« AVEC MOI ET TOM » avec « Sans visages ni prénoms » actif.",
+   "fix": "Cohérence de l'option."
+  },
+  "V5-Partage-ville": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Pas mon cas.",
+   "fix": "RAS."
+  },
+  "V5-Story": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Je vois les mots, pas qui les a choisis » : honnête. Toujours angoissant mais désactivable.",
+   "fix": "RAS."
+  },
+  "W-Repondre": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé.",
+   "fix": "RAS."
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« qui voit quoi » en tête.",
+   "fix": "RAS."
+  },
+  "V5-Fiche": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Privée : bien. « Ton groupe voit seulement \"fiable\" quand tu viens » : l'absence du mot se remarque.",
+   "fix": "Ne rien afficher au groupe."
+  },
+  "V5-Tarifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rien sur le Duo gratuit et sa limite.",
+   "fix": "Ligne « Voie Duo : gratuite, 3 en même temps ; Blowy+ : sans limite »."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« La voie Duo sans limite » sans dire la limite sans Blowy+.",
+   "fix": "Idem."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Format · groupe et duo » : réglé.",
+   "fix": "RAS."
+  },
+  "V5-Confidentialite": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Ton orientation n'est jamais montrée, ni déductible » : dans un duo romantique entre deux hommes, chacun la déduit (c'est voulu, mais pas écrit). « Voie Duo » rangée dans « Réglages protecteurs, activés par défaut » alors que le texte dit « désactivée si tu préfères les groupes ».",
+   "fix": "Écrire l'exception exacte ; sortir la voie Duo de ce bloc."
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Menace d'outing », « LGBTphobie », et « Dans un duo, elle peut s'en douter » : honnête. « Bloquer aussi » pré-coché.",
+   "fix": "Décocher par défaut."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé.",
+   "fix": "RAS."
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Rien à faire » : apaisant.",
+   "fix": "RAS."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  }
+ },
+ "top3": [
+  "Mettre le consentement art. 9 avant toute question sensible et rendre la promesse exacte : « jamais montrée ; seule une personne qui a fait le même choix que toi peut la deviner » ; retirer le badge « projet compatible » ou le soumettre à l'accord des deux.",
+  "Maquetter l'Accueil et l'état vide des Chats pour qui a choisi « À deux, par écrit » : duos en tête, sortie en option.",
+  "Au check-in, ne jamais montrer qui n'est pas arrivé, et dire clairement ce qui est gratuit dans la voie Duo."
+ ],
+ "tenIf": "Je mets 10 si le consentement précède toute question sensible, si aucune réponse secrète (orientation, sérieux, enfants) n'est montrée ou devinable sauf par une personne qui a fait le même choix et l'accepte, si l'Accueil se met au format « à deux » quand je l'ai choisi, et si personne au check-in ne voit que je ne suis pas encore entré."
+}

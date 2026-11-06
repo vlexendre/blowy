@@ -1,0 +1,472 @@
+{
+  "member": "growth-lead",
+  "global": 7,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 6,
+    "desire": 7,
+    "meet": 8,
+    "safety": 8,
+    "virality": 7,
+    "money": 7,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Hook juste, 5 pets = 5 personnes, villes ouvertes nommées. « près de chez toi » contredit « on ne demande jamais ta position » de l'écran suivant.",
+      "fix": "« dans ton quartier »."
+    },
+    "V5-Ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Ville en 1er : réglé ; quartiers acceptables et trajet = taux de placement. Pas de compteur « 12 sorties ce jeudi dans le 11e ».",
+      "fix": "Ligne de preuve sociale réelle sous « Paris 11e · ouvert »."
+    },
+    "V5-Ville-fermee": {
+      "score": 7,
+      "blocking": false,
+      "issue": "87/120 + mars 2027 : réglé. Aucun bouton « Partager la jauge » ici (il n'existe que via la team) ; « M'inscrire » ne dit pas quel contact on laisse.",
+      "fix": "« M'inscrire avec mon numéro » + lien secondaire « Fais ouvrir Saint-Denis » (Partage-ville)."
+    },
+    "V5-Team-amorcage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Meilleur mécanisme de cold start du dossier : 3 vérifiés = une sortie. Aucune date ni lieu pour la sortie d'amorçage : « quand ? » restera sans réponse.",
+      "fix": "« Sortie d'amorçage sous 2 semaines après le 3e selfie »."
+    },
+    "V5-Rencontrer": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Duo à égalité avec le groupe dès l'écran 3 : la voie non virale capte ceux qui auraient invité.",
+      "fix": "« Les deux » en tête, ou Duo proposé après la 1re sortie ; mesurer le taux de team par choix."
+    },
+    "V5-Intention": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Clair, rien coché.",
+      "fix": "—"
+    },
+    "V5-Intention-rempli": {
+      "score": 6,
+      "blocking": false,
+      "issue": "2 sous-questions de plus (sérieuse, enfants) dans le funnel avant toute valeur.",
+      "fix": "Les déplacer après la 1re sortie (« affine tes duos »)."
+    },
+    "V5-Consentement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Nécessaire légalement, mais c'est un écran de plus avant Trouvée.",
+      "fix": "Ne le montrer qu'à ceux qui ont choisi « Une histoire / Les deux » (à confirmer à l'écran)."
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Genre + pronom : rapide.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Clair ; à masquer pour « Nouveaux potes ».",
+      "fix": "—"
+    },
+    "V5-Craft": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Une décision, 5 espèces : réglé.",
+      "fix": "Bouton secondaire « Partager mon pet » (carte 9:16)."
+    },
+    "V5-Vie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "3 questions = 3 écrans ; seule « Tu sors plutôt… » sert la composition.",
+      "fix": "Garder 1 question avant Trouvée ; les 2 autres dans le chat de groupe."
+    },
+    "V5-Dispos": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Utile au taux de placement.",
+      "fix": "—"
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "1,5 s + CTA « Créer mon compte » : réglé. Toujours aucun export vidéo de l'éclosion.",
+      "fix": "Bouton « Filmer » 6 s, filigrane."
+    },
+    "V5-Compte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "SSO 1 tap : bon.",
+      "fix": "—"
+    },
+    "V5-Compte-age": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Écran 15 ; 3 réglages dont un curseur. CTA « Voir ma sortie » = bonne promesse.",
+      "fix": "Âge du groupe par défaut sans le montrer ici."
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Partager » présent : réglé. CTA « Voir la sortie » noir sur fond corail, 330 px vides au-dessus.",
+      "fix": "Remonter les CTA ; garder Partager à côté."
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Prix futur annoncé, team visible : réglé.",
+      "fix": "Ligne « Tom vient avec toi · + 1 place » cliquable vers Partage-invitation."
+    },
+    "V5-Verif": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 1 min » annoncé, selfie + 1 à 3 photos : KPI n°1 du funnel ; aucun indicateur que la place est tenue pendant ce temps.",
+      "fix": "« Ta place est gardée 30 min »."
+    },
+    "V5-Notifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ta place est réservée » en tête : bon renforcement.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Bandeau « Tu y vas » : réglé. Pas de « Dis-le à un·e ami·e » ici (la team est une ligne parmi 3).",
+      "fix": "Ligne team avec « + 1 place » explicite."
+    },
+    "V5-Team": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Leur 1re sortie est offerte aussi » : le bon argument. L'invité ne voit nulle part ce qu'il recevra (pas d'écran d'arrivée par lien).",
+      "fix": "Dessiner l'écran d'arrivée de l'invité (tour 1 : V5-Invite, disparu)."
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Team remontée en 2e position, salon réduit : réglé.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Mode discret ON par défaut = aucun pet ni prénom à l'écran d'accueil pour tous : le produit perd son visage partageable.",
+      "fix": "Discret proposé, OFF par défaut sauf choix « discrétion »."
+    },
+    "V5-Pause": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Évite la désinstallation : bon pour la rétention.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Pas de boucle bande → +1 visible (« Inviter Tom à jeudi »).",
+      "fix": "Raccourci « + Jeudi » sur la ligne bande."
+    },
+    "V5-Groupe": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Brise-glace « 3 mots » : rétention avant J.",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien côté growth.",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Ancien 4/10 réglé : raison + « Oui, le 19 ».",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Ton neutre + alternative : réglé.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Aucun bouton Inviter culpabilisant » : mais aucun partage non plus. Le moteur hors zone (concept B.6) n'a ici que la ligne team.",
+      "fix": "Bouton secondaire « Partager la jauge » (Partage-ville), sans culpabilité."
+    },
+    "V5-Revelation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Moment fort et privé, rien de partageable (normal).",
+      "fix": "Carte « Demain, 4 visages » sans visages."
+    },
+    "V5-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Boucle d'acquisition déguisée en sécurité : bonne.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Encart « une sortie à 5 près de chez toi… Voir › » : réglé.",
+      "fix": "Router vers Ville avec quartier pré-saisi."
+    },
+    "W-Ange-alerte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Aucun marketing : juste.",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien côté growth.",
+      "fix": "—"
+    },
+    "V5-Checkin-code": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Repli fiable : protège le taux de check-in, donc la fiabilité et la rétention.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Aucun moment capturable (5 prénoms à l'écran).",
+      "fix": "Carte « À la table · 5/5 » en pets."
+    },
+    "V5-Souvenir": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Partager la soirée » en CTA principal : ma demande n°1, réglée.",
+      "fix": "—"
+    },
+    "V5-Partage": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Carte propre, lien quartier, « Citer le lieu » ; « avec 4 inconnu·es » est faux (Tom) : premier commentaire garanti.",
+      "fix": "« 3 inconnu·es et un pote »."
+    },
+    "V5-Apres": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien à partager (secret) : juste.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Un CTA + « Partager · pets seulement » : réglé.",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Voir le jeu. 19 nov. » relance tout de suite : bon.",
+      "fix": "—"
+    },
+    "V5-Partage-accords": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« +1 DANS MA BANDE. +1 DUO. » avec 2 pets dont celui de Sarah : identifiable par le groupe (vote révélé), donc à retirer, et c'est la carte la plus virale.",
+      "fix": "Silhouettes génériques ; la garder."
+    },
+    "V5-Bande": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« + Jeudi » par ligne, « Sortie de bande » : réglé.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Ressemble à toutes les apps de dating ; aucune boucle.",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Pas de boucle.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Privé.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Pas de boucle.",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Pas de boucle.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Pas de boucle.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Potentiel TikTok non exploité (carte des deux pets avec double accord).",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Promesse juste (« la fiabilité ne compte que les sorties ») : réglé.",
+      "fix": "—"
+    },
+    "V5-Partage-semaine": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« JEUDI, JE SORS AVEC 4 INCONNU·ES » faux (3 + Tom).",
+      "fix": "Phrase calculée."
+    },
+    "V5-Partage-invitation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« VIENS JEUDI AVEC MOI ET TOM » : bon objet de désir ; la Story publique donne la place au premier venu, souvent hors quartier : CAC gaspillé et place perdue.",
+      "fix": "Message seulement (pas Story) pour une place nominative."
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Aide-nous à ouvrir Saint-Denis » + lien team : réglé. Accessible seulement depuis la team.",
+      "fix": "Entrée depuis Ville-fermée et Attente."
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "NGL retiré : réglé.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Fin « Et toi, tu sors où ? » → Ville : réglé (qualifie le quartier).",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Mes cartes à partager » : un point d'entrée unique, réglé.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Partager » en haut doublonne le Profil.",
+      "fix": "Un seul point d'entrée."
+    },
+    "V5-Tarifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Prix montrables en vidéo.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Rentable à partir de 3 sorties par mois » sur 4 jeudis possibles : argument faible.",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Friction minimale (Face ID).",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Upsell Blowy+ discret et chiffré.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Aucun « pourquoi » (« pas assez de sorties ») qui alimente la carte de demande.",
+      "fix": "1 question facultative."
+    },
+    "V5-Chargement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Place gardée 30 min : limite la perte.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Réessai guidé : réduit la chute au selfie.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ajouter à mon agenda » rattrape le refus : malin.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Renvoie vers la proposition.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Couper le funnel à ≤ 9 écrans avant Trouvée : 1 seule question Vie, sous-choix d'intention après la 1re sortie, âge du groupe implicite ; garder Ville, Rencontrer, Intention, Consentement, Toi, Toi-plus, Craft, Dispos, Compte.",
+    "Remettre un partage (non culpabilisant) sur Attente et Ville-fermée vers Partage-ville, montrer quel contact est capturé à l'inscription en 1 tap, et dessiner l'écran d'arrivée d'un invité de team.",
+    "Corriger les phrases des cartes (« 3 inconnu·es et un pote ») et rendre la carte d'accords anonyme (silhouettes), sinon elle sera retirée et la meilleure boucle avec."
+  ],
+  "tenIf": "Je mets 10 si un test de 4 semaines dans le 11e mesure le funnel montré (Welcome → 1re sortie vécue ≥ 25 %, chute au selfie < 30 %), si chaque sortie vécue produit au moins 0,3 inscrit vérifié dans le même quartier (team + cartes + ange gardien, tracké par source), et si une ville fermée atteint une sortie d'amorçage en moins de 3 semaines grâce aux teams."
+}

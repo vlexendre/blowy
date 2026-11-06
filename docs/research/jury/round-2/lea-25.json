@@ -1,0 +1,472 @@
+{
+  "member": "lea-25",
+  "global": 8,
+  "criteria": {
+    "comprehension": 9,
+    "cognitive": 7,
+    "desire": 8,
+    "meet": 8,
+    "safety": 9,
+    "virality": 7,
+    "money": 8,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Les villes ouvertes sont reléguées dans le pied de page en 12 px gris, sous « J'ai déjà un compte »",
+      "fix": "Monter « Ouvert : Paris 11e, Lyon 4e » sous le sous-titre, en 14 px"
+    },
+    "V5-Ville": {
+      "score": 9,
+      "blocking": false,
+      "issue": "La puce « + Paris 3e » n'a aucun statut alors que 10e et 20e disent « liste d'attente »",
+      "fix": "Même statut sur chaque puce de quartier"
+    },
+    "V5-Ville-fermee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« 87 / 120 personnes vérifiées » ne dit rien de l'équilibre : 120 hommes ouvrent une ville où je serais seule",
+      "fix": "Seuil écrit « dont au moins 40 % de femmes »"
+    },
+    "V5-Team-amorcage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« avec une autre team de Saint-Denis » : et s'il n'y en a pas, la sortie a-t-elle lieu ?",
+      "fix": "Écrire le plan B (« sinon, 2 personnes vérifiées de la liste complètent le groupe »)"
+    },
+    "V5-Rencontrer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Trois fois le même raton en vignette : rien ne distingue visuellement groupe, duo et les deux",
+      "fix": "Une illustration propre à chaque format (table de 5, deux tasses, les deux)"
+    },
+    "V5-Intention": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien pour dire qu'en amitié je veux surtout rencontrer des filles, ma demande du tour 1",
+      "fix": "Sous « Nouveaux potes » : « plutôt des femmes / peu importe », pris en compte dans la composition"
+    },
+    "V5-Intention-rempli": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Sérieuse » et « On verra » sont là, mais rien ne dit si « sérieuse » pèse sur les groupes ou seulement sur les duos",
+      "fix": "Une ligne « sert aux duos et à l'âge de ton groupe »"
+    },
+    "V5-Consentement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« J'accepte » en noir plein, « Amitié seule » en blanc : le choix n'est pas à égalité visuelle",
+      "fix": "Deux boutons de même poids"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Pastille « 4/8 » identique à Consentement et Toi-plus : je ne sais pas où j'en suis",
+      "fix": "Une étape par écran ou des sous-étapes « 4a/4b/4c »"
+    },
+    "V5-Toi-plus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Mon reproche du tour 1 est réglé (« tout le monde voit les mêmes 3 boutons »). Seule la pastille « 4/8 » en double",
+      "fix": "Même correction que Toi"
+    },
+    "V5-Craft": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Un écran entier pour choisir un animal avant même de savoir s'il y a une sortie pour moi",
+      "fix": "Le déplacer après Trouvée, ou le fusionner avec l'Éclosion"
+    },
+    "V5-Vie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "En-tête « Ta vision · 1 sur 3 » sur une question d'activités ; « Jusqu'à 3 » mais bouton « Choisis une réponse »",
+      "fix": "En-tête « Tes sorties » ; bouton « Choisis 1 à 3 activités »"
+    },
+    "V5-Dispos": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Les créneaux sont clairs ; rien ne dit combien de personnes sont dispo sur chacun dans le 11e",
+      "fix": "Indice « souvent complet / plus de chances » par créneau"
+    },
+    "V5-Eclosion": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Toujours un écran plein de mascotte au milieu de l'inscription, même passable",
+      "fix": "Le fusionner avec Craft ou le jouer en arrière-plan de Compte"
+    },
+    "V5-Compte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien à redire sur le fond ; c'est le 13e écran avant de voir une sortie",
+      "fix": "Raccourcir l'onboarding en amont"
+    },
+    "V5-Compte-age": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Tranche « 26–30 ans » ici, mais 24–28, 28–32 et 31–35 ailleurs : des tranches glissantes qui se recoupent trahissent l'âge",
+      "fix": "Tranches fixes (18–21, 22–25, 26–30, 31–35…) partout"
+    },
+    "V5-Trouvee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« 2 femmes, 3 hommes » est affiché, mais c'est un hasard de la semaine, pas une règle",
+      "fix": "Garantie écrite « au moins 2 femmes et 2 hommes par groupe » ou préférence respectée"
+    },
+    "V5-Sortie": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« sauf pour ta sécurité » : je ne sais pas comment le prouver ni à qui le dire",
+      "fix": "Lien « Annuler pour ma sécurité » vers Signaler, sans justificatif exigé"
+    },
+    "V5-Verif": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Je ne vois pas ce que mon groupe verra de moi la veille",
+      "fix": "Aperçu « voilà ta carte pour le groupe » sous les photos"
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Mode discret activé, exemples neutres « Rappel » : exactement ma demande",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 9,
+      "blocking": false,
+      "issue": "L'ange gardien est enfin une ligne ; « Ajouter à mon agenda · sans le mot blowy » ne montre pas le titre réel de l'événement",
+      "fix": "Afficher le titre (« Jeux · 11e »)"
+    },
+    "V5-Team": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Nino garde l'équilibre du groupe » : quel équilibre, si je viens avec deux copines ?",
+      "fix": "Règle chiffrée (« jamais plus de 3 du même genre »)"
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Le mode discret est activé par défaut (Notifs, Confidentialité), donc cet Accueil avec Nino et prénoms n'existe pas pour moi : la maquette contredit le réglage",
+      "fix": "Montrer l'Accueil discret comme état par défaut de la démo"
+    },
+    "V5-Accueil-discret": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Agenda », aucun pet ni prénom : bien. L'onglet « Bande » reste dans la barre",
+      "fix": "Onglet renommé « Proches » en mode discret"
+    },
+    "V5-Pause": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair, rien n'est perdu. Rien ne dit qui voit que je suis en pause (ma bande ?)",
+      "fix": "« Personne ne voit que tu es en pause »"
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Compteurs justes (3 + 1 = 4). « Visages et lieu mer. 11 nov. 18 h » en pastille verte vive, plus visible que le message",
+      "fix": "Pastille en gris"
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Mon BLOQUANT du tour 1 est réglé (menu « … », messages modérés). Le message d'Alex « Code Names, si on est 5 ! » alors qu'on est 5",
+      "fix": "Texte de démo juste"
+    },
+    "V5-Groupe-menu": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Signaler, Bloquer, Quitter, Couper, anonymat, < 1 h : tout y est",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Réglé : raison exacte, aucun groupe affiché, « Oui, le 19 ». L'heure de composition (lundi 21 h) n'était dite nulle part avant",
+      "fix": "L'écrire sur Trouvée (« réponds avant lundi 21 h »)"
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Réglé. « Pas assez de confirmations » : combien de temps avant ai-je été prévenue ?",
+      "fix": "Heure d'annulation affichée"
+    },
+    "V5-Attente": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Honnête (lieux signés, date) ; même manque d'équilibre femmes/hommes dans la jauge",
+      "fix": "Ligne « dont 46 % de femmes »"
+    },
+    "V5-Revelation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Titre « visages vérifiés » mais 4 initiales (L, M, S, T) sur dégradé ; Tom « 31–35 ans » contre « 26–31 ans » sur Trouvée",
+      "fix": "Vraies photos (ou floutées) dans la maquette ; tranches fixes cohérentes avec la composition"
+    },
+    "V5-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Choisi à chaque sortie » : je dois refaire le choix chaque jeudi",
+      "fix": "Raccourci « Comme la dernière fois : Sam », jamais présélectionné"
+    },
+    "W-Ange": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Je n'arrive pas à joindre Alex », expiration, marge de 30 min : tout ce que je demandais",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Position au moment de l'alerte, rappel sous 5 min, texte à lire au 17 : réglé",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Bouton sans pet, « Besoin d'aide » discret, drapeau Signaler : réglé",
+      "fix": "—"
+    },
+    "V5-Checkin-code": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Bon repli. « Demande au comptoir la table Blowy » : le nom de l'appli dit au barman",
+      "fix": "« Demande la table réservée au nom du chevalet orange »"
+    },
+    "V5-Checkin-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Table « Blowy », « Je pars, mal à l'aise » : bien. Avatars encore en initiales",
+      "fix": "Vrais visages à la table"
+    },
+    "V5-Souvenir": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« SORTIE VÉCUE », partage en premier : réglé. Le raton géant reste le seul visuel de ma vraie soirée",
+      "fix": "Un visuel du lieu ou de la table plutôt que la mascotte seule"
+    },
+    "V5-Partage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Citer le lieu » et le logo sont des options, mais rien n'indique l'état par défaut ; « jeudi soir » + lieu = mes abonnés savent où je suis chaque semaine",
+      "fix": "Lieu et logo désactivés par défaut, état visible"
+    },
+    "V5-Apres": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Mon BLOQUANT du tour 1 est réglé. « Non » en noir plein présélectionné sur chaque ligne : l'écran affiche Non / Non / Non avant que j'aie choisi",
+      "fix": "État neutre « pas de réponse = non » en gris"
+    },
+    "V5-Apres-resultats": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Seulement mes accords, un CTA, « Tout le reste reste secret » : réglé",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ton juste. « Jamais les mêmes personnes » : même pas Sarah si je l'ai votée ?",
+      "fix": "« jamais les mêmes inconnu·es »"
+    },
+    "V5-Partage-accords": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« +1 DANS MA BANDE. +1 DUO. » en story : j'annonce que je date quelqu'un, et Léa du groupe se reconnaît",
+      "fix": "Retirer « duo » du modèle ou option « bande seulement » par défaut"
+    },
+    "V5-Bande": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Compteur juste (2), pets distincts, « + Jeudi » : réglé. La rue a disparu, ce n'est plus qu'un décor",
+      "fix": "—, ou une rue qui sert (inviter chez soi)"
+    },
+    "V5-Duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Plus de %, un seul « Ouvrir », « projet compatible » : réglé. « Proposé à vous deux » sur Biscuit mais pas sur Caramel",
+      "fix": "Même ligne d'état sur chaque carte"
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Un rendez-vous… avant le mer. 18 nov. » : et après ? Mon reproche du tour 1 reste",
+      "fix": "« Après le 18, le duo reste ouvert, sans rendez-vous proposé »"
+    },
+    "V5-Lien-debloque": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mes deux vocaux : réglé. Mais les « visages » sont des lettres J et A",
+      "fix": "Photos réelles dans la maquette"
+    },
+    "V5-RdvDuo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Créneau après les visages, chacun sa boisson, Jade accepte, ange facultatif : réglé",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« L'utiliser » pré-remplit : réglé. Le bandeau « Proposer un rendez-vous » violet vif occupe le haut en permanence",
+      "fix": "Bandeau repliable"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Une expo, pas le café de la sortie : réglé",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Désactivé, activé des deux côtés, jamais envoyé : réglé. Je l'aurais supprimé",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Messages humains, rien de présélectionné, « Partir sans message » si insécurité : réglé",
+      "fix": "—"
+    },
+    "V5-Partage-semaine": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« JEUDI, JE SORS AVEC 4 INCONNU·ES » en public : j'annonce le jour où je serai avec des inconnus",
+      "fix": "Version sans jour (« Cette semaine »)"
+    },
+    "V5-Partage-invitation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Filtre « Sans visages ni prénoms » allumé, et le titre dit « AVEC MOI ET TOM »",
+      "fix": "Retirer le prénom ou éteindre le filtre ; une carte ne doit jamais contredire son filtre"
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Pas ma ville ; carte claire et honnête. « on sort avant » flou",
+      "fix": "« une team de 3 sort avant mars »"
+    },
+    "V5-Story": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Plus de NGL, sans logo possible, 18+ : réglé",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Bouton désactivé lisible, « Voir ma ville » : réglé. 9 mots seulement",
+      "fix": "Ajouter 3 ou 4 mots"
+    },
+    "V5-Profil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mes photos toujours invisibles pour moi (avatar « A »), alors que le groupe les verra",
+      "fix": "Mes 1 à 3 photos, visibles par moi seule"
+    },
+    "V5-Fiche": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Plus de barre, accessoires gagnés, fiabilité privée : réglé. Le bouton « Partager » en haut : partager quoi ?",
+      "fix": "Libellé « Partager Nino »"
+    },
+    "V5-Tarifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Honnête. « Je pars, mal à l'aise · remboursé·e » (Check-in) n'est pas cité dans les tarifs",
+      "fix": "Ligne « remboursée si tu pars pour ta sécurité »"
+    },
+    "V5-Abonnement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Statut cohérent (Gratuit, 1 offerte · 1 payée) : réglé. Rien à reprocher hors l'absence de prix annuel",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Feuille Apple Pay claire, 4,99 €. Le titre « JEUDI 19 » derrière le voile gris ne dit pas que c'est un paiement",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair ; la relance Blowy+ juste après le paiement est douce mais inutile",
+      "fix": "La garder pour la 2e place payée du mois"
+    },
+    "V5-Reglages": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Aide · réponse sous 24 h » à côté de la promesse « < 1 h les soirs de sortie »",
+      "fix": "« Aide : 24 h · sécurité : < 1 h les soirs de sortie »"
+    },
+    "V5-Confidentialite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Jamais déductible » est faux dans la voie Duo : une proposition « plus » de même genre le révèle",
+      "fix": "Écrire l'exception (« sauf à la personne d'un duo que vous avez accepté »)"
+    },
+    "V5-Signaler": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Motifs IRL en tête, 17 / 112 / 3919, rappel < 1 h, rien de présélectionné : tout ce que je demandais",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Abonnement App Store expliqué honnêtement, chiffres justes : réglé",
+      "fix": "—"
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair. Squelettes vides sans indication de durée réelle",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Ce qui est enregistré, code hors ligne, 17 / 112 : parfait",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rien débité, place gardée 30 min : clair",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Conseils concrets, pièce d'identité regardée puis supprimée",
+      "fix": "Durée de conservation de la pièce écrite"
+    },
+    "V5-Notifs-refus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Honnête ; « pense à ouvrir blowy. ce jour-là » : mieux vaut un rappel agenda proposé en premier",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Après un refus pour moins de 18 ans, le bouton principal est « Corriger ma date » : il invite à mentir",
+      "fix": "CTA principal « Fermer » ; correction possible une seule fois, signalée à la vérification"
+    },
+    "V5-Chats-vide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair, une action",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Garantir la composition : une préférence « plutôt des femmes » en amitié et une règle écrite « au moins 2 femmes et 2 hommes par groupe », visible sur Trouvée avant « Je viens ».",
+    "Montrer de vrais visages (photos, éventuellement floutées) dans Révélation, Check-in et Les visages, et passer à des tranches d'âge fixes partout (plus de 24–28 / 26–30 / 28–32 qui se recoupent).",
+    "Des cartes de partage qui tiennent leurs promesses : aucun prénom sous le filtre « Sans visages ni prénoms » (Invitation), pas de « +1 DUO » par défaut, lieu et logo éteints par défaut."
+  ],
+  "tenIf": "Je mets 10 si je peux exiger au moins deux femmes dans mon groupe et que Trouvée me le garantit avant « Je viens », si la Révélation montre de vraies photos avec des tranches d'âge fixes, et si aucune carte de partage ne contredit son filtre. Le reste de ma condition du tour 1 est rempli : 2 sorties en 2 semaines dans le 11e, un « plus » qui ne révèle rien et ne coûte jamais l'amitié, Signaler partout, jamais « Nino » au barman, jamais d'œuf envoyé."
+}

@@ -1,0 +1,472 @@
+{
+  "member": "trust-safety",
+  "global": 6,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 8,
+    "desire": 7,
+    "meet": 7,
+    "safety": 5,
+    "virality": 6,
+    "money": 8,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« 18+ · selfie vérifié pour tous » et « Ce que tu cherches reste secret » : réglé.",
+      "fix": "—"
+    },
+    "V5-Ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« On ne demande jamais ta position » : réglé ; « près de chez toi » subsiste sur Welcome et W-Ange.",
+      "fix": "« dans ton quartier » partout."
+    },
+    "V5-Ville-fermee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Compteur agrégé, aucune donnée individuelle. Avant toute vérification d'âge.",
+      "fix": "Demander la date de naissance avant toute inscription (même liste d'attente)."
+    },
+    "V5-Team-amorcage": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Une team de 3 amis + une autre team de 2 = deux blocs qui se connaissent ; « Yacine · vérifié » affiché au créateur : bien. Aucune règle sur qui compose l'autre team (âges, genres).",
+      "fix": "Afficher la composition anonyme de la sortie d'amorçage comme pour une sortie normale."
+    },
+    "V5-Rencontrer": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de sensible ; Duo désactivé par défaut pour « groupe ».",
+      "fix": "—"
+    },
+    "V5-Intention": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien de coché, « Personne ne le voit » : réglé.",
+      "fix": "—"
+    },
+    "V5-Intention-rempli": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Sous-choix « sérieuse / on verra » et « enfants » (projet familial, donnée intime) posés AVANT l'écran de consentement art. 9 et AVANT la date de naissance.",
+      "fix": "Ordre : date de naissance → Consentement → sous-choix."
+    },
+    "V5-Consentement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bon texte, alternative « Amitié seule » à égalité ; arrive après des réponses qu'il prétend précéder.",
+      "fix": "Le placer avant Intention-rempli."
+    },
+    "V5-Toi": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Genre sans présélection, « Je préfère ne pas dire » : réglé. « Un autre mot… » = champ libre affiché ? Non (« Personne ne voit ta réponse ») : OK.",
+      "fix": "Modération du champ libre côté serveur."
+    },
+    "V5-Toi-plus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ancien bloquant levé : « tout le monde voit les mêmes 3 boutons … compatibilité en silence ».",
+      "fix": "—"
+    },
+    "V5-Craft": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Tu ne dis jamais son nom à voix haute » : bien vu.",
+      "fix": "—"
+    },
+    "V5-Vie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Activités : rien de sensible.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« garde alternée » : donnée familiale indirecte, mais non affichée.",
+      "fix": "Ne jamais l'exposer au groupe."
+    },
+    "V5-Eclosion": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« L'âge est vérifié au selfie, avant ta 1re sortie » : réglé.",
+      "fix": "—"
+    },
+    "V5-Compte-age": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Date de naissance à la 8e et dernière étape : un·e mineur·e a déjà fourni des données art. 9 ; tranche montrée « 26–30 » = âge ± 2 (centrée), donc l'âge exact se déduit.",
+      "fix": "Date de naissance en 1re question ; tranches sur grille fixe (25–29, 30–34)."
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Composition anonyme sans prénom : réglé. « 26–31 ans » alors que Tom est 31–35 à la Révélation.",
+      "fix": "Composition calculée sur les mêmes tranches."
+    },
+    "V5-Sortie": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Mal à l'aise sur place ? Tu pars quand tu veux, sans effet » et « sauf pour ta sécurité » : réglé ; menu « … » = Signaler.",
+      "fix": "—"
+    },
+    "V5-Verif": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Vivacité, 18+, ressemblance, conservation 30 j : réglé.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Mode discret ON par défaut, exemples neutres : réglé.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Ange gardien proposé en ligne, facultatif ; « Ajouter à mon agenda sans le mot blowy » : bon réflexe anti-outing.",
+      "fix": "—"
+    },
+    "V5-Team": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Un ami de team contourne la composition (âge du groupe secret, genres) : rien ne dit qu'il est soumis aux mêmes filtres.",
+      "fix": "« Ton ami·e passe le selfie et entre dans la tranche d'âge du groupe »."
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Hors mode discret, « Jeudi, on joue. » et Nino : acceptable puisque le discret est ON par défaut.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aucun pet ni prénom, icône Agenda : réglé.",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Rien n'est public » ; aperçus masqués par défaut dans Confidentialité : réglé.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Messages modérés · pas de numéro ni de réseau avant jeudi » + menu : réglé.",
+      "fix": "Préciser ce qui se passe après jeudi (filtre levé seulement entre accords mutuels)."
+    },
+    "V5-Groupe-menu": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Signaler, Bloquer, Quitter, Couper : réglé ; « Personne ne sait qui a signalé ».",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Aucun groupe affiché : réglé.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Groupe masqué, pas de canal d'au revoir : réglé.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« tu en fais partie » des « personnes vérifiées » sans selfie fait : promesse inexacte.",
+      "fix": "« inscrit·e »."
+    },
+    "V5-Revelation": {
+      "score": 4,
+      "blocking": true,
+      "issue": "Prénom + visage + adresse exacte 25 h 30 avant (j'avais demandé ≤ 3 h) ; tranches centrées qui donnent l'âge (« Léa · 26–30 » = 28) ; « Tom · 31–35 » hors de « 26–31 » ; aucun filigrane nominatif sur les visages.",
+      "fix": "Lieu à J-1 18 h, visages à startsAt − 3 h ; grille d'âge fixe ; filigrane du prénom du regardeur sur chaque visage."
+    },
+    "V5-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ancien point coercitif réglé : facultatif, par sortie, retirable sans prévenir.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ancien bloquant levé : jeton 16 caractères, expiration, « Ce lien ne m'est pas destiné ». Le prénom « Alex » et l'adresse restent lisibles par qui reçoit le lien transféré.",
+      "fix": "Vérifier que « Ce lien ne m'est pas destiné » révoque pour tous."
+    },
+    "W-Ange-alerte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Position au moment de l'alerte, texte pour le 17, rappel < 5 min, le personnel n'intervient pas : réglé.",
+      "fix": "Ajouter le 114 (SMS) pour les proches sourds."
+    },
+    "V5-Checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Position une fois, non stockée ; « Besoin d'aide · prévient Sam et l'équipe, sans bruit ». Si aucun ange choisi, « prévient Sam » est faux.",
+      "fix": "Libellé dynamique (« prévient l'équipe » sans ange)."
+    },
+    "V5-Checkin-code": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Repli par code, 5 essais : réglé.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Alerte en appui long 2 s séparée du faux appel ; « Je pars, mal à l'aise · remboursé·e, sans effet » : réglé.",
+      "fix": "—"
+    },
+    "V5-Souvenir": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« La carte ne montre ni visages ni prénoms ».",
+      "fix": "—"
+    },
+    "V5-Partage": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Citer le lieu » (option) le soir même = position en direct d'un groupe identifiable par ses pets.",
+      "fix": "« Citer le lieu » disponible seulement après endsAt + 12 h."
+    },
+    "V5-Apres": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Ancien bloquant levé : boutons identiques, « Un problème ? » par ligne, non par défaut.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Seulement ses accords ; « Partager · pets seulement » mène à une carte qui ne protège pas (voir ci-dessous).",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Neutre, rien sur les autres.",
+      "fix": "—"
+    },
+    "V5-Partage-accords": {
+      "score": 3,
+      "blocking": true,
+      "issue": "« +1 DANS MA BANDE. +1 DUO. » avec la pigeonne Pia : tout membre du groupe sait que Pia = Sarah, donc que Sarah a voté ami·e ou plus pour Alex ; Léa (seul autre « oui » possible) sait que le duo est elle. La confidentialité du vote (décision A) fuit par le partage.",
+      "fix": "Pets génériques (silhouettes, jamais l'espèce réelle), aucun chiffre détaillé avant que les deux personnes concernées aient consenti au partage, ou carte sans pets."
+    },
+    "V5-Bande": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Menu par ligne « Partir proprement, bloquer » : réglé.",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« avec J. · 24–28 ans » : tranche centrée = âge exact (26) avant tout déblocage.",
+      "fix": "Grille fixe."
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Drapeau Signaler en en-tête, « Partir proprement » : réglé. Pas de bandeau « pas de numéro ni de réseau » comme dans Groupe.",
+      "fix": "Même bandeau de modération."
+    },
+    "V5-Lien-debloque": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Vocal facultatif, transcription, lecture dans l'app seulement : réglé.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Après déblocage, lieu public, ange facultatif, check-in : réglé. Ange pré-sélectionné sur « Sam ».",
+      "fix": "Aucune présélection (cohérent avec « jamais par défaut »)."
+    },
+    "V5-Chat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Signaler visible, « L'utiliser » pré-remplit au lieu d'envoyer : réglé.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Lieu différent de la sortie : réglé. Même présélection de Sam.",
+      "fix": "Idem."
+    },
+    "V5-Oeuf": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Double activation indépendante, « Ne jamais me le proposer » : réglé.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Partir sans message · si tu ne te sens pas en sécurité » : réglé.",
+      "fix": "—"
+    },
+    "V5-Partage-semaine": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Annonce publique « jeudi, je sors » + pets du groupe + lien du quartier : calendrier public. « 4 inconnu·es » faux (Tom).",
+      "fix": "Ne pas citer le jour avant la sortie, ou différer la publication."
+    },
+    "V5-Partage-invitation": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« VIENS JEUDI AVEC MOI ET TOM » sous « Sans visages ni prénoms » activé : prénom d'un tiers sans son accord ; en Story publique, la place de team va au premier inconnu qui clique, hors des filtres de composition.",
+      "fix": "Pas d'option Story pour une invitation de team ; lien nominatif à usage unique ; retirer le prénom de Tom."
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Agrégé, sans données personnelles.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Filiation NGL retirée, 18+, désactivable : réglé.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 18 ans et plus » est déclaratif (chip) ; URL blowy.app/alex = prénom, énumérable et collision.",
+      "fix": "Slug aléatoire ; case « J'ai 18 ans ou plus » avant les chips."
+    },
+    "V5-Profil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ton groupe voit : prénom, pronom, tranche d'âge… » : réglé.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Fiabilité privée, retrait sécurité jamais compté : réglé.",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rien ne s'achète en visibilité.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Offre de rétention supprimée : réglé.",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Aide · réponse sous 24 h » à côté d'un SLA de 1 h ailleurs : préciser que l'urgence passe par Signaler.",
+      "fix": "« Aide (non urgent) · 24 h »."
+    },
+    "V5-Confidentialite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Qui voit quoi, durées, retrait art. 9 : réglé. « ton âge exact » listé sous « Personne » alors que la tranche centrée le donne.",
+      "fix": "Grille fixe."
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Ancien bloquant levé. Manque 114 ; « Bloquer aussi » pré-coché sans explication.",
+      "fix": "Ajouter 114 ; « coché par défaut pour ta sécurité »."
+    },
+    "V5-Supprimer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Rétention légale des signalements : réglé.",
+      "fix": "—"
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« En danger : 17 ou 112 » même hors ligne : bien.",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Pièce regardée par un humain puis supprimée : réglé.",
+      "fix": "Durée de suppression chiffrée."
+    },
+    "V5-Notifs-refus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Arrive après 13 écrans de données (dont art. 9) ; CTA principal « Corriger ma date » invite à mentir.",
+      "fix": "Date en 1re étape ; CTA « Fermer », « Je me suis trompé·e de date » en lien secondaire."
+    },
+    "V5-Chats-vide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Grille d'âge fixe (25–29, 30–34…) partout, et date de naissance en 1re question de l'onboarding, avant toute réponse art. 9 ; Consentement avant les sous-choix d'intention.",
+    "Cartes de partage vraiment anonymes : jamais les pets réels des autres (silhouettes), jamais de prénom de tiers, pas de Story publique pour une place de team, « citer le lieu » seulement après la sortie.",
+    "Visages à startsAt − 3 h avec filigrane du prénom de celui qui regarde ; le lieu peut rester à J-1 18 h. Réconcilier spec §2.5/§3 et concept-v5.1 E.16 dans un seul document."
+  ],
+  "tenIf": "Je mets 10 si un audit croisé des 75 écrans contre « Qui voit quoi » (Confidentialité) ne trouve aucune donnée déductible au-delà de la promesse (âge exact, vote d'un tiers, prénom d'un tiers), si la date de naissance précède toute donnée sensible, si les visages arrivent au plus 3 h avant avec filigrane, et si spec et concept disent la même chose sur `photoRevealAt`."
+}

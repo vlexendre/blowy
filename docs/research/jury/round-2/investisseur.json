@@ -1,0 +1,472 @@
+{
+  "member": "investisseur",
+  "global": 6,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 6,
+    "desire": 7,
+    "meet": 8,
+    "safety": 8,
+    "virality": 7,
+    "money": 5,
+    "visual": 8
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Positionnement clair, villes ouvertes assumées (discipline de densité).",
+      "fix": "A/B store mascotte vs vraies photos de lieux."
+    },
+    "V5-Ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Saisie libre = carte de chaleur de la demande (ma demande du tour 1) ; quartiers acceptables = liquidité.",
+      "fix": "—"
+    },
+    "V5-Ville-fermee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Progression réelle + date : bon outil d'ouverture. Où est capturé le contact pour « on t'écrit une fois » ?",
+      "fix": "Montrer le contact demandé."
+    },
+    "V5-Team-amorcage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Amorçage par teams de 3 : CAC quasi nul, pas besoin du seuil de 120. Risque : groupes de 2 blocs d'amis, faible taux d'accord.",
+      "fix": "Mesurer accords/présent en amorçage vs sorties normales."
+    },
+    "V5-Rencontrer": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Le Duo à égalité dès l'écran 3 dilue le produit et l'équipe.",
+      "fix": "Duo après la 1re sortie vécue, ou hors MVP."
+    },
+    "V5-Intention": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Double intention = TAM élargi.",
+      "fix": "Mesurer la part « plus » par genre dès J1."
+    },
+    "V5-Intention-rempli": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Projet compatible » (sérieuse, enfants) = signal de matching utile pour le Duo, que je voudrais hors MVP.",
+      "fix": "—"
+    },
+    "V5-Consentement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Conformité art. 9 : un actif de due diligence.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Données d'équilibre de genre : nécessaires.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Craft": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Curseurs retirés : onboarding plus court sur ce point.",
+      "fix": "—"
+    },
+    "V5-Vie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Tu sors plutôt… » = signal prédictif (ma demande) ; 3 écrans au lieu d'1.",
+      "fix": "1 question avant Trouvée."
+    },
+    "V5-Dispos": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Créneaux cochés = taux de placement mesurable.",
+      "fix": "—"
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Coût de temps sans valeur mesurable, réduit à 1,5 s.",
+      "fix": "—"
+    },
+    "V5-Compte": {
+      "score": 8,
+      "blocking": false,
+      "issue": "SSO : bon pour la conversion.",
+      "fix": "—"
+    },
+    "V5-Compte-age": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Âge du groupe = qualité de composition.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Moment d'activation ; composition anonyme qui rassure.",
+      "fix": "Instrumenter Trouvée → Je viens."
+    },
+    "V5-Sortie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Prix futur annoncé : réglé.",
+      "fix": "—"
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Vérification après engagement : bon compromis ; coût du fournisseur d'estimation d'âge non chiffré.",
+      "fix": "Coût par vérification dans le P&L."
+    },
+    "V5-Notifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Opt-in contextuel.",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Team": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Invitation = acquisition ; « leur 1re sortie est offerte aussi » ne coûte plus de lieu.",
+      "fix": "Plafonner les 1res offertes par inviteur (abus)."
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Pause en 1 tap : rétention sans culpabilité.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Pause vs churn : bonne mécanique.",
+      "fix": "Mesurer le retour après pause."
+    },
+    "V5-Chats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Bande + duos = rétention entre sorties.",
+      "fix": "% de bandes avec ≥ 1 message à J+7."
+    },
+    "V5-Groupe": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Brise-glace : test no-show avec/sans.",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Ancien symptôme de capacité réglé.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Annulation = 1re offerte conservée, coût faible désormais.",
+      "fix": "Taux d'annulation par lieu (KPI ops)."
+    },
+    "V5-Attente": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« La voie Duo, déjà ouverte » dans une ville sans lieux signés : du dating en ligne à Saint-Denis, hors de la thèse.",
+      "fix": "Retirer le Duo des villes fermées."
+    },
+    "V5-Revelation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Visages et lieu la veille + annulation = absence : protège le taux de présence (bon pour la qualité), au prix de 25 h d'exposition (risque réputationnel).",
+      "fix": "—"
+    },
+    "V5-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Différenciation + acquisition gratuite.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Page web sans app : acquisition passive.",
+      "fix": "Instrumenter « Voir › »."
+    },
+    "W-Ange-alerte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Une personne de l'équipe t'appelle sous 5 min » : promesse d'astreinte humaine 7 j/7 sur les créneaux, non budgétée dans le dossier.",
+      "fix": "Coût d'astreinte par ville dans le P&L."
+    },
+    "V5-Checkin": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Présence fiable = base de la fiabilité.",
+      "fix": "—"
+    },
+    "V5-Checkin-code": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Plus de complexité ops chez le lieu : réglé.",
+      "fix": "—"
+    },
+    "V5-Souvenir": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Le pet réduit à un compteur de souvenirs : ma demande.",
+      "fix": "—"
+    },
+    "V5-Partage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Acquisition locale post-sortie.",
+      "fix": "Tracking K par source."
+    },
+    "V5-Apres": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mécanique de valeur, copiable ; la qualité de composition est l'investissement.",
+      "fix": "—"
+    },
+    "V5-Apres-resultats": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Accords par présent = KPI de valeur.",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Rattrapage vers la sortie suivante : bon pour la 2e sortie.",
+      "fix": "—"
+    },
+    "V5-Partage-accords": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Carte la plus virale mais elle révèle le vote de Sarah (pet identifiable) : risque réputationnel et RGPD.",
+      "fix": "Silhouettes génériques."
+    },
+    "V5-Bande": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Sortie de bande : réglé.",
+      "fix": "Mesurer la part des sorties de bande dans la rétention M2."
+    },
+    "V5-Duo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Une app de dating de plus, en frontal avec Hinge ; et c'est désormais l'avantage payant de Blowy+.",
+      "fix": "Hors MVP, ou réservé aux duos nés d'une sortie."
+    },
+    "V5-Lien": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Même remarque.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Même remarque.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Lieu partenaire · table pour 2 réservée · Rendez-vous gratuit » : coût ops sans revenu, lieu non payé.",
+      "fix": "« Lieu suggéré », pas de réservation tant que le Duo n'est pas prouvé."
+    },
+    "V5-Chat": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Duo né d'une sortie : la meilleure conversion romance du produit.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Lieu public sans réservation : zéro coût.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Gadget, zéro investissement : OK tant qu'il reste désactivé par défaut.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Anti-ghosting = marque.",
+      "fix": "—"
+    },
+    "V5-Partage-semaine": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« 4 inconnu·es » faux : premier commentaire négatif garanti.",
+      "fix": "Phrase calculée."
+    },
+    "V5-Partage-invitation": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Lien de place en Story publique : places perdues hors zone.",
+      "fix": "Lien nominatif."
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Outil d'ouverture de ville à coût nul.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Trafic non qualifié géographiquement, mais la page qualifie la ville ensuite.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Et toi, tu sors où ? » → Ville : qualifie le trafic (ma demande).",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Fiabilité privée : moins d'anxiété, même discipline.",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Un seul modèle, honnête. Plafond d'ARPU ~10–20 €/mois ; « Duo sans limite » contredit « Ne s'achète jamais : plus de… ».",
+      "fix": "P&L par ville publié ; un bénéfice Blowy+ qui n'est pas « plus de duos »."
+    },
+    "V5-Abonnement": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« Tu résilies dans les réglages de l'App Store » + « Restaurer mes achats » = achat intégré (15–30 % pour Apple) alors que la spec §6.2 prévoit Stripe Billing hors IAP. Laquelle est vraie ?",
+      "fix": "Trancher et mettre l'écran, la spec et Supprimer d'accord ; chiffrer la commission."
+    },
+    "V5-Paiement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Apple Pay via Stripe pour un service physique (règle 3.1.5(a)) : cohérent avec la spec.",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Upsell chiffré et honnête.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Export sous 48 h, durées : bon pour la due diligence.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Couverture IRL + SLA 1 h : risque réputationnel réduit ; coût humain à budgéter.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Aucun motif de départ collecté (signal de liquidité perdu).",
+      "fix": "1 question facultative."
+    },
+    "V5-Chargement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Place gardée 30 min : protège la conversion.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Repli pièce d'identité : coût humain par cas à chiffrer.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 8,
+      "blocking": false,
+      "issue": "—",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Un P&L par sortie et par ville dans le dossier (place, Stripe ou Apple, 1re offerte, vérification d'âge, astreinte, modération, ops lieu) et un seul canal d'abonnement tranché entre spec et écrans.",
+    "Sortir le Duo du MVP (ou le réserver aux duos nés d'une sortie) et trouver à Blowy+ un bénéfice qui ne soit pas « plus de duos » ; mettre spec-v5 à jour avec concept-v5.1 (4,99 €, 9,99 €, conso non incluse, visages la veille).",
+    "Un contrat lieu minimal (créneaux, plafond, préavis) même non rémunéré, pour que la densité de lieux devienne un actif défendable face à Timeleft et Tinder Events."
+  ],
+  "tenIf": "Je mets 10 si une cohorte de 8 semaines dans un quartier montre ≥ 40 % de 2e sortie payante sous 21 jours, ≥ 25 % d'actifs à M2, ≥ 0,3 inscrit vérifié par sortie vécue, une contribution positive par ville après astreinte et vérification, au moins 5 lieux sous contrat par quartier ouvert, et si l'équipe m'explique pourquoi Timeleft ou Tinder Events ne répliquent pas la densité de quartier et la couche confiance en 6 mois."
+}

@@ -1,0 +1,472 @@
+{
+  "member": "hugo-25",
+  "global": 7,
+  "criteria": {
+    "comprehension": 9,
+    "cognitive": 7,
+    "desire": 7,
+    "meet": 7,
+    "safety": 8,
+    "virality": 6,
+    "money": 9,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Le titre est réglé ; « Lyon 4e » n'est qu'en pied de page gris",
+      "fix": "Ville détectée nulle part, donc la liste des villes ouvertes au-dessus du CTA"
+    },
+    "V5-Ville": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Démo uniquement parisienne : rien ne montre la Guillotière (Lyon 7e) en liste d'attente avec « tu peux venir dans le 4e »",
+      "fix": "Maquette Lyon 7e → 4e avec le temps de trajet (métro D + C)"
+    },
+    "V5-Ville-fermee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Honnête, date et jauge ; ce n'est pas mon cas",
+      "fix": "—"
+    },
+    "V5-Team-amorcage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Bonne idée pour venir avec un pote ; rien ne dit l'équilibre de la sortie d'amorçage si nos deux teams sont des mecs",
+      "fix": "« Nino complète avec des femmes vérifiées si besoin »"
+    },
+    "V5-Rencontrer": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair ; trois ratons en vignette",
+      "fix": "Illustrations sans mascotte"
+    },
+    "V5-Intention": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Secret, rien de coché : réglé",
+      "fix": "—"
+    },
+    "V5-Intention-rempli": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Sérieuse / On verra » : bien pour moi ; rien ne dit si ça pèse sur mes groupes",
+      "fix": "Une ligne d'usage"
+    },
+    "V5-Consentement": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Juste, mais un écran de plus avant ma sortie, et « J'accepte » en noir écrase « Amitié seule »",
+      "fix": "Deux boutons de même poids"
+    },
+    "V5-Toi": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Un autre mot… » en carte : réglé. Pastille « 4/8 » partagée avec deux autres écrans",
+      "fix": "Pastilles distinctes"
+    },
+    "V5-Toi-plus": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Exactement ma correction du tour 1 : mêmes 3 boutons pour tous, compatibilité en silence",
+      "fix": "—"
+    },
+    "V5-Craft": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Je dois choisir un animal en plein écran avant de voir une sortie : le côté gamin d'entrée",
+      "fix": "Pet choisi après Trouvée, ou un choix par défaut sobre"
+    },
+    "V5-Vie": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Bloc et jeux de société présents ; ni salle de sport ni foot ; « Ta vision » pour des activités",
+      "fix": "Ajouter « sport » ; renommer l'en-tête"
+    },
+    "V5-Dispos": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair ; aucun créneau du midi pour qui finit tard",
+      "fix": "—"
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Passable en 1,5 s, mais toujours un raton en plein écran qui « part te trouver des gens »",
+      "fix": "Fondre l'éclosion dans Craft"
+    },
+    "V5-Compte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Apple / Google / téléphone, 18+ vérifié : réglé",
+      "fix": "—"
+    },
+    "V5-Compte-age": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Date de naissance + tranche du groupe : réglé ; je peux viser 23–30",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Avec Tom, on est 3 hommes pour 2 femmes ; « Nino garde l'équilibre » est promis ailleurs mais pas visible ici",
+      "fix": "Règle « 2 à 3 femmes par groupe » écrite sous la composition"
+    },
+    "V5-Sortie": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Déroulé clair, personne n'anime, chacun paie : bien. Le quiz que j'aimais a disparu, rien sur la durée d'une partie",
+      "fix": "« Jeux en équipe, 20 min par partie »"
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "3 conseils : réglé à moitié. Je ne vois toujours pas ce que le groupe verra de moi mercredi 18 h",
+      "fix": "Aperçu de ma carte pour le groupe"
+    },
+    "V5-Notifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Mode discret activé ici, notifications « Rappel » : réglé",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Ouvrir le chat · 3 messages » : réglé",
+      "fix": "—"
+    },
+    "V5-Team": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Inviter un pote, 1re offerte : je l'utiliserai. « Nino garde l'équilibre » sans chiffre",
+      "fix": "Chiffre de l'équilibre"
+    },
+    "V5-Accueil": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Carte sortie en premier : réglé. Le raton sur canapé rose (« Jeudi, on joue. ») reste dans l'état par défaut",
+      "fix": "Scène masquable hors mode discret"
+    },
+    "V5-Accueil-discret": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« Agenda », aucun pet ni prénom : exactement ce que je voulais dans le tram",
+      "fix": "—"
+    },
+    "V5-Pause": {
+      "score": 9,
+      "blocking": false,
+      "issue": "1 tap, rien perdu",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Compteurs justes",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Menu « … », 3 mots pour briser la glace : réglé",
+      "fix": "—"
+    },
+    "V5-Groupe-menu": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Quitter avant mer. 18 h est gratuit » : clair ; « pour ta sécurité, toujours » sans dire ce que ça coûte aux autres",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Réglé : « Oui, le 19 », rien réservé sans moi",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Réglé : neutre, autre lieu, autre activité",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Honnête ; Duo déjà ouvert pendant l'attente : ma demande",
+      "fix": "—"
+    },
+    "V5-Revelation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Je ne peux plus venir · compte comme une absence » règle mon BLOQUANT, mais « Je connais quelqu'un ici · retrait discret, sans pénalité » permet à n'importe qui d'annuler gratuitement après avoir vu ma tête ; et les « visages » sont des initiales",
+      "fix": "Retrait discret limité (1 par trimestre, affiché), qui demande de désigner la personne connue et retire aussi celle-ci du groupe si besoin ; sinon absence"
+    },
+    "V5-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Facultatif » écrit en tête : réglé",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Sobre et clair",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Délai de 5 min écrit : réglé",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Bouton « JE SUIS LÀ » sans raton : réglé",
+      "fix": "—"
+    },
+    "V5-Checkin-code": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Repli par code : bien",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« au nom de Blowy » mieux que Nino ; « Je pars, mal à l'aise · remboursé·e, sans effet » : nécessaire, mais rien ne dit si l'équipe regarde les départs répétés",
+      "fix": "« L'équipe revoit les départs répétés » en petit"
+    },
+    "V5-Souvenir": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Sortie vécue » sobre ; le raton en plein écran après une vraie soirée",
+      "fix": "Visuel du lieu"
+    },
+    "V5-Partage": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« On était 5 » je l'enverrais à la rigueur dans un groupe WhatsApp ; 5 pets = gamin",
+      "fix": "Modèle texte seul pour Message"
+    },
+    "V5-Apres": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Mon BLOQUANT est réglé. « Non » en noir sur chaque ligne donne l'impression d'avoir déjà refusé tout le monde",
+      "fix": "Pastille neutre par défaut"
+    },
+    "V5-Apres-resultats": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« Écrire à Léa » : clair",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« C'est fréquent après une 1re sortie » : honnête et sans humiliation",
+      "fix": "—"
+    },
+    "V5-Partage-accords": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« +1 DUO » en story : jamais",
+      "fix": "Retirer ou désactiver par défaut"
+    },
+    "V5-Bande": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Gens rencontrés en sortie en premier, pets distincts : réglé",
+      "fix": "—"
+    },
+    "V5-Duo": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Plus de %, accord des deux : réglé",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« avant le mer. 18 nov. » : sinon quoi ? Toujours pas dit",
+      "fix": "Écrire la suite"
+    },
+    "V5-Lien-debloque": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mon vocal facultatif : bien. Pas de lien « Améliorer mes photos » avant ce 2e moment de jugement",
+      "fix": "Lien vers mes photos avant vendredi 21 h"
+    },
+    "V5-RdvDuo": {
+      "score": 10,
+      "blocking": false,
+      "issue": "« chacun sa boisson », lieu réservé, elle accepte : réglé",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 9,
+      "blocking": false,
+      "issue": "« L'utiliser » pré-remplit : réglé",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Autre lieu : réglé ; « billets à prendre chacun » sans prix",
+      "fix": "Prix du billet"
+    },
+    "V5-Oeuf": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Désactivé, personne ne l'envoie : réglé ; « Ne jamais me le proposer » : je coche",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Messages sur la personne, fiabilité juste : réglé",
+      "fix": "—"
+    },
+    "V5-Partage-semaine": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« JEUDI, JE SORS AVEC 4 INCONNU·ES » + 5 pets : jamais en story",
+      "fix": "—, garder pour celles et ceux que ça amuse"
+    },
+    "V5-Partage-invitation": {
+      "score": 8,
+      "blocking": false,
+      "issue": "La seule carte que j'enverrais (à un pote, par message). Le filtre « Sans visages ni prénoms » est allumé alors qu'elle dit « TOM »",
+      "fix": "Cohérence du filtre ; version texte pour WhatsApp"
+    },
+    "V5-Partage-ville": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Clair ; pas mon cas",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« Décris-moi en 3 mots » : pas pour moi ; optionnel, ça ne me gêne plus",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Lisible, rien à installer : réglé",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Chiffres justes (1 sur 1, 2, 3) : réglé",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Barre retirée : réglé. « grandit avec tes souvenirs » sans rien montrer qui grandit",
+      "fix": "Montrer ce qui change, ou retirer la phrase"
+    },
+    "V5-Tarifs": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Prix, rentabilité et « ne s'achète jamais » sur un écran : honnête",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Statut cohérent, aucune pression : réglé",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Apple Pay, 4,99 €, remboursement auto : clair",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Reçu, remboursement auto : clair",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Pause en tête, âge du groupe, quartiers : bien",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Cohérent ; mode discret par défaut : réglé",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Motifs IRL complets ; toujours pas « annule ou ne vient jamais »",
+      "fix": "Motif « absences répétées »"
+    },
+    "V5-Supprimer": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Ne promet plus de résilier l'App Store : réglé",
+      "fix": "—"
+    },
+    "V5-Chargement": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair ; code hors ligne",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 10,
+      "blocking": false,
+      "issue": "Rien débité, place gardée 30 min",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Conseils concrets",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Honnête",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Corriger ma date » en CTA principal après un refus mineur",
+      "fix": "CTA « Fermer »"
+    },
+    "V5-Chats-vide": {
+      "score": 9,
+      "blocking": false,
+      "issue": "Clair",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Fermer la dernière porte : « Je connais quelqu'un ici » limité et contrôlé (quota visible, personne désignée, revu par l'équipe), sinon il compte comme une absence ; et « Je pars, mal à l'aise » revu en cas de répétition.",
+    "Lyon pour de vrai : un parcours maquetté Lyon 7e (Guillotière) en liste d'attente → sorties à Lyon 4e, avec le temps de trajet, la composition et les créneaux lyonnais.",
+    "Équilibre écrit et photos : « 2 à 3 femmes par groupe, même si tu viens avec un pote » sous la composition, et un aperçu « voilà ce que verra ton groupe » à Verif."
+  ],
+  "tenIf": "Je mets 10 si, à Lyon, je vois deux sorties en deux semaines avec 2 à 3 femmes de 23 à 30 ans annoncées avant « Je viens », même quand je viens avec un pote. Si le « retrait discret » ne peut pas servir à annuler gratuitement après avoir vu ma tête. Et si le raton n'apparaît jamais sans que je l'aie choisi. Le « plus » qui me laisse l'amitié et « Nino » jamais prononcé au bar : c'est fait."
+}

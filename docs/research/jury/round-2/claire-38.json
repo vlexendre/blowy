@@ -1,0 +1,472 @@
+{
+ "member": "claire-38",
+ "global": 7,
+ "criteria": {
+  "comprehension": 8,
+  "cognitive": 7,
+  "desire": 7,
+  "meet": 6,
+  "safety": 9,
+  "virality": 4,
+  "money": 8,
+  "visual": 8
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Rien ne dit que c'est aussi pour des adultes de 35–45 ans ; titre géant en majuscules et 5 mascottes : je me sens hors cible.",
+   "fix": "Une ligne « Des groupes de ton âge, de 18 à 60 ans » et proposer le mode discret dès ici."
+  },
+  "V5-Ville": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Je peux ajouter des quartiers, bien. L'exemple et les suggestions sont tous parisiens.",
+   "fix": "Suggestions selon la ville tapée (Lyon 7e → « tu peux venir dans le 4e »)."
+  },
+  "V5-Ville-fermee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Honnête. Pas mon cas.",
+   "fix": "RAS."
+  },
+  "V5-Team-amorcage": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Le mot « team » et « débloque » sonnent ado.",
+   "fix": "« Viens avec une ou deux amies »."
+  },
+  "V5-Rencontrer": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair. « Les visages après 48 h » m'inquiète un peu sans savoir ce que l'autre verra.",
+   "fix": "Ajouter « tes photos aussi, en même temps »."
+  },
+  "V5-Intention": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Nouveaux potes » : je dirais « nouvelles amitiés ». Pas de « surtout des amies ».",
+   "fix": "Sous-choix facultatif « en amitié : plutôt des femmes / tout le monde »."
+  },
+  "V5-Intention-rempli": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« Des enfants un jour ? Oui / Non / Je ne sais pas » : j'ai déjà un fils. Il n'y a pas de case pour moi ; la question me rappelle que je ne suis pas la cible.",
+   "fix": "Ajouter « J'en ai déjà » et « en garde alternée » (secret, pour le matching)."
+  },
+  "V5-Consentement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Rassurant et clair, mais il arrive après l'écran où j'ai déjà répondu sur « une histoire sérieuse ».",
+   "fix": "Le mettre avant `V5-Intention`."
+  },
+  "V5-Toi": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Respectueux.",
+   "fix": "RAS."
+  },
+  "V5-Toi-plus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Pour l'amitié, tu rencontres tout le monde » : bien dit.",
+   "fix": "RAS."
+  },
+  "V5-Craft": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Toujours choisir un animal ; pas d'option « Nino choisit pour moi ».",
+   "fix": "Ajouter « Choisis pour moi »."
+  },
+  "V5-Vie": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Ta vision · 1 sur 3 » : je ne sais pas ce que « vision » veut dire ici.",
+   "fix": "« Tes goûts · 1 sur 3 »."
+  },
+  "V5-Dispos": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Exactement ce que je demandais. Il manque seulement « un week-end sur deux » (ma garde est au week-end, pas à la semaine ISO).",
+   "fix": "Préciser « semaine ou week-end » dans l'alternance."
+  },
+  "V5-Eclosion": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« C'EST UN RATON ! » sur fond violet : enfantin, et « 1,5 s · touche pour passer » est un libellé technique.",
+   "fix": "Garder court, retirer le libellé."
+  },
+  "V5-Compte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pas de mot de passe, e-mail masqué.",
+   "fix": "RAS."
+  },
+  "V5-Compte-age": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Curseur de l'âge du groupe : merci. Aucune borne affichée aux extrémités, je ne sais pas jusqu'où je peux aller.",
+   "fix": "Afficher les bornes (ex. 18 et 65+)."
+  },
+  "V5-Trouvee": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Composition anonyme avant de m'engager : rassurant. Le bouton « Partager » est au même niveau que « Trop de monde ? ».",
+   "fix": "Partager en icône discrète."
+  },
+  "V5-Sortie": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Comment ça se passe » m'enlève l'angoisse. « Après la confirmation, annuler compte comme une absence, sauf pour ta sécurité » : mon fils malade jeudi midi = absence.",
+   "fix": "« Imprévu familial prévenu avant 16 h : sans effet, une fois par mois »."
+  },
+  "V5-Verif": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Vérifions que c'est toi », supprimé sous 30 jours.",
+   "fix": "RAS."
+  },
+  "V5-Notifs": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mode discret activé par défaut, exemples « Rappel » : très bien. Mais je le découvre après avoir réservé ; l'icône était déjà « blowy. » sur mon écran.",
+   "fix": "Proposer le mode discret à l'onboarding, avant toute notification."
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ajouter à mon agenda · sans le mot blowy » : pensé pour moi.",
+   "fix": "RAS."
+  },
+  "V5-Team": {
+   "score": 8,
+   "blocking": false,
+   "issue": "J'invite une amie, sa 1re offerte : c'est comme ça que j'irais.",
+   "fix": "« Viens avec une amie » plutôt que « team »."
+  },
+  "V5-Accueil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Lisible, Pause en 1 tap.",
+   "fix": "RAS."
+  },
+  "V5-Accueil-discret": {
+   "score": 7,
+   "blocking": false,
+   "issue": "« Le reste de l'app est inchangé » : si mon ex ouvre « Agenda », il voit les onglets Chats et Bande et le badge 4.",
+   "fix": "En mode discret, renommer les onglets et demander Face ID à l'ouverture."
+  },
+  "V5-Pause": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« sans rien perdre ».",
+   "fix": "RAS."
+  },
+  "V5-Chats": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Rien n'est public » rassure.",
+   "fix": "RAS."
+  },
+  "V5-Chats-vide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair.",
+   "fix": "RAS."
+  },
+  "V5-Groupe": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Question facultative, « Rien d'obligatoire avant jeudi ».",
+   "fix": "RAS."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Quitter sans pénalité pour ma sécurité.",
+   "fix": "RAS."
+  },
+  "V5-Sortie-complete": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé.",
+   "fix": "RAS."
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Réglé, ton juste.",
+   "fix": "RAS."
+  },
+  "V5-Attente": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Plus de bouton culpabilisant.",
+   "fix": "RAS."
+  },
+  "V5-Revelation": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Je connais quelqu'un ici · retrait discret, sans pénalité » : c'est pour les parents de l'école. « Je ne peux plus venir · compte comme une absence » : même problème que Sortie.",
+   "fix": "Ajouter l'imprévu familial prévenu."
+  },
+  "V5-Ange": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ma sœur, sans appli.",
+   "fix": "RAS."
+  },
+  "W-Ange": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Clair pour ma sœur. Encart publicitaire en bas.",
+   "fix": "RAS."
+  },
+  "W-Ange-alerte": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Sobre.",
+   "fix": "RAS."
+  },
+  "V5-Checkin": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Un bouton, « Personne ne la voit ».",
+   "fix": "RAS."
+  },
+  "V5-Checkin-code": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Repli simple.",
+   "fix": "RAS."
+  },
+  "V5-Checkin-ok": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Voir qui est déjà là m'aide à entrer. Malo sans coche : tout le monde voit qui manque.",
+   "fix": "Ne montrer que les arrivés."
+  },
+  "V5-Souvenir": {
+   "score": 6,
+   "blocking": false,
+   "issue": "Bouton principal noir « PARTAGER LA SOIRÉE », vote en second : on me pousse à poster ce que je cache.",
+   "fix": "Vote en principal, partage en lien discret."
+  },
+  "V5-Partage": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« avec 4 inconnu·es » faux (Tom vient avec Alex). Story en premier choix.",
+   "fix": "Bon compte ; « Message » en premier."
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Personne ne l'apprend », une liste, « non » par défaut : soulageant. Footer rogné sous le bouton.",
+   "fix": "Marge sous le bouton."
+  },
+  "V5-Apres-resultats": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Je ne vois que les miens.",
+   "fix": "RAS."
+  },
+  "V5-Apres-aucun": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« C'est fréquent après une 1re sortie » : doux.",
+   "fix": "RAS."
+  },
+  "V5-Partage-accords": {
+   "score": 5,
+   "blocking": false,
+   "issue": "« +1 DUO » sur une story : exactement ce que personne ne doit savoir.",
+   "fix": "Ne pas proposer ce partage depuis les accords, ou le limiter à « Message »."
+  },
+  "V5-Bande": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Une personne, un pet.",
+   "fix": "RAS."
+  },
+  "V5-Duo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Calme, sans pourcentage.",
+   "fix": "RAS."
+  },
+  "V5-Lien": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« avant le mer. 18 nov. » : si c'est ma semaine avec mon fils, le délai tombe mal.",
+   "fix": "Délai calé sur mes créneaux."
+  },
+  "V5-Lien-debloque": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Toi, non : c'est très bien comme ça » pour le vocal.",
+   "fix": "RAS."
+  },
+  "V5-RdvDuo": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Mardi 19 h seulement ; « Choisir ensemble » existe.",
+   "fix": "Proposer d'office un créneau de journée."
+  },
+  "V5-RdvDuo-lea": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Samedi 15 h, lieu public.",
+   "fix": "RAS."
+  },
+  "V5-Chat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Souffleur qui pré-remplit sans envoyer.",
+   "fix": "RAS."
+  },
+  "V5-Oeuf": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ne jamais me le proposer » : merci.",
+   "fix": "RAS."
+  },
+  "V5-Rupture": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Messages pour une personne.",
+   "fix": "RAS."
+  },
+  "V5-Partage-semaine": {
+   "score": 4,
+   "blocking": false,
+   "issue": "« JEUDI, JE SORS AVEC 4 INCONNU·ES. » : ce que je veux cacher, en très gros, et faux.",
+   "fix": "Ne pas proposer ce partage par défaut ; chiffre juste."
+  },
+  "V5-Partage-invitation": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Bouton « Message » : bien. « AVEC MOI ET TOM » alors que « Sans visages ni prénoms » est actif.",
+   "fix": "Retirer le prénom ou l'option."
+  },
+  "V5-Partage-ville": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Pas mon cas.",
+   "fix": "RAS."
+  },
+  "V5-Story": {
+   "score": 6,
+   "blocking": false,
+   "issue": "« Décris-moi en 3 mots » : jamais pour moi, mais désactivable.",
+   "fix": "Le laisser hors du parcours principal."
+  },
+  "W-Repondre": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Gentil, bouton lisible.",
+   "fix": "RAS."
+  },
+  "V5-Profil": {
+   "score": 8,
+   "blocking": false,
+   "issue": "« Ton groupe voit : prénom, pronom, tranche… » : réglé. « Mes cartes à partager » encore mis en avant.",
+   "fix": "Le descendre sous Blowy+."
+  },
+  "V5-Fiche": {
+   "score": 7,
+   "blocking": false,
+   "issue": "Fiabilité privée : bien. « Ton groupe voit seulement \"fiable\" quand tu viens » : si je ne l'ai pas, ça se voit.",
+   "fix": "Ne rien afficher au groupe, jamais."
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Les places incluses ne se reportent pas » : ma question du tour 1.",
+   "fix": "RAS."
+  },
+  "V5-Abonnement": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Honnête : « Rentable à partir de 3 sorties par mois ».",
+   "fix": "RAS."
+  },
+  "V5-Paiement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Clair.",
+   "fix": "RAS."
+  },
+  "V5-Paiement-ok": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Reçu par e-mail : il faut un objet neutre.",
+   "fix": "Objet de reçu neutre en mode discret."
+  },
+  "V5-Paiement-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Rassurant.",
+   "fix": "RAS."
+  },
+  "V5-Reglages": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Mes créneaux, âge du groupe, Pause en tête.",
+   "fix": "RAS."
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Qui voit quoi » clair, protections par défaut.",
+   "fix": "RAS."
+  },
+  "V5-Signaler": {
+   "score": 9,
+   "blocking": false,
+   "issue": "3919 présent, motifs IRL en tête.",
+   "fix": "RAS."
+  },
+  "V5-Supprimer": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Pause et Supprimer de même poids.",
+   "fix": "RAS."
+  },
+  "V5-Chargement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Erreur-reseau": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  },
+  "V5-Verif-echec": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Conseils simples.",
+   "fix": "RAS."
+  },
+  "V5-Notifs-refus": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Pas de souci ».",
+   "fix": "RAS."
+  },
+  "V5-Erreur-age": {
+   "score": 9,
+   "blocking": false,
+   "issue": "RAS.",
+   "fix": "RAS."
+  }
+ },
+ "top3": [
+  "Le mode discret proposé dès l'onboarding (avant toute icône ou notification visible) et qui couvre toute l'app : onglets neutres, Face ID à l'ouverture, reçu neutre.",
+  "Un imprévu familial prévenu le jour J (enfant malade) sans effet sur la fiabilité, et « J'en ai déjà » dans la question des enfants.",
+  "Le vote en bouton principal après la sortie, le partage public relégué ; aucune carte « 4 inconnu·es » ou « +1 duo » proposée par défaut."
+ ],
+ "tenIf": "Je mets 10 si, en 2 semaines dont une avec mon fils, Nino me propose une sortie sur un créneau que j'ai coché avec des gens de 32 à 45 ans, si le mode discret m'est proposé avant que l'icône blowy apparaisse et cache l'appli entière, si un imprévu d'enfant prévenu le jour même ne compte pas, si une mère peut répondre « j'en ai déjà », et si aucun écran ne me pousse à poster quoi que ce soit."
+}

@@ -1,0 +1,472 @@
+{
+  "member": "createrice-tiktok",
+  "global": 7,
+  "criteria": {
+    "comprehension": 8,
+    "cognitive": 7,
+    "desire": 7,
+    "meet": 7,
+    "safety": 8,
+    "virality": 7,
+    "money": 8,
+    "visual": 7
+  },
+  "screens": {
+    "V5-Welcome": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Plan d'ouverture parfait, 5 pets = 5 personnes : réglé. Pas de version animée exportable.",
+      "fix": "Boucle 6 s des pets qui dansent, filigrane."
+    },
+    "V5-Ville": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« TU SORS OÙ ? » : bon hook ; rien à exporter.",
+      "fix": "—"
+    },
+    "V5-Ville-fermee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Saint-Denis : pas encore. 87 / 120 » : contenu « aidez-moi à ouvrir ma ville » faisable ; pas de bouton partage direct ici.",
+      "fix": "Lien vers Partage-ville."
+    },
+    "V5-Team-amorcage": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« TA TEAM DÉBLOQUE SAINT-DENIS. » : un défi à poster.",
+      "fix": "—"
+    },
+    "V5-Rencontrer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Intention": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Je ne filmerai jamais ce que je coche ; c'est bien qu'il n'y ait rien à exporter.",
+      "fix": "—"
+    },
+    "V5-Intention-rempli": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Consentement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« TON ACCORD D'ABORD » : bon contenu « safety », austère.",
+      "fix": "—"
+    },
+    "V5-Toi": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Toi-plus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Craft": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Choix d'espèce plein cadre, curseurs retirés : réglé.",
+      "fix": "Bouton « Partager mon pet »."
+    },
+    "V5-Vie": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« TU SORS PLUTÔT… » : 3 écrans de quiz, je zappe en vidéo.",
+      "fix": "—"
+    },
+    "V5-Dispos": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Eclosion": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« C'EST UN RATON ! » + CTA « Créer mon compte » : réglé. Toujours pas d'export de l'éclosion.",
+      "fix": "« Enregistrer l'éclosion » 6 s, 9:16."
+    },
+    "V5-Compte": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Compte-age": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Trouvee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Bouton « Partager » : réglé. Le plan d'origine (« NINO T'A TROUVÉ UNE SORTIE » + pets) reste le plus joli, mais il contient le dégradé vide et le bouton « Trop de monde ? ».",
+      "fix": "—"
+    },
+    "V5-Sortie": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Fiche d'info, peu filmable ; « Comment ça se passe » = bon contenu explicatif.",
+      "fix": "—"
+    },
+    "V5-Verif": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« VÉRIFIONS QUE C'EST TOI » : je peux le lire à voix haute. Réglé.",
+      "fix": "—"
+    },
+    "V5-Notifs": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Les 3 notifs « Rappel » : bon plan « voilà ce qui va se passer ».",
+      "fix": "—"
+    },
+    "V5-Sortie-inscrit": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bandeau « Tu y vas. » : réglé, mais pas d'animation plein écran.",
+      "fix": "Micro-animation 1 s exportable."
+    },
+    "V5-Team": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« VIENS AVEC TA TEAM. » : contenu « j'emmène ma meilleure amie ».",
+      "fix": "—"
+    },
+    "V5-Accueil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Salon réduit : réglé.",
+      "fix": "—"
+    },
+    "V5-Accueil-discret": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Mode discret ON par défaut : mon écran d'accueil filmé sera « Agenda », sans pet.",
+      "fix": "Discret OFF par défaut sauf choix."
+    },
+    "V5-Pause": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Raton qui dort : mignon, mais rien à dire.",
+      "fix": "—"
+    },
+    "V5-Chats": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Messages des autres : jamais à l'écran.",
+      "fix": "—"
+    },
+    "V5-Groupe": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ton dimanche idéal, en 3 mots ? » : super plan, mais les réponses des autres ne m'appartiennent pas.",
+      "fix": "Export « mes 3 mots » seuls."
+    },
+    "V5-Groupe-menu": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Sortie-complete": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Plus de « 6 places prises » : plus de commentaires moqueurs. Réglé.",
+      "fix": "—"
+    },
+    "V5-Sortie-annulee": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« Ce n'est la faute de personne » + alternative : réglé.",
+      "fix": "—"
+    },
+    "V5-Attente": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« SAINT-DENIS OUVRE VERS MARS 2027. » : contenu ; aucun bouton partage sur cet écran.",
+      "fix": "Partager la jauge."
+    },
+    "V5-Revelation": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Le moment le plus fort (mercredi 18 h, « C'EST CONFIRMÉ » + 4 visages) et toujours aucune version « réaction » sans visages ni lieu.",
+      "fix": "Carte « C'est confirmé · 4 visages · demain » floutée par défaut, exportable."
+    },
+    "V5-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« SAM VERRA SEULEMENT / JAMAIS » : contenu safety pour mon audience.",
+      "fix": "—"
+    },
+    "W-Ange": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« TU VEILLES SUR ALEX CE SOIR. » : contenu « j'ai mis ma coloc en ange gardien » ; adresse à flouter.",
+      "fix": "—"
+    },
+    "W-Ange-alerte": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Checkin": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Gros bouton fluo « JE SUIS LÀ » : le plan parfait, et pas d'export ; « Café des Oiseaux » visible.",
+      "fix": "Mode capture qui masque le lieu."
+    },
+    "V5-Checkin-code": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Code du chevalet à l'écran : à ne jamais filmer.",
+      "fix": "—"
+    },
+    "V5-Checkin-ok": {
+      "score": 5,
+      "blocking": false,
+      "issue": "« C'EST PARTI. » + 5 prénoms + lieu : infilmable.",
+      "fix": "Mode capture : pets à la place des initiales, lieu masqué."
+    },
+    "V5-Souvenir": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« PARTAGER LA SOIRÉE » en premier : réglé. Le « SORTIE » en dégradé olive bave à l'écran.",
+      "fix": "Titre plein."
+    },
+    "V5-Partage": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« ON ÉTAIT 5. » + 5 pets + lien : je poste. « avec 4 inconnu·es » est faux (Tom = son pote).",
+      "fix": "« 3 inconnu·es et un pote »."
+    },
+    "V5-Apres": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« ALORS, JEUDI ? » + Ami·e / Plus / Non = THE format storytime, mais 3 prénoms à l'écran et aucun mode capture.",
+      "fix": "Mode capture : pets à la place des prénoms, aucune sélection visible."
+    },
+    "V5-Apres-resultats": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« TES ACCORDS. » + lien de partage : réglé.",
+      "fix": "—"
+    },
+    "V5-Apres-aucun": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« PAS D'ACCORD CETTE FOIS. » : contenu honnête « ça n'a pas matché », possible.",
+      "fix": "Carte partageable « 0 accord, 1 soirée »."
+    },
+    "V5-Partage-accords": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Carte demandée au tour 1, mais avec la pigeonne de Sarah : elle se reconnaît, Léa aussi. Je ne la posterai pas.",
+      "fix": "Silhouettes ou pets génériques, jamais ceux du groupe."
+    },
+    "V5-Bande": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rue des pets jolie ; prénoms dessous.",
+      "fix": "Mode capture sans prénoms."
+    },
+    "V5-Duo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Ressemble à toutes les apps de dating ; plus de pourcentage (tant mieux).",
+      "fix": "—"
+    },
+    "V5-Lien": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Trois étapes. Rien ne se débloque si un seul des deux écrit. » : bonne phrase pour une vidéo explicative.",
+      "fix": "—"
+    },
+    "V5-Lien-debloque": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Visage et vocal d'une autre : interdit à l'écran.",
+      "fix": "—"
+    },
+    "V5-RdvDuo": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Chat": {
+      "score": 5,
+      "blocking": false,
+      "issue": "Messages privés.",
+      "fix": "—"
+    },
+    "V5-RdvDuo-lea": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Oeuf": {
+      "score": 6,
+      "blocking": false,
+      "issue": "Hors des cartes partageables : réglé.",
+      "fix": "—"
+    },
+    "V5-Rupture": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« PARTIR PROPREMENT » + messages centrés sur la personne : bon thème anti-ghosting, réglé.",
+      "fix": "—"
+    },
+    "V5-Partage-semaine": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« JEUDI, JE SORS AVEC 4 INCONNU·ES » : faux, Tom est son pote ; les commentaires vont le relever.",
+      "fix": "Phrase calculée (« 3 inconnu·es et Tom » → « 3 inconnu·es et un pote »)."
+    },
+    "V5-Partage-invitation": {
+      "score": 6,
+      "blocking": false,
+      "issue": "« VIENS JEUDI AVEC MOI ET TOM » sous « Sans visages ni prénoms » : Tom n'a rien demandé.",
+      "fix": "« Viens jeudi avec moi et un pote »."
+    },
+    "V5-Partage-ville": {
+      "score": 8,
+      "blocking": false,
+      "issue": "« AIDE-NOUS À OUVRIR SAINT-DENIS. » + jauge + date : je poste, mon audience hors 11e a quoi faire.",
+      "fix": "—"
+    },
+    "V5-Story": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Plus de NGL, liste de mots gentils, 18+ : réglé ; je peux poster.",
+      "fix": "—"
+    },
+    "W-Repondre": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Mots physiques retirés, fin « Et toi, tu sors où ? » : réglé.",
+      "fix": "—"
+    },
+    "V5-Profil": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Mes cartes à partager · aperçu avant partage » : réglé.",
+      "fix": "—"
+    },
+    "V5-Fiche": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Venu·e à 1 sortie sur 1 » : réglé (accord).",
+      "fix": "—"
+    },
+    "V5-Tarifs": {
+      "score": 8,
+      "blocking": false,
+      "issue": "Montrable sans honte.",
+      "fix": "—"
+    },
+    "V5-Abonnement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Ne donne ni plus de sorties, ni plus de visibilité » : honnête ; « Duo sans limite » je ne saurais pas l'expliquer.",
+      "fix": "—"
+    },
+    "V5-Paiement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Paiement-ok": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Reglages": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Confidentialite": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Bon pour une vidéo « safety », austère.",
+      "fix": "—"
+    },
+    "V5-Signaler": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Doit exister ; jamais filmé.",
+      "fix": "—"
+    },
+    "V5-Supprimer": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Mascotte neutre : réglé.",
+      "fix": "—"
+    },
+    "V5-Chargement": {
+      "score": 7,
+      "blocking": false,
+      "issue": "« Nino compose ton groupe… » : 1 s de suspense filmable.",
+      "fix": "—"
+    },
+    "V5-Erreur-reseau": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Paiement-echec": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Verif-echec": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Raton qui pleure : drôle, pas gênant.",
+      "fix": "—"
+    },
+    "V5-Notifs-refus": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Erreur-age": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    },
+    "V5-Chats-vide": {
+      "score": 7,
+      "blocking": false,
+      "issue": "Rien à filmer, et c'est normal.",
+      "fix": "—"
+    }
+  },
+  "top3": [
+    "Exports pour mercredi et jeudi : carte « C'est confirmé · demain » sans visages ni lieu, et « JE SUIS LÀ / À la table 5/5 » en pets, plus un export vidéo 6 s (éclosion, check-in).",
+    "Cartes vraies et anonymes : « 3 inconnu·es et un pote », aucun prénom de tiers, jamais les pets réels des autres sur une carte publique (silhouettes).",
+    "Un mode capture sur Après (pets à la place des prénoms, aucune sélection visible) pour le plan « ALORS, JEUDI ? »."
+  ],
+  "tenIf": "Je mets 10 si je peux tourner la série lundi → dimanche entièrement depuis des exports de l'app (dont mercredi 18 h et le check-in de jeudi), sans flouter un seul visage, prénom ou lieu, si aucune carte n'affirme un chiffre faux, et si personne du groupe ne peut se reconnaître sur la carte d'accords."
+}
