@@ -27,10 +27,10 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **107 fichiers, 10 817 vérifications, 0 contradiction**.
-- **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
+  - Résultat : **107 fichiers, 10 945 vérifications, 0 contradiction**.
+- **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs [.local/dc-runtime.js] [filtre]` (sans runtime, il prend `.local/dc-runtime.js` ; un gabarit `{{…}}` non résolu est ignoré, plus de faux positif sur V5-Signaler).
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **107 écrans, 1 727 textes, 594 cibles, 1 812 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **107 écrans, 1 732 textes, 594 cibles, 1 817 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
   - Les miniatures de « Mes cartes » (`data-miniature`, images réduites de cartes auditées en taille réelle) sont exclues des contrôles de mise en page.
   - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
   - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
@@ -47,6 +47,14 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
 5. **Fiabilité** : toute mention (« fiabilité », « sortie honorée », « Venu à N sortie ») est suivie de « visible par toi seulement ».
 6. **Tranche des personas dans leur groupe** : « 5 personnes · NN–NN ans » contient la tranche du persona de l'écran ; chaque membre du groupe de Lyon a sa tranche (`facts.groupesTranches`).
 7. **Ratons des écrans d'échec** (`facts.ecransEchec`) : 64 pt au plus (`facts.ratonMax`).
+
+## Suivi tour 12 (vu dans les PNG rendus)
+
+- [x] Activités prépayées avec la place (décision produit) : sous « Je viens », « Place offerte (ta 1re sortie) + atelier 25 € · ensuite 4,99 € + 25 € » (Sortie-lille, Amorçage, Amorçage-solo), « + terrain 9 € » (Sortie-lyon), « + bloc 12 € » (Sortie-banlieue) ; sous « Quand tu veux » : « … payé dans l’app avec ta place ». V5-Paiement : récapitulatif place 4,99 € + bloc 12 € = 16,99 €. check-facts : ligne sous « Je viens », « à régler au lieu » banni, récapitulatif contrôlé.
+- [x] Rangées « Tu arrives » et « Pendant » propres à chaque activité (terrain 2 ; accueil de la salle et chaussons ; atelier, « Encadré par le lieu ») ; plus de « table Blowy » ni de « cartes de questions » hors bar (contrôlé).
+- [x] Confidentialité : « Mode discret » et « Accord donné » à 10 pt du filet ; « Ton groupe » : « prénoms, pronoms et tranches d’âge à la Confirmation (veille 18 h) ». Le contrôle « texte trop proche d’un filet » compte maintenant le bord haut ou bas de la carte pour ses lignes, et exige 8 px : il signalait « Mode discret » (0 px) et « Accord donné » (1 px) sur une copie de l’ancien écran ; il a aussi trouvé et fait corriger le relevé de L-Effectif, Supprimer et la suggestion de Ville.
+- [x] L-Contrat : article 1 « Bar : … sans animation » / « Lieu d’activité : … encadre l’activité comme d’habitude ; l’activité est prépayée dans l’app avec la place » ; article 3 : « Activité prépayée, place confirmée, honorée ou non : son prix, reversé en totalité (HT) ».
+- [x] a11y-audit : runtime par défaut et gabarits non résolus ignorés ; lancé sans argument : 0 problème.
 
 ## Suivi tour 11b (alignement sur la spec, vu dans les PNG rendus)
 

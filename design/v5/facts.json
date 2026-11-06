@@ -206,7 +206,8 @@
       "0 €",
       "25 €",
       "9 €",
-      "12 €"
+      "12 €",
+      "16,99 €"
     ],
     "compensationOfferte": "3 €",
     "blowyPlusVia": "Apple Pay",
@@ -851,26 +852,43 @@
   "activitePrix": {
     "lille": {
       "prix": "25 €",
-      "phrase": "Atelier : 25 € sur place, à régler au lieu.",
+      "phrase": "Atelier : 25 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Sortie-lille",
         "V5-Amorcage",
         "V5-Amorcage-solo"
-      ]
+      ],
+      "sous": "Place offerte (ta 1re sortie) + atelier 25 € · ensuite 4,99 € + 25 €",
+      "arrive": "Tu arrives : à l’atelier, chevalet orange à l’entrée. Tu tapes son code à 4 chiffres dans l’app : c’est ton check-in.",
+      "pendant": "Encadré par le lieu. Vous êtes à la même table, en groupe."
     },
     "lyon": {
       "prix": "9 €",
-      "phrase": "Foot à 5 : 9 € sur place, à régler au lieu.",
+      "phrase": "Foot à 5 : 9 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Sortie-lyon"
-      ]
+      ],
+      "sous": "Place offerte (ta 1re sortie) + terrain 9 € · ensuite 4,99 € + 9 €",
+      "arrive": "Tu arrives : terrain 2, chevalet orange au bord. Tu tapes son code à 4 chiffres dans l’app : c’est ton check-in.",
+      "pendant": "Foot à 5 entre vous, ballon et chasubles prêtés par le lieu. Personne n’arbitre."
     },
     "banlieue": {
       "prix": "12 €",
-      "phrase": "Bloc : 12 € sur place, à régler au lieu.",
+      "phrase": "Bloc : 12 €, payé dans l’app avec ta place.",
       "ecrans": [
         "V5-Sortie-banlieue"
-      ]
+      ],
+      "sous": "Place offerte (ta 1re sortie) + bloc 12 € · ensuite 4,99 € + 12 €",
+      "arrive": "Tu arrives : à l’accueil de la salle, chevalet orange ; chaussons prêtés. Tu tapes son code à 4 chiffres dans l’app : c’est ton check-in.",
+      "pendant": "Bloc en groupe, sur les voies faciles indiquées par le lieu."
+    },
+    "paris2": {
+      "prix": "12 €",
+      "phrase": "Bloc : 12 €, payé dans l’app avec ta place.",
+      "ecrans": [
+        "V5-Paiement"
+      ],
+      "total": "16,99 €"
     }
   },
   "especes": [
@@ -924,5 +942,6 @@
     "Maïa",
     "Ilyes",
     "Lina"
-  ]
+  ],
+  "activiteContrat": "Activité prépayée, place confirmée, honorée ou non son prix, reversé en totalité (HT)"
 }

@@ -255,6 +255,13 @@ for (const f of files) {
   for (const b of F.pepiteBlobs) { checks++; if (html.includes(b)) push(f, 'dessin d’une espèce hors domaine (Pépite)'); }
   for (const m of t.matchAll(/\b(?:Un|Une) ([a-zé]+) · \p{Lu}\./gu)) { checks++; if (!F.especes.includes(m[1])) push(f, `espèce « ${m[1]} » hors des 4 du domaine`); }
   if (base === 'V5-Pet') for (const m of html.matchAll(/\['([a-z]+)', '([A-Za-zé]+)', B \+/g)) { checks++; if (!F.especes.some((e) => e.startsWith(m[2].toLowerCase().slice(0, 4)))) push(f, `espèce « ${m[2]} » hors domaine dans le sélecteur`); }
+  // 46. Tour 12 · activité prépayée : prix sous « Je viens », rangées propres à l'activité, jamais « à régler au lieu »
+  for (const [k, a] of Object.entries(F.activitePrix)) if (a.ecrans.includes(base) && a.sous) { checks++;
+    if (!t.includes(a.sous)) push(f, `ligne sous « Je viens » sans l’activité : « ${a.sous} »`);
+    for (const w of ['cartes de questions sur la table', 'table Blowy']) if (t.includes(w)) push(f, `« ${w} » dans une activité qui n’est pas un bar`); }
+  { checks++; if (t.includes('à régler au lieu')) push(f, '« à régler au lieu » : l’activité est prépayée dans l’app'); }
+  if (base === 'V5-Paiement') { checks++; if (!t.includes(F.activitePrix.paris2.total)) push(f, 'récapitulatif place + activité absent'); }
+  if (base === 'L-Contrat') { checks++; if (!t.includes(F.activiteContrat)) push(f, 'clause activité prépayée absente'); }
   // 33. V5.8 · heure de la frise = heure de la carte de sortie
   { const carte = t.match(/(\d{1,2} h(?: \d\d)?) – \d{1,2} h/); for (const m of t.matchAll(/(\d{1,2} h(?: \d\d)?) La sortie\b/g)) { checks++; if (carte && m[1] !== carte[1]) push(f, `frise « ${m[0]} » ≠ carte « ${carte[0]} »`); } }
   // 34. Aucune sortie promise avant composition (écrans d'attente et de remplacement)

@@ -11,7 +11,10 @@ import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const root = dirname(fileURLToPath(import.meta.url));
-const [runtime, filter] = process.argv.slice(2);
+// Le runtime est facultatif : sans lui, on prend .local/dc-runtime.js (sinon les gabarits {{…}} restent non résolus et faussent le contraste).
+const args = process.argv.slice(2);
+const runtime = args[0] && args[0].endsWith('.js') ? args[0] : join(dirname(dirname(root)), '.local', 'dc-runtime.js');
+const filter = args[0] && args[0].endsWith('.js') ? args[1] : args[0];
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.webp': 'image/webp' };
 const assets = await readdir(join(root, 'assets'));
 const server = createServer(async (req, res) => {
@@ -59,7 +62,7 @@ for (const f of files) {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       const n = walker.currentNode; const el = n.parentElement;
-      if (!el || !n.textContent.trim() || seen.has(el)) continue;
+      if (!el || !n.textContent.trim() || /^\s*\{\{[^}]+\}\}\s*$/.test(n.textContent) || seen.has(el)) continue;
       seen.add(el);
       const cs = getComputedStyle(el); const rect = el.getBoundingClientRect();
       if (cs.visibility === 'hidden' || cs.display === 'none' || rect.width === 0 || rect.height === 0) continue;
@@ -88,7 +91,7 @@ for (const f of files) {
     out.layout = []; out.nLayout = 0;
     const visibleText = [];
     const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    while (tw.nextNode()) { const n = tw.currentNode; if (n.textContent.trim() && n.parentElement && n.parentElement.closest('x-dc, body')) visibleText.push(n); }
+    while (tw.nextNode()) { const n = tw.currentNode; if (n.textContent.trim() && !/^\s*\{\{[^}]+\}\}\s*$/.test(n.textContent) && n.parentElement && n.parentElement.closest('x-dc, body')) visibleText.push(n); } // gabarit non résolu : ignoré
     const textRect = (n) => { const r = document.createRange(); r.selectNodeContents(n); return [...r.getClientRects()].filter((q) => q.width > 0.5); };
     const hiddenEl = (el) => { if (el.closest && el.closest('details:not([open])') && !el.closest('summary')) return true; for (let e = el; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.display === 'none' || s.visibility === 'hidden' || parseFloat(s.opacity) === 0) return true; } return false; };
     // a) texte qui touche l'ombre portée d'un bouton (ombre « 0 Npx 0 »)
@@ -113,18 +116,23 @@ for (const f of files) {
       for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.textContent.trim() || hiddenEl(n.parentElement)) continue; const rg = document.createRange(); rg.selectNodeContents(n);
         for (const q of rg.getClientRects()) if (q.width > 0 && (q.bottom > vr.bottom + 1 || q.right > vr.right + 1 || q.top < vr.top - 1)) { out.layout.push(`texte rogné dans la vignette ${v.getAttribute('data-video-vignette')} « ${n.textContent.trim().slice(0, 30)} »`); break; } }
     }
-    // b1) Tour 11 · texte trop proche d'un filet (bordure haute ou basse d'un ancêtre) : moins de 4 px
+    // b1) Tours 11-12 · texte trop proche d'un filet (bordure haute ou basse d'un ancêtre, ou bord haut/bas d'une carte pour ses lignes) : moins de 8 px
     for (const n of visibleText) {
       const el = n.parentElement; if (hiddenEl(el) || el.closest('[aria-hidden="true"], .gnav, input, svg, [data-miniature], button')) continue;
       const rects = textRect(n); if (!rects.length) continue;
       const top = Math.min(...rects.map((q) => q.top)), bot = Math.max(...rects.map((q) => q.bottom));
       for (let e = el, k = 0; e && e !== document.body && k < 4; e = e.parentElement, k++) {
         const cs = getComputedStyle(e); const r = e.getBoundingClientRect();
-        const bt = parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none', bb = parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomStyle !== 'none';
+        let bt = parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none', bb = parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomStyle !== 'none';
+        // bord d'une carte (fond propre, coins arrondis) : compte comme un filet pour les lignes de liste
+        if (!bt && !bb && e.parentElement) { const pcs = getComputedStyle(e.parentElement); const card = (bg) => bg && !/rgba\(0, 0, 0, 0\)|transparent/.test(bg);
+          const isRow = e.classList.contains('row'); const isCard = card(cs.backgroundColor) && cs.backgroundColor !== pcs.backgroundColor && parseFloat(cs.borderTopLeftRadius) > 0 && r.height > 36;
+          if (isRow) { const pr = e.parentElement.getBoundingClientRect(); if (Math.abs(pr.top - r.top) < 1) bt = true; if (Math.abs(pr.bottom - r.bottom) < 1) bb = true; }
+          void isCard; }
         if (!bt && !bb) continue;
         if (r.height > 300) break;
         const gt = top - (r.top + parseFloat(cs.borderTopWidth)), gb = (r.bottom - parseFloat(cs.borderBottomWidth)) - bot;
-        if ((bt && gt < 4) || (bb && gb < 4)) { out.layout.push(`texte trop proche d’un filet (${Math.round(Math.min(bt ? gt : 99, bb ? gb : 99))} px) « ${n.textContent.trim().slice(0, 40)} »`); }
+        if ((bt && gt < 8) || (bb && gb < 8)) { out.layout.push(`texte trop proche d’un filet (${Math.round(Math.min(bt ? gt : 99, bb ? gb : 99))} px) « ${n.textContent.trim().slice(0, 40)} »`); }
         break;
       }
     }
