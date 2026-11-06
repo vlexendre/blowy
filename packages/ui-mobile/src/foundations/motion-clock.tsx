@@ -9,14 +9,27 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
 import { useAnimatedStyle, useFrameCallback, useSharedValue } from 'react-native-reanimated';
 import { useA11yPrefs } from './accessibility';
-import { restValues, sampleKeyframes, toTransform, type KeyframeName, type KeyframeValues, type PlayOptions } from './keyframes';
+import {
+  restValues,
+  sampleKeyframes,
+  toTransform,
+  type KeyframeName,
+  type KeyframeValues,
+  type PlayOptions,
+} from './keyframes';
 
 interface MotionClock {
   frozenAtMs: number | null;
 }
 const MotionClockContext = createContext<MotionClock>({ frozenAtMs: null });
 
-export function MotionClockProvider({ frozenAtMs = null, children }: { frozenAtMs?: number | null; children: ReactNode }) {
+export function MotionClockProvider({
+  frozenAtMs = null,
+  children,
+}: {
+  frozenAtMs?: number | null;
+  children: ReactNode;
+}) {
   const value = useMemo(() => ({ frozenAtMs }), [frozenAtMs]);
   return <MotionClockContext.Provider value={value}>{children}</MotionClockContext.Provider>;
 }
@@ -31,7 +44,12 @@ export function useMotionMode(): { mode: MotionMode; frozenAtMs: number } {
 }
 
 /** Valeurs statiques (modes `rest` / `frozen`). */
-export function staticKeyframeValues(name: KeyframeName, mode: MotionMode, frozenAtMs: number, opts: PlayOptions): KeyframeValues {
+export function staticKeyframeValues(
+  name: KeyframeName,
+  mode: MotionMode,
+  frozenAtMs: number,
+  opts: PlayOptions,
+): KeyframeValues {
   return mode === 'frozen' ? sampleKeyframes(name, frozenAtMs, opts) : restValues(name);
 }
 
@@ -60,7 +78,14 @@ export function useKeyframeStyle(name: KeyframeName, opts: KeyframeStyleOptions 
   useFrameCallback((f) => {
     t.value = f.timeSinceFirstFrame;
   }, live);
-  const still = live ? null : styleOf(opts.disabled ? restValues(name) : staticKeyframeValues(name, mode, frozenAtMs, { delayMs, reverse, durationMs }), withOpacity);
+  const still = live
+    ? null
+    : styleOf(
+        opts.disabled
+          ? restValues(name)
+          : staticKeyframeValues(name, mode, frozenAtMs, { delayMs, reverse, durationMs }),
+        withOpacity,
+      );
   const animated = useAnimatedStyle(() => {
     if (!live) return {};
     return styleOf(sampleKeyframes(name, t.value, { delayMs, reverse, durationMs }), withOpacity);

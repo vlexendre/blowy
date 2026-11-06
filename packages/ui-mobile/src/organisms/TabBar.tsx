@@ -41,9 +41,23 @@ export interface TabBarProps {
 /** Hauteur réservée en bas des écrans d'onglet (`flex:0 0 96px`). */
 export const TAB_BAR_SPACE = layout.navReserve;
 
-function Gradient({ id, top, bottom, radius }: { id: string; top: string; bottom: string; radius: number }) {
+function Gradient({
+  id,
+  top,
+  bottom,
+  radius,
+}: {
+  id: string;
+  top: string;
+  bottom: string;
+  radius: number;
+}) {
   return (
-    <Svg style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} width="100%" height="100%">
+    <Svg
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      width="100%"
+      height="100%"
+    >
       <Defs>
         <LinearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={top} />
@@ -57,9 +71,14 @@ function Gradient({ id, top, bottom, radius }: { id: string; top: string; bottom
 
 function Sheen({ id }: { id: string }) {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
-  const onLayout = (e: LayoutChangeEvent) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height });
+  const onLayout = (e: LayoutChangeEvent) =>
+    setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height });
   return (
-    <View pointerEvents="none" onLayout={onLayout} style={{ position: 'absolute', left: 22, right: 22, top: 1, height: '44%' }}>
+    <View
+      pointerEvents="none"
+      onLayout={onLayout}
+      style={{ position: 'absolute', left: 22, right: 22, top: 1, height: '44%' }}
+    >
       {size ? (
         <Svg width={size.w} height={size.h}>
           <Defs>
@@ -80,7 +99,16 @@ export function TabBar({ items, activeKey, onSelect, bottomInset }: TabBarProps)
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const label = bodyFont(textSpec.nav.size, textSpec.nav.weight, textSpec.nav.letterSpacingEm);
   return (
-    <View pointerEvents="box-none" style={{ position: 'absolute', left: layout.navInset, right: layout.navInset, bottom: tabBarBottom(bottomInset), zIndex: 40 }}>
+    <View
+      pointerEvents="box-none"
+      style={{
+        position: 'absolute',
+        left: layout.navInset,
+        right: layout.navInset,
+        bottom: tabBarBottom(bottomInset),
+        zIndex: 40,
+      }}
+    >
       <View
         style={{
           borderRadius: radii.nav,
@@ -89,17 +117,50 @@ export function TabBar({ items, activeKey, onSelect, bottomInset }: TabBarProps)
           borderWidth: 1,
           borderColor: alpha.glassBorder,
           boxShadow: [
-            { offsetX: 0, offsetY: 1, blurRadius: 1, spreadDistance: 0, color: 'rgba(255,255,255,0.95)', inset: true },
-            { offsetX: 0, offsetY: -10, blurRadius: 18, spreadDistance: 0, color: 'rgba(255,255,255,0.2)', inset: true },
+            {
+              offsetX: 0,
+              offsetY: 1,
+              blurRadius: 1,
+              spreadDistance: 0,
+              color: 'rgba(255,255,255,0.95)',
+              inset: true,
+            },
+            {
+              offsetX: 0,
+              offsetY: -10,
+              blurRadius: 18,
+              spreadDistance: 0,
+              color: 'rgba(255,255,255,0.2)',
+              inset: true,
+            },
             { offsetX: 0, offsetY: 16, blurRadius: 36, spreadDistance: 0, color: alpha.navShadow },
-            { offsetX: 0, offsetY: 2, blurRadius: 6, spreadDistance: 0, color: alpha.navShadowNear },
+            {
+              offsetX: 0,
+              offsetY: 2,
+              blurRadius: 6,
+              spreadDistance: 0,
+              color: alpha.navShadowNear,
+            },
           ],
         }}
       >
         {allowBlur ? (
-          <BlurView intensity={40} tint="light" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+          <BlurView
+            intensity={40}
+            tint="light"
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          />
         ) : (
-          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: color.cream }} />
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: color.cream,
+            }}
+          />
         )}
         <Gradient id={`gl${uid}`} top={alpha.glassTop} bottom={alpha.glassBottom} radius={0} />
         <Sheen id={`sh${uid}`} />
@@ -112,7 +173,9 @@ export function TabBar({ items, activeKey, onSelect, bottomInset }: TabBarProps)
                 key={it.key}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: on }}
-                accessibilityLabel={it.accessibilityLabel ?? [it.label, it.tag, it.badge].filter(Boolean).join(', ')}
+                accessibilityLabel={
+                  it.accessibilityLabel ?? [it.label, it.tag, it.badge].filter(Boolean).join(', ')
+                }
                 onPress={() => onSelect(it.key)}
                 testID={`tab-${it.key}`}
                 style={{
@@ -126,20 +189,51 @@ export function TabBar({ items, activeKey, onSelect, bottomInset }: TabBarProps)
                   ...(on
                     ? {
                         boxShadow: [
-                          { offsetX: 0, offsetY: 1, blurRadius: 1, spreadDistance: 0, color: 'rgba(255,255,255,0.95)', inset: true },
-                          { offsetX: 0, offsetY: -2, blurRadius: 4, spreadDistance: 0, color: 'rgba(125,161,26,0.25)', inset: true },
-                          { offsetX: 0, offsetY: 6, blurRadius: 14, spreadDistance: 0, color: alpha.tabOnGlow },
+                          {
+                            offsetX: 0,
+                            offsetY: 1,
+                            blurRadius: 1,
+                            spreadDistance: 0,
+                            color: 'rgba(255,255,255,0.95)',
+                            inset: true,
+                          },
+                          {
+                            offsetX: 0,
+                            offsetY: -2,
+                            blurRadius: 4,
+                            spreadDistance: 0,
+                            color: 'rgba(125,161,26,0.25)',
+                            inset: true,
+                          },
+                          {
+                            offsetX: 0,
+                            offsetY: 6,
+                            blurRadius: 14,
+                            spreadDistance: 0,
+                            color: alpha.tabOnGlow,
+                          },
                         ],
                       }
                     : null),
                 }}
               >
-                {on ? <Gradient id={`on${uid}${it.key}`} top={alpha.tabOnTop} bottom={alpha.tabOnBottom} radius={radii.navItem} /> : null}
+                {on ? (
+                  <Gradient
+                    id={`on${uid}${it.key}`}
+                    top={alpha.tabOnTop}
+                    bottom={alpha.tabOnBottom}
+                    radius={radii.navItem}
+                  />
+                ) : null}
                 {/* Vue enveloppe : au-dessus du dégradé absolu (ordre de peinture web). */}
                 <View>
                   <Icon name={it.icon} size={21} tint={ink} filled={on} />
                 </View>
-                <RNText style={[label, { color: ink, textTransform: 'uppercase' }]} numberOfLines={1} maxFontSizeMultiplier={1.3}>
+                <RNText
+                  style={[label, { color: ink, textTransform: 'uppercase' }]}
+                  numberOfLines={1}
+                  maxFontSizeMultiplier={1.3}
+                >
                   {it.label}
                 </RNText>
                 {it.badge ? (

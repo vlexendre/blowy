@@ -173,6 +173,12 @@ export function venueCompensationAmount(funding: SeatFunding | null, paidCents: 
 export const VAT_RATE_PERMILLE = 200;
 export const excludingVat = (ttcCents: number): number => cents(Math.round((cents(ttcCents) * 1000) / (1000 + VAT_RATE_PERMILLE)));
 
+/**
+ * V5.10 (jury tour 11) : reversement au lieu de l'activité prépayée — intégral, au régime du lieu : TTC par défaut,
+ * HT si le contrat le prévoit (Blowy garde alors la TVA collectée pour la reverser).
+ */
+export const activityPayoutAmount = (ttcCents: number, taxBasis: 'TTC' | 'HT'): number => (taxBasis === 'HT' ? excludingVat(ttcCents) : cents(ttcCents));
+
 // ------------------------------------------------------------------ paramètres (depuis @blowy/tuning)
 /** Paramètres V5 (lus du tuning ; valeurs absentes du tuning : `PENDING_PAYMENTS_TUNING`, demandées à B). */
 export interface PaymentsParams {

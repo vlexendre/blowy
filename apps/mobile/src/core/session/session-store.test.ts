@@ -19,14 +19,12 @@ describe('session : restauration avant les requêtes (bug du banc)', () => {
 
   it('currentToken attend la restauration au lieu de répondre null', async () => {
     const pending = currentToken();
-    await useSession
-      .getState()
-      .restore(
-        memory({
-          'blowy.session.token': 'tok',
-          'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2099-01-01T00:00:00Z' }),
-        }),
-      );
+    await useSession.getState().restore(
+      memory({
+        'blowy.session.token': 'tok',
+        'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2099-01-01T00:00:00Z' }),
+      }),
+    );
     await expect(pending).resolves.toBe('tok');
   });
 
@@ -38,14 +36,12 @@ describe('session : restauration avant les requêtes (bug du banc)', () => {
   });
 
   it('session expirée → déconnecté', async () => {
-    await useSession
-      .getState()
-      .restore(
-        memory({
-          'blowy.session.token': 'tok',
-          'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2000-01-01T00:00:00Z' }),
-        }),
-      );
+    await useSession.getState().restore(
+      memory({
+        'blowy.session.token': 'tok',
+        'blowy.session.meta': JSON.stringify({ userId: 'u', expiresAt: '2000-01-01T00:00:00Z' }),
+      }),
+    );
     expect(useSession.getState().status).toBe('signedOut');
   });
 });

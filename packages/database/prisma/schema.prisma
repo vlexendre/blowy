@@ -2729,6 +2729,8 @@ enum ActivityKind {
   WORKSHOP
   GAMES
   EXHIBITION
+  /// V5.9 : sport collectif (« Foot à 5 »).
+  SPORT
 }
 
 enum LookingFor {
@@ -3017,38 +3019,44 @@ model NeighborhoodSlotTemplate {
 
 /// Lieu partenaire (spec-v5 §2.3). Adresse et coordonnées révélées aux seuls confirmés au verrouillage.
 model Venue {
-  id                String         @id @default(uuid(7)) @db.Uuid
-  neighborhoodId    String         @db.Uuid
-  name              String
-  addressLine       String
-  postalCode        String
-  city              String
+  id                      String           @id @default(uuid(7)) @db.Uuid
+  neighborhoodId          String           @db.Uuid
+  name                    String
+  addressLine             String
+  postalCode              String
+  city                    String
   /// Coordonnées servant au check-in uniquement ; jamais une distance affichée.
-  lat               Float
-  lng               Float
-  offerKey          String
-  photoUrl          String?
-  activities        ActivityKind[]
+  lat                     Float
+  lng                     Float
+  offerKey                String
+  photoUrl                String?
+  activities              ActivityKind[]
   /// Tables-sorties simultanées par créneau.
-  tablesPerSlot     Int            @default(1)
-  status            VenueStatus    @default(ACTIVE)
-  accessibilityTags String[]
+  tablesPerSlot           Int              @default(1)
+  status                  VenueStatus      @default(ACTIVE)
+  accessibilityTags       String[]
   /// Référence du secret HMAC du code de repli (le secret est dérivé côté serveur ; jamais en clair ici).
-  checkinSecretRef  String
+  checkinSecretRef        String
   /// Visible staff ops uniquement.
-  staffContact      String?
+  staffContact            String?
   /// V5.5 (D-055) : ambiance du lieu (CALM | LIVELY) ; null = convient à tous.
-  ambiance          Ambiance?
+  ambiance                Ambiance?
   /// V5.6 (E15) : contrat bilatéral — signature du lieu (projection de l'espace lieu) et contre-signature Blowy.
-  contractVersion    String?
-  contractSignedAt   DateTime?      @db.Timestamptz(3)
-  contractSignerName String?
-  blowySignedAt      DateTime?      @db.Timestamptz(3)
-  blowySignerName    String?
+  contractVersion         String?
+  contractSignedAt        DateTime?        @db.Timestamptz(3)
+  contractSignerName      String?
+  blowySignedAt           DateTime?        @db.Timestamptz(3)
+  blowySignerName         String?
   /// V5.7 (E30, D-080) : message d'accueil écrit par le lieu (≤ 280 car., texte seul, modéré) ; montré aux seules places confirmées à partir de la confirmation.
+  /// V5.9 : activité précise du lieu (`@blowy/content` `ACTIVITY_DETAILS`, ex. `ceramics_workshop`) ; null = libellé générique de l'activité.
+  activityDetailKey       String?
+  /// V5.10 (jury tour 11) : prix TTC de l'activité par personne (centimes), prépayé dans l'app avec la place ; null = prix du catalogue.
+  activityPriceCents      Int?
+  /// V5.10 : régime du reversement de l'activité au lieu (TTC par défaut ; HT = Blowy reverse le montant hors taxe).
+  activityTaxBasis        ActivityTaxBasis @default(TTC)
   welcomeMessage          String?
-  welcomeMessageUpdatedAt DateTime?      @db.Timestamptz(3)
-  createdAt         DateTime       @default(now()) @db.Timestamptz(3)
+  welcomeMessageUpdatedAt DateTime?        @db.Timestamptz(3)
+  createdAt               DateTime         @default(now()) @db.Timestamptz(3)
 
   neighborhood Neighborhood @relation(fields: [neighborhoodId], references: [id], onDelete: Restrict)
   slots        VenueSlot[]
@@ -3090,21 +3098,21 @@ model WaitlistEntry {
 
 /// Préférences de sortie V5.1 (D.13–D.14, C.10, B.8). Déclaratives ; jamais de géolocalisation.
 model OutingPreferences {
-  userId                String         @id @db.Uuid
-  groupAgeMin           Int
-  groupAgeMax           Int
+  userId                   String         @id @db.Uuid
+  groupAgeMin              Int
+  groupAgeMax              Int
   /// Vide = toutes les activités.
-  activities            ActivityKind[]
-  maxTravelMinutes      Int            @default(30)
+  activities               ActivityKind[]
+  maxTravelMinutes         Int            @default(30)
   /// V5.5 (D-055) : ambiance souhaitée (ANY = peu importe).
-  ambiance              Ambiance       @default(ANY)
+  ambiance                 Ambiance       @default(ANY)
   /// V5.4 (B.9) : garde alternée — « une semaine sur deux » à partir de cette semaine ISO (`YYYY-Www`, off) ; null = non.
-  alternateWeeksOffFrom String?
+  alternateWeeksOffFrom    String?
   /// V5.6 (B.13) : « un week-end sur deux » à partir de cette semaine ISO (week-end de cette semaine off) ; null = non.
   alternateWeekendsOffFrom String?
   /// V5.7 (E32, D-084) : « Montrer au groupe : je préfère le calme » (badge sur le pet, à partir de FORMING) ; désactivé par défaut.
-  showCalmBadge         Boolean        @default(false)
-  updatedAt             DateTime       @updatedAt @db.Timestamptz(3)
+  showCalmBadge            Boolean        @default(false)
+  updatedAt                DateTime       @updatedAt @db.Timestamptz(3)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -3398,27 +3406,27 @@ model Duo {
 
 /// Rendez-vous à deux (spec-v5 §2.12) — lieu public partenaire ; un seul PROPOSED/CONFIRMED par duo (index partiel).
 model DuoDate {
-  id                String        @id @default(uuid(7)) @db.Uuid
-  duoId             String        @db.Uuid
-  proposedByUserId  String        @db.Uuid
-  venueId           String        @db.Uuid
-  startsAt          DateTime      @db.Timestamptz(3)
-  endsAt            DateTime      @db.Timestamptz(3)
-  status            DuoDateStatus
-  checkinLowAt      DateTime?     @db.Timestamptz(3)
-  checkinHighAt     DateTime?     @db.Timestamptz(3)
-  votesCloseAt      DateTime?     @db.Timestamptz(3)
-  votesClosedAt     DateTime?     @db.Timestamptz(3)
-  ballotsPurgedAt   DateTime?     @db.Timestamptz(3)
-  cancelledByUserId String?       @db.Uuid
+  id                  String        @id @default(uuid(7)) @db.Uuid
+  duoId               String        @db.Uuid
+  proposedByUserId    String        @db.Uuid
+  venueId             String        @db.Uuid
+  startsAt            DateTime      @db.Timestamptz(3)
+  endsAt              DateTime      @db.Timestamptz(3)
+  status              DuoDateStatus
+  checkinLowAt        DateTime?     @db.Timestamptz(3)
+  checkinHighAt       DateTime?     @db.Timestamptz(3)
+  votesCloseAt        DateTime?     @db.Timestamptz(3)
+  votesClosedAt       DateTime?     @db.Timestamptz(3)
+  ballotsPurgedAt     DateTime?     @db.Timestamptz(3)
+  cancelledByUserId   String?       @db.Uuid
   /// Annulation à moins de 24 h (comptée en fiabilité) — jamais montrée à l'autre.
-  lateCancel        Boolean       @default(false)
+  lateCancel          Boolean       @default(false)
   /// V5.6 (E13) : table de 2 au lieu partenaire — créneau du lieu (si le lieu publie ses créneaux) et heure à laquelle la réservation est entrée dans l'effectif (veille 18 h).
   venueSlotId         String?       @db.Uuid
   reservationLockedAt DateTime?     @db.Timestamptz(3)
-  createdAt         DateTime      @db.Timestamptz(3)
-  updatedAt         DateTime      @db.Timestamptz(3)
-  version           Int           @default(0)
+  createdAt           DateTime      @db.Timestamptz(3)
+  updatedAt           DateTime      @db.Timestamptz(3)
+  version             Int           @default(0)
 
   duo      Duo                     @relation(fields: [duoId], references: [id], onDelete: Cascade)
   venue    Venue                   @relation(fields: [venueId], references: [id], onDelete: Restrict)
@@ -3885,4 +3893,10 @@ model VenueIncident {
 
   @@index([venueId, createdAt])
   @@index([createdAt])
+}
+
+/// V5.10 : régime de reversement de l'activité prépayée au lieu.
+enum ActivityTaxBasis {
+  TTC
+  HT
 }

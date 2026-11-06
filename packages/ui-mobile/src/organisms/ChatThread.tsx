@@ -13,7 +13,12 @@ export interface ChatThreadProps {
 }
 
 /** Fil de messages inversé (plus récent en bas). */
-export function ChatThread({ items, onEndReached, header, footerSpace = space.lg }: ChatThreadProps) {
+export function ChatThread({
+  items,
+  onEndReached,
+  header,
+  footerSpace = space.lg,
+}: ChatThreadProps) {
   return (
     <FlatList
       inverted

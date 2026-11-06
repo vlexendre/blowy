@@ -26,6 +26,8 @@ export interface DisplayMessage {
   messageId: string | null;
   /** V5.7 : auteur d'un message du chat de sortie (pet, puis prénom après la veille ; badge calme). */
   author?: MessageView['author'];
+  /** V5.9 : réponse à une question soufflée (fil « 3 mots »). */
+  promptId?: string;
 }
 
 export function bubbleFor(m: MessageView, revealed: ReadonlySet<string>): DisplayMessage {
@@ -36,6 +38,7 @@ export function bubbleFor(m: MessageView, revealed: ReadonlySet<string>): Displa
     messageId: m.id,
     systemTemplate: m.systemTemplate,
     author: m.author,
+    promptId: m.promptId,
   };
   // V5.7 (E30) : `system.venue_welcome` est le seul message système avec un texte (celui du lieu).
   if (m.kind === 'SYSTEM')

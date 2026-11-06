@@ -263,7 +263,11 @@ export interface OutingsRepository {
   /** V5.7 (E30) : message d'accueil du lieu (null = aucun). */
   venueWelcomeMessage(venueId: string): Promise<string | null>;
   /** V5.6 (§7.5) : contexte de la vue sortie (ambiance et quartier du lieu ; quartier et activités du lecteur). */
-  outingViewExtras(outingId: string, viewerId: string): Promise<{ venueId: string; venueAmbiance: 'CALM' | 'LIVELY' | null; neighborhoodId: string; activity: string; viewerHome: string | null; viewerActivities: string[] } | null>;
+  outingViewExtras(outingId: string, viewerId: string): Promise<{ venueId: string; venueAmbiance: 'CALM' | 'LIVELY' | null; neighborhoodId: string; activity: string; viewerHome: string | null; viewerHomeLabel: string | null; viewerActivities: string[]; activityDetailKey: string | null; activityPriceCents?: number | null; durationMinutes: number } | null>;
+  /** V5.10 : activité à prépayer avec la place (null = rien à prépayer). */
+  activityQuote?(scope: TxScope | null, outingId: string): Promise<{ cents: number; taxBasis: 'TTC' | 'HT' } | null>;
+  /** V5.9 : trajet à pied estimé dans un quartier. */
+  walkWithin(neighborhoodId: string): Promise<number | null>;
   /** V5.6 (E11) : temps de trajet typique de `from` vers `to` (null si inconnu). */
   travelMinutes(from: string, to: string): Promise<number | null>;
   /** Idem, en disant s'il s'agit d'une estimation (pas de ligne ops). */

@@ -13,19 +13,34 @@ export interface A11yPrefs {
   allowBlur: boolean;
 }
 
-const DEFAULT: A11yPrefs = { reduceMotion: false, reduceTransparency: false, allowBlur: Platform.OS === 'ios' || Platform.OS === 'web' };
+const DEFAULT: A11yPrefs = {
+  reduceMotion: false,
+  reduceTransparency: false,
+  allowBlur: Platform.OS === 'ios' || Platform.OS === 'web',
+};
 const A11yContext = createContext<A11yPrefs>(DEFAULT);
 
-export function A11yPrefsProvider({ children, override }: { children: ReactNode; override?: Partial<A11yPrefs> }) {
+export function A11yPrefsProvider({
+  children,
+  override,
+}: {
+  children: ReactNode;
+  override?: Partial<A11yPrefs>;
+}) {
   const [reduceMotion, setReduceMotion] = useState(false);
   const [reduceTransparency, setReduceTransparency] = useState(false);
 
   useEffect(() => {
     let alive = true;
     void AccessibilityInfo.isReduceMotionEnabled().then((v) => alive && setReduceMotion(v));
-    void AccessibilityInfo.isReduceTransparencyEnabled().then((v) => alive && setReduceTransparency(v));
+    void AccessibilityInfo.isReduceTransparencyEnabled().then(
+      (v) => alive && setReduceTransparency(v),
+    );
     const a = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
-    const b = AccessibilityInfo.addEventListener('reduceTransparencyChanged', setReduceTransparency);
+    const b = AccessibilityInfo.addEventListener(
+      'reduceTransparencyChanged',
+      setReduceTransparency,
+    );
     return () => {
       alive = false;
       a.remove();
@@ -34,7 +49,11 @@ export function A11yPrefsProvider({ children, override }: { children: ReactNode;
   }, []);
 
   const value = useMemo<A11yPrefs>(() => {
-    const base = { reduceMotion, reduceTransparency, allowBlur: (Platform.OS === 'ios' || Platform.OS === 'web') && !reduceTransparency };
+    const base = {
+      reduceMotion,
+      reduceTransparency,
+      allowBlur: (Platform.OS === 'ios' || Platform.OS === 'web') && !reduceTransparency,
+    };
     return { ...base, ...override };
   }, [reduceMotion, reduceTransparency, override]);
 

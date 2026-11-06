@@ -16,7 +16,14 @@ export interface TabScreenTemplateProps {
 }
 
 /** Écran racine d'onglet : réserve l'espace de la barre flottante. */
-export function TabScreenTemplate({ title, topBar, banner, children, scroll = true, testID }: TabScreenTemplateProps) {
+export function TabScreenTemplate({
+  title,
+  topBar,
+  banner,
+  children,
+  scroll = true,
+  testID,
+}: TabScreenTemplateProps) {
   return (
     <ScreenFrame banner={banner} scroll={scroll} bottomSpace={TAB_BAR_SPACE} testID={testID}>
       {topBar ? <View style={styles.top}>{topBar}</View> : null}
@@ -26,4 +33,11 @@ export function TabScreenTemplate({ title, topBar, banner, children, scroll = tr
   );
 }
 
-const styles = StyleSheet.create({ top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.sm } });
+const styles = StyleSheet.create({
+  top: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.sm,
+  },
+});

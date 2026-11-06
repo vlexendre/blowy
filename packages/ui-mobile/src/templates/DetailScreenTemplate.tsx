@@ -18,10 +18,28 @@ export interface DetailScreenTemplateProps {
 }
 
 /** Écran poussé dans une pile : en-tête retour + contenu + pied optionnel. */
-export function DetailScreenTemplate({ title, eyebrow, lead, onBack, backLabel, trailing, banner, footer, children, scroll = true, testID }: DetailScreenTemplateProps) {
+export function DetailScreenTemplate({
+  title,
+  eyebrow,
+  lead,
+  onBack,
+  backLabel,
+  trailing,
+  banner,
+  footer,
+  children,
+  scroll = true,
+  testID,
+}: DetailScreenTemplateProps) {
   return (
     <ScreenFrame banner={banner} footer={footer} scroll={scroll} testID={testID}>
-      <Header title={title} eyebrow={eyebrow} onBack={onBack} backLabel={backLabel} trailing={trailing} />
+      <Header
+        title={title}
+        eyebrow={eyebrow}
+        onBack={onBack}
+        backLabel={backLabel}
+        trailing={trailing}
+      />
       {lead ? (
         <Text variant="body" tone="inkSoft">
           {lead}

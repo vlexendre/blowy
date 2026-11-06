@@ -11,7 +11,6 @@ export interface CardProps extends ViewProps {
   children?: ReactNode;
 }
 
-
 export function Card({ variant = 'card', highlighted, style, children, ...rest }: CardProps) {
   return (
     <View {...rest} style={[cardStyle(variant, highlighted), style]}>

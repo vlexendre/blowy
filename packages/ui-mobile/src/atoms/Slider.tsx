@@ -20,7 +20,14 @@ export interface SliderProps {
 
 const THUMB = 28;
 
-export function Slider({ value, onChange, accessibilityLabel, accessibilityValueText, step = 0.1, testID }: SliderProps) {
+export function Slider({
+  value,
+  onChange,
+  accessibilityLabel,
+  accessibilityValueText,
+  step = 0.1,
+  testID,
+}: SliderProps) {
   const [width, setWidth] = useState(0);
   const toValue = (x: number) => {
     const usable = Math.max(1, width - THUMB);
@@ -30,7 +37,8 @@ export function Slider({ value, onChange, accessibilityLabel, accessibilityValue
   const pan = usePanGesture({ runOnJS: true, onUpdate: (e) => onChange(toValue(e.x)) });
   const tap = useTapGesture({ runOnJS: true, onActivate: (e) => onChange(toValue(e.x)) });
   const left = ((value + 1) / 2) * Math.max(0, width - THUMB);
-  const adjust = (d: number) => onChange(Math.max(-1, Math.min(1, Math.round((value + d) / step) * step)));
+  const adjust = (d: number) =>
+    onChange(Math.max(-1, Math.min(1, Math.round((value + d) / step) * step)));
 
   return (
     <View
@@ -39,7 +47,9 @@ export function Slider({ value, onChange, accessibilityLabel, accessibilityValue
       accessibilityLabel={accessibilityLabel}
       accessibilityValue={{ text: accessibilityValueText }}
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-      onAccessibilityAction={(e) => adjust(e.nativeEvent.actionName === 'increment' ? step * 2 : -step * 2)}
+      onAccessibilityAction={(e) =>
+        adjust(e.nativeEvent.actionName === 'increment' ? step * 2 : -step * 2)
+      }
       testID={testID}
       onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
       style={styles.hit}
@@ -63,7 +73,21 @@ export function Slider({ value, onChange, accessibilityLabel, accessibilityValue
 const styles = StyleSheet.create({
   hit: { height: 44, justifyContent: 'center' },
   inner: { height: 44, justifyContent: 'center' },
-  track: { height: 10, borderRadius: radius.pill, overflow: 'hidden', flexDirection: 'row', marginHorizontal: space.xxs },
+  track: {
+    height: 10,
+    borderRadius: radius.pill,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    marginHorizontal: space.xxs,
+  },
   seg: { flex: 1 },
-  thumb: { position: 'absolute', width: THUMB, height: THUMB, borderRadius: THUMB / 2, backgroundColor: color.white, borderWidth: 4, borderColor: color.ink },
+  thumb: {
+    position: 'absolute',
+    width: THUMB,
+    height: THUMB,
+    borderRadius: THUMB / 2,
+    backgroundColor: color.white,
+    borderWidth: 4,
+    borderColor: color.ink,
+  },
 });

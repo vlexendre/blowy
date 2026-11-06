@@ -12,8 +12,12 @@ export type PortraitKey = V5PortraitKey;
 
 const HAIR: Record<string, (fill: string) => React.ReactNode> = {
   bob: (f) => <Path d="M30 40 Q30 18 50 17 Q70 18 70 40 Q66 28 50 27 Q34 28 30 40Z" fill={f} />,
-  longer: (f) => <Path d="M27 66 Q24 20 50 16 Q76 20 73 66 L66 66 Q68 32 50 28 Q32 32 34 66Z" fill={f} />,
-  long: (f) => <Path d="M28 56 Q26 18 50 17 Q74 18 72 56 L66 56 Q67 30 50 28 Q33 30 34 56Z" fill={f} />,
+  longer: (f) => (
+    <Path d="M27 66 Q24 20 50 16 Q76 20 73 66 L66 66 Q68 32 50 28 Q32 32 34 66Z" fill={f} />
+  ),
+  long: (f) => (
+    <Path d="M28 56 Q26 18 50 17 Q74 18 72 56 L66 56 Q67 30 50 28 Q33 30 34 56Z" fill={f} />
+  ),
   curly: (f) => (
     <G fill={f}>
       <Circle cx={34} cy={30} r={9} />
@@ -46,13 +50,29 @@ export function portraitBackground(who: PortraitKey): string {
   return `linear-gradient(160deg, ${p.from}, ${p.to})`;
 }
 
-export function Portrait({ who, heightRatio, withBackground = true, bottomInset = 0, style }: PortraitProps) {
+export function Portrait({
+  who,
+  heightRatio,
+  withBackground = true,
+  bottomInset = 0,
+  style,
+}: PortraitProps) {
   const p = v5Portraits[who];
   const ratio = heightRatio ?? (p.hairStyle === 'longer' ? 0.96 : 0.88);
   return (
-    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ overflow: 'hidden' }, withBackground ? { backgroundImage: portraitBackground(who) } : null, style]}>
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[
+        { overflow: 'hidden' },
+        withBackground ? { backgroundImage: portraitBackground(who) } : null,
+        style,
+      ]}
+    >
       <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: bottomInset }}>
-        <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: `${ratio * 100}%` }}>
+        <View
+          style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: `${ratio * 100}%` }}
+        >
           <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMax meet">
             <Path d="M14 100 Q16 70 50 68 Q84 70 86 100Z" fill={v5Alpha.ink28} />
             <Rect x={43} y={54} width={14} height={16} rx={6} fill={p.skin} />

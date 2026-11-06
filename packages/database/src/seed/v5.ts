@@ -127,6 +127,9 @@ export async function seedV5(db: Db, now: Date): Promise<{ accounts: string[]; o
       venue('cafe-basilique', NB.sd, 'Café de la Basilique', '2 rue de la République', '93200', 'Saint-Denis', 48.9356, 2.3594, 'venue.offer.table_reserved', ['DRINK_COFFEE']),
     ],
   });
+  // V5.9 : activité précise (libellés de design/v5/facts.json).
+  await db.venue.updateMany({ where: { name: 'Café des Oiseaux' }, data: { activityDetailKey: 'board_games' } });
+  await db.venue.updateMany({ where: { name: 'Bloc Oberkampf' }, data: { activityDetailKey: 'bouldering' } });
 
   // ------------------------------------------------------------ personnes V5 (nouvelles)
   for (const p of NEW_PEOPLE) {

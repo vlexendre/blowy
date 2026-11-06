@@ -29,7 +29,7 @@ import {
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { dayLongTime, dayShortTime } from '../../../core/format/dates';
+import { dayLongTime, dayShortTime, weekdayName } from '../../../core/format/dates';
 import { resolveMedia } from '../../../core/media/resolve';
 import { paths } from '../../../core/navigation/paths';
 import { errorCode } from '../../../core/api/errors';
@@ -37,10 +37,10 @@ import { t, tDynamic } from '../../../i18n';
 import { useCityInsights, useMe, useMyNeighborhood } from '../../account';
 import { useLeaveBand } from '../../band';
 import { useConversation } from '../../conversations';
-import { petSprite, useMyPet } from '../../pets';
+import { otherPetSprite, petSprite, useMyPet } from '../../pets';
 import { useDevicePrefs } from '../../settings';
 import { LoadingScreen } from '../../system';
-import { bracketLabel } from '../../outings';
+import { bracketLabel, useMyOuting } from '../../outings';
 import { useAllowances } from '../../payments';
 import {
   useAnswerProposal,
@@ -54,8 +54,8 @@ import {
 } from '../api/hooks';
 
 const isLive = (d: DuoView) => !['EXPIRED', 'CLOSED', 'LEFT'].includes(d.status);
-const nameOf = (d: DuoView) =>
-  d.status === 'EXCHANGE' ? `${d.other.firstName.charAt(0)}.` : d.other.firstName;
+/** V5.8 §1 : le duo n'existe qu'au double oui → prénom en entier dès l'écriture. */
+const nameOf = (d: DuoView) => d.other.firstName;
 const back = (fallback: string) => () =>
   router.canGoBack() ? router.back() : router.replace(fallback as never);
 
@@ -105,6 +105,7 @@ function Steps() {
 
 // ---------------------------------------------------------------- 37 · Voie Duo
 export function DuoLaneScreen() {
+  const myOuting = useMyOuting();
   const lane = useDuoLane();
   const duos = useDuos();
   const allowances = useAllowances();
@@ -191,7 +192,9 @@ export function DuoLaneScreen() {
           style={{ minHeight: 44, justifyContent: 'center' }}
         >
           <BodyText size={13} weight={800} color={v5.lime}>
-            {t('duo.orGroup')}
+            {myOuting.outing.data
+              ? t('duo.orGroupDay', { day: weekdayName(myOuting.outing.data.startsAt) })
+              : t('duo.orGroupAny')}
           </BodyText>
         </Tap>
       </View>
@@ -453,7 +456,11 @@ function DuoExchange({ d }: { d: DuoView }) {
           title={t('duo.t1')}
           text={
             t('duo.t1Text', {
-              since: d.exchange ? dayLongTime(Date.parse(d.exchange.endsAt) - 48 * 3_600_000) : '',
+              since: d.openedAt
+                ? dayLongTime(d.openedAt)
+                : d.exchange
+                  ? dayLongTime(Date.parse(d.exchange.endsAt) - 48 * 3_600_000)
+                  : '',
             }) + (d.projectCompatible ? ` ${t('duo.t1Compatible')}` : '')
           }
           active
@@ -583,7 +590,7 @@ function DuoFaces({ d }: { d: DuoView }) {
                 />
               ) : undefined
             }
-            petSprite={petSprite(d.other.pet.species)}
+            petSprite={otherPetSprite(d.other.pet.species)}
             title={d.other.firstName}
             verifiedLabel={t('faces.verified')}
             watermark={

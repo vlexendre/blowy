@@ -15,14 +15,26 @@ export interface GaugeProps {
   pendingLabel?: string;
 }
 
-export function Gauge({ label, value, valueText, criticalLabel, pending, pendingLabel }: GaugeProps) {
+export function Gauge({
+  label,
+  value,
+  valueText,
+  criticalLabel,
+  pending,
+  pendingLabel,
+}: GaugeProps) {
   const critical = !!criticalLabel;
   return (
     <View
       accessible
       accessibilityRole="progressbar"
       accessibilityLabel={label}
-      accessibilityValue={{ min: 0, max: 100, now: Math.round(value), text: [valueText, criticalLabel, pending ? pendingLabel : null].filter(Boolean).join(', ') }}
+      accessibilityValue={{
+        min: 0,
+        max: 100,
+        now: Math.round(value),
+        text: [valueText, criticalLabel, pending ? pendingLabel : null].filter(Boolean).join(', '),
+      }}
       style={styles.wrap}
     >
       <View style={styles.row}>
@@ -33,7 +45,11 @@ export function Gauge({ label, value, valueText, criticalLabel, pending, pending
           {critical ? `${criticalLabel} · ${valueText}` : valueText}
         </Text>
       </View>
-      <ProgressBar value={value / 100} fill={critical ? color.danger : color.ink} pending={pending} />
+      <ProgressBar
+        value={value / 100}
+        fill={critical ? color.danger : color.ink}
+        pending={pending}
+      />
     </View>
   );
 }

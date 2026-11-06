@@ -131,7 +131,57 @@ export const ACTIVITY_ENTRIES: Array<I18nEntry<ActivityKind>> = [
   { id: 'WORKSHOP', key: 'activity.workshop', fr: 'Atelier' },
   { id: 'GAMES', key: 'activity.games', fr: 'Jeux' },
   { id: 'EXHIBITION', key: 'activity.exhibition', fr: 'Expo' },
+  { id: 'SPORT', key: 'activity.sport', fr: 'Sport' },
 ];
+
+/**
+ * V5.9 : activité PRÉCISE d'un lieu (libellés de `design/v5/facts.json`). Rattachée au lieu (`Venue.activityDetailKey`) ;
+ * servie dans `OutingView.activityDetail` dès la proposition (l'activité est visible à tous les états, §3.1), jamais le
+ * lieu lui-même. `durationMinutes` = durée typique ; la vue sert la durée réelle de la sortie. `ledBy` : qui mène
+ * l'activité (atelier encadré par le lieu) ; absent = personne (aucune animation).
+ */
+export interface ActivityDetailEntry extends I18nEntry {
+  kind: ActivityKind;
+  durationMinutes: number;
+  ledByKey?: string;
+  ledByFr?: string;
+  /**
+   * V5.10 (jury tour 11) : prix TTC de l'activité par personne, en centimes, PRÉPAYÉ dans l'app avec la place et
+   * reversé intégralement au lieu pour chaque place confirmée (honorée ou non). Absent = rien à prépayer
+   * (consommation réglée sur place). Le lieu peut le remplacer (`Venue.activityPriceCents`).
+   */
+  priceCents?: number;
+}
+const det = (id: string, kind: ActivityKind, fr: string, durationMinutes: number, ledByFr?: string, priceCents?: number): ActivityDetailEntry => ({
+  id,
+  key: `activity.detail.${id}`,
+  kind,
+  fr,
+  durationMinutes,
+  ...(ledByFr ? { ledByKey: `activity.detail.${id}.led_by`, ledByFr } : {}),
+  ...(priceCents ? { priceCents } : {}),
+});
+export const ACTIVITY_DETAILS: ActivityDetailEntry[] = [
+  det('drinks', 'DRINK_COFFEE', 'Verre ou café', 120),
+  det('board_games', 'GAMES', 'Jeux de société', 120),
+  det('bouldering', 'CLIMBING', 'Bloc d’escalade', 120, undefined, 1500),
+  det('ceramics_workshop', 'WORKSHOP', 'Atelier céramique', 120, 'Encadré par le lieu', 3500),
+  det('cooking_workshop', 'WORKSHOP', 'Atelier cuisine', 120, 'Encadré par le lieu', 3900),
+  det('five_a_side', 'SPORT', 'Foot à 5', 60, undefined, 900),
+  det('brunch', 'BRUNCH', 'Brunch', 120),
+  det('exhibition', 'EXHIBITION', 'Expo', 90, undefined, 1200),
+];
+export const activityDetailOf = (key: string | null | undefined): ActivityDetailEntry | undefined => (key ? ACTIVITY_DETAILS.find((d) => d.id === key) : undefined);
+/**
+ * V5.10 : prix TTC (centimes) de l'activité à prépayer pour une sortie — le prix du lieu s'il en a fixé un, sinon
+ * celui du catalogue ; 0 si l'activité précise du lieu ne correspond pas à l'activité de la sortie.
+ */
+export const activityPriceCentsOf = (i: { detailKey: string | null | undefined; outingActivity: string; venuePriceCents?: number | null }): number => {
+  const d = activityDetailOf(i.detailKey);
+  if (!d || d.kind !== i.outingActivity) return 0;
+  const p = i.venuePriceCents ?? d.priceCents ?? 0;
+  return Number.isInteger(p) && p > 0 ? p : 0;
+};
 
 // ---------------------------------------------------------------- notifications V5 (§9)
 export interface NotificationTemplateV5 {

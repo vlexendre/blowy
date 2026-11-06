@@ -4,7 +4,8 @@ import { Button } from '../atoms/Button';
 import { Icon } from '../atoms/Icon';
 import { Text } from '../atoms/Text';
 
-export type BubbleState = 'published' | 'pending' | 'failed' | 'warned-hidden' | 'warned-revealed' | 'system' | 'held';
+export type BubbleState =
+  'published' | 'pending' | 'failed' | 'warned-hidden' | 'warned-revealed' | 'system' | 'held';
 
 export interface MessageBubbleProps {
   mine: boolean;
@@ -20,7 +21,17 @@ export interface MessageBubbleProps {
   time?: string;
 }
 
-export function MessageBubble({ mine, body, state, statusLabel, revealLabel, onReveal, retryLabel, onRetry, time }: MessageBubbleProps) {
+export function MessageBubble({
+  mine,
+  body,
+  state,
+  statusLabel,
+  revealLabel,
+  onReveal,
+  retryLabel,
+  onRetry,
+  time,
+}: MessageBubbleProps) {
   if (state === 'system') {
     return (
       <View style={styles.system} accessible accessibilityLabel={body ?? ''}>
@@ -37,8 +48,15 @@ export function MessageBubble({ mine, body, state, statusLabel, revealLabel, onR
     <View style={[styles.wrap, mine ? styles.mine : styles.theirs]}>
       <View
         accessible
-        accessibilityLabel={[hidden ? statusLabel : body, !hidden ? statusLabel : null, time].filter(Boolean).join(', ')}
-        style={[styles.bubble, { backgroundColor: bg }, state === 'pending' || state === 'held' ? styles.pending : null, mine ? styles.tailMine : styles.tailTheirs]}
+        accessibilityLabel={[hidden ? statusLabel : body, !hidden ? statusLabel : null, time]
+          .filter(Boolean)
+          .join(', ')}
+        style={[
+          styles.bubble,
+          { backgroundColor: bg },
+          state === 'pending' || state === 'held' ? styles.pending : null,
+          mine ? styles.tailMine : styles.tailTheirs,
+        ]}
       >
         {hidden ? (
           <View style={styles.hiddenRow}>
@@ -53,14 +71,18 @@ export function MessageBubble({ mine, body, state, statusLabel, revealLabel, onR
           </Text>
         )}
       </View>
-      {hidden && onReveal && revealLabel ? <Button label={revealLabel} variant="ghost" onPress={onReveal} fullWidth={false} /> : null}
+      {hidden && onReveal && revealLabel ? (
+        <Button label={revealLabel} variant="ghost" onPress={onReveal} fullWidth={false} />
+      ) : null}
       {!hidden && statusLabel ? (
         <View style={styles.meta}>
           {state === 'failed' ? <Icon name="warning" size={14} tint={color.danger} /> : null}
           <Text variant="caption" tone={state === 'failed' ? 'danger' : 'muted'}>
             {statusLabel}
           </Text>
-          {state === 'failed' && onRetry && retryLabel ? <Button label={retryLabel} variant="ghost" onPress={onRetry} fullWidth={false} /> : null}
+          {state === 'failed' && onRetry && retryLabel ? (
+            <Button label={retryLabel} variant="ghost" onPress={onRetry} fullWidth={false} />
+          ) : null}
         </View>
       ) : null}
     </View>
@@ -78,5 +100,10 @@ const styles = StyleSheet.create({
   hiddenRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   flex: { flexShrink: 1 },
   meta: { flexDirection: 'row', alignItems: 'center', gap: space.xxs },
-  system: { alignSelf: 'center', paddingHorizontal: space.lg, paddingVertical: space.xs, maxWidth: '90%' },
+  system: {
+    alignSelf: 'center',
+    paddingHorizontal: space.lg,
+    paddingVertical: space.xs,
+    maxWidth: '90%',
+  },
 });

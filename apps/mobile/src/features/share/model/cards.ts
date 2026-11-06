@@ -14,7 +14,7 @@ export interface ShareStyle {
   darkTag?: boolean;
   ctaColor?: string;
   /** Actions proposées : l'invitation est personnelle (message seulement, jamais en story). */
-  actions: readonly ('story' | 'message' | 'save' | 'textLink' | 'copy')[];
+  actions: readonly ('story' | 'message' | 'save' | 'video' | 'textLink' | 'copy')[];
 }
 
 export const SHARE_STYLES: Record<ShareCardKind, ShareStyle> = {
@@ -31,13 +31,13 @@ export const SHARE_STYLES: Record<ShareCardKind, ShareStyle> = {
     gradient: 'linear-gradient(170deg, #16110D, #2E1065 70%)',
     dot: '#C8F542',
     titleSize: 30,
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
   checkin: {
     gradient: 'linear-gradient(170deg, #0E5E5A, #16110D 90%)',
     dot: '#FF8A3C',
     titleSize: 50,
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
   jeudi: {
     gradient: 'linear-gradient(170deg, #FFE36E, #FFB347 90%)',
@@ -46,7 +46,7 @@ export const SHARE_STYLES: Record<ShareCardKind, ShareStyle> = {
     ink: true,
     darkTag: true,
     ctaColor: '#C8F542',
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
   bande: {
     gradient: 'linear-gradient(170deg, #BFE8F7, #DDF5EA 90%)',
@@ -55,25 +55,25 @@ export const SHARE_STYLES: Record<ShareCardKind, ShareStyle> = {
     ink: true,
     darkTag: true,
     ctaColor: '#C8F542',
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
   soiree: {
     gradient: 'linear-gradient(170deg, #C2185B, #C4341B 60%, #FF8A3C)',
     dot: '#FFE36E',
     titleSize: 50,
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
   dimanche: {
     gradient: 'linear-gradient(170deg, #1E7A47, #3F5A0B 80%)',
     dot: '#C8F542',
     titleSize: 40,
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
   ville: {
     gradient: 'linear-gradient(170deg, #0E4C6E, #1C7DB0 80%)',
     dot: '#9FE3F5',
     titleSize: 40,
-    actions: ['story', 'message', 'save', 'textLink'],
+    actions: ['story', 'message', 'video', 'textLink'],
   },
 };
 

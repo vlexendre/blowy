@@ -28,6 +28,17 @@ export function estimateTravelMinutes(a: Point, b: Point): number {
   return Math.max(TRAVEL_ESTIMATE.roundTo, Math.round(raw / TRAVEL_ESTIMATE.roundTo) * TRAVEL_ESTIMATE.roundTo);
 }
 
+/**
+ * V5.9 : trajet À PIED dans son propre quartier — distance moyenne du centre aux lieux actifs du quartier (jamais un lieu
+ * précis, jamais la position de la personne) × 1,3 à 4,5 km/h, arrondi à 5 min ; sans données : 10 min (valeur type).
+ */
+export const WALK_ESTIMATE = { detour: 1.3, kmPerHour: 4.5, roundTo: 5, defaultMinutes: 10 } as const;
+export function estimateWalkWithin(center: Point | null, venues: readonly Point[]): number {
+  if (!center || venues.length === 0) return WALK_ESTIMATE.defaultMinutes;
+  const km = (venues.reduce((s, v) => s + haversineKm(center, v), 0) / venues.length) * WALK_ESTIMATE.detour;
+  return Math.max(WALK_ESTIMATE.roundTo, Math.round(((km / WALK_ESTIMATE.kmPerHour) * 60) / WALK_ESTIMATE.roundTo) * WALK_ESTIMATE.roundTo);
+}
+
 /** Centre d'un quartier : saisi par ops, sinon moyenne de ses lieux ; null si inconnu. */
 export function centerOf(n: { centerLat: number | null; centerLng: number | null }, venues: readonly Point[]): Point | null {
   if (n.centerLat !== null && n.centerLng !== null) return { lat: n.centerLat, lng: n.centerLng };

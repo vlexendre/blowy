@@ -12,14 +12,21 @@ export type BodyWeight = 400 | 500 | 600 | 700 | 800;
 
 const nearest = (list: readonly number[], size: number): number => {
   let best = list[0]!;
-  for (const s of list) if (Math.abs(s - size) < Math.abs(best - size) || (Math.abs(s - size) === Math.abs(best - size) && s > best)) best = s;
+  for (const s of list)
+    if (
+      Math.abs(s - size) < Math.abs(best - size) ||
+      (Math.abs(s - size) === Math.abs(best - size) && s > best)
+    )
+      best = s;
   return best;
 };
 
 /** Famille Bricolage `.d` (largeur 85 %, 800) dont l'opsz est le plus proche de `size`. */
-export const displayFamily = (size: number): string => `BricolageGrotesque-D${nearest(opticalSizes.display, Math.min(96, size))}`;
+export const displayFamily = (size: number): string =>
+  `BricolageGrotesque-D${nearest(opticalSizes.display, Math.min(96, size))}`;
 /** Famille Bricolage largeur normale 800 (boutons, `.act`, `.seg`, `.mini`). */
-export const strongFamily = (size: number): string => `BricolageGrotesque-B${nearest(opticalSizes.strong, size)}`;
+export const strongFamily = (size: number): string =>
+  `BricolageGrotesque-B${nearest(opticalSizes.strong, size)}`;
 /** Inter : les maquettes ne chargent que 400–700, une graisse 800 est rendue en 700. */
 export const bodyFamily = (weight: BodyWeight = 400): string => {
   const w = Math.min(700, weight);
@@ -41,7 +48,10 @@ export interface FontSpec {
 }
 
 /** Style `.d` à la taille donnée : interlettrage −0,03 em, interligne 0,95 (valeurs non arrondies). */
-export function displayFont(size: number, opts: { lineHeight?: number; letterSpacingEm?: number } = {}): FontSpec {
+export function displayFont(
+  size: number,
+  opts: { lineHeight?: number; letterSpacingEm?: number } = {},
+): FontSpec {
   return {
     fontFamily: displayFamily(size),
     fontSize: size,
@@ -51,7 +61,12 @@ export function displayFont(size: number, opts: { lineHeight?: number; letterSpa
 }
 
 /** Texte Inter ; `lineHeight` absent = `normal` CSS (métriques de la police), comme dans les maquettes. */
-export function bodyFont(size: number, weight: BodyWeight = 400, letterSpacingEm = 0, lineHeight?: number): FontSpec {
+export function bodyFont(
+  size: number,
+  weight: BodyWeight = 400,
+  letterSpacingEm = 0,
+  lineHeight?: number,
+): FontSpec {
   const spec: FontSpec = { fontFamily: bodyFamily(weight), fontSize: size };
   if (letterSpacingEm) spec.letterSpacing = size * letterSpacingEm;
   if (lineHeight !== undefined) spec.lineHeight = lineHeight;

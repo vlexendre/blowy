@@ -6,7 +6,7 @@
  */
 import { uuidv7, isUniqueViolation, type Db, type Tx } from '@blowy/database';
 import { ACTIVE_SEAT_STATUSES, seeksOf, type ConnectionKind, type Gender, type OutingRequestStatus, type OutingStatus, type VoteChoice } from '@blowy/domain';
-import { VENUE_OFFERS } from '@blowy/content';
+import { activityPriceCentsOf, VENUE_OFFERS } from '@blowy/content';
 import type { OutingCandidate, SlotOffer } from '@blowy/matching/groups';
 import { mondayOfWeek, wallToUtc } from '@blowy/pet-engine';
 import type { Tuning } from '@blowy/tuning';
@@ -16,7 +16,7 @@ import type { OutingFacts } from '../domain/facts.js';
 import type { ReliabilityState } from '../domain/reliability.js';
 import type { Attendee } from '../domain/votes.js';
 import type { BandLinkRow, CandidateMeta, CompositionScope, NewOuting, OutingRow, OutingsRepository, RequestRow, RequesterFacts, SeatRow, TeamRow, WeekSlot } from '../application/ports/outings.repository.js';
-import { travelFrom } from './travel-times.js';
+import { travelFrom, walkWithin } from './travel-times.js';
 import { CANDIDATE_INCLUDE, withTravel, compositionFacts, toCandidate, verifiedSet } from './candidates.js';
 import { ageOf, loadPersons, petCardOf, PERSON_INCLUDE, personOf } from './person-facts.js';
 
@@ -192,7 +192,7 @@ export class PrismaOutingsRepository implements OutingsRepository {
   }
 
   async usedFreeFirst(scope: TxScope, userId: string) {
-    return (await txOf(scope).outingSeat.count({ where: { userId, funding: 'FREE_FIRST', refundState: { not: 'RECREDITED' } } })) > 0;
+    return (await txOf(scope).outingSeat.count({ where: { userId, funding: 'FREE_FIRST', refundState: { notIn: ['RECREDITED', 'PENDING', 'REFUNDED'] } } })) > 0;
   }
 
   async history(userId: string, before: { startsAt: Date; id: string } | null, limit: number) {
@@ -579,16 +579,28 @@ export class PrismaOutingsRepository implements OutingsRepository {
 
   async outingViewExtras(outingId: string, viewerId: string) {
     const [o, u] = await Promise.all([
-      this.db.outing.findUnique({ where: { id: outingId }, select: { neighborhoodId: true, venueId: true, activity: true, venue: { select: { ambiance: true } } } }),
-      this.db.user.findUnique({ where: { id: viewerId }, select: { neighborhoodId: true, outingPreferences: { select: { activities: true } } } }),
+      this.db.outing.findUnique({ where: { id: outingId }, select: { neighborhoodId: true, venueId: true, activity: true, startsAt: true, endsAt: true, venue: { select: { ambiance: true, activityDetailKey: true, activityPriceCents: true } } } }),
+      this.db.user.findUnique({ where: { id: viewerId }, select: { neighborhoodId: true, neighborhood: { select: { name: true } }, outingPreferences: { select: { activities: true } } } }),
     ]);
     if (!o) return null;
     const amb = o.venue.ambiance;
-    return { venueId: o.venueId, venueAmbiance: amb === 'CALM' || amb === 'LIVELY' ? amb : null, neighborhoodId: o.neighborhoodId, activity: o.activity, viewerHome: u?.neighborhoodId ?? null, viewerActivities: u?.outingPreferences?.activities ?? [] };
+    return { venueId: o.venueId, venueAmbiance: amb === 'CALM' || amb === 'LIVELY' ? amb : null, neighborhoodId: o.neighborhoodId, activity: o.activity, viewerHome: u?.neighborhoodId ?? null, viewerHomeLabel: u?.neighborhood?.name ?? null, viewerActivities: u?.outingPreferences?.activities ?? [], activityDetailKey: o.venue.activityDetailKey ?? null, activityPriceCents: o.venue.activityPriceCents ?? null, durationMinutes: Math.max(1, Math.round((o.endsAt.getTime() - o.startsAt.getTime()) / 60_000)) };
+  }
+
+  /** V5.10 : activité à prépayer avec la place (prix TTC du lieu, sinon du catalogue ; 0 = rien à prépayer). */
+  async activityQuote(scope: TxScope | null, outingId: string) {
+    const o = await (scope ? txOf(scope) : this.db).outing.findUnique({ where: { id: outingId }, select: { activity: true, venue: { select: { activityDetailKey: true, activityPriceCents: true, activityTaxBasis: true } } } });
+    if (!o) return null;
+    const cents = activityPriceCentsOf({ detailKey: o.venue.activityDetailKey, outingActivity: o.activity, venuePriceCents: o.venue.activityPriceCents });
+    return cents > 0 ? { cents, taxBasis: o.venue.activityTaxBasis } : null;
   }
 
   async venueWelcomeMessage(venueId: string) {
     return (await this.db.venue.findUnique({ where: { id: venueId }, select: { welcomeMessage: true } }))?.welcomeMessage ?? null;
+  }
+
+  async walkWithin(neighborhoodId: string) {
+    return walkWithin(this.db, neighborhoodId);
   }
 
   async reachableNeighborhoods(home: string, maxMinutes: number) {

@@ -1,9 +1,22 @@
 import { keyframes as KF } from '@blowy/design-tokens';
 import { describe, expect, it } from 'vitest';
 import { blurredDiscIntensity, blurredDiscStops, blobExtent } from './blur';
-import { cubicBezierAt, directedProgress, restValues, sampleKeyframes, toTransform } from './keyframes';
+import {
+  cubicBezierAt,
+  directedProgress,
+  restValues,
+  sampleKeyframes,
+  toTransform,
+} from './keyframes';
 import { screenPadding } from './layout';
-import { ALL_FONT_FAMILIES, bodyFamily, bodyFont, displayFamily, displayFont, strongFamily } from './typography';
+import {
+  ALL_FONT_FAMILIES,
+  bodyFamily,
+  bodyFont,
+  displayFamily,
+  displayFont,
+  strongFamily,
+} from './typography';
 
 describe('cubic-bezier', () => {
   it('bornes et linéaire', () => {
@@ -13,7 +26,9 @@ describe('cubic-bezier', () => {
   });
   it('ease-in-out symétrique, pop dépasse 1 (rebond)', () => {
     expect(cubicBezierAt(0.42, 0, 0.58, 1, 0.5)).toBeCloseTo(0.5, 5);
-    const overshoot = Math.max(...Array.from({ length: 50 }, (_, i) => cubicBezierAt(0.2, 1.2, 0.3, 1, i / 50)));
+    const overshoot = Math.max(
+      ...Array.from({ length: 50 }, (_, i) => cubicBezierAt(0.2, 1.2, 0.3, 1, i / 50)),
+    );
     expect(overshoot).toBeGreaterThan(1);
   });
 });
@@ -30,7 +45,9 @@ describe('keyframes CSS', () => {
   });
   it('délai négatif = déphasage ; reverse = progression inversée', () => {
     expect(sampleKeyframes('sq', 0, { delayMs: -600 })).toEqual(sampleKeyframes('sq', 600));
-    expect(directedProgress(KF.drift, 3000, { durationMs: 12000, delayMs: -5000, reverse: true })).toBeCloseTo(1 - 8000 / 12000, 9);
+    expect(
+      directedProgress(KF.drift, 3000, { durationMs: 12000, delayMs: -5000, reverse: true }),
+    ).toBeCloseTo(1 - 8000 / 12000, 9);
   });
   it('orbite : 24 s linéaire, 38,25° à 2 550 ms ; contre-rotation opposée', () => {
     expect(sampleKeyframes('orbit', 2550).r).toBeCloseTo(38.25, 6);
@@ -68,7 +85,8 @@ describe('flou des halos', () => {
     const st = blurredDiscStops(150, 70, 0.8, 32);
     expect(blobExtent(150, 70)).toBe(360);
     expect(st[0]!.opacity).toBeLessThanOrEqual(0.8);
-    for (let i = 1; i < st.length; i++) expect(st[i]!.opacity).toBeLessThanOrEqual(st[i - 1]!.opacity);
+    for (let i = 1; i < st.length; i++)
+      expect(st[i]!.opacity).toBeLessThanOrEqual(st[i - 1]!.opacity);
     expect(st.at(-1)).toEqual({ offset: 1, opacity: 0 });
   });
 });
@@ -90,7 +108,11 @@ describe('typographie', () => {
     expect(d.fontFamily).toBe('BricolageGrotesque-D56');
     expect(d.lineHeight).toBeCloseTo(53.2, 9);
     expect(d.letterSpacing).toBeCloseTo(-1.68, 9);
-    expect(bodyFont(11, 700, 0.14)).toEqual({ fontFamily: 'Inter-700', fontSize: 11, letterSpacing: 1.54 });
+    expect(bodyFont(11, 700, 0.14)).toEqual({
+      fontFamily: 'Inter-700',
+      fontSize: 11,
+      letterSpacing: 1.54,
+    });
   });
   it('liste complète des familles à charger', () => {
     expect(ALL_FONT_FAMILIES).toHaveLength(27 + 9 + 4);
@@ -99,7 +121,12 @@ describe('typographie', () => {
 
 describe('marges d’écran', () => {
   it('iPhone 390×844 (47/34) = maquette 56/22/26', () => {
-    expect(screenPadding({ top: 47, bottom: 34, left: 0, right: 0 })).toEqual({ paddingTop: 56, paddingBottom: 26, paddingLeft: 22, paddingRight: 22 });
+    expect(screenPadding({ top: 47, bottom: 34, left: 0, right: 0 })).toEqual({
+      paddingTop: 56,
+      paddingBottom: 26,
+      paddingLeft: 22,
+      paddingRight: 22,
+    });
   });
   it('îlot dynamique (59/34) : 9 pt sous la barre d’état', () => {
     expect(screenPadding({ top: 59, bottom: 34, left: 0, right: 0 }).paddingTop).toBe(68);

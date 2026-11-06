@@ -30,14 +30,50 @@ export interface OrbitRingProps {
 
 function Satellite({ s, durationMs }: { s: OrbitSatellite; durationMs: number }) {
   const counter = useKeyframeStyle('orbit', { durationMs, reverse: true });
-  return <Animated.View style={[{ position: 'absolute', top: s.top, left: s.left, right: s.right, bottom: s.bottom, marginTop: s.marginTop, marginLeft: s.marginLeft }, counter]}>{s.node}</Animated.View>;
+  return (
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          top: s.top,
+          left: s.left,
+          right: s.right,
+          bottom: s.bottom,
+          marginTop: s.marginTop,
+          marginLeft: s.marginLeft,
+        },
+        counter,
+      ]}
+    >
+      {s.node}
+    </Animated.View>
+  );
 }
 
-export function OrbitRing({ size = 270, borderWidth = 2, durationMs = 24000, satellites = [] }: OrbitRingProps) {
+export function OrbitRing({
+  size = 270,
+  borderWidth = 2,
+  durationMs = 24000,
+  satellites = [],
+}: OrbitRingProps) {
   const spin = useKeyframeStyle('orbit', { durationMs });
   const outer = size + borderWidth * 2;
   return (
-    <Animated.View pointerEvents="box-none" style={[{ position: 'absolute', width: outer, height: outer, borderRadius: outer / 2, borderWidth, borderStyle: 'dashed', borderColor: alpha.orbitDash }, spin]}>
+    <Animated.View
+      pointerEvents="box-none"
+      style={[
+        {
+          position: 'absolute',
+          width: outer,
+          height: outer,
+          borderRadius: outer / 2,
+          borderWidth,
+          borderStyle: 'dashed',
+          borderColor: alpha.orbitDash,
+        },
+        spin,
+      ]}
+    >
       {satellites.map((s) => (
         <Satellite key={s.key} s={s} durationMs={durationMs} />
       ))}

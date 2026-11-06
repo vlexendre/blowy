@@ -543,8 +543,11 @@
     },
     "venueWelcome": "Message du lieu",
     "calm": "préfère le calme",
-    "venueSoon": "Le lieu partenaire vous écrira ici à la révélation, {lock} : où s’asseoir, qui demander.",
-    "datePending": "Rendez-vous proposé · en attente de {name}"
+    "venueSoon": "Le lieu partenaire vous écrira ici à la confirmation, {lock} : où s’asseoir, qui demander.",
+    "datePending": "Rendez-vous proposé · en attente de {name}",
+    "duoOpened": "Duo ouvert le {when}",
+    "calmBadge": "calme",
+    "shareWords": "Partager mes 3 mots, seuls"
   },
   "chat": {
     "placeholder": "Écris à {name}…",
@@ -1105,7 +1108,8 @@
     "CLIMBING": "Bloc d'escalade",
     "WORKSHOP": "Atelier",
     "GAMES": "Jeux de société",
-    "EXHIBITION": "Expo"
+    "EXHIBITION": "Expo",
+    "SPORT": "Sport"
   },
   "found": {
     "shareA11y": "Aperçu de la carte « cette semaine je sors », sans visages ni prénoms",
@@ -1124,8 +1128,8 @@
     "awayTitleV55": "UNE SORTIE À {city}, TROUVÉE PAR {pet}.",
     "chip": "{home} · trajet max {m} min",
     "subtitle": "Pour rencontrer de nouvelles personnes, en vrai, à 5.",
-    "footerFree": "Lieu et prénoms le {lock}. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Ta 1re sortie est offerte.",
-    "footer": "Lieu et prénoms le {lock}. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence.",
+    "footerFree": "Confirmation (lieu et prénoms) le {lock}. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence. Ta 1re sortie est offerte.",
+    "footer": "Confirmation (lieu et prénoms) le {lock}. Annulation gratuite jusqu’à la veille 18 h ; ensuite, c’est une absence.",
     "inviteV55": "Inviter quelqu’un à venir avec toi",
     "calmAsked": "Lieu calme, comme demandé dans Affiner.",
     "weekendTitle": "TON WEEK-END LIBRE : UNE SORTIE À {city}.",
@@ -1172,7 +1176,7 @@
     "addCalendar": "Ajouter à mon agenda",
     "cancelFree": "Annuler · gratuit jusqu’au {lock} · voir la règle",
     "ms": {
-      "lock": "Lieu et prénoms · dernier jour pour annuler",
+      "lock": "Confirmation · lieu et prénoms",
       "faces": "Les visages",
       "outing": "La sortie"
     },
@@ -1276,7 +1280,7 @@
     "discreetOnSub": "« Rappel », icône « Agenda », aucun pet",
     "lockScreen": "Sur ton écran verrouillé",
     "n1When": "blowy. · mer. 18:00",
-    "n1": "Le lieu de jeudi est arrivé.",
+    "n1": "Confirmation de jeudi : lieu et prénoms.",
     "n2When": "blowy. · maintenant",
     "n2": "Nouveau message dans ton groupe.",
     "n3When": "blowy. · lun. 21:00",
@@ -1297,7 +1301,7 @@
     "petA11y": "{name}, ta fiche",
     "labelGoing": "Ta sortie · tu y vas",
     "labelInvited": "Nino t’a trouvé une sortie",
-    "venueAt": "Lieu : {lock}",
+    "venueAt": "Confirmation · lieu et prénoms · {lock}",
     "facesAt": "Visages : {faces}",
     "answerBefore": "Réponds avant mercredi midi",
     "seeOuting": "Voir la sortie",
@@ -1362,11 +1366,11 @@
   },
   "waitlist": {
     "verified": "À {city} : {n} personnes vérifiées",
-    "missing": "IL MANQUE {n} PERSONNES POUR TA SORTIE DU {day}.",
+    "missing": "IL MANQUE {n} PERSONNES POUR UN GROUPE LE {day}.",
     "noGap": "PAS ENCORE DE SORTIE SUR TES CRÉNEAUX.",
     "body": "Créneau du {weekday}, {hours}. Une seule notification quand elle a lieu.",
     "bodyNoGap": "Une sortie se forme dès que 5 personnes compatibles partagent un créneau. Une seule notification.",
-    "helpLabel": "Pour qu’elle ait lieu",
+    "helpLabel": "Pour sortir plus tôt",
     "addSlot": "Ajouter un créneau",
     "addSlotSub": "Plus tu as de créneaux, plus vite elle a lieu",
     "share": "Partager « Aide {city} à sortir »",
@@ -1375,7 +1379,7 @@
     "teamSub": "Ça compte dans le groupe ; sa 1re sortie est offerte",
     "insight": "À {city}, {label} inscrits ont entre {a} et {b} ans",
     "slot": "Créneau du {weekday}, {hours}.",
-    "ifArrive": "Si elles arrivent d’ici le {by}, elle a lieu, en {ages} ans.",
+    "ifArrive": "Si elles arrivent d’ici le {by}, un groupe peut se former, en {ages} ans : réponse ce soir-là.",
     "otherwise": "Sinon, {pet} te propose le {day}, même créneau. Une seule notification.",
     "alsoA": "Tu peux aussi ",
     "alsoInvite": "inviter une personne",
@@ -1422,7 +1426,11 @@
     "fullBody": "Ta réponse est arrivée après la composition des groupes du {day}. Tu n’as rien à faire, rien n’est perdu.",
     "fullNote": "Rien n’est réservé sans ton accord. Ta 1re sortie reste offerte.",
     "yes": "Oui, le {day}",
-    "no": "Non merci"
+    "no": "Non merci",
+    "fullBodyAt": "Tes créneaux sont arrivés après la composition des groupes du {day} ({compose}). Tu n’as rien à faire, rien n’est perdu.",
+    "nextSlotLabel": "Ton créneau suivant",
+    "keep": "Garder le {day}",
+    "notThisTime": "Pas cette fois"
   },
   "confirm": {
     "title": "LIEU CONFIRMÉ",
@@ -1436,12 +1444,13 @@
     "facesSoon": "Les visages arrivent {faces}, 3 h avant. Annulation gratuite jusqu’à {lock}. Ensuite, c’est une absence, sauf pour ta sécurité, « je connais quelqu’un ici » (1 fois par mois) ou un imprévu (1 fois par mois).",
     "guardian": "Choisir un ange gardien",
     "share": "Partager « cette semaine, je sors »",
-    "revealed": "{lock} · lieu révélé",
+    "revealed": "{lock} · Confirmation : lieu et prénoms",
     "photoCaption": "Illustration · dans l’app, la photo du lieu",
     "tableNote": "Table {name}, chevalet orange au fond",
     "rulesSummary": "Règles d’annulation et imprévu ›",
     "shareWeek": "Partager ma semaine",
-    "photos": "Changer mes photos"
+    "photos": "Changer mes photos",
+    "photoProvided": "Photo fournie par le lieu"
   },
   "faces": {
     "title": "LES VISAGES",
@@ -1610,7 +1619,7 @@
     "afterOuting": "Après la sortie",
     "step3": "Duo · étape 3",
     "publicPlace": "Lieu public · gratuit",
-    "partner": "Lieu partenaire · table à deux, réservée quand vous avez dit oui tous les deux",
+    "partner": "Lieu partenaire · table à deux, réservée quand vous avez tous les deux accepté le créneau",
     "noVenue": "Lieu à choisir",
     "otherPlace": "Choisir ensemble un autre lieu ou une autre heure",
     "guardian": "Ange gardien · facultatif",
@@ -1639,7 +1648,9 @@
     "proposalScreenSub": "voie Duo · pour toi seul",
     "guardianLater": "Ange gardien facultatif, choisi par toi.",
     "mustAccept": "{name} doit accepter le créneau.",
-    "proposalSubV58": "{pet} propose un duo avec {initial}. · {initial}. n’a pas encore répondu."
+    "proposalSubV58": "{pet} propose un duo avec {initial}. · {initial}. n’a pas encore répondu.",
+    "orGroupDay": "Ou viens {day} en groupe ›",
+    "orGroupAny": "Ou viens en groupe ›"
   },
   "egg": {
     "title": "CLIN D’ŒIL",
@@ -1728,7 +1739,7 @@
     "bandWhat": "ton prénom, ton pet, ta tranche d’âge, ta carte et vos messages",
     "nobody": "Personne",
     "nobodyWhat": "tes votes, ta position, ton âge exact, ce que tu cherches ; l’indice « projet compatible » seulement si vous l’activez tous les deux en duo",
-    "promise": "Ton orientation et ce que tu cherches ne sont montrés à personne. Seule ta personne de duo le sait, quand vous avez dit oui tous les deux. Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui.",
+    "promise": "Ton orientation et ce que tu cherches ne sont montrés à personne. Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux. Si tu cherches une histoire, Blowy compose tes groupes pour qu’elle soit possible. Il ne te dira jamais avec qui.",
     "discretion": "Réglages de discrétion",
     "discreet": "Mode discret",
     "discreetOff": "tu as choisi « normal » à l’inscription · discret : icône « Agenda », notifications « Rappel »",
@@ -1763,7 +1774,7 @@
     "cards": "Tes cartes",
     "cardsWhat": "les personnes à qui tu les envoies : jamais un visage, un prénom ou le pet de quelqu’un d’autre",
     "duo": "Ton duo",
-    "duoWhat": "d’abord l’espèce de ton pet et ton initiale ; ta carte et ton prénom quand vous avez dit oui tous les deux ; ton visage, aux visages",
+    "duoWhat": "initiale et espèce avant le double oui, puis prénom, visages à 48 h. Seule une personne avec qui tu as un duo sait que vous avez dit oui tous les deux.",
     "guardian": "Ton ange gardien",
     "guardianWhat": "le lieu et l’heure de ta sortie, ton arrivée, ton « tout va bien » ou ta demande d’aide ; jamais ton groupe ni tes messages ; ta position n’est jamais demandée"
   },
@@ -1993,7 +2004,8 @@
       "save": "Enregistrer",
       "textLink": "Texte + lien",
       "copy": "Copier le lien",
-      "copied": "Lien copié"
+      "copied": "Lien copié",
+      "video": "Vidéo 5 s"
     },
     "invitation": {
       "header": "Inviter quelqu’un",
@@ -2070,6 +2082,14 @@
       "title": "MA BANDE.",
       "text": "Des gens rencontrés en vrai, à 5. Sans prénoms, c’est la règle.",
       "cta": "Toi aussi"
+    },
+    "video": {
+      "label": "▶ Aperçu 5 s",
+      "sub": "export vidéo pas encore disponible",
+      "a11y": "Aperçu des trois temps de la carte. L’export en vidéo n’est pas encore disponible.",
+      "f0": "0 s · titre",
+      "f1": "2,5 s · dessin",
+      "f2": "5 s · lien"
     }
   },
   "story3": {

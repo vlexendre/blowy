@@ -14,10 +14,19 @@ export interface EmptyStateTemplateProps extends StateViewProps {
 }
 
 /** Écran entier en état vide / indisponible / erreur. */
-export function EmptyStateTemplate({ onBack, backLabel, headerTitle, banner, inTab, ...state }: EmptyStateTemplateProps) {
+export function EmptyStateTemplate({
+  onBack,
+  backLabel,
+  headerTitle,
+  banner,
+  inTab,
+  ...state
+}: EmptyStateTemplateProps) {
   return (
     <ScreenFrame banner={banner} bottomSpace={inTab ? TAB_BAR_SPACE : 0}>
-      {onBack && backLabel ? <Header title={headerTitle} onBack={onBack} backLabel={backLabel} /> : null}
+      {onBack && backLabel ? (
+        <Header title={headerTitle} onBack={onBack} backLabel={backLabel} />
+      ) : null}
       <EmptyState {...state} />
     </ScreenFrame>
   );

@@ -385,6 +385,14 @@
       "draft": false
     },
     {
+      "ref": "V5-Groupe-calme",
+      "title": "21c · Chat du groupe : puce « calme » (Thomas)",
+      "target": "mobile",
+      "route": "/chat/00000000-0000-4000-8000-000000000201?demo=groupe-calme",
+      "account": null,
+      "draft": false
+    },
+    {
       "ref": "V5-Groupe-menu",
       "title": "21b · Signaler, bloquer, quitter",
       "target": "mobile",
@@ -658,7 +666,7 @@
       "ref": "V5-Duo-hh-proposition",
       "title": "38a · Duo homme-homme : proposition (un pigeon · K.)",
       "target": "mobile",
-      "route": "/duo/proposal?demo=duo-hh-proposition",
+      "route": "/duo?demo=duo-hh-proposition",
       "account": null,
       "draft": false
     },

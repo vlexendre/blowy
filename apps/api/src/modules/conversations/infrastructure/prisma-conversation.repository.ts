@@ -18,6 +18,7 @@ type MsgWith = {
   content: { body: string; purgedAt: Date | null } | null;
   receipts?: { revealedAt: Date | null }[];
   mediaId?: string | null;
+  promptId?: string | null;
 };
 
 function toMsg(m: MsgWith): MessageRow {
@@ -35,6 +36,7 @@ function toMsg(m: MsgWith): MessageRow {
     publishedAt: m.publishedAt,
     revealedByViewer: !!m.receipts?.some((r) => r.revealedAt),
     mediaId: m.mediaId ?? null,
+    promptId: m.promptId ?? null,
   };
 }
 

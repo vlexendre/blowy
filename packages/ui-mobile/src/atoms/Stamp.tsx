@@ -17,7 +17,6 @@ export interface StampProps {
   style?: StyleProp<ViewStyle>;
 }
 
-
 export function Stamp({ tone = 'ink', rotate, children, style }: StampProps) {
   return <View style={[stampStyle(tone, rotate), style]}>{children}</View>;
 }

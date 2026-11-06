@@ -139,5 +139,7 @@ export const LedgerKeys = {
   providerRefund: (seatId: string) => `refund:${seatId}`,
   venueCompensation: (seatId: string) => `venue:comp:${seatId}`,
   venueCompensationReversal: (seatId: string) => `venue:comp-reversal:${seatId}`,
+  /** V5.10 : reversement de l'activité prépayée d'une place au lieu — une seule fois par place. */
+  venueActivityPayout: (seatId: string) => `venue:activity:${seatId}`,
   plusCheckout: (userId: string, commandId: string) => `plus-checkout:${userId}:${commandId}`,
 } as const;

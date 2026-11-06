@@ -25,6 +25,7 @@ import {
   Tap,
   VenueCard,
   VenueWelcome,
+  VenueArt,
   v5,
   v5Alpha,
   v5Gradient,
@@ -42,7 +43,7 @@ import { paths } from '../../../core/navigation/paths';
 import { ruleV57 } from '../../../core/content/rules';
 import { t } from '../../../i18n';
 import { useMe, useMyNeighborhood } from '../../account';
-import { petSprite, useMyPet } from '../../pets';
+import { otherPetSprite, petSprite, useMyPet } from '../../pets';
 import {
   useCreateGuardianLink,
   useRaiseAlert,
@@ -99,6 +100,19 @@ function tileOf(m: OutingMemberView, i: number) {
   return m.inMyTeam ? v5.peach : (TILES[i % TILES.length] ?? v5.violetPale);
 }
 
+/** Sans photo fournie par le lieu : illustration de l'activité (jamais une fausse photo). */
+function VenueIllustration({ activity }: { activity: OutingView['activity'] }) {
+  if (activity === 'SPORT') return <VenueArt kind="pitch" />;
+  if (activity === 'CLIMBING') return <VenueArt kind="wall" />;
+  return (
+    <MediaView
+      source={{ kind: 'sprite', path: 'scenes/cafe.webp' }}
+      contentPosition={{ top: '35%', left: '50%' }}
+      style={{ height: 76 }}
+    />
+  );
+}
+
 // ---------------------------------------------------------------- 27 · Lieu confirmé
 export function ConfirmationScreen() {
   const q = useOutingParam();
@@ -142,9 +156,11 @@ export function ConfirmationScreen() {
                       contentPosition={{ top: '35%', left: '50%' }}
                       style={{ height: 76 }}
                     />
-                  ) : undefined
+                  ) : (
+                    <VenueIllustration activity={o.activity} />
+                  )
                 }
-                photoCaption={t('confirm.photoCaption')}
+                photoCaption={photo ? t('confirm.photoProvided') : t('confirm.photoCaption')}
                 name={venue?.name ?? ''}
                 address={[venue?.address.split(' · ')[0] ?? '', travel].filter(Boolean).join(' · ')}
                 note={
@@ -173,7 +189,7 @@ export function ConfirmationScreen() {
                 {mates.map((m) => (
                   <PersonLine
                     key={m.userId}
-                    sprite={petSprite(m.pet.species)}
+                    sprite={otherPetSprite(m.pet.species)}
                     tile={v5.peach}
                     label={`${m.firstName} · ${bracketLabel(m.ageRange)} · ${t('confirm.withYou')}${m.calm ? ` · ${t('chats.calm')}` : ''}`}
                     pet={m.pet.name}
@@ -182,7 +198,7 @@ export function ConfirmationScreen() {
                 {others.map((m, i) => (
                   <PersonLine
                     key={m.userId}
-                    sprite={petSprite(m.pet.species)}
+                    sprite={otherPetSprite(m.pet.species)}
                     tile={tileOf(m, i)}
                     label={`${m.firstName ?? m.pet.name}${m.ageRange ? ` · ${bracketLabel(m.ageRange)}` : ''}${m.calm ? ` · ${t('chats.calm')}` : ''}`}
                     pet={m.pet.name}
@@ -268,7 +284,7 @@ export function FacesScreen() {
                         />
                       ) : undefined
                     }
-                    petSprite={petSprite(m.pet.species)}
+                    petSprite={otherPetSprite(m.pet.species)}
                     title={`${name}${m.ageRange ? ` · ${bracketLabel(m.ageRange)}` : ''}`}
                     verifiedLabel={t('faces.verified')}
                     watermark={viewer ? t('faces.watermark', { name: viewer }) : undefined}
@@ -337,9 +353,10 @@ function VenueTile({ o }: { o: OutingView }) {
         ],
       }}
     >
-      {photo ? (
-        <MediaView source={photo} style={{ width: 70, height: 70, borderRadius: 16 }} />
-      ) : null}
+      <MediaView
+        source={photo ?? { kind: 'sprite', path: 'scenes/cafe.webp' }}
+        style={{ width: 70, height: 70, borderRadius: 16 }}
+      />
       <View style={{ gap: 3, flexShrink: 1 }}>
         <DisplayText size={22} heading={false}>
           {o.venue?.name ?? ''}

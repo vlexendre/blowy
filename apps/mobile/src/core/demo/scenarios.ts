@@ -404,6 +404,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-09T21:05'),
     world: { phase: 'invited', hood: 'lyon' },
     routes: [
+      get(R.me, W.me({ birthDate: '2003-05-10', age: 23 })),
       get(R.week, W.weekAway('lyon', 'invited')),
       get(R.outing(W.IDS.outingLyon), W.outingAway('lyon', 'invited')),
       get(R.outingPrefs, { ...W.outingPrefs, ambiance: 'ANY', maxTravelMinutes: 20 }),
@@ -413,6 +414,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-09T21:10'),
     world: { phase: 'invitedTeam', hood: 'lyon' },
     routes: [
+      get(R.me, W.me({ birthDate: '2003-05-10', age: 23 })),
       get(R.week, W.weekAway('lyon', 'invitedTeam')),
       get(R.outing(W.IDS.outingLyon), W.outingAway('lyon', 'invitedTeam')),
     ],
@@ -421,6 +423,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-16T18:05'),
     world: { phase: 'confirmed', hood: 'lyon' },
     routes: [
+      get(R.me, W.me({ birthDate: '2003-05-10', age: 23 })),
       get(R.week, W.weekAway('lyon', 'confirmed')),
       get(R.outing(W.IDS.outingLyon), W.outingAway('lyon', 'confirmed')),
     ],
@@ -429,6 +432,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-16T21:05'),
     world: { phase: 'invited', hood: 'saintdenis' },
     routes: [
+      get(R.me, W.me({ birthDate: '2003-05-10', age: 23 })),
       get(R.week, W.weekAway('banlieue', 'invited')),
       get(R.outing(W.IDS.outingBanlieue), W.outingAway('banlieue', 'invited')),
       get(R.outingPrefs, { ...W.outingPrefs, ambiance: 'ANY', maxTravelMinutes: 20 }),
@@ -438,6 +442,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-16T21:10'),
     world: { phase: 'invitedTeam', hood: 'saintdenis' },
     routes: [
+      get(R.me, W.me({ birthDate: '2003-05-10', age: 23 })),
       get(R.week, W.weekAway('banlieue', 'invitedTeam')),
       get(R.outing(W.IDS.outingBanlieue), W.outingAway('banlieue', 'invitedTeam')),
     ],
@@ -446,6 +451,7 @@ const DEFS: Record<string, Def> = {
     now: W.paris('2026-11-18T18:05'),
     world: { phase: 'confirmed', hood: 'saintdenis' },
     routes: [
+      get(R.me, W.me({ birthDate: '2003-05-10', age: 23 })),
       get(R.week, W.weekAway('banlieue', 'confirmed')),
       get(R.outing(W.IDS.outingBanlieue), W.outingAway('banlieue', 'confirmed')),
     ],
@@ -493,8 +499,13 @@ const DEFS: Record<string, Def> = {
   },
   'duo-hh-proposition': {
     now: W.paris('2026-11-09T21:00'),
-    world: { phase: 'going', hood: 'marseille' },
+    world: { phase: 'going', hood: 'marseille', weekPhase: 'none' },
     routes: [
+      get(R.cityInsights, {
+        asOf: '2026-11-09',
+        storyCompatible: { approx: 'ABOUT', value: 15, label: 'une quinzaine de personnes' },
+        ageBrackets: [],
+      }),
       get(R.me, W.me({ displayName: 'Yanis' })),
       get(R.petMine, { ...W.myPet, name: 'Gaston', species: 'GASTON' }),
       get(R.duos, { items: [] }),
@@ -560,6 +571,19 @@ const DEFS: Record<string, Def> = {
   },
   notifs: { now: W.paris('2026-11-09T21:14'), world: { phase: 'going' } },
   groupe: { now: W.paris('2026-11-10T19:00'), world: { phase: 'going' } },
+  // Tour 11 : badge « calme » choisi par M. (Gaston), V5.7 `members[].calm`.
+  'groupe-calme': {
+    now: W.paris('2026-11-10T19:00'),
+    world: { phase: 'going' },
+    routes: [
+      get(R.outing(W.IDS.outing1), {
+        ...W.outing1('going'),
+        members: W.outing1('going').members.map((m) =>
+          m.pet.species === 'GASTON' && !m.inMyTeam ? { ...m, calm: true as const } : m,
+        ),
+      }),
+    ],
+  },
   chargement: {
     now: W.paris('2026-11-09T22:00'),
     world: { phase: 'going' },

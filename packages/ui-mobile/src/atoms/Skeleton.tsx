@@ -10,5 +10,21 @@ export interface SkeletonProps {
 }
 
 export function Skeleton({ width = '100%', height, radius = 14, style }: SkeletonProps) {
-  return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ width, height, borderRadius: radius, backgroundColor: v5.sand, backgroundImage: v5Gradient.skeleton, backgroundSize: '400px 100%' }, style]} />;
+  return (
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[
+        {
+          width,
+          height,
+          borderRadius: radius,
+          backgroundColor: v5.sand,
+          backgroundImage: v5Gradient.skeleton,
+          backgroundSize: '400px 100%',
+        },
+        style,
+      ]}
+    />
+  );
 }

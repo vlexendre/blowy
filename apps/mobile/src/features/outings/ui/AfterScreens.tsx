@@ -33,7 +33,7 @@ import { dayLong, dayLongTime, dayShort, dayShortTime } from '../../../core/form
 import { paths } from '../../../core/navigation/paths';
 import { t } from '../../../i18n';
 import { useDuos } from '../../duos';
-import { petSprite, useMyPet } from '../../pets';
+import { otherPetSprite, petSprite, useMyPet } from '../../pets';
 import { LoadingScreen } from '../../system';
 import { useOuting, useSubmitVotes, useVotes, useWeek } from '../api/hooks';
 import { teamMates, weekdayLabel } from '../model/presenters';
@@ -326,7 +326,7 @@ function VoteBody({ id, o, v }: { id: string; o: OutingView; v: OutingVotesView 
                 justifyContent: 'center',
               }}
             >
-              <Sprite path={petSprite(m.pet.species)} size={25} />
+              <Sprite path={otherPetSprite(m.pet.species)} size={25} />
             </View>
             <BodyText size={13} weight={700} color={v5.inkSoft}>
               {t('vote.alreadyBand', { name: m.firstName ?? m.pet.name })}

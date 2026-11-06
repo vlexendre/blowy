@@ -184,6 +184,9 @@ export function outing1(phase: Phase1): OutingView {
     endsAt: SORTIE1.endsAt,
     capacity: 5,
     activity: 'GAMES',
+    activityDetail: { key: 'board_games', label: 'Jeux de société', durationMinutes: 120 },
+    // V5.9 : même quartier → à pied, estimé (« ≈ 8 min depuis Paris 11e », facts.json).
+    travel: { minutes: 8, estimated: true, mode: 'WALK', fromNeighborhoodLabel: 'Paris 11e' },
     preview: { size: 5, ageMin: 26, ageMax: 34, genders: { WOMAN: 2, MAN: 3 }, teams: 1 },
     confirmedCount: invited ? 3 : 5,
     mySeat: {
@@ -206,7 +209,6 @@ export function outing1(phase: Phase1): OutingView {
       name: 'Café des Oiseaux',
       address: '12 rue Oberkampf, Paris 11e · métro Parmentier (ligne 3)',
       offerLabel: 'Chacun paie ce qu’il boit.',
-      photoUrl: 'demo-asset:scenes/cafe.webp',
       bookingName: 'Blowy',
       travelMinutes: 8,
       travelEstimated: true,
@@ -236,6 +238,8 @@ export function week(phase: Phase1 | 'none' | 'waitlist'): OutingWeekView {
     requestWindow: { opensAt: paris('2026-11-09T09:00'), closesAt: paris('2026-11-10T12:00') },
     slots: [{ startsAt: SORTIE1.startsAt, label: 'slot.thursday_evening' }],
     priorityNextWeek: false,
+    // facts.json › sortie1.composition : lundi 9 novembre, 21 h.
+    composeAt: paris('2026-11-09T21:00'),
   };
   if (phase !== 'none' && phase !== 'waitlist') base.myOutingId = IDS.outing1;
   return base;
@@ -544,6 +548,18 @@ export const MESSAGES = {
       author: { pet: { name: 'Suzie', species: 'SUZIE' } },
     },
     msg(3, IDS.convOuting, true, 'Un jeu de cartes ? On est pile 5 !', paris('2026-11-10T18:52')),
+    // V5.9 : réponses « 3 mots » à la question soufflée (`promptId`), signées par le pet avant la confirmation.
+    ...(
+      [
+        [41, 'Suzie', 'SUZIE', 'marché, brunch, sieste'],
+        [42, 'Gaston', 'GASTON', 'foot, frites, potes'],
+        [43, 'Pépite', 'GASTON', 'vélo, brunch, ciné'],
+      ] as const
+    ).map(([n, name, species, body]) => ({
+      ...msg(n, IDS.convOuting, false, body, paris('2026-11-09T21:30')),
+      promptId: 'icebreaker.sunday',
+      author: { pet: { name, species } },
+    })),
   ],
   tom: [msg(11, IDS.convTom, false, 'Je ramène les cartes ?', paris('2026-11-14T20:10'))],
   jade: [
@@ -612,6 +628,7 @@ export const street: StreetView = {
 export function duoJade(stage: 'exchange' | 'unlocked' | 'date'): DuoView {
   const v: DuoView = {
     id: IDS.duoJade,
+    openedAt: paris('2026-11-09T21:30'),
     status: stage === 'exchange' ? 'EXCHANGE' : stage === 'unlocked' ? 'UNLOCKED' : 'DATE_PROPOSED',
     origin: 'LANE',
     other: { firstName: 'Jade', pet: PETS.caramel },
@@ -685,7 +702,7 @@ export function outing2(): OutingView {
 export function outingLille(mates: readonly string[]): OutingView {
   const team: OutingMemberView[] = mates.map((first, i) => ({
     userId: id(21 + i),
-    pet: [PETS.suzie, PETS.pia][i % 2]!,
+    pet: { ...[PETS.suzie, PETS.pia][i % 2]!, name: ['Pruneau', 'Cannelle'][i % 2]! },
     threeWords: [],
     firstName: first,
     ageRange: '22_25',
@@ -727,11 +744,18 @@ export function outingWeekend(): OutingView {
     id: IDS.outingWeekend,
     status: 'PROPOSED',
     weekKey: '2026-W47',
-    neighborhood: { name: 'Lyon · Guillotière' },
+    neighborhood: { name: 'Lyon 7e · la Guillotière' },
     startsAt: paris('2026-11-21T15:00'),
     endsAt: paris('2026-11-21T17:00'),
     capacity: 5,
     activity: 'WORKSHOP',
+    activityDetail: {
+      key: 'cooking_workshop',
+      label: 'Atelier cuisine',
+      durationMinutes: 120,
+      ledBy: 'Encadré par le lieu',
+    },
+    travel: { minutes: 14, estimated: true, mode: 'TRANSIT', fromNeighborhoodLabel: 'Lyon 3e' },
     preview: { size: 5, ageMin: 35, ageMax: 44, genders: { WOMAN: 3, MAN: 2 }, teams: 0 },
     confirmedCount: 2,
     mySeat: { status: 'INVITED', acceptDeadline: paris('2026-11-19T12:00') },
@@ -766,6 +790,7 @@ export function duoJadeDate(): DuoView {
 export function duoLea(withDate = false): DuoView {
   const v: DuoView = {
     id: IDS.duoLea,
+    openedAt: paris('2026-11-15T21:30'),
     status: withDate ? 'DATE_PROPOSED' : 'UNLOCKED',
     origin: 'OUTING_VOTE',
     other: {
@@ -950,37 +975,67 @@ export function outingAway(city: AwayCity, phase: Phase1): OutingView {
   const base = outing1(phase);
   const lyon = city === 'lyon';
   const shift = (lyon ? 5 : 7) * 86_400_000;
+  // facts.json › groupes / lyon / banlieue : prénoms, tranches et noms de pets de chaque groupe.
   const mate = lyon
-    ? { first: 'Bastien', age: '30_34' as const }
-    : { first: 'Yacine', age: '22_25' as const };
-  const names = lyon ? ['Inès', 'Hugo', 'Nour'] : ['Maïa', 'Karim', 'Lina'];
-  const age = lyon ? ('26_29' as const) : ('22_25' as const);
+    ? { first: 'Bastien', age: '22_25' as const, pet: 'Biscotte' }
+    : { first: 'Yacine', age: '22_25' as const, pet: 'Chouquette' };
+  const others: Record<string, { first: string; age: '22_25' | '26_29'; pet: string }> = lyon
+    ? {
+        Léa: { first: 'Clara', age: '26_29', pet: 'Moka' },
+        Malo: { first: 'Théo', age: '26_29', pet: 'Filou' },
+        Sarah: { first: 'Nour', age: '22_25', pet: 'Praline' },
+      }
+    : {
+        Léa: { first: 'Maïa', age: '22_25', pet: 'Réglisse' },
+        Malo: { first: 'Ilyes', age: '22_25', pet: 'Tic' },
+        Sarah: { first: 'Lina', age: '22_25', pet: 'Noisette' },
+      };
+  const byPet: Record<string, string> = { Suzie: 'Léa', Gaston: 'Malo', Pia: 'Sarah' };
   const v: OutingView = {
     ...base,
     id: AWAY_ID[city],
     weekKey: lyon ? '2026-W47' : '2026-W47',
-    neighborhood: { name: lyon ? 'Lyon 4e' : 'Paris 18e' },
+    neighborhood: { name: lyon ? 'Lyon 4e · Croix-Rousse' : 'Paris 18e' },
     startsAt: new Date(Date.parse(SORTIE1.startsAt) + shift).toISOString(),
     endsAt: new Date(Date.parse(SORTIE1.endsAt) + shift).toISOString(),
-    activity: lyon ? 'GAMES' : 'CLIMBING',
+    activity: lyon ? 'SPORT' : 'CLIMBING',
+    activityDetail: lyon
+      ? { key: 'five_a_side', label: 'Foot à 5', durationMinutes: 120 }
+      : { key: 'bouldering', label: 'Bloc d’escalade', durationMinutes: 120 },
+    travel: lyon
+      ? { minutes: 18, estimated: true, mode: 'TRANSIT', fromNeighborhoodLabel: 'Lyon 7e' }
+      : {
+          minutes: 17,
+          estimated: true,
+          mode: 'TRANSIT',
+          fromNeighborhoodLabel: 'Saint\u2011Denis',
+        },
     timeline: shiftTimeline(shift),
     members: base.members.map((m, i) => {
-      if (m.inMyTeam) return { ...m, userId: id(30), firstName: mate.first, ageRange: mate.age };
+      if (m.inMyTeam)
+        return {
+          ...m,
+          userId: id(30),
+          firstName: mate.first,
+          ageRange: mate.age,
+          pet: { ...m.pet, name: mate.pet },
+        };
+      const o = others[byPet[m.pet.name] ?? ''];
       return {
         ...m,
         userId: id(31 + i),
-        ...(m.firstName ? { firstName: names[i] ?? m.firstName, ageRange: age } : null),
+        ...(o ? { pet: { ...m.pet, name: o.pet } } : null),
+        ...(m.firstName && o ? { firstName: o.first, ageRange: o.age } : null),
       };
     }),
   };
-  if (v.preview && !lyon) v.preview = { ...v.preview, ageMin: 22, ageMax: 29 };
+  if (v.preview) v.preview = { ...v.preview, ageMin: 22, ageMax: lyon ? 29 : 25 };
   if (v.venue)
     v.venue = lyon
       ? {
           name: 'Le Five Croix-Rousse',
           address: '12 rue d’Austerlitz, Lyon 4e',
           offerLabel: 'Chacun paie ce qu’il boit.',
-          photoUrl: 'demo-asset:scenes/cafe.webp',
           bookingName: 'Blowy',
           travelMinutes: 18,
           travelEstimated: true,
@@ -990,7 +1045,6 @@ export function outingAway(city: AwayCity, phase: Phase1): OutingView {
           name: 'Bloc Station',
           address: '8 rue Marcadet, Paris 18e',
           offerLabel: 'Chacun paie ce qu’il boit.',
-          photoUrl: 'demo-asset:scenes/cafe.webp',
           bookingName: 'Blowy',
           travelMinutes: 17,
           travelEstimated: true,
@@ -1017,10 +1071,23 @@ function outingNantes(phase: Phase1): OutingView {
     startsAt: new Date(Date.parse(SORTIE1.startsAt) + shift).toISOString(),
     endsAt: new Date(Date.parse(SORTIE1.endsAt) + shift).toISOString(),
     activity: 'DRINK_COFFEE',
+    activityDetail: { key: 'drinks', label: 'Verre ou café', durationMinutes: 120 },
+    travel: {
+      minutes: 12,
+      estimated: true,
+      mode: 'TRANSIT',
+      fromNeighborhoodLabel: 'Nantes centre',
+    },
     timeline: shiftTimeline(shift),
     members: base.members.map((m, i) => {
       if (m.inMyTeam)
-        return { ...m, userId: id(40), firstName: 'Inès', ageRange: '26_29' as const };
+        return {
+          ...m,
+          userId: id(40),
+          firstName: 'Inès',
+          ageRange: '26_29' as const,
+          pet: { ...m.pet, name: 'Galette' },
+        };
       return {
         ...m,
         userId: id(41 + i),
@@ -1036,7 +1103,6 @@ function outingNantes(phase: Phase1): OutingView {
       name: 'Le Bouffay',
       address: '4 place du Bouffay, Nantes',
       offerLabel: 'Chacun paie ce qu’il boit.',
-      photoUrl: 'demo-asset:scenes/cafe.webp',
       bookingName: 'Blowy',
       travelMinutes: 12,
       travelEstimated: true,
@@ -1055,6 +1121,7 @@ export function weekNotYet(): OutingWeekView {
 export function duoKarim(): DuoView {
   return {
     id: IDS.duoKarim,
+    openedAt: paris('2026-11-09T22:00'),
     status: 'EXCHANGE',
     origin: 'LANE',
     other: { firstName: 'Karim', pet: PETS.plume },

@@ -34,13 +34,17 @@ export class OutingsSeatPaymentSink implements SeatPaymentSink {
     if (raw.paymentRef === i.paymentRef && seat.status !== 'HELD') return 'ALREADY_CONFIRMED';
     const open = (outing.status === 'PROPOSED' || outing.status === 'FORMING') && scope.now < outing.lockAt;
     if (seat.status === 'HELD' && open && seat.holdExpiresAt && scope.now < seat.holdExpiresAt) {
-      await this.repo.updateSeat(scope, seat.id, { status: 'CONFIRMED', funding: 'PAID', paymentRef: i.paymentRef, confirmedAt: scope.now });
+      // V5.10 : place couverte (offerte, Blowy+…) dont seule l'activité était à payer → elle garde son financement.
+      const funding = seat.funding && seat.funding !== 'PAID' ? seat.funding : 'PAID';
+      await this.repo.updateSeat(scope, seat.id, { status: 'CONFIRMED', funding, paymentRef: i.paymentRef, confirmedAt: scope.now });
       await this.events.seatUpdated(scope, outing.id, i.userId, { status: 'CONFIRMED', refundState: 'NONE' });
-      await scope.outbox.emit({ topic: 'outing.seat_confirmed', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { outingId: outing.id, seatId: seat.id, userId: i.userId, funding: 'PAID' } });
+      await scope.outbox.emit({ topic: 'outing.seat_confirmed', aggregateType: 'OutingSeat', aggregateId: seat.id, payload: { outingId: outing.id, seatId: seat.id, userId: i.userId, funding } });
       await this.lifecycle.afterConfirm(scope, outing, i.userId);
       return 'CONFIRMED';
     }
     if (seat.status === 'HELD') {
+      // V5.10 : financement acquis d'une place HELD (offerte, parrainage, ancien crédit) rendu avant remboursement de la carte.
+      if (seat.funding && seat.funding !== 'PAID') await this.lifecycle.releaseHeldFunding(scope, seat);
       // Paiement arrivé après l'échéance du hold (ou sortie close) : place rendue, remboursement intégral.
       await this.repo.updateSeat(scope, seat.id, { status: 'CANCELLED', cancelKind: 'SYSTEM_REMOVAL', funding: 'PAID', paymentRef: i.paymentRef, refundState: 'PENDING', cancelledAt: scope.now });
       await this.events.seatUpdated(scope, outing.id, i.userId, { status: 'CANCELLED', refundState: 'PENDING' });

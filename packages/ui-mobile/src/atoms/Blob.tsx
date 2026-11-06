@@ -28,23 +28,63 @@ export interface BlobProps {
   drift?: BlobDrift;
 }
 
-export const DRIFT_OPTIONS: Record<Exclude<BlobDrift, 'none'>, { durationMs: number; delayMs: number; reverse: boolean }> = {
+export const DRIFT_OPTIONS: Record<
+  Exclude<BlobDrift, 'none'>,
+  { durationMs: number; delayMs: number; reverse: boolean }
+> = {
   dr1: { durationMs: 10000, delayMs: 0, reverse: false },
   dr2: { durationMs: 12000, delayMs: -5000, reverse: true },
 };
 
-export function Blob({ size, color, opacity = 1, blur = BLOB.blur, top, left, right, bottom, drift = 'dr1' }: BlobProps) {
+export function Blob({
+  size,
+  color,
+  opacity = 1,
+  blur = BLOB.blur,
+  top,
+  left,
+  right,
+  bottom,
+  drift = 'dr1',
+}: BlobProps) {
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const R = size / 2;
   const extent = blobExtent(R, blur);
   const stops = useMemo(() => blurredDiscStops(R, blur, opacity, 32), [R, blur, opacity]);
-  const motion = useKeyframeStyle('drift', drift === 'none' ? { disabled: true } : DRIFT_OPTIONS[drift]);
+  const motion = useKeyframeStyle(
+    'drift',
+    drift === 'none' ? { disabled: true } : DRIFT_OPTIONS[drift],
+  );
   return (
-    <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ position: 'absolute', width: size, height: size, top, left, right, bottom }, motion]}>
-      <View style={{ position: 'absolute', left: R - extent, top: R - extent, width: extent * 2, height: extent * 2 }}>
+    <Animated.View
+      pointerEvents="none"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[
+        { position: 'absolute', width: size, height: size, top, left, right, bottom },
+        motion,
+      ]}
+    >
+      <View
+        style={{
+          position: 'absolute',
+          left: R - extent,
+          top: R - extent,
+          width: extent * 2,
+          height: extent * 2,
+        }}
+      >
         <Svg width={extent * 2} height={extent * 2}>
           <Defs>
-            <RadialGradient id={`blob${id}`} cx={extent} cy={extent} r={extent} fx={extent} fy={extent} gradientUnits="userSpaceOnUse">
+            <RadialGradient
+              id={`blob${id}`}
+              cx={extent}
+              cy={extent}
+              r={extent}
+              fx={extent}
+              fy={extent}
+              gradientUnits="userSpaceOnUse"
+            >
               {stops.map((s) => (
                 <Stop key={s.offset} offset={s.offset} stopColor={color} stopOpacity={s.opacity} />
               ))}

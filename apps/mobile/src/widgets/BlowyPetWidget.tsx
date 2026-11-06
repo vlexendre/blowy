@@ -17,20 +17,42 @@ const BlowyPetWidgetView = (props: WidgetProps, env: WidgetEnvironment) => {
   if (!props.petName) {
     return (
       <VStack modifiers={[widgetURL(props.url), padding({ all: 12 }), background('#FFF7EC')]}>
-        <Text modifiers={[font({ size: 15, weight: 'heavy' }), foregroundStyle('#16110D')]}>{props.emptyLabel}</Text>
+        <Text modifiers={[font({ size: 15, weight: 'heavy' }), foregroundStyle('#16110D')]}>
+          {props.emptyLabel}
+        </Text>
       </VStack>
     );
   }
   return (
-    <VStack alignment="leading" spacing={4} modifiers={[widgetURL(props.url), padding({ all: compact ? 2 : 12 }), background(compact ? 'clear' : '#FFF7EC')]}>
-      <Text modifiers={[font({ size: compact ? 14 : 20, weight: 'black' }), foregroundStyle('#16110D')]}>{props.petName.toUpperCase()}</Text>
-      <Text modifiers={[font({ size: 13, weight: 'semibold' }), foregroundStyle('#5A5047')]}>{props.moodLabel}</Text>
+    <VStack
+      alignment="leading"
+      spacing={4}
+      modifiers={[
+        widgetURL(props.url),
+        padding({ all: compact ? 2 : 12 }),
+        background(compact ? 'clear' : '#FFF7EC'),
+      ]}
+    >
+      <Text
+        modifiers={[font({ size: compact ? 14 : 20, weight: 'black' }), foregroundStyle('#16110D')]}
+      >
+        {props.petName.toUpperCase()}
+      </Text>
+      <Text modifiers={[font({ size: 13, weight: 'semibold' }), foregroundStyle('#5A5047')]}>
+        {props.moodLabel}
+      </Text>
       {props.streakLabel ? (
         <HStack>
-          <Text modifiers={[font({ size: 13, weight: 'bold' }), foregroundStyle('#FF5A3C')]}>{props.streakLabel}</Text>
+          <Text modifiers={[font({ size: 13, weight: 'bold' }), foregroundStyle('#FF5A3C')]}>
+            {props.streakLabel}
+          </Text>
         </HStack>
       ) : null}
-      {props.waitingLabel && !compact ? <Text modifiers={[font({ size: 12, weight: 'semibold' }), foregroundStyle('#16110D')]}>{props.waitingLabel}</Text> : null}
+      {props.waitingLabel && !compact ? (
+        <Text modifiers={[font({ size: 12, weight: 'semibold' }), foregroundStyle('#16110D')]}>
+          {props.waitingLabel}
+        </Text>
+      ) : null}
     </VStack>
   );
 };

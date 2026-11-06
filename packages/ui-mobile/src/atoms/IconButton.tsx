@@ -14,10 +14,26 @@ export interface IconButtonProps {
 }
 
 /** Bouton carré 44 pt (maquette .back) : retour, fermer, menu. */
-export function IconButton({ icon, accessibilityLabel, onPress, tone: t = 'white', badge, testID }: IconButtonProps) {
+export function IconButton({
+  icon,
+  accessibilityLabel,
+  onPress,
+  tone: t = 'white',
+  badge,
+  testID,
+}: IconButtonProps) {
   const tk = tone[t];
   return (
-    <Pressable3D background={tk.bg} shadowColor={tk.shadow} depth={3} radius={radius.sm + 2} onPress={onPress} accessibilityLabel={accessibilityLabel} testID={testID} style={styles.btn}>
+    <Pressable3D
+      background={tk.bg}
+      shadowColor={tk.shadow}
+      depth={3}
+      radius={radius.sm + 2}
+      onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+      style={styles.btn}
+    >
       <Icon name={icon} tint={t === 'white' ? color.ink : tk.fg} />
       {badge ? (
         <View style={styles.badge}>

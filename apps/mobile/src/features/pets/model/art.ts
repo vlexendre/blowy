@@ -71,3 +71,6 @@ export const SPECIES_TILE: Record<Species, string> = {
   GASTON: 'peach',
   PIA: 'violetPale',
 };
+
+/** Pet d'une autre personne (groupe, chat, visages) : pose « joyeuse » des maquettes, le mien reste en présentation. */
+export const otherPetSprite = (species: Species): string => petSprite(species, 'joyful');

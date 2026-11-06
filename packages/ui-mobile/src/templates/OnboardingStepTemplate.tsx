@@ -13,7 +13,13 @@ export interface OnboardingStepTemplateProps {
   lead?: string;
   illustration?: ReactNode;
   children?: ReactNode;
-  cta: { label: string; onPress: () => void; disabled?: boolean; loading?: boolean; testID?: string };
+  cta: {
+    label: string;
+    onPress: () => void;
+    disabled?: boolean;
+    loading?: boolean;
+    testID?: string;
+  };
   secondary?: { label: string; onPress: () => void; testID?: string };
   step?: { index: number; count: number; label: string };
   onBack?: () => void;
@@ -23,15 +29,41 @@ export interface OnboardingStepTemplateProps {
 }
 
 /** Étape d'onboarding : sur-titre + titre display + illustration + contenu + CTA collant. */
-export function OnboardingStepTemplate({ eyebrow, title, lead, illustration, children, cta, secondary, step, onBack, backLabel, banner, testID }: OnboardingStepTemplateProps) {
+export function OnboardingStepTemplate({
+  eyebrow,
+  title,
+  lead,
+  illustration,
+  children,
+  cta,
+  secondary,
+  step,
+  onBack,
+  backLabel,
+  banner,
+  testID,
+}: OnboardingStepTemplateProps) {
   return (
     <ScreenFrame
       testID={testID}
       banner={banner}
       footer={
         <>
-          <Button label={cta.label} onPress={cta.onPress} disabled={cta.disabled} loading={cta.loading} testID={cta.testID ?? 'onboarding-next'} />
-          {secondary ? <Button label={secondary.label} variant="ghost" onPress={secondary.onPress} testID={secondary.testID} /> : null}
+          <Button
+            label={cta.label}
+            onPress={cta.onPress}
+            disabled={cta.disabled}
+            loading={cta.loading}
+            testID={cta.testID ?? 'onboarding-next'}
+          />
+          {secondary ? (
+            <Button
+              label={secondary.label}
+              variant="ghost"
+              onPress={secondary.onPress}
+              testID={secondary.testID}
+            />
+          ) : null}
         </>
       }
     >

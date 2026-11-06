@@ -19,21 +19,46 @@ export interface ScreenFrameProps {
   tone?: 'cream' | 'ink';
 }
 
-export function ScreenFrame({ children, banner, footer, scroll = true, bottomSpace = 0, testID, tone = 'cream' }: ScreenFrameProps) {
+export function ScreenFrame({
+  children,
+  banner,
+  footer,
+  scroll = true,
+  bottomSpace = 0,
+  testID,
+  tone = 'cream',
+}: ScreenFrameProps) {
   const insets = useSafeAreaInsets();
   const bg = tone === 'ink' ? color.ink : color.cream;
   const body = scroll ? (
-    <ScrollView contentContainerStyle={[styles.content, { paddingBottom: bottomSpace + space.xl }]} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      contentContainerStyle={[styles.content, { paddingBottom: bottomSpace + space.xl }]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
       {children}
     </ScrollView>
   ) : (
     <View style={[styles.content, styles.flex, { paddingBottom: bottomSpace }]}>{children}</View>
   );
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.flex, { backgroundColor: bg, paddingTop: insets.top }]} testID={testID}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={[styles.flex, { backgroundColor: bg, paddingTop: insets.top }]}
+      testID={testID}
+    >
       {banner ? <View style={styles.banner}>{banner}</View> : null}
       {body}
-      {footer ? <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, space.lg), backgroundColor: bg }]}>{footer}</View> : null}
+      {footer ? (
+        <View
+          style={[
+            styles.footer,
+            { paddingBottom: Math.max(insets.bottom, space.lg), backgroundColor: bg },
+          ]}
+        >
+          {footer}
+        </View>
+      ) : null}
     </KeyboardAvoidingView>
   );
 }

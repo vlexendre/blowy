@@ -29,11 +29,24 @@ export function LinkTree({ nodes }: { nodes: readonly LinkLevelNode[] }) {
           <View key={n.level} style={styles.item}>
             <View style={styles.rail}>
               <View style={[styles.node, { backgroundColor: t.bg }]}>
-                {n.state === 'locked' || n.state === 'not-in-branch' ? <Icon name="lock" size={16} tint={color.muted} /> : <Text variant="displayS" style={{ color: t.fg }}>{String(n.level)}</Text>}
+                {n.state === 'locked' || n.state === 'not-in-branch' ? (
+                  <Icon name="lock" size={16} tint={color.muted} />
+                ) : (
+                  <Text variant="displayS" style={{ color: t.fg }}>
+                    {String(n.level)}
+                  </Text>
+                )}
               </View>
               {i < nodes.length - 1 ? <View style={[styles.line, on && styles.lineOn]} /> : null}
             </View>
-            <Surface padding="md" style={[styles.card, n.state === 'not-in-branch' && styles.dim]} accessible accessibilityLabel={[`${n.level}`, n.title, n.subtitle, n.xpLabel, n.stateLabel].join(', ')}>
+            <Surface
+              padding="md"
+              style={[styles.card, n.state === 'not-in-branch' && styles.dim]}
+              accessible
+              accessibilityLabel={[`${n.level}`, n.title, n.subtitle, n.xpLabel, n.stateLabel].join(
+                ', ',
+              )}
+            >
               <View style={styles.cardRow}>
                 {n.iconPath ? <Sprite path={n.iconPath} size={36} /> : null}
                 <View style={styles.text}>
@@ -58,8 +71,22 @@ const styles = StyleSheet.create({
   list: { gap: 0 },
   item: { flexDirection: 'row', gap: space.md },
   rail: { alignItems: 'center', width: 36 },
-  node: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: color.creamShadow },
-  line: { flex: 1, width: 4, backgroundColor: color.creamShadow, borderRadius: radius.pill, marginVertical: 2 },
+  node: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: color.creamShadow,
+  },
+  line: {
+    flex: 1,
+    width: 4,
+    backgroundColor: color.creamShadow,
+    borderRadius: radius.pill,
+    marginVertical: 2,
+  },
   lineOn: { backgroundColor: color.ink },
   card: { flex: 1, marginBottom: space.md },
   dim: { opacity: 0.6 },

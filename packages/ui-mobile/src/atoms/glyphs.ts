@@ -5,16 +5,49 @@
  * Aucune dépendance React Native : testable sous Node.
  */
 export type GlyphShape =
-  | { k: 'path'; d: string; stroke?: 'c' | 'c2'; fill?: 'c' | 'c2'; w?: number; cap?: 'round'; join?: 'round' }
-  | { k: 'circle'; cx: number; cy: number; r: number; stroke?: 'c' | 'c2'; fill?: 'c' | 'c2'; w?: number }
-  | { k: 'rect'; x: number; y: number; width: number; height: number; rx: number; stroke?: 'c' | 'c2'; fill?: 'c' | 'c2'; w?: number };
+  | {
+      k: 'path';
+      d: string;
+      stroke?: 'c' | 'c2';
+      fill?: 'c' | 'c2';
+      w?: number;
+      cap?: 'round';
+      join?: 'round';
+    }
+  | {
+      k: 'circle';
+      cx: number;
+      cy: number;
+      r: number;
+      stroke?: 'c' | 'c2';
+      fill?: 'c' | 'c2';
+      w?: number;
+    }
+  | {
+      k: 'rect';
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      rx: number;
+      stroke?: 'c' | 'c2';
+      fill?: 'c' | 'c2';
+      w?: number;
+    };
 
 export interface GlyphDef {
   viewBox: number;
   shapes: readonly GlyphShape[];
 }
 
-const line = (d: string, w: number, join = true): GlyphShape => ({ k: 'path', d, stroke: 'c', w, cap: 'round', ...(join ? { join: 'round' as const } : {}) });
+const line = (d: string, w: number, join = true): GlyphShape => ({
+  k: 'path',
+  d,
+  stroke: 'c',
+  w,
+  cap: 'round',
+  ...(join ? { join: 'round' as const } : {}),
+});
 
 export const GLYPHS = {
   /** Coche `0 0 16 16`, trait 2,6 (puces « vérifié », listes). */
@@ -34,17 +67,35 @@ export const GLYPHS = {
       { k: 'circle', cx: 12, cy: 15, r: 1.6, fill: 'c2' },
     ],
   },
-  chat: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 5h16v11H9l-5 4z', stroke: 'c', w: 2.2, join: 'round' }] },
-  chatFilled: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 5h16v11H9l-5 4z', stroke: 'c', fill: 'c', w: 2.2, join: 'round' }] },
+  chat: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M4 5h16v11H9l-5 4z', stroke: 'c', w: 2.2, join: 'round' }],
+  },
+  chatFilled: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M4 5h16v11H9l-5 4z', stroke: 'c', fill: 'c', w: 2.2, join: 'round' }],
+  },
   chatSolid: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 5h16v11H9l-5 4z', fill: 'c' }] },
-  home: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 11l8-7 8 7v9H4z', stroke: 'c', w: 2.2, join: 'round' }] },
-  homeFilled: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 11l8-7 8 7v9H4z', stroke: 'c', fill: 'c', w: 2.2, join: 'round' }] },
+  home: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M4 11l8-7 8 7v9H4z', stroke: 'c', w: 2.2, join: 'round' }],
+  },
+  homeFilled: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M4 11l8-7 8 7v9H4z', stroke: 'c', fill: 'c', w: 2.2, join: 'round' }],
+  },
   band: {
     viewBox: 24,
     shapes: [
       { k: 'circle', cx: 8, cy: 9, r: 3.2, stroke: 'c', w: 2.2 },
       { k: 'circle', cx: 16.5, cy: 9, r: 3.2, stroke: 'c', w: 2.2 },
-      { k: 'path', d: 'M2.5 20c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2M12 16c1-.8 2.5-1.2 4.5-1.2 2.5 0 4.9 1.8 5.5 5.2', stroke: 'c', w: 2.2, cap: 'round' },
+      {
+        k: 'path',
+        d: 'M2.5 20c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2M12 16c1-.8 2.5-1.2 4.5-1.2 2.5 0 4.9 1.8 5.5 5.2',
+        stroke: 'c',
+        w: 2.2,
+        cap: 'round',
+      },
     ],
   },
   bandFilled: {
@@ -52,7 +103,13 @@ export const GLYPHS = {
     shapes: [
       { k: 'circle', cx: 8, cy: 9, r: 3.2, stroke: 'c', fill: 'c', w: 2.2 },
       { k: 'circle', cx: 16.5, cy: 9, r: 3.2, stroke: 'c', fill: 'c', w: 2.2 },
-      { k: 'path', d: 'M2.5 20c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2M12 16c1-.8 2.5-1.2 4.5-1.2 2.5 0 4.9 1.8 5.5 5.2', stroke: 'c', w: 2.2, cap: 'round' },
+      {
+        k: 'path',
+        d: 'M2.5 20c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2M12 16c1-.8 2.5-1.2 4.5-1.2 2.5 0 4.9 1.8 5.5 5.2',
+        stroke: 'c',
+        w: 2.2,
+        cap: 'round',
+      },
     ],
   },
   profile: {
@@ -77,7 +134,18 @@ export const GLYPHS = {
       { k: 'path', d: 'M5 4h13l-3.5 4.5L18 13H5z', fill: 'c' },
     ],
   },
-  link: { viewBox: 24, shapes: [{ k: 'path', d: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1', stroke: 'c', w: 2.2, cap: 'round' }] },
+  link: {
+    viewBox: 24,
+    shapes: [
+      {
+        k: 'path',
+        d: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+        stroke: 'c',
+        w: 2.2,
+        cap: 'round',
+      },
+    ],
+  },
   pin: {
     viewBox: 24,
     shapes: [
@@ -116,9 +184,15 @@ export const GLYPHS = {
       { k: 'rect', x: 14, y: 5, width: 4, height: 14, rx: 1.5, fill: 'c' },
     ],
   },
-  shield: { viewBox: 24, shapes: [{ k: 'path', d: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z', fill: 'c' }] },
+  shield: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z', fill: 'c' }],
+  },
   send: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 12l16-8-6 16-2-7z', fill: 'c' }] },
-  plus: { viewBox: 24, shapes: [{ k: 'path', d: 'M12 5v14M5 12h14', stroke: 'c', w: 3, cap: 'round' }] },
+  plus: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M12 5v14M5 12h14', stroke: 'c', w: 3, cap: 'round' }],
+  },
   clock: {
     viewBox: 24,
     shapes: [
@@ -126,7 +200,10 @@ export const GLYPHS = {
       { k: 'path', d: 'M12 7v5l3 2', stroke: 'c', w: 2.4, cap: 'round' },
     ],
   },
-  close: { viewBox: 10, shapes: [{ k: 'path', d: 'M2 2l6 6M8 2l-6 6', stroke: 'c', w: 2, cap: 'round' }] },
+  close: {
+    viewBox: 10,
+    shapes: [{ k: 'path', d: 'M2 2l6 6M8 2l-6 6', stroke: 'c', w: 2, cap: 'round' }],
+  },
   gear: {
     viewBox: 24,
     shapes: [
@@ -143,13 +220,31 @@ export const GLYPHS = {
   wifiOff: {
     viewBox: 24,
     shapes: [
-      { k: 'path', d: 'M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0', stroke: 'c', w: 2.2, cap: 'round' },
+      {
+        k: 'path',
+        d: 'M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0',
+        stroke: 'c',
+        w: 2.2,
+        cap: 'round',
+      },
       { k: 'circle', cx: 12, cy: 19, r: 1.6, fill: 'c' },
       { k: 'path', d: 'M3 3l18 18', stroke: 'c2', w: 2.4, cap: 'round' },
     ],
   },
-  phone: { viewBox: 24, shapes: [{ k: 'path', d: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z', fill: 'c' }] },
-  pencil: { viewBox: 24, shapes: [{ k: 'path', d: 'M4 20h4L19 9l-4-4L4 16z', stroke: 'c', w: 2.2, join: 'round' }] },
+  phone: {
+    viewBox: 24,
+    shapes: [
+      {
+        k: 'path',
+        d: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z',
+        fill: 'c',
+      },
+    ],
+  },
+  pencil: {
+    viewBox: 24,
+    shapes: [{ k: 'path', d: 'M4 20h4L19 9l-4-4L4 16z', stroke: 'c', w: 2.2, join: 'round' }],
+  },
   play: { viewBox: 24, shapes: [{ k: 'path', d: 'M7 4l13 8-13 8z', fill: 'c' }] },
   warning: {
     viewBox: 24,

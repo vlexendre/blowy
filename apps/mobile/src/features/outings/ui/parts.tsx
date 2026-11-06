@@ -21,7 +21,7 @@ import { router } from 'expo-router';
 import { paths } from '../../../core/navigation/paths';
 import { useMyNeighborhood } from '../../account';
 import { useCancelSeat } from '../api/hooks';
-import { petSprite } from '../../pets';
+import { otherPetSprite, petSprite } from '../../pets';
 import {
   compositionLine,
   groupSlots,
@@ -38,7 +38,12 @@ export function toStripSlots(
 ): GroupSlot[] {
   return slots.map((s) => ({
     key: s.key,
-    sprite: s.kind === 'unknown' || !s.species ? null : petSprite(s.species),
+    sprite:
+      s.kind === 'unknown' || !s.species
+        ? null
+        : s.kind === 'me'
+          ? petSprite(s.species)
+          : otherPetSprite(s.species),
     label: s.label,
     strong: s.kind !== 'unknown',
     background: tileFor(s),
@@ -50,6 +55,12 @@ export const slotTile = (s: GroupSlotModel): string => (s.kind === 'me' ? v5.lim
 
 /** Trajet « ≈ 8 min depuis Paris 11e » (V5.6 E11) : seulement si l'API connaît le trajet — jamais inventé. */
 export const travelLine = (o: OutingView, home?: string): string | null => {
+  // V5.9 : trajet de MON quartier au quartier de la sortie, dès la proposition (jamais le lieu avant la confirmation).
+  if (o.travel)
+    return t('outing.travelFrom', {
+      minutes: String(o.travel.minutes),
+      home: o.travel.fromNeighborhoodLabel,
+    });
   const minutes = o.venue?.travelMinutes;
   if (!minutes) return null;
   return home

@@ -16,9 +16,22 @@ export interface SpeciesOption {
 }
 
 /** Sélecteur d'espèce (maquette Craft) : sprite + nom, sélection = fond encre. */
-export function PetCarousel({ options, selected, onSelect }: { options: readonly SpeciesOption[]; selected: Species; onSelect: (s: Species) => void }) {
+export function PetCarousel({
+  options,
+  selected,
+  onSelect,
+}: {
+  options: readonly SpeciesOption[];
+  selected: Species;
+  onSelect: (s: Species) => void;
+}) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row} accessibilityRole="radiogroup">
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.row}
+      accessibilityRole="radiogroup"
+    >
       {options.map((o) => {
         const on = o.species === selected;
         const t = tone[on ? 'ink' : 'white'];
@@ -54,6 +67,12 @@ export function PetCarousel({ options, selected, onSelect }: { options: readonly
 
 const styles = StyleSheet.create({
   row: { gap: space.sm, paddingVertical: space.xs, paddingHorizontal: 2 },
-  card: { width: 84, alignItems: 'center', paddingVertical: space.sm, gap: 2, borderColor: color.creamShadow },
+  card: {
+    width: 84,
+    alignItems: 'center',
+    paddingVertical: space.sm,
+    gap: 2,
+    borderColor: color.creamShadow,
+  },
   tag: { position: 'absolute', top: -6, right: -6 },
 });

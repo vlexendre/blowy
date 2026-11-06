@@ -93,6 +93,6 @@ export class PrismaSeatDirectory {
   }
 
   async usedFreeFirst(userId: string) {
-    return (await this.db.outingSeat.count({ where: { userId, funding: 'FREE_FIRST', refundState: { not: 'RECREDITED' } } })) > 0;
+    return (await this.db.outingSeat.count({ where: { userId, funding: 'FREE_FIRST', refundState: { notIn: ['RECREDITED', 'PENDING', 'REFUNDED'] } } })) > 0;
   }
 }

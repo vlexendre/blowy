@@ -58,7 +58,12 @@ export interface PetRendererProps {
   initial?: string;
 }
 
-const OVERLAY_ICON: Record<StateOverlay, IconName> = { sick: 'warning', sleep: 'pause', hungry: 'star', sad: 'heart' };
+const OVERLAY_ICON: Record<StateOverlay, IconName> = {
+  sick: 'warning',
+  sleep: 'pause',
+  hungry: 'star',
+  sad: 'heart',
+};
 
 export function PetRenderer({
   species,
@@ -79,7 +84,10 @@ export function PetRenderer({
   const { reduceMotion } = useA11yPrefs();
   const resolved = useMemo(() => resolveSprite(species, stage, pose), [species, stage, pose]);
   const meta = resolved.meta ?? PLACEHOLDER_META;
-  const layout = useMemo(() => layoutSprite(meta, bodyHeight, resolved.stageScale, resolved.heightRatio), [meta, bodyHeight, resolved.stageScale, resolved.heightRatio]);
+  const layout = useMemo(
+    () => layoutSprite(meta, bodyHeight, resolved.stageScale, resolved.heightRatio),
+    [meta, bodyHeight, resolved.stageScale, resolved.heightRatio],
+  );
 
   const seq = motion === 'idle' ? null : framesFor(species, motion);
   const frames = seq && seq.source !== 'procedural' ? seq.frames : null;
@@ -94,7 +102,11 @@ export function PetRenderer({
       return;
     }
     t.value = (phaseMs % BREATH.periodMs) / BREATH.periodMs;
-    t.value = withRepeat(withTiming(t.value + 1, { duration: BREATH.periodMs, easing: Easing.linear }), -1, false);
+    t.value = withRepeat(
+      withTiming(t.value + 1, { duration: BREATH.periodMs, easing: Easing.linear }),
+      -1,
+      false,
+    );
     return () => cancelAnimation(t);
   }, [reduceMotion, motion, phaseMs, t]);
 
@@ -105,7 +117,11 @@ export function PetRenderer({
       return;
     }
     const started = Date.now();
-    const id = setInterval(() => setFrame(frameIndexAt(Date.now() - started, seq.frameMs, frames.length, motion === 'walk')), seq.frameMs / 2);
+    const id = setInterval(
+      () =>
+        setFrame(frameIndexAt(Date.now() - started, seq.frameMs, frames.length, motion === 'walk')),
+      seq.frameMs / 2,
+    );
     return () => clearInterval(id);
   }, [frames, reduceMotion, seq, motion]);
 
@@ -117,7 +133,11 @@ export function PetRenderer({
       hop.value = 0;
       return;
     }
-    hop.value = withRepeat(withSequence(withTiming(-8, { duration: 140 }), withTiming(0, { duration: 140 })), -1, false);
+    hop.value = withRepeat(
+      withSequence(withTiming(-8, { duration: 140 }), withTiming(0, { duration: 140 })),
+      -1,
+      false,
+    );
     return () => cancelAnimation(hop);
   }, [reduceMotion, motion, frames, hop]);
 
@@ -125,18 +145,30 @@ export function PetRenderer({
   const body = useAnimatedStyle(() => {
     const b = breathAt(t.value, 0.4);
     return {
-      transform: [{ translateY: b.translateY + hop.value }, { scaleX: b.scaleX * tapScale.value * (flip ? -1 : 1) }, { scaleY: b.scaleY * tapScale.value }],
+      transform: [
+        { translateY: b.translateY + hop.value },
+        { scaleX: b.scaleX * tapScale.value * (flip ? -1 : 1) },
+        { scaleY: b.scaleY * tapScale.value },
+      ],
     };
   });
 
   const handleTap = () => {
     // Confirmation tactile conservée même en mouvement réduit (un seul pop, sans boucle).
-    tapScale.value = reduceMotion ? withSequence(withTiming(1.04, { duration: 80 }), withTiming(1, { duration: 80 })) : withSequence(withSpring(0.9, { damping: 6 }), withSpring(1.08, { damping: 5 }), withSpring(1));
+    tapScale.value = reduceMotion
+      ? withSequence(withTiming(1.04, { duration: 80 }), withTiming(1, { duration: 80 }))
+      : withSequence(
+          withSpring(0.9, { damping: 6 }),
+          withSpring(1.08, { damping: 5 }),
+          withSpring(1),
+        );
     onTap?.();
   };
 
-  const framePath = frames ? (frames[frame] ?? frames[0])?.path ?? resolved.path : resolved.path;
-  const accLayouts = accessories.map((id) => layoutAccessory(id, species, stage, resolved.resolvedPose, layout)).filter((x): x is NonNullable<typeof x> => x !== null);
+  const framePath = frames ? ((frames[frame] ?? frames[0])?.path ?? resolved.path) : resolved.path;
+  const accLayouts = accessories
+    .map((id) => layoutAccessory(id, species, stage, resolved.resolvedPose, layout))
+    .filter((x): x is NonNullable<typeof x> => x !== null);
 
   // Boîte du composant : largeur = largeur image, hauteur = image ; origine (0,0) au sol, centre.
   const boxW = Math.max(layout.width, layout.body.width * 1.6);
@@ -155,31 +187,88 @@ export function PetRenderer({
       testID={testID}
       style={{ width: boxW, height: boxH }}
     >
-      <View style={[styles.shadow, { left: ox - layout.body.width * 0.35, top: oy - 8, width: layout.body.width * 0.7 }]} />
-      <Animated.View style={[styles.abs, { left: 0, top: 0, width: boxW, height: boxH, transformOrigin: `${ox}px ${oy}px 0px` }, body]}>
+      <View
+        style={[
+          styles.shadow,
+          { left: ox - layout.body.width * 0.35, top: oy - 8, width: layout.body.width * 0.7 },
+        ]}
+      />
+      <Animated.View
+        style={[
+          styles.abs,
+          { left: 0, top: 0, width: boxW, height: boxH, transformOrigin: `${ox}px ${oy}px 0px` },
+          body,
+        ]}
+      >
         {accLayouts
           .filter((a) => a.behind)
           .map((a) => (
-            <Sprite key={a.id} path={a.path} size={a.width} height={a.height} style={[styles.abs, { left: ox + a.left, top: oy + a.top }]} />
+            <Sprite
+              key={a.id}
+              path={a.path}
+              size={a.width}
+              height={a.height}
+              style={[styles.abs, { left: ox + a.left, top: oy + a.top }]}
+            />
           ))}
-        <Sprite path={framePath} size={layout.width} height={layout.height} style={[styles.abs, { left: ox + layout.left, top: oy + layout.top }]} placeholderInitial={initial} />
+        <Sprite
+          path={framePath}
+          size={layout.width}
+          height={layout.height}
+          style={[styles.abs, { left: ox + layout.left, top: oy + layout.top }]}
+          placeholderInitial={initial}
+        />
         {accLayouts
           .filter((a) => !a.behind)
           .map((a) => (
-            <Sprite key={a.id} path={a.path} size={a.width} height={a.height} style={[styles.abs, { left: ox + a.left, top: oy + a.top, transform: [{ rotate: `${a.rotation}deg` }] }]} />
+            <Sprite
+              key={a.id}
+              path={a.path}
+              size={a.width}
+              height={a.height}
+              style={[
+                styles.abs,
+                { left: ox + a.left, top: oy + a.top, transform: [{ rotate: `${a.rotation}deg` }] },
+              ]}
+            />
           ))}
       </Animated.View>
       {resolved.overlay ? (
-        <View style={[styles.overlay, { left: ox + layout.body.left + layout.body.width - 14, top: oy + layout.body.top }]}>
+        <View
+          style={[
+            styles.overlay,
+            { left: ox + layout.body.left + layout.body.width - 14, top: oy + layout.body.top },
+          ]}
+        >
           <Icon name={OVERLAY_ICON[resolved.overlay]} size={16} tint={color.white} />
         </View>
       ) : null}
-      {effect ? <EffectLayer effect={effect} cx={ox} top={oy + layout.body.top} size={layout.body.width} reduceMotion={reduceMotion} /> : null}
+      {effect ? (
+        <EffectLayer
+          effect={effect}
+          cx={ox}
+          top={oy + layout.body.top}
+          size={layout.body.width}
+          reduceMotion={reduceMotion}
+        />
+      ) : null}
     </Pressable>
   );
 }
 
-function EffectLayer({ effect, cx, top, size, reduceMotion }: { effect: EffectId; cx: number; top: number; size: number; reduceMotion: boolean }) {
+function EffectLayer({
+  effect,
+  cx,
+  top,
+  size,
+  reduceMotion,
+}: {
+  effect: EffectId;
+  cx: number;
+  top: number;
+  size: number;
+  reduceMotion: boolean;
+}) {
   const y = useSharedValue(0);
   const o = useSharedValue(1);
   useEffect(() => {
@@ -187,13 +276,20 @@ function EffectLayer({ effect, cx, top, size, reduceMotion }: { effect: EffectId
       o.value = 1;
       return;
     }
-    y.value = withRepeat(withTiming(-60, { duration: 1600, easing: Easing.out(Easing.quad) }), effect === 'hearts' ? -1 : 1, false);
+    y.value = withRepeat(
+      withTiming(-60, { duration: 1600, easing: Easing.out(Easing.quad) }),
+      effect === 'hearts' ? -1 : 1,
+      false,
+    );
     o.value = withRepeat(withTiming(0, { duration: 1600 }), effect === 'hearts' ? -1 : 1, false);
   }, [effect, reduceMotion, y, o]);
   const s = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }], opacity: o.value }));
   const w = effect === 'confetti' ? size * 2 : size * 0.6;
   return (
-    <Animated.View pointerEvents="none" style={[styles.abs, { left: cx - w / 2, top: top - w * 0.4, width: w, height: w }, s]}>
+    <Animated.View
+      pointerEvents="none"
+      style={[styles.abs, { left: cx - w / 2, top: top - w * 0.4, width: w, height: w }, s]}
+    >
       <Sprite path={EFFECTS[effect]} size={w} />
     </Animated.View>
   );
@@ -201,6 +297,19 @@ function EffectLayer({ effect, cx, top, size, reduceMotion }: { effect: EffectId
 
 const styles = StyleSheet.create({
   abs: { position: 'absolute' },
-  shadow: { position: 'absolute', height: 12, borderRadius: radius.pill, backgroundColor: scrim.ground },
-  overlay: { position: 'absolute', width: 28, height: 28, borderRadius: 14, backgroundColor: color.ink, alignItems: 'center', justifyContent: 'center' },
+  shadow: {
+    position: 'absolute',
+    height: 12,
+    borderRadius: radius.pill,
+    backgroundColor: scrim.ground,
+  },
+  overlay: {
+    position: 'absolute',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: color.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

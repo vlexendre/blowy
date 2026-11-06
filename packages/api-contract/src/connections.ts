@@ -108,6 +108,8 @@ export const DuoViewSchema = z
     /** Voie Duo en EXCHANGE uniquement (texte d'abord ; visages débloqués à 48 h si les deux ont écrit ; vocal facultatif). Progression = la mienne seulement. */
     exchange: z.object({ endsAt: IsoDateTimeSchema, mineCount: z.number().int().nonnegative(), unlockProgress: z.number().min(0).max(1) }).strict().optional(),
     dateDeadline: IsoDateTimeSchema.optional(),
+    /** V5.9 : ouverture du duo (le double oui) — « Duo ouvert le dim. 15 nov. 21 h 30 ». */
+    openedAt: IsoDateTimeSchema.optional(),
     currentDate: DuoDateViewSchema.optional(),
     /** V5.1 (F.18) : indice « projet compatible » si les sous-choix secrets concordent (jamais les sous-choix). */
     projectCompatible: z.literal(true).optional(),

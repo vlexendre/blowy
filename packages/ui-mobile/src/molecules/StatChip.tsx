@@ -13,6 +13,22 @@ export interface StatChipProps {
 }
 
 /** Compteur illustré (série, pièces, pet) — en-tête du Nid. */
-export function StatChip({ iconPath, value, accessibilityLabel, onPress, tone = 'white', testID }: StatChipProps) {
-  return <Chip label={value} tone={tone} leading={<Sprite path={iconPath} size={22} />} onPress={onPress} accessibilityLabel={accessibilityLabel} testID={testID} />;
+export function StatChip({
+  iconPath,
+  value,
+  accessibilityLabel,
+  onPress,
+  tone = 'white',
+  testID,
+}: StatChipProps) {
+  return (
+    <Chip
+      label={value}
+      tone={tone}
+      leading={<Sprite path={iconPath} size={22} />}
+      onPress={onPress}
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
+    />
+  );
 }

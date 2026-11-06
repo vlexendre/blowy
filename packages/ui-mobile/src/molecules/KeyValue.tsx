@@ -17,6 +17,12 @@ export function KeyValue({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.md, paddingVertical: space.xxs },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: space.md,
+    paddingVertical: space.xxs,
+  },
   value: { flexShrink: 1, textAlign: 'right' },
 });

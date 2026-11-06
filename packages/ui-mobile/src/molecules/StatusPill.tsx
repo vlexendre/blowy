@@ -28,5 +28,13 @@ export function StatusPill({ kind, label }: { kind: StatusKind; label: string })
 }
 
 const styles = StyleSheet.create({
-  pill: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 3 },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    borderRadius: radius.pill,
+    paddingHorizontal: space.sm,
+    paddingVertical: 3,
+  },
 });

@@ -22,7 +22,14 @@ export interface VisionCardProps {
 }
 
 /** Carte de vision qui se construit au fil des 4 écrans (maquette V4-Vie). */
-export function VisionCard({ petName, speciesLabel, spritePath, rows, pendingLabel, traits = [] }: VisionCardProps) {
+export function VisionCard({
+  petName,
+  speciesLabel,
+  spritePath,
+  rows,
+  pendingLabel,
+  traits = [],
+}: VisionCardProps) {
   return (
     <Surface tone="ink" padding="lg" style={styles.card}>
       <View style={styles.head}>
@@ -48,7 +55,12 @@ export function VisionCard({ petName, speciesLabel, spritePath, rows, pendingLab
         </View>
       ) : null}
       {rows.map((r) => (
-        <View key={r.key} style={[styles.row, r.value === null && styles.empty]} accessible accessibilityLabel={`${r.label}, ${r.value ?? pendingLabel}`}>
+        <View
+          key={r.key}
+          style={[styles.row, r.value === null && styles.empty]}
+          accessible
+          accessibilityLabel={`${r.label}, ${r.value ?? pendingLabel}`}
+        >
           <Text variant="caption" style={styles.label}>
             {r.label}
           </Text>
@@ -66,8 +78,21 @@ const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   titles: { flex: 1 },
   traits: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  trait: { backgroundColor: color.lime, borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 2 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: space.xs, borderTopWidth: 1, borderTopColor: color.inkSoft, gap: space.md },
+  trait: {
+    backgroundColor: color.lime,
+    borderRadius: radius.pill,
+    paddingHorizontal: space.sm,
+    paddingVertical: 2,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: space.xs,
+    borderTopWidth: 1,
+    borderTopColor: color.inkSoft,
+    gap: space.md,
+  },
   empty: { borderStyle: 'dashed' },
   label: { color: color.mutedLight },
 });

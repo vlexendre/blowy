@@ -14,9 +14,23 @@ export interface LinkCardProps {
 }
 
 /** Carte sombre « Lien avec L. » (maquette Nid). */
-export function LinkCard({ title, progressText, progress, onPress, accessibilityHint, testID }: LinkCardProps) {
+export function LinkCard({
+  title,
+  progressText,
+  progress,
+  onPress,
+  accessibilityHint,
+  testID,
+}: LinkCardProps) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${title}, ${progressText}`} accessibilityHint={accessibilityHint} onPress={onPress} testID={testID} style={[styles.card, hard(4, tone.ink.shadow)]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${title}, ${progressText}`}
+      accessibilityHint={accessibilityHint}
+      onPress={onPress}
+      testID={testID}
+      style={[styles.card, hard(4, tone.ink.shadow)]}
+    >
       <View style={styles.row}>
         <Text variant="displayS" tone="white">
           {title}
@@ -31,7 +45,19 @@ export function LinkCard({ title, progressText, progress, onPress, accessibility
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: color.ink, borderRadius: radius.lg, paddingHorizontal: space.lg, paddingVertical: space.md, gap: space.sm },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm, flexWrap: 'wrap' },
+  card: {
+    backgroundColor: color.ink,
+    borderRadius: radius.lg,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+    gap: space.sm,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: space.sm,
+    flexWrap: 'wrap',
+  },
   sub: { color: color.mutedLight, flexShrink: 1 },
 });

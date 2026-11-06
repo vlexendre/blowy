@@ -20,7 +20,16 @@ export interface StateViewProps {
   testID?: string;
 }
 
-export function EmptyState({ title, message, illustrationPath, actionLabel, onAction, secondaryLabel, onSecondary, testID }: StateViewProps) {
+export function EmptyState({
+  title,
+  message,
+  illustrationPath,
+  actionLabel,
+  onAction,
+  secondaryLabel,
+  onSecondary,
+  testID,
+}: StateViewProps) {
   return (
     <View style={styles.wrap} testID={testID}>
       {illustrationPath ? <Sprite path={illustrationPath} size={150} /> : null}
@@ -33,7 +42,9 @@ export function EmptyState({ title, message, illustrationPath, actionLabel, onAc
         </Text>
       ) : null}
       {actionLabel && onAction ? <Button label={actionLabel} onPress={onAction} /> : null}
-      {secondaryLabel && onSecondary ? <Button label={secondaryLabel} variant="secondary" onPress={onSecondary} /> : null}
+      {secondaryLabel && onSecondary ? (
+        <Button label={secondaryLabel} variant="secondary" onPress={onSecondary} />
+      ) : null}
     </View>
   );
 }
@@ -53,7 +64,12 @@ export function UnavailableState(props: StateViewProps) {
 
 export function LoadingState({ label }: { label: string }) {
   return (
-    <View style={styles.wrap} accessible accessibilityLabel={label} accessibilityState={{ busy: true }}>
+    <View
+      style={styles.wrap}
+      accessible
+      accessibilityLabel={label}
+      accessibilityState={{ busy: true }}
+    >
       <ActivityIndicator color={color.ink} size="large" />
       <Text variant="small" tone="muted">
         {label}
@@ -62,11 +78,33 @@ export function LoadingState({ label }: { label: string }) {
   );
 }
 
-export function OfflineBanner({ message, pendingCount, pendingLabel }: { message: string; pendingCount?: number; pendingLabel?: string }) {
-  return <Banner message={pendingCount && pendingLabel ? `${message} · ${pendingLabel}` : message} icon="wifiOff" tone="ink" live testID="offline-banner" />;
+export function OfflineBanner({
+  message,
+  pendingCount,
+  pendingLabel,
+}: {
+  message: string;
+  pendingCount?: number;
+  pendingLabel?: string;
+}) {
+  return (
+    <Banner
+      message={pendingCount && pendingLabel ? `${message} · ${pendingLabel}` : message}
+      icon="wifiOff"
+      tone="ink"
+      live
+      testID="offline-banner"
+    />
+  );
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', justifyContent: 'center', gap: space.md, padding: space.xl, alignSelf: 'stretch' },
+  wrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.md,
+    padding: space.xl,
+    alignSelf: 'stretch',
+  },
   flex: { flex: 1, justifyContent: 'center' },
 });

@@ -154,3 +154,29 @@ describe('V5.7 : phrases canoniques (concept-v5.7, spec §2.7)', () => {
     expect(all).not.toMatch(/inscrits|soirs de sortie|position en continu/i);
   });
 });
+
+describe('V5.9 : catalogue d’activités aligné sur design/v5/facts.json', () => {
+  it('chaque « activite » des maquettes a son entrée (libellé exact, type, durée)', async () => {
+    const { ACTIVITY_DETAILS } = await import('./catalog/v5.js');
+    const { ACTIVITY_KINDS } = await import('@blowy/domain');
+    const facts = JSON.parse(readFileSync(new URL('../../../design/v5/facts.json', import.meta.url), 'utf8')) as Record<string, unknown>;
+    const labels = new Set<string>();
+    const walk = (o: unknown): void => {
+      if (Array.isArray(o)) o.forEach(walk);
+      else if (o && typeof o === 'object') {
+        for (const [k, v] of Object.entries(o)) {
+          if (k === 'activite' && typeof v === 'string') labels.add(v);
+          else walk(v);
+        }
+      }
+    };
+    walk(facts);
+    expect(labels.size).toBeGreaterThan(3);
+    const norm = (s: string) => s.replace(/['’]/g, '’');
+    for (const l of labels) expect(ACTIVITY_DETAILS.some((d) => norm(d.fr) === norm(l)), l).toBe(true);
+    for (const d of ACTIVITY_DETAILS) {
+      expect((ACTIVITY_KINDS as readonly string[]).includes(d.kind)).toBe(true);
+      expect(d.durationMinutes).toBeGreaterThan(0);
+    }
+  });
+});

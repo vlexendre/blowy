@@ -3,11 +3,18 @@
  * centres de quartier de la même ville (`domain/travel.ts`). Aucune position de personne n'est lue.
  */
 import type { Db, Tx } from '@blowy/database';
-import { centerOf, estimateTravelMinutes, type Point } from '../domain/travel.js';
+import { centerOf, estimateTravelMinutes, estimateWalkWithin, type Point } from '../domain/travel.js';
 
 export interface TravelLookup {
   /** minutes (et si c'est une estimation) de `from` vers chaque quartier de la ville, `from` exclu. */
   from(fromId: string): Promise<Map<string, { minutes: number; estimated: boolean }>>;
+}
+
+/** V5.9 : trajet à pied dans le quartier (estimation de quartier, jamais un lieu ni une position). */
+export async function walkWithin(c: Tx | Db, nbId: string): Promise<number | null> {
+  const n = await c.neighborhood.findUnique({ where: { id: nbId }, select: { centerLat: true, centerLng: true, venues: { where: { status: 'ACTIVE' }, select: { lat: true, lng: true } } } });
+  if (!n) return null;
+  return estimateWalkWithin(centerOf(n, n.venues), n.venues);
 }
 
 export async function travelFrom(c: Tx | Db, fromId: string): Promise<Map<string, { minutes: number; estimated: boolean }>> {

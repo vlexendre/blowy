@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { ReasonSchema } from './admin.js';
 
 export const NEIGHBORHOOD_STATUSES_V5 = ['LIVE', 'WAITLIST', 'PAUSED', 'CLOSED'] as const;
-export const ACTIVITY_KINDS_V5 = ['DRINK_COFFEE', 'BRUNCH', 'CLIMBING', 'WORKSHOP', 'GAMES', 'EXHIBITION'] as const;
+export const ACTIVITY_KINDS_V5 = ['DRINK_COFFEE', 'BRUNCH', 'CLIMBING', 'WORKSHOP', 'GAMES', 'EXHIBITION', 'SPORT'] as const;
 export const AdminActivitySchema = z.enum(ACTIVITY_KINDS_V5);
 
 // ---------------------------------------------------------------- Villes et quartiers
@@ -81,6 +81,10 @@ export interface AdminVenueDetail extends AdminVenueRow {
   city: string;
   photoUrl: string | null;
   staffContact: string | null;
+  /** V5.10 : prix TTC (centimes) de l'activité prépayée fixé par le lieu ; null = prix du catalogue. */
+  activityPriceCents?: number | null;
+  /** V5.10 : régime du reversement de l'activité au lieu (TTC par défaut). */
+  activityTaxBasis?: 'TTC' | 'HT';
   partnerAccounts: { userId: string; displayName: string }[];
   schedule: AdminVenueSchedule[];
   closures: { date: string; note: string; at: string }[];
@@ -124,6 +128,12 @@ export const VenueUpdateRequestSchema = z.object({
   staffContact: z.string().trim().max(200).nullable().optional(),
   /** V5.6 (E11, §10.1) : ambiance du lieu (null = convient à tous). */
   ambiance: z.enum(['CALM', 'LIVELY']).nullable().optional(),
+  /** V5.9 : activité précise du lieu (`ACTIVITY_DETAILS`) ; null = libellé générique. */
+  activityDetailKey: z.string().regex(/^[a-z0-9_]{2,40}$/).nullable().optional(),
+  /** V5.10 : prix TTC (centimes) de l'activité, prépayé avec la place ; null = prix du catalogue ; 0 = rien à prépayer. */
+  activityPriceCents: z.number().int().min(0).max(50_000).nullable().optional(),
+  /** V5.10 : régime du reversement de l'activité (TTC par défaut ; HT = reversé hors taxe). */
+  activityTaxBasis: z.enum(['TTC', 'HT']).optional(),
   reason: ReasonSchema,
 });
 export const VenuePartnerAccessRequestSchema = z.object({

@@ -74,7 +74,9 @@ export type JournalKind =
   | 'REFUND_SETTLED'
   | 'REFUND_FAILED'
   | 'VENUE_COMPENSATION'
-  | 'VENUE_COMPENSATION_REVERSAL';
+  | 'VENUE_COMPENSATION_REVERSAL'
+  /** V5.10 : activité prépayée reversée au lieu (une écriture par place confirmée non remboursée). */
+  | 'VENUE_ACTIVITY_PAYOUT';
 
 export type JournalRefs = Readonly<Record<string, string | number | boolean | null>>;
 

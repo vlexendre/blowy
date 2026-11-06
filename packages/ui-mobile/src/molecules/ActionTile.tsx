@@ -20,7 +20,17 @@ export interface ActionTileProps {
 }
 
 /** Tuile d'action du Nid (maquette .act : blanc, ombre #EEDFCB, 46 pt). */
-export function ActionTile({ label, onPress, icon, tone: t = 'white', state = 'idle', stateLabel, subtitle, disabled, testID }: ActionTileProps) {
+export function ActionTile({
+  label,
+  onPress,
+  icon,
+  tone: t = 'white',
+  state = 'idle',
+  stateLabel,
+  subtitle,
+  disabled,
+  testID,
+}: ActionTileProps) {
   const tk = tone[t];
   const busy = state === 'pending';
   return (
@@ -37,7 +47,13 @@ export function ActionTile({ label, onPress, icon, tone: t = 'white', state = 'i
       style={styles.tile}
     >
       <View style={styles.row}>
-        {icon ? <Icon name={state === 'confirmed' ? 'check' : icon} size={18} tint={tk.fg === color.white ? color.white : color.ink} /> : null}
+        {icon ? (
+          <Icon
+            name={state === 'confirmed' ? 'check' : icon}
+            size={18}
+            tint={tk.fg === color.white ? color.white : color.ink}
+          />
+        ) : null}
         <Text variant="displayS" style={{ color: tk.fg }} numberOfLines={1} adjustsFontSizeToFit>
           {label}
         </Text>
@@ -52,6 +68,13 @@ export function ActionTile({ label, onPress, icon, tone: t = 'white', state = 'i
 }
 
 const styles = StyleSheet.create({
-  tile: { flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.sm, paddingVertical: space.xs },
+  tile: {
+    flex: 1,
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: space.sm,
+    paddingVertical: space.xs,
+  },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
 });

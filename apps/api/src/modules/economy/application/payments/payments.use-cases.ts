@@ -11,9 +11,9 @@ import type { DuoAllowanceReader } from '../../../../shared/application/ports/du
 import type { OutboxConsumer, OutboxEnvelope } from '../../../../shared/application/outbox-consumer.js';
 import type { TxScope, UnitOfWork } from '../../../../shared/application/unit-of-work.js';
 import { AppError } from '../../../../shared/domain/errors.js';
-import { blowyCancelCompensated, EUR, LedgerKeys, summarizeLots, venueCompensationAmount, venueCompensationCause, type PaymentsParams } from '../../domain/index.js';
+import { activityPayoutAmount, blowyCancelCompensated, EUR, LedgerKeys, summarizeLots, venueCompensationAmount, venueCompensationCause, type PaymentsParams } from '../../domain/index.js';
 import type { EconomyJournal, JournalEntry, PaymentProvider, ReferralFreeStore, SeatDirectory } from './ports.js';
-import { plusActive, type EconomySeatFunding } from './seat-funding.service.js';
+import { activityCentsOf, plusActive, type EconomySeatFunding } from './seat-funding.service.js';
 import type { HandleStripeWebhookUseCase } from './stripe-webhook.use-case.js';
 
 type KeysOf = (userId: string, at: Date) => Promise<ReadonlySet<EntitlementKey>>;
@@ -88,8 +88,14 @@ export class VenueCompensationConsumer implements OutboxConsumer {
       outingStatus: seat.outingStatus,
       cancelledAfterLock: seat.cancelledAfterLock === true,
     });
+    const payment = (await this.journal.byRef(scope, 'PAYMENT_SUCCEEDED', 'seatId', seatId))[0] ?? null;
+    // V5.10 (jury tour 11) : activité prépayée reversée intégralement au lieu pour chaque place confirmée, honorée ou non
+    // (présence, absence, annulation tardive, imprévu) — jamais si la place (donc l'activité) est remboursée.
+    const honoredOrNot = event.topic === 'outing.attendance_recorded' || (event.topic === 'outing.seat_cancelled' && ['LATE', 'EMERGENCY'].includes(String(event.payload.cancelKind ?? '')));
+    if (honoredOrNot) await this.activityPayout(scope, seat, seatId, payment);
     if (!cause) return;
-    const paid = seat.funding === 'PAID' ? ((await this.journal.byRef(scope, 'PAYMENT_SUCCEEDED', 'seatId', seatId))[0]?.amount ?? null) : null;
+    // La part « activité » d'un paiement carte n'entre jamais dans la compensation de la place.
+    const paid = seat.funding === 'PAID' && payment ? payment.amount - activityCentsOf(payment) : null;
     // V5.6 (E22) : sortie pour raison de sécurité = 3 € HT versés par Blowy (la place est remboursée à la personne).
     const { amountCents, basis, taxBasis } = cause === 'SAFETY' ? { amountCents: this.params().venueCompensationFreeSeatCents, basis: 'SAFETY' as const, taxBasis: 'HT' as const } : venueCompensationAmount(seat.funding, paid, this.params());
     await this.journal.append(scope, {
@@ -100,6 +106,22 @@ export class VenueCompensationConsumer implements OutboxConsumer {
       amount: amountCents,
       unit: 'EUR_CENTS',
       refs: { seatId, outingId: seat.outingId, venueId: seat.venueId, cause, basis, taxBasis, funding: seat.funding, currency: EUR },
+    });
+  }
+
+  private async activityPayout(scope: TxScope, seat: { outingId: string; venueId: string }, seatId: string, payment: JournalEntry | null): Promise<void> {
+    const ttc = activityCentsOf(payment);
+    if (!payment || ttc <= 0) return;
+    if (await this.journal.byKey(scope, LedgerKeys.refundRequested(String(payment.refs.providerPaymentId)))) return;
+    const taxBasis = payment.refs.activityTaxBasis === 'HT' ? ('HT' as const) : ('TTC' as const);
+    await this.journal.append(scope, {
+      key: LedgerKeys.venueActivityPayout(seatId),
+      kind: 'VENUE_ACTIVITY_PAYOUT',
+      account: `venue:${seat.venueId}`,
+      userId: null,
+      amount: activityPayoutAmount(ttc, taxBasis),
+      unit: 'EUR_CENTS',
+      refs: { seatId, outingId: seat.outingId, venueId: seat.venueId, activityCents: ttc, taxBasis, currency: EUR },
     });
   }
 

@@ -18,15 +18,27 @@ export interface BadgeProps {
   accessibilityLabel?: string;
 }
 
-
-export function Badge({ label, tone: t, kind = 'count', ring = true, accessibilityLabel }: BadgeProps) {
+export function Badge({
+  label,
+  tone: t,
+  kind = 'count',
+  ring = true,
+  accessibilityLabel,
+}: BadgeProps) {
   const tt = t ?? (kind === 'plus' ? 'violet' : 'pink');
   const bg = tt === 'pink' ? color.pink : tone[tt].bg;
   const fg = tt === 'pink' ? color.white : tone[tt].fg;
   const sp = kind === 'count' ? textSpec.badge : textSpec.plus;
   return (
-    <View accessible={!!accessibilityLabel} accessibilityLabel={accessibilityLabel} style={badgeStyle(kind, bg, ring)}>
-      <RNText maxFontSizeMultiplier={1.4} style={[bodyFont(sp.size, sp.weight, sp.letterSpacingEm), { color: fg }]}>
+    <View
+      accessible={!!accessibilityLabel}
+      accessibilityLabel={accessibilityLabel}
+      style={badgeStyle(kind, bg, ring)}
+    >
+      <RNText
+        maxFontSizeMultiplier={1.4}
+        style={[bodyFont(sp.size, sp.weight, sp.letterSpacingEm), { color: fg }]}
+      >
         {label}
       </RNText>
     </View>

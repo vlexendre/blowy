@@ -61,6 +61,9 @@ export default async function VenuePage({ params }: { params: Promise<{ id: stri
                 <SelectField id="s" name="f.status" label="Statut" options={[['ACTIVE', 'ACTIVE'], ['PAUSED', 'PAUSED'], ['ARCHIVED', 'ARCHIVED']]} />
                 <TextField id="p" name="f.photoUrl:nullable" label="URL de la photo (vérifiée)" defaultValue={v.photoUrl ?? ''} />
                 <SelectField id="am" name="f.ambiance:nullable" label="Ambiance" options={[['', 'convient à tous'], ['CALM', 'plutôt calme'], ['LIVELY', 'plutôt animé']]} />
+                <SelectField id="ad" name="f.activityDetailKey:nullable" label="Activité précise" options={[['', 'libellé générique'], ['drinks', 'Verre ou café'], ['board_games', 'Jeux de société'], ['bouldering', 'Bloc d’escalade'], ['ceramics_workshop', 'Atelier céramique'], ['cooking_workshop', 'Atelier cuisine'], ['five_a_side', 'Foot à 5'], ['brunch', 'Brunch'], ['exhibition', 'Expo']]} />
+                <TextField id="apc" name="f.activityPriceCents:intnull" label="Prix TTC de l’activité, prépayé (centimes ; vide = catalogue)" type="number" defaultValue={v.activityPriceCents ?? ''} />
+                <SelectField id="atb" name="f.activityTaxBasis" label="Reversement de l’activité" options={v.activityTaxBasis === 'HT' ? [['HT', 'HT'], ['TTC', 'TTC (par défaut)']] : [['TTC', 'TTC (par défaut)'], ['HT', 'HT']]} />
                 <ReasonField id="r1" />
               </Mutation>
               <Mutation endpoint={`/v1/admin/venues/${v.id}/rotate-secret`} label="Renouveler le secret du code (step-up)" ok="Secret renouvelé : nouveau code du chevalet." revalidate={`/venues/${v.id}`} variant="danger" confirm="L’ancien code du chevalet ne fonctionnera plus. Continuer ?">

@@ -33,14 +33,43 @@ export interface ButtonProps {
   tint?: string;
 }
 
-export function Button({ label, onPress, variant = 'b1', size = 'lg', icon, iconPosition = 'leading', loading, disabled, accessibilityLabel, accessibilityHint, testID, fullWidth = true, tint }: ButtonProps) {
+export function Button({
+  label,
+  onPress,
+  variant = 'b1',
+  size = 'lg',
+  icon,
+  iconPosition = 'leading',
+  loading,
+  disabled,
+  accessibilityLabel,
+  accessibilityHint,
+  testID,
+  fullWidth = true,
+  tint,
+}: ButtonProps) {
   const busy = !!loading;
   const r = resolveButton(variant, size);
   const fg = tint ?? r.surface?.fg ?? color.ink;
   const inactive = variant === 'bdis';
-  const glyph = busy ? <ActivityIndicator color={fg} /> : icon === 'arrow' && size !== 'v4' ? <Glyph name="arrow" color={fg} size={22} /> : icon ? <Icon name={icon} tint={fg} size={size === 'sm' ? 18 : 22} strokeWidth={icon === 'arrow' ? 2.8 : 2.2} /> : null;
+  const glyph = busy ? (
+    <ActivityIndicator color={fg} />
+  ) : icon === 'arrow' && size !== 'v4' ? (
+    <Glyph name="arrow" color={fg} size={22} />
+  ) : icon ? (
+    <Icon
+      name={icon}
+      tint={fg}
+      size={size === 'sm' ? 18 : 22}
+      strokeWidth={icon === 'arrow' ? 2.8 : 2.2}
+    />
+  ) : null;
   const text = (
-    <RNText style={[r.text, tint ? { color: tint } : null]} numberOfLines={1} maxFontSizeMultiplier={1.5}>
+    <RNText
+      style={[r.text, tint ? { color: tint } : null]}
+      numberOfLines={1}
+      maxFontSizeMultiplier={1.5}
+    >
       {label}
     </RNText>
   );

@@ -1,7 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { badgeStyle, BUTTON_SURFACE, cardStyle, chipStyle, labelStyle, pressable3DStyle, resolveButton, stampStyle } from './styles';
+import {
+  badgeStyle,
+  BUTTON_SURFACE,
+  cardStyle,
+  chipStyle,
+  labelStyle,
+  pressable3DStyle,
+  resolveButton,
+  stampStyle,
+} from './styles';
 
-const shadowOf = (s: { boxShadow?: unknown }) => (s.boxShadow as Array<{ offsetY: number; color: string; spreadDistance: number }> | undefined)?.[0];
+const shadowOf = (s: { boxShadow?: unknown }) =>
+  (
+    s.boxShadow as Array<{ offsetY: number; color: string; spreadDistance: number }> | undefined
+  )?.[0];
 
 describe('Button (.btn .b1 .b2 .b3 .bl)', () => {
   it('surfaces et ombres exactes', () => {
@@ -16,8 +28,17 @@ describe('Button (.btn .b1 .b2 .b3 .bl)', () => {
     expect(resolveButton('secondary').surface).toEqual(BUTTON_SURFACE.b3);
   });
   it('typo : Bricolage largeur normale 19 px (maquettes V5), capitales, .01em ; lien : Inter 13 px 700', () => {
-    expect(resolveButton('b1').text).toMatchObject({ fontFamily: 'BricolageGrotesque-B19', fontSize: 19, letterSpacing: 0.19, textTransform: 'uppercase' });
-    expect(resolveButton('b1').box).toMatchObject({ minHeight: 56, paddingHorizontal: 20, gap: 10 });
+    expect(resolveButton('b1').text).toMatchObject({
+      fontFamily: 'BricolageGrotesque-B19',
+      fontSize: 19,
+      letterSpacing: 0.19,
+      textTransform: 'uppercase',
+    });
+    expect(resolveButton('b1').box).toMatchObject({
+      minHeight: 56,
+      paddingHorizontal: 20,
+      gap: 10,
+    });
     expect(resolveButton('link').text).toMatchObject({ fontFamily: 'Inter-700', fontSize: 13 });
     expect(resolveButton('link').box.minHeight).toBe(44);
   });
@@ -33,7 +54,12 @@ describe('Button (.btn .b1 .b2 .b3 .bl)', () => {
 describe('Chip, Badge, Stamp, Card, Label', () => {
   it('puce md : 6/12, ombre .07 si blanche ; colorée sans ombre', () => {
     const w = chipStyle('white', 'md', 'soft');
-    expect(w.box).toMatchObject({ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, backgroundColor: '#FFFFFF' });
+    expect(w.box).toMatchObject({
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 999,
+      backgroundColor: '#FFFFFF',
+    });
     expect(shadowOf(w.box)).toMatchObject({ offsetY: 2, color: 'rgba(0,0,0,0.07)' });
     expect(chipStyle('ink', 'sm', 'none').box.boxShadow).toBeUndefined();
   });
@@ -43,15 +69,32 @@ describe('Chip, Badge, Stamp, Card, Label', () => {
     expect(shadowOf(b)).toMatchObject({ spreadDistance: 2, color: 'rgba(255,255,255,0.9)' });
   });
   it('tampons « PET. » et lime', () => {
-    expect(stampStyle('ink')).toMatchObject({ backgroundColor: '#16110D', borderRadius: 16, paddingTop: 0, paddingHorizontal: 12, paddingBottom: 6, transform: [{ rotate: '-3deg' }] });
+    expect(stampStyle('ink')).toMatchObject({
+      backgroundColor: '#16110D',
+      borderRadius: 16,
+      paddingTop: 0,
+      paddingHorizontal: 12,
+      paddingBottom: 6,
+      transform: [{ rotate: '-3deg' }],
+    });
     expect(shadowOf(stampStyle('ink'))).toMatchObject({ offsetY: 5, color: '#FF5A3C' });
-    expect(stampStyle('lime')).toMatchObject({ backgroundColor: '#C8F542', borderRadius: 14, paddingTop: 2, transform: [{ rotate: '-2deg' }] });
+    expect(stampStyle('lime')).toMatchObject({
+      backgroundColor: '#C8F542',
+      borderRadius: 14,
+      paddingTop: 2,
+      transform: [{ rotate: '-2deg' }],
+    });
   });
   it('carte rayon 22 + ombre 4 px #EEDFCB', () => {
     expect(cardStyle()).toMatchObject({ borderRadius: 22, backgroundColor: '#FFFFFF' });
     expect(shadowOf(cardStyle())).toMatchObject({ offsetY: 4, color: '#EEDFCB' });
   });
   it('.lbl 11 px 700 .14em capitales', () => {
-    expect(labelStyle()).toMatchObject({ fontSize: 11, letterSpacing: 1.54, textTransform: 'uppercase', fontFamily: 'Inter-700' });
+    expect(labelStyle()).toMatchObject({
+      fontSize: 11,
+      letterSpacing: 1.54,
+      textTransform: 'uppercase',
+      fontFamily: 'Inter-700',
+    });
   });
 });

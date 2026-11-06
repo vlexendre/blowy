@@ -853,10 +853,13 @@ export function MemberChip({
   sprite,
   tile,
   label,
+  badge,
 }: {
   sprite: string | null;
   tile: string;
   label: string;
+  /** Pastille citron après le nom (« calme », V5.7 `members[].calm`). */
+  badge?: string;
 }) {
   return (
     <View
@@ -886,6 +889,21 @@ export function MemberChip({
       <BodyText size={12} weight={800} color={v5.white}>
         {label}
       </BodyText>
+      {badge ? (
+        <View
+          style={{
+            marginLeft: 4,
+            backgroundColor: v5.limePale,
+            borderRadius: 999,
+            paddingHorizontal: 7,
+            paddingVertical: 1,
+          }}
+        >
+          <BodyText size={11} weight={800} color={v5.ink}>
+            {badge}
+          </BodyText>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -1003,6 +1021,103 @@ export function VenueWelcome({
       <BodyText size={13} weight={600} lh={1.4}>
         {quoted ? `« ${text} »` : text}
       </BodyText>
+    </View>
+  );
+}
+
+const HOLDS: readonly [number, number, string][] = [
+  [30, 50, '#FFE36E'],
+  [70, 22, '#FF3D7F'],
+  [120, 44, '#9FE3F5'],
+  [170, 14, '#C8F542'],
+  [220, 40, '#FF8A3C'],
+  [270, 20, '#FFE36E'],
+  [320, 48, '#FF3D7F'],
+];
+
+/**
+ * Illustration du lieu tant que sa photo n'est pas fournie (bandeau 76 px de `VenueCard`) :
+ * terrain de foot à 5, mur d'escalade (maquettes Confirmation Lyon et banlieue).
+ */
+export function VenueArt({ kind }: { kind: 'pitch' | 'wall' }) {
+  const line = 'rgba(255,255,255,0.8)';
+  if (kind === 'pitch')
+    return (
+      <View style={{ height: 76, backgroundColor: '#2E8B57', overflow: 'hidden' }}>
+        <View
+          style={{
+            position: 'absolute',
+            left: 10,
+            right: 10,
+            top: 8,
+            bottom: 8,
+            borderWidth: 2,
+            borderColor: line,
+            borderRadius: 4,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: 8,
+            bottom: 8,
+            width: 2,
+            backgroundColor: line,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            width: 30,
+            height: 30,
+            marginLeft: -15,
+            marginTop: -15,
+            borderWidth: 2,
+            borderColor: line,
+            borderRadius: 15,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            right: 26,
+            top: 26,
+            width: 12,
+            height: 12,
+            borderRadius: 6,
+            backgroundColor: v5.white,
+          }}
+        />
+      </View>
+    );
+  return (
+    <View
+      style={{
+        height: 76,
+        backgroundImage: 'linear-gradient(160deg, #5A6B7D, #3A4654)',
+        overflow: 'hidden',
+      }}
+    >
+      {HOLDS.map(([left, top, color]) => (
+        <View
+          key={`${left}-${top}`}
+          style={{
+            position: 'absolute',
+            left,
+            top,
+            width: 14,
+            height: 12,
+            borderTopLeftRadius: 6,
+            borderTopRightRadius: 8,
+            borderBottomRightRadius: 5,
+            borderBottomLeftRadius: 9,
+            backgroundColor: color,
+          }}
+        />
+      ))}
     </View>
   );
 }

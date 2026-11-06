@@ -17,7 +17,7 @@ import { LedgerKeys, type PaymentsParams } from '../../domain/index.js';
 import type { BillingRecordRepository } from '../ports/billing-record.repository.js';
 import type { UserDirectory } from '../ports/economy-config.port.js';
 import type { EconomyJournal, SignedWebhookVerifier, VerifiedProviderEvent } from './ports.js';
-import type { EconomySeatFunding } from './seat-funding.service.js';
+import { activityCentsOf, type EconomySeatFunding } from './seat-funding.service.js';
 import { readStripeSubscription } from '../../domain/index.js';
 import type { PlusBillingUseCases } from './plus-billing.use-cases.js';
 
@@ -157,6 +157,9 @@ export class HandleStripeWebhookUseCase {
     const amount = num(o.amount_received) ?? num(o.amount);
     if (amount === null || amount <= 0 || String(o.currency ?? '').toLowerCase() !== 'eur') return 'IGNORED';
     await scope.lock.users([userId]);
+    // V5.10 : la part « activité » (et son régime de reversement) vient de l'intention journalisée par `prepareIntent`.
+    const intent = await this.journal.byKey(scope, LedgerKeys.paymentIntent(seatId));
+    const activity = intent && String(intent.refs.providerPaymentId) === pi ? activityCentsOf(intent) : 0;
     const { inserted } = await this.journal.append(scope, {
       key: LedgerKeys.paymentSucceeded(pi),
       kind: 'PAYMENT_SUCCEEDED',
@@ -164,7 +167,7 @@ export class HandleStripeWebhookUseCase {
       userId,
       amount,
       unit: 'EUR_CENTS',
-      refs: { seatId, providerPaymentId: pi, provider: 'STRIPE' },
+      refs: { seatId, providerPaymentId: pi, provider: 'STRIPE', ...(activity > 0 ? { activityCents: Math.min(activity, amount), activityTaxBasis: intent!.refs.activityTaxBasis === 'HT' ? 'HT' : 'TTC' } : {}) },
     });
     if (!inserted) return 'PROCESSED';
     const outcome = await this.sink().paymentSucceeded(scope, { seatId, userId, paymentRef: pi });

@@ -25,11 +25,12 @@ import {
   Sprite,
   Tap,
   v5,
+  VideoPreviewStrip,
   v5Alpha,
   type ShareAction,
 } from '@blowy/ui-mobile';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { useRef, useState, type ComponentRef } from 'react';
+import { useRef, useState, type ComponentRef, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { timeLabel, weekdayName } from '../../../core/format/dates';
 import { paths } from '../../../core/navigation/paths';
@@ -353,6 +354,21 @@ export function ShareCardScreen() {
     if (kind === 'invitation' && !u) return;
     await shareText(u ? `${copy.text}\n${u}` : copy.text);
   };
+  const cardProps = {
+    gradient: st.gradient,
+    dotColor: st.dot,
+    title: copy.title,
+    titleSize: st.titleSize,
+    text: copy.text,
+    art: copy.art,
+    cta: copy.cta,
+    ctaColor: st.ctaColor,
+    noLogo,
+    link: kind === 'invitation' && !invite ? t('share5.invitation.linkOnSend') : linkLabel(url),
+    ink: st.ink,
+    darkTag: st.darkTag,
+    a11yLabel: t('share5.preview', { title: copy.title }),
+  };
   const ACTION: Record<(typeof st.actions)[number], ShareAction> = {
     story: {
       key: 'story',
@@ -371,6 +387,13 @@ export function ShareCardScreen() {
       glyph: 'download',
       label: t('share5.action.save'),
       onPress: () => void shareCardImage(ref),
+    },
+    // Export vidéo 5 s : pas d'encodeur vidéo propre dans l'app (Expo) → état explicite, jamais un faux export.
+    video: {
+      key: 'video',
+      glyph: 'download',
+      label: t('share5.action.video'),
+      disabled: true,
     },
     textLink: {
       key: 'textLink',
@@ -400,23 +423,7 @@ export function ShareCardScreen() {
     >
       <PopIn>
         <View ref={ref} collapsable={false}>
-          <ShareCard
-            gradient={st.gradient}
-            dotColor={st.dot}
-            title={copy.title}
-            titleSize={st.titleSize}
-            text={copy.text}
-            art={copy.art}
-            cta={copy.cta}
-            ctaColor={st.ctaColor}
-            noLogo={noLogo}
-            link={
-              kind === 'invitation' && !invite ? t('share5.invitation.linkOnSend') : linkLabel(url)
-            }
-            ink={st.ink}
-            darkTag={st.darkTag}
-            a11yLabel={t('share5.preview', { title: copy.title })}
-          />
+          <ShareCard {...cardProps} />
         </View>
       </PopIn>
       {copy.notes.length ? (
@@ -471,21 +478,45 @@ export function ShareCardScreen() {
           />
         </View>
       ) : null}
+      {st.actions.includes('video') ? (
+        <CardVideoPreview card={(stage) => <ShareCard {...cardProps} stage={stage} />} />
+      ) : null}
       <ShareActions actions={st.actions.map((a) => ACTION[a])} />
     </ShareScreen>
+  );
+}
+
+/** « ▶ Aperçu 5 s » : les trois temps de la carte ; l'export vidéo n'existe pas encore (dit). */
+function CardVideoPreview({ card }: { card: (stage: 'title' | 'art' | 'full') => ReactNode }) {
+  return (
+    <VideoPreviewStrip
+      label={t('share5.video.label')}
+      sub={t('share5.video.sub')}
+      a11yLabel={t('share5.video.a11y')}
+      frames={[
+        { key: 'title', label: t('share5.video.f0'), card: card('title') },
+        { key: 'art', label: t('share5.video.f1'), card: card('art') },
+        { key: 'full', label: t('share5.video.f2'), card: card('full'), selected: true },
+      ]}
+    />
   );
 }
 
 // ---------------------------------------------------------------- Décris-moi en 3 mots
 const EXAMPLE_WORDS = ['DROLE', 'LOYAL'] as const;
 
-export function StoryScreen() {
-  const me = useMe();
-  const link = useShareLink('confirmation');
-  const ref = useRef<ComponentRef<typeof View>>(null);
-  const [noLogo, setNoLogo] = useState(false);
-  const name = me.data?.displayName ?? '';
-  const url = link.data?.url ?? null;
+/** Carte « Décris-moi en 3 mots » (fond nuit) ; `stage` = temps de l'aperçu vidéo. */
+function StoryCard({
+  name,
+  url,
+  noLogo,
+  stage = 'full',
+}: {
+  name: string;
+  url: string | null;
+  noLogo: boolean;
+  stage?: 'title' | 'art' | 'full';
+}) {
   const chip = (label: string, s: object) => (
     <View
       style={[
@@ -504,6 +535,97 @@ export function StoryScreen() {
       </BodyText>
     </View>
   );
+  const hideBody = stage === 'title' ? { opacity: 0 } : null;
+  return (
+    <View
+      style={{
+        marginTop: 12,
+        alignSelf: 'center',
+        width: 290,
+        height: 470,
+        borderRadius: 26,
+        overflow: 'hidden',
+        backgroundImage: 'linear-gradient(170deg, #16110D, #4C1D95 60%, #C2185B)',
+        paddingVertical: 18,
+        paddingHorizontal: 16,
+      }}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={t('story3.title')}
+    >
+      {noLogo ? (
+        <View style={{ height: 20 }} />
+      ) : (
+        <DisplayText size={20} color={v5.white} heading={false}>
+          blowy
+          <DisplayText size={20} color={v5.mango} heading={false}>
+            .
+          </DisplayText>
+        </DisplayText>
+      )}
+      <DisplayText
+        size={42}
+        lineHeight={0.9}
+        color={v5.white}
+        heading={false}
+        style={{ marginTop: 14 }}
+      >
+        {t('story3.title')}
+      </DisplayText>
+      <BodyText
+        size={14}
+        weight={700}
+        lh={1.4}
+        color={v5.white}
+        style={[{ marginTop: 10 }, hideBody]}
+      >
+        {t('story3.text')}
+      </BodyText>
+      <View style={[{ flex: 1 }, hideBody]}>
+        {chip(t(`words.${EXAMPLE_WORDS[0]}`), {
+          left: 20,
+          top: 10,
+          transform: [{ rotate: '-6deg' }],
+        })}
+        {chip(t(`words.${EXAMPLE_WORDS[1]}`), {
+          left: 196,
+          top: 30,
+          transform: [{ rotate: '5deg' }],
+        })}
+        {chip('…', { left: 60, top: 92, transform: [{ rotate: '3deg' }] })}
+      </View>
+      <View
+        style={[
+          {
+            alignSelf: 'flex-start',
+            backgroundColor: v5.white,
+            borderRadius: 16,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            transform: [{ rotate: '-2deg' }],
+          },
+          stage !== 'full' ? { opacity: 0 } : null,
+        ]}
+      >
+        <BodyText size={12} weight={800} color={v5.coralText}>
+          {t('story3.for', { name })}
+        </BodyText>
+        <DisplayText size={17} heading={false}>
+          {linkLabel(url)}
+        </DisplayText>
+      </View>
+    </View>
+  );
+}
+
+export function StoryScreen() {
+  const me = useMe();
+  const link = useShareLink('confirmation');
+  const ref = useRef<ComponentRef<typeof View>>(null);
+  const [noLogo, setNoLogo] = useState(false);
+  const name = me.data?.displayName ?? '';
+  const url = link.data?.url ?? null;
+
   return (
     <ShareScreen
       title={t('story3.header')}
@@ -513,81 +635,8 @@ export function StoryScreen() {
       testID="story"
     >
       <PopIn>
-        <View
-          ref={ref}
-          collapsable={false}
-          style={{
-            marginTop: 12,
-            alignSelf: 'center',
-            width: 290,
-            height: 516,
-            borderRadius: 26,
-            overflow: 'hidden',
-            backgroundImage: 'linear-gradient(170deg, #16110D, #4C1D95 60%, #C2185B)',
-            paddingVertical: 18,
-            paddingHorizontal: 16,
-          }}
-          accessible
-          accessibilityRole="image"
-          accessibilityLabel={t('story3.title')}
-        >
-          {noLogo ? (
-            <View style={{ height: 20 }} />
-          ) : (
-            <DisplayText size={20} color={v5.white} heading={false}>
-              blowy
-              <DisplayText size={20} color={v5.mango} heading={false}>
-                .
-              </DisplayText>
-            </DisplayText>
-          )}
-          <DisplayText
-            size={42}
-            lineHeight={0.9}
-            color={v5.white}
-            heading={false}
-            style={{ marginTop: 14 }}
-          >
-            {t('story3.title')}
-          </DisplayText>
-          <BodyText size={14} weight={700} lh={1.4} color={v5.white} style={{ marginTop: 10 }}>
-            {t('story3.text')}
-          </BodyText>
-          <View style={{ flex: 1 }}>
-            {chip(t(`words.${EXAMPLE_WORDS[0]}`), {
-              left: 20,
-              top: 10,
-              transform: [{ rotate: '-6deg' }],
-            })}
-            {chip(t(`words.${EXAMPLE_WORDS[1]}`), {
-              left: 196,
-              top: 30,
-              transform: [{ rotate: '5deg' }],
-            })}
-            {chip('…', { left: 60, top: 92, transform: [{ rotate: '3deg' }] })}
-            <Sprite
-              path="nino/young/dance.webp"
-              size={130}
-              style={{ position: 'absolute', right: 0, bottom: 0 }}
-            />
-          </View>
-          <View
-            style={{
-              alignSelf: 'flex-start',
-              backgroundColor: v5.white,
-              borderRadius: 16,
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              transform: [{ rotate: '-2deg' }],
-            }}
-          >
-            <BodyText size={12} weight={800} color={v5.coralText}>
-              {t('story3.for', { name })}
-            </BodyText>
-            <DisplayText size={17} heading={false}>
-              {linkLabel(url)}
-            </DisplayText>
-          </View>
+        <View ref={ref} collapsable={false}>
+          <StoryCard name={name} url={url} noLogo={noLogo} />
         </View>
       </PopIn>
       <View style={{ marginTop: 12, flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
@@ -625,6 +674,9 @@ export function StoryScreen() {
           </BodyText>
         </Tap>
       </View>
+      <CardVideoPreview
+        card={(stage) => <StoryCard name={name} url={url} noLogo={noLogo} stage={stage} />}
+      />
       <ShareActions
         actions={[
           {
@@ -640,12 +692,7 @@ export function StoryScreen() {
             onPress: () => void shareText(url ? `${t('story3.title')}\n${url}` : t('story3.title')),
             disabled: !url,
           },
-          {
-            key: 'save',
-            glyph: 'download',
-            label: t('share5.action.save'),
-            onPress: () => void shareCardImage(ref),
-          },
+          { key: 'video', glyph: 'download', label: t('share5.action.video'), disabled: true },
           {
             key: 'copy',
             glyph: 'link',

@@ -419,6 +419,14 @@ export class VenuePartnerUseCases {
       else cur.seats.delete(r.seatId);
       byOuting.set(r.outingId, cur);
     }
+    // V5.10 (jury tour 11) : ligne « activités » — activité prépayée reversée pour chaque place confirmée, honorée ou non.
+    const acts = this.ledger?.activitiesForVenue ? (await this.ledger.activitiesForVenue(v.id)).filter((r) => periodOf(r.at, v.timezone) === p) : [];
+    const actsByOuting = new Map<string, { seats: number; cents: number }>();
+    for (const r of acts) {
+      const cur = actsByOuting.get(r.outingId) ?? { seats: 0, cents: 0 };
+      actsByOuting.set(r.outingId, { seats: cur.seats + 1, cents: cur.cents + r.amountCents });
+      if (!byOuting.has(r.outingId)) byOuting.set(r.outingId, { seats: new Set(), amountCents: 0, blowy: false, absences: new Set(), emergencies: new Set(), safety: new Set() });
+    }
     // V5.5 (D-067) : une ligne par soirée — y compris les soirées sans compensation du mois (places, présences).
     const summaries = await this.reads.outingSummaries(v.id, p, v.timezone);
     // Une sortie annulée n'apparaît que si Blowy l'a annulée après la confirmation (ligne de compensation).
@@ -426,10 +434,12 @@ export class VenuePartnerUseCases {
     const lines = [...byOuting]
       .map(([outingId, l]) => {
         const sm = summaries.get(outingId);
-        return { outingId, startsAt: sm?.startsAt.toISOString() ?? null, reservedSeats: sm?.reserved ?? l.seats.size, attended: sm?.attended ?? 0, absences: l.absences.size, emergencies: l.emergencies.size, safetyExits: l.safety.size, seats: l.seats.size, amountCents: l.amountCents, ...(l.blowy ? { cancelledByBlowy: true as const } : {}), ...(sm?.duoTable ? { duoTable: true as const } : {}) };
+        return { outingId, startsAt: sm?.startsAt.toISOString() ?? null, reservedSeats: sm?.reserved ?? l.seats.size, attended: sm?.attended ?? 0, absences: l.absences.size, emergencies: l.emergencies.size, safetyExits: l.safety.size, seats: l.seats.size, amountCents: l.amountCents, ...(l.blowy ? { cancelledByBlowy: true as const } : {}), ...(sm?.duoTable ? { duoTable: true as const } : {}), ...(actsByOuting.has(outingId) ? { activities: actsByOuting.get(outingId)!.seats, activitiesCents: actsByOuting.get(outingId)!.cents } : {}) };
       })
       .sort((a, b) => (a.startsAt ?? '').localeCompare(b.startsAt ?? ''));
-    return { venue: this.venueRef(v), onCall: this.auth.onCall(), period: p, taxBasis: 'HT' as const, totalCents: lines.reduce((s, l) => s + l.amountCents, 0), lines };
+    // Régime : celui figé sur les reversements du mois, sinon le régime actuel du lieu (TTC par défaut).
+    const activitiesTaxBasis = acts[0]?.taxBasis ?? v.activityTaxBasis ?? 'TTC';
+    return { venue: this.venueRef(v), onCall: this.auth.onCall(), period: p, taxBasis: 'HT' as const, totalCents: lines.reduce((s, l) => s + l.amountCents, 0), lines, activitiesTotalCents: acts.reduce((s, r) => s + r.amountCents, 0), activitiesTaxBasis };
   }
 
   /**

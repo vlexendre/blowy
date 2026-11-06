@@ -22,7 +22,14 @@ import {
 } from '@blowy/ui-mobile';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
-import { dayLong, dayShort, timeLabel, timeRange, weekdayName } from '../../../core/format/dates';
+import {
+  dayLong,
+  dayLongTime,
+  dayShort,
+  timeLabel,
+  timeRange,
+  weekdayName,
+} from '../../../core/format/dates';
 import { paths } from '../../../core/navigation/paths';
 import { useTabs } from '../../../core/navigation/tabs';
 import { t, tDynamic } from '../../../i18n';
@@ -238,7 +245,7 @@ function NextProposal({ next }: { next: OutingView }) {
   );
 }
 
-function YesNo({ next }: { next: OutingView | undefined }) {
+function YesNo({ next, full = false }: { next: OutingView | undefined; full?: boolean }) {
   const accept = useAcceptSeat(next?.id ?? '');
   return (
     <View style={{ marginTop: 'auto', flexDirection: 'row', gap: 10 }}>
@@ -248,7 +255,9 @@ function YesNo({ next }: { next: OutingView | undefined }) {
           size="sm"
           label={
             next
-              ? t('later.yes', { day: String(new Date(next.startsAt).getUTCDate()) })
+              ? t(full ? 'later.keep' : 'later.yes', {
+                  day: String(new Date(next.startsAt).getUTCDate()),
+                })
               : t('common.continue')
           }
           onPress={() =>
@@ -261,7 +270,7 @@ function YesNo({ next }: { next: OutingView | undefined }) {
         <Button
           variant="b3"
           size="sm"
-          label={t('later.no')}
+          label={full ? t('later.notThisTime') : t('later.no')}
           onPress={() => router.replace(paths.home)}
         />
       </View>
@@ -311,7 +320,19 @@ export function OutingLaterScreen({ kind }: { kind: 'full' | 'cancelled' }) {
           </View>
         </PopIn>
       ) : (
-        <Sprite path="nino/young/presentation.webp" size={110} style={{ marginTop: 10 }} />
+        <View
+          style={{
+            marginTop: 10,
+            width: 84,
+            height: 84,
+            borderRadius: 42,
+            backgroundColor: v5.peachLight,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Sprite path="nino/young/presentation.webp" size={64} />
+        </View>
       )}
       <DisplayText
         size={kind === 'cancelled' ? 42 : 44}
@@ -325,7 +346,12 @@ export function OutingLaterScreen({ kind }: { kind: 'full' | 'cancelled' }) {
       <BodyText size={15} weight={600} lh={1.5} color={v5.inkSoft}>
         {kind === 'cancelled'
           ? tDynamic(`later.reason.${o?.cancelled?.reason ?? 'OTHER'}`)
-          : t('later.fullBody', { day: o ? dayShort(o.startsAt) : '' })}
+          : week.data?.composeAt
+            ? t('later.fullBodyAt', {
+                day: o ? dayShort(o.startsAt) : '',
+                compose: dayLongTime(week.data.composeAt),
+              })
+            : t('later.fullBody', { day: o ? dayShort(o.startsAt) : '' })}
       </BodyText>
       {kind === 'cancelled' ? (
         <View
@@ -363,7 +389,7 @@ export function OutingLaterScreen({ kind }: { kind: 'full' | 'cancelled' }) {
         </View>
       ) : null}
       <SectionLabel style={{ marginTop: kind === 'cancelled' ? 6 : 8 }}>
-        {kind === 'cancelled' ? t('later.proposeLabel') : t('later.nextLabel')}
+        {kind === 'cancelled' ? t('later.proposeLabel') : t('later.nextSlotLabel')}
       </SectionLabel>
       {next.data ? (
         <NextProposal next={next.data} />
@@ -377,7 +403,7 @@ export function OutingLaterScreen({ kind }: { kind: 'full' | 'cancelled' }) {
           {t('later.fullNote')}
         </BodyText>
       ) : null}
-      <YesNo next={next.data} />
+      <YesNo next={next.data} full={kind === 'full'} />
     </DetailScreen>
   );
 }

@@ -6,7 +6,12 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { useState } from 'react';
-import { GestureDetector, usePanGesture, usePinchGesture, useSimultaneousGestures } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  usePanGesture,
+  usePinchGesture,
+  useSimultaneousGestures,
+} from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useA11yPrefs } from '../foundations/accessibility';
 import { SCENE_LIMITS, clamp, maxPanX } from '../foundations/motion';
@@ -35,7 +40,17 @@ export interface PetSceneProps {
 /** Le décor est plus large que la vue pour permettre le panoramique. */
 const BG_OVERSCAN = 1.35;
 
-export function PetScene({ backgroundPath, height, placeTitle, placeSubtitle, gestureHint, accessibilityLabel, children, overlay, testID }: PetSceneProps) {
+export function PetScene({
+  backgroundPath,
+  height,
+  placeTitle,
+  placeSubtitle,
+  gestureHint,
+  accessibilityLabel,
+  children,
+  overlay,
+  testID,
+}: PetSceneProps) {
   const { reduceMotion } = useA11yPrefs();
   const [w, setW] = useState(0);
   const pan = useSharedValue(0);
@@ -78,8 +93,18 @@ export function PetScene({ backgroundPath, height, placeTitle, placeSubtitle, ge
   });
   const gesture = useSimultaneousGestures(panG, pinchG);
 
-  const back = useAnimatedStyle(() => ({ transform: [{ translateX: pan.value * SCENE_LIMITS.parallaxBack }, { scale: 1 + (scale.value - 1) * 0.6 }] }));
-  const front = useAnimatedStyle(() => ({ transform: [{ translateX: pan.value * SCENE_LIMITS.parallaxFront * 0.5 }, { scale: scale.value }] }));
+  const back = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: pan.value * SCENE_LIMITS.parallaxBack },
+      { scale: 1 + (scale.value - 1) * 0.6 },
+    ],
+  }));
+  const front = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: pan.value * SCENE_LIMITS.parallaxFront * 0.5 },
+      { scale: scale.value },
+    ],
+  }));
 
   const onLayout = (e: LayoutChangeEvent) => {
     const nw = e.nativeEvent.layout.width;
@@ -88,17 +113,44 @@ export function PetScene({ backgroundPath, height, placeTitle, placeSubtitle, ge
   };
 
   return (
-    <View testID={testID} onLayout={onLayout} style={[styles.frame, { height }, hard(6, color.sunShadow)]}>
+    <View
+      testID={testID}
+      onLayout={onLayout}
+      style={[styles.frame, { height }, hard(6, color.sunShadow)]}
+    >
       <GestureDetector gesture={gesture}>
-        <View style={StyleSheet.absoluteFill} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-          <Animated.View style={[styles.bg, { width: w * BG_OVERSCAN, left: -(w * (BG_OVERSCAN - 1)) / 2, height }, back]}>
-            <Sprite path={backgroundPath} size={w * BG_OVERSCAN} height={height} contentFit="cover" />
+        <View
+          style={StyleSheet.absoluteFill}
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={accessibilityLabel}
+        >
+          <Animated.View
+            style={[
+              styles.bg,
+              { width: w * BG_OVERSCAN, left: -(w * (BG_OVERSCAN - 1)) / 2, height },
+              back,
+            ]}
+          >
+            <Sprite
+              path={backgroundPath}
+              size={w * BG_OVERSCAN}
+              height={height}
+              contentFit="cover"
+            />
           </Animated.View>
-          <Animated.View style={[StyleSheet.absoluteFill, styles.stage, front]}>{children}</Animated.View>
+          <Animated.View style={[StyleSheet.absoluteFill, styles.stage, front]}>
+            {children}
+          </Animated.View>
         </View>
       </GestureDetector>
       {placeTitle ? (
-        <View style={styles.place} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <View
+          style={styles.place}
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
           <Text variant="displayM" tone="white" align="right">
             {placeTitle}
           </Text>
@@ -110,7 +162,12 @@ export function PetScene({ backgroundPath, height, placeTitle, placeSubtitle, ge
         </View>
       ) : null}
       {gestureHint ? (
-        <View style={styles.hint} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <View
+          style={styles.hint}
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
           <Text variant="caption" tone="white">
             {gestureHint}
           </Text>
@@ -125,6 +182,23 @@ const styles = StyleSheet.create({
   frame: { borderRadius: radius.xxl, overflow: 'hidden', backgroundColor: color.mango },
   bg: { position: 'absolute', top: 0 },
   stage: { justifyContent: 'flex-end', paddingBottom: space.xl },
-  place: { position: 'absolute', top: space.md, right: space.md, backgroundColor: scrim.medium, borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: space.sm, maxWidth: '70%' },
-  hint: { position: 'absolute', bottom: space.sm, left: space.md, backgroundColor: scrim.strong, borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 3 },
+  place: {
+    position: 'absolute',
+    top: space.md,
+    right: space.md,
+    backgroundColor: scrim.medium,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    maxWidth: '70%',
+  },
+  hint: {
+    position: 'absolute',
+    bottom: space.sm,
+    left: space.md,
+    backgroundColor: scrim.strong,
+    borderRadius: radius.pill,
+    paddingHorizontal: space.sm,
+    paddingVertical: 3,
+  },
 });

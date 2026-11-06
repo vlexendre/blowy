@@ -89,6 +89,8 @@ export class ConnectionQueries {
       },
       ...(exchange ? { exchange } : {}),
       ...(showDeadline ? { dateDeadline: d.dateDeadline!.toISOString() } : {}),
+      // V5.9 : date d'ouverture du duo (double oui) — mon duo seulement.
+      openedAt: d.createdAt.toISOString(),
       ...(date ? { currentDate: await this.dateView(viewerId, d, date, now, me ? seeksOf(me.lookingFor).romance : false) } : {}),
       ...(compatible && live ? { projectCompatible: true as const } : {}),
       conversationId,

@@ -11,6 +11,7 @@ import { Errors } from '../../../shared/domain/errors.js';
 import { isPaused } from '../domain/reliability.js';
 import { cancelPreview, emergencyAvailable, emergencyWindowStart } from '../domain/seat-policy.js';
 import type { Tuning } from '@blowy/tuning';
+import { activityDetailOf, activityPriceCentsOf } from '@blowy/content';
 import { photoEligible, projectOutingFor } from '../domain/visibility.js';
 import { voteTargets } from '../domain/votes.js';
 import type { OutingsRepository } from './ports/outings.repository.js';
@@ -62,6 +63,23 @@ export class OutingQueries {
     const x = await this.repo.outingViewExtras(outingId, viewerId);
     if (!x) return view;
     const out: OutingView = { ...view, activityChosenBy: x.viewerActivities.includes(x.activity) ? 'YOU' : 'VENUE_AND_GROUP', oncall: { covered: true } };
+    // V5.9 : trajet quartier → quartier dès la proposition (le quartier de la sortie est déjà visible) ; même quartier : à pied.
+    if (x.viewerHome && x.viewerHomeLabel) {
+      if (x.viewerHome === x.neighborhoodId) {
+        const walk = await this.repo.walkWithin(x.neighborhoodId);
+        if (walk) out.travel = { minutes: walk, estimated: true, mode: 'WALK', fromNeighborhoodLabel: x.viewerHomeLabel };
+      } else {
+        const t = await this.repo.travelEstimate(x.viewerHome, x.neighborhoodId);
+        if (t) out.travel = { minutes: t.minutes, estimated: t.estimated, mode: 'TRANSIT', fromNeighborhoodLabel: x.viewerHomeLabel };
+      }
+    }
+    // V5.9 : activité précise du lieu (l'activité est visible à tous les états ; jamais le lieu avant la confirmation).
+    const detail = activityDetailOf(x.activityDetailKey);
+    if (detail && detail.kind === x.activity) {
+      // V5.10 : prix TTC de l'activité, prépayé avec la place (absent = réglé sur place).
+      const priceCents = activityPriceCentsOf({ detailKey: x.activityDetailKey, outingActivity: x.activity, venuePriceCents: x.activityPriceCents ?? null });
+      out.activityDetail = { key: detail.id, label: detail.fr, durationMinutes: x.durationMinutes, ...(detail.ledByFr ? { ledBy: detail.ledByFr } : {}), ...(priceCents > 0 ? { priceCents } : {}) };
+    }
     if (out.venue) {
       const t = x.viewerHome && x.viewerHome !== x.neighborhoodId ? await this.repo.travelEstimate(x.viewerHome, x.neighborhoodId) : null;
       const minutes = t?.minutes ?? null;

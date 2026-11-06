@@ -52,6 +52,7 @@ function bodyFrom(fd: FormData): Record<string, unknown> {
     if (!raw.startsWith('f.') || typeof v !== 'string') continue;
     const [name, type] = raw.slice(2).split(':') as [string, string | undefined];
     if (type === 'int') out[name] = v === '' ? undefined : Number.parseInt(v, 10);
+    else if (type === 'intnull') out[name] = v === '' ? null : Number.parseInt(v, 10);
     else if (type === 'num') out[name] = v === '' ? undefined : Number.parseFloat(v.replace(',', '.'));
     else if (type === 'json') out[name] = v === '' ? undefined : JSON.parse(v);
     else if (type === 'bool') out[name] = v === 'true' || v === 'on';

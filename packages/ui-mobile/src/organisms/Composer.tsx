@@ -16,7 +16,16 @@ export interface ComposerProps {
   onDraftChange?: (t: string) => void;
 }
 
-export function Composer({ placeholder, sendLabel, onSend, maxLength, disabled, disabledReason, draft, onDraftChange }: ComposerProps) {
+export function Composer({
+  placeholder,
+  sendLabel,
+  onSend,
+  maxLength,
+  disabled,
+  disabledReason,
+  draft,
+  onDraftChange,
+}: ComposerProps) {
   const [local, setLocal] = useState('');
   const value = draft ?? local;
   const set = onDraftChange ?? setLocal;
@@ -50,13 +59,37 @@ export function Composer({ placeholder, sendLabel, onSend, maxLength, disabled, 
         maxFontSizeMultiplier={2}
         testID="composer-input"
       />
-      <IconButton icon="send" tone="coral" accessibilityLabel={sendLabel} onPress={send} testID="composer-send" />
+      <IconButton
+        icon="send"
+        tone="coral"
+        accessibilityLabel={sendLabel}
+        onPress={send}
+        testID="composer-send"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm, paddingHorizontal: space.lg, paddingVertical: space.sm },
-  input: { flex: 1, minHeight: 44, maxHeight: 140, borderRadius: radius.md, backgroundColor: color.white, paddingHorizontal: space.lg, paddingVertical: space.md, fontFamily: fontFamily.body, fontSize: 16, color: color.ink, ...hard(3, color.creamShadow) },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: space.sm,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.sm,
+  },
+  input: {
+    flex: 1,
+    minHeight: 44,
+    maxHeight: 140,
+    borderRadius: radius.md,
+    backgroundColor: color.white,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+    fontFamily: fontFamily.body,
+    fontSize: 16,
+    color: color.ink,
+    ...hard(3, color.creamShadow),
+  },
   disabled: { padding: space.lg, backgroundColor: color.creamDeep },
 });

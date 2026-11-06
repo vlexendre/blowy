@@ -15,7 +15,16 @@ export interface ModalSheetTemplateProps {
 }
 
 /** Écran présenté en modale (route expo-router `presentation: 'modal'`) : fermer en haut. */
-export function ModalSheetTemplate({ title, lead, onClose, closeLabel, footer, banner, children, testID }: ModalSheetTemplateProps) {
+export function ModalSheetTemplate({
+  title,
+  lead,
+  onClose,
+  closeLabel,
+  footer,
+  banner,
+  children,
+  testID,
+}: ModalSheetTemplateProps) {
   return (
     <ScreenFrame footer={footer} banner={banner} testID={testID}>
       <Header title={title} onClose={onClose} closeLabel={closeLabel} />

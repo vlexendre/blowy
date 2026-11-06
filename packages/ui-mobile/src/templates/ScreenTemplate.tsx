@@ -21,19 +21,31 @@ export interface ScreenTemplateProps {
   style?: StyleProp<ViewStyle>;
 }
 
-
-export function ScreenTemplate({ children, background, backgroundColor = color.cream, scroll, testID, style }: ScreenTemplateProps) {
+export function ScreenTemplate({
+  children,
+  background,
+  backgroundColor = color.cream,
+  scroll,
+  testID,
+  style,
+}: ScreenTemplateProps) {
   const insets = useSafeAreaInsets();
   const pad = screenPadding(insets);
   return (
     <View testID={testID} style={[{ flex: 1, backgroundColor, overflow: 'hidden' }, style]}>
       {background ? (
-        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+        <View
+          pointerEvents="none"
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
           {background}
         </View>
       ) : null}
       {scroll ? (
-        <ScrollView contentContainerStyle={[{ flexGrow: 1 }, pad]} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={[{ flexGrow: 1 }, pad]}
+          showsVerticalScrollIndicator={false}
+        >
           {children}
         </ScrollView>
       ) : (

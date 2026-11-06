@@ -65,11 +65,15 @@ export class SeatUseCases {
         if (!r?.verified) throw Errors.precondition('AGE_VERIFICATION_REQUIRED');
         if (!r.hasPhoto) throw Errors.precondition('PHOTO_REQUIRED');
         if (isPaused(r.reliability, scope.now)) throw Errors.precondition('RELIABILITY_PAUSED', { until: r.reliability!.pausedUntil!.toISOString() });
-        const decision = await this.funding.fund(scope, { userId, seatId: seat.id, outingId, mode, freeFirstAvailable: this.tuning.pricing.firstOutingFree && !(await this.repo.usedFreeFirst(scope, userId)) });
+        // V5.10 (jury tour 11) : activité payante prépayée avec la place ; une place HELD garde son financement acquis.
+        const activity = (await this.repo.activityQuote?.(scope, outingId)) ?? null;
+        const planned = seat.status === 'HELD' && seat.funding && seat.funding !== 'PAID' ? seat.funding : null;
+        const decision = await this.funding.fund(scope, { userId, seatId: seat.id, outingId, mode, freeFirstAvailable: !planned && this.tuning.pricing.firstOutingFree && !(await this.repo.usedFreeFirst(scope, userId)), activity, planned });
         if (decision.kind === 'UNAVAILABLE') throw new AppError('PROVIDER_UNAVAILABLE', 'Paiement indisponible pour le moment', { retryable: true });
         if (decision.kind === 'HOLD') {
           // T3 (G) : place réservée pendant le paiement ; confirmée par le webhook signé du fournisseur.
-          await this.repo.updateSeat(scope, seat.id, { status: 'HELD', holdExpiresAt: decision.holdExpiresAt, respondedAt: scope.now });
+          // V5.10 : place couverte (offerte, Blowy+…) dont seule l'activité reste à payer → financement gardé sur la place HELD.
+          await this.repo.updateSeat(scope, seat.id, { status: 'HELD', holdExpiresAt: decision.holdExpiresAt, respondedAt: scope.now, ...(decision.funding ? { funding: decision.funding, ...(decision.creditRef ? { creditRef: decision.creditRef } : {}) } : {}) });
           await this.events.seatUpdated(scope, outingId, userId, { status: 'HELD', refundState: 'NONE' });
           return { seat: { status: 'HELD', holdExpiresAt: decision.holdExpiresAt.toISOString() } };
         }
@@ -84,7 +88,8 @@ export class SeatUseCases {
     if (result.seat.status === 'HELD' && this.funding.prepareIntent) {
       const seat = await this.repo.seat(null, outingId, userId);
       if (!seat) throw Errors.notFound('Sortie');
-      return { ...result, payment: await this.funding.prepareIntent({ userId, seatId: seat.id }) };
+      const activity = (await this.repo.activityQuote?.(null, outingId)) ?? null;
+      return { ...result, payment: await this.funding.prepareIntent({ userId, seatId: seat.id, seatDue: !seat.funding || seat.funding === 'PAID', activity }) };
     }
     return result;
   }
@@ -178,6 +183,8 @@ export class SeatUseCases {
     if (refundable && p.refund === 'CARD') refundState = await this.funding.refundCard(scope, { userId, seatId: seat.id, paymentRef: null, cause });
     else if (refundable && p.refund === 'CREDIT' && seat.funding && this.funding.refundCredit) refundState = await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
     else if (refundable && seat.funding === 'REFERRAL_FREE' && this.funding.refundCredit) refundState = await this.funding.refundCredit(scope, { userId, seatId: seat.id, funding: seat.funding, cause });
+    // V5.10 : l'activité prépayée est remboursée dans tous les cas où la place l'est (place payée : déjà incluse).
+    if (refundable && this.funding.refundActivity) refundState = (await this.funding.refundActivity(scope, { userId, seatId: seat.id, cause })) ?? refundState;
     await this.repo.updateSeat(scope, seat.id, { status: 'CANCELLED', cancelKind, refundState, cancelledAt: scope.now });
     const conv = await this.chat.conversationOfOuting(scope, outingId);
     if (conv) await this.chat.revokeMember(scope, conv, userId);

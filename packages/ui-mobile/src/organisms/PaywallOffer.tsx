@@ -45,11 +45,29 @@ export function PaywallOffer(p: PaywallOfferProps) {
         </Text>
       ) : (
         p.packages.map((pk) => (
-          <OptionCard key={pk.id} title={pk.title} subtitle={[pk.priceLine, pk.introLine].filter(Boolean).join(' · ')} selected={p.selectedId === pk.id} onPress={() => p.onSelect(pk.id)} testID={`package-${pk.id}`} />
+          <OptionCard
+            key={pk.id}
+            title={pk.title}
+            subtitle={[pk.priceLine, pk.introLine].filter(Boolean).join(' · ')}
+            selected={p.selectedId === pk.id}
+            onPress={() => p.onSelect(pk.id)}
+            testID={`package-${pk.id}`}
+          />
         ))
       )}
-      <Button label={p.ctaLabel} onPress={p.onPurchase} loading={p.purchasing} disabled={!p.selectedId || p.packages.length === 0} testID="paywall-purchase" />
-      <Button label={p.continueFreeLabel} variant="secondary" onPress={p.onContinueFree} testID="paywall-continue-free" />
+      <Button
+        label={p.ctaLabel}
+        onPress={p.onPurchase}
+        loading={p.purchasing}
+        disabled={!p.selectedId || p.packages.length === 0}
+        testID="paywall-purchase"
+      />
+      <Button
+        label={p.continueFreeLabel}
+        variant="secondary"
+        onPress={p.onContinueFree}
+        testID="paywall-continue-free"
+      />
       <Button label={p.restoreLabel} variant="ghost" onPress={p.onRestore} />
       <Text variant="caption" tone="muted" align="center">
         {p.legalText}

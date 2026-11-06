@@ -182,9 +182,7 @@ export const isMinor = (civilDate: string, now: number): boolean =>
   (ageOn(civilDate, now) ?? 99) < 18;
 
 /** Les intentions envoyées à l'API (`PUT /v1/preferences/intentions`) ; null si incomplètes. */
-export function intentionsOf(
-  d: OnboardingDraft,
-): {
+export function intentionsOf(d: OnboardingDraft): {
   lookingFor: LookingFor;
   storySeriousness: null;
   kidsSomeday: null;

@@ -3,16 +3,46 @@
  * des maquettes, testées sous Node (styles.test.ts). Les composants ne font que les appliquer.
  */
 import type { TextStyle, ViewStyle } from 'react-native';
-import { alpha, color, hard, radii, shadow3d, textSpec, tone, touch, v5, type Tone } from '../foundations/theme';
+import {
+  alpha,
+  color,
+  hard,
+  radii,
+  shadow3d,
+  textSpec,
+  tone,
+  touch,
+  v5,
+  type Tone,
+} from '../foundations/theme';
 import { bodyFont, displayFont, strongFont } from '../foundations/typography';
 
 export type StampTone = 'ink' | 'lime';
 /** V5 : `b1` corail #D93A1C (AA) ; `b1v4` = corail V4 (#FF5A3C, témoin de la fondation) ; `bdis` = `.bdis`. */
-export type ButtonVariant = 'b1' | 'b1v4' | 'b2' | 'b3' | 'lime' | 'bdis' | 'link' | 'ghost' | 'danger' | 'violet' | 'primary' | 'secondary' | 'dark';
+export type ButtonVariant =
+  | 'b1'
+  | 'b1v4'
+  | 'b2'
+  | 'b3'
+  | 'lime'
+  | 'bdis'
+  | 'link'
+  | 'ghost'
+  | 'danger'
+  | 'violet'
+  | 'primary'
+  | 'secondary'
+  | 'dark';
 /** `lg` = `.btn` V5 (56 px, 19 px) ; `v4` = `.btn` V4 (56 px, 18 px). */
 export type ButtonSize = 'lg' | 'v4' | 'md' | 'sm';
 
-export const captionBox: ViewStyle = { alignSelf: 'center', backgroundColor: color.ink, borderRadius: radii.caption, paddingVertical: 9, paddingHorizontal: 13 };
+export const captionBox: ViewStyle = {
+  alignSelf: 'center',
+  backgroundColor: color.ink,
+  borderRadius: radii.caption,
+  paddingVertical: 9,
+  paddingHorizontal: 13,
+};
 
 type Solid = 'b1' | 'b1v4' | 'b2' | 'b3' | 'lime' | 'bdis' | 'danger' | 'violet';
 const ALIAS: Partial<Record<ButtonVariant, Solid>> = { primary: 'b1', dark: 'b2', secondary: 'b3' };
@@ -32,34 +62,74 @@ export const BUTTON_SURFACE: Record<Solid, { bg: string; fg: string; shadow: str
 const HEIGHT: Record<ButtonSize, number> = { lg: 56, v4: 56, md: 48, sm: 44 };
 const FONT: Record<ButtonSize, number> = { lg: 19, v4: 18, md: 16, sm: 15 };
 
-export function resolveButton(variant: ButtonVariant, size: ButtonSize = 'lg'): { kind: 'solid' | 'text'; box: ViewStyle; text: TextStyle; surface?: { bg: string; fg: string; shadow: string } } {
+export function resolveButton(
+  variant: ButtonVariant,
+  size: ButtonSize = 'lg',
+): {
+  kind: 'solid' | 'text';
+  box: ViewStyle;
+  text: TextStyle;
+  surface?: { bg: string; fg: string; shadow: string };
+} {
   if (variant === 'link' || variant === 'ghost') {
     const sp = variant === 'link' ? textSpec.link : textSpec.ghost;
     return {
       kind: 'text',
-      box: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: variant === 'link' ? 20 : 0 },
-      text: { ...bodyFont(sp.size, sp.weight, variant === 'ghost' ? 0 : sp.letterSpacingEm), color: color.ink },
+      box: {
+        minHeight: 44,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        paddingHorizontal: variant === 'link' ? 20 : 0,
+      },
+      text: {
+        ...bodyFont(sp.size, sp.weight, variant === 'ghost' ? 0 : sp.letterSpacingEm),
+        color: color.ink,
+      },
     };
   }
   const surface = BUTTON_SURFACE[ALIAS[variant] ?? (variant as Solid)];
   return {
     kind: 'solid',
     surface,
-    box: { minHeight: HEIGHT[size], flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: 20 },
-    text: { ...strongFont(FONT[size], textSpec.button.letterSpacingEm), textTransform: 'uppercase', color: surface.fg },
+    box: {
+      minHeight: HEIGHT[size],
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+      paddingHorizontal: 20,
+    },
+    text: {
+      ...strongFont(FONT[size], textSpec.button.letterSpacingEm),
+      textTransform: 'uppercase',
+      color: surface.fg,
+    },
   };
 }
 
-
 /** Style de surface selon l'état (pur, testé). */
-export function pressable3DStyle(background: string, shadowColor: string, depth: number, pressDepth: number, radius: number, pressed: boolean, disabled: boolean): ViewStyle {
+export function pressable3DStyle(
+  background: string,
+  shadowColor: string,
+  depth: number,
+  pressDepth: number,
+  radius: number,
+  pressed: boolean,
+  disabled: boolean,
+): ViewStyle {
   return {
     minHeight: touch.minTarget,
     minWidth: touch.minTarget,
     borderRadius: radius,
     backgroundColor: background,
     opacity: disabled ? 0.5 : 1,
-    ...(pressed ? { transform: [{ translateY: pressDepth }] } : depth > 0 ? hard(depth, shadowColor) : null),
+    ...(pressed
+      ? { transform: [{ translateY: pressDepth }] }
+      : depth > 0
+        ? hard(depth, shadowColor)
+        : null),
   };
 }
 
@@ -85,12 +155,24 @@ export function cardStyle(variant: 'card' | 'group' = 'card', highlighted = fals
     backgroundColor: color.white,
     borderRadius: variant === 'card' ? radii.card : radii.group,
     overflow: variant === 'group' ? 'hidden' : 'visible',
-    boxShadow: [{ offsetX: 0, offsetY: shadow3d.card.y, blurRadius: 0, spreadDistance: 0, color: shadow3d.card.color }],
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: shadow3d.card.y,
+        blurRadius: 0,
+        spreadDistance: 0,
+        color: shadow3d.card.color,
+      },
+    ],
     ...(highlighted ? { borderWidth: 3, borderColor: color.lime } : null),
   };
 }
 
-export function chipStyle(t: Tone, size: 'sm' | 'md', drop: 'soft' | 'strong' | 'none'): { box: ViewStyle; fg: string } {
+export function chipStyle(
+  t: Tone,
+  size: 'sm' | 'md',
+  drop: 'soft' | 'strong' | 'none',
+): { box: ViewStyle; fg: string } {
   const tk = tone[t];
   const bg = t === 'white' ? color.white : tk.bg;
   const sh = drop === 'soft' ? shadow3d.chip : drop === 'strong' ? shadow3d.chipStrong : null;
@@ -105,7 +187,13 @@ export function chipStyle(t: Tone, size: 'sm' | 'md', drop: 'soft' | 'strong' | 
       paddingVertical: size === 'md' ? 6 : 5,
       paddingHorizontal: size === 'md' ? 12 : 10,
       backgroundColor: bg,
-      ...(sh ? { boxShadow: [{ offsetX: 0, offsetY: sh.y, blurRadius: 0, spreadDistance: 0, color: sh.color }] } : null),
+      ...(sh
+        ? {
+            boxShadow: [
+              { offsetX: 0, offsetY: sh.y, blurRadius: 0, spreadDistance: 0, color: sh.color },
+            ],
+          }
+        : null),
     },
   };
 }
@@ -118,16 +206,36 @@ export function badgeStyle(kind: 'count' | 'plus', bg: string, ring: boolean): V
     justifyContent: 'center',
     borderRadius: radii.pill,
     backgroundColor: bg,
-    ...(kind === 'count' ? { minWidth: 16, height: 16, paddingHorizontal: 4 } : { height: 15, paddingHorizontal: 5 }),
-    ...(ring ? { boxShadow: [{ offsetX: 0, offsetY: 0, blurRadius: 0, spreadDistance: 2, color: alpha.badgeRing }] } : null),
+    ...(kind === 'count'
+      ? { minWidth: 16, height: 16, paddingHorizontal: 4 }
+      : { height: 15, paddingHorizontal: 5 }),
+    ...(ring
+      ? {
+          boxShadow: [
+            { offsetX: 0, offsetY: 0, blurRadius: 0, spreadDistance: 2, color: alpha.badgeRing },
+          ],
+        }
+      : null),
   };
 }
 
-export function labelStyle(variant: 'lbl' | 'tagline' = 'lbl', ink: string = color.muted): TextStyle {
+export function labelStyle(
+  variant: 'lbl' | 'tagline' = 'lbl',
+  ink: string = color.muted,
+): TextStyle {
   const sp = textSpec[variant];
-  return { ...bodyFont(sp.size, sp.weight, sp.letterSpacingEm), textTransform: 'uppercase', color: ink };
+  return {
+    ...bodyFont(sp.size, sp.weight, sp.letterSpacingEm),
+    textTransform: 'uppercase',
+    color: ink,
+  };
 }
 
-export function displayTextStyle(size: number, ink: string = color.ink, lineHeight?: number, letterSpacingEm?: number): TextStyle {
+export function displayTextStyle(
+  size: number,
+  ink: string = color.ink,
+  lineHeight?: number,
+  letterSpacingEm?: number,
+): TextStyle {
   return { ...displayFont(size, { lineHeight, letterSpacingEm }), color: ink };
 }

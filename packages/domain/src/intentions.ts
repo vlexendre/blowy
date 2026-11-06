@@ -35,7 +35,8 @@ export const MEETING_MODES = ['GROUP', 'DUO', 'BOTH'] as const;
 export type MeetingMode = (typeof MEETING_MODES)[number];
 
 /** Types d'activité d'une sortie (D.14). */
-export const ACTIVITY_KINDS = ['DRINK_COFFEE', 'BRUNCH', 'CLIMBING', 'WORKSHOP', 'GAMES', 'EXHIBITION'] as const;
+/** V5.9 : + `SPORT` (« Foot à 5 », facts.json). */
+export const ACTIVITY_KINDS = ['DRINK_COFFEE', 'BRUNCH', 'CLIMBING', 'WORKSHOP', 'GAMES', 'EXHIBITION', 'SPORT'] as const;
 export type ActivityKind = (typeof ACTIVITY_KINDS)[number];
 
 /** Temps de trajet maximal déclaratif (B.8). */

@@ -22,8 +22,20 @@ export interface Pressable3DProps extends Omit<PressableProps, 'style' | 'childr
   dimWhenDisabled?: boolean;
 }
 
-
-export function Pressable3D({ background, shadowColor, depth = 5, pressDepth, radius = 18, style, children, disabled, onPressIn, onPressOut, dimWhenDisabled = true, ...rest }: Pressable3DProps) {
+export function Pressable3D({
+  background,
+  shadowColor,
+  depth = 5,
+  pressDepth,
+  radius = 18,
+  style,
+  children,
+  disabled,
+  onPressIn,
+  onPressOut,
+  dimWhenDisabled = true,
+  ...rest
+}: Pressable3DProps) {
   const [down, setDown] = useState(false);
   const pressed = down && !disabled;
   return (
@@ -40,7 +52,18 @@ export function Pressable3D({ background, shadowColor, depth = 5, pressDepth, ra
         setDown(false);
         onPressOut?.(e);
       }}
-      style={[pressable3DStyle(background, shadowColor, depth, pressDepth ?? (depth > 0 ? Math.min(press.depth, depth) : 0), radius, pressed, !!disabled && dimWhenDisabled), style]}
+      style={[
+        pressable3DStyle(
+          background,
+          shadowColor,
+          depth,
+          pressDepth ?? (depth > 0 ? Math.min(press.depth, depth) : 0),
+          radius,
+          pressed,
+          !!disabled && dimWhenDisabled,
+        ),
+        style,
+      ]}
       {...rest}
     >
       {children}

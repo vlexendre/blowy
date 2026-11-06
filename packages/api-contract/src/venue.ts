@@ -115,7 +115,14 @@ export interface VenueStatementView {
    * places compensées et compensation (HT). `cancelledByBlowy` = sortie confirmée annulée par Blowy (3 € HT par
    * place réservée). Agrégats seulement : aucun prénom, aucun financement individuel.
    */
-  lines: { outingId: string; startsAt: string | null; reservedSeats?: number; attended?: number; absences?: number; emergencies?: number; /** V5.6 (E22) : sorties pour raison de sécurité après la confirmation (3 € HT chacune). */ safetyExits?: number; seats: number; amountCents: number; cancelledByBlowy?: true; /** V5.6 (E13) : table de 2 (Duo). */ duoTable?: true }[];
+  lines: { outingId: string; startsAt: string | null; reservedSeats?: number; attended?: number; absences?: number; emergencies?: number; /** V5.6 (E22) : sorties pour raison de sécurité après la confirmation (3 € HT chacune). */ safetyExits?: number; seats: number; amountCents: number; cancelledByBlowy?: true; /** V5.6 (E13) : table de 2 (Duo). */ duoTable?: true; /** V5.10 : ligne « activités » — places confirmées dont l'activité prépayée est reversée (honorées ou non). */ activities?: number; /** V5.10 : montant de l'activité reversé pour la soirée, au régime `activitiesTaxBasis`. */ activitiesCents?: number }[];
+  /**
+   * V5.10 (jury tour 11) : activités prépayées dans l'app, reversées intégralement au lieu pour chaque place
+   * confirmée (honorée ou non ; jamais si la place est remboursée). Total séparé de `totalCents` (compensations HT).
+   */
+  activitiesTotalCents?: number;
+  /** V5.10 : régime du reversement des activités — TTC par défaut, HT selon le contrat du lieu. */
+  activitiesTaxBasis?: 'TTC' | 'HT';
 }
 
 export const VenueIncidentRequestSchema = z.object({

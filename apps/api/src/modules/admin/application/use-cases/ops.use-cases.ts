@@ -170,6 +170,8 @@ export class OpsV5UseCases {
       city: v.venueCity,
       photoUrl: v.photoUrl,
       staffContact: v.staffContact,
+      activityPriceCents: v.activityPriceCents ?? null,
+      activityTaxBasis: v.activityTaxBasis ?? 'TTC',
       partnerAccounts: [...state.partners].map((userId) => ({ userId, displayName: names.get(userId) ?? '—' })),
       schedule: weeklySchedule(templates, v.activities, state, v.tablesPerSlot, this.tuning.outings.durationMinutes),
       closures: state.closures.map((c) => ({ date: c.date, note: c.note, at: c.at.toISOString() })),

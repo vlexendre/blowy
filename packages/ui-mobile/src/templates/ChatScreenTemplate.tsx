@@ -22,10 +22,25 @@ export interface ChatScreenTemplateProps {
 }
 
 /** Écran de conversation : en-tête, fil inversé, compositeur collé au clavier. */
-export function ChatScreenTemplate({ title, onBack, backLabel, trailing, banner, thread, aboveComposer, composer, overlays, testID }: ChatScreenTemplateProps) {
+export function ChatScreenTemplate({
+  title,
+  onBack,
+  backLabel,
+  trailing,
+  banner,
+  thread,
+  aboveComposer,
+  composer,
+  overlays,
+  testID,
+}: ChatScreenTemplateProps) {
   const insets = useSafeAreaInsets();
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.root, { paddingTop: insets.top }]} testID={testID}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={[styles.root, { paddingTop: insets.top }]}
+      testID={testID}
+    >
       <View style={styles.head}>
         <Header title={title} onBack={onBack} backLabel={backLabel} trailing={trailing} />
         {banner}

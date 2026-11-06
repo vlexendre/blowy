@@ -4,7 +4,13 @@
  * clés, `animation-delay` négatif, `animation-direction: reverse`, `fill-mode: both`).
  * Les données (durées, courbes, images clés) viennent de `keyframes` de @blowy/design-tokens.
  */
-import { easing as EASING, keyframes as KEYFRAMES, type KeyframeName, type KeyframeSpec, type KeyframeStop } from '@blowy/design-tokens';
+import {
+  easing as EASING,
+  keyframes as KEYFRAMES,
+  type KeyframeName,
+  type KeyframeSpec,
+  type KeyframeStop,
+} from '@blowy/design-tokens';
 
 export { KEYFRAMES };
 export type { KeyframeName, KeyframeSpec, KeyframeStop };
@@ -57,12 +63,17 @@ export type KeyframeValues = Required<Omit<KeyframeStop, 'at'>>;
 const IDENTITY: KeyframeValues = { tx: 0, ty: 0, s: 1, sx: 1, sy: 1, r: 0, o: 1, spread: 0, a: 0 };
 
 /** Progression orientée (0..1) d'une animation à l'instant `timeMs` (horloge depuis le début). */
-export function directedProgress(spec: KeyframeSpec, timeMs: number, opts: PlayOptions = {}): number {
+export function directedProgress(
+  spec: KeyframeSpec,
+  timeMs: number,
+  opts: PlayOptions = {},
+): number {
   'worklet';
   const duration = opts.durationMs ?? spec.durationMs;
   const local = timeMs - (opts.delayMs ?? 0);
   let p: number;
-  if (local <= 0) p = 0; // fill backwards (`both`) ; les boucles à délai positif attendent au début
+  if (local <= 0)
+    p = 0; // fill backwards (`both`) ; les boucles à délai positif attendent au début
   else if (!spec.loop) p = Math.min(1, local / duration);
   else p = (local % duration) / duration;
   return opts.reverse ? 1 - p : p;
@@ -85,11 +96,25 @@ export function sampleAt(spec: KeyframeSpec, p: number): KeyframeValues {
     const vb = b[key] ?? IDENTITY[key];
     return va + (vb - va) * w;
   };
-  return { tx: pick('tx'), ty: pick('ty'), s: pick('s'), sx: pick('sx'), sy: pick('sy'), r: pick('r'), o: pick('o'), spread: pick('spread'), a: pick('a') };
+  return {
+    tx: pick('tx'),
+    ty: pick('ty'),
+    s: pick('s'),
+    sx: pick('sx'),
+    sy: pick('sy'),
+    r: pick('r'),
+    o: pick('o'),
+    spread: pick('spread'),
+    a: pick('a'),
+  };
 }
 
 /** Valeurs de l'animation `name` à `timeMs` (ms écoulées depuis le montage). */
-export function sampleKeyframes(name: KeyframeName, timeMs: number, opts: PlayOptions = {}): KeyframeValues {
+export function sampleKeyframes(
+  name: KeyframeName,
+  timeMs: number,
+  opts: PlayOptions = {},
+): KeyframeValues {
   'worklet';
   const spec = KEYFRAMES[name] as KeyframeSpec;
   return sampleAt(spec, directedProgress(spec, timeMs, opts));
@@ -103,7 +128,21 @@ export function restValues(name: KeyframeName): KeyframeValues {
 }
 
 /** Transformation RN équivalente (ordre CSS : translate → rotate → scale). */
-export function toTransform(v: KeyframeValues): Array<{ translateX: number } | { translateY: number } | { rotate: string } | { scaleX: number } | { scaleY: number }> {
+export function toTransform(
+  v: KeyframeValues,
+): Array<
+  | { translateX: number }
+  | { translateY: number }
+  | { rotate: string }
+  | { scaleX: number }
+  | { scaleY: number }
+> {
   'worklet';
-  return [{ translateX: v.tx }, { translateY: v.ty }, { rotate: `${v.r}deg` }, { scaleX: v.s * v.sx }, { scaleY: v.s * v.sy }];
+  return [
+    { translateX: v.tx },
+    { translateY: v.ty },
+    { rotate: `${v.r}deg` },
+    { scaleX: v.s * v.sx },
+    { scaleY: v.s * v.sy },
+  ];
 }

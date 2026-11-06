@@ -15,10 +15,22 @@ export interface LabeledSliderProps {
 }
 
 /** Curseur de caractère avec les deux pôles écrits (maquette Craft). */
-export function LabeledSlider({ left, right, value, onChange, accessibilityLabel, valueText, testID }: LabeledSliderProps) {
+export function LabeledSlider({
+  left,
+  right,
+  value,
+  onChange,
+  accessibilityLabel,
+  valueText,
+  testID,
+}: LabeledSliderProps) {
   return (
     <View style={styles.wrap}>
-      <View style={styles.row} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <View
+        style={styles.row}
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden
+      >
         <Text variant="bodyStrong" tone={value < -0.15 ? 'ink' : 'muted'}>
           {left}
         </Text>
@@ -26,7 +38,13 @@ export function LabeledSlider({ left, right, value, onChange, accessibilityLabel
           {right}
         </Text>
       </View>
-      <Slider value={value} onChange={onChange} accessibilityLabel={accessibilityLabel} accessibilityValueText={valueText} testID={testID} />
+      <Slider
+        value={value}
+        onChange={onChange}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityValueText={valueText}
+        testID={testID}
+      />
     </View>
   );
 }

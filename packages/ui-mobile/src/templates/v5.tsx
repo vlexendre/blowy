@@ -15,7 +15,9 @@ import { PopIn } from '../atoms/PopIn';
 import { BackButton, IconAction, StepTag } from '../molecules/v5';
 import { GlassNav, type GlassNavItem } from '../organisms/v5';
 
-export type Pad = readonly [top: number, x: number, bottom: number] | readonly [top: number, right: number, bottom: number, left: number];
+export type Pad =
+  | readonly [top: number, x: number, bottom: number]
+  | readonly [top: number, right: number, bottom: number, left: number];
 
 export function framePadding(pad: Pad, insets: { top: number; bottom: number }) {
   const [top, right, bottom, left] = pad.length === 3 ? [pad[0], pad[1], pad[2], pad[1]] : pad;
@@ -46,19 +48,48 @@ export interface FrameProps {
 }
 
 /** Div racine : `display:flex; flex-direction:column; overflow:hidden; position:relative`. */
-export function Frame({ children, pad = [56, 22, 26], background = v5.cream, gradient, decor, overlay, gap, scroll, testID, style }: FrameProps) {
+export function Frame({
+  children,
+  pad = [56, 22, 26],
+  background = v5.cream,
+  gradient,
+  decor,
+  overlay,
+  gap,
+  scroll,
+  testID,
+  style,
+}: FrameProps) {
   const insets = useSafeAreaInsets();
   const padding = framePadding(pad, insets);
-  const body = { flexDirection: 'column' as const, ...padding, ...(gap !== undefined ? { gap } : null) };
+  const body = {
+    flexDirection: 'column' as const,
+    ...padding,
+    ...(gap !== undefined ? { gap } : null),
+  };
   return (
-    <View testID={testID} style={[{ flex: 1, backgroundColor: background, overflow: 'hidden' }, gradient ? { backgroundImage: gradient } : null, style]}>
+    <View
+      testID={testID}
+      style={[
+        { flex: 1, backgroundColor: background, overflow: 'hidden' },
+        gradient ? { backgroundImage: gradient } : null,
+        style,
+      ]}
+    >
       {decor ? (
-        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+        <View
+          pointerEvents="none"
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
           {decor}
         </View>
       ) : null}
       {scroll ? (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={[{ flexGrow: 1 }, body]} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={[{ flexGrow: 1 }, body]}
+          showsVerticalScrollIndicator={false}
+        >
           {children}
         </ScrollView>
       ) : (
@@ -93,7 +124,26 @@ export interface StepScreenProps {
 }
 
 /** Étape d'onboarding V5 (Ville → Créneaux) : `padding 52px 20px 22px`, pied collé en bas (`margin-top:auto`). */
-export function StepScreen({ step, total, stepLabel, stepA11y, backLabel, onBack, title, titleSize, titleLineHeight = 0.92, titleMarginTop = 16, intro, introColor = v5.inkSoft, introMarginTop = 8, beforeTitle, children, footer, pad = [52, 20, 22], testID }: StepScreenProps) {
+export function StepScreen({
+  step,
+  total,
+  stepLabel,
+  stepA11y,
+  backLabel,
+  onBack,
+  title,
+  titleSize,
+  titleLineHeight = 0.92,
+  titleMarginTop = 16,
+  intro,
+  introColor = v5.inkSoft,
+  introMarginTop = 8,
+  beforeTitle,
+  children,
+  footer,
+  pad = [52, 20, 22],
+  testID,
+}: StepScreenProps) {
   return (
     <Frame pad={pad} testID={testID}>
       <PopIn style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -107,7 +157,13 @@ export function StepScreen({ step, total, stepLabel, stepA11y, backLabel, onBack
         </DisplayText>
       </PopIn>
       {intro ? (
-        <BodyText size={14} weight={600} lh={1.45} color={introColor} style={{ marginTop: introMarginTop }}>
+        <BodyText
+          size={14}
+          weight={600}
+          lh={1.45}
+          color={introColor}
+          style={{ marginTop: introMarginTop }}
+        >
           {intro}
         </BodyText>
       ) : null}
@@ -136,9 +192,32 @@ export interface DetailScreenProps {
 }
 
 /** Écran de détail V5 (Réglages, Affiner, Les visages…) : `padding 52px 16px 24px; gap 10px`. */
-export function DetailScreen({ title, titleSize = 40, backLabel, onBack, action, children, pad = [52, 16, 24], gap = 10, scroll, background, gradient, overlay, titleColor, testID }: DetailScreenProps) {
+export function DetailScreen({
+  title,
+  titleSize = 40,
+  backLabel,
+  onBack,
+  action,
+  children,
+  pad = [52, 16, 24],
+  gap = 10,
+  scroll,
+  background,
+  gradient,
+  overlay,
+  titleColor,
+  testID,
+}: DetailScreenProps) {
   return (
-    <Frame pad={pad} gap={gap} scroll={scroll} background={background} gradient={gradient} overlay={overlay} testID={testID}>
+    <Frame
+      pad={pad}
+      gap={gap}
+      scroll={scroll}
+      background={background}
+      gradient={gradient}
+      overlay={overlay}
+      testID={testID}
+    >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <BackButton onPress={onBack} label={backLabel} />
         <View style={{ flex: 1, minWidth: 0 }}>
@@ -165,10 +244,34 @@ export interface TabScreenProps {
 }
 
 /** Écran d'onglet V5 (Accueil, Chats, Bande, Profil) : contenu + `.gnav` flottante. */
-export function TabScreen({ children, nav, pad = [56, 16, 26], gap, scroll, background, decor, testID }: TabScreenProps) {
+export function TabScreen({
+  children,
+  nav,
+  pad = [56, 16, 26],
+  gap,
+  scroll,
+  background,
+  decor,
+  testID,
+}: TabScreenProps) {
   const insets = useSafeAreaInsets();
   return (
-    <Frame pad={pad} gap={gap} scroll={scroll} background={background} decor={decor} testID={testID} overlay={<GlassNav items={nav.items} activeKey={nav.activeKey} onSelect={nav.onSelect} bottomInset={insets.bottom} />}>
+    <Frame
+      pad={pad}
+      gap={gap}
+      scroll={scroll}
+      background={background}
+      decor={decor}
+      testID={testID}
+      overlay={
+        <GlassNav
+          items={nav.items}
+          activeKey={nav.activeKey}
+          onSelect={nav.onSelect}
+          bottomInset={insets.bottom}
+        />
+      }
+    >
       {children}
     </Frame>
   );
@@ -191,8 +294,26 @@ export function ChatScreen({ header, children, composer, overlay, testID }: Chat
   const insets = useSafeAreaInsets();
   return (
     <View testID={testID} style={{ flex: 1, backgroundColor: v5.cream, overflow: 'hidden' }}>
-      <View style={{ paddingTop: Math.max(52, insets.top + 5), paddingHorizontal: 14, paddingBottom: 12, backgroundImage: v5Gradient.violet, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, gap: 10, zIndex: 2, boxShadow: [{ offsetX: 0, offsetY: 5, blurRadius: 0, spreadDistance: 0, color: v5.violetDark }] }}>{header}</View>
-      <View style={{ flex: 1, minHeight: 0, overflow: 'hidden', padding: 14, gap: 10 }}>{children}</View>
+      <View
+        style={{
+          paddingTop: Math.max(52, insets.top + 5),
+          paddingHorizontal: 14,
+          paddingBottom: 12,
+          backgroundImage: v5Gradient.violet,
+          borderBottomLeftRadius: 28,
+          borderBottomRightRadius: 28,
+          gap: 10,
+          zIndex: 2,
+          boxShadow: [
+            { offsetX: 0, offsetY: 5, blurRadius: 0, spreadDistance: 0, color: v5.violetDark },
+          ],
+        }}
+      >
+        {header}
+      </View>
+      <View style={{ flex: 1, minHeight: 0, overflow: 'hidden', padding: 14, gap: 10 }}>
+        {children}
+      </View>
       {composer}
       {overlay}
     </View>
@@ -200,11 +321,32 @@ export function ChatScreen({ header, children, composer, overlay, testID }: Chat
 }
 
 /** Écran de partage (V5-Partage-*, V5-Story) : fond encre, retour translucide, titre `.d` 26 blanc. */
-export function ShareScreen({ title, backLabel, onBack, children, pad = [52, 16, 18], testID }: { title: string; backLabel: string; onBack: () => void; children: ReactNode; pad?: Pad; testID?: string }) {
+export function ShareScreen({
+  title,
+  backLabel,
+  onBack,
+  children,
+  pad = [52, 16, 18],
+  testID,
+}: {
+  title: string;
+  backLabel: string;
+  onBack: () => void;
+  children: ReactNode;
+  pad?: Pad;
+  testID?: string;
+}) {
   return (
     <Frame pad={pad} background={v5.ink} testID={testID}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <IconAction glyph="back" glyphSize={16} label={backLabel} background={v5Alpha.white18} glyphColor={v5.white} onPress={onBack} />
+        <IconAction
+          glyph="back"
+          glyphSize={16}
+          label={backLabel}
+          background={v5Alpha.white18}
+          glyphColor={v5.white}
+          onPress={onBack}
+        />
         <DisplayText size={26} color={v5.white}>
           {title}
         </DisplayText>

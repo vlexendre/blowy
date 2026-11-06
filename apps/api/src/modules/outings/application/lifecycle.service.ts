@@ -82,6 +82,12 @@ export class OutingLifecycle {
   // ------------------------------------------------------------------ annulation (verrous tenus)
   /** Rembourse une place annulée par Blowy ou par sécurité (jamais d'effet de fiabilité). */
   async refundFully(scope: TxScope, seat: SeatRow, paymentRef: string | null = null, cause: 'OUTING_CANCELLED' | 'SYSTEM_REMOVAL' | 'SAFETY_EXIT' | 'ACCOUNT_DELETED' = 'OUTING_CANCELLED') {
+    const seatState = await this.refundSeat(scope, seat, paymentRef, cause);
+    // V5.10 : l'activité prépayée suit la place (place payée : déjà remboursée en totalité).
+    return (await this.funding.refundActivity?.(scope, { userId: seat.userId, seatId: seat.id, cause })) ?? seatState;
+  }
+
+  private async refundSeat(scope: TxScope, seat: SeatRow, paymentRef: string | null, cause: 'OUTING_CANCELLED' | 'SYSTEM_REMOVAL' | 'SAFETY_EXIT' | 'ACCOUNT_DELETED') {
     const mode = refundModeFor(seat.funding);
     if (mode === 'CARD') return this.funding.refundCard(scope, { userId: seat.userId, seatId: seat.id, paymentRef, cause });
     // Déprécié (D-042) : un ancien lot de crédit consommé est rendu par l'économie.
@@ -106,7 +112,8 @@ export class OutingLifecycle {
     for (const s of seats) {
       if (!(isPending(s.status) || s.status === 'CONFIRMED' || s.status === 'CHECKED_IN')) continue;
       const refundState = countsAsConfirmed(s.status) ? await this.refundFully(scope, s) : 'NONE';
-      await this.repo.updateSeat(scope, s.id, { status: 'CANCELLED', cancelKind: 'SYSTEM_REMOVAL', refundState, cancelledAt: scope.now });
+      const released = countsAsConfirmed(s.status) ? {} : await this.releaseHeld(scope, s);
+      await this.repo.updateSeat(scope, s.id, { status: 'CANCELLED', cancelKind: 'SYSTEM_REMOVAL', refundState, cancelledAt: scope.now, ...released });
       await this.events.seatUpdated(scope, outing.id, s.userId, { status: 'CANCELLED', refundState });
       if (conv) await this.chat.revokeMember(scope, conv, s.userId);
       await this.events.revoke(scope, s.userId, outing.id, conv);
@@ -150,10 +157,25 @@ export class OutingLifecycle {
     });
   }
 
+  /**
+   * V5.10 : une place HELD dont seule l'activité restait à payer avait déjà son financement (offerte, parrainage,
+   * ancien crédit) : il est rendu et effacé quand la place expire sans paiement.
+   */
+  /** V5.10 : rend le financement acquis d'une place HELD (paiement de l'activité arrivé trop tard). */
+  async releaseHeldFunding(scope: TxScope, s: SeatRow): Promise<void> {
+    await this.releaseHeld(scope, s);
+  }
+
+  private async releaseHeld(scope: TxScope, s: SeatRow): Promise<{ funding?: null }> {
+    if (s.status !== 'HELD' || !s.funding || s.funding === 'PAID') return {};
+    await this.refundSeat(scope, s, null, 'SYSTEM_REMOVAL');
+    return { funding: null };
+  }
+
   private async lock(scope: TxScope, o: OutingRow) {
     const seats = await this.repo.seats(scope, o.id);
     for (const s of seats.filter((x) => isPending(x.status))) {
-      await this.repo.updateSeat(scope, s.id, { status: 'EXPIRED', respondedAt: scope.now });
+      await this.repo.updateSeat(scope, s.id, { status: 'EXPIRED', respondedAt: scope.now, ...(await this.releaseHeld(scope, s)) });
       await this.events.seatUpdated(scope, o.id, s.userId, { status: 'EXPIRED', refundState: s.refundState });
     }
     const confirmed = this.confirmedIds(seats);
@@ -287,7 +309,7 @@ export class OutingLifecycle {
       await scope.lock.outings([outingId]);
       const seat = await this.repo.seat(scope, outingId, userId);
       if (!seat || seat.id !== seatId || !isPending(seat.status) || seat.acceptDeadline > scope.now) return false;
-      await this.repo.updateSeat(scope, seat.id, { status: 'EXPIRED', respondedAt: scope.now });
+      await this.repo.updateSeat(scope, seat.id, { status: 'EXPIRED', respondedAt: scope.now, ...(await this.releaseHeld(scope, seat)) });
       await this.events.seatUpdated(scope, outingId, userId, { status: 'EXPIRED', refundState: seat.refundState });
       return true;
     });

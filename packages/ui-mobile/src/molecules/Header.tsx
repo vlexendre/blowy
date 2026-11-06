@@ -15,10 +15,25 @@ export interface HeaderProps {
 }
 
 /** En-tête d'écran de détail : retour 44 pt, sur-titre, titre display (maquette .back + .lbl). */
-export function Header({ title, eyebrow, onBack, backLabel, onClose, closeLabel, trailing }: HeaderProps) {
+export function Header({
+  title,
+  eyebrow,
+  onBack,
+  backLabel,
+  onClose,
+  closeLabel,
+  trailing,
+}: HeaderProps) {
   return (
     <View style={styles.row}>
-      {onBack && backLabel ? <IconButton icon="back" accessibilityLabel={backLabel} onPress={onBack} testID="header-back" /> : null}
+      {onBack && backLabel ? (
+        <IconButton
+          icon="back"
+          accessibilityLabel={backLabel}
+          onPress={onBack}
+          testID="header-back"
+        />
+      ) : null}
       <View style={styles.titles}>
         {eyebrow ? (
           <Text variant="label" tone="muted">
@@ -32,7 +47,14 @@ export function Header({ title, eyebrow, onBack, backLabel, onClose, closeLabel,
         ) : null}
       </View>
       {trailing}
-      {onClose && closeLabel ? <IconButton icon="close" accessibilityLabel={closeLabel} onPress={onClose} testID="header-close" /> : null}
+      {onClose && closeLabel ? (
+        <IconButton
+          icon="close"
+          accessibilityLabel={closeLabel}
+          onPress={onClose}
+          testID="header-close"
+        />
+      ) : null}
     </View>
   );
 }

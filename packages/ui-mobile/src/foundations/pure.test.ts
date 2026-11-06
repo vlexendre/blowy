@@ -3,7 +3,10 @@ import { BREATH, breathAt, clamp, frameIndexAt, maxPanX } from './motion';
 import { petAccessibilityLabel, type PetLabelWords } from './pet-a11y';
 
 const words: PetLabelWords = {
-  pose: (p) => ({ JOYFUL: 'joyeux', SICK: 'malade', PRESENTATION: 'tranquille', ASLEEP: 'endormi' })[p as 'JOYFUL'] ?? p,
+  pose: (p) =>
+    ({ JOYFUL: 'joyeux', SICK: 'malade', PRESENTATION: 'tranquille', ASLEEP: 'endormi' })[
+      p as 'JOYFUL'
+    ] ?? p,
   withOther: (n) => `avec ${n}`,
   overlay: (o) => ({ sick: 'malade', sleep: 'endormi', hungry: 'affamé', sad: 'triste' })[o],
   walkingTo: (p) => `en route vers ${p}`,
@@ -11,14 +14,25 @@ const words: PetLabelWords = {
 
 describe('petAccessibilityLabel', () => {
   it('« Nino, joyeux, avec Suzie »', () => {
-    expect(petAccessibilityLabel({ name: 'Nino', pose: 'JOYFUL', otherName: 'Suzie' }, words)).toBe('Nino, joyeux, avec Suzie');
+    expect(petAccessibilityLabel({ name: 'Nino', pose: 'JOYFUL', otherName: 'Suzie' }, words)).toBe(
+      'Nino, joyeux, avec Suzie',
+    );
   });
   it("vocalise l'état même quand le dessin est un repli, sans doublon", () => {
-    expect(petAccessibilityLabel({ name: 'Gaston', pose: 'SICK', overlay: 'sick' }, words)).toBe('Gaston, malade');
-    expect(petAccessibilityLabel({ name: 'Pia', pose: 'PRESENTATION', overlay: 'hungry' }, words)).toBe('Pia, tranquille, affamé');
+    expect(petAccessibilityLabel({ name: 'Gaston', pose: 'SICK', overlay: 'sick' }, words)).toBe(
+      'Gaston, malade',
+    );
+    expect(
+      petAccessibilityLabel({ name: 'Pia', pose: 'PRESENTATION', overlay: 'hungry' }, words),
+    ).toBe('Pia, tranquille, affamé');
   });
   it('ajoute déplacement et accessoires', () => {
-    expect(petAccessibilityLabel({ name: 'Nino', pose: 'JOYFUL', walkingTo: 'Chez Suzie', accessories: ['bonnet'] }, words)).toBe('Nino, joyeux, en route vers Chez Suzie, bonnet');
+    expect(
+      petAccessibilityLabel(
+        { name: 'Nino', pose: 'JOYFUL', walkingTo: 'Chez Suzie', accessories: ['bonnet'] },
+        words,
+      ),
+    ).toBe('Nino, joyeux, en route vers Chez Suzie, bonnet');
   });
 });
 

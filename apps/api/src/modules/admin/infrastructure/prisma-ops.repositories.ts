@@ -37,9 +37,11 @@ type VenueRow = {
   photoUrl: string | null;
   staffContact: string | null;
   checkinSecretRef: string;
+  activityPriceCents: number | null;
+  activityTaxBasis: 'TTC' | 'HT';
   neighborhood: { name: string; city: string; timezone: string };
 };
-const venueSelect = { id: true, name: true, neighborhoodId: true, status: true, activities: true, tablesPerSlot: true, addressLine: true, postalCode: true, city: true, photoUrl: true, staffContact: true, checkinSecretRef: true, neighborhood: { select: { name: true, city: true, timezone: true } } } as const;
+const venueSelect = { id: true, name: true, neighborhoodId: true, status: true, activities: true, tablesPerSlot: true, addressLine: true, postalCode: true, city: true, photoUrl: true, staffContact: true, checkinSecretRef: true, activityPriceCents: true, activityTaxBasis: true, neighborhood: { select: { name: true, city: true, timezone: true } } } as const;
 const venueFacts = (v: VenueRow): VenueFacts => ({
   id: v.id,
   name: v.name,
@@ -56,6 +58,8 @@ const venueFacts = (v: VenueRow): VenueFacts => ({
   photoUrl: v.photoUrl,
   staffContact: v.staffContact,
   checkinSecretRef: v.checkinSecretRef,
+  activityPriceCents: v.activityPriceCents,
+  activityTaxBasis: v.activityTaxBasis,
 });
 
 const verifiedWhere = (at: Date) => ({ status: 'ACTIVE' as const, deletedAt: null, verificationSessions: { some: { status: 'VERIFIED' as const, OR: [{ expiresAt: null }, { expiresAt: { gt: at } }] } } });
@@ -544,6 +548,11 @@ export class JournalVenueCompensationLedger implements VenueCompensationLedger {
 
   reverse(scope: TxScope, seatId: string) {
     return reverseVenueCompensation(this.journal, scope, seatId);
+  }
+
+  async activitiesForVenue(venueId: string) {
+    const rows = await this.journal.forAccount(`venue:${venueId}`, ['VENUE_ACTIVITY_PAYOUT'], 2000);
+    return rows.map((e) => ({ seatId: String(e.refs.seatId), outingId: String(e.refs.outingId), amountCents: e.amount, taxBasis: e.refs.taxBasis === 'HT' ? ('HT' as const) : ('TTC' as const), at: e.at }));
   }
 }
 

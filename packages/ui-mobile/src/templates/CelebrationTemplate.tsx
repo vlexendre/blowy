@@ -5,7 +5,12 @@
  */
 import { useEffect, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { EFFECTS } from '@blowy/sprites';
 import { useA11yPrefs } from '../foundations/accessibility';
 import { POP } from '../foundations/motion';
@@ -28,7 +33,17 @@ export interface CelebrationTemplateProps {
   testID?: string;
 }
 
-export function CelebrationTemplate({ eyebrow, title, lead, hero, stats, cta, secondary, confetti = true, testID }: CelebrationTemplateProps) {
+export function CelebrationTemplate({
+  eyebrow,
+  title,
+  lead,
+  hero,
+  stats,
+  cta,
+  secondary,
+  confetti = true,
+  testID,
+}: CelebrationTemplateProps) {
   const { reduceMotion } = useA11yPrefs();
   const s = useSharedValue(reduceMotion ? 1 : POP.fromScale);
   const y = useSharedValue(reduceMotion ? 0 : POP.fromY);
@@ -36,15 +51,24 @@ export function CelebrationTemplate({ eyebrow, title, lead, hero, stats, cta, se
     s.value = reduceMotion ? withTiming(1, { duration: 150 }) : withSpring(1, { damping: 8 });
     y.value = reduceMotion ? 0 : withSpring(0, { damping: 10 });
   }, [reduceMotion, s, y]);
-  const pop = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }, { scale: s.value }] }));
+  const pop = useAnimatedStyle(() => ({
+    transform: [{ translateY: y.value }, { scale: s.value }],
+  }));
   return (
     <ScreenFrame
       tone="ink"
       testID={testID}
       footer={
         <>
-          <Button label={cta.label} variant="lime" onPress={cta.onPress} testID={cta.testID ?? 'celebration-cta'} />
-          {secondary ? <Button label={secondary.label} variant="dark" onPress={secondary.onPress} /> : null}
+          <Button
+            label={cta.label}
+            variant="lime"
+            onPress={cta.onPress}
+            testID={cta.testID ?? 'celebration-cta'}
+          />
+          {secondary ? (
+            <Button label={secondary.label} variant="dark" onPress={secondary.onPress} />
+          ) : null}
         </>
       }
     >
@@ -75,6 +99,11 @@ export function CelebrationTemplate({ eyebrow, title, lead, hero, stats, cta, se
 }
 
 const styles = StyleSheet.create({
-  hero: { alignItems: 'center', justifyContent: 'center', minHeight: 260, paddingVertical: space.lg },
+  hero: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 260,
+    paddingVertical: space.lg,
+  },
   confetti: { position: 'absolute', alignSelf: 'center' },
 });

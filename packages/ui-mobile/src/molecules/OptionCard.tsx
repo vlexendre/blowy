@@ -20,7 +20,17 @@ export interface OptionCardProps {
 }
 
 /** Carte de choix (école, dimanche, intention, espèce…) — sélection = fond encre + coche. */
-export function OptionCard({ title, subtitle, selected, onPress, leading, tag, mode = 'radio', disabled, testID }: OptionCardProps) {
+export function OptionCard({
+  title,
+  subtitle,
+  selected,
+  onPress,
+  leading,
+  tag,
+  mode = 'radio',
+  disabled,
+  testID,
+}: OptionCardProps) {
   const t = tone[selected ? 'ink' : 'white'];
   return (
     <Pressable3D
@@ -54,16 +64,37 @@ export function OptionCard({ title, subtitle, selected, onPress, leading, tag, m
           </Text>
         </View>
       ) : null}
-      <View style={[styles.mark, mode === 'checkbox' && styles.square, selected && styles.markOn]}>{selected ? <Icon name="check" size={16} tint={color.ink} /> : null}</View>
+      <View style={[styles.mark, mode === 'checkbox' && styles.square, selected && styles.markOn]}>
+        {selected ? <Icon name="check" size={16} tint={color.ink} /> : null}
+      </View>
     </Pressable3D>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.lg, minHeight: 64 },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    padding: space.lg,
+    minHeight: 64,
+  },
   text: { flex: 1, gap: 2 },
-  tag: { backgroundColor: color.violet, borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 2 },
-  mark: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: color.creamShadow, alignItems: 'center', justifyContent: 'center' },
+  tag: {
+    backgroundColor: color.violet,
+    borderRadius: radius.pill,
+    paddingHorizontal: space.sm,
+    paddingVertical: 2,
+  },
+  mark: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 2,
+    borderColor: color.creamShadow,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   square: { borderRadius: 8 },
   markOn: { backgroundColor: color.lime, borderColor: color.lime },
 });

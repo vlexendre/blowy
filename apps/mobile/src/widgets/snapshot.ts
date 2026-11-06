@@ -26,9 +26,32 @@ export interface WidgetWords {
 
 export const WIDGET_SCHEME = 'blowy';
 
-export function buildWidgetSnapshot(pet: Pick<OwnPetView, 'name' | 'pose'> | null, streakDays: number | null, rels: readonly Pick<RelationshipView, 'id' | 'type' | 'status' | 'otherPet' | 'otherPresence' | 'myPetHere' | 'paused'>[], words: WidgetWords): WidgetProps {
-  if (!pet) return { petName: '', moodLabel: '', streakLabel: null, waitingLabel: null, url: `${WIDGET_SCHEME}://nest`, emptyLabel: words.empty };
-  const waiting = rels.find((r) => r.type === 'DATE' && r.status === 'ACTIVE' && !r.paused && r.otherPresence === 'HERE' && !r.myPetHere);
+export function buildWidgetSnapshot(
+  pet: Pick<OwnPetView, 'name' | 'pose'> | null,
+  streakDays: number | null,
+  rels: readonly Pick<
+    RelationshipView,
+    'id' | 'type' | 'status' | 'otherPet' | 'otherPresence' | 'myPetHere' | 'paused'
+  >[],
+  words: WidgetWords,
+): WidgetProps {
+  if (!pet)
+    return {
+      petName: '',
+      moodLabel: '',
+      streakLabel: null,
+      waitingLabel: null,
+      url: `${WIDGET_SCHEME}://nest`,
+      emptyLabel: words.empty,
+    };
+  const waiting = rels.find(
+    (r) =>
+      r.type === 'DATE' &&
+      r.status === 'ACTIVE' &&
+      !r.paused &&
+      r.otherPresence === 'HERE' &&
+      !r.myPetHere,
+  );
   return {
     petName: pet.name,
     moodLabel: words.mood(pet.pose),

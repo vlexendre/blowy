@@ -13,7 +13,10 @@ export interface CaptionProps {
 export function Caption({ children, style, testID }: CaptionProps) {
   return (
     <View style={[captionBox, style]} testID={testID}>
-      <RNText maxFontSizeMultiplier={1.4} style={[bodyFont(textSpec.cap.size, textSpec.cap.weight), { color: color.white }]}>
+      <RNText
+        maxFontSizeMultiplier={1.4}
+        style={[bodyFont(textSpec.cap.size, textSpec.cap.weight), { color: color.white }]}
+      >
         {children}
       </RNText>
     </View>

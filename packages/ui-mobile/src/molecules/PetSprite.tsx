@@ -36,12 +36,39 @@ export const transformOriginOf = (name: KeyframeName): string => {
   return `${o[0] * 100}% ${o[1] * 100}%`;
 };
 
-export function PetSprite({ path, size, height, motion = 'sq', delayMs, durationMs, flip, accessibilityLabel, left, right, top, bottom, style }: PetSpriteProps) {
+export function PetSprite({
+  path,
+  size,
+  height,
+  motion = 'sq',
+  delayMs,
+  durationMs,
+  flip,
+  accessibilityLabel,
+  left,
+  right,
+  top,
+  bottom,
+  style,
+}: PetSpriteProps) {
   const name: KeyframeName = motion === 'none' ? 'sq' : motion;
-  const anim = useKeyframeStyle(name, { delayMs, durationMs, disabled: motion === 'none', withOpacity: motion === 'pop' || motion === 'bounce' });
-  const absolute = left !== undefined || right !== undefined || top !== undefined || bottom !== undefined;
+  const anim = useKeyframeStyle(name, {
+    delayMs,
+    durationMs,
+    disabled: motion === 'none',
+    withOpacity: motion === 'pop' || motion === 'bounce',
+  });
+  const absolute =
+    left !== undefined || right !== undefined || top !== undefined || bottom !== undefined;
   return (
-    <Animated.View style={[absolute ? { position: 'absolute', left, right, top, bottom } : null, { width: size, height: height ?? size, transformOrigin: transformOriginOf(name) }, anim, style]}>
+    <Animated.View
+      style={[
+        absolute ? { position: 'absolute', left, right, top, bottom } : null,
+        { width: size, height: height ?? size, transformOrigin: transformOriginOf(name) },
+        anim,
+        style,
+      ]}
+    >
       <View style={flip ? { transform: [{ scaleX: -1 }] } : null}>
         <Sprite path={path} size={size} height={height} accessibilityLabel={accessibilityLabel} />
       </View>

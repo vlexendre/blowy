@@ -15,6 +15,7 @@ export interface MessageRow {
   publishedAt: Date | null;
   revealedByViewer: boolean;
   mediaId: string | null;
+  promptId?: string | null;
 }
 
 export interface ConversationRow {

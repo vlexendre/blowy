@@ -17,4 +17,11 @@ export function SectionTitle({ label, trailing }: { label: string; trailing?: st
   );
 }
 
-const styles = StyleSheet.create({ row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: space.md } });
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginTop: space.md,
+  },
+});

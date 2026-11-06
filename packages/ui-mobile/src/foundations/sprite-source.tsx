@@ -8,7 +8,13 @@ import { createContext, useContext, type ReactNode } from 'react';
 export type SpriteSourceMap = Readonly<Record<string, number>>;
 const SpriteSourceContext = createContext<SpriteSourceMap>({});
 
-export function SpriteSourceProvider({ sources, children }: { sources: SpriteSourceMap; children: ReactNode }) {
+export function SpriteSourceProvider({
+  sources,
+  children,
+}: {
+  sources: SpriteSourceMap;
+  children: ReactNode;
+}) {
   return <SpriteSourceContext.Provider value={sources}>{children}</SpriteSourceContext.Provider>;
 }
 

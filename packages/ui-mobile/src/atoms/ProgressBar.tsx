@@ -15,7 +15,13 @@ export interface ProgressBarProps {
 }
 
 /** Barre de progression animée (jauges, Lien). Pas d'information par la couleur seule : valeur lue par le parent. */
-export function ProgressBar({ value, fill = color.coral, track = color.creamDeep, height = 10, pending }: ProgressBarProps) {
+export function ProgressBar({
+  value,
+  fill = color.coral,
+  track = color.creamDeep,
+  height = 10,
+  pending,
+}: ProgressBarProps) {
   const { reduceMotion } = useA11yPrefs();
   const w = useSharedValue(0);
   const v = Math.max(0, Math.min(1, value));
@@ -24,8 +30,14 @@ export function ProgressBar({ value, fill = color.coral, track = color.creamDeep
   }, [v, reduceMotion, w]);
   const anim = useAnimatedStyle(() => ({ width: `${w.value * 100}%` }));
   return (
-    <View style={[styles.track, { height, backgroundColor: track }]} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
-      <Animated.View style={[styles.fill, { backgroundColor: fill }, pending && styles.pending, anim]} />
+    <View
+      style={[styles.track, { height, backgroundColor: track }]}
+      importantForAccessibility="no-hide-descendants"
+      accessibilityElementsHidden
+    >
+      <Animated.View
+        style={[styles.fill, { backgroundColor: fill }, pending && styles.pending, anim]}
+      />
     </View>
   );
 }

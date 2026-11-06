@@ -40,34 +40,75 @@ const PULSE_RGB: Record<NonNullable<ChipProps['pulse']>, [string, number]> = {
   coral: ['255,90,60', 0.55],
 };
 
-
 function PulseRing({ kind }: { kind: NonNullable<ChipProps['pulse']> }) {
   const [rgb, a0] = PULSE_RGB[kind];
   const { live, t, still } = useKeyframeValues('pulse');
   const ring = (spread: number, a: number) => {
     'worklet';
     // Anneau EXTÉRIEUR uniquement (comme `box-shadow` : rien ne se peint sous la puce).
-    return { top: -spread, left: -spread, right: -spread, bottom: -spread, borderWidth: spread, borderColor: `rgba(${rgb},${a0 * a})` };
+    return {
+      top: -spread,
+      left: -spread,
+      right: -spread,
+      bottom: -spread,
+      borderWidth: spread,
+      borderColor: `rgba(${rgb},${a0 * a})`,
+    };
   };
   const animated = useAnimatedStyle(() => {
     if (!live) return {};
     const v = sampleKeyframes('pulse', t.value);
     return ring(v.spread, v.a);
   }, [live]);
-  return <Animated.View pointerEvents="none" style={[{ position: 'absolute', borderRadius: radii.pill }, still ? ring(still.spread, still.a) : animated]} />;
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        { position: 'absolute', borderRadius: radii.pill },
+        still ? ring(still.spread, still.a) : animated,
+      ]}
+    />
+  );
 }
 
-export function Chip({ label, tone: t = 'white', icon, leading, dot, selected, onPress, accessibilityLabel, testID, size = 'md', drop, pulse }: ChipProps) {
+export function Chip({
+  label,
+  tone: t = 'white',
+  icon,
+  leading,
+  dot,
+  selected,
+  onPress,
+  accessibilityLabel,
+  testID,
+  size = 'md',
+  drop,
+  pulse,
+}: ChipProps) {
   const effTone: Tone = selected ? 'ink' : t;
-  const { box, fg } = chipStyle(effTone, size, pulse ? 'none' : (drop ?? (effTone === 'white' ? 'soft' : 'none')));
+  const { box, fg } = chipStyle(
+    effTone,
+    size,
+    pulse ? 'none' : (drop ?? (effTone === 'white' ? 'soft' : 'none')),
+  );
   const sp = size === 'md' ? textSpec.chip : textSpec.chipSmall;
   const content = (
     <>
       {pulse ? <PulseRing kind={pulse} /> : null}
-      {selected ? <Icon name="check" size={14} tint={color.lime} /> : icon ? <Icon name={icon} size={14} tint={fg} /> : null}
-      {dot ? <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: dot }} /> : null}
+      {selected ? (
+        <Icon name="check" size={14} tint={color.lime} />
+      ) : icon ? (
+        <Icon name={icon} size={14} tint={fg} />
+      ) : null}
+      {dot ? (
+        <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: dot }} />
+      ) : null}
       {leading}
-      <RNText style={[bodyFont(sp.size, sp.weight), { color: fg }]} numberOfLines={1} maxFontSizeMultiplier={1.6}>
+      <RNText
+        style={[bodyFont(sp.size, sp.weight), { color: fg }]}
+        numberOfLines={1}
+        maxFontSizeMultiplier={1.6}
+      >
         {label}
       </RNText>
     </>
@@ -80,9 +121,19 @@ export function Chip({ label, tone: t = 'white', icon, leading, dot, selected, o
     );
   }
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? label} accessibilityState={{ selected: !!selected }} onPress={onPress} testID={testID} hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }} style={({ pressed }) => [box, pressed ? { transform: [{ translateY: 2 }], boxShadow: [] } : null]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityState={{ selected: !!selected }}
+      onPress={onPress}
+      testID={testID}
+      hitSlop={{ top: 10, bottom: 10, left: 4, right: 4 }}
+      style={({ pressed }) => [
+        box,
+        pressed ? { transform: [{ translateY: 2 }], boxShadow: [] } : null,
+      ]}
+    >
       {content}
     </Pressable>
   );
 }
-

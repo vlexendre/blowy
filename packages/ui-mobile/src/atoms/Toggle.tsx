@@ -9,7 +9,13 @@ export interface ToggleProps {
   testID?: string;
 }
 
-export function Toggle({ value, onValueChange, accessibilityLabel, disabled, testID }: ToggleProps) {
+export function Toggle({
+  value,
+  onValueChange,
+  accessibilityLabel,
+  disabled,
+  testID,
+}: ToggleProps) {
   return (
     <Switch
       value={value}

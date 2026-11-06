@@ -7,7 +7,11 @@ import fr from './fr.json';
 type Dict = typeof fr;
 
 type Leaves<T, P extends string = ''> = {
-  [K in keyof T & string]: T[K] extends string ? `${P}${K}` : T[K] extends object ? Leaves<T[K], `${P}${K}.`> : never;
+  [K in keyof T & string]: T[K] extends string
+    ? `${P}${K}`
+    : T[K] extends object
+      ? Leaves<T[K], `${P}${K}.`>
+      : never;
 }[keyof T & string];
 
 export type TKey = Leaves<Dict>;
@@ -23,7 +27,11 @@ const lookup = (dict: unknown, key: string): string | undefined => {
 };
 
 export const interpolate = (template: string, params?: TParams): string =>
-  params ? template.replace(/\{(\w+)\}/g, (m, k: string) => (params[k] !== undefined ? String(params[k]) : m)) : template;
+  params
+    ? template.replace(/\{(\w+)\}/g, (m, k: string) =>
+        params[k] !== undefined ? String(params[k]) : m,
+      )
+    : template;
 
 export function t(key: TKey, params?: TParams): string {
   const raw = lookup(fr, key);
@@ -41,8 +49,10 @@ export const hasKey = (key: string): boolean => lookup(fr, key) !== undefined;
 export const locale = 'fr-FR';
 
 /** Formats localisés (dates/heures) — l'heure affichée est celle de l'appareil. */
-export const formatTime = (iso: string): string => new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-export const formatDate = (iso: string): string => new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+export const formatTime = (iso: string): string =>
+  new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+export const formatDate = (iso: string): string =>
+  new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
 export const formatRelative = (iso: string, now = Date.now()): string => {
   const diff = new Date(iso).getTime() - now;
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });

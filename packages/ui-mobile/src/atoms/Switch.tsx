@@ -15,7 +15,13 @@ export interface SwitchProps {
   testID?: string;
 }
 
-export function Switch({ value, onValueChange, accessibilityLabel, disabled, testID }: SwitchProps) {
+export function Switch({
+  value,
+  onValueChange,
+  accessibilityLabel,
+  disabled,
+  testID,
+}: SwitchProps) {
   return (
     <Pressable
       accessibilityRole="switch"
@@ -24,10 +30,37 @@ export function Switch({ value, onValueChange, accessibilityLabel, disabled, tes
       disabled={disabled}
       testID={testID}
       onPress={() => onValueChange?.(!value)}
-      style={{ marginLeft: 'auto', width: 54, height: 44, alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+      style={{
+        marginLeft: 'auto',
+        width: 54,
+        height: 44,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+      }}
     >
-      <View style={{ width: 50, height: 30, borderRadius: 999, padding: 3, flexDirection: 'row', justifyContent: value ? 'flex-end' : 'flex-start', backgroundColor: value ? v5.switchOn : v5.greyWarm }}>
-        <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: v5.white, boxShadow: [{ offsetX: 0, offsetY: 2, blurRadius: 0, spreadDistance: 0, color: v5Alpha.black15 }] }} />
+      <View
+        style={{
+          width: 50,
+          height: 30,
+          borderRadius: 999,
+          padding: 3,
+          flexDirection: 'row',
+          justifyContent: value ? 'flex-end' : 'flex-start',
+          backgroundColor: value ? v5.switchOn : v5.greyWarm,
+        }}
+      >
+        <View
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 12,
+            backgroundColor: v5.white,
+            boxShadow: [
+              { offsetX: 0, offsetY: 2, blurRadius: 0, spreadDistance: 0, color: v5Alpha.black15 },
+            ],
+          }}
+        />
       </View>
     </Pressable>
   );

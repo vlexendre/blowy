@@ -26,6 +26,8 @@ export function toMessageView(m: MessageRow, viewerId: string, authors: Readonly
     publishedAt: m.publishedAt?.toISOString() ?? null,
     // Vocal : référence média seulement si le corps serait livré (ACL revérifiée au téléchargement).
     mediaId: m.kind === 'VOICE' && !warnedHidden ? m.mediaId : null,
+    // V5.9 : fil des réponses « 3 mots » (question soufflée), sans rien révéler de plus que le message lui-même.
+    ...(m.promptId && !warnedHidden ? { promptId: m.promptId } : {}),
     // V5 chat de sortie : auteur par son pet (prénom à partir de la confirmation).
     ...(!mine && m.kind !== 'SYSTEM' && m.authorUserId && authors?.get(m.authorUserId) ? { author: authors.get(m.authorUserId)! } : {}),
   };

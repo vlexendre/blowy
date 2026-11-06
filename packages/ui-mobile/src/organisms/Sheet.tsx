@@ -22,10 +22,24 @@ export function Sheet({ visible, onClose, closeLabel, title, children, testID }:
   const { reduceMotion } = useA11yPrefs();
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType={reduceMotion ? 'fade' : 'slide'} onRequestClose={onClose} statusBarTranslucent>
+    <Modal
+      visible={visible}
+      transparent
+      animationType={reduceMotion ? 'fade' : 'slide'}
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
       <View style={styles.root} testID={testID}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={closeLabel} accessibilityRole="button" />
-        <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, space.lg) }]} accessibilityViewIsModal>
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={onClose}
+          accessibilityLabel={closeLabel}
+          accessibilityRole="button"
+        />
+        <View
+          style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, space.lg) }]}
+          accessibilityViewIsModal
+        >
           <View style={styles.grip} />
           <Header title={title} onClose={onClose} closeLabel={closeLabel} />
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -39,7 +53,21 @@ export function Sheet({ visible, onClose, closeLabel, title, children, testID }:
 
 const styles = StyleSheet.create({
   root: { flex: 1, justifyContent: 'flex-end', backgroundColor: scrim.sheet },
-  sheet: { backgroundColor: color.cream, borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl, paddingHorizontal: space.lg, paddingTop: space.sm, maxHeight: '90%' },
-  grip: { alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: color.creamShadow, marginBottom: space.sm },
+  sheet: {
+    backgroundColor: color.cream,
+    borderTopLeftRadius: radius.xxl,
+    borderTopRightRadius: radius.xxl,
+    paddingHorizontal: space.lg,
+    paddingTop: space.sm,
+    maxHeight: '90%',
+  },
+  grip: {
+    alignSelf: 'center',
+    width: 44,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: color.creamShadow,
+    marginBottom: space.sm,
+  },
   content: { gap: space.md, paddingTop: space.md, paddingBottom: space.lg },
 });

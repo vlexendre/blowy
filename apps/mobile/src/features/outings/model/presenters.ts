@@ -50,7 +50,10 @@ const ACTIVITY_PLACE: Record<ActivityKind, string> = {
   WORKSHOP: 'un atelier',
   GAMES: 'un bar à jeux',
   EXHIBITION: 'une expo',
+  SPORT: 'un terrain',
 };
+/** V5.9 : type de lieu affiné par l'activité précise (`activityDetail.key`, catalogue `ACTIVITY_DETAILS`). */
+const DETAIL_PLACE: Record<string, string> = { five_a_side: 'un five' };
 
 /** « du 11e » / « de la Croix-Rousse » / « de Lille-Wazemmes » à partir du nom de quartier. */
 export function neighborhoodSuffix(name: string): string {
@@ -64,8 +67,10 @@ export function neighborhoodSuffix(name: string): string {
 }
 
 /** « un bar à jeux du 11e » (type de lieu, sans le nom : le lieu n'est connu qu'à J-1 18 h). */
-export const placeHint = (o: Pick<OutingView, 'activity' | 'neighborhood'>): string =>
-  `${ACTIVITY_PLACE[o.activity]} ${neighborhoodSuffix(o.neighborhood.name)}`;
+export const placeHint = (
+  o: Pick<OutingView, 'activity' | 'neighborhood' | 'activityDetail'>,
+): string =>
+  `${(o.activityDetail && DETAIL_PLACE[o.activityDetail.key]) ?? ACTIVITY_PLACE[o.activity]} ${neighborhoodSuffix(o.neighborhood.name)}`;
 
 export interface OutingHeadline {
   day: string; // « Jeudi 12 novembre »
@@ -74,14 +79,14 @@ export interface OutingHeadline {
 }
 
 export function headline(
-  o: Pick<OutingView, 'startsAt' | 'endsAt' | 'activity' | 'neighborhood'>,
+  o: Pick<OutingView, 'startsAt' | 'endsAt' | 'activity' | 'neighborhood' | 'activityDetail'>,
   activityLabel: string,
   tz = DEFAULT_TZ,
 ): OutingHeadline {
   return {
     day: dayLong(o.startsAt, tz, true),
     hours: timeRange(o.startsAt, o.endsAt, tz),
-    line: `${activityLabel} · ${placeHint(o)}`,
+    line: `${o.activityDetail?.label ?? activityLabel} · ${placeHint(o)}`,
   };
 }
 

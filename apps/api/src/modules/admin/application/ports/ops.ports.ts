@@ -23,6 +23,9 @@ export interface VenueFacts {
   photoUrl: string | null;
   staffContact: string | null;
   checkinSecretRef: string;
+  /** V5.10 : prix TTC de l'activité prépayée fixé par le lieu (null = catalogue) et régime de reversement. */
+  activityPriceCents?: number | null;
+  activityTaxBasis?: 'TTC' | 'HT';
 }
 
 export interface OutingDetailFacts extends AdminOutingRow {
@@ -133,6 +136,8 @@ export const VENUE_PARTNER_STORE = Symbol('VenuePartnerStore');
 export interface VenueCompensationLedger {
   forVenue(venueId: string): Promise<{ seatId: string; outingId: string; venueId: string; amountCents: number; cause: 'NO_SHOW' | 'LATE_CANCEL' | 'EMERGENCY' | 'SAFETY' | 'BLOWY_CANCELLED' | 'REVERSAL'; basis: 'SEAT_PRICE' | 'FREE_SEAT' | 'BLOWY_CANCELLED' | 'SAFETY'; at: Date }[]>;
   reverse(scope: TxScope, seatId: string): Promise<boolean>;
+  /** V5.10 : activités prépayées reversées au lieu (une écriture par place confirmée non remboursée). */
+  activitiesForVenue?(venueId: string): Promise<{ seatId: string; outingId: string; amountCents: number; taxBasis: 'TTC' | 'HT'; at: Date }[]>;
 }
 export const VENUE_COMPENSATION_LEDGER = Symbol('VenueCompensationLedger');
 

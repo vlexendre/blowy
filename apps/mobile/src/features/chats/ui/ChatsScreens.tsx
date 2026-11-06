@@ -43,10 +43,10 @@ import { paths } from '../../../core/navigation/paths';
 import { useTabs } from '../../../core/navigation/tabs';
 import { t, tDynamic } from '../../../i18n';
 import { useBand } from '../../band';
-import { useConversation, useConversations } from '../../conversations';
+import { useConversation, useConversations, type DisplayMessage } from '../../conversations';
 import { useDuo, useDuos } from '../../duos';
 import { schedule, useOuting, weekdayLabel } from '../../outings';
-import { petSprite } from '../../pets';
+import { otherPetSprite, petSprite } from '../../pets';
 import { LoadingScreen } from '../../system';
 
 const TILE = [v5.violetPale, v5.peachLight, v5.greenPale, v5.peach] as const;
@@ -171,7 +171,7 @@ function OutingChatCard({ c }: { c: ConversationView }) {
       onPress={() => router.push(paths.chat(c.id))}
       thumb={
         <PetMosaic
-          sprites={(o.data?.members ?? []).slice(0, 4).map((m) => petSprite(m.pet.species))}
+          sprites={(o.data?.members ?? []).slice(0, 4).map((m) => otherPetSprite(m.pet.species))}
         />
       }
       title={
@@ -232,8 +232,8 @@ function BandChatCard({ c }: { c: ConversationView }) {
   );
 }
 
-const duoName = (d: DuoView) =>
-  d.status === 'EXCHANGE' ? `${d.other.firstName.charAt(0)}.` : d.other.firstName;
+/** V5.8 §1 : prénom en entier dès le double oui. */
+const duoName = (d: DuoView) => d.other.firstName;
 
 function DuoChatCard({ c }: { c: ConversationView }) {
   const duo = useDuo(c.duoId);
@@ -294,7 +294,7 @@ function Messages({ id, footer }: { id: string; footer?: string }) {
           return d.body ? (
             <VenueWelcome key={d.key} title={t('chats.venueWelcome')} text={d.body} />
           ) : null;
-        if (!d.body) return null;
+        if (!d.body || d.promptId) return null;
         if (d.mine || !d.author) return <Bubble key={d.key} text={d.body} mine={d.mine} />;
         const a = d.author;
         return (
@@ -314,7 +314,7 @@ function Messages({ id, footer }: { id: string; footer?: string }) {
                   justifyContent: 'center',
                 }}
               >
-                <Sprite path={petSprite(a.pet.species as Species)} size={29} />
+                <Sprite path={otherPetSprite(a.pet.species as Species)} size={29} />
               </View>
               <View style={{ flexShrink: 1 }}>
                 <Bubble text={d.body} mine={false} />
@@ -389,9 +389,10 @@ function GroupChat({ c, menu }: { c: ConversationView; menu: boolean }) {
             {members.map((m, i) => (
               <MemberChip
                 key={m.userId}
-                sprite={petSprite(m.pet.species)}
+                sprite={otherPetSprite(m.pet.species)}
                 tile={m.inMyTeam ? v5.peach : (TILE[i % TILE.length] ?? v5.violetPale)}
                 label={m.firstName ?? m.pet.name}
+                badge={m.calm ? t('chats.calmBadge') : undefined}
               />
             ))}
           </View>
@@ -471,7 +472,25 @@ function GroupChat({ c, menu }: { c: ConversationView; menu: boolean }) {
         ) : null
       }
     >
-      <IcebreakerCard o={o.data} />
+      <IcebreakerCard rows={iceRows(o.data, conv.messages)} />
+      <Tap
+        onPress={() => router.push(paths.story)}
+        accessibilityRole="link"
+        pressDepth={0}
+        style={{
+          alignSelf: 'flex-end',
+          minHeight: 44,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+          paddingHorizontal: 4,
+        }}
+      >
+        <BodyText size={13} weight={800}>
+          {t('chats.shareWords')}
+        </BodyText>
+        <Glyph name="chevron" size={14} />
+      </Tap>
       {o.data && !o.data.venue && now < Date.parse(o.data.timeline.lockAt) ? (
         <VenueWelcome
           title={t('chats.venueWelcome')}
@@ -489,9 +508,42 @@ function GroupChat({ c, menu }: { c: ConversationView; menu: boolean }) {
   );
 }
 
-/** « Les pets demandent » : question soufflée + les 3 mots de chaque pet (vision, jamais d'intention). */
-function IcebreakerCard({ o }: { o: OutingView | undefined }) {
-  const rows = (o?.members ?? []).filter((m) => m.threeWords.length);
+/** Une ligne du fil « Les pets demandent » : pet, signature, mots. */
+interface IceRow {
+  key: string;
+  sprite: string;
+  tile: string;
+  label: string;
+  words: string[];
+}
+
+/** Réponses « 3 mots » (V5.9 `promptId`), signées comme les messages (pet avant la confirmation). */
+function iceRows(o: OutingView | undefined, messages: readonly DisplayMessage[]): IceRow[] {
+  const answers = messages.filter((m) => m.promptId && m.body && !m.mine && m.author);
+  if (answers.length)
+    return answers.map((m, i) => ({
+      key: m.key,
+      sprite: otherPetSprite(m.author!.pet.species as Species),
+      tile: TILE[i % TILE.length] ?? v5.violetPale,
+      label: m.author!.firstName ?? m.author!.pet.name,
+      words: m
+        .body!.split(/[,·]\s*|\s+/)
+        .filter(Boolean)
+        .slice(0, 3),
+    }));
+  return (o?.members ?? [])
+    .filter((m) => m.threeWords.length)
+    .map((m, i) => ({
+      key: m.userId,
+      sprite: otherPetSprite(m.pet.species),
+      tile: m.inMyTeam ? v5.peach : (TILE[i % TILE.length] ?? v5.violetPale),
+      label: m.firstName ?? m.pet.name,
+      words: m.threeWords.map((w) => tDynamic(`words.${w}`)),
+    }));
+}
+
+/** « Les pets demandent » : question soufflée + les réponses en 3 mots (jamais d'intention). */
+function IcebreakerCard({ rows }: { rows: readonly IceRow[] }) {
   return (
     <View
       style={{
@@ -511,9 +563,9 @@ function IcebreakerCard({ o }: { o: OutingView | undefined }) {
       </BodyText>
       {rows.length ? (
         <View style={{ gap: 6, backgroundColor: v5.cream, borderRadius: 14, padding: 8 }}>
-          {rows.map((m, i) => (
+          {rows.map((r) => (
             <View
-              key={m.userId}
+              key={r.key}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}
             >
               <View
@@ -521,29 +573,18 @@ function IcebreakerCard({ o }: { o: OutingView | undefined }) {
                   width: 26,
                   height: 26,
                   borderRadius: 8,
-                  backgroundColor: m.inMyTeam ? v5.peach : (TILE[i % TILE.length] ?? v5.violetPale),
+                  backgroundColor: r.tile,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <Sprite path={petSprite(m.pet.species)} size={22} />
+                <Sprite path={r.sprite} size={22} />
               </View>
-              <BodyText
-                size={12}
-                weight={800}
-                color={v5.grey}
-                style={{ width: 26 }}
-                numberOfLines={1}
-              >
-                {m.firstName ?? m.pet.name}
+              <BodyText size={12} weight={800} color={v5.grey} numberOfLines={1}>
+                {r.label}
               </BodyText>
-              {m.threeWords.map((w) => (
-                <Pill
-                  key={w}
-                  label={tDynamic(`words.${w}`)}
-                  background={v5.white}
-                  shadow={v5.shadowCream}
-                />
+              {r.words.map((w) => (
+                <Pill key={w} label={w} background={v5.white} shadow={v5.shadowCream} />
               ))}
             </View>
           ))}
@@ -666,6 +707,11 @@ function PersonChat({ id, c }: { id: string; c: ConversationView | undefined }) 
       {c?.closed ? (
         <BodyText size={12} weight={700} color={v5.inkSoft} align="center">
           {t('chats.closed')}
+        </BodyText>
+      ) : null}
+      {duo?.openedAt ? (
+        <BodyText size={12} weight={700} color={v5.grey} align="center">
+          {t('chats.duoOpened', { when: dayShortTime(duo.openedAt) })}
         </BodyText>
       ) : null}
       <Messages id={id} />

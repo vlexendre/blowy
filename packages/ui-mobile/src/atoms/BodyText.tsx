@@ -4,7 +4,12 @@
  * absent = `normal`), `letter-spacing` (em), capitales, alignement. Une seule instance de police
  * par graisse (jamais de gras synthétique).
  */
-import { Text as RNText, type StyleProp, type TextProps as RNTextProps, type TextStyle } from 'react-native';
+import {
+  Text as RNText,
+  type StyleProp,
+  type TextProps as RNTextProps,
+  type TextStyle,
+} from 'react-native';
 import { v5 } from '../foundations/theme';
 import { bodyFont, type BodyWeight } from '../foundations/typography';
 
@@ -24,7 +29,15 @@ export interface BodyTextProps extends Omit<RNTextProps, 'style'> {
   style?: StyleProp<TextStyle>;
 }
 
-export function bodyTextStyle({ size = 14, weight = 600, color = v5.ink, lh, ls, upper, align }: Pick<BodyTextProps, 'size' | 'weight' | 'color' | 'lh' | 'ls' | 'upper' | 'align'>): TextStyle {
+export function bodyTextStyle({
+  size = 14,
+  weight = 600,
+  color = v5.ink,
+  lh,
+  ls,
+  upper,
+  align,
+}: Pick<BodyTextProps, 'size' | 'weight' | 'color' | 'lh' | 'ls' | 'upper' | 'align'>): TextStyle {
   return {
     ...bodyFont(size, weight, ls ?? 0, lh !== undefined ? size * lh : undefined),
     color,
@@ -33,7 +46,20 @@ export function bodyTextStyle({ size = 14, weight = 600, color = v5.ink, lh, ls,
   };
 }
 
-export function BodyText({ size, weight, color, lh, ls, upper, align, nowrap, ellipsis, style, numberOfLines, ...rest }: BodyTextProps) {
+export function BodyText({
+  size,
+  weight,
+  color,
+  lh,
+  ls,
+  upper,
+  align,
+  nowrap,
+  ellipsis,
+  style,
+  numberOfLines,
+  ...rest
+}: BodyTextProps) {
   return (
     <RNText
       maxFontSizeMultiplier={1.6}

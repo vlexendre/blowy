@@ -37,7 +37,8 @@ export function refundStateFor(mode: RefundMode, refundable: boolean): RefundSta
 /** Mode affiché pour une place déjà remboursée (vue `cancelled.refund`). */
 export function refundModeOfState(funding: SeatFunding | null, state: RefundState): RefundMode {
   if (state === 'RECREDITED') return funding === 'CREDIT' ? 'CREDIT' : 'STAYS_FREE';
-  if (state === 'PENDING' || state === 'REFUNDED') return refundModeFor(funding);
+  // V5.10 : PENDING/REFUNDED = remboursement carte (place payée, ou activité prépayée d'une place offerte).
+  if (state === 'PENDING' || state === 'REFUNDED') return 'CARD';
   return 'NONE';
 }
 

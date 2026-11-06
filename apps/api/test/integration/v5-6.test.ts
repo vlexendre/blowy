@@ -43,7 +43,7 @@ beforeAll(async () => {
   nbId = (await h.db.neighborhood.create({ data: { id: uuidv7(), slug: 'it-v56-11', name: 'Paris 11e', city: 'Paris', cityZoneId: zone.id, timezone: 'Europe/Paris', status: 'LIVE' } })).id;
   nb2 = (await h.db.neighborhood.create({ data: { id: uuidv7(), slug: 'it-v56-20', name: 'Paris 20e', city: 'Paris', cityZoneId: zone.id, timezone: 'Europe/Paris', status: 'LIVE' } })).id;
   await h.db.neighborhoodSlotTemplate.create({ data: { neighborhoodId: nbId, isoWeekday: 4, localMinute: 19 * 60 + 30, activity: 'GAMES' } });
-  venueId = (await h.db.venue.create({ data: { neighborhoodId: nbId, name: 'Café calme', addressLine: '1 rue IT', postalCode: '75011', city: 'Paris', lat: 48.86, lng: 2.37, offerKey: 'venue.offer.table_reserved', activities: ['GAMES'], tablesPerSlot: 3, accessibilityTags: [], checkinSecretRef: 'it-v56', ambiance: 'CALM' } })).id;
+  venueId = (await h.db.venue.create({ data: { neighborhoodId: nbId, name: 'Café calme', addressLine: '1 rue IT', postalCode: '75011', city: 'Paris', lat: 48.86, lng: 2.37, offerKey: 'venue.offer.table_reserved', activities: ['GAMES'], tablesPerSlot: 3, accessibilityTags: [], checkinSecretRef: 'it-v56', ambiance: 'CALM', activityDetailKey: 'board_games' } })).id;
   // Trajet typique 20e → 11e : 20 min (ops).
   await h.db.neighborhoodTravelTime.create({ data: { fromNeighborhoodId: nb2, toNeighborhoodId: nbId, minutes: 20, updatedAt: T.monday } });
 });
@@ -107,6 +107,17 @@ describe('V5.6 — deux groupes au même créneau : fiabilité, vue, déplacemen
     await run('outings.compose', T.composed);
     const rows = await h.db.outing.findMany({ where: { venueId }, include: { seats: true }, orderBy: { id: 'asc' } });
     expect(rows.length).toBe(2);
+    // V5.9 : dès la proposition — trajet quartier → quartier (à pied dans son quartier), activité précise ; jamais le lieu.
+    for (const o of rows) for (const s of o.seats) {
+      const p = ps.find((x) => x.userId === s.userId)!;
+      const inv = (await p.call('GET', `/v1/outings/${o.id}`)).body;
+      expect(inv.venue).toBeUndefined();
+      expect(inv.activityDetail).toMatchObject({ key: 'board_games', label: 'Jeux de société' });
+      expect(inv.activityDetail.durationMinutes).toBeGreaterThan(0);
+      if (s.userId === ps[9]!.userId) expect(inv.travel).toEqual({ minutes: 20, estimated: false, mode: 'TRANSIT', fromNeighborhoodLabel: 'Paris 20e' });
+      else expect(inv.travel).toMatchObject({ estimated: true, mode: 'WALK', fromNeighborhoodLabel: 'Paris 11e' });
+      expect(JSON.stringify(inv)).not.toMatch(/Café calme|1 rue IT/);
+    }
     for (const o of rows) for (const s of o.seats) {
       const p = ps.find((x) => x.userId === s.userId)!;
       expect((await p.call('POST', `/v1/outings/${o.id}/seat/accept`, { funding: 'AUTO' })).status).toBe(200);

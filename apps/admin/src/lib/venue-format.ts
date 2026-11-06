@@ -38,6 +38,7 @@ export const ACTIVITY_LABEL: Record<string, string> = {
   CLIMBING: 'Bloc d’escalade',
   WORKSHOP: 'Atelier',
   EXHIBITION: 'Expo',
+  SPORT: 'Sport',
 };
 
 export const euros = (cents: number) => `${(cents / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;

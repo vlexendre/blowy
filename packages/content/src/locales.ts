@@ -23,6 +23,7 @@ import {
   RULES_V56,
   RULES_V57,
   VENUE_WELCOME_TEMPLATE,
+  ACTIVITY_DETAILS,
   SLOT_LABELS,
   SYSTEM_MESSAGES_V5,
   VENUE_OFFERS,
@@ -44,7 +45,8 @@ export function buildFrLocale(): Record<string, string> {
     ...PET_LINES.map((l) => [l.key, l.fr] as [string, string]),
     ...[...DEPARTURE_TEMPLATES, ...NOTIFICATION_TEMPLATES].map((t) => [t.key, t.fr] as [string, string]),
     // V5
-    ...[...MEMORY_ENTRIES, ...ACCESSORIES, ...ICEBREAKER_MESSAGES, ...ICEBREAKER_PROMPTS, ...SYSTEM_MESSAGES_V5, ...VOTE_LABELS, ...SLOT_LABELS, ...VENUE_OFFERS, ...ACTIVITY_ENTRIES, ...NOTIFICATION_TITLES, ...RULES_V56, ...RULES_V57, VENUE_WELCOME_TEMPLATE].map((e) => [e.key, e.fr] as [string, string]),
+    ...[...MEMORY_ENTRIES, ...ACCESSORIES, ...ICEBREAKER_MESSAGES, ...ICEBREAKER_PROMPTS, ...SYSTEM_MESSAGES_V5, ...VOTE_LABELS, ...SLOT_LABELS, ...VENUE_OFFERS, ...ACTIVITY_ENTRIES, ...NOTIFICATION_TITLES, ...RULES_V56, ...RULES_V57, VENUE_WELCOME_TEMPLATE, ...ACTIVITY_DETAILS].map((e) => [e.key, e.fr] as [string, string]),
+    ...ACTIVITY_DETAILS.filter((d) => d.ledByKey && d.ledByFr).map((d) => [d.ledByKey!, d.ledByFr!] as [string, string]),
     ...NOTIFICATION_TEMPLATES_V5.flatMap((n) => [[n.key, n.fr] as [string, string], [`${n.key}.discreet`, n.discreetFr] as [string, string]]),
     ['memory.joint_mission', 'Mission à deux'],
     ['memory.gift', 'Un cadeau dans la maison'],

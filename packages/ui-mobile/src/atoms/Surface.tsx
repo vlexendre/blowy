@@ -13,13 +13,25 @@ export interface SurfaceProps extends ViewProps {
 }
 
 /** Carte : fond plein + ombre dure de 4 pt (maquette `box-shadow: 0 4px 0 #EEDFCB`). */
-export function Surface({ tone: t = 'white', radius = 'lg', padding = 'lg', elevated = true, style, children, ...rest }: SurfaceProps) {
+export function Surface({
+  tone: t = 'white',
+  radius = 'lg',
+  padding = 'lg',
+  elevated = true,
+  style,
+  children,
+  ...rest
+}: SurfaceProps) {
   const tk = tone[t];
   return (
     <View
       {...rest}
       style={[
-        { backgroundColor: t === 'white' ? color.white : tk.bg, borderRadius: R[radius], padding: padding === 0 ? 0 : space[padding] },
+        {
+          backgroundColor: t === 'white' ? color.white : tk.bg,
+          borderRadius: R[radius],
+          padding: padding === 0 ? 0 : space[padding],
+        },
         elevated ? hard(4, t === 'white' ? color.creamShadow : tk.shadow) : null,
         style,
       ]}

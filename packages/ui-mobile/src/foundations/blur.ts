@@ -13,10 +13,28 @@ export function besselI0e(x: number): number {
   const ax = Math.abs(x);
   if (ax < 3.75) {
     const t = (ax / 3.75) ** 2;
-    return Math.exp(-ax) * (1 + t * (3.5156229 + t * (3.0899424 + t * (1.2067492 + t * (0.2659732 + t * (0.0360768 + t * 0.0045813))))));
+    return (
+      Math.exp(-ax) *
+      (1 +
+        t *
+          (3.5156229 +
+            t * (3.0899424 + t * (1.2067492 + t * (0.2659732 + t * (0.0360768 + t * 0.0045813))))))
+    );
   }
   const t = 3.75 / ax;
-  return (1 / Math.sqrt(ax)) * (0.39894228 + t * (0.01328592 + t * (0.00225319 + t * (-0.00157565 + t * (0.00916281 + t * (-0.02057706 + t * (0.02635537 + t * (-0.01647633 + t * 0.00392377))))))));
+  return (
+    (1 / Math.sqrt(ax)) *
+    (0.39894228 +
+      t *
+        (0.01328592 +
+          t *
+            (0.00225319 +
+              t *
+                (-0.00157565 +
+                  t *
+                    (0.00916281 +
+                      t * (-0.02057706 + t * (0.02635537 + t * (-0.01647633 + t * 0.00392377))))))))
+  );
 }
 
 /** Intensité (0..1) au rayon r d'un disque de rayon R flouté par une gaussienne σ. */
@@ -47,7 +65,12 @@ export interface GradientStop {
 export const blobExtent = (R: number, sigma: number): number => R + 3 * sigma;
 
 /** Arrêts de dégradé radial reproduisant le disque flouté (opacité multipliée par `opacity`). */
-export function blurredDiscStops(R: number, sigma: number, opacity = 1, count = 24): GradientStop[] {
+export function blurredDiscStops(
+  R: number,
+  sigma: number,
+  opacity = 1,
+  count = 24,
+): GradientStop[] {
   const extent = blobExtent(R, sigma);
   const stops: GradientStop[] = [];
   for (let i = 0; i < count; i++) {

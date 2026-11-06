@@ -22,7 +22,8 @@ export function screenPadding(insets: Insets) {
 }
 
 /** Distance au bas de l'écran : 18 dans la maquette (indicateur d'accueil 34 inclus). */
-export const tabBarBottom = (bottomInset: number): number => Math.max(layout.navBottom, bottomInset - 16);
+export const tabBarBottom = (bottomInset: number): number =>
+  Math.max(layout.navBottom, bottomInset - 16);
 
 /**
  * Tracé du reflet `::before` (`border-radius:30px 30px 60% 60%`), avec la réduction CSS des rayons
@@ -38,4 +39,3 @@ export function sheenPath(w: number, h: number): string {
   const ry = by * f;
   return `M${t},0 H${w - t} A${t},${t} 0 0 1 ${w},${t} V${h - ry} A${rx},${ry} 0 0 1 ${w - rx},${h} H${rx} A${rx},${ry} 0 0 1 0,${h - ry} V${t} A${t},${t} 0 0 1 ${t},0 Z`;
 }
-

@@ -261,6 +261,17 @@ export const OutingViewSchema = z
     // appliquée en silence par la composition. Vue `.strict()` : un tel champ ferait échouer le contrat.
     /** V5.2 (C.10) : « je connais quelqu'un ici » possible (visages révélés, avant le début). */
     knowsSomeoneAvailable: z.literal(true).optional(),
+    /**
+     * V5.9 : trajet typique de MON quartier vers le QUARTIER de la sortie (jamais vers le lieu avant la confirmation :
+     * quartier à quartier, rien de plus que `neighborhood`), dès la proposition. Même quartier : à pied (estimation).
+     */
+    travel: z.object({ minutes: z.number().int().positive(), estimated: z.boolean(), mode: z.enum(['WALK', 'TRANSIT']), fromNeighborhoodLabel: z.string() }).strict().optional(),
+    /** V5.9 : activité précise du lieu (« Atelier céramique », « Foot à 5 »), durée réelle de la sortie, qui l'encadre. */
+    /**
+     * V5.10 (jury tour 11) : `priceCents` = prix TTC de l'activité par personne, PRÉPAYÉ dans l'app avec la place
+     * (Blowy+ couvre la place, pas l'activité) ; absent = rien à prépayer (consommation réglée sur place).
+     */
+    activityDetail: z.object({ key: z.string(), label: z.string(), durationMinutes: z.number().int().positive(), ledBy: z.string().optional(), priceCents: z.number().int().positive().optional() }).strict().optional(),
     /** V5.6 (§7.5) : `YOU` si l'activité est l'une de MES activités cochées ; sinon « choisie selon le lieu et vos envies ». */
     activityChosenBy: z.enum(['YOU', 'VENUE_AND_GROUP']).optional(),
     /** V5.6 (§7.5, D-058) : une sortie n'existe que sous astreinte — toujours `covered: true`. */
@@ -277,8 +288,11 @@ export type SeatAcceptRequest = z.infer<typeof SeatAcceptRequestSchema>;
 export const SeatPaymentIntentSchema = z.object({
   provider: PaymentProviderSchema,
   clientSecret: z.string().min(1),
+  /** Total TTC à payer : place (si due) + activité. */
   amountCents: AmountCentsSchema,
   currency: CurrencySchema,
+  /** V5.10 : part « activité » (TTC) du total — absente si l'activité n'est pas à prépayer. */
+  activityCents: AmountCentsSchema.optional(),
 });
 export const SeatAcceptResponseSchema = z.object({
   seat: z.object({ status: SeatStatusSchema, funding: SeatFundingSchema.optional(), holdExpiresAt: IsoDateTimeSchema.optional() }),
