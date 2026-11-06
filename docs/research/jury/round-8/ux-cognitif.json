@@ -1,0 +1,658 @@
+{
+ "member": "ux-cognitif",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 9,
+  "safety": 9,
+  "virality": 9,
+  "money": 9,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ta prochaine sortie à Lyon, le mar. 24 nov. : composée le sam. 21 nov. 21 h » : la date est juste mais « ta prochaine sortie » reste affirmé.",
+   "fix": "« Ton créneau du mar. 24 nov. : si un groupe se forme, réponse le sam. 21 nov. 21 h »."
+  },
+  "V5-Sortie-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-lille": {
+   "score": 8,
+   "blocking": false,
+   "issue": "Frise : « Sam. 14 nov. 19 h 30 · La sortie » alors que la carte dit « 15 h – 17 h » et « Comment ça se passe : 15 h » ; check-facts ne l'attrape pas.",
+   "fix": "Frise « Sam. 14 nov. 15 h · La sortie » ; contrôle check-facts : l'heure du jalon « La sortie » = startsAt."
+  },
+  "V5-Trouvee-weekend": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Trouvée et Confirmation : « dans ton quartier (≈ 8 min) » ; Sortie et Tu y vas : « ≈ 8 min depuis Paris 11e » pour le même bar : deux formulations du même trajet.",
+   "fix": "Même libellé partout (« dans ton quartier (≈ 8 min) »)."
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Nino qui coche, en vidéo 1 s : dans Mes cartes » : Mes cartes (V5-Cartes) n'a que 9 cartes, aucune « Tu y vas ». Promesse non tenue à l'écran (README E13 la dit faite).",
+   "fix": "Ajouter la 10e miniature « Tu y vas » (vidéo 1 s, pastille vidéo, son slug) dans Mes cartes, ou retirer la phrase."
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« pas de numéro … seulement dans un chat à deux, après vos deux oui » ; en Duo, après les deux oui, V5-Lien bloque encore numéros et liens jusqu'aux visages : « deux oui » désigne deux moments.",
+   "fix": "« après vos deux oui au vote, ou aux visages en duo »."
+  },
+  "V5-Groupe-menu": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« pas de numéro … seulement dans un chat à deux, après vos deux oui » ; en Duo, après les deux oui, V5-Lien bloque encore numéros et liens jusqu'aux visages : « deux oui » désigne deux moments.",
+   "fix": "« après vos deux oui au vote, ou aux visages en duo »."
+  },
+  "V5-Attente": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Ajouter un créneau · Avec le vendredi soir, une sortie a lieu le ven. 13 nov., 20 h » et « Sinon, Nino te propose le sam. 28 nov. » : deux sorties promises avant leur composition (mar. 10 nov. 21 h, mer. 25 nov. 21 h), contraire à concept V5.7 B5.",
+   "fix": "« Avec le vendredi soir : si un groupe se forme pour le ven. 13 nov., réponse le mar. 10 nov. 21 h » ; « Sinon, ton créneau du sam. 28 nov. reste ouvert : réponse le mer. 25 nov. 21 h »."
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Aucune pastille cochée ; spec §2.11 « 3 pastilles … Non par défaut » se lit comme une présélection. Le texte de l'écran (« Sans réponse, c'est non ») est juste ; la spec est ambiguë.",
+   "fix": "Spec : « aucune pastille cochée ; sans réponse = Non à la clôture »."
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« le prénom, aux visages » ; spec §2.13 (l. 130) et D-082 : « le prénom apparaît au double oui, pas avant et pas plus tard ». Les titres « Duo avec J. » / « Duo avec K. » après le double oui suivent l'écran, pas la spec : un dev appliquera la spec.",
+   "fix": "Trancher : spec et D-082 réécrits « prénom aux visages » (ce que disent 5 écrans et Confidentialité), ou écrans alignés sur la spec."
+  },
+  "V5-Lien": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« numéros … bloqués avant les visages » alors que le chat de groupe promet le numéro « après vos deux oui » (cf. Groupe).",
+   "fix": "Même règle écrite des deux côtés."
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« le prénom, aux visages » ; spec §2.13 (l. 130) et D-082 : « le prénom apparaît au double oui, pas avant et pas plus tard ». Les titres « Duo avec J. » / « Duo avec K. » après le double oui suivent l'écran, pas la spec : un dev appliquera la spec.",
+   "fix": "Trancher : spec et D-082 réécrits « prénom aux visages » (ce que disent 5 écrans et Confidentialité), ou écrans alignés sur la spec."
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Tuile « 1/1 sortie honorée » sans « visible par toi seulement », alors que concept V5.7 F18 l'exige partout où la fiabilité apparaît (la Fiche le dit, le Profil non).",
+   "fix": "Sous la tuile : « visible par toi seulement » (ou icône cadenas + libellé)."
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Blowy+ devient intéressant dès la 3e sortie » (Tarifs) vs « Rentable dès la 3e sortie du mois » (Abonnement) : deux phrases pour une règle.",
+   "fix": "Une phrase canonique dans facts.regles."
+  },
+  "V5-Abonnement": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Rentable dès la 3e sortie du mois » ≠ « devient intéressant dès la 3e sortie » (Tarifs).",
+   "fix": "Phrase unique."
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Ligne « Ton duo … ton prénom et ton visage aux visages » contredit spec §2.13 / D-082 (prénom au double oui).",
+   "fix": "Même arbitrage que V5-Duo, une seule version."
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  }
+ },
+ "top3": [
+  "Prénom du duo : une seule version (écrans « aux visages » vs spec §2.13 / D-082 « au double oui, pas plus tard »), et check-facts compare aussi la spec.",
+  "Une règle = une phrase : « deux oui » (vote vs duo) dans Groupe/Lien, trajet « dans ton quartier (≈ 8 min) » partout, Blowy+ « dès la 3e sortie » en une seule formule.",
+  "Frise Lille (19 h 30 → 15 h) et contrôle automatique de l'heure du jalon « La sortie » ; Attente sans sortie promise."
+ ],
+ "tenIf": "Maquettes : 10 quand aucune règle n'a deux formulations (prénom du duo écran = spec, « deux oui », trajet, Blowy+), quand la frise de Lille est juste et quand Attente ne promet plus de sortie. Terrain (à part) : un 2e test des 5 secondes sur Chats, Chargement et Les visages."
+}

@@ -1,4 +1,4 @@
-# Modèle économique V5.7 — hypothèses chiffrées (à valider par un test terrain)
+# Modèle économique V5.8 — hypothèses chiffrées (à valider par un test terrain)
 
 Toutes les valeurs ci-dessous sont des **hypothèses de travail**, pas des mesures. Elles servent à décider quoi mesurer pendant le test de 8 semaines. Prix en euros TTC, TVA 20 %. Révisé après les jurys tours 3 et 4 (forfait lieu, commission Apple, astreinte en coût fixe).
 
@@ -45,6 +45,15 @@ Ce tableau ne tient compte que de la contribution avant postes V5.6 (7,59 €) ;
 **Point mort national retenu : ≈ 134 sorties par jour** (600 / 4,49), soit ≈ 670 participants. L'astreinte est dimensionnée pour un rappel humain en ≈ 5 min pendant une sortie (`safety.helpCallbackTargetMinutes`) : à vérifier pendant le test, au-delà de ≈ 300 sorties simultanées une 3e personne est nécessaire (+ 300 €/jour).
 
 Sensibilités : chaque point d'absence en plus coûte ≈ 0,18 € par sortie ; une place offerte de moins par groupe ajoute ≈ 3,84 €.
+
+### Dimensionnement de l'astreinte (hypothèses, à mesurer)
+- Pic : le jeudi soir, la majorité des sorties commencent entre 19 h et 20 h 30. Hypothèse : 40 % des sorties du jour sur ce créneau de 90 min.
+- Demandes « besoin d'aide » ou « je pars mal à l'aise » : hypothèse 2 % des sorties ; traitement ≈ 10 min de personne chacune (rappel + suivi).
+- Une personne traite ≈ 9 demandes en 90 min. Pour tenir un rappel en ≈ 5 min, on vise ≤ 50 % d'occupation, soit ≈ 4,5 demandes par personne sur le pic.
+- Avec 2 personnes (≈ 9 demandes sur le pic) : jusqu'à ≈ 450 demandes/2 % = 450 sorties au pic, soit ≈ 1 125 sorties par jour. Au-delà, une 3e personne (+ 300 €/jour).
+- Duo : un rendez-vous Duo compte comme une sortie de 2 personnes pour l'astreinte (même taux de 2 %) ; il ne rapporte rien, il est donc un coût d'acquisition et de rétention.
+- Ville en amorçage : aucune astreinte en plus (mutualisée) ; le coût propre est la 1re sortie offerte de chaque participant (≈ 3,84 € de revenu non encaissé par personne) et le temps ops pour signer 1–2 lieux.
+Ces chiffres sont des hypothèses : le test de 8 semaines doit mesurer le taux réel de demandes et le temps de traitement.
 
 ## Ce que le test de 8 semaines doit mesurer
 - ≥ 40 % des participants à une 1re sortie font une 2e sortie payante sous 21 jours.

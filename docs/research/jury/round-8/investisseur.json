@@ -1,0 +1,658 @@
+{
+ "member": "investisseur",
+ "global": 9,
+ "criteria": {
+  "comprehension": 9,
+  "cognitive": 9,
+  "desire": 9,
+  "meet": 9,
+  "safety": 9,
+  "virality": 9,
+  "money": 8,
+  "visual": 9
+ },
+ "screens": {
+  "V5-Welcome": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ville-bordeaux": {
+   "score": 9,
+   "blocking": false,
+   "issue": "≈ 60 personnes vérifiées, 3 lieux : le taux d'annulation « Blowy annule » est posé à 2 % national, sans distinguer une ville d'amorçage où il sera bien plus haut.",
+   "fix": "Sensibilité « Blowy annule » par statut de ville."
+  },
+  "V5-Toi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Genre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pet": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Rencontrer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Intention": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Consentement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Toi-plus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Dispos": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Dispos-semaines": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Eviter": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Erreur-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confirmation-lyon": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confirmation-banlieue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pas-encore": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ville-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Trouvee-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pas-encore-nantes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-lille": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Frise : « Sam. 14 nov. 19 h 30 · La sortie » alors que la carte dit « 15 h – 17 h » et « Comment ça se passe : 15 h » ; check-facts ne l'attrape pas.",
+   "fix": "Frise « Sam. 14 nov. 15 h · La sortie » ; contrôle check-facts : l'heure du jalon « La sortie » = startsAt."
+  },
+  "V5-Trouvee-weekend": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Team": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-invitation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Invite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Compte": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Verif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Notifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-inscrit": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Accueil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Accueil-discret": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Accueil-duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Pause": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Groupe": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Groupe-menu": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Attente": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-ville": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Amorcage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Amorcage-solo": {
+   "score": 9,
+   "blocking": false,
+   "issue": "5 places offertes d'un coup à Lille : le coût d'une ville d'amorçage n'a toujours pas de ligne dans business-model (demandé T7).",
+   "fix": "Ligne « ville d'amorçage » (lieux, 1res sorties offertes, annulations UNDERSIZED)."
+  },
+  "V5-Sortie-complete": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Sortie-annulee": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« Annulée … à la confirmation : pas assez de participants » + « Sortie annulée par Blowy à la confirmation ou après : chaque place réservée est compensée » ; spec §2.6 : à lockAt avec < 4 → CANCELLED UNDERSIZED (jamais CONFIRMED) et le code exige wasConfirmed : ce cas n'est pas compensé côté spec/code. Et spec §6.5 impose une autre phrase « identique côté client, contrat et relevé » (« Si Blowy annule une sortie confirmée, le lieu reçoit 3 € par place réservée »).",
+   "fix": "Spec §2.6/§6.5 : UNDERSIZED à lockAt = « Blowy annule » compensé 3 € HT ; phrase canonique unique recopiée en spec ; check-facts compare aussi la spec."
+  },
+  "V5-Affiner": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner-histoire": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner-age": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Affiner-ambiance": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-confirmation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Revelation": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "W-Ange": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "W-Ange-aide": {
+   "score": 9,
+   "blocking": false,
+   "issue": "« en quelques minutes » ([T] 5 min) : business-model garde 2 personnes × 12 h pour toute la France et écrit « au-delà de ≈ 300 sorties simultanées une 3e personne » sans calcul ; or au point mort (134 sorties/jour) presque tout tombe le jeudi 19 h 30 : ≈ 670 personnes à la même heure pour 2 personnes.",
+   "fix": "Dimensionner l'astreinte sur le pic simultané (taux d'alerte × durée d'un appel), pas sur la journée ; ligne de part d'astreinte des RDV Duo."
+  },
+  "V5-Checkin": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Checkin-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Souvenir": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Apres": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Apres-resultats": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-jeudi": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-dimanche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Apres-aucun": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Partage-bande": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Rue": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Lien": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-proposition": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo-hh": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-visages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Duo-hh-rdv": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Lien-debloque": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-RdvDuo": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chat": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-RdvDuo-lea": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Oeuf": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Rupture": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Cartes": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Story": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "W-Repondre": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Profil": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Fiche": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Tarifs": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Abonnement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Paiement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Paiement-ok": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Reglages": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Confidentialite": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Signaler": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Supprimer": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chargement": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Erreur-reseau": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Paiement-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Verif-echec": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Notifs-refus": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "V5-Chats-vide": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "L-Effectif": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "L-Creneaux": {
+   "score": 10,
+   "blocking": false,
+   "issue": "Rien qui empêche le 10 de mon point de vue.",
+   "fix": "—"
+  },
+  "L-Contrat": {
+   "score": 9,
+   "blocking": false,
+   "issue": "Art. 3 promet 3 € HT par place si « Blowy annule … à la confirmation » ; spec §2.6 + code (wasConfirmed) ne paient pas une sortie tombée à 18 h faute de monde ; spec §6.5 donne une autre phrase canonique.",
+   "fix": "Spec et code alignés sur le contrat (UNDERSIZED compensé), phrase unique."
+  }
+ },
+ "top3": [
+  "business-model : astreinte dimensionnée sur le pic simultané du jeudi soir (pas « 300 sorties simultanées » affirmé), part d'astreinte des RDV Duo, ligne « ville d'amorçage ».",
+  "Spec §2.6/§6.5 et code alignés sur l'écran et le contrat pour la sortie tombée à 18 h (UNDERSIZED compensé), taux mesuré par ville.",
+  "Avis juridique écrit sur Blowy+ via Stripe, puis cohorte de 8 semaines publiée."
+ ],
+ "tenIf": "Maquettes et documents : 10 quand spec, contrat et écrans disent la même chose pour la sortie tombée à 18 h et quand business-model justifie l'astreinte à 5 min sur le pic simultané avec les lignes Duo et ville d'amorçage. Terrain (à part, ne bloque pas le 10 maquettes) : ≥ 40 % de 2e sortie payante sous 21 j, ≥ 25 % d'actifs à M2, ≥ 0,3 inscrit vérifié par sortie, contribution positive après astreinte réelle, avis juridique écrit sur Blowy+."
+}
