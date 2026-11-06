@@ -637,7 +637,7 @@
   },
   "duoHH": {
     "initiale": "K.",
-    "espece": "Un pigeon",
+    "espece": "Une pigeonne",
     "rdvLieu": "Café Longchamp",
     "rdvQuartier": "Marseille 1er",
     "rdvCourt": "sam. 14 nov. 19 h",
@@ -872,5 +872,57 @@
         "V5-Sortie-banlieue"
       ]
     }
-  }
+  },
+  "especes": [
+    "raton",
+    "lapine",
+    "capybara",
+    "pigeonne"
+  ],
+  "especesInterdites": [
+    "Lutin",
+    "lutin",
+    "pigeon "
+  ],
+  "pepiteBlobs": [
+    "4f1732e4d646fcfb4437f97947c175f0",
+    "3d012c3092c5a7c8d123a4c153c8b27b",
+    "76e13d29027c25245f735f122d3f7eda",
+    "c91c8c3f296cbc58c5cd2db9416b08cf",
+    "46a416be8bb27d10c46153792b6aa5cf",
+    "006eac8860e970c5a95c2f4bbde8e86c"
+  ],
+  "ecransAvantConfirmation": [
+    "V5-Trouvee",
+    "V5-Trouvee-lyon",
+    "V5-Trouvee-banlieue",
+    "V5-Trouvee-nantes",
+    "V5-Trouvee-weekend",
+    "V5-Sortie",
+    "V5-Sortie-lyon",
+    "V5-Sortie-banlieue",
+    "V5-Sortie-nantes",
+    "V5-Sortie-lille",
+    "V5-Sortie-inscrit",
+    "V5-Groupe",
+    "V5-Groupe-menu",
+    "V5-Groupe-calme",
+    "V5-Chats",
+    "V5-Amorcage",
+    "V5-Amorcage-solo",
+    "V5-Team",
+    "V5-Accueil",
+    "V5-Notifs"
+  ],
+  "prenomsMembres": [
+    "Léa",
+    "Malo",
+    "Sarah",
+    "Clara",
+    "Théo",
+    "Nour",
+    "Maïa",
+    "Ilyes",
+    "Lina"
+  ]
 }

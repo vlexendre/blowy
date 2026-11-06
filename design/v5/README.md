@@ -27,10 +27,10 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
   - Bordeaux, Lyon et Lille en solo ;
   - un lien par carte (`slugs`, `slugParFichier`, `slugsPrives`).
 - **`check-facts.mjs`** : `node design/v5/check-facts.mjs [filtre]`.
-  - Résultat : **107 fichiers, 9 935 vérifications, 0 contradiction**.
+  - Résultat : **107 fichiers, 10 817 vérifications, 0 contradiction**.
 - **`a11y-audit.mjs`** : `NODE_PATH=$(npm root -g) node design/v5/a11y-audit.mjs .local/dc-runtime.js [filtre]`.
   - Il audite le contraste, les cibles de 44 pt et **la mise en page sur le DOM rendu**.
-  - Résultat : **107 écrans, 1 728 textes, 595 cibles, 1 813 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
+  - Résultat : **107 écrans, 1 727 textes, 594 cibles, 1 812 blocs de texte mesurés, 0 problème, contraste minimum 4,53:1**.
   - Les miniatures de « Mes cartes » (`data-miniature`, images réduites de cartes auditées en taille réelle) sont exclues des contrôles de mise en page.
   - L'outil du jury `tooling/qa/layout/overflow.mjs` ne signale plus rien. Ses contrôles (texte hors cadre, plages « 26–29 ans » ou « 3 hommes » coupées) sont repris dans `a11y-audit`.
   - Les écrans qui défilent ont, dans `canvas.json`, la hauteur de leur rendu.
@@ -47,6 +47,12 @@ Le tour 9 répond au jury tour 8 (`docs/research/jury/round-8/`, Camille, Mehdi 
 5. **Fiabilité** : toute mention (« fiabilité », « sortie honorée », « Venu à N sortie ») est suivie de « visible par toi seulement ».
 6. **Tranche des personas dans leur groupe** : « 5 personnes · NN–NN ans » contient la tranche du persona de l'écran ; chaque membre du groupe de Lyon a sa tranche (`facts.groupesTranches`).
 7. **Ratons des écrans d'échec** (`facts.ecransEchec`) : 64 pt au plus (`facts.ratonMax`).
+
+## Suivi tour 11b (alignement sur la spec, vu dans les PNG rendus)
+
+- [x] Spec §3.1 : aucun prénom ni initiale avant la Confirmation. Chat du groupe, menu, variante « calme » et Chats montrent les membres par leur pet (Suzie, Gaston, Pia) ; seul le proche invité (Tom) garde son prénom. check-facts (`facts.ecransAvantConfirmation`, `prenomsMembres`) interdit initiales et prénoms ; test piégé (« L. · Suzie ») signalé.
+- [x] Quatre espèces (raton, lapine, capybara, pigeonne) : « Lutin » retiré du sélecteur ; les dessins de Pépite deviennent un capybara recoloré (Tom, Jules, Bastien, Yacine se distinguent par la couleur) ; « Une pigeonne · K. ». check-facts : espèces hors domaine, dessins Pépite et sélecteur contrôlés ; test piégé (« Lutin ») signalé.
+- [x] Ateliers : « Encadré par le lieu » (Sortie-lille, Amorçage, Amorçage-solo).
 
 ## Suivi tour 11 (vu dans les PNG rendus)
 
