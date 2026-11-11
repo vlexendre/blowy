@@ -1,0 +1,19 @@
+---
+/** Section plein écran aimantée de la landing : un panneau coloré, et un emplacement « after » hors panneau. */
+import type { SectionMeta } from '../../content/landing';
+interface Props {
+  section: SectionMeta;
+  /** classes du panneau (couleur + mise en page) */
+  panel: string;
+  /** panneau clair : contours de focus sombres */
+  light?: boolean;
+  class?: string;
+}
+const { section, panel, light = false, class: cls } = Astro.props;
+---
+<section class:list={['sec', cls]} id={section.id} data-glow={section.glow.join(',')}>
+  <div class:list={['panel', panel, { lt: light }]}>
+    <slot />
+  </div>
+  <slot name="after" />
+</section>

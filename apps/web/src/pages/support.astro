@@ -1,0 +1,94 @@
+---
+/** Aide : questions fréquentes et contact. Jauges et niveaux viennent de @blowy/content et @blowy/domain. */
+import { gaugeLabel, levelLabel } from '@blowy/content';
+import { GAUGE_KEYS, LEVEL_KEYS, MAX_LIVES, MIN_AGE, REVIVE_LIVES, SPECIES } from '@blowy/domain';
+import Prose from '../layouts/Prose.astro';
+import { SUPPORT_EMAIL } from '../config/site';
+const mail = `mailto:${SUPPORT_EMAIL}`;
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const species = SPECIES.map(cap);
+---
+<Prose
+  title="Aide — Blowy"
+  heading="Aide"
+  description="Les réponses aux questions sur Blowy : ton pet, les 4 jauges, les 7 vies, les liens fantômes, la photo du jour, les 7 niveaux, la suppression du compte."
+  intro="Les questions qu'on nous pose le plus. Pas trouvé ? Écris-nous, un humain répond."
+  dated={false}
+>
+  <h2>Questions fréquentes</h2>
+
+  <details>
+    <summary>C'est quoi, mon pet ?</summary>
+    <div>
+      <p>Une boule de poils qui te représente. Tu choisis son espèce ({species.slice(0, -1).join(', ')} ou {species[species.length - 1]}) et son nom à l'inscription, puis un petit quiz lui donne son caractère de départ. Ton pet parle dans tes chats, lance des défis, relance quand ça s'endort, et te fait croiser d'autres pets. Il ne meurt jamais.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>À quoi servent les 4 jauges ?</summary>
+    <div>
+      <p>Elles décrivent le caractère de ton pet. Chacune va d'un pôle à l'autre :</p>
+      <ul>
+        {GAUGE_KEYS.map((k) => <li><strong>{gaugeLabel[k].low} ↔ {gaugeLabel[k].high}</strong> : {gaugeLabel[k].hint.charAt(0).toLowerCase() + gaugeLabel[k].hint.slice(1)}</li>)}
+      </ul>
+      <p>Sans activité, elles retombent doucement vers le milieu : ton pet évolue dans un sens, puis dans l'autre. Le trait le plus marqué change sa forme. Les « 3 mots » choisis par tes potes les font bouger aussi.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Comment marchent les {MAX_LIVES} vies ?</summary>
+    <div>
+      <p>Chaque lien entre deux personnes a {MAX_LIVES} vies. Un jour entier sans échange (ni message, ni photo) en coûte une. Quand vous faites tous les deux la photo du jour, le lien en regagne une. À zéro, le lien devient fantôme.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Mon lien est devenu fantôme. C'est fini ?</summary>
+    <div>
+      <p>Pas forcément. Un lien fantôme peut être ranimé <strong>une seule fois</strong> : il repart avec {REVIVE_LIVES} vies. S'il redevient fantôme ensuite, c'est terminé. Ton pet, lui, va très bien : c'est seulement le lien qui s'éteint.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>C'est quoi, la photo du jour ?</summary>
+    <div>
+      <p>Une photo par jour et par lien. Tu ne vois celle de l'autre qu'une fois la tienne envoyée. Quand vous postez tous les deux le même jour, la série monte et le lien gagne une vie. Vos photos se rangent dans l'onglet souvenirs. Pas de nudité : les <a href="/regles">règles</a> s'appliquent aussi aux photos.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Quels sont les {LEVEL_KEYS.length} niveaux d'un lien ?</summary>
+    <div>
+      <p>Plus vous échangez (messages, photos, défis), plus le lien monte :</p>
+      <ol>
+        {LEVEL_KEYS.map((k) => <li><strong>{levelLabel[k].title}</strong> : {levelLabel[k].text.charAt(0).toLowerCase() + levelLabel[k].text.slice(1)}</li>)}
+      </ol>
+      <p>Les photos de profil restent cachées jusqu'au niveau 4, floues au niveau 4, nettes à partir du niveau 5.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Comment marchent les « 3 mots » ?</summary>
+    <div>
+      <p>Dans l'app, tu partages ton lien « 3 mots » (en story, par message…). Tes potes l'ouvrent dans leur navigateur, sans compte, et choisissent 3 mots qui te décrivent. C'est anonyme : tu vois les mots, pas qui les a choisis. Ces mots font bouger les jauges de ton pet.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Pourquoi faut-il avoir {MIN_AGE} ans ?</summary>
+    <div>
+      <p>Blowy fait se croiser des adultes qui ne se connaissent pas encore. On demande ta date de naissance à l'inscription et on refuse les personnes de moins de {MIN_AGE} ans. Si tu penses parler à une personne mineure, signale-la depuis l'app.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Comment supprimer mon compte ?</summary>
+    <div>
+      <p>Dans l'app : <strong>Moi → Supprimer mon compte</strong>. C'est immédiat et définitif : profil, pet, liens, messages et photos sont effacés. Plus de détails dans la <a href="/confidentialite">politique de confidentialité</a>. Si tu n'as plus accès à l'app, écris-nous depuis l'adresse e-mail de ton compte.</p>
+    </div>
+  </details>
+
+  <h2>Nous écrire</h2>
+  <p>Un bug, une question, un souci avec quelqu'un ? Écris à <a href={mail}>{SUPPORT_EMAIL}</a>. Un humain répond, pas un pet. Pour un problème de sécurité, signale aussi la personne depuis l'app : c'est le plus rapide.</p>
+  <p>À lire aussi : <a href="/regles">les règles de la communauté</a>, <a href="/conditions">les conditions d'utilisation</a>.</p>
+</Prose>

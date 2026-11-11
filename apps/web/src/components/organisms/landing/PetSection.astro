@@ -1,0 +1,100 @@
+---
+/** 2. Chacun son pet : sélecteur de couleur et liste des chats. */
+import PetImage from '../../atoms/PetImage.astro';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { petSection as c, sections } from '../../../content/landing';
+const first = c.colors[0];
+---
+<SnapSection section={sections.pet} panel="p-night s-pet">
+  <SectionTitle lines={c.title}>
+    <p class="lead hide-short" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="craft">
+    <div class="cstage" data-r="pop">
+      <div class="bob">
+        {
+          c.colors.map((col, i) => (
+            <PetImage class:list={['cimg', { on: i === 0 }]} data-c={col.key} src={`/img/craft_${col.key}.webp`} alt={`ton pet en ${col.label}`} loading={i === 0 ? undefined : 'lazy'} />
+          ))
+        }
+      </div>
+    </div>
+    <div class="cui" data-r="up">
+      <span class="lbl" style="color:var(--mute)" id="swl">{c.pickLabel}</span>
+      <div class="sw" role="group" aria-labelledby="swl">
+        {c.colors.map((col, i) => <button type="button" data-c={col.key} style={`--c:${col.swatch}`} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={col.label} />)}
+      </div>
+      <span class="nametag">{c.petName} <i id="cname">· {first.label}</i></span>
+    </div>
+  </div>
+  <div class="chats" data-r="up">
+    <h3>{c.chatsTitle}</h3>
+    {
+      c.rows.map((r) => (
+        <div class:list={['row', { 'hide-short': r.short, gone: r.gone }]} data-r="row">
+          <span class="avs">{r.avatars.map((a) => <img src={`/img/${a}_face.webp`} alt="" />)}</span>
+          <span class="rt">
+            <b>
+              {r.name}
+              {r.isNew && (
+                <>
+                  {' '}
+                  <span class="new" style="display:inline">{c.newBadge}</span>
+                </>
+              )}
+            </b>
+            <span>
+              {r.pet && <i style={`color:${r.petColor}`}>{r.pet} :</i>} {r.text}
+            </span>
+          </span>
+          <span class="hz" style={r.gone ? 'color:var(--mute)' : undefined}>♥ {r.lives}</span>
+        </div>
+      ))
+    }
+  </div>
+</SnapSection>
+<style is:global>
+.s-pet{grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"tx" "craft" "chats"}
+.s-pet .tx{grid-area:tx}
+.s-pet .hd{--k:13}
+.craft{grid-area:craft;display:grid;grid-template-columns:44% 1fr;gap:12px;align-items:center;min-height:0}
+.cstage{position:relative;height:clamp(130px,22svh,420px);display:flex;justify-content:center}
+.cstage .bob{position:relative;height:100%;aspect-ratio:9/10}
+.cimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .25s}
+.cimg.on{opacity:1}
+.cui{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.sw{display:grid;grid-template-columns:repeat(3,44px);gap:8px}
+.sw button{width:44px;height:44px;border-radius:50%;background:var(--c);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15);border:3px solid transparent;transition:transform .2s}
+.sw button[aria-pressed="true"]{border-color:#fff;transform:scale(1.08)}
+.sw button:hover{transform:scale(1.08)}
+.nametag{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:800;font-size:16px}
+.nametag i{font-style:normal;color:var(--mute);font-weight:500;font-size:13px}
+.chats{grid-area:chats;align-self:start;background:rgba(11,10,20,.82);border:1px solid var(--line);border-radius:24px;padding:6px;min-height:0;overflow:hidden}
+.chats h3{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.01em;padding:8px 12px 4px}
+.row{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:18px}
+.row+.row{border-top:1px solid rgba(255,255,255,.06)}
+.avs{display:flex;flex:0 0 auto}
+.avs img{width:clamp(34px,4.6svh,46px);height:clamp(34px,4.6svh,46px);border-radius:50%;border:2px solid var(--card);background:#fff;object-fit:cover}
+.avs img+img{margin-left:-14px}
+.rt{flex:1;min-width:0}
+.rt b{display:block;font-weight:800;font-size:15px}
+.rt span{display:block;color:var(--mute);font-size:var(--ts);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rt span i{font-style:normal;font-weight:800}
+.hz{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--rose);white-space:nowrap}
+.new{font-size:10px;font-weight:800;background:var(--lime);color:var(--ink);padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:2px}
+.row.gone{opacity:.42}
+.row.gone img{filter:grayscale(1)}
+.row.gone{display:none}
+@media (min-width:900px){.row.gone{display:flex}}
+@media (min-width:900px){
+  .s-pet{grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx chats" "craft chats";column-gap:5vw}
+  .craft{grid-template-columns:1fr auto;align-self:end}
+  .cstage{height:min(46svh,440px)}
+  .chats{align-self:center;padding:10px}
+  .chats h3{font-size:28px;padding:10px 14px 6px}
+  .row{padding:12px 14px}
+  .rt b{font-size:17px}
+}
+@media (max-width:899px) and (max-height:760px){.cstage{height:19svh}}
+</style>

@@ -1,0 +1,17 @@
+---
+/**
+ * Bloc titre de section : gros titre Anton en lignes insécables (les lignes `dim` sont atténuées),
+ * puis le contenu passé en slot (chapeau, lien…).
+ */
+import type { TitleLine } from '../../content/landing';
+interface Props {
+  lines: TitleLine[];
+  level?: 1 | 2;
+}
+const { lines, level = 2 } = Astro.props;
+const Tag = level === 1 ? 'h1' : 'h2';
+---
+<div class="tx">
+  <Tag class="hd">{lines.map((l) => <span class:list={['ln', { dim: l.dim }]}>{l.text}</span>)}</Tag>
+  <slot />
+</div>

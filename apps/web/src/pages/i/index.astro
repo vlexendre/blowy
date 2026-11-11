@@ -1,0 +1,22 @@
+---
+/** Invitation : /i/CODE (réécrit vers cette page) ou /i/?c=CODE. */
+import Public from '../../layouts/Public.astro';
+import StateBlock from '../../components/molecules/StateBlock.astro';
+import LoadingState from '../../components/organisms/public/LoadingState.astro';
+import NetworkError from '../../components/organisms/public/NetworkError.astro';
+import DownloadCta from '../../components/organisms/public/DownloadCta.astro';
+import InviteCard from '../../components/organisms/public/InviteCard.astro';
+import { common, invitePage as c } from '../../content/public';
+---
+<Public title={c.meta.title} description={c.meta.description} noindex>
+  <LoadingState />
+  <InviteCard />
+  <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
+    <div class="pub-actions"><a class="btn l" href="/">{common.home}</a></div>
+    <DownloadCta />
+  </StateBlock>
+  <NetworkError />
+</Public>
+<script>
+  import '../../scripts/invite-page';
+</script>

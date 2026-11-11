@@ -1,0 +1,43 @@
+---
+/** Landing : 11 sections plein écran aimantées. */
+import Base from '../layouts/Base.astro';
+import Background from '../components/organisms/landing/Background.astro';
+import NavBar from '../components/organisms/landing/NavBar.astro';
+import SectionDots from '../components/organisms/landing/SectionDots.astro';
+import Hero from '../components/organisms/landing/Hero.astro';
+import PetSection from '../components/organisms/landing/PetSection.astro';
+import CharacterSection from '../components/organisms/landing/CharacterSection.astro';
+import ChatsSection from '../components/organisms/landing/ChatsSection.astro';
+import LivesSection from '../components/organisms/landing/LivesSection.astro';
+import PhotoSection from '../components/organisms/landing/PhotoSection.astro';
+import EncountersSection from '../components/organisms/landing/EncountersSection.astro';
+import WordsSection from '../components/organisms/landing/WordsSection.astro';
+import PlusSection from '../components/organisms/landing/PlusSection.astro';
+import FaqSection from '../components/organisms/landing/FaqSection.astro';
+import FinalSection from '../components/organisms/landing/FinalSection.astro';
+import { meta } from '../content/landing';
+---
+<Base title={meta.title} description={meta.description} htmlClass="snap">
+  <link slot="head" rel="preload" as="image" href="/img/nino_salut.webp" />
+  <Background />
+  <NavBar />
+  <SectionDots />
+  <main id="main">
+    <Hero />
+    <PetSection />
+    <CharacterSection />
+    <ChatsSection />
+    <LivesSection />
+    <PhotoSection />
+    <EncountersSection />
+    <WordsSection />
+    <PlusSection />
+    <FaqSection />
+    <FinalSection />
+  </main>
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    import '../scripts/landing';
+  </script>
+</Base>

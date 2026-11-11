@@ -1,0 +1,24 @@
+---
+/** Bouton de store (App Store ou Google Play). Les URL viennent de src/config/site.ts. */
+import { APP_STORE_URL, PLAY_STORE_URL } from '../../config/site';
+import { stores } from '../../content/landing';
+
+interface Props {
+  store: 'apple' | 'google';
+  /** fond encre au lieu de blanc (par défaut : Google Play) */
+  dark?: boolean;
+}
+const { store, dark = store === 'google' } = Astro.props;
+const href = store === 'apple' ? APP_STORE_URL : PLAY_STORE_URL;
+const copy = stores[store];
+---
+<a class:list={['store', { dk: dark }]} href={href} rel="noopener">
+  {
+    store === 'apple' ? (
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 12.6c-.02-2.3 1.88-3.4 1.97-3.46-1.07-1.57-2.74-1.78-3.33-1.8-1.42-.14-2.77.83-3.49.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.68 2.36 2.88 2.31 1.16-.05 1.59-.75 2.99-.75 1.4 0 1.79.75 3.01.72 1.24-.02 2.03-1.13 2.79-2.25.88-1.29 1.24-2.53 1.26-2.6-.03-.01-2.42-.93-2.45-3.71zM14.08 5.85c.64-.77 1.07-1.85.95-2.92-.92.04-2.03.61-2.69 1.38-.59.68-1.11 1.78-.97 2.83 1.02.08 2.07-.52 2.71-1.29z" /></svg>
+    ) : (
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00D7FE" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z" /><path fill="#00F076" d="M16.7 8.7 13.4 12 3.6 2.3c.3-.2.8-.2 1.2 0z" /><path fill="#FF3A44" d="M16.7 15.3 4.8 21.7c-.4.2-.9.2-1.2 0l9.8-9.7z" /><path fill="#FFD400" d="m16.7 8.7 3.6 2c.9.5.9 1.8 0 2.3l-3.6 2.3-3.3-3.3z" /></svg>
+    )
+  }
+  <span><small>{copy.small}</small><b>{copy.name}</b></span>
+</a>

@@ -13,6 +13,7 @@ export const color = {
   violet: '#8D5CF6',
   rose: '#FF8FC6',
   orange: '#FF9A3D',
+  lime: '#A8D52A',
   danger: '#FF4D4D',
   ok: '#3DDC97',
 } as const;
@@ -30,8 +31,10 @@ export const gradient = {
 } as const;
 export type GradientName = keyof typeof gradient;
 
-export const speciesColor = { nino: color.coral, suzie: color.violet, gaston: color.rose, pia: color.orange } as const;
-export const speciesGradient = { nino: 'coral', suzie: 'violet', gaston: 'rose', pia: 'orange' } as const satisfies Record<string, GradientName>;
+/** Couleur du pelage de chaque espèce (Nino vert, Suzie rose, Gaston orange, Pia violette). */
+export const speciesColor = { nino: color.lime, suzie: color.rose, gaston: color.orange, pia: color.violet } as const;
+/** Panneau placé derrière chaque espèce : choisi pour contraster avec son pelage. */
+export const speciesGradient = { nino: 'coral', suzie: 'wine', gaston: 'violet', pia: 'accent' } as const satisfies Record<string, GradientName>;
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 } as const;
 export const radius = { sm: 12, md: 18, lg: 28, xl: 36, pill: 999 } as const;

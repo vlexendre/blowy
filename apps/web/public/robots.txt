@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /m/
+Disallow: /i/
+
+Sitemap: https://blowy.app/sitemap.xml

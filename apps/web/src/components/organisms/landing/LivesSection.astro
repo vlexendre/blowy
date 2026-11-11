@@ -1,0 +1,52 @@
+---
+/** 5. 7 vies : les cœurs se vident, le lien devient fantôme, puis il est ranimé. */
+import Chip from '../../atoms/Chip.astro';
+import Heart from '../../atoms/Heart.astro';
+import PetImage from '../../atoms/PetImage.astro';
+import ChatBubble from '../../molecules/ChatBubble.astro';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { lives as c, sections } from '../../../content/landing';
+const hearts = Array.from({ length: c.total }, (_, i) => i >= c.start);
+---
+<SnapSection section={sections.vies} panel="p-wine s-vies">
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="lives" data-r="up">
+    <div class="hearts" aria-hidden="true">{hearts.map((off) => <Heart off={off} />)}</div>
+    <div class="lcount"><b id="lnum">{c.start}/{c.total}</b><span id="ltxt">{c.lines[0]}</span></div>
+    <div class="hide-short"><Chip>{c.chip}</Chip></div>
+  </div>
+  <div class="ghost" data-r="pop">
+    <div class="bob">
+      <PetImage class="gs" src="/img/nino_triste.webp" loading="lazy" />
+      <PetImage class="gt" src="/img/nino_fantome.webp" alt={c.ghostAlt} loading="lazy" />
+    </div>
+    <ChatBubble bubble={{ who: c.bubbleWho, whoColor: 'var(--rose)', text: c.says[0], avatar: { img: '/img/nino_face.webp' }, dark: true }} class="say" textId="gsay" />
+  </div>
+</SnapSection>
+<style is:global>
+.s-vies{grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"tx" "lives" "ghost"}
+.s-vies .tx{grid-area:tx}
+.s-vies .hd{--k:10}
+.lives{grid-area:lives;display:flex;flex-direction:column;gap:8px}
+.hearts{display:flex;gap:clamp(4px,.8vw,10px)}
+.hearts svg{width:clamp(30px,min(9vw,5.4svh),58px);height:auto;overflow:visible}
+.hearts .f{fill:var(--coral);transition:fill .3s}
+.hearts .o{fill:none;stroke:rgba(255,255,255,.35);stroke-width:2}
+.hearts svg.off .f{fill:transparent}
+.lcount{display:flex;align-items:center;gap:10px;font-weight:700;font-size:var(--ts)}
+.lcount b{font-family:var(--display);font-weight:400;font-size:clamp(22px,3svh,34px);letter-spacing:.02em}
+.ghost{grid-area:ghost;position:relative;min-height:0;display:flex;justify-content:center}
+.ghost .bob{position:relative;height:100%;max-height:520px;aspect-ratio:9/10}
+.ghost .bob img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.ghost .gt{opacity:0}
+.ghost .say{position:absolute;right:0;top:12%;z-index:2}
+@media (min-width:900px){
+  .s-vies{grid-template-columns:1.1fr .9fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". ghost" "tx ghost" "lives ghost" ". ghost";align-items:center;column-gap:4vw}
+  .lives{margin-top:2svh}
+  .ghost{height:100%;align-items:center}
+  .ghost .say{right:auto;left:50%;translate:-115% 0;top:22%}
+}
+</style>

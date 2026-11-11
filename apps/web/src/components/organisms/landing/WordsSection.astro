@@ -1,0 +1,52 @@
+---
+/** 8. 3 mots : la story « décris alex en 3 mots », 3 mots maximum. */
+import Sticker from '../../atoms/Sticker.astro';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { sections, threeWords as c } from '../../../content/landing';
+const on = c.words.filter((w) => w.on).map((w) => `+ ${w.gauge}`);
+---
+<SnapSection section={sections.mots} panel="p-rose s-mots" light>
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.leadBefore} <b>{c.leadLink}</b> {c.leadAfter}</p>
+  </SectionTitle>
+  <div class="mwrap">
+    <div class="story" data-r="pop">
+      <span class="lbl">{c.cardLabel}</span>
+      <p class="q">{c.question} <span>{c.questionAccent}</span></p>
+      <div class="words" role="group" aria-label={c.groupLabel}>
+        {c.words.map((w) => <button type="button" data-g={w.gauge} aria-pressed={w.on ? 'true' : 'false'} class={w.short ? 'hide-short' : undefined}>{w.label}</button>)}
+      </div>
+      <p class="evo" aria-live="polite"><img src="/img/nino_face.webp" alt="" /><span id="evo">{c.evoPrefix} <b>{on.join(' · ')}</b></span></p>
+      <div class="link"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>{c.leadLink}</div>
+      <Sticker class="mnino" src="/img/nino_amour.webp" width={900} height={1000} loading="lazy" reveal />
+    </div>
+  </div>
+</SnapSection>
+<style is:global>
+.s-mots{grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx" "card"}
+.s-mots .tx{grid-area:tx}
+.s-mots .hd{--k:10}
+.mwrap{grid-area:card;position:relative;min-height:0;display:flex;align-items:center;justify-content:center}
+.story{position:relative;width:100%;max-width:460px;background:var(--ink);color:#fff;border-radius:26px;padding:clamp(14px,2.2svh,26px);box-shadow:0 24px 50px rgba(20,16,31,.3);rotate:-2deg}
+.story .q{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(22px,3.4svh,40px);line-height:.95;margin:4px 0 10px}
+.story .q span{color:var(--rose)}
+.story .lbl{color:var(--mute)}
+.words{display:flex;flex-wrap:wrap;gap:6px}
+.words button{height:44px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-weight:700;font-size:14px;transition:background .2s,color .2s,transform .2s}
+.words button:hover{transform:translateY(-2px)}
+.words button[aria-pressed="true"]{background:var(--rose);border-color:var(--rose);color:var(--ink)}
+.evo{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;font-weight:600;color:var(--mute)}
+.evo b{color:var(--lime);font-weight:800}
+.evo img{width:36px;height:36px;border-radius:50%;background:#fff;flex:0 0 auto}
+.link{position:absolute;right:-6px;top:-22px;z-index:2;display:flex;align-items:center;gap:6px;background:#fff;color:var(--ink);font-weight:800;font-size:13px;padding:9px 14px;border-radius:14px;rotate:5deg;box-shadow:0 10px 20px rgba(20,16,31,.25)}
+.link svg{width:14px;height:14px}
+.mnino{position:absolute;right:-10px;bottom:-22px;width:clamp(64px,10svh,190px);z-index:3;rotate:8deg}
+.evo{padding-right:50px}
+@media (min-width:900px){
+  .s-mots{grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"tx card";column-gap:5vw;align-items:center}
+  .words button{font-size:15px;padding:0 16px}
+  .mnino{right:auto;left:-18%;bottom:-8%;width:clamp(70px,20svh,190px);rotate:-8deg}
+  .evo{padding-right:0}
+}
+</style>

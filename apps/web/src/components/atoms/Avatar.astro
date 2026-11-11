@@ -1,0 +1,15 @@
+---
+/** Avatar rond : image de pet ou initiale sur fond de couleur. Décoratif. */
+import type { Avatar } from '../../content/landing';
+interface Props {
+  avatar: Avatar;
+}
+const { avatar } = Astro.props;
+---
+{
+  'img' in avatar ? (
+    <img class="av" src={avatar.img} alt="" />
+  ) : (
+    <span class="av h" style={`background:${avatar.bg}`} aria-hidden="true">{avatar.letter}</span>
+  )
+}

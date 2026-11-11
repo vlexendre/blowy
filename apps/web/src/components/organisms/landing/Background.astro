@@ -1,0 +1,10 @@
+---
+/** Calque de fond fixe : halos colorés (suivent la section active), étoiles, grain, autocollants qui dérivent. */
+const drifts = ['ic_etoiles', 'ic_eclair', 'ic_balle', 'ic_coeurs', 'ic_confettis', 'ic_piece'];
+---
+<div class="bgx" aria-hidden="true">
+  <div class="glow a"></div><div class="glow b"></div><div class="glow c"></div>
+  <div class="stars"></div>
+  {drifts.map((d, i) => <img class={`drift d${i + 1} stk`} src={`/img/${d}.webp`} alt="" />)}
+  <div class="grain"></div>
+</div>

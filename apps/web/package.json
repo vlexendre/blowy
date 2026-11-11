@@ -10,10 +10,15 @@
     "typecheck": "astro check"
   },
   "dependencies": {
+    "@blowy/api-client": "workspace:*",
     "@blowy/content": "workspace:*",
     "@blowy/contract": "workspace:*",
+    "@blowy/domain": "workspace:*",
     "@blowy/tokens": "workspace:*",
-    "astro": "^7.4.11"
+    "astro": "^7.4.11",
+    "cookie": "^2.0.2"
   },
-  "devDependencies": { "@astrojs/check": "^0.9.12" }
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12"
+  }
 }

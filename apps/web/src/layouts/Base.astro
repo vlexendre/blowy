@@ -1,0 +1,74 @@
+---
+/**
+ * Gabarit de base : <head> (méta, Open Graph, Twitter, favicon, polices), variables CSS issues de @blowy/tokens,
+ * lien d'évitement, contenu, emplacement « footer ».
+ */
+import { color, font, gradient, radius, space } from '@blowy/tokens';
+import { OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** classe ajoutée à <html> (ex. « snap » pour la landing) */
+  htmlClass?: string;
+  /** classe ajoutée à <body> */
+  bodyClass?: string;
+  noindex?: boolean;
+  ogImage?: string;
+}
+
+const { title, description, htmlClass, bodyClass, noindex = false, ogImage = OG_IMAGE } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+const ogUrl = new URL(ogImage, SITE_URL).href;
+
+const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+const tokenVars = [
+  ...Object.entries(color).map(([k, v]) => `--color-${kebab(k)}:${v}`),
+  ...Object.entries(gradient).map(([k, [a, b]]) => `--gradient-${kebab(k)}:linear-gradient(180deg,${a} 0%,${b} 100%)`),
+  ...Object.entries(radius).map(([k, v]) => `--radius-${k}:${v}px`),
+  ...Object.entries(space).map(([k, v]) => `--space-${k}:${v}px`),
+  `--font-display:${font.web.display}`,
+  `--font-body:${font.web.body}`,
+];
+const tokenCss = `:root{${tokenVars.join(';')}}`;
+---
+<!doctype html>
+<html lang="fr" class={htmlClass}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content={color.night} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" />
+    <style is:inline set:html={tokenCss}></style>
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip" href="#main">aller au contenu</a>
+    <slot />
+    <slot name="footer" />
+  </body>
+</html>

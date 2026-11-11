@@ -1,0 +1,15 @@
+---
+/** Image de pet (900×1000 par défaut). Sans `alt`, l'image est décorative. */
+interface Props {
+  src: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+  id?: string;
+  [attr: `data-${string}`]: string | undefined;
+}
+const { src, alt = '', width = 900, height = 1000, loading, class: cls, ...rest } = Astro.props;
+---
+<img class={cls} src={src} alt={alt} width={width} height={height} loading={loading} {...rest} />

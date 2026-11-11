@@ -1,0 +1,35 @@
+---
+/** Formulaire « 3 mots » : les 12 mots du domaine, exactement 3 à cocher. */
+import { WORD_KEYS } from '@blowy/domain';
+import { wordLabel } from '@blowy/content';
+import StateBlock from '../../molecules/StateBlock.astro';
+import { wordsPage as c } from '../../../content/public';
+---
+<StateBlock state="form" title={c.title}>
+  <img slot="pet" class="pub-pet" data-pet alt="" width="900" height="1000" />
+  <span slot="before" class="lbl">{c.label}</span>
+  <p class="pub-text" data-tpl={c.intro}>{c.intro}</p>
+  <form class="pick" data-form novalidate>
+    <div class="pick-grid" role="group" aria-label={c.groupLabel} data-tpl-aria={c.groupLabel}>
+      {WORD_KEYS.map((k) => <button type="button" class="pick-w" data-word={k} aria-pressed="false">{wordLabel[k] ?? k}</button>)}
+    </div>
+    <div class="pick-foot">
+      <span class="pick-count" data-count data-tpl={c.counter} aria-live="polite">{c.counter.replace('{n}', '0')}</span>
+      <button type="submit" class="btn l" data-submit disabled>{c.submit}</button>
+    </div>
+    <p class="pick-err" data-form-error role="alert" hidden></p>
+  </form>
+</StateBlock>
+<style is:global>
+.pick{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.pick-grid{display:flex;flex-wrap:wrap;gap:8px}
+.pick-w{min-height:48px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);font-weight:700;font-size:15px;transition:background .2s,color .2s,transform .2s,opacity .2s}
+.pick-w:hover{transform:translateY(-2px)}
+.pick-w[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.pick.full .pick-w[aria-pressed="false"]{opacity:.5}
+.pick-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pick-count{font-weight:800;font-size:15px;color:var(--mute)}
+.pick-count.ok{color:var(--lime)}
+.pick-err{color:#FF8A80;font-weight:700;font-size:14px}
+@media (prefers-reduced-motion:reduce){.pick-w{transition:none}.pick-w:hover{transform:none}}
+</style>

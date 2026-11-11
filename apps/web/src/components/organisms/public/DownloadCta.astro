@@ -1,0 +1,10 @@
+---
+/** Appel à télécharger l'app (boutons de store). */
+import StoreButtons from '../../molecules/StoreButtons.astro';
+import { common } from '../../../content/public';
+---
+<div class="pub-dl">
+  <b>{common.downloadTitle}</b>
+  <p>{common.downloadText}</p>
+  <StoreButtons />
+</div>

@@ -1,0 +1,27 @@
+---
+/** Invitation : qui t'invite, son pet, ouvrir dans l'app, stores, et le code à taper à l'inscription. */
+import StateBlock from '../../molecules/StateBlock.astro';
+import StoreButtons from '../../molecules/StoreButtons.astro';
+import { invitePage as c } from '../../../content/public';
+---
+<StateBlock state="ready" title={c.title} text={c.intro}>
+  <img slot="pet" class="pub-pet" data-pet alt="" width="900" height="1000" />
+  <span slot="before" class="lbl">{c.label}</span>
+  <div class="pub-actions"><a class="btn l" data-open href="/">{c.open}</a></div>
+  <StoreButtons />
+  <div class="code-box">
+    <span class="lbl" id="code-label">{c.codeLabel}</span>
+    <div class="code-row">
+      <output class="code" aria-labelledby="code-label" data-code></output>
+      <button type="button" class="btn g code-copy" data-copy>{c.copy}</button>
+    </div>
+    <p class="pub-text">{c.codeHelp}</p>
+  </div>
+</StateBlock>
+<style is:global>
+.code-box{width:100%;margin-top:6px;padding:16px;border-radius:22px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.25);display:flex;flex-direction:column;gap:8px}
+.code-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.code{font-family:var(--display);font-size:clamp(30px,9vw,44px);letter-spacing:.08em;color:var(--lime);line-height:1;overflow-wrap:anywhere;user-select:all}
+.pub .code-copy{height:44px;font-size:14px}
+.code-box .pub-text{font-size:14px}
+</style>

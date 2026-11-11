@@ -1,0 +1,99 @@
+---
+/** Politique de confidentialité. */
+import Prose from '../layouts/Prose.astro';
+import { LEGAL, SUPPORT_EMAIL } from '../config/site';
+const mail = `mailto:${SUPPORT_EMAIL}`;
+---
+<Prose
+  title="Confidentialité — Blowy"
+  heading="Confidentialité"
+  description="Quelles données Blowy collecte, pourquoi, où elles sont hébergées, combien de temps on les garde et comment exercer tes droits."
+  intro="Ce qu'on garde sur toi, pourquoi, et comment tout effacer. Sans jargon, autant que possible."
+>
+  <p class="note">En bref : on collecte ce qu'il faut pour faire vivre ton pet et tes liens, rien de plus. Pas de pub, pas de revente de données, pas de géolocalisation précise. Tu peux supprimer ton compte à tout moment dans l'app.</p>
+
+  <h2>1. Qui est responsable</h2>
+  <p>Le responsable du traitement de tes données est <strong>{LEGAL.entity}</strong>, qui édite l'application et le site Blowy. Pour toute question sur tes données, écris à <a href={mail}>{SUPPORT_EMAIL}</a>.</p>
+
+  <h2>2. Ce qu'on collecte, et pourquoi</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th scope="col">Donnée</th><th scope="col">À quoi elle sert</th><th scope="col">Base légale</th></tr></thead>
+      <tbody>
+        <tr><td>Adresse e-mail</td><td>Te connecter avec un code reçu par e-mail, t'envoyer les messages liés au service (code de connexion, sécurité du compte).</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Prénom (ou surnom)</td><td>T'afficher auprès des personnes avec qui tu as un lien et des pets que tu croises.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Date de naissance</td><td>Vérifier que tu as au moins 18 ans. Elle n'est jamais montrée aux autres.</td><td data-label="Base légale">Exécution du contrat et intérêt légitime (protéger les mineurs)</td></tr>
+        <tr><td>Ville (facultative)</td><td>Te proposer des rencontres pas trop loin et l'afficher sur ton profil. On ne collecte pas ta position GPS.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Photo de profil (facultative)</td><td>La montrer à tes liens : cachée avant le niveau 4, floue au niveau 4, nette à partir du niveau 5.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Ton pet et ses jauges</td><td>Nom, espèce, forme, humeur, les 4 jauges (casanier↔sociable, posé↔joueur, piquant↔tendre, discret↔bavard), ton quiz de départ et l'historique de ce qui les fait bouger.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Liens et messages</td><td>Faire fonctionner tes chats : messages, mots doux, vannes, défis, vies, niveaux, séries, et ce qui a été lu.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Photos du jour</td><td>Les échanger avec la personne du lien et les ranger dans vos souvenirs.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>Rencontres</td><td>Les saluts envoyés, acceptés ou refusés, et la compatibilité calculée à partir des jauges.</td><td data-label="Base légale">Exécution du contrat</td></tr>
+        <tr><td>« 3 mots »</td><td>Les mots choisis par tes potes sur ta page « 3 mots ». Ils sont anonymes : on ne te dit jamais qui les a choisis, et on ne demande pas de compte aux personnes qui votent. On garde seulement ce qu'il faut techniquement pour limiter les votes en double.</td><td data-label="Base légale">Exécution du contrat et intérêt légitime (éviter les abus)</td></tr>
+        <tr><td>Signalements et blocages</td><td>Traiter les signalements (motif, précisions, personne et lien concernés) et empêcher une personne bloquée de te contacter.</td><td data-label="Base légale">Intérêt légitime (sécurité de la communauté) et obligations légales</td></tr>
+        <tr><td>Données techniques</td><td>Adresse IP, type d'appareil, version de l'app, journaux d'erreurs : faire tourner le service, le sécuriser et corriger les bugs.</td><td data-label="Base légale">Intérêt légitime</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>On n'utilise pas tes données pour de la publicité, on ne les vend pas, et on ne lit pas tes contacts. Les messages des pets dans le chat sont générés automatiquement à partir de l'activité du lien ; aucune décision produisant des effets juridiques à ton égard n'est prise de façon automatisée.</p>
+
+  <h2>3. Ce que voient les autres</h2>
+  <ul>
+    <li><strong>Tes liens</strong> voient ton prénom, ta ville si tu l'as renseignée, ton pet, vos messages et vos photos du jour, et ta photo de profil selon le niveau du lien.</li>
+    <li><strong>Les pets que tu croises</strong> voient ton prénom, ta ville et ton pet. Pas ta photo.</li>
+    <li><strong>Les visiteurs de ta page « 3 mots » ou de ton invitation</strong> voient seulement ton prénom et ton pet.</li>
+    <li>Personne ne voit ton adresse e-mail ni ta date de naissance.</li>
+  </ul>
+
+  <h2>4. Où sont tes données, et qui nous aide</h2>
+  <p>On fait appel à quelques prestataires, qui traitent les données uniquement pour notre compte et selon nos instructions :</p>
+  <ul>
+    <li><strong>Supabase</strong> : base de données, authentification par e-mail et stockage des photos. Tes données sont hébergées dans l'Union européenne, dans la région de Paris (France). Les photos sont stockées dans un espace privé et ne sont accessibles que par des liens temporaires.</li>
+    <li><strong>Resend</strong> : envoi des e-mails (code de connexion notamment). Resend reçoit ton adresse e-mail et le contenu de l'e-mail. Cette société étant établie aux États-Unis, le transfert est encadré par les garanties prévues par le RGPD (clauses contractuelles types de la Commission européenne et, le cas échéant, le cadre de protection des données UE–États-Unis).</li>
+    <li><strong>Cloudflare</strong> : hébergement et diffusion du site blowy.app.</li>
+    <li><strong>Apple et Google</strong> : distribution de l'app via l'App Store et Google Play, selon leurs propres politiques.</li>
+  </ul>
+  <p>On peut aussi devoir communiquer des données aux autorités lorsque la loi l'exige.</p>
+
+  <h2>5. Combien de temps on les garde</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th scope="col">Donnée</th><th scope="col">Durée</th></tr></thead>
+      <tbody>
+        <tr><td>Compte, pet, jauges, liens, messages, photos du jour, mots reçus</td><td>Tant que ton compte existe. Effacés quand tu supprimes ton compte.</td></tr>
+        <tr><td>Compte resté inactif</td><td>Supprimé après 2 ans sans connexion, après un e-mail de prévenance.</td></tr>
+        <tr><td>Sauvegardes techniques</td><td>Écrasées au plus tard 30 jours après la suppression.</td></tr>
+        <tr><td>Signalements</td><td>Jusqu'à 1 an après leur traitement, plus longtemps si une procédure judiciaire l'exige.</td></tr>
+        <tr><td>Journaux techniques et d'envoi d'e-mails</td><td>30 jours maximum, sauf incident de sécurité en cours d'analyse.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>6. Supprimer ton compte</h2>
+  <p>Dans l'app : <strong>Moi → Supprimer mon compte</strong>. La suppression est immédiate et définitive : ton profil, ton pet, tes liens, tes messages, tes photos du jour et les mots reçus sont effacés. Les personnes avec qui tu avais un lien ne voient plus ni ton profil ni tes messages. Seuls les éléments qu'on est légalement tenus de garder (par exemple un signalement en cours) sont conservés, le temps nécessaire.</p>
+  <p>Si tu n'as plus accès à l'app, écris-nous depuis l'adresse e-mail de ton compte à <a href={mail}>{SUPPORT_EMAIL}</a>.</p>
+
+  <h2>7. Tes droits</h2>
+  <p>Conformément au RGPD et à la loi Informatique et Libertés, tu peux à tout moment :</p>
+  <ul>
+    <li>accéder à tes données et en obtenir une copie ;</li>
+    <li>les faire corriger (ton prénom et ta ville se modifient aussi directement dans l'app) ;</li>
+    <li>les faire effacer ;</li>
+    <li>t'opposer à un traitement fondé sur notre intérêt légitime, ou en demander la limitation ;</li>
+    <li>récupérer les données que tu nous as fournies dans un format lisible (portabilité) ;</li>
+    <li>définir des directives sur le sort de tes données après ton décès.</li>
+  </ul>
+  <p>Pour exercer ces droits, écris à <a href={mail}>{SUPPORT_EMAIL}</a>. On répond sous un mois au plus. On pourra te demander de confirmer que la demande vient bien de toi, par exemple en écrivant depuis l'adresse e-mail du compte. Si tu estimes que tes droits ne sont pas respectés, tu peux saisir la CNIL (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).</p>
+
+  <h2>8. Réservé aux adultes</h2>
+  <p>Blowy est réservé aux personnes de 18 ans et plus. On vérifie ta date de naissance à l'inscription. Si on apprend qu'un compte appartient à une personne mineure, il est supprimé.</p>
+
+  <h2>9. Sécurité</h2>
+  <p>Connexions chiffrées (HTTPS), accès aux données limité par des règles strictes côté base, photos dans un stockage privé, connexion sans mot de passe par code à usage unique. Aucun système n'est infaillible : en cas de violation de données présentant un risque pour toi, on te prévient, ainsi que la CNIL, dans les délais prévus par la loi.</p>
+
+  <h2>10. Cookies et site web</h2>
+  <p>Le site blowy.app ne dépose aucun cookie publicitaire ni de mesure d'audience. Pour afficher les polices et les animations, ton navigateur charge des fichiers depuis Google Fonts et cdnjs (Cloudflare), qui reçoivent à cette occasion ton adresse IP. Les pages « 3 mots » et « invitation » interrogent notre serveur pour afficher le prénom et le pet de la personne, et pour enregistrer les mots choisis.</p>
+
+  <h2>11. Changements</h2>
+  <p>Si on modifie cette politique de façon importante, on te prévient dans l'app ou par e-mail avant que les changements s'appliquent. La date de dernière mise à jour figure en haut de cette page.</p>
+</Prose>

@@ -1,0 +1,17 @@
+---
+/** Bulle de discussion avec avatar et prénom. */
+import Avatar from '../atoms/Avatar.astro';
+import type { BubbleCopy } from '../../content/landing';
+interface Props {
+  bubble: BubbleCopy;
+  class?: string;
+  /** id du paragraphe (texte modifié par le script) */
+  textId?: string;
+  reveal?: boolean;
+}
+const { bubble, class: cls, textId, reveal = true } = Astro.props;
+---
+<div class:list={['bub', cls, { d: bubble.dark, me: bubble.me }]} data-r={reveal ? 'bub' : undefined}>
+  <Avatar avatar={bubble.avatar} />
+  <div><span class="who" style={bubble.whoColor ? `color:${bubble.whoColor}` : undefined}>{bubble.who}</span><p id={textId}>{bubble.text}</p></div>
+</div>

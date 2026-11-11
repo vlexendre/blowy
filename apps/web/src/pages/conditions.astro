@@ -1,0 +1,70 @@
+---
+/** Conditions d'utilisation. */
+import Prose from '../layouts/Prose.astro';
+import { LEGAL, SITE_URL, SUPPORT_EMAIL } from '../config/site';
+const mail = `mailto:${SUPPORT_EMAIL}`;
+---
+<Prose
+  title="Conditions d'utilisation — Blowy"
+  heading="Conditions d'utilisation"
+  description="Les règles du contrat entre toi et Blowy : âge minimum, compte, usage acceptable, Blowy+, résiliation."
+  intro="Le contrat entre toi et Blowy. En créant un compte, tu l'acceptes : prends deux minutes pour le lire."
+>
+  <h2>1. Qui sommes-nous</h2>
+  <p>L'application Blowy et le site <a href={SITE_URL}>blowy.app</a> sont édités par <strong>{LEGAL.entity}</strong> (« Blowy », « nous »). Contact : <a href={mail}>{SUPPORT_EMAIL}</a>.</p>
+
+  <h2>2. Ce qu'est Blowy</h2>
+  <p>Blowy est une messagerie où chaque personne élève un pet virtuel. Ton pet a un caractère (4 jauges qui bougent avec ce que tu fais), il parle dans tes chats, et il peut te faire croiser d'autres pets, d'abord ceux des potes de tes potes. Chaque lien entre deux personnes a 7 vies, des niveaux, une photo du jour et des souvenirs. Les messages des pets sont générés automatiquement : ce ne sont pas des personnes.</p>
+
+  <h2>3. Qui peut s'inscrire</h2>
+  <ul>
+    <li><strong>Tu dois avoir 18 ans ou plus.</strong> On te demande ta date de naissance à l'inscription ; donner une fausse date est interdit et entraîne la fermeture du compte.</li>
+    <li><strong>Un seul compte par personne</strong>, à ton nom ou sous un surnom, mais pour une vraie personne : toi. Pas de compte partagé, pas de compte au nom de quelqu'un d'autre.</li>
+    <li>Tu ne dois pas avoir été exclu de Blowy auparavant.</li>
+  </ul>
+
+  <h2>4. Ton compte</h2>
+  <p>Tu te connectes avec un code envoyé à ton adresse e-mail. Garde l'accès à cette boîte mail pour toi : ce qui se passe sur ton compte est sous ta responsabilité. Si tu penses que quelqu'un y a accédé, écris-nous tout de suite.</p>
+
+  <h2>5. Ce que tu t'engages à faire (et à ne pas faire)</h2>
+  <p>Tu utilises Blowy dans le respect de la loi, des autres et des <a href="/regles">règles de la communauté</a>, qui font partie de ces conditions. En particulier, il est interdit :</p>
+  <ul>
+    <li>de harceler, menacer, insulter ou humilier quelqu'un, ou d'inciter à la haine ;</li>
+    <li>de publier ou d'envoyer de la nudité, du contenu sexuel, violent ou illégal, y compris en photo du jour ;</li>
+    <li>d'impliquer une personne mineure de quelque manière que ce soit ;</li>
+    <li>de te faire passer pour quelqu'un d'autre ou de créer de faux profils ;</li>
+    <li>d'envoyer du spam, de la publicité, des arnaques ou des liens malveillants ;</li>
+    <li>de partager des informations privées ou des photos d'une autre personne sans son accord ;</li>
+    <li>d'automatiser l'usage du service (robots, extraction de données), de contourner ses limites ou d'en perturber le fonctionnement.</li>
+  </ul>
+
+  <h2>6. Ce que tu publies</h2>
+  <p>Tes messages et tes photos restent à toi. Tu nous accordes seulement le droit de les stocker, de les afficher aux personnes concernées et de les traiter techniquement, le temps nécessaire pour faire fonctionner Blowy. Ce droit prend fin quand le contenu est supprimé. Tu garantis que tu as le droit de publier ce que tu publies.</p>
+  <p>Si un contenu enfreint ces conditions ou la loi, on peut le retirer, notamment après un signalement.</p>
+
+  <h2>7. Signalement, blocage et modération</h2>
+  <p>Tu peux signaler ou bloquer une personne à tout moment depuis l'app (voir les <a href="/regles">règles de la communauté</a>). On examine les signalements et on peut, selon la gravité : avertir, retirer un contenu, restreindre certaines fonctions, suspendre ou fermer un compte. Lorsque c'est possible, on t'explique la décision et tu peux la contester en écrivant à <a href={mail}>{SUPPORT_EMAIL}</a>.</p>
+
+  <h2>8. Gratuit, et Blowy+ en option</h2>
+  <p>Blowy est gratuit et sans publicité. Un abonnement facultatif, <strong>Blowy+</strong>, est prévu pour aller plus vite (plus de rencontres à la fois, et d'autres bonus). <strong>Il n'est pas encore en vente</strong> : rien ne peut t'être facturé aujourd'hui. Quand il le sera, son prix, sa durée et ses conditions te seront présentés clairement avant tout achat, qui passera par l'App Store ou Google Play ; tu pourras le résilier depuis les réglages de ton store, et ces conditions seront mises à jour en conséquence. L'essentiel de Blowy restera gratuit.</p>
+
+  <h2>9. Fin du contrat</h2>
+  <ul>
+    <li><strong>De ton côté</strong>, tu peux partir quand tu veux : dans l'app, <strong>Moi → Supprimer mon compte</strong>. La suppression est définitive (voir la <a href="/confidentialite">politique de confidentialité</a>).</li>
+    <li><strong>De notre côté</strong>, on peut suspendre ou fermer ton compte si tu ne respectes pas ces conditions, si la loi nous y oblige, ou en cas de risque pour la sécurité d'autres personnes. Sauf urgence ou manquement grave, on te prévient avant.</li>
+    <li>Si on arrête un jour le service, on te prévient au moins 30 jours à l'avance.</li>
+  </ul>
+
+  <h2>10. Disponibilité et responsabilité</h2>
+  <p>On fait de notre mieux pour que Blowy marche bien et tout le temps, mais on ne peut pas garantir l'absence de panne, de bug ou d'interruption, notamment pendant les mises à jour. Les pets, leurs jauges, les vies et les niveaux sont des éléments de jeu sans valeur monétaire.</p>
+  <p>Chacun est responsable de ce qu'il publie et de ses rencontres. Si tu décides de voir quelqu'un en vrai, prends les précautions d'usage : un lieu public, quelqu'un de confiance prévenu. Rien dans ces conditions ne limite les droits que la loi te garantit en tant que consommateur.</p>
+
+  <h2>11. Propriété intellectuelle</h2>
+  <p>La marque Blowy, les pets (Nino, Suzie, Gaston, Pia et leurs variantes), les illustrations, les textes et le logiciel appartiennent à {LEGAL.entity} ou à ses partenaires. Tu peux partager des captures d'écran de tes propres échanges, mais pas copier ou réutiliser ces éléments à d'autres fins.</p>
+
+  <h2>12. Changements</h2>
+  <p>On peut faire évoluer ces conditions, par exemple quand une nouvelle fonction arrive. Pour un changement important, on te prévient dans l'app ou par e-mail avant qu'il s'applique ; si tu n'es pas d'accord, tu peux supprimer ton compte.</p>
+
+  <h2>13. Droit applicable et litiges</h2>
+  <p>Ces conditions sont régies par le droit français. En cas de problème, écris-nous d'abord à <a href={mail}>{SUPPORT_EMAIL}</a> : on cherchera une solution amiable. Tu peux aussi recourir gratuitement à un médiateur de la consommation. À défaut d'accord, les tribunaux compétents sont ceux prévus par la loi.</p>
+</Prose>

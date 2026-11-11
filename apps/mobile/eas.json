@@ -1,0 +1,49 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "http://localhost:3000",
+        "EXPO_PUBLIC_WEB_URL": "https://blowy.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://sqxebllmatfflopqddaw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
+        "EXPO_PUBLIC_AUTH": "supabase"
+      },
+      "node": "22.12.0"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.blowy.app",
+        "EXPO_PUBLIC_WEB_URL": "https://blowy.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://sqxebllmatfflopqddaw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
+        "EXPO_PUBLIC_AUTH": "supabase"
+      },
+      "node": "22.12.0"
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.blowy.app",
+        "EXPO_PUBLIC_WEB_URL": "https://blowy.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://sqxebllmatfflopqddaw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
+        "EXPO_PUBLIC_AUTH": "supabase"
+      },
+      "node": "22.12.0"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "language": "fr-FR"
+      }
+    }
+  }
+}

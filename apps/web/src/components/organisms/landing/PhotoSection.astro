@@ -1,0 +1,47 @@
+---
+/** 6. Photo du jour : léa poste, la série passe à 12, +1 vie. */
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { photo as c, sections } from '../../../content/landing';
+---
+<SnapSection section={sections.photo} panel="p-orange s-photo" light>
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="pics">
+    <div class="tile a" data-r="card"><span class="st ok">{c.mine.status}</span>{c.mine.label}</div>
+    <div class="tile b" data-r="card"><span class="st" id="least">{c.theirs.waiting}</span>{c.theirs.label}</div>
+    <div class="flame" data-r="stk"><img class="stk" src="/img/ic_flamme.webp" alt="" /><b id="streak">{c.streakAfter}</b><span class="sr">{c.streakSr}</span></div>
+    <div class="plus1" id="plus1">{c.plusOne} <span>♥</span></div>
+  </div>
+  <div class="week" data-r="up" aria-label={c.weekLabel}>
+    {c.week.map((d) => <span class={d.state}>{d.d}</span>)}<em class="hide-short">{c.weekText}</em>
+  </div>
+</SnapSection>
+<style is:global>
+.s-photo{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"tx" "pics" "week"}
+.s-photo .tx{grid-area:tx}
+.s-photo .hd{--k:10}
+.pics{grid-area:pics;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0;padding:14px 8px 0}
+.tile{position:relative;border-radius:22px;overflow:hidden;min-height:0;box-shadow:0 18px 34px rgba(120,50,0,.25);border:4px solid #fff;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:800;font-size:var(--ts)}
+.tile.a{background:radial-gradient(60% 50% at 30% 30%,#E6FF8A,transparent 70%),radial-gradient(70% 60% at 80% 80%,#6D3DF0,transparent 70%),linear-gradient(160deg,#FFB000,#3B2A8A);rotate:-4deg}
+.tile.b{background:radial-gradient(60% 50% at 70% 30%,#FFD1E8,transparent 70%),radial-gradient(70% 60% at 20% 80%,#FF5A3C,transparent 70%),linear-gradient(200deg,#FF8FC6,#8C1D4F);rotate:3deg}
+.tile .st{position:absolute;left:10px;top:10px;font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(20,16,31,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.tile .st.ok{background:var(--lime);color:var(--ink)}
+.flame{position:absolute;left:50%;top:-2%;translate:-50% 0;z-index:3;width:clamp(76px,13svh,150px);aspect-ratio:1}
+.flame img{width:100%;height:100%}
+.flame b{position:absolute;left:0;right:0;top:46%;text-align:center;font-family:var(--display);font-weight:400;font-size:clamp(26px,4.6svh,52px);line-height:1;color:#fff;text-shadow:0 2px 0 rgba(140,30,0,.5)}
+.plus1{position:absolute;right:4%;bottom:10%;z-index:4;background:var(--ink);color:#fff;font-weight:800;font-size:var(--ts);padding:8px 14px;border-radius:999px;box-shadow:0 10px 20px rgba(20,16,31,.3);rotate:-6deg}
+.plus1 span{color:var(--coral)}
+.week{grid-area:week;display:flex;gap:6px;align-items:center}
+.week span{width:clamp(30px,4.4svh,44px);height:clamp(30px,4.4svh,44px);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;background:rgba(20,16,31,.1)}
+.week span.d{background:var(--ink);color:var(--orange)}
+.week span.t{background:#fff;box-shadow:0 0 0 3px var(--ink)}
+.week em{font-style:normal;font-weight:700;font-size:var(--ts);margin-left:6px}
+@media (min-width:900px){
+  .s-photo{grid-template-columns:1fr 1fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". pics" "tx pics" "week pics" ". pics";column-gap:5vw;align-items:center}
+  .pics{width:100%;max-width:min(600px,64svh);justify-self:center;padding-top:7svh;gap:24px}
+  .tile{aspect-ratio:3/4}
+  .week{margin-top:2svh}
+}
+</style>

@@ -1,0 +1,53 @@
+---
+/** 7. Rencontres : pia et nino se parlent avant toi ; rien sans ton tap. */
+import Button from '../../atoms/Button.astro';
+import Chip from '../../atoms/Chip.astro';
+import PetImage from '../../atoms/PetImage.astro';
+import ChatBubble from '../../molecules/ChatBubble.astro';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { encounters as c, sections } from '../../../content/landing';
+---
+<SnapSection section={sections.rencontres} panel="p-coral s-meet">
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="mstage">
+    <div class="mpet pia" data-r="pop"><div class="bob" style="height:100%"><PetImage src={c.pia.src} alt={c.pia.alt} loading="lazy" /></div></div>
+    <div class="mpet nino" data-r="pop"><div class="bob" style="height:100%"><PetImage src={c.nino.src} alt={c.nino.alt} loading="lazy" /></div></div>
+    <ChatBubble bubble={c.m1} class="m1" />
+    <ChatBubble bubble={c.m2} class="m2" />
+    <Chip class="match" reveal>{c.match}</Chip>
+  </div>
+  <div class="mcta" data-r="up">
+    <span class="lbl">{c.ctaLabel}</span>
+    <div class="btns"><Button variant="w" href="#go">{c.yes}</Button><Button variant="g" href="#go">{c.no}</Button></div>
+  </div>
+</SnapSection>
+<style is:global>
+.s-meet{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"tx" "stage" "cta"}
+.s-meet .tx{grid-area:tx}
+.s-meet .hd{--k:9}
+.mstage{grid-area:stage;position:relative;min-height:0}
+.mpet{position:absolute;bottom:0;height:min(74%,52vw);aspect-ratio:9/10}
+.mpet img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 18px 22px rgba(80,10,0,.3))}
+.mpet.pia{left:-4%}
+.mpet.nino{right:-4%}
+.mstage .bub{position:absolute;z-index:2;max-width:68%}
+.mstage .m1{left:0;top:0}
+.mstage .m2{right:0;top:22%}
+.chip.match{position:absolute;left:50%;bottom:6%;translate:-50% 0;z-index:3;background:#fff;color:var(--ink)}
+.mcta{grid-area:cta;display:flex;flex-direction:column;gap:8px}
+.mcta .lbl{opacity:.8}
+.btns{display:flex;gap:8px;flex-wrap:nowrap}
+@media (max-width:899px){.btns .btn{padding:0 16px}}
+@media (min-width:900px){
+  .s-meet{grid-template-columns:1fr 1.1fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". stage" "tx stage" "cta stage" ". stage";column-gap:3vw;align-items:center}
+  .mstage{height:100%}
+  .mpet{height:min(66%,29vw)}
+  .mpet.pia{left:2%}.mpet.nino{right:2%}
+  .mstage .m1{left:6%;top:22%}
+  .mstage .m2{right:4%;top:36%}
+  .mcta{margin-top:3svh}
+}
+</style>

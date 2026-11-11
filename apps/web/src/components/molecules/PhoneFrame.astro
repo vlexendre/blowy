@@ -1,0 +1,11 @@
+---
+/** Cadre de téléphone (bord encre, écran sombre). */
+interface Props {
+  class?: string;
+  reveal?: boolean;
+}
+const { class: cls, reveal = true } = Astro.props;
+---
+<div class:list={['phone', cls]} data-r={reveal ? 'pop' : undefined}>
+  <div class="scr"><slot /></div>
+</div>

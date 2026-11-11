@@ -1,0 +1,76 @@
+---
+/** Gabarit des pages de texte (confidentialité, conditions, règles, aide) : colonne lisible, date de mise à jour. */
+import Base from './Base.astro';
+import TopBar from '../components/organisms/TopBar.astro';
+import SiteFooter from '../components/organisms/SiteFooter.astro';
+import { LEGAL } from '../config/site';
+
+interface Props {
+  title: string;
+  /** titre affiché (gros titre Anton) */
+  heading: string;
+  description: string;
+  /** chapeau sous le titre */
+  intro?: string;
+  /** affiche « dernière mise à jour » (true par défaut) */
+  dated?: boolean;
+}
+const { title, heading, description, intro, dated = true } = Astro.props;
+---
+<Base title={title} description={description} bodyClass="prose-body">
+  <TopBar />
+  <main id="main" class="prose-main">
+    <article class="prose">
+      <header class="prose-head">
+        <h1>{heading}</h1>
+        {intro && <p class="prose-intro">{intro}</p>}
+        {dated && <p class="prose-date">Dernière mise à jour : <time datetime={LEGAL.updatedAtIso}>{LEGAL.updatedAt}</time></p>}
+      </header>
+      <slot />
+    </article>
+  </main>
+  <SiteFooter slot="footer" class="prose-foot" />
+</Base>
+<style is:global>
+.prose-body{background:var(--bg)}
+.prose-main{position:relative;padding:calc(var(--top) + 16px) max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px))}
+.prose-main::before{content:"";position:absolute;inset:0 0 auto 0;height:520px;z-index:-1;pointer-events:none;background:radial-gradient(60% 70% at 20% 0%,rgba(109,61,240,.35),transparent 70%),radial-gradient(40% 50% at 90% 10%,rgba(255,184,0,.14),transparent 70%)}
+.prose{max-width:720px;margin:0 auto;font-size:17px;line-height:1.6;color:#E7E4F2}
+.prose-head{margin-bottom:36px}
+.prose h1{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(44px,11vw,84px);line-height:.95;color:#fff;overflow-wrap:anywhere}
+.prose-intro{margin-top:20px;font-size:19px;color:#fff;font-weight:600;text-wrap:pretty}
+.prose-date{margin-top:12px;font-size:14px;color:var(--mute)}
+.prose h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(26px,5vw,34px);line-height:1.05;color:#fff;margin:44px 0 12px;letter-spacing:.01em}
+.prose h3{font-size:18px;font-weight:800;color:#fff;margin:26px 0 8px}
+.prose p,.prose ul,.prose ol,.prose dl,.prose table{margin:0 0 14px}
+.prose ul,.prose ol{padding-left:1.3em}
+.prose li{margin:4px 0}
+.prose li::marker{color:var(--lime)}
+.prose strong{color:#fff}
+.prose a{color:var(--lime);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.prose a:hover{text-decoration-thickness:2px}
+.prose .note{padding:14px 18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:15px}
+.prose .tbl{overflow-x:auto;margin:0 0 14px;border-radius:18px;border:1px solid var(--line)}
+.prose table{width:100%;border-collapse:collapse;font-size:15px;margin:0}
+.prose th,.prose td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+.prose tr:last-child td{border-bottom:0}
+.prose th{color:#fff;background:rgba(255,255,255,.05);font-weight:800}
+.prose details{border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);margin:0 0 10px}
+.prose details[open]{background:rgba(255,255,255,.08)}
+.prose summary{cursor:pointer;list-style:none;padding:16px 48px 16px 18px;font-weight:800;color:#fff;position:relative;font-size:17px;line-height:1.35;border-radius:18px}
+.prose summary::-webkit-details-marker{display:none}
+.prose summary::after{content:"+";position:absolute;right:16px;top:50%;translate:0 -50%;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
+.prose details[open] summary::after{content:"–";background:var(--lime);color:var(--ink)}
+.prose details>div{padding:0 18px 4px}
+@media (max-width:599px){
+  .prose .tbl{overflow:visible}
+  .prose .tbl table,.prose .tbl tbody,.prose .tbl tr,.prose .tbl td{display:block}
+  .prose .tbl thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .prose .tbl tr{padding:12px 14px;border-bottom:1px solid var(--line)}
+  .prose .tbl tr:last-child{border-bottom:0}
+  .prose .tbl td{padding:2px 0;border:0}
+  .prose .tbl td:first-child{color:#fff;font-weight:800;margin-bottom:2px}
+  .prose .tbl td[data-label]::before{content:attr(data-label) " : ";color:var(--mute);font-weight:700}
+}
+.prose-foot{margin:0 auto 16px;width:calc(100% - 32px)}
+</style>

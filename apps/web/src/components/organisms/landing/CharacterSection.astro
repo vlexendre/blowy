@@ -1,0 +1,67 @@
+---
+/** 3. Caractère : nino change de forme, les 4 jauges bougent. */
+import PetImage from '../../atoms/PetImage.astro';
+import Sticker from '../../atoms/Sticker.astro';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { character as c, sections } from '../../../content/landing';
+const initial = c.presets[c.initial];
+const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v) / 2}%`;
+---
+<SnapSection section={sections.caractere} panel="p-violet s-car">
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="cars" data-r="pop">
+    <div class="bob">
+      {c.moods.map((m) => <PetImage class={m.key === c.initial ? 'on' : undefined} data-m={m.key} src={`/img/nino_evo_${m.key}.webp`} alt={m.alt} loading={m.key === c.initial ? undefined : 'lazy'} />)}
+    </div>
+  </div>
+  <div class="gauges" data-r="up" aria-live="polite">
+    {
+      c.gauges.map((g, i) => (
+        <div class="g">
+          <div class="gl"><span>{g.low}</span><span>{g.high}</span></div>
+          <div class="tr" role="meter" aria-label={g.aria} aria-valuemin="-100" aria-valuemax="100" aria-valuenow={String(initial[i])}>
+            <i class="fill" style={fill(initial[i] ?? 0)}></i>
+            <i class="knob" style={`left:${50 + (initial[i] ?? 0) / 2}%`}></i>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  <div class="moods" role="group" aria-label={c.groupLabel} data-r="up">
+    {c.moods.map((m) => <button type="button" data-m={m.key} aria-pressed={m.key === c.initial ? 'true' : 'false'}>{m.key}</button>)}
+  </div>
+  <Sticker class="s3" src="/img/ic_eclair.webp" reveal />
+</SnapSection>
+<style is:global>
+.s-car{grid-template-columns:42% 1fr;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"tx tx" "stage gauges" "moods moods"}
+.s-car .tx{grid-area:tx}
+.s-car .hd{--k:19}
+.cars{grid-area:stage;position:relative;min-height:0;display:flex;justify-content:center;align-items:center}
+.cars .bob{position:relative;height:100%;max-height:clamp(150px,30svh,520px);aspect-ratio:9/10}
+.cars img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0}
+.cars img.on{opacity:1}
+.gauges{grid-area:gauges;align-self:center;display:flex;flex-direction:column;gap:clamp(8px,1.6svh,18px);background:rgba(20,16,31,.28);border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:clamp(12px,1.8svh,22px)}
+.g .gl{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:6px;gap:6px}
+.g .gl span{opacity:.6;transition:opacity .3s}
+.g .gl span.hi{opacity:1}
+.tr{position:relative;height:10px;border-radius:999px;background:rgba(255,255,255,.18)}
+.tr::before{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:rgba(255,255,255,.45);border-radius:2px}
+.fill{position:absolute;top:0;bottom:0;border-radius:999px;background:var(--lime)}
+.knob{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.moods{grid-area:moods;display:flex;flex-wrap:wrap;gap:8px}
+.moods button{height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);font-weight:800;font-size:15px;transition:background .2s,color .2s,transform .2s}
+.moods button:hover{transform:translateY(-2px)}
+.moods button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.s-car .s3{position:absolute;right:5%;top:4%;width:clamp(40px,6svh,72px)}
+@media (min-width:900px){
+  .s-car{grid-template-columns:1.25fr .85fr .8fr;grid-template-rows:minmax(0,1fr) auto;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". stage gauges" "tx stage gauges" "moods stage gauges" ". stage gauges";column-gap:3vw;align-items:center}
+  .moods{margin-top:1svh}
+  .cars{height:100%}
+  .cars .bob{max-height:min(66svh,620px)}
+  .g .gl{font-size:14px}
+  .tr{height:12px}
+}
+</style>

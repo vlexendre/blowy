@@ -1,0 +1,9 @@
+---
+/** Question repliable. La réponse accepte du HTML simple venu de src/content. */
+interface Props {
+  question: string;
+  answer: string;
+}
+const { question, answer } = Astro.props;
+---
+<details><summary>{question}<span class="pl" aria-hidden="true"></span></summary><div class="ans" set:html={answer} /></details>

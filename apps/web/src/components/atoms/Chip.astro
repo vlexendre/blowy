@@ -1,0 +1,9 @@
+---
+/** Pastille de texte. */
+interface Props {
+  class?: string;
+  reveal?: boolean;
+}
+const { class: cls, reveal = false } = Astro.props;
+---
+<span class:list={['chip', cls]} data-r={reveal ? 'stk' : undefined}><slot /></span>

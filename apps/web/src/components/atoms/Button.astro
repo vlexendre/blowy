@@ -1,0 +1,11 @@
+---
+/** Bouton-lien pilule. w = blanc, g = verre, l = jaune (texte sombre), k = encre. */
+interface Props {
+  href: string;
+  variant?: 'w' | 'g' | 'l' | 'k';
+  class?: string;
+  [attr: `data-${string}`]: string | undefined;
+}
+const { href, variant = 'l', class: cls, ...rest } = Astro.props;
+---
+<a class:list={['btn', variant, cls]} href={href} {...rest}><slot /></a>

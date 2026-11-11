@@ -1,0 +1,13 @@
+---
+/** Autocollant décoratif (icône avec contour blanc). `reveal` l'anime à l'entrée de la section. */
+interface Props {
+  src: string;
+  class?: string;
+  reveal?: boolean;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+}
+const { src, class: cls, reveal = false, width, height, loading } = Astro.props;
+---
+<img class:list={[cls, 'stk']} data-r={reveal ? 'stk' : undefined} src={src} alt="" width={width} height={height} loading={loading} />

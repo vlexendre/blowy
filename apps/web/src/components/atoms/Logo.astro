@@ -1,0 +1,10 @@
+---
+/** Logo texte « blowy. » */
+interface Props {
+  href: string;
+  label?: string;
+  class?: string;
+}
+const { href, label, class: cls } = Astro.props;
+---
+<a class:list={['logo', cls]} href={href} aria-label={label}>blowy<i>.</i></a>

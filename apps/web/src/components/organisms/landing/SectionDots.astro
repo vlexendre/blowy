@@ -1,0 +1,7 @@
+---
+/** Points de navigation verticaux (grand écran). */
+import { nav, sectionOrder, sections } from '../../../content/landing';
+---
+<nav class="dots" aria-label={nav.dotsLabel}>
+  {sectionOrder.map((id) => <a href={`#${id}`} aria-label={sections[id].dot}></a>)}
+</nav>

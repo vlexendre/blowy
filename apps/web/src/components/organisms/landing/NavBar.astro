@@ -1,0 +1,14 @@
+---
+/** Barre de navigation flottante (pilule en verre). */
+import Logo from '../../atoms/Logo.astro';
+import { nav } from '../../../content/landing';
+---
+<header class="nav">
+  <div class="pill">
+    <Logo href="#top" label={nav.logoLabel} />
+    <nav class="links" aria-label={nav.sectionsLabel}>
+      {nav.links.map((l) => <a href={`#${l.href}`} data-nav={l.href}>{l.label}</a>)}
+    </nav>
+    <a class="dl" href="#go"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11m0 0 4.5-4.5M12 14l-4.5-4.5M5 19h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{nav.download}</a>
+  </div>
+</header>

@@ -1,0 +1,43 @@
+---
+/** Règles de la communauté. Les motifs de signalement viennent de @blowy/content (les mêmes que dans l'app). */
+import { reportReasonLabel } from '@blowy/content';
+import { REPORT_REASONS } from '@blowy/contract';
+import Prose from '../layouts/Prose.astro';
+import { SUPPORT_EMAIL } from '../config/site';
+const mail = `mailto:${SUPPORT_EMAIL}`;
+---
+<Prose
+  title="Règles de la communauté — Blowy"
+  heading="Les règles"
+  description="Les règles de la communauté Blowy : respect, pas de harcèlement, pas de mineurs, pas de nudité. Comment signaler et bloquer."
+  intro="Blowy, c'est des pets mignons et des vrais humains derrière. Pour que ça reste sympa, quelques règles simples."
+>
+  <h2>Respecte les gens</h2>
+  <p>Derrière chaque pet, il y a une vraie personne. Les vannes entre potes, oui ; les humiliations, non. Si quelqu'un ne répond pas, ne salue pas en retour ou laisse un lien devenir fantôme, c'est son choix : on ne relance pas en boucle et on ne recrée pas de compte pour contourner un refus ou un blocage. Ici, rien ne se fait sans ton tap, et sans celui de l'autre.</p>
+
+  <h2>Pas de harcèlement</h2>
+  <p>Interdit : insultes, menaces, messages répétés non désirés, chantage, moqueries sur le physique, l'origine, la religion, le genre, l'orientation sexuelle ou le handicap, incitation à la haine ou à la violence. Pareil pour la diffusion d'informations privées sur quelqu'un (adresse, numéro, photos) sans son accord.</p>
+
+  <h2>18 ans et plus, sans exception</h2>
+  <p>Blowy est réservé aux adultes. Tout compte appartenant à une personne mineure est supprimé. Tout contenu sexualisant un mineur est signalé aux autorités. Si tu penses parler à une personne mineure, signale-la avec le motif « {reportReasonLabel.mineur} ».</p>
+
+  <h2>Pas de nudité ni de contenu sexuel</h2>
+  <p>Ni dans les messages, ni en photo du jour, ni en photo de profil. Pas de contenu violent, choquant ou illégal non plus. La photo du jour, c'est ton café, ton chat, ta vue, ta tête du matin.</p>
+
+  <h2>Sois toi</h2>
+  <p>Un compte par personne, pour une vraie personne. Pas d'usurpation d'identité, pas de faux profil, pas d'arnaque, pas de spam ni de pub, pas de liens douteux.</p>
+
+  <h2>Signaler quelqu'un</h2>
+  <p>Depuis un chat ou la fiche d'une personne, ouvre le menu et choisis <strong>Signaler</strong>. Choisis le motif :</p>
+  <ul>{REPORT_REASONS.map((r) => <li>{reportReasonLabel[r]}</li>)}</ul>
+  <p>Tu peux ajouter quelques mots pour expliquer. La personne signalée ne sait pas qui l'a signalée. On examine chaque signalement et on peut avertir, retirer un contenu, suspendre ou fermer un compte.</p>
+
+  <h2>Bloquer quelqu'un</h2>
+  <p>Depuis le même menu, choisis <strong>Bloquer</strong>. La personne ne peut plus t'écrire, votre lien s'arrête, et vos pets ne se croiseront plus. Elle n'est pas prévenue. Tu peux retrouver et débloquer les personnes bloquées dans les réglages de l'app.</p>
+
+  <h2>En cas d'urgence</h2>
+  <p>Si toi ou quelqu'un d'autre êtes en danger, appelle le <strong>17</strong> (police) ou le <strong>112</strong>. Pour du cyberharcèlement ou des violences en ligne, le <strong>3018</strong> est gratuit, anonyme et confidentiel. Un contenu illégal peut aussi être signalé sur <a href="https://www.internet-signalement.gouv.fr" rel="noopener">internet-signalement.gouv.fr</a>.</p>
+
+  <h2>Une question, un doute ?</h2>
+  <p>Écris-nous à <a href={mail}>{SUPPORT_EMAIL}</a>. Un humain répond, pas un pet. Ces règles font partie des <a href="/conditions">conditions d'utilisation</a>.</p>
+</Prose>

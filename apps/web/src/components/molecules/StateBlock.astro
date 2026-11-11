@@ -1,0 +1,36 @@
+---
+/**
+ * Un état d'une page publique (chargement, introuvable, erreur…). Caché par défaut sauf `visible`.
+ * Les textes peuvent contenir {name} / {pet} : ils sont rendus tels quels dans data-tpl et remplis par le script.
+ */
+interface Props {
+  state: string;
+  title?: readonly string[];
+  text?: string;
+  /** image de pet fixe (sinon : aucune ; un slot « pet » peut en fournir une) */
+  pet?: { src: string; alt: string };
+  visible?: boolean;
+  /** élément de titre */
+  level?: 1 | 2;
+}
+const { state, title, text, pet, visible = false, level = 1 } = Astro.props;
+const Tag = level === 1 ? 'h1' : 'h2';
+const hasTpl = (s: string) => /\{\w+\}/.test(s);
+---
+<section class="pub-state" data-state={state} hidden={!visible} aria-live="polite">
+  <slot name="pet">{pet && <img class="pub-pet" src={pet.src} alt={pet.alt} width="900" height="1000" />}</slot>
+  <slot name="before" />
+  {
+    title && (
+      <Tag class="pub-title" tabindex="-1">
+        {title.map((l, i) => (
+          <span class:list={['ln', { dim: i > 0 && title.length > 2 && i === title.length - 1 }]} data-tpl={hasTpl(l) ? l : undefined}>
+            {l}
+          </span>
+        ))}
+      </Tag>
+    )
+  }
+  {text && <p class="pub-text" data-tpl={hasTpl(text) ? text : undefined}>{text}</p>}
+  <slot />
+</section>

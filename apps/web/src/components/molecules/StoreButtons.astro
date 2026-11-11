@@ -1,0 +1,13 @@
+---
+/** Les deux boutons de store côte à côte. */
+import StoreBadge from '../atoms/StoreBadge.astro';
+interface Props {
+  class?: string;
+  reveal?: boolean;
+}
+const { class: cls, reveal = false } = Astro.props;
+---
+<div class:list={['stores', cls]} data-r={reveal ? 'up' : undefined}>
+  <StoreBadge store="apple" />
+  <StoreBadge store="google" />
+</div>

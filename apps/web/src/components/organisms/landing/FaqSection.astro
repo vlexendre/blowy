@@ -1,0 +1,46 @@
+---
+/** 10. Questions fréquentes (une seule ouverte à la fois). */
+import PetImage from '../../atoms/PetImage.astro';
+import FaqItem from '../../molecules/FaqItem.astro';
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { SUPPORT_EMAIL } from '../../../config/site';
+import { faq as c, sections } from '../../../content/landing';
+---
+<SnapSection section={sections.faq} panel="p-night s-faq">
+  <SectionTitle lines={c.title}>
+    <p class="side">{c.sideBefore} <a href={`mailto:${SUPPORT_EMAIL}`}>{c.sideLink}</a>{c.sideAfter}</p>
+  </SectionTitle>
+  <div class="faq" data-r="up">
+    {c.items.map((i) => <FaqItem question={i.q} answer={i.a} />)}
+  </div>
+  <PetImage class="fq" src="/img/suzie_joie.webp" loading="lazy" />
+</SnapSection>
+<style is:global>
+.s-faq{grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx" "faq"}
+.s-faq .tx{grid-area:tx}
+.s-faq .hd{--k:10;--hs:7.2svh}
+.faq{grid-area:faq;display:flex;flex-direction:column;gap:6px;min-height:0}
+.faq details{border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);overflow:hidden}
+.faq details[open]{background:rgba(255,255,255,.09)}
+.faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:clamp(46px,6.4svh,64px);padding:0 8px 0 16px;font-weight:800;font-size:clamp(14px,min(1.4vw,2.1svh),19px);cursor:pointer}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .pl{flex:0 0 auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);position:relative;transition:transform .35s cubic-bezier(.2,.8,.2,1),background .2s}
+.faq summary .pl::before,.faq summary .pl::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;margin:-1px 0 0 -6px;background:currentColor;border-radius:2px}
+.faq summary .pl::after{rotate:90deg}
+.faq details[open] .pl{transform:rotate(45deg);background:var(--lime);color:var(--ink)}
+.faq .ans{padding:0 16px 12px;color:var(--mute);font-size:var(--ts);line-height:1.4;max-width:40em}
+.faq .ans b{color:#fff}
+.s-faq .side{font-size:var(--ts);color:var(--mute);margin-top:10px;display:none}
+.s-faq .side a{color:var(--lime);font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.s-faq .fq{display:none}
+@media (min-width:900px){
+  .s-faq{grid-template-columns:.8fr 1.2fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"tx faq";column-gap:5vw;align-items:center}
+  .s-faq .hd{--hs:10svh}
+  .s-faq .side{display:block}
+  .faq{gap:10px}
+  .faq summary{padding:0 12px 0 22px}
+  .faq .ans{padding:0 22px 18px}
+  .s-faq .fq{display:block;position:absolute;left:4%;bottom:-4%;width:min(26svh,250px);rotate:-6deg;opacity:.95}
+}
+</style>

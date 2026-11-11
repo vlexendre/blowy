@@ -1,0 +1,3 @@
+# Cloudflare Pages : les liens partagés /m/CODE et /i/CODE servent la page statique correspondante (l'URL reste intacte).
+/m/* /m/index.html 200
+/i/* /i/index.html 200
