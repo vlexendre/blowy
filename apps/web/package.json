@@ -1,0 +1,19 @@
+{
+  "name": "@blowy/web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@blowy/content": "workspace:*",
+    "@blowy/contract": "workspace:*",
+    "@blowy/tokens": "workspace:*",
+    "astro": "^7.4.11"
+  },
+  "devDependencies": { "@astrojs/check": "^0.9.12" }
+}

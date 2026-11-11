@@ -1,0 +1,22 @@
+{
+  "name": "blowy",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Blowy — élève ton pet. il te présente du monde.",
+  "packageManager": "pnpm@10.28.0",
+  "engines": { "node": ">=22.12" },
+  "scripts": {
+    "dev:api": "pnpm --filter @blowy/api dev",
+    "dev:web": "pnpm --filter @blowy/web dev",
+    "dev:mobile": "pnpm --filter @blowy/mobile start",
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

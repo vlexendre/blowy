@@ -1,0 +1,12 @@
+node_modules
+dist
+.expo
+.astro
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+ios
+android
+.DS_Store
+supabase/.temp
