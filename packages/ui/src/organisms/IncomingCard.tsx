@@ -23,10 +23,13 @@ export interface IncomingCardProps {
   onDecline: () => void;
   accepting?: boolean;
   declining?: boolean;
+  /** Lien discret vers le détail (« voir de plus près »). */
+  openLabel?: string;
+  onOpen?: () => void;
 }
 
 /** Quelqu'un a salué ton pet : accepter (le lien se crée) ou décliner. */
-export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptLabel, declineLabel, onAccept, onDecline, accepting, declining }: IncomingCardProps) {
+export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptLabel, declineLabel, onAccept, onDecline, accepting, declining, openLabel, onOpen }: IncomingCardProps) {
   const { from, compatibility, intro } = incoming;
   const tint = speciesColor[from.pet.species];
   return (
@@ -57,6 +60,7 @@ export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptL
           {intro}
         </Text>
       </View>
+      {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
       <View style={[layout.row, layout.gapSm]}>
         <Button label={declineLabel} variant="ghost" size="md" onPress={onDecline} loading={declining} disabled={accepting} style={layout.fill} />
         <Button label={acceptLabel} variant="accent" size="md" onPress={onAccept} loading={accepting} disabled={declining} style={layout.fill} />
@@ -67,5 +71,6 @@ export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptL
 
 const styles = StyleSheet.create({
   compat: { alignItems: 'flex-end' },
+  open: { alignSelf: 'flex-start' },
   intro: { padding: space.md, borderRadius: radius.md, borderBottomLeftRadius: space.xs + 2, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
 });

@@ -116,3 +116,20 @@ export function useArchiveLink() {
 
 /** Nombre total de messages non lus (pastille de l'onglet Chats). */
 export const totalUnread = (links: Link[] | undefined): number => (links ?? []).reduce((n, l) => n + l.unread, 0);
+
+export { chatDayLabel, isNewLink, shortDay, sortLinks, timeLabel, waitingForMyPhoto, weekStrip } from './format';
+export { ConfirmSheet, PhotoSourceSheet, ReportSheet } from './sheets';
+
+/** Message lisible d'une erreur d'API (codes du contrat), avec un repli. */
+export function errorText(error: unknown, fallback: string, byCode: Partial<Record<string, string>> = {}): string {
+  if (error && typeof error === 'object' && 'code' in error) {
+    const code = String((error as { code: unknown }).code);
+    const mapped = byCode[code];
+    if (mapped) return mapped;
+    if (code !== 'internal' && error instanceof Error && error.message) return error.message;
+  }
+  return fallback;
+}
+
+/** Messages du plus ancien au plus récent (ordre attendu par `ChatThread`). */
+export const chronological = (messages: readonly Message[]): Message[] => [...messages].reverse();

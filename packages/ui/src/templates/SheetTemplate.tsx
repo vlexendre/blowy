@@ -36,7 +36,7 @@ export function SheetTemplate({ visible, onClose, title, children, footer, close
             accessibilityViewIsModal
             style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, space.lg) }]}
           >
-            <InkProvider value={color.white}>
+            <InkProvider value={color.white} mute={color.mute}>
               <View style={styles.grabber} />
               <View style={[layout.rowBetween, layout.gapMd]}>
                 {title ? <Title text={title} variant="h2" style={layout.grow} /> : <View />}

@@ -1,5 +1,5 @@
 import type { Day } from '@blowy/domain';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso, isUniqueViolation } from '../../../persistence/supabase';
 import type { DailyPhotoRecord, DailyPhotosRepository } from '../ports';
 
@@ -22,7 +22,7 @@ const fromRow = (r: DailyPhotoRow): DailyPhotoRecord => ({
 });
 
 export class SupabaseDailyPhotosRepository implements DailyPhotosRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get table() {
     return this.client.from('daily_photos');

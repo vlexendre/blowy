@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso, isoOrNull } from '../../../persistence/supabase';
 import type { Profile, ProfilePatch, ProfilesRepository } from '../ports';
 
@@ -29,7 +29,7 @@ const fromRow = (r: ProfileRow): Profile => ({
 });
 
 export class SupabaseProfilesRepository implements ProfilesRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get table() {
     return this.client.from('profiles');

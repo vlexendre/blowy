@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { Avatar } from '../atoms/Avatar';
+import { Glyph } from '../atoms/Glyph';
 import { Icon } from '../atoms/Icon';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
@@ -23,12 +24,14 @@ export interface MessageBubbleProps {
   /** Libellé lu de la photo. */
   photoLabel?: string;
   onPhotoPress?: () => void;
+  /** Photo encore cachée (`kind: 'photo'` sans `mediaUrl`) : texte de la case verrouillée. */
+  lockedPhotoLabel?: string;
 }
 
 const AVATAR = 30;
 
 /** Une bulle du chat : moi (jaune, à droite), l'autre (blanche), un pet (nuit + visage), ou une pastille centrée. */
-export const MessageBubble = memo(function MessageBubble({ message, name, pet, person, continued, photoLabel, onPhotoPress }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({ message, name, pet, person, continued, photoLabel, onPhotoPress, lockedPhotoLabel }: MessageBubbleProps) {
   const { author, kind, body, mediaUrl } = message;
 
   if (author === 'system' || kind === 'event') {
@@ -53,6 +56,15 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
       <Pressable onPress={onPhotoPress} disabled={!onPhotoPress} accessibilityRole="image" accessibilityLabel={photoLabel ?? body ?? undefined} scaleTo={0.98}>
         <Image source={{ uri: mediaUrl }} contentFit="cover" transition={150} style={[styles.photo, mine ? styles.mineRadius : styles.otherRadius]} />
       </Pressable>
+    ) : kind === 'photo' && !body ? (
+      <View style={[styles.locked, mine ? styles.mineRadius : styles.otherRadius]} accessible accessibilityRole="image" accessibilityLabel={lockedPhotoLabel ?? photoLabel}>
+        <Glyph name="lock" size={22} color={color.white} />
+        {lockedPhotoLabel ? (
+          <Text variant="bodyBold" size={13} color={color.white} center>
+            {lockedPhotoLabel}
+          </Text>
+        ) : null}
+      </View>
     ) : (
       <View style={[styles.bubble, mine ? styles.mine : isPet ? styles.petBubble : styles.other]}>
         <Text variant="body" size={15} color={isPet ? color.white : color.dark} style={styles.bodyText}>
@@ -96,6 +108,18 @@ const styles = StyleSheet.create({
   mine: { backgroundColor: color.accent, borderBottomRightRadius: 6 },
   petBubble: { backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass, borderBottomLeftRadius: 6 },
   photo: { width: 200, height: 250, borderRadius: radius.md + 2, backgroundColor: color.card },
+  locked: {
+    width: 200,
+    height: 150,
+    borderRadius: radius.md + 2,
+    backgroundColor: color.card,
+    borderWidth: 1,
+    borderColor: veil.glassStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.sm,
+    padding: space.md,
+  },
   mineRadius: { borderBottomRightRadius: 6 },
   otherRadius: { borderBottomLeftRadius: 6 },
   pill: {

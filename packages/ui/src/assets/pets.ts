@@ -1,16 +1,23 @@
 /**
  * Registre typé des images de pets (packages/ui/assets/pets/*.webp).
  * Metro exige des chemins littéraux : chaque `require` est écrit en dur.
+ * Chaque espèce a le même jeu : bustes d'humeur, corps entier (debout, trois_quarts, cote, dos),
+ * visage carré (face), fantôme, malade, et une image par forme d'évolution.
  */
 import type { Mood, PetForm, Species } from '@blowy/domain';
 
 /** Module d'asset Metro (`require` statique). */
 export type Src = number;
 
-/** Humeurs du domaine + poses d'illustration (face = visage carré pour les avatars, cote = profil). */
-export type PetPose = Mood | 'face' | 'cote' | 'colere' | 'dodo' | 'malade' | 'fantome';
+/** Poses d'illustration en plus des 7 humeurs du domaine. */
+export const PET_POSES = ['colere', 'dodo', 'fantome', 'malade', 'debout', 'trois_quarts', 'cote', 'dos', 'face'] as const;
+export type PetPose = Mood | (typeof PET_POSES)[number];
 
-const SPECIES_IMAGES: Record<Species, Partial<Record<PetPose, Src>>> = {
+/** Corps entiers (grands affichages : héros, choix du pet). Les autres poses sont des bustes. */
+export const FULL_BODY_POSES = ['debout', 'trois_quarts', 'cote', 'dos'] as const satisfies readonly PetPose[];
+export type FullBodyPose = (typeof FULL_BODY_POSES)[number];
+
+const SPECIES_IMAGES: Record<Species, Record<PetPose, Src>> = {
   nino: {
     neutre: require('../../assets/pets/nino_neutre.webp'),
     joie: require('../../assets/pets/nino_joie.webp'),
@@ -19,12 +26,15 @@ const SPECIES_IMAGES: Record<Species, Partial<Record<PetPose, Src>>> = {
     surpris: require('../../assets/pets/nino_surpris.webp'),
     smug: require('../../assets/pets/nino_smug.webp'),
     salut: require('../../assets/pets/nino_salut.webp'),
-    face: require('../../assets/pets/nino_face.webp'),
-    cote: require('../../assets/pets/nino_cote.webp'),
     colere: require('../../assets/pets/nino_colere.webp'),
     dodo: require('../../assets/pets/nino_dodo.webp'),
-    malade: require('../../assets/pets/nino_malade.webp'),
     fantome: require('../../assets/pets/nino_fantome.webp'),
+    malade: require('../../assets/pets/nino_malade.webp'),
+    debout: require('../../assets/pets/nino_debout.webp'),
+    trois_quarts: require('../../assets/pets/nino_trois_quarts.webp'),
+    cote: require('../../assets/pets/nino_cote.webp'),
+    dos: require('../../assets/pets/nino_dos.webp'),
+    face: require('../../assets/pets/nino_face.webp'),
   },
   suzie: {
     neutre: require('../../assets/pets/suzie_neutre.webp'),
@@ -34,8 +44,15 @@ const SPECIES_IMAGES: Record<Species, Partial<Record<PetPose, Src>>> = {
     surpris: require('../../assets/pets/suzie_surpris.webp'),
     smug: require('../../assets/pets/suzie_smug.webp'),
     salut: require('../../assets/pets/suzie_salut.webp'),
-    face: require('../../assets/pets/suzie_face.webp'),
+    colere: require('../../assets/pets/suzie_colere.webp'),
+    dodo: require('../../assets/pets/suzie_dodo.webp'),
+    fantome: require('../../assets/pets/suzie_fantome.webp'),
+    malade: require('../../assets/pets/suzie_malade.webp'),
+    debout: require('../../assets/pets/suzie_debout.webp'),
+    trois_quarts: require('../../assets/pets/suzie_trois_quarts.webp'),
     cote: require('../../assets/pets/suzie_cote.webp'),
+    dos: require('../../assets/pets/suzie_dos.webp'),
+    face: require('../../assets/pets/suzie_face.webp'),
   },
   gaston: {
     neutre: require('../../assets/pets/gaston_neutre.webp'),
@@ -45,8 +62,15 @@ const SPECIES_IMAGES: Record<Species, Partial<Record<PetPose, Src>>> = {
     surpris: require('../../assets/pets/gaston_surpris.webp'),
     smug: require('../../assets/pets/gaston_smug.webp'),
     salut: require('../../assets/pets/gaston_salut.webp'),
-    face: require('../../assets/pets/gaston_face.webp'),
+    colere: require('../../assets/pets/gaston_colere.webp'),
+    dodo: require('../../assets/pets/gaston_dodo.webp'),
+    fantome: require('../../assets/pets/gaston_fantome.webp'),
+    malade: require('../../assets/pets/gaston_malade.webp'),
+    debout: require('../../assets/pets/gaston_debout.webp'),
+    trois_quarts: require('../../assets/pets/gaston_trois_quarts.webp'),
     cote: require('../../assets/pets/gaston_cote.webp'),
+    dos: require('../../assets/pets/gaston_dos.webp'),
+    face: require('../../assets/pets/gaston_face.webp'),
   },
   pia: {
     neutre: require('../../assets/pets/pia_neutre.webp'),
@@ -56,18 +80,61 @@ const SPECIES_IMAGES: Record<Species, Partial<Record<PetPose, Src>>> = {
     surpris: require('../../assets/pets/pia_surpris.webp'),
     smug: require('../../assets/pets/pia_smug.webp'),
     salut: require('../../assets/pets/pia_salut.webp'),
-    face: require('../../assets/pets/pia_face.webp'),
+    colere: require('../../assets/pets/pia_colere.webp'),
+    dodo: require('../../assets/pets/pia_dodo.webp'),
+    fantome: require('../../assets/pets/pia_fantome.webp'),
+    malade: require('../../assets/pets/pia_malade.webp'),
+    debout: require('../../assets/pets/pia_debout.webp'),
+    trois_quarts: require('../../assets/pets/pia_trois_quarts.webp'),
     cote: require('../../assets/pets/pia_cote.webp'),
+    dos: require('../../assets/pets/pia_dos.webp'),
+    face: require('../../assets/pets/pia_face.webp'),
   },
 };
 
-const FORM_IMAGES: Record<PetForm, Src> = {
-  equilibre: require('../../assets/pets/nino_evo_equilibre.webp'),
-  casanier: require('../../assets/pets/nino_evo_casanier.webp'),
-  sociable: require('../../assets/pets/nino_evo_sociable.webp'),
-  joueur: require('../../assets/pets/nino_evo_joueur.webp'),
-  piquant: require('../../assets/pets/nino_evo_piquant.webp'),
-  tendre: require('../../assets/pets/nino_evo_tendre.webp'),
+const FORM_IMAGES: Record<Species, Record<PetForm, Src>> = {
+  nino: {
+    equilibre: require('../../assets/pets/nino_evo_equilibre.webp'),
+    casanier: require('../../assets/pets/nino_evo_casanier.webp'),
+    sociable: require('../../assets/pets/nino_evo_sociable.webp'),
+    joueur: require('../../assets/pets/nino_evo_joueur.webp'),
+    piquant: require('../../assets/pets/nino_evo_piquant.webp'),
+    tendre: require('../../assets/pets/nino_evo_tendre.webp'),
+  },
+  suzie: {
+    equilibre: require('../../assets/pets/suzie_evo_equilibre.webp'),
+    casanier: require('../../assets/pets/suzie_evo_casanier.webp'),
+    sociable: require('../../assets/pets/suzie_evo_sociable.webp'),
+    joueur: require('../../assets/pets/suzie_evo_joueur.webp'),
+    piquant: require('../../assets/pets/suzie_evo_piquant.webp'),
+    tendre: require('../../assets/pets/suzie_evo_tendre.webp'),
+  },
+  gaston: {
+    equilibre: require('../../assets/pets/gaston_evo_equilibre.webp'),
+    casanier: require('../../assets/pets/gaston_evo_casanier.webp'),
+    sociable: require('../../assets/pets/gaston_evo_sociable.webp'),
+    joueur: require('../../assets/pets/gaston_evo_joueur.webp'),
+    piquant: require('../../assets/pets/gaston_evo_piquant.webp'),
+    tendre: require('../../assets/pets/gaston_evo_tendre.webp'),
+  },
+  pia: {
+    equilibre: require('../../assets/pets/pia_evo_equilibre.webp'),
+    casanier: require('../../assets/pets/pia_evo_casanier.webp'),
+    sociable: require('../../assets/pets/pia_evo_sociable.webp'),
+    joueur: require('../../assets/pets/pia_evo_joueur.webp'),
+    piquant: require('../../assets/pets/pia_evo_piquant.webp'),
+    tendre: require('../../assets/pets/pia_evo_tendre.webp'),
+  },
+};
+
+/** Images de traits propres à certaines espèces. */
+export const PET_TRAITS = ['douce', 'pose', 'calme', 'bavard'] as const;
+export type PetTrait = (typeof PET_TRAITS)[number];
+const TRAIT_IMAGES: Record<Species, Partial<Record<PetTrait, Src>>> = {
+  nino: {},
+  suzie: { douce: require('../../assets/pets/suzie_douce.webp') },
+  gaston: { pose: require('../../assets/pets/gaston_pose.webp'), calme: require('../../assets/pets/gaston_calme.webp') },
+  pia: { bavard: require('../../assets/pets/pia_bavard.webp') },
 };
 
 export const CRAFT_COLOURS = ['corail', 'lime', 'menthe', 'orange', 'rose', 'violet'] as const;
@@ -106,20 +173,22 @@ const ART_IMAGES: Record<ArtName, Src> = {
   duo_nino_suzie: require('../../assets/pets/duo_nino_suzie.webp'),
 };
 
-/** Image d'une espèce dans une pose ; pose absente → `fantome` générique (Nino) ou `neutre`. */
-export function petImage(species: Species, pose: PetPose = 'neutre'): Src {
+const isPose = (v: string): v is PetPose => v in SPECIES_IMAGES.nino;
+
+/** Image d'une espèce dans une humeur ou une pose ; valeur inconnue → `neutre`. */
+export function petImage(species: Species, pose: PetPose | string = 'neutre'): Src {
   const set = SPECIES_IMAGES[species];
-  const found = set[pose];
-  if (found) return found;
-  if (pose === 'fantome') return SPECIES_IMAGES.nino.fantome ?? SPECIES_IMAGES.nino.neutre ?? FORM_IMAGES.equilibre;
-  return set.neutre ?? FORM_IMAGES.equilibre;
+  return isPose(pose) ? set[pose] : set.neutre;
 }
 
-/** Vrai si l'espèce possède réellement cette pose (sans repli). */
-export const hasPetPose = (species: Species, pose: PetPose): boolean => SPECIES_IMAGES[species][pose] !== undefined;
+/** Vrai si la pose est un corps entier (à réserver aux grands affichages). */
+export const isFullBody = (pose: PetPose): pose is FullBodyPose => (FULL_BODY_POSES as readonly string[]).includes(pose);
 
-/** Image d'une forme d'évolution (rendus disponibles pour Nino). */
-export const petFormImage = (form: PetForm): Src => FORM_IMAGES[form];
+/** Image d'une forme d'évolution pour une espèce. */
+export const petFormImage = (species: Species, form: PetForm): Src => FORM_IMAGES[species][form];
+
+/** Image d'un trait propre à l'espèce (suzie douce, gaston posé / calme, pia bavarde), sinon `undefined`. */
+export const petTraitImage = (species: Species, trait: PetTrait): Src | undefined => TRAIT_IMAGES[species][trait];
 
 /** Pet de l'écran de création, par couleur. */
 export const craftImage = (colour: CraftColour): Src => CRAFT_IMAGES[colour];
@@ -129,6 +198,6 @@ export const iconImage = (name: IconName): Src => ICON_IMAGES[name];
 
 export const artImage = (name: ArtName): Src => ART_IMAGES[name];
 
-/** Rapport largeur / hauteur des rendus : 900×1000 pour les pets, 1:1 pour visages et icônes. */
+/** Rapport largeur / hauteur : 900×1000 pour les pets, 1:1 pour les visages et icônes. */
 export const RENDER_RATIO = 0.9;
 export const ART_RATIO: Record<ArtName, number> = { oeuf: 0.9, bebe: 0.9, bande: 2.2, duo_gaston_pia: 1.3636, duo_nino_suzie: 1.3636 };

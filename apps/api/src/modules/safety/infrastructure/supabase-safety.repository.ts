@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso } from '../../../persistence/supabase';
 import type { BlockRecord, BlocksRepository, ReportRecord, ReportsRepository } from '../ports';
 
@@ -9,7 +9,7 @@ interface BlockRow {
 }
 
 export class SupabaseBlocksRepository implements BlocksRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get table() {
     return this.client.from('blocks');
@@ -42,7 +42,7 @@ export class SupabaseBlocksRepository implements BlocksRepository {
 }
 
 export class SupabaseReportsRepository implements ReportsRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   async add(r: ReportRecord): Promise<void> {
     const { error } = await this.client

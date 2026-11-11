@@ -1,8 +1,10 @@
-import { type SupabaseClient, createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+
+import type { Database, Db } from './database.types';
 
 /** Client unique avec la clé service : l'API est le seul écrivain de la base. */
-export function createServiceClient(url: string, serviceRoleKey: string): SupabaseClient {
-  return createClient(url, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
+export function createServiceClient(url: string, serviceRoleKey: string): Db {
+  return createClient<Database>(url, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
 interface PgError {

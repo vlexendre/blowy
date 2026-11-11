@@ -27,7 +27,7 @@ export function Card({ children, tone = 'panel', highlight, padding = 'md', onPr
     highlight ? { borderColor: highlight } : null,
     style,
   ];
-  const body = <InkProvider value={color.white}>{children}</InkProvider>;
+  const body = <InkProvider value={color.white} mute={color.mute}>{children}</InkProvider>;
   if (onPress) {
     return (
       <Pressable onPress={onPress} accessibilityLabel={accessibilityLabel} scaleTo={0.98} style={s}>

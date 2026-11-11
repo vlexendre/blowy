@@ -1,9 +1,9 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso } from '../../../persistence/supabase';
 import type { LinkReadsRepository } from '../ports';
 
 export class SupabaseLinkReadsRepository implements LinkReadsRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   async lastReadAt(linkId: string, userId: string): Promise<string | null> {
     const { data, error } = await this.client.from('link_reads').select('last_read_at').eq('link_id', linkId).eq('user_id', userId).maybeSingle();

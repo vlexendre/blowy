@@ -3,7 +3,7 @@ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Glyph } from '../atoms/Glyph';
 import { useInk } from '../lib/ink';
-import { alpha, extra, size as sizes } from '../theme';
+import { extra, size as sizes } from '../theme';
 
 export interface HeartsProps {
   /** Vies restantes. */
@@ -21,12 +21,13 @@ export interface HeartsProps {
 /** Les vies d'un lien : n cœurs pleins sur 7, les perdus estompés. */
 export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, accessibilityLabel, style }: HeartsProps) {
   const ink = useInk();
-  const off = alpha(ink, 0.2);
   const on = Math.max(0, Math.min(max, ghost ? 0 : lives));
   return (
     <View accessible accessibilityRole="text" accessibilityLabel={accessibilityLabel ?? `${on}/${max}`} style={[styles.row, { gap: Math.max(2, Math.round(size / 5)) }, style]}>
       {Array.from({ length: max }, (_, i) => (
-        <Glyph key={i} name="heart" size={size} color={i < on ? extra.heart : off} />
+        <View key={i} needsOffscreenAlphaCompositing={i >= on} style={i < on ? null : styles.off}>
+          <Glyph name="heart" size={size} color={i < on ? extra.heart : ink} />
+        </View>
       ))}
     </View>
   );
@@ -34,4 +35,5 @@ export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, acce
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
+  off: { opacity: 0.2 },
 });

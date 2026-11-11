@@ -1,5 +1,8 @@
 import type { UpdateMeBody } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import * as Clipboard from 'expo-clipboard';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Share } from 'react-native';
 
 import { keys, useApi, usePorts } from '@/core';
 
@@ -47,3 +50,41 @@ export function useDeleteAccount() {
     onSuccess: () => qc.clear(),
   });
 }
+
+/**
+ * Copier et partager un lien. `copied` reste vrai 2 s après une copie.
+ * Sur le web sans partage natif, partager revient à copier.
+ */
+export function useCopyShare() {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
+  const copy = useCallback(async (text: string) => {
+    try {
+      await Clipboard.setStringAsync(text);
+    } catch {
+      return;
+    }
+    setCopied(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 2000);
+  }, []);
+  const share = useCallback(
+    async (message: string, url: string) => {
+      const canShareOnWeb = Platform.OS === 'web' && typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+      if (Platform.OS === 'web' && !canShareOnWeb) return copy(url);
+      try {
+        await Share.share(Platform.OS === 'ios' ? { message, url } : { message });
+      } catch {
+        await copy(url);
+      }
+    },
+    [copy],
+  );
+  return { copied, copy, share };
+}
+
+/** Adresse affichée sans protocole (« blowy.app/i/ABCD1234 »). */
+export const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '');

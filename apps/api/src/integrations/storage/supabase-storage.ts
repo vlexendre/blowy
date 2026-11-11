@@ -1,10 +1,10 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../persistence/database.types';
 import type { Storage, UploadTicket } from './ports';
 
 const BUCKET = 'media';
 
 export class SupabaseStorage implements Storage {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get bucket() {
     return this.client.storage.from(BUCKET);

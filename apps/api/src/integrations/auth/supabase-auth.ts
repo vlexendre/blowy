@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../persistence/database.types';
 import type { Clock } from '../../shared/clock';
 import type { AuthAdmin, AuthUser, AuthVerifier, UserEmails } from './ports';
 
@@ -11,7 +11,7 @@ export class SupabaseAuthVerifier implements AuthVerifier {
   private readonly cache = new Map<string, { user: AuthUser; until: number }>();
 
   constructor(
-    private readonly client: SupabaseClient,
+    private readonly client: Db,
     private readonly clock: Clock,
   ) {}
 
@@ -32,7 +32,7 @@ export class SupabaseAuthVerifier implements AuthVerifier {
 }
 
 export class SupabaseAuthAdmin implements AuthAdmin {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   async deleteUser(userId: string): Promise<void> {
     const { error } = await this.client.auth.admin.deleteUser(userId);
@@ -43,7 +43,7 @@ export class SupabaseAuthAdmin implements AuthAdmin {
 export class SupabaseUserEmails implements UserEmails {
   private readonly logger = new Logger('UserEmails');
 
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   async emailOf(userId: string): Promise<string | null> {
     const { data, error } = await this.client.auth.admin.getUserById(userId);

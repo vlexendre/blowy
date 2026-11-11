@@ -22,6 +22,7 @@ export const GLYPHS = [
   'share',
   'camera',
   'dot',
+  'more',
 ] as const;
 export type GlyphName = (typeof GLYPHS)[number];
 
@@ -208,6 +209,14 @@ function draw(name: GlyphName, s: number, c: string, sw: number, filled: boolean
       );
     case 'dot':
       return <View style={{ width: s * 0.45, height: s * 0.45, borderRadius: s, backgroundColor: c }} />;
+    case 'more':
+      return (
+        <View style={[styles.rowCenter, { gap: s * 0.12 }]}>
+          {[0, 1, 2].map((i) => (
+            <View key={i} style={{ width: s * 0.18, height: s * 0.18, borderRadius: s, backgroundColor: c }} />
+          ))}
+        </View>
+      );
   }
 }
 
@@ -215,4 +224,5 @@ const styles = StyleSheet.create({
   box: { alignItems: 'center', justifyContent: 'center' },
   center: { alignItems: 'center' },
   row: { flexDirection: 'row', alignItems: 'flex-end' },
+  rowCenter: { flexDirection: 'row', alignItems: 'center' },
 });

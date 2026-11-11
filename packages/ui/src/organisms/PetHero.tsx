@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
+import type { PetPose } from '../assets/pets';
 import { Chip } from '../atoms/Chip';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
@@ -22,7 +23,9 @@ export interface PetHeroProps {
   speech?: string;
   /** Dégradé ; défaut celui de l'espèce. */
   gradient?: GradientName;
-  /** Montre la forme d'évolution plutôt que l'humeur. */
+  /** Pose du grand pet. Défaut `debout` (corps entier) ; une humeur donne un buste. */
+  pose?: PetPose;
+  /** Montre la forme d'évolution (`pet.form`) plutôt que la pose. */
   showForm?: boolean;
   onPetPress?: () => void;
   petLabel?: string;
@@ -30,9 +33,9 @@ export interface PetHeroProps {
 
 
 /** Grand pet sur le panneau de son espèce, avec son nom en Anton. */
-export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, showForm, onPetPress, petLabel }: PetHeroProps) {
+export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, pose = 'debout', showForm, onPetPress, petLabel }: PetHeroProps) {
   const image = (
-    <PetImage species={pet.species} mood={pet.mood ?? 'joie'} form={showForm ? pet.form : undefined} size={196} animation="breathe" accessibilityLabel={petLabel ?? pet.name} />
+    <PetImage species={pet.species} mood={pose} form={showForm ? pet.form : undefined} size={196} animation="breathe" accessibilityLabel={petLabel ?? pet.name} />
   );
   return (
     <Panel gradient={gradient ?? speciesGradient[pet.species]} padding="lg" style={styles.panel}>

@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import { Chip } from '../atoms/Chip';
 import { IconButton } from '../atoms/IconButton';
@@ -76,6 +76,7 @@ export function Composer({
             accessibilityLabel={placeholder}
             maxLength={maxLength}
             multiline
+            numberOfLines={Platform.OS === 'web' ? 1 : undefined}
             style={[type.body, styles.input]}
           />
         </View>
@@ -90,5 +91,5 @@ const styles = StyleSheet.create({
   disabled: { minHeight: size.button.lg, justifyContent: 'center', marginHorizontal: space.md, borderRadius: radius.pill, backgroundColor: veil.line },
   tones: { paddingLeft: size.touch + space.sm },
   field: { flex: 1, minHeight: 46, borderRadius: 23, backgroundColor: veil.line, borderWidth: 1, borderColor: veil.track, paddingHorizontal: space.lg },
-  input: { flex: 1, color: color.white, maxHeight: 120, paddingVertical: space.sm + 2 },
+  input: { flex: 1, minWidth: 0, color: color.white, maxHeight: 120, paddingVertical: space.sm + 2 },
 });

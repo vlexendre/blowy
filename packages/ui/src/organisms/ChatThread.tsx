@@ -23,6 +23,8 @@ export interface ChatThreadProps {
   onEndReached?: () => void;
   loadingOlder?: boolean;
   onPhotoPress?: (message: MessageLook) => void;
+  /** Texte d'une photo encore cachée (pas de `mediaUrl`). */
+  lockedPhotoLabel?: string;
   /** Affiché en haut du fil (début de la conversation). */
   header?: ReactElement;
   /** Affiché quand il n'y a aucun message. */
@@ -35,7 +37,7 @@ type Row = { kind: 'day'; key: string; label: string } | { kind: 'msg'; key: str
 const groupable = (m: MessageLook): boolean => m.author !== 'system' && m.kind !== 'event';
 
 /** Fil de discussion inversé (le plus récent en bas) avec séparateurs de jour et pagination vers le haut. */
-export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey, onEndReached, loadingOlder, onPhotoPress, header, empty, contentStyle }: ChatThreadProps) {
+export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey, onEndReached, loadingOlder, onPhotoPress, lockedPhotoLabel, header, empty, contentStyle }: ChatThreadProps) {
   const rows = useMemo(() => {
     const keyOf = dayKey ?? ((at: string) => dayOf(new Date(at)));
     const out: Row[] = [];
@@ -70,10 +72,11 @@ export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey
           person={isOtherSide ? other : undefined}
           continued={item.continued}
           onPhotoPress={onPhotoPress ? () => onPhotoPress(m) : undefined}
+          lockedPhotoLabel={lockedPhotoLabel}
         />
       );
     },
-    [myPet, other, otherName, onPhotoPress],
+    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel],
   );
 
   if (messages.length === 0 && empty) return <View style={[styles.empty, contentStyle]}>{empty}</View>;

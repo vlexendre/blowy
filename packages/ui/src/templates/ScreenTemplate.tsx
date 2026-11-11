@@ -76,7 +76,7 @@ export function ScreenTemplate({
   return (
     <View style={[styles.root, { paddingTop: top }]}>
       {background !== 'night' ? <LinearGradient colors={gradients[background]} style={StyleSheet.absoluteFill} /> : null}
-      <InkProvider value={color.white}>
+      <InkProvider value={color.white} mute={color.mute}>
         {header ? <View style={[pad, styles.header]}>{header}</View> : null}
         {keyboard ? (
           <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

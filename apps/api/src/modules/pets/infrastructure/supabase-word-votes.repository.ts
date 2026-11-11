@@ -1,9 +1,9 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, isUniqueViolation } from '../../../persistence/supabase';
 import type { WordVotesRepository } from '../ports';
 
 export class SupabaseWordVotesRepository implements WordVotesRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   async add(vote: { targetUser: string; words: readonly string[]; voterHash: string; createdAt: string }): Promise<boolean> {
     const { error } = await this.client

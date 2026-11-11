@@ -1,5 +1,5 @@
 import type { LinkStatus } from '@blowy/domain';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso, isUniqueViolation } from '../../../persistence/supabase';
 import type { LinkRecord, LinksRepository } from '../ports';
 
@@ -58,7 +58,7 @@ const stateRow = (l: LinkRecord) => ({
 });
 
 export class SupabaseLinksRepository implements LinksRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get table() {
     return this.client.from('links');

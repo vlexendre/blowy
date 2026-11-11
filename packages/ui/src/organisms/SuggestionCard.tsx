@@ -38,11 +38,14 @@ export interface SuggestionCardProps {
   /** Légende de la tuile verrouillée (« par la bande du 11e »). */
   lockedCaption?: string;
   onLockedPress?: () => void;
+  /** Bouton secondaire vers le détail de la rencontre (« voir de plus près »). */
+  openLabel?: string;
+  onOpen?: () => void;
 }
 
 /** Un pet croisé : compatibilité, d'où il vient, ce que ton pet en dit, et « saluer ». */
 export function SuggestionCard(props: SuggestionCardProps) {
-  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving } = props;
+  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen } = props;
   const { user, compatibility, intro, waved } = suggestion;
   const pet = user.pet;
   const tint = speciesColor[pet.species];
@@ -104,6 +107,7 @@ export function SuggestionCard(props: SuggestionCardProps) {
           </Text>
         </View>
       </View>
+      {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
       {waved ? (
         <Button label={wavedLabel} variant="ghost" icon="check" disabled />
       ) : (
@@ -119,5 +123,6 @@ const styles = StyleSheet.create({
   compat: { alignItems: 'flex-end' },
   intro: { padding: space.md, borderRadius: radius.md, borderBottomLeftRadius: space.xs + 2, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
   blur: { opacity: 0.6 },
+  open: { alignSelf: 'flex-start' },
   lock: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: color.violet },
 });

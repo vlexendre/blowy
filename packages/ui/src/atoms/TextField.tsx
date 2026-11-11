@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingRight: space.sm,
     gap: space.sm,
   },
-  input: { flex: 1, color: color.white, paddingVertical: space.md, minHeight: size.touch },
+  input: { flex: 1, minWidth: 0, color: color.white, paddingVertical: space.md, minHeight: size.touch, outlineWidth: 0, outlineStyle: 'solid' },
   large: { ...type.bodyBold, fontSize: 20, lineHeight: 26 },
   off: { opacity: 0.6 },
 });

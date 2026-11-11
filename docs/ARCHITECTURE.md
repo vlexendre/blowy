@@ -58,7 +58,7 @@ app/                          routes expo-router (écrans fins)
 src/core/                     config, ports (Auth, Api, Realtime, Media, Purchases) + adaptateurs, providers
 src/features/<f>/             hooks react-query + logique d'écran ; index public
 src/locales/fr.ts             textes de l'interface
-assets/pets/*.webp            images des pets (registre typé dans packages/ui)
+(images des pets : packages/ui/assets/pets, registre typé dans packages/ui/src/assets/pets.ts)
 ```
 
 ## Base (`supabase/migrations`)

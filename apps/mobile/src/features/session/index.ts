@@ -1,7 +1,12 @@
 import { ApiError } from '@blowy/api-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
+import { type Href, router } from 'expo-router';
+import { Alert, Platform } from 'react-native';
 
-import { keys, useApi, usePorts, useSession } from '@/core';
+import { AuthError, keys, useApi, usePorts, useSession } from '@/core';
+import { usePendingInvite } from '@/features/encounters';
+import { useDraft } from '@/features/onboarding';
 
 export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline';
 
@@ -40,4 +45,67 @@ export function useSignOut() {
     mutationFn: () => auth.signOut(),
     onSuccess: () => qc.clear(),
   });
+}
+
+/** Message lisible pour une erreur d'auth ou d'API (repli générique). */
+export function errorMessage(error: unknown, fallback = 'Quelque chose a coincé. Réessaie dans un instant.'): string {
+  if (error instanceof AuthError || error instanceof ApiError) return error.message;
+  return fallback;
+}
+
+/** Compte à rebours en secondes (renvoi du code). `start()` le relance. */
+export function useCountdown(seconds: number) {
+  const [left, setLeft] = useState(0);
+  useEffect(() => {
+    if (left <= 0) return;
+    const id = setTimeout(() => setLeft((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [left]);
+  const start = useCallback(() => setLeft(seconds), [seconds]);
+  return { left, start };
+}
+
+/** Demande une confirmation : `Alert` sur téléphone, `window.confirm` sur le web (où `Alert` ne fait rien). */
+export function confirmAction(opts: { title: string; message: string; confirm: string; cancel: string; destructive?: boolean; onConfirm: () => void }): void {
+  if (Platform.OS === 'web') {
+    if (globalThis.confirm?.(`${opts.title}\n\n${opts.message}`)) opts.onConfirm();
+    return;
+  }
+  Alert.alert(opts.title, opts.message, [
+    { text: opts.cancel, style: 'cancel' },
+    { text: opts.confirm, style: opts.destructive ? 'destructive' : 'default', onPress: opts.onConfirm },
+  ]);
+}
+
+/** Relance la lecture du profil (écran « pas de réseau » de l'aiguillage). */
+export function useRetryGate(): () => void {
+  const qc = useQueryClient();
+  return useCallback(() => void qc.resetQueries({ queryKey: keys.me }), [qc]);
+}
+
+/** Retour arrière, ou vers `fallback` quand l'écran a été ouvert directement (lien, rechargement web). */
+export function goBack(fallback: Href): void {
+  if (router.canGoBack()) router.back();
+  else router.replace(fallback);
+}
+
+/**
+ * Où aller juste après la connexion. Même décision que l'aiguillage (`app/index.tsx`), mais calculée ici :
+ * « / » est aussi la route de l'onglet Chats, donc on ne s'appuie pas sur elle pour choisir.
+ */
+export function useAfterSignIn(): () => Promise<Href> {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useCallback(async () => {
+    try {
+      await qc.fetchQuery({ queryKey: keys.me, queryFn: api.me.get, staleTime: 0 });
+    } catch (e) {
+      if (e instanceof ApiError && e.code === 'not_onboarded') {
+        return useDraft.getState().petName.trim() ? '/(onboarding)/profil' : '/(onboarding)/craft';
+      }
+      return '/';
+    }
+    const code = usePendingInvite.getState().code;
+    return code ? { pathname: '/i/[code]', params: { code } } : '/(tabs)/chats';
+  }, [api, qc]);
 }

@@ -1,5 +1,5 @@
 import type { Gauges, PetEventKind, Species } from '@blowy/domain';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso } from '../../../persistence/supabase';
 import type { PetEventRecord, PetRecord, PetsRepository } from '../ports';
 
@@ -43,7 +43,7 @@ const eventFromRow = (r: PetEventRow): PetEventRecord => ({
 });
 
 export class SupabasePetsRepository implements PetsRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   async findByOwner(ownerId: string): Promise<PetRecord | null> {
     const { data, error } = await this.client.from('pets').select('*').eq('owner_id', ownerId).maybeSingle();

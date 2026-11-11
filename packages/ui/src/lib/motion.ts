@@ -18,11 +18,12 @@ import { motion } from '../theme';
  * Retour visuel d'appui : léger rétrécissement avec ressort, ou simple atténuation
  * quand « réduire les animations » est activé.
  */
-export function usePressFeedback(to = 0.96) {
+export function usePressFeedback(to = 0.96, baseOpacity = 1) {
   const reduced = useReducedMotion();
   const scale = useSharedValue(1);
   const fade = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }], opacity: fade.value }));
+  // `baseOpacity` : opacité demandée par le style (ex. bouton désactivé), que l'animation ne doit pas écraser.
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }], opacity: fade.value * baseOpacity }), [baseOpacity]);
   return {
     animatedStyle,
     pressIn: () => {

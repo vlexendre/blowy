@@ -155,20 +155,20 @@ export function encounterIntroLine(input: EncounterIntroInput, seed: number): st
     via === 'friend_of_friend' && mutualName
       ? pick([`je l'ai croisé chez ${mutualName}.`, `c'est un pote du pet de ${mutualName}.`], seed)
       : via === 'nearby'
-        ? pick([`il traîne pas loin de chez nous.`, `on s'est croisés dans le quartier.`], seed)
-        : pick([`je l'ai croisé en me baladant.`, `il est nouveau dans le coin.`], seed);
+        ? pick([`on habite pas loin l'un de l'autre.`, `on s'est croisés dans le quartier.`], seed)
+        : pick([`on s'est croisés en balade.`, `tout nouveau dans le coin.`], seed);
   const vibe =
     compatibility >= 75
       ? pick([`on a tout de suite accroché.`, `on se ressemble beaucoup.`], seed >> 1)
       : compatibility >= 45
         ? pick([`on s'est bien amusés.`, `on a des trucs en commun.`], seed >> 1)
-        : pick([`on est très différents, c'est ce qui me plaît.`, `il m'a surpris.`], seed >> 1);
+        : pick([`on est très différents, c'est ce qui me plaît.`, `sacrée surprise, cette rencontre.`], seed >> 1);
   return `${other}. ${where} ${vibe}`;
 }
 
 export function wavedAtYouLine(other: string, seed: number): string {
   return pick(
-    [`${other} est venu me dire coucou. on lui répond ?`, `${other} nous a salués. il a l'air sympa.`, `${other} tourne autour de moi. je crois qu'il veut jouer.`],
+    [`${other} m'a fait coucou. on lui répond ?`, `${other} m'a fait signe. ça a l'air sympa.`, `${other} tourne autour de moi. ça sent l'envie de jouer.`],
     seed,
   );
 }

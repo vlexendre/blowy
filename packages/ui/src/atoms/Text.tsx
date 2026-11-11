@@ -1,8 +1,8 @@
 import type { TypeName } from '@blowy/tokens';
 import { Text as RNText, type TextProps as RNTextProps, StyleSheet } from 'react-native';
 
-import { useInk } from '../lib/ink';
-import { alpha, color, opacity, type } from '../theme';
+import { useInk, useMute } from '../lib/ink';
+import { opacity, type } from '../theme';
 
 export interface TextProps extends RNTextProps {
   /** Style typographique de `tokens.type`. Défaut : `body`. */
@@ -20,8 +20,9 @@ export interface TextProps extends RNTextProps {
 
 export function Text({ variant = 'body', color: tint, dim, muted, center, size, style, ...rest }: TextProps) {
   const ink = useInk();
+  const mute = useMute();
   const base = type[variant];
-  const fg = tint ?? (muted ? (ink === color.white ? color.mute : alpha(ink, opacity.mute)) : ink);
+  const fg = tint ?? (muted ? mute : ink);
   const sized = size ? { fontSize: size, lineHeight: Math.round(size * (base.lineHeight / base.fontSize)) } : null;
   return <RNText {...rest} style={[base, { color: fg }, sized, dim && styles.dim, center && styles.center, style]} />;
 }

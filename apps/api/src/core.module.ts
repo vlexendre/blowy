@@ -3,7 +3,7 @@
  * intégrations externes (auth, stockage, e-mail) et dépôts, en version Supabase ou mémoire.
  */
 import { type DynamicModule, Module, type Provider } from '@nestjs/common';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from './persistence/database.types';
 import type { Env } from './config/env';
 import { MemoryAuthAdmin, MemoryAuthVerifier, MemoryUserEmails } from './integrations/auth/memory-auth';
 import { SupabaseAuthAdmin, SupabaseAuthVerifier, SupabaseUserEmails } from './integrations/auth/supabase-auth';
@@ -80,9 +80,9 @@ function supabaseAdapters(env: Env): Provider[] {
   if (!config) throw new Error('configuration Supabase absente');
   return [
     { provide: SUPABASE, useValue: createServiceClient(config.url, config.serviceRoleKey) },
-    { provide: AUTH_VERIFIER, useFactory: (c: SupabaseClient, clock: Clock) => new SupabaseAuthVerifier(c, clock), inject: [SUPABASE, CLOCK] },
-    { provide: AUTH_ADMIN, useFactory: (c: SupabaseClient) => new SupabaseAuthAdmin(c), inject: [SUPABASE] },
-    { provide: USER_EMAILS, useFactory: (c: SupabaseClient) => new SupabaseUserEmails(c), inject: [SUPABASE] },
-    { provide: STORAGE, useFactory: (c: SupabaseClient) => new SupabaseStorage(c), inject: [SUPABASE] },
+    { provide: AUTH_VERIFIER, useFactory: (c: Db, clock: Clock) => new SupabaseAuthVerifier(c, clock), inject: [SUPABASE, CLOCK] },
+    { provide: AUTH_ADMIN, useFactory: (c: Db) => new SupabaseAuthAdmin(c), inject: [SUPABASE] },
+    { provide: USER_EMAILS, useFactory: (c: Db) => new SupabaseUserEmails(c), inject: [SUPABASE] },
+    { provide: STORAGE, useFactory: (c: Db) => new SupabaseStorage(c), inject: [SUPABASE] },
   ];
 }

@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso } from '../../../persistence/supabase';
 import type { AuthorKind, MessageKind, MessageRecord, MessagesRepository } from '../ports';
 
@@ -25,7 +25,7 @@ const fromRow = (r: MessageRow): MessageRecord => ({
 });
 
 export class SupabaseMessagesRepository implements MessagesRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get table() {
     return this.client.from('messages');

@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from '../../../persistence/database.types';
 import { check, iso, isUniqueViolation } from '../../../persistence/supabase';
 import type { EncounterRecord, EncounterStatus, EncountersRepository } from '../ports';
 
@@ -21,7 +21,7 @@ const fromRow = (r: EncounterRow): EncounterRecord => ({
 });
 
 export class SupabaseEncountersRepository implements EncountersRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: Db) {}
 
   private get table() {
     return this.client.from('encounters');

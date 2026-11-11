@@ -2,7 +2,7 @@ import { SPECIES, type Species } from '@blowy/domain';
 import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 
-import { petImage } from '../assets/pets';
+import { type PetPose, petImage } from '../assets/pets';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
@@ -23,17 +23,19 @@ export interface SpeciesPickerProps {
   speechHighlight?: string;
   /** Autocollant (« exemplaire unique »). */
   badge?: string;
+  /** Pose du grand aperçu. Défaut `debout` (corps entier). */
+  pose?: PetPose;
 }
 
 const SWATCH = 58;
 
 /** Choix du pet à la création : grand aperçu sur sa couleur + pastilles des quatre espèces. */
-export function SpeciesPicker({ value, onChange, species = SPECIES, names, speech, speechHighlight, badge }: SpeciesPickerProps) {
+export function SpeciesPicker({ value, onChange, species = SPECIES, names, speech, speechHighlight, badge, pose = 'debout' }: SpeciesPickerProps) {
   return (
     <View style={layout.gapLg}>
       <Panel gradient={speciesGradient[value]} padding="lg" style={styles.stage}>
         {speech ? <SpeechBubble text={speech} highlight={speechHighlight} highlightColor={color.accent} style={styles.speech} /> : null}
-        <PetImage key={value} species={value} mood="salut" size={230} animation="breathe" outline accessibilityLabel={names[value]} style={styles.pet} />
+        <PetImage key={value} species={value} mood={pose} size={230} animation="breathe" outline accessibilityLabel={names[value]} style={styles.pet} />
         {badge ? <Sticker label={badge} tone="white" rotate={-3} size="sm" style={styles.badge} /> : null}
       </Panel>
       <View accessibilityRole="radiogroup" style={layout.rowBetween}>

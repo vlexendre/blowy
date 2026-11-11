@@ -318,19 +318,39 @@ export default function Gallery() {
             <Avatar pet={tom.pet} hidden pose="fantome" size={56} />
           </View>
         </Item>
-        <Item name="PetImage">
+        <Item name="PetImage · humeurs (bustes)">
           <View style={styles.row}>
-            <PetImage species="nino" mood="joie" size={90} animation="breathe" />
-            <PetImage species="suzie" mood="amour" size={90} animation="bob" delay={400} />
-            <PetImage species="gaston" mood="smug" size={90} outline />
-            <PetImage species="pia" mood="salut" size={90} rotate={8} />
+            <PetImage species="nino" mood="joie" size={80} animation="breathe" />
+            <PetImage species="suzie" mood="amour" size={80} animation="bob" delay={400} />
+            <PetImage species="gaston" mood="smug" size={80} outline />
+            <PetImage species="pia" mood="salut" size={80} rotate={8} />
           </View>
           <View style={styles.row}>
-            <PetImage form="casanier" size={70} />
-            <PetImage form="tendre" size={70} />
-            <PetImage form="piquant" size={70} />
-            <PetImage art="oeuf" size={60} />
-            <PetImage art="bebe" size={60} animation="breathe" />
+            {(['neutre', 'surpris', 'triste', 'colere', 'dodo', 'malade', 'fantome'] as const).map((m) => (
+              <PetImage key={m} species="suzie" mood={m} size={44} />
+            ))}
+          </View>
+        </Item>
+        <Item name="PetImage · corps entiers">
+          <View style={styles.row}>
+            {(['debout', 'trois_quarts', 'cote', 'dos'] as const).map((m) => (
+              <PetImage key={m} species="gaston" mood={m} size={80} />
+            ))}
+          </View>
+        </Item>
+        <Item name="PetImage · formes, traits, illustrations">
+          <View style={styles.row}>
+            {(['equilibre', 'casanier', 'sociable', 'joueur', 'piquant', 'tendre'] as const).map((f) => (
+              <PetImage key={f} species="pia" form={f} size={52} />
+            ))}
+          </View>
+          <View style={styles.row}>
+            <PetImage species="suzie" trait="douce" size={64} />
+            <PetImage species="gaston" trait="pose" size={64} />
+            <PetImage species="gaston" trait="calme" size={64} />
+            <PetImage species="pia" trait="bavard" size={64} />
+            <PetImage art="oeuf" size={50} />
+            <PetImage art="bebe" size={50} animation="breathe" />
           </View>
           <PetImage art="duo_nino_suzie" size={220} />
         </Item>
@@ -552,8 +572,8 @@ export default function Gallery() {
           />
         </Item>
         <Item name="PetHero">
-          <PetHero pet={nino} title={[{ text: 'NINO,\n' }, { text: 'PLUTÔT\nJOUEUR.', dim: true }]} moodLabel="d’humeur joueuse" speech="je me sens pousser des antennes." gradient="accent" onPetPress={noop} />
-          <PetHero pet={lea.pet} title={[{ text: 'SUZIE,\n' }, { text: 'TENDRE.', dim: true }]} formLabel={formLabel.tendre} showForm={false} />
+          <PetHero pet={nino} title={[{ text: 'NINO,\n' }, { text: 'PLUTÔT\nJOUEUR.', dim: true }]} moodLabel="d’humeur joueuse" speech="je me sens pousser des antennes." onPetPress={noop} />
+          <PetHero pet={lea.pet} title={[{ text: 'SUZIE,\n' }, { text: 'TENDRE.', dim: true }]} formLabel={formLabel.tendre} showForm />
         </Item>
         <Item name="EvolutionTimeline">
           <EvolutionTimeline events={events} eventLabels={eventLabel} gaugeLabels={gaugeLabel} dateLabel={shortDay} />

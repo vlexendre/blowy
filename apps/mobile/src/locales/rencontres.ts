@@ -1,0 +1,80 @@
+/** Textes des rencontres, du détail d'une rencontre et de la carte. */
+import type { TitleSegment } from '@blowy/ui';
+
+const low = (s: string): string => s.toLowerCase();
+
+export const rencontres = {
+  kicker: 'cette semaine',
+  title: (pet: string, n: number | null): TitleSegment[] => [
+    { text: `${pet.toUpperCase()} A CROISÉ\n` },
+    { text: n === null ? '…' : n === 0 ? 'PERSONNE.' : `${n} ${n > 1 ? 'PETS' : 'PET'}.`, dim: true },
+  ],
+  text: 'les potes de tes potes d’abord. le quartier ensuite.',
+  map: 'la carte',
+  mapA11y: 'Ouvrir la carte du quartier de ton pet',
+  incomingTitle: 'ils t’ont salué',
+  incomingCard: (name: string): string => `${name} veut te rencontrer`,
+  incomingOwner: (pet: string, name: string): string => `${low(pet)}, le pet de ${name}`,
+  suggestionsTitle: 'ton pet les a croisés',
+  owner: (name: string): string => `le pet de ${name}`,
+  compat: 'd’accord',
+  via: {
+    friend_of_friend: (mutual: string | null): string => (mutual ? `ami de ${mutual}` : 'pote de pote'),
+    nearby: (): string => 'près de chez toi',
+    new: (): string => 'nouveau',
+  },
+  badgeNew: 'nouveau',
+  introLabel: (myPet: string): string => `${low(myPet)} raconte`,
+  wave: (pet: string): string => `saluer ${low(pet)}`,
+  waved: 'salué · en attente',
+  open: 'voir de plus près',
+  accept: 'accepter',
+  decline: 'pas cette fois',
+  reminder: (name: string): string => `rien ne se passe sans ton tap. ${name} ne voit rien tant que tu n’as pas salué ou accepté.`,
+  reminderShort: 'rien ne se passe sans ton tap.',
+  emptyTitle: [{ text: 'PERSONNE\n' }, { text: 'POUR L’INSTANT', dim: true }] as TitleSegment[],
+  emptyText: (pet: string): string => `${low(pet)} croise d’abord les potes de tes potes. invite les tiens : leurs potes viendront avec.`,
+  emptyAction: 'partager mon lien d’invitation',
+  shareMessage: (pet: string, url: string): string => `viens rencontrer ${pet} sur blowy 🐾 ${url}`,
+  loadError: 'Impossible de charger les rencontres',
+  retry: 'réessayer',
+  actionError: 'Ça n’a pas marché. Réessaie.',
+};
+
+export const rencontre = {
+  back: 'Retour',
+  me: (pet: string): string => `${low(pet)} · toi`,
+  them: (pet: string, name: string): string => `${low(pet)} · ${name}`,
+  saysTitle: (pet: string): string => `ce que ${low(pet)} en dit`,
+  theySay: (pet: string): string => `${low(pet)} t’a salué`,
+  title: [{ text: 'RIEN SANS\n' }, { text: 'TON TAP.', dim: true }] as TitleSegment[],
+  text: (name: string): string => `${name} ne voit rien tant que tu n’as pas dit oui.`,
+  waitingText: (name: string): string => `ton salut est parti. si ${name} accepte, le chat s’ouvre.`,
+  accept: (name: string): string => `ouvrir le chat avec ${name}`,
+  decline: 'pas cette fois',
+  wave: (pet: string): string => `saluer ${low(pet)}`,
+  waved: 'salué · en attente',
+  compatA11y: (n: number): string => `${n} % d’accord`,
+  safety: 'signaler ou bloquer',
+  goneTitle: [{ text: 'PLUS\n' }, { text: 'LÀ', dim: true }] as TitleSegment[],
+  goneText: 'cette rencontre n’est plus disponible.',
+  goneAction: 'voir les rencontres',
+  safetyTitle: 'sécurité',
+};
+
+export const carte = {
+  back: 'Retour',
+  title: (pet: string): string => `le quartier de ${low(pet)}`,
+  heading: [{ text: 'AUTOUR\n' }, { text: 'DE TOI', dim: true }] as TitleSegment[],
+  me: 'toi',
+  legendLinks: 'tes liens',
+  legendMet: 'croisés',
+  soon: 'bientôt : les pets croisés près de chez toi.',
+  soonText: 'pour l’instant pas de géolocalisation : la carte montre ton cercle, pas une adresse.',
+  linkA11y: (name: string, pet: string): string => `${pet}, le pet de ${name}. Ouvrir le chat`,
+  metA11y: (name: string, pet: string): string => `${pet}, le pet de ${name}. Voir la rencontre`,
+  empty: 'personne autour pour l’instant. ça se remplit à chaque rencontre.',
+  rencontres: 'voir mes rencontres',
+  loadError: 'Impossible de dessiner la carte',
+  retry: 'réessayer',
+};

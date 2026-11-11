@@ -10,7 +10,7 @@ import { type SegmentedTabItem, SegmentedTabs } from '../molecules/SegmentedTabs
 import { layout } from '../lib/styles';
 import { space } from '../theme';
 import type { PersonLook, PetLook } from '../types';
-import { ScreenTemplate } from './ScreenTemplate';
+import { ScreenTemplate, type ScreenTemplateProps } from './ScreenTemplate';
 
 export interface LinkTemplateProps<K extends string = string> {
   other: PersonLook;
@@ -33,6 +33,11 @@ export interface LinkTemplateProps<K extends string = string> {
   footer?: ReactNode;
   /** Corps défilant ; défaut faux (le chat gère sa liste). */
   scroll?: boolean;
+  /** Bouton « … » à droite de la pastille de niveau (signaler, bloquer, quitter). */
+  onOptions?: () => void;
+  optionsLabel?: string;
+  /** Tirer pour rafraîchir (corps défilant seulement). */
+  refreshControl?: ScreenTemplateProps['refreshControl'];
 }
 
 /** Gabarit d'un lien : en-tête (pets, nom, vies, niveau), onglets, corps. */
@@ -52,9 +57,12 @@ export function LinkTemplate<K extends string>({
   children,
   footer,
   scroll = false,
+  onOptions,
+  optionsLabel = 'Options',
+  refreshControl,
 }: LinkTemplateProps<K>) {
   const header = (
-    <View style={layout.gapMd}>
+    <View style={[layout.gapMd, scroll ? null : styles.inset]}>
       <View style={[layout.row, styles.top]}>
         <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} />
         <AvatarPair size={40} first={{ pet: myPet, hidden: true }} second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }} />
@@ -65,12 +73,13 @@ export function LinkTemplate<K extends string>({
           <Hearts lives={lives} ghost={ghost} size={13} accessibilityLabel={livesLabel} />
         </View>
         <LevelPill label={levelLabel} onPress={onLevelPress} />
+        {onOptions ? <IconButton glyph="more" label={optionsLabel} onPress={onOptions} size={40} /> : null}
       </View>
       <SegmentedTabs items={tabs} activeKey={activeTab} onChange={onTabChange} />
     </View>
   );
   return (
-    <ScreenTemplate header={header} footer={footer} scroll={scroll} padded={scroll}>
+    <ScreenTemplate header={header} footer={footer} scroll={scroll} padded={scroll} refreshControl={scroll ? refreshControl : undefined}>
       {children}
     </ScreenTemplate>
   );
@@ -79,4 +88,6 @@ export function LinkTemplate<K extends string>({
 const styles = StyleSheet.create({
   top: { gap: space.md - 2 },
   who: { gap: space.xs },
+  /** Corps non défilant (chat) : le gabarit n'ajoute pas les marges, l'en-tête les garde. */
+  inset: { paddingHorizontal: space.lg },
 });

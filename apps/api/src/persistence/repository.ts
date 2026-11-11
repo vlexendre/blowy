@@ -1,5 +1,5 @@
 import type { Provider } from '@nestjs/common';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Db } from './database.types';
 import { MEMORY_DB, SUPABASE } from '../shared/tokens';
 import type { MemoryDb } from './memory-db';
 
@@ -10,7 +10,7 @@ export function repository<T>(
   token: symbol,
   adapters: Adapters,
   memory: (db: MemoryDb) => T,
-  supabase: (client: SupabaseClient) => T,
+  supabase: (client: Db) => T,
 ): Provider {
   return adapters === 'memory'
     ? { provide: token, useFactory: memory, inject: [MEMORY_DB] }

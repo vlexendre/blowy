@@ -16,8 +16,9 @@ export interface AvatarProps {
   name?: string;
   /** Pet montré à la place du visage (visage caché, pas de photo, ou avatar de pet). */
   pet?: PetLook;
-  /** Visibilité du visage selon le niveau du lien (`hidden` → pet, `blurred` → flou). */
+  /** Visibilité du visage selon le niveau du lien (`hidden` → pet, `blurred` → photo floue). */
   face?: FaceVisibility;
+  /** Flou forcé, sur la photo comme sur le pet (aperçu verrouillé). */
   blurred?: boolean;
   hidden?: boolean;
   /** Pose du pet affiché (défaut `face`, `fantome` pour un lien fantôme). */
@@ -40,7 +41,7 @@ export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose 
   const label = accessibilityLabel ?? name ?? pet?.name;
   const content =
     showPet && pet ? (
-      <Image source={petImage(pet.species, pose)} contentFit="cover" style={styles.fill} />
+      <Image source={petImage(pet.species, pose)} contentFit="cover" blurRadius={blurred ? Math.round(size / 6) : 0} style={styles.fill} />
     ) : uri ? (
       <Image source={{ uri }} contentFit="cover" blurRadius={isBlurred ? Math.round(size / 4) : 0} transition={150} style={styles.fill} />
     ) : (
