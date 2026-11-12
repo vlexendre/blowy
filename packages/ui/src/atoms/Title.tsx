@@ -2,7 +2,7 @@ import { Text as RNText, type StyleProp, StyleSheet, type TextStyle } from 'reac
 
 import { useInk } from '../lib/ink';
 import { alpha, opacity, type } from '../theme';
-import type { TitleContent } from '../types';
+import type { TitleContent, TitleSegment } from '../types';
 import { fitLineHeight } from './Text';
 
 export interface TitleProps {
@@ -16,10 +16,21 @@ export interface TitleProps {
   numberOfLines?: number;
   style?: StyleProp<TextStyle>;
   accessibilityLabel?: string;
+  /**
+   * Nombre de mots montrés (titre qui s'écrit mot à mot, voir `useReveal` et `countWords`) ; les suivants gardent
+   * leur place en encre transparente (rien ne saute). Défaut : tout.
+   */
+  reveal?: number;
+}
+
+/** Nombre de mots d'un titre (pour `reveal`). */
+export function countWords(text: TitleContent): number {
+  const segments = typeof text === 'string' ? [{ text }] : text;
+  return segments.reduce((n, s) => n + s.text.split(/\s+/).filter(Boolean).length, 0);
 }
 
 /** Titre Anton en capitales, avec sa partie estompée. */
-export function Title({ text, variant = 'h1', size, color, center, numberOfLines, style, accessibilityLabel }: TitleProps) {
+export function Title({ text, variant = 'h1', size, color, center, numberOfLines, style, accessibilityLabel, reveal }: TitleProps) {
   const contextInk = useInk();
   const ink = color ?? contextInk;
   const segments = typeof text === 'string' ? [{ text }] : text;
@@ -35,16 +46,42 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
       numberOfLines={numberOfLines}
       style={[composed, fitLineHeight(composed)]}
     >
-      {segments.map((s, i) => (
-        <RNText key={i} style={s.color ? { color: s.color } : s.dim ? { color: dimColor } : null}>
-          {s.text}
-        </RNText>
-      ))}
+      {reveal === undefined
+        ? segments.map((s, i) => (
+            <RNText key={i} style={s.color ? { color: s.color } : s.dim ? { color: dimColor } : null}>
+              {s.text}
+            </RNText>
+          ))
+        : revealSegments(segments, reveal, dimColor)}
     </RNText>
   );
 }
 
+/** Segments découpés en mots ; au-delà de `count`, encre transparente (la mise en page ne bouge pas). */
+function revealSegments(segments: readonly TitleSegment[], count: number, dimColor: string) {
+  let seen = 0;
+  return segments.map((s, i) => {
+    const tint = s.color ?? (s.dim ? dimColor : undefined);
+    return (
+      <RNText key={i} style={tint ? { color: tint } : null}>
+        {s.text.split(/(\s+)/).map((t, j) => {
+          if (!t || /^\s+$/.test(t)) return t;
+          const hidden = seen++ >= count;
+          return hidden ? (
+            <RNText key={j} style={styles.hidden}>
+              {t}
+            </RNText>
+          ) : (
+            t
+          );
+        })}
+      </RNText>
+    );
+  });
+}
+
 const styles = StyleSheet.create({
+  hidden: { color: 'transparent' },
   base: { includeFontPadding: false },
   center: { textAlign: 'center' },
 });

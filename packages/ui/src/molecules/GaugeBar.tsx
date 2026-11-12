@@ -1,10 +1,11 @@
 import { GAUGE_MAX } from '@blowy/domain';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { useAnimatedNumber } from '../lib/motion';
+import { PillSpan } from '../motion/PillSpan';
 import { layout } from '../lib/styles';
 import { alpha, color, motion, radius, size as sizes, space, veil } from '../theme';
 
@@ -27,13 +28,21 @@ export interface GaugeBarProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/** Largeur de référence du milieu étiré de la pilule (plus grande que toute piste). */
+const TRACK_SPAN = 400;
+
 const toPct = (v: number): number => 50 + (Math.max(-GAUGE_MAX, Math.min(GAUGE_MAX, v)) / GAUGE_MAX) * 50;
 
-/** Jauge à deux pôles centrée sur 0 : remplissage depuis le centre et curseur blanc. */
+/**
+ * Jauge à deux pôles centrée sur 0 : remplissage depuis le centre et curseur blanc. Le curseur glisse et dépasse
+ * un peu avant de se poser (depuis le centre à l'apparition) ; transformations seulement.
+ */
 export function GaugeBar({ value, low, high, caption, target, color: fill = color.accent, compact, selected, onPress, accessibilityLabel, style }: GaugeBarProps) {
-  const x = useAnimatedNumber(toPct(value), motion.slow);
-  const fillStyle = useAnimatedStyle(() => ({ left: `${Math.min(50, x.value)}%`, right: `${100 - Math.max(50, x.value)}%` }));
-  const knobStyle = useAnimatedStyle(() => ({ left: `${x.value}%` }));
+  const x = useAnimatedNumber(toPct(value), { duration: motion.slow, overshoot: 0.1, from: 50 });
+  const w = useSharedValue(0);
+  const center = useDerivedValue(() => w.value / 2);
+  const end = useDerivedValue(() => (Math.max(0, Math.min(100, x.value)) / 100) * w.value);
+  const knobStyle = useAnimatedStyle(() => ({ opacity: w.value > 0 ? 1 : 0, transform: [{ translateX: end.value }] }));
   const barH = compact ? 6 : 10;
   const knob = compact ? 14 : 18;
   const lead = value > 0 ? 'high' : value < 0 ? 'low' : null;
@@ -53,11 +62,16 @@ export function GaugeBar({ value, low, high, caption, target, color: fill = colo
           {high}
         </Text>
       </View>
-      <View style={[styles.track, { height: barH, marginVertical: compact ? (knob - barH) / 2 : 0 }]}>
+      <View
+        onLayout={(e) => {
+          w.value = e.nativeEvent.layout.width;
+        }}
+        style={[styles.track, { height: barH, marginVertical: compact ? (knob - barH) / 2 : 0 }]}
+      >
         <View style={styles.zero} />
-        <Animated.View style={[styles.fill, { backgroundColor: fill }, fillStyle]} />
+        <PillSpan from={center} to={end} height={barH} color={fill} span={TRACK_SPAN} />
         {target !== undefined ? <View style={[styles.target, { left: `${toPct(target)}%` }]} /> : null}
-        <Animated.View style={[styles.knob, { width: knob, height: knob, marginLeft: -knob / 2, top: (barH - knob) / 2 }, knobStyle]} />
+        <Animated.View style={[styles.knob, { left: 0, width: knob, height: knob, marginLeft: -knob / 2, top: (barH - knob) / 2 }, knobStyle]} />
       </View>
     </>
   );
@@ -86,7 +100,6 @@ const styles = StyleSheet.create({
   caption: { flexShrink: 1, textAlign: 'center', letterSpacing: 0.66 },
   track: { borderRadius: radius.pill, backgroundColor: veil.track },
   zero: { position: 'absolute', left: '50%', top: -3, bottom: -3, width: 2, backgroundColor: alpha(color.white, 0.35) },
-  fill: { position: 'absolute', top: 0, bottom: 0, borderRadius: radius.pill },
   target: { position: 'absolute', top: -3, bottom: -3, width: 3, marginLeft: -1.5, borderRadius: 2, backgroundColor: color.rose },
   knob: { position: 'absolute', borderRadius: radius.pill, backgroundColor: color.white, shadowColor: color.night, shadowOpacity: 0.4, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
 });

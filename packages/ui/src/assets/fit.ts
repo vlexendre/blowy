@@ -132,3 +132,29 @@ export function badgeFrame(species: Species): { cx: number; cy: number; side: nu
   const b = FIT.species[species]?.badge ?? [0.5, 0.45, 0.75];
   return { cx: (b[0] ?? 0.5) * FIT_CANVAS.width, cy: (b[1] ?? 0.45) * FIT_CANVAS.height, side: (b[2] ?? 0.75) * FIT_CANVAS.width };
 }
+
+/** Ancres mesurées sur la pose `debout` (`fit.json` → `species.<s>.points`). */
+export type FitAnchor = 'headTop' | 'crown' | 'eyes' | 'eyeL' | 'eyeR' | 'nose' | 'lip' | 'mouth' | 'cheeks' | 'neck' | 'torso' | 'ground' | 'toy';
+
+const ANCHOR_FALLBACK: Record<FitAnchor, readonly [number, number]> = {
+  headTop: [0.5, 0.27],
+  crown: [0.5, 0.33],
+  eyes: [0.5, 0.45],
+  eyeL: [0.4, 0.45],
+  eyeR: [0.62, 0.45],
+  nose: [0.5, 0.54],
+  lip: [0.5, 0.57],
+  mouth: [0.5, 0.61],
+  cheeks: [0.5, 0.58],
+  neck: [0.5, 0.69],
+  torso: [0.5, 0.79],
+  ground: [0.5, 0.955],
+  toy: [0.78, 0.955],
+};
+
+/** Une ancre du pet en fraction de la toile `[x/900, y/1000]` (pour poser une bulle, des « z », un cœur…). */
+export function fitAnchor(species: Species, anchor: FitAnchor): { x: number; y: number } {
+  const p = FIT.species[species]?.points[anchor];
+  const f = ANCHOR_FALLBACK[anchor];
+  return { x: p?.[0] ?? f[0], y: p?.[1] ?? f[1] };
+}

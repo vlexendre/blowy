@@ -74,7 +74,7 @@ export function ListRow({
   const s = [styles.base, layout.row, divider && styles.divider, disabled && !hasSwitch && styles.disabled, style];
   if (onPress && !hasSwitch) {
     return (
-      <Pressable onPress={onPress} disabled={disabled} scaleTo={0.99} accessibilityLabel={accessibilityLabel ?? (subtitle ? `${title}, ${subtitle}` : title)} style={s}>
+      <Pressable onPress={onPress} disabled={disabled} scaleTo={0.99} dimTo={0.72} accessibilityLabel={accessibilityLabel ?? (subtitle ? `${title}, ${subtitle}` : title)} style={s}>
         {body}
       </Pressable>
     );

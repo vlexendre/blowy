@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { type LayoutChangeEvent, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { useAnimatedNumber } from '../lib/motion';
-import { color, motion, radius, space, veil } from '../theme';
+import { type Indicator, useActiveInk, useIndicator, useIndicatorStyle } from '../motion/indicator';
+import { color, radius, space, veil } from '../theme';
 
 export interface SegmentedTabItem<K extends string = string> {
   key: K;
@@ -24,18 +24,36 @@ export interface SegmentedTabsProps<K extends string = string> {
 const PAD = 4;
 const GAP = 4;
 
-/** Contrôle segmenté pilule ; la pastille blanche glisse vers l'onglet actif. */
+function TabLabel({ label, indicator, index }: { label: string; indicator: Indicator; index: number }) {
+  const ink = useActiveInk(indicator, index);
+  return (
+    <View>
+      <Animated.View style={ink.off}>
+        <Text variant="bodyHeavy" size={13} color={color.mute}>
+          {label}
+        </Text>
+      </Animated.View>
+      <Animated.View style={[StyleSheet.absoluteFill, ink.on]}>
+        <Text variant="bodyHeavy" size={13} color={color.dark}>
+          {label}
+        </Text>
+      </Animated.View>
+    </View>
+  );
+}
+
+/** Contrôle segmenté pilule ; la pastille blanche glisse en ressort vers l'onglet actif (et s'étire en chemin). */
 export function SegmentedTabs<K extends string>({ items, activeKey, onChange, style }: SegmentedTabsProps<K>) {
   const [width, setWidth] = useState(0);
   const index = Math.max(0, items.findIndex((i) => i.key === activeKey));
   const seg = items.length ? (width - PAD * 2 - GAP * (items.length - 1)) / items.length : 0;
-  const x = useAnimatedNumber(index * (seg + GAP), motion.base);
-  const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+  const indicator = useIndicator(index);
+  const thumb = useIndicatorStyle(indicator, seg + GAP);
   const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
   return (
     <View accessibilityRole="tablist" onLayout={onLayout} style={[styles.base, style]}>
       {width > 0 ? <Animated.View style={[styles.thumb, { width: seg }, thumb]} /> : null}
-      {items.map((item) => {
+      {items.map((item, i) => {
         const on = item.key === activeKey;
         return (
           <Pressable
@@ -50,9 +68,7 @@ export function SegmentedTabs<K extends string>({ items, activeKey, onChange, st
             }}
             style={styles.tab}
           >
-            <Text variant="bodyHeavy" size={13} color={on ? color.dark : color.mute}>
-              {item.label}
-            </Text>
+            <TabLabel label={item.label} indicator={indicator} index={i} />
             {item.badge && !on ? <View style={styles.dot} /> : null}
           </Pressable>
         );

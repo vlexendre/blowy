@@ -10,6 +10,8 @@ import { Button, LinkRow, TodayCard, ScreenTemplate } from '@blowy/ui';
 ## Règles
 - **Niveaux** : `atoms` → `molecules` → `organisms` → `templates`. Un niveau n'importe que les niveaux inférieurs
   (plus `lib/`, `theme.ts`, `types.ts`, `assets/`). Un composant par fichier, exports nommés.
+  `motion/` (primitives d'animation) n'importe que `lib/`, `theme.ts` et l'atome `Text` : utilisable partout (sauf
+  `CountUp` dans les atomes) ; `motion/pets/` (pets vivants) s'appuie sur les atomes : utilisable dès les molécules.
 - **Aucun texte en dur** : tout libellé arrive en prop (seuls quelques libellés d'accessibilité ont un repli, ex. « Retour »).
   Les objets de `@blowy/content` (`gaugeLabel`, `levelLabel`, `eventLabel`…) se passent tels quels.
 - **Données** : les organismes prennent des formes structurelles (`types.ts`) qui reprennent les champs du contrat :
@@ -18,7 +20,7 @@ import { Button, LinkRow, TodayCard, ScreenTemplate } from '@blowy/ui';
 - **Couleurs** : uniquement `@blowy/tokens` + `src/theme.ts` (extensions locales : `extra.heart`, `extra.sky`, voiles `veil.*`,
   `onGradient`, `alpha()`). L'encre (couleur du texte) suit le conteneur : un `Panel` clair passe ses enfants en sombre.
 - **Accessibilité** : tout élément touchable a un rôle et un libellé, une zone de toucher ≥ 44 pt, et toutes les animations
-  se coupent avec « réduire les animations » (`useReducedMotion`).
+  se coupent avec « réduire les animations » (`useReducedMotion` de `@blowy/ui`, voir « Mouvement »).
 - Pictogrammes : `Glyph` dessinés en vues ; pictos SVG (`react-native-svg`) pour la barre d'onglets et les soins (`CareIcon`) ; les icônes 3D sont des images (`Icon`).
 
 ## Images (`src/assets/pets.ts`)
@@ -100,7 +102,8 @@ AvatarProps = { size?: number; uri?: string | null; name?: string; pet?: PetLook
 ```
 #### `Badge` — `src/atoms/Badge.tsx`
 ```ts
-BadgeProps = { count: number; max?: number; tone?: 'heart' | 'accent'; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+BadgeProps = { count: number; max?: number; tone?: 'heart' | 'accent'; size?: 'sm' | 'md'; popOnMount?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// « pop » à chaque changement du nombre ; popOnMount (barre d'onglets, boutons) : aussi à l'apparition (0 → 1)
 ```
 #### `Button` — `src/atoms/Button.tsx`
 ```ts
@@ -124,7 +127,8 @@ type ChipTone = 'glass' | 'accent' | 'dark' | 'light' | 'coral' | 'rose' | 'oran
 ```
 #### `DressedPet` — `src/atoms/DressedPet.tsx`
 ```ts
-DressedPetProps = { species: Species; outfit?: Outfit | null; size: number; mood?: Mood; pose?: PetPose; animated?: boolean; slots?: readonly ItemSlot[]; delay?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+DressedPetProps = { species: Species; outfit?: Outfit | null; size: number; mood?: Mood; pose?: PetPose; animated?: boolean; slots?: readonly ItemSlot[]; delay?: number; hidden?: readonly string[]; headStyle?: AnimatedViewStyle; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// hidden : objets dessinés invisibles (en vol vers le pet) ; headStyle : style animé des objets tête + visage (retard des chapeaux, PetActor)
 // pose `debout` + objets de fit.json ; size = largeur de la toile (hauteur size/0,9) ; mood/pose seulement sans objet.
 // Ailes, objet au sol et chapeaux hauts débordent un peu de la boîte (pas de rognage).
 ```
@@ -167,15 +171,19 @@ type PetAnimation = 'none' | 'breathe' | 'bob'
 ```
 #### `Pressable` — `src/atoms/Pressable.tsx`
 ```ts
-PressableProps extends Omit<RNPressableProps, 'style' | 'children'> = { children?: ReactNode; style?: StyleProp<ViewStyle>; scaleTo?: number; haptic?: HapticKind | false; }
+PressableProps extends Omit<RNPressableProps, 'style' | 'children'> = { children?: ReactNode; style?: StyleProp<ViewStyle>; scaleTo?: number | 'auto'; dimTo?: number; bounceKey?: string | number | boolean | null; haptic?: HapticKind | false; }
+// scaleTo 'auto' (défaut) : enfoncement adapté à la taille mesurée (0,9 → 0,985) ; dimTo : opacité pendant l'appui (lignes : 0,72)
+// relâchement en ressort avec un soupçon de rebond ; désactivé = aucun mouvement ; bounceKey : petit rebond quand la valeur change
 ```
 #### `ProgressBar` — `src/atoms/ProgressBar.tsx`
 ```ts
-ProgressBarProps = { value: number; color?: string; trackColor?: string; height?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+ProgressBarProps = { value: number; color?: string; trackColor?: string; height?: number; fillOnMount?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// remplissage glissé (transformations) avec léger dépassement ; depuis 0 à l'apparition (fillOnMount, défaut vrai)
 ```
 #### `Skeleton` — `src/atoms/Skeleton.tsx`
 ```ts
-SkeletonProps = { width?: DimensionValue; height?: number; radius?: keyof typeof radii | 'circle'; style?: StyleProp<ViewStyle>; }
+SkeletonProps = { width?: DimensionValue; height?: number; radius?: keyof typeof radii | 'circle'; delay?: number; style?: StyleProp<ViewStyle>; }
+// = Shimmer : un reflet glisse dessus (fixe si animations réduites ou écran quitté)
 ```
 #### `Spacer` — `src/atoms/Spacer.tsx`
 ```ts
@@ -196,7 +204,8 @@ TextFieldProps extends Omit<TextInputProps, 'style'> = { label?: string; hint?: 
 ```
 #### `Title` — `src/atoms/Title.tsx`
 ```ts
-TitleProps = { text: TitleContent; variant?: 'hero' | 'h1' | 'h2' | 'h3'; size?: number; color?: string; center?: boolean; numberOfLines?: number; style?: StyleProp<TextStyle>; accessibilityLabel?: string; }
+TitleProps = { text: TitleContent; variant?: 'hero' | 'h1' | 'h2' | 'h3'; size?: number; color?: string; center?: boolean; numberOfLines?: number; style?: StyleProp<TextStyle>; accessibilityLabel?: string; reveal?: number; }
+countWords(text: TitleContent): number   // reveal = nombre de mots montrés (les suivants gardent leur place, encre transparente)
 ```
 ### Molécules
 #### `AvatarPair` — `src/molecules/AvatarPair.tsx`
@@ -229,7 +238,8 @@ EntryCardProps = { title: string; text?: string; left?: ReactNode; badge?: strin
 ```
 #### `EmptyState` — `src/molecules/EmptyState.tsx`
 ```ts
-EmptyStateProps = { species?: Species; mood?: Mood | PetPose; title: TitleContent; text?: string; actionLabel?: string; onAction?: () => void; style?: StyleProp<ViewStyle>; }
+EmptyStateProps = { species?: Species; mood?: Mood | PetPose; title: TitleContent; text?: string; actionLabel?: string; onAction?: () => void; peek?: boolean; seed?: string; style?: StyleProp<ViewStyle>; }
+// peek : le pet passe la tête au-dessus du titre (cache-cache) au lieu de respirer au centre
 ```
 #### `FeatureRow` — `src/molecules/FeatureRow.tsx`
 ```ts
@@ -238,6 +248,7 @@ FeatureRowProps = { icon: IconName; title: string; text?: string; style?: StyleP
 #### `GaugeBar` — `src/molecules/GaugeBar.tsx`
 ```ts
 GaugeBarProps = { value: number; low: string; high: string; caption?: string; target?: number; color?: string; compact?: boolean; selected?: boolean; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// le curseur et le remplissage glissent depuis le centre avec un léger dépassement (transformations seulement)
 ```
 #### `Header` — `src/molecules/Header.tsx`
 ```ts
@@ -249,7 +260,8 @@ HeartsProps = { lives: number; max?: number; size?: number; ghost?: boolean; acc
 ```
 #### `ItemTile` — `src/molecules/ItemTile.tsx`
 ```ts
-ItemTileProps = { id: string; label: string; state: ItemTileState; goalText?: string; progress?: { have: number; need: number }; premiumLabel?: string; newLabel?: string; wornLabel?: string; imageSize?: number; onPress?: () => void; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+ItemTileProps = { id: string; label: string; state: ItemTileState; goalText?: string; progress?: { have: number; need: number }; premiumLabel?: string; newLabel?: string; wornLabel?: string; imageSize?: number; onPress?: () => void; accessibilityHint?: string; imageRef?: RefObject<View | null>; landKey?: number; style?: StyleProp<ViewStyle>; }
+// verrouillé / premium : l'objet tremble au toucher ; « bientôt » : reflet ; « nouveau » : pop + étincelles une fois ; landKey : rebond au retour d'un objet
 type ItemTileState = 'owned' | 'worn' | 'locked' | 'premium'
 // `.tile` de V6-GardeRobe : verrouillé = image à 32 %, étape courte à la place du nom + mini barre ; étiquettes « porté », « nouveau », « bientôt »
 ```
@@ -268,6 +280,7 @@ MessageBubbleProps = { message: Pick<MessageLook, 'author' | 'kind' | 'body' | '
 #### `NeedMeter` — `src/molecules/NeedMeter.tsx`
 ```ts
 NeedMeterProps = { label: string; value: number; lowText?: string; lowAt?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// la barre se remplit avec dépassement et la valeur défile (CountUp), depuis 0 à l'apparition puis à chaque soin
 needColor(value, lowAt = 40): string     // jaune, rouge (pulsation) sous lowAt — tuile `.need` de V6-Accueil
 ```
 #### `OtpInput` — `src/molecules/OtpInput.tsx`
@@ -283,15 +296,18 @@ type PhotoTileState = 'photo' | 'pending' | 'locked' | 'empty'
 ```ts
 SegmentedTabItem<K extends string = string> = { key: K; label: string; badge?: boolean; }
 SegmentedTabsProps<K extends string = string> = { items: readonly SegmentedTabItem<K>[]; activeKey: K; onChange: (key: K) => void; style?: StyleProp<ViewStyle>; }
+// la pastille blanche glisse en ressort (et s'étire), les libellés changent d'encre en fondu croisé
 ```
 #### `SlotTabs` — `src/molecules/SlotTabs.tsx`
 ```ts
 SlotTabsProps = { labels: Record<ItemSlot, string>; active: ItemSlot; onChange: (slot: ItemSlot) => void; badges?: Partial<Record<ItemSlot, boolean>>; slots?: readonly ItemSlot[]; style?: StyleProp<ViewStyle>; }
+// idem : pilule blanche glissante
 // `.slots` : pilule, onglet actif blanc
 ```
 #### `SpeechBubble` — `src/molecules/SpeechBubble.tsx`
 ```ts
-SpeechBubbleProps = { text: string; highlight?: string; highlightColor?: string; tone?: 'dark' | 'light'; tail?: 'left' | 'right' | 'none'; rotate?: number; style?: StyleProp<ViewStyle>; }
+SpeechBubbleProps = { text: string; highlight?: string; highlightColor?: string; tone?: 'dark' | 'light'; tail?: 'left' | 'right' | 'none'; rotate?: number; compact?: boolean; chat?: boolean; typing?: boolean; style?: StyleProp<ViewStyle>; }
+// typing : « … » puis la phrase mot à mot (taille fixe dès le départ), rejoué quand text change
 ```
 #### `StatTile` — `src/molecules/StatTile.tsx`
 ```ts
@@ -307,13 +323,15 @@ StreakPillProps = { count: number; label: string; variant?: 'pill' | 'stack'; ac
 ```
 #### `TabBarItem` — `src/molecules/TabBarItem.tsx`
 ```ts
-TabBarItemProps = { label: string; glyph: GlyphName; active?: boolean; badge?: number; onPress?: () => void; onLongPress?: () => void; accessibilityLabel?: string; }
+TabBarItemProps = { label: string; glyph: GlyphName; active?: boolean; badge?: number; onPress?: () => void; onLongPress?: () => void; accessibilityLabel?: string; indicator?: Indicator; index?: number; }
+// devenu actif : le picto rebondit ; avec indicator (pilule glissante de BottomTabBar) : encre en fondu croisé
 ```
 ### Organismes
 #### `BottomTabBar` — `src/organisms/BottomTabBar.tsx`
 ```ts
 BottomTabItem<K extends string = string> = { key: K; label: string; glyph: GlyphName; badge?: number; }
-BottomTabBarProps<K extends string = string> = { items: readonly BottomTabItem<K>[]; activeKey: K; onPress: (key: K) => void; onLongPress?: (key: K) => void; floating?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+BottomTabBarProps<K extends string = string> = { items: readonly BottomTabItem<K>[]; activeKey: K; onPress: (key: K) => void; onLongPress?: (key: K) => void; floating?: boolean; peek?: { species: Species; mood?: Mood | PetPose }; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// la pilule jaune glisse en ressort (et s'étire) ; peek : le pet passe la tête au-dessus de l'onglet choisi
 const TAB_BAR_SPACE = size.tabBar + space.lg + space.sm
 ```
 #### `CareBar` — `src/organisms/CareBar.tsx`
@@ -324,6 +342,7 @@ CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>
 #### `ChallengeCard` — `src/organisms/ChallengeCard.tsx`
 ```ts
 ChallengeCardProps = { label: string; question: string; choices: readonly [string, string] | readonly string[]; done: boolean; picked?: number | null; doneLabel?: string; onChoose?: (choice: 0 | 1) => void; loading?: boolean; streak?: number; streakUnit?: string; gradient?: GradientName; }
+// réponse choisie : la carte s'incline et grandit pendant l'envoi ; résolue : elle se redresse en jaune, coche en pop
 ```
 #### `ChatThread` — `src/organisms/ChatThread.tsx`
 ```ts
@@ -374,7 +393,8 @@ NeedsPanelProps = { needs: Needs; labels: Record<NeedKey, { name: string; low: s
 ```
 #### `OutfitPreview` — `src/organisms/OutfitPreview.tsx`
 ```ts
-OutfitPreviewProps = { species: Species; outfit: Outfit; slotLabels: Record<ItemSlot, string>; itemLabels: Record<string, string>; emptyLabel: string; activeSlot?: ItemSlot; onSlotPress?: (slot: ItemSlot) => void; gradient?: GradientName; petLabel?: string; }
+OutfitPreviewProps = { species: Species; outfit: Outfit; slotLabels: Record<ItemSlot, string>; itemLabels: Record<string, string>; emptyLabel: string; activeSlot?: ItemSlot; onSlotPress?: (slot: ItemSlot) => void; gradient?: GradientName; petLabel?: string; hiddenItems?: readonly string[]; seed?: string; previewRef?: Ref<OutfitPreviewHandle>; }
+OutfitPreviewHandle = { itemRect(id): Promise<Rect | null>; react(kind: PetActorReaction): void }   // où atterrit un objet sur le pet
 // V6-GardeRobe : panneau 178, pet habillé à gauche, 2 × 2 cases (objet porté ou « + »)
 ```
 #### `PetHero` — `src/organisms/PetHero.tsx`
@@ -385,8 +405,9 @@ PetHeroProps = { pet: PetLook; title: TitleContent; moodLabel?: string; formLabe
 #### `PetStage` — `src/organisms/PetStage.tsx`
 ```ts
 PetStageAction = { label: string; onPress: () => void; accessibilityLabel?: string; }
-PetStageProps = { pet: PetLook; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; action?: PetStageAction; reaction?: PetReaction | null; reactionKey?: number; sleepGlyph?: string; gradient?: GradientName; petSize?: number; height?: number; onPetPress?: () => void; petLabel?: string; style?: StyleProp<ViewStyle>; }
-type PetReaction = CareAction   // feed : rebond + étoiles · play : sauts + confettis · nap : tassement + zzz · cuddle : écrasement + cœurs
+PetStageProps = { pet: PetLook & { id?: string }; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; action?: PetStageAction; reaction?: PetReaction | null; reactionKey?: number; gradient?: GradientName; petSize?: number; height?: number; grabbable?: boolean; onPetPress?: () => void; onPetTouch?: (t: PetTouch) => void; petLabel?: string; style?: StyleProp<ViewStyle>; }
+type PetReaction = PetActorReaction   // feed : fraise croquée · play : balle et sauts · nap : lumière baissée + z · cuddle : cœurs · joy · no · wave · surprise
+// le pet est un PetActor (attrapable par défaut : le panneau passe devant et ne le rogne plus pendant le geste) ; la bulle s'écrit
 // V6-Accueil : panneau 318, nom Anton 40 + puce de forme, bouton blanc (garde-robe), bulle, pet habillé en bas à droite
 // shape `boude` : panneau lie-de-vin et pet éteint (V6-Boude) ; tout coupé si « réduire les animations »
 ```
@@ -420,6 +441,7 @@ TodayCardProps = { today: TodayLook; otherPet: PetLook; streak: number; labels: 
 #### `UnlockSheet` — `src/organisms/UnlockSheet.tsx`
 ```ts
 UnlockSheetProps = { visible: boolean; itemId: string; itemName: string; pet: { species: Species; outfit?: Outfit | null; name?: string }; kicker: string; title: TitleContent; text?: string; wearLabel: string; onWear: () => void; wearing?: boolean; closeLabel: string; onClose: () => void; }
+// l'objet tombe dans sa bulle, rebondit, confettis, apparaît sur le pet qui saute ; titre mot à mot ; un tap n'importe où passe à la fin
 // V6-Debloque : plein écran jaune, le pet qui porte déjà l'objet (aperçu), « il le porte » / « ranger »
 ```
 #### `ItemDetail` — `src/organisms/ItemDetail.tsx`
@@ -433,7 +455,8 @@ UnlockToastProps = { visible: boolean; itemId: string; name: string; kicker: str
 ```
 #### `WardrobeGrid` — `src/organisms/WardrobeGrid.tsx`
 ```ts
-WardrobeGridProps<T extends WardrobeItemLook> = { items: readonly T[]; slot?: ItemSlot; worn?: string | null; itemLabels: Record<string, string>; goalLabels: Record<string, (n: number) => string>; premiumLabel: string; wornLabel?: string; onSelect?: (item: T) => void; newIds?: readonly string[]; newLabel?: string; hints?: Partial<Record<ItemTileState, string>>; columns?: number; }
+WardrobeGridProps<T extends WardrobeItemLook> = { items: readonly T[]; slot?: ItemSlot; worn?: string | null; itemLabels: Record<string, string>; goalLabels: Record<string, (n: number) => string>; premiumLabel: string; wornLabel?: string; onSelect?: (item: T) => void; newIds?: readonly string[]; newLabel?: string; hints?: Partial<Record<ItemTileState, string>>; columns?: number; gridRef?: Ref<WardrobeGridHandle>; }
+WardrobeGridHandle = { tileRect(id): Promise<Rect | null>; land(id): void }   // cases en cascade à chaque emplacement
 // goalLabels : étapes courtes (« 2 jours de soins »), appelées avec goal.need
 ```
 #### `WordsShareCard` — `src/organisms/WordsShareCard.tsx`
@@ -451,18 +474,176 @@ OnboardingTemplateProps = { step?: number; total?: number; onBack?: () => void; 
 ```
 #### `ScreenTemplate` — `src/templates/ScreenTemplate.tsx`
 ```ts
-ScreenTemplateProps = { children?: ReactNode; header?: ReactNode; footer?: ReactNode; scroll?: boolean; background?: GradientName | 'night'; padded?: boolean; edges?: readonly ('top' | 'bottom')[]; bottomSpace?: number; keyboard?: boolean; refreshControl?: ReactElement<RefreshControlProps>; scrollRef?: Ref<ComponentRef<typeof ScrollView>>; contentStyle?: StyleProp<ViewStyle>; }
+ScreenTemplateProps = { children?: ReactNode; header?: ReactNode; footer?: ReactNode; scroll?: boolean; background?: GradientName | 'night'; padded?: boolean; gutter?: number; headerStyle?: StyleProp<ViewStyle>; edges?: readonly ('top' | 'bottom')[]; bottomSpace?: number; keyboard?: boolean; refreshControl?: ReactElement<RefreshControlProps>; scrollRef?: Ref<ComponentRef<typeof ScrollView>>; onScroll?: ((e) => void) | AnimatedScrollHandler; scrollEventThrottle?: number; contentStyle?: StyleProp<ViewStyle>; }
+// Animated.ScrollView ; fournit le verrou de défilement (useScrollLock) : un pet tenu bloque le défilement le temps du geste
 ```
 #### `SheetTemplate` — `src/templates/SheetTemplate.tsx`
 ```ts
-SheetTemplateProps = { visible: boolean; onClose: () => void; title?: TitleContent; children?: ReactNode; footer?: ReactNode; closeLabel?: string; }
+SheetTemplateProps = { visible: boolean; onClose: () => void; title?: TitleContent; children?: ReactNode; footer?: ReactNode; closeLabel?: string; header?: ReactNode; asScreen?: boolean; }
+// monte en ressort, voile en fondu ; se tire vers le bas (suit le doigt, ferme si assez bas ou assez vite) ; redescend à la fermeture
 ```
 #### `TabTemplate` — `src/templates/TabTemplate.tsx`
 ```ts
-TabTemplateProps = { brand?: string; title?: TitleContent; right?: ReactNode; children?: ReactNode; scroll?: boolean; refreshControl?: ReactElement<RefreshControlProps>; }
+TabTemplateProps = { brand?: string; title?: TitleContent; right?: ReactNode; children?: ReactNode; scroll?: boolean; refreshControl?: ReactElement<RefreshControlProps>; gutter?: number; gap?: number; top?: number; onScroll?: ScreenTemplateProps['onScroll']; scrollEventThrottle?: number; }
+```
+
+## Mouvement (`src/motion/`, `src/lib/motion.ts`)
+Règles, jetons et inventaire par écran : `docs/MOTION.md`. Banc d'essai : `/dev/motion` (`apps/mobile/app/dev/motion.tsx`).
+Tout s'importe depuis `@blowy/ui`.
+
+### Mise en place (déjà faite)
+- `app/_layout.tsx` : `<MotionHost>` autour du `Stack` (calque des vols, explosions et pets qui passent la tête ; pause
+  des boucles quand l'app passe en arrière-plan ; annonce du retour au premier plan).
+- Chaque écran : `<ScreenMotion>` de `@/core` autour du gabarit (coupe ses boucles quand l'écran n'est plus au premier
+  plan : onglet quitté, écran recouvert). **À ajouter sur chaque écran que vous animez.**
+
+### Jetons (`theme.ts` → `motion`)
+```ts
+motion.instant 90 · fast 160 · base 240 · slow 420 · scene 700 · stagger 45 · staggerMax 8 · breath 1300   // ms
+motion.spring.press | pop | soft | plush     // { damping, stiffness, mass } pour withSpring (alias : motion.press, motion.pop)
+motion.curve.standard | out | in | inOut     // Bézier ; prêtes à l'emploi : ease.standard / ease.out / ease.in / ease.inOut
+```
+
+### Crochets et outils
+```ts
+useReducedMotion(): boolean            // système, ou forçage de MotionHost / MotionProvider (prop reduced)
+useMotionActive(): boolean             // faux si l'écran n'est pas au premier plan ou l'app en arrière-plan
+useFocusPause(): boolean               // l'inverse
+useLoop(duration?, enabled?, delay?): SharedValue<number>   // 0 → 1 → 0, en pause hors écran, 0 si animations réduites
+useAnimatedNumber(target, number | { duration?; overshoot?; from? }): SharedValue<number>   // overshoot 0,08 = 8 % de dépassement
+usePressFeedback(to: number | 'auto', baseOpacity?, dimTo?)   // { animatedStyle, onLayout, pressIn, pressOut, bounce }
+fadeTo(to, duration?)                  // fondu qui joue même avec « réduire les animations » (worklet)
+ease, springs                          // courbes et ressorts des jetons
+useSeed(petId, salt?): Seed            // { next, range(a, b), pick(items, avoid?), chance(p) } — graine = id + minute courante
+makeSeed(n), hashString(s), isNight(date?)   // nuit = 22 h – 7 h
+useReveal(total, { step?: 70; delay?: 0; enabled?: true; key? }): number   // mots montrés (un rendu par mot)
+hapticFor('press' | 'select' | 'land' | 'success' | 'celebrate' | 'error')   // vibration associée à un moment
+useForeground(cb)                      // appelé à chaque retour de l'app au premier plan
+useScrollLock(): { locked; setLocked(on) }   // fourni par ScreenTemplate
+MotionFocus { active: boolean; children }    // ScreenMotion le pose pour vous
+MotionProvider { reduced?: boolean | null; children }   // déjà dans MotionHost ; imbriqué : force « réduire » sur une zone (banc d'essai)
+```
+
+### Primitives (props exactes)
+```ts
+Appear  { children; delay?: 0; from?: 'below' | 'above' | 'left' | 'right' | 'none'; distance?: 12; scale?: 0.98; duration?: 240;
+          once?: string /* clé : n'anime qu'à la 1re apparition (listes recyclées) */; replay?: string | number; style?; pointerEvents? }
+Stagger { children; step?: 45; max?: 8; delay?; onceKey?: string; itemStyle?; …les props d'Appear sauf once }   // une enveloppe par enfant
+staggerDelay(index, step?, max?): number
+PopIn   { children; delay?; from?: 0.4; trigger?: string | number /* re-pop */; onMount?: true; style?; pointerEvents? }
+Shake   { children; trigger?: number; distance?: 8; haptic?: HapticMoment | false /* 'error' */; style? }   ref: ShakeHandle { shake() }
+Pulse   { children; active?: true; beats?: 2; scale?: 1.07; delay?: 500; trigger?; style? }   // battements puis repos, jamais en boucle
+CountUp { value: number; from?: number; variant?: TypeName; size?; color?; muted?; prefix?; suffix?; duration?: 420; accessibilityLabel?; style? }
+Shimmer { width?; height?: 16; radius?: 8; base?; shine?; duration?: 1300; delay?; style? }
+Burst   { kind: 'hearts' | 'stars' | 'sparkles' | 'confetti' | 'zzz'; trigger?: number; loop?: boolean; count?; spread?; size?; seed?;
+          colors?; onDone?; style /* vue de taille nulle : la placer en absolu à l'origine */ }
+TypingDots { color?; size?: 7; accessibilityLabel?; style? }
+PillSpan { from: SharedValue; to: SharedValue; height; color; span }   // pilule de longueur animée (jauges)
+useIndicator(index) → Indicator · useIndicatorStyle(indicator, step, stretch?) · useActiveInk(indicator, index)   // onglets glissants
+```
+
+### Calque, vols, explosions (`MotionHost`)
+```ts
+MotionHost { children; reduced?: boolean | null }
+HostPortal { children }                       // rend dans le calque, en coordonnées de la fenêtre
+useMotionHost(): { registry; mount(node) => unmount } | null
+measureInWindow(ref): Promise<Rect | null>    // Rect = { x, y, width, height } (fenêtre)
+useFlyTo(): (o: FlightOptions) => Promise<void>
+FlightOptions = { from: RefObject | Rect; to: RefObject | Rect; render: ({ width, height }) => ReactNode; arc?: number; duration?: 560;
+                  spin?: number; haptic?: HapticMoment | false /* 'land' */; onLand?: () => void }
+useBurst(): ({ kind, x, y, count?, spread?, size?, seed? }) => void   // explosion au-dessus de tout
+```
+Une modale native (`Modal` : `SheetTemplate`, `UnlockSheet`) passe au-dessus du calque : à l'intérieur, rendre `Burst` sur place.
+
+### Les pets
+```ts
+PetActor   { species; outfit?; size; mood?: Mood | PetPose /* repos sans tenue, défaut 'debout' */; seed?: string /* id du pet */;
+             sulking?; idle?: true; touch?: true; grabbable?: false; sleepAfter?: number | null /* 25 000 */; shadow?: true;
+             hiddenItems?: readonly string[]; onTouch?: (t: 'tap' | 'double' | 'snuggle' | 'grab' | 'throw') => void;
+             onGrabChange?: (grabbed: boolean) => void; accessibilityLabel?; accessibilityHint?; style? }
+           ref: PetActorHandle { react(kind: 'feed' | 'play' | 'nap' | 'cuddle' | 'joy' | 'no' | 'wave' | 'surprise'); wake() }
+PetPeek    { species; mood?: 'neutre'; edges?: PeekEdge[] /* ['bottom-right','bottom-left'] */; visible?: true; size?: 92; along?: 0.6;
+             safe?: { top?; bottom?; left?; right? }; hideAndSeek?: true; seed?; duration?: number; onPress?; onHidden?;
+             inline?: boolean; accessibilityLabel?; style? }
+           PeekEdge = 'bottom-left' | 'bottom-right' | 'left' | 'right' | 'top'
+PetRefresh { species; mood?: 'surpris'; refreshing; onRefresh; children: (scroll: { refreshControl; onScroll; scrollEventThrottle }) => ReactNode;
+             top?: number /* zone sûre du haut */; bottomPeek?: true; bottomInset?: 0; size?: 64 }
+KeyboardPeek { species; mood?: 'joie'; side?: 'left' | 'right'; size?: 72; seed? }
+HelloPeek  { species; seed?; safe?; duration?: 2400 }   // salut au retour dans l'app (posé dans (tabs)/_layout)
+PetEntrance { species; mood?: 'debout'; size?: 180; glow?; accessibilityLabel?; style? }   // arrive en courant (lancement)
+fitAnchor(species, 'headTop' | 'eyes' | 'mouth' | 'ground' | …): { x, y }   // ancres de fit.json en fraction de la toile
+```
+- **Déclencher une réaction** : `const pet = useRef<PetActorHandle>(null)` puis `pet.current?.react('joy')`. Sur l'accueil,
+  passer par `PetStage` : `reaction` + `reactionKey` (à incrémenter, même réaction rejouée). Dans la garde-robe :
+  `OutfitPreviewHandle.react`.
+- **Zones sûres** : `PetPeek` reste dans la fenêtre moins `safe` ; défaut haut = zone sûre + 60 (en-tête), bas = au-dessus
+  de la barre d'onglets. Sur un écran sans onglets avec un bouton en pied, passer `safe={{ bottom: hauteurDuPied }}`.
+  Préférer `inline` (dans un état vide) ou les coins bas ; jamais sur un champ, un bouton ou un texte utile.
+- **Gestes** : `PetActor` gère seul l'arbitrage avec le défilement (horizontal : on l'attrape ; vertical : la page défile ;
+  appui long : on le tient) et bloque le défilement de son `ScreenTemplate` pendant qu'on le tient. Le conteneur qui le
+  rogne doit cesser de le rogner pendant le geste (`onGrabChange`, comme `PetStage`).
+
+### À faire / à éviter
+- **Oui** : `transform` et `opacity` seulement ; `useAnimatedStyle` + valeurs partagées ; une seule vedette par écran ;
+  `Appear once="liste:id"` dans une liste ; `Stagger` (8 au plus) pour une cascade ; `ScreenMotion` sur l'écran ;
+  `useReducedMotion` de `@blowy/ui` puis `fadeTo` pour l'alternative ; `hapticFor` avec chaque retour important ;
+  décor (`Burst`, signes) `pointerEvents="none"` et masqué au lecteur d'écran ; réglages de geste stables (`useMemo`).
+- **Non** : animer `width` / `height` / `left` / `top` (utiliser `translate`, `scale`, `PillSpan`) ; `setState` à chaque
+  image ; boucle sans pause (passer par `useLoop` / `useMotionActive`) ; retarder une action jusqu'à la fin d'une
+  animation (mutez d'abord, animez ensuite : voir la garde-robe) ; cacher du contenu au lecteur d'écran derrière une
+  animation ; changer la mise en page au repos ; `Math.random` (utiliser `useSeed`).
+- **Web** : pas de tirage élastique (pas de pet dans `PetRefresh`, liste normale), pas de clavier (`KeyboardPeek` absent),
+  pas de vibration. Les images du pet sont `pointerEvents: none` pour éviter le glisser-déposer d'image du navigateur.
+
+### Recettes
+**1. Une liste qui arrive en cascade, une seule fois**
+```tsx
+<FlatList data={links} renderItem={({ item, index }) => (
+  <Appear once={`chats:${item.id}`} delay={staggerDelay(index)}>
+    <LinkRow link={item} … />
+  </Appear>
+)} />
+```
+**2. Secouer un champ en cas d'erreur**
+```tsx
+const [failed, setFailed] = useState(0);
+<Shake trigger={failed}><OtpInput … error={error} /></Shake>
+// dans onError : setFailed((n) => n + 1)   (la vibration « erreur » est incluse)
+```
+**3. Compter une statistique**
+```tsx
+<CountUp value={stats.messages} from={0} variant="h1" accessibilityLabel={`${stats.messages} messages`} />
+```
+**4. Faire voler un objet** (rien n'attend le vol : l'action part avant)
+```tsx
+const fly = useFlyTo(); const from = useRef<ComponentRef<typeof View>>(null); const to = useRef<ComponentRef<typeof View>>(null);
+const send = () => {
+  mutate();
+  void fly({ from, to, render: ({ width }) => <Icon name="coeurs" size={width} />, onLand: () => setLanded((n) => n + 1) });
+};
+```
+**5. Fêter quelque chose**
+```tsx
+const burst = useBurst();
+ref.current?.measureInWindow((x, y, w, h) => burst({ kind: 'confetti', x: x + w / 2, y: y + h / 2 }));
+hapticFor('celebrate');
+// dans une Modal : <Burst kind="confetti" trigger={n} style={{ position: 'absolute', left: 120, top: 80 }} />
+```
+**6. Un pet qui passe la tête dans un état vide (ou une erreur)**
+```tsx
+<EmptyState peek species={pet.species} seed={pet.id} mood="triste" title={t.emptyTitle} text={t.emptyText} />
+// ou, au bord de l'écran au-dessus de la barre d'onglets :
+<PetPeek species={pet.species} seed={pet.id} mood="smug" edges={['bottom-right', 'bottom-left']} />
+```
+**7. Tirer pour rafraîchir avec le pet (iOS)**
+```tsx
+<PetRefresh species={pet.species} refreshing={refreshing} onRefresh={refresh}>
+  {(scroll) => <TabTemplate {...scroll}>…</TabTemplate>}
+</PetRefresh>
 ```
 
 ## Galerie
+Banc d'essai du mouvement : `apps/mobile/app/dev/motion.tsx` (route `/dev/motion`).
 `apps/mobile/app/dev/gallery.tsx` (route `/dev/gallery`) montre chaque composant avec des données d'exemple
 (toi + Nino, Léa + Suzie, Malo + Gaston, Sasha + Pia ; Nino, Suzie et Pia portent une tenue, Gaston et Bob non).
 La section « SOINS & GARDE-ROBE » (en tête) contient une démo interactive (soins → réactions, garde-robe → tenue), chaque

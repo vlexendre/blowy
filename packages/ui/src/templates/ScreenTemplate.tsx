@@ -1,9 +1,22 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ComponentRef, ReactElement, ReactNode, Ref } from 'react';
-import { KeyboardAvoidingView, Platform, type RefreshControlProps, ScrollView, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import type { ComponentProps, ComponentRef, ReactElement, ReactNode, Ref } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  type RefreshControlProps,
+  type ScrollView,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { InkProvider } from '../lib/ink';
+import { ScrollLockProvider, useScrollLock } from '../lib/scroll-lock';
 import { color, type GradientName, gradient as gradients, space } from '../theme';
 
 export interface ScreenTemplateProps {
@@ -30,11 +43,25 @@ export interface ScreenTemplateProps {
   keyboard?: boolean;
   refreshControl?: ReactElement<RefreshControlProps>;
   scrollRef?: Ref<ComponentRef<typeof ScrollView>>;
+  /** Défilement : fonction, ou gestionnaire Reanimated (`useAnimatedScrollHandler`, ex. `PetRefresh`). */
+  onScroll?: ((e: NativeSyntheticEvent<NativeScrollEvent>) => void) | ComponentProps<typeof Animated.ScrollView>['onScroll'];
+  scrollEventThrottle?: number;
   contentStyle?: StyleProp<ViewStyle>;
 }
 
-/** Gabarit de base : fond nuit, zones de sécurité, en-tête, corps défilant ou fixe, pied collant, clavier. */
-export function ScreenTemplate({
+/**
+ * Gabarit de base : fond nuit, zones de sécurité, en-tête, corps défilant ou fixe, pied collant, clavier.
+ * Fournit le verrou de défilement (`useScrollLock`) : un pet attrapé bloque le défilement le temps du geste.
+ */
+export function ScreenTemplate(props: ScreenTemplateProps) {
+  return (
+    <ScrollLockProvider>
+      <ScreenBody {...props} />
+    </ScrollLockProvider>
+  );
+}
+
+function ScreenBody({
   children,
   header,
   footer,
@@ -48,18 +75,24 @@ export function ScreenTemplate({
   keyboard = true,
   refreshControl,
   scrollRef,
+  onScroll,
+  scrollEventThrottle,
   contentStyle,
 }: ScreenTemplateProps) {
   const insets = useSafeAreaInsets();
+  const { locked } = useScrollLock();
   const top = edges.includes('top') ? insets.top : 0;
   const safeBottom = edges.includes('bottom') ? insets.bottom : 0;
   const pad = padded ? { paddingHorizontal: gutter } : null;
   const bodyBottom = (footer ? 0 : safeBottom) + bottomSpace + (scroll ? space.xl : 0);
 
   const body = scroll ? (
-    <ScrollView
-      ref={scrollRef}
+    <Animated.ScrollView
+      ref={scrollRef as Ref<Animated.ScrollView>}
       style={styles.fill}
+      scrollEnabled={!locked}
+      onScroll={onScroll as ComponentProps<typeof Animated.ScrollView>['onScroll']}
+      scrollEventThrottle={scrollEventThrottle ?? (onScroll ? 16 : undefined)}
       contentContainerStyle={[styles.grow, pad, { paddingBottom: bodyBottom }, contentStyle]}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="interactive"
@@ -67,7 +100,7 @@ export function ScreenTemplate({
       refreshControl={refreshControl}
     >
       {children}
-    </ScrollView>
+    </Animated.ScrollView>
   ) : (
     <View style={[styles.fill, pad, { paddingBottom: bodyBottom }, contentStyle]}>{children}</View>
   );

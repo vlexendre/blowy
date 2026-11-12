@@ -47,6 +47,9 @@ export const extra = {
   /** Silhouette de remplacement d'une photo absente (tête, fond). */
   skin: '#FFD9B8',
   wineDeep: '#8C1D4F',
+  /** Feuilles et queue de la fraise du soin « nourrir » (animation). */
+  leaf: '#4CB944',
+  stem: '#2F8F2A',
 } as const;
 
 /** `#RRGGBB` + opacité → `rgba()`. Sert aux voiles blancs / sombres des maquettes (rgba(255,255,255,.1)…). */
@@ -101,15 +104,62 @@ export const shadow = {
   lift: { shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 18, shadowOffset: { width: 0, height: 14 }, elevation: 10 },
 } as const;
 
-/** Durées et ressorts des micro-animations. */
+/** Ressort Reanimated (`withSpring`) : amortissement, raideur, masse. */
+export interface SpringToken {
+  readonly damping: number;
+  readonly stiffness: number;
+  readonly mass?: number;
+}
+
+/**
+ * Durées, ressorts et courbes des animations (docs/MOTION.md → Jetons).
+ * Durées en ms. Ressorts : `press` raide sans rebond (boutons), `pop` un rebond (pastilles, tuiles, bulles),
+ * `soft` lent sans rebond (feuilles, panneaux), `plush` deux rebonds amortis (pets, objets).
+ * Courbes : cubiques de Bézier (`[x1, y1, x2, y2]`) à passer à `Easing.bezier` (voir `ease` de `lib/motion`).
+ */
 export const motion = {
-  press: { damping: 18, stiffness: 420, mass: 0.6 },
-  pop: { damping: 14, stiffness: 180 },
+  /** Retour d'appui, bascule. */
+  instant: 90,
+  /** Fondus, petites apparitions. */
   fast: 160,
+  /** Entrées de cartes, changements d'onglet. */
   base: 240,
+  /** Barres, compteurs, révélations. */
   slow: 420,
+  /** Fêtes, entrées de pet. */
+  scene: 700,
+  /** Décalage entre deux éléments d'une cascade. */
+  stagger: 45,
+  /** Au-delà de ce rang, les éléments d'une cascade arrivent d'un bloc. */
+  staggerMax: 8,
+  /** Respiration d'un pet au repos (demi-cycle). */
   breath: 1300,
-} as const;
+  spring: {
+    press: { damping: 30, stiffness: 520, mass: 0.6 },
+    pop: { damping: 14, stiffness: 180, mass: 1 },
+    soft: { damping: 20, stiffness: 110, mass: 1 },
+    plush: { damping: 8, stiffness: 170, mass: 0.9 },
+  },
+  curve: {
+    /** Courbe par défaut (glissements, changements d'état). */
+    standard: [0.2, 0, 0, 1],
+    /** Entrées : part vite, se pose doucement. */
+    out: [0.16, 1, 0.3, 1],
+    /** Sorties : démarre doucement, file. */
+    in: [0.4, 0, 1, 1],
+    /** Allers-retours (boucles, respiration). */
+    inOut: [0.65, 0, 0.35, 1],
+  },
+  /** Alias historiques (= `spring.press`, `spring.pop`). */
+  press: { damping: 30, stiffness: 520, mass: 0.6 },
+  pop: { damping: 14, stiffness: 180, mass: 1 },
+} as const satisfies {
+  spring: Record<'press' | 'pop' | 'soft' | 'plush', SpringToken>;
+  curve: Record<'standard' | 'out' | 'in' | 'inOut', readonly [number, number, number, number]>;
+  press: SpringToken;
+  pop: SpringToken;
+  [k: string]: unknown;
+};
 
 /**
  * Création du pet (V6-Craft) : pastille et dégradé du panneau de chaque espèce,

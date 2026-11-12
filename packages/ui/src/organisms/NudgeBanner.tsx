@@ -1,6 +1,6 @@
 import type { Mood, Species } from '@blowy/domain';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useReducedMotion } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { Icon } from '../atoms/Icon';
 import { Panel } from '../atoms/Panel';
@@ -9,7 +9,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import type { IconName } from '../assets/pets';
-import { useLoop } from '../lib/motion';
+import { useLoop, useReducedMotion } from '../lib/motion';
 import { type GradientName, radius } from '../theme';
 import type { TitleContent } from '../types';
 

@@ -1,19 +1,22 @@
 import type { Outfit, Species } from '@blowy/domain';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, ZoomIn } from 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '../atoms/Button';
 import { Chip } from '../atoms/Chip';
-import { DressedPet } from '../atoms/DressedPet';
 import { ItemImage } from '../atoms/ItemImage';
 import { Panel } from '../atoms/Panel';
 import { Text } from '../atoms/Text';
-import { Title } from '../atoms/Title';
-import { haptic } from '../lib/haptics';
-import { useLoop } from '../lib/motion';
-import { alpha, color, shadow } from '../theme';
+import { countWords, Title } from '../atoms/Title';
+import { hapticFor } from '../lib/haptics';
+import { ease, fadeTo, springs, useReducedMotion } from '../lib/motion';
+import { layout } from '../lib/styles';
+import { Burst } from '../motion/Burst';
+import { PetActor, type PetActorHandle } from '../motion/pets/PetActor';
+import { alpha, color, motion, shadow } from '../theme';
 import type { TitleContent } from '../types';
 
 export interface UnlockSheetProps {
@@ -40,49 +43,149 @@ export interface UnlockSheetProps {
 }
 
 const PET = 250;
+/** Chorégraphie (ms depuis l'ouverture) : le panneau s'ouvre, l'objet tombe, se pose, confettis, titre mot à mot. */
+const T = { drop: 260, fall: 440, words: 760, wordStep: 95 } as const;
 
-/** Fête d'un objet tout juste gagné (V6-Debloque) : plein écran jaune, le pet qui le porte déjà, « il le porte » ou « ranger ». */
+/**
+ * Fête d'un objet tout juste gagné (V6-Debloque), plein écran jaune : l'objet tombe du haut dans sa bulle, rebondit,
+ * les confettis partent, il apparaît sur le pet qui saute de joie, puis le titre s'écrit mot à mot.
+ * Un tap n'importe où saute directement à la fin. Animations réduites : tout apparaît en fondu, sans confettis.
+ */
 export function UnlockSheet({ visible, itemId, itemName, pet, kicker, title, text, wearLabel, onWear, wearing, closeLabel, onClose }: UnlockSheetProps) {
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
-  const t = useLoop(1300, visible);
-  // `.sq` : petit saut écrasé en boucle.
-  const hop = useAnimatedStyle(() => ({
-    transform: [{ translateY: -8 * t.value }, { scaleX: 1 - 0.03 * t.value }, { scaleY: 1 + 0.04 * t.value }],
-  }));
+  const actor = useRef<PetActorHandle>(null);
+  const words = countWords(title);
+  const [shown, setShown] = useState(reduced ? words : 0);
+  const [landed, setLanded] = useState(reduced);
+  const [confetti, setConfetti] = useState(0);
+  const panel = useSharedValue(0);
+  const drop = useSharedValue(0);
+  const squash = useSharedValue(0);
+  const tail = useSharedValue(0);
+  const act = useSharedValue(0);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const finished = useRef(false);
+
+  const clear = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+  const land = useCallback(() => {
+    setLanded(true);
+    hapticFor('celebrate');
+    setConfetti((n) => n + 1);
+    actor.current?.react('joy');
+  }, []);
+
   useEffect(() => {
-    if (visible) haptic('success');
-  }, [visible, itemId]);
+    if (!visible) return;
+    finished.current = false;
+    clear();
+    if (reduced) {
+      setShown(words);
+      setLanded(true);
+      panel.value = fadeTo(1, motion.base);
+      drop.value = 1;
+      tail.value = fadeTo(1, motion.base);
+      act.value = fadeTo(1, motion.base);
+      hapticFor('celebrate');
+      return;
+    }
+    setShown(0);
+    setLanded(false);
+    panel.value = 0;
+    drop.value = 0;
+    tail.value = 0;
+    act.value = 0;
+    panel.value = withSpring(1, springs.pop);
+    // Les boutons arrivent dès que l'objet est posé (la fête ne retarde pas l'action).
+    act.value = withDelay(T.drop + T.fall - 60, withTiming(1, { duration: motion.base, easing: ease.out }));
+    // L'objet tombe (accélère), touche, s'écrase et rebondit deux fois (ressort `plush`).
+    drop.value = withDelay(T.drop, withTiming(1, { duration: T.fall, easing: Easing.in(Easing.quad) }));
+    squash.value = withDelay(T.drop + T.fall, withSequence(withTiming(1, { duration: 70, easing: ease.out }), withSpring(0, springs.plush)));
+    timers.current.push(setTimeout(land, T.drop + T.fall));
+    for (let i = 1; i <= words; i++) timers.current.push(setTimeout(() => setShown(i), T.words + i * T.wordStep));
+    tail.value = withDelay(T.words + words * T.wordStep, withTiming(1, { duration: motion.base, easing: ease.out }));
+    return clear;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, itemId, reduced]);
+
+  /** Tap n'importe où : fin immédiate de la fête (l'objet posé, le titre entier, les boutons). */
+  const skip = () => {
+    if (finished.current || reduced) return;
+    finished.current = true;
+    clear();
+    panel.value = withTiming(1, { duration: motion.instant });
+    drop.value = 1;
+    squash.value = withTiming(0, { duration: motion.instant });
+    tail.value = withTiming(1, { duration: motion.instant });
+    act.value = withTiming(1, { duration: motion.instant });
+    setShown(words);
+    if (!landed) {
+      setLanded(true);
+      hapticFor('celebrate');
+    }
+  };
+
+  const panelStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, panel.value * 1.5), transform: [{ scale: reduced ? 1 : 0.9 + 0.1 * panel.value }] }));
+  const bubble = useAnimatedStyle(() => ({
+    opacity: drop.value > 0 ? 1 : 0,
+    transform: [
+      { translateY: reduced ? 0 : -420 * (1 - drop.value) },
+      { rotate: `${(1 - drop.value) * -40}deg` },
+      { scaleX: 1 + 0.22 * squash.value },
+      { scaleY: 1 - 0.26 * squash.value },
+    ],
+  }));
+  const tailStyle = useAnimatedStyle(() => ({ opacity: tail.value, transform: [{ translateY: reduced ? 0 : 10 * (1 - tail.value) }] }));
+  const actStyle = useAnimatedStyle(() => ({ opacity: act.value, transform: [{ translateY: reduced ? 0 : 16 * (1 - act.value) }] }));
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       {visible ? (
-        <View style={[styles.root, { paddingTop: insets.top + 12, paddingBottom: Math.max(insets.bottom, 18) + 8 }]} accessibilityViewIsModal>
-          <Animated.View key={itemId} entering={reduced ? undefined : ZoomIn.springify().damping(15)} style={styles.grow}>
-            <Panel gradient="accent" radius={32} padding="none" style={styles.grow}>
-              <View style={styles.panel}>
-                <Chip label={kicker} tone="dark" ink={color.accent} style={styles.kicker} />
-                <View style={styles.stage}>
-                  <Animated.View style={[styles.origin, hop]}>
-                    <DressedPet species={pet.species} outfit={pet.outfit} size={PET} accessibilityLabel={pet.name ? `${pet.name}, ${itemName}` : itemName} />
-                  </Animated.View>
-                  <Animated.View entering={reduced ? undefined : FadeIn.delay(350)} style={[styles.item, shadow.soft]}>
-                    <ItemImage id={itemId} size={58} />
-                  </Animated.View>
+        <GestureHandlerRootView style={layout.fill}>
+          <View
+            onTouchStart={skip}
+            style={[styles.root, { paddingTop: insets.top + 12, paddingBottom: Math.max(insets.bottom, 18) + 8 }]}
+            accessibilityViewIsModal
+          >
+            <Animated.View style={[styles.grow, panelStyle]}>
+              <Panel gradient="accent" radius={32} padding="none" style={styles.grow}>
+                <View style={styles.panel}>
+                  <Chip label={kicker} tone="dark" ink={color.accent} style={styles.kicker} />
+                  <View style={styles.stage}>
+                    <PetActor
+                      ref={actor}
+                      species={pet.species}
+                      outfit={pet.outfit}
+                      size={PET}
+                      hiddenItems={landed ? undefined : [itemId]}
+                      sleepAfter={null}
+                      accessibilityLabel={pet.name ? `${pet.name}, ${itemName}` : itemName}
+                    />
+                    <Animated.View style={[styles.item, shadow.soft, bubble]}>
+                      <ItemImage id={itemId} size={58} />
+                    </Animated.View>
+                    <Burst kind="confetti" trigger={confetti} count={16} size={12} spread={190} seed={itemId} style={styles.burst} />
+                  </View>
+                  <Title text={title} size={52} center style={styles.title} reveal={shown >= words ? undefined : shown} />
+                  {text ? (
+                    <Animated.View style={tailStyle}>
+                      <Text variant="bodyBold" size={15} center style={styles.text}>
+                        {text}
+                      </Text>
+                    </Animated.View>
+                  ) : null}
                 </View>
-                <Title text={title} size={52} center style={styles.title} />
-                {text ? (
-                  <Text variant="bodyBold" size={15} center style={styles.text}>
-                    {text}
-                  </Text>
-                ) : null}
-              </View>
-            </Panel>
-          </Animated.View>
-          <View style={styles.actions}>
-            <Button label={wearLabel} onPress={onWear} loading={wearing} />
-            <Button label={closeLabel} variant="ghost" onPress={onClose} disabled={wearing} />
+              </Panel>
+            </Animated.View>
+            <Animated.View style={[styles.actions, actStyle]}>
+              <Button label={wearLabel} onPress={onWear} loading={wearing} />
+              <Button label={closeLabel} variant="ghost" onPress={onClose} disabled={wearing} />
+            </Animated.View>
           </View>
-        </View>
+        </GestureHandlerRootView>
       ) : null}
     </Modal>
   );
@@ -102,7 +205,6 @@ const styles = StyleSheet.create({
   },
   kicker: { position: 'absolute', top: 18, left: 18 },
   stage: { width: PET * 1.12, alignItems: 'center', marginBottom: -4 },
-  origin: { transformOrigin: '50% 100%' },
   item: {
     position: 'absolute',
     top: 6,
@@ -115,7 +217,9 @@ const styles = StyleSheet.create({
     backgroundColor: alpha(color.white, 0.85),
     borderWidth: 3,
     borderColor: color.white,
+    transformOrigin: '50% 100%',
   },
+  burst: { position: 'absolute', top: 44, right: 38 },
   title: { marginTop: 8 },
   text: { marginTop: 6 },
   // Boutons : écart 8, 26 au-dessus du bas.

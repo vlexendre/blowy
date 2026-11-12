@@ -57,7 +57,7 @@ export const LinkRow = memo(function LinkRow({
   const preview = link.lastMessage?.preview ?? emptyPreview ?? '';
   const a11y = accessibilityLabel ?? [other.displayName, preview, timeLabel, levelLabel].filter(Boolean).join(', ');
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} scaleTo={0.98} accessibilityLabel={a11y} style={[layout.row, styles.row, ghost && styles.ghost]}>
+    <Pressable onPress={onPress} onLongPress={onLongPress} scaleTo={0.98} dimTo={0.85} accessibilityLabel={a11y} style={[layout.row, styles.row, ghost && styles.ghost]}>
       {ghost ? (
         <View style={styles.ghostAvatar}>
           <Avatar size={46} pet={other.pet} hidden pose="fantome" bg={extra.ghostDisc} />

@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
+import type { ScreenTemplateProps } from './ScreenTemplate';
 import type { RefreshControlProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -26,16 +27,33 @@ export interface TabTemplateProps {
   gap?: number;
   /** Marge au-dessus du contenu. Défaut 12. */
   top?: number;
+  /** Défilement (fonction ou gestionnaire Reanimated, ex. `PetRefresh`). */
+  onScroll?: ScreenTemplateProps['onScroll'];
+  scrollEventThrottle?: number;
 }
 
 /** Gabarit d'un onglet principal : marque, grand titre, contenu, place pour la barre flottante. */
-export function TabTemplate({ brand, title, right, children, scroll = true, refreshControl, gutter, gap = space.md, top = space.md }: TabTemplateProps) {
+export function TabTemplate({
+  brand,
+  title,
+  right,
+  children,
+  scroll = true,
+  refreshControl,
+  gutter,
+  gap = space.md,
+  top = space.md,
+  onScroll,
+  scrollEventThrottle,
+}: TabTemplateProps) {
   return (
     <ScreenTemplate
       scroll={scroll}
       edges={['top']}
       bottomSpace={TAB_BAR_SPACE}
       refreshControl={refreshControl}
+      onScroll={onScroll}
+      scrollEventThrottle={scrollEventThrottle}
       contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
     >
       {brand || title || right ? (

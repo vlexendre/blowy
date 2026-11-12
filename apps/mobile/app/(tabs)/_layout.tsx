@@ -1,9 +1,10 @@
 import { color } from '@blowy/tokens';
-import { BottomTabBar, type BottomTabItem } from '@blowy/ui';
+import { BottomTabBar, type BottomTabItem, HelloPeek } from '@blowy/ui';
 import { Redirect, Tabs } from 'expo-router';
 
 import { useEncounters } from '@/features/encounters';
 import { totalUnread, useLinks } from '@/features/links';
+import { usePet } from '@/features/pet';
 import { useGate } from '@/features/session';
 import { tabs } from '@/locales/chats';
 
@@ -19,6 +20,7 @@ export default function TabsLayout() {
   const gate = useGate();
   const links = useLinks();
   const encounters = useEncounters();
+  const pet = usePet().data?.pet;
   const items: BottomTabItem<TabKey>[] = [
     { key: 'pet', label: tabs.pet, glyph: 'heart' },
     { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) },
@@ -29,27 +31,33 @@ export default function TabsLayout() {
   if (gate === 'signedOut') return <Redirect href="/(onboarding)/welcome" />;
   if (gate === 'needsOnboarding') return <Redirect href="/" />;
   return (
-    <Tabs
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: color.night } }}
-      tabBar={({ state, navigateToTab }) => {
-        const current = state.routes[state.index]?.name;
-        return (
-          <BottomTabBar
-            items={items}
-            activeKey={isTab(current) ? current : 'pet'}
-            accessibilityLabel={tabs.a11y}
-            onPress={(key) => {
-              const route = state.routes.find((r) => r.name === key);
-              if (route && current !== key) navigateToTab(route.key);
-            }}
-          />
-        );
-      }}
-    >
-      <Tabs.Screen name="pet" options={{ title: tabs.pet }} />
-      <Tabs.Screen name="chats" options={{ title: tabs.chats }} />
-      <Tabs.Screen name="rencontres" options={{ title: tabs.rencontres }} />
-      <Tabs.Screen name="moi" options={{ title: tabs.moi }} />
-    </Tabs>
+    <>
+      <Tabs
+        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: color.night } }}
+        tabBar={({ state, navigateToTab }) => {
+          const current = state.routes[state.index]?.name;
+          return (
+            <BottomTabBar
+              items={items}
+              activeKey={isTab(current) ? current : 'pet'}
+              accessibilityLabel={tabs.a11y}
+              // Le pet passe la tête au-dessus de la barre à chaque changement d'onglet.
+              peek={pet ? { species: pet.species, mood: 'joie' } : undefined}
+              onPress={(key) => {
+                const route = state.routes.find((r) => r.name === key);
+                if (route && current !== key) navigateToTab(route.key);
+              }}
+            />
+          );
+        }}
+      >
+        <Tabs.Screen name="pet" options={{ title: tabs.pet }} />
+        <Tabs.Screen name="chats" options={{ title: tabs.chats }} />
+        <Tabs.Screen name="rencontres" options={{ title: tabs.rencontres }} />
+        <Tabs.Screen name="moi" options={{ title: tabs.moi }} />
+      </Tabs>
+      {/* Retour dans l'app : le pet salue une fois depuis un coin, au-dessus de la barre. */}
+      {pet ? <HelloPeek species={pet.species} seed={pet.id} /> : null}
+    </>
   );
 }

@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { haptic } from '../lib/haptics';
 import { InkProvider } from '../lib/ink';
+import { useReducedMotion } from '../lib/motion';
+import { Pulse } from '../motion/PopIn';
 import { color, motion, opacity, size as sizes, veil } from '../theme';
 
 export interface CareButtonProps {
@@ -82,9 +84,12 @@ export function CareButton({
       accessibilityState={{ disabled: !!inactive || !!refused, busy: !!loading }}
       style={[styles.root, refused && styles.off, disabled && !loading && styles.inactive, style]}
     >
-      <Animated.View style={[styles.disc, { width: size, height: size, borderRadius: size / 2 }, lit ? styles.hot : null, anim]}>
-        <InkProvider value={ink}>{loading ? <ActivityIndicator color={ink} /> : <View pointerEvents="none">{icon}</View>}</InkProvider>
-      </Animated.View>
+      {/* Conseillé : deux battements pour attirer l'œil, puis repos. */}
+      <Pulse active={!!lit} beats={2} delay={700}>
+        <Animated.View style={[styles.disc, { width: size, height: size, borderRadius: size / 2 }, lit ? styles.hot : null, anim]}>
+          <InkProvider value={ink}>{loading ? <ActivityIndicator color={ink} /> : <View pointerEvents="none">{icon}</View>}</InkProvider>
+        </Animated.View>
+      </Pulse>
       <Text variant="bodyHeavy" size={12} center numberOfLines={1} color={color.white}>
         {label}
       </Text>

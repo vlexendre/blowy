@@ -4,6 +4,7 @@ import { Banner, EvolutionHero, FormPicker, Header, PetQuote, ScreenTemplate, Sk
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
+import { ScreenMotion } from '@/core';
 import { formHistory, usePet } from '@/features/pet';
 import { evolution as t, pet as petText } from '@/locales/pet';
 
@@ -54,6 +55,7 @@ export default function EvolutionScreen() {
   }));
 
   return (
+    <ScreenMotion>
     <ScreenTemplate>
       <Stack top={6} grow>
         <EvolutionHero title={t.title} species={p.species} steps={steps} onBack={back} backLabel={t.back} age={t.age(age)} />
@@ -74,5 +76,6 @@ export default function EvolutionScreen() {
         <PetQuote pet={{ name: p.name, species: p.species, form: p.form }} text={t.speech} note={t.decay} />
       </Stack>
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }

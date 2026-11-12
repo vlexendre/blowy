@@ -22,3 +22,24 @@ export function haptic(kind: HapticKind = 'light'): void {
   };
   run().catch(() => undefined);
 }
+
+/**
+ * Accords visuel ↔ toucher (docs/MOTION.md, règle 7) : un nom de moment plutôt qu'un type de vibration.
+ * - `press` appui · `select` changement de sélection · `land` un pet ou un objet qui se pose
+ * - `success` réussite · `celebrate` fête (objet débloqué, niveau) · `error` refus, code faux
+ */
+export type HapticMoment = 'press' | 'select' | 'land' | 'success' | 'celebrate' | 'error';
+
+const MOMENTS: Record<HapticMoment, HapticKind> = {
+  press: 'light',
+  select: 'selection',
+  land: 'medium',
+  success: 'success',
+  celebrate: 'success',
+  error: 'warning',
+};
+
+/** Vibration associée à un moment d'animation (aucun effet sur le web). */
+export function hapticFor(moment: HapticMoment): void {
+  haptic(MOMENTS[moment]);
+}

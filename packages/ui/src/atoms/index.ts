@@ -17,7 +17,7 @@ export { Spacer, type SpacerProps } from './Spacer';
 export { Sticker, type StickerProps, type StickerTone } from './Sticker';
 export { Text, type TextProps } from './Text';
 export { TextField, type TextFieldProps } from './TextField';
-export { Title, type TitleProps } from './Title';
+export { countWords, Title, type TitleProps } from './Title';
 export { DressedPet, type DressedPetProps } from './DressedPet';
 export { ItemImage, type ItemImageProps } from './ItemImage';
 export { PetBadge, type PetBadgeProps } from './PetBadge';

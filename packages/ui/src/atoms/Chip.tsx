@@ -55,6 +55,7 @@ export function Chip({ label, onPress, selected, tone = 'glass', left, size = 'm
     <Pressable
       onPress={onPress}
       haptic="selection"
+      bounceKey={!!selected}
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ selected: !!selected }}
       hitSlop={hitSlopFor(h)}

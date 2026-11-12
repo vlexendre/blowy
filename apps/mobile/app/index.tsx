@@ -1,6 +1,6 @@
 /** Aiguillage de lancement : selon la session, on part vers l'inscription, la fin du profil ou l'app. */
 import { space } from '@blowy/tokens';
-import { EmptyState, PetImage, ScreenTemplate, Text } from '@blowy/ui';
+import { EmptyState, PetEntrance, ScreenTemplate, Text } from '@blowy/ui';
 import { Redirect } from 'expo-router';
 import { View } from 'react-native';
 
@@ -28,7 +28,7 @@ export default function Gate() {
       return (
         <ScreenTemplate scroll={false}>
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <EmptyState species={species} mood="triste" title={common.offlineTitle.toUpperCase()} text={common.offlineText} actionLabel={common.retry} onAction={retry} />
+            <EmptyState peek species={species} mood="triste" title={common.offlineTitle.toUpperCase()} text={common.offlineText} actionLabel={common.retry} onAction={retry} />
           </View>
         </ScreenTemplate>
       );
@@ -36,7 +36,8 @@ export default function Gate() {
       return (
         <ScreenTemplate scroll={false}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.lg }} accessibilityLabel={common.gate.sleeping} accessible>
-            <PetImage species={species} mood="dodo" size={180} animation="breathe" />
+            {/* Le pet arrive en courant et se pose ; la navigation n'attend pas la fin. */}
+            <PetEntrance species={species} size={180} />
             <Text muted center>
               {common.gate.sleeping}
             </Text>

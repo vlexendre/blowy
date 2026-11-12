@@ -35,12 +35,12 @@ export { TodayCard, type TodayCardLabels, type TodayCardProps } from './TodayCar
 export { WordsShareCard, type WordsShareCardProps } from './WordsShareCard';
 export { CareBar, type CareBarProps } from './CareBar';
 export { NeedsPanel, type NeedsPanelProps } from './NeedsPanel';
-export { OutfitPreview, type OutfitPreviewProps } from './OutfitPreview';
+export { OutfitPreview, type OutfitPreviewHandle, type OutfitPreviewProps } from './OutfitPreview';
 export { type PetReaction, PetStage, type PetStageAction, type PetStageProps } from './PetStage';
 export { UnlockSheet, type UnlockSheetProps } from './UnlockSheet';
 export { ItemDetail, type ItemDetailProps } from './ItemDetail';
 export { UnlockToast, type UnlockToastProps } from './UnlockToast';
-export { WardrobeGrid, type WardrobeGridProps } from './WardrobeGrid';
+export { WardrobeGrid, type WardrobeGridHandle, type WardrobeGridProps } from './WardrobeGrid';
 export { OnboardingPanel, type OnboardingPanelProps } from './OnboardingPanel';
 export { AgeGate, type AgeGateProps } from './AgeGate';
 export { InvitePanel, type InvitePanelProps } from './InvitePanel';

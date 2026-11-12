@@ -6,6 +6,8 @@ import { Glyph } from '../atoms/Glyph';
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
+import { Appear } from '../motion/Appear';
+import { PopIn } from '../motion/PopIn';
 import { alpha, color } from '../theme';
 
 export interface EvolutionStep {
@@ -26,29 +28,41 @@ export interface EvolutionTimelineProps {
   steps: readonly EvolutionStep[];
 }
 
-/** Les formes successives du pet, reliées par des chevrons (panneau de l'écran Évolution). */
+/** Rythme de la frise : chaque forme arrive après la précédente, la flèche entre les deux d'abord. */
+const STEP = 180;
+
+/**
+ * Les formes successives du pet, reliées par des chevrons (panneau de l'écran Évolution).
+ * La frise se dessine de gauche à droite à l'apparition : flèche, puis forme ; l'actuelle arrive en dernier, en « pop ».
+ */
 export function EvolutionTimeline({ species, steps }: EvolutionTimelineProps) {
   return (
     <View style={styles.row} accessibilityRole="list">
       {steps.map((s, i) => (
         <Fragment key={`${s.form}-${i}`}>
-          {i > 0 ? <Glyph name="chevron" size={14} color={color.white} style={styles.arrow} /> : null}
-          <View accessible accessibilityLabel={`${s.when}, ${s.name}${s.caption ? `, ${s.caption}` : ''}`} style={styles.step}>
-            <View style={styles.art}>
-              <PetImage species={species} form={s.form} size={s.current ? 112 : 98} animation={s.current ? 'breathe' : 'none'} style={styles.pet} />
+          {i > 0 ? (
+            <PopIn delay={i * STEP - 60} from={0.2} style={styles.arrow}>
+              <Glyph name="chevron" size={14} color={color.white} />
+            </PopIn>
+          ) : null}
+          <Appear delay={i * STEP} from="left" distance={14} scale={s.current ? 0.9 : 0.96} style={styles.step}>
+            <View accessible accessibilityLabel={`${s.when}, ${s.name}${s.caption ? `, ${s.caption}` : ''}`} style={styles.stepInner}>
+              <View style={styles.art}>
+                <PetImage species={species} form={s.form} size={s.current ? 112 : 98} animation={s.current ? 'breathe' : 'none'} style={styles.pet} />
+              </View>
+              <View style={[styles.when, s.current && styles.whenNow]}>
+                <Text variant="bodyHeavy" size={12} color={s.current ? color.dark : color.white} numberOfLines={1}>
+                  {s.when}
+                </Text>
+              </View>
+              <Title text={s.name} size={20} center numberOfLines={1} style={styles.name} />
+              {s.caption ? (
+                <Text variant="small" size={12} center style={styles.caption} numberOfLines={2}>
+                  {s.caption}
+                </Text>
+              ) : null}
             </View>
-            <View style={[styles.when, s.current && styles.whenNow]}>
-              <Text variant="bodyHeavy" size={12} color={s.current ? color.dark : color.white} numberOfLines={1}>
-                {s.when}
-              </Text>
-            </View>
-            <Title text={s.name} size={20} center numberOfLines={1} style={styles.name} />
-            {s.caption ? (
-              <Text variant="small" size={12} center style={styles.caption} numberOfLines={2}>
-                {s.caption}
-              </Text>
-            ) : null}
-          </View>
+          </Appear>
         </Fragment>
       ))}
     </View>
@@ -57,7 +71,8 @@ export function EvolutionTimeline({ species, steps }: EvolutionTimelineProps) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: 4, marginTop: 10 },
-  step: { flex: 1, minWidth: 0, alignItems: 'center' },
+  step: { flex: 1, minWidth: 0 },
+  stepInner: { alignItems: 'center' },
   art: { height: 92, justifyContent: 'flex-end', alignItems: 'center' },
   pet: { marginBottom: -10, shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 9, shadowOffset: { width: 0, height: 14 } },
   arrow: { marginTop: 56, opacity: 0.7 },

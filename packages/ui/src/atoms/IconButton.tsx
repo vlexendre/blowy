@@ -50,7 +50,7 @@ export function IconButton({ label, onPress, glyph, icon, variant = 'glass', siz
       <InkProvider value={v.ink}>{glyph ? <Glyph name={glyph} size={Math.round(size * 0.4)} /> : icon}</InkProvider>
       {badge ? (
         <View style={styles.badge} pointerEvents="none">
-          <Badge count={badge} />
+          <Badge count={badge} popOnMount />
         </View>
       ) : null}
     </Pressable>

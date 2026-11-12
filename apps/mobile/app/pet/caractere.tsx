@@ -1,11 +1,28 @@
 import { gaugeLabel } from '@blowy/content';
 import { cleanPetName, type GaugeKey, PET_NAME_MAX } from '@blowy/domain';
 import { color } from '@blowy/tokens';
-import { Banner, Button, Card, ChallengeCard, GaugePanel, Header, PetHero, PetSummary, type PetSummaryItem, ScreenTemplate, Skeleton, Stack, TextField } from '@blowy/ui';
+import {
+  Banner,
+  Button,
+  Card,
+  ChallengeCard,
+  GaugePanel,
+  Header,
+  KeyboardPeek,
+  PetHero,
+  PetSummary,
+  type PetSummaryItem,
+  ScreenTemplate,
+  Shake,
+  Skeleton,
+  Stack,
+  TextField,
+} from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import { errorText } from '@/features/links';
 import { useAnswerChallenge, usePet, useRenamePet, weekSummary } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
@@ -23,6 +40,7 @@ export default function CharacterScreen() {
   const [name, setName] = useState('');
   const [picked, setPicked] = useState<0 | 1 | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [renameFailed, setRenameFailed] = useState(0);
 
   const refresh = async () => {
     setRefreshing(true);
@@ -70,10 +88,11 @@ export default function CharacterScreen() {
       setEditing(false);
       return;
     }
-    rename.mutate(clean, { onSuccess: () => setEditing(false) });
+    rename.mutate(clean, { onSuccess: () => setEditing(false), onError: () => setRenameFailed((n) => n + 1) });
   };
 
   return (
+    <ScreenMotion>
     <ScreenTemplate header={header} gutter={12} refreshControl={refreshControl}>
       <Stack top={6}>
         <PetHero
@@ -90,6 +109,7 @@ export default function CharacterScreen() {
         />
 
         {editing ? (
+          <Shake trigger={renameFailed}>
           <Card padding="lg">
             <TextField
               label={t.renameLabel}
@@ -107,6 +127,7 @@ export default function CharacterScreen() {
               <Button label={t.renameSave} size="md" onPress={saveName} loading={rename.isPending} disabled={!cleanPetName(name)} style={styles.fill} />
             </View>
           </Card>
+          </Shake>
         ) : null}
 
         <GaugePanel
@@ -144,7 +165,10 @@ export default function CharacterScreen() {
         {challenge.isError ? <Banner tone="error" text={errorText(challenge.error, t.challengeError)} onClose={() => challenge.reset()} /> : null}
       </Stack>
       <UnlockCelebration />
+      {/* En renommant : le pet regarde par-dessus le clavier (iOS / Android). */}
+      {editing ? <KeyboardPeek species={p.species} seed={p.id} /> : null}
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }
 
