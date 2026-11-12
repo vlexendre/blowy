@@ -4,7 +4,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { InkProvider } from '../lib/ink';
 import { layout } from '../lib/styles';
-import { color, extra, radius, size, space, veil } from '../theme';
+import { color, extra, radius, space, veil } from '../theme';
 
 export interface Plan<K extends string = string> {
   key: K;
@@ -29,8 +29,8 @@ export interface PlanPickerProps<K extends string = string> {
 /** Choix de la formule Blowy+ : cartes côte à côte, la choisie en blanc. */
 export function PlanPicker<K extends string>({ plans, value, onChange }: PlanPickerProps<K>) {
   return (
-    <View accessibilityRole="radiogroup" style={[layout.row, layout.gapMd, styles.wrap]}>
-      {plans.map((p) => {
+    <View accessibilityRole="radiogroup" style={[layout.row, styles.wrap]}>
+      {plans.map((p, i) => {
         const on = p.key === value;
         return (
           <Pressable
@@ -41,29 +41,29 @@ export function PlanPicker<K extends string>({ plans, value, onChange }: PlanPic
             accessibilityRole="radio"
             accessibilityLabel={[p.title, p.price, p.unit, p.caption].filter(Boolean).join(' ')}
             accessibilityState={{ checked: on }}
-            style={[styles.card, on ? styles.on : styles.off]}
+            style={[styles.card, { flex: i === 0 ? 1.25 : 1 }, on ? styles.on : styles.off]}
           >
             <InkProvider value={on ? color.dark : color.white}>
-              <Text variant="label" size={11} muted>
+              <Text variant="label" size={11} style={styles.title}>
                 {p.title}
               </Text>
-              <Text variant="bodyBold" size={22} style={styles.price}>
+              <Text variant="bodyHeavy" size={22} style={styles.price}>
                 {p.price}
                 {p.unit ? (
-                  <Text variant="bodyBold" size={15}>
+                  <Text variant="bodyHeavy" size={14}>
                     {p.unit}
                   </Text>
                 ) : null}
               </Text>
               {p.caption ? (
-                <Text variant="small" muted>
+                <Text variant="small" size={12.5} style={styles.caption}>
                   {p.caption}
                 </Text>
               ) : null}
             </InkProvider>
             {p.badge ? (
               <View style={styles.badge}>
-                <Text variant="bodyBold" size={12} color={color.white}>
+                <Text variant="bodyHeavy" size={12} color={color.white}>
                   {p.badge}
                 </Text>
               </View>
@@ -76,10 +76,13 @@ export function PlanPicker<K extends string>({ plans, value, onChange }: PlanPic
 }
 
 const styles = StyleSheet.create({
-  wrap: { paddingTop: space.md },
-  card: { flex: 1, minHeight: size.button.lg * 1.8, padding: space.lg, borderRadius: radius.lg - 4, gap: space.xs, justifyContent: 'center' },
-  on: { backgroundColor: color.white },
-  off: { backgroundColor: color.panel, borderWidth: 1, borderColor: veil.glassStrong },
-  price: { marginTop: space.xs },
-  badge: { position: 'absolute', top: -space.md, right: space.md, paddingHorizontal: space.md - 2, paddingVertical: space.xs, borderRadius: radius.pill, backgroundColor: extra.heart },
+  wrap: { gap: 10 },
+  // Maquette : 14 × 16 de marge, 100 de haut, bordure de 2 (blanche si choisie).
+  card: { minHeight: 100, paddingVertical: 14, paddingHorizontal: space.lg, borderRadius: radius.lg - 4, borderWidth: 2 },
+  on: { backgroundColor: color.white, borderColor: color.white },
+  off: { backgroundColor: color.panel, borderColor: veil.glassStrong },
+  title: { letterSpacing: 1.32, opacity: 0.7 },
+  price: { marginTop: space.xs, lineHeight: 28 },
+  caption: { opacity: 0.75, lineHeight: 17 },
+  badge: { position: 'absolute', top: -12, right: space.md, paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: extra.heart },
 });

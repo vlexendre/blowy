@@ -1,5 +1,5 @@
 import { Anton_400Regular } from '@expo-google-fonts/anton';
-import { BricolageGrotesque_500Medium, BricolageGrotesque_700Bold } from '@expo-google-fonts/bricolage-grotesque';
+import { BricolageGrotesque_500Medium, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
 import { color } from '@blowy/tokens';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -14,7 +14,7 @@ import { CoreProvider } from '@/core';
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsReady, fontError] = useFonts({ Anton_400Regular, BricolageGrotesque_500Medium, BricolageGrotesque_700Bold });
+  const [fontsReady, fontError] = useFonts({ Anton_400Regular, BricolageGrotesque_500Medium, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold });
 
   useEffect(() => {
     if (fontsReady || fontError) void SplashScreen.hideAsync();

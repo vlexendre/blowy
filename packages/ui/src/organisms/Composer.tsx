@@ -1,4 +1,5 @@
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 import { Chip } from '../atoms/Chip';
 import { IconButton } from '../atoms/IconButton';
@@ -27,6 +28,13 @@ export interface ComposerProps {
   sendLabel?: string;
   maxLength?: number;
 }
+
+/** Avion en papier de la maquette (19 pt). */
+const SEND = (
+  <Svg width={19} height={19} viewBox="0 0 24 24">
+    <Path d="M4 12l16-8-6 16-2-7z" fill={color.dark} />
+  </Svg>
+);
 
 /** Barre de saisie du chat : +, champ pilule, envoyer, bascules de ton. */
 export function Composer({
@@ -58,7 +66,8 @@ export function Composer({
   const toggle = (t: ComposerTone) => onToneChange?.(tone === t ? null : t);
   return (
     <View style={styles.wrap}>
-      {toneLabels && onToneChange ? (
+      {/* Bascules de ton : seulement pendant la saisie (la maquette au repos n'a que la barre). */}
+      {toneLabels && onToneChange && (value.length > 0 || tone) ? (
         <View style={[layout.row, layout.gapSm, styles.tones]}>
           <Chip label={toneLabels.sweet} tone="glass" selected={tone === 'sweet'} onPress={() => toggle('sweet')} />
           <Chip label={toneLabels.tease} tone="glass" selected={tone === 'tease'} onPress={() => toggle('tease')} />
@@ -80,16 +89,18 @@ export function Composer({
             style={[type.body, styles.input]}
           />
         </View>
-        <IconButton glyph="send" label={sendLabel} variant="accent" onPress={onSend} disabled={!canSend} />
+        {/* Maquette : bouton jaune plein même champ vide ; l'envoi d'un champ vide est ignoré. */}
+        <IconButton icon={SEND} label={sendLabel} variant="accent" onPress={canSend ? onSend : undefined} disabled={sending} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { paddingHorizontal: space.md, paddingTop: space.sm - 2, paddingBottom: space.sm, gap: space.sm },
+  // Maquette : padding 6 12 26 ; le gabarit pose déjà 12 au-dessus et la zone de sécurité en dessous.
+  wrap: { paddingHorizontal: space.md, gap: space.sm },
   disabled: { minHeight: size.button.lg, justifyContent: 'center', marginHorizontal: space.md, borderRadius: radius.pill, backgroundColor: veil.line },
   tones: { paddingLeft: size.touch + space.sm },
-  field: { flex: 1, minHeight: 46, borderRadius: 23, backgroundColor: veil.line, borderWidth: 1, borderColor: veil.track, paddingHorizontal: space.lg },
-  input: { flex: 1, minWidth: 0, color: color.white, maxHeight: 120, paddingVertical: space.sm + 2 },
+  field: { flex: 1, minHeight: 46, borderRadius: 23, backgroundColor: veil.line, borderWidth: 1, borderColor: veil.track, paddingLeft: space.lg, paddingRight: space.xs },
+  input: { flex: 1, minWidth: 0, color: color.white, fontSize: 15, lineHeight: 20, maxHeight: 120, paddingTop: 12, paddingBottom: 12 },
 });

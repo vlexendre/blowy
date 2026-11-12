@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '../atoms/Avatar';
@@ -5,11 +6,11 @@ import { Button } from '../atoms/Button';
 import { Card } from '../atoms/Card';
 import { Chip } from '../atoms/Chip';
 import { Glyph } from '../atoms/Glyph';
-import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
-import { color, radius, space, speciesColor, veil } from '../theme';
+import { alpha, color, speciesColor } from '../theme';
+import { EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
 import type { PetLook, SuggestionLook } from '../types';
 
 export interface SuggestionCardProps {
@@ -52,16 +53,16 @@ export function SuggestionCard(props: SuggestionCardProps) {
 
   if (props.locked) {
     return (
-      <Card onPress={props.onLockedPress} accessibilityLabel={`${compatibility} %, ${props.lockedCaption ?? ''}`} padding="md" style={[layout.fill, layout.gapSm]}>
-        <View style={layout.rowBetween}>
-          <Avatar size={44} pet={pet} hidden blurred style={styles.blur} />
-          <Title text={`${compatibility} %`} size={30} />
-          <View style={styles.lock}>
-            <Glyph name="lock" size={16} color={color.white} />
-          </View>
+      <Card onPress={props.onLockedPress} accessibilityLabel={`${compatibility} %, ${props.lockedCaption ?? ''}`} padding="none" style={[layout.fill, styles.locked]}>
+        <View style={[layout.row, styles.lockedRow]}>
+          <Avatar size={40} pet={pet} hidden blurred />
+          <Title text={`${compatibility} %`} size={28} style={layout.grow} />
+          <LinearGradient colors={[color.violet, color.coral]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.lock}>
+            <Glyph name="lock" size={13} color={color.white} />
+          </LinearGradient>
         </View>
         {props.lockedCaption ? (
-          <Text variant="small" muted numberOfLines={2}>
+          <Text variant="small" size={12} muted numberOfLines={2} style={styles.lockedCaption}>
             {props.lockedCaption}
           </Text>
         ) : null}
@@ -69,60 +70,48 @@ export function SuggestionCard(props: SuggestionCardProps) {
     );
   }
 
+  const viaTint = viaPet ? speciesColor[viaPet.species] : null;
   return (
-    <Card padding="lg" highlight={tint} style={[layout.gapMd, { backgroundColor: color.panel }]}>
-      <View style={[layout.rowTop, layout.gapMd]}>
-        <View style={[styles.portrait, { borderColor: tint }]}>
-          <PetImage species={pet.species} mood="salut" size={64} animation="bob" />
+    <EncounterFrame tint={tint}>
+      <EncounterHead
+        person={user}
+        name={pet.name}
+        badge={waved ? <Chip label={wavedLabel} tone="glass" size="sm" /> : badgeLabel ? <Chip label={badgeLabel} tone="accent" size="sm" style={styles.badge} /> : null}
+        owner={ownerLabel}
+        compatibility={compatibility}
+        compatLabel={compatLabel}
+      />
+      {viaLabel || tagline ? (
+        <View style={[layout.row, styles.chips]}>
+          {viaLabel ? (
+            <Chip
+              label={viaLabel}
+              tone="glass"
+              ink={viaTint ? lighten(viaTint, 0.4) : undefined}
+              left={viaPet ? <Avatar size={16} pet={viaPet} hidden /> : undefined}
+              style={[styles.chip, viaTint ? { backgroundColor: alpha(viaTint, 0.18) } : null]}
+            />
+          ) : null}
+          {tagline ? <Chip label={tagline} tone="glass" style={styles.chip} /> : null}
         </View>
-        <View style={[layout.grow, styles.who]}>
-          <View style={[layout.row, layout.gapSm]}>
-            <Title text={pet.name} size={30} numberOfLines={1} style={layout.shrink} />
-            {badgeLabel ? <Chip label={badgeLabel} tone="accent" size="sm" /> : null}
-          </View>
-          <Text variant="small" muted>
-            {ownerLabel}
-          </Text>
-        </View>
-        <View style={styles.compat}>
-          <Title text={`${compatibility} %`} size={40} color={color.accent} />
-          <Text variant="label" size={9} muted>
-            {compatLabel}
-          </Text>
-        </View>
-      </View>
-      <View style={layout.wrap}>
-        {viaLabel ? <Chip label={viaLabel} tone="glass" left={viaPet ? <Avatar size={18} pet={viaPet} hidden /> : undefined} /> : null}
-        {tagline ? <Chip label={tagline} tone="glass" /> : null}
-      </View>
-      <View style={layout.gapXs}>
-        {introLabel ? (
-          <Text variant="bodyBold" size={11} color={tint}>
-            {introLabel}
-          </Text>
-        ) : null}
-        <View style={styles.intro}>
-          <Text variant="body" size={15}>
-            {intro}
-          </Text>
-        </View>
-      </View>
-      {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
-      {waved ? (
-        <Button label={wavedLabel} variant="ghost" icon="check" disabled />
-      ) : (
-        <Button label={waveLabel} variant="white" onPress={onWave} loading={waving} />
+      ) : null}
+      {intro ? <PetSays label={introLabel} labelColor={lighten(tint, 0.3)} text={intro} /> : null}
+      {openLabel && onOpen ? (
+        <Button label={openLabel} variant="white" size="md" labelSize={15} onPress={onOpen} style={styles.cta} />
+      ) : waved ? null : (
+        <Button label={waveLabel} variant="white" size="md" labelSize={15} onPress={onWave} loading={waving} style={styles.cta} />
       )}
-    </Card>
+    </EncounterFrame>
   );
 }
 
 const styles = StyleSheet.create({
-  portrait: { width: 72, height: 72, borderRadius: 36, borderWidth: 3, overflow: 'hidden', alignItems: 'center', justifyContent: 'flex-end', backgroundColor: color.card },
-  who: { paddingTop: space.xs, gap: 2 },
-  compat: { alignItems: 'flex-end' },
-  intro: { padding: space.md, borderRadius: radius.md, borderBottomLeftRadius: space.xs + 2, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
-  blur: { opacity: 0.6 },
-  open: { alignSelf: 'flex-start' },
-  lock: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: color.violet },
+  badge: { height: 22, paddingHorizontal: 9 },
+  chips: { gap: 6, flexWrap: 'wrap' },
+  chip: { height: 26, paddingHorizontal: 11 },
+  cta: { height: 44 },
+  locked: { gap: 6, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 24, minHeight: 44 },
+  lockedRow: { gap: 8 },
+  lockedCaption: { lineHeight: 15 },
+  lock: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
 });

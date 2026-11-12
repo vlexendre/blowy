@@ -6,7 +6,14 @@ import { Card } from '../atoms/Card';
 import { Text } from '../atoms/Text';
 import { GaugeBar } from '../molecules/GaugeBar';
 import { layout } from '../lib/styles';
-import { radius, space, veil } from '../theme';
+import { color, extra, space } from '../theme';
+
+/** Ce qui fait monter / baisser une jauge et ce que ça change à son allure. */
+export interface GaugeDetail {
+  up: string;
+  down: string;
+  look?: string;
+}
 
 export interface GaugePanelProps {
   gauges: Gauges;
@@ -20,21 +27,29 @@ export interface GaugePanelProps {
   hint?: string;
   selected?: GaugeKey | null;
   onSelect?: (key: GaugeKey) => void;
-  /** Encadré sous les jauges (explication de la jauge choisie). */
+  /** Encadré sous les jauges : texte libre… */
   footer?: ReactNode;
+  /** …ou « ↑ ce qui la fait monter  ↓ ce qui la fait baisser » + son effet sur l'allure. */
+  detail?: GaugeDetail | null;
 }
 
 const signed = (v: number): string => (v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : '0');
 
 /** Les quatre jauges du caractère, touchables pour en savoir plus. */
-export function GaugePanel({ gauges, labels, names, title, hint, selected, onSelect, footer }: GaugePanelProps) {
+export function GaugePanel({ gauges, labels, names, title, hint, selected, onSelect, footer, detail }: GaugePanelProps) {
   return (
-    <Card padding="md" style={styles.card}>
+    <Card padding="none" style={styles.card}>
       {title || hint ? (
         <View style={[layout.rowBetween, styles.head]}>
-          {title ? <Text variant="label">{title}</Text> : <View />}
+          {title ? (
+            <Text variant="bodyHeavy" size={11} style={styles.title}>
+              {title}
+            </Text>
+          ) : (
+            <View />
+          )}
           {hint ? (
-            <Text variant="small" muted>
+            <Text variant="small" size={12} muted>
               {hint}
             </Text>
           ) : null}
@@ -54,13 +69,37 @@ export function GaugePanel({ gauges, labels, names, title, hint, selected, onSel
           />
         );
       })}
-      {footer ? <View style={styles.footer}>{typeof footer === 'string' ? <Text variant="small">{footer}</Text> : footer}</View> : null}
+      {detail ? (
+        <View style={[styles.footer, styles.detail]}>
+          <Text variant="small" style={styles.detailText}>
+            <Text variant="bodyBold" style={styles.detailText} color={color.accent}>
+              ↑
+            </Text>
+            {` ${detail.up}  `}
+            <Text variant="bodyBold" style={styles.detailText} color={extra.coralSoft}>
+              ↓
+            </Text>
+            {` ${detail.down}`}
+          </Text>
+          {detail.look ? (
+            <Text variant="small" muted style={[styles.detailText, styles.look]}>
+              {detail.look}
+            </Text>
+          ) : null}
+        </View>
+      ) : footer ? (
+        <View style={styles.footer}>{typeof footer === 'string' ? <Text variant="small" style={styles.detailText}>{footer}</Text> : footer}</View>
+      ) : null}
     </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { gap: space.xs },
-  head: { paddingHorizontal: space.xs, marginBottom: space.xs },
-  footer: { marginTop: space.sm, padding: space.md, borderRadius: radius.md, backgroundColor: veil.line },
+  card: { gap: 2, paddingTop: space.md, paddingHorizontal: space.md, paddingBottom: 10, borderRadius: 24 },
+  head: { paddingHorizontal: space.xs, paddingBottom: space.xs },
+  title: { letterSpacing: 1.32, textTransform: 'uppercase' },
+  footer: { marginTop: 6, paddingVertical: space.sm, paddingHorizontal: space.md, borderRadius: 16, backgroundColor: color.card },
+  detail: { minHeight: 66 },
+  detailText: { fontSize: 12.5, lineHeight: 16 },
+  look: { marginTop: space.xs },
 });

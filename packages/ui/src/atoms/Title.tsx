@@ -3,6 +3,7 @@ import { Text as RNText, type StyleProp, StyleSheet, type TextStyle } from 'reac
 import { useInk } from '../lib/ink';
 import { alpha, opacity, type } from '../theme';
 import type { TitleContent } from '../types';
+import { fitLineHeight } from './Text';
 
 export interface TitleProps {
   /** Texte ou segments `[{ text, dim? }]` ; `\n` dans un segment force un retour à la ligne. */
@@ -22,17 +23,20 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
   const contextInk = useInk();
   const ink = color ?? contextInk;
   const segments = typeof text === 'string' ? [{ text }] : text;
-  const sized = size ? { fontSize: size, lineHeight: Math.round(size * 1.02) } : null;
+  const fontSize = size ?? type[variant].fontSize;
+  // `.d` des maquettes : interlignage .96, approche .005 em.
+  const metrics = { fontSize, lineHeight: Math.round(fontSize * 0.96), letterSpacing: fontSize * 0.005 };
   const dimColor = alpha(ink, opacity.dim);
+  const composed = [type[variant], styles.base, { color: ink }, metrics, center && styles.center, style];
   return (
     <RNText
       accessibilityRole="header"
       accessibilityLabel={accessibilityLabel ?? segments.map((s) => s.text).join('')}
       numberOfLines={numberOfLines}
-      style={[type[variant], styles.base, { color: ink }, sized, center && styles.center, style]}
+      style={[composed, fitLineHeight(composed)]}
     >
       {segments.map((s, i) => (
-        <RNText key={i} style={s.dim ? { color: dimColor } : null}>
+        <RNText key={i} style={s.color ? { color: s.color } : s.dim ? { color: dimColor } : null}>
           {s.text}
         </RNText>
       ))}

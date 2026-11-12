@@ -95,5 +95,7 @@ export interface IncomingLook {
 export interface TitleSegment {
   text: string;
   dim?: boolean;
+  /** Couleur propre au segment (ex. le « + » jaune de BLOWY+). */
+  color?: string;
 }
 export type TitleContent = string | readonly TitleSegment[];

@@ -5,7 +5,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { StatTile } from '../molecules/StatTile';
 import { layout } from '../lib/styles';
-import { color, radius, space, veil } from '../theme';
+import { color, radius, veil } from '../theme';
 import type { MemoryDayLook, MemoryStatsLook } from '../types';
 
 export interface MemoryGridProps {
@@ -35,7 +35,7 @@ function Half({ uri, blurred }: { uri: string | null; blurred?: boolean }) {
 }
 
 /** Souvenirs d'un lien : chiffres clés et grille des photos du jour à deux. */
-export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns = 3, onDayPress, emptyText }: MemoryGridProps) {
+export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns = 4, onDayPress, emptyText }: MemoryGridProps) {
   const rows: (MemoryDayLook | null)[][] = [];
   for (let i = 0; i < days.length; i += columns) {
     const row: (MemoryDayLook | null)[] = days.slice(i, i + columns);
@@ -43,7 +43,7 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
     rows.push(row);
   }
   return (
-    <View style={layout.gapMd}>
+    <View style={layout.gapSm}>
       {stats && statLabels ? (
         <View style={layout.gapSm}>
           {[STAT_KEYS.slice(0, 2), STAT_KEYS.slice(2)].map((pair, i) => (
@@ -78,7 +78,7 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
                   <Half uri={d.theirPhotoUrl} blurred={blurred} />
                 </View>
                 <View style={styles.label}>
-                  <Text variant="bodyBold" size={11} color={color.white}>
+                  <Text variant="bodyHeavy" size={10} color={color.white} numberOfLines={1}>
                     {dayLabel(d.day)}
                   </Text>
                 </View>
@@ -94,9 +94,10 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
 }
 
 const styles = StyleSheet.create({
-  tile: { flex: 1, aspectRatio: 0.78, borderRadius: radius.md, overflow: 'hidden', backgroundColor: color.card },
+  // Maquette V6-Souvenirs : 4 colonnes séparées de 8, vignettes de 78 pt, rayon 16, date en bas à gauche.
+  tile: { flex: 1, height: 78, borderRadius: 16, overflow: 'hidden', backgroundColor: color.card },
   split: { flex: 1, flexDirection: 'row', gap: 2 },
   half: { flex: 1, backgroundColor: veil.glass },
-  label: { position: 'absolute', left: space.sm, bottom: space.sm, paddingHorizontal: space.sm, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: veil.darkLabel },
+  label: { position: 'absolute', left: 6, bottom: 6, paddingHorizontal: 7, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: veil.darkLabel },
   filler: { flex: 1 },
 });

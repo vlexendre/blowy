@@ -1,28 +1,28 @@
 /** Profil (suite de Compte) : prénom, date de naissance (18+), ville, code d'invitation → création du compte et du pet. */
 import { ApiError } from '@blowy/api-client';
-import { space } from '@blowy/tokens';
-import { Banner, EmptyState, OnboardingTemplate, ScreenTemplate, TextField } from '@blowy/ui';
+import { ageOn, dayOf, MIN_AGE } from '@blowy/domain';
+import { AgeGate, Banner, LegalNote, OnboardingTemplate, ScreenTemplate, TextField } from '@blowy/ui';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
 
 import { usePendingInvite } from '@/features/encounters';
 import { birthdateFromInput, useDraft, useOnboard } from '@/features/onboarding';
-import { errorMessage, useSignOut } from '@/features/session';
+import { errorMessage, goBack, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
 const t = onboarding.profil;
 
-/** Tape « 14031999 » → « 14/03/1999 ». */
+/** Tape « 14031999 » → « 14 / 03 / 1999 » (maquette V6-Profil). */
 function formatBirth(raw: string): string {
   const d = raw.replace(/\D/g, '').slice(0, 8);
   if (d.length <= 2) return d;
-  if (d.length <= 4) return `${d.slice(0, 2)}/${d.slice(2)}`;
-  return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+  if (d.length <= 4) return `${d.slice(0, 2)} / ${d.slice(2)}`;
+  return `${d.slice(0, 2)} / ${d.slice(2, 4)} / ${d.slice(4)}`;
 }
-/** « 1999-03-14 » → « 14/03/1999 » (brouillon déjà rempli). */
-const isoToInput = (iso: string): string => (iso ? iso.split('-').reverse().join('/') : '');
+/** « 1999-03-14 » → « 14 / 03 / 1999 » (brouillon déjà rempli). */
+const isoToInput = (iso: string): string => (iso ? iso.split('-').reverse().join(' / ') : '');
+const birthDigits = (v: string): number => v.replace(/\D/g, '').length;
 
 export default function Profil() {
   const draft = useDraft();
@@ -44,6 +44,12 @@ export default function Profil() {
     const iso = birthdateFromInput(birth);
     if (!iso) {
       setBirthError(t.birthError);
+      return;
+    }
+    // Moins de 18 ans : on s'arrête ici, sans rien envoyer ni garder (V6-TropJeune).
+    if (ageOn(iso, dayOf(new Date())) < MIN_AGE) {
+      setTooYoung({ name: petName, species: draft.species });
+      useDraft.getState().reset();
       return;
     }
     draft.set({ birthdate: iso });
@@ -68,17 +74,16 @@ export default function Profil() {
 
   if (tooYoung) {
     return (
-      <ScreenTemplate scroll={false}>
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <EmptyState
-            species={tooYoung.species}
-            mood="dodo"
-            title={t.tooYoungTitle}
-            text={t.tooYoungText(tooYoung.name)}
-            actionLabel={t.tooYoungAction}
-            onAction={() => signOut.mutate(undefined, { onSettled: () => router.replace('/(onboarding)/welcome') })}
-          />
-        </View>
+      <ScreenTemplate scroll={false} gutter={14}>
+        <AgeGate
+          species={tooYoung.species}
+          title={t.tooYoungTitle}
+          text={t.tooYoungText(tooYoung.name)}
+          note={t.tooYoungNote}
+          actionLabel={t.tooYoungAction}
+          loading={signOut.isPending}
+          onAction={() => signOut.mutate(undefined, { onSettled: () => router.replace('/(onboarding)/welcome') })}
+        />
       </ScreenTemplate>
     );
   }
@@ -86,63 +91,68 @@ export default function Profil() {
   const apiError = onboard.isError && !(onboard.error instanceof ApiError && ['too_young', 'already_onboarded'].includes(onboard.error.code));
   return (
     <OnboardingTemplate
-      step={4}
-      total={onboarding.total}
+      progress={0.8}
+      onBack={() => goBack('/(onboarding)/compte')}
+      backLabel={common.back}
+      dense
       title={t.title}
-      text={t.text(petName)}
+      titleSize={52}
+      titlePet={{ species: draft.species }}
       primaryLabel={t.cta}
+      primaryIcon={null}
       primaryLoading={onboard.isPending}
-      primaryDisabled={!draft.displayName.trim() || birth.length < 10}
+      primaryDisabled={!draft.displayName.trim() || birthDigits(birth) < 8}
       onPrimary={submit}
+      footnote={<LegalNote segments={[{ text: t.legal }]} size={11} />}
     >
-      <View style={{ gap: space.lg }}>
-        <TextField
-          label={t.nameLabel}
-          value={draft.displayName}
-          onChangeText={(v) => draft.set({ displayName: v })}
-          placeholder={t.namePlaceholder}
-          maxLength={24}
-          autoCapitalize="words"
-          autoComplete="given-name"
-          textContentType="givenName"
-          returnKeyType="next"
-        />
-        <TextField
-          label={t.birthLabel}
-          hint={t.birthHint}
-          error={birthError}
-          value={birth}
-          onChangeText={(v) => {
-            setBirth(formatBirth(v));
-            if (birthError) setBirthError(null);
-          }}
-          placeholder={t.birthPlaceholder}
-          keyboardType="number-pad"
-          maxLength={10}
-          autoComplete="birthdate-full"
-        />
-        <TextField
-          label={t.cityLabel}
-          hint={t.cityHint}
-          value={draft.city}
-          onChangeText={(v) => draft.set({ city: v })}
-          placeholder={t.cityPlaceholder}
-          maxLength={40}
-          autoCapitalize="words"
-          textContentType="addressCity"
-        />
-        <TextField
-          label={t.inviteLabel}
-          hint={t.inviteHint}
-          value={draft.inviteCode}
-          onChangeText={(v) => draft.set({ inviteCode: v.toUpperCase() })}
-          placeholder={t.invitePlaceholder}
-          autoCapitalize="characters"
-          autoCorrect={false}
-          maxLength={16}
-        />
-        {apiError ? <Banner tone="error" text={errorMessage(onboard.error)} actionLabel={common.retry} onAction={submit} /> : null}
-      </View>
+      <TextField
+        inset
+        label={t.nameLabel}
+        value={draft.displayName}
+        onChangeText={(v) => draft.set({ displayName: v })}
+        placeholder={t.namePlaceholder}
+        maxLength={24}
+        autoCapitalize="words"
+        autoComplete="given-name"
+        textContentType="givenName"
+        returnKeyType="next"
+      />
+      <TextField
+        inset
+        label={t.birthLabel}
+        hint={t.birthHint}
+        error={birthError}
+        value={birth}
+        onChangeText={(v) => {
+          setBirth(formatBirth(v));
+          if (birthError) setBirthError(null);
+        }}
+        placeholder={t.birthPlaceholder}
+        keyboardType="number-pad"
+        maxLength={14}
+        autoComplete="birthdate-full"
+      />
+      <TextField
+        inset
+        label={t.cityLabel}
+        value={draft.city}
+        onChangeText={(v) => draft.set({ city: v })}
+        placeholder={t.cityPlaceholder}
+        maxLength={40}
+        autoCapitalize="words"
+        textContentType="addressCity"
+      />
+      <TextField
+        inset
+        label={t.inviteLabel}
+        value={draft.inviteCode}
+        onChangeText={(v) => draft.set({ inviteCode: v.toUpperCase() })}
+        placeholder={t.invitePlaceholder}
+        autoCapitalize="characters"
+        autoCorrect={false}
+        maxLength={16}
+      />
+      {apiError ? <Banner tone="error" text={errorMessage(onboard.error)} actionLabel={common.retry} onAction={submit} /> : null}
     </OnboardingTemplate>
   );
 }

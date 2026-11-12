@@ -17,13 +17,13 @@ export interface FeatureRowProps {
 export function FeatureRow({ icon, title, text, style }: FeatureRowProps) {
   return (
     <View accessible style={[layout.row, styles.base, style]}>
-      <Icon name={icon} size={36} />
+      <Icon name={icon} size={38} />
       <View style={layout.grow}>
-        <Text variant="bodyBold" size={16}>
+        <Text variant="bodyHeavy" size={16} style={styles.title}>
           {title}
         </Text>
         {text ? (
-          <Text variant="small" muted>
+          <Text variant="small" style={styles.text}>
             {text}
           </Text>
         ) : null}
@@ -32,4 +32,8 @@ export function FeatureRow({ icon, title, text, style }: FeatureRowProps) {
   );
 }
 
-const styles = StyleSheet.create({ base: { gap: space.md + 2 } });
+const styles = StyleSheet.create({
+  base: { gap: space.md },
+  title: { lineHeight: 19 },
+  text: { opacity: 0.72 },
+});

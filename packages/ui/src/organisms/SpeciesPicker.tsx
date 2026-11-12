@@ -1,15 +1,14 @@
 import { SPECIES, type Species } from '@blowy/domain';
-import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
 
-import { type PetPose, petImage } from '../assets/pets';
-import { Panel } from '../atoms/Panel';
+import type { PetPose } from '../assets/pets';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
-import { Sticker } from '../atoms/Sticker';
+import { Text } from '../atoms/Text';
 import { SpeechBubble } from '../molecules/SpeechBubble';
-import { layout } from '../lib/styles';
-import { color, radius, size, space, speciesColor, speciesGradient } from '../theme';
+import { hitSlopFor, layout } from '../lib/styles';
+import { alpha, color, craft, radius, shadow, space } from '../theme';
 
 export interface SpeciesPickerProps {
   value: Species;
@@ -27,18 +26,28 @@ export interface SpeciesPickerProps {
   pose?: PetPose;
 }
 
-const SWATCH = 58;
+const SWATCH = 48;
 
-/** Choix du pet à la création : grand aperçu sur sa couleur + pastilles des quatre espèces. */
+/** Choix du pet à la création (V6-Craft) : grand aperçu sur sa couleur + une pastille par espèce. */
 export function SpeciesPicker({ value, onChange, species = SPECIES, names, speech, speechHighlight, badge, pose = 'debout' }: SpeciesPickerProps) {
+  const look = craft[value];
   return (
-    <View style={layout.gapLg}>
-      <Panel gradient={speciesGradient[value]} padding="lg" style={styles.stage}>
-        {speech ? <SpeechBubble text={speech} highlight={speechHighlight} highlightColor={color.accent} style={styles.speech} /> : null}
-        <PetImage key={value} species={value} mood={pose} size={230} animation="breathe" outline accessibilityLabel={names[value]} style={styles.pet} />
-        {badge ? <Sticker label={badge} tone="white" rotate={-3} size="sm" style={styles.badge} /> : null}
-      </Panel>
-      <View accessibilityRole="radiogroup" style={layout.rowBetween}>
+    <View>
+      <View style={styles.stage}>
+        <LinearGradient colors={look.gradient} style={[StyleSheet.absoluteFill, styles.stageFill]} />
+        <View pointerEvents="none" style={styles.petBox}>
+          <PetImage key={value} species={value} mood={pose} size={300} rotate={4} animation="breathe" outline accessibilityLabel={names[value]} style={shadow.soft} />
+        </View>
+        {speech ? <SpeechBubble text={speech} highlight={speechHighlight} highlightColor={look.swatch} chat style={styles.speech} /> : null}
+        {badge ? (
+          <View style={styles.badge}>
+            <Text variant="bodyHeavy" size={12} color={color.dark} style={styles.badgeText}>
+              {badge}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+      <View accessibilityRole="radiogroup" style={[layout.rowBetween, styles.swatches]}>
         {species.map((s) => {
           const on = s === value;
           return (
@@ -50,11 +59,10 @@ export function SpeciesPicker({ value, onChange, species = SPECIES, names, speec
               accessibilityRole="radio"
               accessibilityLabel={names[s]}
               accessibilityState={{ checked: on }}
-              style={[styles.swatchRing, on && styles.swatchOn]}
+              hitSlop={hitSlopFor(SWATCH)}
+              style={[styles.swatch, { backgroundColor: craft[s].swatch }, on ? styles.swatchOn : styles.swatchOff]}
             >
-              <View style={[styles.swatch, { backgroundColor: speciesColor[s] }]}>
-                <Image source={petImage(s, 'face')} contentFit="cover" style={styles.face} />
-              </View>
+              {on ? <View pointerEvents="none" style={styles.ring} /> : null}
             </Pressable>
           );
         })}
@@ -64,12 +72,16 @@ export function SpeciesPicker({ value, onChange, species = SPECIES, names, speec
 }
 
 const styles = StyleSheet.create({
-  stage: { height: 300, alignItems: 'center', justifyContent: 'flex-end' },
-  speech: { position: 'absolute', top: space.lg, left: space.lg, zIndex: 1 },
-  pet: { marginBottom: -space.xl },
-  badge: { position: 'absolute', right: space.lg, bottom: space.lg },
-  swatchRing: { padding: 3, borderRadius: radius.pill, borderWidth: 3, borderColor: 'transparent', minWidth: size.touch, minHeight: size.touch },
-  swatchOn: { borderColor: color.white },
-  swatch: { width: SWATCH, height: SWATCH, borderRadius: radius.pill, overflow: 'hidden' },
-  face: { width: '100%', height: '100%' },
+  stage: { height: 300, borderRadius: radius.xl - 4 },
+  stageFill: { borderRadius: radius.xl - 4 },
+  petBox: { position: 'absolute', left: 0, right: 0, bottom: -18, alignItems: 'center' },
+  speech: { position: 'absolute', top: space.lg, left: 14 },
+  badge: { position: 'absolute', right: 14, bottom: 14, paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: color.white },
+  badgeText: { lineHeight: 16 },
+  swatches: { marginTop: 30 },
+  swatch: { width: SWATCH, height: SWATCH, borderRadius: radius.pill },
+  swatchOff: { borderWidth: 2, borderColor: alpha(color.white, 0.25) },
+  swatchOn: { transform: [{ scale: 1.08 }] },
+  // `box-shadow: 0 0 0 3px nuit, 0 0 0 6px blanc` : anneau blanc séparé de la pastille par la nuit.
+  ring: { position: 'absolute', top: -6, left: -6, right: -6, bottom: -6, borderRadius: radius.pill, borderWidth: 3, borderColor: color.white },
 });

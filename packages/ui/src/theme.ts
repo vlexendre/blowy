@@ -13,6 +13,40 @@ export const extra = {
   heart: '#FF3D6E',
   /** Fond des remplissages de photo en attente (dégradé « ciel » des maquettes). */
   sky: '#5CE1FF',
+  /** Aperçu du dernier message dans la liste des chats (blanc teinté de lavande). */
+  preview: '#D8D3EC',
+  /** Dégradé rose pâle du niveau d'un lien (V6-Lien, `#FF8FC6 → #FFC4DF`). */
+  roseLight: ['#FF8FC6', '#FFC4DF'] as const,
+  /** Contour d'un bouton radio éteint (`.rad`). */
+  radioOff: '#5A5480',
+  /** Fond plein écran d'un lien fantôme (V6-Fantome). */
+  ghost: ['#2A0F2E', '#8C1D4F'] as const,
+  /** Disque de l'avatar fantôme et nom au-dessus de sa bulle. */
+  ghostDisc: '#3A3550',
+  ghostInk: '#E9E4FF',
+  /** Corail clair des baisses (flèche ↓, puce « −5 bavard »). */
+  coralSoft: '#FF8F6B',
+  /** Plan stylisé du quartier (écran Carte, maquette V6-Carte). */
+  map: {
+    ground: '#0E0C1C',
+    block: '#141127',
+    street: '#231F40',
+    avenue: '#2A2550',
+    lane: '#1F1B3A',
+    park: '#10271F',
+    tree: '#15342A',
+    water: '#16224A',
+    waterLine: '#1D2C5E',
+    label: '#4E4878',
+    waterLabel: '#3D4F8C',
+  },
+  /** Rouge des lignes destructives (`.red` des réglages). */
+  dangerSoft: '#FF6B6B',
+  /** Piste d'un interrupteur éteint (`.sw.off`). */
+  switchOff: '#3A3559',
+  /** Silhouette de remplacement d'une photo absente (tête, fond). */
+  skin: '#FFD9B8',
+  wineDeep: '#8C1D4F',
 } as const;
 
 /** `#RRGGBB` + opacité → `rgba()`. Sert aux voiles blancs / sombres des maquettes (rgba(255,255,255,.1)…). */
@@ -76,3 +110,23 @@ export const motion = {
   slow: 420,
   breath: 1300,
 } as const;
+
+/**
+ * Création du pet (V6-Craft) : pastille et dégradé du panneau de chaque espèce,
+ * dans la famille de son pelage (lime, rose, orange, violet).
+ */
+export const craft = {
+  nino: { swatch: '#B9E53A', gradient: ['#D4FA5E', '#A9E61F'] },
+  suzie: { swatch: color.rose, gradient: ['#FF8FC6', '#FFC4DF'] },
+  gaston: { swatch: color.orange, gradient: gradient.orange },
+  pia: { swatch: color.violet, gradient: gradient.violet },
+} as const satisfies Record<keyof typeof speciesColor, { swatch: string; gradient: readonly [string, string] }>;
+
+/** Grand panneau de Blowy+ (V6-Paywall) : prune vers lie-de-vin. */
+export const plusGradient = ['#2A0F2E', extra.wineDeep] as const;
+
+/**
+ * Couleur d'un pet dans les conversations (disque d'avatar, nom au-dessus des bulles) :
+ * toutes les maquettes mettent Nino en jaune d'accent, les autres à la couleur de leur pelage.
+ */
+export const petTint = { nino: color.accent, suzie: speciesColor.suzie, gaston: speciesColor.gaston, pia: speciesColor.pia } as const;

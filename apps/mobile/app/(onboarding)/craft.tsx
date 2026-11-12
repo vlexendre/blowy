@@ -59,7 +59,7 @@ export default function Craft() {
         returnKeyType="done"
         large
         accessibilityLabel={t.nameLabel}
-        right={<Button label={t.random} size="sm" variant="dark" onPress={randomName} accessibilityLabel={t.randomLabel} />}
+        right={<Button label={t.random} size="chip" variant="glass" onPress={randomName} accessibilityLabel={t.randomLabel} />}
       />
     </OnboardingTemplate>
   );

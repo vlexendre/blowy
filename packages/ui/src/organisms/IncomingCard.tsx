@@ -1,12 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
-import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
-import { Card } from '../atoms/Card';
-import { Text } from '../atoms/Text';
-import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
-import { color, radius, space, speciesColor, veil } from '../theme';
+import { speciesColor } from '../theme';
+import { EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
 import type { IncomingLook } from '../types';
 
 export interface IncomingCardProps {
@@ -33,44 +30,20 @@ export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptL
   const { from, compatibility, intro } = incoming;
   const tint = speciesColor[from.pet.species];
   return (
-    <Card padding="lg" highlight={tint} style={layout.gapMd}>
-      <View style={[layout.row, layout.gapMd]}>
-        <Avatar size={52} pet={from.pet} uri={from.avatarUrl} face={from.face} name={from.displayName} ring={tint} />
-        <View style={layout.grow}>
-          <Text variant="bodyBold" size={17}>
-            {title}
-          </Text>
-          {ownerLabel ? (
-            <Text variant="small" muted>
-              {ownerLabel}
-            </Text>
-          ) : null}
-        </View>
-        <View style={styles.compat}>
-          <Title text={`${compatibility} %`} size={28} color={color.accent} />
-          {compatLabel ? (
-            <Text variant="label" size={9} muted>
-              {compatLabel}
-            </Text>
-          ) : null}
-        </View>
-      </View>
-      <View style={styles.intro}>
-        <Text variant="body" size={15}>
-          {intro}
-        </Text>
-      </View>
+    <EncounterFrame tint={tint}>
+      <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={compatibility} compatLabel={compatLabel} />
+      {intro ? <PetSays text={intro} labelColor={lighten(tint, 0.3)} /> : null}
       {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
-      <View style={[layout.row, layout.gapSm]}>
-        <Button label={declineLabel} variant="ghost" size="md" onPress={onDecline} loading={declining} disabled={accepting} style={layout.fill} />
-        <Button label={acceptLabel} variant="accent" size="md" onPress={onAccept} loading={accepting} disabled={declining} style={layout.fill} />
+      <View style={[layout.row, styles.actions]}>
+        <Button label={declineLabel} variant="ghost" size="md" labelSize={15} onPress={onDecline} loading={declining} disabled={accepting} block={false} style={[layout.fill, styles.cta]} />
+        <Button label={acceptLabel} variant="accent" size="md" labelSize={15} onPress={onAccept} loading={accepting} disabled={declining} block={false} style={[layout.fill, styles.cta]} />
       </View>
-    </Card>
+    </EncounterFrame>
   );
 }
 
 const styles = StyleSheet.create({
-  compat: { alignItems: 'flex-end' },
   open: { alignSelf: 'flex-start' },
-  intro: { padding: space.md, borderRadius: radius.md, borderBottomLeftRadius: space.xs + 2, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
+  actions: { gap: 8 },
+  cta: { height: 44 },
 });

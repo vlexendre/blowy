@@ -10,7 +10,7 @@ import { AvatarPair } from '../molecules/AvatarPair';
 import { Hearts } from '../molecules/Hearts';
 import { LevelPill } from '../molecules/LevelPill';
 import { layout } from '../lib/styles';
-import { color, opacity, space, speciesColor, veil } from '../theme';
+import { color, extra, space, speciesColor, veil } from '../theme';
 import type { LinkLook } from '../types';
 
 export interface LinkRowProps {
@@ -57,10 +57,10 @@ export const LinkRow = memo(function LinkRow({
   const preview = link.lastMessage?.preview ?? emptyPreview ?? '';
   const a11y = accessibilityLabel ?? [other.displayName, preview, timeLabel, levelLabel].filter(Boolean).join(', ');
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} scaleTo={0.98} accessibilityLabel={a11y} style={[layout.row, styles.row]}>
+    <Pressable onPress={onPress} onLongPress={onLongPress} scaleTo={0.98} accessibilityLabel={a11y} style={[layout.row, styles.row, ghost && styles.ghost]}>
       {ghost ? (
         <View style={styles.ghostAvatar}>
-          <Avatar size={46} pet={other.pet} hidden pose="fantome" />
+          <Avatar size={46} pet={other.pet} hidden pose="fantome" bg={extra.ghostDisc} />
         </View>
       ) : (
         <AvatarPair
@@ -69,21 +69,20 @@ export const LinkRow = memo(function LinkRow({
           second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }}
         />
       )}
-      <View style={[layout.grow, styles.body, ghost && styles.ghost]}>
+      <View style={[layout.grow, styles.body]}>
         <View style={[layout.row, layout.gapSm]}>
-          <Text variant="bodyBold" size={17} numberOfLines={1} style={layout.shrink}>
+          <Text variant="bodyHeavy" size={17} numberOfLines={1} style={layout.shrink}>
             {other.displayName}
           </Text>
           {newLabel ? <Chip label={newLabel} tone="coral" size="sm" /> : null}
-          <View style={styles.push} />
           {timeLabel ? (
-            <Text variant="bodyBold" size={12} muted>
+            <Text variant="bodyBold" size={12} muted style={styles.time}>
               {timeLabel}
             </Text>
           ) : null}
         </View>
         <View style={[layout.row, layout.gapSm]}>
-          <Text variant={unread ? 'bodyBold' : 'body'} size={14} numberOfLines={1} color={unread ? color.white : veil.text} style={layout.grow}>
+          <Text variant={unread ? 'bodyBold' : 'body'} size={14} numberOfLines={1} color={unread ? color.white : extra.preview} style={layout.grow}>
             {previewAuthor ? (
               <Text variant="bodyBold" size={14} color={previewAuthorColor ?? speciesColor[myPet.species]}>{`${previewAuthor} `}</Text>
             ) : null}
@@ -96,7 +95,7 @@ export const LinkRow = memo(function LinkRow({
             ghostLabel ? <Chip label={ghostLabel} size="sm" /> : null
           ) : (
             <>
-              <Hearts lives={link.lives} size={13} />
+              <Hearts lives={link.lives} size={14} />
               <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
             </>
           )}
@@ -107,10 +106,10 @@ export const LinkRow = memo(function LinkRow({
 });
 
 const styles = StyleSheet.create({
-  row: { gap: space.md, paddingVertical: space.md - 1, paddingHorizontal: space.xs, minHeight: 72, borderBottomWidth: StyleSheet.hairlineWidth * 2, borderBottomColor: veil.hairline },
-  ghostAvatar: { width: 70, alignItems: 'center' },
+  row: { gap: space.md, paddingVertical: space.md - 1, paddingHorizontal: space.xs, minHeight: 72, borderBottomWidth: 1, borderBottomColor: veil.hairline },
+  ghostAvatar: { width: 66, alignItems: 'center' },
+  time: { marginLeft: 'auto' },
   body: { gap: 3 },
-  push: { flex: 1 },
   meta: { marginTop: 2 },
-  ghost: { opacity: opacity.ghost },
+  ghost: { opacity: 0.45 },
 });

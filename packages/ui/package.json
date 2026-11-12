@@ -15,22 +15,26 @@
     "@blowy/tokens": "workspace:*"
   },
   "peerDependencies": {
+    "expo-blur": "*",
     "expo-haptics": "*",
     "expo-image": "*",
     "expo-linear-gradient": "*",
     "react": "*",
     "react-native": "*",
     "react-native-reanimated": "*",
-    "react-native-safe-area-context": "*"
+    "react-native-safe-area-context": "*",
+    "react-native-svg": "*"
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
+    "expo-blur": "~58.0.6",
     "expo-haptics": "~58.0.7",
     "expo-image": "~58.0.18",
     "expo-linear-gradient": "~58.0.4",
     "react": "19.3.0",
     "react-native": "0.88.1",
     "react-native-reanimated": "4.7.1",
-    "react-native-safe-area-context": "~5.11.1"
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-svg": "15.16.0"
   }
 }

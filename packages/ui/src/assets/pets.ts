@@ -187,6 +187,42 @@ export const isFullBody = (pose: PetPose): pose is FullBodyPose => (FULL_BODY_PO
 /** Image d'une forme d'évolution pour une espèce. */
 export const petFormImage = (species: Species, form: PetForm): Src => FORM_IMAGES[species][form];
 
+/** Haut et hauteur du dessin dans chaque image d'évolution (fractions de la hauteur, mesurées sur les fichiers) : sert à cadrer la tête. */
+export const FORM_BOX: Record<Species, Record<PetForm, { top: number; height: number }>> = {
+  nino: {
+    equilibre: { top: 0.06, height: 0.9 },
+    casanier: { top: 0.193, height: 0.613 },
+    sociable: { top: 0.258, height: 0.702 },
+    joueur: { top: 0.168, height: 0.792 },
+    piquant: { top: 0.183, height: 0.634 },
+    tendre: { top: 0.12, height: 0.76 },
+  },
+  suzie: {
+    equilibre: { top: 0.06, height: 0.9 },
+    casanier: { top: 0.173, height: 0.654 },
+    sociable: { top: 0.266, height: 0.694 },
+    joueur: { top: 0.149, height: 0.701 },
+    piquant: { top: 0.173, height: 0.654 },
+    tendre: { top: 0.12, height: 0.76 },
+  },
+  gaston: {
+    equilibre: { top: 0.193, height: 0.767 },
+    casanier: { top: 0.479, height: 0.481 },
+    sociable: { top: 0.17, height: 0.66 },
+    joueur: { top: 0.157, height: 0.686 },
+    piquant: { top: 0.165, height: 0.67 },
+    tendre: { top: 0.162, height: 0.676 },
+  },
+  pia: {
+    equilibre: { top: 0.274, height: 0.686 },
+    casanier: { top: 0.201, height: 0.598 },
+    sociable: { top: 0.192, height: 0.616 },
+    joueur: { top: 0.249, height: 0.711 },
+    piquant: { top: 0.149, height: 0.701 },
+    tendre: { top: 0.162, height: 0.676 },
+  },
+};
+
 /** Image d'un trait propre à l'espèce (suzie douce, gaston posé / calme, pia bavarde), sinon `undefined`. */
 export const petTraitImage = (species: Species, trait: PetTrait): Src | undefined => TRAIT_IMAGES[species][trait];
 

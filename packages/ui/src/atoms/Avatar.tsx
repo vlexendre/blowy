@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { type PetPose, petImage } from '../assets/pets';
-import { color, opacity, radius, size as sizes, speciesColor } from '../theme';
+import { color, opacity, petTint, radius, size as sizes } from '../theme';
 import type { PetLook } from '../types';
 import { Text } from './Text';
 
@@ -23,6 +23,8 @@ export interface AvatarProps {
   hidden?: boolean;
   /** Pose du pet affiché (défaut `face`, `fantome` pour un lien fantôme). */
   pose?: PetPose;
+  /** Fond du disque derrière le pet ; défaut la couleur de l'espèce. */
+  bg?: string;
   /** Anneau de couleur autour (séparé du fond par un liseré nuit). */
   ring?: string;
   /** Liseré nuit seul (avatars superposés). */
@@ -33,11 +35,12 @@ export interface AvatarProps {
 }
 
 /** Disque : photo (nette ou floue), visage de pet sur sa couleur, ou initiale. */
-export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose = 'face', ring, cutout, dimmed, accessibilityLabel, style }: AvatarProps) {
+export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose = 'face', bg: discBg, ring, cutout, dimmed, accessibilityLabel, style }: AvatarProps) {
   const isHidden = hidden ?? face === 'hidden';
   const isBlurred = blurred ?? face === 'blurred';
   const showPet = !!pet && (isHidden || !uri);
-  const bg = showPet && pet ? speciesColor[pet.species] : color.card;
+  // Disque du pet : `petTint` (Nino sur jaune, comme dans toutes les maquettes).
+  const bg = showPet && pet ? (discBg ?? petTint[pet.species]) : color.card;
   const label = accessibilityLabel ?? name ?? pet?.name;
   const content =
     showPet && pet ? (

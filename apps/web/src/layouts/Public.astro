@@ -9,17 +9,29 @@ interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  /** Pleine page sans carte, sans barre ni fond animé : la page dessine tout elle-même (« 3 mots »). */
+  bare?: boolean;
 }
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, bare = false } = Astro.props;
 ---
 <Base title={title} description={description} noindex={noindex} bodyClass="pub-body">
-  <Background />
-  <TopBar />
-  <main id="main" class="pub">
-    <div class="pub-card">
-      <slot />
-    </div>
-  </main>
+  {
+    bare ? (
+      <main id="main" class="pub-bare">
+        <slot />
+      </main>
+    ) : (
+      <>
+        <Background />
+        <TopBar />
+        <main id="main" class="pub">
+          <div class="pub-card">
+            <slot />
+          </div>
+        </main>
+      </>
+    )
+  }
   <SiteFooter slot="footer" class="pub-foot" />
 </Base>
 <style is:global>

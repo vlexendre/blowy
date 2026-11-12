@@ -33,13 +33,19 @@ export function timeLabel(at: string, now: Date = new Date()): string {
   return shortDay(day);
 }
 
-/** Les 7 derniers jours du lien, d'après les photos du jour (deux = fait, une = à moitié). */
-export function weekStrip(memories: Memories | undefined, today: string): { day: string; state: WeekDayState; mark?: string }[] {
+/** La semaine en cours (lundi → dimanche, maquette « cette semaine »), d'après les photos du jour (deux = fait, une = à moitié). */
+export function weekStrip(
+  memories: Memories | undefined,
+  today: string,
+  todayLook?: { mine: boolean; theirs: boolean },
+): { day: string; state: WeekDayState; mark?: string }[] {
   const byDay = new Map((memories?.days ?? []).map((d) => [d.day, d]));
+  const monday = addDays(today, -((weekdayOf(today) + 6) % 7));
   return Array.from({ length: 7 }, (_, i) => {
-    const day = addDays(today, i - 6);
+    const day = addDays(monday, i);
     const m = byDay.get(day);
-    const count = (m?.myPhotoUrl ? 1 : 0) + (m?.theirPhotoUrl ? 1 : 0);
+    const count =
+      day === today && todayLook ? Number(todayLook.mine) + Number(todayLook.theirs) : (m?.myPhotoUrl ? 1 : 0) + (m?.theirPhotoUrl ? 1 : 0);
     const state: WeekDayState = count === 2 ? 'done' : count === 1 ? 'half' : 'none';
     return { day: todayText.weekDays[weekdayOf(day)] ?? '', state, mark: state === 'half' ? todayText.halfMark : undefined };
   });

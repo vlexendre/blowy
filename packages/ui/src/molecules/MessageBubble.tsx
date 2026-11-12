@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -8,7 +9,7 @@ import { Glyph } from '../atoms/Glyph';
 import { Icon } from '../atoms/Icon';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { color, radius, space, speciesColor, veil } from '../theme';
+import { color, petTint, radius, space, veil } from '../theme';
 import type { MessageLook, PersonLook, PetLook } from '../types';
 
 export interface MessageBubbleProps {
@@ -26,12 +27,18 @@ export interface MessageBubbleProps {
   onPhotoPress?: () => void;
   /** Photo encore cachée (`kind: 'photo'` sans `mediaUrl`) : texte de la case verrouillée. */
   lockedPhotoLabel?: string;
+  /** Couleur du nom au-dessus de la bulle (défaut : `petTint` du pet, blanc pour une personne). */
+  nameColor?: string;
+  /** Fond du disque de l'avatar du pet (défaut : `petTint`, Nino en jaune). */
+  avatarBg?: string;
+  /** Visage de la personne encore caché : disque dégradé rose → violet à la place de l'avatar (V6-Chat). */
+  hiddenFace?: boolean;
 }
 
 const AVATAR = 30;
 
 /** Une bulle du chat : moi (jaune, à droite), l'autre (blanche), un pet (nuit + visage), ou une pastille centrée. */
-export const MessageBubble = memo(function MessageBubble({ message, name, pet, person, continued, photoLabel, onPhotoPress, lockedPhotoLabel }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({ message, name, pet, person, continued, photoLabel, onPhotoPress, lockedPhotoLabel, nameColor: nameTint, avatarBg, hiddenFace }: MessageBubbleProps) {
   const { author, kind, body, mediaUrl } = message;
 
   if (author === 'system' || kind === 'event') {
@@ -48,7 +55,7 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
 
   const mine = author === 'me';
   const isPet = author === 'my_pet' || author === 'other_pet';
-  const nameColor = isPet && pet ? speciesColor[pet.species] : color.white;
+  const nameColor = nameTint ?? (isPet && pet ? petTint[pet.species] : color.white);
   const showHead = !mine && !continued;
 
   const content =
@@ -78,7 +85,9 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
       {!mine ? (
         <View style={styles.avatarSlot}>
           {continued ? null : isPet && pet ? (
-            <Avatar size={AVATAR} pet={pet} hidden />
+            <Avatar size={AVATAR} pet={pet} hidden bg={avatarBg ?? petTint[pet.species]} />
+          ) : person && hiddenFace ? (
+            <LinearGradient colors={[color.rose, color.violet]} start={{ x: 0.18, y: 0.05 }} end={{ x: 0.82, y: 0.95 }} style={styles.hiddenFace} />
           ) : person ? (
             <Avatar size={AVATAR} uri={person.avatarUrl} face={person.face} pet={person.pet} name={person.displayName} />
           ) : null}
@@ -86,7 +95,7 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
       ) : null}
       <View style={styles.column}>
         {showHead && name ? (
-          <Text variant="bodyBold" size={11} color={nameColor} style={styles.who}>
+          <Text variant="bodyHeavy" size={11} color={nameColor} style={styles.who}>
             {name}
           </Text>
         ) : null}
@@ -100,6 +109,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm, maxWidth: '86%', alignSelf: 'flex-start' },
   rowMine: { alignSelf: 'flex-end', flexDirection: 'row-reverse' },
   avatarSlot: { width: AVATAR },
+  // `linear-gradient(140deg, #FF8FC6, #8D5CF6)` (le flou de 1,5 px de la maquette est omis).
+  hiddenFace: { width: AVATAR, height: AVATAR, borderRadius: AVATAR / 2 },
   column: { flexShrink: 1, minWidth: 0 },
   who: { marginBottom: 3, marginLeft: space.xs },
   bubble: { paddingHorizontal: space.md + 1, paddingVertical: space.sm + 1, borderRadius: 20 },

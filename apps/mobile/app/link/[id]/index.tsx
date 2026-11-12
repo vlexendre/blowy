@@ -3,9 +3,8 @@ import type { Link } from '@blowy/contract';
 import { LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
+  Avatar,
   Banner,
-  Button,
-  Card,
   ChatThread,
   Composer,
   type ComposerTone,
@@ -14,15 +13,15 @@ import {
   Header,
   LinkTemplate,
   LivesPanel,
+  MemoriesPanel,
   MemoryGrid,
-  Panel,
   PetImage,
-  ProgressBar,
   ScreenTemplate,
   Skeleton,
   Text,
   Title,
   TodayCard,
+  TodoRow,
 } from '@blowy/ui';
 import { ApiError } from '@blowy/api-client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -61,6 +60,10 @@ export default function LinkScreen() {
   const router = useRouter();
   const link = useLink(id);
   const [tab, setTab] = useState<Tab | null>(isTab(params.tab) ? params.tab : null);
+  // Un lien profond (`?tab=today`) vers un écran déjà ouvert change d'onglet.
+  useEffect(() => {
+    if (isTab(params.tab)) setTab(params.tab);
+  }, [params.tab]);
   const [draft, setDraft] = useState('');
   const [tone, setTone] = useState<ComposerTone | null>(null);
   const [picking, setPicking] = useState(false);
@@ -99,8 +102,11 @@ export default function LinkScreen() {
   }
 
   const ghost = l.status === 'ghost';
-  // Par défaut : l'onglet aujourd'hui si un fantôme ou une photo attend, sinon le chat.
-  const active: Tab = tab ?? (ghost || (l.today.theirs && !l.today.mine) ? 'today' : 'chat');
+  // Par défaut : le chat (maquettes : une ligne de la liste ouvre V6-Chat) ; un lien fantôme ouvre son état (V6-Fantome).
+  const active: Tab = tab ?? (ghost ? 'today' : 'chat');
+
+  // Lien fantôme : écran plein, sans onglets (V6-Fantome).
+  if (ghost) return <GhostBody link={l} onBack={goChats} onLeft={() => router.replace('/(tabs)/chats')} />;
 
   const nudge = () => {
     setDraft(todayText.nudgeDraft);
@@ -138,11 +144,7 @@ export default function LinkScreen() {
           </View>
         ) : null}
         {active === 'today' ? (
-          ghost ? (
-            <GhostBody link={l} onLeft={() => router.replace('/(tabs)/chats')} />
-          ) : (
-            <TodayBody link={l} onPick={() => setPicking(true)} onNudge={nudge} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
-          )
+          <TodayBody link={l} onPick={() => setPicking(true)} onNudge={nudge} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
         ) : active === 'chat' ? (
           <ChatBody link={l} />
         ) : (
@@ -237,38 +239,23 @@ function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: ()
       <LivesPanel
         lives={link.lives}
         max={MAX_LIVES}
-        title={todayText.livesTitle(link.lives)}
-        text={todayText.livesText}
-        streak={link.streak}
-        streakUnit={todayText.streakLabel(link.streak)}
+        count={todayText.livesCount(link.lives)}
         weekTitle={todayText.weekTitle}
-        week={weekStrip(memories.data, today.day)}
+        week={weekStrip(memories.data, today.day, today)}
         accessibilityLabel={t.lives(link.lives)}
       />
-      <Card onPress={onLevels} accessibilityLabel={todayText.nextA11y} padding="lg">
-        <View style={styles.nextRow}>
-          <View style={styles.grow}>
-            <Text variant="label" muted>
-              {atMax ? todayText.maxKicker : todayText.nextKicker}
-            </Text>
-            <Text variant="bodyBold" size={17}>
-              {atMax ? levelLabel.oeuf.title : levelLabel[nextKey].title}
-            </Text>
-            <Text variant="small" muted>
-              {atMax ? todayText.maxText : levelLabel[nextKey].text}
-            </Text>
-          </View>
-          <PetImage species={other.pet.species} mood="amour" size={56} />
-        </View>
-        {atMax ? null : (
-          <View style={styles.progress}>
-            <ProgressBar value={link.levelRatio} accessibilityLabel={todayText.nextXp(progress.span - progress.into)} />
-            <Text variant="small" muted>
-              {todayText.nextXp(Math.max(0, progress.span - progress.into))}
-            </Text>
-          </View>
-        )}
-      </Card>
+      <Text variant="label" size={11} muted style={styles.todoTitle}>
+        {todayText.todoTitle}
+      </Text>
+      <TodoRow
+        tile={atMax ? <PetImage art="oeuf" size={38} /> : <Avatar size={34} pet={other.pet} hidden />}
+        tileGradient={atMax ? 'rose' : 'violet'}
+        title={atMax ? levelLabel.oeuf.title : todayText.nextTodo(link.level + 1, levelLabel[nextKey].title)}
+        subtitle={atMax ? todayText.maxText : levelLabel[nextKey].text}
+        chip={atMax ? undefined : todayText.nextChip(Math.max(0, progress.span - progress.into))}
+        onPress={onLevels}
+        accessibilityLabel={todayText.nextA11y}
+      />
     </View>
   );
 }
@@ -388,43 +375,41 @@ function MemoriesBody({ link }: { link: Link }) {
   const { days, stats } = memories.data;
   return (
     <View style={styles.body}>
-      <Panel gradient="coral" padding="lg">
-        <View style={styles.nextRow}>
-          <View style={styles.grow}>
-            <Text variant="label">
-              {memText.kicker(link.myPet.name, link.other.pet.name)}
-            </Text>
-            <Title text={memText.title} size={40} />
-            <Text variant="bodyBold" size={13}>
-              {memText.subtitle(stats.daysTogether, stats.bestStreak)}
-            </Text>
-          </View>
-          <View style={styles.duo}>
-            <PetImage species={link.myPet.species} mood="joie" size={78} outline />
-            <PetImage species={link.other.pet.species} mood="amour" size={78} outline style={styles.duoSecond} />
-          </View>
-        </View>
-      </Panel>
+      <MemoriesPanel
+        kicker={memText.kicker(link.myPet.name, link.other.pet.name)}
+        title={memText.title}
+        text={memText.subtitle(stats.daysTogether, stats.bestStreak)}
+        pets={[link.myPet.species, link.other.pet.species]}
+      />
       <View style={styles.sectionHead}>
-        <Title text={memText.photosTitle(stats.photos)} variant="h3" />
+        <Title text={memText.photosTitle(stats.photos)} size={24} />
         {blurred && days.length > 0 ? (
-          <Text variant="small" muted>
+          <Text variant="bodyBold" size={12} muted>
             {memText.blurredHint}
           </Text>
         ) : null}
       </View>
-      <MemoryGrid days={days} stats={stats} statLabels={memText.stats(stats)} dayLabel={shortDay} blurred={blurred} emptyText={memText.empty} />
+      <MemoryGrid days={days} dayLabel={shortDay} blurred={blurred} emptyText={memText.empty} />
     </View>
   );
 }
 
 // ── Lien fantôme ────────────────────────────────────────────────────────────
-function GhostBody({ link, onLeft }: { link: Link; onLeft: () => void }) {
+function GhostBody({ link, onBack, onLeft }: { link: Link; onBack: () => void; onLeft: () => void }) {
   const revive = useRevive(link.id);
   const archive = useArchiveLink();
+  const error = revive.isError
+    ? errorText(revive.error, ghostText.reviveError, { cannot_revive: ghostText.cannotRevive })
+    : archive.isError
+      ? errorText(archive.error, ghostText.reviveError)
+      : null;
   return (
-    <View style={styles.body}>
+    <>
       <GhostPanel
+        onBack={onBack}
+        backLabel={t.back}
+        badge={ghostText.badge(link.other.displayName)}
+        livesLabel={t.lives(0)}
         pet={link.myPet}
         title={ghostText.title}
         text={ghostText.text(link.other.displayName)}
@@ -438,17 +423,18 @@ function GhostBody({ link, onLeft }: { link: Link; onLeft: () => void }) {
         onRevive={() => revive.mutate()}
         onLeave={() => archive.mutate(link.id, { onSuccess: onLeft })}
         reviving={revive.isPending}
+        leaving={archive.isPending}
+        error={error}
       />
-      {revive.isError ? <Banner tone="error" text={errorText(revive.error, ghostText.reviveError, { cannot_revive: ghostText.cannotRevive })} /> : null}
-      {archive.isError ? <Banner tone="error" text={errorText(archive.error, ghostText.reviveError)} /> : null}
-      {archive.isPending ? <Button label={ghostText.leave} variant="ghost" loading /> : null}
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   gap: { gap: 16, paddingTop: 8 },
-  body: { gap: 16, paddingTop: 12 },
+  // Maquettes du lien : blocs séparés de 10, 12 sous les onglets (dont 8 posés par l'en-tête du gabarit).
+  body: { gap: 10, paddingTop: 4 },
+  todoTitle: { letterSpacing: 1.32, marginTop: 4, marginLeft: 4 },
   padded: { paddingHorizontal: 16 },
   right: { alignSelf: 'flex-end' },
   grow: { flex: 1, minWidth: 0, gap: 4 },
@@ -456,7 +442,5 @@ const styles = StyleSheet.create({
   progress: { gap: 6, marginTop: 12 },
   composer: { gap: 8 },
   notice: { paddingTop: 12 },
-  sectionHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 },
-  duo: { flexDirection: 'row', alignItems: 'flex-end' },
-  duoSecond: { marginLeft: -26 },
+  sectionHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginTop: 4 },
 });

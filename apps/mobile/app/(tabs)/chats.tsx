@@ -1,5 +1,5 @@
 import { color } from '@blowy/tokens';
-import { Banner, Button, EmptyState, IconButton, LinkRow, Panel, PetImage, Pressable, Skeleton, TabTemplate, Text, Title } from '@blowy/ui';
+import { Banner, Button, EmptyState, IconButton, LinkRow, NudgeBanner, Skeleton, TabTemplate } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
@@ -40,41 +40,31 @@ export default function ChatsScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />}
     >
       {first ? (
-        <Pressable onPress={() => router.push('/rencontres')} accessibilityRole="button" accessibilityLabel={t.wavesA11y(incoming.length)} scaleTo={0.98}>
-          <Panel gradient="violet" padding="lg">
-            <View style={styles.bannerRow}>
-              <View style={styles.grow}>
-                <Text variant="label">
-                  {t.wavesKicker}
-                </Text>
-                <Title text={t.wavesTitle(petName || first.from.pet.name)} size={26} />
-                <Text variant="bodyBold" size={13}>
-                  {t.wavesText(incoming.map((i) => i.from.displayName))}
-                </Text>
-              </View>
-              <PetImage species={first.from.pet.species} mood="salut" size={88} animation="bob" outline />
-            </View>
-          </Panel>
-        </Pressable>
+        <NudgeBanner
+          gradient="violet"
+          kicker={t.wavesKicker}
+          title={t.wavesTitle(petName || first.from.pet.name)}
+          text={t.wavesText(incoming.map((i) => i.from.displayName))}
+          species={first.from.pet.species}
+          mood="salut"
+          animation="bob"
+          onPress={() => router.push('/rencontres')}
+          accessibilityLabel={t.wavesA11y(incoming.length)}
+        />
       ) : null}
 
       {waitingFirst ? (
-        <Pressable onPress={() => router.push(`/link/${waitingFirst.id}?tab=today`)} accessibilityRole="button" accessibilityLabel={t.photoA11y} scaleTo={0.98}>
-          <Panel gradient="orange" padding="lg">
-            <View style={styles.bannerRow}>
-              <View style={styles.grow}>
-                <Text variant="label" dim>
-                  {t.photoKicker}
-                </Text>
-                <Title text={t.photoTitle(waiting.length)} size={26} />
-                <Text variant="bodyBold" size={13}>
-                  {t.photoText(waiting.map((l) => l.other.displayName))}
-                </Text>
-              </View>
-              <PetImage species={waitingFirst.other.pet.species} mood="surpris" size={88} outline />
-            </View>
-          </Panel>
-        </Pressable>
+        <NudgeBanner
+          gradient="orange"
+          icon="flamme"
+          kicker={t.photoKicker}
+          title={t.photoTitle(waiting.length)}
+          text={t.photoText(waiting.map((l) => l.other.displayName))}
+          species={pet.data?.pet.species ?? waitingFirst.myPet.species}
+          mood="joie"
+          onPress={() => router.push(`/link/${waitingFirst.id}?tab=today`)}
+          accessibilityLabel={t.photoA11y}
+        />
       ) : null}
 
       {links.isError && !links.data ? <Banner tone="error" title={t.errorTitle} text={links.error.message} actionLabel={t.retry} onAction={() => void links.refetch()} /> : null}
@@ -124,9 +114,9 @@ export default function ChatsScreen() {
 }
 
 const styles = StyleSheet.create({
-  bannerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   grow: { flex: 1, minWidth: 0, gap: 4 },
-  list: { gap: 4 },
+  // Maquette : 6 pt entre le bandeau et la liste (le gabarit en met 12) ; les lignes se touchent, séparées par un filet.
+  list: { marginTop: -6 },
   skeletonRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
   skeletonLine: { marginTop: 8 },
   empty: { gap: 12, paddingTop: 24 },

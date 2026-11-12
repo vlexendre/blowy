@@ -11,7 +11,7 @@ export interface DayChipProps {
 export function DayChip({ label }: DayChipProps) {
   return (
     <View accessible accessibilityRole="header" style={styles.base}>
-      <Text variant="label" size={11} muted>
+      <Text variant="label" size={11} muted style={styles.text}>
         {label}
       </Text>
     </View>
@@ -19,5 +19,7 @@ export function DayChip({ label }: DayChipProps) {
 }
 
 const styles = StyleSheet.create({
-  base: { alignSelf: 'center', paddingHorizontal: space.md - 2, paddingVertical: space.xs, borderRadius: radius.pill, backgroundColor: veil.hairline, marginVertical: space.sm },
+  // `.daychip` : 11 px, 800, letter-spacing .12em, fond blanc à 7 %, padding 4 × 10.
+  base: { alignSelf: 'center', paddingHorizontal: space.md - 2, paddingVertical: space.xs, borderRadius: radius.pill, backgroundColor: veil.hairline },
+  text: { letterSpacing: 1.32 },
 });

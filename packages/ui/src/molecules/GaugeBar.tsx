@@ -6,7 +6,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { useAnimatedNumber } from '../lib/motion';
 import { layout } from '../lib/styles';
-import { alpha, color, motion, radius, shadow, size as sizes, space, veil } from '../theme';
+import { alpha, color, motion, radius, size as sizes, space, veil } from '../theme';
 
 export interface GaugeBarProps {
   /** Valeur de -100 (pôle bas) à +100 (pôle haut), 0 au centre. */
@@ -41,23 +41,23 @@ export function GaugeBar({ value, low, high, caption, target, color: fill = colo
   const body = (
     <>
       <View style={[layout.rowBetween, styles.labels]}>
-        <Text variant={lead === 'low' ? 'bodyBold' : 'body'} size={compact ? 11 : 14} muted={lead !== 'low'}>
+        <Text variant={lead === 'low' ? 'bodyHeavy' : 'body'} size={compact ? 11 : 13} muted={lead !== 'low'} style={!compact && styles.pole} numberOfLines={1}>
           {low}
         </Text>
         {caption ? (
-          <Text variant="bodyBold" size={11} muted style={styles.caption} numberOfLines={1}>
+          <Text variant="bodyHeavy" size={11} muted style={styles.caption} numberOfLines={1}>
             {caption}
           </Text>
         ) : null}
-        <Text variant={lead === 'high' ? 'bodyBold' : 'body'} size={compact ? 11 : 14} muted={lead !== 'high'}>
+        <Text variant={lead === 'high' ? 'bodyHeavy' : 'body'} size={compact ? 11 : 13} muted={lead !== 'high'} style={[!compact && styles.pole, styles.right]} numberOfLines={1}>
           {high}
         </Text>
       </View>
-      <View style={[styles.track, { height: barH, marginVertical: (knob - barH) / 2 }]}>
+      <View style={[styles.track, { height: barH, marginVertical: compact ? (knob - barH) / 2 : 0 }]}>
         <View style={styles.zero} />
         <Animated.View style={[styles.fill, { backgroundColor: fill }, fillStyle]} />
         {target !== undefined ? <View style={[styles.target, { left: `${toPct(target)}%` }]} /> : null}
-        <Animated.View style={[styles.knob, shadow.soft, { width: knob, height: knob, marginLeft: -knob / 2, top: (barH - knob) / 2 }, knobStyle]} />
+        <Animated.View style={[styles.knob, { width: knob, height: knob, marginLeft: -knob / 2, top: (barH - knob) / 2 }, knobStyle]} />
       </View>
     </>
   );
@@ -77,14 +77,16 @@ export function GaugeBar({ value, low, high, caption, target, color: fill = colo
 }
 
 const styles = StyleSheet.create({
-  frame: { paddingHorizontal: space.sm, paddingVertical: space.sm - 2, borderRadius: radius.sm, borderWidth: sizes.border, borderColor: 'transparent' },
-  compactFrame: { paddingHorizontal: 0, paddingVertical: 0 },
-  selected: { borderColor: alpha(color.accent, 0.6), backgroundColor: alpha(color.accent, 0.08) },
-  labels: { gap: space.sm, marginBottom: space.xs },
-  caption: { flexShrink: 1, textAlign: 'center' },
+  frame: { paddingHorizontal: space.sm, paddingTop: space.xs, paddingBottom: space.sm, minHeight: sizes.touch, borderRadius: 16, borderWidth: sizes.border, borderColor: 'transparent' },
+  compactFrame: { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0, minHeight: 0 },
+  selected: { borderColor: alpha(color.accent, 0.45), backgroundColor: alpha(color.accent, 0.09) },
+  labels: { marginBottom: 5 },
+  pole: { width: '33%' },
+  right: { textAlign: 'right' },
+  caption: { flexShrink: 1, textAlign: 'center', letterSpacing: 0.66 },
   track: { borderRadius: radius.pill, backgroundColor: veil.track },
-  zero: { position: 'absolute', left: '50%', top: -3, bottom: -3, width: 2, marginLeft: -1, backgroundColor: alpha(color.white, 0.35) },
+  zero: { position: 'absolute', left: '50%', top: -3, bottom: -3, width: 2, backgroundColor: alpha(color.white, 0.35) },
   fill: { position: 'absolute', top: 0, bottom: 0, borderRadius: radius.pill },
   target: { position: 'absolute', top: -3, bottom: -3, width: 3, marginLeft: -1.5, borderRadius: 2, backgroundColor: color.rose },
-  knob: { position: 'absolute', borderRadius: radius.pill, backgroundColor: color.white },
+  knob: { position: 'absolute', borderRadius: radius.pill, backgroundColor: color.white, shadowColor: color.night, shadowOpacity: 0.4, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
 });

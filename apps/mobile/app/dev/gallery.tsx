@@ -576,7 +576,14 @@ export default function Gallery() {
           <PetHero pet={lea.pet} title={[{ text: 'SUZIE,\n' }, { text: 'TENDRE.', dim: true }]} formLabel={formLabel.tendre} showForm />
         </Item>
         <Item name="EvolutionTimeline">
-          <EvolutionTimeline events={events} eventLabels={eventLabel} gaugeLabels={gaugeLabel} dateLabel={shortDay} />
+          <EvolutionTimeline
+            species="nino"
+            steps={[
+              { form: 'casanier', when: 'septembre', name: 'casanier', caption: 'que du canapé.' },
+              { form: 'equilibre', when: 'octobre', name: 'équilibré', caption: 'chats rouverts.' },
+              { form: 'sociable', when: 'aujourd’hui', name: 'sociable', caption: '3 pets croisés.', current: true },
+            ]}
+          />
         </Item>
         <Item name="ChallengeCard">
           <ChallengeCard

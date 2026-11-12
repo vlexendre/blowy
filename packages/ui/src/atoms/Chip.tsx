@@ -18,6 +18,8 @@ export interface ChipProps {
   /** Élément à gauche (point, mini avatar, icône). */
   left?: ReactNode;
   size?: 'sm' | 'md' | 'lg';
+  /** Encre du libellé ; défaut celle du ton (ex. jaune sur une puce sombre). */
+  ink?: string;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -36,13 +38,13 @@ const TONES: Record<ChipTone, { bg: string; ink: string }> = {
 const HEIGHT = { sm: 24, md: 30, lg: 44 } as const;
 
 /** Puce pilule (`.chip`) : étiquette, filtre ou mot à choisir. */
-export function Chip({ label, onPress, selected, tone = 'glass', left, size = 'md', accessibilityLabel, style }: ChipProps) {
+export function Chip({ label, onPress, selected, tone = 'glass', left, size = 'md', ink, accessibilityLabel, style }: ChipProps) {
   const t = TONES[selected ? 'accent' : tone];
   const h = HEIGHT[size];
   const content = (
-    <InkProvider value={t.ink}>
+    <InkProvider value={(!selected && ink) || t.ink}>
       {left}
-      <Text variant="bodyBold" size={size === 'sm' ? 11 : size === 'lg' ? 15 : 12} numberOfLines={1}>
+      <Text variant="bodyHeavy" size={size === 'sm' ? 11 : size === 'lg' ? 15 : 12} numberOfLines={1}>
         {label}
       </Text>
     </InkProvider>

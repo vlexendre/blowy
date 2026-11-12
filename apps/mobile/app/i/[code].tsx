@@ -1,15 +1,17 @@
 /** Lien d'invitation (blowy://i/CODE, https://blowy.app/i/CODE) : voir qui t'invite et accepter. */
 import { ApiError } from '@blowy/api-client';
-import { speciesGradient, space } from '@blowy/tokens';
-import { Banner, Button, EmptyState, Header, Panel, PetImage, ScreenTemplate, Skeleton, SpeechBubble, Text, Title } from '@blowy/ui';
+import { space } from '@blowy/tokens';
+import { Banner, Button, EmptyState, Header, InvitationPanel, ScreenTemplate, Skeleton, Stack } from '@blowy/ui';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 
 import { useAcceptInvite, useInvite, usePendingInvite } from '@/features/encounters';
 import { useDraft } from '@/features/onboarding';
+import { usePet } from '@/features/pet';
 import { errorMessage, goBack, useGate } from '@/features/session';
 import { common } from '@/locales/common';
+import { invitation as copy } from '@/locales/rencontres';
 
 const t = common.invite;
 const home = () => router.replace('/(tabs)/chats');
@@ -23,6 +25,7 @@ export default function InviteLink() {
   const ready = gate === 'ready';
   const invite = useInvite(ready && code ? code : null);
   const accept = useAcceptInvite();
+  const mine = usePet().data?.pet;
 
   // Pas encore de compte complet : on garde le code, l'inscription le reprendra.
   useEffect(() => {
@@ -67,37 +70,26 @@ export default function InviteLink() {
   const inv = invite.data;
   return (
     <ScreenTemplate
-      header={header}
       footer={
         <>
           <Button
-            label={t.accept}
-            iconRight="arrow"
+            label={copy.accept}
             loading={accept.isPending}
             onPress={() => accept.mutate(code, { onSuccess: (link) => router.replace({ pathname: '/link/[id]', params: { id: link.id } }) })}
           />
-          <Button label={t.later} variant="ghost" onPress={home} />
+          <Button label={copy.later} variant="ghost" onPress={home} />
         </>
       }
     >
-      <View style={{ gap: space.lg }}>
-        <Panel gradient={speciesGradient[inv.pet.species]} padding="lg" style={{ minHeight: 400 }}>
-          <Text variant="label" dim>
-            {t.kicker}
-          </Text>
-          <Title text={t.title(inv.displayName, inv.pet.name)} size={48} />
-          <View style={{ flexGrow: 1, minHeight: space.lg }} />
-          <View style={{ maxWidth: '60%', zIndex: 1 }}>
-            <SpeechBubble text={t.speech(inv.pet.name)} highlight={inv.pet.name.toLowerCase()} />
-          </View>
-          <View pointerEvents="none" style={{ position: 'absolute', right: -30, bottom: -40 }}>
-            <PetImage species={inv.pet.species} mood="salut" size={200} outline animation="breathe" accessibilityLabel={inv.pet.name} />
-          </View>
-        </Panel>
-        <Text muted>{t.text(inv.pet.name)}</Text>
-        <Text variant="small" muted>
-          {t.already}
-        </Text>
+      <Stack top={12} gap={12} grow>
+        <InvitationPanel
+          kicker={copy.kicker}
+          title={copy.title(inv.displayName, inv.pet.name)}
+          theirs={inv.pet.species}
+          mine={mine?.species}
+          note={{ before: copy.note, bold: copy.noteBold, after: copy.noteEnd }}
+          accessibilityLabel={mine ? copy.a11y(inv.pet.name, mine.name) : inv.pet.name}
+        />
         {accept.isError && !own ? (
           <Banner
             tone="error"
@@ -106,7 +98,7 @@ export default function InviteLink() {
             onAction={() => accept.reset()}
           />
         ) : null}
-      </View>
+      </Stack>
     </ScreenTemplate>
   );
 }

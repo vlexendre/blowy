@@ -14,14 +14,16 @@ export interface StatTileProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Tuile chiffre + légende (profil, souvenirs). */
+const VALUE = 30;
+
+/** Tuile chiffre + légende (`.card` 10 × 12 de Moi). */
 export function StatTile({ value, label, color, onPress, style }: StatTileProps) {
   return (
-    <Card onPress={onPress} accessibilityLabel={`${value} ${label}`} padding="md" style={[styles.base, style]}>
-      <Text variant="h2" size={30} color={color} numberOfLines={1} adjustsFontSizeToFit>
+    <Card onPress={onPress} accessibilityLabel={`${value} ${label}`} padding="none" style={[styles.base, style]}>
+      <Text variant="h2" size={VALUE} color={color} numberOfLines={1} adjustsFontSizeToFit style={styles.value}>
         {value}
       </Text>
-      <Text variant="small" muted numberOfLines={2}>
+      <Text variant="small" size={12} muted numberOfLines={2}>
         {label}
       </Text>
     </Card>
@@ -29,5 +31,6 @@ export function StatTile({ value, label, color, onPress, style }: StatTileProps)
 }
 
 const styles = StyleSheet.create({
-  base: { flex: 1, minHeight: 92, gap: space.xs },
+  base: { flex: 1, borderRadius: 24, paddingVertical: space.sm + 2, paddingHorizontal: space.md },
+  value: { lineHeight: Math.round(VALUE * 0.96), letterSpacing: VALUE * 0.005 },
 });
