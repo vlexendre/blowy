@@ -3,7 +3,7 @@ import { Banner, Header, ScreenTemplate, Skeleton } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 
 import { ScreenMotion } from '@/core';
-import { type MapPet, NeighbourhoodMap, useEncounters, useWave } from '@/features/encounters';
+import { type MapPet, NeighbourhoodMap, useLiveEncounters, useWave } from '@/features/encounters';
 import { sortLinks, useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
@@ -14,7 +14,7 @@ export default function CarteScreen() {
   const router = useRouter();
   const pet = usePet();
   const links = useLinks();
-  const encounters = useEncounters();
+  const encounters = useLiveEncounters();
   const wave = useWave();
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
   const p = pet.data?.pet;

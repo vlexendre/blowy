@@ -8,6 +8,7 @@ import { View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { useAcceptInvite, useInvite, usePendingInvite } from '@/features/encounters';
+import { useMe } from '@/features/me';
 import { useDraft } from '@/features/onboarding';
 import { usePet } from '@/features/pet';
 import { errorMessage, goBack, useGate } from '@/features/session';
@@ -28,6 +29,7 @@ export default function InviteLink() {
   const accept = useAcceptInvite();
   const mine = usePet().data?.pet;
   const bump = usePetBump();
+  const myCode = useMe(ready).data?.inviteCode;
 
   // Pas encore de compte complet : on garde le code, l'inscription le reprendra.
   useEffect(() => {
@@ -42,7 +44,8 @@ export default function InviteLink() {
 
   const header = <Header onBack={() => goBack('/')} backGlyph="close" backLabel={common.close} />;
   const notFound = invite.error instanceof ApiError && invite.error.code === 'not_found';
-  const own = accept.error instanceof ApiError && accept.error.code === 'conflict';
+  // Son propre lien : on le dit tout de suite, sans attendre le refus de l'API.
+  const own = myCode === code || (accept.error instanceof ApiError && accept.error.code === 'conflict');
 
   if (notFound || own) {
     return (

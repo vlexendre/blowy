@@ -73,9 +73,20 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
   async onOnboarded(userId: string): Promise<void> {
     if (DEMO_PEOPLE.some((p) => p.id === userId)) return;
     await this.refreshNeeds();
-    await this.wave.execute(DEMO_LEA, userId);
-    const link = await this.createLink.execute({ by: DEMO_MALO, with: userId });
-    for (const m of DEMO_MALO_MESSAGES) await this.sendMessage.execute({ linkId: link.id, userId: DEMO_MALO, body: m.body, tone: m.tone });
+    // Chaque geste est indépendant : la personne a pu s'inscrire avec le code de Léa ou de Malo (déjà liés).
+    await this.attempt('coucou de Léa', () => this.wave.execute(DEMO_LEA, userId));
+    await this.attempt('lien avec Malo', async () => {
+      const link = await this.createLink.execute({ by: DEMO_MALO, with: userId });
+      for (const m of DEMO_MALO_MESSAGES) await this.sendMessage.execute({ linkId: link.id, userId: DEMO_MALO, body: m.body, tone: m.tone });
+    });
+  }
+
+  private async attempt(what: string, run: () => Promise<unknown>): Promise<void> {
+    try {
+      await run();
+    } catch (err) {
+      this.logger.log(`${what} ignoré : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+    }
   }
 
   /** Les pets de démo ne finissent jamais par bouder (Suzie doit pouvoir saluer les nouveaux venus). */

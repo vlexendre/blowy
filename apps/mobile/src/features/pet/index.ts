@@ -9,6 +9,7 @@ import {
   decayGauges,
   formOf,
   GAUGE_KEYS,
+  itemById,
   type GaugeKey,
   type Gauges,
   NEED_KEYS,
@@ -40,9 +41,13 @@ export const useUnlocks = create<{ queue: string[]; fresh: string[]; push: (ids:
   seen: () => set({ fresh: [] }),
 }));
 
-/** À appeler avec chaque `PetView` reçue d'une action : met de côté les objets débloqués à fêter. */
+/**
+ * À appeler avec chaque `PetView` reçue (action ou simple lecture) : met de côté les objets débloqués à fêter.
+ * Les objets de départ ne se fêtent pas : ils arrivent avec le pet.
+ */
 function celebrate(view: PetView): void {
-  if (view.newItems.length > 0) useUnlocks.getState().push(view.newItems);
+  const won = view.newItems.filter((id) => itemById(id)?.unlock.kind !== 'start');
+  if (won.length > 0) useUnlocks.getState().push(won);
 }
 
 /** Le pet, relu quand l'écran revient au premier plan et toutes les `everyMs` tant qu'il est visible (ses besoins baissent avec le temps). */
@@ -59,9 +64,19 @@ export function useLivePet(everyMs = 3 * 60_000) {
   return pet;
 }
 
+/** Le pet. Une lecture peut porter des objets gagnés ailleurs (lien créé, niveau, 3 mots) : ils sont fêtés aussi. */
 export function usePet() {
   const api = useApi();
-  return useQuery({ queryKey: keys.pet, queryFn: api.pet.get });
+  const qc = useQueryClient();
+  return useQuery({
+    queryKey: keys.pet,
+    queryFn: async () => {
+      const view = await api.pet.get();
+      celebrate(view);
+      if (view.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
+      return view;
+    },
+  });
 }
 
 export function useRenamePet() {

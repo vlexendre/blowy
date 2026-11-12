@@ -137,13 +137,18 @@ describe('vie sociale et sécurité', () => {
     const bobTicket = await bob.api.links.photoTicket(carolLink?.id ?? '', 'image/jpeg');
     await upload(bobTicket.uploadUrl);
     await bob.api.links.sendPhoto(carolLink?.id ?? '', bobTicket.path);
-    const theirUrl = (await carol.api.links.get(carolLink?.id ?? '')).today.theirPhotoUrl ?? '';
+    const { today } = await carol.api.links.get(carolLink?.id ?? '');
+    const theirUrl = today.theirPhotoUrl ?? '';
+    const myUrl = today.myPhotoUrl ?? '';
     expect((await fetch(theirUrl)).status).toBe(200);
+    expect((await fetch(myUrl)).status).toBe(200);
 
     expect(await bob.api.me.remove()).toEqual({ ok: true });
     expect(await errorCode(bob.api.me.get())).toBe('unauthorized');
     expect((await carol.api.links.list()).some((l) => l.other.id === bob.id)).toBe(false);
     expect((await fetch(theirUrl)).status).toBe(404);
+    // Le lien disparaît avec Bob : la photo de Carol dans ce lien ne doit pas rester orpheline.
+    expect((await fetch(myUrl)).status).toBe(404);
   });
 });
 
@@ -151,6 +156,24 @@ describe('configuration', () => {
   it('refuse la production avec les adaptateurs mémoire', async () => {
     await expect(startWorld({ BLOWY_ENV: 'production' })).rejects.toThrow(/adaptateurs mémoire/);
     await expect(startWorld({ BLOWY_ADAPTERS: 'supabase', SUPABASE_URL: '' })).rejects.toThrow(/SUPABASE_URL/);
+  });
+
+  it('avance du temps : en local seulement, et elle fait bouder le pet', async () => {
+    const world = await startWorld();
+    try {
+      const me = world.client();
+      await me.api.me.onboard(onboardBody());
+      const before = await (await fetch(`${world.baseUrl}/dev/clock`)).json() as { now: string };
+      const res = await fetch(`${world.baseUrl}/dev/clock/advance`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hours: 20 }) });
+      expect(res.status).toBe(201);
+      const after = await res.json() as { now: string };
+      expect(Date.parse(after.now) - Date.parse(before.now)).toBe(20 * 3_600_000);
+      expect((await me.api.pet.get()).pet.shape).toBe('boude');
+      const bad = await fetch(`${world.baseUrl}/dev/clock/advance`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hours: -1 }) });
+      expect(bad.status).toBe(400);
+    } finally {
+      await world.close();
+    }
   });
 
   it('monde de démo : suggestions, coucou de Léa et lien avec Malo à l’inscription', async () => {
@@ -173,6 +196,19 @@ describe('configuration', () => {
       const view = await me.api.pet.get();
       expect(view.pet.needs).toEqual(START_NEEDS);
       expect(view.newItems).toEqual(['chapeau_fete', 'noeud_pap', 'bulle']);
+    } finally {
+      await world.close();
+    }
+  });
+
+  it('monde de démo : inscription avec le code de Léa (déjà liée, son coucou est ignoré)', async () => {
+    const world = await startWorld({ BLOWY_DEMO: '1' });
+    try {
+      const me = world.client();
+      await me.api.me.onboard(onboardBody({ inviteCode: 'LEADEMO2' }));
+      const names = (await me.api.links.list()).map((l) => l.other.displayName).sort();
+      expect(names).toEqual(['Léa', 'Malo']);
+      expect((await me.api.encounters.list()).incoming).toEqual([]);
     } finally {
       await world.close();
     }

@@ -22,7 +22,7 @@ import { ScreenMotion } from '@/core';
 import {
   useAcceptEncounter,
   useDeclineEncounter,
-  useEncounters,
+  useLiveEncounters,
   useShareInvite,
   useWave,
 } from '@/features/encounters';
@@ -36,7 +36,7 @@ const viaLabel = (s: Suggestion): string =>
 
 export default function RencontresScreen() {
   const router = useRouter();
-  const encounters = useEncounters();
+  const encounters = useLiveEncounters();
   const pet = usePet();
   const wave = useWave();
   const accept = useAcceptEncounter();

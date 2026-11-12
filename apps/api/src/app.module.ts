@@ -1,7 +1,7 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import type { Env } from './config/env';
-import { type CoreOverrides, CoreModule } from './core.module';
+import { type CoreOverrides, CoreModule, devTools } from './core.module';
 import { DemoModule } from './demo/demo.module';
 import { DevMediaController } from './integrations/storage/dev-media.controller';
 import { EncountersModule } from './modules/encounters/encounters.module';
@@ -13,6 +13,7 @@ import { PetsModule } from './modules/pets/pets.module';
 import { SafetyModule } from './modules/safety/safety.module';
 import { WordsModule } from './modules/words/words.module';
 import { AuthGuard } from './shared/auth.guard';
+import { DevClockController } from './shared/dev-clock.controller';
 import { ErrorFilter } from './shared/error.filter';
 
 @Module({})
@@ -32,8 +33,9 @@ export class AppModule {
         WordsModule,
         SafetyModule,
       ],
-      // Envoi et lecture des médias en mode mémoire seulement (imite les URL signées de Supabase).
-      controllers: env.adapters === 'memory' ? [DevMediaController] : [],
+      // Mode mémoire : envoi et lecture des médias (imite les URL signées de Supabase) ;
+      // en local seulement, l'avance du temps.
+      controllers: [...(env.adapters === 'memory' ? [DevMediaController] : []), ...(devTools(env) ? [DevClockController] : [])],
       providers: [
         { provide: APP_GUARD, useClass: AuthGuard },
         { provide: APP_FILTER, useClass: ErrorFilter },

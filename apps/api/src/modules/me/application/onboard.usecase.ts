@@ -78,7 +78,11 @@ export class Onboard {
       const sent = await this.notifier.notify(userId, welcomeEmail({ displayName: profile.displayName, petName, appUrl: this.env.webUrl }), email);
       if (sent) await this.profiles.update(userId, { welcomeSentAt: this.clock.now().toISOString() });
     }
-    await this.hook.onOnboarded(userId);
+    try {
+      await this.hook.onOnboarded(userId);
+    } catch (err) {
+      this.logger.warn(`suite de l'inscription non faite : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+    }
   }
 
   private async createProfile(userId: string, body: OnboardBody): Promise<Profile> {

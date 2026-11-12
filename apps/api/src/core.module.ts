@@ -19,7 +19,7 @@ import { petsRepositories } from './modules/pets/infrastructure/providers';
 import { safetyRepositories } from './modules/safety/infrastructure/providers';
 import { MemoryDb } from './persistence/memory-db';
 import { createServiceClient } from './persistence/supabase';
-import { type Clock, systemClock } from './shared/clock';
+import { type Clock, ShiftedClock, systemClock } from './shared/clock';
 import { cryptoIds } from './shared/ids';
 import {
   AUTH_ADMIN,
@@ -45,7 +45,7 @@ export class CoreModule {
     const publicUrl: PublicUrl = { current: env.apiUrl };
     const providers: Provider[] = [
       { provide: ENV, useValue: env },
-      { provide: CLOCK, useValue: overrides.clock ?? systemClock },
+      { provide: CLOCK, useValue: overrides.clock ?? (devTools(env) ? new ShiftedClock() : systemClock) },
       { provide: IDS, useValue: cryptoIds },
       { provide: PUBLIC_URL, useValue: publicUrl },
       {
@@ -86,3 +86,6 @@ function supabaseAdapters(env: Env): Provider[] {
     { provide: STORAGE, useFactory: (c: Db) => new SupabaseStorage(c), inject: [SUPABASE] },
   ];
 }
+
+/** Outils de développement (médias imités, avance du temps) : seulement en local avec les adaptateurs mémoire. */
+export const devTools = (env: Env): boolean => env.env === 'local' && env.adapters === 'memory';

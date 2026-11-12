@@ -1,6 +1,7 @@
 import { type ApiClient, ApiError, createApiClient } from '@blowy/api-client';
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
+import { focusManager, QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { AppState, Platform } from 'react-native';
 
 import { createPorts } from './adapters';
 import { config } from './config';
@@ -23,6 +24,14 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Sur iPhone, l'app qui revient au premier plan relit ce qui est affiché (sur le web, le navigateur le signale déjà).
+if (Platform.OS !== 'web') {
+  focusManager.setEventListener((setFocused) => {
+    const sub = AppState.addEventListener('change', (state) => setFocused(state === 'active'));
+    return () => sub.remove();
+  });
+}
 
 /** Clés de cache partagées par les features. */
 export const keys = {

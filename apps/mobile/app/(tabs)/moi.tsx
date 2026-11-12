@@ -7,7 +7,7 @@ import { Alert, RefreshControl, View } from 'react-native';
 import { ScreenMotion, usePorts, wordsUrl } from '@/core';
 import { useLinks } from '@/features/links';
 import { displayUrl, useCopyShare, useMe } from '@/features/me';
-import { usePet } from '@/features/pet';
+import { useLivePet } from '@/features/pet';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
 
@@ -16,7 +16,7 @@ const DAY_MS = 86_400_000;
 
 export default function Moi() {
   const me = useMe();
-  const pet = usePet();
+  const pet = useLivePet();
   const links = useLinks();
   const words = useCopyShare();
   const { purchases } = usePorts();

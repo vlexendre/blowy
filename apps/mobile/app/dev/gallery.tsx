@@ -114,6 +114,7 @@ import {
   type WardrobeItemLook,
   WordsShareCard,
 } from '@blowy/ui';
+import { Redirect } from 'expo-router';
 import { type ReactNode, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -391,7 +392,13 @@ function CareLevel() {
   );
 }
 
+/** Vitrine du design system : réservée au développement, renvoie à l'accueil dans les builds publiés. */
 export default function Gallery() {
+  if (!__DEV__) return <Redirect href="/" />;
+  return <GalleryScreen />;
+}
+
+function GalleryScreen() {
   const [chip, setChip] = useState('drôle');
   const [tab, setTab] = useState<LinkTab>('chat');
   const [otp, setOtp] = useState('4821');

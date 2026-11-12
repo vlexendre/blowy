@@ -69,7 +69,7 @@ export default function ReportScreen() {
         l ? (
           <View style={styles.footer}>
             {done ? (
-              <Button label={linkText.backToChats} variant="ghost" onPress={back} />
+              <Button label={linkText.backToChats} variant="ghost" onPress={toChats} />
             ) : (
               <Button label={t.reportSend} variant="accent" onPress={send} loading={report.isPending || block.isPending} />
             )}

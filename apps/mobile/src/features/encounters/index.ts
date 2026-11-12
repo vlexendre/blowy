@@ -1,12 +1,27 @@
 import type { Encounters } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 import { create } from 'zustand';
 
 import { keys, useApi } from '@/core';
 
+/** Les rencontres : aucun temps réel ne les signale, alors elles sont relues chaque minute (saluts reçus, saluts acceptés). */
 export function useEncounters() {
   const api = useApi();
-  return useQuery({ queryKey: keys.encounters, queryFn: api.encounters.list });
+  return useQuery({ queryKey: keys.encounters, queryFn: api.encounters.list, refetchInterval: 60_000 });
+}
+
+/** Les rencontres, relues aussi à chaque retour sur l'écran. */
+export function useLiveEncounters() {
+  const encounters = useEncounters();
+  const { refetch } = encounters;
+  useFocusEffect(
+    useCallback(() => {
+      void refetch();
+    }, [refetch]),
+  );
+  return encounters;
 }
 
 /** Saluer : rien ne se passe sans ce tap. */

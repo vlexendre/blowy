@@ -6,9 +6,9 @@ import { Platform, Share } from 'react-native';
 
 import { keys, useApi, usePorts } from '@/core';
 
-export function useMe() {
+export function useMe(enabled = true) {
   const api = useApi();
-  return useQuery({ queryKey: keys.me, queryFn: api.me.get });
+  return useQuery({ queryKey: keys.me, queryFn: api.me.get, enabled });
 }
 
 export function useUpdateMe() {
