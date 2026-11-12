@@ -44,6 +44,9 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
       accessibilityRole="header"
       accessibilityLabel={accessibilityLabel ?? segments.map((s) => s.text).join('')}
       numberOfLines={numberOfLines}
+      // Un titre ne se touche pas : sur iOS, `fitLineHeight` agrandit son cadre vers le haut et il couvrirait
+      // les boutons juste au-dessus (la croix de Blowy+).
+      pointerEvents="none"
       style={[composed, fitLineHeight(composed)]}
     >
       {reveal === undefined

@@ -59,7 +59,8 @@ export function ProfileHero({ title, hint, photoUri, photoLabel, pet, petColor, 
 }
 
 const styles = StyleSheet.create({
-  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md + 2 },
+  // La pastille du pet déborde de 16 à droite de la photo : l'écart la laisse hors du texte.
+  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md + 12 },
   // L'anneau (2 + 2 pt) déborde du disque de 48 : la pastille est à -12 / -10 du coin, comme `.ava`.
   badge: { position: 'absolute', right: -12 - 4, bottom: -10 - 4 },
   texts: { flex: 1, minWidth: 0 },

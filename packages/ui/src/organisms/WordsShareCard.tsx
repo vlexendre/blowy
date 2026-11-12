@@ -57,7 +57,8 @@ export function WordsShareCard({ title, countLabel, words, url, copyLabel, copie
       ) : null}
       <View style={[layout.row, layout.gapSm]}>
         <View style={[styles.url, layout.grow]}>
-          <Text variant="bodyHeavy" size={15} numberOfLines={1} selectable>
+          {/* Le code doit rester lisible : le texte rétrécit plutôt que d'être coupé (iPhone étroit, deux boutons à côté). */}
+          <Text variant="bodyHeavy" size={15} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} selectable>
             {url}
           </Text>
         </View>

@@ -63,5 +63,6 @@ const styles = StyleSheet.create({
   second: { marginLeft: -22 },
   kicker: { letterSpacing: 1.32, opacity: 0.8 },
   title: { marginTop: space.xs },
-  text: { marginTop: 6, maxWidth: 180 },
+  // S'arrête avant le duo (210 de large, collé à droite) : sur un iPhone de 402, il commence vers 178.
+  text: { marginTop: 6, maxWidth: 150 },
 });

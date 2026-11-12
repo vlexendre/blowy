@@ -55,10 +55,14 @@ function Column({
   return (
     <View style={{ height: line, overflow: 'hidden' }}>
       <Animated.View style={roll}>
+        {/* Chaque chiffre dans sa case d'une ligne : sur iOS, `fitLineHeight` ajoute une marge intérieure au texte
+            (compensée par des marges négatives) ; une hauteur fixée sur le texte décalerait les chiffres. */}
         {DIGITS.map((d, i) => (
-          <Text key={i} variant={variant} size={size} color={color} muted={muted} style={{ height: line, lineHeight: line, textAlign: 'center' }}>
-            {d}
-          </Text>
+          <View key={i} style={{ height: line }}>
+            <Text variant={variant} size={size} color={color} muted={muted} style={{ lineHeight: line, textAlign: 'center' }}>
+              {d}
+            </Text>
+          </View>
         ))}
       </Animated.View>
     </View>

@@ -52,7 +52,7 @@ export function InvitePanel({ title, text, pet, url, copyLabel, copied, copiedLa
       {url ? (
         <Appear key="link" distance={8} duration={200}>
           <View style={[layout.row, styles.link]}>
-            <Text variant="bodyHeavy" size={17} color={color.dark} numberOfLines={1} style={layout.grow}>
+            <Text variant="bodyHeavy" size={17} color={color.dark} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6} style={layout.grow}>
               {url.slice(0, cut)}
               <Text variant="bodyHeavy" size={17} color={gradient.violet[0]}>
                 {url.slice(cut)}

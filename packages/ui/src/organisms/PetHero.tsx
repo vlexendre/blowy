@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
   chips: { gap: 6 },
   mood: { height: 26, paddingHorizontal: 11 },
   edit: { width: EDIT, height: EDIT, borderRadius: EDIT / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: alpha(color.dark, 0.12) },
-  title: { marginTop: 12 },
+  // Le pet déborde à droite : le titre revient à la ligne avant lui (« PLUTÔT SOCIABLE »).
+  title: { marginTop: 12, maxWidth: '64%' },
   pet: { position: 'absolute', right: -38, bottom: -40, zIndex: 1 },
   formPet: { position: 'absolute', zIndex: 1 },
   speech: { position: 'absolute', top: 14, right: 14, maxWidth: 150, zIndex: 3, alignSelf: 'auto' },
