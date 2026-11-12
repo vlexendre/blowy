@@ -5,7 +5,7 @@
 import type { EncounterRecord } from '../modules/encounters/ports';
 import type { DailyPhotoRecord, LinkRecord, MessageRecord } from '../modules/links/ports';
 import type { Profile } from '../modules/me/ports';
-import type { PetEventRecord, PetRecord } from '../modules/pets/ports';
+import type { ItemSource, PetEventRecord, PetRecord } from '../modules/pets/ports';
 import type { BlockRecord, ReportRecord } from '../modules/safety/ports';
 
 export interface WordVoteRow {
@@ -13,6 +13,13 @@ export interface WordVoteRow {
   words: readonly string[];
   voterHash: string;
   createdAt: string;
+}
+
+export interface PetItemRow {
+  petId: string;
+  itemId: string;
+  source: ItemSource;
+  acquiredAt: string;
 }
 
 export class MemoryDb {
@@ -23,6 +30,7 @@ export class MemoryDb {
   readonly profiles = new Map<string, Profile>();
   readonly pets = new Map<string, PetRecord>();
   readonly petEvents: PetEventRecord[] = [];
+  readonly petItems: PetItemRow[] = [];
   readonly wordVotes: WordVoteRow[] = [];
   readonly links = new Map<string, LinkRecord>();
   readonly messages: MessageRecord[] = [];
@@ -49,6 +57,7 @@ export class MemoryDb {
     const petIds = new Set([...this.pets.values()].filter((p) => p.ownerId === userId).map((p) => p.id));
     for (const id of petIds) this.pets.delete(id);
     removeWhere(this.petEvents, (e) => petIds.has(e.petId));
+    removeWhere(this.petItems, (i) => petIds.has(i.petId));
     removeWhere(this.wordVotes, (v) => v.targetUser === userId);
 
     const linkIds = new Set([...this.links.values()].filter((l) => l.userA === userId || l.userB === userId).map((l) => l.id));

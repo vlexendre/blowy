@@ -5,6 +5,7 @@ import { CLOCK, PETS, WORD_VOTES } from '../../../shared/tokens';
 import type { PetEventRecord, PetRecord, PetsRepository, WordVotesRepository } from '../ports';
 import { challengeOfDay } from './challenge-of-day';
 import { PetCharacter } from './pet-character';
+import { Wardrobe } from './wardrobe';
 
 export interface PetViewResult {
   pet: PetRecord;
@@ -12,6 +13,8 @@ export interface PetViewResult {
   challenge: Challenge;
   doneToday: boolean;
   wordsCount: number;
+  /** Objets attribués pendant cette requête. */
+  newItems: string[];
 }
 
 const EVENTS_SHOWN = 30;
@@ -22,16 +25,19 @@ export class GetPetView {
     @Inject(PetCharacter) private readonly character: PetCharacter,
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(WORD_VOTES) private readonly votes: WordVotesRepository,
+    @Inject(Wardrobe) private readonly wardrobe: Wardrobe,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
+  /** Vue du pet ; attribue au passage les objets gagnés depuis la dernière vue. */
   async execute(ownerId: string): Promise<PetViewResult> {
+    const newItems = await this.wardrobe.sync(ownerId);
     const pet = await this.character.load(ownerId);
     const [events, done, wordsCount] = await Promise.all([
       this.pets.listEvents(pet.id, EVENTS_SHOWN),
       this.character.countToday(pet.id, 'challenge_done'),
       this.votes.count(ownerId),
     ]);
-    return { pet, events, challenge: challengeOfDay(ownerId, todayOf(this.clock)), doneToday: done > 0, wordsCount };
+    return { pet, events, challenge: challengeOfDay(ownerId, todayOf(this.clock)), doneToday: done > 0, wordsCount, newItems };
   }
 }

@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type Clock, todayOf } from '../../../shared/clock';
+import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinkRecord } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
-import { withDecay } from '../../pets/application/pet-character';
+import { livePet } from '../../pets/application/pet-catch-up';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
 
 export interface InviteResult {
@@ -29,7 +29,7 @@ export class Invites {
     const profile = await this.profiles.findByInviteCode(normalize(code));
     const pet = profile ? await this.pets.findByOwner(profile.id) : null;
     if (!profile || !pet) throw new DomainError('not_found', 'Cette invitation n’existe pas.');
-    return { profile, pet: withDecay(pet, todayOf(this.clock)) };
+    return { profile, pet: livePet(pet, this.clock.now()) };
   }
 
   async accept(code: string, userId: string): Promise<LinkRecord> {

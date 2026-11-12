@@ -18,7 +18,8 @@ En mode `memory`, rien d'externe n'est nécessaire :
 - **stockage** : les tickets d'envoi pointent vers `PUT /dev/uploads/<chemin>?token=…` et les URL de lecture
   vers `GET /dev/media/<chemin>?token=…` (expirent au bout d'une heure, comme sur Supabase) ;
 - **e-mails** : sans `RESEND_API_KEY`, seuls le sujet et le domaine du destinataire sont écrits dans la console ;
-- **démo** : `BLOWY_DEMO=1` crée Léa (Suzie), Malo (Gaston) et Sasha (Pia) au démarrage. À chaque inscription,
+- **démo** : `BLOWY_DEMO=1` crée Léa (Suzie), Malo (Gaston) et Sasha (Pia) au démarrage, habillés et avec des
+  besoins variés (remis à niveau à chaque inscription, pour que Suzie puisse toujours saluer). À chaque inscription,
   Léa te salue et Malo se lie avec toi et t'écrit : tous les écrans ont des données. Identifiants fixes dans
   `src/demo/demo.ts`. Les données mémoire disparaissent à l'arrêt.
 
@@ -73,6 +74,24 @@ persistence/             client Supabase (clé service), base mémoire, fabrique
 modules/<m>/             application (cas d'usage) · ports.ts · infrastructure · interface (contrôleurs, présentateurs)
 demo/                    monde de démo local
 ```
+
+## Soins et garde-robe
+
+- **Besoins** (faim, énergie, humeur, 0–100) : usure rattrapée à la lecture (`decayNeeds`, heures réelles depuis
+  `pets.needs_at`). On n'enregistre l'usure que par pas entiers de 2 h (`pet-catch-up.ts`) pour qu'une lecture
+  fréquente ne fausse pas l'arrondi ; `PetsRepository.save` n'écrit jamais les besoins (`saveNeeds` s'en charge).
+- `POST /v1/pet/care` : refusé (`already_done`) si le besoin est comblé ; sinon besoins, événement `care_*`
+  (jauges) et un jour de soin par jour civil.
+- **Objets** (`pet_items`) : le service `Wardrobe` calcule les compteurs (jours de soin, liens non archivés,
+  meilleur niveau, meilleure série, défis, 3 mots) et attribue les objets gagnés à chaque vue du pet
+  (`GetPetView`, donc aussi après soin, défi, renommage, tenue) : `PetView.newItems` = objets attribués par
+  cette requête. Les étapes franchies ailleurs (lien, niveau, photo, 3 mots) sont fêtées à la vue suivante.
+  Les objets de départ sont attribués à l'inscription (pas « nouveaux »). `pets.best_streak` monte avec les
+  photos du jour à deux et reste acquis quand la série retombe.
+- `GET /v1/pet/wardrobe` (catalogue, état, étape) · `PUT /v1/pet/outfit` (`forbidden` si un objet n'est pas à toi).
+- **Conséquences** : la tenue se voit partout (`PublicPet.outfit`) ; hors des liens, l'humeur montrée suit la
+  forme ; les suggestions de rencontre sont limitées par `ENCOUNTER_QUOTA` (aucune si le pet boude) et un pet
+  qui boude ne peut pas saluer (accepter un coucou reste possible).
 
 Règles : injection explicite (`@Inject(JETON)`, pas d'`emitDecoratorMetadata`) ; pas de `Date.now()` ni d'aléa dans
 les cas d'usage (horloge injectée, répliques des pets choisies par une graine stable) ; les vies des liens et l'usure

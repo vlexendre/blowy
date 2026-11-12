@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Inject, Param, Post, Req } from '@nestjs/common';
 import { type WordsPage, WordsBody } from '@blowy/contract';
-import { WORD_KEYS } from '@blowy/domain';
+import { WORD_KEYS, shapeOf } from '@blowy/domain';
 import type { Request } from 'express';
 import { z } from 'zod';
 import type { Clock } from '../../../shared/clock';
@@ -9,6 +9,7 @@ import { DomainError } from '../../../shared/errors';
 import { RateLimiter } from '../../../shared/rate-limiter';
 import { CLOCK } from '../../../shared/tokens';
 import { ZodPipe } from '../../../shared/zod.pipe';
+import { moodForShape } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import { Words } from '../application/words.usecase';
 
@@ -32,7 +33,7 @@ export class WordsController {
   @Get(':code')
   async get(@Param('code', Code) code: string): Promise<WordsPage> {
     const { profile, pet } = await this.words.target(code);
-    return { displayName: profile.displayName, pet: toPublicPet(pet, 'joie'), words: WORD_KEYS };
+    return { displayName: profile.displayName, pet: toPublicPet(pet, moodForShape(shapeOf(pet.needs))), words: WORD_KEYS };
   }
 
   @Post(':code')

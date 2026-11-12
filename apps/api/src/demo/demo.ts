@@ -1,5 +1,5 @@
 /** Monde de démonstration (mode mémoire, BLOWY_DEMO=1) : trois personnes fixes et leurs pets. */
-import type { Gauges, Species } from '@blowy/domain';
+import type { Gauges, Needs, Outfit, Species } from '@blowy/domain';
 
 export const DEMO_LEA = '00000000-0000-4000-8000-00000000000a';
 export const DEMO_MALO = '00000000-0000-4000-8000-00000000000b';
@@ -13,6 +13,10 @@ export interface DemoPerson {
   inviteCode: string;
   wordsCode: string;
   pet: { name: string; species: Species; gauges: Gauges };
+  /** Besoins remis à ces valeurs au démarrage et à chaque inscription (le monde de démo reste vivant). */
+  needs: Needs;
+  /** Tenue portée ; ses objets sont offerts au pet (en plus de ceux de départ). */
+  outfit: Outfit;
 }
 
 export const DEMO_PEOPLE: readonly DemoPerson[] = [
@@ -24,6 +28,8 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     inviteCode: 'LEADEMO2',
     wordsCode: 'LEAMOTS2',
     pet: { name: 'Suzie', species: 'suzie', gauges: { social: 40, play: 20, tender: 30, talk: 10 } },
+    needs: { hunger: 90, energy: 85, mood: 95 },
+    outfit: { head: 'noeud', face: 'lunettes_coeur' },
   },
   {
     id: DEMO_MALO,
@@ -33,6 +39,8 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     inviteCode: 'MALODEMO',
     wordsCode: 'MALOMOTS',
     pet: { name: 'Gaston', species: 'gaston', gauges: { social: -10, play: 55, tender: -20, talk: 35 } },
+    needs: { hunger: 35, energy: 70, mood: 60 },
+    outfit: { head: 'casquette', body: 'echarpe' },
   },
   {
     id: DEMO_SASHA,
@@ -42,6 +50,8 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     inviteCode: 'SASHADEM',
     wordsCode: 'SASHAMOT',
     pet: { name: 'Pia', species: 'pia', gauges: { social: -35, play: -10, tender: 45, talk: -25 } },
+    needs: { hunger: 70, energy: 95, mood: 75 },
+    outfit: { head: 'cornes', toy: 'skate' },
   },
 ];
 

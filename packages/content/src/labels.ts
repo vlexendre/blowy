@@ -92,7 +92,7 @@ export const needLabel: Record<string, { name: string; low: string }> = {
 
 export const careLabel: Record<string, { action: string; done: string; refused: string }> = {
   feed: { action: 'nourrir', done: 'miam.', refused: 'il n’a plus faim.' },
-  play: { action: 'jouer', done: 'encore !', refused: 'trop fatigué pour jouer.' },
+  play: { action: 'jouer', done: 'encore !', refused: 'pas maintenant : il est trop fatigué ou déjà comblé.' },
   nap: { action: 'sieste', done: 'zzz…', refused: 'il n’a pas sommeil.' },
   cuddle: { action: 'câlin', done: 'ronron.', refused: 'il est déjà comblé.' },
 };

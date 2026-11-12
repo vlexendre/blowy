@@ -5,6 +5,8 @@ import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { LinkPresenter } from '../../links/interface/link.presenter';
+import { shapeOf } from '@blowy/domain';
+import { moodForShape } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import { Invites } from '../application/invites.usecase';
 
@@ -21,7 +23,7 @@ export class InvitesController {
   @Get(':code')
   async get(@Param('code', Code) code: string): Promise<Invite> {
     const { profile, pet } = await this.invites.get(code);
-    return { displayName: profile.displayName, pet: toPublicPet(pet, 'salut') };
+    return { displayName: profile.displayName, pet: toPublicPet(pet, moodForShape(shapeOf(pet.needs))) };
   }
 
   @Post(':code/accept')

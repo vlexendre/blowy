@@ -41,10 +41,33 @@ export type Database = {
           tender: number;
           talk: number;
           decayed_on: string;
+          hunger: number;
+          energy: number;
+          mood: number;
+          needs_at: string;
+          care_days: number;
+          last_care_on: string | null;
+          best_streak: number;
+          outfit: Json;
           created_at: string;
         },
-        'id' | 'social' | 'play' | 'tender' | 'talk' | 'decayed_on' | 'created_at'
+        | 'id'
+        | 'social'
+        | 'play'
+        | 'tender'
+        | 'talk'
+        | 'decayed_on'
+        | 'hunger'
+        | 'energy'
+        | 'mood'
+        | 'needs_at'
+        | 'care_days'
+        | 'last_care_on'
+        | 'best_streak'
+        | 'outfit'
+        | 'created_at'
       >;
+      pet_items: Table<{ pet_id: string; item_id: string; source: string; acquired_at: string }, 'acquired_at'>;
       pet_events: Table<{ id: number; pet_id: string; kind: string; delta: Json; created_at: string }, 'id' | 'delta' | 'created_at'>;
       links: Table<
         {

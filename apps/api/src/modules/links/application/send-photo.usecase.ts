@@ -5,8 +5,9 @@ import type { Storage } from '../../../integrations/storage/ports';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
-import { CLOCK, DAILY_PHOTOS, IDS, STORAGE } from '../../../shared/tokens';
+import { CLOCK, DAILY_PHOTOS, IDS, PETS, STORAGE } from '../../../shared/tokens';
 import { PetCharacter } from '../../pets/application/pet-character';
+import type { PetsRepository } from '../../pets/ports';
 import type { DailyPhotosRepository } from '../ports';
 import type { LinkActionResult } from './link-action';
 import { LinkSession } from './link-session';
@@ -25,6 +26,7 @@ export class SendPhoto {
     @Inject(DAILY_PHOTOS) private readonly photos: DailyPhotosRepository,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(PetCharacter) private readonly character: PetCharacter,
+    @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
   ) {}
@@ -56,9 +58,12 @@ export class SendPhoto {
       draft.pet(other, duoPhotoLine(draft.pair(other), state.streak, draft.seed('duo')));
       if (duo.lifeGained) draft.pet(userId, lifeGainedLine(draft.pair(userId), state.lives, draft.seed('life-gained')));
     }
+    const streakBefore = draft.link.streak;
     draft.update(state);
     if (leveledUp) draft.announceLevel(state.level, userId);
     const messages = await this.session.commit(draft);
+    // Meilleure série des deux pets : elle reste acquise même quand la série du lien retombe.
+    if (state.streak > streakBefore) await this.pets.raiseBestStreak([draft.link.userA, draft.link.userB], state.streak);
 
     await this.character.apply(userId, 'photo_sent', { maxPerDay: PHOTO_EVENTS_PER_DAY });
     return { link: draft.link, messages };

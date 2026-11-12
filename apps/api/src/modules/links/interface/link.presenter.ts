@@ -6,7 +6,7 @@ import { type Clock, todayOf } from '../../../shared/clock';
 import { CLOCK, DAILY_PHOTOS, LINK_READS, MESSAGES, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
 import { toPerson } from '../../me/interface/person.presenter';
 import type { ProfilesRepository } from '../../me/ports';
-import { withDecay } from '../../pets/application/pet-character';
+import { livePet } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import type { PetsRepository } from '../../pets/ports';
 import type { DailyPhotosRepository, LinkReadsRepository, LinkRecord, MessageRecord, MessagesRepository } from '../ports';
@@ -41,11 +41,12 @@ export class LinkPresenter {
   }
 
   async links(links: readonly LinkRecord[], viewerId: string): Promise<Link[]> {
+    const now = this.clock.now();
     const today = todayOf(this.clock);
     const otherIds = links.map((l) => (l.userA === viewerId ? l.userB : l.userA));
     const [profiles, pets] = await Promise.all([this.profiles.findByIds(otherIds), this.pets.findByOwners([viewerId, ...otherIds])]);
     const profileById = new Map(profiles.map((p) => [p.id, p]));
-    const petByOwner = new Map(pets.map((p) => [p.ownerId, withDecay(p, today)]));
+    const petByOwner = new Map(pets.map((p) => [p.ownerId, livePet(p, now)]));
 
     const out = await Promise.all(
       links.map(async (link, i): Promise<Link | null> => {

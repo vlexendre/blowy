@@ -15,6 +15,7 @@ export const MEMORY_DB = Symbol('MEMORY_DB');
 export const PROFILES = Symbol('PROFILES');
 export const PETS = Symbol('PETS');
 export const WORD_VOTES = Symbol('WORD_VOTES');
+export const PET_ITEMS = Symbol('PET_ITEMS');
 export const LINKS = Symbol('LINKS');
 export const MESSAGES = Symbol('MESSAGES');
 export const LINK_READS = Symbol('LINK_READS');

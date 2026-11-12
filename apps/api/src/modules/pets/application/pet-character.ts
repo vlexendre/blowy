@@ -1,16 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type Day, type Gauges, type PetEventKind, addGauges, dayOf, daysBetween, decayGauges, deltaFor } from '@blowy/domain';
-import { type Clock, todayOf } from '../../../shared/clock';
+import { type Gauges, type PetEventKind, addGauges, dayOf, deltaFor } from '@blowy/domain';
+import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, PETS } from '../../../shared/tokens';
+import { needsNow, settledNeeds, withDecay } from './pet-catch-up';
 import type { PetEventRecord, PetRecord, PetsRepository } from '../ports';
-
-/** Usure rattrapée à la lecture : les jauges retombent vers 0 pour chaque jour écoulé depuis `decayedOn`. */
-export function withDecay(pet: PetRecord, today: Day): PetRecord {
-  const days = daysBetween(pet.decayedOn, today);
-  if (days <= 0) return pet;
-  return { ...pet, gauges: decayGauges(pet.gauges, days), decayedOn: today };
-}
 
 const sameGauges = (a: Gauges, b: Gauges): boolean => a.social === b.social && a.play === b.play && a.tender === b.tender && a.talk === b.talk;
 
@@ -35,13 +29,20 @@ export class PetCharacter {
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
-  /** Pet de la personne, usure appliquée et enregistrée si elle a changé quelque chose. */
+  /**
+   * Pet de la personne, usure des jauges et des besoins appliquée et enregistrée si elle a changé quelque chose.
+   * Les besoins rendus sont ceux de l'instant présent.
+   */
   async load(ownerId: string): Promise<PetRecord> {
     const pet = await this.pets.findByOwner(ownerId);
     if (!pet) throw new DomainError('not_onboarded');
-    const decayed = withDecay(pet, todayOf(this.clock));
+    const now = this.clock.now();
+    const decayed = withDecay(pet, dayOf(now));
     if (!sameGauges(decayed.gauges, pet.gauges)) await this.pets.save(decayed);
-    return decayed;
+    const settled = settledNeeds(decayed, now);
+    if (settled) await this.pets.saveNeeds(pet.id, settled.needs, settled.needsAt);
+    const stored = settled ? { ...decayed, ...settled } : decayed;
+    return { ...stored, needs: needsNow(stored, now) };
   }
 
   /** Applique un événement : usure, puis delta, puis journal. Null si le plafond du jour est atteint. */

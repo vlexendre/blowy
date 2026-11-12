@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { encounterIntroLine, waveReceivedEmail } from '@blowy/content';
-import { compatibility } from '@blowy/domain';
+import { compatibility, shapeOf } from '@blowy/domain';
 import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
 import type { Clock } from '../../../shared/clock';
@@ -11,6 +11,7 @@ import { BLOCKS, CLOCK, ENCOUNTERS, ENV, IDS, LINKS, PETS, PROFILES } from '../.
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinksRepository } from '../../links/ports';
 import type { ProfilesRepository } from '../../me/ports';
+import { livePet } from '../../pets/application/pet-catch-up';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetsRepository } from '../../pets/ports';
 import type { BlocksRepository } from '../../safety/ports';
@@ -18,7 +19,7 @@ import type { EncountersRepository } from '../ports';
 
 /**
  * Saluer le pet de quelqu'un. Idempotent. Si l'autre avait déjà salué, c'est réciproque :
- * les deux coucous sont acceptés et le lien se crée tout de suite.
+ * les deux coucous sont acceptés et le lien se crée tout de suite. Un pet qui boude ne salue personne.
  */
 @Injectable()
 export class Wave {
@@ -50,6 +51,9 @@ export class Wave {
     const [a, b] = userId < targetId ? [userId, targetId] : [targetId, userId];
     const link = await this.links.findBetween(a, b);
     if (link && link.status !== 'archived') throw new DomainError('conflict', 'Vous êtes déjà liés.');
+    if (shapeOf(livePet(myPet, this.clock.now()).needs) === 'boude') {
+      throw new DomainError('forbidden', 'ton pet boude : occupe-toi de lui avant de saluer.');
+    }
 
     if (await this.encounters.findPair(userId, targetId)) return;
     const theirs = await this.encounters.findPair(targetId, userId);

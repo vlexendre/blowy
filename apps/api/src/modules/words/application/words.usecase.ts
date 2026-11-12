@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import { deltaForWords } from '@blowy/domain';
-import { type Clock, todayOf } from '../../../shared/clock';
+import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, PETS, PROFILES, WORD_VOTES } from '../../../shared/tokens';
 import type { Profile, ProfilesRepository } from '../../me/ports';
-import { PetCharacter, withDecay } from '../../pets/application/pet-character';
+import { livePet } from '../../pets/application/pet-catch-up';
+import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetRecord, PetsRepository, WordVotesRepository } from '../../pets/ports';
 
 export interface WordsTarget {
@@ -37,7 +38,7 @@ export class Words {
     const profile = await this.profiles.findByWordsCode(normalize(code));
     const pet = profile ? await this.pets.findByOwner(profile.id) : null;
     if (!profile || !pet) throw new DomainError('not_found', 'Ce lien « 3 mots » n’existe pas.');
-    return { profile, pet: withDecay(pet, todayOf(this.clock)) };
+    return { profile, pet: livePet(pet, this.clock.now()) };
   }
 
   async vote(input: VoteInput): Promise<void> {

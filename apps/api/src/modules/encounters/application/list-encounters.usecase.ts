@@ -1,13 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type EncounterVia, encounterIntroLine, wavedAtYouLine } from '@blowy/content';
-import { compatibility } from '@blowy/domain';
+import { ENCOUNTER_QUOTA, type Shape, compatibility, shapeOf } from '@blowy/domain';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
 import { BLOCKS, CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
 import type { LinksRepository } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
-import { PetCharacter, withDecay } from '../../pets/application/pet-character';
+import { livePet } from '../../pets/application/pet-catch-up';
+import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
 import type { BlocksRepository } from '../../safety/ports';
 import type { EncounterRecord, EncountersRepository } from '../ports';
@@ -32,9 +33,9 @@ export interface SuggestionResult extends Candidate {
 export interface EncountersResult {
   incoming: IncomingResult[];
   suggestions: SuggestionResult[];
+  petShape: Shape;
 }
 
-const MAX_SUGGESTIONS = 20;
 /** Vivier des personnes récentes examinées pour les suggestions. */
 const RECENT_POOL = 200;
 const VIA_RANK: Record<EncounterVia, number> = { friend_of_friend: 0, nearby: 1, new: 2 };
@@ -45,6 +46,8 @@ const sameCity = (a: string | null, b: string | null): boolean =>
 /**
  * Rencontres : les coucous reçus, puis des pets à croiser. Amis d'amis d'abord (avec le nom de l'ami commun),
  * puis même ville, puis les autres ; dans chaque groupe, les plus compatibles d'abord.
+ * Le nombre de suggestions dépend de la forme du pet (`ENCOUNTER_QUOTA`) : un pet qui boude ne croise
+ * personne ; les coucous reçus, eux, restent toujours visibles.
  */
 @Injectable()
 export class ListEncounters {
@@ -61,6 +64,7 @@ export class ListEncounters {
   async execute(userId: string): Promise<EncountersResult> {
     const me = await this.profiles.findById(userId);
     if (!me) throw new DomainError('not_onboarded');
+    const now = this.clock.now();
     const today = todayOf(this.clock);
     const [myPet, blocked, involved, myLinks, recent] = await Promise.all([
       this.character.load(userId),
@@ -70,6 +74,7 @@ export class ListEncounters {
       this.profiles.listRecent(RECENT_POOL, userId),
     ]);
     const otherOf = (a: string, b: string): string => (a === userId ? b : a);
+    const petShape = shapeOf(myPet.needs);
 
     const linked = new Set(myLinks.map((l) => otherOf(l.userA, l.userB)));
     const declined = new Set(involved.filter((e) => e.status === 'declined').map((e) => otherOf(e.fromUser, e.toUser)));
@@ -92,7 +97,7 @@ export class ListEncounters {
     const wanted = [...new Set([...candidateIds, ...pendingFrom, ...mutualOf.values()])];
     const [profiles, pets] = await Promise.all([this.profiles.findByIds(wanted), this.pets.findByOwners(wanted)]);
     const profileById = new Map([...recent, ...profiles].map((p) => [p.id, p]));
-    const petByOwner = new Map(pets.map((p) => [p.ownerId, withDecay(p, today)]));
+    const petByOwner = new Map(pets.map((p) => [p.ownerId, livePet(p, now)]));
 
     const candidate = (id: string): { profile: Profile; pet: PetRecord; compatibility: number } | null => {
       const profile = profileById.get(id);
@@ -116,8 +121,8 @@ export class ListEncounters {
         return [{ ...c, via, mutualName, intro, waved: myWaves.has(id) }];
       })
       .sort((a, b) => VIA_RANK[a.via] - VIA_RANK[b.via] || b.compatibility - a.compatibility || a.profile.id.localeCompare(b.profile.id))
-      .slice(0, MAX_SUGGESTIONS);
+      .slice(0, ENCOUNTER_QUOTA[petShape]);
 
-    return { incoming: incomingOut, suggestions };
+    return { incoming: incomingOut, suggestions, petShape };
   }
 }

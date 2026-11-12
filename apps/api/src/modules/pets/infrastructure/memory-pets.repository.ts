@@ -1,8 +1,8 @@
-import type { PetEventKind } from '@blowy/domain';
+import type { Needs, PetEventKind } from '@blowy/domain';
 import type { MemoryDb } from '../../../persistence/memory-db';
 import type { PetEventRecord, PetRecord, PetsRepository } from '../ports';
 
-const copy = (p: PetRecord): PetRecord => ({ ...p, gauges: { ...p.gauges } });
+const copy = (p: PetRecord): PetRecord => ({ ...p, gauges: { ...p.gauges }, needs: { ...p.needs }, outfit: { ...p.outfit } });
 
 export class MemoryPetsRepository implements PetsRepository {
   constructor(private readonly db: MemoryDb) {}
@@ -23,8 +23,20 @@ export class MemoryPetsRepository implements PetsRepository {
   }
 
   async save(pet: PetRecord): Promise<void> {
-    if (!this.db.pets.has(pet.id)) throw new Error('pet introuvable');
-    this.db.pets.set(pet.id, copy(pet));
+    const current = this.db.pets.get(pet.id);
+    if (!current) throw new Error('pet introuvable');
+    // Comme l'adaptateur Supabase : les besoins ne sont pas écrits ici.
+    this.db.pets.set(pet.id, copy({ ...pet, needs: current.needs, needsAt: current.needsAt }));
+  }
+
+  async saveNeeds(petId: string, needs: Needs, needsAt: string): Promise<void> {
+    const current = this.db.pets.get(petId);
+    if (!current) throw new Error('pet introuvable');
+    this.db.pets.set(petId, copy({ ...current, needs, needsAt }));
+  }
+
+  async raiseBestStreak(ownerIds: readonly string[], streak: number): Promise<void> {
+    for (const p of this.db.pets.values()) if (ownerIds.includes(p.ownerId) && p.bestStreak < streak) p.bestStreak = streak;
   }
 
   async appendEvent(event: Omit<PetEventRecord, 'id'>): Promise<PetEventRecord> {
@@ -43,5 +55,9 @@ export class MemoryPetsRepository implements PetsRepository {
 
   async listEventsSince(petId: string, kind: PetEventKind, sinceIso: string): Promise<PetEventRecord[]> {
     return this.db.petEvents.filter((e) => e.petId === petId && e.kind === kind && e.createdAt >= sinceIso).map((e) => ({ ...e }));
+  }
+
+  async countEvents(petId: string, kind: PetEventKind): Promise<number> {
+    return this.db.petEvents.filter((e) => e.petId === petId && e.kind === kind).length;
   }
 }

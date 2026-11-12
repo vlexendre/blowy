@@ -17,6 +17,9 @@ export class FakeClock implements Clock {
   advanceDays(days: number): void {
     this.current = new Date(this.current.getTime() + days * 86_400_000);
   }
+  advanceHours(hours: number): void {
+    this.current = new Date(this.current.getTime() + hours * 3_600_000);
+  }
   advanceMinutes(minutes: number): void {
     this.current = new Date(this.current.getTime() + minutes * 60_000);
   }
@@ -70,6 +73,17 @@ export const onboardBody = (overrides: Partial<OnboardBody> = {}): OnboardBody =
 export async function upload(uploadUrl: string, contentType = 'image/jpeg'): Promise<void> {
   const res = await fetch(uploadUrl, { method: 'PUT', headers: { 'content-type': contentType }, body: new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3]) });
   if (!res.ok) throw new Error(`envoi refusé : ${res.status}`);
+}
+
+/** Attend une erreur d'API et rend son code et son message. */
+export async function apiError(promise: Promise<unknown>): Promise<{ code: string; message: string }> {
+  try {
+    await promise;
+  } catch (err) {
+    if (err instanceof Error && 'code' in err) return { code: String(err.code), message: err.message };
+    throw err;
+  }
+  throw new Error('une erreur était attendue');
 }
 
 /** Attend une erreur d'API et rend son code. */

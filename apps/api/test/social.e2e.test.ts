@@ -1,6 +1,6 @@
 /** Invitations, « 3 mots », amis d'amis, défi du jour, sécurité et suppression de compte. */
 import type { ApiClient } from '@blowy/api-client';
-import { WORD_KEYS } from '@blowy/domain';
+import { START_NEEDS, WORD_KEYS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { type TestWorld, errorCode, onboardBody, startWorld, upload } from './helpers';
 
@@ -25,7 +25,7 @@ describe('vie sociale et sécurité', () => {
 
   it("invitation : page publique, inscription avec code, acceptation, refus de son propre code", async () => {
     const invite = await world.anonymous.invites.get(aliceInvite.toLowerCase());
-    expect(invite).toMatchObject({ displayName: 'Alice', pet: { name: 'Nino', mood: 'salut' } });
+    expect(invite).toMatchObject({ displayName: 'Alice', pet: { name: 'Nino', mood: 'joie', outfit: {} } });
     expect(await errorCode(world.anonymous.invites.get('ZZZZZZZZ'))).toBe('not_found');
 
     await bob.api.me.onboard(onboardBody({ displayName: 'Bob', city: 'Lille', inviteCode: aliceInvite, pet: { name: 'Gaston', species: 'gaston' } }));
@@ -164,6 +164,15 @@ describe('configuration', () => {
       const [link] = await me.api.links.list();
       expect(link?.other.displayName).toBe('Malo');
       expect(link?.unread).toBeGreaterThan(0);
+      // Pets de démo habillés ; la nouvelle personne part avec les objets de départ.
+      expect(enc.incoming[0]?.from.pet.outfit).toEqual({ head: 'noeud', face: 'lunettes_coeur' });
+      expect(link?.other.pet.outfit).toEqual({ head: 'casquette', body: 'echarpe' });
+      expect(enc.suggestions.find((s) => s.user.displayName === 'Sasha')?.user.pet.outfit).toEqual({ head: 'cornes', toy: 'skate' });
+      const wardrobe = await me.api.pet.wardrobe();
+      expect(wardrobe.items.filter((i) => i.state === 'owned')).toHaveLength(8 + 3); // + objets du premier lien (avec Malo)
+      const view = await me.api.pet.get();
+      expect(view.pet.needs).toEqual(START_NEEDS);
+      expect(view.newItems).toEqual(['chapeau_fete', 'noeud_pap', 'bulle']);
     } finally {
       await world.close();
     }
