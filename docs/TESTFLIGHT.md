@@ -10,8 +10,9 @@ Compter 30 à 45 minutes la première fois, dont 15 à 20 de build chez Expo.
    Vérifier : `curl https://<ton-api>/health` répond `{"ok":true}`.
 2. **Indiquer son adresse à l'app** : dans `apps/mobile/eas.json`, remplacer `https://api.blowy.app` par l'URL réelle
    (profils `preview` et `production`).
-3. **Codes de connexion** : dans Supabase → Authentication → Emails, ouvrir le modèle « Magic Link » et y mettre
-   `{{ .Token }}` (le code à 6 chiffres). Sans SMTP personnalisé, Supabase limite l'envoi à quelques e-mails par heure :
+3. **Codes de connexion** : dans Supabase → Authentication → Emails, coller `supabase/templates/code.html`
+   (le code à 6 chiffres, `{{ .Token }}`) dans les modèles « Confirm signup » **et** « Magic Link » : le premier part
+   à la création du compte, le second aux connexions suivantes. Sans SMTP personnalisé, Supabase limite l'envoi à quelques e-mails par heure :
    suffisant pour un premier test, pas pour des testeurs. Brancher Resend en SMTP règle ça (`supabase/README.md`).
 
 ## 1. Relier le projet à Expo (une seule fois)
