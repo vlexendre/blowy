@@ -40,9 +40,41 @@ RENDER_RATIO = 0.9 (900×1000) · ART_RATIO: Record<ArtName, number>
 ```
 Corps entiers pour les grands affichages (`PetHero`, `SpeciesPicker` : `debout` par défaut), bustes pour les expressions.
 
+## Garde-robe (`src/assets/items.ts`, `src/assets/fit.ts`, `src/assets/fit.json`)
+Les 64 objets (`ITEM_IDS` du domaine) sont des détourés `assets/items/<id>.webp` (tailles variées).
+```ts
+itemImage(id: string): Src | undefined · hasItemImage(id): id is ItemId · type ItemId   // registre (require statiques)
+FIT_CANVAS = { width: 900, height: 1000 }                                              // toile de la pose debout
+placeItem(species, id): ItemPlacement | null       // { id, slot, left, top, width, height, rotate, scaleY, originX, originY, back } en px de la toile
+outfitLayers(species, outfit, slots?): { back: ItemPlacement[]; front: ItemPlacement[] }   // ordre : tenue, visage, tête, objet au sol
+hasOutfit(outfit): boolean                         // au moins un objet dessinable
+badgeFrame(species): { cx, cy, side }              // cadre du médaillon (tête + épaules)
+```
+**Placement piloté par les données** (`fit.json`, lu par `fit.ts` et par le script de calibration) :
+- `species.<s>.points` : ancres mesurées sur `<s>_debout.webp`, en `[x/900, y/1000]` : `headTop`, `crown` (ligne où reposent
+  les chapeaux, au-dessus des sourcils), `eyes` (centre des yeux), `eyeL`/`eyeR`, `nose`, `lip` (lèvre du haut), `mouth`, `cheeks`,
+  `neck` (juste sous la bouche : col des vêtements), `torso`, `ground`, `toy` (sol, à droite des pieds).
+- `species.<s>.sizes` : mesures en largeur/900 : `head` (largeur à la ligne des yeux), `crown`, `eyes` (étendue des deux yeux),
+  `eye`, `mouth`, `cheeks`, `neck`, `torso`, `body`. `badge` : `[cx, cy, côté]` du médaillon.
+- `items.<id>` : `anchor` (point), `size` (mesure), `w` (largeur = w × mesure), `pivot` (point de l'image posé sur l'ancre),
+  `dx`/`dy` (décalage en unités de la mesure), `rot` (degrés, horaire), `sy` (écrasement vertical), `z: 'back'` (derrière le pet :
+  ailes, cape, sac à dos, serre-têtes à oreilles/antennes/cornes, auréole), `ratio` (largeur/hauteur de l'image).
+- `overrides.<espèce>.<id>` : seulement quand c'est nécessaire (Gaston n'a qu'un œil : lunettes agrandies et centrées sur
+  l'œil, masque, cache-œil recentré ; la houppe de Nino : chapeaux un peu plus larges ; casque audio remonté chez Nino et Pia).
+
+Les vêtements (`sweat`, `salopette`, `teddy`, `tablier`, `bretelles`, `tutu`) partent du col (`neck`) et sont écrasés (`sy`)
+parce que ces pets sont surtout une tête : il n'y a que ~250 px entre la bouche et les pieds.
+
+Pour régler un objet : modifier `fit.json`, régénérer les planches (script Python/PIL hors dépôt qui applique exactement le même
+calcul : `W = w·M`, `P = ancre + (dx,dy)·M`, image posée par son `pivot`, puis `rotate` et `scaleY` autour du pivot) et vérifier
+la section « garde-robe » de `/dev/gallery`. Un objet ajouté au domaine doit être ajouté dans `items.ts` et `fit.json`
+(sinon il n'est pas dessiné).
+
 ## Types partagés (`src/types.ts`)
 ```ts
-PetLook = { name: string; species: Species; form?: PetForm; mood?: Mood }                 // ⊇ PublicPet
+PetLook = { name: string; species: Species; form?: PetForm; mood?: Mood; outfit?: Outfit } // ⊇ PublicPet
+// outfit : avec au moins un objet, Avatar / LinkRow / AvatarPair / MessageBubble / IncomingCard / SuggestionCard /
+// LinkTemplate montrent le médaillon habillé, PetHero le pet habillé. Sans objet : rendu inchangé.
 PersonLook = { displayName: string; pet: PetLook; face: FaceVisibility; avatarUrl: string | null }   // ⊇ Person
 type MessageAuthor = 'me' | 'other' | 'my_pet' | 'other_pet' | 'system'; type MessageKind = 'text' | 'photo' | 'event'
 MessageLook = { id: string; author: MessageAuthor; kind: MessageKind; body: string | null; mediaUrl: string | null; at: string }
@@ -53,6 +85,8 @@ MemoryDayLook = { day: string; myPhotoUrl: string | null; theirPhotoUrl: string 
 MemoryStatsLook = { messages: number; photos: number; daysTogether: number; bestStreak: number }
 SuggestionLook = { user: PersonLook; compatibility: number; intro: string; waved: boolean }
 IncomingLook = { from: PersonLook; compatibility: number; intro: string }
+type WardrobeItemState = 'owned' | 'locked' | 'premium'
+WardrobeItemLook = { id: string; slot: ItemSlot; state: WardrobeItemState; goal: { stat: string; have: number; need: number } | null }   // ⊇ WardrobeItem
 TitleSegment = { text: string; dim?: boolean }; type TitleContent = string | readonly TitleSegment[]   // « \n » = retour à la ligne
 ```
 Exports utilitaires : `alpha(hex, a)`, `extra`, `onGradient`.
@@ -61,7 +95,8 @@ Exports utilitaires : `alpha(hex, a)`, `extra`, `onGradient`.
 ### Atomes
 #### `Avatar` — `src/atoms/Avatar.tsx`
 ```ts
-AvatarProps = { size?: number; uri?: string | null; name?: string; pet?: PetLook; face?: FaceVisibility; blurred?: boolean; hidden?: boolean; pose?: PetPose; ring?: string; cutout?: boolean; dimmed?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+AvatarProps = { size?: number; uri?: string | null; name?: string; pet?: PetLook; face?: FaceVisibility; blurred?: boolean; hidden?: boolean; pose?: PetPose; ring?: string; cutout?: boolean; dimmed?: boolean; dressed?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// dressed (défaut vrai) : pet affiché + pose `face` + `pet.outfit` non vide + pas `blurred` → PetBadge (médaillon habillé)
 ```
 #### `Badge` — `src/atoms/Badge.tsx`
 ```ts
@@ -82,6 +117,12 @@ CardProps = { children?: ReactNode; tone?: 'panel' | 'raised' | 'outline'; highl
 ChipProps = { label: string; onPress?: () => void; selected?: boolean; tone?: ChipTone; left?: ReactNode; size?: 'sm' | 'md' | 'lg'; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 type ChipTone = 'glass' | 'accent' | 'dark' | 'light' | 'coral' | 'rose' | 'orange' | 'violet'
 ```
+#### `DressedPet` — `src/atoms/DressedPet.tsx`
+```ts
+DressedPetProps = { species: Species; outfit?: Outfit | null; size: number; mood?: Mood; pose?: PetPose; animated?: boolean; slots?: readonly ItemSlot[]; delay?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// pose `debout` + objets de fit.json ; size = largeur de la toile (hauteur size/0,9) ; mood/pose seulement sans objet.
+// Ailes, objet au sol et chapeaux hauts débordent un peu de la boîte (pas de rognage).
+```
 #### `Divider` — `src/atoms/Divider.tsx`
 ```ts
 DividerProps = { inset?: keyof typeof space; vertical?: boolean; color?: string; style?: StyleProp<ViewStyle>; }
@@ -101,9 +142,18 @@ IconProps = { name: IconName; size?: number; accessibilityLabel?: string; style?
 IconButtonProps = { label: string; onPress?: () => void; glyph?: GlyphName; icon?: ReactNode; variant?: IconButtonVariant; size?: number; badge?: number; disabled?: boolean; style?: StyleProp<ViewStyle>; }
 type IconButtonVariant = 'glass' | 'accent' | 'dark' | 'white' | 'plain'
 ```
+#### `ItemImage` — `src/atoms/ItemImage.tsx`
+```ts
+ItemImageProps = { id: string; size?: number; accessibilityLabel?: string; style?: StyleProp<ImageStyle>; }
+```
 #### `Panel` — `src/atoms/Panel.tsx`
 ```ts
 PanelProps = { children?: ReactNode; gradient?: GradientName; radius?: 'md' | 'lg' | 'xl'; padding?: 'none' | 'md' | 'lg' | 'xl'; overflow?: boolean; ink?: string; style?: StyleProp<ViewStyle>; }
+```
+#### `PetBadge` — `src/atoms/PetBadge.tsx`
+```ts
+PetBadgeProps = { species: Species; outfit?: Outfit | null; size?: number; background?: string; ring?: string; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// disque : recadrage tête + épaules (badgeFrame) du DressedPet, sans l'objet au sol
 ```
 #### `PetImage` — `src/atoms/PetImage.tsx`
 ```ts
@@ -153,6 +203,11 @@ AvatarPairProps = { first: Omit<AvatarProps, 'size' | 'cutout'>; second: Omit<Av
 BannerProps = { text: string; title?: string; tone?: BannerTone; actionLabel?: string; onAction?: () => void; onClose?: () => void; closeLabel?: string; style?: StyleProp<ViewStyle>; }
 type BannerTone = 'error' | 'info' | 'success'
 ```
+#### `CareButton` — `src/molecules/CareButton.tsx`
+```ts
+CareButtonProps = { label: string; icon: IconName | ReactNode; onPress?: () => void; refused?: boolean; refusedLabel?: string; onRefusedPress?: () => void; loading?: boolean; disabled?: boolean; size?: number; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+// rebond + haptique `medium` ; refusé : estompé, un appui le fait « non de la tête » (haptique `warning`)
+```
 #### `ChoiceCard` — `src/molecules/ChoiceCard.tsx`
 ```ts
 ChoiceCardProps = { title: string; caption?: string; icon?: IconName | ReactNode; gradient?: GradientName; selected?: boolean; faded?: boolean; disabled?: boolean; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
@@ -181,6 +236,11 @@ HeaderProps = { onBack?: () => void; backLabel?: string; backGlyph?: 'back' | 'c
 ```ts
 HeartsProps = { lives: number; max?: number; size?: number; ghost?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 ```
+#### `ItemTile` — `src/molecules/ItemTile.tsx`
+```ts
+ItemTileProps = { id: string; label: string; state: ItemTileState; goalText?: string; progress?: { have: number; need: number }; premiumLabel?: string; newLabel?: string; showLabel?: boolean; onPress?: () => void; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+type ItemTileState = 'owned' | 'worn' | 'locked' | 'premium'
+```
 #### `LevelPill` — `src/molecules/LevelPill.tsx`
 ```ts
 LevelPillProps = { label: string; tone?: 'accent' | 'glass'; size?: 'sm' | 'md'; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
@@ -192,6 +252,11 @@ ListRowProps = { title: string; subtitle?: string; onPress?: () => void; destruc
 #### `MessageBubble` — `src/molecules/MessageBubble.tsx`
 ```ts
 MessageBubbleProps = { message: Pick<MessageLook, 'author' | 'kind' | 'body' | 'mediaUrl'>; name?: string; pet?: PetLook; person?: Pick<PersonLook, 'avatarUrl' | 'face' | 'pet' | 'displayName'>; continued?: boolean; photoLabel?: string; onPhotoPress?: () => void; lockedPhotoLabel?: string; }
+```
+#### `NeedMeter` — `src/molecules/NeedMeter.tsx`
+```ts
+NeedMeterProps = { label: string; value: number; icon?: IconName | ReactNode; lowText?: string; lowAt?: number; midAt?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+needColor(value, lowAt = 40, midAt = 65): string     // jaune → orange → corail (pulsation sous lowAt)
 ```
 #### `OtpInput` — `src/molecules/OtpInput.tsx`
 ```ts
@@ -206,6 +271,10 @@ type PhotoTileState = 'photo' | 'pending' | 'locked' | 'empty'
 ```ts
 SegmentedTabItem<K extends string = string> = { key: K; label: string; badge?: boolean; }
 SegmentedTabsProps<K extends string = string> = { items: readonly SegmentedTabItem<K>[]; activeKey: K; onChange: (key: K) => void; style?: StyleProp<ViewStyle>; }
+```
+#### `SlotTabs` — `src/molecules/SlotTabs.tsx`
+```ts
+SlotTabsProps = { labels: Record<ItemSlot, string>; active: ItemSlot; onChange: (slot: ItemSlot) => void; outfit?: Outfit; badges?: Partial<Record<ItemSlot, boolean>>; slots?: readonly ItemSlot[]; style?: StyleProp<ViewStyle>; }
 ```
 #### `SpeechBubble` — `src/molecules/SpeechBubble.tsx`
 ```ts
@@ -233,6 +302,11 @@ TabBarItemProps = { label: string; glyph: GlyphName; active?: boolean; badge?: n
 BottomTabItem<K extends string = string> = { key: K; label: string; glyph: GlyphName; badge?: number; }
 BottomTabBarProps<K extends string = string> = { items: readonly BottomTabItem<K>[]; activeKey: K; onPress: (key: K) => void; onLongPress?: (key: K) => void; floating?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 const TAB_BAR_SPACE = size.tabBar + space.lg + space.sm
+```
+#### `CareBar` — `src/organisms/CareBar.tsx`
+```ts
+CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>; available: Record<CareAction, boolean>; onCare: (action: CareAction) => void; onRefused?: (action: CareAction) => void; busy?: CareAction | null; showRefused?: boolean; icons?: Partial<Record<CareAction, IconName | ReactNode>>; style?: StyleProp<ViewStyle>; }
+// labels : careLabel tel quel ; available : canCare(needs, action)
 ```
 #### `ChallengeCard` — `src/organisms/ChallengeCard.tsx`
 ```ts
@@ -280,9 +354,25 @@ type WeekDayState = 'done' | 'half' | 'none'
 ```ts
 MemoryGridProps = { days: readonly MemoryDayLook[]; stats?: MemoryStatsLook; statLabels?: Record<keyof MemoryStatsLook, string>; dayLabel: (day: string) => string; blurred?: boolean; columns?: number; onDayPress?: (day: MemoryDayLook) => void; emptyText?: string; }
 ```
+#### `NeedsPanel` — `src/organisms/NeedsPanel.tsx`
+```ts
+NeedsPanelProps = { needs: Needs; labels: Record<NeedKey, { name: string; low: string }>; title?: string; hint?: string; okText?: string; urgent?: NeedKey | null; icons?: Partial<Record<NeedKey, IconName | ReactNode>>; }
+// labels : needLabel tel quel ; phrase urgente = labels[urgentNeed(needs)].low, sinon okText
+```
+#### `OutfitPreview` — `src/organisms/OutfitPreview.tsx`
+```ts
+OutfitPreviewProps = { species: Species; outfit: Outfit; name?: string; slotLabels: Record<ItemSlot, string>; itemLabels: Record<string, string>; emptyLabel: string; activeSlot?: ItemSlot; onSlotPress?: (slot: ItemSlot) => void; gradient?: GradientName; petLabel?: string; }
+```
 #### `PetHero` — `src/organisms/PetHero.tsx`
 ```ts
 PetHeroProps = { pet: PetLook; title: TitleContent; moodLabel?: string; formLabel?: string; speech?: string; gradient?: GradientName; pose?: PetPose; showForm?: boolean; onPetPress?: () => void; petLabel?: string; }
+// pet.outfit non vide (et pas showForm) → DressedPet à la place de PetImage
+```
+#### `PetStage` — `src/organisms/PetStage.tsx`
+```ts
+PetStageProps = { pet: PetLook; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; reaction?: PetReaction | null; reactionKey?: number; sleepGlyph?: string; gradient?: GradientName; petSize?: number; onPetPress?: () => void; petLabel?: string; style?: StyleProp<ViewStyle>; }
+type PetReaction = CareAction   // feed : rebond + étoiles · play : sauts + confettis · nap : tassement + zzz · cuddle : écrasement + cœurs
+// reactionKey : à incrémenter pour rejouer la même réaction ; respiration au repos ; tout coupé si « réduire les animations »
 ```
 #### `PlanPicker` — `src/organisms/PlanPicker.tsx`
 ```ts
@@ -310,6 +400,20 @@ SuggestionCardProps = { suggestion: SuggestionLook; ownerLabel: string; viaLabel
 ```ts
 TodayCardLabels = { title: TitleContent; streakUnit: string; hint: string; mine: { label?: string; badge?: string; emptyTitle: string; emptyCaption?: string }; theirs: { waitingTitle: string; waitingCaption?: string; lockedTitle: string; lockedCaption?: string; label?: string }; cta: string; }
 TodayCardProps = { today: TodayLook; otherPet: PetLook; streak: number; labels: TodayCardLabels; onCta?: () => void; ctaLoading?: boolean; onMinePress?: () => void; gradient?: GradientName; }
+```
+#### `UnlockSheet` — `src/organisms/UnlockSheet.tsx`
+```ts
+UnlockSheetItem = { id: string; name: string; }
+UnlockSheetProps = { visible: boolean; items: readonly UnlockSheetItem[]; title: TitleContent; kicker: string; text?: string; wearLabel?: string; onWear?: (id: string) => void; closeLabel: string; onClose: () => void; }
+```
+#### `UnlockToast` — `src/organisms/UnlockToast.tsx`
+```ts
+UnlockToastProps = { visible: boolean; itemId: string; name: string; kicker: string; text?: string; onPress?: () => void; onClose?: () => void; closeLabel?: string; style?: StyleProp<ViewStyle>; }
+```
+#### `WardrobeGrid` — `src/organisms/WardrobeGrid.tsx`
+```ts
+WardrobeGridProps = { items: readonly WardrobeItemLook[]; slot?: ItemSlot; worn?: string | null; itemLabels: Record<string, string>; goalLabels: Record<string, (n: number) => string>; premiumLabel: string; removeLabel?: string; onRemove?: () => void; onSelect?: (item: WardrobeItemLook) => void; newIds?: readonly string[]; newLabel?: string; columns?: number; }
+// itemLabels : itemLabel ; goalLabels : statGoalLabel (appelé avec goal.need)
 ```
 #### `WordsShareCard` — `src/organisms/WordsShareCard.tsx`
 ```ts
@@ -339,7 +443,9 @@ TabTemplateProps = { brand?: string; title?: TitleContent; right?: ReactNode; ch
 
 ## Galerie
 `apps/mobile/app/dev/gallery.tsx` (route `/dev/gallery`) montre chaque composant avec des données d'exemple
-(toi + Nino, Léa + Suzie, Malo + Gaston, Sasha + Pia).
+(toi + Nino, Léa + Suzie, Malo + Gaston, Sasha + Pia ; Nino, Suzie et Pia portent une tenue, Gaston et Bob non).
+La section « SOINS & GARDE-ROBE » (en tête) contient une démo interactive (soins → réactions, garde-robe → tenue), chaque
+état des composants de soin et de garde-robe, et la matrice des 64 objets sur les 4 pets.
 
 ## Exemple : barre d'onglets expo-router
 ```tsx

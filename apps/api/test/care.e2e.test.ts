@@ -1,3 +1,4 @@
+import { careLabel } from '@blowy/content';
 /** Soins du pet (besoins, forme, jours de soin), garde-robe (objets gagnés, tenue) et conséquences sur les rencontres. */
 import type { ApiClient } from '@blowy/api-client';
 import { ITEM_IDS, START_NEEDS } from '@blowy/domain';
@@ -167,7 +168,7 @@ describe('un pet qui boude ne sort plus', () => {
     world.clock.advanceHours(30);
     expect((await carol.api.pet.get()).pet.needs).toEqual({ hunger: 0, energy: 0, mood: 0 });
     // Trop fatigué pour jouer.
-    expect(await apiError(carol.api.pet.care('play'))).toEqual({ code: 'already_done', message: 'trop fatigué pour jouer.' });
+    expect(await apiError(carol.api.pet.care('play'))).toEqual({ code: 'already_done', message: careLabel.play?.refused });
   });
 
   it('pas de suggestions, coucou refusé, coucous reçus toujours visibles et acceptables ; repart après des soins', async () => {

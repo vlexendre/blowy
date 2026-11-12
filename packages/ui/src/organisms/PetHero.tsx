@@ -1,6 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
+import { hasOutfit } from '../assets/fit';
 import type { PetPose } from '../assets/pets';
+import { DressedPet } from '../atoms/DressedPet';
 import { Chip } from '../atoms/Chip';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
@@ -25,16 +27,18 @@ export interface PetHeroProps {
   gradient?: GradientName;
   /** Pose du grand pet. Défaut `debout` (corps entier) ; une humeur donne un buste. */
   pose?: PetPose;
-  /** Montre la forme d'évolution (`pet.form`) plutôt que la pose. */
+  /** Montre la forme d'évolution (`pet.form`) plutôt que la pose (et la tenue). */
   showForm?: boolean;
   onPetPress?: () => void;
   petLabel?: string;
 }
 
 
-/** Grand pet sur le panneau de son espèce, avec son nom en Anton. */
+/** Grand pet sur le panneau de son espèce, avec son nom en Anton. Habillé quand `pet.outfit` contient un objet. */
 export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, pose = 'debout', showForm, onPetPress, petLabel }: PetHeroProps) {
-  const image = (
+  const image = hasOutfit(pet.outfit) && !showForm ? (
+    <DressedPet species={pet.species} outfit={pet.outfit} size={196} animated accessibilityLabel={petLabel ?? pet.name} />
+  ) : (
     <PetImage species={pet.species} mood={pose} form={showForm ? pet.form : undefined} size={196} animation="breathe" accessibilityLabel={petLabel ?? pet.name} />
   );
   return (

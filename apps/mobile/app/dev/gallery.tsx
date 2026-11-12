@@ -2,8 +2,24 @@
  * Galerie de développement du design system (@blowy/ui) : chaque atome, molécule, organisme et gabarit
  * avec des données d'exemple réalistes. Route : /dev/gallery.
  */
-import { eventLabel, formLabel, gaugeLabel, levelLabel } from '@blowy/content';
-import { type GaugeKey, type Gauges, type Species } from '@blowy/domain';
+import { careLabel, eventLabel, formLabel, gaugeLabel, itemLabel, levelLabel, needLabel, shapeLabel, slotLabel, statGoalLabel } from '@blowy/content';
+import {
+  applyCare,
+  CARE_ACTIONS,
+  type CareAction,
+  canCare,
+  earnedItems,
+  type GaugeKey,
+  type Gauges,
+  ITEM_SLOTS,
+  ITEMS,
+  type ItemSlot,
+  itemProgress,
+  type Needs,
+  type Outfit,
+  shapeOf,
+  type Species,
+} from '@blowy/domain';
 import { color, radius, space } from '@blowy/tokens';
 import {
   alpha,
@@ -15,6 +31,8 @@ import {
   type BottomTabItem,
   Button,
   Card,
+  CareBar,
+  CareButton,
   ChallengeCard,
   ChatThread,
   Chip,
@@ -23,6 +41,7 @@ import {
   type ComposerTone,
   DayChip,
   Divider,
+  DressedPet,
   EmptyState,
   EvolutionTimeline,
   FeatureRow,
@@ -37,6 +56,8 @@ import {
   ICON_NAMES,
   IconButton,
   IncomingCard,
+  ItemImage,
+  ItemTile,
   LevelLadder,
   LevelPill,
   LinkRow,
@@ -47,13 +68,19 @@ import {
   MemoryGrid,
   type MessageLook,
   MessageBubble,
+  NeedMeter,
+  NeedsPanel,
   OnboardingTemplate,
   OtpInput,
+  OutfitPreview,
   Panel,
   type PersonLook,
   type PetEventLook,
+  PetBadge,
   PetHero,
   PetImage,
+  type PetReaction,
+  PetStage,
   type PetLook,
   PhotoTile,
   PlanPicker,
@@ -63,6 +90,7 @@ import {
   SegmentedTabs,
   SettingsSection,
   SheetTemplate,
+  SlotTabs,
   Skeleton,
   Spacer,
   SpeciesPicker,
@@ -79,18 +107,22 @@ import {
   Title,
   TodayCard,
   type TodayCardLabels,
+  UnlockSheet,
+  UnlockToast,
+  WardrobeGrid,
+  type WardrobeItemLook,
   WordsShareCard,
 } from '@blowy/ui';
 import { type ReactNode, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 // ── Données d'exemple ────────────────────────────────────────────────────────
-const nino: PetLook = { name: 'Nino', species: 'nino', form: 'joueur', mood: 'joie' };
+const nino: PetLook = { name: 'Nino', species: 'nino', form: 'joueur', mood: 'joie', outfit: { head: 'casquette', face: 'lunettes_rondes', body: 'echarpe', toy: 'ballon' } };
 const photo = (seed: string): string => `https://picsum.photos/seed/${seed}/400/500`;
 
-const lea: PersonLook = { displayName: 'Léa', pet: { name: 'Suzie', species: 'suzie', form: 'tendre', mood: 'joie' }, face: 'hidden', avatarUrl: photo('lea') };
+const lea: PersonLook = { displayName: 'Léa', pet: { name: 'Suzie', species: 'suzie', form: 'tendre', mood: 'joie', outfit: { head: 'couronne', face: 'joues_roses', body: 'collier_perles' } }, face: 'hidden', avatarUrl: photo('lea') };
 const malo: PersonLook = { displayName: 'Malo', pet: { name: 'Gaston', species: 'gaston', form: 'joueur', mood: 'neutre' }, face: 'blurred', avatarUrl: photo('malo') };
-const sasha: PersonLook = { displayName: 'Sasha', pet: { name: 'Pia', species: 'pia', form: 'piquant', mood: 'salut' }, face: 'hidden', avatarUrl: null };
+const sasha: PersonLook = { displayName: 'Sasha', pet: { name: 'Pia', species: 'pia', form: 'piquant', mood: 'salut', outfit: { head: 'cornes', face: 'lunettes_etoile', toy: 'micro' } }, face: 'hidden', avatarUrl: null };
 const tom: PersonLook = { displayName: 'Tom', pet: { name: 'Bob', species: 'nino', form: 'equilibre', mood: 'triste' }, face: 'hidden', avatarUrl: null };
 
 const links: { link: LinkLook; time: string; author: string; level: string; isNew?: boolean }[] = [
@@ -177,6 +209,183 @@ function Frame({ height, children }: { height: number; children: ReactNode }) {
   return <View style={[styles.frame, { height }]}>{children}</View>;
 }
 
+// ── Soins et garde-robe ──────────────────────────────────────────────────────
+const SPECIES: readonly Species[] = ['nino', 'suzie', 'gaston', 'pia'];
+const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1 };
+const earned = new Set(earnedItems(demoStats));
+const wardrobe: WardrobeItemLook[] = ITEMS.map((i) => {
+  const p = itemProgress(i, demoStats);
+  return {
+    id: i.id,
+    slot: i.slot,
+    state: i.unlock.kind === 'premium' ? 'premium' : earned.has(i.id) ? 'owned' : 'locked',
+    goal: i.unlock.kind === 'stat' && p ? { stat: i.unlock.stat, have: p.have, need: p.need } : null,
+  };
+});
+const looks: Record<Species, Outfit> = {
+  nino: { head: 'bob', face: 'lunettes_coeur', body: 'sweat', toy: 'skate' },
+  suzie: { head: 'lapin', face: 'taches_rousseur', body: 'tutu', toy: 'doudou' },
+  gaston: { head: 'pirate', face: 'cache_oeil', body: 'cape', toy: 'cadeau' },
+  pia: { head: 'sorcier', face: 'monocle', body: 'ailes', toy: 'potion' },
+};
+const careIcons = { feed: <ItemImage id="gateau" size={38} />, play: <ItemImage id="ballon" size={36} />, nap: <ItemImage id="masque_nuit" size={40} />, cuddle: <Icon name="coeurs" size={38} /> };
+
+function CareDemo() {
+  const [needs, setNeeds] = useState<Needs>({ hunger: 32, energy: 58, mood: 88 });
+  const [reaction, setReaction] = useState<PetReaction | null>(null);
+  const [key, setKey] = useState(0);
+  const [outfit, setOutfit] = useState<Outfit>({ head: 'casquette', face: 'lunettes_rondes', body: 'echarpe', toy: 'ballon' });
+  const [slot, setSlot] = useState<ItemSlot>('head');
+  const [toast, setToast] = useState(true);
+  const [unlock, setUnlock] = useState(false);
+  const shape = shapeOf(needs);
+  const available = Object.fromEntries(CARE_ACTIONS.map((a) => [a, canCare(needs, a)])) as Record<CareAction, boolean>;
+  const care = (a: CareAction) => {
+    setNeeds((n) => applyCare(n, a));
+    setReaction(a);
+    setKey((k) => k + 1);
+  };
+  return (
+    <>
+      <Item name="PetStage · NeedsPanel · CareBar (interactif)">
+        <PetStage
+          pet={{ name: 'Nino', species: 'nino', outfit }}
+          shape={shape}
+          shapeLabel={shapeLabel[shape]?.title}
+          speech={reaction ? careLabel[reaction]?.done : 'j’ai un petit creux…'}
+          reaction={reaction}
+          reactionKey={key}
+        />
+        <NeedsPanel needs={needs} labels={needLabel} title="ses besoins" okText="il est comblé." />
+        <CareBar labels={careLabel} available={available} onCare={care} />
+        <Button label="remettre à plat" size="sm" variant="ghost" onPress={() => setNeeds({ hunger: 12, energy: 10, mood: 25 })} />
+      </Item>
+      <Item name="OutfitPreview · SlotTabs · WardrobeGrid (interactif)">
+        <OutfitPreview species="nino" name="Nino" outfit={outfit} slotLabels={slotLabel} itemLabels={itemLabel} emptyLabel="rien" activeSlot={slot} onSlotPress={setSlot} />
+        <SlotTabs labels={slotLabel} active={slot} onChange={setSlot} outfit={outfit} badges={{ toy: true }} />
+        <WardrobeGrid
+          items={wardrobe}
+          slot={slot}
+          worn={outfit[slot] ?? null}
+          itemLabels={itemLabel}
+          goalLabels={statGoalLabel}
+          premiumLabel="bientôt"
+          removeLabel="retirer"
+          onRemove={() => setOutfit((o) => ({ ...o, [slot]: undefined }))}
+          onSelect={(it) => {
+            if (it.state === 'owned') setOutfit((o) => ({ ...o, [it.slot]: it.id }));
+          }}
+          newIds={['tasse']}
+          newLabel="nouveau !"
+        />
+      </Item>
+      <Item name="UnlockToast · UnlockSheet">
+        <UnlockToast visible={toast} itemId="tasse" name={itemLabel.tasse ?? 'tasse'} kicker="nouveau !" text="rangée dans sa garde-robe" onPress={() => setUnlock(true)} onClose={() => setToast(false)} />
+        {!toast ? <Button label="revoir le toast" size="sm" variant="ghost" onPress={() => setToast(true)} /> : null}
+        <Button label="ouvrir la fête" variant="ghost" onPress={() => setUnlock(true)} />
+        <UnlockSheet
+          visible={unlock}
+          items={[{ id: 'tasse', name: itemLabel.tasse ?? 'tasse' }, { id: 'bonnet', name: itemLabel.bonnet ?? 'bonnet' }]}
+          title={[{ text: 'TU AS GAGNÉ\n' }, { text: 'DU STYLE', dim: true }]}
+          kicker="nouveau !"
+          text="ils sont rangés dans sa garde-robe."
+          wearLabel="lui mettre"
+          onWear={(id) => {
+            setOutfit((o) => ({ ...o, toy: id }));
+            setUnlock(false);
+          }}
+          closeLabel="plus tard"
+          onClose={() => setUnlock(false)}
+        />
+      </Item>
+    </>
+  );
+}
+
+function CareLevel() {
+  const noop = () => undefined;
+  return (
+    <Level title="SOINS & GARDE-ROBE">
+      <CareDemo />
+      <Item name="DressedPet · tenues complètes">
+        <View style={styles.row}>
+          {SPECIES.map((sp) => (
+            <DressedPet key={sp} species={sp} outfit={looks[sp]} size={78} animated delay={SPECIES.indexOf(sp) * 200} accessibilityLabel={sp} />
+          ))}
+        </View>
+        <View style={styles.row}>
+          {SPECIES.map((sp) => (
+            <DressedPet key={sp} species={sp} size={78} mood="joie" />
+          ))}
+        </View>
+      </Item>
+      <Item name="PetBadge · Avatar habillé">
+        <View style={styles.row}>
+          {SPECIES.map((sp) => (
+            <PetBadge key={sp} species={sp} outfit={looks[sp]} size={56} />
+          ))}
+          <PetBadge species="suzie" outfit={lea.pet.outfit} size={56} ring={color.accent} />
+        </View>
+        <View style={styles.row}>
+          <Avatar pet={nino} hidden size={44} />
+          <Avatar pet={lea.pet} uri={lea.avatarUrl} face="hidden" size={44} />
+          <Avatar pet={sasha.pet} hidden size={32} />
+          <Avatar pet={malo.pet} hidden size={44} />
+          <Avatar pet={nino} hidden dressed={false} size={44} />
+        </View>
+      </Item>
+      <Item name="NeedMeter">
+        <NeedMeter label="faim" value={85} icon={<ItemImage id="gateau" size={28} />} lowText="il a faim" />
+        <NeedMeter label="énergie" value={52} icon="eclair" lowText="il tombe de sommeil" />
+        <NeedMeter label="humeur" value={18} icon="coeurs" lowText="il s’ennuie" />
+      </Item>
+      <Item name="CareButton">
+        <View style={styles.row}>
+          <CareButton label="nourrir" icon={careIcons.feed} onPress={noop} />
+          <CareButton label="jouer" icon={careIcons.play} refused refusedLabel="trop fatigué pour jouer." onPress={noop} />
+          <CareButton label="sieste" icon={careIcons.nap} loading onPress={noop} />
+          <CareButton label="câlin" icon={careIcons.cuddle} disabled onPress={noop} />
+        </View>
+      </Item>
+      <Item name="ItemTile">
+        <View style={styles.row}>
+          <ItemTile id="bob" label="bob" state="owned" onPress={noop} />
+          <ItemTile id="casquette" label="casquette" state="worn" onPress={noop} />
+          <ItemTile id="toque" label="toque" state="locked" goalText="occupe-toi de lui 10 jours" progress={{ have: 4, need: 10 }} onPress={noop} />
+        </View>
+        <View style={styles.row}>
+          <ItemTile id="aureole" label="auréole" state="premium" premiumLabel="bientôt" onPress={noop} />
+          <ItemTile id="tasse" label="tasse" state="owned" newLabel="nouveau !" onPress={noop} />
+          <ItemTile id="couronne" label="couronne" state="locked" goalText="atteins le niveau 7 dans un lien" progress={{ have: 3, need: 7 }} />
+        </View>
+      </Item>
+      <Item name="NeedsPanel · tout va bien">
+        <NeedsPanel needs={{ hunger: 90, energy: 75, mood: 81 }} labels={needLabel} title="ses besoins" okText="il est comblé." />
+      </Item>
+      <Item name="PetStage · boude">
+        <PetStage pet={{ name: 'Gaston', species: 'gaston', outfit: looks.gaston }} shape="boude" shapeLabel={shapeLabel.boude?.title} />
+      </Item>
+      <Item name="Garde-robe · les 64 objets sur les 4 pets">
+        {ITEM_SLOTS.map((sl) => (
+          <View key={sl} style={styles.wardrobe}>
+            <Title text={slotLabel[sl] ?? sl} variant="h3" />
+            {ITEMS.filter((i) => i.slot === sl).map((i) => (
+              <View key={i.id} style={styles.fitRow}>
+                <Text variant="bodyBold" size={11} muted numberOfLines={2} style={styles.fitName}>
+                  {itemLabel[i.id] ?? i.id}
+                </Text>
+                {SPECIES.map((sp) => (
+                  <DressedPet key={sp} species={sp} outfit={{ [sl]: i.id }} size={66} />
+                ))}
+              </View>
+            ))}
+          </View>
+        ))}
+      </Item>
+    </Level>
+  );
+}
+
 export default function Gallery() {
   const [chip, setChip] = useState('drôle');
   const [tab, setTab] = useState<LinkTab>('chat');
@@ -197,6 +406,7 @@ export default function Gallery() {
 
   return (
     <ScreenTemplate header={<Header title="Design system" subtitle="@blowy/ui · galerie" />}>
+      <CareLevel />
       <Level title="ATOMES">
         <Item name="Text">
           <Text variant="hero">hero</Text>
@@ -769,4 +979,7 @@ const styles = StyleSheet.create({
   thread: { gap: space.sm },
   frame: { borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: color.line, backgroundColor: color.night },
   linkBody: { paddingTop: space.md },
+  wardrobe: { gap: space.xs },
+  fitRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingVertical: space.xs, borderBottomWidth: 1, borderBottomColor: color.line },
+  fitName: { width: 64 },
 });

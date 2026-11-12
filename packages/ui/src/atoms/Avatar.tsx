@@ -2,9 +2,11 @@ import type { FaceVisibility } from '@blowy/domain';
 import { Image } from 'expo-image';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
+import { hasOutfit } from '../assets/fit';
 import { type PetPose, petImage } from '../assets/pets';
 import { color, opacity, radius, size as sizes, speciesColor } from '../theme';
 import type { PetLook } from '../types';
+import { PetBadge } from './PetBadge';
 import { Text } from './Text';
 
 export interface AvatarProps {
@@ -28,19 +30,24 @@ export interface AvatarProps {
   /** Liseré nuit seul (avatars superposés). */
   cutout?: boolean;
   dimmed?: boolean;
+  /** Montre le pet habillé (médaillon) quand `pet.outfit` contient un objet et que la pose est `face`. Défaut vrai. */
+  dressed?: boolean;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Disque : photo (nette ou floue), visage de pet sur sa couleur, ou initiale. */
-export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose = 'face', ring, cutout, dimmed, accessibilityLabel, style }: AvatarProps) {
+export function Avatar({ size = 44, uri, name, pet, face, blurred, hidden, pose = 'face', ring, cutout, dimmed, dressed = true, accessibilityLabel, style }: AvatarProps) {
   const isHidden = hidden ?? face === 'hidden';
   const isBlurred = blurred ?? face === 'blurred';
   const showPet = !!pet && (isHidden || !uri);
   const bg = showPet && pet ? speciesColor[pet.species] : color.card;
   const label = accessibilityLabel ?? name ?? pet?.name;
+  const showDressed = showPet && !!pet && dressed && pose === 'face' && !blurred && hasOutfit(pet.outfit);
   const content =
-    showPet && pet ? (
+    showDressed && pet ? (
+      <PetBadge species={pet.species} outfit={pet.outfit} size={size} />
+    ) : showPet && pet ? (
       <Image source={petImage(pet.species, pose)} contentFit="cover" blurRadius={blurred ? Math.round(size / 6) : 0} style={styles.fill} />
     ) : uri ? (
       <Image source={{ uri }} contentFit="cover" blurRadius={isBlurred ? Math.round(size / 4) : 0} transition={150} style={styles.fill} />

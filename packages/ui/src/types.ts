@@ -3,7 +3,7 @@
  * (Pet, PublicPet, Person, Link, Message, Suggestion, Incoming, Memories, PetEvent) sans en dépendre :
  * un écran peut passer l'objet du contrat tel quel.
  */
-import type { FaceVisibility, Gauges, LinkStatus, Mood, PetEventKind, PetForm, Species } from '@blowy/domain';
+import type { FaceVisibility, Gauges, ItemSlot, LinkStatus, Mood, Outfit, PetEventKind, PetForm, Species } from '@blowy/domain';
 
 /** Compatible avec `PublicPet` (et `Pet`, dont `mood` est absent). */
 export interface PetLook {
@@ -11,6 +11,8 @@ export interface PetLook {
   species: Species;
   form?: PetForm;
   mood?: Mood;
+  /** Tenue portée (`PublicPet.outfit`) : quand elle contient un objet, avatars et héros montrent le pet habillé. */
+  outfit?: Outfit;
 }
 
 /** Compatible avec `Person`. */
@@ -89,6 +91,15 @@ export interface IncomingLook {
   from: PersonLook;
   compatibility: number;
   intro: string;
+}
+
+/** Compatible avec `WardrobeItem` : `owned` (dans la garde-robe), `locked` (à gagner), `premium` (à acheter). */
+export type WardrobeItemState = 'owned' | 'locked' | 'premium';
+export interface WardrobeItemLook {
+  id: string;
+  slot: ItemSlot;
+  state: WardrobeItemState;
+  goal: { stat: string; have: number; need: number } | null;
 }
 
 /** Segment d'un titre Anton : `dim` rend la partie estompée des maquettes. */

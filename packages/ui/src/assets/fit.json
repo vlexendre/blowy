@@ -1,4 +1,11 @@
 {
+ "$doc": [
+  "Habillage des pets (pose debout, toile 900x1000). Lu par src/assets/fit.ts ET par le script de calibration.",
+  "species.<s>.points : ancres [x/900, y/1000] ; species.<s>.sizes : mesures (largeur/900) ; badge : [cx, cy, c\u00f4t\u00e9] du m\u00e9daillon.",
+  "items.<id> : anchor (point), size (mesure), w (largeur = w x mesure), pivot [x,y] (point de l'image pos\u00e9 sur l'ancre),",
+  "dx/dy (d\u00e9calage en unit\u00e9s de la mesure), rot (degr\u00e9s, sens horaire), sy (\u00e9crasement vertical), z 'back' = derri\u00e8re le pet, ratio = largeur/hauteur de l'image.",
+  "overrides.<esp\u00e8ce>.<id> : champs remplac\u00e9s pour une esp\u00e8ce (Gaston n'a qu'un \u0153il, la houppe de Nino\u2026)."
+ ],
  "canvas": [
   900,
   1000
@@ -39,8 +46,8 @@
      0.585
     ],
     "neck": [
-     0.5,
-     0.715
+     0.5022,
+     0.695
     ],
     "torso": [
      0.5,
@@ -69,7 +76,12 @@
     "neck": 0.8667,
     "torso": 0.7778,
     "body": 0.8722
-   }
+   },
+   "badge": [
+    0.5056,
+    0.385,
+    0.8556
+   ]
   },
   "suzie": {
    "points": {
@@ -107,7 +119,7 @@
     ],
     "neck": [
      0.5056,
-     0.65
+     0.64
     ],
     "torso": [
      0.5,
@@ -136,7 +148,12 @@
     "neck": 0.8311,
     "torso": 0.7222,
     "body": 0.8333
-   }
+   },
+   "badge": [
+    0.5056,
+    0.37,
+    0.8333
+   ]
   },
   "gaston": {
    "points": {
@@ -173,8 +190,8 @@
      0.628
     ],
     "neck": [
-     0.5,
-     0.72
+     0.5022,
+     0.69
     ],
     "torso": [
      0.5,
@@ -203,7 +220,12 @@
     "neck": 0.8722,
     "torso": 0.7222,
     "body": 0.8889
-   }
+   },
+   "badge": [
+    0.5056,
+    0.415,
+    0.8444
+   ]
   },
   "pia": {
    "points": {
@@ -241,7 +263,7 @@
     ],
     "neck": [
      0.5,
-     0.75
+     0.742
     ],
     "torso": [
      0.5,
@@ -270,7 +292,12 @@
     "neck": 0.7222,
     "torso": 0.5778,
     "body": 0.8889
-   }
+   },
+   "badge": [
+    0.5,
+    0.465,
+    0.8
+   ]
   }
  },
  "items": {
@@ -607,174 +634,188 @@
   },
   "echarpe": {
    "anchor": "neck",
-   "size": "neck",
+   "size": "torso",
    "w": 0.7,
    "pivot": [
     0.5,
-    0.2
+    0.08
    ],
-   "ratio": 0.8577
+   "ratio": 0.8577,
+   "sy": 0.6
   },
   "bandana": {
    "anchor": "neck",
-   "size": "neck",
-   "w": 0.6,
+   "size": "torso",
+   "w": 0.5,
    "pivot": [
     0.5,
-    0.2
+    0.08
    ],
-   "ratio": 1.0456
+   "ratio": 1.0456,
+   "sy": 0.8
   },
   "noeud_violet": {
    "anchor": "neck",
-   "size": "neck",
+   "size": "torso",
    "w": 0.3,
    "pivot": [
     0.5,
-    0.5
+    0.3
    ],
    "ratio": 1.7192
   },
   "noeud_pap": {
    "anchor": "neck",
-   "size": "neck",
+   "size": "torso",
    "w": 0.3,
    "pivot": [
     0.5,
-    0.5
+    0.3
    ],
    "ratio": 1.6118
   },
   "collier_perles": {
    "anchor": "neck",
-   "size": "neck",
-   "w": 0.45,
+   "size": "torso",
+   "w": 0.6,
    "pivot": [
     0.5,
-    0.4
+    0.12
    ],
-   "ratio": 1.0087
+   "ratio": 1.0087,
+   "sy": 0.5
   },
   "collier_coquillage": {
    "anchor": "neck",
-   "size": "neck",
-   "w": 0.45,
+   "size": "torso",
+   "w": 0.6,
    "pivot": [
     0.5,
-    0.4
+    0.12
    ],
-   "ratio": 1.0222
+   "ratio": 1.0222,
+   "sy": 0.5
   },
   "chaine_or": {
    "anchor": "neck",
-   "size": "neck",
-   "w": 0.45,
+   "size": "torso",
+   "w": 0.6,
    "pivot": [
     0.5,
-    0.4
+    0.12
    ],
-   "ratio": 1.0175
+   "ratio": 1.0175,
+   "sy": 0.5
   },
   "salopette": {
-   "anchor": "torso",
+   "anchor": "neck",
+   "size": "torso",
+   "w": 0.85,
+   "pivot": [
+    0.5,
+    0.03
+   ],
+   "ratio": 0.9882,
+   "sy": 0.6
+  },
+  "sweat": {
+   "anchor": "neck",
+   "size": "torso",
+   "w": 0.85,
+   "pivot": [
+    0.5,
+    0.03
+   ],
+   "ratio": 1.0353,
+   "sy": 0.6
+  },
+  "teddy": {
+   "anchor": "neck",
+   "size": "torso",
+   "w": 0.85,
+   "pivot": [
+    0.5,
+    0.03
+   ],
+   "ratio": 1.2294,
+   "sy": 0.6
+  },
+  "tablier": {
+   "anchor": "neck",
+   "size": "torso",
+   "w": 0.7,
+   "pivot": [
+    0.5,
+    0.03
+   ],
+   "ratio": 0.9558,
+   "sy": 0.62
+  },
+  "tutu": {
+   "anchor": "neck",
    "size": "torso",
    "w": 0.95,
    "pivot": [
     0.5,
-    0.5
+    0.04
    ],
-   "ratio": 0.9882
-  },
-  "sweat": {
-   "anchor": "torso",
-   "size": "torso",
-   "w": 1.0,
-   "pivot": [
-    0.5,
-    0.5
-   ],
-   "ratio": 1.0353
-  },
-  "teddy": {
-   "anchor": "torso",
-   "size": "torso",
-   "w": 1.0,
-   "pivot": [
-    0.5,
-    0.5
-   ],
-   "ratio": 1.2294
-  },
-  "tablier": {
-   "anchor": "torso",
-   "size": "torso",
-   "w": 0.9,
-   "pivot": [
-    0.5,
-    0.5
-   ],
-   "ratio": 0.9558
-  },
-  "tutu": {
-   "anchor": "torso",
-   "size": "torso",
-   "w": 1.0,
-   "pivot": [
-    0.5,
-    0.5
-   ],
-   "dy": 0.1,
-   "ratio": 1.6211
+   "ratio": 1.6211,
+   "sy": 0.75
   },
   "bretelles": {
-   "anchor": "torso",
+   "anchor": "neck",
    "size": "torso",
-   "w": 0.8,
+   "w": 0.7,
    "pivot": [
     0.5,
-    0.5
+    0.02
    ],
-   "ratio": 0.8217
+   "ratio": 0.8217,
+   "sy": 0.55
   },
   "sac_a_dos": {
    "anchor": "torso",
    "size": "torso",
-   "w": 0.55,
+   "w": 0.5,
    "pivot": [
     0.5,
     0.5
    ],
-   "dx": -0.45,
+   "dx": -0.5,
    "z": "back",
-   "ratio": 0.988
+   "ratio": 0.988,
+   "dy": -0.15,
+   "rot": -15
   },
   "sac_main": {
    "anchor": "torso",
    "size": "torso",
-   "w": 0.35,
+   "w": 0.3,
    "pivot": [
     0.5,
-    0.15
+    0.02
    ],
-   "dx": 0.35,
-   "rot": -8,
-   "ratio": 0.7798
+   "dx": 0.42,
+   "rot": -6,
+   "ratio": 0.7798,
+   "dy": -0.24
   },
   "cape": {
-   "anchor": "neck",
+   "anchor": "eyes",
    "size": "body",
-   "w": 1.15,
+   "w": 1.1,
    "pivot": [
     0.5,
-    0.1
+    0.05
    ],
    "z": "back",
-   "ratio": 1.3256
+   "ratio": 1.3256,
+   "sy": 0.75
   },
   "ailes": {
    "anchor": "neck",
    "size": "body",
-   "w": 1.3,
+   "w": 1.2,
    "pivot": [
     0.5,
     0.5
@@ -1001,7 +1042,7 @@
     "w": 1.9
    },
    "lunettes_pixel": {
-    "w": 1.9
+    "w": 2.2
    },
    "masque_nuit": {
     "w": 1.75
@@ -1011,7 +1052,8 @@
    },
    "cache_oeil": {
     "w": 1.9,
-    "rot": 22
+    "rot": 22,
+    "dx": 0.1
    }
   }
  }

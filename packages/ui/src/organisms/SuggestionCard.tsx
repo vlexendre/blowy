@@ -1,10 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 
+import { hasOutfit } from '../assets/fit';
 import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
 import { Card } from '../atoms/Card';
 import { Chip } from '../atoms/Chip';
 import { Glyph } from '../atoms/Glyph';
+import { PetBadge } from '../atoms/PetBadge';
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
@@ -73,7 +75,11 @@ export function SuggestionCard(props: SuggestionCardProps) {
     <Card padding="lg" highlight={tint} style={[layout.gapMd, { backgroundColor: color.panel }]}>
       <View style={[layout.rowTop, layout.gapMd]}>
         <View style={[styles.portrait, { borderColor: tint }]}>
-          <PetImage species={pet.species} mood="salut" size={64} animation="bob" />
+          {hasOutfit(pet.outfit) ? (
+            <PetBadge species={pet.species} outfit={pet.outfit} size={66} background={color.card} />
+          ) : (
+            <PetImage species={pet.species} mood="salut" size={64} animation="bob" />
+          )}
         </View>
         <View style={[layout.grow, styles.who]}>
           <View style={[layout.row, layout.gapSm]}>

@@ -18,3 +18,7 @@ export { StatTile, type StatTileProps } from './StatTile';
 export { StepProgress, type StepProgressProps } from './StepProgress';
 export { StreakPill, type StreakPillProps } from './StreakPill';
 export { TabBarItem, type TabBarItemProps } from './TabBarItem';
+export { CareButton, type CareButtonProps } from './CareButton';
+export { ItemTile, type ItemTileProps, type ItemTileState } from './ItemTile';
+export { needColor, NeedMeter, type NeedMeterProps } from './NeedMeter';
+export { SlotTabs, type SlotTabsProps } from './SlotTabs';
