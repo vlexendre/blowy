@@ -75,7 +75,8 @@ export default function RencontreScreen() {
     return (
       <ScreenMotion>
       <ScreenTemplate header={header} background="violet">
-        {encounter.isPending ? (
+        {/* Acceptée ou refusée à l'instant : on part déjà, pas de « plus là » pendant une image. */}
+        {accept.isSuccess || decline.isSuccess ? null : encounter.isPending ? (
           <Stack top={6}>
             <Skeleton height={240} radius="xl" />
             <Skeleton height={120} radius="lg" />

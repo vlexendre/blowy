@@ -616,6 +616,35 @@ StatTile   { …; count?: number; suffix?: string }           // la valeur défi
   Garder `QuizPreview` au même endroit entre questions et résultat (voir `app/(onboarding)/caractere.tsx`).
 - Un changement de phase sur la même route : donner une `key` au gabarit pour rejouer l'entrée (`compte.tsx` : e-mail → code).
 
+### Liens et rencontres (ajouts)
+```ts
+FanIn      { children; index: number; once?: string; delay?; step?: 90; style? }   // cartes en éventail (pivot sous la carte)
+useFirstTime(key?): boolean · seenOnce(key) · markOnce(key)   // « une fois par session » (révélations, cascades d'un écran)
+useRipple(): (target: Measurable | Rect, { color?; rings?: 2; reach?: 22; radius? }) => void   // ondes autour d'un bouton
+useRippleAnchor(): { props /* à étaler sur la View du bouton */; target() }   // place relevée avant une mise à jour optimiste
+usePetBump(): ({ left: Species; right: Species; from?: { left?: Rect; right?: Rect }; y?; size?: 132 }) => void
+                                          // « accepté » : les deux pets se courent dessus et se cognent (calque, après la navigation)
+useTypingPause(duration?: 800, delay?: 250, key?): boolean   // vrai pendant les « … » d'un pet ; faux si animations réduites
+Hearts     { …; from?: number; beat?: boolean }   // cœur perdu : se brise ; regagné : « pop » un par un ; `beat` : vie en danger
+MessageBubble { …; fade?: true; typing?: boolean; enter?: 'send' | 'receive'; typingLabel? }
+ChatThread { …; typingLabel?: (name) => string }  // message arrivé : le mien monte du champ, celui d'un pet écrit « … » d'abord
+NudgeBanner { …; reveal?: string }        // s'ouvre depuis le haut, le pet jaillit et fait signe (1re apparition de la clé)
+PhotoTile  { …; revealKey?: string }      // le flou se lève la 1re fois que la photo apparaît nette
+TodayCard  { …; motionKey?: string }      // `id:jour` : photo dévoilée + flamme (StreakPill `growKey`) qui grandit
+LivesPanel { …; animateKey?: string }     // jours de la semaine cochés un à un
+MemoryGrid { …; animateKey?: string }     // photos qui se posent comme des cartes
+CountTitle { title; count; from?: 0; size?: 24; hint? }   // « PHOTOS DU JOUR · 12 », le nombre défile
+LevelLadder { …; animateKey?: string; celebrate?: boolean }   // rail qui monte, marche atteinte qui s'allume, confettis
+LinkTemplate { …; livesFrom?: number; levelUp?: number }       // cœurs qui reviennent (ranimé) ; pastille + confettis au passage
+GhostPanel { …; revealKey?: string }      // le pet perd ses couleurs et flotte ; « ranimer » : il les reprend
+EncounterStage { …; waveKey?: number }    ref: EncounterStageHandle { petRects(); hidePets() }
+EncounterHead { …; waveKey?: number }     // l'avatar fait coucou
+```
+- Un style animé doit lire ses valeurs (`x.value`) dans sa propre fonction : sur le web, une valeur lue seulement dans
+  une fonction appelée par le style n'est pas suivie (le style ne bouge plus). Passer les valeurs en arguments.
+- Enchaîner une valeur de départ et une animation : `withSequence(withTiming(v, { duration: 0 }), …)` plutôt que
+  `x.value = v; x.value = withDelay(…)` (sur le web, l'animation repart de l'ancienne valeur).
+
 ### Recettes
 **1. Une liste qui arrive en cascade, une seule fois**
 ```tsx
