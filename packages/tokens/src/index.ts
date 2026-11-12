@@ -23,10 +23,10 @@ export type ColorName = keyof typeof color;
 export const gradient = {
   accent: ['#FFD23F', '#FFB000'],
   orange: ['#FF7A2E', '#FFA24D'],
-  coral: ['#FF5A3C', '#FF8A6B'],
+  coral: ['#FF5A3C', '#FF8F6B'],
   violet: ['#6D3DF0', '#A98BFF'],
-  rose: ['#FF6FB5', '#FFA9D6'],
-  wine: ['#3A1030', '#6B1D4F'],
+  rose: ['#FF8FC6', '#FFC4DF'],
+  wine: ['#2A0F2E', '#8C1D4F'],
   night: ['#17142A', '#0B0A14'],
 } as const;
 export type GradientName = keyof typeof gradient;
@@ -44,6 +44,8 @@ export const font = {
   display: 'Anton_400Regular',
   body: 'BricolageGrotesque_500Medium',
   bodyBold: 'BricolageGrotesque_700Bold',
+  /** Graisse 800 : la plus employée des maquettes (boutons, puces, libellés, noms). */
+  bodyHeavy: 'BricolageGrotesque_800ExtraBold',
   web: { display: "'Anton', sans-serif", body: "'Bricolage Grotesque', sans-serif" },
 } as const;
 
@@ -54,7 +56,8 @@ export const type = {
   h3: { fontFamily: font.display, fontSize: 20, lineHeight: 23, textTransform: 'uppercase' },
   body: { fontFamily: font.body, fontSize: 16, lineHeight: 22 },
   bodyBold: { fontFamily: font.bodyBold, fontSize: 16, lineHeight: 22 },
+  bodyHeavy: { fontFamily: font.bodyHeavy, fontSize: 16, lineHeight: 22 },
   small: { fontFamily: font.body, fontSize: 13, lineHeight: 18 },
-  label: { fontFamily: font.bodyBold, fontSize: 12, lineHeight: 15, letterSpacing: 0.6, textTransform: 'uppercase' },
+  label: { fontFamily: font.bodyHeavy, fontSize: 12, lineHeight: 15, letterSpacing: 0.6, textTransform: 'uppercase' },
 } as const;
 export type TypeName = keyof typeof type;

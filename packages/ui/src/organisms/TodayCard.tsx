@@ -45,10 +45,10 @@ export function TodayCard({ today, otherPet, streak, labels, onCta, ctaLoading, 
   const both = today.mine && today.theirs;
   const theirState = !today.theirs ? 'pending' : both && today.theirPhotoUrl ? 'photo' : 'locked';
   return (
-    <Panel gradient={gradient} padding="lg">
+    <Panel gradient={gradient} padding="none" style={styles.panel}>
       <View style={[layout.rowTop, styles.top]}>
         <Title text={labels.title} size={42} style={layout.grow} />
-        <StreakPill count={streak} label={labels.streakUnit} variant="stack" />
+        <StreakPill count={streak} label={labels.streakUnit} variant="stack" style={styles.streak} />
       </View>
       <View style={[layout.row, styles.photos]}>
         <PhotoTile
@@ -72,7 +72,7 @@ export function TodayCard({ today, otherPet, streak, labels, onCta, ctaLoading, 
         />
       </View>
       <View style={[layout.row, styles.bottom]}>
-        <Text variant="bodyBold" size={13} style={layout.grow}>
+        <Text variant="bodyBold" size={13} style={[layout.grow, styles.hint]}>
           {labels.hint}
         </Text>
         {onCta ? <Button label={labels.cta} variant="dark" size="sm" onPress={onCta} loading={ctaLoading} style={styles.cta} /> : null}
@@ -81,8 +81,12 @@ export function TodayCard({ today, otherPet, streak, labels, onCta, ctaLoading, 
   );
 }
 
+// Maquette V6-Aujourdhui : `.panel` (rayon 32) avec padding 16 16 14.
 const styles = StyleSheet.create({
+  panel: { borderRadius: 32, paddingTop: space.lg, paddingHorizontal: space.lg, paddingBottom: space.md + 2 },
   top: { gap: space.sm },
+  streak: { marginTop: -space.xs, marginRight: -2 },
+  hint: { lineHeight: 16 },
   photos: { gap: space.md - 2, marginTop: space.md + 2 },
   bottom: { gap: space.md - 2, marginTop: space.md },
   cta: { height: 44 },

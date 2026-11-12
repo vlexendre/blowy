@@ -1,41 +1,25 @@
 import { levelLabel } from '@blowy/content';
-import { faceVisibility, LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress } from '@blowy/domain';
-import { color } from '@blowy/tokens';
-import {
-  alpha,
-  AvatarPair,
-  Banner,
-  Card,
-  FeatureRow,
-  Header,
-  Hearts,
-  LevelLadder,
-  Panel,
-  PetImage,
-  ProgressBar,
-  ScreenTemplate,
-  Skeleton,
-  Text,
-  Title,
-} from '@blowy/ui';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress, type Species } from '@blowy/domain';
+import { AvatarPair, Banner, Header, LevelHero, LevelLadder, LivesCard, PetImage, ScreenTemplate, Skeleton } from '@blowy/ui';
+import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { useLink } from '@/features/links';
+import { useBackToLink, useLink } from '@/features/links';
 import { levels as t, link as linkText } from '@/locales/chats';
 
 export default function LevelsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const link = useLink(id);
   const l = link.data;
-  const back = () => (router.canGoBack() ? router.back() : router.replace(`/link/${id}`));
+  const back = useBackToLink(id);
 
   const header = (
     <Header
       onBack={back}
       backLabel={linkText.back}
       title={l ? t.header(l.other.displayName) : undefined}
+      titleSize={15}
+      style={styles.edge}
       right={
         l ? (
           <AvatarPair size={34} first={{ pet: l.myPet, hidden: true }} second={{ pet: l.other.pet, uri: l.other.avatarUrl, face: l.other.face, name: l.other.displayName }} />
@@ -62,76 +46,54 @@ export default function LevelsScreen() {
   const key = LEVEL_KEYS[Math.min(l.level, MAX_LEVEL) - 1] ?? 'rendezvous';
   const p = levelProgress(l.xp);
   const atMax = l.level >= MAX_LEVEL;
-  const face = faceVisibility(l.level);
 
   return (
-    <ScreenTemplate header={header}>
+    <ScreenTemplate header={header} padded={false} contentStyle={styles.edge}>
       <View style={styles.body}>
-        <Panel gradient="rose" padding="lg">
-          <View style={styles.heroRow}>
-            <View style={styles.grow}>
-              <Text variant="label" dim>
-                {t.kicker(l.level)}
-              </Text>
-              <Title text={[{ text: levelLabel[key].title.toUpperCase() }]} size={40} />
-            </View>
-            <View style={styles.duo}>
-              <PetImage species={l.myPet.species} mood="joie" size={70} outline />
-              <PetImage species={l.other.pet.species} mood="amour" size={70} outline style={styles.duoSecond} />
-            </View>
-          </View>
-          <View style={styles.progress}>
-            <ProgressBar value={atMax ? 1 : l.levelRatio} color={color.dark} trackColor={alpha(color.dark, 0.15)} accessibilityLabel={t.kicker(l.level)} />
-            <Text variant="bodyBold" size={13}>
-              {atMax ? t.maxProgress : t.progress(p.into, p.span, l.level + 1)}
-            </Text>
-          </View>
-        </Panel>
+        <LevelHero
+          kicker={t.kicker(l.level)}
+          title={t.heroTitle(levelLabel[key].title)}
+          ratio={atMax ? 1 : l.levelRatio}
+          progressLabel={atMax ? t.maxProgress : t.progress(p.into, p.span, l.level + 1)}
+          art={<DuoArt mine={l.myPet.species} theirs={l.other.pet.species} />}
+        />
 
-        <LevelLadder level={l.level} labels={levelLabel} ratio={l.levelRatio} currentLabel={t.current} nextLabel={atMax ? undefined : t.next(Math.max(0, p.span - p.into))} />
+        <LevelLadder level={l.level} labels={ladder} currentLabel={t.current} nextLabel={atMax ? undefined : t.next(Math.max(0, p.span - p.into))} />
 
-        <Card padding="lg">
-          <Text variant="label" muted>
-            {t.facesTitle}
-          </Text>
-          <Text style={styles.line}>{t.faces}</Text>
-          <Text variant="bodyBold" color={color.accent} style={styles.line}>
-            {t.faceNow[face]}
-          </Text>
-        </Card>
-
-        <Card padding="lg">
-          <Text variant="label" muted>
-            {t.xpTitle}
-          </Text>
-          <View style={styles.xp}>
-            {t.xp.map((x) => (
-              <FeatureRow key={x.title} icon={x.icon} title={x.title} text={x.text} />
-            ))}
-          </View>
-        </Card>
-
-        <Card padding="lg">
-          <View style={styles.heroRow}>
-            <Title text={t.livesTitle(l.lives)} variant="h2" style={styles.grow} />
-            <Hearts lives={l.lives} max={MAX_LIVES} ghost={l.status === 'ghost'} accessibilityLabel={linkText.lives(l.lives)} />
-          </View>
-          <Text variant="small" muted style={styles.line}>
-            {t.livesText}
-          </Text>
-        </Card>
+        <LivesCard style={styles.lives} title={t.livesTitle(l.lives)} lives={l.lives} max={MAX_LIVES} ghost={l.status === 'ghost'} text={t.livesText} accessibilityLabel={linkText.lives(l.lives)} />
       </View>
     </ScreenTemplate>
   );
 }
 
+/** Le duo illustré de la paire quand il existe, sinon les deux pets côte à côte. */
+function DuoArt({ mine, theirs }: { mine: Species; theirs: Species }) {
+  const pair = [mine, theirs].sort().join('+');
+  const art = pair === 'nino+suzie' ? 'duo_nino_suzie' : pair === 'gaston+pia' ? 'duo_gaston_pia' : null;
+  if (art) return <PetImage art={art} size={210} animation="breathe" />;
+  return (
+    <View style={styles.duo}>
+      <PetImage species={mine} mood="joie" size={112} animation="breathe" />
+      <PetImage species={theirs} mood="amour" size={112} animation="breathe" delay={400} style={styles.duoSecond} />
+    </View>
+  );
+}
+
+/** Titres et phrases des niveaux en minuscules, sans point final (ton des maquettes). */
+const ladder = Object.fromEntries(
+  Object.entries(levelLabel).map(([k, v]) => [k, { title: lowerFirst(v.title), text: lowerFirst(v.text).replace(/\.$/, '') }]),
+) as typeof levelLabel;
+
+function lowerFirst(s: string): string {
+  return s.charAt(0).toLowerCase() + s.slice(1);
+}
+
 const styles = StyleSheet.create({
-  body: { gap: 16, paddingTop: 8 },
-  heroRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  grow: { flex: 1, minWidth: 0, gap: 4 },
-  progress: { gap: 8, marginTop: 12 },
+  // Maquette : panneau 12 sous l'en-tête, échelle 16 plus bas, carte des vies collée en bas (24 au-dessus du bord).
+  body: { flex: 1, gap: 16, paddingTop: 4 },
+  lives: { marginTop: 'auto' },
+  // Marges de 14 comme les autres écrans du lien.
+  edge: { paddingHorizontal: 14 },
   duo: { flexDirection: 'row', alignItems: 'flex-end' },
-  duoSecond: { marginLeft: -24 },
-  line: { marginTop: 6 },
-  xp: { gap: 12, marginTop: 12 },
+  duoSecond: { marginLeft: -28 },
 });

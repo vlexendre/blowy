@@ -1,14 +1,12 @@
-/** Caractère de départ (V6-Caractere) : 4 questions une à une, puis les jauges du pet. */
+/** Caractère de départ (V6-Caractere) : 4 questions une à une, puis le caractère obtenu. */
 import { gaugeLabel } from '@blowy/content';
 import { addGauges, type GaugeKey, type Gauges, ZERO_GAUGES } from '@blowy/domain';
-import { space } from '@blowy/tokens';
-import { GaugePanel, Header, OnboardingTemplate, PetImage, QuizStep, ScreenTemplate, StepProgress } from '@blowy/ui';
+import { OnboardingTemplate, QuizPreview, QuizResult, QuizResultActions, QuizStep } from '@blowy/ui';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
 
 import { useSession } from '@/core';
-import { QUIZ, useDraft } from '@/features/onboarding';
+import { QUIZ, strongestTraits, useDraft } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -21,6 +19,7 @@ const poleOf = (delta: Partial<Gauges>): string => {
   const k = gaugeOf(delta);
   return (delta[k] ?? 0) < 0 ? gaugeLabel[k].low : gaugeLabel[k].high;
 };
+const poleOfGauge = (k: GaugeKey, quiz: Gauges): string => (quiz[k] < 0 ? gaugeLabel[k].low : gaugeLabel[k].high);
 const total = (picks: readonly Pick[]): Gauges =>
   picks.reduce<Gauges>((g, p, i) => {
     const delta = QUIZ[i]?.choices[p].delta;
@@ -45,6 +44,7 @@ export default function Caractere() {
   const index = picks.length;
   const question = QUIZ[index];
   const pet = { name: petName, species };
+  const preview = { pet, gauges: quiz, labels: gaugeLabel };
 
   // Le brouillon suit les réponses : revenir en arrière annule l'effet de la dernière.
   const commit = (next: Pick[]) => {
@@ -68,41 +68,49 @@ export default function Caractere() {
   };
 
   if (!question) {
+    const [first, second] = strongestTraits(quiz);
     return (
       <OnboardingTemplate
-        step={2}
-        total={onboarding.total}
+        step={QUIZ.length}
+        total={QUIZ.length}
         onBack={back}
-        backLabel={common.back}
-        title={t.resultTitle(petName)}
-        text={t.resultText}
-        primaryLabel={t.resultCta}
-        onPrimary={() => router.push(session ? '/(onboarding)/profil' : '/(onboarding)/compte')}
+        backLabel={t.previous}
+        gap={16}
+        actions={
+          <QuizResultActions
+            redoLabel={t.redo}
+            onRedo={() => commit([])}
+            ctaLabel={t.resultCta}
+            onCta={() => router.push(session ? '/(onboarding)/profil' : '/(onboarding)/compte')}
+          />
+        }
       >
-        <View style={{ alignItems: 'center' }}>
-          <PetImage species={species} mood="joie" size={170} animation="breathe" outline accessibilityLabel={petName} />
-        </View>
-        <GaugePanel gauges={quiz} labels={gaugeLabel} names={t.gaugeNames} title={t.resultPanel} footer={t.resultHint} />
+        <QuizPreview {...preview} step={QUIZ.length - 1} />
+        <QuizResult
+          kicker={t.resultKicker}
+          title={t.resultTitle(petName)}
+          text={t.resultText(petName, poleOfGauge(first, quiz), poleOfGauge(second, quiz))}
+          species={species}
+          petLabel={petName}
+        />
       </OnboardingTemplate>
     );
   }
 
   const key = gaugeOf(question.choices[0].delta);
-  const icons: readonly (typeof t.icons)[number][number][] = t.icons[index] ?? t.icons[0] ?? [];
   return (
-    <ScreenTemplate header={<Header onBack={back} backLabel={common.back} center={<StepProgress step={2} total={onboarding.total} />} />}>
-      <View style={{ flexGrow: 1, paddingTop: space.sm }}>
-        <QuizStep
-          key={index}
-          kicker={`${t.kicker[key]} · ${index + 1}/${QUIZ.length}`}
-          title={(t.titles[index] ?? t.titles[0])(petName)}
-          text={t.text}
-          choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), icon: icons[i] }))}
-          selectedKey={selected === null ? null : String(selected)}
-          onChoose={choose}
-          preview={{ pet, gauges: quiz, labels: gaugeLabel }}
-        />
-      </View>
-    </ScreenTemplate>
+    <OnboardingTemplate step={index + 1} total={QUIZ.length} stepPending onBack={back} backLabel={index ? t.previous : common.back} scroll={false}>
+      <QuizStep
+        key={index}
+        step={index}
+        kicker={t.kicker[key]}
+        title={(t.titles[index] ?? t.titles[0])(petName)}
+        text={t.text}
+        choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
+        selectedKey={selected === null ? null : String(selected)}
+        onChoose={choose}
+        preview={preview}
+      />
+    </OnboardingTemplate>
   );
 }

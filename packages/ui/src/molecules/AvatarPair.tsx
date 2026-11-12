@@ -1,6 +1,7 @@
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Avatar, type AvatarProps } from '../atoms/Avatar';
+import { color, radius, size } from '../theme';
 
 export interface AvatarPairProps {
   /** Avatar de devant à gauche (souvent ton pet). */
@@ -13,13 +14,21 @@ export interface AvatarPairProps {
 }
 
 /** Deux avatars qui se chevauchent (les deux pets d'un lien). */
-export function AvatarPair({ first, second, size = 42, accessibilityLabel, style }: AvatarPairProps) {
+export function AvatarPair({ first, second, size: side = 42, accessibilityLabel, style }: AvatarPairProps) {
   return (
     <View accessible={!!accessibilityLabel} accessibilityLabel={accessibilityLabel} style={[styles.row, style]}>
-      <Avatar {...first} size={size} accessibilityLabel={undefined} />
-      <Avatar {...second} size={size} cutout accessibilityLabel={undefined} style={{ marginLeft: -Math.round(size / 3) - 2 }} />
+      <Avatar {...first} size={side} accessibilityLabel={undefined} />
+      {/* Maquettes : liseré nuit de 4 pt (`box-shadow: 0 0 0 2px, 0 0 0 4px`) qui mord sur le premier avatar. */}
+      <View style={[styles.ring, { marginLeft: -Math.round(side / 3) - RING }]}>
+        <Avatar {...second} size={side} cutout accessibilityLabel={undefined} />
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({ row: { flexDirection: 'row', alignItems: 'center' } });
+const RING = 4;
+
+const styles = StyleSheet.create({
+  row: { flexDirection: 'row', alignItems: 'center' },
+  ring: { padding: RING - size.ring, borderRadius: radius.pill, backgroundColor: color.night },
+});

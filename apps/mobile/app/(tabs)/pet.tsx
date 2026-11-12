@@ -1,13 +1,13 @@
-import { formLabel, gaugeLabel } from '@blowy/content';
+import { gaugeLabel } from '@blowy/content';
 import { cleanPetName, type GaugeKey, PET_NAME_MAX } from '@blowy/domain';
 import { color } from '@blowy/tokens';
-import { Banner, Button, Card, ChallengeCard, Chip, GaugePanel, PetHero, Skeleton, TabTemplate, Text, TextField } from '@blowy/ui';
+import { Banner, Button, Card, ChallengeCard, GaugePanel, PetHero, PetSummary, type PetSummaryItem, Skeleton, TabTemplate, TextField } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { errorText } from '@/features/links';
-import { useAnswerChallenge, usePet, useRenamePet } from '@/features/pet';
+import { useAnswerChallenge, usePet, useRenamePet, weekSummary } from '@/features/pet';
 import { pet as t } from '@/locales/pet';
 
 export default function PetScreen() {
@@ -30,7 +30,7 @@ export default function PetScreen() {
 
   if (!pet.data) {
     return (
-      <TabTemplate refreshControl={refreshControl}>
+      <TabTemplate gutter={12} gap={10} top={6} refreshControl={refreshControl}>
         {pet.isPending ? (
           <>
             <Skeleton height={280} radius="xl" />
@@ -43,8 +43,15 @@ export default function PetScreen() {
     );
   }
 
-  const { pet: p, challenge: c, wordsCount } = pet.data;
+  const { pet: p, challenge: c, wordsCount, events } = pet.data;
   const look = { name: p.name, species: p.species, form: p.form, mood: 'joie' as const };
+  const week = weekSummary(events, Date.now());
+  const weekItems: PetSummaryItem[] = week.deltas.slice(0, 3).map((d, i) => ({
+    text: i === 0 && week.met > 0 ? `${t.weekDelta(d.value, gaugeLabel[d.gauge].high)} · ${t.weekMet(week.met)}` : t.weekDelta(d.value, gaugeLabel[d.gauge].high),
+    tone: d.value > 0 ? 'up' : 'down',
+  }));
+  if (wordsCount > 0) weekItems.push({ text: t.words(wordsCount), tone: 'neutral' });
+  if (!weekItems.length) weekItems.push({ text: t.weekQuiet, tone: 'neutral' });
 
   const startRename = () => {
     setName(p.name);
@@ -61,16 +68,18 @@ export default function PetScreen() {
   };
 
   return (
-    <TabTemplate refreshControl={refreshControl}>
+    <TabTemplate gutter={12} gap={10} top={6} refreshControl={refreshControl}>
       <PetHero
         pet={look}
         title={t.title(p.name, p.form)}
         moodLabel={t.mood(p.form)}
-        formLabel={formLabel[p.form]}
+        gradient="accent"
         showForm
         speech={t.speech[p.form]}
         onPetPress={startRename}
         petLabel={t.petA11y(p.name)}
+        onEdit={startRename}
+        editLabel={t.renameA11y(p.name)}
       />
 
       {editing ? (
@@ -91,11 +100,7 @@ export default function PetScreen() {
             <Button label={t.renameSave} size="md" onPress={saveName} loading={rename.isPending} disabled={!cleanPetName(name)} style={styles.fill} />
           </View>
         </Card>
-      ) : (
-        <View style={styles.row}>
-          <Chip label={t.rename} tone="dark" onPress={startRename} accessibilityLabel={t.petA11y(p.name)} />
-        </View>
-      )}
+      ) : null}
 
       <GaugePanel
         gauges={p.gauges}
@@ -105,7 +110,15 @@ export default function PetScreen() {
         hint={t.gaugesHint}
         selected={selected}
         onSelect={(k) => setSelected(selected === k ? null : k)}
-        footer={selected ? gaugeLabel[selected].hint : t.gaugesFooter}
+        detail={selected ? t.gaugeDetail[selected] : null}
+        footer={t.gaugesFooter}
+      />
+
+      <PetSummary
+        label={t.week}
+        items={weekItems}
+        primary={{ label: t.evolution, onPress: () => router.push('/pet/evolution') }}
+        secondary={{ label: t.wardrobe, plus: t.plus, accessibilityLabel: t.wardrobeA11y, onPress: () => router.push('/moi/blowy-plus') }}
       />
 
       <ChallengeCard
@@ -122,15 +135,6 @@ export default function PetScreen() {
         loading={challenge.isPending}
       />
       {challenge.isError ? <Banner tone="error" text={errorText(challenge.error, t.challengeError)} onClose={() => challenge.reset()} /> : null}
-
-      <Card padding="lg">
-        <Text variant="bodyBold">{t.words(wordsCount)}</Text>
-        <Text variant="small" muted>
-          {t.wordsText}
-        </Text>
-      </Card>
-
-      <Button label={t.evolution} iconRight="arrow" size="lg" onPress={() => router.push('/pet/evolution')} />
     </TabTemplate>
   );
 }

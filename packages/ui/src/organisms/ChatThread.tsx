@@ -63,13 +63,15 @@ export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey
       const m = item.message;
       const isOtherSide = m.author === 'other' || m.author === 'other_pet';
       const pet = m.author === 'my_pet' ? myPet : m.author === 'other_pet' ? other.pet : undefined;
-      const name = m.author === 'other' ? (otherName ?? other.displayName) : pet?.name;
+      // Maquette : noms en minuscules au-dessus des bulles (« léa », « suzie »).
+      const name = (m.author === 'other' ? (otherName ?? other.displayName) : pet?.name)?.toLowerCase();
       return (
         <MessageBubble
           message={m}
           name={name}
           pet={pet}
           person={isOtherSide ? other : undefined}
+          hiddenFace={m.author === 'other' && other.face === 'hidden'}
           continued={item.continued}
           onPhotoPress={onPhotoPress ? () => onPhotoPress(m) : undefined}
           lockedPhotoLabel={lockedPhotoLabel}
@@ -102,7 +104,8 @@ export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: space.md + 2, paddingVertical: space.md, gap: space.sm },
+  // Liste inversée : `paddingBottom` est le haut visuel (12 pt sous les onglets, dont 8 posés par l'en-tête du gabarit).
+  content: { paddingHorizontal: space.md + 2, paddingTop: 0, paddingBottom: space.xs, gap: space.sm },
   empty: { flex: 1, justifyContent: 'center' },
   loader: { marginVertical: space.lg },
 });

@@ -1,35 +1,154 @@
 ---
-/** Formulaire « 3 mots » : les 12 mots du domaine, exactement 3 à cocher. */
-import { WORD_KEYS } from '@blowy/domain';
-import { wordLabel } from '@blowy/content';
-import StateBlock from '../../molecules/StateBlock.astro';
+/**
+ * Page « 3 mots » (maquette V6-Mots) : panneau rose, les 12 mots du domaine (exactement 3), effet sur les jauges du pet,
+ * puis, une fois envoyé, la réponse du pet et l'invitation à créer le sien. Rempli par scripts/words-page.ts.
+ */
+import { GAUGE_KEYS, WORD_KEYS } from '@blowy/domain';
+import { gaugeLabel, wordLabel } from '@blowy/content';
 import { wordsPage as c } from '../../../content/public';
+
+/** Inclinaison des mots choisis (degrés), dans l'ordre des mots. */
+const ROT = [-4, 3, -2, 4, 0, -3, 2, -5, 4, -2, 3, -4];
+const hasTpl = (s: string) => /\{\w+\}/.test(s);
 ---
-<StateBlock state="form" title={c.title}>
-  <img slot="pet" class="pub-pet" data-pet alt="" width="900" height="1000" />
-  <span slot="before" class="lbl">{c.label}</span>
-  <p class="pub-text" data-tpl={c.intro}>{c.intro}</p>
-  <form class="pick" data-form novalidate>
-    <div class="pick-grid" role="group" aria-label={c.groupLabel} data-tpl-aria={c.groupLabel}>
-      {WORD_KEYS.map((k) => <button type="button" class="pick-w" data-word={k} aria-pressed="false">{wordLabel[k] ?? k}</button>)}
+<section class="pub-state mots" data-state="form" hidden aria-live="polite">
+  <div class="mots-top">
+    <a href="/" class="mots-logo" aria-label="blowy, accueil">blowy<i>.</i></a>
+    <span class="mots-chip">{c.anonymous}</span>
+  </div>
+
+  <div class="mots-panel">
+    <h1 class="pub-title mots-title" tabindex="-1">
+      {c.title.map((l, i) => <span class:list={['ln', { dim: i > 0 }]} data-tpl={hasTpl(l) ? l : undefined}>{l}</span>)}
+    </h1>
+    <p class="mots-intro" data-tpl={c.intro}>{c.intro}</p>
+    <div class="mots-pet" aria-hidden="true"><img class="stk sq" data-pet src="/img/nino_neutre.webp" alt="" width="900" height="1000" /></div>
+  </div>
+
+  <form class="mots-form" data-form novalidate>
+    <div class="mots-words" role="group" aria-label={c.groupLabel} data-tpl-aria={c.groupLabel}>
+      {
+        WORD_KEYS.map((k, i) => (
+          <button type="button" class="mots-w" data-word={k} aria-pressed="false" style={`--rot:${ROT[i % ROT.length]}deg`}>
+            {wordLabel[k] ?? k}
+          </button>
+        ))
+      }
     </div>
-    <div class="pick-foot">
-      <span class="pick-count" data-count data-tpl={c.counter} aria-live="polite">{c.counter.replace('{n}', '0')}</span>
-      <button type="submit" class="btn l" data-submit disabled>{c.submit}</button>
+
+    <div class="mots-card">
+      <span class="mots-ava"><img data-pet-face src="/img/nino_face.webp" alt="" width="48" height="48" /></span>
+      <div class="mots-body">
+        <div class="mots-head">
+          <span data-tpl={c.evolve}>{c.evolve}</span>
+          <span class="mots-count" data-count aria-live="polite">{c.counter.replace('{n}', '0')}</span>
+        </div>
+        <div class="mots-gauges" role="img" aria-label={c.gaugesLabel} data-tpl-aria={c.gaugesLabel}>
+          {
+            GAUGE_KEYS.map((g) => (
+              <div class="mots-g" data-gauge={g}>
+                <div class="mots-gl">
+                  {gaugeLabel[g].high} <b data-delta />
+                </div>
+                <div class="mots-gauge">
+                  <b />
+                  <u />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
     </div>
+
+    <button type="submit" class="mots-send" data-submit disabled>{c.submitEmpty}</button>
     <p class="pick-err" data-form-error role="alert" hidden></p>
   </form>
-</StateBlock>
+
+  <div class="mots-sent" data-sent hidden>
+    <div class="mots-msgs">
+      <div class="mots-msg">
+        <span class="mots-ava sm"><img data-pet-face src="/img/nino_face.webp" alt="" width="30" height="30" /></span>
+        <div>
+          <div class="mots-who" data-tpl="{petNom}">{'{petNom}'}</div>
+          <div class="mots-bub">{c.sentReply}</div>
+        </div>
+      </div>
+      <div class="mots-msg follow">
+        <div class="mots-bub">{c.sentList} <b data-list /></div>
+      </div>
+    </div>
+    <div class="mots-you">
+      <h2 class="mots-title you">{c.youTitle.map((l, i) => <span class:list={['ln', { dim: i > 0 }]}>{l}</span>)}</h2>
+      <p class="mots-intro you">{c.youText}</p>
+      <a href="/" class="mots-cta">
+        {c.youCta}
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </a>
+      <div class="mots-egg" aria-hidden="true"><img class="stk bob" src="/img/oeuf.webp" alt="" width="130" /></div>
+    </div>
+  </div>
+</section>
 <style is:global>
-.pick{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:6px}
-.pick-grid{display:flex;flex-wrap:wrap;gap:8px}
-.pick-w{min-height:48px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);font-weight:700;font-size:15px;transition:background .2s,color .2s,transform .2s,opacity .2s}
-.pick-w:hover{transform:translateY(-2px)}
-.pick-w[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--ink)}
-.pick.full .pick-w[aria-pressed="false"]{opacity:.5}
-.pick-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.pick-count{font-weight:800;font-size:15px;color:var(--mute)}
-.pick-count.ok{color:var(--lime)}
-.pick-err{color:#FF8A80;font-weight:700;font-size:14px}
-@media (prefers-reduced-motion:reduce){.pick-w{transition:none}.pick-w:hover{transform:none}}
+.pub-bare{position:relative;z-index:1;min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+.pub-bare>.pub-state:not(.mots){padding:calc(env(safe-area-inset-top,0px) + 24px) 16px 24px;max-width:600px;margin:0 auto;width:100%}
+.mots:not([hidden]){display:flex;flex-direction:column;align-items:stretch;gap:0;flex:1;width:100%;max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 20px)}
+.mots-top{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.mots-logo{font-weight:800;font-size:26px;letter-spacing:-.04em;line-height:1}
+.mots-logo i{font-style:normal;color:var(--lime)}
+.mots-chip{display:inline-flex;align-items:center;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;white-space:nowrap;background:rgba(255,255,255,.12)}
+.mots-panel{position:relative;margin-top:12px;background:var(--g-rose);color:var(--ink);padding:20px 20px 18px;border-radius:32px}
+.mots-title{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.96;letter-spacing:.005em;font-size:54px;margin:0;overflow-wrap:normal}
+.mots-title .ln{display:block}
+.mots-title .dim{opacity:.38}
+.mots-intro{margin:8px 0 0;font-size:14.5px;font-weight:600;line-height:1.35;max-width:200px}
+.mots-pet{position:absolute;right:-8px;bottom:-16px;transform:rotate(8deg);pointer-events:none}
+.mots-pet img{width:150px;display:block}
+.mots-form{display:flex;flex-direction:column;flex:1}
+.mots-form[hidden]{display:none}
+.mots-words{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
+.mots-w{height:44px;padding:0 15px;border-radius:999px;font-weight:800;font-size:15px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.14);transition:all .2s}
+.mots-w[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime);transform:rotate(var(--rot))}
+.mots-form.full .mots-w[aria-pressed="false"]{opacity:.4}
+.mots-card{margin:14px 0;display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:24px}
+.mots-ava{width:48px;height:48px;border-radius:50%;overflow:hidden;flex:0 0 auto;display:block;background:var(--lime)}
+.mots-ava.sm{width:30px;height:30px}
+.mots-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.mots-body{flex:1 1 auto;min-width:0}
+.mots-head{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:800}
+.mots-count{color:var(--lime);white-space:nowrap}
+.mots-gauges{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+.mots-gl{font-size:10.5px;font-weight:700;color:var(--mute);margin-bottom:3px}
+.mots-gl b{color:var(--lime)}
+.mots-gl b.down{color:var(--rose)}
+.mots-gauge{position:relative;height:6px;border-radius:999px;background:rgba(255,255,255,.12)}
+.mots-gauge::before{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,.35)}
+.mots-gauge b{position:absolute;top:0;bottom:0;left:50%;right:50%;border-radius:999px;background:var(--lime);transition:left .45s,right .45s}
+.mots-gauge u{position:absolute;top:50%;left:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:left .45s}
+.mots-send{margin-top:auto;display:flex;align-items:center;justify-content:center;height:56px;width:100%;padding:0 22px;border-radius:999px;font-weight:800;font-size:17px;white-space:nowrap;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.14);transition:transform .15s}
+.mots-send.ready{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+.mots-send:active{transform:scale(.97)}
+.mots-send:disabled{cursor:default}
+.mots-send:disabled:not(.ready){opacity:1}
+.pick-err{color:#FF8A80;font-weight:700;font-size:14px;margin-top:10px}
+.mots-sent{display:flex;flex-direction:column;flex:1}
+.mots-sent[hidden]{display:none}
+.mots-msgs{margin:22px 0;display:flex;flex-direction:column;gap:10px}
+.mots-msg{display:flex;gap:8px;align-items:flex-end;max-width:86%}
+.mots-msg.follow{margin-left:38px}
+.mots-who{font-size:11px;font-weight:800;margin:0 0 3px 4px;color:var(--lime)}
+.mots-bub{background:var(--card-2);color:#fff;border:1px solid rgba(255,255,255,.10);border-radius:20px 20px 20px 6px;padding:9px 13px;font-size:15px;font-weight:500;line-height:1.3}
+.mots-bub b{color:var(--lime)}
+.mots-you{position:relative;margin-top:auto;background:var(--g-lime);color:var(--ink);padding:20px;border-radius:32px;overflow:hidden}
+.mots-title.you{font-size:46px}
+.mots-intro.you{margin:8px 0 14px;max-width:220px}
+.mots-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 22px;border-radius:999px;font-weight:800;font-size:17px;white-space:nowrap;background:var(--ink);color:#fff;transition:transform .15s}
+.mots-cta:active{transform:scale(.97)}
+.mots-egg{position:absolute;right:-14px;bottom:-14px;transform:rotate(-8deg);pointer-events:none}
+.mots-egg img{width:130px;display:block}
+@keyframes mots-sq{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-8px) scale(.97,1.04)}52%{transform:translateY(0) scale(1.04,.96)}}
+@keyframes mots-bob{50%{transform:translateY(-8px)}}
+.mots .sq{animation:mots-sq 2.6s cubic-bezier(.3,0,.2,1) infinite;transform-origin:50% 100%}
+.mots .bob{animation:mots-bob 4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.mots .sq,.mots .bob{animation:none}.mots-w,.mots-gauge b,.mots-gauge u{transition:none}}
 </style>

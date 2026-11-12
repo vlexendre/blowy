@@ -16,50 +16,71 @@ export interface TextFieldProps extends Omit<TextInputProps, 'style'> {
   right?: ReactNode;
   /** Grand texte gras (nom du pet). */
   large?: boolean;
+  /** Libellé dans la case, au-dessus de la valeur (`.fld` de V6-Profil : 17 pt gras sur fond `card`). */
+  inset?: boolean;
   style?: StyleProp<ViewStyle>;
   ref?: Ref<ComponentRef<typeof TextInput>>;
 }
 
 /** Champ de saisie sombre arrondi. */
-export function TextField({ label, hint, error, right, large, style, onFocus, onBlur, editable = true, accessibilityLabel, ref, ...rest }: TextFieldProps) {
+export function TextField({ label, hint, error, right, large, inset, style, onFocus, onBlur, editable = true, accessibilityLabel, ref, ...rest }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
-  const border = error ? color.danger : focused ? color.accent : veil.glassStrong;
+  const border = error ? color.danger : focused ? color.accent : inset ? veil.glass : veil.glassStrong;
+  const input = (
+    <TextInput
+      ref={ref}
+      {...rest}
+      editable={editable}
+      accessibilityLabel={accessibilityLabel ?? label}
+      placeholderTextColor={color.mute}
+      selectionColor={color.accent}
+      onFocus={(e) => {
+        setFocused(true);
+        onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        setFocused(false);
+        onBlur?.(e);
+      }}
+      style={[inset ? styles.insetInput : large ? styles.large : type.body, styles.input, inset && styles.insetPad]}
+    />
+  );
+  const note = error ? (
+    <Text variant="small" color={color.danger} accessibilityLiveRegion="polite" style={styles.hint}>
+      {error}
+    </Text>
+  ) : hint ? (
+    <Text variant="small" muted size={inset ? 12 : undefined} style={[styles.hint, inset && styles.insetHint]}>
+      {hint}
+    </Text>
+  ) : null;
+  if (inset) {
+    return (
+      <View style={style}>
+        <View style={[styles.inset, { borderColor: border }, !editable && styles.off]}>
+          {label ? (
+            <Text variant="label" muted size={11} style={styles.insetLabel}>
+              {label}
+            </Text>
+          ) : null}
+          {input}
+        </View>
+        {note}
+      </View>
+    );
+  }
   return (
-    <View style={[layout.gapSm, style]}>
+    <View style={style}>
       {label ? (
-        <Text variant="label" muted>
+        <Text variant="label" muted style={styles.label}>
           {label}
         </Text>
       ) : null}
       <View style={[styles.box, layout.row, { borderColor: border }, !editable && styles.off]}>
-        <TextInput
-          ref={ref}
-          {...rest}
-          editable={editable}
-          accessibilityLabel={accessibilityLabel ?? label}
-          placeholderTextColor={color.mute}
-          selectionColor={color.accent}
-          onFocus={(e) => {
-            setFocused(true);
-            onFocus?.(e);
-          }}
-          onBlur={(e) => {
-            setFocused(false);
-            onBlur?.(e);
-          }}
-          style={[large ? styles.large : type.body, styles.input]}
-        />
-        {right}
+        {input}
+        {right ? <View style={styles.right}>{right}</View> : null}
       </View>
-      {error ? (
-        <Text variant="small" color={color.danger} accessibilityLiveRegion="polite">
-          {error}
-        </Text>
-      ) : hint ? (
-        <Text variant="small" muted>
-          {hint}
-        </Text>
-      ) : null}
+      {note}
     </View>
   );
 }
@@ -67,14 +88,23 @@ export function TextField({ label, hint, error, right, large, style, onFocus, on
 const styles = StyleSheet.create({
   box: {
     minHeight: size.button.lg,
-    borderRadius: radius.md + 4,
+    borderRadius: radius.md + 2,
     borderWidth: size.border,
     backgroundColor: color.panel,
-    paddingLeft: space.lg + 4,
+    paddingLeft: space.lg + 2,
     paddingRight: space.sm,
     gap: space.sm,
   },
   input: { flex: 1, minWidth: 0, color: color.white, paddingVertical: space.md, minHeight: size.touch, outlineWidth: 0, outlineStyle: 'solid' },
-  large: { ...type.bodyBold, fontSize: 20, lineHeight: 26 },
+  large: { ...type.bodyHeavy, fontSize: 20, lineHeight: 26 },
+  // `.lbl` des maquettes : 11 px, approche .12 em, décalé de 4 px.
+  label: { fontSize: 11, lineHeight: 14, letterSpacing: 1.32, marginHorizontal: space.xs, marginBottom: space.xs + 2 },
+  hint: { marginHorizontal: space.xs + 2, marginTop: space.sm },
+  right: { alignSelf: 'center' },
+  inset: { borderRadius: radius.md, borderWidth: size.border, backgroundColor: color.card, paddingVertical: 9, paddingHorizontal: space.lg, gap: 1 },
+  insetLabel: { lineHeight: 14, letterSpacing: 1.1 },
+  insetInput: { ...type.bodyBold, fontSize: 17, lineHeight: 22 },
+  insetHint: { marginTop: 10, lineHeight: 16 },
+  insetPad: { paddingVertical: 0, minHeight: 23 },
   off: { opacity: 0.6 },
 });

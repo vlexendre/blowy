@@ -8,7 +8,7 @@ import { Hearts } from '../molecules/Hearts';
 import { LevelPill } from '../molecules/LevelPill';
 import { type SegmentedTabItem, SegmentedTabs } from '../molecules/SegmentedTabs';
 import { layout } from '../lib/styles';
-import { space } from '../theme';
+import { space, veil } from '../theme';
 import type { PersonLook, PetLook } from '../types';
 import { ScreenTemplate, type ScreenTemplateProps } from './ScreenTemplate';
 
@@ -62,32 +62,39 @@ export function LinkTemplate<K extends string>({
   refreshControl,
 }: LinkTemplateProps<K>) {
   const header = (
-    <View style={[layout.gapMd, scroll ? null : styles.inset]}>
+    <View style={[styles.head, styles.inset]}>
       <View style={[layout.row, styles.top]}>
-        <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} />
+        <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} style={styles.back} />
         <AvatarPair size={40} first={{ pet: myPet, hidden: true }} second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }} />
         <View style={[layout.grow, styles.who]}>
-          <Text variant="bodyBold" size={19} numberOfLines={1} accessibilityRole="header">
+          <Text variant="bodyHeavy" size={19} numberOfLines={1} accessibilityRole="header" style={styles.name}>
             {other.displayName}
           </Text>
-          <Hearts lives={lives} ghost={ghost} size={13} accessibilityLabel={livesLabel} />
+          <Hearts lives={lives} ghost={ghost} size={14} accessibilityLabel={livesLabel} />
         </View>
-        <LevelPill label={levelLabel} onPress={onLevelPress} />
-        {onOptions ? <IconButton glyph="more" label={optionsLabel} onPress={onOptions} size={40} /> : null}
+        <LevelPill label={levelLabel} onPress={onLevelPress} style={styles.level} />
+        {onOptions ? <IconButton glyph="more" label={optionsLabel} onPress={onOptions} size={40} style={styles.back} /> : null}
       </View>
       <SegmentedTabs items={tabs} activeKey={activeTab} onChange={onTabChange} />
     </View>
   );
   return (
-    <ScreenTemplate header={header} footer={footer} scroll={scroll} padded={scroll} refreshControl={scroll ? refreshControl : undefined}>
+    <ScreenTemplate header={header} footer={footer} scroll={scroll} padded={false} contentStyle={scroll ? styles.inset : undefined} refreshControl={scroll ? refreshControl : undefined}>
       {children}
     </ScreenTemplate>
   );
 }
 
+// Maquettes (`.hd`, `.tabs3`) : en-tête à 14 pt des bords, onglets 10 pt sous la rangée du haut.
+const EDGE = 14;
+
 const styles = StyleSheet.create({
-  top: { gap: space.md - 2 },
+  head: { gap: 10, paddingTop: 2 },
+  top: { gap: 10 },
+  back: { backgroundColor: veil.track },
   who: { gap: space.xs },
-  /** Corps non défilant (chat) : le gabarit n'ajoute pas les marges, l'en-tête les garde. */
-  inset: { paddingHorizontal: space.lg },
+  name: { lineHeight: 20 },
+  level: { marginLeft: 'auto', paddingLeft: space.xs },
+  /** Marges de 14 pt (le gabarit de base en met 16) ; le chat gère les siennes dans sa liste. */
+  inset: { paddingHorizontal: EDGE },
 });

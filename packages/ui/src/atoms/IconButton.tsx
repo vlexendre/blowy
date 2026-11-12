@@ -8,7 +8,8 @@ import { Badge } from './Badge';
 import { Glyph, type GlyphName } from './Glyph';
 import { Pressable } from './Pressable';
 
-export type IconButtonVariant = 'glass' | 'accent' | 'dark' | 'white' | 'plain';
+/** `back` : rond de retour des maquettes (`.back`, blanc à 12 %). */
+export type IconButtonVariant = 'glass' | 'back' | 'accent' | 'dark' | 'white' | 'plain';
 
 export interface IconButtonProps {
   /** Libellé lu par le lecteur d'écran (obligatoire : le bouton n'a pas de texte). */
@@ -27,6 +28,7 @@ export interface IconButtonProps {
 
 const BG: Record<IconButtonVariant, { bg: string; ink: string }> = {
   glass: { bg: veil.glass, ink: color.white },
+  back: { bg: veil.track, ink: color.white },
   accent: { bg: color.accent, ink: color.dark },
   dark: { bg: color.dark, ink: color.white },
   white: { bg: color.white, ink: color.dark },

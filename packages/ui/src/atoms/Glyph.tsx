@@ -23,6 +23,7 @@ export const GLYPHS = [
   'camera',
   'dot',
   'more',
+  'copy',
 ] as const;
 export type GlyphName = (typeof GLYPHS)[number];
 
@@ -193,6 +194,14 @@ function draw(name: GlyphName, s: number, c: string, sw: number, filled: boolean
       );
     case 'play':
       return <View style={{ marginLeft: s * 0.1 }}>{triangle(s * 0.66, s * 0.6, c, '90deg')}</View>;
+    case 'copy':
+      // Deux cartes décalées (maquette V6-Invite : « copier »).
+      return (
+        <View style={{ width: s, height: s }}>
+          <View style={{ position: 'absolute', left: s * 0.12, top: s * 0.12, width: s * 0.52, height: s * 0.52, borderWidth: sw, borderRightWidth: 0, borderBottomWidth: 0, borderColor: c, borderTopLeftRadius: s * 0.1 }} />
+          <View style={{ position: 'absolute', right: s * 0.12, bottom: s * 0.12, width: s * 0.52, height: s * 0.52, borderWidth: sw, borderColor: c, borderRadius: s * 0.12 }} />
+        </View>
+      );
     case 'share':
       return (
         <View style={[styles.center, { width: s, height: s }]}>

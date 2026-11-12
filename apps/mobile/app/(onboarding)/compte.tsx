@@ -1,9 +1,9 @@
 /** Compte (V6-Compte) : e-mail → code à 6 chiffres. Après la connexion, l'aiguillage décide de la suite. */
-import { color, space } from '@blowy/tokens';
-import { Banner, Button, OnboardingTemplate, OtpInput, Panel, PetImage, SpeechBubble, Text, TextField, Title } from '@blowy/ui';
+import { color } from '@blowy/tokens';
+import { Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, OtpInput, Text, TextField } from '@blowy/ui';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Linking } from 'react-native';
 
 import { config, LOCAL_CODE } from '@/core';
 import { useDraft } from '@/features/onboarding';
@@ -109,29 +109,28 @@ export default function Compte() {
       total={login ? undefined : onboarding.total}
       onBack={() => goBack(login ? '/(onboarding)/welcome' : '/(onboarding)/caractere')}
       backLabel={common.back}
+      gap={16}
       primaryLabel={t.sendCode}
       primaryLoading={send.isPending}
       primaryDisabled={!email.trim()}
       onPrimary={() => sendCode()}
       footnote={
-        <View style={{ gap: space.xs }}>
-          <Text variant="small" muted center>
-            {t.legal}
-          </Text>
+        <>
+          <LegalNote
+            segments={[
+              { text: t.legalLead, strong: true },
+              { text: t.legalBefore },
+              { text: t.legalTerms, onPress: () => void Linking.openURL(`${config.webUrl}/conditions`) },
+              { text: t.legalAnd },
+              { text: t.legalPrivacy, onPress: () => void Linking.openURL(`${config.webUrl}/confidentialite`) },
+              { text: '.' },
+            ]}
+          />
           {devHint}
-        </View>
+        </>
       }
     >
-      <Panel gradient="coral" padding="lg" style={{ minHeight: 280 }}>
-        <Title text={login ? t.loginTitle : t.titleWaiting(petName)} size={52} />
-        <View style={{ flexGrow: 1, minHeight: space.lg }} />
-        <View style={{ maxWidth: '62%' }}>
-          <SpeechBubble text={t.speech} tail="left" />
-        </View>
-        <View pointerEvents="none" style={{ position: 'absolute', right: -36, bottom: -36 }}>
-          <PetImage species={species} mood="surpris" size={170} outline animation="bob" accessibilityLabel={petName} />
-        </View>
-      </Panel>
+      <OnboardingPanel title={login ? t.loginTitle : t.titleWaiting(petName)} pet={{ name: petName, species }} speech={t.speech} />
       <TextField
         label={t.emailLabel}
         hint={t.emailHint}

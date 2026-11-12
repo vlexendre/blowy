@@ -14,32 +14,39 @@ export interface SpeechBubbleProps {
   /** Coin pointu : côté de la queue. */
   tail?: 'left' | 'right' | 'none';
   rotate?: number;
+  /** Petite bulle à plat (13 pt, sans ombre ni bordure), comme sur le panneau de Mon pet. */
+  compact?: boolean;
+  /** Bulle de chat à plat (`.bub` : 15 pt normal, mot en couleur gras, sans ombre ni bordure), comme V6-Craft. */
+  chat?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Bulle de parole posée sur un panneau (le pet parle). */
-export function SpeechBubble({ text, highlight, highlightColor = color.accent, tone = 'dark', tail = 'left', rotate = 0, style }: SpeechBubbleProps) {
+export function SpeechBubble({ text, highlight, highlightColor = color.accent, tone = 'dark', tail = 'left', rotate = 0, compact, chat, style }: SpeechBubbleProps) {
   const dark = tone === 'dark';
+  const flat = compact || chat;
+  const variant = flat ? 'body' : 'bodyBold';
+  const fontSize = compact ? 13 : 15;
   const parts = highlight ? text.split(highlight) : [text];
   return (
     <View
       style={[
         styles.base,
-        shadow.soft,
+        compact ? styles.compact : chat ? styles.chat : shadow.soft,
         { backgroundColor: dark ? color.dark : color.white, transform: rotate ? [{ rotate: `${rotate}deg` }] : undefined },
-        tail === 'left' && styles.tailLeft,
-        tail === 'right' && styles.tailRight,
-        dark && styles.border,
+        tail === 'left' && (flat ? styles.compactTailLeft : styles.tailLeft),
+        tail === 'right' && (flat ? styles.compactTailRight : styles.tailRight),
+        dark && !flat && styles.border,
         style,
       ]}
     >
       <InkProvider value={dark ? color.white : color.dark}>
-        <Text variant="bodyBold" size={15}>
+        <Text variant={variant} size={fontSize}>
           {parts.map((p, i) => (
-            <Text key={i} variant="bodyBold" size={15}>
+            <Text key={i} variant={variant} size={fontSize}>
               {p}
               {highlight && i < parts.length - 1 ? (
-                <Text variant="bodyBold" size={15} color={highlightColor}>
+                <Text variant={chat ? 'bodyBold' : variant} size={fontSize} color={highlightColor}>
                   {highlight}
                 </Text>
               ) : null}
@@ -56,4 +63,8 @@ const styles = StyleSheet.create({
   tailLeft: { borderBottomLeftRadius: space.xs },
   tailRight: { borderBottomRightRadius: space.xs },
   border: { borderWidth: 1, borderColor: veil.glass },
+  compact: { paddingHorizontal: 11, paddingVertical: 7, borderRadius: 18 },
+  chat: { maxWidth: 300, paddingHorizontal: 13, paddingVertical: 9, borderRadius: 20 },
+  compactTailLeft: { borderBottomLeftRadius: 6 },
+  compactTailRight: { borderBottomRightRadius: 6 },
 });

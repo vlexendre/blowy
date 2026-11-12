@@ -1,7 +1,7 @@
 import { MAX_LIVES } from '@blowy/domain';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
-import { Glyph } from '../atoms/Glyph';
 import { useInk } from '../lib/ink';
 import { extra, size as sizes } from '../theme';
 
@@ -18,6 +18,9 @@ export interface HeartsProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/** `clip-path` des cœurs de la maquette (`.hearts i`, 14 × 13). */
+const HEART = 'M7 13 C2 9 0 6.5 0 4 A3.6 3.6 0 0 1 7 2.6 A3.6 3.6 0 0 1 14 4 C14 6.5 12 9 7 13 Z';
+
 /** Les vies d'un lien : n cœurs pleins sur 7, les perdus estompés. */
 export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, accessibilityLabel, style }: HeartsProps) {
   const ink = useInk();
@@ -25,9 +28,9 @@ export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, acce
   return (
     <View accessible accessibilityRole="text" accessibilityLabel={accessibilityLabel ?? `${on}/${max}`} style={[styles.row, { gap: Math.max(2, Math.round(size / 5)) }, style]}>
       {Array.from({ length: max }, (_, i) => (
-        <View key={i} needsOffscreenAlphaCompositing={i >= on} style={i < on ? null : styles.off}>
-          <Glyph name="heart" size={size} color={i < on ? extra.heart : ink} />
-        </View>
+        <Svg key={i} width={size} height={(size * 13) / 14} viewBox="0 0 14 13" style={i < on ? null : styles.off}>
+          <Path d={HEART} fill={i < on ? extra.heart : ink} />
+        </Svg>
       ))}
     </View>
   );

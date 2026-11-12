@@ -4,20 +4,17 @@ import {
   Button,
   Chip,
   EmptyState,
+  EncounterStage,
   Header,
   MessageBubble,
-  PetImage,
   ScreenTemplate,
   SettingsSection,
   SheetTemplate,
   Skeleton,
-  Sticker,
-  Text,
-  Title,
+  Stack,
 } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import { useAcceptEncounter, useDeclineEncounter, useEncounter, useWave } from '@/features/encounters';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
@@ -62,10 +59,10 @@ export default function RencontreScreen() {
     return (
       <ScreenTemplate header={header} background="violet">
         {encounter.isPending ? (
-          <View style={styles.body}>
+          <Stack top={6}>
             <Skeleton height={240} radius="xl" />
             <Skeleton height={120} radius="lg" />
-          </View>
+          </Stack>
         ) : encounter.isError ? (
           <Banner tone="error" title={listText.loadError} text={encounter.error.message} actionLabel={listText.retry} onAction={() => void encounter.refetch()} />
         ) : (
@@ -83,7 +80,7 @@ export default function RencontreScreen() {
         loading={accept.isPending}
         disabled={decline.isPending}
       />
-      <Button label={t.decline} variant="ghost" onPress={() => decline.mutate(incoming.id, { onSuccess: back })} loading={decline.isPending} disabled={accept.isPending} />
+      <Button label={t.decline} variant="link" size="md" labelSize={15} onPress={() => decline.mutate(incoming.id, { onSuccess: back })} loading={decline.isPending} disabled={accept.isPending} />
     </>
   ) : suggestion?.waved ? (
     <Button label={t.waved} variant="ghost" icon="check" disabled />
@@ -92,34 +89,31 @@ export default function RencontreScreen() {
   );
 
   return (
-    <ScreenTemplate header={header} background="violet" footer={footer}>
-      <View style={styles.body}>
-        <View style={styles.stage}>
-          <View style={styles.side}>
-            {myPet ? <PetImage species={myPet.species} form={myPet.form} size={140} animation="breathe" outline /> : null}
-            <Sticker label={t.me(myPetName)} rotate={-5} size="sm" style={styles.tagLeft} />
-          </View>
-          <View style={styles.side}>
-            <PetImage species={person.pet.species} mood="salut" size={140} animation="bob" delay={300} outline />
-            <Sticker label={t.them(person.pet.name, person.displayName)} tone="white" rotate={4} size="sm" style={styles.tagRight} />
-          </View>
-        </View>
-
-        <Text variant="label">{incoming ? t.theySay(person.pet.name) : t.saysTitle(myPetName)}</Text>
-        <MessageBubble
-          message={{ author: incoming ? 'other_pet' : 'my_pet', kind: 'text', body: incoming?.intro ?? suggestion?.intro ?? '', mediaUrl: null }}
-          name={(incoming ? person.pet.name : myPetName).toLowerCase()}
-          pet={incoming ? person.pet : myPet ? { name: myPet.name, species: myPet.species, form: myPet.form } : undefined}
-        />
-
-        <Title text={t.title} variant="hero" />
-        <Text variant="bodyBold">{suggestion?.waved ? t.waitingText(person.displayName) : t.text(person.displayName)}</Text>
-
+    <ScreenTemplate footer={footer}>
+      <Stack top={6} gap={6} grow>
+        <EncounterStage
+          onBack={back}
+          backLabel={t.back}
+          via={via ? { label: via } : undefined}
+          compat={`${compat} %`}
+          compatLabel={t.compatA11y(compat)}
+          onMore={() => setSheet('menu')}
+          moreLabel={t.more}
+          me={myPet ? { pet: { name: myPet.name, species: myPet.species, form: myPet.form }, label: t.me(myPetName) } : undefined}
+          them={{ pet: person.pet, label: t.them(person.pet.name, person.displayName) }}
+          saysLabel={incoming ? t.theySay(person.pet.name) : t.saysTitle(myPetName)}
+          title={t.title}
+          text={suggestion?.waved ? t.waitingText(person.displayName) : t.text(person.displayName)}
+        >
+          <MessageBubble
+            message={{ author: incoming ? 'other_pet' : 'my_pet', kind: 'text', body: incoming?.intro ?? suggestion?.intro ?? '', mediaUrl: null }}
+            name={(incoming ? person.pet.name : myPetName).toLowerCase()}
+            pet={incoming ? person.pet : myPet ? { name: myPet.name, species: myPet.species, form: myPet.form } : undefined}
+          />
+        </EncounterStage>
         {error ? <Banner tone="error" text={errorText(error, listText.actionError)} /> : null}
         {reported ? <Banner tone="success" text={optionsText.reportDone} onClose={() => setReported(false)} closeLabel={optionsText.close} /> : null}
-
-        <Button label={t.safety} variant="ghost" size="sm" onPress={() => setSheet('menu')} style={styles.safety} />
-      </View>
+      </Stack>
 
       <SheetTemplate visible={sheet === 'menu'} onClose={() => setSheet(null)} title={t.safetyTitle} closeLabel={optionsText.close}>
         <SettingsSection
@@ -159,12 +153,3 @@ export default function RencontreScreen() {
     </ScreenTemplate>
   );
 }
-
-const styles = StyleSheet.create({
-  body: { gap: 14, paddingTop: 4 },
-  stage: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 8 },
-  side: { alignItems: 'center', flex: 1 },
-  tagLeft: { marginTop: -10 },
-  tagRight: { marginTop: -10 },
-  safety: { alignSelf: 'center', marginTop: 8 },
-});

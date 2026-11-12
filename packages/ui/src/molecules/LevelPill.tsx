@@ -17,7 +17,7 @@ export interface LevelPillProps {
 
 /** Pastille du niveau d'un lien. */
 export function LevelPill({ label, tone = 'accent', size = 'md', onPress, accessibilityLabel, style }: LevelPillProps) {
-  const chip = <Chip label={label} tone={tone} size={size} style={onPress ? undefined : style} />;
+  const chip = <Chip label={label} tone={tone} size={size} style={[size === 'sm' && styles.sm, onPress ? undefined : style]} />;
   if (!onPress) return chip;
   return (
     <Pressable onPress={onPress} accessibilityLabel={accessibilityLabel ?? label} hitSlop={hitSlopFor(30)} style={[styles.self, style]}>
@@ -26,4 +26,8 @@ export function LevelPill({ label, tone = 'accent', size = 'md', onPress, access
   );
 }
 
-const styles = StyleSheet.create({ self: { alignSelf: 'flex-start' } });
+const styles = StyleSheet.create({
+  self: { alignSelf: 'flex-start' },
+  // `.chip` des lignes de chat : padding 3px 9px, 11px → 21 pt de haut.
+  sm: { height: 21, paddingHorizontal: 9 },
+});

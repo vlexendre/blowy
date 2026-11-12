@@ -5,7 +5,7 @@ import { Card } from '../atoms/Card';
 import { Chip, type ChipTone } from '../atoms/Chip';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
-import { radius, size, space, veil } from '../theme';
+import { color, size, space, type } from '../theme';
 
 export interface WordsShareCardProps {
   /** « décris-moi en 3 mots ». */
@@ -32,19 +32,21 @@ const TONES: readonly ChipTone[] = ['accent', 'rose', 'orange', 'violet'];
 /** Le lien « 3 mots » : mots reçus, adresse, copier, partager en story. */
 export function WordsShareCard({ title, countLabel, words, url, copyLabel, copiedLabel, copied, shareLabel, onCopy, onShare, emptyText }: WordsShareCardProps) {
   return (
-    <Card padding="md" style={layout.gapMd}>
+    <Card padding="none" style={styles.card}>
       <View style={[layout.rowBetween, layout.gapSm]}>
-        <Text variant="label">{title}</Text>
+        <Text variant="label" size={11} style={styles.label}>
+          {title}
+        </Text>
         {countLabel ? (
-          <Text variant="small" muted>
+          <Text variant="small" size={12} muted>
             {countLabel}
           </Text>
         ) : null}
       </View>
       {words.length ? (
-        <View style={layout.wrap}>
+        <View style={[layout.row, styles.chips]}>
           {words.map((w, i) => (
-            <Chip key={w.label} label={w.count ? `${w.label} ×${w.count}` : w.label} tone={TONES[i % TONES.length]} />
+            <Chip key={w.label} label={w.count ? `${w.label} ×${w.count}` : w.label} tone={TONES[i % TONES.length]} style={styles.chip} />
           ))}
         </View>
       ) : emptyText ? (
@@ -54,11 +56,11 @@ export function WordsShareCard({ title, countLabel, words, url, copyLabel, copie
       ) : null}
       <View style={[layout.row, layout.gapSm]}>
         <View style={[styles.url, layout.grow]}>
-          <Text variant="bodyBold" size={14} numberOfLines={1} selectable>
+          <Text variant="bodyHeavy" size={15} numberOfLines={1} selectable>
             {url}
           </Text>
         </View>
-        <Button label={copied && copiedLabel ? copiedLabel : copyLabel} variant="ghost" size="sm" onPress={onCopy} style={styles.btn} />
+        <Button label={copied && copiedLabel ? copiedLabel : copyLabel} variant="ghost" size="sm" onPress={onCopy} style={[styles.btn, styles.copy]} />
         <Button label={shareLabel} variant="accent" size="sm" onPress={onShare} style={styles.btn} />
       </View>
     </Card>
@@ -66,6 +68,11 @@ export function WordsShareCard({ title, countLabel, words, url, copyLabel, copie
 }
 
 const styles = StyleSheet.create({
-  url: { height: size.touch, justifyContent: 'center', paddingHorizontal: space.md, borderRadius: radius.pill, backgroundColor: veil.line },
+  card: { borderRadius: 24, padding: space.md + 2, gap: space.sm + 2 },
+  label: { fontFamily: type.bodyHeavy.fontFamily, letterSpacing: 11 * 0.12 },
+  chips: { flexWrap: 'wrap', gap: space.xs + 2 },
+  chip: { height: 26, paddingHorizontal: 11 },
+  url: { height: size.touch, justifyContent: 'center', paddingHorizontal: space.lg, borderRadius: size.touch / 2, backgroundColor: color.card },
   btn: { height: size.touch },
+  copy: { minWidth: 88 },
 });

@@ -1,5 +1,5 @@
 import type { Me } from '@blowy/contract';
-import { addGauges, type Gauges, type Species, ZERO_GAUGES } from '@blowy/domain';
+import { addGauges, GAUGE_KEYS, type GaugeKey, type Gauges, type Species, ZERO_GAUGES } from '@blowy/domain';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
 
@@ -30,43 +30,54 @@ export const useDraft = create<Draft>((set) => ({
   reset: () => set(empty),
 }));
 
-/** Questions du quiz de départ : chaque réponse pousse une jauge d'un côté. */
-export const QUIZ: { question: string; choices: [{ label: string; delta: Partial<Gauges> }, { label: string; delta: Partial<Gauges> }] }[] = [
+/** Questions du quiz de départ (ordre des jauges) : chaque réponse pousse une jauge d'un côté. */
+export const QUIZ: { choices: [QuizChoice, QuizChoice] }[] = [
   {
-    question: 'un vendredi soir, ton pet préfère…',
     choices: [
-      { label: 'un plaid et une série', delta: { social: -30 } },
-      { label: 'sortir voir du monde', delta: { social: 30 } },
+      { label: 'reste au chaud : plaid, série, pizza', emoji: '🛋️', delta: { social: -30 } },
+      { label: 'sort. on verra bien où ça finit', emoji: '🪩', delta: { social: 30 } },
     ],
   },
   {
-    question: 'devant un inconnu, il…',
     choices: [
-      { label: 'observe d’abord', delta: { talk: -30 } },
-      { label: 'raconte déjà sa vie', delta: { talk: 30 } },
+      { label: 'un bon livre et le bruit de la pluie', emoji: '📖', delta: { play: -30 } },
+      { label: 'tournoi de uno, mauvaise foi incluse', emoji: '🃏', delta: { play: 30 } },
     ],
   },
   {
-    question: 'pour dire qu’il t’aime bien, il…',
     choices: [
-      { label: 'te vanne gentiment', delta: { tender: -30 } },
-      { label: 'te fait un câlin', delta: { tender: 30 } },
+      { label: 'tu le chambres. c’est de l’amour aussi', emoji: '🌶️', delta: { tender: -30 } },
+      { label: 'câlin direct, et on n’en parle plus', emoji: '🫶', delta: { tender: 30 } },
     ],
   },
   {
-    question: 'son week-end idéal…',
     choices: [
-      { label: 'tranquille, sans plan', delta: { play: -30 } },
-      { label: 'des jeux et des défis', delta: { play: 30 } },
+      { label: 'tu réponds « ok 👍 »', emoji: '🤐', delta: { talk: -30 } },
+      { label: 'tu en renvoies un de 6', emoji: '🎙️', delta: { talk: 30 } },
     ],
   },
 ];
 
+interface QuizChoice {
+  label: string;
+  emoji: string;
+  delta: Partial<Gauges>;
+}
+
+/** Les deux traits les plus marqués du caractère de départ (pôle de chaque jauge), dans l'ordre des maquettes. */
+export function strongestTraits(quiz: Gauges): [GaugeKey, GaugeKey] {
+  const order = GAUGE_KEYS.map((k, i) => ({ k, i, v: Math.abs(quiz[k]) }))
+    .sort((a, b) => b.v - a.v)
+    .slice(0, 2)
+    .sort((a, b) => b.i - a.i);
+  return [order[0]?.k ?? 'play', order[1]?.k ?? 'social'];
+}
+
 export const isValidBirthdate = (v: string): boolean => /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v));
 
-/** « 14/03/1999 » → « 1999-03-14 » ; chaîne vide si incomplet. */
+/** « 14 / 03 / 1999 » → « 1999-03-14 » ; chaîne vide si incomplet. */
 export function birthdateFromInput(input: string): string {
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(input.trim());
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(input.replace(/\s/g, ''));
   if (!m) return '';
   const iso = `${m[3]}-${m[2]}-${m[1]}`;
   const d = new Date(`${iso}T00:00:00Z`);

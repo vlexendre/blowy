@@ -18,6 +18,10 @@ export interface ScreenTemplateProps {
   background?: GradientName | 'night';
   /** Marges latérales de `tokens.space.lg`. Défaut vrai. */
   padded?: boolean;
+  /** Marge latérale personnalisée quand `padded` (ex. 18 pour l'inscription). */
+  gutter?: number;
+  /** Espacements de la barre du haut (défaut 4 au-dessus, 8 en dessous). */
+  headerStyle?: StyleProp<ViewStyle>;
   /** Bords protégés par la zone de sécurité. Défaut haut et bas. */
   edges?: readonly ('top' | 'bottom')[];
   /** Espace réservé en bas du contenu (ex. `TAB_BAR_SPACE`). */
@@ -37,6 +41,8 @@ export function ScreenTemplate({
   scroll = true,
   background = 'night',
   padded = true,
+  gutter = space.lg,
+  headerStyle,
   edges = ['top', 'bottom'],
   bottomSpace = 0,
   keyboard = true,
@@ -47,7 +53,7 @@ export function ScreenTemplate({
   const insets = useSafeAreaInsets();
   const top = edges.includes('top') ? insets.top : 0;
   const safeBottom = edges.includes('bottom') ? insets.bottom : 0;
-  const pad = padded ? { paddingHorizontal: space.lg } : null;
+  const pad = padded ? { paddingHorizontal: gutter } : null;
   const bodyBottom = (footer ? 0 : safeBottom) + bottomSpace + (scroll ? space.xl : 0);
 
   const body = scroll ? (
@@ -77,7 +83,7 @@ export function ScreenTemplate({
     <View style={[styles.root, { paddingTop: top }]}>
       {background !== 'night' ? <LinearGradient colors={gradients[background]} style={StyleSheet.absoluteFill} /> : null}
       <InkProvider value={color.white} mute={color.mute}>
-        {header ? <View style={[pad, styles.header]}>{header}</View> : null}
+        {header ? <View style={[pad, styles.header, headerStyle]}>{header}</View> : null}
         {keyboard ? (
           <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             {inner}

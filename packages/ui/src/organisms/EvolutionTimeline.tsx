@@ -1,80 +1,68 @@
-import { GAUGE_KEYS, type GaugeKey, type PetEventKind } from '@blowy/domain';
+import type { PetForm, Species } from '@blowy/domain';
+import { Fragment } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Glyph } from '../atoms/Glyph';
+import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
-import { layout } from '../lib/styles';
-import { alpha, color, radius, space, veil } from '../theme';
-import type { PetEventLook } from '../types';
+import { Title } from '../atoms/Title';
+import { alpha, color } from '../theme';
 
-export interface EvolutionTimelineProps {
-  events: readonly PetEventLook[];
-  /** Libellé de chaque événement (`eventLabel` de @blowy/content accepté tel quel). */
-  eventLabels: Record<PetEventKind, string>;
-  /** Pôles des jauges (`gaugeLabel` de @blowy/content) : « +12 sociable », « −5 bavard ». */
-  gaugeLabels: Record<GaugeKey, { low: string; high: string }>;
-  /** Date affichée d'un événement (« hier », « 12 oct. »). */
-  dateLabel: (at: string) => string;
-  /** Texte quand la liste est vide. */
-  emptyText?: string;
+export interface EvolutionStep {
+  form: PetForm;
+  /** Puce de date (« septembre », « aujourd'hui »). */
+  when: string;
+  /** Nom de la forme (« casanier »). */
+  name: string;
+  /** Légende (« que du canapé. »). */
+  caption?: string;
+  /** Étape actuelle : puce blanche, pet plus grand qui respire. */
+  current?: boolean;
 }
 
-const deltaText = (v: number, label: string): string => `${v > 0 ? '+' : '−'}${Math.abs(v)} ${label}`;
+export interface EvolutionTimelineProps {
+  species: Species;
+  /** Étapes de la plus ancienne à l'actuelle (3 au plus). */
+  steps: readonly EvolutionStep[];
+}
 
-/** Journal du caractère : ce qui s'est passé et comment les jauges ont bougé. */
-export function EvolutionTimeline({ events, eventLabels, gaugeLabels, dateLabel, emptyText }: EvolutionTimelineProps) {
-  if (events.length === 0) {
-    return emptyText ? (
-      <Text variant="small" muted center>
-        {emptyText}
-      </Text>
-    ) : null;
-  }
+/** Les formes successives du pet, reliées par des chevrons (panneau de l'écran Évolution). */
+export function EvolutionTimeline({ species, steps }: EvolutionTimelineProps) {
   return (
-    <View accessibilityRole="list">
-      {events.map((e, i) => {
-        const deltas = GAUGE_KEYS.flatMap((k) => {
-          const v = e.delta[k];
-          return v ? [{ k, v }] : [];
-        });
-        return (
-          <View key={e.id} accessible style={[layout.rowTop, styles.row]}>
-            <View style={styles.rail}>
-              <View style={styles.dot} />
-              {i < events.length - 1 ? <View style={styles.line} /> : null}
+    <View style={styles.row} accessibilityRole="list">
+      {steps.map((s, i) => (
+        <Fragment key={`${s.form}-${i}`}>
+          {i > 0 ? <Glyph name="chevron" size={14} color={color.white} style={styles.arrow} /> : null}
+          <View accessible accessibilityLabel={`${s.when}, ${s.name}${s.caption ? `, ${s.caption}` : ''}`} style={styles.step}>
+            <View style={styles.art}>
+              <PetImage species={species} form={s.form} size={s.current ? 112 : 98} animation={s.current ? 'breathe' : 'none'} style={styles.pet} />
             </View>
-            <View style={[layout.grow, styles.body]}>
-              <View style={[layout.rowBetween, layout.gapSm]}>
-                <Text variant="bodyBold" size={15} style={layout.shrink}>
-                  {eventLabels[e.kind]}
-                </Text>
-                <Text variant="small" muted>
-                  {dateLabel(e.at)}
-                </Text>
-              </View>
-              {deltas.length ? (
-                <View style={layout.wrap}>
-                  {deltas.map(({ k, v }) => (
-                    <View key={k} style={[styles.delta, { backgroundColor: alpha(v > 0 ? color.accent : color.coral, 0.16) }]}>
-                      <Text variant="bodyBold" size={12} color={v > 0 ? color.accent : color.coral}>
-                        {deltaText(v, gaugeLabels[k].high)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ) : null}
+            <View style={[styles.when, s.current && styles.whenNow]}>
+              <Text variant="bodyHeavy" size={12} color={s.current ? color.dark : color.white} numberOfLines={1}>
+                {s.when}
+              </Text>
             </View>
+            <Title text={s.name} size={20} center numberOfLines={1} style={styles.name} />
+            {s.caption ? (
+              <Text variant="small" size={12} center style={styles.caption} numberOfLines={2}>
+                {s.caption}
+              </Text>
+            ) : null}
           </View>
-        );
-      })}
+        </Fragment>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { gap: space.md },
-  rail: { width: 14, alignItems: 'center', alignSelf: 'stretch', paddingTop: space.xs + 1 },
-  dot: { width: 12, height: 12, borderRadius: radius.pill, backgroundColor: color.accent, borderWidth: 3, borderColor: color.panel },
-  line: { flex: 1, width: 2, backgroundColor: veil.glass, marginTop: 2 },
-  body: { gap: space.sm, paddingBottom: space.lg },
-  delta: { paddingHorizontal: space.md - 2, paddingVertical: space.xs, borderRadius: radius.pill },
+  row: { flexDirection: 'row', alignItems: 'flex-start', gap: 4, marginTop: 10 },
+  step: { flex: 1, minWidth: 0, alignItems: 'center' },
+  art: { height: 92, justifyContent: 'flex-end', alignItems: 'center' },
+  pet: { marginBottom: -10, shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 9, shadowOffset: { width: 0, height: 14 } },
+  arrow: { marginTop: 56, opacity: 0.7 },
+  when: { marginTop: 4, height: 26, paddingHorizontal: 11, borderRadius: 999, justifyContent: 'center', backgroundColor: alpha(color.white, 0.16) },
+  whenNow: { backgroundColor: color.white },
+  name: { marginTop: 6 },
+  caption: { marginTop: 3, lineHeight: 15, opacity: 0.85 },
 });

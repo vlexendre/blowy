@@ -20,35 +20,49 @@ export interface TabTemplateProps {
   children?: ReactNode;
   scroll?: boolean;
   refreshControl?: ReactElement<RefreshControlProps>;
+  /** Marges latérales. Défaut 16 (V6-Pet / V6-Rencontres : 12). */
+  gutter?: number;
+  /** Écart entre les blocs du contenu. Défaut 12. */
+  gap?: number;
+  /** Marge au-dessus du contenu. Défaut 12. */
+  top?: number;
 }
 
 /** Gabarit d'un onglet principal : marque, grand titre, contenu, place pour la barre flottante. */
-export function TabTemplate({ brand, title, right, children, scroll = true, refreshControl }: TabTemplateProps) {
+export function TabTemplate({ brand, title, right, children, scroll = true, refreshControl, gutter, gap = space.md, top = space.md }: TabTemplateProps) {
   return (
-    <ScreenTemplate scroll={scroll} edges={['top']} bottomSpace={TAB_BAR_SPACE} refreshControl={refreshControl}>
+    <ScreenTemplate
+      scroll={scroll}
+      edges={['top']}
+      bottomSpace={TAB_BAR_SPACE}
+      refreshControl={refreshControl}
+      contentStyle={gutter !== undefined ? { paddingHorizontal: gutter } : undefined}
+    >
       {brand || title || right ? (
         <View style={[layout.row, styles.head]}>
           <View style={layout.grow}>
             {brand ? (
-              <Text variant="bodyBold" size={18} style={styles.brand}>
+              <Text variant="bodyHeavy" size={18} style={styles.brand}>
                 {brand}
-                <Text variant="bodyBold" size={18} color={color.accent}>
+                <Text variant="bodyHeavy" size={18} color={color.accent}>
                   .
                 </Text>
               </Text>
             ) : null}
-            {title ? <Title text={title} size={64} numberOfLines={1} /> : null}
+            {title ? <Title text={title} size={64} numberOfLines={1} style={brand ? styles.title : undefined} /> : null}
           </View>
-          {right}
+          {right ? <View style={styles.right}>{right}</View> : null}
         </View>
       ) : null}
-      <View style={[layout.gapMd, styles.body]}>{children}</View>
+      <View style={{ gap, paddingTop: top }}>{children}</View>
     </ScreenTemplate>
   );
 }
 
 const styles = StyleSheet.create({
   head: { alignItems: 'flex-end', gap: space.md, paddingTop: space.xs },
-  brand: { letterSpacing: -0.3 },
-  body: { paddingTop: space.md },
+  // Mot-marque : 18 px, graisse 800, letter-spacing -.02em.
+  brand: { letterSpacing: -0.36, lineHeight: 24 },
+  title: { marginTop: space.xs },
+  right: { marginBottom: space.sm },
 });

@@ -21,11 +21,11 @@ export function StreakPill({ count, label, variant = 'pill', accessibilityLabel,
   if (variant === 'stack') {
     return (
       <View accessible accessibilityLabel={a11y} style={[styles.stack, style]}>
-        <Icon name="flamme" size={48} />
+        <Icon name="flamme" size={50} />
         <Text variant="h2" size={30} style={styles.count}>
           {String(count)}
         </Text>
-        <Text variant="bodyBold" size={11}>
+        <Text variant="bodyHeavy" size={11}>
           {label}
         </Text>
       </View>
@@ -41,6 +41,6 @@ export function StreakPill({ count, label, variant = 'pill', accessibilityLabel,
 
 const styles = StyleSheet.create({
   stack: { alignItems: 'center' },
-  count: { marginTop: -space.sm },
+  count: { marginTop: -6 },
   pill: { alignSelf: 'flex-start', height: 30, gap: space.xs, paddingHorizontal: space.md - 2, borderRadius: radius.pill, backgroundColor: veil.darkGlass },
 });

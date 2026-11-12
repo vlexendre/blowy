@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { useAnimatedNumber } from '../lib/motion';
-import { color, motion, radius, size, space, veil } from '../theme';
+import { color, motion, radius, space, veil } from '../theme';
 
 export interface SegmentedTabItem<K extends string = string> {
   key: K;
@@ -22,13 +22,14 @@ export interface SegmentedTabsProps<K extends string = string> {
 }
 
 const PAD = 4;
+const GAP = 4;
 
 /** Contrôle segmenté pilule ; la pastille blanche glisse vers l'onglet actif. */
 export function SegmentedTabs<K extends string>({ items, activeKey, onChange, style }: SegmentedTabsProps<K>) {
   const [width, setWidth] = useState(0);
   const index = Math.max(0, items.findIndex((i) => i.key === activeKey));
-  const seg = items.length ? (width - PAD * 2) / items.length : 0;
-  const x = useAnimatedNumber(index * seg, motion.base);
+  const seg = items.length ? (width - PAD * 2 - GAP * (items.length - 1)) / items.length : 0;
+  const x = useAnimatedNumber(index * (seg + GAP), motion.base);
   const thumb = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
   const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
   return (
@@ -49,7 +50,7 @@ export function SegmentedTabs<K extends string>({ items, activeKey, onChange, st
             }}
             style={styles.tab}
           >
-            <Text variant="bodyBold" size={13} color={on ? color.dark : color.mute}>
+            <Text variant="bodyHeavy" size={13} color={on ? color.dark : color.mute}>
               {item.label}
             </Text>
             {item.badge && !on ? <View style={styles.dot} /> : null}
@@ -61,8 +62,9 @@ export function SegmentedTabs<K extends string>({ items, activeKey, onChange, st
 }
 
 const styles = StyleSheet.create({
-  base: { flexDirection: 'row', padding: PAD, borderRadius: radius.pill, backgroundColor: veil.line },
+  // `.tabs3` : 3 colonnes séparées de 4, onglets de 34 pt, fond blanc à 8 %.
+  base: { flexDirection: 'row', gap: GAP, padding: PAD, borderRadius: radius.pill, backgroundColor: veil.line },
   thumb: { position: 'absolute', top: PAD, bottom: PAD, left: PAD, borderRadius: radius.pill, backgroundColor: color.white },
-  tab: { flex: 1, minHeight: size.touch - PAD * 2 + 2, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: space.xs, borderRadius: radius.pill },
+  tab: { flex: 1, height: 34, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: space.xs, borderRadius: radius.pill },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: color.accent },
 });

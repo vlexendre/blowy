@@ -9,7 +9,8 @@ export interface PanelProps {
   children?: ReactNode;
   /** Dégradé vertical de `tokens.gradient`. Défaut `accent`. */
   gradient?: GradientName;
-  radius?: 'md' | 'lg' | 'xl';
+  /** Rayon (`tokens.radius`) ou valeur en points (ex. 32 pour `.panel`). */
+  radius?: 'md' | 'lg' | 'xl' | number;
   /** Marge intérieure (`tokens.space`). Défaut `lg`. */
   padding?: 'none' | 'md' | 'lg' | 'xl';
   /** Laisse déborder le contenu (pet qui sort du panneau). Défaut : rogné. */
@@ -21,7 +22,7 @@ export interface PanelProps {
 
 /** Grand panneau arrondi en dégradé (`.panel`). Le texte enfant prend l'encre adaptée. */
 export function Panel({ children, gradient = 'accent', radius = 'xl', padding = 'lg', overflow = false, ink, style }: PanelProps) {
-  const r = radii[radius];
+  const r = typeof radius === 'number' ? radius : radii[radius];
   return (
     <View style={[{ borderRadius: r, padding: padding === 'none' ? 0 : space[padding] }, !overflow && styles.clip, style]}>
       <LinearGradient colors={gradients[gradient]} style={[StyleSheet.absoluteFill, { borderRadius: r }]} />
