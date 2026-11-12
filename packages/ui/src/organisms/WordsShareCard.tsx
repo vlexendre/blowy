@@ -5,6 +5,7 @@ import { Card } from '../atoms/Card';
 import { Chip, type ChipTone } from '../atoms/Chip';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
+import { DrawnCheck } from '../motion/DrawnCheck';
 import { color, size, space, type } from '../theme';
 
 export interface WordsShareCardProps {
@@ -29,7 +30,7 @@ export interface WordsShareCardProps {
 
 const TONES: readonly ChipTone[] = ['accent', 'rose', 'orange', 'violet'];
 
-/** Le lien « 3 mots » : mots reçus, adresse, copier, partager en story. */
+/** Le lien « 3 mots » : mots reçus, adresse, copier (une coche se dessine), partager en story. */
 export function WordsShareCard({ title, countLabel, words, url, copyLabel, copiedLabel, copied, shareLabel, onCopy, onShare, emptyText }: WordsShareCardProps) {
   return (
     <Card padding="none" style={styles.card}>
@@ -60,7 +61,14 @@ export function WordsShareCard({ title, countLabel, words, url, copyLabel, copie
             {url}
           </Text>
         </View>
-        <Button label={copied && copiedLabel ? copiedLabel : copyLabel} variant="ghost" size="sm" onPress={onCopy} style={[styles.btn, styles.copy]} />
+        <Button
+          label={copied && copiedLabel ? copiedLabel : copyLabel}
+          icon={copied ? <DrawnCheck key="check" size={14} haptic="success" /> : undefined}
+          variant="ghost"
+          size="sm"
+          onPress={onCopy}
+          style={[styles.btn, styles.copy]}
+        />
         <Button label={shareLabel} variant="accent" size="sm" onPress={onShare} style={styles.btn} />
       </View>
     </Card>

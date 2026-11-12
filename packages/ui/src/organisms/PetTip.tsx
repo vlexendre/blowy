@@ -1,5 +1,6 @@
 import type { Mood, Species } from '@blowy/domain';
-import { StyleSheet, View } from 'react-native';
+import type { Ref } from 'react';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Card } from '../atoms/Card';
 import { Panel } from '../atoms/Panel';
@@ -7,6 +8,7 @@ import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import type { PetPose } from '../assets/pets';
+import { PetActor, type PetActorHandle } from '../motion/pets/PetActor';
 import { space } from '../theme';
 import type { TitleContent } from '../types';
 
@@ -19,14 +21,27 @@ export interface PetTipProps {
   tone?: 'accent' | 'card' | 'wine';
   /** Titre Anton (ton `wine`). */
   title?: TitleContent;
+  /**
+   * Pet vivant (respire, se touche) qu'on peut faire réagir : `ref.current?.react('no')` (il fait non de la tête).
+   * Sans elle, une simple image.
+   */
+  actor?: Ref<PetActorHandle>;
+  /** Graine du pet vivant (id du pet). */
+  seed?: string;
+}
+
+/** Le pet du conseil : image, ou pet vivant si on veut le faire réagir. */
+function TipPet({ species, mood, size, actor, seed, sad, style }: { species: Species; mood: Mood | PetPose; size: number; actor?: Ref<PetActorHandle>; seed?: string; sad?: boolean; style?: StyleProp<ViewStyle> }) {
+  if (!actor) return <PetImage species={species} mood={mood} size={size} style={style} />;
+  return <PetActor ref={actor} species={species} mood={mood} size={size} seed={seed} sulking={sad} sleepAfter={null} shadow={false} style={style} />;
 }
 
 /** Petit conseil du pet : le pet déborde à gauche, une phrase à droite. */
-export function PetTip({ text, species, mood, tone = 'accent', title }: PetTipProps) {
+export function PetTip({ text, species, mood, tone = 'accent', title, actor, seed }: PetTipProps) {
   if (tone === 'wine') {
     return (
       <Panel gradient="wine" radius={28} padding="lg" style={[styles.row, styles.wine]}>
-        <PetImage species={species} mood={mood ?? 'triste'} size={110} style={styles.winePet} />
+        <TipPet species={species} mood={mood ?? 'triste'} size={110} actor={actor} seed={seed} sad style={styles.winePet} />
         <View style={styles.texts}>
           {title ? <Title text={title} size={30} /> : null}
           <Text variant="body" size={13} style={styles.wineText}>
@@ -39,7 +54,7 @@ export function PetTip({ text, species, mood, tone = 'accent', title }: PetTipPr
   if (tone === 'card') {
     return (
       <Card padding="none" style={[styles.row, styles.card]}>
-        <PetImage species={species} mood={mood ?? 'neutre'} size={64} style={styles.cardPet} />
+        <TipPet species={species} mood={mood ?? 'neutre'} size={64} actor={actor} seed={seed} style={styles.cardPet} />
         <View style={styles.texts}>
           <Text variant="small" muted>
             {text}
@@ -50,7 +65,7 @@ export function PetTip({ text, species, mood, tone = 'accent', title }: PetTipPr
   }
   return (
     <Panel gradient="accent" radius={26} padding="none" style={[styles.row, styles.panel]}>
-      <PetImage species={species} mood={mood ?? 'salut'} size={70} style={styles.panelPet} />
+      <TipPet species={species} mood={mood ?? 'salut'} size={70} actor={actor} seed={seed} style={styles.panelPet} />
       <View style={styles.texts}>
         <Text variant="bodyBold" size={14}>
           {text}

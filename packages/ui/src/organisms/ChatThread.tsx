@@ -1,9 +1,11 @@
 import { dayOf } from '@blowy/domain';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, type ListRenderItem, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { DayChip } from '../molecules/DayChip';
-import { MessageBubble } from '../molecules/MessageBubble';
+import { MessageBubble, type MessageBubbleProps } from '../molecules/MessageBubble';
+import { Appear, staggerDelay } from '../motion/Appear';
+import { useReducedMotion } from '../lib/motion';
 import { color, space } from '../theme';
 import type { MessageLook, PersonLook, PetLook } from '../types';
 
@@ -29,6 +31,8 @@ export interface ChatThreadProps {
   header?: ReactElement;
   /** Affiché quand il n'y a aucun message. */
   empty?: ReactElement;
+  /** Libellé lu des « … » d'un pet qui écrit (« gaston écrit… »). */
+  typingLabel?: (name: string) => string;
   contentStyle?: StyleProp<ViewStyle>;
 }
 
@@ -36,8 +40,57 @@ type Row = { kind: 'day'; key: string; label: string } | { kind: 'msg'; key: str
 
 const groupable = (m: MessageLook): boolean => m.author !== 'system' && m.kind !== 'event';
 
+/** Un message de pet tout juste arrivé : attente avant ses « … », puis durée des « … ». */
+const PET_FIRST = 380;
+const PET_GAP = 1050;
+const PET_TYPING = 760;
+
+/** Rang de chaque message arrivé pendant que le fil est affiché (les plus anciens chargés en remontant n'en sont pas). */
+type Fresh = Map<string, { petRank: number }>;
+
 /** Fil de discussion inversé (le plus récent en bas) avec séparateurs de jour et pagination vers le haut. */
-export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey, onEndReached, loadingOlder, onPhotoPress, lockedPhotoLabel, header, empty, contentStyle }: ChatThreadProps) {
+export function ChatThread({
+  messages,
+  myPet,
+  other,
+  otherName,
+  dayLabel,
+  dayKey,
+  onEndReached,
+  loadingOlder,
+  onPhotoPress,
+  lockedPhotoLabel,
+  header,
+  empty,
+  typingLabel,
+  contentStyle,
+}: ChatThreadProps) {
+  // Messages déjà là : ceux qui arrivent ensuite (plus récents que tous) entrent en scène.
+  const known = useRef<Set<string> | null>(null);
+  const newest = useRef('');
+  // Un message reste « tout juste arrivé » tant qu'il est monté (son entrée n'est pas coupée par un rendu suivant).
+  const arrived = useRef<Fresh>(new Map());
+  const fresh = useMemo<Fresh>(() => {
+    if (!known.current) return arrived.current;
+    const next: Fresh = new Map(arrived.current);
+    let pets = 0;
+    for (const m of messages) {
+      if (known.current.has(m.id) || m.at < newest.current) continue;
+      const isPet = m.author === 'my_pet' || m.author === 'other_pet';
+      next.set(m.id, { petRank: isPet ? pets++ : -1 });
+    }
+    arrived.current = next;
+    return next;
+  }, [messages]);
+  useEffect(() => {
+    const set = known.current ?? new Set<string>();
+    for (const m of messages) {
+      set.add(m.id);
+      if (m.at > newest.current) newest.current = m.at;
+    }
+    known.current = set;
+  }, [messages]);
+
   const rows = useMemo(() => {
     const keyOf = dayKey ?? ((at: string) => dayOf(new Date(at)));
     const out: Row[] = [];
@@ -58,27 +111,36 @@ export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey
   }, [messages, dayKey, dayLabel]);
 
   const renderItem = useCallback<ListRenderItem<Row>>(
-    ({ item }) => {
-      if (item.kind === 'day') return <DayChip label={item.label} />;
+    ({ item, index }) => {
+      // Ouverture du fil (et pages plus anciennes) : courte cascade depuis le bas, une seule fois par message.
+      const settle = (node: ReactElement) => (
+        <Appear once={`chat:${item.key}`} distance={8} duration={180} delay={staggerDelay(index, 30)}>
+          {node}
+        </Appear>
+      );
+      if (item.kind === 'day') return settle(<DayChip label={item.label} />);
       const m = item.message;
       const isOtherSide = m.author === 'other' || m.author === 'other_pet';
       const pet = m.author === 'my_pet' ? myPet : m.author === 'other_pet' ? other.pet : undefined;
       // Maquette : noms en minuscules au-dessus des bulles (« léa », « suzie »).
       const name = (m.author === 'other' ? (otherName ?? other.displayName) : pet?.name)?.toLowerCase();
-      return (
-        <MessageBubble
-          message={m}
-          name={name}
-          pet={pet}
-          person={isOtherSide ? other : undefined}
-          hiddenFace={m.author === 'other' && other.face === 'hidden'}
-          continued={item.continued}
-          onPhotoPress={onPhotoPress ? () => onPhotoPress(m) : undefined}
-          lockedPhotoLabel={lockedPhotoLabel}
-        />
-      );
+      const props: MessageBubbleProps = {
+        message: m,
+        name,
+        pet,
+        person: isOtherSide ? other : undefined,
+        hiddenFace: m.author === 'other' && other.face === 'hidden',
+        continued: item.continued,
+        onPhotoPress: onPhotoPress ? () => onPhotoPress(m) : undefined,
+        lockedPhotoLabel,
+        fade: false,
+        typingLabel: name && typingLabel ? typingLabel(name) : undefined,
+      };
+      const f = fresh.get(m.id);
+      if (!f) return settle(<MessageBubble {...props} />);
+      return <FreshBubble {...props} petRank={f.petRank} />;
     },
-    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel],
+    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel, typingLabel, fresh],
   );
 
   if (messages.length === 0 && empty) return <View style={[styles.empty, contentStyle]}>{empty}</View>;
@@ -101,6 +163,28 @@ export function ChatThread({ messages, myPet, other, otherName, dayLabel, dayKey
       showsVerticalScrollIndicator={false}
     />
   );
+}
+
+/**
+ * Message tout juste arrivé : le mien monte depuis le champ ; celui d'un pet attend son tour, montre ses « … »,
+ * puis s'écrit ; celui de l'autre s'ouvre depuis son avatar. Sans animation : affiché tout de suite.
+ */
+function FreshBubble({ petRank, ...props }: MessageBubbleProps & { petRank: number }) {
+  const reduced = useReducedMotion();
+  const pet = petRank >= 0 && !reduced;
+  const start = PET_FIRST + Math.max(0, petRank) * PET_GAP;
+  const [phase, setPhase] = useState<'wait' | 'typing' | 'done'>(pet ? 'wait' : 'done');
+  useEffect(() => {
+    if (!pet) return;
+    const a = setTimeout(() => setPhase('typing'), start);
+    const b = setTimeout(() => setPhase('done'), start + PET_TYPING);
+    return () => {
+      clearTimeout(a);
+      clearTimeout(b);
+    };
+  }, [pet, start]);
+  if (phase === 'wait') return null;
+  return <MessageBubble {...props} typing={phase === 'typing'} enter={props.message.author === 'me' ? 'send' : 'receive'} />;
 }
 
 const styles = StyleSheet.create({

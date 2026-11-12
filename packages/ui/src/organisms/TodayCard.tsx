@@ -36,19 +36,24 @@ export interface TodayCardProps {
   /** Toucher ma case (prendre / revoir ma photo). */
   onMinePress?: () => void;
   gradient?: GradientName;
+  /**
+   * Clé du lien et du jour (ex. `id:2026-11-12`) : sa photo se dévoile (le flou se lève) la première fois qu'elle apparaît, la flamme de la série
+   * grandit à la première visite.
+   */
+  motionKey?: string;
 }
 
 /**
  * Photo du jour d'un lien. Quatre états : personne, moi seul, l'autre seul (cachée tant que je n'ai pas posté), les deux.
  */
-export function TodayCard({ today, otherPet, streak, labels, onCta, ctaLoading, onMinePress, gradient = 'orange' }: TodayCardProps) {
+export function TodayCard({ today, otherPet, streak, labels, onCta, ctaLoading, onMinePress, gradient = 'orange', motionKey }: TodayCardProps) {
   const both = today.mine && today.theirs;
   const theirState = !today.theirs ? 'pending' : both && today.theirPhotoUrl ? 'photo' : 'locked';
   return (
     <Panel gradient={gradient} padding="none" style={styles.panel}>
       <View style={[layout.rowTop, styles.top]}>
         <Title text={labels.title} size={42} style={layout.grow} />
-        <StreakPill count={streak} label={labels.streakUnit} variant="stack" style={styles.streak} />
+        <StreakPill count={streak} label={labels.streakUnit} variant="stack" growKey={motionKey} style={styles.streak} />
       </View>
       <View style={[layout.row, styles.photos]}>
         <PhotoTile
@@ -68,6 +73,7 @@ export function TodayCard({ today, otherPet, streak, labels, onCta, ctaLoading, 
           title={theirState === 'pending' ? labels.theirs.waitingTitle : theirState === 'locked' ? labels.theirs.lockedTitle : undefined}
           caption={theirState === 'pending' ? labels.theirs.waitingCaption : theirState === 'locked' ? labels.theirs.lockedCaption : undefined}
           label={theirState === 'photo' ? labels.theirs.label : undefined}
+          revealKey={motionKey}
           style={layout.fill}
         />
       </View>

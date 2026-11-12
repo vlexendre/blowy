@@ -5,7 +5,7 @@ import { OnboardingTemplate, QuizPreview, QuizResult, QuizResultActions, QuizSte
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
-import { useSession } from '@/core';
+import { ScreenMotion, useSession } from '@/core';
 import { QUIZ, strongestTraits, useDraft } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -70,6 +70,7 @@ export default function Caractere() {
   if (!question) {
     const [first, second] = strongestTraits(quiz);
     return (
+      <ScreenMotion>
       <OnboardingTemplate
         step={QUIZ.length}
         total={QUIZ.length}
@@ -94,14 +95,18 @@ export default function Caractere() {
           petLabel={petName}
         />
       </OnboardingTemplate>
+      </ScreenMotion>
     );
   }
 
   const key = gaugeOf(question.choices[0].delta);
+  // Une seule pile pour tout le quiz : l'aperçu (pet et jauges) reste en place, seules la question et les réponses changent.
   return (
-    <OnboardingTemplate step={index + 1} total={QUIZ.length} stepPending onBack={back} backLabel={index ? t.previous : common.back} scroll={false}>
+    <ScreenMotion>
+    <OnboardingTemplate step={index + 1} total={QUIZ.length} stepPending onBack={back} backLabel={index ? t.previous : common.back} gap={0}>
+      {/* Même place que sur le résultat : l'aperçu (pet et jauges) ne bouge pas d'un écran à l'autre. */}
+      <QuizPreview {...preview} step={index} />
       <QuizStep
-        key={index}
         step={index}
         kicker={t.kicker[key]}
         title={(t.titles[index] ?? t.titles[0])(petName)}
@@ -109,8 +114,8 @@ export default function Caractere() {
         choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
         selectedKey={selected === null ? null : String(selected)}
         onChoose={choose}
-        preview={preview}
       />
     </OnboardingTemplate>
+    </ScreenMotion>
   );
 }

@@ -4,11 +4,44 @@
  * Aucune géolocalisation : les rues sont un décor, les positions des emplacements fixes.
  */
 import { color, speciesColor } from '@blowy/tokens';
-import { alpha, Avatar, Button, Chip, extra, IconButton, MessageBubble, type PetLook, Pressable, Text, Title, type TitleContent } from '@blowy/ui';
+import {
+  alpha,
+  Appear,
+  Avatar,
+  Button,
+  Chip,
+  ease,
+  extra,
+  fadeTo,
+  hapticFor,
+  IconButton,
+  MessageBubble,
+  type PetLook,
+  Pressable,
+  springs,
+  Text,
+  Title,
+  type TitleContent,
+  useFirstTime,
+  useMotionActive,
+  useReducedMotion,
+  useRipple,
+  useRippleAnchor,
+} from '@blowy/ui';
 import { LinearGradient } from 'expo-linear-gradient';
 import { type ReactNode, useEffect, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import Animated, { cancelAnimation, Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withDelay, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface MapPet {
@@ -95,6 +128,10 @@ export function NeighbourhoodMap({ me, meLabel, pins, title, subtitle, onBack, b
   const sx = box.w / W;
   const sy = box.h / H;
   const shown = pins.slice(0, SLOTS.length);
+  // Les pets se posent du centre vers l'extérieur : rang de chaque emplacement selon sa distance à toi.
+  const order = rankByDistance(shown.length);
+  // Une fois par session : ensuite la carte s'affiche posée.
+  const land = useFirstTime('carte:land');
   const current = shown.find((p) => p.key === selected) ?? shown.find((p) => p.kind === 'met') ?? shown[0] ?? null;
 
   return (
@@ -105,14 +142,29 @@ export function NeighbourhoodMap({ me, meLabel, pins, title, subtitle, onBack, b
           <View pointerEvents="none" style={[styles.me, { left: ME[0] * sx, top: ME[1] * sy }]}>
             <Radar />
             <Radar delay={1300} />
-            <View style={styles.meInner}>
+            <Landing play={land} delay={0} dx={0} dy={0} style={styles.meInner}>
               <Avatar size={64} pet={me} hidden bg={color.accent} ring={color.accent} />
               <Chip label={meLabel} tone="accent" style={styles.meChip} />
-            </View>
+            </Landing>
           </View>
           {shown.map((p, i) => {
             const slot = SLOTS[i] ?? SLOTS[0];
-            return <Pin key={p.key} item={p} on={p.key === current?.key} left={slot[0] * sx} top={slot[1] * sy} onPress={() => setSelected(p.key)} />;
+            const left = slot[0] * sx;
+            const top = slot[1] * sy;
+            // Vecteur de l'épingle vers toi : elle part de là, à mi-chemin, et se pose à sa place.
+            const dx = (ME[0] * sx - (left + PIN / 2)) * 0.4;
+            const dy = (ME[1] * sy - (top + PIN / 2)) * 0.4;
+            return (
+              <Pin
+                key={p.key}
+                item={p}
+                on={p.key === current?.key}
+                left={left}
+                top={top}
+                land={{ play: land, delay: 260 + (order[i] ?? i) * 110, dx, dy }}
+                onPress={() => setSelected(p.key)}
+              />
+            );
           })}
         </>
       ) : null}
@@ -136,10 +188,13 @@ export function NeighbourhoodMap({ me, meLabel, pins, title, subtitle, onBack, b
         ) : null}
       </LinearGradient>
 
-      <View style={[styles.sheet, { bottom: 14 + insets.bottom }]}>
+      <Appear once="carte:sheet" delay={380} distance={40} duration={320} style={[styles.sheet, { bottom: 14 + insets.bottom }]}>
         <View style={styles.grabber} />
-        {current ? <Sheet item={current} me={me} compatLabel={compatLabel} /> : <EmptySheet {...empty} />}
-      </View>
+        {/* Une autre épingle choisie : la fiche change en glissant doucement. */}
+        <Appear key={current?.key ?? 'empty'} from="right" distance={14} duration={200} style={styles.sheetBody}>
+          {current ? <Sheet item={current} me={me} compatLabel={compatLabel} /> : <EmptySheet {...empty} />}
+        </Appear>
+      </Appear>
     </View>
   );
 }
@@ -198,43 +253,126 @@ function Streets({ sx, sy, h }: { sx: number; sy: number; h: number }) {
   );
 }
 
-/** Onde jaune qui part du pet (2,6 s), coupée si « réduire les animations ». */
+/** Rang de chaque emplacement, du plus proche de toi au plus loin. */
+function rankByDistance(n: number): number[] {
+  const d = SLOTS.slice(0, n).map(([x, y], i) => ({ i, d: Math.hypot(x + PIN / 2 - ME[0], y + PIN / 2 - ME[1]) }));
+  const rank: number[] = [];
+  [...d].sort((a, b) => a.d - b.d).forEach((s, r) => (rank[s.i] = r));
+  return rank;
+}
+
+/**
+ * Un pet qui se pose sur la carte : il part d'un peu plus près du centre, petit et en l'air, et atterrit à sa place
+ * en rebondissant (ressort de peluche). Fondu décalé si animations réduites.
+ */
+function Landing({ play, delay, dx, dy, style, children }: { play: boolean; delay: number; dx: number; dy: number; style?: object; children: ReactNode }) {
+  const reduced = useReducedMotion();
+  const p = useSharedValue(play ? 0 : 1);
+  const o = useSharedValue(play ? 0 : 1);
+  useEffect(() => {
+    if (!play) return;
+    if (reduced) {
+      p.value = 1;
+      o.value = withDelay(Math.min(delay, 300), fadeTo(1, 160));
+      return;
+    }
+    o.value = withDelay(delay, withTiming(1, { duration: 120 }));
+    p.value = withDelay(delay, withSpring(1, springs.plush));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const animated = useAnimatedStyle(() => {
+    const k = 1 - p.value;
+    return { opacity: o.value, transform: [{ translateX: dx * k }, { translateY: dy * k - 26 * Math.sin(Math.min(1, Math.max(0, k)) * Math.PI) }, { scale: 1 - 0.6 * k }] };
+  });
+  return <Animated.View style={[style, animated]}>{children}</Animated.View>;
+}
+
+/** Onde jaune qui part du pet (2,6 s) ; en pause hors écran, coupée si « réduire les animations ». */
 function Radar({ delay = 0 }: { delay?: number }) {
   const reduced = useReducedMotion();
+  const active = useMotionActive();
   const t = useSharedValue(reduced ? 0.6 : 0);
   useEffect(() => {
-    if (reduced) return;
+    if (reduced) {
+      cancelAnimation(t);
+      t.value = 0.6;
+      return;
+    }
+    if (!active) {
+      cancelAnimation(t);
+      return;
+    }
+    t.value = 0;
     t.value = withDelay(delay, withRepeat(withTiming(1, { duration: 2600, easing: Easing.bezier(0.2, 0.6, 0.3, 1) }), -1, false));
     return () => cancelAnimation(t);
-  }, [delay, reduced, t]);
+  }, [delay, reduced, active, t]);
   const style = useAnimatedStyle(() => ({ opacity: 0.8 * (1 - t.value), transform: [{ scale: 0.3 + 1.4 * t.value }] }));
   return <Animated.View style={[styles.radar, style]} />;
 }
 
-function Pin({ item, on, left, top, onPress }: { item: MapPet; on: boolean; left: number; top: number; onPress: () => void }) {
+function Pin({
+  item,
+  on,
+  left,
+  top,
+  land,
+  onPress,
+}: {
+  item: MapPet;
+  on: boolean;
+  left: number;
+  top: number;
+  land: { play: boolean; delay: number; dx: number; dy: number };
+  onPress: () => void;
+}) {
   const tint = speciesColor[item.pet.species];
+  const reduced = useReducedMotion();
+  // Touché : il sautille (petit saut, écrasé à l'atterrissage).
+  const hop = useSharedValue(0);
+  const squash = useSharedValue(0);
+  const press = () => {
+    onPress();
+    if (reduced) return;
+    hop.value = withSequence(withTiming(1, { duration: 150, easing: ease.out }), withTiming(0, { duration: 170, easing: Easing.in(Easing.quad) }), withTiming(0.35, { duration: 110, easing: ease.out }), withTiming(0, { duration: 120, easing: Easing.in(Easing.quad) }));
+    squash.value = withDelay(320, withSequence(withTiming(1, { duration: 60 }), withSpring(0, springs.pop)));
+    setTimeout(() => hapticFor('land'), 320);
+  };
+  const bounce = useAnimatedStyle(() => ({
+    transform: [{ translateY: -18 * hop.value }, { scaleX: 1 + 0.12 * squash.value }, { scaleY: 1 - 0.12 * squash.value }],
+  }));
   return (
     <Pressable
-      onPress={onPress}
+      onPress={press}
       haptic="selection"
       scaleTo={0.94}
       accessibilityLabel={item.accessibilityLabel}
       accessibilityState={{ selected: on }}
       style={[styles.pin, { left, top }]}
     >
-      <View style={[styles.face, on ? styles.faceOn : styles.faceOff]}>
-        <Avatar size={50} pet={item.pet} hidden bg={tint} pose={item.ghost ? 'fantome' : undefined} dimmed={item.ghost} />
-      </View>
+      <Landing play={land.play} delay={land.delay} dx={land.dx} dy={land.dy} style={styles.landing}>
+      <Animated.View style={[styles.hop, bounce]}>
+        <View style={[styles.face, on ? styles.faceOn : styles.faceOff]}>
+          <Avatar size={50} pet={item.pet} hidden bg={tint} pose={item.ghost ? 'fantome' : undefined} dimmed={item.ghost} />
+        </View>
+      </Animated.View>
       <View style={[styles.dist, on && styles.distOn]}>
         <Text variant="bodyHeavy" size={11} color={on ? color.dark : color.white} numberOfLines={1}>
           {item.name}
         </Text>
       </View>
+      </Landing>
     </Pressable>
   );
 }
 
 function Sheet({ item, me, compatLabel }: { item: MapPet; me: PetLook; compatLabel: string }) {
+  const button = useRippleAnchor();
+  const ripple = useRipple();
+  const act = () => {
+    item.action.onPress();
+    // Dire bonjour : une onde part du bouton (l'action est déjà partie).
+    if (item.kind === 'met' && item.action.tone === 'accent') ripple(button.target(), { color: color.accent });
+  };
   return (
     <>
       <View style={styles.sheetHead}>
@@ -262,11 +400,13 @@ function Sheet({ item, me, compatLabel }: { item: MapPet; me: PetLook; compatLab
       ) : null}
       {item.after ? (
         <>
-          <MessageBubble message={{ author: 'my_pet', kind: 'text', body: item.after.say, mediaUrl: null }} name={me.name.toLowerCase()} pet={me} />
+          <MessageBubble message={{ author: 'my_pet', kind: 'text', body: item.after.say, mediaUrl: null }} name={me.name.toLowerCase()} pet={me} fade={false} enter="receive" />
           <Button label={item.after.label} variant="ghost" size="md" labelSize={15} onPress={item.after.onPress} />
         </>
       ) : (
-        <Button label={item.action.label} variant={item.action.tone} onPress={item.action.onPress} loading={item.action.loading} />
+        <View {...button.props}>
+          <Button label={item.action.label} variant={item.action.tone} onPress={act} loading={item.action.loading} />
+        </View>
       )}
     </>
   );
@@ -308,7 +448,9 @@ const styles = StyleSheet.create({
     borderColor: color.accent,
     backgroundColor: alpha(color.accent, 0.1),
   },
-  pin: { position: 'absolute', width: PIN, minHeight: 44, alignItems: 'center', gap: 4, zIndex: 4 },
+  pin: { position: 'absolute', width: PIN, minHeight: 44, alignItems: 'center', zIndex: 4 },
+  landing: { alignItems: 'center', gap: 4 },
+  hop: { transformOrigin: '50% 100%' },
   face: { borderRadius: 999, padding: 3, backgroundColor: color.night },
   faceOff: { shadowColor: color.night, shadowOpacity: 0.5, shadowRadius: 7, shadowOffset: { width: 0, height: 6 } },
   faceOn: { borderWidth: 3, borderColor: color.accent, padding: 0, transform: [{ translateY: -5 }, { scale: 1.12 }] },
@@ -317,6 +459,7 @@ const styles = StyleSheet.create({
   head: { position: 'absolute', left: 0, right: 0, top: 0, zIndex: 10, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 18 },
   headText: { flex: 1, minWidth: 0 },
   badge: { height: 26, paddingHorizontal: 11, borderRadius: 999, justifyContent: 'center', overflow: 'hidden' },
+  sheetBody: { gap: 10 },
   sheet: {
     position: 'absolute',
     left: 10,

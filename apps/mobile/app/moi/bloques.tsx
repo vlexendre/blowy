@@ -1,6 +1,7 @@
 /** Personnes bloquées (V6-Bloques) : liste, déblocage, comment bloquer. */
-import { Avatar, Banner, Button, ListRow, PetTip, SettingsSection, SettingsTemplate, Skeleton } from '@blowy/ui';
+import { Appear, Avatar, Banner, Button, ListRow, PetTip, SettingsSection, SettingsTemplate, Skeleton, staggerDelay } from '@blowy/ui';
 
+import { ScreenMotion } from '@/core';
 import { useMe } from '@/features/me';
 import { useBlocks, useUnblock } from '@/features/safety';
 import { errorMessage, goBack } from '@/features/session';
@@ -16,17 +17,22 @@ export default function Bloques() {
   const list = blocks.data ?? [];
 
   return (
+    <ScreenMotion>
     <SettingsTemplate title={t.title} onBack={() => goBack('/moi/reglages')} backLabel={common.back} intro={t.text}>
       {blocks.isError ? (
-        <Banner tone="error" title={common.errorTitle} text={errorMessage(blocks.error)} actionLabel={common.retry} onAction={() => void blocks.refetch()} />
+        <Appear key="error">
+          <Banner tone="error" title={common.errorTitle} text={errorMessage(blocks.error)} actionLabel={common.retry} onAction={() => void blocks.refetch()} />
+        </Appear>
       ) : blocks.isLoading ? (
         <Skeleton height={120} radius="lg" />
       ) : (
+        <Appear>
         <SettingsSection>
           {list.length ? (
             list.map((b, i) => (
+              // Chaque ligne arrive une seule fois (cascade) ; débloquée, elle disparaît de la liste.
+              <Appear key={b.userId} once={`bloques:${b.userId}`} delay={staggerDelay(i)}>
               <ListRow
-                key={b.userId}
                 title={b.displayName}
                 left={<Avatar size={44} name={b.displayName} />}
                 divider={i < list.length - 1}
@@ -42,14 +48,23 @@ export default function Bloques() {
                   />
                 }
               />
+              </Appear>
             ))
           ) : (
             <ListRow title={t.empty} divider={false} />
           )}
         </SettingsSection>
+        </Appear>
       )}
-      {unblock.isError ? <Banner tone="error" text={errorMessage(unblock.error)} /> : null}
-      <PetTip tone="card" text={t.howTo} species={me.data?.pet.species ?? 'nino'} />
+      {unblock.isError ? (
+        <Appear key="unblock-error">
+          <Banner tone="error" text={errorMessage(unblock.error)} />
+        </Appear>
+      ) : null}
+      <Appear delay={120}>
+        <PetTip tone="card" text={t.howTo} species={me.data?.pet.species ?? 'nino'} />
+      </Appear>
     </SettingsTemplate>
+    </ScreenMotion>
   );
 }

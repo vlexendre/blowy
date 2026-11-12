@@ -1,10 +1,11 @@
 import { reportReasonLabel } from '@blowy/content';
 import { REPORT_REASONS, type ReportBody } from '@blowy/contract';
-import { Banner, Button, Card, Header, ListRow, NoteField, Radio, ScreenTemplate, SettingsSection, Skeleton, Text, Title, Toggle } from '@blowy/ui';
+import { Banner, Button, Card, Header, ListRow, NoteField, Radio, ScreenTemplate, SettingsSection, Shake, Skeleton, Text, Title, Toggle } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import { errorText, useBackToLink, useLink } from '@/features/links';
 import { useBlock, useReport } from '@/features/safety';
 import { link as linkText, options as t } from '@/locales/chats';
@@ -24,6 +25,8 @@ export default function ReportScreen() {
   const [details, setDetails] = useState('');
   const [alsoBlock, setAlsoBlock] = useState(true);
   const [missing, setMissing] = useState(false);
+  // Chaque envoi sans raison secoue la liste des raisons (et vibre).
+  const [nudges, setNudges] = useState(0);
   const [done, setDone] = useState(false);
   const l = link.data;
 
@@ -37,6 +40,7 @@ export default function ReportScreen() {
     if (!l) return;
     if (!reason) {
       setMissing(true);
+      setNudges((n) => n + 1);
       return;
     }
     const trimmed = details.trim();
@@ -56,6 +60,7 @@ export default function ReportScreen() {
   const error = report.isError ? errorText(report.error, t.error) : block.isError ? errorText(block.error, t.error) : null;
 
   return (
+    <ScreenMotion>
     <ScreenTemplate
       header={header}
       padded={false}
@@ -86,6 +91,7 @@ export default function ReportScreen() {
           <Text variant="body" size={14} muted style={styles.intro}>
             {t.reportIntro(name)}
           </Text>
+          <Shake trigger={nudges}>
           <SettingsSection
             rows={REPORT_REASONS.map((r) => ({
               key: r,
@@ -99,6 +105,7 @@ export default function ReportScreen() {
               accessibilityLabel: `${reportReasonLabel[r] ?? r}${reason === r ? `, ${t.selected}` : ''}`,
             }))}
           />
+          </Shake>
           <NoteField label={t.reportNote} value={details} onChangeText={setDetails} placeholder={t.reportNotePlaceholder} />
           <Card>
             <ListRow
@@ -115,6 +122,7 @@ export default function ReportScreen() {
         </View>
       )}
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }
 

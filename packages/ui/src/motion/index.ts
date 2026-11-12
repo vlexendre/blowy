@@ -50,3 +50,9 @@ export {
 } from '../lib/motion';
 export { haptic, hapticFor, type HapticKind, type HapticMoment } from '../lib/haptics';
 export { ScrollLockProvider, useScrollLock } from '../lib/scroll-lock';
+export { DrawnCheck, type DrawnCheckProps } from './DrawnCheck';
+export { FanIn, type FanInProps } from './FanIn';
+export { markOnce, seenOnce, useFirstTime } from './once';
+export { type RippleOptions, useRipple, useRippleAnchor } from './Ripple';
+export { type PetBumpOptions, usePetBump } from './pets/PetBump';
+export { useTypingPause } from './typing';

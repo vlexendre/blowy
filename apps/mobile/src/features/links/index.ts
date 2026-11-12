@@ -120,6 +120,7 @@ export const totalUnread = (links: Link[] | undefined): number => (links ?? []).
 export { chatDayLabel, isNewLink, shortDay, sortLinks, timeLabel, waitingForMyPhoto, weekStrip } from './format';
 export { ConfirmSheet, PhotoSourceSheet, ReportSheet } from './sheets';
 export { useBackToLink } from './navigation';
+export { useLevelUps } from './levels';
 
 /** Message lisible d'une erreur d'API (codes du contrat), avec un repli. */
 export function errorText(error: unknown, fallback: string, byCode: Partial<Record<string, string>> = {}): string {

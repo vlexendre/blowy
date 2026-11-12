@@ -1,11 +1,17 @@
 import { Image } from 'expo-image';
+import { type ReactNode, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { StatTile } from '../molecules/StatTile';
+import { fadeTo, springs, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
-import { color, radius, veil } from '../theme';
+import { staggerDelay } from '../motion/Appear';
+import { useFirstTime } from '../motion/once';
+import { hashString, makeSeed } from '../motion/seed';
+import { color, motion, radius, veil } from '../theme';
 import type { MemoryDayLook, MemoryStatsLook } from '../types';
 
 export interface MemoryGridProps {
@@ -21,6 +27,8 @@ export interface MemoryGridProps {
   columns?: number;
   onDayPress?: (day: MemoryDayLook) => void;
   emptyText?: string;
+  /** Clé du lien : à la première visite, les photos se posent une à une comme des cartes jetées sur la table. */
+  animateKey?: string;
 }
 
 const STAT_KEYS: readonly (keyof MemoryStatsLook)[] = ['daysTogether', 'bestStreak', 'photos', 'messages'];
@@ -35,7 +43,8 @@ function Half({ uri, blurred }: { uri: string | null; blurred?: boolean }) {
 }
 
 /** Souvenirs d'un lien : chiffres clés et grille des photos du jour à deux. */
-export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns = 4, onDayPress, emptyText }: MemoryGridProps) {
+export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns = 4, onDayPress, emptyText, animateKey }: MemoryGridProps) {
+  const deal = useFirstTime(animateKey ? `memories:${animateKey}` : undefined) && !!animateKey;
   const rows: (MemoryDayLook | null)[][] = [];
   for (let i = 0; i < days.length; i += columns) {
     const row: (MemoryDayLook | null)[] = days.slice(i, i + columns);
@@ -64,6 +73,7 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
         <View key={r} style={[layout.row, layout.gapSm]}>
           {row.map((d, c) =>
             d ? (
+              <Land key={d.day} play={deal} index={r * columns + c} seed={d.day}>
               <Pressable
                 key={d.day}
                 onPress={onDayPress ? () => onDayPress(d) : undefined}
@@ -83,6 +93,7 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
                   </Text>
                 </View>
               </Pressable>
+              </Land>
             ) : (
               <View key={`empty:${c}`} style={styles.filler} />
             ),
@@ -93,9 +104,38 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
   );
 }
 
+/**
+ * Une photo qui se pose comme une carte : elle tombe d'un peu plus haut, plus grande et inclinée (angle tiré de sa
+ * date), puis se pose à plat avec un petit rebond. Animations réduites : fondu décalé.
+ */
+function Land({ play, index, seed, children }: { play: boolean; index: number; seed: string; children: ReactNode }) {
+  const reduced = useReducedMotion();
+  const p = useSharedValue(play ? 0 : 1);
+  const o = useSharedValue(play ? 0 : 1);
+  const tilt = (makeSeed(hashString(seed)).next() - 0.5) * 24;
+  useEffect(() => {
+    if (!play) return;
+    const delay = 120 + staggerDelay(index, 70);
+    if (reduced) {
+      p.value = 1;
+      o.value = withDelay(Math.min(delay, motion.base), fadeTo(1, motion.fast));
+      return;
+    }
+    o.value = withDelay(delay, withTiming(1, { duration: motion.instant }));
+    p.value = withDelay(delay, withSpring(1, springs.plush));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => {
+    const k = 1 - p.value;
+    return { opacity: o.value, transform: [{ translateY: -14 * k }, { rotate: `${tilt * k}deg` }, { scale: 1 + 0.16 * k }] };
+  });
+  return <Animated.View style={[styles.land, style]}>{children}</Animated.View>;
+}
+
 const styles = StyleSheet.create({
+  land: { flex: 1 },
   // Maquette V6-Souvenirs : 4 colonnes séparées de 8, vignettes de 78 pt, rayon 16, date en bas à gauche.
-  tile: { flex: 1, height: 78, borderRadius: 16, overflow: 'hidden', backgroundColor: color.card },
+  tile: { height: 78, borderRadius: 16, overflow: 'hidden', backgroundColor: color.card },
   split: { flex: 1, flexDirection: 'row', gap: 2 },
   half: { flex: 1, backgroundColor: veil.glass },
   label: { position: 'absolute', left: 6, bottom: 6, paddingHorizontal: 7, paddingVertical: 3, borderRadius: radius.pill, backgroundColor: veil.darkLabel },

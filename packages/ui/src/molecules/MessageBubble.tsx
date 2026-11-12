@@ -1,15 +1,17 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Avatar } from '../atoms/Avatar';
 import { Glyph } from '../atoms/Glyph';
 import { Icon } from '../atoms/Icon';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { color, petTint, radius, space, veil } from '../theme';
+import { fadeTo, springs, useReducedMotion } from '../lib/motion';
+import { TypingDots } from '../motion/TypingDots';
+import { color, motion, petTint, radius, space, veil } from '../theme';
 import type { MessageLook, PersonLook, PetLook } from '../types';
 
 export interface MessageBubbleProps {
@@ -33,18 +35,46 @@ export interface MessageBubbleProps {
   avatarBg?: string;
   /** Visage de la personne encore caché : disque dégradé rose → violet à la place de l'avatar (V6-Chat). */
   hiddenFace?: boolean;
+  /** Fondu à l'apparition (défaut vrai). Faux quand la liste gère elle-même l'entrée de ses bulles. */
+  fade?: boolean;
+  /** L'auteur écrit : « … » qui sautillent dans la bulle à la place du texte (puis le texte arrive en « pop »). */
+  typing?: boolean;
+  /**
+   * Entrée d'un message qui vient d'arriver : `send` (le mien) monte depuis le champ de saisie ; `receive` (l'autre,
+   * un pet) : la tête sort par le bas, la bulle s'ouvre depuis l'avatar. Fondu court si animations réduites.
+   */
+  enter?: 'send' | 'receive';
+  /** Libellé lu des « … » (« gaston écrit… »). */
+  typingLabel?: string;
 }
 
 const AVATAR = 30;
 
 /** Une bulle du chat : moi (jaune, à droite), l'autre (blanche), un pet (nuit + visage), ou une pastille centrée. */
-export const MessageBubble = memo(function MessageBubble({ message, name, pet, person, continued, photoLabel, onPhotoPress, lockedPhotoLabel, nameColor: nameTint, avatarBg, hiddenFace }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({
+  message,
+  name,
+  pet,
+  person,
+  continued,
+  photoLabel,
+  onPhotoPress,
+  lockedPhotoLabel,
+  nameColor: nameTint,
+  avatarBg,
+  hiddenFace,
+  fade = true,
+  typing,
+  enter,
+  typingLabel,
+}: MessageBubbleProps) {
   const { author, kind, body, mediaUrl } = message;
+  const entrance = useEntrance(enter, !!typing);
 
   if (author === 'system' || kind === 'event') {
     const isEvent = kind === 'event';
     return (
-      <Animated.View entering={FadeIn} style={[styles.pill, isEvent ? styles.eventPill : null]} accessible accessibilityRole="text">
+      <Animated.View entering={fade ? FadeIn : undefined} style={[styles.pill, isEvent ? styles.eventPill : null, entrance.row]} accessible accessibilityRole="text">
         {isEvent ? <Icon name="etoiles" size={16} /> : null}
         <Text variant="bodyBold" size={12} muted={!isEvent} color={isEvent ? color.accent : undefined} center>
           {body ?? ''}
@@ -58,8 +88,11 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
   const nameColor = nameTint ?? (isPet && pet ? petTint[pet.species] : color.white);
   const showHead = !mine && !continued;
 
-  const content =
-    kind === 'photo' && mediaUrl ? (
+  const content = typing ? (
+    <View style={[styles.bubble, styles.typing, isPet ? styles.petBubble : styles.other]} accessible accessibilityLabel={typingLabel}>
+      <TypingDots color={isPet ? color.white : color.dark} size={7} />
+    </View>
+  ) : kind === 'photo' && mediaUrl ? (
       <Pressable onPress={onPhotoPress} disabled={!onPhotoPress} accessibilityRole="image" accessibilityLabel={photoLabel ?? body ?? undefined} scaleTo={0.98}>
         <Image source={{ uri: mediaUrl }} contentFit="cover" transition={150} style={[styles.photo, mine ? styles.mineRadius : styles.otherRadius]} />
       </Pressable>
@@ -81,9 +114,9 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
     );
 
   return (
-    <Animated.View entering={FadeIn} style={[styles.row, mine ? styles.rowMine : null]}>
+    <Animated.View entering={fade ? FadeIn : undefined} style={[styles.row, mine ? styles.rowMine : null, entrance.row]}>
       {!mine ? (
-        <View style={styles.avatarSlot}>
+        <Animated.View style={[styles.avatarSlot, entrance.avatar]}>
           {continued ? null : isPet && pet ? (
             <Avatar size={AVATAR} pet={pet} hidden bg={avatarBg ?? petTint[pet.species]} />
           ) : person && hiddenFace ? (
@@ -91,7 +124,7 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
           ) : person ? (
             <Avatar size={AVATAR} uri={person.avatarUrl} face={person.face} pet={person.pet} name={person.displayName} />
           ) : null}
-        </View>
+        </Animated.View>
       ) : null}
       <View style={styles.column}>
         {showHead && name ? (
@@ -99,11 +132,60 @@ export const MessageBubble = memo(function MessageBubble({ message, name, pet, p
             {name}
           </Text>
         ) : null}
-        {content}
+        <Animated.View style={[mine ? styles.originMine : styles.originOther, entrance.bubble]}>{content}</Animated.View>
       </View>
     </Animated.View>
   );
 });
+
+/**
+ * Entrée d'une bulle qui vient d'arriver (voir `enter`). La bulle envoyée monte d'une hauteur de champ en grandissant
+ * depuis son coin ; une bulle reçue s'ouvre depuis l'avatar, dont la tête sort par le bas. Quand les « … » laissent
+ * place au texte, la bulle refait un petit « pop ».
+ */
+function useEntrance(enter: MessageBubbleProps['enter'], typing: boolean) {
+  const reduced = useReducedMotion();
+  const row = useSharedValue(enter ? 0 : 1);
+  const head = useSharedValue(enter === 'receive' ? 0 : 1);
+  const pop = useSharedValue(1);
+  const wasTyping = useRef(typing);
+  useEffect(() => {
+    if (!enter) return;
+    if (reduced) {
+      head.value = 1;
+      row.value = fadeTo(1, motion.fast);
+      return;
+    }
+    if (enter === 'send') {
+      row.value = withSpring(1, { damping: 16, stiffness: 210, mass: 0.8 });
+      return;
+    }
+    head.value = withSpring(1, springs.plush);
+    row.value = withDelay(70, withSpring(1, springs.pop));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (wasTyping.current && !typing && !reduced) {
+      pop.value = withSequence(withTiming(0.86, { duration: 0 }), withSpring(1, springs.pop));
+    }
+    wasTyping.current = typing;
+  }, [typing, reduced, pop]);
+  return {
+    row: useAnimatedStyle(() => {
+      const moving = enter === 'send' && !reduced;
+      const opacity = reduced ? row.value : Math.min(1, row.value * (moving ? 2.5 : 3));
+      return { opacity, transform: [{ translateY: moving ? (1 - row.value) * 64 : 0 }] };
+    }),
+    avatar: useAnimatedStyle(() => {
+      const k = enter === 'receive' && !reduced ? 1 - head.value : 0;
+      return { opacity: 1 - Math.max(0, k * 3 - 2), transform: [{ translateY: k * 22 }, { scale: 1 - 0.5 * k }] };
+    }),
+    bubble: useAnimatedStyle(() => {
+      const base = enter && !reduced ? (enter === 'send' ? 0.82 + 0.18 * row.value : 0.4 + 0.6 * row.value) : 1;
+      return { transform: [{ scale: base * pop.value }] };
+    }),
+  };
+}
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm, maxWidth: '86%', alignSelf: 'flex-start' },
@@ -131,6 +213,10 @@ const styles = StyleSheet.create({
     gap: space.sm,
     padding: space.md,
   },
+  typing: { paddingVertical: space.sm + 3 },
+  // Les bulles grandissent depuis leur coin pointu (vers le champ pour moi, vers l'avatar pour l'autre).
+  originMine: { transformOrigin: '100% 100%' },
+  originOther: { transformOrigin: '0% 100%' },
   mineRadius: { borderBottomRightRadius: 6 },
   otherRadius: { borderBottomLeftRadius: 6 },
   pill: {

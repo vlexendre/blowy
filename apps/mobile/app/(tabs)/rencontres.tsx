@@ -7,15 +7,18 @@ import {
   DotNote,
   EmptyState,
   EncountersHero,
+  FanIn,
   IncomingCard,
   Skeleton,
   SuggestionCard,
   TabTemplate,
+  usePetBump,
 } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import {
   useAcceptEncounter,
   useDeclineEncounter,
@@ -40,6 +43,7 @@ export default function RencontresScreen() {
   const decline = useDeclineEncounter();
   const invite = useShareInvite(t.shareMessage);
   const [refreshing, setRefreshing] = useState(false);
+  const bump = usePetBump();
 
   const myPet = pet.data?.pet;
   const petName = myPet?.name ?? chatsText.yourPet;
@@ -58,6 +62,7 @@ export default function RencontresScreen() {
   };
 
   return (
+    <ScreenMotion>
     <TabTemplate
       gutter={12}
       gap={10}
@@ -119,9 +124,9 @@ export default function RencontresScreen() {
         </>
       ) : null}
 
-      {incoming.map((i) => (
+      {incoming.map((i, n) => (
+        <FanIn key={i.id} index={n} once={`rencontres:in:${i.id}`} delay={120}>
         <IncomingCard
-          key={i.id}
           incoming={i}
           title={t.incomingCard(i.from.displayName)}
           ownerLabel={t.incomingOwner(i.from.pet.name, i.from.displayName)}
@@ -132,14 +137,23 @@ export default function RencontresScreen() {
           onOpen={() => router.push(`/rencontre/${i.from.id}`)}
           accepting={accept.isPending && accept.variables === i.id}
           declining={decline.isPending && decline.variables === i.id}
-          onAccept={() => accept.mutate(i.id, { onSuccess: (link) => router.push(`/link/${link.id}`) })}
+          onAccept={() =>
+            accept.mutate(i.id, {
+              onSuccess: (link) => {
+                // Les deux pets se courent dessus au-dessus de l'écran pendant que le lien s'ouvre.
+                if (myPet) bump({ left: myPet.species, right: i.from.pet.species });
+                router.push(`/link/${link.id}`);
+              },
+            })
+          }
           onDecline={() => decline.mutate(i.id)}
         />
+        </FanIn>
       ))}
 
-      {suggestions.map((s) => (
+      {suggestions.map((s, n) => (
+        <FanIn key={s.user.id} index={incoming.length + n} once={`rencontres:s:${s.user.id}`} delay={120}>
         <SuggestionCard
-          key={s.user.id}
           suggestion={s}
           ownerLabel={t.owner(s.user.displayName)}
           viaLabel={viaLabel(s)}
@@ -153,10 +167,13 @@ export default function RencontresScreen() {
           openLabel={t.openTalk}
           onOpen={() => router.push(`/rencontre/${s.user.id}`)}
         />
+        </FanIn>
       ))}
 
       {encounters.data && !sulking && incoming.length + suggestions.length === 0 ? (
         <EmptyState
+          peek
+          seed={myPet?.id}
           species={myPet?.species ?? 'nino'}
           mood="dodo"
           title={t.emptyTitle}
@@ -168,5 +185,6 @@ export default function RencontresScreen() {
 
       {encounters.data ? <DotNote text={t.reminderShort} /> : null}
     </TabTemplate>
+    </ScreenMotion>
   );
 }

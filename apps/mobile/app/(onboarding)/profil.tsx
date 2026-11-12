@@ -1,10 +1,11 @@
 /** Profil (suite de Compte) : prénom, date de naissance (18+), ville, code d'invitation → création du compte et du pet. */
 import { ApiError } from '@blowy/api-client';
 import { ageOn, dayOf, MIN_AGE } from '@blowy/domain';
-import { AgeGate, Banner, LegalNote, OnboardingTemplate, ScreenTemplate, TextField } from '@blowy/ui';
+import { AgeGate, Appear, Banner, LegalNote, OnboardingTemplate, ScreenTemplate, Shake, TextField } from '@blowy/ui';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
+import { ScreenMotion } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
 import { birthdateFromInput, useDraft, useOnboard } from '@/features/onboarding';
 import { errorMessage, goBack, useSignOut } from '@/features/session';
@@ -31,6 +32,7 @@ export default function Profil() {
   const signOut = useSignOut();
   const [birth, setBirth] = useState(() => isoToInput(draft.birthdate));
   const [birthError, setBirthError] = useState<string | null>(null);
+  const [birthShake, setBirthShake] = useState(0);
   const [tooYoung, setTooYoung] = useState<{ name: string; species: typeof draft.species } | null>(null);
   const petName = draft.petName || common.speciesNames[draft.species];
 
@@ -44,6 +46,7 @@ export default function Profil() {
     const iso = birthdateFromInput(birth);
     if (!iso) {
       setBirthError(t.birthError);
+      setBirthShake((n) => n + 1);
       return;
     }
     // Moins de 18 ans : on s'arrête ici, sans rien envoyer ni garder (V6-TropJeune).
@@ -73,7 +76,9 @@ export default function Profil() {
   };
 
   if (tooYoung) {
+    // Le pet, triste, se détourne (AgeGate).
     return (
+      <ScreenMotion>
       <ScreenTemplate scroll={false} gutter={14}>
         <AgeGate
           species={tooYoung.species}
@@ -85,11 +90,13 @@ export default function Profil() {
           onAction={() => signOut.mutate(undefined, { onSettled: () => router.replace('/(onboarding)/welcome') })}
         />
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
 
   const apiError = onboard.isError && !(onboard.error instanceof ApiError && ['too_young', 'already_onboarded'].includes(onboard.error.code));
   return (
+    <ScreenMotion>
     <OnboardingTemplate
       progress={0.8}
       onBack={() => goBack('/(onboarding)/compte')}
@@ -117,6 +124,7 @@ export default function Profil() {
         textContentType="givenName"
         returnKeyType="next"
       />
+      <Shake trigger={birthShake}>
       <TextField
         inset
         label={t.birthLabel}
@@ -132,6 +140,7 @@ export default function Profil() {
         maxLength={14}
         autoComplete="birthdate-full"
       />
+      </Shake>
       <TextField
         inset
         label={t.cityLabel}
@@ -152,7 +161,12 @@ export default function Profil() {
         autoCorrect={false}
         maxLength={16}
       />
-      {apiError ? <Banner tone="error" text={errorMessage(onboard.error)} actionLabel={common.retry} onAction={submit} /> : null}
+      {apiError ? (
+        <Appear key="api-error">
+          <Banner tone="error" text={errorMessage(onboard.error)} actionLabel={common.retry} onAction={submit} />
+        </Appear>
+      ) : null}
     </OnboardingTemplate>
+    </ScreenMotion>
   );
 }

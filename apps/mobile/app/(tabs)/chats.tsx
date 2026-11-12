@@ -1,9 +1,10 @@
 import { color } from '@blowy/tokens';
-import { Banner, Button, EmptyState, IconButton, LinkRow, NudgeBanner, Skeleton, TabTemplate } from '@blowy/ui';
+import { Appear, Banner, Button, EmptyState, IconButton, LinkRow, NudgeBanner, Skeleton, staggerDelay, TabTemplate } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import { useEncounters, useShareInvite } from '@/features/encounters';
 import { isNewLink, sortLinks, timeLabel, useLinks, waitingForMyPhoto } from '@/features/links';
 import { usePet } from '@/features/pet';
@@ -33,6 +34,7 @@ export default function ChatsScreen() {
   const waitingFirst = waiting[0];
 
   return (
+    <ScreenMotion>
     <TabTemplate
       brand={t.brand}
       title={t.title(list.length)}
@@ -48,12 +50,14 @@ export default function ChatsScreen() {
           species={first.from.pet.species}
           mood="salut"
           animation="bob"
+          reveal={first.id}
           onPress={() => router.push('/rencontres')}
           accessibilityLabel={t.wavesA11y(incoming.length)}
         />
       ) : null}
 
       {waitingFirst ? (
+        <Appear once={`chats:photo:${waitingFirst.id}:${waitingFirst.today.day}`} delay={first ? 160 : 0}>
         <NudgeBanner
           gradient="orange"
           icon="flamme"
@@ -65,6 +69,7 @@ export default function ChatsScreen() {
           onPress={() => router.push(`/link/${waitingFirst.id}?tab=today`)}
           accessibilityLabel={t.photoA11y}
         />
+        </Appear>
       ) : null}
 
       {links.isError && !links.data ? <Banner tone="error" title={t.errorTitle} text={links.error.message} actionLabel={t.retry} onAction={() => void links.refetch()} /> : null}
@@ -84,6 +89,8 @@ export default function ChatsScreen() {
       ) : list.length === 0 && !links.isError ? (
         <View style={styles.empty}>
           <EmptyState
+            peek
+            seed={pet.data?.pet.id}
             species={pet.data?.pet.species ?? 'nino'}
             mood="triste"
             title={t.emptyTitle}
@@ -95,9 +102,9 @@ export default function ChatsScreen() {
         </View>
       ) : (
         <View style={styles.list}>
-          {list.map((l) => (
+          {list.map((l, i) => (
+            <Appear key={l.id} once={`chats:${l.id}`} delay={(first || waitingFirst ? 140 : 0) + staggerDelay(i)}>
             <LinkRow
-              key={l.id}
               link={l}
               timeLabel={l.lastMessage ? timeLabel(l.lastMessage.at, now) : undefined}
               levelLabel={t.level(l.level)}
@@ -106,10 +113,12 @@ export default function ChatsScreen() {
               newLabel={isNewLink(l, now) ? t.isNew : undefined}
               onPress={() => router.push(`/link/${l.id}`)}
             />
+            </Appear>
           ))}
         </View>
       )}
     </TabTemplate>
+    </ScreenMotion>
   );
 }
 

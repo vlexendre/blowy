@@ -95,6 +95,8 @@ export const onboarding = {
     title: [{ text: 'DONNE-LUI\n' }, { text: 'DES POTES', dim: true }],
     text: 'ton pet croise d’abord les pets de tes potes, puis ceux de leurs potes.',
     copy: 'copier',
+    /** Après la copie (une coche se dessine à côté). */
+    copied: 'copié',
     share: 'partager en story',
     shareMessage: (pet: string, url: string) => `j’ai un pet sur blowy, il s’appelle ${pet.toLowerCase()}. viens, nos pets vont se plaire : ${url}`,
     wordsTitle: 'décris-moi en 3 mots',

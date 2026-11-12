@@ -2,10 +2,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ProgressBar } from '../atoms/ProgressBar';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { InkProvider } from '../lib/ink';
-import { alpha, color, extra, radius, space } from '../theme';
+import { alpha, color, extra, space } from '../theme';
 import type { TitleContent } from '../types';
 
 export interface LevelHeroProps {
@@ -22,7 +23,6 @@ export interface LevelHeroProps {
 
 /** Panneau du niveau d'un lien (V6-Lien) : niveau, titre, barre d'xp, les pets qui débordent. */
 export function LevelHero({ kicker, title, ratio, progressLabel, art }: LevelHeroProps) {
-  const pct = `${Math.round(Math.max(0, Math.min(1, ratio)) * 100)}%` as const;
   return (
     <View style={styles.panel}>
       <LinearGradient colors={extra.roseLight} style={[StyleSheet.absoluteFill, styles.round]} />
@@ -36,10 +36,9 @@ export function LevelHero({ kicker, title, ratio, progressLabel, art }: LevelHer
           {kicker}
         </Text>
         <Title text={title} size={44} style={styles.title} />
-        <View style={styles.progress} accessible accessibilityRole="progressbar" accessibilityLabel={progressLabel}>
-          <View style={styles.track}>
-            <View style={[styles.fill, { width: pct }]} />
-          </View>
+        <View style={styles.progress}>
+          {/* Se remplit depuis 0 à l'ouverture, avec un léger dépassement (transformations seulement). */}
+          <ProgressBar value={ratio} color={color.dark} trackColor={alpha(color.dark, 0.18)} height={10} accessibilityLabel={progressLabel} />
           <Text variant="bodyHeavy" size={12} style={styles.caption}>
             {progressLabel}
           </Text>
@@ -57,7 +56,5 @@ const styles = StyleSheet.create({
   kicker: { letterSpacing: 1.32, opacity: 0.7 },
   title: { marginTop: space.xs },
   progress: { marginTop: space.md + 2, width: 186 },
-  track: { height: 10, borderRadius: radius.pill, backgroundColor: alpha(color.dark, 0.18), overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: radius.pill, backgroundColor: color.dark },
   caption: { marginTop: 5 },
 });

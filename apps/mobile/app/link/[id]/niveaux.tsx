@@ -4,7 +4,8 @@ import { AvatarPair, Banner, Header, LevelHero, LevelLadder, LivesCard, PetImage
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { useBackToLink, useLink } from '@/features/links';
+import { ScreenMotion } from '@/core';
+import { useBackToLink, useLevelUps, useLink } from '@/features/links';
 import { levels as t, link as linkText } from '@/locales/chats';
 
 export default function LevelsScreen() {
@@ -12,6 +13,7 @@ export default function LevelsScreen() {
   const link = useLink(id);
   const l = link.data;
   const back = useBackToLink(id);
+  const levelUps = useLevelUps(id, l?.level);
 
   const header = (
     <Header
@@ -30,6 +32,7 @@ export default function LevelsScreen() {
 
   if (!l) {
     return (
+      <ScreenMotion>
       <ScreenTemplate header={header}>
         {link.isPending ? (
           <View style={styles.body}>
@@ -40,6 +43,7 @@ export default function LevelsScreen() {
           <Banner tone="error" title={linkText.loadError} text={link.error?.message ?? ''} actionLabel={linkText.retry} onAction={() => void link.refetch()} />
         )}
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
 
@@ -48,6 +52,7 @@ export default function LevelsScreen() {
   const atMax = l.level >= MAX_LEVEL;
 
   return (
+    <ScreenMotion>
     <ScreenTemplate header={header} padded={false} contentStyle={styles.edge}>
       <View style={styles.body}>
         <LevelHero
@@ -58,11 +63,19 @@ export default function LevelsScreen() {
           art={<DuoArt mine={l.myPet.species} theirs={l.other.pet.species} />}
         />
 
-        <LevelLadder level={l.level} labels={ladder} currentLabel={t.current} nextLabel={atMax ? undefined : t.next(Math.max(0, p.span - p.into))} />
+        <LevelLadder
+          level={l.level}
+          labels={ladder}
+          currentLabel={t.current}
+          nextLabel={atMax ? undefined : t.next(Math.max(0, p.span - p.into))}
+          animateKey={l.id}
+          celebrate={levelUps > 0}
+        />
 
         <LivesCard style={styles.lives} title={t.livesTitle(l.lives)} lives={l.lives} max={MAX_LIVES} ghost={l.status === 'ghost'} text={t.livesText} accessibilityLabel={linkText.lives(l.lives)} />
       </View>
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }
 

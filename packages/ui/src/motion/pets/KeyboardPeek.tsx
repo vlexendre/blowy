@@ -15,6 +15,11 @@ export interface KeyboardPeekProps {
   /** Taille du buste. Défaut 72. */
   size?: number;
   seed?: string;
+  /**
+   * Hauteur à laisser libre au-dessus du clavier (pied collé au clavier : bouton principal…). Défaut 0.
+   * Le pet regarde alors par-dessus ce pied, sans jamais le couvrir.
+   */
+  above?: number;
 }
 
 /**
@@ -22,7 +27,7 @@ export interface KeyboardPeekProps {
  * il se ferme. Il reste au-dessus du clavier, hors des champs (coin opposé au champ). iOS et Android ;
  * sur le web (pas d'événement clavier), rien ne s'affiche.
  */
-export function KeyboardPeek({ species, mood = 'joie', side = 'right', size = 72, seed }: KeyboardPeekProps) {
+export function KeyboardPeek({ species, mood = 'joie', side = 'right', size = 72, seed, above = 0 }: KeyboardPeekProps) {
   const win = useWindowDimensions();
   const [top, setTop] = useState<number | null>(null);
   useEffect(() => {
@@ -46,7 +51,7 @@ export function KeyboardPeek({ species, mood = 'joie', side = 'right', size = 72
       size={size}
       seed={seed}
       hideAndSeek={false}
-      safe={{ bottom: top !== null ? Math.max(0, win.height - top) : 0 }}
+      safe={{ bottom: top !== null ? Math.max(0, win.height - top) + above : above }}
     />
   );
 }

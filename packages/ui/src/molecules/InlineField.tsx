@@ -1,6 +1,7 @@
 import { type ComponentRef, type Ref, useState } from 'react';
 import { type StyleProp, StyleSheet, TextInput, type TextInputProps, View, type ViewStyle } from 'react-native';
 
+import { FocusRing } from '../atoms/FocusRing';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { color, size, space, type, veil } from '../theme';
@@ -15,6 +16,7 @@ export interface InlineFieldProps extends Omit<TextInputProps, 'style'> {
 }
 
 const VALUE = { ...type.bodyBold, fontSize: 17, lineHeight: 22 } as const;
+const RADIUS = 18;
 
 /**
  * Champ des réglages (`.fld`) : libellé et valeur dans le même cadre, bordure jaune au focus.
@@ -22,7 +24,8 @@ const VALUE = { ...type.bodyBold, fontSize: 17, lineHeight: 22 } as const;
  */
 export function InlineField({ label, error, style, editable = true, onFocus, onBlur, accessibilityLabel, ref, ...rest }: InlineFieldProps) {
   const [focused, setFocused] = useState(false);
-  const border = error ? color.danger : focused ? color.accent : veil.glass;
+  // Au focus, la bordure jaune arrive en fondu par-dessus (`FocusRing`).
+  const border = error ? color.danger : veil.glass;
   const box = [styles.box, { borderColor: border }, style];
   const labelNode = (
     <Text variant="label" size={11} muted style={styles.label}>
@@ -64,6 +67,7 @@ export function InlineField({ label, error, style, editable = true, onFocus, onB
           }}
           style={[VALUE, styles.input]}
         />
+        <FocusRing on={focused && !error} radius={RADIUS} />
       </Pressable>
       {error ? (
         <Text variant="small" size={12} color={color.danger} style={styles.error} accessibilityLiveRegion="polite">
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: color.card,
     borderWidth: size.border,
-    borderRadius: 18,
+    borderRadius: RADIUS,
     paddingVertical: 9,
     paddingHorizontal: space.lg,
     gap: 1,

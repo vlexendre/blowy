@@ -106,6 +106,21 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Barre d'onglets | l'icône active rebondit, la pastille jaune glisse | pastilles qui « pop » à l'arrivée d'un message ; le pet passe la tête au-dessus de l'onglet choisi ; retour dans l'app : il salue |
 | Feuilles | montée à ressort, fond qui s'assombrit | se ferment en glissant vers le bas, suivent le doigt |
 
+### Détail : inscription et Moi
+- **Bienvenue** : le panneau se pose, le pet glisse depuis le bord droit (rogné par le panneau : la coupe du buste ne se
+  voit jamais) et salue ; « … » puis chaque message ; le bouton respire une fois. Touché : il s'écrase, un cœur s'envole.
+- **Créer son pet** : un calque par espèce toujours monté (aucune image à charger au moment du saut) ; le choisi bondit de
+  sa pastille et s'écrase en se posant, l'ancien rentre dans la sienne, le fond change en fondu, puis les trois autres
+  passent la tête par les bords (gauche, haut, droite) en se penchant. Le nom tapé le fait hocher la tête.
+- **Caractère** : l'aperçu (pet + jauges) reste en place de la 1re question au résultat ; résultat : panneau qui se pose,
+  pet qui bondit dans des étoiles, verdict mot à mot.
+- **Compte** : chaque case gonfle quand un chiffre y tombe ; code bon : vague verte, les cases se rejoignent en coche
+  (pendant que l'aiguillage cherche la suite : la navigation n'attend pas).
+- **Profil / 18+** : date fausse : secousse ; trop jeune : le pet, triste, soupire, se retourne (de dos) et flotte.
+- **Moi** : cascade à la 1re visite (`onceKey`), chiffres qui défilent, pastille du pet en « pop », copie : coche ;
+  supprimer : le pet (vivant, boudeur) fait non quand « supprimer » est écrit, et encore à la confirmation.
+- **Page inconnue** : le pet surpris passe la tête au-dessus du titre (`EmptyState peek`).
+
 ## Banc d'essai
 `apps/mobile/app/dev/motion.tsx` (route `/dev/motion`) : chaque primitive et chaque comportement des pets, avec des
 boutons pour les déclencher et un interrupteur « réduire les animations ».

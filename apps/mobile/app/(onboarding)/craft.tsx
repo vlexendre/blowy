@@ -4,6 +4,7 @@ import { Button, OnboardingTemplate, SpeciesPicker, TextField } from '@blowy/ui'
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 
+import { ScreenMotion } from '@/core';
 import { useDraft } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -33,6 +34,7 @@ export default function Craft() {
   const display = (cleanPetName(name) || names[species]).toLowerCase();
 
   return (
+    <ScreenMotion>
     <OnboardingTemplate
       step={1}
       total={onboarding.total}
@@ -46,7 +48,16 @@ export default function Craft() {
         router.push('/(onboarding)/caractere');
       }}
     >
-      <SpeciesPicker value={species} onChange={pickSpecies} names={names} speech={t.speech(display)} speechHighlight={display} badge={t.badge} />
+      {/* Le pet choisi bondit au centre, les autres passent la tête ; le nom tapé le fait hocher la tête. */}
+      <SpeciesPicker
+        value={species}
+        onChange={pickSpecies}
+        names={names}
+        speech={t.speech(display)}
+        speechHighlight={display}
+        badge={t.badge}
+        nodKey={display}
+      />
       <TextField
         label={t.nameLabel}
         hint={t.nameHint}
@@ -62,5 +73,6 @@ export default function Craft() {
         right={<Button label={t.random} size="chip" variant="glass" onPress={randomName} accessibilityLabel={t.randomLabel} />}
       />
     </OnboardingTemplate>
+    </ScreenMotion>
   );
 }

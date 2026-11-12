@@ -1,10 +1,10 @@
 /** Mon compte (V6-MonCompte) : photo de profil (cachée à un lien jusqu'au niveau 4), prénom, ville, e-mail. */
-import { Banner, Button, InlineField, PhotoEditCard, SettingsTemplate, SheetTemplate, Skeleton } from '@blowy/ui';
+import { Appear, Banner, Button, InlineField, PhotoEditCard, SettingsTemplate, SheetTemplate, Skeleton, Stagger } from '@blowy/ui';
 import { space } from '@blowy/tokens';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
-import { useSession } from '@/core';
+import { ScreenMotion, useSession } from '@/core';
 import { maskEmail, useMe, useSetAvatar, useUpdateMe } from '@/features/me';
 import { errorMessage, goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -44,6 +44,7 @@ export default function Compte() {
 
   if (!me.data) {
     return (
+      <ScreenMotion>
       <SettingsTemplate title={t.title} onBack={back} backLabel={common.back}>
         {me.isError ? (
           <Banner tone="error" title={common.errorTitle} text={errorMessage(me.error)} actionLabel={common.retry} onAction={() => void me.refetch()} />
@@ -55,18 +56,23 @@ export default function Compte() {
           </View>
         )}
       </SettingsTemplate>
+      </ScreenMotion>
     );
   }
 
   const m = me.data;
+  // Champs qui s'allument au focus (InlineField), bannières qui arrivent en douceur, feuille à ressort.
   return (
+    <ScreenMotion>
     <SettingsTemplate
       title={t.title}
       onBack={back}
       backLabel={common.back}
       footer={<Button label={t.save} onPress={save} loading={update.isPending} disabled={!dirty || !name.trim()} />}
     >
+      <Stagger step={50}>
       <PhotoEditCard
+        key="photo"
         uri={m.avatarUrl}
         photoLabel={t.photoLabel}
         hint={t.photoHint}
@@ -74,10 +80,19 @@ export default function Compte() {
         loading={avatar.isPending}
         onPress={() => setSheet(true)}
       />
-      {avatar.isError ? <Banner tone="error" text={t.photoError} onClose={() => avatar.reset()} closeLabel={common.close} /> : null}
-      {avatar.data === true ? <Banner tone="success" text={t.photoSaved} onClose={() => avatar.reset()} closeLabel={common.close} /> : null}
+      {avatar.isError ? (
+        <Appear key="photo-error">
+          <Banner tone="error" text={t.photoError} onClose={() => avatar.reset()} closeLabel={common.close} />
+        </Appear>
+      ) : null}
+      {avatar.data === true ? (
+        <Appear key="photo-saved">
+          <Banner tone="success" text={t.photoSaved} onClose={() => avatar.reset()} closeLabel={common.close} />
+        </Appear>
+      ) : null}
 
       <InlineField
+        key="name"
         label={t.nameLabel}
         value={name}
         onChangeText={(v) => {
@@ -90,6 +105,7 @@ export default function Compte() {
         textContentType="givenName"
       />
       <InlineField
+        key="city"
         label={t.cityLabel}
         value={city}
         onChangeText={(v) => {
@@ -101,9 +117,18 @@ export default function Compte() {
         autoCapitalize="words"
         textContentType="addressCity"
       />
-      {session?.email ? <InlineField label={t.emailLabel} value={maskEmail(session.email)} editable={false} /> : null}
-      {update.isError ? <Banner tone="error" text={errorMessage(update.error)} actionLabel={common.retry} onAction={save} /> : null}
-      {saved && !dirty ? <Banner tone="success" text={t.saved} /> : null}
+      {session?.email ? <InlineField key="email" label={t.emailLabel} value={maskEmail(session.email)} editable={false} /> : null}
+      </Stagger>
+      {update.isError ? (
+        <Appear key="save-error">
+          <Banner tone="error" text={errorMessage(update.error)} actionLabel={common.retry} onAction={save} />
+        </Appear>
+      ) : null}
+      {saved && !dirty ? (
+        <Appear key="saved">
+          <Banner tone="success" text={t.saved} />
+        </Appear>
+      ) : null}
 
       <SheetTemplate visible={sheet} onClose={() => setSheet(false)} title={t.sheetTitle} closeLabel={common.close}>
         <View style={{ gap: space.sm }}>
@@ -112,5 +137,6 @@ export default function Compte() {
         </View>
       </SheetTemplate>
     </SettingsTemplate>
+    </ScreenMotion>
   );
 }

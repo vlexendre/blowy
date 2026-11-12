@@ -1,10 +1,10 @@
 /** Onglet Moi (V6-Moi) : profil, lien « 3 mots », chiffres, Blowy+, liste courte menant aux réglages. */
 import { color, space } from '@blowy/tokens';
-import { Banner, PlusBanner, ProfileHero, SettingsSection, Skeleton, StatTile, TabTemplate, WordsShareCard } from '@blowy/ui';
+import { Appear, Banner, PlusBanner, ProfileHero, SettingsSection, Skeleton, Stagger, StatTile, TabTemplate, WordsShareCard } from '@blowy/ui';
 import { router } from 'expo-router';
 import { Alert, RefreshControl, View } from 'react-native';
 
-import { usePorts, wordsUrl } from '@/core';
+import { ScreenMotion, usePorts, wordsUrl } from '@/core';
 import { useLinks } from '@/features/links';
 import { displayUrl, useCopyShare, useMe } from '@/features/me';
 import { usePet } from '@/features/pet';
@@ -35,9 +35,12 @@ export default function Moi() {
 
   if (!me.data) {
     return (
+      <ScreenMotion>
       <TabTemplate gutter={12} gap={10} top={6}>
         {me.isError ? (
-          <Banner tone="error" title={common.errorTitle} text={t.errorText} actionLabel={common.retry} onAction={() => void me.refetch()} />
+          <Appear key="error">
+            <Banner tone="error" title={common.errorTitle} text={t.errorText} actionLabel={common.retry} onAction={() => void me.refetch()} />
+          </Appear>
         ) : (
           <View style={{ gap: space.md }} accessibilityLabel={common.loading}>
             <Skeleton height={160} radius="xl" />
@@ -46,6 +49,7 @@ export default function Moi() {
           </View>
         )}
       </TabTemplate>
+      </ScreenMotion>
     );
   }
 
@@ -58,9 +62,13 @@ export default function Moi() {
   const days = Math.max(1, Math.floor((Date.now() - Date.parse(m.pet.bornAt)) / DAY_MS) + 1);
   const soon = (text: string) => Alert.alert(t.pauseSoonTitle, text, [{ text: t.ok }]);
 
+  // Les blocs arrivent en cascade à la première visite seulement (l'onglet reste monté) ; les chiffres défilent.
   return (
+    <ScreenMotion>
     <TabTemplate refreshControl={refresh} gutter={12} gap={10} top={6}>
+      <Stagger onceKey="moi" step={55}>
       <ProfileHero
+        key="hero"
         title={t.title(m.displayName, petName)}
         hint={t.photoHint}
         photoUri={m.avatarUrl}
@@ -71,26 +79,28 @@ export default function Moi() {
       />
 
       <WordsShareCard
+        key="words"
         title={t.wordsTitle}
         countLabel={t.wordsCount(wordsCount)}
         words={[]}
         emptyText={wordsCount > 0 ? t.wordsReceived(petName) : t.wordsEmpty(petName)}
         url={displayUrl(wordsLink)}
         copyLabel={t.copy}
-        copiedLabel={common.copied}
+        copiedLabel={t.copied}
         copied={words.copied}
         shareLabel={t.share}
         onCopy={() => void words.copy(wordsLink)}
         onShare={() => void words.share(t.wordsMessage(wordsLink), wordsLink)}
       />
 
-      <View style={{ flexDirection: 'row', gap: space.sm }}>
-        <StatTile value={links.data ? String(linkList.length) : '–'} label={t.stats.links} />
-        <StatTile value={t.streakValue(bestStreak)} label={t.stats.streak} color={color.orange} />
-        <StatTile value={String(days)} label={t.stats.days(petName)} color={color.accent} />
+      <View key="stats" style={{ flexDirection: 'row', gap: space.sm }}>
+        <StatTile value={links.data ? String(linkList.length) : '–'} count={links.data ? linkList.length : undefined} label={t.stats.links} />
+        <StatTile value={t.streakValue(bestStreak)} count={links.data ? bestStreak : undefined} suffix={t.streakSuffix} label={t.stats.streak} color={color.orange} />
+        <StatTile value={String(days)} count={days} label={t.stats.days(petName)} color={color.accent} />
       </View>
 
       <PlusBanner
+        key="plus"
         title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle : t.plusSoonTitle}
         text={t.plusText}
         ctaLabel={purchases.available && !m.plus ? t.plusCta : t.plusSoonCta}
@@ -98,6 +108,7 @@ export default function Moi() {
       />
 
       <SettingsSection
+        key="rows"
         variant="plain"
         rows={[
           {
@@ -111,6 +122,8 @@ export default function Moi() {
           { key: 'settings', ...t.rows.settings, onPress: () => router.push('/moi/reglages') },
         ]}
       />
+      </Stagger>
     </TabTemplate>
+    </ScreenMotion>
   );
 }

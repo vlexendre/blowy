@@ -4,6 +4,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import { ConfirmSheet, errorText, shortDay, useArchiveLink, useBackToLink, useLink } from '@/features/links';
 import { useBlock } from '@/features/safety';
 import { link as linkText, options as t } from '@/locales/chats';
@@ -50,7 +51,7 @@ export default function LinkOptionsScreen() {
   );
 
   return (
-    <>
+    <ScreenMotion>
       <SheetTemplate asScreen visible onClose={close} closeLabel={t.close} header={header} footer={<Button label={t.cancel} variant="ghost" onPress={close} />}>
         {!l ? (
           link.isPending ? (
@@ -106,7 +107,7 @@ export default function LinkOptionsScreen() {
           </>
         )}
       </SheetTemplate>
-    </>
+    </ScreenMotion>
   );
 }
 

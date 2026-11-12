@@ -34,7 +34,9 @@ export function SpeechBubble({ text, highlight, highlightColor = color.accent, t
   const flat = compact || chat;
   const variant = flat ? 'body' : 'bodyBold';
   const fontSize = compact ? 13 : 15;
-  const parts = highlight ? text.split(highlight) : [text];
+  // Le mot en couleur est le dernier de la phrase qui correspond (« salut, moi c'est m » : pas le « m » de « moi »).
+  const at = highlight ? text.lastIndexOf(highlight) : -1;
+  const parts = highlight && at >= 0 ? [text.slice(0, at), text.slice(at + highlight.length)] : [text];
   const tokens = typing ? text.split(/(\s+)/).filter((t) => t.length > 0) : [];
   const words = tokens.filter((t) => !/^\s+$/.test(t)).length;
   const shown = useReveal(words, { enabled: typing, step: 55, delay: 300, key: text });

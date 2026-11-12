@@ -4,7 +4,7 @@ export { ChatThread, type ChatThreadProps } from './ChatThread';
 export { Composer, type ComposerProps, type ComposerTone } from './Composer';
 export { EvolutionHero, type EvolutionHeroProps } from './EvolutionHero';
 export { EncountersHero, type EncountersHeroProps } from './EncountersHero';
-export { EncounterStage, type EncounterStageProps } from './EncounterStage';
+export { EncounterStage, type EncounterStageHandle, type EncounterStageProps } from './EncounterStage';
 export { type EvolutionStep, EvolutionTimeline, type EvolutionTimelineProps } from './EvolutionTimeline';
 export { type FormGauge, type FormOption, FormPicker, type FormPickerProps } from './FormPicker';
 export { type GaugeDetail, GaugePanel, type GaugePanelProps } from './GaugePanel';

@@ -3,6 +3,7 @@ import { type StyleProp, StyleSheet, TextInput, type TextInputProps, View, type 
 
 import { layout } from '../lib/styles';
 import { color, radius, size, space, type, veil } from '../theme';
+import { FocusRing } from './FocusRing';
 import { Text } from './Text';
 
 export interface TextFieldProps extends Omit<TextInputProps, 'style'> {
@@ -25,7 +26,9 @@ export interface TextFieldProps extends Omit<TextInputProps, 'style'> {
 /** Champ de saisie sombre arrondi. */
 export function TextField({ label, hint, error, right, large, inset, style, onFocus, onBlur, editable = true, accessibilityLabel, ref, ...rest }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
-  const border = error ? color.danger : focused ? color.accent : inset ? veil.glass : veil.glassStrong;
+  // Au focus, la bordure jaune arrive en fondu par-dessus (`FocusRing`) : le champ « s'allume ».
+  const border = error ? color.danger : inset ? veil.glass : veil.glassStrong;
+  const lit = focused && !error && editable;
   const input = (
     <TextInput
       ref={ref}
@@ -64,6 +67,7 @@ export function TextField({ label, hint, error, right, large, inset, style, onFo
             </Text>
           ) : null}
           {input}
+          <FocusRing on={lit} radius={radius.md} />
         </View>
         {note}
       </View>
@@ -79,6 +83,7 @@ export function TextField({ label, hint, error, right, large, inset, style, onFo
       <View style={[styles.box, layout.row, { borderColor: border }, !editable && styles.off]}>
         {input}
         {right ? <View style={styles.right}>{right}</View> : null}
+        <FocusRing on={lit} radius={radius.md + 2} />
       </View>
       {note}
     </View>

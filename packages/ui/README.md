@@ -595,6 +595,27 @@ fitAnchor(species, 'headTop' | 'eyes' | 'mouth' | 'ground' | …): { x, y }   //
 - **Web** : pas de tirage élastique (pas de pet dans `PetRefresh`, liste normale), pas de clavier (`KeyboardPeek` absent),
   pas de vibration. Les images du pet sont `pointerEvents: none` pour éviter le glisser-déposer d'image du navigateur.
 
+### Inscription et Moi (ajouts)
+```ts
+DrawnCheck { size?: 20; color? /* encre du contexte */; strokeWidth?; delay?; trigger?: string | number /* retrace */;
+             haptic?: HapticMoment | false; style? }   // coche qui se dessine (copié, code bon) ; fondu si animations réduites
+KeyboardPeek { …; above?: number }        // hauteur laissée libre au-dessus du clavier (pied collé au clavier)
+OnboardingTemplate { …; keyboardPeek?: { species; seed?; mood? } }   // pet par-dessus le clavier, au-dessus du pied (mesuré)
+OtpInput   { …; success?: boolean }       // chiffre en « pop », curseur qui clignote, secousse à chaque nouvelle `error`,
+                                          // code bon : vague verte, les cases se rejoignent et deviennent une coche
+SpeciesPicker { …; nodKey?: string }      // le nom tapé : le pet hoche la tête
+InvitePanel { …; copied?: boolean; copiedLabel?: string }   // coche dessinée à la place du pictogramme
+PetTip     { …; actor?: Ref<PetActorHandle>; seed? }        // pet vivant qu'on fait réagir (`react('no')`)
+StatTile   { …; count?: number; suffix?: string }           // la valeur défile (CountUp) ; `value` reste le libellé lu
+```
+- `TextField` et `InlineField` « s'allument » au focus (`FocusRing` : bordure jaune en fondu + halo qui se resserre).
+- `StepProgress` remplit le segment de l'étape où l'on arrive ; `OnboardingTemplate` fait entrer titre, contenu puis pied
+  (cascade courte, rien n'est bloqué) ; sa barre continue (`progress`) avance depuis l'étape d'avant (`PillSpan`).
+- `QuizStep` : jauges en transformations (`PillSpan` + pastille en `translateX`, dépassement), la réponse choisie
+  s'incline puis part de son côté, la question suivante arrive de la droite (de la gauche en revenant).
+  Garder `QuizPreview` au même endroit entre questions et résultat (voir `app/(onboarding)/caractere.tsx`).
+- Un changement de phase sur la même route : donner une `key` au gabarit pour rejouer l'entrée (`compte.tsx` : e-mail → code).
+
 ### Recettes
 **1. Une liste qui arrive en cascade, une seule fois**
 ```tsx

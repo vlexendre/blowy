@@ -14,10 +14,14 @@ export const moi = {
     wordsEmpty: (pet: string) => `partage ton lien : tes potes choisissent 3 mots sur toi, ça fait bouger ${low(pet)}.`,
     wordsReceived: (pet: string) => `leurs mots ont déjà fait bouger les jauges de ${low(pet)}.`,
     copy: 'copier',
+    /** Après la copie (une coche se dessine à côté). */
+    copied: 'copié',
     share: 'en story',
     wordsMessage: (url: string) => `décris-moi en 3 mots (c’est anonyme) : ${url}`,
     stats: { links: 'liens', streak: 'plus longue série', days: (pet: string) => `jours avec ${low(pet)}` },
     streakValue: (n: number) => `${n} J`,
+    /** Unité après le compteur de la plus longue série (même rendu que `streakValue`). */
+    streakSuffix: ' J',
     plusTitle: [{ text: 'BLOWY+ ' }, { text: '4,99 €/MOIS', dim: true }],
     plusSoonTitle: [{ text: 'BLOWY+ ' }, { text: 'À VENIR', dim: true }],
     plusMemberTitle: [{ text: 'BLOWY+ ' }, { text: 'C’EST TOI', dim: true }],

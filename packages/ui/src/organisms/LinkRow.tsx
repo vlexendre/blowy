@@ -36,6 +36,9 @@ export interface LinkRowProps {
   accessibilityLabel?: string;
 }
 
+/** En dessous (ou à égalité), la vie du lien est en danger : le dernier cœur bat. */
+const DANGER_LIVES = 2;
+
 /** Ligne de la liste des chats : les deux pets, le nom, l'aperçu, les vies, le niveau, les non-lus. */
 export const LinkRow = memo(function LinkRow({
   link,
@@ -95,7 +98,7 @@ export const LinkRow = memo(function LinkRow({
             ghostLabel ? <Chip label={ghostLabel} size="sm" /> : null
           ) : (
             <>
-              <Hearts lives={link.lives} size={14} />
+              <Hearts lives={link.lives} size={14} beat={link.lives > 0 && link.lives <= DANGER_LIVES} />
               <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
             </>
           )}

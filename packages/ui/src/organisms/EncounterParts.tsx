@@ -1,12 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Avatar } from '../atoms/Avatar';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { InkProvider } from '../lib/ink';
+import { ease, springs, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
 import { alpha, color, speciesColor, veil } from '../theme';
 import type { PersonLook } from '../types';
@@ -47,14 +49,18 @@ export interface EncounterHeadProps {
   owner?: string;
   compatibility: number;
   compatLabel?: string;
+  /** À incrémenter : l'avatar fait coucou (balancement, petit saut) — réponse à « saluer ». */
+  waveKey?: number;
 }
 
 /** Avatar cerclé, nom, propriétaire et pourcentage d'accord. */
-export function EncounterHead({ person, name, nameStyle = 'display', badge, owner, compatibility, compatLabel }: EncounterHeadProps) {
+export function EncounterHead({ person, name, nameStyle = 'display', badge, owner, compatibility, compatLabel, waveKey = 0 }: EncounterHeadProps) {
   const tint = speciesColor[person.pet.species];
   return (
     <View style={[layout.row, styles.head]}>
-      <Avatar size={58} pet={person.pet} uri={person.avatarUrl} face={person.face} name={person.displayName} ring={tint} />
+      <Waver waveKey={waveKey}>
+        <Avatar size={58} pet={person.pet} uri={person.avatarUrl} face={person.face} name={person.displayName} ring={tint} />
+      </Waver>
       <View style={layout.grow}>
         <View style={[layout.row, styles.nameRow]}>
           {nameStyle === 'display' ? (
@@ -84,6 +90,21 @@ export function EncounterHead({ person, name, nameStyle = 'display', badge, owne
   );
 }
 
+/** Coucou : balancement autour du bas, petit saut. Rien si animations réduites. */
+function Waver({ waveKey, children }: { waveKey: number; children: ReactNode }) {
+  const reduced = useReducedMotion();
+  const rot = useSharedValue(0);
+  const hop = useSharedValue(0);
+  useEffect(() => {
+    if (!waveKey || reduced) return;
+    const w = (to: number) => withTiming(to, { duration: 150, easing: ease.inOut });
+    rot.value = withDelay(260, withSequence(w(-14), w(12), w(-9), w(6), withSpring(0, springs.pop)));
+    hop.value = withDelay(260, withSequence(withTiming(1, { duration: 140, easing: ease.out }), withSpring(0, springs.plush)));
+  }, [waveKey, reduced, rot, hop]);
+  const style = useAnimatedStyle(() => ({ transform: [{ translateY: -8 * hop.value }, { rotate: `${rot.value}deg` }] }));
+  return <Animated.View style={[styles.waver, style]}>{children}</Animated.View>;
+}
+
 /** Ce qu'un pet raconte : « pia, à nino » puis sa bulle. */
 export function PetSays({ label, labelColor, text }: { label?: string; labelColor: string; text: string }) {
   return (
@@ -105,6 +126,7 @@ export function PetSays({ label, labelColor, text }: { label?: string; labelColo
 const styles = StyleSheet.create({
   frame: { borderRadius: 24, borderWidth: 1, paddingVertical: 12, paddingHorizontal: 14, gap: 8, backgroundColor: color.panel, overflow: 'hidden' },
   head: { gap: 12 },
+  waver: { transformOrigin: '50% 90%' },
   nameRow: { gap: 8 },
   owner: { marginTop: 2 },
   compat: { alignItems: 'flex-end' },

@@ -1,15 +1,20 @@
 import type { Species } from '@blowy/domain';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { type DimensionValue, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 import { Chip } from '../atoms/Chip';
 import { Glyph } from '../atoms/Glyph';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
+import { hapticFor } from '../lib/haptics';
 import { useInk } from '../lib/ink';
+import { ease, fadeTo, useReducedMotion } from '../lib/motion';
+import { Burst } from '../motion/Burst';
+import { useFirstTime } from '../motion/once';
 import { alpha, color, extra, gradient, radius, space, veil } from '../theme';
 
 /** `photo` : image ; `pending` : en attente (pet qui patiente) ; `locked` : posée mais cachée ; `empty` : à prendre. */
@@ -35,11 +40,16 @@ export interface PhotoTileProps {
   children?: ReactNode;
   onPress?: () => void;
   accessibilityLabel?: string;
+  /**
+   * Clé de la photo (ex. lien + jour) : la première fois qu'elle apparaît nette (`state="photo"`), le flou se lève
+   * sous tes yeux, puis quelques étincelles. Ensuite : affichée directement.
+   */
+  revealKey?: string;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Vignette de photo du jour et de souvenir, avec ses états d'attente. */
-export function PhotoTile({ state, uri, label, badge, title, caption, species = 'suzie', blurred, height = 124, children, onPress, accessibilityLabel, style }: PhotoTileProps) {
+export function PhotoTile({ state, uri, label, badge, title, caption, species = 'suzie', blurred, height = 124, children, onPress, accessibilityLabel, revealKey, style }: PhotoTileProps) {
   const ink = useInk();
   const hasImage = state === 'photo' || (state === 'locked' && !!uri);
   const body = (
@@ -49,6 +59,7 @@ export function PhotoTile({ state, uri, label, badge, title, caption, species = 
       ) : hasImage || state === 'locked' ? (
         <LinearGradient colors={[extra.sky, gradient.violet[0]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
       ) : null}
+      {state === 'photo' && uri && revealKey && !blurred ? <Unveil key={revealKey} uri={uri} revealKey={revealKey} /> : null}
       {state === 'pending' ? <PetImage species={species} mood="triste" size={70} animation="breathe" style={styles.pet} /> : null}
       {state === 'empty' ? <Glyph name="camera" size={30} /> : null}
       {state === 'locked' ? (
@@ -99,7 +110,42 @@ export function PhotoTile({ state, uri, label, badge, title, caption, species = 
   );
 }
 
+/**
+ * Le flou se lève : une copie floue de la photo, posée dessus, s'efface en grandissant un peu (on « entre » dans
+ * l'image), puis des étincelles. Monté au passage à l'état net : joue à la première apparition de la clé seulement.
+ * Animations réduites : le même fondu, sans étincelles.
+ */
+function Unveil({ uri, revealKey }: { uri: string; revealKey: string }) {
+  const first = useFirstTime(`photo:${revealKey}`);
+  const reduced = useReducedMotion();
+  const veil = useSharedValue(first ? 1 : 0);
+  const [sparkle, setSparkle] = useState(0);
+  useEffect(() => {
+    if (!first) return;
+    const DELAY = 280;
+    const LIFT = 900;
+    veil.value = withDelay(DELAY, reduced ? fadeTo(0, LIFT) : withTiming(0, { duration: LIFT, easing: ease.inOut }));
+    const id = setTimeout(() => {
+      hapticFor('success');
+      setSparkle(1);
+    }, DELAY + LIFT * 0.7);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const style = useAnimatedStyle(() => ({ opacity: veil.value, transform: [{ scale: 1 + 0.12 * (1 - veil.value) }] }));
+  if (!first) return null;
+  return (
+    <>
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, style]}>
+        <Image source={{ uri }} contentFit="cover" blurRadius={24} style={StyleSheet.absoluteFill} />
+      </Animated.View>
+      {sparkle && !reduced ? <Burst kind="sparkles" trigger={sparkle} count={6} spread={46} seed={revealKey} style={styles.sparkles} /> : null}
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
+  sparkles: { position: 'absolute', left: '50%', top: '45%' },
   base: { borderRadius: radius.md + 4, overflow: 'hidden', alignItems: 'center', justifyContent: 'flex-end', paddingBottom: space.md - 2 },
   placeholder: { borderWidth: 2 },
   pet: { marginBottom: -space.xs },

@@ -1,11 +1,11 @@
 /** Compte (V6-Compte) : e-mail → code à 6 chiffres. Après la connexion, l'aiguillage décide de la suite. */
 import { color } from '@blowy/tokens';
-import { Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, OtpInput, Text, TextField } from '@blowy/ui';
+import { Appear, Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, OtpInput, Shake, Text, TextField } from '@blowy/ui';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Linking } from 'react-native';
 
-import { config, LOCAL_CODE } from '@/core';
+import { config, LOCAL_CODE, ScreenMotion } from '@/core';
 import { useDraft } from '@/features/onboarding';
 import { errorMessage, goBack, useAfterSignIn, useCountdown, useSendCode, useVerifyCode } from '@/features/session';
 import { common } from '@/locales/common';
@@ -26,6 +26,7 @@ export default function Compte() {
   const [code, setCode] = useState('');
   const [resent, setResent] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailShake, setEmailShake] = useState(0);
   const send = useSendCode();
   const verify = useVerifyCode();
   const afterSignIn = useAfterSignIn();
@@ -41,6 +42,7 @@ export default function Compte() {
   const sendCode = (again = false) => {
     if (!looksLikeEmail(email)) {
       setEmailError(t.invalidEmail);
+      setEmailShake((n) => n + 1);
       return;
     }
     setEmailError(null);
@@ -57,12 +59,15 @@ export default function Compte() {
 
   const submitCode = (value = code) => {
     if (value.length !== 6 || verify.isPending) return;
+    // La coche se dessine pendant que l'aiguillage cherche la suite (rien n'attend l'animation).
     verify.mutate({ email, code: value }, { onSuccess: async () => router.replace(await afterSignIn()) });
   };
 
   if (phase === 'code') {
     return (
+      <ScreenMotion>
       <OnboardingTemplate
+        key="code"
         step={login ? undefined : 3}
         total={login ? undefined : onboarding.total}
         onBack={() => setPhase('email')}
@@ -76,6 +81,7 @@ export default function Compte() {
         secondaryLabel={t.changeEmail}
         onSecondary={() => setPhase('email')}
         footnote={devHint}
+        keyboardPeek={{ species }}
       >
         <OtpInput
           value={code}
@@ -85,12 +91,21 @@ export default function Compte() {
           }}
           onComplete={submitCode}
           autoFocus
-          disabled={verify.isPending}
+          disabled={verify.isPending || verify.isSuccess}
           error={verify.isError ? errorMessage(verify.error) : null}
+          success={verify.isSuccess}
           accessibilityLabel={t.codeLabel}
         />
-        {resent && !send.isError ? <Banner tone="success" text={t.resent} /> : null}
-        {send.isError ? <Banner tone="error" text={errorMessage(send.error)} /> : null}
+        {resent && !send.isError ? (
+          <Appear key="resent">
+            <Banner tone="success" text={t.resent} />
+          </Appear>
+        ) : null}
+        {send.isError ? (
+          <Appear key="send-error">
+            <Banner tone="error" text={errorMessage(send.error)} />
+          </Appear>
+        ) : null}
         <Button
           label={countdown.left > 0 ? t.resendIn(countdown.left) : t.resend}
           variant="ghost"
@@ -100,11 +115,14 @@ export default function Compte() {
           onPress={() => sendCode(true)}
         />
       </OnboardingTemplate>
+      </ScreenMotion>
     );
   }
 
   return (
+    <ScreenMotion>
     <OnboardingTemplate
+      key="email"
       step={login ? undefined : 3}
       total={login ? undefined : onboarding.total}
       onBack={() => goBack(login ? '/(onboarding)/welcome' : '/(onboarding)/caractere')}
@@ -131,6 +149,7 @@ export default function Compte() {
       }
     >
       <OnboardingPanel title={login ? t.loginTitle : t.titleWaiting(petName)} pet={{ name: petName, species }} speech={t.speech} />
+      <Shake trigger={emailShake}>
       <TextField
         label={t.emailLabel}
         hint={t.emailHint}
@@ -150,7 +169,13 @@ export default function Compte() {
         returnKeyType="send"
         onSubmitEditing={() => sendCode()}
       />
-      {send.isError ? <Banner tone="error" text={errorMessage(send.error)} /> : null}
+      </Shake>
+      {send.isError ? (
+        <Appear key="send-error">
+          <Banner tone="error" text={errorMessage(send.error)} />
+        </Appear>
+      ) : null}
     </OnboardingTemplate>
+    </ScreenMotion>
   );
 }

@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { hasOutfit } from '../assets/fit';
@@ -10,6 +11,8 @@ import { Glyph } from '../atoms/Glyph';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
+import { PopIn } from '../motion/PopIn';
+import { useRipple, useRippleAnchor } from '../motion/Ripple';
 import { alpha, color, speciesColor } from '../theme';
 import { EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
 import type { PetLook, SuggestionLook } from '../types';
@@ -47,10 +50,8 @@ export interface SuggestionCardProps {
 
 /** Un pet croisé : compatibilité, d'où il vient, ce que ton pet en dit, et « saluer ». */
 export function SuggestionCard(props: SuggestionCardProps) {
-  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen } = props;
-  const { user, compatibility, intro, waved } = suggestion;
+  const { compatibility, user } = props.suggestion;
   const pet = user.pet;
-  const tint = speciesColor[pet.species];
 
   if (props.locked) {
     return (
@@ -71,13 +72,39 @@ export function SuggestionCard(props: SuggestionCardProps) {
     );
   }
 
+  return <SuggestionBody {...props} />;
+}
+
+/** Carte dépliée : « saluer » lance l'action, puis l'onde autour du bouton et le coucou de l'avatar (rien n'attend). */
+function SuggestionBody(props: SuggestionCardProps) {
+  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen } = props;
+  const { user, compatibility, intro, waved } = suggestion;
+  const pet = user.pet;
+  const tint = speciesColor[pet.species];
+  const button = useRippleAnchor();
+  const ripple = useRipple();
+  const [waves, setWaves] = useState(0);
+  const wave = () => {
+    onWave?.();
+    ripple(button.target(), { color: color.white });
+    setWaves((n) => n + 1);
+  };
   const viaTint = viaPet ? speciesColor[viaPet.species] : null;
   return (
     <EncounterFrame tint={tint}>
       <EncounterHead
         person={user}
         name={pet.name}
-        badge={waved ? <Chip label={wavedLabel} tone="glass" size="sm" /> : badgeLabel ? <Chip label={badgeLabel} tone="accent" size="sm" style={styles.badge} /> : null}
+        badge={
+          waved ? (
+            <PopIn onMount={waves > 0}>
+              <Chip label={wavedLabel} tone="glass" size="sm" />
+            </PopIn>
+          ) : badgeLabel ? (
+            <Chip label={badgeLabel} tone="accent" size="sm" style={styles.badge} />
+          ) : null
+        }
+        waveKey={waves}
         owner={ownerLabel}
         compatibility={compatibility}
         compatLabel={compatLabel}
@@ -100,7 +127,9 @@ export function SuggestionCard(props: SuggestionCardProps) {
       {openLabel && onOpen ? (
         <Button label={openLabel} variant="white" size="md" labelSize={15} onPress={onOpen} style={styles.cta} />
       ) : waved ? null : (
-        <Button label={waveLabel} variant="white" size="md" labelSize={15} onPress={onWave} loading={waving} style={styles.cta} />
+        <View {...button.props}>
+          <Button label={waveLabel} variant="white" size="md" labelSize={15} onPress={wave} loading={waving} style={styles.cta} />
+        </View>
       )}
     </EncounterFrame>
   );

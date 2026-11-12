@@ -1,11 +1,12 @@
 /** Lien d'invitation (blowy://i/CODE, https://blowy.app/i/CODE) : voir qui t'invite et accepter. */
 import { ApiError } from '@blowy/api-client';
 import { space } from '@blowy/tokens';
-import { Banner, Button, EmptyState, Header, InvitationPanel, ScreenTemplate, Skeleton, Stack } from '@blowy/ui';
+import { Banner, Button, EmptyState, Header, InvitationPanel, ScreenTemplate, Skeleton, Stack, usePetBump } from '@blowy/ui';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import { useAcceptInvite, useInvite, usePendingInvite } from '@/features/encounters';
 import { useDraft } from '@/features/onboarding';
 import { usePet } from '@/features/pet';
@@ -26,6 +27,7 @@ export default function InviteLink() {
   const invite = useInvite(ready && code ? code : null);
   const accept = useAcceptInvite();
   const mine = usePet().data?.pet;
+  const bump = usePetBump();
 
   // Pas encore de compte complet : on garde le code, l'inscription le reprendra.
   useEffect(() => {
@@ -44,16 +46,19 @@ export default function InviteLink() {
 
   if (notFound || own) {
     return (
+      <ScreenMotion>
       <ScreenTemplate header={header} scroll={false}>
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <EmptyState mood={own ? 'smug' : 'triste'} title={own ? t.ownTitle : t.notFoundTitle} text={own ? t.ownText : t.notFoundText} actionLabel={t.home} onAction={home} />
+          <EmptyState peek mood={own ? 'smug' : 'triste'} title={own ? t.ownTitle : t.notFoundTitle} text={own ? t.ownText : t.notFoundText} actionLabel={t.home} onAction={home} />
         </View>
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
 
   if (!invite.data) {
     return (
+      <ScreenMotion>
       <ScreenTemplate header={header}>
         {invite.isError || gate === 'offline' ? (
           <Banner tone="error" title={common.errorTitle} text={invite.isError ? errorMessage(invite.error) : common.offlineText} actionLabel={common.retry} onAction={() => void invite.refetch()} />
@@ -64,18 +69,28 @@ export default function InviteLink() {
           </View>
         )}
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
 
   const inv = invite.data;
   return (
+    <ScreenMotion>
     <ScreenTemplate
       footer={
         <>
           <Button
             label={copy.accept}
             loading={accept.isPending}
-            onPress={() => accept.mutate(code, { onSuccess: (link) => router.replace({ pathname: '/link/[id]', params: { id: link.id } }) })}
+            onPress={() =>
+              accept.mutate(code, {
+                onSuccess: (link) => {
+                  router.replace({ pathname: '/link/[id]', params: { id: link.id } });
+                  // Les deux pets de l'invitation se courent dessus pendant que le lien s'ouvre.
+                  if (mine) bump({ left: mine.species, right: inv.pet.species });
+                },
+              })
+            }
           />
           <Button label={copy.later} variant="ghost" onPress={home} />
         </>
@@ -102,5 +117,6 @@ export default function InviteLink() {
         ) : null}
       </Stack>
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }

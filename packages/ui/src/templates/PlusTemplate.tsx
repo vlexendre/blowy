@@ -11,10 +11,12 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { FeatureRow } from '../molecules/FeatureRow';
+import { Appear, Stagger } from '../motion/Appear';
+import { PopIn } from '../motion/PopIn';
 import { PlanPicker, type Plan } from '../organisms/PlanPicker';
 import { InkProvider } from '../lib/ink';
 import { layout } from '../lib/styles';
-import { color, plusGradient, radius, space } from '../theme';
+import { color, motion, plusGradient, radius, space } from '../theme';
 
 export interface PlusTemplateProps<K extends string> {
   /** Puce jaune en haut à gauche (« essai 3 jours offert », « à venir »). */
@@ -76,29 +78,33 @@ export function PlusTemplate<K extends string>({
         <View style={[styles.panel, { height: PANEL_HEIGHT + insets.top - FRAME_STATUS }]}>
           <LinearGradient colors={plusGradient} style={StyleSheet.absoluteFill} />
         </View>
-        <View pointerEvents="none" style={[styles.pet, { top: insets.top + 46 }]}>
+        <Appear from="right" distance={70} delay={140} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: insets.top + 46 }]}>
           <PetImage species={species} mood="smug" size={190} rotate={10} animation="breathe" outline />
-        </View>
+        </Appear>
         <View style={[layout.rowBetween, styles.top]}>
-          <View style={styles.sticker}>
+          <PopIn delay={120} from={0.6} style={styles.sticker}>
             <Text variant="bodyHeavy" size={12} color={color.dark} style={styles.stickerText}>
               {sticker}
             </Text>
-          </View>
+          </PopIn>
           <IconButton glyph="close" variant="back" label={closeLabel} onPress={onClose} />
         </View>
-        <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={92} style={styles.title} />
-        <Title text={[{ text: subtitle, dim: true }]} size={34} variant="h2" style={styles.subtitle} />
+        <Appear delay={60} distance={18}>
+          <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={92} style={styles.title} />
+          <Title text={[{ text: subtitle, dim: true }]} size={34} variant="h2" style={styles.subtitle} />
+        </Appear>
         <InkProvider value={color.white}>
           <View style={styles.features}>
-            {features.map((f) => (
-              <FeatureRow key={f.icon} icon={f.icon} title={f.title} text={f.text} />
-            ))}
+            <Stagger delay={160} step={50} from="left" distance={14}>
+              {features.map((f) => (
+                <FeatureRow key={f.icon} icon={f.icon} title={f.title} text={f.text} />
+              ))}
+            </Stagger>
           </View>
         </InkProvider>
-        <View style={styles.plans}>
+        <Appear delay={340} distance={14} style={styles.plans}>
           <PlanPicker plans={plans} value={plan} onChange={onPlan} />
-        </View>
+        </Appear>
         <Text size={13.5} muted style={styles.free}>
           {free}
         </Text>

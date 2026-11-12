@@ -104,6 +104,7 @@ export const chat = {
   ghostDisabled: 'lien fantôme : ranime-le pour écrire',
   sendError: 'Ton message n’est pas parti. Il est toujours là, réessaie.',
   lockedPhoto: 'envoie la tienne pour voir la sienne',
+  typing: (name: string): string => `${name} écrit…`,
   emptyTitle: [{ text: 'DITES-VOUS\n' }, { text: 'BONJOUR', dim: true }] as TitleSegment[],
   emptyText: (pet: string, otherPet: string): string => `${low(pet)} et ${low(otherPet)} se sont trouvés. à toi le premier mot.`,
   loadError: 'Impossible de charger les messages',
@@ -117,7 +118,7 @@ export const memories = {
   title: [{ text: 'VOS\n' }, { text: 'SOUVENIRS', dim: true }] as TitleSegment[],
   subtitle: (days: number, streak: number): string =>
     `${days} ${days > 1 ? 'jours' : 'jour'} ensemble. meilleure série : ${streak} ${streak > 1 ? 'jours' : 'jour'}.`,
-  photosTitle: (n: number): TitleSegment[] => [{ text: 'PHOTOS DU JOUR' }, { text: ` · ${n}`, dim: true }],
+  photosTitle: 'PHOTOS DU JOUR',
   blurredHint: 'nettes au niveau 5',
   stats: (s: { messages: number; photos: number; daysTogether: number }) => ({
     messages: s.messages > 1 ? 'messages' : 'message',

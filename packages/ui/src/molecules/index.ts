@@ -30,3 +30,4 @@ export { ItemTile, type ItemTileProps, type ItemTileState } from './ItemTile';
 export { needColor, NeedMeter, type NeedMeterProps } from './NeedMeter';
 export { SlotTabs, type SlotTabsProps } from './SlotTabs';
 export { LegalNote, type LegalNoteProps, type LegalSegment } from './LegalNote';
+export { CountTitle, type CountTitleProps } from './CountTitle';

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ComponentRef, type ReactNode, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { IconButton } from '../atoms/IconButton';
@@ -7,7 +7,10 @@ import { AvatarPair } from '../molecules/AvatarPair';
 import { Hearts } from '../molecules/Hearts';
 import { LevelPill } from '../molecules/LevelPill';
 import { type SegmentedTabItem, SegmentedTabs } from '../molecules/SegmentedTabs';
+import { hapticFor } from '../lib/haptics';
 import { layout } from '../lib/styles';
+import { useBurst } from '../motion/MotionHost';
+import { PopIn } from '../motion/PopIn';
 import { space, veil } from '../theme';
 import type { PersonLook, PetLook } from '../types';
 import { ScreenTemplate, type ScreenTemplateProps } from './ScreenTemplate';
@@ -24,6 +27,10 @@ export interface LinkTemplateProps<K extends string = string> {
   backLabel?: string;
   /** Libellé lu des vies (« 5 vies sur 7 »). */
   livesLabel?: string;
+  /** Vies montrées à l'ouverture avant d'aller vers `lives` (0 après « ranimer » : les cœurs reviennent un à un). */
+  livesFrom?: number;
+  /** À incrémenter à chaque passage de niveau : la pastille de niveau rebondit et lâche des confettis. */
+  levelUp?: number;
   /** Onglets aujourd'hui · chat · souvenirs. */
   tabs: readonly SegmentedTabItem<K>[];
   activeTab: K;
@@ -51,6 +58,8 @@ export function LinkTemplate<K extends string>({
   onBack,
   backLabel = 'Retour',
   livesLabel,
+  livesFrom,
+  levelUp = 0,
   tabs,
   activeTab,
   onTabChange,
@@ -61,6 +70,13 @@ export function LinkTemplate<K extends string>({
   optionsLabel = 'Options',
   refreshControl,
 }: LinkTemplateProps<K>) {
+  const level = useRef<ComponentRef<typeof View>>(null);
+  const burst = useBurst();
+  useEffect(() => {
+    if (!levelUp) return;
+    hapticFor('celebrate');
+    level.current?.measureInWindow((x, y, w, h) => burst({ kind: 'confetti', x: x + w / 2, y: y + h / 2 }));
+  }, [levelUp, burst]);
   const header = (
     <View style={[styles.head, styles.inset]}>
       <View style={[layout.row, styles.top]}>
@@ -70,9 +86,13 @@ export function LinkTemplate<K extends string>({
           <Text variant="bodyHeavy" size={19} numberOfLines={1} accessibilityRole="header" style={styles.name}>
             {other.displayName}
           </Text>
-          <Hearts lives={lives} ghost={ghost} size={14} accessibilityLabel={livesLabel} />
+          <Hearts lives={lives} ghost={ghost} from={livesFrom} size={14} accessibilityLabel={livesLabel} />
         </View>
-        <LevelPill label={levelLabel} onPress={onLevelPress} style={styles.level} />
+        <View ref={level} collapsable={false} style={styles.level}>
+          <PopIn trigger={levelUp} onMount={false}>
+            <LevelPill label={levelLabel} onPress={onLevelPress} />
+          </PopIn>
+        </View>
         {onOptions ? <IconButton glyph="more" label={optionsLabel} onPress={onOptions} size={40} style={styles.back} /> : null}
       </View>
       <SegmentedTabs items={tabs} activeKey={activeTab} onChange={onTabChange} />

@@ -8,6 +8,7 @@ import {
   ChatThread,
   Composer,
   type ComposerTone,
+  CountTitle,
   EmptyState,
   GhostPanel,
   Header,
@@ -18,8 +19,8 @@ import {
   PetImage,
   ScreenTemplate,
   Skeleton,
+  Stagger,
   Text,
-  Title,
   TodayCard,
   TodoRow,
 } from '@blowy/ui';
@@ -28,6 +29,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import {
   chatDayLabel,
   chronological,
@@ -35,6 +37,7 @@ import {
   PhotoSourceSheet,
   shortDay,
   useArchiveLink,
+  useLevelUps,
   useLink,
   useMarkRead,
   useMemories,
@@ -75,6 +78,9 @@ export default function LinkScreen() {
   }, [notice]);
 
   const l = link.data;
+  // Ranimé à l'instant : les cœurs reviennent un à un dans l'en-tête.
+  const [revived, setRevived] = useState(false);
+  const levelUps = useLevelUps(id, l?.level);
   const goChats = useCallback(() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/chats')), [router]);
 
   // Lien quitté, ou disparu (blocage) : retour à la liste.
@@ -85,6 +91,7 @@ export default function LinkScreen() {
 
   if (!l) {
     return (
+      <ScreenMotion>
       <ScreenTemplate header={<Header onBack={goChats} backLabel={t.back} />}>
         {link.isPending ? (
           <View style={styles.gap}>
@@ -93,11 +100,12 @@ export default function LinkScreen() {
             <Skeleton height={140} radius="lg" />
           </View>
         ) : gone ? (
-          <EmptyState mood="triste" title={t.gone} actionLabel={t.backToChats} onAction={() => router.replace('/(tabs)/chats')} />
+          <EmptyState peek mood="triste" title={t.gone} actionLabel={t.backToChats} onAction={() => router.replace('/(tabs)/chats')} />
         ) : (
           <Banner tone="error" title={t.loadError} text={link.error?.message ?? ''} actionLabel={t.retry} onAction={() => void link.refetch()} />
         )}
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
 
@@ -106,7 +114,13 @@ export default function LinkScreen() {
   const active: Tab = tab ?? (ghost ? 'today' : 'chat');
 
   // Lien fantôme : écran plein, sans onglets (V6-Fantome).
-  if (ghost) return <GhostBody link={l} onBack={goChats} onLeft={() => router.replace('/(tabs)/chats')} />;
+  if (ghost) {
+    return (
+      <ScreenMotion>
+        <GhostBody link={l} onBack={goChats} onLeft={() => router.replace('/(tabs)/chats')} onRevived={() => setRevived(true)} />
+      </ScreenMotion>
+    );
+  }
 
   const nudge = () => {
     setDraft(todayText.nudgeDraft);
@@ -114,7 +128,7 @@ export default function LinkScreen() {
   };
 
   return (
-    <>
+    <ScreenMotion>
       <LinkTemplate
         other={l.other}
         myPet={l.myPet}
@@ -125,6 +139,8 @@ export default function LinkScreen() {
         onBack={goChats}
         backLabel={t.back}
         livesLabel={t.lives(l.lives)}
+        livesFrom={revived ? 0 : undefined}
+        levelUp={levelUps}
         onOptions={() => router.push(`/link/${l.id}/options`)}
         optionsLabel={t.options}
         tabs={TABS}
@@ -152,7 +168,7 @@ export default function LinkScreen() {
         )}
       </LinkTemplate>
       <PhotoSender link={l} visible={picking} onClose={() => setPicking(false)} onNotice={setNotice} />
-    </>
+    </ScreenMotion>
   );
 }
 
@@ -213,9 +229,13 @@ function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: ()
   const nextKey = LEVEL_KEYS[link.level];
   const atMax = link.level >= MAX_LEVEL || !nextKey;
 
+  const key = `${link.id}:${today.day}`;
   return (
     <View style={styles.body}>
+      <Stagger onceKey={`today:${link.id}`} step={70}>
       <TodayCard
+        key="card"
+        motionKey={key}
         today={today}
         otherPet={other.pet}
         streak={link.streak}
@@ -237,6 +257,8 @@ function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: ()
         onMinePress={today.mine ? undefined : onPick}
       />
       <LivesPanel
+        key="week"
+        animateKey={memories.data ? key : undefined}
         lives={link.lives}
         max={MAX_LIVES}
         count={todayText.livesCount(link.lives)}
@@ -244,10 +266,11 @@ function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: ()
         week={weekStrip(memories.data, today.day, today)}
         accessibilityLabel={t.lives(link.lives)}
       />
-      <Text variant="label" size={11} muted style={styles.todoTitle}>
+      <Text key="todoTitle" variant="label" size={11} muted style={styles.todoTitle}>
         {todayText.todoTitle}
       </Text>
       <TodoRow
+        key="todo"
         tile={atMax ? <PetImage art="oeuf" size={38} /> : <Avatar size={34} pet={other.pet} hidden />}
         tileGradient={atMax ? 'rose' : 'violet'}
         title={atMax ? levelLabel.oeuf.title : todayText.nextTodo(link.level + 1, levelLabel[nextKey].title)}
@@ -256,6 +279,7 @@ function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: ()
         onPress={onLevels}
         accessibilityLabel={todayText.nextA11y}
       />
+      </Stagger>
     </View>
   );
 }
@@ -293,7 +317,10 @@ function ChatBody({ link }: { link: Link }) {
       }}
       loadingOlder={thread.isFetchingNextPage}
       lockedPhotoLabel={chatText.lockedPhoto}
-      empty={<EmptyState species={link.myPet.species} mood="salut" title={chatText.emptyTitle} text={chatText.emptyText(link.myPet.name, link.other.pet.name)} />}
+      typingLabel={chatText.typing}
+      empty={
+        <EmptyState peek seed={link.id} species={link.myPet.species} mood="salut" title={chatText.emptyTitle} text={chatText.emptyText(link.myPet.name, link.other.pet.name)} />
+      }
     />
   );
 }
@@ -381,21 +408,14 @@ function MemoriesBody({ link }: { link: Link }) {
         text={memText.subtitle(stats.daysTogether, stats.bestStreak)}
         pets={[link.myPet.species, link.other.pet.species]}
       />
-      <View style={styles.sectionHead}>
-        <Title text={memText.photosTitle(stats.photos)} size={24} />
-        {blurred && days.length > 0 ? (
-          <Text variant="bodyBold" size={12} muted>
-            {memText.blurredHint}
-          </Text>
-        ) : null}
-      </View>
-      <MemoryGrid days={days} dayLabel={shortDay} blurred={blurred} emptyText={memText.empty} />
+      <CountTitle title={memText.photosTitle} count={stats.photos} hint={blurred && days.length > 0 ? memText.blurredHint : undefined} />
+      <MemoryGrid days={days} dayLabel={shortDay} blurred={blurred} emptyText={memText.empty} animateKey={link.id} />
     </View>
   );
 }
 
 // ── Lien fantôme ────────────────────────────────────────────────────────────
-function GhostBody({ link, onBack, onLeft }: { link: Link; onBack: () => void; onLeft: () => void }) {
+function GhostBody({ link, onBack, onLeft, onRevived }: { link: Link; onBack: () => void; onLeft: () => void; onRevived: () => void }) {
   const revive = useRevive(link.id);
   const archive = useArchiveLink();
   const error = revive.isError
@@ -420,11 +440,12 @@ function GhostBody({ link, onBack, onLeft }: { link: Link; onBack: () => void; o
         reviveHint={ghostText.reviveHint}
         alreadyRevivedLabel={ghostText.already}
         leaveLabel={ghostText.leave}
-        onRevive={() => revive.mutate()}
+        onRevive={() => revive.mutate(undefined, { onSuccess: onRevived })}
         onLeave={() => archive.mutate(link.id, { onSuccess: onLeft })}
         reviving={revive.isPending}
         leaving={archive.isPending}
         error={error}
+        revealKey={link.id}
       />
     </>
   );
@@ -442,5 +463,4 @@ const styles = StyleSheet.create({
   progress: { gap: 6, marginTop: 12 },
   composer: { gap: 8 },
   notice: { paddingTop: 12 },
-  sectionHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, marginTop: 4 },
 });

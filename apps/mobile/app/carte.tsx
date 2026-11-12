@@ -2,6 +2,7 @@ import { formLabel } from '@blowy/content';
 import { Banner, Header, ScreenTemplate, Skeleton } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 
+import { ScreenMotion } from '@/core';
 import { type MapPet, NeighbourhoodMap, useEncounters, useWave } from '@/features/encounters';
 import { sortLinks, useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
@@ -68,6 +69,7 @@ export default function CarteScreen() {
 
   if (!p || loading) {
     return (
+      <ScreenMotion>
       <ScreenTemplate header={<Header onBack={back} backLabel={t.back} />}>
         {failed ? (
           <Banner
@@ -81,11 +83,13 @@ export default function CarteScreen() {
           <Skeleton height={400} radius="xl" />
         )}
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
 
   const pins = [...met, ...linked];
   return (
+    <ScreenMotion>
     <ScreenTemplate scroll={false} padded={false} edges={[]} keyboard={false}>
       <NeighbourhoodMap
         me={p}
@@ -101,5 +105,6 @@ export default function CarteScreen() {
         empty={{ text: t.empty, label: t.rencontres, onPress: toRencontres }}
       />
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }

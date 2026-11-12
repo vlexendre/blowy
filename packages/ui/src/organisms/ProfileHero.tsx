@@ -6,6 +6,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { PortraitTile } from '../molecules/PortraitTile';
+import { PopIn } from '../motion/PopIn';
 import { space } from '../theme';
 import type { PetLook, TitleContent } from '../types';
 
@@ -32,9 +33,10 @@ export function ProfileHero({ title, hint, photoUri, photoLabel, pet, petColor, 
   const photo = (
     <>
       <PortraitTile uri={photoUri} width={TILE_W} height={TILE_H} blurred accessibilityLabel={photoLabel} />
-      <View style={styles.badge} pointerEvents="none">
+      {/* Le pet arrive en « pop » sur le coin de ta photo. */}
+      <PopIn delay={220} from={0.3} style={styles.badge} pointerEvents="none">
         <Avatar size={BADGE} pet={pet} hidden bg={petColor} ring={petColor} accessibilityLabel={pet.name} />
-      </View>
+      </PopIn>
     </>
   );
   return (

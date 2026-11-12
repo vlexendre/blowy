@@ -26,7 +26,7 @@ export interface PlanPickerProps<K extends string = string> {
   onChange: (key: K) => void;
 }
 
-/** Choix de la formule Blowy+ : cartes côte à côte, la choisie en blanc. */
+/** Choix de la formule Blowy+ : cartes côte à côte, la choisie en blanc (elle rebondit quand on la choisit). */
 export function PlanPicker<K extends string>({ plans, value, onChange }: PlanPickerProps<K>) {
   return (
     <View accessibilityRole="radiogroup" style={[layout.row, styles.wrap]}>
@@ -38,6 +38,7 @@ export function PlanPicker<K extends string>({ plans, value, onChange }: PlanPic
             onPress={() => onChange(p.key)}
             haptic="selection"
             scaleTo={0.97}
+            bounceKey={on}
             accessibilityRole="radio"
             accessibilityLabel={[p.title, p.price, p.unit, p.caption].filter(Boolean).join(' ')}
             accessibilityState={{ checked: on }}

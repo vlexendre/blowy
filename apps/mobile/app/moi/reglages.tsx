@@ -1,10 +1,10 @@
 /** Réglages (V6-Reglages) : compte, confidentialité, aide, déconnexion et suppression. */
-import { SettingsSection, SettingsTemplate } from '@blowy/ui';
+import { SettingsSection, SettingsTemplate, Stagger } from '@blowy/ui';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { Alert, Linking } from 'react-native';
 
-import { config } from '@/core';
+import { config, ScreenMotion } from '@/core';
 import { useMe } from '@/features/me';
 import { useBlocks } from '@/features/safety';
 import { confirmAction, goBack, useSignOut } from '@/features/session';
@@ -31,9 +31,13 @@ export default function Reglages() {
       onConfirm: () => signOut.mutate(undefined, { onSuccess: () => router.replace('/(onboarding)/welcome') }),
     });
 
+  // Les sections arrivent en cascade (une fois) ; les lignes s'enfoncent au toucher, l'interrupteur file en ressort.
   return (
+    <ScreenMotion>
     <SettingsTemplate title={t.title} onBack={() => goBack('/(tabs)/moi')} backLabel={common.back} note={t.version(version)}>
+      <Stagger onceKey="reglages" step={50}>
       <SettingsSection
+        key="account"
         title={t.sections.account}
         rows={[
           {
@@ -47,6 +51,7 @@ export default function Reglages() {
         ]}
       />
       <SettingsSection
+        key="privacy"
         title={t.sections.privacy}
         rows={[
           {
@@ -65,6 +70,7 @@ export default function Reglages() {
         ]}
       />
       <SettingsSection
+        key="help"
         title={t.sections.help}
         rows={[
           { key: 'rules', ...t.rows.rules, onPress: open('regles'), chevron: true },
@@ -73,11 +79,14 @@ export default function Reglages() {
         ]}
       />
       <SettingsSection
+        key="end"
         rows={[
           { key: 'signout', ...t.rows.signOut, onPress: askSignOut, chevron: false, disabled: signOut.isPending },
           { key: 'delete', ...t.rows.delete, destructive: true, chevron: true, onPress: () => router.push('/moi/supprimer') },
         ]}
       />
+      </Stagger>
     </SettingsTemplate>
+    </ScreenMotion>
   );
 }

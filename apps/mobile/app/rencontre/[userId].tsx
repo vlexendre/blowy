@@ -1,4 +1,5 @@
 import { ApiError } from '@blowy/api-client';
+import { color } from '@blowy/tokens';
 import type { Person } from '@blowy/contract';
 import {
   Banner,
@@ -6,6 +7,7 @@ import {
   Chip,
   EmptyState,
   EncounterStage,
+  type EncounterStageHandle,
   Header,
   MessageBubble,
   ScreenTemplate,
@@ -13,15 +15,21 @@ import {
   SheetTemplate,
   Skeleton,
   Stack,
+  usePetBump,
+  useRipple,
+  useRippleAnchor,
+  useTypingPause,
 } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { View } from 'react-native';
 
+import { ScreenMotion } from '@/core';
 import { useAcceptEncounter, useDeclineEncounter, useEncounter, useWave } from '@/features/encounters';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useBlock } from '@/features/safety';
-import { chats as chatsText, options as optionsText } from '@/locales/chats';
+import { chat as chatText, chats as chatsText, options as optionsText } from '@/locales/chats';
 import { rencontre as t, rencontres as listText } from '@/locales/rencontres';
 
 type Sheet = 'menu' | 'report' | 'block' | null;
@@ -37,6 +45,13 @@ export default function RencontreScreen() {
   const block = useBlock();
   const [sheet, setSheet] = useState<Sheet>(null);
   const [reported, setReported] = useState(false);
+  const stage = useRef<EncounterStageHandle>(null);
+  const waveButton = useRippleAnchor();
+  const [waves, setWaves] = useState(0);
+  const ripple = useRipple();
+  const bump = usePetBump();
+  // Le pet « écrit » avant que sa bulle s'affiche.
+  const typing = useTypingPause(800, 450, encounter.incoming?.id ?? encounter.suggestion?.user.id);
 
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
   const { incoming, suggestion } = encounter;
@@ -58,6 +73,7 @@ export default function RencontreScreen() {
 
   if (!person) {
     return (
+      <ScreenMotion>
       <ScreenTemplate header={header} background="violet">
         {encounter.isPending ? (
           <Stack top={6}>
@@ -67,17 +83,35 @@ export default function RencontreScreen() {
         ) : encounter.isError ? (
           <Banner tone="error" title={listText.loadError} text={encounter.error.message} actionLabel={listText.retry} onAction={() => void encounter.refetch()} />
         ) : (
-          <EmptyState mood="triste" title={t.goneTitle} text={t.goneText} actionLabel={t.goneAction} onAction={() => router.replace('/rencontres')} />
+          <EmptyState peek mood="triste" title={t.goneTitle} text={t.goneText} actionLabel={t.goneAction} onAction={() => router.replace('/rencontres')} />
         )}
       </ScreenTemplate>
+      </ScreenMotion>
     );
   }
+
+  /** Accepté : le lien s'ouvre tout de suite ; les deux pets quittent la scène pour se cogner au centre. */
+  const onAccepted = async (linkId: string) => {
+    // La place des pets est relevée avant de partir ; la navigation n'attend pas la mesure.
+    const measuring = stage.current?.petRects();
+    stage.current?.hidePets();
+    router.replace(`/link/${linkId}`);
+    if (!myPet) return;
+    const rects = await measuring;
+    bump({ left: myPet.species, right: person.pet.species, from: { left: rects?.me, right: rects?.them } });
+  };
+  /** Saluer : l'action part, puis ton pet fait signe et une onde part du bouton. */
+  const onWave = () => {
+    wave.mutate(person.id);
+    setWaves((n) => n + 1);
+    ripple(waveButton.target(), { color: color.accent });
+  };
 
   const footer = incoming ? (
     <>
       <Button
         label={t.accept(person.displayName)}
-        onPress={() => accept.mutate(incoming.id, { onSuccess: (link) => router.replace(`/link/${link.id}`) })}
+        onPress={() => accept.mutate(incoming.id, { onSuccess: (link) => void onAccepted(link.id) })}
         loading={accept.isPending}
         disabled={decline.isPending}
       />
@@ -86,13 +120,18 @@ export default function RencontreScreen() {
   ) : suggestion?.waved ? (
     <Button label={t.waved} variant="ghost" icon="check" disabled />
   ) : (
-    <Button label={t.wave(person.pet.name)} onPress={() => wave.mutate(person.id)} loading={wave.isPending} />
+    <View {...waveButton.props}>
+      <Button label={t.wave(person.pet.name)} onPress={onWave} loading={wave.isPending} />
+    </View>
   );
 
   return (
+    <ScreenMotion>
     <ScreenTemplate footer={footer}>
       <Stack top={6} gap={6} grow>
         <EncounterStage
+          ref={stage}
+          waveKey={waves}
           onBack={back}
           backLabel={t.back}
           via={via ? { label: via } : undefined}
@@ -110,6 +149,10 @@ export default function RencontreScreen() {
             message={{ author: incoming ? 'other_pet' : 'my_pet', kind: 'text', body: incoming?.intro ?? suggestion?.intro ?? '', mediaUrl: null }}
             name={(incoming ? person.pet.name : myPetName).toLowerCase()}
             pet={incoming ? person.pet : myPet}
+            fade={false}
+            enter="receive"
+            typing={typing}
+            typingLabel={chatText.typing((incoming ? person.pet.name : myPetName).toLowerCase())}
           />
         </EncounterStage>
         {error ? (
@@ -159,5 +202,6 @@ export default function RencontreScreen() {
         }
       />
     </ScreenTemplate>
+    </ScreenMotion>
   );
 }
