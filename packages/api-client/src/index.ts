@@ -19,6 +19,8 @@ import {
   routes,
   type SendMessageBody,
   type UpdateMeBody,
+  type OutfitDto,
+  WardrobeZ,
   UploadTicketZ,
   WordsPageZ,
   BlockedZ,
@@ -42,7 +44,7 @@ export interface ApiClientOptions {
   fetch?: typeof fetch;
 }
 
-type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 export function createApiClient(opts: ApiClientOptions) {
   const doFetch = opts.fetch ?? fetch;
@@ -88,6 +90,9 @@ export function createApiClient(opts: ApiClientOptions) {
       get: () => call('GET', routes.pet(), PetViewZ),
       rename: (name: string) => call('PATCH', routes.pet(), PetViewZ, { name }),
       answerChallenge: (choice: 0 | 1) => call('POST', routes.petChallenge(), PetViewZ, { choice }),
+      care: (action: 'feed' | 'play' | 'nap' | 'cuddle') => call('POST', routes.petCare(), PetViewZ, { action }),
+      wardrobe: () => call('GET', routes.petWardrobe(), WardrobeZ),
+      setOutfit: (outfit: OutfitDto) => call('PUT', routes.petOutfit(), PetViewZ, { outfit }),
     },
     links: {
       list: () => call('GET', routes.links(), Links),

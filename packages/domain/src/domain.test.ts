@@ -87,3 +87,46 @@ describe('lien', () => {
     expect(faceVisibility(6)).toBe('clear');
   });
 });
+
+import { applyCare, canCare, decayNeeds, shapeOf, START_NEEDS, urgentNeed, wellbeing, ENCOUNTER_QUOTA } from './care';
+import { cleanOutfit, earnedItems, itemById, itemProgress, ITEMS, ITEM_SLOTS, ZERO_STATS } from './items';
+
+describe('soins', () => {
+  it('les besoins baissent puis remontent', () => {
+    const tired = decayNeeds(START_NEEDS, 20);
+    expect(tired).toEqual({ hunger: 10, energy: 30, mood: 30 });
+    expect(shapeOf(tired)).toBe('boude');
+    expect(ENCOUNTER_QUOTA[shapeOf(tired)]).toBe(0);
+    expect(urgentNeed(tired)).toBe('hunger');
+    const fed = applyCare(applyCare(tired, 'feed'), 'feed');
+    expect(fed.hunger).toBe(90);
+    expect(decayNeeds(START_NEEDS, 1000)).toEqual({ hunger: 0, energy: 0, mood: 0 });
+  });
+  it('refuse un geste inutile ou impossible', () => {
+    expect(canCare({ hunger: 95, energy: 50, mood: 50 }, 'feed')).toBe(false);
+    expect(canCare({ hunger: 50, energy: 10, mood: 50 }, 'play')).toBe(false);
+    expect(canCare(START_NEEDS, 'cuddle')).toBe(true);
+    expect(wellbeing({ hunger: 100, energy: 100, mood: 100 })).toBe(100);
+  });
+});
+
+describe('garde-robe', () => {
+  it('64 objets uniques, 4 emplacements, au moins deux de départ par emplacement', () => {
+    expect(ITEMS.length).toBe(64);
+    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(64);
+    for (const slot of ITEM_SLOTS) expect(ITEMS.filter((i) => i.slot === slot && i.unlock.kind === 'start').length).toBeGreaterThanOrEqual(2);
+  });
+  it('débloque par étapes', () => {
+    expect(earnedItems(ZERO_STATS)).toHaveLength(8);
+    const some = earnedItems({ ...ZERO_STATS, careDays: 5, links: 1 });
+    expect(some).toContain('bonnet');
+    expect(some).toContain('noeud');
+    expect(some).not.toContain('toque');
+    expect(some).not.toContain('aureole');
+    expect(itemProgress(itemById('toque')!, { ...ZERO_STATS, careDays: 4 })).toEqual({ have: 4, need: 10 });
+  });
+  it('nettoie une tenue', () => {
+    const owned = new Set(['bob', 'echarpe']);
+    expect(cleanOutfit({ head: 'bob', face: 'bob', body: 'cape', toy: 'inconnu' }, owned)).toEqual({ head: 'bob' });
+  });
+});

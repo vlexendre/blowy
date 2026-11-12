@@ -32,10 +32,18 @@ export const PET_EVENT_KINDS = [
   'message_sent', // message texte
   'three_words', // des potes ont donné 3 mots
   'quiz', // quiz de caractère à la création
+  'care_feed', // nourri
+  'care_play', // a joué avec son pet
+  'care_nap', // sieste
+  'care_cuddle', // câlin
 ] as const;
 export type PetEventKind = (typeof PET_EVENT_KINDS)[number];
 
 const DELTAS: Record<Exclude<PetEventKind, 'three_words' | 'quiz'>, Partial<Gauges>> = {
+  care_feed: {},
+  care_play: { play: 3 },
+  care_nap: { social: -1 },
+  care_cuddle: { tender: 3 },
   met_new_pet: { social: 12 },
   waved: { social: 4 },
   challenge_done: { play: 10 },

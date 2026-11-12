@@ -2,7 +2,7 @@
  * Contrat de l'API Blowy (REST /v1). Source de vérité partagée par l'API, l'app et le site.
  * Tout ce qui traverse le réseau est décrit ici en Zod ; les types en sont dérivés.
  */
-import { GAUGE_KEYS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SPECIES, WORD_KEYS } from '@blowy/domain';
+import { CARE_ACTIONS, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
 import { z } from 'zod';
 
 export const API_PREFIX = '/v1';
@@ -21,6 +21,16 @@ export const FaceZ = z.enum(['hidden', 'blurred', 'clear']);
 
 export const TraitZ = z.object({ gauge: GaugeKeyZ, pole: z.string().nullable(), tier: z.union([z.literal(0), z.literal(1), z.literal(2)]), value: gauge });
 
+// ── Soins et garde-robe ────────────────────────────────────────────────────
+const need = z.number().int().min(0).max(100);
+export const NeedsZ = z.object({ hunger: need, energy: need, mood: need });
+export const ShapeZ = z.enum(SHAPES);
+export const ItemSlotZ = z.enum(ITEM_SLOTS);
+export const ItemIdZ = z.enum(ITEM_IDS as [string, ...string[]]);
+/** Un objet au plus par emplacement. */
+export const OutfitZ = z.object({ head: ItemIdZ.optional(), face: ItemIdZ.optional(), body: ItemIdZ.optional(), toy: ItemIdZ.optional() });
+export type OutfitDto = z.infer<typeof OutfitZ>;
+
 // ── Pet ────────────────────────────────────────────────────────────────────
 export const PetZ = z.object({
   id: Uuid,
@@ -29,6 +39,11 @@ export const PetZ = z.object({
   gauges: GaugesZ,
   form: FormZ,
   traits: z.array(TraitZ),
+  needs: NeedsZ,
+  /** Forme générale de 0 à 100, et son palier. */
+  wellbeing: need,
+  shape: ShapeZ,
+  outfit: OutfitZ,
   bornAt: Iso,
 });
 export type Pet = z.infer<typeof PetZ>;
@@ -37,7 +52,7 @@ export const PetEventZ = z.object({ id: z.string(), kind: z.enum(PET_EVENT_KINDS
 export type PetEvent = z.infer<typeof PetEventZ>;
 
 /** Pet vu par les autres : pas de jauges chiffrées, seulement sa forme et son humeur. */
-export const PublicPetZ = z.object({ name: z.string(), species: SpeciesZ, form: FormZ, mood: MoodZ });
+export const PublicPetZ = z.object({ name: z.string(), species: SpeciesZ, form: FormZ, mood: MoodZ, outfit: OutfitZ });
 export type PublicPet = z.infer<typeof PublicPetZ>;
 
 export const PetViewZ = z.object({
@@ -46,8 +61,28 @@ export const PetViewZ = z.object({
   /** Défi du jour : une question, deux réponses ; fait une fois par jour. */
   challenge: z.object({ id: z.string(), question: z.string(), choices: z.array(z.string()).length(2), doneToday: z.boolean() }),
   wordsCount: z.number().int(),
+  /** Jours où la personne s'est occupée de son pet. */
+  careDays: z.number().int(),
+  /** Objets débloqués par cette action (à fêter à l'écran). */
+  newItems: z.array(ItemIdZ),
 });
 export type PetView = z.infer<typeof PetViewZ>;
+
+export const CareBody = z.object({ action: z.enum(CARE_ACTIONS) });
+export type CareBody = z.infer<typeof CareBody>;
+
+export const WardrobeItemZ = z.object({
+  id: ItemIdZ,
+  slot: ItemSlotZ,
+  /** owned : dans la garde-robe · locked : à gagner par une étape · premium : à acheter. */
+  state: z.enum(['owned', 'locked', 'premium']),
+  /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
+  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words']), have: z.number().int(), need: z.number().int() }).nullable(),
+});
+export type WardrobeItem = z.infer<typeof WardrobeItemZ>;
+export const WardrobeZ = z.object({ items: z.array(WardrobeItemZ), outfit: OutfitZ });
+export type Wardrobe = z.infer<typeof WardrobeZ>;
+export const OutfitBody = z.object({ outfit: OutfitZ });
 
 export const RenamePetBody = z.object({ name: z.string().trim().min(1).max(14) });
 export const ChallengeBody = z.object({ choice: z.union([z.literal(0), z.literal(1)]) });
@@ -173,7 +208,12 @@ export type Suggestion = z.infer<typeof SuggestionZ>;
 export const IncomingZ = z.object({ id: Uuid, from: PersonZ, compatibility: z.number().int(), intro: z.string(), at: Iso });
 export type Incoming = z.infer<typeof IncomingZ>;
 
-export const EncountersZ = z.object({ incoming: z.array(IncomingZ), suggestions: z.array(SuggestionZ) });
+export const EncountersZ = z.object({
+  incoming: z.array(IncomingZ),
+  suggestions: z.array(SuggestionZ),
+  /** Forme du pet : un pet qui boude ne croise plus personne (suggestions vides). */
+  petShape: ShapeZ,
+});
 export type Encounters = z.infer<typeof EncountersZ>;
 export const WaveBody = z.object({ userId: Uuid });
 
@@ -230,6 +270,9 @@ export const routes = {
   avatar: () => `${API_PREFIX}/me/avatar`,
   pet: () => `${API_PREFIX}/pet`,
   petChallenge: () => `${API_PREFIX}/pet/challenge`,
+  petCare: () => `${API_PREFIX}/pet/care`,
+  petWardrobe: () => `${API_PREFIX}/pet/wardrobe`,
+  petOutfit: () => `${API_PREFIX}/pet/outfit`,
   links: () => `${API_PREFIX}/links`,
   link: (id: string) => `${API_PREFIX}/links/${id}`,
   linkMessages: (id: string) => `${API_PREFIX}/links/${id}/messages`,

@@ -28,6 +28,7 @@ const queryClient = new QueryClient({
 export const keys = {
   me: ['me'] as const,
   pet: ['pet'] as const,
+  wardrobe: ['pet', 'wardrobe'] as const,
   links: ['links'] as const,
   link: (id: string) => ['links', id] as const,
   messages: (id: string) => ['links', id, 'messages'] as const,
