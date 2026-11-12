@@ -17,6 +17,7 @@
   },
   "peerDependencies": {
     "expo-blur": "*",
+    "expo-glass-effect": "*",
     "expo-haptics": "*",
     "expo-image": "*",
     "expo-linear-gradient": "*",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/react": "~19.3.0",
     "expo-blur": "~58.0.6",
+    "expo-glass-effect": "~58.0.5",
     "expo-haptics": "~58.0.7",
     "expo-image": "~58.0.18",
     "expo-linear-gradient": "~58.0.4",

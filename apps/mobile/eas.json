@@ -14,29 +14,29 @@
         "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
         "EXPO_PUBLIC_AUTH": "supabase"
       },
-      "node": "22.12.0"
+      "node": "22.23.4"
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.blowy.app",
+        "EXPO_PUBLIC_API_URL": "https://api-production-54424dd1.up.railway.app",
         "EXPO_PUBLIC_WEB_URL": "https://blowy.app",
         "EXPO_PUBLIC_SUPABASE_URL": "https://sqxebllmatfflopqddaw.supabase.co",
         "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
         "EXPO_PUBLIC_AUTH": "supabase"
       },
-      "node": "22.12.0"
+      "node": "22.23.4"
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.blowy.app",
+        "EXPO_PUBLIC_API_URL": "https://api-production-54424dd1.up.railway.app",
         "EXPO_PUBLIC_WEB_URL": "https://blowy.app",
         "EXPO_PUBLIC_SUPABASE_URL": "https://sqxebllmatfflopqddaw.supabase.co",
         "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
         "EXPO_PUBLIC_AUTH": "supabase"
       },
-      "node": "22.12.0"
+      "node": "22.23.4"
     }
   },
   "submit": {

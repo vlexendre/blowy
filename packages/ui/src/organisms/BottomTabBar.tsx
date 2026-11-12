@@ -1,5 +1,6 @@
 import type { Mood, Species } from '@blowy/domain';
 import { BlurView } from 'expo-blur';
+import { GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
 import { type LayoutChangeEvent, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
@@ -80,11 +81,14 @@ function TabPeek({
   );
 }
 
+/** Liquid Glass natif (iOS 26+) ; ailleurs (iOS plus ancien, Android, web) on garde le flou teinté. */
+const LIQUID_GLASS = isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
+
 /** Hauteur à réserver en bas d'un écran sous la barre flottante (hors zone de sécurité). */
 export const TAB_BAR_SPACE = BAR_HEIGHT + space.lg + space.sm;
 
 /**
- * Barre d'onglets flottante en verre. Utilisable comme `tabBar` d'expo-router :
+ * Barre d'onglets flottante en verre (Liquid Glass sur iOS 26+, flou teinté sinon). Utilisable comme `tabBar` d'expo-router :
  * `tabBar={(p) => <BottomTabBar items={…} activeKey={p.state.routes[p.state.index].name} onPress={(k) => p.navigation.navigate(k)} />}`.
  */
 export function BottomTabBar<K extends string>({
@@ -120,11 +124,15 @@ export function BottomTabBar<K extends string>({
       {peek && peekKey > 0 && width > 0 ? (
         <TabPeek species={peek.species} mood={peek.mood} index={index} step={seg + GAP} offset={14 + 1 + PAD} show={peekKey} />
       ) : null}
-      <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} onLayout={onLayout} style={styles.bar}>
-        <View pointerEvents="none" style={styles.glass}>
-          <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
-          <View style={[StyleSheet.absoluteFill, styles.tint]} />
-        </View>
+      <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} onLayout={onLayout} style={[styles.bar, LIQUID_GLASS && styles.barLiquid]}>
+        {LIQUID_GLASS ? (
+          <GlassView pointerEvents="none" glassEffectStyle="regular" colorScheme="dark" tintColor={alpha(color.card, 0.35)} style={styles.glass} />
+        ) : (
+          <View pointerEvents="none" style={styles.glass}>
+            <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+            <View style={[StyleSheet.absoluteFill, styles.tint]} />
+          </View>
+        )}
         {width > 0 ? <Animated.View pointerEvents="none" style={[styles.pill, { width: seg }, pill]} /> : null}
         {items.map((it, i) => (
           <TabBarItem
@@ -166,4 +174,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 14 },
     elevation: 10,
   },
+  // Le verre natif dessine son propre liseré et sa profondeur : bordure transparente (elle garde sa place, la pastille s'y aligne), ombre plus légère.
+  barLiquid: { borderColor: 'transparent', shadowOpacity: 0.25 },
 });

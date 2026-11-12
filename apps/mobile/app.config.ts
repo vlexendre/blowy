@@ -8,8 +8,8 @@ const NIGHT = '#0B0A14';
 const BUNDLE_ID = process.env.BLOWY_BUNDLE_ID ?? 'app.blowy';
 const ASSOCIATED_DOMAIN = 'blowy.app';
 /** À coller après `eas init` (voir docs/TESTFLIGHT.md). */
-const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? '';
-const EXPO_OWNER = process.env.EXPO_OWNER ?? undefined;
+const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? '01d6f37d-203a-4747-910b-6de4cfe50ed5';
+const EXPO_OWNER = process.env.EXPO_OWNER ?? 'alexendre.o';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
