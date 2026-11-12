@@ -1,8 +1,63 @@
-import type { OutfitDto, PetEvent, Wardrobe } from '@blowy/contract';
-import { addGauges, type CareAction, type ItemSlot, decayGauges, formOf, GAUGE_KEYS, type GaugeKey, type Gauges, type PetForm, ZERO_GAUGES } from '@blowy/domain';
+import type { OutfitDto, PetEvent, PetView, Wardrobe, WardrobeItem } from '@blowy/contract';
+import {
+  addGauges,
+  CARE_ACTIONS,
+  CARE_EFFECTS,
+  type CareAction,
+  canCare,
+  type ItemSlot,
+  decayGauges,
+  formOf,
+  GAUGE_KEYS,
+  type GaugeKey,
+  type Gauges,
+  NEED_KEYS,
+  type Needs,
+  type PetForm,
+  urgentNeed,
+  ZERO_GAUGES,
+} from '@blowy/domain';
+import { useFocusEffect } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { create } from 'zustand';
 
 import { keys, useApi } from '@/core';
+
+/**
+ * Objets tout juste gagnés : `queue` attend d'être fêtée (V6-Debloque), `fresh` garde l'étiquette « nouveau »
+ * dans la garde-robe jusqu'à ce qu'on l'ait ouverte.
+ */
+export const useUnlocks = create<{ queue: string[]; fresh: string[]; push: (ids: readonly string[]) => void; next: () => void; seen: () => void }>((set) => ({
+  queue: [],
+  fresh: [],
+  push: (ids) =>
+    set((s) => ({
+      queue: [...s.queue, ...ids.filter((id) => !s.queue.includes(id))],
+      fresh: [...s.fresh, ...ids.filter((id) => !s.fresh.includes(id))],
+    })),
+  next: () => set((s) => ({ queue: s.queue.slice(1) })),
+  seen: () => set({ fresh: [] }),
+}));
+
+/** À appeler avec chaque `PetView` reçue d'une action : met de côté les objets débloqués à fêter. */
+function celebrate(view: PetView): void {
+  if (view.newItems.length > 0) useUnlocks.getState().push(view.newItems);
+}
+
+/** Le pet, relu quand l'écran revient au premier plan et toutes les `everyMs` tant qu'il est visible (ses besoins baissent avec le temps). */
+export function useLivePet(everyMs = 3 * 60_000) {
+  const pet = usePet();
+  const { refetch } = pet;
+  useFocusEffect(
+    useCallback(() => {
+      void refetch();
+      const id = setInterval(() => void refetch(), everyMs);
+      return () => clearInterval(id);
+    }, [refetch, everyMs]),
+  );
+  return pet;
+}
 
 export function usePet() {
   const api = useApi();
@@ -28,6 +83,8 @@ export function useAnswerChallenge() {
     mutationFn: (choice: 0 | 1) => api.pet.answerChallenge(choice),
     onSuccess: (view) => {
       qc.setQueryData(keys.pet, view);
+      celebrate(view);
+      if (view.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
       void qc.invalidateQueries({ queryKey: keys.me });
     },
   });
@@ -41,6 +98,7 @@ export function useCare() {
     mutationFn: (action: CareAction) => api.pet.care(action),
     onSuccess: (view) => {
       qc.setQueryData(keys.pet, view);
+      celebrate(view);
       void qc.invalidateQueries({ queryKey: keys.me });
       void qc.invalidateQueries({ queryKey: keys.encounters });
       if (view.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
@@ -60,13 +118,16 @@ export function useSetOutfit() {
   return useMutation({
     mutationFn: (outfit: OutfitDto) => api.pet.setOutfit(outfit),
     onMutate: async (outfit) => {
-      await qc.cancelQueries({ queryKey: keys.wardrobe });
+      await qc.cancelQueries({ queryKey: keys.pet });
       const before = qc.getQueryData<Wardrobe>(keys.wardrobe);
+      const petBefore = qc.getQueryData<PetView>(keys.pet);
       if (before) qc.setQueryData<Wardrobe>(keys.wardrobe, { ...before, outfit });
-      return { before };
+      if (petBefore) qc.setQueryData<PetView>(keys.pet, { ...petBefore, pet: { ...petBefore.pet, outfit } });
+      return { before, petBefore };
     },
     onError: (_error, _outfit, context) => {
       if (context?.before) qc.setQueryData(keys.wardrobe, context.before);
+      if (context?.petBefore) qc.setQueryData(keys.pet, context.petBefore);
     },
     onSuccess: (view) => {
       qc.setQueryData(keys.pet, view);
@@ -82,6 +143,45 @@ export function withItem(outfit: OutfitDto, slot: ItemSlot, id: string | null): 
   if (id === null || next[slot] === id) delete next[slot];
   else next[slot] = id;
   return next;
+}
+
+/** Soins conseillés (disque jaune) : ceux qui comblent un besoin urgent, sinon celui du besoin le plus bas. */
+export function careHot(needs: Needs): Record<CareAction, boolean> {
+  const urgent = urgentNeed(needs);
+  const lowest = NEED_KEYS.reduce((a, b) => (needs[b] < needs[a] ? b : a));
+  const out = { feed: false, play: false, nap: false, cuddle: false };
+  for (const a of CARE_ACTIONS) {
+    const fills = CARE_EFFECTS[a].fills;
+    const wanted = urgent ? needs[fills] < 40 : fills === lowest;
+    // Jeu et câlin comblent tous deux l'humeur : le câlin n'est mis en avant que si le jeu est refusé.
+    out[a] = canCare(needs, a) && wanted && !(a === 'cuddle' && out.play);
+  }
+  return out;
+}
+
+/** Gestes acceptés maintenant (`canCare`). */
+export function careAvailable(needs: Needs): Record<CareAction, boolean> {
+  const out = {} as Record<CareAction, boolean>;
+  for (const a of CARE_ACTIONS) out[a] = canCare(needs, a);
+  return out;
+}
+
+/** Le prochain objet à gagner : celui dont l'étape est la plus avancée (à égalité, la plus courte). */
+export function nextItem(items: readonly WardrobeItem[]): (WardrobeItem & { goal: NonNullable<WardrobeItem['goal']> }) | null {
+  let best: (WardrobeItem & { goal: NonNullable<WardrobeItem['goal']> }) | null = null;
+  const ratio = (g: NonNullable<WardrobeItem['goal']>): number => (g.need > 0 ? g.have / g.need : 0);
+  for (const it of items) {
+    const g = it.goal;
+    if (it.state !== 'locked' || !g) continue;
+    if (!best || ratio(g) > ratio(best.goal) || (ratio(g) === ratio(best.goal) && g.need - g.have < best.goal.need - best.goal.have)) best = { ...it, goal: g };
+  }
+  return best;
+}
+
+/** Choix stable d'une phrase parmi plusieurs, d'après l'état du pet (pas d'aléa : même état, même phrase). */
+export function pickLine<T>(lines: readonly T[], needs: Needs): T | undefined {
+  if (lines.length === 0) return undefined;
+  return lines[(needs.hunger + needs.energy + needs.mood) % lines.length];
 }
 
 const WEEK_MS = 7 * 24 * 3600 * 1000;

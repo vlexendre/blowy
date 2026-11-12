@@ -14,7 +14,7 @@ import { common } from '@/locales/common';
 import { invitation as copy } from '@/locales/rencontres';
 
 const t = common.invite;
-const home = () => router.replace('/(tabs)/chats');
+const home = () => router.replace('/(tabs)/pet');
 
 export default function InviteLink() {
   const params = useLocalSearchParams<{ code: string }>();
@@ -86,7 +86,9 @@ export default function InviteLink() {
           kicker={copy.kicker}
           title={copy.title(inv.displayName, inv.pet.name)}
           theirs={inv.pet.species}
+          theirsOutfit={inv.pet.outfit}
           mine={mine?.species}
+          mineOutfit={mine?.outfit}
           note={{ before: copy.note, bold: copy.noteBold, after: copy.noteEnd }}
           accessibilityLabel={mine ? copy.a11y(inv.pet.name, mine.name) : inv.pet.name}
         />

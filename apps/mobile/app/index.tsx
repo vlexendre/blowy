@@ -23,7 +23,7 @@ export default function Gate() {
       // Un compte sans pet doit d'abord le créer ; si le brouillon a déjà un pet, on reprend au profil.
       return <Redirect href={petName.trim() ? '/(onboarding)/profil' : '/(onboarding)/craft'} />;
     case 'ready':
-      return pendingInvite ? <Redirect href={{ pathname: '/i/[code]', params: { code: pendingInvite } }} /> : <Redirect href="/(tabs)/chats" />;
+      return pendingInvite ? <Redirect href={{ pathname: '/i/[code]', params: { code: pendingInvite } }} /> : <Redirect href="/(tabs)/pet" />;
     case 'offline':
       return (
         <ScreenTemplate scroll={false}>

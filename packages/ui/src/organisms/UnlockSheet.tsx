@@ -1,111 +1,87 @@
+import type { Outfit, Species } from '@blowy/domain';
 import { useEffect } from 'react';
-import { Modal, Pressable as RNPressable, StyleSheet, View } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withTiming,
-  ZoomIn,
-} from 'react-native-reanimated';
+import { Modal, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, ZoomIn } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '../atoms/Button';
-import { Icon } from '../atoms/Icon';
+import { Chip } from '../atoms/Chip';
+import { DressedPet } from '../atoms/DressedPet';
 import { ItemImage } from '../atoms/ItemImage';
 import { Panel } from '../atoms/Panel';
-import { Sticker } from '../atoms/Sticker';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { haptic } from '../lib/haptics';
-import { layout } from '../lib/styles';
-import { color, radius, space, veil } from '../theme';
+import { useLoop } from '../lib/motion';
+import { alpha, color, shadow } from '../theme';
 import type { TitleContent } from '../types';
-
-export interface UnlockSheetItem {
-  id: string;
-  name: string;
-}
 
 export interface UnlockSheetProps {
   visible: boolean;
-  /** Objets débloqués (`PetView.newItems` + `itemLabel`). */
-  items: readonly UnlockSheetItem[];
-  /** « TU AS GAGNÉ / QUELQUE CHOSE ». */
-  title: TitleContent;
-  /** Autocollant (« nouveau ! »). */
+  /** L'objet débloqué (`PetView.newItems`). */
+  itemId: string;
+  /** Son nom (`itemLabel`), lu par le lecteur d'écran. */
+  itemName: string;
+  /** Le pet, déjà habillé avec l'objet (aperçu). */
+  pet: { species: Species; outfit?: Outfit | null; name?: string };
+  /** Puce en haut à gauche (« nouveau ! »). */
   kicker: string;
-  /** Ligne d'explication (« il est rangé dans sa garde-robe. »). */
+  /** « TACHES DE ROUSSEUR / POUR NINO. » */
+  title: TitleContent;
+  /** Ligne sous le titre (« 1 jour de soins. c'est mérité. »). */
   text?: string;
-  /** Bouton principal (« lui mettre »), avec le premier objet. */
-  wearLabel?: string;
-  onWear?: (id: string) => void;
-  /** Bouton secondaire et voile (« plus tard »). */
+  /** Bouton jaune (« il le porte »). */
+  wearLabel: string;
+  onWear: () => void;
+  wearing?: boolean;
+  /** Bouton verre (« ranger dans la garde-robe »). */
   closeLabel: string;
   onClose: () => void;
 }
 
-function Prize({ item, index, kicker, halo }: { item: UnlockSheetItem; index: number; kicker: string; halo: number }) {
-  const reduced = useReducedMotion();
-  const wobble = useSharedValue(0);
-  useEffect(() => {
-    if (reduced) return;
-    wobble.value = withDelay(400 + index * 120, withRepeat(withSequence(withTiming(-5, { duration: 500 }), withTiming(5, { duration: 500 })), -1, true));
-  }, [reduced, index, wobble]);
-  const style = useAnimatedStyle(() => ({ transform: [{ rotate: `${wobble.value}deg` }] }));
-  return (
-    <Animated.View entering={ZoomIn.delay(150 + index * 120).springify().damping(12)} style={styles.prize}>
-      <Animated.View style={[styles.halo, { width: halo, height: halo, borderRadius: halo / 2 }, style]}>
-        <ItemImage id={item.id} size={Math.round(halo * 0.78)} accessibilityLabel={item.name} />
-      </Animated.View>
-      {index === 0 ? <Sticker label={kicker} tone="coral" rotate={-8} style={styles.kicker} /> : null}
-      <Text variant="h3" size={20} center numberOfLines={1}>
-        {item.name}
-      </Text>
-    </Animated.View>
-  );
-}
+const PET = 250;
 
-/** Fête un ou plusieurs objets tout juste débloqués, au centre de l'écran sur un voile sombre. */
-export function UnlockSheet({ visible, items, title, kicker, text, wearLabel, onWear, closeLabel, onClose }: UnlockSheetProps) {
+/** Fête d'un objet tout juste gagné (V6-Debloque) : plein écran jaune, le pet qui le porte déjà, « il le porte » ou « ranger ». */
+export function UnlockSheet({ visible, itemId, itemName, pet, kicker, title, text, wearLabel, onWear, wearing, closeLabel, onClose }: UnlockSheetProps) {
+  const insets = useSafeAreaInsets();
+  const reduced = useReducedMotion();
+  const t = useLoop(1300, visible);
+  // `.sq` : petit saut écrasé en boucle.
+  const hop = useAnimatedStyle(() => ({
+    transform: [{ translateY: -8 * t.value }, { scaleX: 1 - 0.03 * t.value }, { scaleY: 1 + 0.04 * t.value }],
+  }));
   useEffect(() => {
     if (visible) haptic('success');
-  }, [visible]);
-  const halo = items.length > 1 ? 84 : 124;
-  const first = items[0];
+  }, [visible, itemId]);
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       {visible ? (
-        <View style={styles.root}>
-          <Animated.View entering={FadeIn} exiting={FadeOut} style={[StyleSheet.absoluteFill, styles.scrim]}>
-            <RNPressable accessibilityRole="button" accessibilityLabel={closeLabel} onPress={onClose} style={layout.fill} />
-          </Animated.View>
-          <Animated.View entering={ZoomIn.springify().damping(15)} accessibilityViewIsModal style={styles.card}>
-            <Panel gradient="violet" padding="lg" style={styles.panel}>
-              <View style={styles.burst} pointerEvents="none">
-                <Icon name="confettis" size={64} style={styles.confettiLeft} />
-                <Icon name="etoiles" size={48} style={styles.confettiRight} />
-              </View>
-              <Title text={title} variant="h2" center />
-              <View style={styles.prizes}>
-                {items.slice(0, 3).map((it, i) => (
-                  <Prize key={it.id} item={it} index={i} kicker={kicker} halo={halo} />
-                ))}
-              </View>
-              {text ? (
-                <Text variant="body" center>
-                  {text}
-                </Text>
-              ) : null}
-              <View style={layout.gapSm}>
-                {wearLabel && onWear && first ? <Button label={wearLabel} variant="accent" block onPress={() => onWear(first.id)} /> : null}
-                <Button label={closeLabel} variant="ghost" block onPress={onClose} />
+        <View style={[styles.root, { paddingTop: insets.top + 12, paddingBottom: Math.max(insets.bottom, 18) + 8 }]} accessibilityViewIsModal>
+          <Animated.View key={itemId} entering={reduced ? undefined : ZoomIn.springify().damping(15)} style={styles.grow}>
+            <Panel gradient="accent" radius={32} padding="none" style={styles.grow}>
+              <View style={styles.panel}>
+                <Chip label={kicker} tone="dark" ink={color.accent} style={styles.kicker} />
+                <View style={styles.stage}>
+                  <Animated.View style={[styles.origin, hop]}>
+                    <DressedPet species={pet.species} outfit={pet.outfit} size={PET} accessibilityLabel={pet.name ? `${pet.name}, ${itemName}` : itemName} />
+                  </Animated.View>
+                  <Animated.View entering={reduced ? undefined : FadeIn.delay(350)} style={[styles.item, shadow.soft]}>
+                    <ItemImage id={itemId} size={58} />
+                  </Animated.View>
+                </View>
+                <Title text={title} size={52} center style={styles.title} />
+                {text ? (
+                  <Text variant="bodyBold" size={15} center style={styles.text}>
+                    {text}
+                  </Text>
+                ) : null}
               </View>
             </Panel>
           </Animated.View>
+          <View style={styles.actions}>
+            <Button label={wearLabel} onPress={onWear} loading={wearing} />
+            <Button label={closeLabel} variant="ghost" onPress={onClose} disabled={wearing} />
+          </View>
         </View>
       ) : null}
     </Modal>
@@ -113,15 +89,35 @@ export function UnlockSheet({ visible, items, title, kicker, text, wearLabel, on
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.lg },
-  scrim: { backgroundColor: veil.scrim },
-  card: { width: '100%', maxWidth: 380 },
-  panel: { gap: space.lg, borderWidth: 3, borderColor: color.white, borderRadius: radius.xl },
-  burst: StyleSheet.absoluteFill,
-  confettiLeft: { position: 'absolute', top: space.sm, left: space.sm, transform: [{ rotate: '-18deg' }] },
-  confettiRight: { position: 'absolute', top: space.lg, right: space.md },
-  prizes: { flexDirection: 'row', justifyContent: 'center', gap: space.md },
-  prize: { alignItems: 'center', gap: space.sm, flexShrink: 1 },
-  halo: { alignItems: 'center', justifyContent: 'center', backgroundColor: veil.glassStrong },
-  kicker: { position: 'absolute', top: -space.sm, right: -space.md },
+  // `.wrap` : padding 0 14, écart 12, fond nuit.
+  root: { flex: 1, paddingHorizontal: 14, gap: 12, backgroundColor: color.night },
+  grow: { flex: 1 },
+  // `.panel` jaune : contenu calé en bas, centré, padding bas 20.
+  panel: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  kicker: { position: 'absolute', top: 18, left: 18 },
+  stage: { width: PET * 1.12, alignItems: 'center', marginBottom: -4 },
+  origin: { transformOrigin: '50% 100%' },
+  item: {
+    position: 'absolute',
+    top: 6,
+    right: 0,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: alpha(color.white, 0.85),
+    borderWidth: 3,
+    borderColor: color.white,
+  },
+  title: { marginTop: 8 },
+  text: { marginTop: 6 },
+  // Boutons : écart 8, 26 au-dessus du bas.
+  actions: { gap: 8 },
 });

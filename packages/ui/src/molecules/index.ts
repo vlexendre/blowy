@@ -3,6 +3,7 @@ export { Banner, type BannerProps, type BannerTone } from './Banner';
 export { ChoiceCard, type ChoiceCardProps } from './ChoiceCard';
 export { DayChip, type DayChipProps } from './DayChip';
 export { DotNote, type DotNoteProps } from './DotNote';
+export { EntryCard, type EntryCardProps } from './EntryCard';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { FeatureRow, type FeatureRowProps } from './FeatureRow';
 export { GaugeBar, type GaugeBarProps } from './GaugeBar';

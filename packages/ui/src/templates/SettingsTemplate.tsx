@@ -24,10 +24,14 @@ export interface SettingsTemplateProps {
   intro?: string;
   /** Petite mention centrée tout en bas (« blowy 1.0.0 »). */
   note?: string;
+  /** Élément à droite du titre (V6-GardeRobe : puce « 13 / 64 »). */
+  right?: ReactNode;
+  /** Corps du titre. Défaut 44 (V6-GardeRobe : 40). */
+  titleSize?: number;
 }
 
 /** Sous-écran de Moi (réglages, compte, notifications, bloqués, supprimer) : retour rond + grand titre, blocs serrés. */
-export function SettingsTemplate({ title, onBack, backLabel, children, footer, gap = 10, intro, note }: SettingsTemplateProps) {
+export function SettingsTemplate({ title, onBack, backLabel, children, footer, gap = 10, intro, note, right, titleSize = 44 }: SettingsTemplateProps) {
   return (
     <ScreenTemplate
       padded={false}
@@ -35,8 +39,9 @@ export function SettingsTemplate({ title, onBack, backLabel, children, footer, g
         <View style={styles.head}>
           <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} style={styles.back} />
           <View style={styles.title}>
-            <Title text={title} size={44} numberOfLines={1} />
+            <Title text={title} size={titleSize} numberOfLines={1} />
           </View>
+          {right}
         </View>
       }
       footer={footer ? <View style={styles.footer}>{footer}</View> : undefined}

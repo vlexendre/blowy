@@ -1,13 +1,10 @@
 import { memo } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { Glyph } from '../atoms/Glyph';
 import { ItemImage } from '../atoms/ItemImage';
 import { Pressable } from '../atoms/Pressable';
-import { ProgressBar } from '../atoms/ProgressBar';
-import { Sticker } from '../atoms/Sticker';
 import { Text } from '../atoms/Text';
-import { color, opacity, radius, size as sizes, space, veil } from '../theme';
+import { color, radius, size as sizes, veil } from '../theme';
 
 export type ItemTileState = 'owned' | 'worn' | 'locked' | 'premium';
 
@@ -16,29 +13,54 @@ export interface ItemTileProps {
   id: string;
   /** Nom lu et affiché (`itemLabel[id]`). */
   label: string;
-  /** `owned` dans la garde-robe · `worn` porté (cadre jaune, coche) · `locked` à gagner · `premium` à acheter. */
+  /** `owned` dans la garde-robe · `worn` porté (cadre jaune) · `locked` à gagner · `premium` à acheter. */
   state: ItemTileState;
-  /** Objet à gagner : étape courte (« crée 3 liens »). */
+  /** Objet à gagner : étape courte (« 2 jours de soins »), affichée à la place du nom. */
   goalText?: string;
-  /** Objet à gagner : avancement. */
+  /** Objet à gagner : avancement (mini barre). */
   progress?: { have: number; need: number };
-  /** Autocollant des objets premium (« bientôt »). */
+  /** Étiquette des objets premium (« bientôt »). */
   premiumLabel?: string;
-  /** Autocollant « nouveau ! » (objet tout juste débloqué). */
+  /** Étiquette d'un objet tout juste débloqué (« nouveau »). */
   newLabel?: string;
-  /** Montre le nom sous l'image. Défaut vrai. */
-  showLabel?: boolean;
+  /** Étiquette de l'objet porté (« porté »). */
+  wornLabel?: string;
+  /** Côté de l'image. Défaut 72. */
+  imageSize?: number;
   onPress?: () => void;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 }
 
-/** Case d'un objet : possédé, porté, verrouillé (étape + barre) ou premium (« bientôt »). */
-export const ItemTile = memo(function ItemTile({ id, label, state, goalText, progress, premiumLabel, newLabel, showLabel = true, onPress, accessibilityHint, style }: ItemTileProps) {
+/** Case d'un objet (`.tile` de V6-GardeRobe) : porté, possédé, à gagner (étape + mini barre) ou premium (« bientôt »). */
+export const ItemTile = memo(function ItemTile({
+  id,
+  label,
+  state,
+  goalText,
+  progress,
+  premiumLabel,
+  newLabel,
+  wornLabel,
+  imageSize = 72,
+  onPress,
+  accessibilityHint,
+  style,
+}: ItemTileProps) {
   const worn = state === 'worn';
   const locked = state === 'locked';
   const premium = state === 'premium';
-  const a11y = [label, locked ? goalText : undefined, premium ? premiumLabel : undefined, progress && locked ? `${progress.have}/${progress.need}` : undefined]
+  const tag = premium ? premiumLabel : worn ? wornLabel : newLabel;
+  const caption = locked && goalText ? goalText : label;
+  const ratio = progress && progress.need > 0 ? Math.max(0, Math.min(1, progress.have / progress.need)) : 0;
+  const a11y = [
+    label,
+    worn ? wornLabel : undefined,
+    locked ? goalText : undefined,
+    premium ? premiumLabel : undefined,
+    progress && locked ? `${progress.have}/${progress.need}` : undefined,
+    !premium && !worn ? newLabel : undefined,
+  ]
     .filter(Boolean)
     .join(', ');
   return (
@@ -50,72 +72,55 @@ export const ItemTile = memo(function ItemTile({ id, label, state, goalText, pro
       accessibilityLabel={a11y}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ selected: worn, disabled: !onPress }}
-      style={[styles.tile, worn && styles.worn, (locked || premium) && styles.closed, style]}
+      style={[styles.tile, worn && styles.worn, style]}
     >
-      <View style={styles.art}>
-        <ItemImage id={id} size={60} style={(locked || premium) && styles.dim} />
-        {locked ? (
-          <View style={styles.lock}>
-            <Glyph name="lock" size={14} color={color.white} />
-          </View>
-        ) : null}
-        {worn ? (
-          <View style={styles.check}>
-            <Glyph name="check" size={13} color={color.dark} />
-          </View>
-        ) : null}
-      </View>
-      {showLabel ? (
-        <Text variant="bodyBold" size={12} center numberOfLines={1} muted={locked || premium}>
-          {label}
-        </Text>
+      <ItemImage id={id} size={imageSize} style={locked ? styles.locked : undefined} />
+      <Text variant="bodyBold" size={10.5} muted center numberOfLines={2} style={styles.caption}>
+        {caption}
+      </Text>
+      {locked && progress ? (
+        <View style={styles.mini}>
+          <View style={[styles.miniFill, { width: `${ratio * 100}%` }]} />
+        </View>
       ) : null}
-      {locked && goalText ? (
-        <Text variant="small" size={10} center muted numberOfLines={2} style={styles.goal}>
-          {goalText}
-        </Text>
+      {tag ? (
+        <View style={[styles.tag, premium && styles.tagPremium]}>
+          <Text variant="bodyHeavy" size={9} color={premium ? color.white : color.dark} numberOfLines={1} style={styles.tagText}>
+            {tag}
+          </Text>
+        </View>
       ) : null}
-      {locked && progress ? <ProgressBar value={progress.need ? progress.have / progress.need : 0} height={5} style={styles.bar} /> : null}
-      {premium && premiumLabel ? <Sticker label={premiumLabel} tone="violet" size="sm" rotate={-8} style={styles.sticker} /> : null}
-      {newLabel && !premium ? <Sticker label={newLabel} tone="coral" size="sm" rotate={6} style={styles.newSticker} /> : null}
     </Pressable>
   );
 });
 
 const styles = StyleSheet.create({
+  // `.tile` : 1/1.08, #17142A, filet 8 %, rayon 22, padding 8 6 6, écart 2.
   tile: {
     flex: 1,
-    minHeight: 112,
     minWidth: sizes.touch,
-    padding: space.sm,
-    paddingTop: space.md,
-    gap: space.xs,
-    alignItems: 'center',
-    borderRadius: radius.md,
-    backgroundColor: color.card,
-    borderWidth: 2,
-    borderColor: veil.line,
-  },
-  worn: { borderColor: color.accent, backgroundColor: color.line },
-  closed: { backgroundColor: color.panel },
-  art: { width: 64, height: 64, alignItems: 'center', justifyContent: 'center' },
-  dim: { opacity: opacity.ghost - 0.15 },
-  lock: { position: 'absolute', width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: veil.scrim },
-  check: {
-    position: 'absolute',
-    top: -6,
-    right: -10,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    aspectRatio: 1 / 1.08,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: color.accent,
-    borderWidth: 2,
-    borderColor: color.dark,
+    gap: 2,
+    paddingTop: 8,
+    paddingHorizontal: 6,
+    paddingBottom: 6,
+    borderRadius: 22,
+    backgroundColor: color.panel,
+    borderWidth: sizes.border,
+    borderColor: veil.line,
   },
-  goal: { lineHeight: 13 },
-  bar: { alignSelf: 'stretch', marginTop: 'auto' },
-  sticker: { position: 'absolute', top: -space.sm, right: -space.xs },
-  newSticker: { position: 'absolute', top: -space.sm, left: -space.xs },
+  // `.tile.on` : filet jaune 2, fond un cran plus clair.
+  worn: { borderWidth: 2, borderColor: color.accent, backgroundColor: color.line },
+  // `.tile.lock img` : opacité .32.
+  locked: { opacity: 0.32 },
+  caption: { lineHeight: 12 },
+  // `.mini` : 70 % de large, 4 de haut.
+  mini: { width: '70%', height: 4, marginTop: 2, borderRadius: radius.pill, backgroundColor: veil.glassStrong, overflow: 'hidden' },
+  miniFill: { height: '100%', backgroundColor: color.accent },
+  // `.tag` : en haut à droite, 9/800, pilule jaune (violette pour « bientôt »).
+  tag: { position: 'absolute', top: 7, right: 7, paddingVertical: 3, paddingHorizontal: 7, borderRadius: radius.pill, backgroundColor: color.accent },
+  tagPremium: { backgroundColor: color.violet },
+  tagText: { letterSpacing: 0.36, lineHeight: 11 },
 });

@@ -88,7 +88,7 @@ export default function CarteScreen() {
   return (
     <ScreenTemplate scroll={false} padded={false} edges={[]} keyboard={false}>
       <NeighbourhoodMap
-        me={{ name: p.name, species: p.species, form: p.form }}
+        me={p}
         meLabel={t.me}
         pins={pins}
         title={t.title}

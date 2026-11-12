@@ -33,6 +33,7 @@ import {
   Card,
   CareBar,
   CareButton,
+  CareIcon,
   ChallengeCard,
   ChatThread,
   Chip,
@@ -228,7 +229,7 @@ const looks: Record<Species, Outfit> = {
   gaston: { head: 'pirate', face: 'cache_oeil', body: 'cape', toy: 'cadeau' },
   pia: { head: 'sorcier', face: 'monocle', body: 'ailes', toy: 'potion' },
 };
-const careIcons = { feed: <ItemImage id="gateau" size={38} />, play: <ItemImage id="ballon" size={36} />, nap: <ItemImage id="masque_nuit" size={40} />, cuddle: <Icon name="coeurs" size={38} /> };
+const careIcons = { feed: <CareIcon name="feed" size={30} />, play: <CareIcon name="play" size={30} />, nap: <CareIcon name="nap" size={30} />, cuddle: <CareIcon name="cuddle" size={30} /> };
 
 function CareDemo() {
   const [needs, setNeeds] = useState<Needs>({ hunger: 32, energy: 58, mood: 88 });
@@ -250,19 +251,20 @@ function CareDemo() {
       <Item name="PetStage · NeedsPanel · CareBar (interactif)">
         <PetStage
           pet={{ name: 'Nino', species: 'nino', outfit }}
+          action={{ label: 'garde-robe', onPress: () => setSlot('head') }}
           shape={shape}
           shapeLabel={shapeLabel[shape]?.title}
           speech={reaction ? careLabel[reaction]?.done : 'j’ai un petit creux…'}
           reaction={reaction}
           reactionKey={key}
         />
-        <NeedsPanel needs={needs} labels={needLabel} title="ses besoins" okText="il est comblé." />
-        <CareBar labels={careLabel} available={available} onCare={care} />
+        <NeedsPanel needs={needs} labels={needLabel} />
+        <CareBar labels={careLabel} available={available} hot={{ feed: needs.hunger < 40 }} onCare={care} />
         <Button label="remettre à plat" size="sm" variant="ghost" onPress={() => setNeeds({ hunger: 12, energy: 10, mood: 25 })} />
       </Item>
       <Item name="OutfitPreview · SlotTabs · WardrobeGrid (interactif)">
-        <OutfitPreview species="nino" name="Nino" outfit={outfit} slotLabels={slotLabel} itemLabels={itemLabel} emptyLabel="rien" activeSlot={slot} onSlotPress={setSlot} />
-        <SlotTabs labels={slotLabel} active={slot} onChange={setSlot} outfit={outfit} badges={{ toy: true }} />
+        <OutfitPreview species="nino" outfit={outfit} slotLabels={slotLabel} itemLabels={itemLabel} emptyLabel="rien" activeSlot={slot} onSlotPress={setSlot} />
+        <SlotTabs labels={slotLabel} active={slot} onChange={setSlot} badges={{ toy: true }} />
         <WardrobeGrid
           items={wardrobe}
           slot={slot}
@@ -270,13 +272,12 @@ function CareDemo() {
           itemLabels={itemLabel}
           goalLabels={statGoalLabel}
           premiumLabel="bientôt"
-          removeLabel="retirer"
-          onRemove={() => setOutfit((o) => ({ ...o, [slot]: undefined }))}
+          wornLabel="porté"
           onSelect={(it) => {
-            if (it.state === 'owned') setOutfit((o) => ({ ...o, [it.slot]: it.id }));
+            if (it.state === 'owned') setOutfit((o) => (o[it.slot] === it.id ? { ...o, [it.slot]: undefined } : { ...o, [it.slot]: it.id }));
           }}
           newIds={['tasse']}
-          newLabel="nouveau !"
+          newLabel="nouveau"
         />
       </Item>
       <Item name="UnlockToast · UnlockSheet">
@@ -285,16 +286,18 @@ function CareDemo() {
         <Button label="ouvrir la fête" variant="ghost" onPress={() => setUnlock(true)} />
         <UnlockSheet
           visible={unlock}
-          items={[{ id: 'tasse', name: itemLabel.tasse ?? 'tasse' }, { id: 'bonnet', name: itemLabel.bonnet ?? 'bonnet' }]}
-          title={[{ text: 'TU AS GAGNÉ\n' }, { text: 'DU STYLE', dim: true }]}
+          itemId="tasse"
+          itemName={itemLabel.tasse ?? 'tasse'}
+          pet={{ species: 'nino', outfit: { ...outfit, toy: 'tasse' }, name: 'Nino' }}
+          title={[{ text: 'TASSE\n' }, { text: 'POUR NINO.', dim: true }]}
           kicker="nouveau !"
-          text="ils sont rangés dans sa garde-robe."
-          wearLabel="lui mettre"
-          onWear={(id) => {
-            setOutfit((o) => ({ ...o, toy: id }));
+          text="3 jours de soins. c’est mérité."
+          wearLabel="il le porte"
+          onWear={() => {
+            setOutfit((o) => ({ ...o, toy: 'tasse' }));
             setUnlock(false);
           }}
-          closeLabel="plus tard"
+          closeLabel="ranger dans la garde-robe"
           onClose={() => setUnlock(false)}
         />
       </Item>
@@ -335,13 +338,15 @@ function CareLevel() {
         </View>
       </Item>
       <Item name="NeedMeter">
-        <NeedMeter label="faim" value={85} icon={<ItemImage id="gateau" size={28} />} lowText="il a faim" />
-        <NeedMeter label="énergie" value={52} icon="eclair" lowText="il tombe de sommeil" />
-        <NeedMeter label="humeur" value={18} icon="coeurs" lowText="il s’ennuie" />
+        <View style={styles.row}>
+          <NeedMeter label="faim" value={85} lowText="il a faim" />
+          <NeedMeter label="énergie" value={52} lowText="il tombe de sommeil" />
+          <NeedMeter label="humeur" value={18} lowText="il s’ennuie" />
+        </View>
       </Item>
       <Item name="CareButton">
         <View style={styles.row}>
-          <CareButton label="nourrir" icon={careIcons.feed} onPress={noop} />
+          <CareButton label="nourrir" icon={careIcons.feed} hot onPress={noop} />
           <CareButton label="jouer" icon={careIcons.play} refused refusedLabel="trop fatigué pour jouer." onPress={noop} />
           <CareButton label="sieste" icon={careIcons.nap} loading onPress={noop} />
           <CareButton label="câlin" icon={careIcons.cuddle} disabled onPress={noop} />
@@ -350,17 +355,17 @@ function CareLevel() {
       <Item name="ItemTile">
         <View style={styles.row}>
           <ItemTile id="bob" label="bob" state="owned" onPress={noop} />
-          <ItemTile id="casquette" label="casquette" state="worn" onPress={noop} />
-          <ItemTile id="toque" label="toque" state="locked" goalText="occupe-toi de lui 10 jours" progress={{ have: 4, need: 10 }} onPress={noop} />
+          <ItemTile id="casquette" label="casquette" state="worn" wornLabel="porté" onPress={noop} />
+          <ItemTile id="toque" label="toque" state="locked" goalText="10 jours de soins" progress={{ have: 4, need: 10 }} onPress={noop} />
         </View>
         <View style={styles.row}>
           <ItemTile id="aureole" label="auréole" state="premium" premiumLabel="bientôt" onPress={noop} />
-          <ItemTile id="tasse" label="tasse" state="owned" newLabel="nouveau !" onPress={noop} />
-          <ItemTile id="couronne" label="couronne" state="locked" goalText="atteins le niveau 7 dans un lien" progress={{ have: 3, need: 7 }} />
+          <ItemTile id="tasse" label="tasse" state="owned" newLabel="nouveau" onPress={noop} />
+          <ItemTile id="couronne" label="couronne" state="locked" goalText="niveau 7 d’un lien" progress={{ have: 3, need: 7 }} />
         </View>
       </Item>
       <Item name="NeedsPanel · tout va bien">
-        <NeedsPanel needs={{ hunger: 90, energy: 75, mood: 81 }} labels={needLabel} title="ses besoins" okText="il est comblé." />
+        <NeedsPanel needs={{ hunger: 90, energy: 75, mood: 81 }} labels={needLabel} />
       </Item>
       <Item name="PetStage · boude">
         <PetStage pet={{ name: 'Gaston', species: 'gaston', outfit: looks.gaston }} shape="boude" shapeLabel={shapeLabel.boude?.title} />

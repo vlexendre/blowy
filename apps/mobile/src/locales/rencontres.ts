@@ -38,6 +38,13 @@ export const rencontres = {
   loadError: 'Impossible de charger les rencontres',
   retry: 'réessayer',
   actionError: 'Ça n’a pas marché. Réessaie.',
+  /** Pet qui boude : il ne croise plus personne (texte : `shapeLabel.boude`). */
+  sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'BOUDE.', dim: true }],
+  sulkAction: 'm’occuper de lui',
+  /** Salut refusé par l'API parce que le pet boude. */
+  waveSulk: (pet: string): string => `${pet} boude : occupe-toi de lui avant de saluer.`,
+  /** Pet un peu à plat (`shapeLabel.bof`). */
+  bofTitle: (pet: string): string => `${low(pet)} est un peu à plat`,
 };
 
 export const rencontre = {

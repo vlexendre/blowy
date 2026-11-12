@@ -1,3 +1,5 @@
+import { ApiError } from '@blowy/api-client';
+import { shapeLabel } from '@blowy/content';
 import type { Suggestion } from '@blowy/contract';
 import { color } from '@blowy/tokens';
 import {
@@ -44,6 +46,10 @@ export default function RencontresScreen() {
   const incoming = encounters.data?.incoming ?? [];
   const suggestions = encounters.data?.suggestions ?? [];
   const actionError = wave.error ?? accept.error ?? decline.error;
+  const shape = encounters.data?.petShape;
+  const sulking = shape === 'boude';
+  const sulkWave = wave.error instanceof ApiError && wave.error.code === 'forbidden';
+  const toPet = () => router.navigate('/(tabs)/pet');
 
   const refresh = async () => {
     setRefreshing(true);
@@ -80,15 +86,29 @@ export default function RencontresScreen() {
           onAction={() => void encounters.refetch()}
         />
       ) : null}
+      {shape === 'bof' ? <Banner tone="info" title={t.bofTitle(petName)} text={shapeLabel.bof?.text ?? ''} actionLabel={t.sulkAction} onAction={toPet} /> : null}
       {actionError ? (
         <Banner
           tone="error"
-          text={errorText(actionError, t.actionError)}
+          text={sulkWave ? t.waveSulk(petName) : errorText(actionError, t.actionError)}
+          actionLabel={sulkWave ? t.sulkAction : undefined}
+          onAction={sulkWave ? toPet : undefined}
           onClose={() => {
             wave.reset();
             accept.reset();
             decline.reset();
           }}
+        />
+      ) : null}
+
+      {sulking ? (
+        <EmptyState
+          species={myPet?.species ?? 'nino'}
+          mood="colere"
+          title={t.sulkTitle(petName)}
+          text={shapeLabel.boude?.text}
+          actionLabel={t.sulkAction}
+          onAction={toPet}
         />
       ) : null}
 
@@ -135,7 +155,7 @@ export default function RencontresScreen() {
         />
       ))}
 
-      {encounters.data && incoming.length + suggestions.length === 0 ? (
+      {encounters.data && !sulking && incoming.length + suggestions.length === 0 ? (
         <EmptyState
           species={myPet?.species ?? 'nino'}
           mood="dodo"

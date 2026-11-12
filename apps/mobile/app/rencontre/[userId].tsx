@@ -1,3 +1,4 @@
+import { ApiError } from '@blowy/api-client';
 import type { Person } from '@blowy/contract';
 import {
   Banner,
@@ -99,7 +100,7 @@ export default function RencontreScreen() {
           compatLabel={t.compatA11y(compat)}
           onMore={() => setSheet('menu')}
           moreLabel={t.more}
-          me={myPet ? { pet: { name: myPet.name, species: myPet.species, form: myPet.form }, label: t.me(myPetName) } : undefined}
+          me={myPet ? { pet: myPet, label: t.me(myPetName) } : undefined}
           them={{ pet: person.pet, label: t.them(person.pet.name, person.displayName) }}
           saysLabel={incoming ? t.theySay(person.pet.name) : t.saysTitle(myPetName)}
           title={t.title}
@@ -108,10 +109,17 @@ export default function RencontreScreen() {
           <MessageBubble
             message={{ author: incoming ? 'other_pet' : 'my_pet', kind: 'text', body: incoming?.intro ?? suggestion?.intro ?? '', mediaUrl: null }}
             name={(incoming ? person.pet.name : myPetName).toLowerCase()}
-            pet={incoming ? person.pet : myPet ? { name: myPet.name, species: myPet.species, form: myPet.form } : undefined}
+            pet={incoming ? person.pet : myPet}
           />
         </EncounterStage>
-        {error ? <Banner tone="error" text={errorText(error, listText.actionError)} /> : null}
+        {error ? (
+          <Banner
+            tone="error"
+            text={error instanceof ApiError && error.code === 'forbidden' && error === wave.error ? listText.waveSulk(myPetName) : errorText(error, listText.actionError)}
+            actionLabel={error instanceof ApiError && error.code === 'forbidden' && error === wave.error ? listText.sulkAction : undefined}
+            onAction={() => router.navigate('/(tabs)/pet')}
+          />
+        ) : null}
         {reported ? <Banner tone="success" text={optionsText.reportDone} onClose={() => setReported(false)} closeLabel={optionsText.close} /> : null}
       </Stack>
 

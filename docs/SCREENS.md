@@ -6,22 +6,24 @@ présentation dans `app/**` (uniquement de la mise en page triviale passée par 
 
 | Route | Maquette | Données |
 |---|---|---|
-| `app/index.tsx` | — | `useGate()` → redirige vers `/(onboarding)/welcome`, `/(onboarding)/profil` ou `/(tabs)` |
+| `app/index.tsx` | — | `useGate()` → redirige vers `/(onboarding)/welcome`, `/(onboarding)/profil` ou l'accueil `/(tabs)/pet` (l'app s'ouvre sur le pet) |
 | `app/(onboarding)/welcome.tsx` | V6-Welcome | — (« j'ai déjà un compte » → compte) |
 | `app/(onboarding)/craft.tsx` | V6-Craft | `useDraft` (espèce + nom) |
 | `app/(onboarding)/caractere.tsx` | V6-Caractere | `QUIZ`, `useDraft.answer`, résultat = jauges |
 | `app/(onboarding)/compte.tsx` | V6-Compte | `useSendCode`, `useVerifyCode` (e-mail puis code à 6 chiffres) |
 | `app/(onboarding)/profil.tsx` | (suite de Compte) | prénom, date de naissance (18+), ville, code d'invitation → `useOnboard` |
 | `app/(onboarding)/invite.tsx` | V6-Invite | `useMe` : lien d'invitation + lien « 3 mots » à partager |
-| `app/(onboarding)/paywall.tsx` | V6-Paywall | `usePorts().purchases` (non branché : offre présentée, « continuer gratuitement ») |
-| `app/(tabs)/_layout.tsx` | barre du bas | `BottomTabBar`, pastille = `totalUnread` + rencontres reçues |
-| `app/(tabs)/index.tsx` | V6-Chats | `useLinks`, `useEncounters` (bandeau « X t'a salué ») |
-| `app/(tabs)/pet.tsx` | V6-Pet | `usePet`, `useAnswerChallenge`, `useRenamePet` |
-| `app/(tabs)/rencontres.tsx` | V6-Rencontres | `useEncounters`, `useWave`, `useAcceptEncounter`, `useDeclineEncounter` |
+| `app/(onboarding)/paywall.tsx` | V6-Paywall | `usePorts().purchases` (non branché : offre présentée, « continuer gratuitement ») ; sortie → `/(tabs)/pet` |
+| `app/(tabs)/_layout.tsx` | barre du bas | `BottomTabBar` : **Mon pet · Chats · Rencontres · Moi** (onglet de départ : `pet`) ; pastilles = `totalUnread`, rencontres reçues |
+| `app/(tabs)/pet.tsx` | V6-Accueil, V6-Boude, V6-Debloque | accueil : `useLivePet` (relu au retour sur l'onglet et toutes les 3 min), `useCare`, `useWardrobe`, `useUnlocks` ; `PetStage` (tenue, forme, bulle), `NeedsPanel`, `CareBar` (`canCare`, `careHot`), carte garde-robe (`nextItem`), carte caractère, carte « il ne sort plus » quand il boude ; `UnlockCelebration` fête les `newItems` |
+| `app/(tabs)/chats.tsx` | V6-Chats | `useLinks`, `useEncounters` (bandeau « X t'a salué ») |
+| `app/(tabs)/rencontres.tsx` | V6-Rencontres | `useEncounters`, `useWave`, `useAcceptEncounter`, `useDeclineEncounter` ; `petShape` `boude` → état dédié (`shapeLabel.boude`, « m'occuper de lui » → accueil), `bof` → bandeau ; salut refusé (`forbidden`) → bandeau vers l'accueil |
 | `app/(tabs)/moi.tsx` | V6-Moi | `useMe`, `useSignOut` |
 | `app/link/[id]/index.tsx` | V6-Aujourdhui, V6-Chat, V6-Souvenirs, V6-Fantome | `useLink`, `useMessages`, `useSendMessage`, `useSendPhoto`, `useMemories`, `useRevive`, `useMarkRead` |
 | `app/link/[id]/niveaux.tsx` | V6-Lien | `useLink` |
 | `app/link/[id]/options.tsx` | — | `useReport`, `useBlock`, `useArchiveLink` |
+| `app/pet/caractere.tsx` | V6-Pet | son caractère (ancien onglet Mon pet) : `usePet`, `useAnswerChallenge`, `useRenamePet` ; ouvert depuis l'accueil |
+| `app/pet/garde-robe.tsx` | V6-GardeRobe, V6-Objet | `useWardrobe`, `useSetOutfit` + `withItem` (porter / retirer, optimiste) ; fiche d'un objet à gagner (étape, avancement, raccourci) ou premium (« bientôt disponible », pas d'achat) |
 | `app/pet/evolution.tsx` | V6-Evolution | `usePet` |
 | `app/rencontre/[userId].tsx` | V6-Rencontre | `useEncounters` (cache) |
 | `app/carte.tsx` | V6-Carte | `useLinks`, `useEncounters` : carte stylisée du voisinage du pet (pas de géolocalisation en V1) |
@@ -31,3 +33,14 @@ présentation dans `app/**` (uniquement de la mise en page triviale passée par 
 | `app/moi/blowy-plus.tsx` | V6-Paywall | même contenu que le paywall |
 | `app/i/[code].tsx` | — | lien d'invitation : `useInvite`, `useAcceptInvite`, `usePendingInvite` |
 | `app/+not-found.tsx` | — | — |
+
+## Soins et garde-robe
+- L'app s'ouvre sur **Mon pet** (après l'aiguillage, l'inscription, la connexion, l'invitation « plus tard »). Les retours
+  qui veulent vraiment dire « les chats » (lien archivé, signalement, lien disparu) restent sur `/(tabs)/chats`.
+- Bulle du pet : son besoin le plus urgent (`urgentNeed`), sinon une phrase joyeuse ; choix stable d'après l'état
+  (`pickLine`, 3 phrases par cas dans `locales/pet.ts`). Après un soin : `careLabel[action].done` ; geste refusé
+  (`canCare` faux, ou `already_done` de l'API) : la raison, dans la bulle.
+- Objets gagnés : chaque `PetView` d'une action (soin, défi) pousse ses `newItems` dans `useUnlocks` ; `UnlockCelebration`
+  (accueil et caractère) les fête un par un, et l'étiquette « nouveau » reste dans la garde-robe jusqu'à sa visite.
+- Les autres voient la tenue : `Avatar` montre le médaillon habillé dès que `pet.outfit` n'est pas vide (rangées des chats,
+  en-tête du lien, bulles des pets, rencontres, carte) ; `EncounterStage` et `InvitationPanel` montrent le pet habillé.

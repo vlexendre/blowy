@@ -23,7 +23,8 @@ export function Card({ children, tone = 'panel', highlight, padding = 'md', onPr
     styles.base,
     tone === 'panel' && styles.panel,
     tone === 'raised' && styles.raised,
-    { padding: padding === 'none' ? 0 : space[padding] + (padding === 'md' ? 2 : 0) },
+    // Sans `padding: 0` pour `none` : sur le web, le raccourci écraserait les `paddingHorizontal`… passés en style.
+    padding === 'none' ? null : { padding: space[padding] + (padding === 'md' ? 2 : 0) },
     highlight ? { borderColor: highlight } : null,
     style,
   ];

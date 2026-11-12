@@ -23,3 +23,4 @@ export { ItemImage, type ItemImageProps } from './ItemImage';
 export { PetBadge, type PetBadgeProps } from './PetBadge';
 export { Toggle, type ToggleProps } from './Toggle';
 export { Stack, type StackProps } from './Stack';
+export { CARE_ICONS, CareIcon, type CareIconName, type CareIconProps } from './CareIcon';

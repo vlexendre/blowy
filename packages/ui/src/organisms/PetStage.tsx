@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, {
   Easing,
+  FadeIn,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -13,52 +14,64 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import type { IconName } from '../assets/pets';
+import { Button } from '../atoms/Button';
+import { Chip } from '../atoms/Chip';
 import { DressedPet } from '../atoms/DressedPet';
 import { Icon } from '../atoms/Icon';
 import { Panel } from '../atoms/Panel';
 import { Pressable } from '../atoms/Pressable';
-import { Sticker, type StickerTone } from '../atoms/Sticker';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { SpeechBubble } from '../molecules/SpeechBubble';
-import { layout } from '../lib/styles';
-import { color, type GradientName, motion, radius, space, speciesGradient, veil } from '../theme';
+import { color, type GradientName, motion, speciesGradient } from '../theme';
 import type { PetLook, TitleContent } from '../types';
 
 export type PetReaction = CareAction;
+
+export interface PetStageAction {
+  label: string;
+  onPress: () => void;
+  accessibilityLabel?: string;
+}
 
 export interface PetStageProps {
   /** Le pet (`Pet` du contrat accepté tel quel : nom, espèce, tenue). */
   pet: PetLook;
   /** Titre ; défaut le nom du pet. */
   title?: TitleContent;
-  /** Forme du pet (`Pet.shape`) : teinte de l'autocollant. */
+  /** Forme du pet (`Pet.shape`) : un pet qui boude passe sur le panneau lie-de-vin, couleurs éteintes. */
   shape?: Shape;
-  /** Texte de l'autocollant (`shapeLabel[shape].title` : « en pleine forme »). */
+  /** Puce sous le nom (`shapeLabel[shape].title` : « en pleine forme »). */
   shapeLabel?: string;
-  /** Ce que dit le pet (bulle). */
+  /** Ce que dit le pet (bulle sombre). */
   speech?: string;
+  /** Bouton blanc en haut à droite (« garde-robe »). */
+  action?: PetStageAction;
   /** Réaction à jouer après un soin : `feed` rebond + étoiles, `play` sauts + confettis, `nap` zzz, `cuddle` cœurs. */
   reaction?: PetReaction | null;
   /** À incrémenter pour rejouer la même réaction. */
   reactionKey?: number;
   /** Lettre des « zzz » de la sieste (décorative). Défaut « z ». */
   sleepGlyph?: string;
+  /** Panneau ; défaut celui de l'espèce, lie-de-vin quand il boude. */
   gradient?: GradientName;
-  /** Largeur du pet. Défaut 240. */
+  /** Largeur du pet. Défaut 236. */
   petSize?: number;
+  /** Hauteur du panneau. Défaut 318. */
+  height?: number;
   onPetPress?: () => void;
   petLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
 
-const SHAPE_TONE: Record<Shape, StickerTone> = { en_forme: 'accent', bof: 'white', boude: 'coral' };
 const PARTICLE: Record<PetReaction, IconName | null> = { feed: 'etoiles', play: 'confettis', nap: null, cuddle: 'coeurs' };
 const SPOTS = [
   { x: -0.32, y: 0.22, delay: 0 },
   { x: 0.3, y: 0.12, delay: 160 },
   { x: -0.05, y: 0.02, delay: 320 },
 ] as const;
+/** Pet qui boude : `filter: saturate(.55) brightness(.8)` de V6-Boude. */
+const SULK_FILTER = 'saturate(0.55) brightness(0.8)';
 
 function Particle({ kind, index, trigger, area, glyph }: { kind: PetReaction; index: number; trigger: number; area: number; glyph: string }) {
   const reduced = useReducedMotion();
@@ -95,18 +108,23 @@ function Particle({ kind, index, trigger, area, glyph }: { kind: PetReaction; in
   );
 }
 
-/** Héros de l'accueil : le pet habillé en grand sur le panneau de son espèce, son nom, sa forme, et ses réactions aux soins. */
+/**
+ * Scène de l'accueil (V6-Accueil, V6-Boude) : grand panneau, nom en Anton, puce de forme, bouton garde-robe,
+ * bulle du pet, et le pet habillé en bas à droite qui réagit aux soins.
+ */
 export function PetStage({
   pet,
   title,
   shape,
   shapeLabel,
   speech,
+  action,
   reaction,
   reactionKey = 0,
   sleepGlyph = 'z',
   gradient,
-  petSize = 240,
+  petSize = 236,
+  height = 318,
   onPetPress,
   petLabel,
   style,
@@ -117,6 +135,7 @@ export function PetStage({
   const sy = useSharedValue(1);
   const rot = useSharedValue(0);
   const trigger = reaction ? reactionKey + 1 : 0;
+  const sulking = shape === 'boude';
 
   useEffect(() => {
     if (!reaction || reduced) return;
@@ -125,7 +144,10 @@ export function PetStage({
       sy.value = withSequence(withTiming(0.9, { duration: 120 }), withSpring(1.06, sp), withSpring(1, sp));
       sx.value = withSequence(withTiming(1.08, { duration: 120 }), withSpring(0.97, sp), withSpring(1, sp));
     } else if (reaction === 'play') {
-      const hop = withSequence(withTiming(-46, { duration: 200, easing: Easing.out(Easing.quad) }), withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }));
+      const hop = withSequence(
+        withTiming(-46, { duration: 200, easing: Easing.out(Easing.quad) }),
+        withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }),
+      );
       y.value = withSequence(hop, withSequence(withTiming(-30, { duration: 170 }), withTiming(0, { duration: 170 })));
       rot.value = withSequence(withTiming(-6, { duration: 200 }), withTiming(6, { duration: 340 }), withSpring(0, sp));
     } else if (reaction === 'nap') {
@@ -143,16 +165,11 @@ export function PetStage({
   }));
 
   const petNode = <DressedPet species={pet.species} outfit={pet.outfit} size={petSize} animated accessibilityLabel={petLabel ?? pet.name} />;
+  const petHeight = Math.round(petSize / 0.9);
 
   return (
-    <Panel gradient={gradient ?? speciesGradient[pet.species]} padding="lg" style={[styles.panel, style]}>
-      <View style={[layout.rowBetween, styles.head]}>
-        <Title text={title ?? pet.name} size={48} numberOfLines={1} style={layout.shrink} />
-        {shapeLabel ? <Sticker label={shapeLabel} tone={shape ? SHAPE_TONE[shape] : 'white'} rotate={4} /> : null}
-      </View>
-      {speech ? <SpeechBubble text={speech} tail="left" rotate={-2} style={styles.speech} /> : null}
-      <View style={[styles.stage, { height: Math.round(petSize / 0.9) }]}>
-        <View style={[styles.ground, { width: petSize * 0.62, left: (petSize * 0.38) / 2 }]} />
+    <Panel gradient={gradient ?? (sulking ? 'wine' : speciesGradient[pet.species])} radius={32} padding="none" style={[styles.panel, { height }, style]}>
+      <View style={[styles.pet, { width: petSize, height: petHeight }, sulking && styles.sulk]}>
         <Animated.View style={[styles.origin, react]}>
           {onPetPress ? (
             <Pressable onPress={onPetPress} accessibilityLabel={petLabel ?? pet.name} scaleTo={0.95} haptic="medium">
@@ -166,16 +183,46 @@ export function PetStage({
           ? SPOTS.map((_, i) => <Particle key={`${reaction}-${i}`} kind={reaction} index={i} trigger={trigger} area={petSize} glyph={sleepGlyph} />)
           : null}
       </View>
+      <View style={styles.head} pointerEvents="box-none">
+        <View style={styles.name}>
+          <Title text={title ?? pet.name.toUpperCase()} size={40} numberOfLines={1} />
+          {shapeLabel ? <Chip label={shapeLabel} tone="dark" left={<View style={styles.dot} />} style={styles.chip} /> : null}
+        </View>
+        {action ? (
+          <Button
+            label={action.label}
+            onPress={action.onPress}
+            accessibilityLabel={action.accessibilityLabel}
+            variant="white"
+            size="sm"
+            labelSize={14}
+            block={false}
+            style={styles.action}
+          />
+        ) : null}
+      </View>
+      {speech ? (
+        <Animated.View key={speech} entering={reduced ? undefined : FadeIn.duration(motion.base)} style={styles.speech} pointerEvents="none">
+          <SpeechBubble text={speech} tone="dark" tail="left" />
+        </Animated.View>
+      ) : null}
     </Panel>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: { alignItems: 'center', paddingBottom: 0 },
-  head: { alignSelf: 'stretch', gap: space.md, zIndex: 2 },
-  speech: { alignSelf: 'flex-end', maxWidth: 200, marginTop: space.sm, marginBottom: -space.xl, zIndex: 2 },
-  stage: { alignSelf: 'center', justifyContent: 'flex-end' },
-  ground: { position: 'absolute', bottom: 8, height: 22, borderRadius: radius.pill, backgroundColor: veil.darkGlass },
+  panel: {},
+  // `.panel` : rayon 32, padding 14 16, hauteur 318.
+  head: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, paddingTop: 14, paddingHorizontal: 16 },
+  name: { flexShrink: 1, minWidth: 0, alignItems: 'flex-start' },
+  chip: { marginTop: 4 },
+  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: color.white },
+  action: { height: 38 },
+  // `.bubble` : à 16 du bord, 112 du haut, 150 de large au plus.
+  speech: { position: 'absolute', left: 16, top: 112, maxWidth: 168, zIndex: 2 },
+  // `.sq` : à 6 du bord droit, 6 sous le bas du panneau.
+  pet: { position: 'absolute', right: 6, bottom: -6 },
   origin: { transformOrigin: '50% 100%' },
+  sulk: { filter: SULK_FILTER },
   particle: { position: 'absolute' },
 });

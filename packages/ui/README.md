@@ -19,7 +19,7 @@ import { Button, LinkRow, TodayCard, ScreenTemplate } from '@blowy/ui';
   `onGradient`, `alpha()`). L'encre (couleur du texte) suit le conteneur : un `Panel` clair passe ses enfants en sombre.
 - **Accessibilité** : tout élément touchable a un rôle et un libellé, une zone de toucher ≥ 44 pt, et toutes les animations
   se coupent avec « réduire les animations » (`useReducedMotion`).
-- Pas de dépendance SVG : les pictogrammes d'interface (`Glyph`) sont dessinés en vues ; les icônes 3D sont des images (`Icon`).
+- Pictogrammes : `Glyph` dessinés en vues ; pictos SVG (`react-native-svg`) pour la barre d'onglets et les soins (`CareIcon`) ; les icônes 3D sont des images (`Icon`).
 
 ## Images (`src/assets/pets.ts`)
 Chaque espèce (`nino`, `suzie`, `gaston`, `pia`) a le même jeu : bustes d'humeur, corps entiers, visage, fantôme, malade, formes.
@@ -111,6 +111,11 @@ type ButtonSize = 'sm' | 'md' | 'lg'
 #### `Card` — `src/atoms/Card.tsx`
 ```ts
 CardProps = { children?: ReactNode; tone?: 'panel' | 'raised' | 'outline'; highlight?: string; padding?: 'none' | 'sm' | 'md' | 'lg'; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+```
+#### `CareIcon` — `src/atoms/CareIcon.tsx`
+```ts
+CareIconProps = { name: CareIconName; size?: number; color?: string; }
+type CareIconName = 'feed' | 'play' | 'nap' | 'cuddle' | 'door'   // SVG, viewBox 24, trait 2,2 (famille des pictos de la barre d'onglets)
 ```
 #### `Chip` — `src/atoms/Chip.tsx`
 ```ts
@@ -205,8 +210,9 @@ type BannerTone = 'error' | 'info' | 'success'
 ```
 #### `CareButton` — `src/molecules/CareButton.tsx`
 ```ts
-CareButtonProps = { label: string; icon: IconName | ReactNode; onPress?: () => void; refused?: boolean; refusedLabel?: string; onRefusedPress?: () => void; loading?: boolean; disabled?: boolean; size?: number; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
-// rebond + haptique `medium` ; refusé : estompé, un appui le fait « non de la tête » (haptique `warning`)
+CareButtonProps = { label: string; icon: ReactNode; onPress?: () => void; hot?: boolean; refused?: boolean; refusedLabel?: string; onRefusedPress?: () => void; loading?: boolean; disabled?: boolean; size?: number; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+// `.care` de V6-Accueil : disque 64 #221E3C ; hot = disque jaune qui brille ; refusé = estompé (.38), un appui le fait « non de la tête »
+// l'icône prend l'encre du disque (sombre sur jaune, blanche sinon)
 ```
 #### `ChoiceCard` — `src/molecules/ChoiceCard.tsx`
 ```ts
@@ -215,6 +221,11 @@ ChoiceCardProps = { title: string; caption?: string; icon?: IconName | ReactNode
 #### `DayChip` — `src/molecules/DayChip.tsx`
 ```ts
 DayChipProps = { label: string; }
+```
+#### `EntryCard` — `src/molecules/EntryCard.tsx`
+```ts
+EntryCardProps = { title: string; text?: string; left?: ReactNode; badge?: string; chevron?: boolean; tone?: 'default' | 'alert'; onPress?: () => void; accessibilityLabel?: string; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+// `.card.row` de V6-Accueil (garde-robe, caractère) ; alert : filet rouge (« il ne sort plus »)
 ```
 #### `EmptyState` — `src/molecules/EmptyState.tsx`
 ```ts
@@ -238,8 +249,9 @@ HeartsProps = { lives: number; max?: number; size?: number; ghost?: boolean; acc
 ```
 #### `ItemTile` — `src/molecules/ItemTile.tsx`
 ```ts
-ItemTileProps = { id: string; label: string; state: ItemTileState; goalText?: string; progress?: { have: number; need: number }; premiumLabel?: string; newLabel?: string; showLabel?: boolean; onPress?: () => void; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+ItemTileProps = { id: string; label: string; state: ItemTileState; goalText?: string; progress?: { have: number; need: number }; premiumLabel?: string; newLabel?: string; wornLabel?: string; imageSize?: number; onPress?: () => void; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
 type ItemTileState = 'owned' | 'worn' | 'locked' | 'premium'
+// `.tile` de V6-GardeRobe : verrouillé = image à 32 %, étape courte à la place du nom + mini barre ; étiquettes « porté », « nouveau », « bientôt »
 ```
 #### `LevelPill` — `src/molecules/LevelPill.tsx`
 ```ts
@@ -255,8 +267,8 @@ MessageBubbleProps = { message: Pick<MessageLook, 'author' | 'kind' | 'body' | '
 ```
 #### `NeedMeter` — `src/molecules/NeedMeter.tsx`
 ```ts
-NeedMeterProps = { label: string; value: number; icon?: IconName | ReactNode; lowText?: string; lowAt?: number; midAt?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
-needColor(value, lowAt = 40, midAt = 65): string     // jaune → orange → corail (pulsation sous lowAt)
+NeedMeterProps = { label: string; value: number; lowText?: string; lowAt?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+needColor(value, lowAt = 40): string     // jaune, rouge (pulsation) sous lowAt — tuile `.need` de V6-Accueil
 ```
 #### `OtpInput` — `src/molecules/OtpInput.tsx`
 ```ts
@@ -274,7 +286,8 @@ SegmentedTabsProps<K extends string = string> = { items: readonly SegmentedTabIt
 ```
 #### `SlotTabs` — `src/molecules/SlotTabs.tsx`
 ```ts
-SlotTabsProps = { labels: Record<ItemSlot, string>; active: ItemSlot; onChange: (slot: ItemSlot) => void; outfit?: Outfit; badges?: Partial<Record<ItemSlot, boolean>>; slots?: readonly ItemSlot[]; style?: StyleProp<ViewStyle>; }
+SlotTabsProps = { labels: Record<ItemSlot, string>; active: ItemSlot; onChange: (slot: ItemSlot) => void; badges?: Partial<Record<ItemSlot, boolean>>; slots?: readonly ItemSlot[]; style?: StyleProp<ViewStyle>; }
+// `.slots` : pilule, onglet actif blanc
 ```
 #### `SpeechBubble` — `src/molecules/SpeechBubble.tsx`
 ```ts
@@ -305,8 +318,8 @@ const TAB_BAR_SPACE = size.tabBar + space.lg + space.sm
 ```
 #### `CareBar` — `src/organisms/CareBar.tsx`
 ```ts
-CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>; available: Record<CareAction, boolean>; onCare: (action: CareAction) => void; onRefused?: (action: CareAction) => void; busy?: CareAction | null; showRefused?: boolean; icons?: Partial<Record<CareAction, IconName | ReactNode>>; style?: StyleProp<ViewStyle>; }
-// labels : careLabel tel quel ; available : canCare(needs, action)
+CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>; available: Record<CareAction, boolean>; onCare: (action: CareAction) => void; onRefused?: (action: CareAction) => void; hot?: Partial<Record<CareAction, boolean>>; busy?: CareAction | null; icons?: Partial<Record<CareAction, ReactNode>>; style?: StyleProp<ViewStyle>; }
+// labels : careLabel tel quel ; available : canCare(needs, action) ; pictos par défaut : CareIcon
 ```
 #### `ChallengeCard` — `src/organisms/ChallengeCard.tsx`
 ```ts
@@ -356,12 +369,13 @@ MemoryGridProps = { days: readonly MemoryDayLook[]; stats?: MemoryStatsLook; sta
 ```
 #### `NeedsPanel` — `src/organisms/NeedsPanel.tsx`
 ```ts
-NeedsPanelProps = { needs: Needs; labels: Record<NeedKey, { name: string; low: string }>; title?: string; hint?: string; okText?: string; urgent?: NeedKey | null; icons?: Partial<Record<NeedKey, IconName | ReactNode>>; }
-// labels : needLabel tel quel ; phrase urgente = labels[urgentNeed(needs)].low, sinon okText
+NeedsPanelProps = { needs: Needs; labels: Record<NeedKey, { name: string; low: string }>; lowAt?: number; style?: StyleProp<ViewStyle>; }
+// trois tuiles NeedMeter côte à côte ; labels : needLabel tel quel
 ```
 #### `OutfitPreview` — `src/organisms/OutfitPreview.tsx`
 ```ts
-OutfitPreviewProps = { species: Species; outfit: Outfit; name?: string; slotLabels: Record<ItemSlot, string>; itemLabels: Record<string, string>; emptyLabel: string; activeSlot?: ItemSlot; onSlotPress?: (slot: ItemSlot) => void; gradient?: GradientName; petLabel?: string; }
+OutfitPreviewProps = { species: Species; outfit: Outfit; slotLabels: Record<ItemSlot, string>; itemLabels: Record<string, string>; emptyLabel: string; activeSlot?: ItemSlot; onSlotPress?: (slot: ItemSlot) => void; gradient?: GradientName; petLabel?: string; }
+// V6-GardeRobe : panneau 178, pet habillé à gauche, 2 × 2 cases (objet porté ou « + »)
 ```
 #### `PetHero` — `src/organisms/PetHero.tsx`
 ```ts
@@ -370,9 +384,11 @@ PetHeroProps = { pet: PetLook; title: TitleContent; moodLabel?: string; formLabe
 ```
 #### `PetStage` — `src/organisms/PetStage.tsx`
 ```ts
-PetStageProps = { pet: PetLook; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; reaction?: PetReaction | null; reactionKey?: number; sleepGlyph?: string; gradient?: GradientName; petSize?: number; onPetPress?: () => void; petLabel?: string; style?: StyleProp<ViewStyle>; }
+PetStageAction = { label: string; onPress: () => void; accessibilityLabel?: string; }
+PetStageProps = { pet: PetLook; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; action?: PetStageAction; reaction?: PetReaction | null; reactionKey?: number; sleepGlyph?: string; gradient?: GradientName; petSize?: number; height?: number; onPetPress?: () => void; petLabel?: string; style?: StyleProp<ViewStyle>; }
 type PetReaction = CareAction   // feed : rebond + étoiles · play : sauts + confettis · nap : tassement + zzz · cuddle : écrasement + cœurs
-// reactionKey : à incrémenter pour rejouer la même réaction ; respiration au repos ; tout coupé si « réduire les animations »
+// V6-Accueil : panneau 318, nom Anton 40 + puce de forme, bouton blanc (garde-robe), bulle, pet habillé en bas à droite
+// shape `boude` : panneau lie-de-vin et pet éteint (V6-Boude) ; tout coupé si « réduire les animations »
 ```
 #### `PlanPicker` — `src/organisms/PlanPicker.tsx`
 ```ts
@@ -403,8 +419,13 @@ TodayCardProps = { today: TodayLook; otherPet: PetLook; streak: number; labels: 
 ```
 #### `UnlockSheet` — `src/organisms/UnlockSheet.tsx`
 ```ts
-UnlockSheetItem = { id: string; name: string; }
-UnlockSheetProps = { visible: boolean; items: readonly UnlockSheetItem[]; title: TitleContent; kicker: string; text?: string; wearLabel?: string; onWear?: (id: string) => void; closeLabel: string; onClose: () => void; }
+UnlockSheetProps = { visible: boolean; itemId: string; itemName: string; pet: { species: Species; outfit?: Outfit | null; name?: string }; kicker: string; title: TitleContent; text?: string; wearLabel: string; onWear: () => void; wearing?: boolean; closeLabel: string; onClose: () => void; }
+// V6-Debloque : plein écran jaune, le pet qui porte déjà l'objet (aperçu), « il le porte » / « ranger »
+```
+#### `ItemDetail` — `src/organisms/ItemDetail.tsx`
+```ts
+ItemDetailProps = { id: string; title: TitleContent; text?: string; goal?: { text: string; have: number; need: number; hint?: string }; note?: string; action?: { label: string; onPress: () => void }; closeLabel: string; onClose: () => void; }
+// V6-Objet : à poser dans SheetTemplate (prop `header`) — visuel 112, nom, étape + barre, raccourci et « fermer »
 ```
 #### `UnlockToast` — `src/organisms/UnlockToast.tsx`
 ```ts
@@ -412,8 +433,8 @@ UnlockToastProps = { visible: boolean; itemId: string; name: string; kicker: str
 ```
 #### `WardrobeGrid` — `src/organisms/WardrobeGrid.tsx`
 ```ts
-WardrobeGridProps = { items: readonly WardrobeItemLook[]; slot?: ItemSlot; worn?: string | null; itemLabels: Record<string, string>; goalLabels: Record<string, (n: number) => string>; premiumLabel: string; removeLabel?: string; onRemove?: () => void; onSelect?: (item: WardrobeItemLook) => void; newIds?: readonly string[]; newLabel?: string; columns?: number; }
-// itemLabels : itemLabel ; goalLabels : statGoalLabel (appelé avec goal.need)
+WardrobeGridProps<T extends WardrobeItemLook> = { items: readonly T[]; slot?: ItemSlot; worn?: string | null; itemLabels: Record<string, string>; goalLabels: Record<string, (n: number) => string>; premiumLabel: string; wornLabel?: string; onSelect?: (item: T) => void; newIds?: readonly string[]; newLabel?: string; hints?: Partial<Record<ItemTileState, string>>; columns?: number; }
+// goalLabels : étapes courtes (« 2 jours de soins »), appelées avec goal.need
 ```
 #### `WordsShareCard` — `src/organisms/WordsShareCard.tsx`
 ```ts

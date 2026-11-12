@@ -91,7 +91,7 @@ export function goBack(fallback: Href): void {
 
 /**
  * Où aller juste après la connexion. Même décision que l'aiguillage (`app/index.tsx`), mais calculée ici :
- * « / » est aussi la route de l'onglet Chats, donc on ne s'appuie pas sur elle pour choisir.
+ * on ne passe pas par « / » pour ne pas rejouer l'aiguillage (et son écran d'attente) après la connexion.
  */
 export function useAfterSignIn(): () => Promise<Href> {
   const api = useApi();
@@ -106,6 +106,6 @@ export function useAfterSignIn(): () => Promise<Href> {
       return '/';
     }
     const code = usePendingInvite.getState().code;
-    return code ? { pathname: '/i/[code]', params: { code } } : '/(tabs)/chats';
+    return code ? { pathname: '/i/[code]', params: { code } } : '/(tabs)/pet';
   }, [api, qc]);
 }

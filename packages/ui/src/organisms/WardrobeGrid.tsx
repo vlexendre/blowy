@@ -2,67 +2,55 @@ import type { ItemSlot } from '@blowy/domain';
 import { type ReactElement, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Glyph } from '../atoms/Glyph';
-import { Pressable } from '../atoms/Pressable';
-import { Text } from '../atoms/Text';
 import { ItemTile } from '../molecules/ItemTile';
-import { color, radius, space, veil } from '../theme';
 import type { WardrobeItemLook } from '../types';
 
-export interface WardrobeGridProps {
+export interface WardrobeGridProps<T extends WardrobeItemLook = WardrobeItemLook> {
   /** Objets de la garde-robe (`Wardrobe.items` du contrat accepté tel quel). */
-  items: readonly WardrobeItemLook[];
+  items: readonly T[];
   /** N'affiche que cet emplacement. */
   slot?: ItemSlot;
   /** Objet porté dans cet emplacement (`outfit[slot]`). */
   worn?: string | null;
   /** Noms des objets (`itemLabel`). */
   itemLabels: Record<string, string>;
-  /** Étapes à franchir (`statGoalLabel`) : appelées avec `goal.need`. */
+  /** Étapes courtes sous les objets à gagner (« 2 jours de soins »), appelées avec `goal.need`. */
   goalLabels: Record<string, (n: number) => string>;
-  /** Autocollant premium (« bientôt »). */
+  /** Étiquette premium (« bientôt »). */
   premiumLabel: string;
-  /** Case « retirer » (« retirer »). Absente sans `onRemove`. */
-  removeLabel?: string;
-  onRemove?: () => void;
-  onSelect?: (item: WardrobeItemLook) => void;
-  /** Objets tout juste débloqués (autocollant). */
+  /** Étiquette de l'objet porté (« porté »). */
+  wornLabel?: string;
+  onSelect?: (item: T) => void;
+  /** Objets tout juste débloqués (étiquette). */
   newIds?: readonly string[];
   newLabel?: string;
+  /** Aide lue sur chaque case selon son état (« toucher pour le porter »…). */
+  hints?: Partial<Record<'owned' | 'worn' | 'locked' | 'premium', string>>;
   /** Colonnes. Défaut 3. */
   columns?: number;
 }
 
-/** Grille des objets d'un emplacement : porté, possédés, à gagner, premium ; et « retirer » en premier. */
-export function WardrobeGrid({ items, slot, worn, itemLabels, goalLabels, premiumLabel, removeLabel, onRemove, onSelect, newIds, newLabel, columns = 3 }: WardrobeGridProps) {
+/** Grille des objets d'un emplacement (`.grid` de V6-GardeRobe) : porté, possédés, à gagner, premium. */
+export function WardrobeGrid<T extends WardrobeItemLook>({
+  items,
+  slot,
+  worn,
+  itemLabels,
+  goalLabels,
+  premiumLabel,
+  wornLabel,
+  onSelect,
+  newIds,
+  newLabel,
+  hints,
+  columns = 3,
+}: WardrobeGridProps<T>) {
   const list = useMemo(() => (slot ? items.filter((i) => i.slot === slot) : items), [items, slot]);
-  const cells: ReactElement[] = [];
-  if (onRemove && removeLabel) {
-    const none = !worn;
-    cells.push(
-      <Pressable
-        key="__remove"
-        onPress={onRemove}
-        haptic="selection"
-        scaleTo={0.95}
-        accessibilityLabel={removeLabel}
-        accessibilityState={{ selected: none }}
-        style={[styles.remove, none && styles.removeOn]}
-      >
-        <View style={[styles.removeIcon, none && styles.removeIconOn]}>
-          <Glyph name="close" size={22} color={none ? color.dark : color.white} />
-        </View>
-        <Text variant="bodyBold" size={12} center muted={!none}>
-          {removeLabel}
-        </Text>
-      </Pressable>,
-    );
-  }
-  for (const it of list) {
+  const cells: ReactElement[] = list.map((it) => {
     const state = it.state === 'owned' ? (it.id === worn ? 'worn' : 'owned') : it.state;
     const goal = it.goal;
     const goalFn = goal ? goalLabels[goal.stat] : undefined;
-    cells.push(
+    return (
       <ItemTile
         key={it.id}
         id={it.id}
@@ -71,11 +59,13 @@ export function WardrobeGrid({ items, slot, worn, itemLabels, goalLabels, premiu
         goalText={goal && goalFn ? goalFn(goal.need) : undefined}
         progress={goal ? { have: goal.have, need: goal.need } : undefined}
         premiumLabel={premiumLabel}
+        wornLabel={wornLabel}
         newLabel={newIds?.includes(it.id) ? newLabel : undefined}
+        accessibilityHint={hints?.[state]}
         onPress={onSelect ? () => onSelect(it) : undefined}
-      />,
+      />
     );
-  }
+  });
   const rows: ReactElement[][] = [];
   for (let i = 0; i < cells.length; i += columns) rows.push(cells.slice(i, i + columns));
   return (
@@ -93,21 +83,8 @@ export function WardrobeGrid({ items, slot, worn, itemLabels, goalLabels, premiu
 }
 
 const styles = StyleSheet.create({
-  grid: { gap: space.sm },
-  row: { flexDirection: 'row', gap: space.sm },
+  // `.grid` : 3 colonnes, écart 9.
+  grid: { gap: 9 },
+  row: { flexDirection: 'row', gap: 9 },
   pad: { flex: 1 },
-  remove: {
-    flex: 1,
-    minHeight: 112,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space.sm,
-    borderRadius: radius.md,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: veil.off,
-  },
-  removeOn: { borderColor: color.accent, borderStyle: 'solid' },
-  removeIconOn: { backgroundColor: color.accent },
-  removeIcon: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: veil.glass },
 });

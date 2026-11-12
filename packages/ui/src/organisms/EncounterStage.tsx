@@ -5,6 +5,9 @@ import { Avatar } from '../atoms/Avatar';
 import { Chip } from '../atoms/Chip';
 import { IconButton } from '../atoms/IconButton';
 import { Panel } from '../atoms/Panel';
+import { hasOutfit } from '../assets/fit';
+import type { PetPose } from '../assets/pets';
+import { DressedPet } from '../atoms/DressedPet';
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
@@ -35,6 +38,12 @@ export interface EncounterStageProps {
 
 const PET = 196;
 
+/** Pet de la scène : habillé (pose debout) quand il porte une tenue, sinon dans sa pose détourée. */
+function StagePet({ pet, pose, delay }: { pet: PetLook; pose: PetPose; delay?: number }) {
+  if (hasOutfit(pet.outfit)) return <DressedPet species={pet.species} outfit={pet.outfit} size={PET * 0.92} animated delay={delay} />;
+  return <PetImage species={pet.species} mood={pose} size={PET} outline animation="breathe" delay={delay} />;
+}
+
 /** Panneau violet du détail d'une rencontre : les deux pets face à face, ce qu'ils se sont dit, « rien sans ton tap ». */
 export function EncounterStage({ onBack, backLabel, via, compat, compatLabel, onMore, moreLabel, me, them, saysLabel, children, title, text }: EncounterStageProps) {
   return (
@@ -52,11 +61,11 @@ export function EncounterStage({ onBack, backLabel, via, compat, compatLabel, on
       <View style={styles.stage}>
         {me ? (
           <View style={styles.mine} pointerEvents="none">
-            <PetImage species={me.pet.species} mood="cote" size={PET} outline animation="breathe" />
+            <StagePet pet={me.pet} pose="cote" />
           </View>
         ) : null}
         <View style={styles.theirs} pointerEvents="none">
-          <PetImage species={them.pet.species} mood="salut" size={PET} outline animation="breathe" delay={500} />
+          <StagePet pet={them.pet} pose="salut" delay={500} />
         </View>
         {me ? <Chip label={me.label} tone="accent" style={[styles.chip, styles.meTag]} /> : null}
         <Chip label={them.label} tone="light" style={[styles.chip, styles.themTag]} />

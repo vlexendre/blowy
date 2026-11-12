@@ -66,7 +66,7 @@ export default function Profil() {
           useDraft.getState().reset();
         } else if (e instanceof ApiError && e.code === 'already_onboarded') {
           useDraft.getState().reset();
-          router.replace('/(tabs)/chats');
+          router.replace('/(tabs)/pet');
         }
       },
     });

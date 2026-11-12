@@ -1,9 +1,11 @@
-import type { Species } from '@blowy/domain';
+import type { Outfit, Species } from '@blowy/domain';
 import { StyleSheet, View } from 'react-native';
 
 import { Card } from '../atoms/Card';
 import { Chip } from '../atoms/Chip';
 import { Panel } from '../atoms/Panel';
+import { hasOutfit } from '../assets/fit';
+import { DressedPet } from '../atoms/DressedPet';
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
@@ -19,24 +21,32 @@ export interface InvitationPanelProps {
   theirs: Species;
   /** Ton pet (à droite), s'il est connu. */
   mine?: Species;
+  /** Tenues portées (`PublicPet.outfit`, `Pet.outfit`) : le pet est montré habillé. */
+  theirsOutfit?: Outfit | null;
+  mineOutfit?: Outfit | null;
   gradient?: GradientName;
   /** Encadré sous le panneau : texte avec un passage en gras (« 7 vies »). */
   note?: { before: string; bold?: string; after?: string };
   accessibilityLabel?: string;
 }
 
+function InvitePet({ species, outfit, delay }: { species: Species; outfit?: Outfit | null; delay?: number }) {
+  if (hasOutfit(outfit)) return <DressedPet species={species} outfit={outfit} size={176} animated delay={delay} />;
+  return <PetImage species={species} mood="debout" size={190} animation="breathe" delay={delay} />;
+}
+
 /** Invitation reçue : les deux pets côte à côte sur le panneau de l'espèce qui invite, puis ce que ça ouvre. */
-export function InvitationPanel({ kicker, title, theirs, mine, gradient, note, accessibilityLabel }: InvitationPanelProps) {
+export function InvitationPanel({ kicker, title, theirs, mine, theirsOutfit, mineOutfit, gradient, note, accessibilityLabel }: InvitationPanelProps) {
   return (
     <View style={styles.wrap}>
       <Panel gradient={gradient ?? speciesGradient[theirs]} radius={32} padding="none" style={styles.panel}>
         <View style={styles.stage} accessible={!!accessibilityLabel} accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <View style={[styles.pet, mine ? styles.left : styles.solo]}>
-            <PetImage species={theirs} mood="debout" size={190} animation="breathe" />
+            <InvitePet species={theirs} outfit={theirsOutfit} />
           </View>
           {mine ? (
             <View style={[styles.pet, styles.right]}>
-              <PetImage species={mine} mood="debout" size={190} animation="breathe" delay={600} />
+              <InvitePet species={mine} outfit={mineOutfit} delay={600} />
             </View>
           ) : null}
         </View>

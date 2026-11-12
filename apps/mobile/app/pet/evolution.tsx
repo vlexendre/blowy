@@ -23,7 +23,7 @@ export default function EvolutionScreen() {
   const router = useRouter();
   const pet = usePet();
   const [chosen, setChosen] = useState<PetForm | null>(null);
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/pet'));
+  const back = () => (router.canGoBack() ? router.back() : router.replace('/pet/caractere'));
   const p = pet.data?.pet;
 
   if (!pet.data || !p) {

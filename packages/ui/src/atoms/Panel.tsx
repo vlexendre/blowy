@@ -24,7 +24,7 @@ export interface PanelProps {
 export function Panel({ children, gradient = 'accent', radius = 'xl', padding = 'lg', overflow = false, ink, style }: PanelProps) {
   const r = typeof radius === 'number' ? radius : radii[radius];
   return (
-    <View style={[{ borderRadius: r, padding: padding === 'none' ? 0 : space[padding] }, !overflow && styles.clip, style]}>
+    <View style={[{ borderRadius: r }, padding === 'none' ? null : { padding: space[padding] }, !overflow && styles.clip, style]}>
       <LinearGradient colors={gradients[gradient]} style={[StyleSheet.absoluteFill, { borderRadius: r }]} />
       <InkProvider value={ink ?? onGradient[gradient]}>{children}</InkProvider>
     </View>

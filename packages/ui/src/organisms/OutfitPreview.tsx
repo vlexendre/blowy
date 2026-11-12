@@ -6,75 +6,90 @@ import { ItemImage } from '../atoms/ItemImage';
 import { Panel } from '../atoms/Panel';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { Title } from '../atoms/Title';
-import { layout } from '../lib/styles';
-import { color, type GradientName, radius, size as sizes, space, speciesGradient, veil } from '../theme';
+import { alpha, color, type GradientName, speciesGradient } from '../theme';
 
 export interface OutfitPreviewProps {
   species: Species;
   outfit: Outfit;
-  /** Nom du pet (titre). */
-  name?: string;
   /** Noms des emplacements (`slotLabel`). */
   slotLabels: Record<ItemSlot, string>;
   /** Noms des objets (`itemLabel`). */
   itemLabels: Record<string, string>;
-  /** Emplacement vide (« rien »). */
+  /** Emplacement vide (« rien »), lu par le lecteur d'écran. */
   emptyLabel: string;
-  /** Emplacement en cours d'édition (surligné). */
+  /** Emplacement en cours d'édition (case cerclée). */
   activeSlot?: ItemSlot;
   onSlotPress?: (slot: ItemSlot) => void;
   gradient?: GradientName;
   petLabel?: string;
 }
 
-/** Haut de l'écran garde-robe : le pet habillé et le résumé des 4 emplacements. */
-export function OutfitPreview({ species, outfit, name, slotLabels, itemLabels, emptyLabel, activeSlot, onSlotPress, gradient, petLabel }: OutfitPreviewProps) {
+/** Hauteur du panneau (V6-GardeRobe : 178) et du pet (170). */
+const HEIGHT = 178;
+const PET_HEIGHT = 170;
+
+/** Haut de la garde-robe : le pet habillé en direct et une case par emplacement (objet porté ou « + »). */
+export function OutfitPreview({ species, outfit, slotLabels, itemLabels, emptyLabel, activeSlot, onSlotPress, gradient, petLabel }: OutfitPreviewProps) {
   return (
-    <Panel gradient={gradient ?? speciesGradient[species]} padding="md" style={styles.panel}>
-      <View style={styles.pet}>
-        <DressedPet species={species} outfit={outfit} size={150} animated accessibilityLabel={petLabel ?? name} />
-      </View>
-      <View style={[layout.grow, layout.gapXs]}>
-        {name ? <Title text={name} size={30} numberOfLines={1} /> : null}
-        {ITEM_SLOTS.map((slot) => {
-          const id = outfit[slot];
-          const on = slot === activeSlot;
-          const itemName = id ? (itemLabels[id] ?? id) : emptyLabel;
-          return (
-            <Pressable
-              key={slot}
-              onPress={onSlotPress ? () => onSlotPress(slot) : undefined}
-              disabled={!onSlotPress}
-              haptic="selection"
-              scaleTo={0.97}
-              accessibilityRole={onSlotPress ? 'button' : 'text'}
-              accessibilityLabel={`${slotLabels[slot]} : ${itemName}`}
-              accessibilityState={{ selected: on }}
-              style={[styles.row, on && styles.rowOn]}
-            >
-              <View style={styles.thumb}>{id ? <ItemImage id={id} size={28} /> : <View style={styles.empty} />}</View>
-              <View style={layout.shrink}>
-                <Text variant="label" size={10} color={on ? color.dark : undefined} muted={!on}>
-                  {slotLabels[slot]}
-                </Text>
-                <Text variant="bodyBold" size={13} numberOfLines={1} color={on ? color.dark : undefined} dim={!id && !on}>
-                  {itemName}
-                </Text>
-              </View>
-            </Pressable>
-          );
-        })}
+    <Panel gradient={gradient ?? speciesGradient[species]} radius={32} padding="none" style={styles.panel}>
+      <View style={styles.inner}>
+        <View style={styles.pet}>
+          <DressedPet species={species} outfit={outfit} size={Math.round(PET_HEIGHT * 0.9)} animated accessibilityLabel={petLabel} />
+        </View>
+        <View style={styles.grid}>
+          {[ITEM_SLOTS.slice(0, 2), ITEM_SLOTS.slice(2)].map((row, r) => (
+            <View key={r} style={styles.row}>
+              {row.map((slot) => {
+                const id = outfit[slot];
+                const on = slot === activeSlot;
+                return (
+                  <Pressable
+                    key={slot}
+                    onPress={onSlotPress ? () => onSlotPress(slot) : undefined}
+                    disabled={!onSlotPress}
+                    haptic="selection"
+                    scaleTo={0.95}
+                    accessibilityRole={onSlotPress ? 'button' : 'text'}
+                    accessibilityLabel={`${slotLabels[slot]} : ${id ? (itemLabels[id] ?? id) : emptyLabel}`}
+                    accessibilityState={{ selected: on }}
+                    style={[styles.box, on && styles.boxOn]}
+                  >
+                    {id ? (
+                      <ItemImage id={id} size={44} />
+                    ) : (
+                      <Text variant="body" size={22} color={color.white} style={styles.plus}>
+                        +
+                      </Text>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
+        </View>
       </View>
     </Panel>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  pet: { width: 150, alignItems: 'center' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: sizes.touch, paddingHorizontal: space.sm, borderRadius: radius.sm },
-  rowOn: { backgroundColor: color.white },
-  thumb: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: veil.darkGlass },
-  empty: { width: 10, height: 2, borderRadius: 1, backgroundColor: veil.off },
+  // `.panel.row` : 178 de haut, padding 0 14, écart 6.
+  panel: { height: HEIGHT },
+  inner: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, gap: 6 },
+  pet: { alignSelf: 'flex-end', height: PET_HEIGHT, marginBottom: 2 },
+  // Grille 2 × 2, écart 6 ; cases de 62, encre à 28 %, rayon 16.
+  grid: { flex: 1, minWidth: 0, gap: 6 },
+  row: { flexDirection: 'row', gap: 6 },
+  box: {
+    flex: 1,
+    height: 62,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: alpha(color.dark, 0.28),
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  boxOn: { borderColor: alpha(color.white, 0.75) },
+  plus: { opacity: 0.6 },
 });
