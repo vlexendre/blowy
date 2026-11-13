@@ -34,7 +34,8 @@ export interface QuizPreviewProps {
 export interface QuizStepProps<K extends string = string> {
   /** Petite ligne jaune (« sociabilité »). */
   kicker?: string;
-  title: TitleContent;
+  /** Sans titre (ni kicker, ni texte) : la question est posée par l'hôte (`OnboardingTemplate` → `host`). */
+  title?: TitleContent;
   text?: string;
   choices: readonly QuizChoice<K>[];
   selectedKey?: K | null;
@@ -187,19 +188,21 @@ export function QuizStep<K extends string>({ kicker, title, text, choices, selec
   return (
     <View style={layout.fill}>
       {preview ? <QuizPreview {...preview} step={step} /> : null}
+      {title || kicker || text ? (
       <Appear key={`q${step}`} from={from} distance={28} delay={40} style={styles.heading}>
         {kicker ? (
           <Text variant="label" size={11} color={color.accent} style={styles.kicker}>
             {kicker}
           </Text>
         ) : null}
-        <Title text={title} size={54} style={styles.title} />
+        {title ? <Title text={title} size={54} style={styles.title} /> : null}
         {text ? (
           <Text muted size={14} style={styles.text}>
             {text}
           </Text>
         ) : null}
       </Appear>
+      ) : null}
       <View key={`c${step}`} style={styles.choices} accessibilityRole="radiogroup">
         {choices.map((c, i) => (
           <Appear key={c.key} from={from} distance={40} delay={110 + i * 70}>

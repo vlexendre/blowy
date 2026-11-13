@@ -6,7 +6,7 @@ import { Alert, Platform } from 'react-native';
 
 import { AuthError, keys, useApi, usePorts, useSession } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
-import { useDraft } from '@/features/onboarding';
+import { resumeOnboarding } from '@/features/onboarding';
 
 export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline';
 
@@ -101,7 +101,7 @@ export function useAfterSignIn(): () => Promise<Href> {
       await qc.fetchQuery({ queryKey: keys.me, queryFn: api.me.get, staleTime: 0 });
     } catch (e) {
       if (e instanceof ApiError && e.code === 'not_onboarded') {
-        return useDraft.getState().petName.trim() ? '/(onboarding)/profil' : '/(onboarding)/craft';
+        return resumeOnboarding();
       }
       return '/';
     }

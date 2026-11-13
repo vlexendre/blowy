@@ -1,12 +1,15 @@
-/** Caractère de départ (V6-Caractere) : 4 questions une à une, puis le caractère obtenu. */
+/**
+ * Caractère (V6-Caractere) : le pet pose 4 questions, une par écran (choisir une réponse passe à la suivante), puis
+ * le temps fort : il sort du bas de l'écran, le verdict s'écrit mot à mot et ses deux traits reviennent en puces.
+ */
 import { gaugeLabel } from '@blowy/content';
 import { addGauges, type GaugeKey, type Gauges, ZERO_GAUGES } from '@blowy/domain';
-import { OnboardingTemplate, QuizPreview, QuizResult, QuizResultActions, QuizStep } from '@blowy/ui';
-import { router } from 'expo-router';
+import { OnboardingTemplate, PetRise, QuizStep, StageEcho, StageLine, StageTemplate } from '@blowy/ui';
+import { Redirect, router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
-import { ScreenMotion, useSession } from '@/core';
-import { QUIZ, strongestTraits, useDraft } from '@/features/onboarding';
+import { ScreenMotion } from '@/core';
+import { type FlowStep, hasDraftPet, progressAt, QUIZ, strongestTraits, useDraft } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -25,16 +28,22 @@ const total = (picks: readonly Pick[]): Gauges =>
     const delta = QUIZ[i]?.choices[p].delta;
     return delta ? addGauges(g, delta) : g;
   }, ZERO_GAUGES);
+const STEPS: readonly FlowStep[] = ['q1', 'q2', 'q3', 'q4'];
 
 export default function Caractere() {
+  // Rechargé en plein milieu (web) : plus de brouillon, on repart de l'aiguillage.
+  const [ok] = useState(hasDraftPet);
+  return ok ? <Quiz /> : <Redirect href="/" />;
+}
+
+function Quiz() {
   const species = useDraft((d) => d.species);
   const petName = useDraft((d) => d.petName) || common.speciesNames[species];
   const quiz = useDraft((d) => d.quiz);
   const set = useDraft((d) => d.set);
-  // Déjà connecté (compte sans pet) : pas besoin de repasser par l'e-mail.
-  const session = useSession();
   const [picks, setPicks] = useState<Pick[]>([]);
   const [selected, setSelected] = useState<Pick | null>(null);
+  const [reactKey, setReactKey] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     useDraft.getState().set({ quiz: ZERO_GAUGES });
@@ -43,8 +52,6 @@ export default function Caractere() {
 
   const index = picks.length;
   const question = QUIZ[index];
-  const pet = { name: petName, species };
-  const preview = { pet, gauges: quiz, labels: gaugeLabel };
 
   // Le brouillon suit les réponses : revenir en arrière annule l'effet de la dernière.
   const commit = (next: Pick[]) => {
@@ -57,7 +64,9 @@ export default function Caractere() {
     if (selected !== null) return;
     const p: Pick = key === '1' ? 1 : 0;
     setSelected(p);
+    setReactKey((n) => n + 1);
     set({ quiz: total([...picks, p]) });
+    // La carte choisie s'incline et part ; la question suivante arrive juste après (rien n'attend la fin).
     timer.current = setTimeout(() => commit([...picks, p]), 420);
   };
 
@@ -69,53 +78,41 @@ export default function Caractere() {
 
   if (!question) {
     const [first, second] = strongestTraits(quiz);
+    const next = () => router.push('/(onboarding)/prenom');
     return (
       <ScreenMotion>
-      <OnboardingTemplate
-        step={QUIZ.length}
-        total={QUIZ.length}
-        onBack={back}
-        backLabel={t.previous}
-        gap={16}
-        actions={
-          <QuizResultActions
-            redoLabel={t.redo}
-            onRedo={() => commit([])}
-            ctaLabel={t.resultCta}
-            onCta={() => router.push(session ? '/(onboarding)/profil' : '/(onboarding)/compte')}
-          />
-        }
-      >
-        <QuizPreview {...preview} step={QUIZ.length - 1} />
-        <QuizResult
-          kicker={t.resultKicker}
-          title={t.resultTitle(petName)}
-          text={t.resultText(petName, poleOfGauge(first, quiz), poleOfGauge(second, quiz))}
-          species={species}
-          petLabel={petName}
-        />
-      </OnboardingTemplate>
+        <StageTemplate
+          onBack={back}
+          backLabel={t.previous}
+          {...progressAt('traits')}
+          onTap={next}
+          tapLabel={t.tap}
+          tapHintDelay={1500}
+          stage={<PetRise species={species} up reach={0.3} mood="joie" gesture="look" gestureDelay={1300} celebrate="stars" accessibilityLabel={petName} />}
+        >
+          <StageLine text={t.resultTitle(petName)} size={50} wordByWord />
+          <StageEcho chips={[t.trait(poleOfGauge(first, quiz)), t.trait(poleOfGauge(second, quiz))]} text={t.resultText} delay={700} />
+        </StageTemplate>
       </ScreenMotion>
     );
   }
 
-  const key = gaugeOf(question.choices[0].delta);
-  // Une seule pile pour tout le quiz : l'aperçu (pet et jauges) reste en place, seules la question et les réponses changent.
   return (
     <ScreenMotion>
-    <OnboardingTemplate step={index + 1} total={QUIZ.length} stepPending onBack={back} backLabel={index ? t.previous : common.back} gap={0}>
-      {/* Même place que sur le résultat : l'aperçu (pet et jauges) ne bouge pas d'un écran à l'autre. */}
-      <QuizPreview {...preview} step={index} />
-      <QuizStep
-        step={index}
-        kicker={t.kicker[key]}
-        title={(t.titles[index] ?? t.titles[0])(petName)}
-        text={t.text}
-        choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
-        selectedKey={selected === null ? null : String(selected)}
-        onChoose={choose}
-      />
-    </OnboardingTemplate>
+      <OnboardingTemplate
+        {...progressAt(STEPS[index] ?? 'q1')}
+        onBack={back}
+        backLabel={index ? t.previous : common.back}
+        gap={0}
+        host={{ species, line: t.host[index] ?? t.host[0], note: t.note, reactKey, seed: petName, name: petName }}
+      >
+        <QuizStep
+          step={index}
+          choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
+          selectedKey={selected === null ? null : String(selected)}
+          onChoose={choose}
+        />
+      </OnboardingTemplate>
     </ScreenMotion>
   );
 }

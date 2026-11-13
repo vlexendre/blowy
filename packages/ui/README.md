@@ -200,7 +200,8 @@ TextProps extends RNTextProps = { variant?: TypeName; color?: string; dim?: bool
 ```
 #### `TextField` — `src/atoms/TextField.tsx`
 ```ts
-TextFieldProps extends Omit<TextInputProps, 'style'> = { label?: string; hint?: string; error?: string | null; right?: ReactNode; large?: boolean; style?: StyleProp<ViewStyle>; ref?: Ref<ComponentRef<typeof TextInput>>; }
+TextFieldProps extends Omit<TextInputProps, 'style'> = { label?: string; hint?: string; error?: string | null; right?: ReactNode; large?: boolean; inset?: boolean; hero?: boolean; style?: StyleProp<ViewStyle>; ref?: Ref<ComponentRef<typeof TextInput>>; }
+// hero : très grand champ centré, sans cadre, souligné (une question par écran : prénom, date, ville)
 ```
 #### `Title` — `src/atoms/Title.tsx`
 ```ts
@@ -306,8 +307,37 @@ SlotTabsProps = { labels: Record<ItemSlot, string>; active: ItemSlot; onChange: 
 ```
 #### `SpeechBubble` — `src/molecules/SpeechBubble.tsx`
 ```ts
-SpeechBubbleProps = { text: string; highlight?: string; highlightColor?: string; tone?: 'dark' | 'light'; tail?: 'left' | 'right' | 'none'; rotate?: number; compact?: boolean; chat?: boolean; typing?: boolean; style?: StyleProp<ViewStyle>; }
+SpeechBubbleProps = { text: string; highlight?: string; highlightColor?: string; tone?: 'dark' | 'light'; tail?: 'left' | 'right' | 'none'; rotate?: number; compact?: boolean; chat?: boolean; typing?: boolean; size?: 'md' | 'lg'; style?: StyleProp<ViewStyle>; }
+// size 'lg' : grande bulle de l'hôte (19 pt très gras, toute la largeur)
 // typing : « … » puis la phrase mot à mot (taille fixe dès le départ), rejoué quand text change
+```
+#### `HostBubble` — `src/molecules/HostBubble.tsx`
+```ts
+HostBubbleProps = { species: Species; line: string; highlight?: string; note?: string; mood?: Mood | PetPose; reactKey?: number; reaction?: PetActorReaction /* 'joy' */; seed?: string; name?: string; }
+// l'hôte de l'inscription : petit PetActor (64 pt) en haut à gauche + grande bulle qui écrit la question ; reactKey le fait réagir
+```
+#### `HoldButton` — `src/molecules/HoldButton.tsx`
+```ts
+HoldButtonProps = { label: string; doneLabel: string; onDone: () => void; onPressDone?: () => void; doneA11yLabel?: string; done?: boolean; holdMs?: number /* 1100 */; size?: number /* 132 */; accessibilityHint?: string; }
+// bouton rond à maintenir : un anneau jaune se remplit (deux demi-disques qui tournent) ; un simple tap le finit seul en 0,28 s ;
+// l'appui qui le remplit ne déclenche pas aussi onPressDone ; plein : coche + onPressDone au toucher suivant
+```
+#### `OptionalField` — `src/molecules/OptionalField.tsx`
+```ts
+OptionalFieldProps = { toggleLabel: string; open: boolean; onOpen: () => void; children: ReactNode; }   // champ facultatif replié derrière un lien centré
+```
+#### `ProgressLine` — `src/molecules/ProgressLine.tsx`
+```ts
+ProgressLineProps = { value: number /* 0–1 */; from?: number /* défaut value − 0,2 */; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// barre continue de l'inscription (6 pt) : avance depuis `from` à l'arrivée, glisse quand `value` change (PillSpan)
+```
+#### `StageEcho` — `src/molecules/StageEcho.tsx`
+```ts
+StageEchoProps = { chips: readonly string[]; text?: string; delay?: number; }   // la réponse renvoyée en puces (« pop » une à une)
+```
+#### `StageLine` — `src/molecules/StageLine.tsx`
+```ts
+StageLineProps = { text: TitleContent; size?: number /* 46 */; wordByWord?: boolean; delay?: number; }   // grande ligne centrée d'un temps fort ; nouvelle ligne = nouvelle `key`
 ```
 #### `StatTile` — `src/molecules/StatTile.tsx`
 ```ts
@@ -416,10 +446,24 @@ type PetReaction = PetActorReaction   // feed : fraise croquée · play : balle 
 Plan<K extends string = string> = { key: K; title: string; price: string; unit?: string; caption?: string; badge?: string; }
 PlanPickerProps<K extends string = string> = { plans: readonly Plan<K>[]; value: K; onChange: (key: K) => void; }
 ```
+#### `PrepChecklist` — `src/organisms/PrepChecklist.tsx`
+```ts
+PrepChecklistProps = { species: Species; title: TitleContent; percent: number /* 0–100 */; items: readonly { label: string; state: 'todo' | 'doing' | 'done' }[]; stalled?: boolean; percentLabel?: (n: number) => string; }
+// préparation : pet au milieu, pourcentage qui défile (CountUp), barre, lignes cochées (DrawnCheck) ; l'écran décide du rythme
+```
+#### `PromiseStage` — `src/organisms/PromiseStage.tsx`
+```ts
+PromiseStageProps = { species: Species; kicker: string; title: TitleContent; text: string; cheerKey?: number; seed?: string; petLabel?: string; }
+// la promesse : demande en grand, pourquoi en une ligne, PetActor au milieu de la place libre ; cheerKey : saut de joie + cœurs
+```
+#### `ReadyHero` — `src/organisms/ReadyHero.tsx`
+```ts
+ReadyHeroProps = { species: Species; title: TitleContent; text?: string; seed?: string; petLabel?: string; }   // « tout est prêt » : saut de joie, confettis, titre mot à mot
+```
 #### `QuizStep` — `src/organisms/QuizStep.tsx`
 ```ts
 QuizChoice<K extends string = string> = { key: K; title: string; caption?: string; icon?: IconName | ReactNode; }
-QuizStepProps<K extends string = string> = { kicker?: string; title: TitleContent; text?: string; choices: readonly QuizChoice<K>[]; selectedKey?: K | null; onChoose: (key: K) => void; preview?: { pet: PetLook; gauges: Gauges; labels: Record<GaugeKey, { low: string; high: string }> }; }
+QuizStepProps<K extends string = string> = { kicker?: string; title?: TitleContent /* sans titre : la question est posée par l'hôte */; text?: string; choices: readonly QuizChoice<K>[]; selectedKey?: K | null; onChoose: (key: K) => void; preview?: { pet: PetLook; gauges: Gauges; labels: Record<GaugeKey, { low: string; high: string }> }; }
 ```
 #### `SettingsSection` — `src/organisms/SettingsSection.tsx`
 ```ts
@@ -470,7 +514,14 @@ LinkTemplateProps<K extends string = string> = { other: PersonLook; myPet: PetLo
 ```
 #### `OnboardingTemplate` — `src/templates/OnboardingTemplate.tsx`
 ```ts
-OnboardingTemplateProps = { step?: number; total?: number; onBack?: () => void; backLabel?: string; kicker?: string; title?: TitleContent; text?: string; children?: ReactNode; primaryLabel: string; onPrimary: () => void; primaryDisabled?: boolean; primaryLoading?: boolean; primaryIcon?: 'arrow' | null; secondaryLabel?: string; onSecondary?: () => void; footnote?: ReactNode; scroll?: boolean; }
+OnboardingTemplateProps = { step?: number; total?: number; progress?: number; progressFrom?: number; host?: HostBubbleProps; centerBody?: boolean; onBack?: () => void; backLabel?: string; kicker?: string; title?: TitleContent; text?: string; children?: ReactNode; primaryLabel: string; onPrimary: () => void; primaryDisabled?: boolean; primaryLoading?: boolean; primaryIcon?: 'arrow' | null; secondaryLabel?: string; onSecondary?: () => void; footnote?: ReactNode; scroll?: boolean; }
+// host : l'hôte (pet + bulle) remplace le titre — toutes les questions de l'inscription ; progress : barre continue
+```
+#### `StageTemplate` — `src/templates/StageTemplate.tsx`
+```ts
+StageTemplateProps = { onBack?: () => void; backLabel?: string; progress?: number; progressFrom?: number; right?: ReactNode; children?: ReactNode; align?: 'center' | 'upper'; stage?: ReactNode; footer?: ReactNode; onTap?: () => void; tapLabel?: string; tapHintDelay?: number /* 900 */; }
+// temps forts plein écran (entrée en scène, réaction, promesse, préparation, prêt) : `stage` = calque plein écran derrière
+// (pets qui sortent du bas, sans toucher) ; onTap : tout l'écran se touche, `tapLabel` est le bouton lu par le lecteur d'écran
 ```
 #### `ScreenTemplate` — `src/templates/ScreenTemplate.tsx`
 ```ts
@@ -571,6 +622,10 @@ PetRefresh { species; mood?: 'surpris'; refreshing; onRefresh; children: (scroll
 KeyboardPeek { species; mood?: 'joie'; side?: 'left' | 'right'; size?: 72; seed? }
 HelloPeek  { species; seed?; safe?; duration?: 2400 }   // salut au retour dans l'app (posé dans (tabs)/_layout)
 PetEntrance { species; mood?: 'debout'; size?: 180; glow?; accessibilityLabel?; style? }   // arrive en courant (lancement)
+PetRise    { species; up: boolean; size?; reach?: 0.4 /* part de la hauteur d'écran */; mood?: 'neutre'; gesture?: 'blink' | 'look' | 'none';
+             gestureDelay?: 380; sink?: 0.14; x?; tilt?; hopKey?: number; celebrate?: BurstKind; accessibilityLabel? }
+           // sort du bord bas, rogné par lui ; up=false : redescend ; clin d'œil = image « dodo » par-dessus (opacité) ; à mettre dans StageTemplate.stage
+useSceneSteps(count, { step?: 1150; onDone?; enabled?: true }): { index; next(); skip() }   // scène en plusieurs temps : avance seule, un tap avance
 fitAnchor(species, 'headTop' | 'eyes' | 'mouth' | 'ground' | …): { x, y }   // ancres de fit.json en fraction de la toile
 ```
 - **Déclencher une réaction** : `const pet = useRef<PetActorHandle>(null)` puis `pet.current?.react('joy')`. Sur l'accueil,
@@ -615,6 +670,10 @@ StatTile   { …; count?: number; suffix?: string }           // la valeur défi
   s'incline puis part de son côté, la question suivante arrive de la droite (de la gauche en revenant).
   Garder `QuizPreview` au même endroit entre questions et résultat (voir `app/(onboarding)/caractere.tsx`).
 - Un changement de phase sur la même route : donner une `key` au gabarit pour rejouer l'entrée (`compte.tsx` : e-mail → code).
+- **Parcours d'inscription** (voir `docs/SCREENS.md`) : questions = `OnboardingTemplate` avec `host` + `progress` ; temps
+  forts = `StageTemplate` (entrée en scène : `PetRise` × 4 + `useSceneSteps` ; caractère : `PetRise` + `StageLine wordByWord`
+  + `StageEcho` ; promesse : `PromiseStage` + `HoldButton` en pied ; préparation : `PrepChecklist` ; prêt : `ReadyHero`).
+  Un pet ne recouvre jamais un bouton ni un champ : `PetRise` reste dans `stage` (sans toucher) et sa taille suit `reach`.
 
 ### Liens et rencontres (ajouts)
 ```ts

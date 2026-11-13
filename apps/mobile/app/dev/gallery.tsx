@@ -71,7 +71,10 @@ import {
   MessageBubble,
   NeedMeter,
   NeedsPanel,
+  HoldButton,
+  HostBubble,
   OnboardingTemplate,
+  OptionalField,
   OtpInput,
   OutfitPreview,
   Panel,
@@ -84,9 +87,14 @@ import {
   PetStage,
   type PetLook,
   PhotoTile,
+  PetRise,
   PlanPicker,
+  PrepChecklist,
   ProgressBar,
+  ProgressLine,
+  PromiseStage,
   QuizStep,
+  ReadyHero,
   ScreenTemplate,
   SegmentedTabs,
   SettingsSection,
@@ -96,6 +104,9 @@ import {
   Spacer,
   SpeciesPicker,
   SpeechBubble,
+  StageEcho,
+  StageLine,
+  StageTemplate,
   StatTile,
   StepProgress,
   Sticker,
@@ -411,6 +422,8 @@ function GalleryScreen() {
   const [gauge, setGauge] = useState<GaugeKey | null>('social');
   const [pause, setPause] = useState(false);
   const [sheet, setSheet] = useState(false);
+  const [promised, setPromised] = useState(false);
+  const [riseUp, setRiseUp] = useState(true);
   const [nav, setNav] = useState<'chats' | 'pet' | 'encounters' | 'me'>('chats');
   const [copied, setCopied] = useState(false);
   const [picked, setPicked] = useState<0 | 1 | null>(null);
@@ -895,6 +908,38 @@ function GalleryScreen() {
             preview={{ pet: nino, gauges: { social: answer === 'out' ? 30 : answer === 'home' ? -30 : 0, play: 0, tender: 0, talk: 0 }, labels: gaugeLabel }}
           />
         </Item>
+        <Item name="HostBubble · ProgressLine (inscription : le pet pose la question)">
+          <ProgressLine value={0.46} />
+          <HostBubble species="pia" line="et toi, je t’appelle comment\u00a0?" note="c’est ce que verront les gens que je te présente." seed="dev-host" name="Pia" />
+          <TextField hero value={name} onChangeText={setName} placeholder="ton prénom" hint="un grand champ centré, sans cadre" accessibilityLabel="ton prénom" />
+          <OptionalField toggleLabel="j’ai un code d’invitation" open={promised} onOpen={() => setPromised(true)}>
+            <TextField inset label="ton code d’invitation" value="LEA-7K2P" />
+          </OptionalField>
+        </Item>
+        <Item name="StageLine · StageEcho (temps fort)">
+          <StageLine text={[{ text: 'C’EST NINO.\n' }, { text: 'POUR L’INSTANT.', dim: true }]} wordByWord />
+          <StageEcho chips={['plutôt joueur', 'plutôt bavard']} text="ça changera avec toi." />
+        </Item>
+        <Item name="PromiseStage · HoldButton (maintenir, ou toucher)">
+          <PromiseStage species="gaston" kicker="gaston te demande une seule chose" title={[{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }]} text="un pet en forme rencontre du monde. un pet oublié boude, et ne présente plus personne." cheerKey={promised ? 1 : 0} seed="dev-promise" />
+          <HoldButton label="promis" doneLabel="promis\u00a0!" done={promised} onDone={() => setPromised(true)} onPressDone={() => setPromised(false)} doneA11yLabel="recommencer" />
+        </Item>
+        <Item name="PrepChecklist">
+          <PrepChecklist
+            species="suzie"
+            title={[{ text: 'ON PRÉPARE\n' }, { text: 'L’ARRIVÉE DE SUZIE', dim: true }]}
+            percent={56}
+            items={[
+              { label: 'suzie choisit son coin', state: 'done' },
+              { label: 'on regonfle son coussin', state: 'done' },
+              { label: 'suzie répète son plus beau « salut »', state: 'doing' },
+              { label: 'il renifle qui traîne près de chez toi', state: 'todo' },
+            ]}
+          />
+        </Item>
+        <Item name="ReadyHero">
+          <ReadyHero species="nino" title={[{ text: 'TOUT EST PRÊT,\n' }, { text: 'ALEX\u00a0!', dim: true }]} text="nino est arrivé. il a déjà hâte de te présenter du monde." seed="dev-ready" />
+        </Item>
         <Item name="PlanPicker">
           <Panel gradient="wine" padding="lg">
             <FeatureRow icon="coeurs" title="3 rencontres à la fois" text="au lieu d’une par semaine" />
@@ -953,6 +998,19 @@ function GalleryScreen() {
             <OnboardingTemplate step={1} total={4} onBack={noop} title={[{ text: 'TON PET,\n' }, { text: 'TON VIBE', dim: true }]} primaryLabel="c’est lui" onPrimary={noop} secondaryLabel="j’ai déjà un compte" onSecondary={noop}>
               <TextField label="son petit nom" value={name} onChangeText={setName} large />
             </OnboardingTemplate>
+          </Frame>
+        </Item>
+        <Item name="StageTemplate · PetRise (un pet sort du bas de l’écran)">
+          <Frame height={620}>
+            <StageTemplate
+              onBack={noop}
+              progress={0.5}
+              onTap={() => setRiseUp((u) => !u)}
+              tapLabel="touche : il se cache / revient"
+              stage={<PetRise species="nino" up={riseUp} reach={0.4} gesture="blink" />}
+            >
+              <StageLine text={[{ text: 'PSST.\n' }, { text: 'SALUT.', dim: true }]} />
+            </StageTemplate>
           </Frame>
         </Item>
         <Item name="TabTemplate">

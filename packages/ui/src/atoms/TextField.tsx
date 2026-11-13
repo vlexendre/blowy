@@ -19,12 +19,14 @@ export interface TextFieldProps extends Omit<TextInputProps, 'style'> {
   large?: boolean;
   /** Libellé dans la case, au-dessus de la valeur (`.fld` de V6-Profil : 17 pt gras sur fond `card`). */
   inset?: boolean;
+  /** Très grand champ centré, sans cadre, souligné (une seule question à l'écran : son prénom, sa date). */
+  hero?: boolean;
   style?: StyleProp<ViewStyle>;
   ref?: Ref<ComponentRef<typeof TextInput>>;
 }
 
 /** Champ de saisie sombre arrondi. */
-export function TextField({ label, hint, error, right, large, inset, style, onFocus, onBlur, editable = true, accessibilityLabel, ref, ...rest }: TextFieldProps) {
+export function TextField({ label, hint, error, right, large, inset, hero, style, onFocus, onBlur, editable = true, accessibilityLabel, ref, ...rest }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
   // Au focus, la bordure jaune arrive en fondu par-dessus (`FocusRing`) : le champ « s'allume ».
   const border = error ? color.danger : inset ? veil.glass : veil.glassStrong;
@@ -45,7 +47,7 @@ export function TextField({ label, hint, error, right, large, inset, style, onFo
         setFocused(false);
         onBlur?.(e);
       }}
-      style={[inset ? styles.insetInput : large ? styles.large : type.body, styles.input, inset && styles.insetPad]}
+      style={[inset ? styles.insetInput : hero ? styles.hero : large ? styles.large : type.body, styles.input, inset && styles.insetPad, hero && styles.heroPad]}
     />
   );
   const note = error ? (
@@ -57,6 +59,23 @@ export function TextField({ label, hint, error, right, large, inset, style, onFo
       {hint}
     </Text>
   ) : null;
+  if (hero) {
+    return (
+      <View style={style}>
+        {input}
+        <View style={[styles.underline, { backgroundColor: error ? color.danger : lit ? color.accent : veil.track }]} />
+        {error ? (
+          <Text variant="small" center color={color.danger} accessibilityLiveRegion="polite" style={styles.hint}>
+            {error}
+          </Text>
+        ) : hint ? (
+          <Text variant="small" center muted style={styles.hint}>
+            {hint}
+          </Text>
+        ) : null}
+      </View>
+    );
+  }
   if (inset) {
     return (
       <View style={style}>
@@ -112,4 +131,7 @@ const styles = StyleSheet.create({
   insetHint: { marginTop: 10, lineHeight: 16 },
   insetPad: { paddingVertical: 0, minHeight: 23 },
   off: { opacity: 0.6 },
+  hero: { ...type.bodyHeavy, fontSize: 34, lineHeight: 42, textAlign: 'center' },
+  heroPad: { paddingVertical: space.sm, minHeight: 58 },
+  underline: { height: 3, borderRadius: radius.pill, marginHorizontal: space.xxl },
 });

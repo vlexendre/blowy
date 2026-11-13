@@ -1,4 +1,8 @@
-/** Compte (V6-Compte) : e-mail → code à 6 chiffres. Après la connexion, l'aiguillage décide de la suite. */
+/**
+ * Compte (V6-Compte) : e-mail → code à 6 chiffres. À l'inscription, c'est le pet qui demande (hôte, barre continue) ;
+ * en connexion (« j'ai déjà un compte »), le panneau « content de te revoir ». Après la connexion, `useAfterSignIn`
+ * décide de la suite (préparation si le brouillon est complet, création du pet sinon, ou l'app).
+ */
 import { color } from '@blowy/tokens';
 import { Appear, Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, OtpInput, Shake, Text, TextField } from '@blowy/ui';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -6,7 +10,7 @@ import { useState } from 'react';
 import { Linking } from 'react-native';
 
 import { config, LOCAL_CODE, ScreenMotion } from '@/core';
-import { useDraft } from '@/features/onboarding';
+import { progressAt, useDraft } from '@/features/onboarding';
 import { errorMessage, goBack, useAfterSignIn, useCountdown, useSendCode, useVerifyCode } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -19,7 +23,10 @@ export default function Compte() {
   const { mode } = useLocalSearchParams<{ mode?: string }>();
   const login = mode === 'login';
   const species = useDraft((d) => d.species);
-  const petName = useDraft((d) => d.petName) || common.speciesNames[species];
+  const draftPet = useDraft((d) => d.petName);
+  const petName = draftPet || common.speciesNames[species];
+  // L'hôte et la barre continue : seulement en pleine inscription (un pet dans le brouillon).
+  const signup = !login && !!draftPet.trim();
   const email = useDraft((d) => d.email);
   const set = useDraft((d) => d.set);
   const [phase, setPhase] = useState<'email' | 'code'>('email');
@@ -68,12 +75,12 @@ export default function Compte() {
       <ScreenMotion>
       <OnboardingTemplate
         key="code"
-        step={login ? undefined : 3}
-        total={login ? undefined : onboarding.total}
+        {...(signup ? progressAt('code') : {})}
         onBack={() => setPhase('email')}
         backLabel={common.back}
-        title={t.codeTitle}
-        text={t.codeText(email.trim().toLowerCase())}
+        host={signup ? { species, line: t.hostCode, note: t.codeText(email.trim().toLowerCase()), seed: petName, name: petName } : undefined}
+        title={signup ? undefined : t.codeTitle}
+        text={signup ? undefined : t.codeText(email.trim().toLowerCase())}
         primaryLabel={t.verify}
         primaryDisabled={code.length !== 6}
         primaryLoading={verify.isPending}
@@ -81,7 +88,7 @@ export default function Compte() {
         secondaryLabel={t.changeEmail}
         onSecondary={() => setPhase('email')}
         footnote={devHint}
-        keyboardPeek={{ species }}
+        keyboardPeek={signup ? undefined : { species }}
       >
         <OtpInput
           value={code}
@@ -123,9 +130,9 @@ export default function Compte() {
     <ScreenMotion>
     <OnboardingTemplate
       key="email"
-      step={login ? undefined : 3}
-      total={login ? undefined : onboarding.total}
-      onBack={() => goBack(login ? '/(onboarding)/welcome' : '/(onboarding)/caractere')}
+      {...(signup ? progressAt('email') : {})}
+      onBack={() => goBack(login ? '/(onboarding)/welcome' : '/(onboarding)/promesse')}
+      host={signup ? { species, line: t.hostEmail, note: t.speech, seed: petName, name: petName } : undefined}
       backLabel={common.back}
       gap={16}
       primaryLabel={t.sendCode}
@@ -148,7 +155,7 @@ export default function Compte() {
         </>
       }
     >
-      <OnboardingPanel title={login ? t.loginTitle : t.titleWaiting(petName)} pet={{ name: petName, species }} speech={t.speech} />
+      {signup ? null : <OnboardingPanel title={t.loginTitle} pet={{ name: petName, species }} speech={t.speech} />}
       <Shake trigger={emailShake}>
       <TextField
         label={t.emailLabel}

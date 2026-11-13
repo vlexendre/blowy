@@ -5,14 +5,13 @@ import { Redirect } from 'expo-router';
 import { View } from 'react-native';
 
 import { usePendingInvite } from '@/features/encounters';
-import { useDraft } from '@/features/onboarding';
+import { resumeOnboarding, useDraft } from '@/features/onboarding';
 import { useGate, useRetryGate } from '@/features/session';
 import { common } from '@/locales/common';
 
 export default function Gate() {
   const gate = useGate();
   const retry = useRetryGate();
-  const petName = useDraft((d) => d.petName);
   const species = useDraft((d) => d.species);
   const pendingInvite = usePendingInvite((p) => p.code);
 
@@ -20,8 +19,8 @@ export default function Gate() {
     case 'signedOut':
       return <Redirect href="/(onboarding)/welcome" />;
     case 'needsOnboarding':
-      // Un compte sans pet doit d'abord le créer ; si le brouillon a déjà un pet, on reprend au profil.
-      return <Redirect href={petName.trim() ? '/(onboarding)/profil' : '/(onboarding)/craft'} />;
+      // Un compte sans pet doit d'abord le créer ; si le brouillon est complet, on reprend à la préparation.
+      return <Redirect href={resumeOnboarding()} />;
     case 'ready':
       return pendingInvite ? <Redirect href={{ pathname: '/i/[code]', params: { code: pendingInvite } }} /> : <Redirect href="/(tabs)/pet" />;
     case 'offline':

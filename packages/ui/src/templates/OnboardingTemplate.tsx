@@ -1,7 +1,6 @@
 import type { Species } from '@blowy/domain';
 import { type ReactNode, useState } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { PetPose } from '../assets/pets';
@@ -11,13 +10,13 @@ import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
+import { HostBubble, type HostBubbleProps } from '../molecules/HostBubble';
+import { ProgressLine } from '../molecules/ProgressLine';
 import { StepProgress } from '../molecules/StepProgress';
-import { useAnimatedNumber } from '../lib/motion';
 import { layout } from '../lib/styles';
 import { Appear } from '../motion/Appear';
-import { PillSpan } from '../motion/PillSpan';
 import { KeyboardPeek } from '../motion/pets/KeyboardPeek';
-import { color, motion, radius, space } from '../theme';
+import { color, space } from '../theme';
 import type { TitleContent } from '../types';
 import { ScreenTemplate } from './ScreenTemplate';
 
@@ -29,6 +28,15 @@ export interface OnboardingTemplateProps {
   stepPending?: boolean;
   /** Barre d'avancement continue sans compteur (V6-Profil), de 0 à 1 ; remplace `step` / `total`. */
   progress?: number;
+  /** D'où part la barre continue à l'arrivée (l'étape d'avant). Défaut `progress − 0,2`. */
+  progressFrom?: number;
+  /**
+   * L'hôte : le pet choisi, petit en haut à gauche, pose la question dans une grande bulle (remplace le titre).
+   * Toutes les questions de l'inscription passent par là, pour qu'elles se ressemblent.
+   */
+  host?: HostBubbleProps;
+  /** Centre le contenu dans la hauteur libre (grand champ seul : prénom, date). */
+  centerBody?: boolean;
   onBack?: () => void;
   backLabel?: string;
   /** Petite ligne jaune au-dessus du titre (`.lbl` jaune). */
@@ -75,6 +83,9 @@ export function OnboardingTemplate({
   total,
   stepPending,
   progress,
+  progressFrom,
+  host,
+  centerBody,
   onBack,
   backLabel = 'Retour',
   kicker,
@@ -105,7 +116,7 @@ export function OnboardingTemplate({
       <View style={[layout.row, styles.header]}>
         {onBack ? <IconButton glyph="back" variant="back" label={backLabel} onPress={onBack} size={40} /> : null}
         {progress !== undefined ? (
-          <ProgressLine value={progress} />
+          <ProgressLine value={progress} from={progressFrom} />
         ) : step && total ? (
           <StepProgress step={step} total={total} pending={stepPending} style={layout.grow} />
         ) : null}
@@ -126,8 +137,9 @@ export function OnboardingTemplate({
       {footnote}
     </View>
   );
-  const heading =
-    kicker || title || text ? (
+  const heading = host ? (
+    <HostBubble {...host} />
+  ) : kicker || title || text ? (
       <View style={[styles.heading, dense && styles.headingDense]}>
         {kicker ? (
           <Text variant="label" size={11} color={color.accent} style={styles.kicker}>
@@ -162,8 +174,8 @@ export function OnboardingTemplate({
       scroll={scroll}
       gutter={dense ? 14 : GUTTER}
     >
-      {heading ? <Appear delay={40}>{heading}</Appear> : null}
-      <Appear delay={90} style={[styles.body, { gap: gap ?? (dense ? 10 : 18), marginTop: dense ? 10 : 14 }]}>
+      {heading ? host ? heading : <Appear delay={40}>{heading}</Appear> : null}
+      <Appear delay={host ? 260 : 90} style={[styles.body, centerBody && styles.center, { gap: gap ?? (dense ? 10 : 18), marginTop: dense ? 10 : 14 }]}>
         {children}
       </Appear>
       {keyboardPeek ? (
@@ -178,33 +190,7 @@ export function OnboardingTemplate({
   );
 }
 
-const LINE = 6;
-
-/**
- * Barre d'avancement continue (V6-Profil : 6 pt, piste `card`, remplissage jaune). À l'arrivée, elle avance depuis
- * l'étape d'avant avec un léger dépassement (transformations seulement, voir `PillSpan`).
- */
-function ProgressLine({ value }: { value: number }) {
-  const v = Math.max(0, Math.min(1, value));
-  const [width, setWidth] = useState(0);
-  const p = useAnimatedNumber(v, { from: Math.max(0, v - 0.2), duration: motion.slow, overshoot: 0.08 });
-  const from = useSharedValue(0);
-  const to = useDerivedValue(() => Math.max(LINE, Math.min(1, p.value) * width));
-  return (
-    <View
-      accessible
-      accessibilityRole="progressbar"
-      accessibilityValue={{ min: 0, max: 100, now: Math.round(v * 100) }}
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-      style={[layout.grow, styles.line]}
-    >
-      {width ? <PillSpan from={from} to={to} height={LINE} color={color.accent} span={width} /> : null}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  line: { height: LINE, borderRadius: radius.pill, backgroundColor: color.card },
   footer: { gap: space.sm },
   headerBox: { paddingTop: 6, paddingBottom: 0 },
   header: { gap: space.md, minHeight: 40 },
@@ -216,5 +202,6 @@ const styles = StyleSheet.create({
   titleAfterKicker: { marginTop: 6 },
   text: { marginTop: 10 },
   body: { flexGrow: 1 },
+  center: { justifyContent: 'center', paddingBottom: space.xxl },
   secondary: { height: 48, alignItems: 'center', justifyContent: 'center' },
 });

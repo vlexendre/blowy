@@ -1,11 +1,11 @@
-/** Création du pet (V6-Craft) : une des 4 espèces, un petit nom, aperçu en direct. */
+/** Création du pet (V6-Craft) : une des 4 espèces, un petit nom, aperçu en direct. Ensuite, ce pet pose les questions. */
 import { cleanPetName, PET_NAME_MAX, type Species } from '@blowy/domain';
 import { Button, OnboardingTemplate, SpeciesPicker, TextField } from '@blowy/ui';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 
 import { ScreenMotion } from '@/core';
-import { useDraft } from '@/features/onboarding';
+import { progressAt, useDraft } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -36,8 +36,7 @@ export default function Craft() {
   return (
     <ScreenMotion>
     <OnboardingTemplate
-      step={1}
-      total={onboarding.total}
+      {...progressAt('craft')}
       onBack={() => goBack('/(onboarding)/welcome')}
       backLabel={common.back}
       title={t.title}

@@ -9,7 +9,7 @@ import { View } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { useAcceptInvite, useInvite, usePendingInvite } from '@/features/encounters';
 import { useMe } from '@/features/me';
-import { useDraft } from '@/features/onboarding';
+import { resumeOnboarding } from '@/features/onboarding';
 import { usePet } from '@/features/pet';
 import { errorMessage, goBack, useGate } from '@/features/session';
 import { common } from '@/locales/common';
@@ -23,7 +23,6 @@ export default function InviteLink() {
   const code = (params.code ?? '').trim().toUpperCase();
   const gate = useGate();
   const setPending = usePendingInvite((p) => p.set);
-  const draftPet = useDraft((d) => d.petName.trim());
   const ready = gate === 'ready';
   const invite = useInvite(ready && code ? code : null);
   const accept = useAcceptInvite();
@@ -40,7 +39,7 @@ export default function InviteLink() {
 
   if (!code) return <Redirect href="/" />;
   if (gate === 'signedOut') return <Redirect href="/(onboarding)/welcome" />;
-  if (gate === 'needsOnboarding') return <Redirect href={draftPet ? '/(onboarding)/profil' : '/(onboarding)/craft'} />;
+  if (gate === 'needsOnboarding') return <Redirect href={resumeOnboarding()} />;
 
   const header = <Header onBack={() => goBack('/')} backGlyph="close" backLabel={common.close} />;
   const notFound = invite.error instanceof ApiError && invite.error.code === 'not_found';

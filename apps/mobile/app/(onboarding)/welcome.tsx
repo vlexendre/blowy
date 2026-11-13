@@ -18,7 +18,7 @@ export default function Welcome() {
       chat={t.chat}
       pet={nino}
       primaryLabel={t.create}
-      onPrimary={() => router.push('/(onboarding)/craft')}
+      onPrimary={() => router.push('/(onboarding)/entree')}
       secondaryLabel={t.login}
       onSecondary={() => router.push({ pathname: '/(onboarding)/compte', params: { mode: 'login' } })}
     />

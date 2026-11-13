@@ -48,7 +48,8 @@ mécanique), barres animées (`ProgressBar`, `NeedMeter`, `GaugeBar` : dépassem
 `Shimmer` (squelettes, `Skeleton`), `Burst` (cœurs, étoiles, étincelles, confettis, « z » en vues simples),
 `TypingDots`, `useFlyTo` (un objet vole d'un point à un autre), `useBurst` (explosion au-dessus de tout), `useReveal`
 (mot à mot : bulles, titres), feuille à ressort (`SheetTemplate`), interrupteur à ressort (`Toggle`), indicateur d'onglet
-glissant (`SegmentedTabs`, `SlotTabs`, `BottomTabBar`). Tout élément touchable passe par `Pressable` (enfoncement
+glissant (`SegmentedTabs`, `SlotTabs`, `BottomTabBar`), petite scène en plusieurs temps (`useSceneSteps`), bouton à
+maintenir à anneau (`HoldButton`). Tout élément touchable passe par `Pressable` (enfoncement
 adapté à la taille, rebond au relâchement, `bounceKey` pour confirmer un changement d'état).
 
 **Racine** : `MotionHost` (une fois, dans `app/_layout.tsx`) fournit le calque des vols, explosions et pets qui passent
@@ -56,7 +57,7 @@ la tête, et met les boucles en pause quand l'app passe en arrière-plan. Chaque
 (`src/core/motion.tsx`, `useIsFocused` d'expo-router → `MotionFocus`) pour couper ses boucles quand il n'est plus au
 premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` → « Mouvement ».
 
-## Les pets jouent avec l'écran (`PetActor`, `PetPeek`, `PetRefresh`, `KeyboardPeek`, `HelloPeek`, `PetEntrance`)
+## Les pets jouent avec l'écran (`PetActor`, `PetPeek`, `PetRefresh`, `KeyboardPeek`, `HelloPeek`, `PetEntrance`, `PetRise`)
 - **Au repos** : respiration (écrasement léger), petit saut de temps en temps, changement d'expression bref
   (les 9 émotions de chaque espèce servent à ça ; habillé, il s'exprime par le corps et de petits signes : étincelles,
   goutte, « ! », « z »), regard vers ce qu'on vient de toucher. L'humeur change au creux d'un petit écrasement
@@ -69,6 +70,8 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 - **Soins** : `feed` une fraise tombe dans sa bouche ouverte, il croque ; `play` une balle rebondit, il saute après ;
   `nap` la lumière baisse, il dort, des « z » montent, il s'étire au réveil ; `cuddle` il se serre, cœurs. Refus : `no`
   (il fait non de la tête, goutte de sueur). Aussi `joy`, `wave`, `surprise`.
+- **Il sort du bas** (`PetRise`) : grand, rogné par le bord bas de l'écran, il monte, cligne des yeux ou regarde
+  autour de lui, et redescend s'y cacher ; décor sans toucher (inscription : entrée en scène, temps fort du caractère).
 - **Cache-cache** (`PetPeek`) : le pet sort d'un bord de l'écran (coin bas, côté, suspendu en haut), regarde,
   se cache si on le touche et ressort ailleurs. Utilisé pour : états vides, erreurs (triste), hors ligne,
   tirer pour rafraîchir (il grimpe à mesure qu'on tire), fin de liste (il sort quand on tire trop loin),
@@ -87,10 +90,16 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 |---|---|---|
 | Lancement | le pet entre en courant et se pose (`PetEntrance`) | fond qui s'éclaire |
 | Bienvenue | les bulles du chat s'écrivent une à une | bouton qui respire une fois, pet qui passe la tête |
+| Entrée en scène | les quatre pets sortent du bas de l'écran l'un après l'autre (`PetRise`) | grande ligne qui monte à chaque pet ; clin d'œil ou regard autour ; tap = ligne suivante |
 | Créer son pet | le pet choisi saute au centre | les autres se penchent pour regarder ; le nom tapé fait hocher le pet |
-| Caractère (quiz) | la carte choisie s'incline et part | jauge qui glisse avec dépassement ; résultat compté |
-| Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; le pet regarde par-dessus le clavier |
-| Profil / 18+ | — | champs qui s'allument au focus ; pet triste qui se retourne si trop jeune |
+| Questions (hôte) | la bulle de l'hôte s'écrit (« … » puis mot à mot) | petit pet qui fait « pop » à l'arrivée ; barre continue qui avance d'un cran depuis l'étape d'avant |
+| Caractère (quiz) | la carte choisie s'incline et part | l'hôte saute de joie à chaque réponse ; la bulle se réécrit |
+| Caractère (temps fort) | le pet sort du bas de l'écran dans des étoiles | verdict mot à mot ; puces des deux traits en « pop » ; il regarde autour |
+| Prénom / date / ville | — | grand champ souligné qui s'allume au focus ; date fausse : secousse ; trop jeune : pet triste qui se retourne |
+| Promesse | l'anneau se remplit autour de « promis » (`HoldButton`) | le bouton s'enfonce pendant l'appui ; plein : coche dessinée, le pet saute de joie, cœurs |
+| Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; connexion : le pet regarde par-dessus le clavier |
+| Préparation | les lignes se cochent une à une (`PrepChecklist`) | pourcentage qui défile, barre avec dépassement ; erreur : tout s'arrête, le pet s'inquiète |
+| Tout est prêt | le pet saute de joie, confettis (`ReadyHero`) | titre mot à mot puis la phrase |
 | Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) | barres qui se remplissent avec dépassement, nombres comptés ; bouton conseillé qui pulse ; bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir : il grimpe (iOS) |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
@@ -109,14 +118,29 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 ### Détail : inscription et Moi
 - **Bienvenue** : le panneau se pose, le pet glisse depuis le bord droit (rogné par le panneau : la coupe du buste ne se
   voit jamais) et salue ; « … » puis chaque message ; le bouton respire une fois. Touché : il s'écrase, un cœur s'envole.
+- **Entrée en scène** (`StageTemplate` + `PetRise` + `useSceneSteps`) : nino, suzie, gaston puis pia montent du bord bas
+  (ressort `plush`, rognés par le bord : la coupe du buste reste sous l'écran), clignent des yeux (l'image « dodo » posée
+  par-dessus, opacité seule) ou regardent autour d'eux, puis redescendent quand le suivant arrive ; une grande ligne par
+  pet. 1,15 s par pet (≈ 4,6 s sans toucher) ; un tap passe à la ligne suivante, « passer » va au choix. Rien n'attend.
 - **Créer son pet** : un calque par espèce toujours monté (aucune image à charger au moment du saut) ; le choisi bondit de
   sa pastille et s'écrase en se posant, l'ancien rentre dans la sienne, le fond change en fondu, puis les trois autres
   passent la tête par les bords (gauche, haut, droite) en se penchant. Le nom tapé le fait hocher la tête.
-- **Caractère** : l'aperçu (pet + jauges) reste en place de la 1re question au résultat ; résultat : panneau qui se pose,
-  pet qui bondit dans des étoiles, verdict mot à mot.
+- **Hôte** (`HostBubble`, tous les écrans de questions) : le petit pet vivant (`PetActor`) fait « pop », puis la bulle
+  écrit sa question ; une nouvelle question réécrit la bulle (même taille dès le départ, rien ne saute).
+- **Caractère** : une question par écran ; la réponse choisie s'incline et part, l'hôte saute de joie, la question
+  suivante arrive (0,42 s, l'action n'attend pas). Temps fort : le pet monte du bas (1/3 de l'écran au plus : il ne
+  touche jamais les puces), étoiles en se posant, verdict mot à mot, puces en « pop », « touche pour continuer ».
+- **Promesse** : maintenir « promis » remplit l'anneau en 1,1 s (deux demi-disques qui tournent : rotations seules) ;
+  un simple tap le termine seul en 0,28 s (accessibilité). Plein : vibration « fête », coche, le pet saute dans des
+  cœurs, la suite arrive 1,4 s plus tard (toucher le bouton plein y va tout de suite). Animations réduites : plein d'un
+  coup, en fondu.
+- **Préparation** : **seule exception** à « jamais retarder une action », dans ces limites : une ligne cochée toutes les
+  0,52 s, la dernière (et 100 %) seulement après la réussite de la création, 2,5 s au plus de plus que le serveur, un tap
+  passe le reste ; erreur : arrêt sur place, pas de faux 100 %.
+- **Tout est prêt** : le pet saute de joie (`react('joy')`), confettis depuis lui, titre mot à mot.
 - **Compte** : chaque case gonfle quand un chiffre y tombe ; code bon : vague verte, les cases se rejoignent en coche
   (pendant que l'aiguillage cherche la suite : la navigation n'attend pas).
-- **Profil / 18+** : date fausse : secousse ; trop jeune : le pet, triste, soupire, se retourne (de dos) et flotte.
+- **Date / 18+** : date fausse : secousse ; trop jeune : le pet, triste, soupire, se retourne (de dos) et flotte.
 - **Moi** : cascade à la 1re visite (`onceKey`), chiffres qui défilent, pastille du pet en « pop », copie : coche ;
   supprimer : le pet (vivant, boudeur) fait non quand « supprimer » est écrit, et encore à la confirmation.
 - **Page inconnue** : le pet surpris passe la tête au-dessus du titre (`EmptyState peek`).

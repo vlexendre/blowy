@@ -21,7 +21,7 @@ export default function Invite() {
 
   return (
     <ScreenMotion>
-    <OnboardingTemplate step={4} total={onboarding.total} primaryLabel={t.cta} onPrimary={next} secondaryLabel={t.later} onSecondary={next}>
+    <OnboardingTemplate primaryLabel={t.cta} onPrimary={next} secondaryLabel={t.later} onSecondary={next}>
       {me.isError ? (
         <Appear key="error">
           <Banner tone="error" title={common.errorTitle} text={common.genericError} actionLabel={common.retry} onAction={() => void me.refetch()} />

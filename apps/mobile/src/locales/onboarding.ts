@@ -1,11 +1,16 @@
-/** Textes de l'inscription : bienvenue, création du pet, caractère, compte, profil, invitations, Blowy+. */
+/**
+ * Textes de l'inscription, dans l'ordre du parcours : bienvenue, entrée en scène, création du pet, caractère, toi
+ * (prénom, date, ville), promesse, compte, préparation, « tout est prêt », invitations, Blowy+.
+ * À partir de la création, c'est le pet qui parle : il pose les questions (première personne, tutoiement).
+ */
 import type { GaugeKey } from '@blowy/domain';
 
 const up = (s: string): string => s.toUpperCase();
 
 export const onboarding = {
-  // Maquettes : création (1), caractère (son propre quiz en 4 questions), compte (3), invitations (4) ; le profil a sa barre continue.
-  total: 4,
+  back: 'retour',
+  /** Lu sur la barre continue de l'inscription. */
+  progressLabel: 'avancement de l’inscription',
   welcome: {
     brand: 'blowy',
     sticker: 'pas de swipe · pas de pub',
@@ -18,6 +23,17 @@ export const onboarding = {
     ],
     create: 'créer mon pet',
     login: 'j’ai déjà un compte',
+  },
+  entree: {
+    /** Une ligne par pet, dans l'ordre où ils sortent du bas de l'écran (nino, suzie, gaston, pia). */
+    lines: [
+      [{ text: 'PSST.\n' }, { text: 'SALUT.', dim: true }],
+      [{ text: 'ON EST\n' }, { text: 'QUATRE.', dim: true }],
+      [{ text: 'CHACUN CHERCHE\n' }, { text: 'SON HUMAIN.', dim: true }],
+      [{ text: 'LEQUEL\n' }, { text: 'SERA LE TIEN\u00a0?', dim: true }],
+    ],
+    skip: 'passer',
+    tap: 'touche pour la suite',
   },
   craft: {
     title: [{ text: 'TON PET,\n' }, { text: 'TON VIBE', dim: true }],
@@ -32,24 +48,25 @@ export const onboarding = {
     cta: 'c’est lui',
   },
   caractere: {
-    kicker: { social: 'sociabilité', play: 'jeu', tender: 'tendresse', talk: 'parole' } satisfies Record<GaugeKey, string>,
-    titles: [
-      (pet: string) => [{ text: 'SAMEDI SOIR,\n' }, { text: `${up(pet)}…`, dim: true }],
-      () => [{ text: 'IL PLEUT,\n' }, { text: 'DIMANCHE…', dim: true }],
-      () => [{ text: 'TON POTE\n' }, { text: 'SE VAUTRE…', dim: true }],
-      () => [{ text: 'UN VOCAL\n' }, { text: 'DE 4 MINUTES…', dim: true }],
+    /** Ce que demande le pet, une question par écran (on finit la phrase en choisissant). */
+    host: [
+      'samedi soir, moi je…',
+      'il pleut, c’est dimanche. tu me vois plutôt…',
+      'mon pote se vautre devant tout le monde. je…',
+      'on m’envoie un vocal de 4 minutes. je…',
     ],
-    text: 'réponds comme lui. pas comme ta mère.',
+    note: 'réponds comme si c’était moi. pas comme ta mère.',
     caption: (pole: string) => `→ ${pole}`,
     previous: 'question précédente',
-    resultKicker: 'son caractère de départ',
+    // Le temps fort après la 4e réponse : le verdict mot à mot, ses deux traits en puces.
     resultTitle: (pet: string) => [{ text: `C’EST ${up(pet)}.\n` }, { text: 'POUR\nL’INSTANT.', dim: true }],
-    resultText: (pet: string, first: string, second: string) => `${pet.toLowerCase()} est plutôt ${first} et ${second}. ça changera avec toi.`,
-    redo: 'refaire',
-    resultCta: 'continuer',
+    trait: (pole: string) => `plutôt ${pole}`,
+    resultText: 'ça changera avec toi.',
+    tap: 'touche pour continuer',
   },
   compte: {
-    titleWaiting: (pet: string) => [{ text: 'DERNIÈRE\nÉTAPE.\n' }, { text: `${up(pet)}\nT’ATTEND.`, dim: true }],
+    hostEmail: 'dernière chose\u00a0: où je t’envoie ton code\u00a0?',
+    hostCode: 'regarde tes e-mails\u00a0: un code à 6\u00a0chiffres t’attend.',
     loginTitle: [{ text: 'CONTENT DE\n' }, { text: 'TE REVOIR.', dim: true }],
     speech: 'ton e-mail reste entre nous. promis 🤐',
     emailLabel: 'ton e-mail',
@@ -72,24 +89,58 @@ export const onboarding = {
     legalPrivacy: 'politique de confidentialité',
     invalidEmail: 'cette adresse e-mail ne semble pas valide.',
   },
-  profil: {
-    title: [{ text: 'ET TOI,\n' }, { text: 'C’EST QUI ?', dim: true }],
+  toi: {
+    nameHost: 'et toi, je t’appelle comment\u00a0?',
+    namePlaceholder: 'ton prénom',
     nameLabel: 'ton prénom',
-    namePlaceholder: 'Alex',
+    nameHint: 'c’est ce que verront les gens que je te présente.',
+    birthHost: (name: string) => `enchanté, ${name}\u00a0! ta date de naissance\u00a0?`,
     birthLabel: 'ta date de naissance',
     birthPlaceholder: 'JJ / MM / AAAA',
     birthHint: 'blowy est réservé aux 18 ans et plus. ta date n’est jamais affichée.',
     birthError: 'écris-la comme ça : 14 / 03 / 1999',
+    cityHost: 'tu traînes où, d’habitude\u00a0?',
     cityLabel: 'ta ville (facultatif)',
     cityPlaceholder: 'Paris 11e',
-    inviteLabel: 'un code d’invitation ? (facultatif)',
+    cityHint: 'facultatif. ça m’aide à te présenter des gens du coin.',
+    inviteToggle: 'j’ai un code d’invitation',
+    inviteLabel: 'ton code d’invitation',
     invitePlaceholder: 'LEA-7K2P',
-    cta: 'c’est parti',
-    legal: 'en continuant tu acceptes les conditions et les règles de la communauté.',
+    cta: 'continuer',
+    skip: 'passer',
     tooYoungTitle: [{ text: 'REVIENS\n' }, { text: 'À 18 ANS.', dim: true }],
     tooYoungText: (pet: string) => `blowy fait se rencontrer des adultes. ${pet.toLowerCase()} t’attendra, promis.`,
     tooYoungNote: 'ton pet n’a pas été créé et on n’a rien gardé sur toi.',
     tooYoungAction: 'fermer',
+  },
+  promesse: {
+    // La vraie règle (packages/domain/src/care.ts) : un pet négligé boude et ne fait plus de rencontres.
+    kicker: (pet: string) => `${pet.toLowerCase()} te demande une seule chose`,
+    title: [{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }],
+    text: 'un pet en forme rencontre du monde. un pet oublié boude, et ne présente plus personne.',
+    hold: 'promis',
+    held: 'promis\u00a0!',
+    holdHint: 'reste appuyé',
+    holdA11y: 'reste appuyé, ou touche une fois',
+    after: (pet: string) => `${pet.toLowerCase()} t’attend demain. et après-demain.`,
+    cta: 'continuer',
+  },
+  preparation: {
+    title: (pet: string) => [{ text: 'ON PRÉPARE\n' }, { text: `L’ARRIVÉE DE ${up(pet)}`, dim: true }],
+    items: (pet: string) => [
+      `${pet.toLowerCase()} choisit son coin`,
+      'on regonfle son coussin',
+      `${pet.toLowerCase()} répète son plus beau « salut »`,
+      'il renifle qui traîne près de chez toi',
+    ],
+    percent: (n: number) => `préparation : ${n} %`,
+    tap: 'touche pour aller plus vite',
+    errorTitle: 'ça a coincé',
+  },
+  pret: {
+    title: (name: string) => [{ text: 'TOUT EST PRÊT,\n' }, { text: `${up(name)}\u00a0!`, dim: true }],
+    text: (pet: string) => `${pet.toLowerCase()} est arrivé. il a déjà hâte de te présenter du monde.`,
+    cta: 'on y va',
   },
   invite: {
     title: [{ text: 'DONNE-LUI\n' }, { text: 'DES POTES', dim: true }],

@@ -6,3 +6,4 @@ export { SheetTemplate, type SheetTemplateProps } from './SheetTemplate';
 export { TabTemplate, type TabTemplateProps } from './TabTemplate';
 export { WelcomeTemplate, type WelcomeTemplateProps } from './WelcomeTemplate';
 export { PlusTemplate, type PlusTemplateProps } from './PlusTemplate';
+export { StageTemplate, type StageTemplateProps } from './StageTemplate';
