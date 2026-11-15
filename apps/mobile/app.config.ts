@@ -15,6 +15,11 @@ const APP_GROUP = `group.${BUNDLE_ID}`;
 /** Identifiant d'équipe Apple (10 caractères) : utile à `@bacons/apple-targets` pour signer l'extension hors EAS. */
 const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID;
 /**
+ * `BLOWY_WIDGETS=off` : build sans l'extension des widgets ni le groupe d'apps (cible `app.blowy.widget` absente).
+ * Provisoire, tant qu'Apple refuse d'enregistrer de nouveaux identifiants pour l'équipe (contrats en attente).
+ */
+const WIDGETS = process.env.BLOWY_WIDGETS !== 'off';
+/**
  * Textes des autorisations iOS : une seule source, `./locales/fr.json` (français, langue source), repris tels quels dans
  * `Info.plist` ; chaque langue a son `InfoPlist.strings` par `locales` (hors français : la phrase française en attendant
  * la passe de traduction, docs/I18N.md). Seules ces trois autorisations existent : `ios-release.test.ts` le vérifie.
@@ -103,7 +108,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // « Continuer avec Apple » (capacité Sign in with Apple de l'identifiant d'app) : docs/CONNEXION.md.
     usesAppleSignIn: true,
     entitlements: {
-      'com.apple.security.application-groups': [APP_GROUP],
+      ...(WIDGETS ? { 'com.apple.security.application-groups': [APP_GROUP] } : {}),
       // Jetons APNs des activités en direct (ActivityKit). EAS active la capacité Push sur l'identifiant d'app.
       'aps-environment': apsEnvironment(),
     },
@@ -164,10 +169,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // Blowy+ : achats intégrés StoreKit 2 (vérifiés par l'API) ; docs/BLOWY-PLUS.md.
     'expo-iap',
     // Widgets iOS et activités en direct : fichiers générés de l'extension, puis la cible elle-même (targets/widget).
-    './plugins/with-blowy-widgets',
-    '@bacons/apple-targets',
+    ...(WIDGETS ? ['./plugins/with-blowy-widgets', '@bacons/apple-targets'] : []),
     // Après tout le reste : l'extension suit les appareils de l'app (iPhone seulement), audit « iPad ».
-    './plugins/with-ios-release',
+    ['./plugins/with-ios-release', { widget: WIDGETS }],
   ],
   // Textes système iOS (autorisations) par langue : français écrit, les autres à traduire (docs/I18N.md).
   locales: { fr: './locales/fr.json', en: './locales/en.json', es: './locales/es.json', pt: './locales/pt.json', nl: './locales/nl.json' },

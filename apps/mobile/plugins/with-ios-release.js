@@ -33,8 +33,9 @@ function patchWidgetBuildSettings(pbxproj, { family, version }) {
   return out;
 }
 
-const withIosRelease = (config) =>
-  withFinalizedMod(config, [
+/** `widget: false` : build sans l'extension (BLOWY_WIDGETS=off dans app.config.ts), rien à aligner. */
+const withIosRelease = (config, { widget = true } = {}) =>
+  !widget ? config : withFinalizedMod(config, [
     'ios',
     async (cfg) => {
       const iosDir = cfg.modRequest.platformProjectRoot;
