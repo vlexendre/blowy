@@ -68,7 +68,8 @@ export function ChallengeEntry({ kicker, title, caption, kind, icon, done = fals
         )}
       </View>
       <View style={layout.grow}>
-        <Text variant="label" size={12} color={done ? color.mute : color.accentSoft} numberOfLines={1}>
+        {/* « Défi du jour · Un mot à un lien » : deux lignes plutôt qu'un type de défi coupé (langues plus longues). */}
+        <Text variant="label" size={12} color={done ? color.mute : color.accentSoft} numberOfLines={2}>
           {kicker}
         </Text>
         <Text variant="bodyHeavy" size={16} numberOfLines={2} style={styles.title}>

@@ -52,7 +52,7 @@ export function Text({ variant = 'body', color: tint, dim, muted, center, size, 
   // Un morceau imbriqué ne reçoit pas le recadrage iOS (marges et marge intérieure de `fitLineHeight`) : seul le
   // parent a un cadre. Les espaces normales avant « ? ! : ; » deviennent insécables (voir `lib/runs`).
   const text = (
-    <RNText {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed)]}>
+    <RNText {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed, { lines: rest.numberOfLines })]}>
       {frenchChildren(children)}
     </RNText>
   );
@@ -74,22 +74,48 @@ const NATURAL_LINE: Record<string, number> = { [font.display]: 1.505, [font.body
 /** Marge de sécurité au-dessus des capitales accentuées d'Anton (É, À…), en em. */
 const ACCENT_ROOM = 0.25;
 
+/**
+ * Anton, mesuré dans la police (2048 unités par em) : ascendante 2409, descendante 674 ; le haut des capitales
+ * accentuées (É Ê È À Ã Õ Ú Ô Ï Ë Ñ…) monte à 2254, la cédille de Ç descend à −631. Toutes ces lettres sont dans la
+ * police (Ĳ néerlandais compris) : seul leur cadre posait problème.
+ */
+const ANTON = { ascent: 2409 / 2048, descent: 674 / 2048, markTop: 2254 / 2048, markBottom: 631 / 2048 } as const;
+/** Pixel d'antialiasing en plus, au-dessus et au-dessous. */
+const EDGE = 1;
+
 const num = (...values: unknown[]): number => {
   for (const v of values) if (typeof v === 'number') return v;
   return 0;
 };
 
+export interface FitOptions {
+  /**
+   * Nombre de lignes du texte s'il est tronqué (`numberOfLines`). Sur le web, au-delà d'une ligne, la troncature
+   * coupe au bas de la dernière ligne gardée : on n'agrandit alors pas le cadre vers le bas (la ligne suivante, cachée,
+   * y apparaîtrait).
+   */
+  lines?: number;
+}
+
 /**
- * iOS cale le texte en bas d'une ligne plus serrée que la police (Anton à .96) et rogne le haut des glyphes.
- * On recentre chaque ligne comme le CSS des maquettes (demi-interlignage) et on agrandit le cadre dessiné
- * vers le haut (marge intérieure) sans bouger la mise en page (marges négatives).
+ * Interlignage plus serré que la police (titres Anton à .96) : sans rien faire, le haut des glyphes est rogné.
+ *
+ * - iOS cale le texte en bas d'une ligne plus serrée que la police (React Native 0.88, sans décalage de ligne de base
+ *   quand la ligne est comprimée) et rogne le haut des glyphes. On recentre chaque ligne comme le CSS des maquettes
+ *   (demi-interlignage) et on agrandit le cadre dessiné vers le haut (marge intérieure) sans bouger la mise en page
+ *   (marges négatives). La place gardée en haut (dépassement + `ACCENT_ROOM`) couvre les accents des capitales.
+ * - Le web centre déjà chaque ligne (demi-interlignage) mais un texte tronqué (`numberOfLines`) coupe tout ce qui
+ *   sort de sa boîte : les accents des capitales (« VOCÊ » devenait « VOCE ») et la cédille de Ç. On agrandit la
+ *   boîte de ce qui dépasse, en haut et en bas, sans bouger la mise en page (marges négatives).
  */
-export function fitLineHeight(style: StyleProp<TextStyle>): TextStyle | null {
-  if (Platform.OS !== 'ios') return null;
+export function fitLineHeight(style: StyleProp<TextStyle>, options: FitOptions = {}): TextStyle | null {
   const flat: TextStyle = StyleSheet.flatten(style) ?? {};
-  const ratio = flat.fontFamily ? NATURAL_LINE[flat.fontFamily] : undefined;
   const { fontSize, lineHeight } = flat;
-  if (!ratio || !fontSize || !lineHeight) return null;
+  if (!fontSize || !lineHeight) return null;
+  if (Platform.OS === 'web') return fitWebBox(flat, fontSize, lineHeight, options);
+  if (Platform.OS !== 'ios') return null;
+  const ratio = flat.fontFamily ? NATURAL_LINE[flat.fontFamily] : undefined;
+  if (!ratio) return null;
   const overflow = ratio * fontSize - lineHeight;
   if (overflow <= 0) return null;
   const shift = overflow / 2;
@@ -98,6 +124,20 @@ export function fitLineHeight(style: StyleProp<TextStyle>): TextStyle | null {
     paddingTop: num(flat.paddingTop, flat.paddingVertical, flat.padding) + room,
     marginTop: num(flat.marginTop, flat.marginVertical, flat.margin) - room + shift,
     marginBottom: num(flat.marginBottom, flat.marginVertical, flat.margin) - shift,
+  };
+}
+
+/** Web : ce qui dépasse de la boîte d'un titre Anton (lignes centrées par le navigateur), rendu à la boîte. */
+function fitWebBox(flat: TextStyle, fontSize: number, lineHeight: number, { lines }: FitOptions): TextStyle | null {
+  if (flat.fontFamily !== font.display) return null;
+  const baseline = (lineHeight - (ANTON.ascent + ANTON.descent) * fontSize) / 2 + ANTON.ascent * fontSize;
+  const top = Math.ceil(Math.max(0, ANTON.markTop * fontSize - baseline)) + EDGE;
+  const bottom = lines !== undefined && lines > 1 ? 0 : Math.ceil(Math.max(0, baseline + ANTON.markBottom * fontSize - lineHeight)) + EDGE;
+  return {
+    paddingTop: num(flat.paddingTop, flat.paddingVertical, flat.padding) + top,
+    paddingBottom: num(flat.paddingBottom, flat.paddingVertical, flat.padding) + bottom,
+    marginTop: num(flat.marginTop, flat.marginVertical, flat.margin) - top,
+    marginBottom: num(flat.marginBottom, flat.marginVertical, flat.margin) - bottom,
   };
 }
 

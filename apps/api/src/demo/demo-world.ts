@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, type OnApplicationBootstrap } from '@nestjs/common';
 import { type Clock, todayOf } from '../shared/clock';
 import type { Ids } from '../shared/ids';
-import { VISION_AXES, type VisionSignal, isPremiumItem, itemById } from '@blowy/domain';
+import { type Locale, VISION_AXES, type VisionSignal, isPremiumItem, itemById } from '@blowy/domain';
 
 import { CLOCK, ENCOUNTERS, IDS, PET_ITEMS, PETS, PROFILES } from '../shared/tokens';
 import { AnswerEncounter } from '../modules/encounters/application/answer-encounter.usecase';
@@ -14,7 +14,7 @@ import { Wardrobe } from '../modules/pets/application/wardrobe';
 import type { PetItemsRepository, PetsRepository } from '../modules/pets/ports';
 import { Locations } from '../modules/vision/application/locations';
 import { VISION_SIGNALS, type VisionSignals } from '../modules/vision/tokens';
-import { DEMO_LEA, DEMO_MALO, DEMO_MALO_MESSAGES, DEMO_PEOPLE, DEMO_SASHA } from './demo';
+import { DEMO_LEA, DEMO_MALO, DEMO_PEOPLE, DEMO_SASHA, demoMaloMessages } from './demo';
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
 
@@ -107,7 +107,11 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
 
   async onOnboarded(userId: string): Promise<void> {
     if (DEMO_PEOPLE.some((p) => p.id === userId)) return;
+    const locale = (await this.profiles.findById(userId))?.locale ?? 'fr';
     await this.refreshNeeds();
+    // Les répliques des minimoas sont écrites dans la langue de leur humain : les personnes de démo prennent celle de la
+    // dernière personne arrivée (démo locale : une langue à la fois), pour que tout son monde lui parle dans sa langue.
+    await this.speak(locale);
     // Chaque geste est indépendant : la personne a pu s'inscrire avec le code de Léa ou de Malo (déjà liés).
     await this.attempt('coucou de Léa', () => this.wave.execute(DEMO_LEA, userId));
     // Rencontre déjà acceptée avec Malo (refusée si la personne est arrivée par le code de Malo : déjà liés).
@@ -119,7 +123,7 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     await this.attempt('lien avec Malo', async () => {
       const link = await this.createLink.execute({ by: DEMO_MALO, with: userId });
       await this.plateforme.welcome(link.id);
-      for (const m of DEMO_MALO_MESSAGES) await this.sendMessage.execute({ linkId: link.id, userId: DEMO_MALO, body: m.body, tone: m.tone });
+      for (const m of demoMaloMessages(locale)) await this.sendMessage.execute({ linkId: link.id, userId: DEMO_MALO, body: m.body, tone: m.tone });
     });
     await this.attempt('bilan de la semaine passée', () => this.rituels.welcome(userId));
   }
@@ -129,6 +133,13 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
       await run();
     } catch (err) {
       this.logger.log(`${what} ignoré : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+    }
+  }
+
+  private async speak(locale: Locale): Promise<void> {
+    for (const p of DEMO_PEOPLE) {
+      const profile = await this.profiles.findById(p.id);
+      if (profile && profile.locale !== locale) await this.profiles.update(p.id, { locale });
     }
   }
 

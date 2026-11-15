@@ -3,6 +3,8 @@ import { brand } from '@blowy/content';
 import { messages } from './runtime';
 
 const up = (s: string): string => s.toUpperCase();
+/** Heure pleine à l'américaine (l'anglais de Blowy est américain) : « 9 AM », « 10 PM », « 12 PM » pour midi. */
+const usHour = (h: number): string => `${h % 12 === 0 ? 12 : h % 12} ${h % 24 < 12 ? 'AM' : 'PM'}`;
 
 export const moi = messages({
   fr: {
@@ -148,7 +150,7 @@ export const moi = messages({
     },
     supprimer: {
       title: 'SUPPRIMER',
-      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'S’EN VA AUSSI.', dim: true }],
+      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'S’EN VA AUSSI.', dim: true }],
       text: 'C’est immédiat et définitif : on ne peut rien récupérer ensuite.',
       erasedTitle: 'Ce qui est effacé tout de suite',
       items: (links: number | null) => [
@@ -334,11 +336,11 @@ export const moi = messages({
       title: 'NOTIFS',
       banner: (pet: string, cap: number) => `${pet} only lets you know when it matters: ${cap} times a day at most, messages aside. Never ads.`,
       sections: { pet: 'Your minimoa', links: 'Your links', plus: 'Blowy+' },
-      morning: { title: 'Challenge time', value: (h: number) => `${h}:00` },
-      quiet: { title: 'Quiet hours', value: (start: number, end: number) => `${start}:00 – ${end}:00`, text: (start: number, end: number) => `Nothing between ${start}:00 and ${end}:00. Whatever can wait arrives in the morning.` },
+      morning: { title: 'Challenge time', value: (h: number) => usHour(h) },
+      quiet: { title: 'Quiet hours', value: (start: number, end: number) => `${usHour(start)} – ${usHour(end)}`, text: (start: number, end: number) => `Nothing between ${usHour(start)} and ${usHour(end)}. Whatever can wait arrives in the morning.` },
       morningTitle: [{ text: 'CHALLENGE ' }, { text: 'TIME', dim: true }],
       morningText: 'Your daily challenge arrives at this time (your phone’s time).',
-      hour: (h: number) => `${h}:00`,
+      hour: (h: number) => usHour(h),
       rows: {
         daily_challenge: { title: 'Daily challenge', subtitle: 'In the morning, at your time' },
         needs_out: { title: (pet: string) => `${pet} needs to get out`, subtitle: 'Low sociability, 1 a day at most' },
@@ -393,7 +395,7 @@ export const moi = messages({
     },
     supprimer: {
       title: 'DELETE',
-      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'LEAVES TOO.', dim: true }],
+      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'LEAVES TOO.', dim: true }],
       text: 'It’s immediate and permanent: nothing can be recovered afterwards.',
       erasedTitle: 'What is erased right away',
       items: (links: number | null) => [
@@ -633,7 +635,7 @@ export const moi = messages({
     },
     supprimer: {
       title: 'ELIMINAR',
-      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'TAMBIÉN SE VA.', dim: true }],
+      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'TAMBIÉN SE VA.', dim: true }],
       text: 'Es inmediato y definitivo: después no se puede recuperar nada.',
       erasedTitle: 'Lo que se borra al momento',
       items: (links: number | null) => [
@@ -873,7 +875,7 @@ export const moi = messages({
     },
     supprimer: {
       title: 'EXCLUIR',
-      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'VAI EMBORA TAMBÉM.', dim: true }],
+      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'VAI EMBORA TAMBÉM.', dim: true }],
       text: 'É imediato e definitivo: depois não dá para recuperar nada.',
       erasedTitle: 'O que é apagado na hora',
       items: (links: number | null) => [
@@ -1113,7 +1115,7 @@ export const moi = messages({
     },
     supprimer: {
       title: 'VERWIJDEREN',
-      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'GAAT OOK WEG.', dim: true }],
+      heading: (pet: string) => [{ text: `${up(pet)} ` }, { text: 'GAAT OOK WEG.', dim: true }],
       text: 'Het gebeurt meteen en is definitief: daarna valt er niets meer terug te halen.',
       erasedTitle: 'Wat meteen wordt gewist',
       items: (links: number | null) => [

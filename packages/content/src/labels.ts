@@ -391,7 +391,7 @@ export const labels = defineMessages({
     gaugeLabel: {
       social: { low: 'caseiro', high: 'sociável', hint: 'Muda quando seu minimoa conhece caras novas.' },
       play: { low: 'sereno', high: 'brincalhão', hint: 'Muda com os desafios do dia.' },
-      tender: { low: 'atrevido', high: 'carinhoso', hint: 'Muda com as palavras carinhosas, as provocações e os dias em que vocês conversam.' },
+      tender: { low: 'atrevido', high: 'carinhoso', hint: 'Muda com os carinhos, as provocações e os dias em que vocês se escrevem.' },
       talk: { low: 'reservado', high: 'falante', hint: 'Muda com as mensagens.' },
     },
     formLabel: {
@@ -417,7 +417,7 @@ export const labels = defineMessages({
       challenge_done: 'Cumpriu o desafio do dia',
       photo_sent: 'Foto compartilhada em um vínculo',
       wrote_together: 'Vocês trocaram mensagens',
-      sweet_word: 'Uma palavra carinhosa',
+      sweet_word: 'Um carinho',
       tease: 'Uma provocação',
       message_sent: 'Bateu papo',
       three_words: 'A galera te deu 3 palavras',

@@ -10,6 +10,7 @@ export const ui: UiStrings = messages<UiStrings>({
     send: 'Envoyer',
     options: 'Options',
     percent: (n: number) => `${n} %`,
+    percentSuffix: ' %',
     labelValue: (label: string, value: string) => `${label} : ${value}`,
   },
   en: {
@@ -19,6 +20,7 @@ export const ui: UiStrings = messages<UiStrings>({
     send: 'Send',
     options: 'Options',
     percent: (n: number) => `${n}%`,
+    percentSuffix: '%',
     labelValue: (label: string, value: string) => `${label}: ${value}`,
   },
   es: {
@@ -28,6 +30,7 @@ export const ui: UiStrings = messages<UiStrings>({
     send: 'Enviar',
     options: 'Opciones',
     percent: (n: number) => `${n} %`,
+    percentSuffix: ' %',
     labelValue: (label: string, value: string) => `${label}: ${value}`,
   },
   pt: {
@@ -37,6 +40,7 @@ export const ui: UiStrings = messages<UiStrings>({
     send: 'Enviar',
     options: 'Opções',
     percent: (n: number) => `${n}%`,
+    percentSuffix: '%',
     labelValue: (label: string, value: string) => `${label}: ${value}`,
   },
   nl: {
@@ -46,6 +50,7 @@ export const ui: UiStrings = messages<UiStrings>({
     send: 'Versturen',
     options: 'Opties',
     percent: (n: number) => `${n}%`,
+    percentSuffix: '%',
     labelValue: (label: string, value: string) => `${label}: ${value}`,
   },
 });

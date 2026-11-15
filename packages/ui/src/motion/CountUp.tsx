@@ -3,6 +3,7 @@ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { Text } from '../atoms/Text';
+import { digitPosition, shownCount } from '../lib/count';
 import { useAnimatedNumber } from '../lib/motion';
 import { motion, type } from '../theme';
 
@@ -29,6 +30,7 @@ const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'] as const;
 
 function Column({
   n,
+  bounds,
   place,
   line,
   variant,
@@ -37,6 +39,8 @@ function Column({
   muted,
 }: {
   n: SharedValue<number>;
+  /** Départ et cible : le nombre affiché ne sort pas de cet intervalle (voir `lib/count`). */
+  bounds: readonly [number, number];
   place: number;
   line: number;
   variant: TypeName;
@@ -45,9 +49,8 @@ function Column({
   muted?: boolean;
 }) {
   const roll = useAnimatedStyle(() => {
-    const v = Math.max(0, n.value);
-    // Compteur mécanique : un chiffre ne roule que pendant la dernière unité des chiffres à sa droite (retenue).
-    const pos = (Math.floor(v / place) % 10) + Math.max(0, (v % place) - (place - 1));
+    const v = shownCount(n.value, bounds[0], bounds[1]);
+    const pos = digitPosition(v, place);
     // Zéro de tête (colonne des dizaines quand on passe sous 10) : estompé.
     const lead = place > 1 && v < place - 0.5 ? Math.max(0, 1 - (place - 0.5 - v) / (place * 0.25)) : 1;
     return { opacity: lead, transform: [{ translateY: -pos * line }] };
@@ -87,7 +90,10 @@ export function CountUp({
   style,
 }: CountUpProps) {
   const target = Math.round(value);
-  const n = useAnimatedNumber(Math.abs(target), { duration, overshoot: 0.04, from: from === undefined ? undefined : Math.abs(Math.round(from)) });
+  const start = from === undefined ? undefined : Math.abs(Math.round(from));
+  const n = useAnimatedNumber(Math.abs(target), { duration, overshoot: 0.04, from: start });
+  // Le rebond reste dans le mouvement ; le nombre écrit, lui, ne dépasse jamais la cible.
+  const bounds = [start ?? Math.abs(target), Math.abs(target)] as const;
   const base = type[variant];
   const fontSize = size ?? base.fontSize;
   const line = Math.round(fontSize * (base.lineHeight / base.fontSize));
@@ -103,7 +109,7 @@ export function CountUp({
           </Text>
         ) : null}
         {places.map((p) => (
-          <Column key={p} n={n} place={p} line={line} variant={variant} size={size} color={color} muted={muted} />
+          <Column key={p} n={n} bounds={bounds} place={p} line={line} variant={variant} size={size} color={color} muted={muted} />
         ))}
         {suffix ? (
           <Text variant={variant} size={size} color={color} muted={muted} style={{ lineHeight: line }}>

@@ -7,7 +7,7 @@
  * écrit ; le rattrapage normal (`tickLink`) fait le reste à la première lecture.
  */
 import { Body, Controller, Inject, Injectable, Post } from '@nestjs/common';
-import { chatSystemText } from '@blowy/content';
+import { auditText, chatSystemText } from '@blowy/content';
 import { type Day, LEVEL_XP, type LinkDay, type LinkMilestone, addDays, levelForXp, newLink } from '@blowy/domain';
 import { type Clock, todayOf } from '../shared/clock';
 import type { Ids } from '../shared/ids';
@@ -28,14 +28,14 @@ interface Past {
   lastActiveDaysAgo: number;
   xp: number;
   bestStreak: number;
-  /** Le dernier échange, il y a `lastActiveDaysAgo` jours : l'autre, puis la personne. */
-  lines: readonly [string, string];
+  /** Le dernier échange, il y a `lastActiveDaysAgo` jours : l'autre, puis la personne (`auditText.demo.pastLines`). */
+  lines: 'sasha' | 'ines' | 'yanis';
 }
 
 const PAST: readonly Past[] = [
-  { with: DEMO_SASHA, ageDays: 24, duoDaysAgo: [1, 2, 3, 4, 5, 6, 9, 10, 11], lastActiveDaysAgo: 1, xp: LEVEL_XP[3] + 120, bestStreak: 9, lines: ['Bonne nuit ! Pia ronfle déjà.', 'Bonne nuit, à demain.'] },
-  { with: DEMO_INES, ageDays: 16, duoDaysAgo: [6, 7, 8], lastActiveDaysAgo: 6, xp: LEVEL_XP[1] + 30, bestStreak: 3, lines: ['On se refait un café la semaine pro ?', 'Carrément, je te dis.'] },
-  { with: DEMO_YANIS, ageDays: 30, duoDaysAgo: [11, 12], lastActiveDaysAgo: 11, xp: LEVEL_XP[1] - 5, bestStreak: 2, lines: ['Tu es dispo samedi ?', 'Je regarde et je te dis.'] },
+  { with: DEMO_SASHA, ageDays: 24, duoDaysAgo: [1, 2, 3, 4, 5, 6, 9, 10, 11], lastActiveDaysAgo: 1, xp: LEVEL_XP[3] + 120, bestStreak: 9, lines: 'sasha' },
+  { with: DEMO_INES, ageDays: 16, duoDaysAgo: [6, 7, 8], lastActiveDaysAgo: 6, xp: LEVEL_XP[1] + 30, bestStreak: 3, lines: 'ines' },
+  { with: DEMO_YANIS, ageDays: 30, duoDaysAgo: [11, 12], lastActiveDaysAgo: 11, xp: LEVEL_XP[1] - 5, bestStreak: 2, lines: 'yanis' },
 ];
 
 @Injectable()
@@ -43,6 +43,7 @@ export class LinksDemo {
   constructor(
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(MESSAGES) private readonly messages: MessagesRepository,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
   ) {}
@@ -92,7 +93,9 @@ export class LinksDemo {
       lastMessageAt: reply,
     };
     if (!(await this.links.create(link))) return;
-    const [theirs, mine] = p.lines;
+    // Écrit dans la langue de la personne.
+    const locale = (await this.profiles.findById(userId))?.locale ?? 'fr';
+    const [theirs = '…', mine = '…'] = auditText.in(locale).demo.pastLines[p.lines];
     const message = (authorId: string | null, body: string, createdAt: string) => ({
       id: this.ids.uuid(),
       linkId: link.id,
@@ -103,7 +106,7 @@ export class LinksDemo {
       mediaPath: null,
       createdAt,
     });
-    await this.messages.add([message(null, chatSystemText('fr').linkCreated, created), message(p.with, theirs, first), message(userId, mine, reply)]);
+    await this.messages.add([message(null, chatSystemText(locale).linkCreated, created), message(p.with, theirs, first), message(userId, mine, reply)]);
   }
 }
 

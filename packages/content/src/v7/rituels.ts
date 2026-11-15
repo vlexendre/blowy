@@ -181,7 +181,7 @@ const fr = {
     texts: {
       q_foyer_table: { text: 'Un dimanche dans dix ans ?', choices: ['Une grande table, du bruit, des enfants', 'Libre, sans programme'] },
       q_foyer_cles: { text: 'Donner un double de tes clés à quelqu’un ?', choices: ['Avec plaisir, c’est le début d’un foyer', 'Mes clés restent à moi'] },
-      q_foyer_fetes: { text: 'Les fêtes de fin d’année, tu les vois…', choices: ['En famille, la tienne ou une à construire', 'Entre amis, ou en voyage'] },
+      q_foyer_fetes: { text: 'Les fêtes de fin d’année, tu les vois…', choices: ['En famille, la mienne ou une à construire', 'Entre amis, ou en voyage'] },
       q_ancrage_offre: { text: 'Un job rêvé, mais à Montréal ?', choices: ['Je pars', 'Je cherche le même ici'] },
       q_ancrage_quartier: { text: 'Ton quartier dans cinq ans ?', choices: ['Le même, j’y ai mes repères', 'Aucune idée, et ça me plaît'] },
       q_ancrage_valise: { text: 'Une valise toujours prête ?', choices: ['Évidemment', 'Elle dort au grenier'] },
@@ -324,7 +324,7 @@ const en: Translation<RituelsText> = {
     texts: {
       q_foyer_table: { text: 'A Sunday ten years from now?', choices: ['A big table, noise, kids', 'Free, nothing planned'] },
       q_foyer_cles: { text: 'Give someone a spare key to your place?', choices: ['Gladly, that’s how a home begins', 'My keys stay mine'] },
-      q_foyer_fetes: { text: 'The holidays, you picture them…', choices: ['With family, your own or one to build', 'With friends, or traveling'] },
+      q_foyer_fetes: { text: 'The holidays, you picture them…', choices: ['With family, my own or one to build', 'With friends, or traveling'] },
       q_ancrage_offre: { text: 'Your dream job, but in Montreal?', choices: ['I’m going', 'I’ll find the same here'] },
       q_ancrage_quartier: { text: 'Your neighborhood in five years?', choices: ['The same, I know every corner', 'No idea, and I like that'] },
       q_ancrage_valise: { text: 'A suitcase always packed?', choices: ['Obviously', 'It lives in the attic'] },
@@ -453,7 +453,7 @@ const es: Translation<RituelsText> = {
     texts: {
       q_foyer_table: { text: '¿Un domingo dentro de diez años?', choices: ['Una mesa grande, ruido, niños', 'Libre, sin planes'] },
       q_foyer_cles: { text: '¿Darle una copia de tus llaves a alguien?', choices: ['Con gusto, así empieza un hogar', 'Mis llaves son mías'] },
-      q_foyer_fetes: { text: 'Las fiestas de fin de año, te las imaginas…', choices: ['En familia, la tuya o una por formar', 'Con amigos, o de viaje'] },
+      q_foyer_fetes: { text: 'Las fiestas de fin de año, te las imaginas…', choices: ['En familia, la mía o una por formar', 'Con amigos, o de viaje'] },
       q_ancrage_offre: { text: '¿El trabajo de tus sueños, pero en Montreal?', choices: ['Me voy', 'Busco lo mismo aquí'] },
       q_ancrage_quartier: { text: '¿Tu barrio dentro de cinco años?', choices: ['El mismo, ahí tengo mis rutinas', 'Ni idea, y eso me gusta'] },
       q_ancrage_valise: { text: '¿Una maleta siempre lista?', choices: ['Por supuesto', 'Duerme en el trastero'] },
@@ -582,7 +582,7 @@ const pt: Translation<RituelsText> = {
     texts: {
       q_foyer_table: { text: 'Um domingo daqui a dez anos?', choices: ['Uma mesa grande, barulho, crianças', 'Livre, sem planos'] },
       q_foyer_cles: { text: 'Dar uma cópia das suas chaves para alguém?', choices: ['Com prazer, é o começo de um lar', 'Minhas chaves ficam comigo'] },
-      q_foyer_fetes: { text: 'As festas de fim de ano, você imagina…', choices: ['Em família, a sua ou uma a construir', 'Com amigos, ou viajando'] },
+      q_foyer_fetes: { text: 'As festas de fim de ano, você imagina…', choices: ['Em família, a minha ou uma a construir', 'Com amigos, ou viajando'] },
       q_ancrage_offre: { text: 'O emprego dos sonhos, mas em Montreal?', choices: ['Eu vou', 'Procuro o mesmo aqui'] },
       q_ancrage_quartier: { text: 'Seu bairro daqui a cinco anos?', choices: ['O mesmo, ali tenho meus cantos', 'Não faço ideia, e gosto disso'] },
       q_ancrage_valise: { text: 'Uma mala sempre pronta?', choices: ['Claro', 'Está no fundo do armário'] },
@@ -711,7 +711,7 @@ const nl: Translation<RituelsText> = {
     texts: {
       q_foyer_table: { text: 'Een zondag over tien jaar?', choices: ['Een grote tafel, lawaai, kinderen', 'Vrij, niks gepland'] },
       q_foyer_cles: { text: 'Iemand een reservesleutel van je huis geven?', choices: ['Graag, zo begint een thuis', 'Mijn sleutels blijven van mij'] },
-      q_foyer_fetes: { text: 'De feestdagen vier je het liefst…', choices: ['Met familie, je eigen of een die je opbouwt', 'Met vrienden, of op reis'] },
+      q_foyer_fetes: { text: 'De feestdagen vier je het liefst…', choices: ['Met familie, mijn eigen of een die ik opbouw', 'Met vrienden, of op reis'] },
       q_ancrage_offre: { text: 'Je droombaan, maar dan in Montreal?', choices: ['Ik ga', 'Ik zoek hetzelfde hier'] },
       q_ancrage_quartier: { text: 'Je buurt over vijf jaar?', choices: ['Dezelfde, daar ken ik alles', 'Geen idee, en dat bevalt me'] },
       q_ancrage_valise: { text: 'Altijd een koffer klaarstaan?', choices: ['Natuurlijk', 'Die ligt op zolder'] },

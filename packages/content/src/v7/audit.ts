@@ -72,6 +72,24 @@ const fr = {
       'Mon minimoa vient de faire une sieste, il est en forme.',
       'J’adore cet endroit.',
     ],
+    /** Répliques courtes du lien ouvert (un café proposé, un oui, mardi confirmé). */
+    short: { coffee: '☕️ ?', yes: 'Oui !', tuesday: 'Oui, mardi ?' },
+  },
+  /**
+   * Monde de démo (local, `BLOWY_DEMO=1`) : messages de Malo à la personne qui arrive, et dernier échange de chaque lien
+   * d'avant (`POST /dev/demo/links`), écrits dans la langue de la personne.
+   */
+  demo: {
+    maloMessages: [
+      'Salut ! Gaston n’arrêtait pas de parler de ton minimoa.',
+      'Il paraît que ton minimoa est très bien élevé. J’ai des doutes.',
+      'Écris-moi quand tu peux : Gaston veut lancer notre série.',
+    ],
+    pastLines: {
+      sasha: ['Bonne nuit ! Pia ronfle déjà.', 'Bonne nuit, à demain.'],
+      ines: ['On se refait un café la semaine pro ?', 'Carrément, je te dis.'],
+      yanis: ['Tu es dispo samedi ?', 'Je regarde et je te dis.'],
+    },
   },
 };
 
@@ -120,6 +138,19 @@ const en: Translation<AuditText> = {
     today: 'Tuesday, noted 👍',
     dangerLines: ['Coffee again next week?', 'Definitely, I’ll let you know.'],
     replies: ['Haha, totally.', 'Good idea! When works for you?', 'I’ll let you know tonight.', 'My minimoa just had a nap, it’s full of energy.', 'I love that place.'],
+    short: { coffee: '☕️?', yes: 'Yes!', tuesday: 'Yes, Tuesday?' },
+  },
+  demo: {
+    maloMessages: [
+      'Hi! Gaston wouldn’t stop talking about your minimoa.',
+      'Word is your minimoa is very well behaved. I have my doubts.',
+      'Write to me when you can: Gaston wants to start our streak.',
+    ],
+    pastLines: {
+      sasha: ['Good night! Pia is already snoring.', 'Good night, talk tomorrow.'],
+      ines: ['Coffee again next week?', 'Definitely, I’ll let you know.'],
+      yanis: ['Are you free Saturday?', 'I’ll check and let you know.'],
+    },
   },
 };
 
@@ -166,6 +197,19 @@ const es: Translation<AuditText> = {
     today: 'El martes, apuntado 👍',
     dangerLines: ['¿Otro café la semana que viene?', 'Claro, te digo.'],
     replies: ['Jaja, totalmente.', '¡Buena idea! ¿Cuándo te viene bien?', 'Te digo esta noche.', 'Mi minimoa acaba de echarse una siesta, está lleno de energía.', 'Me encanta ese sitio.'],
+    short: { coffee: '¿☕️?', yes: '¡Sí!', tuesday: 'Sí, ¿el martes?' },
+  },
+  demo: {
+    maloMessages: [
+      '¡Hola! Gaston no paraba de hablar de tu minimoa.',
+      'Dicen que tu minimoa es muy educado. Tengo mis dudas.',
+      'Escríbeme cuando puedas: Gaston quiere empezar nuestra racha.',
+    ],
+    pastLines: {
+      sasha: ['¡Buenas noches! Pia ya está roncando.', 'Buenas noches, hasta mañana.'],
+      ines: ['¿Otro café la semana que viene?', 'Claro, te digo.'],
+      yanis: ['¿Estás libre el sábado?', 'Lo miro y te digo.'],
+    },
   },
 };
 
@@ -212,6 +256,19 @@ const pt: Translation<AuditText> = {
     today: 'Terça, combinado 👍',
     dangerLines: ['Bora tomar outro café semana que vem?', 'Bora, te aviso.'],
     replies: ['Haha, com certeza.', 'Boa ideia! Quando você pode?', 'Te falo hoje à noite.', 'Meu minimoa acabou de tirar uma soneca, está cheio de energia.', 'Adoro esse lugar.'],
+    short: { coffee: '☕️?', yes: 'Sim!', tuesday: 'Sim, terça?' },
+  },
+  demo: {
+    maloMessages: [
+      'Oi! O Gaston não parava de falar do seu minimoa.',
+      'Dizem que o seu minimoa é muito educado. Tenho minhas dúvidas.',
+      'Me escreve quando puder: o Gaston quer começar a nossa sequência.',
+    ],
+    pastLines: {
+      sasha: ['Boa noite! A Pia já está roncando.', 'Boa noite, até amanhã.'],
+      ines: ['Mais um café semana que vem?', 'Com certeza, te aviso.'],
+      yanis: ['Está livre no sábado?', 'Vou ver e te falo.'],
+    },
   },
 };
 
@@ -258,6 +315,19 @@ const nl: Translation<AuditText> = {
     today: 'Dinsdag, genoteerd 👍',
     dangerLines: ['Volgende week weer koffie?', 'Zeker, ik laat het je weten.'],
     replies: ['Haha, zeker.', 'Goed idee! Wanneer kun jij?', 'Ik laat het je vanavond weten.', 'Mijn minimoa heeft net een dutje gedaan, hij zit vol energie.', 'Ik ben dol op die plek.'],
+    short: { coffee: '☕️?', yes: 'Ja!', tuesday: 'Ja, dinsdag?' },
+  },
+  demo: {
+    maloMessages: [
+      'Hoi! Gaston hield maar niet op over jouw minimoa.',
+      'Ik hoor dat jouw minimoa heel goed is opgevoed. Ik heb mijn twijfels.',
+      'Schrijf me als je kunt: Gaston wil onze reeks beginnen.',
+    ],
+    pastLines: {
+      sasha: ['Welterusten! Pia snurkt al.', 'Welterusten, tot morgen.'],
+      ines: ['Volgende week weer een koffie?', 'Zeker, ik laat het je weten.'],
+      yanis: ['Ben je zaterdag vrij?', 'Ik kijk even en laat het je weten.'],
+    },
   },
 };
 

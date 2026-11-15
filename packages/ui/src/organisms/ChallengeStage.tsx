@@ -8,7 +8,7 @@ import { Panel } from '../atoms/Panel';
 import { Pressable } from '../atoms/Pressable';
 import { Skeleton } from '../atoms/Skeleton';
 import { Sticker } from '../atoms/Sticker';
-import { Text } from '../atoms/Text';
+import { MIN_TEXT_SIZE, Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { hapticFor } from '../lib/haptics';
 import { ease, fadeTo, springs, useReducedMotion } from '../lib/motion';
@@ -65,10 +65,16 @@ const PET = 176;
  * libre (accepter, répondre, fait). Rien n'attend l'animation ; animations réduites : fondus seulement.
  * À présenter dans une route en modale transparente (le fond voilé laisse voir l'accueil).
  */
+/** Lettres au-delà desquelles un mot de titre de récompense ne tient plus à 15 pt dans une tuile (« Sociabilité » : 11). */
+const LONG_REWARD_WORD = 11;
+
 export function ChallengeStage({ pet, streak, kicker, title, text, rewards = [], children, secondary, note, onDismiss, dismissLabel, celebrateKey = 0, petLabel }: ChallengeStageProps) {
   const insets = useSafeAreaInsets();
   const win = useWindowDimensions();
   const reduced = useReducedMotion();
+  // Un nom de récompense ne se coupe pas au milieu (« Sociabilidade ») : au-delà de 11 lettres, les trois titres passent
+  // au plancher de 13 pt et les tuiles gagnent un peu de largeur utile (français et anglais restent à 15).
+  const longReward = rewards.slice(0, 3).some((r) => r.title.split(/\s+/).some((w) => w.length > LONG_REWARD_WORD));
   const actor = useRef<PetActorHandle>(null);
   useOverlay(true);
   const veilO = useSharedValue(0);
@@ -154,9 +160,9 @@ export function ChallengeStage({ pet, streak, kicker, title, text, rewards = [],
               <View style={[layout.row, styles.rewards]}>
                 {rewards.slice(0, 3).map((r, i) => (
                   <PopIn key={r.title} delay={reduced ? 0 : 560 + i * motion.stagger * 2} from={0.7} style={styles.rewardSlot}>
-                    <View style={styles.reward} accessible accessibilityLabel={`${r.title}, ${r.text}`}>
+                    <View style={[styles.reward, longReward && styles.rewardTight]} accessible accessibilityLabel={`${r.title}, ${r.text}`}>
                       <View style={styles.rewardIcon}>{r.icon}</View>
-                      <Text variant="bodyHeavy" size={15} center numberOfLines={2}>
+                      <Text variant="bodyHeavy" size={longReward ? MIN_TEXT_SIZE : 15} center numberOfLines={2}>
                         {r.title}
                       </Text>
                       <Text variant="bodyBold" size={13} center style={styles.rewardText} numberOfLines={3}>
@@ -207,6 +213,7 @@ const styles = StyleSheet.create({
   reward: { flex: 1, minHeight: 124, borderRadius: radius.md + 4, paddingHorizontal: space.sm, paddingVertical: space.md, alignItems: 'center', gap: 2, backgroundColor: alpha(color.white, 0.32) },
   rewardIcon: { height: 46, alignItems: 'center', justifyContent: 'center', marginBottom: space.xs },
   rewardText: { opacity: 0.72 },
+  rewardTight: { paddingHorizontal: space.xs },
   actions: { gap: space.sm },
   note: { marginTop: space.md, opacity: 0.72 },
   burst: { position: 'absolute', left: '50%', top: 40 },

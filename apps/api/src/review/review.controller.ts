@@ -1,12 +1,13 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { Body, Controller, Inject, Post, Req } from '@nestjs/common';
 import { ReviewSessionBody, type ReviewReset, type ReviewSession } from '@blowy/contract';
-import { auditText, textOf } from '@blowy/content';
+import { type Locale, auditText, textOf } from '@blowy/content';
 import type { Request } from 'express';
 import type { z } from 'zod';
 import type { Env } from '../config/env';
 import type { AuthUser } from '../integrations/auth/ports';
 import { CurrentUser, Public } from '../shared/auth.guard';
+import { localeOfRequest } from '../shared/locale';
 import type { Clock } from '../shared/clock';
 import { DomainError } from '../shared/errors';
 import { RateLimiter } from '../shared/rate-limiter';
@@ -15,6 +16,9 @@ import { ZodPipe } from '../shared/zod.pipe';
 import type { PetsRepository } from '../modules/pets/ports';
 import { REVIEW_AUTH, type ReviewAuth } from './review-auth';
 import { ReviewWorld } from './review-world';
+
+/** Langue de l'app qui appelle (`Accept-Language`), ou null sans en-tête (le monde garde la langue du profil). */
+const appLocale = (req: Request): Locale | null => (req.headers['accept-language'] ? localeOfRequest(req) : null);
 
 /** Comparaison en temps constant (empreintes de même longueur). */
 const same = (a: string, b: string): boolean => timingSafeEqual(createHash('sha256').update(a).digest(), createHash('sha256').update(b).digest());
@@ -53,13 +57,13 @@ export class ReviewController {
     if (!review || !emailOk || !codeOk) throw new DomainError('unauthorized', textOf(auditText, (t) => t.reviewSignIn.wrong));
     const tokens = await this.auth.sessionFor(review.email);
     const onboarded = (await this.pets.findByOwner(tokens.userId)) !== null;
-    const fixtures = onboarded ? await this.world.reset(tokens.userId) : 0;
+    const fixtures = onboarded ? await this.world.reset(tokens.userId, appLocale(req)) : 0;
     return { userId: tokens.userId, email: review.email, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, worldReset: fixtures > 0 };
   }
 
   @Post('reset')
-  async reset(@CurrentUser() user: AuthUser): Promise<ReviewReset> {
+  async reset(@CurrentUser() user: AuthUser, @Req() req: Request): Promise<ReviewReset> {
     if (!this.world.isReviewEmail(user.email)) throw new DomainError('forbidden');
-    return { ok: true, fixtures: await this.world.reset(user.userId) };
+    return { ok: true, fixtures: await this.world.reset(user.userId, appLocale(req)) };
   }
 }

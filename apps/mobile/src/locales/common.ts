@@ -183,7 +183,7 @@ export const common = messages({
     errorTitle: 'Oeps',
     genericError: 'Er liep iets vast. Probeer het zo opnieuw.',
     offlineTitle: 'Geen netwerk',
-    offlineText: 'Blowy is niet bereikbaar. Check je verbinding: je minimoa wacht op je.',
+    offlineText: 'Blowy is niet bereikbaar. Controleer je verbinding: je minimoa wacht op je.',
     copied: 'Gekopieerd ✓',
     speciesNames: { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' },
     gate: { sleeping: 'Je minimoa wordt wakker…' },
@@ -208,7 +208,7 @@ export const common = messages({
       already: 'Hebben jullie al een band? Dan openen we die voor je.',
     },
     errors: {
-      network: 'Geen verbinding. Check je netwerk.',
+      network: 'Geen verbinding. Controleer je netwerk.',
       unknown: 'Er ging iets mis. Probeer het opnieuw.',
       internal: 'Er ging iets mis.',
       rateLimited: 'Te veel pogingen. Probeer het over een minuut opnieuw.',

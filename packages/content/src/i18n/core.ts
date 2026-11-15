@@ -192,13 +192,26 @@ export const formatNumber = (locale: Locale, n: number, opts?: Intl.NumberFormat
 export const formatPrice = (locale: Locale, amountMinor: number, currency: string, deviceTag?: string | null): string =>
   formatNumber(locale, amountMinor / 100, { style: 'currency', currency, minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2 }, deviceTag);
 
-/** Date (Europe/Paris par défaut) : `formatDate('fr', iso, { day: 'numeric', month: 'long' })` → « 22 novembre ». */
+/**
+ * Étiquette des dates : l'anglais de Blowy est américain (orthographe US), ses dates aussi (« November 22 »), quelle
+ * que soit la région du téléphone ; les autres langues suivent la région de l'appareil.
+ */
+const dateTag = (locale: Locale, deviceTag?: string | null): string => (locale === 'en' ? 'en-US' : intlTag(locale, deviceTag));
+
+/**
+ * Date (Europe/Paris par défaut) : `formatDate('fr', iso, { day: 'numeric', month: 'long' })` → « 22 novembre » ;
+ * en anglais « November 22 » (et l'heure « 5:19 PM »).
+ */
 export const formatDate = (
   locale: Locale,
   date: Date | string,
   opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' },
   deviceTag?: string | null,
-): string => new Intl.DateTimeFormat(intlTag(locale, deviceTag), { timeZone: 'Europe/Paris', ...opts }).format(typeof date === 'string' ? new Date(date) : date);
+): string => {
+  // Heure à l'américaine en anglais : « 5:19 PM », pas « 05:19 PM ».
+  const shown = locale === 'en' && opts.hour === '2-digit' ? { ...opts, hour: 'numeric' as const } : opts;
+  return new Intl.DateTimeFormat(dateTag(locale, deviceTag), { timeZone: 'Europe/Paris', ...shown }).format(typeof date === 'string' ? new Date(date) : date);
+};
 
 /** Remplace les {clés} d'un modèle ; une clé absente disparaît proprement. */
 export const fillTemplate = (template: string, vars: Readonly<Record<string, string | number>>): string =>

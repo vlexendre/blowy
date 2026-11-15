@@ -1145,7 +1145,7 @@ export const options = messages({
     reportAlsoBlock: (name: string): string => `Block ${name} too`,
     reportAlsoBlockSub: 'The link disappears from your chats.',
     reportSend: 'Send report',
-    reportEmergency: 'In immediate danger? Call 112 or your local emergency number.',
+    reportEmergency: 'In immediate danger? Call 911, 112 or your local emergency number.',
     reportDone: 'Thanks. Your report has been sent, we’ll look at it quickly.',
     reportPickFirst: 'Pick a reason.',
     blockTitle: (name: string): TitleSegment[] => [{ text: 'BLOCK ' }, { text: `${name.toUpperCase()}?`, dim: true }],
@@ -1215,7 +1215,7 @@ export const options = messages({
     reportAlsoBlock: (name: string): string => `Bloquear ${name} também`,
     reportAlsoBlockSub: 'O vínculo some dos seus chats.',
     reportSend: 'Enviar denúncia',
-    reportEmergency: 'Em perigo imediato? Ligue para o 112 ou para o número de emergência local.',
+    reportEmergency: 'Em perigo imediato? Ligue para o 190 ou para o número de emergência local.',
     reportDone: 'Obrigado. Sua denúncia foi enviada, vamos analisá-la rapidinho.',
     reportPickFirst: 'Escolha um motivo.',
     blockTitle: (name: string): TitleSegment[] => [{ text: 'BLOQUEAR ' }, { text: `${name.toUpperCase()}?`, dim: true }],
@@ -1274,6 +1274,10 @@ export const dates = messages({
     weekdaysShort: ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'] as const,
     today: 'aujourd’hui',
     yesterday: 'hier',
+    /** « 12 oct. » : jour et mois abrégé. */
+    dayMonth: (day: number, month: string): string => `${day} ${month}`,
+    /** « lundi 3 nov. » */
+    weekdayDate: (weekday: string, date: string): string => `${weekday} ${date}`,
   },
   en: {
     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -1281,6 +1285,8 @@ export const dates = messages({
     weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     today: 'today',
     yesterday: 'yesterday',
+    dayMonth: (day: number, month: string): string => `${month} ${day}`,
+    weekdayDate: (weekday: string, date: string): string => `${weekday}, ${date}`,
   },
   es: {
     months: ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.', 'dic.'],
@@ -1288,6 +1294,8 @@ export const dates = messages({
     weekdaysShort: ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     today: 'hoy',
     yesterday: 'ayer',
+    dayMonth: (day: number, month: string): string => `${day} ${month}`,
+    weekdayDate: (weekday: string, date: string): string => `${weekday} ${date}`,
   },
   pt: {
     months: ['jan.', 'fev.', 'mar.', 'abr.', 'mai.', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'],
@@ -1295,6 +1303,8 @@ export const dates = messages({
     weekdaysShort: ['dom.', 'seg.', 'ter.', 'qua.', 'qui.', 'sex.', 'sáb.'],
     today: 'hoje',
     yesterday: 'ontem',
+    dayMonth: (day: number, month: string): string => `${day} ${month}`,
+    weekdayDate: (weekday: string, date: string): string => `${weekday}, ${date}`,
   },
   nl: {
     months: ['jan.', 'feb.', 'mrt.', 'apr.', 'mei', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.', 'dec.'],
@@ -1302,5 +1312,7 @@ export const dates = messages({
     weekdaysShort: ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'],
     today: 'vandaag',
     yesterday: 'gisteren',
+    dayMonth: (day: number, month: string): string => `${day} ${month}`,
+    weekdayDate: (weekday: string, date: string): string => `${weekday} ${date}`,
   },
 });

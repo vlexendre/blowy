@@ -319,15 +319,15 @@ const PT: ChatLines = {
     pose: ['Primeira mensagem do dia. O vínculo respira.', 'Bom dia. Vou me ajeitar e ouvir.'],
   },
   sweet: {
-    doux: ['Ah. Isso foi fofo. {other} está fingindo que não ficou vermelho.', 'Palavra carinhosa anotada. Essa a gente guarda.'],
+    doux: ['Ah. Isso foi fofo. {other} está fingindo que não ficou vermelho.', 'Carinho anotado. Esse a gente guarda.'],
     sec: ['Isso foi quase gentil. Anotado.', 'Que fofo. Vou fingir que não vi.'],
-    joueur: ['Oh. {other}, você viu isso?', 'Palavra carinhosa detectada. Estou dançando por dentro.'],
+    joueur: ['Oh. {other}, você viu isso?', 'Carinho detectado. Estou dançando por dentro.'],
     pose: ['Isso foi fofo. Acho que {other} está ronronando.', 'Bonito. Não digo mais nada.'],
   },
   tease: {
     doux: ['Ai. Com carinho, hein.', 'Essa doeu um pouco. {other} está preparando a resposta.'],
     sec: ['Toma. Adorei.', 'Mandou bem.'],
-    joueur: ['Que provocação! {other} está preparando a revanche.', 'A zoeira está pesada aqui. Vou me acomodar.'],
+    joueur: ['Que provocação! {other} está preparando a revanche.', 'Aqui a provocação está solta. Vou me acomodar.'],
     pose: ['Não vi nada, não ouvi nada. Mas foi engraçado.', 'Provocação anotada. Aguardando a revanche.'],
   },
   guard: {

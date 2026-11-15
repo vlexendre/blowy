@@ -9,10 +9,10 @@ const plural = (n: number, one: string, many: string): string => `${n} ${n > 1 
 /** « plutôt joueur », adjectif accordé au masculin (le minimoa). */
 const formTitleFr: Record<PetForm, string> = {
   equilibre: 'ÉQUILIBRÉ.',
-  casanier: 'PLUTÔT\nCASANIER',
-  sociable: 'PLUTÔT\nSOCIABLE',
+  casanier: 'PLUTÔT\nCASANIER.',
+  sociable: 'PLUTÔT\nSOCIABLE.',
   joueur: 'PLUTÔT\nJOUEUR.',
-  piquant: 'PLUTÔT\nPIQUANT',
+  piquant: 'PLUTÔT\nPIQUANT.',
   tendre: 'PLUTÔT\nTENDRE.',
 };
 
@@ -31,34 +31,34 @@ const count = (n: number, one: string, many: string): string => `${n} ${n === 1 
 const formTitle: Record<'en' | 'es' | 'pt' | 'nl', Record<PetForm, string>> = {
   en: {
     equilibre: 'BALANCED.',
-    casanier: 'QUITE THE\nHOMEBODY',
-    sociable: 'QUITE\nSOCIABLE',
+    casanier: 'QUITE THE\nHOMEBODY.',
+    sociable: 'QUITE\nSOCIABLE.',
     joueur: 'QUITE\nPLAYFUL.',
-    piquant: 'QUITE\nSASSY',
+    piquant: 'QUITE\nSASSY.',
     tendre: 'QUITE\nSWEET.',
   },
   es: {
     equilibre: 'EQUILIBRADO.',
-    casanier: 'MÁS BIEN\nCASERO',
-    sociable: 'MÁS BIEN\nSOCIABLE',
+    casanier: 'MÁS BIEN\nCASERO.',
+    sociable: 'MÁS BIEN\nSOCIABLE.',
     joueur: 'MÁS BIEN\nJUGUETÓN.',
-    piquant: 'MÁS BIEN\nPICANTE',
+    piquant: 'MÁS BIEN\nPICANTE.',
     tendre: 'MÁS BIEN\nTIERNO.',
   },
   pt: {
     equilibre: 'EQUILIBRADO.',
-    casanier: 'MEIO\nCASEIRO',
-    sociable: 'MEIO\nSOCIÁVEL',
+    casanier: 'MEIO\nCASEIRO.',
+    sociable: 'MEIO\nSOCIÁVEL.',
     joueur: 'MEIO\nBRINCALHÃO.',
-    piquant: 'MEIO\nATREVIDO',
+    piquant: 'MEIO\nATREVIDO.',
     tendre: 'MEIO\nCARINHOSO.',
   },
   nl: {
     equilibre: 'EVENWICHTIG.',
-    casanier: 'NOGAL\nHUISELIJK',
-    sociable: 'NOGAL\nSOCIAAL',
+    casanier: 'NOGAL\nHUISELIJK.',
+    sociable: 'NOGAL\nSOCIAAL.',
     joueur: 'NOGAL\nSPEELS.',
-    piquant: 'NOGAL\nPITTIG',
+    piquant: 'NOGAL\nPITTIG.',
     tendre: 'NOGAL\nLIEF.',
   },
 };
@@ -357,7 +357,7 @@ export const evolution = messages({
       sociable: 'Cruzarte con nuevos minimoas, saludar, aceptar encuentros.',
       joueur: 'Retos, quiz y nunca perder a propósito.',
       piquant: 'Bromas, piques, ironía a voluntad.',
-      tendre: 'Mimos, palabras dulces, vínculos en los que se escriben cada día.',
+      tendre: 'Mimos, cariños, vínculos en los que se escriben cada día.',
     },
     howTitle: (form: string): string => `Para volverse ${low(form)}: `,
     speech: 'Hacia un lado, luego hacia el otro. Nada es definitivo.',
@@ -402,7 +402,7 @@ export const evolution = messages({
       sociable: 'Cruzar com novos minimoas, acenar, aceitar encontros.',
       joueur: 'Desafios, quizzes e nunca perder de propósito.',
       piquant: 'Provocações, zoações, ironia à vontade.',
-      tendre: 'Carinho, palavras doces, vínculos em que vocês se escrevem todo dia.',
+      tendre: 'Abraços, carinhos, vínculos em que vocês se escrevem todo dia.',
     },
     howTitle: (form: string): string => `Para ficar ${low(form)}: `,
     speech: 'Para um lado, depois para o outro. Nada é definitivo.',
@@ -463,7 +463,7 @@ export const home = messages({
     petA11y: (name: string): string => `${name}, ton minimoa`,
     /** Ce que dit le minimoa : choisi selon son besoin le plus urgent, sinon une phrase joyeuse (3 par cas). */
     speech: {
-      hunger: ['J’ai faim. Et hier, personne.', 'Mon ventre fait des bruits bizarres.', 'Un petit truc à grignoter ?'],
+      hunger: ['J’ai faim. Personne ne m’a nourri depuis hier.', 'Mon ventre fait des bruits bizarres.', 'Un petit truc à grignoter ?'],
       energy: ['Je tombe de sommeil…', 'Mes yeux se ferment tout seuls.', 'Une sieste. Vite.'],
       mood: ['Je m’ennuie à mourir.', 'On joue ? Juste un peu ?', 'Un câlin, ça ne se refuse pas.'],
     } as Record<NeedKey, readonly string[]>,
@@ -498,7 +498,7 @@ export const home = messages({
     wardrobeA11y: 'Open its wardrobe',
     petA11y: (name: string): string => `${name}, your minimoa`,
     speech: {
-      hunger: ['I’m hungry. And yesterday: nobody.', 'My stomach is making weird noises.', 'A little something to nibble?'],
+      hunger: ['I’m hungry. Nobody’s fed me since yesterday.', 'My stomach is making weird noises.', 'A little something to nibble?'],
       energy: ['I’m falling asleep…', 'My eyes keep closing on their own.', 'A nap. Now.'],
       mood: ['I’m bored to death.', 'Shall we play? Just a bit?', 'Nobody says no to a hug.'],
     },
@@ -528,7 +528,7 @@ export const home = messages({
     wardrobeA11y: 'Abrir su armario',
     petA11y: (name: string): string => `${name}, tu minimoa`,
     speech: {
-      hunger: ['Tengo hambre. Y ayer, nadie.', 'Mi barriga hace ruidos raros.', '¿Algo para picar?'],
+      hunger: ['Tengo hambre. Nadie me ha dado de comer desde ayer.', 'Mi barriga hace ruidos raros.', '¿Algo para picar?'],
       energy: ['Me caigo de sueño…', 'Se me cierran los ojos solos.', 'Una siesta. Ya.'],
       mood: ['Me aburro muchísimo.', '¿Jugamos? ¿Un poquito?', 'Un abrazo no se rechaza.'],
     },
@@ -558,7 +558,7 @@ export const home = messages({
     wardrobeA11y: 'Abrir o guarda-roupa dele',
     petA11y: (name: string): string => `${name}, seu minimoa`,
     speech: {
-      hunger: ['Tô com fome. E ontem, ninguém.', 'Minha barriga tá roncando.', 'Um lanchinho?'],
+      hunger: ['Tô com fome. Ninguém me deu comida desde ontem.', 'Minha barriga tá roncando.', 'Um lanchinho?'],
       energy: ['Tô morrendo de sono…', 'Meus olhos estão fechando sozinhos.', 'Uma soneca. Já.'],
       mood: ['Tô morrendo de tédio.', 'Vamos brincar? Só um pouquinho?', 'Abraço não se recusa.'],
     },
@@ -588,7 +588,7 @@ export const home = messages({
     wardrobeA11y: 'Zijn garderobe openen',
     petA11y: (name: string): string => `${name}, je minimoa`,
     speech: {
-      hunger: ['Ik heb honger. En gisteren: niemand.', 'Mijn buik maakt rare geluiden.', 'Iets kleins om te knabbelen?'],
+      hunger: ['Ik heb honger. Niemand heeft me sinds gisteren eten gegeven.', 'Mijn buik maakt rare geluiden.', 'Iets kleins om te knabbelen?'],
       energy: ['Ik val om van de slaap…', 'Mijn ogen vallen vanzelf dicht.', 'Een dutje. Nu.'],
       mood: ['Ik verveel me dood.', 'Spelen? Heel even?', 'Een knuffel sla je niet af.'],
     },

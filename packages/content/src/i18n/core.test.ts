@@ -92,6 +92,15 @@ describe('formats', () => {
     expect(formatPrice('fr', 499, 'EUR').replace(/\s/g, ' ')).toBe('4,99 €');
     expect(formatPrice('en', 499, 'EUR')).toBe('€4.99');
     expect(formatDate('fr', '2026-11-22T12:00:00Z')).toBe('22 novembre');
-    expect(formatDate('en', '2026-11-22T12:00:00Z')).toBe('22 November');
+    // Anglais américain (orthographe US) : dates à l'américaine, même sur un téléphone britannique.
+    expect(formatDate('en', '2026-11-22T12:00:00Z')).toBe('November 22');
+    expect(formatDate('en', '2026-11-22T12:00:00Z', undefined, 'en-GB')).toBe('November 22');
+    expect(formatDate('en', '2026-11-22T12:00:00Z', { weekday: 'long', day: 'numeric', month: 'long' })).toBe('Sunday, November 22');
+    expect(formatDate('en', '2026-11-22T16:19:00Z', { hour: '2-digit', minute: '2-digit' })).toBe('5:19 PM');
+    expect(formatDate('fr', '2026-11-22T16:19:00Z', { hour: '2-digit', minute: '2-digit' })).toBe('17:19');
+    // Les autres langues ne changent pas.
+    expect(formatDate('es', '2026-11-22T12:00:00Z')).toBe('22 de noviembre');
+    expect(formatDate('pt', '2026-11-22T12:00:00Z', undefined, 'pt-BR')).toBe('22 de novembro');
+    expect(formatDate('nl', '2026-11-22T12:00:00Z')).toBe('22 november');
   });
 });

@@ -13,6 +13,8 @@ export interface UiStrings {
   options: string;
   /** « 91 % » (espace insécable en français, « 91% » en anglais). */
   percent: (n: number) => string;
+  /** Ce qui suit un nombre qui défile pour faire un pourcentage (« % » avec son espace insécable en français, « % » collé en anglais). */
+  percentSuffix: string;
   /** Libellé et valeur lus ensemble : « Ville : Paris ». */
   labelValue: (label: string, value: string) => string;
 }
@@ -25,6 +27,7 @@ const EMPTY: UiStrings = {
   send: '',
   options: '',
   percent: (n) => String(n),
+  percentSuffix: '',
   labelValue: (label, value) => `${label} ${value}`,
 };
 

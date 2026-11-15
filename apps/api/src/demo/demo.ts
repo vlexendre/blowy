@@ -1,4 +1,5 @@
 /** Monde de démonstration (mode mémoire, BLOWY_DEMO=1) : huit personnes fixes, leurs minimoas, leur vision et leur zone. */
+import { type Locale, auditText } from '@blowy/content';
 import type { Gauges, Gender, GeoPoint, Needs, Outfit, Seeking, Species, VisionAxis, Whom } from '@blowy/domain';
 
 export const DEMO_LEA = '00000000-0000-4000-8000-00000000000a';
@@ -138,9 +139,6 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
   },
 ];
 
-/** Messages de Malo à la personne qui arrive. */
-export const DEMO_MALO_MESSAGES: readonly { body: string; tone?: 'sweet' | 'tease' }[] = [
-  { body: 'Salut ! Gaston n’arrêtait pas de parler de ton minimoa.' },
-  { body: 'Il paraît que ton minimoa est très bien élevé. J’ai des doutes.', tone: 'tease' },
-  { body: 'Écris-moi quand tu peux : Gaston veut lancer notre série.' },
-];
+/** Messages de Malo à la personne qui arrive, dans sa langue (`auditText.demo.maloMessages`) ; le deuxième est une vanne. */
+export const demoMaloMessages = (locale: Locale): readonly { body: string; tone?: 'sweet' | 'tease' }[] =>
+  auditText.in(locale).demo.maloMessages.map((body, i) => (i === 1 ? { body, tone: 'tease' as const } : { body }));

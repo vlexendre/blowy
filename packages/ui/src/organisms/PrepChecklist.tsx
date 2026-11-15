@@ -5,6 +5,7 @@ import { PetImage } from '../atoms/PetImage';
 import { ProgressBar } from '../atoms/ProgressBar';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
+import { useUiStrings } from '../lib/strings';
 import { layout } from '../lib/styles';
 import { Appear, Stagger } from '../motion/Appear';
 import { CountUp } from '../motion/CountUp';
@@ -34,13 +35,14 @@ export interface PrepChecklistProps {
  */
 export function PrepChecklist({ species, title, percent, items, stalled, percentLabel }: PrepChecklistProps) {
   const p = Math.max(0, Math.min(100, Math.round(percent)));
+  const uiStrings = useUiStrings();
   return (
     <View style={styles.wrap}>
       <Appear scale={0.9} distance={20}>
         <PetImage species={species} mood={stalled ? 'triste' : p >= 100 ? 'joie' : 'neutre'} size={150} animation={stalled ? 'none' : 'breathe'} />
       </Appear>
       <Title text={title} size={40} center style={styles.title} />
-      <CountUp value={p} from={0} variant="bodyHeavy" size={34} suffix=" %" accessibilityLabel={percentLabel?.(p)} style={styles.count} />
+      <CountUp value={p} from={0} variant="bodyHeavy" size={34} suffix={uiStrings.percentSuffix} accessibilityLabel={percentLabel?.(p)} style={styles.count} />
       <ProgressBar value={p / 100} height={10} color={stalled ? color.mute : color.accent} style={styles.bar} />
       <View style={styles.list}>
       <Stagger delay={200} step={70}>

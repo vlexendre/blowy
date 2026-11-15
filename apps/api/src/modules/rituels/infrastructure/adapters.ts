@@ -97,7 +97,7 @@ export class AiCoach implements Coach {
       });
       if (!result.ok) return null;
       const text = result.text.trim();
-      return isKindText(text) ? text : null;
+      return isKindText(text, input.locale) ? text : null;
     } catch {
       return null;
     }

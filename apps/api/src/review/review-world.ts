@@ -20,6 +20,7 @@ import { DAILY_CHALLENGES as DAILY_CATALOGUE, auditText, chatSystemText, chatLin
 import {
   type Day,
   LEVEL_XP,
+  type Locale,
   type LinkDay,
   MANUAL_AREA_CHANGE_DAYS,
   REVIEW_DEFAULT_CENTER,
@@ -112,12 +113,18 @@ export class ReviewWorld implements OnboardedHook {
     return true;
   }
 
-  /** Remet le monde d'exemple à neuf. Rend le nombre de personnes fictives posées (0 si le compte n'a pas de minimoa). */
-  async reset(world: string): Promise<number> {
+  /**
+   * Remet le monde d'exemple à neuf. Rend le nombre de personnes fictives posées (0 si le compte n'a pas de minimoa).
+   * `locale` : la langue de l'app au moment de la connexion (en-tête `Accept-Language`), adoptée avant de poser le monde :
+   * tout y est écrit dans la langue que l'examinateur voit (messages, répliques des minimoas, bilan), même si le compte
+   * a été utilisé dans une autre langue avant.
+   */
+  async reset(world: string, locale: Locale | null = null): Promise<number> {
     let reviewer = await this.profiles.findById(world);
     const reviewerPet = await this.pets.findByOwner(world);
     if (!reviewer || !reviewerPet) return 0;
     if (reviewer.reviewWorld !== world) reviewer = await this.profiles.update(world, { reviewWorld: world });
+    if (locale && reviewer.locale !== locale) reviewer = await this.profiles.update(world, { locale });
 
     await this.profiles.deleteFixtures(world);
     await this.reports.removeBy(world);
@@ -262,13 +269,13 @@ export class ReviewWorld implements OnboardedHook {
       this.message(link, me, t.afterNudge[1] ?? '…', at(5, '13:00:00')),
       this.message(link, them, '🙂', at(4, '19:00:00')),
       this.message(link, me, '👋', at(4, '19:05:00')),
-      this.message(link, them, '☕️ ?', at(3, '08:30:00')),
-      this.message(link, me, 'Oui !', at(3, '08:40:00')),
+      this.message(link, them, t.short.coffee, at(3, '08:30:00')),
+      this.message(link, me, t.short.yes, at(3, '08:40:00')),
       this.message(link, me, t.heated, at(2, '20:00:00')),
       this.message(link, { kind: 'pet', id: world }, t.guard, at(2, '20:00:30'), { petRole: 'guard', visibleTo: world }),
       this.message(link, them, t.apology, at(2, '20:30:00')),
       this.message(link, them, t.after[0]?.text ?? '…', at(1, '10:00:00')),
-      this.message(link, me, 'Oui, mardi ?', at(1, '10:30:00')),
+      this.message(link, me, t.short.tuesday, at(1, '10:30:00')),
       this.message(link, { kind: 'pet', id: other }, t.remark, at(1, '10:31:00'), { petRole: 'remark' }),
       this.message(link, them, t.today, new Date(this.clock.now().getTime() - 60 * 60_000).toISOString()),
     ];

@@ -3,6 +3,7 @@ import { rituelsNotificationVars, reviewDetailedAxisLine, reviewNoticedLine, rit
 import type { WeeklyReview } from '@blowy/contract';
 import {
   type Day,
+  type Locale,
   VISION_AXES,
   type VisionAxis,
   addDays,
@@ -40,8 +41,11 @@ import { requestLocale } from '../../../shared/locale';
 
 export const REVIEWS_PAGE = 10;
 
-/** Ne garde que les phrases qui passent le garde-fou (les modèles le passent tous : c'est vérifié par les tests). */
-const kind = (lines: readonly string[]): string[] => lines.filter(isKindText);
+/**
+ * Ne garde que les phrases qui passent le garde-fou de leur langue (les modèles le passent tous : c'est vérifié par
+ * les tests de `@blowy/content`).
+ */
+const kindIn = (locale: Locale) => (lines: readonly string[]): string[] => lines.filter((line) => isKindText(line, locale));
 
 export const toReviewDto = (r: WeeklyReviewRecord): WeeklyReview => ({
   id: r.id,
@@ -117,6 +121,7 @@ export class ReviewsService {
     // Le bilan est écrit une fois, dans la langue de la personne.
     const locale = profile.locale ?? 'fr';
     const reviewText = rituelsText.in(locale).review;
+    const kind = kindIn(locale);
     const perWeek = entitlements(plus).jokersPerWeek;
     const pet = await this.pets.findByOwner(userId);
     if (!pet) return false;
@@ -185,7 +190,7 @@ export class ReviewsService {
       noticed: noticedLine,
       tip,
     });
-    const rephrased = isActiveWeek(facts) ? await this.coach.rephrase({ userId, locale: profile.locale ?? 'fr', template: forAi }) : null;
+    const rephrased = isActiveWeek(facts) ? await this.coach.rephrase({ userId, locale, template: forAi }) : null;
     const coached = rephrased ? [withPetName(rephrased, pet.name), ...linkLines].join('\n') : null;
 
     const created = await this.reviews.insertIfAbsent({

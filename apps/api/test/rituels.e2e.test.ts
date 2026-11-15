@@ -517,7 +517,7 @@ describe('tâches planifiées des rituels', () => {
       expect(review.facts).toMatchObject({ outings: 1, challengesDone: 1, habitsKept: 0 });
       expect(review.did[0]).toMatch(/^1\ssortie/);
       expect(review.links).toEqual([reviewText.link.steady('Max', 0)]);
-      for (const line of [...review.did, review.noticed, review.tip, ...review.links, review.text]) expect(isKindText(line) || line === review.text).toBe(true);
+      for (const line of [...review.did, review.noticed, review.tip, ...review.links, review.text]) expect(isKindText(line, 'fr') || line === review.text).toBe(true);
       expect(review.text).toContain(review.tip);
       expect(spy.mock.calls.filter((c) => c[0] === a.id && c[1] === 'weekly_review')).toHaveLength(1);
 
@@ -589,6 +589,6 @@ describe('modèles de phrases', () => {
       ...proofVerdictLines.unsure,
       ...Object.values(outingText.reply),
     ];
-    for (const line of lines) expect(isKindText(line), line).toBe(true);
+    for (const line of lines) expect(isKindText(line, 'fr'), line).toBe(true);
   });
 });

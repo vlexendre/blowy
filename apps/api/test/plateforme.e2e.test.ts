@@ -464,17 +464,19 @@ describe('notifications', () => {
     expect(sentTo(token)).toHaveLength(1);
   });
 
-  it('langue du profil : textes français, repli sur le français pour une langue pas encore traduite', async () => {
+  it('langue du profil : chaque notification dans la langue de la personne', async () => {
     expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '0' })).toEqual({ title: 'Série avec Léa', body: '4 jours d’affilée. À toi d’écrire avant minuit.' });
     expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Série avec Léa', body: 'Léa t’a écrit aujourd’hui. À toi avant minuit.' });
     expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '2' }).body).toBe('À toi d’écrire avant minuit. Et dans 2 autres liens.');
     expect(notificationText('en', 'your_turn', { name: 'Léa', count: '1' })).toEqual({ title: 'Streak with Léa', body: '1 day in a row. Your turn to write before midnight.' });
-    expect(notificationText('nl', 'your_turn', { name: 'Léa' })).toEqual(notificationText('fr', 'your_turn', { name: 'Léa' }));
+    expect(notificationText('nl', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Reeks met Léa', body: 'Léa schreef je vandaag. Jouw beurt, voor middernacht.' });
+    expect(notificationText('nl', 'your_turn', { name: 'Léa', count: '1' }).body).toBe('1 dag op rij. Jouw beurt om te schrijven voor middernacht.');
     const e = world.client();
     await e.api.me.onboard(onboardBody({ displayName: 'Eva', locale: 'pt' }));
     await e.api.notifications.registerDevice({ token: 'ExponentPushToken[eva]', platform: 'ios', timeZone: 'Europe/Lisbon' });
     await notifier.notify(e.id, 'words_received');
-    expect(sentTo('ExponentPushToken[eva]')[0]).toMatchObject({ title: notificationText('fr', 'words_received').title, data: { url: 'blowy://pet/caractere' } });
+    expect(sentTo('ExponentPushToken[eva]')[0]).toMatchObject({ title: '3 palavras para você', data: { url: 'blowy://pet/caractere' } });
+    expect(sentTo('ExponentPushToken[eva]')[0]?.title).not.toBe(notificationText('fr', 'words_received').title);
   });
 
   it('jetons invalides : refus immédiat ou au reçu (15 min plus tard) → appareil désactivé', async () => {

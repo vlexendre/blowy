@@ -4,7 +4,7 @@
  * Ici : les règles (quoi dire, quand) et le garde-fou ; les phrases sont dans `@blowy/content` (v7/rituels).
  */
 import { type Day, addDays } from '../days';
-import { VISION_AXES, type VisionAxis } from '../vision';
+import { type Locale, VISION_AXES, type VisionAxis } from '../vision';
 import { weekStartOf, weekdayOf } from './week';
 
 /** Dimanche, à partir de 19 h (Paris). */
@@ -105,62 +105,245 @@ export function linkNote(link: { streak: number; level: number; lives: number })
 
 /**
  * Garde-fou : refuse un texte qui reproche, culpabilise ou dramatise. Utilisé sur les modèles de phrases (tests)
- * et sur tout texte reformulé par l'IA (sinon on garde le modèle).
+ * et sur tout texte reformulé par l'IA (sinon on garde le modèle). Une liste par langue : le texte est vérifié avec
+ * celle de la langue dans laquelle il est écrit (la langue de la personne). Un faux positif ne coûte rien (on garde le
+ * modèle de phrases) ; un faux négatif laisse passer un reproche : dans le doute, une entrée de plus.
+ *
+ * Débuts de mots (ou expressions) interdits ; « $ » en fin d'entrée : le mot entier. Apostrophes droites : le texte
+ * est normalisé (’ → ') avant la recherche.
  */
-/** Débuts de mots (ou expressions) interdits ; « $ » en fin d'entrée : le mot entier. */
-const NEGATIVE_STEMS: readonly string[] = [
-  'pas assez$',
-  'jamais$',
-  'dommage$',
-  'abandon',
-  'échec',
-  'échou',
-  'raté',
-  'rater$',
-  'mauvais',
-  'décev',
-  'déçu',
-  'manqu',
-  'nul$',
-  'nulle$',
-  'paresse',
-  'honte',
-  'tu dois$',
-  'il faut$',
-  'il te faut$',
-  'faudrait$',
-  'devrais$',
-  "tu n'as pas$",
-  'tu n’as pas$',
-  "tu n'as rien$",
-  'tu n’as rien$',
-  'seulement$',
-  'négli',
-  'oubli',
-  'pire$',
-  'triste',
-  'reproch',
-  'culpab',
-  'faible',
-  'peine$',
-  'personne ne$',
-  'moins que$',
-];
+export const NEGATIVE_STEMS: Readonly<Record<Locale, readonly string[]>> = {
+  fr: [
+    'pas assez$',
+    'jamais$',
+    'dommage$',
+    'abandon',
+    'échec',
+    'échou',
+    'raté',
+    'rater$',
+    'mauvais',
+    'décev',
+    'déçu',
+    'manqu',
+    'nul$',
+    'nulle$',
+    'paresse',
+    'honte',
+    'tu dois$',
+    'il faut$',
+    'il te faut$',
+    'faudrait$',
+    'devrais$',
+    "tu n'as pas$",
+    "tu n'as rien$",
+    'seulement$',
+    'négli',
+    'oubli',
+    'pire$',
+    'triste',
+    'reproch',
+    'culpab',
+    'faible',
+    'peine$',
+    'personne ne$',
+    'moins que$',
+  ],
+  en: [
+    'not enough$',
+    'too little$',
+    'never$',
+    'too bad$',
+    'pity$',
+    'shame',
+    'give up$',
+    'gave up$',
+    'giving up$',
+    'abandon',
+    'fail',
+    'missed$',
+    'bad$',
+    'badly$',
+    'disappoint',
+    'let down$',
+    'let yourself down$',
+    'lazy$',
+    'laziness$',
+    'you must$',
+    'you should$',
+    'you have to$',
+    'you need to$',
+    'you ought to$',
+    'should have$',
+    "should've$",
+    "you didn't$",
+    'you did not$',
+    "you haven't$",
+    'you have not$',
+    "you weren't$",
+    'only$',
+    'neglect',
+    'forgot',
+    'forget',
+    'worse$',
+    'worst$',
+    'sad$',
+    'sadly$',
+    'blame',
+    'guilt',
+    'weak',
+    'nobody$',
+    'no one$',
+    'less than$',
+  ],
+  es: [
+    'lo suficiente$',
+    'no basta$',
+    'insuficiente',
+    'nunca$',
+    'lástima$',
+    'qué pena$',
+    'abandon',
+    'fracas',
+    'fallaste$',
+    'fallado$',
+    'fallar$',
+    'fallo$',
+    'falló$',
+    'mal$',
+    'mala$',
+    'malo$',
+    'decepci',
+    'pereza',
+    'perezos',
+    'vergüenza',
+    'tienes que$',
+    'debes$',
+    'deberías$',
+    'hay que$',
+    'tendrías que$',
+    'no has$',
+    'no hiciste$',
+    'no saliste$',
+    'no lograste$',
+    'no conseguiste$',
+    'solo$',
+    'sólo$',
+    'descuid',
+    'olvid',
+    'peor$',
+    'triste',
+    'reproch',
+    'culpa',
+    'débil',
+    'nadie$',
+    'menos que$',
+  ],
+  pt: [
+    'o suficiente$',
+    'insuficiente',
+    'nunca$',
+    'que pena$',
+    'uma pena$',
+    'abandon',
+    'fracass',
+    'falh',
+    'ruim$',
+    'mal$',
+    'decepcion',
+    'decepç',
+    'preguiç',
+    'vergonha',
+    'você deve$',
+    'você precisa$',
+    'tem que$',
+    'deveria$',
+    'você não$',
+    'não saiu$',
+    'não fez$',
+    'não conseguiu$',
+    'não cumpriu$',
+    'perdeu$',
+    'só$',
+    'apenas$',
+    'neglig',
+    'esquec',
+    'pior$',
+    'triste',
+    'reclam',
+    'culpa',
+    'fraco$',
+    'fraca$',
+    'ninguém$',
+    'menos que$',
+  ],
+  nl: [
+    'niet genoeg$',
+    'te weinig$',
+    'nooit$',
+    'jammer$',
+    'opgeven$',
+    'opgegeven$',
+    'gefaald$',
+    'faal',
+    'mislukt',
+    'gemist$',
+    'miste$',
+    'slecht',
+    'teleurgesteld',
+    'teleurstell',
+    'lui$',
+    'luiheid$',
+    'schaam',
+    'je moet$',
+    'moet je$',
+    'zou moeten$',
+    'je hebt niet$',
+    'je hebt geen$',
+    'je hebt niks$',
+    'heb je niet$',
+    'je bent niet$',
+    'alleen maar$',
+    'slechts$',
+    'verwaarloos',
+    'vergeten$',
+    'vergat$',
+    'erger$',
+    'ergste$',
+    'verdrietig',
+    'zielig',
+    'verwijt',
+    'schuld',
+    'zwak',
+    'niemand$',
+    'minder dan$',
+  ],
+};
 
 const escape = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const straightQuotes = (s: string): string => s.replace(/[’‘]/g, "'");
 /** Bornes de mots qui comprennent les lettres accentuées (`\b` de JavaScript ne les voit pas). */
-export const NEGATIVE_WORDING: readonly RegExp[] = NEGATIVE_STEMS.map((stem) => {
+const toPattern = (stem: string): RegExp => {
   const whole = stem.endsWith('$');
-  const body = escape(whole ? stem.slice(0, -1) : stem).replace(/ /g, '\\s+');
+  const body = escape(straightQuotes(whole ? stem.slice(0, -1) : stem)).replace(/ /g, '\\s+');
   return new RegExp(`(?<![\\p{L}])${body}${whole ? '(?![\\p{L}])' : ''}`, 'iu');
-});
+};
+
+export const NEGATIVE_WORDING: Readonly<Record<Locale, readonly RegExp[]>> = {
+  fr: NEGATIVE_STEMS.fr.map(toPattern),
+  en: NEGATIVE_STEMS.en.map(toPattern),
+  es: NEGATIVE_STEMS.es.map(toPattern),
+  pt: NEGATIVE_STEMS.pt.map(toPattern),
+  nl: NEGATIVE_STEMS.nl.map(toPattern),
+};
 
 export const REVIEW_TEXT_MAX = 700;
 
-export function isKindText(text: string): boolean {
-  const t = text.trim();
+/** Vrai si le texte, écrit dans la langue `locale`, ne reproche rien (et n'est ni vide ni trop long). */
+export function isKindText(text: string, locale: Locale): boolean {
+  const t = straightQuotes(text.trim());
   if (t.length === 0 || t.length > REVIEW_TEXT_MAX) return false;
-  return !NEGATIVE_WORDING.some((re) => re.test(t));
+  return !NEGATIVE_WORDING[locale].some((re) => re.test(t));
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { AxisMove, DailyKind, DailyStatus, Day, HabitRhythm, OutingAnswer, ProofVerdict, StreakState, VisionAxis } from '@blowy/domain';
+import type { AxisMove, DailyKind, DailyStatus, Day, Locale, HabitRhythm, OutingAnswer, ProofVerdict, StreakState, VisionAxis } from '@blowy/domain';
 
 // ── État des rituels d'une personne (une ligne par personne) ───────────────
 export interface RitualStateRecord {
@@ -220,7 +220,8 @@ export interface HabitVerifier {
 
 export interface CoachInput {
   userId: string;
-  locale: string;
+  /** Langue de la personne : celle du bilan, de la reformulation et du garde-fou. */
+  locale: Locale;
   /** Bilan assemblé des modèles de phrases (déjà validé par le garde-fou). */
   template: string;
 }

@@ -325,18 +325,39 @@ describe('bilan de la semaine', () => {
     expect(linkNote({ streak: 0, level: 1, lives: 3 })).toBe('growing');
   });
   it('garde-fou : refuse les reproches, y compris avec des accents', () => {
-    expect(isKindText('Tu es sorti trois fois. Belle semaine.')).toBe(true);
-    expect(isKindText('Tu n’as pas assez bougé.')).toBe(false);
-    expect(isKindText("Tu n'as pas tenu ta série.")).toBe(false);
-    expect(isKindText('Encore un échec.')).toBe(false);
-    expect(isKindText('Tu as manqué deux jours.')).toBe(false);
-    expect(isKindText('Il faut sortir plus.')).toBe(false);
-    expect(isKindText('C’est dommage.')).toBe(false);
-    expect(isKindText('Ne néglige pas ton minimoa.')).toBe(false);
-    expect(isKindText('')).toBe(false);
-    expect(isKindText('a'.repeat(800))).toBe(false);
+    expect(isKindText('Tu es sorti trois fois. Belle semaine.', 'fr')).toBe(true);
+    expect(isKindText('Tu n’as pas assez bougé.', 'fr')).toBe(false);
+    expect(isKindText("Tu n'as pas tenu ta série.", 'fr')).toBe(false);
+    expect(isKindText('Encore un échec.', 'fr')).toBe(false);
+    expect(isKindText('Tu as manqué deux jours.', 'fr')).toBe(false);
+    expect(isKindText('Il faut sortir plus.', 'fr')).toBe(false);
+    expect(isKindText('C’est dommage.', 'fr')).toBe(false);
+    expect(isKindText('Ne néglige pas ton minimoa.', 'fr')).toBe(false);
+    expect(isKindText('', 'fr')).toBe(false);
+    expect(isKindText('a'.repeat(800), 'fr')).toBe(false);
     // Pas de faux positif sur des mots proches.
-    expect(isKindText('Un dîner prévu, une balade improvisée : tu sais doser.')).toBe(true);
-    expect(isKindText('Ton manteau t’attend.')).toBe(true);
+    expect(isKindText('Un dîner prévu, une balade improvisée : tu sais doser.', 'fr')).toBe(true);
+    expect(isKindText('Ton manteau t’attend.', 'fr')).toBe(true);
+  });
+  it('garde-fou : une liste par langue (anglais, espagnol, portugais, néerlandais)', () => {
+    expect(isKindText('Three outings this week. Nice rhythm.', 'en')).toBe(true);
+    expect(isKindText('You didn’t go out enough.', 'en')).toBe(false);
+    expect(isKindText("You didn't keep your streak.", 'en')).toBe(false);
+    expect(isKindText('You should write more.', 'en')).toBe(false);
+    expect(isKindText('Another failure.', 'en')).toBe(false);
+    expect(isKindText('An unforgettable week.', 'en')).toBe(true);
+    expect(isKindText('Tres salidas esta semana. Buen ritmo.', 'es')).toBe(true);
+    expect(isKindText('No has salido lo suficiente.', 'es')).toBe(false);
+    expect(isKindText('Hay que salir más.', 'es')).toBe(false);
+    expect(isKindText('Una semana inolvidable.', 'es')).toBe(true);
+    expect(isKindText('Três saídas esta semana. Bom ritmo.', 'pt')).toBe(true);
+    expect(isKindText('Você não saiu nenhuma vez.', 'pt')).toBe(false);
+    expect(isKindText('Que pena, mais um fracasso.', 'pt')).toBe(false);
+    expect(isKindText('Vale a pena continuar assim.', 'pt')).toBe(true);
+    expect(isKindText('Drie uitjes deze week. Mooi ritme.', 'nl')).toBe(true);
+    expect(isKindText('Je hebt niet genoeg gedaan.', 'nl')).toBe(false);
+    expect(isKindText('Jammer, weer mislukt.', 'nl')).toBe(false);
+    // Le garde-fou lit la langue indiquée : un reproche dans une autre langue n'est pas de son ressort.
+    expect(isKindText('Encore un échec.', 'en')).toBe(true);
   });
 });

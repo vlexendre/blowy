@@ -395,7 +395,7 @@ export const onboarding = messages({
       capTitle: '3 a day at most',
       capText: 'Messages aside. Never ads.',
       nightTitle: 'Never at night',
-      nightText: 'Nothing between 10 pm and 8 am.',
+      nightText: 'Nothing between 10 PM and 8 AM.',
       refuseNote: 'If you say no: I won’t be able to tell you when someone waves at you. You can turn them on later in the Me tab.',
       denied: 'Okay. Nothing will pop up: news will wait for you in the app.',
       cta: 'Continue',

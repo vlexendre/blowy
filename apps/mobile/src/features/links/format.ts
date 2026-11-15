@@ -8,8 +8,8 @@ import { formatDate, upperFirst } from '@/locales/runtime';
 
 const weekdayOf = (day: string): number => new Date(`${day}T12:00:00Z`).getUTCDay();
 
-/** « 12 oct. » à partir de AAAA-MM-JJ. */
-export const shortDay = (day: string): string => `${Number(day.slice(8, 10))} ${dates.months[Number(day.slice(5, 7)) - 1] ?? ''}`;
+/** « 12 oct. » (« Oct 12 » en anglais) à partir de AAAA-MM-JJ. */
+export const shortDay = (day: string): string => dates.dayMonth(Number(day.slice(8, 10)), dates.months[Number(day.slice(5, 7)) - 1] ?? '');
 
 /** Séparateur du chat : « aujourd'hui · mardi », « hier », « lundi 3 nov. ». */
 export function chatDayLabel(day: string, now: Date = new Date()): string {
@@ -17,7 +17,7 @@ export function chatDayLabel(day: string, now: Date = new Date()): string {
   const weekday = dates.weekdays[weekdayOf(day)] ?? '';
   if (diff === 0) return upperFirst(`${dates.today} · ${weekday}`);
   if (diff === 1) return upperFirst(dates.yesterday);
-  return upperFirst(`${weekday} ${shortDay(day)}`);
+  return upperFirst(dates.weekdayDate(weekday, shortDay(day)));
 }
 
 /** Heure ou jour d'un dernier message, pour la liste des chats : « 21:04 », « hier », « lun. », « 3 nov. ». */
