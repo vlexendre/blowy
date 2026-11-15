@@ -224,6 +224,10 @@ describe('audit App Store — côté serveur', () => {
         message: 'Pas de lien, d’adresse, de numéro ni de pseudo dans un nom.',
       });
       expect(db.profiles.has(fr.id)).toBe(false);
+      // L'app sait vers quel champ ramener la personne (texte gardé, jamais renvoyé par l'API).
+      const field = async (p: Promise<unknown>) => p.then(() => null, (e: unknown) => (e as { field?: string }).field ?? null);
+      expect(await field(fr.api.me.onboard(onboardBody({ displayName: 'S@l0pe' })))).toBe('displayName');
+      expect(await field(fr.api.me.onboard(onboardBody({ pet: { name: 'snap lea93', species: 'nino' } })))).toBe('petName');
       const en = clientIn(w, 'en');
       expect(await apiError(en.api.me.onboard(onboardBody({ displayName: 'B i t c h', locale: 'en' })))).toEqual({
         code: 'content_refused',
@@ -334,7 +338,7 @@ describe('audit App Store — côté serveur', () => {
         rejected = await send();
         expect(await apiError(p.api.me.setAvatar(rejected))).toEqual({
           code: 'content_refused',
-          message: 'Cette photo ne peut pas être ta photo de profil. Choisis-en une autre, où on te reconnaît, habillé.',
+          message: 'Cette photo ne peut pas être ta photo de profil. Choisis-en une autre : toi, reconnaissable, sans nudité.',
         });
       } finally {
         model.respondWith(null);

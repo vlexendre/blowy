@@ -220,72 +220,72 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touche pour lui répondre"
+            "value": "Touche pour écrire"
           }
         },
         "en": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Touche pour lui répondre"
+            "value": "Touche pour écrire"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Touche pour lui répondre"
+            "value": "Touche pour écrire"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Touche pour lui répondre"
+            "value": "Touche pour écrire"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Touche pour lui répondre"
+            "value": "Touche pour écrire"
           }
         }
       },
       "extractionState": "manual",
-      "comment": "Écran verrouillé, en bas à droite"
+      "comment": "Série d’un lien : sous la barre de temps."
     },
-    "activity.link.title %@": {
+    "activity.link.title": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ t’a écrit. À toi"
+            "value": "À toi d’écrire"
           }
         },
         "en": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ t’a écrit. À toi"
+            "value": "À toi d’écrire"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ t’a écrit. À toi"
+            "value": "À toi d’écrire"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ t’a écrit. À toi"
+            "value": "À toi d’écrire"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "%@ t’a écrit. À toi"
+            "value": "À toi d’écrire"
           }
         }
       },
       "extractionState": "manual",
-      "comment": "%@ : prénom de l’autre personne du lien"
+      "comment": "Série d’un lien, le soir : l’autre a écrit, pas toi. Jamais de prénom (écran verrouillé visible de tous)."
     },
     "activity.outing.done": {
       "localizations": {

@@ -1,8 +1,9 @@
 /**
  * Moi › L'IA et toi (App Review 5.1.2(i), audit B5) : un seul endroit pour voir chaque usage de l'IA tierce et retirer
  * son accord. Le prestataire (nom, pays) vient de l'API. Preuves d'habitude : interrupteur (retrait immédiat).
- * Lecture des chats : accord chat par chat, sur l'écran des minimoas. Bilan de la semaine : rien n'est demandé, il part
- * sans aucun prénom ni nom.
+ * Lecture des chats : accord chat par chat, sur l'écran des minimoas. Vérifications de sécurité (photo de profil, message
+ * douteux d'un chat où la lecture est acceptée des deux côtés) : dites, sans interrupteur. Bilan de la semaine : rien
+ * n'est demandé, il part sans aucun prénom ni nom.
  */
 import { Banner, SettingsSection, SettingsTemplate, Skeleton, Stack, Stagger, Text } from '@blowy/ui';
 import { router } from 'expo-router';
@@ -60,6 +61,12 @@ export default function AiAndYou() {
               title={t.sections.chats}
               rows={[{ key: 'chats', title: t.chats.title, subtitle: t.chats.subtitle, onPress: () => router.push('/moi/minimoas') }]}
               footer={t.chats.footer}
+            />
+            <SettingsSection
+              key="safety"
+              title={t.sections.safety}
+              rows={[{ key: 'safety', title: t.safety.title, subtitle: t.safety.subtitle, chevron: false }]}
+              footer={t.safety.footer(`${data.provider.name} (${data.provider.country})`)}
             />
             <SettingsSection
               key="review"

@@ -7,6 +7,7 @@ import {
   EncounterHistoryZ,
   EncountersZ,
   type ErrorCode,
+  type RefusedField,
   InviteZ,
   LinkActionZ,
   LinkZ,
@@ -73,6 +74,8 @@ export class ApiError extends Error {
     readonly code: ErrorCode | 'network',
     message: string,
     readonly status: number,
+    /** `content_refused` : le champ refusé (prénom, nom du minimoa), quand l'API le précise. */
+    readonly field?: RefusedField,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -115,7 +118,7 @@ export function createApiClient(opts: ApiClientOptions) {
     const json: unknown = await res.json().catch(() => null);
     if (!res.ok) {
       const parsed = ApiErrorZ.safeParse(json);
-      if (parsed.success) throw new ApiError(parsed.data.error.code, parsed.data.error.message, res.status);
+      if (parsed.success) throw new ApiError(parsed.data.error.code, parsed.data.error.message, res.status, parsed.data.error.field);
       throw new ApiError('internal', opts.messages?.internal() ?? 'Unexpected error.', res.status);
     }
     return schema.parse(json);

@@ -67,7 +67,7 @@ export const unixSeconds = (d: Date | string | number): number => Math.floor((ty
 /** Copie stricte : seulement les clés du contrat (un champ en trop fait échouer le décodage Swift). */
 const strictState = (s: LiveActivityState): LiveActivityState => LiveActivityStateZ.strict().parse({ endsAt: s.endsAt, streak: s.streak, title: s.title, done: s.done });
 const strictAttributes = (a: LiveActivityAttributes): LiveActivityAttributes =>
-  LiveActivityAttributesZ.strict().parse({ kind: a.kind, pet: { name: a.pet.name, species: a.pet.species }, startedAt: a.startedAt, url: a.url, ...(a.otherName !== undefined ? { otherName: a.otherName } : {}) });
+  LiveActivityAttributesZ.strict().parse({ kind: a.kind, pet: { name: a.pet.name, species: a.pet.species }, startedAt: a.startedAt, url: a.url });
 
 const checkSize = (p: LiveActivityPayload): LiveActivityPayload => {
   if (Buffer.byteLength(JSON.stringify(p)) > APNS_MAX_PAYLOAD_BYTES) throw new Error('charge d’activité en direct trop grosse');

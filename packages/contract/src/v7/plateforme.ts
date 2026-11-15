@@ -208,14 +208,17 @@ export const LiveActivityAttributesZ = z.object({
   startedAt: z.number(),
   /** Lien profond ouvert au toucher (`blowy://pet`, `blowy://link/<id>`). */
   url: z.string().max(200),
-  /** link : le prénom de l'autre personne du lien. */
-  otherName: z.string().max(40).optional(),
+  // Jamais le prénom de l'autre personne d'un lien : l'écran verrouillé est visible de tous (HIG Live Activities,
+  // « Avoid displaying sensitive information » ; app de rencontre). Le texte de l'extension reste neutre.
 });
 export type LiveActivityAttributes = z.infer<typeof LiveActivityAttributesZ>;
 
 /** Partie qui change (`aps.content-state` des push `update` et `end`). Mêmes règles d'encodage. */
 export const LiveActivityStateZ = z.object({
-  /** Fin, en secondes Unix (minuit local pour le défi et la série d'un lien). */
+  /**
+   * Fin affichée, en secondes Unix (minuit local pour le défi et la série d'un lien). L'activité elle-même ne vit pas
+   * plus de 8 h après `startedAt` (HIG) : périmée puis retirée à ce moment-là si minuit est plus loin.
+   */
   endsAt: z.number(),
   /** Série en jeu : celle du défi (challenge) ou celle du lien (link) ; 0 : pas de série à montrer. */
   streak: z.number().int().min(0),

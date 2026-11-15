@@ -5,7 +5,7 @@ import type { Request, Response } from 'express';
 import { DomainError, HTTP_STATUS, defaultMessage } from './errors';
 import { localeOfRequest } from './locale';
 
-/** Toute erreur sort au format du contrat : { error: { code, message } }. */
+/** Toute erreur sort au format du contrat : { error: { code, message, field? } }. */
 @Catch()
 export class ErrorFilter implements ExceptionFilter {
   private readonly logger = new Logger('Erreurs');
@@ -19,7 +19,7 @@ export class ErrorFilter implements ExceptionFilter {
 
   private toBody(exception: unknown, locale: Locale): { status: number; body: ApiErrorBody } {
     if (exception instanceof DomainError) {
-      return { status: HTTP_STATUS[exception.code], body: { error: { code: exception.code, message: exception.messageIn(locale) } } };
+      return { status: HTTP_STATUS[exception.code], body: { error: { code: exception.code, message: exception.messageIn(locale), ...(exception.field ? { field: exception.field } : {}) } } };
     }
     if (exception instanceof HttpException) {
       const code = codeForStatus(exception.getStatus());

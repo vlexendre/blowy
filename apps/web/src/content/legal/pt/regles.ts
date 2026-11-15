@@ -42,7 +42,7 @@ export const regles: LegalPage = {
 
     { h2: 'O que acontece se uma regra não for respeitada', id: 'sanctions' },
     {
-      p: 'Analisamos cada denúncia, com o objetivo de responder em 24 horas. Um moderador pode ler a mensagem denunciada e o seu contexto imediato, nada mais. Consoante a gravidade:',
+      p: 'Os nomes, os nomes de minimoa, as mensagens e as fotos de perfil passam por um **filtro automático**: o que viola claramente estas regras não é publicado, e a app diz porquê; uma mensagem duvidosa (um insulto, por exemplo) é enviada, mas sinalizada à equipa de moderação. Cada denúncia, de uma pessoa ou do filtro, avisa a equipa, que a analisa com o objetivo de responder em 24 horas. Um moderador pode ler a mensagem denunciada e o seu contexto imediato, nada mais. Consoante a gravidade:',
     },
     {
       ol: [
@@ -53,12 +53,12 @@ export const regles: LegalPage = {
       ],
     },
     {
-      p: 'O que é ilegal pode ser denunciado às autoridades. A pessoa em causa recebe as razões da decisão e pode contestá-la ([termos de utilização](@conditions#moderation)).',
+      p: 'Dois casos suspendem uma conta automaticamente, no máximo 72 horas, enquanto um moderador a analisa: vocabulário pedocriminoso explícito numa mensagem, ou uma conta denunciada como menor por duas pessoas diferentes. O que é ilegal pode ser denunciado às autoridades. A pessoa em causa recebe as razões da decisão e pode contestá-la, seja automática ou não ([condições de utilização](@conditions#moderation)).',
     },
 
     { h2: 'Denunciar e bloquear', id: 'signaler' },
     {
-      p: 'Num chat ou num encontro, abre o menu e escolhe **Denunciar** ou **Bloquear**. A pessoa não sabe quem a denunciou e não é avisada de um bloqueio. Está tudo explicado em [segurança e denúncias](@securite).',
+      p: 'Num chat ou num encontro, abre o menu e escolhe **Denunciar** ou **Bloquear**; num chat, um toque longo numa mensagem também permite denunciá-la. A pessoa não sabe quem a denunciou e não é avisada de um bloqueio. Está tudo explicado em [segurança e denúncias](@securite).',
     },
     { p: 'Estas regras fazem parte dos [termos de utilização](@conditions). Uma pergunta, uma dúvida: {{email.support}}. Responde um humano, não um minimoa.' },
   ],

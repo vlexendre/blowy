@@ -142,6 +142,10 @@ serveur, APNs), Anthropic, Expo push. Les premiers essais réels se font sur Tes
 
 ## 9. Plus de photo du jour (spéc §24) sur une base V7 en service
 
+> **Livraison du 15 novembre 2026** : l'ordre complet, de la production d'aujourd'hui à la soumission (§9, §10 et
+> §11 ensemble, variables, rattrapages, contrôles), est dans **`docs/LIVRAISON.md`**. Les sections ci-dessous
+> gardent le détail et les mesures de chaque chantier.
+
 Les sept migrations V7 sont en production et l'API V7 se déploie seule à chaque poussée sur `main`. Ce changement
 ajoute `20261115190000_no_daily_photo.sql` (structure) et `20261115190100_no_daily_photo_backfill.sql` (reprise).
 
@@ -214,19 +218,6 @@ where l.status = 'active' and (l.last_duo_day_on is null or l.last_duo_day_on < 
 Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées) ; les photos du jour
 n'ont pas été touchées.
 
-## 10. Audit App Store : accords pour l'IA tierce et objets premium (migration `20261115210000_audit_app.sql`)
-
-1. **Migration d'abord** : deux colonnes nullables sur `profiles` (`ai_proofs_consent`, `ai_proofs_consent_at`), sans
-   valeur par défaut ni réécriture (verrou de quelques millisecondes, `lock_timeout` de 5 s). L'API d'avant les ignore.
-2. **Puis le code.** Dès son arrivée, plus aucune photo de preuve ne part à l'IA tant que la personne n'a pas accepté
-   (tout le monde part de « jamais demandé ») : les preuves envoyées par une ancienne version de l'app comptent comme
-   « pas sûr » (on fait confiance), sans IA. La nouvelle app pose la question avant la première preuve.
-3. Le minuteur range les objets premium des personnes dont Blowy+ a pris fin (travail `wardrobe`), par pages de 200 ;
-   rien à faire à la main. Aucune donnée à reprendre.
-
-Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées ; l'ancien code renverrait
-les preuves à l'IA sans accord : à éviter une fois l'app publiée).
-
 ## 10. Audit App Store (côté serveur) sur une base en service
 
 Migrations `20261115200000_audit.sql` (structure) et `20261115200100_audit_backfill.sql` (reprise), à appliquer AVANT
@@ -269,3 +260,16 @@ from snapped s where s.user_id = p.user_id and (p.last_lat <> s.lat or p.last_ln
 
 Revenir en arrière : redéployer le code précédent suffit (colonnes ignorées ; les fonctions de statistiques comptent
 seulement un peu moins). Les positions arrondies ne reviennent pas (c'est voulu).
+
+## 11. Audit App Store (côté app) : accords pour l'IA tierce et objets premium (migration `20261115210000_audit_app.sql`)
+
+1. **Migration d'abord** : deux colonnes nullables sur `profiles` (`ai_proofs_consent`, `ai_proofs_consent_at`), sans
+   valeur par défaut ni réécriture (verrou de quelques millisecondes, `lock_timeout` de 5 s). L'API d'avant les ignore.
+2. **Puis le code.** Dès son arrivée, plus aucune photo de preuve ne part à l'IA tant que la personne n'a pas accepté
+   (tout le monde part de « jamais demandé ») : les preuves envoyées par une ancienne version de l'app comptent comme
+   « pas sûr » (on fait confiance), sans IA. La nouvelle app pose la question avant la première preuve.
+3. Le minuteur range les objets premium des personnes dont Blowy+ a pris fin (travail `wardrobe`), par pages de 200 ;
+   rien à faire à la main. Aucune donnée à reprendre.
+
+Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées ; l'ancien code renverrait
+les preuves à l'IA sans accord : à éviter une fois l'app publiée).

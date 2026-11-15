@@ -248,6 +248,7 @@ export default function LinkScreen() {
             mine={l.myPet}
             theirs={l.other.pet}
             text={mm.consent.text}
+            policy={{ label: minimoaText.policy, onPress: openLegal('confidentialite') }}
             notes={[
               { key: 'refuse', icon: 'gel', text: minimoaText.ifRefused(l.myPet.name, l.other.pet.name) },
               {
@@ -544,6 +545,12 @@ function ChatComposer({
 }) {
   const send = useSendMessage(link.id);
   const ghost = link.status !== 'active';
+  // Refusé par le filtre : le message n'est pas parti, la raison vient de l'API, le texte reste dans le champ.
+  const refused = send.error instanceof ApiError && send.error.code === 'content_refused' ? send.error.message : null;
+  const edit = (v: string) => {
+    setDraft(v);
+    if (send.isError) send.reset();
+  };
   const submit = () => {
     const body = draft.trim();
     if (!body || send.isPending) return;
@@ -560,8 +567,10 @@ function ChatComposer({
   return (
     <View style={styles.composer}>
       {notice ? <NoticeBanner notice={notice} onClose={() => onNotice(null)} /> : null}
-      {send.isError ? (
-        <Banner tone="error" text={errorText(send.error, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
+      {refused ? (
+        <Banner tone="error" title={refused} text={chatText.refusedKeep} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
+      ) : send.isError ? (
+        <Banner tone="error" title={chatText.notSent} text={errorText(send.error, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
       ) : null}
       {rhythm ? (
         <Text size={13} muted center style={styles.rhythm}>
@@ -570,7 +579,7 @@ function ChatComposer({
       ) : null}
       <Composer
         value={draft}
-        onChangeText={setDraft}
+        onChangeText={edit}
         onSend={submit}
         placeholder={chatText.placeholder(link.other.displayName, link.myPet.name)}
         disabled={ghost}

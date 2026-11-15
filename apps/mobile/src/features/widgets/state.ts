@@ -109,9 +109,9 @@ export function challengeActivity(i: ActivityInputs): DesiredActivity | null {
 }
 
 /**
- * Série d'un lien : « Léa t'a écrit, à toi avant minuit ». Le soir seulement (mêmes heures que le rappel du serveur,
- * `WRITE_REMINDER_HOURS`), quand l'autre a écrit aujourd'hui et pas toi. Une seule à la fois : la plus longue série en
- * jeu d'abord.
+ * Série d'un lien : « À toi d'écrire » avant minuit, sans prénom (écran verrouillé visible de tous). Le soir seulement
+ * (mêmes heures que le rappel du serveur, `WRITE_REMINDER_HOURS`), quand l'autre a écrit aujourd'hui et pas toi. Une
+ * seule à la fois : la plus longue série en jeu d'abord.
  */
 export function linkActivity(i: ActivityInputs): DesiredActivity | null {
   const day = dayOf(i.now);
@@ -129,7 +129,6 @@ export function linkActivity(i: ActivityInputs): DesiredActivity | null {
       pet: { name: i.pet.name, species: i.pet.species },
       startedAt: nowS(i.now),
       url: linkUrl(link.id),
-      otherName: link.other.displayName,
     },
     state: { endsAt: endOfDay(i.now), streak: link.streak, title: null, done: false },
   };
@@ -153,7 +152,15 @@ export type ActivityDecision =
   | { action: 'end'; state: LiveActivityState; dismissAfterSeconds: number };
 
 /**
- * challenge : fait → état final « Défi relevé » laissé 15 min ; jour passé → retirée ; sinon mise à jour (série, texte).
+ * Durée de vie d'une activité en direct : 8 h au plus après son début (HIG d'Apple, « don't exceed eight hours »).
+ * Le défi affiche minuit (sa vraie échéance) mais son activité, démarrée par l'app, est périmée puis retirée 8 h après
+ * son début (`staleDate` côté natif, `decideRunning` ici), même si minuit est plus loin.
+ */
+export const ACTIVITY_MAX_SECONDS = 8 * 3600;
+
+/**
+ * challenge : fait → état final « Défi relevé » laissé 15 min ; jour passé ou 8 h écoulées depuis le début → retirée ;
+ * sinon mise à jour (série, texte).
  * link : tu as écrit → « C'est fait » (série à jour) 10 min ; jour passé ou plus personne n'attend → retirée.
  * outing : terminée à son heure de fin.
  */
@@ -167,8 +174,9 @@ export function decideRunning(
   switch (attributes.kind) {
     case 'challenge': {
       const done = i.streak?.doneToday ?? (i.today?.day === dayOf(i.now) ? i.today.challenge.status === 'done' : false);
-      if (done && !dayOver) return { action: 'end', state: { ...state, done: true, streak: i.streak?.current ?? state.streak }, dismissAfterSeconds: 15 * 60 };
-      if (dayOver) return { action: 'end', state, dismissAfterSeconds: 0 };
+      const expired = now >= attributes.startedAt + ACTIVITY_MAX_SECONDS;
+      if (done && !dayOver && !expired) return { action: 'end', state: { ...state, done: true, streak: i.streak?.current ?? state.streak }, dismissAfterSeconds: 15 * 60 };
+      if (dayOver || expired) return { action: 'end', state, dismissAfterSeconds: 0 };
       const desired = challengeActivity(i);
       if (!desired) return { action: 'keep' };
       const next = { ...state, streak: desired.state.streak, title: desired.state.title };

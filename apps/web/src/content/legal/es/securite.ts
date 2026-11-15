@@ -12,7 +12,7 @@ export const securite: LegalPage = {
     {
       ol: [
         'Abre el chat con la persona, o su ficha en tus encuentros.',
-        'Toca el menú arriba a la derecha y luego **Denunciar**.',
+        'Toca el menú («…») y luego **Denunciar** (en un encuentro: **Denunciar o bloquear**). Para un mensaje concreto, mantén pulsado el mensaje y luego **Denunciar este mensaje**.',
         'Elige el motivo: acoso, contenido inapropiado, perfil falso, persona menor de edad u otro.',
         'Añade unas palabras si quieres (qué pasó, cuándo). Nos ayuda a actuar rápido.',
         'Puedes bloquear a la persona al mismo tiempo.',
@@ -25,10 +25,11 @@ export const securite: LegalPage = {
     { h2: 'Qué pasa después', id: 'suite' },
     {
       ul: [
-        '**Objetivo: una respuesta en 24 horas.** Las denuncias graves (menores, amenazas, violencia) van primero.',
+        'El equipo de moderación recibe **un aviso por correo** de cada denuncia: enseguida si es urgente (menor, amenaza), si no en un resumen. **Objetivo: una respuesta en 24 horas**; pasado ese plazo, la denuncia sube al principio de la cola.',
         'Un moderador de Blowy lee **el mensaje denunciado y su contexto inmediato**, y nada más de tus conversaciones.',
         'Según la gravedad: retirada del contenido, advertencia, limitación, suspensión o cierre de la cuenta. Lo que es ilegal puede transmitirse a las autoridades.',
-        'Te confirmamos que tu denuncia se ha tramitado. Para proteger la intimidad de todos, no siempre detallamos la sanción.',
+        'Una cuenta denunciada como menor por dos personas distintas queda suspendida automáticamente, hasta que la revise el moderador.',
+        'La app te confirma que tu denuncia se ha enviado. Para proteger la intimidad de todos, no te informamos de la sanción.',
       ],
     },
 
@@ -40,7 +41,9 @@ export const securite: LegalPage = {
     { h2: 'Tus protecciones en la app', id: 'protections' },
     {
       ul: [
-        'Tu posición nunca es exacta en el mapa: redondeada a unos 300 m y desplazada, nunca en tiempo real.',
+        'Tu posición exacta nunca se guarda; en el mapa, aparece redondeada a unos 300 m y desplazada, nunca en tiempo real.',
+        'Los nombres, los mensajes y las fotos de perfil pasan por un **filtro automático**: lo que infringe claramente las [normas](@regles) no se publica, un mensaje dudoso se señala a la moderación.',
+        'Cuando un vínculo llega al nivel en el que os veis en persona, la app te recuerda estos consejos de seguridad.',
         'El **modo discreto** te quita del mapa.',
         'Nada pasa sin tu acuerdo: saludas, la otra persona acepta, se crea el vínculo.',
         'Puedes salir de un vínculo en cualquier momento.',

@@ -48,8 +48,11 @@ export const DPO = { name: TODO } as const;
 /** Hébergeur du site blowy.app (article 6 III de la LCEN). */
 export const SITE_HOST = { name: TODO, address: TODO, phone: TODO } as const;
 
-/** Hébergeur des données de l'application (base, authentification, fichiers). */
-export const DATA_HOST = { name: TODO, address: TODO, phone: TODO, region: TODO } as const;
+/**
+ * Hébergeur des données de l'application (base, authentification, fichiers). `backupRetention` : combien de temps ses
+ * sauvegardes gardent une donnée effacée (selon l'offre souscrite, ex. « 7 jours »).
+ */
+export const DATA_HOST = { name: TODO, address: TODO, phone: TODO, region: TODO, backupRetention: TODO } as const;
 
 /** Médiateur de la consommation (article L612-1 du Code de la consommation). */
 export const MEDIATOR = { name: TODO, address: TODO, website: TODO } as const;
@@ -70,6 +73,14 @@ export const SUBPROCESSORS = {
 } as const;
 
 export type SubprocessorKey = keyof typeof SUBPROCESSORS;
+
+/**
+ * Ce que le prestataire d'IA (`SUBPROCESSORS.ai`) garde de son côté et combien de temps, tel que le dit le contrat
+ * signé avec lui (ex. « au plus 30 jours, pour la sécurité ; jamais pour entraîner ses modèles »). Rien d'autre ne
+ * doit être affirmé sur ce point dans les pages. Le nom et le pays doivent rester ceux de `AI_PROVIDER_NAME` et
+ * `AI_PROVIDER_COUNTRY` côté API (phrase d'accord servie dans l'app).
+ */
+export const AI_TERMS = { retention: TODO } as const;
 
 /**
  * Table plate des champs lisibles depuis le contenu ({{clé}}). Les clés « email.* » s'affichent en lien mailto.
@@ -94,6 +105,8 @@ export const LEGAL_FIELDS: Record<string, string> = {
   'dataHost.address': DATA_HOST.address,
   'dataHost.phone': DATA_HOST.phone,
   'dataHost.region': DATA_HOST.region,
+  'dataHost.backupRetention': DATA_HOST.backupRetention,
+  'ai.retention': AI_TERMS.retention,
   'mediator.name': MEDIATOR.name,
   'mediator.address': MEDIATOR.address,
   'mediator.website': MEDIATOR.website,

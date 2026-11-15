@@ -12,7 +12,7 @@ export const securite: LegalPage = {
     {
       ol: [
         'Open de chat met de persoon, of zijn kaart bij je ontmoetingen.',
-        'Tik op het menu rechtsboven en dan op **Melden**.',
+        'Tik op het menu (“…”) en dan op **Melden** (bij een ontmoeting: **Melden of blokkeren**). Voor een specifiek bericht druk je er lang op en kies je **Dit bericht melden**.',
         'Kies de reden: intimidatie, ongepaste inhoud, nepprofiel, minderjarige, of anders.',
         'Voeg eventueel een paar woorden toe (wat er gebeurde, wanneer). Zo kunnen we snel handelen.',
         'Je kunt de persoon tegelijk blokkeren.',
@@ -25,10 +25,11 @@ export const securite: LegalPage = {
     { h2: 'Wat er daarna gebeurt', id: 'suite' },
     {
       ul: [
-        '**Doel: een reactie binnen 24 uur.** Ernstige meldingen (minderjarigen, bedreigingen, geweld) gaan voor.',
+        'Het moderatieteam krijgt van elke melding **een e-mail**: meteen bij iets dringends (minderjarige, bedreiging), anders in een overzicht. **Doel: een reactie binnen 24 uur**; daarna komt de melding bovenaan de wachtrij.',
         'Een moderator van Blowy leest **het gemelde bericht en de directe context**, en verder niets van je gesprekken.',
         'Afhankelijk van de ernst: verwijdering van de inhoud, waarschuwing, beperking, opschorting of sluiting van het account. Wat illegaal is, kan aan de autoriteiten worden doorgegeven.',
-        'We bevestigen dat je melding is afgehandeld. Om ieders privacy te beschermen, vertellen we niet altijd welke sanctie er is gegeven.',
+        'Een account dat door twee verschillende mensen als minderjarig is gemeld, wordt automatisch geschorst tot de moderator ernaar kijkt.',
+        'De app bevestigt dat je melding is verstuurd. Om ieders privacy te beschermen, houden we je niet op de hoogte van de sanctie.',
       ],
     },
 
@@ -40,7 +41,9 @@ export const securite: LegalPage = {
     { h2: 'Je bescherming in de app', id: 'protections' },
     {
       ul: [
-        'Je positie is op de kaart nooit exact: afgerond op ongeveer 300 m en verschoven, nooit live.',
+        'Je exacte positie wordt nooit opgeslagen; op de kaart is ze afgerond op ongeveer 300 m en verschoven, nooit live.',
+        'Voornamen, berichten en profielfoto’s gaan door een **automatisch filter**: wat duidelijk tegen de [regels](@regles) ingaat, wordt niet gepubliceerd, een grensgeval wordt gemeld aan de moderatie.',
+        'Als een band het niveau bereikt waarop jullie elkaar in het echt zien, herinnert de app je aan deze veiligheidstips.',
         'De **discrete modus** haalt je van de kaart.',
         'Niets gebeurt zonder jouw akkoord: jij zwaait, de ander accepteert, de band ontstaat.',
         'Je kunt een band altijd verlaten.',

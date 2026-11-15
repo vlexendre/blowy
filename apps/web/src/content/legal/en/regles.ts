@@ -42,7 +42,7 @@ export const regles: LegalPage = {
 
     { h2: 'What happens when a rule is broken', id: 'sanctions' },
     {
-      p: 'We review every report, aiming to respond within 24 hours. A moderator may read the reported message and its immediate context, nothing more. Depending on how serious it is:',
+      p: 'First names, minimoa names, messages and profile photos go through an **automatic filter**: what clearly breaks these rules is not published, and the app says why; a borderline message (an insult, for example) is sent, but reported to the moderation team. Every report, from a person or from the filter, alerts the team, which reviews it aiming to respond within 24 hours. A moderator may read the reported message and its immediate context, nothing more. Depending on how serious it is:',
     },
     {
       ol: [
@@ -53,12 +53,12 @@ export const regles: LegalPage = {
       ],
     },
     {
-      p: 'Anything illegal may be reported to the authorities. The person concerned receives the reasons for the decision and can challenge it ([terms of use](@conditions#moderation)).',
+      p: 'Two cases suspend an account automatically, for 72 hours at most, while a moderator looks at it: explicit child-abuse vocabulary in a message, or an account reported as a minor by two different people. Anything illegal may be reported to the authorities. The person concerned receives the reasons for the decision and can challenge it, whether it was automatic or not ([terms of use](@conditions#moderation)).',
     },
 
     { h2: 'Report and block', id: 'signaler' },
     {
-      p: 'From a chat or an encounter, open the menu and choose **Report** or **Block**. The person does not know who reported them, and is not notified of a block. Everything is explained in [safety and reporting](@securite).',
+      p: 'From a chat or an encounter, open the menu and choose **Report** or **Block**; in a chat, a long press on a message also lets you report it. The person does not know who reported them, and is not notified of a block. Everything is explained in [safety and reporting](@securite).',
     },
     { p: 'These rules are part of the [terms of use](@conditions). A question or a doubt: {{email.support}}. A human answers, not a minimoa.' },
   ],

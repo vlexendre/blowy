@@ -56,10 +56,15 @@ function applyAction(qc: QueryClient, id: string, action: LinkAction): void {
   void qc.invalidateQueries({ queryKey: keys.memories(id) });
 }
 
+/**
+ * Envoi d'un message. Jamais relancé tout seul : un refus du filtre (`content_refused`) ou une panne reste affiché,
+ * le texte reste dans le champ, et c'est la personne qui renvoie.
+ */
 export function useSendMessage(id: string) {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
+    retry: false,
     mutationFn: (body: SendMessageBody) => api.links.send(id, body),
     onSuccess: (action) => applyAction(qc, id, action),
   });

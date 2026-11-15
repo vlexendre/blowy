@@ -10,7 +10,7 @@ export const supprimerMonCompte: LegalPage = {
     { ol: ['Abre la pestaña **Yo**.', 'Toca **Ajustes**.', 'Toca **Eliminar mi cuenta**.', 'Escribe la palabra de confirmación que aparece en pantalla.'] },
     { p: 'Es inmediato y definitivo: después no se puede recuperar nada.' },
     {
-      note: '**¿Tienes Blowy+?** Eliminar tu cuenta no cancela la suscripción. Cancélala primero en los ajustes de tu tienda ([cómo hacerlo](@abonnement#annuler)).',
+      note: '**¿Tienes Blowy+?** Eliminar tu cuenta no cancela la suscripción. Cancélala primero en los ajustes de tu iPhone ([cómo hacerlo](@abonnement#annuler)).',
     },
 
     { h2: 'Sin la app', id: 'sans-app' },
@@ -21,11 +21,12 @@ export const supprimerMonCompte: LegalPage = {
     { h2: 'Lo que se borra enseguida', id: 'efface' },
     {
       ul: [
-        'tu cuenta, tu nombre, tu fecha de nacimiento, tu sexo, lo que buscas;',
+        'tu cuenta, tu nombre, tu fecha de nacimiento, tu sexo, lo que buscas, tu foto de perfil;',
+        'tu token de inicio de sesión de Apple, después de revocar ante Apple el acceso de Blowy a tu ID de Apple;',
         'tu minimoa, su visión, su estilo, sus objetos, tus hábitos, tu racha;',
-        'tu ubicación y la zona aproximada de tu domicilio;',
-        'tus vínculos, con sus mensajes, sus fotos y sus etapas. **También desaparecen para las otras personas**;',
-        'las fotos de prueba que guardaste como recuerdo;',
+        'tu posición redondeada, tu zona de domicilio aproximada o la ciudad que elegiste;',
+        'tus vínculos, con sus mensajes, sus antiguas fotos del día y sus etapas. **También desaparecen para las otras personas**;',
+        'tus fotos de prueba y de reto, guardadas como recuerdo o aún no borradas;',
         'las «3 palabras» recibidas, tus invitaciones;',
         'tus ajustes y el permiso para enviarte notificaciones.',
       ],
@@ -36,17 +37,17 @@ export const supprimerMonCompte: LegalPage = {
       table: {
         head: ['Qué', 'Por qué', 'Cuánto tiempo'],
         rows: [
-          ['Copias de seguridad técnicas', 'Poder restaurar el servicio en caso de fallo', 'Se sobrescriben a medida que rotan, como máximo 30 días después'],
-          ['Denuncias y decisiones de moderación', 'Seguridad de los demás y obligaciones legales. Ya no están vinculadas a tu cuenta.', '1 año después del cierre del expediente, más si un procedimiento judicial lo exige'],
-          ['En caso de expulsión definitiva: un identificador técnico de tu cuenta de Apple o Google', 'Impedir un nuevo registro', '3 años'],
-          ['Referencias de las compras de Blowy+', 'Obligaciones contables', 'Hasta 10 años'],
-          ['Datos de conexión exigidos por la ley', 'Responder a los requerimientos de las autoridades', 'El plazo fijado por la ley, un año como máximo'],
+          ['Copias de seguridad técnicas', 'Poder restaurar el servicio en caso de avería', 'Se sobrescriben a medida que rotan: {{dataHost.backupRetention}}'],
+          ['Denuncias y decisiones de moderación', 'Seguridad de los demás y obligaciones legales. Ya no están vinculadas a ninguna cuenta; el registro de decisiones conserva el nombre afectado.', '1 año después del cierre del expediente (una denuncia aún abierta: hasta que se tramite, y después 1 año), más tiempo solo si la ley lo exige'],
+          ['En caso de exclusión definitiva: una huella no reversible de tu identificador de Apple o Google', 'Impedir un nuevo registro', '3 años'],
+          ['Referencias de las compras de Blowy+', 'Obligaciones contables. Ya no están vinculadas a ninguna cuenta.', 'Hasta 10 años'],
+          ['Días de actividad y clasificación interna (estadísticas)', 'Calcular las cifras del servicio', '40 días como máximo'],
           ['Estadísticas agregadas', 'Dirigir el servicio. No permiten identificarte.', 'Sin límite'],
         ],
       },
     },
     {
-      p: 'Las «3 palabras» que elegiste para otras personas se quedan en su cuenta: son anónimas. Apple o Google conservan sus propios datos de compra y de inicio de sesión, según sus políticas. También puedes quitar Blowy de las apps conectadas a tu ID de Apple o a tu cuenta de Google.',
+      p: 'Las «3 palabras» que elegiste para otras personas se quedan en su cuenta: son anónimas. Apple o Google conservan sus propios datos de compra y de inicio de sesión, según sus políticas. Con Apple, la eliminación también quita Blowy de las apps que usan tu ID de Apple; con Google, puedes hacerlo desde tu cuenta de Google. Lo que ya se envió a nuestro proveedor de IA sigue lo que este conserva por su parte ([política de privacidad](@confidentialite#ia)).',
     },
 
     { h2: 'Una pregunta', id: 'question' },

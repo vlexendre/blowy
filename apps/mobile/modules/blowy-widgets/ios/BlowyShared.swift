@@ -120,9 +120,17 @@ struct BlowyActivityAttributes: ActivityAttributes {
   /// Début, en secondes Unix.
   var startedAt: Double
   var url: String
-  /// link : prénom de l'autre personne du lien.
-  var otherName: String?
+  // Jamais le prénom de l'autre personne d'un lien : l'écran verrouillé est visible de tous (HIG). Une ancienne charge
+  // utile qui porterait encore `otherName` se décode quand même (clé inconnue ignorée).
 
   var startDate: Date { Date(timeIntervalSince1970: startedAt) }
+
+  /// Durée de vie maximale d'une activité (HIG d'Apple : « don't exceed eight hours »).
+  static let maxDuration: TimeInterval = 8 * 3600
+
+  /// Périmée à sa fin affichée, ou 8 h après son début si c'est plus tôt (défi accepté le matin : minuit est plus loin).
+  func staleDate(for state: ContentState) -> Date {
+    min(state.endDate, startDate.addingTimeInterval(Self.maxDuration))
+  }
 }
 #endif

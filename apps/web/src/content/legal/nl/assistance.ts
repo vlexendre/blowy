@@ -40,38 +40,50 @@ export const assistance: LegalPage = {
         {
           q: 'Waarom vraagt Blowy om mijn locatie?',
           a: [
-            'Voor de kaart en ontmoetingen in de buurt, alleen als de app open is. Voor anderen wordt je positie afgerond en verschoven, en de discrete modus haalt je van de kaart. Zonder locatie werkt de rest van de app gewoon.',
+            'Voor de kaart en ontmoetingen in de buurt, alleen als de app open is. Je exacte positie wordt nooit opgeslagen: we bewaren alleen een punt afgerond op ongeveer 300 m. Anderen zien een afgeronde en verschoven positie, en de discrete modus haalt je van de kaart. Zonder locatie kies je zelf je stad (Ontmoetingen, of Ik → Instellingen → Mijn locatie) en krijg je toch ontmoetingen.',
           ],
         },
         {
           q: 'Wie leest mijn berichten?',
           a: [
-            'Geen mens leest je gesprekken. Als jullie het allebei aanzetten, leest een AI jullie berichten zodat jullie minimoas kunnen reageren; daarna wordt niets bewaard. Je zet het uit in de opties van de band of in Ik. De enige uitzondering: als een bericht wordt gemeld, leest een moderator dat bericht en de directe context.',
+            'Niemand bij Blowy leest je gesprekken, behalve een gemeld bericht (gemeld door iemand of door ons automatische filter): een moderator leest dan dat bericht en de directe context ervan. Als jullie het allebei aanzetten, leest een AI, die van onze dienstverlener {{sub.ai.provider}}, jullie laatste berichten zodat jullie minimoa’s kunnen reageren; Blowy bewaart niets van dat meelezen. Je zet het uit in de opties van de band of via Ik → De AI en jij.',
           ],
         },
         {
           q: 'Wat gebeurt er met mijn bewijsfoto’s?',
-          a: ['Een AI controleert de foto, geen mens ziet hem, en hij wordt binnen 24 uur verwijderd, tenzij je hem in je privéherinneringen bewaart.'],
+          a: [
+            'Vóór je eerste bewijs vraagt de app of een AI ({{sub.ai.provider}}) je foto’s mag controleren. Accepteer je, dan wordt de verkleinde foto ernaartoe gestuurd; anders bevestig je je gewoontes op je woord, zonder foto. Geen mens ziet je bewijsfoto’s, en ze worden binnen 24 uur gewist, tenzij je ze in je privéherinneringen bewaart. Je kunt van gedachten veranderen via Ik → De AI en jij.',
+          ],
+        },
+        {
+          q: 'Waarom is mijn bericht, voornaam of foto geweigerd?',
+          a: [
+            'Voornamen, minimoa-namen, berichten en profielfoto’s gaan door een automatisch filter, dat tegenhoudt wat duidelijk tegen de [communityregels](@regles) ingaat. De app vertelt je waarom, en je tekst blijft staan zodat je hem kunt aanpassen. Denk je dat het een vergissing is? Mail naar {{email.support}}: een mens kijkt ernaar.',
+          ],
         },
         {
           q: 'Ik kan niet meer inloggen. Wat nu?',
           a: [
-            'Inloggen gaat via Apple (iPhone) of Google (Android). Gebruik dezelfde Apple ID of hetzelfde Google-account als bij het aanmelden. Werkt het nog steeds niet, schrijf ons dan op {{email.support}}.',
+            'Inloggen gaat via Apple (iPhone) of Google (Android). Gebruik dezelfde Apple ID of hetzelfde Google-account als bij de aanmelding. Is je account geschorst? Het scherm zegt tot wanneer, en laat je de klantenservice mailen om bezwaar te maken. Werkt het nog steeds niet, mail ons dan via {{email.support}}.',
           ],
         },
         {
           q: 'Hoe zeg ik Blowy+ op?',
           a: [
-            'In de instellingen van je store, niet in Blowy. iPhone: Instellingen → je naam → Abonnementen. Android: Google Play → profiel → Betalingen en abonnementen → Abonnementen. Details in de [voorwaarden van Blowy+](@abonnement#annuler).',
+            'In de instellingen van je iPhone, niet in Blowy: Instellingen → je naam → Abonnementen (in de app brengt Ik → Blowy+ → Mijn abonnement beheren je erheen). Details in de [voorwaarden van Blowy+](@abonnement#annuler).',
           ],
         },
         {
           q: 'Hoe krijg ik mijn geld terug?',
-          a: ['Betalingen lopen via Apple of Google: zij betalen terug, volgens hun voorwaarden. De links staan in de [voorwaarden van Blowy+](@abonnement#remboursements).'],
+          a: [
+            'Betalingen lopen via Apple: Apple betaalt terug, volgens zijn voorwaarden. De link staat in de [voorwaarden van Blowy+](@abonnement#remboursements).',
+          ],
         },
         {
           q: 'Hoe meld of blokkeer ik iemand?',
-          a: ['In de chat of bij de ontmoeting: menu rechtsboven, dan Melden of Blokkeren. Zie [veiligheid en melden](@securite).'],
+          a: [
+            'In de chat of bij de ontmoeting, menu “…” rechtsboven en dan Melden of Blokkeren; in een chat kun je een bericht melden door er lang op te drukken. Zie [veiligheid en meldingen](@securite).',
+          ],
         },
         {
           q: 'Hoe verwijder ik mijn account?',

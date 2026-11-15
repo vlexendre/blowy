@@ -1,5 +1,6 @@
 // Activités en direct (V6-GWidget, écran verrouillé et île déployée) : le défi du jour accepté (temps restant
-// jusqu'à minuit, série en jeu), la série d'un lien le soir (« Léa t'a écrit, à toi avant minuit »), une sortie en cours.
+// jusqu'à minuit, série en jeu ; l'activité part au plus 8 h après son début), la série d'un lien le soir (« À toi
+// d'écrire », sans prénom : l'écran verrouillé est visible de tous), une sortie en cours.
 // Démarrées et terminées par l'app ; mises à jour par l'app ou par push APNs (type `liveactivity`).
 
 import ActivityKit
@@ -93,7 +94,7 @@ private struct LockScreenActivityView: View {
 
 // MARK: - Morceaux
 
-/// « Défi accepté · Blowy » puis le titre (« Un café dehors », « Léa t'a écrit », « Nino est de sortie »).
+/// « Défi accepté · Blowy » puis le titre (« Un café dehors », « À toi d'écrire », « Nino est de sortie »).
 private struct ActivityTitle: View {
   let context: Context
   let compact: Bool
@@ -118,7 +119,7 @@ private struct ActivityTitle: View {
       Text(attributes.doneKey)
     } else {
       switch attributes.kind {
-      case "link": Text("activity.link.title \(attributes.otherName ?? "")")
+      case "link": Text("activity.link.title")
       case "outing": Text("activity.outing.title \(attributes.pet.name)")
       default:
         if let text = state.title, !text.isEmpty { Text(verbatim: text) } else { Text("challenge.generic") }

@@ -42,7 +42,7 @@ export const regles: LegalPage = {
 
     { h2: 'Wat er gebeurt als een regel wordt overtreden', id: 'sanctions' },
     {
-      p: 'We bekijken elke melding, met als doel een reactie binnen 24 uur. Een moderator kan het gemelde bericht en de directe context lezen, verder niets. Afhankelijk van de ernst:',
+      p: 'Voornamen, minimoa-namen, berichten en profielfoto’s gaan door een **automatisch filter**: wat duidelijk tegen deze regels ingaat, wordt niet gepubliceerd, en de app zegt waarom; een grensgeval (een belediging, bijvoorbeeld) wordt wel verstuurd, maar gemeld aan het moderatieteam. Elke melding, van een persoon of van het filter, waarschuwt het team, dat ze bekijkt met als doel een reactie binnen 24 uur. Een moderator kan het gemelde bericht en de directe context lezen, verder niets. Afhankelijk van de ernst:',
     },
     {
       ol: [
@@ -53,12 +53,12 @@ export const regles: LegalPage = {
       ],
     },
     {
-      p: 'Wat illegaal is, kan aan de autoriteiten worden gemeld. De betrokkene krijgt de redenen van de beslissing en kan die aanvechten ([gebruiksvoorwaarden](@conditions#moderation)).',
+      p: 'Twee gevallen schorsen een account automatisch, maximaal 72 uur, terwijl een moderator ernaar kijkt: expliciete pedoseksuele woordenschat in een bericht, of een account dat door twee verschillende mensen als minderjarig is gemeld. Wat illegaal is, kan aan de autoriteiten worden gemeld. De betrokkene krijgt de redenen van de beslissing en kan er bezwaar tegen maken, of ze nu automatisch was of niet ([gebruiksvoorwaarden](@conditions#moderation)).',
     },
 
     { h2: 'Melden en blokkeren', id: 'signaler' },
     {
-      p: 'Open in een chat of bij een ontmoeting het menu en kies **Melden** of **Blokkeren**. De persoon weet niet wie hem heeft gemeld, en krijgt geen bericht van een blokkade. Alles wordt uitgelegd in [veiligheid en melden](@securite).',
+      p: 'Open in een chat of bij een ontmoeting het menu en kies **Melden** of **Blokkeren**; in een chat kun je een bericht ook melden door er lang op te drukken. De persoon weet niet wie hem heeft gemeld, en krijgt geen bericht van een blokkade. Alles wordt uitgelegd in [veiligheid en melden](@securite).',
     },
     { p: 'Deze regels maken deel uit van de [gebruiksvoorwaarden](@conditions). Een vraag of twijfel: {{email.support}}. Er antwoordt een mens, geen minimoa.' },
   ],

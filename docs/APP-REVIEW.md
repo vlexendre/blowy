@@ -1,8 +1,10 @@
 # App Review : compte de revue, notes et réglages
 
 Réponse au constat B1 de `docs/AUDIT-APPLE.md` (l'examinateur ne peut pas atteindre les rencontres, les chats, l'IA,
-le signalement ni le blocage). Ce document dit ce que le propriétaire règle, comment préparer le compte, et le texte
-exact à coller dans App Store Connect › Version › App Review Information.
+le signalement ni le blocage). **Source unique** des notes de revue et du compte de revue : ce document dit ce que le
+propriétaire règle, comment préparer le compte, et le texte exact à coller dans App Store Connect › Version › App
+Review Information. Le reste d'App Store Connect (classement d'âge, App Privacy, abonnements, adresses) :
+`docs/APP-STORE-CONNECT.md`. Ordre de mise en production (migrations, variables, contrôles) : `docs/LIVRAISON.md`.
 
 ## 1. Comment ça marche
 
@@ -68,7 +70,7 @@ du public et le code est limité en essais).
 1. Sur un iPhone avec la version TestFlight : Bienvenue › créer son minimoa, passer le test de vision, répondre aux
    écrans, jusqu'à « Connexion ». Toucher **Connexion par e-mail**, saisir `REVIEW_EMAIL` et `REVIEW_CODE`,
    « Se connecter ». La localisation peut être refusée : le compte reçoit alors Paris comme zone choisie à la main
-   (changeable tout de suite dans Rencontres ou Moi › Ma position), et le monde se place autour.
+   (changeable tout de suite dans Rencontres ou Moi › Réglages › Ma position), et le monde se place autour.
 2. L'inscription se termine : le monde d'exemple est posé. Vérifier Rencontres, Chats (Léa, Malo), la carte.
 3. Moi › Réglages › Se déconnecter. L'examinateur se connectera par « J'ai déjà un compte » et retrouvera un monde neuf.
 
@@ -93,8 +95,13 @@ reset at every sign-in):
 - Chats tab: a chat with "Léa" (or another first name) and a link "in danger" (2 hearts left). On first opening of a
   chat, a sheet asks for consent to AI reading (see AI below). Léa has already agreed; if you agree too, the creatures
   can react to messages. When you write, the fictional person replies.
+- Each chat has two tabs at the top: "Chat" (the conversation) and "Le lien" (the connection: who wrote today, the
+  week, lives, next level, milestones). There is no daily photo; a connection's streak grows on days when both people
+  write.
 - Mon minimoa tab: today's challenge, a 6-day streak, two habits, and last week's review (weekly reviews are under
   Mon minimoa > Son caractère).
+- Moi tab: "L'IA et toi" (what the third-party AI sees, each consent), Réglages (account, profile photo, location,
+  blocked people, legal pages, account deletion), Blowy+.
 You can also create your own account with Sign in with Apple (no sample data then).
 If you delete the demo account, sign in again with the same e-mail and code: sign-up takes about 2 minutes and the
 sample data is created again.
@@ -111,20 +118,33 @@ position: it is rounded to a ~300 m grid before being saved; others see a rounde
 time; "Discret" mode (map, top right) hides the user from the map. If location is refused, the user picks a city by
 hand for free (Rencontres > "Choisir ma ville", or Moi > Réglages > Ma position) and still gets introductions.
 
-AI (third party: Anthropic)
-(1) In a chat, an AI reads a short window of recent messages so the creatures can react, only if BOTH people agree on
-the consent sheet shown at first opening (chat > "..." > Minimoas to change it). (2) Habit proof photos are checked
-by the AI after a one-time consent. (3) Profile photos and borderline messages may be checked automatically for
-safety (see below). Weekly reviews are written from templates without names.
+AI (third party: Anthropic, United States)
+Every use is disclosed where the data is given and listed in Moi > "L'IA et toi", which names the provider.
+(1) Chats: an AI reads a short window of recent messages (authors marked A/B, no names) so the creatures can react,
+only if BOTH people agree on the consent sheet shown at first opening of a chat (provider named, link to the privacy
+policy; change it later in the chat's "..." menu or in Moi > "L'IA et toi").
+(2) Habit proof photos: before the first proof, a sheet explains what is sent (the reduced photo and the habit name),
+to whom, why, and that Blowy deletes it within 24 h; the person picks "Oui, vérifier par une IA" or "Sans
+vérification par IA" (the habit is then confirmed without any photo and counts the same). Without consent the server
+never sends an image.
+(3) Safety checks: every profile photo is checked before it is shown (nudity, apparent minors, violence, hate, ads);
+this is stated under the photo picker (Moi > Réglages > Mon compte) and in the picker sheet before a photo is chosen.
+A profile photo is optional. In a chat where both people accepted AI reading, a message the word filter is unsure
+about (e.g. a bare link) may also be checked after it is sent.
+(4) Weekly reviews are rephrased by the AI from figures and generic sentences, without any first name or creature
+name. The daily photo challenge is never sent to an AI.
 
 SAFETY AND MODERATION
 - Report and block: on any introduction (Rencontres > person > "..." > Signaler ou bloquer) and in a chat ("..." menu,
   or long-press a message > Signaler ce message). Reports reach our moderation team by e-mail right away for urgent
   ones (minor, threats) and in a digest otherwise; target handling time 24 h, with automatic escalation after 24 h.
 - Filtering: names and messages are filtered by the server (multilingual word lists resistant to simple tricks).
-  Clear violations (threats, hate, sexual content involving minors, commercial sex, scams) are not delivered and the
-  sender sees why; borderline messages (insults, explicit content) are delivered but flagged to moderators, and the
-  sender's creature suggests a pause. Profile photos are checked when uploaded (nudity, minors, violence, hate, ads).
+  Clear violations (threats, hate, sexual content involving minors, commercial sex, scams) are not delivered: the chat
+  shows "Message non envoyé" with the reason and keeps the text so it can be edited (nothing is retried
+  automatically); a refused first name or creature name sends the person back to that field with the reason.
+  Borderline messages (insults, explicit content) are delivered but flagged to moderators, and the sender's creature
+  suggests a pause. Profile photos are checked when uploaded (nudity, minors, violence, hate, ads); a refused photo is
+  deleted and the reason is shown.
   Accounts reported as a minor by two different people, or using explicit child-abuse vocabulary, are suspended
   automatically until a moderator reviews them.
 - Contact: <moderation e-mail>. Account deletion: Moi > Réglages > Supprimer mon compte (immediate; revokes the Sign
@@ -135,9 +155,13 @@ Moi > Blowy+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly
 server; sandbox purchases are accepted. "Restaurer mes achats" is on the same sheet. A reminder is sent on day 5 of
 the trial by notification and by e-mail.
 
+LOCATION AND PRIVACY LABELS
+Location is declared as Coarse Location: the exact point is never stored (see LOCATION above).
+
 WIDGETS AND LIVE ACTIVITIES
 Home/Lock Screen widgets show the creature, its mood and the streak. A Live Activity starts when the user accepts the
-daily challenge and ends at midnight or after 8 hours at most; it never shows another person's name.
+daily challenge (it shows the time left until midnight and is removed 8 hours after it started at most), and in the
+evening when a connection is waiting for a reply ("À toi d'écrire"); it never shows another person's name.
 ```
 
 ## 4. Ce qui reste à vérifier sur un vrai projet (non vérifié ici)

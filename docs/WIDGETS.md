@@ -2,7 +2,7 @@
 
 Ce qui existe : deux widgets d'écran d'accueil (petit, moyen), deux widgets d'écran verrouillé (rond, rectangulaire)
 et trois activités en direct (Dynamic Island et écran verrouillé) : le défi du jour accepté, la série d'un lien le soir
-(« Léa t'a écrit, à toi avant minuit », spéc §24), une sortie en cours. Rien sur Android, sur le web ni dans Expo Go : le pont JavaScript n'y fait rien.
+(« À toi d'écrire » avant minuit, sans prénom sur l'écran verrouillé ; spéc §24), une sortie en cours. Rien sur Android, sur le web ni dans Expo Go : le pont JavaScript n'y fait rien.
 
 ## Comment c'est construit
 
@@ -97,8 +97,11 @@ Ne pas les modifier dans `ios/` : `prebuild --clean` repart de `targets/widget`.
       déployée avec « Y aller » ; écran verrouillé : bannière, barre qui se vide jusqu'à minuit, « Série de N en jeu »).
 - [ ] Relever le défi : « Défi relevé », puis l'activité s'efface au bout de 15 min. La retirer à la main, rouvrir
       l'app : elle ne revient pas le même jour.
-- [ ] Le soir (19 h – 22 h), un lien t'a écrit et pas toi : « Léa t'a écrit. À toi », série en jeu ; « Écrire » ouvre le
-      chat ; y écrire montre « Vous vous êtes écrit » puis l'activité s'efface.
+- [ ] Le soir (19 h – 22 h), un lien t'a écrit et pas toi : « À toi d'écrire » (jamais de prénom sur l'écran
+      verrouillé), série en jeu ; « Écrire » ouvre le chat ; y écrire montre « Vous vous êtes écrit » puis l'activité
+      s'efface.
+- [ ] Défi accepté le matin (9 h) : la carte affiche « avant minuit », passe en état périmé à 17 h et l'app la retire à
+      la première ouverture après 17 h ; elle n'est pas relancée le même jour.
 - [ ] Se déconnecter : les widgets passent sur « Ouvre Blowy », les activités disparaissent.
 - [ ] Mode avion pendant une heure : le widget avance seul (la sociabilité baisse), sans appeler le réseau.
 
@@ -135,10 +138,10 @@ cours (un jeton par activité, qui peut changer pendant sa vie). Jetons en hexad
 { "aps": { "timestamp": 1794757320, "event": "start",
   "attributes-type": "BlowyActivityAttributes",
   "attributes": { "kind": "link", "pet": { "name": "Nino", "species": "nino" }, "startedAt": 1794757320,
-                  "url": "blowy://link/<linkId>", "otherName": "Léa" },
+                  "url": "blowy://link/<linkId>" },
   "content-state": { "endsAt": 1794783600, "streak": 4, "title": null, "done": false },
   "stale-date": 1794783600, "relevance-score": 75, "input-push-token": 1,
-  "alert": { "title": "Série avec Léa", "body": "4 jours d’affilée. À toi d’écrire avant minuit." } } }
+  "alert": { "title": "Un lien t’attend", "body": "À toi d’écrire avant minuit." } } }
 // Mettre à jour (jeton use = update de cette activité)
 { "aps": { "timestamp": 1794760000, "event": "update", "stale-date": 1794783600,
   "content-state": { "endsAt": 1794783600, "streak": 12, "title": "Un café dehors", "done": false } } }
@@ -147,8 +150,8 @@ cours (un jeton par activité, qui peut changer pendant sa vie). Jetons en hexad
   "content-state": { "endsAt": 1794783600, "streak": 13, "title": "Un café dehors", "done": true } } }
 ```
 
-Correspondance avec le notifieur (`event: 'start'` sur `your_turn`) : `writeTo` → `otherName`, `endsAt` ISO →
-secondes, `streak` (série du lien mis en avant) → `streak`, nom et espèce du minimoa lus par l'API. Démarrer par push
+Correspondance avec le notifieur (`event: 'start'` sur `your_turn`) : **aucun prénom** dans les attributs ni dans
+l'alerte (écran verrouillé visible de tous ; textes neutres `auditText.lockScreen`), `endsAt` ISO → secondes, `streak` (série du lien mis en avant) → `streak`, nom et espèce du minimoa lus par l'API. Démarrer par push
 **seulement la série d'un lien** : l'activité du défi n'a de sens qu'une fois le défi accepté, dans l'app ; côté défi, se
 contenter de `update` (série en danger) et `end` (minuit). Référence :
 [Starting and updating Live Activities with ActivityKit push notifications](https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications).
@@ -159,8 +162,10 @@ contenter de `update` (série en danger) et `end` (minuit). Référence :
   Vérifié : prebuild (cible, entitlements, Info.plist), modèle partagé compilé (Swift 6.2, mode 5) et décodé contre le
   JSON produit par le TypeScript, typecheck et tests du TypeScript, exports iOS et web.
 - **8 heures au plus** par activité ([Apple](https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities)) :
-  un défi accepté le matin quitte la Dynamic Island 8 h plus tard (il reste jusqu'à 4 h sur l'écran verrouillé) et
-  n'est pas relancé le même jour.
+  un défi accepté le matin affiche minuit (sa vraie échéance), mais son activité est périmée 8 h après son début
+  (`staleDate` = `BlowyActivityAttributes.staleDate(for:)`, plus tôt de minuit et début + 8 h) et l'app la retire à
+  ce moment-là (`decideRunning`, `ACTIVITY_MAX_SECONDS`) ; elle n'est pas relancée le même jour. Côté API, le jeton
+  d'une activité expire aussi au plus 8 h après son enregistrement (`endExpired`).
 - **Minuit = minuit à Paris** (le jour du défi est celui du serveur) : décalé pour quelqu'un dans un autre fuseau.
 - Après minuit sans ouvrir l'app, la série affichée suppose « joker restant → la série tient, sinon zéro » ; corrigée à
   la prochaine ouverture.

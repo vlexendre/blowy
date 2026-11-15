@@ -10,7 +10,7 @@ export const supprimerMonCompte: LegalPage = {
     { ol: ['Open het tabblad **Ik**.', 'Tik op **Instellingen**.', 'Tik op **Mijn account verwijderen**.', 'Typ het bevestigingswoord dat op het scherm staat.'] },
     { p: 'Dit is direct en definitief: daarna kan niets meer worden teruggehaald.' },
     {
-      note: '**Heb je Blowy+?** Je account verwijderen zegt het abonnement niet op. Zeg het eerst op in de instellingen van je store ([hoe](@abonnement#annuler)).',
+      note: '**Heb je Blowy+?** Je account verwijderen zegt het abonnement niet op. Zeg het eerst op in de instellingen van je iPhone ([hoe](@abonnement#annuler)).',
     },
 
     { h2: 'Zonder de app', id: 'sans-app' },
@@ -21,12 +21,13 @@ export const supprimerMonCompte: LegalPage = {
     { h2: 'Wat meteen wordt gewist', id: 'efface' },
     {
       ul: [
-        'je account, je voornaam, je geboortedatum, je geslacht, wat je zoekt;',
+        'je account, je voornaam, je geboortedatum, je geslacht, wat je zoekt, je profielfoto;',
+        'je Apple-inlogtoken, nadat de toegang van Blowy tot je Apple ID bij Apple is ingetrokken;',
         'je minimoa, zijn kijk, zijn stijl, zijn voorwerpen, je gewoontes, je reeks;',
-        'je locatie en je geschatte thuisgebied;',
-        'je banden, met hun berichten, foto’s en mijlpalen. **Ze verdwijnen ook voor de andere mensen**;',
-        'als herinnering bewaarde bewijsfoto’s;',
-        'de ontvangen “3 woorden”, je uitnodigingen;',
+        'je afgeronde positie, je geschatte woongebied of de stad die je koos;',
+        'je banden, met hun berichten, oude foto’s van de dag en mijlpalen. **Ze verdwijnen ook voor de andere mensen**;',
+        'je bewijs- en uitdagingsfoto’s, bewaard als herinnering of nog niet gewist;',
+        'de “3 woorden” die je kreeg, je uitnodigingen;',
         'je instellingen en de toestemming om je meldingen te sturen.',
       ],
     },
@@ -36,17 +37,17 @@ export const supprimerMonCompte: LegalPage = {
       table: {
         head: ['Wat', 'Waarom', 'Hoe lang'],
         rows: [
-          ['Technische back-ups', 'De dienst kunnen herstellen na een storing', 'Overschreven naarmate ze roteren, uiterlijk 30 dagen later'],
-          ['Meldingen en moderatiebeslissingen', 'De veiligheid van anderen en wettelijke verplichtingen. Ze zijn niet meer aan je account gekoppeld.', '1 jaar na afsluiting van het dossier, langer als een gerechtelijke procedure dat vereist'],
-          ['Bij definitieve uitsluiting: een technische identificatie van je Apple- of Google-account', 'Opnieuw aanmelden voorkomen', '3 jaar'],
-          ['Referenties van Blowy+-aankopen', 'Boekhoudkundige verplichtingen', 'Tot 10 jaar'],
-          ['Wettelijk verplichte verbindingsgegevens', 'Verzoeken van de autoriteiten beantwoorden', 'De wettelijke termijn, hoogstens een jaar'],
+          ['Technische back-ups', 'De dienst kunnen herstellen na een storing', 'Overschreven naarmate ze roteren: {{dataHost.backupRetention}}'],
+          ['Meldingen en moderatiebeslissingen', 'De veiligheid van anderen en wettelijke verplichtingen. Ze zijn aan geen enkel account meer gekoppeld; het logboek van beslissingen bewaart de betrokken voornaam.', '1 jaar na het sluiten van het dossier (een melding die nog open is: tot ze is behandeld, daarna 1 jaar), alleen langer als de wet dat vereist'],
+          ['Bij definitieve uitsluiting: een niet-omkeerbare vingerafdruk van je Apple- of Google-identificatie', 'Een nieuwe aanmelding voorkomen', '3 jaar'],
+          ['Referenties van Blowy+-aankopen', 'Boekhoudkundige verplichtingen. Ze zijn aan geen enkel account meer gekoppeld.', 'Tot 10 jaar'],
+          ['Activiteitsdagen en interne ranglijst (statistieken)', 'De cijfers van de dienst berekenen', 'Maximaal 40 dagen'],
           ['Geaggregeerde statistieken', 'De dienst sturen. Je bent er niet mee te identificeren.', 'Onbeperkt'],
         ],
       },
     },
     {
-      p: 'De “3 woorden” die jij voor anderen hebt gekozen, blijven op hun account staan: ze zijn anoniem. Apple of Google bewaren hun eigen aankoop- en inloggegevens, volgens hun beleid. Je kunt Blowy ook verwijderen uit de apps die aan je Apple ID of Google-account gekoppeld zijn.',
+      p: 'De “3 woorden” die jij voor anderen hebt gekozen, blijven op hun account staan: ze zijn anoniem. Apple of Google bewaren hun eigen aankoop- en inloggegevens, volgens hun beleid. Bij Apple haalt de verwijdering Blowy ook weg uit de apps die je Apple ID gebruiken; bij Google kun je dat via je Google-account doen. Wat al naar onze AI-provider is gestuurd, volgt wat die aan zijn kant bewaart ([privacybeleid](@confidentialite#ia)).',
     },
 
     { h2: 'Een vraag', id: 'question' },

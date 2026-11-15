@@ -147,6 +147,10 @@ export const chat = messages({
     send: 'Envoyer',
     ghostDisabled: 'Lien fantôme : ranime-le pour écrire',
     sendError: 'Ton message n’est pas parti. Il est toujours là, réessaie.',
+    /** Titre d'un envoi raté (hors refus du filtre, dont la raison vient de l'API). */
+    notSent: 'Message non envoyé',
+    /** Sous la raison du refus (servie par l'API) : le texte n'est pas perdu. */
+    refusedKeep: 'Ton texte est resté dans le champ : modifie-le avant de le renvoyer.',
     /** Ancienne photo du jour de l’autre, restée cachée (tu n’avais pas posté la tienne ce jour-là). */
     lockedPhoto: 'Photo restée cachée',
     typing: (name: string): string => `${name} écrit…`,
@@ -236,12 +240,14 @@ export const minimoas = messages({
      * Où en est l'autre (`consent.theirs`) : « agreed » ou « not_yet ». Un refus et une question pas encore vue se
      * disent pareil, « pas encore activé de son côté » : jamais « a refusé », aucune pression.
      */
-    otherWaiting: (name: string): string => `Pas encore activé du côté de ${name}. Tant que ce n’est pas le cas, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi.`,
-    otherAgreed: (name: string): string => `${name} l’a activé de son côté. Si tu dis oui aussi, vos minimoas liront vos messages. Modifiable dans les options du lien ou dans Moi.`,
-    bothYes: (name: string): string => `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi.`,
+    otherWaiting: (name: string): string => `Pas encore activé du côté de ${name}. Tant que ce n’est pas le cas, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
+    otherAgreed: (name: string): string => `${name} l’a activé de son côté. Si tu dis oui aussi, vos minimoas liront vos messages. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
+    bothYes: (name: string): string => `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi › L’IA et toi.`,
     /** Accord venu du réglage par défaut (« Moi ») : pas de question, une ligne dans le chat. */
     byDefault: (on: boolean): string => (on ? 'Lecture par une IA : activée d’office pour ce chat (ton réglage).' : 'Lecture par une IA : coupée d’office pour ce chat (ton réglage).'),
     byDefaultChange: 'Changer',
+    /** Sous la phrase de l’API, dans la feuille d’accord. */
+    policy: 'Politique de confidentialité',
     accept: 'J’active pour ce chat',
     decline: 'Sans lecture',
     later: 'Plus tard',
@@ -312,7 +318,7 @@ export const options = messages({
     block: (name: string): string => `Bloquer ${name}`,
     blockSub: 'Plus de messages, plus de rencontre',
     leave: 'Quitter ce lien',
-    leaveSub: 'Le chat et vos étapes disparaissent pour toi',
+    leaveSub: 'Le lien disparaît de vos chats, à tous les deux',
     reportTitle: (name: string): TitleSegment[] => [{ text: 'SIGNALER ' }, { text: name.toUpperCase(), dim: true }],
     reportIntro: (name: string): string => `${name} ne saura pas que ça vient de toi. Dis-nous ce qui ne va pas.`,
     reportReason: 'Qu’est-ce qui se passe ?',
@@ -331,7 +337,7 @@ export const options = messages({
       `${name} ne pourra plus t’écrire ni croiser ton minimoa. Ce lien disparaît. Tu pourras revenir dessus depuis Moi › Personnes bloquées.`,
     blockConfirm: 'Bloquer',
     leaveTitle: [{ text: 'QUITTER ' }, { text: 'CE LIEN ?', dim: true }] as TitleSegment[],
-    leaveText: (name: string): string => `Ton chat avec ${name} et vos étapes disparaissent pour toi. Ce n’est pas un blocage.`,
+    leaveText: (name: string): string => `Ton lien avec ${name} disparaît de vos chats, à tous les deux. Ce n’est pas un blocage : si vous vous retrouvez sur Blowy, il revient, avec votre conversation.`,
     leaveConfirm: 'Quitter le lien',
     cancel: 'Annuler',
     error: 'Ça n’a pas marché. Réessaie.',

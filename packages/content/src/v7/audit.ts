@@ -17,7 +17,7 @@ const fr = {
     nameContact: 'Pas de lien, d’adresse, de numéro ni de pseudo dans un nom.',
     message: 'Message non envoyé : il ne respecte pas les règles de la communauté de Blowy.',
     messageScam: 'Message non envoyé : pas de liens vers de l’argent, de la crypto ou des plateformes payantes sur Blowy.',
-    photo: 'Cette photo ne peut pas être ta photo de profil. Choisis-en une autre, où on te reconnaît, habillé.',
+    photo: 'Cette photo ne peut pas être ta photo de profil. Choisis-en une autre : toi, reconnaissable, sans nudité.',
   },
   /** Connexion du compte de revue : même message pour une mauvaise adresse et un mauvais code. */
   reviewSignIn: {
@@ -26,7 +26,7 @@ const fr = {
   /** Zone choisie à la main, sans localisation (gratuit). */
   area: {
     changeLocked: (day: string) => `Tu pourras changer de zone à partir du ${day}. Avec Blowy+, quand tu veux.`,
-    fromPhone: 'Ta zone vient déjà de ta position. Pour en choisir une à la main, oublie d’abord ta position (Moi › Ma position).',
+    fromPhone: 'Ta zone vient déjà de ta position. Pour en choisir une à la main, oublie d’abord ta position (Moi › Réglages › Ma position).',
   },
   /** E-mail du rappel de fin d’essai (jour 5), envoyé en plus de la notification. */
   trialEmail: {
@@ -57,10 +57,10 @@ const fr = {
     nudge: 'Ça fait 3 jours. Vous en étiez à l’expo photo.',
     afterNudge: ['Pardon, j’étais sous l’eau. Ça tient toujours, l’expo ?', 'Carrément. Samedi 15 h ?'],
     heated: 'Tu annules encore ? Franchement, ça m’énerve.',
-    guard: 'On souffle un coup ? Une pause de deux minutes, et ça repart mieux. (Toi seul vois ce message.)',
+    guard: 'On souffle un coup ? Une pause de deux minutes, et ça repart mieux. (Ce message n’est visible que par toi.)',
     apology: 'Pardon, tu as raison. J’ai eu une semaine de fou.',
     after: [
-      { who: 'them', text: 'Désolée pour samedi. On remet ça la semaine prochaine ?' },
+      { who: 'them', text: 'Pardon pour samedi. On remet ça la semaine prochaine ?' },
     ],
     today: 'Mardi, c’est noté 👍',
     dangerLines: ['On se refait un café la semaine pro ?', 'Carrément, je te dis.'],
@@ -84,7 +84,7 @@ export const auditText = defineMessages({
       nameContact: 'No links, addresses, numbers or usernames in a name.',
       message: 'Message not sent: it doesn’t follow Blowy’s community rules.',
       messageScam: 'Message not sent: no links to money, crypto or paid platforms on Blowy.',
-      photo: 'This photo can’t be your profile photo. Pick another one where you can be recognised, dressed.',
+      photo: 'This photo can’t be your profile photo. Pick another one: you, recognisable, no nudity.',
     },
     trialEmail: {
       subject: 'Your Blowy+ trial ends soon',

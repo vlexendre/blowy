@@ -12,7 +12,7 @@ export const securite: LegalPage = {
     {
       ol: [
         'Open the chat with the person, or their card in your encounters.',
-        'Tap the menu at the top right, then **Report**.',
+        'Tap the menu (“…”), then **Report** (in an encounter: **Report or block**). For a specific message, long-press it, then **Report this message**.',
         'Choose the reason: harassment, inappropriate content, fake profile, minor, or other.',
         'Add a few words if you want (what happened, when). It helps us act fast.',
         'You can block the person at the same time.',
@@ -25,10 +25,11 @@ export const securite: LegalPage = {
     { h2: 'What happens next', id: 'suite' },
     {
       ul: [
-        '**Target: a response within 24 hours.** Serious reports (minors, threats, violence) come first.',
+        'The moderation team is **notified by email** of every report: straight away for anything urgent (minor, threat), otherwise in a digest. **Target: a response within 24 hours**; beyond that, the report moves to the top of the queue.',
         'A Blowy moderator reads **the reported message and its immediate context**, and nothing else from your conversations.',
         'Depending on how serious it is: content removal, warning, restriction, suspension or closure of the account. Anything illegal may be passed on to the authorities.',
-        'We confirm that your report has been handled. To protect everyone’s privacy, we do not always detail the sanction.',
+        'An account reported as a minor by two different people is suspended automatically, until the moderator looks at it.',
+        'The app confirms that your report has been sent. To protect everyone’s privacy, we do not keep you informed about the sanction.',
       ],
     },
 
@@ -40,7 +41,9 @@ export const securite: LegalPage = {
     { h2: 'Your protections in the app', id: 'protections' },
     {
       ul: [
-        'Your position is never exact on the map: rounded to about 300 m and shifted, never in real time.',
+        'Your exact position is never stored; on the map, it is rounded to about 300 m and shifted, never in real time.',
+        'First names, messages and profile photos go through an **automatic filter**: what clearly breaks the [rules](@regles) is not published, a borderline message is reported to moderation.',
+        'When a connection reaches the level where you meet in person, the app reminds you of these safety tips.',
         '**Discreet mode** removes you from the map.',
         'Nothing happens without your agreement: you wave, the other person accepts, the connection is created.',
         'You can leave a connection at any time.',

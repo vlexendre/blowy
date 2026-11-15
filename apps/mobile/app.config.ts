@@ -62,8 +62,9 @@ const PRIVACY_MANIFEST = {
     [
       ['EmailAddress', ['AppFunctionality']],
       ['Name', ['AppFunctionality']],
-      // Précise tant que l'API garde plus de deux décimales (audit M6) ; passer à CoarseLocation une fois l'arrondi en production.
-      ['PreciseLocation', ['AppFunctionality']],
+      // Approximative (audit M6) : l'API n'enregistre jamais le point exact, seulement le centre de sa maille de ~300 m
+      // (`storedPoint`) et la zone du domicile (même maille) ; le point exact ne sert qu'en mémoire, pendant la requête.
+      ['CoarseLocation', ['AppFunctionality']],
       ['SensitiveInfo', ['AppFunctionality']],
       ['EmailsOrTextMessages', ['AppFunctionality']],
       ['PhotosorVideos', ['AppFunctionality']],

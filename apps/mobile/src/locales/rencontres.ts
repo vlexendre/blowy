@@ -45,7 +45,7 @@ export const rencontres = messages({
     noLocation: {
       title: 'Pas de rencontres près de chez toi',
       text: (pet: string): string =>
-        `Sans ta localisation, ${pet} ne te présente que des potes de tes potes. Ta position reste arrondie à 300 m environ, jamais en direct, et seulement app ouverte.`,
+        `Sans ta localisation, ${pet} ne te présente que des potes de tes potes. Choisis ta ville à la main, ou active la localisation : ta position exacte n’est jamais enregistrée, seulement un point arrondi à 300 m environ.`,
       action: 'Activer la localisation',
       settings: 'Ouvrir les Réglages',
       denied: 'Tu as refusé la localisation : choisis ta ville à la main, ou active-la dans Réglages › Blowy › Position.',

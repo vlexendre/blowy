@@ -46,7 +46,7 @@ export const ia = messages({
       back: 'Retour',
       lead: (provider: string, country: string): string =>
         `Certaines fonctions passent par une IA fournie par ${provider} (${country}), notre prestataire. Voici ce qu’elle voit, et ce que tu as accepté.`,
-      sections: { proofs: 'Preuves d’habitude', chats: 'Lecture des chats', review: 'Bilan de la semaine' },
+      sections: { proofs: 'Preuves d’habitude', chats: 'Lecture des chats', safety: 'Vérifications de sécurité', review: 'Bilan de la semaine' },
       proofs: {
         title: 'Vérifier mes preuves par une IA',
         on: (date: string): string => `Activé le ${date}. Ta photo réduite et le nom de l’habitude lui sont envoyés.`,
@@ -58,6 +58,13 @@ export const ia = messages({
         title: 'Minimoas dans tes chats',
         subtitle: 'Accord chat par chat, et pour les prochains',
         footer: 'Une IA lit vos derniers messages seulement si vous l’avez activé l’un et l’autre. Tu le retires chat par chat ou partout d’un coup.',
+      },
+      /** Vérifications de sécurité : photo de profil (toujours) et message qui laisse un doute (si vous avez accepté la lecture tous les deux). */
+      safety: {
+        title: 'Photo de profil et messages douteux',
+        subtitle: 'Toujours active : elle protège tout le monde',
+        footer: (provider: string): string =>
+          `Chaque photo de profil est vérifiée par ${provider} avant d’être montrée (nudité, personne qui semble mineure, violence, haine, pub) ; une photo refusée est effacée. Dans un chat où vous avez accepté tous les deux la lecture par une IA, un message qui laisse un doute (un lien, par exemple) peut aussi lui être envoyé, après l’envoi, pour vérifier qu’il respecte les règles. Ça ne se coupe pas, parce que ça protège tout le monde. Sans photo de profil, aucune photo ne part.`,
       },
       review: {
         title: 'Reformulé par une IA',

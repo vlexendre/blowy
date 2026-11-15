@@ -1,7 +1,7 @@
 import type { Link, RitualsToday, Streak } from '@blowy/contract';
 import { describe, expect, it } from 'vitest';
 
-import { challengeActivity, decideRunning, endOfDay, linkActivity, outingActivity, streakAfterMidnight, widgetSnapshot } from './state';
+import { ACTIVITY_MAX_SECONDS, challengeActivity, decideRunning, endOfDay, linkActivity, outingActivity, streakAfterMidnight, widgetSnapshot } from './state';
 
 // Dimanche 15 novembre 2026, 16 h 42 à Paris (UTC+1).
 const NOW = new Date('2026-11-15T15:42:00Z');
@@ -111,6 +111,19 @@ describe('activités en direct', () => {
     expect(decideRunning(running, { ...inputs, today: today('accepted') })).toEqual({ action: 'keep' });
   });
 
+  it('défi accepté le matin : l’activité affiche minuit mais part 8 h après son début (HIG)', () => {
+    const morning = new Date('2026-11-15T08:00:00Z'); // 9 h à Paris
+    const running = challengeActivity({ ...inputs, now: morning, today: today('accepted') })!;
+    expect(running.state.endsAt).toBe(MIDNIGHT);
+    expect(ACTIVITY_MAX_SECONDS).toBe(8 * 3600);
+    const before = new Date((running.attributes.startedAt + ACTIVITY_MAX_SECONDS - 60) * 1000);
+    expect(decideRunning(running, { ...inputs, now: before, today: today('accepted') })).toEqual({ action: 'keep' });
+    const after = new Date((running.attributes.startedAt + ACTIVITY_MAX_SECONDS) * 1000);
+    expect(decideRunning(running, { ...inputs, now: after, today: today('accepted') })).toEqual({ action: 'end', state: running.state, dismissAfterSeconds: 0 });
+    // Fait après 8 h : rien à laisser à l'écran, l'activité est déjà périmée.
+    expect(decideRunning(running, { ...inputs, now: after, streak: streak({ doneToday: true }), today: today('done') })).toMatchObject({ action: 'end', dismissAfterSeconds: 0 });
+  });
+
   it('série d’un lien : le soir seulement, quand l’autre a écrit et pas toi ; finie quand tu écris', () => {
     const evening = new Date('2026-11-15T18:30:00Z'); // 19 h 30 à Paris
     expect(linkActivity({ ...inputs, today: null, links: [link(false, true)] })).toBeNull(); // 16 h 42 : trop tôt
@@ -119,7 +132,10 @@ describe('activités en direct', () => {
     const longer = link(false, true, 9, '22222222-2222-4222-8222-222222222222');
     const a = linkActivity({ ...inputs, now: evening, today: null, links: [link(false, true), longer] })!;
     expect(a.key).toBe('link:22222222-2222-4222-8222-222222222222:2026-11-15');
-    expect(a.attributes).toMatchObject({ kind: 'link', otherName: 'Léa', url: 'blowy://link/22222222-2222-4222-8222-222222222222' });
+    expect(a.attributes).toMatchObject({ kind: 'link', url: 'blowy://link/22222222-2222-4222-8222-222222222222' });
+    // Écran verrouillé visible de tous : jamais le prénom de l'autre.
+    expect(a.attributes).not.toHaveProperty('otherName');
+    expect(JSON.stringify(a)).not.toContain('Léa');
     expect(a.state).toMatchObject({ streak: 9, done: false, title: null });
     expect(decideRunning(a, { ...inputs, now: evening, today: null, links: [link(true, true, 10, '22222222-2222-4222-8222-222222222222')] })).toEqual({
       action: 'end',

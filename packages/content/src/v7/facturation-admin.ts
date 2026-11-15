@@ -77,7 +77,7 @@ const fr = {
     inactivitySubject: 'Ton compte Blowy va être supprimé',
     inactivityLines: (i: { displayName: string; deleteOn: string }) => [
       `Salut ${i.displayName},`,
-      'Tu ne t’es pas connecté à Blowy depuis presque deux ans. Comme promis dans notre politique de confidentialité, on ne garde pas les comptes inactifs.',
+      'Ça fait presque deux ans que tu n’as pas ouvert Blowy. Comme promis dans notre politique de confidentialité, on ne garde pas les comptes inactifs.',
       `Sans connexion d’ici le ${i.deleteOn}, ton compte et tout ce qui va avec (ton minimoa, tes liens, tes messages) seront supprimés.`,
       'Pour le garder, il suffit d’ouvrir l’app une fois. Sinon, tu n’as rien à faire.',
     ],

@@ -10,9 +10,9 @@ export const confidentialite: LegalPage = {
     items: [
       'We use your data for one thing: bringing your minimoa to life and introducing you to compatible people. **No advertising, no selling.**',
       'What you are looking for and whom you want to meet can reveal your sexual orientation: we ask for your **explicit consent**, and you can withdraw it.',
-      'Your **location** is only used while the app is open. On the map it is rounded and shifted, never real-time, and **discreet mode** removes you from the map.',
-      'Your **proof photos** are checked by an AI, seen by no human, and deleted within 24 hours (unless you keep them).',
-      '**No human reads your conversations.** If you both switch it on, an AI reads your messages so your minimoas can react. Nothing is kept afterwards. The only human exception: a reported message and its immediate context, read by a moderator.',
+      'Your **location** is only used while the app is open, and **never stored exactly**: we only keep a point rounded to about 300 m and your area. On the map, others see a rounded and shifted position, never real-time, and **discreet mode** removes you from the map. Without location, you pick your city by hand.',
+      'A **third-party AI**, that of {{sub.ai.provider}} ({{sub.ai.location}}), is used in four places, detailed [below](#ia): reading chats if you both switch it on, your proof photos if you accept, the safety check of profile photos and of some messages, and the weekly review, sent without any name.',
+      '**No one at Blowy reads your conversations**, except a reported message (reported by someone or by our automatic filter) and its immediate context, read by a moderator.',
       'You can change everything in the app and [delete your account](@supprimer-mon-compte) at any time. For anything else: {{email.privacy}}.',
     ],
   },
@@ -33,11 +33,11 @@ export const confidentialite: LegalPage = {
     { h3: 'Your account' },
     {
       ul: [
-        '**Data:** the identifier Apple or Google sends us when you sign in, and the associated email address. With Apple, this may be a relay address that hides your real one.',
-        '**Purpose:** create your account, sign you back in, secure access, write to you about your account.',
+        '**Data:** the identifier Apple or Google sends us when you sign in, and the associated email address. With Apple, this may be a relay address that hides your real one. With Apple, we also keep a sign-in token issued by Apple, used only to revoke Blowy’s access to your Apple ID when you delete your account.',
+        '**Purpose:** create your account, sign you back in, secure access, and write to you about your account (welcome, new connection, end-of-trial reminder, moderation warning, notice before deletion for inactivity).',
         '**Legal basis:** performance of the contract.',
-        '**Retention:** as long as your account exists.',
-        '**Access:** authorised Blowy staff, our authentication host. Apple or Google know you use Blowy, since sign-in goes through them.',
+        '**Retention:** as long as your account exists. On deletion, the Apple token is first revoked with Apple, then erased. An account with no sign-in for 2 years is deleted, after a warning email sent 30 days before.',
+        '**Access:** authorised Blowy staff, our authentication host, our email provider. Apple or Google know you use Blowy, since sign-in goes through them.',
       ],
     },
 
@@ -45,10 +45,22 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** the first name (or nickname) you choose; your date of birth.',
-        '**Purpose:** your first name introduces you to others. Your date of birth checks that you are 18 or over, and is used for the age filter in encounters.',
-        '**Legal basis:** performance of the contract; for age, also our legitimate interest in protecting minors.',
+        '**Purpose:** your first name introduces you to others. It goes through our automatic filter before being saved (see [moderation](#signalements)). Your date of birth checks that you are 18 or over, and is used for the age filter in encounters.',
+        '**Legal basis:** performance of the contract; for age and the filter, also our legitimate interest in protecting minors and the community.',
         '**Retention:** as long as your account exists. If you are under 18, sign-up stops before sign-in and nothing is stored.',
         '**Access:** your first name is visible to people your minimoa introduces you to and to your connections. Your date of birth is not shown to others.',
+      ],
+    },
+
+    { h3: 'Your profile photo', id: 'photo-profil' },
+    {
+      ul: [
+        '**Data:** the photo you choose, if you add one (it is optional), taken with the camera or picked from your gallery.',
+        '**Purpose:** show you to your connections: it stays hidden in a connection until level 4, blurred at level 4, sharp from level 5.',
+        '**Safety check:** before it is published, the photo is downsized and sent to our AI provider, {{sub.ai.provider}}, which checks that it shows no nudity, no one who appears to be a minor, no violence, no hate and no advertising. We tell you so in the app before you choose the photo. A rejected photo is erased immediately, and the moderation team receives an automatic report, without the photo. If the check is not possible at that moment, the photo is published and checked a little later. This check cannot be turned off: it protects everyone. Without a profile photo, nothing is sent.',
+        '**Legal basis:** performance of the contract to display it; our legitimate interest and our safety obligations (filtering published content) for the check.',
+        '**Retention:** as long as you keep it. When you change it, the old one is erased. It is erased when you delete your account.',
+        '**Access:** your connections, depending on the connection’s level; our AI provider, for the duration of the check.',
       ],
     },
 
@@ -58,21 +70,22 @@ export const confidentialite: LegalPage = {
         '**Data:** your gender (woman, man, non-binary, or “I’d rather not say”); what you are looking for (friends, more, or both); if you are looking for “more”, whom you want to meet (women, men, everyone).',
         '**Why it is sensitive:** together, these answers can reveal your **sexual orientation**, data protected by Article 9 of the GDPR.',
         '**Purpose:** only introduce you to people who are looking for the same thing as you, and who want to meet someone like you.',
-        '**Legal basis:** your **explicit consent**, asked at sign-up before you answer. You can withdraw it: change your answers in the app (“I’d rather not say”, “friends” only) or delete your account. Without these answers, we cannot offer you “more” encounters.',
-        '**Retention:** as long as your account exists, or until you change your answers.',
-        '**Access:** the matching algorithm. These answers are used for filtering: a person introduced to you may infer that you are looking for the same thing. They are never used for advertising or passed on to a third party.',
+        '**Legal basis:** your **explicit consent**, asked at sign-up before you answer. You can withdraw it in the app (**Me → Settings → Who you are, what you’re looking for → Withdraw my consent**), or by deleting your account. Without these answers, we cannot offer you “more” encounters.',
+        '**Retention:** as long as your account exists, or until you withdraw your consent or change your answers.',
+        '**Access:** the matching algorithm. These answers are used for filtering: a person introduced to you may infer that you are looking for the same thing. They are never displayed, never used for advertising or passed on to a third party.',
       ],
     },
 
     { h3: 'Your location', id: 'localisation' },
     {
       ul: [
-        '**Data:** your position, **only while the app is open** (never in the background), and an approximate home area derived from it.',
+        '**Data:** your position, **only while the app is open** (never in the background). **It is never stored as is**: our server only keeps the centre of the roughly 300 m square you are in, and your approximate home area derived from it (same precision). The exact position is only used, for the duration of the request, to tell whether you are outside your home area.',
+        '**Without location:** you can pick your city by hand (free; once every 30 days, or whenever you like with Blowy+). We then only keep the chosen city and its centre, which serve as your area.',
         '**Purpose:** show you the map and the compatible minimoas around you; offer you nearby encounters; confirm that an outing really happened outside your home area, to raise your minimoa’s sociability.',
-        '**What others see:** never your exact position. It is rounded to about 300 m and shifted, never shown in real time. **Discreet mode** removes you from the map completely.',
-        '**Legal basis:** your consent, given through your phone’s location permission. You can withdraw it at any time in your phone settings. Without it, there is no map and no nearby encounters (we tell you clearly), but the rest of the app works.',
-        '**Retention:** we keep your last rounded position and your approximate home area, replaced at each update. We do not keep a history of your movements.',
-        '**Access:** authorised Blowy staff, our host, and the map tile provider, which receives the area shown on screen.',
+        '**What others see:** never your exact position. They see a position rounded to about 300 m and shifted, never shown in real time. **Discreet mode** removes you from the map completely.',
+        '**Legal basis:** your consent, given through your phone’s location permission, or by choosing your city. You can withdraw it at any time: in your phone settings, or in the app (**Me → Settings → My location → Forget my location**), which erases your position and your area.',
+        '**Retention:** the last rounded point and your area (or the chosen city), replaced at each update. We do not keep a history of your movements.',
+        '**Access:** authorised Blowy staff, our host, and the map tile provider, which receives from your phone the area shown on screen.',
       ],
     },
 
@@ -91,7 +104,7 @@ export const confidentialite: LegalPage = {
     { h3: 'Your minimoa, habits and streak' },
     {
       ul: [
-        '**Data:** your minimoa’s name and appearance, its gauges (sociability, hunger, energy, mood), the actions you take, your habits and their rhythm, your streak, jokers, items, your weekly review.',
+        '**Data:** your minimoa’s name and appearance, its gauges (sociability, hunger, energy, mood), the actions you take, your habits and their rhythm, your streak, jokers, items, daily challenges, your weekly review. The minimoa’s name goes through our automatic filter, like your first name.',
         '**Purpose:** run the game.',
         '**Legal basis:** performance of the contract.',
         '**Retention:** as long as your account exists.',
@@ -99,37 +112,40 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Proof photos', id: 'preuves' },
+    { h3: 'Proof and challenge photos', id: 'preuves' },
     {
       ul: [
-        '**Data:** the photo you take in the app when your minimoa asks for proof of a habit (your trainers, for example). It is taken with the camera, not picked from your gallery.',
-        '**Purpose:** check that the habit was kept. An AI answers yes, no or “not sure”, with a sentence. If “not sure”, we trust you.',
-        '**Legal basis:** your consent: you choose to take and send the photo.',
-        '**Retention:** **deleted within 24 hours**, unless you choose to keep it in your private memories (it stays there until you delete it or your account).',
-        '**Access:** **no human sees it.** Only our AI provider receives it, downsized, to analyse it. No one else on Blowy sees it.',
+        '**Data:** the photo you take in the app when your minimoa asks for proof of a habit (your trainers, for example), or for a daily photo challenge. It is taken with the camera, not picked from your gallery.',
+        '**Purpose:** check that a habit was kept; count a challenge as done.',
+        '**Checked by an AI, only if you accept:** before your first proof, the app tells you what is sent, to whom and why, and you choose. If you accept, each proof photo is downsized and sent to {{sub.ai.provider}} with the habit’s name (not your first name, not your location), which answers yes, no or “not sure”, with a sentence; if “not sure”, we trust you. If you refuse, **no photo is sent to an AI**: you confirm the habit on your word, without a photo, and your streak moves on just the same. You can change your mind at any time in **Me → AI and you**. Challenge photos are never sent to an AI.',
+        '**Legal basis:** your consent, for the AI check; performance of the contract, for temporary storage.',
+        '**Retention:** **deleted from our storage within 24 hours**, unless you choose to keep it in your private memories (it stays there until you stop keeping it or delete your account).',
+        '**Access:** **no human sees it**, neither at Blowy nor anywhere else on Blowy. Only {{sub.ai.provider}} receives a proof photo, downsized, if you accepted.',
       ],
     },
     { p: 'Avoid photographing other people, documents or sensitive information.' },
 
-    { h3: 'Your messages, and their reading by an AI if you switch it on' },
+    { h3: 'Your messages, and their reading by an AI if you switch it on', id: 'messages' },
     {
       ul: [
         '**Data:** the messages you exchange in your connections, their date, and what has been read.',
         '**Purpose:** deliver them to the other person and keep them in your conversation.',
-        '**Legal basis:** performance of the contract.',
-        '**Retention:** as long as the connection exists. If you leave a connection, the conversation is erased for you. If either of you deletes their account, the connection and its messages disappear for both.',
-        '**Access:** you and the other person. A moderator may read a **reported** message and its immediate context (see [reports](#signalements)).',
+        '**Automatic filter:** before being sent, every message goes through our filter, on our servers (word lists in several languages, no AI). A clear violation (threat, hate, sexual content involving a minor, paid sex, scam) is not sent: we tell you why, your text stays in the field, and the moderation team receives an automatic report with a short excerpt. A borderline message (insult, explicit sexual content) is sent, but reported to the moderation team, and your minimoa suggests a break.',
+        '**Legal basis:** performance of the contract; for the filter, our legitimate interest and our safety obligations.',
+        '**Retention:** as long as the connection exists, that is, as long as both your accounts exist. Leaving a connection removes it from both your lists without erasing the conversation: it comes back if you meet again. If either of you deletes their account, the connection and its messages are erased for both.',
+        '**Access:** you and the other person. A moderator may read a **reported** message, reported by one of you or by the filter, and its immediate context (see [reports](#signalements)).',
       ],
     },
     {
-      note: '“No human reads your conversations. If you both switch it on, an AI reads your messages so your minimoas can react. Nothing is kept afterwards.”',
+      note: 'The sentence the app shows you before asking for your consent: “No one at Blowy reads your conversations, except a reported message and the few messages around it, for moderation. If you both switch it on, an AI reads your latest messages so your minimoas can react to them. This AI is provided by {{sub.ai.provider}} ({{sub.ai.location}}), our provider, which receives these messages on our behalf. You can withdraw your consent at any time.”',
     },
     {
       ul: [
-        '**Each person’s agreement:** we ask both of you, the first time you open the chat. If one of you says no, no one reads: the minimoas only react to the rhythm of the connection (silences, streaks, challenges).',
-        '**Withdrawal:** at any time, in the connection’s options or in **Me**. Reading stops immediately for that connection.',
-        '**How:** no analysis on every message. When something triggers it (a silence, a certain number of messages), a short window of the latest messages is sent to our AI provider, which suggests the minimoa’s reaction. At most 3 interventions per day per connection, and you can turn them off for a connection.',
-        '**What is kept:** nothing from the analysis. Only the minimoa’s reaction appears in the chat, as a message.',
+        '**Each person’s agreement:** we ask both of you, the first time you open the chat (or once for all your chats, if you choose a default setting). If one of you has not said yes, the AI reads nothing: the minimoas only react to the rhythm of the connection (silences, streaks, challenges), with ready-made sentences.',
+        '**Withdrawal:** at any time, in the connection’s options, or for all your chats in **Me → AI and you**. Reading stops immediately.',
+        '**How:** no analysis on every message. When something triggers it (a silence, a certain number of messages, a rising tone), a short window of the latest messages is sent to {{sub.ai.provider}}, with the authors marked A and B, without your first names; the AI suggests the minimoa’s reaction. At most 3 interventions per day per connection, and you can turn them off for a connection. If the tone rises, your minimoa may suggest a break: that message is visible only to you.',
+        '**Safety check:** in a chat where you have both accepted reading, a message our filter has doubts about (a link, for example) may also be sent on its own to {{sub.ai.provider}}, after it is sent, to check that it follows the rules. If it does not, it is reported to the moderation team.',
+        '**What is kept:** at Blowy, nothing from the window sent or from the analysis; only the minimoa’s reaction appears in the chat, as a message. What {{sub.ai.provider}} keeps on its side, and for how long: {{ai.retention}}.',
         '**Legal basis:** the consent of each of you.',
       ],
     },
@@ -137,43 +153,46 @@ export const confidentialite: LegalPage = {
     { h3: 'A connection’s streak and milestones' },
     {
       ul: [
-        '**Data:** the days on which each of you wrote in the connection (not the content of the messages) and the connection’s milestones (meeting, levels reached, streak records). For connections from before 15 November 2026, the photos you had sent each other there, which stay in your memories; we no longer receive new ones.',
+        '**Data:** the days on which each of you wrote in the connection (not the content of the messages) and the connection’s milestones (meeting, levels reached, streak records). For connections from before 15 November 2026, the “daily photos” you had sent each other there: Blowy no longer receives new ones, and the old ones stay in the connection’s memories.',
         '**Purpose:** run the connection’s streak (the days in a row you both write), its lives and levels, and show you your memories.',
         '**Legal basis:** performance of the contract.',
-        '**Retention:** as long as the connection exists (same rules as messages).',
-        '**Access:** you and the other person in the connection. Photos are stored in a private space, reachable only through temporary links.',
+        '**Retention:** as long as the connection exists (same rules as messages): old daily photos are erased when the connection is, or when either of you deletes their account.',
+        '**Access:** you and the other person in the connection (their old photos stay blurred for you until level 5). Photos are stored in a private space, reachable only through temporary links.',
       ],
     },
 
-    { h3: 'Notifications' },
+    { h3: 'Notifications and emails' },
     {
       ul: [
-        '**Data:** your phone’s technical notification token, your settings for each notification type, the time you chose for the daily challenge.',
-        '**Purpose:** let you know (daily challenge, new encounter, message, “your turn to write” in the evening, connection or streak at risk, proof requested, weekly review, end-of-trial reminder). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. On iPhone, the widget and Live Activities use the same data.',
-        '**Legal basis:** your consent, given through your phone’s permission. You withdraw it in your phone settings or type by type in the app.',
+        '**Data:** your phone’s technical notification token, your settings for each notification type, the time you chose for the daily challenge; on iPhone, Live Activity tokens.',
+        '**Purpose:** let you know (daily challenge, new encounter, message, “your turn to write” in the evening, connection or streak at risk, proof requested, weekly review, end-of-trial reminder). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. The end-of-trial reminder is also sent by email, even if notifications are off. On iPhone, the widget and Live Activities use the same data; a Live Activity on the lock screen never shows anyone’s first name.',
+        '**Legal basis:** your consent for notifications, given through your phone’s permission (you withdraw it in your phone settings or type by type in the app); performance of the contract for emails about your account and subscription.',
         '**Retention:** until you turn off notifications or delete your account.',
-        '**Access:** our notification delivery provider, and Apple or Google, which deliver them to your phone.',
+        '**Access:** our notification and email providers, and Apple or Google, which deliver notifications to your phone.',
       ],
     },
 
     { h3: 'Blowy+ purchases' },
     {
       ul: [
-        '**Data:** the plan chosen, the purchase, trial and renewal dates, subscription status, transaction identifier. **We never receive your payment details**: Apple or Google bills you.',
-        '**Purpose:** unlock Blowy+ features, verify the purchase with the store, manage the trial and its reminder.',
+        '**Data:** the plan chosen, the purchase, trial and renewal dates, subscription status, transaction identifier. **We never receive your payment details**: Apple bills you.',
+        '**Purpose:** unlock Blowy+ features, verify the purchase with Apple, manage the trial and its reminder.',
         '**Legal basis:** performance of the contract; accounting obligations for transaction references.',
-        '**Retention:** status as long as your account exists; transaction references for as long as our accounting obligations require (10 years at most).',
-        '**Access:** authorised Blowy staff; Apple or Google, under their own policies.',
+        '**Retention:** status as long as your account exists; transaction references, detached from your account if it is deleted, up to 10 years (accounting obligations).',
+        '**Access:** authorised Blowy staff; Apple, under its own policy.',
       ],
     },
 
-    { h3: 'Reports, blocks and moderation', id: 'signalements' },
+    { h3: 'Filtering, reports, blocks and moderation', id: 'signalements' },
     {
       ul: [
-        '**Data:** who reports, who is reported, the connection concerned, the reason, written details; the **reported message and its immediate context**; blocks; moderation decisions and the action log.',
-        '**Purpose:** protect people, handle reports (target: within 24 hours), enforce the [rules](@regles), respond to authorities, prevent a blocked person from contacting you.',
+        '**Data:** who reports, who is reported, the connection concerned, the reason, written details; the **reported message and its immediate context**; automatic reports from our filter (first name or minimoa name refused, message not sent with an excerpt of 280 characters at most, borderline message, profile photo rejected, without the photo); blocks; moderation decisions and the action log.',
+        '**Automatic filtering:** first names, minimoa names, messages and profile photos are filtered before being published (see above). A refused first name or name is not saved, and the app tells you why.',
+        '**Purpose:** protect people, handle reports, enforce the [rules](@regles), respond to authorities, prevent a blocked person from contacting you. The moderation team is notified by email of every new report: immediately for an urgent report (minor, threat), otherwise in a digest. Target: handled within 24 hours; beyond that, the report moves to the top of the queue.',
+        '**Automatic suspension, in two cases only:** a message containing explicit child-abuse vocabulary, or an account reported as a minor by two different people. The account is then suspended for 72 hours at most, while a moderator looks at it; the moderator lifts or confirms the suspension. Apart from these two cases and the filter’s refusals, no sanction is taken without a human.',
+        '**Challenging a decision:** you can challenge any decision concerning you, automatic or not, by writing to {{email.support}} (in the app, the suspended-account screen has a button for this). A person reviews the decision.',
         '**Legal basis:** our legal obligations (in particular the Digital Services Act) and our legitimate interest in keeping the community safe.',
-        '**Retention:** see the [retention table](#durees).',
+        '**Retention:** see the [retention table](#durees). If you delete your account, reports about you and the decision log remain until they are erased, no longer linked to any account (the log keeps the first name concerned).',
         '**Access:** authorised Blowy moderators, and the authorities where the law requires it. The reported person does not know who reported them. A blocked person is not notified.',
       ],
     },
@@ -181,11 +200,11 @@ export const confidentialite: LegalPage = {
     { h3: 'Statistics and administration' },
     {
       ul: [
-        '**Data:** figures calculated from activity: number of accounts, active accounts, retention, subscribers and trials, streaks, minimoa messages, encounters suggested and accepted, AI costs.',
+        '**Data:** figures calculated from activity: number of accounts, active accounts, retention, subscribers and trials, streaks, minimoa messages, encounters suggested and accepted, AI costs. To calculate them, we note the days on which you open the app, and the encounters suggested to each person.',
         '**Purpose:** run and improve Blowy, control costs.',
         '**Legal basis:** our legitimate interest.',
         '**How:** these statistics are calculated from our own database, in an internal tool restricted to a few authorised people. There is no audience measurement or advertising tool in the app. The internal tool gives no access to conversations, except to a reported message and its immediate context.',
-        '**Retention:** individual data follows the life of your account; aggregated figures, which cannot identify you, may be kept longer.',
+        '**Retention:** activity days, 40 days; suggested encounters, 30 days; per-person AI usage counter, 2 days; internal ranking of the most active minimoas (first name and minimoa), 40 days. Aggregated figures, which cannot identify you, are kept without limit.',
       ],
     },
 
@@ -194,7 +213,7 @@ export const confidentialite: LegalPage = {
       ul: [
         '**Data:** IP address, device model and system, app version, language, error and connection logs.',
         '**Purpose:** run the service, secure it, limit abuse, fix bugs.',
-        '**Legal basis:** our legitimate interest; our legal obligations to retain certain connection data.',
+        '**Legal basis:** our legitimate interest.',
         '**Retention:** see the [retention table](#durees).',
         '**Access:** authorised technical staff and our hosts.',
       ],
@@ -238,28 +257,54 @@ export const confidentialite: LegalPage = {
     },
 
     { h2: '4. Artificial intelligence', id: 'ia' },
-    { p: 'Blowy uses AI in three places, and nowhere else:' },
+    {
+      p: 'Blowy uses the AI of **{{sub.ai.provider}}** ({{sub.ai.location}}), an outside provider, in four places and nowhere else. Everything can be seen, and what can be withdrawn can be withdrawn, in the app: **Me → AI and you**.',
+    },
     {
       table: {
-        head: ['Use', 'What the AI receives', 'What is kept'],
+        head: ['Use', 'When', 'What the provider receives', 'What Blowy keeps'],
         rows: [
-          ['Proof photos', 'The photo, downsized', 'The answer (yes, no, not sure). The photo is deleted within 24 hours, unless you keep it.'],
-          ['Reading messages (if you both switch it on)', 'A short window of the connection’s latest messages', 'Nothing from the analysis. Only the minimoa’s reaction appears in the chat.'],
-          ['Weekly review and minimoa voices', 'A summary of your week’s activity (outings, habits, streak, connections)', 'The review text, in the app.'],
+          [
+            'Reading chats',
+            'Only if you have both switched it on; can be withdrawn at any time',
+            'A short window of the connection’s latest messages, authors marked A and B, without your first names',
+            'Nothing from the window or the analysis. Only the minimoa’s reaction appears in the chat.',
+          ],
+          [
+            'Habit proof photos',
+            'Only if you accepted, once, before your first proof; can be withdrawn. Without consent: confirmation on your word, without a photo',
+            'The downsized photo and the habit’s name',
+            'The answer (yes, no, not sure). The photo is deleted within 24 hours, unless you keep it.',
+          ],
+          [
+            'Safety checks',
+            'Every profile photo, before it is published (cannot be turned off); a message the filter has doubts about, only in a chat where you have both accepted reading',
+            'The downsized profile photo; or that single message',
+            'The decision (accepted, or rejected and reported to moderation). A rejected photo is erased.',
+          ],
+          [
+            'Weekly review',
+            'In active weeks, to rephrase your review',
+            'A text made of figures and general sentences, without any first name or name (not yours, not your connections’, not your minimoa’s): nothing that could identify you',
+            'The review text, in the app.',
+          ],
         ],
       },
     },
     {
-      p: 'Our AI provider acts as a processor: it processes this data only for us, on our instructions, and not for its own purposes. No Blowy staff member sees this content during analysis. AI answers can be wrong: they have no legal effect, and if a proof is in doubt, we trust you.',
+      p: 'We never send the AI provider your email address, your date of birth, your location or your account identifier. It acts as a processor: it processes this data only for us, on our instructions, and not for its own purposes. What it keeps on its side, and for how long: {{ai.retention}}. Daily challenge photos are never sent to an AI. Without consent to chat reading, the minimoas speak with ready-made sentences, without AI.',
+    },
+    {
+      p: 'AI answers can be wrong: they have no legal effect. If a proof is in doubt, we trust you; a profile photo rejected by mistake can be reported to {{email.support}}.',
     },
 
     { h2: '5. What others see', id: 'visibilite' },
     {
       ul: [
         '**People your minimoa introduces you to** see your first name, your minimoa, its style, what you have in common and one difference, and your approximate position on the map (unless you are in discreet mode).',
-        '**Your connections** also see your messages, your streak, your connection’s milestones and your earlier photos, if any.',
+        '**Your connections** also see your messages, your streak, your connection’s milestones, your old daily photos if any, and your profile photo if you have one (hidden until level 4, blurred at level 4, sharp from level 5).',
         '**Visitors to your “3 words” page or your invitation** see your first name and your minimoa.',
-        'No one sees your email address, your date of birth, your exact position, or your vision test answers. Your proof photos are checked by an AI: no human sees them, and they are deleted within 24 hours (unless you keep them in your private memories).',
+        'No one sees your email address, your date of birth, what you answered about your gender and whom you want to meet, or your vision test answers. Your exact position is not stored anywhere. Your proof photos are seen by no human, and they are deleted within 24 hours (unless you keep them in your private memories).',
       ],
     },
 
@@ -271,8 +316,8 @@ export const confidentialite: LegalPage = {
         roles: {
           database: 'Database, authentication and photo storage',
           api: 'Hosting of the app’s server (API)',
-          ai: 'AI: proof photos, message reading if switched on, reviews',
-          email: 'Sending emails',
+          ai: 'AI: reading chats if you both switch it on, proof photos if you accept, safety check of profile photos and of some messages, weekly review (without names)',
+          email: 'Sending emails (account, end-of-trial reminder, moderation alerts)',
           push: 'Sending notifications',
           maps: 'Map tiles',
           site: 'Hosting of the blowy.app website',
@@ -280,13 +325,13 @@ export const confidentialite: LegalPage = {
       },
     },
     {
-      p: '**Apple and Google** are also involved, on their own behalf and under their own policies: sign-in (Sign in with Apple, Google), app distribution (App Store, Google Play), Blowy+ payment, and notification delivery.',
+      p: '**Apple and Google** are also involved, on their own behalf and under their own policies: sign-in (Sign in with Apple, Google), app distribution (App Store, Google Play), Blowy+ payment (App Store), and notification delivery.',
     },
     { p: 'Finally, we may have to disclose data to the authorities when the law requires it.' },
 
     { h2: '7. Transfers outside the European Union', id: 'transferts' },
     {
-      p: 'We favour providers that process data within the European Union. When a provider processes data outside the EU (the table above says so), the transfer is covered by a European Commission adequacy decision (for example the EU–US Data Privacy Framework, for certified companies) or by the Commission’s standard contractual clauses. You can get a copy by writing to {{email.privacy}}.',
+      p: 'We favour providers that process data within the European Union. When a provider processes data outside the EU (the table above says so, for example our AI provider), the transfer is covered by the safeguard shown in the table: a European Commission adequacy decision (for example the EU–US Data Privacy Framework, for certified companies) or the Commission’s standard contractual clauses. You can get a copy by writing to {{email.privacy}}.',
     },
 
     { h2: '8. How long we keep your data', id: 'durees' },
@@ -295,18 +340,21 @@ export const confidentialite: LegalPage = {
         head: ['Data', 'Retention'],
         rows: [
           ['Account, profile, vision, minimoa, habits, settings', 'As long as your account exists. Erased as soon as you delete it.'],
-          ['Inactive account', 'Deleted after 2 years without sign-in, after a warning message.'],
-          ['Location', 'Only the last rounded position and the approximate home area, replaced at each update.'],
-          ['Proof photos', 'Within 24 hours, unless you keep them in your private memories.'],
-          ['Message reading by the AI', 'Nothing is kept after the analysis.'],
-          ['A connection’s messages, streak, milestones and earlier photos', 'As long as the connection exists.'],
-          ['Purchases', 'Status as long as the account exists; transaction references up to 10 years (accounting obligations).'],
-          ['Reports and moderation decisions', '1 year after the case is closed, longer if legal proceedings require it.'],
-          ['Permanent ban', 'A technical identifier of the Apple or Google account, for 3 years, to prevent re-registration.'],
-          ['Technical logs', '30 days, unless a security incident is being investigated. Connection data the law requires us to keep: the period set by law, one year at most.'],
+          ['Inactive account', 'Deleted after 2 years without sign-in, after a warning email sent 30 days before.'],
+          ['Apple sign-in token', 'As long as your account exists. Revoked with Apple, then erased, when you delete it.'],
+          ['Location', 'Only the last rounded point (about 300 m) and your area, or the chosen city, replaced at each update. Erased if you forget your location.'],
+          ['Profile photo', 'As long as you keep it. The old one is erased when you change it; a photo rejected by the check is erased immediately.'],
+          ['Proof and challenge photos', 'Within 24 hours, unless you keep them in your private memories (until you stop keeping them or delete your account).'],
+          ['What is sent to the AI', 'Nothing is kept at Blowy, except the answer (minimoa’s reaction, proof verdict, safety decision, review text). At the provider: {{ai.retention}}.'],
+          ['A connection’s messages, streak, milestones and old daily photos', 'As long as the connection exists, that is, until either of you deletes their account.'],
+          ['Purchases', 'Status as long as the account exists; transaction references up to 10 years (accounting obligations), detached from the account if it is deleted.'],
+          ['Handled reports and moderation decisions', '1 year after the case is closed, longer only if the law requires it.'],
+          ['Permanent ban', 'A non-reversible fingerprint of the account’s Apple or Google identifier, for 3 years, to prevent re-registration.'],
+          ['Statistics', 'Activity days and named internal ranking: 40 days. Suggested encounters: 30 days. Aggregated figures, which cannot identify you: without limit.'],
+          ['The app’s technical logs', '30 days at most. Our hosts’ logs follow their own retention periods.'],
           ['Exchanges with support', '1 year after the request is closed.'],
           ['Requests to exercise your rights', '5 years, so we can prove we answered.'],
-          ['Backups', 'Overwritten as they rotate, at the latest 30 days after deletion.'],
+          ['Backups', 'Overwritten as they rotate at our data host: {{dataHost.backupRetention}}.'],
         ],
       },
     },
@@ -318,7 +366,7 @@ export const confidentialite: LegalPage = {
         '**access** your data and get a copy;',
         'have it **corrected** (much of it can be changed directly in the app);',
         'have it **erased** ([deleting your account](@supprimer-mon-compte) does it in one go);',
-        '**withdraw your consent** where it is the basis for processing (sensitive data, location, proof photos, message reading by the AI, notifications), without affecting what was done before;',
+        '**withdraw your consent** where it is the basis for processing (sensitive data, location, AI check of proof photos, message reading by the AI, notifications), without affecting what was done before;',
         '**object** to processing based on our legitimate interest, or ask for it to be **restricted**;',
         'get the data you gave us in a machine-readable format (**portability**);',
         'set **instructions** for what happens to your data after your death.',
@@ -333,7 +381,7 @@ export const confidentialite: LegalPage = {
 
     { h2: '10. Adults only', id: 'mineurs' },
     {
-      p: 'Blowy is only for people aged 18 and over. We ask for the date of birth before sign-in; under 18, sign-up stops and nothing is created. We do not knowingly collect data about minors. If we learn that an account belongs to a minor, it is deleted. You can tell us from the app using the reason “Minor”.',
+      p: 'Blowy is only for people aged 18 and over. We ask for the date of birth before sign-in; under 18, sign-up stops and nothing is created. We do not knowingly collect data about minors. If we learn that an account belongs to a minor, it is deleted. You can tell us from the app using the reason “Minor”; an account reported this way by two different people is suspended until a moderator looks at it.',
     },
 
     { h2: '11. Security', id: 'securite' },
@@ -343,7 +391,7 @@ export const confidentialite: LegalPage = {
         'No password is stored by us: sign-in goes through Apple or Google.',
         'Photos are in private storage, reachable only through temporary links.',
         'Access to data is limited to the people who need it; the admin tool is restricted to authorised people, read-only except for moderation, and its actions are logged.',
-        'We keep as little as possible: proof photos deleted within 24 hours, rounded location, nothing kept after the AI reads messages.',
+        'We keep as little as possible: location never stored exactly, proof and challenge photos deleted within 24 hours, nothing kept at Blowy of what is sent to the AI.',
       ],
     },
     {

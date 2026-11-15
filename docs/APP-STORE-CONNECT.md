@@ -1,9 +1,10 @@
 # À faire dans App Store Connect (propriétaire)
 
-Copie à jour de la section 7 de `docs/AUDIT-APPLE.md`, après les corrections de l'app du 15 novembre 2026 (objets
-premium livrés, manifestes de confidentialité, accords pour l'IA tierce, autorisations iOS). À relire après chaque
-changement de ce que l'app collecte ou partage. Les réponses ci-dessous suivent le code tel qu'il est sur
-`wip/soins-garde-robe` ; ce qui dépend d'un chantier encore en cours est signalé « en attente ».
+Copie à jour de la section 7 de `docs/AUDIT-APPLE.md`, après les corrections de l'app et du serveur du 15 novembre
+2026 (objets premium livrés, manifestes de confidentialité, accords pour l'IA tierce, autorisations iOS, position
+arrondie, filtre des contenus, compte de revue, plus de photo du jour). À relire après chaque changement de ce que
+l'app collecte ou partage. Les réponses ci-dessous suivent le code tel qu'il est sur `wip/soins-garde-robe`. Notes de
+revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `docs/LIVRAISON.md`.
 
 ## 1. Avant tout
 
@@ -24,7 +25,7 @@ changement de ce que l'app collecte ou partage. Les réponses ci-dessous suivent
 | Rapport de confidentialité d'Xcode sur l'archive (Organizer › clic droit › *Generate Privacy Report*) : il doit lister le manifeste de l'app (`PrivacyInfo.xcprivacy` de la cible Blowy), celui de l'extension (`BlowyWidget.appex`, UserDefaults `1C8F.1`) et ceux des bibliothèques. Un e-mail « ITMS-91053 Missing API declaration » d'Apple après l'envoi = une raison manque : l'ajouter dans `ios.privacyManifests` (`apps/mobile/app.config.ts`). | Mac ou EAS | propriétaire |
 | Même version et même numéro de build pour l'app et l'extension (sinon avertissement ITMS-90473) : à vérifier dans l'onglet « Builds » de la première version envoyée. | App Store Connect | propriétaire |
 | `APPLE_TEAM_ID=<identifiant d'équipe>` dans les variables du build du site (Cloudflare Pages), puis vérifier `https://blowy.app/.well-known/apple-app-site-association` : `appIDs` doit contenir `<équipe>.app.blowy`. Sans la variable, le fichier ne déclare **aucune** app et les liens d'invitation et « 3 mots » s'ouvrent dans le navigateur. | Cloudflare | propriétaire |
-| API : migration `supabase/migrations/20261115210000_audit_app.sql` appliquée **avant** le déploiement du code (deux colonnes nullables sur `profiles`, sans réécriture) ; `AI_PROVIDER_NAME` et `AI_PROVIDER_COUNTRY` laissés vides tant que le prestataire est Anthropic (États-Unis), sinon les renseigner **en même temps** que la politique de confidentialité. | Supabase, Railway | propriétaire |
+| API : migrations et déploiement dans l'ordre de `docs/LIVRAISON.md` (migrations `20261115190000` à `20261115210000` **avant** le code) ; `AI_PROVIDER_NAME` et `AI_PROVIDER_COUNTRY` laissés vides tant que le prestataire est Anthropic (États-Unis), sinon les renseigner **en même temps** que `SUBPROCESSORS.ai` des pages légales (`apps/web/src/config/legal.ts`). | Supabase, Railway | propriétaire |
 | Pages légales remplies, en ligne, et à jour pour l'IA (voir 5. et le rapport de l'audit, B2 et B5). | site | propriétaire, juriste |
 
 ## 2. Classement d'âge (questionnaire en vigueur au 16 novembre 2026)
@@ -62,7 +63,7 @@ de l'app (`NSPrivacyCollectedDataTypes`, `apps/mobile/app.config.ts`) : changer 
 |---|---|---|---|
 | Contact Info | Email Address | Oui (relais Apple possible) | App Functionality |
 | Contact Info | Name | Oui (prénom ou surnom) | App Functionality |
-| Location | **Precise Location** tant que l'API garde la position telle quelle ; **Coarse Location** une fois l'arrondi avant enregistrement en production (audit M6, en attente). Changer alors aussi `PreciseLocation` en `CoarseLocation` dans `app.config.ts`. | Oui | App Functionality |
+| Location | **Coarse Location** : l'API n'enregistre jamais le point exact, seulement le centre de sa maille de ~300 m et la zone du domicile (même maille), ou la ville choisie à la main (audit M6, corrigé ; le manifeste déclare `CoarseLocation`, vérifié par `plugins/ios-release.test.ts`). Le point exact ne sert qu'en mémoire, pendant la requête (sortie hors de la zone). | Oui | App Functionality |
 | Sensitive Info | Sensitive Info (orientation sexuelle déductible du sexe et de « qui tu veux rencontrer ») | Oui | App Functionality |
 | User Content | Emails or Text Messages (chat) | Oui | App Functionality |
 | User Content | Photos or Videos (photo de profil, preuves d'habitude, défis photo ; anciennes photos du jour encore gardées dans les souvenirs des liens) | Oui | App Functionality |
@@ -83,9 +84,12 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 - **preuves d'habitude** : feuille d'accord avant la première photo (ce qui part, à qui, pourquoi, 24 h, et « Sans
   vérification par IA ») ; sans accord, l'API n'envoie aucune image (vérifié par les tests) et l'habitude se valide
   sans photo ;
+- **vérifications de sécurité** : chaque photo de profil, réduite, avant d'être publiée (dit sous la photo dans Moi ›
+  Réglages › Mon compte et dans la feuille de choix, avant de choisir ; ne se coupe pas : photo facultative) ; un message
+  qui laisse un doute au filtre, seulement dans un chat où les deux ont accepté la lecture par l'IA ;
 - **bilan de la semaine** : reformulé sans aucun prénom ni nom (seulement des chiffres et des phrases générales) ;
 - **photo du défi du jour** : jamais envoyée à une IA ;
-- tout se voit et se retire dans **Moi › L'IA et toi**.
+- tout se voit dans **Moi › L'IA et toi** (prestataire nommé, chaque usage), et ce qui se retire s'y retire.
 
 ## 4. Abonnements
 
@@ -110,10 +114,11 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 
 ## 5. Adresses obligatoires
 
-- **Politique de confidentialité** : `https://blowy.app/legal/confidentialite` (champ App Privacy), complète (audit B2)
-  et à jour pour l'IA : nommer Anthropic (États-Unis) et la garantie de transfert, décrire les trois usages comme en
-  3., remplacer « Rien n'est conservé après » par la durée réelle chez le prestataire une fois confirmée par le contrat,
-  retirer les mentions de la photo du jour comme fonction active.
+- **Politique de confidentialité** : `https://blowy.app/legal/confidentialite` (champ App Privacy). Réécrite le 15
+  novembre 2026 d'après le code (prestataire d'IA lu dans `apps/web/src/config/legal.ts`, quatre usages, position
+  jamais exacte, filtre et suspensions automatiques, durées réellement appliquées, plus de photo du jour). Reste à
+  remplir dans `legal.ts` : e-mails de contact, DPO, hébergeurs, médiateur, garanties de transfert, durée de
+  conservation chez le prestataire d'IA (`AI_TERMS.retention`, selon le contrat), rotation des sauvegardes.
 - **Assistance (Support URL)** : `https://blowy.app/legal/assistance`, avec un e-mail réel.
 - **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Blowy,
   soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://blowy.app/legal/conditions » à la
@@ -121,40 +126,9 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
   premium comme en 4.
 - Fiche : pas de prix dans le nom, le sous-titre ni les captures (2.3.7) ; captures de l'app en usage (2.3.3).
 
-## 6. Texte pour les notes de revue (à compléter une fois le compte de revue fait, audit B1)
+## 6. Notes de revue et compte de revue
 
-> Blowy is a French app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
-> creature ("minimoa") that represents their outlook on life and introduces them only to people whose outlook is
-> compatible (score above 70%).
->
-> **Demo account.** Sign in with Apple is the only public sign-in. For review, tap "J'ai un code de démonstration"
-> below the Apple button, enter `review@blowy.app`, then the code `<code>`. [To confirm once the review account exists.]
->
-> **Language.** The app is in French. Main tabs: Mon minimoa (home) · Chats · Rencontres (introductions) · Moi (profile,
-> settings).
->
-> **Age.** Date of birth is asked before sign-in; under 18 the sign-up stops and nothing is stored. The server checks
-> the age again.
->
-> **Location.** Used only while the app is open, to find compatible people nearby. Others see a position rounded and
-> shifted, never in real time; "Mode discret" (Moi) hides you from the map.
->
-> **Third-party AI (Anthropic, United States).** Every use is disclosed and can be reviewed or withdrawn in
-> Moi › "L'IA et toi". (1) Chats: an AI reads a short window of recent messages so the creatures can react, only if BOTH
-> people agree on the consent sheet, which names the provider. (2) Habit proof photos: before the first photo, a sheet
-> explains what is sent (the reduced photo and the habit name), to whom, why, and that it is deleted within 24 h; the
-> person chooses "Oui, vérifier par une IA" or "Sans vérification par IA" (the habit is then confirmed without any
-> photo and counts the same). Without consent the server never sends an image to the AI. (3) Weekly summaries are
-> rephrased by the AI without any first name or creature name. The daily photo challenge is never sent to an AI.
->
-> **Subscription Blowy+.** Moi › Blowy+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99.
-> Includes all premium wardrobe items while subscribed (Mon minimoa › Garde-robe, items tagged "Blowy+"); when the
-> subscription ends they return to the wardrobe. Purchases are verified by our server; sandbox purchases are accepted.
-> "Restaurer mes achats" is on the same sheet.
->
-> **Safety.** Report and block: from any introduction (Rencontres › person › "Signaler ou bloquer") and in a chat
-> (… menu, or long-press a message › "Signaler ce message"). Contact: `<e-mail>`. Account deletion:
-> Moi › Réglages › Supprimer mon compte (immediate; revokes the Sign in with Apple token).
->
-> **Widgets and Live Activities.** Home/Lock Screen widgets show the creature, its mood and the streak. A Live Activity
-> starts when the user accepts the daily challenge and ends at midnight.
+Une seule source : **`docs/APP-REVIEW.md`** (fonctionnement du compte de revue, réglages Railway et Supabase, préparation
+du compte, et §3 le texte exact à coller dans App Store Connect › Version › App Review Information, en anglais). Ne pas
+recopier les notes ici : les modifier là-bas, après chaque changement de ce qu'un examinateur voit (onglets, chemins,
+usages de l'IA, abonnement).

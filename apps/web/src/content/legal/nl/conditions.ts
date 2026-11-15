@@ -12,7 +12,7 @@ export const conditions: LegalPage = {
       'Je **minimoa** draagt jouw kijk op het leven en stelt je voor aan mensen die bij je passen, als vrienden of meer. Zijn berichten zijn automatisch: het is geen persoon.',
       'Respecteer anderen en de [communityregels](@regles). Geen intimidatie, geen seksuele inhoud, niets waarbij een minderjarige betrokken is.',
       'Je berichten en foto’s blijven van jou. Je geeft ons alleen het recht om ze te verwerken zodat Blowy werkt.',
-      'Blowy is gratis. **Blowy+** is een optioneel abonnement, betaald via de App Store of Google Play ([voorwaarden van Blowy+](@abonnement)).',
+      'Blowy is gratis. **Blowy+** is een optioneel abonnement, betaald via de App Store, op iPhone ([voorwaarden van Blowy+](@abonnement)).',
       'Je kunt vertrekken wanneer je wilt: [je account verwijderen](@supprimer-mon-compte) doe je in de app.',
       'Frans recht is van toepassing. Is er een probleem, schrijf ons eerst; je kunt ook gratis naar een bemiddelaar.',
     ],
@@ -37,7 +37,7 @@ export const conditions: LegalPage = {
         '**Ontmoetingen**: je minimoa stelt je alleen voor aan mensen van wie de compatibiliteit boven een drempel ligt. Niets gebeurt zonder jouw akkoord: jij zwaait, de ander accepteert, de band ontstaat. Hoe het werkt staat in het [privacybeleid](@confidentialite#compatibilite).',
         '**Banden**: een chat, een reeks die groeit op elke dag dat jullie allebei schrijven, herinneringen, en levens die dalen als het stil blijft.',
         '**Je minimoa** heeft meters (sociaal, honger, energie, humeur), gewoontes om vol te houden, een reeks, voorwerpen. Hij gaat nooit dood.',
-        '**De kaart** toont passende minimoas om je heen, op een bewust onnauwkeurige plek.',
+        '**De kaart** toont passende minimoas om je heen (of rond de stad die je koos, als je je locatie niet aanzet), op een bewust onnauwkeurige plek.',
       ],
     },
     {
@@ -72,21 +72,24 @@ export const conditions: LegalPage = {
         'mensen op te lichten, om geld te vragen, reclame te maken of te spammen;',
         'betaalde seksuele diensten aan te bieden of te vragen;',
         'privégegevens of foto’s van iemand anders zonder toestemming te delen;',
-        'de controles te misleiden (valse bewijsfoto, vervalste locatie);',
+        'de controles te misleiden (valse bewijsfoto, vervalste locatie) of het automatische inhoudsfilter te omzeilen;',
         'het gebruik van de dienst te automatiseren (bots, scraping), de grenzen, blokkades of beveiliging te omzeilen, of de werking te verstoren.',
       ],
     },
 
     { h2: '6. Je inhoud', id: 'contenus' },
     {
-      p: 'Je berichten, foto’s en antwoorden blijven van jou. Om Blowy te laten werken, geef je ons een **gratis, niet-exclusieve, wereldwijde licentie**, beperkt tot wat nodig is om: ze op te slaan, ze te bezorgen bij de mensen voor wie ze bedoeld zijn, ze in de app te tonen, ze technisch te verwerken (een foto verkleinen bijvoorbeeld) en, waar voorzien, ze door een AI te laten analyseren (bewijsfoto’s; berichten, als jullie dat allebei hebben aangezet). Deze licentie loopt zolang de inhoud online staat en eindigt als die wordt verwijderd, behalve voor wat we moeten bewaren volgens het [privacybeleid](@confidentialite#durees).',
+      p: 'Je berichten, foto’s en antwoorden blijven van jou. Om Blowy te laten werken, geef je ons een **gratis, niet-exclusieve, wereldwijde licentie**, beperkt tot wat nodig is om: ze op te slaan, ze te bezorgen bij de mensen voor wie ze bedoeld zijn, ze in de app te tonen, ze technisch te verwerken (een foto verkleinen bijvoorbeeld) en, waar voorzien, ze automatisch te filteren en, waar voorzien, ze door een AI te laten analyseren (bewijsfoto’s, als je dat hebt geaccepteerd; berichten, als jullie dat allebei hebben aangezet; profielfoto en berichten die twijfel wekken, voor de veiligheid; zie het [privacybeleid](@confidentialite#ia)). Deze licentie loopt zolang de inhoud online staat en eindigt als die wordt verwijderd, behalve voor wat we moeten bewaren volgens het [privacybeleid](@confidentialite#durees).',
     },
     { p: 'We gebruiken je inhoud niet voor reclame en we verkopen hem niet.' },
     { p: 'Je garandeert dat je het recht hebt om te plaatsen wat je plaatst, en dat het geen inbreuk maakt op de rechten van anderen (portretrecht, privacy, auteursrecht).' },
 
     { h2: '7. Melden, moderatie en sancties', id: 'moderation' },
     {
-      p: 'Je kunt iemand altijd melden of blokkeren vanuit de app ([hoe](@securite)). We bekijken elke melding, met als doel een reactie binnen 24 uur. Daarvoor kan een moderator van Blowy het gemelde bericht en de directe context lezen (de berichten eromheen). Buiten dit geval leest geen mens je gesprekken; een AI leest ze alleen als jullie dat allebei hebben aangezet.',
+      p: 'Je kunt iemand altijd melden of blokkeren vanuit de app ([hoe](@securite)). Elke melding waarschuwt het moderatieteam, dat ze bekijkt met als doel een reactie binnen 24 uur. Daarvoor kan een moderator van Blowy het gemelde bericht en de directe context lezen (de berichten eromheen). Buiten dit geval leest niemand bij Blowy je gesprekken; een AI leest ze alleen als jullie dat allebei hebben aangezet.',
+    },
+    {
+      p: 'Voornamen, minimoa-namen, berichten en profielfoto’s gaan door een **automatisch filter** voordat ze worden gepubliceerd: inhoud die duidelijk tegen de regels ingaat, wordt geweigerd, en de app vertelt je waarom; een grensgeval wordt wel verstuurd, maar gemeld aan de moderatie. In slechts twee gevallen wordt het account **automatisch geschorst**, maximaal 72 uur, terwijl een moderator ernaar kijkt: expliciete pedoseksuele woordenschat in een bericht, of een account dat door twee verschillende mensen als minderjarig is gemeld. De moderator heft de schorsing op of bevestigt ze.',
     },
     { p: 'Afhankelijk van de ernst kunnen we:' },
     {
@@ -99,24 +102,25 @@ export const conditions: LegalPage = {
       ],
     },
     {
-      p: 'Wat ernstig en illegaal is (inhoud met een minderjarige, een serieuze bedreiging bijvoorbeeld), melden we bij de autoriteiten. Als we een beslissing over jou nemen, geven we je de redenen, tenzij de wet dat verbiedt of het iemand in gevaar zou brengen. Je kunt de beslissing aanvechten door binnen zes maanden te schrijven naar {{email.support}}; een mens bekijkt de beslissing opnieuw.',
+      p: 'Wat ernstig en illegaal is (inhoud met een minderjarige, een serieuze bedreiging bijvoorbeeld), melden we bij de autoriteiten. Als we een beslissing over jou nemen, geven we je de redenen, tenzij de wet dat verbiedt of het iemand in gevaar zou brengen. Je kunt ertegen in bezwaar gaan, of de beslissing nu automatisch was of niet, door binnen zes maanden te mailen naar {{email.support}}; een mens bekijkt de beslissing opnieuw.',
     },
 
     { h2: '8. Kunstmatige intelligentie in Blowy', id: 'ia' },
     {
       ul: [
-        '**Bewijsfoto’s**: een AI zegt of de foto bij de gewoonte past. Bij twijfel vertrouwen we je.',
-        '**Berichten lezen**: alleen als jullie het allebei aanzetten, zodat jullie minimoas kunnen reageren. Jullie kunnen het altijd uitzetten.',
-        '**Weekoverzicht en opmerkingen van de minimoas**: automatisch gemaakte teksten.',
+        '**Berichten lezen**: alleen als jullie het allebei aanzetten, zodat jullie minimoa’s kunnen reageren. Jullie kunnen het altijd uitzetten.',
+        '**Bewijsfoto’s**: alleen als je dat accepteert, zegt een AI of de foto bij de gewoonte past; bij twijfel vertrouwen we je. Zonder toestemming bevestig je op je woord, zonder foto.',
+        '**Veiligheidscontroles**: elke profielfoto, en een bericht dat twijfel wekt in een chat waarin jullie allebei het meelezen hebben geaccepteerd.',
+        '**Weekoverzicht**: door een AI herschreven, zonder enige voornaam of naam. De andere opmerkingen van de minimoa’s komen uit kant-en-klare zinnen.',
       ],
     },
     {
-      p: 'Deze functies dienen het spel en het gesprek. Geen ervan neemt een beslissing met rechtsgevolgen voor jou. De details staan in het [privacybeleid](@confidentialite#ia).',
+      p: 'Deze AI is die van {{sub.ai.provider}} ({{sub.ai.location}}), onze dienstverlener. Deze functies dienen het spel, het gesprek en de veiligheid. Geen ervan neemt een beslissing met rechtsgevolgen voor jou. De details, en wat de dienstverlener ontvangt, staan in het [privacybeleid](@confidentialite#ia); je toestemmingen zie en trek je in in de app, **Ik → De AI en jij**.',
     },
 
     { h2: '9. Gratis, met Blowy+ als optie', id: 'blowy-plus' },
     {
-      p: 'Blowy is gratis en zonder reclame. **Blowy+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple of Google. De prijzen, de gratis proefperiode, de verlenging en hoe je opzegt staan in de [voorwaarden van het Blowy+-abonnement](@abonnement).',
+      p: 'Blowy is gratis en zonder reclame. **Blowy+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple, op iPhone (een abonnement dat je op iPhone neemt, volgt je account op je andere apparaten). Wat het bevat, de prijzen, de gratis proefperiode, de verlenging en hoe je opzegt staan in de [voorwaarden van het Blowy+-abonnement](@abonnement).',
     },
     {
       p: 'Voorwerpen, jokers, reeksen, levens en andere spelelementen hebben geen geldwaarde. Ze kunnen niet worden geruild, doorverkocht of terugbetaald, behalve waar de wet dat vereist.',
@@ -125,7 +129,7 @@ export const conditions: LegalPage = {
     { h2: '10. Einde van de overeenkomst', id: 'fin' },
     {
       ul: [
-        '**Jij** kunt vertrekken wanneer je wilt: in de app, **Ik → Instellingen → Mijn account verwijderen** ([wat er gewist wordt](@supprimer-mon-compte)). Je account verwijderen zegt een Blowy+-abonnement niet op: zeg het ook op in je store.',
+        '**Jij** kunt vertrekken wanneer je wilt: in de app, **Ik → Instellingen → Mijn account verwijderen** ([wat er gewist wordt](@supprimer-mon-compte)). Je account verwijderen zegt een Blowy+-abonnement niet op: zeg het ook op in de instellingen van je iPhone.',
         '**Wij** kunnen je account opschorten of sluiten als je je niet aan deze voorwaarden houdt, als de wet ons dat oplegt, of als iemands veiligheid op het spel staat. Behalve bij spoed of een ernstige overtreding waarschuwen we je vooraf en leggen we uit waarom.',
         'Als we met de dienst stoppen, laten we het je minstens 30 dagen van tevoren weten.',
       ],

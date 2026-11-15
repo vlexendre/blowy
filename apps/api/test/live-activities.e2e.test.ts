@@ -22,12 +22,13 @@ import { MEMORY_DB } from '../src/shared/tokens';
 import { type TestWorld, doToday, onboardBody, startWorld } from './helpers';
 
 const NOW = new Date('2026-11-15T17:42:00Z');
-const attributes = { kind: 'link' as const, pet: { name: 'Nino', species: 'nino' }, startedAt: 1794757320, url: 'blowy://link/x', otherName: 'Léa' };
+const attributes = { kind: 'link' as const, pet: { name: 'Nino', species: 'nino' }, startedAt: 1794757320, url: 'blowy://link/x' };
 const state = { endsAt: 1794783600, streak: 0, title: null, done: false };
 
 describe('charges ActivityKit', () => {
   it('démarrage : timestamp, event, content-state, attributes-type, attributes, alerte obligatoire, input-push-token ; dates en secondes', () => {
-    const p = liveStartPayload({ now: NOW, attributes, state, alert: { title: 'Série avec Léa', body: 'À toi d’écrire avant minuit.' }, relevance: 75 });
+    // Un prénom glissé dans les attributs ne part jamais (écran verrouillé visible de tous).
+    const p = liveStartPayload({ now: NOW, attributes: { ...attributes, otherName: 'Léa' } as typeof attributes, state, alert: { title: 'Un lien t’attend', body: 'À toi d’écrire avant minuit.' }, relevance: 75 });
     expect(p).toEqual({
       aps: {
         timestamp: Math.floor(NOW.getTime() / 1000),
@@ -37,7 +38,7 @@ describe('charges ActivityKit', () => {
         'relevance-score': 75,
         'attributes-type': 'BlowyActivityAttributes',
         attributes,
-        alert: { title: 'Série avec Léa', body: 'À toi d’écrire avant minuit.' },
+        alert: { title: 'Un lien t’attend', body: 'À toi d’écrire avant minuit.' },
         'input-push-token': 1,
       },
     });

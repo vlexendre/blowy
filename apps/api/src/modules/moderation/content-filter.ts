@@ -53,7 +53,7 @@ export class ContentFilter {
     const decision = decideModeration(surface, classifyText(text, locale));
     if (decision.outcome === 'block') {
       const category = decision.category;
-      throw new DomainError('content_refused', (l) => refusedText(l, surface, category));
+      throw new DomainError('content_refused', (l) => refusedText(l, surface, category), surface === 'pet_name' ? 'petName' : 'displayName');
     }
   }
 

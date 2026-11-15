@@ -39,9 +39,10 @@ interface ChatLines {
 
 const FR: ChatLines = {
   /** Texte de la spéc (§9), servi avec l'état de l'accord pour que l'app montre partout les mêmes mots. */
-  // App Review 5.1.2(i) : dire que l'IA est un tiers, lequel et où (audit B5).
+  // App Review 5.1.2(i) : dire que l'IA est un tiers, lequel et où (audit B5). Pas de « aucun humain » : un message
+  // signalé (par une personne ou par le filtre) et son contexte immédiat sont lus par la modération.
   confidentiality: (provider: string, country: string): string =>
-    `Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par ${provider} (${country}), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.`,
+    `Personne chez Blowy ne lit tes conversations, sauf un message signalé et les quelques messages autour, pour la modération. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par ${provider} (${country}), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.`,
   /** Bandeaux du système dans le chat. */
   system: { linkCreated: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
 

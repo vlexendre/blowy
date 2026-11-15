@@ -71,6 +71,7 @@ public class BlowyWidgetsModule: Module {
 
     /// Démarre une activité (app au premier plan). `key` : une activité par clé, une seule fois (ex. `challenge:2026-11-15`),
     /// même si la personne l'a retirée de l'écran verrouillé et rouvre l'app. Rend son identifiant, ou nil.
+    /// Périmée 8 h après son début au plus (`staleDate(for:)`) ; l'app la retire à ce moment-là (`decideRunning`).
     AsyncFunction("startActivity") { (key: String, attributesJson: String, stateJson: String, withPush: Bool) async throws -> String? in
       #if canImport(ActivityKit)
       if #available(iOS 17.0, *) {
@@ -79,7 +80,7 @@ public class BlowyWidgetsModule: Module {
         let state = try BlowyWidgetsModule.decode(BlowyActivityAttributes.ContentState.self, stateJson)
         let activity = try Activity.request(
           attributes: attributes,
-          content: ActivityContent(state: state, staleDate: state.endDate, relevanceScore: BlowyWidgetsModule.relevance(attributes.kind)),
+          content: ActivityContent(state: state, staleDate: attributes.staleDate(for: state), relevanceScore: BlowyWidgetsModule.relevance(attributes.kind)),
           pushType: withPush ? PushType.token : nil
         )
         // Son jeton arrive par `activityUpdates` (voir startObserving) quand le JS écoute.
@@ -95,7 +96,7 @@ public class BlowyWidgetsModule: Module {
         guard let activity = Activity<BlowyActivityAttributes>.activities.first(where: { $0.id == id }) else { return false }
         let state = try BlowyWidgetsModule.decode(BlowyActivityAttributes.ContentState.self, stateJson)
         if state == activity.content.state { return false }
-        await activity.update(ActivityContent(state: state, staleDate: state.endDate, relevanceScore: BlowyWidgetsModule.relevance(activity.attributes.kind)))
+        await activity.update(ActivityContent(state: state, staleDate: activity.attributes.staleDate(for: state), relevanceScore: BlowyWidgetsModule.relevance(activity.attributes.kind)))
         return true
       }
       #endif

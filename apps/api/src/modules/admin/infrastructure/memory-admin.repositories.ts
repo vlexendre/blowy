@@ -214,6 +214,15 @@ export class MemoryDailyStatsRepository implements DailyStatsRepository {
   async put(row: DailyStatsRow): Promise<void> {
     this.db.dailyStats.set(row.day, row);
   }
+  async forgetPeopleBefore(before: Day): Promise<number> {
+    let n = 0;
+    for (const [day, row] of this.db.dailyStats) {
+      if (day >= before || (row.metrics.top.length === 0 && Object.keys(row.metrics.topDetails).length === 0)) continue;
+      this.db.dailyStats.set(day, { ...row, metrics: { ...row.metrics, top: [], topDetails: {} } });
+      n += 1;
+    }
+    return n;
+  }
 }
 
 /** Mêmes chiffres que la fonction SQL `admin_daily_metrics`, calculés sur la base mémoire. */

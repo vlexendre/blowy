@@ -132,9 +132,9 @@ export const onboarding = messages({
       zoneTitle: 'Ta zone, pas ton adresse',
       zoneText: (pet: string) => `${pet} te présente les minimoas compatibles autour de toi.`,
       exactTitle: 'Jamais ta position exacte',
-      exactText: 'Arrondie à 300 m, décalée, jamais en direct. Rien quand l’app est fermée.',
-      refuseNote: 'Si tu refuses : tu choisiras ta ville à la main, et tu auras quand même des rencontres. Activable plus tard dans Moi.',
-      denied: 'D’accord. Choisis ta ville à la main dans Rencontres (ou Moi › Ma position) : ton minimoa te présentera du monde autour. La position s’active plus tard dans Moi.',
+      exactText: 'Arrondie à 300 m avant d’être enregistrée, décalée pour les autres, jamais en direct. Rien quand l’app est fermée.',
+      refuseNote: 'Si tu refuses : tu choisiras ta ville à la main, et tu auras quand même des rencontres. Activable plus tard dans Moi › Réglages › Ma position.',
+      denied: 'D’accord. Choisis ta ville à la main dans Rencontres (ou Moi › Réglages › Ma position) : ton minimoa te présentera du monde autour. La position s’active plus tard au même endroit.',
       cta: 'Continuer',
     },
     notifications: {
@@ -218,6 +218,12 @@ export const onboarding = messages({
       percent: (n: number) => `Préparation : ${n} %`,
       tap: 'Touche pour aller plus vite',
       errorTitle: 'Ça a coincé',
+      /** Prénom ou nom du minimoa refusé par le filtre (la raison vient de l’API). */
+      refusedTitle: 'Un nom à changer',
+      refusedNameAction: 'Changer mon prénom',
+      refusedPetAction: 'Changer le nom de mon minimoa',
+      /** Retour au champ après un refus : le bouton relance la création. */
+      fixCta: 'Valider et continuer',
     },
     pret: {
       title: (name: string) => [{ text: 'TOUT EST PRÊT,\n' }, { text: `${up(name)} !`, dim: true }],

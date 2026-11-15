@@ -1,5 +1,5 @@
 import { type ApiErrorText, type Locale, apiErrorText } from '@blowy/content';
-import type { ErrorCode } from '@blowy/contract';
+import type { ErrorCode, RefusedField } from '@blowy/contract';
 
 /**
  * Message d'erreur dans la langue de la personne : une fonction de la langue (`errorText('linkNotFound')`,
@@ -25,6 +25,8 @@ export class DomainError extends Error {
   constructor(
     readonly code: ErrorCode,
     message?: string | ErrorText,
+    /** `content_refused` : le champ refusé, renvoyé à l'app pour qu'elle y ramène la personne. */
+    readonly field?: RefusedField,
   ) {
     const text: ErrorText = typeof message === 'function' ? message : typeof message === 'string' ? () => message : (l) => defaultMessage(code, l);
     super(text('fr'));

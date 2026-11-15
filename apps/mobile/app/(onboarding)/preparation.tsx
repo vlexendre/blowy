@@ -3,7 +3,8 @@
  * tout le brouillon : vision, sexe, ce que tu cherches et l'accord, position, langue du téléphone, invitation). Le pet au milieu,
  * un pourcentage, une barre et 4 lignes qui se cochent. La barre est un décor honnête : la dernière ligne et 100 %
  * n'arrivent qu'une fois la création réussie, 2,5 s au plus de plus que le serveur, et un tap passe le reste.
- * Erreur : tout s'arrête sur place, le message et « réessayer » ; jamais de faux 100 %.
+ * Erreur : tout s'arrête sur place, le message et « réessayer » ; jamais de faux 100 %. Un nom refusé par le filtre
+ * (`content_refused`) renvoie au champ concerné (`?fix=1`), sans relance automatique.
  */
 import { ApiError } from '@blowy/api-client';
 import type { Species } from '@blowy/domain';
@@ -69,6 +70,14 @@ function Prep() {
   }, []);
 
   const failed = onboard.isError && !handled(onboard.error);
+  // Prénom ou nom du minimoa refusé par le filtre : relancer ne servirait à rien. On ramène la personne au champ
+  // concerné, avec la raison de l'API et son texte gardé dans le brouillon ; elle revient ici en le validant.
+  const refused = onboard.error instanceof ApiError && onboard.error.code === 'content_refused' ? onboard.error : null;
+  const fixRefused = () => {
+    if (!refused) return;
+    const pathname = refused.field === 'petName' ? '/(onboarding)/craft' : '/(onboarding)/prenom';
+    router.replace({ pathname, params: { fix: '1', reason: refused.message } });
+  };
   const tick = usePrepTicker({ succeeded: onboard.isSuccess, failed });
   useEffect(() => {
     if (tick.finished) router.replace('/(onboarding)/pret');
@@ -106,16 +115,26 @@ function Prep() {
         footer={
           failed ? (
             <Appear key="error">
-              <Banner
-                tone="error"
-                title={t.errorTitle}
-                text={errorMessage(onboard.error)}
-                actionLabel={common.retry}
-                onAction={() => {
-                  tick.resume();
-                  run();
-                }}
-              />
+              {refused ? (
+                <Banner
+                  tone="error"
+                  title={t.refusedTitle}
+                  text={refused.message}
+                  actionLabel={refused.field === 'petName' ? t.refusedPetAction : t.refusedNameAction}
+                  onAction={fixRefused}
+                />
+              ) : (
+                <Banner
+                  tone="error"
+                  title={t.errorTitle}
+                  text={errorMessage(onboard.error)}
+                  actionLabel={common.retry}
+                  onAction={() => {
+                    tick.resume();
+                    run();
+                  }}
+                />
+              )}
             </Appear>
           ) : undefined
         }

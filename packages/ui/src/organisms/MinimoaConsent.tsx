@@ -1,6 +1,7 @@
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import type { IconName } from '../assets/pets';
+import { Button } from '../atoms/Button';
 import { Icon } from '../atoms/Icon';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
@@ -22,6 +23,8 @@ export interface MinimoaConsentProps {
   text: string;
   /** Lignes d'explication sous la phrase : ce qui se passe si l'un refuse, où en est l'autre. */
   notes: readonly { key: string; icon: IconName; text: string }[];
+  /** Lien vers la politique de confidentialité, juste sous la phrase (App Review 5.1.2(i)). */
+  policy?: { label: string; onPress: () => void };
   style?: StyleProp<ViewStyle>;
 }
 
@@ -30,7 +33,7 @@ export interface MinimoaConsentProps {
  * la phrase de confidentialité telle quelle, puis ce qu'il se passe. Les deux choix sont dans le pied de la feuille.
  * Les minimoas montent du bas du panneau (fondu si animations réduites).
  */
-export function MinimoaConsent({ title, subtitle, mine, theirs, text, notes, style }: MinimoaConsentProps) {
+export function MinimoaConsent({ title, subtitle, mine, theirs, text, notes, policy, style }: MinimoaConsentProps) {
   return (
     <View style={[styles.root, style]}>
       <Panel gradient="rose" radius="lg" padding="none" overflow={false} style={styles.panel}>
@@ -56,6 +59,8 @@ export function MinimoaConsent({ title, subtitle, mine, theirs, text, notes, sty
           {text}
         </Text>
       </View>
+      {/* Hors de la boîte (lue d'un bloc par VoiceOver) pour rester un bouton à part. */}
+      {policy ? <Button label={policy.label} variant="link" size="sm" block={false} onPress={policy.onPress} style={styles.policy} /> : null}
       {notes.map((n) => (
         <View key={n.key} style={[layout.rowTop, styles.note]}>
           <Icon name={n.icon} size={22} />
@@ -76,5 +81,6 @@ const styles = StyleSheet.create({
   pets: { position: 'absolute', right: 6, bottom: -6, flexDirection: 'row', alignItems: 'flex-end' },
   box: { padding: space.lg, borderRadius: 22, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
   boxText: { lineHeight: 24 },
+  policy: { alignSelf: 'flex-start', marginTop: -space.xs },
   note: { gap: space.sm, paddingHorizontal: space.xs },
 });

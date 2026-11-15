@@ -1,6 +1,6 @@
 /** « On t'appelle comment ? » : un grand champ centré ; en dessous, le code d'invitation si on en a un. */
 import { OnboardingTemplate, OptionalField, TextField } from '@blowy/ui';
-import { Redirect, router } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
 import { ScreenMotion } from '@/core';
@@ -25,23 +25,30 @@ function PrenomStep() {
   const name = useDraft((d) => d.displayName);
   const inviteCode = useDraft((d) => d.inviteCode);
   const set = useDraft((d) => d.set);
+  // Revenu de la préparation : prénom refusé par le filtre (`?fix=1&reason=…`). La raison reste affichée tant que le
+  // prénom n'a pas changé ; valider relance la création.
+  const params = useLocalSearchParams<{ fix?: string; reason?: string }>();
+  const fix = params.fix === '1';
+  const [refusedName] = useState(() => useDraft.getState().displayName);
+  const refusal = fix && params.reason && name === refusedName ? params.reason : null;
   // Arrivé par un lien d'invitation : le code est déjà là, le champ est ouvert.
   const [showInvite, setShowInvite] = useState(() => !!useDraft.getState().inviteCode);
   const next = () => {
-    if (!name.trim()) return;
+    if (!name.trim() || refusal) return;
     set({ displayName: name.trim() });
-    router.push('/(onboarding)/sexe');
+    if (fix) router.replace('/(onboarding)/preparation');
+    else router.push('/(onboarding)/sexe');
   };
   return (
     <ScreenMotion>
       <OnboardingTemplate
         {...progressAt('prenom')}
-        onBack={() => goBack('/(onboarding)/ta-vision')}
+        onBack={fix ? undefined : () => goBack('/(onboarding)/ta-vision')}
         backLabel={common.back}
         host={{ species, line: t.nameHost, seed: petName, name: petName }}
         centerBody
-        primaryLabel={t.cta}
-        primaryDisabled={!name.trim()}
+        primaryLabel={fix ? onboarding.preparation.fixCta : t.cta}
+        primaryDisabled={!name.trim() || !!refusal}
         onPrimary={next}
       >
         <TextField
@@ -50,6 +57,7 @@ function PrenomStep() {
           onChangeText={(v) => set({ displayName: v })}
           placeholder={t.namePlaceholder}
           hint={t.nameHint}
+          error={refusal}
           maxLength={24}
           autoFocus
           autoCapitalize="words"

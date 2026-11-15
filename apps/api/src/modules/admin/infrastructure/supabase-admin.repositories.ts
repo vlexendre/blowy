@@ -274,6 +274,20 @@ export class SupabaseDailyStatsRepository implements DailyStatsRepository {
     const { error } = await this.table.upsert({ day: row.day, metrics: JSON.parse(JSON.stringify(row.metrics)), computed_at: row.computedAt }, { onConflict: 'day' });
     check(error, 'écriture des statistiques');
   }
+  async forgetPeopleBefore(before: Day): Promise<number> {
+    // Une ligne par jour : quelques centaines au plus, relues par pages de 100 jours (les plus anciens d'abord).
+    const { data, error } = await this.table.select('*').lt('day', before).order('day', { ascending: true }).limit(100);
+    check(error, 'lecture des statistiques');
+    let n = 0;
+    for (const row of (data ?? []).map(this.fromRow)) {
+      const m = row.metrics as Partial<DailyStatsRow['metrics']>;
+      if ((m.top?.length ?? 0) === 0 && Object.keys(m.topDetails ?? {}).length === 0) continue;
+      const { error: e } = await this.table.update({ metrics: JSON.parse(JSON.stringify({ ...row.metrics, top: [], topDetails: {} })) }).eq('day', row.day);
+      check(e, 'nettoyage des statistiques');
+      n += 1;
+    }
+    return n;
+  }
 }
 
 const n = (v: unknown): number => (typeof v === 'number' ? v : typeof v === 'string' ? Number(v) || 0 : 0);

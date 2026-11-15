@@ -8,6 +8,8 @@ import { adminRoutes } from '@blowy/contract';
 import { addDays, dayOf } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AdminStatsJobs } from '../src/modules/admin/application/stats.jobs';
+import type { DailyStatsRepository } from '../src/modules/admin/ports';
+import { DAILY_STATS } from '../src/modules/admin/tokens';
 import { MESSAGES } from '../src/shared/tokens';
 import type { MessagesRepository } from '../src/modules/links/ports';
 import { type TestWorld, apiError, onboardBody, startWorld } from './helpers';
@@ -231,6 +233,22 @@ describe('administration', () => {
       expect(Array.isArray(minimoas.top)).toBe(true);
       const ai = await admin.aiCosts(7);
       expect(ai.available).toBe(true);
+    });
+
+    it('le classement nominatif (prénoms, minimoas) ne survit pas aux jours d’activité (40 jours)', async () => {
+      const jobs = w.app.get(AdminStatsJobs, { strict: false });
+      const stats = w.app.get(DAILY_STATS, { strict: false }) as DailyStatsRepository;
+      const old = addDays(dayOf(w.clock.now()), -60);
+      const named = { userId: 'u', ownerName: 'Léa', petName: 'Nino', species: 'nino', activeLinks: 2 };
+      const row = (await stats.latest())!;
+      await stats.put({ ...row, day: old, metrics: { ...row.metrics, top: [named], topDetails: { u: { shape: null, streak: 3 } } } });
+      w.clock.advanceDays(1);
+      await jobs.runDue(w.clock.now());
+      const kept = (await stats.get(old))!;
+      expect(kept.metrics.top).toEqual([]);
+      expect(kept.metrics.topDetails).toEqual({});
+      expect(kept.metrics.accountsTotal).toBe(row.metrics.accountsTotal);
+      expect(JSON.stringify(kept)).not.toContain('Léa');
     });
   });
 });

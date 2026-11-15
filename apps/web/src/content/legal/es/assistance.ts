@@ -40,38 +40,50 @@ export const assistance: LegalPage = {
         {
           q: '¿Por qué Blowy pide mi ubicación?',
           a: [
-            'Para el mapa y los encuentros cercanos, solo con la app abierta. Tu posición se redondea y se desplaza para los demás, y el modo discreto te quita del mapa. Sin ubicación, el resto de la app funciona.',
+            'Para el mapa y los encuentros cercanos, solo con la app abierta. Tu posición exacta nunca se guarda: solo guardamos un punto redondeado a unos 300 m. Los demás ven una posición redondeada y desplazada, y el modo discreto te quita del mapa. Sin ubicación, eliges tu ciudad a mano (Encuentros, o Yo → Ajustes → Mi ubicación) y sigues teniendo encuentros.',
           ],
         },
         {
           q: '¿Quién lee mis mensajes?',
           a: [
-            'Ningún humano lee tus conversaciones. Si los dos lo activáis, una IA lee vuestros mensajes para que vuestros minimoas puedan reaccionar; no se conserva nada después. Puedes desactivarla en las opciones del vínculo o en Yo. Única excepción: si se denuncia un mensaje, un moderador lee ese mensaje y su contexto inmediato.',
+            'Nadie en Blowy lee tus conversaciones, salvo un mensaje denunciado (por alguien o por nuestro filtro automático): un moderador lee entonces ese mensaje y su contexto inmediato. Si la activáis los dos, una IA, la de nuestro proveedor {{sub.ai.provider}}, lee vuestros últimos mensajes para que vuestros minimoas puedan reaccionar; Blowy no guarda nada de esa lectura. Puedes desactivarla en las opciones del vínculo o en Yo → La IA y tú.',
           ],
         },
         {
           q: '¿Qué pasa con mis fotos de prueba?',
-          a: ['Una IA verifica la foto, ningún humano la ve y se elimina en 24 horas, salvo si la guardas en tus recuerdos privados.'],
+          a: [
+            'Antes de tu primera prueba, la app te pregunta si una IA ({{sub.ai.provider}}) puede comprobar tus fotos. Si aceptas, se le envía la foto reducida; si no, validas tus hábitos de palabra, sin foto. Ningún ser humano ve tus fotos de prueba, y se borran en 24 horas, salvo que las guardes en tus recuerdos privados. Puedes cambiar de opinión en Yo → La IA y tú.',
+          ],
+        },
+        {
+          q: '¿Por qué se ha rechazado mi mensaje, mi nombre o mi foto?',
+          a: [
+            'Los nombres, los nombres de minimoa, los mensajes y las fotos de perfil pasan por un filtro automático, que bloquea lo que infringe claramente las [normas de la comunidad](@regles). La app te dice por qué, y tu texto se queda ahí para que lo modifiques. ¿Crees que es un error? Escribe a {{email.support}}: una persona lo revisará.',
+          ],
         },
         {
           q: 'Ya no puedo iniciar sesión. ¿Qué hago?',
           a: [
-            'El inicio de sesión pasa por Apple (iPhone) o Google (Android). Usa el mismo ID de Apple o la misma cuenta de Google que al registrarte. Si sigue sin funcionar, escríbenos a {{email.support}}.',
+            'El inicio de sesión pasa por Apple (iPhone) o Google (Android). Usa el mismo ID de Apple o la misma cuenta de Google que al registrarte. ¿Tu cuenta está suspendida? La pantalla te dice hasta cuándo, y te permite escribir al soporte para impugnarlo. Si sigue sin funcionar, escríbenos a {{email.support}}.',
           ],
         },
         {
           q: '¿Cómo cancelo Blowy+?',
           a: [
-            'En los ajustes de tu tienda, no en Blowy. iPhone: Ajustes → tu nombre → Suscripciones. Android: Google Play → perfil → Pagos y suscripciones → Suscripciones. Detalles en las [condiciones de Blowy+](@abonnement#annuler).',
+            'En los ajustes de tu iPhone, no en Blowy: Ajustes → tu nombre → Suscripciones (en la app, Yo → Blowy+ → Gestionar mi suscripción te lleva allí). Detalles en las [condiciones de Blowy+](@abonnement#annuler).',
           ],
         },
         {
           q: '¿Cómo consigo un reembolso?',
-          a: ['Los pagos pasan por Apple o Google: son ellos quienes reembolsan, según sus condiciones. Los enlaces están en las [condiciones de Blowy+](@abonnement#remboursements).'],
+          a: [
+            'Los pagos pasan por Apple: es Apple quien reembolsa, según sus condiciones. El enlace está en las [condiciones de Blowy+](@abonnement#remboursements).',
+          ],
         },
         {
           q: '¿Cómo denuncio o bloqueo a alguien?',
-          a: ['Desde el chat o el encuentro, menú arriba a la derecha y luego Denunciar o Bloquear. Consulta [seguridad y denuncias](@securite).'],
+          a: [
+            'Desde el chat o el encuentro, menú «…» arriba a la derecha y luego Denunciar o Bloquear; en un chat, una pulsación larga sobre un mensaje permite denunciarlo. Consulta [seguridad y denuncias](@securite).',
+          ],
         },
         {
           q: '¿Cómo elimino mi cuenta?',

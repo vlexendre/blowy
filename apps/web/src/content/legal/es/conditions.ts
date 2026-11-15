@@ -12,7 +12,7 @@ export const conditions: LegalPage = {
       'Tu **minimoa** lleva tu visión de la vida y te presenta a personas compatibles, para ser amigos o algo más. Sus mensajes son automáticos: no es una persona.',
       'Respeta a los demás y las [normas de la comunidad](@regles). Nada de acoso, nada de contenido sexual, nada que implique a un menor.',
       'Tus mensajes y tus fotos siguen siendo tuyos. Solo nos das el derecho de tratarlos para que Blowy funcione.',
-      'Blowy es gratis. **Blowy+** es una suscripción opcional, pagada a través de App Store o Google Play ([condiciones de Blowy+](@abonnement)).',
+      'Blowy es gratis. **Blowy+** es una suscripción opcional, pagada a través de la App Store, en iPhone ([condiciones de Blowy+](@abonnement)).',
       'Puedes irte cuando quieras: [eliminar tu cuenta](@supprimer-mon-compte) se hace en la app.',
       'Se aplica la ley francesa. Si hay un problema, escríbenos primero; también puedes acudir a un mediador, gratis.',
     ],
@@ -37,7 +37,7 @@ export const conditions: LegalPage = {
         '**Los encuentros**: tu minimoa solo te presenta a personas cuya compatibilidad supera un umbral. Nada ocurre sin tu acuerdo: saludas, la otra persona acepta, se crea el vínculo. Cómo funciona se explica en la [política de privacidad](@confidentialite#compatibilite).',
         '**Los vínculos**: un chat, una racha que crece cada día en que os escribís los dos, recuerdos y vidas que bajan cuando el vínculo se queda en silencio.',
         '**Tu minimoa** tiene indicadores (sociabilidad, hambre, energía, humor), hábitos que mantener, una racha, objetos. Nunca muere.',
-        '**El mapa** muestra los minimoas compatibles a tu alrededor, en una posición imprecisa a propósito.',
+        '**El mapa** muestra los minimoas compatibles a tu alrededor (o alrededor de la ciudad que elegiste, si no activas la ubicación), en una posición imprecisa a propósito.',
       ],
     },
     {
@@ -72,21 +72,24 @@ export const conditions: LegalPage = {
         'estafar, pedir dinero, hacer publicidad o spam;',
         'ofrecer o pedir servicios sexuales remunerados;',
         'difundir información privada o fotos de otra persona sin su consentimiento;',
-        'engañar a las verificaciones (foto de prueba falsa, ubicación falsificada);',
+        'engañar a las verificaciones (foto de prueba falsa, ubicación falsificada) o eludir el filtro automático de contenidos;',
         'automatizar el uso del servicio (bots, extracción de datos), eludir sus límites, bloqueos o protecciones, o perturbar su funcionamiento.',
       ],
     },
 
     { h2: '6. Tus contenidos', id: 'contenus' },
     {
-      p: 'Tus mensajes, tus fotos y tus respuestas siguen siendo tuyos. Para que Blowy funcione, nos concedes una **licencia gratuita, no exclusiva y mundial**, limitada a lo necesario para: almacenarlos, entregarlos a las personas a las que los envías, mostrarlos en la app, tratarlos técnicamente (redimensionar una foto, por ejemplo) y, cuando está previsto, hacer que una IA los analice (fotos de prueba; mensajes, si los dos lo habéis activado). Esta licencia dura mientras el contenido esté en línea y termina cuando se elimina, salvo lo que debamos conservar según la [política de privacidad](@confidentialite#durees).',
+      p: 'Tus mensajes, tus fotos y tus respuestas siguen siendo tuyos. Para que Blowy funcione, nos concedes una **licencia gratuita, no exclusiva y mundial**, limitada a lo necesario para: almacenarlos, entregarlos a las personas a las que los envías, mostrarlos en la app, tratarlos técnicamente (redimensionar una foto, por ejemplo) y, cuando está previsto, filtrarlos automáticamente y, cuando está previsto, hacer que una IA los analice (fotos de prueba, si lo has aceptado; mensajes, si los dos lo habéis activado; foto de perfil y mensajes que dejan dudas, por seguridad; ver la [política de privacidad](@confidentialite#ia)). Esta licencia dura mientras el contenido esté en línea y termina cuando se elimina, salvo lo que debamos conservar según la [política de privacidad](@confidentialite#durees).',
     },
     { p: 'No usamos tus contenidos para publicidad y no los vendemos.' },
     { p: 'Garantizas que tienes derecho a publicar lo que publicas y que no vulnera los derechos de otros (imagen, intimidad, derechos de autor).' },
 
     { h2: '7. Denuncias, moderación y sanciones', id: 'moderation' },
     {
-      p: 'Puedes denunciar o bloquear a una persona en cualquier momento desde la app ([cómo hacerlo](@securite)). Revisamos cada denuncia, con el objetivo de responder en 24 horas. Para ello, un moderador de Blowy puede leer el mensaje denunciado y su contexto inmediato (los mensajes que lo rodean). Fuera de este caso, ningún humano lee tus conversaciones; una IA solo las lee si los dos lo habéis activado.',
+      p: 'Puedes denunciar o bloquear a una persona en cualquier momento desde la app ([cómo hacerlo](@securite)). Cada denuncia avisa al equipo de moderación, que la revisa con el objetivo de responder en 24 horas. Para ello, un moderador de Blowy puede leer el mensaje denunciado y su contexto inmediato (los mensajes de alrededor). Fuera de este caso, nadie en Blowy lee tus conversaciones; una IA solo las lee si los dos lo habéis activado.',
+    },
+    {
+      p: 'Los nombres, los nombres de minimoa, los mensajes y las fotos de perfil pasan por un **filtro automático** antes de publicarse: un contenido que infringe claramente las normas se rechaza, y la app te dice por qué; un mensaje dudoso se envía, pero se señala a la moderación. Solo en dos casos la cuenta queda **suspendida automáticamente**, 72 horas como máximo, mientras un moderador la revisa: vocabulario pederasta explícito en un mensaje, o una cuenta denunciada como menor por dos personas distintas. El moderador levanta o confirma la suspensión.',
     },
     { p: 'Según la gravedad, podemos:' },
     {
@@ -99,24 +102,25 @@ export const conditions: LegalPage = {
       ],
     },
     {
-      p: 'Lo que es grave e ilegal (contenido que implica a un menor, una amenaza seria, por ejemplo) se denuncia a las autoridades. Cuando tomamos una decisión que te afecta, te damos los motivos, salvo que la ley lo prohíba o que ello ponga a alguien en peligro. Puedes recurrirla escribiendo a {{email.support}} en un plazo de seis meses; una persona revisa la decisión.',
+      p: 'Lo que es grave e ilegal (contenido que implica a un menor, una amenaza seria, por ejemplo) se denuncia a las autoridades. Cuando tomamos una decisión que te afecta, te damos los motivos, salvo que la ley lo prohíba o que ello ponga a alguien en peligro. Puedes impugnarla, sea automática o no, escribiendo a {{email.support}} en un plazo de seis meses; una persona revisa la decisión.',
     },
 
     { h2: '8. La inteligencia artificial en Blowy', id: 'ia' },
     {
       ul: [
-        '**Fotos de prueba**: una IA dice si la foto corresponde al hábito. En caso de duda, confiamos en ti.',
         '**Lectura de los mensajes**: solo si los dos la activáis, para que vuestros minimoas puedan reaccionar. Podéis desactivarla cuando queráis.',
-        '**Balance semanal y comentarios de los minimoas**: textos generados automáticamente.',
+        '**Fotos de prueba**: solo si lo aceptas, una IA dice si la foto corresponde al hábito; en caso de duda, confiamos en ti. Sin consentimiento, validas de palabra, sin foto.',
+        '**Comprobaciones de seguridad**: cada foto de perfil, y un mensaje que deja dudas en un chat en el que los dos habéis aceptado la lectura.',
+        '**Resumen de la semana**: reformulado por una IA, sin ningún nombre. Los demás comentarios de los minimoas vienen de frases ya escritas.',
       ],
     },
     {
-      p: 'Estas funciones sirven al juego y a la conversación. Ninguna toma una decisión que produzca efectos jurídicos sobre ti. Los detalles están en la [política de privacidad](@confidentialite#ia).',
+      p: 'Esta IA es la de {{sub.ai.provider}} ({{sub.ai.location}}), nuestro proveedor. Estas funciones sirven al juego, a la conversación y a la seguridad. Ninguna toma una decisión que produzca efectos jurídicos sobre ti. Los detalles, y lo que recibe el proveedor, están en la [política de privacidad](@confidentialite#ia); tus consentimientos se ven y se retiran en la app, **Yo → La IA y tú**.',
     },
 
     { h2: '9. Gratis, y Blowy+ como opción', id: 'blowy-plus' },
     {
-      p: 'Blowy es gratis y sin publicidad. **Blowy+** es una suscripción opcional que abre funciones adicionales. La venden y la facturan Apple o Google. Sus precios, su prueba gratuita, su renovación y cómo cancelarla están en las [condiciones de la suscripción Blowy+](@abonnement).',
+      p: 'Blowy es gratis y sin publicidad. **Blowy+** es una suscripción opcional que abre funciones adicionales. La vende y la factura Apple, en iPhone (una suscripción hecha en iPhone acompaña a tu cuenta en tus otros dispositivos). Lo que incluye, sus precios, su prueba gratuita, su renovación y cómo cancelarla están en las [condiciones de la suscripción Blowy+](@abonnement).',
     },
     {
       p: 'Los objetos, comodines, rachas, vidas y demás elementos del juego no tienen valor monetario. No se intercambian, no se revenden y no se reembolsan, salvo lo que exija la ley.',
@@ -125,7 +129,7 @@ export const conditions: LegalPage = {
     { h2: '10. Fin del contrato', id: 'fin' },
     {
       ul: [
-        '**Por tu parte**, puedes irte cuando quieras: en la app, **Yo → Ajustes → Eliminar mi cuenta** ([qué se borra](@supprimer-mon-compte)). Eliminar tu cuenta no cancela una suscripción Blowy+: cancélala también en tu tienda.',
+        '**Por tu parte**, puedes irte cuando quieras: en la app, **Yo → Ajustes → Eliminar mi cuenta** ([qué se borra](@supprimer-mon-compte)). Eliminar tu cuenta no cancela una suscripción Blowy+: cancélala también en los ajustes de tu iPhone.',
         '**Por nuestra parte**, podemos suspender o cerrar tu cuenta si no respetas estas condiciones, si la ley nos obliga o si está en juego la seguridad de alguien. Salvo urgencia o incumplimiento grave, te avisamos antes y te explicamos por qué.',
         'Si dejamos de prestar el servicio, te avisamos con al menos 30 días de antelación.',
       ],

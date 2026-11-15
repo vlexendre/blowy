@@ -134,7 +134,11 @@ export default function CharacterScreen() {
                 label={t.renameLabel}
                 hint={t.renameHint}
                 value={renameLocked ? p.name : name}
-                onChangeText={setName}
+                onChangeText={(v) => {
+                  setName(v);
+                  // Nom refusé par le filtre (raison de l'API) : l'erreur part dès que le nom change.
+                  if (rename.isError) rename.reset();
+                }}
                 maxLength={PET_NAME_MAX}
                 locked={renameLocked}
                 notice={renameNotice}

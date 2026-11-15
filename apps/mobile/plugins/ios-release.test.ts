@@ -43,9 +43,11 @@ describe('manifestes de confidentialité (B4)', () => {
       expect(c.NSPrivacyCollectedDataTypeTracking).toBe(false);
       expect(c.NSPrivacyCollectedDataTypeLinked).toBe(true);
     }
-    for (const t of ['EmailAddress', 'PhotosorVideos', 'EmailsOrTextMessages', 'SensitiveInfo', 'PurchaseHistory']) {
+    for (const t of ['EmailAddress', 'PhotosorVideos', 'EmailsOrTextMessages', 'SensitiveInfo', 'PurchaseHistory', 'CoarseLocation']) {
       expect(collected.map((c) => c.NSPrivacyCollectedDataType)).toContain(`NSPrivacyCollectedDataType${t}`);
     }
+    // Position : jamais gardée exacte (maille de ~300 m côté API, audit M6) : approximative, pas précise.
+    expect(collected.map((c) => c.NSPrivacyCollectedDataType)).not.toContain('NSPrivacyCollectedDataTypePreciseLocation');
   });
 
   it("extension des widgets : son propre manifeste, UserDefaults du groupe d'apps (1C8F.1), rien de collecté", () => {
@@ -103,6 +105,9 @@ describe('autorisations iOS', () => {
     expect(camera).toMatch(/IA/);
     expect(camera).not.toMatch(/vue par personne|n’est vue par personne|photo du jour/);
     expect(String(info.NSPhotoLibraryUsageDescription)).not.toMatch(/photo du jour/);
+    // La position n'est jamais gardée exacte : le texte le dit, et ne promet rien d'autre.
+    expect(String(info.NSLocationWhenInUseUsageDescription)).toMatch(/300 m/);
+    expect(String(info.NSLocationWhenInUseUsageDescription)).not.toMatch(/arrière-plan|en continu/);
   });
 
   it('jetons APNs : production pour les builds EAS hors développement', () => {

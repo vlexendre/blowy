@@ -1,8 +1,8 @@
 /** Création du minimoa (V6-Craft) : une des 4 espèces, un petit nom, aperçu en direct. Ensuite, il pose les questions. */
 import { cleanPetName, PET_NAME_MAX, type Species } from '@blowy/domain';
 import { Button, OnboardingTemplate, SpeciesPicker, TextField } from '@blowy/ui';
-import { router } from 'expo-router';
-import { useEffect } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
 import { adoptPendingInvite, progressAt, useDraft, useDraftHydrated, useStep } from '@/features/onboarding';
@@ -25,6 +25,11 @@ function CraftStep() {
   const petName = useDraft((d) => d.petName);
   const set = useDraft((d) => d.set);
   const name = petName;
+  // Revenu de la préparation : nom refusé par le filtre (`?fix=1&reason=…`) ; valider relance la création.
+  const params = useLocalSearchParams<{ fix?: string; reason?: string }>();
+  const fix = params.fix === '1';
+  const [refusedName] = useState(() => useDraft.getState().petName);
+  const refusal = fix && params.reason && cleanPetName(name) === cleanPetName(refusedName) ? params.reason : null;
 
   // Premier passage : le pet porte le nom de son espèce, la personne le change si elle veut.
   useEffect(() => {
@@ -45,14 +50,15 @@ function CraftStep() {
     <ScreenMotion>
     <OnboardingTemplate
       {...progressAt('craft')}
-      onBack={() => goBack('/(onboarding)/welcome')}
+      onBack={fix ? undefined : () => goBack('/(onboarding)/welcome')}
       backLabel={common.back}
       title={t.title}
-      primaryLabel={t.cta}
-      primaryDisabled={!cleanPetName(name)}
+      primaryLabel={fix ? onboarding.preparation.fixCta : t.cta}
+      primaryDisabled={!cleanPetName(name) || !!refusal}
       onPrimary={() => {
         set({ petName: cleanPetName(name) });
-        router.push('/(onboarding)/vision');
+        if (fix) router.replace('/(onboarding)/preparation');
+        else router.push('/(onboarding)/vision');
       }}
     >
       {/* Le pet choisi bondit au centre, les autres passent la tête ; le nom tapé le fait hocher la tête. */}
@@ -68,6 +74,7 @@ function CraftStep() {
       <TextField
         label={t.nameLabel}
         hint={t.nameHint}
+        error={refusal}
         value={name}
         onChangeText={(v) => set({ petName: v.slice(0, PET_NAME_MAX) })}
         placeholder={t.namePlaceholder}

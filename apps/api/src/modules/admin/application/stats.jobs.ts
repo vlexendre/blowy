@@ -6,7 +6,7 @@ import { ACTIVITY, ADMIN_INSIGHTS, DAILY_STATS, METRICS_SOURCE } from '../tokens
 
 /** Jours rattrapés au plus par passage (après une panne du minuteur). */
 export const STATS_BACKFILL_DAYS = 3;
-/** Jours d'activité gardés (mois actif = 30 jours, rétention J30 = 31 jours). */
+/** Jours d'activité gardés (mois actif = 30 jours, rétention J30 = 31 jours) ; même durée pour le classement nominatif. */
 export const ACTIVITY_KEPT_DAYS = 40;
 
 /**
@@ -39,6 +39,8 @@ export class AdminStatsJobs {
     }
     if (computed > 0) {
       await this.activity.purgeBefore(addDays(today, -ACTIVITY_KEPT_DAYS));
+      // Le classement des minimoas les plus actifs nomme des gens : pas plus longtemps que les jours d'activité.
+      await this.stats.forgetPeopleBefore(addDays(today, -ACTIVITY_KEPT_DAYS));
       this.logger.log(`statistiques calculées : ${computed} jour(s), jusqu’au ${addDays(day, -1)}`);
     }
     return computed;

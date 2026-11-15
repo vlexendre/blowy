@@ -176,4 +176,9 @@ export interface DailyStatsRepository {
   range(from: Day, to: Day): Promise<DailyStatsRow[]>;
   latest(): Promise<DailyStatsRow | null>;
   put(row: DailyStatsRow): Promise<void>;
+  /**
+   * Retire des jours antérieurs à `before` ce qui nomme des personnes (classement `top`, `topDetails`) : les chiffres
+   * gardés ensuite ne permettent plus d'identifier quelqu'un (politique de confidentialité). Rend le nombre de jours changés.
+   */
+  forgetPeopleBefore(before: Day): Promise<number>;
 }

@@ -415,7 +415,13 @@ export const ERROR_CODES = [
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
-export const ApiErrorZ = z.object({ error: z.object({ code: z.enum(ERROR_CODES), message: z.string() }) });
+/**
+ * Champ refusé par le filtre (`content_refused` sur l'inscription, le profil ou le renommage) : l'app y renvoie la
+ * personne avec le texte gardé. Absent pour un message ou une photo (l'écran sait déjà de quoi il s'agit).
+ */
+export const REFUSED_FIELDS = ['displayName', 'petName'] as const;
+export type RefusedField = (typeof REFUSED_FIELDS)[number];
+export const ApiErrorZ = z.object({ error: z.object({ code: z.enum(ERROR_CODES), message: z.string(), field: z.enum(REFUSED_FIELDS).optional() }) });
 export type ApiErrorBody = z.infer<typeof ApiErrorZ>;
 
 // ── Table des routes ───────────────────────────────────────────────────────

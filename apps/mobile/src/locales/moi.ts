@@ -120,6 +120,15 @@ export const moi = messages({
       camera: 'Prendre une photo',
       library: 'Choisir dans ma galerie',
       photoError: 'La photo n’est pas passée. Réessaie.',
+      /** Photo refusée par le filtre : la raison vient de l’API. */
+      photoRefusedTitle: 'Photo refusée',
+      /**
+       * Sous la photo et dans la feuille, avant de choisir (App Review 5.1.2(i)). Le prestataire (nom, pays) vient de
+       * l’API (`GET /v1/me/ai`) ; tant qu’il n’est pas lu, « notre prestataire d’IA ».
+       */
+      photoCheck: (provider: string | null, country: string | null): string =>
+        `Avant d’être montrée, chaque photo de profil est vérifiée automatiquement par ${provider ? `${provider}${country ? ` (${country})` : ''}, notre prestataire d’IA` : 'notre prestataire d’IA'} : ni nudité, ni personne qui semble mineure, ni violence, ni haine, ni pub. Une photo refusée est effacée.`,
+      photoCheckAccept: 'En choisissant une photo, tu acceptes cette vérification. Détails dans Moi › L’IA et toi.',
       photoSaved: 'Photo enregistrée.',
       nameLabel: 'Prénom',
       cityLabel: 'Ville',
@@ -143,24 +152,24 @@ export const moi = messages({
       text: 'C’est immédiat et définitif : on ne peut rien récupérer ensuite.',
       erasedTitle: 'Ce qui est effacé tout de suite',
       items: (links: number | null) => [
-        { key: 'account', title: 'Ton compte', subtitle: 'Prénom, date de naissance, sexe, ce que tu cherches' },
+        { key: 'account', title: 'Ton compte', subtitle: 'Prénom, photo, date de naissance, sexe, ce que tu cherches' },
         { key: 'pet', title: 'Ton minimoa', subtitle: 'Sa vision, son style, ses objets, tes habitudes, ta série' },
-        { key: 'place', title: 'Ta position', subtitle: 'Et ta zone de domicile approximative' },
+        { key: 'place', title: 'Ta position', subtitle: 'Arrondie, et ta zone ou ta ville choisie' },
         {
           key: 'links',
           title: links === null ? 'Tes liens' : links === 0 ? 'Tes liens (tu n’en as pas encore)' : links === 1 ? 'Ton lien' : `Tes ${links} liens`,
-          subtitle: 'Messages, photos, étapes. Ils disparaissent aussi pour les autres',
+          subtitle: 'Messages, anciennes photos, étapes. Ils disparaissent aussi pour les autres',
         },
-        { key: 'photos', title: 'Tes photos de preuve gardées', subtitle: 'Et les « 3 mots » reçus, tes invitations' },
+        { key: 'photos', title: 'Tes photos de preuve et de défi', subtitle: 'Et les « 3 mots » reçus, tes invitations' },
         { key: 'settings', title: 'Tes réglages', subtitle: 'Et l’autorisation de t’envoyer des notifications' },
       ],
       keptTitle: 'Ce qui est gardé, et pourquoi',
       kept: [
-        { key: 'backups', title: 'Sauvegardes techniques', subtitle: 'Écrasées au fil de leur rotation, 30 jours au plus' },
+        { key: 'backups', title: 'Sauvegardes techniques', subtitle: 'Écrasées au fil de leur rotation' },
         { key: 'moderation', title: 'Signalements et modération', subtitle: 'Sécurité des autres, détachés de ton compte, 1 an' },
         { key: 'purchases', title: 'Références des achats Blowy+', subtitle: 'Obligations comptables, jusqu’à 10 ans' },
-        { key: 'law', title: 'Données de connexion exigées par la loi', subtitle: 'Un an au plus' },
-        { key: 'ban', title: 'En cas d’exclusion définitive', subtitle: 'Un identifiant technique, pour empêcher la réinscription, 3 ans' },
+        { key: 'stats', title: 'Statistiques', subtitle: 'Jours d’activité 40 jours au plus, puis seulement des chiffres anonymes' },
+        { key: 'ban', title: 'En cas d’exclusion définitive', subtitle: 'Une empreinte de ton identifiant, pour empêcher la réinscription, 3 ans' },
       ],
       plusNote: 'Tu as Blowy+ ? Supprimer ton compte n’annule pas l’abonnement. Annule-le d’abord dans les réglages de ton store.',
       details: 'Tout le détail',
@@ -238,17 +247,17 @@ export const moi = messages({
     /** Ma position. */
     position: {
       title: [{ text: 'MA ' }, { text: 'POSITION', dim: true }],
-      lead: 'Ta position sert à trouver des gens compatibles autour de toi et à confirmer tes sorties. Seulement app ouverte, arrondie à 300 m environ et décalée, jamais en direct.',
+      lead: 'Ta position sert à trouver des gens compatibles autour de toi et à confirmer tes sorties, seulement app ouverte. Blowy n’enregistre jamais ta position exacte : seulement un point arrondi à 300 m environ. Les autres voient une position arrondie et décalée, jamais en direct.',
       on: 'Position activée',
       onSub: (date: string | null) => (date ? `Dernier relevé le ${date}` : 'Pas encore de relevé'),
       off: 'Position désactivée',
-      offSub: 'Pas de carte, pas de rencontres près de chez toi',
+      offSub: 'Choisis ta ville à la main pour avoir des rencontres autour',
       zone: (km: string) => `Ta zone : ${km} km autour de ton domicile approximatif`,
       city: (name: string, active: boolean) => (active ? `Ville choisie : ${name}` : `Ville choisie : ${name} (avec Blowy+)`),
       enable: 'Activer la localisation',
       forget: 'Oublier ma position',
       forgetTitle: [{ text: 'OUBLIER ' }, { text: 'TA POSITION ?', dim: true }],
-      forgetText: 'On efface ta position et ta zone, et on retire ton accord. Plus de carte ni de rencontres près de chez toi, jusqu’à ce que tu la réactives.',
+      forgetText: 'On efface ta position et ta zone, et on retire ton accord. Plus de rencontres près de chez toi, jusqu’à ce que tu la réactives ou que tu choisisses ta ville à la main.',
       forgetConfirm: 'Oublier ma position',
       forgotten: 'C’est oublié.',
       error: 'Ce n’est pas passé. Réessaie.',

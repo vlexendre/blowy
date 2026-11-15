@@ -13,7 +13,7 @@ export const securite: LegalPage = {
     {
       ol: [
         'Ouvre le chat avec la personne, ou sa fiche dans tes rencontres.',
-        'Touche le menu en haut à droite, puis **Signaler**.',
+        'Touche le menu (« … »), puis **Signaler** (dans une rencontre : **Signaler ou bloquer**). Pour un message précis, fais un appui long dessus, puis **Signaler ce message**.',
         'Choisis la raison : harcèlement, contenu inapproprié, faux profil, personne mineure, ou autre.',
         'Ajoute quelques mots si tu veux (ce qui s’est passé, quand). Ça nous aide à agir vite.',
         'Tu peux bloquer la personne en même temps.',
@@ -26,10 +26,11 @@ export const securite: LegalPage = {
     { h2: 'Ce qui se passe ensuite', id: 'suite' },
     {
       ul: [
-        '**Objectif : une réponse sous 24 h.** Les signalements graves (mineurs, menaces, violences) passent en premier.',
+        'L’équipe de modération est **prévenue par e-mail** de chaque signalement : tout de suite pour ce qui est urgent (personne mineure, menace), sinon dans un récapitulatif. **Objectif : une réponse sous 24 h** ; au-delà, le signalement remonte en tête de la file.',
         'Un modérateur de Blowy lit **le message signalé et son contexte immédiat**, et rien d’autre de tes conversations.',
         'Selon la gravité : retrait du contenu, avertissement, limitation, suspension ou fermeture du compte. Ce qui est illégal peut être transmis aux autorités.',
-        'On te confirme que ton signalement a été traité. Pour protéger la vie privée de chacun, on ne détaille pas toujours la sanction.',
+        'Un compte signalé comme mineur par deux personnes différentes est suspendu automatiquement, en attendant le modérateur.',
+        'L’app te confirme que ton signalement est bien envoyé. Pour protéger la vie privée de chacun, on ne te tient pas au courant de la sanction.',
       ],
     },
 
@@ -41,7 +42,9 @@ export const securite: LegalPage = {
     { h2: 'Tes protections dans l’app', id: 'protections' },
     {
       ul: [
-        'Ta position n’est jamais exacte sur la carte : arrondie à environ 300 m et décalée, jamais en temps réel.',
+        'Ta position exacte n’est jamais enregistrée ; sur la carte, elle est arrondie à environ 300 m et décalée, jamais en temps réel.',
+        'Les prénoms, les messages et les photos de profil passent par un **filtre automatique** : ce qui enfreint nettement les [règles](@regles) n’est pas publié, un message limite est signalé à la modération.',
+        'Quand un lien atteint le niveau où l’on se voit en vrai, l’app te rappelle ces conseils de sécurité.',
         'Le **mode discret** te retire de la carte.',
         'Rien ne se passe sans ton accord : tu salues, l’autre accepte, le lien se crée.',
         'Tu peux quitter un lien à tout moment.',

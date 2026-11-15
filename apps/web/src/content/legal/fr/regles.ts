@@ -48,7 +48,7 @@ export const regles: LegalPage = {
 
     { h2: 'Ce qui se passe si une règle n’est pas respectée', id: 'sanctions' },
     {
-      p: 'On examine chaque signalement, avec un objectif de réponse sous 24 h. Un modérateur peut lire le message signalé et son contexte immédiat, rien de plus. Selon la gravité :',
+      p: 'Les prénoms, les noms de minimoa, les messages et les photos de profil passent par un **filtre automatique** : ce qui enfreint nettement ces règles n’est pas publié, et l’app dit pourquoi ; un message limite (une insulte, par exemple) part, mais il est signalé à l’équipe de modération. Chaque signalement, d’une personne ou du filtre, prévient l’équipe, qui l’examine avec un objectif de réponse sous 24 h. Un modérateur peut lire le message signalé et son contexte immédiat, rien de plus. Selon la gravité :',
     },
     {
       ol: [
@@ -59,12 +59,12 @@ export const regles: LegalPage = {
       ],
     },
     {
-      p: 'Ce qui est illégal peut être signalé aux autorités. La personne concernée reçoit les raisons de la décision et peut la contester ([conditions d’utilisation](@conditions#moderation)).',
+      p: 'Deux cas suspendent un compte automatiquement, 72 h au plus, le temps qu’un modérateur regarde : du vocabulaire pédocriminel explicite dans un message, ou un compte signalé comme mineur par deux personnes différentes. Ce qui est illégal peut être signalé aux autorités. La personne concernée reçoit les raisons de la décision et peut la contester, qu’elle soit automatique ou non ([conditions d’utilisation](@conditions#moderation)).',
     },
 
     { h2: 'Signaler et bloquer', id: 'signaler' },
     {
-      p: 'Depuis un chat ou une rencontre, ouvre le menu et choisis **Signaler** ou **Bloquer**. La personne ne sait pas qui l’a signalée, et n’est pas prévenue d’un blocage. Tout est expliqué dans [sécurité et signalement](@securite).',
+      p: 'Depuis un chat ou une rencontre, ouvre le menu et choisis **Signaler** ou **Bloquer** ; dans un chat, un appui long sur un message permet aussi de le signaler. La personne ne sait pas qui l’a signalée, et n’est pas prévenue d’un blocage. Tout est expliqué dans [sécurité et signalement](@securite).',
     },
     {
       p: 'Ces règles font partie des [conditions d’utilisation](@conditions). Une question, un doute : {{email.support}}. Un humain répond, pas un minimoa.',

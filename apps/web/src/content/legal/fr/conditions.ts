@@ -13,7 +13,7 @@ export const conditions: LegalPage = {
       'Ton **minimoa** porte ta vision de la vie et te présente des gens compatibles, pour devenir potes ou plus. Ses messages sont automatiques : ce n’est pas une personne.',
       'Respecte les autres et les [règles de la communauté](@regles). Pas de harcèlement, pas de contenu sexuel, rien qui implique un mineur.',
       'Tes messages et tes photos restent à toi. Tu nous donnes seulement le droit de les traiter pour faire marcher Blowy.',
-      'Blowy est gratuit. **Blowy+** est un abonnement facultatif, payé via l’App Store ou Google Play ([conditions de Blowy+](@abonnement)).',
+      'Blowy est gratuit. **Blowy+** est un abonnement facultatif, payé via l’App Store, sur iPhone ([conditions de Blowy+](@abonnement)).',
       'Tu peux partir quand tu veux : [supprimer ton compte](@supprimer-mon-compte) se fait dans l’app.',
       'Droit français. En cas de souci, écris-nous d’abord ; tu peux aussi saisir un médiateur, gratuitement.',
     ],
@@ -38,7 +38,7 @@ export const conditions: LegalPage = {
         '**Les rencontres** : ton minimoa ne te présente que des personnes dont la compatibilité dépasse un seuil. Rien ne se passe sans ton accord : tu salues, l’autre accepte, le lien se crée. Le fonctionnement est expliqué dans la [politique de confidentialité](@confidentialite#compatibilite).',
         '**Les liens** : un chat, une série qui grandit chaque jour où vous vous écrivez tous les deux, des souvenirs, et des vies qui baissent quand le lien reste silencieux.',
         '**Ton minimoa** a des jauges (sociabilité, faim, énergie, humeur), des habitudes à tenir, une série, des objets. Il ne meurt jamais.',
-        '**La carte** montre les minimoas compatibles autour de toi, à une position volontairement imprécise.',
+        '**La carte** montre les minimoas compatibles autour de toi (ou autour de la ville que tu as choisie, si tu n’actives pas la localisation), à une position volontairement imprécise.',
       ],
     },
     {
@@ -77,21 +77,24 @@ export const conditions: LegalPage = {
         'd’arnaquer, de demander de l’argent, de faire de la publicité ou du spam ;',
         'de proposer ou de demander des services sexuels rémunérés ;',
         'de diffuser des informations privées ou des photos d’une autre personne sans son accord ;',
-        'de tromper les vérifications (fausse photo de preuve, position falsifiée) ;',
+        'de tromper les vérifications (fausse photo de preuve, position falsifiée) ou de contourner le filtre automatique des contenus ;',
         'd’automatiser l’usage du service (robots, extraction de données), de contourner ses limites, ses blocages ou ses protections, ou d’en perturber le fonctionnement.',
       ],
     },
 
     { h2: '6. Tes contenus', id: 'contenus' },
     {
-      p: 'Tes messages, tes photos et tes réponses restent à toi. Pour faire fonctionner Blowy, tu nous accordes une **licence gratuite, non exclusive, pour le monde entier**, limitée à ce qui est nécessaire pour : les stocker, les transmettre aux personnes à qui tu les destines, les afficher dans l’app, les traiter techniquement (redimensionner une photo, par exemple) et, quand c’est prévu, les faire analyser par une IA (photos de preuve ; messages, si vous l’avez activé tous les deux). Cette licence dure tant que le contenu est en ligne, et prend fin quand il est supprimé, sauf pour ce qu’on doit garder selon la [politique de confidentialité](@confidentialite#durees).',
+      p: 'Tes messages, tes photos et tes réponses restent à toi. Pour faire fonctionner Blowy, tu nous accordes une **licence gratuite, non exclusive, pour le monde entier**, limitée à ce qui est nécessaire pour : les stocker, les transmettre aux personnes à qui tu les destines, les afficher dans l’app, les traiter techniquement (redimensionner une photo, par exemple) les filtrer automatiquement et, quand c’est prévu, les faire analyser par une IA (photos de preuve, si tu l’as accepté ; messages, si vous l’avez activé tous les deux ; photo de profil et messages qui laissent un doute, pour la sécurité ; voir la [politique de confidentialité](@confidentialite#ia)). Cette licence dure tant que le contenu est en ligne, et prend fin quand il est supprimé, sauf pour ce qu’on doit garder selon la [politique de confidentialité](@confidentialite#durees).',
     },
     { p: 'On n’utilise pas tes contenus pour de la publicité et on ne les vend pas.' },
     { p: 'Tu garantis que tu as le droit de publier ce que tu publies, et qu’il ne porte pas atteinte aux droits d’autrui (image, vie privée, droit d’auteur).' },
 
     { h2: '7. Signalement, modération et sanctions', id: 'moderation' },
     {
-      p: 'Tu peux signaler ou bloquer une personne à tout moment depuis l’app ([comment faire](@securite)). On examine chaque signalement, avec un objectif de réponse sous 24 h. Pour cela, un modérateur de Blowy peut lire le message signalé et son contexte immédiat (les messages qui l’entourent). En dehors de ce cas, aucun humain ne lit tes conversations ; une IA ne les lit que si vous l’avez activé tous les deux.',
+      p: 'Tu peux signaler ou bloquer une personne à tout moment depuis l’app ([comment faire](@securite)). Chaque signalement prévient l’équipe de modération, qui l’examine avec un objectif de réponse sous 24 h. Pour cela, un modérateur de Blowy peut lire le message signalé et son contexte immédiat (les messages qui l’entourent). En dehors de ce cas, personne chez Blowy ne lit tes conversations ; une IA ne les lit que si vous l’avez activé tous les deux.',
+    },
+    {
+      p: 'Les prénoms, les noms de minimoa, les messages et les photos de profil passent par un **filtre automatique** avant d’être publiés : un contenu qui enfreint nettement les règles est refusé, et l’app te dit pourquoi ; un message limite est envoyé mais signalé à la modération. Dans deux cas seulement, le compte est **suspendu automatiquement** 72 h au plus, le temps qu’un modérateur regarde : vocabulaire pédocriminel explicite dans un message, ou compte signalé comme mineur par deux personnes différentes. Le modérateur lève ou confirme la suspension.',
     },
     { p: 'Selon la gravité, on peut :' },
     {
@@ -104,24 +107,25 @@ export const conditions: LegalPage = {
       ],
     },
     {
-      p: 'Ce qui est grave et illégal (contenu impliquant un mineur, menace sérieuse, par exemple) est signalé aux autorités. Quand on prend une décision qui te concerne, on t’en donne les raisons, sauf si la loi l’interdit ou si cela mettrait quelqu’un en danger. Tu peux la contester en écrivant à {{email.support}} dans les six mois ; une personne réexamine la décision.',
+      p: 'Ce qui est grave et illégal (contenu impliquant un mineur, menace sérieuse, par exemple) est signalé aux autorités. Quand on prend une décision qui te concerne, on t’en donne les raisons, sauf si la loi l’interdit ou si cela mettrait quelqu’un en danger. Tu peux la contester, qu’elle soit automatique ou non, en écrivant à {{email.support}} dans les six mois ; une personne réexamine la décision.',
     },
 
     { h2: "8. L'intelligence artificielle dans Blowy", id: 'ia' },
     {
       ul: [
-        '**Photos de preuve** : une IA dit si la photo correspond à l’habitude. En cas de doute, on te fait confiance.',
         '**Lecture des messages** : seulement si vous l’activez tous les deux, pour que vos minimoas puissent réagir. Vous pouvez la couper quand vous voulez.',
-        '**Bilan de la semaine et remarques des minimoas** : textes produits automatiquement.',
+        '**Photos de preuve** : seulement si tu l’acceptes, une IA dit si la photo correspond à l’habitude ; en cas de doute, on te fait confiance. Sans accord, tu valides sur parole, sans photo.',
+        '**Vérifications de sécurité** : chaque photo de profil, et un message qui laisse un doute dans un chat où vous avez accepté la lecture tous les deux.',
+        '**Bilan de la semaine** : reformulé par une IA, sans aucun prénom ni nom. Les autres remarques des minimoas viennent de modèles de phrases.',
       ],
     },
     {
-      p: 'Ces fonctions servent le jeu et la conversation. Aucune ne prend de décision qui produit des effets juridiques à ton égard. Le détail est dans la [politique de confidentialité](@confidentialite#ia).',
+      p: 'Cette IA est celle de {{sub.ai.provider}} ({{sub.ai.location}}), notre prestataire. Ces fonctions servent le jeu, la conversation et la sécurité. Aucune ne prend de décision qui produit des effets juridiques à ton égard. Le détail, et ce que reçoit le prestataire, est dans la [politique de confidentialité](@confidentialite#ia) ; tes accords se voient et se retirent dans l’app, **Moi → L’IA et toi**.',
     },
 
     { h2: '9. Gratuit, et Blowy+ en option', id: 'blowy-plus' },
     {
-      p: 'Blowy est gratuit et sans publicité. **Blowy+** est un abonnement facultatif qui ouvre des fonctions en plus. Il est vendu et facturé par Apple ou Google. Ses prix, son essai gratuit, son renouvellement et la façon de l’annuler sont dans les [conditions de l’abonnement Blowy+](@abonnement).',
+      p: 'Blowy est gratuit et sans publicité. **Blowy+** est un abonnement facultatif qui ouvre des fonctions en plus. Il est vendu et facturé par Apple, sur iPhone (un abonnement pris sur iPhone suit ton compte sur tes autres appareils). Ses prix, ce qu’il contient, son essai gratuit, son renouvellement et la façon de l’annuler sont dans les [conditions de l’abonnement Blowy+](@abonnement).',
     },
     {
       p: 'Les objets, jokers, séries, vies et autres éléments du jeu n’ont aucune valeur monétaire. Ils ne s’échangent pas, ne se revendent pas et ne se remboursent pas, sauf ce que la loi impose.',
@@ -130,7 +134,7 @@ export const conditions: LegalPage = {
     { h2: '10. Fin du contrat', id: 'fin' },
     {
       ul: [
-        '**De ton côté**, tu peux partir quand tu veux : dans l’app, **Moi → Réglages → Supprimer mon compte** ([ce qui est effacé](@supprimer-mon-compte)). Supprimer ton compte n’annule pas un abonnement Blowy+ : annule-le aussi dans ton store.',
+        '**De ton côté**, tu peux partir quand tu veux : dans l’app, **Moi → Réglages → Supprimer mon compte** ([ce qui est effacé](@supprimer-mon-compte)). Supprimer ton compte n’annule pas un abonnement Blowy+ : annule-le aussi dans les réglages de ton iPhone.',
         '**De notre côté**, on peut suspendre ou fermer ton compte si tu ne respectes pas ces conditions, si la loi nous y oblige, ou si la sécurité de quelqu’un est en jeu. Sauf urgence ou manquement grave, on te prévient avant et on t’explique pourquoi.',
         'Si on arrête le service, on te prévient au moins 30 jours avant.',
       ],
