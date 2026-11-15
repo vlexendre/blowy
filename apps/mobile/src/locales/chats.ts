@@ -87,7 +87,7 @@ export const link = messages({
 
 /**
  * Onglet « Le lien » : la journée du lien (spéc §24), sa semaine, ses vies, le prochain niveau.
- * La série compte les jours d’affilée où vous vous êtes écrit tous les deux.
+ * La série compte les jours d’affilée où vous vous êtes écrit, vous deux.
  */
 export const today = messages({
   fr: {
@@ -110,11 +110,11 @@ export const today = messages({
     },
     atStake: {
       title: [{ text: 'SÉRIE\n' }, { text: 'EN JEU', dim: true }] as TitleSegment[],
-      text: (n: number): string => `${n} ${n > 1 ? 'jours' : 'jour'} d’affilée. Un message de chacun avant minuit, sinon elle repart de zéro.`,
+      text: (n: number): string => `${n} ${n > 1 ? 'jours' : 'jour'} d’affilée. Un message de chaque côté avant minuit, sinon elle repart de zéro.`,
     },
     fresh: {
-      title: [{ text: 'UN MOT\n' }, { text: 'CHACUN', dim: true }] as TitleSegment[],
-      text: 'Un message de chacun dans la journée, et votre série commence. Chaque jour d’affilée la fait grandir.',
+      title: [{ text: 'UN MOT\n' }, { text: 'DE CHAQUE CÔTÉ', dim: true }] as TitleSegment[],
+      text: 'Un message de ta part et un de la sienne dans la journée, et votre série commence. Chaque jour d’affilée la fait grandir.',
     },
     me: 'Toi',
     wrote: 'A écrit',
@@ -126,7 +126,7 @@ export const today = messages({
     weekDays: ['D', 'L', 'M', 'M', 'J', 'V', 'S'] as const,
     halfMark: '1/2',
     livesCount: (n: number): string => `${n}/7`,
-    livesText: 'Un jour entier sans message coûte une vie. Un jour où vous vous écrivez tous les deux en rend une. À 0, le lien devient fantôme.',
+    livesText: 'Un jour entier sans message coûte une vie. Un jour d’échange à deux en rend une. À 0, le lien devient fantôme.',
     todoTitle: 'Prochain niveau',
     nextTodo: (level: number, title: string): string => `Niv. ${level} · ${title.toLowerCase()}`,
     nextChip: (n: number): string => `${n} xp`,
@@ -158,7 +158,7 @@ export const chat = messages({
     yesterday: 'Hier',
     /** Nom au-dessus d'une réplique de minimoa : « nino · brise-glace ». */
     role: (role: 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event', name: string): string =>
-      `${name} · ${{ icebreaker: 'brise-glace', nudge: 'relance', remark: 'remarque', guard: 'garde-fou, pour toi seul', event: 'annonce' }[role]}`,
+      `${name} · ${{ icebreaker: 'brise-glace', nudge: 'relance', remark: 'remarque', guard: 'garde-fou, rien que pour toi', event: 'annonce' }[role]}`,
     /** Sous le fil, au-dessus du champ. */
     rhythm: (max: number): string => `Les minimoas parlent ${max} fois par jour au plus.`,
     rhythmNoReading: (max: number): string => `Sans lecture : ils réagissent au rythme (silences, séries, défis), ${max} fois par jour au plus.`,
@@ -187,7 +187,7 @@ export const chat = messages({
 export const memories = messages({
   fr: {
     title: 'VOS ÉTAPES',
-    met: 'Vous vous êtes rencontrés',
+    met: 'Votre rencontre',
     level: (n: number, title: string): string => `Niveau ${n} : ${title.toLowerCase()}`,
     streak: (n: number): string => `${n} jours d’affilée à vous écrire`,
     earlier: 'Plus tôt',
@@ -231,7 +231,7 @@ export const minimoas = messages({
     consentTitle: [{ text: 'VOS MINIMOAS\n' }, { text: 'DANS CE CHAT.', dim: true }] as TitleSegment[],
     consentSubtitle: 'Ils lancent, relancent, et glissent une remarque.',
     /** La phrase de confidentialité vient de l'API (`consent.text`) : jamais réécrite ici. */
-    ifRefused: (mine: string, theirs: string): string => `Si l’un de vous refuse, ${mine} et ${theirs} réagissent seulement au rythme : silences, séries, défis. Sans rien lire.`,
+    ifRefused: (mine: string, theirs: string): string => `Si l’accord manque d’un côté, ${mine} et ${theirs} réagissent seulement au rythme : silences, séries, défis. Sans rien lire.`,
     /**
      * Où en est l'autre (`consent.theirs`) : « agreed » ou « not_yet ». Un refus et une question pas encore vue se
      * disent pareil, « pas encore activé de son côté » : jamais « a refusé », aucune pression.
@@ -256,7 +256,7 @@ export const minimoas = messages({
       { key: 'icebreaker', icon: 'gel', title: 'Brise-glace', text: 'Au début du lien, une question tirée de vos points communs.' },
       { key: 'nudge', icon: 'eclair', title: 'Relance', text: 'Après un long silence : « Ça fait 3 jours. Vous en étiez à ce resto. »' },
       { key: 'remark', icon: 'etoiles', title: 'Remarque', text: 'De temps en temps, ce qu’ils remarquent de vous deux.' },
-      { key: 'guard', icon: 'coeurs', title: 'Garde-fou', text: 'Si le ton monte, ton minimoa te propose une pause. À toi seul.' },
+      { key: 'guard', icon: 'coeurs', title: 'Garde-fou', text: 'Si le ton monte, ton minimoa te propose une pause. Rien que pour toi.' },
       { key: 'review', icon: 'flamme', title: 'Bilan du dimanche', text: 'Une fois par semaine, la santé du lien, dans ton bilan.' },
     ] as const,
     rolesNote: 'Ils parlent avec le caractère de leur humain. Tu peux les couper pour ce chat, en haut à droite.',
@@ -293,7 +293,7 @@ export const levels = messages({
     current: 'Vous êtes là',
     next: (n: number): string => `Encore ${n} xp`,
     livesTitle: (n: number): TitleSegment[] => [{ text: `${n} ${n > 1 ? 'VIES' : 'VIE'} ` }, { text: 'SUR 7', dim: true }],
-    livesText: 'Un jour où vous vous écrivez tous les deux = +1 vie. Un jour de silence = −1 vie. À 0, le lien devient fantôme.',
+    livesText: 'Un jour d’échange à deux = +1 vie. Un jour de silence = −1 vie. À 0, le lien devient fantôme.',
   },
   en: TODO,
   es: TODO,

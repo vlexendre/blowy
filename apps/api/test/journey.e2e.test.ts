@@ -131,7 +131,7 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     expect(duo.link).toMatchObject({ lives: 6, streak: 1, bestStreak: 1 });
     expect(duo.link.today).toMatchObject({ mine: true, theirs: true, atStake: false });
     // La vie rendue est dite par un minimoa (comme le faisait la photo à deux).
-    expect(duo.messages.some((m) => m.author === 'my_pet' && /6\svies/.test(m.body ?? ''))).toBe(true);
+    expect(duo.messages.some((m) => m.author === 'my_pet' && m.petRole === 'event' && /\b6\b/.test(m.body ?? ''))).toBe(true);
     // La semaine, du lundi 9 au dimanche 15 : le lien est né mercredi 11, écrit à deux ce jour-là et aujourd'hui.
     expect(duo.link.today.week.map((d) => `${d.day.slice(8)}:${d.when}:${d.beforeLink ? 'avant' : d.mine && d.theirs ? 'deux' : d.mine || d.theirs ? 'un' : '-'}`)).toEqual([
       '09:past:avant',

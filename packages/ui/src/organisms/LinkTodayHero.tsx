@@ -127,7 +127,7 @@ function Side({ label, wrote, wroteLabel, waitingLabel, avatar }: { label: strin
         <Text variant="bodyHeavy" size={14} numberOfLines={1}>
           {label}
         </Text>
-        <Text variant="bodyBold" size={12} numberOfLines={1} style={!wrote && styles.waiting}>
+        <Text variant="bodyBold" size={13} numberOfLines={1} style={!wrote && styles.waiting}>
           {wrote ? wroteLabel : waitingLabel}
         </Text>
       </View>

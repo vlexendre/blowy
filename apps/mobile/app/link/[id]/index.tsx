@@ -35,6 +35,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
+import { openLegal } from '@/features/me';
+import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
+import { home as homeText } from '@/locales/pet';
 import {
   chatDayLabel,
   chronological,
@@ -167,6 +170,7 @@ export default function LinkScreen() {
         onBack={goChats}
         backLabel={t.back}
         livesLabel={t.lives(l.lives)}
+        livesShort={todayText.livesCount(l.lives)}
         livesFrom={revived ? 0 : undefined}
         levelUp={levelUps}
         onOptions={() => router.push(`/link/${l.id}/options`)}
@@ -345,7 +349,8 @@ function NoticeBanner({ notice, onClose }: { notice: Notice; onClose: () => void
 }
 
 // ── Le lien : la journée, la semaine, le prochain niveau, les étapes ───────────
-const HERO_GRADIENT = { both: 'accent', yourTurn: 'orange', atStake: 'orange', theirTurn: 'rose', fresh: 'coral' } as const;
+// Encre sombre sur jaune, orange et rose ; blanc sur violet (docs/DESIGN.md : jamais de petit texte blanc sur corail).
+const HERO_GRADIENT = { both: 'accent', yourTurn: 'orange', atStake: 'orange', theirTurn: 'rose', fresh: 'violet' } as const;
 
 function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void; onLevels: () => void }) {
   const { today, other, streak } = link;
@@ -363,6 +368,10 @@ function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void
             : { title: todayText.fresh.title, text: todayText.fresh.text };
   const next = link.next;
   const key = `${link.id}:${today.day}`;
+  // Niveau « se voir » atteint : le même rappel de sécurité que l'accueil, lu une seule fois (où qu'il soit lu).
+  const meetSeen = useMeetReminders((s) => s.seen);
+  const dismissMeet = useMeetReminders((s) => s.dismiss);
+  const meet = link.status === 'active' && link.level >= MEET_LEVEL && !meetSeen.includes(link.id);
   return (
     <View style={styles.body}>
       <Stagger onceKey={`lien:${link.id}`} step={70}>
@@ -384,6 +393,19 @@ function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void
           onCta={onWrite}
           gradient={HERO_GRADIENT[state]}
         />
+        {meet ? (
+          <Banner
+            key="meet"
+            tone="info"
+            title={homeText.meetTitle(name)}
+            text={homeText.meetText}
+            actionLabel={homeText.meetAction}
+            onAction={openLegal('securite')}
+            actionBelow
+            onClose={() => dismissMeet(link.id)}
+            closeLabel={homeText.meetClose}
+          />
+        ) : null}
         <LivesPanel
           key="week"
           animateKey={key}
@@ -542,7 +564,7 @@ function ChatComposer({
         <Banner tone="error" text={errorText(send.error, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
       ) : null}
       {rhythm ? (
-        <Text size={13} muted center>
+        <Text size={13} muted center style={styles.rhythm}>
           {rhythm}
         </Text>
       ) : null}
@@ -612,5 +634,6 @@ const styles = StyleSheet.create({
   nextRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   progress: { gap: 6, marginTop: 12 },
   composer: { gap: 8 },
+  rhythm: { paddingHorizontal: 20 },
   notice: { paddingTop: 12 },
 });
