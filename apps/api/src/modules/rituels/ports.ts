@@ -12,14 +12,13 @@ export interface RitualStateRecord {
   outingConfirmed: boolean;
   /** Habitudes tenues depuis toujours (compteur des objets liés). */
   habitsKept: number;
-  /** Marqueurs d'idempotence des notifications planifiées. */
-  dailyNotifiedOn: Day | null;
+  /** Marqueurs d'idempotence des notifications planifiées (le défi du matin est envoyé par la plateforme). */
   dangerNotifiedOn: Day | null;
   needsOutNotifiedOn: Day | null;
   /** Lundi de la dernière semaine dont le bilan a été traité. */
   reviewWeek: Day | null;
 }
-export type RitualMarker = 'dailyNotifiedOn' | 'dangerNotifiedOn' | 'needsOutNotifiedOn' | 'reviewWeek';
+export type RitualMarker = 'dangerNotifiedOn' | 'needsOutNotifiedOn' | 'reviewWeek';
 export type RitualStatePatch = Partial<Omit<RitualStateRecord, 'userId'>>;
 
 export const EMPTY_RITUAL_STATE = (userId: string): RitualStateRecord => ({
@@ -30,7 +29,6 @@ export const EMPTY_RITUAL_STATE = (userId: string): RitualStateRecord => ({
   outingAnswer: null,
   outingConfirmed: false,
   habitsKept: 0,
-  dailyNotifiedOn: null,
   dangerNotifiedOn: null,
   needsOutNotifiedOn: null,
   reviewWeek: null,

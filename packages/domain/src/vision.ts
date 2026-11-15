@@ -136,6 +136,10 @@ export const MID_BAND = 20;
 export const sideOf = (value: number): AxisSide => (value <= -MID_BAND ? 'low' : value >= MID_BAND ? 'high' : 'mid');
 
 /** Un profil sert à l'appariement s'il est un peu connu : au moins 3 axes avec une confiance non nulle. */
+/** Répartition d'un axe en 5 tranches égales de −100 à +100 (statistiques de l'administration). */
+export const VISION_BUCKETS = 5;
+export const visionBucketOf = (value: number): number => Math.min(VISION_BUCKETS - 1, Math.max(0, Math.floor((value + 100) / (200 / VISION_BUCKETS))));
+
 export const isMatchable = (profile: VisionProfile): boolean => VISION_AXES.filter((a) => profile[a].confidence > 0).length >= 3;
 
 // ── Le test de vision ─────────────────────────────────────────────────────────
@@ -163,6 +167,17 @@ export const VISION_TEST: readonly VisionQuestion[] = [
   { id: 'quartier', choices: [{ rythme: -60, ancrage: -30 }, { rythme: 60 }] },
 ];
 export const VISION_TEST_IDS = VISION_TEST.map((q) => q.id);
+
+/**
+ * Le test est soit pas passé (aucune réponse : la personne est inscrite mais n'a pas de suggestions tant qu'elle ne
+ * l'a pas fait), soit complet : chaque situation une fois, aucune inconnue.
+ */
+export function testAnswersState(answers: readonly { questionId: string }[]): 'none' | 'complete' | 'unknown_question' | 'incomplete' {
+  if (answers.length === 0) return 'none';
+  if (answers.some((a) => !VISION_TEST_IDS.includes(a.questionId))) return 'unknown_question';
+  const ids = new Set(answers.map((a) => a.questionId));
+  return ids.size === answers.length && ids.size === VISION_TEST_IDS.length ? 'complete' : 'incomplete';
+}
 
 export interface VisionAnswer {
   questionId: string;

@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { visionErrorText } from '@blowy/content';
+import { textOf, visionText } from '@blowy/content';
 import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, snapToGrid } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { BLOCKS, CLOCK, PETS, PROFILES } from '../../../shared/tokens';
+import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
 import type { Profile, ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
-import type { BlocksRepository } from '../../safety/ports';
+import { Audience } from '../../safety/application/audience';
 import type { CachedMatch } from '../ports';
 import { Matchmaker } from './matchmaker';
 
@@ -51,7 +51,7 @@ export class GetMap {
   constructor(
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(PETS) private readonly pets: PetsRepository,
-    @Inject(BLOCKS) private readonly blocks: BlocksRepository,
+    @Inject(Audience) private readonly audience: Audience,
     @Inject(Matchmaker) private readonly matchmaker: Matchmaker,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
@@ -62,7 +62,7 @@ export class GetMap {
     const me = await this.matchmaker.seeker(profile);
     const can = entitlements(me.plus);
     const elsewhere = query.lat !== undefined && query.lng !== undefined ? { lat: query.lat, lng: query.lng } : null;
-    if (elsewhere && !can.mapEverywhere) throw new DomainError('forbidden', visionErrorText.mapEverywherePlus);
+    if (elsewhere && !can.mapEverywhere) throw new DomainError('forbidden', textOf(visionText, (t) => t.errors.mapEverywherePlus));
     const base = { scope: can.mapEverywhere ? ('everywhere' as const) : ('zone' as const), discreet: profile.discreet, canChangeCity: can.changeCity };
     if (!me.center) return { ...base, status: 'no_location', center: null, radiusKm: ZONE_RADIUS_KM, pins: [], beyond: { count: 0, blurred: [] } };
 
@@ -85,9 +85,9 @@ export class GetMap {
       outside = all.filter((m) => m.distanceKm > ZONE_RADIUS_KM);
     }
 
-    // Relu à chaque fois : un passage en mode discret, un blocage ou une suppression comptent tout de suite.
-    const [blocked, profiles] = await Promise.all([this.blocks.blockedEitherWay(userId), this.profiles.findByIds([...inside, ...outside].map((m) => m.userId))]);
-    const visible = new Map(profiles.filter((p) => !p.discreet && p.locationConsentAt && !blocked.has(p.id)).map((p) => [p.id, p]));
+    // Relu à chaque fois (Audience) : un passage en mode discret, un blocage, une suspension ou une suppression comptent tout de suite.
+    const profiles = await this.audience.visible(userId, [...inside, ...outside].map((m) => m.userId), 'map');
+    const visible = new Map(profiles.map((p) => [p.id, p]));
     const shownInside = inside.filter((m) => visible.has(m.userId)).slice(0, PIN_CAP);
     const shownOutside = outside.filter((m) => visible.has(m.userId));
 

@@ -1,4 +1,4 @@
-import { levelLabel } from '@blowy/content';
+import { levelLabel } from '@/locales/content';
 import type { Link } from '@blowy/contract';
 import { LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress } from '@blowy/domain';
 import { color } from '@blowy/tokens';

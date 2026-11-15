@@ -4,6 +4,7 @@ import { addDays, APP_TIMEZONE, dayOf, daysBetween } from '@blowy/domain';
 import type { WeekDayState } from '@blowy/ui';
 
 import { dates, today as todayText } from '@/locales/chats';
+import { formatDate, upperFirst } from '@/locales/runtime';
 
 const weekdayOf = (day: string): number => new Date(`${day}T12:00:00Z`).getUTCDay();
 
@@ -14,9 +15,9 @@ export const shortDay = (day: string): string => `${Number(day.slice(8, 10))} ${
 export function chatDayLabel(day: string, now: Date = new Date()): string {
   const diff = daysBetween(day, dayOf(now));
   const weekday = dates.weekdays[weekdayOf(day)] ?? '';
-  if (diff === 0) return `${dates.today} · ${weekday}`;
-  if (diff === 1) return dates.yesterday;
-  return `${weekday} ${shortDay(day)}`;
+  if (diff === 0) return upperFirst(`${dates.today} · ${weekday}`);
+  if (diff === 1) return upperFirst(dates.yesterday);
+  return upperFirst(`${weekday} ${shortDay(day)}`);
 }
 
 /** Heure ou jour d'un dernier message, pour la liste des chats : « 21:04 », « hier », « lun. », « 3 nov. ». */
@@ -26,9 +27,9 @@ export function timeLabel(at: string, now: Date = new Date()): string {
   const day = dayOf(date);
   const diff = daysBetween(day, dayOf(now));
   if (diff <= 0) {
-    return new Intl.DateTimeFormat('fr-FR', { timeZone: APP_TIMEZONE, hour: '2-digit', minute: '2-digit' }).format(date);
+    return formatDate(date, { timeZone: APP_TIMEZONE, hour: '2-digit', minute: '2-digit' });
   }
-  if (diff === 1) return dates.yesterday;
+  if (diff === 1) return upperFirst(dates.yesterday);
   if (diff < 7) return dates.weekdaysShort[weekdayOf(day)] ?? '';
   return shortDay(day);
 }

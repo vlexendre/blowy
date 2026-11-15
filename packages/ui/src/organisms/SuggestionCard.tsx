@@ -16,6 +16,7 @@ import { useRipple, useRippleAnchor } from '../motion/Ripple';
 import { alpha, color, speciesColor } from '../theme';
 import { EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
 import type { PetLook, SuggestionLook } from '../types';
+import { useUiStrings } from '../lib/strings';
 
 export interface SuggestionCardProps {
   /** La rencontre (objet `Suggestion` du contrat accepté tel quel). */
@@ -50,15 +51,16 @@ export interface SuggestionCardProps {
 
 /** Un pet croisé : compatibilité, d'où il vient, ce que ton pet en dit, et « saluer ». */
 export function SuggestionCard(props: SuggestionCardProps) {
+  const uiStrings = useUiStrings();
   const { compatibility, user } = props.suggestion;
   const pet = user.pet;
 
   if (props.locked) {
     return (
-      <Card onPress={props.onLockedPress} accessibilityLabel={`${compatibility} %, ${props.lockedCaption ?? ''}`} padding="none" style={[layout.fill, styles.locked]}>
+      <Card onPress={props.onLockedPress} accessibilityLabel={`${uiStrings.percent(compatibility)}, ${props.lockedCaption ?? ''}`} padding="none" style={[layout.fill, styles.locked]}>
         <View style={[layout.row, styles.lockedRow]}>
           <Avatar size={40} pet={pet} hidden blurred />
-          <Title text={`${compatibility} %`} size={28} style={layout.grow} />
+          <Title text={uiStrings.percent(compatibility)} size={28} style={layout.grow} />
           <LinearGradient colors={[color.violet, color.coral]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.lock}>
             <Glyph name="lock" size={13} color={color.white} />
           </LinearGradient>

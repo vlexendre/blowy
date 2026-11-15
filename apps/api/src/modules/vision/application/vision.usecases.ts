@@ -1,14 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { visionErrorText } from '@blowy/content';
-import { VISION_TEST_IDS, type VisionAnswer } from '@blowy/domain';
+import { textOf, visionText } from '@blowy/content';
+import { type VisionAnswer, testAnswersState } from '@blowy/domain';
 import { DomainError } from '../../../shared/errors';
 import { PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import type { VisionSnapshot } from '../ports';
 import { VisionRecorder } from './vision-recorder';
 
-export const checkAnswers = (answers: readonly VisionAnswer[]): void => {
-  if (answers.some((a) => !VISION_TEST_IDS.includes(a.questionId))) throw new DomainError('invalid', visionErrorText.unknownQuestion);
+/** Réponses au test : aucune (inscription sans test, la personne est envoyée au test ensuite) ou les 12 situations. */
+export const checkAnswers = (answers: readonly VisionAnswer[], allowNone = false): void => {
+  const state = testAnswersState(answers);
+  if (state === 'unknown_question') throw new DomainError('invalid', textOf(visionText, (t) => t.errors.unknownQuestion));
+  if (state === 'incomplete' || (state === 'none' && !allowNone)) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.incompleteTest));
 };
 
 /** Ta vision (pour toi seul) et le test repassé. */

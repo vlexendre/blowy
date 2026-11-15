@@ -75,6 +75,10 @@ export class ApiError extends Error {
 export interface ApiClientOptions {
   baseUrl: string;
   getToken?: () => Promise<string | null> | string | null;
+  /** Langue de l'app (« fr », « en »…), envoyée en `Accept-Language` sur chaque requête : l'API y répond (erreurs, textes). */
+  getLocale?: () => string;
+  /** Messages des erreurs nées dans le client (pas de réseau, réponse illisible), dans la langue de l'app. */
+  messages?: { network: () => string; internal: () => string };
   fetch?: typeof fetch;
 }
 
@@ -86,6 +90,7 @@ export function createApiClient(opts: ApiClientOptions) {
 
   async function call<S extends z.ZodType>(method: Method, path: string, schema: S, body?: unknown): Promise<z.infer<S>> {
     const token = opts.getToken ? await opts.getToken() : null;
+    const locale = opts.getLocale?.();
     let res: Response;
     try {
       res = await doFetch(base + path, {
@@ -93,17 +98,18 @@ export function createApiClient(opts: ApiClientOptions) {
         headers: {
           ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
           ...(token ? { authorization: `Bearer ${token}` } : {}),
+          ...(locale ? { 'accept-language': locale } : {}),
         },
         body: body !== undefined ? JSON.stringify(body) : undefined,
       });
     } catch {
-      throw new ApiError('network', 'Connexion impossible. Vérifie ton réseau.', 0);
+      throw new ApiError('network', opts.messages?.network() ?? 'Network error.', 0);
     }
     const json: unknown = await res.json().catch(() => null);
     if (!res.ok) {
       const parsed = ApiErrorZ.safeParse(json);
       if (parsed.success) throw new ApiError(parsed.data.error.code, parsed.data.error.message, res.status);
-      throw new ApiError('internal', 'Une erreur est survenue.', res.status);
+      throw new ApiError('internal', opts.messages?.internal() ?? 'Unexpected error.', res.status);
     }
     return schema.parse(json);
   }
@@ -124,7 +130,6 @@ export function createApiClient(opts: ApiClientOptions) {
     pet: {
       get: () => call('GET', routes.pet(), PetViewZ),
       rename: (name: string) => call('PATCH', routes.pet(), PetViewZ, { name }),
-      answerChallenge: (choice: 0 | 1) => call('POST', routes.petChallenge(), PetViewZ, { choice }),
       care: (action: 'feed' | 'play' | 'nap' | 'cuddle') => call('POST', routes.petCare(), PetViewZ, { action }),
       wardrobe: () => call('GET', routes.petWardrobe(), WardrobeZ),
       setOutfit: (outfit: OutfitDto) => call('PUT', routes.petOutfit(), PetViewZ, { outfit }),

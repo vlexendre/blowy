@@ -2,7 +2,7 @@
  * Caractère (V6-Caractere) : le pet pose 4 questions, une par écran (choisir une réponse passe à la suivante), puis
  * le temps fort : il sort du bas de l'écran, le verdict s'écrit mot à mot et ses deux traits reviennent en puces.
  */
-import { gaugeLabel } from '@blowy/content';
+import { gaugeLabel } from '@/locales/content';
 import { addGauges, type GaugeKey, type Gauges, ZERO_GAUGES } from '@blowy/domain';
 import { OnboardingTemplate, PetRise, QuizStep, StageEcho, StageLine, StageTemplate } from '@blowy/ui';
 import { Redirect, router } from 'expo-router';
@@ -108,7 +108,7 @@ function Quiz() {
       >
         <QuizStep
           step={index}
-          choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
+          choices={question.choices.map((c, i) => ({ key: String(i), title: t.answers[index]?.[i] ?? '', caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
           selectedKey={selected === null ? null : String(selected)}
           onChoose={choose}
           hint={t.pick}

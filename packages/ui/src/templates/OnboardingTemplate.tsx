@@ -19,6 +19,7 @@ import { KeyboardPeek } from '../motion/pets/KeyboardPeek';
 import { color, space } from '../theme';
 import type { TitleContent } from '../types';
 import { ScreenTemplate } from './ScreenTemplate';
+import { useUiStrings } from '../lib/strings';
 
 export interface OnboardingTemplateProps {
   /** Étape courante (à partir de 1) et nombre d'étapes ; sans eux, pas de barre d'avancement. */
@@ -87,7 +88,7 @@ export function OnboardingTemplate({
   host,
   centerBody,
   onBack,
-  backLabel = 'Retour',
+  backLabel,
   kicker,
   title,
   titleSize = 60,
@@ -108,13 +109,14 @@ export function OnboardingTemplate({
   scroll = true,
   keyboardPeek,
 }: OnboardingTemplateProps) {
+  const uiStrings = useUiStrings();
   const insets = useSafeAreaInsets();
   const [footerHeight, setFooterHeight] = useState(0);
   const measureFooter = (e: LayoutChangeEvent) => setFooterHeight(Math.round(e.nativeEvent.layout.height));
   const header =
     onBack || (step && total) || progress !== undefined ? (
       <View style={[layout.row, styles.header]}>
-        {onBack ? <IconButton glyph="back" variant="back" label={backLabel} onPress={onBack} size={40} /> : null}
+        {onBack ? <IconButton glyph="back" variant="back" label={backLabel ?? uiStrings.back} onPress={onBack} size={40} /> : null}
         {progress !== undefined ? (
           <ProgressLine value={progress} from={progressFrom} />
         ) : step && total ? (

@@ -5,6 +5,18 @@ export const PUSH_DEVICES = Symbol('PUSH_DEVICES');
 export const NOTIFICATION_SETTINGS = Symbol('NOTIFICATION_SETTINGS');
 export const NOTIFICATION_LOG = Symbol('NOTIFICATION_LOG');
 export const PUSH_RECEIPTS = Symbol('PUSH_RECEIPTS');
+export const LIVE_ACTIVITY_TOKENS = Symbol('LIVE_ACTIVITY_TOKENS');
+
+/**
+ * Contenu du push « défi du jour » (fourni par le module « rituels », `RitualsDailyPush`). La plateforme décide QUAND
+ * (heure choisie, fuseau, heures calmes, plafond) ; les rituels décident SI (personne active, défi pas encore fait)
+ * et QUOI (le défi du jour). Seul chemin d'envoi de `daily_challenge`.
+ */
+export const DAILY_PUSH_SOURCE = Symbol('DAILY_PUSH_SOURCE');
+export interface DailyPushSource {
+  /** Variables du push, ou null pour ne rien envoyer ce matin-là. */
+  morning(userId: string, now: Date): Promise<Record<string, string> | null>;
+}
 
 export type DeviceKind = 'expo' | 'apns_live_activity';
 
@@ -79,4 +91,43 @@ export interface PushReceiptsRepository {
   due(before: string, limit: number): Promise<{ ticketId: string; token: string }[]>;
   remove(ticketIds: readonly string[]): Promise<void>;
   purge(before: string): Promise<number>;
+}
+
+// ── Jetons APNs des activités en direct (rangés à part des jetons Expo) ────
+export type LiveActivityUse = 'start' | 'update';
+export type LiveActivityKindKey = 'challenge' | 'photo' | 'outing';
+
+export interface LiveActivityTokenRecord {
+  token: string;
+  userId: string;
+  /** start : jeton « push-to-start » de l'app · update : jeton d'une activité en cours. */
+  use: LiveActivityUse;
+  activity: LiveActivityKindKey | null;
+  activityId: string | null;
+  /** Photo du jour : lien concerné, s'il est connu. */
+  linkId: string | null;
+  /** Fin de l'activité (minuit local) : le minuteur la termine et oublie le jeton. Null pour un jeton start. */
+  endsAt: string | null;
+  createdAt: string;
+  lastSeenAt: string;
+}
+
+export interface LiveActivityTokensRepository {
+  /**
+   * Range un jeton. Un jeton `update` remplace le précédent de la même activité (même personne, type et
+   * identifiant d'activité) : l'ancien est oublié.
+   */
+  upsert(record: LiveActivityTokenRecord): Promise<void>;
+  /** Jetons actifs d'une personne pour cet usage (et ce type d'activité, ce lien). */
+  forUser(userId: string, filter: { use: LiveActivityUse; activity?: LiveActivityKindKey; linkId?: string | null }): Promise<LiveActivityTokenRecord[]>;
+  /** Oublie ces jetons (activité terminée). */
+  remove(tokens: readonly string[]): Promise<void>;
+  /** Retrait par l'app (déconnexion). */
+  removeForUser(token: string, userId: string): Promise<void>;
+  /** Jetons refusés par APNs (410, BadDeviceToken) : plus aucun envoi. */
+  disable(tokens: readonly string[], at: string): Promise<void>;
+  /** Jetons `update` dont l'activité est finie (`endsAt <= at`), les plus anciens d'abord. */
+  listEnded(at: string, limit: number): Promise<LiveActivityTokenRecord[]>;
+  /** Jetons désactivés avant `before` : effacés. */
+  purgeDisabled(before: string): Promise<number>;
 }

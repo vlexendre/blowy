@@ -10,6 +10,7 @@ import { Text } from '../atoms/Text';
 import { measureInWindow, type Rect } from '../motion/MotionHost';
 import { PetActor, type PetActorHandle, type PetActorReaction } from '../motion/pets/PetActor';
 import { alpha, color, type GradientName, speciesGradient } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 /** Commandes de l'aperçu pour les vols d'objets (garde-robe → pet). */
 export interface OutfitPreviewHandle {
@@ -64,6 +65,7 @@ export function OutfitPreview({
   seed,
   previewRef,
 }: OutfitPreviewProps) {
+  const uiStrings = useUiStrings();
   const petBox = useRef<ComponentRef<typeof View>>(null);
   const actor = useRef<PetActorHandle>(null);
   useImperativeHandle(
@@ -111,7 +113,7 @@ export function OutfitPreview({
                     scaleTo={0.95}
                     bounceKey={id ?? null}
                     accessibilityRole={onSlotPress ? 'button' : 'text'}
-                    accessibilityLabel={`${slotLabels[slot]} : ${id ? (itemLabels[id] ?? id) : emptyLabel}`}
+                    accessibilityLabel={uiStrings.labelValue(slotLabels[slot] ?? slot, id ? (itemLabels[id] ?? id) : emptyLabel)}
                     accessibilityState={{ selected: on }}
                     style={[styles.box, on && styles.boxOn]}
                   >

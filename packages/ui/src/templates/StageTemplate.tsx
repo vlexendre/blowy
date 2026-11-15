@@ -10,6 +10,7 @@ import { layout } from '../lib/styles';
 import { ProgressLine } from '../molecules/ProgressLine';
 import { Appear } from '../motion/Appear';
 import { color, space } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 export interface StageTemplateProps {
   /** Retour en haut à gauche (même place que `OnboardingTemplate`). */
@@ -51,7 +52,7 @@ const GUTTER = 18;
  */
 export function StageTemplate({
   onBack,
-  backLabel = 'Retour',
+  backLabel,
   progress,
   progressFrom,
   right,
@@ -63,11 +64,12 @@ export function StageTemplate({
   tapLabel,
   tapHintDelay = 900,
 }: StageTemplateProps) {
+  const uiStrings = useUiStrings();
   const insets = useSafeAreaInsets();
   const header =
     onBack || progress !== undefined || right ? (
       <View style={[layout.row, styles.header]}>
-        {onBack ? <IconButton glyph="back" variant="back" label={backLabel} onPress={onBack} size={40} /> : null}
+        {onBack ? <IconButton glyph="back" variant="back" label={backLabel ?? uiStrings.back} onPress={onBack} size={40} /> : null}
         {progress !== undefined ? <ProgressLine value={progress} from={progressFrom} /> : <View style={layout.grow} />}
         {right}
       </View>

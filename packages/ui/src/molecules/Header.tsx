@@ -5,6 +5,7 @@ import { IconButton } from '../atoms/IconButton';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
 import { space, veil } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 export interface HeaderProps {
   /** Affiche le bouton retour. */
@@ -25,10 +26,11 @@ export interface HeaderProps {
 }
 
 /** Barre du haut : retour rond, titre, emplacement à droite. */
-export function Header({ onBack, backLabel = 'Retour', backGlyph = 'back', title, titleSize = 17, subtitle, center, right, style }: HeaderProps) {
+export function Header({ onBack, backLabel, backGlyph = 'back', title, titleSize = 17, subtitle, center, right, style }: HeaderProps) {
+  const uiStrings = useUiStrings();
   return (
     <View style={[layout.row, styles.base, style]}>
-      {onBack ? <IconButton glyph={backGlyph} label={backLabel} onPress={onBack} size={40} style={styles.back} /> : null}
+      {onBack ? <IconButton glyph={backGlyph} label={backLabel ?? uiStrings.back} onPress={onBack} size={40} style={styles.back} /> : null}
       <View style={[layout.grow, styles.center]}>
         {center ?? (
           <>

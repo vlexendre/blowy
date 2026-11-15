@@ -1,9 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { moderationText } from '@blowy/content';
+import { moderationTextIn } from '@blowy/content';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK } from '../../../shared/tokens';
+import { RETENTION, type RetentionRepository } from '../../retention/ports';
 import type { ActivityRepository, SuspensionsRepository } from '../ports';
 import { ACTIVITY, SUSPENSIONS } from '../tokens';
 
@@ -35,6 +36,7 @@ export class AccountGate {
     @Inject(SUSPENSIONS) private readonly repo: SuspensionsRepository,
     @Inject(ACTIVITY) private readonly activity: ActivityRepository,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(RETENTION) private readonly retention: RetentionRepository,
   ) {}
 
   async check(user: AuthUser, req: GateRequest): Promise<void> {
@@ -43,11 +45,18 @@ export class AccountGate {
     const s = await this.suspension(user.userId, now);
     if (s.suspended && (s.until === null || s.until > now)) {
       if (!ALLOWED_WHEN_SUSPENDED.some((a) => a.method === req.method && a.path.test(req.path))) {
-        throw new DomainError('suspended', moderationText.suspended(s.until === null ? null : new Date(s.until).toISOString()));
+        throw new DomainError('suspended', (l) => moderationTextIn(l).suspended(s.until === null ? null : new Date(s.until).toISOString()));
       }
       return;
     }
     this.touch(user.userId);
+  }
+
+  /** Suspension en cours (même cache de 30 s que la garde) : sert aux envois (push) et à la visibilité. */
+  async isSuspended(userId: string): Promise<boolean> {
+    const now = this.clock.now().getTime();
+    const s = await this.suspension(userId, now);
+    return s.suspended && (s.until === null || s.until > now);
   }
 
   /** Après une suspension ou une levée (même instance) : effet immédiat. */
@@ -73,7 +82,8 @@ export class AccountGate {
     }
     if (this.seen.has(userId)) return;
     this.seen.add(userId);
-    this.activity.touch(userId, day).catch((err: unknown) => {
+    // Jour d'activité (statistiques) et dernier jour d'activité du compte (comptes inactifs supprimés après 2 ans).
+    Promise.all([this.activity.touch(userId, day), this.retention.touch(userId, day)]).catch((err: unknown) => {
       this.seen.delete(userId);
       this.logger.warn(`jour d’activité non noté : ${err instanceof Error ? err.message : 'erreur'}`);
     });

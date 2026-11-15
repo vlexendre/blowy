@@ -10,10 +10,11 @@ import type { Profile, ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
+import { Audience } from '../../safety/application/audience';
 import type { BlocksRepository } from '../../safety/ports';
 import { Matchmaker } from '../../vision/application/matchmaker';
 import { type ExplanationInput, firstCommonLine } from '../../vision/interface/vision.presenter';
-import type { EncounterRecord, EncountersRepository } from '../ports';
+import { ENCOUNTER_PROPOSALS, type EncounterRecord, type EncountersRepository, type ProposalsRepository } from '../ports';
 
 export interface Candidate {
   profile: Profile;
@@ -62,7 +63,24 @@ export class ListEncounters {
     @Inject(PetCharacter) private readonly character: PetCharacter,
     @Inject(Matchmaker) private readonly matchmaker: Matchmaker,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(Audience) private readonly audience: Audience,
+    @Inject(ENCOUNTER_PROPOSALS) private readonly proposals: ProposalsRepository,
   ) {}
+
+  /** Plus grand nombre de suggestions déjà noté par personne et par jour (dans cette instance) : une écriture quand il augmente. */
+  private readonly recorded = new Map<string, number>();
+
+  private async recordProposals(userId: string, day: string, shown: readonly SuggestionResult[]): Promise<void> {
+    const key = `${day}:${userId}`;
+    if (shown.length === 0 || (this.recorded.get(key) ?? 0) >= shown.length) return;
+    if (this.recorded.size > 50_000) this.recorded.clear();
+    this.recorded.set(key, shown.length);
+    try {
+      await this.proposals.record(day, userId, shown.length, shown.reduce((sum, s) => sum + s.compatibility, 0));
+    } catch {
+      this.recorded.delete(key); // statistique seulement : jamais d'erreur pour la personne
+    }
+  }
 
   async execute(userId: string): Promise<EncountersResult> {
     const me = await this.profiles.findById(userId);
@@ -101,7 +119,8 @@ export class ListEncounters {
 
     const nearby = quota > 0 ? (await this.matchmaker.nearby(seeker)).filter((m) => !excluded(m.userId) && !mutualOf.has(m.userId)) : [];
     const wanted = [...new Set([...mutualOf.keys(), ...mutualOf.values(), ...nearby.map((m) => m.userId), ...pendingFrom])];
-    const [profiles, pets] = await Promise.all([this.profiles.findByIds(wanted), this.pets.findByOwners(wanted)]);
+    // Supprimés, suspendus et bloqués disparaissent ici (Audience) : ni suggestion, ni coucou reçu, ni ami commun.
+    const [profiles, pets] = await Promise.all([this.audience.visible(userId, wanted, 'suggest'), this.pets.findByOwners(wanted)]);
     const profileById = new Map(profiles.map((p) => [p.id, p]));
     const petByOwner = new Map(pets.map((p) => [p.ownerId, livePet(p, now)]));
 
@@ -114,7 +133,7 @@ export class ListEncounters {
       const pet = petByOwner.get(encounter.fromUser);
       if (!profile || !pet) return [];
       const c = incomingExplained.get(encounter.fromUser) ?? null;
-      return [{ profile, pet, encounter, compatibility: c?.score ?? 0, explanation: c, intro: wavedAtYouLine(pet.name, seedOf('incoming', encounter.id)) }];
+      return [{ profile, pet, encounter, compatibility: c?.score ?? 0, explanation: c, intro: wavedAtYouLine(me.locale, pet.name, seedOf('incoming', encounter.id)) }];
     });
 
     const suggestion = (id: string, via: VisionVia, score: number, explanation: ExplanationInput): SuggestionResult[] => {
@@ -123,7 +142,7 @@ export class ListEncounters {
       if (!profile || !pet) return [];
       const mutualId = mutualOf.get(id);
       const mutualName = mutualId ? (profileById.get(mutualId)?.displayName ?? null) : null;
-      const intro = visionIntroLine({ other: pet.name, via, mutualName, firstCommon: firstCommonLine(explanation) }, seedOf('intro', userId, id, today));
+      const intro = visionIntroLine(me.locale, { other: pet.name, via, mutualName, firstCommon: firstCommonLine(explanation, me.locale) }, seedOf('intro', userId, id, today));
       return [{ profile, pet, compatibility: score, explanation, via, mutualName, intro, waved: myWaves.has(id) }];
     };
 
@@ -132,6 +151,8 @@ export class ListEncounters {
       .sort((a, b) => b.compatibility - a.compatibility || a.profile.id.localeCompare(b.profile.id));
     const nearbyOut = nearby.flatMap((m) => suggestion(m.userId, 'nearby', m.score, m));
 
-    return { incoming: incomingOut, suggestions: [...fofOut, ...nearbyOut].slice(0, quota), petShape };
+    const suggestions = [...fofOut, ...nearbyOut].slice(0, quota);
+    await this.recordProposals(userId, today, suggestions);
+    return { incoming: incomingOut, suggestions, petShape };
   }
 }

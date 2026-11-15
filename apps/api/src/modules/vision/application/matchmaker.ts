@@ -34,6 +34,8 @@ export interface Seeker {
   profile: Profile;
   place: PlaceRecord | null;
   vision: VisionProfile;
+  /** Test de vision passé : sans lui, ni suggestions ni carte (et personne ne te voit). */
+  testDone: boolean;
   plus: boolean;
   /** Centre de recherche (ville choisie avec Blowy+, sinon zone du domicile) ; null sans position. */
   center: GeoPoint | null;
@@ -81,12 +83,12 @@ export class Matchmaker {
     const [place, snapshot] = await Promise.all([this.places.find(profile.id), this.recorder.current(profile.id)]);
     const plus = hasPlus(profile, this.clock.now());
     const usable = place && profile.locationConsentAt ? place : null;
-    return { profile, place: usable, vision: snapshot.profile, plus, center: usable ? matchingCenter(usable.home, usable.chosenCity, entitlements(plus).changeCity) : null };
+    return { profile, place: usable, vision: snapshot.profile, testDone: snapshot.testDone, plus, center: usable ? matchingCenter(usable.home, usable.chosenCity, entitlements(plus).changeCity) : null };
   }
 
   /** Personnes compatibles autour du centre de recherche (MATCH_RADIUS_KM), du plus au moins compatible. Gardé un jour. */
   async nearby(me: Seeker): Promise<CachedMatch[]> {
-    if (!me.center || !isMatchable(me.vision)) return [];
+    if (!me.center || !me.testDone || !isMatchable(me.vision)) return [];
     const day = todayOf(this.clock);
     const key = centerKey(me.center);
     const cached = await this.cache.get(me.profile.id);
@@ -98,12 +100,13 @@ export class Matchmaker {
 
   /** Personnes compatibles autour d'un point quelconque (carte de Blowy+), sans cache. */
   async around(me: Seeker, center: GeoPoint, radiusKm: number, cap: number): Promise<CachedMatch[]> {
-    if (!isMatchable(me.vision)) return [];
+    if (!me.testDone || !isMatchable(me.vision)) return [];
     const places = await this.places.listInCells(cellsAround(center, radiusKm), CANDIDATE_CAP, me.profile.id);
     const ids = places.map((p) => p.userId);
     const [profiles, snapshots] = await Promise.all([this.profiles.findByIds(ids), this.store.findSnapshots(ids)]);
     const profileById = new Map(profiles.map((p) => [p.id, p]));
-    const visionById = new Map(snapshots.map((s) => [s.userId, s.profile]));
+    // Seulement les personnes qui ont passé le test.
+    const visionById = new Map(snapshots.filter((s) => s.testDone).map((s) => [s.userId, s.profile]));
     const today = todayOf(this.clock);
     const mePerson = asPerson(me.profile, me.vision);
     const out: CachedMatch[] = [];
@@ -120,9 +123,9 @@ export class Matchmaker {
   /** Appariement sans filtre de zone (amis d'amis) : seulement celles et ceux qui passent les filtres et le seuil. */
   async matchAmong(me: Seeker, others: readonly Profile[]): Promise<Map<string, Compatibility>> {
     const out = new Map<string, Compatibility>();
-    if (others.length === 0 || !isMatchable(me.vision)) return out;
+    if (others.length === 0 || !me.testDone || !isMatchable(me.vision)) return out;
     const snapshots = await this.store.findSnapshots(others.map((p) => p.id));
-    const visionById = new Map(snapshots.map((s) => [s.userId, s.profile]));
+    const visionById = new Map(snapshots.filter((s) => s.testDone).map((s) => [s.userId, s.profile]));
     const today = todayOf(this.clock);
     const mePerson = asPerson(me.profile, me.vision);
     for (const other of others) {

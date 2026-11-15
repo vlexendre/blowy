@@ -61,12 +61,6 @@ export type PublicPet = z.infer<typeof PublicPetZ>;
 export const PetViewZ = z.object({
   pet: PetZ,
   events: z.array(PetEventZ),
-  /**
-   * Ancien défi du jour (V6) : une question de caractère, deux réponses. Remplacé par le défi des rituels
-   * (`ritualRoutes.today()`, choisi par le serveur, qui fait avancer la série) ; gardé tant que l'écran actuel s'en sert.
-   * `doneToday` est vrai dès qu'un des deux est fait (un seul « défi relevé » compté par jour).
-   */
-  challenge: z.object({ id: z.string(), question: z.string(), choices: z.array(z.string()).length(2), doneToday: z.boolean() }),
   wordsCount: z.number().int(),
   /** Jours où la personne s'est occupée de son pet. */
   careDays: z.number().int(),
@@ -100,7 +94,6 @@ export type Wardrobe = z.infer<typeof WardrobeZ>;
 export const OutfitBody = z.object({ outfit: OutfitZ });
 
 export const RenamePetBody = z.object({ name: z.string().trim().min(1).max(14) });
-export const ChallengeBody = z.object({ choice: z.union([z.literal(0), z.literal(1)]) });
 
 // ── Moi ────────────────────────────────────────────────────────────────────
 export const MeZ = z.object({
@@ -112,6 +105,11 @@ export const MeZ = z.object({
   inviteCode: z.string(),
   wordsCode: z.string(),
   plus: z.boolean(),
+  /**
+   * Test de vision passé. Faux : la personne s'est inscrite sans répondre ; aucune suggestion ni carte tant qu'elle
+   * ne l'a pas passé (`POST /v1/vision/test`) : l'app l'y envoie.
+   */
+  visionTestDone: z.boolean(),
   pet: PetZ,
 });
 export type Me = z.infer<typeof MeZ>;
@@ -354,7 +352,6 @@ export const routes = {
   avatarTicket: () => `${API_PREFIX}/me/avatar/ticket`,
   avatar: () => `${API_PREFIX}/me/avatar`,
   pet: () => `${API_PREFIX}/pet`,
-  petChallenge: () => `${API_PREFIX}/pet/challenge`,
   petCare: () => `${API_PREFIX}/pet/care`,
   petWardrobe: () => `${API_PREFIX}/pet/wardrobe`,
   petOutfit: () => `${API_PREFIX}/pet/outfit`,

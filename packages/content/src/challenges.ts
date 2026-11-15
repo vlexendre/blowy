@@ -1,8 +1,11 @@
 /**
- * Défis du jour : une question, deux réponses. Chaque réponse pousse un peu les jauges du pet,
+ * Défis du jour (V6) : une question, deux réponses. Chaque réponse pousse un peu les jauges du minimoa,
  * en plus de l'effet de base du défi (`challenge_done`). L'API choisit le défi du jour de façon déterministe.
+ * Les effets sont des données (`CHALLENGE_DATA`) ; les mots, par langue (`challengeText`).
+ * Une réponse qui suit « tu… » continue la phrase (minuscule) ; une réponse autonome prend la majuscule.
  */
-import type { Gauges } from '@blowy/domain';
+import type { Gauges, Locale } from '@blowy/domain';
+import { TODO, defineMessages } from './i18n/core';
 
 export interface ChallengeChoice {
   label: string;
@@ -15,46 +18,102 @@ export interface Challenge {
   choices: readonly [ChallengeChoice, ChallengeChoice];
 }
 
-const c = (id: string, question: string, a: string, da: Partial<Gauges>, b: string, db: Partial<Gauges>): Challenge => ({
-  id,
-  question,
-  choices: [
-    { label: a, delta: da },
-    { label: b, delta: db },
-  ],
+interface ChallengeData {
+  id: string;
+  deltas: readonly [Partial<Gauges>, Partial<Gauges>];
+}
+
+/** Ordre stable : le choix du jour se fait par indice. */
+export const CHALLENGE_DATA: readonly ChallengeData[] = [
+  { id: 'soiree', deltas: [{ social: -3 }, { social: 3 }] },
+  { id: 'message', deltas: [{ talk: 3 }, { talk: -3 }] },
+  { id: 'dispute', deltas: [{ tender: -3 }, { tender: 3 }] },
+  { id: 'weekend', deltas: [{ play: -3 }, { play: 3 }] },
+  { id: 'fete', deltas: [{ social: -3 }, { social: 3 }] },
+  { id: 'vocal', deltas: [{ talk: 3 }, { talk: -2 }] },
+  { id: 'compliment', deltas: [{ tender: 3 }, { tender: -2, play: 2 }] },
+  { id: 'jeu', deltas: [{ play: 3, tender: -1 }, { play: 2, tender: 1 }] },
+  { id: 'voyage', deltas: [{ play: -3 }, { play: 3 }] },
+  { id: 'nouveau', deltas: [{ social: 3 }, { social: -3 }] },
+  { id: 'secret', deltas: [{ talk: -3 }, { talk: 2, tender: 1 }] },
+  { id: 'matin', deltas: [{ play: -2, talk: -1 }, { play: 2, talk: 1 }] },
+  { id: 'cadeau', deltas: [{ tender: -2 }, { tender: 3 }] },
+  { id: 'pluie', deltas: [{ social: -2 }, { play: 3 }] },
+  { id: 'groupe', deltas: [{ talk: -3 }, { talk: 3 }] },
+  { id: 'film', deltas: [{ play: 2 }, { tender: 2 }] },
+  { id: 'retard', deltas: [{ play: 2, tender: -1 }, { tender: 2 }] },
+  { id: 'cuisine', deltas: [{ play: -2 }, { play: 3 }] },
+  { id: 'anniv', deltas: [{ social: -2, tender: 1 }, { social: 3 }] },
+  { id: 'appel', deltas: [{ talk: 2, social: 1 }, { talk: -3 }] },
+  { id: 'sport', deltas: [{ social: -2 }, { social: 2, play: 1 }] },
+  { id: 'critique', deltas: [{ tender: -3 }, { play: 2 }] },
+  { id: 'musique', deltas: [{ social: 2, talk: 1 }, { social: -1, tender: 1 }] },
+  { id: 'dimanche', deltas: [{ play: -2 }, { play: 3 }] },
+  { id: 'animaux', deltas: [{ tender: 3 }, { talk: 3 }] },
+  { id: 'photo', deltas: [{ social: -3 }, { social: 2, play: 2 }] },
+  { id: 'defi', deltas: [{ play: -2 }, { play: 3 }] },
+  { id: 'mots', deltas: [{ tender: 2, talk: 2 }, { tender: 2, talk: -2 }] },
+  { id: 'nuit', deltas: [{ social: -2 }, { talk: 3 }] },
+  { id: 'vacances', deltas: [{ social: -3 }, { social: 3 }] },
+  { id: 'blague', deltas: [{ play: 3 }, { talk: -2 }] },
+  { id: 'dessert', deltas: [{ tender: 2 }, { tender: -2, play: 1 }] },
+];
+
+type ChallengeWords = { question: string; choices: readonly [string, string] };
+
+export const challengeText = defineMessages({
+  fr: {
+    soiree: { question: 'Ce soir, plutôt…', choices: ['Canapé et plaid', 'Sortie improvisée'] },
+    message: { question: 'Un message important, tu…', choices: ['écris un roman', 'réponds en un mot'] },
+    dispute: { question: 'Un pote te vanne, tu…', choices: ['renvoies la balle', 'fais un câlin'] },
+    weekend: { question: 'Le week-end idéal…', choices: ['Rien de prévu', 'Trois plans par jour'] },
+    fete: { question: 'À une fête, tu es…', choices: ['près du buffet, tranquille', 'au milieu de la piste'] },
+    vocal: { question: 'Les vocaux de 4 minutes…', choices: ['J’adore en envoyer', 'Je les écoute en x2'] },
+    compliment: { question: 'On te fait un compliment, tu…', choices: ['en fais un en retour', 'fais une blague'] },
+    jeu: { question: 'Un jeu de société, tu…', choices: ['joues pour gagner', 'joues pour rigoler'] },
+    voyage: { question: 'En voyage, plutôt…', choices: ['Tout planifier', 'Se perdre exprès'] },
+    nouveau: { question: 'Quelqu’un de nouveau arrive, tu…', choices: ['vas lui parler', 'attends qu’il vienne'] },
+    secret: { question: 'Un secret, tu le…', choices: ['gardes pour toujours', 'racontes à ton minimoa'] },
+    matin: { question: 'Le matin, tu es…', choices: ['en mode zombie', 'déjà en train de chanter'] },
+    cadeau: { question: 'Un cadeau réussi, c’est…', choices: ['un truc utile', 'un truc qui fait pleurer'] },
+    pluie: { question: 'Il pleut, tu…', choices: ['restes au chaud', 'sautes dans les flaques'] },
+    groupe: { question: 'Dans un groupe de discussion, tu…', choices: ['lis sans écrire', 'lances les sujets'] },
+    film: { question: 'Ce soir, film…', choices: ['qui fait rire', 'qui fait pleurer'] },
+    retard: { question: 'Ton pote a 20 minutes de retard, tu…', choices: ['lui envoies un mème', 'lui dis de prendre son temps'] },
+    cuisine: { question: 'En cuisine, tu…', choices: ['suis la recette', 'improvises tout'] },
+    anniv: { question: 'Pour ton anniversaire…', choices: ['Un petit dîner à deux', 'Une grosse fête'] },
+    appel: { question: 'Un appel inattendu, tu…', choices: ['décroches direct', 'laisses sonner'] },
+    sport: { question: 'Le sport, c’est…', choices: ['en solo, avec mes écouteurs', 'en équipe, en criant'] },
+    critique: { question: 'On critique ton look, tu…', choices: ['réponds cash', 'en ris avec eux'] },
+    musique: { question: 'En soirée, la musique…', choices: ['C’est moi qui choisis', 'Je laisse faire'] },
+    dimanche: { question: 'Dimanche, tu…', choices: ['ranges ta vie', 'pars à l’aventure'] },
+    animaux: { question: 'Un chien croise ta route, tu…', choices: ['le caresses', 'lui parles comme à un humain'] },
+    photo: { question: 'Sur les photos de groupe, tu…', choices: ['te caches derrière', 'fais une grimace devant'] },
+    defi: { question: 'Un défi idiot entre potes, tu…', choices: ['regardes', 'relèves'] },
+    mots: { question: 'Pour dire je t’aime bien, tu…', choices: ['le dis avec des mots', 'le montres sans rien dire'] },
+    nuit: { question: 'À 2 h du matin, tu…', choices: ['dors depuis longtemps', 'refais le monde'] },
+    vacances: { question: 'Les vacances idéales…', choices: ['Une cabane perdue', 'Un festival'] },
+    blague: { question: 'Ta blague tombe à plat, tu…', choices: ['en refais une pire', 'changes de sujet'] },
+    dessert: { question: 'Au restaurant, le dessert…', choices: ['Je partage', 'Personne n’y touche'] },
+  } as Record<string, ChallengeWords>,
+  en: TODO,
+  es: TODO,
+  pt: TODO,
+  nl: TODO,
 });
 
-export const CHALLENGES: readonly Challenge[] = [
-  c('soiree', 'ce soir, plutôt…', 'canapé et plaid', { social: -3 }, 'sortie improvisée', { social: 3 }),
-  c('message', 'un message important, tu…', 'écris un roman', { talk: 3 }, 'réponds en un mot', { talk: -3 }),
-  c('dispute', 'un pote te vanne, tu…', 'renvoies la balle', { tender: -3 }, 'fais un câlin', { tender: 3 }),
-  c('weekend', 'le week-end idéal…', 'rien de prévu', { play: -3 }, 'trois plans par jour', { play: 3 }),
-  c('fete', 'à une fête, tu es…', 'près du buffet, tranquille', { social: -3 }, 'au milieu de la piste', { social: 3 }),
-  c('vocal', 'les vocaux de 4 minutes…', 'j’adore en envoyer', { talk: 3 }, 'je les écoute en x2', { talk: -2 }),
-  c('compliment', 'on te fait un compliment, tu…', 'en fais un en retour', { tender: 3 }, 'fais une blague', { tender: -2, play: 2 }),
-  c('jeu', 'un jeu de société, tu…', 'joues pour gagner', { play: 3, tender: -1 }, 'joues pour rigoler', { play: 2, tender: 1 }),
-  c('voyage', 'en voyage, plutôt…', 'tout planifier', { play: -3 }, 'se perdre exprès', { play: 3 }),
-  c('nouveau', 'quelqu’un de nouveau arrive, tu…', 'vas lui parler', { social: 3 }, 'attends qu’il vienne', { social: -3 }),
-  c('secret', 'un secret, tu le…', 'gardes pour toujours', { talk: -3 }, 'racontes à ton pet', { talk: 2, tender: 1 }),
-  c('matin', 'le matin, tu es…', 'en mode zombie', { play: -2, talk: -1 }, 'déjà en train de chanter', { play: 2, talk: 1 }),
-  c('cadeau', 'un cadeau réussi, c’est…', 'un truc utile', { tender: -2 }, 'un truc qui fait pleurer', { tender: 3 }),
-  c('pluie', 'il pleut, tu…', 'restes au chaud', { social: -2 }, 'sautes dans les flaques', { play: 3 }),
-  c('groupe', 'dans un groupe de discussion, tu…', 'lis sans écrire', { talk: -3 }, 'lances les sujets', { talk: 3 }),
-  c('film', 'ce soir, film…', 'qui fait rire', { play: 2 }, 'qui fait pleurer', { tender: 2 }),
-  c('retard', 'ton pote a 20 minutes de retard, tu…', 'lui envoies un mème', { play: 2, tender: -1 }, 'lui dis de prendre son temps', { tender: 2 }),
-  c('cuisine', 'en cuisine, tu…', 'suis la recette', { play: -2 }, 'improvises tout', { play: 3 }),
-  c('anniv', 'pour ton anniversaire…', 'un petit dîner à deux', { social: -2, tender: 1 }, 'une grosse fête', { social: 3 }),
-  c('appel', 'un appel inattendu, tu…', 'décroches direct', { talk: 2, social: 1 }, 'laisses sonner', { talk: -3 }),
-  c('sport', 'le sport, c’est…', 'seul avec mes écouteurs', { social: -2 }, 'en équipe, en criant', { social: 2, play: 1 }),
-  c('critique', 'on critique ton look, tu…', 'réponds cash', { tender: -3 }, 'en ris avec eux', { play: 2 }),
-  c('musique', 'en soirée, la musique…', 'c’est moi qui choisis', { social: 2, talk: 1 }, 'je laisse faire', { social: -1, tender: 1 }),
-  c('dimanche', 'dimanche, tu…', 'ranges ta vie', { play: -2 }, 'pars à l’aventure', { play: 3 }),
-  c('animaux', 'un chien croise ta route, tu…', 'le caresses', { tender: 3 }, 'lui parles comme à un humain', { talk: 3 }),
-  c('photo', 'sur les photos de groupe, tu…', 'te caches derrière', { social: -3 }, 'fais une grimace devant', { social: 2, play: 2 }),
-  c('defi', 'un défi idiot entre potes, tu…', 'regardes', { play: -2 }, 'relèves', { play: 3 }),
-  c('mots', 'pour dire je t’aime bien, tu…', 'le dis avec des mots', { tender: 2, talk: 2 }, 'le montres sans rien dire', { tender: 2, talk: -2 }),
-  c('nuit', 'à 2 h du matin, tu…', 'dors depuis longtemps', { social: -2 }, 'refais le monde', { talk: 3 }),
-  c('vacances', 'les vacances idéales…', 'une cabane perdue', { social: -3 }, 'un festival', { social: 3 }),
-  c('blague', 'ta blague tombe à plat, tu…', 'en refais une pire', { play: 3 }, 'changes de sujet', { talk: -2 }),
-  c('dessert', 'au restaurant, le dessert…', 'je partage', { tender: 2 }, 'personne n’y touche', { tender: -2, play: 1 }),
-];
+const cache = new Map<Locale, readonly Challenge[]>();
+
+/** Les défis avec leurs mots dans une langue (français pour ce qui manque). */
+export function challengesIn(locale: Locale): readonly Challenge[] {
+  let list = cache.get(locale);
+  if (!list) {
+    const words = challengeText.in(locale);
+    list = CHALLENGE_DATA.map((d) => {
+      const w = words[d.id] ?? { question: d.id, choices: [d.id, d.id] };
+      return { id: d.id, question: w.question, choices: [{ label: w.choices[0], delta: d.deltas[0] }, { label: w.choices[1], delta: d.deltas[1] }] as const };
+    });
+    cache.set(locale, list);
+  }
+  return list;
+}

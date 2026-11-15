@@ -33,6 +33,12 @@ const PlateformeSchema = z.object({
   EXPO_ACCESS_TOKEN: optionalString,
   INTERNAL_TICK_SECRET: z.preprocess(emptyToUndefined, z.string().min(24, 'au moins 24 caractères').optional()),
   TICK_BUDGET_MS: z.preprocess(emptyToUndefined, z.coerce.number().int().min(1000).max(120_000).default(20_000)),
+  /** Activités en direct iOS : clé APNs `.p8` (contenu PEM ; « \n » littéraux acceptés), son identifiant, l'équipe. */
+  APNS_KEY_P8: optionalString,
+  APNS_KEY_ID: z.preprocess(emptyToUndefined, z.string().length(10, '10 caractères').optional()),
+  APNS_TEAM_ID: z.preprocess(emptyToUndefined, z.string().length(10, '10 caractères').optional()),
+  /** production : api.push.apple.com (TestFlight, App Store) · sandbox : builds de développement. */
+  APNS_ENVIRONMENT: z.preprocess(emptyToUndefined, z.enum(['production', 'sandbox']).default('production')),
 });
 
 export interface PlateformeEnv {
@@ -48,6 +54,8 @@ export interface PlateformeEnv {
   };
   push: { provider: 'expo' | 'memory' | 'off'; accessToken: string | null };
   tick: { secret: string | null; budgetMs: number };
+  /** Activités en direct : apns (clé présente) · memory (adaptateurs mémoire, sans clé) · off. */
+  liveActivities: { provider: 'apns' | 'memory' | 'off'; apns: { keyP8: string; keyId: string; teamId: string; environment: 'production' | 'sandbox' } | null };
 }
 
 const parsePrices = (raw: string | undefined, base: AiPrice): AiPrice => {
@@ -70,7 +78,10 @@ export function loadPlateformeEnv(source: Record<string, string | undefined>, bl
   if (aiProvider === 'anthropic' && !e.ANTHROPIC_API_KEY) problems.push('AI_PROVIDER=anthropic demande ANTHROPIC_API_KEY');
   if (blowyEnv === 'production' && aiProvider === 'memory') problems.push('la production refuse AI_PROVIDER=memory');
   if (blowyEnv === 'production' && pushProvider === 'memory') problems.push('la production refuse PUSH_PROVIDER=memory');
+  const apnsParts = [e.APNS_KEY_P8, e.APNS_KEY_ID, e.APNS_TEAM_ID].filter((v) => v !== undefined).length;
+  if (apnsParts > 0 && apnsParts < 3) problems.push('APNS_KEY_P8, APNS_KEY_ID et APNS_TEAM_ID vont ensemble (activités en direct)');
   if (problems.length > 0) throw new Error(`configuration invalide — ${problems.join(' ; ')}`);
+  const apns = e.APNS_KEY_P8 && e.APNS_KEY_ID && e.APNS_TEAM_ID ? { keyP8: e.APNS_KEY_P8, keyId: e.APNS_KEY_ID, teamId: e.APNS_TEAM_ID, environment: e.APNS_ENVIRONMENT } : null;
   return {
     ai: {
       provider: aiProvider,
@@ -84,5 +95,6 @@ export function loadPlateformeEnv(source: Record<string, string | undefined>, bl
     },
     push: { provider: pushProvider, accessToken: e.EXPO_ACCESS_TOKEN ?? null },
     tick: { secret: e.INTERNAL_TICK_SECRET ?? null, budgetMs: e.TICK_BUDGET_MS },
+    liveActivities: { provider: apns ? 'apns' : adapters === 'memory' ? 'memory' : 'off', apns },
   };
 }

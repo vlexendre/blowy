@@ -2,6 +2,10 @@ import type { Day } from '@blowy/domain';
 import type { MemoryDb } from '../../persistence/memory-db';
 import type {
   DevicesRepository,
+  LiveActivityKindKey,
+  LiveActivityTokenRecord,
+  LiveActivityTokensRepository,
+  LiveActivityUse,
   NotificationLogRecord,
   NotificationLogRepository,
   NotificationSettingsRecord,
@@ -115,6 +119,62 @@ export class MemoryPushReceiptsRepository implements PushReceiptsRepository {
     for (const [id, r] of this.db.pushReceipts) {
       if (r.createdAt < before) {
         this.db.pushReceipts.delete(id);
+        n += 1;
+      }
+    }
+    return n;
+  }
+}
+
+export class MemoryLiveActivityTokensRepository implements LiveActivityTokensRepository {
+  constructor(private readonly db: MemoryDb) {}
+
+  async upsert(r: LiveActivityTokenRecord): Promise<void> {
+    if (r.use === 'update') {
+      for (const [token, t] of this.db.liveActivityTokens) {
+        if (token !== r.token && t.record.userId === r.userId && t.record.use === 'update' && t.record.activity === r.activity && t.record.activityId === r.activityId) this.db.liveActivityTokens.delete(token);
+      }
+    }
+    const existing = this.db.liveActivityTokens.get(r.token);
+    this.db.liveActivityTokens.set(r.token, { record: { ...r, createdAt: existing?.record.createdAt ?? r.createdAt }, disabledAt: null });
+  }
+
+  async forUser(userId: string, filter: { use: LiveActivityUse; activity?: LiveActivityKindKey; linkId?: string | null }): Promise<LiveActivityTokenRecord[]> {
+    return [...this.db.liveActivityTokens.values()]
+      .filter((t) => t.disabledAt === null && t.record.userId === userId && t.record.use === filter.use)
+      .filter((t) => filter.activity === undefined || t.record.activity === filter.activity)
+      .filter((t) => filter.linkId === undefined || t.record.linkId === filter.linkId)
+      .map((t) => ({ ...t.record }));
+  }
+
+  async remove(tokens: readonly string[]): Promise<void> {
+    for (const t of tokens) this.db.liveActivityTokens.delete(t);
+  }
+
+  async removeForUser(token: string, userId: string): Promise<void> {
+    if (this.db.liveActivityTokens.get(token)?.record.userId === userId) this.db.liveActivityTokens.delete(token);
+  }
+
+  async disable(tokens: readonly string[], at: string): Promise<void> {
+    for (const t of tokens) {
+      const row = this.db.liveActivityTokens.get(t);
+      if (row) row.disabledAt = at;
+    }
+  }
+
+  async listEnded(at: string, limit: number): Promise<LiveActivityTokenRecord[]> {
+    return [...this.db.liveActivityTokens.values()]
+      .filter((t) => t.disabledAt === null && t.record.use === 'update' && t.record.endsAt !== null && t.record.endsAt <= at)
+      .sort((a, b) => (a.record.endsAt ?? '').localeCompare(b.record.endsAt ?? ''))
+      .slice(0, limit)
+      .map((t) => ({ ...t.record }));
+  }
+
+  async purgeDisabled(before: string): Promise<number> {
+    let n = 0;
+    for (const [token, t] of this.db.liveActivityTokens) {
+      if (t.disabledAt !== null && t.disabledAt < before) {
+        this.db.liveActivityTokens.delete(token);
         n += 1;
       }
     }

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { applyLinkEvent } from '@blowy/domain';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import { PetCharacter } from '../../pets/application/pet-character';
@@ -36,7 +36,7 @@ export class SendMessage {
     const draft = await this.session.open(input.linkId, userId);
     if (draft.link.status !== 'active') {
       await this.session.commit(draft);
-      throw new DomainError('link_not_active', 'Ce lien dort. Ranime-le pour écrire à nouveau.');
+      throw new DomainError('link_not_active', errorText('linkSleepingWrite'));
     }
     const link = draft.link;
     const today = draft.today;

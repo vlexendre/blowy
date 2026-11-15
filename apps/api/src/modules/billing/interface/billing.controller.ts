@@ -4,6 +4,8 @@ import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
 import { DomainError } from '../../../shared/errors';
+import { ReqLocale } from '../../../shared/locale';
+import { type Locale, facturationText, textOf } from '@blowy/content';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { HandleAppleNotification } from '../application/apple-notifications.usecase';
 import { GetPaywall, GetSubscription, SubmitPurchase } from '../application/plus.usecases';
@@ -18,20 +20,24 @@ export class BillingController {
   ) {}
 
   @Get('paywall')
-  async getPaywall(@CurrentUser() user: AuthUser): Promise<Paywall> {
-    return this.paywall.execute(user.userId);
+  async getPaywall(@CurrentUser() user: AuthUser, @ReqLocale() locale: Locale): Promise<Paywall> {
+    return this.paywall.execute(user.userId, locale);
   }
 
   @Get('subscription')
-  async getSubscription(@CurrentUser() user: AuthUser): Promise<Subscription> {
-    return this.subscription.execute(user.userId);
+  async getSubscription(@CurrentUser() user: AuthUser, @ReqLocale() locale: Locale): Promise<Subscription> {
+    return this.subscription.execute(user.userId, locale);
   }
 
   /** Après un achat ou « Restaurer mes achats » (transaction StoreKit 2 signée). */
   @Post('purchases')
   @HttpCode(200)
-  async purchase(@CurrentUser() user: AuthUser, @Body(new ZodPipe(SubmitPurchaseBody)) body: z.infer<typeof SubmitPurchaseBody>): Promise<Subscription> {
-    return this.submit.execute(user.userId, body);
+  async purchase(
+    @CurrentUser() user: AuthUser,
+    @Body(new ZodPipe(SubmitPurchaseBody)) body: z.infer<typeof SubmitPurchaseBody>,
+    @ReqLocale() locale: Locale,
+  ): Promise<Subscription> {
+    return this.submit.execute(user.userId, body, locale);
   }
 
   /** App Store Server Notifications V2 (appelé par Apple ; authentifié par la signature, pas par un jeton). */
@@ -40,7 +46,7 @@ export class BillingController {
   @HttpCode(200)
   async apple(@Body(new ZodPipe(AppleNotificationBody)) body: z.infer<typeof AppleNotificationBody>): Promise<{ ok: true; outcome: string }> {
     const outcome = await this.appleNotification.execute(body.signedPayload);
-    if (outcome === 'rejected') throw new DomainError('invalid', 'Notification refusée.');
+    if (outcome === 'rejected') throw new DomainError('invalid', textOf(facturationText, (t) => t.plus.errors.notificationRejected));
     return { ok: true, outcome };
   }
 }

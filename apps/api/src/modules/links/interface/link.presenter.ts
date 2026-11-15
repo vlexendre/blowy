@@ -10,11 +10,13 @@ import { livePet } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import type { PetsRepository } from '../../pets/ports';
 import type { DailyPhotosRepository, LinkReadsRepository, LinkRecord, MessageRecord, MessagesRepository } from '../ports';
+import { labels } from '@blowy/content';
+import { requestLocale } from '../../../shared/locale';
 
 const PREVIEW_MAX = 80;
 
 const preview = (m: MessageRecord): string => {
-  if (m.kind === 'photo') return 'Photo du jour';
+  if (m.kind === 'photo') return labels.in(requestLocale()).photoPreview;
   const body = (m.body ?? '').replace(/\s+/g, ' ').trim();
   return body.length > PREVIEW_MAX ? `${body.slice(0, PREVIEW_MAX - 1)}…` : body;
 };

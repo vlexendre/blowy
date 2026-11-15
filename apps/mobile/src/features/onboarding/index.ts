@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
 
 import { keys, useApi } from '@/core';
+import { getLocale } from '@/locales/runtime';
 
 /** Brouillon de création : le pet est façonné avant que le compte existe. */
 interface Draft {
@@ -33,38 +34,38 @@ export const useDraft = create<Draft>((set) => ({
 }));
 
 /**
- * Questions du quiz de départ (ordre des jauges) : chaque réponse pousse une jauge d'un côté. Le pet pose la question
- * (`locales/onboarding.ts` → `caractere.host`, « samedi soir, moi je… ») et la réponse finit sa phrase.
+ * Questions du quiz de départ (ordre des jauges) : chaque réponse pousse une jauge d'un côté. Le minimoa pose la question
+ * (`locales/onboarding.ts` → `caractere.host`, « Samedi soir, moi je… ») et la réponse finit sa phrase
+ * (`caractere.answers`, même ordre).
  */
 export const QUIZ: { choices: [QuizChoice, QuizChoice] }[] = [
   {
     choices: [
-      { label: 'reste au chaud : plaid, série, pizza', emoji: '🛋️', delta: { social: -30 } },
-      { label: 'sors. on verra bien où ça finit', emoji: '🪩', delta: { social: 30 } },
+      { emoji: '🛋️', delta: { social: -30 } },
+      { emoji: '🪩', delta: { social: 30 } },
     ],
   },
   {
     choices: [
-      { label: 'un bon livre et le bruit de la pluie', emoji: '📖', delta: { play: -30 } },
-      { label: 'tournoi de uno, mauvaise foi incluse', emoji: '🃏', delta: { play: 30 } },
+      { emoji: '📖', delta: { play: -30 } },
+      { emoji: '🃏', delta: { play: 30 } },
     ],
   },
   {
     choices: [
-      { label: 'le chambre. c’est de l’amour aussi', emoji: '🌶️', delta: { tender: -30 } },
-      { label: 'lui fais un câlin, et on n’en parle plus', emoji: '🫶', delta: { tender: 30 } },
+      { emoji: '🌶️', delta: { tender: -30 } },
+      { emoji: '🫶', delta: { tender: 30 } },
     ],
   },
   {
     choices: [
-      { label: 'réponds « ok 👍 »', emoji: '🤐', delta: { talk: -30 } },
-      { label: 'en renvoie un de 6', emoji: '🎙️', delta: { talk: 30 } },
+      { emoji: '🤐', delta: { talk: -30 } },
+      { emoji: '🎙️', delta: { talk: 30 } },
     ],
   },
 ];
 
 interface QuizChoice {
-  label: string;
   emoji: string;
   delta: Partial<Gauges>;
 }
@@ -101,6 +102,7 @@ export function useOnboard() {
         pet: { name: d.petName.trim(), species: d.species },
         quiz: d.quiz,
         inviteCode: d.inviteCode.trim() || undefined,
+        locale: getLocale(),
       });
     },
     onSuccess: (me: Me) => {

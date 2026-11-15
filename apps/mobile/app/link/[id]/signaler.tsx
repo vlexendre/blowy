@@ -1,4 +1,4 @@
-import { reportReasonLabel } from '@blowy/content';
+import { reportReasonLabel } from '@/locales/content';
 import { REPORT_REASONS, type ReportBody } from '@blowy/contract';
 import { Banner, Button, Card, Header, ListRow, NoteField, Radio, ScreenTemplate, SettingsSection, Shake, Skeleton, Text, Title, Toggle } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';

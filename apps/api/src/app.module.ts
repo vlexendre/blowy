@@ -17,6 +17,7 @@ import { VisionModule } from './modules/vision/vision.module';
 import { WordsModule } from './modules/words/words.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { RetentionModule } from './modules/retention/retention.module';
 import { AuthGuard } from './shared/auth.guard';
 import { DevClockController } from './shared/dev-clock.controller';
 import { ErrorFilter } from './shared/error.filter';
@@ -42,6 +43,7 @@ export class AppModule {
         RituelsModule,
         BillingModule,
         AdminModule.forRoot({ demo: env.demo }),
+        RetentionModule,
       ],
       // Mode mémoire : envoi et lecture des médias (imite les URL signées de Supabase) ;
       // en local seulement, l'avance du temps.

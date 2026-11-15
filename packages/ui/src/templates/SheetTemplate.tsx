@@ -14,6 +14,7 @@ import { useOverlay } from '../lib/overlay';
 import { layout } from '../lib/styles';
 import { alpha, color, extra, motion, radius, space, veil } from '../theme';
 import type { TitleContent } from '../types';
+import { useUiStrings } from '../lib/strings';
 
 export interface SheetTemplateProps {
   visible: boolean;
@@ -70,7 +71,9 @@ const RISE = { ...springs.soft, stiffness: 190, damping: 21 } as const;
  * On peut la tirer vers le bas : elle suit le doigt (élastique vers le haut) et se ferme si on la lâche assez bas
  * ou assez vite, sinon elle remonte. Elle redescend en glissant à la fermeture. Animations réduites : fondus.
  */
-export function SheetTemplate({ visible, onClose, title, children, footer, closeLabel = 'Fermer', header, asScreen, bare }: SheetTemplateProps) {
+export function SheetTemplate({ visible, onClose, title, children, footer, closeLabel: closeLabelProp, header, asScreen, bare }: SheetTemplateProps) {
+  const uiStrings = useUiStrings();
+  const closeLabel = closeLabelProp ?? uiStrings.close;
   const insets = useSafeAreaInsets();
   const win = useWindowDimensions();
   const reduced = useReducedMotion();

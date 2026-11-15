@@ -172,6 +172,11 @@ export const ModerationActionBody = z
     days: z.number().int().min(1).max(365).optional(),
     /** Supprimer : recopier le prénom du compte, pour éviter une erreur. */
     confirmName: z.string().trim().max(40).optional(),
+    /**
+     * Supprimer : exclusion définitive (vrai par défaut) — l'empreinte de l'identifiant Apple ou Google est gardée
+     * 3 ans et toute nouvelle inscription avec lui est refusée. Faux : simple suppression (le compte peut revenir).
+     */
+    ban: z.boolean().optional(),
   })
   .refine((b) => b.action !== 'dismiss' || b.reportId !== undefined, { message: 'reportId requis pour classer', path: ['reportId'] });
 export type ModerationActionBody = z.infer<typeof ModerationActionBody>;

@@ -5,17 +5,17 @@ import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier as PushNotifier } from '../../../integrations/push/notifier';
 import type { Clock } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { seedOf } from '../../../shared/seed';
-import { BLOCKS, CLOCK, ENCOUNTERS, ENV, IDS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
+import { CLOCK, ENCOUNTERS, ENV, IDS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinksRepository } from '../../links/ports';
 import type { ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetsRepository } from '../../pets/ports';
-import type { BlocksRepository } from '../../safety/ports';
+import { Audience } from '../../safety/application/audience';
 import type { EncountersRepository } from '../ports';
 
 /**
@@ -29,7 +29,6 @@ export class Wave {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
-    @Inject(BLOCKS) private readonly blocks: BlocksRepository,
     @Inject(CreateLink) private readonly createLink: CreateLink,
     @Inject(PetCharacter) private readonly character: PetCharacter,
     @Inject(Notifier) private readonly notifier: Notifier,
@@ -37,10 +36,11 @@ export class Wave {
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
     @Inject(NOTIFIER) private readonly push: PushNotifier,
+    @Inject(Audience) private readonly audience: Audience,
   ) {}
 
   async execute(userId: string, targetId: string): Promise<void> {
-    if (userId === targetId) throw new DomainError('invalid', 'Ton pet se connaît déjà très bien.');
+    if (userId === targetId) throw new DomainError('invalid', errorText('waveSelf'));
     const [me, target, myPet, targetPet] = await Promise.all([
       this.profiles.findById(userId),
       this.profiles.findById(targetId),
@@ -48,15 +48,15 @@ export class Wave {
       this.pets.findByOwner(targetId),
     ]);
     if (!me || !myPet) throw new DomainError('not_onboarded');
-    // Une personne bloquée (dans un sens ou l'autre) est introuvable.
-    if (!target || !targetPet || (await this.blocks.blockedEitherWay(userId)).has(targetId)) throw new DomainError('not_found', 'Cette personne est introuvable.');
+    // Une personne bloquée (dans un sens ou l'autre), suspendue ou supprimée est introuvable (Audience).
+    if (!target || !targetPet || !(await this.audience.reachable(userId, targetId))) throw new DomainError('not_found', errorText('personNotFound'));
     // Ce que chacun cherche (filtre dur de la vision) : sinon, rien ne trahit pourquoi, la personne est « introuvable ».
-    if (!matchMode(me, target)) throw new DomainError('not_found', 'Cette personne est introuvable.');
+    if (!matchMode(me, target)) throw new DomainError('not_found', errorText('personNotFound'));
     const [a, b] = userId < targetId ? [userId, targetId] : [targetId, userId];
     const link = await this.links.findBetween(a, b);
-    if (link && link.status !== 'archived') throw new DomainError('conflict', 'Vous êtes déjà liés.');
+    if (link && link.status !== 'archived') throw new DomainError('conflict', errorText('alreadyLinked'));
     if (shapeOf(livePet(myPet, this.clock.now()).needs) === 'boude') {
-      throw new DomainError('forbidden', 'ton pet boude : occupe-toi de lui avant de saluer.');
+      throw new DomainError('forbidden', errorText('waveSulking'));
     }
 
     if (await this.encounters.findPair(userId, targetId)) return;
@@ -68,7 +68,7 @@ export class Wave {
       fromUser: userId,
       toUser: targetId,
       status: mutual ? 'accepted' : 'waved',
-      intro: encounterIntroLine({ other: targetPet.name, via: 'new', compatibility: compatibility(myPet.gauges, targetPet.gauges), mutualName: null }, seedOf('wave', userId, targetId)),
+      intro: encounterIntroLine(me.locale, { other: targetPet.name, via: 'new', compatibility: compatibility(myPet.gauges, targetPet.gauges), mutualName: null }, seedOf('wave', userId, targetId)),
       createdAt: now,
       statusAt: now,
     });
@@ -82,7 +82,7 @@ export class Wave {
     }
     await this.notifier.notify(
       targetId,
-      waveReceivedEmail({ displayName: target.displayName, petName: targetPet.name, fromName: me.displayName, fromPetName: myPet.name, appUrl: this.env.webUrl }),
+      waveReceivedEmail(target.locale, { displayName: target.displayName, petName: targetPet.name, fromName: me.displayName, fromPetName: myPet.name, appUrl: this.env.webUrl }),
     );
     await this.push.notify(targetId, 'waved', { name: me.displayName, minimoa: myPet.name });
   }

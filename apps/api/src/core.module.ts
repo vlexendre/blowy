@@ -21,6 +21,8 @@ import { rituelsRepositories } from './modules/rituels/infrastructure/providers'
 import { visionProviders } from './modules/vision/infrastructure/providers';
 import { billingProviders } from './modules/billing/infrastructure/providers';
 import { adminProviders } from './modules/admin/infrastructure/providers';
+import { Audience } from './modules/safety/application/audience';
+import { retentionProviders } from './modules/retention/infrastructure/providers';
 import { MemoryDb } from './persistence/memory-db';
 import { createServiceClient } from './persistence/supabase';
 import { type Clock, ShiftedClock, systemClock } from './shared/clock';
@@ -67,6 +69,9 @@ export class CoreModule {
       ...visionProviders(env.adapters),
       ...billingProviders(env.adapters),
       ...adminProviders(env.adapters),
+      ...retentionProviders(env.adapters),
+      // Qui est « utilisable » pour qui (supprimé, suspendu, bloqué, discret) : une seule règle, partout.
+      Audience,
     ];
     const exported = providers.map((p) => (typeof p === 'function' ? p : p.provide));
     return { module: CoreModule, global: true, providers, exports: exported };

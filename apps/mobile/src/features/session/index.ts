@@ -7,6 +7,7 @@ import { Alert, Platform } from 'react-native';
 import { AuthError, keys, useApi, usePorts, useSession } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
 import { resumeOnboarding } from '@/features/onboarding';
+import { common } from '@/locales/common';
 
 export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline';
 
@@ -48,7 +49,7 @@ export function useSignOut() {
 }
 
 /** Message lisible pour une erreur d'auth ou d'API (repli générique). */
-export function errorMessage(error: unknown, fallback = 'Quelque chose a coincé. Réessaie dans un instant.'): string {
+export function errorMessage(error: unknown, fallback: string = common.genericError): string {
   if (error instanceof AuthError || error instanceof ApiError) return error.message;
   return fallback;
 }

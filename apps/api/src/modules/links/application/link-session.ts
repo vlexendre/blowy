@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type Clock, todayOf } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import { CLOCK, IDS, LINKS, MESSAGES, PETS, PROFILES } from '../../../shared/tokens';
@@ -29,7 +29,7 @@ export class LinkSession {
   /** Lien d'un membre ; `not_found` pour les autres (on ne révèle pas son existence). */
   async open(linkId: string, userId: string): Promise<LinkDraft> {
     const link = await this.links.findById(linkId);
-    if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', 'Ce lien n’existe pas.');
+    if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', errorText('linkNotFound'));
     const [draft] = await this.draftsFor([link]);
     if (!draft) throw new DomainError('not_found');
     return draft;
@@ -38,11 +38,13 @@ export class LinkSession {
   /** Brouillons rattrapés pour plusieurs liens (une seule lecture des pets). */
   async draftsFor(links: readonly LinkRecord[]): Promise<LinkDraft[]> {
     const owners = [...new Set(links.flatMap((l) => [l.userA, l.userB]))];
-    const pets = await this.pets.findByOwners(owners);
+    const [pets, profiles] = await Promise.all([this.pets.findByOwners(owners), this.profiles.findByIds(owners)]);
     const names = new Map(pets.map((p) => [p.ownerId, p.name]));
+    // Langue de chaque membre : un minimoa parle la langue de son humain.
+    const locales = new Map(profiles.map((p) => [p.id, p.locale]));
     const today = todayOf(this.clock);
     return links.map((link) => {
-      const draft = new LinkDraft(link, today, names);
+      const draft = new LinkDraft(link, today, names, locales);
       draft.tick();
       return draft;
     });

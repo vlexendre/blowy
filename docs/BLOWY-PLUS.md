@@ -80,7 +80,7 @@ l'App Store Server API (voir `apps/api/README.md`).
    `willRenew: false`.
 7. En bac à sable, Apple n'envoie chaque notification qu'une fois (pas de renvoi) : surveiller les journaux de l'API
    (`[Blowy+]`).
-8. Le journal `store_notifications` (table, lecture par la clé service) garde chaque notification 90 jours avec son
+8. Le journal `store_notifications` (table, lecture par la clé service) garde chaque notification 30 jours (journal technique) avec son
    résultat (`applied`, `unlinked`, `duplicate`, `ignored`, `test`).
 
 En local sans Apple : l'API en mémoire accepte des transactions fabriquées (`memoryJws` dans

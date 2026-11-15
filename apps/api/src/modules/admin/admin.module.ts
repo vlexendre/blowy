@@ -4,7 +4,7 @@ import { AdminDemo } from './application/admin-demo';
 import { AiCosts, Dashboards } from './application/dashboards.usecases';
 import { Moderation } from './application/moderation.usecases';
 import { AdminStatsJobs } from './application/stats.jobs';
-import { NO_INSIGHTS } from './insights';
+import { LiveAdminInsights } from './application/live-insights';
 import { AdminController } from './interface/admin.controller';
 import { AdminGuard } from './interface/admin.guard';
 import { ADMIN_INSIGHTS } from './tokens';
@@ -14,14 +14,14 @@ import { ADMIN_INSIGHTS } from './tokens';
  * Dépôts et garde de compte : fournis par CoreModule (`adminProviders`), car la garde d'authentification
  * globale en a besoin. `DeleteMe` est le cas d'usage de « Supprimer mon compte », réutilisé tel quel.
  *
- * `ADMIN_INSIGHTS` : remplacer `NO_INSIGHTS` par l'implémentation des chantiers « rituels » et « vision »
- * quand ils exposent série moyenne, propositions, compatibilité, formes et visions.
+ * `ADMIN_INSIGHTS` : `LiveAdminInsights` (série moyenne, propositions, compatibilité, formes, visions), lu une
+ * fois par jour terminé par `AdminStatsJobs`.
  */
 @Module({})
 export class AdminModule {
   static forRoot(options: { demo: boolean }): DynamicModule {
     const providers: Provider[] = [
-      { provide: ADMIN_INSIGHTS, useValue: NO_INSIGHTS },
+      { provide: ADMIN_INSIGHTS, useClass: LiveAdminInsights },
       AdminGuard,
       Dashboards,
       AiCosts,

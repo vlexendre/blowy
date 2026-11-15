@@ -10,6 +10,7 @@ import { ease, fadeTo, springs, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
 import { Appear } from '../motion/Appear';
 import { color, motion, radius, size, space, type, veil } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 export type ComposerTone = 'sweet' | 'tease';
 
@@ -53,10 +54,11 @@ export function Composer({
   onToneChange,
   toneLabels,
   onAttach,
-  attachLabel = 'Ajouter',
-  sendLabel = 'Envoyer',
+  attachLabel,
+  sendLabel,
   maxLength = 2000,
 }: ComposerProps) {
+  const uiStrings = useUiStrings();
   if (disabled) {
     return (
       <View style={[styles.wrap, styles.disabled]} accessibilityRole="text">
@@ -78,7 +80,7 @@ export function Composer({
         </Appear>
       ) : null}
       <View style={[layout.row, layout.gapSm]}>
-        {onAttach ? <IconButton glyph="plus" label={attachLabel} onPress={onAttach} /> : null}
+        {onAttach ? <IconButton glyph="plus" label={attachLabel ?? uiStrings.add} onPress={onAttach} /> : null}
         <View style={[layout.row, styles.field]}>
           <TextInput
             value={value}
@@ -94,7 +96,7 @@ export function Composer({
           />
         </View>
         {/* Maquette : bouton jaune plein même champ vide ; l'envoi d'un champ vide est ignoré. */}
-        <IconButton icon={<Plane ready={canSend} sending={!!sending} />} label={sendLabel} variant="accent" onPress={canSend ? onSend : undefined} disabled={sending} />
+        <IconButton icon={<Plane ready={canSend} sending={!!sending} />} label={sendLabel ?? uiStrings.send} variant="accent" onPress={canSend ? onSend : undefined} disabled={sending} />
       </View>
     </View>
   );

@@ -1,14 +1,15 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { OnboardBody } from '@blowy/contract';
-import { visionErrorText, welcomeEmail } from '@blowy/content';
+import { facturationText, textOf, visionText, welcomeEmail } from '@blowy/content';
 import { GAUGE_KEYS, type Gauges, MIN_AGE, START_NEEDS, ZERO_GAUGES, ageOn, clampGauge, cleanPetName } from '@blowy/domain';
 import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
 import { type Clock, todayOf } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { CLOCK, ENV, IDS, ONBOARDED_HOOK, PETS, PROFILES } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
+import { Bans } from '../../retention/application/bans';
 import { PetCharacter } from '../../pets/application/pet-character';
 import { Wardrobe } from '../../pets/application/wardrobe';
 import type { PetsRepository } from '../../pets/ports';
@@ -47,6 +48,7 @@ export class Onboard {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
+    @Inject(Bans) private readonly bans: Bans,
   ) {}
 
   async execute({ userId, email, body }: OnboardInput): Promise<void> {
@@ -54,11 +56,14 @@ export class Onboard {
     if (ageOn(body.birthdate, today) < MIN_AGE) throw new DomainError('too_young');
     const existing = await this.profiles.findById(userId);
     if (existing && (await this.pets.findByOwner(userId))) throw new DomainError('already_onboarded');
+    // Exclusion définitive : même identifiant Apple ou Google qu'un compte exclu il y a moins de 3 ans.
+    if (await this.bans.isBanned(userId)) throw new DomainError('forbidden', textOf(facturationText, (t) => t.moderation.banned));
     // Tout est vérifié avant d'écrire quoi que ce soit.
-    checkAnswers(body.visionAnswers);
+    // Le test se passe avant le compte ; sans réponses, l'inscription passe et `Me.visionTestDone` vaut faux.
+    checkAnswers(body.visionAnswers, true);
     const nowIso = this.clock.now().toISOString();
     const identity = applyIdentity(DEFAULT_IDENTITY, { gender: body.gender, seeking: body.seeking, whom: body.whom ?? null, sensitiveConsent: body.consents.sensitive || undefined }, nowIso);
-    if (body.location && !body.consents.location) throw new DomainError('invalid', visionErrorText.locationConsent);
+    if (body.location && !body.consents.location) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.locationConsent));
 
     const profile = existing
       ? await this.profiles.update(userId, { ...identity, locale: body.locale, ...(body.consents.location && !existing.locationConsentAt ? { locationConsentAt: nowIso } : {}) })
@@ -67,7 +72,7 @@ export class Onboard {
     if (body.visionAnswers.length > 0) await this.vision.answerTest(userId, body.visionAnswers);
     if (body.location) await this.locations.record(userId, { lat: body.location.latitude, lng: body.location.longitude }, true);
     const petName = cleanPetName(body.pet.name);
-    if (!petName) throw new DomainError('invalid', 'Donne un nom à ton pet.');
+    if (!petName) throw new DomainError('invalid', errorText('petNameEmpty'));
     const gauges = startingGauges(body.quiz);
     const now = this.clock.now().toISOString();
     await this.pets.create({
@@ -92,7 +97,7 @@ export class Onboard {
 
     if (body.inviteCode) await this.joinInviter(userId, body.inviteCode.trim().toUpperCase());
     if (!profile.welcomeSentAt) {
-      const sent = await this.notifier.notify(userId, welcomeEmail({ displayName: profile.displayName, petName, appUrl: this.env.webUrl }), email);
+      const sent = await this.notifier.notify(userId, welcomeEmail(profile.locale, { displayName: profile.displayName, petName, appUrl: this.env.webUrl }), email);
       if (sent) await this.profiles.update(userId, { welcomeSentAt: this.clock.now().toISOString() });
     }
     try {

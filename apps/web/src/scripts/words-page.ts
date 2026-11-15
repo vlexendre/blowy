@@ -1,7 +1,10 @@
 /** Page « 3 mots » : charge la personne, laisse choisir exactement 3 mots, montre leur effet, envoie, fait répondre le pet. */
 import type { WordsPage } from '@blowy/contract';
 import { deltaForWords, GAUGE_KEYS, type GaugeKey, type Mood } from '@blowy/domain';
-import { wordLabel } from '@blowy/content';
+import { labels } from '@blowy/content';
+
+/** Le site est en français. */
+const { wordLabel } = labels.in('fr');
 import { api, failureOf } from '../lib/api';
 import { readCode } from '../lib/code';
 import { setPetImage } from '../lib/pet';
@@ -84,7 +87,7 @@ chips.forEach((b) => {
 });
 
 function vars(p: WordsPage): Record<string, string> {
-  return { name: p.displayName, nom: p.displayName.toLowerCase(), pet: p.pet.name, petNom: p.pet.name.toLowerCase() };
+  return { name: p.displayName, nom: p.displayName, pet: p.pet.name, petNom: p.pet.name };
 }
 
 function showFailure(kind: ReturnType<typeof failureOf>): void {

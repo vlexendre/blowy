@@ -31,10 +31,20 @@ import type { ModelClient } from '../ai/model-client';
 import { SupabaseAiUsageStore } from '../ai/supabase-usage-store';
 import { AI_USAGE_STORE, type AiUsageStore } from '../ai/usage-store';
 import { ExpoPusher } from '../push/expo-pusher';
-import { LIVE_ACTIVITIES, NoLiveActivities } from '../push/live-activity';
+import { ApnsLiveActivities } from '../push/apns-live-activities';
+import { LIVE_ACTIVITIES, type LiveActivityPusher, NoLiveActivities } from '../push/live-activity';
+import { MemoryLiveActivities } from '../push/memory-live-activities';
+import { LiveActivities } from '../../modules/notifications/live-activities';
 import { MemoryPusher } from '../push/memory-pusher';
 import { NOTIFIER } from '../push/notifier';
 import { NoPusher, PUSHER } from '../push/pusher';
+
+/** Activités en direct : APNs si la clé est là, mémoire en local, sinon rien (docs/WIDGETS.md). */
+function liveActivityPusher(env: Env, clock: Clock): LiveActivityPusher {
+  const la = env.plateforme.liveActivities;
+  if (la.provider === 'apns' && la.apns) return new ApnsLiveActivities({ ...la.apns, bundleId: env.facturationAdmin.apple.bundleId }, () => clock.now());
+  return la.provider === 'memory' ? new MemoryLiveActivities() : new NoLiveActivities();
+}
 
 /** Modèle d'IA branché (null : IA désactivée). Les tests y lisent le `MemoryModel`. */
 export const AI_MODEL = Symbol('AI_MODEL');
@@ -58,7 +68,8 @@ export class PlateformeModule {
       },
       AiUsage,
       { provide: PUSHER, useValue: p.push.provider === 'expo' ? new ExpoPusher(p.push.accessToken) : p.push.provider === 'memory' ? new MemoryPusher() : new NoPusher() },
-      { provide: LIVE_ACTIVITIES, useValue: new NoLiveActivities() },
+      { provide: LIVE_ACTIVITIES, useFactory: (clock: Clock): LiveActivityPusher => liveActivityPusher(env, clock), inject: [CLOCK] },
+      LiveActivities,
       ...notificationsRepositories(env.adapters),
       ...chatMinimoasRepositories(env.adapters),
       repository<TickRunsRepository>(TICK_RUNS, env.adapters, (db) => new MemoryTickRunsRepository(db), (c) => new SupabaseTickRunsRepository(c)),

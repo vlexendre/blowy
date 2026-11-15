@@ -31,6 +31,7 @@ import { usePet } from '@/features/pet';
 import { useBlock } from '@/features/safety';
 import { chat as chatText, chats as chatsText, options as optionsText } from '@/locales/chats';
 import { rencontre as t, rencontres as listText } from '@/locales/rencontres';
+import { ui } from '@/locales/ui';
 
 type Sheet = 'menu' | 'report' | 'block' | null;
 
@@ -67,7 +68,7 @@ export default function RencontreScreen() {
       onBack={back}
       backLabel={t.back}
       center={via ? <Chip label={via} tone="glass" size="sm" /> : undefined}
-      right={person ? <Chip label={`${compat} %`} tone="accent" size="sm" accessibilityLabel={t.compatA11y(compat)} /> : undefined}
+      right={person ? <Chip label={ui.percent(compat)} tone="accent" size="sm" accessibilityLabel={t.compatA11y(compat)} /> : undefined}
     />
   );
 
@@ -136,7 +137,7 @@ export default function RencontreScreen() {
           onBack={back}
           backLabel={t.back}
           via={via ? { label: via } : undefined}
-          compat={`${compat} %`}
+          compat={ui.percent(compat)}
           compatLabel={t.compatA11y(compat)}
           onMore={() => setSheet('menu')}
           moreLabel={t.more}

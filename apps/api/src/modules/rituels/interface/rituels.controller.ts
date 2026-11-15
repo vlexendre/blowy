@@ -23,10 +23,11 @@ import {
   type WeeklyReview,
   type WeeklyReviews,
 } from '@blowy/contract';
-import { dailyText } from '@blowy/content';
+import { rituelsText } from '@blowy/content';
 import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser } from '../../../shared/auth.guard';
+import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { DailyService, type DoneResult, toDailyDto } from '../application/daily.service';
 import { HabitsService } from '../application/habits.service';
@@ -36,6 +37,7 @@ import { RitualsContext } from '../application/rituals-context';
 import { StreakService } from '../application/streak.service';
 import { TodayService } from '../application/today.service';
 import { PetCharacter } from '../../pets/application/pet-character';
+import { requestLocale } from '../../../shared/locale';
 
 const Ref = new ZodPipe(Uuid);
 const BeforeIso = new ZodPipe(Iso.datetime({ offset: true }).optional());
@@ -68,6 +70,7 @@ export class RituelsController {
   }
 
   // ── Sortie du jour ──
+  @RateLimit('write')
   @Post('outing')
   async outing(@CurrentUser() user: AuthUser, @Body(new ZodPipe(OutingBody)) body: z.infer<typeof OutingBody>): Promise<OutingResult> {
     const outcome = await this.outings.answer(user.userId, body.answer, body.awayFromHome);
@@ -83,31 +86,37 @@ export class RituelsController {
   }
 
   // ── Défi du jour ──
+  @RateLimit('write')
   @Post('today/seen')
   async seen(@CurrentUser() user: AuthUser): Promise<DailyResult> {
     return this.dailyResult(user.userId, { record: await this.daily.mark(user.userId, 'seen'), newItems: [], justDone: false });
   }
 
+  @RateLimit('write')
   @Post('today/accept')
   async accept(@CurrentUser() user: AuthUser): Promise<DailyResult> {
     return this.dailyResult(user.userId, { record: await this.daily.mark(user.userId, 'accepted'), newItems: [], justDone: false });
   }
 
+  @RateLimit('write')
   @Post('today/answer')
   async answer(@CurrentUser() user: AuthUser, @Body(new ZodPipe(DailyAnswerBody)) body: z.infer<typeof DailyAnswerBody>): Promise<DailyResult> {
     return this.dailyResult(user.userId, await this.daily.answer(user.userId, body.choice));
   }
 
+  @RateLimit('write')
   @Post('today/photo/ticket')
   dailyTicket(@CurrentUser() user: AuthUser, @Body(new ZodPipe(RitualPhotoTicketBody)) body: z.infer<typeof RitualPhotoTicketBody>): Promise<UploadTicket> {
     return this.daily.photoTicket(user.userId, body.contentType);
   }
 
+  @RateLimit('write')
   @Post('today/photo')
   async dailyPhoto(@CurrentUser() user: AuthUser, @Body(new ZodPipe(RitualPhotoBody)) body: z.infer<typeof RitualPhotoBody>): Promise<DailyResult> {
     return this.dailyResult(user.userId, await this.daily.photo(user.userId, body.path, body.keep));
   }
 
+  @RateLimit('write')
   @Post('today/complete')
   async complete(@CurrentUser() user: AuthUser): Promise<DailyResult> {
     return this.dailyResult(user.userId, await this.daily.complete(user.userId));
@@ -124,12 +133,14 @@ export class RituelsController {
     return this.habits.list(user.userId);
   }
 
+  @RateLimit('write')
   @Post('habits')
   async addHabit(@CurrentUser() user: AuthUser, @Body(new ZodPipe(AddHabitBody)) body: z.infer<typeof AddHabitBody>): Promise<Habits> {
     await this.habits.add(user.userId, body.habitId, body.rhythm, body.proofHour);
     return this.habits.list(user.userId);
   }
 
+  @RateLimit('write')
   @Patch('habits/:ref')
   async updateHabit(
     @CurrentUser() user: AuthUser,
@@ -140,12 +151,14 @@ export class RituelsController {
     return this.habits.list(user.userId);
   }
 
+  @RateLimit('write')
   @Delete('habits/:ref')
   async removeHabit(@CurrentUser() user: AuthUser, @Param('ref', Ref) ref: string): Promise<Habits> {
     await this.habits.remove(user.userId, ref);
     return this.habits.list(user.userId);
   }
 
+  @RateLimit('write')
   @Post('habits/:ref/proof/ticket')
   proofTicket(
     @CurrentUser() user: AuthUser,
@@ -155,6 +168,8 @@ export class RituelsController {
     return this.habits.proofTicket(user.userId, ref, body.contentType);
   }
 
+  // Peut appeler le modèle de vision (`habit_proof`) : quota « ai » par personne, en plus du budget de la passerelle.
+  @RateLimit('ai')
   @Post('habits/:ref/proof')
   async proof(@CurrentUser() user: AuthUser, @Param('ref', Ref) ref: string, @Body(new ZodPipe(RitualPhotoBody)) body: z.infer<typeof RitualPhotoBody>): Promise<ProofResult> {
     const r = await this.habits.proof(user.userId, ref, body.path, body.keep);
@@ -162,6 +177,7 @@ export class RituelsController {
   }
 
   // ── Photos privées ──
+  @RateLimit('write')
   @Post('photos/:id/keep')
   async keep(@CurrentUser() user: AuthUser, @Param('id', Ref) id: string, @Body(new ZodPipe(KeepPhotoBody)) body: z.infer<typeof KeepPhotoBody>): Promise<Ok> {
     await this.habits.keepPhoto(user.userId, id, body.keep);
@@ -188,12 +204,13 @@ export class RituelsController {
     return toReviewDto(await this.reviews.get(user.userId, id));
   }
 
+  @RateLimit('write')
   @Post('reviews/:id/read')
   async readReview(@CurrentUser() user: AuthUser, @Param('id', Ref) id: string): Promise<WeeklyReview> {
     return toReviewDto(await this.reviews.markRead(user.userId, id));
   }
 
   private async dailyResult(userId: string, r: DoneResult): Promise<DailyResult> {
-    return { challenge: toDailyDto(r.record), streak: await this.streaks.view(userId), line: r.justDone ? dailyText.done : null, newItems: r.newItems };
+    return { challenge: toDailyDto(r.record), streak: await this.streaks.view(userId), line: r.justDone ? rituelsText.in(requestLocale()).daily.done : null, newItems: r.newItems };
   }
 }

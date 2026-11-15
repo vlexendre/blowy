@@ -12,6 +12,7 @@ import { ease, springs, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
 import { alpha, color, speciesColor, veil } from '../theme';
 import type { PersonLook } from '../types';
+import { useUiStrings } from '../lib/strings';
 
 /** Teinte claire d'une couleur d'espèce (texte sur fond teinté : « par Malo, pote de pote »). */
 export function lighten(hex: string, t: number): string {
@@ -55,6 +56,7 @@ export interface EncounterHeadProps {
 
 /** Avatar cerclé, nom, propriétaire et pourcentage d'accord. */
 export function EncounterHead({ person, name, nameStyle = 'display', badge, owner, compatibility, compatLabel, waveKey = 0 }: EncounterHeadProps) {
+  const uiStrings = useUiStrings();
   const tint = speciesColor[person.pet.species];
   return (
     <View style={[layout.row, styles.head]}>
@@ -79,7 +81,7 @@ export function EncounterHead({ person, name, nameStyle = 'display', badge, owne
         ) : null}
       </View>
       <View style={styles.compat}>
-        <Title text={`${compatibility} %`} size={38} color={color.accent} />
+        <Title text={uiStrings.percent(compatibility)} size={38} color={color.accent} />
         {compatLabel ? (
           <Text variant="bodyHeavy" size={9} muted style={styles.compatLabel}>
             {compatLabel}

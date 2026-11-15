@@ -2,7 +2,7 @@
 import type { ApiClient } from '@blowy/api-client';
 import { START_NEEDS, WORD_KEYS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { type TestWorld, errorCode, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, doToday, errorCode, onboardBody, startWorld, upload } from './helpers';
 
 describe('vie sociale et sécurité', () => {
   let world: TestWorld;
@@ -88,15 +88,17 @@ describe('vie sociale et sécurité', () => {
     expect(await errorCode(world.anonymous.words.send(aliceWords, ['doux', 'calme', 'cash']))).toBe('rate_limited');
   });
 
-  it('défi du jour : une fois par jour, renommage du pet', async () => {
-    const before = await bob.api.pet.get();
-    expect(before.challenge.doneToday).toBe(false);
-    const after = await bob.api.pet.answerChallenge(0);
-    expect(after.challenge.doneToday).toBe(true);
-    expect(after.events[0]?.kind).toBe('challenge_done');
-    expect(await errorCode(bob.api.pet.answerChallenge(1))).toBe('already_done');
+  it('défi du jour : un seul système (celui des rituels), une fois par jour ; renommage du pet', async () => {
+    // L'ancien défi (V6) n'existe plus.
+    const legacy = await fetch(`${world.baseUrl}/v1/pet/challenge`, { method: 'POST', headers: { authorization: `Bearer test:${bob.id}`, 'content-type': 'application/json' }, body: '{"choice":0}' });
+    expect(legacy.status).toBe(404);
+    expect('challenge' in (await bob.api.pet.get())).toBe(false);
+    expect((await bob.api.rituals.today()).streak.doneToday).toBe(false);
+    await doToday(bob);
+    expect((await bob.api.rituals.today()).streak.doneToday).toBe(true);
+    expect((await bob.api.pet.get()).events.some((e) => e.kind === 'challenge_done')).toBe(true);
     world.clock.advanceDays(1);
-    expect((await bob.api.pet.get()).challenge.doneToday).toBe(false);
+    expect((await bob.api.rituals.today()).streak.doneToday).toBe(false);
     expect((await bob.api.pet.rename('  Gaston   le G  ')).pet.name).toBe('Gaston le G');
   });
 

@@ -1,5 +1,5 @@
 import { ApiError } from '@blowy/api-client';
-import { shapeLabel } from '@blowy/content';
+import { shapeLabel } from '@/locales/content';
 import type { EncounterHistoryItem, Suggestion } from '@blowy/contract';
 import { color } from '@blowy/tokens';
 import {

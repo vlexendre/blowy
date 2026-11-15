@@ -3,7 +3,7 @@
  * Version réelle (passerelle IA, stockage Supabase) et version mémoire (déterministe, pour les tests et le local).
  */
 import { Logger } from '@nestjs/common';
-import { habitById, habitProofPrompt, habitProofSystem, reviewText } from '@blowy/content';
+import { habitById, habitProofPrompt, habitProofSystem, reviewCoachSystem } from '@blowy/content';
 import { type ProofVerdict, isKindText } from '@blowy/domain';
 import type { AiGateway } from '../../../integrations/ai/ai-gateway';
 import type { MemoryStorage } from '../../../integrations/storage/memory-storage';
@@ -89,7 +89,7 @@ export class AiCoach implements Coach {
       const result = await this.gateway.complete({
         feature: 'weekly_review',
         userId: input.userId,
-        system: reviewText.coachSystem,
+        system: reviewCoachSystem,
         prompt: input.template,
         maxTokens: 300,
         tier: 'small',

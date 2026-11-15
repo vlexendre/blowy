@@ -1,6 +1,6 @@
 /** Accueil de l'app (V6-Accueil, V6-Boude) : le pet, ses besoins, les soins, sa garde-robe, son caractère. */
 import { ApiError } from '@blowy/api-client';
-import { careLabel, formLabel, itemLabel, needLabel, shapeLabel, statGoalLabel } from '@blowy/content';
+import { careLabel, formLabel, itemLabel, needLabel, shapeLabel, statGoalLabel } from '@/locales/content';
 import { type CareAction, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import { Appear, Banner, CareBar, CareIcon, EntryCard, ItemImage, NeedsPanel, PetHomeSkeleton, PetRefresh, type PetReaction, PetStage, TabTemplate, usePetLure } from '@blowy/ui';
@@ -10,7 +10,7 @@ import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { errorText } from '@/features/links';
-import { careAvailable, careHot, nextItem, pickLine, useCare, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
+import { careAvailable, careHot, nextItem, pickLine, useCare, useLivePet, useRitualsToday, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { home as t } from '@/locales/pet';
 
@@ -21,6 +21,7 @@ export default function PetHome() {
   const router = useRouter();
   const pet = useLivePet();
   const wardrobe = useWardrobe();
+  const today = useRitualsToday();
   const care = useCare();
   const fresh = useUnlocks((s) => s.fresh);
   const [reaction, setReaction] = useState<PetReaction | null>(null);
@@ -62,7 +63,8 @@ export default function PetHome() {
     );
   }
 
-  const { pet: p, challenge } = pet.data;
+  const { pet: p } = pet.data;
+  const challengeDone = today.data?.streak.doneToday ?? false;
   const urgent = urgentNeed(p.needs);
   const speech = said?.text ?? pickLine(urgent ? t.speech[urgent] : t.happy, p.needs);
   const sulking = p.shape === 'boude';
@@ -143,10 +145,10 @@ export default function PetHome() {
             <Appear once="home:character" delay={260}>
               <EntryCard
                 title={t.character}
-                text={t.characterText(formLabel[p.form], challenge.doneToday)}
+                text={t.characterText(formLabel[p.form], challengeDone)}
                 chevron
                 onPress={() => router.push('/pet/caractere')}
-                accessibilityLabel={`${t.characterA11y}, ${t.characterText(formLabel[p.form], challenge.doneToday)}`}
+                accessibilityLabel={`${t.characterA11y}, ${t.characterText(formLabel[p.form], challengeDone)}`}
               />
             </Appear>
             <UnlockCelebration />

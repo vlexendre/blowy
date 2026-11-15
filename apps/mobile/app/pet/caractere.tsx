@@ -1,4 +1,4 @@
-import { gaugeLabel } from '@blowy/content';
+import { gaugeLabel } from '@/locales/content';
 import { cleanPetName, dayOf, type GaugeKey, nextRenameOn, PET_NAME_MAX, RENAME_COOLDOWN_DAYS } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
@@ -22,7 +22,7 @@ import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { errorText, shortDay } from '@/features/links';
-import { useAnswerChallenge, usePet, useRenamePet, weekSummary } from '@/features/pet';
+import { useAnswerChallenge, usePet, useRenamePet, useRitualsToday, weekSummary } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { goBack } from '@/features/session';
 import { pet as t } from '@/locales/pet';
@@ -33,6 +33,7 @@ export default function CharacterScreen() {
   const pet = usePet();
   const rename = useRenamePet();
   const challenge = useAnswerChallenge();
+  const today = useRitualsToday();
   const [selected, setSelected] = useState<GaugeKey | null>('social');
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState('');
@@ -65,7 +66,10 @@ export default function CharacterScreen() {
     );
   }
 
-  const { pet: p, challenge: c, wordsCount, events, rename: renameRule } = pet.data;
+  const { pet: p, wordsCount, events, rename: renameRule } = pet.data;
+  // Défi du jour des rituels : la carte n'est montrée ici que pour une question (les autres types ont leur écran).
+  const c = today.data?.challenge;
+  const question = c && c.kind === 'question' && c.choices ? { text: c.text, choices: c.choices, done: c.status === 'done', answer: c.answer } : null;
   // Nom changé il y a moins de 60 jours (sans Blowy+) : champ en lecture seule, date et raccourci vers Blowy+.
   const renameLocked = !renameRule.allowed;
   const renameNotice = renameLocked
@@ -156,19 +160,21 @@ export default function CharacterScreen() {
           secondary={{ label: t.wardrobe, accessibilityLabel: t.wardrobeA11y, onPress: () => router.push('/pet/garde-robe') }}
         />
 
-        <ChallengeCard
-          label={t.challengeLabel}
-          question={c.question}
-          choices={c.choices}
-          done={c.doneToday}
-          picked={c.doneToday ? picked : null}
-          doneLabel={t.challengeDone}
-          onChoose={(choice) => {
-            setPicked(choice);
-            challenge.mutate(choice);
-          }}
-          loading={challenge.isPending}
-        />
+        {question ? (
+          <ChallengeCard
+            label={t.challengeLabel}
+            question={question.text}
+            choices={question.choices}
+            done={question.done}
+            picked={question.done ? (picked ?? question.answer) : null}
+            doneLabel={t.challengeDone}
+            onChoose={(choice) => {
+              setPicked(choice);
+              challenge.mutate(choice);
+            }}
+            loading={challenge.isPending}
+          />
+        ) : null}
         {challenge.isError ? <Banner tone="error" text={errorText(challenge.error, t.challengeError)} onClose={() => challenge.reset()} /> : null}
       </Stack>
       <UnlockCelebration />

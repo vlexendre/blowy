@@ -16,7 +16,7 @@ import type { DailyChallengeRecord, HabitCheckRecord, HabitRecord, RitualPhotoRe
 import type { ChatPetState } from '@blowy/domain';
 import type { AiUsageRecord } from '../integrations/ai/usage-store';
 import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
-import type { NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
+import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
 
 export interface WordVoteRow {
   targetUser: string;
@@ -48,6 +48,8 @@ export class MemoryDb {
   readonly linkReads = new Map<string, string>();
   readonly dailyPhotos: DailyPhotoRecord[] = [];
   readonly encounters = new Map<string, EncounterRecord>();
+  /** Rencontres proposées, clé `${day}:${userId}`. */
+  readonly encounterProposals = new Map<string, { proposed: number; scoreSum: number }>();
   /** clé `${blocker}:${blocked}` */
   readonly blocks = new Map<string, BlockRecord>();
   readonly reports: ReportRecord[] = [];
@@ -75,6 +77,8 @@ export class MemoryDb {
   readonly chatPetStates = new Map<string, ChatPetState>();
   /** clé token */
   readonly pushDevices = new Map<string, PushDeviceRecord>();
+  /** Jetons APNs des activités en direct, clé token. */
+  readonly liveActivityTokens = new Map<string, { record: LiveActivityTokenRecord; disabledAt: string | null }>();
   readonly notificationSettings = new Map<string, NotificationSettingsRecord>();
   readonly notificationLog: NotificationLogRecord[] = [];
   /** clé ticket → jeton et date */
@@ -92,6 +96,10 @@ export class MemoryDb {
   /** Jours d'activité, clé `${day}:${userId}`. */
   readonly activityDays = new Set<string>();
   readonly dailyStats = new Map<string, DailyStatsRow>();
+  /** Conservation : dernier jour d'activité et prévenance (colonnes de `profiles`), exclusions, signalements purgés. */
+  readonly accountActivity = new Map<string, { lastActiveOn: string; noticedOn: string | null }>();
+  readonly bannedIdentities = new Map<string, { bannedAt: string; until: string }>();
+  readonly purgedReports = new Set<string>();
 
   private sequence = 0;
   nextId(): string {
@@ -135,13 +143,16 @@ export class MemoryDb {
     for (const id of linkIds) this.chatPetStates.delete(id);
     removeWhere(this.messages, (m) => m.visibleTo === userId);
     for (const [token, d] of this.pushDevices) if (d.userId === userId) this.pushDevices.delete(token);
+    for (const [token, t] of this.liveActivityTokens) if (t.record.userId === userId || (t.record.linkId !== null && linkIds.has(t.record.linkId))) this.liveActivityTokens.delete(token);
     this.notificationSettings.delete(userId);
     removeWhere(this.notificationLog, (l) => l.userId === userId || (l.linkId !== null && linkIds.has(l.linkId)));
 
     for (const [id, e] of this.encounters) if (e.fromUser === userId || e.toUser === userId) this.encounters.delete(id);
+    for (const key of [...this.encounterProposals.keys()]) if (key.endsWith(`:${userId}`)) this.encounterProposals.delete(key);
     for (const [key, b] of this.blocks) if (b.blocker === userId || b.blocked === userId) this.blocks.delete(key);
     for (const s of this.subscriptions.values()) if (s.userId === userId) s.userId = null;
     this.suspensions.delete(userId);
+    this.accountActivity.delete(userId);
     for (const key of [...this.activityDays]) if (key.endsWith(`:${userId}`)) this.activityDays.delete(key);
     const messageIds = new Set(this.messages.map((m) => m.id));
     for (const r of this.reports) {

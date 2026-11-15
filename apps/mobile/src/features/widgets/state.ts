@@ -1,0 +1,181 @@
+/**
+ * Ce que montrent les widgets et les activités en direct, calculé à partir des données déjà lues par l'app.
+ * Pur (l'heure est passée en paramètre) : testé dans state.test.ts.
+ *
+ * Les widgets n'appellent jamais l'API. L'app leur publie une suite de moments calculés d'avance avec les règles
+ * du domaine (la sociabilité qui baisse, la forme qui suit, le défi qui repart à minuit) ; l'extension les
+ * déroule sans rien recalculer.
+ */
+import type { Link, LiveActivityAttributes, LiveActivityKind, LiveActivityState, Pet, RitualsToday, Streak } from '@blowy/contract';
+import { APP_TIMEZONE, dayOf, decayNeeds, nextLocalHour, shapeOf } from '@blowy/domain';
+
+import type { WidgetFrame, WidgetSnapshot } from '@/core/widgets';
+
+/** Un moment toutes les 2 h sur 24 h, plus minuit (le défi repart) : 13 entrées au plus, bien au-dessus des 5 min d'Apple. */
+const STEP_S = 2 * 3600;
+const HORIZON_S = 24 * 3600;
+
+export const HOME_URL = 'blowy://pet';
+export const linkUrl = (linkId: string): string => `blowy://link/${linkId}`;
+
+export interface WidgetInputs {
+  pet: Pick<Pet, 'name' | 'species' | 'needs'>;
+  /** Instant de la lecture du pet : ses besoins valent pour cet instant. */
+  readAt: Date;
+  streak: Streak | null;
+  /** Accueil des rituels (texte et état du défi) ; null s'il n'est pas (encore) lu. */
+  today: RitualsToday | null;
+}
+
+/** Fin de la journée en cours (minuit, jour de Paris comme celui du défi), en secondes Unix. */
+export const endOfDay = (now: Date): number => Math.floor(nextLocalHour(now, APP_TIMEZONE, 0).getTime() / 1000);
+
+/** Série affichée après minuit si le défi d'aujourd'hui n'est pas fait : un joker la protège, sinon elle repart de zéro. */
+export function streakAfterMidnight(streak: Streak | null): number {
+  if (!streak) return 0;
+  if (streak.doneToday || streak.jokersLeft > 0) return streak.current;
+  return 0;
+}
+
+function challengeToday(i: WidgetInputs, now: Date): Pick<WidgetFrame, 'challenge' | 'challengeText'> {
+  const today = i.today && i.today.day === dayOf(now) ? i.today : null;
+  const done = i.streak?.doneToday ?? today?.streak.doneToday ?? false;
+  if (done) return { challenge: 'done', challengeText: null };
+  return {
+    challenge: today?.challenge.status === 'accepted' ? 'accepted' : 'todo',
+    challengeText: today?.challenge.text ?? null,
+  };
+}
+
+/** L'état publié pour les widgets. */
+export function widgetSnapshot(i: WidgetInputs): WidgetSnapshot {
+  const readS = Math.floor(i.readAt.getTime() / 1000);
+  const midnight = endOfDay(i.readAt);
+  // Grille fixe (toutes les 2 h) : l'état ne change pas d'une lecture à l'autre si rien n'a bougé.
+  const first = Math.floor(readS / STEP_S) * STEP_S;
+  const times = new Set<number>([first, midnight]);
+  for (let t = first + STEP_S; t <= readS + HORIZON_S; t += STEP_S) times.add(t);
+
+  const today = challengeToday(i, i.readAt);
+  const streakNow = i.streak?.current ?? i.today?.streak.current ?? 0;
+  const frames = [...times]
+    .sort((a, b) => a - b)
+    .map((at): WidgetFrame => {
+      const needs = decayNeeds(i.pet.needs, Math.max(0, at - readS) / 3600);
+      const afterMidnight = at >= midnight;
+      return {
+        at,
+        sociability: needs.sociability,
+        shape: shapeOf(needs),
+        streak: afterMidnight ? streakAfterMidnight(i.streak ?? i.today?.streak ?? null) : streakNow,
+        ...(afterMidnight ? { challenge: 'todo' as const, challengeText: null } : today),
+      };
+    });
+  return { v: 1, pet: { name: i.pet.name, species: i.pet.species }, url: HOME_URL, frames };
+}
+
+// ── Activités en direct ────────────────────────────────────────────────────
+
+export interface DesiredActivity {
+  /** Une activité par clé, démarrée une seule fois (ex. `challenge:2026-11-15`). */
+  key: string;
+  kind: LiveActivityKind;
+  attributes: LiveActivityAttributes;
+  state: LiveActivityState;
+}
+
+export interface ActivityInputs {
+  pet: Pick<Pet, 'name' | 'species'>;
+  today: RitualsToday | null;
+  streak: Streak | null;
+  links: readonly Link[];
+  now: Date;
+}
+
+const nowS = (now: Date): number => Math.floor(now.getTime() / 1000);
+
+/** Le défi du jour accepté et pas encore fait : jusqu'à minuit, série en jeu. */
+export function challengeActivity(i: ActivityInputs): DesiredActivity | null {
+  const day = dayOf(i.now);
+  const c = i.today?.day === day ? i.today.challenge : null;
+  if (!c || c.status !== 'accepted') return null;
+  const streak = i.streak?.current ?? i.today?.streak.current ?? 0;
+  return {
+    key: `challenge:${day}`,
+    kind: 'challenge',
+    attributes: { kind: 'challenge', pet: { name: i.pet.name, species: i.pet.species }, startedAt: nowS(i.now), url: HOME_URL },
+    state: { endsAt: endOfDay(i.now), streak, title: c.text, done: false },
+  };
+}
+
+/** « Léa a posté, à toi » : l'autre a envoyé sa photo du jour, pas toi. Une seule à la fois (la première trouvée). */
+export function photoActivity(i: ActivityInputs): DesiredActivity | null {
+  const day = dayOf(i.now);
+  const link = i.links.find((l) => l.status === 'active' && l.today.day === day && l.today.theirs && !l.today.mine);
+  if (!link) return null;
+  return {
+    key: `photo:${link.id}:${day}`,
+    kind: 'photo',
+    attributes: {
+      kind: 'photo',
+      pet: { name: i.pet.name, species: i.pet.species },
+      startedAt: nowS(i.now),
+      url: linkUrl(link.id),
+      otherName: link.other.displayName,
+    },
+    state: { endsAt: endOfDay(i.now), streak: 0, title: null, done: false },
+  };
+}
+
+/** Une sortie déclarée (« Nino est de sortie »), pour `hours` heures au plus (huit au plus selon Apple). */
+export function outingActivity(pet: Pick<Pet, 'name' | 'species'>, now: Date, hours = 3): DesiredActivity {
+  const start = nowS(now);
+  return {
+    key: `outing:${start}`,
+    kind: 'outing',
+    attributes: { kind: 'outing', pet: { name: pet.name, species: pet.species }, startedAt: start, url: HOME_URL },
+    state: { endsAt: start + Math.min(8, Math.max(1, hours)) * 3600, streak: 0, title: null, done: false },
+  };
+}
+
+/** Ce qu'il faut faire d'une activité en cours, au vu des données du moment. */
+export type ActivityDecision =
+  | { action: 'keep' }
+  | { action: 'update'; state: LiveActivityState }
+  | { action: 'end'; state: LiveActivityState; dismissAfterSeconds: number };
+
+/**
+ * challenge : fait → état final « Défi relevé » laissé 15 min ; jour passé → retirée ; sinon mise à jour (série, texte).
+ * photo : ta photo est partie → « Photo envoyée » 10 min ; jour passé ou lien sans photo de l'autre → retirée.
+ * outing : terminée à son heure de fin.
+ */
+export function decideRunning(
+  running: { attributes: LiveActivityAttributes; state: LiveActivityState },
+  i: ActivityInputs,
+): ActivityDecision {
+  const { attributes, state } = running;
+  const now = nowS(i.now);
+  const dayOver = state.endsAt <= now;
+  switch (attributes.kind) {
+    case 'challenge': {
+      const done = i.streak?.doneToday ?? (i.today?.day === dayOf(i.now) ? i.today.challenge.status === 'done' : false);
+      if (done && !dayOver) return { action: 'end', state: { ...state, done: true, streak: i.streak?.current ?? state.streak }, dismissAfterSeconds: 15 * 60 };
+      if (dayOver) return { action: 'end', state, dismissAfterSeconds: 0 };
+      const desired = challengeActivity(i);
+      if (!desired) return { action: 'keep' };
+      const next = { ...state, streak: desired.state.streak, title: desired.state.title };
+      return next.streak !== state.streak || next.title !== state.title ? { action: 'update', state: next } : { action: 'keep' };
+    }
+    case 'photo': {
+      if (dayOver) return { action: 'end', state, dismissAfterSeconds: 0 };
+      const linkId = attributes.url.split('/').pop();
+      const link = i.links.find((l) => l.id === linkId);
+      if (!link) return { action: 'keep' };
+      if (link.today.mine) return { action: 'end', state: { ...state, done: true }, dismissAfterSeconds: 10 * 60 };
+      if (!link.today.theirs) return { action: 'end', state, dismissAfterSeconds: 0 };
+      return { action: 'keep' };
+    }
+    case 'outing':
+      return dayOver ? { action: 'end', state: { ...state, done: true }, dismissAfterSeconds: 30 * 60 } : { action: 'keep' };
+  }
+}

@@ -10,3 +10,7 @@ ios
 android
 .DS_Store
 supabase/.temp
+# Module natif local des widgets (le motif « ios » ci-dessus vise les projets générés, pas ce code-là).
+!apps/mobile/modules/*/ios
+# Fichiers générés par plugins/with-blowy-widgets.js au prebuild.
+apps/mobile/targets/widget/Generated/

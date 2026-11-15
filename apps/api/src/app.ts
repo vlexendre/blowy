@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import type { Env } from './config/env';
 import type { CoreOverrides } from './core.module';
 import type { PublicUrl } from './integrations/storage/ports';
+import { withRequestLocale } from './shared/locale';
 import { PUBLIC_URL } from './shared/tokens';
 
 export interface CreateAppOptions extends CoreOverrides {
@@ -23,7 +24,9 @@ export async function createApp(env: Env, options: CreateAppOptions = {}): Promi
   // Derrière le proxy de l'hébergeur : l'IP réelle sert au limiteur de la page « 3 mots ».
   app.set('trust proxy', 1);
   app.disable('x-powered-by');
-  app.enableCors({ origin: env.corsOrigins, methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'], allowedHeaders: ['authorization', 'content-type'] });
+  app.enableCors({ origin: env.corsOrigins, methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'], allowedHeaders: ['authorization', 'content-type', 'accept-language'] });
+  // Langue de la requête (Accept-Language), lisible partout pendant la requête (`requestLocale()`).
+  app.use(withRequestLocale);
   app.enableShutdownHooks();
   await app.listen(env.port);
   if (env.port === 0) {

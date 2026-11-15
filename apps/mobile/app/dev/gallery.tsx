@@ -2,7 +2,7 @@
  * Galerie de développement du design system (@blowy/ui) : chaque atome, molécule, organisme et gabarit
  * avec des données d'exemple réalistes. Route : /dev/gallery.
  */
-import { careLabel, eventLabel, formLabel, gaugeLabel, itemLabel, levelLabel, needLabel, shapeLabel, slotLabel, statGoalLabel } from '@blowy/content';
+import { careLabel, eventLabel, formLabel, gaugeLabel, itemLabel, levelLabel, needLabel, shapeLabel, slotLabel, statGoalLabel } from '@/locales/content';
 import {
   applyCare,
   CARE_ACTIONS,
@@ -142,7 +142,7 @@ const links: { link: LinkLook; time: string; author: string; level: string; isNe
   { link: { other: lea, myPet: nino, status: 'active', lives: 5, level: 3, unread: 2, lastMessage: { preview: '🔥 12 jours. ne casse pas la série', at: '' } }, time: '21:04', author: 'nino :', level: 'niv. 3' },
   { link: { other: malo, myPet: nino, status: 'active', lives: 6, level: 2, unread: 0, lastMessage: { preview: 'quiz dispo. le perdant paie le kebab', at: '' } }, time: '19:30', author: 'gaston :', level: 'niv. 2' },
   { link: { other: sasha, myPet: nino, status: 'active', lives: 7, level: 1, unread: 0, lastMessage: { preview: 'on s’est croisés rue oberkampf 👀', at: '' } }, time: 'hier', author: 'pia :', level: 'niv. 1', isNew: true },
-  { link: { other: tom, myPet: nino, status: 'ghost', lives: 0, level: 2, unread: 0, lastMessage: { preview: 'plus un bruit depuis 7 jours', at: '' } }, time: 'lun.', author: 'son pet :', level: 'niv. 2' },
+  { link: { other: tom, myPet: nino, status: 'ghost', lives: 0, level: 2, unread: 0, lastMessage: { preview: 'plus un bruit depuis 7 jours', at: '' } }, time: 'lun.', author: 'son minimoa :', level: 'niv. 2' },
 ];
 
 const at = (d: string, h: string): string => `2026-11-${d}T${h}:00+01:00`;
@@ -190,7 +190,7 @@ type LinkTab = (typeof tabs)[number]['key'];
 
 const navItems: BottomTabItem<'chats' | 'pet' | 'encounters' | 'me'>[] = [
   { key: 'chats', label: 'Chats', glyph: 'chat', badge: 3 },
-  { key: 'pet', label: 'Mon pet', glyph: 'heart' },
+  { key: 'pet', label: 'Mon minimoa', glyph: 'heart' },
   { key: 'encounters', label: 'Rencontres', glyph: 'people', badge: 2 },
   { key: 'me', label: 'Moi', glyph: 'person' },
 ];
@@ -382,7 +382,7 @@ function CareLevel() {
       <Item name="PetStage · boude">
         <PetStage pet={{ name: 'Gaston', species: 'gaston', outfit: looks.gaston }} shape="boude" shapeLabel={shapeLabel.boude?.title} />
       </Item>
-      <Item name="Garde-robe · les 64 objets sur les 4 pets">
+      <Item name="Garde-robe · les 64 objets sur les 4 minimoas">
         {ITEM_SLOTS.map((sl) => (
           <View key={sl} style={styles.wardrobe}>
             <Title text={slotLabel[sl] ?? sl} variant="h3" />
@@ -439,7 +439,7 @@ function GalleryScreen() {
           <Text variant="h2">h2 titre</Text>
           <Text variant="h3">h3 titre</Text>
           <Text>body : élève ton pet. il te présente du monde.</Text>
-          <Text variant="bodyBold">bodyBold : nino a croisé 3 pets</Text>
+          <Text variant="bodyBold">bodyBold : nino a croisé 3 minimoas</Text>
           <Text variant="small" muted>
             small muted : la prochaine dans 4 jours.
           </Text>
@@ -447,10 +447,10 @@ function GalleryScreen() {
         </Item>
         <Item name="Title">
           <Title text={[{ text: 'CHATS' }, { text: ' · 5', dim: true }]} size={64} />
-          <Title text={[{ text: 'TON PET,\n' }, { text: 'TON VIBE', dim: true }]} />
+          <Title text={[{ text: 'TON MINIMOA,\n' }, { text: 'TON VIBE', dim: true }]} />
         </Item>
         <Item name="Button">
-          <Button label="créer mon pet" iconRight="arrow" onPress={noop} />
+          <Button label="créer mon minimoa" iconRight="arrow" onPress={noop} />
           <Button label="continuer avec ton e-mail" variant="white" onPress={noop} />
           <Button label="le ranimer" hint="(une seule fois)" variant="dark" onPress={noop} />
           <Button label="le laisser partir" variant="ghost" onPress={noop} />
@@ -667,7 +667,7 @@ function GalleryScreen() {
         </Item>
         <Item name="ListRow">
           <View>
-            <ListRow title="pause rencontres" subtitle="nino croise de nouveaux pets" switchValue={pause} onSwitchChange={setPause} />
+            <ListRow title="pause rencontres" subtitle="nino croise de nouveaux minimoas" switchValue={pause} onSwitchChange={setPause} />
             <ListRow title="qui nino peut croiser" subtitle="potes de potes, puis le quartier" onPress={noop} />
             <ListRow title="supprimer mon compte" destructive onPress={noop} divider={false} />
           </View>
@@ -705,7 +705,7 @@ function GalleryScreen() {
           <View style={styles.row}>
             <StatTile value="6" label="liens" />
             <StatTile value="12 J" label="plus longue série" color={color.orange} />
-            <StatTile value="14" label="pets croisés" color={color.accent} />
+            <StatTile value="14" label="minimoas croisés" color={color.accent} />
           </View>
         </Item>
         <Item name="TabBarItem · StepProgress · FeatureRow">
@@ -817,7 +817,7 @@ function GalleryScreen() {
             steps={[
               { form: 'casanier', when: 'septembre', name: 'casanier', caption: 'que du canapé.' },
               { form: 'equilibre', when: 'octobre', name: 'équilibré', caption: 'chats rouverts.' },
-              { form: 'sociable', when: 'aujourd’hui', name: 'sociable', caption: '3 pets croisés.', current: true },
+              { form: 'sociable', when: 'aujourd’hui', name: 'sociable', caption: '3 minimoas croisés.', current: true },
             ]}
           />
         </Item>
@@ -837,7 +837,7 @@ function GalleryScreen() {
         <Item name="SuggestionCard">
           <SuggestionCard
             suggestion={{ user: sasha, compatibility: 91, intro: 'ton humain perd à tous les quiz de gaston ? on va bien s’entendre 😏', waved: false }}
-            ownerLabel="le pet de Sasha"
+            ownerLabel="le minimoa de Sasha"
             viaLabel="par Malo, pote de pote"
             viaPet={malo.pet}
             badgeLabel="nouveau"
@@ -855,9 +855,9 @@ function GalleryScreen() {
         </Item>
         <Item name="IncomingCard">
           <IncomingCard
-            incoming={{ from: sasha, compatibility: 91, intro: 'nino, t’es le pet dont gaston parle tout le temps ?' }}
+            incoming={{ from: sasha, compatibility: 91, intro: 'nino, t’es le minimoa dont gaston parle tout le temps ?' }}
             title="Sasha veut te rencontrer"
-            ownerLabel="pia, le pet de Sasha"
+            ownerLabel="pia, le minimoa de Sasha"
             compatLabel="d’accord"
             acceptLabel="accepter"
             declineLabel="pas cette fois"
@@ -909,7 +909,7 @@ function GalleryScreen() {
             preview={{ pet: nino, gauges: { social: answer === 'out' ? 30 : answer === 'home' ? -30 : 0, play: 0, tender: 0, talk: 0 }, labels: gaugeLabel }}
           />
         </Item>
-        <Item name="HostBubble · ProgressLine (inscription : le pet pose la question)">
+        <Item name="HostBubble · ProgressLine (inscription : le minimoa pose la question)">
           <ProgressLine value={0.46} />
           <HostBubble species="pia" line="et toi, je t’appelle comment\u00a0?" note="c’est ce que verront les gens que je te présente." seed="dev-host" name="Pia" />
           <TextField hero value={name} onChangeText={setName} placeholder="ton prénom" hint="un grand champ centré, sans cadre" accessibilityLabel="ton prénom" />
@@ -922,7 +922,7 @@ function GalleryScreen() {
           <StageEcho chips={['plutôt joueur', 'plutôt bavard']} text="ça changera avec toi." />
         </Item>
         <Item name="PromiseStage · HoldButton (maintenir, ou toucher)">
-          <PromiseStage species="gaston" kicker="gaston te demande une seule chose" title={[{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }]} text="un pet en forme rencontre du monde. un pet oublié boude, et ne présente plus personne." cheerKey={promised ? 1 : 0} seed="dev-promise" />
+          <PromiseStage species="gaston" kicker="gaston te demande une seule chose" title={[{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }]} text="un minimoa en forme rencontre du monde. un minimoa oublié boude, et ne présente plus personne." cheerKey={promised ? 1 : 0} seed="dev-promise" />
           <HoldButton label="promis" doneLabel="promis\u00a0!" done={promised} onDone={() => setPromised(true)} onPressDone={() => setPromised(false)} doneA11yLabel="recommencer" />
         </Item>
         <Item name="PrepChecklist">
@@ -978,7 +978,7 @@ function GalleryScreen() {
           <SettingsSection
             title="confidentialité"
             rows={[
-              { key: 'pause', title: 'pause rencontres', subtitle: 'nino croise de nouveaux pets', switchValue: pause, onSwitchChange: setPause },
+              { key: 'pause', title: 'pause rencontres', subtitle: 'nino croise de nouveaux minimoas', switchValue: pause, onSwitchChange: setPause },
               { key: 'notif', title: 'notifications', subtitle: 'séries, vies, rencontres', onPress: noop },
               { key: 'blocks', title: 'personnes bloquées', onPress: noop },
               { key: 'delete', title: 'supprimer mon compte', destructive: true, onPress: noop },
@@ -996,12 +996,12 @@ function GalleryScreen() {
       <Level title="GABARITS">
         <Item name="OnboardingTemplate">
           <Frame height={760}>
-            <OnboardingTemplate step={1} total={4} onBack={noop} title={[{ text: 'TON PET,\n' }, { text: 'TON VIBE', dim: true }]} primaryLabel="c’est lui" onPrimary={noop} secondaryLabel="j’ai déjà un compte" onSecondary={noop}>
+            <OnboardingTemplate step={1} total={4} onBack={noop} title={[{ text: 'TON MINIMOA,\n' }, { text: 'TON VIBE', dim: true }]} primaryLabel="c’est lui" onPrimary={noop} secondaryLabel="j’ai déjà un compte" onSecondary={noop}>
               <TextField label="son petit nom" value={name} onChangeText={setName} large />
             </OnboardingTemplate>
           </Frame>
         </Item>
-        <Item name="StageTemplate · PetRise (un pet sort du bas de l’écran)">
+        <Item name="StageTemplate · PetRise (un minimoa sort du bas de l’écran)">
           <Frame height={620}>
             <StageTemplate
               onBack={noop}

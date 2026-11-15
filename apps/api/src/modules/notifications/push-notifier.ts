@@ -8,12 +8,13 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { PushData, WidgetState } from '@blowy/contract';
 import { notificationText } from '@blowy/content';
 import { DEFERRED_MAX_HOURS, type NotificationKindKey, capExempt, decideNotification, localTimeOf, nextLocalHour } from '@blowy/domain';
-import { LIVE_ACTIVITIES, type LiveActivityPusher } from '../../integrations/push/live-activity';
 import type { NotificationKind, Notifier } from '../../integrations/push/notifier';
 import { PUSHER, type PushMessage, type Pusher } from '../../integrations/push/pusher';
 import type { Clock } from '../../shared/clock';
 import { CLOCK, PROFILES } from '../../shared/tokens';
 import type { ProfilesRepository } from '../me/ports';
+import { Audience } from '../safety/application/audience';
+import { LiveActivities } from './live-activities';
 import { NotificationSettings } from './notification-settings';
 import {
   type DevicesRepository,
@@ -87,9 +88,10 @@ export class PushNotifier implements Notifier {
     @Inject(NOTIFICATION_LOG) private readonly log: NotificationLogRepository,
     @Inject(PUSH_RECEIPTS) private readonly receipts: PushReceiptsRepository,
     @Inject(PUSHER) private readonly pusher: Pusher,
-    @Inject(LIVE_ACTIVITIES) private readonly liveActivities: LiveActivityPusher,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(Audience) private readonly audience: Audience,
+    @Inject(LiveActivities) private readonly live: LiveActivities,
   ) {}
 
   async notify(userId: string, kind: NotificationKind, vars: Record<string, string> = {}): Promise<void> {
@@ -118,7 +120,8 @@ export class PushNotifier implements Notifier {
   private async process(userId: string, kind: NotificationKind, vars: Record<string, string>, queued: NotificationLogRecord | null): Promise<boolean> {
     const settings = await this.settings.resolve(userId);
     const devices = (await this.devices.forUser(userId)).filter((d) => d.kind === 'expo');
-    if (devices.length === 0) {
+    // Compte suspendu : aucun push (Audience) ; un report en attente est abandonné.
+    if (devices.length === 0 || !(await this.audience.canNotify(userId))) {
       if (queued) await this.log.close(queued.id, 'dropped');
       return false;
     }
@@ -153,17 +156,20 @@ export class PushNotifier implements Notifier {
     if (queued && !(await this.log.close(queued.id, 'sent'))) return false; // déjà envoyé par un autre tick
 
     const profile = await this.profiles.findById(userId);
-    const lang = (profile as { locale?: string } | null)?.locale ?? 'fr';
+    const lang = profile?.locale ?? 'fr';
     const text = notificationText(lang, kind, vars);
     const endsAt = nextLocalHour(now, settings.timeZone, 0).toISOString();
     const state = widgetState(kind, vars, endsAt);
     const data: PushData = { kind, url: deepLink(kind, vars), ...(vars.linkId ? { linkId: vars.linkId } : {}), ...(state ? { state } : {}) };
-    const delivered = await this.deliver(devices, { title: text.title, body: text.body, data });
+    // Activités en direct (docs/WIDGETS.md) : seule la photo du jour démarre par push ; le défi du jour n'est jamais
+    // démarré ici (l'app le démarre quand il est accepté), la série en danger met à jour son activité.
+    let liveStarted = false;
+    if (kind === 'daily_photo' && vars.linkId) liveStarted = await this.live.startPhoto(userId, { linkId: vars.linkId, otherName: vars.name ?? '', alert: text });
+    if (kind === 'streak_in_danger') await this.live.updateChallenge(userId, { streak: Number(vars.streak ?? vars.count ?? 0) || 0, title: null });
+    // Activité démarrée avec son alerte : pas de seconde notification sur iOS.
+    const targets = liveStarted ? devices.filter((d) => d.platform !== 'ios') : devices;
+    const delivered = targets.length > 0 ? await this.deliver(targets, { title: text.title, body: text.body, data }) : liveStarted;
     await this.log.add({ userId, kind, linkId, localDay: local.day, status: 'sent', sendAfter: null, vars: null, createdAt: now.toISOString() });
-    if (state && (kind === 'daily_photo' || kind === 'daily_challenge')) {
-      const tokens = (await this.devices.forUser(userId)).filter((d) => d.kind === 'apns_live_activity').map((d) => d.token);
-      if (tokens.length > 0) await this.liveActivities.push({ userId, kind, event: 'start', state, tokens });
-    }
     return delivered;
   }
 

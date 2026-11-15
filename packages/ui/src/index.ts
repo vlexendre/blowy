@@ -8,3 +8,4 @@ export * from './templates';
 export * from './motion';
 export { alpha, extra, onGradient } from './theme';
 export type * from './types';
+export { type UiStrings, UiStringsProvider, useUiStrings } from './lib/strings';

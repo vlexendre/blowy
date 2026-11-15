@@ -4,7 +4,10 @@
  * puis, une fois envoyé, la réponse du pet et l'invitation à créer le sien. Rempli par scripts/words-page.ts.
  */
 import { GAUGE_KEYS, WORD_KEYS } from '@blowy/domain';
-import { gaugeLabel, wordLabel } from '@blowy/content';
+import { labels } from '@blowy/content';
+
+// Le site est en français.
+const { gaugeLabel, wordLabel } = labels.in('fr');
 import { wordsPage as c } from '../../../content/public';
 
 /** Inclinaison des mots choisis (degrés), dans l'ordre des mots. */
@@ -13,7 +16,7 @@ const hasTpl = (s: string) => /\{\w+\}/.test(s);
 ---
 <section class="pub-state mots" data-state="form" hidden aria-live="polite">
   <div class="mots-top">
-    <a href="/" class="mots-logo" aria-label="blowy, accueil">blowy<i>.</i></a>
+    <a href="/" class="mots-logo" aria-label="Blowy, accueil">blowy<i>.</i></a>
     <span class="mots-chip">{c.anonymous}</span>
   </div>
 

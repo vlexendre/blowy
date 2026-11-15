@@ -10,6 +10,10 @@ const ASSOCIATED_DOMAIN = 'blowy.app';
 /** À coller après `eas init` (voir docs/TESTFLIGHT.md). */
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? '01d6f37d-203a-4747-910b-6de4cfe50ed5';
 const EXPO_OWNER = process.env.EXPO_OWNER ?? 'alexendre.o';
+/** Groupe d'apps partagé avec l'extension des widgets (état des widgets). À créer dans le portail Apple : docs/WIDGETS.md. */
+const APP_GROUP = `group.${BUNDLE_ID}`;
+/** Identifiant d'équipe Apple (10 caractères) : utile à `@bacons/apple-targets` pour signer l'extension hors EAS. */
+const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID;
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -25,14 +29,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   runtimeVersion: { policy: 'appVersion' },
   ios: {
     bundleIdentifier: BUNDLE_ID,
+    ...(APPLE_TEAM_ID ? { appleTeamId: APPLE_TEAM_ID } : {}),
     supportsTablet: false,
     associatedDomains: [`applinks:${ASSOCIATED_DOMAIN}`],
+    entitlements: {
+      'com.apple.security.application-groups': [APP_GROUP],
+      // Jetons APNs des activités en direct (ActivityKit). EAS active la capacité Push sur l'identifiant d'app.
+      'aps-environment': 'development',
+    },
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
       CFBundleDevelopmentRegion: 'fr',
-      CFBundleLocalizations: ['fr'],
+      CFBundleLocalizations: ['fr', 'en', 'es', 'pt', 'nl'],
       NSCameraUsageDescription: 'Blowy utilise l’appareil photo pour ta photo du jour. Elle n’est envoyée qu’à la personne du lien.',
       NSPhotoLibraryUsageDescription: 'Blowy accède aux photos que tu choisis pour ta photo du jour ou ta photo de profil.',
+      // Activités en direct (défi accepté, photo d'un lien, sortie) : docs/WIDGETS.md.
+      NSSupportsLiveActivities: true,
     },
   },
   android: {
@@ -53,6 +65,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         microphonePermission: false,
       },
     ],
+    // Widgets iOS et activités en direct : fichiers générés de l'extension, puis la cible elle-même (targets/widget).
+    './plugins/with-blowy-widgets',
+    '@bacons/apple-targets',
   ],
   experiments: { typedRoutes: true },
   extra: { router: {}, eas: EAS_PROJECT_ID ? { projectId: EAS_PROJECT_ID } : {} },

@@ -1,13 +1,40 @@
+import { type ApiErrorText, type Locale, apiErrorText } from '@blowy/content';
 import type { ErrorCode } from '@blowy/contract';
 
-/** Erreur métier : un code du contrat et un message en français (tutoiement). */
+/**
+ * Message d'erreur dans la langue de la personne : une fonction de la langue (`errorText('linkNotFound')`,
+ * ou `(l) => visionText.in(l).errors.locationConsent`). Une chaîne simple reste acceptée mais n'est pas traduite.
+ */
+export type ErrorText = (locale: Locale) => string;
+
+type ErrorKey = { [K in keyof ApiErrorText]: ApiErrorText[K] extends string | ((...args: never[]) => string) ? K : never }[keyof ApiErrorText];
+type ArgsOf<K extends ErrorKey> = ApiErrorText[K] extends (...args: infer A) => string ? A : [];
+
+/** Message du dictionnaire des erreurs de l'API (`@blowy/content`, api-errors.ts), résolu au moment de répondre. */
+export function errorText<K extends ErrorKey>(key: K, ...args: ArgsOf<K>): ErrorText {
+  return (locale) => {
+    const value = apiErrorText.in(locale)[key] as string | ((...a: ArgsOf<K>) => string);
+    return typeof value === 'function' ? value(...args) : value;
+  };
+}
+
+/** Erreur métier : un code du contrat et un message (dans la langue de la requête, au moment de répondre). */
 export class DomainError extends Error {
+  readonly text: ErrorText;
+
   constructor(
     readonly code: ErrorCode,
-    message: string = DEFAULT_MESSAGES[code],
+    message?: string | ErrorText,
   ) {
-    super(message);
+    const text: ErrorText = typeof message === 'function' ? message : typeof message === 'string' ? () => message : (l) => defaultMessage(code, l);
+    super(text('fr'));
     this.name = 'DomainError';
+    this.text = text;
+  }
+
+  /** Le message dans une langue. */
+  messageIn(locale: Locale): string {
+    return this.text(locale);
   }
 }
 
@@ -29,20 +56,8 @@ export const HTTP_STATUS: Record<ErrorCode, number> = {
   internal: 500,
 };
 
-export const DEFAULT_MESSAGES: Record<ErrorCode, string> = {
-  unauthorized: 'Connecte-toi pour continuer.',
-  not_onboarded: 'Crée d’abord ton pet.',
-  already_onboarded: 'Ton pet existe déjà.',
-  too_young: 'Blowy est réservé aux personnes de 18 ans et plus.',
-  not_found: 'Introuvable.',
-  forbidden: 'Tu n’as pas accès à ça.',
-  invalid: 'Ta demande n’est pas valide.',
-  conflict: 'C’est déjà le cas.',
-  link_not_active: 'Ce lien n’est plus actif.',
-  cannot_revive: 'Ce lien ne peut pas être ranimé.',
-  already_done: 'C’est déjà fait pour aujourd’hui.',
-  rename_locked: 'Tu as déjà changé son nom récemment.',
-  rate_limited: 'Doucement ! Réessaie dans un moment.',
-  suspended: 'Ton compte est suspendu.',
-  internal: 'Une erreur est survenue.',
-};
+/** Message par défaut d'un code, dans une langue. */
+export const defaultMessage = (code: ErrorCode, locale: Locale = 'fr'): string => apiErrorText.in(locale).defaults[code];
+
+/** Messages par défaut en français (compatibilité ; préférer `defaultMessage(code, locale)`). */
+export const DEFAULT_MESSAGES: Record<ErrorCode, string> = apiErrorText.in('fr').defaults;

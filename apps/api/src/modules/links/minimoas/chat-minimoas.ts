@@ -9,7 +9,7 @@
  * Quand la passerelle refuse (coupée, budget, panne), une ligne de règle (`@blowy/content` v7/chat) la remplace.
  */
 import { Inject, Injectable, Optional } from '@nestjs/common';
-import { CHAT_AI_SYSTEM, type ChatLineContext, chatAiPrompt, chatConfidentialityText, chatLines } from '@blowy/content';
+import { CHAT_AI_SYSTEM, type ChatLineContext, chatAiPrompt, chatConfidentialityText, chatLines, type Locale } from '@blowy/content';
 import {
   AI_WINDOW_CHARS,
   AI_WINDOW_MESSAGES,
@@ -43,7 +43,7 @@ import { AI_GATEWAY, type AiGateway } from '../../../integrations/ai/ai-gateway'
 import { Background } from '../../../shared/background';
 import { CACHE, type Cache } from '../../../shared/cache';
 import type { Clock } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
 import { CLOCK, DAILY_PHOTOS, LINKS, MESSAGES, PETS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
@@ -104,7 +104,7 @@ export class ChatMinimoas {
 
   async update(linkId: string, userId: string, patch: { consent?: boolean; muted?: boolean }): Promise<LinkMinimoasView> {
     const link = await this.links.findById(linkId);
-    if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', 'Ce lien n’existe pas.');
+    if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', errorText('linkNotFound'));
     const now = this.clock.now().toISOString();
     const rows = await this.settings.forLink(linkId);
     const mine = rows.find((r) => r.userId === userId) ?? { linkId, userId, consent: null, consentAt: null, muted: false, updatedAt: now };
@@ -343,7 +343,7 @@ export class ChatMinimoas {
 
   // ── Outils ───────────────────────────────────────────────────────────────
 
-  private toView(link: LinkRecord, viewerId: string, rows: readonly ChatLinkSettingRecord[], state: ChatPetState, lang: string): LinkMinimoasView {
+  private toView(link: LinkRecord, viewerId: string, rows: readonly ChatLinkSettingRecord[], state: ChatPetState, lang: Locale): LinkMinimoasView {
     const mine = rows.find((r) => r.userId === viewerId);
     return {
       linkId: link.id,
@@ -367,9 +367,9 @@ export class ChatMinimoas {
     return this.cache.wrap(this.settingsKey(linkId), SETTINGS_TTL_MS, () => this.settings.forLink(linkId));
   }
 
-  private async langOf(userId: string): Promise<string> {
+  private async langOf(userId: string): Promise<Locale> {
     const profile = await this.profiles.findById(userId);
-    return (profile as { locale?: string } | null)?.locale ?? 'fr';
+    return profile?.locale ?? 'fr';
   }
 
   /** Voix des deux minimoas, d'après le style de leur humain. */

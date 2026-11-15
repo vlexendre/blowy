@@ -8,6 +8,7 @@ import { Sticker } from '../atoms/Sticker';
 import { Text } from '../atoms/Text';
 import { hitSlopFor, layout } from '../lib/styles';
 import { color, radius, shadow, space, veil } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 export interface UnlockToastProps {
   visible: boolean;
@@ -27,7 +28,8 @@ export interface UnlockToastProps {
 }
 
 /** Bandeau qui surgit quand un objet se débloque : image, nom, « nouveau ! ». À poser en haut ou en bas de l'écran. */
-export function UnlockToast({ visible, itemId, name, kicker, text, onPress, onClose, closeLabel = 'Fermer', style }: UnlockToastProps) {
+export function UnlockToast({ visible, itemId, name, kicker, text, onPress, onClose, closeLabel, style }: UnlockToastProps) {
+  const uiStrings = useUiStrings();
   if (!visible) return null;
   return (
     <Animated.View entering={ZoomIn.springify().damping(14)} exiting={FadeOut} accessibilityLiveRegion="polite" style={[styles.wrap, shadow.lift, style]}>
@@ -47,7 +49,7 @@ export function UnlockToast({ visible, itemId, name, kicker, text, onPress, onCl
           ) : null}
         </View>
         {onClose ? (
-          <Pressable onPress={onClose} accessibilityLabel={closeLabel} hitSlop={hitSlopFor(28)} style={styles.close}>
+          <Pressable onPress={onClose} accessibilityLabel={closeLabel ?? uiStrings.close} hitSlop={hitSlopFor(28)} style={styles.close}>
             <Glyph name="close" size={14} color={color.dark} />
           </Pressable>
         ) : null}

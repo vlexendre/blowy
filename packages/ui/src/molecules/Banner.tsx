@@ -6,6 +6,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
 import { alpha, color, radius, space } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 export type BannerTone = 'error' | 'info' | 'success';
 
@@ -23,7 +24,8 @@ export interface BannerProps {
 const TONE: Record<BannerTone, string> = { error: color.danger, info: color.accent, success: color.ok };
 
 /** Message en ligne (erreur réseau, info, confirmation). */
-export function Banner({ text, title, tone = 'info', actionLabel, onAction, onClose, closeLabel = 'Fermer', style }: BannerProps) {
+export function Banner({ text, title, tone = 'info', actionLabel, onAction, onClose, closeLabel, style }: BannerProps) {
+  const uiStrings = useUiStrings();
   const c = TONE[tone];
   return (
     <View
@@ -43,7 +45,7 @@ export function Banner({ text, title, tone = 'info', actionLabel, onAction, onCl
           </Text>
         </Pressable>
       ) : null}
-      {onClose ? <IconButton glyph="close" label={closeLabel} variant="plain" size={32} onPress={onClose} /> : null}
+      {onClose ? <IconButton glyph="close" label={closeLabel ?? uiStrings.close} variant="plain" size={32} onPress={onClose} /> : null}
       {!onClose && !onAction && tone === 'success' ? <Glyph name="check" size={16} color={c} /> : null}
     </View>
   );

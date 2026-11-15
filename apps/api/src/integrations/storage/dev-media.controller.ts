@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Post, Put, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Public } from '../../shared/auth.guard';
-import { DomainError } from '../../shared/errors';
+import { DomainError, errorText } from '../../shared/errors';
 import { STORAGE } from '../../shared/tokens';
 import type { MemoryStorage } from './memory-storage';
 
@@ -32,10 +32,10 @@ export class DevMediaController {
 
   private receive(req: Request): { ok: true } {
     const body: unknown = req.body;
-    if (!Buffer.isBuffer(body) || body.length === 0) throw new DomainError('invalid', 'Le fichier est vide.');
+    if (!Buffer.isBuffer(body) || body.length === 0) throw new DomainError('invalid', errorText('uploadEmpty'));
     const contentType = req.headers['content-type'] ?? 'application/octet-stream';
     if (!this.storage.put(pathAfter(req, '/dev/uploads/'), tokenOf(req), { bytes: body, contentType })) {
-      throw new DomainError('forbidden', 'Ce lien d’envoi n’est plus valable.');
+      throw new DomainError('forbidden', errorText('uploadExpired'));
     }
     return { ok: true };
   }

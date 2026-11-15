@@ -82,7 +82,7 @@ describe('vision', () => {
   it('ta vision, pour l’instant : 5 axes, confiance, formulation ; le test repassé la change', async () => {
     const v = await ana.api.vision.mine();
     expect(v.testDone).toBe(true);
-    expect(v.note).toBe('Indicatif, il s’affine avec toi.');
+    expect(v.note).toBe('Indicatif. Il s’affine avec toi.');
     expect(v.axes.map((a) => a.axis)).toEqual(['foyer', 'ancrage', 'elan', 'rythme', 'cap']);
     const foyer = v.axes.find((a) => a.axis === 'foyer');
     expect(foyer?.value).toBeGreaterThan(20);

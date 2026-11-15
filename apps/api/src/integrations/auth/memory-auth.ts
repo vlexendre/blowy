@@ -24,6 +24,13 @@ export class MemoryAuthAdmin implements AuthAdmin {
   async deleteUser(userId: string): Promise<void> {
     this.db.deleteUser(userId);
   }
+
+  /** En local : l'e-mail retenu du jeton (comme le fournisseur « email » de Supabase), sinon l'identifiant. */
+  async subjectsOf(userId: string): Promise<{ provider: string; subject: string }[]> {
+    if (this.db.deletedUsers.has(userId)) return [];
+    const email = this.db.authEmails.get(userId);
+    return [email ? { provider: 'email', subject: email } : { provider: 'local', subject: userId }];
+  }
 }
 
 export class MemoryUserEmails implements UserEmails {

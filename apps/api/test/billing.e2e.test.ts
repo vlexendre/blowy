@@ -4,6 +4,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { notificationText } from '@blowy/content';
 import { NOTIFIER, type Notifier } from '../src/integrations/push/notifier';
 import { BillingJobs } from '../src/modules/billing/application/billing.jobs';
 import { memoryJws } from '../src/modules/billing/infrastructure/memory-billing';
@@ -72,7 +73,9 @@ describe('Blowy+', () => {
       ['monthly', 'app.blowy.plus.monthly', 1499, 'month', 0],
     ]);
     const yearly = p.offers[0];
-    expect(yearly?.labels).toEqual({ price: '59,88 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,88 € par an', name: 'Abonnement annuel Blowy+' });
+    // Espaces insécables (fines ou non) normalisées : seule la formulation compte ici.
+    const plain = (o: Record<string, string | null> | undefined) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k, v?.replace(/[\u00a0\u202f]/g, ' ') ?? v]));
+    expect(plain(yearly?.labels)).toEqual({ price: '59,88 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,88 € par an', name: 'Abonnement annuel Blowy+' });
     expect(yearly?.discountPercent).toBe(67);
     expect(p.trial).toMatchObject({ days: 7, reminderDay: 5, eligible: true });
     expect(p.trial.timeline.map((s) => s.day)).toEqual([0, 5, 7]);
@@ -192,7 +195,9 @@ describe('Blowy+', () => {
     await jobs.runDue(at(5));
     const reminders = mine();
     expect(reminders.map((r) => r.userId)).toEqual([a.id]);
-    expect(reminders[0]?.vars).toMatchObject({ price: '59,88 €' });
+    // Variables en données (date ISO, centimes) : la notification les met en forme dans la langue de la personne.
+    expect(reminders[0]?.vars).toMatchObject({ price: '5988', currency: 'EUR' });
+    expect(notificationText('fr', 'trial_reminder', reminders[0]?.vars ?? {}).body.replace(/[\u00a0\u202f]/g, ' ')).toMatch(/^L’essai gratuit se termine le \d+ \p{L}+\. Ensuite, premier paiement de 59,88 €\./u);
     await jobs.runDue(at(5.5));
     await jobs.runDue(at(6));
     expect(mine()).toHaveLength(1);

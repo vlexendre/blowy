@@ -1,6 +1,6 @@
 /** Garde-robe (V6-GardeRobe, V6-Objet) : la tenue en direct, les 4 emplacements, porter ou retirer, comment gagner le reste. */
 import type { WardrobeItem } from '@blowy/contract';
-import { itemLabel, slotLabel, statGoalLabel } from '@blowy/content';
+import { itemLabel, slotLabel, statGoalLabel } from '@/locales/content';
 import { ITEM_SLOTS, type ItemSlot, type StatKey } from '@blowy/domain';
 import {
   Banner,

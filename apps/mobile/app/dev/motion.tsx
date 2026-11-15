@@ -2,7 +2,7 @@
  * Banc d'essai du mouvement (@blowy/ui, docs/MOTION.md) : chaque primitive et chaque comportement des pets,
  * avec des boutons pour les déclencher. Route : /dev/motion. Un interrupteur force « réduire les animations ».
  */
-import { careLabel, itemLabel, needLabel, slotLabel, statGoalLabel } from '@blowy/content';
+import { careLabel, itemLabel, needLabel, slotLabel, statGoalLabel } from '@/locales/content';
 import { CARE_ACTIONS, type ItemSlot, ITEMS, type Needs, type Outfit, type Species } from '@blowy/domain';
 import { color, radius, space } from '@blowy/tokens';
 import {
@@ -129,7 +129,7 @@ function ActorBench() {
           grabbable
           sleepAfter={sleepy ? 2000 : 25_000}
           onTouch={(t) => setLog(`geste : ${t}`)}
-          accessibilityLabel={`pet de démonstration, ${species}`}
+          accessibilityLabel={`minimoa de démonstration, ${species}`}
         />
       </View>
       <Text muted>{log}</Text>
@@ -197,7 +197,7 @@ function PeekBench() {
         />
       ) : null}
       <Label>état vide qui passe la tête (touche-le)</Label>
-      <EmptyState peek species="gaston" mood="smug" title="RIEN ICI" text="touche le pet : il se cache et revient." seed="dev-empty" />
+      <EmptyState peek species="gaston" mood="smug" title="RIEN ICI" text="touche le minimoa : il se cache et revient." seed="dev-empty" />
       <Label>clavier (iOS / Android)</Label>
       <TextField label="son petit nom" value={name} onChangeText={setName} />
       <KeyboardPeek species="pia" seed="dev-kb" />
@@ -335,13 +335,13 @@ function PrimitivesBench() {
           />
         ))}
       </Row>
-      <Label>Barre d'onglets (pilule, rebond, pastilles, tête du pet)</Label>
+      <Label>Barre d'onglets (pilule, rebond, pastilles, tête du minimoa)</Label>
       <Button label="+1 message" size="chip" variant="glass" block={false} onPress={() => setBadge((b) => b + 1)} />
       <View style={styles.tabFrame}>
         <BottomTabBar
           floating={false}
           items={[
-            { key: 'pet', label: 'Mon pet', glyph: 'heart' },
+            { key: 'pet', label: 'Mon minimoa', glyph: 'heart' },
             { key: 'chats', label: 'Chats', glyph: 'chat', badge },
             { key: 'rencontres', label: 'Rencontres', glyph: 'people', badge: 1 },
             { key: 'moi', label: 'Moi', glyph: 'person' },
@@ -443,7 +443,7 @@ function ScenesBench() {
   const [challenge, setChallenge] = useState<{ loading: boolean; done: boolean; picked: 0 | 1 | null }>({ loading: false, done: false, picked: null });
   return (
     <Section title="SCÈNES">
-      <Label>Lancement : le pet arrive en courant</Label>
+      <Label>Lancement : le minimoa arrive en courant</Label>
       <Button label="rejouer l'entrée" size="sm" variant="ghost" onPress={() => setEntrance((n) => n + 1)} />
       <View style={styles.center}>
         <PetEntrance key={entrance} species="nino" size={160} />

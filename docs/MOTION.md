@@ -120,7 +120,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) | barres qui se remplissent avec dépassement, nombres comptés ; bouton conseillé qui pulse ; bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir : il grimpe (iOS) ; soin glissé jusqu'au pet (il le suit des yeux, ouvre la bouche) ; soin en cours : trois boules dans le disque |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
-| Chats | bandeau « ton pet a croisé quelqu'un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger |
+| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger |
 | Chat | la bulle envoyée monte depuis le champ | « … » avant un message de pet ; tête du pet qui sort avec sa bulle ; bouton envoyer qui se transforme ; cœur qui se brise ou revient |
 | Aujourd'hui | la photo de l'autre se dévoile (flou qui se lève) quand les deux ont posté | flamme de série qui grandit ; jours de la semaine cochés un à un |
 | Souvenirs | photos qui se posent comme des cartes | compteurs |

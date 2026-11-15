@@ -5,11 +5,12 @@ import { Notifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier as PushNotifier } from '../../../integrations/push/notifier';
 import type { Env } from '../../../config/env';
 import { type Clock, todayOf } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { BLOCKS, CLOCK, ENV, IDS, LINKS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import { PetCharacter } from '../../pets/application/pet-character';
+import { Audience } from '../../safety/application/audience';
 import type { BlocksRepository } from '../../safety/ports';
 import type { LinkRecord, LinksRepository } from '../ports';
 import { ChatMinimoas } from '../minimoas/chat-minimoas';
@@ -43,11 +44,14 @@ export class CreateLink {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
+    @Inject(Audience) private readonly audience: Audience,
   ) {}
 
   async execute(input: CreateLinkInput): Promise<LinkRecord> {
-    if (input.by === input.with) throw new DomainError('conflict', 'Tu ne peux pas créer un lien avec toi-même.');
+    if (input.by === input.with) throw new DomainError('conflict', errorText('linkSelf'));
     if ((await this.blocks.blockedEitherWay(input.by)).has(input.with)) throw new DomainError('forbidden');
+    // Compte suspendu : introuvable, comme partout ailleurs (Audience).
+    if (await this.audience.isSuspended(input.with)) throw new DomainError('not_found', errorText('personNotFound'));
     const [userA, userB] = input.by < input.with ? [input.by, input.with] : [input.with, input.by];
     const today = todayOf(this.clock);
 
@@ -74,7 +78,7 @@ export class CreateLink {
 
     const draft = (await this.session.draftsFor([created]))[0];
     if (!draft) throw new Error('brouillon de lien manquant');
-    draft.system(chatSystemText('fr').linkCreated);
+    draft.system(chatSystemText(draft.systemLocale).linkCreated);
     // Brise-glace : une question tirée de vos points communs de vision (compte dans les 3 interventions du jour).
     await this.minimoas.icebreaker(draft);
     await this.session.commit(draft);
@@ -94,7 +98,7 @@ export class CreateLink {
     if (!draft) throw new Error('brouillon de lien manquant');
     const alive = link.lives > 0;
     draft.update({ status: alive ? 'active' : 'ghost', lastTickOn: draft.today, ...(alive ? { lastActiveOn: draft.today } : {}) });
-    draft.system(chatSystemText('fr').linkCreated);
+    draft.system(chatSystemText(draft.systemLocale).linkCreated);
     await this.session.commit(draft);
     return draft.link;
   }
@@ -104,7 +108,7 @@ export class CreateLink {
     if (!me || !other) return;
     await this.notifier.notify(
       to,
-      linkCreatedEmail({ displayName: me.displayName, petName: pets.self, otherName: other.displayName, otherPetName: pets.other, appUrl: this.env.webUrl }),
+      linkCreatedEmail(me.locale, { displayName: me.displayName, petName: pets.self, otherName: other.displayName, otherPetName: pets.other, appUrl: this.env.webUrl }),
     );
   }
 }

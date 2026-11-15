@@ -1,4 +1,4 @@
-import { levelLabel } from '@blowy/content';
+import { levelLabel } from '@/locales/content';
 import { LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress, type Species } from '@blowy/domain';
 import { AvatarPair, Banner, Header, LevelHero, LevelLadder, LivesCard, PetImage, ScreenTemplate, Skeleton } from '@blowy/ui';
 import { useLocalSearchParams } from 'expo-router';

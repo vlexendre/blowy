@@ -70,6 +70,14 @@ export const NotificationKindZ = z.enum(NOTIFICATION_KINDS);
 export type NotificationKindDto = z.infer<typeof NotificationKindZ>;
 
 /**
+ * Activités en direct iOS (Dynamic Island, écran verrouillé ; spéc §19), toujours bornées dans le temps :
+ * challenge : défi du jour accepté, jusqu'à minuit · photo : « Léa a posté, à toi » · outing : une sortie en cours.
+ */
+export const LIVE_ACTIVITY_KINDS = ['challenge', 'photo', 'outing'] as const;
+export const LiveActivityKindZ = z.enum(LIVE_ACTIVITY_KINDS);
+export type LiveActivityKind = z.infer<typeof LiveActivityKindZ>;
+
+/**
  * Enregistrer l'appareil (à chaque ouverture : c'est aussi ce qui met à jour le fuseau).
  * `token` : jeton Expo (`ExponentPushToken[…]`). `timeZone` : fuseau IANA du téléphone.
  */
@@ -77,6 +85,27 @@ export const RegisterDeviceBody = z.object({
   token: z.string().min(10).max(200),
   platform: z.enum(['ios', 'android']),
   timeZone: z.string().min(1).max(64),
+  /**
+   * Absent ou `expo` : jeton Expo. `apns_live_activity` : jeton APNs d'activité en direct (hexadécimal), à ne jamais
+   * envoyer au service Expo. L'app n'envoie ce type que lorsque l'API sait le ranger (voir docs/WIDGETS.md).
+   */
+  kind: z.enum(['expo', 'apns_live_activity']).optional(),
+  /** Jetons d'activité en direct seulement : à quoi sert le jeton. */
+  liveActivity: z
+    .object({
+      /** start : jeton « push-to-start » de l'app (iOS 17.2+) · update : jeton d'une activité en cours. */
+      use: z.enum(['start', 'update']),
+      /** Activité concernée (jetons `update`). */
+      activity: LiveActivityKindZ.optional(),
+      /** Identifiant ActivityKit de l'activité (jetons `update`). */
+      activityId: z.string().max(80).optional(),
+      /**
+       * Photo du jour : le lien concerné (facultatif). Avec lui, l'API termine l'activité de ce lien seulement quand
+       * la personne poste ; sans lui, toutes ses activités « photo » en cours.
+       */
+      linkId: Id.optional(),
+    })
+    .optional(),
 });
 export type RegisterDeviceBody = z.infer<typeof RegisterDeviceBody>;
 /** Se déconnecter / refuser les notifications : retirer le jeton. */
@@ -132,6 +161,38 @@ export const PushDataZ = z.object({
   state: WidgetStateZ.optional(),
 });
 export type PushData = z.infer<typeof PushDataZ>;
+
+/** Nom du type Swift des attributs : valeur de `aps.attributes-type` d'un push qui démarre une activité. */
+export const LIVE_ACTIVITY_ATTRIBUTES_TYPE = 'BlowyActivityAttributes';
+
+/**
+ * Partie fixe d'une activité (`aps.attributes` d'un push de démarrage). Décodée par Swift sans stratégie
+ * d'encodage : noms de clés exacts, dates en secondes Unix (nombres), pas de champ en plus.
+ */
+export const LiveActivityAttributesZ = z.object({
+  kind: LiveActivityKindZ,
+  pet: z.object({ name: z.string().max(40), species: z.string().max(20) }),
+  /** Début de l'activité, en secondes Unix : sert à la barre de temps. */
+  startedAt: z.number(),
+  /** Lien profond ouvert au toucher (`blowy://pet`, `blowy://link/<id>`). */
+  url: z.string().max(200),
+  /** photo : le prénom de la personne qui a posté. */
+  otherName: z.string().max(40).optional(),
+});
+export type LiveActivityAttributes = z.infer<typeof LiveActivityAttributesZ>;
+
+/** Partie qui change (`aps.content-state` des push `update` et `end`). Mêmes règles d'encodage. */
+export const LiveActivityStateZ = z.object({
+  /** Fin, en secondes Unix (minuit local pour le défi et la photo). */
+  endsAt: z.number(),
+  /** Série en jeu (0 : pas de série à montrer). */
+  streak: z.number().int().min(0),
+  /** challenge : texte du défi (déjà dans la langue de la personne) ; null : phrase générique de l'extension. */
+  title: z.string().max(120).nullable(),
+  /** C'est fait (défi relevé, photo postée, retour de sortie) : l'activité affiche son état final. */
+  done: z.boolean(),
+});
+export type LiveActivityState = z.infer<typeof LiveActivityStateZ>;
 
 // ── Minuteur (interne) ─────────────────────────────────────────────────────
 

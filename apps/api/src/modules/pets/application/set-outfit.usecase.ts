@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ITEM_SLOTS, type Outfit, cleanOutfit } from '@blowy/domain';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { PETS } from '../../../shared/tokens';
 import type { PetsRepository } from '../ports';
 import { Wardrobe } from './wardrobe';
@@ -16,7 +16,7 @@ export class SetOutfit {
   async execute(ownerId: string, outfit: Outfit): Promise<void> {
     const { pet, owned } = await this.wardrobe.state(ownerId);
     const clean = cleanOutfit(outfit, owned);
-    if (ITEM_SLOTS.some((slot) => clean[slot] !== outfit[slot])) throw new DomainError('forbidden', 'cet objet n’est pas encore à toi.');
+    if (ITEM_SLOTS.some((slot) => clean[slot] !== outfit[slot])) throw new DomainError('forbidden', errorText('itemNotOwned'));
     await this.pets.save({ ...pet, outfit: clean });
   }
 }

@@ -4,7 +4,7 @@
  * Composition de @blowy/ui uniquement ; les écrans gardent la navigation.
  */
 import { ApiError } from '@blowy/api-client';
-import { reportReasonLabel } from '@blowy/content';
+import { reportReasonLabel } from '@/locales/content';
 import { REPORT_REASONS, type ReportBody } from '@blowy/contract';
 import { Banner, Button, Glyph, ListRow, SheetTemplate, Text, TextField, type TitleContent } from '@blowy/ui';
 import { useEffect, useState } from 'react';

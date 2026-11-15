@@ -5,7 +5,15 @@
  */
 import { randomUUID } from 'node:crypto';
 import type { ApiClient } from '@blowy/api-client';
-import { HABITS, outingText, proofVerdictLines, reviewText } from '@blowy/content';
+import { HABITS, reviewCoachSystem, reviewDetailedAxisLine, reviewNoticedLine, rituelsText } from '@blowy/content';
+
+const { outing: outingText, proofVerdictLines, review: reviewFr } = rituelsText.in('fr');
+const reviewText = {
+  ...reviewFr,
+  coachSystem: reviewCoachSystem,
+  noticed: (axis: Parameters<typeof reviewNoticedLine>[1], dir: 'up' | 'down') => reviewNoticedLine('fr', axis, dir),
+  detailedAxis: (axis: Parameters<typeof reviewDetailedAxisLine>[1], delta: number) => reviewDetailedAxisLine('fr', axis, delta),
+};
 import type { DailyChallenge } from '@blowy/contract';
 import { LINK_NOTES, REVIEW_HIGHLIGHTS, REVIEW_TIPS, VISION_AXES, isKindText } from '@blowy/domain';
 import { type MockInstance, afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -20,7 +28,7 @@ import { HABIT_VERIFIER } from '../src/modules/rituels/tokens';
 import { VISION_SIGNALS, type VisionSignals } from '../src/modules/vision/tokens';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { MEMORY_DB, STORAGE } from '../src/shared/tokens';
-import { type TestWorld, apiError, errorCode, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, apiError, doToday, errorCode, onboardBody, startWorld, upload } from './helpers';
 
 type Person = { id: string; api: ApiClient };
 
@@ -37,29 +45,6 @@ async function personWithChallenge(world: TestWorld, kind: DailyChallenge['kind'
     if ((await p.api.rituals.today()).challenge.kind === kind) return p;
   }
   throw new Error(`aucune personne avec un défi « ${kind} »`);
-}
-
-/** Fait le défi du jour, quel que soit son type. */
-async function doToday(p: Person): Promise<{ newItems: string[] }> {
-  const { challenge, outing } = await p.api.rituals.today();
-  if (challenge.status === 'done') return { newItems: [] };
-  switch (challenge.kind) {
-    case 'question':
-      return p.api.rituals.answerChallenge(1);
-    case 'photo': {
-      const ticket = await p.api.rituals.challengePhotoTicket('image/jpeg');
-      await upload(ticket.uploadUrl);
-      return p.api.rituals.challengePhoto(ticket.path);
-    }
-    case 'go_out':
-      return outing.canAnswer ? p.api.rituals.outing('walk') : p.api.rituals.completeChallenge();
-    case 'write': {
-      const [link] = await p.api.links.list();
-      if (!link) throw new Error('défi « écrire » sans lien');
-      await p.api.links.send(link.id, { body: 'Des nouvelles ?' });
-      return p.api.rituals.completeChallenge();
-    }
-  }
 }
 
 /** Avance jusqu'à l'heure de Paris donnée (hiver, UTC+1), le jour même ou le lendemain. */
@@ -456,7 +441,7 @@ describe('tâches planifiées des rituels', () => {
 
   const kinds = (userId: string) => notify.mock.calls.filter((c) => c[0] === userId).map((c) => c[1]);
 
-  it('défi du jour le matin, minimoa qui a besoin de sortir, preuve demandée, série en danger le soir — une fois chacun', async () => {
+  it('minimoa qui a besoin de sortir, preuve demandée, série en danger le soir — une fois chacun ; pas de défi du jour (envoyé par la plateforme)', async () => {
     const active = await newPerson(world, 'Iris');
     const done = await newPerson(world, 'Jade');
     await active.api.rituals.today();
@@ -469,10 +454,10 @@ describe('tâches planifiées des rituels', () => {
     notify.mockClear();
     await active.api.rituals.today(); // ouvre l'app (active)
     await jobs.runDue(world.clock.now());
-    expect(kinds(active.id)).toEqual(['daily_challenge']);
-    expect(kinds(done.id)).toEqual(['daily_challenge']);
     await jobs.runDue(world.clock.now());
-    expect(kinds(active.id)).toEqual(['daily_challenge']); // idempotent
+    // Le défi du matin n'est plus envoyé ici : la plateforme l'envoie à l'heure choisie (RitualsDailyPush).
+    expect(kinds(active.id)).not.toContain('daily_challenge');
+    expect(kinds(done.id)).not.toContain('daily_challenge');
 
     notify.mockClear();
     advanceToParisHour(world, 12);
@@ -528,7 +513,7 @@ describe('tâches planifiées des rituels', () => {
       if (!review) throw new Error('bilan');
       expect(review).toMatchObject({ weekStart: '2026-11-09', title: reviewText.title, detailed: null, read: false });
       expect(review.facts).toMatchObject({ outings: 1, challengesDone: 1, habitsKept: 0 });
-      expect(review.did[0]).toContain('1 sortie');
+      expect(review.did[0]).toMatch(/^1\ssortie/);
       expect(review.links).toEqual([reviewText.link.steady('Max', 0)]);
       for (const line of [...review.did, review.noticed, review.tip, ...review.links, review.text]) expect(isKindText(line) || line === review.text).toBe(true);
       expect(review.text).toContain(review.tip);

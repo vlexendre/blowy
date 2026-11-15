@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AnswerChallenge } from './application/answer-challenge.usecase';
 import { CarePet } from './application/care-pet.usecase';
 import { GetPetView } from './application/get-pet-view.usecase';
 import { PetCharacter } from './application/pet-character';
@@ -10,7 +9,7 @@ import { PetsController } from './interface/pets.controller';
 
 @Module({
   controllers: [PetsController],
-  providers: [PetCharacter, Wardrobe, GetPetView, RenamePet, AnswerChallenge, CarePet, SetOutfit],
+  providers: [PetCharacter, Wardrobe, GetPetView, RenamePet, CarePet, SetOutfit],
   exports: [PetCharacter, Wardrobe],
 })
 export class PetsModule {}

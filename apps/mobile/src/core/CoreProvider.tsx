@@ -3,8 +3,12 @@ import { focusManager, QueryClient, QueryClientProvider, useQueryClient } from '
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 
+import { common } from '@/locales/common';
+import { getLocale, onLocaleChange } from '@/locales/runtime';
+
 import { createPorts } from './adapters';
 import { config } from './config';
+import './locale';
 import type { Ports, Session } from './ports';
 
 interface Core {
@@ -44,6 +48,9 @@ export const keys = {
   memories: (id: string) => ['links', id, 'memories'] as const,
   encounters: ['encounters'] as const,
   blocks: ['blocks'] as const,
+  /** Rituels : accueil du jour (défi, série, sortie…) et série seule (lecture légère, widgets). */
+  ritualsToday: ['rituals', 'today'] as const,
+  ritualsStreak: ['rituals', 'streak'] as const,
 };
 
 function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | null | undefined }) {
@@ -59,9 +66,51 @@ function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | n
   return null;
 }
 
+/**
+ * Quand la langue change : les données de l'API sont relues (elles contiennent du texte) et la langue du profil
+ * est mise à jour (notifications, e-mails et répliques des minimoas suivent `profiles.locale`).
+ */
+function LocaleBridge({ api, session }: { api: ApiClient; session: Session | null | undefined }) {
+  const qc = useQueryClient();
+  const signedIn = !!session;
+  useEffect(() => {
+    const sync = (locale: string) => {
+      const me = qc.getQueryData<{ identity?: { locale?: string } }>(keys.me);
+      if (signedIn && me?.identity && me.identity.locale !== locale) {
+        void api.me
+          .update({ locale: getLocale() })
+          .then((next) => qc.setQueryData(keys.me, next))
+          .catch(() => undefined);
+      }
+    };
+    // À l'ouverture : si le profil a été créé dans une autre langue, on l'aligne sur celle du téléphone.
+    const off = qc.getQueryCache().subscribe((e) => {
+      if (e.type === 'updated' && e.query.queryKey[0] === keys.me[0] && e.action.type === 'success') sync(getLocale());
+    });
+    const offLocale = onLocaleChange((locale) => {
+      void qc.invalidateQueries();
+      sync(locale);
+    });
+    return () => {
+      off();
+      offLocale();
+    };
+  }, [api, qc, signedIn]);
+  return null;
+}
+
 export function CoreProvider({ children }: { children: ReactNode }) {
   const ports = useMemo(createPorts, []);
-  const api = useMemo(() => createApiClient({ baseUrl: config.apiUrl, getToken: () => ports.auth.getToken() }), [ports]);
+  const api = useMemo(
+    () =>
+      createApiClient({
+        baseUrl: config.apiUrl,
+        getToken: () => ports.auth.getToken(),
+        getLocale,
+        messages: { network: () => common.errors.network, internal: () => common.errors.internal },
+      }),
+    [ports],
+  );
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
@@ -82,6 +131,7 @@ export function CoreProvider({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <CoreContext.Provider value={value}>
         <RealtimeBridge ports={ports} session={session} />
+        <LocaleBridge api={api} session={session} />
         {children}
       </CoreContext.Provider>
     </QueryClientProvider>

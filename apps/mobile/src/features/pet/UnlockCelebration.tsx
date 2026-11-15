@@ -1,4 +1,4 @@
-import { itemLabel } from '@blowy/content';
+import { itemLabel } from '@/locales/content';
 import { itemById } from '@blowy/domain';
 import { UnlockSheet } from '@blowy/ui';
 

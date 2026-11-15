@@ -14,7 +14,7 @@ import {
 } from '@blowy/domain';
 import { CACHE, type Cache } from '../../shared/cache';
 import type { Clock } from '../../shared/clock';
-import { DomainError } from '../../shared/errors';
+import { DomainError, errorText } from '../../shared/errors';
 import { CLOCK, PROFILES } from '../../shared/tokens';
 import type { ProfilesRepository } from '../me/ports';
 import { type DevicesRepository, NOTIFICATION_SETTINGS, type NotificationSettingsRecord, type NotificationSettingsRepository, PUSH_DEVICES } from './ports';
@@ -48,7 +48,7 @@ export class NotificationSettings {
 
   async view(userId: string): Promise<SettingsView> {
     const [s, devices, profile] = await Promise.all([this.resolve(userId), this.devices.forUser(userId), this.profiles.findById(userId)]);
-    const lang = (profile as { locale?: string } | null)?.locale ?? 'fr';
+    const lang = profile?.locale ?? 'fr';
     const kinds = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, !s.disabledKinds.includes(k)])) as Record<NotificationKindKey, boolean>;
     const labels = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, notificationKindLabel(lang, k)])) as Record<NotificationKindKey, string>;
     return {
@@ -63,7 +63,7 @@ export class NotificationSettings {
   }
 
   async update(userId: string, patch: { kinds?: Partial<Record<NotificationKindKey, boolean>>; morningHour?: number; timeZone?: string }): Promise<SettingsView> {
-    if (patch.timeZone !== undefined && !isValidTimeZone(patch.timeZone)) throw new DomainError('invalid', 'Ce fuseau horaire est inconnu.');
+    if (patch.timeZone !== undefined && !isValidTimeZone(patch.timeZone)) throw new DomainError('invalid', errorText('unknownTimeZone'));
     const current = await this.resolve(userId);
     const disabled = new Set(current.disabledKinds);
     for (const [k, on] of Object.entries(patch.kinds ?? {}) as [NotificationKindKey, boolean | undefined][]) {
@@ -79,6 +79,11 @@ export class NotificationSettings {
     }, (await this.devices.forUser(userId)).length > 0);
     await this.save(next);
     return this.view(userId);
+  }
+
+  /** Refuse une personne pas encore inscrite (`not_onboarded`). */
+  async requireProfile(userId: string): Promise<void> {
+    if (!(await this.profiles.findById(userId))) throw new DomainError('not_onboarded');
   }
 
   /** Enregistre l'appareil et le fuseau (appelé à chaque ouverture de l'app). */

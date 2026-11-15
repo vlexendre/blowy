@@ -109,11 +109,18 @@ create table public.chat_pet_state (
 create index chat_pet_state_silence_idx on public.chat_pet_state (last_user_at) where last_user_at is not null;
 
 -- Rôle des répliques de minimoa et destinataire unique (garde-fou).
+-- `messages` est la plus grosse table : colonnes ajoutées sans valeur (instantané), contraintes posées NOT VALID
+-- (aucun parcours de la table sous verrou exclusif) ; elles s'appliquent aux nouvelles lignes tout de suite et sont
+-- validées par la migration 20261115170000_integration (verrou qui ne bloque ni lectures ni écritures).
 alter table public.messages
-  add column pet_role text check (pet_role is null or pet_role in ('icebreaker', 'nudge', 'remark', 'guard', 'event')),
-  add column visible_to uuid references public.profiles (id) on delete cascade;
--- Santé du lien : messages des personnes sur 7 jours.
-create index messages_link_user_idx on public.messages (link_id, created_at desc) where author_kind = 'user';
+  add column pet_role text,
+  add column visible_to uuid;
+alter table public.messages
+  add constraint messages_pet_role_check check (pet_role is null or pet_role in ('icebreaker', 'nudge', 'remark', 'guard', 'event')) not valid,
+  add constraint messages_visible_to_fkey foreign key (visible_to) references public.profiles (id) on delete cascade not valid;
+-- Santé du lien : messages des personnes sur 7 jours. Grosse table : à créer avant, sans bloquer les écritures,
+-- avec `create index concurrently` (docs/DEPLOIEMENT-V7.md) ; la ligne ci-dessous ne fait alors plus rien.
+create index if not exists messages_link_user_idx on public.messages (link_id, created_at desc) where author_kind = 'user';
 
 -- Le temps réel applique la RLS : un garde-fou n'est livré qu'à la personne concernée.
 drop policy "membres : lire les messages de leurs liens" on public.messages;
@@ -128,7 +135,7 @@ create policy "membres : lire les messages de leurs liens" on public.messages
   );
 
 -- Minuteur : liens à rattraper (vies perdues) sans parcourir toute la table.
-create index links_due_tick_idx on public.links (last_tick_on) where status = 'active';
+create index if not exists links_due_tick_idx on public.links (last_tick_on) where status = 'active';
 
 -- ── Notifications ─────────────────────────────────────────────────────────
 -- Jetons des appareils. kind 'expo' : push Expo ; 'apns_live_activity' : réservé aux activités en direct (à venir).

@@ -1,8 +1,12 @@
 import type { Day, NotificationKindKey } from '@blowy/domain';
-import type { Db, Json } from '../../persistence/database.types';
+import type { Database, Db, Json } from '../../persistence/database.types';
 import { check, iso, isoOrNull } from '../../persistence/supabase';
 import type {
   DevicesRepository,
+  LiveActivityKindKey,
+  LiveActivityTokenRecord,
+  LiveActivityTokensRepository,
+  LiveActivityUse,
   NotificationLogRecord,
   NotificationLogRepository,
   NotificationSettingsRecord,
@@ -169,5 +173,89 @@ export class SupabasePushReceiptsRepository implements PushReceiptsRepository {
     const { count, error } = await this.client.from('push_receipts').delete({ count: 'exact' }).lt('created_at', before);
     check(error, 'ménage des tickets de push');
     return count ?? 0;
+  }
+}
+
+type LiveRow = Database['public']['Tables']['live_activity_tokens']['Row'];
+const liveFrom = (r: LiveRow): LiveActivityTokenRecord => ({
+  token: r.token,
+  userId: r.user_id,
+  use: r.use as LiveActivityUse,
+  activity: r.activity as LiveActivityKindKey | null,
+  activityId: r.activity_id,
+  linkId: r.link_id,
+  endsAt: isoOrNull(r.ends_at),
+  createdAt: iso(r.created_at),
+  lastSeenAt: iso(r.last_seen_at),
+});
+
+/** `live_activity_tokens` (migration 20261115170000_integration). */
+export class SupabaseLiveActivityTokensRepository implements LiveActivityTokensRepository {
+  constructor(private readonly client: Db) {}
+
+  async upsert(r: LiveActivityTokenRecord): Promise<void> {
+    if (r.use === 'update' && r.activity) {
+      let q = this.client.from('live_activity_tokens').delete().eq('user_id', r.userId).eq('use', 'update').eq('activity', r.activity).neq('token', r.token);
+      q = r.activityId === null ? q.is('activity_id', null) : q.eq('activity_id', r.activityId);
+      const { error } = await q;
+      check(error, 'remplacement du jeton d’activité');
+    }
+    const { error } = await this.client.from('live_activity_tokens').upsert({
+      token: r.token,
+      user_id: r.userId,
+      use: r.use,
+      activity: r.activity,
+      activity_id: r.activityId,
+      link_id: r.linkId,
+      ends_at: r.endsAt,
+      last_seen_at: r.lastSeenAt,
+      disabled_at: null,
+    });
+    check(error, 'enregistrement du jeton d’activité');
+  }
+
+  async forUser(userId: string, filter: { use: LiveActivityUse; activity?: LiveActivityKindKey; linkId?: string | null }): Promise<LiveActivityTokenRecord[]> {
+    let q = this.client.from('live_activity_tokens').select('*').eq('user_id', userId).eq('use', filter.use).is('disabled_at', null);
+    if (filter.activity) q = q.eq('activity', filter.activity);
+    if (filter.linkId !== undefined) q = filter.linkId === null ? q.is('link_id', null) : q.eq('link_id', filter.linkId);
+    const { data, error } = await q.order('last_seen_at', { ascending: false }).limit(10);
+    check(error, 'jetons d’activité');
+    return (data ?? []).map(liveFrom);
+  }
+
+  async remove(tokens: readonly string[]): Promise<void> {
+    if (tokens.length === 0) return;
+    const { error } = await this.client.from('live_activity_tokens').delete().in('token', [...tokens]);
+    check(error, 'oubli des jetons d’activité');
+  }
+
+  async removeForUser(token: string, userId: string): Promise<void> {
+    const { error } = await this.client.from('live_activity_tokens').delete().eq('token', token).eq('user_id', userId);
+    check(error, 'retrait du jeton d’activité');
+  }
+
+  async disable(tokens: readonly string[], at: string): Promise<void> {
+    if (tokens.length === 0) return;
+    const { error } = await this.client.from('live_activity_tokens').update({ disabled_at: at }).in('token', [...tokens]);
+    check(error, 'désactivation des jetons d’activité');
+  }
+
+  async listEnded(at: string, limit: number): Promise<LiveActivityTokenRecord[]> {
+    const { data, error } = await this.client
+      .from('live_activity_tokens')
+      .select('*')
+      .eq('use', 'update')
+      .is('disabled_at', null)
+      .lte('ends_at', at)
+      .order('ends_at')
+      .limit(limit);
+    check(error, 'activités terminées');
+    return (data ?? []).map(liveFrom);
+  }
+
+  async purgeDisabled(before: string): Promise<number> {
+    const { data, error } = await this.client.from('live_activity_tokens').delete().lt('disabled_at', before).select('token');
+    check(error, 'purge des jetons d’activité');
+    return (data ?? []).length;
   }
 }

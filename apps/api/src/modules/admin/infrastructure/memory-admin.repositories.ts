@@ -47,12 +47,22 @@ export class MemorySuspensionsRepository implements SuspensionsRepository {
       .slice(0, limit)
       .map((s) => ({ ...s }));
   }
+  async activeAmong(userIds: readonly string[], now: string): Promise<Set<string>> {
+    return new Set(
+      userIds.filter((id) => {
+        const s = this.db.suspensions.get(id);
+        return s !== undefined && (s.until === null || ms(s.until) > ms(now));
+      }),
+    );
+  }
 }
 
 export class MemoryAuditLogRepository implements AuditLogRepository {
   constructor(private readonly db: MemoryDb) {}
   async append(entry: Omit<AuditRecord, 'id'>): Promise<AuditRecord> {
-    const record = { ...entry, id: String(this.db.auditLog.length + 1) };
+    // Identifiant croissant même après une purge (conservation : un an).
+    const last = this.db.auditLog[this.db.auditLog.length - 1];
+    const record = { ...entry, id: String((last ? Number(last.id) : 0) + 1) };
     this.db.auditLog.push(record);
     return { ...record };
   }
@@ -73,10 +83,11 @@ export class MemoryModerationRepository implements ModerationRepository {
   constructor(private readonly db: MemoryDb) {}
 
   private rows(): AdminReportRow[] {
-    return this.db.reports.map((r, i) => {
+    return this.db.reports.flatMap((r, i): AdminReportRow[] => {
+      if (this.db.purgedReports.has(String(i + 1))) return [];
       const id = String(i + 1);
       const review = this.db.reportReviews.get(id);
-      return {
+      return [{
         id,
         reporter: r.reporter,
         targetUser: r.targetUser,
@@ -88,7 +99,7 @@ export class MemoryModerationRepository implements ModerationRepository {
         handledAt: review?.handledAt ?? null,
         handledBy: review?.handledBy ?? null,
         resolution: review?.resolution ?? null,
-      };
+      }];
     });
   }
 
@@ -166,6 +177,14 @@ export class MemoryActivityRepository implements ActivityRepository {
     }
     return n;
   }
+  async usersOn(day: Day, afterUserId: string | null, limit: number): Promise<string[]> {
+    return [...this.db.activityDays]
+      .filter((k) => k.startsWith(`${day}:`))
+      .map((k) => k.slice(11))
+      .filter((id) => afterUserId === null || id > afterUserId)
+      .sort()
+      .slice(0, limit);
+  }
 }
 
 export class MemoryDailyStatsRepository implements DailyStatsRepository {
@@ -217,7 +236,7 @@ export class MemoryMetricsSource implements MetricsSource {
       const silent = (d: Day): number => Math.max(0, (Date.parse(d) - Date.parse(l.lastActiveOn)) / 86_400_000 - 1);
       return silent(day) - silent(l.lastTickOn) >= l.lives;
     };
-    const reports = db.reports.map((r, i) => ({ ...r, review: db.reportReviews.get(String(i + 1)) }));
+    const reports = db.reports.map((r, i) => ({ ...r, review: db.reportReviews.get(String(i + 1)), purged: db.purgedReports.has(String(i + 1)) })).filter((r) => !r.purged);
     const activeLinksOf = new Map<string, number>();
     for (const l of links) {
       if (l.status !== 'active' || effectiveGhost(l)) continue;

@@ -39,7 +39,8 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     await bob.api.me.onboard(onboardBody({ displayName: 'Bob', pet: { name: 'Gaston', species: 'gaston' } }));
     const pet = await alice.api.pet.get();
     expect(pet.events.map((e) => e.kind)).toEqual(['quiz']);
-    expect(pet.challenge.choices).toHaveLength(2);
+    // Un seul défi du jour : celui des rituels (`/v1/rituals/today`).
+    expect(pet).not.toHaveProperty('challenge');
   });
 
   it('salue, accepte et crée le lien', async () => {
@@ -51,7 +52,7 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     await alice.api.encounters.wave(bob.id);
     await alice.api.encounters.wave(bob.id); // idempotent
     expect((await alice.api.encounters.list()).suggestions.find((s) => s.user.id === bob.id)?.waved).toBe(true);
-    expect(world.outbox.at(-1)).toMatchObject({ to: 'bob@example.com', subject: 'Gaston a croisé le pet de Alice' });
+    expect(world.outbox.at(-1)).toMatchObject({ to: 'bob@example.com', subject: 'Gaston a croisé le minimoa de Alice' });
 
     const incoming = (await bob.api.encounters.list()).incoming;
     expect(incoming).toHaveLength(1);
@@ -113,7 +114,7 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     expect(hurt.lives).toBe(5);
     expect(hurt.myPet.mood).toBe('neutre');
     const again = await alice.api.links.messages(link.id);
-    const lines = again.messages.filter((m) => m.body?.includes('5 vies'));
+    const lines = again.messages.filter((m) => /5\svies/.test(m.body ?? ''));
     expect(lines).toHaveLength(1);
   });
 
@@ -137,7 +138,7 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     const duo = await bob.api.links.sendPhoto(link.id, bobTicket.path);
     expect(duo.link).toMatchObject({ lives: 6, streak: 1, level: 2 });
     expect(duo.link.today.theirPhotoUrl).toBeTruthy();
-    expect(duo.messages.some((m) => m.kind === 'event' && m.body?.includes('ils jouent ensemble'))).toBe(true);
+    expect(duo.messages.some((m) => m.kind === 'event' && m.body?.includes('Ils jouent ensemble'))).toBe(true);
     expect(duo.messages.filter((m) => m.author === 'other_pet' || m.author === 'my_pet').length).toBeGreaterThanOrEqual(2);
 
     const aliceView = await alice.api.links.get(link.id);

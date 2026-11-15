@@ -33,7 +33,6 @@ interface StateRow {
   outing_answer: string | null;
   outing_confirmed: boolean;
   habits_kept: number;
-  daily_notified_on: string | null;
   danger_notified_on: string | null;
   needs_out_notified_on: string | null;
   review_week: string | null;
@@ -47,7 +46,6 @@ const stateFromRow = (r: StateRow): RitualStateRecord => ({
   outingAnswer: r.outing_answer as OutingAnswer | null,
   outingConfirmed: r.outing_confirmed,
   habitsKept: r.habits_kept,
-  dailyNotifiedOn: r.daily_notified_on,
   dangerNotifiedOn: r.danger_notified_on,
   needsOutNotifiedOn: r.needs_out_notified_on,
   reviewWeek: r.review_week,
@@ -63,7 +61,6 @@ function statePatchRow(p: RitualStatePatch) {
     ...(p.outingAnswer !== undefined ? { outing_answer: p.outingAnswer } : {}),
     ...(p.outingConfirmed !== undefined ? { outing_confirmed: p.outingConfirmed } : {}),
     ...(p.habitsKept !== undefined ? { habits_kept: p.habitsKept } : {}),
-    ...(p.dailyNotifiedOn !== undefined ? { daily_notified_on: p.dailyNotifiedOn } : {}),
     ...(p.dangerNotifiedOn !== undefined ? { danger_notified_on: p.dangerNotifiedOn } : {}),
     ...(p.needsOutNotifiedOn !== undefined ? { needs_out_notified_on: p.needsOutNotifiedOn } : {}),
     ...(p.reviewWeek !== undefined ? { review_week: p.reviewWeek } : {}),
@@ -71,20 +68,17 @@ function statePatchRow(p: RitualStatePatch) {
 }
 
 const MARKER_COLUMNS: Record<RitualMarker, string> = {
-  dailyNotifiedOn: 'daily_notified_on',
   dangerNotifiedOn: 'danger_notified_on',
   needsOutNotifiedOn: 'needs_out_notified_on',
   reviewWeek: 'review_week',
 };
 
 const markerPatch = (marker: RitualMarker, value: Day) =>
-  marker === 'dailyNotifiedOn'
-    ? { daily_notified_on: value }
-    : marker === 'dangerNotifiedOn'
-      ? { danger_notified_on: value }
-      : marker === 'needsOutNotifiedOn'
-        ? { needs_out_notified_on: value }
-        : { review_week: value };
+  marker === 'dangerNotifiedOn'
+    ? { danger_notified_on: value }
+    : marker === 'needsOutNotifiedOn'
+      ? { needs_out_notified_on: value }
+      : { review_week: value };
 
 export class SupabaseRitualStatesRepository implements RitualStatesRepository {
   constructor(private readonly client: Db) {}

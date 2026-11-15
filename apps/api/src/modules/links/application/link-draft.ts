@@ -1,4 +1,4 @@
-import { type PetPair, systemText, ghostLine, levelLabel, levelUpLine, lifeLostLine } from '@blowy/content';
+import { type Locale, type PetPair, systemText, ghostLine, labels, levelUpLine, lifeLostLine } from '@blowy/content';
 import { type Day, LEVEL_KEYS, type LinkState, type PetRole, tickLink } from '@blowy/domain';
 import { seedOf } from '../../../shared/seed';
 import type { AuthorKind, LinkRecord, MessageKind } from '../ports';
@@ -40,9 +40,27 @@ export class LinkDraft {
   constructor(
     public link: LinkRecord,
     readonly today: Day,
-    /** Nom du pet de chaque membre, par identifiant de personne. */
+    /** Nom du minimoa de chaque membre, par identifiant de personne. */
     private readonly petNames: ReadonlyMap<string, string>,
+    /** Langue de chaque membre (`profiles.locale`). */
+    private readonly locales: ReadonlyMap<string, Locale> = new Map(),
   ) {}
+
+  /**
+   * Langue d'un membre. Une réplique de minimoa est écrite dans la langue de son humain ; elle est rangée telle quelle
+   * dans la conversation et lue par les deux personnes.
+   */
+  localeOf(userId: string): Locale {
+    return this.locales.get(userId) ?? 'fr';
+  }
+
+  /**
+   * Langue des bandeaux du système, vus par les deux : la langue commune, sinon celle de la personne A
+   * (limite connue : un lien entre deux langues voit ces bandeaux dans une seule).
+   */
+  get systemLocale(): Locale {
+    return this.localeOf(this.link.userA);
+  }
 
   get changed(): boolean {
     return this.dirty || this.pending.length > 0;
@@ -54,7 +72,7 @@ export class LinkDraft {
 
   /** Les deux pets vus depuis celui de `ownerId`. */
   pair(ownerId: string): PetPair {
-    return { self: this.petNames.get(ownerId) ?? 'ton pet', other: this.petNames.get(this.otherOf(ownerId)) ?? 'son pet' };
+    return { self: this.petNames.get(ownerId) ?? '', other: this.petNames.get(this.otherOf(ownerId)) ?? '' };
   }
 
   /** Graine stable pour varier les répliques sans aléa. */
@@ -99,9 +117,10 @@ export class LinkDraft {
   announceLevel(level: number, ownerId: string): void {
     const key = LEVEL_KEYS[level - 1];
     if (!key) return;
-    const label = levelLabel[key];
-    this.system(systemText.levelUp(label.title, label.text));
-    this.pet(ownerId, levelUpLine(this.pair(ownerId), label.title, this.seed('level', String(level))));
+    const sys = labels.in(this.systemLocale).levelLabel[key];
+    this.system(systemText(this.systemLocale).levelUp(sys.title, sys.text));
+    const own = this.localeOf(ownerId);
+    this.pet(ownerId, levelUpLine(own, this.pair(ownerId), labels.in(own).levelLabel[key].title, this.seed('level', String(level))));
   }
 
   /**
@@ -116,9 +135,9 @@ export class LinkDraft {
     if (after.status === 'active' && after.lives <= LINK_DANGER_LIVES && before.lives > LINK_DANGER_LIVES) this.enteredDanger = true;
     const speaker = this.speaker('tick');
     if (after.status === 'ghost' && before.status === 'active') {
-      this.pet(speaker, ghostLine(this.pair(speaker), this.seed('ghost')));
+      this.pet(speaker, ghostLine(this.localeOf(speaker), this.pair(speaker), this.seed('ghost')));
     } else if (after.lives < before.lives) {
-      this.pet(speaker, lifeLostLine(this.pair(speaker), after.lives, this.seed('life-lost')));
+      this.pet(speaker, lifeLostLine(this.localeOf(speaker), this.pair(speaker), after.lives, this.seed('life-lost')));
     }
   }
 }

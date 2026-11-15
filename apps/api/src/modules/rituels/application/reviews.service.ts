@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { reviewText, rituelsErrors, rituelsNotificationVars } from '@blowy/content';
+import { rituelsNotificationVars, reviewDetailedAxisLine, reviewNoticedLine, rituelsText, textOf } from '@blowy/content';
 import type { WeeklyReview } from '@blowy/contract';
 import {
   type Day,
@@ -35,6 +35,7 @@ import type {
 } from '../ports';
 import { COACH, DAILY_CHALLENGES, HABIT_CHECKS, WEEKLY_REVIEWS } from '../tokens';
 import { RitualNotifications, RitualsContext } from './rituals-context';
+import { requestLocale } from '../../../shared/locale';
 
 export const REVIEWS_PAGE = 10;
 
@@ -44,7 +45,7 @@ const kind = (lines: readonly string[]): string[] => lines.filter(isKindText);
 export const toReviewDto = (r: WeeklyReviewRecord): WeeklyReview => ({
   id: r.id,
   weekStart: r.weekStart,
-  title: reviewText.title,
+  title: rituelsText.in(requestLocale()).review.title,
   did: r.did,
   noticed: r.noticed,
   tip: r.tip,
@@ -84,7 +85,7 @@ export class ReviewsService {
 
   async get(userId: string, id: string): Promise<WeeklyReviewRecord> {
     const review = await this.reviews.find(id);
-    if (!review || review.userId !== userId) throw new DomainError('not_found', rituelsErrors.reviewNotFound);
+    if (!review || review.userId !== userId) throw new DomainError('not_found', textOf(rituelsText, (t) => t.errors.reviewNotFound));
     return review;
   }
 
@@ -111,6 +112,9 @@ export class ReviewsService {
     const now = this.ctx.now();
     const weekEnd = addDays(weekStart, 6);
     const plus = hasPlus(profile, now);
+    // Le bilan est écrit une fois, dans la langue de la personne.
+    const locale = profile.locale ?? 'fr';
+    const reviewText = rituelsText.in(locale).review;
     const perWeek = entitlements(plus).jokersPerWeek;
     const pet = await this.pets.findByOwner(userId);
     if (!pet) return false;
@@ -148,7 +152,7 @@ export class ReviewsService {
 
     const did = kind(reviewHighlights(facts).map((h) => reviewText.highlight[h](vars)));
     const move = noticedMove(deltas);
-    const noticed = move ? reviewText.noticed(move.axis, move.direction) : reviewText.noticedSteady;
+    const noticed = move ? reviewNoticedLine(locale, move.axis, move.direction) : reviewText.noticedSteady;
     const tip = reviewText.tip[reviewTip(facts, active.length)];
     const linkLines = kind(
       active.flatMap((l) => {
@@ -158,7 +162,7 @@ export class ReviewsService {
     );
     const detailed = entitlements(plus).detailedReview
       ? {
-          axes: kind(VISION_AXES.map((axis) => reviewText.detailedAxis(axis, deltaOf(previous[previous.length - 1]?.vision ?? {}, vision)[axis] ?? 0))),
+          axes: kind(VISION_AXES.map((axis) => reviewDetailedAxisLine(locale, axis, deltaOf(previous[previous.length - 1]?.vision ?? {}, vision)[axis] ?? 0))),
           links: kind(
             active.flatMap((l) => {
               const name = names.get(l.userA === userId ? l.userB : l.userA);

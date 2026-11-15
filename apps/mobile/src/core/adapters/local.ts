@@ -7,6 +7,7 @@ import type { UploadTicket } from '@blowy/contract';
 
 import { AuthError, type AuthPort, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
 import { pickImage } from './image-picker';
+import { common } from '@/locales/common';
 
 const KEY = 'blowy.local.session';
 export const LOCAL_CODE = '000000';
@@ -37,10 +38,10 @@ export function localAuth(): AuthPort {
       return s ? `test:${s.userId}:${s.email ?? ''}` : null;
     },
     async sendCode(email) {
-      if (!/^\S+@\S+\.\S+$/.test(email)) throw new AuthError('invalid_email', 'Cette adresse e-mail ne semble pas valide.');
+      if (!/^\S+@\S+\.\S+$/.test(email)) throw new AuthError('invalid_email', common.errors.invalidEmail);
     },
     async verifyCode(email, code) {
-      if (code !== LOCAL_CODE) throw new AuthError('invalid_code', 'Ce code n’est pas le bon, ou il a expiré.');
+      if (code !== LOCAL_CODE) throw new AuthError('invalid_code', common.errors.invalidCode);
       const session = { userId: uuid(), email };
       await set(session);
       return session;

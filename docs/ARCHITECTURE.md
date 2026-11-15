@@ -1,28 +1,35 @@
-# Architecture Blowy V6
+# Architecture Blowy V7
 
 ```
 apps/mobile  Expo SDK 58 (React Native 0.88, expo-router)  ─┐
 apps/web     Astro 7 (site marketing, pages publiques)      ├─ @blowy/api-client ─ REST /v1 ─► apps/api (NestJS 12)
-                                                             │                                   │ clé service
-apps/mobile ── supabase-js : session (code e-mail) + temps réel (lecture RLS) ──────────────► Supabase (Postgres, Auth, Storage)
-                                                                                 apps/api ──► Resend (e-mails)
+apps/admin   Vite + React (administration, /admin/*)       ─┘                                   │ clé service
+apps/mobile ── supabase-js : session (Apple, Google ; code e-mail en local) + temps réel ────► Supabase (Postgres, Auth, Storage)
+planificateur (Railway cron ou pg_cron) ── POST /internal/tick toutes les 5 min ──► apps/api ──► Resend (e-mails)
+                                                                                    apps/api ──► Expo push · APNs (activités en direct)
+                                                                                    apps/api ──► Anthropic (IA, via AiGateway) · Apple (achats)
 ```
 
 ## Règles
-1. **Un seul écrivain** : l'API. L'app ne parle à Supabase que pour la session (auth par code e-mail) et pour
-   s'abonner en temps réel aux tables `messages` et `links` (politiques RLS en lecture seule). Toute donnée affichée
-   vient de l'API (`@blowy/api-client`), le temps réel ne sert qu'à déclencher un rafraîchissement.
+1. **Un seul écrivain** : l'API. L'app ne parle à Supabase que pour la session et pour s'abonner en temps réel aux
+   tables `messages` et `links` : ce sont les deux seules politiques RLS (lecture par les membres du lien ; un garde-fou
+   n'est livré qu'à la personne concernée). Toutes les autres tables ont la RLS sans politique (profil, vision, positions,
+   « qui tu veux rencontrer », abonnements, administration, usage de l'IA). Toute donnée affichée vient de l'API, le temps
+   réel ne sert qu'à déclencher un rafraîchissement. Vérifié par `pnpm --filter @blowy/api check:schema`.
 2. **Le contrat d'abord** : `packages/contract` (Zod) décrit chaque requête et réponse. L'API valide les entrées avec,
    le client valide les sorties avec. On ne duplique jamais un type du contrat.
-3. **Moteur pur** : `packages/domain` contient les règles (jauges, vies, niveaux, jours). Pas d'horloge, pas d'aléa,
-   pas d'entrée-sortie ; le jour courant est un paramètre. Les vies et l'usure des jauges sont rattrapées à la lecture
-   (`tickLink`, `decayGauges`), donc aucune tâche planifiée n'est nécessaire.
-4. **Ports et adaptateurs** côté API et côté app : chaque dépendance externe (base, stockage, e-mail, auth, achats) est
-   une interface avec un adaptateur réel et un adaptateur local en mémoire. La production refuse les adaptateurs locaux.
+3. **Moteur pur** : `packages/domain` contient les règles (jauges, vies, vision et compatibilité, série, budgets d'IA,
+   heures calmes, essai, conservation des données). Pas d'horloge, pas d'aléa, pas d'entrée-sortie ; le jour courant
+   est un paramètre. Les vies, l'usure des besoins et la série sont rattrapées à la lecture ; ce qui doit partir sans
+   que personne n'ouvre l'app passe par le **minuteur** (`POST /internal/tick`, secret `INTERNAL_TICK_SECRET`, toutes
+   les 5 min) : chaque module expose un `XxxJobs.runDue(now)` idempotent, listé dans `modules/tick/jobs.ts`.
+4. **Ports et adaptateurs** côté API et côté app : chaque dépendance externe (base, stockage, e-mail, auth, IA, push,
+   activités en direct, achats, vérification des preuves, bilan) est une interface avec un adaptateur réel et un
+   adaptateur en mémoire ; les tests tournent en mémoire. La production refuse les adaptateurs mémoire.
 5. **Design atomique** côté app : `packages/ui/src/{atoms,molecules,organisms,templates}` ; un niveau n'importe que les
    niveaux inférieurs ; aucun `StyleSheet` de présentation dans un écran. Les écrans (`apps/mobile/app/**`) sont fins :
    un template, des organismes, un hook de feature.
-6. Textes en français, tutoiement, externalisés (`packages/content`, `apps/mobile/src/locales/fr.ts`).
+6. Textes écrits en français (langue source), tutoiement, externalisés et traduits par clés dans cinq langues (fr, en, es, pt, nl) : `apps/mobile/src/locales/*.ts` (app), `packages/content` (partagés, API). Voir `docs/I18N.md`.
 7. TypeScript strict. Paquets internes consommés en source (`main: src/index.ts`), imports sans extension
    (`moduleResolution: Bundler`). Pas de `any`.
 
@@ -32,7 +39,7 @@ apps/mobile ── supabase-js : session (code e-mail) + temps réel (lecture RL
 | `@blowy/domain` | règles pures | rien |
 | `@blowy/contract` | schémas Zod + table des routes | domain, zod |
 | `@blowy/api-client` | client HTTP typé | contract |
-| `@blowy/content` | libellés, voix des pets, défis, e-mails | domain |
+| `@blowy/content` | socle des langues (`i18n/core`), libellés, voix des minimoas, défis, e-mails, erreurs de l'API, par langue | domain |
 | `@blowy/tokens` | couleurs, dégradés, typo, espacements | rien |
 | `@blowy/ui` | composants React Native (atomique) | tokens, domain |
 
@@ -49,23 +56,59 @@ modules/<module>/
   interface/*.controller.ts   REST : valide (contrat), appelle un cas d'usage, mappe vers le DTO
   <module>.module.ts          racine de composition
 ```
-Modules : `me`, `pets`, `links` (messages, photo du jour, souvenirs), `encounters`, `invites`, `words`, `safety`, `health`.
+Modules : `me`, `pets` (soins, garde-robe), `links` (messages, photo du jour, souvenirs ; `links/minimoas` : les minimoas
+dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
+`vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
+`notifications` (appareils, réglages, envoi, activités en direct), `billing` (Blowy+), `admin` (tableaux, modération),
+`retention` (comptes inactifs, exclusions, purges), `tick` (minuteur), `health`.
+`integrations/` : `ai` (`AiGateway` : interrupteur, plafond global, budget par personne, compteur), `push` (Expo,
+APNs), `plateforme` (composition globale : cache, limites de débit, IA, push, minuteur).
 Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`, ce qui permet `tsx` en dev et `tsup` en build.
+
+### Ports externes (réel · mémoire)
+| Port | Réel | Mémoire |
+|---|---|---|
+| `AuthVerifier`, `AuthAdmin`, `UserEmails` | Supabase Auth | jetons `test:<uuid>[:<e-mail>]` |
+| `Storage` | Supabase Storage (URL signées) | `/dev/uploads`, `/dev/media` |
+| `Mailer` | Resend | console (`outbox`) |
+| `AiGateway` → `ModelClient` | Anthropic (Haiku, Sonnet) | `MemoryModel` déterministe |
+| `Pusher` | Expo push | `MemoryPusher` (`outbox`) |
+| `LiveActivityPusher` | APNs HTTP/2 (clé `.p8`) | `MemoryLiveActivities` |
+| `Billing` | vérification locale des JWS d'Apple | `memoryJws` |
+| `HabitVerifier`, `Coach` | IA via `AiGateway` (repli : « pas sûr », modèles de phrases) | déterministes |
+| dépôts de chaque module | `supabase-*.repository.ts` | `memory-*` sur `MemoryDb` (cascades comprises) |
+
+### Tâches du minuteur (`modules/tick/jobs.ts`, dans l'ordre)
+`links` (vies rattrapées, « lien en danger », relances de 72 h) · `notifications` (reports des heures calmes, défi du
+jour à l'heure choisie — seul chemin d'envoi de `daily_challenge` —, activités en direct finies, reçus Expo, ménage) ·
+`rituels` (preuves demandées, besoin de sortir, série en danger, bilans du dimanche, photos privées de plus de 24 h) ·
+`billing` (rappel du jour 5 de l'essai, journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
+apports `ADMIN_INSIGHTS`) · `retention` (prévenance puis suppression après 2 ans sans connexion, exclusions > 3 ans,
+modération > 1 an). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
 
 ## App (`apps/mobile`)
 ```
 app/                          routes expo-router (écrans fins)
 src/core/                     config, ports (Auth, Api, Realtime, Media, Purchases) + adaptateurs, providers
 src/features/<f>/             hooks react-query + logique d'écran ; index public
-src/locales/fr.ts             textes de l'interface
+src/locales/*.ts              textes de l'interface, par langue (`messages({ fr, en, es, pt, nl })`)
 (images des pets : packages/ui/assets/pets, registre typé dans packages/ui/src/assets/pets.ts)
 ```
 
 ## Base (`supabase/migrations`)
-Tables : `profiles`, `pets`, `pet_events`, `links`, `messages`, `link_reads`, `daily_photos`, `encounters`,
-`word_votes`, `blocks`, `reports`. Compartiment de stockage privé `media` (URL signées émises par l'API).
+V6 : `profiles`, `pets`, `pet_events`, `pet_items`, `links`, `messages`, `link_reads`, `daily_photos`, `encounters`,
+`word_votes`, `blocks`, `reports`. V7 : vision (`profile_places`, `vision_signals`, `vision_profiles`, `match_cache`),
+rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_photos`, `weekly_reviews`), plateforme
+(`ai_usage_daily`, `ai_user_calls`, `chat_link_settings`, `chat_pet_state`, `push_devices`, `live_activity_tokens`,
+`notification_settings`, `notification_log`, `push_receipts`, `tick_runs`), Blowy+ et administration (`subscriptions`,
+`store_notifications`, `account_suspensions`, `admin_audit_log`, `user_activity_days`, `admin_daily_stats`,
+`encounter_proposals`), conservation (`banned_identities`). Compartiment privé `media` (URL signées émises par l'API).
+Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
-## Produit (V6)
+## Produit
+La V7 (minimoa, vision, rituels, Blowy+) est décrite dans `docs/V7-SPEC.md` ; ce qui suit reste vrai de la V6.
+
+### Base V6
 - Un pet par personne. 4 jauges à deux pôles (casanier↔sociable, posé↔joueur, piquant↔tendre, discret↔bavard) qui
   bougent avec l'activité et retombent vers 0.
 - Un lien = deux personnes et leurs pets. 7 vies (un jour entier de silence en coûte une ; la photo du jour faite par

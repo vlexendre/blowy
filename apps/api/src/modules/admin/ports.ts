@@ -18,6 +18,8 @@ export interface SuspensionsRepository {
   remove(userId: string): Promise<void>;
   /** Suspensions en cours à `now`, de la plus récente à la plus ancienne. */
   listActive(now: string, cursor: string | null, limit: number): Promise<SuspensionRecord[]>;
+  /** Parmi ces personnes, celles dont la suspension court à `now` (une requête). */
+  activeAmong(userIds: readonly string[], now: string): Promise<Set<string>>;
 }
 
 export interface AuditRecord {
@@ -100,6 +102,8 @@ export interface ActivityRepository {
   /** Note qu'une personne a utilisé l'app ce jour-là (idempotent). */
   touch(userId: string, day: Day): Promise<void>;
   purgeBefore(day: Day): Promise<number>;
+  /** Personnes actives ce jour-là, par identifiant croissant (échantillon des statistiques), `limit` au plus. */
+  usersOn(day: Day, afterUserId: string | null, limit: number): Promise<string[]>;
 }
 
 export interface TopMinimoaRow {

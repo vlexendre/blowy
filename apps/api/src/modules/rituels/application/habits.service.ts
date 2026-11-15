@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { HABITS as HABIT_CATALOGUE, type HabitDef, habitById, proofVerdictLines, rhythmLabel, rituelsErrors, rituelsNotificationVars } from '@blowy/content';
+import { type HabitDef, habitById, rituelsNotificationVars, habitsIn, rituelsText, textOf } from '@blowy/content';
 import type { Habit, HabitCatalogue } from '@blowy/contract';
 import {
   type Day,
@@ -33,6 +33,7 @@ import type {
 } from '../ports';
 import { HABIT_CHECKS, HABIT_VERIFIER, HABITS, RITUAL_PHOTOS, RITUAL_STATES } from '../tokens';
 import { RitualNotifications, RitualsContext } from './rituals-context';
+import { requestLocale } from '../../../shared/locale';
 
 /** Fenêtre relue pour les séries d'habitude (au-delà, la série affichée plafonne). */
 export const HABIT_HISTORY_DAYS = 120;
@@ -41,13 +42,13 @@ export const habitPhotoPattern = (userId: string, ref: string, day: Day): RegExp
   new RegExp(`^rituals/${userId}/${day}/habit-${ref}-[0-9a-f-]{36}\\.(jpg|webp)$`);
 
 const lineFor = (verdict: ProofVerdict, seed: string): string => {
-  const lines = proofVerdictLines[verdict];
+  const lines = rituelsText.in(requestLocale()).proofVerdictLines[verdict];
   return lines[seedOf(seed) % lines.length] ?? lines[0] ?? '';
 };
 
 /** Définition d'une habitude suivie ; une habitude retirée du catalogue garde un libellé neutre. */
 const defOf = (habit: HabitRecord): HabitDef =>
-  habitById(habit.habitId) ?? { id: habit.habitId, axis: 'rythme', lean: 0, social: false, sociability: 0, rhythm: habit.rhythm, proofHour: habit.proofHour, label: habit.habitId, ask: '' };
+  habitById(habit.habitId, requestLocale()) ?? { id: habit.habitId, axis: 'rythme', lean: 0, social: false, sociability: 0, rhythm: habit.rhythm, proofHour: habit.proofHour, label: habit.habitId, ask: '' };
 
 export function toHabitDto(habit: HabitRecord, checks: readonly HabitCheckRecord[], today: Day, hour: number): Habit {
   const def = defOf(habit);
@@ -62,7 +63,7 @@ export function toHabitDto(habit: HabitRecord, checks: readonly HabitCheckRecord
     ask: def.ask,
     social: def.social,
     rhythm: habit.rhythm,
-    rhythmLabel: rhythmLabel[habit.rhythm],
+    rhythmLabel: rituelsText.in(requestLocale()).rhythmLabel[habit.rhythm],
     proofHour: habit.proofHour,
     today: {
       doneToday: day.doneToday,
@@ -111,8 +112,8 @@ export class HabitsService {
   async catalogue(userId: string): Promise<HabitCatalogue> {
     const [profile, active] = await Promise.all([this.ctx.profile(userId), this.habits.listActive(userId)]);
     return {
-      habits: HABIT_CATALOGUE.map((h) => ({ id: h.id, label: h.label, ask: h.ask, axis: h.axis, social: h.social, rhythm: h.rhythm, proofHour: h.proofHour })),
-      rhythms: HABIT_RHYTHMS.map((id) => ({ id, label: rhythmLabel[id] })),
+      habits: habitsIn(requestLocale()).map((h) => ({ id: h.id, label: h.label, ask: h.ask, axis: h.axis, social: h.social, rhythm: h.rhythm, proofHour: h.proofHour })),
+      rhythms: HABIT_RHYTHMS.map((id) => ({ id, label: rituelsText.in(requestLocale()).rhythmLabel[id] })),
       limit: this.ctx.limitsOf(profile).habits,
       used: active.length,
     };
@@ -144,12 +145,12 @@ export class HabitsService {
   }
 
   async add(userId: string, habitId: string, rhythm?: HabitRhythm, proofHour?: number): Promise<void> {
-    const def = habitById(habitId);
-    if (!def) throw new DomainError('invalid', rituelsErrors.habitUnknown);
+    const def = habitById(habitId, requestLocale());
+    if (!def) throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.habitUnknown));
     const [profile, active] = await Promise.all([this.ctx.profile(userId), this.habits.listActive(userId)]);
     const limit = this.ctx.limitsOf(profile).habits;
-    if (active.some((h) => h.habitId === habitId)) throw new DomainError('conflict', rituelsErrors.habitTaken);
-    if (!canAddHabit(active.length, limit)) throw new DomainError('forbidden', limit >= 6 ? rituelsErrors.habitLimitPlus : rituelsErrors.habitLimit(limit));
+    if (active.some((h) => h.habitId === habitId)) throw new DomainError('conflict', textOf(rituelsText, (t) => t.errors.habitTaken));
+    if (!canAddHabit(active.length, limit)) throw new DomainError('forbidden', limit >= 6 ? textOf(rituelsText, (t) => t.errors.habitLimitPlus) : textOf(rituelsText, (t) => t.errors.habitLimit(limit)));
     const created = await this.habits.create({
       id: this.ids.uuid(),
       userId,
@@ -160,7 +161,7 @@ export class HabitsService {
       archivedAt: null,
       askedOn: null,
     });
-    if (!created) throw new DomainError('conflict', rituelsErrors.habitTaken);
+    if (!created) throw new DomainError('conflict', textOf(rituelsText, (t) => t.errors.habitTaken));
     // Choisir une habitude dit déjà quelque chose de sa vision (moitié du poids d'une habitude tenue).
     await this.signals.record(userId, [{ axis: def.axis, value: Math.round(def.lean / 2), source: 'habit', at: this.ctx.now().toISOString() }]);
   }
@@ -188,8 +189,8 @@ export class HabitsService {
     const habit = await this.owned(userId, ref);
     const today = this.ctx.today();
     const previous = await this.notCountedYet(ref, today);
-    if (!habitPhotoPattern(userId, ref, today).test(path)) throw new DomainError('invalid', rituelsErrors.proofPath);
-    if (!(await this.storage.exists(path))) throw new DomainError('invalid', rituelsErrors.proofMissing);
+    if (!habitPhotoPattern(userId, ref, today).test(path)) throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.proofPath));
+    if (!(await this.storage.exists(path))) throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.proofMissing));
     const def = defOf(habit);
     const now = this.ctx.now().toISOString();
     const photo: RitualPhotoRecord = { id: this.ids.uuid(), userId, source: 'habit', day: today, path, caption: def.label, keep, createdAt: now, deletedAt: null };
@@ -217,7 +218,7 @@ export class HabitsService {
   async keepPhoto(userId: string, photoId: string, keep: boolean): Promise<void> {
     const photo = await this.photos.find(photoId);
     if (!photo || photo.userId !== userId) throw new DomainError('not_found');
-    if (photo.deletedAt !== null) throw new DomainError('not_found', rituelsErrors.proofGone);
+    if (photo.deletedAt !== null) throw new DomainError('not_found', textOf(rituelsText, (t) => t.errors.proofGone));
     await this.photos.setKeep(photoId, keep);
   }
 
@@ -230,14 +231,14 @@ export class HabitsService {
 
   private async owned(userId: string, ref: string): Promise<HabitRecord> {
     const habit = await this.habits.find(ref);
-    if (!habit || habit.userId !== userId || habit.archivedAt !== null) throw new DomainError('not_found', rituelsErrors.habitNotFound);
+    if (!habit || habit.userId !== userId || habit.archivedAt !== null) throw new DomainError('not_found', textOf(rituelsText, (t) => t.errors.habitNotFound));
     return habit;
   }
 
   /** Preuve du jour déjà comptée : refusée. Rend la preuve « non » du jour s'il y en a une (elle sera remplacée). */
   private async notCountedYet(ref: string, today: Day): Promise<HabitCheckRecord | null> {
     const check = await this.checks.find(ref, today);
-    if (check && proofCounts(check.verdict)) throw new DomainError('already_done', rituelsErrors.habitDoneToday);
+    if (check && proofCounts(check.verdict)) throw new DomainError('already_done', textOf(rituelsText, (t) => t.errors.habitDoneToday));
     return check;
   }
 }

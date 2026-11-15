@@ -1,5 +1,5 @@
 import type { MemoryDb } from '../../../persistence/memory-db';
-import type { EncounterRecord, EncounterStatus, EncountersRepository } from '../ports';
+import type { EncounterRecord, EncounterStatus, EncountersRepository, ProposalsRepository } from '../ports';
 
 export class MemoryEncountersRepository implements EncountersRepository {
   constructor(private readonly db: MemoryDb) {}
@@ -37,5 +37,35 @@ export class MemoryEncountersRepository implements EncountersRepository {
       .sort((a, b) => b.statusAt.localeCompare(a.statusAt) || b.id.localeCompare(a.id))
       .slice(0, limit)
       .map((e) => ({ ...e }));
+  }
+}
+
+export class MemoryProposalsRepository implements ProposalsRepository {
+  constructor(private readonly db: MemoryDb) {}
+  async record(day: string, userId: string, proposed: number, scoreSum: number): Promise<void> {
+    if (!this.db.profiles.has(userId)) return;
+    const key = `${day}:${userId}`;
+    const current = this.db.encounterProposals.get(key);
+    if (!current || proposed > current.proposed) this.db.encounterProposals.set(key, { proposed, scoreSum });
+  }
+  async summary(day: string): Promise<{ proposed: number; scoreSum: number }> {
+    let proposed = 0;
+    let scoreSum = 0;
+    for (const [key, v] of this.db.encounterProposals) {
+      if (!key.startsWith(`${day}:`)) continue;
+      proposed += v.proposed;
+      scoreSum += v.scoreSum;
+    }
+    return { proposed, scoreSum };
+  }
+  async purgeBefore(day: string): Promise<number> {
+    let n = 0;
+    for (const key of [...this.db.encounterProposals.keys()]) {
+      if (key.slice(0, 10) < day) {
+        this.db.encounterProposals.delete(key);
+        n += 1;
+      }
+    }
+    return n;
   }
 }

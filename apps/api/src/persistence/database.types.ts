@@ -33,6 +33,8 @@ export type Database = {
           plus_until: string | null;
           welcome_sent_at: string | null;
           created_at: string;
+          last_active_on: string;
+          inactivity_noticed_on: string | null;
         },
         | 'gender'
         | 'seeking'
@@ -45,6 +47,8 @@ export type Database = {
         | 'plus_until'
         | 'welcome_sent_at'
         | 'created_at'
+        | 'last_active_on'
+        | 'inactivity_noticed_on'
       >;
       pets: Table<
         {
@@ -231,6 +235,24 @@ export type Database = {
       >;
       user_activity_days: Table<{ day: string; user_id: string }>;
       admin_daily_stats: Table<{ day: string; metrics: Json; computed_at: string }, 'computed_at'>;
+      // ── Intégration (20261115170000_integration) ──
+      banned_identities: Table<{ hash: string; banned_at: string; until: string }, 'banned_at'>;
+      encounter_proposals: Table<{ day: string; user_id: string; proposed: number; score_sum: number }>;
+      live_activity_tokens: Table<
+        {
+          token: string;
+          user_id: string;
+          use: string;
+          activity: string | null;
+          activity_id: string | null;
+          link_id: string | null;
+          ends_at: string | null;
+          created_at: string;
+          last_seen_at: string;
+          disabled_at: string | null;
+        },
+        'activity' | 'activity_id' | 'link_id' | 'ends_at' | 'created_at' | 'last_seen_at' | 'disabled_at'
+      >;
       // ── plateforme (20261115150000) ──
       ai_usage_daily: Table<
         {
@@ -303,7 +325,6 @@ export type Database = {
           outing_answer: string | null;
           outing_confirmed: boolean;
           habits_kept: number;
-          daily_notified_on: string | null;
           danger_notified_on: string | null;
           needs_out_notified_on: string | null;
           review_week: string | null;
@@ -318,7 +339,6 @@ export type Database = {
         | 'outing_answer'
         | 'outing_confirmed'
         | 'habits_kept'
-        | 'daily_notified_on'
         | 'danger_notified_on'
         | 'needs_out_notified_on'
         | 'review_week'
@@ -378,6 +398,9 @@ export type Database = {
       admin_daily_metrics: { Args: { p_day: string }; Returns: Json };
       ai_take_user_call: { Args: { p_user: string; p_day: string; p_feature: string; p_max: number }; Returns: boolean };
       ritual_add_habits_kept: { Args: { p_user: string; p_n: number }; Returns: number };
+      encounter_proposals_record: { Args: { p_day: string; p_user: string; p_proposed: number; p_score_sum: number }; Returns: undefined };
+      encounter_proposals_summary: { Args: { p_day: string }; Returns: Json };
+      places_in_cells: { Args: { p_cells: string[]; p_limit: number; p_exclude: string }; Returns: Database['public']['Tables']['profile_places']['Row'][] };
       ai_record_usage: {
         Args: {
           p_day: string;

@@ -3,6 +3,7 @@ import { BlockBody, type Blocked, ReportBody, Uuid } from '@blowy/contract';
 import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser } from '../../../shared/auth.guard';
+import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { Blocks } from '../application/blocks.usecase';
 import { Report } from '../application/report.usecase';
@@ -14,6 +15,7 @@ export class SafetyController {
     @Inject(Report) private readonly report: Report,
   ) {}
 
+  @RateLimit('write')
   @Post('blocks')
   async block(@CurrentUser() user: AuthUser, @Body(new ZodPipe(BlockBody)) body: z.infer<typeof BlockBody>): Promise<{ ok: true }> {
     await this.blocks.block(user.userId, body.userId);
@@ -31,6 +33,7 @@ export class SafetyController {
     return { ok: true };
   }
 
+  @RateLimit('write')
   @Post('reports')
   async create(@CurrentUser() user: AuthUser, @Body(new ZodPipe(ReportBody)) body: z.infer<typeof ReportBody>): Promise<{ ok: true }> {
     await this.report.execute(user.userId, body);

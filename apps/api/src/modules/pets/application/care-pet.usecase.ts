@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { careLabel } from '@blowy/content';
+import { labels, textOf } from '@blowy/content';
 import { CARE_EFFECTS, type CareAction, applyCare, canCare, dayOf } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
@@ -21,7 +21,7 @@ export class CarePet {
 
   async execute(ownerId: string, action: CareAction): Promise<void> {
     const pet = await this.character.load(ownerId);
-    if (!canCare(pet.needs, action)) throw new DomainError('already_done', careLabel[action]?.refused);
+    if (!canCare(pet.needs, action)) throw new DomainError('already_done', textOf(labels, (t) => t.careLabel[action]?.refused ?? ''));
     const now = this.clock.now();
     const today = dayOf(now);
     await this.pets.saveNeeds(pet.id, applyCare(pet.needs, action), now.toISOString());

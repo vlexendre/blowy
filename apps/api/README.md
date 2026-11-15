@@ -36,6 +36,7 @@ curl -H 'Authorization: Bearer test:11111111-1111-4111-8111-111111111111' localh
 | `pnpm --filter @blowy/api test` | tests de bout en bout (API réelle en mémoire, pilotée par `@blowy/api-client`, horloge simulée) |
 | `pnpm --filter @blowy/api build` | bundle `dist/main.js` (tsup ; les paquets `@blowy/*` sont embarqués) |
 | `pnpm --filter @blowy/api start` | `node dist/main.js` |
+| `pnpm --filter @blowy/api check:schema` | migrations sur un PostgreSQL **local** jetable, puis comparaison avec `database.types.ts`, RLS, politiques, temps réel, droits des fonctions (voir plus bas) |
 
 ## Variables d'environnement
 
@@ -95,7 +96,8 @@ demo/                    monde de démo local
 
 Règles : injection explicite (`@Inject(JETON)`, pas d'`emitDecoratorMetadata`) ; pas de `Date.now()` ni d'aléa dans
 les cas d'usage (horloge injectée, répliques des pets choisies par une graine stable) ; les vies des liens et l'usure
-des jauges sont rattrapées à chaque lecture (`tickLink`, `decayGauges`), sans tâche planifiée.
+des jauges sont rattrapées à chaque lecture (`tickLink`, `decayGauges`) ; ce qui doit partir sans que personne n'ouvre
+l'app (push programmés, bilans, conservation des données) passe par le minuteur (`POST /internal/tick`).
 
 ## Déployer avec Docker (Render, Fly.io, Railway)
 
@@ -247,7 +249,7 @@ Aucune clé secrète : les achats se vérifient avec le certificat public d'Appl
 - Les événements sont ramenés à un `StoreEvent` du domaine ; l'état est calculé par `applyStoreEvent` (`packages/domain/src/billing.ts`, testé) et `profiles.plus_until` par `plusUntilOf` (accès gardé pendant l'essai, la période payée et le délai de grâce ; coupé à la date d'un remboursement ou d'un retrait du partage familial).
 - Rattachement : `appAccountToken` (l'app doit passer `Me.id` à l'achat), sinon l'abonnement déjà connu, sinon la personne qui envoie la transaction. Une restauration depuis un autre compte Blowy déplace l'abonnement.
 - Idempotence : table `store_notifications` (clé `notificationUUID`) ; une notification déjà traitée rend `duplicate` (200). Signature refusée : 400. Erreur technique : 500, Apple renvoie (5 fois, à 1, 12, 24, 48 et 72 h).
-- Tâche `BillingJobs` (minuteur) : rappel de fin d'essai à partir du jour 5 (`Notifier.notify(userId, 'trial_reminder', { endsOn, price })`), entre 10 h et 20 h (Paris) sauf dans les 12 dernières heures, une seule fois par essai ; pas de rappel si l'essai est annulé. Purge des notifications de plus de 90 jours.
+- Tâche `BillingJobs` (minuteur) : rappel de fin d'essai à partir du jour 5 (`Notifier.notify(userId, 'trial_reminder', { endsOn, price })`), entre 10 h et 20 h (Paris) sauf dans les 12 dernières heures, une seule fois par essai ; pas de rappel si l'essai est annulé. Purge des notifications de plus de 30 jours (journal technique, politique de confidentialité).
 - Non implémenté (et pas nécessaire pour démarrer) : appels à l'App Store Server API (Get All Subscription Statuses, Get Notification History) pour rattraper des notifications manquées après une panne longue ; ils demanderont une clé d'API In-App Purchase (`.p8`).
 
 Pages Apple consultées (15 novembre 2026) :
@@ -268,4 +270,67 @@ Tests : `test/apple-billing.e2e.test.ts` (adaptateur réel contre des charges co
 - Supprimer réutilise `DeleteMe` (le même chemin que « Supprimer mon compte ») ; le journal (`admin_audit_log`) est écrit avant et garde le prénom.
 - Contexte d'un signalement : seulement le message signalé (`messageId`, nouveau champ facultatif de `POST /v1/reports`) et deux messages avant et après, dans le lien du signalement. Jamais « qui quelqu'un veut rencontrer ».
 - Chiffres : `AdminStatsJobs` (minuteur) calcule chaque jour terminé une seule fois (fonction SQL `admin_daily_metrics`, une requête par jour) et le range dans `admin_daily_stats` ; les écrans lisent au plus 60 lignes. Les jours d'activité (`user_activity_days`, une écriture par personne et par jour, gardés 40 jours) donnent actifs et rétention.
-- Apports des autres chantiers : port `ADMIN_INSIGHTS` (série moyenne, rencontres proposées, compatibilité moyenne, formes, visions) à brancher par « rituels » et « vision » ; coûts IA lus dans `AiUsage` (« plateforme »).
+- Apports des autres chantiers : port `ADMIN_INSIGHTS` = `LiveAdminInsights` (`application/live-insights.ts`), lu une fois par jour terminé par `AdminStatsJobs` : rencontres proposées et compatibilité moyenne (table `encounter_proposals`, une ligne par personne et par jour, écrite par `ListEncounters` quand le nombre montré augmente ; total par la fonction SQL `encounter_proposals_summary`) ; série moyenne, formes et répartition des visions sur un échantillon de 5 000 comptes actifs du jour au plus (`user_activity_days`, lus par paquets de 1 000) ; forme et série des 100 du classement. Coûts IA lus dans `AiUsage` (« plateforme »).
+- Supprimer (`action: 'delete'`) = **exclusion définitive** par défaut (`ban: false` pour une simple suppression) : voir « Conservation des données ».
+
+## Intégration V7 : qui est « utilisable », un seul défi du jour, conservation, activités en direct
+
+### Qui est montré à qui (`modules/safety/application/audience.ts`)
+`Audience` est le seul endroit qui décide : supprimé (profil absent), **suspendu** (modération), bloqué dans un sens ou
+dans l'autre, mode discret (carte seulement). Utilisé par les rencontres (suggestions, coucous reçus, amis communs),
+le coucou, la création d'un lien (invitation, rencontre acceptée), la carte, le compteur du paywall, les pages
+publiques (invitation, « 3 mots »), et le notifieur (aucun push vers un compte suspendu). Les caches (suggestions du
+jour, carte) ne gardent que la compatibilité : la règle est relue à chaque requête. Sans test de vision, une personne
+n'est ni proposée ni ne reçoit de suggestion (`Me.visionTestDone` le dit à l'app).
+
+### Défi du jour : un seul système
+L'ancien défi V6 (`POST /v1/pet/challenge`, `PetView.challenge`) n'existe plus : le défi du jour est celui des rituels
+(`/v1/rituals/today`). Son push (`daily_challenge`) n'a qu'un chemin : `NotificationJobs` l'envoie à l'heure choisie
+(fuseau de la personne) ; le texte et la décision (personne vue ces 14 derniers jours, défi pas encore fait) viennent
+des rituels par le port `DAILY_PUSH_SOURCE` (`RitualsDailyPush`).
+
+### Conservation des données (`modules/retention`, politique de confidentialité)
+`RetentionJobs` (minuteur) : comptes sans connexion depuis 2 ans moins 30 jours → e-mail de prévenance ; 2 ans, et
+prévenus depuis 30 jours → supprimés par `DeleteMe` ; exclusions de plus de 3 ans, signalements clos et journal de
+modération de plus d'un an, rencontres proposées de plus de 30 jours → effacés. `profiles.last_active_on` est écrit par
+la garde de compte au plus une fois par jour (une connexion efface la prévenance). Exclusion définitive (`Bans`) :
+l'empreinte SHA-256 de chaque identifiant de connexion (Apple, Google ; l'e-mail en local) est gardée 3 ans dans
+`banned_identities` ; l'inscription la vérifie avant de créer quoi que ce soit (`forbidden`). Journaux techniques :
+30 jours au plus (`notification_log` 3 j, `push_receipts` 1 j, `tick_runs` 2 j, `store_notifications` 30 j).
+
+### Activités en direct iOS (`integrations/push/*live-activit*`, `modules/notifications/live-activities.ts`)
+Jetons APNs rangés à part (`live_activity_tokens`, jamais envoyés à Expo) : `POST /v1/devices` avec
+`kind: 'apns_live_activity'` et `liveActivity: { use: 'start' | 'update', activity, activityId, linkId? }`. Un jeton
+`update` remplace le précédent de la même activité ; il est oublié quand l'activité se termine ; un jeton refusé par APNs
+(410, `BadDeviceToken`, `DeviceTokenNotForTopic`) est désactivé. Événements : la **photo du jour** démarre par push chez
+l'autre (« Léa a posté », alerte obligatoire, `input-push-token: 1` ; pas de seconde notification iOS), se termine
+quand il poste ou à minuit ; le **défi du jour** n'est jamais démarré par push (l'app le démarre quand il est accepté) :
+`update` sur « série en danger », `end` quand il est relevé ou à minuit. Adaptateur APNs : HTTP/2, JWT ES256 refait
+toutes les 40 min, `apns-push-type: liveactivity`, `apns-topic: <APPLE_BUNDLE_ID>.push-type.liveactivity`, priorité 10
+pour démarrer, terminer ou une série en danger, 5 pour une fin de journée. Sans clé : aucun envoi ; en mémoire : boîte
+d'envoi (`MemoryLiveActivities`).
+
+| Variable | Rôle |
+|---|---|
+| `APNS_KEY_P8` | contenu de la clé `.p8` (PEM ; `\n` littéraux acceptés) — secret |
+| `APNS_KEY_ID` | identifiant de la clé (10 caractères) |
+| `APNS_TEAM_ID` | Team ID (10 caractères) |
+| `APNS_ENVIRONMENT` | `production` (défaut : TestFlight et App Store) ou `sandbox` (builds de développement) |
+
+Les trois premières vont ensemble (l'API refuse de démarrer avec une partie seulement). Une fois déployé avec la clé,
+l'app peut activer `EXPO_PUBLIC_LIVE_ACTIVITY_PUSH=1` (profils de `apps/mobile/eas.json`).
+
+### Vérification du schéma (`scripts/check-schema.mjs`)
+À relancer après chaque migration, sur un PostgreSQL **local** (refuse un hôte distant) :
+
+```bash
+PGHOST=/chemin/du/socket PGPORT=5432 PGUSER=postgres pnpm --filter @blowy/api check:schema
+```
+
+Il recrée une base jetable (`SCHEMA_CHECK_DB`, défaut `blowy_schema_check`), y installe un socle qui imite Supabase
+(rôles, `auth.uid()`, publication `supabase_realtime`, privilèges par défaut), applique toutes les migrations dans
+l'ordre (une transaction par fichier), puis vérifie : chaque table et colonne contre `database.types.ts` (type, null,
+facultative à l'insertion), les fonctions et leurs arguments, la RLS sur chaque table, les seules politiques permises
+(lecture des liens et des messages par leurs membres), le temps réel limité à `links` et `messages`, aucune fonction
+exécutable par `anon` ou `authenticated`, et un essai réel de la politique des messages (garde-fou visible par une seule
+personne).

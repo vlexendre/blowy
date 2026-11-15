@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { Paywall, SubmitPurchaseBody, Subscription } from '@blowy/contract';
-import { euros, frenchDate, plusPerkText, plusText } from '@blowy/content';
+import { type Locale, formatDate, formatPrice, plusPerkTextIn, plusTextIn, textOf, facturationText } from '@blowy/content';
 import {
   OFFERS,
   PLANS,
@@ -24,8 +24,10 @@ import { Subscriptions } from './subscriptions.service';
 const APPLE_MANAGE_URL = 'https://apps.apple.com/account/subscriptions';
 
 /** État de l'abonnement tel que l'app l'affiche. */
-export function presentSubscription(record: SubscriptionRecord | null, now: Date): Subscription {
+export function presentSubscription(record: SubscriptionRecord | null, now: Date, locale: Locale = 'fr'): Subscription {
   const v = subscriptionView(record, now);
+  const plusText = plusTextIn(locale);
+  const frenchDate = (iso: string): string => formatDate(locale, iso);
   const summary = (() => {
     switch (v.phase) {
       case 'none':
@@ -66,20 +68,20 @@ export class SubmitPurchase {
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
-  async execute(userId: string, body: SubmitPurchaseBody): Promise<Subscription> {
+  async execute(userId: string, body: SubmitPurchaseBody, locale: Locale = 'fr'): Promise<Subscription> {
     if (!(await this.profiles.findById(userId))) throw new DomainError('not_onboarded');
     try {
       const tx = await this.apple.verifyTransaction(body.signedTransaction);
       const renewal: VerifiedRenewal | null = body.signedRenewalInfo ? await this.apple.verifyRenewal(body.signedRenewalInfo) : null;
       const event = appleStoreEvent(this.env.facturationAdmin.plusProducts, tx, renewal, null);
-      if (!event) throw new DomainError('invalid', plusText.errors.unknownProduct);
+      if (!event) throw new DomainError('invalid', textOf(facturationText, (t) => t.plus.errors.unknownProduct));
       if (tx.appAccountToken && tx.appAccountToken.toLowerCase() !== userId) this.logger.log('achat d’un autre compte Blowy restauré ici');
       const record = await this.subscriptions.apply(event, { claimedBy: userId, accountToken: tx.appAccountToken, environment: tx.environment });
-      return presentSubscription(record, this.clock.now());
+      return presentSubscription(record, this.clock.now(), locale);
     } catch (err) {
       if (err instanceof BillingVerificationError) {
         this.logger.warn(`achat refusé : ${err.reason}`);
-        throw new DomainError('invalid', plusText.errors.invalidPurchase);
+        throw new DomainError('invalid', textOf(facturationText, (t) => t.plus.errors.invalidPurchase));
       }
       throw err;
     }
@@ -93,8 +95,8 @@ export class GetSubscription {
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
-  async execute(userId: string): Promise<Subscription> {
-    return presentSubscription(await this.subscriptions.latestForUser(userId), this.clock.now());
+  async execute(userId: string, locale: Locale = 'fr'): Promise<Subscription> {
+    return presentSubscription(await this.subscriptions.latestForUser(userId), this.clock.now(), locale);
   }
 }
 
@@ -110,7 +112,10 @@ export class GetPaywall {
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
-  async execute(userId: string): Promise<Paywall> {
+  async execute(userId: string, locale: Locale = 'fr'): Promise<Paywall> {
+    const plusText = plusTextIn(locale);
+    const plusPerkText = plusPerkTextIn(locale);
+    const euros = (amountMinor: number): string => formatPrice(locale, amountMinor, 'EUR');
     const [record, trialUsed, compatible] = await Promise.all([
       this.subscriptions.latestForUser(userId),
       this.subscriptions.trialUsedBy(userId),
@@ -154,7 +159,7 @@ export class GetPaywall {
       legal: { termsUrl: `${web}/legal/conditions`, privacyUrl: `${web}/legal/confidentialite`, plusTermsUrl: `${web}/legal/abonnement` },
       continueFreeLabel: plusText.continueFree,
       restoreLabel: plusText.restore,
-      subscription: presentSubscription(record, this.clock.now()),
+      subscription: presentSubscription(record, this.clock.now(), locale),
     };
   }
 }

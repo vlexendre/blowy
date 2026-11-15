@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { cleanPetName, dayOf } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import type { PetsRepository } from '../ports';
@@ -23,13 +23,14 @@ export class RenamePet {
 
   async execute(ownerId: string, rawName: string): Promise<void> {
     const name = cleanPetName(rawName);
-    if (name.length === 0) throw new DomainError('invalid', 'Donne un nom à ton pet.');
+    if (name.length === 0) throw new DomainError('invalid', errorText('petNameEmpty'));
     const [pet, profile] = await Promise.all([this.character.load(ownerId), this.profiles.findById(ownerId)]);
     if (name === pet.name) return;
     const now = this.clock.now();
     const rule = renameStateOf(pet, profile, now);
     if (!rule.allowed && rule.availableOn) {
-      throw new DomainError('rename_locked', `Tu pourras renommer ${pet.name} à partir du ${frenchDay(rule.availableOn, dayOf(now))}. Avec Blowy+, pas d’attente.`);
+      const on = rule.availableOn;
+      throw new DomainError('rename_locked', (l) => errorText('renameLocked', pet.name, frenchDay(on, dayOf(now), l))(l));
     }
     await this.pets.save({ ...pet, name, renamedAt: now.toISOString() });
   }

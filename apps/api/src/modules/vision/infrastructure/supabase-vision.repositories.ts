@@ -83,7 +83,8 @@ export class SupabasePlacesRepository implements PlacesRepository {
   /** Utilise l'index (home_cell, located_at desc) : quelques dizaines de mailles, `limit` lignes au plus. */
   async listInCells(cells: readonly string[], limit: number, excludeId: string): Promise<PlaceRecord[]> {
     if (cells.length === 0) return [];
-    const { data, error } = await this.table.select('*').in('home_cell', [...cells]).neq('user_id', excludeId).order('located_at', { ascending: false }).limit(limit);
+    // Fonction SQL : au plus `limit` par maille par l'index, jamais toutes les positions d'une ville dense.
+    const { data, error } = await this.client.rpc('places_in_cells', { p_cells: [...cells], p_limit: limit, p_exclude: excludeId });
     check(error, 'lecture des positions proches');
     return (data as PlaceRow[]).map(placeFromRow);
   }

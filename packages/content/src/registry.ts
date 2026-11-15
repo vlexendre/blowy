@@ -1,0 +1,25 @@
+/** Tous les dictionnaires partagés, nommés (pour `pnpm i18n:check`). */
+import { apiErrorText } from './api-errors';
+import { challengeText } from './challenges';
+import { emailText } from './emails';
+import type { Messages } from './i18n/core';
+import { labels } from './labels';
+import { chatText } from './v7/chat';
+import { facturationText } from './v7/facturation-admin';
+import { notificationTexts } from './v7/notifications';
+import { rituelsText } from './v7/rituels';
+import { visionText } from './v7/vision';
+import { voiceText } from './voice';
+
+export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = {
+  labels,
+  challenges: challengeText,
+  voice: voiceText,
+  emails: emailText,
+  apiErrors: apiErrorText,
+  vision: visionText,
+  chat: chatText,
+  notifications: notificationTexts,
+  rituels: rituelsText,
+  facturation: facturationText,
+};

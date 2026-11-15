@@ -10,7 +10,9 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { CoreProvider } from '@/core';
+import { CoreProvider, LocaleRoot } from '@/core';
+import { UiStringsProvider } from '@blowy/ui';
+import { ui } from '@/locales/ui';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -31,13 +33,18 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <CoreProvider>
           {/* Calque des animations (vols, explosions, pets qui passent la tête) + pause des boucles en arrière-plan. */}
-          <MotionHost>
-            <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }}>
-              {/* Blowy+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
-              <Stack.Screen name="moi/blowy-plus" options={SHEET} />
-            </Stack>
-          </MotionHost>
+          {/* Langue du téléphone : à chaque changement, l'arbre est remonté et relit ses textes. */}
+          <LocaleRoot>
+            <UiStringsProvider value={ui}>
+              <MotionHost>
+                <StatusBar style="light" />
+                <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }}>
+                  {/* Blowy+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
+                  <Stack.Screen name="moi/blowy-plus" options={SHEET} />
+                </Stack>
+              </MotionHost>
+            </UiStringsProvider>
+          </LocaleRoot>
         </CoreProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

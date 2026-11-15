@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Clock } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinkRecord } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
+import { Audience } from '../../safety/application/audience';
 
 export interface InviteResult {
   profile: Profile;
@@ -22,13 +23,14 @@ export class Invites {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(CreateLink) private readonly createLink: CreateLink,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(Audience) private readonly audience: Audience,
   ) {}
 
   /** Page publique d'une invitation : le prénom et le pet de la personne qui invite. */
   async get(code: string): Promise<InviteResult> {
-    const profile = await this.profiles.findByInviteCode(normalize(code));
+    const profile = await this.audience.publiclyVisible(await this.profiles.findByInviteCode(normalize(code)));
     const pet = profile ? await this.pets.findByOwner(profile.id) : null;
-    if (!profile || !pet) throw new DomainError('not_found', 'Cette invitation n’existe pas.');
+    if (!profile || !pet) throw new DomainError('not_found', errorText('inviteNotFound'));
     return { profile, pet: livePet(pet, this.clock.now()) };
   }
 
@@ -39,8 +41,8 @@ export class Invites {
       this.pets.findByOwner(userId),
     ]);
     if (!me || !myPet) throw new DomainError('not_onboarded');
-    if (!owner) throw new DomainError('not_found', 'Cette invitation n’existe pas.');
-    if (owner.id === userId) throw new DomainError('conflict', 'C’est ton propre code d’invitation.');
+    if (!owner) throw new DomainError('not_found', errorText('inviteNotFound'));
+    if (owner.id === userId) throw new DomainError('conflict', errorText('inviteOwn'));
     return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id });
   }
 }

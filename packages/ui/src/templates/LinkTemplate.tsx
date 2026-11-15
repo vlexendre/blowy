@@ -14,6 +14,7 @@ import { PopIn } from '../motion/PopIn';
 import { space, veil } from '../theme';
 import type { PersonLook, PetLook } from '../types';
 import { ScreenTemplate, type ScreenTemplateProps } from './ScreenTemplate';
+import { useUiStrings } from '../lib/strings';
 
 export interface LinkTemplateProps<K extends string = string> {
   other: PersonLook;
@@ -56,7 +57,7 @@ export function LinkTemplate<K extends string>({
   levelLabel,
   onLevelPress,
   onBack,
-  backLabel = 'Retour',
+  backLabel,
   livesLabel,
   livesFrom,
   levelUp = 0,
@@ -67,9 +68,10 @@ export function LinkTemplate<K extends string>({
   footer,
   scroll = false,
   onOptions,
-  optionsLabel = 'Options',
+  optionsLabel,
   refreshControl,
 }: LinkTemplateProps<K>) {
+  const uiStrings = useUiStrings();
   const level = useRef<ComponentRef<typeof View>>(null);
   const burst = useBurst();
   useEffect(() => {
@@ -80,7 +82,7 @@ export function LinkTemplate<K extends string>({
   const header = (
     <View style={[styles.head, styles.inset]}>
       <View style={[layout.row, styles.top]}>
-        <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} style={styles.back} />
+        <IconButton glyph="back" label={backLabel ?? uiStrings.back} onPress={onBack} size={40} style={styles.back} />
         <AvatarPair size={40} first={{ pet: myPet, hidden: true }} second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }} />
         <View style={[layout.grow, styles.who]}>
           <Text variant="bodyHeavy" size={19} numberOfLines={1} accessibilityRole="header" style={styles.name}>
@@ -93,7 +95,7 @@ export function LinkTemplate<K extends string>({
             <LevelPill label={levelLabel} onPress={onLevelPress} />
           </PopIn>
         </View>
-        {onOptions ? <IconButton glyph="more" label={optionsLabel} onPress={onOptions} size={40} style={styles.back} /> : null}
+        {onOptions ? <IconButton glyph="more" label={optionsLabel ?? uiStrings.options} onPress={onOptions} size={40} style={styles.back} /> : null}
       </View>
       <SegmentedTabs items={tabs} activeKey={activeTab} onChange={onTabChange} />
     </View>

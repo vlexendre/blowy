@@ -5,6 +5,7 @@ import { FocusRing } from '../atoms/FocusRing';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { color, size, space, type, veil } from '../theme';
+import { useUiStrings } from '../lib/strings';
 
 export interface InlineFieldProps extends Omit<TextInputProps, 'style'> {
   /** Petit libellé en capitales, dans le cadre (`.fld span`). */
@@ -23,6 +24,7 @@ const RADIUS = 18;
  * `editable={false}` : valeur grisée (e-mail, date de naissance).
  */
 export function InlineField({ label, error, style, editable = true, onFocus, onBlur, accessibilityLabel, ref, ...rest }: InlineFieldProps) {
+  const uiStrings = useUiStrings();
   const [focused, setFocused] = useState(false);
   // Au focus, la bordure jaune arrive en fondu par-dessus (`FocusRing`).
   const border = error ? color.danger : veil.glass;
@@ -34,7 +36,7 @@ export function InlineField({ label, error, style, editable = true, onFocus, onB
   );
   if (!editable) {
     return (
-      <View style={box} accessible accessibilityLabel={`${label} : ${rest.value ?? ''}`}>
+      <View style={box} accessible accessibilityLabel={uiStrings.labelValue(String(label), rest.value ?? '')}>
         {labelNode}
         <Text style={VALUE} color={color.mute} numberOfLines={1}>
           {rest.value}

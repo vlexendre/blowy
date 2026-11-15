@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Clock } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { CLOCK, ENCOUNTERS } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinkRecord } from '../../links/ports';
@@ -17,7 +17,7 @@ export class AnswerEncounter {
 
   async accept(encounterId: string, userId: string): Promise<LinkRecord> {
     const encounter = await this.received(encounterId, userId);
-    if (encounter.status === 'declined') throw new DomainError('conflict', 'Tu as déjà refusé cette rencontre.');
+    if (encounter.status === 'declined') throw new DomainError('conflict', errorText('encounterDeclined'));
     // Le lien est créé avant de marquer la rencontre acceptée : en cas d'échec, on peut réessayer.
     const link = await this.createLink.execute({ by: userId, with: encounter.fromUser, notify: encounter.fromUser });
     if (encounter.status !== 'accepted') await this.encounters.setStatus(encounter.id, 'accepted', this.clock.now().toISOString());
@@ -26,14 +26,14 @@ export class AnswerEncounter {
 
   async decline(encounterId: string, userId: string): Promise<void> {
     const encounter = await this.received(encounterId, userId);
-    if (encounter.status === 'accepted') throw new DomainError('conflict', 'Vous êtes déjà liés.');
+    if (encounter.status === 'accepted') throw new DomainError('conflict', errorText('alreadyLinked'));
     if (encounter.status !== 'declined') await this.encounters.setStatus(encounter.id, 'declined', this.clock.now().toISOString());
   }
 
   private async received(encounterId: string, userId: string): Promise<EncounterRecord> {
     const encounter = await this.encounters.findById(encounterId);
-    if (!encounter || (encounter.toUser !== userId && encounter.fromUser !== userId)) throw new DomainError('not_found', 'Cette rencontre est introuvable.');
-    if (encounter.toUser !== userId) throw new DomainError('forbidden', 'C’est à l’autre personne de répondre.');
+    if (!encounter || (encounter.toUser !== userId && encounter.fromUser !== userId)) throw new DomainError('not_found', errorText('encounterNotFound'));
+    if (encounter.toUser !== userId) throw new DomainError('forbidden', errorText('encounterNotYours'));
     return encounter;
   }
 }

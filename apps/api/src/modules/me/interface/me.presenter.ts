@@ -15,7 +15,7 @@ export class MePresenter {
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
-  async present({ profile, pet, place }: MeResult): Promise<Me> {
+  async present({ profile, pet, place, visionTestDone }: MeResult): Promise<Me> {
     const plus = hasPlus(profile, this.clock.now());
     return {
       id: profile.id,
@@ -25,6 +25,7 @@ export class MePresenter {
       identity: toIdentity(profile, place, plus),
       wordsCode: profile.wordsCode,
       plus,
+      visionTestDone,
       pet: toPetDto(pet),
     };
   }

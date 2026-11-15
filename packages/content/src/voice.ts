@@ -1,147 +1,109 @@
 /**
- * Voix des pets dans le chat et dans les rencontres.
- * Fonctions pures : la variante est choisie par `seed` (entier stable fourni par l'appelant),
- * jamais par un tirage aléatoire. Ton : minuscules, court, joueur, pas d'emoji.
+ * Voix des minimoas dans les liens (événements de jeu) et dans les rencontres, par langue.
+ * Fonctions pures : la variante est choisie par `seed` (entier stable fourni par l'appelant), jamais par un tirage.
+ * Ton : phrases courtes, humour sec, pas d'emoji. Les interventions dans la conversation sont dans `v7/chat`.
  */
+import type { Locale } from '@blowy/domain';
+import { TODO, defineMessages } from './i18n/core';
 
-/** Les deux pets d'un lien, vus depuis celui qui parle. */
+/** Les deux minimoas d'un lien, vus depuis celui qui parle. */
 export interface PetPair {
-  /** Nom du pet qui parle. */
+  /** Nom du minimoa qui parle. */
   self: string;
-  /** Nom de l'autre pet. */
+  /** Nom de l'autre minimoa. */
   other: string;
 }
 
 export type EncounterVia = 'friend_of_friend' | 'nearby' | 'new';
 
-const pick = (variants: readonly string[], seed: number): string => {
-  const n = variants.length;
-  return variants[((Math.trunc(seed) % n) + n) % n] ?? variants[0] ?? '';
+type Line<A extends unknown[]> = readonly ((...args: A) => string)[];
+
+const fr = {
+  lifeLost: [
+    (other: string, lives: string) => `Hier, silence radio. Il nous reste ${lives}.`,
+    (other: string, lives: string) => `${other} et moi, on a attendu toute la journée. Plus que ${lives}.`,
+    (other: string, lives: string) => `Un mot suffit à nous garder en forme. ${lives} au compteur.`,
+    (other: string, lives: string) => `On s’ennuie un peu. On en est à ${lives}.`,
+  ] as Line<[string, string]>,
+  /** « 3 vies », « une seule vie ». */
+  lives: (n: number) => (n > 1 ? `${n} vies` : 'une seule vie'),
+  lifeGained: [
+    (other: string, lives: number) => `Une vie de plus. On remonte à ${lives}.`,
+    (other: string, lives: number) => `${other} et moi, on revit. ${lives} vies.`,
+    (other: string, lives: number) => `Ça, c’est de l’entretien de lien. ${lives} vies.`,
+  ] as Line<[string, number]>,
+  levelUp: [
+    (other: string, title: string) => `Nouveau niveau : « ${title} ». ${other}, on a grandi.`,
+    (other: string, title: string) => `${title}. Je n’en attendais pas moins.`,
+    (other: string, title: string) => `On passe à « ${title} ». Je fais la danse de la victoire. Discrètement.`,
+    (other: string, title: string) => `Niveau suivant : « ${title} ». ${other} fait semblant de ne pas être fier.`,
+  ] as Line<[string, string]>,
+  ghost: [
+    (other: string) => `Plus de vies. ${other} et moi, on devient transparents.`,
+    (other: string) => `Le lien s’est endormi. On peut encore le réveiller, une fois.`,
+    (other: string) => `On est des fantômes, maintenant. Il fait un peu froid.`,
+  ] as Line<[string]>,
+  revived: [
+    (other: string) => `On est revenus. ${other}, on ne refait plus jamais ça.`,
+    (other: string) => `Deuxième chance. Je la garde précieusement.`,
+    (other: string) => `Ranimés. Je respire. Merci.`,
+  ] as Line<[string]>,
+  duoPhoto: [
+    (other: string) => `Photo du jour, des deux côtés. ${other} et moi, on l’accroche au mur.`,
+    (other: string) => `Les deux photos sont là. Joli duo.`,
+    (other: string) => `Vous vous êtes montré votre journée. J’aime bien ce rituel.`,
+  ] as Line<[string]>,
+  /** Ajouté après la photo à deux quand la série dépasse un jour. */
+  duoStreak: (n: number) => ` ${n} jours d’affilée.`,
+  encounterWhere: {
+    friend: [(mutual: string) => `Je l’ai croisé chez ${mutual}.`, (mutual: string) => `C’est un pote du minimoa de ${mutual}.`] as Line<[string]>,
+    nearby: ['On n’habite pas loin l’un de l’autre.', 'On s’est croisés dans le quartier.'] as readonly string[],
+    other: ['On s’est croisés en balade.', 'Tout nouveau dans le coin.'] as readonly string[],
+  },
+  encounterVibe: {
+    high: ['On a tout de suite accroché.', 'On se ressemble beaucoup.'] as readonly string[],
+    mid: ['On s’est bien amusés.', 'On a des trucs en commun.'] as readonly string[],
+    low: ['On est très différents. C’est ce qui me plaît.', 'Sacrée surprise, cette rencontre.'] as readonly string[],
+  },
+  wavedAtYou: [
+    (other: string) => `${other} m’a fait signe. On répond ?`,
+    (other: string) => `${other} est passé dire bonjour. Ça a l’air sympa.`,
+    (other: string) => `${other} tourne autour de moi. Ça sent l’envie de jouer.`,
+  ] as Line<[string]>,
+  /** Bandeaux du système dans un lien. */
+  system: {
+    revived: 'Le lien est ranimé. Il ne pourra pas l’être une deuxième fois.',
+    levelUp: (title: string, text: string) => `Niveau atteint : « ${title} ». ${text}`,
+  },
 };
 
-export function linkCreatedLine(p: PetPair, seed: number): string {
-  return pick(
-    [
-      `coucou ${p.other}. je crois qu'on va bien s'entendre.`,
-      `${p.other} sent bon les nouvelles aventures. je reste dans le coin.`,
-      `bon. ${p.other}, toi et moi, on surveille ces deux-là.`,
-      `je viens de rencontrer ${p.other}. on se renifle encore un peu.`,
-      `salut ${p.other}. j'ai apporté ma meilleure tête.`,
-    ],
-    seed,
-  );
-}
+export const voiceText = defineMessages({ fr, en: TODO, es: TODO, pt: TODO, nl: TODO });
 
-export function firstMessageOfDayLine(p: PetPair, seed: number): string {
-  return pick(
-    [
-      `premier message du jour. ${p.other}, t'as vu ? on est réveillés.`,
-      `ah, ça papote déjà. je prends des notes.`,
-      `bonjour ${p.other}. ils recommencent, c'est bon signe.`,
-      `le lien respire. je m'étire et j'écoute.`,
-      `on démarre la journée ensemble. j'aime bien.`,
-    ],
-    seed,
-  );
-}
+const pick = <T>(variants: readonly T[], seed: number): T => {
+  const n = variants.length;
+  return (variants[((Math.trunc(seed) % n) + n) % n] ?? variants[0]) as T;
+};
 
-export function sweetReactionLine(p: PetPair, seed: number): string {
-  return pick(
-    [
-      `oh. c'était doux, ça. ${p.other} rougit un peu.`,
-      `je note : mot doux reçu. on garde.`,
-      `tout mignon. je fais semblant de ne pas avoir vu.`,
-      `${p.other} ronronne. enfin je crois.`,
-    ],
-    seed,
-  );
-}
+export const lifeLostLine = (locale: Locale, p: PetPair, livesLeft: number, seed: number): string => {
+  const t = voiceText.in(locale);
+  return pick(t.lifeLost, seed)(p.other, t.lives(livesLeft));
+};
 
-export function teaseReactionLine(p: PetPair, seed: number): string {
-  return pick(
-    [
-      `ouh, la vanne. ${p.other} prépare sa revanche.`,
-      `piqué. j'adore.`,
-      `je n'ai rien vu, rien entendu. mais c'était drôle.`,
-      `ça chambre sec ici. je m'installe.`,
-    ],
-    seed,
-  );
-}
+export const lifeGainedLine = (locale: Locale, p: PetPair, lives: number, seed: number): string => pick(voiceText.in(locale).lifeGained, seed)(p.other, lives);
 
-export function lifeLostLine(p: PetPair, livesLeft: number, seed: number): string {
-  const lives = livesLeft > 1 ? `${livesLeft} vies` : 'une seule vie';
-  return pick(
-    [
-      `hier c'était calme. trop calme. il nous reste ${lives}.`,
-      `${p.other} et moi on a attendu toute la journée. plus que ${lives}.`,
-      `un petit mot suffit à nous garder en forme. ${lives} au compteur.`,
-      `je m'ennuie un peu. on est à ${lives}.`,
-    ],
-    seed,
-  );
-}
+export const levelUpLine = (locale: Locale, p: PetPair, levelTitle: string, seed: number): string => pick(voiceText.in(locale).levelUp, seed)(p.other, levelTitle);
 
-export function lifeGainedLine(p: PetPair, lives: number, seed: number): string {
-  return pick(
-    [
-      `une vie de plus. on remonte à ${lives}.`,
-      `${p.other} et moi, on se sent revivre. ${lives} vies.`,
-      `ça, c'est de l'entretien de lien. ${lives} vies.`,
-    ],
-    seed,
-  );
-}
+export const ghostLine = (locale: Locale, p: PetPair, seed: number): string => pick(voiceText.in(locale).ghost, seed)(p.other);
 
-export function levelUpLine(p: PetPair, levelTitle: string, seed: number): string {
-  const title = levelTitle.toLowerCase();
-  return pick(
-    [
-      `nouveau niveau : ${title}. ${p.other}, on a grandi.`,
-      `${title}. je savais que vous en étiez capables.`,
-      `on passe à « ${title} ». je fais la danse de la victoire.`,
-      `niveau suivant : ${title}. ${p.other} est tout fier.`,
-    ],
-    seed,
-  );
-}
+export const revivedLine = (locale: Locale, p: PetPair, seed: number): string => pick(voiceText.in(locale).revived, seed)(p.other);
 
-export function ghostLine(p: PetPair, seed: number): string {
-  return pick(
-    [
-      `plus de vies. ${p.other} et moi, on devient tout transparents.`,
-      `le lien s'est endormi. on peut encore le réveiller, une fois.`,
-      `on est des fantômes maintenant. ça fait un peu froid.`,
-    ],
-    seed,
-  );
-}
-
-export function revivedLine(p: PetPair, seed: number): string {
-  return pick(
-    [
-      `on est revenus. ${p.other}, on ne refait plus jamais ça.`,
-      `deuxième chance. je la garde précieusement.`,
-      `ranimés. je respire à nouveau. merci.`,
-    ],
-    seed,
-  );
-}
-
-export function duoPhotoLine(p: PetPair, streak: number, seed: number): string {
-  const serie = streak > 1 ? ` ${streak} jours d'affilée.` : '';
-  return pick(
-    [
-      `photo du jour, des deux côtés. ${p.other} et moi on l'accroche au mur.${serie}`,
-      `les deux photos sont là. joli duo.${serie}`,
-      `vous vous êtes montré votre journée. j'adore ce rituel.${serie}`,
-    ],
-    seed,
-  );
-}
+export const duoPhotoLine = (locale: Locale, p: PetPair, streak: number, seed: number): string => {
+  const t = voiceText.in(locale);
+  return pick(t.duoPhoto, seed)(p.other) + (streak > 1 ? t.duoStreak(streak) : '');
+};
 
 export interface EncounterIntroInput {
-  /** Nom du pet croisé. */
+  /** Nom du minimoa croisé. */
   other: string;
   via: EncounterVia;
   compatibility: number;
@@ -149,33 +111,20 @@ export interface EncounterIntroInput {
   mutualName: string | null;
 }
 
-export function encounterIntroLine(input: EncounterIntroInput, seed: number): string {
+export function encounterIntroLine(locale: Locale, input: EncounterIntroInput, seed: number): string {
   const { other, via, compatibility, mutualName } = input;
+  const t = voiceText.in(locale);
   const where =
     via === 'friend_of_friend' && mutualName
-      ? pick([`je l'ai croisé chez ${mutualName}.`, `c'est un pote du pet de ${mutualName}.`], seed)
+      ? pick(t.encounterWhere.friend, seed)(mutualName)
       : via === 'nearby'
-        ? pick([`on habite pas loin l'un de l'autre.`, `on s'est croisés dans le quartier.`], seed)
-        : pick([`on s'est croisés en balade.`, `tout nouveau dans le coin.`], seed);
-  const vibe =
-    compatibility >= 75
-      ? pick([`on a tout de suite accroché.`, `on se ressemble beaucoup.`], seed >> 1)
-      : compatibility >= 45
-        ? pick([`on s'est bien amusés.`, `on a des trucs en commun.`], seed >> 1)
-        : pick([`on est très différents, c'est ce qui me plaît.`, `sacrée surprise, cette rencontre.`], seed >> 1);
+        ? pick(t.encounterWhere.nearby, seed)
+        : pick(t.encounterWhere.other, seed);
+  const vibe = pick(compatibility >= 75 ? t.encounterVibe.high : compatibility >= 45 ? t.encounterVibe.mid : t.encounterVibe.low, seed >> 1);
   return `${other}. ${where} ${vibe}`;
 }
 
-export function wavedAtYouLine(other: string, seed: number): string {
-  return pick(
-    [`${other} m'a fait coucou. on lui répond ?`, `${other} m'a fait signe. ça a l'air sympa.`, `${other} tourne autour de moi. ça sent l'envie de jouer.`],
-    seed,
-  );
-}
+export const wavedAtYouLine = (locale: Locale, other: string, seed: number): string => pick(voiceText.in(locale).wavedAtYou, seed)(other);
 
-/** Messages du système (bandeaux d'événement dans le chat). */
-export const systemText = {
-  linkCreated: 'vos pets se sont trouvés. vous pouvez vous écrire.',
-  revived: 'le lien est ranimé. il ne pourra plus l’être une deuxième fois.',
-  levelUp: (title: string, text: string): string => `niveau atteint : ${title.toLowerCase()}. ${text.toLowerCase()}`,
-} as const;
+/** Bandeaux du système dans un lien. */
+export const systemText = (locale: Locale) => voiceText.in(locale).system;

@@ -1,4 +1,4 @@
-import { formLabel } from '@blowy/content';
+import { formLabel } from '@/locales/content';
 import { Banner, Header, ScreenTemplate, Skeleton } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 

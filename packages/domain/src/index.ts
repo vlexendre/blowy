@@ -11,3 +11,4 @@ export * from './vision';
 export * from './billing';
 export * from './rituels';
 export * from './plateforme';
+export * from './retention';

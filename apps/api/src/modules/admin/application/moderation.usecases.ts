@@ -11,13 +11,14 @@ import type {
   AdminSuspensions,
   ModerationActionBody,
 } from '@blowy/contract';
-import { moderationText } from '@blowy/content';
+import { moderationTextIn } from '@blowy/content';
 import { Notifier as MailNotifier } from '../../../integrations/mailer/notifier';
 import type { Storage } from '../../../integrations/storage/ports';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, PROFILES, STORAGE } from '../../../shared/tokens';
 import { DeleteMe } from '../../me/application/delete-me.usecase';
+import { Bans } from '../../retention/application/bans';
 import type { ProfilesRepository } from '../../me/ports';
 import { reportCursor } from '../infrastructure/memory-admin.repositories';
 import type { AdminReportRow, AuditLogRepository, AuditRecord, ModerationRepository, SuspensionsRepository } from '../ports';
@@ -52,6 +53,7 @@ export class Moderation {
     @Inject(MailNotifier) private readonly mail: MailNotifier,
     @Inject(AccountGate) private readonly gate: AccountGate,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(Bans) private readonly bans: Bans,
   ) {}
 
   async list(query: AdminReportsQuery): Promise<AdminReports> {
@@ -118,7 +120,7 @@ export class Moderation {
 
     switch (body.action) {
       case 'warn': {
-        const sent = await this.mail.notify(body.targetUserId, moderationText.warningEmail({ displayName: profile?.displayName ?? '', reason: body.reason }));
+        const sent = await this.mail.notify(body.targetUserId, moderationTextIn(profile?.locale ?? 'fr').warningEmail({ displayName: profile?.displayName ?? '', reason: body.reason }));
         if (!sent) this.logger.warn('avertissement non envoyé (pas d’adresse e-mail)');
         break;
       }
@@ -161,6 +163,8 @@ export class Moderation {
       reason: body.reason,
       until,
     });
+    // Exclusion définitive (par défaut) : l'empreinte de l'identifiant de connexion, lue avant la suppression.
+    if (body.action === 'delete' && body.ban !== false) await this.bans.ban(body.targetUserId);
     // Même chemin que « Supprimer mon compte » dans l'app : médias, puis compte d'authentification (cascade).
     if (body.action === 'delete') await this.deleteMe.execute(body.targetUserId);
     return presentAudit(entry);

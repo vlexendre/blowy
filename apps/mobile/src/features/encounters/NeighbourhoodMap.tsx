@@ -43,6 +43,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ui } from '@/locales/ui';
 
 export interface MapPet {
   key: string;
@@ -385,7 +386,7 @@ function Sheet({ item, me, compatLabel }: { item: MapPet; me: PetLook; compatLab
         </View>
         {item.compat !== undefined ? (
           <View style={styles.compat}>
-            <Title text={`${item.compat} %`} size={34} color={color.accent} />
+            <Title text={ui.percent(item.compat)} size={34} color={color.accent} />
             <Text variant="bodyHeavy" size={9} muted style={styles.compatLabel}>
               {compatLabel}
             </Text>

@@ -1,4 +1,4 @@
-import { formLabel, gaugeLabel } from '@blowy/content';
+import { formLabel, gaugeLabel } from '@/locales/content';
 import { daysBetween, dayOf, type GaugeKey, type PetForm } from '@blowy/domain';
 import { Banner, EvolutionHero, FormPicker, Header, PetQuote, ScreenTemplate, Skeleton, Stack } from '@blowy/ui';
 import { useRouter } from 'expo-router';

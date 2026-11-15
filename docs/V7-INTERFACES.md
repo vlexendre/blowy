@@ -73,7 +73,11 @@ export interface Notifier {
 
 ## Langue
 
-`profiles.locale` (`'fr' | 'en' | 'es' | 'pt' | 'nl'`, défaut `'fr'`), ajouté par le chantier « vision » avec les autres champs du profil. Les textes de l'API se choisissent avec cette valeur.
+`profiles.locale` (`'fr' | 'en' | 'es' | 'pt' | 'nl'`, défaut `'fr'`), ajouté par le chantier « vision » avec les autres champs du profil. L'app l'envoie à l'inscription et quand la langue du téléphone change, et envoie `Accept-Language` sur chaque requête.
+
+- Un texte de l'API vit dans un dictionnaire `defineMessages({ fr, en, es, pt, nl })` de `packages/content` et se lit avec `.in(locale)` (guide : `docs/I18N.md`).
+- Réponse à une requête : langue de l'en-tête (`@ReqLocale()` dans un contrôleur, `requestLocale()` plus loin). Erreur : `new DomainError(code, errorText('clé'))` ou `textOf(dictionnaire, (t) => t.errors.x)`, résolue au moment de répondre.
+- Texte envoyé ou rangé pour quelqu'un (notification, e-mail, réplique de minimoa, bilan) : `profiles.locale` de cette personne. Les variables des notifications sont des données (date ISO, centimes) mises en forme par `v7/notifications`.
 
 ## Minuteur
 

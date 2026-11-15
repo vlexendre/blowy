@@ -106,3 +106,26 @@ export async function errorCode(promise: Promise<unknown>): Promise<string> {
   }
   throw new Error('une erreur était attendue');
 }
+
+/** Fait le défi du jour, quel que soit son type. */
+export async function doToday(p: { api: ApiClient }): Promise<{ newItems: string[] }> {
+  const { challenge, outing } = await p.api.rituals.today();
+  if (challenge.status === 'done') return { newItems: [] };
+  switch (challenge.kind) {
+    case 'question':
+      return p.api.rituals.answerChallenge(1);
+    case 'photo': {
+      const ticket = await p.api.rituals.challengePhotoTicket('image/jpeg');
+      await upload(ticket.uploadUrl);
+      return p.api.rituals.challengePhoto(ticket.path);
+    }
+    case 'go_out':
+      return outing.canAnswer ? p.api.rituals.outing('walk') : p.api.rituals.completeChallenge();
+    case 'write': {
+      const [link] = await p.api.links.list();
+      if (!link) throw new Error('défi « écrire » sans lien');
+      await p.api.links.send(link.id, { body: 'Des nouvelles ?' });
+      return p.api.rituals.completeChallenge();
+    }
+  }
+}

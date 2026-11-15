@@ -4,7 +4,7 @@
  * invalides), minuteur (secret, idempotence) et adaptateurs réels contre des réponses HTTP enregistrées.
  */
 import type { ApiClient } from '@blowy/api-client';
-import { CHAT_AI_SYSTEM, CHAT_CONFIDENTIALITY, notificationText } from '@blowy/content';
+import { CHAT_AI_SYSTEM, chatConfidentialityText, notificationText } from '@blowy/content';
 import type { Message } from '@blowy/contract';
 import { DEFAULT_AI_PRICES, parseAiBudgets } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -249,9 +249,9 @@ describe('minimoas dans le chat', () => {
     expect(lines[0]?.petRole).toBe('icebreaker');
     const settings = await a.api.minimoas.get(linkId);
     expect(settings).toMatchObject({ consent: { mine: null, reading: false }, muted: false, interventionsToday: 1, maxPerDay: 3 });
-    expect(settings.consent.text).toBe(CHAT_CONFIDENTIALITY.fr);
+    expect(settings.consent.text).toBe(chatConfidentialityText('fr'));
     expect(settings.consent.text).toBe(
-      "Aucun humain ne lit tes conversations. Si vous l'activez tous les deux, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n'est conservé après.",
+      'Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n’est conservé après.',
     );
   });
 
@@ -318,7 +318,7 @@ describe('minimoas dans le chat', () => {
     expect(petLines(await allMessages(a.api, linkId))).toHaveLength(count);
     const mine = await b.api.minimoas.mine();
     expect(mine.items.find((i) => i.linkId === linkId)).toMatchObject({ muted: true });
-    expect(mine.text).toBe(CHAT_CONFIDENTIALITY.fr);
+    expect(mine.text).toBe(chatConfidentialityText('fr'));
   });
 
   it('garde-fou : heuristique locale puis modèle ; visible par la seule personne concernée ; repli sur la règle en cas de panne', async () => {
@@ -377,7 +377,7 @@ describe('minimoas dans le chat', () => {
     }
     const [health] = await minimoas.linkHealth(b.id);
     expect(health).toMatchObject({ otherName: 'Mia', key: 'balanced' });
-    expect(health?.line).toBe('Avec Mia : vous vous répondez bien, tous les deux.');
+    expect(health?.line).toBe('Avec Mia : vous vous répondez bien, l’un comme l’autre.');
   });
 });
 
@@ -433,7 +433,7 @@ describe('notifications', () => {
     expect(sentTo(token)).toHaveLength(3);
     await notifier.notify(c.id, 'message', { name: 'Zoé', linkId: '00000000-0000-4000-8000-000000000001' });
     expect(sentTo(token)).toHaveLength(4);
-    expect(sentTo(token)[0]).toMatchObject({ title: 'P0 t’a salué', data: { kind: 'waved', url: 'blowy://rencontres' } });
+    expect(sentTo(token)[0]).toMatchObject({ title: 'P0 te salue', data: { kind: 'waved', url: 'blowy://rencontres' } });
   });
 
   it('heures calmes dans le fuseau de la personne : report au matin (une fois) ou abandon', async () => {
@@ -465,7 +465,7 @@ describe('notifications', () => {
     await e.api.me.onboard(onboardBody({ displayName: 'Eva', locale: 'pt' }));
     await e.api.notifications.registerDevice({ token: 'ExponentPushToken[eva]', platform: 'ios', timeZone: 'Europe/Lisbon' });
     await notifier.notify(e.id, 'words_received');
-    expect(sentTo('ExponentPushToken[eva]')[0]).toMatchObject({ title: '3 mots pour toi', data: { url: 'blowy://pet/caractere' } });
+    expect(sentTo('ExponentPushToken[eva]')[0]).toMatchObject({ title: notificationText('fr', 'words_received').title, data: { url: 'blowy://pet/caractere' } });
   });
 
   it('jetons invalides : refus immédiat ou au reçu (15 min plus tard) → appareil désactivé', async () => {
@@ -487,6 +487,7 @@ describe('notifications', () => {
   it('défi du jour à l’heure choisie, une fois par jour ; données compactes pour le widget', async () => {
     const g = world.client();
     await g.api.me.onboard(onboardBody({ displayName: 'Gil' }));
+    const today = await g.api.rituals.today(); // ouverture de l'app : personne active pour les rituels
     const token = 'ExponentPushToken[gil]';
     await g.api.notifications.registerDevice({ token, platform: 'ios', timeZone: 'Europe/Paris' });
     await g.api.notifications.updateSettings({ morningHour: 10 });
@@ -498,6 +499,9 @@ describe('notifications', () => {
     await tick();
     expect(morning()).toHaveLength(1);
     expect(morning()[0]?.data).toMatchObject({ url: 'blowy://pet', state: { challengePending: true } });
+    // Seul chemin d'envoi : le minuteur de la plateforme, avec le défi choisi par les rituels.
+    expect(morning()[0]?.body).toContain('Nino');
+    expect(today.challenge.status).toBe('offered');
     world.clock.advanceMinutes(3);
     await tick();
     expect(morning()).toHaveLength(1);

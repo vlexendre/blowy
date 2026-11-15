@@ -38,6 +38,20 @@ export class SupabaseAuthAdmin implements AuthAdmin {
     const { error } = await this.client.auth.admin.deleteUser(userId);
     if (error) throw new Error(`suppression du compte impossible : ${error.message}`);
   }
+
+  /** Identités du compte (`auth.identities`) : `sub` d'Apple ou de Google, e-mail pour le fournisseur « email ». */
+  async subjectsOf(userId: string): Promise<{ provider: string; subject: string }[]> {
+    const { data, error } = await this.client.auth.admin.getUserById(userId);
+    if (error || !data.user) return [];
+    const out: { provider: string; subject: string }[] = [];
+    for (const identity of data.user.identities ?? []) {
+      const info: Record<string, unknown> = identity.identity_data ?? {};
+      const subject = identity.provider === 'email' ? String(info.email ?? data.user.email ?? '') : String(info.sub ?? identity.id ?? '');
+      if (subject) out.push({ provider: identity.provider, subject });
+    }
+    if (out.length === 0 && data.user.email) out.push({ provider: 'email', subject: data.user.email });
+    return out;
+  }
 }
 
 export class SupabaseUserEmails implements UserEmails {

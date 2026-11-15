@@ -8,6 +8,7 @@ import { NotificationJobs } from '../notifications/notification-jobs';
 import { RituelsJobs } from '../rituels/application/rituels.jobs';
 import { BillingJobs } from '../billing/application/billing.jobs';
 import { AdminStatsJobs } from '../admin/application/stats.jobs';
+import { RetentionJobs } from '../retention/application/retention.jobs';
 import type { TickJobClass } from './tick-job';
 
 export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
@@ -16,4 +17,5 @@ export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
   { name: 'rituels', job: RituelsJobs },
   { name: 'billing', job: BillingJobs },
   { name: 'admin-stats', job: AdminStatsJobs },
+  { name: 'retention', job: RetentionJobs },
 ];

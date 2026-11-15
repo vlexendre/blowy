@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { DAILY_CHALLENGES as DAILY_CATALOGUE, type DailyDef, dailyById, dailyText, rituelsErrors } from '@blowy/content';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { LiveActivities } from '../../notifications/live-activities';
+import { DAILY_CHALLENGES as DAILY_CATALOGUE, type DailyDef, dailyById, dailyChallengesIn, type Locale, rituelsText, textOf } from '@blowy/content';
 import type { DailyChallenge } from '@blowy/contract';
 import { type DailyCandidate, type DailyStatus, type Day, advanceDaily, leastConfidentAxis, pickDailyChallenge, presentDailyCard } from '@blowy/domain';
 import { EXTENSIONS, type Storage, type UploadTicket } from '../../../integrations/storage/ports';
@@ -14,15 +15,19 @@ import type { DailyChallengePatch, DailyChallengeRecord, DailyChallengesReposito
 import { DAILY_CHALLENGES, RITUAL_PHOTOS } from '../tokens';
 import { RitualsContext } from './rituals-context';
 import { StreakService } from './streak.service';
+import { requestLocale } from '../../../shared/locale';
 
 const CANDIDATES: readonly DailyCandidate[] = DAILY_CATALOGUE.map((d) => ({ id: d.id, kind: d.kind, axis: d.axis }));
 
 /** Définition d'un défi enregistré ; s'il a quitté le catalogue depuis, une consigne neutre de son type. */
-export const dailyDefOf = (rec: Pick<DailyChallengeRecord, 'challengeId' | 'kind' | 'axis'>): DailyDef =>
-  dailyById(rec.challengeId) ?? DAILY_CATALOGUE.find((d) => d.kind === rec.kind) ?? DAILY_CATALOGUE[0]!;
+export const dailyDefOf = (rec: Pick<DailyChallengeRecord, 'challengeId' | 'kind' | 'axis'>, locale: Locale = requestLocale()): DailyDef => {
+  const catalogue = dailyChallengesIn(locale);
+  return dailyById(rec.challengeId, locale) ?? catalogue.find((d) => d.kind === rec.kind) ?? catalogue[0]!;
+};
 
-export const toDailyDto = (rec: DailyChallengeRecord): DailyChallenge => {
-  const def = dailyDefOf(rec);
+export const toDailyDto = (rec: DailyChallengeRecord, locale: Locale = requestLocale()): DailyChallenge => {
+  const def = dailyDefOf(rec, locale);
+  const dailyText = rituelsText.in(locale).daily;
   const choices = def.choices ? [def.choices[0].label, def.choices[1].label] : null;
   return {
     day: rec.day,
@@ -67,6 +72,7 @@ export class DailyService {
     @Inject(VISION_SIGNALS) private readonly signals: VisionSignals,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(IDS) private readonly ids: Ids,
+    @Optional() @Inject(LiveActivities) private readonly live?: LiveActivities,
   ) {}
 
   /** Défi du jour de la personne ; choisi et enregistré au premier appel du jour. */
@@ -113,8 +119,8 @@ export class DailyService {
   async answer(userId: string, choice: 0 | 1): Promise<DoneResult> {
     const today = this.ctx.today();
     const rec = await this.ensure(userId, today);
-    if (rec.kind !== 'question') throw new DomainError('invalid', rituelsErrors.dailyKind);
-    if (rec.status === 'done') throw new DomainError('already_done', rituelsErrors.dailyDone);
+    if (rec.kind !== 'question') throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.dailyKind));
+    if (rec.status === 'done') throw new DomainError('already_done', textOf(rituelsText, (t) => t.errors.dailyDone));
     const result = await this.finish(userId, rec, { answer: choice });
     const def = dailyDefOf(rec);
     const picked = def.choices?.[choice];
@@ -127,8 +133,8 @@ export class DailyService {
   async photoTicket(userId: string, contentType: 'image/jpeg' | 'image/webp'): Promise<UploadTicket> {
     const today = this.ctx.today();
     const rec = await this.ensure(userId, today);
-    if (rec.kind !== 'photo') throw new DomainError('invalid', rituelsErrors.dailyKind);
-    if (rec.status === 'done') throw new DomainError('already_done', rituelsErrors.dailyDone);
+    if (rec.kind !== 'photo') throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.dailyKind));
+    if (rec.status === 'done') throw new DomainError('already_done', textOf(rituelsText, (t) => t.errors.dailyDone));
     return this.storage.createUploadTicket(`rituals/${userId}/${today}/daily-${this.ids.uuid()}.${EXTENSIONS[contentType]}`);
   }
 
@@ -136,10 +142,10 @@ export class DailyService {
   async photo(userId: string, path: string, keep: boolean): Promise<DoneResult> {
     const today = this.ctx.today();
     const rec = await this.ensure(userId, today);
-    if (rec.kind !== 'photo') throw new DomainError('invalid', rituelsErrors.dailyKind);
-    if (rec.status === 'done') throw new DomainError('already_done', rituelsErrors.dailyDone);
-    if (!dailyPhotoPattern(userId, today).test(path)) throw new DomainError('invalid', rituelsErrors.proofPath);
-    if (!(await this.storage.exists(path))) throw new DomainError('invalid', rituelsErrors.proofMissing);
+    if (rec.kind !== 'photo') throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.dailyKind));
+    if (rec.status === 'done') throw new DomainError('already_done', textOf(rituelsText, (t) => t.errors.dailyDone));
+    if (!dailyPhotoPattern(userId, today).test(path)) throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.proofPath));
+    if (!(await this.storage.exists(path))) throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.proofMissing));
     const photoId = this.ids.uuid();
     await this.photos.create({
       id: photoId,
@@ -159,9 +165,10 @@ export class DailyService {
   async complete(userId: string): Promise<DoneResult> {
     const today = this.ctx.today();
     const rec = await this.ensure(userId, today);
-    if (rec.status === 'done') throw new DomainError('already_done', rituelsErrors.dailyDone);
-    if (rec.kind !== 'write' && rec.kind !== 'go_out') throw new DomainError('invalid', rituelsErrors.dailyKind);
-    if (!(await this.fulfilled(userId, rec, today))) throw new DomainError('invalid', rituelsErrors.dailyNotYet[rec.kind]);
+    if (rec.status === 'done') throw new DomainError('already_done', textOf(rituelsText, (t) => t.errors.dailyDone));
+    if (rec.kind !== 'write' && rec.kind !== 'go_out') throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.dailyKind));
+    const kind = rec.kind;
+    if (!(await this.fulfilled(userId, rec, today))) throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.dailyNotYet[kind]));
     return this.finish(userId, rec, {});
   }
 
@@ -202,7 +209,9 @@ export class DailyService {
     const record: DailyChallengeRecord = { ...rec, ...patch, status: 'done', doneAt: rec.doneAt ?? now.toISOString() };
     if (!justDone) return { record: (await this.daily.find(userId, today)) ?? record, newItems: [], justDone };
     const perWeek = this.ctx.limitsOf(await this.ctx.profile(userId)).jokersPerWeek;
-    const { newItems } = await this.streaks.complete(userId, today, perWeek);
+    const { newItems, streak } = await this.streaks.complete(userId, today, perWeek);
+    // Activité en direct du défi (démarrée par l'app) : « Défi relevé », puis retirée.
+    await this.live?.endChallenge(userId, { streak: streak.current, title: dailyDefOf(rec).text.slice(0, 120) });
     // Compteur « défis relevés » de la garde-robe et petit effet sur le caractère ; une fois par jour au plus.
     await this.character.apply(userId, 'challenge_done', { maxPerDay: 1 });
     return { record, newItems, justDone };

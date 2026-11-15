@@ -1,6 +1,6 @@
 # Blowy
 
-> élève ton pet. il te présente du monde.
+> Élève ton minimoa. Il te présente du monde.
 
 Monorepo TypeScript (pnpm) : une API NestJS, une app Expo (React Native), un site Astro, une base Supabase.
 
@@ -8,9 +8,10 @@ Monorepo TypeScript (pnpm) : une API NestJS, une app Expo (React Native), un sit
 apps/api      API REST NestJS — seul écrivain de la base, e-mails via Resend
 apps/mobile   App iOS / Android (Expo SDK 58, expo-router)
 apps/web      Site marketing Astro + pages publiques (« 3 mots », invitation, légal)
+apps/admin    Administration web (Vite + React) : tableaux, modération, coûts de l'IA
 packages/     domain (règles pures) · contract (Zod) · api-client · content (textes) · tokens · ui (design atomique)
 supabase/     migrations SQL
-docs/         ARCHITECTURE.md · SCREENS.md · TESTFLIGHT.md
+docs/         ARCHITECTURE.md · SCREENS.md · TESTFLIGHT.md · V7-SPEC.md · DEPLOIEMENT-V7.md · COUTS.md · BLOWY-PLUS.md · WIDGETS.md
 ```
 
 ## Démarrer en local (sans aucun service externe)
@@ -23,6 +24,8 @@ BLOWY_ADAPTERS=memory BLOWY_DEMO=1 CORS_ORIGINS=http://localhost:8081 pnpm dev:a
 cd apps/mobile && EXPO_PUBLIC_AUTH=local EXPO_PUBLIC_API_URL=http://localhost:3000 npx expo start
 # 3. Site
 pnpm dev:web
+# 4. Administration (adresse admin@blowy.local, code 000000 avec l'API de démo)
+VITE_AUTH=local VITE_API_URL=http://localhost:3000 pnpm dev:admin
 ```
 
 ## Brancher les vrais services
@@ -41,12 +44,14 @@ Copier `.env.example` vers `apps/api/.env`, `apps/mobile/.env` et `apps/web/.env
 ```bash
 pnpm typecheck   # tous les paquets
 pnpm test        # règles du domaine + parcours de l'API (en mémoire, horloge simulée)
-pnpm build       # API (dist/main.js) et site (apps/web/dist)
+pnpm build       # API (dist/main.js), site (apps/web/dist), administration (apps/admin/dist)
+# Après une migration SQL : schéma, types et RLS sur un PostgreSQL local jetable
+PGHOST=/chemin/du/socket PGPORT=5432 PGUSER=postgres pnpm --filter @blowy/api check:schema
 ```
 
 ## Mettre en ligne
 
-- **API** : `docker build -f apps/api/Dockerfile -t blowy-api .` puis n'importe quel hébergeur de conteneurs (voir `apps/api/README.md`).
+- **API** : `docker build -f apps/api/Dockerfile -t blowy-api .` puis n'importe quel hébergeur de conteneurs (voir `apps/api/README.md`), plus le minuteur (`POST /internal/tick` toutes les 5 min). V7 : ordre complet dans `docs/DEPLOIEMENT-V7.md`.
 - **Site** : Cloudflare Pages, commande `pnpm --filter @blowy/web build`, dossier `apps/web/dist`.
 - **App** : voir `docs/TESTFLIGHT.md`.
 

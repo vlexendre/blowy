@@ -1,6 +1,6 @@
 import type { Db } from '../../../persistence/database.types';
 import { check, iso, isUniqueViolation } from '../../../persistence/supabase';
-import type { EncounterRecord, EncounterStatus, EncountersRepository } from '../ports';
+import type { EncounterRecord, EncounterStatus, EncountersRepository, ProposalsRepository } from '../ports';
 
 interface EncounterRow {
   id: string;
@@ -69,5 +69,25 @@ export class SupabaseEncountersRepository implements EncountersRepository {
     const { data, error } = await query.order('status_at', { ascending: false }).order('id', { ascending: false }).limit(limit);
     check(error, "lecture de l'historique des rencontres");
     return (data as EncounterRow[]).map(fromRow);
+  }
+}
+
+/** `encounter_proposals` : écriture et total d'un jour par deux fonctions SQL (une requête chacune, clé primaire). */
+export class SupabaseProposalsRepository implements ProposalsRepository {
+  constructor(private readonly client: Db) {}
+  async record(day: string, userId: string, proposed: number, scoreSum: number): Promise<void> {
+    const { error } = await this.client.rpc('encounter_proposals_record', { p_day: day, p_user: userId, p_proposed: proposed, p_score_sum: scoreSum });
+    check(error, 'rencontres proposées');
+  }
+  async summary(day: string): Promise<{ proposed: number; scoreSum: number }> {
+    const { data, error } = await this.client.rpc('encounter_proposals_summary', { p_day: day });
+    check(error, 'rencontres proposées');
+    const row = (data ?? {}) as { proposed?: number; score_sum?: number };
+    return { proposed: Number(row.proposed ?? 0), scoreSum: Number(row.score_sum ?? 0) };
+  }
+  async purgeBefore(day: string): Promise<number> {
+    const { data, error } = await this.client.from('encounter_proposals').delete().lt('day', day).select('day');
+    check(error, 'purge des rencontres proposées');
+    return (data ?? []).length;
   }
 }

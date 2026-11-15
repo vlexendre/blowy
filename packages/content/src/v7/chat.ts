@@ -3,21 +3,19 @@
  * Dictionnaires à clés par langue (seul le français est écrit ; repli sur le français), par rôle et par voix.
  * Fonctions pures : la variante est choisie par `seed`, jamais par un tirage. Jamais le mot « pet ».
  */
-import type { LinkHealthKey, MinimoaVoice, VisionAxis } from '@blowy/domain';
+import type { LinkHealthKey, Locale, MinimoaVoice, VisionAxis } from '@blowy/domain';
+import { TODO, defineMessages, fillTemplate } from '../i18n/core';
 
-/** Langue d'un texte de l'API (repli : français). */
-type Lang = string;
+export { fillTemplate };
 
-/** Texte exact de la spéc (§9), servi avec l'état de l'accord pour que l'app montre partout les mêmes mots. */
-export const CHAT_CONFIDENTIALITY: Readonly<Record<string, string>> = {
-  fr: "Aucun humain ne lit tes conversations. Si vous l'activez tous les deux, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n'est conservé après.",
-};
-
-export const chatConfidentialityText = (lang: Lang): string => CHAT_CONFIDENTIALITY[lang] ?? CHAT_CONFIDENTIALITY.fr ?? '';
+/** Langue d'un texte de l'API. */
+type Lang = Locale;
 
 type VoiceLines = Readonly<Record<MinimoaVoice, readonly string[]>>;
 
 interface ChatLines {
+  confidentiality: string;
+  system: { linkCreated: string };
   /** Brise-glace par axe de vision partagé ({other} = minimoa de l'autre). */
   icebreaker: Readonly<Record<VisionAxis, readonly string[]>>;
   /** Brise-glace sans point commun connu. */
@@ -38,9 +36,15 @@ interface ChatLines {
 }
 
 const FR: ChatLines = {
+  /** Texte de la spéc (§9), servi avec l'état de l'accord pour que l'app montre partout les mêmes mots. */
+  confidentiality:
+    'Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n’est conservé après.',
+  /** Bandeaux du système dans le chat. */
+  system: { linkCreated: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
+
   icebreaker: {
     foyer: [
-      'Vous voyez le foyer un peu pareil, tous les deux. Question : le dîner du dimanche idéal, il ressemble à quoi ?',
+      'Vous voyez le foyer un peu pareil, vous deux. Question : le dîner du dimanche idéal, il ressemble à quoi ?',
       'Point commun repéré côté foyer. Alors : grande tablée ou tête-à-tête ?',
     ],
     ancrage: [
@@ -49,14 +53,14 @@ const FR: ChatLines = {
     ],
     elan: [
       'Côté projets, vous allez dans le même sens. Le truc qui vous occupe la tête en ce moment ?',
-      'Même rapport au travail, tous les deux. Un projet perso que vous n’avez encore dit à personne ?',
+      'Même rapport au travail, vous deux. Un projet perso que vous n’avez encore dit à personne ?',
     ],
     rythme: [
       'Même rythme de vie, ça se voit. Votre soirée parfaite en semaine ?',
       'Vous vivez à la même vitesse. Dernière sortie qui valait le coup ?',
     ],
     cap: [
-      'Vous prévoyez à peu près pareil, tous les deux. Les prochaines vacances : réservées ou au feeling ?',
+      'Vous prévoyez à peu près pareil, vous deux. Les prochaines vacances : réservées ou au feeling ?',
       'Même façon de voir loin. Le dernier achat que vous avez préparé des mois ?',
     ],
   },
@@ -71,7 +75,7 @@ const FR: ChatLines = {
     pose: ['Ça fait {days} jours. Vous en étiez où ?', '{days} jours de calme. On reprend quand vous voulez.'],
   },
   remark: {
-    doux: ['Vous vous répondez vite, c’est mignon.', 'J’aime bien quand vous parlez comme ça.'],
+    doux: ['Vous vous répondez vite. Je note.', 'J’aime bien quand vous parlez comme ça.'],
     sec: ['Ça papote. Je prends des notes.', 'Vous êtes d’accord sur plus de choses que vous ne croyez.'],
     joueur: ['Ça va vite ici. {other}, tu suis ?', 'Je compte les points. Égalité, pour l’instant.'],
     pose: ['Vous êtes d’accord sur plus de choses que vous ne croyez.', 'Belle conversation. Je me fais discret.'],
@@ -83,9 +87,9 @@ const FR: ChatLines = {
     pose: ['Premier message du jour. Le lien respire.', 'Bonjour. Je m’installe et j’écoute.'],
   },
   sweet: {
-    doux: ['Oh. C’était doux, ça. {other} rougit.', 'Mot doux noté. On garde.'],
+    doux: ['Oh. C’était doux, ça. {other} fait semblant de ne pas rougir.', 'Mot doux noté. On garde.'],
     sec: ['C’était presque gentil. Je note.', 'Tout mignon. Je fais semblant de ne rien voir.'],
-    joueur: ['Ooooh. {other}, tu as vu ça ?', 'Mot doux détecté. Je danse.'],
+    joueur: ['Oh. {other}, tu as vu ça ?', 'Mot doux détecté. Je danse, intérieurement.'],
     pose: ['C’était doux. {other} ronronne, je crois.', 'Joli. Je ne dis rien de plus.'],
   },
   tease: {
@@ -95,7 +99,7 @@ const FR: ChatLines = {
     pose: ['Je n’ai rien vu, rien entendu. Mais c’était drôle.', 'Vanne notée. Match retour attendu.'],
   },
   guard: {
-    doux: ['Ça chauffe un peu, non ? Une pause de dix minutes, et on reprend plus doucement.', 'Je te sens tendu. Tu veux souffler avant de répondre ?'],
+    doux: ['Ça chauffe un peu, non ? Une pause de dix minutes, et on reprend plus doucement.', 'Ça a l’air tendu. Tu veux souffler avant de répondre ?'],
     sec: ['Le ton monte. Pause, et tu relis avant d’envoyer ?', 'On respire. Dix minutes, puis tu réponds.'],
     joueur: ['Temps mort ! Je siffle une pause de dix minutes.', 'Ça s’échauffe. Pause goûter, et on reprend ?'],
     pose: ['Le ton monte un peu. Une pause, peut-être ?', 'Tu veux qu’on fasse une pause avant de répondre ?'],
@@ -106,21 +110,20 @@ const FR: ChatLines = {
     photos: 'Avec {name} : vos photos du jour font plaisir à voir.',
     lively: 'Avec {name} : vous vous parlez beaucoup, et ça se sent.',
     one_sided: 'Avec {name} : tu donnes le rythme, c’est précieux.',
-    balanced: 'Avec {name} : vous vous répondez bien, tous les deux.',
+    balanced: 'Avec {name} : vous vous répondez bien, l’un comme l’autre.',
   },
 };
 
-const LINES: Readonly<Record<string, ChatLines>> = { fr: FR };
-const linesFor = (lang: Lang): ChatLines => LINES[lang] ?? FR;
+export const chatText = defineMessages({ fr: FR, en: TODO, es: TODO, pt: TODO, nl: TODO });
+const linesFor = (lang: Lang): ChatLines => chatText.in(lang);
+
+export const chatConfidentialityText = (lang: Lang): string => chatText.in(lang).confidentiality;
 
 const pick = (variants: readonly string[], seed: number): string => {
   const n = variants.length;
   return variants[((Math.trunc(seed) % n) + n) % n] ?? variants[0] ?? '';
 };
 
-/** Remplace les {clés} connues ; une clé absente disparaît proprement. */
-export const fillTemplate = (template: string, vars: Readonly<Record<string, string | number>>): string =>
-  template.replace(/\{(\w+)\}/g, (_, key: string) => (vars[key] !== undefined ? String(vars[key]) : '')).replace(/\s{2,}/g, ' ').trim();
 
 export interface ChatLineContext {
   lang: Lang;
@@ -154,8 +157,8 @@ export const MINIMOA_VOICE_PROMPT: Readonly<Record<MinimoaVoice, string>> = {
   pose: 'posé, calme, peu de mots',
 };
 
-const LANGUAGE_NAMES: Readonly<Record<string, string>> = { fr: 'français', en: 'anglais', es: 'espagnol', pt: 'portugais', nl: 'néerlandais' };
-export const languageName = (lang: Lang): string => LANGUAGE_NAMES[lang] ?? 'français';
+const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = { fr: 'français', en: 'anglais', es: 'espagnol', pt: 'portugais', nl: 'néerlandais' };
+export const languageName = (lang: Lang): string => LANGUAGE_NAMES[lang];
 
 /**
  * Consigne système du chat. Elle ne change jamais d'un appel à l'autre (cache du fournisseur).
@@ -193,8 +196,5 @@ export function chatAiPrompt(i: ChatAiPromptInput): string {
     .join('\n');
 }
 
-/** Bandeaux du système dans le chat (V7 : « minimoa », majuscule en début de phrase). */
-export const CHAT_SYSTEM_TEXT: Readonly<Record<string, { linkCreated: string }>> = {
-  fr: { linkCreated: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
-};
-export const chatSystemText = (lang: Lang): { linkCreated: string } => CHAT_SYSTEM_TEXT[lang] ?? { linkCreated: CHAT_SYSTEM_TEXT.fr?.linkCreated ?? '' };
+/** Bandeaux du système dans le chat. */
+export const chatSystemText = (lang: Lang): { linkCreated: string } => chatText.in(lang).system;

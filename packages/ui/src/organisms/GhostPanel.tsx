@@ -23,6 +23,7 @@ import { useFirstTime } from '../motion/once';
 import { layout } from '../lib/styles';
 import { color, extra, motion, space, veil } from '../theme';
 import type { PetLook, TitleContent } from '../types';
+import { useUiStrings } from '../lib/strings';
 
 export interface GhostPanelProps {
   /** Ton pet, en version fantôme. */
@@ -82,11 +83,12 @@ export function GhostPanel({
   leaving,
   error,
   onBack,
-  backLabel = 'Retour',
+  backLabel,
   badge,
   livesLabel,
   revealKey,
 }: GhostPanelProps) {
+  const uiStrings = useUiStrings();
   const insets = useSafeAreaInsets();
   const first = useFirstTime(revealKey ? `ghost:${revealKey}` : undefined);
   const fading = !!revealKey && first;
@@ -103,7 +105,7 @@ export function GhostPanel({
       <LinearGradient colors={extra.ghost} style={StyleSheet.absoluteFill} />
       <InkProvider value={color.white}>
         <View style={[layout.row, styles.head]}>
-          {onBack ? <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} style={styles.back} /> : null}
+          {onBack ? <IconButton glyph="back" label={backLabel ?? uiStrings.back} onPress={onBack} size={40} style={styles.back} /> : null}
           {badge ? <Chip label={badge} tone="glass" /> : null}
           <Hearts lives={0} max={MAX_LIVES} ghost size={14} accessibilityLabel={livesLabel} style={styles.hearts} />
         </View>

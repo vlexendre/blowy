@@ -1,4 +1,4 @@
-import { visionErrorText } from '@blowy/content';
+import { textOf, visionText } from '@blowy/content';
 import type { Gender, Seeking, Whom } from '@blowy/domain';
 import { DomainError } from '../../../shared/errors';
 
@@ -28,19 +28,19 @@ export function applyIdentity(current: IdentityState, change: IdentityChange, no
   const gender = change.gender ?? current.gender;
   if (change.sensitiveConsent === false) {
     if ((change.seeking && change.seeking !== 'potes') || (change.whom !== undefined && change.whom !== null)) {
-      throw new DomainError('invalid', visionErrorText.sensitiveConsent);
+      throw new DomainError('invalid', textOf(visionText, (t) => t.errors.sensitiveConsent));
     }
     return { gender, seeking: 'potes', whom: null, sensitiveConsentAt: null };
   }
   const sensitiveConsentAt = change.sensitiveConsent === true ? (current.sensitiveConsentAt ?? now) : current.sensitiveConsentAt;
   const seeking = change.seeking ?? current.seeking;
   if (seeking === 'potes') {
-    if (change.whom !== undefined && change.whom !== null) throw new DomainError('invalid', visionErrorText.whomOnlyForMore);
+    if (change.whom !== undefined && change.whom !== null) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.whomOnlyForMore));
     return { gender, seeking, whom: null, sensitiveConsentAt };
   }
   const whom = change.whom !== undefined ? change.whom : current.whom;
-  if (whom === null) throw new DomainError('invalid', visionErrorText.whomRequired);
-  if (sensitiveConsentAt === null) throw new DomainError('invalid', visionErrorText.sensitiveConsent);
+  if (whom === null) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.whomRequired));
+  if (sensitiveConsentAt === null) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.sensitiveConsent));
   return { gender, seeking, whom, sensitiveConsentAt };
 }
 

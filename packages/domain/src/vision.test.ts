@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  testAnswersState,
+  visionBucketOf,
   AXIS_WEIGHTS,
   CLOSENESS_SPAN,
   EMPTY_VISION,
@@ -115,7 +117,22 @@ describe('profil de vision : poids, décroissance, confiance', () => {
   });
 });
 
+describe('répartition des visions (administration)', () => {
+  it('5 tranches de 40 points, bornes comprises', () => {
+    expect([-100, -61, -60, -21, -20, 0, 19, 20, 59, 60, 100].map(visionBucketOf)).toEqual([0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4]);
+  });
+});
+
 describe('test de vision', () => {
+  it('réponses à l’inscription : aucune (test plus tard) ou les 12 situations une fois chacune', () => {
+    const all = VISION_TEST.map((q) => ({ questionId: q.id }));
+    expect(testAnswersState([])).toBe('none');
+    expect(testAnswersState(all)).toBe('complete');
+    expect(testAnswersState(all.slice(1))).toBe('incomplete');
+    expect(testAnswersState([...all.slice(1), all[2] ?? { questionId: '' }])).toBe('incomplete');
+    expect(testAnswersState([...all, { questionId: 'astrologie' }])).toBe('unknown_question');
+  });
+
   it('12 situations, chaque axe visé au moins deux fois, deux choix opposés', () => {
     expect(VISION_TEST).toHaveLength(12);
     expect(new Set(VISION_TEST.map((q) => q.id)).size).toBe(12);

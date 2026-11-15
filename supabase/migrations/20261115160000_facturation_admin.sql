@@ -33,7 +33,8 @@ create index subscriptions_user_idx on public.subscriptions (user_id);
 create index subscriptions_status_idx on public.subscriptions (status);
 create index subscriptions_trial_idx on public.subscriptions (trial_ends_at) where status = 'trial' and auto_renew;
 
--- Notifications reçues des magasins : idempotence (Apple renvoie jusqu'à 5 fois) et trace des 90 derniers jours.
+-- Notifications reçues des magasins : idempotence (Apple renvoie jusqu'à 5 fois) et trace des 30 derniers jours
+-- (journal technique ; purge par la tâche BillingJobs).
 create table public.store_notifications (
   store text not null check (store in ('apple', 'google')),
   notification_id text not null,
@@ -51,13 +52,16 @@ create index store_notifications_received_idx on public.store_notifications (rec
 
 -- ── Modération ────────────────────────────────────────────────────────────
 -- Signalement d'un message précis (contexte vu par la modération) et suivi du traitement.
+-- Clé étrangère vers `messages` posée NOT VALID (validée par 20261115170000_integration).
 alter table public.reports
-  add column message_id uuid references public.messages (id) on delete set null,
+  add column message_id uuid,
   add column handled_at timestamptz,
   add column handled_by text,
   add column resolution text check (resolution is null or resolution in ('warn', 'suspend', 'delete', 'dismiss', 'lift'));
-create index reports_open_idx on public.reports (created_at) where handled_at is null;
-create index reports_created_idx on public.reports (created_at desc);
+alter table public.reports
+  add constraint reports_message_id_fkey foreign key (message_id) references public.messages (id) on delete set null not valid;
+create index if not exists reports_open_idx on public.reports (created_at) where handled_at is null;
+create index if not exists reports_created_idx on public.reports (created_at desc);
 
 -- Suspension en cours : l'API refuse toute requête du compte (sauf supprimer son compte) tant qu'elle court.
 create table public.account_suspensions (
@@ -68,8 +72,9 @@ create table public.account_suspensions (
   by_email text not null
 );
 
--- Journal des actions de modération : jamais modifié ni effacé (pas de clé étrangère vers le compte,
--- pour garder la trace après une suppression ; le prénom est recopié au moment de l'action).
+-- Journal des actions de modération : jamais modifié ; effacé un an après l'action (politique de confidentialité,
+-- tâche RetentionJobs). Pas de clé étrangère vers le compte, pour garder la trace après une suppression ; le prénom
+-- est recopié au moment de l'action.
 create table public.admin_audit_log (
   id bigint generated always as identity primary key,
   at timestamptz not null default now(),
@@ -103,11 +108,12 @@ create table public.admin_daily_stats (
   computed_at timestamptz not null default now()
 );
 
--- Index des requêtes de la tâche quotidienne.
-create index profiles_created_idx on public.profiles (created_at);
-create index messages_pet_created_idx on public.messages (created_at) where author_kind = 'pet';
-create index encounters_created_idx on public.encounters (created_at);
-create index encounters_accepted_idx on public.encounters (status_at) where status = 'accepted';
+-- Index des requêtes de la tâche quotidienne (tables existantes : à créer avant avec `concurrently` sur une base
+-- déjà peuplée, docs/DEPLOIEMENT-V7.md ; ces lignes ne font alors plus rien).
+create index if not exists profiles_created_idx on public.profiles (created_at);
+create index if not exists messages_pet_created_idx on public.messages (created_at) where author_kind = 'pet';
+create index if not exists encounters_created_idx on public.encounters (created_at);
+create index if not exists encounters_accepted_idx on public.encounters (status_at) where status = 'accepted';
 
 alter table public.subscriptions enable row level security;
 alter table public.store_notifications enable row level security;

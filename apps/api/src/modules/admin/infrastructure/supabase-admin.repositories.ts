@@ -63,6 +63,17 @@ export class SupabaseSuspensionsRepository implements SuspensionsRepository {
     check(error, 'lecture des suspensions');
     return (data ?? []).map((d) => ({ userId: d.user_id, since: iso(d.since), until: isoOrNull(d.until), reason: d.reason, byEmail: d.by_email }));
   }
+  async activeAmong(userIds: readonly string[], now: string): Promise<Set<string>> {
+    const out = new Set<string>();
+    // Par paquets (longueur de l'URL PostgREST) ; la clé primaire sert la recherche.
+    for (let i = 0; i < userIds.length; i += 200) {
+      const ids = userIds.slice(i, i + 200);
+      const { data, error } = await this.table.select('user_id').in('user_id', [...ids]).or(`until.is.null,until.gt.${now}`);
+      check(error, 'lecture des suspensions');
+      for (const d of data ?? []) out.add(d.user_id);
+    }
+    return out;
+  }
 }
 
 type AuditRow = Database['public']['Tables']['admin_audit_log']['Row'];
@@ -216,6 +227,14 @@ export class SupabaseActivityRepository implements ActivityRepository {
     const { count, error } = await this.client.from('user_activity_days').delete({ count: 'exact' }).lt('day', day);
     check(error, 'purge des jours d’activité');
     return count ?? 0;
+  }
+  async usersOn(day: Day, afterUserId: string | null, limit: number): Promise<string[]> {
+    // Clé primaire (day, user_id) : parcours d'un intervalle, sans tri.
+    let q = this.client.from('user_activity_days').select('user_id').eq('day', day).order('user_id').limit(limit);
+    if (afterUserId) q = q.gt('user_id', afterUserId);
+    const { data, error } = await q;
+    check(error, 'lecture des jours d’activité');
+    return (data ?? []).map((r) => r.user_id);
   }
 }
 

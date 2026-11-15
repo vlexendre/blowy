@@ -2,9 +2,11 @@
   "name": "blowy",
   "private": true,
   "version": "1.0.0",
-  "description": "Blowy — élève ton pet. il te présente du monde.",
+  "description": "Blowy — Élève ton minimoa. Il te présente du monde.",
   "packageManager": "pnpm@10.28.0",
-  "engines": { "node": ">=22.12" },
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "dev:api": "pnpm --filter @blowy/api dev",
     "dev:web": "pnpm --filter @blowy/web dev",
@@ -13,11 +15,14 @@
     "build:admin": "pnpm --filter @blowy/admin build",
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm i18n:check && pnpm -r --if-present test",
+    "i18n:check": "tsx scripts/i18n-check.mts",
+    "i18n:list": "tsx scripts/i18n-check.mts --list",
     "format": "prettier --write ."
   },
   "devDependencies": {
     "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vitest": "^5.0.5"
   }

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EXTENSIONS, type Storage, type UploadTicket } from '../../../integrations/storage/ports';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
 import { IDS, STORAGE } from '../../../shared/tokens';
 import { LinkSession } from './link-session';
@@ -22,7 +22,7 @@ export class PhotoTicket {
     await this.session.commit(draft);
     if (draft.link.status !== 'active') throw new DomainError('link_not_active');
     const ext = EXTENSIONS[contentType];
-    if (!ext) throw new DomainError('invalid', 'Ce format de photo n’est pas accepté.');
+    if (!ext) throw new DomainError('invalid', errorText('photoFormat'));
     return this.storage.createUploadTicket(`links/${linkId}/${userId}/${draft.today}-${this.ids.uuid()}.${ext}`);
   }
 }

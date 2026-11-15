@@ -8,6 +8,7 @@ import { ScreenMotion, usePorts, wordsUrl } from '@/core';
 import { useLinks } from '@/features/links';
 import { displayUrl, useCopyShare, useMe } from '@/features/me';
 import { useLivePet } from '@/features/pet';
+import { plusPrices } from '@/features/plus';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
 
@@ -107,7 +108,7 @@ export default function Moi() {
 
       <PlusBanner
         key="plus"
-        title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle : t.plusSoonTitle}
+        title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle(plusPrices().perMonth) : t.plusSoonTitle}
         text={t.plusText}
         ctaLabel={purchases.available && !m.plus ? t.plusCta : t.plusSoonCta}
         onPress={() => router.push('/moi/blowy-plus')}

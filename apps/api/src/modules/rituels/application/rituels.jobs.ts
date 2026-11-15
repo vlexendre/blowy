@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { dailyById, habitById, rituelsNotificationVars } from '@blowy/content';
+import { habitById, rituelsNotificationVars } from '@blowy/content';
 import {
   type Day,
   PROOF_PHOTO_HOURS,
@@ -23,7 +23,6 @@ import { needsNow } from '../../pets/application/pet-catch-up';
 import type { PetsRepository } from '../../pets/ports';
 import type { TickJob } from '../../tick/tick-job';
 import type {
-  DailyChallengesRepository,
   HabitChecksRepository,
   HabitsRepository,
   RitualMarker,
@@ -31,7 +30,7 @@ import type {
   RitualStateRecord,
   RitualStatesRepository,
 } from '../ports';
-import { DAILY_CHALLENGES, HABIT_CHECKS, HABITS, RITUAL_PHOTOS, RITUAL_STATES } from '../tokens';
+import { HABIT_CHECKS, HABITS, RITUAL_PHOTOS, RITUAL_STATES } from '../tokens';
 import { ReviewsService } from './reviews.service';
 import { RitualNotifications } from './rituals-context';
 
@@ -41,9 +40,12 @@ const PAGE = 200;
 const REVIEW_PAGE = 25;
 const PHOTO_PAGE = 200;
 
-/** Fenêtres horaires (Paris) des envois programmés ; heures calmes et plafonds : plateforme. */
+/**
+ * Fenêtres horaires (Paris) des envois programmés ; heures calmes et plafonds : plateforme.
+ * Le défi du jour n'est pas ici : la plateforme l'envoie à l'heure choisie par la personne (`NotificationJobs`),
+ * avec le texte fourni par `RitualsDailyPush`.
+ */
 export const WINDOWS = {
-  dailyChallenge: [9, 21],
   needsOut: [11, 20],
   streakInDanger: [20, 22],
 } as const;
@@ -60,7 +62,6 @@ export class RituelsJobs implements TickJob {
 
   constructor(
     @Inject(RITUAL_STATES) private readonly states: RitualStatesRepository,
-    @Inject(DAILY_CHALLENGES) private readonly daily: DailyChallengesRepository,
     @Inject(HABITS) private readonly habits: HabitsRepository,
     @Inject(HABIT_CHECKS) private readonly checks: HabitChecksRepository,
     @Inject(RITUAL_PHOTOS) private readonly photos: RitualPhotosRepository,
@@ -78,7 +79,6 @@ export class RituelsJobs implements TickJob {
     let done = 0;
     done += await this.purgePhotos(now, over);
     if (!over()) done += await this.askProofs(today, hour, over);
-    if (!over() && within(hour, WINDOWS.dailyChallenge)) done += await this.dailyReminders(today, over);
     if (!over() && within(hour, WINDOWS.needsOut)) done += await this.needsOutReminders(now, today, over);
     if (!over() && within(hour, WINDOWS.streakInDanger)) done += await this.streakDanger(now, today, over);
     const week = reviewWeekDue(today, hour);
@@ -134,22 +134,6 @@ export class RituelsJobs implements TickJob {
       if (page.length < PAGE) break;
     }
     return n;
-  }
-
-  /** Défi du jour, le matin, à qui ne l'a pas encore fait. */
-  async dailyReminders(today: Day, over: () => boolean): Promise<number> {
-    return this.forActive(today, 'dailyNotifiedOn', today, PAGE, over, async (page) => {
-      const rows = new Map((await this.daily.findForDay(page.map((s) => s.userId), today)).map((c) => [c.userId, c]));
-      let n = 0;
-      for (const s of page) {
-        const rec = rows.get(s.userId);
-        if (rec?.status === 'done') continue;
-        const def = rec ? dailyById(rec.challengeId) : undefined;
-        await this.notifications.send(s.userId, 'daily_challenge', def ? rituelsNotificationVars.dailyChallenge(def) : {});
-        n += 1;
-      }
-      return n;
-    });
   }
 
   /** Le minimoa a besoin de sortir : sociabilité basse, une fois par jour au plus. */

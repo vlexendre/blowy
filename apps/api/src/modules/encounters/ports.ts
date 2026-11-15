@@ -14,6 +14,19 @@ export interface EncounterRecord {
   statusAt: string;
 }
 
+/**
+ * Rencontres proposées par jour et par personne (statistiques de l'administration : propositions, compatibilité
+ * moyenne). Une ligne par personne et par jour, réécrite seulement quand le nombre montré augmente ; purgée après 30 jours.
+ */
+export const ENCOUNTER_PROPOSALS = Symbol('ENCOUNTER_PROPOSALS');
+export interface ProposalsRepository {
+  /** Garde le plus grand nombre de suggestions montrées ce jour-là (et la somme de leurs compatibilités). */
+  record(day: string, userId: string, proposed: number, scoreSum: number): Promise<void>;
+  /** Total d'un jour : suggestions montrées et somme des compatibilités. */
+  summary(day: string): Promise<{ proposed: number; scoreSum: number }>;
+  purgeBefore(day: string): Promise<number>;
+}
+
 export interface EncountersRepository {
   findById(id: string): Promise<EncounterRecord | null>;
   findPair(fromUser: string, toUser: string): Promise<EncounterRecord | null>;

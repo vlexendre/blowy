@@ -1,9 +1,11 @@
-import { careLabel } from '@blowy/content';
+import { labels } from '@blowy/content';
+
+const { careLabel } = labels.in('fr');
 /** Soins du pet (besoins, forme, jours de soin), garde-robe (objets gagnés, tenue) et conséquences sur les rencontres. */
 import type { ApiClient } from '@blowy/api-client';
 import { ITEM_IDS, START_NEEDS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { type TestWorld, apiError, errorCode, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, apiError, doToday, errorCode, onboardBody, startWorld, upload } from './helpers';
 
 type Person = { id: string; api: ApiClient };
 
@@ -47,7 +49,7 @@ describe('soins et garde-robe', () => {
     expect(fed.newItems).toEqual(['taches_rousseur', 'coeur']);
     expect((await alice.api.pet.get()).newItems).toEqual([]);
 
-    expect(await apiError(alice.api.pet.care('feed'))).toEqual({ code: 'already_done', message: 'il n’a plus faim.' });
+    expect(await apiError(alice.api.pet.care('feed'))).toEqual({ code: 'already_done', message: careLabel.feed?.refused });
 
     const cuddled = await alice.api.pet.care('cuddle');
     expect(cuddled.pet.needs.mood).toBe(95);
@@ -81,7 +83,7 @@ describe('soins et garde-robe', () => {
     expect(dressed.pet.outfit).toEqual({ head: 'bonnet', toy: 'coeur' });
     expect((await alice.api.pet.wardrobe()).outfit).toEqual({ head: 'bonnet', toy: 'coeur' });
 
-    expect(await apiError(alice.api.pet.setOutfit({ head: 'couronne' }))).toEqual({ code: 'forbidden', message: 'cet objet n’est pas encore à toi.' });
+    expect(await apiError(alice.api.pet.setOutfit({ head: 'couronne' }))).toEqual({ code: 'forbidden', message: 'Cet objet n’est pas encore à toi.' });
     expect(await errorCode(alice.api.pet.setOutfit({ head: 'aureole' }))).toBe('forbidden'); // premium
     expect(await errorCode(alice.api.pet.setOutfit({ head: 'ballon' }))).toBe('forbidden'); // mauvais emplacement
     expect(await errorCode(alice.api.pet.setOutfit({ head: 'pas_un_objet' }))).toBe('invalid');
@@ -113,7 +115,8 @@ describe('soins et garde-robe', () => {
   });
 
   it('le premier défi relevé débloque le pansement', async () => {
-    const view = await bob.api.pet.answerChallenge(0);
+    await doToday(bob);
+    const view = await bob.api.pet.get();
     expect(view.newItems).toEqual(['pansement']);
     expect((await bob.api.pet.get()).newItems).toEqual([]);
     expect((await bob.api.pet.wardrobe()).items.find((i) => i.id === 'livre')?.goal).toEqual({ stat: 'challenges', have: 1, need: 2 });
@@ -191,7 +194,7 @@ describe('un pet qui boude ne sort plus', () => {
     expect(sulking.petShape).toBe('boude');
     expect(sulking.suggestions).toEqual([]);
     expect(sulking.incoming.map((i) => i.from.displayName)).toEqual(['Fred']);
-    expect(await apiError(dana.api.encounters.wave(eli.id))).toEqual({ code: 'forbidden', message: 'ton pet boude : occupe-toi de lui avant de saluer.' });
+    expect(await apiError(dana.api.encounters.wave(eli.id))).toEqual({ code: 'forbidden', message: 'Ton minimoa boude. Occupe-toi de lui avant de saluer.' });
 
     // Vu par les autres : un pet qui boude a l'air triste.
     const seen = (await fred.api.encounters.list()).suggestions.find((s) => s.user.id === eli.id);

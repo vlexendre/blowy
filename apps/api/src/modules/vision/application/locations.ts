@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { visionErrorText } from '@blowy/content';
+import { textOf, visionText } from '@blowy/content';
 import { type GeoPoint, cellOf, entitlements, isAwayFromHome, updateHome } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
@@ -39,7 +39,7 @@ export class Locations {
     let { profile } = await this.state(userId);
     const now = this.clock.now().toISOString();
     if (!profile.locationConsentAt) {
-      if (!consent) throw new DomainError('forbidden', visionErrorText.locationConsent);
+      if (!consent) throw new DomainError('forbidden', textOf(visionText, (t) => t.errors.locationConsent));
       profile = await this.profiles.update(userId, { locationConsentAt: now });
     }
     const before = await this.places.find(userId);
@@ -73,8 +73,8 @@ export class Locations {
   /** Changer de ville (Blowy+) : déplace le centre des rencontres, pas la zone montrée aux autres. */
   async chooseCity(userId: string, city: ChosenCityRecord): Promise<LocationState> {
     const s = await this.state(userId);
-    if (!entitlements(s.plus).changeCity) throw new DomainError('forbidden', visionErrorText.changeCityPlus);
-    if (!s.place) throw new DomainError('invalid', visionErrorText.locationConsent);
+    if (!entitlements(s.plus).changeCity) throw new DomainError('forbidden', textOf(visionText, (t) => t.errors.changeCityPlus));
+    if (!s.place) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.locationConsent));
     const place: PlaceRecord = { ...s.place, chosenCity: { label: city.label, lat: city.lat, lng: city.lng } };
     await this.places.save(place);
     await this.cache.clear(userId);

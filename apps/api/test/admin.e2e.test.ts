@@ -138,7 +138,7 @@ describe('administration', () => {
       expect(entry.until).not.toBeNull();
       const err = await apiError(x.api.me.get());
       expect(err.code).toBe('suspended');
-      expect(err.message).toMatch(/^Ton compte est suspendu jusqu’au \d+ \w+, après des signalements\. Une question \? Écris-nous à /);
+      expect(err.message).toMatch(/^Ton compte est suspendu jusqu’au \d+ \w+, après des signalements\. Une question\s\? Écris-nous à /);
       expect((await apiError(x.api.links.list())).code).toBe('suspended');
       expect((await admin.suspensions()).items.map((s) => s.displayName)).toContain('Max');
 
@@ -218,10 +218,16 @@ describe('administration', () => {
       expect(overview.retention.d1.value).not.toBeNull();
       expect(overview.series.find((s) => s.key === 'dau')?.points).toHaveLength(30);
       const funnel = await admin.funnel();
+      // Sept jours calculés sont nécessaires pour une semaine de propositions.
       expect(funnel.encounters.proposed.value).toBeNull();
       expect(funnel.links.active).toBeGreaterThanOrEqual(1);
       const minimoas = await admin.minimoas();
-      expect(minimoas.shapes).toBeNull();
+      // Apports de « vision » et « rituels » (LiveAdminInsights) : sur les deux comptes actifs ce jour-là.
+      const shapes = minimoas.shapes;
+      expect(shapes && shapes.en_forme + shapes.bof + shapes.boude).toBe(2);
+      expect(minimoas.visions?.map((v) => v.axis)).toEqual(['foyer', 'ancrage', 'elan', 'rythme', 'cap']);
+      expect(minimoas.visions?.[0]?.buckets.reduce((a, b) => a + b, 0)).toBe(2);
+      expect(overview.averageStreak.value).toBe(0);
       expect(Array.isArray(minimoas.top)).toBe(true);
       const ai = await admin.aiCosts(7);
       expect(ai.available).toBe(true);

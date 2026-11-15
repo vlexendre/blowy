@@ -7,21 +7,25 @@
  * Idempotent : un report est clos avant l'envoi (une seule fois), le défi du matin n'est envoyé qu'une fois par jour
  * local (règle du notifieur) et son prochain envoi est recalculé tout de suite.
  */
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { addDays, dayOf } from '@blowy/domain';
 import { AI_USAGE_STORE, type AiUsageStore } from '../../integrations/ai/usage-store';
 import { PUSHER, type Pusher } from '../../integrations/push/pusher';
 import type { TickJob } from '../tick/tick-job';
 import { TICK_RUNS, type TickRunsRepository } from '../tick/ports';
+import { LiveActivities } from './live-activities';
 import { NotificationSettings } from './notification-settings';
 import { PushNotifier } from './push-notifier';
-import { type DevicesRepository, NOTIFICATION_LOG, NOTIFICATION_SETTINGS, type NotificationLogRepository, type NotificationSettingsRepository, PUSH_DEVICES, PUSH_RECEIPTS, type PushReceiptsRepository } from './ports';
+import { DAILY_PUSH_SOURCE, type DailyPushSource, type DevicesRepository, NOTIFICATION_LOG, NOTIFICATION_SETTINGS, type NotificationLogRepository, type NotificationSettingsRepository, PUSH_DEVICES, PUSH_RECEIPTS, type PushReceiptsRepository } from './ports';
 
 const BATCH = 100;
 const RECEIPT_DELAY_MS = 15 * 60_000;
 
 @Injectable()
 export class NotificationJobs implements TickJob {
+  private readonly logger = new Logger('Push');
+
   constructor(
     @Inject(PushNotifier) private readonly notifier: PushNotifier,
     @Inject(NotificationSettings) private readonly settings: NotificationSettings,
@@ -32,7 +36,18 @@ export class NotificationJobs implements TickJob {
     @Inject(PUSHER) private readonly pusher: Pusher,
     @Inject(AI_USAGE_STORE) private readonly aiUsage: AiUsageStore,
     @Inject(TICK_RUNS) private readonly tickRuns: TickRunsRepository,
+    @Inject(ModuleRef) private readonly moduleRef: ModuleRef,
+    @Inject(LiveActivities) private readonly live: LiveActivities,
   ) {}
+
+  /** Contenu du défi du jour (module « rituels ») ; absent : envoi sans détail. */
+  private dailySource(): DailyPushSource | null {
+    try {
+      return this.moduleRef.get<DailyPushSource>(DAILY_PUSH_SOURCE, { strict: false });
+    } catch {
+      return null;
+    }
+  }
 
   async runDue(now: Date, deadline: number = Date.now() + 20_000): Promise<number> {
     const at = now.toISOString();
@@ -45,17 +60,28 @@ export class NotificationJobs implements TickJob {
       if (due.length < BATCH) break;
     }
 
-    // 2. Défi du jour, le matin.
+    // 2. Défi du jour, le matin, à l'heure choisie : seul chemin d'envoi de `daily_challenge`.
+    const source = this.dailySource();
     for (let i = 0; i < 20 && Date.now() < deadline; i++) {
       const due = await this.settingsRepo.dueMorning(at, BATCH);
       for (const s of due) {
         // D'abord le prochain créneau : un tick concurrent ne reprend pas la même personne.
         await this.settings.scheduleNextMorning(s, now);
-        await this.notifier.notify(s.userId, 'daily_challenge', {});
+        let vars: Record<string, string> | null = {};
+        try {
+          vars = source ? await source.morning(s.userId, now) : {};
+        } catch (err) {
+          this.logger.warn(`défi du jour illisible : ${err instanceof Error ? err.message : 'erreur'}`);
+        }
+        if (vars === null) continue; // personne inactive ou défi déjà fait
+        await this.notifier.notify(s.userId, 'daily_challenge', vars);
         done += 1;
       }
       if (due.length < BATCH) break;
     }
+
+    // 2 bis. Activités en direct arrivées à leur fin (minuit local) : terminées, jetons oubliés.
+    if (Date.now() < deadline) done += await this.live.endExpired(now, deadline);
 
     // 3. Reçus.
     if (Date.now() < deadline) {

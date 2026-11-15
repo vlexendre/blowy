@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Clock } from '../../../shared/clock';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { BLOCKS, CLOCK, LINKS, PROFILES } from '../../../shared/tokens';
 import type { LinksRepository } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
@@ -22,8 +22,8 @@ export class Blocks {
   ) {}
 
   async block(userId: string, targetId: string): Promise<void> {
-    if (userId === targetId) throw new DomainError('invalid', 'Tu ne peux pas te bloquer toi-même.');
-    if (!(await this.profiles.findById(targetId))) throw new DomainError('not_found', 'Cette personne est introuvable.');
+    if (userId === targetId) throw new DomainError('invalid', errorText('blockSelf'));
+    if (!(await this.profiles.findById(targetId))) throw new DomainError('not_found', errorText('personNotFound'));
     await this.blocks.add({ blocker: userId, blocked: targetId, createdAt: this.clock.now().toISOString() });
     const [a, b] = userId < targetId ? [userId, targetId] : [targetId, userId];
     const link = await this.links.findBetween(a, b);

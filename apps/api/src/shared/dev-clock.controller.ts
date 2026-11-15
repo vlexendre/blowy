@@ -2,7 +2,7 @@ import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { z } from 'zod';
 import { Public } from './auth.guard';
 import { type Clock, canAdvance } from './clock';
-import { DomainError } from './errors';
+import { DomainError, errorText } from './errors';
 import { CLOCK } from './tokens';
 
 const AdvanceZ = z.object({ hours: z.number().positive().max(24 * 60) });
@@ -21,7 +21,7 @@ export class DevClockController {
   @Post('advance')
   advance(@Body() body: unknown): { now: string } {
     const parsed = AdvanceZ.safeParse(body);
-    if (!parsed.success) throw new DomainError('invalid', 'Indique un nombre d’heures (1 à 1440).');
+    if (!parsed.success) throw new DomainError('invalid', errorText('devClockHours'));
     if (!canAdvance(this.clock)) throw new DomainError('forbidden');
     this.clock.advanceHours(parsed.data.hours);
     return this.now();

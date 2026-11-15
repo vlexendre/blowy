@@ -1,7 +1,9 @@
 import { type ArgumentsHost, Catch, type ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import type { Locale } from '@blowy/content';
 import type { ApiErrorBody, ErrorCode } from '@blowy/contract';
-import type { Response } from 'express';
-import { DEFAULT_MESSAGES, DomainError, HTTP_STATUS } from './errors';
+import type { Request, Response } from 'express';
+import { DomainError, HTTP_STATUS, defaultMessage } from './errors';
+import { localeOfRequest } from './locale';
 
 /** Toute erreur sort au format du contrat : { error: { code, message } }. */
 @Catch()
@@ -9,24 +11,25 @@ export class ErrorFilter implements ExceptionFilter {
   private readonly logger = new Logger('Erreurs');
 
   catch(exception: unknown, host: ArgumentsHost): void {
-    const res = host.switchToHttp().getResponse<Response>();
-    const { status, body } = this.toBody(exception);
+    const http = host.switchToHttp();
+    const res = http.getResponse<Response>();
+    const { status, body } = this.toBody(exception, localeOfRequest(http.getRequest<Request>()));
     res.status(status).json(body);
   }
 
-  private toBody(exception: unknown): { status: number; body: ApiErrorBody } {
+  private toBody(exception: unknown, locale: Locale): { status: number; body: ApiErrorBody } {
     if (exception instanceof DomainError) {
-      return { status: HTTP_STATUS[exception.code], body: { error: { code: exception.code, message: exception.message } } };
+      return { status: HTTP_STATUS[exception.code], body: { error: { code: exception.code, message: exception.messageIn(locale) } } };
     }
     if (exception instanceof HttpException) {
       const code = codeForStatus(exception.getStatus());
       const status = code === 'internal' ? 500 : HTTP_STATUS[code];
-      return { status, body: { error: { code, message: DEFAULT_MESSAGES[code] } } };
+      return { status, body: { error: { code, message: defaultMessage(code, locale) } } };
     }
     // Ni le corps de la requête ni les jetons ne sont journalisés : seulement le type et le message technique.
     const err = exception instanceof Error ? exception : new Error(String(exception));
     this.logger.error(`${err.name}: ${err.message}`, err.stack);
-    return { status: 500, body: { error: { code: 'internal', message: DEFAULT_MESSAGES.internal } } };
+    return { status: 500, body: { error: { code: 'internal', message: defaultMessage('internal', locale) } } };
   }
 }
 

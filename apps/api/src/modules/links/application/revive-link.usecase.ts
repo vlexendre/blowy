@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { revivedLine, systemText } from '@blowy/content';
 import { reviveLink } from '@blowy/domain';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import type { LinkActionResult } from './link-action';
 import { LinkSession } from './link-session';
 
@@ -15,11 +15,11 @@ export class ReviveLink {
     const revived = reviveLink(draft.link, draft.today);
     if (!revived) {
       await this.session.commit(draft);
-      throw new DomainError('cannot_revive', draft.link.revived ? 'Ce lien a déjà été ranimé une fois.' : 'Ce lien n’est pas fantôme.');
+      throw new DomainError('cannot_revive', draft.link.revived ? errorText('reviveAlready') : errorText('reviveNotGhost'));
     }
     draft.update(revived);
-    draft.system(systemText.revived);
-    for (const owner of [userId, draft.otherOf(userId)]) draft.pet(owner, revivedLine(draft.pair(owner), draft.seed('revived', owner)));
+    draft.system(systemText(draft.systemLocale).revived);
+    for (const owner of [userId, draft.otherOf(userId)]) draft.pet(owner, revivedLine(draft.localeOf(owner), draft.pair(owner), draft.seed('revived', owner)));
     const messages = await this.session.commit(draft);
     return { link: draft.link, messages };
   }

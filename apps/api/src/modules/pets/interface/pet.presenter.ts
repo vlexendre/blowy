@@ -32,7 +32,6 @@ const toEventDto = (e: PetEventRecord): PetEvent => ({ id: e.id, kind: e.kind, d
 export const toPetView = (r: PetViewResult): PetView => ({
   pet: toPetDto(r.pet),
   events: r.events.map(toEventDto),
-  challenge: { id: r.challenge.id, question: r.challenge.question, choices: r.challenge.choices.map((c) => c.label), doneToday: r.doneToday },
   wordsCount: r.wordsCount,
   careDays: r.pet.careDays,
   newItems: r.newItems,

@@ -11,6 +11,11 @@ export const config = {
   supabaseKey: process.env.EXPO_PUBLIC_SUPABASE_KEY ?? '',
   /** `local` : connexion factice (code 000000) pour le développement, avec l'API en mode mémoire. */
   auth: process.env.EXPO_PUBLIC_AUTH === 'local' && isLocalApi ? ('local' as const) : ('supabase' as const),
+  /**
+   * `1` : envoyer à l'API les jetons APNs des activités en direct (`kind: 'apns_live_activity'`). À n'activer que
+   * lorsque l'API range ce type de jeton à part (sinon il serait pris pour un jeton Expo) : docs/WIDGETS.md.
+   */
+  liveActivityPush: process.env.EXPO_PUBLIC_LIVE_ACTIVITY_PUSH === '1',
 } as const;
 
 export const inviteUrl = (code: string): string => `${config.webUrl}/i/${code}`;

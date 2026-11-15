@@ -8,6 +8,7 @@ import { AppState, Platform } from 'react-native';
 import { config } from '../config';
 import { AuthError, type AuthPort, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
 import { pickImage } from './image-picker';
+import { common } from '@/locales/common';
 
 const BUCKET = 'media';
 
@@ -28,10 +29,10 @@ export function createSupabase(): SupabaseClient {
 const toSession = (s: SbSession | null): Session | null => (s ? { userId: s.user.id, email: s.user.email ?? null } : null);
 
 function authError(message: string, status?: number): AuthError {
-  if (status === 429) return new AuthError('rate_limited', 'Trop de tentatives. Réessaie dans une minute.');
-  if (/invalid|expired|otp/i.test(message)) return new AuthError('invalid_code', 'Ce code n’est pas le bon, ou il a expiré.');
-  if (/network|fetch/i.test(message)) return new AuthError('network', 'Connexion impossible. Vérifie ton réseau.');
-  return new AuthError('unknown', 'Une erreur est survenue. Réessaie.');
+  if (status === 429) return new AuthError('rate_limited', common.errors.rateLimited);
+  if (/invalid|expired|otp/i.test(message)) return new AuthError('invalid_code', common.errors.invalidCode);
+  if (/network|fetch/i.test(message)) return new AuthError('network', common.errors.network);
+  return new AuthError('unknown', common.errors.unknown);
 }
 
 export function supabaseAuth(sb: SupabaseClient): AuthPort {
@@ -52,7 +53,7 @@ export function supabaseAuth(sb: SupabaseClient): AuthPort {
       const { data, error } = await sb.auth.verifyOtp({ email, token: code, type: 'email' });
       if (error) throw authError(error.message, error.status);
       const session = toSession(data.session);
-      if (!session) throw new AuthError('unknown', 'Une erreur est survenue. Réessaie.');
+      if (!session) throw new AuthError('unknown', common.errors.unknown);
       return session;
     },
     async signOut() {
