@@ -240,3 +240,13 @@ Pages, sur le site et liées depuis l'app : mentions légales · conditions d'ut
 ## 23. Langues
 
 FR, EN, ES, PT, NL, selon la langue du téléphone (repli : anglais ; français si la langue est le français). Tout texte passe par des clés : app, textes venant de l'API (voix du minimoa, défis, bilans, notifications, e-mails), pages légales. Les prix et les dates suivent la région.
+
+## 24. Plus de photo du jour : la série d'un lien vit avec la conversation (décision du 15 nov., 13 h 35)
+
+- **La photo du jour disparaît** : plus de photo quotidienne à poster dans un lien, plus d'onglet ni de carte qui la demande, plus de notification ni d'activité en direct « X a posté, à toi ».
+- **La série d'un lien** compte les jours d'affilée où **les deux se sont écrit** (au moins un message de chacun dans la journée, heure de Paris). Un jour où un seul a écrit ne casse pas les vies, mais n'allonge pas la série.
+- **Les vies** ne changent pas : un jour entier sans aucun échange en coûte une ; à zéro le lien devient fantôme.
+- **L'expérience et les niveaux** : les points que rapportait la photo du jour sont reportés sur la conversation régulière (un bonus le jour où les deux se sont écrit), pour que les 7 niveaux restent atteignables au même rythme qu'avant.
+- **Dans le lien**, l'onglet « Aujourd'hui » devient l'état du lien du jour : la série, « à toi d'écrire » ou « vous vous êtes écrit aujourd'hui », la semaine, les vies, le niveau et ce qu'il débloque. « Souvenirs » garde les étapes du lien (rencontre, niveaux passés, records de série) et les photos que les deux se sont envoyées dans le chat si le chat en permet.
+- **Rappels** : « lien en danger » reste ; « série avec X : à toi d'écrire avant minuit » remplace le rappel de photo, une fois par jour au plus et seulement si l'autre a déjà écrit. L'activité en direct correspondante remplace celle de la photo.
+- Ne sont **pas** concernés : la photo de profil (floue pour l'autre jusqu'au niveau 5), les photos de preuve d'habitude, le défi du jour de type photo, ni la série personnelle (celle de la mèche), qui reste liée au défi du jour.
