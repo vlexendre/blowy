@@ -79,7 +79,7 @@ export function Costs() {
                         <td>{FEATURES[f.feature] ?? f.feature}</td>
                         <td className="num">{fmtInt(f.calls)}</td>
                         <td className="num">{fmtUsd(f.costUsd)}</td>
-                        <td className="num">{f.calls > 0 ? `${(f.costUsd / f.calls).toFixed(4)} $` : '—'}</td>
+                        <td className="num">{f.calls > 0 ? perCall(f.costUsd / f.calls) : "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -93,3 +93,6 @@ export function Costs() {
     </>
   );
 }
+
+const perCallFmt = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD', minimumFractionDigits: 4, maximumFractionDigits: 4 });
+const perCall = (n: number): string => perCallFmt.format(n);

@@ -49,7 +49,7 @@ export function Minimoas() {
             )}
           </section>
 
-          <div className="grid-2 section">
+          <div className="section" style={{ display: 'grid', gap: 12 }}>
             <section className="card" aria-labelledby="shapes">
               <h2 id="shapes">Forme des minimoas</h2>
               {data.shapes ? (
@@ -61,21 +61,45 @@ export function Minimoas() {
             <section className="card" aria-labelledby="visions">
               <h2 id="visions">Répartition des visions</h2>
               {data.visions ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                  {data.visions.map((v) => {
-                    const [name, minus, plus] = AXES[v.axis] ?? [v.axis, '−', '+'];
-                    return (
-                      <div key={v.axis}>
-                        <h3 style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span>{name}</span>
-                          <span className="muted small">
-                            {minus} ← → {plus}
-                          </span>
-                        </h3>
-                        <BarList label={`Vision : ${name}`} rows={v.buckets.map((b, i) => ({ label: BUCKETS[i] ?? '', value: b }))} />
-                      </div>
-                    );
-                  })}
+                <div className="table-wrap vision">
+                  <table>
+                    <caption className="sr-only">Part des comptes par tranche, sur chaque axe de vision</caption>
+                    <thead>
+                      <tr>
+                        <th>Axe</th>
+                        {BUCKETS.map((b) => (
+                          <th key={b} className="num">
+                            {b}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.visions.map((v) => {
+                        const [name, minus, plus] = AXES[v.axis] ?? [v.axis, '−', '+'];
+                        const total = v.buckets.reduce((a, b) => a + b, 0) || 1;
+                        const max = Math.max(1, ...v.buckets);
+                        return (
+                          <tr key={v.axis}>
+                            <td>
+                              <strong>{name}</strong>
+                              <div className="muted small">
+                                {minus} → {plus}
+                              </div>
+                            </td>
+                            {v.buckets.map((b, i) => (
+                              <td key={i} className="num cell" title={`${fmtInt(b)} comptes`}>
+                                {Math.round((b / total) * 100)} %
+                                <div className="cell-bar" aria-hidden="true">
+                                  <div style={{ width: `${(b / max) * 100}%` }} />
+                                </div>
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               ) : (
                 <Empty title="Pas encore branché">La répartition vient du chantier « vision ».</Empty>
@@ -102,7 +126,7 @@ export function Minimoas() {
               <label className="sr-only" htmlFor="topq">
                 Rechercher un minimoa ou une personne
               </label>
-              <input id="topq" className="input" type="search" placeholder="Rechercher un minimoa ou un prénom" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input id="topq" className="input" type="search" placeholder="Minimoa ou prénom" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             {top.length === 0 ? (
               <Empty title="Aucun minimoa ne correspond" />

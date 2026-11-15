@@ -59,7 +59,7 @@ export function Audit() {
         <label className="sr-only" htmlFor="aq">
           Rechercher
         </label>
-        <input id="aq" className="input" type="search" placeholder="Prénom, adresse de l’équipe ou motif" value={q} onChange={(e) => setQ(e.target.value)} style={{ minWidth: 280 }} />
+        <input id="aq" className="input" type="search" placeholder="Prénom, équipe ou motif" value={q} onChange={(e) => setQ(e.target.value)} style={{ minWidth: 280 }} />
       </div>
       {error && <ErrorBox message={error} onRetry={() => setNonce((n) => n + 1)} />}
       {loading && !data ? (

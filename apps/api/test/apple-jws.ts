@@ -22,7 +22,7 @@ const ROGUE_KEY = read('rogue.pk8.pem');
 
 export interface SignOptions {
   /** Chaîne x5c (par défaut : feuille, intermédiaire, racine de test). */
-  chain?: string[];
+  chain?: readonly string[];
   key?: string;
   alg?: string;
 }

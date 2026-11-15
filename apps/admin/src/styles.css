@@ -36,7 +36,7 @@ h3 { font-size: 15px; font-weight: 800; margin: 0 0 var(--s-sm); }
 .section > h2 .hint { font-weight: 500; color: var(--mute); font-size: 13px; }
 
 /* Grilles */
-.grid { display: grid; gap: var(--s-md); grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.grid { display: grid; gap: var(--s-md); grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); }
 .grid-2 { display: grid; gap: var(--s-md); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-3 { display: grid; gap: var(--s-md); grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 1200px) { .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -104,10 +104,10 @@ tbody tr:hover { background: color-mix(in srgb, var(--card) 60%, transparent); }
 .chart .tip { position: absolute; pointer-events: none; background: var(--night); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 12px; white-space: nowrap; transform: translate(-50%, -110%); }
 .chart .tip strong { display: block; font-size: 14px; }
 .bars { display: flex; flex-direction: column; gap: 10px; }
-.bar-row { display: grid; grid-template-columns: 140px 1fr 72px; gap: var(--s-sm); align-items: center; font-size: 14px; }
+.bar-row { display: grid; grid-template-columns: 120px 1fr 110px; gap: var(--s-sm); align-items: center; font-size: 14px; }
 .bar-track { height: 10px; background: var(--card); border-radius: 4px; overflow: hidden; }
 .bar-fill { height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
-.bar-row .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--mute); }
+.bar-row .num { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; color: var(--mute); }
 details.data { margin-top: var(--s-sm); font-size: 13px; color: var(--mute); }
 details.data summary { cursor: pointer; }
 details.data table { margin-top: var(--s-sm); }
@@ -145,3 +145,10 @@ dl.facts dd { margin: 0; }
 .progress { height: 8px; background: var(--card); border-radius: 4px; overflow: hidden; }
 .progress > div { height: 100%; background: var(--accent); }
 .progress.over > div { background: var(--danger); }
+
+/* Répartition des visions : un axe par ligne, cinq tranches */
+.vision td.cell { min-width: 84px; }
+.vision td:first-child { white-space: nowrap; }
+.vision .cell-bar { height: 6px; background: var(--card); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.vision .cell-bar > div { height: 100%; background: var(--accent); }
+#topq, #q { min-width: 260px; }

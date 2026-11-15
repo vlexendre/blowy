@@ -213,3 +213,59 @@ lecture (`tickLink`) ; les reports, défis du matin et relances sont sélectionn
 (`send_after <= now`, `next_morning_at <= now`, silence ≥ 72 h), donc ils partent en retard, une seule fois. Garde-fous :
 un report de plus de 24 h est abandonné, et un défi du matin qui tomberait pendant les heures calmes (panne longue)
 est abandonné plutôt qu'envoyé la nuit. Un tick répété dans la même minute ne refait rien (`ran: false`).
+
+## Blowy+ et administration (chantier « facturation-admin »)
+
+Mise en place côté App Store : `docs/BLOWY-PLUS.md`. Appli web d'administration : `apps/admin/README.md`.
+
+### Variables
+
+| Variable | Rôle |
+|---|---|
+| `ADMIN_EMAILS` | Adresses autorisées sur `/admin/*`, séparées par des virgules (casse ignorée). Vide = personne. En démo locale (mémoire + `BLOWY_DEMO=1`) sans liste : `admin@blowy.local`. |
+| `APPLE_BUNDLE_ID` | Bundle iOS (défaut `app.blowy`), vérifié dans chaque transaction et notification. |
+| `APPLE_APP_APPLE_ID` | Apple ID numérique de l'app (App Store Connect → Informations sur l'app). **Requis en production** : vérifié sur les notifications de production. |
+| `APPLE_ACCEPT_SANDBOX` | `1` (défaut) : accepte les achats du bac à sable (TestFlight). `0` : les refuse. |
+| `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY` | Identifiants produit (défauts `app.blowy.plus.yearly`, `app.blowy.plus.monthly`). |
+
+Aucune clé secrète : les achats se vérifient avec le certificat public d'Apple, embarqué dans le code.
+
+### Routes
+
+| Route | Qui | Rôle |
+|---|---|---|
+| `GET /v1/plus/paywall` | l'app | offres (produits, montants facturés de repli, périodes), essai et frise, avantages (`entitlements`), nombre réel de personnes compatibles autour (0 = cacher le bloc), mentions et liens légaux, état de l'abonnement |
+| `GET /v1/plus/subscription` | l'app | état : `none`, `trial` (jusqu'au…), `active`, `grace`, `billing_retry`, `expired`, `refunded`, `revoked` ; se renouvelle ou non ; lien « Gérer » |
+| `POST /v1/plus/purchases` | l'app | après un achat ou « Restaurer » : `Transaction.jwsRepresentation` (+ `renewalInfo` signé si disponible) |
+| `POST /v1/plus/apple/notifications` | Apple | App Store Server Notifications V2 (publique, authentifiée par la signature, idempotente) |
+| `/admin/*` | l'équipe | voir `packages/contract/src/v7/admin.ts` ; lecture seule sauf `POST /admin/moderation/actions` |
+
+### Vérification des achats (`src/modules/billing`)
+
+- Port `Billing` (`ports.ts`) : `AppleBilling` (réel, `infrastructure/apple/app-store-verifier.ts`), `MemoryBilling` (tests et local, « JWS » non signés `memory.<base64url>`), `GooglePlayBilling` (emplacement réservé, refuse tout).
+- `AppleBilling` vérifie localement chaque JWS comme la bibliothèque officielle d'Apple : `alg` ES256, chaîne `x5c` de 3 certificats, intermédiaire signé par **Apple Root CA - G3** (embarquée, empreinte SHA-256 `63:34:3A:…:91:79`) et portant l'extension 1.2.840.113635.100.6.2.1, feuille portant 1.2.840.113635.100.6.11.1, validité à la date de signature, signature ES256, puis bundle, Apple ID (production) et environnement. Pas de vérification OCSP en ligne (optionnelle chez Apple).
+- Les événements sont ramenés à un `StoreEvent` du domaine ; l'état est calculé par `applyStoreEvent` (`packages/domain/src/billing.ts`, testé) et `profiles.plus_until` par `plusUntilOf` (accès gardé pendant l'essai, la période payée et le délai de grâce ; coupé à la date d'un remboursement ou d'un retrait du partage familial).
+- Rattachement : `appAccountToken` (l'app doit passer `Me.id` à l'achat), sinon l'abonnement déjà connu, sinon la personne qui envoie la transaction. Une restauration depuis un autre compte Blowy déplace l'abonnement.
+- Idempotence : table `store_notifications` (clé `notificationUUID`) ; une notification déjà traitée rend `duplicate` (200). Signature refusée : 400. Erreur technique : 500, Apple renvoie (5 fois, à 1, 12, 24, 48 et 72 h).
+- Tâche `BillingJobs` (minuteur) : rappel de fin d'essai à partir du jour 5 (`Notifier.notify(userId, 'trial_reminder', { endsOn, price })`), entre 10 h et 20 h (Paris) sauf dans les 12 dernières heures, une seule fois par essai ; pas de rappel si l'essai est annulé. Purge des notifications de plus de 90 jours.
+- Non implémenté (et pas nécessaire pour démarrer) : appels à l'App Store Server API (Get All Subscription Statuses, Get Notification History) pour rattraper des notifications manquées après une panne longue ; ils demanderont une clé d'API In-App Purchase (`.p8`).
+
+Pages Apple consultées (15 novembre 2026) :
+- [notificationType](https://developer.apple.com/documentation/appstoreservernotifications/notificationtype) : types et sous-types par événement (essai, renouvellement, annulation, délai de grâce, nouvelle tentative, expiration, remboursement, retrait).
+- [responseBodyV2DecodedPayload](https://developer.apple.com/documentation/appstoreservernotifications/responsebodyv2decodedpayload) et [data](https://developer.apple.com/documentation/appstoreservernotifications/data) : enveloppe de la notification (`notificationUUID`, `signedDate`, `data.signedTransactionInfo`, `data.signedRenewalInfo`, `data.status`).
+- [Transaction data types](https://developer.apple.com/documentation/appstoreservernotifications/transaction-data-types) et [Data types de l'App Store Server API](https://developer.apple.com/documentation/appstoreserverapi/data-types) : champs de `JWSTransactionDecodedPayload` et `JWSRenewalInfoDecodedPayload` (`offerType`, `offerDiscountType`, `expiresDate`, `revocationDate`, `appAccountToken`, `gracePeriodExpiresDate`, `isInBillingRetryPeriod`, `autoRenewStatus`).
+- [JWSDecodedHeader](https://developer.apple.com/documentation/appstoreservernotifications/jwsdecodedheader) : chaîne `x5c` et extension de l'intermédiaire.
+- [Responding to App Store Server Notifications](https://developer.apple.com/documentation/appstoreservernotifications/responding-to-app-store-server-notifications) : codes de réponse et calendrier des renvois.
+- [Apple PKI](https://www.apple.com/certificateauthority/) : Apple Root CA - G3.
+- Bibliothèque officielle [app-store-server-library-python](https://apple.github.io/app-store-server-library-python/) : valeurs de `offerType` (1 à 4), `Status` (1 actif, 2 expiré, 3 nouvelle tentative, 4 délai de grâce, 5 révoqué), `OfferDiscountType`, et l'algorithme de `SignedDataVerifier` reproduit ici.
+
+Tests : `test/apple-billing.e2e.test.ts` (adaptateur réel contre des charges conformes à la documentation, signées par une chaîne de test générée avec openssl dans `test/fixtures/apple` ; la route des notifications avec cet adaptateur) et `test/billing.e2e.test.ts` (parcours complet en mémoire). Aucune vraie transaction Apple n'a été vérifiée faute de clés et de compte de test.
+
+### Administration et modération (`src/modules/admin`)
+
+- `AdminGuard` : chaque route `/admin/*` exige un jeton valide (garde globale, 401 sinon) **et** une adresse de `ADMIN_EMAILS` (403 sinon).
+- Suspension : la garde d'authentification appelle `AccountGate` après chaque jeton ; un compte suspendu reçoit `403 suspended` avec un message clair (jusqu'à quand, qui contacter), sauf `DELETE /v1/me` (il peut toujours supprimer son compte). Cache de 30 s par instance, vidé localement à chaque action.
+- Supprimer réutilise `DeleteMe` (le même chemin que « Supprimer mon compte ») ; le journal (`admin_audit_log`) est écrit avant et garde le prénom.
+- Contexte d'un signalement : seulement le message signalé (`messageId`, nouveau champ facultatif de `POST /v1/reports`) et deux messages avant et après, dans le lien du signalement. Jamais « qui quelqu'un veut rencontrer ».
+- Chiffres : `AdminStatsJobs` (minuteur) calcule chaque jour terminé une seule fois (fonction SQL `admin_daily_metrics`, une requête par jour) et le range dans `admin_daily_stats` ; les écrans lisent au plus 60 lignes. Les jours d'activité (`user_activity_days`, une écriture par personne et par jour, gardés 40 jours) donnent actifs et rétention.
+- Apports des autres chantiers : port `ADMIN_INSIGHTS` (série moyenne, rencontres proposées, compatibilité moyenne, formes, visions) à brancher par « rituels » et « vision » ; coûts IA lus dans `AiUsage` (« plateforme »).

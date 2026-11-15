@@ -98,7 +98,7 @@ export function Moderation({ onCountsChange }: { onCountsChange?: () => void }) 
           <label className="sr-only" htmlFor="q">
             Rechercher une personne signalée
           </label>
-          <input id="q" className="input" type="search" placeholder="Prénom de la personne signalée" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input id="q" className="input" type="search" placeholder="Personne signalée" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
         {error && <ErrorBox message={error} onRetry={refresh} />}
         {loading && !pages ? (
@@ -337,7 +337,7 @@ function ReportDrawer({ id, onClose, onDone }: { id: string; onClose: () => void
             <dl className="facts">
               <dt>Personne signalée</dt>
               <dd>
-                {target ? `${target.displayName} (${target.openReports} ouvert·s, ${target.totalReports} au total)` : 'Compte supprimé'}
+                {target ? `${target.displayName} (signalements : ${target.openReports} ouvert${target.openReports > 1 ? 's' : ''}, ${target.totalReports} au total)` : 'Compte supprimé'}
                 {target?.suspended && ` · suspendue ${target.suspendedUntil ? `jusqu’au ${fmtDateTime(target.suspendedUntil)}` : 'sans fin'}`}
               </dd>
               <dt>Signalé par</dt>

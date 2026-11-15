@@ -4,15 +4,15 @@
  * survol au clavier et à la souris, et le tableau des valeurs pour qui ne lit pas le graphique.
  */
 import type { AdminSeries } from '@blowy/contract';
-import { type KeyboardEvent, useId, useMemo, useState } from 'react';
+import { type KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { fmtDay, fmtDayShort, fmtInt } from './format';
 
-const W = 640;
 const H = 200;
 const PAD = { top: 12, right: 12, bottom: 26, left: 48 };
 
 function niceMax(v: number): number {
   if (v <= 0) return 1;
+  if (v < 1) return Math.ceil(v * 10) / 10;
   const p = 10 ** Math.floor(Math.log10(v));
   const n = v / p;
   return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p;
@@ -21,6 +21,16 @@ function niceMax(v: number): number {
 export function TrendChart({ series, title, format = fmtInt }: { series: AdminSeries; title: string; format?: (n: number | null) => string }) {
   const id = useId();
   const [hover, setHover] = useState<number | null>(null);
+  // Largeur réelle du conteneur : le texte garde sa taille quelle que soit la largeur du graphique.
+  const box = useRef<HTMLElement>(null);
+  const [W, setW] = useState(640);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => entry && setW(Math.max(280, Math.round(entry.contentRect.width))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const pts = series.points;
   const values = pts.map((p) => p.value).filter((v): v is number => v !== null);
   const max = niceMax(Math.max(0, ...values));
@@ -41,7 +51,7 @@ export function TrendChart({ series, title, format = fmtInt }: { series: AdminSe
     });
     return d.trim();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pts, max]);
+  }, [pts, max, W]);
   const area = path ? `${path} L${x(lastIndex(pts)).toFixed(1)},${PAD.top + ih} L${x(firstIndex(pts)).toFixed(1)},${PAD.top + ih} Z` : '';
   const ticks = [0, max / 2, max];
   const h = hover !== null ? pts[hover] : undefined;
@@ -55,7 +65,7 @@ export function TrendChart({ series, title, format = fmtInt }: { series: AdminSe
   };
 
   return (
-    <figure className="chart" style={{ margin: 0 }}>
+    <figure className="chart" style={{ margin: 0 }} ref={box}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
@@ -76,7 +86,7 @@ export function TrendChart({ series, title, format = fmtInt }: { series: AdminSe
           <g key={t}>
             <line x1={PAD.left} x2={W - PAD.right} y1={y(t)} y2={y(t)} stroke="var(--line)" strokeWidth={1} />
             <text x={PAD.left - 8} y={y(t) + 4} textAnchor="end" fontSize={11} fill="var(--mute)">
-              {fmtInt(t)}
+              {format(t)}
             </text>
           </g>
         ))}
