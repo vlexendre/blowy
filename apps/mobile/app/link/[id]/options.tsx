@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { ConfirmSheet, errorText, shortDay, useArchiveLink, useBackToLink, useLink } from '@/features/links';
+import { ConfirmSheet, errorText, shortDay, useArchiveLink, useBackToLink, useLink, useLinkMinimoas, useUpdateLinkMinimoas } from '@/features/links';
 import { useBlock } from '@/features/safety';
-import { link as linkText, options as t } from '@/locales/chats';
+import { link as linkText, minimoas as minimoaText, options as t } from '@/locales/chats';
 
 type Sheet = 'block' | 'leave' | null;
 
@@ -20,6 +20,9 @@ export default function LinkOptionsScreen() {
   const archive = useArchiveLink();
   const [sheet, setSheet] = useState<Sheet>(null);
   const l = link.data;
+  const minimoas = useLinkMinimoas(id);
+  const updateMinimoas = useUpdateLinkMinimoas(id);
+  const mm = minimoas.data;
 
   // Ouvert par un lien profond, la feuille arrive seule dans la pile du lien : on la rouvre avec le lien dessous.
   const navigation = useNavigation();
@@ -62,6 +65,33 @@ export default function LinkOptionsScreen() {
         ) : (
           <>
             <SettingsSection tone="raised" rows={[{ key: 'levels', title: t.levels, onPress: () => router.push(`/link/${l.id}/niveaux`), chevron: true }]} />
+            {mm ? (
+              <SettingsSection
+                tone="raised"
+                title={minimoaText.sectionTitle}
+                // La phrase de confidentialité, telle que l'API la sert.
+                footer={mm.consent.text}
+                rows={[
+                  {
+                    key: 'reading',
+                    title: minimoaText.readingRow,
+                    subtitle: minimoaText.readingSub(mm.consent.mine, mm.consent.reading),
+                    switchValue: mm.consent.mine === true,
+                    onSwitchChange: (on: boolean) => updateMinimoas.mutate({ consent: on }),
+                  },
+                  {
+                    key: 'muted',
+                    title: minimoaText.muteRow,
+                    subtitle: minimoaText.muteSub(mm.interventionsToday, mm.maxPerDay),
+                    switchValue: !mm.muted,
+                    onSwitchChange: (on: boolean) => updateMinimoas.mutate({ muted: !on }),
+                  },
+                ]}
+              />
+            ) : minimoas.isPending ? (
+              <Skeleton height={120} radius="lg" />
+            ) : null}
+            {updateMinimoas.isError ? <Banner tone="error" text={minimoaText.error} /> : null}
             <SettingsSection
               tone="raised"
               rows={[

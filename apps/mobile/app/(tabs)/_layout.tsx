@@ -7,6 +7,7 @@ import { totalUnread, useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useGate } from '@/features/session';
 import { useWidgetSync } from '@/features/widgets';
+import { useNotificationsBridge } from '@/features/notifications';
 import { tabs } from '@/locales/chats';
 
 /** Onglet de départ quand on arrive directement sur un autre (lien profond, rechargement web). */
@@ -21,6 +22,8 @@ export default function TabsLayout() {
   const gate = useGate();
   // Widgets iOS et activités en direct (no-op ailleurs).
   useWidgetSync(gate);
+  // Notification touchée (même app fermée) → son écran ; appareil réenregistré au retour au premier plan.
+  useNotificationsBridge(gate);
   const links = useLinks();
   const encounters = useEncounters();
   const pet = usePet().data?.pet;

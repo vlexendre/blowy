@@ -62,6 +62,8 @@ export const link = messages({
   fr: {
     back: 'Retour aux chats',
     level: (n: number): string => `Niveau ${n} ›`,
+    /** En-tête chargé (interrupteur des minimoas) : version courte. */
+    levelShort: (n: number): string => `Niv. ${n} ›`,
     levelA11y: (n: number): string => `Niveau ${n} sur 7. Voir les niveaux du lien`,
     lives: (n: number): string => `${n} ${n > 1 ? 'vies' : 'vie'} sur 7`,
     options: 'Options du lien : signaler, bloquer, quitter',
@@ -128,7 +130,8 @@ export const today = messages({
 
 export const chat = messages({
   fr: {
-    placeholder: (name: string, pet: string): string => `Écris à ${name} (${pet} lit tout)`,
+    /** Pas de « lit tout » : le minimoa ne lit que si vous avez dit oui tous les deux (et c'est une IA). */
+    placeholder: (name: string, _pet: string): string => `Écris à ${name}`,
     tones: { sweet: 'Mot doux', tease: 'Vanne' },
     attach: 'Envoyer ta photo du jour',
     send: 'Envoyer',
@@ -142,6 +145,26 @@ export const chat = messages({
     retry: 'Réessayer',
     today: 'Aujourd’hui',
     yesterday: 'Hier',
+    /** Nom au-dessus d'une réplique de minimoa : « nino · brise-glace ». */
+    role: (role: 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event', name: string): string =>
+      `${name} · ${{ icebreaker: 'brise-glace', nudge: 'relance', remark: 'remarque', guard: 'garde-fou, pour toi seul', event: 'annonce' }[role]}`,
+    /** Sous le fil, au-dessus du champ. */
+    rhythm: (max: number): string => `Les minimoas parlent ${max} fois par jour au plus.`,
+    rhythmNoReading: (max: number): string => `Sans lecture : ils réagissent au rythme (silences, photos, défis), ${max} fois par jour au plus.`,
+    rhythmMuted: 'Minimoas coupés dans ce chat.',
+    /** Interrupteur de l'en-tête. */
+    switchOn: 'Minimoas activés dans ce chat. Toucher pour les couper.',
+    switchOff: 'Minimoas coupés dans ce chat. Toucher pour les réactiver.',
+    mutedNotice: 'Vos minimoas se taisent ici. Les annonces du lien (niveau, vies) restent.',
+    unmutedNotice: 'Vos minimoas peuvent reparler ici.',
+    muteError: 'Le réglage n’est pas passé. Réessaie.',
+    /** Signaler un message (appui long). */
+    longPressHint: 'Signaler ce message',
+    reportTitle: [{ text: 'CE ' }, { text: 'MESSAGE ?', dim: true }] as TitleSegment[],
+    reportText: 'On ne voit que ce message et les quelques messages autour. Rien d’autre de votre conversation.',
+    reportAction: 'Signaler ce message',
+    quote: (body: string): string => `« ${body} »`,
+    cancel: 'Annuler',
   },
   en: TODO,
   es: TODO,
@@ -186,6 +209,48 @@ export const ghost = messages({
     leave: 'Le laisser partir',
     reviveError: 'Impossible de le ranimer.',
     cannotRevive: 'Ce lien a déjà été ranimé une fois.',
+  },
+  en: TODO,
+  es: TODO,
+  pt: TODO,
+  nl: TODO,
+});
+
+/** Les minimoas dans un chat : accord de lecture, explication des rôles (spéc  9). */
+export const minimoas = messages({
+  fr: {
+    consentTitle: [{ text: 'VOS MINIMOAS\n' }, { text: 'DANS CE CHAT.', dim: true }] as TitleSegment[],
+    consentSubtitle: 'Ils lancent, relancent, et glissent une remarque.',
+    /** La phrase de confidentialité vient de l'API (`consent.text`) : jamais réécrite ici. */
+    ifRefused: (mine: string, theirs: string): string => `Si l’un de vous refuse, ${mine} et ${theirs} réagissent seulement au rythme : silences, photos, défis. Sans rien lire.`,
+    /** Où en est l'autre : l'API ne dit que « vous avez dit oui tous les deux » (`reading`). */
+    otherWaiting: (name: string): string => `Tant que ${name} n’a pas dit oui aussi, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi.`,
+    bothYes: (name: string): string => `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi.`,
+    accept: 'J’active pour ce chat',
+    decline: 'Sans lecture',
+    later: 'Plus tard',
+    error: 'Ton choix n’est pas passé. Réessaie.',
+    /** Première fois : à quoi servent les minimoas d'un chat. */
+    guideTitle: 'Ce que font vos minimoas ici',
+    guideText: 'Ils brisent la glace, relancent après un silence, glissent une remarque. 3 fois par jour au plus.',
+    guideMore: 'Voir les 5 rôles',
+    guideClose: 'Compris',
+    rolesTitle: [{ text: 'LEURS ' }, { text: 'RÔLES', dim: true }] as TitleSegment[],
+    roles: [
+      { key: 'icebreaker', icon: 'gel', title: 'Brise-glace', text: 'Au début du lien, une question tirée de vos points communs.' },
+      { key: 'nudge', icon: 'eclair', title: 'Relance', text: 'Après un long silence : « Ça fait 3 jours. Vous en étiez à ce resto. »' },
+      { key: 'remark', icon: 'etoiles', title: 'Remarque', text: 'De temps en temps, ce qu’ils remarquent de vous deux.' },
+      { key: 'guard', icon: 'coeurs', title: 'Garde-fou', text: 'Si le ton monte, ton minimoa te propose une pause. À toi seul.' },
+      { key: 'review', icon: 'flamme', title: 'Bilan du dimanche', text: 'Une fois par semaine, la santé du lien, dans ton bilan.' },
+    ] as const,
+    rolesNote: 'Ils parlent avec le caractère de leur humain. Tu peux les couper pour ce chat, en haut à droite.',
+    /** Options du lien. */
+    sectionTitle: 'Minimoas dans ce chat',
+    readingRow: 'Lecture par une IA',
+    readingSub: (on: boolean | null, both: boolean): string =>
+      on === null ? 'Pas encore choisi' : !on ? 'Non : ils réagissent seulement au rythme' : both ? 'Oui, vous deux' : 'Oui, en attente de l’autre',
+    muteRow: 'Minimoas actifs',
+    muteSub: (n: number, max: number): string => `${n} sur ${max} interventions aujourd’hui`,
   },
   en: TODO,
   es: TODO,

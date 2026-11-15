@@ -4,27 +4,41 @@ import { useCallback, useEffect, useState } from 'react';
 import { type Href, router } from 'expo-router';
 import { Alert, Platform } from 'react-native';
 
-import { AuthError, keys, useApi, usePorts, useSession } from '@/core';
+import { type AuthProvider, AuthError, keys, useApi, usePorts, useSession } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
-import { resumeOnboarding } from '@/features/onboarding';
+import { resumeOnboarding, useDraft, useDraftHydrated } from '@/features/onboarding';
 import { common } from '@/locales/common';
 
-export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline';
+export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline' | 'suspended';
 
-/** Où envoyer la personne au lancement : connexion, création du pet, ou l'app. */
+/** Où envoyer la personne au lancement : connexion, création du minimoa, l'app, ou l'écran « compte suspendu ». */
 export function useGate(): Gate {
   const session = useSession();
   const api = useApi();
+  // Le brouillon d'inscription doit être relu avant de décider (reprise là où la personne s'était arrêtée).
+  const hydrated = useDraftHydrated();
   const me = useQuery({ queryKey: keys.me, queryFn: api.me.get, enabled: !!session });
-  if (session === undefined) return 'loading';
+  if (session === undefined || !hydrated) return 'loading';
   if (session === null) return 'signedOut';
   if (me.isSuccess) return 'ready';
   if (me.error instanceof ApiError) {
+    if (me.error.code === 'suspended') return 'suspended';
     if (me.error.code === 'not_onboarded') return 'needsOnboarding';
     if (me.error.code === 'unauthorized') return 'signedOut';
     return 'offline';
   }
   return 'loading';
+}
+
+/** Fournisseurs de connexion proposés ici (Apple sur iPhone, Google sur Android et le web, e-mail en mode local). */
+export function useProviders(): readonly AuthProvider[] {
+  return usePorts().auth.providers;
+}
+
+/** Connexion par Apple ou Google ; `data` vaut null si la personne a annulé (rien à afficher). */
+export function useSignInWith() {
+  const { auth } = usePorts();
+  return useMutation({ mutationFn: (provider: Exclude<AuthProvider, 'email'>) => auth.signInWith(provider) });
 }
 
 export function useSendCode() {
@@ -104,9 +118,14 @@ export function useAfterSignIn(): () => Promise<Href> {
       if (e instanceof ApiError && e.code === 'not_onboarded') {
         return resumeOnboarding();
       }
+      if (e instanceof ApiError && e.code === 'suspended') return '/(onboarding)/suspendu';
       return '/';
     }
+    // Le compte existe déjà (avec son minimoa) : le brouillon d'une inscription commencée ne sert plus.
+    useDraft.getState().reset();
     const code = usePendingInvite.getState().code;
     return code ? { pathname: '/i/[code]', params: { code } } : '/(tabs)/pet';
   }, [api, qc]);
 }
+export { SessionBridges } from './bridges';
+export { AppleButton } from './AppleButton';

@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Pressable as RNPressable, type StyleProp, StyleSheet, useWindowDimensions, View, type ViewStyle } from 'react-native';
+import { Modal, Pressable as RNPressable, ScrollView, type StyleProp, StyleSheet, useWindowDimensions, View, type ViewStyle } from 'react-native';
 import { GestureDetector, GestureHandlerRootView, type PanGestureConfig, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,6 +34,11 @@ export interface SheetTemplateProps {
    * haut) ou en tirant le contenu au-delà du haut ; `useSheet().close()` la fait redescendre puis appelle `onClose`.
    */
   bare?: boolean;
+  /**
+   * Contenu long (petit écran) : le corps défile entre l'en-tête et le pied, qui restent visibles. On tire alors la
+   * feuille vers le bas par sa barre du haut (poignée et en-tête).
+   */
+  scroll?: boolean;
 }
 
 interface SheetControl {
@@ -71,7 +76,7 @@ const RISE = { ...springs.soft, stiffness: 190, damping: 21 } as const;
  * On peut la tirer vers le bas : elle suit le doigt (élastique vers le haut) et se ferme si on la lâche assez bas
  * ou assez vite, sinon elle remonte. Elle redescend en glissant à la fermeture. Animations réduites : fondus.
  */
-export function SheetTemplate({ visible, onClose, title, children, footer, closeLabel: closeLabelProp, header, asScreen, bare }: SheetTemplateProps) {
+export function SheetTemplate({ visible, onClose, title, children, footer, closeLabel: closeLabelProp, header, asScreen, bare, scroll }: SheetTemplateProps) {
   const uiStrings = useUiStrings();
   const closeLabel = closeLabelProp ?? uiStrings.close;
   const insets = useSafeAreaInsets();
@@ -205,7 +210,33 @@ export function SheetTemplate({ visible, onClose, title, children, footer, close
       <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, scrimStyle]}>
         <RNPressable accessibilityRole="button" accessibilityLabel={closeLabel} onPress={bare ? close : onClose} style={layout.fill} />
       </Animated.View>
-      {bareSheet ?? (
+      {bareSheet ?? (scroll ? (
+        <Animated.View
+          accessibilityViewIsModal
+          onLayout={(e) => {
+            sheetH.value = e.nativeEvent.layout.height + insets.bottom;
+          }}
+          style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 30) }, sheetStyle]}
+        >
+          <InkProvider value={color.white} mute={color.mute}>
+            <GestureDetector gesture={pan}>
+              <View style={layout.gapSm}>
+                <View style={styles.grabber} />
+                {header ?? (
+                  <View style={[layout.rowBetween, layout.gapMd]}>
+                    {title ? <Title text={title} variant="h2" style={layout.grow} /> : <View />}
+                    <IconButton glyph="close" label={closeLabel} onPress={onClose} size={40} />
+                  </View>
+                )}
+              </View>
+            </GestureDetector>
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false} bounces={false}>
+              {children}
+            </ScrollView>
+            {footer ? <View style={layout.gapSm}>{footer}</View> : null}
+          </InkProvider>
+        </Animated.View>
+      ) : (
       <GestureDetector gesture={pan}>
         <Animated.View
           accessibilityViewIsModal
@@ -227,7 +258,7 @@ export function SheetTemplate({ visible, onClose, title, children, footer, close
           </InkProvider>
         </Animated.View>
       </GestureDetector>
-      )}
+      ))}
     </View>
   ) : null;
   if (asScreen) return content;
@@ -263,6 +294,7 @@ const styles = StyleSheet.create({
     marginBottom: space.xs,
   },
   body: { gap: 10 },
+  scroll: { flexShrink: 1 },
   bare: { maxHeight: '100%', paddingHorizontal: 0, paddingTop: 0, gap: 0, overflow: 'hidden', backgroundColor: color.night },
   bareGrabber: { position: 'absolute', top: 8, marginBottom: 0, backgroundColor: alpha(color.white, 0.32) },
 });

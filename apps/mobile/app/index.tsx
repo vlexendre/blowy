@@ -5,7 +5,7 @@ import { Redirect } from 'expo-router';
 import { View } from 'react-native';
 
 import { usePendingInvite } from '@/features/encounters';
-import { resumeOnboarding, useDraft } from '@/features/onboarding';
+import { resumeOnboarding, signedOutStart, useDraft } from '@/features/onboarding';
 import { useGate, useRetryGate } from '@/features/session';
 import { common } from '@/locales/common';
 
@@ -17,7 +17,10 @@ export default function Gate() {
 
   switch (gate) {
     case 'signedOut':
-      return <Redirect href="/(onboarding)/welcome" />;
+      // Une inscription commencée reprend là où la personne s'était arrêtée ; sinon, la bienvenue.
+      return <Redirect href={signedOutStart()} />;
+    case 'suspended':
+      return <Redirect href="/(onboarding)/suspendu" />;
     case 'needsOnboarding':
       // Un compte sans pet doit d'abord le créer ; si le brouillon est complet, on reprend à la préparation.
       return <Redirect href={resumeOnboarding()} />;

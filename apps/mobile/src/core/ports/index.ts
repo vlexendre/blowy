@@ -9,12 +9,22 @@ export interface Session {
   email: string | null;
 }
 
+/** Fournisseurs de connexion : Apple sur iPhone, Google sur Android (et le web) ; l'e-mail en mode local seulement. */
+export type AuthProvider = 'apple' | 'google' | 'email';
+
 export interface AuthPort {
+  /** Fournisseurs proposés sur cet appareil, dans l'ordre d'affichage. */
+  readonly providers: readonly AuthProvider[];
+  /**
+   * Connexion par Apple ou Google (jeton d'identité du fournisseur → Supabase). Rend la session ouverte, ou null si la
+   * personne a annulé (aucune erreur à montrer). Lève `AuthError` en cas d'échec.
+   */
+  signInWith(provider: Exclude<AuthProvider, 'email'>): Promise<Session | null>;
   /** Session courante, ou null. */
   getSession(): Promise<Session | null>;
   /** Jeton d'accès à joindre aux appels de l'API. */
   getToken(): Promise<string | null>;
-  /** Envoie un code à 6 chiffres par e-mail (crée le compte si besoin). */
+  /** Mode local seulement : envoie un code à 6 chiffres par e-mail (crée le compte si besoin). */
   sendCode(email: string): Promise<void>;
   /** Vérifie le code reçu ; rend la session ouverte. */
   verifyCode(email: string, code: string): Promise<Session>;
@@ -40,11 +50,48 @@ export interface MediaPort {
   upload(ticket: UploadTicket, image: PickedImage): Promise<void>;
 }
 
+/** Prix localisé d'un produit, tel que le magasin le donne (StoreKit). */
+export interface StoreProduct {
+  productId: string;
+  /** Prix facturé mis en forme par le magasin (« 59,88 € »). */
+  displayPrice: string;
+  /** Montant en unités (59.88) et devise, pour calculer l'équivalent mensuel. Null si inconnu. */
+  price: number | null;
+  currency: string | null;
+  /** Essai gratuit possible pour ce compte Apple (null : inconnu, on se fie à l'API). */
+  introEligible: boolean | null;
+}
+
+/** Une transaction signée à faire vérifier par l'API (`api.plus.submitPurchase`), puis à terminer. */
+export interface SignedPurchase {
+  productId: string;
+  signedTransaction: string;
+  signedRenewalInfo?: string;
+  /** À appeler une fois l'API d'accord (StoreKit `transaction.finish()`). */
+  finish(): Promise<void>;
+}
+
+export type PurchaseOutcome =
+  | { status: 'purchased'; purchase: SignedPurchase }
+  /** En attente (contrôle parental, paiement à valider) : la transaction arrivera plus tard par `onUpdates`. */
+  | { status: 'pending' }
+  | { status: 'cancelled' };
+
 export interface PurchasesPort {
-  /** Vrai quand les achats sont réellement branchés (sinon l'écran Blowy+ reste informatif). */
+  /** Vrai quand on peut acheter ici (StoreKit sur iPhone, ou achat simulé du mode local). */
   readonly available: boolean;
-  purchase(plan: 'yearly' | 'monthly'): Promise<boolean>;
-  restore(): Promise<boolean>;
+  /** Achat simulé du mode local (API en mémoire) : rien n'est facturé. */
+  readonly simulated: boolean;
+  /** Produits et prix localisés ; liste vide si le magasin ne répond pas (l'API sert alors de repli). */
+  products(productIds: readonly string[]): Promise<StoreProduct[]>;
+  /** Achat d'un abonnement, lié au compte Blowy (`appAccountToken` = identifiant de la personne). */
+  purchase(productId: string, accountToken: string): Promise<PurchaseOutcome>;
+  /** « Restaurer mes achats » : resynchronise avec le magasin et rend les abonnements en cours. */
+  restore(): Promise<SignedPurchase[]>;
+  /** Transactions arrivées hors d'un achat (renouvellement, achat en attente validé, autre appareil). */
+  onUpdates(listener: (purchase: SignedPurchase) => void): () => void;
+  /** Ouvre la gestion des abonnements du système ; faux si impossible ici. */
+  manageSubscriptions(): Promise<boolean>;
 }
 
 export interface Ports {
@@ -56,7 +103,7 @@ export interface Ports {
 
 export class AuthError extends Error {
   constructor(
-    readonly code: 'invalid_email' | 'invalid_code' | 'rate_limited' | 'network' | 'unknown',
+    readonly code: 'invalid_email' | 'invalid_code' | 'rate_limited' | 'network' | 'unavailable' | 'unknown',
     message: string,
   ) {
     super(message);

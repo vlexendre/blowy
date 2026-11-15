@@ -9,7 +9,7 @@ import { View } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { useAcceptInvite, useInvite, usePendingInvite } from '@/features/encounters';
 import { useMe } from '@/features/me';
-import { resumeOnboarding } from '@/features/onboarding';
+import { resumeOnboarding, signedOutStart } from '@/features/onboarding';
 import { usePet } from '@/features/pet';
 import { errorMessage, goBack, useGate } from '@/features/session';
 import { common } from '@/locales/common';
@@ -38,7 +38,7 @@ export default function InviteLink() {
   }, [gate, code, setPending]);
 
   if (!code) return <Redirect href="/" />;
-  if (gate === 'signedOut') return <Redirect href="/(onboarding)/welcome" />;
+  if (gate === 'signedOut') return <Redirect href={signedOutStart()} />;
   if (gate === 'needsOnboarding') return <Redirect href={resumeOnboarding()} />;
 
   const header = <Header onBack={() => goBack('/')} backGlyph="close" backLabel={common.close} />;

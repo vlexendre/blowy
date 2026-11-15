@@ -8,51 +8,68 @@ présentation dans `app/**` (uniquement de la mise en page triviale passée par 
 
 | Route | Maquette | Données |
 |---|---|---|
-| `app/index.tsx` | — | `useGate()` → redirige vers `/(onboarding)/welcome`, la reprise de l'inscription (`resumeOnboarding()` : préparation si le brouillon est complet, sinon création du pet) ou l'accueil `/(tabs)/pet` (l'app s'ouvre sur le pet) |
-| `app/(onboarding)/welcome.tsx` | V6-Welcome | — (« Créer mon minimoa » → entrée en scène ; « J’ai déjà un compte » → compte en mode `login`) |
-| `app/(onboarding)/entree.tsx` | — | entrée en scène : `useSceneSteps` (4 lignes, une par pet, ≈ 4,6 s, tap = ligne suivante, « Passer ») ; se termine par `router.replace` vers craft (revenir du choix ramène à la bienvenue) |
-| `app/(onboarding)/craft.tsx` | V6-Craft | `useDraft` (espèce + nom) ; à partir d'ici, ce pet est l'hôte |
-| `app/(onboarding)/caractere.tsx` | V6-Caractere | `QUIZ`, `useDraft.quiz` : une question par écran posée par l'hôte (`OnboardingTemplate host`), au-dessus des cartes les quatre jauges du caractère (celle de la question mise en avant, elle bouge dès qu'on touche une carte), la consigne « Touche une carte… » et des cartes à pastille ronde (vide → coche) ; à la 1re question, sans toucher, les deux cartes se soulèvent l'une après l'autre ; choisir passe à la suivante ; puis le temps fort (`StageTemplate` + `PetRise`, verdict mot à mot, deux traits en puces, tap pour continuer) |
-| `app/(onboarding)/prenom.tsx` | — | `useDraft.displayName` (grand champ centré) |
-| `app/(onboarding)/naissance.tsx` | V6-TropJeune | `useDraft.birthdate` (18+ vérifié sur place : `AgeGate`, brouillon vidé) |
-| `app/(onboarding)/ville.tsx` | — | `useDraft.city` (facultatif, « Passer ») et `inviteCode` (repris de `usePendingInvite`, champ replié sinon) |
-| `app/(onboarding)/promesse.tsx` | — | la promesse : `HoldButton` (maintenir ou toucher), rien n'est enregistré ; → compte, ou préparation si déjà connecté |
-| `app/(onboarding)/compte.tsx` | V6-Compte | `useSendCode`, `useVerifyCode` (e-mail puis code à 6 chiffres) ; inscription : hôte + barre continue ; `mode=login` : panneau « content de te revoir », sans barre ; suite décidée par `useAfterSignIn` |
-| `app/(onboarding)/preparation.tsx` | — | `useOnboard` (la vraie création du compte et du pet) + `usePrepTicker` (barre honnête : 100 % seulement après la réussite) ; erreur → bannière « Réessayer » ; `too_young` → `AgeGate` ; `already_onboarded` → accueil |
+| `app/index.tsx` | — | `useGate()` (attend la relecture du brouillon) → sans session : `signedOutStart()` (l'écran d'inscription où la personne s'était arrêtée, sinon `/(onboarding)/welcome`) ; compte sans minimoa : `resumeOnboarding()` (préparation si le brouillon est complet, sinon l'écran en cours, sinon la création) ; `suspended` → `/(onboarding)/suspendu` ; sinon l'accueil `/(tabs)/pet` |
+| `app/(onboarding)/welcome.tsx` | V6-Welcome | — (« Créer mon minimoa » → entrée en scène ; « J’ai déjà un compte » → connexion en mode `login`) |
+| `app/(onboarding)/entree.tsx` | — | entrée en scène : `useSceneSteps` (4 lignes, une par minimoa, ≈ 4,6 s, tap = ligne suivante, « Passer ») ; se termine par `router.replace` vers craft (revenir du choix ramène à la bienvenue) |
+| `app/(onboarding)/craft.tsx` | V6-Craft | `useDraft` (espèce + nom) ; à partir d'ici, ce minimoa est l'hôte ; recopie le code d'invitation en attente dans le brouillon |
+| `app/(onboarding)/vision.tsx` | V6-GVision | `useVisionTest()` (`GET /v1/vision/test`, public) : 12 situations, une par écran, posées par l'hôte ; deux cartes sombres à pastille (`QuizStep look="plain"`), la choisie passe au jaune, s'incline et part ; le minimoa regarde les réponses au-dessus des cartes (grands écrans) ; dessous, `VisionMeter` : l'axe visé (`axisOfQuestion`), rempli d'après les réponses (`visionNow`, mêmes règles que le serveur), qui bouge dès le toucher avec une étiquette « + pôle » ; réponses dans `useDraft.visionAnswers` (reprise à la 1re sans réponse) ; erreur → `EmptyState` « Réessayer », chargement → squelettes |
+| `app/(onboarding)/ta-vision.tsx` | V6-GTaVision | `VisionHero` + `VisionReading` : 5 axes en barres simples, « sûr / assez sûr / à affiner », pôle penché en gras, mention « indicatif » (`visionText.profile.note`) ; au-dessus du bouton : « <minimoa> ne te présentera que des gens dont la vision va avec la tienne. » → « C’est moi, ça » |
+| `app/(onboarding)/prenom.tsx` | — | « On t’appelle comment ? » : `useDraft.displayName` (grand champ centré) ; code d'invitation replié (ouvert s'il y en a un) |
+| `app/(onboarding)/sexe.tsx` | — | « Enchanté, <prénom>. Tu es… » : 4 cartes à pastille (`ChoiceCard plain compact`), toucher choisit et passe à la suite (`useDraft.gender`) |
+| `app/(onboarding)/cherche.tsx` | V6-GCherche | des potes / plus / les deux ; pour « plus » : des femmes / des hommes / tout le monde (`ChoiceGrid`) et l'accord explicite (`CheckRow`, donnée sensible) ; « Suivant » seulement quand c'est complet (`seekingDone`) ; « des potes » efface « qui » et l'accord |
+| `app/(onboarding)/naissance.tsx` | V6-GNaissance, V6-TropJeune | `DateWheel` (roues jour/mois/année, cran = vibration) + `AgeCard` (l'âge en grand, saute à chaque cran) ; moins de 18 ans : `AgeGate`, brouillon vidé, rien n'est envoyé |
+| `app/(onboarding)/localisation.tsx` | V6-GLocalisation | explication (`ZonePreview`, deux `PointRow`, la conséquence d'un refus écrite) puis un seul « Continuer » → demande du système (app ouverte seulement) ; accordée : position relevée en fond (`useDraft.location`) ; refusée : bannière qui dit ce qui manque, « Continuer » avance |
+| `app/(onboarding)/notifications.tsx` | — | même principe : `NotifPreview` (exemples), « 3 par jour au plus », « jamais la nuit », puis la demande du système ; l'appareil est enregistré auprès de l'API après la création du compte (`SessionBridges`) ; web : pas de demande |
+| `app/(onboarding)/promesse.tsx` | — | la promesse : `HoldButton` (maintenir ou toucher), rien n'est enregistré ; → connexion, ou préparation si déjà connecté |
+| `app/(onboarding)/connexion.tsx` | V6-GConnexion | « On garde <minimoa> ? » (`OnboardingPanel` jaune, puces) ; `useProviders()` : « Continuer avec Apple » (bouton officiel, iPhone) ou « Continuer avec Google » (Android, web) via `useSignInWith` ; annulé → ligne neutre, échec → bannière « Réessayer » ; `mode=login` : « content de te revoir », sans barre ; suite par `useAfterSignIn` ; mode local : boutons simulés + « Mode dev : e-mail et code » replié (docs/CONNEXION.md) |
+| `app/(onboarding)/auth-callback.tsx` | — | retour de la page Google (`blowy://auth-callback`, `/auth-callback`) : referme la fenêtre (web) ou revient en arrière |
+| `app/(onboarding)/preparation.tsx` | — | `useOnboard` (la vraie création : `onboardBody()` avec vision, sexe, ce que tu cherches et l'accord, position et accord, langue, invitation) + `usePrepTicker` (barre honnête : 100 % seulement après la réussite) ; erreur → bannière « Réessayer » ; `too_young` → `AgeGate` ; `already_onboarded` → accueil |
 | `app/(onboarding)/pret.tsx` | — | `useMe` : « tout est prêt, <prénom> ! », un bouton → invitations |
 | `app/(onboarding)/invite.tsx` | V6-Invite | `useMe` : lien d'invitation + lien « 3 mots » à partager |
-| `app/(onboarding)/paywall.tsx` | V6-Paywall | feuille qui monte du bas par-dessus les invitations (modale transparente + `SheetTemplate asScreen bare`, `PlusOffer`) ; `usePorts().purchases` (non branché : offre présentée, « Continuer gratuitement »), « Restaurer mes achats », conditions et confidentialité ; croix, glisser vers le bas, voile ou « continuer » → `/(tabs)/pet` |
+| `app/(onboarding)/paywall.tsx` | V6-GPlus | feuille Blowy+ par-dessus les invitations (`PlusOffer reason="onboarding"`) ; croix, glisser vers le bas, voile ou « Continuer gratuitement » → `/(tabs)/pet` |
+| `app/(onboarding)/suspendu.tsx` | — | compte suspendu (erreur `suspended`, au lancement ou n'importe quand : `SessionBridges`) : le message de l'API, « Écrire à l’assistance » (e-mail), « Supprimer mon compte » (seule action encore permise), « Me déconnecter » |
 | `app/(tabs)/_layout.tsx` | barre du bas | `BottomTabBar` : **Mon minimoa · Chats · Rencontres · Moi** (onglet de départ : `pet`) ; pastilles = `totalUnread`, rencontres reçues |
 | `app/(tabs)/pet.tsx` | V6-Accueil, V6-Boude, V6-Debloque | accueil : `useLivePet` (relu au retour sur l'onglet et toutes les 3 min), `useCare`, `useWardrobe`, `useUnlocks` ; `PetStage` (tenue, forme, bulle), `NeedsPanel`, `CareBar` (`canCare`, `careHot`), carte garde-robe (`nextItem`), carte caractère, carte « … ne sort plus » quand il boude ; `UnlockCelebration` fête les `newItems` |
 | `app/(tabs)/chats.tsx` | V6-Chats | `useLinks`, `useEncounters` (bandeau « X t'a salué ») |
-| `app/(tabs)/rencontres.tsx` | V6-Rencontres | `useEncounters`, `useWave`, `useAcceptEncounter`, `useDeclineEncounter` ; `petShape` `boude` → état dédié (`shapeLabel.boude`, « M’occuper de lui » → accueil), `bof` → bandeau ; salut refusé (`forbidden`) → bandeau vers l'accueil ; en bas, « Déjà croisés » (`useEncounterHistory`, `EncounterHistory`) : rencontres passées, plus récentes d'abord, par pages de 20 (« Voir plus ») — liés (→ `/link/[id]`), lien rangé, pas cette fois, en attente ; jamais de personne bloquée, signalée ou supprimée ; un refus n'est jamais montré à qui a salué |
-| `app/(tabs)/moi.tsx` | V6-Moi | `useMe`, `useSignOut` ; ta photo nette (le flou n'est que pour les autres) ; carte « 3 mots » : une ligne d'explication, 1-2-3, « partager le lien » ; reçus → compte, « voir le caractère » |
-| `app/link/[id]/index.tsx` | V6-Aujourdhui, V6-Chat, V6-Souvenirs, V6-Fantome | `useLink`, `useMessages`, `useSendMessage`, `useSendPhoto`, `useMemories`, `useRevive`, `useMarkRead` |
+| `app/(tabs)/rencontres.tsx` | V6-Rencontres, V6-GRencontre | `useLiveEncounters`, `useWave`, `useAcceptEncounter`, `useDeclineEncounter`, `useMe`, `useFreshPosition` ; en tête, une ligne : « Seulement des visions qui vont avec la tienne. » ; chaque carte dit pourquoi (`MatchWhy` : 3 points communs en puces, 1 différence à explorer) ; un salut reçu sans `explanation` n'affiche **pas** de pourcentage (`hideCompat`) ; personne : la raison — test de vision pas passé (`visionTestDone` faux → « Passer le test de vision », `VISION_TEST_ROUTE`), pas de position (bandeau : activer, ou refusée → Réglages), minimoa qui boude (`petShape` `boude`), sinon « il préfère personne à n'importe qui » + inviter ; sous la liste : le filtre (70 %) et « Rien ne se passe sans ton tap » ; gratuit : bandeau « Plus de rencontres avec Blowy+ » (`openPlusFrom('encounters')`) ; en bas, « Déjà croisés » (`useEncounterHistory`, `EncounterHistory`) : rencontres passées, plus récentes d'abord, par pages de 20 (« Voir plus ») — liés (→ `/link/[id]`), lien rangé, pas cette fois, en attente ; jamais de personne bloquée, signalée ou supprimée ; un refus n'est jamais montré à qui a salué |
+| `app/(tabs)/moi.tsx` | V6-Moi | `useMe`, `useDiscreet` ; ta photo nette (le flou n'est que pour les autres) ; carte « 3 mots » ; bandeau Blowy+ **sans prix** (le montant facturé se lit sur la feuille, Apple 3.1.2) ; lignes : ce que tu cherches (→ `/moi/identite`), mode discret (interrupteur réel), minimoas dans tes chats (→ `/moi/minimoas`), réglages |
+| `app/link/[id]/index.tsx` | V6-Aujourdhui, V6-Chat, V6-GChat, V6-GAccord, V6-Souvenirs, V6-Fantome | `useLink`, `useMessages`, `useSendMessage`, `useSendPhoto`, `useMemories`, `useRevive`, `useMarkRead`, `useLinkMinimoas`, `useUpdateLinkMinimoas`, `useMinimoaGuide` ; répliques de minimoa stylées par rôle (`Message.petRole` : brise-glace, relance, remarque, garde-fou « pour toi seul », annonce ; nom « nino · brise-glace ») ; **accord de lecture** en feuille à la première ouverture quand `consent.mine` est null (phrase `consent.text` telle quelle, « J’active pour ce chat » / « Sans lecture », ce qui se passe si l'un refuse, où en est l'autre ; fermer = redemandé à la prochaine ouverture) ; interrupteur des minimoas dans l'en-tête (`MinimoaSwitch`, coupe pour ce lien) ; explication des 5 rôles une fois (bandeau puis feuille, mémoire de l'appareil) ; au-dessus du champ, le rythme (3 fois par jour, sans lecture, coupés) ; appui long sur un message de l'autre → « Signaler ce message » → `/link/[id]/signaler?messageId=` |
 | `app/link/[id]/niveaux.tsx` | V6-Lien | `useLink` |
-| `app/link/[id]/options.tsx` | — | `useReport`, `useBlock`, `useArchiveLink` |
+| `app/link/[id]/signaler.tsx` | V6-Signaler | `useReport`, `useBlock` ; `?messageId=` : un message précis (la modération ne voit que lui et son contexte immédiat) |
+| `app/link/[id]/options.tsx` | — | `useReport`, `useBlock`, `useArchiveLink`, `useLinkMinimoas` ; section « Minimoas dans ce chat » : lecture par une IA (ton accord, état « vous deux » / « en attente »), minimoas actifs (interventions du jour), la phrase de confidentialité de l'API en pied |
 | `app/pet/caractere.tsx` | V6-Pet | son caractère (ancien onglet Mon pet, aujourd’hui « Mon minimoa ») : `usePet`, `useAnswerChallenge`, `useRenamePet` ; ouvert depuis l'accueil. Nom (`RenameCard`, `PetView.rename`) : une fois tous les 60 jours (`renameRule`, le nom de la création ne compte pas), sans attente avec Blowy+ ; avant de confirmer, rappel de la prochaine date ; bloqué → champ en lecture seule, date, « Découvrir Blowy+ » → `/moi/blowy-plus` ; refus API `rename_locked` |
 | `app/pet/garde-robe.tsx` | V6-GardeRobe, V6-Objet | `useWardrobe`, `useSetOutfit` + `withItem` (porter / retirer, optimiste) ; fiche d'un objet à gagner (étape, avancement, raccourci) ou premium (« Bientôt disponible », pas d'achat) |
 | `app/pet/evolution.tsx` | V6-Evolution | `usePet` |
-| `app/rencontre/[userId].tsx` | V6-Rencontre | `useEncounters` (cache) |
-| `app/carte.tsx` | V6-Carte | `useLinks`, `useEncounters` : carte stylisée du voisinage du pet (pas de géolocalisation en V1) |
+| `app/rencontre/[userId].tsx` | V6-Rencontre, V6-GRencontre | `useEncounters` (cache), `useMyVision` ; la scène des deux minimoas, puis le pourquoi (`VisionMatch`) : 3 points communs et 1 différence, une piste par axe avec toi (plein) et l'autre (cerclé), placés par tiers (jamais un chiffre) — l'autre seulement quand c'est sûr (voir `features/encounters/vision.ts`) ; sans explication : pas de pourcentage, une ligne honnête ; « Saluer » |
+| `app/carte.tsx` | V6-Carte, V6-GCarte | `useMap`, `useMe`, `useFreshPosition`, `useDiscreet`, `useCity`, `useWave` ; vraie carte Apple sur iPhone (`features/map/MapLayer.tsx`, react-native-maps, sombre et atténuée, sans points d'intérêt), carte dessinée ailleurs (`ZoneMap`, web et repli) ; la zone (cercle pointillé), toi au centre, les minimoas compatibles en autocollants (positions arrondies du serveur), silhouettes floues et puce « N minimoas plus loin » (serveur, cachée à zéro) ; gratuit : caméra fixée sur la zone + bandeau Blowy+ (`openPlusFrom('map')`) ; Blowy+ : navigation libre (relit la carte là où on regarde) et « Changer de ville » (`chooseCity` / `clearCity`) ; interrupteur « Discret » ; fiche d'un minimoa (pourquoi + saluer) ; sans position : explication, « Activer la localisation », refusée → Réglages (web : navigateur) |
 | `app/moi/compte.tsx` | — | `useMe`, `useUpdateMe`, `useSetAvatar` |
+| `app/moi/reglages.tsx` | V6-Reglages | `useMe`, `useBlocks`, `useDiscreet`, `useSignOut` ; compte (qui tu es, Blowy+, notifications), confidentialité (minimoas, position, discret, bloqués), langue (suit le téléphone ; feuille qui dit laquelle et renvoie aux Réglages), aide et pages légales du site dans la langue de l'app (`legalUrl` : `/legal/<page>/`, `/<langue>/legal/<page>/`) ; se déconnecter retire d'abord le jeton de notifications (`unregisterDevice`) |
+| `app/moi/notifications.tsx` | V6-GNotifs | `useNotificationSettings`, `useUpdateNotificationSettings`, `usePushPermission` ; heure du défi (8 h – 21 h, feuille), heures calmes (affichage), un interrupteur par ligne de la maquette (une ligne peut porter deux types), accord du téléphone (pas demandé → demander ; refusé → Réglages ; web : pas de push) |
+| `app/moi/identite.tsx` | — | `useMe`, `useUpdateMe` ; ce que tu cherches, qui (pour « plus »), sexe ; accord explicite pour « qui tu veux rencontrer » (case), date de l'accord, « Retirer mon accord » (efface et repasse à « des potes ») |
+| `app/moi/minimoas.tsx` | — | `useMyMinimoas`, `useLinks`, `useUpdateLinkMinimoas`, `useSetReadingEverywhere` ; la phrase de l'API, « pour tous mes chats » (un appel par lien), puis chat par chat |
+| `app/moi/position.tsx` | — | `useMe`, `useLocation` ; à quoi sert la position, état, zone, ville choisie, activer / « Oublier ma position » (`forgetLocation`) |
 | `app/moi/bloques.tsx` | — | `useBlocks`, `useUnblock` |
-| `app/moi/supprimer.tsx` | — | `useDeleteAccount` |
-| `app/moi/blowy-plus.tsx` | V6-Paywall | même feuille que le paywall (modale transparente, déclarée dans `app/_layout.tsx`), ouverte depuis Moi, les réglages, la carte et un objet blowy+ de la garde-robe (« voir blowy+ ») ; la fermer revient à l'écran d'en dessous |
+| `app/moi/supprimer.tsx` | V6-Supprimer | `useDeleteAccount` ; ce qui est effacé tout de suite et ce qui est gardé (et pourquoi), comme la page légale `supprimer-mon-compte` (lien « Tout le détail ») ; Blowy+ : l'abonnement n'est pas annulé ; le jeton de notifications part avant la suppression |
+| `app/moi/blowy-plus.tsx` | V6-GPlus | la feuille Blowy+ (modale transparente, déclarée dans `app/_layout.tsx`), ouverte partout par `openPlus(raison, { item })` (`features/plus`) : titre selon la raison, avantage correspondant en tête ; `PlusOffer` : `api.plus.paywall()` (offres, frise de l'essai, avantages, mentions, liens, nombre de personnes compatibles — bloc caché à 0), prix du magasin (`useStoreProducts`) sinon de l'API, montant facturé en grand ; `usePurchase` (StoreKit, `appAccountToken` = `me.id`, puis `submitPurchase`, puis `finish`), `useRestore` ; membre : état (`subscription.summary`) et « Gérer mon abonnement » ; la fermer revient à l'écran d'en dessous |
 | `app/i/[code].tsx` | — | lien d'invitation : `useInvite`, `useAcceptInvite`, `usePendingInvite` |
 | `app/+not-found.tsx` | — | — |
 
 ## Inscription (ordre et règles)
-Bienvenue → entrée en scène → créer son pet → caractère (4 questions + temps fort) → prénom → date de naissance →
-ville → promesse → compte (e-mail, code) → préparation (création réelle) → tout est prêt → invitations → Blowy+ → accueil.
-- Le pet choisi est l'**hôte** : petit en haut à gauche, il pose chaque question dans sa bulle (`OnboardingTemplate host`).
-  Une seule barre d'avancement continue de la création au code (`progressAt(step)` dans `features/onboarding`, liste `FLOW`).
-- Le compte vient tard ; la création (`useOnboard`) n'a lieu qu'à la préparation, une fois connecté. Déjà connecté sans pet
-  (connexion d'un compte sans pet) : la promesse saute l'e-mail.
-- Retour arrière à chaque étape, sans perdre la saisie (brouillon zustand). Rechargé en plein milieu (web), le brouillon
-  est vide : chaque écran après la création renvoie à l'aiguillage (`hasDraftPet` / `isDraftComplete`, lus une fois).
-- Connexion (« J’ai déjà un compte ») : compte → accueil, sans aucune des étapes ci-dessus (sauf compte sans pet → création).
-
+Bienvenue → entrée en scène → créer son minimoa → test de vision (12) → ta vision → « On t’appelle comment ? » → sexe →
+ce que tu cherches → date de naissance → localisation → notifications → promesse → connexion (Apple / Google) →
+préparation (création réelle) → tout est prêt → invitations → Blowy+ (feuille) → accueil.
+- Le minimoa choisi est l'**hôte** : petit en haut à gauche, il pose chaque question dans sa bulle (`OnboardingTemplate host`).
+  Une seule barre d'avancement continue de la création à la connexion (`progressAt(step, sub)`, le test compte pour 12).
+- Le compte vient tard ; la création (`useOnboard`) n'a lieu qu'à la préparation, une fois connecté. Déjà connecté sans
+  minimoa : la promesse saute la connexion.
+- Brouillon gardé sur le téléphone (zustand `persist`, AsyncStorage) : retour arrière, rechargement et app quittée ne perdent
+  rien ; chaque écran note son nom (`useStep`) et l'aiguillage y ramène (`signedOutStart`, `resumeOnboarding`). Les écrans
+  après la création attendent la relecture (`useDraftGate`) et renvoient à l'aiguillage s'il n'y a pas de minimoa. Vidé à la
+  création du compte, à la connexion d'un compte existant, et tout de suite si la personne a moins de 18 ans.
+- Autorisations : un écran explique d'abord, un seul « Continuer » (pas de « plus tard », règle d'Apple), puis la demande
+  du système ; un refus est noté et dit ce qui manque, l'inscription continue.
+- Connexion (« J’ai déjà un compte ») : mêmes boutons → accueil, sans aucune des étapes ci-dessus (compte sans minimoa →
+  l'inscription reprend).
 ## Soins et garde-robe
 - L'app s'ouvre sur **Mon minimoa** (après l'aiguillage, l'inscription, la connexion, l'invitation « plus tard »). Les retours
   qui veulent vraiment dire « les chats » (lien archivé, signalement, lien disparu) restent sur `/(tabs)/chats`.
@@ -63,3 +80,16 @@ ville → promesse → compte (e-mail, code) → préparation (création réelle
   (accueil et caractère) les fête un par un, et l'étiquette « nouveau » reste dans la garde-robe jusqu'à sa visite.
 - Les autres voient la tenue : `Avatar` montre le médaillon habillé dès que `pet.outfit` n'est pas vide (rangées des chats,
   en-tête du lien, bulles des pets, rencontres, carte) ; `EncounterStage` et `InvitationPanel` montrent le pet habillé.
+
+## Autour des autres (V7) : rencontres, chats, carte, notifications
+- **Jamais un pourcentage seul** : une compatibilité s'affiche avec son explication (`MatchWhy` sur les cartes,
+  `VisionMatch` sur la rencontre et la fiche de la carte) ; sans explication, pas de chiffre.
+- **Lecture par une IA** : la phrase vient de l'API (`consent.text`) et s'affiche telle quelle (accord, options du lien,
+  Moi). Nulle part « personne ne lit » sans préciser l'IA ; le champ du chat dit seulement « Écris à Léa ».
+- **Position** : demandée seulement après une explication, app ouverte seulement (`features/map/location.ts`) ; refusée,
+  on dit ce qui manque et comment l'activer dans les Réglages ; relevé discret à l'ouverture de la carte et des rencontres
+  (au plus toutes les 10 min, seulement si l'accord est déjà donné).
+- **Notifications** : jeton envoyé à l'ouverture par `SessionBridges` (une fois par session) et au retour au premier plan
+  (`useNotificationsBridge`, monté par les onglets) ; une notification touchée ouvre `PushData.url` (`blowy://…`), même
+  app fermée (`getLastNotificationResponseAsync`) ; retrait du jeton à la déconnexion et à la suppression. Web : rien.
+- **Blowy+** depuis ces écrans : `openPlusFrom(raison)` (`features/me/links.ts`), relais vers `openPlus` du chantier Blowy+.

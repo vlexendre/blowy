@@ -121,14 +121,15 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
 | Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger |
-| Chat | la bulle envoyée monte depuis le champ | « … » avant un message de pet ; tête du pet qui sort avec sa bulle ; bouton envoyer qui se transforme ; cœur qui se brise ou revient |
+| Chat | la bulle envoyée monte depuis le champ | « … » avant un message de minimoa ; tête du minimoa qui sort avec sa bulle ; bouton envoyer qui se transforme ; cœur qui se brise ou revient ; interrupteur des minimoas (en-tête) qui fait « pop » et pâlit quand on les coupe ; accord de lecture : feuille à ressort, les deux minimoas montent du bas du panneau rose ; appui long sur un message : la bulle s'enfonce, la feuille « signaler » monte |
 | Aujourd'hui | la photo de l'autre se dévoile (flou qui se lève) quand les deux ont posté | flamme de série qui grandit ; jours de la semaine cochés un à un |
 | Souvenirs | photos qui se posent comme des cartes | compteurs |
 | Niveaux | la marche atteinte s'allume | barre vers le niveau suivant ; confettis au passage |
 | Lien fantôme | le pet devient transparent et flotte | ranimer : les cœurs reviennent un à un |
-| Rencontres | les cartes arrivent en éventail | « saluer » : le pet fait signe, onde autour du bouton ; accepté : les deux pets se courent dessus et se cognent |
-| Carte | les pets se posent en cercle, du centre vers l'extérieur | le pet touché sautille |
-| Moi / réglages | — | interrupteurs à ressort ; lignes qui s'enfoncent ; copie du lien : coche ; suppression : pet qui fait non |
+| Rencontres | les cartes arrivent en éventail | « saluer » : le minimoa fait signe, onde autour du bouton ; accepté : les deux minimoas se courent dessus et se cognent |
+| Une rencontre | les deux minimoas entrent par leur côté | les repères « toi » et l'autre glissent du centre de chaque piste vers leur tiers, l'un après l'autre (ressort `pop`) ; « saluer » : ton minimoa fait signe, onde |
+| Carte | les minimoas se posent dans la zone, du centre vers l'extérieur (une fois par session) | au repos, chaque autocollant flotte doucement (décalés) ; touché, il sautille et sa fiche glisse de la droite ; onde jaune autour de toi ; silhouettes floues qui respirent lentement ; « saluer » : onde depuis le bouton ; la puce « plus loin » et le pied arrivent après la carte |
+| Moi / réglages | — | interrupteurs à ressort ; lignes qui s'enfoncent ; copie du lien : coche ; suppression : minimoa qui fait non ; notifications : l'heure choisie passe en jaune avec un petit rebond |
 | Barre d'onglets | l'icône active rebondit, la pastille jaune glisse | pastilles qui « pop » à l'arrivée d'un message ; rarement (≈ 1 fois sur 10, 3 min de pause), le pet passe la tête au-dessus de l'onglet choisi ; retour dans l'app : parfois, il salue (une fois par session au plus) |
 | Feuilles | montée à ressort, fond qui s'assombrit | se ferment en glissant vers le bas, suivent le doigt ; Blowy+ : feuille haute (`bare`), on la tire par sa barre du haut ou en tirant le contenu au-delà du haut (iOS), la croix la fait redescendre |
 
@@ -161,6 +162,21 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 - **Moi** : cascade à la 1re visite (`onceKey`), chiffres qui défilent, pastille du pet en « pop », copie : coche ;
   supprimer : le pet (vivant, boudeur) fait non quand « supprimer » est écrit, et encore à la confirmation.
 - **Page inconnue** : le pet surpris passe la tête au-dessus du titre (`EmptyState peek`).
+
+### Détail : rencontres, chat, carte (V7)
+- **Pourquoi** (`AxisCompare`, `VisionMatch`) : à l'apparition, les deux repères partent du centre de la piste et glissent
+  vers leur tiers (ressort `pop`, 90 ms de décalage par axe). Deux repères au même tiers restent côte à côte. Animations
+  réduites : fondu, repères déjà posés.
+- **Interrupteur des minimoas** (`MinimoaSwitch`) : au changement, le visage s'écrase puis rebondit (`pop`) ; coupé, il
+  pâlit et une pastille rouge apparaît. L'appel part tout de suite (optimiste), un refus le remet.
+- **Accord de lecture** (`MinimoaConsent`) : les deux minimoas montent du bas du panneau rose, décalés de 120 ms ; la feuille
+  défile sur un petit écran (`SheetTemplate scroll`), la poignée reste dans la barre du haut.
+- **Répliques des minimoas** : même entrée que les autres bulles (« … » puis texte en « pop ») ; leur style (voile coloré,
+  pointillés pour une relance, cadenas pour un garde-fou) est statique.
+- **Carte** (`ZoneMap`, `MapSticker`, `MapBlob`) : les autocollants atterrissent (ressort `plush`) du plus proche au plus
+  loin, 110 ms d'écart, une fois par session (`useFirstTime('carte:land')`) ; au repos, flottement de 3 pt (boucle
+  `useLoop`, coupée hors écran et en animations réduites) ; les silhouettes floues respirent (opacité, échelle). Sur iPhone,
+  la carte Apple garde les mêmes autocollants dans ses annotations ; gratuit, elle ne bouge pas (gestes coupés).
 
 ## Banc d'essai
 `apps/mobile/app/dev/motion.tsx` (route `/dev/motion`) : chaque primitive et chaque comportement des pets, avec des

@@ -47,6 +47,8 @@ export const extra = {
   /** Silhouette de remplacement d'une photo absente (tête, fond). */
   skin: '#FFD9B8',
   wineDeep: '#8C1D4F',
+  /** Couleurs de marque imposées par Google pour son « G » (bouton « Continuer avec Google »). */
+  google: { red: '#EA4335', blue: '#4285F4', yellow: '#FBBC05', green: '#34A853' },
   /** Feuilles et queue de la fraise du soin « nourrir » (animation). */
   leaf: '#4CB944',
   stem: '#2F8F2A',

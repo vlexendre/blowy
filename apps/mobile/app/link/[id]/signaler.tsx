@@ -8,7 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { errorText, useBackToLink, useLink } from '@/features/links';
 import { useBlock, useReport } from '@/features/safety';
-import { link as linkText, options as t } from '@/locales/chats';
+import { chat as chatText, link as linkText, options as t } from '@/locales/chats';
 
 type Reason = ReportBody['reason'];
 
@@ -16,7 +16,8 @@ const lowerFirst = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1)
 
 /** Signaler la personne d'un lien (V6-Signaler) : une raison, une précision, et bloquer dans la foulée. */
 export default function ReportScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  // `messageId` : un message précis (appui long dans le chat) ; la modération ne voit que lui et son contexte immédiat.
+  const { id, messageId } = useLocalSearchParams<{ id: string; messageId?: string }>();
   const router = useRouter();
   const link = useLink(id);
   const report = useReport();
@@ -45,7 +46,7 @@ export default function ReportScreen() {
     }
     const trimmed = details.trim();
     report.mutate(
-      { userId: l.other.id, linkId: l.id, reason, details: trimmed ? trimmed : undefined },
+      { userId: l.other.id, linkId: l.id, messageId: messageId || undefined, reason, details: trimmed ? trimmed : undefined },
       {
         onSuccess: () => {
           if (alsoBlock) block.mutate(l.other.id, { onSuccess: toChats });
@@ -88,9 +89,14 @@ export default function ReportScreen() {
         )
       ) : (
         <View style={styles.body}>
-          <Text variant="body" size={14} muted style={styles.intro}>
+          <Text variant="body" size={15} muted style={styles.intro}>
             {t.reportIntro(name)}
           </Text>
+          {messageId ? (
+            <Text variant="body" size={15} muted style={styles.intro}>
+              {chatText.reportText}
+            </Text>
+          ) : null}
           <Shake trigger={nudges}>
           <SettingsSection
             rows={REPORT_REASONS.map((r) => ({

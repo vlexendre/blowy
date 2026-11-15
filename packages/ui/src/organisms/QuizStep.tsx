@@ -20,6 +20,8 @@ export interface QuizChoice<K extends string = string> {
   key: K;
   title: string;
   caption?: string;
+  /** Phrase en casse normale sous le titre (test de vision). */
+  subtitle?: string;
   icon?: IconName | ReactNode;
   emoji?: string;
 }
@@ -57,6 +59,15 @@ export interface QuizStepProps<K extends string = string> {
    * pour montrer qu'elles se touchent. Une seule fois par session (clé), jamais avec « réduire les animations ».
    */
   nudgeKey?: string;
+  /**
+   * `colors` (défaut) : chaque réponse a son dégradé (quiz de caractère). `plain` : cartes sombres, la choisie passe au
+   * jaune (test de vision, maquette V6-GVision).
+   */
+  look?: 'colors' | 'plain';
+  /** Au-dessus des cartes, posé sur la première (le minimoa qui regarde les réponses). */
+  peek?: ReactNode;
+  /** Sous les cartes (la barre de vision que la réponse fait bouger). */
+  below?: ReactNode;
 }
 
 /** Couleurs des deux réponses de chaque question (V6-Caractere). */
@@ -230,7 +241,7 @@ function ChoiceSlot({ state, dir, nudgeAt, children }: { state: 'idle' | 'picked
 }
 
 /** Une question du quiz de caractère : aperçu des jauges, question, deux grandes réponses. */
-export function QuizStep<K extends string>({ kicker, title, text, choices, selectedKey, onChoose, step = 0, preview, hint, nudgeKey }: QuizStepProps<K>) {
+export function QuizStep<K extends string>({ kicker, title, text, choices, selectedKey, onChoose, step = 0, preview, hint, nudgeKey, look = 'colors', peek, below }: QuizStepProps<K>) {
   const firstNudge = useFirstTime(nudgeKey);
   // Le coup de pouce s'arrête pour de bon au premier choix.
   const [answered, setAnswered] = useState(false);
@@ -272,35 +283,47 @@ export function QuizStep<K extends string>({ kicker, title, text, choices, selec
         </View>
       ) : null}
       <View key={`c${step}`} style={[styles.choices, preview && !(title || kicker || text) && styles.choicesAfterPreview]} accessibilityRole="radiogroup" accessibilityLabel={hint}>
-        {hint ? (
+        {hint && look === 'colors' ? (
           <Appear from="none" delay={60}>
             <Text variant="label" size={11} muted center style={styles.hint}>
               {hint}
             </Text>
           </Appear>
         ) : null}
+        {peek ? <View style={styles.peek} pointerEvents="none">{peek}</View> : null}
         {choices.map((c, i) => (
           <Appear key={c.key} from={from} distance={40} delay={110 + i * 70}>
           <ChoiceSlot state={selectedKey == null ? 'idle' : selectedKey === c.key ? 'picked' : 'other'} dir={i ? 1 : -1} nudgeAt={nudging ? 1400 + i * 520 : undefined}>
           <ChoiceCard
             title={c.title}
             caption={c.caption}
+            subtitle={c.subtitle}
             icon={c.icon}
             emoji={c.emoji}
+            plain={look === 'plain'}
             colors={looks?.[i % 2]?.colors}
             ink={looks?.[i % 2]?.ink}
+            marker
             selected={selectedKey === c.key}
             tilt={i ? 2 : -2}
-            marker
             onPress={() => choose(c.key)}
           />
           </ChoiceSlot>
           </Appear>
         ))}
+        {hint && look === 'plain' ? (
+          <Appear from="none" delay={220}>
+            <Text size={13} muted center>
+              {hint}
+            </Text>
+          </Appear>
+        ) : null}
       </View>
+      {below ? <View style={styles.below}>{below}</View> : null}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   card: { gap: 10, paddingTop: 10, paddingBottom: 10, paddingLeft: 6, paddingRight: 14, borderRadius: 26, borderWidth: 1, borderColor: veil.line, backgroundColor: color.panel },
@@ -325,4 +348,6 @@ const styles = StyleSheet.create({
   choices: { marginTop: 'auto', paddingTop: space.lg, gap: space.md },
   previewLow: { marginTop: 'auto', paddingTop: space.md },
   choicesAfterPreview: { marginTop: 0, paddingTop: space.lg },
+  peek: { alignItems: 'center', marginBottom: -40 },
+  below: { paddingTop: space.lg },
 });

@@ -60,3 +60,4 @@ export { type PetBumpOptions, usePetBump } from './pets/PetBump';
 export { useTypingPause } from './typing';
 export { PetRise, type PetRiseGesture, type PetRiseProps } from './pets/PetRise';
 export { type SceneStepsOptions, useSceneSteps } from './scene';
+export { flameScale, StreakFlame, type StreakFlameProps } from './pets/StreakFlame';

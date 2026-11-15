@@ -1,110 +1,278 @@
-import { formLabel } from '@/locales/content';
-import { Banner, Header, ScreenTemplate, Skeleton } from '@blowy/ui';
+/**
+ * La carte (spéc §10, maquette V6-GCarte) : ta zone, les minimoas compatibles en autocollants (positions arrondies du
+ * serveur), des silhouettes floues au-delà et leur nombre (caché à zéro). Gratuit : la carte reste sur ta zone.
+ * Blowy+ : navigation libre et « Changer de ville ». Mode discret. Sans localisation : ce qui manque et comment l'activer.
+ * Vraie carte Apple sur iPhone ; ailleurs (web, module absent), la carte dessinée (`MapLayer`).
+ */
+import type { MapPin } from '@blowy/contract';
+import { entitlements } from '@blowy/domain';
+import {
+  Banner,
+  Button,
+  ChoiceGrid,
+  DotNote,
+  EmptyState,
+  Header,
+  MapPinCard,
+  MapPlusStrip,
+  MapTemplate,
+  MatchWhy,
+  PillToggle,
+  ScreenTemplate,
+  SheetTemplate,
+  Skeleton,
+  Stack,
+  Sticker,
+  Text,
+  useFirstTime,
+} from '@blowy/ui';
 import { useRouter } from 'expo-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { type MapPet, NeighbourhoodMap, useLiveEncounters, useWave } from '@/features/encounters';
-import { sortLinks, useLinks } from '@/features/links';
-import { usePet } from '@/features/pet';
+import { useLiveEncounters, useWave, whyA11y } from '@/features/encounters';
+import { CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap } from '@/features/map';
+import { MapLayer } from '@/features/map/MapLayer';
+import { openPlusFrom, useMe } from '@/features/me';
 import { chats as chatsText } from '@/locales/chats';
+import { formatNumber } from '@/locales/runtime';
 import { carte as t, rencontres as listText } from '@/locales/rencontres';
+import { ui } from '@/locales/ui';
 
-/** Plan stylisé du voisinage du pet : pas de géolocalisation en V1. */
 export default function CarteScreen() {
   const router = useRouter();
-  const pet = usePet();
-  const links = useLinks();
+  const me = useMe();
+  const location = useFreshPosition(me.data);
+  const [at, setAt] = useState<MapAt | null>(null);
+  const map = useMap(at);
   const encounters = useLiveEncounters();
   const wave = useWave();
+  const discreet = useDiscreet();
+  const city = useCity();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [citySheet, setCitySheet] = useState(false);
+  const [waved, setWaved] = useState<ReadonlySet<string>>(new Set());
+  const land = useFirstTime('carte:land');
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
-  const p = pet.data?.pet;
-  const myName = p?.name ?? chatsText.yourPet;
-  const toRencontres = () => router.push('/rencontres');
 
-  const met: MapPet[] = [
-    ...(encounters.data?.suggestions ?? []).map((s) => ({
-      key: `s:${s.user.id}`,
-      person: s.user,
-      compat: s.compatibility,
-      via: s.via === 'friend_of_friend' ? listText.via.friend_of_friend(s.mutualName) : listText.via[s.via](),
-      waved: s.waved,
-      incoming: false,
-    })),
-    ...(encounters.data?.incoming ?? []).map((i) => ({ key: `in:${i.id}`, person: i.from, compat: i.compatibility, via: undefined, waved: false, incoming: true })),
-  ].map(({ key, person, compat, via, waved, ...rest }) => ({
-    key,
-    name: person.displayName,
-    pet: person.pet,
-    kind: 'met' as const,
-    accessibilityLabel: t.metA11y(person.displayName, person.pet.name),
-    who: t.linkWho(person.displayName),
-    via,
-    tags: [formLabel[person.pet.form]],
-    compat,
-    action: rest.incoming
-      ? { label: listText.open, tone: 'accent' as const, onPress: () => router.push(`/rencontre/${person.id}`) }
-      : {
-          label: t.hello(myName),
-          tone: 'accent' as const,
-          loading: wave.isPending && wave.variables === person.id,
-          onPress: () => wave.mutate(person.id),
-        },
-    after: waved ? { say: t.helloSent, label: t.rencontres, onPress: toRencontres } : null,
-  }));
-  const linked: MapPet[] = sortLinks(links.data ?? []).map((l) => ({
-    key: l.id,
-    name: l.other.displayName,
-    pet: l.other.pet,
-    kind: 'link',
-    ghost: l.status === 'ghost',
-    accessibilityLabel: t.linkA11y(l.other.displayName, l.other.pet.name),
-    who: t.linkWho(l.other.displayName),
-    via: t.linkVia,
-    tags: [formLabel[l.other.pet.form]],
-    action: { label: t.openChat(l.other.displayName), tone: 'white', onPress: () => router.push(`/link/${l.id}`) },
-  }));
+  // Blowy+ : la carte a bougé → on relit ce qu'il y a là (après un court repos du doigt).
+  const pan = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (pan.current) clearTimeout(pan.current);
+  }, []);
+  const onRegionChange = (next: MapAt) => {
+    if (pan.current) clearTimeout(pan.current);
+    pan.current = setTimeout(() => setAt(next), 450);
+  };
 
-  const loading = pet.isPending || links.isPending || encounters.isPending;
-  const failed = pet.isError || links.isError || encounters.isError;
+  const m = me.data;
+  const data = map.data;
+  const plus = !!m && entitlements(m.plus).mapEverywhere;
+  const petName = m?.pet.name ?? chatsText.yourPet;
+  const known = useMemo(() => {
+    const ids = new Set<string>();
+    for (const s of encounters.data?.suggestions ?? []) ids.add(s.user.id);
+    for (const i of encounters.data?.incoming ?? []) ids.add(i.from.id);
+    return ids;
+  }, [encounters.data]);
+  const wavedIds = useMemo(() => {
+    const ids = new Set(waved);
+    for (const s of encounters.data?.suggestions ?? []) if (s.waved) ids.add(s.user.id);
+    return ids;
+  }, [encounters.data, waved]);
 
-  if (!p || loading) {
+  // ── Chargement, erreur ──────────────────────────────────────────────────
+  if (!m || !data) {
+    const failed = me.isError || map.isError;
     return (
       <ScreenMotion>
-      <ScreenTemplate header={<Header onBack={back} backLabel={t.back} />}>
-        {failed ? (
-          <Banner
-            tone="error"
-            title={t.loadError}
-            text={(pet.error ?? links.error ?? encounters.error)?.message ?? ''}
-            actionLabel={t.retry}
-            onAction={() => void Promise.all([pet.refetch(), links.refetch(), encounters.refetch()])}
-          />
-        ) : (
-          <Skeleton height={400} radius="xl" />
-        )}
-      </ScreenTemplate>
+        <ScreenTemplate header={<Header onBack={back} backLabel={t.back} />}>
+          {failed ? (
+            <Banner
+              tone="error"
+              title={t.loadError}
+              text={(me.error ?? map.error)?.message ?? ''}
+              actionLabel={t.retry}
+              onAction={() => void Promise.all([me.refetch(), map.refetch()])}
+            />
+          ) : (
+            <Stack top={6}>
+              <Skeleton height={56} width="70%" radius="md" />
+              <Skeleton height={420} radius="xl" />
+            </Stack>
+          )}
+        </ScreenTemplate>
       </ScreenMotion>
     );
   }
 
-  const pins = [...met, ...linked];
+  // ── Sans localisation : ce qui manque, et comment l'activer ─────────────────
+  if (data.status === 'no_location' || !data.center) {
+    const denied = location.permission?.status === 'denied' && !location.permission.canAskAgain;
+    const refusedNow = location.result === 'denied';
+    const blocked = denied || refusedNow;
+    const web = Platform.OS === 'web';
+    return (
+      <ScreenMotion>
+        <ScreenTemplate header={<Header onBack={back} backLabel={t.back} />}>
+          <Stack top={6} gap={16}>
+            <EmptyState
+              peek
+              seed={m.pet.id}
+              species={m.pet.species}
+              mood={blocked ? 'triste' : 'surpris'}
+              title={blocked ? t.noLocation.deniedTitle : t.noLocation.title}
+              text={blocked ? (web ? t.noLocation.deniedWeb : t.noLocation.denied) : t.noLocation.text(petName)}
+            />
+            <DotNote text={t.noLocation.without} />
+            {location.result === 'unavailable' ? <Banner tone="info" text={t.noLocation.unavailable} /> : null}
+            {blocked && !web ? (
+              <Button label={t.noLocation.settings} onPress={location.openSettings} />
+            ) : (
+              <Button label={blocked ? t.noLocation.retry : t.noLocation.action} onPress={() => void location.enable()} loading={location.sending} />
+            )}
+          </Stack>
+        </ScreenTemplate>
+      </ScreenMotion>
+    );
+  }
+
+  // ── La carte ─────────────────────────────────────────────────────────────
+  const center = data.center;
+  const pins = data.pins;
+  const current: MapPin | null = pins.find((p) => p.user.id === selected) ?? null;
+  const km = formatNumber(data.radiusKm, { maximumFractionDigits: 1 });
+  const chosen = m.identity.location.chosenCity;
+  const cityActive = m.identity.location.chosenCityActive && !!chosen;
+  const subtitle = cityActive && chosen ? t.subtitleCity(chosen.label, km) : data.scope === 'everywhere' ? t.subtitleEverywhere(km) : t.subtitle(km);
+  // Les silhouettes et leur nombre viennent du serveur : rien à zéro.
+  const beyond = data.beyond.count > 0 ? data.beyond : null;
+
+  const card = current ? (
+    <MapPinCard
+      motionKey={current.user.id}
+      pet={current.user.pet}
+      owner={t.owner(current.user.displayName)}
+      compat={ui.percent(current.compatibility)}
+      compatLabel={t.compat}
+      why={
+        <MatchWhy
+          commonTitle={current.explanation.commonTitle}
+          common={current.explanation.common.map((c) => c.name)}
+          exploreTitle={current.explanation.exploreTitle}
+          explore={current.explanation.explore.name}
+          accessibilityLabel={whyA11y(current.explanation, listText.whyJoin)}
+        />
+      }
+      actionLabel={wavedIds.has(current.user.id) ? t.waved : t.wave(current.user.pet.name)}
+      actionLoading={wave.isPending && wave.variables === current.user.id}
+      onAction={() => {
+        if (wavedIds.has(current.user.id)) return;
+        const id = current.user.id;
+        wave.mutate(id, { onSuccess: () => setWaved((s) => new Set(s).add(id)) });
+      }}
+      secondaryLabel={known.has(current.user.id) ? t.open : undefined}
+      onSecondary={() => router.push(`/rencontre/${current.user.id}`)}
+    />
+  ) : null;
+
+  const bottom = (
+    <>
+      {m.identity.discreet && !current ? <Banner tone="info" text={t.discreetOn} /> : null}
+      {discreet.isError ? <Banner tone="error" text={listText.actionError} onClose={() => discreet.reset()} /> : null}
+      {wave.isError ? <Banner tone="error" text={listText.actionError} onClose={() => wave.reset()} /> : null}
+      {card}
+      {!current && pins.length === 0 ? (
+        <Banner tone="info" text={t.empty} actionLabel={t.emptyAction} onAction={() => router.push('/rencontres')} actionBelow />
+      ) : null}
+      {!current ? (
+        plus ? (
+          <Stack gap={8}>
+            <Button label={t.city} variant="white" size="md" onPress={() => setCitySheet(true)} />
+            {cityActive ? <Button label={t.cityBack} variant="ghost" size="md" loading={city.clear.isPending} onPress={() => city.clear.mutate()} /> : null}
+          </Stack>
+        ) : (
+          <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlusFrom('map')} />
+        )
+      ) : null}
+    </>
+  );
+
   return (
     <ScreenMotion>
-    <ScreenTemplate scroll={false} padded={false} edges={[]} keyboard={false}>
-      <NeighbourhoodMap
-        me={p}
-        meLabel={t.me}
-        pins={pins}
+      <MapTemplate
         title={t.title}
-        subtitle={t.subtitle(pins.length)}
+        subtitle={subtitle}
         onBack={back}
         backLabel={t.back}
-        badge={t.badge}
-        onBadge={() => router.push('/moi/blowy-plus')}
-        compatLabel={t.compat}
-        empty={{ text: t.empty, label: t.rencontres, onPress: toRencontres }}
+        right={
+          <PillToggle
+            label={t.discreet}
+            value={m.identity.discreet}
+            onValueChange={(on) => discreet.mutate(on)}
+            accessibilityLabel={t.discreetA11y(m.identity.discreet)}
+            disabled={discreet.isPending}
+          />
+        }
+        map={
+          <MapLayer
+            center={center}
+            radiusKm={data.radiusKm}
+            free={!plus}
+            onRegionChange={plus ? onRegionChange : undefined}
+            land={land}
+            insetTop={190}
+            insetBottom={200}
+            me={{ pet: m.pet, label: t.me, accessibilityLabel: t.meA11y(m.pet.name) }}
+            blurred={beyond?.blurred ?? []}
+            pins={pins.map((p) => ({
+              key: p.user.id,
+              position: p.position,
+              pet: p.user.pet,
+              label: p.user.displayName,
+              accessibilityLabel: t.pinA11y(p.user.pet.name, p.user.displayName),
+              selected: p.user.id === selected,
+              onPress: () => setSelected((s) => (s === p.user.id ? null : p.user.id)),
+            }))}
+          />
+        }
+        badge={beyond && !current ? <Sticker label={beyond.label} tone="white" rotate={-2} font="body" /> : undefined}
+        bottom={bottom}
       />
-    </ScreenTemplate>
+
+      {/* Blowy+ : changer de ville sans bouger. */}
+      <SheetTemplate
+        visible={citySheet}
+        onClose={() => setCitySheet(false)}
+        title={t.cityTitle}
+        closeLabel={t.back}
+        scroll
+        footer={cityActive ? <Button label={t.cityBack} variant="ghost" onPress={() => city.clear.mutate(undefined, { onSuccess: () => setCitySheet(false) })} loading={city.clear.isPending} /> : undefined}
+      >
+        <Text size={15} muted>
+          {t.cityText}
+        </Text>
+        <ChoiceGrid
+          items={CITIES.map((c) => ({ key: c.id, label: t.cities[c.id] }))}
+          selected={cityActive && chosen ? (CITIES.find((c) => t.cities[c.id] === chosen.label)?.id ?? null) : null}
+          onSelect={(id) => {
+            const c = CITIES.find((x) => x.id === id);
+            if (!c) return;
+            city.choose.mutate(
+              { label: t.cities[c.id], latitude: c.latitude, longitude: c.longitude },
+              {
+                onSuccess: () => {
+                  setAt(null);
+                  setSelected(null);
+                  setCitySheet(false);
+                },
+              },
+            );
+          }}
+        />
+        {city.choose.isError ? <Banner tone="error" text={t.cityError} /> : null}
+      </SheetTemplate>
     </ScreenMotion>
   );
 }

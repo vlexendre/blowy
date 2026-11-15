@@ -3,18 +3,23 @@ import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { UploadTicket } from '@blowy/contract';
 import { createClient, type Session as SbSession, type SupabaseClient } from '@supabase/supabase-js';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import { AppState, Platform } from 'react-native';
 
 import { config } from '../config';
-import { AuthError, type AuthPort, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
+import { AuthError, type AuthPort, type AuthProvider, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
+import { appleSignIn } from './apple-sign-in';
 import { pickImage } from './image-picker';
 import { common } from '@/locales/common';
+import { onboarding } from '@/locales/onboarding';
 
 const BUCKET = 'media';
 
 export function createSupabase(): SupabaseClient {
   const client = createClient(config.supabaseUrl, config.supabaseKey, {
-    auth: { storage: AsyncStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: false },
+    // PKCE : la connexion Google revient avec un `code` échangé par l'app (exchangeCodeForSession), jamais un jeton dans l'URL.
+    auth: { storage: AsyncStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: false, flowType: 'pkce' },
   });
   // Le rafraîchissement du jeton ne tourne que quand l'app est au premier plan.
   if (Platform.OS !== 'web') {
@@ -35,8 +40,78 @@ function authError(message: string, status?: number): AuthError {
   return new AuthError('unknown', common.errors.unknown);
 }
 
+/**
+ * Fournisseurs proposés : Apple sur iPhone (règle d'Apple : obligatoire dès qu'on propose une connexion tierce, et
+ * c'est la seule ici), Google sur Android et le web. Plus de code par e-mail pour les vrais comptes.
+ */
+export const platformProviders = (): readonly AuthProvider[] => (Platform.OS === 'ios' ? ['apple'] : ['google']);
+
+/** Adresse de retour de la connexion Google (`blowy://auth-callback`, ou la même origine sur le web). */
+export function oauthRedirect(): string {
+  if (Platform.OS === 'web' && typeof window !== 'undefined') return `${window.location.origin}/auth-callback`;
+  return Linking.createURL('auth-callback');
+}
+
+/** La session ouverte par le fournisseur (absente : échec, jamais une annulation). */
+function opened(s: SbSession | null): Session {
+  const session = toSession(s);
+  if (!session) throw new AuthError('unknown', onboarding.connexion.errors.failed);
+  return session;
+}
+
+function providerError(e: unknown): AuthError {
+  if (e instanceof AuthError) return e;
+  const message = e instanceof Error ? e.message : '';
+  if (/network|fetch/i.test(message)) return new AuthError('network', common.errors.network);
+  return new AuthError('unknown', onboarding.connexion.errors.failed);
+}
+
+/** Apple : jeton d'identité de la feuille système → `signInWithIdToken` (procédé documenté par Supabase pour Expo). */
+async function withApple(sb: SupabaseClient): Promise<Session | null> {
+  const credential = await appleSignIn();
+  if (!credential) return null;
+  const { data, error } = await sb.auth.signInWithIdToken({ provider: 'apple', token: credential.identityToken });
+  if (error) throw authError(error.message, error.status);
+  return opened(data.session);
+}
+
+/**
+ * Google : page de connexion de Google dans le navigateur du système (onglet personnalisé sur Android, fenêtre sur le
+ * web), flux PKCE de Supabase, puis échange du `code` contre la session. Aucun module natif ni identifiant Google dans
+ * l'app : tout se règle dans Supabase (docs/CONNEXION.md).
+ */
+async function withGoogle(sb: SupabaseClient): Promise<Session | null> {
+  const redirectTo = oauthRedirect();
+  const { data, error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo, skipBrowserRedirect: true, queryParams: { prompt: 'select_account' } },
+  });
+  if (error || !data.url) throw authError(error?.message ?? 'oauth', error?.status);
+  const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+  if (result.type !== 'success') return null;
+  const url = new URL(result.url);
+  const params = new URLSearchParams(url.search || url.hash.replace(/^#/, ''));
+  const code = params.get('code');
+  if (!code) {
+    // Refus sur la page de Google (« access_denied ») : c'est une annulation.
+    if (params.get('error') === 'access_denied') return null;
+    throw new AuthError('unknown', onboarding.connexion.errors.failed);
+  }
+  const exchanged = await sb.auth.exchangeCodeForSession(code);
+  if (exchanged.error) throw authError(exchanged.error.message, exchanged.error.status);
+  return opened(exchanged.data.session);
+}
+
 export function supabaseAuth(sb: SupabaseClient): AuthPort {
   return {
+    providers: platformProviders(),
+    async signInWith(provider) {
+      try {
+        return provider === 'apple' ? await withApple(sb) : await withGoogle(sb);
+      } catch (e) {
+        throw providerError(e);
+      }
+    },
     async getSession() {
       const { data } = await sb.auth.getSession();
       return toSession(data.session);

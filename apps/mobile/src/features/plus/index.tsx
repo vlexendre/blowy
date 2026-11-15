@@ -1,118 +1,335 @@
 /**
- * Blowy+ : présentation de l'offre, partagée par le paywall de l'inscription et l'écran « Moi › Blowy+ ».
- * Toujours en feuille qui monte du bas, hors de la navigation (route en modale transparente) : croix, glisser vers le
- * bas ou toucher le voile la ferment. En bas : « restaurer mes achats », conditions et confidentialité (Apple).
- * Les achats ne sont pas branchés dans cette version (`purchases.available` faux) : rien n'est vendu,
- * le bouton principal reste désactivé et l'écran propose de continuer gratuitement.
+ * Blowy+ : la feuille d'offre (paywall de l'inscription, « Moi › Blowy+ » et tous les points d'entrée de l'app via
+ * `openPlus(raison)`), les achats StoreKit vérifiés par l'API, la restauration et la synchronisation au lancement.
+ *
+ * Les faits viennent de l'API (`api.plus.paywall()` : offres, essai, avantages, nombre réel de personnes compatibles,
+ * mentions, liens légaux) ; les prix affichés viennent du magasin (StoreKit, localisés) quand il répond, sinon de l'API.
+ * Le montant facturé est toujours le prix le plus visible (Apple 3.1.2) ; « Continuer gratuitement » est toujours là.
  */
-import { OFFERS, type Plan, monthlyEquivalentMinor, yearlyDiscountPercent, type Species } from '@blowy/domain';
-import { PlusTemplate, SheetTemplate } from '@blowy/ui';
-import { useState } from 'react';
+import { ApiError } from '@blowy/api-client';
+import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
+import { ITEMS, OFFERS, type Plan, type PlusPerk, monthlyEquivalentMinor, type Species } from '@blowy/domain';
+import { PlusTemplate, type PlusOfferView, SheetTemplate } from '@blowy/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 
-import { config, usePorts } from '@/core';
+import { keys, type SignedPurchase, type StoreProduct, useApi, usePorts, useSession } from '@/core';
+import { itemLabel } from '@/locales/content';
 import { common } from '@/locales/common';
-import { onboarding } from '@/locales/onboarding';
+import { plus as t } from '@/locales/plus';
 import { formatPrice } from '@/locales/runtime';
 
-const t = onboarding.plus;
-type PlanKey = Plan;
-const PLAN_ORDER: readonly PlanKey[] = ['yearly', 'monthly'];
+// ── Ouvrir la feuille depuis n'importe où ────────────────────────────────────
+
+/** Ce que la personne vient d'essayer de faire : le titre de la feuille et l'avantage mis en tête en dépendent. */
+export const PLUS_REASONS = ['generic', 'onboarding', 'premium_item', 'map', 'change_city', 'habits_limit', 'rename', 'detailed_review', 'jokers', 'encounters'] as const;
+export type PlusReason = (typeof PLUS_REASONS)[number];
+
+const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
+  premium_item: 'premium_items',
+  map: 'map_everywhere',
+  change_city: 'map_everywhere',
+  habits_limit: 'more_habits',
+  rename: 'free_rename',
+  detailed_review: 'detailed_review',
+  jokers: 'streak_jokers',
+  encounters: 'more_encounters',
+};
 
 /**
- * Prix indicatifs de Blowy+ (`OFFERS` du domaine), mis en forme dans la langue et la région du téléphone.
- * Quand les achats seront branchés, ces montants viendront du magasin (prix localisés), jamais d'une phrase.
+ * Ouvre la feuille Blowy+ par-dessus l'écran courant (modale transparente `moi/blowy-plus`). `item` : l'objet premium
+ * touché (il flotte près du minimoa). La fermer revient à l'écran d'en dessous.
  */
-export function plusPrices(plan: PlanKey = 'yearly'): { total: string; perMonth: string } {
+export function openPlus(reason: PlusReason = 'generic', opts: { item?: string } = {}): void {
+  router.push({ pathname: '/moi/blowy-plus', params: { reason, ...(opts.item ? { item: opts.item } : {}) } });
+}
+
+export const isPlusReason = (v: unknown): v is PlusReason => typeof v === 'string' && (PLUS_REASONS as readonly string[]).includes(v);
+
+// ── Données ──────────────────────────────────────────────────────────────────
+
+export const plusKeys = { paywall: ['plus', 'paywall'] as const, subscription: ['plus', 'subscription'] as const };
+
+export function usePaywall() {
+  const api = useApi();
+  const session = useSession();
+  return useQuery({ queryKey: plusKeys.paywall, queryFn: api.plus.paywall, enabled: !!session });
+}
+
+export function useSubscription(enabled = true) {
+  const api = useApi();
+  const session = useSession();
+  return useQuery({ queryKey: plusKeys.subscription, queryFn: api.plus.subscription, enabled: enabled && !!session });
+}
+
+/** Prix localisés du magasin pour ces produits (liste vide : on prend ceux de l'API). */
+export function useStoreProducts(productIds: readonly string[]) {
+  const { purchases } = usePorts();
+  return useQuery({
+    queryKey: ['plus', 'store', ...productIds],
+    queryFn: () => purchases.products(productIds),
+    enabled: purchases.available && productIds.length > 0,
+    staleTime: 30 * 60_000,
+    retry: false,
+  });
+}
+
+/**
+ * Prix indicatifs de Blowy+ (domaine), mis en forme dans la langue et la région du téléphone. Sert aux lignes d'aperçu
+ * hors de la feuille (« Moi »). Dans la feuille, les prix viennent du magasin ou de l'API.
+ */
+export function plusPrices(plan: Plan = 'yearly'): { total: string; perMonth: string } {
   const o = OFFERS[plan];
   return { total: formatPrice(o.amountMinor, o.currency), perMonth: formatPrice(monthlyEquivalentMinor(o), o.currency) };
 }
 
-/** Les offres telles que le paywall les montre. */
-const plans = () =>
-  PLAN_ORDER.map((key) => {
-    const prices = plusPrices(key);
-    const words = t.plans[key];
-    return {
-      key,
-      title: words.title,
-      price: prices.perMonth,
-      unit: words.unit,
-      caption: words.caption(prices.total),
-      ...('badge' in words ? { badge: words.badge(yearlyDiscountPercent()) } : {}),
-    };
+/** Envoie une transaction signée à l'API, puis la termine chez Apple (seulement si l'API l'a acceptée). */
+async function submit(api: ReturnType<typeof useApi>, p: SignedPurchase): Promise<Subscription> {
+  const sub = await api.plus.submitPurchase({ store: 'apple', signedTransaction: p.signedTransaction, ...(p.signedRenewalInfo ? { signedRenewalInfo: p.signedRenewalInfo } : {}) });
+  await p.finish();
+  return sub;
+}
+
+function useRefreshPlus() {
+  const qc = useQueryClient();
+  return (sub?: Subscription) => {
+    if (sub) qc.setQueryData(plusKeys.subscription, sub);
+    void qc.invalidateQueries({ queryKey: keys.me });
+    void qc.invalidateQueries({ queryKey: plusKeys.paywall });
+    if (!sub) void qc.invalidateQueries({ queryKey: plusKeys.subscription });
+  };
+}
+
+export type BuyResult = { status: 'purchased'; subscription: Subscription } | { status: 'pending' } | { status: 'cancelled' };
+
+/** Achat : StoreKit (lié au compte par `appAccountToken`), vérification par l'API, puis `me` relu. */
+export function usePurchase() {
+  const api = useApi();
+  const { purchases } = usePorts();
+  const qc = useQueryClient();
+  const refresh = useRefreshPlus();
+  return useMutation({
+    mutationFn: async (productId: string): Promise<BuyResult> => {
+      const me = qc.getQueryData<{ id: string }>(keys.me) ?? (await api.me.get());
+      const out = await purchases.purchase(productId, me.id);
+      if (out.status !== 'purchased') return out;
+      try {
+        return { status: 'purchased', subscription: await submit(api, out.purchase) };
+      } catch (e) {
+        // Payé chez Apple mais pas encore activé : la transaction reste ouverte, StoreKit la redonnera (et « restaurer »).
+        throw new PlusActivationError(e);
+      }
+    },
+    onSuccess: (r) => {
+      if (r.status === 'purchased') refresh(r.subscription);
+    },
   });
+}
+
+export class PlusActivationError extends Error {
+  constructor(readonly cause: unknown) {
+    super('activation');
+  }
+}
+
+/** « Restaurer mes achats » : resynchronise avec le magasin et fait vérifier chaque abonnement en cours. */
+export function useRestore() {
+  const api = useApi();
+  const { purchases } = usePorts();
+  const refresh = useRefreshPlus();
+  return useMutation({
+    mutationFn: async (): Promise<Subscription | null> => {
+      const list = await purchases.restore();
+      let last: Subscription | null = null;
+      for (const p of list) last = await submit(api, p);
+      return last;
+    },
+    onSuccess: (sub) => refresh(sub ?? undefined),
+  });
+}
+
+/**
+ * Au lancement (connecté, inscrit) : chaque transaction qui arrive hors d'un achat (renouvellement, achat « en
+ * attente » validé, achat fait ailleurs) est envoyée à l'API, puis `me` est relu. Rien sur le web ni en mode local.
+ */
+export function usePlusSync(enabled: boolean) {
+  const api = useApi();
+  const { purchases } = usePorts();
+  const refresh = useRefreshPlus();
+  useEffect(() => {
+    if (!enabled || !purchases.available || purchases.simulated) return;
+    return purchases.onUpdates((p) => {
+      void submit(api, p)
+        .then((sub) => refresh(sub))
+        .catch(() => undefined);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, purchases, api]);
+}
+
+// ── La feuille ───────────────────────────────────────────────────────────────
+
+/** Prix d'une offre : StoreKit d'abord (localisé), l'API en repli. */
+function offerPrices(o: PaywallOffer, store: StoreProduct | undefined) {
+  if (store) {
+    const perMonth =
+      o.period === 'year' && store.price !== null && store.currency ? formatPrice(Math.round((store.price * 100) / 12), store.currency) : null;
+    return { price: o.period === 'year' ? t.price.year(store.displayPrice) : t.price.month(store.displayPrice), perMonth: perMonth ? t.perMonth(perMonth) : null };
+  }
+  return { price: o.labels.price, perMonth: o.labels.perMonth };
+}
+
+/** Objets premium montrés autour du minimoa : celui qu'on vient de toucher d'abord. */
+const PREMIUM = ITEMS.filter((i) => i.unlock.kind === 'premium').map((i) => i.id);
+function floatingFor(item: string | undefined): string[] {
+  const rest = ['lunettes_pixel', 'aureole', ...PREMIUM].filter((id, i, all) => id !== item && all.indexOf(id) === i);
+  return item && PREMIUM.includes(item) ? [item, rest[0] ?? 'aureole'] : rest.slice(0, 2);
+}
+
+const TEASER_SPECIES: readonly Species[] = ['suzie', 'gaston', 'pia'];
+
+function headlineFor(reason: PlusReason, petName: string, item?: string): string {
+  if (reason === 'premium_item' && item) return t.headline.premium_item(itemLabel[item as keyof typeof itemLabel] ?? petName);
+  const h = t.headline[reason === 'premium_item' ? 'generic' : reason];
+  return typeof h === 'function' ? h(petName) : h;
+}
 
 export interface PlusOfferProps {
-  pet: { name: string; species: Species };
-  /** Déjà membre : on remercie au lieu de présenter l'offre. */
+  pet: { name: string; species: Species; outfit?: Record<string, string> | null };
+  reason?: PlusReason;
+  /** Objet premium touché (raison `premium_item`). */
+  item?: string;
+  /** Membre ou non (`me.plus`). */
   member?: boolean;
   onClose: () => void;
-  /** Action « continuer gratuitement » (le paywall mène aux onglets, Moi revient en arrière). */
+  /** « Continuer gratuitement » (le paywall de l'inscription mène à l'app, ailleurs on revient en arrière). */
   onContinue: () => void;
 }
 
-export function PlusOffer({ pet, member = false, onClose, onContinue }: PlusOfferProps) {
+export function PlusOffer({ pet, reason = 'generic', item, member = false, onClose, onContinue }: PlusOfferProps) {
   const { purchases } = usePorts();
-  const [plan, setPlan] = useState<PlanKey>('yearly');
-  const [buying, setBuying] = useState(false);
-  const [restoring, setRestoring] = useState(false);
-  const [restoreNote, setRestoreNote] = useState<string | undefined>();
+  const paywall = usePaywall();
+  const data: Paywall | undefined = paywall.data;
+  const offers = data?.offers ?? [];
+  const store = useStoreProducts(offers.map((o) => o.productId));
+  const [plan, setPlan] = useState<PlanDto | null>(null);
+  const chosen = plan ?? data?.defaultPlan ?? 'yearly';
+  const buy = usePurchase();
+  const restore = useRestore();
+  const [status, setStatus] = useState<{ tone: 'info' | 'success' | 'error'; text: string } | null>(null);
+  const sub = data?.subscription;
+  const isMember = member || !!sub?.plus;
 
-  const restore = async () => {
-    setRestoring(true);
-    setRestoreNote(undefined);
-    try {
-      if (await purchases.restore()) onContinue();
-      else setRestoreNote(t.restoreNone);
-    } catch {
-      setRestoreNote(t.restoreError);
-    } finally {
-      setRestoring(false);
-    }
+  const byId = useMemo(() => new Map((store.data ?? []).map((p) => [p.productId, p])), [store.data]);
+  const highlight = REASON_PERK[reason];
+  const perks = (data?.perks ?? []).map((p) => ({ key: p.key, label: p.label, highlight: p.key === highlight }));
+  perks.sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight));
+
+  const views: PlusOfferView<PlanDto>[] = offers.map((o) => {
+    const s = byId.get(o.productId);
+    const prices = offerPrices(o, s);
+    const eligible = o.trialDays > 0 && (s?.introEligible ?? data?.trial.eligible ?? true);
+    const name = o.period === 'year' ? t.plan.yearly : t.plan.monthly;
+    return {
+      key: o.plan,
+      lead: eligible ? t.lead.trial(name, o.trialDays) : o.trialDays > 0 ? name : t.lead.noTrial(name),
+      price: prices.price,
+      perMonth: prices.perMonth,
+      badge: o.discountPercent ? t.badge(o.discountPercent) : null,
+      short: o.trialDays > 0 ? name : t.lead.noTrial(name),
+      timeline: eligible && data ? data.trial.timeline : null,
+    };
+  });
+  const current = offers.find((o) => o.plan === chosen);
+  const currentView = views.find((v) => v.key === chosen);
+  const trialing = !!currentView?.timeline;
+
+  const cta = !purchases.available
+    ? t.cta.unavailable
+    : trialing && current
+      ? t.cta.trial(current.trialDays)
+      : t.cta.subscribe(currentView?.price ?? '');
+
+  const doBuy = () => {
+    if (!current) return;
+    setStatus(null);
+    buy.mutate(current.productId, {
+      onSuccess: (r) => {
+        if (r.status === 'pending') setStatus({ tone: 'info', text: t.status.pending });
+        if (r.status === 'purchased') setStatus({ tone: 'success', text: t.status.welcome(pet.name) });
+      },
+      onError: (e) => setStatus({ tone: 'error', text: e instanceof PlusActivationError ? t.status.activation : t.status.failed }),
+    });
   };
-  const legal = onboarding.compte;
-
-  const buy = async () => {
-    setBuying(true);
-    try {
-      if (await purchases.purchase(plan)) onContinue();
-    } finally {
-      setBuying(false);
-    }
+  const doRestore = () => {
+    setStatus(null);
+    restore.mutate(undefined, {
+      onSuccess: (s) => setStatus(s?.plus ? { tone: 'success', text: t.status.restored } : { tone: 'info', text: t.status.restoreNone }),
+      onError: (e) => setStatus({ tone: 'error', text: e instanceof ApiError ? e.message : t.status.restoreError }),
+    });
+  };
+  const manage = async () => {
+    if (await purchases.manageSubscriptions()) return;
+    void Linking.openURL(sub?.manageUrl ?? 'https://apps.apple.com/account/subscriptions');
   };
 
+  const legal = data?.legal;
+  const teaserCount = data?.teaser.compatibleNearby ?? 0;
   return (
     <SheetTemplate asScreen bare visible onClose={onClose} closeLabel={common.close}>
-    <PlusTemplate
-      sticker={t.sticker}
-      onClose={onClose}
-      closeLabel={common.close}
-      brand={t.brand}
-      subtitle={t.subtitle(pet.name)}
-      species={pet.species}
-      features={t.features.map((f) => ({ icon: f.icon, title: typeof f.title === 'function' ? f.title(pet.name) : f.title, text: f.text }))}
-      plans={plans()}
-      plan={plan}
-      onPlan={setPlan}
-      free={t.free}
-      ctaLabel={member ? t.member : t.cta}
-      onCta={purchases.available && !member ? () => void buy() : undefined}
-      ctaDisabled={!purchases.available || member}
-      ctaLoading={buying}
-      ctaHint={purchases.available ? undefined : t.soon}
-      note={member ? undefined : purchases.available ? t.renewal[plan](plusPrices(plan).total) : t.soon}
-      secondaryLabel={t.continueFree}
-      onSecondary={onContinue}
-      restoreLabel={t.restore}
-      onRestore={() => void restore()}
-      restoreLoading={restoring}
-      restoreNote={restoreNote}
-      links={[
-        { label: legal.legalTerms, onPress: () => void Linking.openURL(`${config.webUrl}/conditions`) },
-        { label: legal.legalPrivacy, onPress: () => void Linking.openURL(`${config.webUrl}/confidentialite`) },
-      ]}
-    />
+      <PlusTemplate
+        onClose={onClose}
+        closeLabel={common.close}
+        brand={t.brand}
+        headline={headlineFor(reason, pet.name, item)}
+        pet={{ species: pet.species, outfit: pet.outfit ?? undefined, name: pet.name }}
+        floatingItems={floatingFor(item)}
+        teaser={teaserCount > 0 && data?.teaser.label ? { label: data.teaser.label, species: TEASER_SPECIES } : null}
+        perks={perks.length ? perks : t.perksFallback.map((label, i) => ({ key: String(i), label }))}
+        offers={views}
+        selected={chosen}
+        onSelect={(k) => {
+          setPlan(k);
+          setStatus(null);
+        }}
+        offersLabel={t.offersLabel}
+        ctaLabel={paywall.isError ? undefined : cta}
+        onCta={purchases.available && current && !buy.isPending ? doBuy : undefined}
+        ctaDisabled={!purchases.available || !current}
+        ctaLoading={buy.isPending || paywall.isLoading}
+        status={
+          status ??
+          (paywall.isError
+            ? { tone: 'error', text: t.status.loadError }
+            : !purchases.available && data
+              ? { tone: 'info', text: t.status.unavailable }
+              : purchases.simulated && data && !isMember
+                ? { tone: 'info', text: t.status.simulated }
+                : null)
+        }
+        member={
+          isMember
+            ? { title: t.member.title, summary: sub?.summary ?? t.member.fallback, manageLabel: sub?.store === 'apple' || purchases.available ? t.member.manage : undefined, onManage: () => void manage() }
+            : null
+        }
+        continueLabel={isMember ? common.close : (data?.continueFreeLabel ?? t.continueFree)}
+        onContinue={onContinue}
+        renewalNotice={isMember ? null : (data?.renewalNotice ?? null)}
+        restoreLabel={data?.restoreLabel ?? t.restore}
+        onRestore={purchases.available ? doRestore : undefined}
+        restoreLoading={restore.isPending}
+        links={
+          legal
+            ? [
+                { label: t.links.terms, onPress: () => void Linking.openURL(legal.termsUrl) },
+                { label: t.links.privacy, onPress: () => void Linking.openURL(legal.privacyUrl) },
+                { label: t.links.plusTerms, onPress: () => void Linking.openURL(legal.plusTermsUrl) },
+              ]
+            : []
+        }
+      />
     </SheetTemplate>
   );
 }

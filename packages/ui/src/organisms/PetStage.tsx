@@ -1,5 +1,5 @@
 import type { Shape } from '@blowy/domain';
-import { useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
@@ -60,6 +60,10 @@ export interface PetStageProps {
   petLabel?: string;
   /** Soin porté vers le pet (`usePetLure`, partagé avec `CareBar`) : le pet le suit des yeux et ouvre la bouche quand il approche. */
   lure?: PetLure;
+  /** Décor posé sur la tête du pet et qui le suit (la mèche de la série : `StreakFlame`). */
+  crest?: ReactNode;
+  /** Jauge vedette en bas à gauche du panneau (la sociabilité : `HeroMeter`). La bulle remonte un peu. */
+  meter?: ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -88,6 +92,8 @@ export function PetStage({
   onPetTouch,
   petLabel,
   lure,
+  crest,
+  meter,
   style,
 }: PetStageProps) {
   const reduced = useReducedMotion();
@@ -130,6 +136,7 @@ export function PetStage({
           grabbable={grabbable}
           onGrabChange={setLifted}
           lure={lure}
+          crest={crest}
           onTouch={(t) => {
             onPetTouch?.(t);
             if (t === 'tap') onPetPress?.();
@@ -156,10 +163,11 @@ export function PetStage({
         ) : null}
       </View>
       {speech ? (
-        <View style={styles.speech} pointerEvents="none">
+        <View style={[styles.speech, meter ? styles.speechHigh : null]} pointerEvents="none">
           <SpeechBubble text={speech} tone="dark" tail="left" typing />
         </View>
       ) : null}
+      {meter ? <View style={styles.meter}>{meter}</View> : null}
     </Panel>
   );
 }
@@ -177,6 +185,10 @@ const styles = StyleSheet.create({
   action: { height: 38 },
   // `.bubble` : à 16 du bord, 112 du haut, 150 de large au plus.
   speech: { position: 'absolute', left: 16, top: 112, maxWidth: 168, zIndex: 2 },
+  // Avec une jauge vedette en bas : la bulle remonte sous la puce de forme.
+  speechHigh: { top: 98 },
+  // V6-GAccueil : jauge dans un verre sombre, à 14 du bas et 16 du bord gauche.
+  meter: { position: 'absolute', left: 16, bottom: 14, width: 168, zIndex: 2 },
   // `.sq` : à 6 du bord droit, 6 sous le bas du panneau.
   pet: { position: 'absolute', right: 6, bottom: -6 },
   sulk: { filter: SULK_FILTER },

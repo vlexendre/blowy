@@ -11,11 +11,11 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { fadeTo, springs, useReducedMotion } from '../lib/motion';
 import { TypingDots } from '../motion/TypingDots';
-import { color, motion, petTint, radius, space, veil } from '../theme';
-import type { MessageLook, PersonLook, PetLook } from '../types';
+import { alpha, color, motion, petTint, radius, space, veil } from '../theme';
+import type { MessageLook, PersonLook, PetLook, PetRoleLook } from '../types';
 
 export interface MessageBubbleProps {
-  message: Pick<MessageLook, 'author' | 'kind' | 'body' | 'mediaUrl'>;
+  message: Pick<MessageLook, 'author' | 'kind' | 'body' | 'mediaUrl'> & { petRole?: PetRoleLook | null };
   /** Nom au-dessus de la bulle (prénom de l'autre, nom du pet). */
   name?: string;
   /** Pet auteur (`my_pet` / `other_pet`) : visage et couleur du nom. */
@@ -46,6 +46,10 @@ export interface MessageBubbleProps {
   enter?: 'send' | 'receive';
   /** Libellé lu des « … » (« gaston écrit… »). */
   typingLabel?: string;
+  /** Appui long sur la bulle (signaler un message). */
+  onLongPress?: () => void;
+  /** Libellé lu de l'appui long (« Signaler ce message »). */
+  longPressHint?: string;
 }
 
 const AVATAR = 30;
@@ -67,8 +71,10 @@ export const MessageBubble = memo(function MessageBubble({
   typing,
   enter,
   typingLabel,
+  onLongPress,
+  longPressHint,
 }: MessageBubbleProps) {
-  const { author, kind, body, mediaUrl } = message;
+  const { author, kind, body, mediaUrl, petRole } = message;
   const entrance = useEntrance(enter, !!typing);
 
   if (author === 'system' || kind === 'event') {
@@ -88,8 +94,13 @@ export const MessageBubble = memo(function MessageBubble({
   const nameColor = nameTint ?? (isPet && pet ? petTint[pet.species] : color.white);
   const showHead = !mine && !continued;
 
+  const tint = isPet && pet ? petTint[pet.species] : null;
+  const role = isPet ? (petRole ?? null) : null;
+  const petLook = tint ? roleLook(role, tint) : null;
+  const petStyle = petLook ? [styles.petBubble, petLook.bubble] : styles.petBubble;
+
   const content = typing ? (
-    <View style={[styles.bubble, styles.typing, isPet ? styles.petBubble : styles.other]} accessible accessibilityLabel={typingLabel}>
+    <View style={[styles.bubble, styles.typing, isPet ? petStyle : styles.other]} accessible accessibilityLabel={typingLabel}>
       <TypingDots color={isPet ? color.white : color.dark} size={7} />
     </View>
   ) : kind === 'photo' && mediaUrl ? (
@@ -106,12 +117,21 @@ export const MessageBubble = memo(function MessageBubble({
         ) : null}
       </View>
     ) : (
-      <View style={[styles.bubble, mine ? styles.mine : isPet ? styles.petBubble : styles.other]}>
+      <View style={[styles.bubble, mine ? styles.mine : isPet ? petStyle : styles.other]}>
+        {petLook?.wash ? <LinearGradient colors={petLook.wash} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
+        {role === 'guard' ? <Glyph name="lock" size={13} color={color.mute} style={styles.guardLock} /> : null}
         <Text variant="body" size={15} color={isPet ? color.white : color.dark} style={styles.bodyText}>
           {body ?? ''}
         </Text>
       </View>
     );
+  const pressable = onLongPress && !typing ? (
+    <Pressable onLongPress={onLongPress} delayLongPress={380} haptic={false} scaleTo={0.97} accessibilityRole="text" accessibilityHint={longPressHint} accessibilityActions={longPressHint ? [{ name: 'longpress', label: longPressHint }] : undefined} onAccessibilityAction={(e) => (e.nativeEvent.actionName === 'longpress' ? onLongPress() : undefined)}>
+      {content}
+    </Pressable>
+  ) : (
+    content
+  );
 
   return (
     <Animated.View entering={fade ? FadeIn : undefined} style={[styles.row, mine ? styles.rowMine : null, entrance.row]}>
@@ -132,11 +152,32 @@ export const MessageBubble = memo(function MessageBubble({
             {name}
           </Text>
         ) : null}
-        <Animated.View style={[mine ? styles.originMine : styles.originOther, entrance.bubble]}>{content}</Animated.View>
+        <Animated.View style={[mine ? styles.originMine : styles.originOther, entrance.bubble]}>{pressable}</Animated.View>
       </View>
     </Animated.View>
   );
 });
+
+/**
+ * Bulle d'un minimoa selon son rôle (spéc §9) : jamais pleine comme celles des humains (jaune pour toi, blanche pour
+ * l'autre), mais teintée de la couleur du minimoa. Brise-glace : voile coloré franc ; relance : bord pointillé ;
+ * remarque : voile léger ; garde-fou : nuit calme, cadenas (visible par toi seul) ; annonce : voile léger.
+ */
+function roleLook(role: PetRoleLook | null, tint: string): { bubble: object; wash?: readonly [string, string] } {
+  switch (role) {
+    case 'icebreaker':
+      return { bubble: { borderColor: alpha(tint, 0.75), borderWidth: 1.5, backgroundColor: color.card }, wash: [alpha(tint, 0.4), alpha(tint, 0.14)] };
+    case 'nudge':
+      return { bubble: { borderColor: alpha(tint, 0.85), borderWidth: 1.5, borderStyle: 'dashed', backgroundColor: alpha(tint, 0.1) } };
+    case 'remark':
+    case 'event':
+      return { bubble: { borderColor: alpha(tint, 0.45), backgroundColor: color.card }, wash: [alpha(tint, 0.22), alpha(tint, 0.06)] };
+    case 'guard':
+      return { bubble: { borderColor: veil.glassStrong, backgroundColor: color.panel, paddingLeft: space.md + 18 } };
+    default:
+      return { bubble: {} };
+  }
+}
 
 /**
  * Entrée d'une bulle qui vient d'arriver (voir `enter`). La bulle envoyée monte d'une hauteur de champ en grandissant
@@ -199,7 +240,7 @@ const styles = StyleSheet.create({
   bodyText: { lineHeight: 20 },
   other: { backgroundColor: color.white, borderBottomLeftRadius: 6 },
   mine: { backgroundColor: color.accent, borderBottomRightRadius: 6 },
-  petBubble: { backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass, borderBottomLeftRadius: 6 },
+  petBubble: { backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass, borderBottomLeftRadius: 6, overflow: 'hidden' },
   photo: { width: 200, height: 250, borderRadius: radius.md + 2, backgroundColor: color.card },
   locked: {
     width: 200,
@@ -214,6 +255,7 @@ const styles = StyleSheet.create({
     padding: space.md,
   },
   typing: { paddingVertical: space.sm + 3 },
+  guardLock: { position: 'absolute', left: space.md, top: space.sm + 4 },
   // Les bulles grandissent depuis leur coin pointu (vers le champ pour moi, vers l'avatar pour l'autre).
   originMine: { transformOrigin: '100% 100%' },
   originOther: { transformOrigin: '0% 100%' },

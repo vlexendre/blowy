@@ -32,10 +32,10 @@ const SHORTCUT: Record<StatKey, Href> = {
   links: '/(tabs)/rencontres',
   bestLevel: '/(tabs)/chats',
   bestStreak: '/(tabs)/chats',
-  challenges: '/pet/caractere',
+  challenges: '/pet/defi',
   words: '/(tabs)/moi',
-  ritualStreak: '/(tabs)/pet',
-  habitsKept: '/(tabs)/pet',
+  ritualStreak: '/pet/serie',
+  habitsKept: '/pet/habitudes',
 };
 
 export default function WardrobeScreen() {

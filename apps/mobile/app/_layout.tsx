@@ -13,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CoreProvider, LocaleRoot } from '@/core';
 import { UiStringsProvider } from '@blowy/ui';
 import { ui } from '@/locales/ui';
+import { SessionBridges } from '@/features/session';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -38,9 +39,15 @@ export default function RootLayout() {
             <UiStringsProvider value={ui}>
               <MotionHost>
                 <StatusBar style="light" />
+                {/* Compte suspendu, jeton de notifications, achats Blowy+ arrivés hors d'un achat. */}
+                <SessionBridges />
                 <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }}>
                   {/* Blowy+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
                   <Stack.Screen name="moi/blowy-plus" options={SHEET} />
+                  {/* Défi du jour : la carte monte en plein écran par-dessus l'accueil (elle fait sa montée elle-même). */}
+                  <Stack.Screen name="pet/defi" options={SHEET} />
+                  {/* Preuve en photo : plein écran qui monte du bas, hors des onglets. */}
+                  <Stack.Screen name="pet/preuve" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
                 </Stack>
               </MotionHost>
             </UiStringsProvider>

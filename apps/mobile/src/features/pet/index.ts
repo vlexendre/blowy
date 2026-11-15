@@ -93,27 +93,7 @@ export function useRenamePet() {
   });
 }
 
-/** Accueil des rituels (défi du jour choisi par le serveur, série) : le seul défi du jour depuis la V7. */
-const ritualsTodayKey = ['rituals', 'today'] as const;
-
-export function useRitualsToday() {
-  const api = useApi();
-  return useQuery({ queryKey: ritualsTodayKey, queryFn: api.rituals.today });
-}
-
-/** Répondre au défi du jour quand c'est une question (adaptation minimale ; l'écran du défi sera refait). */
-export function useAnswerChallenge() {
-  const api = useApi();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (choice: 0 | 1) => api.rituals.answerChallenge(choice),
-    onSuccess: (result) => {
-      void qc.invalidateQueries({ queryKey: ritualsTodayKey });
-      void qc.invalidateQueries({ queryKey: keys.pet });
-      if (result.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
-    },
-  });
-}
+/** Les rituels (défi du jour, série, habitudes, bilans) vivent dans `@/features/rituals`. */
 
 /** S'occuper du pet : nourrir, jouer, sieste, câlin. Le résultat porte les objets tout juste débloqués. */
 export function useCare() {

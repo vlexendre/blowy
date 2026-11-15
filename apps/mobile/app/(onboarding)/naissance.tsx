@@ -1,62 +1,34 @@
-/** Toi, 2/3 : la date de naissance (18 ans et plus). Trop jeune : on s'arrête là, rien n'est gardé (V6-TropJeune). */
+/**
+ * Date de naissance (V6-GNaissance), avant la connexion : sélecteur à trois roues, et une carte qui dit l'âge en grand
+ * (elle saute à chaque cran). Moins de 18 ans : on s'arrête là, le brouillon est vidé, rien n'est créé (V6-TropJeune).
+ */
 import { ageOn, dayOf, MIN_AGE, type Species } from '@blowy/domain';
-import { AgeGate, OnboardingTemplate, ScreenTemplate, Shake, TextField } from '@blowy/ui';
+import { AgeCard, AgeGate, DateWheel, type DateParts, OnboardingTemplate, ScreenTemplate, Text } from '@blowy/ui';
 import { Redirect, router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
-import { birthdateFromInput, hasDraftPet, progressAt, useDraft } from '@/features/onboarding';
+import { isValidBirthdate, progressAt, useDraft, useDraftGate, useStep } from '@/features/onboarding';
 import { goBack, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
+import { formatDate } from '@/locales/runtime';
 
-const t = onboarding.toi;
-
-/** Tape « 14031999 » → « 14 / 03 / 1999 » (maquette V6-Profil). */
-function formatBirth(raw: string): string {
-  const d = raw.replace(/\D/g, '').slice(0, 8);
-  if (d.length <= 2) return d;
-  if (d.length <= 4) return `${d.slice(0, 2)} / ${d.slice(2)}`;
-  return `${d.slice(0, 2)} / ${d.slice(2, 4)} / ${d.slice(4)}`;
-}
-/** « 1999-03-14 » → « 14 / 03 / 1999 » (brouillon déjà rempli : retour arrière). */
-const isoToInput = (iso: string): string => (iso ? iso.split('-').reverse().join(' / ') : '');
-const birthDigits = (v: string): number => v.replace(/\D/g, '').length;
+const t = onboarding.naissance;
+const pad = (n: number): string => String(n).padStart(2, '0');
+const toIso = (d: DateParts): string => `${d.year}-${pad(d.month)}-${pad(d.day)}`;
+const fromIso = (iso: string): DateParts => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return { year: y ?? 2000, month: m ?? 1, day: d ?? 1 };
+};
 
 export default function Naissance() {
-  const [ok] = useState(hasDraftPet);
-  return ok ? <NaissanceStep /> : <Redirect href="/" />;
-}
-
-function NaissanceStep() {
-  const species = useDraft((d) => d.species);
-  const petName = useDraft((d) => d.petName);
-  const displayName = useDraft((d) => d.displayName);
-  const [birth, setBirth] = useState(() => isoToInput(useDraft.getState().birthdate));
-  const [error, setError] = useState<string | null>(null);
-  const [shake, setShake] = useState(0);
+  const gate = useDraftGate();
+  // Trop jeune : le brouillon vient d'être vidé, l'écran d'arrêt reste affiché (gardé ici, hors du brouillon).
   const [tooYoung, setTooYoung] = useState<{ name: string; species: Species } | null>(null);
   const signOut = useSignOut();
-
-  const next = () => {
-    const iso = birthdateFromInput(birth);
-    if (!iso) {
-      setError(t.birthError);
-      setShake((n) => n + 1);
-      return;
-    }
-    // Moins de 18 ans : on s'arrête ici, sans rien envoyer ni garder.
-    if (ageOn(iso, dayOf(new Date())) < MIN_AGE) {
-      setTooYoung({ name: petName, species });
-      useDraft.getState().reset();
-      return;
-    }
-    useDraft.getState().set({ birthdate: iso });
-    router.push('/(onboarding)/ville');
-  };
-
   if (tooYoung) {
-    // Le pet, triste, se détourne (AgeGate). « fermer » : déconnexion s'il y avait une session, retour à la bienvenue.
+    // Le minimoa, triste, se détourne. « Fermer » : déconnexion s'il y avait une session, retour à la bienvenue.
     return (
       <ScreenMotion>
         <ScreenTemplate scroll={false} gutter={14}>
@@ -73,40 +45,55 @@ function NaissanceStep() {
       </ScreenMotion>
     );
   }
+  if (gate === 'missing') return <Redirect href="/" />;
+  if (gate === 'loading') return null;
+  return <NaissanceStep onTooYoung={setTooYoung} />;
+}
 
-  const first = displayName.trim();
+function NaissanceStep({ onTooYoung }: { onTooYoung: (v: { name: string; species: Species }) => void }) {
+  useStep('naissance');
+  const species = useDraft((d) => d.species);
+  const petName = useDraft((d) => d.petName);
+  const today = dayOf(new Date());
+  const thisYear = Number(today.slice(0, 4));
+  const [date, setDate] = useState<DateParts>(() => {
+    const saved = useDraft.getState().birthdate;
+    return isValidBirthdate(saved) ? fromIso(saved) : { year: thisYear - 25, month: 1, day: 1 };
+  });
+  const monthNames = useMemo(() => Array.from({ length: 12 }, (_, m) => formatDate(new Date(Date.UTC(2001, m, 15)), { month: 'long', timeZone: 'UTC' })), []);
+  const iso = toIso(date);
+  const age = ageOn(iso, today);
+  const young = age < MIN_AGE;
+
+  const next = () => {
+    // Moins de 18 ans : on s'arrête ici, sans rien envoyer ni garder.
+    if (young) {
+      onTooYoung({ name: petName, species });
+      useDraft.getState().reset();
+      return;
+    }
+    useDraft.getState().set({ birthdate: iso });
+    router.push('/(onboarding)/localisation');
+  };
+
   return (
     <ScreenMotion>
       <OnboardingTemplate
         {...progressAt('naissance')}
-        onBack={() => goBack('/(onboarding)/prenom')}
+        onBack={() => goBack('/(onboarding)/cherche')}
         backLabel={common.back}
-        host={{ species, line: t.birthHost(first), highlight: first, seed: petName, name: petName }}
-        centerBody
+        host={{ species, line: t.host, highlight: t.highlight, seed: petName, name: petName }}
+        gap={14}
         primaryLabel={t.cta}
-        primaryDisabled={birthDigits(birth) < 8}
         onPrimary={next}
+        footnote={
+          <Text size={13} muted center>
+            {t.note}
+          </Text>
+        }
       >
-        <Shake trigger={shake}>
-          <TextField
-            hero
-            value={birth}
-            onChangeText={(v) => {
-              setBirth(formatBirth(v));
-              if (error) setError(null);
-            }}
-            placeholder={t.birthPlaceholder}
-            hint={t.birthHint}
-            error={error}
-            keyboardType="number-pad"
-            maxLength={14}
-            autoFocus
-            autoComplete="birthdate-full"
-            returnKeyType="next"
-            onSubmitEditing={next}
-            accessibilityLabel={t.birthLabel}
-          />
-        </Shake>
+        <AgeCard species={species} title={young ? t.young : t.age(Math.max(0, age))} ageKey={age} blocked={young} petLabel={petName} />
+        <DateWheel value={date} onChange={setDate} monthNames={monthNames} labels={t.labels} minYear={thisYear - 100} maxYear={thisYear} />
       </OnboardingTemplate>
     </ScreenMotion>
   );

@@ -34,6 +34,15 @@ export interface ChatThreadProps {
   empty?: ReactElement;
   /** Libellé lu des « … » d'un pet qui écrit (« gaston écrit… »). */
   typingLabel?: (name: string) => string;
+  /**
+   * Nom au-dessus d'une réplique de minimoa qui a un rôle (« nino · brise-glace »). Défaut : le nom du minimoa seul.
+   * `name` est déjà en minuscules.
+   */
+  roleLabel?: (role: NonNullable<MessageLook['petRole']>, name: string) => string;
+  /** Appui long sur un message de l'autre personne (signaler ce message). */
+  onMessageLongPress?: (message: MessageLook) => void;
+  /** Libellé lu de l'appui long. */
+  longPressHint?: string;
   contentStyle?: StyleProp<ViewStyle>;
 }
 
@@ -64,6 +73,9 @@ export function ChatThread({
   header,
   empty,
   typingLabel,
+  roleLabel,
+  onMessageLongPress,
+  longPressHint,
   contentStyle,
 }: ChatThreadProps) {
   // Messages déjà là : ceux qui arrivent ensuite (plus récents que tous) entrent en scène.
@@ -124,7 +136,9 @@ export function ChatThread({
       const isOtherSide = m.author === 'other' || m.author === 'other_pet';
       const pet = m.author === 'my_pet' ? myPet : m.author === 'other_pet' ? other.pet : undefined;
       // Maquette : noms en minuscules au-dessus des bulles (« léa », « suzie »).
-      const name = (m.author === 'other' ? (otherName ?? other.displayName) : pet?.name)?.toLowerCase();
+      const plain = (m.author === 'other' ? (otherName ?? other.displayName) : pet?.name)?.toLowerCase();
+      const name = plain && pet && m.petRole && roleLabel ? roleLabel(m.petRole, plain) : plain;
+      const reportable = m.author === 'other' && m.kind !== 'event' && !!onMessageLongPress;
       const props: MessageBubbleProps = {
         message: m,
         name,
@@ -135,13 +149,15 @@ export function ChatThread({
         onPhotoPress: onPhotoPress ? () => onPhotoPress(m) : undefined,
         lockedPhotoLabel,
         fade: false,
-        typingLabel: name && typingLabel ? typingLabel(name) : undefined,
+        typingLabel: plain && typingLabel ? typingLabel(plain) : undefined,
+        onLongPress: reportable ? () => onMessageLongPress?.(m) : undefined,
+        longPressHint: reportable ? longPressHint : undefined,
       };
       const f = fresh.get(m.id);
       if (!f) return settle(<MessageBubble {...props} />);
       return <FreshBubble {...props} petRank={f.petRank} />;
     },
-    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel, typingLabel, fresh],
+    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel, typingLabel, roleLabel, onMessageLongPress, longPressHint, fresh],
   );
 
   if (messages.length === 0 && empty) return <View style={[styles.empty, contentStyle]}>{empty}</View>;

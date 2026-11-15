@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { hasOutfit } from '../assets/fit';
@@ -47,6 +47,8 @@ export interface SuggestionCardProps {
   /** Bouton secondaire vers le détail de la rencontre (« voir de plus près »). */
   openLabel?: string;
   onOpen?: () => void;
+  /** Pourquoi ton minimoa la présente (`MatchWhy`), sous l'en-tête : le pourcentage n'est jamais seul. */
+  why?: ReactNode;
 }
 
 /** Un pet croisé : compatibilité, d'où il vient, ce que ton pet en dit, et « saluer ». */
@@ -79,7 +81,7 @@ export function SuggestionCard(props: SuggestionCardProps) {
 
 /** Carte dépliée : « saluer » lance l'action, puis l'onde autour du bouton et le coucou de l'avatar (rien n'attend). */
 function SuggestionBody(props: SuggestionCardProps) {
-  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen } = props;
+  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen, why } = props;
   const { user, compatibility, intro, waved } = suggestion;
   const pet = user.pet;
   const tint = speciesColor[pet.species];
@@ -111,6 +113,7 @@ function SuggestionBody(props: SuggestionCardProps) {
         compatibility={compatibility}
         compatLabel={compatLabel}
       />
+      {why}
       {viaLabel || tagline ? (
         <View style={[layout.row, styles.chips]}>
           {viaLabel ? (

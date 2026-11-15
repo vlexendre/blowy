@@ -48,7 +48,8 @@ export interface EncounterHeadProps {
   nameStyle?: 'display' | 'text';
   badge?: ReactNode;
   owner?: string;
-  compatibility: number;
+  /** Null : rien n'est affiché (compatibilité inconnue : jamais « 0 % »). */
+  compatibility: number | null;
   compatLabel?: string;
   /** À incrémenter : l'avatar fait coucou (balancement, petit saut) — réponse à « saluer ». */
   waveKey?: number;
@@ -80,14 +81,16 @@ export function EncounterHead({ person, name, nameStyle = 'display', badge, owne
           </Text>
         ) : null}
       </View>
-      <View style={styles.compat}>
-        <Title text={uiStrings.percent(compatibility)} size={38} color={color.accent} />
-        {compatLabel ? (
-          <Text variant="bodyHeavy" size={9} muted style={styles.compatLabel}>
-            {compatLabel}
-          </Text>
-        ) : null}
-      </View>
+      {compatibility !== null ? (
+        <View style={styles.compat}>
+          <Title text={uiStrings.percent(compatibility)} size={38} color={color.accent} />
+          {compatLabel ? (
+            <Text variant="bodyHeavy" size={9} muted style={styles.compatLabel}>
+              {compatLabel}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 }

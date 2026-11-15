@@ -1,10 +1,11 @@
 /**
- * Textes de l'inscription, dans l'ordre du parcours : bienvenue, entrée en scène, création du minimoa, caractère, toi
- * (prénom, date, ville), promesse, compte, préparation, « tout est prêt », invitations, Blowy+.
+ * Textes de l'inscription, dans l'ordre du parcours : bienvenue, entrée en scène, création du minimoa, test de vision,
+ * ta vision, toi (« on t'appelle comment ? »), sexe, ce que tu cherches, naissance, localisation, notifications, promesse,
+ * connexion, préparation, « tout est prêt », invitations ; puis l'écran « compte suspendu ». Blowy+ : `locales/plus.ts`.
  * À partir de la création, c'est le minimoa qui parle : il pose les questions (première personne, tutoiement).
  */
-import { TODO } from '@blowy/content';
-import { messages } from './runtime';
+import { TODO, visionText } from '@blowy/content';
+import { liveMessages, messages } from './runtime';
 
 const up = (s: string): string => s.toUpperCase();
 
@@ -49,82 +50,110 @@ export const onboarding = messages({
       randomNames: ['Pistache', 'Mochi', 'Biscotte', 'Gribouille', 'Nougat', 'Pépite', 'Cachou', 'Frisbee', 'Bulle', 'Zigzag', 'Praline', 'Tofu'],
       cta: 'C’est lui',
     },
-    caractere: {
-      /** Ce que demande le minimoa, une question par écran (on finit la phrase en choisissant). */
-      host: [
-        'Samedi soir, moi je…',
-        'Il pleut, c’est dimanche. Tu me vois plutôt…',
-        'Mon pote se vautre devant tout le monde. Je…',
-        'On m’envoie un vocal de 4 minutes. Je…',
-      ],
-      /** Réponses du quiz, dans l'ordre de `QUIZ` (features/onboarding) : elles finissent la phrase du minimoa. */
-      answers: [
-        ['reste au chaud : plaid, série, pizza', 'sors. On verra bien où ça finit'],
-        ['un bon livre et le bruit de la pluie', 'tournoi de Uno, mauvaise foi incluse'],
-        ['le chambre. C’est de l’amour aussi', 'lui fais un câlin, et on n’en parle plus'],
-        ['réponds « OK 👍 »', 'en renvoie un de 6 minutes'],
-      ],
-      note: 'Réponds comme si c’était moi. Pas comme ta mère.',
-      /** Consigne au-dessus des deux cartes : on en touche une, la jauge bouge. */
-      pick: 'Touche une carte : ça règle son caractère',
-      /** Petite ligne au-dessus des jauges qui bougent avec les réponses. */
-      gaugesTitle: (pet: string) => `Le caractère de ${pet}`,
-      caption: (pole: string) => `→ ${pole}`,
-      previous: 'Question précédente',
-      // Le temps fort après la 4e réponse : le verdict mot à mot, ses deux traits en puces.
-      resultTitle: (pet: string) => [{ text: `C’EST ${up(pet)}.\n` }, { text: 'POUR\nL’INSTANT.', dim: true }],
-      trait: (pole: string) => `Plutôt ${pole}`,
-      resultText: 'Ça changera avec toi.',
-      tap: 'Touche pour continuer',
+    /** Le test de vision : 12 situations venues de l'API, posées par le minimoa, une par écran. */
+    vision: {
+      note: 'Réponds pour toi, pas pour faire bien.',
+      /** Sous les deux cartes. */
+      hint: 'Touche la carte qui te ressemble. Pas de bonne réponse.',
+      meterTitle: (axis: string) => `Ta vision · ${axis}`,
+      sticker: (pole: string) => `+ ${pole}`,
+      meterA11y: (axis: string, pole: string) => `${axis} : ${pole}`,
+      previous: 'Situation précédente',
+      loadErrorTitle: [{ text: 'LE TEST\n' }, { text: 'NE CHARGE PAS.', dim: true }],
+      loadErrorText: 'Impossible de récupérer les situations. Vérifie ta connexion.',
     },
-    compte: {
-      hostEmail: 'Dernière chose : où je t’envoie ton code ?',
-      hostCode: 'Regarde tes e-mails : un code à 6 chiffres t’attend.',
-      loginTitle: [{ text: 'CONTENT DE\n' }, { text: 'TE REVOIR.', dim: true }],
-      speech: 'Ton e-mail reste entre nous. Promis.',
-      emailLabel: 'Ton e-mail',
-      emailPlaceholder: 'toi@exemple.fr',
-      emailHint: 'On t’envoie un code à 6 chiffres. Pas de mot de passe à retenir.',
-      sendCode: 'Recevoir mon code',
-      codeTitle: [{ text: 'TON CODE\n' }, { text: 'À 6 CHIFFRES.', dim: true }],
-      codeText: (email: string) => `On l’a envoyé à ${email}. Regarde aussi dans les indésirables.`,
-      codeLabel: 'Code reçu par e-mail',
-      verify: 'Valider',
-      resend: 'Renvoyer le code',
-      resendIn: (s: number) => `Renvoyer le code dans ${s} s`,
-      resent: 'Nouveau code envoyé.',
-      changeEmail: 'Changer d’adresse',
-      devHint: (code: string) => `Mode dev : le code est ${code}`,
-      legalLead: 'Blowy, c’est 18 ans et plus.',
-      legalBefore: ' En continuant, tu acceptes les ',
-      legalTerms: 'conditions d’utilisation',
-      legalAnd: ' et la ',
-      legalPrivacy: 'politique de confidentialité',
-      invalidEmail: 'Cette adresse e-mail ne semble pas valide.',
+    /** Ta vision, pour l'instant : le résultat du test. */
+    taVision: {
+      title: [{ text: 'TA VISION,\n' }, { text: 'POUR L’INSTANT.', dim: true }],
+      chips: (n: number) => [`${n} situations`, '2 minutes'] as const,
+      sureness: { sure: 'sûr', fairly: 'assez sûr', refine: 'à affiner' },
+      axisA11y: (name: string, line: string, sureness: string) => `${name} : ${line}, ${sureness}`,
+      between: 'entre les deux',
+      lean: (pole: string) => `plutôt ${pole}`,
+      promise: (pet: string) => `${pet} ne te présentera que des gens dont la vision va avec la tienne.`,
+      cta: 'C’est moi, ça',
     },
     toi: {
-      nameHost: 'Et toi, je t’appelle comment ?',
-      namePlaceholder: 'Ton prénom',
-      nameLabel: 'Ton prénom',
+      nameHost: 'On t’appelle comment ?',
+      namePlaceholder: 'Prénom ou surnom',
+      nameLabel: 'Comment on t’appelle',
       nameHint: 'C’est ce que verront les gens que je te présente.',
-      birthHost: (name: string) => `Enchanté, ${name}. Ta date de naissance ?`,
-      birthLabel: 'Ta date de naissance',
-      birthPlaceholder: 'JJ / MM / AAAA',
-      birthHint: 'Blowy est réservé aux 18 ans et plus. Ta date n’est jamais affichée.',
-      birthError: 'Écris-la comme ça : 14 / 03 / 1999',
-      cityHost: 'Tu traînes où, d’habitude ?',
-      cityLabel: 'Ta ville (facultatif)',
-      cityPlaceholder: 'Paris 11e',
-      cityHint: 'Facultatif. Ça m’aide à te présenter des gens du coin.',
       inviteToggle: 'J’ai un code d’invitation',
       inviteLabel: 'Ton code d’invitation',
       invitePlaceholder: 'LEA-7K2P',
       cta: 'Continuer',
-      skip: 'Passer',
+    },
+    sexe: {
+      host: (name: string) => `Enchanté, ${name}. Tu es…`,
+      options: {
+        femme: 'Une femme',
+        homme: 'Un homme',
+        non_binaire: 'Non-binaire',
+        non_dit: 'Je préfère ne pas dire',
+      },
+      note: 'Je m’en sers pour choisir qui te présenter. Rien d’autre.',
+    },
+    cherche: {
+      host: 'Et ici, tu cherches quoi ?',
+      highlight: 'quoi',
+      options: {
+        potes: { emoji: '🍻', title: 'Des potes', subtitle: 'Des gens avec qui sortir.' },
+        plus: { emoji: '💘', title: 'Plus que ça', subtitle: 'Une histoire, peut-être.' },
+        les_deux: { emoji: '✨', title: 'Les deux', subtitle: 'On verra bien qui tu croises.' },
+      },
+      whomTitle: 'Et pour « plus », tu veux rencontrer…',
+      whom: { femmes: 'Des femmes', hommes: 'Des hommes', tout_le_monde: 'Tout le monde' },
+      consent: 'J’accepte que Blowy utilise cette réponse pour choisir qui me présenter. Elle n’est montrée à personne, et je peux la retirer dans Moi.',
+      consentHint: 'Sans cet accord, choisis « Des potes ».',
+      footer: (pet: string) => `${pet} ne te présentera que des gens qui cherchent pareil.`,
+      cta: 'Suivant',
+    },
+    naissance: {
+      host: 'Ta date de naissance ? Je garde le secret.',
+      highlight: 'Je garde le secret.',
+      age: (n: number) => {
+        const line = n < 25 ? 'ET LA VIE DEVANT TOI.' : n < 35 ? 'ET TOUTES TES DENTS.' : n < 50 ? 'ET TOUJOURS LÀ.' : 'ET DES HISTOIRES À RACONTER.';
+        return [{ text: `${n} ANS\n` }, { text: line, dim: true }];
+      },
+      young: [{ text: 'PAS ENCORE\n' }, { text: '18 ANS.', dim: true }],
+      labels: { day: 'Jour', month: 'Mois', year: 'Année' },
+      note: 'Réservé aux 18 ans et plus. Avant, on s’arrête là et rien n’est enregistré. Ta date n’est jamais affichée.',
+      cta: 'Suivant',
       tooYoungTitle: [{ text: 'REVIENS\n' }, { text: 'À 18 ANS.', dim: true }],
       tooYoungText: (pet: string) => `Blowy fait se rencontrer des adultes. ${pet} t’attendra, promis.`,
       tooYoungNote: 'Ton minimoa n’a pas été créé, et on n’a rien gardé sur toi.',
       tooYoungAction: 'Fermer',
+    },
+    localisation: {
+      host: 'Je peux voir dans quel coin tu es, quand l’app est ouverte ?',
+      highlight: 'dans quel coin',
+      radius: '1,5 km autour de toi',
+      mapA11y: 'Ta zone : un cercle d’environ 1,5 km autour de toi, avec des minimoas compatibles.',
+      zoneTitle: 'Ta zone, pas ton adresse',
+      zoneText: (pet: string) => `${pet} te présente les minimoas compatibles autour de toi.`,
+      exactTitle: 'Jamais ta position exacte',
+      exactText: 'Arrondie à 300 m, décalée, jamais en direct. Rien quand l’app est fermée.',
+      refuseNote: 'Si tu refuses : pas de carte, ni de rencontres près de chez toi. Activable plus tard dans Moi.',
+      denied: 'D’accord. Sans ta position, pas de carte ni de rencontres près de chez toi pour l’instant. Tu pourras l’activer dans Moi.',
+      cta: 'Continuer',
+    },
+    notifications: {
+      host: 'Je te préviens quand quelqu’un te fait signe ?',
+      highlight: 'quelqu’un te fait signe',
+      app: 'Blowy',
+      previewA11y: 'Exemples de notifications de ton minimoa.',
+      items: (pet: string) => [
+        { title: 'Quelqu’un te fait signe', body: `${pet} a croisé un minimoa compatible.`, time: 'maintenant' },
+        { title: 'Ton défi du jour', body: 'Une question, deux minutes.', time: '8 h 30' },
+        { title: 'Le bilan de la semaine', body: `${pet} a deux mots à te dire.`, time: 'dim.' },
+      ],
+      capTitle: '3 par jour au plus',
+      capText: 'Hors messages. Jamais de pub.',
+      nightTitle: 'Jamais la nuit',
+      nightText: 'Rien entre 22 h et 8 h.',
+      refuseNote: 'Si tu refuses : je ne pourrai pas te dire quand quelqu’un te fait signe. Activable plus tard dans Moi.',
+      denied: 'D’accord. Rien ne s’affichera : les nouvelles t’attendront dans l’app.',
+      cta: 'Continuer',
     },
     promesse: {
       // La vraie règle (packages/domain/src/care.ts) : un minimoa négligé boude et ne fait plus de rencontres.
@@ -137,6 +166,36 @@ export const onboarding = messages({
       holdA11y: 'Reste appuyé, ou touche une fois',
       after: (pet: string) => `${pet} t’attend demain. Et après-demain.`,
       cta: 'Continuer',
+    },
+    connexion: {
+      title: (pet: string) => [{ text: 'ON GARDE\n' }, { text: `${up(pet)} ?`, dim: true }],
+      text: 'Un compte, et il garde tout, même si tu changes de téléphone.',
+      chips: ['Ta vision', 'Tes réponses', 'Sa série 🔥'],
+      loginTitle: [{ text: 'CONTENT DE\n' }, { text: 'TE REVOIR.', dim: true }],
+      loginText: 'Connecte-toi comme la première fois : on retrouve ton minimoa.',
+      apple: 'Continuer avec Apple',
+      google: 'Continuer avec Google',
+      appleNote: 'Pas de mot de passe. Tu peux masquer ton e-mail.',
+      googleNote: 'Pas de mot de passe à retenir.',
+      cancelled: 'Connexion annulée. Réessaie quand tu veux.',
+      errors: {
+        failed: 'La connexion n’a pas abouti. Réessaie.',
+      },
+      legalLead: 'Blowy, c’est 18 ans et plus.',
+      legalBefore: ' En continuant, tu acceptes les ',
+      legalTerms: 'conditions d’utilisation',
+      legalAnd: ' et la ',
+      legalPrivacy: 'politique de confidentialité',
+      dev: {
+        toggle: 'Mode dev : e-mail et code',
+        emailLabel: 'E-mail',
+        emailPlaceholder: 'toi@exemple.fr',
+        codeLabel: 'Code reçu',
+        send: 'Recevoir le code',
+        verify: 'Valider',
+        hint: (code: string) => `Mode dev : le code est ${code}`,
+        invalidEmail: 'Cette adresse e-mail ne semble pas valide.',
+      },
     },
     preparation: {
       title: (pet: string) => [{ text: 'ON PRÉPARE\n' }, { text: `L’ARRIVÉE DE ${up(pet)}`, dim: true }],
@@ -172,33 +231,17 @@ export const onboarding = messages({
       cta: 'C’est parti',
       later: 'Plus tard',
     },
-    plus: {
-      sticker: 'À venir',
-      brand: 'blowy',
-      subtitle: (pet: string) => `${pet} en veut plus.`,
-      features: [
-        { icon: 'coeurs', title: '3 rencontres à la fois', text: 'Au lieu d’une par semaine' },
-        { icon: 'etoiles', title: 'La carte des minimoas', text: 'Qui traîne autour de toi, en direct' },
-        { icon: 'cadeau', title: (pet: string) => `La garde-robe de ${pet}`, text: 'Bonnets, lunettes, dignité en option' },
-        { icon: 'gel', title: '2 gels de série par mois', text: 'Un jour off sans casser la flamme' },
-      ],
-      /** Les prix arrivent mis en forme (langue et région du téléphone) : jamais écrits ici. */
-      plans: {
-        yearly: { title: 'À l’année', unit: '/mois', caption: (total: string) => `Facturé ${total}/an`, badge: (percent: number) => `−${percent} %` },
-        monthly: { title: 'Au mois', unit: '/mois', caption: (_total: string) => 'Sans engagement' },
-      },
-      soon: 'Blowy+ arrive bientôt : rien n’est vendu pour l’instant, ces prix sont indicatifs.',
-      renewal: {
-        yearly: (total: string) => `${total} par an. Annulable quand tu veux.`,
-        monthly: (total: string) => `${total} par mois. Annulable quand tu veux.`,
-      },
-      free: 'Sans Blowy+, rien ne disparaît : tes chats, tes liens et ton minimoa restent gratuits. Pour toujours.',
-      cta: 'Bientôt disponible',
-      continueFree: 'Continuer gratuitement',
-      restore: 'Restaurer mes achats',
-      restoreNone: 'Aucun achat à restaurer sur ce compte.',
-      restoreError: 'La restauration n’a pas abouti. Réessaie.',
-      member: 'Tu as déjà Blowy+. Merci.',
+    suspendu: {
+      title: [{ text: 'COMPTE\n' }, { text: 'SUSPENDU.', dim: true }],
+      fallback: 'Ton compte est suspendu, après des signalements.',
+      support: 'Écrire à l’assistance',
+      supportSubject: 'Mon compte Blowy est suspendu',
+      deleteLabel: 'Supprimer mon compte',
+      deleteTitle: 'Supprimer ton compte ?',
+      deleteText: 'Ton minimoa, tes liens et tes messages seront effacés. C’est définitif.',
+      deleteConfirm: 'Supprimer',
+      deleteError: 'La suppression n’a pas abouti. Réessaie.',
+      signOut: 'Me déconnecter',
     },
   } as const,
   en: {
@@ -219,16 +262,25 @@ export const onboarding = messages({
     },
     entree: TODO,
     craft: TODO,
-    caractere: TODO,
-    compte: TODO,
+    vision: TODO,
+    taVision: TODO,
     toi: TODO,
+    sexe: TODO,
+    cherche: TODO,
+    naissance: TODO,
+    localisation: TODO,
+    notifications: TODO,
     promesse: TODO,
+    connexion: TODO,
     preparation: TODO,
     pret: TODO,
     invite: TODO,
-    plus: TODO,
+    suspendu: TODO,
   },
   es: TODO,
   pt: TODO,
   nl: TODO,
 });
+
+/** Libellés du test et des axes de la vision (`@blowy/content`), dans la langue de l'app. */
+export const visionLabels = liveMessages(visionText);

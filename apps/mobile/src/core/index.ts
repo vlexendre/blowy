@@ -1,7 +1,7 @@
 export { config, inviteUrl, wordsUrl } from './config';
 export { CoreProvider, keys, useApi, usePorts, useSession } from './CoreProvider';
 export { AuthError } from './ports';
-export type { PickedImage, Ports, Session } from './ports';
+export type { AuthProvider, PickedImage, Ports, PurchaseOutcome, Session, SignedPurchase, StoreProduct } from './ports';
 export { LOCAL_CODE } from './adapters/local';
 export { ScreenMotion } from './motion';
 export { LocaleRoot, useAppLocale } from './locale';

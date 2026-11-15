@@ -1,177 +1,319 @@
-import type { Species } from '@blowy/domain';
+import type { Outfit, Species } from '@blowy/domain';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { IconName } from '../assets/pets';
+import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
+import { DressedPet } from '../atoms/DressedPet';
+import { Glyph } from '../atoms/Glyph';
 import { IconButton } from '../atoms/IconButton';
-import { PetImage } from '../atoms/PetImage';
+import { ItemImage } from '../atoms/ItemImage';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
-import { FeatureRow } from '../molecules/FeatureRow';
-import { Appear, Stagger } from '../motion/Appear';
-import { PopIn } from '../motion/PopIn';
-import { PlanPicker, type Plan } from '../organisms/PlanPicker';
+import { Banner } from '../molecules/Banner';
 import { InkProvider } from '../lib/ink';
+import { useLoop } from '../lib/motion';
 import { layout } from '../lib/styles';
-import { color, motion, plusGradient, radius, space } from '../theme';
+import { Appear } from '../motion/Appear';
+import { PopIn } from '../motion/PopIn';
+import { alpha, color, motion, plusGradient, radius, space, veil } from '../theme';
 import { SheetHandle, useSheet } from './SheetTemplate';
 
+/** Une offre telle que la feuille la montre (les prix arrivent mis en forme : jamais écrits dans le kit). */
+export interface PlusOfferView<K extends string = string> {
+  key: K;
+  /** Ligne du haut, déployée (« Annuel · 7 jours gratuits, puis »). */
+  lead: string;
+  /** Montant facturé, le prix le plus visible (« 59,88 € par an »). */
+  price: string;
+  /** Équivalent mensuel, en petit (« soit 4,99 € par mois »). */
+  perMonth?: string | null;
+  /** Pastille de remise exacte (« −67 % »). */
+  badge?: string | null;
+  /** Ligne repliée (« Mensuel, sans essai »), avec le prix à droite. */
+  short: string;
+  /** Frise de l'essai : aujourd'hui → rappel → premier paiement. */
+  timeline?: readonly { title: string; text: string }[] | null;
+}
+
 export interface PlusTemplateProps<K extends string> {
-  /** Puce jaune en haut à gauche (« essai 3 jours offert », « à venir »). */
-  sticker: string;
   onClose: () => void;
   closeLabel: string;
   /** Marque du grand titre (« blowy ») : le « + » jaune est ajouté. */
   brand: string;
-  /** Ligne estompée sous le titre (« nino en veut plus. »). */
-  subtitle: string;
-  species: Species;
-  features: readonly { icon: IconName; title: string; text: string }[];
-  plans: readonly Plan<K>[];
-  plan: K;
-  onPlan: (key: K) => void;
-  /** Rappel sous les formules (« sans blowy+, rien ne disparaît… »). */
-  free: string;
-  ctaLabel: string;
+  /** Ligne estompée sous le titre : ce que la personne vient d'essayer, ou « Nino en veut plus. ». */
+  headline: string;
+  /** Son minimoa, habillé, et les objets premium qui flottent autour de lui. */
+  pet: { species: Species; outfit?: Outfit | null; name: string };
+  floatingItems?: readonly string[];
+  /** Preuve concrète (nombre réel venu du serveur) : absente à zéro. */
+  teaser?: { label: string; species: readonly Species[] } | null;
+  perks: readonly { key: string; label: string; highlight?: boolean }[];
+  /** Offres ; absentes pour un membre (`member`). */
+  offers?: readonly PlusOfferView<K>[];
+  selected?: K;
+  onSelect?: (key: K) => void;
+  offersLabel?: string;
+  ctaLabel?: string;
   onCta?: () => void;
   ctaDisabled?: boolean;
   ctaLoading?: boolean;
-  ctaHint?: string;
-  /** Petite ligne sous le bouton (« puis 59,88 € par an… »). */
-  note?: string;
-  secondaryLabel?: string;
-  onSecondary?: () => void;
-  /** « restaurer mes achats » (exigé par Apple, toujours visible en bas). */
+  /** Retour d'un achat (en attente, échec, réussite) ou d'une restauration. */
+  status?: { tone: 'info' | 'success' | 'error'; text: string } | null;
+  /** Déjà membre : l'état de l'abonnement et « gérer mon abonnement » à la place des offres. */
+  member?: { title: string; summary: string; manageLabel?: string; onManage?: () => void } | null;
+  /** « Continuer gratuitement » : toujours présent, neutre. */
+  continueLabel: string;
+  onContinue: () => void;
+  /** Renouvellement automatique et comment annuler (Apple 3.1.2). */
+  renewalNotice?: string | null;
   restoreLabel?: string;
   onRestore?: () => void;
   restoreLoading?: boolean;
-  /** Retour de la restauration (« aucun achat à restaurer »). */
-  restoreNote?: string;
-  /** Liens légaux en bas (conditions d'utilisation, confidentialité). */
   links?: readonly { label: string; onPress: () => void }[];
 }
 
-/** Hauteur du grand panneau de la maquette (548), comptée depuis le haut du cadre sous la barre d'état de 44. */
-const PANEL_HEIGHT = 548;
-const FRAME_STATUS = 44;
-/** Contenu tiré de plus de 70 pt au-delà du haut (iOS) : la feuille se ferme. */
-const PULL_TO_CLOSE = 70;
+const HEADER = 178;
 
-/** Blowy+ (V6-Paywall) : panneau prune, titre géant, avantages, formules, puis l'appel à l'action. */
+/** Un objet premium qui flotte près du minimoa (boucle douce, arrêtée avec « réduire les animations »). */
+function Floating({ id, size, delay, style }: { id: string; size: number; delay: number; style: object }) {
+  const t = useLoop(2600, true, delay);
+  const float = useAnimatedStyle(() => ({ transform: [{ translateY: -6 * t.value }, { rotate: `${-6 + 12 * t.value}deg` }] }));
+  return (
+    <PopIn delay={420 + delay / 4} from={0.3} style={[styles.floating, style]} pointerEvents="none">
+      <Animated.View style={float}>
+        <ItemImage id={id} size={size} />
+      </Animated.View>
+    </PopIn>
+  );
+}
+
+/** Frise de l'essai : trois jalons reliés, le premier allumé. */
+function TrialTimeline({ steps }: { steps: readonly { title: string; text: string }[] }) {
+  return (
+    <View style={styles.timeline}>
+      <View style={styles.timelineLine} />
+      <View style={layout.row}>
+        {steps.map((s, i) => (
+          <View key={s.title} style={styles.timelineStep}>
+            <PopIn delay={180 + i * 90} from={0.5}>
+              <View style={[styles.timelineDot, i === 0 ? styles.timelineDotOn : null]} />
+            </PopIn>
+            <Text variant="bodyHeavy" size={13} center>
+              {s.title}
+            </Text>
+            <Text size={13} muted center style={styles.timelineText}>
+              {s.text}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function OfferCard<K extends string>({ offer, on, onPress }: { offer: PlusOfferView<K>; on: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      haptic="selection"
+      scaleTo={0.985}
+      bounceKey={on}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: on }}
+      accessibilityLabel={[on ? offer.lead : offer.short, offer.price, offer.perMonth].filter(Boolean).join(', ')}
+      style={[styles.offer, on ? styles.offerOn : styles.offerOff]}
+    >
+      {on ? (
+        <View>
+          <View style={[layout.rowBetween, styles.offerTop]}>
+            <Text variant="bodyHeavy" size={15} style={layout.grow}>
+              {offer.lead}
+            </Text>
+            {offer.badge ? (
+              <View style={styles.badge}>
+                <Text variant="bodyHeavy" size={13} color={color.dark}>
+                  {offer.badge}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+          <Text variant="bodyHeavy" size={30} style={styles.price}>
+            {offer.price}
+          </Text>
+          {offer.perMonth ? (
+            <Text size={13} muted>
+              {offer.perMonth}
+            </Text>
+          ) : null}
+          {offer.timeline?.length ? <TrialTimeline steps={offer.timeline} /> : null}
+        </View>
+      ) : (
+        <View style={[layout.rowBetween, styles.offerShort]}>
+          <Text variant="bodyHeavy" size={15} style={layout.grow}>
+            {offer.short}
+          </Text>
+          <Text variant="bodyHeavy" size={15}>
+            {offer.price}
+          </Text>
+        </View>
+      )}
+    </Pressable>
+  );
+}
+
+/**
+ * Blowy+ (V6-GPlus) : feuille haute. En haut, le minimoa de la personne habillé avec les objets premium qui flottent, la
+ * preuve concrète (si le serveur en a une), puis les avantages, l'offre annuelle déployée (prix facturé en grand,
+ * équivalent mensuel en petit, frise de l'essai), la mensuelle repliée, l'action, « Continuer gratuitement » neutre, le
+ * renouvellement et la résiliation, « Restaurer mes achats » et les liens légaux. La croix est là tout de suite.
+ */
 export function PlusTemplate<K extends string>({
-  sticker,
   onClose,
   closeLabel,
   brand,
-  subtitle,
-  species,
-  features,
-  plans,
-  plan,
-  onPlan,
-  free,
+  headline,
+  pet,
+  floatingItems = [],
+  teaser,
+  perks,
+  offers,
+  selected,
+  onSelect,
+  offersLabel,
   ctaLabel,
   onCta,
   ctaDisabled,
   ctaLoading,
-  ctaHint,
-  note,
-  secondaryLabel,
-  onSecondary,
+  status,
+  member,
+  continueLabel,
+  onContinue,
+  renewalNotice,
   restoreLabel,
   onRestore,
   restoreLoading,
-  restoreNote,
   links,
 }: PlusTemplateProps<K>) {
   const insets = useSafeAreaInsets();
-  // Dans une feuille (`SheetTemplate bare`) : pas de barre d'état au-dessus, la barre du haut sert de poignée,
-  // la croix et « continuer » font redescendre la feuille, et tirer le contenu au-delà du haut la ferme.
+  // Dans une feuille (`SheetTemplate bare`) : la barre du haut sert de poignée, la croix et « continuer » font
+  // redescendre la feuille, et tirer le contenu au-delà du haut la ferme.
   const sheet = useSheet();
   const top = sheet ? 12 : insets.top;
   const close = sheet ? sheet.close : onClose;
-  const secondary = sheet && onSecondary ? sheet.close : onSecondary;
+  const proceed = sheet ? sheet.close : onContinue;
   return (
     <View style={[styles.root, sheet && styles.rootSheet]}>
       <ScrollView
         contentContainerStyle={[styles.content, { paddingTop: top, paddingBottom: Math.max(insets.bottom, 18) }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        onScrollEndDrag={sheet ? (e) => e.nativeEvent.contentOffset.y < -PULL_TO_CLOSE && sheet.close() : undefined}
+        onScrollEndDrag={sheet ? (e) => e.nativeEvent.contentOffset.y < -70 && sheet.close() : undefined}
       >
-        <View style={[styles.panel, { height: PANEL_HEIGHT + top - FRAME_STATUS }]}>
+        <View style={[styles.panel, { height: HEADER + top }]}>
           <LinearGradient colors={plusGradient} style={StyleSheet.absoluteFill} />
         </View>
-        <Appear from="right" distance={70} delay={140} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + 46 }]}>
-          <PetImage species={species} mood="smug" size={190} rotate={10} animation="breathe" outline />
+        {/* Son minimoa, habillé, entre par la droite ; les objets premium flottent autour. */}
+        <Appear from="right" distance={60} delay={120} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + 34 }]}>
+          <DressedPet species={pet.species} outfit={pet.outfit ?? undefined} size={150} mood="joie" accessibilityLabel={pet.name} />
         </Appear>
-        <SheetHandle style={[layout.rowBetween, styles.top, sheet && styles.topSheet]}>
-          <PopIn delay={120} from={0.6} style={styles.sticker}>
-            <Text variant="bodyHeavy" size={12} color={color.dark} style={styles.stickerText}>
-              {sticker}
-            </Text>
-          </PopIn>
+        {floatingItems[0] ? <Floating id={floatingItems[0]} size={48} delay={0} style={{ top: top + 132, right: 2 }} /> : null}
+        {floatingItems[1] ? <Floating id={floatingItems[1]} size={44} delay={900} style={{ top: top + 10, right: 122 }} /> : null}
+        <SheetHandle style={[layout.rowBetween, styles.top]}>
+          <View />
           <IconButton glyph="close" variant="back" label={closeLabel} onPress={close} />
         </SheetHandle>
-        <Appear delay={60} distance={18}>
-          <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={92} style={styles.title} />
-          <Title text={[{ text: subtitle, dim: true }]} size={34} variant="h2" style={styles.subtitle} />
-        </Appear>
-        <InkProvider value={color.white}>
-          <View style={styles.features}>
-            <Stagger delay={160} step={50} from="left" distance={14}>
-              {features.map((f) => (
-                <FeatureRow key={f.icon} icon={f.icon} title={f.title} text={f.text} />
-              ))}
-            </Stagger>
-          </View>
-        </InkProvider>
-        <Appear delay={340} distance={14} style={styles.plans}>
-          <PlanPicker plans={plans} value={plan} onChange={onPlan} />
-        </Appear>
-        <Text size={13.5} muted style={styles.free}>
-          {free}
-        </Text>
-        <View style={styles.actions}>
-          <Button label={ctaLabel} onPress={onCta} disabled={ctaDisabled} loading={ctaLoading} accessibilityHint={ctaHint} />
-          {note ? (
-            <Text size={12} muted center style={styles.note}>
-              {note}
-            </Text>
-          ) : null}
-          {secondaryLabel && secondary ? (
-            <Pressable onPress={secondary} accessibilityLabel={secondaryLabel} style={styles.secondary}>
-              <Text variant="bodyBold" size={15} color={color.mute}>
-                {secondaryLabel}
+        <View style={styles.head}>
+          <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={64} style={styles.title} />
+          <Title text={[{ text: headline, dim: true }]} size={26} variant="h2" style={styles.headline} />
+        </View>
+
+        <View style={styles.body}>
+          {teaser ? (
+            <Appear delay={260} style={[layout.row, styles.teaser]}>
+              <View style={[layout.row, styles.silhouettes]} accessible={false}>
+                {teaser.species.slice(0, 3).map((s, i) => (
+                  <Avatar key={s} size={34} pet={{ name: s, species: s }} blurred cutout style={i ? styles.silhouetteNext : null} />
+                ))}
+              </View>
+              <Text variant="bodyHeavy" size={15} color={color.white} style={styles.teaserText}>
+                {teaser.label}
               </Text>
-            </Pressable>
+            </Appear>
           ) : null}
-          {(restoreLabel && onRestore) || links?.length ? (
+          <View style={styles.perks}>
+            {perks.map((p, i) => (
+              <Appear key={p.key} delay={140 + Math.min(i, 8) * 35} distance={8} style={styles.perkCell}>
+                <View style={[layout.row, styles.perk]}>
+                  <Glyph name="check" size={15} color={color.accent} />
+                  <Text variant={p.highlight ? 'bodyHeavy' : 'bodyBold'} size={14} color={p.highlight ? color.accent : undefined} style={styles.perkText}>
+                    {p.label}
+                  </Text>
+                </View>
+              </Appear>
+            ))}
+          </View>
+
+          {member ? (
+            <Appear delay={220} style={styles.memberCard}>
+              <Text variant="bodyHeavy" size={19}>
+                {member.title}
+              </Text>
+              <Text size={15} muted>
+                {member.summary}
+              </Text>
+              {member.manageLabel && member.onManage ? <Button label={member.manageLabel} variant="glass" onPress={member.onManage} /> : null}
+            </Appear>
+          ) : offers?.length ? (
+            <Appear delay={220} style={styles.offers}>
+              <View accessibilityRole="radiogroup" accessibilityLabel={offersLabel} style={styles.offersList}>
+                {offers.map((o) => (
+                  <OfferCard key={o.key} offer={o} on={o.key === selected} onPress={() => onSelect?.(o.key)} />
+                ))}
+              </View>
+            </Appear>
+          ) : null}
+
+          {status ? (
+            <Appear key={status.text} from="none">
+              <Banner tone={status.tone === 'error' ? 'error' : status.tone === 'success' ? 'success' : 'info'} text={status.text} />
+            </Appear>
+          ) : null}
+
+          <View style={styles.actions}>
+            {!member && ctaLabel ? <Button label={ctaLabel} onPress={onCta} disabled={ctaDisabled || !onCta} loading={ctaLoading} /> : null}
+            <Pressable onPress={proceed} accessibilityLabel={continueLabel} style={styles.secondary}>
+              <InkProvider value={color.white}>
+                <Text variant="bodyHeavy" size={16}>
+                  {continueLabel}
+                </Text>
+              </InkProvider>
+            </Pressable>
+            {renewalNotice ? (
+              <Text size={13} muted center style={styles.note}>
+                {renewalNotice}
+              </Text>
+            ) : null}
             <View style={styles.legal}>
               {restoreLabel && onRestore ? (
                 <Pressable onPress={onRestore} disabled={restoreLoading} accessibilityRole="button" accessibilityLabel={restoreLabel} style={styles.legalItem}>
-                  <Text variant="bodyBold" size={12.5} muted style={styles.legalText}>
+                  <Text variant="bodyBold" size={13} muted={!restoreLoading} dim={restoreLoading} style={styles.legalText}>
                     {restoreLabel}
                   </Text>
                 </Pressable>
               ) : null}
               {links?.map((l) => (
                 <Pressable key={l.label} onPress={l.onPress} accessibilityRole="link" accessibilityLabel={l.label} style={styles.legalItem}>
-                  <Text size={12.5} muted style={styles.legalText}>
+                  <Text size={13} muted style={styles.legalText}>
                     {l.label}
                   </Text>
                 </Pressable>
               ))}
             </View>
-          ) : null}
-          {restoreNote ? (
-            <Text size={12} muted center style={styles.note}>
-              {restoreNote}
-            </Text>
-          ) : null}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -183,21 +325,41 @@ const styles = StyleSheet.create({
   rootSheet: { backgroundColor: 'transparent' },
   content: { flexGrow: 1 },
   panel: { position: 'absolute', top: 6, left: 6, right: 6, borderRadius: radius.xl + 4, overflow: 'hidden' },
-  pet: { position: 'absolute', right: -74 },
-  top: { paddingTop: space.xs, paddingHorizontal: 28 },
-  // Poignée de la feuille : plus haute, pour qu'on l'attrape facilement (la barre grise est dessinée par la feuille).
-  topSheet: { paddingTop: space.md, paddingBottom: space.xs },
-  sticker: { paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: color.accent },
-  stickerText: { lineHeight: 16 },
-  title: { marginTop: space.md, marginHorizontal: 28, lineHeight: 83 },
-  subtitle: { marginTop: space.xs, marginHorizontal: 28 },
-  features: { marginTop: 20, marginHorizontal: 28, gap: 14 },
-  plans: { marginTop: 40, marginHorizontal: 18 },
-  free: { marginTop: 18, marginHorizontal: 28, lineHeight: 19 },
-  actions: { marginTop: 'auto', paddingTop: space.lg, marginHorizontal: 18, gap: space.sm },
-  note: { lineHeight: 16 },
-  secondary: { height: 44, alignItems: 'center', justifyContent: 'center' },
-  legal: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: space.md },
-  legalItem: { minHeight: 32, justifyContent: 'center' },
+  pet: { position: 'absolute', right: -14 },
+  floating: { position: 'absolute' },
+  top: { paddingTop: space.md, paddingBottom: space.xs, paddingHorizontal: 20 },
+  head: { paddingHorizontal: 26, minHeight: HEADER - 64, paddingRight: 150 },
+  title: { lineHeight: 60 },
+  headline: { marginTop: 2 },
+  teaser: { gap: space.md, alignItems: 'center', padding: space.md, borderRadius: radius.md, backgroundColor: alpha(color.white, 0.06) },
+  silhouettes: { alignItems: 'center' },
+  silhouetteNext: { marginLeft: -12 },
+  teaserText: { flex: 1, lineHeight: 20 },
+  body: { paddingHorizontal: 20, paddingTop: space.md, gap: space.md, flexGrow: 1 },
+  perks: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 8 },
+  perkCell: { width: '50%', paddingRight: space.sm },
+  perk: { gap: 6, alignItems: 'flex-start' },
+  perkText: { flex: 1, lineHeight: 18 },
+  offers: {},
+  offersList: { gap: space.sm },
+  offer: { borderRadius: radius.lg - 6, borderWidth: 2, backgroundColor: color.panel },
+  offerOn: { borderColor: color.accent, paddingHorizontal: 18, paddingVertical: 14 },
+  offerOff: { borderColor: veil.glassStrong, paddingHorizontal: 18, minHeight: 56, justifyContent: 'center' },
+  offerTop: { gap: space.sm, alignItems: 'flex-start' },
+  offerShort: { gap: space.md },
+  price: { marginTop: space.xs, lineHeight: 36 },
+  badge: { paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: color.accent, transform: [{ rotate: '3deg' }] },
+  timeline: { marginTop: space.md },
+  timelineLine: { position: 'absolute', top: 8, left: '16%', right: '16%', height: 2, backgroundColor: veil.off },
+  timelineStep: { flex: 1, alignItems: 'center', gap: 2 },
+  timelineDot: { width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: veil.off, backgroundColor: color.card, marginBottom: space.xs },
+  timelineDotOn: { backgroundColor: color.accent, borderColor: alpha(color.accent, 0.4) },
+  timelineText: { lineHeight: 16, paddingHorizontal: 2 },
+  memberCard: { gap: space.md, padding: 18, borderRadius: radius.lg - 6, borderWidth: 2, borderColor: color.accent, backgroundColor: color.panel },
+  actions: { marginTop: 'auto', gap: space.xs },
+  secondary: { minHeight: 48, alignItems: 'center', justifyContent: 'center' },
+  note: { lineHeight: 18 },
+  legal: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: space.lg, marginTop: space.xs },
+  legalItem: { minHeight: 44, justifyContent: 'center' },
   legalText: { textDecorationLine: 'underline' },
 });

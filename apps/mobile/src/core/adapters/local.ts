@@ -8,8 +8,11 @@ import type { UploadTicket } from '@blowy/contract';
 import { AuthError, type AuthPort, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
 import { pickImage } from './image-picker';
 import { common } from '@/locales/common';
+import { onboarding } from '@/locales/onboarding';
 
 const KEY = 'blowy.local.session';
+/** Comptes « Apple » / « Google » simulés : le même fournisseur rouvre le même compte (tester « j'ai déjà un compte »). */
+const IDS_KEY = 'blowy.local.identities';
 export const LOCAL_CODE = '000000';
 
 const uuid = (): string =>
@@ -32,6 +35,21 @@ export function localAuth(): AuthPort {
     listeners.forEach((l) => l(s));
   };
   return {
+    // Mode local : les deux boutons des fournisseurs (simulés) et le code par e-mail, pour tout tester sur le web.
+    providers: ['apple', 'google', 'email'],
+    async signInWith(provider) {
+      // Banc d'essai : `globalThis.__BLOWY_AUTH_SIM__ = 'cancel' | 'fail'` simule une annulation ou un échec.
+      const sim = (globalThis as { __BLOWY_AUTH_SIM__?: string }).__BLOWY_AUTH_SIM__;
+      await new Promise((r) => setTimeout(r, 450));
+      if (sim === 'cancel') return null;
+      if (sim === 'fail') throw new AuthError('unknown', onboarding.connexion.errors.failed);
+      const ids = JSON.parse((await AsyncStorage.getItem(IDS_KEY)) ?? '{}') as Record<string, string>;
+      const userId = ids[provider] ?? uuid();
+      if (!ids[provider]) await AsyncStorage.setItem(IDS_KEY, JSON.stringify({ ...ids, [provider]: userId }));
+      const session = { userId, email: `${provider}-${userId.slice(0, 8)}@local.test` };
+      await set(session);
+      return session;
+    },
     getSession: load,
     async getToken() {
       const s = await load();

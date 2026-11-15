@@ -18,13 +18,15 @@ export interface BannerProps {
   onAction?: () => void;
   onClose?: () => void;
   closeLabel?: string;
+  /** Action sous le texte plutôt qu'à droite (texte long : la colonne garde toute sa largeur). */
+  actionBelow?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 const TONE: Record<BannerTone, string> = { error: color.danger, info: color.accent, success: color.ok };
 
 /** Message en ligne (erreur réseau, info, confirmation). */
-export function Banner({ text, title, tone = 'info', actionLabel, onAction, onClose, closeLabel, style }: BannerProps) {
+export function Banner({ text, title, tone = 'info', actionLabel, onAction, onClose, closeLabel, actionBelow, style }: BannerProps) {
   const uiStrings = useUiStrings();
   const c = TONE[tone];
   return (
@@ -37,8 +39,15 @@ export function Banner({ text, title, tone = 'info', actionLabel, onAction, onCl
       <View style={layout.grow}>
         {title ? <Text variant="bodyBold" size={14}>{title}</Text> : null}
         <Text variant="small">{text}</Text>
+        {actionBelow && actionLabel && onAction ? (
+          <Pressable onPress={onAction} accessibilityLabel={actionLabel} style={styles.below}>
+            <Text variant="bodyBold" size={15} color={c}>
+              {actionLabel}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
-      {actionLabel && onAction ? (
+      {!actionBelow && actionLabel && onAction ? (
         <Pressable onPress={onAction} accessibilityLabel={actionLabel} style={styles.action}>
           <Text variant="bodyBold" size={13} color={c}>
             {actionLabel}
@@ -55,4 +64,5 @@ const styles = StyleSheet.create({
   base: { gap: space.md - 2, paddingVertical: space.md - 2, paddingLeft: space.md + 2, paddingRight: space.sm, borderRadius: radius.md, borderWidth: 1 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   action: { minHeight: 44, justifyContent: 'center', paddingHorizontal: space.sm },
+  below: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
 });

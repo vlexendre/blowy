@@ -10,20 +10,26 @@ import {
   type ComposerTone,
   CountTitle,
   EmptyState,
+  FeatureRow,
   GhostPanel,
   Header,
   LinkTemplate,
   LivesPanel,
   MemoriesPanel,
   MemoryGrid,
+  MinimoaConsent,
+  MinimoaSwitch,
   PetImage,
   ScreenTemplate,
+  SheetTemplate,
   Skeleton,
   Stagger,
   Text,
   TodayCard,
   TodoRow,
+  Button,
 } from '@blowy/ui';
+import type { Message } from '@blowy/contract';
 import { ApiError } from '@blowy/api-client';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -39,15 +45,18 @@ import {
   useArchiveLink,
   useLevelUps,
   useLink,
+  useLinkMinimoas,
   useMarkRead,
+  useMinimoaGuide,
   useMemories,
   useMessages,
   useRevive,
   useSendMessage,
   useSendPhoto,
+  useUpdateLinkMinimoas,
   weekStrip,
 } from '@/features/links';
-import { chat as chatText, ghost as ghostText, link as t, memories as memText, today as todayText } from '@/locales/chats';
+import { chat as chatText, ghost as ghostText, link as t, memories as memText, minimoas as minimoaText, today as todayText } from '@/locales/chats';
 
 type Tab = 'today' | 'chat' | 'memories';
 const TABS = [
@@ -78,6 +87,13 @@ export default function LinkScreen() {
   }, [notice]);
 
   const l = link.data;
+  // Les minimoas de ce chat : accord de lecture (demandé à la première ouverture), coupure, explication des rôles.
+  const minimoas = useLinkMinimoas(id);
+  const updateMinimoas = useUpdateLinkMinimoas(id);
+  const guide = useMinimoaGuide();
+  const [consentLater, setConsentLater] = useState(false);
+  const [rolesOpen, setRolesOpen] = useState(false);
+  const [reporting, setReporting] = useState<Message | null>(null);
   // Ranimé à l'instant : les cœurs reviennent un à un dans l'en-tête.
   const [revived, setRevived] = useState(false);
   const levelUps = useLevelUps(id, l?.level);
@@ -127,6 +143,20 @@ export default function LinkScreen() {
     setTab('chat');
   };
 
+  const mm = minimoas.data;
+  const muted = mm?.muted ?? false;
+  const askConsent = !!mm && mm.consent.mine === null && !consentLater;
+  const toggleMuted = () =>
+    updateMinimoas.mutate(
+      { muted: !muted },
+      {
+        onSuccess: (next) => setNotice({ tone: 'success', text: next.muted ? chatText.mutedNotice : chatText.unmutedNotice }),
+        onError: () => setNotice({ tone: 'error', text: chatText.muteError }),
+      },
+    );
+  const answerConsent = (consent: boolean) =>
+    updateMinimoas.mutate({ consent }, { onError: () => setNotice({ tone: 'error', text: minimoaText.error }) });
+
   return (
     <ScreenMotion>
       <LinkTemplate
@@ -134,7 +164,7 @@ export default function LinkScreen() {
         myPet={l.myPet}
         lives={l.lives}
         ghost={ghost}
-        levelLabel={t.level(l.level)}
+        levelLabel={minimoas.data ? t.levelShort(l.level) : t.level(l.level)}
         onLevelPress={() => router.push(`/link/${l.id}/niveaux`)}
         onBack={goChats}
         backLabel={t.back}
@@ -143,6 +173,16 @@ export default function LinkScreen() {
         levelUp={levelUps}
         onOptions={() => router.push(`/link/${l.id}/options`)}
         optionsLabel={t.options}
+        headerAction={
+          mm ? (
+            <MinimoaSwitch pet={l.myPet} on={!muted} onToggle={toggleMuted} accessibilityLabel={muted ? chatText.switchOff : chatText.switchOn} disabled={updateMinimoas.isPending} />
+          ) : undefined
+        }
+        notice={
+          active === 'chat' && mm && mm.consent.mine !== null && guide.seen === false ? (
+            <Banner tone="info" title={minimoaText.guideTitle} text={minimoaText.guideText} actionLabel={minimoaText.guideMore} onAction={() => setRolesOpen(true)} onClose={guide.dismiss} closeLabel={minimoaText.guideClose} actionBelow />
+          ) : undefined
+        }
         tabs={TABS}
         activeTab={active}
         onTabChange={setTab}
@@ -150,7 +190,17 @@ export default function LinkScreen() {
         refreshControl={<Refresh linkId={l.id} />}
         footer={
           active === 'chat' ? (
-            <ChatComposer link={l} draft={draft} setDraft={setDraft} tone={tone} setTone={setTone} onAttach={() => setPicking(true)} notice={notice} onNotice={setNotice} />
+            <ChatComposer
+              link={l}
+              draft={draft}
+              setDraft={setDraft}
+              tone={tone}
+              setTone={setTone}
+              onAttach={() => setPicking(true)}
+              notice={notice}
+              onNotice={setNotice}
+              rhythm={mm ? (mm.muted ? chatText.rhythmMuted : mm.consent.reading ? chatText.rhythm(mm.maxPerDay) : chatText.rhythmNoReading(mm.maxPerDay)) : null}
+            />
           ) : undefined
         }
       >
@@ -162,12 +212,97 @@ export default function LinkScreen() {
         {active === 'today' ? (
           <TodayBody link={l} onPick={() => setPicking(true)} onNudge={nudge} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
         ) : active === 'chat' ? (
-          <ChatBody link={l} />
+          <ChatBody link={l} onReport={setReporting} />
         ) : (
           <MemoriesBody link={l} />
         )}
       </LinkTemplate>
       <PhotoSender link={l} visible={picking} onClose={() => setPicking(false)} onNotice={setNotice} />
+
+      {/* Accord de lecture : à la première ouverture du chat, la phrase de l'API telle quelle et les deux choix. */}
+      <SheetTemplate
+        visible={askConsent && active === 'chat'}
+        onClose={() => setConsentLater(true)}
+        header={<View />}
+        scroll
+        closeLabel={minimoaText.later}
+        footer={
+          <>
+            <Button label={minimoaText.accept} onPress={() => answerConsent(true)} loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === true} />
+            <Button label={minimoaText.decline} variant="ghost" onPress={() => answerConsent(false)} loading={updateMinimoas.isPending && updateMinimoas.variables?.consent === false} />
+          </>
+        }
+      >
+        {mm ? (
+          <MinimoaConsent
+            title={minimoaText.consentTitle}
+            subtitle={minimoaText.consentSubtitle}
+            mine={l.myPet}
+            theirs={l.other.pet}
+            text={mm.consent.text}
+            notes={[
+              { key: 'refuse', icon: 'gel', text: minimoaText.ifRefused(l.myPet.name, l.other.pet.name) },
+              { key: 'other', icon: 'eclair', text: mm.consent.reading ? minimoaText.bothYes(l.other.displayName) : minimoaText.otherWaiting(l.other.displayName) },
+            ]}
+          />
+        ) : null}
+      </SheetTemplate>
+
+      {/* Les rôles des minimoas, une fois, en lisant à son rythme. */}
+      <SheetTemplate
+        visible={rolesOpen}
+        onClose={() => setRolesOpen(false)}
+        title={minimoaText.rolesTitle}
+        scroll
+        closeLabel={minimoaText.guideClose}
+        footer={
+          <Button
+            label={minimoaText.guideClose}
+            onPress={() => {
+              setRolesOpen(false);
+              guide.dismiss();
+            }}
+          />
+        }
+      >
+        {minimoaText.roles.map((r) => (
+          <FeatureRow key={r.key} icon={r.icon} title={r.title} text={r.text} />
+        ))}
+        <Text size={15} muted>
+          {minimoaText.rolesNote}
+        </Text>
+      </SheetTemplate>
+
+      {/* Appui long sur un message de l'autre : le signaler (la modération ne voit que lui et son contexte immédiat). */}
+      <SheetTemplate
+        visible={!!reporting}
+        onClose={() => setReporting(null)}
+        title={chatText.reportTitle}
+        closeLabel={chatText.cancel}
+        footer={
+          <>
+            <Button
+              label={chatText.reportAction}
+              variant="danger"
+              onPress={() => {
+                const m = reporting;
+                setReporting(null);
+                if (m) router.push({ pathname: '/link/[id]/signaler', params: { id: l.id, messageId: m.id } });
+              }}
+            />
+            <Button label={chatText.cancel} variant="ghost" onPress={() => setReporting(null)} />
+          </>
+        }
+      >
+        {reporting?.body ? (
+          <Text variant="bodyBold" size={17}>
+            {chatText.quote(reporting.body)}
+          </Text>
+        ) : null}
+        <Text size={15} muted>
+          {chatText.reportText}
+        </Text>
+      </SheetTemplate>
     </ScreenMotion>
   );
 }
@@ -285,7 +420,7 @@ function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: ()
 }
 
 // ── Chat ─────────────────────────────────────────────────────────────────────
-function ChatBody({ link }: { link: Link }) {
+function ChatBody({ link, onReport }: { link: Link; onReport: (m: Message) => void }) {
   const thread = useMessages(link.id);
   useMarkRead(link.id, thread.messages[0]?.id);
   const dayLabel = useCallback((day: string) => chatDayLabel(day), []);
@@ -318,6 +453,12 @@ function ChatBody({ link }: { link: Link }) {
       loadingOlder={thread.isFetchingNextPage}
       lockedPhotoLabel={chatText.lockedPhoto}
       typingLabel={chatText.typing}
+      roleLabel={chatText.role}
+      onMessageLongPress={(m) => {
+        const found = thread.messages.find((x) => x.id === m.id);
+        if (found) onReport(found);
+      }}
+      longPressHint={chatText.longPressHint}
       empty={
         <EmptyState peek seed={link.id} species={link.myPet.species} mood="salut" title={chatText.emptyTitle} text={chatText.emptyText(link.myPet.name, link.other.pet.name)} />
       }
@@ -334,8 +475,10 @@ function ChatComposer({
   onAttach,
   notice,
   onNotice,
+  rhythm,
 }: {
   link: Link;
+  rhythm: string | null;
   notice: Notice | null;
   onNotice: (n: Notice | null) => void;
   draft: string;
@@ -364,6 +507,11 @@ function ChatComposer({
       {notice ? <NoticeBanner notice={notice} onClose={() => onNotice(null)} /> : null}
       {send.isError ? (
         <Banner tone="error" text={errorText(send.error, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
+      ) : null}
+      {rhythm ? (
+        <Text size={13} muted center>
+          {rhythm}
+        </Text>
       ) : null}
       <Composer
         value={draft}

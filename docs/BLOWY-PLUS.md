@@ -54,7 +54,7 @@ sable). Le passer à `0` refuse ces achats en production si on le souhaite plus 
 Aucune clé « In-App Purchase » n'est requise aujourd'hui. Elle le deviendra si l'on ajoute le rattrapage par
 l'App Store Server API (voir `apps/api/README.md`).
 
-## 3. Ce que l'app doit faire (écran à venir)
+## 3. Ce que fait l'app (`apps/mobile/src/features/plus`, StoreKit par `expo-iap`)
 
 1. `GET /v1/plus/paywall` (`api.plus.paywall()`) pour les faits : produits, frise de l'essai, avantages, nombre
    de personnes compatibles (0 : cacher le bloc), mentions de renouvellement, liens légaux.
@@ -82,6 +82,12 @@ l'App Store Server API (voir `apps/api/README.md`).
    (`[Blowy+]`).
 8. Le journal `store_notifications` (table, lecture par la clé service) garde chaque notification 30 jours (journal technique) avec son
    résultat (`applied`, `unlinked`, `duplicate`, `ignored`, `test`).
+
+Dans l'app : `src/core/adapters/storekit.ios.ts` (StoreKit 2 par `expo-iap` : produits, achat avec `appAccountToken`,
+restauration, mises à jour au lancement), `features/plus` (`usePurchase`, `useRestore`, `usePlusSync`, `PlusOffer`,
+`openPlus(raison)`). Web et Android : rien n'est vendu (« Disponible sur iPhone »).
+En mode local (`EXPO_PUBLIC_AUTH=local`) : achat **simulé** (`simulatedPurchases`, `src/core/adapters/purchases.ts`) qui
+fabrique la transaction mémoire ci-dessous ; banc d'essai : `globalThis.__BLOWY_IAP_SIM__ = 'cancel' | 'pending' | 'fail'`.
 
 En local sans Apple : l'API en mémoire accepte des transactions fabriquées (`memoryJws` dans
 `src/modules/billing/infrastructure/memory-billing.ts`), utilisées par `test/billing.e2e.test.ts`.

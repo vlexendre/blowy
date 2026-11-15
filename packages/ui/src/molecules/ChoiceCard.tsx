@@ -17,6 +17,14 @@ export interface ChoiceCardProps {
   title: string;
   /** Petite ligne en capitales (« → casanier »). */
   caption?: string;
+  /** Phrase sous le titre, en casse normale (« Des gens avec qui sortir. ») : à la place de `caption`. */
+  subtitle?: string;
+  /** Carte sombre liserée, qui passe au jaune une fois choisie (test de vision, sexe, ce que tu cherches). */
+  plain?: boolean;
+  /** Liseré clair autour de la carte (cartes sombres sur la nuit). */
+  outlined?: boolean;
+  /** Hauteur réduite (listes de 3 ou 4 choix : sexe, ce que tu cherches). */
+  compact?: boolean;
   /** Icône 3D à gauche, ou élément libre. */
   icon?: IconName | ReactNode;
   /** Emoji à gauche (38 pt), comme les réponses du quiz. */
@@ -43,7 +51,7 @@ export interface ChoiceCardProps {
 }
 
 /** Réponse de quiz ou de défi : grande carte touchable (`.panel` 28 pt de rayon, 104 pt de haut). */
-export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', colors, ink, selected, tilt = -2, faded, disabled, marker, onPress, accessibilityLabel, style }: ChoiceCardProps) {
+export function ChoiceCard({ title, caption, subtitle, compact, plain, outlined: outlinedProp, icon, emoji, gradient = 'night', colors, ink, selected, tilt = -2, faded, disabled, marker, onPress, accessibilityLabel, style }: ChoiceCardProps) {
   const reduced = useReducedMotion();
   // Choisie : la carte s'incline et grandit un peu, en ressort (un rebond) ; posée d'emblée si animations réduites.
   const pick = useSharedValue(selected ? 1 : 0);
@@ -52,21 +60,24 @@ export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', co
   }, [selected, reduced, pick]);
   const lean = useAnimatedStyle(() => ({ transform: [{ rotate: `${tilt * pick.value}deg` }, { scale: 1 + 0.03 * pick.value }] }));
   const dot = useAnimatedStyle(() => ({ opacity: pick.value, transform: [{ scale: 0.4 + 0.6 * pick.value }] }));
-  const fg = ink ?? onGradient[gradient];
+  const outlined = outlinedProp ?? (plain && !selected);
+  const fill = plain ? (selected ? gradients.accent : PLAIN) : (colors ?? gradients[gradient]);
+  const fg = plain ? (selected ? color.dark : color.white) : (ink ?? onGradient[gradient]);
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled || !onPress}
       haptic="selection"
       scaleTo={0.97}
-      accessibilityLabel={accessibilityLabel ?? (caption ? `${title}, ${caption}` : title)}
-      accessibilityState={{ selected: !!selected, disabled: !!disabled }}
-      style={[styles.card, faded && styles.faded, style]}
+      accessibilityLabel={accessibilityLabel ?? (caption || subtitle ? `${title}, ${caption ?? subtitle}` : title)}
+      accessibilityRole={marker ? 'radio' : 'button'}
+      accessibilityState={marker ? { checked: !!selected, disabled: !!disabled } : { selected: !!selected, disabled: !!disabled }}
+      style={[styles.card, compact && styles.compact, faded && styles.faded, style]}
     >
-      <Animated.View style={[styles.inner, lean]}>
-        <LinearGradient colors={colors ?? gradients[gradient]} style={[StyleSheet.absoluteFill, styles.fill]} />
+      <Animated.View style={[styles.inner, compact && styles.compact, outlined && styles.outlined, lean]}>
+        <LinearGradient colors={fill} style={[StyleSheet.absoluteFill, styles.fill]} />
         <InkProvider value={fg}>
-          <View style={[layout.row, styles.row]}>
+          <View style={[layout.row, styles.row, compact && styles.rowCompact]}>
             {emoji ? (
               <View style={styles.emojiBox}>
                 <RNText style={styles.emoji} accessible={false} numberOfLines={1}>
@@ -87,6 +98,11 @@ export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', co
                   {caption}
                 </Text>
               ) : null}
+              {subtitle ? (
+                <Text size={15} style={styles.subtitle}>
+                  {subtitle}
+                </Text>
+              ) : null}
             </View>
             {marker ? (
               <View style={[styles.marker, { borderColor: alpha(fg, 0.55) }]} accessible={false}>
@@ -103,6 +119,8 @@ export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', co
 }
 
 const RADIUS = 28;
+/** Carte sombre du style `plain`. */
+const PLAIN = [color.card, color.panel] as const;
 
 const styles = StyleSheet.create({
   card: { minHeight: 104, borderRadius: RADIUS },
@@ -114,6 +132,10 @@ const styles = StyleSheet.create({
   texts: { gap: 6 },
   title: { lineHeight: 22, letterSpacing: -0.19 },
   caption: { letterSpacing: 1.32, opacity: 0.7 },
+  subtitle: { opacity: 0.78, lineHeight: 20, marginTop: 2 },
+  compact: { minHeight: 76 },
+  rowCompact: { paddingVertical: space.md },
+  outlined: { borderWidth: 1, borderColor: alpha(color.white, 0.1), overflow: 'hidden' },
   faded: { opacity: opacity.disabled },
   marker: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   markerFill: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },

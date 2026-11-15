@@ -1,5 +1,6 @@
 /**
- * Préparation (après le code) : c'est ici que le compte et le pet sont vraiment créés (`useOnboard`). Le pet au milieu,
+ * Préparation (après la connexion) : c'est ici que le compte et le minimoa sont vraiment créés (`useOnboard`, avec
+ * tout le brouillon : vision, sexe, ce que tu cherches et l'accord, position, langue du téléphone, invitation). Le pet au milieu,
  * un pourcentage, une barre et 4 lignes qui se cochent. La barre est un décor honnête : la dernière ligne et 100 %
  * n'arrivent qu'une fois la création réussie, 2,5 s au plus de plus que le serveur, et un tap passe le reste.
  * Erreur : tout s'arrête sur place, le message et « réessayer » ; jamais de faux 100 %.
@@ -12,7 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
-import { isDraftComplete, PREP_LINES, useDraft, useOnboard, usePrepTicker } from '@/features/onboarding';
+import { isDraftComplete, PREP_LINES, useDraft, useDraftHydrated, useOnboard, usePrepTicker } from '@/features/onboarding';
 import { errorMessage, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -21,7 +22,11 @@ const t = onboarding.preparation;
 const handled = (e: unknown): boolean => e instanceof ApiError && ['too_young', 'already_onboarded'].includes(e.code);
 
 export default function Preparation() {
-  // Lu une fois : le brouillon est vidé dès que la création a réussi (et vide après un rechargement web).
+  return useDraftHydrated() ? <PrepGate /> : null;
+}
+
+function PrepGate() {
+  // Lu une fois : le brouillon est vidé dès que la création a réussi.
   const [ok] = useState(() => isDraftComplete());
   return ok ? <Prep /> : <Redirect href="/" />;
 }
@@ -75,10 +80,10 @@ function Prep() {
         <ScreenTemplate scroll={false} gutter={14}>
           <AgeGate
             species={pet.species}
-            title={onboarding.toi.tooYoungTitle}
-            text={onboarding.toi.tooYoungText(pet.name)}
-            note={onboarding.toi.tooYoungNote}
-            actionLabel={onboarding.toi.tooYoungAction}
+            title={onboarding.naissance.tooYoungTitle}
+            text={onboarding.naissance.tooYoungText(pet.name)}
+            note={onboarding.naissance.tooYoungNote}
+            actionLabel={onboarding.naissance.tooYoungAction}
             loading={signOut.isPending}
             onAction={() => signOut.mutate(undefined, { onSettled: () => router.replace('/(onboarding)/welcome') })}
           />

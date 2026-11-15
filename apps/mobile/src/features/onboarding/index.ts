@@ -1,110 +1,185 @@
-import type { Me } from '@blowy/contract';
-import { addGauges, GAUGE_KEYS, type GaugeKey, type Gauges, type Species, ZERO_GAUGES } from '@blowy/domain';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { Gender, LatLng, Me, OnboardInput, Seeking, VisionAnswer, Whom } from '@blowy/contract';
+import { type Species, VISION_TEST_IDS } from '@blowy/domain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { keys, useApi } from '@/core';
+import { usePendingInvite } from '@/features/encounters';
 import { getLocale } from '@/locales/runtime';
 
-/** Brouillon de création : le pet est façonné avant que le compte existe. */
-interface Draft {
+export * from './vision';
+export * from './permissions';
+
+/** Les écrans du parcours d'inscription qu'on peut reprendre (nom de la route dans `app/(onboarding)`). */
+export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'sexe', 'cherche', 'naissance', 'localisation', 'notifications', 'promesse', 'connexion'] as const;
+export type OnboardingStep = (typeof RESUMABLE)[number];
+
+export type PermissionAnswer = 'granted' | 'denied' | 'unavailable';
+
+/**
+ * Brouillon de création : le minimoa, le test et les réponses sont faits avant que le compte existe. Il est gardé sur
+ * le téléphone (AsyncStorage, localStorage sur le web) : revenir en arrière, recharger ou quitter l'app ne perd rien,
+ * et l'app rouvre l'inscription là où la personne s'était arrêtée (`step`). Vidé à la création du compte, ou tout de
+ * suite si la personne a moins de 18 ans.
+ */
+interface DraftData {
   petName: string;
   species: Species;
-  quiz: Gauges;
+  /** Réponses au test de vision (une par situation, la dernière compte). */
+  visionAnswers: VisionAnswer[];
   displayName: string;
+  gender: Gender | null;
+  seeking: Seeking | null;
+  /** Pour « plus » ou « les deux » seulement. */
+  whom: Whom | null;
+  /** Accord explicite pour « qui tu veux rencontrer » (donnée sensible). */
+  sensitiveConsent: boolean;
   birthdate: string;
-  city: string;
-  email: string;
+  /** Réponse à la demande de position, et le point relevé si elle est accordée. */
+  locationAnswer: PermissionAnswer | null;
+  location: LatLng | null;
+  notificationsAnswer: PermissionAnswer | null;
   inviteCode: string;
-  set: (patch: Partial<Omit<Draft, 'set' | 'answer' | 'reset'>>) => void;
-  /** Ajoute l'effet d'une réponse du quiz de caractère. */
-  answer: (delta: Partial<Gauges>) => void;
+  email: string;
+  /** Dernier écran atteint (reprise). */
+  step: OnboardingStep | null;
+}
+
+interface Draft extends DraftData {
+  set: (patch: Partial<DraftData>) => void;
+  /** Enregistre (ou remplace) la réponse à une situation du test. */
+  answer: (a: VisionAnswer) => void;
+  /** Retire la réponse à une situation (retour arrière dans le test). */
+  unanswer: (questionId: string) => void;
   reset: () => void;
 }
 
-const empty = { petName: '', species: 'nino' as Species, quiz: ZERO_GAUGES, displayName: '', birthdate: '', city: '', email: '', inviteCode: '' };
+const empty: DraftData = {
+  petName: '',
+  species: 'nino',
+  visionAnswers: [],
+  displayName: '',
+  gender: null,
+  seeking: null,
+  whom: null,
+  sensitiveConsent: false,
+  birthdate: '',
+  locationAnswer: null,
+  location: null,
+  notificationsAnswer: null,
+  inviteCode: '',
+  email: '',
+  step: null,
+};
 
-export const useDraft = create<Draft>((set) => ({
-  ...empty,
-  set: (patch) => set(patch),
-  answer: (delta) => set((s) => ({ quiz: addGauges(s.quiz, delta) })),
-  reset: () => set(empty),
-}));
+export const useDraft = create<Draft>()(
+  persist(
+    (set) => ({
+      ...empty,
+      set: (patch) => set(patch),
+      answer: (a) => set((s) => ({ visionAnswers: [...s.visionAnswers.filter((x) => x.questionId !== a.questionId), a] })),
+      unanswer: (id) => set((s) => ({ visionAnswers: s.visionAnswers.filter((x) => x.questionId !== id) })),
+      reset: () => set(empty),
+    }),
+    {
+      name: 'blowy.onboarding.draft',
+      version: 2,
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: ({ set: _s, answer: _a, unanswer: _u, reset: _r, ...data }) => data,
+      // Une version plus ancienne du brouillon (quiz de caractère, ville) : on repart de zéro.
+      migrate: () => empty,
+    },
+  ),
+);
 
-/**
- * Questions du quiz de départ (ordre des jauges) : chaque réponse pousse une jauge d'un côté. Le minimoa pose la question
- * (`locales/onboarding.ts` → `caractere.host`, « Samedi soir, moi je… ») et la réponse finit sa phrase
- * (`caractere.answers`, même ordre).
- */
-export const QUIZ: { choices: [QuizChoice, QuizChoice] }[] = [
-  {
-    choices: [
-      { emoji: '🛋️', delta: { social: -30 } },
-      { emoji: '🪩', delta: { social: 30 } },
-    ],
-  },
-  {
-    choices: [
-      { emoji: '📖', delta: { play: -30 } },
-      { emoji: '🃏', delta: { play: 30 } },
-    ],
-  },
-  {
-    choices: [
-      { emoji: '🌶️', delta: { tender: -30 } },
-      { emoji: '🫶', delta: { tender: 30 } },
-    ],
-  },
-  {
-    choices: [
-      { emoji: '🤐', delta: { talk: -30 } },
-      { emoji: '🎙️', delta: { talk: 30 } },
-    ],
-  },
-];
-
-interface QuizChoice {
-  emoji: string;
-  delta: Partial<Gauges>;
+/** Vrai une fois le brouillon relu depuis le téléphone (avant : ne rien décider). */
+export function useDraftHydrated(): boolean {
+  return useSyncExternalStore(
+    (cb) => useDraft.persist.onFinishHydration(cb),
+    () => useDraft.persist.hasHydrated(),
+    () => true,
+  );
 }
 
-/** Les deux traits les plus marqués du caractère de départ (pôle de chaque jauge), dans l'ordre des maquettes. */
-export function strongestTraits(quiz: Gauges): [GaugeKey, GaugeKey] {
-  const order = GAUGE_KEYS.map((k, i) => ({ k, i, v: Math.abs(quiz[k]) }))
-    .sort((a, b) => b.v - a.v)
-    .slice(0, 2)
-    .sort((a, b) => b.i - a.i);
-  return [order[0]?.k ?? 'play', order[1]?.k ?? 'social'];
+/** Note l'écran courant : la reprise y ramène. */
+export function useStep(step: OnboardingStep | null): void {
+  useEffect(() => {
+    if (step) useDraft.getState().set({ step });
+  }, [step]);
 }
 
 export const isValidBirthdate = (v: string): boolean => /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v));
 
-/** « 14 / 03 / 1999 » → « 1999-03-14 » ; chaîne vide si incomplet. */
-export function birthdateFromInput(input: string): string {
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(input.replace(/\s/g, ''));
-  if (!m) return '';
-  const iso = `${m[3]}-${m[2]}-${m[1]}`;
-  const d = new Date(`${iso}T00:00:00Z`);
-  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === iso ? iso : '';
+/** Le test est complet : une réponse par situation. */
+export const visionDone = (answers: readonly VisionAnswer[]): boolean => VISION_TEST_IDS.every((id) => answers.some((a) => a.questionId === id));
+
+/** « Qui tu cherches » est complet : potes, ou plus/les deux avec « qui » et l'accord explicite. */
+export const seekingDone = (d: Pick<DraftData, 'seeking' | 'whom' | 'sensitiveConsent'>): boolean =>
+  d.seeking === 'potes' || (!!d.seeking && !!d.whom && d.sensitiveConsent);
+
+/** Le brouillon a tout ce qu'il faut pour créer le compte et le minimoa. */
+export function isDraftComplete(d: DraftData = useDraft.getState()): boolean {
+  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && !!d.gender && seekingDone(d) && visionDone(d.visionAnswers);
+}
+
+/** Le brouillon a un minimoa (sinon, l'inscription repart de la création). */
+export const hasDraftPet = (): boolean => !!useDraft.getState().petName.trim();
+
+const stepHref = (step: OnboardingStep): Href => `/(onboarding)/${step}` as Href;
+
+/**
+ * Où reprendre un compte connecté sans minimoa : la préparation si le brouillon est complet, sinon l'écran où la
+ * personne s'était arrêtée (jamais la connexion : elle est déjà connectée), sinon la création du minimoa.
+ */
+export function resumeOnboarding(): Href {
+  const d = useDraft.getState();
+  if (isDraftComplete(d)) return '/(onboarding)/preparation';
+  if (hasDraftPet() && d.step && d.step !== 'connexion') return stepHref(d.step);
+  return '/(onboarding)/craft';
+}
+
+/** Sans session : l'inscription en cours (écran où la personne s'était arrêtée) ou la bienvenue. */
+export function signedOutStart(): Href {
+  const d = useDraft.getState();
+  return hasDraftPet() && d.step ? stepHref(d.step) : '/(onboarding)/welcome';
+}
+
+/** Un code d'invitation reçu par lien est recopié dans le brouillon (gardé si la personne quitte l'app). */
+export function adoptPendingInvite(): void {
+  const code = usePendingInvite.getState().code;
+  const d = useDraft.getState();
+  if (code && !d.inviteCode) d.set({ inviteCode: code });
+}
+
+/** Le corps de `POST /v1/me/onboard` à partir du brouillon (contrat : `OnboardInput`). */
+export function onboardBody(d: DraftData = useDraft.getState()): OnboardInput {
+  const seeking = d.seeking ?? 'potes';
+  const whom = seeking === 'potes' ? undefined : (d.whom ?? undefined);
+  const location = d.locationAnswer === 'granted' && d.location ? d.location : undefined;
+  return {
+    displayName: d.displayName.trim(),
+    birthdate: d.birthdate,
+    pet: { name: d.petName.trim(), species: d.species },
+    inviteCode: d.inviteCode.trim() || undefined,
+    gender: d.gender ?? 'non_dit',
+    seeking,
+    ...(whom ? { whom } : {}),
+    locale: getLocale(),
+    consents: { sensitive: !!whom && d.sensitiveConsent, location: !!location },
+    ...(location ? { location } : {}),
+    visionAnswers: d.visionAnswers,
+  };
 }
 
 export function useOnboard() {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => {
-      const d = useDraft.getState();
-      return api.me.onboard({
-        displayName: d.displayName.trim(),
-        birthdate: d.birthdate,
-        pet: { name: d.petName.trim(), species: d.species },
-        quiz: d.quiz,
-        inviteCode: d.inviteCode.trim() || undefined,
-        locale: getLocale(),
-      });
-    },
+    mutationFn: () => api.me.onboard(onboardBody()),
     onSuccess: (me: Me) => {
       qc.setQueryData(keys.me, me);
       void qc.invalidateQueries({ queryKey: keys.links });
@@ -112,31 +187,45 @@ export function useOnboard() {
   });
 }
 
+/** Les 12 situations, servies par l'API dans la langue de l'app (public : avant la connexion). */
+export function useVisionTest() {
+  const api = useApi();
+  return useQuery({ queryKey: ['vision', 'test'], queryFn: api.vision.test, staleTime: 60 * 60_000 });
+}
+
 /**
- * Les étapes de l'inscription qui ont la barre continue, dans l'ordre. La barre avance d'un cran par écran, de la
- * création du pet au code ; la préparation a sa propre barre.
+ * La barre d'avancement continue, de la création du minimoa à la connexion. Chaque écran compte pour un cran ; le test
+ * de vision compte pour ses 12 situations (`sub` : la situation en cours, 0 à 11).
  */
-export const FLOW = ['craft', 'q1', 'q2', 'q3', 'q4', 'traits', 'prenom', 'naissance', 'ville', 'promesse', 'email', 'code'] as const;
-export type FlowStep = (typeof FLOW)[number];
+const FLOW: readonly [OnboardingStep, number][] = [
+  ['craft', 1],
+  ['vision', 12],
+  ['ta-vision', 1],
+  ['prenom', 1],
+  ['sexe', 1],
+  ['cherche', 1],
+  ['naissance', 1],
+  ['localisation', 1],
+  ['notifications', 1],
+  ['promesse', 1],
+  ['connexion', 1],
+];
+const FLOW_TOTAL = FLOW.reduce((n, [, w]) => n + w, 0) + 1;
 
 /** Avancement de la barre continue à une étape (0 à 1) et à l'étape d'avant (d'où elle part à l'arrivée). */
-export function progressAt(step: FlowStep): { progress: number; progressFrom: number } {
-  const i = FLOW.indexOf(step);
-  const n = FLOW.length + 1;
-  return { progress: (i + 1) / n, progressFrom: i / n };
+export function progressAt(step: OnboardingStep, sub = 0): { progress: number; progressFrom: number } {
+  let before = 0;
+  for (const [s, w] of FLOW) {
+    if (s === step) {
+      const at = before + Math.min(sub, w - 1) + 1;
+      return { progress: at / FLOW_TOTAL, progressFrom: (at - 1) / FLOW_TOTAL };
+    }
+    before += w;
+  }
+  return { progress: 0, progressFrom: 0 };
 }
 
-/** Le brouillon a tout ce qu'il faut pour créer le compte et le pet (sinon : rechargement, on reprend au début). */
-export function isDraftComplete(d: Pick<Draft, 'petName' | 'displayName' | 'birthdate'> = useDraft.getState()): boolean {
-  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate);
-}
-
-/** Où reprendre un compte connecté sans pet : la préparation si le brouillon est complet, sinon la création du pet. */
-export function resumeOnboarding(): Href {
-  return isDraftComplete() ? '/(onboarding)/preparation' : '/(onboarding)/craft';
-}
-
-/** Les lignes de la préparation (une coche par ligne) ; la dernière n'est cochée qu'une fois le pet vraiment créé. */
+/** Les lignes de la préparation (une coche par ligne) ; la dernière n'est cochée qu'une fois le minimoa vraiment créé. */
 export const PREP_LINES = 4;
 /** Pourcentage montré à chaque ligne cochée (0 à 4). */
 const PREP_PERCENT = [4, 29, 56, 83, 100] as const;
@@ -184,5 +273,16 @@ export function usePrepTicker({ succeeded, failed }: { succeeded: boolean; faile
   return { done, percent: PREP_PERCENT[done] ?? 100, finished, skip, resume };
 }
 
-/** Le brouillon a un pet (lu une fois à l'arrivée sur un écran du parcours : après un rechargement web, il est vide). */
-export const hasDraftPet = (): boolean => !!useDraft.getState().petName.trim();
+/**
+ * Garde des écrans après la création du minimoa : attendre la relecture du brouillon, puis `missing` s'il n'y a pas
+ * de minimoa (lien ouvert directement) → l'aiguillage décide.
+ */
+export function useDraftGate(): 'loading' | 'ok' | 'missing' {
+  const hydrated = useDraftHydrated();
+  const pet = useDraft((d) => d.petName);
+  if (!hydrated) return 'loading';
+  return pet.trim() ? 'ok' : 'missing';
+}
+
+/** « Fonder un foyer » → « fonder un foyer » (un libellé placé dans une phrase). */
+export const lowerFirst = (s: string): string => (s ? s.charAt(0).toLocaleLowerCase() + s.slice(1) : s);

@@ -46,6 +46,10 @@ export interface LinkTemplateProps<K extends string = string> {
   optionsLabel?: string;
   /** Tirer pour rafraîchir (corps défilant seulement). */
   refreshControl?: ScreenTemplateProps['refreshControl'];
+  /** Commande en plus à gauche du « … » (interrupteur des minimoas, `MinimoaSwitch`). */
+  headerAction?: ReactNode;
+  /** Bandeau sous les onglets (au-dessus du corps), par exemple une explication à lire une fois. */
+  notice?: ReactNode;
 }
 
 /** Gabarit d'un lien : en-tête (pets, nom, vies, niveau), onglets, corps. */
@@ -70,6 +74,8 @@ export function LinkTemplate<K extends string>({
   onOptions,
   optionsLabel,
   refreshControl,
+  headerAction,
+  notice,
 }: LinkTemplateProps<K>) {
   const uiStrings = useUiStrings();
   const level = useRef<ComponentRef<typeof View>>(null);
@@ -81,7 +87,7 @@ export function LinkTemplate<K extends string>({
   }, [levelUp, burst]);
   const header = (
     <View style={[styles.head, styles.inset]}>
-      <View style={[layout.row, styles.top]}>
+      <View style={[layout.row, styles.top, headerAction ? styles.tight : null]}>
         <IconButton glyph="back" label={backLabel ?? uiStrings.back} onPress={onBack} size={40} style={styles.back} />
         <AvatarPair size={40} first={{ pet: myPet, hidden: true }} second={{ pet: other.pet, uri: other.avatarUrl, face: other.face, name: other.displayName }} />
         <View style={[layout.grow, styles.who]}>
@@ -95,9 +101,11 @@ export function LinkTemplate<K extends string>({
             <LevelPill label={levelLabel} onPress={onLevelPress} />
           </PopIn>
         </View>
+        {headerAction}
         {onOptions ? <IconButton glyph="more" label={optionsLabel ?? uiStrings.options} onPress={onOptions} size={40} style={styles.back} /> : null}
       </View>
       <SegmentedTabs items={tabs} activeKey={activeTab} onChange={onTabChange} />
+      {notice}
     </View>
   );
   return (
@@ -113,6 +121,8 @@ const EDGE = 14;
 const styles = StyleSheet.create({
   head: { gap: 10, paddingTop: 2 },
   top: { gap: 10 },
+  /** Une commande de plus dans l'en-tête : un peu moins d'air, pour que le prénom reste lisible. */
+  tight: { gap: 7 },
   back: { backgroundColor: veil.track },
   who: { gap: space.xs },
   name: { lineHeight: 20 },

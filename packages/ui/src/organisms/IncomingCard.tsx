@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button } from '../atoms/Button';
@@ -23,15 +24,21 @@ export interface IncomingCardProps {
   /** Lien discret vers le détail (« voir de plus près »). */
   openLabel?: string;
   onOpen?: () => void;
+  /**
+   * Pourquoi (`MatchWhy`) sous l'en-tête. Sans explication, passer `hideCompat` : le pourcentage n'est jamais montré seul.
+   */
+  why?: ReactNode;
+  hideCompat?: boolean;
 }
 
 /** Quelqu'un a salué ton pet : accepter (le lien se crée) ou décliner. */
-export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptLabel, declineLabel, onAccept, onDecline, accepting, declining, openLabel, onOpen }: IncomingCardProps) {
+export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptLabel, declineLabel, onAccept, onDecline, accepting, declining, openLabel, onOpen, why, hideCompat }: IncomingCardProps) {
   const { from, compatibility, intro } = incoming;
   const tint = speciesColor[from.pet.species];
   return (
     <EncounterFrame tint={tint}>
-      <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={compatibility} compatLabel={compatLabel} />
+      <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={hideCompat ? null : compatibility} compatLabel={compatLabel} />
+      {why}
       {intro ? <PetSays text={intro} labelColor={lighten(tint, 0.3)} /> : null}
       {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
       <View style={[layout.row, styles.actions]}>

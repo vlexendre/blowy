@@ -110,8 +110,6 @@ export function useAcceptInvite() {
 }
 
 export { useShareInvite } from './share';
-export { NeighbourhoodMap } from './NeighbourhoodMap';
-export type { MapPet } from './NeighbourhoodMap';
 
 /** Une rencontre précise, lue dans le cache des rencontres (salut reçu ou pet croisé). */
 export function useEncounter(userId: string) {
@@ -120,3 +118,5 @@ export function useEncounter(userId: string) {
   const suggestion = query.data?.suggestions.find((s) => s.user.id === userId) ?? null;
   return { ...query, incoming, suggestion };
 }
+
+export { matchAxes, useMyVision, VISION_TEST_ROUTE, visionKey, whyA11y, type AxisWords } from './vision';

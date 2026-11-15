@@ -5,6 +5,7 @@ import {
   Banner,
   Button,
   Chip,
+  DotNote,
   EmptyState,
   EncounterStage,
   type EncounterStageHandle,
@@ -16,6 +17,7 @@ import {
   Skeleton,
   Stack,
   usePetBump,
+  VisionMatch,
   useRipple,
   useRippleAnchor,
   useTypingPause,
@@ -25,7 +27,7 @@ import { useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { useAcceptEncounter, useDeclineEncounter, useEncounter, useWave } from '@/features/encounters';
+import { matchAxes, useAcceptEncounter, useDeclineEncounter, useEncounter, useMyVision, useWave } from '@/features/encounters';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useBlock } from '@/features/safety';
@@ -58,6 +60,9 @@ export default function RencontreScreen() {
   const { incoming, suggestion } = encounter;
   const person: Person | null = incoming?.from ?? suggestion?.user ?? null;
   const compat = incoming?.compatibility ?? suggestion?.compatibility ?? 0;
+  // Le pourcentage ne s'affiche jamais sans son explication (3 points communs, 1 différence).
+  const explanation = incoming?.explanation ?? suggestion?.explanation ?? null;
+  const vision = useMyVision(!!explanation);
   const via = suggestion ? (suggestion.via === 'friend_of_friend' ? listText.via.friend_of_friend(suggestion.mutualName) : listText.via[suggestion.via]()) : null;
   const myPet = pet.data?.pet;
   const myPetName = myPet?.name ?? chatsText.yourPet;
@@ -68,7 +73,7 @@ export default function RencontreScreen() {
       onBack={back}
       backLabel={t.back}
       center={via ? <Chip label={via} tone="glass" size="sm" /> : undefined}
-      right={person ? <Chip label={ui.percent(compat)} tone="accent" size="sm" accessibilityLabel={t.compatA11y(compat)} /> : undefined}
+      right={person && explanation ? <Chip label={ui.percent(compat)} tone="accent" size="sm" accessibilityLabel={t.compatA11y(compat)} /> : undefined}
     />
   );
 
@@ -91,6 +96,8 @@ export default function RencontreScreen() {
       </ScreenMotion>
     );
   }
+
+  const axes = explanation ? matchAxes(explanation, vision.data, person.displayName, { same: t.sameSide, mineOnly: t.mineOnly }) : null;
 
   /** Accepté : le lien s'ouvre tout de suite ; les deux pets quittent la scène pour se cogner au centre. */
   const onAccepted = async (linkId: string) => {
@@ -137,7 +144,7 @@ export default function RencontreScreen() {
           onBack={back}
           backLabel={t.back}
           via={via ? { label: via } : undefined}
-          compat={ui.percent(compat)}
+          compat={explanation ? ui.percent(compat) : undefined}
           compatLabel={t.compatA11y(compat)}
           onMore={() => setSheet('menu')}
           moreLabel={t.more}
@@ -157,6 +164,18 @@ export default function RencontreScreen() {
             typingLabel={chatText.typing((incoming ? person.pet.name : myPetName).toLowerCase())}
           />
         </EncounterStage>
+        {explanation ? (
+          <VisionMatch
+            common={axes?.common ?? []}
+            explore={axes?.explore ?? { axis: explanation.explore.axis, name: explanation.explore.name, text: explanation.explore.text }}
+            commonTitle={explanation.commonTitle}
+            exploreTitle={explanation.exploreTitle}
+            legend={vision.data ? { mine: t.legendMe, theirs: person.displayName } : undefined}
+            note={t.filterNote(myPetName)}
+          />
+        ) : (
+          <DotNote text={t.unknownVision} />
+        )}
         {error ? (
           <Banner
             tone="error"

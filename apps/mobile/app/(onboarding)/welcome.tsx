@@ -20,7 +20,7 @@ export default function Welcome() {
       primaryLabel={t.create}
       onPrimary={() => router.push('/(onboarding)/entree')}
       secondaryLabel={t.login}
-      onSecondary={() => router.push({ pathname: '/(onboarding)/compte', params: { mode: 'login' } })}
+      onSecondary={() => router.push({ pathname: '/(onboarding)/connexion', params: { mode: 'login' } })}
     />
     </ScreenMotion>
   );

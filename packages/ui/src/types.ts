@@ -34,7 +34,12 @@ export interface MessageLook {
   body: string | null;
   mediaUrl: string | null;
   at: string;
+  /** Rôle d'une réplique de minimoa (`Message.petRole`) : change le style de sa bulle. */
+  petRole?: PetRoleLook | null;
 }
+
+/** Rôles des répliques de minimoa (`PET_ROLES` du domaine). */
+export type PetRoleLook = 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event';
 
 /** Compatible avec `Link.today`. */
 export interface TodayLook {

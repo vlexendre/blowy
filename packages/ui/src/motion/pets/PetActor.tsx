@@ -1,6 +1,6 @@
 import type { Mood, Outfit, Species } from '@blowy/domain';
 import { Image } from 'expo-image';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, type ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { type StyleProp, StyleSheet, useWindowDimensions, View, type ViewStyle } from 'react-native';
 import {
   GestureDetector,
@@ -87,6 +87,12 @@ export interface PetActorProps {
    * réveille, prend un air gourmand, puis ouvre la bouche (`surpris`) quand l'objet arrive tout près.
    */
   lure?: PetLure;
+  /**
+   * Décor posé sur le haut de la tête (la mèche allumée de la série, `StreakFlame`) : il suit le corps (sauts,
+   * écrasements, lancers). Côté du décor : `crestSize` (défaut 26 % de la largeur). Ne capte aucune touche.
+   */
+  crest?: ReactNode;
+  crestSize?: number;
   accessibilityLabel?: string;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
@@ -98,6 +104,8 @@ const SULK_MOODS: readonly PetPose[] = ['triste', 'colere'];
 const BUSTS: readonly PetPose[] = ['neutre', 'salut', 'joie', 'smug', 'amour', 'surpris', 'triste', 'colere', 'dodo'];
 /** Les bustes s'arrêtent à 84 % de la toile, le corps entier touche le sol à 95,5 % : on les pose au sol. */
 const BUST_DROP = 0.115;
+/** Écart vertical (part de la toile) entre le haut de la tête en pied et en buste posé au sol, par espèce (mesuré sur les images). */
+const BUST_CREST_SHIFT: Record<string, number> = { nino: 0.24, suzie: 0.22, gaston: 0.08, pia: 0.04 };
 const LAG = { damping: 12, stiffness: 190, mass: 0.7 } as const;
 const PLUSH = springs.plush;
 
@@ -172,6 +180,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     onTouch,
     onGrabChange,
     lure,
+    crest,
+    crestSize,
     accessibilityLabel,
     accessibilityHint,
     style,
@@ -190,6 +200,9 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   const mouth = fitAnchor(species, 'mouth');
   const ground = fitAnchor(species, 'ground');
   const restIsBody = isFullBody(mood as PetPose) || mood === 'debout';
+  const crestSide = crestSize ?? Math.round(size * 0.26);
+  /** Avec une humeur en buste (sommeil, joie…), la tête est plus bas : le décor de la tête descend avec elle. */
+  const crestDrop = (BUST_CREST_SHIFT[species] ?? 0.15) * h;
 
   // — État lent (React) : humeur affichée, sommeil, accessoires en scène, particules.
   const [expr, setExpr] = useState<PetPose | null>(null);
@@ -985,6 +998,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     return { opacity: (1 - lift * 0.6) * (1 - away), transform: [{ translateX: x.value * 0.9 }, { scaleX: 1 - lift * 0.45 }, { scaleY: 1 - lift * 0.3 }] };
   });
   const restStyle = useAnimatedStyle(() => ({ opacity: 1 - exprO.value }));
+  const crestBust = restIsBody && !dressed && (lastExpr.current ? !isFullBody(lastExpr.current) : false);
+  const crestStyle = useAnimatedStyle(() => ({ transform: [{ translateY: crestBust ? exprO.value * crestDrop : 0 }] }));
   const exprStyle = useAnimatedStyle(() => ({ opacity: exprO.value }));
   const signs = useAnimatedStyle(() => ({
     // Suivent le corps (même porté vers le bas) ; au sol, ils ne s'enfoncent pas avec l'écrasement.
@@ -1057,6 +1072,16 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
               </Animated.View>
             </>
           )}
+          {crest ? (
+            <Animated.View
+              pointerEvents="none"
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              style={[styles.abs, { width: crestSide, height: crestSide, left: head.x * size - crestSide / 2, top: head.y * h - crestSide * 0.86 }, crestStyle]}
+            >
+              {crest}
+            </Animated.View>
+          ) : null}
         </Animated.View>
       </GestureDetector>
       {/* Signes au-dessus de la tête (décoratifs) : suivent le corps avec un temps de retard. */}

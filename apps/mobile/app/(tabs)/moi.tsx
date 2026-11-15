@@ -2,13 +2,13 @@
 import { color, space } from '@blowy/tokens';
 import { Appear, Banner, PlusBanner, ProfileHero, SettingsSection, Skeleton, Stagger, StatTile, TabTemplate, WordsShareCard } from '@blowy/ui';
 import { router } from 'expo-router';
-import { Alert, RefreshControl, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 
 import { ScreenMotion, usePorts, wordsUrl } from '@/core';
 import { useLinks } from '@/features/links';
-import { displayUrl, useCopyShare, useMe } from '@/features/me';
+import { displayUrl, openPlusFrom, useCopyShare, useMe } from '@/features/me';
+import { useDiscreet } from '@/features/map';
 import { useLivePet } from '@/features/pet';
-import { plusPrices } from '@/features/plus';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
 
@@ -21,6 +21,7 @@ export default function Moi() {
   const links = useLinks();
   const words = useCopyShare();
   const { purchases } = usePorts();
+  const discreet = useDiscreet();
 
   const refresh = (
     <RefreshControl
@@ -61,7 +62,7 @@ export default function Moi() {
   const linkList = links.data ?? [];
   const bestStreak = linkList.reduce((best, l) => Math.max(best, l.streak), 0);
   const days = Math.max(1, Math.floor((Date.now() - Date.parse(m.pet.bornAt)) / DAY_MS) + 1);
-  const soon = (text: string) => Alert.alert(t.pauseSoonTitle, text, [{ text: t.ok }]);
+  const seeking = moi.identite.seekingShort[m.identity.seeking] ?? '';
 
   // Les blocs arrivent en cascade à la première visite seulement (l'onglet reste monté) ; les chiffres défilent.
   return (
@@ -108,28 +109,32 @@ export default function Moi() {
 
       <PlusBanner
         key="plus"
-        title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle(plusPrices().perMonth) : t.plusSoonTitle}
+        // Pas de prix ici : le montant facturé se lit sur la feuille Blowy+ (règle Apple 3.1.2, spéc §13).
+        title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle : t.plusSoonTitle}
         text={t.plusText}
         ctaLabel={purchases.available && !m.plus ? t.plusCta : t.plusSoonCta}
-        onPress={() => router.push('/moi/blowy-plus')}
+        onPress={() => openPlusFrom('generic')}
       />
 
       <SettingsSection
         key="rows"
         variant="plain"
         rows={[
+          { key: 'seeking', title: t.rows.seeking.title, subtitle: t.rows.seeking.subtitle(seeking), onPress: () => router.push('/moi/identite') },
           {
-            key: 'pause',
-            title: t.rows.pause.title,
-            subtitle: t.rows.pause.subtitle(petName),
-            switchValue: false,
-            onSwitchChange: () => soon(t.pauseSoonText(petName)),
+            key: 'discreet',
+            title: t.rows.discreet.title,
+            subtitle: t.rows.discreet.subtitle(m.identity.discreet),
+            switchValue: m.identity.discreet,
+            onSwitchChange: (on: boolean) => discreet.mutate(on),
+            disabled: discreet.isPending,
           },
-          { key: 'reach', title: t.rows.reach.title(petName), subtitle: t.rows.reach.subtitle, onPress: () => soon(t.reachSoonText(petName)) },
+          { key: 'minimoas', ...t.rows.minimoas, onPress: () => router.push('/moi/minimoas') },
           { key: 'settings', ...t.rows.settings, onPress: () => router.push('/moi/reglages') },
         ]}
       />
       </Stagger>
+      {discreet.isError ? <Banner tone="error" text={t.discreetError} onClose={() => discreet.reset()} closeLabel={common.close} /> : null}
     </TabTemplate>
     </ScreenMotion>
   );

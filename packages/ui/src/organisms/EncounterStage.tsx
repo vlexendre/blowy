@@ -27,7 +27,8 @@ export interface EncounterStageProps {
   /** Puce centrale (« par Malo · pote de pote »), avec le visage du pet de l'intermédiaire. */
   via?: { label: string; pet?: PetLook };
   /** Puce jaune à droite (« 91 % »). */
-  compat: string;
+  /** Absent : pas de puce (compatibilité inconnue). */
+  compat?: string;
   compatLabel?: string;
   /** Bouton « … » (signaler / bloquer). */
   onMore?: () => void;
@@ -136,9 +137,11 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
           <Chip label={via.label} left={via.pet ? <Avatar size={18} pet={via.pet} hidden /> : undefined} style={[styles.chip, styles.via]} />
         ) : null}
         <View style={[layout.row, styles.right]}>
-          <PopIn delay={420}>
-            <Chip label={compat} tone="accent" accessibilityLabel={compatLabel} style={styles.chip} />
-          </PopIn>
+          {compat ? (
+            <PopIn delay={420}>
+              <Chip label={compat} tone="accent" accessibilityLabel={compatLabel} style={styles.chip} />
+            </PopIn>
+          ) : null}
           {onMore ? <IconButton glyph="more" label={moreLabel ?? ''} onPress={onMore} size={32} /> : null}
         </View>
       </View>
