@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { type PlateformeEnv, loadPlateformeEnv } from './plateforme.env';
 import { type FacturationAdminEnv, loadFacturationAdminEnv } from './facturation-admin.env';
+import { type AppleSignInEnv, loadAppleSignInEnv } from './apple-signin.env';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
@@ -45,6 +46,8 @@ export interface Env {
   plateforme: PlateformeEnv;
   /** Blowy+ et administration (chantier « facturation-admin »). */
   facturationAdmin: FacturationAdminEnv;
+  /** Révocation des jetons de Sign in with Apple à la suppression d'un compte. */
+  appleSignIn: AppleSignInEnv;
 }
 
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
@@ -54,6 +57,10 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     throw new Error(`configuration invalide — ${details}`);
   }
   const e = parsed.data;
+  const facturationAdmin = loadFacturationAdminEnv(source, {
+    env: e.BLOWY_ENV,
+    demo: e.BLOWY_DEMO === '1' && e.BLOWY_ENV === 'local' && e.BLOWY_ADAPTERS === 'memory',
+  });
   return {
     env: e.BLOWY_ENV,
     adapters: e.BLOWY_ADAPTERS,
@@ -68,9 +75,7 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
       .map((o) => o.trim())
       .filter((o) => o.length > 0),
     plateforme: loadPlateformeEnv(source, e.BLOWY_ENV, e.BLOWY_ADAPTERS),
-    facturationAdmin: loadFacturationAdminEnv(source, {
-      env: e.BLOWY_ENV,
-      demo: e.BLOWY_DEMO === '1' && e.BLOWY_ENV === 'local' && e.BLOWY_ADAPTERS === 'memory',
-    }),
+    facturationAdmin,
+    appleSignIn: loadAppleSignInEnv(source, e.BLOWY_ADAPTERS, facturationAdmin.apple.bundleId),
   };
 }

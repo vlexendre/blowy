@@ -10,7 +10,8 @@ import { useFirstTime } from '../motion/once';
 import { PopIn } from '../motion/PopIn';
 import { alpha, color, radius, space, veil } from '../theme';
 
-export type StreakDayStatus = 'done' | 'joker' | 'missed' | 'today' | 'future';
+/** not_yet : avant le premier jour de la personne (neutre, ni manqué ni à venir). */
+export type StreakDayStatus = 'done' | 'joker' | 'missed' | 'today' | 'future' | 'not_yet';
 
 export interface StreakWeekProps {
   /** Lundi → dimanche (`Streak.week` du contrat, avec l'initiale du jour). */
@@ -25,7 +26,10 @@ const TICK_START = 220;
 const TICK_STEP = 110;
 const DOT = 38;
 
-/** La semaine de la série (V6-GSerie) : jours faits en jaune cochés, joker en violet, aujourd'hui en pointillé. */
+/**
+ * La semaine de la série (V6-GSerie) : jours faits en jaune cochés, joker en violet, aujourd'hui en pointillé, jours
+ * d'avant l'arrivée de la personne à peine tracés (neutres).
+ */
 export function StreakWeek({ days, runs, animateKey }: StreakWeekProps) {
   const first = useFirstTime(animateKey ? `streak-week:${animateKey}` : undefined);
   const tick = !!animateKey && first;
@@ -73,5 +77,6 @@ const styles = StyleSheet.create({
   missed: { backgroundColor: veil.line },
   today: { borderWidth: 2, borderStyle: 'dashed', borderColor: color.accent },
   future: { borderWidth: 1, borderColor: alpha(color.white, 0.14) },
+  not_yet: { opacity: 0.35, borderWidth: 1, borderStyle: 'dotted', borderColor: alpha(color.white, 0.14) },
   text: { marginTop: space.md },
 });

@@ -1,13 +1,15 @@
 /**
- * Minimoas dans tes chats (spéc §9) : l'accord de lecture par une IA, chat par chat, et pour tous d'un coup.
+ * Minimoas dans tes chats (spéc §9) : l'accord de lecture par une IA, chat par chat, pour tous d'un coup (un appel),
+ * et le réglage par défaut des prochains chats (demander, toujours oui, toujours non).
  * La phrase de confidentialité est celle de l'API, telle quelle. Changer d'avis est possible à tout moment.
  */
-import type { LinkMinimoas } from '@blowy/contract';
-import { Appear, Banner, Button, DotNote, EmptyState, ListRow, SettingsSection, SettingsTemplate, Skeleton, Stack, Stagger, Text } from '@blowy/ui';
+import type { ChatReadingDefaultDto, LinkMinimoas } from '@blowy/contract';
+import { color } from '@blowy/tokens';
+import { Appear, Banner, Button, DotNote, EmptyState, Glyph, ListRow, SettingsSection, SettingsTemplate, Skeleton, Stack, Stagger, Text } from '@blowy/ui';
 import { useState } from 'react';
 
 import { ScreenMotion } from '@/core';
-import { useLinks, useMyMinimoas, useSetReadingEverywhere, useUpdateLinkMinimoas } from '@/features/links';
+import { useLinks, useMyMinimoas, useSetReadingDefault, useSetReadingEverywhere, useUpdateLinkMinimoas } from '@/features/links';
 import { useMe } from '@/features/me';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -20,6 +22,7 @@ export default function Minimoas() {
   const links = useLinks();
   const list = useMyMinimoas();
   const all = useSetReadingEverywhere();
+  const setDefault = useSetReadingDefault();
   const [done, setDone] = useState<number | null>(null);
   const back = () => goBack('/moi/reglages');
   const names = new Map((links.data ?? []).map((l) => [l.id, l.other.displayName]));
@@ -27,8 +30,26 @@ export default function Minimoas() {
 
   const setAll = (consent: boolean) => {
     setDone(null);
-    all.mutate({ consent, linkIds: items.filter((i) => i.consent.mine !== consent).map((i) => i.linkId) }, { onSuccess: setDone });
+    all.mutate(consent, { onSuccess: setDone });
   };
+  const defaults: ChatReadingDefaultDto[] = ['ask', 'on', 'off'];
+  const defaultSection = (
+    <SettingsSection
+      key="default"
+      title={t.defaultTitle}
+      rows={defaults.map((d) => ({
+        key: d,
+        title: t.defaults[d].title,
+        subtitle: t.defaults[d].subtitle,
+        onPress: () => setDefault.mutate(d),
+        disabled: setDefault.isPending,
+        chevron: false,
+        right: list.readingDefault === d ? <Glyph name="check" size={16} color={color.accent} /> : undefined,
+        accessibilityLabel: t.defaultA11y(t.defaults[d].title, list.readingDefault === d),
+      }))}
+      footer={t.defaultNote}
+    />
+  );
 
   return (
     <ScreenMotion>
@@ -52,6 +73,7 @@ export default function Minimoas() {
                 {list.text}
               </Text>
             ) : null}
+            {defaultSection}
             {items.length === 0 ? (
               <EmptyState key="empty" peek species={me.data?.pet.species ?? 'nino'} mood="salut" seed={me.data?.pet.id} title={t.title} text={t.empty} />
             ) : (
@@ -76,6 +98,7 @@ export default function Minimoas() {
           </Stagger>
         )}
         {all.isError ? <Banner tone="error" text={t.error} onClose={() => all.reset()} closeLabel={common.close} /> : null}
+        {setDefault.isError ? <Banner tone="error" text={t.error} onClose={() => setDefault.reset()} closeLabel={common.close} /> : null}
         {done !== null ? (
           <Appear key={`done:${done}`}>
             <DotNote text={t.allDone(done)} />
@@ -92,7 +115,7 @@ function LinkRow({ item, name, divider }: { item: LinkMinimoas; name: string; di
   return (
     <ListRow
       title={t.row(name)}
-      subtitle={update.isError ? t.error : t.sub(item.consent.mine, item.consent.reading, item.muted)}
+      subtitle={update.isError ? t.error : t.sub(item.consent.mine, item.consent.reading, item.muted, item.consent.theirs)}
       switchValue={item.consent.mine === true}
       onSwitchChange={(on: boolean) => update.mutate({ consent: on })}
       accessibilityLabel={t.readA11y(name)}

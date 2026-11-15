@@ -492,6 +492,7 @@ interface ReviewRow {
   vision: Json;
   read_at: string | null;
   created_at: string;
+  axis_moves: Json;
 }
 const reviewFromRow = (r: ReviewRow): WeeklyReviewRecord => ({
   id: r.id,
@@ -506,6 +507,7 @@ const reviewFromRow = (r: ReviewRow): WeeklyReviewRecord => ({
   coached: r.coached,
   detailed: (r.detailed as unknown as WeeklyReviewRecord['detailed']) ?? null,
   vision: (r.vision as unknown as WeeklyReviewRecord['vision']) ?? {},
+  axisMoves: Array.isArray(r.axis_moves) ? (r.axis_moves as unknown as WeeklyReviewRecord['axisMoves']) : [],
   readAt: isoOrNull(r.read_at),
   createdAt: iso(r.created_at),
 });
@@ -530,6 +532,7 @@ export class SupabaseWeeklyReviewsRepository implements WeeklyReviewsRepository 
           coached: r.coached,
           detailed: r.detailed as unknown as Json,
           vision: r.vision as unknown as Json,
+          axis_moves: r.axisMoves as unknown as Json,
           read_at: r.readAt,
           created_at: r.createdAt,
         },

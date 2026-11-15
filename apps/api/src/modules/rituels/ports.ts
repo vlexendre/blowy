@@ -1,4 +1,4 @@
-import type { DailyKind, DailyStatus, Day, HabitRhythm, OutingAnswer, ProofVerdict, StreakState, VisionAxis } from '@blowy/domain';
+import type { AxisMove, DailyKind, DailyStatus, Day, HabitRhythm, OutingAnswer, ProofVerdict, StreakState, VisionAxis } from '@blowy/domain';
 
 // ── État des rituels d'une personne (une ligne par personne) ───────────────
 export interface RitualStateRecord {
@@ -184,6 +184,8 @@ export interface WeeklyReviewRecord {
   detailed: { axes: string[]; links: string[] } | null;
   /** Valeurs des axes de vision à la fin de la semaine (sert au mouvement de la semaine suivante). */
   vision: Partial<Record<VisionAxis, number>>;
+  /** Mouvement de chaque axe depuis le bilan d'avant (direction et taille), vide pour un premier bilan. */
+  axisMoves: AxisMove[];
   readAt: string | null;
   createdAt: string;
 }

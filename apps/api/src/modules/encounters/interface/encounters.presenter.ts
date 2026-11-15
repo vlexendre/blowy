@@ -19,6 +19,7 @@ export const toEncountersDto = (r: EncountersResult, locale: Locale = 'fr'): Enc
     explanation: i.explanation ? toExplanation(i.explanation, i.profile.displayName, locale) : null,
     intro: i.intro,
     at: i.encounter.createdAt,
+    lookingFor: i.lookingFor,
   })),
   suggestions: r.suggestions.map((s) => ({
     user: person(s),
@@ -28,6 +29,7 @@ export const toEncountersDto = (r: EncountersResult, locale: Locale = 'fr'): Enc
     mutualName: s.mutualName,
     intro: s.intro,
     waved: s.waved,
+    lookingFor: s.lookingFor,
   })),
   petShape: r.petShape,
 });

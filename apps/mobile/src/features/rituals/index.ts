@@ -304,19 +304,11 @@ export function isoWeek(day: string): number {
 }
 
 /**
- * Le prochain objet de série encore à gagner (palier au-delà du record, objet pas encore dans la garde-robe) et les
- * jours qu'il reste depuis la série en cours. Le `nextMilestone` du serveur suit la série en cours : après une série
- * retombée, son objet peut être déjà gagné.
+ * Le prochain objet de série à gagner, tel que le serveur le dit (`nextMilestone` : le premier palier dont l'objet
+ * n'est pas encore gagné, au-delà du record), et les jours qu'il reste depuis la série en cours.
  */
-export function nextStreakItem(
-  streak: Pick<Streak, 'current' | 'best'>,
-  owned: (itemId: string) => boolean | undefined,
-): { days: number; itemId: string; left: number } | null {
-  for (const days of STREAK_MILESTONES) {
-    const itemId = streakReward(days);
-    if (!itemId) continue;
-    const has = owned(itemId) ?? streak.best >= days;
-    if (!has && days > streak.current) return { days, itemId, left: days - streak.current };
-  }
-  return null;
+export function nextStreakItem(streak: Pick<Streak, 'current' | 'nextMilestone'>): { days: number; itemId: string; left: number } | null {
+  const m = streak.nextMilestone;
+  if (!m?.itemId) return null;
+  return { days: m.days, itemId: m.itemId, left: Math.max(1, m.days - streak.current) };
 }

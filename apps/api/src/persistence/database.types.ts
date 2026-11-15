@@ -35,6 +35,7 @@ export type Database = {
           created_at: string;
           last_active_on: string;
           inactivity_noticed_on: string | null;
+          chat_reading_default: string;
         },
         | 'gender'
         | 'seeking'
@@ -49,6 +50,7 @@ export type Database = {
         | 'created_at'
         | 'last_active_on'
         | 'inactivity_noticed_on'
+        | 'chat_reading_default'
       >;
       pets: Table<
         {
@@ -272,8 +274,8 @@ export type Database = {
       >;
       ai_user_calls: Table<{ user_id: string; day: string; feature: string; calls: number }, 'calls'>;
       chat_link_settings: Table<
-        { link_id: string; user_id: string; consent: boolean | null; consent_at: string | null; muted: boolean; updated_at: string },
-        'consent' | 'consent_at' | 'muted' | 'updated_at'
+        { link_id: string; user_id: string; consent: boolean | null; consent_at: string | null; muted: boolean; by_default: boolean; updated_at: string },
+        'consent' | 'consent_at' | 'muted' | 'by_default' | 'updated_at'
       >;
       chat_pet_state: Table<
         {
@@ -389,9 +391,11 @@ export type Database = {
           vision: Json;
           read_at: string | null;
           created_at: string;
+          axis_moves: Json;
         },
-        'did' | 'link_lines' | 'coached' | 'detailed' | 'vision' | 'read_at' | 'created_at'
+        'did' | 'link_lines' | 'coached' | 'detailed' | 'vision' | 'read_at' | 'created_at' | 'axis_moves'
       >;
+      apple_tokens: Table<{ user_id: string; refresh_token: string; client_id: string; created_at: string; updated_at: string }, 'created_at' | 'updated_at'>;
     };
     Views: { [_ in never]: never };
     Functions: {

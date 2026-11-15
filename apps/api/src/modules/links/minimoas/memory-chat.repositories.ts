@@ -1,4 +1,4 @@
-import { type ChatPetState, EMPTY_CHAT_PET_STATE } from '@blowy/domain';
+import { type ChatPetState, type ChatReadingDefault, EMPTY_CHAT_PET_STATE } from '@blowy/domain';
 import type { MemoryDb } from '../../../persistence/memory-db';
 import type { ChatLinkSettingRecord, ChatPetStateRepository, ChatSettingsRepository } from './ports';
 
@@ -17,7 +17,21 @@ export class MemoryChatSettingsRepository implements ChatSettingsRepository {
   }
 
   async upsert(record: ChatLinkSettingRecord): Promise<void> {
+    if (!this.db.links.has(record.linkId)) return;
     this.db.chatLinkSettings.set(`${record.linkId}:${record.userId}`, { ...record });
+  }
+
+  async upsertMany(records: readonly ChatLinkSettingRecord[]): Promise<void> {
+    for (const r of records) await this.upsert(r);
+  }
+
+  async readingDefault(userId: string): Promise<ChatReadingDefault> {
+    return this.db.chatReadingDefaults.get(userId) ?? 'ask';
+  }
+
+  async setReadingDefault(userId: string, value: ChatReadingDefault): Promise<void> {
+    if (!this.db.profiles.has(userId)) return;
+    this.db.chatReadingDefaults.set(userId, value);
   }
 }
 

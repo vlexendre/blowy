@@ -1,5 +1,5 @@
 /** Ports des minimoas du chat : accord de lecture et coupure par personne, compteurs d'interventions par lien. */
-import type { ChatConsent, ChatPetState } from '@blowy/domain';
+import type { ChatConsent, ChatPetState, ChatReadingDefault } from '@blowy/domain';
 
 export const CHAT_SETTINGS = Symbol('CHAT_SETTINGS');
 export const CHAT_PET_STATE = Symbol('CHAT_PET_STATE');
@@ -11,6 +11,8 @@ export interface ChatLinkSettingRecord {
   consent: ChatConsent;
   consentAt: string | null;
   muted: boolean;
+  /** L'accord vient du réglage par défaut de la personne (pas d'une réponse dans ce chat). */
+  byDefault: boolean;
   updatedAt: string;
 }
 
@@ -20,6 +22,10 @@ export interface ChatSettingsRepository {
   /** Réglages d'une personne pour plusieurs liens. */
   forUserLinks(userId: string, linkIds: readonly string[]): Promise<ChatLinkSettingRecord[]>;
   upsert(record: ChatLinkSettingRecord): Promise<void>;
+  upsertMany(records: readonly ChatLinkSettingRecord[]): Promise<void>;
+  /** Réglage par défaut des nouveaux liens (« ask » si jamais choisi). */
+  readingDefault(userId: string): Promise<ChatReadingDefault>;
+  setReadingDefault(userId: string, value: ChatReadingDefault): Promise<void>;
 }
 
 export interface ChatPetStateRepository {

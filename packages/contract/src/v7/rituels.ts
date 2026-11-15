@@ -10,6 +10,7 @@
  * Ce fichier ne dépend que de zod et du domaine (pas de `../index`, pour éviter un import circulaire).
  */
 import {
+  AXIS_MOVE_SIZES,
   DAILY_KINDS,
   DAILY_STATUSES,
   HABIT_RHYTHMS,
@@ -64,12 +65,18 @@ export const StreakZ = z.object({
   doneToday: z.boolean(),
   /** La série est en jeu : elle existe et le défi n’est pas encore fait. */
   atRisk: z.boolean(),
-  /** Prochain palier (3, 7, 14, 30, 60, 100) et l’objet qu’il débloque ; null après 100. */
+  /**
+   * Prochain palier dont l’objet n’est pas encore gagné (3, 7, 14, 30, 60, 100 ; un palier ne se gagne qu’une fois,
+   * quand le record le franchit) et cet objet ; null quand les six sont gagnés.
+   */
   nextMilestone: z.object({ days: z.number().int(), itemId: ItemId.nullable() }).nullable(),
   /** Jokers restants cette semaine (lundi → dimanche) ; chacun protège automatiquement un jour manqué. */
   jokersLeft: z.number().int().min(0),
   jokersPerWeek: z.number().int().min(0),
-  /** Lundi → dimanche. done : défi fait · joker : jour protégé · missed : jour passé sans défi · today : à faire · future. */
+  /**
+   * Lundi → dimanche. done : défi fait (ou jour compté par la série) · joker : jour protégé · missed : jour passé sans
+   * défi · today : à faire · future · not_yet : avant le premier jour de la personne (neutre).
+   */
   week: z.array(z.object({ day: Day, status: WeekDayStatusZ })).length(7),
 });
 export type Streak = z.infer<typeof StreakZ>;
@@ -98,6 +105,8 @@ export const DailyChallengeZ = z.object({
   present: z.boolean(),
   /** Index de la réponse choisie (questions faites). */
   answer: z.union([z.literal(0), z.literal(1)]).nullable(),
+  /** Axe de vision que le défi vise (une question en éclaire un) ; null pour un défi qui n'en vise aucun. */
+  axis: VisionAxisZ.nullable().optional(),
 });
 export type DailyChallenge = z.infer<typeof DailyChallengeZ>;
 
@@ -115,6 +124,11 @@ export const DailyResultZ = z.object({
   line: z.string().nullable(),
   /** Objets débloqués par cette action (palier de série), à fêter. */
   newItems: z.array(ItemId),
+  /**
+   * Défi photo : la photo enregistrée, pour proposer « la garder dans mes souvenirs privés » après coup
+   * (`POST /v1/rituals/photos/:id/keep`, comme une preuve d'habitude) ; null sinon.
+   */
+  photoId: z.string().uuid().nullable().optional(),
 });
 export type DailyResult = z.infer<typeof DailyResultZ>;
 
@@ -216,7 +230,7 @@ export const UpdateHabitBody = z.object({ rhythm: HabitRhythmZ.optional(), proof
 export type UpdateHabitBody = z.infer<typeof UpdateHabitBody>;
 
 /**
- * Résultat d’une preuve. La photo est privée : personne ne la voit ; elle sert à la vérification et est supprimée
+ * Résultat d’une preuve. La photo est privée : aucun humain ne la voit ; une IA la vérifie, puis elle est supprimée
  * sous 24 h, sauf si la personne la garde (`keep`). « pas sûr » compte comme tenu ; après un « non », on peut réessayer.
  */
 export const ProofResultZ = z.object({
@@ -257,6 +271,13 @@ export const WeeklyReviewZ = z.object({
   did: z.array(z.string()),
   /** Ce que le minimoa a remarqué de ta vision. */
   noticed: z.string(),
+  /**
+   * Comment chaque axe a bougé depuis le bilan d’avant, en gros : direction (up : vers le pôle + · down · steady) et
+   * taille (small, medium, large ; null si l’axe ne bouge pas). Vide pour un premier bilan ou un bilan plus ancien.
+   */
+  axisMoves: z
+    .array(z.object({ axis: VisionAxisZ, direction: z.enum(['up', 'down', 'steady']), size: z.enum(AXIS_MOVE_SIZES).nullable() }))
+    .optional(),
   /** Un conseil : une proposition. */
   tip: z.string(),
   /** Un mot par lien actif. */

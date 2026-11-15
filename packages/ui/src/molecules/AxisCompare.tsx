@@ -1,4 +1,4 @@
-import type { AxisSide } from '@blowy/domain';
+import type { AxisLean, AxisSide } from '@blowy/domain';
 import { useEffect } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
@@ -13,10 +13,13 @@ export interface AxisCompareProps {
   name: string;
   /** La phrase de l'API (« Un foyer, un jour. Tous les deux. »). */
   text: string;
-  /** Ton côté de l'axe (pôle −, entre les deux, pôle +). Absent : pas de repère. */
-  mine?: AxisSide | null;
-  /** Le côté de l'autre. Absent : pas de repère (l'API ne l'a pas dit). */
-  theirs?: AxisSide | null;
+  /**
+   * Où tu penches : un côté (pôle −, entre les deux, pôle +) ou, mieux, un côté et un cran (`AxisLean` de l'API :
+   * light, clear, strong). Absent : pas de repère.
+   */
+  mine?: AxisSide | AxisLean | null;
+  /** Où penche l'autre, même forme. Absent : pas de repère (l'API ne l'a pas dit). */
+  theirs?: AxisSide | AxisLean | null;
   /** Couleur de ton repère (plein). Défaut : jaune d'accent. */
   mineColor?: string;
   /** Libellé lu de la piste (« Toi et Sasha, du même côté »). */
@@ -31,15 +34,25 @@ const TRACK = 96;
 const DOT = 14;
 /** Position d'un côté sur la piste (un tiers, jamais une valeur chiffrée). */
 const AT: Record<AxisSide, number> = { low: 0.12, mid: 0.5, high: 0.88 };
+/** Écart au centre selon le cran (le plus fort rejoint le bord, comme un côté seul). */
+const REACH: Record<AxisLean['strength'], number> = { light: 0.18, clear: 0.28, strong: 0.38 };
+
+/** Place d'un repère de 0 à 1 : un côté seul va au bord de son tiers ; un côté avec un cran, plus ou moins loin. */
+export function markerAt(p: AxisSide | AxisLean): number {
+  if (typeof p === 'string') return AT[p];
+  if (p.side === 'mid') return 0.5;
+  return p.side === 'low' ? 0.5 - REACH[p.strength] : 0.5 + REACH[p.strength];
+}
 
 /**
  * Un axe de vision comparé (maquette V6-GRencontre) : le nom, la phrase, et une piste avec deux repères, toi (plein)
- * et l'autre (cerclé). Les repères se placent par tiers (pôle −, entre les deux, pôle +) : jamais un chiffre.
+ * et l'autre (cerclé). Les repères se placent par côté (pôle −, entre les deux, pôle +) et, si l'API le dit, par cran
+ * (à peine, nettement, très) : jamais un chiffre.
  * Ils glissent du centre vers leur place à l'apparition (fondu seul si animations réduites).
  */
 export function AxisCompare({ name, text, mine, theirs, mineColor = color.accent, trackLabel, index = 0, divider = true, style }: AxisCompareProps) {
   // Deux repères au même endroit : légèrement décalés pour qu'on voie les deux (comme dans la maquette).
-  const same = !!mine && mine === theirs;
+  const same = !!mine && !!theirs && markerAt(mine) === markerAt(theirs);
   return (
     <View style={[layout.row, styles.row, divider ? styles.divider : null, style]}>
       <View style={[layout.grow, styles.text]}>
@@ -61,9 +74,9 @@ export function AxisCompare({ name, text, mine, theirs, mineColor = color.accent
   );
 }
 
-function Marker({ side, nudge, hollow, fill, index }: { side: AxisSide; nudge: number; hollow?: boolean; fill?: string; index: number }) {
+function Marker({ side, nudge, hollow, fill, index }: { side: AxisSide | AxisLean; nudge: number; hollow?: boolean; fill?: string; index: number }) {
   const reduced = useReducedMotion();
-  const target = AT[side] * TRACK - DOT / 2 + nudge;
+  const target = markerAt(side) * TRACK - DOT / 2 + nudge;
   const start = TRACK / 2 - DOT / 2;
   const x = useSharedValue(reduced ? target : start);
   const o = useSharedValue(reduced ? 0 : 1);

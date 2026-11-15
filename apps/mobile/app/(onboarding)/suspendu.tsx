@@ -13,6 +13,7 @@ import { Linking, View } from 'react-native';
 import { keys, ScreenMotion, useApi, useSession } from '@/core';
 import { useDraft } from '@/features/onboarding';
 import { useDeleteAccount } from '@/features/me';
+import { unregisterDevice } from '@/features/notifications';
 import { confirmAction, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -36,8 +37,10 @@ export default function Suspendu() {
       confirm: t.deleteConfirm,
       cancel: common.cancel,
       destructive: true,
-      onConfirm: () => remove.mutate(undefined, { onSuccess: toWelcome }),
+      // Comme dans Moi : le jeton push de ce téléphone part d'abord (l'API l'accepte d'un compte suspendu).
+      onConfirm: () => void unregisterDevice(api).finally(() => remove.mutate(undefined, { onSuccess: toWelcome })),
     });
+  const leave = () => void unregisterDevice(api).finally(() => signOut.mutate(undefined, { onSettled: toWelcome }));
 
   return (
     <ScreenMotion>
@@ -51,7 +54,7 @@ export default function Suspendu() {
               onPress={() => void Linking.openURL(`mailto:${brand.supportEmail}?subject=${encodeURIComponent(t.supportSubject)}`)}
             />
             <Button label={t.deleteLabel} variant="danger" onPress={askDelete} loading={remove.isPending} />
-            <Button label={t.signOut} variant="ghost" onPress={() => signOut.mutate(undefined, { onSettled: toWelcome })} loading={signOut.isPending} />
+            <Button label={t.signOut} variant="ghost" onPress={leave} loading={signOut.isPending} />
           </View>
         }
       >

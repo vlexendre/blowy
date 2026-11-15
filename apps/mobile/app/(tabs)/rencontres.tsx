@@ -30,6 +30,7 @@ import {
   useLiveEncounters,
   useShareInvite,
   useWave,
+  lookingForLine,
   VISION_TEST_ROUTE,
   whyA11y,
 } from '@/features/encounters';
@@ -227,6 +228,7 @@ export default function RencontresScreen() {
           viaLabel={viaLabel(s)}
           badgeLabel={s.via === 'new' ? t.badgeNew : undefined}
           compatLabel={t.compat}
+          tagline={lookingForLine(s.lookingFor, t.lookingFor) ?? undefined}
           why={why(s.explanation)}
           introLabel={t.introLabel(petName)}
           waveLabel={t.wave(s.user.pet.name)}

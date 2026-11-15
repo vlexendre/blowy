@@ -13,7 +13,7 @@ import type { ModerationActionKind } from '@blowy/contract';
 import type { MatchCacheEntry, PlaceRecord, VisionSnapshot } from '../modules/vision/ports';
 import type { VisionSignal } from '@blowy/domain';
 import type { DailyChallengeRecord, HabitCheckRecord, HabitRecord, RitualPhotoRecord, RitualStateRecord, WeeklyReviewRecord } from '../modules/rituels/ports';
-import type { ChatPetState } from '@blowy/domain';
+import type { ChatPetState, ChatReadingDefault } from '@blowy/domain';
 import type { AiUsageRecord } from '../integrations/ai/usage-store';
 import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
 import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
@@ -73,6 +73,10 @@ export class MemoryDb {
   readonly aiUserCalls = new Map<string, number>();
   /** clé `${linkId}:${userId}` */
   readonly chatLinkSettings = new Map<string, ChatLinkSettingRecord>();
+  /** `profiles.chat_reading_default` (absent : « ask »). */
+  readonly chatReadingDefaults = new Map<string, ChatReadingDefault>();
+  /** `apple_tokens` : jeton de rafraîchissement d'Apple, par personne (révocation à la suppression). */
+  readonly appleTokens = new Map<string, { refreshToken: string; clientId: string; createdAt: string }>();
   /** clé linkId */
   readonly chatPetStates = new Map<string, ChatPetState>();
   /** clé token */
@@ -140,6 +144,8 @@ export class MemoryDb {
     this.matchCache.delete(userId);
     for (const key of [...this.aiUserCalls.keys()]) if (key.startsWith(`${userId}|`)) this.aiUserCalls.delete(key);
     for (const [key, c] of this.chatLinkSettings) if (c.userId === userId || linkIds.has(c.linkId)) this.chatLinkSettings.delete(key);
+    this.chatReadingDefaults.delete(userId);
+    this.appleTokens.delete(userId);
     for (const id of linkIds) this.chatPetStates.delete(id);
     removeWhere(this.messages, (m) => m.visibleTo === userId);
     for (const [token, d] of this.pushDevices) if (d.userId === userId) this.pushDevices.delete(token);

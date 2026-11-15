@@ -4,6 +4,8 @@
  */
 export interface AppleCredential {
   identityToken: string;
+  /** Code d'autorisation (5 minutes, une fois) : l'API l'échange pour pouvoir révoquer l'accès à la suppression. */
+  authorizationCode: string | null;
 }
 
 export const appleSignInAvailable = async (): Promise<boolean> => false;

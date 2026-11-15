@@ -18,6 +18,7 @@ import {
   Skeleton,
   Stack,
   TipRow,
+  VisionMeter,
 } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
@@ -25,9 +26,10 @@ import { useEffect, useRef } from 'react';
 import { ScreenMotion } from '@/core';
 import { useMe } from '@/features/me';
 import { usePet } from '@/features/pet';
-import { isoWeek, useReadReview, useReview } from '@/features/rituals';
+import { isoWeek, useReadReview, useReview, useVision } from '@/features/rituals';
 import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
+import { lowerFirst } from '@/features/onboarding';
 import { rituels } from '@/locales/rituels';
 
 const t = rituels.review;
@@ -39,6 +41,7 @@ export default function ReviewScreen() {
   const pet = usePet();
   const me = useMe();
   const read = useReadReview();
+  const vision = useVision();
   const marked = useRef(false);
   const close = () => goBack('/(tabs)/pet');
 
@@ -70,6 +73,11 @@ export default function ReviewScreen() {
   }
 
   const f = r.facts;
+  // L'axe qui a le plus bougé cette semaine (en crans, dit par l'API) : sa barre, et le sens du mouvement.
+  const order = { small: 1, medium: 2, large: 3 } as const;
+  const moved = (r.axisMoves ?? []).filter((m) => m.direction !== 'steady' && m.size).sort((a, b) => order[b.size ?? 'small'] - order[a.size ?? 'small'])[0];
+  const movedAxis = moved ? vision.data?.axes.find((a) => a.axis === moved.axis) : undefined;
+  const movedPole = moved && movedAxis ? lowerFirst(moved.direction === 'up' ? movedAxis.highLabel : movedAxis.lowLabel) : null;
   return (
     <ScreenMotion>
       <ScreenTemplate>
@@ -91,7 +99,18 @@ export default function ReviewScreen() {
             />
           </Appear>
           <Appear once={`review:${r.id}:noticed`} delay={200}>
-            <NoteCard kicker={t.noticed(p.name)} text={r.noticed} icon={<Icon name="etoiles" size={30} />} />
+            <NoteCard kicker={t.noticed(p.name)} text={r.noticed} icon={<Icon name="etoiles" size={30} />}>
+              {moved?.size && movedAxis && movedPole ? (
+                <VisionMeter
+                  title={t.moveTitle(movedAxis.name)}
+                  value={movedAxis.value}
+                  low={movedAxis.lowLabel}
+                  high={movedAxis.highLabel}
+                  sticker={t.moveSticker(movedPole, moved.size)}
+                  accessibilityLabel={t.moveA11y(movedAxis.name, movedPole, moved.size)}
+                />
+              ) : null}
+            </NoteCard>
           </Appear>
           <Appear once={`review:${r.id}:tip`} delay={260}>
             <NoteCard text={r.tip} icon={<Icon name="eclair" size={30} />} accent />

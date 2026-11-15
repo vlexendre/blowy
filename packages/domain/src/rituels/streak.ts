@@ -84,24 +84,53 @@ export function streakReward(days: number): string | null {
   return ITEMS.find((i) => i.unlock.kind === 'stat' && i.unlock.stat === 'ritualStreak' && i.unlock.n === days)?.id ?? null;
 }
 
-/** Prochain palier au-delà de la série en cours, ou null après 100. */
-export function nextStreakMilestone(current: number): { days: number; itemId: string | null } | null {
-  const days = STREAK_MILESTONES.find((m) => m > current);
+/**
+ * Prochain palier à montrer : le premier dont l'objet n'est pas encore gagné. Un palier ne se gagne qu'une fois
+ * (quand le record le franchit, voir `completeStreakDay`), donc tout palier au plus égal au record est déjà acquis :
+ * après une série retombée puis repartie, on vise le premier palier au-delà du record, pas au-delà de la série en
+ * cours. null quand les six sont gagnés. (`best` absent : la série en cours fait office de record.)
+ */
+export function nextStreakMilestone(current: number, best: number = current): { days: number; itemId: string | null } | null {
+  const reach = Math.max(current, best);
+  const days = STREAK_MILESTONES.find((m) => m > reach);
   return days === undefined ? null : { days, itemId: streakReward(days) };
 }
 
-export const WEEK_DAY_STATUSES = ['done', 'joker', 'missed', 'today', 'future'] as const;
+/** not_yet : jour d'avant le premier jour de la personne (rien à reprocher, rien à compter). */
+export const WEEK_DAY_STATUSES = ['done', 'joker', 'missed', 'today', 'future', 'not_yet'] as const;
 export type WeekDayStatus = (typeof WEEK_DAY_STATUSES)[number];
 
 /**
- * Les sept jours de la semaine en cours pour l'app et le widget. `doneDays` : jours de la semaine avec le défi fait.
- * Un jour passé sans défi ni joker est « missed » (même s'il n'y avait pas de série à protéger).
+ * Jours comptés par la série en cours : en remontant depuis le dernier jour fait, `current` jours faits, en sautant
+ * les jours protégés par un joker. C'est ce que la série affirme : la semaine l'affiche même si un jour fait n'a pas
+ * d'enregistrement (série reprise, monde de démo).
  */
-export function streakWeek(settled: StreakState, today: Day, doneDays: ReadonlySet<Day>): { day: Day; status: WeekDayStatus }[] {
+export function streakRunDays(settled: StreakState): Set<Day> {
+  const out = new Set<Day>();
+  if (settled.current <= 0 || settled.lastDoneOn === null) return out;
+  const jokers = new Set(settled.jokerDays);
+  let d = settled.lastDoneOn;
+  // Garde-fou : jamais plus de `current` jours faits, ni plus de `current` + jokers jours examinés.
+  for (let seen = 0; out.size < settled.current && seen < settled.current + jokers.size + 1; seen++, d = addDays(d, -1)) {
+    if (!jokers.has(d)) out.add(d);
+  }
+  return out;
+}
+
+/**
+ * Les sept jours de la semaine en cours pour l'app et le widget. `doneDays` : jours de la semaine avec le défi fait.
+ * Un jour passé sans défi ni joker est « missed » (même s'il n'y avait pas de série à protéger), sauf s'il précède
+ * `since`, le premier jour de la personne (création du compte) : il est alors « not_yet ». Un jour compté par la
+ * série en cours est « done ».
+ */
+export function streakWeek(settled: StreakState, today: Day, doneDays: ReadonlySet<Day>, since: Day | null = null): { day: Day; status: WeekDayStatus }[] {
+  const run = streakRunDays(settled);
   return weekDaysOf(today).map((day) => {
     if (day > today) return { day, status: 'future' as const };
-    if (doneDays.has(day)) return { day, status: 'done' as const };
+    if (doneDays.has(day) || run.has(day)) return { day, status: 'done' as const };
     if (day === today) return { day, status: 'today' as const };
-    return { day, status: settled.jokerDays.includes(day) ? ('joker' as const) : ('missed' as const) };
+    if (settled.jokerDays.includes(day)) return { day, status: 'joker' as const };
+    if (since !== null && day < since) return { day, status: 'not_yet' as const };
+    return { day, status: 'missed' as const };
   });
 }

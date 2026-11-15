@@ -48,7 +48,8 @@ export function localAuth(): AuthPort {
       if (!ids[provider]) await AsyncStorage.setItem(IDS_KEY, JSON.stringify({ ...ids, [provider]: userId }));
       const session = { userId, email: `${provider}-${userId.slice(0, 8)}@local.test` };
       await set(session);
-      return session;
+      // « Apple » simulé : un faux code d'autorisation, pour exercer l'envoi à l'API (gardé en mémoire côté API).
+      return provider === 'apple' ? { ...session, appleAuthorizationCode: `local-apple-${uuid()}` } : session;
     },
     getSession: load,
     async getToken() {

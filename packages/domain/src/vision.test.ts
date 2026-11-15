@@ -213,9 +213,9 @@ describe('compatibilité', () => {
     const other = profile({ foyer: 70, ancrage: -55, elan: 15, rythme: -40, cap: 20 });
     const c = compatibilityOf(me, other, 'plus');
     expect(c.common.map((p) => p.axis)).toEqual(['ancrage', 'elan', 'foyer']);
-    expect(c.common[0]).toEqual({ axis: 'ancrage', side: 'low' });
-    expect(c.common[1]).toEqual({ axis: 'elan', side: 'mid' });
-    expect(c.explore).toEqual({ axis: 'rythme', mine: 'high', theirs: 'low' });
+    expect(c.common[0]).toMatchObject({ axis: 'ancrage', side: 'low' });
+    expect(c.common[1]).toMatchObject({ axis: 'elan', side: 'mid' });
+    expect(c.explore).toMatchObject({ axis: 'rythme', mine: 'high', theirs: 'low' });
     expect(c.mode).toBe('plus');
   });
 

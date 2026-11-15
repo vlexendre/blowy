@@ -223,9 +223,16 @@ export const minimoas = messages({
     consentSubtitle: 'Ils lancent, relancent, et glissent une remarque.',
     /** La phrase de confidentialité vient de l'API (`consent.text`) : jamais réécrite ici. */
     ifRefused: (mine: string, theirs: string): string => `Si l’un de vous refuse, ${mine} et ${theirs} réagissent seulement au rythme : silences, photos, défis. Sans rien lire.`,
-    /** Où en est l'autre : l'API ne dit que « vous avez dit oui tous les deux » (`reading`). */
-    otherWaiting: (name: string): string => `Tant que ${name} n’a pas dit oui aussi, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi.`,
-    bothYes: (name: string): string => `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi.`,
+    /**
+     * Où en est l'autre (`consent.theirs`) : « agreed » ou « not_yet ». Un refus et une question pas encore vue se
+     * disent pareil, « pas encore activé de son côté » : jamais « a refusé », aucune pression.
+     */
+    otherWaiting: (name: string): string => `Pas encore activé du côté de ${name}. Tant que ce n’est pas le cas, l’IA ne lit rien. Modifiable dans les options du lien ou dans Moi.`,
+    otherAgreed: (name: string): string => `${name} l’a activé de son côté. Si tu dis oui aussi, vos minimoas liront vos messages. Modifiable dans les options du lien ou dans Moi.`,
+    bothYes: (name: string): string => `${name} a dit oui aussi : vos minimoas lisent vos messages. Modifiable dans les options du lien ou dans Moi.`,
+    /** Accord venu du réglage par défaut (« Moi ») : pas de question, une ligne dans le chat. */
+    byDefault: (on: boolean): string => (on ? 'Lecture par une IA : activée d’office pour ce chat (ton réglage).' : 'Lecture par une IA : coupée d’office pour ce chat (ton réglage).'),
+    byDefaultChange: 'Changer',
     accept: 'J’active pour ce chat',
     decline: 'Sans lecture',
     later: 'Plus tard',
@@ -247,8 +254,12 @@ export const minimoas = messages({
     /** Options du lien. */
     sectionTitle: 'Minimoas dans ce chat',
     readingRow: 'Lecture par une IA',
-    readingSub: (on: boolean | null, both: boolean): string =>
-      on === null ? 'Pas encore choisi' : !on ? 'Non : ils réagissent seulement au rythme' : both ? 'Oui, vous deux' : 'Oui, en attente de l’autre',
+    /** `theirs` : `consent.theirs` de l'API (absent d'une réponse plus ancienne). */
+    readingSub: (on: boolean | null, both: boolean, theirs?: 'agreed' | 'not_yet', byDefault?: boolean): string => {
+      const mine = on === null ? 'Pas encore choisi' : !on ? 'Non : ils réagissent seulement au rythme' : both ? 'Oui, vous deux' : 'Oui';
+      const other = both || theirs === undefined ? '' : theirs === 'agreed' ? ' · activé de son côté' : ' · pas encore activé de son côté';
+      return `${mine}${other}${byDefault ? ' · par défaut' : ''}`;
+    },
     muteRow: 'Minimoas actifs',
     muteSub: (n: number, max: number): string => `${n} sur ${max} interventions aujourd’hui`,
   },

@@ -54,6 +54,8 @@ export const rencontres = messages({
     },
     /** Sous la liste : ce que fait le minimoa, en une ligne. */
     filterNote: (pet: string): string => `${pet} ne te présente que des gens au-dessus de 70 % d’accord sur la vision.`,
+    /** Ce que vous cherchez tous les deux (`lookingFor` de l'API ; jamais « qui »). */
+    lookingFor: { friends: 'Vous cherchez tous les deux des potes.', more: 'Vous cherchez tous les deux plus.', both: 'Vous cherchez tous les deux des potes, ou plus.' },
     /** Version courte du pourquoi, sur les cartes. */
     whyJoin: (title: string, items: string): string => `${title} : ${items}.`,
     morePlus: { title: 'Plus de rencontres avec Blowy+', text: 'Une rencontre de plus chaque semaine.', cta: 'Voir' },
@@ -107,7 +109,7 @@ export const rencontre = messages({
     /** Pourquoi : légende des repères et libellés lus des pistes. */
     legendMe: 'toi',
     sameSide: (name: string): string => `Toi et ${name}, du même côté`,
-    mineOnly: (line: string): string => `Toi : ${line}`,
+    apartSide: (name: string): string => `Toi et ${name}, pas du même côté`,
     filterNote: (pet: string): string => `${pet} ne présente que des gens dont la vision va avec la tienne.`,
     unknownVision: 'Vos visions ne sont pas encore assez connues pour être comparées. Fiez-vous à ce que racontent vos minimoas.',
     wave2: 'Saluer',
@@ -133,6 +135,8 @@ export const carte = messages({
     compat: 'd’accord',
     wave: (pet: string): string => `Saluer ${pet}`,
     waved: 'Salué · en attente',
+    /** On t'a salué (repère `waved_you`) : la réponse se donne sur l'écran de la rencontre. */
+    wavedYou: (name: string): string => `${name} t’a fait signe · répondre`,
     open: 'Voir de plus près',
     /** Puce sous la zone (le nombre vient du serveur ; cachée à zéro). */
     beyondA11y: (label: string): string => `${label}. Avec Blowy+, toute la carte.`,

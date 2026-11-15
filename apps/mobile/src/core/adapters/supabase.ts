@@ -72,7 +72,9 @@ async function withApple(sb: SupabaseClient): Promise<Session | null> {
   if (!credential) return null;
   const { data, error } = await sb.auth.signInWithIdToken({ provider: 'apple', token: credential.identityToken });
   if (error) throw authError(error.message, error.status);
-  return opened(data.session);
+  const session = opened(data.session);
+  // Le code d'autorisation part ensuite à l'API (révocation à la suppression du compte, exigence d'Apple).
+  return credential.authorizationCode ? { ...session, appleAuthorizationCode: credential.authorizationCode } : session;
 }
 
 /**

@@ -66,6 +66,32 @@ export function noticedMove(deltas: Partial<Record<VisionAxis, number>> | null):
   return best === null ? null : { axis: best, direction: (deltas[best] ?? 0) > 0 ? 'up' : 'down' };
 }
 
+/**
+ * Mouvement de chaque axe sur la semaine, en gros (pour faire bouger la barre de l'axe à l'écran, jamais un chiffre) :
+ * direction (up : vers le pôle + · down : vers le pôle − · steady : moins de NOTICE_MIN_DELTA) et taille
+ * (small : moins de 10 points · medium : 10 à 19 · large : 20 et plus ; null quand l'axe ne bouge pas).
+ * Seulement les axes connus des deux relevés ; dans l'ordre des axes.
+ */
+export const AXIS_MOVE_SIZES = ['small', 'medium', 'large'] as const;
+export type AxisMoveSize = (typeof AXIS_MOVE_SIZES)[number];
+export interface AxisMove {
+  axis: VisionAxis;
+  direction: 'up' | 'down' | 'steady';
+  size: AxisMoveSize | null;
+}
+export const MOVE_MEDIUM = 10;
+export const MOVE_LARGE = 20;
+export function axisMoves(deltas: Partial<Record<VisionAxis, number>> | null): AxisMove[] {
+  if (!deltas) return [];
+  return VISION_AXES.flatMap((axis): AxisMove[] => {
+    const d = deltas[axis];
+    if (d === undefined) return [];
+    const abs = Math.abs(d);
+    if (abs < NOTICE_MIN_DELTA) return [{ axis, direction: 'steady', size: null }];
+    return [{ axis, direction: d > 0 ? 'up' : 'down', size: abs >= MOVE_LARGE ? 'large' : abs >= MOVE_MEDIUM ? 'medium' : 'small' }];
+  });
+}
+
 export const LINK_NOTES = ['photo_streak', 'close', 'steady', 'growing'] as const;
 export type LinkNote = (typeof LINK_NOTES)[number];
 

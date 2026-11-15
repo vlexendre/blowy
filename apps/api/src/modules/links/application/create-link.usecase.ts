@@ -76,6 +76,8 @@ export class CreateLink {
       return raced;
     }
 
+    // Accord de lecture de départ : le réglage par défaut de chacun (« Moi › Minimoas dans tes chats »).
+    await this.minimoas.applyDefaults(created);
     const draft = (await this.session.draftsFor([created]))[0];
     if (!draft) throw new Error('brouillon de lien manquant');
     draft.system(chatSystemText(draft.systemLocale).linkCreated);

@@ -78,7 +78,7 @@ describe('rituels', () => {
       const first = await p.api.rituals.today();
       expect(first.challenge).toMatchObject({ status: 'offered', present: true, day: '2026-11-11' });
       expect(first.streak).toMatchObject({ current: 0, best: 0, doneToday: false, atRisk: false, jokersLeft: 1, jokersPerWeek: 1, nextMilestone: { days: 3, itemId: 'fleurs' } });
-      expect(first.streak.week.map((d) => d.status)).toEqual(['missed', 'missed', 'today', 'future', 'future', 'future', 'future']);
+      expect(first.streak.week.map((d) => d.status)).toEqual(['not_yet', 'not_yet', 'today', 'future', 'future', 'future', 'future']); // lundi et mardi précèdent le compte (créé mercredi)
       expect(first.outing).toMatchObject({ question: outingText.question, canAnswer: true, answer: null, confirmed: false });
       expect(first.sociability).toBe(80);
       expect(first.needsOut).toBe(false);
@@ -221,7 +221,7 @@ describe('rituels', () => {
         await doToday(p); // dimanche 15
         const full = await p.api.rituals.streak();
         expect(full).toMatchObject({ current: 4, best: 4, doneToday: true, atRisk: false });
-        expect(full.week.map((d) => d.status)).toEqual(['missed', 'missed', 'done', 'done', 'done', 'joker', 'done']);
+        expect(full.week.map((d) => d.status)).toEqual(['not_yet', 'not_yet', 'done', 'done', 'done', 'joker', 'done']);
 
         // Nouvelle semaine : un joker de nouveau. Lundi 16 et mardi 17 manqués.
         w.clock.advanceDays(2);

@@ -7,6 +7,11 @@ import type { UploadTicket } from '@blowy/contract';
 export interface Session {
   userId: string;
   email: string | null;
+  /**
+   * Sign in with Apple seulement, juste après la connexion : le code d'autorisation d'Apple (valable 5 minutes, une
+   * fois), à transmettre à l'API pour qu'elle puisse révoquer l'accès à la suppression du compte. Jamais gardé.
+   */
+  appleAuthorizationCode?: string;
 }
 
 /** Fournisseurs de connexion : Apple sur iPhone, Google sur Android (et le web) ; l'e-mail en mode local seulement. */

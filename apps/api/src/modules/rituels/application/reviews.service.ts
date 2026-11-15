@@ -12,6 +12,7 @@ import {
   isKindText,
   linkNote,
   noticedMove,
+  axisMoves,
   reviewHighlights,
   reviewTip,
   settleStreak,
@@ -48,6 +49,7 @@ export const toReviewDto = (r: WeeklyReviewRecord): WeeklyReview => ({
   title: rituelsText.in(requestLocale()).review.title,
   did: r.did,
   noticed: r.noticed,
+  axisMoves: r.axisMoves.map((m) => ({ ...m })),
   tip: r.tip,
   links: r.links,
   text: r.text,
@@ -189,6 +191,7 @@ export class ReviewsService {
       coached: coached !== null,
       detailed,
       vision,
+      axisMoves: axisMoves(deltas),
       readAt: null,
       createdAt: now.toISOString(),
     });

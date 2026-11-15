@@ -36,6 +36,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
+import { VISION_TEST_ROUTE } from '@/features/encounters';
 import { errorText } from '@/features/links';
 import { useMe } from '@/features/me';
 import { careAvailable, careHot, nextItem, pickLine, useCare, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
@@ -213,6 +214,19 @@ export default function PetHome() {
                 ) : null
               }
             />
+
+            {/* Pas encore de test de vision (inscrit sans le passer, ou compte V6) : pas de rencontres tant qu'il manque. */}
+            {me.data && !me.data.visionTestDone ? (
+              <Appear once="home:vision-test" delay={60}>
+                <EntryCard
+                  left={<Icon name="etoiles" size={34} />}
+                  title={r.home.visionTestTitle(p.name)}
+                  text={r.home.visionTestText}
+                  chevron
+                  onPress={() => router.push(VISION_TEST_ROUTE)}
+                />
+              </Appear>
+            ) : null}
 
             {d?.unreadReviewId ? (
               <Appear once={`home:review:${d.unreadReviewId}`} delay={80}>

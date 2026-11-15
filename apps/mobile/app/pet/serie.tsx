@@ -25,7 +25,7 @@ import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { useMe } from '@/features/me';
-import { usePet, useWardrobe } from '@/features/pet';
+import { usePet } from '@/features/pet';
 import { nextStreakItem, useRitualsToday, useStreak } from '@/features/rituals';
 import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
@@ -37,7 +37,6 @@ const t = rituels.streak;
 export default function StreakScreen() {
   const router = useRouter();
   const pet = usePet();
-  const wardrobe = useWardrobe();
   const streak = useStreak();
   const today = useRitualsToday();
   const me = useMe();
@@ -84,15 +83,12 @@ export default function StreakScreen() {
       ]
     : undefined;
 
-  // Paliers : gagnés (objet dans la garde-robe), le prochain à gagner, puis les autres.
-  const ownedItem = (id: string) => {
-    const it = wardrobe.data?.items.find((i) => i.id === id);
-    return it ? it.state !== 'locked' : undefined;
-  };
-  const next = nextStreakItem(s, ownedItem);
+  // Paliers : les six, gagnés (un palier se gagne une fois, quand le record le franchit), le prochain à gagner
+  // (`nextMilestone` du serveur), puis les autres.
+  const next = nextStreakItem(s);
   const milestones: Milestone[] = STREAK_MILESTONES.map((m) => {
     const itemId = streakReward(m);
-    const has = itemId ? (ownedItem(itemId) ?? s.best >= m) : s.best >= m;
+    const has = s.best >= m;
     const state: Milestone['state'] = has ? 'owned' : m === next?.days ? 'next' : 'locked';
     const name = itemId ? (itemLabel[itemId] ?? itemId) : '';
     return { days: m, itemId, state, label: t.milestoneLabel(m), accessibilityLabel: t.milestoneA11y(name, m, state) };

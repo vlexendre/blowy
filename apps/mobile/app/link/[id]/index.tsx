@@ -92,6 +92,7 @@ export default function LinkScreen() {
   const updateMinimoas = useUpdateLinkMinimoas(id);
   const guide = useMinimoaGuide();
   const [consentLater, setConsentLater] = useState(false);
+  const [defaultNoticeClosed, setDefaultNoticeClosed] = useState(false);
   const [rolesOpen, setRolesOpen] = useState(false);
   const [reporting, setReporting] = useState<Message | null>(null);
   // Ranimé à l'instant : les cœurs reviennent un à un dans l'en-tête.
@@ -179,7 +180,17 @@ export default function LinkScreen() {
           ) : undefined
         }
         notice={
-          active === 'chat' && mm && mm.consent.mine !== null && guide.seen === false ? (
+          // Accord venu du réglage par défaut : la question n'est pas posée, mais l'état reste visible, en une ligne.
+          active === 'chat' && mm && mm.consent.byDefault && mm.consent.mine !== null && !defaultNoticeClosed ? (
+            <Banner
+              tone="info"
+              text={minimoaText.byDefault(mm.consent.mine)}
+              actionLabel={minimoaText.byDefaultChange}
+              onAction={() => router.push(`/link/${l.id}/options`)}
+              onClose={() => setDefaultNoticeClosed(true)}
+              closeLabel={minimoaText.guideClose}
+            />
+          ) : active === 'chat' && mm && mm.consent.mine !== null && guide.seen === false ? (
             <Banner tone="info" title={minimoaText.guideTitle} text={minimoaText.guideText} actionLabel={minimoaText.guideMore} onAction={() => setRolesOpen(true)} onClose={guide.dismiss} closeLabel={minimoaText.guideClose} actionBelow />
           ) : undefined
         }
@@ -242,7 +253,15 @@ export default function LinkScreen() {
             text={mm.consent.text}
             notes={[
               { key: 'refuse', icon: 'gel', text: minimoaText.ifRefused(l.myPet.name, l.other.pet.name) },
-              { key: 'other', icon: 'eclair', text: mm.consent.reading ? minimoaText.bothYes(l.other.displayName) : minimoaText.otherWaiting(l.other.displayName) },
+              {
+                key: 'other',
+                icon: 'eclair',
+                text: mm.consent.reading
+                  ? minimoaText.bothYes(l.other.displayName)
+                  : mm.consent.theirs === 'agreed'
+                    ? minimoaText.otherAgreed(l.other.displayName)
+                    : minimoaText.otherWaiting(l.other.displayName),
+              },
             ]}
           />
         ) : null}

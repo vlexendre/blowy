@@ -27,7 +27,7 @@ import { useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { matchAxes, useAcceptEncounter, useDeclineEncounter, useEncounter, useMyVision, useWave } from '@/features/encounters';
+import { lookingForLine, matchAxes, useAcceptEncounter, useDeclineEncounter, useEncounter, useWave } from '@/features/encounters';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useBlock } from '@/features/safety';
@@ -62,7 +62,8 @@ export default function RencontreScreen() {
   const compat = incoming?.compatibility ?? suggestion?.compatibility ?? 0;
   // Le pourcentage ne s'affiche jamais sans son explication (3 points communs, 1 différence).
   const explanation = incoming?.explanation ?? suggestion?.explanation ?? null;
-  const vision = useMyVision(!!explanation);
+  // Ce que vous cherchez tous les deux (« Vous cherchez tous les deux… ») : seulement ce qui est réciproque.
+  const together = lookingForLine(incoming?.lookingFor ?? suggestion?.lookingFor, listText.lookingFor);
   const via = suggestion ? (suggestion.via === 'friend_of_friend' ? listText.via.friend_of_friend(suggestion.mutualName) : listText.via[suggestion.via]()) : null;
   const myPet = pet.data?.pet;
   const myPetName = myPet?.name ?? chatsText.yourPet;
@@ -97,7 +98,7 @@ export default function RencontreScreen() {
     );
   }
 
-  const axes = explanation ? matchAxes(explanation, vision.data, person.displayName, { same: t.sameSide, mineOnly: t.mineOnly }) : null;
+  const axes = explanation ? matchAxes(explanation, person.displayName, { same: t.sameSide, apart: t.apartSide }) : null;
 
   /** Accepté : le lien s'ouvre tout de suite ; les deux pets quittent la scène pour se cogner au centre. */
   const onAccepted = async (linkId: string) => {
@@ -170,11 +171,15 @@ export default function RencontreScreen() {
             explore={axes?.explore ?? { axis: explanation.explore.axis, name: explanation.explore.name, text: explanation.explore.text }}
             commonTitle={explanation.commonTitle}
             exploreTitle={explanation.exploreTitle}
-            legend={vision.data ? { mine: t.legendMe, theirs: person.displayName } : undefined}
+            legend={axes?.hasMarkers ? { mine: t.legendMe, theirs: person.displayName } : undefined}
+            kicker={together ?? undefined}
             note={t.filterNote(myPetName)}
           />
         ) : (
-          <DotNote text={t.unknownVision} />
+          <>
+            {together ? <DotNote text={together} /> : null}
+            <DotNote text={t.unknownVision} />
+          </>
         )}
         {error ? (
           <Banner

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type VisionVia, visionIntroLine, wavedAtYouLine } from '@blowy/content';
-import { ENCOUNTER_QUOTA, type Shape, entitlements, shapeOf } from '@blowy/domain';
+import { ENCOUNTER_QUOTA, type LookingFor, type Shape, entitlements, mutualLookingFor, shapeOf } from '@blowy/domain';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
@@ -23,6 +23,8 @@ export interface Candidate {
   compatibility: number;
   explanation: ExplanationInput | null;
   intro: string;
+  /** Ce que vous cherchez tous les deux (filtre réciproque) ; jamais « qui ». */
+  lookingFor: LookingFor | null;
 }
 
 export interface IncomingResult extends Candidate {
@@ -133,7 +135,17 @@ export class ListEncounters {
       const pet = petByOwner.get(encounter.fromUser);
       if (!profile || !pet) return [];
       const c = incomingExplained.get(encounter.fromUser) ?? null;
-      return [{ profile, pet, encounter, compatibility: c?.score ?? 0, explanation: c, intro: wavedAtYouLine(me.locale, pet.name, seedOf('incoming', encounter.id)) }];
+      return [
+        {
+          profile,
+          pet,
+          encounter,
+          compatibility: c?.score ?? 0,
+          explanation: c,
+          intro: wavedAtYouLine(me.locale, pet.name, seedOf('incoming', encounter.id)),
+          lookingFor: mutualLookingFor(me, profile),
+        },
+      ];
     });
 
     const suggestion = (id: string, via: VisionVia, score: number, explanation: ExplanationInput): SuggestionResult[] => {
@@ -143,7 +155,7 @@ export class ListEncounters {
       const mutualId = mutualOf.get(id);
       const mutualName = mutualId ? (profileById.get(mutualId)?.displayName ?? null) : null;
       const intro = visionIntroLine(me.locale, { other: pet.name, via, mutualName, firstCommon: firstCommonLine(explanation, me.locale) }, seedOf('intro', userId, id, today));
-      return [{ profile, pet, compatibility: score, explanation, via, mutualName, intro, waved: myWaves.has(id) }];
+      return [{ profile, pet, compatibility: score, explanation, via, mutualName, intro, waved: myWaves.has(id), lookingFor: mutualLookingFor(me, profile) }];
     };
 
     const fofOut = [...fofMatches.entries()]

@@ -1,4 +1,4 @@
-import type { AxisSide } from '@blowy/domain';
+import type { AxisLean, AxisSide } from '@blowy/domain';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Text } from '../atoms/Text';
@@ -13,8 +13,9 @@ export interface VisionMatchAxis {
   axis: string;
   name: string;
   text: string;
-  mine?: AxisSide | null;
-  theirs?: AxisSide | null;
+  /** Où penche chacun : côté seul, ou côté et cran (`MatchExplanation.common[n].mine` du contrat). */
+  mine?: AxisSide | AxisLean | null;
+  theirs?: AxisSide | AxisLean | null;
   /** Libellé lu de la piste. */
   trackLabel?: string;
 }

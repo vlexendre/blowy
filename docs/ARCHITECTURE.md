@@ -69,6 +69,7 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 | Port | Réel | Mémoire |
 |---|---|---|
 | `AuthVerifier`, `AuthAdmin`, `UserEmails` | Supabase Auth | jetons `test:<uuid>[:<e-mail>]` |
+| `AppleTokenClient`, `AppleTokenStore` (révocation de Sign in with Apple à la suppression, `docs/CONNEXION.md`) | `appleid.apple.com` (JWT ES256) · table `apple_tokens` ; désactivé sans clé | Apple imité · `MemoryDb` |
 | `Storage` | Supabase Storage (URL signées) | `/dev/uploads`, `/dev/media` |
 | `Mailer` | Resend | console (`outbox`) |
 | `AiGateway` → `ModelClient` | Anthropic (Haiku, Sonnet) | `MemoryModel` déterministe |
@@ -102,7 +103,8 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 (`ai_usage_daily`, `ai_user_calls`, `chat_link_settings`, `chat_pet_state`, `push_devices`, `live_activity_tokens`,
 `notification_settings`, `notification_log`, `push_receipts`, `tick_runs`), Blowy+ et administration (`subscriptions`,
 `store_notifications`, `account_suspensions`, `admin_audit_log`, `user_activity_days`, `admin_daily_stats`,
-`encounter_proposals`), conservation (`banned_identities`). Compartiment privé `media` (URL signées émises par l'API).
+`encounter_proposals`), conservation (`banned_identities`), manques (`apple_tokens`, `profiles.chat_reading_default`, `chat_link_settings.by_default`,
+`weekly_reviews.axis_moves`). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit

@@ -1,11 +1,11 @@
 /**
  * Preuve en photo (V6-GPreuve) : `?ref=<habitude>` pour une habitude, `?daily=1` pour la photo du défi du jour.
  * Le minimoa demande, la photo se prend ici (appareil photo de l'app, jamais la galerie), part avec un ticket, et le
- * verdict arrive avec sa phrase (« pas sûr » compte). Personne ne la voit ; supprimée sous 24 h sauf si on la garde.
+ * verdict arrive avec sa phrase (« pas sûr » compte). Aucun humain ne la voit (une IA vérifie la preuve) ; supprimée sous 24 h sauf si on la garde.
  */
 import { ApiError } from '@blowy/api-client';
 import type { ProofResult } from '@blowy/contract';
-import { Banner, Button, EmptyState, ListRow, ProofStage, type ProofVerdictLook, StageTemplate } from '@blowy/ui';
+import { Banner, Button, EmptyState, ProofStage, type ProofVerdictLook, StageTemplate } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 
@@ -37,7 +37,8 @@ export default function ProofScreen() {
   const [broken, setBroken] = useState(false);
   const [shot, setShot] = useState<Shot | null>(null);
   const [result, setResult] = useState<ProofResult | null>(null);
-  const [keep, setKeep] = useState(false);
+  /** Défi photo envoyé : la photo enregistrée (`photoId` de l'API), pour proposer de la garder après coup. */
+  const [dailyDone, setDailyDone] = useState<{ photoId: string; line: string | null } | null>(null);
   const [shooting, setShooting] = useState(false);
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/pet'));
@@ -105,8 +106,8 @@ export default function ProofScreen() {
 
   const send = (s: Shot) => {
     if (daily) {
-      // Défi fait : la fête a lieu sur l'accueil (le minimoa, sa mèche, la série).
-      dailyPhoto.mutate({ shot: s, keep }, { onSuccess: close });
+      // Défi fait : « la garder » se propose maintenant, comme pour une preuve ; la fête a lieu ensuite sur l'accueil.
+      dailyPhoto.mutate({ shot: s, keep: false }, { onSuccess: (r) => (r.photoId ? setDailyDone({ photoId: r.photoId, line: r.line }) : close()) });
       return;
     }
     proof.mutate({ shot: s, keep: false }, { onSuccess: setResult });
@@ -126,9 +127,26 @@ export default function ProofScreen() {
         badge: result.counted ? t.badge(result.habit.streak, result.habit.rhythm === 'three_per_week') : null,
         text: result.line,
       }
-    : null;
-  // Gardée : la réponse de la preuve, puis le dernier choix enregistré (on peut revenir dessus).
-  const kept = result ? (keepPhoto.isSuccess ? keepPhoto.variables?.keep === true : result.kept) : false;
+    : dailyDone
+      ? { tone: 'yes', title: t.dailyDone, badge: null, text: dailyDone.line ?? '' }
+      : null;
+  // La photo qu'on peut garder (preuve ou défi), et si elle l'est : la réponse de l'API, puis le dernier choix.
+  const keepable = result ? { photoId: result.photoId, kept: result.kept } : dailyDone ? { photoId: dailyDone.photoId, kept: false } : null;
+  const kept = keepable ? (keepPhoto.isSuccess ? keepPhoto.variables?.keep === true : keepable.kept) : false;
+  const keepButton = keepable ? (
+    kept ? (
+      <Button
+        label={t.kept}
+        variant="link"
+        icon="check"
+        loading={keepPhoto.isPending}
+        accessibilityHint={t.unkeep}
+        onPress={() => keepPhoto.mutate({ photoId: keepable.photoId, keep: false })}
+      />
+    ) : (
+      <Button label={t.keep} variant="link" loading={keepPhoto.isPending} onPress={() => keepPhoto.mutate({ photoId: keepable.photoId, keep: true })} />
+    )
+  ) : null;
 
   const viewfinder = shot ? (
     <ShotPreview shot={shot} />
@@ -143,25 +161,15 @@ export default function ProofScreen() {
       return (
         <>
           {result.verdict === 'no' ? <Button label={t.retry} icon="camera" onPress={retake} /> : <Button label={t.continue} onPress={close} />}
-          {result.verdict === 'no' ? (
-            <Button label={t.continue} variant="link" onPress={close} />
-          ) : kept ? (
-            <Button
-              label={t.kept}
-              variant="link"
-              icon="check"
-              loading={keepPhoto.isPending}
-              accessibilityHint={t.unkeep}
-              onPress={() => keepPhoto.mutate({ photoId: result.photoId, keep: false })}
-            />
-          ) : (
-            <Button
-              label={t.keep}
-              variant="link"
-              loading={keepPhoto.isPending}
-              onPress={() => keepPhoto.mutate({ photoId: result.photoId, keep: true })}
-            />
-          )}
+          {result.verdict === 'no' ? <Button label={t.continue} variant="link" onPress={close} /> : keepButton}
+        </>
+      );
+    }
+    if (dailyDone) {
+      return (
+        <>
+          <Button label={t.continue} onPress={close} />
+          {keepButton}
         </>
       );
     }
@@ -184,7 +192,6 @@ export default function ProofScreen() {
     }
     return (
       <>
-        {daily ? <ListRow title={t.keep} switchValue={keep} onSwitchChange={setKeep} divider={false} /> : null}
         <Button label={t.shutter} icon="camera" onPress={() => void shoot()} loading={shooting} disabled={!ready || broken || sending || !!shot} />
       </>
     );

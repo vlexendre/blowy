@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { dayOf } from '@blowy/domain';
 import type { RitualsToday } from '@blowy/contract';
 import { needsOut } from '@blowy/domain';
 import { PetCharacter } from '../../pets/application/pet-character';
@@ -42,7 +43,7 @@ export class TodayService {
       state = await this.ctx.state(userId);
     }
     const [streak, habits, unreadReviewId] = await Promise.all([
-      this.streaks.view(userId, { state, perWeek }),
+      this.streaks.view(userId, { state, perWeek, since: dayOf(new Date(profile.createdAt)) }),
       this.habits.todaySummary(userId),
       this.reviews.latestUnreadId(userId),
     ]);

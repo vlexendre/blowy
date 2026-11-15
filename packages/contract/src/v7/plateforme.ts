@@ -3,7 +3,7 @@
  * (appareils, réglages, données des push pour l'app, les widgets et les activités en direct), le minuteur
  * et l'usage de l'IA. Ne dépend que de zod et du domaine (pas de `../index`, pour éviter un import circulaire).
  */
-import { CHAT_MAX_INTERVENTIONS_PER_DAY, LINK_HEALTH_KEYS, NOTIFICATION_KINDS, PET_ROLES } from '@blowy/domain';
+import { CHAT_MAX_INTERVENTIONS_PER_DAY, CHAT_READING_DEFAULTS, LINK_HEALTH_KEYS, NOTIFICATION_KINDS, PET_ROLES, THEIR_CONSENT_STATES } from '@blowy/domain';
 import { z } from 'zod';
 
 const Iso = z.string();
@@ -24,15 +24,22 @@ export type PetRoleDto = z.infer<typeof PetRoleZ>;
  * Réglages des minimoas d'un lien, vus par toi.
  * - `consent.mine` : null tant que la question n'a pas été posée → l'app la pose à la première ouverture du chat,
  *   avec `consent.text` (texte exact de la spéc, à afficher tel quel partout) ;
- * - `consent.reading` : vrai seulement si vous avez dit oui tous les deux (la réponse de l'autre n'est pas détaillée) ;
+ * - `consent.reading` : vrai seulement si vous avez dit oui tous les deux ;
+ * - `consent.theirs` : agreed (l'autre a dit oui) · not_yet (pas encore activé de son côté). Un refus de l'autre et
+ *   une question qu'il n'a pas encore vue donnent tous deux `not_yet` : on ne dit jamais « Léa a refusé » ;
+ * - `consent.byDefault` : ton accord vient de ton réglage par défaut (« Moi ») et non d'une réponse dans ce chat :
+ *   la question n'est pas posée, mais le chat montre l'état en une ligne avec de quoi le changer ;
  * - sans lecture, les minimoas ne réagissent qu'au rythme (silences, photos, défis, série, niveau).
  */
+export const TheirConsentZ = z.enum(THEIR_CONSENT_STATES);
 export const LinkMinimoasZ = z.object({
   linkId: Id,
   consent: z.object({
     mine: z.boolean().nullable(),
     reading: z.boolean(),
     text: z.string(),
+    theirs: TheirConsentZ.optional(),
+    byDefault: z.boolean().optional(),
   }),
   /** Tu as coupé les interventions pour ce lien (si l'un des deux coupe, les minimoas se taisent, sauf annonces de jeu). */
   muted: z.boolean(),
@@ -47,9 +54,33 @@ export const LinkMinimoasBody = z
   .refine((b) => b.consent !== undefined || b.muted !== undefined, { message: 'au moins un champ' });
 export type LinkMinimoasBody = z.infer<typeof LinkMinimoasBody>;
 
-/** Tous tes liens et leurs réglages (écran « Moi »), par pages (`?cursor=<nextCursor>`). */
-export const MyMinimoasZ = z.object({ items: z.array(LinkMinimoasZ), nextCursor: z.string().nullable(), text: z.string() });
+/**
+ * Accord de lecture appliqué à chaque nouveau lien : ask (question à la première ouverture du chat) · on · off.
+ */
+export const ChatReadingDefaultZ = z.enum(CHAT_READING_DEFAULTS);
+export type ChatReadingDefaultDto = z.infer<typeof ChatReadingDefaultZ>;
+
+/** Tous tes liens et leurs réglages (écran « Moi »), par pages (`?cursor=<nextCursor>`), et ton réglage par défaut. */
+export const MyMinimoasZ = z.object({
+  items: z.array(LinkMinimoasZ),
+  nextCursor: z.string().nullable(),
+  text: z.string(),
+  readingDefault: ChatReadingDefaultZ.optional(),
+});
 export type MyMinimoas = z.infer<typeof MyMinimoasZ>;
+
+/** `PUT /v1/me/minimoas/default` : le réglage par défaut des nouveaux liens (les liens existants ne changent pas). */
+export const ReadingDefaultBody = z.object({ readingDefault: ChatReadingDefaultZ });
+export type ReadingDefaultBody = z.infer<typeof ReadingDefaultBody>;
+export const ReadingDefaultZ = z.object({ readingDefault: ChatReadingDefaultZ });
+export type ReadingDefault = z.infer<typeof ReadingDefaultZ>;
+
+/** `POST /v1/me/minimoas/all` : ton accord pour tous tes liens d'un coup (non archivés). */
+export const ReadingAllBody = z.object({ consent: z.boolean() });
+export type ReadingAllBody = z.infer<typeof ReadingAllBody>;
+/** Nombre de liens dont ton accord a changé. */
+export const ReadingAllZ = z.object({ updated: z.number().int().min(0) });
+export type ReadingAll = z.infer<typeof ReadingAllZ>;
 export const PageQuery = z.object({ cursor: z.string().max(80).optional(), limit: z.coerce.number().int().min(1).max(50).default(20) });
 
 /** Santé d'un lien sur la semaine (données du bilan ; assemblées par le chantier « rituels »). */
@@ -235,6 +266,8 @@ export type AiUsageSummary = z.infer<typeof AiUsageSummaryZ>;
 export const plateformeRoutes = {
   linkMinimoas: (id: string) => `${API}/links/${id}/minimoas`,
   myMinimoas: () => `${API}/me/minimoas`,
+  myMinimoasDefault: () => `${API}/me/minimoas/default`,
+  myMinimoasAll: () => `${API}/me/minimoas/all`,
   devices: () => `${API}/devices`,
   devicesRemove: () => `${API}/devices/remove`,
   notificationSettings: () => `${API}/notifications/settings`,

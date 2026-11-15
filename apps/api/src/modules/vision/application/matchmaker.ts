@@ -54,7 +54,7 @@ const toCached = (userId: string, c: Compatibility, d: number, home: GeoPoint): 
   userId,
   score: c.score,
   mode: c.mode,
-  common: c.common.map((p) => ({ axis: p.axis, side: p.side })),
+  common: c.common.map((p) => ({ axis: p.axis, side: p.side, leans: p.leans })),
   explore: { ...c.explore },
   distanceKm: Math.round(d * 100) / 100,
   // Graine = identifiant : la même position décalée pour tout le monde, donc rien à moyenner.
@@ -92,7 +92,9 @@ export class Matchmaker {
     const day = todayOf(this.clock);
     const key = centerKey(me.center);
     const cached = await this.cache.get(me.profile.id);
-    if (cached && cached.day === day && cached.centerKey === key) return cached.matches;
+    // Une entrée écrite avant l'ajout des repères (`leans`) est refaite : sinon les repères manqueraient jusqu'à demain.
+    const complete = (m: CachedMatch): boolean => !!m.explore.leans && m.common.every((p) => !!p.leans);
+    if (cached && cached.day === day && cached.centerKey === key && cached.matches.every(complete)) return cached.matches;
     const matches = await this.around(me, me.center, MATCH_RADIUS_KM, CACHE_CAP);
     await this.cache.put(me.profile.id, { day, centerKey: key, matches });
     return matches;

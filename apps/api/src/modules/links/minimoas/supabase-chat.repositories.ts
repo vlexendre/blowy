@@ -1,4 +1,4 @@
-import { type ChatPetState, EMPTY_CHAT_PET_STATE } from '@blowy/domain';
+import { CHAT_READING_DEFAULTS, type ChatPetState, type ChatReadingDefault, EMPTY_CHAT_PET_STATE } from '@blowy/domain';
 import type { Db } from '../../../persistence/database.types';
 import { check, iso, isoOrNull } from '../../../persistence/supabase';
 import type { ChatLinkSettingRecord, ChatPetStateRepository, ChatSettingsRepository } from './ports';
@@ -9,6 +9,7 @@ interface SettingRow {
   consent: boolean | null;
   consent_at: string | null;
   muted: boolean;
+  by_default: boolean;
   updated_at: string;
 }
 
@@ -18,7 +19,18 @@ const fromRow = (r: SettingRow): ChatLinkSettingRecord => ({
   consent: r.consent,
   consentAt: isoOrNull(r.consent_at),
   muted: r.muted,
+  byDefault: r.by_default ?? false,
   updatedAt: iso(r.updated_at),
+});
+
+const toRow = (r: ChatLinkSettingRecord) => ({
+  link_id: r.linkId,
+  user_id: r.userId,
+  consent: r.consent,
+  consent_at: r.consentAt,
+  muted: r.muted,
+  by_default: r.byDefault,
+  updated_at: r.updatedAt,
 });
 
 export class SupabaseChatSettingsRepository implements ChatSettingsRepository {
@@ -38,10 +50,27 @@ export class SupabaseChatSettingsRepository implements ChatSettingsRepository {
   }
 
   async upsert(r: ChatLinkSettingRecord): Promise<void> {
-    const { error } = await this.client
-      .from('chat_link_settings')
-      .upsert({ link_id: r.linkId, user_id: r.userId, consent: r.consent, consent_at: r.consentAt, muted: r.muted, updated_at: r.updatedAt });
+    const { error } = await this.client.from('chat_link_settings').upsert(toRow(r));
     check(error, 'enregistrement des réglages des minimoas');
+  }
+
+  async upsertMany(records: readonly ChatLinkSettingRecord[]): Promise<void> {
+    for (let i = 0; i < records.length; i += 200) {
+      const { error } = await this.client.from('chat_link_settings').upsert(records.slice(i, i + 200).map(toRow));
+      check(error, 'enregistrement des réglages des minimoas');
+    }
+  }
+
+  async readingDefault(userId: string): Promise<ChatReadingDefault> {
+    const { data, error } = await this.client.from('profiles').select('chat_reading_default').eq('id', userId).maybeSingle();
+    check(error, 'réglage par défaut des minimoas');
+    const v = data?.chat_reading_default;
+    return (CHAT_READING_DEFAULTS as readonly string[]).includes(v ?? '') ? (v as ChatReadingDefault) : 'ask';
+  }
+
+  async setReadingDefault(userId: string, value: ChatReadingDefault): Promise<void> {
+    const { error } = await this.client.from('profiles').update({ chat_reading_default: value }).eq('id', userId);
+    check(error, 'réglage par défaut des minimoas');
   }
 }
 

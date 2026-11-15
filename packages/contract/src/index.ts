@@ -4,7 +4,7 @@
  */
 import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
 import { z } from 'zod';
-import { IdentityZ, LatLngZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
+import { IdentityZ, LatLngZ, LookingForZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
 import { PetRoleZ } from './v7/plateforme';
 
 export const API_PREFIX = '/v1';
@@ -224,6 +224,8 @@ export const SuggestionZ = z.object({
   /** Ce que ton pet raconte de cette rencontre. */
   intro: z.string(),
   waved: z.boolean(),
+  /** Ce que vous cherchez tous les deux (potes, plus, les deux) ; jamais « qui ». */
+  lookingFor: LookingForZ.nullable().optional(),
 });
 export type Suggestion = z.infer<typeof SuggestionZ>;
 
@@ -235,6 +237,8 @@ export const IncomingZ = z.object({
   explanation: MatchExplanationZ.nullable(),
   intro: z.string(),
   at: Iso,
+  /** Ce que vous cherchez tous les deux ; null si vos recherches ne se rejoignent pas. */
+  lookingFor: LookingForZ.nullable().optional(),
 });
 export type Incoming = z.infer<typeof IncomingZ>;
 
@@ -248,11 +252,22 @@ export type Encounters = z.infer<typeof EncountersZ>;
 
 // ── Carte (vision) ─────────────────────────────────────────────────────────
 /** Un minimoa compatible sur la carte. Position arrondie (~300 m) et décalée, jamais exacte ni en temps réel. */
+/**
+ * Où vous en êtes, vous deux : none (rien encore) · waved (tu as salué, ça attend) · waved_you (on t'a salué :
+ * réponds avec `encounterId`). Les personnes liées, refusées ou bloquées ne sont pas sur la carte (mêmes règles que
+ * les rencontres).
+ */
+export const MAP_PIN_RELATIONS = ['none', 'waved', 'waved_you'] as const;
+export const MapPinRelationZ = z.enum(MAP_PIN_RELATIONS);
 export const MapPinZ = z.object({
   user: PersonZ,
   position: LatLngZ,
   compatibility: z.number().int(),
   explanation: MatchExplanationZ,
+  relation: MapPinRelationZ.optional(),
+  /** Coucou reçu (relation `waved_you`) : à accepter ou refuser comme dans les rencontres. */
+  encounterId: Uuid.nullable().optional(),
+  lookingFor: LookingForZ.nullable().optional(),
 });
 export type MapPin = z.infer<typeof MapPinZ>;
 export const MapZ = z.object({
@@ -381,3 +396,4 @@ export * from './v7/billing';
 export * from './v7/admin';
 export * from './v7/plateforme';
 export * from './v7/rituels';
+export * from './v7/compte';

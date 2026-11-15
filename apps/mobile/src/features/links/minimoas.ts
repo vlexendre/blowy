@@ -3,7 +3,7 @@
  * chat), coupure par lien, et la liste de tous tes liens pour « Moi ». La phrase de confidentialité vient de l'API
  * (`consent.text`) et s'affiche telle quelle.
  */
-import type { LinkMinimoas, LinkMinimoasBody, MyMinimoas } from '@blowy/contract';
+import type { ChatReadingDefaultDto, LinkMinimoas, LinkMinimoasBody, MyMinimoas } from '@blowy/contract';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
@@ -59,27 +59,35 @@ export function useMyMinimoas() {
   });
   const items = (query.data?.pages ?? []).flatMap((p) => p.items);
   const text = query.data?.pages[0]?.text ?? null;
-  return { ...query, items, text };
+  /** Réglage par défaut des nouveaux chats (« ask » si l'API ne le dit pas encore). */
+  const readingDefault: ChatReadingDefaultDto = query.data?.pages[0]?.readingDefault ?? 'ask';
+  return { ...query, items, text, readingDefault };
 }
 
-/**
- * Appliquer un même accord à tous les liens (réglage global de « Moi ») : un appel par lien, à la suite.
- * Rend le nombre de liens modifiés.
- */
+/** Le réglage par défaut des nouveaux chats : demander à chaque fois, toujours oui, toujours non. */
+export function useSetReadingDefault() {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (value: ChatReadingDefaultDto) => api.minimoas.setDefault(value),
+    onSuccess: ({ readingDefault }) =>
+      qc.setQueryData<InfiniteData<MyMinimoas>>(myMinimoasKey, (data) =>
+        data ? { ...data, pages: data.pages.map((p, i) => (i === 0 ? { ...p, readingDefault } : p)) } : data,
+      ),
+  });
+}
+
+/** Appliquer un même accord à tous les liens (réglage global de « Moi ») : un seul appel. Rend le nombre de liens modifiés. */
 export function useSetReadingEverywhere() {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ consent, linkIds }: { consent: boolean; linkIds: readonly string[] }) => {
-      let done = 0;
-      for (const id of linkIds) {
-        const next = await api.minimoas.update(id, { consent });
-        qc.setQueryData(minimoasKey(id), next);
-        done++;
-      }
-      return done;
+    mutationFn: async (consent: boolean) => (await api.minimoas.setAll(consent)).updated,
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: myMinimoasKey });
+      // Les réglages de chaque chat déjà lus (options du lien, feuille d'accord).
+      void qc.invalidateQueries({ predicate: (q) => q.queryKey.at(-1) === 'minimoas' });
     },
-    onSettled: () => qc.invalidateQueries({ queryKey: myMinimoasKey }),
   });
 }
 

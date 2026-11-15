@@ -22,7 +22,11 @@ import {
   type VisionAxis,
   ZERO_GAUGES,
   addDays,
+  type ChatReadingDefault,
+  type TheirConsent,
   chatReadingAllowed,
+  consentFromDefault,
+  theirConsentOf,
   cleanMinimoaLine,
   compatibilityOf,
   countIntervention,
@@ -57,7 +61,7 @@ import { CHAT_PET_STATE, CHAT_SETTINGS, type ChatLinkSettingRecord, type ChatPet
 /** Réglages d'un lien vus par une personne (forme du contrat `LinkMinimoasZ`). */
 export interface LinkMinimoasView {
   linkId: string;
-  consent: { mine: boolean | null; reading: boolean; text: string };
+  consent: { mine: boolean | null; reading: boolean; text: string; theirs: TheirConsent; byDefault: boolean };
   muted: boolean;
   interventionsToday: number;
   maxPerDay: typeof CHAT_MAX_INTERVENTIONS_PER_DAY;
@@ -107,10 +111,11 @@ export class ChatMinimoas {
     if (!link || (link.userA !== userId && link.userB !== userId)) throw new DomainError('not_found', errorText('linkNotFound'));
     const now = this.clock.now().toISOString();
     const rows = await this.settings.forLink(linkId);
-    const mine = rows.find((r) => r.userId === userId) ?? { linkId, userId, consent: null, consentAt: null, muted: false, updatedAt: now };
+    const mine = rows.find((r) => r.userId === userId) ?? { linkId, userId, consent: null, consentAt: null, muted: false, byDefault: false, updatedAt: now };
     const next: ChatLinkSettingRecord = {
       ...mine,
-      ...(patch.consent !== undefined ? { consent: patch.consent, consentAt: now } : {}),
+      // Une réponse donnée dans ce chat remplace l'accord venu du réglage par défaut.
+      ...(patch.consent !== undefined ? { consent: patch.consent, consentAt: now, byDefault: false } : {}),
       ...(patch.muted !== undefined ? { muted: patch.muted } : {}),
       updatedAt: now,
     };
@@ -119,18 +124,63 @@ export class ChatMinimoas {
     return this.view(link, userId);
   }
 
-  /** Réglages de tous les liens (non archivés) d'une personne, par pages d'identifiants de lien. */
-  async listForUser(userId: string, cursor: string | null, limit: number): Promise<{ items: LinkMinimoasView[]; nextCursor: string | null; text: string }> {
+  /** Réglages de tous les liens (non archivés) d'une personne, par pages d'identifiants de lien, et son réglage par défaut. */
+  async listForUser(
+    userId: string,
+    cursor: string | null,
+    limit: number,
+  ): Promise<{ items: LinkMinimoasView[]; nextCursor: string | null; text: string; readingDefault: ChatReadingDefault }> {
     const page = await this.links.pageForUser(userId, cursor, limit + 1);
     const shown = page.slice(0, limit);
-    const lang = await this.langOf(userId);
+    const [lang, readingDefault] = await Promise.all([this.langOf(userId), this.settings.readingDefault(userId)]);
     const items = await Promise.all(
       shown.map(async (link) => {
         const [rows, state] = await Promise.all([this.settingsOf(link.id), this.states.get(link.id)]);
         return this.toView(link, userId, rows, state, lang);
       }),
     );
-    return { items, nextCursor: page.length > limit ? (shown.at(-1)?.id ?? null) : null, text: chatConfidentialityText(lang) };
+    return { items, nextCursor: page.length > limit ? (shown.at(-1)?.id ?? null) : null, text: chatConfidentialityText(lang), readingDefault };
+  }
+
+  /** Réglage par défaut des nouveaux liens. Les liens existants ne changent pas (voir `setAll`). */
+  async setDefault(userId: string, value: ChatReadingDefault): Promise<ChatReadingDefault> {
+    await this.settings.setReadingDefault(userId, value);
+    return value;
+  }
+
+  /**
+   * Ton accord pour tous tes liens non archivés, en une fois (une lecture, une écriture groupée). Rend le nombre de
+   * liens dont l'accord a changé. Comme une réponse dans le chat : l'accord n'est plus « par défaut ».
+   */
+  async setAll(userId: string, consent: boolean): Promise<number> {
+    const links = (await this.links.listForUsers([userId])).filter((l) => l.status !== 'archived');
+    const rows = new Map((await this.settings.forUserLinks(userId, links.map((l) => l.id))).map((r) => [r.linkId, r]));
+    const now = this.clock.now().toISOString();
+    const changed: ChatLinkSettingRecord[] = [];
+    for (const link of links) {
+      const row = rows.get(link.id);
+      if (row && row.consent === consent && !row.byDefault) continue;
+      changed.push({ ...(row ?? { linkId: link.id, userId, muted: false }), consent, consentAt: now, byDefault: false, updatedAt: now });
+    }
+    await this.settings.upsertMany(changed);
+    await Promise.all(changed.map((r) => this.cache.delete(this.settingsKey(r.linkId))));
+    return changed.filter((r) => rows.get(r.linkId)?.consent !== consent).length;
+  }
+
+  /**
+   * Nouveau lien : l'accord de chacun part de son réglage par défaut (« on » : oui, « off » : non, sans question à la
+   * première ouverture ; « ask » : rien d'écrit, la question sera posée).
+   */
+  async applyDefaults(link: LinkRecord): Promise<void> {
+    const now = this.clock.now().toISOString();
+    const records: ChatLinkSettingRecord[] = [];
+    for (const userId of [link.userA, link.userB]) {
+      const consent = consentFromDefault(await this.settings.readingDefault(userId));
+      if (consent !== null) records.push({ linkId: link.id, userId, consent, consentAt: now, muted: false, byDefault: true, updatedAt: now });
+    }
+    if (records.length === 0) return;
+    await this.settings.upsertMany(records);
+    await this.cache.delete(this.settingsKey(link.id));
   }
 
   // ── Brise-glace ──────────────────────────────────────────────────────────
@@ -345,9 +395,12 @@ export class ChatMinimoas {
 
   private toView(link: LinkRecord, viewerId: string, rows: readonly ChatLinkSettingRecord[], state: ChatPetState, lang: Locale): LinkMinimoasView {
     const mine = rows.find((r) => r.userId === viewerId);
+    const other = link.userA === viewerId ? link.userB : link.userA;
+    // Refus et question pas encore vue se disent pareil (« pas encore activé de son côté ») : aucune pression.
+    const theirs = theirConsentOf(rows.find((r) => r.userId === other)?.consent ?? null);
     return {
       linkId: link.id,
-      consent: { mine: mine?.consent ?? null, reading: this.reading(link, rows), text: chatConfidentialityText(lang) },
+      consent: { mine: mine?.consent ?? null, reading: this.reading(link, rows), text: chatConfidentialityText(lang), theirs, byDefault: mine?.byDefault ?? false },
       muted: mine?.muted ?? false,
       interventionsToday: interventionsToday(state, dayOf(this.clock.now())),
       maxPerDay: CHAT_MAX_INTERVENTIONS_PER_DAY,

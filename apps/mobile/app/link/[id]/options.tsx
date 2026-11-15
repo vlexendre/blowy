@@ -75,7 +75,7 @@ export default function LinkOptionsScreen() {
                   {
                     key: 'reading',
                     title: minimoaText.readingRow,
-                    subtitle: minimoaText.readingSub(mm.consent.mine, mm.consent.reading),
+                    subtitle: minimoaText.readingSub(mm.consent.mine, mm.consent.reading, mm.consent.theirs, mm.consent.byDefault),
                     switchValue: mm.consent.mine === true,
                     onSwitchChange: (on: boolean) => updateMinimoas.mutate({ consent: on }),
                   },

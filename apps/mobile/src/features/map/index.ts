@@ -3,7 +3,7 @@
  * l'accord de localisation, le mode discret et la ville choisie (Blowy+).
  * Une position n'est jamais exacte ni en temps réel : le serveur l'arrondit (~300 m) et la décale.
  */
-import type { ChosenCity, Me } from '@blowy/contract';
+import type { ChosenCity, MapDto, Me } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
@@ -32,6 +32,23 @@ export function useMap(at?: MapAt | null) {
     queryFn: () => api.vision.map(at ?? undefined),
     placeholderData: (prev) => prev,
   });
+}
+
+/**
+ * Où en est chaque repère (`relation` de l'API : none, waved, waved_you). Après un salut réussi depuis la carte, le
+ * repère passe tout de suite à « waved » dans les cartes en cache ; la relecture suivante le confirme.
+ */
+export function useMarkWaved() {
+  const qc = useQueryClient();
+  return useCallback(
+    (userId: string) => {
+      qc.setQueriesData<MapDto>({ queryKey: mapKey }, (d) =>
+        d ? { ...d, pins: d.pins.map((p) => (p.user.id === userId && (p.relation ?? 'none') === 'none' ? { ...p, relation: 'waved' as const } : p)) } : d,
+      );
+      void qc.invalidateQueries({ queryKey: mapKey });
+    },
+    [qc],
+  );
 }
 
 /** Ce qui dépend de la position : relu après chaque changement (carte, rencontres proches, profil). */

@@ -4,6 +4,7 @@ import {
   type Day,
   type StreakState,
   completeStreakDay,
+  dayOf,
   jokersLeft,
   nextStreakMilestone,
   settleStreak,
@@ -37,25 +38,34 @@ export class StreakService {
     return settled;
   }
 
-  /** Vue légère de la série (accueil, widget) : la ligne d'état, le profil et au plus 7 défis. */
-  async view(userId: string, known?: { state: RitualStateRecord; perWeek: number }): Promise<Streak> {
+  /**
+   * Vue légère de la série (accueil, widget) : la ligne d'état, le profil et au plus 7 défis. `since` : premier jour
+   * de la personne (jour de création du compte) ; les jours d'avant sont neutres dans la semaine.
+   */
+  async view(userId: string, known?: { state: RitualStateRecord; perWeek: number; since: Day }): Promise<Streak> {
     const today = this.ctx.today();
-    const ctx = known ?? { state: await this.ctx.state(userId), perWeek: this.ctx.limitsOf(await this.ctx.profile(userId)).jokersPerWeek };
+    const ctx =
+      known ??
+      (await (async () => {
+        const profile = await this.ctx.profile(userId);
+        return { state: await this.ctx.state(userId), perWeek: this.ctx.limitsOf(profile).jokersPerWeek, since: dayOf(new Date(profile.createdAt)) };
+      })());
     const streak = await this.settled(ctx.state, today, ctx.perWeek);
     const week = await this.daily.listBetween(userId, weekStartOf(today), today);
-    return this.toDto(streak, today, ctx.perWeek, new Set(week.filter((d) => d.status === 'done').map((d) => d.day)));
+    return this.toDto(streak, today, ctx.perWeek, new Set(week.filter((d) => d.status === 'done').map((d) => d.day)), ctx.since);
   }
 
-  toDto(streak: StreakState, today: Day, perWeek: number, doneDays: ReadonlySet<Day>): Streak {
+  toDto(streak: StreakState, today: Day, perWeek: number, doneDays: ReadonlySet<Day>, since: Day | null = null): Streak {
     return {
       current: streak.current,
       best: streak.best,
       doneToday: streak.lastDoneOn === today,
       atRisk: streakAtRisk(streak, today),
-      nextMilestone: nextStreakMilestone(streak.current),
+      // Le premier palier dont l'objet n'est pas encore gagné (au-delà du record), pas celui de la série en cours.
+      nextMilestone: nextStreakMilestone(streak.current, streak.best),
       jokersLeft: jokersLeft(streak, today, perWeek),
       jokersPerWeek: perWeek,
-      week: streakWeek(streak, today, doneDays),
+      week: streakWeek(streak, today, doneDays, since),
     };
   }
 

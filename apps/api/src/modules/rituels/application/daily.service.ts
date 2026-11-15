@@ -40,6 +40,7 @@ export const toDailyDto = (rec: DailyChallengeRecord, locale: Locale = requestLo
     status: rec.status,
     present: presentDailyCard(rec.status),
     answer: rec.answer,
+    axis: rec.axis,
   };
 };
 

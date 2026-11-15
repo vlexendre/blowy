@@ -1,9 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { textOf, visionText } from '@blowy/content';
-import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, snapToGrid } from '@blowy/domain';
+import { BLUR_GRID_METERS, type GeoPoint, type LookingFor, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, mutualLookingFor, snapToGrid } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
+import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
+import type { EncountersRepository } from '../../encounters/ports';
+import type { LinksRepository } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
@@ -24,10 +26,15 @@ export interface MapQueryInput {
   radiusKm?: number;
 }
 
+/** Où vous en êtes : rien · tu as salué · on t'a salué (avec la rencontre à accepter). */
+export type PinRelation = { kind: 'none' } | { kind: 'waved' } | { kind: 'waved_you'; encounterId: string };
+
 export interface MapPinResult {
   profile: Profile;
   pet: PetRecord;
   match: CachedMatch;
+  relation: PinRelation;
+  lookingFor: LookingFor | null;
 }
 
 export interface MapResult {
@@ -45,6 +52,9 @@ export interface MapResult {
  * La carte. Gratuit : sa zone (~1,5 km) autour de son centre, carte fixe ; au-delà, un nombre et des silhouettes
  * floues. Blowy+ : toute la carte (autour de son centre ou d'un point demandé). Positions toujours arrondies et
  * décalées, tirées de la zone du domicile (jamais du dernier relevé). Personnes en mode discret : jamais montrées.
+ * Mêmes règles que les rencontres : une personne déjà liée (lien vivant, fantôme ou archivé) ou dont un coucou a été
+ * refusé (dans un sens ou dans l'autre) n'apparaît pas, ni en repère ni dans les silhouettes ; un coucou en attente
+ * est dit sur le repère (`waved`, `waved_you`).
  */
 @Injectable()
 export class GetMap {
@@ -54,7 +64,25 @@ export class GetMap {
     @Inject(Audience) private readonly audience: Audience,
     @Inject(Matchmaker) private readonly matchmaker: Matchmaker,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(LINKS) private readonly links: LinksRepository,
+    @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
   ) {}
+
+  /** Liens et coucous de la personne : qui écarter de la carte, et où en est chaque coucou en attente. */
+  private async relations(userId: string): Promise<{ excluded: Set<string>; relationOf: (id: string) => PinRelation }> {
+    const [links, involved] = await Promise.all([this.links.listForUsers([userId]), this.encounters.listInvolving(userId)]);
+    const otherOf = (a: string, b: string): string => (a === userId ? b : a);
+    const excluded = new Set<string>([...links.map((l) => otherOf(l.userA, l.userB))]);
+    for (const e of involved) if (e.status === 'declined') excluded.add(otherOf(e.fromUser, e.toUser));
+    const waved = new Set(involved.filter((e) => e.status === 'waved' && e.fromUser === userId).map((e) => e.toUser));
+    const wavedYou = new Map(involved.filter((e) => e.status === 'waved' && e.toUser === userId).map((e) => [e.fromUser, e.id]));
+    const relationOf = (id: string): PinRelation => {
+      const encounterId = wavedYou.get(id);
+      if (encounterId) return { kind: 'waved_you', encounterId };
+      return waved.has(id) ? { kind: 'waved' } : { kind: 'none' };
+    };
+    return { excluded, relationOf };
+  }
 
   async execute(userId: string, query: MapQueryInput): Promise<MapResult> {
     const profile = await this.profiles.findById(userId);
@@ -86,6 +114,10 @@ export class GetMap {
     }
 
     // Relu à chaque fois (Audience) : un passage en mode discret, un blocage, une suspension ou une suppression comptent tout de suite.
+    // Liens et refus aussi (mêmes règles que les rencontres).
+    const { excluded, relationOf } = await this.relations(userId);
+    inside = inside.filter((m) => !excluded.has(m.userId));
+    outside = outside.filter((m) => !excluded.has(m.userId));
     const profiles = await this.audience.visible(userId, [...inside, ...outside].map((m) => m.userId), 'map');
     const visible = new Map(profiles.map((p) => [p.id, p]));
     const shownInside = inside.filter((m) => visible.has(m.userId)).slice(0, PIN_CAP);
@@ -96,7 +128,7 @@ export class GetMap {
     const pins = shownInside.flatMap((m): MapPinResult[] => {
       const p = visible.get(m.userId);
       const pet = pets.get(m.userId);
-      return p && pet ? [{ profile: p, pet, match: m }] : [];
+      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), lookingFor: mutualLookingFor(profile, p) }] : [];
     });
 
     const blurred = new Map<string, GeoPoint>();

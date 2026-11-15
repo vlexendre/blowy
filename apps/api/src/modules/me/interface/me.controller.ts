@@ -1,5 +1,8 @@
-import { Body, Controller, Delete, Get, Inject, Patch, Post } from '@nestjs/common';
-import { ConfirmUploadBody, type Me, OnboardBody, UpdateMeBody, UploadTicketBody, type UploadTicket } from '@blowy/contract';
+import { Body, Controller, Delete, Get, HttpCode, Inject, Patch, Post } from '@nestjs/common';
+import { DomainError, errorText } from '../../../shared/errors';
+import { type AppleAuthorization, AppleAuthorizationBody, ConfirmUploadBody, type Me, OnboardBody, UpdateMeBody, UploadTicketBody, type UploadTicket } from '@blowy/contract';
+import { AppleRevocation } from '../../../integrations/auth/apple-revocation';
+import { RateLimit } from '../../../shared/user-rate-limit';
 import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser } from '../../../shared/auth.guard';
@@ -20,7 +23,27 @@ export class MeController {
     @Inject(DeleteMe) private readonly deleteMe: DeleteMe,
     @Inject(Avatar) private readonly avatar: Avatar,
     @Inject(MePresenter) private readonly presenter: MePresenter,
+    @Inject(AppleRevocation) private readonly apple: AppleRevocation,
   ) {}
+
+  /**
+   * Sign in with Apple : le code d'autorisation reçu à la connexion (avant ou après l'inscription), échangé contre un
+   * jeton gardé pour la révocation à la suppression du compte. `skipped` si rien n'est configuré côté serveur.
+   */
+  @Post('apple-authorization')
+  @HttpCode(200)
+  @RateLimit('write')
+  async appleAuthorization(
+    @CurrentUser() user: AuthUser,
+    @Body(new ZodPipe(AppleAuthorizationBody)) body: z.infer<typeof AppleAuthorizationBody>,
+  ): Promise<AppleAuthorization> {
+    try {
+      return { status: await this.apple.remember(user.userId, body.authorizationCode) };
+    } catch {
+      // Code expiré, déjà utilisé ou refusé : rien à corriger côté app (elle renverra un code à la prochaine connexion).
+      throw new DomainError('invalid', errorText('appleAuthorization'));
+    }
+  }
 
   @Get()
   async get(@CurrentUser() user: AuthUser): Promise<Me> {

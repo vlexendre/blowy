@@ -212,10 +212,19 @@ const fr = {
     /** Ce qu'il reste à faire pour que le défi compte (types qui se valident par une action ailleurs). */
     howTo: {
       question: 'Choisis une réponse.',
-      photo: 'Prends la photo dans l’app.',
+      photo: 'Prends la photo dans l’app. Aucun humain ne la voit ; supprimée sous 24 h, sauf si tu la gardes.',
       write: 'Écris un message dans l’un de tes liens, puis reviens ici.',
       go_out: 'Réponds « oui » à « Tu as mis le nez dehors aujourd’hui ? ».',
     } as Record<DailyKind, string>,
+  },
+  /**
+   * Ce qu'on dit des photos privées, partout où on en parle. Vrai à la lettre : aucun humain ne les voit ; la preuve
+   * d'habitude est vérifiée par une IA ; toutes sont supprimées sous 24 h, sauf si la personne les garde.
+   * Ne jamais écrire « personne ne la voit » sans préciser l'IA.
+   */
+  privacy: {
+    proof: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit : une IA la vérifie, puis elle est supprimée sous 24 h, sauf si tu la gardes.',
+    daily: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit. Supprimée sous 24 h, sauf si tu la gardes.',
   },
   /** Erreurs (codes du contrat, messages ici). */
   errors: {

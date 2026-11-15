@@ -58,6 +58,11 @@ import {
   type NotificationSettingsBody,
   type RegisterDeviceBody,
   plateformeRoutes,
+  type ChatReadingDefaultDto,
+  ReadingAllZ,
+  ReadingDefaultZ,
+  AppleAuthorizationZ,
+  compteRoutes,
 } from '@blowy/contract';
 import { z } from 'zod';
 
@@ -126,6 +131,11 @@ export function createApiClient(opts: ApiClientOptions) {
       remove: () => call('DELETE', routes.me(), OkZ),
       avatarTicket: (contentType: string) => call('POST', routes.avatarTicket(), UploadTicketZ, { contentType }),
       setAvatar: (path: string) => call('POST', routes.avatar(), MeZ, { path }),
+      /**
+       * Sign in with Apple : le code d'autorisation reçu à la connexion (iPhone), pour que l'API puisse révoquer
+       * l'accès à Apple quand le compte est supprimé. Sans effet si la révocation n'est pas configurée côté serveur.
+       */
+      appleAuthorization: (authorizationCode: string) => call('POST', compteRoutes.appleAuthorization(), AppleAuthorizationZ, { authorizationCode }),
     },
     pet: {
       get: () => call('GET', routes.pet(), PetViewZ),
@@ -250,6 +260,10 @@ export function createApiClient(opts: ApiClientOptions) {
       update: (linkId: string, body: LinkMinimoasBody) => call('PATCH', plateformeRoutes.linkMinimoas(linkId), LinkMinimoasZ, body),
       /** Tous tes liens, par pages : passer le `nextCursor` de la page précédente. */
       mine: (cursor?: string) => call('GET', plateformeRoutes.myMinimoas() + (cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''), MyMinimoasZ),
+      /** Réglage par défaut des nouveaux liens : demander à chaque fois, toujours oui, toujours non. */
+      setDefault: (readingDefault: ChatReadingDefaultDto) => call('PUT', plateformeRoutes.myMinimoasDefault(), ReadingDefaultZ, { readingDefault }),
+      /** Ton accord pour tous tes liens d'un coup (un seul appel) ; rend le nombre de liens changés. */
+      setAll: (consent: boolean) => call('POST', plateformeRoutes.myMinimoasAll(), ReadingAllZ, { consent }),
     },
     /**
      * Notifications : enregistrer le jeton Expo et le fuseau à chaque ouverture (`registerDevice`), le retirer à la

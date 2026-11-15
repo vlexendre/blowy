@@ -35,10 +35,24 @@ export function useProviders(): readonly AuthProvider[] {
   return usePorts().auth.providers;
 }
 
-/** Connexion par Apple ou Google ; `data` vaut null si la personne a annulé (rien à afficher). */
+/**
+ * Connexion par Apple ou Google ; `data` vaut null si la personne a annulé (rien à afficher). Avec Apple, le code
+ * d'autorisation part à l'API juste après (révocation à la suppression du compte) ; un échec n'empêche rien.
+ */
 export function useSignInWith() {
   const { auth } = usePorts();
-  return useMutation({ mutationFn: (provider: Exclude<AuthProvider, 'email'>) => auth.signInWith(provider) });
+  const api = useApi();
+  return useMutation({
+    mutationFn: async (provider: Exclude<AuthProvider, 'email'>) => {
+      const session = await auth.signInWith(provider);
+      if (session?.appleAuthorizationCode) {
+        const { appleAuthorizationCode, ...rest } = session;
+        void api.me.appleAuthorization(appleAuthorizationCode).catch(() => undefined);
+        return rest;
+      }
+      return session;
+    },
+  });
 }
 
 export function useSendCode() {

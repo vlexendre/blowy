@@ -1,6 +1,6 @@
 import type { Identity, LocationStatus, MatchExplanation, VisionProfileDto, VisionTest } from '@blowy/contract';
 import { type Locale, visionExploreLine, visionSideLine, visionText } from '@blowy/content';
-import { type AxisSide, VISION_AXES, VISION_TEST, type VisionAxis, ZONE_RADIUS_KM, entitlements, sideOf } from '@blowy/domain';
+import { type AxisLeans, type AxisSide, VISION_AXES, VISION_TEST, type VisionAxis, ZONE_RADIUS_KM, entitlements, sideOf } from '@blowy/domain';
 import type { Profile } from '../../me/ports';
 import type { PlaceRecord, VisionSnapshot } from '../ports';
 
@@ -27,20 +27,32 @@ export const toVisionProfile = (s: VisionSnapshot, locale: Locale = 'fr'): Visio
 });
 
 export interface ExplanationInput {
-  common: readonly { axis: VisionAxis; side: AxisSide }[];
-  explore: { axis: VisionAxis; mine: AxisSide; theirs: AxisSide };
+  /** `leans` : où penche chacun (côté et cran) ; absent d'une entrée de cache plus ancienne. */
+  common: readonly { axis: VisionAxis; side: AxisSide; leans?: AxisLeans }[];
+  explore: { axis: VisionAxis; mine: AxisSide; theirs: AxisSide; leans?: AxisLeans };
 }
 
-/** Ce que l'autre voit : 3 points communs et 1 différence, en phrases. Jamais de valeur chiffrée d'axe. */
+/** Les deux repères d'un axe, vus par la personne qui lit (`mine` = elle). Côté et cran seulement. */
+const markers = (leans: AxisLeans | undefined) => (leans ? { mine: { ...leans.mine }, theirs: { ...leans.theirs } } : {});
+
+/**
+ * Ce que l'autre voit : 3 points communs et 1 différence, en phrases, et sur ces 4 axes seulement où penche chacun
+ * (côté et cran, `axisLean`). Jamais de valeur chiffrée d'axe, jamais la confiance, rien sur les deux autres axes.
+ */
 export function toExplanation(c: ExplanationInput, otherName: string, locale: Locale = 'fr'): MatchExplanation {
   const t = visionText.in(locale);
-  const common = c.common.slice(0, 3).map((p) => ({ axis: p.axis, name: t.axes[p.axis].name, text: t.common[p.axis][p.side] }));
+  const common = c.common.slice(0, 3).map((p) => ({ axis: p.axis, name: t.axes[p.axis].name, text: t.common[p.axis][p.side], ...markers(p.leans) }));
   if (common.length !== 3) throw new Error('explication incomplète');
   return {
     commonTitle: t.match.commonTitle,
     common,
     exploreTitle: t.match.exploreTitle,
-    explore: { axis: c.explore.axis, name: t.axes[c.explore.axis].name, text: visionExploreLine(locale, c.explore.axis, c.explore.mine, c.explore.theirs, otherName) },
+    explore: {
+      axis: c.explore.axis,
+      name: t.axes[c.explore.axis].name,
+      text: visionExploreLine(locale, c.explore.axis, c.explore.mine, c.explore.theirs, otherName),
+      ...markers(c.explore.leans),
+    },
   };
 }
 

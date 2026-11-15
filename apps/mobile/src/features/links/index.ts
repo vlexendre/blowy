@@ -135,4 +135,4 @@ export function errorText(error: unknown, fallback: string, byCode: Partial<Reco
 
 /** Messages du plus ancien au plus récent (ordre attendu par `ChatThread`). */
 export const chronological = (messages: readonly Message[]): Message[] => [...messages].reverse();
-export { minimoasKey, myMinimoasKey, useLinkMinimoas, useMinimoaGuide, useMyMinimoas, useSetReadingEverywhere, useUpdateLinkMinimoas } from './minimoas';
+export { minimoasKey, myMinimoasKey, useLinkMinimoas, useMinimoaGuide, useMyMinimoas, useSetReadingDefault, useSetReadingEverywhere, useUpdateLinkMinimoas } from './minimoas';

@@ -32,7 +32,7 @@ import { Platform } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { useLiveEncounters, useWave, whyA11y } from '@/features/encounters';
-import { CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap } from '@/features/map';
+import { CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap, useMarkWaved } from '@/features/map';
 import { MapLayer } from '@/features/map/MapLayer';
 import { useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
@@ -53,7 +53,7 @@ export default function CarteScreen() {
   const city = useCity();
   const [selected, setSelected] = useState<string | null>(null);
   const [citySheet, setCitySheet] = useState(false);
-  const [waved, setWaved] = useState<ReadonlySet<string>>(new Set());
+  const markWaved = useMarkWaved();
   const land = useFirstTime('carte:land');
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
 
@@ -77,11 +77,6 @@ export default function CarteScreen() {
     for (const i of encounters.data?.incoming ?? []) ids.add(i.from.id);
     return ids;
   }, [encounters.data]);
-  const wavedIds = useMemo(() => {
-    const ids = new Set(waved);
-    for (const s of encounters.data?.suggestions ?? []) if (s.waved) ids.add(s.user.id);
-    return ids;
-  }, [encounters.data, waved]);
 
   // ── Chargement, erreur ──────────────────────────────────────────────────
   if (!m || !data) {
@@ -166,12 +161,14 @@ export default function CarteScreen() {
           accessibilityLabel={whyA11y(current.explanation, listText.whyJoin)}
         />
       }
-      actionLabel={wavedIds.has(current.user.id) ? t.waved : t.wave(current.user.pet.name)}
+      // Où vous en êtes, dit par l'API : salué (en attente), on t'a salué (répondre), ou rien encore.
+      actionLabel={current.relation === 'waved' ? t.waved : current.relation === 'waved_you' ? t.wavedYou(current.user.displayName) : t.wave(current.user.pet.name)}
       actionLoading={wave.isPending && wave.variables === current.user.id}
       onAction={() => {
-        if (wavedIds.has(current.user.id)) return;
+        if (current.relation === 'waved') return;
+        if (current.relation === 'waved_you') return router.push(`/rencontre/${current.user.id}`);
         const id = current.user.id;
-        wave.mutate(id, { onSuccess: () => setWaved((s) => new Set(s).add(id)) });
+        wave.mutate(id, { onSuccess: () => markWaved(id) });
       }}
       secondaryLabel={known.has(current.user.id) ? t.open : undefined}
       onSecondary={() => router.push(`/rencontre/${current.user.id}`)}

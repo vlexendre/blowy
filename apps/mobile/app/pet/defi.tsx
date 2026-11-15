@@ -12,9 +12,10 @@ import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { errorText } from '@/features/links';
-import { usePet, useWardrobe } from '@/features/pet';
+import { usePet } from '@/features/pet';
 import { nextStreakItem, useAcceptChallenge, useAnswerChallenge, useChallengeSeen, useRitualsToday, useVision } from '@/features/rituals';
 import { startOuting } from '@/features/widgets';
+import { visionLabels } from '@/locales/onboarding';
 import { rituels } from '@/locales/rituels';
 import { upperFirst } from '@/locales/runtime';
 
@@ -29,7 +30,6 @@ export default function DailyChallengeScreen() {
   const router = useRouter();
   const today = useRitualsToday();
   const pet = usePet();
-  const wardrobe = useWardrobe();
   const vision = useVision();
   const seen = useChallengeSeen();
   const accept = useAcceptChallenge();
@@ -69,15 +69,12 @@ export default function DailyChallengeScreen() {
   const rewards: ChallengeReward[] = [];
   if (!done) {
     rewards.push({ icon: <Icon name="flamme" size={40} />, title: t.rewardStreak(streak.current + 1), text: t.rewardStreakText });
-    const m = nextStreakItem(streak, (id) => {
-      const it = wardrobe.data?.items.find((i) => i.id === id);
-      return it ? it.state !== 'locked' : undefined;
-    });
+    const m = nextStreakItem(streak);
     if (m) rewards.push({ icon: <ItemImage id={m.itemId} size={44} />, title: upperFirst(itemLabel[m.itemId] ?? m.itemId), text: t.rewardItemText(m.left) });
     if (c.kind === 'question') {
-      const axes = vision.data?.axes ?? [];
-      const weakest = axes.length ? axes.reduce((a, b) => (b.confidence < a.confidence ? b : a)) : null;
-      rewards.push({ icon: <Icon name="etoiles" size={40} />, title: t.rewardVision, text: t.rewardVisionText(weakest?.name ?? null) });
+      // L'axe que la question éclaire, dit par le serveur (`challenge.axis`).
+      const axisName = c.axis ? (vision.data?.axes.find((a) => a.axis === c.axis)?.name ?? visionLabels.axes[c.axis].name) : null;
+      rewards.push({ icon: <Icon name="etoiles" size={40} />, title: t.rewardVision, text: t.rewardVisionText(axisName) });
     } else {
       rewards.push({ icon: <CareIcon name="door" size={38} color={color.dark} />, title: t.rewardSocial, text: t.rewardSocialText });
     }

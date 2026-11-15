@@ -105,6 +105,8 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 - **Confidentialité** (décision du 15 nov. : une IA lit les messages) :
   - Texte exact : « Aucun humain ne lit tes conversations. Si vous l'activez tous les deux, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n'est conservé après. »
   - Accord demandé à **chacun**, à la première ouverture du chat. Si l'un refuse, les minimoas ne réagissent qu'au rythme (silences, photos, défis), sans lire.
+  - Réglage par défaut dans « Moi » (demander à chaque fois · toujours activer · ne jamais activer), appliqué à chaque nouveau chat : la question n'est alors pas posée, mais le chat affiche l'état en une ligne avec « Changer ». « Pour tous mes chats » s'applique en une fois aux chats existants.
+  - Ce qu'on dit de l'autre (décision du 15 nov., 2e passe) : seulement « il l'a activé » ou « pas encore activé de son côté ». Un refus explicite et une question pas encore vue donnent la même réponse : on ne montre jamais « a refusé », pour ne mettre aucune pression et ne pas transformer un réglage de confidentialité en signal social (`consent.theirs` : `agreed` · `not_yet`).
   - Réglage visible et réversible dans les options du lien et dans « Moi ».
   - On n'écrit nulle part « personne ne lit » sans préciser l'IA.
 

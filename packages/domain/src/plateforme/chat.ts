@@ -39,6 +39,24 @@ export type ChatConsent = boolean | null;
 /** L'IA ne lit les messages que si les deux personnes ont dit oui. */
 export const chatReadingAllowed = (a: ChatConsent, b: ChatConsent): boolean => a === true && b === true;
 
+/**
+ * Ce qu'on dit à une personne de l'accord de l'autre : agreed (l'autre a dit oui) ou not_yet (pas encore activé de
+ * son côté). Décision (docs/V7-SPEC.md §9) : un refus explicite et une question pas encore posée donnent la même
+ * réponse, « not_yet », pour ne mettre aucune pression (ni « Léa a refusé », ni relance de l'un sur l'autre).
+ */
+export const THEIR_CONSENT_STATES = ['agreed', 'not_yet'] as const;
+export type TheirConsent = (typeof THEIR_CONSENT_STATES)[number];
+export const theirConsentOf = (c: ChatConsent): TheirConsent => (c === true ? 'agreed' : 'not_yet');
+
+/**
+ * Accord de lecture par défaut d'une personne, appliqué à chaque nouveau lien : ask (on lui demande à la première
+ * ouverture du chat) · on (oui d'office) · off (non d'office). Le chat montre toujours l'état et comment le changer.
+ */
+export const CHAT_READING_DEFAULTS = ['ask', 'on', 'off'] as const;
+export type ChatReadingDefault = (typeof CHAT_READING_DEFAULTS)[number];
+/** Accord de départ d'un nouveau lien selon le réglage par défaut (null : la question sera posée). */
+export const consentFromDefault = (d: ChatReadingDefault): ChatConsent => (d === 'on' ? true : d === 'off' ? false : null);
+
 /** État des interventions d'un lien. */
 export interface ChatPetState {
   /** Jour (Europe/Paris) auquel `interventions` se rapporte. */

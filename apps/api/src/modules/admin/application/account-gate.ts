@@ -11,8 +11,14 @@ import { ACTIVITY, SUSPENSIONS } from '../tokens';
 const CACHE_TTL_MS = 30_000;
 const CACHE_MAX = 20_000;
 
-/** Ce qu'un compte suspendu peut encore faire : supprimer son compte (droit à l'effacement). */
-const ALLOWED_WHEN_SUSPENDED: ReadonlyArray<{ method: string; path: RegExp }> = [{ method: 'DELETE', path: /^\/v1\/me\/?$/ }];
+/**
+ * Ce qu'un compte suspendu peut encore faire : supprimer son compte (droit à l'effacement) et retirer le jeton push de
+ * son téléphone en se déconnectant (sinon ce téléphone garderait ses notifications).
+ */
+const ALLOWED_WHEN_SUSPENDED: ReadonlyArray<{ method: string; path: RegExp }> = [
+  { method: 'DELETE', path: /^\/v1\/me\/?$/ },
+  { method: 'POST', path: /^\/v1\/devices\/remove\/?$/ },
+];
 
 export interface GateRequest {
   method: string;

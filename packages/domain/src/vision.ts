@@ -135,6 +135,28 @@ export type AxisSide = (typeof AXIS_SIDES)[number];
 export const MID_BAND = 20;
 export const sideOf = (value: number): AxisSide => (value <= -MID_BAND ? 'low' : value >= MID_BAND ? 'high' : 'mid');
 
+/**
+ * Où penche une personne sur un axe, en gros : le côté (comme `sideOf`) et une force en trois crans, jamais la valeur.
+ * light : entre les deux, ou à peine d'un côté (moins de 50) · clear : nettement (50 à 79) · strong : très (80 et plus).
+ * Sert à placer les repères « toi » et « l'autre » sur les axes de l'explication : rien de plus fin n'est montré.
+ * Une lecture peu sûre (confiance sous LEAN_MIN_CONFIDENCE) reste à « light » : on n'affirme pas ce qu'on ne sait pas.
+ */
+export const AXIS_STRENGTHS = ['light', 'clear', 'strong'] as const;
+export type AxisStrength = (typeof AXIS_STRENGTHS)[number];
+export interface AxisLean {
+  side: AxisSide;
+  strength: AxisStrength;
+}
+export const LEAN_CLEAR = 50;
+export const LEAN_STRONG = 80;
+export const LEAN_MIN_CONFIDENCE = 25;
+export function axisLean(reading: AxisReading): AxisLean {
+  const side = sideOf(reading.value);
+  const abs = Math.abs(reading.value);
+  if (side === 'mid' || reading.confidence < LEAN_MIN_CONFIDENCE) return { side, strength: 'light' };
+  return { side, strength: abs >= LEAN_STRONG ? 'strong' : abs >= LEAN_CLEAR ? 'clear' : 'light' };
+}
+
 /** Un profil sert à l'appariement s'il est un peu connu : au moins 3 axes avec une confiance non nulle. */
 /** Répartition d'un axe en 5 tranches égales de −100 à +100 (statistiques de l'administration). */
 export const VISION_BUCKETS = 5;
@@ -239,6 +261,21 @@ export function matchMode(a: Seeker, b: Seeker): MatchMode | null {
   return null;
 }
 
+/**
+ * Ce que deux personnes cherchent toutes les deux, une fois le filtre réciproque passé (« Vous cherchez tous les
+ * deux… ») : friends (des potes) · more (plus) · both (les deux : plus, et des potes aussi). Rien sur « qui » :
+ * « more » ou « both » ne sortent que si c'est réciproque, ce que la présentation elle-même implique déjà.
+ * null : ils ne peuvent pas se rencontrer (`matchMode` vaut null).
+ */
+export const LOOKING_FOR = ['friends', 'more', 'both'] as const;
+export type LookingFor = (typeof LOOKING_FOR)[number];
+export function mutualLookingFor(a: Seeker, b: Seeker): LookingFor | null {
+  const mode = matchMode(a, b);
+  if (mode === null) return null;
+  if (mode === 'potes') return 'friends';
+  return openToFriends(a) && openToFriends(b) ? 'both' : 'more';
+}
+
 // ── Compatibilité ────────────────────────────────────────────────────────────
 
 /** En dessous, personne n'est proposé (spéc. §4). */
@@ -258,15 +295,22 @@ export const closeness = (a: number, b: number): number => Math.max(0, 1 - Math.
 /** Confiance commune sur un axe, de MIN_AXIS_TRUST à 1 (moyenne géométrique : il faut que les deux soient sûrs). */
 export const axisTrust = (a: AxisReading, b: AxisReading): number => Math.max(MIN_AXIS_TRUST, Math.sqrt(a.confidence * b.confidence) / 100);
 
+/** Où penche chacun des deux sur un axe de l'explication (`axisLean`). */
+export interface AxisLeans {
+  mine: AxisLean;
+  theirs: AxisLean;
+}
 export interface CommonPoint {
   axis: VisionAxis;
   /** Côté partagé (moyenne des deux). */
   side: AxisSide;
+  leans: AxisLeans;
 }
 export interface ToExplore {
   axis: VisionAxis;
   mine: AxisSide;
   theirs: AxisSide;
+  leans: AxisLeans;
 }
 export interface Compatibility {
   /** De 0 à 100. Jamais montré seul : toujours avec l'explication. */
@@ -302,14 +346,15 @@ export function compatibilityOf(me: VisionProfile, other: VisionProfile, mode: M
     weight: AXIS_WEIGHTS[mode][axis] * axisTrust(me[axis], other[axis]),
   })).sort((a, b) => b.close - a.close || b.weight - a.weight || a.index - b.index);
   const [c1, c2, c3, r1, r2] = ranked as [(typeof ranked)[number], (typeof ranked)[number], (typeof ranked)[number], (typeof ranked)[number], (typeof ranked)[number]];
-  const common = (r: (typeof ranked)[number]): CommonPoint => ({ axis: r.axis, side: sideOf((me[r.axis].value + other[r.axis].value) / 2) });
+  const leans = (axis: VisionAxis): AxisLeans => ({ mine: axisLean(me[axis]), theirs: axisLean(other[axis]) });
+  const common = (r: (typeof ranked)[number]): CommonPoint => ({ axis: r.axis, side: sideOf((me[r.axis].value + other[r.axis].value) / 2), leans: leans(r.axis) });
   // Différence à explorer : la plus grande des deux restantes (r2 est la moins proche, sauf égalité où r1 l'emporte par l'ordre).
   const far = r2.close < r1.close ? r2 : r1.close < r2.close ? r1 : r1.weight >= r2.weight ? r1 : r2;
   return {
     score: visionScore(me, other, mode),
     mode,
     common: [common(c1), common(c2), common(c3)],
-    explore: { axis: far.axis, mine: sideOf(me[far.axis].value), theirs: sideOf(other[far.axis].value) },
+    explore: { axis: far.axis, mine: sideOf(me[far.axis].value), theirs: sideOf(other[far.axis].value), leans: leans(far.axis) },
   };
 }
 

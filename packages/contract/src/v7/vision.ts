@@ -7,7 +7,7 @@
  * « Qui tu veux rencontrer » n'est jamais montré aux autres : il sert seulement à filtrer. Il exige un accord
  * explicite (horodaté), comme la position.
  */
-import { AXIS_SIDES, GENDERS, LOCALES, SEEKINGS, VISION_AXES, WHOMS } from '@blowy/domain';
+import { AXIS_SIDES, AXIS_STRENGTHS, GENDERS, LOCALES, LOOKING_FOR, SEEKINGS, VISION_AXES, WHOMS } from '@blowy/domain';
 import { z } from 'zod';
 
 const Iso = z.string();
@@ -112,6 +112,18 @@ export const VisionAxisZ = z.enum(VISION_AXES);
 export type VisionAxisKey = z.infer<typeof VisionAxisZ>;
 /** low : pôle − · mid : entre les deux · high : pôle +. */
 export const AxisSideZ = z.enum(AXIS_SIDES);
+/**
+ * Où penche une personne sur un axe, en gros : le côté et une force en trois crans (light : entre les deux, à peine
+ * d'un côté ou peu sûr · clear : nettement · strong : très). Jamais la valeur ni la confiance.
+ */
+export const AxisLeanZ = z.object({ side: AxisSideZ, strength: z.enum(AXIS_STRENGTHS) });
+export type AxisLeanDto = z.infer<typeof AxisLeanZ>;
+/**
+ * Ce que vous cherchez tous les deux, une fois le filtre réciproque passé (« Vous cherchez tous les deux… ») :
+ * friends (des potes) · more (plus) · both (les deux). Jamais « qui » l'autre veut rencontrer.
+ */
+export const LookingForZ = z.enum(LOOKING_FOR);
+export type LookingForDto = z.infer<typeof LookingForZ>;
 
 
 /** Le test : 12 situations à deux choix, une par écran (public : il se passe avant la connexion). */
@@ -156,12 +168,15 @@ export type VisionProfileDto = z.infer<typeof VisionProfileZ>;
 /**
  * Pourquoi le minimoa présente quelqu'un : 3 points communs et 1 différence à explorer. C'est tout ce que
  * l'autre voit de ta vision (jamais tes chiffres, jamais « qui tu veux rencontrer »).
+ * `mine` / `theirs` (sur ces 4 axes seulement) : où penche chacun, en gros (côté et cran), pour placer les deux
+ * repères. Absents d'une réponse plus ancienne.
  */
+const ExplainedAxisZ = z.object({ axis: VisionAxisZ, name: z.string(), text: z.string(), mine: AxisLeanZ.optional(), theirs: AxisLeanZ.optional() });
 export const MatchExplanationZ = z.object({
   commonTitle: z.string(),
-  common: z.array(z.object({ axis: VisionAxisZ, name: z.string(), text: z.string() })).length(3),
+  common: z.array(ExplainedAxisZ).length(3),
   exploreTitle: z.string(),
-  explore: z.object({ axis: VisionAxisZ, name: z.string(), text: z.string() }),
+  explore: ExplainedAxisZ,
 });
 export type MatchExplanation = z.infer<typeof MatchExplanationZ>;
 

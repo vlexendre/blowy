@@ -7,6 +7,16 @@ import type { Db } from './persistence/database.types';
 import type { Env } from './config/env';
 import { MemoryAuthAdmin, MemoryAuthVerifier, MemoryUserEmails } from './integrations/auth/memory-auth';
 import { SupabaseAuthAdmin, SupabaseAuthVerifier, SupabaseUserEmails } from './integrations/auth/supabase-auth';
+import {
+  APPLE_TOKEN_CLIENT,
+  APPLE_TOKEN_STORE,
+  AppleIdTokenClient,
+  AppleRevocation,
+  DisabledAppleTokenClient,
+  MemoryAppleTokenClient,
+  MemoryAppleTokenStore,
+  SupabaseAppleTokenStore,
+} from './integrations/auth/apple-revocation';
 import { ConsoleMailer, ResendMailer } from './integrations/mailer/mailer';
 import { Notifier } from './integrations/mailer/notifier';
 import { MemoryStorage } from './integrations/storage/memory-storage';
@@ -72,6 +82,17 @@ export class CoreModule {
       ...retentionProviders(env.adapters),
       // Qui est « utilisable » pour qui (supprimé, suspendu, bloqué, discret) : une seule règle, partout.
       Audience,
+      // Sign in with Apple : jetons gardés à la connexion, révoqués à la suppression du compte.
+      {
+        provide: APPLE_TOKEN_CLIENT,
+        useFactory: (clock: Clock) => {
+          const cfg = env.appleSignIn;
+          if (cfg.provider === 'apple' && cfg.apple) return new AppleIdTokenClient(cfg.apple, clock);
+          return cfg.provider === 'memory' ? new MemoryAppleTokenClient(env.facturationAdmin.apple.bundleId) : new DisabledAppleTokenClient();
+        },
+        inject: [CLOCK],
+      },
+      AppleRevocation,
     ];
     const exported = providers.map((p) => (typeof p === 'function' ? p : p.provide));
     return { module: CoreModule, global: true, providers, exports: exported };
@@ -85,6 +106,7 @@ function memoryAdapters(): Provider[] {
     { provide: AUTH_ADMIN, useFactory: (db: MemoryDb) => new MemoryAuthAdmin(db), inject: [MEMORY_DB] },
     { provide: USER_EMAILS, useFactory: (db: MemoryDb) => new MemoryUserEmails(db), inject: [MEMORY_DB] },
     { provide: STORAGE, useFactory: (url: PublicUrl, clock: Clock) => new MemoryStorage(url, clock), inject: [PUBLIC_URL, CLOCK] },
+    { provide: APPLE_TOKEN_STORE, useFactory: (db: MemoryDb) => new MemoryAppleTokenStore(db), inject: [MEMORY_DB] },
   ];
 }
 
@@ -97,6 +119,7 @@ function supabaseAdapters(env: Env): Provider[] {
     { provide: AUTH_ADMIN, useFactory: (c: Db) => new SupabaseAuthAdmin(c), inject: [SUPABASE] },
     { provide: USER_EMAILS, useFactory: (c: Db) => new SupabaseUserEmails(c), inject: [SUPABASE] },
     { provide: STORAGE, useFactory: (c: Db) => new SupabaseStorage(c), inject: [SUPABASE] },
+    { provide: APPLE_TOKEN_STORE, useFactory: (c: Db) => new SupabaseAppleTokenStore(c), inject: [SUPABASE] },
   ];
 }
 

@@ -202,13 +202,33 @@ export const moi = messages({
       allOn: 'Activer la lecture partout',
       allOff: 'Couper la lecture partout',
       allDone: (n: number) => (n === 0 ? 'Rien à changer.' : n === 1 ? 'C’est fait pour ton chat.' : `C’est fait pour tes ${n} chats.`),
-      allNote: 'Un nouveau chat te demandera ton choix à sa première ouverture.',
+      allNote: 'Pour les chats que tu as déjà. Les nouveaux suivent le réglage ci-dessus.',
+      /** Réglage par défaut des nouveaux chats. */
+      defaultTitle: 'Pour mes prochains chats',
+      defaults: {
+        ask: { title: 'Me demander à chaque fois', subtitle: 'À la première ouverture du chat' },
+        on: { title: 'Toujours activer la lecture', subtitle: 'Il faut encore l’accord de l’autre' },
+        off: { title: 'Ne jamais activer la lecture', subtitle: 'Les minimoas réagissent seulement au rythme' },
+      },
+      defaultNote: 'Sans question à l’ouverture, le chat affiche quand même l’état de la lecture, avec de quoi le changer.',
+      defaultA11y: (title: string, on: boolean) => (on ? `${title}, choisi` : title),
       perLink: 'Chat par chat',
       row: (name: string) => `Avec ${name}`,
-      sub: (on: boolean | null, both: boolean, muted: boolean) =>
-        muted ? 'Minimoas coupés ici' : on === null ? 'Pas encore choisi' : !on ? 'Sans lecture' : both ? 'Lecture activée, vous deux' : 'Oui, en attente de l’autre',
+      /** `theirs` : refus et question pas encore vue se disent pareil (« pas encore activé de son côté »). */
+      sub: (on: boolean | null, both: boolean, muted: boolean, theirs?: 'agreed' | 'not_yet') =>
+        muted
+          ? 'Minimoas coupés ici'
+          : on === null
+            ? theirs === 'agreed'
+              ? 'Pas encore choisi · activé de son côté'
+              : 'Pas encore choisi'
+            : !on
+              ? 'Sans lecture'
+              : both
+                ? 'Lecture activée, vous deux'
+                : 'Oui · pas encore activé de son côté',
       readA11y: (name: string) => `Lecture par une IA dans le chat avec ${name}`,
-      empty: 'Pas encore de chat. Le choix te sera demandé à la première ouverture.',
+      empty: 'Pas encore de chat. Ton réglage pour les prochains chats s’appliquera au premier.',
       more: 'Voir plus',
       loadError: 'Impossible de charger tes réglages',
       error: 'Ce n’est pas passé. Réessaie.',

@@ -211,6 +211,13 @@ export class RituelsController {
   }
 
   private async dailyResult(userId: string, r: DoneResult): Promise<DailyResult> {
-    return { challenge: toDailyDto(r.record), streak: await this.streaks.view(userId), line: r.justDone ? rituelsText.in(requestLocale()).daily.done : null, newItems: r.newItems };
+    return {
+      challenge: toDailyDto(r.record),
+      streak: await this.streaks.view(userId),
+      line: r.justDone ? rituelsText.in(requestLocale()).daily.done : null,
+      newItems: r.newItems,
+      // Défi photo : de quoi proposer « la garder dans mes souvenirs privés » après coup.
+      photoId: r.record.photoId,
+    };
   }
 }

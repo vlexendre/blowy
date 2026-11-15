@@ -98,6 +98,7 @@ export const rituels = messages({
         missed: (d: string): string => `${d} : pas de défi`,
         today: (d: string): string => `${d} : aujourd’hui, à faire`,
         future: (d: string): string => `${d} : à venir`,
+        not_yet: (d: string): string => `${d} : avant ton arrivée`,
       },
       weekday: (day: string): string => formatDate(day, { weekday: 'long' }),
       todayLead: 'Aujourd’hui : ',
@@ -183,8 +184,9 @@ export const rituels = messages({
       close: 'Fermer',
       dailyChip: 'Défi du jour',
       busy: 'Il regarde…',
-      privacy: 'Prise ici, jamais depuis ta galerie. Personne ne la voit. Supprimée sous 24 h.',
-      privacyDaily: 'Prise ici, jamais depuis ta galerie. Personne ne la voit, sauf si tu la gardes.',
+      /** Vrai à la lettre (comme `rituelsText.privacy` côté API) : aucun humain ; une IA vérifie la preuve ; 24 h. */
+      privacy: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit : une IA la vérifie, puis elle est supprimée sous 24 h.',
+      privacyDaily: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit. Supprimée sous 24 h, sauf si tu la gardes.',
       verdict: { yes: 'VALIDÉ !', unsure: 'ÇA COMPTE.', no: 'PAS CETTE FOIS.' } as Record<ProofVerdict, string>,
       dailyDone: 'FAIT !',
       badge: (streak: number, weekly: boolean): string =>
@@ -219,6 +221,11 @@ export const rituels = messages({
     },
     /** Bilan de la semaine (V6-GBilan). */
     review: {
+      /** L'axe qui a le plus bougé (`axisMoves` de l'API) : direction et taille en mots, jamais un chiffre. */
+      moveTitle: (axis: string): string => `Ta vision · ${axis}`,
+      moveSticker: (pole: string, size: 'small' | 'medium' | 'large'): string => `${size === 'small' ? 'Un peu' : size === 'medium' ? 'Nettement' : 'Beaucoup'} vers ${pole}`,
+      moveA11y: (axis: string, pole: string, size: 'small' | 'medium' | 'large'): string =>
+        `${axis} : cette semaine, ${size === 'small' ? 'un peu' : size === 'medium' ? 'nettement' : 'beaucoup'} vers ${pole}`,
       close: 'Fermer',
       back: 'Retour',
       kicker: (week: number): string => `Dimanche soir · semaine ${week}`,
@@ -255,6 +262,9 @@ export const rituels = messages({
     },
     /** Accueil : lignes vers les rituels. */
     home: {
+      /** Compte sans test de vision : l'entrée vers `/vision-test`. */
+      visionTestTitle: (pet: string): string => `${pet} ne sait pas encore qui te présenter`,
+      visionTestText: 'Passe le test de vision : 12 situations, 2 minutes. Sans lui, pas de rencontres.',
       habitsTitle: 'Ses habitudes',
       habitsDue: (n: number): string => `${n} ${plural(n, { one: 'à faire', other: 'à faire' })} aujourd’hui`,
       habitsNone: 'Choisis-en une : il gagne des objets.',
