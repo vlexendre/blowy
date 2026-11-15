@@ -55,8 +55,9 @@ export class SupabaseMessagesRepository implements MessagesRepository {
     check(error, 'ajout de messages');
   }
 
-  async page(linkId: string, before: string | null, limit: number, viewerId: string): Promise<MessageRecord[]> {
-    let query = this.table.select('*').eq('link_id', linkId).or(`visible_to.is.null,visible_to.eq.${viewerId}`);
+  async page(linkId: string, before: string | null, limit: number, viewerId?: string): Promise<MessageRecord[]> {
+    let query = this.table.select('*').eq('link_id', linkId);
+    if (viewerId !== undefined) query = query.or(`visible_to.is.null,visible_to.eq.${viewerId}`);
     if (before !== null) query = query.lt('created_at', before);
     const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
     check(error, 'lecture des messages');

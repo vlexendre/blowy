@@ -467,6 +467,12 @@ export class SupabaseRitualPhotosRepository implements RitualPhotosRepository {
     check(error, 'suppression de photos privées');
   }
 
+  async listLive(userId: string): Promise<RitualPhotoRecord[]> {
+    const { data, error } = await this.client.from('ritual_photos').select('*').eq('user_id', userId).is('deleted_at', null);
+    check(error, 'lecture des photos privées');
+    return (data ?? []).map(photoFromRow);
+  }
+
   async listKept(userId: string, before: string | null, limit: number): Promise<RitualPhotoRecord[]> {
     let query = this.client.from('ritual_photos').select('*').eq('user_id', userId).eq('keep', true).is('deleted_at', null);
     if (before) query = query.lt('created_at', before);

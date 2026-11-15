@@ -3,6 +3,8 @@ import type { AuthAdmin } from '../../../integrations/auth/ports';
 import type { Storage } from '../../../integrations/storage/ports';
 import { AUTH_ADMIN, DAILY_PHOTOS, LINKS, PROFILES, STORAGE } from '../../../shared/tokens';
 import type { DailyPhotosRepository, LinksRepository } from '../../links/ports';
+import type { RitualPhotosRepository } from '../../rituels/ports';
+import { RITUAL_PHOTOS } from '../../rituels/tokens';
 import type { ProfilesRepository } from '../ports';
 
 /**
@@ -18,6 +20,7 @@ export class DeleteMe {
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(AUTH_ADMIN) private readonly auth: AuthAdmin,
+    @Inject(RITUAL_PHOTOS) private readonly ritualPhotos: RitualPhotosRepository,
   ) {}
 
   async execute(userId: string): Promise<void> {
@@ -25,6 +28,8 @@ export class DeleteMe {
     const photos = (await Promise.all(links.map((l) => this.photos.listForLink(l.id)))).flat();
     const paths = photos.map((p) => p.mediaPath);
     if (profile?.avatarPath) paths.push(profile.avatarPath);
+    // Photos privées des rituels (preuves, défis photo) encore dans le stockage, gardées ou pas.
+    paths.push(...(await this.ritualPhotos.listLive(userId)).map((p) => p.path));
     await this.storage.remove(paths);
     await this.auth.deleteUser(userId);
   }

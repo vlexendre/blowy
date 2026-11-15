@@ -142,10 +142,11 @@ as $$
   ),
   top as (
     select p.id as user_id, p.display_name as owner_name, pe.name as pet_name, pe.species,
-           count(l.id) filter (where l.status = 'active') as active_links
+           count(l.id) as active_links
     from public.profiles p
     join public.pets pe on pe.owner_id = p.id
     join public.links l on (l.user_a = p.id or l.user_b = p.id) and l.status = 'active'
+      and greatest(0, (p_day - l.last_active_on) - 1) - greatest(0, (l.last_tick_on - l.last_active_on) - 1) < l.lives
     group by p.id, p.display_name, pe.name, pe.species
     order by active_links desc, p.created_at
     limit 100

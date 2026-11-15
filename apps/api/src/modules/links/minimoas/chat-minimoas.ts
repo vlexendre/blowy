@@ -14,11 +14,11 @@ import {
   AI_WINDOW_CHARS,
   AI_WINDOW_MESSAGES,
   CHAT_MAX_INTERVENTIONS_PER_DAY,
+  SILENCE_NUDGE_HOURS,
   type ChatPetState,
   type Day,
   type LinkHealthKey,
   type MinimoaVoice,
-  type PetRole,
   type VisionAxis,
   ZERO_GAUGES,
   addDays,
@@ -143,7 +143,7 @@ export class ChatMinimoas {
     const speaker = draft.speaker('icebreaker');
     const [axis, lang] = await Promise.all([this.sharedAxis(link.userA, link.userB), this.langOf(speaker)]);
     draft.pet(speaker, chatLines.icebreaker(lang, axis, draft.pair(speaker).other, draft.seed('icebreaker')), 'icebreaker');
-    await this.states.save(link.id, { ...countIntervention(state, draft.today), icebreakerDone: true });
+    await this.states.save(link.id, { ...countIntervention(state, draft.today), icebreakerDone: true, lastUserAt: state.lastUserAt ?? link.createdAt });
   }
 
   // ── Après un message ─────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ export class ChatMinimoas {
     const today = draft.today;
     const now = this.clock.now();
     const [rows, stored] = await Promise.all([this.settingsOf(link.id), this.states.get(link.id)]);
-    let state: ChatPetState = { ...stored, messagesSinceRemark: stored.messagesSinceRemark + 1 };
+    let state: ChatPetState = { ...stored, messagesSinceRemark: stored.messagesSinceRemark + 1, lastUserAt: now.toISOString() };
     const muted = rows.some((r) => r.muted);
     const reading = this.reading(link, rows);
     let followUp: FollowUp | null = null;
@@ -209,30 +209,37 @@ export class ChatMinimoas {
 
   /** Relance les liens silencieux depuis 72 h, par lots, jusqu'à `deadline`. Rend le nombre de relances. */
   async nudgeSilent(now: Date, deadline: number, batch = 50): Promise<number> {
-    const before = new Date(now.getTime() - 72 * 3_600_000).toISOString();
+    const before = new Date(now.getTime() - SILENCE_NUDGE_HOURS * 3_600_000).toISOString();
     const today = dayOf(now);
     let cursor: string | null = null;
     let done = 0;
     while (Date.now() < deadline) {
-      const silent = await this.links.listSilent(before, cursor, batch);
-      for (const link of silent) {
+      const silent = await this.states.listSilent(before, cursor, batch);
+      for (const { linkId, state } of silent) {
         if (Date.now() >= deadline) return done;
-        if (await this.nudge(link, now, today)) done += 1;
+        if (await this.nudge(linkId, state, now, today)) done += 1;
       }
       if (silent.length < batch) break;
-      cursor = silent.at(-1)?.lastMessageAt ?? null;
+      cursor = silent.at(-1)?.state.lastUserAt ?? null;
     }
     return done;
   }
 
-  private async nudge(link: LinkRecord, now: Date, today: Day): Promise<boolean> {
-    const [rows, state] = await Promise.all([this.settingsOf(link.id), this.states.get(link.id)]);
+  private async nudge(linkId: string, state: ChatPetState, now: Date, today: Day): Promise<boolean> {
+    const link = await this.links.findById(linkId);
+    const lastUserAt = state.lastUserAt;
+    if (!link || link.status !== 'active' || lastUserAt === null) {
+      // Lien endormi ou archivé : il sort de la liste des silences (index partiel).
+      await this.states.save(linkId, { ...state, lastUserAt: null });
+      return false;
+    }
+    const rows = await this.settingsOf(link.id);
     const muted = rows.some((r) => r.muted);
-    if (!nudgeDue({ state, today, muted, active: link.status === 'active', lastMessageAt: link.lastMessageAt, now })) return false;
+    if (!nudgeDue({ state, today, muted, active: true, now })) return false;
     // L'état passe d'abord : un tick répété ou concurrent ne relance pas deux fois le même silence.
-    await this.states.save(link.id, { ...countIntervention(state, today), lastNudgeFor: link.lastMessageAt });
-    const speaker = seedOf(link.id, link.lastMessageAt, 'nudge') % 2 === 0 ? link.userA : link.userB;
-    const days = silenceDays(link.lastMessageAt, now);
+    await this.states.save(link.id, { ...countIntervention(state, today), lastNudgeFor: lastUserAt });
+    const speaker = seedOf(link.id, lastUserAt, 'nudge') % 2 === 0 ? link.userA : link.userB;
+    const days = silenceDays(lastUserAt, now);
     let line: string | null = null;
     if (this.reading(link, rows)) {
       const ai = await this.askModel(link, speaker, 'relance', days);
@@ -241,7 +248,7 @@ export class ChatMinimoas {
     }
     if (line === null) {
       const voices = await this.voices(link);
-      line = chatLines.nudge(await this.ctxFor(link, speaker, voices, 'nudge', link.lastMessageAt), days);
+      line = chatLines.nudge(await this.ctxFor(link, speaker, voices, 'nudge', lastUserAt), days);
     }
     await this.session.addPetLine(link.id, speaker, line, 'nudge');
     return true;

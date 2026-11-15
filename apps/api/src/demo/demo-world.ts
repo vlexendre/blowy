@@ -14,6 +14,8 @@ import type { PetItemsRepository, PetsRepository } from '../modules/pets/ports';
 import { Locations } from '../modules/vision/application/locations';
 import { VISION_SIGNALS, type VisionSignals } from '../modules/vision/tokens';
 import { DEMO_LEA, DEMO_MALO, DEMO_MALO_MESSAGES, DEMO_PEOPLE, DEMO_SASHA } from './demo';
+import { PlateformeDemo } from './plateforme-demo';
+import { RituelsDemo } from './rituels-demo';
 
 /**
  * Remplit la base mémoire au démarrage (Léa, Malo, Sasha et cinq autres autour de Paris, aux visions variées,
@@ -37,6 +39,8 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
     @Inject(Locations) private readonly locations: Locations,
     @Inject(VISION_SIGNALS) private readonly vision: VisionSignals,
+    @Inject(RituelsDemo) private readonly rituels: RituelsDemo,
+    @Inject(PlateformeDemo) private readonly plateforme: PlateformeDemo,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
   ) {}
@@ -90,6 +94,8 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
       if (p.place) await this.locations.record(p.id, p.place, true);
     }
     await this.createLink.execute({ by: DEMO_MALO, with: DEMO_SASHA });
+    await this.rituels.seed();
+    await this.plateforme.seed();
     this.logger.log(`monde de démo prêt : ${DEMO_PEOPLE.map((p) => p.displayName).join(', ')}`);
   }
 
@@ -106,8 +112,10 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     });
     await this.attempt('lien avec Malo', async () => {
       const link = await this.createLink.execute({ by: DEMO_MALO, with: userId });
+      await this.plateforme.welcome(link.id);
       for (const m of DEMO_MALO_MESSAGES) await this.sendMessage.execute({ linkId: link.id, userId: DEMO_MALO, body: m.body, tone: m.tone });
     });
+    await this.attempt('bilan de la semaine passée', () => this.rituels.welcome(userId));
   }
 
   private async attempt(what: string, run: () => Promise<unknown>): Promise<void> {

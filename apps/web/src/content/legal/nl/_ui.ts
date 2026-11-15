@@ -15,7 +15,6 @@ export const ui: LegalUi = {
     { slug: 'mentions-legales', label: 'colofon' },
     { slug: 'conditions', label: 'voorwaarden' },
     { slug: 'confidentialite', label: 'privacy' },
-    { slug: 'cookies', label: 'cookies' },
     { slug: 'index', label: 'alles juridisch' },
   ],
   index: {

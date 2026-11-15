@@ -65,6 +65,8 @@ create table public.ritual_photos (
 create index ritual_photos_purge_idx on public.ritual_photos (created_at) where keep = false and deleted_at is null;
 -- Souvenirs privés d'une personne, du plus récent au plus ancien.
 create index ritual_photos_kept_idx on public.ritual_photos (user_id, created_at desc) where keep = true and deleted_at is null;
+-- Suppression du compte : toutes les photos encore stockées d'une personne.
+create index ritual_photos_user_idx on public.ritual_photos (user_id) where deleted_at is null;
 
 -- ── Défi du jour : un par personne et par jour (jour de Paris) ──────────────
 create table public.daily_challenges (

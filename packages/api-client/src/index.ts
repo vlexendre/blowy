@@ -50,6 +50,15 @@ import {
   ritualRoutes,
 } from '@blowy/contract';
 import { PaywallZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
+import {
+  type LinkMinimoasBody,
+  LinkMinimoasZ,
+  MyMinimoasZ,
+  NotificationSettingsZ,
+  type NotificationSettingsBody,
+  type RegisterDeviceBody,
+  plateformeRoutes,
+} from '@blowy/contract';
 import { z } from 'zod';
 
 export class ApiError extends Error {
@@ -226,6 +235,26 @@ export function createApiClient(opts: ApiClientOptions) {
       subscription: () => call('GET', billingRoutes.plusSubscription(), SubscriptionZ),
       /** Achat ou restauration : la transaction signée est vérifiée par le serveur, qui ouvre Blowy+. */
       submitPurchase: (body: SubmitPurchaseBody) => call('POST', billingRoutes.plusPurchases(), SubscriptionZ, body),
+    },
+    /**
+     * Les minimoas dans le chat : accord de lecture par l'IA (à demander à la première ouverture du chat quand
+     * `consent.mine` est null, avec `consent.text` tel quel) et coupure, par lien ; liste pour l'écran « Moi ».
+     */
+    minimoas: {
+      get: (linkId: string) => call('GET', plateformeRoutes.linkMinimoas(linkId), LinkMinimoasZ),
+      update: (linkId: string, body: LinkMinimoasBody) => call('PATCH', plateformeRoutes.linkMinimoas(linkId), LinkMinimoasZ, body),
+      /** Tous tes liens, par pages : passer le `nextCursor` de la page précédente. */
+      mine: (cursor?: string) => call('GET', plateformeRoutes.myMinimoas() + (cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''), MyMinimoasZ),
+    },
+    /**
+     * Notifications : enregistrer le jeton Expo et le fuseau à chaque ouverture (`registerDevice`), le retirer à la
+     * déconnexion ; réglages par type et heure du défi du jour. Les push portent `data` au format `PushDataZ`.
+     */
+    notifications: {
+      registerDevice: (body: RegisterDeviceBody) => call('POST', plateformeRoutes.devices(), NotificationSettingsZ, body),
+      removeDevice: (token: string) => call('POST', plateformeRoutes.devicesRemove(), OkZ, { token }),
+      settings: () => call('GET', plateformeRoutes.notificationSettings(), NotificationSettingsZ),
+      updateSettings: (body: NotificationSettingsBody) => call('PATCH', plateformeRoutes.notificationSettings(), NotificationSettingsZ, body),
     },
   };
 }

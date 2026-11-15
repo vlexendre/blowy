@@ -40,14 +40,6 @@ export class MemoryLinksRepository implements LinksRepository {
       .map((l) => ({ ...l }));
   }
 
-  async listSilent(before: string, after: string | null, limit: number): Promise<LinkRecord[]> {
-    return [...this.db.links.values()]
-      .filter((l) => l.status === 'active' && l.lastMessageAt < before && (after === null || l.lastMessageAt > after))
-      .sort((a, b) => a.lastMessageAt.localeCompare(b.lastMessageAt))
-      .slice(0, limit)
-      .map((l) => ({ ...l }));
-  }
-
   async pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]> {
     return [...this.db.links.values()]
       .filter((l) => (l.userA === userId || l.userB === userId) && l.status !== 'archived' && (after === null || l.id > after))

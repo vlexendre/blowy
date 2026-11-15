@@ -144,7 +144,7 @@ function ActorBench() {
 
 /** Accueil complet : scène, besoins, soins (avec fraise, balle, lumière, cœurs). */
 function HomeBench() {
-  const [needs, setNeeds] = useState<Needs>({ hunger: 32, energy: 58, mood: 88 });
+  const [needs, setNeeds] = useState<Needs>({ sociability: 60, hunger: 32, energy: 58, mood: 88 });
   const [reaction, setReaction] = useState<PetActorReaction | null>(null);
   const [key, setKey] = useState(0);
   const [dressed, setDressed] = useState(true);
@@ -159,7 +159,7 @@ function HomeBench() {
         <Chip label="habillé" selected={dressed} onPress={() => setDressed((d) => !d)} />
         <Chip
           label="besoins au hasard"
-          onPress={() => setNeeds({ hunger: Math.round(Math.random() * 100), energy: Math.round(Math.random() * 100), mood: Math.round(Math.random() * 100) })}
+          onPress={() => setNeeds({ sociability: Math.round(Math.random() * 100), hunger: Math.round(Math.random() * 100), energy: Math.round(Math.random() * 100), mood: Math.round(Math.random() * 100) })}
         />
       </Row>
       <PetStage

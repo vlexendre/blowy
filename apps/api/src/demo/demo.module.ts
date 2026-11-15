@@ -4,8 +4,11 @@ import { LinksModule } from '../modules/links/links.module';
 import type { OnboardedHook } from '../modules/me/ports';
 import { PetsModule } from '../modules/pets/pets.module';
 import { VisionModule } from '../modules/vision/vision.module';
+import { RituelsModule } from '../modules/rituels/rituels.module';
 import { ONBOARDED_HOOK } from '../shared/tokens';
 import { DemoWorld } from './demo-world';
+import { PlateformeDemo } from './plateforme-demo';
+import { RituelsDemo } from './rituels-demo';
 
 const noHook: OnboardedHook = { onOnboarded: async () => undefined };
 
@@ -19,8 +22,8 @@ export class DemoModule {
     return {
       module: DemoModule,
       global: true,
-      imports: [PetsModule, LinksModule, EncountersModule, VisionModule],
-      providers: [DemoWorld, { provide: ONBOARDED_HOOK, useExisting: DemoWorld }],
+      imports: [PetsModule, LinksModule, EncountersModule, VisionModule, RituelsModule],
+      providers: [DemoWorld, RituelsDemo, PlateformeDemo, { provide: ONBOARDED_HOOK, useExisting: DemoWorld }],
       exports: [ONBOARDED_HOOK],
     };
   }

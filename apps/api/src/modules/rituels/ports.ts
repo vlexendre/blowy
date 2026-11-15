@@ -155,6 +155,8 @@ export interface RitualPhotosRepository {
   /** Photos non gardées, pas encore supprimées, créées avant `beforeIso` (les plus anciennes d'abord). */
   listExpired(beforeIso: string, limit: number): Promise<RitualPhotoRecord[]>;
   markDeleted(ids: readonly string[], at: string): Promise<void>;
+  /** Photos d'une personne encore dans le stockage (suppression du compte). */
+  listLive(userId: string): Promise<RitualPhotoRecord[]>;
   /** Souvenirs privés : photos gardées, de la plus récente à la plus ancienne, strictement avant `before`. */
   listKept(userId: string, before: string | null, limit: number): Promise<RitualPhotoRecord[]>;
 }

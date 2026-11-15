@@ -17,7 +17,7 @@ export const RATE_LIMIT_STORE = Symbol('RATE_LIMIT_STORE');
 /** Quotas par personne : nombre d'appels par fenêtre. */
 export const RATE_LIMITS = {
   /** Messages et photos dans un lien. */
-  message: { max: 30, windowMs: 60_000 },
+  message: { max: 60, windowMs: 60_000 },
   /** Autres écritures (réglages, accords, appareils). */
   write: { max: 30, windowMs: 60_000 },
   /** Routes qui peuvent appeler un modèle d'IA (preuves d'habitude…). */

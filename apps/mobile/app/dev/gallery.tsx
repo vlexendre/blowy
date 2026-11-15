@@ -224,7 +224,7 @@ function Frame({ height, children }: { height: number; children: ReactNode }) {
 
 // ── Soins et garde-robe ──────────────────────────────────────────────────────
 const SPECIES: readonly Species[] = ['nino', 'suzie', 'gaston', 'pia'];
-const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1 };
+const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1, ritualStreak: 3, habitsKept: 1 };
 const earned = new Set(earnedItems(demoStats));
 const wardrobe: WardrobeItemLook[] = ITEMS.map((i) => {
   const p = itemProgress(i, demoStats);
@@ -244,7 +244,7 @@ const looks: Record<Species, Outfit> = {
 const careIcons = { feed: <CareIcon name="feed" size={30} />, play: <CareIcon name="play" size={30} />, nap: <CareIcon name="nap" size={30} />, cuddle: <CareIcon name="cuddle" size={30} /> };
 
 function CareDemo() {
-  const [needs, setNeeds] = useState<Needs>({ hunger: 32, energy: 58, mood: 88 });
+  const [needs, setNeeds] = useState<Needs>({ sociability: 60, hunger: 32, energy: 58, mood: 88 });
   const [reaction, setReaction] = useState<PetReaction | null>(null);
   const [key, setKey] = useState(0);
   const [outfit, setOutfit] = useState<Outfit>({ head: 'casquette', face: 'lunettes_rondes', body: 'echarpe', toy: 'ballon' });
@@ -272,7 +272,7 @@ function CareDemo() {
         />
         <NeedsPanel needs={needs} labels={needLabel} />
         <CareBar labels={careLabel} available={available} hot={{ feed: needs.hunger < 40 }} onCare={care} />
-        <Button label="remettre à plat" size="sm" variant="ghost" onPress={() => setNeeds({ hunger: 12, energy: 10, mood: 25 })} />
+        <Button label="remettre à plat" size="sm" variant="ghost" onPress={() => setNeeds({ sociability: 20, hunger: 12, energy: 10, mood: 25 })} />
       </Item>
       <Item name="OutfitPreview · SlotTabs · WardrobeGrid (interactif)">
         <OutfitPreview species="nino" outfit={outfit} slotLabels={slotLabel} itemLabels={itemLabel} emptyLabel="rien" activeSlot={slot} onSlotPress={setSlot} />
@@ -377,7 +377,7 @@ function CareLevel() {
         </View>
       </Item>
       <Item name="NeedsPanel · tout va bien">
-        <NeedsPanel needs={{ hunger: 90, energy: 75, mood: 81 }} labels={needLabel} />
+        <NeedsPanel needs={{ sociability: 85, hunger: 90, energy: 75, mood: 81 }} labels={needLabel} />
       </Item>
       <Item name="PetStage · boude">
         <PetStage pet={{ name: 'Gaston', species: 'gaston', outfit: looks.gaston }} shape="boude" shapeLabel={shapeLabel.boude?.title} />

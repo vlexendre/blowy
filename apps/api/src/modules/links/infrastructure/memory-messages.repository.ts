@@ -11,9 +11,9 @@ export class MemoryMessagesRepository implements MessagesRepository {
     for (const m of messages) this.db.messages.push({ ...m });
   }
 
-  async page(linkId: string, before: string | null, limit: number, viewerId: string): Promise<MessageRecord[]> {
+  async page(linkId: string, before: string | null, limit: number, viewerId?: string): Promise<MessageRecord[]> {
     return this.ofLink(linkId)
-      .filter((m) => visibleBy(m, viewerId) && (before === null || m.createdAt < before))
+      .filter((m) => (viewerId === undefined || visibleBy(m, viewerId)) && (before === null || m.createdAt < before))
       .sort(newestFirst)
       .slice(0, limit)
       .map((m) => ({ ...m }));

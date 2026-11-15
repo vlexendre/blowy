@@ -64,11 +64,13 @@ describe('minimoas dans le chat', () => {
     expect(remarkDue({ state: { ...s, day: today, interventions: 3 }, today, muted: false })).toBe(false);
   });
   it('relance après 72 h de silence, une seule fois par silence', () => {
-    const lastMessageAt = '2026-11-12T10:00:00.000Z';
-    const input = { state: EMPTY_CHAT_PET_STATE, today, muted: false, active: true, lastMessageAt };
+    const lastUserAt = '2026-11-12T10:00:00.000Z';
+    const state = { ...EMPTY_CHAT_PET_STATE, lastUserAt };
+    const input = { state, today, muted: false, active: true };
     expect(nudgeDue({ ...input, now: new Date('2026-11-15T09:59:00Z') })).toBe(false);
     expect(nudgeDue({ ...input, now: new Date('2026-11-15T10:00:00Z') })).toBe(true);
-    expect(nudgeDue({ ...input, state: { ...EMPTY_CHAT_PET_STATE, lastNudgeFor: lastMessageAt }, now: new Date('2026-11-16T10:00:00Z') })).toBe(false);
+    expect(nudgeDue({ ...input, state: { ...state, lastNudgeFor: lastUserAt }, now: new Date('2026-11-16T10:00:00Z') })).toBe(false);
+    expect(nudgeDue({ ...input, state: EMPTY_CHAT_PET_STATE, now: new Date('2026-11-16T10:00:00Z') })).toBe(false);
     expect(nudgeDue({ ...input, active: false, now: new Date('2026-11-16T10:00:00Z') })).toBe(false);
   });
   it('heuristique de ton locale et garde-fou espacé de 24 h', () => {

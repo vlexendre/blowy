@@ -60,6 +60,7 @@ export function TabTemplate({
       edges={['top']}
       bottomSpace={barSpace}
       compactTitle={title ? plain(title) : undefined}
+      compactAfter={brand ? 104 : 80}
       refreshControl={refreshControl}
       onScroll={onScroll}
       scrollEventThrottle={scrollEventThrottle}

@@ -115,10 +115,18 @@ export function CareButton({
       if (hit) {
         haptic('medium');
         onPress?.();
+        // Une fois entré dans le pet, le picto repousse dans son disque (le disque montre d'abord le chargement).
+        setTimeout(() => {
+          tx.value = 0;
+          ty.value = 0;
+          fade.value = 1;
+          scale.value = 0.4;
+          scale.value = withSpring(1, springs.pop);
+        }, 240);
       }
       setTimeout(() => setLifted(false), hit ? 260 : 420);
     },
-    [scrollLock, onPress],
+    [scrollLock, onPress, tx, ty, fade, scale],
   );
   // Trampolines stables : le geste n'est recréé que si `canDrag` change (jamais pendant qu'on porte le picto).
   const startRef = useRef(startJS);
@@ -171,13 +179,7 @@ export function CareButton({
           tx.value = withTiming(tx.value + dx, { duration: 180, easing: ease.in });
           ty.value = withTiming(ty.value + dy, { duration: 180, easing: ease.in });
           scale.value = withTiming(0.2, { duration: 180, easing: ease.in });
-          fade.value = withSequence(withTiming(0, { duration: 180 }), withTiming(0, { duration: 60 }, () => {
-            tx.value = 0;
-            ty.value = 0;
-            scale.value = 0;
-            fade.value = 1;
-            scale.value = withSpring(1, springs.pop);
-          }));
+          fade.value = withTiming(0, { duration: 180 });
         } else {
           // Lâché ailleurs : il revient à sa place en ressort.
           tx.value = withSpring(0, springs.plush);

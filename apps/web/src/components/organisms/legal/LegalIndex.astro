@@ -16,8 +16,8 @@ const { ui, pages } = LEGAL_CONTENT[locale];
     {
       LEGAL_SLUGS.map((s) => (
         <li>
-          <a href={legalPath(locale, s)}>{pages[s].heading}</a>
-          <p>{pages[s].description}</p>
+          <a href={legalPath(locale, s)} set:html={inline(pages[s].heading, locale)} />
+          <p set:html={inline(pages[s].description, locale)} />
         </li>
       ))
     }

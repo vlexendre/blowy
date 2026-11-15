@@ -106,15 +106,6 @@ export class SupabaseLinksRepository implements LinksRepository {
     return (data as LinkRow[]).map(fromRow);
   }
 
-  async listSilent(before: string, after: string | null, limit: number): Promise<LinkRecord[]> {
-    // Index partiel links_silence_idx (last_message_at) where status = 'active'.
-    let query = this.table.select('*').eq('status', 'active').lt('last_message_at', before);
-    if (after !== null) query = query.gt('last_message_at', after);
-    const { data, error } = await query.order('last_message_at').limit(limit);
-    check(error, 'liens silencieux');
-    return (data as LinkRow[]).map(fromRow);
-  }
-
   async pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]> {
     let query = this.table.select('*').or(`user_a.eq.${userId},user_b.eq.${userId}`).neq('status', 'archived');
     if (after !== null) query = query.gt('id', after);

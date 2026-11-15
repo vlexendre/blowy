@@ -47,7 +47,9 @@ export interface ChatPetState {
   /** Messages texte des personnes depuis la dernière remarque. */
   messagesSinceRemark: number;
   icebreakerDone: boolean;
-  /** `lastMessageAt` du lien au moment de la dernière relance : une seule relance par silence. */
+  /** Dernier message d'une personne (ou création du lien) : base des silences (les répliques des minimoas n'y comptent pas). */
+  lastUserAt: string | null;
+  /** `lastUserAt` au moment de la dernière relance : une seule relance par silence. */
   lastNudgeFor: string | null;
   lastGuardAt: string | null;
 }
@@ -57,6 +59,7 @@ export const EMPTY_CHAT_PET_STATE: ChatPetState = {
   interventions: 0,
   messagesSinceRemark: 0,
   icebreakerDone: false,
+  lastUserAt: null,
   lastNudgeFor: null,
   lastGuardAt: null,
 };
@@ -83,14 +86,14 @@ export interface NudgeInput {
   today: Day;
   muted: boolean;
   active: boolean;
-  lastMessageAt: string;
   now: Date;
 }
-/** Relance : lien actif, silence d'au moins 72 h, pas déjà relancé pour ce silence. */
+/** Relance : lien actif, silence des personnes d'au moins 72 h, pas déjà relancé pour ce silence. */
 export function nudgeDue(i: NudgeInput): boolean {
-  if (!i.active || i.muted || interventionsLeft(i.state, i.today) === 0) return false;
-  if (i.state.lastNudgeFor === i.lastMessageAt) return false;
-  return i.now.getTime() - new Date(i.lastMessageAt).getTime() >= SILENCE_NUDGE_HOURS * 3_600_000;
+  const last = i.state.lastUserAt;
+  if (!i.active || i.muted || last === null || interventionsLeft(i.state, i.today) === 0) return false;
+  if (i.state.lastNudgeFor === last) return false;
+  return i.now.getTime() - new Date(last).getTime() >= SILENCE_NUDGE_HOURS * 3_600_000;
 }
 
 /** Heures entières de silence (pour « Ça fait 3 jours »). */
@@ -101,7 +104,7 @@ export const silenceDays = (lastMessageAt: string, now: Date): number => Math.fl
 const HOSTILE_WORDS = [
   'connard', 'connasse', 'conne', 'con', 'débile', 'debile', 'abruti', 'abrutie', 'idiot', 'idiote', 'crétin', 'cretin',
   'pétasse', 'salope', 'salaud', 'enfoiré', 'enfoire', 'ta gueule', 'tg', 'ferme-la', 'ferme la', 'dégage', 'degage',
-  'nul', 'nulle', 'pathétique', 'pathetique', 'minable', 'menteur', 'menteuse', 'stupid', 'idiot', 'shut up', 'loser',
+  'nul', 'nulle', 'pathétique', 'pathetique', 'minable', 'menteur', 'menteuse', 'stupid', 'shut up', 'loser',
 ];
 const HEATED_PHRASES = [
   "j'en ai marre", 'j’en ai marre', 'tu me saoules', 'tu me soûles', 'tu m’énerves', "tu m'énerves", 'laisse-moi tranquille',

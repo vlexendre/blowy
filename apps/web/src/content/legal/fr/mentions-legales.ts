@@ -57,9 +57,5 @@ export const mentionsLegales: LegalPage = {
     {
       p: 'Polices du site : Anton et Bricolage Grotesque, sous licence SIL Open Font License. Animations de la page d’accueil : bibliothèque GSAP.',
     },
-    { h2: 'Les autres documents', id: 'documents' },
-    {
-      p: "L'usage de Blowy est encadré par les [conditions d'utilisation](@conditions), la [politique de confidentialité](@confidentialite), les [conditions de l'abonnement Blowy+](@abonnement) et les [règles de la communauté](@regles).",
-    },
   ],
 };

@@ -40,7 +40,7 @@ describe('soins et garde-robe', () => {
 
   it('soins : comblent un besoin, refusés quand il est comblé, un jour de soin par jour', async () => {
     const fed = await alice.api.pet.care('feed');
-    expect(fed.pet.needs).toEqual({ hunger: 100, energy: 80, mood: 80 });
+    expect(fed.pet.needs).toEqual({ sociability: 80, hunger: 100, energy: 80, mood: 80 });
     expect(fed.careDays).toBe(1);
     expect(fed.events[0]?.kind).toBe('care_feed');
     // Premier jour de soin : deux objets débloqués, fêtés une seule fois.
@@ -67,7 +67,8 @@ describe('soins et garde-robe', () => {
     world.clock.advanceHours(14); // 1 h du matin à Paris : un autre jour
     const before = await alice.api.pet.get();
     expect(before.careDays).toBe(1);
-    expect(before.pet.needs).toEqual({ hunger: 51, energy: 65, mood: 60 });
+    // La sociabilité baisse aussi (1,5 point par heure) : les gestes ne la comblent pas.
+    expect(before.pet.needs).toEqual({ sociability: 59, hunger: 51, energy: 65, mood: 60 });
     const fed = await alice.api.pet.care('feed');
     expect(fed.careDays).toBe(2);
     expect(fed.newItems).toEqual(['bonnet']);
@@ -134,8 +135,9 @@ describe('soins et garde-robe', () => {
 
     world.clock.advanceDays(3);
     expect((await alice.api.links.get(linkId)).streak).toBe(0);
+    // V7 : les paliers de 3 jours et plus suivent la série des défis du jour, plus celle des photos.
     const fleurs = (await alice.api.pet.wardrobe()).items.find((i) => i.id === 'fleurs');
-    expect(fleurs?.goal).toEqual({ stat: 'bestStreak', have: 2, need: 3 });
+    expect(fleurs?.goal).toEqual({ stat: 'ritualStreak', have: 0, need: 3 });
     expect((await bob.api.pet.wardrobe()).items.find((i) => i.id === 'fleur')?.state).toBe('owned');
   });
 });
@@ -157,16 +159,20 @@ describe('un pet qui boude ne sort plus', () => {
       await carol.api.pet.get();
     }
     const after10 = (await carol.api.pet.get()).pet;
-    expect(after10.needs).toEqual({ hunger: 45, energy: 55, mood: 55 });
-    expect(after10).toMatchObject({ wellbeing: 50, shape: 'bof' });
+    expect(after10.needs).toEqual({ sociability: 65, hunger: 45, energy: 55, mood: 55 });
+    // Forme : 60 % sociabilité (65) + 40 % petits besoins (50).
+    expect(after10).toMatchObject({ wellbeing: 59, shape: 'bof' });
 
     world.clock.advanceHours(10);
     const after20 = (await carol.api.me.get()).pet;
-    expect(after20.needs).toEqual({ hunger: 10, energy: 30, mood: 30 });
-    expect(after20).toMatchObject({ wellbeing: 20, shape: 'boude' });
+    expect(after20.needs).toEqual({ sociability: 50, hunger: 10, energy: 30, mood: 30 });
+    expect(after20).toMatchObject({ wellbeing: 38, shape: 'bof' });
 
-    world.clock.advanceHours(30);
-    expect((await carol.api.pet.get()).pet.needs).toEqual({ hunger: 0, energy: 0, mood: 0 });
+    world.clock.advanceHours(10);
+    expect((await carol.api.pet.get()).pet).toMatchObject({ needs: { sociability: 35 }, shape: 'boude' });
+
+    world.clock.advanceHours(20);
+    expect((await carol.api.pet.get()).pet.needs).toEqual({ sociability: 5, hunger: 0, energy: 0, mood: 0 });
     // Trop fatigué pour jouer.
     expect(await apiError(carol.api.pet.care('play'))).toEqual({ code: 'already_done', message: careLabel.play?.refused });
   });
@@ -177,7 +183,7 @@ describe('un pet qui boude ne sort plus', () => {
     const fred = world.client();
     await dana.api.me.onboard(onboardBody({ displayName: 'Dana' }));
     await eli.api.me.onboard(onboardBody({ displayName: 'Eli' }));
-    world.clock.advanceHours(20);
+    world.clock.advanceHours(30);
     await fred.api.me.onboard(onboardBody({ displayName: 'Fred' }));
     await fred.api.encounters.wave(dana.id);
 
@@ -197,13 +203,18 @@ describe('un pet qui boude ne sort plus', () => {
     await dana.api.pet.care('feed');
     await dana.api.pet.care('nap');
     const cuddled = await dana.api.pet.care('cuddle');
-    expect(cuddled.pet.needs).toEqual({ hunger: 50, energy: 75, mood: 45 });
+    // Sociabilité : 35 après 30 h, +12 pour la rencontre acceptée avec Fred.
+    expect(cuddled.pet.needs).toEqual({ sociability: 47, hunger: 40, energy: 50, mood: 20 });
     expect(cuddled.pet.shape).toBe('bof');
     expect((await dana.api.encounters.list()).petShape).toBe('bof');
-    await dana.api.encounters.wave(eli.id);
+    await dana.api.encounters.wave(eli.id); // saluer : +4 de sociabilité
 
     const played = await dana.api.pet.care('play');
-    expect(played.pet).toMatchObject({ needs: { hunger: 50, energy: 65, mood: 75 }, wellbeing: 60, shape: 'en_forme' });
+    expect(played.pet).toMatchObject({ needs: { sociability: 51, hunger: 40, energy: 40, mood: 50 }, wellbeing: 48, shape: 'bof' });
+    // Les gestes ne suffisent plus : il faut sortir (V7, sociabilité d'abord).
+    const out = await dana.api.rituals.outing('saw_people');
+    expect(out.sociability).toBe(91);
+    expect((await dana.api.pet.get()).pet).toMatchObject({ wellbeing: 72, shape: 'en_forme' });
   });
 
   it('le quota de suggestions dépend de la forme', async () => {

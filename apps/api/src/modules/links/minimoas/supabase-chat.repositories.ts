@@ -45,21 +45,41 @@ export class SupabaseChatSettingsRepository implements ChatSettingsRepository {
   }
 }
 
+type StateRow = {
+  day: string | null;
+  interventions: number;
+  messages_since_remark: number;
+  icebreaker_done: boolean;
+  last_user_at: string | null;
+  last_nudge_for: string | null;
+  last_guard_at: string | null;
+};
+const stateFrom = (data: StateRow): ChatPetState => ({
+  day: data.day,
+  interventions: data.interventions,
+  messagesSinceRemark: data.messages_since_remark,
+  icebreakerDone: data.icebreaker_done,
+  lastUserAt: isoOrNull(data.last_user_at),
+  lastNudgeFor: isoOrNull(data.last_nudge_for),
+  lastGuardAt: isoOrNull(data.last_guard_at),
+});
+
 export class SupabaseChatPetStateRepository implements ChatPetStateRepository {
   constructor(private readonly client: Db) {}
 
   async get(linkId: string): Promise<ChatPetState> {
     const { data, error } = await this.client.from('chat_pet_state').select('*').eq('link_id', linkId).maybeSingle();
     check(error, 'état des minimoas');
-    if (!data) return { ...EMPTY_CHAT_PET_STATE };
-    return {
-      day: data.day,
-      interventions: data.interventions,
-      messagesSinceRemark: data.messages_since_remark,
-      icebreakerDone: data.icebreaker_done,
-      lastNudgeFor: isoOrNull(data.last_nudge_for),
-      lastGuardAt: isoOrNull(data.last_guard_at),
-    };
+    return data ? stateFrom(data) : { ...EMPTY_CHAT_PET_STATE };
+  }
+
+  async listSilent(before: string, after: string | null, limit: number): Promise<{ linkId: string; state: ChatPetState }[]> {
+    // Index partiel chat_pet_state_silence_idx (last_user_at) where last_user_at is not null.
+    let query = this.client.from('chat_pet_state').select('*').not('last_user_at', 'is', null).lt('last_user_at', before);
+    if (after !== null) query = query.gt('last_user_at', after);
+    const { data, error } = await query.order('last_user_at').limit(limit);
+    check(error, 'silences des liens');
+    return (data ?? []).map((r) => ({ linkId: r.link_id, state: stateFrom(r) }));
   }
 
   async save(linkId: string, s: ChatPetState): Promise<void> {
@@ -69,6 +89,7 @@ export class SupabaseChatPetStateRepository implements ChatPetStateRepository {
       interventions: s.interventions,
       messages_since_remark: s.messagesSinceRemark,
       icebreaker_done: s.icebreakerDone,
+      last_user_at: s.lastUserAt,
       last_nudge_for: s.lastNudgeFor,
       last_guard_at: s.lastGuardAt,
       updated_at: new Date().toISOString(),

@@ -55,9 +55,5 @@ export const mentionsLegales: LegalPage = {
       p: 'Het merk Blowy, de minimoas, de illustraties, teksten, animaties en software zijn beschermd door het intellectuele-eigendomsrecht. Ze zijn van {{publisher.name}} of haar partners. Ze kopiëren of hergebruiken zonder toestemming is verboden, behalve wat de wet toestaat (kort citaat, privékopie).',
     },
     { p: 'Lettertypen van de website: Anton en Bricolage Grotesque, onder de SIL Open Font License. Animaties op de homepage: de GSAP-bibliotheek.' },
-    { h2: 'Andere documenten', id: 'documents' },
-    {
-      p: 'Het gebruik van Blowy valt onder de [gebruiksvoorwaarden](@conditions), het [privacybeleid](@confidentialite), de [voorwaarden van het Blowy+-abonnement](@abonnement) en de [communityregels](@regles).',
-    },
   ],
 };

@@ -3,7 +3,7 @@ import { ApiError } from '@blowy/api-client';
 import { careLabel, formLabel, itemLabel, needLabel, shapeLabel, statGoalLabel } from '@blowy/content';
 import { type CareAction, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
-import { Appear, Banner, CareBar, CareIcon, EntryCard, ItemImage, NeedsPanel, PetRefresh, type PetReaction, PetStage, Skeleton, TabTemplate, usePetLure } from '@blowy/ui';
+import { Appear, Banner, CareBar, CareIcon, EntryCard, ItemImage, NeedsPanel, PetHomeSkeleton, PetRefresh, type PetReaction, PetStage, TabTemplate, usePetLure } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { RefreshControl } from 'react-native';
@@ -53,11 +53,7 @@ export default function PetHome() {
       <ScreenMotion>
         <TabTemplate gutter={14} gap={10} top={6} refreshControl={refreshControl}>
           {pet.isPending ? (
-            <>
-              <Skeleton height={318} radius="xl" />
-              <Skeleton height={56} radius="md" />
-              <Skeleton height={112} radius="lg" />
-            </>
+            <PetHomeSkeleton />
           ) : (
             <Banner tone="error" title={t.loadError} text={pet.error?.message ?? ''} actionLabel={t.retry} onAction={() => void pet.refetch()} />
           )}

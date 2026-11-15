@@ -26,4 +26,6 @@ export interface ChatPetStateRepository {
   /** État du lien (vide s'il n'existe pas encore). */
   get(linkId: string): Promise<ChatPetState>;
   save(linkId: string, state: ChatPetState): Promise<void>;
+  /** Minuteur : liens dont le dernier message d'une personne date d'avant `before`, du plus ancien au plus récent, après le curseur. */
+  listSilent(before: string, after: string | null, limit: number): Promise<{ linkId: string; state: ChatPetState }[]>;
 }

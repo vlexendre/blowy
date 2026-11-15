@@ -50,8 +50,6 @@ export interface LinksRepository {
   save(link: LinkRecord): Promise<void>;
   /** Minuteur : liens actifs pas encore rattrapés aujourd'hui (`last_tick_on < today`), par lots. */
   listDueForTick(today: Day, limit: number): Promise<LinkRecord[]>;
-  /** Minuteur : liens actifs silencieux depuis `before`, du plus ancien silence au plus récent, après le curseur. */
-  listSilent(before: string, after: string | null, limit: number): Promise<LinkRecord[]>;
   /** Liens d'une personne par pages (ordre d'identifiant), tous statuts sauf archivés. */
   pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]>;
 }
@@ -60,9 +58,9 @@ export interface MessagesRepository {
   add(messages: readonly MessageRecord[]): Promise<void>;
   /**
    * Messages strictement avant `before`, du plus récent au plus ancien, vus par `viewerId`
-   * (les messages réservés à l'autre personne sont exclus).
+   * (les messages réservés à l'autre personne sont exclus ; sans `viewerId` : tous, usage interne).
    */
-  page(linkId: string, before: string | null, limit: number, viewerId: string): Promise<MessageRecord[]>;
+  page(linkId: string, before: string | null, limit: number, viewerId?: string): Promise<MessageRecord[]>;
   latest(linkId: string, viewerId: string): Promise<MessageRecord | null>;
   /** Messages non écrits par `userId` (ni par son pet) après `after`, visibles par lui. */
   countUnread(linkId: string, userId: string, after: string | null): Promise<number>;

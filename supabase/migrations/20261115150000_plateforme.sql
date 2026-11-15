@@ -98,10 +98,15 @@ create table public.chat_pet_state (
   interventions smallint not null default 0 check (interventions >= 0),
   messages_since_remark integer not null default 0,
   icebreaker_done boolean not null default false,
+  -- Dernier message d'une personne (ou création du lien) : base des silences ; null une fois le lien endormi.
+  last_user_at timestamptz,
   last_nudge_for timestamptz,
   last_guard_at timestamptz,
   updated_at timestamptz not null default now()
 );
+
+-- Minuteur : silences à relancer, sans parcourir toute la table.
+create index chat_pet_state_silence_idx on public.chat_pet_state (last_user_at) where last_user_at is not null;
 
 -- Rôle des répliques de minimoa et destinataire unique (garde-fou).
 alter table public.messages
@@ -122,9 +127,8 @@ create policy "membres : lire les messages de leurs liens" on public.messages
     )
   );
 
--- Minuteur : liens à rattraper (vies perdues) et silences à relancer, sans parcourir toute la table.
+-- Minuteur : liens à rattraper (vies perdues) sans parcourir toute la table.
 create index links_due_tick_idx on public.links (last_tick_on) where status = 'active';
-create index links_silence_idx on public.links (last_message_at) where status = 'active';
 
 -- ── Notifications ─────────────────────────────────────────────────────────
 -- Jetons des appareils. kind 'expo' : push Expo ; 'apns_live_activity' : réservé aux activités en direct (à venir).

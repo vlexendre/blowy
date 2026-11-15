@@ -61,7 +61,11 @@ export type PublicPet = z.infer<typeof PublicPetZ>;
 export const PetViewZ = z.object({
   pet: PetZ,
   events: z.array(PetEventZ),
-  /** Défi du jour : une question, deux réponses ; fait une fois par jour. */
+  /**
+   * Ancien défi du jour (V6) : une question de caractère, deux réponses. Remplacé par le défi des rituels
+   * (`ritualRoutes.today()`, choisi par le serveur, qui fait avancer la série) ; gardé tant que l'écran actuel s'en sert.
+   * `doneToday` est vrai dès qu'un des deux est fait (un seul « défi relevé » compté par jour).
+   */
   challenge: z.object({ id: z.string(), question: z.string(), choices: z.array(z.string()).length(2), doneToday: z.boolean() }),
   wordsCount: z.number().int(),
   /** Jours où la personne s'est occupée de son pet. */

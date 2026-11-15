@@ -49,3 +49,4 @@ export { PromiseStage, type PromiseStageProps } from './PromiseStage';
 export { ReadyHero, type ReadyHeroProps } from './ReadyHero';
 export { type EncounterHistoryEntry, EncounterHistory, type EncounterHistoryProps, type EncounterHistoryTone } from './EncounterHistory';
 export { RenameCard, type RenameCardProps } from './RenameCard';
+export { PetHomeSkeleton } from './PetHomeSkeleton';

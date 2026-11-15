@@ -65,7 +65,9 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     expect((await alice.api.encounters.list()).suggestions.some((s) => s.user.id === bob.id)).toBe(false);
 
     const { messages } = await alice.api.links.messages(link.id);
-    expect(messages.map((m) => m.author)).toEqual(['system', 'my_pet', 'other_pet']);
+    // Bandeau, puis le brise-glace d'un des deux minimoas (une question tirée des points communs).
+    expect(messages.map((m) => m.author)[0]).toBe('system');
+    expect(messages.slice(1).map((m) => m.petRole)).toEqual(['icebreaker']);
     // met_new_pet (+12) et waved (+4) font bouger la jauge sociale d'Alice.
     expect((await alice.api.pet.get()).pet.gauges.social).toBe(46);
   });
@@ -75,7 +77,8 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     expect(action.messages.map((m) => m.author)).toEqual(['me', 'my_pet', 'other_pet']);
 
     const bobView = await bob.api.links.get(link.id);
-    expect(bobView.unread).toBe(4);
+    const seenByBob = (await bob.api.links.messages(link.id)).messages;
+    expect(bobView.unread).toBe(seenByBob.filter((m) => m.author !== 'me' && m.author !== 'my_pet').length);
     expect(bobView.lastMessage?.preview).toBeTruthy();
     const page = await bob.api.links.messages(link.id);
     const authors = page.messages.map((m) => m.author);
@@ -84,8 +87,8 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     expect((await bob.api.links.get(link.id)).unread).toBe(0);
 
     const reply = await bob.api.links.send(link.id, { body: 'hello', tone: 'tease' });
-    // Pas de réplique « premier message du jour » : le lien a déjà parlé aujourd'hui.
-    expect(reply.messages.map((m) => m.author)).toEqual(['me', 'other_pet']);
+    // Plus de réplique aujourd'hui : brise-glace, premier message du jour et mot doux font déjà 3 interventions.
+    expect(reply.messages.map((m) => m.author)).toEqual(['me']);
     expect((await alice.api.pet.get()).events.some((e) => e.kind === 'sweet_word')).toBe(true);
   });
 

@@ -9,6 +9,8 @@
     "dev:api": "pnpm --filter @blowy/api dev",
     "dev:web": "pnpm --filter @blowy/web dev",
     "dev:mobile": "pnpm --filter @blowy/mobile start",
+    "dev:admin": "pnpm --filter @blowy/admin dev",
+    "build:admin": "pnpm --filter @blowy/admin build",
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",

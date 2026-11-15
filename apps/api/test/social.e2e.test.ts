@@ -164,10 +164,10 @@ describe('configuration', () => {
       const me = world.client();
       await me.api.me.onboard(onboardBody());
       const before = await (await fetch(`${world.baseUrl}/dev/clock`)).json() as { now: string };
-      const res = await fetch(`${world.baseUrl}/dev/clock/advance`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hours: 20 }) });
+      const res = await fetch(`${world.baseUrl}/dev/clock/advance`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hours: 30 }) });
       expect(res.status).toBe(201);
       const after = await res.json() as { now: string };
-      expect(Date.parse(after.now) - Date.parse(before.now)).toBe(20 * 3_600_000);
+      expect(Date.parse(after.now) - Date.parse(before.now)).toBe(30 * 3_600_000);
       expect((await me.api.pet.get()).pet.shape).toBe('boude');
       const bad = await fetch(`${world.baseUrl}/dev/clock/advance`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ hours: -1 }) });
       expect(bad.status).toBe(400);
@@ -198,7 +198,8 @@ describe('configuration', () => {
       const wardrobe = await me.api.pet.wardrobe();
       expect(wardrobe.items.filter((i) => i.state === 'owned')).toHaveLength(8 + 3); // + objets du premier lien (avec Malo)
       const view = await me.api.pet.get();
-      expect(view.pet.needs).toEqual(START_NEEDS);
+      // Rencontre acceptée avec Malo : +12 de sociabilité.
+      expect(view.pet.needs).toEqual({ ...START_NEEDS, sociability: START_NEEDS.sociability + 12 });
       expect(view.newItems).toEqual(['chapeau_fete', 'noeud_pap', 'bulle']);
     } finally {
       await world.close();

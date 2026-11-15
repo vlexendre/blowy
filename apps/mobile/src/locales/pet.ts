@@ -166,6 +166,8 @@ export const unlock = {
     bestStreak: (n: number): string => `une série de ${n} photos du jour. chapeau.`,
     challenges: (n: number): string => `${plural(n, 'défi relevé', 'défis relevés')}. pas mal.`,
     words: (n: number): string => `${plural(n, 'pote a', 'potes ont')} donné leurs 3 mots.`,
+    ritualStreak: (n: number): string => `${n} jours de série. la mèche brille.`,
+    habitsKept: (n: number): string => `${plural(n, 'habitude tenue', 'habitudes tenues')}. ça se voit.`,
   } as Record<StatKey, (n: number) => string>,
   fallback: 'il est rangé dans sa garde-robe.',
   wear: 'il le porte',
@@ -192,6 +194,8 @@ export const wardrobe = {
     bestStreak: (n: number): string => `série de ${n} photos`,
     challenges: (n: number): string => plural(n, 'défi', 'défis'),
     words: (n: number): string => (n > 1 ? `3 mots de ${n} potes` : '3 mots d’un pote'),
+    ritualStreak: (n: number): string => `série de ${n} jours`,
+    habitsKept: (n: number): string => plural(n, 'habitude tenue', 'habitudes tenues'),
   } as Record<StatKey, (n: number) => string>,
   /** Titre de la fiche : le dernier mot estompé (« COURONNE DE / FLEURS »). */
   itemTitle: (name: string): TitleSegment[] => {
@@ -213,6 +217,8 @@ export const wardrobe = {
     bestStreak: (have: number): string => (have === 0 ? 'pas encore de série.' : `ta meilleure série : ${plural(have, 'jour', 'jours')}.`),
     challenges: (have: number): string => `${plural(have, 'défi relevé', 'défis relevés')} pour l’instant.`,
     words: (have: number): string => (have === 0 ? 'personne n’a encore choisi tes 3 mots.' : `${plural(have, 'pote a', 'potes ont')} déjà répondu.`),
+    ritualStreak: (have: number): string => (have === 0 ? 'pas encore de série.' : `ton record : ${plural(have, 'jour', 'jours')}.`),
+    habitsKept: (have: number): string => `${plural(have, 'habitude tenue', 'habitudes tenues')} pour l’instant.`,
   } as Record<StatKey, (have: number) => string>,
   /** Raccourci vers l'endroit où on avance. */
   shortcut: {
@@ -222,6 +228,8 @@ export const wardrobe = {
     bestStreak: 'faire la photo du jour',
     challenges: 'relever le défi du jour',
     words: 'partager mes 3 mots',
+    ritualStreak: 'relever le défi du jour',
+    habitsKept: 'tenir une habitude',
   } as Record<StatKey, string>,
   premiumNote: 'bientôt disponible',
   /** Fiche d'un objet blowy+ : ouvre la feuille blowy+. */

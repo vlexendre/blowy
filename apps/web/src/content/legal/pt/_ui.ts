@@ -15,7 +15,6 @@ export const ui: LegalUi = {
     { slug: 'mentions-legales', label: 'informação legal' },
     { slug: 'conditions', label: 'termos' },
     { slug: 'confidentialite', label: 'privacidade' },
-    { slug: 'cookies', label: 'cookies' },
     { slug: 'index', label: 'tudo o que é legal' },
   ],
   index: {

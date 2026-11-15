@@ -125,7 +125,7 @@ export class MemoryHabitsRepository implements HabitsRepository {
   async listActive(userId: string): Promise<HabitRecord[]> {
     return [...this.db.habits.values()]
       .filter((h) => h.userId === userId && h.archivedAt === null)
-      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt)) // tri stable : ordre d'ajout à instant égal
       .map(clone);
   }
 
@@ -219,6 +219,10 @@ export class MemoryRitualPhotosRepository implements RitualPhotosRepository {
       const p = this.db.ritualPhotos.get(id);
       if (p) p.deletedAt = at;
     }
+  }
+
+  async listLive(userId: string): Promise<RitualPhotoRecord[]> {
+    return [...this.db.ritualPhotos.values()].filter((p) => p.userId === userId && p.deletedAt === null).map(clone);
   }
 
   async listKept(userId: string, before: string | null, limit: number): Promise<RitualPhotoRecord[]> {

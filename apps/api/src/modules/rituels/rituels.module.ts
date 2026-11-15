@@ -30,6 +30,6 @@ import { RituelsController } from './interface/rituels.controller';
     TodayService,
     RituelsJobs,
   ],
-  exports: [RituelsJobs, HabitsService, DailyService, StreakService],
+  exports: [RituelsJobs, RitualsContext, HabitsService, DailyService, StreakService, ReviewsService],
 })
 export class RituelsModule {}

@@ -5,6 +5,8 @@
  * Rien de tout cela n'existe hors du mode démo.
  */
 import { Inject, Injectable, Logger, type OnApplicationBootstrap } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { AI_USAGE_STORE, type AiUsageStore } from '../../../integrations/ai/usage-store';
 import { type Day, addDays, dayOf, newLink } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { CLOCK, LINKS, MESSAGES, PROFILES, REPORTS } from '../../../shared/tokens';
@@ -16,6 +18,7 @@ import { AUDIT_LOG, DAILY_STATS, SUSPENSIONS } from '../tokens';
 import { Moderation } from './moderation.usecases';
 
 const H = 3_600_000;
+type AiUsageEntryFeature = 'chat_remark' | 'habit_proof' | 'moderation' | 'weekly_review';
 
 /** Générateur pseudo-aléatoire déterministe (mêmes chiffres à chaque démarrage). */
 function rng(seed: number): () => number {
@@ -139,7 +142,34 @@ export class AdminDemo implements OnApplicationBootstrap {
     @Inject(DAILY_STATS) private readonly stats: DailyStatsRepository,
     @Inject(Moderation) private readonly moderation: Moderation,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(ModuleRef) private readonly moduleRef: ModuleRef,
   ) {}
+
+  /** Usage de l'IA sur 30 jours, écrit par le port public du chantier « plateforme » s'il est fourni. */
+  private async seedAiUsage(today: Day): Promise<void> {
+    let store: AiUsageStore;
+    try {
+      store = this.moduleRef.get<AiUsageStore>(AI_USAGE_STORE, { strict: false });
+    } catch {
+      return;
+    }
+    if ((await store.list(addDays(today, -29), today)).length > 0) return;
+    const rand = rng(7);
+    const usage = { input: 900, output: 60, cacheWrite: 0, cacheRead: 700 };
+    for (let i = 29; i >= 0; i--) {
+      const day = addDays(today, -i);
+      const sunday = new Date(`${day}T12:00:00Z`).getUTCDay() === 0;
+      const plan: ReadonlyArray<[AiUsageEntryFeature, 'small' | 'medium', number, number]> = [
+        ['chat_remark', 'small', Math.round(70 + (29 - i) * 2 + rand() * 20), 260],
+        ['habit_proof', 'small', Math.round(35 + (29 - i) + rand() * 10), 520],
+        ['moderation', 'small', Math.round(4 + rand() * 6), 240],
+        ['weekly_review', 'medium', sunday ? Math.round(120 + (29 - i) * 3) : 0, 2100],
+      ];
+      for (const [feature, tier, calls, costMicros] of plan) {
+        for (let c = 0; c < calls; c++) await store.record({ day, feature, tier, outcome: 'ok', usage, costMicros });
+      }
+    }
+  }
 
   async onApplicationBootstrap(): Promise<void> {
     if (await this.profiles.findById(DEMO_REPORTED.margaux)) return;
@@ -147,6 +177,7 @@ export class AdminDemo implements OnApplicationBootstrap {
     const ago = (hours: number): string => new Date(now.getTime() - hours * H).toISOString();
     const today = dayOf(now);
     for (const row of demoDailyStats(today)) await this.stats.put({ ...row, computedAt: `${addDays(row.day, 1)}T03:10:00.000Z` });
+    await this.seedAiUsage(today);
 
     for (const [key, name] of PEOPLE) {
       const profile: Profile = {

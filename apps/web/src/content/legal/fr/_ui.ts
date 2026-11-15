@@ -13,7 +13,6 @@ export const ui: LegalUi = {
     { slug: 'mentions-legales', label: 'mentions légales' },
     { slug: 'conditions', label: 'conditions' },
     { slug: 'confidentialite', label: 'confidentialité' },
-    { slug: 'cookies', label: 'cookies' },
     { slug: 'index', label: 'tout le légal' },
   ],
   index: {

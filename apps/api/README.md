@@ -121,3 +121,95 @@ mémoire. Pour plusieurs instances, déporter le limiteur (Redis) ; le reste est
 
 Conseil : ajouter un `.dockerignore` à la racine (`**/node_modules`, `**/dist`, `.git`, `apps/mobile`, `apps/web`)
 pour alléger le contexte de build.
+
+## Plateforme : IA, minimoas du chat, notifications, minuteur
+
+Coûts et ordres de grandeur : `docs/COUTS.md`. Interfaces partagées : `docs/V7-INTERFACES.md`.
+
+### Variables
+
+| Variable | Défaut | Rôle |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | vide | clé de l'API Anthropic (seulement dans `apps/api/.env` ou les secrets de l'hébergeur) |
+| `AI_PROVIDER` | selon la clé | `anthropic` (clé requise) · `memory` (déterministe, refusé en production) · `off` ; défaut : `anthropic` si clé, sinon `memory` en mémoire, `off` avec Supabase |
+| `AI_MODEL_SMALL` / `AI_MODEL_MEDIUM` | `claude-haiku-5-5` / `claude-sonnet-5-5` | identifiants de modèle par palier |
+| `AI_KILL_SWITCH` | `0` | `1` = plus aucun appel (tout passe par les règles) |
+| `AI_DAILY_CEILING_USD` | `3` | plafond global de dépense estimée par jour (Europe/Paris) |
+| `AI_USER_BUDGETS` | `chat_remark=4,habit_proof=6,weekly_review=1,moderation=4` | appels par personne, par jour et par fonction |
+| `AI_PRICES_SMALL` / `AI_PRICES_MEDIUM` | prix publics | `entrée,sortie,écriture cache,lecture cache` en $ par million de jetons (coût estimé du compteur) |
+| `AI_EUR_PER_USD` | `0.9` | conversion pour l'affichage en euros (approximative, à tenir à jour) |
+| `PUSH_PROVIDER` | `memory` / `expo` | `expo` · `memory` (boîte d'envoi, refusé en production) · `off` |
+| `EXPO_ACCESS_TOKEN` | vide | seulement si « enhanced push security » est activé chez Expo |
+| `INTERNAL_TICK_SECRET` | vide | secret du minuteur (24 caractères au moins) ; vide = la route n'existe pas |
+| `TICK_BUDGET_MS` | `20000` | temps maximal d'un tick ; le reste passe au suivant |
+
+### IA (`src/integrations/ai`)
+Une seule porte : `AI_GATEWAY` (`AiGateway.complete`). Avant tout appel : interrupteur → modèle configuré → plafond
+global du jour → budget de la personne pour la fonction (atomique, `ai_take_user_call`). Puis appel (consigne système
+mise en cache, `max_tokens` borné : 400 petit palier, 800 moyen), puis compteur `ai_usage_daily` (appels, refus,
+erreurs, jetons, coût estimé). `ok: false` (`disabled` | `budget` | `error`) → l'appelant applique sa règle.
+Lecture de l'usage : service `AiUsage.summary(days)` (injectable partout ; l'administration l'affiche).
+
+### Minimoas du chat (`src/modules/links/minimoas`)
+- Rôles (`messages.pet_role`) : `icebreaker` (création du lien, question tirée du premier point commun de vision,
+  sans IA), `nudge` (silence des personnes de 72 h, minuteur), `remark` (premier message du jour, mot doux / vanne,
+  puis tous les 12 messages), `guard` (le ton monte : visible par la seule personne, `messages.visible_to`),
+  `event` (niveau, vies, photo à deux ; ni plafonné ni coupé).
+- Au plus 3 interventions par jour et par lien ; `PATCH /v1/links/:id/minimoas { muted }` coupe (un seul « coupé » suffit).
+- Accord par personne et par lien (`{ consent }`) ; l'IA ne lit que si les deux ont dit oui. Sinon : lignes de règle
+  au rythme. Avec accord : un appel au petit modèle par déclencheur (12 messages, 72 h de silence, heuristique de ton
+  locale), fenêtre des 8 derniers messages (280 caractères chacun), personnes anonymisées en A / B, réponse « RIEN »
+  possible ; rien n'est conservé de la fenêtre. Les appels partent après la réponse (`Background`).
+- Santé du lien pour le bilan : `ChatMinimoas.linkHealth(userId)` (comptes par auteur, photos à deux, série, vies).
+
+### Notifications (`src/modules/notifications`, `src/integrations/push`)
+`NOTIFIER.notify(userId, kind, vars)` ne lève jamais : réglage par type → une fois par jour (défi, sortie, série,
+lien en danger, bilan, essai) → heures calmes 22 h – 8 h dans le fuseau de la personne (reporté à 8 h : nouveau lien,
+coucou, 3 mots, objet, lien en danger, essai ; abandonné : le reste) → 3 par jour hors messages → messages : un push par
+lien toutes les 5 min, sans contenu. Textes : `@blowy/content` (`v7/notifications.ts`) selon `profiles.locale`.
+`vars` reconnues : `name`, `minimoa`, `count`, `lives`, `item`, `linkId`, `path` (lien profond `blowy://…` imposé).
+`data` de chaque push : `PushDataZ` (`kind`, `url`, `linkId`, `state` pour widgets et activités en direct).
+Appareils : `POST /v1/devices` à chaque ouverture (jeton Expo + fuseau), `POST /v1/devices/remove` à la déconnexion.
+Activités en direct : port `LIVE_ACTIVITIES` (`integrations/push/live-activity.ts`), sans envoi pour l'instant.
+
+### Minuteur : `POST /internal/tick`
+Travaux listés dans `src/modules/tick/jobs.ts` (un par chantier, une ligne chacun), appelés dans l'ordre, chacun une
+fois par créneau d'une minute (table `tick_runs`), en lots, dans `TICK_BUDGET_MS`. Ceux de la plateforme : rattrapage
+des liens (vies, « lien en danger ») et relances, reports du matin, défi du jour à l'heure choisie, reçus Expo (jetons
+morts), ménage.
+
+```bash
+curl -fsS -X POST -H "x-tick-secret: $INTERNAL_TICK_SECRET" https://api.blowy.app/internal/tick
+```
+
+Appeler toutes les 5 minutes, depuis un planificateur gratuit :
+
+- **Railway** : un second service « cron » (même dépôt, image `curlimages/curl` ou Nixpacks) avec *Cron Schedule*
+  `*/5 * * * *` et la commande ci-dessus (variable `INTERNAL_TICK_SECRET` partagée). Le service s'arrête après l'appel.
+- **Supabase** (`pg_cron` + `pg_net`, sans service en plus) :
+
+```sql
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+select vault.create_secret('<INTERNAL_TICK_SECRET>', 'tick_secret');
+select cron.schedule(
+  'blowy-tick',
+  '*/5 * * * *',
+  $$
+  select net.http_post(
+    url := 'https://api.blowy.app/internal/tick',
+    headers := jsonb_build_object(
+      'content-type', 'application/json',
+      'x-tick-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'tick_secret')
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);
+```
+
+**Tick manqué** : rien n'est perdu, tout est rattrapé au suivant. Les vies sont de toute façon recalculées à la
+lecture (`tickLink`) ; les reports, défis du matin et relances sont sélectionnés par « échéance dépassée »
+(`send_after <= now`, `next_morning_at <= now`, silence ≥ 72 h), donc ils partent en retard, une seule fois. Garde-fous :
+un report de plus de 24 h est abandonné, et un défi du matin qui tomberait pendant les heures calmes (panne longue)
+est abandonné plutôt qu'envoyé la nuit. Un tick répété dans la même minute ne refait rien (`ran: false`).

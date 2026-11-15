@@ -32,4 +32,12 @@ export class MemoryChatPetStateRepository implements ChatPetStateRepository {
     if (!this.db.links.has(linkId)) return;
     this.db.chatPetStates.set(linkId, { ...state });
   }
+
+  async listSilent(before: string, after: string | null, limit: number): Promise<{ linkId: string; state: ChatPetState }[]> {
+    return [...this.db.chatPetStates.entries()]
+      .filter(([, s]) => s.lastUserAt !== null && s.lastUserAt < before && (after === null || s.lastUserAt > after))
+      .sort(([, a], [, b]) => (a.lastUserAt ?? '').localeCompare(b.lastUserAt ?? ''))
+      .slice(0, limit)
+      .map(([linkId, s]) => ({ linkId, state: { ...s } }));
+  }
 }

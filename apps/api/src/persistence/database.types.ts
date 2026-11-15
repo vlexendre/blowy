@@ -260,11 +260,12 @@ export type Database = {
           interventions: number;
           messages_since_remark: number;
           icebreaker_done: boolean;
+          last_user_at: string | null;
           last_nudge_for: string | null;
           last_guard_at: string | null;
           updated_at: string;
         },
-        'day' | 'interventions' | 'messages_since_remark' | 'icebreaker_done' | 'last_nudge_for' | 'last_guard_at' | 'updated_at'
+        'day' | 'interventions' | 'messages_since_remark' | 'icebreaker_done' | 'last_user_at' | 'last_nudge_for' | 'last_guard_at' | 'updated_at'
       >;
       push_devices: Table<
         { token: string; user_id: string; platform: string; kind: string; created_at: string; last_seen_at: string; disabled_at: string | null },

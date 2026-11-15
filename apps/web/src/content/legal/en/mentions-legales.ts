@@ -55,9 +55,5 @@ export const mentionsLegales: LegalPage = {
       p: 'The Blowy brand, the minimoas, illustrations, texts, animations and software are protected by intellectual property law. They belong to {{publisher.name}} or its partners. Copying or reusing them without permission is forbidden, except where the law allows it (short quotation, private copy).',
     },
     { p: 'Website fonts: Anton and Bricolage Grotesque, under the SIL Open Font License. Home page animations: the GSAP library.' },
-    { h2: 'Other documents', id: 'documents' },
-    {
-      p: 'Using Blowy is governed by the [terms of use](@conditions), the [privacy policy](@confidentialite), the [Blowy+ subscription terms](@abonnement) and the [community rules](@regles).',
-    },
   ],
 };
