@@ -12,7 +12,6 @@ import { keys, useApi, usePorts } from '@/core';
 import { useUnlocks } from '@/features/pet';
 
 export { awayFromHome, useAwayFromHome } from './location';
-export { type PlusReason, useOpenPlus } from './plus';
 
 /** Clés propres aux écrans des rituels (l'accueil et la série gardent celles du cœur, partagées avec les widgets). */
 export const ritualKeys = {

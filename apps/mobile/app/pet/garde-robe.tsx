@@ -23,6 +23,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ScreenMotion } from '@/core';
 import { errorText } from '@/features/links';
 import { usePet, useSetOutfit, useUnlocks, useWardrobe, withItem } from '@/features/pet';
+import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { wardrobe as t } from '@/locales/pet';
 
@@ -144,8 +145,9 @@ export default function WardrobeScreen() {
   // Blowy+ monte en feuille : on attend que la fiche de l'objet soit redescendue (iOS ne présente pas deux
   // modales à la fois).
   const toPlus = () => {
+    const item = open?.id;
     setOpen(null);
-    setTimeout(() => router.push('/moi/blowy-plus'), 320);
+    setTimeout(() => openPlus('premium_item', item ? { item } : {}), 320);
   };
 
   const name = open ? (itemLabel[open.id] ?? open.id) : '';

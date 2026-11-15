@@ -7,7 +7,8 @@ import { Linking, Platform } from 'react-native';
 
 import { ScreenMotion, useApi } from '@/core';
 import { useDiscreet } from '@/features/map';
-import { openLegal, openPlusFrom, useMe } from '@/features/me';
+import { openLegal, useMe } from '@/features/me';
+import { openPlus } from '@/features/plus';
 import { unregisterDevice } from '@/features/notifications';
 import { useBlocks } from '@/features/safety';
 import { confirmAction, goBack, useSignOut } from '@/features/session';
@@ -52,7 +53,7 @@ export default function Reglages() {
         rows={[
           { key: 'account', title: t.rows.account.title, subtitle: m ? t.rows.account.subtitle(m.displayName) : undefined, onPress: () => router.push('/moi/compte') },
           { key: 'identity', title: t.rows.identity.title, subtitle: identity ? t.rows.identity.subtitle(identity) : undefined, onPress: () => router.push('/moi/identite') },
-          { key: 'plus', title: t.rows.plus.title, subtitle: t.rows.plus.subtitle(!!m?.plus), onPress: () => openPlusFrom('generic') },
+          { key: 'plus', title: t.rows.plus.title, subtitle: t.rows.plus.subtitle(!!m?.plus), onPress: () => openPlus('generic') },
           { key: 'notifications', ...t.rows.notifications, onPress: () => router.push('/moi/notifications') },
         ]}
       />

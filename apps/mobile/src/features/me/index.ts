@@ -96,4 +96,4 @@ export function maskEmail(email: string): string {
   return `${email.slice(0, 1)}•••${email.slice(at)}`;
 }
 
-export { legalUrl, openLegal, openPlusFrom, type LegalPage, type PlusEntry } from './links';
+export { legalUrl, openLegal, type LegalPage } from './links';

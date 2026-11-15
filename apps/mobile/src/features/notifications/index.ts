@@ -25,8 +25,10 @@ import {
   storedPushToken,
   takeLaunchTap,
 } from './push';
+import { pathFromPushUrl } from './url';
 
 export type { PushPermission } from './push';
+export { pathFromPushUrl } from './url';
 
 export const notificationKeys = { settings: ['notifications', 'settings'] as const };
 
@@ -64,18 +66,6 @@ export async function unregisterDevice(api: ApiClient): Promise<void> {
     // Le jeton sera remplacé ou expirera : on ne bloque pas la déconnexion.
   }
   await forgetPushToken();
-}
-
-/**
- * Chemin de l'app pour le lien profond d'une notification (`PushData.url`, « blowy://link/<id> » ou
- * « https://blowy.app/… »). Null si le lien est illisible.
- */
-export function pathFromPushUrl(url: string): Href | null {
-  const m = /^(?:blowy:\/\/|https?:\/\/[^/]+\/)(.*)$/.exec(url.trim());
-  if (!m) return null;
-  const path = (m[1] ?? '').replace(/^\/+/, '');
-  if (!/^[\w\-/.?=&%]*$/.test(path)) return null;
-  return `/${path}` as Href;
 }
 
 /**

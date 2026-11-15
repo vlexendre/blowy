@@ -270,6 +270,7 @@ export const rituels = messages({
       axisA11y: (name: string, line: string): string => `${name} : ${line}`,
       style: 'Son style',
       styleHint: 'ne filtre personne',
+      styleEmpty: 'Son style prend forme avec les 3 mots de tes potes et avec le temps passé ensemble.',
       styleA11y: (name: string, value: number): string => `${name} : ${value > 0 ? '+' : ''}${value}`,
       habits: 'Ses habitudes',
       habitsText: (n: number, best: number): string =>

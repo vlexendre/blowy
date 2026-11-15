@@ -34,7 +34,8 @@ import { ScreenMotion } from '@/core';
 import { useLiveEncounters, useWave, whyA11y } from '@/features/encounters';
 import { CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap } from '@/features/map';
 import { MapLayer } from '@/features/map/MapLayer';
-import { openPlusFrom, useMe } from '@/features/me';
+import { useMe } from '@/features/me';
+import { openPlus } from '@/features/plus';
 import { chats as chatsText } from '@/locales/chats';
 import { formatNumber } from '@/locales/runtime';
 import { carte as t, rencontres as listText } from '@/locales/rencontres';
@@ -193,7 +194,7 @@ export default function CarteScreen() {
             {cityActive ? <Button label={t.cityBack} variant="ghost" size="md" loading={city.clear.isPending} onPress={() => city.clear.mutate()} /> : null}
           </Stack>
         ) : (
-          <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlusFrom('map')} />
+          <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlus('map')} />
         )
       ) : null}
     </>

@@ -32,6 +32,7 @@ import { errorText, shortDay } from '@/features/links';
 import { usePet, useRenamePet } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { useHabits, useStreak, useVision } from '@/features/rituals';
+import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { pet as t } from '@/locales/pet';
 import { rituels } from '@/locales/rituels';
@@ -136,7 +137,7 @@ export default function CharacterScreen() {
                 maxLength={PET_NAME_MAX}
                 locked={renameLocked}
                 notice={renameNotice}
-                noticeAction={renameLocked ? { label: t.renamePlus, onPress: () => router.push('/moi/blowy-plus') } : null}
+                noticeAction={renameLocked ? { label: t.renamePlus, onPress: () => openPlus('rename') } : null}
                 error={rename.isError ? errorText(rename.error, t.renameError) : null}
                 cancelLabel={renameLocked ? t.renameClose : t.renameCancel}
                 saveLabel={t.renameSave}
@@ -175,6 +176,7 @@ export default function CharacterScreen() {
             <StylePanel
               title={c.style}
               hint={c.styleHint}
+              footer={GAUGE_KEYS.every((k) => Math.abs(p.gauges[k]) < 10) ? c.styleEmpty : null}
               gauges={GAUGE_KEYS.map((k) => ({ name: upperFirst(gaugeLabel[k].high), value: p.gauges[k], accessibilityLabel: c.styleA11y(`${t.gaugeNames[k]}, ${gaugeLabel[k].low} ↔ ${gaugeLabel[k].high}`, p.gauges[k]) }))}
             />
           </Appear>

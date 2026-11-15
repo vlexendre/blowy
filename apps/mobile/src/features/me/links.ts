@@ -1,7 +1,6 @@
 /**
- * Sorties de « Moi » : pages légales du site (dans la langue de l'app) et feuille Blowy+.
+ * Sorties de « Moi » : pages légales du site (dans la langue de l'app). Blowy+ : `openPlus` de `@/features/plus`.
  */
-import { router } from 'expo-router';
 import { Linking } from 'react-native';
 
 import { config } from '@/core';
@@ -17,12 +16,3 @@ export function legalUrl(page: LegalPage): string {
 }
 
 export const openLegal = (page: LegalPage) => () => void Linking.openURL(legalUrl(page));
-
-/**
- * Ouvre la feuille Blowy+ en disant d'où l'on vient (contrat `openPlus(reason)` du chantier Blowy+,
- * /home/claude/work/f1/OPENPLUS.md). Petit relais local : il appelle `openPlus` dès qu'il existe.
- */
-export type PlusEntry = 'map' | 'change_city' | 'encounters' | 'generic';
-export function openPlusFrom(reason: PlusEntry = 'generic'): void {
-  router.push({ pathname: '/moi/blowy-plus', params: { reason } });
-}

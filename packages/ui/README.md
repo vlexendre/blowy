@@ -808,3 +808,25 @@ La section « SOINS & GARDE-ROBE » (en tête) contient une démo interactive (s
 )} />
 // et dans chaque écran d'onglet : <TabTemplate …> (réserve TAB_BAR_SPACE en bas)
 ```
+
+### Rencontres, chats, carte (V7, ajouts)
+```ts
+AxisCompareProps = { name; text; mine?: AxisSide | null; theirs?: AxisSide | null; mineColor?; trackLabel?; index?; divider?; style? }
+// un axe de vision : phrase + piste à deux repères (toi plein, l'autre cerclé), placés par tiers (low / mid / high), jamais un chiffre
+VisionMatchProps = { commonTitle; common: VisionMatchAxis[]; exploreTitle; explore: VisionMatchAxis; legend?: { mine; theirs }; kicker?; note?; style? }
+MatchWhyProps = { commonTitle; common: string[]; exploreTitle; explore: string; accessibilityLabel; style? }   // version courte (cartes)
+SuggestionCard / IncomingCard : `why?: ReactNode` (sous l'en-tête) ; IncomingCard `hideCompat` ; EncounterHead `compatibility: number | null` ; EncounterStage `compat?`
+MessageLook.petRole?: PetRoleLook | null   // 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event' : style de la bulle du minimoa
+MessageBubble : `onLongPress?`, `longPressHint?` ; ChatThread : `roleLabel?(role, name)`, `onMessageLongPress?(m)`, `longPressHint?`
+MinimoaSwitchProps = { pet; on; onToggle; accessibilityLabel; disabled?; size? }   // interrupteur compact des minimoas (en-tête du lien)
+LinkTemplate : `headerAction?: ReactNode`, `notice?: ReactNode` (sous les onglets)
+MinimoaConsentProps = { title; subtitle?; mine; theirs; text /* consent.text tel quel */; notes: { key; icon; text }[]; style? }
+SheetTemplate : `scroll?: boolean` (corps qui défile, poignée + en-tête pour tirer) ; Banner : `actionBelow?: boolean`
+Stack : `direction?: 'column' | 'row'`, `align?`
+ZoneMapProps = { center; radiusKm; me?; pins: ZoneMapPin[]; blurred?; land?; insetTop?; insetBottom? }   // carte dessinée (web, repli)
+MapStickerProps = { pet; label; selected?; me?; onPress?; accessibilityLabel; landDelay?; floatDelay?; size?; style? } · MapBlobProps = { size?; delay?; style? }
+MapTemplateProps = { map; title; subtitle?; onBack; backLabel; right?; badge?; bottom? }
+MapPinCardProps = { motionKey; pet; owner; compat?; compatLabel?; why?; actionLabel; onAction; actionLoading?; secondaryLabel?; onSecondary? } · MapPlusStripProps = { title; text; ctaLabel; onPress }
+PillToggleProps = { label; value; onValueChange; accessibilityLabel?; disabled?; style? } · ChoiceGridProps<K> = { items: { key; label }[]; selected; onSelect }
+projectAround(center, point, pxPerKm) → { dx, dy }
+```

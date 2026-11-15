@@ -26,7 +26,8 @@ import { RefreshControl } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { useMe } from '@/features/me';
 import { usePet, useWardrobe } from '@/features/pet';
-import { nextStreakItem, useOpenPlus, useRitualsToday, useStreak } from '@/features/rituals';
+import { nextStreakItem, useRitualsToday, useStreak } from '@/features/rituals';
+import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { rituels } from '@/locales/rituels';
 import { upperFirst } from '@/locales/runtime';
@@ -40,7 +41,6 @@ export default function StreakScreen() {
   const streak = useStreak();
   const today = useRitualsToday();
   const me = useMe();
-  const openPlus = useOpenPlus();
   const [refreshing, setRefreshing] = useState(false);
   const back = () => goBack('/(tabs)/pet');
   const refresh = async () => {

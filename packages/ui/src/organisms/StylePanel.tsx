@@ -13,10 +13,12 @@ export interface StylePanelProps {
   hint?: string;
   /** Les quatre jauges : nom, valeur de −100 à 100, libellé lu. */
   gauges: readonly { name: string; value: number; accessibilityLabel: string }[];
+  /** Phrase sous les jauges (ex. quand elles sont encore au centre : comment il prend forme). */
+  footer?: string | null;
 }
 
 /** Son style, en petit (V6-GCaractere) : quatre jauges côte à côte. Il donne sa personnalité au minimoa, sans filtrer. */
-export function StylePanel({ title, hint, gauges }: StylePanelProps) {
+export function StylePanel({ title, hint, gauges, footer }: StylePanelProps) {
   return (
     <Card padding="none" style={styles.card}>
       <View style={[layout.rowBetween, styles.head]}>
@@ -39,6 +41,11 @@ export function StylePanel({ title, hint, gauges }: StylePanelProps) {
           </View>
         ))}
       </View>
+      {footer ? (
+        <Text size={15} muted>
+          {footer}
+        </Text>
+      ) : null}
     </Card>
   );
 }

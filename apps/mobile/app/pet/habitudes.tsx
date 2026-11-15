@@ -29,7 +29,8 @@ import { ScreenMotion } from '@/core';
 import { errorText } from '@/features/links';
 import { useMe } from '@/features/me';
 import { usePet, useWardrobe } from '@/features/pet';
-import { useAddHabit, useHabitCatalogue, useHabits, useOpenPlus, useRemoveHabit, useUpdateHabit, useVision } from '@/features/rituals';
+import { useAddHabit, useHabitCatalogue, useHabits, useRemoveHabit, useUpdateHabit, useVision } from '@/features/rituals';
+import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { rituels } from '@/locales/rituels';
 import { upperFirst } from '@/locales/runtime';
@@ -49,7 +50,6 @@ export default function HabitsScreen() {
   const add = useAddHabit();
   const update = useUpdateHabit();
   const remove = useRemoveHabit();
-  const openPlus = useOpenPlus();
   const [adding, setAdding] = useState<HabitDef | null>(null);
   const [rhythm, setRhythm] = useState<HabitDef['rhythm']>('daily');
   const [removing, setRemoving] = useState<{ ref: string; label: string } | null>(null);
@@ -98,7 +98,7 @@ export default function HabitsScreen() {
 
   const startAdd = (def: HabitDef) => {
     if (full) {
-      if (!plus) openPlus('habits');
+      if (!plus) openPlus('habits_limit');
       return;
     }
     add.reset();
@@ -115,7 +115,7 @@ export default function HabitsScreen() {
         backLabel={t.back}
         intro={t.intro(name)}
         right={<Chip label={t.count(h.habits.length, h.limit)} tone="accent" accessibilityLabel={t.countA11y(h.habits.length, h.limit)} />}
-        footer={full && !plus ? <Button label={t.plusCta} variant="glass" onPress={() => openPlus('habits')} /> : undefined}
+        footer={full && !plus ? <Button label={t.plusCta} variant="glass" onPress={() => openPlus('habits_limit')} /> : undefined}
       >
         {h.habits.length === 0 ? <EmptyState species={pet.data?.pet.species} mood="neutre" title={t.emptyTitle} text={t.empty} /> : null}
         {h.habits.map((x, i) => {

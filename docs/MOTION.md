@@ -117,7 +117,13 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; connexion : le pet regarde par-dessus le clavier |
 | Préparation | les lignes se cochent une à une (`PrepChecklist`) | pourcentage qui défile, barre avec dépassement ; erreur : tout s'arrête, le pet s'inquiète |
 | Tout est prêt | le pet saute de joie, confettis (`ReadyHero`) | titre mot à mot puis la phrase |
-| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) | barres qui se remplissent avec dépassement, nombres comptés ; bouton conseillé qui pulse ; bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir : il grimpe (iOS) ; soin glissé jusqu'au pet (il le suit des yeux, ouvre la bouche) ; soin en cours : trois boules dans le disque |
+| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) ; défi relevé : `StreakCelebration` (le chiffre défile d'un cran, la mèche se rallume plus grande, il saute de joie, confettis ; tap pour fermer) | mèche (`StreakFlame`) qui vacille sur sa tête et le suit (sauts, buste quand il dort), plus basse tant que le défi n'est pas fait ; jauge de sociabilité (`HeroMeter`) : chiffre compté, barre avec dépassement ; réponses de sortie qui rebondissent, réponse du minimoa qui monte ; puce de série qui bat deux fois ; barres, bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir ; soin glissé jusqu'au pet |
+| Défi du jour | la carte monte du bas en ressort, le minimoa jaillit derrière son bord haut (mèche allumée) | puce inclinée en « pop », tuiles de ce que ça rapporte en cascade ; réponse choisie qui s'incline ; voile qui s'assombrit |
+| Série | la mèche se rallume (braise → jaillit → se pose, étincelles) à la 1re visite, chiffre qui défile depuis 0 ; record : confettis | jours faits cochés un à un ; prochain objet qui bat deux fois ; objets en cascade |
+| Preuve | le verdict monte sur la photo, le minimoa en autocollant saute de joie (ou fait non, gentiment), étoiles | bulle de la demande qui s'écrit ; trois boules pendant la vérification |
+| Habitudes | — | cartes en cascade (une fois) ; pastille de rythme qui glisse au toucher (rebond de confirmation) |
+| Bilan | — | chiffres qui défilent, cartes en cascade (une fois par bilan) |
+| Son caractère | les barres de la vision se remplissent depuis le centre, l'une après l'autre | jauges du style en petit, même mouvement ; entrées en cascade |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
 | Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger |
@@ -181,3 +187,9 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 ## Banc d'essai
 `apps/mobile/app/dev/motion.tsx` (route `/dev/motion`) : chaque primitive et chaque comportement des pets, avec des
 boutons pour les déclencher et un interrupteur « réduire les animations ».
+
+### Détail : la mèche (`StreakFlame`)
+- Posée par `crest` sur `PetActor` / `PetStage` (au-dessus de la tête, ancre `headTop`) : elle suit le corps ; en humeur
+  « buste » (sommeil…), elle descend avec la tête. Taille : 62 % à 1 jour, pleine à 100 jours (log) ; rien à 0.
+- Vacille en boucle (`useLoop`, en pause hors écran) ; `igniteKey` change → rallumage (braise, jaillit à 135 %, ressort
+  `plush`, étincelles, vibration « réussite »). Animations réduites : flamme fixe, rallumage en fondu.

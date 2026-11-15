@@ -25,7 +25,8 @@ import { useEffect, useRef } from 'react';
 import { ScreenMotion } from '@/core';
 import { useMe } from '@/features/me';
 import { usePet } from '@/features/pet';
-import { isoWeek, useOpenPlus, useReadReview, useReview } from '@/features/rituals';
+import { isoWeek, useReadReview, useReview } from '@/features/rituals';
+import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { rituels } from '@/locales/rituels';
 
@@ -38,7 +39,6 @@ export default function ReviewScreen() {
   const pet = usePet();
   const me = useMe();
   const read = useReadReview();
-  const openPlus = useOpenPlus();
   const marked = useRef(false);
   const close = () => goBack('/(tabs)/pet');
 
@@ -117,7 +117,7 @@ export default function ReviewScreen() {
               title={t.plusLead}
               text={t.plusText}
               chevron
-              onPress={() => openPlus('review')}
+              onPress={() => openPlus('detailed_review')}
               accessibilityLabel={t.plusA11y}
             />
           )}

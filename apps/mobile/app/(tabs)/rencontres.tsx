@@ -35,7 +35,8 @@ import {
 } from '@/features/encounters';
 import { errorText, timeLabel } from '@/features/links';
 import { useFreshPosition } from '@/features/map';
-import { openPlusFrom, useMe } from '@/features/me';
+import { useMe } from '@/features/me';
+import { openPlus } from '@/features/plus';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { rencontres as t } from '@/locales/rencontres';
@@ -268,7 +269,7 @@ export default function RencontresScreen() {
       {encounters.data && !sulking && !noVision ? <DotNote text={t.filterNote(petName)} /> : null}
       {encounters.data ? <DotNote text={t.reminderShort} dot={color.mute} /> : null}
       {encounters.data && m && !m.plus && !sulking && !noVision ? (
-        <MapPlusStrip title={t.morePlus.title} text={t.morePlus.text} ctaLabel={t.morePlus.cta} onPress={() => openPlusFrom('encounters')} />
+        <MapPlusStrip title={t.morePlus.title} text={t.morePlus.text} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
       ) : null}
 
       <EncounterHistory
