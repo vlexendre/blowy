@@ -17,12 +17,6 @@ export const DEEP_LINK_SCHEME = 'blowy://';
 /** URL de l'API, injectée au build (PUBLIC_API_URL). */
 export const API_URL: string = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
 
-/** Mentions légales. TODO(propriétaire) : compléter avant la mise en ligne. */
-export const LEGAL = {
-  entity: '[Raison sociale à compléter]',
-  /** Date affichée sur les pages légales. */
-  updatedAt: '11 novembre 2026',
-  updatedAtIso: '2026-11-11',
-} as const;
+/** Éditeur, hébergeurs, contacts et sous-traitants des pages légales : voir ./legal.ts. */
 
 export const OG_IMAGE = '/img/og.png';

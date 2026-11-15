@@ -1,6 +1,7 @@
 import { type StyleProp, StyleSheet, type TextStyle } from 'react-native';
 
 import { Text } from '../atoms/Text';
+import { normalizeRuns } from '../lib/runs';
 import { color } from '../theme';
 
 export interface LegalSegment {
@@ -22,7 +23,7 @@ export interface LegalNoteProps {
 export function LegalNote({ segments, size = 12.5, style }: LegalNoteProps) {
   return (
     <Text size={size} muted center style={[{ lineHeight: Math.round(size * 1.45) }, style]}>
-      {segments.map((s, i) =>
+      {normalizeRuns(segments, { noLeadingSpace: (s) => !!s.onPress }).map((s, i) =>
         s.strong ? (
           <Text key={i} variant="bodyBold" size={size} color={color.white}>
             {s.text}

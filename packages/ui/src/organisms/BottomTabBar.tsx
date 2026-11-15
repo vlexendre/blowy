@@ -10,8 +10,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type PetPose, petImage, RENDER_RATIO } from '../assets/pets';
 import type { GlyphName } from '../atoms/Glyph';
 import { ease, springs, useReducedMotion } from '../lib/motion';
+import { isOverlayOpen } from '../lib/overlay';
 import { ITEM_HEIGHT, TabBarItem } from '../molecules/TabBarItem';
 import { useIndicator, useIndicatorStyle } from '../motion/indicator';
+import { claimTabPeek } from '../motion/pets/peekBudget';
 import { alpha, color, radius, space, veil } from '../theme';
 
 export interface BottomTabItem<K extends string = string> {
@@ -29,8 +31,12 @@ export interface BottomTabBarProps<K extends string = string> {
   onLongPress?: (key: K) => void;
   /** Flotte au-dessus du contenu (défaut) ou s'empile en bas. */
   floating?: boolean;
-  /** À chaque changement d'onglet, ce pet passe la tête au-dessus de la barre un instant (décoratif). */
-  peek?: { species: Species; mood?: Mood | PetPose };
+  /**
+   * De temps en temps (rarement : environ un changement d'onglet sur dix, jamais deux fois en 3 min, jamais au
+   * lancement ; voir `peekBudget`), ce pet passe la tête au-dessus de l'onglet choisi (décoratif). `seed` : id du pet.
+   * Ne le passer que quand la barre est visible (écran à onglets au premier plan).
+   */
+  peek?: { species: Species; mood?: Mood | PetPose; seed?: string };
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -88,6 +94,15 @@ const LIQUID_GLASS = isLiquidGlassAvailable() && isGlassEffectAPIAvailable();
 export const TAB_BAR_SPACE = BAR_HEIGHT + space.lg + space.sm;
 
 /**
+ * Hauteur exacte occupée par la barre flottante depuis le bas de l'écran (indicateur d'accueil compris), plus un
+ * écart : le dernier élément d'un onglet s'arrête au-dessus de la barre, jamais dessous.
+ */
+export function useTabBarSpace(): number {
+  const insets = useSafeAreaInsets();
+  return Math.max(insets.bottom, space.lg) + BAR_HEIGHT + space.sm;
+}
+
+/**
  * Barre d'onglets flottante en verre (Liquid Glass sur iOS 26+, flou teinté sinon). Utilisable comme `tabBar` d'expo-router :
  * `tabBar={(p) => <BottomTabBar items={…} activeKey={p.state.routes[p.state.index].name} onPress={(k) => p.navigation.navigate(k)} />}`.
  */
@@ -112,17 +127,19 @@ export function BottomTabBar<K extends string>({
   const seg = items.length ? (width - 2 - PAD * 2 - GAP * (items.length - 1)) / items.length : 0;
   const indicator = useIndicator(index);
   const pill = useIndicatorStyle(indicator, seg + GAP, 0.1);
-  const [peekKey, setPeekKey] = useState(0);
+  // Onglet où la tête sort, figé au moment du tirage (un changement d'onglet pendant qu'elle est sortie ne la déplace pas).
+  const [peekAt, setPeekAt] = useState<{ key: number; index: number }>({ key: 0, index: 0 });
   const last = useRef(activeKey);
   useEffect(() => {
-    if (last.current !== activeKey && peek && !reduced) setPeekKey((n) => n + 1);
+    // Rare : le budget décide (hasard déterministe, pause de 3 min, rien au lancement) ; jamais sous une feuille.
+    if (last.current !== activeKey && peek && !reduced && !isOverlayOpen() && claimTabPeek(peek.seed ?? peek.species)) setPeekAt((p) => ({ key: p.key + 1, index }));
     last.current = activeKey;
-  }, [activeKey, peek, reduced]);
+  }, [activeKey, peek, reduced, index]);
   const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
   return (
     <View pointerEvents="box-none" style={[floating ? styles.floating : null, { paddingBottom: bottom }, styles.outer, style]}>
-      {peek && peekKey > 0 && width > 0 ? (
-        <TabPeek species={peek.species} mood={peek.mood} index={index} step={seg + GAP} offset={14 + 1 + PAD} show={peekKey} />
+      {peek && peekAt.key > 0 && width > 0 ? (
+        <TabPeek species={peek.species} mood={peek.mood} index={peekAt.index} step={seg + GAP} offset={14 + 1 + PAD} show={peekAt.key} />
       ) : null}
       <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} onLayout={onLayout} style={[styles.bar, LIQUID_GLASS && styles.barLiquid]}>
         {LIQUID_GLASS ? (

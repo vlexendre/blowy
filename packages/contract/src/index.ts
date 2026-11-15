@@ -2,8 +2,10 @@
  * Contrat de l'API Blowy (REST /v1). Source de vérité partagée par l'API, l'app et le site.
  * Tout ce qui traverse le réseau est décrit ici en Zod ; les types en sont dérivés.
  */
-import { CARE_ACTIONS, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
+import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
 import { z } from 'zod';
+import { IdentityZ, LatLngZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
+import { PetRoleZ } from './v7/plateforme';
 
 export const API_PREFIX = '/v1';
 
@@ -23,7 +25,8 @@ export const TraitZ = z.object({ gauge: GaugeKeyZ, pole: z.string().nullable(), 
 
 // ── Soins et garde-robe ────────────────────────────────────────────────────
 const need = z.number().int().min(0).max(100);
-export const NeedsZ = z.object({ hunger: need, energy: need, mood: need });
+/** sociability : besoin principal (V7), monte quand la personne sort et voit du monde ; les trois autres se comblent avec les gestes. */
+export const NeedsZ = z.object({ sociability: need, hunger: need, energy: need, mood: need });
 export const ShapeZ = z.enum(SHAPES);
 export const ItemSlotZ = z.enum(ITEM_SLOTS);
 export const ItemIdZ = z.enum(ITEM_IDS as [string, ...string[]]);
@@ -65,6 +68,14 @@ export const PetViewZ = z.object({
   careDays: z.number().int(),
   /** Objets débloqués par cette action (à fêter à l'écran). */
   newItems: z.array(ItemIdZ),
+  /** Changement de nom : une fois tous les 60 jours (le nom donné à la création ne compte pas), sans attente avec Blowy+. */
+  rename: z.object({
+    allowed: z.boolean(),
+    /** Jour (Europe/Paris) à partir duquel le nom pourra changer ; null s'il le peut déjà. */
+    availableOn: DayStr.nullable(),
+    /** Blowy+ : aucune attente entre deux changements. */
+    unlimited: z.boolean(),
+  }),
 });
 export type PetView = z.infer<typeof PetViewZ>;
 
@@ -77,7 +88,7 @@ export const WardrobeItemZ = z.object({
   /** owned : dans la garde-robe · locked : à gagner par une étape · premium : à acheter. */
   state: z.enum(['owned', 'locked', 'premium']),
   /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
-  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words']), have: z.number().int(), need: z.number().int() }).nullable(),
+  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept']), have: z.number().int(), need: z.number().int() }).nullable(),
 });
 export type WardrobeItem = z.infer<typeof WardrobeItemZ>;
 export const WardrobeZ = z.object({ items: z.array(WardrobeItemZ), outfit: OutfitZ });
@@ -91,8 +102,9 @@ export const ChallengeBody = z.object({ choice: z.union([z.literal(0), z.literal
 export const MeZ = z.object({
   id: Uuid,
   displayName: z.string(),
-  city: z.string().nullable(),
   avatarUrl: z.string().nullable(),
+  /** Qui tu es, ce que tu cherches, ta position : vu par toi seul. */
+  identity: IdentityZ,
   inviteCode: z.string(),
   wordsCode: z.string(),
   plus: z.boolean(),
@@ -102,24 +114,27 @@ export type Me = z.infer<typeof MeZ>;
 
 export const OnboardBody = z.object({
   displayName: z.string().trim().min(1).max(24),
+  /** 18 ans au moins, sinon `too_young` et rien n'est créé. */
   birthdate: DayStr,
-  city: z.string().trim().max(40).optional(),
   pet: z.object({ name: z.string().trim().min(1).max(14), species: SpeciesZ }),
   /** Résultat du quiz de caractère : point de départ des jauges. */
   quiz: GaugesZ.partial().default({}),
   /** Code d'invitation reçu, s'il y en a un. */
   inviteCode: z.string().optional(),
+  /** Sexe, ce que tu cherches, langue, accords, position et réponses au test de vision (voir v7/vision.ts). La ville n'est plus demandée. */
+  ...OnboardIdentityFields,
 });
 export type OnboardBody = z.infer<typeof OnboardBody>;
+/** Ce que l'app envoie (les champs à valeur par défaut sont facultatifs). */
+export type OnboardInput = z.input<typeof OnboardBody>;
 
-export const UpdateMeBody = z.object({ displayName: z.string().trim().min(1).max(24).optional(), city: z.string().trim().max(40).nullable().optional() });
+export const UpdateMeBody = z.object({ displayName: z.string().trim().min(1).max(24).optional(), ...UpdateIdentityFields });
 export type UpdateMeBody = z.infer<typeof UpdateMeBody>;
 
 // ── Personnes et liens ─────────────────────────────────────────────────────
 export const PersonZ = z.object({
   id: Uuid,
   displayName: z.string(),
-  city: z.string().nullable(),
   pet: PublicPetZ,
   /** Le visage reste caché tant que le lien n'a pas atteint le bon niveau. */
   face: FaceZ,
@@ -164,6 +179,8 @@ export const MessageZ = z.object({
   body: z.string().nullable(),
   mediaUrl: z.string().nullable(),
   at: Iso,
+  /** Rôle de la réplique quand un minimoa parle (`my_pet` / `other_pet`), sinon null. Un garde-fou n'est envoyé qu'à la personne concernée. */
+  petRole: PetRoleZ.nullable().default(null),
 });
 export type Message = z.infer<typeof MessageZ>;
 
@@ -196,7 +213,10 @@ export type Memories = z.infer<typeof MemoriesZ>;
 // ── Rencontres ─────────────────────────────────────────────────────────────
 export const SuggestionZ = z.object({
   user: PersonZ,
+  /** Compatibilité de vision, de 70 à 100 (personne n'est proposé en dessous). Ne jamais l'afficher sans `explanation`. */
   compatibility: z.number().int(),
+  /** Pourquoi ton minimoa te la présente : 3 points communs, 1 différence à explorer. */
+  explanation: MatchExplanationZ,
   via: z.enum(['friend_of_friend', 'nearby', 'new']),
   mutualName: z.string().nullable(),
   /** Ce que ton pet raconte de cette rencontre. */
@@ -205,7 +225,15 @@ export const SuggestionZ = z.object({
 });
 export type Suggestion = z.infer<typeof SuggestionZ>;
 
-export const IncomingZ = z.object({ id: Uuid, from: PersonZ, compatibility: z.number().int(), intro: z.string(), at: Iso });
+export const IncomingZ = z.object({
+  id: Uuid,
+  from: PersonZ,
+  compatibility: z.number().int(),
+  /** Explication de la compatibilité, si vos deux visions sont assez connues (null sinon). */
+  explanation: MatchExplanationZ.nullable(),
+  intro: z.string(),
+  at: Iso,
+});
 export type Incoming = z.infer<typeof IncomingZ>;
 
 export const EncountersZ = z.object({
@@ -215,7 +243,54 @@ export const EncountersZ = z.object({
   petShape: ShapeZ,
 });
 export type Encounters = z.infer<typeof EncountersZ>;
+
+// ── Carte (vision) ─────────────────────────────────────────────────────────
+/** Un minimoa compatible sur la carte. Position arrondie (~300 m) et décalée, jamais exacte ni en temps réel. */
+export const MapPinZ = z.object({
+  user: PersonZ,
+  position: LatLngZ,
+  compatibility: z.number().int(),
+  explanation: MatchExplanationZ,
+});
+export type MapPin = z.infer<typeof MapPinZ>;
+export const MapZ = z.object({
+  /** no_location : pas de position ou pas d'accord → ni carte ni rencontres proches (`message` le dit). */
+  status: z.enum(['ok', 'no_location']),
+  message: z.string().nullable(),
+  /** zone : ta zone seulement, carte fixe (gratuit) · everywhere : toute la carte (Blowy+). */
+  scope: z.enum(['zone', 'everywhere']),
+  /** Centre affiché (ta zone, la ville choisie ou l'endroit demandé avec Blowy+). */
+  center: LatLngZ.nullable(),
+  /** Rayon visible autour du centre. */
+  radiusKm: z.number(),
+  pins: z.array(MapPinZ),
+  /** Au-delà du rayon visible (gratuit) : un nombre et des silhouettes floues. Vide avec Blowy+. */
+  beyond: MapBeyondZ,
+  /** Tu es en mode discret : tu n'apparais sur la carte de personne. */
+  discreet: z.boolean(),
+  canChangeCity: z.boolean(),
+});
+export type MapDto = z.infer<typeof MapZ>;
+
 export const WaveBody = z.object({ userId: Uuid });
+
+/** Une rencontre passée : coucou reçu auquel tu as répondu, ou coucou que tu as envoyé. */
+export const EncounterHistoryItemZ = z.object({
+  id: Uuid,
+  person: PersonZ,
+  /** received : on t'a salué · sent : tu as salué. */
+  direction: z.enum(['received', 'sent']),
+  /** linked : lien créé (ouvrir `linkId`) · ended : lien archivé depuis · declined : tu as passé ton tour · waiting : ton coucou attend un oui. */
+  outcome: z.enum(ENCOUNTER_OUTCOMES),
+  /** Lien né de cette rencontre, s'il existe encore. */
+  linkId: Uuid.nullable(),
+  /** Moment de l'issue (réponse) ou, s'il n'y en a pas encore, du coucou. */
+  at: Iso,
+});
+export type EncounterHistoryItem = z.infer<typeof EncounterHistoryItemZ>;
+/** Historique des rencontres, du plus récent au plus ancien, par pages (`?before=<nextBefore>`). */
+export const EncounterHistoryZ = z.object({ items: z.array(EncounterHistoryItemZ), nextBefore: Iso.nullable() });
+export type EncounterHistory = z.infer<typeof EncounterHistoryZ>;
 
 // ── Invitations et « 3 mots » (publics) ────────────────────────────────────
 export const InviteZ = z.object({ displayName: z.string(), pet: PublicPetZ });
@@ -234,6 +309,8 @@ export const REPORT_REASONS = ['harcelement', 'contenu_inapproprie', 'faux_profi
 export const ReportBody = z.object({
   userId: Uuid,
   linkId: Uuid.optional(),
+  /** Message signalé (dans `linkId`) : la modération voit ce message et son contexte immédiat, rien d'autre. */
+  messageId: Uuid.optional(),
   reason: z.enum(REPORT_REASONS),
   details: z.string().trim().max(1000).optional(),
 });
@@ -254,7 +331,11 @@ export const ERROR_CODES = [
   'link_not_active',
   'cannot_revive',
   'already_done',
+  /** Nom du pet changé il y a moins de 60 jours (sans Blowy+). */
+  'rename_locked',
   'rate_limited',
+  /** Compte suspendu par la modération (le message dit jusqu'à quand). */
+  'suspended',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -282,6 +363,7 @@ export const routes = {
   linkPhoto: (id: string) => `${API_PREFIX}/links/${id}/photo`,
   linkMemories: (id: string) => `${API_PREFIX}/links/${id}/memories`,
   encounters: () => `${API_PREFIX}/encounters`,
+  encounterHistory: () => `${API_PREFIX}/encounters/history`,
   wave: () => `${API_PREFIX}/encounters/wave`,
   encounterAccept: (id: string) => `${API_PREFIX}/encounters/${id}/accept`,
   encounterDecline: (id: string) => `${API_PREFIX}/encounters/${id}/decline`,
@@ -292,3 +374,9 @@ export const routes = {
   block: (userId: string) => `${API_PREFIX}/blocks/${userId}`,
   reports: () => `${API_PREFIX}/reports`,
 } as const;
+
+export * from './v7/vision';
+export * from './v7/billing';
+export * from './v7/admin';
+export * from './v7/plateforme';
+export * from './v7/rituels';

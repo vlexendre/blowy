@@ -87,9 +87,10 @@ export const LinkRow = memo(function LinkRow({
         <View style={[layout.row, layout.gapSm]}>
           <Text variant={unread ? 'bodyBold' : 'body'} size={14} numberOfLines={1} color={unread ? color.white : extra.preview} style={layout.grow}>
             {previewAuthor ? (
-              <Text variant="bodyBold" size={14} color={previewAuthorColor ?? speciesColor[myPet.species]}>{`${previewAuthor} `}</Text>
+              <Text variant="bodyBold" size={14} color={previewAuthorColor ?? speciesColor[myPet.species]}>{previewAuthor}</Text>
             ) : null}
-            {preview}
+            {/* L'espace ouvre la suite plutôt que de finir le nom en couleur (voir `lib/runs`). */}
+            {previewAuthor ? ` ${preview}` : preview}
           </Text>
           <Badge count={unread} />
         </View>

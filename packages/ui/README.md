@@ -108,6 +108,7 @@ BadgeProps = { count: number; max?: number; tone?: 'heart' | 'accent'; size?: 's
 #### `Button` — `src/atoms/Button.tsx`
 ```ts
 ButtonProps = { label: string; onPress?: () => void; variant?: ButtonVariant; size?: ButtonSize; icon?: GlyphName | ReactNode; iconRight?: GlyphName; hint?: string; loading?: boolean; disabled?: boolean; block?: boolean; accessibilityLabel?: string; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+// loading : le libellé garde sa place (taille inchangée), un Loader à l'encre du bouton le remplace
 type ButtonVariant = 'accent' | 'white' | 'dark' | 'ghost' | 'danger'
 type ButtonSize = 'sm' | 'md' | 'lg'
 ```
@@ -180,6 +181,13 @@ PressableProps extends Omit<RNPressableProps, 'style' | 'children'> = { children
 ProgressBarProps = { value: number; color?: string; trackColor?: string; height?: number; fillOnMount?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 // remplissage glissé (transformations) avec léger dépassement ; depuis 0 à l'apparition (fillOnMount, défaut vrai)
 ```
+#### `Loader` — `src/atoms/Loader.tsx`
+```ts
+LoaderProps = { color?: string | 'accent' /* défaut : encre courante */; size?: number /* 8 */; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// chargement en ligne : trois boules de poils qui rebondissent à tour de rôle (écrasées à l'atterrissage) ; apparaît en fondu ;
+// fixe (dégradé d'opacité) si animations réduites ; en pause hors écran / arrière-plan. Pas d'ActivityIndicator dans l'app :
+// boutons et soins → Loader ; écrans et listes → Skeleton à la forme du contenu ; tirer pour rafraîchir → ScreenTemplate / PetRefresh
+```
 #### `Skeleton` — `src/atoms/Skeleton.tsx`
 ```ts
 SkeletonProps = { width?: DimensionValue; height?: number; radius?: keyof typeof radii | 'circle'; delay?: number; style?: StyleProp<ViewStyle>; }
@@ -220,13 +228,14 @@ type BannerTone = 'error' | 'info' | 'success'
 ```
 #### `CareButton` — `src/molecules/CareButton.tsx`
 ```ts
-CareButtonProps = { label: string; icon: ReactNode; onPress?: () => void; hot?: boolean; refused?: boolean; refusedLabel?: string; onRefusedPress?: () => void; loading?: boolean; disabled?: boolean; size?: number; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+CareButtonProps = { label: string; icon: ReactNode; onPress?: () => void; hot?: boolean; refused?: boolean; refusedLabel?: string; onRefusedPress?: () => void; loading?: boolean; disabled?: boolean; lure?: PetLure; size?: number; accessibilityHint?: string; style?: StyleProp<ViewStyle>; }
+// loading : Loader (trois boules) dans le disque ; lure : glisser jusqu'au pet (refusé / inactif : pas de glissé, il tremble au tap)
 // `.care` de V6-Accueil : disque 64 #221E3C ; hot = disque jaune qui brille ; refusé = estompé (.38), un appui le fait « non de la tête »
 // l'icône prend l'encre du disque (sombre sur jaune, blanche sinon)
 ```
 #### `ChoiceCard` — `src/molecules/ChoiceCard.tsx`
 ```ts
-ChoiceCardProps = { title: string; caption?: string; icon?: IconName | ReactNode; gradient?: GradientName; selected?: boolean; faded?: boolean; disabled?: boolean; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+ChoiceCardProps = { title: string; caption?: string; icon?: IconName | ReactNode; gradient?: GradientName; selected?: boolean; faded?: boolean; disabled?: boolean; marker?: boolean /* pastille ronde : vide, puis coche une fois choisie */; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 ```
 #### `DayChip` — `src/molecules/DayChip.tsx`
 ```ts
@@ -249,7 +258,7 @@ FeatureRowProps = { icon: IconName; title: string; text?: string; style?: StyleP
 #### `GaugeBar` — `src/molecules/GaugeBar.tsx`
 ```ts
 GaugeBarProps = { value: number; low: string; high: string; caption?: string; target?: number; color?: string; compact?: boolean; selected?: boolean; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
-// le curseur et le remplissage glissent depuis le centre avec un léger dépassement (transformations seulement)
+// compteur, pas réglage : le remplissage part du centre vers un pôle avec un léger dépassement, sans curseur (rien à tirer)
 ```
 #### `Header` — `src/molecules/Header.tsx`
 ```ts
@@ -360,14 +369,18 @@ TabBarItemProps = { label: string; glyph: GlyphName; active?: boolean; badge?: n
 #### `BottomTabBar` — `src/organisms/BottomTabBar.tsx`
 ```ts
 BottomTabItem<K extends string = string> = { key: K; label: string; glyph: GlyphName; badge?: number; }
-BottomTabBarProps<K extends string = string> = { items: readonly BottomTabItem<K>[]; activeKey: K; onPress: (key: K) => void; onLongPress?: (key: K) => void; floating?: boolean; peek?: { species: Species; mood?: Mood | PetPose }; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
-// la pilule jaune glisse en ressort (et s'étire) ; peek : le pet passe la tête au-dessus de l'onglet choisi
+BottomTabBarProps<K extends string = string> = { items: readonly BottomTabItem<K>[]; activeKey: K; onPress: (key: K) => void; onLongPress?: (key: K) => void; floating?: boolean; peek?: { species: Species; mood?: Mood | PetPose; seed?: string }; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+// la pilule jaune glisse en ressort (et s'étire) ; peek : RAREMENT le pet passe la tête au-dessus de l'onglet choisi
+// (budget `peekBudget` : ~1 changement sur 10, jamais 2 fois en 3 min, rien les 20 premières s, jamais sous une feuille) ;
+// ne passer `peek` que quand la barre est visible (onglets au premier plan) ; seed = id du pet
 const TAB_BAR_SPACE = size.tabBar + space.lg + space.sm
+useTabBarSpace(): number   // hauteur réelle de la barre depuis le bas (indicateur d'accueil compris) + écart (TabTemplate s'en sert)
 ```
 #### `CareBar` — `src/organisms/CareBar.tsx`
 ```ts
-CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>; available: Record<CareAction, boolean>; onCare: (action: CareAction) => void; onRefused?: (action: CareAction) => void; hot?: Partial<Record<CareAction, boolean>>; busy?: CareAction | null; icons?: Partial<Record<CareAction, ReactNode>>; style?: StyleProp<ViewStyle>; }
+CareBarProps = { labels: Record<CareAction, { action: string; refused: string }>; available: Record<CareAction, boolean>; onCare: (action: CareAction) => void; onRefused?: (action: CareAction) => void; hot?: Partial<Record<CareAction, boolean>>; busy?: CareAction | null; lure?: PetLure; icons?: Partial<Record<CareAction, ReactNode>>; style?: StyleProp<ViewStyle>; }
 // labels : careLabel tel quel ; available : canCare(needs, action) ; pictos par défaut : CareIcon
+// lure (usePetLure, le même que PetStage) : appuyer 0,14 s puis glisser soulève le picto ; lâché sur le pet = onCare (comme un tap)
 ```
 #### `ChallengeCard` — `src/organisms/ChallengeCard.tsx`
 ```ts
@@ -435,7 +448,8 @@ PetHeroProps = { pet: PetLook; title: TitleContent; moodLabel?: string; formLabe
 #### `PetStage` — `src/organisms/PetStage.tsx`
 ```ts
 PetStageAction = { label: string; onPress: () => void; accessibilityLabel?: string; }
-PetStageProps = { pet: PetLook & { id?: string }; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; action?: PetStageAction; reaction?: PetReaction | null; reactionKey?: number; gradient?: GradientName; petSize?: number; height?: number; grabbable?: boolean; onPetPress?: () => void; onPetTouch?: (t: PetTouch) => void; petLabel?: string; style?: StyleProp<ViewStyle>; }
+PetStageProps = { pet: PetLook & { id?: string }; title?: TitleContent; shape?: Shape; shapeLabel?: string; speech?: string; action?: PetStageAction; reaction?: PetReaction | null; reactionKey?: number; gradient?: GradientName; petSize?: number; height?: number; grabbable?: boolean; onPetPress?: () => void; onPetTouch?: (t: PetTouch) => void; petLabel?: string; lure?: PetLure; style?: StyleProp<ViewStyle>; }
+// lure : soin glissé depuis CareBar ; le pet le suit des yeux, se penche, ouvre la bouche (surpris) quand il arrive tout près
 type PetReaction = PetActorReaction   // feed : fraise croquée · play : balle et sauts · nap : lumière baissée + z · cuddle : cœurs · joy · no · wave · surprise
 // le pet est un PetActor (attrapable par défaut : le panneau passe devant et ne le rogne plus pendant le geste) ; la bulle s'écrit
 // V6-Accueil : panneau 318, nom Anton 40 + puce de forme, bouton blanc (garde-robe), bulle, pet habillé en bas à droite
@@ -505,7 +519,8 @@ WardrobeGridHandle = { tileRect(id): Promise<Rect | null>; land(id): void }   //
 ```
 #### `WordsShareCard` — `src/organisms/WordsShareCard.tsx`
 ```ts
-WordsShareCardProps = { title: string; countLabel?: string; words: readonly { label: string; count?: number }[]; url: string; copyLabel: string; copiedLabel?: string; copied?: boolean; shareLabel: string; onCopy: () => void; onShare: () => void; emptyText?: string; }
+WordsShareCardProps = { title: string; countLabel?: string; badge?: string; words: readonly { label: string; count?: number }[]; url: string; copyLabel: string; copiedLabel?: string; copied?: boolean; shareLabel: string; onCopy: () => void; onShare: () => void; emptyText?: string; steps?: readonly [string, string, string]; received?: boolean; receivedText?: string; moreLabel?: string; onMore?: () => void; }
+// ce que c'est (une ligne), 1-2-3, une action principale « partager le lien » ; reçus : compte en avant, mots, lien vers le caractère
 ```
 ### Gabarits
 #### `LinkTemplate` — `src/templates/LinkTemplate.tsx`
@@ -525,8 +540,15 @@ StageTemplateProps = { onBack?: () => void; backLabel?: string; progress?: numbe
 ```
 #### `ScreenTemplate` — `src/templates/ScreenTemplate.tsx`
 ```ts
-ScreenTemplateProps = { children?: ReactNode; header?: ReactNode; footer?: ReactNode; scroll?: boolean; background?: GradientName | 'night'; padded?: boolean; gutter?: number; headerStyle?: StyleProp<ViewStyle>; edges?: readonly ('top' | 'bottom')[]; bottomSpace?: number; keyboard?: boolean; refreshControl?: ReactElement<RefreshControlProps>; scrollRef?: Ref<ComponentRef<typeof ScrollView>>; onScroll?: ((e) => void) | AnimatedScrollHandler; scrollEventThrottle?: number; contentStyle?: StyleProp<ViewStyle>; }
+ScreenTemplateProps = { children?: ReactNode; header?: ReactNode; footer?: ReactNode; scroll?: boolean; background?: GradientName | 'night'; padded?: boolean; gutter?: number; headerStyle?: StyleProp<ViewStyle>; edges?: readonly ('top' | 'bottom')[]; bottomSpace?: number; keyboard?: boolean; refreshControl?: ReactElement<RefreshControlProps>; scrollRef?: Ref<ComponentRef<typeof ScrollView>>; onScroll?: ((e) => void) | AnimatedScrollHandler; scrollEventThrottle?: number; contentStyle?: StyleProp<ViewStyle>; compactTitle?: string; compactAfter?: number /* 72 */; }
 // Animated.ScrollView ; fournit le verrou de défilement (useScrollLock) : un pet tenu bloque le défilement le temps du geste
+// EN-TÊTES (règle unique de l'app) — corps défilant : toute la hauteur ; la bande de la barre d'état + `header` forment une barre
+// collée en haut (stickyHeaderIndices), le contenu passe dessous derrière un verre (flou sombre + teinte nuit + filet) qui
+// s'allume dès 14 pt de défilement : au repos rien n'est caché ni recouvert. compactTitle (TabTemplate : le titre) : petit
+// titre centré qui apparaît sous la barre d'état quand le grand titre est sorti. Corps fixe (chat, carte) : en-tête dans le
+// flux, la liste s'efface sous lui (dégradé 14 pt). Pied : le contenu s'efface au-dessus (dégradé 20 pt).
+// contentStyle s'applique au bloc du contenu (sous la barre), plus au conteneur du défilement.
+// refreshControl : roue native rendue transparente, remplacée par trois boules jaunes (se remplissent en tirant, Loader pendant)
 ```
 #### `SheetTemplate` — `src/templates/SheetTemplate.tsx`
 ```ts
@@ -536,6 +558,7 @@ SheetTemplateProps = { visible: boolean; onClose: () => void; title?: TitleConte
 #### `TabTemplate` — `src/templates/TabTemplate.tsx`
 ```ts
 TabTemplateProps = { brand?: string; title?: TitleContent; right?: ReactNode; children?: ReactNode; scroll?: boolean; refreshControl?: ReactElement<RefreshControlProps>; gutter?: number; gap?: number; top?: number; onScroll?: ScreenTemplateProps['onScroll']; scrollEventThrottle?: number; }
+// bas : useTabBarSpace() + 24 (le dernier élément s'arrête au-dessus de la barre et de l'indicateur d'accueil) ; title → compactTitle
 ```
 
 ## Mouvement (`src/motion/`, `src/lib/motion.ts`)
@@ -611,7 +634,8 @@ Une modale native (`Modal` : `SheetTemplate`, `UnlockSheet`) passe au-dessus du 
 PetActor   { species; outfit?; size; mood?: Mood | PetPose /* repos sans tenue, défaut 'debout' */; seed?: string /* id du pet */;
              sulking?; idle?: true; touch?: true; grabbable?: false; sleepAfter?: number | null /* 25 000 */; shadow?: true;
              hiddenItems?: readonly string[]; onTouch?: (t: 'tap' | 'double' | 'snuggle' | 'grab' | 'throw') => void;
-             onGrabChange?: (grabbed: boolean) => void; accessibilityLabel?; accessibilityHint?; style? }
+             onGrabChange?: (grabbed: boolean) => void; lure?: PetLure /* objet porté : il le suit, ouvre la bouche */;
+             accessibilityLabel?; accessibilityHint?; style? }
            ref: PetActorHandle { react(kind: 'feed' | 'play' | 'nap' | 'cuddle' | 'joy' | 'no' | 'wave' | 'surprise'); wake() }
 PetPeek    { species; mood?: 'neutre'; edges?: PeekEdge[] /* ['bottom-right','bottom-left'] */; visible?: true; size?: 92; along?: 0.6;
              safe?: { top?; bottom?; left?; right? }; hideAndSeek?: true; seed?; duration?: number; onPress?; onHidden?;
@@ -620,7 +644,12 @@ PetPeek    { species; mood?: 'neutre'; edges?: PeekEdge[] /* ['bottom-right','bo
 PetRefresh { species; mood?: 'surpris'; refreshing; onRefresh; children: (scroll: { refreshControl; onScroll; scrollEventThrottle }) => ReactNode;
              top?: number /* zone sûre du haut */; bottomPeek?: true; bottomInset?: 0; size?: 64 }
 KeyboardPeek { species; mood?: 'joie'; side?: 'left' | 'right'; size?: 72; seed? }
-HelloPeek  { species; seed?; safe?; duration?: 2400 }   // salut au retour dans l'app (posé dans (tabs)/_layout)
+HelloPeek  { species; seed?; safe?; duration?: 2400; active?: true }   // salut au retour dans l'app (posé dans (tabs)/_layout)
+           // rare : après ≥ 1 min d'absence, au plus une fois par session, 1 chance sur 2, jamais à < 3 min d'une autre tête ;
+           // active = onglets au premier plan (useIsFocused du layout) : faux sur un écran poussé ; jamais sous une feuille
+claimTabPeek(seed) / claimHelloPeek(seed, awayMs)   // budget partagé des têtes surprises (peekBudget.ts ; decide* purs, testés)
+usePetLure(): PetLure      // { x, y, on: SharedValue; target: AnimatedRef<View> } : soin porté de CareBar vers PetStage / PetActor
+useOverlayOpen() / useOverlay(shown)   // feuilles ouvertes (SheetTemplate, UnlockSheet) : aucun pet décoratif par-dessus
 PetEntrance { species; mood?: 'debout'; size?: 180; glow?; accessibilityLabel?; style? }   // arrive en courant (lancement)
 PetRise    { species; up: boolean; size?; reach?: 0.4 /* part de la hauteur d'écran */; mood?: 'neutre'; gesture?: 'blink' | 'look' | 'none';
              gestureDelay?: 380; sink?: 0.14; x?; tilt?; hopKey?: number; celebrate?: BurstKind; accessibilityLabel? }
@@ -649,6 +678,20 @@ fitAnchor(species, 'headTop' | 'eyes' | 'mouth' | 'ground' | …): { x, y }   //
   animation ; changer la mise en page au repos ; `Math.random` (utiliser `useSeed`).
 - **Web** : pas de tirage élastique (pas de pet dans `PetRefresh`, liste normale), pas de clavier (`KeyboardPeek` absent),
   pas de vibration. Les images du pet sont `pointerEvents: none` pour éviter le glisser-déposer d'image du navigateur.
+
+### Feuilles hautes (Blowy+)
+```ts
+SheetTemplate { …; asScreen?; bare?: boolean }   // bare : presque toute la hauteur, sans en-tête ni marges ; le contenu défile lui-même
+SheetHandle { children; style? }                  // zone qu'on tire pour descendre une feuille bare (barre du haut)
+useSheet(): { close(); pan } | null               // close : la feuille redescend puis onClose (croix, « continuer », contenu tiré au-delà du haut)
+```
+Route en feuille : `presentation: 'transparentModal', animation: 'fade'` + `SheetTemplate asScreen bare` (voir `features/plus`).
+
+### Phrases en plusieurs morceaux
+`Title` (segments), `SpeechBubble` (`highlight`, `typing`), `LegalNote`, `RichText { runs: TextRun[] }` : un seul `Text` parent, les
+morceaux imbriqués ; `lib/runs.ts` règle les espaces des jointures (l'espace passe au début du morceau suivant, jamais seule ni en
+fin de morceau stylé ; pas de double espace ; insécable avant `? ! : ; » € %`). Un `Text` imbriqué n'a ni interlignage ni cadre à
+lui (pas de `fitLineHeight`). Ne pas poser des `Text` côte à côte dans une rangée pour faire une phrase.
 
 ### Inscription et Moi (ajouts)
 ```ts

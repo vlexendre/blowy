@@ -1,4 +1,4 @@
-export { BottomTabBar, type BottomTabBarProps, type BottomTabItem, TAB_BAR_SPACE } from './BottomTabBar';
+export { BottomTabBar, type BottomTabBarProps, type BottomTabItem, TAB_BAR_SPACE, useTabBarSpace } from './BottomTabBar';
 export { ChallengeCard, type ChallengeCardProps } from './ChallengeCard';
 export { ChatThread, type ChatThreadProps } from './ChatThread';
 export { Composer, type ComposerProps, type ComposerTone } from './Composer';
@@ -47,3 +47,5 @@ export { InvitePanel, type InvitePanelProps } from './InvitePanel';
 export { type PrepItemState, PrepChecklist, type PrepChecklistProps } from './PrepChecklist';
 export { PromiseStage, type PromiseStageProps } from './PromiseStage';
 export { ReadyHero, type ReadyHeroProps } from './ReadyHero';
+export { type EncounterHistoryEntry, EncounterHistory, type EncounterHistoryProps, type EncounterHistoryTone } from './EncounterHistory';
+export { RenameCard, type RenameCardProps } from './RenameCard';

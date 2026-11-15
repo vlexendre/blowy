@@ -47,7 +47,13 @@ export class SupabaseReportsRepository implements ReportsRepository {
   async add(r: ReportRecord): Promise<void> {
     const { error } = await this.client
       .from('reports')
-      .insert({ reporter: r.reporter, target_user: r.targetUser, link_id: r.linkId, reason: r.reason, details: r.details, created_at: r.createdAt });
+      .insert({ reporter: r.reporter, target_user: r.targetUser, link_id: r.linkId, message_id: r.messageId ?? null, reason: r.reason, details: r.details, created_at: r.createdAt });
     check(error, 'signalement');
+  }
+
+  async reportedBy(reporter: string): Promise<Set<string>> {
+    const { data, error } = await this.client.from('reports').select('target_user').eq('reporter', reporter).not('target_user', 'is', null);
+    check(error, 'lecture des signalements');
+    return new Set((data ?? []).flatMap((r) => (r.target_user ? [r.target_user] : [])));
   }
 }

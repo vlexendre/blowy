@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type Gauges, type PetEventKind, addGauges, dayOf, deltaFor } from '@blowy/domain';
+import { type Gauges, type PetEventKind, SOCIABILITY_GAIN, addGauges, dayOf, deltaFor, raiseSociability } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, PETS } from '../../../shared/tokens';
@@ -19,6 +19,8 @@ export interface ApplyOptions {
   extra?: Partial<Gauges>;
   /** Plafond d'événements de ce type par jour ; au-delà, rien ne bouge. */
   maxPerDay?: number;
+  /** Points de sociabilité gagnés (par défaut ceux de l'événement, `SOCIABILITY_GAIN`). */
+  sociability?: number;
 }
 
 /** Caractère du pet : seule porte d'entrée pour faire bouger ses jauges (utilisée par tous les modules). */
@@ -53,6 +55,9 @@ export class PetCharacter {
     const delta = custom ? (options.extra ?? {}) : sumDeltas(deltaFor(kind), options.extra ?? {});
     const now = this.clock.now();
     await this.pets.save({ ...pet, gauges: addGauges(pet.gauges, delta), decayedOn: dayOf(now) });
+    // Sociabilité (besoin principal) : sortir, saluer, écrire, poster la photo du jour, tenir une habitude tournée vers les autres.
+    const gain = options.sociability ?? SOCIABILITY_GAIN[kind] ?? 0;
+    if (gain !== 0) await this.pets.saveNeeds(pet.id, raiseSociability(pet.needs, gain), now.toISOString());
     return this.pets.appendEvent({ petId: pet.id, kind, delta, createdAt: now.toISOString() });
   }
 

@@ -1,7 +1,9 @@
 import { font, type TypeName } from '@blowy/tokens';
+import { createContext, useContext } from 'react';
 import { Platform, Text as RNText, type TextProps as RNTextProps, type StyleProp, StyleSheet, type TextStyle } from 'react-native';
 
 import { useInk, useMute } from '../lib/ink';
+import { frenchChildren } from '../lib/runs';
 import { opacity, type } from '../theme';
 
 export interface TextProps extends RNTextProps {
@@ -18,18 +20,38 @@ export interface TextProps extends RNTextProps {
   size?: number;
 }
 
+/** Vrai dans un `Text` : un `Text` imbriqué n'est qu'un morceau de la phrase (pas de cadre à lui). */
+const InText = createContext(false);
+
+/** Vrai quand ce composant est rendu à l'intérieur d'un `Text` (morceau de phrase). */
+export const useInText = (): boolean => useContext(InText);
+
 export function Text({ variant = 'body', color: tint, dim, muted, center, size, style, children, ...rest }: TextProps) {
   const ink = useInk();
   const mute = useMute();
+  const nested = useContext(InText);
   const base = type[variant];
   const fg = tint ?? (muted ? mute : ink);
   const sized = size ? { fontSize: size, lineHeight: Math.round(size * (base.lineHeight / base.fontSize)) } : null;
   const composed = [base, { color: fg }, sized, dim && styles.dim, center && styles.center, style];
-  return (
-    <RNText {...rest} style={[composed, fitLineHeight(composed)]}>
-      {children}
+  // Un morceau imbriqué ne reçoit pas le recadrage iOS (marges et marge intérieure de `fitLineHeight`) : seul le
+  // parent a un cadre. Les espaces normales avant « ? ! : ; » deviennent insécables (voir `lib/runs`).
+  const text = (
+    <RNText {...rest} style={nested ? inline(composed) : [composed, fitLineHeight(composed)]}>
+      {frenchChildren(children)}
     </RNText>
   );
+  return nested ? text : <InText.Provider value>{text}</InText.Provider>;
+}
+
+/**
+ * Style d'un morceau imbriqué : seulement les attributs de texte. L'interlignage et le cadre (marges, marges
+ * intérieures) sont ceux du parent ; sinon une ligne change de hauteur quand un mot coloré y apparaît.
+ */
+function inline(style: StyleProp<TextStyle>): TextStyle {
+  const { lineHeight: _lh, padding: _p, paddingTop: _pt, paddingBottom: _pb, paddingVertical: _pv, margin: _m, marginTop: _mt, marginBottom: _mb, marginVertical: _mv, ...text } =
+    StyleSheet.flatten(style) ?? {};
+  return text;
 }
 
 /** Hauteur de ligne naturelle d'iOS (ascendante + descendante, en em) des polices de l'app. */

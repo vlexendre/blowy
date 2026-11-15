@@ -1,12 +1,17 @@
-import type { ReactNode } from 'react';
-import { ActivityIndicator, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { GestureDetector, type PanGestureConfig, usePanGesture } from 'react-native-gesture-handler';
+import Animated, { measure, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
+import { Loader } from '../atoms/Loader';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { haptic } from '../lib/haptics';
+import { haptic, hapticFor } from '../lib/haptics';
 import { InkProvider } from '../lib/ink';
-import { useReducedMotion } from '../lib/motion';
+import { ease, springs, useReducedMotion } from '../lib/motion';
+import { useScrollLock } from '../lib/scroll-lock';
+import { lureHits, type PetLure } from '../motion/pets/lure';
 import { Pulse } from '../motion/PopIn';
 import { color, motion, opacity, size as sizes, veil } from '../theme';
 
@@ -24,17 +29,27 @@ export interface CareButtonProps {
   refusedLabel?: string;
   /** Appui sur un geste refusé (pour afficher la raison ailleurs). */
   onRefusedPress?: () => void;
-  /** Requête en cours. */
+  /** Requête en cours : trois boules rebondissent dans le disque (`Loader`). */
   loading?: boolean;
   /** Bouton inactif (ex. pendant un autre soin). */
   disabled?: boolean;
+  /**
+   * Glisser jusqu'au pet : appuyer puis glisser soulève le picto ; lâché sur le pet (`lure.target`), il y entre et
+   * le soin part (même effet qu'un tap) ; lâché ailleurs, il revient en ressort. Sans `lure`, tap seul.
+   */
+  lure?: PetLure;
   /** Diamètre du disque. Défaut 64. */
   size?: number;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
 }
 
-/** Bouton rond d'un soin (`.care` de V6-Accueil) : disque, libellé ; rebond et vibration à l'appui. */
+/** Tenir ce temps avant de pouvoir glisser (un glissé immédiat fait défiler l'écran). */
+const HOLD_MS = 140;
+/** Le picto porté passe au-dessus du doigt (sinon le doigt le cache). */
+const LIFT = 34;
+
+/** Bouton rond d'un soin (`.care` de V6-Accueil) : disque, libellé ; rebond et vibration à l'appui ; glissable jusqu'au pet. */
 export function CareButton({
   label,
   icon,
@@ -45,17 +60,24 @@ export function CareButton({
   onRefusedPress,
   loading,
   disabled,
+  lure,
   size = 64,
   accessibilityHint,
   style,
 }: CareButtonProps) {
   const reduced = useReducedMotion();
+  const scrollLock = useScrollLock();
   const pop = useSharedValue(1);
   const shake = useSharedValue(0);
   const anim = useAnimatedStyle(() => ({ transform: [{ scale: pop.value }, { translateX: shake.value }] }));
   const inactive = disabled || loading;
   const lit = hot && !refused;
+  /** Un glissé vient de finir : le relâchement ne compte pas comme un tap. */
+  const dragged = useRef(0);
+  const [lifted, setLifted] = useState(false);
+
   const press = () => {
+    if (Date.now() - dragged.current < 450) return;
     if (refused) {
       haptic('warning');
       if (!reduced)
@@ -72,8 +94,110 @@ export function CareButton({
     if (!reduced) pop.value = withSequence(withSpring(1.14, motion.press), withSpring(1, motion.pop));
     onPress?.();
   };
+
+  // — Glisser jusqu'au pet. Le picto porté : décalage (fil natif), échelle, inclinaison selon la vitesse.
+  const tx = useSharedValue(0);
+  const ty = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const tilt = useSharedValue(0);
+  const fade = useSharedValue(1);
+
+  const startJS = useCallback(() => {
+    dragged.current = Date.now();
+    setLifted(true);
+    scrollLock.setLocked(true);
+    hapticFor('press');
+  }, [scrollLock]);
+  const endJS = useCallback(
+    (hit: boolean) => {
+      dragged.current = Date.now();
+      scrollLock.setLocked(false);
+      if (hit) {
+        haptic('medium');
+        onPress?.();
+      }
+      setTimeout(() => setLifted(false), hit ? 260 : 420);
+    },
+    [scrollLock, onPress],
+  );
+  // Trampolines stables : le geste n'est recréé que si `canDrag` change (jamais pendant qu'on porte le picto).
+  const startRef = useRef(startJS);
+  startRef.current = startJS;
+  const endRef = useRef(endJS);
+  endRef.current = endJS;
+  const startStable = useCallback(() => startRef.current(), []);
+  const endStable = useCallback((hit: boolean) => endRef.current(hit), []);
+
+  const canDrag = !!lure && !refused && !inactive;
+  const cfg = useMemo<PanGestureConfig>(() => {
+    const l = lure;
+    return {
+      enabled: canDrag,
+      activateAfterLongPress: HOLD_MS,
+      onActivate: (e) => {
+        'worklet';
+        if (!l) return;
+        tx.value = withSpring(e.translationX, springs.press);
+        ty.value = withSpring(e.translationY - LIFT, springs.press);
+        scale.value = withSpring(1.32, springs.pop);
+        fade.value = 1;
+        l.x.value = e.absoluteX;
+        l.y.value = e.absoluteY - LIFT;
+        l.on.value = 1;
+        scheduleOnRN(startStable);
+      },
+      onUpdate: (e) => {
+        'worklet';
+        if (!l) return;
+        tx.value = e.translationX;
+        ty.value = e.translationY - LIFT;
+        tilt.value = withSpring(Math.max(-16, Math.min(16, e.velocityX * 0.01)), { damping: 18, stiffness: 260 });
+        l.x.value = e.absoluteX;
+        l.y.value = e.absoluteY - LIFT;
+      },
+      onDeactivate: (e) => {
+        'worklet';
+        if (!l) return;
+        const px = e.absoluteX;
+        const py = e.absoluteY - LIFT;
+        const rect = measure(l.target);
+        const hit = lureHits(px, py, rect);
+        l.on.value = 0;
+        tilt.value = withSpring(0, springs.pop);
+        if (hit && rect) {
+          // Il entre dans le pet (vers la bouche, au tiers haut), rapetisse et s'efface, puis repousse dans son disque.
+          const dx = rect.pageX + rect.width * 0.5 - px;
+          const dy = rect.pageY + rect.height * 0.42 - py;
+          tx.value = withTiming(tx.value + dx, { duration: 180, easing: ease.in });
+          ty.value = withTiming(ty.value + dy, { duration: 180, easing: ease.in });
+          scale.value = withTiming(0.2, { duration: 180, easing: ease.in });
+          fade.value = withSequence(withTiming(0, { duration: 180 }), withTiming(0, { duration: 60 }, () => {
+            tx.value = 0;
+            ty.value = 0;
+            scale.value = 0;
+            fade.value = 1;
+            scale.value = withSpring(1, springs.pop);
+          }));
+        } else {
+          // Lâché ailleurs : il revient à sa place en ressort.
+          tx.value = withSpring(0, springs.plush);
+          ty.value = withSpring(0, springs.plush);
+          scale.value = withSpring(1, springs.plush);
+        }
+        scheduleOnRN(endStable, hit);
+      },
+    };
+    // Valeurs animées et trampolines stables : seul `canDrag` (et le lien au pet) recrée le geste.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canDrag, lure]);
+  const pan = usePanGesture(cfg);
+  const carried = useAnimatedStyle(() => ({
+    opacity: fade.value,
+    transform: [{ translateX: tx.value }, { translateY: ty.value }, { rotate: `${tilt.value}deg` }, { scale: scale.value }],
+  }));
+
   const ink = lit ? color.dark : color.white;
-  return (
+  const button = (
     <Pressable
       onPress={press}
       disabled={inactive}
@@ -82,12 +206,24 @@ export function CareButton({
       accessibilityLabel={refused && refusedLabel ? `${label}, ${refusedLabel}` : label}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!inactive || !!refused, busy: !!loading }}
-      style={[styles.root, refused && styles.off, disabled && !loading && styles.inactive, style]}
+      style={[styles.root, refused && styles.off, disabled && !loading && styles.inactive, lifted && styles.lifted, style]}
     >
       {/* Conseillé : deux battements pour attirer l'œil, puis repos. */}
-      <Pulse active={!!lit} beats={2} delay={700}>
+      <Pulse active={!!lit && !lifted} beats={2} delay={700}>
         <Animated.View style={[styles.disc, { width: size, height: size, borderRadius: size / 2 }, lit ? styles.hot : null, anim]}>
-          <InkProvider value={ink}>{loading ? <ActivityIndicator color={ink} /> : <View pointerEvents="none">{icon}</View>}</InkProvider>
+          <InkProvider value={ink}>
+            {loading ? (
+              <Loader color={ink} size={7} />
+            ) : (
+              <Animated.View
+                pointerEvents="none"
+                style={[styles.token, { width: size - 6, height: size - 6, borderRadius: (size - 6) / 2 }, lifted && (lit ? styles.tokenHot : styles.tokenOn), carried]}
+              >
+                {/* Porté, le picto voyage dans un jeton rond (lisible sur le panneau coloré du pet). */}
+                {icon}
+              </Animated.View>
+            )}
+          </InkProvider>
         </Animated.View>
       </Pulse>
       <Text variant="bodyHeavy" size={12} center numberOfLines={1} color={color.white}>
@@ -95,11 +231,19 @@ export function CareButton({
       </Text>
     </Pressable>
   );
+  if (!lure) return button;
+  return (
+    <GestureDetector gesture={pan} touchAction="pan-y">
+      {button}
+    </GestureDetector>
+  );
 }
 
 const styles = StyleSheet.create({
   // `.care` : colonne, écart 6, libellé 12/800.
   root: { flex: 1, minWidth: sizes.touch, alignItems: 'center', gap: 6 },
+  // Le picto porté passe devant les autres soins.
+  lifted: { zIndex: 20, elevation: 20 },
   // `.care u` : disque 64 #221E3C, filet blanc 12 %.
   disc: { alignItems: 'center', justifyContent: 'center', backgroundColor: color.card, borderWidth: sizes.border, borderColor: veil.track },
   // `.care.hot u` : jaune, ombre 0 8 18 jaune 35 %.
@@ -112,6 +256,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     elevation: 8,
   },
+  token: { alignItems: 'center', justifyContent: 'center' },
+  tokenOn: { backgroundColor: color.card, borderWidth: sizes.border, borderColor: veil.glassStrong },
+  tokenHot: { backgroundColor: color.accent },
   // `.care.off` : opacité .38.
   off: { opacity: opacity.dim },
   inactive: { opacity: opacity.disabled },

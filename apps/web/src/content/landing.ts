@@ -275,9 +275,12 @@ export const final = {
 export const footer = {
   legalLabel: 'liens légaux',
   links: [
-    { href: '/support', label: 'aide' },
-    { href: '/confidentialite', label: 'confidentialité' },
-    { href: '/conditions', label: 'conditions' },
+    { href: '/legal/assistance/', label: 'aide' },
+    { href: '/legal/mentions-legales/', label: 'mentions légales' },
+    { href: '/legal/conditions/', label: 'conditions' },
+    { href: '/legal/confidentialite/', label: 'confidentialité' },
+    { href: '/legal/cookies/', label: 'cookies' },
+    { href: '/legal/', label: 'tout le légal' },
   ],
   copyright: '© 2026 Blowy',
 } as const;

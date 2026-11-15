@@ -18,5 +18,7 @@ export {
   usePressFeedback,
   useReducedMotion,
 } from './motion';
+export { isOverlayOpen, useOverlay, useOverlayOpen } from './overlay';
 export { hitSlopFor, layout, surface } from './styles';
 export { ScrollLockProvider, useScrollLock } from './scroll-lock';
+export { frenchSpaces, highlightRuns, normalizeRuns, revealTokens } from './runs';

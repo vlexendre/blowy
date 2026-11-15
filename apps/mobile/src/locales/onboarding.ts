@@ -56,6 +56,10 @@ export const onboarding = {
       'on m’envoie un vocal de 4 minutes. je…',
     ],
     note: 'réponds comme si c’était moi. pas comme ta mère.',
+    /** Consigne au-dessus des deux cartes : on en touche une, la jauge bouge. */
+    pick: 'touche une carte, ça règle son caractère',
+    /** Petite ligne au-dessus des jauges qui bougent avec les réponses. */
+    gaugesTitle: (pet: string) => `le caractère de ${pet.toLowerCase()}`,
     caption: (pole: string) => `→ ${pole}`,
     previous: 'question précédente',
     // Le temps fort après la 4e réponse : le verdict mot à mot, ses deux traits en puces.
@@ -152,7 +156,9 @@ export const onboarding = {
     shareMessage: (pet: string, url: string) => `j’ai un pet sur blowy, il s’appelle ${pet.toLowerCase()}. viens, nos pets vont se plaire : ${url}`,
     wordsTitle: 'décris-moi en 3 mots',
     wordsEmpty: (pet: string) => `tes potes choisissent 3 mots sur toi. ça fait bouger les jauges de ${pet.toLowerCase()}.`,
-    wordsShare: 'partager',
+    wordsShare: 'partager le lien',
+    wordsSteps: (pet: string) => ['tu partages ton lien', 'tes potes choisissent 3\u00a0mots', `${pet.toLowerCase()} prend ton caractère`] as const,
+    wordsBadge: 'anonyme',
     wordsMessage: (url: string) => `décris-moi en 3 mots (c’est anonyme) : ${url}`,
     cta: 'c’est parti',
     later: 'plus tard',
@@ -176,6 +182,9 @@ export const onboarding = {
     free: 'sans blowy+, rien ne disparaît : tes chats, tes liens et ton pet restent gratuits. pour toujours.',
     cta: 'bientôt disponible',
     continueFree: 'continuer gratuitement',
+    restore: 'restaurer mes achats',
+    restoreNone: 'aucun achat à restaurer sur ce compte.',
+    restoreError: 'la restauration n’a pas abouti. réessaie.',
     member: 'tu es déjà blowy+. merci ♥',
   },
 } as const;

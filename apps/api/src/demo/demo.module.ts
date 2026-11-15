@@ -3,6 +3,7 @@ import { EncountersModule } from '../modules/encounters/encounters.module';
 import { LinksModule } from '../modules/links/links.module';
 import type { OnboardedHook } from '../modules/me/ports';
 import { PetsModule } from '../modules/pets/pets.module';
+import { VisionModule } from '../modules/vision/vision.module';
 import { ONBOARDED_HOOK } from '../shared/tokens';
 import { DemoWorld } from './demo-world';
 
@@ -18,7 +19,7 @@ export class DemoModule {
     return {
       module: DemoModule,
       global: true,
-      imports: [PetsModule, LinksModule, EncountersModule],
+      imports: [PetsModule, LinksModule, EncountersModule, VisionModule],
       providers: [DemoWorld, { provide: ONBOARDED_HOOK, useExisting: DemoWorld }],
       exports: [ONBOARDED_HOOK],
     };

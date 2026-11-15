@@ -1,0 +1,33 @@
+---
+/** Sommaire des pages légales dans une langue, avec l'identité de l'éditeur. */
+import Legal from '../../../layouts/Legal.astro';
+import { LEGAL_CONTENT } from '../../../content/legal';
+import { LEGAL_SLUGS, legalPath, type Locale } from '../../../i18n/legal';
+import { inline } from '../../../lib/legal-render';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const { ui, pages } = LEGAL_CONTENT[locale];
+---
+<Legal locale={locale} ui={ui} title={ui.index.title} heading={ui.index.heading} description={ui.index.description} intro={ui.index.intro}>
+  <ul class="doc-list">
+    {
+      LEGAL_SLUGS.map((s) => (
+        <li>
+          <a href={legalPath(locale, s)}>{pages[s].heading}</a>
+          <p>{pages[s].description}</p>
+        </li>
+      ))
+    }
+  </ul>
+  <h2>{ui.index.publisherTitle}</h2>
+  <p set:html={inline(ui.index.publisherText, locale)} />
+</Legal>
+<style>
+.doc-list{list-style:none;padding:0;display:grid;gap:10px}
+.doc-list li{margin:0;padding:14px 18px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.doc-list a{font-size:19px}
+.doc-list p{margin:4px 0 0;font-size:15px;color:var(--mute)}
+</style>

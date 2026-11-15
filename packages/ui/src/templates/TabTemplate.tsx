@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
-import { TAB_BAR_SPACE } from '../organisms/BottomTabBar';
+import { useTabBarSpace } from '../organisms/BottomTabBar';
 import { layout } from '../lib/styles';
 import { color, space } from '../theme';
 import type { TitleContent } from '../types';
@@ -32,7 +32,14 @@ export interface TabTemplateProps {
   scrollEventThrottle?: number;
 }
 
-/** Gabarit d'un onglet principal : marque, grand titre, contenu, place pour la barre flottante. */
+/** Texte brut d'un titre (segments joints) pour le petit titre de la barre du haut. */
+const plain = (t: TitleContent): string => (typeof t === 'string' ? t : t.map((s) => s.text).join(''));
+
+/**
+ * Gabarit d'un onglet principal : marque, grand titre, contenu, place pour la barre flottante.
+ * Toute la hauteur : le contenu passe sous la barre d'état (verre flouté qui s'allume au défilement) ; quand le
+ * grand titre sort de l'écran, un petit titre apparaît en haut. En bas, le dernier élément s'arrête au-dessus de la barre d'onglets.
+ */
 export function TabTemplate({
   brand,
   title,
@@ -46,11 +53,13 @@ export function TabTemplate({
   onScroll,
   scrollEventThrottle,
 }: TabTemplateProps) {
+  const barSpace = useTabBarSpace();
   return (
     <ScreenTemplate
       scroll={scroll}
       edges={['top']}
-      bottomSpace={TAB_BAR_SPACE}
+      bottomSpace={barSpace}
+      compactTitle={title ? plain(title) : undefined}
       refreshControl={refreshControl}
       onScroll={onScroll}
       scrollEventThrottle={scrollEventThrottle}

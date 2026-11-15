@@ -14,10 +14,13 @@ import { SendMessage } from './application/send-message.usecase';
 import { SendPhoto } from './application/send-photo.usecase';
 import { LinkPresenter } from './interface/link.presenter';
 import { LinksController } from './interface/links.controller';
+import { ChatMinimoas } from './minimoas/chat-minimoas';
+import { LinkJobs } from './minimoas/link-jobs';
+import { LinkMinimoasController } from './minimoas/link-minimoas.controller';
 
 @Module({
   imports: [PetsModule],
-  controllers: [LinksController],
+  controllers: [LinksController, LinkMinimoasController],
   providers: [
     LinkSession,
     LinkPresenter,
@@ -32,7 +35,9 @@ import { LinksController } from './interface/links.controller';
     PhotoTicket,
     SendPhoto,
     GetMemories,
+    ChatMinimoas,
+    LinkJobs,
   ],
-  exports: [CreateLink, LinkPresenter, SendMessage],
+  exports: [CreateLink, LinkPresenter, SendMessage, ChatMinimoas, LinkJobs],
 })
 export class LinksModule {}

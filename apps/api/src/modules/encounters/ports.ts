@@ -1,4 +1,6 @@
-export type EncounterStatus = 'waved' | 'accepted' | 'declined';
+import type { EncounterStatus } from '@blowy/domain';
+
+export type { EncounterStatus };
 
 export interface EncounterRecord {
   id: string;
@@ -8,6 +10,8 @@ export interface EncounterRecord {
   /** Ce que le pet de `fromUser` disait de la rencontre au moment du coucou. */
   intro: string | null;
   createdAt: string;
+  /** Dernier changement de statut (le coucou, puis la réponse) : date montrée et ordre de l'historique. */
+  statusAt: string;
 }
 
 export interface EncountersRepository {
@@ -15,7 +19,12 @@ export interface EncountersRepository {
   findPair(fromUser: string, toUser: string): Promise<EncounterRecord | null>;
   /** Null si la paire existe déjà. */
   create(encounter: EncounterRecord): Promise<EncounterRecord | null>;
-  setStatus(id: string, status: EncounterStatus): Promise<void>;
+  setStatus(id: string, status: EncounterStatus, at: string): Promise<void>;
   /** Toutes les rencontres où la personne est d'un côté ou de l'autre. */
   listInvolving(userId: string): Promise<EncounterRecord[]>;
+  /**
+   * Historique : rencontres envoyées par la personne (tous statuts) et reçues auxquelles elle a répondu,
+   * `statusAt` strictement avant `before`, de la plus récente à la plus ancienne, `limit` au plus.
+   */
+  listHistory(userId: string, before: string | null, limit: number): Promise<EncounterRecord[]>;
 }

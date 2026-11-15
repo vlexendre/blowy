@@ -6,7 +6,6 @@ import type { Profile } from '../ports';
 export const toPerson = (profile: Profile, pet: PublicPet, face: FaceVisibility, avatarUrl: string | null): Person => ({
   id: profile.id,
   displayName: profile.displayName,
-  city: profile.city,
   pet,
   face,
   avatarUrl: face === 'hidden' ? null : avatarUrl,

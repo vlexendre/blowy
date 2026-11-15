@@ -1,11 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { duoPhotoLine, lifeGainedLine } from '@blowy/content';
 import { applyLinkEvent } from '@blowy/domain';
+import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import type { Storage } from '../../../integrations/storage/ports';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
-import { CLOCK, DAILY_PHOTOS, IDS, PETS, STORAGE } from '../../../shared/tokens';
+import { CLOCK, DAILY_PHOTOS, IDS, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
+import type { ProfilesRepository } from '../../me/ports';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetsRepository } from '../../pets/ports';
 import type { DailyPhotosRepository } from '../ports';
@@ -29,6 +31,8 @@ export class SendPhoto {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
+    @Inject(NOTIFIER) private readonly notifier: Notifier,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
   ) {}
 
   async execute(linkId: string, userId: string, path: string): Promise<LinkActionResult> {
@@ -66,6 +70,11 @@ export class SendPhoto {
     if (state.streak > streakBefore) await this.pets.raiseBestStreak([draft.link.userA, draft.link.userB], state.streak);
 
     await this.character.apply(userId, 'photo_sent', { maxPerDay: PHOTO_EVENTS_PER_DAY });
+    // L'autre n'a pas encore posté : on le lui dit (« Léa a posté, à toi »), état prêt pour une activité en direct.
+    if (!sameDay.some((p) => p.userId === other)) {
+      const me = await this.profiles.findById(userId);
+      await this.notifier.notify(other, 'daily_photo', { linkId, name: me?.displayName ?? '' });
+    }
     return { link: draft.link, messages };
   }
 }

@@ -1,7 +1,10 @@
 import { type PetPair, systemText, ghostLine, levelLabel, levelUpLine, lifeLostLine } from '@blowy/content';
-import { type Day, LEVEL_KEYS, type LinkState, tickLink } from '@blowy/domain';
+import { type Day, LEVEL_KEYS, type LinkState, type PetRole, tickLink } from '@blowy/domain';
 import { seedOf } from '../../../shared/seed';
 import type { AuthorKind, LinkRecord, MessageKind } from '../ports';
+
+/** Vies restantes à partir desquelles on prévient les deux personnes (spéc §12). */
+export const LINK_DANGER_LIVES = 2;
 
 export type PendingMessage = {
   authorKind: AuthorKind;
@@ -9,6 +12,8 @@ export type PendingMessage = {
   kind: MessageKind;
   body: string | null;
   mediaPath: string | null;
+  petRole: PetRole | null;
+  visibleTo: string | null;
 };
 
 const sameState = (a: LinkState, b: LinkState): boolean =>
@@ -29,6 +34,8 @@ const sameState = (a: LinkState, b: LinkState): boolean =>
 export class LinkDraft {
   readonly pending: PendingMessage[] = [];
   private dirty = false;
+  /** Le rattrapage vient de faire passer le lien à 2 vies ou moins (notification « lien en danger »). */
+  enteredDanger = false;
 
   constructor(
     public link: LinkRecord,
@@ -67,15 +74,25 @@ export class LinkDraft {
   }
 
   user(userId: string, kind: 'text' | 'photo', body: string | null, mediaPath: string | null = null): void {
-    this.pending.push({ authorKind: 'user', authorId: userId, kind, body, mediaPath });
+    this.pending.push({ authorKind: 'user', authorId: userId, kind, body, mediaPath, petRole: null, visibleTo: null });
   }
 
-  pet(ownerId: string, body: string): void {
-    this.pending.push({ authorKind: 'pet', authorId: ownerId, kind: 'text', body, mediaPath: null });
+  /**
+   * Réplique du minimoa de `ownerId`. `role` : annonce de jeu (`event`, par défaut) ou intervention
+   * (les interventions passent par `ChatMinimoas`, qui applique accord, coupure et plafond).
+   * `visibleTo` : une seule personne la voit (garde-fou).
+   */
+  pet(ownerId: string, body: string, role: PetRole = 'event', visibleTo: string | null = null): void {
+    this.pending.push({ authorKind: 'pet', authorId: ownerId, kind: 'text', body, mediaPath: null, petRole: role, visibleTo });
   }
 
   system(body: string): void {
-    this.pending.push({ authorKind: 'system', authorId: null, kind: 'event', body, mediaPath: null });
+    this.pending.push({ authorKind: 'system', authorId: null, kind: 'event', body, mediaPath: null, petRole: null, visibleTo: null });
+  }
+
+  /** Personnes du lien vues par `ownerId` : A = user_a, B = user_b (fenêtre anonymisée de l'IA). */
+  letterOf(userId: string): 'A' | 'B' {
+    return userId === this.link.userA ? 'A' : 'B';
   }
 
   /** Bandeau de niveau + réplique d'un pet. */
@@ -96,6 +113,7 @@ export class LinkDraft {
     const after = tickLink(before, this.today);
     if (after === before) return;
     this.update(after);
+    if (after.status === 'active' && after.lives <= LINK_DANGER_LIVES && before.lives > LINK_DANGER_LIVES) this.enteredDanger = true;
     const speaker = this.speaker('tick');
     if (after.status === 'ghost' && before.status === 'active') {
       this.pet(speaker, ghostLine(this.pair(speaker), this.seed('ghost')));

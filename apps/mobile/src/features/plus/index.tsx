@@ -1,13 +1,16 @@
 /**
  * Blowy+ : présentation de l'offre, partagée par le paywall de l'inscription et l'écran « Moi › Blowy+ ».
+ * Toujours en feuille qui monte du bas, hors de la navigation (route en modale transparente) : croix, glisser vers le
+ * bas ou toucher le voile la ferment. En bas : « restaurer mes achats », conditions et confidentialité (Apple).
  * Les achats ne sont pas branchés dans cette version (`purchases.available` faux) : rien n'est vendu,
  * le bouton principal reste désactivé et l'écran propose de continuer gratuitement.
  */
 import type { Species } from '@blowy/domain';
-import { PlusTemplate } from '@blowy/ui';
+import { PlusTemplate, SheetTemplate } from '@blowy/ui';
 import { useState } from 'react';
+import { Linking } from 'react-native';
 
-import { usePorts } from '@/core';
+import { config, usePorts } from '@/core';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -27,6 +30,22 @@ export function PlusOffer({ pet, member = false, onClose, onContinue }: PlusOffe
   const { purchases } = usePorts();
   const [plan, setPlan] = useState<PlanKey>('yearly');
   const [buying, setBuying] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreNote, setRestoreNote] = useState<string | undefined>();
+
+  const restore = async () => {
+    setRestoring(true);
+    setRestoreNote(undefined);
+    try {
+      if (await purchases.restore()) onContinue();
+      else setRestoreNote(t.restoreNone);
+    } catch {
+      setRestoreNote(t.restoreError);
+    } finally {
+      setRestoring(false);
+    }
+  };
+  const legal = onboarding.compte;
 
   const buy = async () => {
     setBuying(true);
@@ -38,6 +57,7 @@ export function PlusOffer({ pet, member = false, onClose, onContinue }: PlusOffe
   };
 
   return (
+    <SheetTemplate asScreen bare visible onClose={onClose} closeLabel={common.close}>
     <PlusTemplate
       sticker={t.sticker}
       onClose={onClose}
@@ -58,6 +78,15 @@ export function PlusOffer({ pet, member = false, onClose, onContinue }: PlusOffe
       note={member ? undefined : purchases.available ? t.renewal[plan] : t.soon}
       secondaryLabel={t.continueFree}
       onSecondary={onContinue}
+      restoreLabel={t.restore}
+      onRestore={() => void restore()}
+      restoreLoading={restoring}
+      restoreNote={restoreNote}
+      links={[
+        { label: legal.legalTerms, onPress: () => void Linking.openURL(`${config.webUrl}/conditions`) },
+        { label: legal.legalPrivacy, onPress: () => void Linking.openURL(`${config.webUrl}/confidentialite`) },
+      ]}
     />
+    </SheetTemplate>
   );
 }

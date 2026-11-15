@@ -49,6 +49,11 @@ export class MemoryStorage implements Storage {
     return true;
   }
 
+  /** Fichier tel qu'il est stocké, sans jeton (usage interne de l'API : vérification des preuves). */
+  peek(path: string): StoredFile | null {
+    return this.files.get(path) ?? null;
+  }
+
   /** Lit un fichier avec un jeton de lecture encore valable. */
   read(path: string, token: string): StoredFile | null {
     const grant = this.readTokens.get(token);

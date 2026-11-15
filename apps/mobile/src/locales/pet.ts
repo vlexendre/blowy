@@ -32,6 +32,11 @@ export const pet = {
   renameSave: 'garder ce nom',
   renameCancel: 'annuler',
   renameError: 'Impossible de le renommer. Réessaie.',
+  /** Changement de nom : une fois tous les 60 jours, sans attente avec Blowy+. */
+  renameLocked: (when: string): string => `prochain changement de nom possible le ${when} · avec blowy+, pas d’attente.`,
+  renameNext: (days: number, when: string): string => `après ce changement, le prochain ne sera possible que dans ${days} jours (le ${when}).`,
+  renamePlus: 'découvrir blowy+',
+  renameClose: 'fermer',
   gaugesTitle: 'son caractère',
   gaugesHint: 'touche une jauge',
   gaugeNames: { social: 'sociabilité', play: 'jeu', tender: 'tendresse', talk: 'parole' } as Record<GaugeKey, string>,
@@ -219,6 +224,8 @@ export const wardrobe = {
     words: 'partager mes 3 mots',
   } as Record<StatKey, string>,
   premiumNote: 'bientôt disponible',
+  /** Fiche d'un objet blowy+ : ouvre la feuille blowy+. */
+  premiumCta: 'voir blowy+',
   premiumText: 'cet objet arrive avec blowy+. pas encore en vente : on te prévient dès qu’il l’est.',
   close: 'fermer',
   loadError: 'Impossible d’ouvrir la garde-robe',

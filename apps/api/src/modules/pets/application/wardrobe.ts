@@ -3,6 +3,8 @@ import { ITEMS, type PetStats, earnedItems, itemById } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { CLOCK, LINKS, PET_ITEMS, PETS, WORD_VOTES } from '../../../shared/tokens';
 import type { LinksRepository } from '../../links/ports';
+import type { RitualStatesRepository } from '../../rituels/ports';
+import { RITUAL_STATES } from '../../rituels/tokens';
 import type { PetItemsRepository, PetRecord, PetsRepository, WordVotesRepository } from '../ports';
 import { PetCharacter } from './pet-character';
 
@@ -25,6 +27,7 @@ export class Wardrobe {
     @Inject(PET_ITEMS) private readonly items: PetItemsRepository,
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(WORD_VOTES) private readonly votes: WordVotesRepository,
+    @Inject(RITUAL_STATES) private readonly rituals: RitualStatesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
@@ -53,10 +56,11 @@ export class Wardrobe {
   }
 
   async statsOf(pet: PetRecord): Promise<PetStats> {
-    const [links, challenges, words] = await Promise.all([
+    const [links, challenges, words, rituals] = await Promise.all([
       this.links.listForUsers([pet.ownerId]),
       this.pets.countEvents(pet.id, 'challenge_done'),
       this.votes.count(pet.ownerId),
+      this.rituals.find(pet.ownerId),
     ]);
     return {
       careDays: pet.careDays,
@@ -66,6 +70,9 @@ export class Wardrobe {
       bestStreak: Math.max(pet.bestStreak, ...links.map((l) => l.streak)),
       challenges,
       words,
+      // Rituels (V7) : record de la série des défis du jour, habitudes tenues.
+      ritualStreak: rituals?.streak.best ?? 0,
+      habitsKept: rituals?.habitsKept ?? 0,
     };
   }
 }

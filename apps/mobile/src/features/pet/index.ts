@@ -88,6 +88,8 @@ export function useRenamePet() {
       qc.setQueryData(keys.pet, view);
       void qc.invalidateQueries({ queryKey: keys.me });
     },
+    // Refus `rename_locked` (renommé ailleurs entre-temps) : on relit le pet pour montrer l'attente.
+    onError: () => qc.invalidateQueries({ queryKey: keys.pet }),
   });
 }
 

@@ -1,12 +1,13 @@
 import { dayOf } from '@blowy/domain';
 import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, type ListRenderItem, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { FlatList, type ListRenderItem, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
+import { Skeleton } from '../atoms/Skeleton';
 import { DayChip } from '../molecules/DayChip';
 import { MessageBubble, type MessageBubbleProps } from '../molecules/MessageBubble';
 import { Appear, staggerDelay } from '../motion/Appear';
 import { useReducedMotion } from '../lib/motion';
-import { color, space } from '../theme';
+import { space } from '../theme';
 import type { MessageLook, PersonLook, PetLook } from '../types';
 
 export interface ChatThreadProps {
@@ -153,7 +154,7 @@ export function ChatThread({
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.4}
-      ListFooterComponent={loadingOlder ? <ActivityIndicator color={color.mute} style={styles.loader} /> : header}
+      ListFooterComponent={loadingOlder ? <OlderSkeleton /> : header}
       contentContainerStyle={[styles.content, contentStyle]}
       keyboardDismissMode="interactive"
       keyboardShouldPersistTaps="handled"
@@ -191,5 +192,16 @@ const styles = StyleSheet.create({
   // Liste inversée : `paddingBottom` est le haut visuel (12 pt sous les onglets, dont 8 posés par l'en-tête du gabarit).
   content: { paddingHorizontal: space.md + 2, paddingTop: 0, paddingBottom: space.xs, gap: space.sm },
   empty: { flex: 1, justifyContent: 'center' },
-  loader: { marginVertical: space.lg },
+  loader: { gap: space.sm, paddingTop: space.md, paddingBottom: space.sm },
+  mine: { alignSelf: 'flex-end' },
 });
+
+/** Anciens messages en route : deux bulles en squelette (l'une de l'autre personne, l'une à soi), à la place d'une roue. */
+function OlderSkeleton() {
+  return (
+    <View style={styles.loader}>
+      <Skeleton width="58%" height={44} radius="lg" />
+      <Skeleton width="42%" height={36} radius="lg" delay={160} style={styles.mine} />
+    </View>
+  );
+}

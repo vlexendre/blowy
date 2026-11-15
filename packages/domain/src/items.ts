@@ -20,8 +20,13 @@ export interface PetStats {
   challenges: number;
   /** Potes ayant donné leurs 3 mots. */
   words: number;
+  /** Meilleure série de défis du jour (la « série » de la V7, avec sa mèche) : paliers 3, 7, 14, 30, 60, 100. */
+  ritualStreak: number;
+  /** Habitudes tenues (preuves acceptées ou « pas sûr »), toutes habitudes confondues. */
+  habitsKept: number;
 }
-export const ZERO_STATS: PetStats = { careDays: 0, links: 0, bestLevel: 0, bestStreak: 0, challenges: 0, words: 0 };
+export const ZERO_STATS: PetStats = { careDays: 0, links: 0, bestLevel: 0, bestStreak: 0, challenges: 0, words: 0, ritualStreak: 0, habitsKept: 0 };
+export const STAT_KEYS = ['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept'] as const;
 export type StatKey = keyof PetStats;
 
 export type Unlock = { kind: 'start' } | { kind: 'premium' } | { kind: 'stat'; stat: StatKey; n: number };
@@ -47,12 +52,12 @@ export const ITEMS: readonly Item[] = [
   item('head', 'noeud', at('careDays', 5)),
   item('head', 'antennes', at('links', 3)),
   item('head', 'toque', at('careDays', 10)),
-  item('head', 'fleurs', at('bestStreak', 3)),
+  item('head', 'fleurs', at('ritualStreak', 3)),
   item('head', 'chat', at('bestLevel', 2)),
   item('head', 'lapin', at('bestLevel', 3)),
   item('head', 'casque_audio', at('challenges', 10)),
-  item('head', 'sorcier', at('bestStreak', 14)),
-  item('head', 'couronne', at('bestLevel', 7)),
+  item('head', 'sorcier', at('ritualStreak', 14)),
+  item('head', 'couronne', at('ritualStreak', 100)),
   item('head', 'aureole', premium),
   item('head', 'cornes', premium),
   item('head', 'pirate', premium),
@@ -63,9 +68,9 @@ export const ITEMS: readonly Item[] = [
   item('face', 'pansement', at('challenges', 1)),
   item('face', 'nez_rouge', at('challenges', 5)),
   item('face', 'moustache', at('words', 1)),
-  item('face', 'masque_nuit', at('careDays', 7)),
+  item('face', 'masque_nuit', at('habitsKept', 5)),
   item('face', 'lunettes_coeur', at('bestLevel', 4)),
-  item('face', 'lunettes_etoile', at('bestStreak', 7)),
+  item('face', 'lunettes_etoile', at('ritualStreak', 7)),
   item('face', 'tetine', at('links', 2)),
   item('face', 'monocle', at('words', 3)),
   item('face', 'etincelles', at('bestLevel', 5)),
@@ -77,14 +82,14 @@ export const ITEMS: readonly Item[] = [
   item('body', 'noeud_violet', at('careDays', 3)),
   item('body', 'noeud_pap', at('links', 1)),
   item('body', 'sac_a_dos', at('links', 5)),
-  item('body', 'salopette', at('careDays', 14)),
+  item('body', 'salopette', at('habitsKept', 15)),
   item('body', 'sweat', at('challenges', 7)),
   item('body', 'bretelles', at('words', 2)),
-  item('body', 'tablier', at('careDays', 21)),
+  item('body', 'tablier', at('habitsKept', 30)),
   item('body', 'collier_perles', at('bestLevel', 3)),
-  item('body', 'collier_coquillage', at('bestStreak', 5)),
+  item('body', 'collier_coquillage', at('ritualStreak', 60)),
   item('body', 'sac_main', at('bestLevel', 6)),
-  item('body', 'cape', at('bestStreak', 21)),
+  item('body', 'cape', at('ritualStreak', 30)),
   item('body', 'teddy', premium),
   item('body', 'tutu', premium),
   item('body', 'chaine_or', premium),
@@ -93,12 +98,12 @@ export const ITEMS: readonly Item[] = [
   item('toy', 'ballon', start),
   item('toy', 'doudou', start),
   item('toy', 'coeur', at('careDays', 1)),
-  item('toy', 'tasse', at('careDays', 4)),
+  item('toy', 'tasse', at('habitsKept', 1)),
   item('toy', 'livre', at('challenges', 2)),
   item('toy', 'bulle', at('links', 1)),
   item('toy', 'fleur', at('bestStreak', 2)),
   item('toy', 'ballons', at('links', 4)),
-  item('toy', 'gateau', at('careDays', 30)),
+  item('toy', 'gateau', at('bestLevel', 7)),
   item('toy', 'cadeau', at('bestLevel', 2)),
   item('toy', 'pinceau', at('challenges', 15)),
   item('toy', 'micro', at('words', 5)),

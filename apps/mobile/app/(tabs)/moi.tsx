@@ -82,13 +82,19 @@ export default function Moi() {
         key="words"
         title={t.wordsTitle}
         countLabel={t.wordsCount(wordsCount)}
+        badge={t.wordsBadge}
         words={[]}
-        emptyText={wordsCount > 0 ? t.wordsReceived(petName) : t.wordsEmpty(petName)}
+        received={wordsCount > 0}
+        emptyText={t.wordsLead(petName)}
+        steps={t.wordsSteps(petName)}
+        receivedText={t.wordsReceived(petName)}
+        moreLabel={t.wordsMore(petName)}
+        onMore={() => router.push('/pet/caractere')}
         url={displayUrl(wordsLink)}
         copyLabel={t.copy}
         copiedLabel={t.copied}
         copied={words.copied}
-        shareLabel={t.share}
+        shareLabel={t.wordsShareCta}
         onCopy={() => void words.copy(wordsLink)}
         onShare={() => void words.share(t.wordsMessage(wordsLink), wordsLink)}
       />

@@ -4,6 +4,7 @@
  */
 import {
   ApiErrorZ,
+  EncounterHistoryZ,
   EncountersZ,
   type ErrorCode,
   InviteZ,
@@ -13,7 +14,15 @@ import {
   MessagesPageZ,
   MeZ,
   OkZ,
-  type OnboardBody,
+  type OnboardInput,
+  type ChosenCity,
+  type LatLng,
+  LocationStatusZ,
+  MapZ,
+  type VisionAnswer,
+  VisionProfileZ,
+  VisionTestZ,
+  visionRoutes,
   PetViewZ,
   type ReportBody,
   routes,
@@ -24,7 +33,23 @@ import {
   UploadTicketZ,
   WordsPageZ,
   BlockedZ,
+  // Rituels (V7)
+  type AddHabitBody,
+  DailyResultZ,
+  HabitCatalogueZ,
+  HabitsZ,
+  type OutingAnswer,
+  OutingResultZ,
+  PrivateMemoriesZ,
+  ProofResultZ,
+  RitualsTodayZ,
+  StreakZ,
+  type UpdateHabitBody,
+  WeeklyReviewZ,
+  WeeklyReviewsZ,
+  ritualRoutes,
 } from '@blowy/contract';
+import { PaywallZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
 import { z } from 'zod';
 
 export class ApiError extends Error {
@@ -80,7 +105,8 @@ export function createApiClient(opts: ApiClientOptions) {
   return {
     me: {
       get: () => call('GET', routes.me(), MeZ),
-      onboard: (body: OnboardBody) => call('POST', routes.onboard(), MeZ, body),
+      /** Inscription : prénom, date de naissance, minimoa, sexe, ce que tu cherches, accords, position et réponses au test. */
+      onboard: (body: OnboardInput) => call('POST', routes.onboard(), MeZ, body),
       update: (body: UpdateMeBody) => call('PATCH', routes.me(), MeZ, body),
       remove: () => call('DELETE', routes.me(), OkZ),
       avatarTicket: (contentType: string) => call('POST', routes.avatarTicket(), UploadTicketZ, { contentType }),
@@ -109,9 +135,35 @@ export function createApiClient(opts: ApiClientOptions) {
     },
     encounters: {
       list: () => call('GET', routes.encounters(), EncountersZ),
+      /** Rencontres passées, par pages : passer le `nextBefore` de la page précédente. */
+      history: (before?: string) =>
+        call('GET', routes.encounterHistory() + (before ? `?before=${encodeURIComponent(before)}` : ''), EncounterHistoryZ),
       wave: (userId: string) => call('POST', routes.wave(), OkZ, { userId }),
       accept: (id: string) => call('POST', routes.encounterAccept(id), LinkZ),
       decline: (id: string) => call('POST', routes.encounterDecline(id), OkZ),
+    },
+    /** Vision : le test, ta vision, ta position et la carte. */
+    vision: {
+      /** Public (avant la connexion) : les 12 situations. */
+      test: () => call('GET', visionRoutes.visionTest(), VisionTestZ),
+      /** Repasser le test : les réponses remplacent les précédentes. */
+      retakeTest: (answers: VisionAnswer[]) => call('POST', visionRoutes.visionTest(), VisionProfileZ, { answers }),
+      /** Ta vision, pour l'instant (5 axes, confiance, formulations). */
+      mine: () => call('GET', visionRoutes.vision(), VisionProfileZ),
+      /** Position relevée à l'ouverture de l'app ; `consent: true` la première fois. */
+      locate: (point: LatLng, consent?: boolean) => call('POST', visionRoutes.location(), LocationStatusZ, { ...point, ...(consent !== undefined ? { consent } : {}) }),
+      /** Oublier la position et retirer l'accord. */
+      forgetLocation: () => call('DELETE', visionRoutes.location(), LocationStatusZ),
+      /** Blowy+ : changer de ville sans bouger. */
+      chooseCity: (city: ChosenCity) => call('PUT', visionRoutes.city(), LocationStatusZ, city),
+      clearCity: () => call('DELETE', visionRoutes.city(), LocationStatusZ),
+      /** La carte : sa zone (gratuit) ; avec Blowy+, `at` pour regarder ailleurs. */
+      map: (at?: { lat: number; lng: number; radiusKm?: number }) =>
+        call(
+          'GET',
+          visionRoutes.map() + (at ? `?lat=${at.lat}&lng=${at.lng}${at.radiusKm !== undefined ? `&radiusKm=${at.radiusKm}` : ''}` : ''),
+          MapZ,
+        ),
     },
     invites: {
       get: (code: string) => call('GET', routes.invite(code), InviteZ),
@@ -121,12 +173,62 @@ export function createApiClient(opts: ApiClientOptions) {
       get: (code: string) => call('GET', routes.words(code), WordsPageZ),
       send: (code: string, words: string[]) => call('POST', routes.words(code), OkZ, { words }),
     },
+    /**
+     * Rituels : sortie du jour, défi du jour, série, habitudes et preuves en photo, souvenirs privés, bilans.
+     * Envoi d'une photo (défi ou preuve) : `…Ticket` → envoi direct du fichier sur `uploadUrl` → `dailyPhoto` / `proof`.
+     */
+    rituals: {
+      /** Accueil : défi du jour (`challenge.present` : montrer la carte en plein écran), série, sortie, sociabilité, habitudes, bilan non lu. */
+      today: () => call('GET', ritualRoutes.today(), RitualsTodayZ),
+      /** Série seule, lecture légère (widget). */
+      streak: () => call('GET', ritualRoutes.streak(), StreakZ),
+      /** « Tu es sorti aujourd'hui ? » ; `awayFromHome` si l'app sait que la position actuelle est hors de la zone du domicile. */
+      outing: (answer: OutingAnswer, awayFromHome?: boolean) =>
+        call('POST', ritualRoutes.outing(), OutingResultZ, { answer, ...(awayFromHome !== undefined ? { awayFromHome } : {}) }),
+      /** La carte du défi a été montrée (acceptée ou rangée) : elle ne remonte plus aujourd'hui. */
+      seenChallenge: () => call('POST', ritualRoutes.dailySeen(), DailyResultZ),
+      acceptChallenge: () => call('POST', ritualRoutes.dailyAccept(), DailyResultZ),
+      answerChallenge: (choice: 0 | 1) => call('POST', ritualRoutes.dailyAnswer(), DailyResultZ, { choice }),
+      challengePhotoTicket: (contentType: 'image/jpeg' | 'image/webp') => call('POST', ritualRoutes.dailyPhotoTicket(), UploadTicketZ, { contentType }),
+      challengePhoto: (path: string, keep = false) => call('POST', ritualRoutes.dailyPhoto(), DailyResultZ, { path, keep }),
+      /** Défis « écrire à un lien » et « sortir » : le serveur vérifie que c'est fait. */
+      completeChallenge: () => call('POST', ritualRoutes.dailyComplete(), DailyResultZ),
+      habitCatalogue: () => call('GET', ritualRoutes.habitCatalogue(), HabitCatalogueZ),
+      habits: () => call('GET', ritualRoutes.habits(), HabitsZ),
+      addHabit: (body: AddHabitBody) => call('POST', ritualRoutes.habits(), HabitsZ, body),
+      updateHabit: (ref: string, body: UpdateHabitBody) => call('PATCH', ritualRoutes.habit(ref), HabitsZ, body),
+      removeHabit: (ref: string) => call('DELETE', ritualRoutes.habit(ref), HabitsZ),
+      proofTicket: (ref: string, contentType: 'image/jpeg' | 'image/webp') => call('POST', ritualRoutes.habitProofTicket(ref), UploadTicketZ, { contentType }),
+      /** Preuve envoyée : verdict, phrase du minimoa ; `keep` la garde dans les souvenirs privés (sinon supprimée sous 24 h). */
+      proof: (ref: string, path: string, keep = false) => call('POST', ritualRoutes.habitProof(ref), ProofResultZ, { path, keep }),
+      keepPhoto: (photoId: string, keep: boolean) => call('POST', ritualRoutes.photoKeep(photoId), OkZ, { keep }),
+      /** Souvenirs privés (photos gardées), par pages : passer le `nextBefore` de la page précédente. */
+      memories: (before?: string) => call('GET', ritualRoutes.memories() + (before ? `?before=${encodeURIComponent(before)}` : ''), PrivateMemoriesZ),
+      /** Bilans de la semaine, du plus récent au plus ancien (`before` : un lundi, le `nextBefore` de la page précédente). */
+      reviews: (before?: string) => call('GET', ritualRoutes.reviews() + (before ? `?before=${encodeURIComponent(before)}` : ''), WeeklyReviewsZ),
+      review: (id: string) => call('GET', ritualRoutes.review(id), WeeklyReviewZ),
+      readReview: (id: string) => call('POST', ritualRoutes.reviewRead(id), WeeklyReviewZ),
+    },
     safety: {
       blocks: () => call('GET', routes.blocks(), BlockedList),
       block: (userId: string) => call('POST', routes.blocks(), OkZ, { userId }),
       unblock: (userId: string) => call('DELETE', routes.block(userId), OkZ),
       report: (body: ReportBody) => call('POST', routes.reports(), OkZ, body),
     },
+    /**
+     * Blowy+ (paywall et abonnement). Après un achat ou « Restaurer mes achats » StoreKit 2 (avec
+     * `appAccountToken` = `Me.id`), envoyer `Transaction.jwsRepresentation` à `submitPurchase`.
+     */
+    plus: {
+      /** Offres (identifiants produit, montants facturés en repli), essai, avantages, personnes compatibles, mentions. */
+      paywall: () => call('GET', billingRoutes.plusPaywall(), PaywallZ),
+      /** État de l'abonnement (essai jusqu'au…, se renouvelle le…, expiré) et lien pour le gérer. */
+      subscription: () => call('GET', billingRoutes.plusSubscription(), SubscriptionZ),
+      /** Achat ou restauration : la transaction signée est vérifiée par le serveur, qui ouvre Blowy+. */
+      submitPurchase: (body: SubmitPurchaseBody) => call('POST', billingRoutes.plusPurchases(), SubscriptionZ, body),
+    },
   };
 }
 export type ApiClient = ReturnType<typeof createApiClient>;
+
+export { createAdminClient, type AdminClient, type AdminClientOptions } from './admin';

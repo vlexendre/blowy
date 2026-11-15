@@ -17,7 +17,7 @@ describe('vie sociale et sécurité', () => {
     alice = world.client(undefined, 'alice@example.com');
     bob = world.client();
     carol = world.client();
-    const me = await alice.api.me.onboard(onboardBody({ displayName: 'Alice', city: 'Nantes' }));
+    const me = await alice.api.me.onboard(onboardBody({ displayName: 'Alice' }));
     aliceInvite = me.inviteCode;
     aliceWords = me.wordsCode;
   });
@@ -28,13 +28,13 @@ describe('vie sociale et sécurité', () => {
     expect(invite).toMatchObject({ displayName: 'Alice', pet: { name: 'Nino', mood: 'joie', outfit: {} } });
     expect(await errorCode(world.anonymous.invites.get('ZZZZZZZZ'))).toBe('not_found');
 
-    await bob.api.me.onboard(onboardBody({ displayName: 'Bob', city: 'Lille', inviteCode: aliceInvite, pet: { name: 'Gaston', species: 'gaston' } }));
+    await bob.api.me.onboard(onboardBody({ displayName: 'Bob', inviteCode: aliceInvite, pet: { name: 'Gaston', species: 'gaston' } }));
     const bobLinks = await bob.api.links.list();
     expect(bobLinks).toHaveLength(1);
     expect(bobLinks[0]?.other.id).toBe(alice.id);
     expect(world.outbox.at(-1)).toMatchObject({ to: 'alice@example.com', subject: 'Nino et Gaston se sont trouvés' });
 
-    await carol.api.me.onboard(onboardBody({ displayName: 'Carol', city: 'Brest', pet: { name: 'Pia', species: 'pia' } }));
+    await carol.api.me.onboard(onboardBody({ displayName: 'Carol', pet: { name: 'Pia', species: 'pia' } }));
     const link = await carol.api.invites.accept(aliceInvite);
     expect(link.other.displayName).toBe('Alice');
     // Accepter deux fois rend le même lien.
@@ -45,7 +45,7 @@ describe('vie sociale et sécurité', () => {
 
   it("rencontres : amis d'amis d'abord, avec l'ami commun", async () => {
     const dave = world.client();
-    await dave.api.me.onboard(onboardBody({ displayName: 'Dave', city: 'Brest' }));
+    await dave.api.me.onboard(onboardBody({ displayName: 'Dave' }));
     const { suggestions } = await carol.api.encounters.list();
     expect(suggestions[0]).toMatchObject({ via: 'friend_of_friend', mutualName: 'Alice', user: { id: bob.id } });
     expect(suggestions.find((s) => s.user.id === dave.id)?.via).toBe('nearby');
@@ -101,7 +101,7 @@ describe('vie sociale et sécurité', () => {
   });
 
   it('profil : mise à jour et avatar sous son propre préfixe', async () => {
-    expect((await bob.api.me.update({ city: null, displayName: 'Bobby' })).city).toBeNull();
+    expect((await bob.api.me.update({ displayName: 'Bobby' })).displayName).toBe('Bobby');
     const ticket = await bob.api.me.avatarTicket('image/webp');
     expect(ticket.path.startsWith(`avatars/${bob.id}/`)).toBe(true);
     await upload(ticket.uploadUrl, 'image/webp');
@@ -187,6 +187,10 @@ describe('configuration', () => {
       const [link] = await me.api.links.list();
       expect(link?.other.displayName).toBe('Malo');
       expect(link?.unread).toBeGreaterThan(0);
+      // Malo arrive par une rencontre acceptée : l'historique n'est pas vide et mène au lien.
+      const history = await me.api.encounters.history();
+      expect(history.items).toHaveLength(1);
+      expect(history.items[0]).toMatchObject({ person: { displayName: 'Malo' }, direction: 'received', outcome: 'linked', linkId: link?.id });
       // Pets de démo habillés ; la nouvelle personne part avec les objets de départ.
       expect(enc.incoming[0]?.from.pet.outfit).toEqual({ head: 'noeud', face: 'lunettes_coeur' });
       expect(link?.other.pet.outfit).toEqual({ head: 'casquette', body: 'echarpe' });

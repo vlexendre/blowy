@@ -98,7 +98,6 @@ export function useOnboard() {
       return api.me.onboard({
         displayName: d.displayName.trim(),
         birthdate: d.birthdate,
-        city: d.city.trim() || undefined,
         pet: { name: d.petName.trim(), species: d.species },
         quiz: d.quiz,
         inviteCode: d.inviteCode.trim() || undefined,

@@ -1,6 +1,6 @@
 import { GAUGE_MAX } from '@blowy/domain';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
@@ -34,17 +34,16 @@ const TRACK_SPAN = 400;
 const toPct = (v: number): number => 50 + (Math.max(-GAUGE_MAX, Math.min(GAUGE_MAX, v)) / GAUGE_MAX) * 50;
 
 /**
- * Jauge à deux pôles centrée sur 0 : remplissage depuis le centre et curseur blanc. Le curseur glisse et dépasse
- * un peu avant de se poser (depuis le centre à l'apparition) ; transformations seulement.
+ * Jauge à deux pôles centrée sur 0 : une barre qui se remplit du centre vers un pôle, sans curseur (c'est un
+ * compteur, pas un réglage : rien ne doit donner envie de la tirer). Le remplissage dépasse un peu avant de se poser
+ * (depuis le centre à l'apparition) ; transformations seulement.
  */
 export function GaugeBar({ value, low, high, caption, target, color: fill = color.accent, compact, selected, onPress, accessibilityLabel, style }: GaugeBarProps) {
   const x = useAnimatedNumber(toPct(value), { duration: motion.slow, overshoot: 0.1, from: 50 });
   const w = useSharedValue(0);
   const center = useDerivedValue(() => w.value / 2);
   const end = useDerivedValue(() => (Math.max(0, Math.min(100, x.value)) / 100) * w.value);
-  const knobStyle = useAnimatedStyle(() => ({ opacity: w.value > 0 ? 1 : 0, transform: [{ translateX: end.value }] }));
-  const barH = compact ? 6 : 10;
-  const knob = compact ? 14 : 18;
+  const barH = compact ? 7 : 10;
   const lead = value > 0 ? 'high' : value < 0 ? 'low' : null;
   const label = accessibilityLabel ?? `${low} ${high} ${Math.round(value)}`;
   const body = (
@@ -66,12 +65,11 @@ export function GaugeBar({ value, low, high, caption, target, color: fill = colo
         onLayout={(e) => {
           w.value = e.nativeEvent.layout.width;
         }}
-        style={[styles.track, { height: barH, marginVertical: compact ? (knob - barH) / 2 : 0 }]}
+        style={[styles.track, { height: barH }]}
       >
         <View style={styles.zero} />
         <PillSpan from={center} to={end} height={barH} color={fill} span={TRACK_SPAN} />
         {target !== undefined ? <View style={[styles.target, { left: `${toPct(target)}%` }]} /> : null}
-        <Animated.View style={[styles.knob, { left: 0, width: knob, height: knob, marginLeft: -knob / 2, top: (barH - knob) / 2 }, knobStyle]} />
       </View>
     </>
   );
@@ -84,7 +82,7 @@ export function GaugeBar({ value, low, high, caption, target, color: fill = colo
     );
   }
   return (
-    <View accessible accessibilityRole="adjustable" accessibilityLabel={label} accessibilityValue={{ min: -100, max: 100, now: Math.round(value) }} style={frame}>
+    <View accessible accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ text: lead ? (lead === 'low' ? low : high) : undefined }} style={frame}>
       {body}
     </View>
   );
@@ -101,5 +99,4 @@ const styles = StyleSheet.create({
   track: { borderRadius: radius.pill, backgroundColor: veil.track },
   zero: { position: 'absolute', left: '50%', top: -3, bottom: -3, width: 2, backgroundColor: alpha(color.white, 0.35) },
   target: { position: 'absolute', top: -3, bottom: -3, width: 3, marginLeft: -1.5, borderRadius: 2, backgroundColor: color.rose },
-  knob: { position: 'absolute', borderRadius: radius.pill, backgroundColor: color.white, shadowColor: color.night, shadowOpacity: 0.4, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
 });

@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { linkCreatedEmail, linkCreatedLine, systemText } from '@blowy/content';
+import { chatSystemText, linkCreatedEmail } from '@blowy/content';
 import { newLink } from '@blowy/domain';
 import { Notifier } from '../../../integrations/mailer/notifier';
+import { NOTIFIER, type Notifier as PushNotifier } from '../../../integrations/push/notifier';
 import type { Env } from '../../../config/env';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
@@ -11,6 +12,7 @@ import type { ProfilesRepository } from '../../me/ports';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { BlocksRepository } from '../../safety/ports';
 import type { LinkRecord, LinksRepository } from '../ports';
+import { ChatMinimoas } from '../minimoas/chat-minimoas';
 import { LinkSession } from './link-session';
 
 export interface CreateLinkInput {
@@ -36,6 +38,8 @@ export class CreateLink {
     @Inject(LinkSession) private readonly session: LinkSession,
     @Inject(PetCharacter) private readonly character: PetCharacter,
     @Inject(Notifier) private readonly notifier: Notifier,
+    @Inject(NOTIFIER) private readonly push: PushNotifier,
+    @Inject(ChatMinimoas) private readonly minimoas: ChatMinimoas,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
@@ -70,13 +74,18 @@ export class CreateLink {
 
     const draft = (await this.session.draftsFor([created]))[0];
     if (!draft) throw new Error('brouillon de lien manquant');
-    draft.system(systemText.linkCreated);
-    for (const owner of [input.with, input.by]) draft.pet(owner, linkCreatedLine(draft.pair(owner), draft.seed('created', owner)));
+    draft.system(chatSystemText('fr').linkCreated);
+    // Brise-glace : une question tirée de vos points communs de vision (compte dans les 3 interventions du jour).
+    await this.minimoas.icebreaker(draft);
     await this.session.commit(draft);
 
     await this.character.apply(input.by, 'met_new_pet');
     await this.character.apply(input.with, 'met_new_pet');
     if (input.notify) await this.sendCreatedEmail(input.notify, draft.otherOf(input.notify), draft.pair(input.notify));
+    if (input.notify) {
+      const by = await this.profiles.findById(input.by);
+      await this.push.notify(input.notify, 'new_encounter', { linkId: draft.link.id, name: by?.displayName ?? '' });
+    }
     return draft.link;
   }
 
@@ -85,7 +94,7 @@ export class CreateLink {
     if (!draft) throw new Error('brouillon de lien manquant');
     const alive = link.lives > 0;
     draft.update({ status: alive ? 'active' : 'ghost', lastTickOn: draft.today, ...(alive ? { lastActiveOn: draft.today } : {}) });
-    draft.system(systemText.linkCreated);
+    draft.system(chatSystemText('fr').linkCreated);
     await this.session.commit(draft);
     return draft.link;
   }

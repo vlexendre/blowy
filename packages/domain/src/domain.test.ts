@@ -94,19 +94,24 @@ import { cleanOutfit, earnedItems, itemById, itemProgress, ITEMS, ITEM_SLOTS, ZE
 describe('soins', () => {
   it('les besoins baissent puis remontent', () => {
     const tired = decayNeeds(START_NEEDS, 20);
-    expect(tired).toEqual({ hunger: 10, energy: 30, mood: 30 });
-    expect(shapeOf(tired)).toBe('boude');
-    expect(ENCOUNTER_QUOTA[shapeOf(tired)]).toBe(0);
+    expect(tired).toEqual({ sociability: 50, hunger: 10, energy: 30, mood: 30 });
+    // 60 % sociabilité (50) + 40 % petits besoins (20) : le minimoa est « bof », pas encore boudeur.
+    expect(wellbeing(tired)).toBe(38);
+    expect(shapeOf(tired)).toBe('bof');
+    const flat = decayNeeds(START_NEEDS, 30);
+    expect(shapeOf(flat)).toBe('boude');
+    expect(ENCOUNTER_QUOTA[shapeOf(flat)]).toBe(0);
     expect(urgentNeed(tired)).toBe('hunger');
     const fed = applyCare(applyCare(tired, 'feed'), 'feed');
     expect(fed.hunger).toBe(90);
-    expect(decayNeeds(START_NEEDS, 1000)).toEqual({ hunger: 0, energy: 0, mood: 0 });
+    expect(fed.sociability).toBe(50);
+    expect(decayNeeds(START_NEEDS, 1000)).toEqual({ sociability: 0, hunger: 0, energy: 0, mood: 0 });
   });
   it('refuse un geste inutile ou impossible', () => {
     expect(canCare({ hunger: 95, energy: 50, mood: 50 }, 'feed')).toBe(false);
     expect(canCare({ hunger: 50, energy: 10, mood: 50 }, 'play')).toBe(false);
     expect(canCare(START_NEEDS, 'cuddle')).toBe(true);
-    expect(wellbeing({ hunger: 100, energy: 100, mood: 100 })).toBe(100);
+    expect(wellbeing({ sociability: 100, hunger: 100, energy: 100, mood: 100 })).toBe(100);
   });
 });
 

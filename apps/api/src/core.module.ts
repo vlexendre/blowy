@@ -17,6 +17,10 @@ import { linksRepositories } from './modules/links/infrastructure/providers';
 import { meRepositories } from './modules/me/infrastructure/providers';
 import { petsRepositories } from './modules/pets/infrastructure/providers';
 import { safetyRepositories } from './modules/safety/infrastructure/providers';
+import { rituelsRepositories } from './modules/rituels/infrastructure/providers';
+import { visionProviders } from './modules/vision/infrastructure/providers';
+import { billingProviders } from './modules/billing/infrastructure/providers';
+import { adminProviders } from './modules/admin/infrastructure/providers';
 import { MemoryDb } from './persistence/memory-db';
 import { createServiceClient } from './persistence/supabase';
 import { type Clock, ShiftedClock, systemClock } from './shared/clock';
@@ -59,6 +63,10 @@ export class CoreModule {
       ...linksRepositories(env.adapters),
       ...encountersRepositories(env.adapters),
       ...safetyRepositories(env.adapters),
+      ...rituelsRepositories(env.adapters),
+      ...visionProviders(env.adapters),
+      ...billingProviders(env.adapters),
+      ...adminProviders(env.adapters),
     ];
     const exported = providers.map((p) => (typeof p === 'function' ? p : p.provide));
     return { module: CoreModule, global: true, providers, exports: exported };

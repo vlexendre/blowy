@@ -1,4 +1,4 @@
-import type { LinkStatus } from '@blowy/domain';
+import type { Day, LinkStatus } from '@blowy/domain';
 import type { Db } from '../../../persistence/database.types';
 import { check, iso, isUniqueViolation } from '../../../persistence/supabase';
 import type { LinkRecord, LinksRepository } from '../ports';
@@ -97,5 +97,29 @@ export class SupabaseLinksRepository implements LinksRepository {
   async save(link: LinkRecord): Promise<void> {
     const { error } = await this.table.update(stateRow(link)).eq('id', link.id);
     check(error, 'enregistrement du lien');
+  }
+
+  async listDueForTick(today: Day, limit: number): Promise<LinkRecord[]> {
+    // Index partiel links_due_tick_idx (last_tick_on) where status = 'active'.
+    const { data, error } = await this.table.select('*').eq('status', 'active').lt('last_tick_on', today).order('last_tick_on').order('id').limit(limit);
+    check(error, 'liens à rattraper');
+    return (data as LinkRow[]).map(fromRow);
+  }
+
+  async listSilent(before: string, after: string | null, limit: number): Promise<LinkRecord[]> {
+    // Index partiel links_silence_idx (last_message_at) where status = 'active'.
+    let query = this.table.select('*').eq('status', 'active').lt('last_message_at', before);
+    if (after !== null) query = query.gt('last_message_at', after);
+    const { data, error } = await query.order('last_message_at').limit(limit);
+    check(error, 'liens silencieux');
+    return (data as LinkRow[]).map(fromRow);
+  }
+
+  async pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]> {
+    let query = this.table.select('*').or(`user_a.eq.${userId},user_b.eq.${userId}`).neq('status', 'archived');
+    if (after !== null) query = query.gt('id', after);
+    const { data, error } = await query.order('id').limit(limit);
+    check(error, 'liens par pages');
+    return (data as LinkRow[]).map(fromRow);
   }
 }

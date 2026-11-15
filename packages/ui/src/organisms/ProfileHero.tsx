@@ -16,7 +16,7 @@ export interface ProfileHeroProps {
   /** « ta photo reste floue jusqu'au niveau 5 de chaque lien. » */
   hint: string;
   photoUri?: string | null;
-  /** Libellé lu de la photo (floutée). */
+  /** Libellé lu de la photo. */
   photoLabel: string;
   pet: PetLook;
   /** Fond et anneau de la pastille du pet (défaut : couleur de l'espèce). */
@@ -28,11 +28,14 @@ const TILE_W = 104;
 const TILE_H = 128;
 const BADGE = 48;
 
-/** Panneau rose de Moi : ta photo floutée, ton pet en pastille, ton nom et celui du pet. */
+/**
+ * Panneau rose de Moi : ta photo, ton pet en pastille, ton nom et celui du pet. Ta photo est toujours nette pour toi :
+ * le flou ne sert qu'aux autres, avant le niveau 5 d'un lien (`hint` l'explique).
+ */
 export function ProfileHero({ title, hint, photoUri, photoLabel, pet, petColor, onPhotoPress }: ProfileHeroProps) {
   const photo = (
     <>
-      <PortraitTile uri={photoUri} width={TILE_W} height={TILE_H} blurred accessibilityLabel={photoLabel} />
+      <PortraitTile uri={photoUri} width={TILE_W} height={TILE_H} accessibilityLabel={photoLabel} />
       {/* Le pet arrive en « pop » sur le coin de ta photo. */}
       <PopIn delay={220} from={0.3} style={styles.badge} pointerEvents="none">
         <Avatar size={BADGE} pet={pet} hidden bg={petColor} ring={petColor} accessibilityLabel={pet.name} />

@@ -45,6 +45,15 @@ export const rencontres = {
   waveSulk: (pet: string): string => `${pet} boude : occupe-toi de lui avant de saluer.`,
   /** Pet un peu à plat (`shapeLabel.bof`). */
   bofTitle: (pet: string): string => `${low(pet)} est un peu à plat`,
+  /** Historique : rencontres passées, acceptées ou non. */
+  history: {
+    title: 'déjà croisés',
+    outcome: { linked: 'liés', ended: 'lien rangé', declined: 'pas cette fois', waiting: 'en attente' },
+    received: (pet: string, when: string): string => `${low(pet)} t’a salué · ${when}`,
+    sent: (pet: string, when: string): string => `tu as salué ${low(pet)} · ${when}`,
+    openA11y: (name: string): string => `ouvrir le chat avec ${name}`,
+    more: 'voir plus',
+  },
 };
 
 export const rencontre = {

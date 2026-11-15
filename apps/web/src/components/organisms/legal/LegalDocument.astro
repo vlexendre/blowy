@@ -1,0 +1,29 @@
+---
+/** Une page légale dans une langue : gabarit commun + corps rendu depuis le module de contenu. */
+import Legal from '../../../layouts/Legal.astro';
+import { LEGAL_CONTENT } from '../../../content/legal';
+import type { LegalSlug, Locale } from '../../../i18n/legal';
+import { headings, renderBlocks } from '../../../lib/legal-render';
+
+interface Props {
+  locale: Locale;
+  slug: LegalSlug;
+}
+const { locale, slug } = Astro.props;
+const { ui, pages } = LEGAL_CONTENT[locale];
+const page = pages[slug];
+const html = renderBlocks(page.body, locale);
+---
+<Legal
+  locale={locale}
+  slug={slug}
+  ui={ui}
+  title={page.title}
+  heading={page.heading}
+  description={page.description}
+  intro={page.intro}
+  summary={page.summary}
+  toc={page.toc ? headings(page.body) : undefined}
+>
+  <Fragment set:html={html} />
+</Legal>

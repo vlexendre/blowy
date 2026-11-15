@@ -744,6 +744,7 @@ function GalleryScreen() {
               otherName="léa"
               dayLabel={(d) => (d === '2026-11-10' ? 'aujourd’hui · mardi' : shortDay(d))}
               onEndReached={noop}
+              loadingOlder
             />
             <Composer
               value={draft}

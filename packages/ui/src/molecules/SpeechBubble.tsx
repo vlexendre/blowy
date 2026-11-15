@@ -2,6 +2,7 @@ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Text } from '../atoms/Text';
 import { InkProvider } from '../lib/ink';
+import { highlightRuns, normalizeRuns, revealTokens } from '../lib/runs';
 import { useReveal } from '../motion/reveal';
 import { TypingDots } from '../motion/TypingDots';
 import { color, radius, shadow, space, veil } from '../theme';
@@ -37,14 +38,12 @@ export function SpeechBubble({ text, highlight, highlightColor = color.accent, t
   const flat = compact || chat;
   const variant = lg ? 'bodyHeavy' : flat ? 'body' : 'bodyBold';
   const fontSize = lg ? 19 : compact ? 13 : 15;
-  // Le mot en couleur est le dernier de la phrase qui correspond (« salut, moi c'est m » : pas le « m » de « moi »).
-  const at = highlight ? text.lastIndexOf(highlight) : -1;
-  const parts = highlight && at >= 0 ? [text.slice(0, at), text.slice(at + highlight.length)] : [text];
-  const tokens = typing ? text.split(/(\s+)/).filter((t) => t.length > 0) : [];
-  const words = tokens.filter((t) => !/^\s+$/.test(t)).length;
+  // Un seul `Text` parent, le mot en couleur imbriqué ; espaces des jointures gérées par `lib/runs` (« enchanté, Tom ! »).
+  const runs = normalizeRuns(highlightRuns(text, highlight));
+  const tokens = typing ? revealTokens(runs) : [];
+  const words = tokens.filter((t) => t.word >= 0).length;
   const shown = useReveal(words, { enabled: typing, step: lg ? 60 : 55, delay: lg ? 360 : 300, key: text });
   const ink = dark ? color.white : color.dark;
-  let w = 0;
   return (
     <View
       style={[
@@ -59,33 +58,27 @@ export function SpeechBubble({ text, highlight, highlightColor = color.accent, t
       ]}
     >
       <InkProvider value={ink}>
-        {typing ? (
-          <Text variant={variant} size={fontSize} style={lg ? styles.lgText : undefined} accessibilityLabel={text}>
-            {tokens.map((t, i) => {
-              if (/^\s+$/.test(t)) return t;
-              const visible = w++ < shown;
-              const hot = !!highlight && t.includes(highlight);
-              return (
-                <Text key={i} variant={hot && chat ? 'bodyBold' : variant} size={fontSize} color={visible ? (hot ? highlightColor : ink) : 'transparent'}>
-                  {t}
-                </Text>
-              );
-            })}
-          </Text>
-        ) : (
-        <Text variant={variant} size={fontSize} style={lg ? styles.lgText : undefined}>
-          {parts.map((p, i) => (
-            <Text key={i} variant={variant} size={fontSize}>
-              {p}
-              {highlight && i < parts.length - 1 ? (
-                <Text variant={chat ? 'bodyBold' : variant} size={fontSize} color={highlightColor}>
-                  {highlight}
-                </Text>
-              ) : null}
-            </Text>
-          ))}
+        <Text variant={variant} size={fontSize} style={lg ? styles.lgText : undefined} accessibilityLabel={typing ? text : undefined}>
+          {typing
+            ? tokens.map((t, i) => {
+                const visible = t.word < shown;
+                if (visible && !t.run.hot) return t.text;
+                return (
+                  <Text key={i} variant={t.run.hot && chat ? 'bodyBold' : variant} size={fontSize} color={visible ? highlightColor : 'transparent'}>
+                    {t.text}
+                  </Text>
+                );
+              })
+            : runs.map((r, i) =>
+                r.hot ? (
+                  <Text key={i} variant={chat ? 'bodyBold' : variant} size={fontSize} color={highlightColor}>
+                    {r.text}
+                  </Text>
+                ) : (
+                  r.text
+                ),
+              )}
         </Text>
-        )}
         {typing && shown === 0 && words > 0 ? <TypingDots color={ink} size={6} style={styles.dots} /> : null}
       </InkProvider>
     </View>

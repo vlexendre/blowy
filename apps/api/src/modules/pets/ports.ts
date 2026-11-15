@@ -21,6 +21,8 @@ export interface PetRecord {
   /** Plus longue série de photos du jour à deux, tous liens confondus (conservée quand une série retombe). */
   bestStreak: number;
   outfit: Outfit;
+  /** Dernier changement de nom (ISO) ; null tant qu'il garde le nom donné à sa création. */
+  renamedAt: string | null;
   createdAt: string;
 }
 

@@ -1,5 +1,5 @@
-import type { Encounters } from '@blowy/contract';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { EncounterHistoryItem, Encounters } from '@blowy/contract';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { create } from 'zustand';
@@ -22,6 +22,30 @@ export function useLiveEncounters() {
     }, [refetch]),
   );
   return encounters;
+}
+
+/** Clé de l'historique : sous `keys.encounters`, donc relue avec les rencontres (salut, réponse, blocage). */
+export const encounterHistoryKey = [...keys.encounters, 'history'] as const;
+
+/** Historique des rencontres, du plus récent au plus ancien, par pages (« voir plus »). */
+export function useEncounterHistory() {
+  const api = useApi();
+  const query = useInfiniteQuery({
+    queryKey: encounterHistoryKey,
+    queryFn: ({ pageParam }) => api.encounters.history(pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.nextBefore ?? undefined,
+  });
+  const seen = new Set<string>();
+  const items: EncounterHistoryItem[] = [];
+  for (const page of query.data?.pages ?? []) {
+    for (const item of page.items) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      items.push(item);
+    }
+  }
+  return { ...query, items };
 }
 
 /** Saluer : rien ne se passe sans ce tap. */

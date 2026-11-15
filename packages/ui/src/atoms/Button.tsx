@@ -1,10 +1,11 @@
 import { isValidElement, type ReactNode } from 'react';
-import { ActivityIndicator, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { InkProvider } from '../lib/ink';
 import { layout } from '../lib/styles';
 import { color, opacity, radius, size as sizes, space, veil } from '../theme';
 import { Glyph, type GlyphName } from './Glyph';
+import { Loader } from './Loader';
 import { Pressable } from './Pressable';
 import { Text } from './Text';
 
@@ -76,19 +77,21 @@ export function Button({ label, onPress, variant = 'accent', size = 'lg', icon, 
       ]}
     >
       <InkProvider value={v.ink}>
+        {/* En cours : le libellé garde sa place (le bouton ne change pas de taille), les boules rebondissent dessus. */}
+        <View style={[layout.row, styles.content, loading ? styles.hidden : null]}>
+          {isGlyph(icon) ? <Glyph name={icon} size={glyphSize} /> : isValidElement(icon) ? icon : null}
+          <Text variant="bodyHeavy" size={fontSize} numberOfLines={1}>
+            {label}
+            {hint ? <Text variant="body" size={fontSize} dim>{`  ${hint}`}</Text> : null}
+          </Text>
+          {iconRight ? <Glyph name={iconRight} size={glyphSize} /> : null}
+          {trailing}
+        </View>
         {loading ? (
-          <ActivityIndicator color={v.ink} />
-        ) : (
-          <View style={[layout.row, styles.content]}>
-            {isGlyph(icon) ? <Glyph name={icon} size={glyphSize} /> : isValidElement(icon) ? icon : null}
-            <Text variant="bodyHeavy" size={fontSize} numberOfLines={1}>
-              {label}
-              {hint ? <Text variant="body" size={fontSize} dim>{`  ${hint}`}</Text> : null}
-            </Text>
-            {iconRight ? <Glyph name={iconRight} size={glyphSize} /> : null}
-            {trailing}
+          <View pointerEvents="none" style={styles.loader}>
+            <Loader color={v.ink} size={small ? 6 : 8} />
           </View>
-        )}
+        ) : null}
       </InkProvider>
     </Pressable>
   );
@@ -100,4 +103,6 @@ const styles = StyleSheet.create({
   inline: { alignSelf: 'flex-start' },
   content: { gap: space.sm + 2 },
   disabled: { opacity: opacity.disabled },
+  hidden: { opacity: 0 },
+  loader: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
 });

@@ -16,9 +16,28 @@ interface Props {
   bodyClass?: string;
   noindex?: boolean;
   ogImage?: string;
+  /** langue du document (fr par défaut) */
+  lang?: string;
+  /** locale Open Graph (fr_FR par défaut) */
+  ogLocale?: string;
+  /** versions dans d'autres langues (balises hreflang) ; chemins relatifs au site */
+  alternates?: { hreflang: string; path: string }[];
+  /** texte du lien d'évitement */
+  skipLabel?: string;
 }
 
-const { title, description, htmlClass, bodyClass, noindex = false, ogImage = OG_IMAGE } = Astro.props;
+const {
+  title,
+  description,
+  htmlClass,
+  bodyClass,
+  noindex = false,
+  ogImage = OG_IMAGE,
+  lang = 'fr',
+  ogLocale = 'fr_FR',
+  alternates = [],
+  skipLabel = 'aller au contenu',
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;
 const ogUrl = new URL(ogImage, SITE_URL).href;
 
@@ -34,7 +53,7 @@ const tokenVars = [
 const tokenCss = `:root{${tokenVars.join(';')}}`;
 ---
 <!doctype html>
-<html lang="fr" class={htmlClass}>
+<html lang={lang} class={htmlClass}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -42,13 +61,14 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={new URL(a.path, SITE_URL).href} />)}
     <meta name="theme-color" content={color.night} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
-    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -67,7 +87,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <slot name="head" />
   </head>
   <body class={bodyClass}>
-    <a class="skip" href="#main">aller au contenu</a>
+    <a class="skip" href="#main">{skipLabel}</a>
     <slot />
     <slot name="footer" />
   </body>

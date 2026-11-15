@@ -1,10 +1,8 @@
 import { gaugeLabel } from '@blowy/content';
-import { cleanPetName, type GaugeKey, PET_NAME_MAX } from '@blowy/domain';
+import { cleanPetName, dayOf, type GaugeKey, nextRenameOn, PET_NAME_MAX, RENAME_COOLDOWN_DAYS } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Banner,
-  Button,
-  Card,
   ChallengeCard,
   GaugePanel,
   Header,
@@ -12,18 +10,18 @@ import {
   PetHero,
   PetSummary,
   type PetSummaryItem,
+  RenameCard,
   ScreenTemplate,
   Shake,
   Skeleton,
   Stack,
-  TextField,
 } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { errorText } from '@/features/links';
+import { errorText, shortDay } from '@/features/links';
 import { useAnswerChallenge, usePet, useRenamePet, weekSummary } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { goBack } from '@/features/session';
@@ -67,7 +65,16 @@ export default function CharacterScreen() {
     );
   }
 
-  const { pet: p, challenge: c, wordsCount, events } = pet.data;
+  const { pet: p, challenge: c, wordsCount, events, rename: renameRule } = pet.data;
+  // Nom changé il y a moins de 60 jours (sans Blowy+) : champ en lecture seule, date et raccourci vers Blowy+.
+  const renameLocked = !renameRule.allowed;
+  const renameNotice = renameLocked
+    ? renameRule.availableOn
+      ? t.renameLocked(shortDay(renameRule.availableOn))
+      : null
+    : renameRule.unlimited
+      ? null
+      : t.renameNext(RENAME_COOLDOWN_DAYS, shortDay(nextRenameOn(dayOf(new Date()))));
   const look = { name: p.name, species: p.species, form: p.form, mood: 'joie' as const };
   const week = weekSummary(events, Date.now());
   const weekItems: PetSummaryItem[] = week.deltas.slice(0, 3).map((d, i) => ({
@@ -110,23 +117,23 @@ export default function CharacterScreen() {
 
         {editing ? (
           <Shake trigger={renameFailed}>
-          <Card padding="lg">
-            <TextField
-              label={t.renameLabel}
-              hint={t.renameHint}
-              value={name}
-              onChangeText={setName}
-              maxLength={PET_NAME_MAX}
-              autoFocus
-              returnKeyType="done"
-              onSubmitEditing={saveName}
-              error={rename.isError ? errorText(rename.error, t.renameError) : null}
-            />
-            <View style={styles.row}>
-              <Button label={t.renameCancel} variant="ghost" size="md" onPress={() => setEditing(false)} style={styles.fill} />
-              <Button label={t.renameSave} size="md" onPress={saveName} loading={rename.isPending} disabled={!cleanPetName(name)} style={styles.fill} />
-            </View>
-          </Card>
+          <RenameCard
+            label={t.renameLabel}
+            hint={t.renameHint}
+            value={renameLocked ? p.name : name}
+            onChangeText={setName}
+            maxLength={PET_NAME_MAX}
+            locked={renameLocked}
+            notice={renameNotice}
+            noticeAction={renameLocked ? { label: t.renamePlus, onPress: () => router.push('/moi/blowy-plus') } : null}
+            error={rename.isError ? errorText(rename.error, t.renameError) : null}
+            cancelLabel={renameLocked ? t.renameClose : t.renameCancel}
+            saveLabel={t.renameSave}
+            onCancel={() => setEditing(false)}
+            onSave={saveName}
+            saving={rename.isPending}
+            canSave={!!cleanPetName(name)}
+          />
           </Shake>
         ) : null}
 
@@ -166,13 +173,8 @@ export default function CharacterScreen() {
       </Stack>
       <UnlockCelebration />
       {/* En renommant : le pet regarde par-dessus le clavier (iOS / Android). */}
-      {editing ? <KeyboardPeek species={p.species} seed={p.id} /> : null}
+      {editing && !renameLocked ? <KeyboardPeek species={p.species} seed={p.id} /> : null}
     </ScreenTemplate>
     </ScreenMotion>
   );
 }
-
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 4 },
-  fill: { flex: 1 },
-});

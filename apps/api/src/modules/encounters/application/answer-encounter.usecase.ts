@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
+import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { ENCOUNTERS } from '../../../shared/tokens';
+import { CLOCK, ENCOUNTERS } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinkRecord } from '../../links/ports';
 import type { EncounterRecord, EncountersRepository } from '../ports';
@@ -11,6 +12,7 @@ export class AnswerEncounter {
   constructor(
     @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
     @Inject(CreateLink) private readonly createLink: CreateLink,
+    @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
   async accept(encounterId: string, userId: string): Promise<LinkRecord> {
@@ -18,14 +20,14 @@ export class AnswerEncounter {
     if (encounter.status === 'declined') throw new DomainError('conflict', 'Tu as déjà refusé cette rencontre.');
     // Le lien est créé avant de marquer la rencontre acceptée : en cas d'échec, on peut réessayer.
     const link = await this.createLink.execute({ by: userId, with: encounter.fromUser, notify: encounter.fromUser });
-    if (encounter.status !== 'accepted') await this.encounters.setStatus(encounter.id, 'accepted');
+    if (encounter.status !== 'accepted') await this.encounters.setStatus(encounter.id, 'accepted', this.clock.now().toISOString());
     return link;
   }
 
   async decline(encounterId: string, userId: string): Promise<void> {
     const encounter = await this.received(encounterId, userId);
     if (encounter.status === 'accepted') throw new DomainError('conflict', 'Vous êtes déjà liés.');
-    if (encounter.status !== 'declined') await this.encounters.setStatus(encounter.id, 'declined');
+    if (encounter.status !== 'declined') await this.encounters.setStatus(encounter.id, 'declined', this.clock.now().toISOString());
   }
 
   private async received(encounterId: string, userId: string): Promise<EncounterRecord> {

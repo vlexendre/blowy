@@ -14,6 +14,9 @@ import { CoreProvider } from '@/core';
 
 void SplashScreen.preventAutoHideAsync();
 
+/** Écran présenté en feuille : modale transparente, l'écran fait sa feuille lui-même (`SheetTemplate asScreen`). */
+const SHEET = { presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } } as const;
+
 export default function RootLayout() {
   const [fontsReady, fontError] = useFonts({ Anton_400Regular, BricolageGrotesque_500Medium, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold });
 
@@ -30,7 +33,10 @@ export default function RootLayout() {
           {/* Calque des animations (vols, explosions, pets qui passent la tête) + pause des boucles en arrière-plan. */}
           <MotionHost>
             <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }} />
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }}>
+              {/* Blowy+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
+              <Stack.Screen name="moi/blowy-plus" options={SHEET} />
+            </Stack>
           </MotionHost>
         </CoreProvider>
       </SafeAreaProvider>

@@ -52,6 +52,8 @@ export const eventLabel: Record<PetEventKind, string> = {
   care_play: 'A joué avec toi',
   care_nap: 'A fait une sieste',
   care_cuddle: 'A eu un câlin',
+  went_out: 'Est sorti avec toi',
+  habit_done: 'Une habitude tenue',
 };
 
 export const wordLabel: Record<string, string> = {

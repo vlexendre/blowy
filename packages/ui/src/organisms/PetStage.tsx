@@ -9,6 +9,7 @@ import { Panel } from '../atoms/Panel';
 import { Title } from '../atoms/Title';
 import { ease, fadeTo, useReducedMotion } from '../lib/motion';
 import { SpeechBubble } from '../molecules/SpeechBubble';
+import type { PetLure } from '../motion/pets/lure';
 import { PetActor, type PetActorHandle, type PetActorReaction, type PetTouch } from '../motion/pets/PetActor';
 import { alpha, color, type GradientName, motion, speciesGradient } from '../theme';
 import type { PetLook, TitleContent } from '../types';
@@ -57,6 +58,8 @@ export interface PetStageProps {
   /** Tout geste sur le pet (tap, double tap, câlin, attrapé, lancé). */
   onPetTouch?: (touch: PetTouch) => void;
   petLabel?: string;
+  /** Soin porté vers le pet (`usePetLure`, partagé avec `CareBar`) : le pet le suit des yeux et ouvre la bouche quand il approche. */
+  lure?: PetLure;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -84,6 +87,7 @@ export function PetStage({
   onPetPress,
   onPetTouch,
   petLabel,
+  lure,
   style,
 }: PetStageProps) {
   const reduced = useReducedMotion();
@@ -115,7 +119,7 @@ export function PetStage({
       style={[styles.panel, { height }, lifted && styles.lifted, style]}
     >
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.night, night]} />
-      <View style={[styles.pet, { width: petSize, height: Math.round(petSize / 0.9) }, sulking && styles.sulk]}>
+      <View ref={lure?.target} collapsable={false} style={[styles.pet, { width: petSize, height: Math.round(petSize / 0.9) }, sulking && styles.sulk]}>
         <PetActor
           ref={actor}
           species={pet.species}
@@ -125,6 +129,7 @@ export function PetStage({
           sulking={sulking}
           grabbable={grabbable}
           onGrabChange={setLifted}
+          lure={lure}
           onTouch={(t) => {
             onPetTouch?.(t);
             if (t === 'tap') onPetPress?.();

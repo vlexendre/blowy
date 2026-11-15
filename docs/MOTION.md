@@ -45,7 +45,7 @@ Les noms historiques (`motion.press`, `motion.pop`, `fast`, `base`, `slow`, `bre
 `Appear` (fondu + montée + légère échelle, `delay`, `once` pour les listes), `Stagger` (cascade d'enfants), `PopIn`,
 `Shake` (erreur), `Pulse` (attirer l'œil, 2 battements puis repos), `CountUp` (nombre qui défile comme un compteur
 mécanique), barres animées (`ProgressBar`, `NeedMeter`, `GaugeBar` : dépassement léger, transformations seulement),
-`Shimmer` (squelettes, `Skeleton`), `Burst` (cœurs, étoiles, étincelles, confettis, « z » en vues simples),
+`Shimmer` (squelettes, `Skeleton`), `Loader` (chargement en ligne : trois boules de poils qui rebondissent), `Burst` (cœurs, étoiles, étincelles, confettis, « z » en vues simples),
 `TypingDots`, `useFlyTo` (un objet vole d'un point à un autre), `useBurst` (explosion au-dessus de tout), `useReveal`
 (mot à mot : bulles, titres), feuille à ressort (`SheetTemplate`), interrupteur à ressort (`Toggle`), indicateur d'onglet
 glissant (`SegmentedTabs`, `SlotTabs`, `BottomTabBar`), petite scène en plusieurs temps (`useSceneSteps`), bouton à
@@ -77,11 +77,28 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   tirer pour rafraîchir (il grimpe à mesure qu'on tire), fin de liste (il sort quand on tire trop loin),
   clavier ouvert (il regarde par-dessus le clavier), changement d'onglet (il passe la tête au-dessus de la barre),
   retour dans l'app (il salue).
+- **Têtes surprises : rares** (`peekBudget`, partagé par la barre d'onglets et `HelloPeek`). Changement d'onglet : environ
+  une fois sur dix (tirage déterministe : id du pet + n° du changement + minute) ; jamais deux têtes à moins de 3 min ;
+  rien dans les 20 premières secondes de la session. Retour dans l'app : après au moins 1 min d'absence, au plus une fois
+  par session (une chance sur deux). Uniquement sur un écran à onglets au premier plan (barre visible) et jamais par-dessus
+  une feuille (`useOverlay`) : rien sur un écran poussé, l'inscription ou une modale. Les `PetPeek` liés à un état (état
+  vide, hors ligne, page inconnue, lien disparu, clavier) restent tels quels : ils sont sur place (`inline`) ou suivent leur écran.
 - **Il s'endort** : 25 s sans toucher l'accueil, ou la nuit (22 h – 7 h) : il dort, des « z » montent ; un tap le
   réveille en sursaut.
 - **Jamais gênant** : un pet ne recouvre ni un bouton, ni un champ, ni du texte utile ; il ne capture pas les
   touches destinées à ce qu'il y a dessous (sauf sur lui-même). `PetPeek` reste hors des zones sûres (`safe` : sous
   l'en-tête, au-dessus de la barre d'onglets ou du clavier) ; par défaut seulement dans les coins bas.
+- **Soin glissé** (accueil) : appuyer 0,14 s sur un soin puis glisser soulève son picto (jeton rond, au-dessus du doigt) ;
+  le pet le suit des yeux en se penchant, prend un air gourmand, puis ouvre la bouche (`surpris`) quand il arrive tout
+  près ; lâché sur le pet, le picto entre dans sa bouche et le soin part (même mutation qu'un tap) ; lâché ailleurs, il
+  revient en ressort. Le tap reste identique ; un soin refusé ou inactif ne se glisse pas (il tremble au tap). Un glissé
+  immédiat fait défiler la page ; une fois le picto soulevé, la page ne défile plus.
+- **Chargements** : jamais de roue. Écran ou liste : squelettes (`Skeleton`, reflet `Shimmer`) à la forme du contenu ;
+  bouton ou soin : `Loader` (trois boules qui rebondissent, à l'encre du bouton, libellé gardé en place) ; tirer pour
+  rafraîchir : le pet qui grimpe (`PetRefresh`, accueil) ou trois boules jaunes qui se remplissent puis rebondissent
+  (`ScreenTemplate`). Animations réduites : boules fixes, reflet arrêté.
+- **En-têtes** : corps défilant en pleine hauteur ; barre du haut collée, verre flouté qui s'allume dès qu'on défile (le
+  contenu passe dessous, rien n'est caché au repos) ; petit titre qui apparaît quand le grand titre d'un onglet sort.
 - **Sur le web** : pas de tirage élastique (donc pas de pet dans `PetRefresh`), pas d'événement clavier (`KeyboardPeek`
   n'apparaît pas), pas de vibration. Tout le reste fonctionne.
 
@@ -93,14 +110,14 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Entrée en scène | les quatre pets sortent du bas de l'écran l'un après l'autre (`PetRise`) | grande ligne qui monte à chaque pet ; clin d'œil ou regard autour ; tap = ligne suivante |
 | Créer son pet | le pet choisi saute au centre | les autres se penchent pour regarder ; le nom tapé fait hocher le pet |
 | Questions (hôte) | la bulle de l'hôte s'écrit (« … » puis mot à mot) | petit pet qui fait « pop » à l'arrivée ; barre continue qui avance d'un cran depuis l'étape d'avant |
-| Caractère (quiz) | la carte choisie s'incline et part | l'hôte saute de joie à chaque réponse ; la bulle se réécrit |
+| Caractère (quiz) | la carte choisie s'incline et part | la jauge de la question file vers le pôle choisi et s'éclaire dès le toucher ; 1re question sans toucher : les deux cartes se soulèvent l'une après l'autre (deux fois, une fois par session) ; l'hôte saute de joie à chaque réponse ; la bulle se réécrit |
 | Caractère (temps fort) | le pet sort du bas de l'écran dans des étoiles | verdict mot à mot ; puces des deux traits en « pop » ; il regarde autour |
 | Prénom / date / ville | — | grand champ souligné qui s'allume au focus ; date fausse : secousse ; trop jeune : pet triste qui se retourne |
 | Promesse | l'anneau se remplit autour de « promis » (`HoldButton`) | le bouton s'enfonce pendant l'appui ; plein : coche dessinée, le pet saute de joie, cœurs |
 | Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; connexion : le pet regarde par-dessus le clavier |
 | Préparation | les lignes se cochent une à une (`PrepChecklist`) | pourcentage qui défile, barre avec dépassement ; erreur : tout s'arrête, le pet s'inquiète |
 | Tout est prêt | le pet saute de joie, confettis (`ReadyHero`) | titre mot à mot puis la phrase |
-| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) | barres qui se remplissent avec dépassement, nombres comptés ; bouton conseillé qui pulse ; bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir : il grimpe (iOS) |
+| Accueil (pet) | réaction au soin (croque, saute, dort, cœurs) | barres qui se remplissent avec dépassement, nombres comptés ; bouton conseillé qui pulse ; bulle qui s'écrit ; pet attrapable ; il s'endort ; tirer pour rafraîchir : il grimpe (iOS) ; soin glissé jusqu'au pet (il le suit des yeux, ouvre la bouche) ; soin en cours : trois boules dans le disque |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
 | Chats | bandeau « ton pet a croisé quelqu'un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger |
@@ -112,8 +129,8 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Rencontres | les cartes arrivent en éventail | « saluer » : le pet fait signe, onde autour du bouton ; accepté : les deux pets se courent dessus et se cognent |
 | Carte | les pets se posent en cercle, du centre vers l'extérieur | le pet touché sautille |
 | Moi / réglages | — | interrupteurs à ressort ; lignes qui s'enfoncent ; copie du lien : coche ; suppression : pet qui fait non |
-| Barre d'onglets | l'icône active rebondit, la pastille jaune glisse | pastilles qui « pop » à l'arrivée d'un message ; le pet passe la tête au-dessus de l'onglet choisi ; retour dans l'app : il salue |
-| Feuilles | montée à ressort, fond qui s'assombrit | se ferment en glissant vers le bas, suivent le doigt |
+| Barre d'onglets | l'icône active rebondit, la pastille jaune glisse | pastilles qui « pop » à l'arrivée d'un message ; rarement (≈ 1 fois sur 10, 3 min de pause), le pet passe la tête au-dessus de l'onglet choisi ; retour dans l'app : parfois, il salue (une fois par session au plus) |
+| Feuilles | montée à ressort, fond qui s'assombrit | se ferment en glissant vers le bas, suivent le doigt ; Blowy+ : feuille haute (`bare`), on la tire par sa barre du haut ou en tirant le contenu au-delà du haut (iOS), la croix la fait redescendre |
 
 ### Détail : inscription et Moi
 - **Bienvenue** : le panneau se pose, le pet glisse depuis le bord droit (rogné par le panneau : la coupe du buste ne se

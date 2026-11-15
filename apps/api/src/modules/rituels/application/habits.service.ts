@@ -1,0 +1,243 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { HABITS as HABIT_CATALOGUE, type HabitDef, habitById, proofVerdictLines, rhythmLabel, rituelsErrors, rituelsNotificationVars } from '@blowy/content';
+import type { Habit, HabitCatalogue } from '@blowy/contract';
+import {
+  type Day,
+  HABIT_RHYTHMS,
+  type HabitRhythm,
+  ITEMS,
+  type ProofVerdict,
+  addDays,
+  canAddHabit,
+  habitDay,
+  habitStreak,
+  proofCounts,
+  seedOf,
+  shouldAskProof,
+} from '@blowy/domain';
+import { EXTENSIONS, MEDIA_URL_SECONDS, type Storage, type UploadTicket } from '../../../integrations/storage/ports';
+import { DomainError } from '../../../shared/errors';
+import type { Ids } from '../../../shared/ids';
+import { IDS, STORAGE } from '../../../shared/tokens';
+import { PetCharacter } from '../../pets/application/pet-character';
+import { VISION_SIGNALS, type VisionSignals } from '../../vision/tokens';
+import type {
+  HabitCheckRecord,
+  HabitChecksRepository,
+  HabitRecord,
+  HabitVerifier,
+  HabitsRepository,
+  RitualPhotoRecord,
+  RitualPhotosRepository,
+  RitualStatesRepository,
+} from '../ports';
+import { HABIT_CHECKS, HABIT_VERIFIER, HABITS, RITUAL_PHOTOS, RITUAL_STATES } from '../tokens';
+import { RitualNotifications, RitualsContext } from './rituals-context';
+
+/** Fenêtre relue pour les séries d'habitude (au-delà, la série affichée plafonne). */
+export const HABIT_HISTORY_DAYS = 120;
+
+export const habitPhotoPattern = (userId: string, ref: string, day: Day): RegExp =>
+  new RegExp(`^rituals/${userId}/${day}/habit-${ref}-[0-9a-f-]{36}\\.(jpg|webp)$`);
+
+const lineFor = (verdict: ProofVerdict, seed: string): string => {
+  const lines = proofVerdictLines[verdict];
+  return lines[seedOf(seed) % lines.length] ?? lines[0] ?? '';
+};
+
+/** Définition d'une habitude suivie ; une habitude retirée du catalogue garde un libellé neutre. */
+const defOf = (habit: HabitRecord): HabitDef =>
+  habitById(habit.habitId) ?? { id: habit.habitId, axis: 'rythme', lean: 0, social: false, sociability: 0, rhythm: habit.rhythm, proofHour: habit.proofHour, label: habit.habitId, ask: '' };
+
+export function toHabitDto(habit: HabitRecord, checks: readonly HabitCheckRecord[], today: Day, hour: number): Habit {
+  const def = defOf(habit);
+  const mine = checks.filter((c) => c.habitRef === habit.id);
+  const keptDays = mine.filter((c) => proofCounts(c.verdict)).map((c) => c.day);
+  const day = habitDay(habit.rhythm, keptDays, today);
+  const todayCheck = mine.find((c) => c.day === today) ?? null;
+  return {
+    ref: habit.id,
+    habitId: habit.habitId,
+    label: def.label,
+    ask: def.ask,
+    social: def.social,
+    rhythm: habit.rhythm,
+    rhythmLabel: rhythmLabel[habit.rhythm],
+    proofHour: habit.proofHour,
+    today: {
+      doneToday: day.doneToday,
+      doneThisWeek: day.doneThisWeek,
+      target: day.target,
+      due: day.due,
+      askNow: shouldAskProof(day, hour, habit.proofHour),
+      verdict: todayCheck?.verdict ?? null,
+      line: todayCheck?.line ?? null,
+    },
+    streak: habitStreak(habit.rhythm, keptDays, today),
+    since: habit.createdAt,
+  };
+}
+
+export interface ProofOutcome {
+  photo: RitualPhotoRecord;
+  verdict: ProofVerdict;
+  counted: boolean;
+  line: string;
+  habit: Habit;
+  newItems: string[];
+}
+
+/**
+ * Habitudes : catalogue relié aux axes de vision, rythme, limite selon l'abonnement (`entitlements().habits`),
+ * preuve en photo vérifiée par le port `HabitVerifier` (« pas sûr » compte). Une habitude tenue fait évoluer le minimoa
+ * (compteur `habitsKept` → objets), monte sa sociabilité si elle est tournée vers les autres, et renseigne la vision.
+ */
+@Injectable()
+export class HabitsService {
+  constructor(
+    @Inject(RitualsContext) private readonly ctx: RitualsContext,
+    @Inject(HABITS) private readonly habits: HabitsRepository,
+    @Inject(HABIT_CHECKS) private readonly checks: HabitChecksRepository,
+    @Inject(RITUAL_PHOTOS) private readonly photos: RitualPhotosRepository,
+    @Inject(RITUAL_STATES) private readonly states: RitualStatesRepository,
+    @Inject(HABIT_VERIFIER) private readonly verifier: HabitVerifier,
+    @Inject(PetCharacter) private readonly character: PetCharacter,
+    @Inject(VISION_SIGNALS) private readonly signals: VisionSignals,
+    @Inject(RitualNotifications) private readonly notifications: RitualNotifications,
+    @Inject(STORAGE) private readonly storage: Storage,
+    @Inject(IDS) private readonly ids: Ids,
+  ) {}
+
+  async catalogue(userId: string): Promise<HabitCatalogue> {
+    const [profile, active] = await Promise.all([this.ctx.profile(userId), this.habits.listActive(userId)]);
+    return {
+      habits: HABIT_CATALOGUE.map((h) => ({ id: h.id, label: h.label, ask: h.ask, axis: h.axis, social: h.social, rhythm: h.rhythm, proofHour: h.proofHour })),
+      rhythms: HABIT_RHYTHMS.map((id) => ({ id, label: rhythmLabel[id] })),
+      limit: this.ctx.limitsOf(profile).habits,
+      used: active.length,
+    };
+  }
+
+  /** Habitudes suivies avec leur état du jour. */
+  async list(userId: string): Promise<{ habits: Habit[]; limit: number; canAdd: boolean }> {
+    const [profile, active] = await Promise.all([this.ctx.profile(userId), this.habits.listActive(userId)]);
+    const today = this.ctx.today();
+    const checks = await this.checks.listSince(
+      active.map((h) => h.id),
+      addDays(today, -HABIT_HISTORY_DAYS),
+    );
+    const limit = this.ctx.limitsOf(profile).habits;
+    return { habits: active.map((h) => toHabitDto(h, checks, today, this.ctx.hour())), limit, canAdd: canAddHabit(active.length, limit) };
+  }
+
+  /** Habitudes dont la preuve est demandée maintenant (accueil), et celles à faire aujourd'hui. */
+  async todaySummary(userId: string): Promise<{ due: number; asked: { habitRef: string; ask: string }[] }> {
+    const active = await this.habits.listActive(userId);
+    if (active.length === 0) return { due: 0, asked: [] };
+    const today = this.ctx.today();
+    const checks = await this.checks.listSince(
+      active.map((h) => h.id),
+      addDays(today, -7),
+    );
+    const dtos = active.map((h) => toHabitDto(h, checks, today, this.ctx.hour()));
+    return { due: dtos.filter((d) => d.today.due).length, asked: dtos.filter((d) => d.today.askNow).map((d) => ({ habitRef: d.ref, ask: d.ask })) };
+  }
+
+  async add(userId: string, habitId: string, rhythm?: HabitRhythm, proofHour?: number): Promise<void> {
+    const def = habitById(habitId);
+    if (!def) throw new DomainError('invalid', rituelsErrors.habitUnknown);
+    const [profile, active] = await Promise.all([this.ctx.profile(userId), this.habits.listActive(userId)]);
+    const limit = this.ctx.limitsOf(profile).habits;
+    if (active.some((h) => h.habitId === habitId)) throw new DomainError('conflict', rituelsErrors.habitTaken);
+    if (!canAddHabit(active.length, limit)) throw new DomainError('forbidden', limit >= 6 ? rituelsErrors.habitLimitPlus : rituelsErrors.habitLimit(limit));
+    const created = await this.habits.create({
+      id: this.ids.uuid(),
+      userId,
+      habitId,
+      rhythm: rhythm ?? def.rhythm,
+      proofHour: proofHour ?? def.proofHour,
+      createdAt: this.ctx.now().toISOString(),
+      archivedAt: null,
+      askedOn: null,
+    });
+    if (!created) throw new DomainError('conflict', rituelsErrors.habitTaken);
+    // Choisir une habitude dit déjà quelque chose de sa vision (moitié du poids d'une habitude tenue).
+    await this.signals.record(userId, [{ axis: def.axis, value: Math.round(def.lean / 2), source: 'habit', at: this.ctx.now().toISOString() }]);
+  }
+
+  async update(userId: string, ref: string, patch: { rhythm?: HabitRhythm; proofHour?: number }): Promise<void> {
+    await this.owned(userId, ref);
+    await this.habits.update(ref, patch);
+  }
+
+  /** Arrêter une habitude : elle quitte la liste, son historique reste. */
+  async remove(userId: string, ref: string): Promise<void> {
+    await this.owned(userId, ref);
+    await this.habits.update(ref, { archivedAt: this.ctx.now().toISOString() });
+  }
+
+  async proofTicket(userId: string, ref: string, contentType: 'image/jpeg' | 'image/webp'): Promise<UploadTicket> {
+    await this.owned(userId, ref);
+    const today = this.ctx.today();
+    await this.notCountedYet(ref, today);
+    return this.storage.createUploadTicket(`rituals/${userId}/${today}/habit-${ref}-${this.ids.uuid()}.${EXTENSIONS[contentType]}`);
+  }
+
+  /** Preuve envoyée : vérifiée (oui / non / pas sûr), une phrase gentille ; « pas sûr » compte, « non » permet de réessayer. */
+  async proof(userId: string, ref: string, path: string, keep: boolean): Promise<ProofOutcome> {
+    const habit = await this.owned(userId, ref);
+    const today = this.ctx.today();
+    const previous = await this.notCountedYet(ref, today);
+    if (!habitPhotoPattern(userId, ref, today).test(path)) throw new DomainError('invalid', rituelsErrors.proofPath);
+    if (!(await this.storage.exists(path))) throw new DomainError('invalid', rituelsErrors.proofMissing);
+    const def = defOf(habit);
+    const now = this.ctx.now().toISOString();
+    const photo: RitualPhotoRecord = { id: this.ids.uuid(), userId, source: 'habit', day: today, path, caption: def.label, keep, createdAt: now, deletedAt: null };
+    await this.photos.create(photo);
+
+    const profile = await this.ctx.profile(userId);
+    const { verdict } = await this.verifier.verify({ userId, locale: profile.locale ?? 'fr', habitId: habit.habitId, path });
+    const counted = proofCounts(verdict);
+    const line = lineFor(verdict, path);
+    await this.checks.upsert({ id: previous?.id ?? this.ids.uuid(), habitRef: ref, userId, day: today, verdict, line, photoId: photo.id, createdAt: now });
+
+    let newItems: string[] = [];
+    if (counted) {
+      const kept = await this.states.addHabitsKept(userId, 1);
+      newItems = ITEMS.filter((i) => i.unlock.kind === 'stat' && i.unlock.stat === 'habitsKept' && i.unlock.n === kept).map((i) => i.id);
+      await this.character.apply(userId, 'habit_done', { sociability: def.sociability });
+      await this.signals.record(userId, [{ axis: def.axis, value: def.lean, source: 'habit', at: now }]);
+      for (const item of newItems) await this.notifications.send(userId, 'item_unlocked', rituelsNotificationVars.itemUnlocked(item, `habits_${kept}`));
+    }
+    const checks = await this.checks.listSince([ref], addDays(today, -HABIT_HISTORY_DAYS));
+    return { photo, verdict, counted, line, habit: toHabitDto(habit, checks, today, this.ctx.hour()), newItems };
+  }
+
+  /** Garder (ou ne plus garder) une photo privée dans ses souvenirs ; une photo déjà supprimée ne revient pas. */
+  async keepPhoto(userId: string, photoId: string, keep: boolean): Promise<void> {
+    const photo = await this.photos.find(photoId);
+    if (!photo || photo.userId !== userId) throw new DomainError('not_found');
+    if (photo.deletedAt !== null) throw new DomainError('not_found', rituelsErrors.proofGone);
+    await this.photos.setKeep(photoId, keep);
+  }
+
+  /** Souvenirs privés : photos gardées, URL signées d'une heure. */
+  async memories(userId: string, before: string | null, limit: number): Promise<{ items: (RitualPhotoRecord & { url: string })[]; nextBefore: string | null }> {
+    const rows = await this.photos.listKept(userId, before, limit);
+    const items = await Promise.all(rows.map(async (p) => ({ ...p, url: await this.storage.signedUrl(p.path, MEDIA_URL_SECONDS) })));
+    return { items, nextBefore: rows.length === limit ? (rows[rows.length - 1]?.createdAt ?? null) : null };
+  }
+
+  private async owned(userId: string, ref: string): Promise<HabitRecord> {
+    const habit = await this.habits.find(ref);
+    if (!habit || habit.userId !== userId || habit.archivedAt !== null) throw new DomainError('not_found', rituelsErrors.habitNotFound);
+    return habit;
+  }
+
+  /** Preuve du jour déjà comptée : refusée. Rend la preuve « non » du jour s'il y en a une (elle sera remplacée). */
+  private async notCountedYet(ref: string, today: Day): Promise<HabitCheckRecord | null> {
+    const check = await this.checks.find(ref, today);
+    if (check && proofCounts(check.verdict)) throw new DomainError('already_done', rituelsErrors.habitDoneToday);
+    return check;
+  }
+}

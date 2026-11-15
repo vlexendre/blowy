@@ -18,27 +18,23 @@ export default function Compte() {
   const update = useUpdateMe();
   const avatar = useSetAvatar();
   const [name, setName] = useState('');
-  const [city, setCity] = useState('');
   const [sheet, setSheet] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (me.data) {
-      setName(me.data.displayName);
-      setCity(me.data.city ?? '');
-    }
-  }, [me.data?.displayName, me.data?.city]);
+    if (me.data) setName(me.data.displayName);
+  }, [me.data?.displayName]);
 
   const pick = (source: 'camera' | 'library') => {
     setSheet(false);
     avatar.mutate(source);
   };
 
-  const dirty = !!me.data && (name.trim() !== me.data.displayName || (city.trim() || null) !== me.data.city);
+  const dirty = !!me.data && name.trim() !== me.data.displayName;
   const save = () => {
     if (!name.trim()) return;
     setSaved(false);
-    update.mutate({ displayName: name.trim(), city: city.trim() || null }, { onSuccess: () => setSaved(true) });
+    update.mutate({ displayName: name.trim() }, { onSuccess: () => setSaved(true) });
   };
   const back = () => goBack('/moi/reglages');
 
@@ -103,19 +99,6 @@ export default function Compte() {
         maxLength={24}
         autoCapitalize="words"
         textContentType="givenName"
-      />
-      <InlineField
-        key="city"
-        label={t.cityLabel}
-        value={city}
-        onChangeText={(v) => {
-          setCity(v);
-          setSaved(false);
-        }}
-        placeholder={t.cityPlaceholder}
-        maxLength={40}
-        autoCapitalize="words"
-        textContentType="addressCity"
       />
       {session?.email ? <InlineField key="email" label={t.emailLabel} value={maskEmail(session.email)} editable={false} /> : null}
       </Stagger>

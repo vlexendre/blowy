@@ -26,11 +26,20 @@ export function useUnblock() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (userId: string) => api.safety.unblock(userId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: keys.blocks }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: keys.blocks });
+      // L'historique des rencontres la montre à nouveau.
+      void qc.invalidateQueries({ queryKey: keys.encounters });
+    },
   });
 }
 
 export function useReport() {
   const api = useApi();
-  return useMutation({ mutationFn: (body: ReportBody) => api.safety.report(body) });
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ReportBody) => api.safety.report(body),
+    // Une personne signalée sort de l'historique des rencontres.
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.encounters }),
+  });
 }

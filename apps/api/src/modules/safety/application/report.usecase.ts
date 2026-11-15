@@ -19,6 +19,7 @@ export class Report {
   async execute(userId: string, body: ReportBody): Promise<void> {
     if (body.userId === userId) throw new DomainError('invalid');
     if (!(await this.profiles.findById(body.userId))) throw new DomainError('not_found', 'Cette personne est introuvable.');
+    if (body.messageId && !body.linkId) throw new DomainError('invalid');
     if (body.linkId) {
       const link = await this.links.findById(body.linkId);
       const members = link ? [link.userA, link.userB] : [];
@@ -28,6 +29,7 @@ export class Report {
       reporter: userId,
       targetUser: body.userId,
       linkId: body.linkId ?? null,
+      messageId: body.messageId ?? null,
       reason: body.reason,
       details: body.details ? body.details : null,
       createdAt: this.clock.now().toISOString(),

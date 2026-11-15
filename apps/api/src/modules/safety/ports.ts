@@ -17,6 +17,8 @@ export interface ReportRecord {
   reporter: string | null;
   targetUser: string | null;
   linkId: string | null;
+  /** Message signalé, dans `linkId` (null : signalement de la personne, sans message précis). */
+  messageId?: string | null;
   reason: string;
   details: string | null;
   createdAt: string;
@@ -24,4 +26,6 @@ export interface ReportRecord {
 
 export interface ReportsRepository {
   add(report: ReportRecord): Promise<void>;
+  /** Personnes signalées par `reporter`. */
+  reportedBy(reporter: string): Promise<Set<string>>;
 }

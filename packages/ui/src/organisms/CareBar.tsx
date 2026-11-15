@@ -4,6 +4,7 @@ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { CareIcon } from '../atoms/CareIcon';
 import { CareButton } from '../molecules/CareButton';
+import type { PetLure } from '../motion/pets/lure';
 import { color, size as sizes, veil } from '../theme';
 
 export interface CareBarProps {
@@ -18,13 +19,18 @@ export interface CareBarProps {
   hot?: Partial<Record<CareAction, boolean>>;
   /** Geste en cours d'envoi : les autres sont inactifs. */
   busy?: CareAction | null;
+  /**
+   * Lien avec le pet (`usePetLure`, le même que `PetStage lure`) : on peut alors glisser un soin jusqu'au pet
+   * (appuyer, glisser, lâcher sur lui). Le tap reste le geste principal.
+   */
+  lure?: PetLure;
   /** Pictos à la place des `CareIcon`. */
   icons?: Partial<Record<CareAction, ReactNode>>;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Les quatre soins (nourrir, jouer, sieste, câlin) dans une carte, en disques ronds (V6-Accueil). */
-export function CareBar({ labels, available, onCare, onRefused, hot, busy, icons, style }: CareBarProps) {
+export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, icons, style }: CareBarProps) {
   return (
     <View style={[styles.card, style]}>
       {CARE_ACTIONS.map((a) => (
@@ -39,6 +45,7 @@ export function CareBar({ labels, available, onCare, onRefused, hot, busy, icons
           loading={busy === a}
           disabled={!!busy && busy !== a}
           onPress={() => onCare(a)}
+          lure={lure}
         />
       ))}
     </View>

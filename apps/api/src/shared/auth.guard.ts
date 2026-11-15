@@ -4,6 +4,8 @@ import type { Request } from 'express';
 import type { AuthUser, AuthVerifier } from '../integrations/auth/ports';
 import { DomainError } from './errors';
 import { AUTH_VERIFIER } from './tokens';
+import type { AccountGate } from '../modules/admin/application/account-gate';
+import { ACCOUNT_GATE } from '../modules/admin/tokens';
 
 const IS_PUBLIC = 'blowy:public';
 
@@ -25,6 +27,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     @Inject(Reflector) private readonly reflector: Reflector,
     @Inject(AUTH_VERIFIER) private readonly verifier: AuthVerifier,
+    @Inject(ACCOUNT_GATE) private readonly gate: AccountGate,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
@@ -37,6 +40,8 @@ export class AuthGuard implements CanActivate {
     const user = await this.verifier.verify(token);
     if (!user) throw new DomainError('unauthorized', 'Ta session a expiré. Reconnecte-toi.');
     req.user = user;
+    // Compte suspendu par la modération : refusé avec un message clair ; sinon, jour d'activité noté.
+    await this.gate.check(user, { method: req.method, path: req.path });
     return true;
   }
 }

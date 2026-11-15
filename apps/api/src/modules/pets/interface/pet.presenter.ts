@@ -36,6 +36,7 @@ export const toPetView = (r: PetViewResult): PetView => ({
   wordsCount: r.wordsCount,
   careDays: r.pet.careDays,
   newItems: r.newItems,
+  rename: { allowed: r.rename.allowed, availableOn: r.rename.availableOn, unlimited: r.rename.unlimited },
 });
 
 /** Tout le catalogue, dans l'ordre : possédé, à gagner (avec l'étape) ou premium. */

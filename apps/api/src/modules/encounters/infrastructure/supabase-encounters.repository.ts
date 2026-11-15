@@ -9,6 +9,7 @@ interface EncounterRow {
   status: EncounterStatus;
   intro: string | null;
   created_at: string;
+  status_at: string;
 }
 
 const fromRow = (r: EncounterRow): EncounterRecord => ({
@@ -18,6 +19,7 @@ const fromRow = (r: EncounterRow): EncounterRecord => ({
   status: r.status,
   intro: r.intro,
   createdAt: iso(r.created_at),
+  statusAt: iso(r.status_at),
 });
 
 export class SupabaseEncountersRepository implements EncountersRepository {
@@ -41,7 +43,7 @@ export class SupabaseEncountersRepository implements EncountersRepository {
 
   async create(e: EncounterRecord): Promise<EncounterRecord | null> {
     const { data, error } = await this.table
-      .insert({ id: e.id, from_user: e.fromUser, to_user: e.toUser, status: e.status, intro: e.intro, created_at: e.createdAt })
+      .insert({ id: e.id, from_user: e.fromUser, to_user: e.toUser, status: e.status, intro: e.intro, created_at: e.createdAt, status_at: e.statusAt })
       .select('*')
       .single();
     if (isUniqueViolation(error)) return null;
@@ -49,14 +51,23 @@ export class SupabaseEncountersRepository implements EncountersRepository {
     return fromRow(data as EncounterRow);
   }
 
-  async setStatus(id: string, status: EncounterStatus): Promise<void> {
-    const { error } = await this.table.update({ status }).eq('id', id);
+  async setStatus(id: string, status: EncounterStatus, at: string): Promise<void> {
+    const { error } = await this.table.update({ status, status_at: at }).eq('id', id);
     check(error, 'mise à jour de la rencontre');
   }
 
   async listInvolving(userId: string): Promise<EncounterRecord[]> {
     const { data, error } = await this.table.select('*').or(`from_user.eq.${userId},to_user.eq.${userId}`);
     check(error, 'lecture des rencontres');
+    return (data as EncounterRow[]).map(fromRow);
+  }
+
+  async listHistory(userId: string, before: string | null, limit: number): Promise<EncounterRecord[]> {
+    // Envoyées (tous statuts) ou reçues avec une réponse : les coucous reçus en attente restent dans « reçus ».
+    let query = this.table.select('*').or(`from_user.eq.${userId},and(to_user.eq.${userId},status.neq.waved)`);
+    if (before !== null) query = query.lt('status_at', before);
+    const { data, error } = await query.order('status_at', { ascending: false }).order('id', { ascending: false }).limit(limit);
+    check(error, "lecture de l'historique des rencontres");
     return (data as EncounterRow[]).map(fromRow);
   }
 }

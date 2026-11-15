@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import { deltaForWords } from '@blowy/domain';
+import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, PETS, PROFILES, WORD_VOTES } from '../../../shared/tokens';
@@ -32,6 +33,7 @@ export class Words {
     @Inject(WORD_VOTES) private readonly votes: WordVotesRepository,
     @Inject(PetCharacter) private readonly character: PetCharacter,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(NOTIFIER) private readonly notifier: Notifier,
   ) {}
 
   async target(code: string): Promise<WordsTarget> {
@@ -49,5 +51,6 @@ export class Words {
     const added = await this.votes.add({ targetUser: profile.id, words: input.words, voterHash, createdAt: this.clock.now().toISOString() });
     if (!added) throw new DomainError('already_done', 'Tu as déjà donné tes 3 mots. Merci !');
     await this.character.apply(profile.id, 'three_words', { extra: deltaForWords(input.words) });
+    await this.notifier.notify(profile.id, 'words_received');
   }
 }

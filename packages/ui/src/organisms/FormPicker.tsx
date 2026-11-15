@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'rea
 import { Card } from '../atoms/Card';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
+import { RichText } from '../atoms/RichText';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
@@ -44,14 +45,13 @@ export interface FormPickerProps {
 
 const pct = (v: number): number => 50 + Math.max(-100, Math.min(100, v)) / 2;
 
-/** Jauge de la forme choisie : remplissage depuis le centre et curseur qui glissent avec un léger dépassement. */
+/** Jauge de la forme choisie : remplissage depuis le centre (sans curseur : rien à tirer) et repère rose de la forme visée. */
 function FormGaugeTrack({ value, target }: { value: number; target: number }) {
   const x = useAnimatedNumber(pct(value), { duration: motion.slow, overshoot: 0.12, from: 50 });
   const t = useAnimatedNumber(pct(target), { duration: motion.slow, overshoot: 0.1 });
   const w = useSharedValue(0);
   const center = useDerivedValue(() => w.value / 2);
   const end = useDerivedValue(() => (Math.max(0, Math.min(100, x.value)) / 100) * w.value);
-  const knob = useAnimatedStyle(() => ({ opacity: w.value > 0 ? 1 : 0, transform: [{ translateX: end.value }] }));
   const mark = useAnimatedStyle(() => ({ opacity: w.value > 0 ? 1 : 0, transform: [{ translateX: (t.value / 100) * w.value }] }));
   return (
     <View
@@ -62,7 +62,6 @@ function FormGaugeTrack({ value, target }: { value: number; target: number }) {
     >
       <View style={styles.zero} />
       <PillSpan from={center} to={end} height={10} color={color.accent} span={400} />
-      <Animated.View style={[styles.knob, knob]} />
       <Animated.View style={[styles.target, mark]} />
     </View>
   );
@@ -107,17 +106,11 @@ export function FormPicker({ title, hint, species, options, selected, onSelect, 
         })}
       </View>
       <Card padding="none" style={styles.how}>
-        <Text size={15} style={styles.howText}>
-          <Text variant="bodyBold" size={15} style={styles.howText}>
-            {how.title}
-          </Text>
-          {how.text}
-          {how.look ? (
-            <Text size={15} muted style={styles.howText}>
-              {` ${how.look}`}
-            </Text>
-          ) : null}
-        </Text>
+        <RichText
+          size={15}
+          style={styles.howText}
+          runs={[{ text: how.title, variant: 'bodyBold' }, { text: how.text }, ...(how.look ? [{ text: ` ${how.look}`, muted: true }] : [])]}
+        />
         {gauge ? (
           <View style={[layout.row, styles.gaugeRow]}>
             <Text variant={lead === 'low' ? 'bodyHeavy' : 'body'} size={12} muted={lead !== 'low'} numberOfLines={1} style={styles.pole}>
@@ -133,8 +126,6 @@ export function FormPicker({ title, hint, species, options, selected, onSelect, 
     </View>
   );
 }
-
-const KNOB = 18;
 
 const styles = StyleSheet.create({
   wrap: { gap: 10 },
@@ -163,19 +154,5 @@ const styles = StyleSheet.create({
   right: { textAlign: 'right' },
   track: { flex: 1, height: 10, borderRadius: 999, backgroundColor: alpha(color.white, 0.12) },
   zero: { position: 'absolute', left: '50%', top: -3, bottom: -3, width: 2, backgroundColor: alpha(color.white, 0.35) },
-  knob: {
-    position: 'absolute',
-    left: 0,
-    top: (10 - KNOB) / 2,
-    width: KNOB,
-    height: KNOB,
-    marginLeft: -KNOB / 2,
-    borderRadius: KNOB / 2,
-    backgroundColor: color.white,
-    shadowColor: color.night,
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 2 },
-  },
   target: { position: 'absolute', left: 0, top: -3, width: 4, height: 16, marginLeft: -2, borderRadius: 2, backgroundColor: color.rose },
 });

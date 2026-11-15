@@ -139,6 +139,12 @@ export default function WardrobeScreen() {
     setOpen(null);
     router.navigate(href);
   };
+  // Blowy+ monte en feuille : on attend que la fiche de l'objet soit redescendue (iOS ne présente pas deux
+  // modales à la fois).
+  const toPlus = () => {
+    setOpen(null);
+    setTimeout(() => router.push('/moi/blowy-plus'), 320);
+  };
 
   const name = open ? (itemLabel[open.id] ?? open.id) : '';
   const goal = open?.goal;
@@ -198,7 +204,13 @@ export default function WardrobeScreen() {
                     ? { text: statGoalLabel[goal.stat]?.(goal.need) ?? '', have: goal.have, need: goal.need, hint: t.goalHint[goal.stat]?.(goal.have) }
                     : undefined
                 }
-                action={goal ? { label: t.shortcut[goal.stat], onPress: () => go(SHORTCUT[goal.stat]) } : undefined}
+                action={
+                  open.state === 'premium'
+                    ? { label: t.premiumCta, onPress: toPlus }
+                    : goal
+                      ? { label: t.shortcut[goal.stat], onPress: () => go(SHORTCUT[goal.stat]) }
+                      : undefined
+                }
                 closeLabel={t.close}
                 onClose={() => setOpen(null)}
               />

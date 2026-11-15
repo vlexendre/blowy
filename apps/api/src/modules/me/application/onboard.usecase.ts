@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { OnboardBody } from '@blowy/contract';
-import { welcomeEmail } from '@blowy/content';
+import { visionErrorText, welcomeEmail } from '@blowy/content';
 import { GAUGE_KEYS, type Gauges, MIN_AGE, START_NEEDS, ZERO_GAUGES, ageOn, clampGauge, cleanPetName } from '@blowy/domain';
 import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
@@ -12,6 +12,10 @@ import { CreateLink } from '../../links/application/create-link.usecase';
 import { PetCharacter } from '../../pets/application/pet-character';
 import { Wardrobe } from '../../pets/application/wardrobe';
 import type { PetsRepository } from '../../pets/ports';
+import { DEFAULT_IDENTITY, type IdentityState, applyIdentity } from '../../vision/application/identity';
+import { Locations } from '../../vision/application/locations';
+import { VisionRecorder } from '../../vision/application/vision-recorder';
+import { checkAnswers } from '../../vision/application/vision.usecases';
 import type { OnboardedHook, Profile, ProfilesRepository } from '../ports';
 
 export interface OnboardInput {
@@ -38,6 +42,8 @@ export class Onboard {
     @Inject(CreateLink) private readonly createLink: CreateLink,
     @Inject(Notifier) private readonly notifier: Notifier,
     @Inject(ONBOARDED_HOOK) private readonly hook: OnboardedHook,
+    @Inject(Locations) private readonly locations: Locations,
+    @Inject(VisionRecorder) private readonly vision: VisionRecorder,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
@@ -48,8 +54,18 @@ export class Onboard {
     if (ageOn(body.birthdate, today) < MIN_AGE) throw new DomainError('too_young');
     const existing = await this.profiles.findById(userId);
     if (existing && (await this.pets.findByOwner(userId))) throw new DomainError('already_onboarded');
+    // Tout est vérifié avant d'écrire quoi que ce soit.
+    checkAnswers(body.visionAnswers);
+    const nowIso = this.clock.now().toISOString();
+    const identity = applyIdentity(DEFAULT_IDENTITY, { gender: body.gender, seeking: body.seeking, whom: body.whom ?? null, sensitiveConsent: body.consents.sensitive || undefined }, nowIso);
+    if (body.location && !body.consents.location) throw new DomainError('invalid', visionErrorText.locationConsent);
 
-    const profile = existing ?? (await this.createProfile(userId, body));
+    const profile = existing
+      ? await this.profiles.update(userId, { ...identity, locale: body.locale, ...(body.consents.location && !existing.locationConsentAt ? { locationConsentAt: nowIso } : {}) })
+      : await this.createProfile(userId, body, identity);
+    // Vision et position avant le pet : refaits à l'identique si l'inscription est reprise.
+    if (body.visionAnswers.length > 0) await this.vision.answerTest(userId, body.visionAnswers);
+    if (body.location) await this.locations.record(userId, { lat: body.location.latitude, lng: body.location.longitude }, true);
     const petName = cleanPetName(body.pet.name);
     if (!petName) throw new DomainError('invalid', 'Donne un nom à ton pet.');
     const gauges = startingGauges(body.quiz);
@@ -67,6 +83,7 @@ export class Onboard {
       lastCareOn: null,
       bestStreak: 0,
       outfit: {},
+      renamedAt: null,
       createdAt: now,
     });
     await this.character.apply(userId, 'quiz', { extra: gauges });
@@ -85,12 +102,16 @@ export class Onboard {
     }
   }
 
-  private async createProfile(userId: string, body: OnboardBody): Promise<Profile> {
+  private async createProfile(userId: string, body: OnboardBody, identity: IdentityState): Promise<Profile> {
+    const now = this.clock.now().toISOString();
     const profile: Profile = {
       id: userId,
       displayName: body.displayName,
       birthdate: body.birthdate,
-      city: body.city ? body.city : null,
+      ...identity,
+      locale: body.locale,
+      discreet: false,
+      locationConsentAt: body.consents.location ? now : null,
       avatarPath: null,
       inviteCode: await this.freshCode(),
       wordsCode: await this.freshCode(),

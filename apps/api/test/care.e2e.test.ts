@@ -18,8 +18,8 @@ describe('soins et garde-robe', () => {
     world = await startWorld();
     alice = world.client();
     bob = world.client();
-    await alice.api.me.onboard(onboardBody({ displayName: 'Alice', city: 'Nantes', pet: { name: 'Nino', species: 'nino' } }));
-    await bob.api.me.onboard(onboardBody({ displayName: 'Bob', city: 'Nantes', pet: { name: 'Gaston', species: 'gaston' } }));
+    await alice.api.me.onboard(onboardBody({ displayName: 'Alice', pet: { name: 'Nino', species: 'nino' } }));
+    await bob.api.me.onboard(onboardBody({ displayName: 'Bob', pet: { name: 'Gaston', species: 'gaston' } }));
   });
   afterAll(() => world.close());
 

@@ -22,7 +22,7 @@ export class ListMessages {
   async execute(linkId: string, userId: string, before: string | null): Promise<MessagesPageResult> {
     const draft = await this.session.open(linkId, userId);
     await this.session.commit(draft);
-    const page = await this.messages.page(linkId, before, MESSAGES_PAGE);
+    const page = await this.messages.page(linkId, before, MESSAGES_PAGE, userId);
     const oldest = page.at(-1);
     return {
       link: draft.link,

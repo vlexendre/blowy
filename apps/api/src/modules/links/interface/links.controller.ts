@@ -16,6 +16,7 @@ import type { AuthUser } from '../../../integrations/auth/ports';
 import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
 import { CurrentUser } from '../../../shared/auth.guard';
 import { STORAGE } from '../../../shared/tokens';
+import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { ArchiveLink } from '../application/archive-link.usecase';
 import { GetLink } from '../application/get-link.usecase';
@@ -61,6 +62,7 @@ export class LinksController {
   }
 
   @Delete(':id')
+  @RateLimit('write')
   async archive(@CurrentUser() user: AuthUser, @Param('id', LinkId) id: string): Promise<{ ok: true }> {
     await this.archiveLink.execute(id, user.userId);
     return { ok: true };
@@ -73,6 +75,7 @@ export class LinksController {
   }
 
   @Post(':id/messages')
+  @RateLimit('message')
   async send(
     @CurrentUser() user: AuthUser,
     @Param('id', LinkId) id: string,
@@ -88,11 +91,13 @@ export class LinksController {
   }
 
   @Post(':id/revive')
+  @RateLimit('write')
   async revive(@CurrentUser() user: AuthUser, @Param('id', LinkId) id: string): Promise<LinkAction> {
     return this.action(await this.reviveLink.execute(id, user.userId), user.userId);
   }
 
   @Post(':id/photo/ticket')
+  @RateLimit('write')
   async ticket(
     @CurrentUser() user: AuthUser,
     @Param('id', LinkId) id: string,
@@ -102,6 +107,7 @@ export class LinksController {
   }
 
   @Post(':id/photo')
+  @RateLimit('message')
   async photo(
     @CurrentUser() user: AuthUser,
     @Param('id', LinkId) id: string,

@@ -1,18 +1,27 @@
 /**
- * S'occuper de son pet : trois besoins de 0 (à plat) à 100 (comblé) qui baissent avec le temps.
- * Un pet négligé boude — il ne meurt jamais — et ne fait plus de rencontres.
+ * S'occuper de son minimoa. Le besoin principal est la **sociabilité** (V7) : elle monte quand la personne
+ * sort, voit du monde, salue, écrit, poste la photo du jour ou tient une habitude tournée vers les autres,
+ * et descend seule. Trois petits besoins (faim, énergie, humeur) se comblent avec les quatre gestes.
+ * Tous vont de 0 (à plat) à 100 (comblé). Un minimoa négligé boude — il ne meurt jamais — et ne fait plus de rencontres.
  * Moteur pur : le temps écoulé est passé en paramètre, rattrapé à la lecture.
  */
 import type { PetEventKind } from './gauges';
 
+/** Les trois petits besoins, comblés par les gestes (`CARE_ACTIONS`). La sociabilité n'en fait pas partie. */
 export const NEED_KEYS = ['hunger', 'energy', 'mood'] as const;
 export type NeedKey = (typeof NEED_KEYS)[number];
-export type Needs = Record<NeedKey, number>;
+/** Besoins du minimoa : la sociabilité (principale) et les trois petits besoins. */
+export type Needs = Record<NeedKey, number> & { sociability: number };
 
-export const START_NEEDS: Needs = { hunger: 80, energy: 80, mood: 80 };
+export const START_NEEDS: Needs = { sociability: 80, hunger: 80, energy: 80, mood: 80 };
 
-/** Points perdus par heure. Un pet comblé met environ une journée et demie à tomber à plat. */
-export const NEED_DECAY_PER_HOUR: Needs = { hunger: 3.5, energy: 2.5, mood: 2.5 };
+/** Points perdus par heure. Un minimoa comblé met environ une journée et demie à tomber à plat. */
+export const NEED_DECAY_PER_HOUR: Record<NeedKey, number> = { hunger: 3.5, energy: 2.5, mood: 2.5 };
+/**
+ * Sociabilité perdue par heure : 36 points par jour, donc une sortie par jour la maintient.
+ * Multiple de 0,5 : l'usure enregistrée par pas de 2 h reste un nombre entier de points.
+ */
+export const SOCIABILITY_DECAY_PER_HOUR = 1.5;
 
 const clamp = (v: number): number => Math.max(0, Math.min(100, Math.round(v)));
 
@@ -20,7 +29,14 @@ export function decayNeeds(needs: Needs, hours: number): Needs {
   if (hours <= 0) return needs;
   const out = { ...needs };
   for (const k of NEED_KEYS) out[k] = clamp(needs[k] - NEED_DECAY_PER_HOUR[k] * hours);
+  out.sociability = clamp(needs.sociability - SOCIABILITY_DECAY_PER_HOUR * hours);
   return out;
+}
+
+/** Ajoute (ou retire) des points de sociabilité, bornés de 0 à 100. */
+export function raiseSociability(needs: Needs, points: number): Needs {
+  if (points === 0) return needs;
+  return { ...needs, sociability: clamp(needs.sociability + points) };
 }
 
 export const CARE_ACTIONS = ['feed', 'play', 'nap', 'cuddle'] as const;
@@ -46,23 +62,31 @@ export const NEED_FULL = 92;
 /** Jouer demande un minimum d'énergie. */
 export const PLAY_MIN_ENERGY = 15;
 
-export function canCare(needs: Needs, action: CareAction): boolean {
+export function canCare(needs: Record<NeedKey, number>, action: CareAction): boolean {
   if (action === 'play' && needs.energy < PLAY_MIN_ENERGY) return false;
   return needs[CARE_EFFECTS[action].fills] < NEED_FULL;
 }
 
-export function applyCare(needs: Needs, action: CareAction): Needs {
-  const out = { ...needs };
+export function applyCare<N extends Record<NeedKey, number>>(needs: N, action: CareAction): N {
+  const out: N = { ...needs };
   const effect = CARE_EFFECTS[action].needs;
   for (const k of NEED_KEYS) out[k] = clamp(needs[k] + (effect[k] ?? 0));
   return out;
 }
 
-/** Forme générale, de 0 à 100 : le besoin le plus bas pèse double. */
-export function wellbeing(needs: Needs): number {
+/** État des trois petits besoins, de 0 à 100 : le plus bas pèse double. */
+export function careLevel(needs: Record<NeedKey, number>): number {
   const values = NEED_KEYS.map((k) => needs[k]);
   const low = Math.min(...values);
   return Math.round((values.reduce((a, b) => a + b, 0) + low) / (values.length + 1));
+}
+
+/** Poids de la sociabilité dans la forme (V7 : 60 % sociabilité, 40 % les trois petits besoins). */
+export const SOCIABILITY_WEIGHT = 0.6;
+
+/** Forme générale, de 0 à 100 : 60 % sociabilité + 40 % des trois petits besoins. */
+export function wellbeing(needs: Needs): number {
+  return Math.round(SOCIABILITY_WEIGHT * needs.sociability + (1 - SOCIABILITY_WEIGHT) * careLevel(needs));
 }
 
 export const SHAPES = ['en_forme', 'bof', 'boude'] as const;
@@ -75,8 +99,12 @@ export const shapeOf = (needs: Needs): Shape => {
 /** Conséquence sur les rencontres : un pet en forme croise plus de monde, un pet qui boude ne sort plus. */
 export const ENCOUNTER_QUOTA: Record<Shape, number> = { en_forme: 20, bof: 6, boude: 0 };
 
-/** Besoin le plus urgent, ou null si tout va bien. */
-export function urgentNeed(needs: Needs): NeedKey | null {
+/** Sous ce seuil, le minimoa « a besoin de sortir » (notification, une par jour au plus). */
+export const SOCIABILITY_LOW = 35;
+export const needsOut = (needs: Pick<Needs, 'sociability'>): boolean => needs.sociability < SOCIABILITY_LOW;
+
+/** Petit besoin le plus urgent, ou null si tout va bien (la sociabilité se lit avec `needsOut`). */
+export function urgentNeed(needs: Record<NeedKey, number>): NeedKey | null {
   let worst: NeedKey | null = null;
   for (const k of NEED_KEYS) if (needs[k] < 40 && (worst === null || needs[k] < needs[worst])) worst = k;
   return worst;

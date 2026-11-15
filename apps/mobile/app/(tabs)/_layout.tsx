@@ -1,6 +1,6 @@
 import { color } from '@blowy/tokens';
 import { BottomTabBar, type BottomTabItem, HelloPeek } from '@blowy/ui';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, useIsFocused } from 'expo-router';
 
 import { useEncounters } from '@/features/encounters';
 import { totalUnread, useLinks } from '@/features/links';
@@ -21,6 +21,8 @@ export default function TabsLayout() {
   const links = useLinks();
   const encounters = useEncounters();
   const pet = usePet().data?.pet;
+  // Faux quand un écran est poussé par-dessus les onglets (lien, garde-robe…) : aucun pet décoratif alors.
+  const focused = useIsFocused();
   const items: BottomTabItem<TabKey>[] = [
     { key: 'pet', label: tabs.pet, glyph: 'heart' },
     { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) },
@@ -41,8 +43,8 @@ export default function TabsLayout() {
               items={items}
               activeKey={isTab(current) ? current : 'pet'}
               accessibilityLabel={tabs.a11y}
-              // Le pet passe la tête au-dessus de la barre à chaque changement d'onglet.
-              peek={pet ? { species: pet.species, mood: 'joie' } : undefined}
+              // Rarement, le pet passe la tête au-dessus de l'onglet choisi (budget dans @blowy/ui : ~1 sur 10, 3 min de pause).
+              peek={pet && focused ? { species: pet.species, mood: 'joie', seed: pet.id } : undefined}
               onPress={(key) => {
                 const route = state.routes.find((r) => r.name === key);
                 if (route && current !== key) navigateToTab(route.key);
@@ -56,8 +58,8 @@ export default function TabsLayout() {
         <Tabs.Screen name="rencontres" options={{ title: tabs.rencontres }} />
         <Tabs.Screen name="moi" options={{ title: tabs.moi }} />
       </Tabs>
-      {/* Retour dans l'app : le pet salue une fois depuis un coin, au-dessus de la barre. */}
-      {pet ? <HelloPeek species={pet.species} seed={pet.id} /> : null}
+      {/* Retour dans l'app : parfois, le pet salue depuis un coin, au-dessus de la barre (onglets visibles seulement). */}
+      {pet ? <HelloPeek species={pet.species} seed={pet.id} active={focused} /> : null}
     </>
   );
 }

@@ -38,6 +38,7 @@ import { useScrollLock } from '../../lib/scroll-lock';
 import { motion } from '../../theme';
 import { Burst } from '../Burst';
 import { isNight, useSeed } from '../seed';
+import type { PetLure } from './lure';
 import { Bang, SoftShadow, Strawberry, SweatDrop } from './PetProps';
 
 /** Réactions qu'on peut demander au pet (`ref.current.react(…)`). */
@@ -81,6 +82,11 @@ export interface PetActorProps {
   onTouch?: (touch: PetTouch) => void;
   /** Le pet est tenu ou en l'air (pour passer son conteneur au premier plan et ne plus le rogner). */
   onGrabChange?: (grabbed: boolean) => void;
+  /**
+   * Objet porté vers lui (soin glissé depuis `CareBar`, `usePetLure`) : il le suit des yeux en se penchant, se
+   * réveille, prend un air gourmand, puis ouvre la bouche (`surpris`) quand l'objet arrive tout près.
+   */
+  lure?: PetLure;
   accessibilityLabel?: string;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
@@ -165,6 +171,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     hiddenItems,
     onTouch,
     onGrabChange,
+    lure,
     accessibilityLabel,
     accessibilityHint,
     style,
@@ -226,6 +233,9 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   const topInset = useSharedValue(insets.top);
   const bottomInset = useSharedValue(insets.bottom);
   const box = useAnimatedRef<View>();
+  /** Objet porté : penché vers lui (-1 … 1) et proximité (0 … 1). */
+  const lean = useSharedValue(0);
+  const reach = useSharedValue(0);
 
   useEffect(() => {
     winW.value = win.width;
@@ -600,12 +610,62 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
 
   useImperativeHandle(ref, () => ({ react, wake }), [react, wake]);
 
+  // — Objet porté vers lui (soin glissé) : il le suit des yeux, puis ouvre la bouche quand il arrive tout près.
+  const lureZone = useRef(0);
+  const onLureJS = useCallback(
+    (zone: number) => {
+      const before = lureZone.current;
+      lureZone.current = zone;
+      if (zone === before) return;
+      armSleep();
+      if (zone === 0) {
+        if (!busy.current) express(null);
+        return;
+      }
+      if (asleepRef.current) wake();
+      if (zone === 1) {
+        express(sulking ? 'triste' : 'joie', 0);
+        // Il se redresse en le voyant (une fois, à la prise).
+        if (before === 0 && !reduced) sy.value = withSequence(withTiming(1.06, { duration: 120, easing: ease.out }), withSpring(1, PLUSH));
+      } else {
+        express('surpris', 0);
+        if (!reduced) hapticFor('press');
+      }
+    },
+    [armSleep, express, wake, sulking, reduced, sy],
+  );
+  const lureRef = useRef(onLureJS);
+  lureRef.current = onLureJS;
+  const lureStable = useCallback((zone: number) => lureRef.current(zone), []);
+  useAnimatedReaction(
+    () => {
+      if (!lure || lure.on.value === 0) return [0, 0, 0];
+      const m = measure(box);
+      if (!m) return [1, 0, 0];
+      const dx = lure.x.value - (m.pageX + mouth.x * m.width);
+      const dy = lure.y.value - (m.pageY + mouth.y * m.height);
+      const d = Math.hypot(dx, dy);
+      return [d < size * 0.62 ? 2 : 1, clamp(dx / (size * 0.8), -1, 1), clamp(1 - (d - size * 0.3) / (size * 1.2), 0, 1)];
+    },
+    (now, before) => {
+      const zone = now[0] ?? 0;
+      if (reduced || zone === 0) {
+        lean.value = withSpring(0, springs.soft);
+        reach.value = withSpring(0, springs.soft);
+      } else {
+        lean.value = withSpring(now[1] ?? 0, { damping: 16, stiffness: 180 });
+        reach.value = withSpring(now[2] ?? 0, { damping: 16, stiffness: 180 });
+      }
+      if (!before || before[0] !== zone) scheduleOnRN(lureStable, zone);
+    },
+  );
+
   // — Vie au repos : une petite chose toutes les 3,5 à 7 s, jamais deux fois la même de suite.
   useEffect(() => {
     if (!idle || reduced || !active) return;
     let id: ReturnType<typeof setTimeout>;
     const tick = () => {
-      if (!busy.current && !asleepRef.current && free.value === 0) {
+      if (!busy.current && !asleepRef.current && free.value === 0 && !lureZone.current) {
         const choices = sulking ? ['sigh', 'turn', 'mood'] : ['hop', 'look', 'wiggle', 'mood', 'mood'];
         const what = seed.pick(choices, lastIdle.current);
         lastIdle.current = what;
@@ -900,13 +960,15 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     const groundHit = free.value === 0 && y.value > 0 ? Math.min(0.26, (y.value / size) * 1.3) : 0;
     const yy = free.value === 0 && y.value > 0 ? 0 : y.value;
     const b = breath.value * amp.value;
+    // Objet porté : il se penche vers lui et s'étire un peu pour l'attraper quand il approche.
+    const tilt = lean.value * (5 + 6 * reach.value);
     return {
       transform: [
-        { translateX: x.value },
+        { translateX: x.value + lean.value * size * 0.04 },
         { translateY: yy - 2 * b },
-        { rotate: `${rot.value}deg` },
-        { scaleX: sx.value * (1 - 0.02 * b) * (1 + groundHit * 0.8) },
-        { scaleY: sy.value * (1 + 0.03 * b) * (1 - groundHit) },
+        { rotate: `${rot.value + tilt}deg` },
+        { scaleX: sx.value * (1 - 0.02 * b) * (1 + groundHit * 0.8) * (1 - 0.025 * reach.value) },
+        { scaleY: sy.value * (1 + 0.03 * b) * (1 - groundHit) * (1 + 0.05 * reach.value) },
       ],
     };
   });

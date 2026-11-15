@@ -13,7 +13,8 @@ export default function Invite() {
   const me = useMe();
   const invite = useCopyShare();
   const words = useCopyShare();
-  const next = () => router.replace('/(onboarding)/paywall');
+  // Blowy+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
+  const next = () => router.push('/(onboarding)/paywall');
 
   const pet = me.data?.pet;
   const link = me.data ? inviteUrl(me.data.inviteCode) : '';
@@ -44,7 +45,9 @@ export default function Invite() {
         <WordsShareCard
           title={t.wordsTitle}
           words={[]}
+          badge={t.wordsBadge}
           emptyText={t.wordsEmpty(pet?.name ?? '')}
+          steps={t.wordsSteps(pet?.name ?? '')}
           url={displayUrl(wordsLink)}
           copyLabel={t.copy}
           copiedLabel={t.copied}

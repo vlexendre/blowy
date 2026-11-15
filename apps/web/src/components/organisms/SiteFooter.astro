@@ -5,13 +5,17 @@ import { footer } from '../../content/landing';
 interface Props {
   logoHref?: string;
   class?: string;
+  /** liens (pages traduites) ; par défaut ceux de la landing */
+  links?: readonly { href: string; label: string }[];
+  /** aria-label de la navigation */
+  label?: string;
 }
-const { logoHref = '/', class: cls } = Astro.props;
+const { logoHref = '/', class: cls, links = footer.links, label = footer.legalLabel } = Astro.props;
 ---
 <footer class:list={['foot', cls]}>
   <Logo href={logoHref} />
-  <nav aria-label={footer.legalLabel}>
-    {footer.links.map((l) => <a href={l.href}>{l.label}</a>)}
+  <nav aria-label={label}>
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
   </nav>
   <span>{footer.copyright}</span>
 </footer>

@@ -13,6 +13,7 @@ import { Text } from '../atoms/Text';
 import { countWords, Title } from '../atoms/Title';
 import { hapticFor } from '../lib/haptics';
 import { ease, fadeTo, springs, useReducedMotion } from '../lib/motion';
+import { useOverlay } from '../lib/overlay';
 import { layout } from '../lib/styles';
 import { Burst } from '../motion/Burst';
 import { PetActor, type PetActorHandle } from '../motion/pets/PetActor';
@@ -59,6 +60,7 @@ export function UnlockSheet({ visible, itemId, itemName, pet, kicker, title, tex
   const [shown, setShown] = useState(reduced ? words : 0);
   const [landed, setLanded] = useState(reduced);
   const [confetti, setConfetti] = useState(0);
+  useOverlay(visible);
   const panel = useSharedValue(0);
   const drop = useSharedValue(0);
   const squash = useSharedValue(0);

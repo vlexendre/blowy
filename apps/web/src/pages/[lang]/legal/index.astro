@@ -1,0 +1,11 @@
+---
+/** Sommaire des pages légales traduites : /<langue>/legal. */
+import LegalIndex from '../../../components/organisms/legal/LegalIndex.astro';
+import { TRANSLATED_LOCALES, type Locale } from '../../../i18n/legal';
+
+export function getStaticPaths() {
+  return TRANSLATED_LOCALES.map((lang) => ({ params: { lang } }));
+}
+const lang = Astro.params.lang as Locale;
+---
+<LegalIndex locale={lang} />

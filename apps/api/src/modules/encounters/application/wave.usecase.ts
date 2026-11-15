@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { encounterIntroLine, waveReceivedEmail } from '@blowy/content';
-import { compatibility, shapeOf } from '@blowy/domain';
+import { compatibility, matchMode, shapeOf } from '@blowy/domain';
 import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
+import { NOTIFIER, type Notifier as PushNotifier } from '../../../integrations/push/notifier';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
@@ -35,6 +36,7 @@ export class Wave {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
+    @Inject(NOTIFIER) private readonly push: PushNotifier,
   ) {}
 
   async execute(userId: string, targetId: string): Promise<void> {
@@ -48,6 +50,8 @@ export class Wave {
     if (!me || !myPet) throw new DomainError('not_onboarded');
     // Une personne bloquée (dans un sens ou l'autre) est introuvable.
     if (!target || !targetPet || (await this.blocks.blockedEitherWay(userId)).has(targetId)) throw new DomainError('not_found', 'Cette personne est introuvable.');
+    // Ce que chacun cherche (filtre dur de la vision) : sinon, rien ne trahit pourquoi, la personne est « introuvable ».
+    if (!matchMode(me, target)) throw new DomainError('not_found', 'Cette personne est introuvable.');
     const [a, b] = userId < targetId ? [userId, targetId] : [targetId, userId];
     const link = await this.links.findBetween(a, b);
     if (link && link.status !== 'archived') throw new DomainError('conflict', 'Vous êtes déjà liés.');
@@ -58,19 +62,21 @@ export class Wave {
     if (await this.encounters.findPair(userId, targetId)) return;
     const theirs = await this.encounters.findPair(targetId, userId);
     const mutual = theirs?.status === 'waved';
+    const now = this.clock.now().toISOString();
     const created = await this.encounters.create({
       id: this.ids.uuid(),
       fromUser: userId,
       toUser: targetId,
       status: mutual ? 'accepted' : 'waved',
       intro: encounterIntroLine({ other: targetPet.name, via: 'new', compatibility: compatibility(myPet.gauges, targetPet.gauges), mutualName: null }, seedOf('wave', userId, targetId)),
-      createdAt: this.clock.now().toISOString(),
+      createdAt: now,
+      statusAt: now,
     });
     if (!created) return;
     await this.character.apply(userId, 'waved');
 
     if (theirs && mutual) {
-      await this.encounters.setStatus(theirs.id, 'accepted');
+      await this.encounters.setStatus(theirs.id, 'accepted', now);
       await this.createLink.execute({ by: userId, with: targetId, notify: targetId });
       return;
     }
@@ -78,5 +84,6 @@ export class Wave {
       targetId,
       waveReceivedEmail({ displayName: target.displayName, petName: targetPet.name, fromName: me.displayName, fromPetName: myPet.name, appUrl: this.env.webUrl }),
     );
+    await this.push.notify(targetId, 'waved', { name: me.displayName, minimoa: myPet.name });
   }
 }

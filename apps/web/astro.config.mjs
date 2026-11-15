@@ -7,4 +7,12 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
+  // Anciennes adresses des pages légales (déjà liées depuis l'app) : pages de redirection en statique,
+  // doublées d'une 301 dans public/_redirects pour Cloudflare Pages.
+  redirects: {
+    '/conditions': '/legal/conditions/',
+    '/confidentialite': '/legal/confidentialite/',
+    '/regles': '/legal/regles/',
+    '/support': '/legal/assistance/',
+  },
 });

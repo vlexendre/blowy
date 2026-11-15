@@ -58,7 +58,7 @@ export class LinkPresenter {
         const mood = linkMood(link);
         const face = faceVisibility(link.level);
         const [latest, lastRead, todays, avatarUrl] = await Promise.all([
-          this.messages.latest(link.id),
+          this.messages.latest(link.id, viewerId),
           this.reads.lastReadAt(link.id, viewerId),
           this.photos.forDay(link.id, today),
           face !== 'hidden' && other.avatarPath ? this.sign(other.avatarPath) : Promise.resolve(null),
@@ -101,7 +101,9 @@ export class LinkPresenter {
     const dayOfPath = new Map(photos.map((p) => [p.mediaPath, p.day]));
     const myDays = new Set(photos.filter((p) => p.userId === viewerId).map((p) => p.day));
     return Promise.all(
-      records.map(async (m): Promise<Message> => {
+      records
+        .filter((m) => !m.visibleTo || m.visibleTo === viewerId)
+        .map(async (m): Promise<Message> => {
         const mine = m.authorId === viewerId;
         const day = m.mediaPath ? dayOfPath.get(m.mediaPath) : undefined;
         const visible = m.mediaPath !== null && (mine || (day !== undefined && myDays.has(day)));
@@ -113,6 +115,7 @@ export class LinkPresenter {
           body: m.body,
           mediaUrl: visible && m.mediaPath ? await this.sign(m.mediaPath) : null,
           at: m.createdAt,
+          petRole: m.authorKind === 'pet' ? (m.petRole ?? null) : null,
         };
       }),
     );

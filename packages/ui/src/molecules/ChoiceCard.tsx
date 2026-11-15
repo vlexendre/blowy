@@ -4,13 +4,14 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import { type StyleProp, StyleSheet, Text as RNText, View, type ViewStyle } from 'react-native';
 
 import type { IconName } from '../assets/pets';
+import { Glyph } from '../atoms/Glyph';
 import { Icon } from '../atoms/Icon';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { InkProvider } from '../lib/ink';
 import { springs, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
-import { type GradientName, gradient as gradients, onGradient, opacity, space } from '../theme';
+import { alpha, color, type GradientName, gradient as gradients, onGradient, opacity, space } from '../theme';
 
 export interface ChoiceCardProps {
   title: string;
@@ -31,13 +32,18 @@ export interface ChoiceCardProps {
   /** Réponse non retenue après le choix : estompée. */
   faded?: boolean;
   disabled?: boolean;
+  /**
+   * Pastille ronde à droite, comme un bouton radio : vide tant qu'on n'a pas choisi, pleine avec une coche une fois
+   * choisie. Dit sans texte « une des cartes se choisit ».
+   */
+  marker?: boolean;
   onPress?: () => void;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Réponse de quiz ou de défi : grande carte touchable (`.panel` 28 pt de rayon, 104 pt de haut). */
-export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', colors, ink, selected, tilt = -2, faded, disabled, onPress, accessibilityLabel, style }: ChoiceCardProps) {
+export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', colors, ink, selected, tilt = -2, faded, disabled, marker, onPress, accessibilityLabel, style }: ChoiceCardProps) {
   const reduced = useReducedMotion();
   // Choisie : la carte s'incline et grandit un peu, en ressort (un rebond) ; posée d'emblée si animations réduites.
   const pick = useSharedValue(selected ? 1 : 0);
@@ -45,6 +51,8 @@ export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', co
     pick.value = reduced ? (selected ? 1 : 0) : withSpring(selected ? 1 : 0, springs.pop);
   }, [selected, reduced, pick]);
   const lean = useAnimatedStyle(() => ({ transform: [{ rotate: `${tilt * pick.value}deg` }, { scale: 1 + 0.03 * pick.value }] }));
+  const dot = useAnimatedStyle(() => ({ opacity: pick.value, transform: [{ scale: 0.4 + 0.6 * pick.value }] }));
+  const fg = ink ?? onGradient[gradient];
   return (
     <Pressable
       onPress={onPress}
@@ -57,7 +65,7 @@ export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', co
     >
       <Animated.View style={[styles.inner, lean]}>
         <LinearGradient colors={colors ?? gradients[gradient]} style={[StyleSheet.absoluteFill, styles.fill]} />
-        <InkProvider value={ink ?? onGradient[gradient]}>
+        <InkProvider value={fg}>
           <View style={[layout.row, styles.row]}>
             {emoji ? (
               <View style={styles.emojiBox}>
@@ -80,6 +88,13 @@ export function ChoiceCard({ title, caption, icon, emoji, gradient = 'night', co
                 </Text>
               ) : null}
             </View>
+            {marker ? (
+              <View style={[styles.marker, { borderColor: alpha(fg, 0.55) }]} accessible={false}>
+                <Animated.View style={[styles.markerFill, { backgroundColor: fg }, dot]}>
+                  <Glyph name="check" size={14} color={fg === color.dark ? color.white : color.dark} />
+                </Animated.View>
+              </View>
+            ) : null}
           </View>
         </InkProvider>
       </Animated.View>
@@ -100,4 +115,6 @@ const styles = StyleSheet.create({
   title: { lineHeight: 22, letterSpacing: -0.19 },
   caption: { letterSpacing: 1.32, opacity: 0.7 },
   faded: { opacity: opacity.disabled },
+  marker: { width: 28, height: 28, borderRadius: 14, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  markerFill: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
 });

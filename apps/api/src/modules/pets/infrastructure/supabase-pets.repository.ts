@@ -17,10 +17,12 @@ interface PetRow {
   energy: number;
   mood: number;
   needs_at: string;
+  sociability: number;
   care_days: number;
   last_care_on: string | null;
   best_streak: number;
   outfit: unknown;
+  renamed_at: string | null;
   created_at: string;
 }
 
@@ -51,12 +53,13 @@ const fromRow = (r: PetRow): PetRecord => ({
   species: r.species,
   gauges: { social: r.social, play: r.play, tender: r.tender, talk: r.talk },
   decayedOn: r.decayed_on,
-  needs: { hunger: r.hunger, energy: r.energy, mood: r.mood },
+  needs: { sociability: r.sociability, hunger: r.hunger, energy: r.energy, mood: r.mood },
   needsAt: iso(r.needs_at),
   careDays: r.care_days,
   lastCareOn: r.last_care_on,
   bestStreak: r.best_streak,
   outfit: outfitFromJson(r.outfit),
+  renamedAt: r.renamed_at ? iso(r.renamed_at) : null,
   createdAt: iso(r.created_at),
 });
 
@@ -156,8 +159,15 @@ export class SupabasePetsRepository implements PetsRepository {
       last_care_on: pet.lastCareOn,
       best_streak: pet.bestStreak,
       outfit: { ...pet.outfit },
+      renamed_at: pet.renamedAt,
     };
   }
 }
 
-const needsRow = (needs: Needs, needsAt: string) => ({ hunger: needs.hunger, energy: needs.energy, mood: needs.mood, needs_at: needsAt });
+const needsRow = (needs: Needs, needsAt: string) => ({
+  sociability: needs.sociability,
+  hunger: needs.hunger,
+  energy: needs.energy,
+  mood: needs.mood,
+  needs_at: needsAt,
+});

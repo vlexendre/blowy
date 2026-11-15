@@ -2,8 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
-import { CLOCK, IDS, LINKS, MESSAGES, PETS } from '../../../shared/tokens';
+import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
+import { CLOCK, IDS, LINKS, MESSAGES, PETS, PROFILES } from '../../../shared/tokens';
+import type { ProfilesRepository } from '../../me/ports';
 import type { PetsRepository } from '../../pets/ports';
+import type { PetRole } from '@blowy/domain';
 import type { LinkRecord, LinksRepository, MessageRecord, MessagesRepository } from '../ports';
 import { LinkDraft } from './link-draft';
 
@@ -19,6 +22,8 @@ export class LinkSession {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
+    @Inject(NOTIFIER) private readonly notifier: Notifier,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
   ) {}
 
   /** Lien d'un membre ; `not_found` pour les autres (on ne révèle pas son existence). */
@@ -62,6 +67,32 @@ export class LinkSession {
     }
     await this.links.save(draft.link);
     draft.pending.length = 0;
+    if (draft.enteredDanger) {
+      draft.enteredDanger = false;
+      await this.warnDanger(draft.link);
+    }
     return records;
+  }
+
+  /**
+   * Ajoute une réplique de minimoa hors d'une requête (arrière-plan, minuteur) : le lien est relu juste avant
+   * l'écriture pour ne pas écraser une action faite entre-temps. Rien si le lien n'est plus actif.
+   */
+  async addPetLine(linkId: string, ownerId: string, body: string, role: PetRole, visibleTo: string | null = null): Promise<MessageRecord | null> {
+    const link = await this.links.findById(linkId);
+    if (!link || link.status !== 'active') return null;
+    const [draft] = await this.draftsFor([link]);
+    if (!draft || draft.link.status !== 'active') return null;
+    draft.pet(ownerId, body, role, visibleTo);
+    const records = await this.commit(draft);
+    return records.find((m) => m.authorKind === 'pet' && m.body === body) ?? null;
+  }
+
+  /** « Lien en danger » : il reste 2 vies. Une fois par jour et par lien (règle du notifieur). */
+  private async warnDanger(link: LinkRecord): Promise<void> {
+    const people = await this.profiles.findByIds([link.userA, link.userB]);
+    const name = (id: string): string => people.find((p) => p.id === id)?.displayName ?? '';
+    await this.notifier.notify(link.userA, 'link_in_danger', { linkId: link.id, name: name(link.userB), lives: String(link.lives) });
+    await this.notifier.notify(link.userB, 'link_in_danger', { linkId: link.id, name: name(link.userA), lives: String(link.lives) });
   }
 }

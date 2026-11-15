@@ -1,5 +1,7 @@
 /** Variables d'environnement validées au démarrage : l'API refuse de démarrer si elles sont incohérentes. */
 import { z } from 'zod';
+import { type PlateformeEnv, loadPlateformeEnv } from './plateforme.env';
+import { type FacturationAdminEnv, loadFacturationAdminEnv } from './facturation-admin.env';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
@@ -39,6 +41,10 @@ export interface Env {
   mailFrom: string;
   webUrl: string;
   corsOrigins: string[];
+  /** IA, push et minuteur (chantier « plateforme »). */
+  plateforme: PlateformeEnv;
+  /** Blowy+ et administration (chantier « facturation-admin »). */
+  facturationAdmin: FacturationAdminEnv;
 }
 
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
@@ -61,5 +67,10 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     corsOrigins: e.CORS_ORIGINS.split(',')
       .map((o) => o.trim())
       .filter((o) => o.length > 0),
+    plateforme: loadPlateformeEnv(source, e.BLOWY_ENV, e.BLOWY_ADAPTERS),
+    facturationAdmin: loadFacturationAdminEnv(source, {
+      env: e.BLOWY_ENV,
+      demo: e.BLOWY_DEMO === '1' && e.BLOWY_ENV === 'local' && e.BLOWY_ADAPTERS === 'memory',
+    }),
   };
 }

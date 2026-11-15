@@ -1,8 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { firstMessageOfDayLine, sweetReactionLine, teaseReactionLine } from '@blowy/content';
 import { applyLinkEvent } from '@blowy/domain';
+import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import { DomainError } from '../../../shared/errors';
+import { PROFILES } from '../../../shared/tokens';
+import type { ProfilesRepository } from '../../me/ports';
 import { PetCharacter } from '../../pets/application/pet-character';
+import { ChatMinimoas } from '../minimoas/chat-minimoas';
 import type { LinkActionResult } from './link-action';
 import { LinkSession } from './link-session';
 
@@ -23,6 +26,9 @@ export class SendMessage {
   constructor(
     @Inject(LinkSession) private readonly session: LinkSession,
     @Inject(PetCharacter) private readonly character: PetCharacter,
+    @Inject(ChatMinimoas) private readonly minimoas: ChatMinimoas,
+    @Inject(NOTIFIER) private readonly notifier: Notifier,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
   ) {}
 
   async execute(input: SendMessageInput): Promise<LinkActionResult> {
@@ -41,15 +47,17 @@ export class SendMessage {
     draft.update({ ...effect.state, messageXpOn: today, messageXp: xpToday + (effect.state.xp - link.xp) });
 
     draft.user(userId, 'text', input.body);
-    if (firstToday) draft.pet(userId, firstMessageOfDayLine(draft.pair(userId), draft.seed('first', userId)));
-    const other = draft.otherOf(userId);
-    if (input.tone === 'sweet') draft.pet(other, sweetReactionLine(draft.pair(other), draft.seed('sweet', String(link.messageXp))));
-    if (input.tone === 'tease') draft.pet(other, teaseReactionLine(draft.pair(other), draft.seed('tease', String(link.messageXp))));
+    // Les minimoas réagissent (règles tout de suite ; IA éventuelle après la réponse), dans leurs plafonds.
+    const followUp = await this.minimoas.onUserMessage(draft, userId, input.body, { firstToday, tone: input.tone });
     if (effect.leveledUp) draft.announceLevel(effect.state.level, userId);
     const messages = await this.session.commit(draft);
+    this.minimoas.later(followUp);
 
     await this.character.apply(userId, 'message_sent', { maxPerDay: TALK_EVENTS_PER_DAY });
     if (input.tone) await this.character.apply(userId, input.tone === 'sweet' ? 'sweet_word' : 'tease', { maxPerDay: TONE_EVENTS_PER_DAY });
+    // Push : jamais le contenu du message, seulement le prénom (un envoi par lien toutes les 5 minutes au plus).
+    const me = await this.profiles.findById(userId);
+    await this.notifier.notify(draft.otherOf(userId), 'message', { linkId: link.id, name: me?.displayName ?? '' });
     return { link: draft.link, messages };
   }
 }

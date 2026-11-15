@@ -1,10 +1,20 @@
-import type { Day } from '@blowy/domain';
+import type { Day, Gender, Locale, Seeking, Whom } from '@blowy/domain';
 
 export interface Profile {
   id: string;
   displayName: string;
   birthdate: Day;
-  city: string | null;
+  /** Qui la personne est et ce qu'elle cherche (chantier « vision »). `whom` : jamais montré aux autres. */
+  gender: Gender;
+  seeking: Seeking;
+  whom: Whom | null;
+  locale: Locale;
+  /** Mode discret : absente de la carte des autres. */
+  discreet: boolean;
+  /** Accord explicite pour « qui tu veux rencontrer ». */
+  sensitiveConsentAt: string | null;
+  /** Accord explicite pour la position. */
+  locationConsentAt: string | null;
   avatarPath: string | null;
   inviteCode: string;
   wordsCode: string;
@@ -13,7 +23,9 @@ export interface Profile {
   createdAt: string;
 }
 
-export type ProfilePatch = Partial<Pick<Profile, 'displayName' | 'city' | 'avatarPath' | 'welcomeSentAt'>>;
+export type ProfilePatch = Partial<
+  Pick<Profile, 'displayName' | 'avatarPath' | 'welcomeSentAt' | 'gender' | 'seeking' | 'whom' | 'locale' | 'discreet' | 'sensitiveConsentAt' | 'locationConsentAt'>
+>;
 
 export interface ProfilesRepository {
   findById(id: string): Promise<Profile | null>;

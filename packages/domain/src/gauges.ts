@@ -36,6 +36,8 @@ export const PET_EVENT_KINDS = [
   'care_play', // a joué avec son pet
   'care_nap', // sieste
   'care_cuddle', // câlin
+  'went_out', // sortie déclarée (« Tu es sorti aujourd'hui ? »)
+  'habit_done', // habitude tenue (preuve acceptée ou « pas sûr »)
 ] as const;
 export type PetEventKind = (typeof PET_EVENT_KINDS)[number];
 
@@ -44,6 +46,8 @@ const DELTAS: Record<Exclude<PetEventKind, 'three_words' | 'quiz'>, Partial<Gaug
   care_play: { play: 3 },
   care_nap: { social: -1 },
   care_cuddle: { tender: 3 },
+  went_out: { social: 4 },
+  habit_done: { play: 2 },
   met_new_pet: { social: 12 },
   waved: { social: 4 },
   challenge_done: { play: 10 },

@@ -1,21 +1,36 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { cleanPetName } from '@blowy/domain';
+import { cleanPetName, dayOf } from '@blowy/domain';
+import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { PETS } from '../../../shared/tokens';
+import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
+import type { ProfilesRepository } from '../../me/ports';
 import type { PetsRepository } from '../ports';
 import { PetCharacter } from './pet-character';
+import { frenchDay, renameStateOf } from './rename-state';
 
+/**
+ * Changer le nom de son pet : une fois tous les 60 jours (`renameRule`), sans attente avec Blowy+.
+ * Le nom donné à la création ne compte pas ; redonner le même nom ne compte pas non plus.
+ */
 @Injectable()
 export class RenamePet {
   constructor(
     @Inject(PetCharacter) private readonly character: PetCharacter,
     @Inject(PETS) private readonly pets: PetsRepository,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
+    @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
   async execute(ownerId: string, rawName: string): Promise<void> {
     const name = cleanPetName(rawName);
     if (name.length === 0) throw new DomainError('invalid', 'Donne un nom à ton pet.');
-    const pet = await this.character.load(ownerId);
-    await this.pets.save({ ...pet, name });
+    const [pet, profile] = await Promise.all([this.character.load(ownerId), this.profiles.findById(ownerId)]);
+    if (name === pet.name) return;
+    const now = this.clock.now();
+    const rule = renameStateOf(pet, profile, now);
+    if (!rule.allowed && rule.availableOn) {
+      throw new DomainError('rename_locked', `Tu pourras renommer ${pet.name} à partir du ${frenchDay(rule.availableOn, dayOf(now))}. Avec Blowy+, pas d’attente.`);
+    }
+    await this.pets.save({ ...pet, name, renamedAt: now.toISOString() });
   }
 }

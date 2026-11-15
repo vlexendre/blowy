@@ -43,7 +43,7 @@ export default function Reglages() {
           {
             key: 'account',
             title: t.rows.account.title,
-            subtitle: m ? t.rows.account.subtitle(m.displayName, m.city) : undefined,
+            subtitle: m ? t.rows.account.subtitle(m.displayName, null) : undefined,
             onPress: () => router.push('/moi/compte'),
           },
           { key: 'plus', title: t.rows.plus.title, subtitle: t.rows.plus.subtitle(!!m?.plus), onPress: () => router.push('/moi/blowy-plus') },

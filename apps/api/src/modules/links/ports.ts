@@ -1,4 +1,4 @@
-import type { Day, LinkState } from '@blowy/domain';
+import type { Day, LinkState, PetRole } from '@blowy/domain';
 
 export interface LinkRecord extends LinkState {
   id: string;
@@ -25,6 +25,10 @@ export interface MessageRecord {
   body: string | null;
   mediaPath: string | null;
   createdAt: string;
+  /** Rôle d'une réplique de minimoa ; null (ou absent) pour les personnes et le système. */
+  petRole?: PetRole | null;
+  /** Seule personne qui voit ce message (garde-fou) ; null (ou absent) = les deux. */
+  visibleTo?: string | null;
 }
 
 export interface DailyPhotoRecord {
@@ -44,15 +48,28 @@ export interface LinksRepository {
   /** Null si la paire existe déjà (course entre deux créations). */
   create(link: LinkRecord): Promise<LinkRecord | null>;
   save(link: LinkRecord): Promise<void>;
+  /** Minuteur : liens actifs pas encore rattrapés aujourd'hui (`last_tick_on < today`), par lots. */
+  listDueForTick(today: Day, limit: number): Promise<LinkRecord[]>;
+  /** Minuteur : liens actifs silencieux depuis `before`, du plus ancien silence au plus récent, après le curseur. */
+  listSilent(before: string, after: string | null, limit: number): Promise<LinkRecord[]>;
+  /** Liens d'une personne par pages (ordre d'identifiant), tous statuts sauf archivés. */
+  pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]>;
 }
 
 export interface MessagesRepository {
   add(messages: readonly MessageRecord[]): Promise<void>;
-  /** Messages strictement avant `before`, du plus récent au plus ancien. */
-  page(linkId: string, before: string | null, limit: number): Promise<MessageRecord[]>;
-  latest(linkId: string): Promise<MessageRecord | null>;
-  /** Messages non écrits par `userId` (ni par son pet) après `after`. */
+  /**
+   * Messages strictement avant `before`, du plus récent au plus ancien, vus par `viewerId`
+   * (les messages réservés à l'autre personne sont exclus).
+   */
+  page(linkId: string, before: string | null, limit: number, viewerId: string): Promise<MessageRecord[]>;
+  latest(linkId: string, viewerId: string): Promise<MessageRecord | null>;
+  /** Messages non écrits par `userId` (ni par son pet) après `after`, visibles par lui. */
   countUnread(linkId: string, userId: string, after: string | null): Promise<number>;
+  /** Derniers messages texte des personnes (fenêtre courte des minimoas), du plus récent au plus ancien. */
+  recentUserTexts(linkId: string, limit: number): Promise<MessageRecord[]>;
+  /** Messages texte des personnes depuis `since`, comptés par auteur (santé du lien). */
+  countUserTextsSince(linkId: string, since: string): Promise<Map<string, number>>;
   /** Messages texte écrits par les personnes (hors pets, système et photos). */
   countUserMessages(linkId: string): Promise<number>;
 }

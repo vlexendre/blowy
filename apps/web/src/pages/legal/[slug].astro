@@ -1,0 +1,11 @@
+---
+/** Pages légales en français (version qui fait foi) : /legal/<page>. */
+import LegalDocument from '../../components/organisms/legal/LegalDocument.astro';
+import { DEFAULT_LOCALE, LEGAL_SLUGS, type LegalSlug } from '../../i18n/legal';
+
+export function getStaticPaths() {
+  return LEGAL_SLUGS.map((slug) => ({ params: { slug } }));
+}
+const slug = Astro.params.slug as LegalSlug;
+---
+<LegalDocument locale={DEFAULT_LOCALE} slug={slug} />

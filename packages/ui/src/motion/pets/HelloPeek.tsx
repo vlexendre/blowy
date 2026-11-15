@@ -1,7 +1,9 @@
 import type { Species } from '@blowy/domain';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 
-import { useForeground } from '../../lib/motion';
+import { useOverlayOpen } from '../../lib/overlay';
+import { claimHelloPeek } from './peekBudget';
 import { PetPeek, type PeekSafeArea } from './PetPeek';
 
 export interface HelloPeekProps {
@@ -11,15 +13,48 @@ export interface HelloPeekProps {
   safe?: PeekSafeArea;
   /** Durée du salut (ms). Défaut 2400. */
   duration?: number;
+  /**
+   * Un écran à onglets est au premier plan (barre visible). Faux (écran poussé, inscription) : aucun salut, et
+   * un salut en cours se cache. Défaut vrai.
+   */
+  active?: boolean;
 }
 
 /**
- * Quand l'app revient au premier plan (après un passage en arrière-plan), le pet passe la tête dans un coin bas
- * et fait coucou, une fois, puis se cache. À poser une fois sous les onglets.
+ * Quand l'app revient au premier plan après une vraie absence, le pet passe parfois la tête dans un coin bas et
+ * fait coucou, puis se cache. Rare (`peekBudget`) : au plus une fois par session, jamais à moins de 3 min d'une
+ * autre apparition, seulement sur un écran à onglets et jamais par-dessus une feuille. À poser une fois sous les onglets.
  */
-export function HelloPeek({ species, seed, safe, duration = 2400 }: HelloPeekProps) {
+export function HelloPeek({ species, seed, safe, duration = 2400, active = true }: HelloPeekProps) {
   const [shown, setShown] = useState(0);
-  useForeground(() => setShown((n) => n + 1));
+  const sheet = useOverlayOpen();
+  const awayAt = useRef<number | null>(null);
+  const allowed = useRef(active && !sheet);
+  allowed.current = active && !sheet;
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'background') awayAt.current ??= Date.now();
+      else if (s === 'active' && awayAt.current !== null) {
+        const away = Date.now() - awayAt.current;
+        awayAt.current = null;
+        if (allowed.current && claimHelloPeek(seed ?? species, away)) setShown((n) => n + 1);
+      }
+    });
+    return () => sub.remove();
+  }, [seed, species]);
   if (!shown) return null;
-  return <PetPeek key={shown} species={species} mood="salut" edges={['bottom-left']} seed={seed} safe={safe} duration={duration} hideAndSeek={false} />;
+  return (
+    <PetPeek
+      key={shown}
+      species={species}
+      mood="salut"
+      edges={['bottom-left']}
+      seed={seed}
+      safe={safe}
+      duration={duration}
+      visible={active && !sheet}
+      hideAndSeek={false}
+      onHidden={() => setShown(0)}
+    />
+  );
 }

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { type ApiClient, createApiClient } from '@blowy/api-client';
-import type { OnboardBody } from '@blowy/contract';
+import type { OnboardInput } from '@blowy/contract';
+import { VISION_TEST } from '@blowy/domain';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { createApp } from '../src/app';
 import { loadEnv } from '../src/config/env';
@@ -60,10 +61,19 @@ export async function startWorld(extraEnv: Record<string, string> = {}): Promise
   };
 }
 
-export const onboardBody = (overrides: Partial<OnboardBody> = {}): OnboardBody => ({
+/** Paris, place de la République. */
+export const PARIS = { latitude: 48.8674, longitude: 2.3636 };
+
+/** Réponses au test de vision : toutes le même choix (deux personnes ainsi sont compatibles à 100). */
+export const visionAnswers = (choice: 0 | 1 = 0): { questionId: string; choice: 0 | 1 }[] => VISION_TEST.map((q) => ({ questionId: q.id, choice }));
+
+/** Par défaut : test passé (premier choix partout) et position à Paris, avec l'accord. */
+export const onboardBody = (overrides: Partial<OnboardInput> = {}): OnboardInput => ({
   displayName: 'Camille',
   birthdate: '1997-05-04',
-  city: 'Paris',
+  visionAnswers: visionAnswers(0),
+  location: PARIS,
+  consents: { sensitive: false, location: true },
   pet: { name: 'Nino', species: 'nino' },
   quiz: { social: 10 },
   ...overrides,

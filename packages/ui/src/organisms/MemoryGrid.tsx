@@ -22,7 +22,7 @@ export interface MemoryGridProps {
   statLabels?: Record<keyof MemoryStatsLook, string>;
   /** Libellé de la date d'une vignette (« 12 oct. »). */
   dayLabel: (day: string) => string;
-  /** Photos floues (visages pas encore nets). */
+  /** Photos de l'autre floues (visage pas encore net) ; les tiennes restent nettes pour toi. */
   blurred?: boolean;
   columns?: number;
   onDayPress?: (day: MemoryDayLook) => void;
@@ -84,7 +84,8 @@ export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns
                 style={styles.tile}
               >
                 <View style={styles.split}>
-                  <Half uri={d.myPhotoUrl} blurred={blurred} />
+                  {/* Ta propre photo reste nette pour toi : seul le flou de l'autre compte. */}
+                  <Half uri={d.myPhotoUrl} />
                   <Half uri={d.theirPhotoUrl} blurred={blurred} />
                 </View>
                 <View style={styles.label}>

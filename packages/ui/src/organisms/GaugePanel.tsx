@@ -75,7 +75,8 @@ export function GaugePanel({ gauges, labels, names, title, hint, selected, onSel
             <Text variant="bodyBold" style={styles.detailText} color={color.accent}>
               ↑
             </Text>
-            {` ${detail.up}  `}
+            {/* Une ligne par sens (plus de double espace qui se perd au retour à la ligne). */}
+            {` ${detail.up}\n`}
             <Text variant="bodyBold" style={styles.detailText} color={extra.coralSoft}>
               ↓
             </Text>

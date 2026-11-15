@@ -111,6 +111,9 @@ function Quiz() {
           choices={question.choices.map((c, i) => ({ key: String(i), title: c.label, caption: t.caption(poleOf(c.delta)), emoji: c.emoji }))}
           selectedKey={selected === null ? null : String(selected)}
           onChoose={choose}
+          hint={t.pick}
+          nudgeKey={index === 0 ? 'onboarding:quiz' : undefined}
+          preview={{ gauges: quiz, labels: gaugeLabel, focus: gaugeOf(question.choices[0].delta), title: t.gaugesTitle(petName) }}
         />
       </OnboardingTemplate>
     </ScreenMotion>

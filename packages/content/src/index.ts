@@ -2,3 +2,8 @@ export * from './labels';
 export * from './voice';
 export * from './challenges';
 export * from './emails';
+export * from './v7/vision';
+export * from './v7/facturation-admin';
+export * from './v7/chat';
+export * from './v7/notifications';
+export * from './v7/rituels';

@@ -1,11 +1,13 @@
 import { ApiError } from '@blowy/api-client';
 import { shapeLabel } from '@blowy/content';
-import type { Suggestion } from '@blowy/contract';
+import type { EncounterHistoryItem, Suggestion } from '@blowy/contract';
 import { color } from '@blowy/tokens';
 import {
   Banner,
   DotNote,
   EmptyState,
+  EncounterHistory,
+  type EncounterHistoryEntry,
   EncountersHero,
   FanIn,
   IncomingCard,
@@ -14,25 +16,42 @@ import {
   TabTemplate,
   usePetBump,
 } from '@blowy/ui';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import {
   useAcceptEncounter,
   useDeclineEncounter,
+  useEncounterHistory,
   useLiveEncounters,
   useShareInvite,
   useWave,
 } from '@/features/encounters';
-import { errorText } from '@/features/links';
+import { errorText, timeLabel } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { rencontres as t } from '@/locales/rencontres';
 
 const viaLabel = (s: Suggestion): string =>
   s.via === 'friend_of_friend' ? t.via.friend_of_friend(s.mutualName) : t.via[s.via]();
+
+/** Une ligne de l'historique : qui, dans quel sens, quand ; une rencontre acceptée ouvre son lien. */
+const historyEntry = (item: EncounterHistoryItem, openLink: (linkId: string) => void): EncounterHistoryEntry => {
+  const when = timeLabel(item.at);
+  const { linkId } = item;
+  return {
+    key: item.id,
+    person: item.person,
+    title: item.person.displayName,
+    detail: item.direction === 'received' ? t.history.received(item.person.pet.name, when) : t.history.sent(item.person.pet.name, when),
+    statusLabel: t.history.outcome[item.outcome],
+    tone: item.outcome,
+    onPress: linkId ? () => openLink(linkId) : undefined,
+    accessibilityLabel: linkId ? `${t.history.openA11y(item.person.displayName)}, ${t.history.outcome[item.outcome]}, ${when}` : undefined,
+  };
+};
 
 export default function RencontresScreen() {
   const router = useRouter();
@@ -42,6 +61,13 @@ export default function RencontresScreen() {
   const accept = useAcceptEncounter();
   const decline = useDeclineEncounter();
   const invite = useShareInvite(t.shareMessage);
+  const history = useEncounterHistory();
+  const refetchHistory = history.refetch;
+  useFocusEffect(
+    useCallback(() => {
+      void refetchHistory();
+    }, [refetchHistory]),
+  );
   const [refreshing, setRefreshing] = useState(false);
   const bump = usePetBump();
 
@@ -57,7 +83,7 @@ export default function RencontresScreen() {
 
   const refresh = async () => {
     setRefreshing(true);
-    await encounters.refetch();
+    await Promise.all([encounters.refetch(), history.refetch()]);
     setRefreshing(false);
   };
 
@@ -184,6 +210,14 @@ export default function RencontresScreen() {
       ) : null}
 
       {encounters.data ? <DotNote text={t.reminderShort} /> : null}
+
+      <EncounterHistory
+        title={t.history.title}
+        entries={history.items.map((item) => historyEntry(item, (linkId) => router.push(`/link/${linkId}`)))}
+        moreLabel={t.history.more}
+        onMore={history.hasNextPage ? () => void history.fetchNextPage() : undefined}
+        loadingMore={history.isFetchingNextPage}
+      />
     </TabTemplate>
     </ScreenMotion>
   );

@@ -1,3 +1,9 @@
 # Cloudflare Pages : les liens partagés /m/CODE et /i/CODE servent la page statique correspondante (l'URL reste intacte).
 /m/* /m/index.html 200
 /i/* /i/index.html 200
+
+# Anciennes adresses des pages légales → /legal/… (l'app publiée lie /conditions et /confidentialite).
+/conditions /legal/conditions/ 301
+/confidentialite /legal/confidentialite/ 301
+/regles /legal/regles/ 301
+/support /legal/assistance/ 301

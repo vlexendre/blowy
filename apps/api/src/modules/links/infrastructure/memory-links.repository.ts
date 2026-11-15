@@ -1,4 +1,5 @@
 import type { MemoryDb } from '../../../persistence/memory-db';
+import type { Day } from '@blowy/domain';
 import type { LinkRecord, LinksRepository } from '../ports';
 
 export class MemoryLinksRepository implements LinksRepository {
@@ -29,5 +30,29 @@ export class MemoryLinksRepository implements LinksRepository {
   async save(link: LinkRecord): Promise<void> {
     if (!this.db.links.has(link.id)) throw new Error('lien introuvable');
     this.db.links.set(link.id, { ...link });
+  }
+
+  async listDueForTick(today: Day, limit: number): Promise<LinkRecord[]> {
+    return [...this.db.links.values()]
+      .filter((l) => l.status === 'active' && l.lastTickOn < today)
+      .sort((a, b) => a.lastTickOn.localeCompare(b.lastTickOn) || a.id.localeCompare(b.id))
+      .slice(0, limit)
+      .map((l) => ({ ...l }));
+  }
+
+  async listSilent(before: string, after: string | null, limit: number): Promise<LinkRecord[]> {
+    return [...this.db.links.values()]
+      .filter((l) => l.status === 'active' && l.lastMessageAt < before && (after === null || l.lastMessageAt > after))
+      .sort((a, b) => a.lastMessageAt.localeCompare(b.lastMessageAt))
+      .slice(0, limit)
+      .map((l) => ({ ...l }));
+  }
+
+  async pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]> {
+    return [...this.db.links.values()]
+      .filter((l) => (l.userA === userId || l.userB === userId) && l.status !== 'archived' && (after === null || l.id > after))
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .slice(0, limit)
+      .map((l) => ({ ...l }));
   }
 }

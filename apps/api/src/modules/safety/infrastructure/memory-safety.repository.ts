@@ -33,4 +33,8 @@ export class MemoryReportsRepository implements ReportsRepository {
   async add(report: ReportRecord): Promise<void> {
     this.db.reports.push({ ...report });
   }
+
+  async reportedBy(reporter: string): Promise<Set<string>> {
+    return new Set(this.db.reports.flatMap((r) => (r.reporter === reporter && r.targetUser !== null ? [r.targetUser] : [])));
+  }
 }

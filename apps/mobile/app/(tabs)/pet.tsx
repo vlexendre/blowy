@@ -3,7 +3,7 @@ import { ApiError } from '@blowy/api-client';
 import { careLabel, formLabel, itemLabel, needLabel, shapeLabel, statGoalLabel } from '@blowy/content';
 import { type CareAction, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
-import { Appear, Banner, CareBar, CareIcon, EntryCard, ItemImage, NeedsPanel, PetRefresh, type PetReaction, PetStage, Skeleton, TabTemplate } from '@blowy/ui';
+import { Appear, Banner, CareBar, CareIcon, EntryCard, ItemImage, NeedsPanel, PetRefresh, type PetReaction, PetStage, Skeleton, TabTemplate, usePetLure } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { RefreshControl } from 'react-native';
@@ -27,6 +27,8 @@ export default function PetHome() {
   const [reactionKey, setReactionKey] = useState(0);
   const [said, setSaid] = useState<{ text: string; key: number } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  // Soin glissé de la barre jusqu'au pet : le pet le suit des yeux (même effet qu'un tap une fois lâché sur lui).
+  const lure = usePetLure();
 
   useEffect(() => {
     if (!said) return;
@@ -109,6 +111,7 @@ export default function PetHome() {
               reaction={reaction}
               reactionKey={reactionKey}
               petLabel={t.petA11y(p.name)}
+              lure={lure}
             />
             <NeedsPanel needs={p.needs} labels={needLabel} />
             <Appear once="home:care" delay={120}>
@@ -118,6 +121,7 @@ export default function PetHome() {
                 hot={careHot(p.needs)}
                 busy={care.isPending ? care.variables : null}
                 onCare={onCare}
+                lure={lure}
                 onRefused={(a) => {
                   play('no');
                   say(careLabel[a]?.refused ?? '');

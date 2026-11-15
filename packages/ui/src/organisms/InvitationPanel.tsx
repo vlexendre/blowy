@@ -9,6 +9,7 @@ import { Panel } from '../atoms/Panel';
 import { hasOutfit } from '../assets/fit';
 import { DressedPet } from '../atoms/DressedPet';
 import { PetImage } from '../atoms/PetImage';
+import { RichText } from '../atoms/RichText';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { fadeTo, springs, useReducedMotion } from '../lib/motion';
@@ -95,15 +96,7 @@ export function InvitationPanel({ kicker, title, theirs, mine, theirsOutfit, min
       {note ? (
         <Appear delay={680}>
         <Card padding="none" style={styles.note}>
-          <Text size={14} style={styles.noteText}>
-            {note.before}
-            {note.bold ? (
-              <Text variant="bodyBold" size={14} style={styles.noteText}>
-                {note.bold}
-              </Text>
-            ) : null}
-            {note.after}
-          </Text>
+          <RichText size={14} style={styles.noteText} runs={[{ text: note.before }, ...(note.bold ? [{ text: note.bold, variant: 'bodyBold' as const }] : []), { text: note.after ?? '' }]} />
         </Card>
         </Appear>
       ) : null}

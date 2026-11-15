@@ -30,6 +30,8 @@ export { KeyboardPeek, type KeyboardPeekProps } from './pets/KeyboardPeek';
 export { PetActor, type PetActorHandle, type PetActorProps, type PetActorReaction, type PetTouch } from './pets/PetActor';
 export { type PeekEdge, type PeekSafeArea, PetPeek, type PetPeekProps } from './pets/PetPeek';
 export { PetRefresh, type PetRefreshProps, type PetRefreshScroll } from './pets/PetRefresh';
+export { lureHits, type PetLure, usePetLure } from './pets/lure';
+export { claimHelloPeek, claimTabPeek, decideHelloPeek, decideTabPeek, newPeekBudget, PEEK_RULES, type PeekBudget, resetPeekBudget } from './pets/peekBudget';
 export {
   ease,
   fadeTo,

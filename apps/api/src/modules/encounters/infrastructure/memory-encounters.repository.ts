@@ -20,13 +20,22 @@ export class MemoryEncountersRepository implements EncountersRepository {
     return { ...encounter };
   }
 
-  async setStatus(id: string, status: EncounterStatus): Promise<void> {
+  async setStatus(id: string, status: EncounterStatus, at: string): Promise<void> {
     const e = this.db.encounters.get(id);
     if (!e) throw new Error('rencontre introuvable');
-    this.db.encounters.set(id, { ...e, status });
+    this.db.encounters.set(id, { ...e, status, statusAt: at });
   }
 
   async listInvolving(userId: string): Promise<EncounterRecord[]> {
     return [...this.db.encounters.values()].filter((e) => e.fromUser === userId || e.toUser === userId).map((e) => ({ ...e }));
+  }
+
+  async listHistory(userId: string, before: string | null, limit: number): Promise<EncounterRecord[]> {
+    return [...this.db.encounters.values()]
+      .filter((e) => e.fromUser === userId || (e.toUser === userId && e.status !== 'waved'))
+      .filter((e) => before === null || e.statusAt < before)
+      .sort((a, b) => b.statusAt.localeCompare(a.statusAt) || b.id.localeCompare(a.id))
+      .slice(0, limit)
+      .map((e) => ({ ...e }));
   }
 }

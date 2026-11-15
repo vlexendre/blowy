@@ -7,16 +7,21 @@ const low = (s: string): string => s.toLowerCase();
 export const moi = {
   tab: {
     title: (name: string, pet: string) => [{ text: up(name) }, { text: '.\n', dim: true }, { text: `ET ${up(pet)}.`, dim: true }],
-    photoHint: 'ta photo reste floue jusqu’au niveau 5 de chaque lien.',
-    photoLabel: 'ta photo, floutée jusqu’au niveau 5. touche pour la changer.',
+    /** À côté de ta photo, nette pour toi : ce que voient les autres. */
+    photoHint: 'les autres la voient floue jusqu’au niveau 5 de chaque lien.',
+    photoLabel: 'ta photo, nette pour toi, floue pour les autres jusqu’au niveau 5. touche pour la changer.',
     wordsTitle: 'décris-moi en 3 mots',
     wordsCount: (n: number) => (n === 0 ? 'personne n’a répondu' : n === 1 ? '1 pote a répondu' : `${n} potes ont répondu`),
-    wordsEmpty: (pet: string) => `partage ton lien : tes potes choisissent 3 mots sur toi, ça fait bouger ${low(pet)}.`,
     wordsReceived: (pet: string) => `leurs mots ont déjà fait bouger les jauges de ${low(pet)}.`,
+    /** Carte « 3 mots » : ce que c'est en une ligne, les trois temps, l'action principale. */
+    wordsLead: (pet: string) => `tes potes ouvrent ton lien et choisissent 3 mots sur toi. ces mots forment le caractère de ${low(pet)}.`,
+    wordsSteps: (pet: string) => ['tu partages ton lien', 'tes potes choisissent 3\u00a0mots', `${low(pet)} prend ton caractère`] as const,
+    wordsBadge: 'anonyme',
+    wordsShareCta: 'partager le lien',
+    wordsMore: (pet: string) => `voir le caractère de ${low(pet)}`,
     copy: 'copier',
     /** Après la copie (une coche se dessine à côté). */
     copied: 'copié',
-    share: 'en story',
     wordsMessage: (url: string) => `décris-moi en 3 mots (c’est anonyme) : ${url}`,
     stats: { links: 'liens', streak: 'plus longue série', days: (pet: string) => `jours avec ${low(pet)}` },
     streakValue: (n: number) => `${n} J`,

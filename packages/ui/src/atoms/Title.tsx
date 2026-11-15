@@ -1,6 +1,7 @@
 import { Text as RNText, type StyleProp, StyleSheet, type TextStyle } from 'react-native';
 
 import { useInk } from '../lib/ink';
+import { countRunWords, normalizeRuns, revealTokens } from '../lib/runs';
 import { alpha, opacity, type } from '../theme';
 import type { TitleContent, TitleSegment } from '../types';
 import { fitLineHeight } from './Text';
@@ -25,8 +26,7 @@ export interface TitleProps {
 
 /** Nombre de mots d'un titre (pour `reveal`). */
 export function countWords(text: TitleContent): number {
-  const segments = typeof text === 'string' ? [{ text }] : text;
-  return segments.reduce((n, s) => n + s.text.split(/\s+/).filter(Boolean).length, 0);
+  return countRunWords(typeof text === 'string' ? [{ text }] : text);
 }
 
 /** Titre Anton en capitales, avec sa partie estompée. */
@@ -34,6 +34,8 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
   const contextInk = useInk();
   const ink = color ?? contextInk;
   const segments = typeof text === 'string' ? [{ text }] : text;
+  // Un seul `Text` parent ; espaces des jointures au début du morceau suivant (voir `lib/runs`).
+  const runs = normalizeRuns(segments);
   const fontSize = size ?? type[variant].fontSize;
   // `.d` des maquettes : interlignage .96, approche .005 em.
   const metrics = { fontSize, lineHeight: Math.round(fontSize * 0.96), letterSpacing: fontSize * 0.005 };
@@ -50,41 +52,42 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
       style={[composed, fitLineHeight(composed)]}
     >
       {reveal === undefined
-        ? segments.map((s, i) => (
-            <RNText key={i} style={s.color ? { color: s.color } : s.dim ? { color: dimColor } : null}>
-              {s.text}
-            </RNText>
-          ))
-        : revealSegments(segments, reveal, dimColor)}
+        ? runs.map((s, i) => {
+            const tint = runTint(s, dimColor);
+            return tint ? (
+              <RNText key={i} style={{ color: tint }}>
+                {s.text}
+              </RNText>
+            ) : (
+              s.text
+            );
+          })
+        : revealSegments(runs, reveal, dimColor)}
     </RNText>
   );
 }
 
-/** Segments découpés en mots ; au-delà de `count`, encre transparente (la mise en page ne bouge pas). */
-function revealSegments(segments: readonly TitleSegment[], count: number, dimColor: string) {
-  let seen = 0;
-  return segments.map((s, i) => {
-    const tint = s.color ?? (s.dim ? dimColor : undefined);
-    return (
-      <RNText key={i} style={tint ? { color: tint } : null}>
-        {s.text.split(/(\s+)/).map((t, j) => {
-          if (!t || /^\s+$/.test(t)) return t;
-          const hidden = seen++ >= count;
-          return hidden ? (
-            <RNText key={j} style={styles.hidden}>
-              {t}
-            </RNText>
-          ) : (
-            t
-          );
-        })}
+const runTint = (s: TitleSegment, dimColor: string): string | undefined => s.color ?? (s.dim ? dimColor : undefined);
+
+/**
+ * Mots un à un ; au-delà de `count`, encre transparente (la mise en page ne bouge pas). Chaque mot porte l'espace qui
+ * le précède : aucun morceau ne finit par une espace, aucun n'est fait que d'espaces.
+ */
+function revealSegments(runs: readonly TitleSegment[], count: number, dimColor: string) {
+  return revealTokens(runs).map((t, i) => {
+    const hidden = t.word >= count;
+    const tint = hidden ? 'transparent' : runTint(t.run, dimColor);
+    return tint ? (
+      <RNText key={i} style={{ color: tint }}>
+        {t.text}
       </RNText>
+    ) : (
+      t.text
     );
   });
 }
 
 const styles = StyleSheet.create({
-  hidden: { color: 'transparent' },
   base: { includeFontPadding: false },
   center: { textAlign: 'center' },
 });

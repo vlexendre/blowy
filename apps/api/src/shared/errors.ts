@@ -23,7 +23,9 @@ export const HTTP_STATUS: Record<ErrorCode, number> = {
   link_not_active: 409,
   cannot_revive: 409,
   already_done: 409,
+  rename_locked: 409,
   rate_limited: 429,
+  suspended: 403,
   internal: 500,
 };
 
@@ -39,6 +41,8 @@ export const DEFAULT_MESSAGES: Record<ErrorCode, string> = {
   link_not_active: 'Ce lien n’est plus actif.',
   cannot_revive: 'Ce lien ne peut pas être ranimé.',
   already_done: 'C’est déjà fait pour aujourd’hui.',
+  rename_locked: 'Tu as déjà changé son nom récemment.',
   rate_limited: 'Doucement ! Réessaie dans un moment.',
+  suspended: 'Ton compte est suspendu.',
   internal: 'Une erreur est survenue.',
 };
