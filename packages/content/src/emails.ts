@@ -3,7 +3,7 @@
  * HTML simple et responsive (tableau unique, styles en ligne), fond sombre, accent jaune.
  */
 import type { Locale } from '@blowy/domain';
-import { TODO, defineMessages } from './i18n/core';
+import { defineMessages } from './i18n/core';
 import { brand, labels } from './labels';
 
 export interface Email {
@@ -70,7 +70,133 @@ const fr = {
   },
 };
 
-export const emailText = defineMessages({ fr, en: TODO, es: TODO, pt: TODO, nl: TODO });
+export const emailText = defineMessages({
+  fr,
+  en: {
+    ctaSeparator: ': ',
+    welcome: {
+      subject: (i: WelcomeInput) => `Welcome, ${i.displayName}`,
+      title: (i: WelcomeInput) => `${i.petName} is born.`,
+      paragraphs: (i: WelcomeInput) => [
+        `Hi ${i.displayName}, your minimoa ${i.petName} just opened its eyes.`,
+        'It will cross paths with other minimoas and introduce you to people. Nothing happens without your tap: you wave, the other person accepts, the link is made.',
+        'Drop by every day. It grows with you.',
+      ],
+      cta: (i: WelcomeInput) => `See ${i.petName}`,
+    },
+    wave: {
+      subject: (i: WaveInput) => `${i.petName} met ${i.fromName}’s minimoa`,
+      title: (i: WaveInput) => `${i.fromPetName} stopped by to say hi.`,
+      paragraphs: (i: WaveInput) => [
+        `Hi ${i.displayName}, ${i.petName} met ${i.fromPetName}, ${i.fromName}’s minimoa.`,
+        'If you accept, your minimoas meet and you can write to each other.',
+      ],
+      cta: 'See the encounter',
+    },
+    linkCreated: {
+      subject: (i: LinkInput) => `${i.petName} and ${i.otherPetName} found each other`,
+      title: (i: LinkInput) => `New link with ${i.otherName}.`,
+      paragraphs: (i: LinkInput) => [
+        `Hi ${i.displayName}, ${i.petName} and ${i.otherPetName} just met.`,
+        `Write to ${i.otherName}: every day of silence costs the link a life.`,
+      ],
+      cta: 'Open the link',
+    },
+  },
+  es: {
+    ctaSeparator: ': ',
+    welcome: {
+      subject: (i: WelcomeInput) => `Te damos la bienvenida, ${i.displayName}`,
+      title: (i: WelcomeInput) => `${i.petName} ha nacido.`,
+      paragraphs: (i: WelcomeInput) => [
+        `Hola, ${i.displayName}: tu minimoa ${i.petName} acaba de abrir los ojos.`,
+        'Se cruzará con otros minimoas y te presentará gente. Nada pasa sin tu toque: saludas, la otra persona acepta y se crea el vínculo.',
+        'Pásate a verlo cada día. Crece contigo.',
+      ],
+      cta: (i: WelcomeInput) => `Ver a ${i.petName}`,
+    },
+    wave: {
+      subject: (i: WaveInput) => `${i.petName} se ha cruzado con el minimoa de ${i.fromName}`,
+      title: (i: WaveInput) => `${i.fromPetName} ha pasado a saludar.`,
+      paragraphs: (i: WaveInput) => [
+        `Hola, ${i.displayName}: ${i.petName} se ha cruzado con ${i.fromPetName}, el minimoa de ${i.fromName}.`,
+        'Si aceptas, sus minimoas se conocen y podrás escribirle.',
+      ],
+      cta: 'Ver el encuentro',
+    },
+    linkCreated: {
+      subject: (i: LinkInput) => `${i.petName} y ${i.otherPetName} se han encontrado`,
+      title: (i: LinkInput) => `Nuevo vínculo con ${i.otherName}.`,
+      paragraphs: (i: LinkInput) => [
+        `Hola, ${i.displayName}: ${i.petName} y ${i.otherPetName} acaban de conocerse.`,
+        `Escríbele a ${i.otherName}: cada día de silencio le cuesta una vida al vínculo.`,
+      ],
+      cta: 'Abrir el vínculo',
+    },
+  },
+  pt: {
+    ctaSeparator: ': ',
+    welcome: {
+      subject: (i: WelcomeInput) => `Boas-vindas, ${i.displayName}`,
+      title: (i: WelcomeInput) => `${i.petName} nasceu.`,
+      paragraphs: (i: WelcomeInput) => [
+        `Oi, ${i.displayName}! Seu minimoa ${i.petName} acabou de abrir os olhos.`,
+        'Ele vai cruzar com outros minimoas e te apresentar pessoas. Nada acontece sem o seu toque: você acena, a outra pessoa aceita e o vínculo é criado.',
+        'Passe para vê-lo todos os dias. Ele cresce com você.',
+      ],
+      cta: (i: WelcomeInput) => `Ver ${i.petName}`,
+    },
+    wave: {
+      subject: (i: WaveInput) => `${i.petName} cruzou com o minimoa de ${i.fromName}`,
+      title: (i: WaveInput) => `${i.fromPetName} passou para dar um oi.`,
+      paragraphs: (i: WaveInput) => [
+        `Oi, ${i.displayName}! ${i.petName} cruzou com ${i.fromPetName}, o minimoa de ${i.fromName}.`,
+        'Se você aceitar, os minimoas de vocês se conhecem e vocês podem conversar.',
+      ],
+      cta: 'Ver o encontro',
+    },
+    linkCreated: {
+      subject: (i: LinkInput) => `${i.petName} e ${i.otherPetName} se encontraram`,
+      title: (i: LinkInput) => `Novo vínculo com ${i.otherName}.`,
+      paragraphs: (i: LinkInput) => [
+        `Oi, ${i.displayName}! ${i.petName} e ${i.otherPetName} acabaram de se conhecer.`,
+        `Escreva para ${i.otherName}: cada dia de silêncio custa uma vida ao vínculo.`,
+      ],
+      cta: 'Abrir o vínculo',
+    },
+  },
+  nl: {
+    ctaSeparator: ': ',
+    welcome: {
+      subject: (i: WelcomeInput) => `Welkom, ${i.displayName}`,
+      title: (i: WelcomeInput) => `${i.petName} is geboren.`,
+      paragraphs: (i: WelcomeInput) => [
+        `Hoi ${i.displayName}, je minimoa ${i.petName} heeft net zijn ogen geopend.`,
+        'Hij gaat andere minimoas tegenkomen en je aan mensen voorstellen. Niets gebeurt zonder jouw tik: jij zwaait, de ander accepteert, de band ontstaat.',
+        'Kom elke dag even langs. Hij groeit met je mee.',
+      ],
+      cta: (i: WelcomeInput) => `Bekijk ${i.petName}`,
+    },
+    wave: {
+      subject: (i: WaveInput) => `${i.petName} kwam de minimoa van ${i.fromName} tegen`,
+      title: (i: WaveInput) => `${i.fromPetName} kwam even hallo zeggen.`,
+      paragraphs: (i: WaveInput) => [
+        `Hoi ${i.displayName}, ${i.petName} kwam ${i.fromPetName} tegen, de minimoa van ${i.fromName}.`,
+        'Als je accepteert, ontmoeten jullie minimoas elkaar en kunnen jullie elkaar schrijven.',
+      ],
+      cta: 'Bekijk de ontmoeting',
+    },
+    linkCreated: {
+      subject: (i: LinkInput) => `${i.petName} en ${i.otherPetName} hebben elkaar gevonden`,
+      title: (i: LinkInput) => `Nieuwe band met ${i.otherName}.`,
+      paragraphs: (i: LinkInput) => [
+        `Hoi ${i.displayName}, ${i.petName} en ${i.otherPetName} hebben elkaar net ontmoet.`,
+        `Schrijf ${i.otherName}: elke dag stilte kost de band een leven.`,
+      ],
+      cta: 'Open de band',
+    },
+  },
+});
 
 /** Les textes passés ici sont bruts : ils sont échappés au rendu. */
 function render(locale: Locale, subject: string, layout: Layout): Email {

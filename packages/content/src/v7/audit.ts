@@ -5,7 +5,7 @@
  * Les consignes des modèles d'IA (`moderationSystem`, `photoModerationSystem`) sont stables (cache) et jamais montrées.
  */
 import type { Locale, ModerationCategory } from '@blowy/domain';
-import { TODO, defineMessages, formatDate, formatPrice } from '../i18n/core';
+import { type Translation, defineMessages, formatDate, formatPrice } from '../i18n/core';
 import { brand } from '../labels';
 
 const fr = {
@@ -75,40 +75,193 @@ const fr = {
   },
 };
 
-export const auditText = defineMessages({
-  fr,
-  en: {
-    refused: {
-      displayName: 'This first name can’t be used on Blowy. Pick another one.',
-      petName: 'A minimoa can’t be given this name. Pick another one.',
-      nameContact: 'No links, addresses, numbers or usernames in a name.',
-      message: 'Message not sent: it doesn’t follow Blowy’s community rules.',
-      messageScam: 'Message not sent: no links to money, crypto or paid platforms on Blowy.',
-      photo: 'This photo can’t be your profile photo. Pick another one: you, recognisable, no nudity.',
-    },
-    trialEmail: {
-      subject: 'Your Blowy+ trial ends soon',
-      title: 'Your free trial ends soon.',
-      lines: (i: { displayName: string; endsOn: string; price: string }) => [
-        `Hi ${i.displayName},`,
-        `Your free Blowy+ trial ends on ${i.endsOn}. After that, the first payment of ${i.price} is charged by Apple, then every year.`,
-        'Want to keep Blowy+? You don’t need to do anything.',
-        'Prefer to stop? Cancel at least 24 hours before the trial ends: on your iPhone, Settings, your name, then Subscriptions. You keep Blowy+ until the trial ends.',
-      ],
-      cta: 'Manage my subscription',
-    },
-    reviewSignIn: { wrong: 'Wrong address or code.' },
-    area: {
-      changeLocked: (day: string) => `You can change your area from ${day}. With Blowy+, whenever you like.`,
-      fromPhone: 'Your area already comes from your location. To pick one by hand, forget your location first (Me › My location).',
-    },
-    lockScreen: { linkTitle: 'A link is waiting', linkBody: 'Your turn to write before midnight.' },
-    review: TODO,
+type AuditText = typeof fr;
+
+const en: Translation<AuditText> = {
+  refused: {
+    displayName: 'This first name can’t be used on Blowy. Pick another one.',
+    petName: 'A minimoa can’t be given this name. Pick another one.',
+    nameContact: 'No links, addresses, numbers or usernames in a name.',
+    message: 'Message not sent: it doesn’t follow Blowy’s community rules.',
+    messageScam: 'Message not sent: no links to money, crypto or paid platforms on Blowy.',
+    photo: 'This photo can’t be your profile photo. Pick another one: you, recognizable, no nudity.',
   },
-  es: TODO,
-  pt: TODO,
-  nl: TODO,
-});
+  trialEmail: {
+    subject: 'Your Blowy+ trial ends soon',
+    title: 'Your free trial ends soon.',
+    lines: (i: { displayName: string; endsOn: string; price: string }) => [
+      `Hi ${i.displayName},`,
+      `Your free Blowy+ trial ends on ${i.endsOn}. After that, the first payment of ${i.price} is charged by Apple, then every year.`,
+      'Want to keep Blowy+? You don’t need to do anything.',
+      'Prefer to stop? Cancel at least 24 hours before the trial ends: on your iPhone, Settings, your name, then Subscriptions. You keep Blowy+ until the trial ends.',
+    ],
+    cta: 'Manage my subscription',
+  },
+  reviewSignIn: { wrong: 'Wrong address or code.' },
+  area: {
+    changeLocked: (day: string) => `You can change your area from ${day}. With Blowy+, whenever you like.`,
+    fromPhone: 'Your area already comes from your location. To pick one by hand, forget your location first (Me › Settings › My location).',
+  },
+  lockScreen: { linkTitle: 'A link is waiting', linkBody: 'Your turn to write before midnight.' },
+  review: {
+    activeLines: [
+      { who: 'them', text: 'Hi! Your minimoa looks as stubborn as mine.' },
+      { who: 'me', text: 'It is. What are you up to this weekend?' },
+      { who: 'them', text: 'A photo exhibition on Saturday. Do you know the area?' },
+      { who: 'me', text: 'A bit. I often go there on Sunday mornings.' },
+    ],
+    remark: 'You both love quiet Sundays. That’s already something in common.',
+    nudge: 'It’s been 3 days. You were talking about the photo exhibition.',
+    afterNudge: ['Sorry, I was swamped. Is the exhibition still on?', 'Absolutely. Saturday at 3 p.m.?'],
+    heated: 'Canceling again? Honestly, that annoys me.',
+    guard: 'Take a breath? A two-minute break, and things will go better. (Only you can see this message.)',
+    apology: 'Sorry, you’re right. I’ve had a crazy week.',
+    after: [{ who: 'them', text: 'Sorry about Saturday. Shall we try again next week?' }],
+    today: 'Tuesday, noted 👍',
+    dangerLines: ['Coffee again next week?', 'Definitely, I’ll let you know.'],
+    replies: ['Haha, totally.', 'Good idea! When works for you?', 'I’ll let you know tonight.', 'My minimoa just had a nap, it’s full of energy.', 'I love that place.'],
+  },
+};
+
+const es: Translation<AuditText> = {
+  refused: {
+    displayName: 'Este nombre no se puede usar en Blowy. Elige otro.',
+    petName: 'Este nombre no se le puede dar a un minimoa. Elige otro.',
+    nameContact: 'Nada de enlaces, direcciones, números ni nombres de usuario en un nombre.',
+    message: 'Mensaje no enviado: no respeta las normas de la comunidad de Blowy.',
+    messageScam: 'Mensaje no enviado: en Blowy no se permiten enlaces a dinero, cripto ni plataformas de pago.',
+    photo: 'Esta foto no puede ser tu foto de perfil. Elige otra: tú, reconocible, sin desnudos.',
+  },
+  trialEmail: {
+    subject: 'Tu prueba de Blowy+ termina pronto',
+    title: 'Tu prueba gratuita termina pronto.',
+    lines: (i: { displayName: string; endsOn: string; price: string }) => [
+      `Hola, ${i.displayName}:`,
+      `Tu prueba gratuita de Blowy+ termina el ${i.endsOn}. Después, Apple cobrará el primer pago de ${i.price}, y luego cada año.`,
+      '¿Quieres seguir con Blowy+? No tienes que hacer nada.',
+      '¿Prefieres dejarlo? Cancela al menos 24 horas antes de que termine la prueba: en tu iPhone, Ajustes, tu nombre y luego Suscripciones. Conservas Blowy+ hasta el final de la prueba.',
+    ],
+    cta: 'Gestionar mi suscripción',
+  },
+  reviewSignIn: { wrong: 'Dirección o código incorrectos.' },
+  area: {
+    changeLocked: (day: string) => `Podrás cambiar de zona a partir del ${day}. Con Blowy+, cuando quieras.`,
+    fromPhone: 'Tu zona ya viene de tu ubicación. Para elegir una a mano, primero olvida tu ubicación (Yo › Ajustes › Mi ubicación).',
+  },
+  lockScreen: { linkTitle: 'Un vínculo te espera', linkBody: 'Te toca escribir antes de medianoche.' },
+  review: {
+    activeLines: [
+      { who: 'them', text: '¡Hola! Tu minimoa parece tan testarudo como el mío.' },
+      { who: 'me', text: 'Lo es. ¿Qué haces este fin de semana?' },
+      { who: 'them', text: 'Una expo de fotos el sábado. ¿Conoces el barrio?' },
+      { who: 'me', text: 'Un poco. Voy a menudo los domingos por la mañana.' },
+    ],
+    remark: 'A ustedes dos les gustan los domingos tranquilos. Ya es un punto en común.',
+    nudge: 'Ya van 3 días. Estaban hablando de la expo de fotos.',
+    afterNudge: ['Perdona, tuve mucho lío. ¿Sigue en pie lo de la expo?', 'Claro. ¿Sábado a las 15 h?'],
+    heated: '¿Cancelas otra vez? La verdad, me molesta.',
+    guard: '¿Respiramos un momento? Una pausa de dos minutos y todo irá mejor. (Solo tú puedes ver este mensaje.)',
+    apology: 'Perdona, tienes razón. He tenido una semana de locos.',
+    after: [{ who: 'them', text: 'Perdona lo del sábado. ¿Lo dejamos para la semana que viene?' }],
+    today: 'El martes, apuntado 👍',
+    dangerLines: ['¿Otro café la semana que viene?', 'Claro, te digo.'],
+    replies: ['Jaja, totalmente.', '¡Buena idea! ¿Cuándo te viene bien?', 'Te digo esta noche.', 'Mi minimoa acaba de echarse una siesta, está lleno de energía.', 'Me encanta ese sitio.'],
+  },
+};
+
+const pt: Translation<AuditText> = {
+  refused: {
+    displayName: 'Esse nome não pode ser usado no Blowy. Escolha outro.',
+    petName: 'Esse nome não pode ser dado a um minimoa. Escolha outro.',
+    nameContact: 'Nada de links, endereços, números ou nomes de usuário em um nome.',
+    message: 'Mensagem não enviada: ela não respeita as regras da comunidade do Blowy.',
+    messageScam: 'Mensagem não enviada: no Blowy, nada de links para dinheiro, cripto ou plataformas pagas.',
+    photo: 'Essa foto não pode ser sua foto de perfil. Escolha outra: você, reconhecível, sem nudez.',
+  },
+  trialEmail: {
+    subject: 'Seu teste do Blowy+ está acabando',
+    title: 'Seu teste gratuito está acabando.',
+    lines: (i: { displayName: string; endsOn: string; price: string }) => [
+      `Oi, ${i.displayName},`,
+      `Seu teste gratuito do Blowy+ termina em ${i.endsOn}. Depois, a Apple cobra o primeiro pagamento de ${i.price} e, em seguida, a cada ano.`,
+      'Quer continuar com o Blowy+? Você não precisa fazer nada.',
+      'Prefere parar? Cancele pelo menos 24 horas antes do fim do teste: no seu iPhone, em Ajustes, no seu nome e depois em Assinaturas. Você continua com o Blowy+ até o fim do teste.',
+    ],
+    cta: 'Gerenciar minha assinatura',
+  },
+  reviewSignIn: { wrong: 'E-mail ou código incorreto.' },
+  area: {
+    changeLocked: (day: string) => `Você poderá mudar de área a partir de ${day}. Com o Blowy+, quando quiser.`,
+    fromPhone: 'Sua área já vem da sua localização. Para escolher uma manualmente, primeiro esqueça sua localização (Eu › Ajustes › Minha localização).',
+  },
+  lockScreen: { linkTitle: 'Um vínculo te espera', linkBody: 'Sua vez de escrever antes da meia-noite.' },
+  review: {
+    activeLines: [
+      { who: 'them', text: 'Oi! Seu minimoa parece tão teimoso quanto o meu.' },
+      { who: 'me', text: 'É mesmo. O que você vai fazer no fim de semana?' },
+      { who: 'them', text: 'Uma exposição de fotos no sábado. Você conhece o bairro?' },
+      { who: 'me', text: 'Um pouco. Vou bastante lá no domingo de manhã.' },
+    ],
+    remark: 'Vocês gostam de domingos tranquilos. Já é um ponto em comum.',
+    nudge: 'Já faz 3 dias. Vocês estavam falando da exposição de fotos.',
+    afterNudge: ['Desculpa, a semana foi corrida. A exposição ainda está de pé?', 'Com certeza. Sábado às 15h?'],
+    heated: 'Vai cancelar de novo? Sinceramente, isso me irrita.',
+    guard: 'Vamos respirar um pouco? Uma pausa de dois minutos, e tudo flui melhor. (Só você vê esta mensagem.)',
+    apology: 'Desculpa, você tem razão. Tive uma semana de louco.',
+    after: [{ who: 'them', text: 'Desculpa pelo sábado. Vamos remarcar para a semana que vem?' }],
+    today: 'Terça, combinado 👍',
+    dangerLines: ['Bora tomar outro café semana que vem?', 'Bora, te aviso.'],
+    replies: ['Haha, com certeza.', 'Boa ideia! Quando você pode?', 'Te falo hoje à noite.', 'Meu minimoa acabou de tirar uma soneca, está cheio de energia.', 'Adoro esse lugar.'],
+  },
+};
+
+const nl: Translation<AuditText> = {
+  refused: {
+    displayName: 'Deze voornaam kan niet worden gebruikt op Blowy. Kies een andere.',
+    petName: 'Deze naam kan niet aan een minimoa worden gegeven. Kies een andere.',
+    nameContact: 'Geen links, adressen, nummers of gebruikersnamen in een naam.',
+    message: 'Bericht niet verstuurd: het houdt zich niet aan de communityregels van Blowy.',
+    messageScam: 'Bericht niet verstuurd: geen links naar geld, crypto of betaalde platforms op Blowy.',
+    photo: 'Deze foto kan niet je profielfoto zijn. Kies een andere: jij, herkenbaar, zonder naakt.',
+  },
+  trialEmail: {
+    subject: 'Je Blowy+-proefperiode eindigt bijna',
+    title: 'Je gratis proefperiode eindigt bijna.',
+    lines: (i: { displayName: string; endsOn: string; price: string }) => [
+      `Hoi ${i.displayName},`,
+      `Je gratis proefperiode van Blowy+ eindigt op ${i.endsOn}. Daarna schrijft Apple de eerste betaling van ${i.price} af, en vervolgens elk jaar.`,
+      'Wil je Blowy+ houden? Dan hoef je niets te doen.',
+      'Wil je liever stoppen? Zeg minstens 24 uur voor het einde van de proefperiode op: op je iPhone via Instellingen, je naam en dan Abonnementen. Je houdt Blowy+ tot het einde van de proefperiode.',
+    ],
+    cta: 'Mijn abonnement beheren',
+  },
+  reviewSignIn: { wrong: 'Onjuist adres of onjuiste code.' },
+  area: {
+    changeLocked: (day: string) => `Je kunt vanaf ${day} van gebied wisselen. Met Blowy+ wanneer je wilt.`,
+    fromPhone: 'Je gebied komt al van je locatie. Wil je er zelf een kiezen, vergeet dan eerst je locatie (Ik › Instellingen › Mijn locatie).',
+  },
+  lockScreen: { linkTitle: 'Een band wacht op je', linkBody: 'Jouw beurt om te schrijven, vóór middernacht.' },
+  review: {
+    activeLines: [
+      { who: 'them', text: 'Hoi! Jouw minimoa lijkt net zo koppig als de mijne.' },
+      { who: 'me', text: 'Klopt. Wat doe jij dit weekend?' },
+      { who: 'them', text: 'Zaterdag een fototentoonstelling. Ken je de buurt?' },
+      { who: 'me', text: 'Een beetje. Ik kom er vaak op zondagochtend.' },
+    ],
+    remark: 'Jullie houden allebei van rustige zondagen. Dat is al één overeenkomst.',
+    nudge: 'Het is 3 dagen geleden. Jullie hadden het over de fototentoonstelling.',
+    afterNudge: ['Sorry, ik zat tot over mijn oren in het werk. Gaat de tentoonstelling nog door?', 'Zeker. Zaterdag om 15.00 uur?'],
+    heated: 'Zeg je weer af? Eerlijk gezegd irriteert me dat.',
+    guard: 'Even ademhalen? Twee minuten pauze, en dan gaat het beter. (Alleen jij ziet dit bericht.)',
+    apology: 'Sorry, je hebt gelijk. Ik heb een gekke week gehad.',
+    after: [{ who: 'them', text: 'Sorry van zaterdag. Volgende week nog een keer?' }],
+    today: 'Dinsdag, genoteerd 👍',
+    dangerLines: ['Volgende week weer koffie?', 'Zeker, ik laat het je weten.'],
+    replies: ['Haha, zeker.', 'Goed idee! Wanneer kun jij?', 'Ik laat het je vanavond weten.', 'Mijn minimoa heeft net een dutje gedaan, hij zit vol energie.', 'Ik ben dol op die plek.'],
+  },
+};
+
+export const auditText = defineMessages({ fr, en, es, pt, nl });
 
 /** Message du refus d'un texte, selon la surface et la catégorie trouvée. */
 export function refusedText(locale: Locale, surface: 'display_name' | 'pet_name' | 'message' | 'photo', category: ModerationCategory | null): string {

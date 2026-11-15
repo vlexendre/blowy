@@ -1,7 +1,7 @@
 {
   "ios": {
-    "NSCameraUsageDescription": "Blowy utilise l’appareil photo pour ta photo de profil, les preuves de tes habitudes et les défis photo. Ta photo de profil est vérifiée automatiquement par notre prestataire d’IA avant d’être montrée. Une preuve d’habitude ne lui est envoyée que si tu l’as accepté ; aucun humain ne la regarde. Preuves et photos de défi sont supprimées sous 24 h, sauf celles que tu gardes.",
-    "NSLocationWhenInUseUsageDescription": "Blowy utilise ta position, seulement quand l’app est ouverte, pour te présenter des personnes compatibles près de toi et confirmer tes sorties. Ta position exacte n’est jamais enregistrée : seulement un point arrondi à environ 300 m. Sans elle, tu peux choisir ta ville à la main.",
-    "NSPhotoLibraryUsageDescription": "Blowy ouvre ta photothèque seulement pour la photo de profil que tu choisis. Elle est vérifiée automatiquement par notre prestataire d’IA avant d’être montrée."
+    "NSCameraUsageDescription": "O Blowy usa a câmera para sua foto de perfil, as provas dos seus hábitos e os desafios com foto. Sua foto de perfil é verificada automaticamente pelo nosso fornecedor de IA antes de ser exibida. Uma prova de hábito só é enviada a ele se você tiver aceitado; nenhum humano olha a foto. Provas e fotos de desafio são excluídas em até 24 h, exceto as que você guardar.",
+    "NSLocationWhenInUseUsageDescription": "O Blowy usa sua localização, só quando o app está aberto, para te apresentar pessoas compatíveis perto de você e confirmar suas saídas. Sua localização exata nunca é salva: só um ponto arredondado para cerca de 300 m. Sem ela, você pode escolher sua cidade manualmente.",
+    "NSPhotoLibraryUsageDescription": "O Blowy abre sua fototeca só para a foto de perfil que você escolher. Ela é verificada automaticamente pelo nosso fornecedor de IA antes de ser exibida."
   }
 }

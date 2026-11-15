@@ -11,26 +11,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@, ton minimoa"
+            "state": "translated",
+            "value": "%@, your minimoa"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@, ton minimoa"
+            "state": "translated",
+            "value": "%@, tu minimoa"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@, ton minimoa"
+            "state": "translated",
+            "value": "%@, seu minimoa"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@, ton minimoa"
+            "state": "translated",
+            "value": "%@, je minimoa"
           }
         }
       },
@@ -47,26 +47,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi accepté · Blowy"
+            "state": "translated",
+            "value": "Challenge accepted · Blowy"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi accepté · Blowy"
+            "state": "translated",
+            "value": "Reto aceptado · Blowy"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi accepté · Blowy"
+            "state": "translated",
+            "value": "Desafio aceito · Blowy"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi accepté · Blowy"
+            "state": "translated",
+            "value": "Uitdaging aangenomen · Blowy"
           }
         }
       },
@@ -82,26 +82,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Y aller"
+            "state": "translated",
+            "value": "Go"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Y aller"
+            "state": "translated",
+            "value": "Ir"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Y aller"
+            "state": "translated",
+            "value": "Ir"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Y aller"
+            "state": "translated",
+            "value": "Gaan"
           }
         }
       },
@@ -117,26 +117,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Écrire"
+            "state": "translated",
+            "value": "Write"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Écrire"
+            "state": "translated",
+            "value": "Escribir"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Écrire"
+            "state": "translated",
+            "value": "Escrever"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Écrire"
+            "state": "translated",
+            "value": "Schrijven"
           }
         }
       },
@@ -153,26 +153,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Vous vous êtes écrit"
+            "state": "translated",
+            "value": "You both wrote"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Vous vous êtes écrit"
+            "state": "translated",
+            "value": "Ya se escribieron"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Vous vous êtes écrit"
+            "state": "translated",
+            "value": "Vocês se escreveram"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Vous vous êtes écrit"
+            "state": "translated",
+            "value": "Jullie schreven elkaar"
           }
         }
       },
@@ -189,26 +189,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série du lien · Blowy"
+            "state": "translated",
+            "value": "Link streak · Blowy"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série du lien · Blowy"
+            "state": "translated",
+            "value": "Racha del vínculo · Blowy"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série du lien · Blowy"
+            "state": "translated",
+            "value": "Sequência do vínculo · Blowy"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série du lien · Blowy"
+            "state": "translated",
+            "value": "Bandreeks · Blowy"
           }
         }
       },
@@ -225,26 +225,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour écrire"
+            "state": "translated",
+            "value": "Tap to write"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour écrire"
+            "state": "translated",
+            "value": "Toca para escribir"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour écrire"
+            "state": "translated",
+            "value": "Toque para escrever"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour écrire"
+            "state": "translated",
+            "value": "Tik om te schrijven"
           }
         }
       },
@@ -261,26 +261,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "À toi d’écrire"
+            "state": "translated",
+            "value": "Your turn to write"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "À toi d’écrire"
+            "state": "translated",
+            "value": "Te toca escribir"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "À toi d’écrire"
+            "state": "translated",
+            "value": "Sua vez de escrever"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "À toi d’écrire"
+            "state": "translated",
+            "value": "Jouw beurt om te schrijven"
           }
         }
       },
@@ -297,26 +297,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "De retour"
+            "state": "translated",
+            "value": "Back home"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "De retour"
+            "state": "translated",
+            "value": "De vuelta"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "De retour"
+            "state": "translated",
+            "value": "De volta"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "De retour"
+            "state": "translated",
+            "value": "Weer terug"
           }
         }
       },
@@ -332,26 +332,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sortie · Blowy"
+            "state": "translated",
+            "value": "Outing · Blowy"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sortie · Blowy"
+            "state": "translated",
+            "value": "Salida · Blowy"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sortie · Blowy"
+            "state": "translated",
+            "value": "Saída · Blowy"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sortie · Blowy"
+            "state": "translated",
+            "value": "Uitje · Blowy"
           }
         }
       },
@@ -367,26 +367,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "depuis"
+            "state": "translated",
+            "value": "out for"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "depuis"
+            "state": "translated",
+            "value": "desde hace"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "depuis"
+            "state": "translated",
+            "value": "fora há"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "depuis"
+            "state": "translated",
+            "value": "onderweg"
           }
         }
       },
@@ -402,26 +402,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ est de sortie"
+            "state": "translated",
+            "value": "%@ is out"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ est de sortie"
+            "state": "translated",
+            "value": "%@ ha salido"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ est de sortie"
+            "state": "translated",
+            "value": "%@ está passeando"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ est de sortie"
+            "state": "translated",
+            "value": "%@ is op pad"
           }
         }
       },
@@ -438,26 +438,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "avant minuit"
+            "state": "translated",
+            "value": "before midnight"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "avant minuit"
+            "state": "translated",
+            "value": "antes de medianoche"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "avant minuit"
+            "state": "translated",
+            "value": "até meia-noite"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "avant minuit"
+            "state": "translated",
+            "value": "tot middernacht"
           }
         }
       },
@@ -473,26 +473,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi relevé"
+            "state": "translated",
+            "value": "Challenge done"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi relevé"
+            "state": "translated",
+            "value": "Reto superado"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi relevé"
+            "state": "translated",
+            "value": "Desafio cumprido"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi relevé"
+            "state": "translated",
+            "value": "Uitdaging gehaald"
           }
         }
       },
@@ -508,26 +508,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Reviens demain"
+            "state": "translated",
+            "value": "Come back tomorrow"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Reviens demain"
+            "state": "translated",
+            "value": "Vuelve mañana"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Reviens demain"
+            "state": "translated",
+            "value": "Volte amanhã"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Reviens demain"
+            "state": "translated",
+            "value": "Kom morgen terug"
           }
         }
       },
@@ -543,26 +543,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton défi du jour t’attend"
+            "state": "translated",
+            "value": "Your daily challenge awaits"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton défi du jour t’attend"
+            "state": "translated",
+            "value": "Tu reto del día te espera"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton défi du jour t’attend"
+            "state": "translated",
+            "value": "Seu desafio do dia te espera"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton défi du jour t’attend"
+            "state": "translated",
+            "value": "Je uitdaging van de dag wacht"
           }
         }
       },
@@ -578,26 +578,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi : %@"
+            "state": "translated",
+            "value": "Challenge: %@"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi : %@"
+            "state": "translated",
+            "value": "Reto: %@"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi : %@"
+            "state": "translated",
+            "value": "Desafio: %@"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi : %@"
+            "state": "translated",
+            "value": "Uitdaging: %@"
           }
         }
       },
@@ -614,26 +614,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour y aller"
+            "state": "translated",
+            "value": "Tap to go"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour y aller"
+            "state": "translated",
+            "value": "Toca para ir"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour y aller"
+            "state": "translated",
+            "value": "Toque para ir"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour y aller"
+            "state": "translated",
+            "value": "Tik om te gaan"
           }
         }
       },
@@ -649,26 +649,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi du jour à faire"
+            "state": "translated",
+            "value": "Daily challenge to do"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi du jour à faire"
+            "state": "translated",
+            "value": "Reto del día pendiente"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi du jour à faire"
+            "state": "translated",
+            "value": "Desafio do dia pendente"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Défi du jour à faire"
+            "state": "translated",
+            "value": "Uitdaging nog te doen"
           }
         }
       },
@@ -684,26 +684,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "pour retrouver ton minimoa ici."
+            "state": "translated",
+            "value": "to see your minimoa here."
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "pour retrouver ton minimoa ici."
+            "state": "translated",
+            "value": "para ver a tu minimoa aquí."
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "pour retrouver ton minimoa ici."
+            "state": "translated",
+            "value": "para ver seu minimoa aqui."
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "pour retrouver ton minimoa ici."
+            "state": "translated",
+            "value": "om je minimoa hier te zien."
           }
         }
       },
@@ -719,26 +719,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ouvre Blowy"
+            "state": "translated",
+            "value": "Open Blowy"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ouvre Blowy"
+            "state": "translated",
+            "value": "Abre Blowy"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ouvre Blowy"
+            "state": "translated",
+            "value": "Abra o Blowy"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ouvre Blowy"
+            "state": "translated",
+            "value": "Open Blowy"
           }
         }
       },
@@ -754,26 +754,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "bof"
+            "state": "translated",
+            "value": "a bit flat"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "bof"
+            "state": "translated",
+            "value": "un poco apagado"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "bof"
+            "state": "translated",
+            "value": "meio pra baixo"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "bof"
+            "state": "translated",
+            "value": "een beetje futloos"
           }
         }
       },
@@ -789,26 +789,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "boude"
+            "state": "translated",
+            "value": "sulking"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "boude"
+            "state": "translated",
+            "value": "enfurruñado"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "boude"
+            "state": "translated",
+            "value": "emburrado"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "boude"
+            "state": "translated",
+            "value": "mokt"
           }
         }
       },
@@ -824,26 +824,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "en forme"
+            "state": "translated",
+            "value": "doing great"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "en forme"
+            "state": "translated",
+            "value": "en plena forma"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "en forme"
+            "state": "translated",
+            "value": "em plena forma"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "en forme"
+            "state": "translated",
+            "value": "in topvorm"
           }
         }
       },
@@ -859,26 +859,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sociabilité"
+            "state": "translated",
+            "value": "Sociability"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sociabilité"
+            "state": "translated",
+            "value": "Sociabilidad"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sociabilité"
+            "state": "translated",
+            "value": "Sociabilidade"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Sociabilité"
+            "state": "translated",
+            "value": "Sociale energie"
           }
         }
       },
@@ -894,26 +894,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld en jeu"
+            "state": "translated",
+            "value": "%lld-day streak at stake"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld en jeu"
+            "state": "translated",
+            "value": "Racha de %lld en juego"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld en jeu"
+            "state": "translated",
+            "value": "Sequência de %lld em jogo"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld en jeu"
+            "state": "translated",
+            "value": "Reeks van %lld op het spel"
           }
         }
       },
@@ -944,14 +944,14 @@
             "plural": {
               "one": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jour"
+                  "state": "translated",
+                  "value": "%lld day"
                 }
               },
               "other": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jours"
+                  "state": "translated",
+                  "value": "%lld days"
                 }
               }
             }
@@ -962,14 +962,14 @@
             "plural": {
               "one": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jour"
+                  "state": "translated",
+                  "value": "%lld día"
                 }
               },
               "other": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jours"
+                  "state": "translated",
+                  "value": "%lld días"
                 }
               }
             }
@@ -980,14 +980,14 @@
             "plural": {
               "one": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jour"
+                  "state": "translated",
+                  "value": "%lld dia"
                 }
               },
               "other": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jours"
+                  "state": "translated",
+                  "value": "%lld dias"
                 }
               }
             }
@@ -998,14 +998,14 @@
             "plural": {
               "one": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jour"
+                  "state": "translated",
+                  "value": "%lld dag"
                 }
               },
               "other": {
                 "stringUnit": {
-                  "state": "needs_review",
-                  "value": "%lld jours"
+                  "state": "translated",
+                  "value": "%lld dagen"
                 }
               }
             }
@@ -1025,26 +1025,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld"
+            "state": "translated",
+            "value": "%lld-day streak"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld"
+            "state": "translated",
+            "value": "Racha de %lld"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld"
+            "state": "translated",
+            "value": "Sequência de %lld"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Série de %lld"
+            "state": "translated",
+            "value": "Reeks van %lld"
           }
         }
       },
@@ -1060,26 +1060,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa, sa sociabilité, ta série et le défi du jour."
+            "state": "translated",
+            "value": "Your minimoa, its sociability, your streak and the daily challenge."
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa, sa sociabilité, ta série et le défi du jour."
+            "state": "translated",
+            "value": "Tu minimoa, su sociabilidad, tu racha y el reto del día."
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa, sa sociabilité, ta série et le défi du jour."
+            "state": "translated",
+            "value": "Seu minimoa, a sociabilidade dele, sua sequência e o desafio do dia."
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa, sa sociabilité, ta série et le défi du jour."
+            "state": "translated",
+            "value": "Je minimoa, zijn sociale energie, je reeks en de uitdaging van de dag."
           }
         }
       },
@@ -1095,26 +1095,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa"
+            "state": "translated",
+            "value": "Your minimoa"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa"
+            "state": "translated",
+            "value": "Tu minimoa"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa"
+            "state": "translated",
+            "value": "Seu minimoa"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ton minimoa"
+            "state": "translated",
+            "value": "Je minimoa"
           }
         }
       },
@@ -1131,26 +1131,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série et le défi du jour, sur l’écran verrouillé."
+            "state": "translated",
+            "value": "Your streak and the daily challenge, on the lock screen."
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série et le défi du jour, sur l’écran verrouillé."
+            "state": "translated",
+            "value": "Tu racha y el reto del día, en la pantalla bloqueada."
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série et le défi du jour, sur l’écran verrouillé."
+            "state": "translated",
+            "value": "Sua sequência e o desafio do dia, na tela bloqueada."
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série et le défi du jour, sur l’écran verrouillé."
+            "state": "translated",
+            "value": "Je reeks en de uitdaging van de dag, op het toegangsscherm."
           }
         }
       },
@@ -1166,26 +1166,26 @@
         },
         "en": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série"
+            "state": "translated",
+            "value": "Your streak"
           }
         },
         "es": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série"
+            "state": "translated",
+            "value": "Tu racha"
           }
         },
         "pt": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série"
+            "state": "translated",
+            "value": "Sua sequência"
           }
         },
         "nl": {
           "stringUnit": {
-            "state": "needs_review",
-            "value": "Ta série"
+            "state": "translated",
+            "value": "Je reeks"
           }
         }
       },
