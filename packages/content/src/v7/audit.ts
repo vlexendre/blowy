@@ -55,11 +55,14 @@ const fr = {
     ],
     remark: 'Vous aimez tous les deux les dimanches calmes. Ça fait déjà un point commun.',
     nudge: 'Ça fait 3 jours. Vous en étiez à l’expo photo.',
+    afterNudge: ['Pardon, j’étais sous l’eau. Ça tient toujours, l’expo ?', 'Carrément. Samedi 15 h ?'],
     heated: 'Tu annules encore ? Franchement, ça m’énerve.',
     guard: 'On souffle un coup ? Une pause de deux minutes, et ça repart mieux. (Toi seul vois ce message.)',
+    apology: 'Pardon, tu as raison. J’ai eu une semaine de fou.',
     after: [
       { who: 'them', text: 'Désolée pour samedi. On remet ça la semaine prochaine ?' },
     ],
+    today: 'Mardi, c’est noté 👍',
     dangerLines: ['On se refait un café la semaine pro ?', 'Carrément, je te dis.'],
     /** Réponses automatiques des personnes fictives quand le compte de revue leur écrit. */
     replies: [

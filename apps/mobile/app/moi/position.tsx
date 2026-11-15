@@ -67,7 +67,7 @@ export default function Position() {
                 <Button label={t.enable} onPress={() => void location.enable()} loading={location.sending} />
               )}
               <Button label={manual ? carte.area.change : carte.area.choose} variant="glass" onPress={() => setAreaSheet(true)} />
-              {manual ? <Button label={t.forget} variant="ghost" onPress={() => setForgetting(true)} /> : null}
+              {manual ? <Button label={carte.area.forget} variant="ghost" onPress={() => setForgetting(true)} /> : null}
             </Stack>
           )
         }
@@ -79,7 +79,7 @@ export default function Position() {
           <SettingsSection
             key="state"
             rows={[
-              { key: 'state', title: on ? t.on : t.off, subtitle: on ? t.onSub(when) : t.offSub, chevron: false },
+              { key: 'state', title: on ? t.on : t.off, subtitle: on ? t.onSub(when) : manual ? carte.area.offSub : t.offSub, chevron: false },
               ...(manual
                 ? [{ key: 'area', title: carte.area.current(manual.label), subtitle: manual.nextChangeOn && manual.nextChangeOn > today() ? carte.area.nextChange(formatDate(manual.nextChangeOn, { day: 'numeric', month: 'long' })) : undefined, chevron: false }]
                 : []),

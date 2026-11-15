@@ -195,6 +195,20 @@ describe('audit App Store — côté serveur', () => {
       await reviewer.api.me.remove();
       expect([...db.profiles.values()].filter((p) => p.reviewWorld === reviewer.id)).toEqual([]);
     });
+
+    it('après suppression, la même adresse se réinscrit ; sans localisation, le monde est complet (zone Paris, changeable)', async () => {
+      const s = await w.anonymous.review.session({ email: REVIEW_EMAIL, code: REVIEW_CODE });
+      expect(s.worldReset).toBe(false);
+      const again = createApiClient({ baseUrl: w.baseUrl, getToken: () => s.accessToken });
+      await again.me.onboard(onboardBody({ displayName: 'Apple', location: undefined, consents: { sensitive: false, location: false } }));
+      const me = await again.me.get();
+      expect(me.identity.location).toMatchObject({ source: 'manual', manualArea: { label: 'Paris' } });
+      const map = await again.vision.map();
+      expect(map.status).toBe('ok');
+      expect(map.pins.length).toBeGreaterThanOrEqual(2);
+      expect((await again.vision.chooseArea({ label: 'Lyon', latitude: 45.76, longitude: 4.84 })).manualArea?.label).toBe('Lyon');
+      expect((await again.vision.map()).pins.length).toBeGreaterThanOrEqual(2);
+    });
   });
 
   // ── B6 ──────────────────────────────────────────────────────────────────────

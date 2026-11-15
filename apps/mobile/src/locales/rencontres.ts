@@ -197,6 +197,8 @@ export const carte = messages({
       text: 'Sans ta position, dis-nous en gros où tu vis : ton minimoa te présente des gens compatibles autour, et ta carte s’y centre. Gratuit. Tu pourras en changer dans 30 jours (quand tu veux avec Blowy+).',
       current: (city: string) => `Ta zone : ${city} (choisie à la main)`,
       nextChange: (date: string) => `Prochain changement possible le ${date}.`,
+      offSub: 'Ta ville choisie sert de zone : rencontres et carte autour d’elle.',
+      forget: 'Oublier ma ville',
       error: 'Ce n’est pas passé. Réessaie.',
     },
     loadError: 'Impossible de dessiner la carte',

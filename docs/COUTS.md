@@ -41,13 +41,23 @@ l'administration (« Coûts » et « Vue d'ensemble ») dès les premières sema
 | Fonction | Déclencheur (jamais un appel par message) | Plafond codé | Appels moyens / DAU / jour | Jetons par appel (entrée / sortie) | Coût par appel | Coût / DAU / jour |
 |---|---|---|---|---|---|---|
 | `chat_remark` (remarque, relance) | lien où les deux ont dit oui : tous les 12 messages ; silence de 72 h | 3 interventions / lien / jour (règles comprises) ; 4 appels / personne / jour | 0,46 | ~650 / 30 | 80 µ$ | 37 µ$ |
-| `moderation` (garde-fou) | heuristique de ton locale d'abord ; accord des deux | 1 par 24 h par lien ; 4 / personne / jour | inclus ci-dessus (~0,05) | ~650 / 30 | 80 µ$ | — |
+| `moderation` (garde-fou) | heuristique de ton locale d'abord ; accord des deux | 1 par 24 h par lien ; 4 / personne / jour (budget partagé avec les deux lignes suivantes) | inclus ci-dessus (~0,05) | ~650 / 30 | 80 µ$ | — |
+| `moderation` (filtre : message à confirmer) | seulement quand la règle hésite (lien nu) ET que les deux ont accepté la lecture par l'IA ; jamais pour un nom | même budget `moderation` | ~0,01 | ~350 / 2 | 36 µ$ | 0,4 µ$ |
+| `moderation` (photo de profil) | à l'envoi d'une photo de profil (512 px, réponse d'un mot) ; sinon le minuteur, au plus 20 par heure | même budget `moderation` | ~0,02 | ~610 / 2 | 62 µ$ | 1,2 µ$ |
 | `habit_proof` (chantier « rituels ») | photo de preuve, 512 px, réponse de 4 jetons | 6 / personne / jour | 0,75 | ~750 / 4 | 77 µ$ | 58 µ$ |
 | `weekly_review` (chantier « rituels ») | dimanche, comptes actifs de la semaine seulement | 1 / personne / jour | 0,27 (WAU / 7 / DAU) | ~900 / 250 | 215 µ$ | 58 µ$ |
-| **Total** | | | | | | **≈ 150 µ$ (0,00015 $)** |
+| **Total** | | | | | | **≈ 152 µ$ (0,00015 $)** |
 
 Brise-glace, premiers messages du jour, réactions aux mots doux et vannes, relances sans accord, santé du lien,
-textes des notifications : **règles, 0 appel**.
+textes des notifications : **règles, 0 appel**. Filtre des contenus (audit App Store B6, `modules/moderation`) :
+la règle locale tranche presque tout (prénoms, noms de minimoa, notes de signalement, messages nets ou limites) à
+**0 appel** ; l'IA n'est demandée que pour un lien nu dans un chat où les deux ont accepté la lecture, et pour les
+photos de profil. Quand la passerelle refuse (interrupteur, budget, plafond), la règle reste et la photo est publiée
+puis revérifiée plus tard : le filtre ne coûte jamais plus que le budget `moderation` (4 appels par personne et par
+jour, `AI_USER_BUDGETS`) et reste sous le plafond global. Photos d'avant le filtre : vérifiées une fois, au plus 20 par
+heure (≈ 480 par jour, ~0,03 $ par jour tant qu'il en reste).
+Compte de revue d'Apple : son monde d'exemple n'appelle l'IA que comme un compte ordinaire (mêmes budgets) ; sans clé,
+tout est démontrable avec les règles.
 
 Pire cas théorique (chaque actif atteint tous ses plafonds chaque jour) : ≈ 1 130 µ$ / DAU / jour, soit ~90 $ par jour
 à 1 M de téléchargements — c'est le rôle du plafond global de l'empêcher.
@@ -104,7 +114,8 @@ limiteur en mémoire par instance, remplaçables par un cache partagé dans `Pla
 appel HTTP toutes les 5 minutes (Railway cron ou `pg_cron` de Supabase, gratuit). Sortie JSON estimée à
 ~0,5 Mo par DAU et par jour (les photos de profil et de preuve passent par des URL signées de Supabase, pas par l'API).
 
-Non comptés ici : e-mails (Resend, peu d'envois : bienvenue, lien créé, coucou — tarif **non vérifié**),
+Non comptés ici : e-mails (Resend, peu d'envois : bienvenue, lien créé, coucou, rappel de fin d'essai (un par essai),
+alertes de modération à l'équipe (au plus un récapitulatif par quart d'heure, plus les urgents) — tarif **non vérifié**),
 fond de carte Apple (MapKit, annoncé sans clé ni coût dans la spéc — **non vérifié**), nom de domaine.
 
 ## 6. Estimation par palier (par mois)

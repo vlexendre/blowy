@@ -226,3 +226,46 @@ n'ont pas été touchées.
 
 Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées ; l'ancien code renverrait
 les preuves à l'IA sans accord : à éviter une fois l'app publiée).
+
+## 10. Audit App Store (côté serveur) sur une base en service
+
+Migrations `20261115200000_audit.sql` (structure) et `20261115200100_audit_backfill.sql` (reprise), à appliquer AVANT
+le code (l'API d'avant ignore les colonnes nouvelles ; elles ont toutes une valeur par défaut constante ou sont
+nullables ; contraintes posées `not valid` puis validées ; `lock_timeout` de 5 s). La migration de l'autre chantier
+`20261115210000_audit_app.sql` passe après, indépendante.
+
+1. Appliquer `20261115200000_audit.sql`. Ce qu'elle fait : `profiles.review_world` (clé étrangère vers `auth.users`,
+   `on delete cascade`) et `profiles.avatar_checked_at` ; `profile_places.source`, `manual_label`, `manual_set_on` ;
+   `reports.source`, `priority`, `category`, `review`, `alerted_at`, `escalated_at` ; trois index partiels sur ces
+   colonnes nouvelles (elles ne peuvent pas exister avant : pas de `concurrently` possible ; `profiles_review_world_idx`
+   est vide, `reports_*` petits) ; les fonctions `admin_daily_metrics_base` et `admin_daily_metrics` remplacées (mêmes
+   noms, même signature) pour exclure le monde de revue. Mesuré sur PostgreSQL 16 local avec 300 000 profils et
+   positions et 60 000 signalements : 0,24 s en tout (validation de la clé étrangère et index compris).
+2. Appliquer `20261115200100_audit_backfill.sql` (transaction à part, verrous de ligne seulement) : les positions déjà
+   gardées sont arrondies à la maille de ~300 m (même calcul que le domaine, `storedPoint`) ; les signalements de plus
+   de 10 minutes sont marqués « déjà vus » (pas d'alerte en rafale à l'équipe ; ceux ouverts depuis plus de 24 h seront
+   annoncés une fois comme « en retard » au premier tick). Même base de mesure : 4,3 s, verrous de ligne seulement
+   (une écriture de position attend la fin ; aucune table verrouillée).
+3. Poser les variables (docs/APP-REVIEW.md §2) puis pousser le code sur `main`.
+4. Juste après le déploiement, rejouer la **partie 1 seule** du fichier de reprise (positions écrites exactes par
+   l'API d'avant entre la migration et le déploiement) :
+
+```sql
+with grid as (
+  select user_id, (floor(last_lat / (300 / 111320.0)) + 0.5) * (300 / 111320.0) as lat from public.profile_places
+),
+snapped as (
+  select g.user_id, round(g.lat::numeric, 6)::double precision as lat,
+         round(((floor(p.last_lng / (300 / (111320.0 * greatest(0.01, cos(radians(g.lat)))))) + 0.5)
+                * (300 / (111320.0 * greatest(0.01, cos(radians(g.lat))))))::numeric, 6)::double precision as lng
+  from grid g join public.profile_places p on p.user_id = g.user_id
+)
+update public.profile_places p set last_lat = s.lat, last_lng = s.lng
+from snapped s where s.user_id = p.user_id and (p.last_lat <> s.lat or p.last_lng <> s.lng);
+```
+
+5. Contrôles : `GET /health` ; `POST /v1/review/session` avec un mauvais code → 401 « Adresse ou code incorrect. » ;
+   un signalement de test → e-mail à `ADMIN_EMAILS` au tick suivant ; la réponse du minuteur liste `moderation`.
+
+Revenir en arrière : redéployer le code précédent suffit (colonnes ignorées ; les fonctions de statistiques comptent
+seulement un peu moins). Les positions arrondies ne reviennent pas (c'est voulu).

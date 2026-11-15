@@ -7,7 +7,8 @@ fournisseur du téléphone, puis l'API lit le jeton Supabase comme avant (rien n
 |---|---|---|
 | iPhone | « Continuer avec Apple » (bouton officiel d'Apple) | `expo-apple-authentication` → jeton d'identité → `supabase.auth.signInWithIdToken({ provider: 'apple' })` |
 | Android, web | « Continuer avec Google » | page de Google dans le navigateur du système (`expo-web-browser`), flux PKCE de Supabase → `exchangeCodeForSession` |
-| Mode local (`EXPO_PUBLIC_AUTH=local`) | les deux boutons (simulés) + « Mode dev : e-mail et code » (`000000`) | aucun service externe ; un même fournisseur rouvre le même compte (tester « J'ai déjà un compte ») |
+| Partout, replié sous les boutons | « Connexion par e-mail » (adresse et code) | seulement pour le compte de revue d'Apple (`REVIEW_EMAIL`, `REVIEW_CODE` côté API) : `POST /v1/review/session` ouvre une session Supabase, l'app la pose avec `setSession` ; toute autre adresse : « Adresse ou code incorrect. » (docs/APP-REVIEW.md) |
+| Mode local (`EXPO_PUBLIC_AUTH=local`) | les deux boutons (simulés) ; « Connexion par e-mail » accepte aussi le code de développement (`000000`) pour toute adresse | aucun service externe ; un même fournisseur rouvre le même compte (tester « J'ai déjà un compte ») |
 
 Code : `apps/mobile/src/core/adapters/supabase.ts` (`signInWith`), `apple-sign-in.ios.ts`, `local.ts` ; écran
 `app/(onboarding)/connexion.tsx` ; retour de Google `app/(onboarding)/auth-callback.tsx`.

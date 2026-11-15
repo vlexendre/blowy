@@ -3,7 +3,8 @@
  * puis à chaque connexion par son code (ou `POST /v1/review/reset`), le serveur lui pose un monde cohérent, visible de
  * ce seul compte, fait de vraies lignes marquées `profiles.review_world = <compte de revue>` :
  * - 8 personnes fictives compatibles (plan pur `reviewWorldPlan` : leur sexe et ce qu'elles cherchent passent les
- *   filtres du compte, leur vision est la sienne décalée), placées autour de sa zone (ou de Paris sans zone) : 4 dans la
+ *   filtres du compte, leur vision est la sienne décalée), placées autour de sa zone (sans zone, le compte reçoit
+ *   Paris comme zone choisie à la main, changeable tout de suite) : 4 dans la
  *   zone (épingles, rencontres expliquées), 3 au-delà (compteur « plus loin » et paywall), amis d'amis entre elles ;
  * - un coucou reçu ; un lien ouvert avec une conversation (répliques des minimoas de chaque rôle : brise-glace,
  *   relance, remarque, garde-fou visible de lui seul) et l'accord de lecture par l'IA déjà donné par l'autre ; un lien
@@ -20,18 +21,21 @@ import {
   type Day,
   LEVEL_XP,
   type LinkDay,
+  MANUAL_AREA_CHANGE_DAYS,
   REVIEW_DEFAULT_CENTER,
   type StreakState,
   VISION_AXES,
   type VisionAxis,
   type VisionSignal,
   addDays,
+  cellOf,
   dayOf,
   fixtureVision,
   levelForXp,
   newLink,
   reviewFixtureId,
   reviewWorldPlan,
+  storedPoint,
   streakRunDays,
   weekStartOf,
 } from '@blowy/domain';
@@ -173,9 +177,17 @@ export class ReviewWorld implements OnboardedHook {
       await this.visionSignals.record(id, signals);
     }
 
-    // Zone : celle du compte (position ou zone choisie), sinon Paris ; suit ensuite chaque changement (`ReviewPlaces`).
-    const place = await this.places.find(world);
-    await this.reviewPlaces.placeAround(world, reviewer.locationConsentAt && place ? place.home : REVIEW_DEFAULT_CENTER);
+    // Zone : celle du compte (position ou zone choisie). Sans zone, le compte de revue reçoit une zone choisie à la main
+    // (Paris), changeable tout de suite : la carte et les rencontres proches sont pleines dès la connexion, même si
+    // l'examinateur refuse la localisation. Le monde suit ensuite chaque changement (`ReviewPlaces`).
+    let place = reviewer.locationConsentAt ? await this.places.find(world) : null;
+    if (!place) {
+      const home = storedPoint(REVIEW_DEFAULT_CENTER);
+      place = { userId: world, last: home, locatedAt: nowIso, lastAwayAt: null, home, homeCell: cellOf(home), candidate: null, candidateSince: null, chosenCity: null, source: 'manual', manualArea: { label: 'Paris', setOn: addDays(today, -MANUAL_AREA_CHANGE_DAYS) } };
+      if (!reviewer.locationConsentAt) reviewer = await this.profiles.update(world, { locationConsentAt: nowIso });
+      await this.places.save(place);
+    }
+    await this.reviewPlaces.placeAround(world, place.home);
 
     const pair = (slot: number): string => ids[slot] as string;
     const active = plan.find((f) => f.role === 'link_active');
@@ -240,26 +252,25 @@ export class ReviewWorld implements OnboardedHook {
     const t = auditText.in(lang).review;
     const them = { kind: 'user' as const, id: other };
     const me = { kind: 'user' as const, id: world };
-    const otherPet = (await this.pets.findByOwner(other))?.name ?? '';
     const lines = t.activeLines.map((l, i) => this.message(link, l.who === 'me' ? me : them, l.text, at(9, `18:${String(10 + i * 7).padStart(2, '0')}:00`)));
     const rows: MessageRecord[] = [
       this.message(link, { kind: 'system', id: null }, chatSystemText(lang).linkCreated, at(9, '18:00:00')),
       this.message(link, { kind: 'pet', id: other }, chatLines.icebreaker(lang, 'rythme', reviewerPetName, 7), at(9, '18:01:00'), { petRole: 'icebreaker' }),
       ...lines,
       this.message(link, { kind: 'pet', id: world }, t.nudge, at(5, '09:00:00'), { petRole: 'nudge' }),
-      this.message(link, them, t.activeLines[2]?.text ?? '…', at(5, '12:30:00')),
-      this.message(link, me, t.activeLines[3]?.text ?? '…', at(5, '13:00:00')),
+      this.message(link, them, t.afterNudge[0] ?? '…', at(5, '12:30:00')),
+      this.message(link, me, t.afterNudge[1] ?? '…', at(5, '13:00:00')),
       this.message(link, them, '🙂', at(4, '19:00:00')),
       this.message(link, me, '👋', at(4, '19:05:00')),
       this.message(link, them, '☕️ ?', at(3, '08:30:00')),
       this.message(link, me, 'Oui !', at(3, '08:40:00')),
       this.message(link, me, t.heated, at(2, '20:00:00')),
       this.message(link, { kind: 'pet', id: world }, t.guard, at(2, '20:00:30'), { petRole: 'guard', visibleTo: world }),
-      this.message(link, them, '…', at(2, '20:30:00')),
+      this.message(link, them, t.apology, at(2, '20:30:00')),
       this.message(link, them, t.after[0]?.text ?? '…', at(1, '10:00:00')),
       this.message(link, me, 'Oui, mardi ?', at(1, '10:30:00')),
       this.message(link, { kind: 'pet', id: other }, t.remark, at(1, '10:31:00'), { petRole: 'remark' }),
-      this.message(link, them, `${otherPet ? `${otherPet} ` : ''}👍`, new Date(this.clock.now().getTime() - 60 * 60_000).toISOString()),
+      this.message(link, them, t.today, new Date(this.clock.now().getTime() - 60 * 60_000).toISOString()),
     ];
     await this.messages.add(rows);
     // L'autre a déjà dit oui à la lecture par l'IA : à la première ouverture, le compte de revue voit la demande.

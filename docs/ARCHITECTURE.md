@@ -60,7 +60,10 @@ Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conv
 dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
 `notifications` (appareils, réglages, envoi, activités en direct), `billing` (Blowy+), `admin` (tableaux, modération),
-`retention` (comptes inactifs, exclusions, purges), `tick` (minuteur), `health`.
+`retention` (comptes inactifs, exclusions, purges), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
+règles du domaine `moderation.ts` puis IA si permise ; `ReportDesk`, seul créateur des signalements : priorité, escalade,
+suspension automatique, alertes de l'équipe), et `src/review` (compte de revue d'Apple et son monde d'exemple,
+`docs/APP-REVIEW.md` ; « qui voit qui » reste dans `Audience`, par `profiles.review_world`).
 `integrations/` : `ai` (`AiGateway` : interrupteur, plafond global, budget par personne, compteur), `push` (Expo,
 APNs), `plateforme` (composition globale : cache, limites de débit, IA, push, minuteur).
 Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`, ce qui permet `tsx` en dev et `tsup` en build.
@@ -83,9 +86,10 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 `links` (vies rattrapées, « lien en danger », relances de 72 h, le soir « à toi d'écrire ») · `notifications` (reports des heures calmes, défi du
 jour à l'heure choisie — seul chemin d'envoi de `daily_challenge` —, activités en direct finies, reçus Expo, ménage) ·
 `rituels` (preuves demandées, besoin de sortir, série en danger, bilans du dimanche, photos privées de plus de 24 h) ·
-`billing` (rappel du jour 5 de l'essai, journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
+`billing` (rappel du jour 5 de l'essai, par push et par e-mail ; journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
 apports `ADMIN_INSIGHTS`) · `retention` (prévenance puis suppression après 2 ans sans connexion, exclusions > 3 ans,
-modération > 1 an). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
+modération > 1 an) · `moderation` (récapitulatif des signalements à l'équipe, escalade après 24 h, photos de profil à
+vérifier). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
 
 ## App (`apps/mobile`)
 ```
