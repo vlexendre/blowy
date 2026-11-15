@@ -24,15 +24,17 @@ Trois choses doivent se comprendre sans lire :
 
 Deux couches, bien séparées à l'écran.
 
-**La vision** (sert à l'appariement) — 5 axes, chacun de −100 à +100 avec un indice de confiance :
+**La vision** (sert à l'appariement) : ce que la personne **projette pour sa vie**. Deux personnes dont les projets de vie vont dans le même sens sont compatibles ; la compatibilité est le moteur de tout l'appariement. 5 axes, chacun de −100 à +100 avec un indice de confiance :
 
-| Axe | Pôle − | Pôle + | Ce que ça mesure |
+| Axe | Pôle − | Pôle + | Le projet de vie mesuré |
 |---|---|---|---|
-| Élan | posé | ambitieux | place des projets, du travail |
-| Terrain | casanier | dehors | sortir, bouger, voyager |
-| Lien | indépendant | fusionnel | place des autres dans la vie |
-| Cadre | spontané | organisé | prévoir ou improviser |
-| Horizon | profiter | construire | présent ou long terme |
+| Foyer | libre, en solo | fonder un foyer | couple durable, enfants, vie de famille |
+| Ancrage | rester ici | partir | où vivre : même ville, ailleurs, à l'étranger |
+| Élan | du temps pour soi | de grands projets | place du travail, de l'ambition |
+| Rythme | calme, chez soi | intense, dehors | le quotidien voulu |
+| Cap | au jour le jour | tout prévoir | long terme, argent, planification |
+
+Pour « potes », l'axe Foyer pèse peu ; pour « plus », il pèse double. On ne demande ni religion, ni opinions politiques, ni santé.
 
 **Le style** (donne sa personnalité au minimoa, ne filtre pas) — les 4 jauges actuelles : sociable, joueur, tendre, bavard.
 
@@ -178,3 +180,61 @@ De haut en bas : le minimoa et sa forme · **sa vision** (5 axes, barres simples
 - Supabase : activer les fournisseurs Apple et Google.
 - Clés (dans `apps/api/.env` uniquement) : IA (photos, bilans, chat), service d'achats, fond de carte.
 - Données sensibles : sexe, « qui tu veux rencontrer », photos de preuve et lecture des messages par une IA demandent un accord explicite et une mise à jour de la politique de confidentialité. À faire relire par un juriste.
+
+---
+
+# Compléments du 15 novembre (2e message) — décisions prises, à coder sans nouvelle validation
+
+## 18. Essai gratuit et inscription pensée pour convertir
+
+- **7 jours gratuits sur l'offre annuelle**, puis 59,88 € par an. L'offre mensuelle (14,99 €) n'a pas d'essai.
+- Affichage conforme Apple : « 7 jours gratuits, puis 59,88 € par an » ; le montant facturé reste le prix le plus visible.
+- Ce qui donne envie, sans tromper :
+  1. **L'investissement** : la personne a créé son minimoa et passé le test avant de voir une offre.
+  2. **Le résultat personnalisé** : « ta vision » juste avant.
+  3. **La preuve concrète** : le nombre réel de personnes compatibles dans sa zone, en silhouettes floues (chiffre venu du serveur ; s'il vaut zéro on ne montre pas ce bloc).
+  4. **La frise de l'essai** : aujourd'hui (tout est ouvert) → jour 5 (rappel envoyé) → jour 7 (premier paiement). Le rappel est réellement envoyé.
+  5. **La sortie visible** : « Continuer gratuitement » toujours présent, sans texte culpabilisant.
+- Pas de témoignages ni de chiffres d'utilisateurs tant qu'ils ne sont pas réels.
+
+## 19. Widget et Dynamic Island (iOS)
+
+- **Widget d'écran d'accueil** (petit et moyen) et **d'écran verrouillé** : le minimoa dans son état du moment, sa sociabilité, la série, et le défi du jour s'il n'est pas fait. Toucher ouvre le défi.
+- **Activité en direct / Dynamic Island** pour ce qui a un début et une fin :
+  - le défi du jour accepté (temps restant jusqu'à minuit, série en jeu) ;
+  - la photo du jour d'un lien (« Léa a posté, à toi ») ;
+  - une sortie en cours déclarée (« Nino est de sortie »).
+- Données partagées par un groupe d'apps ; mises à jour par push. Pas d'activité permanente : Apple les limite à des événements bornés dans le temps.
+
+## 20. Administration
+
+Une appli web séparée (`apps/admin`), réservée aux adresses autorisées (liste dans `apps/api/.env`), lecture seule sauf modération.
+
+- **Vue d'ensemble** : comptes (total, nouveaux, actifs jour / semaine / mois), rétention J1 / J7 / J30, abonnés et essais, série moyenne.
+- **Minimoas** : nombre de messages de minimoas, taux de réaction, ceux « qui vont le mieux » (forme, série, liens actifs), répartition des visions.
+- **Liens et rencontres** : rencontres proposées, saluées, acceptées ; compatibilité moyenne ; liens vivants ou fantômes.
+- **Modération** : signalements à traiter (motif, contexte), blocages, actions (avertir, suspendre, supprimer), journal des actions. Délai cible affiché : 24 h.
+- **Coûts** : appels et dépense IA par jour et par fonction, plafond et interrupteur.
+- Aucune lecture des conversations depuis l'admin, sauf le message signalé et son contexte immédiat.
+
+## 21. Pages légales
+
+Éditeur : **Avec Trois E** (forme juridique, capital, SIREN, adresse, directeur de la publication : à compléter, laissés en champs de configuration).
+Pages, sur le site et liées depuis l'app : mentions légales · conditions d'utilisation · politique de confidentialité · conditions de l'abonnement Blowy+ · règles de la communauté · cookies · sécurité et signalement · supprimer son compte et ses données · assistance. En français (version qui fait foi) et traduites en ES, EN, PT, NL.
+
+## 22. Coûts et montée en charge (objectif : 1 M de téléchargements, presque rien tant qu'il n'y a personne)
+
+- **IA** : toujours la règle avant le modèle ; le plus petit modèle qui suffit ; une seule porte d'entrée (`AiGateway`) qui compte chaque appel, applique un budget par personne et par jour, un plafond global et un interrupteur.
+  - Chat : pas d'appel par message. Analyse au déclencheur (silence, tous les N messages), sur une fenêtre courte, 3 interventions par jour et par lien au plus.
+  - Photos de preuve : image réduite (512 px), petit modèle de vision, réponse courte.
+  - Bilan : modèles de phrases pour tous ; texte par IA seulement pour les comptes actifs de la semaine.
+  - Cache des consignes, traitement par lots quand rien ne presse.
+- **API** : sans état, derrière un cache pour les lectures fréquentes, limites de débit par personne, pagination partout, tâches planifiées par lots.
+- **Base** : index sur chaque requête de liste, messages rangés par mois quand le volume le demandera, temps réel limité aux chats ouverts.
+- **Fichiers** : photos compressées sur le téléphone, preuves supprimées sous 24 h.
+- **Services gratuits ou à l'usage** : carte Apple (sans clé ni coût), push Expo, achats vérifiés directement auprès d'Apple (pas d'intermédiaire payant).
+- Un tableau des coûts estimés par palier (1 k, 10 k, 100 k, 1 M) est tenu dans `docs/COUTS.md`.
+
+## 23. Langues
+
+FR, EN, ES, PT, NL, selon la langue du téléphone (repli : anglais ; français si la langue est le français). Tout texte passe par des clés : app, textes venant de l'API (voix du minimoa, défis, bilans, notifications, e-mails), pages légales. Les prix et les dates suivent la région.
