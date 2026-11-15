@@ -61,6 +61,12 @@ export interface AdminReportRow {
   handledAt: string | null;
   handledBy: string | null;
   resolution: ModerationActionKind | null;
+  /** 0 normal · 1 haut · 2 urgent ; la file des ouverts commence par les plus prioritaires. */
+  priority: number;
+  source: 'person' | 'filter';
+  category: string | null;
+  /** Monde d'exemple du compte de revue d'Apple. */
+  review: boolean;
 }
 
 export interface ReportFilter {
@@ -82,7 +88,7 @@ export interface ContextMessage {
 }
 
 export interface ModerationRepository {
-  /** Signalements du plus ancien au plus récent pour les ouverts (le plus urgent d'abord), du plus récent sinon. */
+  /** Ouverts : les plus prioritaires d'abord, puis du plus ancien au plus récent ; les autres : du plus récent au plus ancien. */
   page(filter: ReportFilter, cursor: string | null, limit: number): Promise<AdminReportRow[]>;
   find(id: string): Promise<AdminReportRow | null>;
   counts(now: string, overdueHours: number): Promise<{ open: number; overdue: number }>;

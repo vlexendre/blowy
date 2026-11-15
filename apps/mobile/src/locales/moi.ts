@@ -37,7 +37,8 @@ export const moi = messages({
       rows: {
         seeking: { title: 'Ce que tu cherches', subtitle: (v: string) => v },
         discreet: { title: 'Mode discret', subtitle: (on: boolean) => (on ? 'Tu n’apparais sur la carte de personne' : 'Visible sur la carte, position arrondie') },
-        minimoas: { title: 'Minimoas dans tes chats', subtitle: 'Lecture par une IA, chat par chat' },
+        /** Moi › L’IA et toi : chaque usage de l’IA tierce et son accord (audit B5). */
+        ia: { title: 'L’IA et toi', subtitle: 'Ce qu’elle voit, tes accords' },
         settings: { title: 'Réglages', subtitle: 'Compte, notifications, position, aide' },
       },
       discreetError: 'Le mode discret n’a pas changé. Réessaie.',
@@ -52,7 +53,8 @@ export const moi = messages({
         identity: { title: 'Qui tu es, ce que tu cherches', subtitle: (v: string) => v },
         plus: { title: 'Blowy+', subtitle: (member: boolean) => (member ? 'Abonnement actif' : 'Pas encore de Blowy+') },
         notifications: { title: 'Notifications', subtitle: 'Défi, séries, liens, rencontres' },
-        minimoas: { title: 'Minimoas dans tes chats', subtitle: 'Lecture par une IA, chat par chat' },
+        /** Moi › L’IA et toi : chaque usage de l’IA tierce et son accord (audit B5). */
+        ia: { title: 'L’IA et toi', subtitle: 'Ce qu’elle voit, tes accords' },
         location: { title: 'Ma position', subtitle: (on: boolean) => (on ? 'Activée, arrondie à 300 m environ' : 'Désactivée') },
         discreet: { title: 'Mode discret', subtitle: 'Tu n’apparais sur la carte de personne' },
         blocked: { title: 'Personnes bloquées', subtitle: (n: number | null) => (n === null ? ' ' : n === 0 ? 'Personne' : n === 1 ? '1 personne' : `${n} personnes`) },

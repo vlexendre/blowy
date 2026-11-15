@@ -34,6 +34,7 @@ import type {
 import { HABIT_CHECKS, HABIT_VERIFIER, HABITS, RITUAL_PHOTOS, RITUAL_STATES } from '../tokens';
 import { RitualNotifications, RitualsContext } from './rituals-context';
 import { requestLocale } from '../../../shared/locale';
+import { AiConsents } from '../../ai-consents/application/ai-consents.service';
 
 /** Fenêtre relue pour les séries d'habitude (au-delà, la série affichée plafonne). */
 export const HABIT_HISTORY_DAYS = 120;
@@ -41,10 +42,8 @@ export const HABIT_HISTORY_DAYS = 120;
 export const habitPhotoPattern = (userId: string, ref: string, day: Day): RegExp =>
   new RegExp(`^rituals/${userId}/${day}/habit-${ref}-[0-9a-f-]{36}\\.(jpg|webp)$`);
 
-const lineFor = (verdict: ProofVerdict, seed: string): string => {
-  const lines = rituelsText.in(requestLocale()).proofVerdictLines[verdict];
-  return lines[seedOf(seed) % lines.length] ?? lines[0] ?? '';
-};
+const pickLine = (lines: readonly string[], seed: string): string => lines[seedOf(seed) % lines.length] ?? lines[0] ?? '';
+const lineFor = (verdict: ProofVerdict, seed: string): string => pickLine(rituelsText.in(requestLocale()).proofVerdictLines[verdict], seed);
 
 /** Définition d'une habitude suivie ; une habitude retirée du catalogue garde un libellé neutre. */
 const defOf = (habit: HabitRecord): HabitDef =>
@@ -107,6 +106,7 @@ export class HabitsService {
     @Inject(RitualNotifications) private readonly notifications: RitualNotifications,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(IDS) private readonly ids: Ids,
+    @Inject(AiConsents) private readonly aiConsents: AiConsents,
   ) {}
 
   async catalogue(userId: string): Promise<HabitCatalogue> {
@@ -196,11 +196,47 @@ export class HabitsService {
     const photo: RitualPhotoRecord = { id: this.ids.uuid(), userId, source: 'habit', day: today, path, caption: def.label, keep, createdAt: now, deletedAt: null };
     await this.photos.create(photo);
 
-    const profile = await this.ctx.profile(userId);
-    const { verdict } = await this.verifier.verify({ userId, locale: profile.locale ?? 'fr', habitId: habit.habitId, path });
+    // App Review 5.1.2(i) (audit B5) : l'image ne part au prestataire d'IA qu'avec l'accord explicite de la personne.
+    // Sans accord (jamais demandé, refusé ou retiré) : personne ne la vérifie, on fait confiance (« pas sûr » compte).
+    const checked = await this.aiConsents.proofsAllowed(userId);
+    const verdict: ProofVerdict = checked
+      ? (await this.verifier.verify({ userId, locale: (await this.ctx.profile(userId)).locale ?? 'fr', habitId: habit.habitId, path })).verdict
+      : 'unsure';
+    const line = checked ? lineFor(verdict, path) : pickLine(rituelsText.in(requestLocale()).proofUncheckedLines, path);
+    const { counted, newItems, habitDto } = await this.record(userId, habit, def, previous, verdict, line, photo.id, now);
+    return { photo, verdict, counted, line, habit: habitDto, newItems };
+  }
+
+  /**
+   * Habitude tenue sans photo ni IA (« Sans vérification par IA ») : rien n'est envoyé à personne ; on fait confiance,
+   * comme pour un « pas sûr ». Mêmes effets qu'une preuve qui compte (série, objets, sociabilité, vision).
+   */
+  async done(userId: string, ref: string): Promise<{ verdict: ProofVerdict; counted: boolean; line: string; habit: Habit; newItems: string[] }> {
+    const habit = await this.owned(userId, ref);
+    const today = this.ctx.today();
+    const previous = await this.notCountedYet(ref, today);
+    const def = defOf(habit);
+    const now = this.ctx.now().toISOString();
+    const line = pickLine(rituelsText.in(requestLocale()).selfCheckLines, `${ref}:${today}`);
+    const { counted, newItems, habitDto } = await this.record(userId, habit, def, previous, 'unsure', line, null, now);
+    return { verdict: 'unsure', counted, line, habit: habitDto, newItems };
+  }
+
+  /** Enregistre la preuve du jour et, si elle compte, ses effets (compteur, objets, sociabilité, vision). */
+  private async record(
+    userId: string,
+    habit: HabitRecord,
+    def: HabitDef,
+    previous: HabitCheckRecord | null,
+    verdict: ProofVerdict,
+    line: string,
+    photoId: string | null,
+    now: string,
+  ): Promise<{ counted: boolean; newItems: string[]; habitDto: Habit }> {
+    const ref = habit.id;
+    const today = this.ctx.today();
     const counted = proofCounts(verdict);
-    const line = lineFor(verdict, path);
-    await this.checks.upsert({ id: previous?.id ?? this.ids.uuid(), habitRef: ref, userId, day: today, verdict, line, photoId: photo.id, createdAt: now });
+    await this.checks.upsert({ id: previous?.id ?? this.ids.uuid(), habitRef: ref, userId, day: today, verdict, line, photoId, createdAt: now });
 
     let newItems: string[] = [];
     if (counted) {
@@ -211,7 +247,7 @@ export class HabitsService {
       for (const item of newItems) await this.notifications.send(userId, 'item_unlocked', rituelsNotificationVars.itemUnlocked(item, `habits_${kept}`));
     }
     const checks = await this.checks.listSince([ref], addDays(today, -HABIT_HISTORY_DAYS));
-    return { photo, verdict, counted, line, habit: toHabitDto(habit, checks, today, this.ctx.hour()), newItems };
+    return { counted, newItems, habitDto: toHabitDto(habit, checks, today, this.ctx.hour()) };
   }
 
   /** Garder (ou ne plus garder) une photo privée dans ses souvenirs ; une photo déjà supprimée ne revient pas. */

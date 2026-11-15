@@ -280,7 +280,7 @@ function CareDemo() {
           worn={outfit[slot] ?? null}
           itemLabels={itemLabel}
           goalLabels={statGoalLabel}
-          premiumLabel="bientôt"
+          premiumLabel="Blowy+"
           wornLabel="porté"
           onSelect={(it) => {
             if (it.state === 'owned') setOutfit((o) => (o[it.slot] === it.id ? { ...o, [it.slot]: undefined } : { ...o, [it.slot]: it.id }));
@@ -368,7 +368,7 @@ function CareLevel() {
           <ItemTile id="toque" label="toque" state="locked" goalText="10 jours de soins" progress={{ have: 4, need: 10 }} onPress={noop} />
         </View>
         <View style={styles.row}>
-          <ItemTile id="aureole" label="auréole" state="premium" premiumLabel="bientôt" onPress={noop} />
+          <ItemTile id="aureole" label="auréole" state="premium" premiumLabel="Blowy+" onPress={noop} />
           <ItemTile id="tasse" label="tasse" state="owned" newLabel="nouveau" onPress={noop} />
           <ItemTile id="couronne" label="couronne" state="locked" goalText="niveau 7 d’un lien" progress={{ have: 3, need: 7 }} />
         </View>

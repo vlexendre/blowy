@@ -98,6 +98,13 @@ export class VisionController {
     return status(await this.locations.chooseCity(user.userId, { label: body.label, lat: body.latitude, lng: body.longitude }));
   }
 
+  /** Zone choisie à la main, sans localisation (gratuit ; une fois tous les 30 jours sans Blowy+). */
+  @RateLimit('write')
+  @Put('me/area')
+  async chooseArea(@CurrentUser() user: AuthUser, @Body(new ZodPipe(ChosenCityZ)) body: z.infer<typeof ChosenCityZ>): Promise<LocationStatus> {
+    return status(await this.locations.chooseArea(user.userId, { label: body.label, lat: body.latitude, lng: body.longitude }));
+  }
+
   @RateLimit('write')
   @Delete('me/city')
   async clearCity(@CurrentUser() user: AuthUser): Promise<LocationStatus> {

@@ -199,8 +199,9 @@ export const wardrobe = messages({
     empty: 'Rien',
     worn: 'Porté',
     new: 'Nouveau',
-    premium: 'Bientôt',
-    hints: { owned: 'Toucher pour le lui mettre', worn: 'Toucher pour le retirer', locked: 'Toucher pour voir comment le gagner', premium: 'Bientôt disponible' },
+    /** Étiquette des objets inclus dans Blowy+ (possédés ou non). */
+    premium: 'Blowy+',
+    hints: { owned: 'Toucher pour le lui mettre', worn: 'Toucher pour le retirer', locked: 'Toucher pour voir comment le gagner', premium: 'Toucher pour voir Blowy+' },
     petA11y: (name: string): string => `${name}, habillé`,
     /** Sous un objet à gagner : l'étape en bref. */
     goalShort: {
@@ -247,10 +248,11 @@ export const wardrobe = messages({
       ritualStreak: 'Relever le défi du jour',
       habitsKept: 'Tenir une habitude',
     } as Record<StatKey, string>,
-    premiumNote: 'Bientôt disponible',
+    premiumNote: 'Inclus dans Blowy+',
     /** Fiche d'un objet Blowy+ : ouvre la feuille Blowy+. */
     premiumCta: 'Voir Blowy+',
-    premiumText: 'Cet objet arrive avec Blowy+. Pas encore en vente : on te prévient dès qu’il l’est.',
+    /** Fin de l'abonnement : le minimoa range ses objets premium (audit B3). */
+    premiumText: 'Avec Blowy+, tous les objets premium sont à lui, tant que l’abonnement dure. S’il s’arrête, il les range ; ils reviennent avec Blowy+.',
     close: 'Fermer',
     loadError: 'Impossible d’ouvrir la garde-robe',
     outfitError: 'La tenue n’a pas changé. Réessaie.',

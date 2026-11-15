@@ -1,4 +1,4 @@
-import type { Needs, PetEventKind } from '@blowy/domain';
+import type { Needs, Outfit, PetEventKind } from '@blowy/domain';
 import type { MemoryDb } from '../../../persistence/memory-db';
 import type { PetEventRecord, PetRecord, PetsRepository } from '../ports';
 
@@ -33,6 +33,20 @@ export class MemoryPetsRepository implements PetsRepository {
     const current = this.db.pets.get(petId);
     if (!current) throw new Error('pet introuvable');
     this.db.pets.set(petId, copy({ ...current, needs, needsAt }));
+  }
+
+  async saveOutfit(petId: string, outfit: Outfit): Promise<void> {
+    const current = this.db.pets.get(petId);
+    if (current) current.outfit = { ...outfit };
+  }
+
+  async listWearing(itemIds: readonly string[], afterId: string | null, limit: number): Promise<PetRecord[]> {
+    const wanted = new Set(itemIds);
+    return [...this.db.pets.values()]
+      .filter((p) => (afterId === null || p.id > afterId) && Object.values(p.outfit).some((id) => id !== undefined && wanted.has(id)))
+      .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+      .slice(0, limit)
+      .map(copy);
   }
 
   async raiseBestStreak(ownerIds: readonly string[], streak: number): Promise<void> {

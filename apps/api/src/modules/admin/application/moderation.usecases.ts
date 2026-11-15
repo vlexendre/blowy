@@ -12,6 +12,7 @@ import type {
   ModerationActionBody,
 } from '@blowy/contract';
 import { moderationTextIn } from '@blowy/content';
+import { priorityOfRank } from '@blowy/domain';
 import { Notifier as MailNotifier } from '../../../integrations/mailer/notifier';
 import type { Storage } from '../../../integrations/storage/ports';
 import type { Clock } from '../../../shared/clock';
@@ -68,7 +69,7 @@ export class Moderation {
     const last = page[page.length - 1];
     return {
       items: await this.present(page, now),
-      nextCursor: rows.length > query.limit && last ? reportCursor(last) : null,
+      nextCursor: rows.length > query.limit && last ? reportCursor(last, query.status === 'open') : null,
       open: counts.open,
       overdue: counts.overdue,
       targetHours: REPORT_TARGET_HOURS,
@@ -221,6 +222,10 @@ export class Moderation {
         linkId: r.linkId,
         hasMessage: r.messageId !== null,
         resolution: r.handledAt && r.resolution && r.handledBy ? { action: r.resolution, at: r.handledAt, by: r.handledBy } : null,
+        priority: priorityOfRank(r.priority),
+        source: r.source,
+        category: r.category,
+        review: r.review,
       } satisfies AdminReportItem;
     });
   }

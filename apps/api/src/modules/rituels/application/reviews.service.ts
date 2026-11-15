@@ -174,9 +174,19 @@ export class ReviewsService {
         }
       : null;
 
-    const template = [reviewText.intro(pet.name), ...did, kind([noticed])[0] ?? reviewText.noticedSteady, tip, ...linkLines].join('\n');
+    const noticedLine = kind([noticed])[0] ?? reviewText.noticedSteady;
+    const template = [reviewText.intro(pet.name), ...did, noticedLine, tip, ...linkLines].join('\n');
     // IA seulement pour les personnes actives de la semaine ; le modèle de phrases dès que la passerelle refuse.
-    const coached = isActiveWeek(facts) ? await this.coach.rephrase({ userId, locale: profile.locale ?? 'fr', template }) : null;
+    // Rien qui nomme quelqu'un ne part au prestataire (audit B5) : ni les prénoms des liens (leurs lignes restent hors
+    // de l'IA et sont ajoutées après), ni le nom du minimoa (remplacé par un nom d'emprunt, remis au retour).
+    const forAi = reviewTextForAi({
+      intro: reviewText.intro(REVIEW_AI_STAND_IN),
+      did: kind(reviewHighlights(facts).map((h) => reviewText.highlight[h]({ ...vars, petName: REVIEW_AI_STAND_IN }))),
+      noticed: noticedLine,
+      tip,
+    });
+    const rephrased = isActiveWeek(facts) ? await this.coach.rephrase({ userId, locale: profile.locale ?? 'fr', template: forAi }) : null;
+    const coached = rephrased ? [withPetName(rephrased, pet.name), ...linkLines].join('\n') : null;
 
     const created = await this.reviews.insertIfAbsent({
       id: this.ids.uuid(),
@@ -199,6 +209,20 @@ export class ReviewsService {
     return created;
   }
 }
+
+/** Nom d'emprunt du minimoa dans le texte envoyé à l'IA (remplacé par le vrai nom au retour). */
+export const REVIEW_AI_STAND_IN = 'Momo';
+
+/**
+ * Texte du bilan envoyé au prestataire d'IA : l'intro, ce que la personne a fait (compteurs), ce que le minimoa a
+ * remarqué de sa vision (phrase générique) et le conseil. Jamais les lignes des liens (prénoms d'autres personnes).
+ */
+export function reviewTextForAi(parts: { intro: string; did: readonly string[]; noticed: string; tip: string }): string {
+  return [parts.intro, ...parts.did, parts.noticed, parts.tip].join('\n');
+}
+
+/** Remet le nom du minimoa dans le texte reformulé. */
+export const withPetName = (text: string, petName: string): string => text.split(REVIEW_AI_STAND_IN).join(petName);
 
 /** Mouvement par axe entre deux relevés (seulement les axes connus des deux côtés). */
 function deltaOf(before: Partial<Record<VisionAxis, number>>, after: Partial<Record<VisionAxis, number>>): Partial<Record<VisionAxis, number>> {

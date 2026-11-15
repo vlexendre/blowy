@@ -18,7 +18,8 @@ export class Notifier {
   async notify(userId: string, email: Email, knownAddress?: string | null): Promise<boolean> {
     try {
       const to = knownAddress ?? (await this.emails.emailOf(userId));
-      if (!to) return false;
+      // Adresses réservées (`.invalid`, RFC 2606) : personnes fictives du compte de revue, jamais d'envoi.
+      if (!to || /\.invalid$/i.test(to)) return false;
       await this.mailer.send({ to, subject: email.subject, html: email.html, text: email.text });
       return true;
     } catch (err) {

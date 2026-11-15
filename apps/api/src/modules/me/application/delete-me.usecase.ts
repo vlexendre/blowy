@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { FIXTURE_ACCOUNTS, type FixtureAccounts } from '../../../review/review-auth';
 import { AppleRevocation } from '../../../integrations/auth/apple-revocation';
 import type { AuthAdmin } from '../../../integrations/auth/ports';
 import type { Storage } from '../../../integrations/storage/ports';
@@ -25,6 +26,7 @@ export class DeleteMe {
     @Inject(AUTH_ADMIN) private readonly auth: AuthAdmin,
     @Inject(RITUAL_PHOTOS) private readonly ritualPhotos: RitualPhotosRepository,
     @Inject(AppleRevocation) private readonly apple: AppleRevocation,
+    @Optional() @Inject(FIXTURE_ACCOUNTS) private readonly fixtures: FixtureAccounts | null = null,
   ) {}
 
   async execute(userId: string): Promise<void> {
@@ -35,6 +37,11 @@ export class DeleteMe {
     // Photos privées des rituels (preuves, défis photo) encore dans le stockage, gardées ou pas.
     paths.push(...(await this.ritualPhotos.listLive(userId)).map((p) => p.path));
     await this.storage.remove(paths);
+    // Compte de revue d'Apple : ses personnes fictives partent avec lui, comptes d'authentification compris.
+    if (profile?.reviewWorld === userId) {
+      for (const f of await this.profiles.listFixtures(userId)) await this.fixtures?.remove(f.id).catch(() => undefined);
+      await this.profiles.deleteFixtures(userId);
+    }
     await this.apple.revokeFor(userId);
     await this.auth.deleteUser(userId);
   }

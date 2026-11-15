@@ -4,6 +4,7 @@ import type { EncounterHistoryItem, MatchExplanation, Suggestion } from '@blowy/
 import { color } from '@blowy/tokens';
 import {
   Banner,
+  Button,
   DotNote,
   EmptyState,
   EncounterHistory,
@@ -35,12 +36,12 @@ import {
   whyA11y,
 } from '@/features/encounters';
 import { errorText, timeLabel } from '@/features/links';
-import { useFreshPosition } from '@/features/map';
+import { AreaSheet, useFreshPosition } from '@/features/map';
 import { useMe } from '@/features/me';
 import { openPlus, usePlusPerks } from '@/features/plus';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
-import { rencontres as t } from '@/locales/rencontres';
+import { carte as carteText, rencontres as t } from '@/locales/rencontres';
 
 const viaLabel = (s: Suggestion): string =>
   s.via === 'friend_of_friend' ? t.via.friend_of_friend(s.mutualName) : t.via[s.via]();
@@ -85,6 +86,7 @@ export default function RencontresScreen() {
     }, [refetchHistory]),
   );
   const [refreshing, setRefreshing] = useState(false);
+  const [areaSheet, setAreaSheet] = useState(false);
   const bump = usePetBump();
 
   const myPet = pet.data?.pet;
@@ -109,6 +111,7 @@ export default function RencontresScreen() {
 
   // Pas de position : ce qui manque, et comment l'activer (ou, refusée, comment l'autoriser dans les Réglages).
   const denied = location.permission?.status === 'denied' && !location.permission.canAskAgain;
+  // Refusée : choisir sa ville à la main (gratuit, App Review 5.1.1(iv)) ; sinon, activer la localisation.
   const placeBanner = (
     <Banner
       tone="info"
@@ -122,8 +125,8 @@ export default function RencontresScreen() {
               : t.noLocation.denied
             : t.noLocation.text(petName)
       }
-      actionLabel={denied && Platform.OS !== 'web' ? t.noLocation.settings : denied ? undefined : t.noLocation.action}
-      onAction={denied ? location.openSettings : () => void location.enable()}
+      actionLabel={denied || location.result === 'denied' ? t.noLocation.chooseCity : t.noLocation.action}
+      onAction={denied || location.result === 'denied' ? () => setAreaSheet(true) : () => void location.enable()}
       actionBelow
     />
   );
@@ -268,6 +271,9 @@ export default function RencontresScreen() {
         />
       ) : null}
       {encounters.data && !sulking && !noVision && noPlace ? placeBanner : null}
+      {encounters.data && !sulking && !noVision && noPlace && !(denied || location.result === 'denied') ? (
+        <Button label={carteText.area.choose} variant="glass" size="sm" onPress={() => setAreaSheet(true)} />
+      ) : null}
 
       {encounters.data && !sulking && !noVision ? <DotNote text={t.filterNote(petName)} /> : null}
       {encounters.data ? <DotNote text={t.reminderShort} dot={color.mute} /> : null}
@@ -283,6 +289,7 @@ export default function RencontresScreen() {
         loadingMore={history.isFetchingNextPage}
       />
     </TabTemplate>
+    <AreaSheet visible={areaSheet} onClose={() => setAreaSheet(false)} />
     </ScreenMotion>
   );
 }

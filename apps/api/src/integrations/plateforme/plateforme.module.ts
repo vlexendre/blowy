@@ -22,6 +22,7 @@ import type { Clock } from '../../shared/clock';
 import { CLOCK } from '../../shared/tokens';
 import { MemoryRateLimitStore, RATE_LIMIT_STORE, UserRateLimitGuard } from '../../shared/user-rate-limit';
 import { AI_GATEWAY } from '../ai/ai-gateway';
+import { AI_PROCESSOR } from '../ai/ai-processor';
 import { AiUsage } from '../ai/ai-usage.service';
 import { AnthropicModel } from '../ai/anthropic-model';
 import { MemoryAiUsageStore } from '../ai/memory-usage-store';
@@ -61,6 +62,7 @@ export class PlateformeModule {
       Background,
       repository<AiUsageStore>(AI_USAGE_STORE, env.adapters, (db) => new MemoryAiUsageStore(db), (c) => new SupabaseAiUsageStore(c)),
       { provide: AI_MODEL, useValue: model },
+      { provide: AI_PROCESSOR, useValue: p.ai.processor },
       {
         provide: AI_GATEWAY,
         useFactory: (store: AiUsageStore, cache: Cache, clock: Clock) => new MeteredAiGateway(model, p.ai, store, cache, clock),

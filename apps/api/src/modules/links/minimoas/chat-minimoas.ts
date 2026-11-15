@@ -9,10 +9,14 @@
  * Quand la passerelle refuse (coupée, budget, panne), une ligne de règle (`@blowy/content` v7/chat) la remplace.
  */
 import { Inject, Injectable, Optional } from '@nestjs/common';
+import { AI_PROCESSOR, type AiProcessor } from '../../../integrations/ai/ai-processor';
 import { CHAT_AI_SYSTEM, type ChatLineContext, chatAiPrompt, chatConfidentialityText, chatLines, type Locale } from '@blowy/content';
 import {
   AI_WINDOW_CHARS,
   AI_WINDOW_MESSAGES,
+  GUARD_COOLDOWN_HOURS,
+  classifyText,
+  decideModeration,
   CHAT_MAX_INTERVENTIONS_PER_DAY,
   SILENCE_NUDGE_HOURS,
   type ChatPetState,
@@ -96,6 +100,8 @@ export class ChatMinimoas {
     @Inject(CACHE) private readonly cache: Cache,
     @Inject(CLOCK) private readonly clock: Clock,
     @Optional() @Inject(VISION_READER) private readonly vision: VisionReader | null,
+    // Prestataire d'IA nommé dans la phrase d'accord (configuration ; par défaut celui de la politique de confidentialité).
+    @Optional() @Inject(AI_PROCESSOR) private readonly processor: AiProcessor | null = null,
   ) {}
 
   // ── Réglages ─────────────────────────────────────────────────────────────
@@ -138,7 +144,7 @@ export class ChatMinimoas {
         return this.toView(link, userId, rows, state, lang);
       }),
     );
-    return { items, nextCursor: page.length > limit ? (shown.at(-1)?.id ?? null) : null, text: chatConfidentialityText(lang), readingDefault };
+    return { items, nextCursor: page.length > limit ? (shown.at(-1)?.id ?? null) : null, text: chatConfidentialityText(lang, this.processor ?? undefined), readingDefault };
   }
 
   /** Réglage par défaut des nouveaux liens. Les liens existants ne changent pas (voir `setAll`). */
@@ -224,6 +230,16 @@ export class ChatMinimoas {
           state = { ...countIntervention(state, today), lastGuardAt: now.toISOString() };
           followUp = () => this.guard(link.id, userId);
         }
+      }
+      // Garde-fou cohérent avec le filtre des contenus : un message livré mais signalé à la modération (insulte, sexe
+      // explicite) vaut un garde-fou, à son auteur seul, même sans lecture par l'IA (ligne de règle : rien ne sort du
+      // serveur). Au plus un par 24 h et par lien, dans le plafond des interventions ; si l'IA a déjà été appelée
+      // ci-dessus pour un garde-fou, c'est elle qui parle.
+      const filtered = decideModeration('message', classifyText(text, draft.localeOf(userId)));
+      const guardRested = state.lastGuardAt === null || now.getTime() - new Date(state.lastGuardAt).getTime() >= GUARD_COOLDOWN_HOURS * 3_600_000;
+      if (!followUp && filtered.outcome === 'flag' && guardRested && interventionsLeft(state, today) > 0) {
+        draft.pet(userId, chatLines.guard(await this.ctx(draft, userId, await this.voices(link), 'guard-filter')), 'guard', userId);
+        state = { ...countIntervention(state, today), lastGuardAt: now.toISOString() };
       }
       if (!followUp) {
         const voices = await this.voices(link);
@@ -396,7 +412,7 @@ export class ChatMinimoas {
     const theirs = theirConsentOf(rows.find((r) => r.userId === other)?.consent ?? null);
     return {
       linkId: link.id,
-      consent: { mine: mine?.consent ?? null, reading: this.reading(link, rows), text: chatConfidentialityText(lang), theirs, byDefault: mine?.byDefault ?? false },
+      consent: { mine: mine?.consent ?? null, reading: this.reading(link, rows), text: chatConfidentialityText(lang, this.processor ?? undefined), theirs, byDefault: mine?.byDefault ?? false },
       muted: mine?.muted ?? false,
       interventionsToday: interventionsToday(state, dayOf(this.clock.now())),
       maxPerDay: CHAT_MAX_INTERVENTIONS_PER_DAY,

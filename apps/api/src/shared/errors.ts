@@ -53,6 +53,7 @@ export const HTTP_STATUS: Record<ErrorCode, number> = {
   rename_locked: 409,
   rate_limited: 429,
   suspended: 403,
+  content_refused: 422,
   internal: 500,
 };
 

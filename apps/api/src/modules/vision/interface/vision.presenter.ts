@@ -1,6 +1,6 @@
 import type { Identity, LocationStatus, MatchExplanation, VisionProfileDto, VisionTest } from '@blowy/contract';
 import { type Locale, visionExploreLine, visionSideLine, visionText } from '@blowy/content';
-import { type AxisLeans, type AxisSide, VISION_AXES, VISION_TEST, type VisionAxis, ZONE_RADIUS_KM, entitlements, sideOf } from '@blowy/domain';
+import { type AxisLeans, type AxisSide, MANUAL_AREA_CHANGE_DAYS, VISION_AXES, VISION_TEST, type VisionAxis, ZONE_RADIUS_KM, addDays, entitlements, sideOf } from '@blowy/domain';
 import type { Profile } from '../../me/ports';
 import type { PlaceRecord, VisionSnapshot } from '../ports';
 
@@ -70,6 +70,11 @@ export function toLocationStatus(profile: Profile, place: PlaceRecord | null, pl
     zone: usable ? { center: { latitude: usable.home.lat, longitude: usable.home.lng }, radiusKm: ZONE_RADIUS_KM } : null,
     chosenCity: usable?.chosenCity ? { label: usable.chosenCity.label, latitude: usable.chosenCity.lat, longitude: usable.chosenCity.lng } : null,
     chosenCityActive: !!usable?.chosenCity && entitlements(plus).changeCity,
+    source: usable ? (usable.source ?? 'gps') : null,
+    manualArea:
+      usable?.source === 'manual' && usable.manualArea
+        ? { label: usable.manualArea.label, nextChangeOn: entitlements(plus).changeCity ? null : addDays(usable.manualArea.setOn, MANUAL_AREA_CHANGE_DAYS) }
+        : null,
   };
 }
 

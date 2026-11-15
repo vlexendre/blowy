@@ -128,6 +128,33 @@ export function itemProgress(i: Item, stats: PetStats): { have: number; need: nu
   return { have: Math.min(stats[i.unlock.stat], i.unlock.n), need: i.unlock.n };
 }
 
+/** Objets « premium » : inclus dans Blowy+, portables tant que l'abonnement dure. */
+export const PREMIUM_ITEM_IDS: readonly string[] = ITEMS.filter((i) => i.unlock.kind === 'premium').map((i) => i.id);
+export const isPremiumItem = (id: string): boolean => BY_ID.get(id)?.unlock.kind === 'premium';
+
+/**
+ * Objets possédés selon l'abonnement : ceux gagnés ou attribués (`owned`), plus tous les objets premium tant que
+ * Blowy+ est actif (`premiumItems` de `entitlements`). Sans Blowy+, un objet premium n'est jamais possédé, même s'il
+ * avait été attribué autrement (monde de démo, ancien achat).
+ */
+export function ownedWith(owned: Iterable<string>, premiumItems: boolean): Set<string> {
+  const out = new Set<string>();
+  for (const id of owned) if (premiumItems || !isPremiumItem(id)) out.add(id);
+  if (premiumItems) for (const id of PREMIUM_ITEM_IDS) out.add(id);
+  return out;
+}
+
+/** Tenue sans les objets premium (fin de Blowy+ : le minimoa les range). Même objet rendu si rien ne change. */
+export function withoutPremium(outfit: Outfit): Outfit {
+  if (!ITEM_SLOTS.some((slot) => outfit[slot] !== undefined && isPremiumItem(outfit[slot] as string))) return outfit;
+  const out: Outfit = {};
+  for (const slot of ITEM_SLOTS) {
+    const id = outfit[slot];
+    if (id && !isPremiumItem(id)) out[slot] = id;
+  }
+  return out;
+}
+
 /** Ne garde d'une tenue que les objets possédés et rangés dans le bon emplacement. */
 export function cleanOutfit(outfit: Outfit, owned: ReadonlySet<string>): Outfit {
   const out: Outfit = {};

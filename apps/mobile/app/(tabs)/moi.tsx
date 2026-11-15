@@ -134,7 +134,7 @@ export default function Moi() {
             onSwitchChange: (on: boolean) => discreet.mutate(on),
             disabled: discreet.isPending,
           },
-          { key: 'minimoas', ...t.rows.minimoas, onPress: () => router.push('/moi/minimoas') },
+          { key: 'ia', ...t.rows.ia, onPress: () => router.push('/moi/ia') },
           { key: 'settings', ...t.rows.settings, onPress: () => router.push('/moi/reglages') },
         ]}
       />

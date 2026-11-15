@@ -5,6 +5,7 @@
  */
 import type { LinkHealthKey, Locale, MinimoaVoice, VisionAxis } from '@blowy/domain';
 import { TODO, defineMessages, fillTemplate } from '../i18n/core';
+import { type AiProcessor, DEFAULT_AI_PROCESSOR, aiProcessorView } from '../ai-provider';
 
 export { fillTemplate };
 
@@ -14,7 +15,8 @@ type Lang = Locale;
 type VoiceLines = Readonly<Record<MinimoaVoice, readonly string[]>>;
 
 interface ChatLines {
-  confidentiality: string;
+  /** Accord de lecture : nomme le prestataire d'IA et son pays (configuration de l'API, jamais écrits en dur). */
+  confidentiality: (provider: string, country: string) => string;
   system: { linkCreated: string };
   /** Brise-glace par axe de vision partagé ({other} = minimoa de l'autre). */
   icebreaker: Readonly<Record<VisionAxis, readonly string[]>>;
@@ -37,8 +39,9 @@ interface ChatLines {
 
 const FR: ChatLines = {
   /** Texte de la spéc (§9), servi avec l'état de l'accord pour que l'app montre partout les mêmes mots. */
-  confidentiality:
-    'Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n’est conservé après.',
+  // App Review 5.1.2(i) : dire que l'IA est un tiers, lequel et où (audit B5).
+  confidentiality: (provider: string, country: string): string =>
+    `Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par ${provider} (${country}), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.`,
   /** Bandeaux du système dans le chat. */
   system: { linkCreated: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
 
@@ -117,7 +120,11 @@ const FR: ChatLines = {
 export const chatText = defineMessages({ fr: FR, en: TODO, es: TODO, pt: TODO, nl: TODO });
 const linesFor = (lang: Lang): ChatLines => chatText.in(lang);
 
-export const chatConfidentialityText = (lang: Lang): string => chatText.in(lang).confidentiality;
+/** Phrase de l'accord de lecture, avec le prestataire d'IA de la configuration (`AiProcessor`). */
+export const chatConfidentialityText = (lang: Lang, processor: AiProcessor = DEFAULT_AI_PROCESSOR): string => {
+  const p = aiProcessorView(lang, processor);
+  return chatText.in(lang).confidentiality(p.name, p.country);
+};
 
 const pick = (variants: readonly string[], seed: number): string => {
   const n = variants.length;

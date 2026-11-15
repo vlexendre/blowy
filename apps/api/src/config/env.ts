@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { type PlateformeEnv, loadPlateformeEnv } from './plateforme.env';
 import { type FacturationAdminEnv, loadFacturationAdminEnv } from './facturation-admin.env';
 import { type AppleSignInEnv, loadAppleSignInEnv } from './apple-signin.env';
+import { type AuditEnv, loadAuditEnv } from './audit.env';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
@@ -48,6 +49,8 @@ export interface Env {
   facturationAdmin: FacturationAdminEnv;
   /** Révocation des jetons de Sign in with Apple à la suppression d'un compte. */
   appleSignIn: AppleSignInEnv;
+  /** Compte de revue d'Apple et alertes de modération (audit App Store). */
+  audit: AuditEnv;
 }
 
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
@@ -77,5 +80,6 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     plateforme: loadPlateformeEnv(source, e.BLOWY_ENV, e.BLOWY_ADAPTERS),
     facturationAdmin,
     appleSignIn: loadAppleSignInEnv(source, e.BLOWY_ADAPTERS, facturationAdmin.apple.bundleId),
+    audit: loadAuditEnv(source, { env: e.BLOWY_ENV, webUrl: e.WEB_URL.replace(/\/$/, '') }),
   };
 }

@@ -19,7 +19,7 @@ export interface ItemDetailProps {
   text?: string;
   /** Objet à gagner : la phrase de l'étape, l'avancement et une aide (« ton meilleur lien est au niveau 3. »). */
   goal?: { text: string; have: number; need: number; hint?: string };
-  /** Puce violette (« bientôt disponible ») pour un objet premium. */
+  /** Puce violette (« Inclus dans Blowy+ ») pour un objet premium. */
   note?: string;
   /** Bouton jaune vers l'endroit où on avance (« aller dans mes chats »). */
   action?: { label: string; onPress: () => void };

@@ -21,6 +21,7 @@ const fr = {
     rename_locked: 'Tu as déjà changé son nom récemment.',
     rate_limited: 'Doucement. Réessaie dans un moment.',
     suspended: 'Ton compte est suspendu.',
+    content_refused: 'Ce contenu ne respecte pas les règles de Blowy.',
     internal: 'Une erreur est survenue.',
   },
   /** « Ta demande n’est pas valide (champ : name). » */
@@ -76,6 +77,7 @@ export const apiErrorText = defineMessages({
       rename_locked: 'You changed its name recently.',
       rate_limited: 'Easy. Try again in a moment.',
       suspended: 'Your account is suspended.',
+      content_refused: 'This content doesn’t follow Blowy’s rules.',
       internal: 'Something went wrong.',
     },
     invalidField: (where: string) => `Your request isn’t valid (${where}).`,

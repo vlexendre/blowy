@@ -1,6 +1,7 @@
 /**
  * Ma position (spéc §10) : à quoi elle sert, l'accord, la zone, la ville choisie (Blowy+), et « l'oublier »
- * (`DELETE /v1/me/location` : position et accord effacés).
+ * (`DELETE /v1/me/location` : position et accord effacés). Sans localisation : choisir sa ville à la main, gratuit
+ * (`PUT /v1/me/area`, App Review 5.1.1(iv)).
  */
 import { Appear, Banner, Button, DotNote, SettingsSection, SettingsTemplate, Skeleton, Stack, Stagger, Text } from '@blowy/ui';
 import { useState } from 'react';
@@ -8,7 +9,7 @@ import { Platform } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { ConfirmSheet } from '@/features/links';
-import { useLocation } from '@/features/map';
+import { AreaSheet, useLocation } from '@/features/map';
 import { useMe } from '@/features/me';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -22,6 +23,7 @@ export default function Position() {
   const me = useMe();
   const location = useLocation(me.data);
   const [forgetting, setForgetting] = useState(false);
+  const [areaSheet, setAreaSheet] = useState(false);
   const back = () => goBack('/moi/reglages');
   const place = me.data?.identity.location;
 
@@ -42,7 +44,8 @@ export default function Position() {
     );
   }
 
-  const on = !!place.consentAt;
+  const manual = place.source === 'manual' ? place.manualArea : null;
+  const on = !!place.consentAt && !manual;
   const denied = location.permission?.status === 'denied' && !location.permission.canAskAgain;
   const blocked = denied || location.result === 'denied';
   const when = place.locatedAt ? formatDate(place.locatedAt, { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : null;
@@ -56,10 +59,16 @@ export default function Position() {
         footer={
           on ? (
             <Button label={t.forget} variant="danger" onPress={() => setForgetting(true)} />
-          ) : blocked && Platform.OS !== 'web' ? (
-            <Button label={carte.noLocation.settings} onPress={location.openSettings} />
           ) : (
-            <Button label={t.enable} onPress={() => void location.enable()} loading={location.sending} />
+            <Stack gap={8}>
+              {blocked && Platform.OS !== 'web' ? (
+                <Button label={carte.noLocation.settings} onPress={location.openSettings} />
+              ) : (
+                <Button label={t.enable} onPress={() => void location.enable()} loading={location.sending} />
+              )}
+              <Button label={manual ? carte.area.change : carte.area.choose} variant="glass" onPress={() => setAreaSheet(true)} />
+              {manual ? <Button label={t.forget} variant="ghost" onPress={() => setForgetting(true)} /> : null}
+            </Stack>
           )
         }
       >
@@ -71,6 +80,9 @@ export default function Position() {
             key="state"
             rows={[
               { key: 'state', title: on ? t.on : t.off, subtitle: on ? t.onSub(when) : t.offSub, chevron: false },
+              ...(manual
+                ? [{ key: 'area', title: carte.area.current(manual.label), subtitle: manual.nextChangeOn && manual.nextChangeOn > today() ? carte.area.nextChange(formatDate(manual.nextChangeOn, { day: 'numeric', month: 'long' })) : undefined, chevron: false }]
+                : []),
               ...(on && place.zone ? [{ key: 'zone', title: t.zone(formatNumber(place.zone.radiusKm, { maximumFractionDigits: 1 })), chevron: false }] : []),
               ...(place.chosenCity ? [{ key: 'city', title: t.city(place.chosenCity.label, place.chosenCityActive), chevron: false }] : []),
             ]}
@@ -83,6 +95,7 @@ export default function Position() {
             <Banner tone="success" text={t.forgotten} />
           </Appear>
         ) : null}
+        <AreaSheet visible={areaSheet} onClose={() => setAreaSheet(false)} current={manual?.label ?? null} />
         <ConfirmSheet
           visible={forgetting}
           onClose={() => setForgetting(false)}
@@ -97,3 +110,9 @@ export default function Position() {
     </ScreenMotion>
   );
 }
+
+/** Jour d'aujourd'hui (AAAA-MM-JJ, heure locale du téléphone). */
+const today = (): string => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};

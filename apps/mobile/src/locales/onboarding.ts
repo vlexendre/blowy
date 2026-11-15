@@ -133,8 +133,8 @@ export const onboarding = messages({
       zoneText: (pet: string) => `${pet} te présente les minimoas compatibles autour de toi.`,
       exactTitle: 'Jamais ta position exacte',
       exactText: 'Arrondie à 300 m, décalée, jamais en direct. Rien quand l’app est fermée.',
-      refuseNote: 'Si tu refuses : pas de carte, ni de rencontres près de chez toi. Activable plus tard dans Moi.',
-      denied: 'D’accord. Sans ta position, pas de carte ni de rencontres près de chez toi pour l’instant. Tu pourras l’activer dans Moi.',
+      refuseNote: 'Si tu refuses : tu choisiras ta ville à la main, et tu auras quand même des rencontres. Activable plus tard dans Moi.',
+      denied: 'D’accord. Choisis ta ville à la main dans Rencontres (ou Moi › Ma position) : ton minimoa te présentera du monde autour. La position s’active plus tard dans Moi.',
       cta: 'Continuer',
     },
     notifications: {
@@ -195,6 +195,16 @@ export const onboarding = messages({
         verify: 'Valider',
         hint: (code: string) => `Mode dev : le code est ${code}`,
         invalidEmail: 'Cette adresse e-mail ne semble pas valide.',
+      },
+      /** Connexion par e-mail et code : pour les comptes qui ont reçu un code (compte de revue d’Apple). */
+      email: {
+        toggle: 'Connexion par e-mail',
+        lead: 'Pour les comptes qui ont reçu un code de connexion. Sinon, utilise le bouton au-dessus.',
+        emailLabel: 'E-mail',
+        emailPlaceholder: 'toi@exemple.fr',
+        codeLabel: 'Code',
+        codePlaceholder: 'Ton code',
+        submit: 'Se connecter',
       },
     },
     preparation: {

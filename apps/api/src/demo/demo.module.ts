@@ -10,22 +10,40 @@ import { DemoWorld } from './demo-world';
 import { DevDemoLinksController, LinksDemo } from './links-demo';
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
+import { ReviewWorld } from '../review/review-world';
 
-const noHook: OnboardedHook = { onOnboarded: async () => undefined };
+/** Le compte de revue d'Apple d'abord (son monde d'exemple, partout) ; sinon le monde de démo (local) ou rien. */
+const hookWith = (review: ReviewWorld, demo: OnboardedHook | null): OnboardedHook => ({
+  onOnboarded: async (userId) => {
+    if (await review.claim(userId)) return;
+    await demo?.onOnboarded(userId);
+  },
+});
 
-/** Fournit le crochet d'inscription : le monde de démo en local, rien sinon. */
+/** Fournit le crochet d'inscription : le compte de revue (`ReviewModule`, global), puis le monde de démo en local. */
 @Module({})
 export class DemoModule {
   static forRoot(enabled: boolean): DynamicModule {
     if (!enabled) {
-      return { module: DemoModule, global: true, providers: [{ provide: ONBOARDED_HOOK, useValue: noHook }], exports: [ONBOARDED_HOOK] };
+      return {
+        module: DemoModule,
+        global: true,
+        providers: [{ provide: ONBOARDED_HOOK, useFactory: (review: ReviewWorld) => hookWith(review, null), inject: [ReviewWorld] }],
+        exports: [ONBOARDED_HOOK],
+      };
     }
     return {
       module: DemoModule,
       global: true,
       imports: [PetsModule, LinksModule, EncountersModule, VisionModule, RituelsModule],
       controllers: [DevDemoLinksController],
-      providers: [DemoWorld, RituelsDemo, PlateformeDemo, LinksDemo, { provide: ONBOARDED_HOOK, useExisting: DemoWorld }],
+      providers: [
+        DemoWorld,
+        RituelsDemo,
+        PlateformeDemo,
+        LinksDemo,
+        { provide: ONBOARDED_HOOK, useFactory: (review: ReviewWorld, demo: DemoWorld) => hookWith(review, demo), inject: [ReviewWorld, DemoWorld] },
+      ],
       exports: [ONBOARDED_HOOK],
     };
   }

@@ -51,6 +51,7 @@ export { RenameCard, type RenameCardProps } from './RenameCard';
 export { PetHomeSkeleton } from './PetHomeSkeleton';
 export { VisionMatch, type VisionMatchAxis, type VisionMatchProps } from './VisionMatch';
 export { MinimoaConsent, type MinimoaConsentProps } from './MinimoaConsent';
+export { type ConsentFact, ConsentFacts, type ConsentFactsProps } from './ConsentFacts';
 export { type MapPoint, projectAround, ZoneMap, type ZoneMapPin, type ZoneMapProps } from './ZoneMap';
 export { MapPinCard, type MapPinCardProps, MapPlusStrip, type MapPlusStripProps } from './MapPinCard';
 export { ChallengeEntry, type ChallengeEntryProps, ChallengeKindIcon, type ChallengeKindLook } from './ChallengeEntry';

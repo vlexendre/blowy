@@ -32,7 +32,7 @@ import { Platform } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { useLiveEncounters, useWave, whyA11y } from '@/features/encounters';
-import { CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap, useMarkWaved } from '@/features/map';
+import { AreaSheet, CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap, useMarkWaved } from '@/features/map';
 import { MapLayer } from '@/features/map/MapLayer';
 import { useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
@@ -53,6 +53,7 @@ export default function CarteScreen() {
   const city = useCity();
   const [selected, setSelected] = useState<string | null>(null);
   const [citySheet, setCitySheet] = useState(false);
+  const [areaSheet, setAreaSheet] = useState(false);
   const markWaved = useMarkWaved();
   const land = useFirstTime('carte:land');
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
@@ -128,8 +129,11 @@ export default function CarteScreen() {
             ) : (
               <Button label={blocked ? t.noLocation.retry : t.noLocation.action} onPress={() => void location.enable()} loading={location.sending} />
             )}
+            {/* Sans localisation, gratuit : une ville choisie à la main (App Review 5.1.1(iv)). */}
+            <Button label={t.area.choose} variant="glass" onPress={() => setAreaSheet(true)} />
           </Stack>
         </ScreenTemplate>
+        <AreaSheet visible={areaSheet} onClose={() => setAreaSheet(false)} />
       </ScreenMotion>
     );
   }

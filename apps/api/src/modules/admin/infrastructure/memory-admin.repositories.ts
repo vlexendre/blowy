@@ -20,11 +20,16 @@ import type {
 
 const ms = (iso: string): number => Date.parse(iso);
 
-/** Curseur des signalements : `<createdAt>|<id>` de la dernière ligne de la page précédente. */
-export const reportCursor = (r: { createdAt: string; id: string }): string => `${r.createdAt}|${r.id}`;
-export function parseCursor(cursor: string): { createdAt: string; id: string } | null {
-  const [createdAt, id] = cursor.split('|');
-  return createdAt && id && !Number.isNaN(Date.parse(createdAt)) && /^\d+$/.test(id) ? { createdAt, id } : null;
+/**
+ * Curseur des signalements : `<priorité>|<createdAt>|<id>` de la dernière ligne de la page précédente (file des
+ * ouverts, rangée par priorité), ou `<createdAt>|<id>` (traités, tous). Un curseur à deux parties vaut priorité 0.
+ */
+export const reportCursor = (r: { createdAt: string; id: string; priority?: number }, withPriority = false): string =>
+  withPriority ? `${r.priority ?? 0}|${r.createdAt}|${r.id}` : `${r.createdAt}|${r.id}`;
+export function parseCursor(cursor: string): { createdAt: string; id: string; priority: number } | null {
+  const parts = cursor.split('|');
+  const [priority, createdAt, id] = parts.length === 3 ? [Number(parts[0]), parts[1], parts[2]] : [0, parts[0], parts[1]];
+  return createdAt && id && Number.isInteger(priority) && !Number.isNaN(Date.parse(createdAt)) && /^\d+$/.test(id) ? { createdAt, id, priority } : null;
 }
 
 export class MemorySuspensionsRepository implements SuspensionsRepository {
@@ -99,13 +104,19 @@ export class MemoryModerationRepository implements ModerationRepository {
         handledAt: review?.handledAt ?? null,
         handledBy: review?.handledBy ?? null,
         resolution: review?.resolution ?? null,
+        priority: r.priority ?? 0,
+        source: r.source ?? 'person',
+        category: r.category ?? null,
+        review: r.review ?? false,
       }];
     });
   }
 
   async page(filter: ReportFilter, cursor: string | null, limit: number): Promise<AdminReportRow[]> {
     const ascending = filter.status === 'open';
-    const cmp = (a: AdminReportRow, b: { createdAt: string; id: string }): number => ms(a.createdAt) - ms(b.createdAt) || Number(a.id) - Number(b.id);
+    // File des ouverts : priorité décroissante d'abord (le curseur porte la priorité).
+    const cmp = (a: AdminReportRow, b: { createdAt: string; id: string; priority?: number }): number =>
+      (ascending ? (b.priority ?? 0) - a.priority : 0) || ms(a.createdAt) - ms(b.createdAt) || Number(a.id) - Number(b.id);
     const after = cursor ? parseCursor(cursor) : null;
     return this.rows()
       .filter((r) => (filter.status === 'open' ? r.handledAt === null : filter.status === 'handled' ? r.handledAt !== null : true))
@@ -214,29 +225,36 @@ export class MemoryMetricsSource implements MetricsSource {
 
   async compute(day: Day): ReturnType<MetricsSource['compute']> {
     const db = this.db;
-    const profiles = [...db.profiles.values()];
+    // Monde d'exemple du compte de revue d'Apple : hors statistiques (comme la fonction SQL).
+    const rv = new Set([...db.profiles.values()].filter((p) => p.reviewWorld).map((p) => p.id));
+    const profiles = [...db.profiles.values()].filter((p) => !rv.has(p.id));
     const createdOn = (iso: string): Day => this.dayOf(iso);
-    const activeOn = (d: Day): Set<string> => new Set([...db.activityDays].filter((k) => k.startsWith(`${d}:`)).map((k) => k.slice(11)));
-    const activeBetween = (from: Day, to: Day): number => new Set([...db.activityDays].filter((k) => k.slice(0, 10) >= from && k.slice(0, 10) <= to).map((k) => k.slice(11))).size;
+    const activity = [...db.activityDays].filter((k) => !rv.has(k.slice(11)));
+    const activeOn = (d: Day): Set<string> => new Set(activity.filter((k) => k.startsWith(`${d}:`)).map((k) => k.slice(11)));
+    const activeBetween = (from: Day, to: Day): number => new Set(activity.filter((k) => k.slice(0, 10) >= from && k.slice(0, 10) <= to).map((k) => k.slice(11))).size;
     const cohort = (n: number): { size: number; retained: number } => {
       const members = profiles.filter((p) => createdOn(p.createdAt) === addDays(day, -n));
       const active = activeOn(day);
       return { size: members.length, retained: members.filter((p) => active.has(p.id)).length };
     };
     const [c1, c7, c30] = [cohort(1), cohort(7), cohort(30)];
-    const subs = [...db.subscriptions.values()].filter((s) => s.userId !== null);
-    const petMessages = db.messages.filter((m) => m.authorKind === 'pet' && createdOn(m.createdAt) === day);
+    const subs = [...db.subscriptions.values()].filter((s) => s.userId !== null && !rv.has(s.userId));
+    const reviewLinks = new Set([...db.links.values()].filter((l) => rv.has(l.userA) || rv.has(l.userB)).map((l) => l.id));
+    const petMessages = db.messages.filter((m) => m.authorKind === 'pet' && createdOn(m.createdAt) === day && !reviewLinks.has(m.linkId));
     const answered = petMessages.filter((pm) =>
       db.messages.some((r) => r.linkId === pm.linkId && r.authorKind === 'user' && ms(r.createdAt) > ms(pm.createdAt) && ms(r.createdAt) <= ms(pm.createdAt) + 86_400_000),
     );
-    const links = [...db.links.values()];
+    const links = [...db.links.values()].filter((l) => !reviewLinks.has(l.id));
+    const encounters = [...db.encounters.values()].filter((e) => !rv.has(e.fromUser));
     const effectiveGhost = (l: (typeof links)[number]): boolean => {
       if (l.status === 'ghost') return true;
       if (l.status !== 'active') return false;
       const silent = (d: Day): number => Math.max(0, (Date.parse(d) - Date.parse(l.lastActiveOn)) / 86_400_000 - 1);
       return silent(day) - silent(l.lastTickOn) >= l.lives;
     };
-    const reports = db.reports.map((r, i) => ({ ...r, review: db.reportReviews.get(String(i + 1)), purged: db.purgedReports.has(String(i + 1)) })).filter((r) => !r.purged);
+    const reports = db.reports
+      .map((r, i) => ({ ...r, handled: db.reportReviews.get(String(i + 1)), purged: db.purgedReports.has(String(i + 1)) }))
+      .filter((r) => !r.purged && !r.review);
     const activeLinksOf = new Map<string, number>();
     for (const l of links) {
       if (l.status !== 'active' || effectiveGhost(l)) continue;
@@ -264,18 +282,18 @@ export class MemoryMetricsSource implements MetricsSource {
       d30Retained: c30.retained,
       subscribers: subs.filter((s) => s.status === 'active' || s.status === 'grace').length,
       trials: subs.filter((s) => s.status === 'trial').length,
-      newTrials: [...db.subscriptions.values()].filter((s) => s.trialUsed && createdOn(s.startedAt) === day).length,
+      newTrials: [...db.subscriptions.values()].filter((s) => s.trialUsed && createdOn(s.startedAt) === day && (s.userId === null || !rv.has(s.userId))).length,
       petMessages: petMessages.length,
       petMessagesAnswered: answered.length,
-      encountersWaved: [...db.encounters.values()].filter((e) => createdOn(e.createdAt) === day).length,
-      encountersAccepted: [...db.encounters.values()].filter((e) => e.status === 'accepted' && createdOn(e.statusAt) === day).length,
+      encountersWaved: encounters.filter((e) => createdOn(e.createdAt) === day).length,
+      encountersAccepted: encounters.filter((e) => e.status === 'accepted' && createdOn(e.statusAt) === day).length,
       linksActive: links.filter((l) => l.status === 'active' && !effectiveGhost(l)).length,
       linksGhost: links.filter(effectiveGhost).length,
       linksArchived: links.filter((l) => l.status === 'archived').length,
       linksWroteTogether: links.filter((l) => l.status === 'active' && l.recentDays.some((d) => d.day === day && d.a && d.b)).length,
       reportsOpened: reports.filter((r) => createdOn(r.createdAt) === day).length,
-      reportsHandled: reports.filter((r) => r.review && createdOn(r.review.handledAt) === day).length,
-      reportsOpen: reports.filter((r) => !r.review).length,
+      reportsHandled: reports.filter((r) => r.handled && createdOn(r.handled.handledAt) === day).length,
+      reportsOpen: reports.filter((r) => !r.handled).length,
       top,
     } satisfies Omit<DailyMetrics, 'averageStreak' | 'encountersProposed' | 'averageCompatibility' | 'shapes' | 'visions' | 'topDetails'>;
   }

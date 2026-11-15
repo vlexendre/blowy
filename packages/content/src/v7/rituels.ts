@@ -162,6 +162,10 @@ const fr = {
     no: ['Je ne reconnais pas l’habitude sur cette photo. Tu peux en reprendre une.', 'Je ne vois pas le rapport. Une autre photo ?'],
     unsure: ['Difficile à dire. Je te fais confiance, ça compte.', 'Pas évident, mais je te crois. C’est compté.'],
   } as Record<ProofVerdict, readonly string[]>,
+  /** Habitude validée sans photo ni IA (« Sans vérification par IA ») : on fait confiance, ça compte. */
+  selfCheckLines: ['C’est noté. Je te fais confiance.', 'Sur parole, ça compte. Bien joué.'] as readonly string[],
+  /** Photo reçue sans accord pour l'IA (ancienne version de l'app) : personne ne l'a vérifiée, on fait confiance. */
+  proofUncheckedLines: ['Photo reçue, pas vérifiée : tu n’as pas activé l’IA. Je te fais confiance, ça compte.'] as readonly string[],
   outing: {
     question: 'Tu as mis le nez dehors aujourd’hui ?',
     answers: { saw_people: 'Oui, j’ai vu du monde', walk: 'Oui, un tour', not_yet: 'Pas encore' } as Record<OutingAnswer, string>,
@@ -219,11 +223,11 @@ const fr = {
   },
   /**
    * Ce qu'on dit des photos privées, partout où on en parle. Vrai à la lettre : aucun humain ne les voit ; la preuve
-   * d'habitude est vérifiée par une IA ; toutes sont supprimées sous 24 h, sauf si la personne les garde.
+   * d'habitude est vérifiée par une IA tierce, seulement avec l'accord de la personne (`AiConsents`) ; toutes sont supprimées sous 24 h, sauf si la personne les garde.
    * Ne jamais écrire « personne ne la voit » sans préciser l'IA.
    */
   privacy: {
-    proof: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit : une IA la vérifie, puis elle est supprimée sous 24 h, sauf si tu la gardes.',
+    proof: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit : une IA tierce la vérifie si tu l’as accepté, puis elle est supprimée sous 24 h, sauf si tu la gardes.',
     daily: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit. Supprimée sous 24 h, sauf si tu la gardes.',
   },
   /** Erreurs (codes du contrat, messages ici). */

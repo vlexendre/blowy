@@ -16,5 +16,7 @@ Pod::Spec.new do |s|
   s.frameworks = 'WidgetKit', 'ActivityKit'
 
   s.source_files = '*.swift'
+  # Manifeste de confidentialité du module (UserDefaults de l'app et du groupe d'apps) : audit B4.
+  s.resource_bundles = { 'BlowyWidgets_privacy' => ['PrivacyInfo.xcprivacy'] }
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end

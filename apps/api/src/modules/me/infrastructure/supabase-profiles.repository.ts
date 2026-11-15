@@ -20,6 +20,8 @@ interface ProfileRow {
   plus_until: string | null;
   welcome_sent_at: string | null;
   created_at: string;
+  review_world?: string | null;
+  avatar_checked_at?: string | null;
 }
 
 const fromRow = (r: ProfileRow): Profile => ({
@@ -40,6 +42,8 @@ const fromRow = (r: ProfileRow): Profile => ({
   plusUntil: isoOrNull(r.plus_until),
   welcomeSentAt: isoOrNull(r.welcome_sent_at),
   createdAt: iso(r.created_at),
+  reviewWorld: r.review_world ?? null,
+  avatarCheckedAt: isoOrNull(r.avatar_checked_at ?? null),
 });
 
 export class SupabaseProfilesRepository implements ProfilesRepository {
@@ -92,6 +96,7 @@ export class SupabaseProfilesRepository implements ProfilesRepository {
       plus_until: p.plusUntil,
       welcome_sent_at: p.welcomeSentAt,
       created_at: p.createdAt,
+      ...(p.reviewWorld ? { review_world: p.reviewWorld } : {}),
     });
     check(error, 'création du profil');
   }
@@ -108,6 +113,8 @@ export class SupabaseProfilesRepository implements ProfilesRepository {
     if (patch.locationConsentAt !== undefined) row.location_consent_at = patch.locationConsentAt;
     if (patch.avatarPath !== undefined) row.avatar_path = patch.avatarPath;
     if (patch.welcomeSentAt !== undefined) row.welcome_sent_at = patch.welcomeSentAt;
+    if (patch.reviewWorld !== undefined) row.review_world = patch.reviewWorld;
+    if (patch.avatarCheckedAt !== undefined) row.avatar_checked_at = patch.avatarCheckedAt;
     const { data, error } = await this.table.update(row).eq('id', id).select('*').single();
     check(error, 'mise à jour du profil');
     return fromRow(data as ProfileRow);
@@ -116,6 +123,24 @@ export class SupabaseProfilesRepository implements ProfilesRepository {
   async listRecent(limit: number, excludeId: string): Promise<Profile[]> {
     const { data, error } = await this.table.select('*').neq('id', excludeId).order('created_at', { ascending: false }).limit(limit);
     check(error, 'lecture des profils récents');
+    return (data as ProfileRow[]).map(fromRow);
+  }
+
+  async listFixtures(world: string): Promise<Profile[]> {
+    const { data, error } = await this.table.select('*').eq('review_world', world).neq('id', world);
+    check(error, 'lecture des personnes fictives');
+    return (data as ProfileRow[]).map(fromRow);
+  }
+
+  async deleteFixtures(world: string): Promise<string[]> {
+    const { data, error } = await this.table.delete().eq('review_world', world).neq('id', world).select('id');
+    check(error, 'suppression des personnes fictives');
+    return (data ?? []).map((r) => r.id);
+  }
+
+  async listUncheckedAvatars(limit: number): Promise<Profile[]> {
+    const { data, error } = await this.table.select('*').not('avatar_path', 'is', null).is('avatar_checked_at', null).order('created_at', { ascending: true }).limit(limit);
+    check(error, 'lecture des photos à vérifier');
     return (data as ProfileRow[]).map(fromRow);
   }
 

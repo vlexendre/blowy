@@ -59,6 +59,7 @@ import {
   type WardrobeItemLook,
 } from '@blowy/ui';
 import { type ComponentRef, type ReactNode, useRef, useState } from 'react';
+import { Redirect } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
@@ -355,7 +356,7 @@ function PrimitivesBench() {
   );
 }
 
-/** Garde-robe : vols d'objets vers le pet et retour, cascade, cadenas, « bientôt », « nouveau ». */
+/** Garde-robe : vols d'objets vers le pet et retour, cascade, cadenas, « Blowy+ », « nouveau ». */
 function WardrobeBench() {
   const [outfit, setOutfit] = useState<Outfit>({ head: 'casquette' });
   const [slot, setSlot] = useState<ItemSlot>('head');
@@ -424,7 +425,7 @@ function WardrobeBench() {
         worn={outfit[slot] ?? null}
         itemLabels={itemLabel}
         goalLabels={statGoalLabel}
-        premiumLabel="bientôt"
+        premiumLabel="Blowy+"
         wornLabel="porté"
         newIds={['bob', 'tasse']}
         newLabel="nouveau"
@@ -501,6 +502,12 @@ function ScenesBench() {
 }
 
 export default function MotionLab() {
+  // Banc d'essai : jamais en production (lien profond `blowy://dev/motion`), comme la galerie (audit m1).
+  if (!__DEV__) return <Redirect href="/" />;
+  return <MotionLabScreen />;
+}
+
+function MotionLabScreen() {
   const [reduced, setReduced] = useState(false);
   return (
     <ScreenMotion>

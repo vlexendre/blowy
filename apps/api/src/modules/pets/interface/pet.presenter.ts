@@ -38,14 +38,19 @@ export const toPetView = (r: PetViewResult): PetView => ({
   rename: { allowed: r.rename.allowed, availableOn: r.rename.availableOn, unlimited: r.rename.unlimited },
 });
 
-/** Tout le catalogue, dans l'ordre : possédé, à gagner (avec l'étape) ou premium. */
+/**
+ * Tout le catalogue, dans l'ordre : possédé, à gagner (avec l'étape) ou premium. Les objets premium sont possédés
+ * tant que Blowy+ est actif (`WardrobeState.owned`), sinon `premium` (la fiche ouvre Blowy+) ; `plus` les signale.
+ */
 export const toWardrobe = (w: WardrobeState): Wardrobe => ({
   items: ITEMS.map((item) => {
     const progress = itemProgress(item, w.stats);
+    const premium = item.unlock.kind === 'premium';
     return {
       id: item.id,
       slot: item.slot,
-      state: w.owned.has(item.id) ? 'owned' : item.unlock.kind === 'premium' ? 'premium' : 'locked',
+      state: w.owned.has(item.id) ? 'owned' : premium ? 'premium' : 'locked',
+      plus: premium,
       goal: item.unlock.kind === 'stat' && progress ? { stat: item.unlock.stat, ...progress } : null,
     };
   }),

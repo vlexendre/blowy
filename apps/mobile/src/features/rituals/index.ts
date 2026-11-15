@@ -3,7 +3,7 @@
  * privés et le bilan de la semaine. Les clés `ritualsToday` / `ritualsStreak` sont celles du pont des widgets
  * (`useWidgetSync`) : chaque réponse de l'API les met à jour, et le widget suit.
  */
-import type { DailyChallenge, DailyResult, Habits, OutingAnswer, OutingResult, ProofResult, RitualsToday, Streak, WeeklyReview, WeeklyReviews } from '@blowy/contract';
+import type { DailyChallenge, DailyResult, HabitDoneResult, Habits, OutingAnswer, OutingResult, ProofResult, RitualsToday, Streak, WeeklyReview, WeeklyReviews } from '@blowy/contract';
 import { itemById, STREAK_MILESTONES, streakReward } from '@blowy/domain';
 import { type QueryClient, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
@@ -224,6 +224,23 @@ export function useProof(ref: string) {
       void qc.invalidateQueries({ queryKey: keys.ritualsToday });
       void qc.invalidateQueries({ queryKey: keys.pet });
       if (r.kept) void qc.invalidateQueries({ queryKey: ritualKeys.memories });
+    },
+  });
+}
+
+/** Habitude tenue sans photo ni IA (« Sans vérification par IA ») : rien n'est envoyé au prestataire d'IA. */
+export function useHabitDone(ref: string) {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (): Promise<HabitDoneResult> => api.rituals.habitDone(ref),
+    onSuccess: (r) => {
+      const before = qc.getQueryData<Habits>(ritualKeys.habits);
+      if (before) qc.setQueryData<Habits>(ritualKeys.habits, { ...before, habits: before.habits.map((h) => (h.ref === r.habit.ref ? r.habit : h)) });
+      celebrateItems(r.newItems);
+      if (r.newItems.length > 0) void qc.invalidateQueries({ queryKey: keys.wardrobe });
+      void qc.invalidateQueries({ queryKey: keys.ritualsToday });
+      void qc.invalidateQueries({ queryKey: keys.pet });
     },
   });
 }

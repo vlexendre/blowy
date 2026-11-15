@@ -1,21 +1,29 @@
 /**
  * Preuve en photo (V6-GPreuve) : `?ref=<habitude>` pour une habitude, `?daily=1` pour la photo du défi du jour.
  * Le minimoa demande, la photo se prend ici (appareil photo de l'app, jamais la galerie), part avec un ticket, et le
- * verdict arrive avec sa phrase (« pas sûr » compte). Aucun humain ne la voit (une IA vérifie la preuve) ; supprimée sous 24 h sauf si on la garde.
+ * verdict arrive avec sa phrase (« pas sûr » compte). Aucun humain ne la voit ; supprimée sous 24 h sauf si on la garde.
+ *
+ * IA tierce (App Review 5.1.2(i), audit B5) : avant la première preuve d'habitude, une feuille dit ce qui part, à qui,
+ * pourquoi et combien de temps, avec deux choix égaux. Sans accord, ni appareil photo ni IA : l'habitude se valide
+ * « sur parole » (`POST …/done`), la série avance pareil. La photo du défi du jour, elle, ne part jamais à une IA.
  */
 import { ApiError } from '@blowy/api-client';
 import type { ProofResult } from '@blowy/contract';
-import { Banner, Button, EmptyState, ProofStage, type ProofVerdictLook, StageTemplate } from '@blowy/ui';
+import { Banner, Button, ConsentFacts, EmptyState, ProofStage, type ProofVerdictLook, SheetTemplate, StageTemplate } from '@blowy/ui';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 
+import { useAiConsents, useSetAiProofs } from '@/features/ai';
 import { errorText } from '@/features/links';
+import { openLegal } from '@/features/me';
 import { usePet } from '@/features/pet';
-import { type Shot, useChallengePhoto, useHabits, useKeepPhoto, useProof, useRitualsToday } from '@/features/rituals';
+import { type Shot, useChallengePhoto, useHabitDone, useHabits, useKeepPhoto, useProof, useRitualsToday } from '@/features/rituals';
 import { type CameraHandle, openSettings, ProofCamera, ShotPreview, useCameraPermissions } from '@/features/rituals/camera';
+import { ia } from '@/locales/ia';
 import { rituels } from '@/locales/rituels';
 
 const t = rituels.proof;
+const c = ia.consent;
 
 /** Le dernier mot de la demande, mis en couleur (« Montre-moi tes **baskets**. »). */
 const lastWord = (s: string): string | undefined => s.replace(/[.!?…\s]+$/u, '').split(/\s+/).pop();
@@ -31,6 +39,11 @@ export default function ProofScreen() {
   const proof = useProof(ref);
   const dailyPhoto = useChallengePhoto();
   const keepPhoto = useKeepPhoto();
+  const ai = useAiConsents(!daily);
+  const setAi = useSetAiProofs();
+  const habitDone = useHabitDone(ref);
+  /** Feuille d'accord ouverte à la demande depuis la preuve sans IA (« Vérifier par une IA plutôt »). */
+  const [askAi, setAskAi] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraHandle>(null);
   const [ready, setReady] = useState(false);
@@ -50,9 +63,9 @@ export default function ProofScreen() {
   const sendError = proof.error ?? dailyPhoto.error;
 
   // Rien à montrer sans le minimoa ni la demande : chargement, ou habitude disparue.
-  if (!p || (!daily && !habit) || (daily && !today.data)) {
+  if (!p || (!daily && !habit) || (daily && !today.data) || (!daily && !ai.data)) {
     const gone = !daily && habits.isSuccess && !habit;
-    const failed = pet.isError || habits.isError || today.isError;
+    const failed = pet.isError || habits.isError || today.isError || (!daily && ai.isError);
     return (
       <StageTemplate onBack={close} backLabel={t.close} align="center">
         {gone || failed ? (
@@ -62,10 +75,87 @@ export default function ProofScreen() {
             peek
             title={gone ? t.notFound : rituels.habits.loadError}
             actionLabel={gone ? t.back : rituels.habits.retry}
-            onAction={gone ? close : () => void Promise.all([pet.refetch(), habits.refetch(), today.refetch()])}
+            onAction={gone ? close : () => void Promise.all([pet.refetch(), habits.refetch(), today.refetch(), ai.refetch()])}
           />
         ) : null}
       </StageTemplate>
+    );
+  }
+
+  // Preuve d'habitude : accord pour l'IA jamais demandé (null) → la feuille ; refusé ou retiré (false) → sans IA.
+  const consent = daily ? true : (ai.data?.proofs.consent ?? null);
+  const provider = ai.data?.provider;
+  const choose = (accept: boolean) => setAi.mutate(accept, { onSuccess: () => setAskAi(false) });
+  const consentSheet = provider ? (
+    <SheetTemplate
+      visible={consent === null || askAi}
+      onClose={consent === null ? close : () => setAskAi(false)}
+      closeLabel={t.close}
+      scroll
+      footer={
+        <>
+          {setAi.isError ? <Banner tone="error" text={c.error} /> : null}
+          <Button label={c.accept} onPress={() => choose(true)} loading={setAi.isPending && setAi.variables === true} disabled={setAi.isPending} />
+          <Button label={c.refuse} variant="ghost" onPress={() => choose(false)} loading={setAi.isPending && setAi.variables === false} disabled={setAi.isPending} />
+          <Button label={c.policy} variant="link" onPress={openLegal('confidentialite')} />
+        </>
+      }
+    >
+      <ConsentFacts
+        title={c.title}
+        subtitle={c.subtitle(provider.name)}
+        pet={{ species: p.species }}
+        facts={[
+          { key: 'sent', glyph: 'camera', label: c.sent.label, text: c.sent.text },
+          { key: 'to', glyph: 'people', label: c.to.label, text: c.to.text(provider.name, provider.country) },
+          { key: 'why', glyph: 'check', label: c.why.label, text: c.why.text },
+          { key: 'kept', glyph: 'lock', label: c.kept.label, text: c.kept.text },
+          { key: 'without', glyph: 'heart', label: c.without.label, text: c.without.text },
+        ]}
+      />
+    </SheetTemplate>
+  ) : null;
+
+  // Sans IA (ou pas encore choisi) : ni appareil photo, ni photo. On valide sur parole.
+  if (!daily && consent !== true) {
+    const done = habitDone.data;
+    const noAiVerdict: ProofVerdictLook | null = done
+      ? { tone: 'yes', title: ia.noAi.doneTitle, badge: done.counted ? t.badge(done.habit.streak, done.habit.rhythm === 'three_per_week') : null, text: done.line }
+      : null;
+    return (
+      <>
+        <ProofStage
+          pet={{ species: p.species, outfit: p.outfit, name: p.name, id: p.id }}
+          chip={chip}
+          ask={ask}
+          askHighlight={lastWord(ask)}
+          // Une fois compté, le verdict amène son propre minimoa : le cadre se vide.
+          viewfinder={done ? null : <EmptyState species={p.species} mood="salut" seed={p.id} title={ia.noAi.title} text={ia.noAi.text} />}
+          busy={habitDone.isPending}
+          busyLabel={t.busy}
+          verdict={noAiVerdict}
+          privacy={ia.noAi.privacy}
+          footer={
+            done ? (
+              <Button label={t.continue} onPress={close} />
+            ) : habitDone.error && habitDone.error instanceof ApiError && habitDone.error.code === 'already_done' ? (
+              <>
+                <Banner tone="info" text={errorText(habitDone.error, t.sendError)} />
+                <Button label={t.continue} onPress={close} />
+              </>
+            ) : (
+              <>
+                {habitDone.isError ? <Banner tone="error" text={errorText(habitDone.error, t.sendError)} /> : null}
+                <Button label={ia.noAi.done} icon="check" onPress={() => habitDone.mutate()} loading={habitDone.isPending} disabled={consent === null} />
+                <Button label={ia.noAi.enable} variant="link" onPress={() => setAskAi(true)} />
+              </>
+            )
+          }
+          onClose={close}
+          closeLabel={t.close}
+        />
+        {consentSheet}
+      </>
     );
   }
 

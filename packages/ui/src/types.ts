@@ -90,12 +90,16 @@ export interface IncomingLook {
   intro: string;
 }
 
-/** Compatible avec `WardrobeItem` : `owned` (dans la garde-robe), `locked` (à gagner), `premium` (à acheter). */
+/**
+ * Compatible avec `WardrobeItem` : `owned` (dans la garde-robe), `locked` (à gagner), `premium` (inclus dans Blowy+,
+ * pas encore à la personne). `plus` : objet de Blowy+ (possédé ou non).
+ */
 export type WardrobeItemState = 'owned' | 'locked' | 'premium';
 export interface WardrobeItemLook {
   id: string;
   slot: ItemSlot;
   state: WardrobeItemState;
+  plus?: boolean;
   goal: { stat: string; have: number; need: number } | null;
 }
 

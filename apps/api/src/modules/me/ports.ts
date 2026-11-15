@@ -21,10 +21,21 @@ export interface Profile {
   plusUntil: string | null;
   welcomeSentAt: string | null;
   createdAt: string;
+  /**
+   * Monde d'exemple du compte de revue d'Apple : identifiant du compte de revue, sur ce compte et sur chacune de ses
+   * personnes fictives ; absent ou null pour tout le monde. `Audience` ne montre une personne qu'à quelqu'un du même
+   * monde : les personnes fictives ne croisent jamais un vrai compte.
+   */
+  reviewWorld?: string | null;
+  /** Photo de profil vérifiée par le filtre (null : pas encore, le minuteur s'en charge). */
+  avatarCheckedAt?: string | null;
 }
 
 export type ProfilePatch = Partial<
-  Pick<Profile, 'displayName' | 'avatarPath' | 'welcomeSentAt' | 'gender' | 'seeking' | 'whom' | 'locale' | 'discreet' | 'sensitiveConsentAt' | 'locationConsentAt'>
+  Pick<
+    Profile,
+    'displayName' | 'avatarPath' | 'welcomeSentAt' | 'gender' | 'seeking' | 'whom' | 'locale' | 'discreet' | 'sensitiveConsentAt' | 'locationConsentAt' | 'reviewWorld' | 'avatarCheckedAt'
+  >
 >;
 
 export interface ProfilesRepository {
@@ -38,6 +49,12 @@ export interface ProfilesRepository {
   update(id: string, patch: ProfilePatch): Promise<Profile>;
   /** Profils les plus récents, hors `excludeId` : vivier des rencontres. */
   listRecent(limit: number, excludeId: string): Promise<Profile[]>;
+  /** Personnes fictives du monde d'exemple `world` (sans le compte de revue lui-même). */
+  listFixtures(world: string): Promise<Profile[]>;
+  /** Supprime les personnes fictives du monde `world` et tout ce qui va avec (cascade) ; rend leurs identifiants. */
+  deleteFixtures(world: string): Promise<string[]>;
+  /** Photos de profil pas encore vérifiées par le filtre, les plus anciennes d'abord. */
+  listUncheckedAvatars(limit: number): Promise<Profile[]>;
 }
 
 /** Appelé après une création de pet réussie (monde de démo en local ; rien en production). */

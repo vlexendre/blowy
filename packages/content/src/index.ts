@@ -12,4 +12,6 @@ export * from './v7/facturation-admin';
 export * from './v7/chat';
 export * from './v7/notifications';
 export * from './v7/rituels';
+export * from './v7/audit';
+export * from './ai-provider';
 export { contentDictionaries } from './registry';

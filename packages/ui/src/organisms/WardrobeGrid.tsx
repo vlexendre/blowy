@@ -26,7 +26,7 @@ export interface WardrobeGridProps<T extends WardrobeItemLook = WardrobeItemLook
   itemLabels: Record<string, string>;
   /** Étapes courtes sous les objets à gagner (« 2 jours de soins »), appelées avec `goal.need`. */
   goalLabels: Record<string, (n: number) => string>;
-  /** Étiquette premium (« bientôt »). */
+  /** Étiquette des objets premium (« Blowy+ »), possédés ou non. */
   premiumLabel: string;
   /** Étiquette de l'objet porté (« porté »). */
   wornLabel?: string;
@@ -94,6 +94,7 @@ export function WardrobeGrid<T extends WardrobeItemLook>({
           goalText={goal && goalFn ? goalFn(goal.need) : undefined}
           progress={goal ? { have: goal.have, need: goal.need } : undefined}
           premiumLabel={premiumLabel}
+          plus={it.plus === true}
           wornLabel={wornLabel}
           newLabel={newIds?.includes(it.id) ? newLabel : undefined}
           accessibilityHint={hints?.[state]}

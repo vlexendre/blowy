@@ -108,6 +108,27 @@ export class SupabasePetsRepository implements PetsRepository {
     check(error, 'enregistrement des besoins du pet');
   }
 
+  async saveOutfit(petId: string, outfit: Outfit): Promise<void> {
+    const { error } = await this.client.from('pets').update({ outfit: { ...outfit } }).eq('id', petId);
+    check(error, 'enregistrement de la tenue');
+  }
+
+  async listWearing(itemIds: readonly string[], afterId: string | null, limit: number): Promise<PetRecord[]> {
+    if (itemIds.length === 0) return [];
+    // Identifiants d'objets : [a-z0-9_] seulement (catalogue du domaine), rien à échapper dans le filtre.
+    const list = itemIds.filter((id) => /^[a-z0-9_]+$/.test(id)).join(',');
+    let q = this.client
+      .from('pets')
+      .select('*')
+      .or(ITEM_SLOTS.map((slot) => `outfit->>${slot}.in.(${list})`).join(','))
+      .order('id', { ascending: true })
+      .limit(limit);
+    if (afterId) q = q.gt('id', afterId);
+    const { data, error } = await q;
+    check(error, 'lecture des tenues');
+    return (data as PetRow[]).map(fromRow);
+  }
+
   async raiseBestStreak(ownerIds: readonly string[], streak: number): Promise<void> {
     if (ownerIds.length === 0) return;
     // Condition dans la requête : jamais de retour en arrière, même si deux photos arrivent en même temps.

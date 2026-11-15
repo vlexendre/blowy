@@ -83,8 +83,13 @@ export type CareBody = z.infer<typeof CareBody>;
 export const WardrobeItemZ = z.object({
   id: ItemIdZ,
   slot: ItemSlotZ,
-  /** owned : dans la garde-robe · locked : à gagner par une étape · premium : à acheter. */
+  /**
+   * owned : dans la garde-robe (portable) · locked : à gagner par une étape · premium : inclus dans Blowy+, que la
+   * personne n'a pas (la toucher ouvre Blowy+). Avec Blowy+, un objet premium est `owned` et `plus` vaut vrai.
+   */
   state: z.enum(['owned', 'locked', 'premium']),
+  /** Objet premium (inclus dans Blowy+) : vrai qu'il soit possédé ou non. Absent des réponses des anciennes API. */
+  plus: z.boolean().optional(),
   /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
   goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept']), have: z.number().int(), need: z.number().int() }).nullable(),
 });
@@ -405,6 +410,8 @@ export const ERROR_CODES = [
   'rate_limited',
   /** Compte suspendu par la modération (le message dit jusqu'à quand). */
   'suspended',
+  /** Contenu refusé par le filtre (nom, message, photo de profil) : le message dit pourquoi, sans répéter le contenu. */
+  'content_refused',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -447,3 +454,5 @@ export * from './v7/admin';
 export * from './v7/plateforme';
 export * from './v7/rituels';
 export * from './v7/compte';
+export * from './v7/revue';
+export * from './v7/ia';

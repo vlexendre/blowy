@@ -4,6 +4,7 @@
  * (ou des variables de l'hébergeur) ; ils ne sont jamais journalisés.
  */
 import { type AiFeatureKey, type AiPrice, type AiTier, DEFAULT_AI_PRICES, dollarsToMicros, parseAiBudgets } from '@blowy/domain';
+import { DEFAULT_AI_PROCESSOR } from '@blowy/content';
 import { z } from 'zod';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);
@@ -20,6 +21,13 @@ const PlateformeSchema = z.object({
   ANTHROPIC_API_KEY: optionalString,
   AI_PROVIDER: z.preprocess(emptyToUndefined, z.enum(['anthropic', 'memory', 'off']).optional()),
   /** Identifiants de modèle par palier (docs : https://platform.claude.com/docs/en/models/overview). */
+  /**
+   * Prestataire d'IA nommé dans les textes vus par les gens (accord de lecture des chats, accord des preuves) :
+   * doit rester celui de la politique de confidentialité (`apps/web/src/config/legal.ts`, `PROCESSORS.ai`).
+   */
+  AI_PROVIDER_NAME: z.preprocess(emptyToUndefined, z.string().max(60).optional()),
+  /** Pays où ce prestataire traite les données (code ISO 3166-1 alpha-2, « US »). */
+  AI_PROVIDER_COUNTRY: z.preprocess(emptyToUndefined, z.string().regex(/^[A-Za-z]{2}$/, 'code pays ISO à deux lettres').optional()),
   AI_MODEL_SMALL: z.preprocess(emptyToUndefined, z.string().default('claude-haiku-5-5')),
   AI_MODEL_MEDIUM: z.preprocess(emptyToUndefined, z.string().default('claude-sonnet-5-5')),
   AI_KILL_SWITCH: z.preprocess(emptyToUndefined, z.enum(['0', '1']).default('0')),
@@ -51,6 +59,8 @@ export interface PlateformeEnv {
     dailyCeilingMicros: number;
     userBudgets: Record<AiFeatureKey, number>;
     eurPerUsd: number;
+    /** Prestataire nommé dans les textes (nom, pays ISO). */
+    processor: { name: string; country: string };
   };
   push: { provider: 'expo' | 'memory' | 'off'; accessToken: string | null };
   tick: { secret: string | null; budgetMs: number };
@@ -92,6 +102,7 @@ export function loadPlateformeEnv(source: Record<string, string | undefined>, bl
       dailyCeilingMicros: dollarsToMicros(e.AI_DAILY_CEILING_USD),
       userBudgets: parseAiBudgets(e.AI_USER_BUDGETS),
       eurPerUsd: e.AI_EUR_PER_USD,
+      processor: { name: e.AI_PROVIDER_NAME ?? DEFAULT_AI_PROCESSOR.name, country: (e.AI_PROVIDER_COUNTRY ?? DEFAULT_AI_PROCESSOR.country).toUpperCase() },
     },
     push: { provider: pushProvider, accessToken: e.EXPO_ACCESS_TOKEN ?? null },
     tick: { secret: e.INTERNAL_TICK_SECRET ?? null, budgetMs: e.TICK_BUDGET_MS },

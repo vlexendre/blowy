@@ -12,6 +12,8 @@ et trois activités en direct (Dynamic Island et écran verrouillé) : le défi 
 | `targets/widget/Pets.xcassets` | Les minimoas réduits pour l'extension (versionnés). Régénérer : `python3 apps/mobile/scripts/widget-pets.py`. |
 | `targets/widget/Localizable.xcstrings` | Les textes de l'extension (fr, en, es, pt, nl ; hors français : texte français marqué « à revoir »). |
 | `targets/widget/Generated/` | Recréé à chaque prebuild, non versionné : le modèle partagé et les couleurs de `@blowy/tokens`. |
+| `targets/widget/PrivacyInfo.xcprivacy` | Manifeste de confidentialité de l'extension (UserDefaults du groupe d'apps, raison `1C8F.1` ; rien de collecté). Repris par le groupe synchronisé de la cible. Celui du module local est `modules/blowy-widgets/ios/PrivacyInfo.xcprivacy` (pod `BlowyWidgets_privacy`), celui de l'app `ios.privacyManifests` (`app.config.ts`). |
+| `plugins/with-ios-release.js` | Après `@bacons/apple-targets` : l'extension en iPhone seulement comme l'app, même version que l'app (sinon le prebuild échoue). |
 | `apps/mobile/modules/blowy-widgets/` | Module Expo local (iOS) : écrit l'état des widgets, démarre / met à jour / termine les activités, remonte les jetons APNs. |
 | `modules/blowy-widgets/ios/BlowyShared.swift` | **Le** modèle partagé app ↔ extension (état des widgets, `BlowyActivityAttributes`). |
 | `apps/mobile/plugins/with-blowy-widgets.js` | Plugin Expo : copie le modèle partagé et génère les couleurs dans `Generated/`, met le projet Xcode en français. |

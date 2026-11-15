@@ -44,6 +44,13 @@ export interface PetsRepository {
    */
   save(pet: PetRecord): Promise<void>;
   saveNeeds(petId: string, needs: Needs, needsAt: string): Promise<void>;
+  /** Change la tenue seulement (rien d'autre n'est réécrit). */
+  saveOutfit(petId: string, outfit: Outfit): Promise<void>;
+  /**
+   * Pets qui portent au moins un de ces objets, par identifiant croissant après `afterId` (pages du minuteur de la
+   * garde-robe : fin de Blowy+).
+   */
+  listWearing(itemIds: readonly string[], afterId: string | null, limit: number): Promise<PetRecord[]>;
   /** Monte `bestStreak` à `streak` pour les pets de ces personnes, s'il était plus bas. */
   raiseBestStreak(ownerIds: readonly string[], streak: number): Promise<void>;
   appendEvent(event: Omit<PetEventRecord, 'id'>): Promise<PetEventRecord>;

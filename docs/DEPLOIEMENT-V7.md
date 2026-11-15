@@ -66,7 +66,8 @@ d'inactivité) ; `ANTHROPIC_API_KEY` (sinon l'IA est coupée et les règles pren
 `APNS_KEY_P8`, `APNS_KEY_ID`, `APNS_TEAM_ID` (ensemble ; sinon pas d'activités en direct par push) ;
 `APNS_ENVIRONMENT=production` (TestFlight et App Store utilisent la production APNs).
 
-Facultatives (valeurs par défaut correctes) : `AI_PROVIDER`, `AI_MODEL_SMALL`, `AI_MODEL_MEDIUM`,
+Facultatives (valeurs par défaut correctes) : `AI_PROVIDER`, `AI_PROVIDER_NAME` (`Anthropic`) et `AI_PROVIDER_COUNTRY` (`US`)
+— le prestataire nommé dans les accords pour l'IA, à changer avec la politique de confidentialité —, `AI_MODEL_SMALL`, `AI_MODEL_MEDIUM`,
 `AI_KILL_SWITCH` (0), `AI_DAILY_CEILING_USD` (3), `AI_USER_BUDGETS`, `AI_PRICES_SMALL`, `AI_PRICES_MEDIUM`,
 `AI_EUR_PER_USD`, `PUSH_PROVIDER` (`expo`), `EXPO_ACCESS_TOKEN`, `TICK_BUDGET_MS` (20000), `APPLE_BUNDLE_ID`
 (`app.blowy`), `APPLE_ACCEPT_SANDBOX` (1, nécessaire pour TestFlight), `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`,
@@ -212,3 +213,16 @@ where l.status = 'active' and (l.last_duo_day_on is null or l.last_duo_day_on < 
 
 Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées) ; les photos du jour
 n'ont pas été touchées.
+
+## 10. Audit App Store : accords pour l'IA tierce et objets premium (migration `20261115210000_audit_app.sql`)
+
+1. **Migration d'abord** : deux colonnes nullables sur `profiles` (`ai_proofs_consent`, `ai_proofs_consent_at`), sans
+   valeur par défaut ni réécriture (verrou de quelques millisecondes, `lock_timeout` de 5 s). L'API d'avant les ignore.
+2. **Puis le code.** Dès son arrivée, plus aucune photo de preuve ne part à l'IA tant que la personne n'a pas accepté
+   (tout le monde part de « jamais demandé ») : les preuves envoyées par une ancienne version de l'app comptent comme
+   « pas sûr » (on fait confiance), sans IA. La nouvelle app pose la question avant la première preuve.
+3. Le minuteur range les objets premium des personnes dont Blowy+ a pris fin (travail `wardrobe`), par pages de 200 ;
+   rien à faire à la main. Aucune donnée à reprendre.
+
+Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées ; l'ancien code renverrait
+les preuves à l'IA sans accord : à éviter une fois l'app publiée).

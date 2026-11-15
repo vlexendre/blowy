@@ -41,7 +41,8 @@ export class Invites {
       this.pets.findByOwner(userId),
     ]);
     if (!me || !myPet) throw new DomainError('not_onboarded');
-    if (!owner) throw new DomainError('not_found', errorText('inviteNotFound'));
+    // Monde d'exemple du compte de revue d'Apple, d'un côté ou de l'autre : introuvable (jamais de lien avec un vrai compte).
+    if (!owner || (owner.reviewWorld ?? null) !== (me.reviewWorld ?? null)) throw new DomainError('not_found', errorText('inviteNotFound'));
     if (owner.id === userId) throw new DomainError('conflict', errorText('inviteOwn'));
     return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id });
   }

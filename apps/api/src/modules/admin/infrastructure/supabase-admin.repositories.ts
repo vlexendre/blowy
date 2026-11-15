@@ -36,6 +36,10 @@ const reportFromRow = (r: ReportRow): AdminReportRow => ({
   handledAt: isoOrNull(r.handled_at),
   handledBy: r.handled_by,
   resolution: r.resolution as ModerationActionKind | null,
+  priority: r.priority ?? 0,
+  source: r.source === 'filter' ? 'filter' : 'person',
+  category: r.category ?? null,
+  review: r.review ?? false,
 });
 
 export class SupabaseSuspensionsRepository implements SuspensionsRepository {
@@ -134,7 +138,7 @@ export class SupabaseModerationRepository implements ModerationRepository {
 
   async page(filter: ReportFilter, cursor: string | null, limit: number): Promise<AdminReportRow[]> {
     const ascending = filter.status === 'open';
-    let q = this.reports.select('*').order('created_at', { ascending }).order('id', { ascending }).limit(limit);
+    let q = (ascending ? this.reports.select('*').order('priority', { ascending: false }) : this.reports.select('*')).order('created_at', { ascending }).order('id', { ascending }).limit(limit);
     if (filter.status === 'open') q = q.is('handled_at', null);
     if (filter.status === 'handled') q = q.not('handled_at', 'is', null);
     if (filter.reason) q = q.eq('reason', filter.reason);
@@ -142,7 +146,10 @@ export class SupabaseModerationRepository implements ModerationRepository {
     const after = cursor ? parseCursor(cursor) : null;
     if (after) {
       const op = ascending ? 'gt' : 'lt';
-      q = q.or(`created_at.${op}.${after.createdAt},and(created_at.eq.${after.createdAt},id.${op}.${after.id})`);
+      const sameRank = `created_at.${op}.${after.createdAt},and(created_at.eq.${after.createdAt},id.${op}.${after.id})`;
+      q = ascending
+        ? q.or(`priority.lt.${after.priority},and(priority.eq.${after.priority},created_at.gt.${after.createdAt}),and(priority.eq.${after.priority},created_at.eq.${after.createdAt},id.gt.${after.id})`)
+        : q.or(sameRank);
     }
     const { data, error } = await q;
     check(error, 'lecture des signalements');

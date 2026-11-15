@@ -1,9 +1,10 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import type { Env } from '../../../config/env';
 import { moderationTextIn } from '@blowy/content';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
-import { CLOCK } from '../../../shared/tokens';
+import { CLOCK, ENV } from '../../../shared/tokens';
 import { RETENTION, type RetentionRepository } from '../../retention/ports';
 import type { ActivityRepository, SuspensionsRepository } from '../ports';
 import { ACTIVITY, SUSPENSIONS } from '../tokens';
@@ -43,6 +44,7 @@ export class AccountGate {
     @Inject(ACTIVITY) private readonly activity: ActivityRepository,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(RETENTION) private readonly retention: RetentionRepository,
+    @Optional() @Inject(ENV) private readonly env: Env | null = null,
   ) {}
 
   async check(user: AuthUser, req: GateRequest): Promise<void> {
@@ -55,7 +57,13 @@ export class AccountGate {
       }
       return;
     }
-    this.touch(user.userId);
+    this.touch(user.userId, this.isReviewAccount(user.email));
+  }
+
+  /** Compte de revue d'Apple : jamais compté dans les statistiques d'activité. */
+  private isReviewAccount(email: string | null): boolean {
+    const review = this.env?.audit.review;
+    return !!review && !!email && email.toLowerCase() === review.email;
   }
 
   /** Suspension en cours (même cache de 30 s que la garde) : sert aux envois (push) et à la visibilité. */
@@ -80,7 +88,7 @@ export class AccountGate {
     return value;
   }
 
-  private touch(userId: string): void {
+  private touch(userId: string, review = false): void {
     const day = todayOf(this.clock);
     if (day !== this.seenDay) {
       this.seenDay = day;
@@ -89,7 +97,8 @@ export class AccountGate {
     if (this.seen.has(userId)) return;
     this.seen.add(userId);
     // Jour d'activité (statistiques) et dernier jour d'activité du compte (comptes inactifs supprimés après 2 ans).
-    Promise.all([this.activity.touch(userId, day), this.retention.touch(userId, day)]).catch((err: unknown) => {
+    // Le compte de revue n'entre pas dans les statistiques ; il garde seulement son dernier jour d'activité.
+    Promise.all([review ? Promise.resolve() : this.activity.touch(userId, day), this.retention.touch(userId, day)]).catch((err: unknown) => {
       this.seen.delete(userId);
       this.logger.warn(`jour d’activité non noté : ${err instanceof Error ? err.message : 'erreur'}`);
     });

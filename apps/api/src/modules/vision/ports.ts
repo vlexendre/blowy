@@ -8,7 +8,11 @@ export interface ChosenCityRecord extends GeoPoint {
 /** Position d'une personne (n'existe que si elle a donné son accord). */
 export interface PlaceRecord {
   userId: string;
-  /** Dernier relevé exact : jamais montré, jamais renvoyé à quelqu'un d'autre. */
+  /**
+   * Dernier relevé, arrondi à la maille de ~300 m avant d'être enregistré (`storedPoint`) : jamais le point exact,
+   * jamais montré, jamais renvoyé à quelqu'un d'autre. Le point exact ne sert qu'en mémoire, le temps de savoir si la
+   * personne est hors de sa zone (`lastAwayAt`).
+   */
   last: GeoPoint;
   locatedAt: string;
   lastAwayAt: string | null;
@@ -18,6 +22,10 @@ export interface PlaceRecord {
   candidate: GeoPoint | null;
   candidateSince: string | null;
   chosenCity: ChosenCityRecord | null;
+  /** D'où vient la zone : `gps` (défaut) ou `manual` (choisie à la main, sans localisation). */
+  source?: 'gps' | 'manual';
+  /** Zone choisie à la main : la ville et le jour du choix (gratuit : une fois tous les 30 jours). */
+  manualArea?: { label: string; setOn: string } | null;
 }
 
 export interface PlacesRepository {

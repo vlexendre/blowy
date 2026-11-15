@@ -49,6 +49,24 @@ export class MemoryProfilesRepository implements ProfilesRepository {
       .map((p) => ({ ...p }));
   }
 
+  async listFixtures(world: string): Promise<Profile[]> {
+    return [...this.db.profiles.values()].filter((p) => p.reviewWorld === world && p.id !== world).map((p) => ({ ...p }));
+  }
+
+  async deleteFixtures(world: string): Promise<string[]> {
+    const ids = (await this.listFixtures(world)).map((p) => p.id);
+    for (const id of ids) this.db.deleteProfile(id);
+    return ids;
+  }
+
+  async listUncheckedAvatars(limit: number): Promise<Profile[]> {
+    return [...this.db.profiles.values()]
+      .filter((p) => p.avatarPath !== null && !p.avatarCheckedAt)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .slice(0, limit)
+      .map((p) => ({ ...p }));
+  }
+
   private find(predicate: (p: Profile) => boolean): Profile | null {
     for (const p of this.db.profiles.values()) if (predicate(p)) return { ...p };
     return null;

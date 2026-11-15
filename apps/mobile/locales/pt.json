@@ -1,7 +1,7 @@
 {
   "ios": {
-    "NSCameraUsageDescription": "Blowy utilise l’appareil photo pour les preuves de tes habitudes et les défis photo. Une IA les vérifie ; personne d’autre que toi ne les voit.",
-    "NSLocationWhenInUseUsageDescription": "Blowy utilise ta position, app ouverte seulement, pour trouver des minimoas près de toi et confirmer tes sorties.",
-    "NSPhotoLibraryUsageDescription": "Blowy accède aux photos que tu choisis pour ta photo de profil."
+    "NSCameraUsageDescription": "Blowy utilise l’appareil photo pour ta photo de profil, les preuves de tes habitudes et les défis photo. Une preuve d’habitude n’est vérifiée par une IA externe que si tu l’as accepté ; aucun humain ne la regarde. Preuves et photos de défi sont supprimées sous 24 h, sauf celles que tu gardes.",
+    "NSLocationWhenInUseUsageDescription": "Blowy utilise ta position, seulement quand l’app est ouverte, pour te présenter des personnes compatibles près de toi et confirmer tes sorties. Les autres ne voient jamais ta position exacte.",
+    "NSPhotoLibraryUsageDescription": "Blowy ouvre ta photothèque seulement pour la photo de profil que tu choisis."
   }
 }

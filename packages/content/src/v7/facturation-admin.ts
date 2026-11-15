@@ -26,7 +26,7 @@ const fr = {
     more_habits: 'Jusqu’à 6 habitudes',
     detailed_review: 'Le bilan détaillé du dimanche',
     free_rename: 'Renommer ton minimoa quand tu veux',
-    premium_items: 'Les objets premium',
+    premium_items: 'Tous les objets premium de la garde-robe',
   } as Record<PlusPerk, string>,
   plus: {
     name: { yearly: 'Abonnement annuel Blowy+', monthly: 'Abonnement mensuel Blowy+' },

@@ -37,6 +37,8 @@ pnpm --filter @blowy/web preview
 | Nom | Défaut | Rôle |
 |---|---|---|
 | `PUBLIC_API_URL` | `http://localhost:3000` | URL de base de l'API (sans `/v1`). Injectée **au build** dans le code client. |
+| `APPLE_TEAM_ID` | (aucun) | Identifiant d'équipe Apple (10 caractères) pour `/.well-known/apple-app-site-association`. Absent : le fichier ne déclare aucune app (liens universels désactivés) et le build l'écrit en avertissement. **Obligatoire en production.** |
+| `BLOWY_BUNDLE_ID` | `app.blowy` | Identifiant de l'app iOS, le même que `apps/mobile/app.config.ts`. |
 
 ## Déploiement sur Cloudflare Pages
 
@@ -45,7 +47,7 @@ pnpm --filter @blowy/web preview
    - Commande : `pnpm --filter @blowy/web build`
    - Répertoire de sortie : `apps/web/dist`
    - Répertoire racine : la racine du dépôt (pour que pnpm voie l'espace de travail)
-   - Variables : `PUBLIC_API_URL=https://api.blowy.app` (par exemple) et `NODE_VERSION=22`
+   - Variables : `PUBLIC_API_URL=https://api.blowy.app` (par exemple), `APPLE_TEAM_ID=<identifiant d'équipe>` et `NODE_VERSION=22`
 3. Domaine personnalisé : `blowy.app`.
 
 `public/_redirects` sert `/m/*` et `/i/*` avec la page statique correspondante (statut 200, l'URL reste intacte).
@@ -54,7 +56,7 @@ pnpm --filter @blowy/web preview
 ## À compléter avant la mise en ligne
 
 - `src/config/site.ts` : `LEGAL.entity` (raison sociale, utilisée par toutes les pages légales), `APP_STORE_URL`, `PLAY_STORE_URL`.
-- `public/.well-known/apple-app-site-association` : remplacer `TEAMID.app.blowy` par l'identifiant d'équipe Apple et le bundle id réels.
+- `APPLE_TEAM_ID` dans les variables du build : `/.well-known/apple-app-site-association` est généré par `src/pages/.well-known/apple-app-site-association.ts` (`src/config/apple.ts`) ; sans lui, aucune app n'y est déclarée (avertissement au build).
 
 ## Organisation
 

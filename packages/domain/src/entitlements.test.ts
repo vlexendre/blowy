@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PLUS_PERKS, entitlements } from './entitlements';
+import { PREMIUM_ITEM_IDS, cleanOutfit, ownedWith, withoutPremium } from './items';
 
 describe('entitlements', () => {
   it('sans Blowy+ : 2 habitudes, 1 joker, sa zone seulement, pas de bonus', () => {
@@ -37,5 +38,25 @@ describe('entitlements', () => {
   it('les limites sont figées (personne ne les modifie par erreur)', () => {
     expect(Object.isFrozen(entitlements(true))).toBe(true);
     expect(Object.isFrozen(entitlements(false))).toBe(true);
+  });
+});
+
+describe('objets premium (Blowy+)', () => {
+  it('avec Blowy+ : tous les objets premium sont possédés, en plus de ceux gagnés', () => {
+    const owned = ownedWith(['bob', 'casquette'], entitlements(true).premiumItems);
+    expect(PREMIUM_ITEM_IDS.length).toBeGreaterThan(0);
+    for (const id of PREMIUM_ITEM_IDS) expect(owned.has(id)).toBe(true);
+    expect(owned.has('bob')).toBe(true);
+  });
+  it('sans Blowy+ : aucun objet premium, même attribué autrement (démo, ancien achat)', () => {
+    const owned = ownedWith(['bob', 'aureole'], entitlements(false).premiumItems);
+    expect([...owned]).toEqual(['bob']);
+  });
+  it('fin de Blowy+ : le minimoa range ses objets premium, garde le reste', () => {
+    expect(withoutPremium({ head: 'aureole', face: 'lunettes_rondes', toy: 'skate' })).toEqual({ face: 'lunettes_rondes' });
+    const plain = { head: 'bob' };
+    expect(withoutPremium(plain)).toBe(plain);
+    expect(cleanOutfit({ head: 'aureole' }, ownedWith([], false))).toEqual({});
+    expect(cleanOutfit({ head: 'aureole' }, ownedWith([], true))).toEqual({ head: 'aureole' });
   });
 });

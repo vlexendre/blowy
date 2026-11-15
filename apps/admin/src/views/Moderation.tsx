@@ -126,12 +126,29 @@ export function Moderation({ onCountsChange }: { onCountsChange?: () => void }) 
                     <tr key={r.id}>
                       <td>
                         {r.status === 'open' ? (
-                          <span className={`badge${r.overdue ? ' late' : ''}`}>{r.overdue ? `⚠ ${fmtAge(r.ageHours)}` : fmtAge(r.ageHours)}</span>
+                          <>
+                            <span className={`badge${r.overdue ? ' late' : ''}`} title={r.overdue ? 'Au-delà du délai cible de 24 h' : undefined}>
+                              {r.overdue ? `⚠ ${fmtAge(r.ageHours)} · en retard` : fmtAge(r.ageHours)}
+                            </span>
+                            {r.priority !== 'normal' && (
+                              <span className={`badge${r.priority === 'urgent' ? ' late' : ' warn'}`} style={{ marginLeft: 6 }}>
+                                {r.priority === 'urgent' ? 'urgent' : 'prioritaire'}
+                              </span>
+                            )}
+                          </>
                         ) : (
                           <span className="muted small">{fmtDateTime(r.createdAt)}</span>
                         )}
                       </td>
-                      <td>{REASONS[r.reason] ?? r.reason}</td>
+                      <td>
+                        {REASONS[r.reason] ?? r.reason}
+                        {r.source === 'filter' && (
+                          <div className="muted small">
+                            filtre automatique{r.category ? ` · ${r.category}` : ''}
+                          </div>
+                        )}
+                        {r.review && <div className="muted small">compte de revue d’Apple (fictif)</div>}
+                      </td>
                       <td>
                         {r.target ? (
                           <>
@@ -145,7 +162,7 @@ export function Moderation({ onCountsChange }: { onCountsChange?: () => void }) 
                           <span className="muted">Compte supprimé</span>
                         )}
                       </td>
-                      <td>{r.reporter?.displayName ?? <span className="muted">Compte supprimé</span>}</td>
+                      <td>{r.reporter?.displayName ?? <span className="muted">{r.source === 'filter' ? 'Filtre' : 'Compte supprimé'}</span>}</td>
                       <td className="clip" title={r.details ?? ''}>
                         {r.hasMessage && <span className="badge" style={{ marginRight: 6 }}>message</span>}
                         {r.details ?? <span className="muted">—</span>}

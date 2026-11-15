@@ -14,6 +14,15 @@ Les identifiants sont des réglages (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHL
 Connect, les changer aussi dans `apps/api/.env`. Les prix réellement affichés viennent de StoreKit (localisés) ;
 l'API ne fournit que des prix de repli.
 
+## Ce que Blowy+ ouvre, et la fin de l'abonnement
+
+Les limites viennent de `entitlements(hasPlus(...))` (`packages/domain/src/entitlements.ts`). Les objets premium de la
+garde-robe (`unlock.kind === 'premium'`, 13 objets) sont à la personne tant que Blowy+ est actif
+(`Wardrobe.state`, `ownedWith`) et se portent comme les autres ; sans Blowy+, leur fiche ouvre Blowy+
+(`openPlus('premium_item')`). **Quand Blowy+ prend fin, le minimoa les range** : à la prochaine ouverture de l'app par sa
+personne (`Wardrobe.settle`), et pour les autres par le minuteur (`WardrobeJobs`, `modules/tick/jobs.ts`). Ils reviennent
+avec un nouvel abonnement. Le reste de la tenue ne bouge pas.
+
 ## 1. Dans App Store Connect
 
 1. **Contrat** : « Accords, taxes et banques » → accord des Apps payantes signé, coordonnées bancaires et fiscales

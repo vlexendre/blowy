@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Optional, Param, Post, Query } from '@nestjs/common';
 import {
   Iso,
   type Link,
@@ -24,6 +24,8 @@ import { ListMessages } from '../application/list-messages.usecase';
 import { MarkRead } from '../application/mark-read.usecase';
 import { ReviveLink } from '../application/revive-link.usecase';
 import { SendMessage } from '../application/send-message.usecase';
+import { ContentFilter } from '../../moderation/content-filter';
+import { REVIEW_REPLIES, type ReviewReplies } from '../../../review/review-replies';
 import { LinkPresenter } from './link.presenter';
 
 const LinkId = new ZodPipe(Uuid);
@@ -42,6 +44,8 @@ export class LinksController {
     @Inject(GetMemories) private readonly getMemories: GetMemories,
     @Inject(LinkPresenter) private readonly presenter: LinkPresenter,
     @Inject(STORAGE) private readonly storage: Storage,
+    @Inject(ContentFilter) private readonly filter: ContentFilter,
+    @Optional() @Inject(REVIEW_REPLIES) private readonly review: ReviewReplies | null,
   ) {}
 
   @Get()
@@ -74,7 +78,13 @@ export class LinksController {
     @Param('id', LinkId) id: string,
     @Body(new ZodPipe(SendMessageBody)) body: z.infer<typeof SendMessageBody>,
   ): Promise<LinkAction> {
-    return this.action(await this.sendMessage.execute({ linkId: id, userId: user.userId, body: body.body, tone: body.tone }), user.userId);
+    // Filtre des contenus (audit B6) : une violation nette n'est jamais écrite ; un cas limite est signalé après coup.
+    const screened = await this.filter.screenMessage({ userId: user.userId, linkId: id, text: body.body });
+    const result = await this.sendMessage.execute({ linkId: id, userId: user.userId, body: body.body, tone: body.tone });
+    await this.filter.afterMessage({ userId: user.userId, linkId: id, text: body.body, screened, written: result.messages });
+    // Compte de revue d'Apple : la personne fictive répond (rien pour un vrai lien).
+    this.review?.afterUserMessage(id, user.userId);
+    return this.action(result, user.userId);
   }
 
   @Post(':id/read')

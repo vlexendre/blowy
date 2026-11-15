@@ -230,8 +230,10 @@ export const UpdateHabitBody = z.object({ rhythm: HabitRhythmZ.optional(), proof
 export type UpdateHabitBody = z.infer<typeof UpdateHabitBody>;
 
 /**
- * Résultat d’une preuve. La photo est privée : aucun humain ne la voit ; une IA la vérifie, puis elle est supprimée
- * sous 24 h, sauf si la personne la garde (`keep`). « pas sûr » compte comme tenu ; après un « non », on peut réessayer.
+ * Résultat d’une preuve. La photo est privée : aucun humain ne la voit ; une IA tierce la vérifie seulement si la
+ * personne l’a accepté (`GET /v1/me/ai`, `proofs.consent`), sinon personne ne la vérifie et elle compte comme « pas sûr ».
+ * Elle est supprimée sous 24 h, sauf si la personne la garde (`keep`). « pas sûr » compte comme tenu ; après un « non »,
+ * on peut réessayer.
  */
 export const ProofResultZ = z.object({
   photoId: z.string().uuid(),
@@ -244,6 +246,20 @@ export const ProofResultZ = z.object({
   newItems: z.array(ItemId),
 });
 export type ProofResult = z.infer<typeof ProofResultZ>;
+
+/**
+ * Habitude validée sans photo ni IA (« Sans vérification par IA », ou accord pour l'IA retiré) : la personne dit
+ * qu'elle l'a tenue, ça compte comme un « pas sûr » (on fait confiance). Rien n'est envoyé à un prestataire.
+ */
+export const HabitDoneResultZ = z.object({
+  verdict: ProofVerdictZ,
+  counted: z.boolean(),
+  /** Phrase du minimoa. */
+  line: z.string(),
+  habit: HabitZ,
+  newItems: z.array(ItemId),
+});
+export type HabitDoneResult = z.infer<typeof HabitDoneResultZ>;
 
 export const KeepPhotoBody = z.object({ keep: z.boolean() });
 
@@ -317,6 +333,8 @@ export const ritualRoutes = {
   habit: (ref: string) => `${API}/habits/${ref}`,
   habitProofTicket: (ref: string) => `${API}/habits/${ref}/proof/ticket`,
   habitProof: (ref: string) => `${API}/habits/${ref}/proof`,
+  /** Habitude tenue sans photo (aucune IA) : `POST`, sans corps. */
+  habitDone: (ref: string) => `${API}/habits/${ref}/done`,
   photoKeep: (photoId: string) => `${API}/photos/${photoId}/keep`,
   memories: () => `${API}/memories`,
   reviews: () => `${API}/reviews`,

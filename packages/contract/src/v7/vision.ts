@@ -50,6 +50,16 @@ export const LocationStatusZ = z.object({
   chosenCity: ChosenCityZ.nullable(),
   /** Vrai si la ville choisie sert en ce moment de centre (Blowy+ actif). */
   chosenCityActive: z.boolean(),
+  /**
+   * D'où vient la zone : `gps` (position du téléphone, arrondie) ou `manual` (zone choisie à la main, sans
+   * localisation, gratuit) ; null sans zone.
+   */
+  source: z.enum(['gps', 'manual']).nullable(),
+  /**
+   * Zone choisie à la main (sans localisation) : la ville et le premier jour où elle pourra changer (gratuit : 30 jours
+   * après le choix, ce jour peut être passé ; null avec Blowy+ : quand on veut). Null si la zone vient du téléphone.
+   */
+  manualArea: z.object({ label: z.string(), nextChangeOn: z.string().nullable() }).nullable(),
 });
 export type LocationStatus = z.infer<typeof LocationStatusZ>;
 
@@ -201,6 +211,8 @@ export const visionRoutes = {
   location: () => '/v1/me/location',
   /** PUT : changer de ville (Blowy+) · DELETE : revenir à sa zone. */
   city: () => '/v1/me/city',
+  /** PUT : choisir sa zone à la main, sans localisation (gratuit ; corps `ChosenCityZ`). DELETE `location` l'oublie. */
+  area: () => '/v1/me/area',
   /** GET : la carte. */
   map: () => '/v1/map',
 } as const;

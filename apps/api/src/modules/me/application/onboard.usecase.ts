@@ -17,6 +17,7 @@ import { DEFAULT_IDENTITY, type IdentityState, applyIdentity } from '../../visio
 import { Locations } from '../../vision/application/locations';
 import { VisionRecorder } from '../../vision/application/vision-recorder';
 import { checkAnswers } from '../../vision/application/vision.usecases';
+import { ContentFilter } from '../../moderation/content-filter';
 import type { OnboardedHook, Profile, ProfilesRepository } from '../ports';
 
 export interface OnboardInput {
@@ -49,6 +50,7 @@ export class Onboard {
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
     @Inject(Bans) private readonly bans: Bans,
+    @Inject(ContentFilter) private readonly filter: ContentFilter,
   ) {}
 
   async execute({ userId, email, body }: OnboardInput): Promise<void> {
@@ -61,6 +63,9 @@ export class Onboard {
     // Tout est vérifié avant d'écrire quoi que ce soit.
     // Le test se passe avant le compte ; sans réponses, l'inscription passe et `Me.visionTestDone` vaut faux.
     checkAnswers(body.visionAnswers, true);
+    // Prénom et nom du minimoa : vus par des inconnus, passés au filtre des contenus (refus clair, rien n'est écrit).
+    this.filter.checkName('display_name', body.displayName, body.locale);
+    this.filter.checkName('pet_name', body.pet.name, body.locale);
     const nowIso = this.clock.now().toISOString();
     const identity = applyIdentity(DEFAULT_IDENTITY, { gender: body.gender, seeking: body.seeking, whom: body.whom ?? null, sensitiveConsent: body.consents.sensitive || undefined }, nowIso);
     if (body.location && !body.consents.location) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.locationConsent));
@@ -139,7 +144,8 @@ export class Onboard {
   /** Un code d'invitation invalide n'empêche pas l'inscription : il est simplement ignoré. */
   private async joinInviter(userId: string, code: string): Promise<void> {
     const inviter = await this.profiles.findByInviteCode(code);
-    if (!inviter || inviter.id === userId) return;
+    // Le compte de revue d'Apple et ses personnes fictives ne se lient jamais à un vrai compte.
+    if (!inviter || inviter.id === userId || inviter.reviewWorld) return;
     try {
       await this.createLink.execute({ by: userId, with: inviter.id, notify: inviter.id });
     } catch (err) {

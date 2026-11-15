@@ -19,7 +19,10 @@ export type AudiencePurpose = 'suggest' | 'map';
  * - supprimée : son profil n'existe plus ;
  * - suspendue par la modération : jamais proposée, jamais sur la carte, ne reçoit aucun push ;
  * - bloquée dans un sens ou dans l'autre : invisible pour l'autre ;
- * - mode discret : absente de la carte seulement (elle reste proposée en rencontre).
+ * - mode discret : absente de la carte seulement (elle reste proposée en rencontre) ;
+ * - monde d'exemple du compte de revue d'Apple (`profiles.review_world`) : une personne n'est montrée qu'à quelqu'un du
+ *   même monde. Les personnes fictives et le compte de revue ne croisent donc jamais un vrai compte (rencontres, carte,
+ *   coucous, invitations, « 3 mots », compteur du paywall), et les vrais comptes n'entrent jamais dans ce monde.
  * Relu à chaque requête (les caches des suggestions et de la carte ne gardent que la compatibilité).
  */
 @Injectable()
@@ -37,14 +40,15 @@ export class Audience {
     const wanted = [...new Set(ids.filter((id) => id !== viewerId))];
     if (wanted.length === 0) return [];
     const [profiles, blocked, suspended] = await Promise.all([
-      this.profiles.findByIds(wanted),
+      this.profiles.findByIds([...wanted, viewerId]),
       this.blocks.blockedEitherWay(viewerId),
       this.suspensions.activeAmong(wanted, this.clock.now().toISOString()),
     ]);
     const byId = new Map(profiles.map((p) => [p.id, p]));
+    const world = sameWorld(byId.get(viewerId)?.reviewWorld);
     return wanted.flatMap((id) => {
       const p = byId.get(id);
-      if (!p || blocked.has(id) || suspended.has(id)) return [];
+      if (!p || blocked.has(id) || suspended.has(id) || !world(p.reviewWorld)) return [];
       if (purpose === 'map' && (p.discreet || !p.locationConsentAt)) return [];
       return [p];
     });
@@ -60,9 +64,12 @@ export class Audience {
     return (await this.visible(viewerId, [targetId], 'suggest'))[0] ?? null;
   }
 
-  /** Personne joignable par une page publique (invitation, « 3 mots ») : existe et n'est pas suspendue. */
+  /**
+   * Personne joignable par une page publique (invitation, « 3 mots ») : existe, n'est pas suspendue, et n'appartient
+   * pas au monde d'exemple du compte de revue.
+   */
   async publiclyVisible(profile: Profile | null): Promise<Profile | null> {
-    if (!profile) return null;
+    if (!profile || profile.reviewWorld) return null;
     return (await this.gate.isSuspended(profile.id)) ? null : profile;
   }
 
@@ -76,3 +83,9 @@ export class Audience {
     return !(await this.gate.isSuspended(userId));
   }
 }
+
+/** Même monde : tous deux hors de tout monde d'exemple, ou dans le même. */
+const sameWorld =
+  (viewer: string | null | undefined) =>
+  (other: string | null | undefined): boolean =>
+    (viewer ?? null) === (other ?? null);

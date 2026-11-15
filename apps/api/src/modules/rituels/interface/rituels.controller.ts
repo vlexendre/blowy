@@ -22,6 +22,7 @@ import {
   Uuid,
   type WeeklyReview,
   type WeeklyReviews,
+  type HabitDoneResult,
 } from '@blowy/contract';
 import { rituelsText } from '@blowy/content';
 import type { z } from 'zod';
@@ -168,12 +169,20 @@ export class RituelsController {
     return this.habits.proofTicket(user.userId, ref, body.contentType);
   }
 
-  // Peut appeler le modèle de vision (`habit_proof`) : quota « ai » par personne, en plus du budget de la passerelle.
+  // Peut appeler le modèle de vision (`habit_proof`), seulement avec l'accord de la personne (`AiConsents`) :
+  // quota « ai » par personne, en plus du budget de la passerelle.
   @RateLimit('ai')
   @Post('habits/:ref/proof')
   async proof(@CurrentUser() user: AuthUser, @Param('ref', Ref) ref: string, @Body(new ZodPipe(RitualPhotoBody)) body: z.infer<typeof RitualPhotoBody>): Promise<ProofResult> {
     const r = await this.habits.proof(user.userId, ref, body.path, body.keep);
     return { photoId: r.photo.id, verdict: r.verdict, counted: r.counted, line: r.line, kept: r.photo.keep, habit: r.habit, newItems: r.newItems };
+  }
+
+  /** Habitude tenue sans photo ni IA (« Sans vérification par IA ») : rien n'est envoyé au prestataire d'IA. */
+  @RateLimit('write')
+  @Post('habits/:ref/done')
+  async habitDone(@CurrentUser() user: AuthUser, @Param('ref', Ref) ref: string): Promise<HabitDoneResult> {
+    return this.habits.done(user.userId, ref);
   }
 
   // ── Photos privées ──

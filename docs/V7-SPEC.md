@@ -71,6 +71,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 - Gratuit : 2 habitudes. Blowy+ : 6.
 - Le minimoa **demande une preuve en photo** au bon moment (« Montre-moi tes baskets. »). Photo prise dans l'app, pas depuis la galerie.
 - **Une IA valide** : oui / non / pas sûr, avec une phrase gentille. En cas de « pas sûr », on fait confiance. La photo n'est vue par personne, sert à la validation et est supprimée sous 24 h, sauf si la personne la garde dans ses souvenirs privés.
+- **Accord explicite avant la première photo** (audit App Store B5, App Review 5.1.2(i)) : une feuille dit ce qui part (la photo réduite et le nom de l'habitude), à qui (le prestataire d'IA, nommé par la configuration), pourquoi, et la suppression sous 24 h ; deux choix, « Oui, vérifier par une IA » ou « Sans vérification par IA ». Sans accord, l'API n'envoie aucune image : l'habitude se valide sans photo (compte comme « pas sûr »). Accord retirable dans Moi › L'IA et toi.
 - Effets : le minimoa **évolue** (formes et objets liés à l'habitude tenue), la série avance, l'axe de vision correspondant gagne en confiance.
 - Port `HabitVerifier` : adaptateur réel (IA de vision, clé dans `apps/api/.env`), adaptateur mémoire pour les tests.
 
@@ -103,7 +104,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 - Chaque minimoa parle avec le caractère de son humain. Au plus 3 interventions par jour et par lien ; on peut les couper pour un lien.
 - **Confidentialité** (décision du 15 nov. : une IA lit les messages) :
-  - Texte exact : « Aucun humain ne lit tes conversations. Si vous l'activez tous les deux, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n'est conservé après. »
+  - Texte exact (audit App Store B5, 15 nov. : nommer l'IA tierce, servi par l'API depuis `packages/content`, prestataire lu dans la configuration) : « Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par {prestataire} ({pays}), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux. »
   - Accord demandé à **chacun**, à la première ouverture du chat. Si l'un refuse, les minimoas ne réagissent qu'au rythme (silences, séries, défis), sans lire.
   - Réglage par défaut dans « Moi » (demander à chaque fois · toujours activer · ne jamais activer), appliqué à chaque nouveau chat : la question n'est alors pas posée, mais le chat affiche l'état en une ligne avec « Changer ». « Pour tous mes chats » s'applique en une fois aux chats existants.
   - Ce qu'on dit de l'autre (décision du 15 nov., 2e passe) : seulement « il l'a activé » ou « pas encore activé de son côté ». Un refus explicite et une question pas encore vue donnent la même réponse : on ne montre jamais « a refusé », pour ne mettre aucune pression et ne pas transformer un réglage de confidentialité en signal social (`consent.theirs` : `agreed` · `not_yet`).
@@ -150,6 +151,7 @@ Un minuteur côté serveur (tâche planifiée qui appelle l'API) déclenche les 
 
 - Offres : **59,88 € par an** ou **14,99 € par mois**.
 - Contenu : toute la carte et changer de ville · plus de rencontres · jokers de série · 6 habitudes · bilan détaillé · renommer son minimoa librement · objets premium.
+- Objets premium (audit B3) : tous possédés et portables tant que Blowy+ dure ; à la fin de l'abonnement, le minimoa les range (verrouillés, de retour avec un nouvel abonnement).
 - Achat intégré Apple, vérifié côté serveur (port `Billing`), qui met à jour `plus` sur le profil.
 - **Conformité Apple (3.1.2)** — le paywall actuel n'est pas conforme sur un point : il affiche « 4,99 €/mois » en grand et « facturé 59,88 €/an » en petit. Apple exige que **le montant réellement facturé soit le prix le plus visible**. À faire :
   - « 59,88 € par an » en grand, « soit 4,99 € par mois » en petit ;

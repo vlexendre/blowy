@@ -184,8 +184,8 @@ export const rituels = messages({
       close: 'Fermer',
       dailyChip: 'Défi du jour',
       busy: 'Il regarde…',
-      /** Vrai à la lettre (comme `rituelsText.privacy` côté API) : aucun humain ; une IA vérifie la preuve ; 24 h. */
-      privacy: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit : une IA la vérifie, puis elle est supprimée sous 24 h.',
+      /** Vrai à la lettre : aucun humain ; une IA tierce la vérifie, seulement avec l’accord donné avant (audit B5). */
+      privacy: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit : une IA la vérifie, avec ton accord. Supprimée sous 24 h chez Blowy, sauf si tu la gardes.',
       privacyDaily: 'Prise ici, jamais depuis ta galerie. Aucun humain ne la voit. Supprimée sous 24 h, sauf si tu la gardes.',
       verdict: { yes: 'VALIDÉ !', unsure: 'ÇA COMPTE.', no: 'PAS CETTE FOIS.' } as Record<ProofVerdict, string>,
       dailyDone: 'FAIT !',

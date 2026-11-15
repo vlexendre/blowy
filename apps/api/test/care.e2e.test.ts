@@ -34,8 +34,8 @@ describe('soins et garde-robe', () => {
     const wardrobe = await alice.api.pet.wardrobe();
     expect(wardrobe.items.map((i) => i.id)).toEqual(ITEM_IDS);
     expect(wardrobe.items.filter((i) => i.state === 'owned').map((i) => i.id)).toEqual(START_ITEMS);
-    expect(wardrobe.items.find((i) => i.id === 'coeur')).toEqual({ id: 'coeur', slot: 'toy', state: 'locked', goal: { stat: 'careDays', have: 0, need: 1 } });
-    expect(wardrobe.items.find((i) => i.id === 'aureole')).toEqual({ id: 'aureole', slot: 'head', state: 'premium', goal: null });
+    expect(wardrobe.items.find((i) => i.id === 'coeur')).toEqual({ id: 'coeur', slot: 'toy', state: 'locked', plus: false, goal: { stat: 'careDays', have: 0, need: 1 } });
+    expect(wardrobe.items.find((i) => i.id === 'aureole')).toEqual({ id: 'aureole', slot: 'head', state: 'premium', plus: true, goal: null });
     expect(wardrobe.items.find((i) => i.id === 'bob')?.goal).toBeNull();
     expect(wardrobe.outfit).toEqual({});
   });

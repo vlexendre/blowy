@@ -72,7 +72,9 @@ export class ListEncounters {
   /** Plus grand nombre de suggestions déjà noté par personne et par jour (dans cette instance) : une écriture quand il augmente. */
   private readonly recorded = new Map<string, number>();
 
-  private async recordProposals(userId: string, day: string, shown: readonly SuggestionResult[]): Promise<void> {
+  private async recordProposals(userId: string, day: string, shown: readonly SuggestionResult[], review = false): Promise<void> {
+    // Monde d'exemple du compte de revue : hors statistiques.
+    if (review) return;
     const key = `${day}:${userId}`;
     if (shown.length === 0 || (this.recorded.get(key) ?? 0) >= shown.length) return;
     if (this.recorded.size > 50_000) this.recorded.clear();
@@ -164,7 +166,7 @@ export class ListEncounters {
     const nearbyOut = nearby.flatMap((m) => suggestion(m.userId, 'nearby', m.score, m));
 
     const suggestions = [...fofOut, ...nearbyOut].slice(0, quota);
-    await this.recordProposals(userId, today, suggestions);
+    await this.recordProposals(userId, today, suggestions, !!me.reviewWorld);
     return { incoming: incomingOut, suggestions, petShape };
   }
 }

@@ -7,6 +7,7 @@ import type { UploadTicket } from '@blowy/contract';
 
 import { AuthError, type AuthPort, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
 import { pickImage } from './image-picker';
+import { reviewSession } from './review-session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -55,6 +56,18 @@ export function localAuth(): AuthPort {
     async getToken() {
       const s = await load();
       return s ? `test:${s.userId}:${s.email ?? ''}` : null;
+    },
+    async signInWithEmailCode(email, code) {
+      // Le compte de revue (adresse et code de l'API locale) d'abord ; sinon le code de développement.
+      try {
+        const r = await reviewSession(email, code);
+        const session = { userId: r.userId, email: r.email };
+        await set(session);
+        return session;
+      } catch (e) {
+        if (!(e instanceof AuthError) || e.code !== 'invalid_code' || code !== LOCAL_CODE) throw e;
+      }
+      return this.verifyCode(email, code);
     },
     async sendCode(email) {
       if (!/^\S+@\S+\.\S+$/.test(email)) throw new AuthError('invalid_email', common.errors.invalidEmail);

@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ITEMS, type PetStats, earnedItems, itemById } from '@blowy/domain';
+import { ITEMS, type PetStats, earnedItems, entitlements, itemById, ownedWith, withoutPremium } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
-import { CLOCK, LINKS, PET_ITEMS, PETS, WORD_VOTES } from '../../../shared/tokens';
+import { CLOCK, LINKS, PET_ITEMS, PETS, PROFILES, WORD_VOTES } from '../../../shared/tokens';
+import { hasPlus } from '../../me/application/plus';
+import type { ProfilesRepository } from '../../me/ports';
 import type { LinksRepository } from '../../links/ports';
 import type { RitualStatesRepository } from '../../rituels/ports';
 import { RITUAL_STATES } from '../../rituels/tokens';
@@ -11,8 +13,13 @@ import { PetCharacter } from './pet-character';
 export interface WardrobeState {
   pet: PetRecord;
   stats: PetStats;
-  /** Objets possédés : ceux de `pet_items` et ceux déjà gagnés par les compteurs (un objet gagné reste gagné). */
+  /**
+   * Objets possédés : ceux de `pet_items` et ceux déjà gagnés par les compteurs (un objet gagné reste gagné), plus tous
+   * les objets premium tant que Blowy+ est actif (`entitlements().premiumItems`) ; sans Blowy+, aucun objet premium.
+   */
   owned: ReadonlySet<string>;
+  /** Blowy+ actif : les objets premium sont à la personne. */
+  plus: boolean;
 }
 
 /**
@@ -28,6 +35,7 @@ export class Wardrobe {
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(WORD_VOTES) private readonly votes: WordVotesRepository,
     @Inject(RITUAL_STATES) private readonly rituals: RitualStatesRepository,
+    @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
@@ -37,8 +45,9 @@ export class Wardrobe {
    * (lien créé, niveau, série, 3 mots) deviennent des objets « nouveaux ».
    */
   async sync(ownerId: string): Promise<string[]> {
-    const pet = await this.character.load(ownerId);
-    const [stats, owned] = await Promise.all([this.statsOf(pet), this.items.list(pet.id)]);
+    const loaded = await this.character.load(ownerId);
+    const [stats, owned, plus] = await Promise.all([this.statsOf(loaded), this.items.list(loaded.id), this.plusOf(ownerId)]);
+    const pet = await this.settle(loaded, plus);
     const have = new Set(owned);
     const missing = earnedItems(stats).filter((id) => !have.has(id));
     if (missing.length === 0) return [];
@@ -50,9 +59,26 @@ export class Wardrobe {
   }
 
   async state(ownerId: string): Promise<WardrobeState> {
-    const pet = await this.character.load(ownerId);
-    const [stats, owned] = await Promise.all([this.statsOf(pet), this.items.list(pet.id)]);
-    return { pet, stats, owned: new Set([...owned, ...earnedItems(stats)]) };
+    const loaded = await this.character.load(ownerId);
+    const [stats, owned, plus] = await Promise.all([this.statsOf(loaded), this.items.list(loaded.id), this.plusOf(ownerId)]);
+    const pet = await this.settle(loaded, plus);
+    return { pet, stats, plus, owned: ownedWith([...owned, ...earnedItems(stats)], entitlements(plus).premiumItems) };
+  }
+
+  /**
+   * Fin de Blowy+ : le minimoa range ses objets premium (ils retournent dans la garde-robe, verrouillés, et reviennent
+   * avec un nouvel abonnement). Fait ici à chaque vue par sa personne, et pour les autres par `WardrobeJobs`.
+   */
+  async settle<T extends PetRecord>(pet: T, plus: boolean): Promise<T> {
+    if (entitlements(plus).premiumItems) return pet;
+    const outfit = withoutPremium(pet.outfit);
+    if (outfit === pet.outfit) return pet;
+    await this.pets.saveOutfit(pet.id, outfit);
+    return { ...pet, outfit };
+  }
+
+  private async plusOf(ownerId: string): Promise<boolean> {
+    return hasPlus(await this.profiles.findById(ownerId), this.clock.now());
   }
 
   async statsOf(pet: PetRecord): Promise<PetStats> {

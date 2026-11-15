@@ -36,6 +36,12 @@ export type Database = {
           last_active_on: string;
           inactivity_noticed_on: string | null;
           chat_reading_default: string;
+          ai_proofs_consent: boolean | null;
+          ai_proofs_consent_at: string | null;
+          /** Migration 20261115200000_audit : monde d'exemple du compte de revue d'Apple. */
+          review_world: string | null;
+          /** Migration 20261115200000_audit : photo de profil vérifiée par le filtre. */
+          avatar_checked_at: string | null;
         },
         | 'gender'
         | 'seeking'
@@ -51,6 +57,10 @@ export type Database = {
         | 'last_active_on'
         | 'inactivity_noticed_on'
         | 'chat_reading_default'
+        | 'ai_proofs_consent'
+        | 'ai_proofs_consent_at'
+        | 'review_world'
+        | 'avatar_checked_at'
       >;
       pets: Table<
         {
@@ -181,8 +191,32 @@ export type Database = {
           handled_at: string | null;
           handled_by: string | null;
           resolution: string | null;
+          /** Migration 20261115200000_audit : person · filter (filtre automatique). */
+          source: string;
+          /** 0 normal · 1 haut · 2 urgent. */
+          priority: number;
+          category: string | null;
+          /** Fait dans le monde d'exemple du compte de revue (ni alerte, ni statistique). */
+          review: boolean;
+          alerted_at: string | null;
+          escalated_at: string | null;
         },
-        'id' | 'reporter' | 'target_user' | 'link_id' | 'details' | 'created_at' | 'message_id' | 'handled_at' | 'handled_by' | 'resolution'
+        | 'id'
+        | 'reporter'
+        | 'target_user'
+        | 'link_id'
+        | 'details'
+        | 'created_at'
+        | 'message_id'
+        | 'handled_at'
+        | 'handled_by'
+        | 'resolution'
+        | 'source'
+        | 'priority'
+        | 'category'
+        | 'review'
+        | 'alerted_at'
+        | 'escalated_at'
       >;
       // ── Vision (migration 20261115130000_vision) ──
       profile_places: Table<
@@ -201,8 +235,12 @@ export type Database = {
           city_label: string | null;
           city_lat: number | null;
           city_lng: number | null;
+          /** Migration 20261115200000_audit : gps (relevé arrondi) · manual (zone choisie sans localisation). */
+          source: string;
+          manual_label: string | null;
+          manual_set_on: string | null;
         },
-        'last_away_at' | 'candidate_lat' | 'candidate_lng' | 'candidate_since' | 'city_label' | 'city_lat' | 'city_lng'
+        'last_away_at' | 'candidate_lat' | 'candidate_lng' | 'candidate_since' | 'city_label' | 'city_lat' | 'city_lng' | 'source' | 'manual_label' | 'manual_set_on'
       >;
       vision_signals: Table<{ id: number; user_id: string; axis: string; value: number; source: string; at: string }, 'id'>;
       vision_profiles: Table<{ user_id: string; axes: Json; test_done: boolean; computed_at: string }, 'test_done' | 'computed_at'>;

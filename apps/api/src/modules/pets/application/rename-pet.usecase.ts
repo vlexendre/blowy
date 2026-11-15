@@ -6,6 +6,7 @@ import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import type { PetsRepository } from '../ports';
 import { PetCharacter } from './pet-character';
+import { ContentFilter } from '../../moderation/content-filter';
 import { frenchDay, renameStateOf } from './rename-state';
 
 /**
@@ -19,6 +20,7 @@ export class RenamePet {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(ContentFilter) private readonly filter: ContentFilter,
   ) {}
 
   async execute(ownerId: string, rawName: string): Promise<void> {
@@ -26,6 +28,7 @@ export class RenamePet {
     if (name.length === 0) throw new DomainError('invalid', errorText('petNameEmpty'));
     const [pet, profile] = await Promise.all([this.character.load(ownerId), this.profiles.findById(ownerId)]);
     if (name === pet.name) return;
+    this.filter.checkName('pet_name', name, profile?.locale ?? 'fr');
     const now = this.clock.now();
     const rule = renameStateOf(pet, profile, now);
     if (!rule.allowed && rule.availableOn) {

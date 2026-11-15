@@ -11,6 +11,7 @@ import { config } from '../config';
 import { AuthError, type AuthPort, type AuthProvider, type MediaPort, type PickedImage, type RealtimePort, type Session } from '../ports';
 import { appleSignIn } from './apple-sign-in';
 import { pickImage } from './image-picker';
+import { reviewSession } from './review-session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -121,6 +122,12 @@ export function supabaseAuth(sb: SupabaseClient): AuthPort {
     async getToken() {
       const { data } = await sb.auth.getSession();
       return data.session?.access_token ?? null;
+    },
+    async signInWithEmailCode(email, code) {
+      const r = await reviewSession(email, code);
+      const { data, error } = await sb.auth.setSession({ access_token: r.accessToken, refresh_token: r.refreshToken });
+      if (error) throw authError(error.message, error.status);
+      return opened(data.session);
     },
     async sendCode(email) {
       const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });

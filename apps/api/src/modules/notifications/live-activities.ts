@@ -7,16 +7,23 @@
  * Chaque jeton refusé par APNs (410, BadDeviceToken) est désactivé ; un jeton d'activité terminée est oublié.
  * Rien ne lève : une activité en direct ne fait jamais échouer une action.
  */
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { LiveActivityState, RegisterDeviceBody } from '@blowy/contract';
+import { auditText } from '@blowy/content';
 import { nextLocalHour } from '@blowy/domain';
 import { LIVE_ACTIVITIES, type LiveActivityPayload, type LiveActivityPusher, liveEndPayload, liveStartPayload, liveUpdatePayload, unixSeconds } from '../../integrations/push/live-activity';
 import type { Clock } from '../../shared/clock';
-import { CLOCK, PETS } from '../../shared/tokens';
+import { CLOCK, PETS, PROFILES } from '../../shared/tokens';
+import type { ProfilesRepository } from '../me/ports';
 import type { PetsRepository } from '../pets/ports';
 import { NotificationSettings } from './notification-settings';
 import { LIVE_ACTIVITY_TOKENS, type LiveActivityTokenRecord, type LiveActivityTokensRepository } from './ports';
 
+/**
+ * Durée maximale d'une activité en direct (HIG d'Apple : « don't exceed eight hours ») : le défi du jour et la série
+ * d'un lien finissent à minuit ou au bout de 8 h, au premier des deux.
+ */
+const MAX_ACTIVITY_MS = 8 * 3_600_000;
 /** État final laissé à l'écran : 15 min pour un défi relevé, 10 min pour un lien où tu as écrit (comme l'app). */
 const CHALLENGE_DONE_MS = 15 * 60_000;
 const LINK_DONE_MS = 10 * 60_000;
@@ -32,6 +39,7 @@ export class LiveActivities {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(NotificationSettings) private readonly settings: NotificationSettings,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Optional() @Inject(PROFILES) private readonly profiles: ProfilesRepository | null = null,
   ) {}
 
   /** Range un jeton envoyé par l'app (`POST /v1/devices` avec `kind: 'apns_live_activity'`). */
@@ -48,8 +56,8 @@ export class LiveActivities {
       activity,
       activityId: use === 'update' ? (la?.activityId ?? null) : null,
       linkId: activity === 'link' ? (la?.linkId ?? null) : null,
-      // Défi et série d'un lien vivent jusqu'à minuit local ; la sortie, au plus 8 h (limite d'Apple).
-      endsAt: activity === null ? null : activity === 'outing' ? new Date(now.getTime() + 8 * 3_600_000).toISOString() : nextLocalHour(now, timeZone, 0).toISOString(),
+      // Minuit local ou 8 h (limite d'Apple), au premier des deux ; la sortie, 8 h.
+      endsAt: activity === null ? null : activity === 'outing' ? new Date(now.getTime() + MAX_ACTIVITY_MS).toISOString() : capped(now, nextLocalHour(now, timeZone, 0)).toISOString(),
       createdAt: now.toISOString(),
       lastSeenAt: now.toISOString(),
     });
@@ -68,13 +76,17 @@ export class LiveActivities {
     try {
       const starts = await this.tokens.forUser(userId, { use: 'start' });
       if (starts.length === 0) return false;
-      const [pet, endsAt] = await Promise.all([this.pets.findByOwner(userId), this.midnight(userId)]);
+      const [pet, endsAt, profile] = await Promise.all([this.pets.findByOwner(userId), this.midnight(userId), this.profiles?.findById(userId) ?? null]);
       const now = this.clock.now();
+      // Écran verrouillé, visible de tous : jamais le prénom de l'autre (HIG « Avoid displaying sensitive information »,
+      // app de rencontre). Ni dans les attributs (pas d'`otherName`), ni dans l'alerte : un texte neutre ; le prénom
+      // reste dans l'app.
+      const neutral = auditText.in(profile?.locale ?? 'fr').lockScreen;
       const payload = liveStartPayload({
         now,
-        attributes: { kind: 'link', pet: { name: pet?.name ?? '', species: pet?.species ?? 'nino' }, startedAt: unixSeconds(now), url: `blowy://link/${input.linkId}`, otherName: input.otherName.slice(0, 40) },
+        attributes: { kind: 'link', pet: { name: pet?.name ?? '', species: pet?.species ?? 'nino' }, startedAt: unixSeconds(now), url: `blowy://link/${input.linkId}` },
         state: { endsAt, streak: Math.max(0, Math.trunc(input.streak)), title: null, done: false },
-        alert: input.alert,
+        alert: { title: neutral.linkTitle, body: neutral.linkBody },
         relevance: 75,
       });
       return (await this.deliver(starts, payload, 10)) > 0;
@@ -142,9 +154,11 @@ export class LiveActivities {
     return n;
   }
 
+  /** Fin affichée d'une activité : minuit local, ou 8 h après maintenant si c'est plus tôt. */
   private async midnight(userId: string): Promise<number> {
     const s = await this.settings.resolve(userId);
-    return unixSeconds(nextLocalHour(this.clock.now(), s.timeZone, 0));
+    const now = this.clock.now();
+    return unixSeconds(capped(now, nextLocalHour(now, s.timeZone, 0)));
   }
 
   /** Envoie à chaque jeton ; désactive les jetons morts. Rend le nombre d'envois acceptés. */
@@ -169,3 +183,6 @@ export class LiveActivities {
     }
   }
 }
+
+/** Le premier de `end` et de `now` + 8 h. */
+const capped = (now: Date, end: Date): Date => new Date(Math.min(end.getTime(), now.getTime() + MAX_ACTIVITY_MS));

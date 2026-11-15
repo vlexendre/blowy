@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PetsModule } from '../pets/pets.module';
+import { AiConsentsModule } from '../ai-consents/ai-consents.module';
 import { DailyService } from './application/daily.service';
 import { RitualsDailyPush } from './application/daily-push';
 import { DAILY_PUSH_SOURCE } from '../notifications/ports';
@@ -18,7 +19,7 @@ import { RituelsController } from './interface/rituels.controller';
  * ce module fournit les cas d'usage, les ports externes (vérification, bilan, images) et les tâches planifiées.
  */
 @Module({
-  imports: [PetsModule],
+  imports: [PetsModule, AiConsentsModule],
   controllers: [RituelsController],
   providers: [
     ...rituelsPorts,

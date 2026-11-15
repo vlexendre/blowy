@@ -1,6 +1,10 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
+import { trialReminderEmail } from '@blowy/content';
 import { OFFERS, TECHNICAL_LOG_DAYS, TRIAL_DAYS, TRIAL_REMINDER_DAY, trialReminderDue } from '@blowy/domain';
+import { Notifier as MailNotifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
+import { PROFILES } from '../../../shared/tokens';
+import type { ProfilesRepository } from '../../me/ports';
 import type { StoreNotificationsRepository, SubscriptionsRepository } from '../ports';
 import { STORE_NOTIFICATIONS, SUBSCRIPTIONS } from '../tokens';
 
@@ -18,7 +22,9 @@ export const parisHour = (now: Date): number =>
 
 /**
  * Travaux planifiés de Blowy+ (appelés par le minuteur, `modules/tick/jobs.ts`) :
- * - le rappel promis sur la frise du paywall, à partir du jour 5 de l'essai, une seule fois par essai ;
+ * - le rappel promis sur la frise du paywall, à partir du jour 5 de l'essai, une seule fois par essai : en
+ *   notification ET par e-mail quand le compte a une adresse (l'adresse relais d'Apple marche aussi). Le push peut être
+ *   refusé, reporté ou coupé par la personne ; l'e-mail garantit que la promesse « on t'envoie un rappel » est tenue ;
  * - la purge des notifications des magasins de plus de 30 jours (journal technique).
  * Idempotent : le rappel est marqué envoyé avant l'envoi (au plus un rappel par essai).
  */
@@ -30,6 +36,8 @@ export class BillingJobs {
     @Inject(SUBSCRIPTIONS) private readonly subscriptions: SubscriptionsRepository,
     @Inject(STORE_NOTIFICATIONS) private readonly notifications: StoreNotificationsRepository,
     @Inject(NOTIFIER) private readonly notifier: Notifier,
+    @Optional() @Inject(MailNotifier) private readonly mail: MailNotifier | null = null,
+    @Optional() @Inject(PROFILES) private readonly profiles: ProfilesRepository | null = null,
   ) {}
 
   async runDue(now: Date, deadline?: number): Promise<number> {
@@ -53,10 +61,24 @@ export class BillingJobs {
       const lastCall = Date.parse(s.trialEndsAt) - now.getTime() <= LAST_CALL_MS;
       if (!daytime && !lastCall) continue;
       await this.subscriptions.markTrialReminded(s.store, s.originalTransactionId, s.trialEndsAt);
-      await this.notifier.notify(s.userId, 'trial_reminder', { endsOn: s.trialEndsAt, price: String(OFFERS[s.plan].amountMinor), currency: OFFERS[s.plan].currency });
+      const offer = OFFERS[s.plan];
+      await this.notifier.notify(s.userId, 'trial_reminder', { endsOn: s.trialEndsAt, price: String(offer.amountMinor), currency: offer.currency });
+      await this.emailReminder(s.userId, s.trialEndsAt, offer.amountMinor, offer.currency);
       sent += 1;
     }
     if (sent > 0) this.logger.log(`${sent} rappel(s) de fin d’essai envoyé(s)`);
     return sent;
+  }
+
+  /** Le même rappel par e-mail, dans la langue du profil ; sans adresse, rien (le push reste). Ne lève jamais. */
+  private async emailReminder(userId: string, endsOn: string, amountMinor: number, currency: string): Promise<void> {
+    if (!this.mail || !this.profiles) return;
+    try {
+      const profile = await this.profiles.findById(userId);
+      if (!profile) return;
+      await this.mail.notify(userId, trialReminderEmail(profile.locale, { displayName: profile.displayName, endsOn, amountMinor, currency }));
+    } catch (err) {
+      this.logger.warn(`rappel de fin d’essai par e-mail non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+    }
   }
 }

@@ -50,6 +50,7 @@ import {
   ritualRoutes,
 } from '@blowy/contract';
 import { PaywallZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
+import { AiConsentsZ, HabitDoneResultZ, aiRoutes } from '@blowy/contract';
 import {
   type LinkMinimoasBody,
   LinkMinimoasZ,
@@ -64,6 +65,7 @@ import {
   AppleAuthorizationZ,
   compteRoutes,
 } from '@blowy/contract';
+import { ReviewResetZ, type ReviewSessionBody, ReviewSessionZ, reviewRoutes } from '@blowy/contract';
 import { z } from 'zod';
 
 export class ApiError extends Error {
@@ -136,6 +138,13 @@ export function createApiClient(opts: ApiClientOptions) {
        * l'accès à Apple quand le compte est supprimé. Sans effet si la révocation n'est pas configurée côté serveur.
        */
       appleAuthorization: (authorizationCode: string) => call('POST', compteRoutes.appleAuthorization(), AppleAuthorizationZ, { authorizationCode }),
+      /**
+       * IA tierce : le prestataire (nom, pays) et l'accord pour la vérification des preuves par l'IA (null : jamais
+       * demandé). La lecture des chats a ses accords par lien (`minimoas`).
+       */
+      ai: () => call('GET', aiRoutes.consents(), AiConsentsZ),
+      /** Accepter, refuser ou retirer la vérification des preuves d'habitude par l'IA. */
+      setAiProofs: (consent: boolean) => call('PUT', aiRoutes.proofsConsent(), AiConsentsZ, { consent }),
     },
     pet: {
       get: () => call('GET', routes.pet(), PetViewZ),
@@ -179,6 +188,8 @@ export function createApiClient(opts: ApiClientOptions) {
       /** Blowy+ : changer de ville sans bouger. */
       chooseCity: (city: ChosenCity) => call('PUT', visionRoutes.city(), LocationStatusZ, city),
       clearCity: () => call('DELETE', visionRoutes.city(), LocationStatusZ),
+      /** Sans localisation : choisir sa zone à la main (gratuit ; une fois tous les 30 jours sans Blowy+). */
+      chooseArea: (city: ChosenCity) => call('PUT', visionRoutes.area(), LocationStatusZ, city),
       /** La carte : sa zone (gratuit) ; avec Blowy+, `at` pour regarder ailleurs. */
       map: (at?: { lat: number; lng: number; radiusKm?: number }) =>
         call(
@@ -186,6 +197,11 @@ export function createApiClient(opts: ApiClientOptions) {
           visionRoutes.map() + (at ? `?lat=${at.lat}&lng=${at.lng}${at.radiusKm !== undefined ? `&radiusKm=${at.radiusKm}` : ''}` : ''),
           MapZ,
         ),
+    },
+    /** Compte de revue d'Apple : session par adresse et code (public), remise à neuf de son monde d'exemple. */
+    review: {
+      session: (body: ReviewSessionBody) => call('POST', reviewRoutes.session(), ReviewSessionZ, body),
+      reset: () => call('POST', reviewRoutes.reset(), ReviewResetZ),
     },
     invites: {
       get: (code: string) => call('GET', routes.invite(code), InviteZ),
@@ -223,6 +239,8 @@ export function createApiClient(opts: ApiClientOptions) {
       proofTicket: (ref: string, contentType: 'image/jpeg' | 'image/webp') => call('POST', ritualRoutes.habitProofTicket(ref), UploadTicketZ, { contentType }),
       /** Preuve envoyée : verdict, phrase du minimoa ; `keep` la garde dans les souvenirs privés (sinon supprimée sous 24 h). */
       proof: (ref: string, path: string, keep = false) => call('POST', ritualRoutes.habitProof(ref), ProofResultZ, { path, keep }),
+      /** Habitude tenue sans photo ni IA (« Sans vérification par IA ») : compte comme un « pas sûr ». */
+      habitDone: (ref: string) => call('POST', ritualRoutes.habitDone(ref), HabitDoneResultZ),
       keepPhoto: (photoId: string, keep: boolean) => call('POST', ritualRoutes.photoKeep(photoId), OkZ, { keep }),
       /** Souvenirs privés (photos gardées), par pages : passer le `nextBefore` de la page précédente. */
       memories: (before?: string) => call('GET', ritualRoutes.memories() + (before ? `?before=${encodeURIComponent(before)}` : ''), PrivateMemoriesZ),

@@ -55,6 +55,14 @@ export function useSignInWith() {
   });
 }
 
+/** Connexion par e-mail et code (compte de revue d'Apple ; code de développement en local). */
+export function useEmailCodeSignIn() {
+  const { auth } = usePorts();
+  return useMutation({
+    mutationFn: ({ email, code }: { email: string; code: string }) => auth.signInWithEmailCode(email.trim().toLowerCase(), code.trim()),
+  });
+}
+
 export function useSendCode() {
   const { auth } = usePorts();
   return useMutation({ mutationFn: (email: string) => auth.sendCode(email.trim().toLowerCase()) });

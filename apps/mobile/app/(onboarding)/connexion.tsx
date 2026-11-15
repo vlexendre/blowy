@@ -3,7 +3,9 @@
  * Android et le web (jeton du fournisseur → Supabase). Annuler la feuille du fournisseur ne montre rien d'alarmant ; un
  * échec, un message et on peut réessayer. `mode=login` (« J'ai déjà un compte ») : mêmes boutons, panneau « content de
  * te revoir », sans barre. Ensuite `useAfterSignIn` décide : préparation (inscription), l'app (compte existant).
- * Le code par e-mail n'existe plus qu'en mode local (développement), replié sous les boutons.
+ * « Connexion par e-mail », repliée sous les boutons : pour les comptes qui ont reçu un code (le compte de revue
+ * d'Apple : adresse et code configurés sur le serveur, `POST /v1/review/session`). Toute autre adresse reçoit
+ * « Adresse ou code incorrect. ». En mode local, le code de développement (000000) marche aussi.
  */
 import { Appear, AuthButton, Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, OptionalField, Stack, Text, TextField } from '@blowy/ui';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -12,7 +14,7 @@ import { Linking } from 'react-native';
 
 import { config, LOCAL_CODE, ScreenMotion } from '@/core';
 import { progressAt, useDraft, useStep } from '@/features/onboarding';
-import { AppleButton, errorMessage, goBack, useAfterSignIn, useProviders, useSendCode, useSignInWith, useVerifyCode } from '@/features/session';
+import { AppleButton, errorMessage, goBack, useAfterSignIn, useEmailCodeSignIn, useProviders, useSignInWith } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -75,7 +77,7 @@ export default function Connexion() {
                 { text: '.' },
               ]}
             />
-            {providers.includes('email') ? <DevEmail /> : null}
+            <EmailSignIn devHint={providers.includes('email')} />
           </Stack>
         }
       >
@@ -103,27 +105,39 @@ export default function Connexion() {
   );
 }
 
-/** Mode local seulement : l'ancien code par e-mail (000000), replié. */
-function DevEmail() {
+/**
+ * Connexion par e-mail et code, repliée : visible de tous (rien de caché à la revue), utile seulement aux comptes qui
+ * ont reçu un code (compte de revue d'Apple). En mode local, rappel du code de développement.
+ */
+function EmailSignIn({ devHint }: { devHint: boolean }) {
   const email = useDraft((d) => d.email);
   const set = useDraft((d) => d.set);
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
-  const send = useSendCode();
-  const verify = useVerifyCode();
+  const signIn = useEmailCodeSignIn();
   const afterSignIn = useAfterSignIn();
-  const d = t.dev;
-  const submit = () =>
-    send.mutate(email, {
-      onSuccess: () => verify.mutate({ email, code }, { onSuccess: async () => router.replace(await afterSignIn()) }),
-    });
-  const error = send.error ?? verify.error;
+  const e = t.email;
+  const submit = () => signIn.mutate({ email, code }, { onSuccess: async () => router.replace(await afterSignIn()) });
   return (
-    <OptionalField toggleLabel={d.toggle} open={open} onOpen={() => setOpen(true)}>
-      <TextField inset label={d.emailLabel} value={email} onChangeText={(v) => set({ email: v })} placeholder={d.emailPlaceholder} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
-      <TextField inset label={d.codeLabel} value={code} onChangeText={setCode} placeholder={LOCAL_CODE} keyboardType="number-pad" maxLength={6} hint={d.hint(LOCAL_CODE)} />
-      {error ? <Banner tone="error" text={errorMessage(error)} /> : null}
-      <Button label={d.verify} variant="glass" size="sm" onPress={submit} loading={send.isPending || verify.isPending} disabled={!email.trim() || code.length !== 6} />
+    <OptionalField toggleLabel={e.toggle} open={open} onOpen={() => setOpen(true)}>
+      <Text size={13} muted>
+        {e.lead}
+      </Text>
+      <TextField inset label={e.emailLabel} value={email} onChangeText={(v) => set({ email: v })} placeholder={e.emailPlaceholder} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
+      <TextField
+        inset
+        label={e.codeLabel}
+        value={code}
+        onChangeText={setCode}
+        placeholder={devHint ? LOCAL_CODE : e.codePlaceholder}
+        autoCapitalize="none"
+        autoCorrect={false}
+        secureTextEntry={!devHint}
+        maxLength={64}
+        hint={devHint ? t.dev.hint(LOCAL_CODE) : undefined}
+      />
+      {signIn.error ? <Banner tone="error" text={errorMessage(signIn.error)} /> : null}
+      <Button label={e.submit} variant="glass" size="sm" onPress={submit} loading={signIn.isPending} disabled={!email.trim() || code.trim().length < 4} />
     </OptionalField>
   );
 }

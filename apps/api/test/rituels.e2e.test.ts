@@ -251,6 +251,8 @@ describe('rituels', () => {
     let verifier: MemoryHabitVerifier;
     beforeAll(async () => {
       p = await newPerson(world, 'Hugo');
+      // Accord explicite pour la vérification des preuves par l'IA (audit B5) : sans lui, rien ne part au vérificateur.
+      await p.api.me.setAiProofs(true);
       verifier = world.app.get<MemoryHabitVerifier>(HABIT_VERIFIER);
     });
 

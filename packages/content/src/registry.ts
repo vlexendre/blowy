@@ -4,6 +4,7 @@ import { challengeText } from './challenges';
 import { emailText } from './emails';
 import type { Messages } from './i18n/core';
 import { labels } from './labels';
+import { auditText } from './v7/audit';
 import { chatText } from './v7/chat';
 import { facturationText } from './v7/facturation-admin';
 import { notificationTexts } from './v7/notifications';
@@ -22,4 +23,5 @@ export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = 
   notifications: notificationTexts,
   rituels: rituelsText,
   facturation: facturationText,
+  audit: auditText,
 };

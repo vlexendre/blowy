@@ -197,14 +197,19 @@ describe('événements de bout en bout (mémoire)', () => {
       payload: {
         aps: {
           'attributes-type': 'BlowyActivityAttributes',
-          attributes: { kind: 'link', pet: { name: 'Gaston', species: 'gaston' }, url: `blowy://link/${linkId}`, otherName: 'Léa' },
+          attributes: { kind: 'link', pet: { name: 'Gaston', species: 'gaston' }, url: `blowy://link/${linkId}` },
           'content-state': { streak: 0, done: false, title: null },
           'input-push-token': 1,
         },
       },
     });
     expect(LiveActivityAttributesZ.strict().safeParse(start?.payload.aps.attributes).success).toBe(true);
-    expect(`${start?.payload.aps.alert?.title} ${start?.payload.aps.alert?.body}`).toContain('Léa');
+    // Écran verrouillé d'une app de rencontre : jamais le prénom de l'autre (audit App Store, HIG Live Activities).
+    expect(start?.payload.aps.attributes).not.toHaveProperty('otherName');
+    expect(start?.payload.aps.alert).toEqual({ title: 'Un lien t’attend', body: 'À toi d’écrire avant minuit.' });
+    // Jamais plus de 8 h (limite d'Apple) : ici minuit arrive avant.
+    const endsAt = start?.payload.aps['content-state'].endsAt ?? 0;
+    expect(endsAt * 1000 - world.clock.now().getTime()).toBeLessThanOrEqual(8 * 3_600_000);
     // L'activité porte l'alerte : pas de seconde notification sur iOS.
     expect(yourTurn()).toBe(0);
     // Idempotent : un deuxième passage ne redémarre rien.

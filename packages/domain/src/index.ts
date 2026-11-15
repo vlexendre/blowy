@@ -12,3 +12,6 @@ export * from './billing';
 export * from './rituels';
 export * from './plateforme';
 export * from './retention';
+export * from './moderation';
+export * from './area';
+export * from './review';

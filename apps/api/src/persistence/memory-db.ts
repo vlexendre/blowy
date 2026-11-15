@@ -78,6 +78,8 @@ export class MemoryDb {
   readonly chatLinkSettings = new Map<string, ChatLinkSettingRecord>();
   /** `profiles.chat_reading_default` (absent : « ask »). */
   readonly chatReadingDefaults = new Map<string, ChatReadingDefault>();
+  /** `profiles.ai_proofs_consent` et `ai_proofs_consent_at` (absent : jamais demandé). */
+  readonly aiProofsConsents = new Map<string, { consent: boolean; at: string }>();
   /** `apple_tokens` : jeton de rafraîchissement d'Apple, par personne (révocation à la suppression). */
   readonly appleTokens = new Map<string, { refreshToken: string; clientId: string; createdAt: string }>();
   /** clé linkId */
@@ -118,6 +120,13 @@ export class MemoryDb {
   deleteUser(userId: string): void {
     this.deletedUsers.add(userId);
     this.authEmails.delete(userId);
+    // Les personnes fictives d'un compte de revue partent avec lui (`profiles.review_world`, on delete cascade).
+    for (const p of [...this.profiles.values()]) if (p.reviewWorld === userId && p.id !== userId) this.deleteProfile(p.id);
+    this.deleteProfile(userId);
+  }
+
+  /** Équivalent de `delete from public.profiles` (le compte d'authentification reste) et de ses cascades. */
+  deleteProfile(userId: string): void {
     this.profiles.delete(userId);
 
     const petIds = new Set([...this.pets.values()].filter((p) => p.ownerId === userId).map((p) => p.id));
@@ -151,6 +160,7 @@ export class MemoryDb {
     for (const key of [...this.aiUserCalls.keys()]) if (key.startsWith(`${userId}|`)) this.aiUserCalls.delete(key);
     for (const [key, c] of this.chatLinkSettings) if (c.userId === userId || linkIds.has(c.linkId)) this.chatLinkSettings.delete(key);
     this.chatReadingDefaults.delete(userId);
+    this.aiProofsConsents.delete(userId);
     this.appleTokens.delete(userId);
     for (const id of linkIds) this.chatPetStates.delete(id);
     removeWhere(this.messages, (m) => m.visibleTo === userId);

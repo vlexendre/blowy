@@ -134,6 +134,7 @@ Coûts et ordres de grandeur : `docs/COUTS.md`. Interfaces partagées : `docs/V7
 |---|---|---|
 | `ANTHROPIC_API_KEY` | vide | clé de l'API Anthropic (seulement dans `apps/api/.env` ou les secrets de l'hébergeur) |
 | `AI_PROVIDER` | selon la clé | `anthropic` (clé requise) · `memory` (déterministe, refusé en production) · `off` ; défaut : `anthropic` si clé, sinon `memory` en mémoire, `off` avec Supabase |
+| `AI_PROVIDER_NAME` / `AI_PROVIDER_COUNTRY` | `Anthropic` / `US` | prestataire d'IA nommé dans les textes vus par les gens (accord de lecture des chats, accord des preuves, Moi › L'IA et toi) ; code pays ISO à deux lettres. Doit rester celui de la politique de confidentialité (`apps/web/src/config/legal.ts`, `PROCESSORS.ai`) |
 | `AI_MODEL_SMALL` / `AI_MODEL_MEDIUM` | `claude-haiku-5-5` / `claude-sonnet-5-5` | identifiants de modèle par palier |
 | `AI_KILL_SWITCH` | `0` | `1` = plus aucun appel (tout passe par les règles) |
 | `AI_DAILY_CEILING_USD` | `3` | plafond global de dépense estimée par jour (Europe/Paris) |

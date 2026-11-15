@@ -15,6 +15,7 @@ import { askLocationPermission, currentPosition, type LocationPermission, openAp
 export { openAppSettings } from './location';
 export type { LocationPermission } from './location';
 export { CITIES, type City } from './cities';
+export { AreaSheet } from './AreaSheet';
 
 export const mapKey = ['map'] as const;
 
@@ -151,6 +152,20 @@ export function useDiscreet() {
     onSuccess: (me) => {
       qc.setQueryData(keys.me, me);
       void qc.invalidateQueries({ queryKey: mapKey });
+    },
+  });
+}
+
+/** Sans localisation : choisir sa ville à la main (gratuit). */
+export function useArea() {
+  const api = useApi();
+  const qc = useQueryClient();
+  const invalidate = useInvalidatePlace();
+  return useMutation({
+    mutationFn: (city: ChosenCity) => api.vision.chooseArea(city),
+    onSuccess: (status) => {
+      qc.setQueryData<Me>(keys.me, (m) => (m ? { ...m, identity: { ...m.identity, location: status } } : m));
+      invalidate();
     },
   });
 }

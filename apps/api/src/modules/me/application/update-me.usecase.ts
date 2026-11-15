@@ -7,6 +7,7 @@ import { applyIdentity, identityChanged } from '../../vision/application/identit
 import type { MatchCacheRepository } from '../../vision/ports';
 import { MATCH_CACHE } from '../../vision/tokens';
 import type { ProfilePatch, ProfilesRepository } from '../ports';
+import { ContentFilter } from '../../moderation/content-filter';
 
 @Injectable()
 export class UpdateMe {
@@ -14,13 +15,17 @@ export class UpdateMe {
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(MATCH_CACHE) private readonly cache: MatchCacheRepository,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(ContentFilter) private readonly filter: ContentFilter,
   ) {}
 
   async execute(userId: string, body: UpdateMeBody): Promise<void> {
     const current = await this.profiles.findById(userId);
     if (!current) throw new DomainError('not_onboarded');
     const patch: ProfilePatch = {};
-    if (body.displayName !== undefined) patch.displayName = body.displayName;
+    if (body.displayName !== undefined && body.displayName !== current.displayName) {
+      this.filter.checkName('display_name', body.displayName, body.locale ?? current.locale);
+      patch.displayName = body.displayName;
+    }
     if (body.locale !== undefined) patch.locale = body.locale;
     if (body.discreet !== undefined) patch.discreet = body.discreet;
     const touchesIdentity = body.gender !== undefined || body.seeking !== undefined || body.whom !== undefined || body.sensitiveConsent !== undefined;

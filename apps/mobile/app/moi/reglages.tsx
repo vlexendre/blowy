@@ -61,7 +61,7 @@ export default function Reglages() {
         key="privacy"
         title={t.sections.privacy}
         rows={[
-          { key: 'minimoas', ...t.rows.minimoas, onPress: () => router.push('/moi/minimoas') },
+          { key: 'ia', ...t.rows.ia, onPress: () => router.push('/moi/ia') },
           {
             key: 'location',
             title: t.rows.location.title,

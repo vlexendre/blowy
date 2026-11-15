@@ -1,7 +1,8 @@
 import { Inject, Injectable, Logger, type OnApplicationBootstrap } from '@nestjs/common';
 import { type Clock, todayOf } from '../shared/clock';
 import type { Ids } from '../shared/ids';
-import { VISION_AXES, type VisionSignal, itemById } from '@blowy/domain';
+import { VISION_AXES, type VisionSignal, isPremiumItem, itemById } from '@blowy/domain';
+
 import { CLOCK, ENCOUNTERS, IDS, PET_ITEMS, PETS, PROFILES } from '../shared/tokens';
 import { AnswerEncounter } from '../modules/encounters/application/answer-encounter.usecase';
 import { Wave } from '../modules/encounters/application/wave.usecase';
@@ -16,6 +17,9 @@ import { VISION_SIGNALS, type VisionSignals } from '../modules/vision/tokens';
 import { DEMO_LEA, DEMO_MALO, DEMO_MALO_MESSAGES, DEMO_PEOPLE, DEMO_SASHA } from './demo';
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
+
+/** Blowy+ des personnes de démo qui portent des objets premium. */
+const DEMO_PLUS_UNTIL = '2099-01-01T00:00:00.000Z';
 
 /**
  * Remplit la base mémoire au démarrage (Léa, Malo, Sasha et cinq autres autour de Paris, aux visions variées,
@@ -64,7 +68,8 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
         avatarPath: null,
         inviteCode: p.inviteCode,
         wordsCode: p.wordsCode,
-        plusUntil: null,
+        // Une personne qui porte des objets premium a Blowy+ (sans lui, son minimoa les range : audit B3).
+        plusUntil: Object.values(p.outfit).some((id) => id !== undefined && isPremiumItem(id)) ? DEMO_PLUS_UNTIL : null,
         welcomeSentAt: now,
         createdAt: now,
       });

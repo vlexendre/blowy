@@ -8,6 +8,7 @@ const clonePlace = (p: PlaceRecord): PlaceRecord => ({
   home: { ...p.home },
   candidate: p.candidate ? { ...p.candidate } : null,
   chosenCity: p.chosenCity ? { ...p.chosenCity } : null,
+  manualArea: p.manualArea ? { ...p.manualArea } : null,
 });
 
 export class MemoryPlacesRepository implements PlacesRepository {

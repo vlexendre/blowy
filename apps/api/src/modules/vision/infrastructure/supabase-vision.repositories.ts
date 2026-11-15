@@ -19,6 +19,9 @@ interface PlaceRow {
   city_label: string | null;
   city_lat: number | null;
   city_lng: number | null;
+  source?: string;
+  manual_label?: string | null;
+  manual_set_on?: string | null;
 }
 
 const placeFromRow = (r: PlaceRow): PlaceRecord => ({
@@ -31,6 +34,8 @@ const placeFromRow = (r: PlaceRow): PlaceRecord => ({
   candidate: r.candidate_lat !== null && r.candidate_lng !== null ? { lat: r.candidate_lat, lng: r.candidate_lng } : null,
   candidateSince: isoOrNull(r.candidate_since),
   chosenCity: r.city_label !== null && r.city_lat !== null && r.city_lng !== null ? { label: r.city_label, lat: r.city_lat, lng: r.city_lng } : null,
+  source: r.source === 'manual' ? 'manual' : 'gps',
+  manualArea: r.source === 'manual' && r.manual_label && r.manual_set_on ? { label: r.manual_label, setOn: r.manual_set_on } : null,
 });
 
 const placeToRow = (p: PlaceRecord): PlaceRow => ({
@@ -48,6 +53,9 @@ const placeToRow = (p: PlaceRecord): PlaceRow => ({
   city_label: p.chosenCity?.label ?? null,
   city_lat: p.chosenCity?.lat ?? null,
   city_lng: p.chosenCity?.lng ?? null,
+  source: p.source ?? 'gps',
+  manual_label: p.source === 'manual' ? (p.manualArea?.label ?? null) : null,
+  manual_set_on: p.source === 'manual' ? (p.manualArea?.setOn ?? null) : null,
 });
 
 export class SupabasePlacesRepository implements PlacesRepository {

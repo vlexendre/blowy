@@ -39,6 +39,7 @@ const aiConfig = (over: Partial<PlateformeEnv['ai']> = {}): PlateformeEnv['ai'] 
   dailyCeilingMicros: 1_000_000,
   userBudgets: parseAiBudgets('chat_remark=2'),
   eurPerUsd: 0.9,
+  processor: { name: 'Anthropic', country: 'US' },
   ...over,
 });
 
@@ -251,7 +252,7 @@ describe('minimoas dans le chat', () => {
     expect(settings).toMatchObject({ consent: { mine: null, reading: false }, muted: false, interventionsToday: 1, maxPerDay: 3 });
     expect(settings.consent.text).toBe(chatConfidentialityText('fr'));
     expect(settings.consent.text).toBe(
-      'Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n’est conservé après.',
+      'Aucun humain ne lit tes conversations. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par Anthropic (États-Unis), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.',
     );
   });
 

@@ -161,6 +161,8 @@ describe('parcours complet V7 (mémoire)', () => {
 
     const verifier = w.app.get<MemoryHabitVerifier>(HABIT_VERIFIER);
     const ref = (await ana.api.rituals.addHabit({ habitId: 'marcher' })).habits[0]?.ref ?? '';
+    // Accord explicite pour la vérification par l'IA (audit B5), sinon la preuve ne part pas au vérificateur.
+    await ana.api.me.setAiProofs(true);
     const t = await ana.api.rituals.proofTicket(ref, 'image/jpeg');
     await upload(t.uploadUrl);
     const proof = await ana.api.rituals.proof(ref, t.path, true);

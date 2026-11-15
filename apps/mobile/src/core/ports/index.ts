@@ -29,6 +29,12 @@ export interface AuthPort {
   getSession(): Promise<Session | null>;
   /** Jeton d'accès à joindre aux appels de l'API. */
   getToken(): Promise<string | null>;
+  /**
+   * Connexion par e-mail et code fixe, réservée aux comptes qui ont reçu un code (le compte de revue d'Apple, dont
+   * l'adresse et le code sont configurés sur le serveur ; `POST /v1/review/session`). Toute autre adresse reçoit
+   * « Adresse ou code incorrect. ». En mode local, le code de développement (000000) marche aussi pour toute adresse.
+   */
+  signInWithEmailCode(email: string, code: string): Promise<Session>;
   /** Mode local seulement : envoie un code à 6 chiffres par e-mail (crée le compte si besoin). */
   sendCode(email: string): Promise<void>;
   /** Vérifie le code reçu ; rend la session ouverte. */

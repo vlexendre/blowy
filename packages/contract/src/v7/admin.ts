@@ -5,7 +5,7 @@
  * Jamais de contenu de conversation hors du message signalé et de son contexte immédiat ; jamais
  * « qui quelqu'un veut rencontrer ».
  */
-import { SHAPES } from '@blowy/domain';
+import { REPORT_PRIORITIES, SHAPES } from '@blowy/domain';
 import { z } from 'zod';
 
 const Day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -103,6 +103,14 @@ export const AdminReportItemZ = z.object({
   linkId: z.string().nullable(),
   hasMessage: z.boolean(),
   resolution: z.object({ action: ModerationActionKindZ, at: z.string(), by: z.string() }).nullable(),
+  /** File de modération : urgent (mineur, menace), haut (haine, arnaque, plusieurs personnes), normal. */
+  priority: z.enum(REPORT_PRIORITIES),
+  /** Qui a signalé : une personne, ou le filtre automatique (message bloqué ou signalé, photo retirée). */
+  source: z.enum(['person', 'filter']),
+  /** Catégorie trouvée par le filtre (`MODERATION_CATEGORIES` du domaine), null pour un signalement d'une personne sans note. */
+  category: z.string().nullable(),
+  /** Signalement fait dans le monde d'exemple du compte de revue d'Apple (personnes fictives) : rien à traiter. */
+  review: z.boolean(),
 });
 export type AdminReportItem = z.infer<typeof AdminReportItemZ>;
 

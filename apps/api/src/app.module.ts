@@ -13,11 +13,14 @@ import { MeModule } from './modules/me/me.module';
 import { PetsModule } from './modules/pets/pets.module';
 import { SafetyModule } from './modules/safety/safety.module';
 import { RituelsModule } from './modules/rituels/rituels.module';
+import { AiConsentsModule } from './modules/ai-consents/ai-consents.module';
 import { VisionModule } from './modules/vision/vision.module';
 import { WordsModule } from './modules/words/words.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { RetentionModule } from './modules/retention/retention.module';
+import { ModerationModule } from './modules/moderation/moderation.module';
+import { ReviewModule } from './review/review.module';
 import { AuthGuard } from './shared/auth.guard';
 import { DevClockController } from './shared/dev-clock.controller';
 import { ErrorFilter } from './shared/error.filter';
@@ -41,9 +44,13 @@ export class AppModule {
         SafetyModule,
         VisionModule,
         RituelsModule,
+        AiConsentsModule,
         BillingModule,
         AdminModule.forRoot({ demo: env.demo }),
         RetentionModule,
+        // Audit App Store : filtre des contenus et suite des signalements (global) ; compte de revue d'Apple.
+        ModerationModule,
+        ReviewModule.forRoot(env),
       ],
       // Mode mémoire : envoi et lecture des médias (imite les URL signées de Supabase) ;
       // en local seulement, l'avance du temps.
