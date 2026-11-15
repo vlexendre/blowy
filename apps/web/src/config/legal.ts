@@ -17,19 +17,19 @@ export const PUBLISHER = {
   /** Dénomination sociale. */
   name: 'Avec Trois E',
   /** Forme juridique (SAS, SARL…). */
-  legalForm: TODO,
+  legalForm: 'SAS (société par actions simplifiée)',
   /** Capital social, ex. « 1 000 € ». */
   shareCapital: TODO,
   /** Numéro SIREN et ville du RCS, ex. « 123 456 789 RCS Paris ». */
-  registration: TODO,
+  registration: '914 595 657 RCS Nanterre',
   /** Numéro de TVA intracommunautaire. */
-  vatNumber: TODO,
+  vatNumber: 'FR72914595657',
   /** Adresse du siège social. */
-  address: TODO,
+  address: '47 quai Carnot, 92210 Saint-Cloud',
   /** Téléphone (exigé par l'article 6 III de la LCEN). */
   phone: TODO,
   /** Directeur ou directrice de la publication (nom et qualité). */
-  publicationDirector: TODO,
+  publicationDirector: 'Alexendre Obli, président',
 } as const;
 
 /** Adresses de contact. Une adresse peut servir à plusieurs usages. */
@@ -60,12 +60,12 @@ export const MEDIATOR = { name: TODO, address: TODO, website: TODO } as const;
  * de transfert si ce pays est hors de l'Union européenne.
  */
 export const SUBPROCESSORS = {
-  database: { provider: TODO, location: TODO, safeguard: TODO },
-  api: { provider: TODO, location: TODO, safeguard: TODO },
-  ai: { provider: TODO, location: TODO, safeguard: TODO },
-  email: { provider: TODO, location: TODO, safeguard: TODO },
-  push: { provider: TODO, location: TODO, safeguard: TODO },
-  maps: { provider: TODO, location: TODO, safeguard: TODO },
+  database: { provider: 'Supabase', location: 'France (Paris)', safeguard: TODO },
+  api: { provider: 'Railway', location: 'Pays-Bas', safeguard: TODO },
+  ai: { provider: 'Anthropic', location: 'États-Unis', safeguard: TODO },
+  email: { provider: 'Resend', location: TODO, safeguard: TODO },
+  push: { provider: 'Expo et Apple (service de notifications)', location: 'États-Unis', safeguard: TODO },
+  maps: { provider: 'Apple (Plans)', location: TODO, safeguard: TODO },
   site: { provider: TODO, location: TODO, safeguard: TODO },
 } as const;
 
