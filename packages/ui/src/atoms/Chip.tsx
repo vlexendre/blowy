@@ -44,7 +44,7 @@ export function Chip({ label, onPress, selected, tone = 'glass', left, size = 'm
   const content = (
     <InkProvider value={(!selected && ink) || t.ink}>
       {left}
-      <Text variant="bodyHeavy" size={size === 'sm' ? 11 : size === 'lg' ? 15 : 12} numberOfLines={1}>
+      <Text variant="bodyHeavy" size={size === 'sm' ? 11 : size === 'lg' ? 15 : 12} numberOfLines={1} style={styles.label}>
         {label}
       </Text>
     </InkProvider>
@@ -68,4 +68,6 @@ export function Chip({ label, onPress, selected, tone = 'glass', left, size = 'm
 
 const styles = StyleSheet.create({
   base: { borderRadius: radius.pill, gap: space.xs + 2, alignSelf: 'flex-start' },
+  // Dans une puce bornée en largeur (`maxWidth`), le libellé se raccourcit au lieu de déborder.
+  label: { flexShrink: 1 },
 });

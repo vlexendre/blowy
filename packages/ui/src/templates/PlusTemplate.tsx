@@ -161,7 +161,8 @@ function OfferCard<K extends string>({ offer, on, onPress }: { offer: PlusOfferV
           <Text variant="bodyHeavy" size={15} style={layout.grow}>
             {offer.short}
           </Text>
-          <Text variant="bodyHeavy" size={15}>
+          {/* Le prix reste sur une ligne ; c'est le nom de l'offre qui passe à la ligne s'il le faut. */}
+          <Text variant="bodyHeavy" size={15} numberOfLines={1} style={styles.shortPrice}>
             {offer.price}
           </Text>
         </View>
@@ -383,6 +384,7 @@ const styles = StyleSheet.create({
   offerTop: { gap: space.sm, alignItems: 'flex-start' },
   offerShort: { gap: space.md },
   price: { marginTop: space.xs, lineHeight: 36 },
+  shortPrice: { flexShrink: 0 },
   badge: { paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: color.accent, transform: [{ rotate: '3deg' }] },
   timeline: { marginTop: space.md },
   timelineLine: { position: 'absolute', top: 8, left: '16%', right: '16%', height: 2, backgroundColor: veil.off },

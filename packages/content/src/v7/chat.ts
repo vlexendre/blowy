@@ -272,7 +272,7 @@ const ES: ChatLines = {
 
 const PT: ChatLines = {
   confidentiality: (provider: string, country: string): string =>
-    `Ninguém na Blowy lê suas conversas, exceto uma mensagem denunciada e as poucas mensagens em volta dela, para a moderação. Se as duas pessoas ativarem, uma IA lê as últimas mensagens de vocês para que os minimoas de vocês possam reagir a elas. Essa IA é fornecida por ${provider} (${country}), nosso fornecedor, que recebe essas mensagens em nosso nome. Você pode retirar seu consentimento quando quiser.`,
+    `Ninguém no Blowy lê suas conversas, exceto uma mensagem denunciada e as poucas mensagens em volta dela, para a moderação. Se as duas pessoas ativarem, uma IA lê as últimas mensagens de vocês para que os minimoas de vocês possam reagir a elas. Essa IA é fornecida por ${provider} (${country}), nosso fornecedor, que recebe essas mensagens em nosso nome. Você pode retirar seu consentimento quando quiser.`,
   system: { linkCreated: 'Os minimoas de vocês se encontraram. Agora vocês podem trocar mensagens.' },
   icebreaker: {
     foyer: [

@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { IconButton } from '../atoms/IconButton';
 import { Text } from '../atoms/Text';
-import { Title } from '../atoms/Title';
+import { Title, fitTitleSize } from '../atoms/Title';
 import { space, veil } from '../theme';
 import type { TitleContent } from '../types';
 import { ScreenTemplate } from './ScreenTemplate';
@@ -30,16 +31,21 @@ export interface SettingsTemplateProps {
   titleSize?: number;
 }
 
+const MIN_SETTINGS_TITLE = 32;
+
 /** Sous-écran de Moi (réglages, compte, notifications, bloqués, supprimer) : retour rond + grand titre, blocs serrés. */
 export function SettingsTemplate({ title, onBack, backLabel, children, footer, gap = 10, intro, note, right, titleSize = 44 }: SettingsTemplateProps) {
+  // Un titre ne se coupe jamais (« MINHA LOCALIZAÇÃO ») : mesuré dans sa place, il réduit son corps (32 au moins).
+  const [room, setRoom] = useState(0);
+  const size = room > 0 ? fitTitleSize(title, titleSize, room - 2, MIN_SETTINGS_TITLE) : titleSize;
   return (
     <ScreenTemplate
       padded={false}
       header={
         <View style={styles.head}>
           <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} style={styles.back} />
-          <View style={styles.title}>
-            <Title text={title} size={titleSize} numberOfLines={1} />
+          <View style={styles.title} onLayout={(e) => setRoom(Math.floor(e.nativeEvent.layout.width))}>
+            <Title text={title} size={size} numberOfLines={1} />
           </View>
           {right}
         </View>

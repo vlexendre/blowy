@@ -10,6 +10,8 @@ import { formatDate, messages, plural } from './runtime';
 
 const days = (n: number): string => `${n} ${plural(n, { one: 'jour', other: 'jours' })}`;
 const daysEn = (n: number): string => `${n} ${plural(n, { one: 'day', other: 'days' })}`;
+/** Heure pleine à l'américaine (l'anglais de Blowy est américain) : « 6 PM ». */
+const usHour = (h: number): string => `${h % 12 === 0 ? 12 : h % 12} ${h % 24 < 12 ? 'AM' : 'PM'}`;
 const daysEs = (n: number): string => `${n} ${plural(n, { one: 'día', other: 'días' })}`;
 const daysPt = (n: number): string => `${n} ${plural(n, { one: 'dia', other: 'dias' })}`;
 const daysNl = (n: number): string => `${n} ${plural(n, { one: 'dag', other: 'dagen' })}`;
@@ -409,8 +411,8 @@ export const rituels = messages({
       intro: (pet: string): string => `Keep them up: ${pet} earns items, and your vision gets sharper.`,
       meta: (axis: string, streak: number, weekly: boolean, hour: number): string =>
         streak > 0
-          ? `${axis} · ${streak}-${weekly ? 'week' : 'day'} streak · photo around ${hour}:00`
-          : `${axis} · photo around ${hour}:00`,
+          ? `${axis} · ${streak}-${weekly ? 'week' : 'day'} streak · photo around ${usHour(hour)}`
+          : `${axis} · photo around ${usHour(hour)}`,
       progress: (item: string, need: number): string => `${item} for ${need} ${plural(need, { one: 'habit kept', other: 'habits kept' })}`,
       progressAll: 'All its habit items are earned.',
       itemsTitle: 'What they unlock',
@@ -434,7 +436,7 @@ export const rituels = messages({
       social: 'With people',
       addTitle: (label: string): string => label,
       addAsk: (ask: string): string => `It will ask you: “${ask}”`,
-      addHour: (h: number): string => `Around ${h}:00, when it’s due.`,
+      addHour: (h: number): string => `Around ${usHour(h)}, when it’s due.`,
       addConfirm: 'Start',
       emptyTitle: [{ text: 'NO HABITS\n' }, { text: 'YET.', dim: true }],
       empty: 'Pick one from the catalog: your minimoa will follow.',
@@ -717,8 +719,8 @@ export const rituels = messages({
       close: 'Cerrar',
       dailyChip: 'Reto del día',
       busy: 'Está mirando…',
-      privacy: 'Hecha aquí, nunca desde tu galería. Ningún ser humano la ve: una IA la verifica, con tu consentimiento. Blowy la elimina en un plazo de 24 h, salvo que la guardes.',
-      privacyDaily: 'Hecha aquí, nunca desde tu galería. Ningún ser humano la ve. Se elimina en un plazo de 24 h, salvo que la guardes.',
+      privacy: 'Hecha aquí, nunca desde tu galería. Ningún ser humano la ve: una IA la verifica, con tu consentimiento. Blowy la elimina en un plazo de 24 h, salvo que la guardes.',
+      privacyDaily: 'Hecha aquí, nunca desde tu galería. Ningún ser humano la ve. Se elimina en un plazo de 24 h, salvo que la guardes.',
       verdict: { yes: '¡VALIDADO!', unsure: 'CUENTA.', no: 'ESTA VEZ NO.' },
       dailyDone: '¡HECHO!',
       badge: (streak: number, weekly: boolean): string =>
@@ -744,7 +746,7 @@ export const rituels = messages({
       title: [{ text: 'TUS ' }, { text: 'RECUERDOS', dim: true }],
       intro: 'Tus recuerdos privados: las fotos que guardaste. Nadie más las ve.',
       empty: [{ text: 'NADA\n' }, { text: 'GUARDADO.', dim: true }],
-      emptyText: 'Después de una prueba, guarda la foto si quieres recordarla. Si no, desaparece en un plazo de 24 h.',
+      emptyText: 'Después de una prueba, guarda la foto si quieres recordarla. Si no, desaparece en un plazo de 24 h.',
       day: (day: string): string => formatDate(day, { day: 'numeric', month: 'short' }),
       more: 'Ver más',
       loadError: 'Tus recuerdos no se cargaron.',
@@ -972,8 +974,8 @@ export const rituels = messages({
       close: 'Fechar',
       dailyChip: 'Desafio do dia',
       busy: 'Ele está olhando…',
-      privacy: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê: uma IA a verifica, com o seu consentimento. Excluída do Blowy em até 24 h, a menos que você a guarde.',
-      privacyDaily: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê. Excluída em até 24 h, a menos que você a guarde.',
+      privacy: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê: uma IA a verifica, com o seu consentimento. Excluída do Blowy em até 24 h, a menos que você a guarde.',
+      privacyDaily: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê. Excluída em até 24 h, a menos que você a guarde.',
       verdict: { yes: 'VALIDADO!', unsure: 'VALE.', no: 'DESSA VEZ NÃO.' },
       dailyDone: 'FEITO!',
       badge: (streak: number, weekly: boolean): string =>
@@ -999,7 +1001,7 @@ export const rituels = messages({
       title: [{ text: 'SUAS ' }, { text: 'LEMBRANÇAS', dim: true }],
       intro: 'Suas lembranças privadas: as fotos que você guardou. Ninguém mais as vê.',
       empty: [{ text: 'NADA\n' }, { text: 'GUARDADO.', dim: true }],
-      emptyText: 'Depois de uma prova, guarde a foto se quiser lembrar. Senão, ela some em até 24 h.',
+      emptyText: 'Depois de uma prova, guarde a foto se quiser lembrar. Senão, ela some em até 24 h.',
       day: (day: string): string => formatDate(day, { day: 'numeric', month: 'short' }),
       more: 'Ver mais',
       loadError: 'Suas lembranças não carregaram.',
@@ -1016,7 +1018,7 @@ export const rituels = messages({
       title: lastWordDim,
       outings: (n: number): string => plural(n, { one: 'saída', other: 'saídas' }),
       habits: (n: number): string => plural(n, { one: 'hábito', other: 'hábitos' }),
-      streak: (n: number): string => plural(n, { one: 'dia de sequência', other: 'dias de sequência' }),
+      streak: (n: number): string => plural(n, { one: 'dia seguido', other: 'dias seguidos' }),
       did: 'Sua semana',
       noticed: (pet: string): string => `O que ${pet} percebeu`,
       links: 'Seus vínculos',

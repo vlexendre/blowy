@@ -145,7 +145,8 @@ function SuggestionBody(props: SuggestionCardProps) {
 const styles = StyleSheet.create({
   badge: { height: 22, paddingHorizontal: 9 },
   chips: { gap: 6, flexWrap: 'wrap' },
-  chip: { height: 26, paddingHorizontal: 11 },
+  // Une puce ne dépasse jamais de la carte (phrase plus longue dans une autre langue) : au pire, points de suspension.
+  chip: { height: 26, paddingHorizontal: 11, maxWidth: '100%' },
   cta: { height: 44 },
   locked: { gap: 6, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 24, minHeight: 44 },
   lockedRow: { gap: 8 },

@@ -48,10 +48,10 @@ export function NeedMeter({ label, value, lowText, lowAt = 40, accessibilityLabe
       accessibilityRole="progressbar"
       accessibilityLabel={accessibilityLabel ?? (low && lowText ? `${label}, ${lowText}` : label)}
       accessibilityValue={{ min: 0, max: 100, now: v }}
-      style={[styles.tile, style]}
+      style={[styles.tile, label.length > 5 && styles.tileTight, style]}
     >
       <View style={layout.rowBetween}>
-        <Text variant="bodyHeavy" size={11} muted numberOfLines={1} style={styles.label}>
+        <Text variant="bodyHeavy" size={11} muted numberOfLines={1} style={[styles.label, label.length > 5 && styles.labelTight]}>
           {label}
         </Text>
         <CountUp value={v} from={0} variant="bodyHeavy" size={11} style={styles.value} />
@@ -81,7 +81,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   label: { flexShrink: 1, textTransform: 'uppercase', letterSpacing: 1.1 },
-  value: { marginLeft: 4 },
+  // Libellé long (« ÉNERGIE », « HUMEUR » en néerlandais) : approche et marges resserrées plutôt qu'un mot coupé.
+  labelTight: { letterSpacing: 0.4 },
+  tileTight: { paddingHorizontal: 10 },
+  value: { marginLeft: 4, flexShrink: 0 },
   // `.bar` : 9 de haut, piste blanche à 12 %, 8 sous le libellé.
   track: { height: 9, marginTop: 8, borderRadius: radius.pill, backgroundColor: veil.track, overflow: 'hidden' },
   fill: { height: '100%', width: '100%', borderRadius: radius.pill },

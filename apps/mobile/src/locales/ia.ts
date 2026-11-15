@@ -153,7 +153,7 @@ export const ia = messages({
         text: (provider: string, country: string): string => `${provider} (${country}), nuestro proveedor de IA, la revisa por nosotros. Ningún humano la mira.`,
       },
       why: { label: 'Por qué', text: 'Comprobar que muestra de verdad tu hábito, para que tu racha avance.' },
-      kept: { label: 'Cuánto tiempo', text: 'En Blowy, la foto se elimina en menos de 24 h, salvo que la guardes en tus recuerdos privados.' },
+      kept: { label: 'Cuánto tiempo', text: 'En Blowy, la foto se elimina en menos de 24 h, salvo que la guardes en tus recuerdos privados.' },
       without: {
         label: 'Sin IA',
         text: 'Lo validas tú, sin foto, y tu racha avanza igual. Puedes cambiar de opinión en Yo › La IA y tú.',
@@ -183,7 +183,7 @@ export const ia = messages({
         on: (date: string): string => `Activado el ${date}. Se le envían tu foto reducida y el nombre del hábito.`,
         off: 'Desactivado. Validas tus hábitos tú, sin foto.',
         never: 'Aún sin elegir. Te preguntaremos antes de tu primera prueba.',
-        footer: 'Retirar tu consentimiento es inmediato: las pruebas siguientes ya no se envían. Se eliminan en menos de 24 h en Blowy, salvo las que guardes.',
+        footer: 'Retirar tu consentimiento es inmediato: las pruebas siguientes ya no se envían. Se eliminan en menos de 24 h en Blowy, salvo las que guardes.',
       },
       chats: {
         title: 'Minimoas en tus chats',
@@ -218,7 +218,7 @@ export const ia = messages({
         text: (provider: string, country: string): string => `${provider} (${country}), nosso fornecedor de IA, faz a verificação para nós. Nenhum humano olha a foto.`,
       },
       why: { label: 'Por quê', text: 'Verificar se ela mostra mesmo o seu hábito, para sua sequência avançar.' },
-      kept: { label: 'Por quanto tempo', text: 'No Blowy, a foto é excluída em até 24 h, a não ser que você a guarde nas suas lembranças privadas.' },
+      kept: { label: 'Por quanto tempo', text: 'No Blowy, a foto é excluída em até 24 h, a não ser que você a guarde nas suas lembranças privadas.' },
       without: {
         label: 'Sem IA',
         text: 'Você confirma por conta própria, sem foto, e sua sequência avança do mesmo jeito. Você pode mudar de ideia em Eu › A IA e você.',
@@ -248,7 +248,7 @@ export const ia = messages({
         on: (date: string): string => `Ativado em ${date}. Sua foto reduzida e o nome do hábito são enviados a ela.`,
         off: 'Desativado. Você confirma seus hábitos por conta própria, sem foto.',
         never: 'Ainda não escolhido. Vamos perguntar antes da sua primeira prova.',
-        footer: 'Retirar seu consentimento vale na hora: as próximas provas não são mais enviadas. Excluídas em até 24 h no Blowy, exceto as que você guardar.',
+        footer: 'Retirar seu consentimento vale na hora: as próximas provas não são mais enviadas. Excluídas em até 24 h no Blowy, exceto as que você guardar.',
       },
       chats: {
         title: 'Minimoas nos seus chats',

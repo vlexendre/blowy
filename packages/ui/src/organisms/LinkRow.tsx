@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   ghostAvatar: { width: 66, alignItems: 'center' },
   time: { marginLeft: 'auto' },
   body: { gap: 3 },
-  meta: { marginTop: 2 },
+  // Cœurs, niveau, série et « À toi » : sur deux lignes plutôt qu'une puce coupée au bord (langues plus longues).
+  meta: { marginTop: 2, flexWrap: 'wrap', rowGap: space.xs },
   ghost: { opacity: 0.45 },
   // Même hauteur que les autres pastilles de la ligne.
   streak: { height: 24, paddingHorizontal: space.sm },

@@ -91,7 +91,7 @@ export const challengeText = defineMessages({
     photo: { question: 'Sur les photos de groupe, tu…', choices: ['te caches derrière', 'fais une grimace devant'] },
     defi: { question: 'Un défi idiot entre potes, tu…', choices: ['regardes', 'relèves'] },
     mots: { question: 'Pour dire je t’aime bien, tu…', choices: ['le dis avec des mots', 'le montres sans rien dire'] },
-    nuit: { question: 'À 2 h du matin, tu…', choices: ['dors depuis longtemps', 'refais le monde'] },
+    nuit: { question: 'À 2 h du matin, tu…', choices: ['dors depuis longtemps', 'refais le monde'] },
     vacances: { question: 'Les vacances idéales…', choices: ['Une cabane perdue', 'Un festival'] },
     blague: { question: 'Ta blague tombe à plat, tu…', choices: ['en refais une pire', 'changes de sujet'] },
     dessert: { question: 'Au restaurant, le dessert…', choices: ['Je partage', 'Personne n’y touche'] },

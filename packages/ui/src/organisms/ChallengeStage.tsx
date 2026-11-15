@@ -1,5 +1,5 @@
 import type { Outfit, Species } from '@blowy/domain';
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Pressable as RNPressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -65,16 +65,18 @@ const PET = 176;
  * libre (accepter, répondre, fait). Rien n'attend l'animation ; animations réduites : fondus seulement.
  * À présenter dans une route en modale transparente (le fond voilé laisse voir l'accueil).
  */
-/** Lettres au-delà desquelles un mot de titre de récompense ne tient plus à 15 pt dans une tuile (« Sociabilité » : 11). */
-const LONG_REWARD_WORD = 11;
 
 export function ChallengeStage({ pet, streak, kicker, title, text, rewards = [], children, secondary, note, onDismiss, dismissLabel, celebrateKey = 0, petLabel }: ChallengeStageProps) {
   const insets = useSafeAreaInsets();
   const win = useWindowDimensions();
   const reduced = useReducedMotion();
-  // Un nom de récompense ne se coupe pas au milieu (« Sociabilidade ») : au-delà de 11 lettres, les trois titres passent
-  // au plancher de 13 pt et les tuiles gagnent un peu de largeur utile (français et anglais restent à 15).
-  const longReward = rewards.slice(0, 3).some((r) => r.title.split(/\s+/).some((w) => w.length > LONG_REWARD_WORD));
+  // Un nom de récompense ne se coupe pas au milieu (« Sociabilidade », « Bloemkrans ») : chaque mot est mesuré à 15 pt
+  // contre la place utile d'une tuile ; s'il ne tient pas, les trois titres passent au plancher de 13 pt et les tuiles
+  // resserrent leurs marges.
+  const [tileWidth, setTileWidth] = useState(0);
+  const [widest, setWidest] = useState(0);
+  const longReward = tileWidth > 0 && widest > tileWidth - space.sm * 2;
+  const rewardWords = [...new Set(rewards.slice(0, 3).flatMap((r) => r.title.split(/\s+/)))];
   const actor = useRef<PetActorHandle>(null);
   useOverlay(true);
   const veilO = useSharedValue(0);
@@ -158,9 +160,32 @@ export function ChallengeStage({ pet, streak, kicker, title, text, rewards = [],
             </Text>
             {rewards.length ? (
               <View style={[layout.row, styles.rewards]}>
+                {/* Mesure des mots des titres à 15 pt (invisible, hors mise en page). */}
+                <View style={styles.measure} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+                  {rewardWords.map((w) => (
+                    <Text
+                      key={w}
+                      variant="bodyHeavy"
+                      size={15}
+                      numberOfLines={1}
+                      style={styles.natural}
+                      onLayout={(e) => {
+                        const width = Math.ceil(e.nativeEvent.layout.width);
+                        setWidest((prev) => Math.max(prev, width));
+                      }}
+                    >
+                      {w}
+                    </Text>
+                  ))}
+                </View>
                 {rewards.slice(0, 3).map((r, i) => (
                   <PopIn key={r.title} delay={reduced ? 0 : 560 + i * motion.stagger * 2} from={0.7} style={styles.rewardSlot}>
-                    <View style={[styles.reward, longReward && styles.rewardTight]} accessible accessibilityLabel={`${r.title}, ${r.text}`}>
+                    <View
+                      style={[styles.reward, longReward && styles.rewardTight]}
+                      accessible
+                      accessibilityLabel={`${r.title}, ${r.text}`}
+                      onLayout={i === 0 ? (e) => setTileWidth(Math.floor(e.nativeEvent.layout.width)) : undefined}
+                    >
                       <View style={styles.rewardIcon}>{r.icon}</View>
                       <Text variant="bodyHeavy" size={longReward ? MIN_TEXT_SIZE : 15} center numberOfLines={2}>
                         {r.title}
@@ -214,6 +239,8 @@ const styles = StyleSheet.create({
   rewardIcon: { height: 46, alignItems: 'center', justifyContent: 'center', marginBottom: space.xs },
   rewardText: { opacity: 0.72 },
   rewardTight: { paddingHorizontal: space.xs },
+  measure: { position: 'absolute', left: 0, top: 0, height: 0, overflow: 'hidden', opacity: 0, alignItems: 'flex-start' },
+  natural: { flexShrink: 0, alignSelf: 'flex-start' },
   actions: { gap: space.sm },
   note: { marginTop: space.md, opacity: 0.72 },
   burst: { position: 'absolute', left: '50%', top: 40 },

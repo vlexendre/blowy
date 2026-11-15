@@ -226,7 +226,7 @@ export const plus = messages({
     plan: { yearly: 'Anual', monthly: 'Mensal' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} dias grátis, depois`,
-      noTrial: (plan: string) => `${plan}, sem teste gratuito`,
+      noTrial: (plan: string) => `${plan}, sem teste`,
     },
     price: { year: (p: string) => `${p} por ano`, month: (p: string) => `${p} por mês` },
     perMonth: (p: string) => `ou seja, ${p} por mês`,
@@ -290,7 +290,7 @@ export const plus = messages({
     plan: { yearly: 'Jaarlijks', monthly: 'Maandelijks' },
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} dagen gratis, daarna`,
-      noTrial: (plan: string) => `${plan}, zonder proefperiode`,
+      noTrial: (plan: string) => `${plan}, zonder proef`,
     },
     price: { year: (p: string) => `${p} per jaar`, month: (p: string) => `${p} per maand` },
     perMonth: (p: string) => `dat is ${p} per maand`,

@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
   how: { padding: 14, gap: 8, borderRadius: 24 },
   howText: { lineHeight: 20 },
   gaugeRow: { gap: 8 },
-  pole: { width: 52 },
+  // Un pôle garde son mot entier (« carinhoso », « praatgraag ») ; la barre prend le reste.
+  pole: { minWidth: 52, flexShrink: 0 },
   right: { textAlign: 'right' },
   track: { flex: 1, height: 10, borderRadius: 999, backgroundColor: alpha(color.white, 0.12) },
   zero: { position: 'absolute', left: '50%', top: -3, bottom: -3, width: 2, backgroundColor: alpha(color.white, 0.35) },

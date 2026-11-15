@@ -44,7 +44,7 @@ export const rencontres = messages({
     noLocation: {
       title: 'Pas de rencontres près de chez toi',
       text: (pet: string): string =>
-        `Sans ta localisation, ${pet} ne te présente que des potes de tes potes. Choisis ta ville à la main, ou active la localisation : ta position exacte n’est jamais enregistrée, seulement un point arrondi à 300 m environ.`,
+        `Sans ta localisation, ${pet} ne te présente que des potes de tes potes. Choisis ta ville à la main, ou active la localisation : ta position exacte n’est jamais enregistrée, seulement un point arrondi à 300 m environ.`,
       action: 'Activer la localisation',
       settings: 'Ouvrir les Réglages',
       denied: 'Tu as refusé la localisation : choisis ta ville à la main, ou active-la dans Réglages › Blowy › Position.',
@@ -121,7 +121,7 @@ export const rencontres = messages({
     noLocation: {
       title: 'No encounters near you',
       text: (pet: string): string =>
-        `Without your location, ${pet} only introduces you to friends of your friends. Pick your city by hand, or turn on location: your exact location is never saved, only a point rounded to about 300 m.`,
+        `Without your location, ${pet} only introduces you to friends of your friends. Pick your city by hand, or turn on location: your exact location is never saved, only a point rounded to about 300 m.`,
       action: 'Turn on location',
       settings: 'Open Settings',
       denied: 'You turned down location: pick your city by hand, or turn it on in Settings › Blowy › Location.',
@@ -190,7 +190,7 @@ export const rencontres = messages({
     noLocation: {
       title: 'Sin encuentros cerca de ti',
       text: (pet: string): string =>
-        `Sin tu ubicación, ${pet} solo te presenta a gente del círculo de tu gente. Elige tu ciudad a mano o activa la ubicación: tu ubicación exacta nunca se guarda, solo un punto redondeado a unos 300 m.`,
+        `Sin tu ubicación, ${pet} solo te presenta a gente del círculo de tu gente. Elige tu ciudad a mano o activa la ubicación: tu ubicación exacta nunca se guarda, solo un punto redondeado a unos 300 m.`,
       action: 'Activar la ubicación',
       settings: 'Abrir Ajustes',
       denied: 'Has rechazado la ubicación: elige tu ciudad a mano o actívala en Ajustes › Blowy › Ubicación.',
@@ -259,7 +259,7 @@ export const rencontres = messages({
     noLocation: {
       title: 'Nenhum encontro perto de você',
       text: (pet: string): string =>
-        `Sem a sua localização, ${pet} só te apresenta gente da rede da sua galera. Escolha sua cidade manualmente ou ative a localização: sua localização exata nunca é salva, só um ponto arredondado para cerca de 300 m.`,
+        `Sem a sua localização, ${pet} só te apresenta gente da rede da sua galera. Escolha sua cidade manualmente ou ative a localização: sua localização exata nunca é salva, só um ponto arredondado para cerca de 300 m.`,
       action: 'Ativar a localização',
       settings: 'Abrir Ajustes',
       denied: 'Você recusou a localização: escolha sua cidade manualmente ou ative-a em Ajustes › Blowy › Localização.',
@@ -268,7 +268,7 @@ export const rencontres = messages({
       unavailable: 'Não encontramos sua localização agora. Tente de novo ao ar livre ou daqui a pouco.',
     },
     filterNote: (pet: string): string => `${pet} só te apresenta pessoas com mais de 70% de afinidade de visão.`,
-    lookingFor: { friends: 'Vocês buscam a mesma coisa: amizade.', more: 'Vocês buscam a mesma coisa: algo mais.', both: 'Vocês buscam a mesma coisa: amizade, ou algo mais.' },
+    lookingFor: { friends: 'Vocês buscam amizade.', more: 'Vocês buscam algo mais.', both: 'Vocês buscam amizade, ou algo mais.' },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     morePlus: { title: 'Mais encontros com Blowy+', cta: 'Ver' },
     shareMessage: (pet: string, url: string): string => `Vem conhecer ${pet} no Blowy: ${url}`,
@@ -328,7 +328,7 @@ export const rencontres = messages({
     noLocation: {
       title: 'Geen ontmoetingen bij jou in de buurt',
       text: (pet: string): string =>
-        `Zonder je locatie stelt ${pet} je alleen voor aan vrienden van je vrienden. Kies zelf je stad, of zet je locatie aan: je exacte locatie wordt nooit opgeslagen, alleen een punt afgerond op ongeveer 300 m.`,
+        `Zonder je locatie stelt ${pet} je alleen voor aan vrienden van je vrienden. Kies zelf je stad, of zet je locatie aan: je exacte locatie wordt nooit opgeslagen, alleen een punt afgerond op ongeveer 300 m.`,
       action: 'Locatie aanzetten',
       settings: 'Instellingen openen',
       denied: 'Je hebt locatie geweigerd: kies zelf je stad, of zet locatie aan via Instellingen › Blowy › Locatie.',
@@ -550,7 +550,7 @@ export const carte = messages({
     /** Pas de localisation : ce qui manque, et comment l'activer. */
     noLocation: {
       title: [{ text: 'OÙ ES-TU,\n' }, { text: 'EN GROS ?', dim: true }] as TitleSegment[],
-      text: (pet: string): string => `Pour te montrer qui est compatible autour de toi, ${pet} a besoin de ta position. Seulement app ouverte, arrondie à 300 m environ et décalée, jamais en direct.`,
+      text: (pet: string): string => `Pour te montrer qui est compatible autour de toi, ${pet} a besoin de ta position. Seulement app ouverte, arrondie à 300 m environ et décalée, jamais en direct.`,
       without: 'Sans elle : pas de carte, et pas de rencontres près de chez toi (les potes de tes potes, si).',
       action: 'Activer la localisation',
       deniedTitle: [{ text: 'LOCALISATION\n' }, { text: 'COUPÉE', dim: true }] as TitleSegment[],
@@ -626,7 +626,7 @@ export const carte = messages({
     emptyAction: 'See my encounters',
     noLocation: {
       title: [{ text: 'WHERE ARE YOU,\n' }, { text: 'ROUGHLY?', dim: true }] as TitleSegment[],
-      text: (pet: string): string => `To show you who’s compatible around you, ${pet} needs your location. Only while the app is open, rounded to about 300 m and offset, never live.`,
+      text: (pet: string): string => `To show you who’s compatible around you, ${pet} needs your location. Only while the app is open, rounded to about 300 m and offset, never live.`,
       without: 'Without it: no map, and no encounters near you (friends of your friends, yes).',
       action: 'Turn on location',
       deniedTitle: [{ text: 'LOCATION\n' }, { text: 'OFF', dim: true }] as TitleSegment[],
@@ -701,7 +701,7 @@ export const carte = messages({
     emptyAction: 'Ver mis encuentros',
     noLocation: {
       title: [{ text: '¿DÓNDE ESTÁS,\n' }, { text: 'MÁS O MENOS?', dim: true }] as TitleSegment[],
-      text: (pet: string): string => `Para mostrarte quién es compatible a tu alrededor, ${pet} necesita tu ubicación. Solo con la app abierta, redondeada a unos 300 m y desplazada, nunca en directo.`,
+      text: (pet: string): string => `Para mostrarte quién es compatible a tu alrededor, ${pet} necesita tu ubicación. Solo con la app abierta, redondeada a unos 300 m y desplazada, nunca en directo.`,
       without: 'Sin ella: no hay mapa ni encuentros cerca de ti (gente del círculo de tu gente, sí).',
       action: 'Activar la ubicación',
       deniedTitle: [{ text: 'UBICACIÓN\n' }, { text: 'DESACTIVADA', dim: true }] as TitleSegment[],
@@ -776,7 +776,7 @@ export const carte = messages({
     emptyAction: 'Ver meus encontros',
     noLocation: {
       title: [{ text: 'ONDE VOCÊ ESTÁ,\n' }, { text: 'MAIS OU MENOS?', dim: true }] as TitleSegment[],
-      text: (pet: string): string => `Para te mostrar quem é compatível perto de você, ${pet} precisa da sua localização. Só com o app aberto, arredondada para cerca de 300 m e deslocada, nunca ao vivo.`,
+      text: (pet: string): string => `Para te mostrar quem é compatível perto de você, ${pet} precisa da sua localização. Só com o app aberto, arredondada para cerca de 300 m e deslocada, nunca ao vivo.`,
       without: 'Sem ela: nada de mapa, nem de encontros perto de você (gente da rede da sua galera, sim).',
       action: 'Ativar a localização',
       deniedTitle: [{ text: 'LOCALIZAÇÃO\n' }, { text: 'DESATIVADA', dim: true }] as TitleSegment[],
@@ -851,7 +851,7 @@ export const carte = messages({
     emptyAction: 'Mijn ontmoetingen bekijken',
     noLocation: {
       title: [{ text: 'WAAR BEN JE,\n' }, { text: 'ONGEVEER?', dim: true }] as TitleSegment[],
-      text: (pet: string): string => `Om je te laten zien wie er om je heen compatibel is, heeft ${pet} je locatie nodig. Alleen als de app open is, afgerond op ongeveer 300 m en verschoven, nooit live.`,
+      text: (pet: string): string => `Om je te laten zien wie er om je heen compatibel is, heeft ${pet} je locatie nodig. Alleen als de app open is, afgerond op ongeveer 300 m en verschoven, nooit live.`,
       without: 'Zonder locatie: geen kaart, en geen ontmoetingen bij jou in de buurt (vrienden van je vrienden wel).',
       action: 'Locatie aanzetten',
       deniedTitle: [{ text: 'LOCATIE\n' }, { text: 'UIT', dim: true }] as TitleSegment[],

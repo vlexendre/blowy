@@ -186,7 +186,7 @@ const fr = {
       q_ancrage_quartier: { text: 'Ton quartier dans cinq ans ?', choices: ['Le même, j’y ai mes repères', 'Aucune idée, et ça me plaît'] },
       q_ancrage_valise: { text: 'Une valise toujours prête ?', choices: ['Évidemment', 'Elle dort au grenier'] },
       q_elan_soirs: { text: 'Un projet perso te prendrait tes soirs pendant un an.', choices: ['Je fonce', 'Mes soirs sont sacrés'] },
-      q_elan_vendredi: { text: 'Vendredi 18 h, un dossier urgent arrive.', choices: ['Je m’y mets, ça me motive', 'Lundi, il sera encore là'] },
+      q_elan_vendredi: { text: 'Vendredi 18 h, un dossier urgent arrive.', choices: ['Je m’y mets, ça me motive', 'Lundi, il sera encore là'] },
       q_elan_reve: { text: 'Ton rêve à cinq ans, c’est plutôt…', choices: ['Construire quelque chose de grand', 'Avoir du temps pour moi'] },
       q_rythme_samedi: { text: 'Samedi soir idéal ?', choices: ['Dehors, et on verra jusqu’à quelle heure', 'Chez moi, tranquille'] },
       q_rythme_agenda: { text: 'Ta semaine idéale compte…', choices: ['Une sortie presque tous les soirs', 'Deux soirs dehors, pas plus'] },
@@ -223,7 +223,7 @@ const fr = {
   },
   /**
    * Ce qu'on dit des photos privées, partout où on en parle. Vrai à la lettre : aucun humain ne les voit ; la preuve
-   * d'habitude est vérifiée par une IA tierce, seulement avec l'accord de la personne (`AiConsents`) ; toutes sont supprimées sous 24 h, sauf si la personne les garde.
+   * d'habitude est vérifiée par une IA tierce, seulement avec l'accord de la personne (`AiConsents`) ; toutes sont supprimées sous 24 h, sauf si la personne les garde.
    * Ne jamais écrire « personne ne la voit » sans préciser l'IA.
    */
   privacy: {
@@ -458,7 +458,7 @@ const es: Translation<RituelsText> = {
       q_ancrage_quartier: { text: '¿Tu barrio dentro de cinco años?', choices: ['El mismo, ahí tengo mis rutinas', 'Ni idea, y eso me gusta'] },
       q_ancrage_valise: { text: '¿Una maleta siempre lista?', choices: ['Por supuesto', 'Duerme en el trastero'] },
       q_elan_soirs: { text: 'Un proyecto personal te ocuparía las noches durante un año.', choices: ['Me lanzo', 'Mis noches son sagradas'] },
-      q_elan_vendredi: { text: 'Viernes, 18 h, llega un asunto urgente.', choices: ['Me pongo, me motiva', 'El lunes seguirá ahí'] },
+      q_elan_vendredi: { text: 'Viernes, 18 h, llega un asunto urgente.', choices: ['Me pongo, me motiva', 'El lunes seguirá ahí'] },
       q_elan_reve: { text: 'Tu sueño para los próximos cinco años es más bien…', choices: ['Construir algo grande', 'Tener tiempo para mí'] },
       q_rythme_samedi: { text: '¿Tu sábado noche ideal?', choices: ['Fuera, y ya veremos hasta qué hora', 'En casa, con calma'] },
       q_rythme_agenda: { text: 'Tu semana ideal tiene…', choices: ['Una salida casi cada noche', 'Dos noches fuera, no más'] },
@@ -486,14 +486,14 @@ const es: Translation<RituelsText> = {
     kindLabel: { question: 'Una pregunta', photo: 'Una foto', write: 'Escribir a un vínculo', go_out: 'Salir' },
     howTo: {
       question: 'Elige una respuesta.',
-      photo: 'Toma la foto en la app. Ningún humano la ve; se borra en 24 h, salvo que la guardes.',
+      photo: 'Toma la foto en la app. Ningún humano la ve; se borra en 24 h, salvo que la guardes.',
       write: 'Escribe un mensaje en uno de tus vínculos y luego vuelve aquí.',
       go_out: 'Responde «sí» a «¿Has salido a la calle hoy?».',
     },
   },
   privacy: {
-    proof: 'Tomada aquí, nunca desde tu galería. Ningún humano la ve: una IA de terceros la verifica si lo aceptaste, y luego se borra en 24 h, salvo que la guardes.',
-    daily: 'Tomada aquí, nunca desde tu galería. Ningún humano la ve. Se borra en 24 h, salvo que la guardes.',
+    proof: 'Tomada aquí, nunca desde tu galería. Ningún humano la ve: una IA de terceros la verifica si lo aceptaste, y luego se borra en 24 h, salvo que la guardes.',
+    daily: 'Tomada aquí, nunca desde tu galería. Ningún humano la ve. Se borra en 24 h, salvo que la guardes.',
   },
   errors: {
     outingDone: 'Tu salida de hoy ya cuenta. Gracias por el aire fresco.',
@@ -615,14 +615,14 @@ const pt: Translation<RituelsText> = {
     kindLabel: { question: 'Uma pergunta', photo: 'Uma foto', write: 'Mensagem a um vínculo', go_out: 'Sair' },
     howTo: {
       question: 'Escolha uma resposta.',
-      photo: 'Tire a foto no app. Nenhum humano a vê; ela é apagada em até 24 h, a não ser que você a guarde.',
+      photo: 'Tire a foto no app. Nenhum humano a vê; ela é apagada em até 24 h, a não ser que você a guarde.',
       write: 'Escreva uma mensagem em um dos seus vínculos e depois volte aqui.',
       go_out: 'Responda “sim” a “Você saiu de casa hoje?”.',
     },
   },
   privacy: {
-    proof: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê: uma IA de terceiros a verifica se você aceitou, e depois ela é apagada em até 24 h, a não ser que você a guarde.',
-    daily: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê. Apagada em até 24 h, a não ser que você a guarde.',
+    proof: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê: uma IA de terceiros a verifica se você aceitou, e depois ela é apagada em até 24 h, a não ser que você a guarde.',
+    daily: 'Tirada aqui, nunca da sua galeria. Nenhum humano a vê. Apagada em até 24 h, a não ser que você a guarde.',
   },
   errors: {
     outingDone: 'Sua saída de hoje já foi contada. Obrigado pelo ar fresco.',
