@@ -40,6 +40,18 @@ export class MemoryLinksRepository implements LinksRepository {
       .map((l) => ({ ...l }));
   }
 
+  async listForWriteReminder(today: Day, limit: number): Promise<LinkRecord[]> {
+    return [...this.db.links.values()]
+      .filter((l) => l.status === 'active' && l.lastActiveOn === today && (this.db.linkWriteReminders.get(l.id) ?? '') < today)
+      .sort((a, b) => a.id.localeCompare(b.id))
+      .slice(0, limit)
+      .map((l) => ({ ...l }));
+  }
+
+  async markWriteReminder(ids: readonly string[], today: Day): Promise<void> {
+    for (const id of ids) if (this.db.links.has(id)) this.db.linkWriteReminders.set(id, today);
+  }
+
   async pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]> {
     return [...this.db.links.values()]
       .filter((l) => (l.userA === userId || l.userB === userId) && l.status !== 'archived' && (after === null || l.id > after))

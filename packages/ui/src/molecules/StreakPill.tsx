@@ -14,7 +14,7 @@ export interface StreakPillProps {
   count: number;
   /** Unité (« jours », « série »). */
   label: string;
-  /** `pill` : puce compacte ; `stack` : flamme, gros chiffre Anton et unité empilés (photo du jour). */
+  /** `pill` : puce compacte ; `stack` : flamme, gros chiffre Anton et unité empilés (journée d'un lien). */
   variant?: 'pill' | 'stack';
   accessibilityLabel?: string;
   /**

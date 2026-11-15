@@ -1,5 +1,5 @@
 /** Ses bilans : tous les bilans du dimanche, du plus récent au plus ancien, par pages. */
-import { Appear, Banner, Button, Chip, EmptyState, ListRow, SettingsTemplate, Skeleton, staggerDelay } from '@blowy/ui';
+import { Appear, Banner, Button, Chip, EmptyState, SettingsSection, SettingsTemplate, Skeleton } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 
 import { ScreenMotion } from '@/core';
@@ -31,17 +31,18 @@ export default function ReviewsScreen() {
           <EmptyState species={pet?.species} mood="neutre" peek seed={pet?.id} title={t.empty} text={t.emptyText} />
         ) : (
           <>
-            {list.map((r, i) => (
-              <Appear key={r.id} once={`reviews:${r.id}`} delay={staggerDelay(i)}>
-                <ListRow
-                  title={t.row(r.weekStart)}
-                  subtitle={r.did[0] ?? r.noticed}
-                  right={r.read ? undefined : <Chip label={t.unread} tone="accent" />}
-                  onPress={() => router.push({ pathname: '/pet/bilan/[id]', params: { id: r.id } })}
-                  divider={i < list.length - 1}
-                />
-              </Appear>
-            ))}
+            <Appear once="reviews:list">
+              <SettingsSection
+                rows={list.map((r) => ({
+                  key: r.id,
+                  title: t.row(r.weekStart),
+                  subtitle: r.did[0] ?? r.noticed,
+                  right: r.read ? undefined : <Chip label={t.unread} tone="accent" />,
+                  chevron: true,
+                  onPress: () => router.push({ pathname: '/pet/bilan/[id]', params: { id: r.id } }),
+                }))}
+              />
+            </Appear>
             {reviews.hasNextPage ? (
               <Button label={t.more} variant="glass" loading={reviews.isFetchingNextPage} onPress={() => void reviews.fetchNextPage()} />
             ) : null}

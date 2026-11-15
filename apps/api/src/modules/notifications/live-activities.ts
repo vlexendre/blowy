@@ -1,7 +1,7 @@
 /**
  * Activités en direct iOS (docs/WIDGETS.md, spéc §19) : jetons APNs et événements.
- * - Photo du jour d'un lien : démarrée PAR PUSH (« Léa a posté, à toi », jeton push-to-start), terminée quand la
- *   personne poste à son tour ou à minuit (heure locale).
+ * - Série d'un lien (`link`) : démarrée PAR PUSH avec le rappel du soir « à toi d'écrire » (jeton push-to-start),
+ *   terminée quand la personne écrit dans ce lien (« C'est fait », série à jour) ou à minuit (heure locale).
  * - Défi du jour : jamais démarré par push (l'app le démarre quand le défi est accepté) ; seulement `update` (série en
  *   danger, le soir) et `end` (défi relevé, ou minuit).
  * Chaque jeton refusé par APNs (410, BadDeviceToken) est désactivé ; un jeton d'activité terminée est oublié.
@@ -17,9 +17,9 @@ import type { PetsRepository } from '../pets/ports';
 import { NotificationSettings } from './notification-settings';
 import { LIVE_ACTIVITY_TOKENS, type LiveActivityTokenRecord, type LiveActivityTokensRepository } from './ports';
 
-/** État final laissé à l'écran : 15 min pour un défi relevé, 10 min pour une photo envoyée (comme l'app). */
+/** État final laissé à l'écran : 15 min pour un défi relevé, 10 min pour un lien où tu as écrit (comme l'app). */
 const CHALLENGE_DONE_MS = 15 * 60_000;
-const PHOTO_DONE_MS = 10 * 60_000;
+const LINK_DONE_MS = 10 * 60_000;
 const BATCH = 100;
 
 @Injectable()
@@ -47,8 +47,8 @@ export class LiveActivities {
       use,
       activity,
       activityId: use === 'update' ? (la?.activityId ?? null) : null,
-      linkId: activity === 'photo' ? (la?.linkId ?? null) : null,
-      // Défi et photo vivent jusqu'à minuit local ; la sortie, au plus 8 h (limite d'Apple).
+      linkId: activity === 'link' ? (la?.linkId ?? null) : null,
+      // Défi et série d'un lien vivent jusqu'à minuit local ; la sortie, au plus 8 h (limite d'Apple).
       endsAt: activity === null ? null : activity === 'outing' ? new Date(now.getTime() + 8 * 3_600_000).toISOString() : nextLocalHour(now, timeZone, 0).toISOString(),
       createdAt: now.toISOString(),
       lastSeenAt: now.toISOString(),
@@ -59,8 +59,11 @@ export class LiveActivities {
     await this.tokens.removeForUser(token, userId);
   }
 
-  /** « Léa a posté, à toi » : démarre l'activité photo sur les appareils de la personne. Vrai si un appareil l'a reçue. */
-  async startPhoto(userId: string, input: { linkId: string; otherName: string; alert: { title: string; body: string } }): Promise<boolean> {
+  /**
+   * « Série avec Léa : à toi d'écrire avant minuit » : démarre l'activité du lien sur les appareils de la personne
+   * (avec l'alerte du rappel). Vrai si un appareil l'a reçue.
+   */
+  async startLinkStreak(userId: string, input: { linkId: string; otherName: string; streak: number; alert: { title: string; body: string } }): Promise<boolean> {
     if (!this.pusher.enabled) return false;
     try {
       const starts = await this.tokens.forUser(userId, { use: 'start' });
@@ -69,27 +72,30 @@ export class LiveActivities {
       const now = this.clock.now();
       const payload = liveStartPayload({
         now,
-        attributes: { kind: 'photo', pet: { name: pet?.name ?? '', species: pet?.species ?? 'nino' }, startedAt: unixSeconds(now), url: `blowy://link/${input.linkId}`, otherName: input.otherName.slice(0, 40) },
-        state: { endsAt, streak: 0, title: null, done: false },
+        attributes: { kind: 'link', pet: { name: pet?.name ?? '', species: pet?.species ?? 'nino' }, startedAt: unixSeconds(now), url: `blowy://link/${input.linkId}`, otherName: input.otherName.slice(0, 40) },
+        state: { endsAt, streak: Math.max(0, Math.trunc(input.streak)), title: null, done: false },
         alert: input.alert,
         relevance: 75,
       });
       return (await this.deliver(starts, payload, 10)) > 0;
     } catch (err) {
-      this.logger.warn(`activité photo non démarrée : ${err instanceof Error ? err.message : 'erreur'}`);
+      this.logger.warn(`activité du lien non démarrée : ${err instanceof Error ? err.message : 'erreur'}`);
       return false;
     }
   }
 
-  /** La personne a posté sa photo du jour dans ce lien : l'activité montre « Photo envoyée », puis se retire. */
-  async endPhoto(userId: string, linkId: string): Promise<void> {
-    await this.safely('fin de l’activité photo', async () => {
-      const all = await this.tokens.forUser(userId, { use: 'update', activity: 'photo' });
+  /**
+   * La personne vient d'écrire dans ce lien (premier message du jour) : son activité « à toi d'écrire » de ce lien montre
+   * « C'est fait » avec la série à jour, puis se retire. Sans `linkId` connu sur le jeton : toutes ses activités `link`.
+   */
+  async endLinkStreak(userId: string, linkId: string, streak: number): Promise<void> {
+    await this.safely('fin de l’activité du lien', async () => {
+      const all = await this.tokens.forUser(userId, { use: 'update', activity: 'link' });
       const mine = all.filter((t) => t.linkId === linkId || t.linkId === null);
       if (mine.length === 0) return;
       const now = this.clock.now();
-      const state: LiveActivityState = { endsAt: await this.midnight(userId), streak: 0, title: null, done: true };
-      await this.deliver(mine, liveEndPayload({ now, state, dismissAt: new Date(now.getTime() + PHOTO_DONE_MS) }), 10);
+      const state: LiveActivityState = { endsAt: await this.midnight(userId), streak: Math.max(0, streak), title: null, done: true };
+      await this.deliver(mine, liveEndPayload({ now, state, dismissAt: new Date(now.getTime() + LINK_DONE_MS) }), 10);
       await this.tokens.remove(mine.map((t) => t.token));
     });
   }

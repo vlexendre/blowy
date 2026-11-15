@@ -4,7 +4,7 @@ Composants React Native (Expo SDK 58, RN 0.88, Reanimated 4) en design atomique.
 en dégradé, titres Anton en capitales avec partie estompée, corps Bricolage Grotesque, accent jaune (texte sombre dessus).
 
 ```ts
-import { Button, LinkRow, TodayCard, ScreenTemplate } from '@blowy/ui';
+import { Button, LinkRow, LinkTodayHero, ScreenTemplate } from '@blowy/ui';
 ```
 
 ## Règles
@@ -297,11 +297,6 @@ needColor(value, lowAt = 40): string     // jaune, rouge (pulsation) sous lowAt 
 ```ts
 OtpInputProps = { value: string; onChange: (value: string) => void; onComplete?: (value: string) => void; length?: number; error?: string | null; autoFocus?: boolean; disabled?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 ```
-#### `PhotoTile` — `src/molecules/PhotoTile.tsx`
-```ts
-PhotoTileProps = { state: PhotoTileState; uri?: string | null; label?: string; badge?: string; title?: string; caption?: string; species?: Species; blurred?: boolean; height?: DimensionValue; children?: ReactNode; onPress?: () => void; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
-type PhotoTileState = 'photo' | 'pending' | 'locked' | 'empty'
-```
 #### `SegmentedTabs` — `src/molecules/SegmentedTabs.tsx`
 ```ts
 SegmentedTabItem<K extends string = string> = { key: K; label: string; badge?: boolean; }
@@ -491,11 +486,13 @@ SpeciesPickerProps = { value: Species; onChange: (species: Species) => void; spe
 ```ts
 SuggestionCardProps = { suggestion: SuggestionLook; ownerLabel: string; viaLabel?: string; viaPet?: PetLook; badgeLabel?: string; compatLabel: string; tagline?: string; introLabel?: string; waveLabel: string; wavedLabel: string; onWave?: () => void; waving?: boolean; locked?: boolean; lockedCaption?: string; onLockedPress?: () => void; openLabel?: string; onOpen?: () => void; }
 ```
-#### `TodayCard` — `src/organisms/TodayCard.tsx`
+#### `LinkTodayHero` — `src/organisms/LinkTodayHero.tsx`
 ```ts
-TodayCardLabels = { title: TitleContent; streakUnit: string; hint: string; mine: { label?: string; badge?: string; emptyTitle: string; emptyCaption?: string }; theirs: { waitingTitle: string; waitingCaption?: string; lockedTitle: string; lockedCaption?: string; label?: string }; cta: string; }
-TodayCardProps = { today: TodayLook; otherPet: PetLook; streak: number; labels: TodayCardLabels; onCta?: () => void; ctaLoading?: boolean; onMinePress?: () => void; gradient?: GradientName; }
+LinkTodayHeroProps = { streak: number; streakUnit: string; streakA11y?: string; title: TitleContent; text: string; myPet: PetLook; other: PersonLook; me: LinkTodaySide; them: LinkTodaySide; wroteLabel: string; waitingLabel: string; cta?: string; onCta?: () => void; gradient?: GradientName; motionKey?: string; }
+LinkTodaySide = { label: string; wrote: boolean }
 ```
+La journée d'un lien (onglet « Le lien ») : la série en vedette (`StreakPill` en pile), qui a écrit de chaque côté, le bouton vers le chat. Quand la série monte pendant que l'écran est ouvert : le chiffre défile, la flamme saute, confettis.
+
 #### `UnlockSheet` — `src/organisms/UnlockSheet.tsx`
 ```ts
 UnlockSheetProps = { visible: boolean; itemId: string; itemName: string; pet: { species: Species; outfit?: Outfit | null; name?: string }; kicker: string; title: TitleContent; text?: string; wearLabel: string; onWear: () => void; wearing?: boolean; closeLabel: string; onClose: () => void; }
@@ -731,11 +728,10 @@ Hearts     { …; from?: number; beat?: boolean }   // cœur perdu : se brise ; 
 MessageBubble { …; fade?: true; typing?: boolean; enter?: 'send' | 'receive'; typingLabel? }
 ChatThread { …; typingLabel?: (name) => string }  // message arrivé : le mien monte du champ, celui d'un pet écrit « … » d'abord
 NudgeBanner { …; reveal?: string }        // s'ouvre depuis le haut, le pet jaillit et fait signe (1re apparition de la clé)
-PhotoTile  { …; revealKey?: string }      // le flou se lève la 1re fois que la photo apparaît nette
-TodayCard  { …; motionKey?: string }      // `id:jour` : photo dévoilée + flamme (StreakPill `growKey`) qui grandit
+LinkTodayHero { …; motionKey?: string }  // id du lien : flamme (StreakPill `growKey`) qui grandit ; la série qui monte fait défiler le chiffre, sauter la flamme, confettis
 LivesPanel { …; animateKey?: string }     // jours de la semaine cochés un à un
 MemoryGrid { …; animateKey?: string }     // photos qui se posent comme des cartes
-CountTitle { title; count; from?: 0; size?: 24; hint? }   // « PHOTOS DU JOUR · 12 », le nombre défile
+CountTitle { title; count; from?: 0; size?: 24; hint? }   // « VOS ÉTAPES · 4 », le nombre défile
 LevelLadder { …; animateKey?: string; celebrate?: boolean }   // rail qui monte, marche atteinte qui s'allume, confettis
 LinkTemplate { …; livesFrom?: number; levelUp?: number }       // cœurs qui reviennent (ranimé) ; pastille + confettis au passage
 GhostPanel { …; revealKey?: string }      // le pet perd ses couleurs et flotte ; « ranimer » : il les reprend

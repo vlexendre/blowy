@@ -1,6 +1,6 @@
 /**
  * S'occuper de son minimoa. Le besoin principal est la **sociabilité** (V7) : elle monte quand la personne
- * sort, voit du monde, salue, écrit, poste la photo du jour ou tient une habitude tournée vers les autres,
+ * sort, voit du monde, salue, écrit, s'écrit chaque jour avec un lien ou tient une habitude tournée vers les autres,
  * et descend seule. Trois petits besoins (faim, énergie, humeur) se comblent avec les quatre gestes.
  * Tous vont de 0 (à plat) à 100 (comblé). Un minimoa négligé boude — il ne meurt jamais — et ne fait plus de rencontres.
  * Moteur pur : le temps écoulé est passé en paramètre, rattrapé à la lecture.

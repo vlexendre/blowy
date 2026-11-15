@@ -1,5 +1,5 @@
 import { color } from '@blowy/tokens';
-import { BottomTabBar, type BottomTabItem, HelloPeek } from '@blowy/ui';
+import { BottomTabBar, type BottomTabItem } from '@blowy/ui';
 import { Redirect, Tabs, useIsFocused } from 'expo-router';
 
 import { useEncounters } from '@/features/encounters';
@@ -64,8 +64,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="rencontres" options={{ title: tabs.rencontres }} />
         <Tabs.Screen name="moi" options={{ title: tabs.moi }} />
       </Tabs>
-      {/* Retour dans l'app : parfois, le pet salue depuis un coin, au-dessus de la barre (onglets visibles seulement). */}
-      {pet ? <HelloPeek species={pet.species} seed={pet.id} active={focused} /> : null}
+      {/* Retour dans l'app : le salut est joué par le minimoa de l'accueil lui-même (`useHelloWave`), rien par-dessus le contenu. */}
     </>
   );
 }

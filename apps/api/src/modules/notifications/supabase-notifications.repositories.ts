@@ -1,4 +1,4 @@
-import type { Day, NotificationKindKey } from '@blowy/domain';
+import { type Day, NOTIFICATION_KINDS, type NotificationKindKey } from '@blowy/domain';
 import type { Database, Db, Json } from '../../persistence/database.types';
 import { check, iso, isoOrNull } from '../../persistence/supabase';
 import type {
@@ -57,7 +57,8 @@ const settingsFrom = (r: SettingsRow): NotificationSettingsRecord => ({
   userId: r.user_id,
   timeZone: r.time_zone,
   morningHour: r.morning_hour,
-  disabledKinds: r.disabled_kinds as NotificationKindKey[],
+  // Un type retiré (ex. `daily_photo`, migré en `your_turn` par 20261115190000) est ignoré.
+  disabledKinds: r.disabled_kinds.filter((k): k is NotificationKindKey => (NOTIFICATION_KINDS as readonly string[]).includes(k)),
   nextMorningAt: isoOrNull(r.next_morning_at),
   updatedAt: iso(r.updated_at),
 });

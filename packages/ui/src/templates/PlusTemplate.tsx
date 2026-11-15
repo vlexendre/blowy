@@ -73,7 +73,12 @@ export interface PlusTemplateProps<K extends string> {
   restoreLabel?: string;
   onRestore?: () => void;
   restoreLoading?: boolean;
+  /** Liens de la barre fixe (conditions, confidentialité), à côté de « Restaurer mes achats ». */
   links?: readonly { label: string; onPress: () => void }[];
+  /** Liens sous la mention complète (conditions de Blowy+). */
+  moreLinks?: readonly { label: string; onPress: () => void }[];
+  /** Une ligne sous le bouton d'achat : le prix après l'essai, le renouvellement, l'annulation. */
+  ctaNote?: string | null;
 }
 
 const HEADER = 178;
@@ -197,6 +202,8 @@ export function PlusTemplate<K extends string>({
   onRestore,
   restoreLoading,
   links,
+  moreLinks,
+  ctaNote,
 }: PlusTemplateProps<K>) {
   const insets = useSafeAreaInsets();
   // Dans une feuille (`SheetTemplate bare`) : la barre du haut sert de poignée, la croix et « continuer » font
@@ -208,48 +215,52 @@ export function PlusTemplate<K extends string>({
   return (
     <View style={[styles.root, sheet && styles.rootSheet]}>
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingTop: top, paddingBottom: Math.max(insets.bottom, 18) }]}
+        style={layout.fill}
+        contentContainerStyle={[styles.content, { paddingBottom: space.lg }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScrollEndDrag={sheet ? (e) => e.nativeEvent.contentOffset.y < -70 && sheet.close() : undefined}
       >
-        <View style={[styles.panel, { height: HEADER + top }]}>
-          <LinearGradient colors={plusGradient} style={StyleSheet.absoluteFill} />
-        </View>
-        {/* Son minimoa, habillé, entre par la droite ; les objets premium flottent autour. */}
-        <Appear from="right" distance={60} delay={120} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + 34 }]}>
-          <DressedPet species={pet.species} outfit={pet.outfit ?? undefined} size={150} mood="joie" accessibilityLabel={pet.name} />
-        </Appear>
-        {floatingItems[0] ? <Floating id={floatingItems[0]} size={48} delay={0} style={{ top: top + 132, right: 2 }} /> : null}
-        {floatingItems[1] ? <Floating id={floatingItems[1]} size={44} delay={900} style={{ top: top + 10, right: 122 }} /> : null}
-        <SheetHandle style={[layout.rowBetween, styles.top]}>
-          <View />
-          <IconButton glyph="close" variant="back" label={closeLabel} onPress={close} />
-        </SheetHandle>
-        <View style={styles.head}>
-          <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={64} style={styles.title} />
-          <Title text={[{ text: headline, dim: true }]} size={26} variant="h2" style={styles.headline} />
+        {/* Le panneau suit son contenu (titre, ligne de la raison, preuve concrète) : rien ne déborde quelle que soit la raison. */}
+        <View style={[styles.panel, { minHeight: HEADER + top - 6 }]}>
+          <View style={styles.panelFill}>
+            <LinearGradient colors={plusGradient} style={StyleSheet.absoluteFill} />
+          </View>
+          {/* Son minimoa, habillé, entre par la droite ; les objets premium flottent autour. */}
+          <Appear from="right" distance={60} delay={120} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + 28 }]}>
+            <DressedPet species={pet.species} outfit={pet.outfit ?? undefined} size={150} mood="joie" accessibilityLabel={pet.name} />
+          </Appear>
+          {floatingItems[0] ? <Floating id={floatingItems[0]} size={48} delay={0} style={{ top: top + 126, right: -4 }} /> : null}
+          {floatingItems[1] ? <Floating id={floatingItems[1]} size={44} delay={900} style={{ top: top + 4, right: 116 }} /> : null}
+          <SheetHandle style={[layout.rowBetween, styles.top, { paddingTop: top - 6 + space.md }]}>
+            <View />
+            <IconButton glyph="close" variant="back" label={closeLabel} onPress={close} />
+          </SheetHandle>
+          <View style={styles.head}>
+            <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={64} style={styles.title} />
+            <Title text={[{ text: headline, dim: true }]} size={26} variant="h2" style={styles.headline} />
+            {teaser ? (
+              <Appear delay={260} style={[layout.row, styles.teaser]}>
+                <View style={[layout.row, styles.silhouettes]} accessible={false}>
+                  {teaser.species.slice(0, 3).map((s, i) => (
+                    <Avatar key={s} size={30} pet={{ name: s, species: s }} blurred cutout style={i ? styles.silhouetteNext : null} />
+                  ))}
+                </View>
+                <Text variant="bodyHeavy" size={15} color={color.white} style={styles.teaserText}>
+                  {teaser.label}
+                </Text>
+              </Appear>
+            ) : null}
+          </View>
         </View>
 
         <View style={styles.body}>
-          {teaser ? (
-            <Appear delay={260} style={[layout.row, styles.teaser]}>
-              <View style={[layout.row, styles.silhouettes]} accessible={false}>
-                {teaser.species.slice(0, 3).map((s, i) => (
-                  <Avatar key={s} size={34} pet={{ name: s, species: s }} blurred cutout style={i ? styles.silhouetteNext : null} />
-                ))}
-              </View>
-              <Text variant="bodyHeavy" size={15} color={color.white} style={styles.teaserText}>
-                {teaser.label}
-              </Text>
-            </Appear>
-          ) : null}
           <View style={styles.perks}>
             {perks.map((p, i) => (
               <Appear key={p.key} delay={140 + Math.min(i, 8) * 35} distance={8} style={styles.perkCell}>
                 <View style={[layout.row, styles.perk]}>
-                  <Glyph name="check" size={15} color={color.accent} />
-                  <Text variant={p.highlight ? 'bodyHeavy' : 'bodyBold'} size={14} color={p.highlight ? color.accent : undefined} style={styles.perkText}>
+                  <Glyph name="check" size={16} color={color.accent} />
+                  <Text variant={p.highlight ? 'bodyHeavy' : 'bodyBold'} size={15} color={p.highlight ? color.accent : undefined} style={styles.perkText}>
                     {p.label}
                   </Text>
                 </View>
@@ -283,8 +294,8 @@ export function PlusTemplate<K extends string>({
             </Appear>
           ) : null}
 
+          {/* Sous l'offre : continuer sans payer, la mention complète du renouvellement, les conditions de Blowy+. */}
           <View style={styles.actions}>
-            {!member && ctaLabel ? <Button label={ctaLabel} onPress={onCta} disabled={ctaDisabled || !onCta} loading={ctaLoading} /> : null}
             <Pressable onPress={proceed} accessibilityLabel={continueLabel} style={styles.secondary}>
               <InkProvider value={color.white}>
                 <Text variant="bodyHeavy" size={16}>
@@ -297,26 +308,49 @@ export function PlusTemplate<K extends string>({
                 {renewalNotice}
               </Text>
             ) : null}
-            <View style={styles.legal}>
-              {restoreLabel && onRestore ? (
-                <Pressable onPress={onRestore} disabled={restoreLoading} accessibilityRole="button" accessibilityLabel={restoreLabel} style={styles.legalItem}>
-                  <Text variant="bodyBold" size={13} muted={!restoreLoading} dim={restoreLoading} style={styles.legalText}>
-                    {restoreLabel}
-                  </Text>
-                </Pressable>
-              ) : null}
-              {links?.map((l) => (
-                <Pressable key={l.label} onPress={l.onPress} accessibilityRole="link" accessibilityLabel={l.label} style={styles.legalItem}>
-                  <Text size={13} muted style={styles.legalText}>
-                    {l.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
+            {moreLinks?.length ? (
+              <View style={styles.legal}>
+                {moreLinks.map((l) => (
+                  <LegalLink key={l.label} label={l.label} onPress={l.onPress} />
+                ))}
+              </View>
+            ) : null}
           </View>
         </View>
       </ScrollView>
+
+      {/* Barre fixe : l'achat, ce qu'il engage en une ligne, et la restauration et les conditions, toujours visibles. */}
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+        {!member && ctaLabel ? <Button label={ctaLabel} onPress={onCta} disabled={ctaDisabled || !onCta} loading={ctaLoading} /> : null}
+        {!member && ctaNote ? (
+          <Text size={13} muted center style={styles.ctaNote}>
+            {ctaNote}
+          </Text>
+        ) : null}
+        <View style={styles.legalBar}>
+          {restoreLabel && onRestore ? (
+            <Pressable onPress={onRestore} disabled={restoreLoading} accessibilityRole="button" accessibilityLabel={restoreLabel} style={styles.legalItem}>
+              <Text variant="bodyBold" size={13} muted={!restoreLoading} dim={restoreLoading} style={styles.legalText}>
+                {restoreLabel}
+              </Text>
+            </Pressable>
+          ) : null}
+          {links?.map((l) => (
+            <LegalLink key={l.label} label={l.label} onPress={l.onPress} />
+          ))}
+        </View>
+      </View>
     </View>
+  );
+}
+
+function LegalLink({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="link" accessibilityLabel={label} style={styles.legalItem}>
+      <Text size={13} muted style={styles.legalText}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -324,22 +358,23 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: color.night },
   rootSheet: { backgroundColor: 'transparent' },
   content: { flexGrow: 1 },
-  panel: { position: 'absolute', top: 6, left: 6, right: 6, borderRadius: radius.xl + 4, overflow: 'hidden' },
-  pet: { position: 'absolute', right: -14 },
+  panel: { marginTop: 6, marginHorizontal: 6 },
+  panelFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: radius.xl + 4, overflow: 'hidden' },
+  pet: { position: 'absolute', right: -8 },
   floating: { position: 'absolute' },
-  top: { paddingTop: space.md, paddingBottom: space.xs, paddingHorizontal: 20 },
-  head: { paddingHorizontal: 26, minHeight: HEADER - 64, paddingRight: 150 },
+  top: { paddingBottom: space.xs, paddingHorizontal: 14 },
+  head: { paddingLeft: 20, paddingRight: 136, paddingBottom: space.lg },
   title: { lineHeight: 60 },
   headline: { marginTop: 2 },
-  teaser: { gap: space.md, alignItems: 'center', padding: space.md, borderRadius: radius.md, backgroundColor: alpha(color.white, 0.06) },
+  teaser: { gap: space.sm, alignItems: 'center', marginTop: space.md },
   silhouettes: { alignItems: 'center' },
-  silhouetteNext: { marginLeft: -12 },
-  teaserText: { flex: 1, lineHeight: 20 },
+  silhouetteNext: { marginLeft: -11 },
+  teaserText: { flex: 1, lineHeight: 19 },
   body: { paddingHorizontal: 20, paddingTop: space.md, gap: space.md, flexGrow: 1 },
-  perks: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 8 },
-  perkCell: { width: '50%', paddingRight: space.sm },
-  perk: { gap: 6, alignItems: 'flex-start' },
-  perkText: { flex: 1, lineHeight: 18 },
+  perks: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 10 },
+  perkCell: { width: '50%', paddingRight: space.xs },
+  perk: { gap: 7, alignItems: 'center' },
+  perkText: { flex: 1, lineHeight: 20 },
   offers: {},
   offersList: { gap: space.sm },
   offer: { borderRadius: radius.lg - 6, borderWidth: 2, backgroundColor: color.panel },
@@ -356,7 +391,10 @@ const styles = StyleSheet.create({
   timelineDotOn: { backgroundColor: color.accent, borderColor: alpha(color.accent, 0.4) },
   timelineText: { lineHeight: 16, paddingHorizontal: 2 },
   memberCard: { gap: space.md, padding: 18, borderRadius: radius.lg - 6, borderWidth: 2, borderColor: color.accent, backgroundColor: color.panel },
-  actions: { marginTop: 'auto', gap: space.xs },
+  actions: { gap: space.xs, paddingBottom: space.md },
+  footer: { paddingHorizontal: 20, paddingTop: space.md, gap: space.xs, backgroundColor: color.night, borderTopWidth: 1, borderTopColor: veil.hairline },
+  ctaNote: { lineHeight: 17, paddingHorizontal: space.sm },
+  legalBar: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: space.lg },
   secondary: { minHeight: 48, alignItems: 'center', justifyContent: 'center' },
   note: { lineHeight: 18 },
   legal: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: space.lg, marginTop: space.xs },

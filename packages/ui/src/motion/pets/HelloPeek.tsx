@@ -58,3 +58,28 @@ export function HelloPeek({ species, seed, safe, duration = 2400, active = true 
     />
   );
 }
+
+/**
+ * Le même salut, sans rien poser par-dessus l'écran : au retour dans l'app (mêmes règles que `HelloPeek`, budget
+ * partagé), appelle `onHello` pour que le minimoa déjà à l'écran (scène de l'accueil) fasse coucou lui-même.
+ * Ne couvre donc jamais une carte ni un bouton. `active` : l'écran est au premier plan (sinon rien n'est consommé).
+ */
+export function useHelloWave(onHello: () => void, { seed, active = true }: { seed?: string; active?: boolean }): void {
+  const sheet = useOverlayOpen();
+  const awayAt = useRef<number | null>(null);
+  const allowed = useRef(active && !sheet);
+  allowed.current = active && !sheet;
+  const cb = useRef(onHello);
+  cb.current = onHello;
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'background') awayAt.current ??= Date.now();
+      else if (s === 'active' && awayAt.current !== null) {
+        const away = Date.now() - awayAt.current;
+        awayAt.current = null;
+        if (allowed.current && seed && claimHelloPeek(seed, away)) cb.current();
+      }
+    });
+    return () => sub.remove();
+  }, [seed]);
+}

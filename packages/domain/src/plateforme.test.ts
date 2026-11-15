@@ -96,12 +96,13 @@ describe('minimoas dans le chat', () => {
     expect(cleanMinimoaLine('x'.repeat(300))?.length).toBe(160);
   });
   it('santé du lien', () => {
-    expect(linkHealthOf({ mine: 0, theirs: 0, duoPhotoDays: 0, streak: 0, lives: 7, ageDays: 2 }).key).toBe('new');
-    expect(linkHealthOf({ mine: 0, theirs: 0, duoPhotoDays: 0, streak: 0, lives: 3, ageDays: 20 }).key).toBe('quiet');
-    expect(linkHealthOf({ mine: 10, theirs: 1, duoPhotoDays: 0, streak: 0, lives: 7, ageDays: 20 }).key).toBe('one_sided');
-    expect(linkHealthOf({ mine: 20, theirs: 20, duoPhotoDays: 1, streak: 1, lives: 7, ageDays: 20 }).key).toBe('lively');
-    expect(linkHealthOf({ mine: 2, theirs: 2, duoPhotoDays: 4, streak: 4, lives: 7, ageDays: 20 })).toMatchObject({ key: 'photos' });
-    expect(linkHealthOf({ mine: 40, theirs: 40, duoPhotoDays: 7, streak: 9, lives: 7, ageDays: 20 }).score).toBe(100);
+    expect(linkHealthOf({ mine: 0, theirs: 0, duoDays: 0, streak: 0, lives: 7, ageDays: 2 }).key).toBe('new');
+    expect(linkHealthOf({ mine: 0, theirs: 0, duoDays: 0, streak: 0, lives: 3, ageDays: 20 }).key).toBe('quiet');
+    expect(linkHealthOf({ mine: 10, theirs: 1, duoDays: 0, streak: 0, lives: 7, ageDays: 20 }).key).toBe('one_sided');
+    expect(linkHealthOf({ mine: 20, theirs: 20, duoDays: 1, streak: 1, lives: 7, ageDays: 20 }).key).toBe('lively');
+    expect(linkHealthOf({ mine: 5, theirs: 5, duoDays: 5, streak: 5, lives: 7, ageDays: 20 })).toMatchObject({ key: 'together' });
+    expect(linkHealthOf({ mine: 5, theirs: 5, duoDays: 4, streak: 4, lives: 7, ageDays: 20 }).key).toBe('balanced');
+    expect(linkHealthOf({ mine: 40, theirs: 40, duoDays: 7, streak: 9, lives: 7, ageDays: 20 }).score).toBe(100);
   });
 });
 

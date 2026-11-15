@@ -107,40 +107,185 @@
       },
       "extractionState": "manual"
     },
-    "activity.cta.photo": {
+    "activity.cta.write": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Prendre la photo"
+            "value": "Écrire"
           }
         },
         "en": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Prendre la photo"
+            "value": "Écrire"
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Prendre la photo"
+            "value": "Écrire"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Prendre la photo"
+            "value": "Écrire"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Prendre la photo"
+            "value": "Écrire"
           }
         }
       },
-      "extractionState": "manual"
+      "extractionState": "manual",
+      "comment": "Bouton de l’île déployée : ouvre le chat du lien"
+    },
+    "activity.link.done": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous vous êtes écrit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous vous êtes écrit"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous vous êtes écrit"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous vous êtes écrit"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous vous êtes écrit"
+          }
+        }
+      },
+      "extractionState": "manual",
+      "comment": "État final : tu as écrit dans le lien, la série continue"
+    },
+    "activity.link.kicker": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Série du lien · Blowy"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Série du lien · Blowy"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Série du lien · Blowy"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Série du lien · Blowy"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Série du lien · Blowy"
+          }
+        }
+      },
+      "extractionState": "manual",
+      "comment": "Activité en direct, le soir : la série d’un lien est en jeu"
+    },
+    "activity.link.tap": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touche pour lui répondre"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touche pour lui répondre"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touche pour lui répondre"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touche pour lui répondre"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Touche pour lui répondre"
+          }
+        }
+      },
+      "extractionState": "manual",
+      "comment": "Écran verrouillé, en bas à droite"
+    },
+    "activity.link.title %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ t’a écrit. À toi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ t’a écrit. À toi"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ t’a écrit. À toi"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ t’a écrit. À toi"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%@ t’a écrit. À toi"
+          }
+        }
+      },
+      "extractionState": "manual",
+      "comment": "%@ : prénom de l’autre personne du lien"
     },
     "activity.outing.done": {
       "localizations": {
@@ -282,147 +427,6 @@
       },
       "extractionState": "manual",
       "comment": "%@ : nom du minimoa"
-    },
-    "activity.photo.done": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo envoyée"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo envoyée"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo envoyée"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo envoyée"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo envoyée"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "activity.photo.kicker": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Photo du jour · Blowy"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo du jour · Blowy"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo du jour · Blowy"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo du jour · Blowy"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Photo du jour · Blowy"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "activity.photo.tap": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touche pour la photo"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour la photo"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour la photo"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour la photo"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "Touche pour la photo"
-          }
-        }
-      },
-      "extractionState": "manual"
-    },
-    "activity.photo.title %@": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ a posté, à toi"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ a posté, à toi"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ a posté, à toi"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ a posté, à toi"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "needs_review",
-            "value": "%@ a posté, à toi"
-          }
-        }
-      },
-      "extractionState": "manual",
-      "comment": "%@ : prénom de la personne du lien"
     },
     "activity.untilMidnight": {
       "localizations": {

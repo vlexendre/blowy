@@ -153,8 +153,6 @@ export function createApiClient(opts: ApiClientOptions) {
       send: (id: string, body: SendMessageBody) => call('POST', routes.linkMessages(id), LinkActionZ, body),
       read: (id: string) => call('POST', routes.linkRead(id), OkZ),
       revive: (id: string) => call('POST', routes.linkRevive(id), LinkActionZ),
-      photoTicket: (id: string, contentType: string) => call('POST', routes.linkPhotoTicket(id), UploadTicketZ, { contentType }),
-      sendPhoto: (id: string, path: string) => call('POST', routes.linkPhoto(id), LinkActionZ, { path }),
       memories: (id: string) => call('GET', routes.linkMemories(id), MemoriesZ),
     },
     encounters: {

@@ -126,7 +126,7 @@ export const confidentialite: LegalPage = {
     },
     {
       ul: [
-        '**Akkoord van ieder:** we vragen het jullie allebei, de eerste keer dat jullie de chat openen. Zegt een van jullie nee, dan leest niemand mee: de minimoas reageren alleen op het ritme van de band (stiltes, foto’s, uitdagingen).',
+        '**Akkoord van ieder:** we vragen het jullie allebei, de eerste keer dat jullie de chat openen. Zegt een van jullie nee, dan leest niemand mee: de minimoas reageren alleen op het ritme van de band (stiltes, reeksen, uitdagingen).',
         '**Intrekken:** wanneer je wilt, in de opties van de band of in **Ik**. Het meelezen stopt direct voor die band.',
         '**Hoe:** geen analyse bij elk bericht. Bij een aanleiding (een stilte, een bepaald aantal berichten) wordt een kort venster met de laatste berichten naar onze AI-leverancier gestuurd, die de reactie van de minimoa voorstelt. Hoogstens 3 tussenkomsten per dag per band, en je kunt ze voor een band uitzetten.',
         '**Wat bewaard wordt:** niets van de analyse. Alleen de reactie van de minimoa verschijnt in de chat, als bericht.',
@@ -134,14 +134,14 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Foto’s van de dag en herinneringen' },
+    { h3: 'De reeks en de mijlpalen van een band' },
     {
       ul: [
-        '**Gegevens:** de foto van de dag die je in een band plaatst, en wat je in jullie herinneringen bewaart.',
-        '**Doel:** hem delen met de ander in de band en bewaren in jullie herinneringen.',
+        '**Gegevens:** de dagen waarop ieder van jullie in de band heeft geschreven (niet de inhoud van de berichten) en de mijlpalen van de band (ontmoeting, bereikte niveaus, reeksrecords). Bij banden van vóór 15 november 2026 de foto’s die jullie elkaar daar stuurden; die blijven in jullie herinneringen. We ontvangen geen nieuwe meer.',
+        '**Doel:** de reeks van de band (de dagen op rij dat jullie allebei schrijven), haar levens en niveaus laten werken, en jullie herinneringen tonen.',
         '**Rechtsgrond:** uitvoering van de overeenkomst.',
-        '**Bewaartermijn:** zolang de band bestaat (zelfde regels als berichten).',
-        '**Toegang:** jij en de ander in de band. Foto’s staan in een privéopslag, alleen bereikbaar via tijdelijke links.',
+        '**Bewaartermijn:** zolang de band bestaat (dezelfde regels als berichten).',
+        '**Toegang:** jij en de ander in de band. Foto’s staan in een privéruimte en zijn alleen via tijdelijke links bereikbaar.',
       ],
     },
 
@@ -149,7 +149,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** het technische meldingstoken van je telefoon, je instellingen per soort melding, het tijdstip dat je voor de uitdaging van de dag kiest.',
-        '**Doel:** je laten weten wat er speelt (uitdaging van de dag, nieuwe ontmoeting, bericht, band of reeks in gevaar, gevraagd bewijs, weekoverzicht, herinnering aan het einde van de proefperiode). Stille uren van 22.00 tot 8.00 uur; buiten berichten hoogstens 3 per dag. Op iPhone gebruiken de widget en de live-activiteiten dezelfde gegevens.',
+        '**Doel:** je laten weten wat er speelt (uitdaging van de dag, nieuwe ontmoeting, bericht, ’s avonds “jij bent aan de beurt”, band of reeks in gevaar, gevraagd bewijs, weekoverzicht, herinnering aan het einde van de proefperiode). Stille uren van 22.00 tot 8.00 uur; buiten berichten hoogstens 3 per dag. Op iPhone gebruiken de widget en de live-activiteiten dezelfde gegevens.',
         '**Rechtsgrond:** je toestemming, via de toestemming op je telefoon. Je trekt die in via de instellingen van je telefoon of per soort in de app.',
         '**Bewaartermijn:** tot je meldingen uitzet of je account verwijdert.',
         '**Toegang:** onze leverancier voor het versturen van meldingen, en Apple of Google, die ze op je telefoon bezorgen.',
@@ -257,9 +257,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Mensen aan wie je minimoa je voorstelt** zien je voornaam, je minimoa, zijn stijl, jullie overeenkomsten en één verschil, en je geschatte positie op de kaart (behalve in de discrete modus).',
-        '**Je banden** zien daarnaast jullie berichten, jullie foto’s van de dag en jullie herinneringen.',
+        '**Je banden** zien daarnaast jullie berichten, jullie reeks, de mijlpalen van jullie band en jullie eerdere foto’s, als die er zijn.',
         '**Bezoekers van je “3 woorden”-pagina of je uitnodiging** zien je voornaam en je minimoa.',
-        'Niemand ziet je e-mailadres, je geboortedatum, je exacte positie, je bewijsfoto’s of je antwoorden op de kijk-test.',
+        'Niemand ziet je e-mailadres, je geboortedatum, je exacte positie of je antwoorden op de kijk-test. Je bewijsfoto’s worden gecontroleerd door een AI: geen mens ziet ze, en ze worden binnen 24 uur verwijderd (tenzij je ze in je privéherinneringen bewaart).',
       ],
     },
 
@@ -299,7 +299,7 @@ export const confidentialite: LegalPage = {
           ['Locatie', 'Alleen de laatste afgeronde positie en het geschatte thuisgebied, bij elke update vervangen.'],
           ['Bewijsfoto’s', 'Binnen 24 uur, tenzij je ze in je privéherinneringen bewaart.'],
           ['Berichten lezen door de AI', 'Na de analyse wordt niets bewaard.'],
-          ['Berichten, foto’s van de dag, herinneringen', 'Zolang de band bestaat.'],
+          ['Berichten, reeks, mijlpalen en eerdere foto’s van een band', 'Zolang de band bestaat.'],
           ['Aankopen', 'Status zolang het account bestaat; transactiereferenties tot 10 jaar (boekhoudkundige verplichtingen).'],
           ['Meldingen en moderatiebeslissingen', '1 jaar na afsluiting van het dossier, langer als een gerechtelijke procedure dat vereist.'],
           ['Definitieve uitsluiting', 'Een technische identificatie van het Apple- of Google-account, 3 jaar lang, om opnieuw aanmelden te voorkomen.'],

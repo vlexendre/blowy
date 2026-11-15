@@ -301,6 +301,7 @@ export class SupabaseMetricsSource implements MetricsSource {
       linksActive: n(m.linksActive),
       linksGhost: n(m.linksGhost),
       linksArchived: n(m.linksArchived),
+      linksWroteTogether: m.linksWroteTogether === undefined || m.linksWroteTogether === null ? null : n(m.linksWroteTogether),
       reportsOpened: n(m.reportsOpened),
       reportsHandled: n(m.reportsHandled),
       reportsOpen: n(m.reportsOpen),

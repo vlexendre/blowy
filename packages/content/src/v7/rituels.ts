@@ -268,7 +268,7 @@ const fr = {
       keep_going: 'Une idée pour la semaine : continuer sur cette lancée.',
     } as Record<ReviewTip, string>,
     link: {
-      photo_streak: (name: string, streak: number): string => `Avec ${name} : ${streak} photos du jour d’affilée.`,
+      streak: (name: string, streak: number): string => `Avec ${name} : ${streak} jours d’affilée à vous écrire.`,
       close: (name: string): string => `Avec ${name} : vous vous connaissez de mieux en mieux.`,
       steady: (name: string): string => `Avec ${name} : un lien solide.`,
       growing: (name: string): string => `Avec ${name} : ça se construit, tranquillement.`,

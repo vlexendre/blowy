@@ -1,6 +1,6 @@
 /** Dates lisibles pour les chats (fuseau de l'app : Europe/Paris, comme le domaine). */
-import type { Link, Memories } from '@blowy/contract';
-import { addDays, APP_TIMEZONE, dayOf, daysBetween } from '@blowy/domain';
+import type { Link } from '@blowy/contract';
+import { APP_TIMEZONE, dayOf, daysBetween } from '@blowy/domain';
 import type { WeekDayState } from '@blowy/ui';
 
 import { dates, today as todayText } from '@/locales/chats';
@@ -34,22 +34,26 @@ export function timeLabel(at: string, now: Date = new Date()): string {
   return shortDay(day);
 }
 
-/** La semaine en cours (lundi → dimanche, maquette « cette semaine »), d'après les photos du jour (deux = fait, une = à moitié). */
-export function weekStrip(
-  memories: Memories | undefined,
-  today: string,
-  todayLook?: { mine: boolean; theirs: boolean },
-): { day: string; state: WeekDayState; mark?: string }[] {
-  const byDay = new Map((memories?.days ?? []).map((d) => [d.day, d]));
-  const monday = addDays(today, -((weekdayOf(today) + 6) % 7));
-  return Array.from({ length: 7 }, (_, i) => {
-    const day = addDays(monday, i);
-    const m = byDay.get(day);
-    const count =
-      day === today && todayLook ? Number(todayLook.mine) + Number(todayLook.theirs) : (m?.myPhotoUrl ? 1 : 0) + (m?.theirPhotoUrl ? 1 : 0);
+/**
+ * La semaine en cours du lien (lundi → dimanche, maquette « cette semaine ») : coche quand vous vous êtes écrit tous les
+ * deux, « 1/2 » quand un seul a écrit. Les jours à venir et ceux d'avant le lien restent vides.
+ */
+export function weekStrip(today: Link['today']): { day: string; state: WeekDayState; mark?: string }[] {
+  return today.week.map((d) => {
+    const count = d.when === 'future' || d.beforeLink ? 0 : Number(d.mine) + Number(d.theirs);
     const state: WeekDayState = count === 2 ? 'done' : count === 1 ? 'half' : 'none';
-    return { day: todayText.weekDays[weekdayOf(day)] ?? '', state, mark: state === 'half' ? todayText.halfMark : undefined };
+    return { day: todayText.weekDays[weekdayOf(d.day)] ?? '', state, mark: state === 'half' ? todayText.halfMark : undefined };
   });
+}
+
+/** État de la journée d'un lien, vu par toi (onglet « Le lien »). */
+export type LinkDayState = 'both' | 'yourTurn' | 'theirTurn' | 'atStake' | 'fresh';
+export function linkDayState(l: Pick<Link, 'today' | 'streak'>): LinkDayState {
+  const { mine, theirs, atStake } = l.today;
+  if (mine && theirs) return 'both';
+  if (theirs) return 'yourTurn';
+  if (mine) return 'theirTurn';
+  return atStake ? 'atStake' : 'fresh';
 }
 
 /** Liens visibles dans la liste, du plus récent au plus ancien. */
@@ -62,6 +66,9 @@ export function sortLinks(links: readonly Link[]): Link[] {
 export const isNewLink = (l: Link, now: Date = new Date()): boolean =>
   !l.lastMessage && now.getTime() - new Date(l.createdAt).getTime() < 2 * 86_400_000;
 
-/** Liens actifs où l'autre attend ma photo du jour. */
-export const waitingForMyPhoto = (links: readonly Link[]): Link[] =>
-  links.filter((l) => l.status === 'active' && l.today.theirs && !l.today.mine);
+/** Liens actifs dont la série est en jeu et où l'autre a déjà écrit aujourd'hui : c'est à toi (bandeau des chats). */
+export const streaksWaitingOnMe = (links: readonly Link[]): Link[] =>
+  links.filter((l) => l.status === 'active' && l.today.atStake && l.today.theirs && !l.today.mine).sort((a, b) => b.streak - a.streak);
+
+/** « À toi » sur la ligne d'un lien : l'autre a écrit aujourd'hui, pas toi. */
+export const isMyTurn = (l: Link): boolean => l.status === 'active' && l.today.theirs && !l.today.mine;

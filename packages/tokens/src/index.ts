@@ -24,7 +24,8 @@ export const gradient = {
   accent: ['#FFD23F', '#FFB000'],
   orange: ['#FF7A2E', '#FFA24D'],
   coral: ['#FF5A3C', '#FF8F6B'],
-  violet: ['#6D3DF0', '#A98BFF'],
+  // Bas du dégradé assez foncé pour du texte blanc lisible partout (AA, 4,5:1), même en petit.
+  violet: ['#6D3DF0', '#8253F4'],
   rose: ['#FF8FC6', '#FFC4DF'],
   wine: ['#2A0F2E', '#8C1D4F'],
   night: ['#17142A', '#0B0A14'],

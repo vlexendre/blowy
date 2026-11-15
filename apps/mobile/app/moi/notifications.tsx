@@ -18,7 +18,7 @@ import { moi } from '@/locales/moi';
 
 const t = moi.notifications;
 
-/** Une ligne de la maquette peut porter plusieurs types (« Messages et photo du jour ») : allumée si tous le sont. */
+/** Une ligne de la maquette peut porter plusieurs types (« Nouvelle rencontre, on te fait signe ») : allumée si tous le sont. */
 type Row = { key: string; kinds: readonly NotificationKindDto[]; title: string; subtitle: string };
 
 const HOURS = Array.from({ length: MORNING_HOUR_MAX - MORNING_HOUR_MIN + 1 }, (_, i) => MORNING_HOUR_MIN + i);
@@ -44,7 +44,8 @@ export default function Notifications() {
   ];
   const linkRows: Row[] = [
     { key: 'encounters', kinds: ['new_encounter', 'waved'], ...t.rows.encounters },
-    { key: 'messages', kinds: ['message', 'daily_photo'], ...t.rows.messages },
+    { key: 'messages', kinds: ['message'], ...t.rows.messages },
+    { key: 'turn', kinds: ['your_turn'], ...t.rows.your_turn },
     { key: 'danger', kinds: ['link_in_danger'], ...t.rows.link_in_danger },
   ];
   const plusRows: Row[] = [{ key: 'trial', kinds: ['trial_reminder'], ...t.rows.trial_reminder }];

@@ -15,7 +15,7 @@ const API = '/v1';
 /**
  * Rôle d'une réplique de minimoa (champ `petRole` des messages) :
  * icebreaker (début du lien) · nudge (relance après un silence) · remark (de temps en temps) ·
- * guard (le ton monte ; visible par toi seul) · event (niveau, vies, photo à deux).
+ * guard (le ton monte ; visible par toi seul) · event (niveau, vies, série).
  */
 export const PetRoleZ = z.enum(PET_ROLES);
 export type PetRoleDto = z.infer<typeof PetRoleZ>;
@@ -29,7 +29,7 @@ export type PetRoleDto = z.infer<typeof PetRoleZ>;
  *   une question qu'il n'a pas encore vue donnent tous deux `not_yet` : on ne dit jamais « Léa a refusé » ;
  * - `consent.byDefault` : ton accord vient de ton réglage par défaut (« Moi ») et non d'une réponse dans ce chat :
  *   la question n'est pas posée, mais le chat montre l'état en une ligne avec de quoi le changer ;
- * - sans lecture, les minimoas ne réagissent qu'au rythme (silences, photos, défis, série, niveau).
+ * - sans lecture, les minimoas ne réagissent qu'au rythme (silences, défis, série, niveau).
  */
 export const TheirConsentZ = z.enum(THEIR_CONSENT_STATES);
 export const LinkMinimoasZ = z.object({
@@ -102,9 +102,10 @@ export type NotificationKindDto = z.infer<typeof NotificationKindZ>;
 
 /**
  * Activités en direct iOS (Dynamic Island, écran verrouillé ; spéc §19), toujours bornées dans le temps :
- * challenge : défi du jour accepté, jusqu'à minuit · photo : « Léa a posté, à toi » · outing : une sortie en cours.
+ * challenge : défi du jour accepté, jusqu'à minuit · link : la série d'un lien, « Léa t'a écrit : à toi avant minuit »
+ * (le soir, l'autre a écrit aujourd'hui et pas toi) · outing : une sortie en cours.
  */
-export const LIVE_ACTIVITY_KINDS = ['challenge', 'photo', 'outing'] as const;
+export const LIVE_ACTIVITY_KINDS = ['challenge', 'link', 'outing'] as const;
 export const LiveActivityKindZ = z.enum(LIVE_ACTIVITY_KINDS);
 export type LiveActivityKind = z.infer<typeof LiveActivityKindZ>;
 
@@ -131,8 +132,8 @@ export const RegisterDeviceBody = z.object({
       /** Identifiant ActivityKit de l'activité (jetons `update`). */
       activityId: z.string().max(80).optional(),
       /**
-       * Photo du jour : le lien concerné (facultatif). Avec lui, l'API termine l'activité de ce lien seulement quand
-       * la personne poste ; sans lui, toutes ses activités « photo » en cours.
+       * Série d'un lien (`link`) : le lien concerné (facultatif). Avec lui, l'API termine l'activité de ce lien seulement
+       * quand la personne y écrit ; sans lui, toutes ses activités `link` en cours.
        */
       linkId: Id.optional(),
     })
@@ -175,8 +176,8 @@ export const WidgetStateZ = z.object({
   streak: z.number().int().optional(),
   /** Jusqu'à quand l'activité a un sens (fin de journée locale, ISO). */
   endsAt: Iso.optional(),
-  /** Photo du jour : l'autre a posté, à toi. */
-  photoFrom: z.string().optional(),
+  /** Série d'un lien : prénom de qui t'a écrit aujourd'hui, à toi d'écrire avant minuit. */
+  writeTo: z.string().optional(),
   livesLeft: z.number().int().optional(),
 });
 export type WidgetState = z.infer<typeof WidgetStateZ>;
@@ -207,20 +208,20 @@ export const LiveActivityAttributesZ = z.object({
   startedAt: z.number(),
   /** Lien profond ouvert au toucher (`blowy://pet`, `blowy://link/<id>`). */
   url: z.string().max(200),
-  /** photo : le prénom de la personne qui a posté. */
+  /** link : le prénom de l'autre personne du lien. */
   otherName: z.string().max(40).optional(),
 });
 export type LiveActivityAttributes = z.infer<typeof LiveActivityAttributesZ>;
 
 /** Partie qui change (`aps.content-state` des push `update` et `end`). Mêmes règles d'encodage. */
 export const LiveActivityStateZ = z.object({
-  /** Fin, en secondes Unix (minuit local pour le défi et la photo). */
+  /** Fin, en secondes Unix (minuit local pour le défi et la série d'un lien). */
   endsAt: z.number(),
-  /** Série en jeu (0 : pas de série à montrer). */
+  /** Série en jeu : celle du défi (challenge) ou celle du lien (link) ; 0 : pas de série à montrer. */
   streak: z.number().int().min(0),
   /** challenge : texte du défi (déjà dans la langue de la personne) ; null : phrase générique de l'extension. */
   title: z.string().max(120).nullable(),
-  /** C'est fait (défi relevé, photo postée, retour de sortie) : l'activité affiche son état final. */
+  /** C'est fait (défi relevé, tu as écrit, retour de sortie) : l'activité affiche son état final. */
   done: z.boolean(),
 });
 export type LiveActivityState = z.infer<typeof LiveActivityStateZ>;

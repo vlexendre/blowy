@@ -1,5 +1,5 @@
 // Activités en direct (V6-GWidget, écran verrouillé et île déployée) : le défi du jour accepté (temps restant
-// jusqu'à minuit, série en jeu), la photo du jour d'un lien (« Léa a posté, à toi »), une sortie en cours.
+// jusqu'à minuit, série en jeu), la série d'un lien le soir (« Léa t'a écrit, à toi avant minuit »), une sortie en cours.
 // Démarrées et terminées par l'app ; mises à jour par l'app ou par push APNs (type `liveactivity`).
 
 import ActivityKit
@@ -93,7 +93,7 @@ private struct LockScreenActivityView: View {
 
 // MARK: - Morceaux
 
-/// « Défi accepté · Blowy » puis le titre (« Un café dehors », « Léa a posté, à toi », « Nino est de sortie »).
+/// « Défi accepté · Blowy » puis le titre (« Un café dehors », « Léa t'a écrit », « Nino est de sortie »).
 private struct ActivityTitle: View {
   let context: Context
   let compact: Bool
@@ -118,7 +118,7 @@ private struct ActivityTitle: View {
       Text(attributes.doneKey)
     } else {
       switch attributes.kind {
-      case "photo": Text("activity.photo.title \(attributes.otherName ?? "")")
+      case "link": Text("activity.link.title \(attributes.otherName ?? "")")
       case "outing": Text("activity.outing.title \(attributes.pet.name)")
       default:
         if let text = state.title, !text.isEmpty { Text(verbatim: text) } else { Text("challenge.generic") }
@@ -169,12 +169,12 @@ private struct TimeBar: View {
   }
 }
 
-/// « 🔥 Série de 12 en jeu » (défi), sinon rien.
+/// « 🔥 Série de 12 en jeu » (défi ou lien ; fait : « Série de 13 »), sinon rien.
 private struct StakeLine: View {
   let context: Context
 
   var body: some View {
-    if context.attributes.kind == "challenge", context.state.streak > 0 {
+    if context.attributes.kind == "challenge" || context.attributes.kind == "link", context.state.streak > 0 {
       HStack(spacing: 4) {
         Image(systemName: "flame.fill").foregroundStyle(BlowyTokens.orange)
         if context.state.done {
@@ -189,7 +189,7 @@ private struct StakeLine: View {
   }
 }
 
-/// Île compacte, à droite : le temps qui reste (défi, photo) ou une icône (sortie, fait, journée passée).
+/// Île compacte, à droite : le temps qui reste (défi, lien) ou une icône (sortie, fait, journée passée).
 private struct CompactTrailing: View {
   let context: Context
 
@@ -215,7 +215,7 @@ private extension BlowyActivityAttributes {
 
   var kickerKey: LocalizedStringKey {
     switch kind {
-    case "photo": "activity.photo.kicker"
+    case "link": "activity.link.kicker"
     case "outing": "activity.outing.kicker"
     default: "activity.challenge.kicker"
     }
@@ -223,23 +223,23 @@ private extension BlowyActivityAttributes {
 
   var doneKey: LocalizedStringKey {
     switch kind {
-    case "photo": "activity.photo.done"
+    case "link": "activity.link.done"
     case "outing": "activity.outing.done"
     default: "challenge.done"
     }
   }
 
   var tapHintKey: LocalizedStringKey {
-    kind == "photo" ? "activity.photo.tap" : "challenge.tap"
+    kind == "link" ? "activity.link.tap" : "challenge.tap"
   }
 
   var ctaKey: LocalizedStringKey {
-    kind == "photo" ? "activity.cta.photo" : "activity.cta.go"
+    kind == "link" ? "activity.cta.write" : "activity.cta.go"
   }
 
   var ctaSymbol: String {
     switch kind {
-    case "photo": "camera.fill"
+    case "link": "bubble.left.and.bubble.right.fill"
     case "outing": "figure.walk"
     default: "flame.fill"
     }

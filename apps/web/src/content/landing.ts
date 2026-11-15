@@ -41,7 +41,7 @@ export const sections = {
   caractere: { id: 'caractere', dot: 'Caractère', glow: ['#A98BFF', '#6D3DF0', '#FF8FC6'] },
   chats: { id: 'chats', dot: 'Dans tes chats', glow: ['#FF8FC6', '#6D3DF0', '#FF9A3D'] },
   vies: { id: 'vies', dot: '7 vies', glow: ['#8C1D4F', '#FF5A3C', '#6D3DF0'] },
-  photo: { id: 'photo', dot: 'Photo du jour', glow: ['#FF9A3D', '#FF5A3C', '#FFB800'] },
+  photo: { id: 'photo', dot: 'La série', glow: ['#FF9A3D', '#FF5A3C', '#FFB800'] },
   rencontres: { id: 'rencontres', dot: 'Rencontres', glow: ['#FF5A3C', '#A98BFF', '#FF9A3D'] },
   mots: { id: 'mots', dot: '3 mots', glow: ['#FF8FC6', '#FFB800', '#A98BFF'] },
   plus: { id: 'plus', dot: 'Blowy+', glow: ['#6D3DF0', '#FFB800', '#8C1D4F'] },
@@ -179,16 +179,17 @@ export const lives = {
   bubbleWho: 'Nino',
 } as const;
 
+/** La série d'un lien (section d'ancre `photo`, gardée pour les liens déjà partagés) : un mot de chacun par jour. */
 export const photo = {
-  title: [{ text: 'UNE PHOTO' }, { text: 'PAR JOUR.', dim: true }, { text: 'SINON RIEN.', dim: true }] as TitleLine[],
-  lead: 'Vous postez l’un et l’autre : la série monte et le lien gagne une vie. Tu sautes ton tour ? Ça se verra 💀',
-  mine: { status: '✓ postée', label: 'Photo de toi' },
-  theirs: { waiting: 'En attente…', posted: '✓ postée', label: 'Photo de Léa' },
+  title: [{ text: 'UN MOT' }, { text: 'CHACUN.', dim: true }, { text: 'CHAQUE JOUR.', dim: true }] as TitleLine[],
+  lead: 'Vous vous écrivez tous les deux dans la journée : la série du lien monte. Tu laisses passer minuit ? Elle repart de zéro 💀',
+  mine: { status: '✓ a écrit', label: 'Toi : « Ciné ce soir ? »' },
+  theirs: { waiting: 'Pas encore…', posted: '✓ a écrit', label: 'Léa : « Grave ! »' },
   streakBefore: '11',
   streakAfter: '12',
   streakSr: 'jours de série',
-  plusOne: '+1 vie',
-  weekLabel: 'La semaine : 5 jours postés',
+  plusOne: 'Série +1',
+  weekLabel: 'La semaine : 5 jours à vous écrire',
   week: [
     { d: 'L', state: 'd' },
     { d: 'M', state: 'd' },
@@ -198,7 +199,7 @@ export const photo = {
     { d: 'S' },
     { d: 'D' },
   ] as { d: string; state?: 'd' | 't' }[],
-  weekText: '12 jours d’affilée',
+  weekText: '12 jours d’affilée',
 } as const;
 
 export const encounters = {
@@ -241,7 +242,7 @@ export const threeWords = {
 export const plus = {
   title: [{ text: 'BLOWY+.' }, { text: 'POUR ALLER', dim: true }, { text: 'PLUS VITE.', dim: true }] as TitleLine[],
   lead: 'L’essentiel est gratuit, sans pub. Le plus, c’est pour aller plus vite.',
-  free: { name: 'Gratuit', note: '0 €, pour toujours', items: ['1 rencontre par semaine', 'Chats et défis illimités', 'Photo du jour, 7 vies', 'Zéro pub. Jamais.'] },
+  free: { name: 'Gratuit', note: '0 €, pour toujours', items: ['1 rencontre par semaine', 'Chats et défis illimités', 'Séries et 7 vies', 'Zéro pub. Jamais.'] },
   pro: {
     name: 'Blowy+',
     note: 'Essai 3 jours',

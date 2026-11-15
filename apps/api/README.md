@@ -86,9 +86,9 @@ demo/                    monde de démo local
 - **Objets** (`pet_items`) : le service `Wardrobe` calcule les compteurs (jours de soin, liens non archivés,
   meilleur niveau, meilleure série, défis, 3 mots) et attribue les objets gagnés à chaque vue du pet
   (`GetPetView`, donc aussi après soin, défi, renommage, tenue) : `PetView.newItems` = objets attribués par
-  cette requête. Les étapes franchies ailleurs (lien, niveau, photo, 3 mots) sont fêtées à la vue suivante.
-  Les objets de départ sont attribués à l'inscription (pas « nouveaux »). `pets.best_streak` monte avec les
-  photos du jour à deux et reste acquis quand la série retombe.
+  cette requête. Les étapes franchies ailleurs (lien, niveau, série d'un lien, 3 mots) sont fêtées à la vue suivante.
+  Les objets de départ sont attribués à l'inscription (pas « nouveaux »). `pets.best_streak` monte avec la
+  série des liens (jours d'affilée où les deux s'écrivent) et reste acquis quand la série retombe.
 - `GET /v1/pet/wardrobe` (catalogue, état, étape) · `PUT /v1/pet/outfit` (`forbidden` si un objet n'est pas à toi).
 - **Conséquences** : la tenue se voit partout (`PublicPet.outfit`) ; hors des liens, l'humeur montrée suit la
   forme ; les suggestions de rencontre sont limitées par `ENCOUNTER_QUOTA` (aucune si le pet boude) et un pet
@@ -156,13 +156,13 @@ Lecture de l'usage : service `AiUsage.summary(days)` (injectable partout ; l'adm
 - Rôles (`messages.pet_role`) : `icebreaker` (création du lien, question tirée du premier point commun de vision,
   sans IA), `nudge` (silence des personnes de 72 h, minuteur), `remark` (premier message du jour, mot doux / vanne,
   puis tous les 12 messages), `guard` (le ton monte : visible par la seule personne, `messages.visible_to`),
-  `event` (niveau, vies, photo à deux ; ni plafonné ni coupé).
+  `event` (niveau, vies, palier de série ; ni plafonné ni coupé).
 - Au plus 3 interventions par jour et par lien ; `PATCH /v1/links/:id/minimoas { muted }` coupe (un seul « coupé » suffit).
 - Accord par personne et par lien (`{ consent }`) ; l'IA ne lit que si les deux ont dit oui. Sinon : lignes de règle
   au rythme. Avec accord : un appel au petit modèle par déclencheur (12 messages, 72 h de silence, heuristique de ton
   locale), fenêtre des 8 derniers messages (280 caractères chacun), personnes anonymisées en A / B, réponse « RIEN »
   possible ; rien n'est conservé de la fenêtre. Les appels partent après la réponse (`Background`).
-- Santé du lien pour le bilan : `ChatMinimoas.linkHealth(userId)` (comptes par auteur, photos à deux, série, vies).
+- Santé du lien pour le bilan : `ChatMinimoas.linkHealth(userId)` (comptes par auteur, jours où les deux ont écrit, série, vies).
 
 ### Notifications (`src/modules/notifications`, `src/integrations/push`)
 `NOTIFIER.notify(userId, kind, vars)` ne lève jamais : réglage par type → une fois par jour (défi, sortie, série,
@@ -173,6 +173,20 @@ lien toutes les 5 min, sans contenu. Textes : `@blowy/content` (`v7/notification
 `data` de chaque push : `PushDataZ` (`kind`, `url`, `linkId`, `state` pour widgets et activités en direct).
 Appareils : `POST /v1/devices` à chaque ouverture (jeton Expo + fuseau), `POST /v1/devices/remove` à la déconnexion.
 Activités en direct : port `LIVE_ACTIVITIES` (`integrations/push/live-activity.ts`), sans envoi pour l'instant.
+
+### Série d'un lien (spéc §24 : plus de photo du jour)
+Règles dans `packages/domain/src/link.ts` (`applyLinkMessage`, `linkToday`, `lateSide`, `linkWeek`) : un jour compte
+quand chacun a écrit au moins un message (jour de Paris) ; la série avance au premier message du deuxième, retombe à 0
+au rattrapage d'un jour qui n'a pas été écrit par les deux ; le jour à deux rend une vie ; xp : 1 par message (plafond
+20 / jour / lien), 8 au premier message du jour de chacun, 12 au jour à deux (les points de l'ancienne photo). État
+tenu dans la ligne du lien (`recent_days` sur 14 jours, `milestones`, `best_streak`, `duo_days`, `last_duo_day_on`) :
+la vue d'un lien (`Link.today` : `mine`, `theirs`, `atStake`, `week` ; `Link.next`, `bestStreak`) ne coûte aucune
+requête de plus. `GET /v1/links/:id/memories` : étapes (rencontre, niveaux, paliers 3·7·14·30·60·100), chiffres et
+anciennes photos (`daily_photos`, lecture seule). Les routes `POST /v1/links/:id/photo/ticket` et `/photo` n'existent
+plus (404). Rappel du soir `your_turn` (`application/write-reminders.ts`, appelé par `LinkJobs` de 19 h à 22 h, Paris) :
+une notification par personne et par jour, qui résume ses liens où l'autre a écrit et pas elle ; chaque lien lu est
+marqué (`write_reminder_on`). Démo locale : `POST /dev/demo/links` ajoute à la dernière personne inscrite une série en
+jeu (Sasha), un lien en danger (Inès) et un lien fantôme (Yanis).
 
 ### Minuteur : `POST /internal/tick`
 Travaux listés dans `src/modules/tick/jobs.ts` (un par chantier, une ligne chacun), appelés dans l'ordre, chacun une
@@ -302,9 +316,9 @@ l'empreinte SHA-256 de chaque identifiant de connexion (Apple, Google ; l'e-mail
 Jetons APNs rangés à part (`live_activity_tokens`, jamais envoyés à Expo) : `POST /v1/devices` avec
 `kind: 'apns_live_activity'` et `liveActivity: { use: 'start' | 'update', activity, activityId, linkId? }`. Un jeton
 `update` remplace le précédent de la même activité ; il est oublié quand l'activité se termine ; un jeton refusé par APNs
-(410, `BadDeviceToken`, `DeviceTokenNotForTopic`) est désactivé. Événements : la **photo du jour** démarre par push chez
-l'autre (« Léa a posté », alerte obligatoire, `input-push-token: 1` ; pas de seconde notification iOS), se termine
-quand il poste ou à minuit ; le **défi du jour** n'est jamais démarré par push (l'app le démarre quand il est accepté) :
+(410, `BadDeviceToken`, `DeviceTokenNotForTopic`) est désactivé. Événements : la **série d'un lien** démarre par push avec le
+rappel du soir `your_turn` (« Série avec Léa », alerte obligatoire, `input-push-token: 1` ; pas de seconde notification
+iOS), se termine quand la personne écrit dans ce lien ou à minuit ; le **défi du jour** n'est jamais démarré par push (l'app le démarre quand il est accepté) :
 `update` sur « série en danger », `end` quand il est relevé ou à minuit. Adaptateur APNs : HTTP/2, JWT ES256 refait
 toutes les 40 min, `apns-push-type: liveactivity`, `apns-topic: <APPLE_BUNDLE_ID>.push-type.liveactivity`, priorité 10
 pour démarrer, terminer ou une série en danger, 5 pour une fin de journée. Sans clé : aucun envoi ; en mémoire : boîte

@@ -19,7 +19,8 @@ export const PET_ITEMS = Symbol('PET_ITEMS');
 export const LINKS = Symbol('LINKS');
 export const MESSAGES = Symbol('MESSAGES');
 export const LINK_READS = Symbol('LINK_READS');
-export const DAILY_PHOTOS = Symbol('DAILY_PHOTOS');
+/** Anciennes photos du jour des liens (lecture seule). */
+export const PAST_PHOTOS = Symbol('PAST_PHOTOS');
 export const ENCOUNTERS = Symbol('ENCOUNTERS');
 export const BLOCKS = Symbol('BLOCKS');
 export const REPORTS = Symbol('REPORTS');

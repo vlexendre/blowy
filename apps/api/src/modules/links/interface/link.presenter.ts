@@ -1,15 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Link, Message } from '@blowy/contract';
-import { canRevive, faceVisibility, levelProgress, type Mood, moodForLives } from '@blowy/domain';
+import { canRevive, dayOf, faceVisibility, levelProgress, linkToday, linkWeek, type Mood, moodForLives, nextLevel } from '@blowy/domain';
 import { MEDIA_URL_SECONDS, type Storage } from '../../../integrations/storage/ports';
 import { type Clock, todayOf } from '../../../shared/clock';
-import { CLOCK, DAILY_PHOTOS, LINK_READS, MESSAGES, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
+import { CLOCK, LINK_READS, MESSAGES, PAST_PHOTOS, PETS, PROFILES, STORAGE } from '../../../shared/tokens';
 import { toPerson } from '../../me/interface/person.presenter';
 import type { ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
 import type { PetsRepository } from '../../pets/ports';
-import type { DailyPhotosRepository, LinkReadsRepository, LinkRecord, MessageRecord, MessagesRepository } from '../ports';
+import { type LinkReadsRepository, type LinkRecord, type MessageRecord, type MessagesRepository, type PastPhotosRepository, sideOf } from '../ports';
 import { labels } from '@blowy/content';
 import { requestLocale } from '../../../shared/locale';
 
@@ -31,7 +31,7 @@ export class LinkPresenter {
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(MESSAGES) private readonly messages: MessagesRepository,
     @Inject(LINK_READS) private readonly reads: LinkReadsRepository,
-    @Inject(DAILY_PHOTOS) private readonly photos: DailyPhotosRepository,
+    @Inject(PAST_PHOTOS) private readonly photos: PastPhotosRepository,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
@@ -59,19 +59,22 @@ export class LinkPresenter {
         if (!other || !myPet || !theirPet) return null;
         const mood = linkMood(link);
         const face = faceVisibility(link.level);
-        const [latest, lastRead, todays, avatarUrl] = await Promise.all([
+        const [latest, lastRead, avatarUrl] = await Promise.all([
           this.messages.latest(link.id, viewerId),
           this.reads.lastReadAt(link.id, viewerId),
-          this.photos.forDay(link.id, today),
           face !== 'hidden' && other.avatarPath ? this.sign(other.avatarPath) : Promise.resolve(null),
         ]);
         const unread = await this.messages.countUnread(link.id, viewerId, lastRead);
-        const mine = todays.find((p) => p.userId === viewerId) ?? null;
-        const theirs = todays.find((p) => p.userId === otherId) ?? null;
-        const [myPhotoUrl, theirPhotoUrl] = await Promise.all([
-          mine ? this.sign(mine.mediaPath) : Promise.resolve(null),
-          mine && theirs ? this.sign(theirs.mediaPath) : Promise.resolve(null),
-        ]);
+        // La journée du lien, vue d'ici : qui a écrit, la série (et si elle est en jeu), la semaine (spéc §24).
+        const side = sideOf(link, viewerId);
+        const day = linkToday(link, side, today);
+        const week = linkWeek(link.recentDays, today, dayOf(new Date(link.createdAt))).map((d) => ({
+          day: d.day,
+          mine: side === 'a' ? d.a : d.b,
+          theirs: side === 'a' ? d.b : d.a,
+          when: d.when,
+          beforeLink: d.beforeLink,
+        }));
         return {
           id: link.id,
           other: toPerson(other, toPublicPet(theirPet, mood), face, avatarUrl),
@@ -81,11 +84,13 @@ export class LinkPresenter {
           level: link.level,
           xp: link.xp,
           levelRatio: levelProgress(link.xp).ratio,
-          streak: link.streak,
+          next: nextLevel(link.xp),
+          streak: day.streak,
+          bestStreak: Math.max(link.bestStreak, day.streak),
           canRevive: canRevive(link),
           unread,
           lastMessage: latest ? { preview: preview(latest), at: latest.createdAt } : null,
-          today: { day: today, mine: mine !== null, theirs: theirs !== null, myPhotoUrl, theirPhotoUrl },
+          today: { day: today, mine: day.mine, theirs: day.theirs, atStake: day.atStake, week, myPhotoUrl: null, theirPhotoUrl: null },
           createdAt: link.createdAt,
         };
       }),
@@ -94,8 +99,8 @@ export class LinkPresenter {
   }
 
   /**
-   * Messages vus par `viewerId`. Une photo de l'autre n'est visible que si tu as envoyé la tienne
-   * le même jour (même règle que `today.theirPhotoUrl`).
+   * Messages vus par `viewerId`. Une ancienne photo du jour de l'autre n'est visible que si tu avais envoyé la tienne
+   * le même jour (règle d'alors, gardée pour l'historique).
    */
   async messagesFor(link: LinkRecord, records: readonly MessageRecord[], viewerId: string): Promise<Message[]> {
     const hasPhotos = records.some((m) => m.mediaPath !== null);

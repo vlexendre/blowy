@@ -107,7 +107,7 @@ const FR: ChatLines = {
   health: {
     new: 'Avec {name} : ça vient de commencer, tout est possible.',
     quiet: 'Avec {name} : une semaine calme, un mot suffira pour relancer.',
-    photos: 'Avec {name} : vos photos du jour font plaisir à voir.',
+    together: 'Avec {name} : vous vous écrivez presque tous les jours. Ça se voit.',
     lively: 'Avec {name} : vous vous parlez beaucoup, et ça se sent.',
     one_sided: 'Avec {name} : tu donnes le rythme, c’est précieux.',
     balanced: 'Avec {name} : vous vous répondez bien, l’un comme l’autre.',

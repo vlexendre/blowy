@@ -8,10 +8,9 @@ import { LinkSession } from './application/link-session';
 import { ListLinks } from './application/list-links.usecase';
 import { ListMessages } from './application/list-messages.usecase';
 import { MarkRead } from './application/mark-read.usecase';
-import { PhotoTicket } from './application/photo-ticket.usecase';
 import { ReviveLink } from './application/revive-link.usecase';
 import { SendMessage } from './application/send-message.usecase';
-import { SendPhoto } from './application/send-photo.usecase';
+import { WriteReminders } from './application/write-reminders';
 import { LinkPresenter } from './interface/link.presenter';
 import { LinksController } from './interface/links.controller';
 import { ChatMinimoas } from './minimoas/chat-minimoas';
@@ -32,11 +31,10 @@ import { LinkMinimoasController } from './minimoas/link-minimoas.controller';
     SendMessage,
     MarkRead,
     ReviveLink,
-    PhotoTicket,
-    SendPhoto,
     GetMemories,
     ChatMinimoas,
     LinkJobs,
+    WriteReminders,
   ],
   exports: [CreateLink, LinkPresenter, SendMessage, ChatMinimoas, LinkJobs],
 })

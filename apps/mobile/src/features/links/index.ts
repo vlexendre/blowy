@@ -2,7 +2,7 @@ import type { Link, LinkAction, Message, MessagesPage, SendMessageBody } from '@
 import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { keys, useApi, usePorts } from '@/core';
+import { keys, useApi } from '@/core';
 
 export function useLinks() {
   const api = useApi();
@@ -52,6 +52,8 @@ function applyAction(qc: QueryClient, id: string, action: LinkAction): void {
     return { ...data, pages: [{ ...first, messages: [...first.messages, ...fresh] }, ...rest] };
   });
   void qc.invalidateQueries({ queryKey: keys.pet });
+  // Étapes du lien (niveau passé, palier de série) : relues au prochain affichage de « Le lien ».
+  void qc.invalidateQueries({ queryKey: keys.memories(id) });
 }
 
 export function useSendMessage(id: string) {
@@ -67,24 +69,6 @@ export function useRevive(id: string) {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({ mutationFn: () => api.links.revive(id), onSuccess: (action) => applyAction(qc, id, action) });
-}
-
-/** Photo du jour : choisir, envoyer, confirmer. Rend false si la personne annule. */
-export function useSendPhoto(id: string) {
-  const api = useApi();
-  const { media } = usePorts();
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (source: 'camera' | 'library') => {
-      const image = await media.pick(source);
-      if (!image) return false;
-      const ticket = await api.links.photoTicket(id, image.contentType);
-      await media.upload(ticket, image);
-      applyAction(qc, id, await api.links.sendPhoto(id, ticket.path));
-      void qc.invalidateQueries({ queryKey: keys.memories(id) });
-      return true;
-    },
-  });
 }
 
 export function useMemories(id: string) {
@@ -117,8 +101,8 @@ export function useArchiveLink() {
 /** Nombre total de messages non lus (pastille de l'onglet Chats). */
 export const totalUnread = (links: Link[] | undefined): number => (links ?? []).reduce((n, l) => n + l.unread, 0);
 
-export { chatDayLabel, isNewLink, shortDay, sortLinks, timeLabel, waitingForMyPhoto, weekStrip } from './format';
-export { ConfirmSheet, PhotoSourceSheet, ReportSheet } from './sheets';
+export { chatDayLabel, isMyTurn, isNewLink, linkDayState, type LinkDayState, shortDay, sortLinks, streaksWaitingOnMe, timeLabel, weekStrip } from './format';
+export { ConfirmSheet, ReportSheet } from './sheets';
 export { useBackToLink } from './navigation';
 export { useLevelUps } from './levels';
 

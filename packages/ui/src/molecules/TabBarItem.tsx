@@ -75,7 +75,7 @@ function Face({ glyph, label, ink, active }: { glyph: GlyphName; label: string; 
   return (
     <View style={styles.face}>
       <NavIcon glyph={glyph} color={ink} active={active} />
-      <Text variant="bodyHeavy" size={10} color={ink} numberOfLines={1} style={styles.label}>
+      <Text variant="bodyHeavy" size={10} tabLabel color={ink} numberOfLines={1} style={styles.label}>
         {label}
       </Text>
     </View>

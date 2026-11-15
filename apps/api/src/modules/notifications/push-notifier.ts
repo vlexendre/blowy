@@ -32,17 +32,22 @@ type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never;
 const kindsMatch: Same<NotificationKind, NotificationKindKey> = true;
 void kindsMatch;
 
-/** Types liés à un lien : « une fois par jour » et délai entre messages se comptent par lien. */
-const PER_LINK: readonly NotificationKind[] = ['message', 'daily_photo', 'link_in_danger'];
+/**
+ * Types liés à un lien : « une fois par jour » et délai entre messages se comptent par lien. `your_turn` n'en fait pas
+ * partie : un seul rappel par personne et par jour, qui résume tous ses liens.
+ */
+const PER_LINK: readonly NotificationKind[] = ['message', 'link_in_danger'];
 
 /** Lien profond (routes expo-router de l'app) ; `vars.path` (commençant par « / ») le remplace. */
 export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, string>>): string {
   if (vars.path?.startsWith('/')) return `blowy:/${vars.path}`;
   switch (kind) {
     case 'message':
-    case 'daily_photo':
     case 'link_in_danger':
       return vars.linkId ? `blowy://link/${vars.linkId}` : 'blowy://chats';
+    case 'your_turn':
+      // Plusieurs liens attendent : la liste des chats ; un seul : son chat.
+      return vars.linkId && !(Number(vars.more) > 0) ? `blowy://link/${vars.linkId}` : 'blowy://chats';
     case 'new_encounter':
       return vars.linkId ? `blowy://link/${vars.linkId}` : 'blowy://rencontres';
     case 'waved':
@@ -69,8 +74,8 @@ export function widgetState(kind: NotificationKind, vars: Readonly<Record<string
     case 'daily_challenge':
     case 'streak_in_danger':
       return { challengePending: true, endsAt, ...(num(vars.count) !== undefined ? { streak: num(vars.count) } : {}) };
-    case 'daily_photo':
-      return { photoFrom: vars.name ?? '', endsAt };
+    case 'your_turn':
+      return { writeTo: vars.name ?? '', endsAt, ...(num(vars.count) !== undefined ? { streak: num(vars.count) } : {}) };
     case 'link_in_danger':
       return num(vars.lives) !== undefined ? { livesLeft: num(vars.lives) } : undefined;
     default:
@@ -161,10 +166,13 @@ export class PushNotifier implements Notifier {
     const endsAt = nextLocalHour(now, settings.timeZone, 0).toISOString();
     const state = widgetState(kind, vars, endsAt);
     const data: PushData = { kind, url: deepLink(kind, vars), ...(vars.linkId ? { linkId: vars.linkId } : {}), ...(state ? { state } : {}) };
-    // Activités en direct (docs/WIDGETS.md) : seule la photo du jour démarre par push ; le défi du jour n'est jamais
-    // démarré ici (l'app le démarre quand il est accepté), la série en danger met à jour son activité.
+    // Activités en direct (docs/WIDGETS.md) : seul « à toi d'écrire » démarre par push (série du lien mis en avant) ;
+    // le défi du jour n'est jamais démarré ici (l'app le démarre quand il est accepté), la série en danger met à jour
+    // son activité.
     let liveStarted = false;
-    if (kind === 'daily_photo' && vars.linkId) liveStarted = await this.live.startPhoto(userId, { linkId: vars.linkId, otherName: vars.name ?? '', alert: text });
+    if (kind === 'your_turn' && vars.linkId) {
+      liveStarted = await this.live.startLinkStreak(userId, { linkId: vars.linkId, otherName: vars.name ?? '', streak: Number(vars.count ?? 0) || 0, alert: text });
+    }
     if (kind === 'streak_in_danger') await this.live.updateChallenge(userId, { streak: Number(vars.streak ?? vars.count ?? 0) || 0, title: null });
     // Activité démarrée avec son alerte : pas de seconde notification sur iOS.
     const targets = liveStarted ? devices.filter((d) => d.platform !== 'ios') : devices;

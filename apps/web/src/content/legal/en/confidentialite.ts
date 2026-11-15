@@ -126,7 +126,7 @@ export const confidentialite: LegalPage = {
     },
     {
       ul: [
-        '**Each person’s agreement:** we ask both of you, the first time you open the chat. If one of you says no, no one reads: the minimoas only react to the rhythm of the connection (silences, photos, challenges).',
+        '**Each person’s agreement:** we ask both of you, the first time you open the chat. If one of you says no, no one reads: the minimoas only react to the rhythm of the connection (silences, streaks, challenges).',
         '**Withdrawal:** at any time, in the connection’s options or in **Me**. Reading stops immediately for that connection.',
         '**How:** no analysis on every message. When something triggers it (a silence, a certain number of messages), a short window of the latest messages is sent to our AI provider, which suggests the minimoa’s reaction. At most 3 interventions per day per connection, and you can turn them off for a connection.',
         '**What is kept:** nothing from the analysis. Only the minimoa’s reaction appears in the chat, as a message.',
@@ -134,11 +134,11 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Photos of the day and memories' },
+    { h3: 'A connection’s streak and milestones' },
     {
       ul: [
-        '**Data:** the photo of the day you post in a connection, and what you save in your memories.',
-        '**Purpose:** share it with the other person in the connection and keep it in your memories.',
+        '**Data:** the days on which each of you wrote in the connection (not the content of the messages) and the connection’s milestones (meeting, levels reached, streak records). For connections from before 15 November 2026, the photos you had sent each other there, which stay in your memories; we no longer receive new ones.',
+        '**Purpose:** run the connection’s streak (the days in a row you both write), its lives and levels, and show you your memories.',
         '**Legal basis:** performance of the contract.',
         '**Retention:** as long as the connection exists (same rules as messages).',
         '**Access:** you and the other person in the connection. Photos are stored in a private space, reachable only through temporary links.',
@@ -149,7 +149,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** your phone’s technical notification token, your settings for each notification type, the time you chose for the daily challenge.',
-        '**Purpose:** let you know (daily challenge, new encounter, message, connection or streak at risk, proof requested, weekly review, end-of-trial reminder). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. On iPhone, the widget and Live Activities use the same data.',
+        '**Purpose:** let you know (daily challenge, new encounter, message, “your turn to write” in the evening, connection or streak at risk, proof requested, weekly review, end-of-trial reminder). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. On iPhone, the widget and Live Activities use the same data.',
         '**Legal basis:** your consent, given through your phone’s permission. You withdraw it in your phone settings or type by type in the app.',
         '**Retention:** until you turn off notifications or delete your account.',
         '**Access:** our notification delivery provider, and Apple or Google, which deliver them to your phone.',
@@ -257,9 +257,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**People your minimoa introduces you to** see your first name, your minimoa, its style, what you have in common and one difference, and your approximate position on the map (unless you are in discreet mode).',
-        '**Your connections** also see your messages, your photos of the day and your memories.',
+        '**Your connections** also see your messages, your streak, your connection’s milestones and your earlier photos, if any.',
         '**Visitors to your “3 words” page or your invitation** see your first name and your minimoa.',
-        'No one sees your email address, your date of birth, your exact position, your proof photos, or your vision test answers.',
+        'No one sees your email address, your date of birth, your exact position, or your vision test answers. Your proof photos are checked by an AI: no human sees them, and they are deleted within 24 hours (unless you keep them in your private memories).',
       ],
     },
 
@@ -299,7 +299,7 @@ export const confidentialite: LegalPage = {
           ['Location', 'Only the last rounded position and the approximate home area, replaced at each update.'],
           ['Proof photos', 'Within 24 hours, unless you keep them in your private memories.'],
           ['Message reading by the AI', 'Nothing is kept after the analysis.'],
-          ['Messages, photos of the day, memories', 'As long as the connection exists.'],
+          ['A connection’s messages, streak, milestones and earlier photos', 'As long as the connection exists.'],
           ['Purchases', 'Status as long as the account exists; transaction references up to 10 years (accounting obligations).'],
           ['Reports and moderation decisions', '1 year after the case is closed, longer if legal proceedings require it.'],
           ['Permanent ban', 'A technical identifier of the Apple or Google account, for 3 years, to prevent re-registration.'],

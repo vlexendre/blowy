@@ -5,9 +5,9 @@
 import type { ApiClient } from '@blowy/api-client';
 import type { Link } from '@blowy/contract';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { type TestWorld, errorCode, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, errorCode, onboardBody, seedPastPhoto, startWorld } from './helpers';
 
-describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
+describe('parcours : rencontre, chat, vies, série de la conversation, niveaux', () => {
   let world: TestWorld;
   let alice: { id: string; api: ApiClient };
   let bob: { id: string; api: ApiClient };
@@ -96,7 +96,9 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
   it("plafonne l'expérience des messages et pagine par 40", async () => {
     for (let i = 0; i < 35; i++) await alice.api.links.send(link.id, { body: `message ${i}` });
     const l = await alice.api.links.get(link.id);
-    expect(l.xp).toBe(20);
+    // 20 xp de messages (plafond du jour) + 8 et 8 pour le premier message de chacun + 12 pour le jour à deux.
+    expect(l.xp).toBe(48);
+    expect(l).toMatchObject({ level: 2, streak: 1, bestStreak: 1, today: { mine: true, theirs: true, atStake: false } });
     const first = await alice.api.links.messages(link.id);
     expect(first.messages).toHaveLength(40);
     expect(first.nextBefore).not.toBeNull();
@@ -118,45 +120,77 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     expect(lines).toHaveLength(1);
   });
 
-  it('photo du jour : visible chez l’autre seulement à deux, rend une vie, fait monter de niveau', async () => {
-    const ticket = await alice.api.links.photoTicket(link.id, 'image/jpeg');
-    expect(ticket.path).toMatch(new RegExp(`^links/${link.id}/${alice.id}/2026-11-14-`));
-    expect(await errorCode(alice.api.links.sendPhoto(link.id, ticket.path))).toBe('invalid'); // pas encore envoyée
-    await upload(ticket.uploadUrl);
-    const mine = await alice.api.links.sendPhoto(link.id, ticket.path);
-    expect(mine.link.today).toMatchObject({ mine: true, theirs: false });
-    expect(mine.link.today.myPhotoUrl).toBeTruthy();
-    expect(await errorCode(alice.api.links.sendPhoto(link.id, ticket.path))).toBe('already_done');
+  it('série de la conversation : un jour compte quand les deux ont écrit, et rend une vie', async () => {
+    // Samedi 14 novembre : Alice écrit seule, la série (tombée pendant le silence) n'avance pas.
+    const solo = await alice.api.links.send(link.id, { body: 'tu es là ?' });
+    expect(solo.link).toMatchObject({ lives: 5, streak: 0, bestStreak: 1 });
+    expect(solo.link.today).toMatchObject({ day: '2026-11-14', mine: true, theirs: false, atStake: false });
+    expect((await bob.api.links.get(link.id)).today).toMatchObject({ mine: false, theirs: true });
 
-    const bobBefore = await bob.api.links.get(link.id);
-    expect(bobBefore.today).toMatchObject({ mine: false, theirs: true, theirPhotoUrl: null });
-    const hidden = (await bob.api.links.messages(link.id)).messages.find((m) => m.kind === 'photo');
-    expect(hidden).toMatchObject({ author: 'other', mediaUrl: null });
+    const duo = await bob.api.links.send(link.id, { body: 'oui !' });
+    expect(duo.link).toMatchObject({ lives: 6, streak: 1, bestStreak: 1 });
+    expect(duo.link.today).toMatchObject({ mine: true, theirs: true, atStake: false });
+    // La vie rendue est dite par un minimoa (comme le faisait la photo à deux).
+    expect(duo.messages.some((m) => m.author === 'my_pet' && /6\svies/.test(m.body ?? ''))).toBe(true);
+    // La semaine, du lundi 9 au dimanche 15 : le lien est né mercredi 11, écrit à deux ce jour-là et aujourd'hui.
+    expect(duo.link.today.week.map((d) => `${d.day.slice(8)}:${d.when}:${d.beforeLink ? 'avant' : d.mine && d.theirs ? 'deux' : d.mine || d.theirs ? 'un' : '-'}`)).toEqual([
+      '09:past:avant',
+      '10:past:avant',
+      '11:past:deux',
+      '12:past:-',
+      '13:past:-',
+      '14:today:deux',
+      '15:future:-',
+    ]);
+    // Le niveau suivant et ce qu'il manque : ce que l'écran « Aujourd'hui » montre.
+    expect(duo.link.next).toMatchObject({ level: 3, key: 'emmenagent' });
 
-    const bobTicket = await bob.api.links.photoTicket(link.id, 'image/png');
-    await upload(bobTicket.uploadUrl, 'image/png');
-    const duo = await bob.api.links.sendPhoto(link.id, bobTicket.path);
-    expect(duo.link).toMatchObject({ lives: 6, streak: 1, level: 2 });
-    expect(duo.link.today.theirPhotoUrl).toBeTruthy();
-    expect(duo.messages.some((m) => m.kind === 'event' && m.body?.includes('Ils jouent ensemble'))).toBe(true);
-    expect(duo.messages.filter((m) => m.author === 'other_pet' || m.author === 'my_pet').length).toBeGreaterThanOrEqual(2);
-
-    const aliceView = await alice.api.links.get(link.id);
-    expect(aliceView.today.theirPhotoUrl).toBeTruthy();
-    const photoRes = await fetch(aliceView.today.theirPhotoUrl ?? '');
-    expect(photoRes.status).toBe(200);
-    expect(photoRes.headers.get('content-type')).toBe('image/png');
-    const shown = (await bob.api.links.messages(link.id)).messages.find((m) => m.kind === 'photo' && m.author === 'other');
-    expect(shown?.mediaUrl).toBeTruthy();
+    // Dimanche : la série est en jeu jusqu'à minuit.
+    world.clock.advanceDays(1);
+    const sunday = await alice.api.links.get(link.id);
+    expect(sunday).toMatchObject({ streak: 1, today: { day: '2026-11-15', mine: false, theirs: false, atStake: true } });
+    await bob.api.links.send(link.id, { body: 'bon dimanche' });
+    expect((await alice.api.links.get(link.id)).today).toMatchObject({ mine: false, theirs: true, atStake: true });
+    const kept = await alice.api.links.send(link.id, { body: 'à toi aussi' });
+    expect(kept.link).toMatchObject({ streak: 2, bestStreak: 2, today: { atStake: false } });
   });
 
-  it('souvenirs : les jours à deux et les statistiques', async () => {
+  it('les anciennes photos du jour restent dans les souvenirs (celle de l’autre seulement si vous aviez posté tous les deux)', async () => {
+    await seedPastPhoto(world, link.id, alice.id, '2026-11-12');
+    await seedPastPhoto(world, link.id, bob.id, '2026-11-12');
+    await seedPastPhoto(world, link.id, bob.id, '2026-11-13');
     const memories = await alice.api.links.memories(link.id);
-    expect(memories.days).toHaveLength(1);
-    expect(memories.days[0]).toMatchObject({ day: '2026-11-14' });
-    expect(memories.days[0]?.myPhotoUrl).toBeTruthy();
-    expect(memories.days[0]?.theirPhotoUrl).toBeTruthy();
-    expect(memories.stats).toMatchObject({ photos: 2, bestStreak: 1, daysTogether: 4, messages: 37 });
+    expect(memories.photos.map((d) => d.day)).toEqual(['2026-11-12']);
+    expect(memories.photos[0]?.theirPhotoUrl).toBeTruthy();
+    expect((await fetch(memories.photos[0]?.myPhotoUrl ?? '')).status).toBe(200);
+    const bobs = await bob.api.links.memories(link.id);
+    expect(bobs.photos.map((d) => [d.day, d.theirPhotoUrl !== null])).toEqual([
+      ['2026-11-13', false],
+      ['2026-11-12', true],
+    ]);
+    // Dans le chat, même règle qu'avant : la photo de Bob du 13 reste cachée pour Alice.
+    const photos = (await alice.api.links.messages(link.id)).messages.filter((m) => m.kind === 'photo' && m.author === 'other');
+    expect(photos.map((m) => m.mediaUrl !== null).sort()).toEqual([false, true]);
+  });
+
+  it('souvenirs : les étapes du lien et les chiffres', async () => {
+    const memories = await alice.api.links.memories(link.id);
+    expect(memories.milestones).toEqual([
+      { kind: 'level', value: 2, on: '2026-11-11' },
+      { kind: 'met', value: 0, on: '2026-11-11' },
+    ]);
+    expect(memories.stats).toEqual({ messages: 41, daysTogether: 5, duoDays: 3, bestStreak: 2, photos: 3 });
+  });
+
+  it('plus de photo du jour : les anciennes routes n’existent plus', async () => {
+    for (const path of [`/v1/links/${link.id}/photo/ticket`, `/v1/links/${link.id}/photo`]) {
+      const res = await fetch(`${world.baseUrl}${path}`, {
+        method: 'POST',
+        headers: { authorization: `Bearer test:${alice.id}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ contentType: 'image/jpeg', path: 'x' }),
+      });
+      expect(res.status).toBe(404);
+    }
   });
 
   it('devient fantôme, se ranime une fois, pas deux', async () => {
@@ -166,7 +200,7 @@ describe('parcours : rencontre, chat, vies, photo du jour, niveaux', () => {
     expect(await errorCode(alice.api.links.send(link.id, { body: 'tu es là ?' }))).toBe('link_not_active');
 
     const revived = await bob.api.links.revive(link.id);
-    expect(revived.link).toMatchObject({ status: 'active', lives: 3, canRevive: false });
+    expect(revived.link).toMatchObject({ status: 'active', lives: 3, canRevive: false, streak: 0, bestStreak: 2 });
     expect(revived.messages.map((m) => m.author)).toEqual(['system', 'my_pet', 'other_pet']);
 
     world.clock.advanceDays(10);

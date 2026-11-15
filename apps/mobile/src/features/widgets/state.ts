@@ -7,7 +7,7 @@
  * déroule sans rien recalculer.
  */
 import type { Link, LiveActivityAttributes, LiveActivityKind, LiveActivityState, Pet, RitualsToday, Streak } from '@blowy/contract';
-import { APP_TIMEZONE, dayOf, decayNeeds, nextLocalHour, shapeOf } from '@blowy/domain';
+import { APP_TIMEZONE, dayOf, decayNeeds, isWriteReminderHour, nextLocalHour, parisHourOf, shapeOf } from '@blowy/domain';
 
 import type { WidgetFrame, WidgetSnapshot } from '@/core/widgets';
 
@@ -108,22 +108,30 @@ export function challengeActivity(i: ActivityInputs): DesiredActivity | null {
   };
 }
 
-/** « Léa a posté, à toi » : l'autre a envoyé sa photo du jour, pas toi. Une seule à la fois (la première trouvée). */
-export function photoActivity(i: ActivityInputs): DesiredActivity | null {
+/**
+ * Série d'un lien : « Léa t'a écrit, à toi avant minuit ». Le soir seulement (mêmes heures que le rappel du serveur,
+ * `WRITE_REMINDER_HOURS`), quand l'autre a écrit aujourd'hui et pas toi. Une seule à la fois : la plus longue série en
+ * jeu d'abord.
+ */
+export function linkActivity(i: ActivityInputs): DesiredActivity | null {
   const day = dayOf(i.now);
-  const link = i.links.find((l) => l.status === 'active' && l.today.day === day && l.today.theirs && !l.today.mine);
+  if (!isWriteReminderHour(parisHourOf(i.now))) return null;
+  const waiting = i.links
+    .filter((l) => l.status === 'active' && l.today.day === day && l.today.theirs && !l.today.mine)
+    .sort((a, b) => b.streak - a.streak);
+  const link = waiting[0];
   if (!link) return null;
   return {
-    key: `photo:${link.id}:${day}`,
-    kind: 'photo',
+    key: `link:${link.id}:${day}`,
+    kind: 'link',
     attributes: {
-      kind: 'photo',
+      kind: 'link',
       pet: { name: i.pet.name, species: i.pet.species },
       startedAt: nowS(i.now),
       url: linkUrl(link.id),
       otherName: link.other.displayName,
     },
-    state: { endsAt: endOfDay(i.now), streak: 0, title: null, done: false },
+    state: { endsAt: endOfDay(i.now), streak: link.streak, title: null, done: false },
   };
 }
 
@@ -146,7 +154,7 @@ export type ActivityDecision =
 
 /**
  * challenge : fait → état final « Défi relevé » laissé 15 min ; jour passé → retirée ; sinon mise à jour (série, texte).
- * photo : ta photo est partie → « Photo envoyée » 10 min ; jour passé ou lien sans photo de l'autre → retirée.
+ * link : tu as écrit → « C'est fait » (série à jour) 10 min ; jour passé ou plus personne n'attend → retirée.
  * outing : terminée à son heure de fin.
  */
 export function decideRunning(
@@ -166,13 +174,13 @@ export function decideRunning(
       const next = { ...state, streak: desired.state.streak, title: desired.state.title };
       return next.streak !== state.streak || next.title !== state.title ? { action: 'update', state: next } : { action: 'keep' };
     }
-    case 'photo': {
+    case 'link': {
       if (dayOver) return { action: 'end', state, dismissAfterSeconds: 0 };
       const linkId = attributes.url.split('/').pop();
       const link = i.links.find((l) => l.id === linkId);
       if (!link) return { action: 'keep' };
-      if (link.today.mine) return { action: 'end', state: { ...state, done: true }, dismissAfterSeconds: 10 * 60 };
-      if (!link.today.theirs) return { action: 'end', state, dismissAfterSeconds: 0 };
+      if (link.today.mine) return { action: 'end', state: { ...state, done: true, streak: link.streak }, dismissAfterSeconds: 10 * 60 };
+      if (!link.today.theirs || link.status !== 'active') return { action: 'end', state, dismissAfterSeconds: 0 };
       return { action: 'keep' };
     }
     case 'outing':

@@ -92,12 +92,12 @@ export function axisMoves(deltas: Partial<Record<VisionAxis, number>> | null): A
   });
 }
 
-export const LINK_NOTES = ['photo_streak', 'close', 'steady', 'growing'] as const;
+export const LINK_NOTES = ['streak', 'close', 'steady', 'growing'] as const;
 export type LinkNote = (typeof LINK_NOTES)[number];
 
 /** Un mot par lien actif, toujours sur ce qui va bien. */
 export function linkNote(link: { streak: number; level: number; lives: number }): LinkNote {
-  if (link.streak >= 3) return 'photo_streak';
+  if (link.streak >= 3) return 'streak';
   if (link.level >= 4) return 'close';
   if (link.lives >= 6) return 'steady';
   return 'growing';

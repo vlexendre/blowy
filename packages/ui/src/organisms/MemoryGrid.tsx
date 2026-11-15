@@ -42,7 +42,7 @@ function Half({ uri, blurred }: { uri: string | null; blurred?: boolean }) {
   );
 }
 
-/** Souvenirs d'un lien : chiffres clés et grille des photos du jour à deux. */
+/** Photos d'un lien (celles d'avant la spéc §24), en grille ; chiffres clés en option. */
 export function MemoryGrid({ days, stats, statLabels, dayLabel, blurred, columns = 4, onDayPress, emptyText, animateKey }: MemoryGridProps) {
   const deal = useFirstTime(animateKey ? `memories:${animateKey}` : undefined) && !!animateKey;
   const rows: (MemoryDayLook | null)[][] = [];

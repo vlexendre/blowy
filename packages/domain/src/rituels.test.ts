@@ -319,7 +319,7 @@ describe('bilan de la semaine', () => {
     expect(noticedMove(null)).toBeNull();
   });
   it('un mot par lien, toujours sur ce qui va bien', () => {
-    expect(linkNote({ streak: 4, level: 1, lives: 2 })).toBe('photo_streak');
+    expect(linkNote({ streak: 4, level: 1, lives: 2 })).toBe('streak');
     expect(linkNote({ streak: 0, level: 5, lives: 2 })).toBe('close');
     expect(linkNote({ streak: 0, level: 1, lives: 7 })).toBe('steady');
     expect(linkNote({ streak: 0, level: 1, lives: 3 })).toBe('growing');

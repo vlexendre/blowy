@@ -95,7 +95,7 @@ export interface PushReceiptsRepository {
 
 // ── Jetons APNs des activités en direct (rangés à part des jetons Expo) ────
 export type LiveActivityUse = 'start' | 'update';
-export type LiveActivityKindKey = 'challenge' | 'photo' | 'outing';
+export type LiveActivityKindKey = 'challenge' | 'link' | 'outing';
 
 export interface LiveActivityTokenRecord {
   token: string;
@@ -104,7 +104,7 @@ export interface LiveActivityTokenRecord {
   use: LiveActivityUse;
   activity: LiveActivityKindKey | null;
   activityId: string | null;
-  /** Photo du jour : lien concerné, s'il est connu. */
+  /** Série d'un lien (`link`) : lien concerné, s'il est connu. */
   linkId: string | null;
   /** Fin de l'activité (minuit local) : le minuteur la termine et oublie le jeton. Null pour un jeton start. */
   endsAt: string | null;

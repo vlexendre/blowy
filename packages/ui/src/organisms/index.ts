@@ -15,7 +15,6 @@ export { LevelHero, type LevelHeroProps } from './LevelHero';
 export { LevelLadder, type LevelLadderProps } from './LevelLadder';
 export { LinkRow, type LinkRowProps } from './LinkRow';
 export { LivesPanel, type LivesPanelProps, type WeekDayState } from './LivesPanel';
-export { MemoriesPanel, type MemoriesPanelProps } from './MemoriesPanel';
 export { MemoryGrid, type MemoryGridProps } from './MemoryGrid';
 export { NudgeBanner, type NudgeBannerProps } from './NudgeBanner';
 export { PetHero, type PetHeroProps } from './PetHero';
@@ -31,7 +30,7 @@ export { type QuizChoice, QuizPreview, type QuizPreviewProps, QuizStep, type Qui
 export { SettingsSection, type SettingsSectionProps } from './SettingsSection';
 export { SpeciesPicker, type SpeciesPickerProps } from './SpeciesPicker';
 export { SuggestionCard, type SuggestionCardProps } from './SuggestionCard';
-export { TodayCard, type TodayCardLabels, type TodayCardProps } from './TodayCard';
+export { LinkTodayHero, type LinkTodayHeroProps, type LinkTodaySide } from './LinkTodayHero';
 export { WordsShareCard, type WordsShareCardProps } from './WordsShareCard';
 export { CareBar, type CareBarProps } from './CareBar';
 export { NeedsPanel, type NeedsPanelProps } from './NeedsPanel';

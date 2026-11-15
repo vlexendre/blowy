@@ -43,9 +43,12 @@ export class MemoryDb {
   readonly petItems: PetItemRow[] = [];
   readonly wordVotes: WordVoteRow[] = [];
   readonly links = new Map<string, LinkRecord>();
+  /** links.write_reminder_on : dernier jour où le lien est passé au rappel « à toi d'écrire ». */
+  readonly linkWriteReminders = new Map<string, string>();
   readonly messages: MessageRecord[] = [];
   /** clé `${linkId}:${userId}` → last_read_at */
   readonly linkReads = new Map<string, string>();
+  /** Anciennes photos du jour (lecture seule depuis la spéc §24 ; remplies par les tests et la démo seulement). */
   readonly dailyPhotos: DailyPhotoRecord[] = [];
   readonly encounters = new Map<string, EncounterRecord>();
   /** Rencontres proposées, clé `${day}:${userId}`. */
@@ -124,7 +127,10 @@ export class MemoryDb {
     removeWhere(this.wordVotes, (v) => v.targetUser === userId);
 
     const linkIds = new Set([...this.links.values()].filter((l) => l.userA === userId || l.userB === userId).map((l) => l.id));
-    for (const id of linkIds) this.links.delete(id);
+    for (const id of linkIds) {
+      this.links.delete(id);
+      this.linkWriteReminders.delete(id);
+    }
     removeWhere(this.messages, (m) => linkIds.has(m.linkId));
     for (const m of this.messages) if (m.authorId === userId) m.authorId = null;
     for (const key of [...this.linkReads.keys()]) {

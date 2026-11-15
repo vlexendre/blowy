@@ -11,6 +11,7 @@ import {
   Banner,
   Glyph,
   EntryCard,
+  EntryGroup,
   Header,
   Icon,
   KeyboardPeek,
@@ -181,32 +182,29 @@ export default function CharacterScreen() {
             />
           </Appear>
 
-          <Appear once="character:habits" delay={200}>
-            <EntryCard
-              left={<Glyph name="camera" size={26} color={color.accent} />}
-              title={c.habits}
-              text={c.habitsText(hs.length, bestHabit)}
-              chevron
-              onPress={() => router.push('/pet/habitudes')}
-            />
-          </Appear>
-          <Appear once="character:streak" delay={230}>
-            <EntryCard
-              left={<Icon name="flamme" size={34} />}
-              title={c.streak}
-              text={s ? c.streakText(s.current, s.best) : undefined}
-              chevron
-              onPress={() => router.push('/pet/serie')}
-            />
-          </Appear>
-          <Appear once="character:evolution" delay={260}>
-            <EntryCard left={<Icon name="etoiles" size={34} />} title={c.evolution} text={c.evolutionText} chevron onPress={() => router.push('/pet/evolution')} />
-          </Appear>
-          <Appear once="character:reviews" delay={290}>
-            <EntryCard left={<Icon name="cadeau" size={34} />} title={c.reviews} text={c.reviewsText} chevron onPress={() => router.push('/pet/bilans')} />
-          </Appear>
-          <Appear once="character:memories" delay={320}>
-            <EntryCard left={<Icon name="coeurs" size={34} />} title={c.memories} text={c.memoriesText} chevron onPress={() => router.push('/pet/souvenirs')} />
+          {/* Tout ce qui le fait avancer, réuni dans une carte. */}
+          <Appear once="character:entries" delay={200}>
+            <EntryGroup>
+              <EntryCard
+                inGroup
+                left={<Glyph name="camera" size={26} color={color.accent} />}
+                title={c.habits}
+                text={c.habitsText(hs.length, bestHabit)}
+                chevron
+                onPress={() => router.push('/pet/habitudes')}
+              />
+              <EntryCard
+                inGroup
+                left={<Icon name="flamme" size={34} />}
+                title={c.streak}
+                text={s ? c.streakText(s.current, s.best) : undefined}
+                chevron
+                onPress={() => router.push('/pet/serie')}
+              />
+              <EntryCard inGroup left={<Icon name="etoiles" size={34} />} title={c.evolution} text={c.evolutionText} chevron onPress={() => router.push('/pet/evolution')} />
+              <EntryCard inGroup left={<Icon name="cadeau" size={34} />} title={c.reviews} text={c.reviewsText} chevron onPress={() => router.push('/pet/bilans')} />
+              <EntryCard inGroup left={<Icon name="coeurs" size={34} />} title={c.memories} text={c.memoriesText} chevron onPress={() => router.push('/pet/souvenirs')} />
+            </EntryGroup>
           </Appear>
         </Stack>
         <UnlockCelebration />

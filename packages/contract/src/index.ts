@@ -2,7 +2,7 @@
  * Contrat de l'API Blowy (REST /v1). Source de vérité partagée par l'API, l'app et le site.
  * Tout ce qui traverse le réseau est décrit ici en Zod ; les types en sont dérivés.
  */
-import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
+import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LEVEL_KEYS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
 import { z } from 'zod';
 import { IdentityZ, LatLngZ, LookingForZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
 import { PetRoleZ } from './v7/plateforme';
@@ -144,14 +144,39 @@ export const PersonZ = z.object({
 });
 export type Person = z.infer<typeof PersonZ>;
 
-export const TodayZ = z.object({
+/** Un jour de la semaine en cours d'un lien, vu par toi : qui a écrit. */
+export const LinkWeekDayZ = z.object({
   day: DayStr,
   mine: z.boolean(),
   theirs: z.boolean(),
-  myPhotoUrl: z.string().nullable(),
-  /** Visible seulement quand les deux ont envoyé la leur. */
-  theirPhotoUrl: z.string().nullable(),
+  when: z.enum(['past', 'today', 'future']),
+  /** Jour d'avant la création du lien. */
+  beforeLink: z.boolean(),
 });
+export type LinkWeekDay = z.infer<typeof LinkWeekDayZ>;
+
+/**
+ * La journée d'un lien (jour de Paris), vue par toi. La série du lien compte les jours d'affilée où vous vous êtes
+ * écrit tous les deux (au moins un message de chacun) ; un jour où un seul écrit ne l'allonge pas.
+ */
+export const TodayZ = z.object({
+  day: DayStr,
+  /** Tu as écrit aujourd'hui. */
+  mine: z.boolean(),
+  /** L'autre a écrit aujourd'hui. */
+  theirs: z.boolean(),
+  /** La série (> 0) est en jeu : sans un message de chacun avant minuit, elle retombe à 0. */
+  atStake: z.boolean(),
+  /** La semaine en cours, du lundi au dimanche. */
+  week: z.array(LinkWeekDayZ).length(7),
+  /**
+   * Obsolètes, toujours null : gardés pour que les versions de l'app d'avant la spéc §24 (qui les exigent) lisent encore
+   * un lien. À retirer quand ces versions ne tournent plus.
+   */
+  myPhotoUrl: z.null(),
+  theirPhotoUrl: z.null(),
+});
+export type LinkToday = z.infer<typeof TodayZ>;
 
 export const LinkZ = z.object({
   id: Uuid,
@@ -163,7 +188,12 @@ export const LinkZ = z.object({
   xp: z.number().int(),
   /** Avancement vers le niveau suivant, de 0 à 1. */
   levelRatio: z.number(),
+  /** Le niveau suivant (ce qu'il débloque : `LEVEL_KEYS`) et l'expérience qu'il manque ; null au dernier niveau. */
+  next: z.object({ level: z.number().int(), key: z.enum(LEVEL_KEYS), xpLeft: z.number().int() }).nullable(),
+  /** Jours d'affilée où vous vous êtes écrit tous les deux (0 si elle est tombée). */
   streak: z.number().int(),
+  /** Meilleure série du lien. */
+  bestStreak: z.number().int(),
   canRevive: z.boolean(),
   unread: z.number().int(),
   lastMessage: z.object({ preview: z.string(), at: Iso }).nullable(),
@@ -177,6 +207,7 @@ export const MessageZ = z.object({
   id: Uuid,
   linkId: Uuid,
   author: AuthorZ,
+  /** `photo` : ancienne photo d'un lien (plus aucune n'est envoyée ; celle de l'autre reste cachée si tu n'avais pas posté la tienne ce jour-là). */
   kind: z.enum(['text', 'photo', 'event']),
   body: z.string().nullable(),
   mediaUrl: z.string().nullable(),
@@ -205,10 +236,31 @@ export type UploadTicket = z.infer<typeof UploadTicketZ>;
 export const UploadTicketBody = z.object({ contentType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/heic']) });
 export const ConfirmUploadBody = z.object({ path: z.string().min(1) });
 
+/**
+ * Étapes d'un lien, de la plus récente à la plus ancienne : niveaux passés, paliers de série (3, 7, 14, 30, 60, 100
+ * jours), et la rencontre (toujours la dernière). `on` : null pour une étape passée avant qu'on la date.
+ */
+export const LinkMilestoneZ = z.object({ kind: z.enum(['met', 'level', 'streak']), value: z.number().int(), on: DayStr.nullable() });
+export type LinkMilestone = z.infer<typeof LinkMilestoneZ>;
+
+/** Anciennes photos du lien (d'avant la conversation quotidienne) : la tienne, et celle de l'autre si vous aviez posté tous les deux. */
 export const MemoryDayZ = z.object({ day: DayStr, myPhotoUrl: z.string().nullable(), theirPhotoUrl: z.string().nullable() });
 export const MemoriesZ = z.object({
+  milestones: z.array(LinkMilestoneZ),
+  /** Vide pour un lien sans anciennes photos. */
+  photos: z.array(MemoryDayZ),
+  stats: z.object({
+    /** Messages écrits par vous deux. */
+    messages: z.number().int(),
+    daysTogether: z.number().int(),
+    /** Jours où vous vous êtes écrit tous les deux. */
+    duoDays: z.number().int(),
+    bestStreak: z.number().int(),
+    /** Obsolète (apps d'avant la spéc §24) : nombre d'anciennes photos. */
+    photos: z.number().int(),
+  }),
+  /** Obsolète (apps d'avant la spéc §24) : les mêmes anciennes photos que `photos`. */
   days: z.array(MemoryDayZ),
-  stats: z.object({ messages: z.number().int(), photos: z.number().int(), daysTogether: z.number().int(), bestStreak: z.number().int() }),
 });
 export type Memories = z.infer<typeof MemoriesZ>;
 
@@ -375,8 +427,6 @@ export const routes = {
   linkMessages: (id: string) => `${API_PREFIX}/links/${id}/messages`,
   linkRead: (id: string) => `${API_PREFIX}/links/${id}/read`,
   linkRevive: (id: string) => `${API_PREFIX}/links/${id}/revive`,
-  linkPhotoTicket: (id: string) => `${API_PREFIX}/links/${id}/photo/ticket`,
-  linkPhoto: (id: string) => `${API_PREFIX}/links/${id}/photo`,
   linkMemories: (id: string) => `${API_PREFIX}/links/${id}/memories`,
   encounters: () => `${API_PREFIX}/encounters`,
   encounterHistory: () => `${API_PREFIX}/encounters/history`,

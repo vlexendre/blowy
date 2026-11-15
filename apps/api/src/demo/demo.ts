@@ -142,5 +142,5 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
 export const DEMO_MALO_MESSAGES: readonly { body: string; tone?: 'sweet' | 'tease' }[] = [
   { body: 'Salut ! Gaston n’arrêtait pas de parler de ton minimoa.' },
   { body: 'Il paraît que ton minimoa est très bien élevé. J’ai des doutes.', tone: 'tease' },
-  { body: 'Photo du jour ce soir ? Ça nous rend une vie.' },
+  { body: 'Écris-moi quand tu peux : Gaston veut lancer notre série.' },
 ];

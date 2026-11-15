@@ -1,7 +1,7 @@
 /**
  * Textes des notifications push (chantier « plateforme », spéc §12), par langue et par type.
  * Variables reçues du `Notifier` : name (prénom de l'autre), minimoa (nom d'un minimoa ; `petName` accepté),
- * count (`streak` accepté), days, item (identifiant d'objet, traduit ici), endsOn (date ISO), price (centimes),
+ * count (`streak` accepté), more (nombre d'autres liens concernés), days, item (identifiant d'objet, traduit ici), endsOn (date ISO), price (centimes),
  * currency (défaut EUR). Les dates et les prix sont mis en forme dans la langue de la personne.
  * Pas d'emoji, pas de fausse urgence, pas de culpabilisation.
  */
@@ -20,6 +20,8 @@ export interface NotificationVars {
   /** Nom du minimoa, ou « Ton minimoa » s'il n'est pas connu. */
   minimoa: string;
   count: string;
+  /** Autres liens concernés par le même rappel (« à toi d'écrire »), en chiffres ; « 0 » ou vide : aucun. */
+  more: string;
   days: string;
   item: string;
   endsOn: string;
@@ -37,7 +39,15 @@ const fr = {
     new_encounter: { title: () => 'Nouveau lien', body: (v) => `${v.name} et toi, vous pouvez vous écrire.` },
     waved: { title: (v) => `${v.name} te salue`, body: () => 'Son minimoa est passé dire bonjour au tien.' },
     message: { title: (v) => v.name, body: (v) => `${v.name} t’a écrit.` },
-    daily_photo: { title: () => 'Photo du jour', body: (v) => `${v.name} a posté la sienne. À toi.` },
+    your_turn: {
+      title: (v) => `Série avec ${v.name}`,
+      body: (v) =>
+        Number(v.more) > 0
+          ? `À toi d’écrire avant minuit. Et dans ${v.more} ${Number(v.more) > 1 ? 'autres liens' : 'autre lien'}.`
+          : Number(v.count) > 0
+            ? `${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'} d’affilée. À toi d’écrire avant minuit.`
+            : `${v.name} t’a écrit aujourd’hui. À toi avant minuit.`,
+    },
     link_in_danger: { title: (v) => `Lien avec ${v.name}`, body: () => 'Il lui reste peu de vies. Un mot suffit à le garder.' },
     streak_in_danger: { title: (v) => `Ta série de ${v.count} jours`, body: () => 'Le défi du jour t’attend encore ce soir.' },
     habit_proof: { title: (v) => `${v.minimoa} voudrait voir`, body: () => 'C’est l’heure de ton habitude. Une photo ?' },
@@ -57,7 +67,7 @@ const fr = {
     new_encounter: 'Nouveaux liens',
     waved: 'On te salue',
     message: 'Messages',
-    daily_photo: 'Photo du jour de l’autre',
+    your_turn: 'À toi d’écrire (série d’un lien)',
     link_in_danger: 'Lien en danger',
     streak_in_danger: 'Série en danger',
     habit_proof: 'Preuve d’habitude',
@@ -78,7 +88,15 @@ export const notificationTexts = defineMessages({
       new_encounter: { title: () => 'New link', body: (v) => `You and ${v.name} can now write to each other.` },
       waved: { title: (v) => `${v.name} waved at you`, body: () => 'Their minimoa stopped by to say hi to yours.' },
       message: { title: (v) => v.name, body: (v) => `${v.name} wrote to you.` },
-      daily_photo: { title: () => 'Photo of the day', body: (v) => `${v.name} posted theirs. Your turn.` },
+      your_turn: {
+        title: (v) => `Streak with ${v.name}`,
+        body: (v) =>
+          Number(v.more) > 0
+            ? `Your turn to write before midnight. And in ${v.more} other ${Number(v.more) > 1 ? 'links' : 'link'}.`
+            : Number(v.count) > 0
+              ? `${v.count} ${Number(v.count) > 1 ? 'days' : 'day'} in a row. Your turn to write before midnight.`
+              : `${v.name} wrote to you today. Your turn before midnight.`,
+      },
       link_in_danger: { title: (v) => `Your link with ${v.name}`, body: () => 'It’s running out of lives. One word is enough to keep it.' },
       streak_in_danger: { title: (v) => `Your ${v.count}-day streak`, body: () => 'Today’s challenge is still waiting for you tonight.' },
       habit_proof: { title: (v) => `${v.minimoa} would like to see`, body: () => 'Time for your habit. A photo?' },
@@ -109,6 +127,7 @@ export function notificationVars(locale: Locale, vars: Readonly<Record<string, s
     name: vars.name ?? '',
     minimoa: vars.minimoa || vars.petName || t.yourMinimoa,
     count: vars.count ?? vars.streak ?? '',
+    more: vars.more ?? '',
     days: vars.days ?? '',
     item: labels.in(locale).itemLabel[item] ?? item,
     endsOn: vars.endsOn && isIsoDate(vars.endsOn) ? formatDate(locale, vars.endsOn, { day: 'numeric', month: 'long' }) : (vars.endsOn ?? ''),

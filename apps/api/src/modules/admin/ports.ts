@@ -137,6 +137,8 @@ export interface DailyMetrics {
   linksActive: number;
   linksGhost: number;
   linksArchived: number;
+  /** Liens actifs où les deux ont écrit ce jour-là (série des liens, spéc §24) ; null pour un jour calculé avant. */
+  linksWroteTogether: number | null;
   reportsOpened: number;
   reportsHandled: number;
   reportsOpen: number;

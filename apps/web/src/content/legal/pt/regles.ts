@@ -26,7 +26,7 @@ export const regles: LegalPage = {
 
     { h2: 'Nada de nudez nem de conteúdo sexual', id: 'contenus' },
     {
-      p: 'Nem nas mensagens, nem na foto do dia, nem na foto de prova. Também nada de conteúdo violento, chocante ou ilegal. A foto do dia é o teu café, a tua vista, as tuas sapatilhas, a tua cara de manhã.',
+      p: 'Nem nas mensagens, nem na foto de perfil, nem na foto de prova. Também nada de conteúdo violento, chocante ou ilegal. Uma foto de prova são as tuas sapatilhas, o teu livro, o teu prato: não tu em roupa interior.',
     },
 
     { h2: 'Sê tu', id: 'authenticite' },

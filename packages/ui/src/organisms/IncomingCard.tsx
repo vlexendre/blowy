@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '../atoms/Button';
 import { layout } from '../lib/styles';
 import { speciesColor } from '../theme';
-import { EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
+import { CompatPill, EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
+import { useUiStrings } from '../lib/strings';
 import type { IncomingLook } from '../types';
 
 export interface IncomingCardProps {
@@ -33,12 +34,14 @@ export interface IncomingCardProps {
 
 /** Quelqu'un a salué ton pet : accepter (le lien se crée) ou décliner. */
 export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptLabel, declineLabel, onAccept, onDecline, accepting, declining, openLabel, onOpen, why, hideCompat }: IncomingCardProps) {
+  const uiStrings = useUiStrings();
   const { from, compatibility, intro } = incoming;
   const tint = speciesColor[from.pet.species];
   return (
     <EncounterFrame tint={tint}>
-      <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={hideCompat ? null : compatibility} compatLabel={compatLabel} />
+      <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={null} />
       {why}
+      {why && !hideCompat ? <CompatPill inline value={uiStrings.percent(compatibility)} label={compatLabel} /> : null}
       {intro ? <PetSays text={intro} labelColor={lighten(tint, 0.3)} /> : null}
       {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
       <View style={[layout.row, styles.actions]}>

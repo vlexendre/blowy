@@ -14,7 +14,7 @@ import { layout } from '../lib/styles';
 import { PopIn } from '../motion/PopIn';
 import { useRipple, useRippleAnchor } from '../motion/Ripple';
 import { alpha, color, speciesColor } from '../theme';
-import { EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
+import { CompatPill, EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
 import type { PetLook, SuggestionLook } from '../types';
 import { useUiStrings } from '../lib/strings';
 
@@ -81,6 +81,7 @@ export function SuggestionCard(props: SuggestionCardProps) {
 
 /** Carte dépliée : « saluer » lance l'action, puis l'onde autour du bouton et le coucou de l'avatar (rien n'attend). */
 function SuggestionBody(props: SuggestionCardProps) {
+  const uiStrings = useUiStrings();
   const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen, why } = props;
   const { user, compatibility, intro, waved } = suggestion;
   const pet = user.pet;
@@ -110,10 +111,11 @@ function SuggestionBody(props: SuggestionCardProps) {
         }
         waveKey={waves}
         owner={ownerLabel}
-        compatibility={compatibility}
-        compatLabel={compatLabel}
+        compatibility={null}
       />
+      {/* Le pourquoi d'abord ; le chiffre ensuite, en petit, et seulement avec lui. */}
       {why}
+      {why ? <CompatPill inline value={uiStrings.percent(compatibility)} label={compatLabel} /> : null}
       {viaLabel || tagline ? (
         <View style={[layout.row, styles.chips]}>
           {viaLabel ? (

@@ -20,7 +20,7 @@ export interface NudgeBannerProps {
   title: TitleContent;
   text: string;
   gradient?: GradientName;
-  /** Icône 3D animée à gauche (flamme de la photo du jour). */
+  /** Icône 3D animée à gauche (flamme de la série d'un lien). */
   icon?: IconName;
   /** Pet autocollant qui déborde à droite. */
   species: Species;
@@ -36,7 +36,7 @@ export interface NudgeBannerProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Bandeau d'appel en tête de la liste des chats (photo du jour, rencontres) : icône, texte, pet qui déborde. */
+/** Bandeau d'appel en tête de la liste des chats (à toi d'écrire, rencontres) : icône, texte, pet qui déborde. */
 export function NudgeBanner({ kicker, title, text, gradient = 'orange', icon, species, mood = 'joie', animation = 'none', onPress, accessibilityLabel, reveal, style }: NudgeBannerProps) {
   const open = useOpen(reveal);
   return (

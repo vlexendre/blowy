@@ -7,7 +7,7 @@ import { CountUp } from '../motion/CountUp';
 import { alpha, opacity } from '../theme';
 
 export interface CountTitleProps {
-  /** « PHOTOS DU JOUR ». */
+  /** « VOS ÉTAPES ». */
   title: string;
   /** Le nombre estompé après le titre (« · 12 »), qui défile depuis `from` à l'apparition. */
   count: number;
@@ -20,7 +20,7 @@ export interface CountTitleProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Titre de section suivi de son compteur estompé (« PHOTOS DU JOUR · 12 »), le nombre défile comme un compteur. */
+/** Titre de section suivi de son compteur estompé (« VOS ÉTAPES · 4 »), le nombre défile comme un compteur. */
 export function CountTitle({ title, count, from = 0, size = 24, hint, style }: CountTitleProps) {
   const ink = useInk();
   const dim = alpha(ink, opacity.dim);

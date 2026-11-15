@@ -135,7 +135,7 @@ export function minimoasOf(w: StatsWindow | null, computedAt: string | null): Ad
 }
 
 export function funnelOf(w: StatsWindow | null, computedAt: string | null): AdminFunnel {
-  if (!w) return { asOf: null, computedAt, encounters: { proposed: emptyMetric, waved: emptyMetric, accepted: emptyMetric }, averageCompatibility: emptyMetric, links: { active: 0, ghost: 0, archived: 0 }, series: [] };
+  if (!w) return { asOf: null, computedAt, encounters: { proposed: emptyMetric, waved: emptyMetric, accepted: emptyMetric }, averageCompatibility: emptyMetric, wroteTogether: emptyMetric, links: { active: 0, ghost: 0, archived: 0 }, series: [] };
   const latest = w.at(w.asOf);
   const proposed = (end: Day): number | null => {
     let total = 0;
@@ -155,6 +155,7 @@ export function funnelOf(w: StatsWindow | null, computedAt: string | null): Admi
       accepted: w.windowed('encountersAccepted', 7),
     },
     averageCompatibility: w.snapshot('averageCompatibility', 7),
+    wroteTogether: w.snapshot('linksWroteTogether', 7),
     links: { active: latest?.linksActive ?? 0, ghost: latest?.linksGhost ?? 0, archived: latest?.linksArchived ?? 0 },
     series: [w.series('encountersProposed', 'Proposées'), w.series('encountersWaved', 'Saluées'), w.series('encountersAccepted', 'Acceptées')],
   };

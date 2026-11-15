@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { hasOutfit } from '../assets/fit';
 import { FORM_BOX, type PetPose, RENDER_RATIO } from '../assets/pets';
@@ -9,7 +10,7 @@ import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
 import { Pressable } from '../atoms/Pressable';
 import { Sticker } from '../atoms/Sticker';
-import { Title } from '../atoms/Title';
+import { fitTitleSize, Title } from '../atoms/Title';
 import { SpeechBubble } from '../molecules/SpeechBubble';
 import { hitSlopFor, layout } from '../lib/styles';
 import { alpha, color, type GradientName, speciesGradient } from '../theme';
@@ -49,9 +50,20 @@ const FORM_DRAWN_H = 210;
 const FORM_TOP_Y = 64;
 const FORM_CENTER_RIGHT = 87;
 const EDIT = 28;
+/** Part de la largeur utile laissée au titre : au-delà, il passerait sur le visage du minimoa. */
+const TITLE_SHARE = 0.52;
+const SPEECH_W = 150;
 
 /** Grand pet sur un panneau en dégradé, avec son nom en Anton (maquette V6-Pet). Habillé quand `pet.outfit` contient un objet. */
 export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, pose = 'debout', showForm, onPetPress, petLabel, onEdit, editLabel }: PetHeroProps) {
+  const win = useWindowDimensions();
+  const [panelW, setPanelW] = useState(win.width - 40);
+  const [chipsW, setChipsW] = useState(0);
+  const inner = panelW - 36;
+  // Le titre rétrécit si son mot le plus long ne tient pas devant le minimoa (« PLUTÔT SOCIABLE » à 375 pt).
+  const titleSize = fitTitleSize(title, 52, inner * TITLE_SHARE, 38);
+  // Puce d'humeur longue : la bulle descend sous la rangée de puces au lieu de couvrir le bouton « … ».
+  const speechLow = chipsW > 0 && 18 + chipsW + 8 > panelW - 14 - SPEECH_W;
   const box = FORM_BOX[pet.species][pet.form ?? 'equilibre'];
   const formW = Math.round(Math.min(270, Math.max(200, (FORM_DRAWN_H / box.height) * RENDER_RATIO)));
   const formFrame = { top: FORM_TOP_Y - box.top * (formW / RENDER_RATIO), right: FORM_CENTER_RIGHT - formW / 2 };
@@ -61,7 +73,13 @@ export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, po
     <PetImage species={pet.species} mood={pose} form={showForm ? pet.form : undefined} size={showForm ? formW : PET_W} animation="breathe" accessibilityLabel={petLabel ?? pet.name} />
   );
   return (
-    <Panel gradient={gradient ?? speciesGradient[pet.species]} radius={32} padding="none" style={styles.panel}>
+    <Panel
+      gradient={gradient ?? speciesGradient[pet.species]}
+      radius={32}
+      padding="none"
+      style={styles.panel}
+      onLayout={(e) => setPanelW(e.nativeEvent.layout.width)}
+    >
       <View style={showForm ? [styles.formPet, formFrame] : styles.pet} pointerEvents="box-none">
         {onPetPress ? (
           <Pressable onPress={onPetPress} accessibilityLabel={petLabel ?? pet.name} scaleTo={0.94} haptic="medium">
@@ -73,7 +91,7 @@ export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, po
       </View>
       <View style={styles.text} pointerEvents="box-none">
         {moodLabel || onEdit ? (
-          <View style={[layout.row, styles.chips]}>
+          <View style={[layout.row, styles.chips]} onLayout={(e) => setChipsW(e.nativeEvent.layout.width)}>
             {moodLabel ? <Chip label={moodLabel} tone="dark" ink={color.accent} left={<View style={styles.moodDot} />} style={styles.mood} /> : null}
             {onEdit ? (
               <Pressable onPress={onEdit} accessibilityLabel={editLabel} haptic="selection" hitSlop={hitSlopFor(EDIT)} style={styles.edit}>
@@ -82,9 +100,9 @@ export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, po
             ) : null}
           </View>
         ) : null}
-        <Title text={title} size={52} style={styles.title} />
+        <Title text={title} size={titleSize} style={styles.title} />
       </View>
-      {speech ? <SpeechBubble text={speech} tail="right" rotate={3} compact style={styles.speech} /> : null}
+      {speech ? <SpeechBubble text={speech} tail="right" rotate={3} compact style={[styles.speech, speechLow && styles.speechLow]} /> : null}
       {formLabel ? <Sticker label={formLabel} tone="white" rotate={-6} style={styles.sticker} /> : null}
     </Panel>
   );
@@ -93,14 +111,15 @@ export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, po
 const styles = StyleSheet.create({
   panel: { height: PANEL_H, paddingTop: 16, paddingHorizontal: 18 },
   text: { zIndex: 2, alignItems: 'flex-start' },
-  chips: { gap: 6 },
+  chips: { gap: 6, alignSelf: 'flex-start' },
   mood: { height: 26, paddingHorizontal: 11 },
   edit: { width: EDIT, height: EDIT, borderRadius: EDIT / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: alpha(color.dark, 0.12) },
   // Le pet déborde à droite : le titre revient à la ligne avant lui (« PLUTÔT SOCIABLE »).
   title: { marginTop: 12, maxWidth: '64%' },
   pet: { position: 'absolute', right: -38, bottom: -40, zIndex: 1 },
   formPet: { position: 'absolute', zIndex: 1 },
-  speech: { position: 'absolute', top: 14, right: 14, maxWidth: 150, zIndex: 3, alignSelf: 'auto' },
+  speech: { position: 'absolute', top: 14, right: 14, maxWidth: SPEECH_W, zIndex: 3, alignSelf: 'auto' },
+  speechLow: { top: 52, maxWidth: 136 },
   sticker: { position: 'absolute', bottom: 16, right: 24, zIndex: 3 },
   moodDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: color.accent },
 });

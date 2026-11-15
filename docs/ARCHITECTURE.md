@@ -56,7 +56,7 @@ modules/<module>/
   interface/*.controller.ts   REST : valide (contrat), appelle un cas d'usage, mappe vers le DTO
   <module>.module.ts          racine de composition
 ```
-Modules : `me`, `pets` (soins, garde-robe), `links` (messages, photo du jour, souvenirs ; `links/minimoas` : les minimoas
+Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conversation, étapes, rappel « à toi d'écrire » ; `links/minimoas` : les minimoas
 dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
 `notifications` (appareils, réglages, envoi, activités en direct), `billing` (Blowy+), `admin` (tableaux, modération),
@@ -80,7 +80,7 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 | dépôts de chaque module | `supabase-*.repository.ts` | `memory-*` sur `MemoryDb` (cascades comprises) |
 
 ### Tâches du minuteur (`modules/tick/jobs.ts`, dans l'ordre)
-`links` (vies rattrapées, « lien en danger », relances de 72 h) · `notifications` (reports des heures calmes, défi du
+`links` (vies rattrapées, « lien en danger », relances de 72 h, le soir « à toi d'écrire ») · `notifications` (reports des heures calmes, défi du
 jour à l'heure choisie — seul chemin d'envoi de `daily_challenge` —, activités en direct finies, reçus Expo, ménage) ·
 `rituels` (preuves demandées, besoin de sortir, série en danger, bilans du dimanche, photos privées de plus de 24 h) ·
 `billing` (rappel du jour 5 de l'essai, journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
@@ -104,7 +104,8 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 `notification_settings`, `notification_log`, `push_receipts`, `tick_runs`), Blowy+ et administration (`subscriptions`,
 `store_notifications`, `account_suspensions`, `admin_audit_log`, `user_activity_days`, `admin_daily_stats`,
 `encounter_proposals`), conservation (`banned_identities`), manques (`apple_tokens`, `profiles.chat_reading_default`, `chat_link_settings.by_default`,
-`weekly_reviews.axis_moves`). Compartiment privé `media` (URL signées émises par l'API).
+`weekly_reviews.axis_moves`), série de la conversation (`links.best_streak`, `duo_days`, `last_duo_day_on`,
+`recent_days`, `milestones`, `write_reminder_on` ; `daily_photos` gardée en lecture seule pour les souvenirs). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit
@@ -113,10 +114,10 @@ La V7 (minimoa, vision, rituels, Blowy+) est décrite dans `docs/V7-SPEC.md` ; c
 ### Base V6
 - Un pet par personne. 4 jauges à deux pôles (casanier↔sociable, posé↔joueur, piquant↔tendre, discret↔bavard) qui
   bougent avec l'activité et retombent vers 0.
-- Un lien = deux personnes et leurs pets. 7 vies (un jour entier de silence en coûte une ; la photo du jour faite par
-  les deux en rend une), lien fantôme à 0 (ranimable une fois), 7 niveaux (rendez-vous → l'œuf). Visages cachés avant
+- Un lien = deux personnes et leurs pets. 7 vies (un jour entier de silence en coûte une ; un jour où les deux
+  s'écrivent en rend une — V7 §24 : plus de photo du jour, la série compte les jours d'affilée où les deux s'écrivent), lien fantôme à 0 (ranimable une fois), 7 niveaux (rendez-vous → l'œuf). Visages cachés avant
   le niveau 4, flous au 4, nets au 5.
-- Dans chaque lien : aujourd'hui · chat · souvenirs. Les pets parlent dans le chat.
+- Dans chaque lien (V7) : chat · le lien (la journée, la semaine, les vies, le prochain niveau, les étapes). Les pets parlent dans le chat.
 - Rencontres : ton pet croise d'autres pets (amis d'amis d'abord). Rien ne se passe sans ton tap : tu salues,
   l'autre accepte, le lien se crée.
 - « 3 mots » : un lien web où tes potes choisissent 3 mots sur toi ; ils font bouger les jauges.

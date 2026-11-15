@@ -41,14 +41,6 @@ export interface MessageLook {
 /** Rôles des répliques de minimoa (`PET_ROLES` du domaine). */
 export type PetRoleLook = 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event';
 
-/** Compatible avec `Link.today`. */
-export interface TodayLook {
-  mine: boolean;
-  theirs: boolean;
-  myPhotoUrl: string | null;
-  theirPhotoUrl: string | null;
-}
-
 /** Sous-ensemble de `Link` utilisé par la liste des chats. */
 export interface LinkLook {
   other: PersonLook;
@@ -68,7 +60,7 @@ export interface PetEventLook {
   at: string;
 }
 
-/** Compatible avec `Memories.days[n]`. */
+/** Compatible avec `Memories.photos[n]` (anciennes photos d'un lien). */
 export interface MemoryDayLook {
   day: string;
   myPhotoUrl: string | null;

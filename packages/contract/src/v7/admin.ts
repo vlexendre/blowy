@@ -73,6 +73,8 @@ export const AdminFunnelZ = z.object({
   encounters: z.object({ proposed: MetricZ, waved: MetricZ, accepted: MetricZ }),
   /** Compatibilité moyenne des rencontres proposées, de 0 à 100 (null : pas encore fournie par « vision »). */
   averageCompatibility: MetricZ,
+  /** Liens actifs où les deux ont écrit le dernier jour calculé (la série des liens vit avec la conversation), contre 7 jours plus tôt. */
+  wroteTogether: MetricZ,
   links: z.object({ active: z.number().int(), ghost: z.number().int(), archived: z.number().int() }),
   series: z.array(AdminSeriesZ),
 });

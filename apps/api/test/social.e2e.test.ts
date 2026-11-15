@@ -2,7 +2,7 @@
 import type { ApiClient } from '@blowy/api-client';
 import { START_NEEDS, WORD_KEYS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { type TestWorld, doToday, errorCode, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, doToday, errorCode, onboardBody, seedPastPhoto, startWorld, upload } from './helpers';
 
 describe('vie sociale et sécurité', () => {
   let world: TestWorld;
@@ -132,16 +132,13 @@ describe('vie sociale et sécurité', () => {
   });
 
   it('suppression du compte : médias, données et accès effacés', async () => {
+    // Anciennes photos du jour (gardées dans les souvenirs) : elles partent avec le compte et le lien.
     const carolLink = (await carol.api.links.list()).find((l) => l.other.id === bob.id);
-    const ticket = await carol.api.links.photoTicket(carolLink?.id ?? '', 'image/jpeg');
-    await upload(ticket.uploadUrl);
-    await carol.api.links.sendPhoto(carolLink?.id ?? '', ticket.path);
-    const bobTicket = await bob.api.links.photoTicket(carolLink?.id ?? '', 'image/jpeg');
-    await upload(bobTicket.uploadUrl);
-    await bob.api.links.sendPhoto(carolLink?.id ?? '', bobTicket.path);
-    const { today } = await carol.api.links.get(carolLink?.id ?? '');
-    const theirUrl = today.theirPhotoUrl ?? '';
-    const myUrl = today.myPhotoUrl ?? '';
+    await seedPastPhoto(world, carolLink?.id ?? '', carol.id, '2026-11-10');
+    await seedPastPhoto(world, carolLink?.id ?? '', bob.id, '2026-11-10');
+    const [day] = (await carol.api.links.memories(carolLink?.id ?? '')).photos;
+    const theirUrl = day?.theirPhotoUrl ?? '';
+    const myUrl = day?.myPhotoUrl ?? '';
     expect((await fetch(theirUrl)).status).toBe(200);
     expect((await fetch(myUrl)).status).toBe(200);
 
@@ -216,6 +213,25 @@ describe('configuration', () => {
       const names = (await me.api.links.list()).map((l) => l.other.displayName).sort();
       expect(names).toEqual(['Léa', 'Malo']);
       expect((await me.api.encounters.list()).incoming).toEqual([]);
+    } finally {
+      await world.close();
+    }
+  });
+
+  it('monde de démo : états d’un lien à la demande (série en jeu, lien en danger, fantôme)', async () => {
+    const world = await startWorld({ BLOWY_DEMO: '1' });
+    try {
+      const me = world.client();
+      await me.api.me.onboard(onboardBody());
+      const res = await fetch(`${world.baseUrl}/dev/demo/links`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+      expect(await res.json()).toEqual({ userId: me.id });
+      const byName = new Map((await me.api.links.list()).map((l) => [l.other.displayName, l]));
+      expect(byName.get('Malo')?.today).toMatchObject({ mine: false, theirs: true, atStake: false });
+      expect(byName.get('Sasha')).toMatchObject({ status: 'active', streak: 6, bestStreak: 9, lives: 7, today: { mine: false, theirs: false, atStake: true } });
+      expect(byName.get('Inès')).toMatchObject({ status: 'active', lives: 2, streak: 0 });
+      expect(byName.get('Yanis')).toMatchObject({ status: 'ghost', lives: 0, canRevive: true });
+      const memories = await me.api.links.memories(byName.get('Sasha')?.id ?? '');
+      expect(memories.milestones.map((m) => `${m.kind}:${m.value}`)).toEqual(['level:4', 'streak:7', 'level:3', 'streak:3', 'level:2', 'met:0']);
     } finally {
       await world.close();
     }

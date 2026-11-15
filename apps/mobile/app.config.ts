@@ -15,7 +15,7 @@ const APP_GROUP = `group.${BUNDLE_ID}`;
 /** Identifiant d'équipe Apple (10 caractères) : utile à `@bacons/apple-targets` pour signer l'extension hors EAS. */
 const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID;
 /** Textes des autorisations iOS (français, langue source) ; traduits par `locales` (fichiers `./locales/<langue>.json`). */
-const CAMERA_TEXT = 'Blowy utilise l’appareil photo pour ta photo du jour et les preuves de tes habitudes. Une preuve n’est vue par personne.';
+const CAMERA_TEXT = 'Blowy utilise l’appareil photo pour les preuves de tes habitudes et les défis photo. Une IA les vérifie ; personne d’autre que toi ne les voit.';
 const LOCATION_TEXT = 'Blowy utilise ta position, app ouverte seulement, pour trouver des minimoas près de toi et confirmer tes sorties.';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
@@ -50,7 +50,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSLocationWhenInUseUsageDescription: LOCATION_TEXT,
       // Textes d'autorisation traduits (`locales`) même si l'app n'a pas de traduction native de son nom.
       CFBundleAllowMixedLocalizations: true,
-      NSPhotoLibraryUsageDescription: 'Blowy accède aux photos que tu choisis pour ta photo du jour ou ta photo de profil.',
+      NSPhotoLibraryUsageDescription: 'Blowy accède aux photos que tu choisis pour ta photo de profil.',
       // Activités en direct (défi accepté, photo d'un lien, sortie) : docs/WIDGETS.md.
       NSSupportsLiveActivities: true,
     },
@@ -68,7 +68,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-image-picker',
       {
-        photosPermission: 'Blowy accède aux photos que tu choisis pour ta photo du jour ou ta photo de profil.',
+        photosPermission: 'Blowy accède aux photos que tu choisis pour ta photo de profil.',
         cameraPermission: CAMERA_TEXT,
         microphonePermission: false,
       },

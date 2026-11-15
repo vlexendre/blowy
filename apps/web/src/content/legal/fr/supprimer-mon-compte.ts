@@ -31,7 +31,7 @@ export const supprimerMonCompte: LegalPage = {
         'ton compte, ton prénom, ta date de naissance, ton sexe, ce que tu cherches ;',
         'ton minimoa, sa vision, son style, ses objets, tes habitudes, ta série ;',
         'ta position et ta zone de domicile approximative ;',
-        'tes liens, avec leurs messages, photos du jour et souvenirs. **Ils disparaissent aussi pour les autres personnes** ;',
+        'tes liens, avec leurs messages, leurs photos et leurs étapes. **Ils disparaissent aussi pour les autres personnes** ;',
         'tes photos de preuve gardées en souvenir ;',
         'les « 3 mots » reçus, tes invitations ;',
         'tes réglages et l’autorisation de t’envoyer des notifications.',

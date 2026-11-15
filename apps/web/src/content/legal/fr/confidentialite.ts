@@ -134,7 +134,7 @@ export const confidentialite: LegalPage = {
     },
     {
       ul: [
-        '**Accord de chacun :** on vous le demande à tous les deux, à la première ouverture du chat. Si l’un refuse, personne ne lit : les minimoas réagissent seulement au rythme du lien (silences, photos, défis).',
+        '**Accord de chacun :** on vous le demande à tous les deux, à la première ouverture du chat. Si l’un refuse, personne ne lit : les minimoas réagissent seulement au rythme du lien (silences, séries, défis).',
         '**Retrait :** à tout moment, dans les options du lien ou dans **Moi**. La lecture s’arrête aussitôt pour ce lien.',
         '**Comment :** pas d’analyse à chaque message. Au moment d’un déclencheur (un silence, un certain nombre de messages), une courte fenêtre des derniers messages est envoyée à notre fournisseur d’IA, qui propose la réaction du minimoa. Au plus 3 interventions par jour et par lien, et tu peux les couper pour un lien.',
         '**Ce qui est gardé :** rien de l’analyse. Seule la réaction du minimoa apparaît dans le chat, comme un message.',
@@ -142,14 +142,14 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Les photos du jour et les souvenirs' },
+    { h3: 'La série et les étapes d’un lien' },
     {
       ul: [
-        '**Données :** la photo du jour que tu postes dans un lien, et ce que tu ranges dans vos souvenirs.',
-        '**But :** l’échanger avec l’autre personne du lien et la garder dans vos souvenirs.',
-        '**Base légale :** exécution du contrat.',
-        '**Durée :** tant que le lien existe (mêmes règles que les messages).',
-        '**Accès :** toi et l’autre personne du lien. Les photos sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
+        '**Données :** les jours où chacun de vous deux a écrit dans le lien (pas le contenu des messages) et les étapes du lien (rencontre, niveaux passés, records de série). Pour les liens d’avant le 15 novembre 2026, les photos que vous vous y étiez envoyées, qui restent dans vos souvenirs ; on n’en reçoit plus de nouvelles.',
+        '**But :** faire vivre la série du lien (les jours d’affilée où vous vous écrivez tous les deux), ses vies et ses niveaux, et vous montrer vos souvenirs.',
+        '**Base légale :** exécution du contrat.',
+        '**Durée :** tant que le lien existe (mêmes règles que les messages).',
+        '**Accès :** toi et l’autre personne du lien. Les photos sont stockées dans un espace privé, accessibles seulement par des liens temporaires.',
       ],
     },
 
@@ -157,7 +157,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** le jeton technique de ton téléphone pour les notifications, tes réglages par type de notification, l’heure choisie pour le défi du jour.',
-        '**But :** te prévenir (défi du jour, nouvelle rencontre, message, lien ou série en danger, preuve demandée, bilan, rappel de fin d’essai). Heures calmes de 22 h à 8 h ; hors messages, 3 par jour au plus. Sur iPhone, le widget et les activités en direct utilisent les mêmes données.',
+        '**But :** te prévenir (défi du jour, nouvelle rencontre, message, « à toi d’écrire » le soir, lien ou série en danger, preuve demandée, bilan, rappel de fin d’essai). Heures calmes de 22 h à 8 h ; hors messages, 3 par jour au plus. Sur iPhone, le widget et les activités en direct utilisent les mêmes données.',
         '**Base légale :** ton consentement, donné via l’autorisation de ton téléphone. Tu le retires dans les réglages du téléphone ou type par type dans l’app.',
         '**Durée :** jusqu’à ce que tu désactives les notifications ou supprimes ton compte.',
         '**Accès :** notre prestataire d’envoi des notifications, et Apple ou Google, qui les acheminent jusqu’à ton téléphone.',
@@ -269,9 +269,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Les personnes que ton minimoa te présente** voient ton prénom, ton minimoa, son style, vos points communs et une différence, et ta position approximative sur la carte (sauf en mode discret).',
-        '**Tes liens** voient en plus vos messages, vos photos du jour et vos souvenirs.',
+        '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien et vos photos d’avant s’il y en a.',
         '**Les visiteurs de ta page « 3 mots » ou de ton invitation** voient ton prénom et ton minimoa.',
-        'Personne ne voit ton adresse e-mail, ta date de naissance, ta position exacte, tes photos de preuve, ni tes réponses au test de vision.',
+        'Personne ne voit ton adresse e-mail, ta date de naissance, ta position exacte, ni tes réponses au test de vision. Tes photos de preuve sont vérifiées par une IA : aucun humain ne les voit, et elles sont supprimées sous 24 h (sauf si tu les gardes dans tes souvenirs privés).',
       ],
     },
 
@@ -313,7 +313,7 @@ export const confidentialite: LegalPage = {
           ['Position', 'Seulement la dernière position arrondie et la zone de domicile approximative, remplacées à chaque mise à jour.'],
           ['Photos de preuve', 'Sous 24 h, sauf si tu les gardes dans tes souvenirs privés.'],
           ['Lecture des messages par l’IA', 'Rien n’est conservé après l’analyse.'],
-          ['Messages, photos du jour, souvenirs', 'Tant que le lien existe.'],
+          ['Messages, série, étapes et photos d’avant d’un lien', 'Tant que le lien existe.'],
           ['Achats', 'Statut tant que le compte existe ; références de transaction jusqu’à 10 ans (obligations comptables).'],
           ['Signalements et décisions de modération', '1 an après la clôture du dossier, plus longtemps si une procédure judiciaire l’exige.'],
           ['Exclusion définitive', 'Un identifiant technique du compte Apple ou Google, pendant 3 ans, pour empêcher une réinscription.'],

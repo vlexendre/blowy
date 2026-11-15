@@ -13,11 +13,12 @@ import { useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import type { Gate } from '@/features/session';
 
-import { challengeActivity, decideRunning, outingActivity, photoActivity, widgetSnapshot, type ActivityInputs, type DesiredActivity } from './state';
+import { challengeActivity, decideRunning, linkActivity, outingActivity, widgetSnapshot, type ActivityInputs, type DesiredActivity } from './state';
 
 export { outingActivity } from './state';
 
 const active = (): boolean => AppState.currentState === 'active';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Série seule (lecture légère) et accueil des rituels, partagés avec les écrans des rituels par leurs clés. */
 function useRituals(enabled: boolean) {
@@ -37,7 +38,7 @@ async function syncActivities(i: ActivityInputs, push: boolean): Promise<void> {
       await widgets.activities.end(activity.id, decision.state, decision.dismissAfterSeconds === 0 ? { immediate: true } : { afterSeconds: decision.dismissAfterSeconds });
     }
   }
-  const wanted = [challengeActivity(i), photoActivity(i)].filter((a): a is DesiredActivity => a !== null);
+  const wanted = [challengeActivity(i), linkActivity(i)].filter((a): a is DesiredActivity => a !== null);
   for (const a of wanted) {
     if (running.some((r) => r.attributes.kind === a.kind)) continue;
     await widgets.activities.start(a.key, a.attributes, a.state, push);
@@ -54,13 +55,15 @@ function useActivityTokens(enabled: boolean) {
     return widgets.activities.onToken((t: ActivityToken) => {
       if (sent.current.has(t.token)) return;
       sent.current.add(t.token);
+      // Série d'un lien : le lien concerné, pour que l'API ne termine que cette activité quand tu y écris.
+      const linkId = t.activity === 'link' ? widgets.activities.list().find((a) => a.id === t.activityId)?.attributes.url.split('/').pop() : undefined;
       void api.notifications
         .registerDevice({
           token: t.token,
           platform: 'ios',
           timeZone,
           kind: 'apns_live_activity',
-          liveActivity: { use: t.use, ...(t.activity ? { activity: t.activity } : {}), ...(t.activityId ? { activityId: t.activityId } : {}) },
+          liveActivity: { use: t.use, ...(t.activity ? { activity: t.activity } : {}), ...(t.activityId ? { activityId: t.activityId } : {}), ...(linkId && UUID.test(linkId) ? { linkId } : {}) },
         })
         .catch(() => sent.current.delete(t.token));
     });

@@ -21,7 +21,8 @@ import { RituelsDemo } from './rituels-demo';
  * Remplit la base mémoire au démarrage (Léa, Malo, Sasha et cinq autres autour de Paris, aux visions variées,
  * avec leur position ; Malo et Sasha sont liés) et anime l'arrivée
  * d'une nouvelle personne : Léa la salue (coucou à accepter), Malo l'a saluée et c'est accepté (le lien
- * s'ouvre et il écrit ; l'historique des rencontres n'est pas vide). Chaque écran a ainsi des données.
+ * s'ouvre et il écrit ; l'historique des rencontres n'est pas vide). Chaque écran a ainsi des données. Les états d'un
+ * lien (série en jeu, lien en danger, fantôme) s'ajoutent à la demande : `POST /dev/demo/links` (`LinksDemo`).
  */
 @Injectable()
 export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {

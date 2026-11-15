@@ -35,7 +35,7 @@ export interface LivesPanelProps {
   animateKey?: string;
 }
 
-/** Les vies d'un lien et la semaine de photos du jour (`.card` « cette semaine » de V6-Aujourdhui). */
+/** Les vies d'un lien et sa semaine (`.card` « cette semaine » de V6-Aujourdhui) : jours écrits à deux (coche), par un seul (« 1/2 »). */
 export function LivesPanel({ lives, max = MAX_LIVES, title, count, text, streak, streakUnit, week, weekTitle, accessibilityLabel, animateKey }: LivesPanelProps) {
   const tick = useFirstTime(animateKey ? `week:${animateKey}` : undefined) && !!animateKey;
   let ticked = 0;

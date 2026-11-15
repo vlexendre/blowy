@@ -76,20 +76,30 @@ export function EncounterHead({ person, name, nameStyle = 'display', badge, owne
           {badge}
         </View>
         {owner ? (
-          <Text variant="small" size={13} muted numberOfLines={1} style={styles.owner}>
+          <Text size={15} muted numberOfLines={1} style={styles.owner}>
             {owner}
           </Text>
         ) : null}
       </View>
-      {compatibility !== null ? (
-        <View style={styles.compat}>
-          <Title text={uiStrings.percent(compatibility)} size={38} color={color.accent} />
-          {compatLabel ? (
-            <Text variant="bodyHeavy" size={9} muted style={styles.compatLabel}>
-              {compatLabel}
-            </Text>
-          ) : null}
-        </View>
+      {compatibility !== null ? <CompatPill value={uiStrings.percent(compatibility)} label={compatLabel} /> : null}
+    </View>
+  );
+}
+
+/**
+ * Le chiffre d'accord, en second : une pastille calme (« 82 % d’accord »), jamais plus grande que le pourquoi. À poser
+ * seulement à côté d'une explication (`MatchWhy`).
+ */
+export function CompatPill({ value, label, inline = false }: { value: string; label?: string; inline?: boolean }) {
+  return (
+    <View style={inline ? [layout.row, styles.compatInline] : styles.compat} accessible accessibilityLabel={label ? `${value} ${label}` : value}>
+      <Text variant="bodyHeavy" size={15} color={color.accent}>
+        {value}
+      </Text>
+      {label ? (
+        <Text variant="bodyBold" size={13} muted>
+          {label}
+        </Text>
       ) : null}
     </View>
   );
@@ -115,12 +125,12 @@ export function PetSays({ label, labelColor, text }: { label?: string; labelColo
   return (
     <View>
       {label ? (
-        <Text variant="bodyHeavy" size={11} color={labelColor} style={styles.who}>
+        <Text variant="bodyHeavy" size={13} color={labelColor} style={styles.who}>
           {label}
         </Text>
       ) : null}
       <View style={styles.bubble}>
-        <Text size={14} style={styles.bubbleText}>
+        <Text size={15} style={styles.bubbleText}>
           {text}
         </Text>
       </View>
@@ -129,14 +139,14 @@ export function PetSays({ label, labelColor, text }: { label?: string; labelColo
 }
 
 const styles = StyleSheet.create({
-  frame: { borderRadius: 24, borderWidth: 1, paddingVertical: 12, paddingHorizontal: 14, gap: 8, backgroundColor: color.panel, overflow: 'hidden' },
+  frame: { borderRadius: 24, borderWidth: 1, paddingVertical: 14, paddingHorizontal: 16, gap: 10, backgroundColor: color.panel, overflow: 'hidden' },
   head: { gap: 12 },
   waver: { transformOrigin: '50% 90%' },
   nameRow: { gap: 8 },
   owner: { marginTop: 2 },
-  compat: { alignItems: 'flex-end' },
-  compatLabel: { letterSpacing: 1.08, textTransform: 'uppercase' },
+  compat: { alignItems: 'flex-end', alignSelf: 'flex-start', paddingTop: 4 },
+  compatInline: { gap: 6, alignItems: 'baseline' },
   who: { marginLeft: 4, marginBottom: 3 },
   bubble: { alignSelf: 'flex-start', paddingVertical: 9, paddingHorizontal: 13, borderRadius: 20, borderBottomLeftRadius: 6, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
-  bubbleText: { lineHeight: 18 },
+  bubbleText: { lineHeight: 20 },
 });

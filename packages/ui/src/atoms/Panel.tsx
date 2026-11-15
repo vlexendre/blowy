@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { type LayoutChangeEvent, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { InkProvider } from '../lib/ink';
 import { type GradientName, gradient as gradients, onGradient, radius as radii, space } from '../theme';
@@ -18,13 +18,14 @@ export interface PanelProps {
   /** Encre du texte ; défaut adaptée au dégradé. */
   ink?: string;
   style?: StyleProp<ViewStyle>;
+  onLayout?: (e: LayoutChangeEvent) => void;
 }
 
 /** Grand panneau arrondi en dégradé (`.panel`). Le texte enfant prend l'encre adaptée. */
-export function Panel({ children, gradient = 'accent', radius = 'xl', padding = 'lg', overflow = false, ink, style }: PanelProps) {
+export function Panel({ children, gradient = 'accent', radius = 'xl', padding = 'lg', overflow = false, ink, style, onLayout }: PanelProps) {
   const r = typeof radius === 'number' ? radius : radii[radius];
   return (
-    <View style={[{ borderRadius: r }, padding === 'none' ? null : { padding: space[padding] }, !overflow && styles.clip, style]}>
+    <View style={[{ borderRadius: r }, padding === 'none' ? null : { padding: space[padding] }, !overflow && styles.clip, style]} onLayout={onLayout}>
       <LinearGradient colors={gradients[gradient]} style={[StyleSheet.absoluteFill, { borderRadius: r }]} />
       <InkProvider value={ink ?? onGradient[gradient]}>{children}</InkProvider>
     </View>

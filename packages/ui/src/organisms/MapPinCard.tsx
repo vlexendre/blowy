@@ -12,6 +12,7 @@ import { Appear } from '../motion/Appear';
 import { useRipple, useRippleAnchor } from '../motion/Ripple';
 import { alpha, color, petTint, size, space, veil } from '../theme';
 import type { PetLook } from '../types';
+import { CompatPill } from './EncounterParts';
 
 export interface MapPinCardProps {
   /** Clé de la personne choisie : la fiche glisse doucement quand elle change. */
@@ -27,13 +28,15 @@ export interface MapPinCardProps {
   actionLabel: string;
   onAction: () => void;
   actionLoading?: boolean;
+  /** Déjà fait (salué, en attente) : bouton calme, désactivé, coche. */
+  actionDone?: boolean;
   /** Bouton secondaire (« Voir de plus près »). */
   secondaryLabel?: string;
   onSecondary?: () => void;
 }
 
 /** Fiche flottante du minimoa choisi sur la carte : qui, pourquoi, et une action. Saluer lance une onde. */
-export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, actionLabel, onAction, actionLoading, secondaryLabel, onSecondary }: MapPinCardProps) {
+export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, actionLabel, onAction, actionLoading, actionDone, secondaryLabel, onSecondary }: MapPinCardProps) {
   const anchor = useRippleAnchor();
   const ripple = useRipple();
   const act = () => {
@@ -51,22 +54,17 @@ export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, ac
               {owner}
             </Text>
           </View>
-          {compat ? (
-            <View style={styles.compat}>
-              <Title text={compat} size={30} color={color.accent} />
-              {compatLabel ? (
-                <Text variant="bodyHeavy" size={13} muted>
-                  {compatLabel}
-                </Text>
-              ) : null}
-            </View>
-          ) : null}
         </View>
         {why}
+        {compat && why ? <CompatPill inline value={compat} label={compatLabel} /> : null}
         <View style={[layout.row, styles.actions]}>
-          {secondaryLabel && onSecondary ? <Button label={secondaryLabel} variant="ghost" size="md" onPress={onSecondary} block={false} style={layout.fill} /> : null}
-          <View {...anchor.props} style={layout.fill}>
-            <Button label={actionLabel} size="md" onPress={act} loading={actionLoading} />
+          {secondaryLabel && onSecondary ? <Button label={secondaryLabel} variant="ghost" size="md" onPress={onSecondary} style={styles.half} /> : null}
+          <View {...anchor.props} style={styles.half}>
+            {actionDone ? (
+              <Button label={actionLabel} variant="glass" size="md" icon="check" disabled />
+            ) : (
+              <Button label={actionLabel} size="md" onPress={act} loading={actionLoading} />
+            )}
           </View>
         </View>
       </Appear>
@@ -116,8 +114,9 @@ const styles = StyleSheet.create({
   },
   body: { gap: space.md },
   head: { gap: space.md },
-  compat: { alignItems: 'flex-end' },
   actions: { gap: space.sm },
+  // Deux moitiés égales, quel que soit le libellé (aucun n'est rogné à 375 pt).
+  half: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0 },
   strip: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.lg },
   cta: { height: size.touch },
 });

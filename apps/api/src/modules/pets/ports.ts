@@ -18,7 +18,7 @@ export interface PetRecord {
   /** Jours où la personne s'est occupée de son pet, et le dernier. */
   careDays: number;
   lastCareOn: Day | null;
-  /** Plus longue série de photos du jour à deux, tous liens confondus (conservée quand une série retombe). */
+  /** Plus longue série d'un lien (jours d'affilée où les deux s'écrivent), tous liens confondus (conservée quand une série retombe). */
   bestStreak: number;
   outfit: Outfit;
   /** Dernier changement de nom (ISO) ; null tant qu'il garde le nom donné à sa création. */

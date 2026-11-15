@@ -14,7 +14,7 @@ export interface PetStats {
   links: number;
   /** Plus haut niveau atteint dans un lien. */
   bestLevel: number;
-  /** Plus longue série de photos du jour. */
+  /** Plus longue série d'un lien (jours d'affilée où les deux se sont écrit). */
   bestStreak: number;
   /** Défis du jour relevés. */
   challenges: number;

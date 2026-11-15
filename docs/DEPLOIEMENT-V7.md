@@ -138,3 +138,77 @@ comptes inactifs ; un tick manqué est rattrapé au suivant. Contrôle : la rép
 Tout a été testé en mémoire (tests de l'API) et les migrations sur un PostgreSQL 16 local qui imite Supabase. Jamais
 contre : un vrai projet Supabase (Auth Apple et Google, temps réel, stockage), Apple (achats signés, notifications
 serveur, APNs), Anthropic, Expo push. Les premiers essais réels se font sur TestFlight avec un compte bac à sable.
+
+## 9. Plus de photo du jour (spéc §24) sur une base V7 en service
+
+Les sept migrations V7 sont en production et l'API V7 se déploie seule à chaque poussée sur `main`. Ce changement
+ajoute `20261115190000_no_daily_photo.sql` (structure) et `20261115190100_no_daily_photo_backfill.sql` (reprise).
+
+**Ordre : les migrations d'abord, le code ensuite.** Le nouveau code lit et écrit des colonnes qui n'existent pas
+encore (`links.recent_days`, `best_streak`…) : déployé avant, chaque lecture d'un lien échouerait. À l'inverse, les
+migrations ne gênent pas l'API qui tourne : colonnes nouvelles à valeur par défaut, aucune colonne retirée,
+`activity = 'photo'` et le réglage `daily_photo` encore acceptés, `admin_daily_metrics` garde son nom et sa signature.
+Donc :
+
+1. Hors transaction, sans bloquer les écritures (comme l'étape 3) :
+   `create index concurrently if not exists links_write_reminder_idx on public.links (last_active_on, id) where status = 'active';`
+2. Appliquer `20261115190000_no_daily_photo.sql` puis `20261115190100_no_daily_photo_backfill.sql` (deux transactions ;
+   `lock_timeout` de 5 s : si un verrou n'arrive pas, la migration échoue sans rien appliquer, la relancer).
+   Répétition locale avec écritures concurrentes de l'ancienne API (30 000 liens, 600 000 messages, 160 000 photos) :
+   structure 0,06 s, reprise 3,3 s (verrous de ligne sur `links` seulement : une écriture de lien attend la fin),
+   aucune écriture perdue. Un seul fichier gardait `links` verrouillé pendant toute la reprise et s'interbloquait avec
+   l'API : d'où les deux fichiers.
+3. Pousser le code sur `main` (déploiement automatique de l'API) et publier l'app qui va avec (contrat changé : plus de
+   photo du jour, nouvel écran du lien). L'ancienne app reste utilisable pour écrire ; ses écrans de photo du jour
+   échouent (routes retirées, 404).
+4. Juste après le déploiement, la reprise du jour (rejouable, sans effet la deuxième fois) : elle recompte qui a écrit
+   aujourd'hui entre la migration et le code (l'ancienne API ne tenait pas `recent_days`) et fait avancer les séries
+   des liens où les deux ont écrit dans cet intervalle.
+
+```sql
+-- Reprise du jour (spéc §24), juste après le déploiement du code : rejouable, sans effet la deuxième fois.
+-- 1. Photos à deux faites par l'API d'avant entre la migration et le code.
+update public.links set last_duo_day_on = last_duo_photo_on
+where last_duo_photo_on is not null and (last_duo_day_on is null or last_duo_photo_on > last_duo_day_on);
+-- 2. Qui a écrit aujourd'hui (messages des personnes et photos du jour), fusionné dans `recent_days`.
+with t as (select (now() at time zone 'Europe/Paris')::date as d),
+writes as (
+  select m.link_id, m.author_id as user_id from public.messages m, t
+  where m.author_kind = 'user' and m.kind = 'text' and m.created_at >= (t.d::timestamp at time zone 'Europe/Paris')
+  union
+  select p.link_id, p.user_id from public.daily_photos p, t where p.day = t.d
+),
+per_link as (
+  select w.link_id, bool_or(w.user_id = l.user_a) as a, bool_or(w.user_id = l.user_b) as b
+  from writes w join public.links l on l.id = w.link_id group by w.link_id
+)
+update public.links l set
+  recent_days = (
+    select coalesce(jsonb_agg(e order by e ->> 'day'), '[]'::jsonb) from jsonb_array_elements(l.recent_days) as e where e ->> 'day' <> to_char(t.d, 'YYYY-MM-DD')
+  ) || jsonb_build_array(jsonb_build_object(
+    'day', to_char(t.d, 'YYYY-MM-DD'),
+    'a', p.a or exists (select 1 from jsonb_array_elements(l.recent_days) e where e ->> 'day' = to_char(t.d, 'YYYY-MM-DD') and (e ->> 'a')::boolean),
+    'b', p.b or exists (select 1 from jsonb_array_elements(l.recent_days) e where e ->> 'day' = to_char(t.d, 'YYYY-MM-DD') and (e ->> 'b')::boolean)
+  )),
+  last_active_on = greatest(l.last_active_on, t.d)
+from per_link p, t
+where p.link_id = l.id;
+-- 3. Jour à deux pas encore compté : la série avance (règle du domaine, `applyLinkMessage`).
+with t as (select (now() at time zone 'Europe/Paris')::date as d)
+update public.links l set
+  streak = case when l.last_duo_day_on = t.d - 1 then l.streak + 1 else 1 end,
+  best_streak = greatest(l.best_streak, case when l.last_duo_day_on = t.d - 1 then l.streak + 1 else 1 end),
+  duo_days = l.duo_days + 1,
+  last_duo_day_on = t.d
+from t
+where l.status = 'active' and (l.last_duo_day_on is null or l.last_duo_day_on < t.d)
+  and exists (select 1 from jsonb_array_elements(l.recent_days) e where e ->> 'day' = to_char(t.d, 'YYYY-MM-DD') and (e ->> 'a')::boolean and (e ->> 'b')::boolean);
+```
+
+5. Plus tard, une fois l'ancienne API éteinte pour de bon : retirer `photo` de `live_activity_tokens_activity_check`,
+   `daily_photo` des `notification_settings.disabled_kinds`, et la colonne `links.last_duo_photo_on`. La table
+   `daily_photos` et ses fichiers restent tant que les liens existent : ce sont les souvenirs des personnes (montrés
+   dans « Le lien »), effacés avec le lien ou le compte comme avant.
+
+Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées) ; les photos du jour
+n'ont pas été touchées.

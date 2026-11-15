@@ -26,7 +26,7 @@ export function SettingsSection({ title, rows, children, footer, variant = 'grou
   return (
     <View style={[styles.base, style]}>
       {title ? (
-        <Text variant="label" size={11} muted style={styles.sec} accessibilityRole="header">
+        <Text variant="label" size={13} muted style={styles.sec} accessibilityRole="header">
           {title}
         </Text>
       ) : null}
@@ -43,7 +43,7 @@ export function SettingsSection({ title, rows, children, footer, variant = 'grou
         {children}
       </View>
       {footer ? (
-        <Text variant="small" size={12} muted style={styles.footer}>
+        <Text variant="small" size={13} muted style={styles.footer}>
           {footer}
         </Text>
       ) : null}
@@ -53,7 +53,7 @@ export function SettingsSection({ title, rows, children, footer, variant = 'grou
 
 const styles = StyleSheet.create({
   base: { gap: space.sm + 2 },
-  sec: { fontFamily: type.bodyHeavy.fontFamily, letterSpacing: 11 * 0.12, paddingHorizontal: space.xs + 2 },
+  sec: { fontFamily: type.bodyHeavy.fontFamily, letterSpacing: 13 * 0.08, paddingHorizontal: space.xs + 2 },
   group: {
     backgroundColor: color.panel,
     borderWidth: size.border,

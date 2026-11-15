@@ -16,9 +16,20 @@ export interface TextProps extends RNTextProps {
   /** Texte secondaire (`.mute`). */
   muted?: boolean;
   center?: boolean;
-  /** Taille de police personnalisée ; l'interlignage suit la proportion du variant. */
+  /** Taille de police personnalisée ; l'interlignage suit la proportion du variant. Relevée à 13 pt au moins. */
   size?: number;
+  /**
+   * Seule exception au plancher de 13 pt : les libellés de la barre d'onglets (comme ceux d'iOS, 10 pt), toujours
+   * doublés d'une icône. Ne pas l'utiliser ailleurs.
+   */
+  tabLabel?: boolean;
 }
+
+/**
+ * Plancher de lisibilité : aucun texte de l'app sous 13 pt (règle du design, `docs/DESIGN.md`). Une taille plus petite
+ * demandée par un composant est relevée ici, interlignage compris.
+ */
+export const MIN_TEXT_SIZE = 13;
 
 /** Vrai dans un `Text` : un `Text` imbriqué n'est qu'un morceau de la phrase (pas de cadre à lui). */
 const InText = createContext(false);
@@ -26,14 +37,18 @@ const InText = createContext(false);
 /** Vrai quand ce composant est rendu à l'intérieur d'un `Text` (morceau de phrase). */
 export const useInText = (): boolean => useContext(InText);
 
-export function Text({ variant = 'body', color: tint, dim, muted, center, size, style, children, ...rest }: TextProps) {
+export function Text({ variant = 'body', color: tint, dim, muted, center, size, tabLabel, style, children, ...rest }: TextProps) {
   const ink = useInk();
   const mute = useMute();
   const nested = useContext(InText);
   const base = type[variant];
   const fg = tint ?? (muted ? mute : ink);
-  const sized = size ? { fontSize: size, lineHeight: Math.round(size * (base.lineHeight / base.fontSize)) } : null;
-  const composed = [base, { color: fg }, sized, dim && styles.dim, center && styles.center, style];
+  const wanted = size ?? base.fontSize;
+  const px = tabLabel ? wanted : Math.max(MIN_TEXT_SIZE, wanted);
+  const sized = size || wanted < MIN_TEXT_SIZE ? { fontSize: px, lineHeight: Math.round(px * (base.lineHeight / base.fontSize)) } : null;
+  // Relevé au plancher : l'interlignage serré prévu pour la petite taille ferait chevaucher les lignes.
+  const raised = px !== wanted ? { lineHeight: Math.round(px * 1.25) } : null;
+  const composed = [base, { color: fg }, sized, dim && styles.dim, center && styles.center, style, raised];
   // Un morceau imbriqué ne reçoit pas le recadrage iOS (marges et marge intérieure de `fitLineHeight`) : seul le
   // parent a un cadre. Les espaces normales avant « ? ! : ; » deviennent insécables (voir `lib/runs`).
   const text = (

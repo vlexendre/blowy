@@ -10,11 +10,13 @@ import { type CareAction, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Appear,
+  Avatar,
   Banner,
   CareBar,
   CareIcon,
   ChallengeEntry,
   EntryCard,
+  EntryGroup,
   Glyph,
   HeroMeter,
   Icon,
@@ -29,16 +31,18 @@ import {
   StreakCelebration,
   StreakFlame,
   TabTemplate,
+  useHelloWave,
   usePetLure,
 } from '@blowy/ui';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useIsFocused, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { VISION_TEST_ROUTE } from '@/features/encounters';
-import { errorText } from '@/features/links';
-import { useMe } from '@/features/me';
+import { errorText, useLinks } from '@/features/links';
+import { openLegal, useMe } from '@/features/me';
+import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
 import { careAvailable, careHot, nextItem, pickLine, useCare, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { useAwayFromHome, useOuting, useRitualsToday, useStreakParty } from '@/features/rituals';
@@ -71,7 +75,21 @@ export default function PetHome() {
   const [refreshing, setRefreshing] = useState(false);
   // Soin glissé de la barre jusqu'au pet : le pet le suit des yeux (même effet qu'un tap une fois lâché sur lui).
   const lure = usePetLure();
+  // Un lien arrive au niveau où l'on se voit : un rappel calme, une fois par lien.
+  const links = useLinks();
+  const meetSeen = useMeetReminders((s) => s.seen);
+  const dismissMeet = useMeetReminders((s) => s.dismiss);
+  const meet = pendingMeetReminder(links.data, meetSeen);
   const presented = useRef<string | null>(null);
+  // Retour dans l'app (rare, budget partagé) : il fait coucou depuis sa scène, sans rien couvrir.
+  const focused = useIsFocused();
+  useHelloWave(
+    () => {
+      play('wave');
+      say(t.hello);
+    },
+    { seed: pet.data?.pet.id, active: focused },
+  );
 
   useEffect(() => {
     if (!said) return;
@@ -228,15 +246,9 @@ export default function PetHome() {
               </Appear>
             ) : null}
 
-            {d?.unreadReviewId ? (
-              <Appear once={`home:review:${d.unreadReviewId}`} delay={80}>
-                <EntryCard
-                  left={<Icon name="cadeau" size={34} />}
-                  title={r.review.homeTitle}
-                  text={r.review.homeText(p.name)}
-                  chevron
-                  onPress={() => router.push({ pathname: '/pet/bilan/[id]', params: { id: d.unreadReviewId as string } })}
-                />
+            {sulking ? (
+              <Appear once="home:sulk" delay={60}>
+                <EntryCard tone="alert" left={<CareIcon name="door" size={30} color={color.danger} />} title={t.sulkTitle(p.name)} text={t.sulkText} />
               </Appear>
             ) : null}
 
@@ -282,6 +294,33 @@ export default function PetHome() {
               <Banner tone="error" text={r.entry.error} actionLabel={r.entry.retry} onAction={() => void today.refetch()} />
             ) : null}
 
+            {d?.unreadReviewId ? (
+              <Appear once={`home:review:${d.unreadReviewId}`} delay={80}>
+                <EntryCard
+                  left={<Icon name="cadeau" size={34} />}
+                  title={r.review.homeTitle}
+                  text={r.review.homeText(p.name)}
+                  chevron
+                  onPress={() => router.push({ pathname: '/pet/bilan/[id]', params: { id: d.unreadReviewId as string } })}
+                />
+              </Appear>
+            ) : null}
+
+            {meet ? (
+              <Appear once={`home:meet:${meet.id}`} delay={150}>
+                <Banner
+                  tone="info"
+                  title={t.meetTitle(meet.other.displayName)}
+                  text={t.meetText}
+                  actionLabel={t.meetAction}
+                  onAction={openLegal('securite')}
+                  actionBelow
+                  onClose={() => dismissMeet(meet.id)}
+                  closeLabel={t.meetClose}
+                />
+              </Appear>
+            ) : null}
+
             {d?.proofAsked.map((ask) => (
               <Appear key={ask.habitRef} once={`home:proof:${ask.habitRef}`} delay={160}>
                 <EntryCard
@@ -311,38 +350,37 @@ export default function PetHome() {
             </Appear>
             {careError ? <Banner tone="error" text={errorText(care.error, t.careError)} onClose={() => care.reset()} /> : null}
 
-            <Appear once="home:habits" delay={180}>
-              <EntryCard
-                left={<Glyph name="camera" size={26} color={color.accent} />}
-                title={r.home.habitsTitle}
-                text={habitsText}
-                chevron
-                onPress={() => router.push('/pet/habitudes')}
-              />
-            </Appear>
-
-            <Appear once="home:wardrobe" delay={200}>
-              {sulking ? (
-                <EntryCard tone="alert" left={<CareIcon name="door" size={30} color={color.danger} />} title={t.sulkTitle(p.name)} text={t.sulkText} />
-              ) : (
+            {/* Ses coins à lui, réunis dans une carte : habitudes, garde-robe, caractère. */}
+            <Appear once="home:more" delay={180}>
+              <EntryGroup>
                 <EntryCard
+                  inGroup
+                  left={<Glyph name="camera" size={26} color={color.accent} />}
+                  title={r.home.habitsTitle}
+                  text={habitsText}
+                  chevron
+                  onPress={() => router.push('/pet/habitudes')}
+                />
+                <EntryCard
+                  inGroup
                   left={<ItemImage id={next?.id ?? p.outfit.head ?? 'couronne'} size={46} />}
                   title={t.wardrobeTitle(owned, w?.items.length ?? 64)}
                   text={nextText}
                   badge={fresh.length ? t.newCount(fresh.length) : undefined}
+                  chevron={!fresh.length}
                   onPress={() => router.push('/pet/garde-robe')}
                   accessibilityLabel={`${t.wardrobeA11y}, ${t.wardrobeTitle(owned, w?.items.length ?? 64)}, ${nextText}`}
                 />
-              )}
-            </Appear>
-            <Appear once="home:character" delay={260}>
-              <EntryCard
-                title={t.character}
-                text={t.characterText(formLabel[p.form], challengeDone)}
-                chevron
-                onPress={() => router.push('/pet/caractere')}
-                accessibilityLabel={`${t.characterA11y}, ${t.characterText(formLabel[p.form], challengeDone)}`}
-              />
+                <EntryCard
+                  inGroup
+                  left={<Avatar size={40} pet={look} hidden />}
+                  title={t.character}
+                  text={t.characterText(formLabel[p.form], challengeDone)}
+                  chevron
+                  onPress={() => router.push('/pet/caractere')}
+                  accessibilityLabel={`${t.characterA11y}, ${t.characterText(formLabel[p.form], challengeDone)}`}
+                />
+              </EntryGroup>
             </Appear>
             {party ? (
               <StreakCelebration

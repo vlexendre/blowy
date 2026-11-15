@@ -6,7 +6,7 @@ import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { useEncounters, useShareInvite } from '@/features/encounters';
-import { isNewLink, sortLinks, timeLabel, useLinks, waitingForMyPhoto } from '@/features/links';
+import { isMyTurn, isNewLink, sortLinks, streaksWaitingOnMe, timeLabel, useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { chats as t } from '@/locales/chats';
 
@@ -20,7 +20,8 @@ export default function ChatsScreen() {
 
   const list = sortLinks(links.data ?? []);
   const incoming = encounters.data?.incoming ?? [];
-  const waiting = waitingForMyPhoto(list);
+  // Séries en jeu où l'autre a déjà écrit aujourd'hui : c'est à toi (la plus longue d'abord).
+  const waiting = streaksWaitingOnMe(list);
   const petName = pet.data?.pet.name ?? '';
   const now = new Date();
 
@@ -57,17 +58,17 @@ export default function ChatsScreen() {
       ) : null}
 
       {waitingFirst ? (
-        <Appear once={`chats:photo:${waitingFirst.id}:${waitingFirst.today.day}`} delay={first ? 160 : 0}>
+        <Appear once={`chats:turn:${waitingFirst.id}:${waitingFirst.today.day}`} delay={first ? 160 : 0}>
         <NudgeBanner
           gradient="orange"
           icon="flamme"
-          kicker={t.photoKicker}
-          title={t.photoTitle(waiting.length)}
-          text={t.photoText(waiting.map((l) => l.other.displayName))}
+          kicker={t.turnKicker}
+          title={t.turnTitle(waiting.length)}
+          text={t.turnText(waiting.map((l) => l.other.displayName))}
           species={pet.data?.pet.species ?? waitingFirst.myPet.species}
           mood="joie"
-          onPress={() => router.push(`/link/${waitingFirst.id}?tab=today`)}
-          accessibilityLabel={t.photoA11y}
+          onPress={() => router.push(`/link/${waitingFirst.id}`)}
+          accessibilityLabel={t.turnA11y}
         />
         </Appear>
       ) : null}
@@ -111,6 +112,9 @@ export default function ChatsScreen() {
               emptyPreview={t.emptyPreview}
               ghostLabel={t.ghost}
               newLabel={isNewLink(l, now) ? t.isNew : undefined}
+              streak={l.status === 'active' ? l.streak : 0}
+              streakUnit={t.streakUnit}
+              turnLabel={isMyTurn(l) ? t.turn : undefined}
               onPress={() => router.push(`/link/${l.id}`)}
             />
             </Appear>

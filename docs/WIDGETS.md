@@ -1,8 +1,8 @@
 # Widgets iOS et activités en direct (spéc §19)
 
 Ce qui existe : deux widgets d'écran d'accueil (petit, moyen), deux widgets d'écran verrouillé (rond, rectangulaire)
-et trois activités en direct (Dynamic Island et écran verrouillé) : le défi du jour accepté, « Léa a posté, à toi »,
-une sortie en cours. Rien sur Android, sur le web ni dans Expo Go : le pont JavaScript n'y fait rien.
+et trois activités en direct (Dynamic Island et écran verrouillé) : le défi du jour accepté, la série d'un lien le soir
+(« Léa t'a écrit, à toi avant minuit », spéc §24), une sortie en cours. Rien sur Android, sur le web ni dans Expo Go : le pont JavaScript n'y fait rien.
 
 ## Comment c'est construit
 
@@ -38,11 +38,13 @@ recharge les deux widgets **si le contenu a changé**. L'extension montre le mom
 dernier moment.
 
 Les activités sont démarrées par l'app (au premier plan, comme l'exige ActivityKit), une seule fois par clé
-(`challenge:<jour>`, `photo:<lien>:<jour>`) même si la personne les retire ; mises à jour et terminées par l'app au fil
-des lectures (défi relevé → « Défi relevé » 15 min ; photo envoyée → « Photo envoyée » 10 min ; minuit → retirée).
+(`challenge:<jour>`, `link:<lien>:<jour>`) même si la personne les retire ; mises à jour et terminées par l'app au fil
+des lectures (défi relevé → « Défi relevé » 15 min ; tu as écrit dans le lien → « Vous vous êtes écrit » 10 min ; minuit → retirée). L'activité d'un lien ne démarre dans
+l'app que le soir (19 h – 22 h, Paris, comme le rappel du serveur), quand l'autre a écrit aujourd'hui et pas toi : la plus
+longue série en jeu d'abord.
 Pour la sortie : `startOuting(pet)` / `endOuting()` (`src/features/widgets`) sont prêts pour l'écran de la sortie.
 
-Liens profonds : widgets et défi → `blowy://pet` ; photo → `blowy://link/<id>`.
+Liens profonds : widgets et défi → `blowy://pet` ; série d'un lien → `blowy://link/<id>`.
 
 ## À faire dans le portail Apple (une fois)
 
@@ -93,7 +95,8 @@ Ne pas les modifier dans `ios/` : `prebuild --clean` repart de `targets/widget`.
       déployée avec « Y aller » ; écran verrouillé : bannière, barre qui se vide jusqu'à minuit, « Série de N en jeu »).
 - [ ] Relever le défi : « Défi relevé », puis l'activité s'efface au bout de 15 min. La retirer à la main, rouvrir
       l'app : elle ne revient pas le même jour.
-- [ ] Un lien poste sa photo du jour avant toi : « Léa a posté, à toi » ; toucher ouvre le lien.
+- [ ] Le soir (19 h – 22 h), un lien t'a écrit et pas toi : « Léa t'a écrit. À toi », série en jeu ; « Écrire » ouvre le
+      chat ; y écrire montre « Vous vous êtes écrit » puis l'activité s'efface.
 - [ ] Se déconnecter : les widgets passent sur « Ouvre Blowy », les activités disparaissent.
 - [ ] Mode avion pendant une heure : le widget avance seul (la sociabilité baisse), sans appeler le réseau.
 
@@ -101,15 +104,15 @@ Ne pas les modifier dans `ios/` : `prebuild --clean` repart de `targets/widget`.
 
 **Fait côté API** (intégration V7, `apps/api/README.md` « Activités en direct iOS ») : jetons rangés à part
 (`live_activity_tokens`), adaptateur APNs (variables `APNS_KEY_P8`, `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_ENVIRONMENT`),
-photo démarrée par push, défi seulement `update` / `end`. Une fois l'API déployée avec la clé, mettre
-`EXPO_PUBLIC_LIVE_ACTIVITY_PUSH=1` dans les profils de `apps/mobile/eas.json`. Facultatif mais utile : envoyer aussi
-`liveActivity.linkId` avec le jeton `update` d'une activité photo (sinon, poster dans un lien termine toutes les
-activités « photo » de la personne).
+série d'un lien démarrée par push avec le rappel du soir `your_turn`, défi seulement `update` / `end`. Une fois l'API déployée avec la clé, mettre
+`EXPO_PUBLIC_LIVE_ACTIVITY_PUSH=1` dans les profils de `apps/mobile/eas.json`. L'app envoie
+`liveActivity.linkId` avec le jeton `update` d'une activité `link` (lu dans l'URL de l'activité) : écrire dans un lien ne
+termine que l'activité de ce lien.
 
 **Ce que l'app enverra** à `POST /v1/devices` (`RegisterDeviceBody`) :
 `{ token, platform: 'ios', timeZone, kind: 'apns_live_activity', liveActivity: { use: 'start' } }` pour le jeton
 « push-to-start » (iOS 17.2+, un par appareil, peut changer), et
-`{ …, liveActivity: { use: 'update', activity: 'challenge' | 'photo' | 'outing', activityId } }` pour chaque activité en
+`{ …, liveActivity: { use: 'update', activity: 'challenge' | 'link' | 'outing', activityId, linkId? } }` pour chaque activité en
 cours (un jeton par activité, qui peut changer pendant sa vie). Jetons en hexadécimal.
 
 **Ce que l'API doit faire** (`LiveActivityPusher`, `apps/api/src/integrations/push/live-activity.ts`) :
@@ -129,11 +132,11 @@ cours (un jeton par activité, qui peut changer pendant sa vie). Jetons en hexad
 // Démarrer (jeton use = start). iOS 18+ : "input-push-token": 1 renvoie un jeton update à l'app.
 { "aps": { "timestamp": 1794757320, "event": "start",
   "attributes-type": "BlowyActivityAttributes",
-  "attributes": { "kind": "photo", "pet": { "name": "Nino", "species": "nino" }, "startedAt": 1794757320,
+  "attributes": { "kind": "link", "pet": { "name": "Nino", "species": "nino" }, "startedAt": 1794757320,
                   "url": "blowy://link/<linkId>", "otherName": "Léa" },
-  "content-state": { "endsAt": 1794783600, "streak": 0, "title": null, "done": false },
+  "content-state": { "endsAt": 1794783600, "streak": 4, "title": null, "done": false },
   "stale-date": 1794783600, "relevance-score": 75, "input-push-token": 1,
-  "alert": { "title": "Léa a posté", "body": "À toi : ta photo du jour avant minuit." } } }
+  "alert": { "title": "Série avec Léa", "body": "4 jours d’affilée. À toi d’écrire avant minuit." } } }
 // Mettre à jour (jeton use = update de cette activité)
 { "aps": { "timestamp": 1794760000, "event": "update", "stale-date": 1794783600,
   "content-state": { "endsAt": 1794783600, "streak": 12, "title": "Un café dehors", "done": false } } }
@@ -142,9 +145,9 @@ cours (un jeton par activité, qui peut changer pendant sa vie). Jetons en hexad
   "content-state": { "endsAt": 1794783600, "streak": 13, "title": "Un café dehors", "done": true } } }
 ```
 
-Correspondance avec le notifieur actuel (`event: 'start'` sur `daily_photo` et `daily_challenge`) : `photoFrom` →
-`otherName`, `endsAt` ISO → secondes, `streak` → `streak`, nom et espèce du minimoa lus par l'API. Démarrer par push
-**seulement la photo** : l'activité du défi n'a de sens qu'une fois le défi accepté, dans l'app ; côté défi, se
+Correspondance avec le notifieur (`event: 'start'` sur `your_turn`) : `writeTo` → `otherName`, `endsAt` ISO →
+secondes, `streak` (série du lien mis en avant) → `streak`, nom et espèce du minimoa lus par l'API. Démarrer par push
+**seulement la série d'un lien** : l'activité du défi n'a de sens qu'une fois le défi accepté, dans l'app ; côté défi, se
 contenter de `update` (série en danger) et `end` (minuit). Référence :
 [Starting and updating Live Activities with ActivityKit push notifications](https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications).
 

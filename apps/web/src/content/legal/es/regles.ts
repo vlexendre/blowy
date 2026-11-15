@@ -26,7 +26,7 @@ export const regles: LegalPage = {
 
     { h2: 'Nada de desnudos ni de contenido sexual', id: 'contenus' },
     {
-      p: 'Ni en los mensajes, ni en la foto del día, ni en la foto de prueba. Tampoco contenido violento, impactante o ilegal. La foto del día es tu café, tus vistas, tus zapatillas, tu cara por la mañana.',
+      p: 'Ni en los mensajes, ni en la foto de perfil, ni en la foto de prueba. Tampoco contenido violento, impactante o ilegal. Una foto de prueba son tus zapatillas, tu libro, tu plato: no tú en ropa interior.',
     },
 
     { h2: 'Sé tú', id: 'authenticite' },

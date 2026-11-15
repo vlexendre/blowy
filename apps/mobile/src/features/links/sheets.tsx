@@ -1,6 +1,6 @@
 /**
- * Feuilles partagées par les écrans de lien et de rencontre : choix de la source de la photo du jour,
- * signalement (raisons du contrat) et confirmation d'une action lourde (bloquer, quitter).
+ * Feuilles partagées par les écrans de lien et de rencontre : signalement (raisons du contrat) et confirmation d'une
+ * action lourde (bloquer, quitter).
  * Composition de @blowy/ui uniquement ; les écrans gardent la navigation.
  */
 import { ApiError } from '@blowy/api-client';
@@ -10,28 +10,9 @@ import { Banner, Button, Glyph, ListRow, SheetTemplate, Text, TextField, type Ti
 import { useEffect, useState } from 'react';
 
 import { useReport } from '@/features/safety';
-import { options as t, today as todayText } from '@/locales/chats';
+import { options as t } from '@/locales/chats';
 
 type Reason = ReportBody['reason'];
-
-export function PhotoSourceSheet({ visible, onClose, onPick }: { visible: boolean; onClose: () => void; onPick: (source: 'camera' | 'library') => void }) {
-  return (
-    <SheetTemplate
-      visible={visible}
-      onClose={onClose}
-      title={todayText.pickTitle}
-      closeLabel={t.close}
-      footer={
-        <>
-          <Button label={todayText.camera} icon="camera" onPress={() => onPick('camera')} />
-          <Button label={todayText.library} variant="ghost" onPress={() => onPick('library')} />
-        </>
-      }
-    >
-      <Text muted>{todayText.pickText}</Text>
-    </SheetTemplate>
-  );
-}
 
 export interface ReportSheetProps {
   visible: boolean;

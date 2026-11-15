@@ -8,7 +8,7 @@
  */
 import { ApiError } from '@blowy/api-client';
 import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
-import { ITEMS, OFFERS, type Plan, type PlusPerk, monthlyEquivalentMinor, type Species } from '@blowy/domain';
+import { ITEMS, OFFERS, type Plan, PLUS_PERKS, type PlusPerk, monthlyEquivalentMinor, type Species } from '@blowy/domain';
 import { PlusTemplate, type PlusOfferView, SheetTemplate } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -74,6 +74,24 @@ export function useStoreProducts(productIds: readonly string[]) {
     staleTime: 30 * 60_000,
     retry: false,
   });
+}
+
+/**
+ * Les avantages de Blowy+, une seule source pour toute l'app : la liste et la phrase de l'API (`paywall.perks`, tirée de
+ * `entitlements`), avec leur forme courte de l'app. Avant que l'API ait répondu : les clés du domaine (`PLUS_PERKS`).
+ * La feuille, l'onglet Moi et les rencontres lisent tous ici (jamais une phrase d'avantage écrite ailleurs).
+ */
+export function usePlusPerks(petName: string): { key: PlusPerk; label: string | null; short: readonly string[] }[] {
+  const paywall = usePaywall();
+  const short = t.perks(petName) as Record<PlusPerk, readonly string[]>;
+  const fromApi = paywall.data?.perks;
+  if (fromApi?.length) return fromApi.map((p) => ({ key: p.key, label: p.label, short: short[p.key] ?? [p.label] }));
+  return PLUS_PERKS.map((key) => ({ key, label: null, short: short[key] }));
+}
+
+/** Les avantages en une ligne (« Toute la carte · Changer de ville · … »), pour un bandeau. */
+export function plusPerksLine(perks: ReturnType<typeof usePlusPerks>, max = 4): string {
+  return perks.flatMap((p) => p.short).slice(0, max).join(' · ');
 }
 
 /**
@@ -224,7 +242,11 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
 
   const byId = useMemo(() => new Map((store.data ?? []).map((p) => [p.productId, p])), [store.data]);
   const highlight = REASON_PERK[reason];
-  const perks = (data?.perks ?? []).map((p) => ({ key: p.key, label: p.label, highlight: p.key === highlight }));
+  // Libellés courts de l'app (une ligne chacun) ; la phrase de l'API reste pour un avantage que l'app ne connaît pas.
+  const short = t.perks(pet.name) as Partial<Record<string, readonly string[]>>;
+  const perks = (data?.perks ?? []).flatMap((p) =>
+    (short[p.key] ?? [p.label]).map((label, i) => ({ key: `${p.key}:${i}`, label, highlight: p.key === highlight })),
+  );
   perks.sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight));
 
   const views: PlusOfferView<PlanDto>[] = offers.map((o) => {
@@ -239,7 +261,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
       perMonth: prices.perMonth,
       badge: o.discountPercent ? t.badge(o.discountPercent) : null,
       short: o.trialDays > 0 ? name : t.lead.noTrial(name),
-      timeline: eligible && data ? data.trial.timeline : null,
+      timeline: eligible && data ? data.trial.timeline.map((step, i) => ({ title: step.title, text: t.timeline[i] ?? step.text })) : null,
     };
   });
   const current = offers.find((o) => o.plan === chosen);
@@ -325,10 +347,11 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
             ? [
                 { label: t.links.terms, onPress: () => void Linking.openURL(legal.termsUrl) },
                 { label: t.links.privacy, onPress: () => void Linking.openURL(legal.privacyUrl) },
-                { label: t.links.plusTerms, onPress: () => void Linking.openURL(legal.plusTermsUrl) },
               ]
             : []
         }
+        moreLinks={legal ? [{ label: t.links.plusTerms, onPress: () => void Linking.openURL(legal.plusTermsUrl) }] : []}
+        ctaNote={isMember || !currentView ? null : trialing ? t.ctaNote.trial(currentView.price) : t.ctaNote.plain(currentView.price)}
       />
     </SheetTemplate>
   );

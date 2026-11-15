@@ -6,8 +6,10 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { createApp } from '../src/app';
 import { loadEnv } from '../src/config/env';
 import type { ConsoleMailer } from '../src/integrations/mailer/mailer';
+import type { Storage } from '../src/integrations/storage/ports';
+import type { MemoryDb } from '../src/persistence/memory-db';
 import type { Clock } from '../src/shared/clock';
-import { MAILER } from '../src/shared/tokens';
+import { MAILER, MEMORY_DB, STORAGE } from '../src/shared/tokens';
 
 /** Horloge de test : on avance le temps à la main. */
 export class FakeClock implements Clock {
@@ -83,6 +85,21 @@ export const onboardBody = (overrides: Partial<OnboardInput> = {}): OnboardInput
 export async function upload(uploadUrl: string, contentType = 'image/jpeg'): Promise<void> {
   const res = await fetch(uploadUrl, { method: 'PUT', headers: { 'content-type': contentType }, body: new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3]) });
   if (!res.ok) throw new Error(`envoi refusé : ${res.status}`);
+}
+
+/**
+ * Une ancienne photo du jour (d'avant la spéc §24), comme la base en garde : le fichier, la ligne `daily_photos` et le
+ * message `photo` du chat. Plus aucune route n'en crée ; les liens existants les gardent dans leurs souvenirs.
+ */
+export async function seedPastPhoto(world: TestWorld, linkId: string, userId: string, day: string): Promise<string> {
+  const storage = world.app.get<Storage>(STORAGE);
+  const db = world.app.get<MemoryDb>(MEMORY_DB);
+  const path = `links/${linkId}/${userId}/${day}-${randomUUID()}.jpg`;
+  await upload((await storage.createUploadTicket(path)).uploadUrl);
+  const at = new Date(`${day}T12:00:00Z`).toISOString();
+  db.dailyPhotos.push({ id: randomUUID(), linkId, userId, day, mediaPath: path, createdAt: at });
+  db.messages.push({ id: randomUUID(), linkId, authorKind: 'user', authorId: userId, kind: 'photo', body: null, mediaPath: path, createdAt: at });
+  return path;
 }
 
 /** Attend une erreur d'API et rend son code et son message. */

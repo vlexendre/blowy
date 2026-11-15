@@ -48,13 +48,12 @@ const fr = {
     (other: string) => `Deuxième chance. Je la garde précieusement.`,
     (other: string) => `Ranimés. Je respire. Merci.`,
   ] as Line<[string]>,
-  duoPhoto: [
-    (other: string) => `Photo du jour, des deux côtés. ${other} et moi, on l’accroche au mur.`,
-    (other: string) => `Les deux photos sont là. Joli duo.`,
-    (other: string) => `Vous vous êtes montré votre journée. J’aime bien ce rituel.`,
-  ] as Line<[string]>,
-  /** Ajouté après la photo à deux quand la série dépasse un jour. */
-  duoStreak: (n: number) => ` ${n} jours d’affilée.`,
+  /** Palier de série d'un lien (3, 7, 14… jours d'affilée où les deux se sont écrit). */
+  streakMilestone: [
+    (other: string, days: number) => `${days} jours d’affilée à vous écrire. ${other} et moi, on le note quelque part.`,
+    (other: string, days: number) => `${days} jours sans un trou dans la conversation. Joli duo.`,
+    (other: string, days: number) => `Série de ${days} jours. Je fais semblant de ne pas compter. Je compte.`,
+  ] as Line<[string, number]>,
   encounterWhere: {
     friend: [(mutual: string) => `Je l’ai croisé chez ${mutual}.`, (mutual: string) => `C’est un pote du minimoa de ${mutual}.`] as Line<[string]>,
     nearby: ['On n’habite pas loin l’un de l’autre.', 'On s’est croisés dans le quartier.'] as readonly string[],
@@ -97,10 +96,9 @@ export const ghostLine = (locale: Locale, p: PetPair, seed: number): string => p
 
 export const revivedLine = (locale: Locale, p: PetPair, seed: number): string => pick(voiceText.in(locale).revived, seed)(p.other);
 
-export const duoPhotoLine = (locale: Locale, p: PetPair, streak: number, seed: number): string => {
-  const t = voiceText.in(locale);
-  return pick(t.duoPhoto, seed)(p.other) + (streak > 1 ? t.duoStreak(streak) : '');
-};
+/** Palier de série d'un lien atteint (`LINK_STREAK_MILESTONES`). */
+export const streakMilestoneLine = (locale: Locale, p: PetPair, streak: number, seed: number): string =>
+  pick(voiceText.in(locale).streakMilestone, seed)(p.other, streak);
 
 export interface EncounterIntroInput {
   /** Nom du minimoa croisé. */

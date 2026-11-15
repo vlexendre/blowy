@@ -55,7 +55,7 @@ export class PetCharacter {
     const delta = custom ? (options.extra ?? {}) : sumDeltas(deltaFor(kind), options.extra ?? {});
     const now = this.clock.now();
     await this.pets.save({ ...pet, gauges: addGauges(pet.gauges, delta), decayedOn: dayOf(now) });
-    // Sociabilité (besoin principal) : sortir, saluer, écrire, poster la photo du jour, tenir une habitude tournée vers les autres.
+    // Sociabilité (besoin principal) : sortir, saluer, écrire, s'écrire chaque jour avec un lien, tenir une habitude tournée vers les autres.
     const gain = options.sociability ?? SOCIABILITY_GAIN[kind] ?? 0;
     if (gain !== 0) await this.pets.saveNeeds(pet.id, raiseSociability(pet.needs, gain), now.toISOString());
     return this.pets.appendEvent({ petId: pet.id, kind, delta, createdAt: now.toISOString() });

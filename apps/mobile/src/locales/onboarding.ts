@@ -22,7 +22,7 @@ export const onboarding = messages({
       chat: [
         { from: 'pet', text: 'J’ai croisé quelqu’un 👀' },
         { from: 'me', text: 'Qui ça ?' },
-        { from: 'pet', text: 'Une piquante. 91 % compatible. Je te la présente ?' },
+        { from: 'pet', text: 'Même quartier, même envie de bouger. Je te présente ?' },
       ],
       create: 'Créer mon minimoa',
       login: 'J’ai déjà un compte',
@@ -39,7 +39,7 @@ export const onboarding = messages({
       tap: 'Touche pour la suite',
     },
     craft: {
-      title: [{ text: 'TON MINIMOA,\n' }, { text: 'TA VIBE', dim: true }],
+      title: [{ text: 'TON MINIMOA,\n' }, { text: 'TOI EN PETIT.', dim: true }],
       speech: (name: string) => `Salut. Moi, c’est ${name}.`,
       badge: 'Exemplaire unique',
       nameLabel: 'Son petit nom',
@@ -84,7 +84,7 @@ export const onboarding = messages({
       cta: 'Continuer',
     },
     sexe: {
-      host: (name: string) => `Enchanté, ${name}. Tu es…`,
+      host: (name: string) => `Salut, ${name}. Tu es…`,
       options: {
         femme: 'Une femme',
         homme: 'Un homme',
@@ -159,7 +159,7 @@ export const onboarding = messages({
       // La vraie règle (packages/domain/src/care.ts) : un minimoa négligé boude et ne fait plus de rencontres.
       kicker: (pet: string) => `${pet} te demande une seule chose`,
       title: [{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }],
-      text: 'Un minimoa en forme rencontre du monde. Un minimoa oublié boude, et ne présente plus personne.',
+      text: 'Tu sors, tu tiens tes habitudes : il rencontre plus de monde. Oublié, il boude et ne présente plus personne.',
       hold: 'Promis',
       held: 'Promis.',
       holdHint: 'Reste appuyé',
@@ -171,7 +171,7 @@ export const onboarding = messages({
       title: (pet: string) => [{ text: 'ON GARDE\n' }, { text: `${up(pet)} ?`, dim: true }],
       text: 'Un compte, et il garde tout, même si tu changes de téléphone.',
       chips: ['Ta vision', 'Tes réponses', 'Sa série 🔥'],
-      loginTitle: [{ text: 'CONTENT DE\n' }, { text: 'TE REVOIR.', dim: true }],
+      loginTitle: [{ text: 'TE\n' }, { text: 'REVOILÀ.', dim: true }],
       loginText: 'Connecte-toi comme la première fois : on retrouve ton minimoa.',
       apple: 'Continuer avec Apple',
       google: 'Continuer avec Google',

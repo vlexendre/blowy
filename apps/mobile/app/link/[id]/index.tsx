@@ -1,6 +1,6 @@
 import { levelLabel } from '@/locales/content';
 import type { Link } from '@blowy/contract';
-import { LEVEL_KEYS, MAX_LEVEL, MAX_LIVES, levelProgress } from '@blowy/domain';
+import { LEVEL_KEYS, MAX_LIVES } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Avatar,
@@ -14,8 +14,8 @@ import {
   GhostPanel,
   Header,
   LinkTemplate,
+  LinkTodayHero,
   LivesPanel,
-  MemoriesPanel,
   MemoryGrid,
   MinimoaConsent,
   MinimoaSwitch,
@@ -25,7 +25,6 @@ import {
   Skeleton,
   Stagger,
   Text,
-  TodayCard,
   TodoRow,
   Button,
 } from '@blowy/ui';
@@ -40,7 +39,7 @@ import {
   chatDayLabel,
   chronological,
   errorText,
-  PhotoSourceSheet,
+  linkDayState,
   shortDay,
   useArchiveLink,
   useLevelUps,
@@ -52,33 +51,36 @@ import {
   useMessages,
   useRevive,
   useSendMessage,
-  useSendPhoto,
   useUpdateLinkMinimoas,
   weekStrip,
 } from '@/features/links';
 import { chat as chatText, ghost as ghostText, link as t, memories as memText, minimoas as minimoaText, today as todayText } from '@/locales/chats';
 
-type Tab = 'today' | 'chat' | 'memories';
+/**
+ * Deux onglets : le chat (par défaut) et « Le lien » (la journée, la semaine, les vies, le prochain niveau, les étapes).
+ * Sans photo du jour, il n'y a plus rien à faire ailleurs que dans le chat : la journée et les souvenirs tiennent sur
+ * une seule page. Les anciens liens profonds (`?tab=today`, `?tab=memories`) ouvrent « Le lien ».
+ */
+type Tab = 'chat' | 'lien';
 const TABS = [
-  { key: 'today', label: t.tabs.today },
   { key: 'chat', label: t.tabs.chat },
-  { key: 'memories', label: t.tabs.memories },
+  { key: 'lien', label: t.tabs.lien },
 ] as const;
-const isTab = (v: unknown): v is Tab => v === 'today' || v === 'chat' || v === 'memories';
+const tabOf = (v: unknown): Tab | null => (v === 'chat' ? 'chat' : v === 'lien' || v === 'today' || v === 'memories' ? 'lien' : null);
 
 export default function LinkScreen() {
   const params = useLocalSearchParams<{ id: string; tab?: string }>();
   const id = params.id;
   const router = useRouter();
   const link = useLink(id);
-  const [tab, setTab] = useState<Tab | null>(isTab(params.tab) ? params.tab : null);
-  // Un lien profond (`?tab=today`) vers un écran déjà ouvert change d'onglet.
+  const [tab, setTab] = useState<Tab | null>(tabOf(params.tab));
+  // Un lien profond (`?tab=lien`) vers un écran déjà ouvert change d'onglet.
   useEffect(() => {
-    if (isTab(params.tab)) setTab(params.tab);
+    const next = tabOf(params.tab);
+    if (next) setTab(next);
   }, [params.tab]);
   const [draft, setDraft] = useState('');
   const [tone, setTone] = useState<ComposerTone | null>(null);
-  const [picking, setPicking] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
   useEffect(() => {
     if (notice?.tone !== 'success') return;
@@ -127,8 +129,8 @@ export default function LinkScreen() {
   }
 
   const ghost = l.status === 'ghost';
-  // Par défaut : le chat (maquettes : une ligne de la liste ouvre V6-Chat) ; un lien fantôme ouvre son état (V6-Fantome).
-  const active: Tab = tab ?? (ghost ? 'today' : 'chat');
+  // Par défaut : le chat (maquettes : une ligne de la liste ouvre V6-Chat) ; un lien fantôme a son propre écran (V6-Fantome).
+  const active: Tab = tab ?? 'chat';
 
   // Lien fantôme : écran plein, sans onglets (V6-Fantome).
   if (ghost) {
@@ -138,11 +140,6 @@ export default function LinkScreen() {
       </ScreenMotion>
     );
   }
-
-  const nudge = () => {
-    setDraft(todayText.nudgeDraft);
-    setTab('chat');
-  };
 
   const mm = minimoas.data;
   const muted = mm?.muted ?? false;
@@ -207,7 +204,6 @@ export default function LinkScreen() {
               setDraft={setDraft}
               tone={tone}
               setTone={setTone}
-              onAttach={() => setPicking(true)}
               notice={notice}
               onNotice={setNotice}
               rhythm={mm ? (mm.muted ? chatText.rhythmMuted : mm.consent.reading ? chatText.rhythm(mm.maxPerDay) : chatText.rhythmNoReading(mm.maxPerDay)) : null}
@@ -220,15 +216,12 @@ export default function LinkScreen() {
             <NoticeBanner notice={notice} onClose={() => setNotice(null)} />
           </View>
         ) : null}
-        {active === 'today' ? (
-          <TodayBody link={l} onPick={() => setPicking(true)} onNudge={nudge} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
-        ) : active === 'chat' ? (
-          <ChatBody link={l} onReport={setReporting} />
+        {active === 'lien' ? (
+          <LienBody link={l} onWrite={() => setTab('chat')} onLevels={() => router.push(`/link/${l.id}/niveaux`)} />
         ) : (
-          <MemoriesBody link={l} />
+          <ChatBody link={l} onReport={setReporting} />
         )}
       </LinkTemplate>
-      <PhotoSender link={l} visible={picking} onClose={() => setPicking(false)} onNotice={setNotice} />
 
       {/* Accord de lecture : à la première ouverture du chat, la phrase de l'API telle quelle et les deux choix. */}
       <SheetTemplate
@@ -326,7 +319,7 @@ export default function LinkScreen() {
   );
 }
 
-/** Tirer pour rafraîchir le lien et ses souvenirs. */
+/** Tirer pour rafraîchir le lien et ses étapes. */
 function Refresh({ linkId, ...rest }: { linkId: string }) {
   const link = useLink(linkId);
   const memories = useMemories(linkId);
@@ -345,95 +338,118 @@ function Refresh({ linkId, ...rest }: { linkId: string }) {
   );
 }
 
-// ── Photo du jour : choix de la source puis envoi ────────────────────────────
 type Notice = { tone: 'success' | 'error' | 'info'; text: string };
 
 function NoticeBanner({ notice, onClose }: { notice: Notice; onClose: () => void }) {
   return <Banner tone={notice.tone} text={notice.text} onClose={notice.tone === 'info' ? undefined : onClose} closeLabel={todayText.dismiss} />;
 }
 
-function PhotoSender({ link, visible, onClose, onNotice }: { link: Link; visible: boolean; onClose: () => void; onNotice: (n: Notice | null) => void }) {
-  const send = useSendPhoto(link.id);
-  const linkQuery = useLink(link.id);
+// ── Le lien : la journée, la semaine, le prochain niveau, les étapes ───────────
+const HERO_GRADIENT = { both: 'accent', yourTurn: 'orange', atStake: 'orange', theirTurn: 'rose', fresh: 'coral' } as const;
 
-  const pick = (source: 'camera' | 'library') => {
-    onClose();
-    onNotice(null);
-    send.mutate(source, {
-      onSuccess: (sent) => onNotice(sent ? { tone: 'success', text: todayText.sent } : null),
-      onError: (e) => {
-        if (e instanceof ApiError && e.code === 'already_done') void linkQuery.refetch();
-        onNotice({ tone: 'error', text: errorText(e, todayText.failed, { already_done: todayText.alreadyDone, link_not_active: todayText.notActive }) });
-      },
-    });
-  };
-  useEffect(() => {
-    if (send.isPending) onNotice({ tone: 'info', text: todayText.sending });
-  }, [send.isPending, onNotice]);
-
-  return <PhotoSourceSheet visible={visible} onClose={onClose} onPick={pick} />;
-}
-
-// ── Aujourd'hui ─────────────────────────────────────────────────────────────
-function TodayBody({ link, onPick, onNudge, onLevels }: { link: Link; onPick: () => void; onNudge: () => void; onLevels: () => void }) {
-  const memories = useMemories(link.id);
-  const { today, other } = link;
+function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void; onLevels: () => void }) {
+  const { today, other, streak } = link;
   const name = other.displayName;
-  const progress = levelProgress(link.xp);
-  const nextKey = LEVEL_KEYS[link.level];
-  const atMax = link.level >= MAX_LEVEL || !nextKey;
-
+  const state = linkDayState(link);
+  const copy =
+    state === 'both'
+      ? { title: todayText.both.title, text: todayText.both.text(streak) }
+      : state === 'yourTurn'
+        ? { title: todayText.yourTurn.title, text: todayText.yourTurn.text(name, streak + 1) }
+        : state === 'theirTurn'
+          ? { title: todayText.theirTurn.title(name), text: todayText.theirTurn.text(name, streak + 1) }
+          : state === 'atStake'
+            ? { title: todayText.atStake.title, text: todayText.atStake.text(streak) }
+            : { title: todayText.fresh.title, text: todayText.fresh.text };
+  const next = link.next;
   const key = `${link.id}:${today.day}`;
   return (
     <View style={styles.body}>
-      <Stagger onceKey={`today:${link.id}`} step={70}>
-      <TodayCard
-        key="card"
-        motionKey={key}
-        today={today}
-        otherPet={other.pet}
-        streak={link.streak}
-        labels={{
-          title: todayText.title,
-          streakUnit: todayText.streakUnit(link.streak),
-          hint: todayText.hint,
-          mine: { label: todayText.mineLabel, badge: todayText.mineBadge, emptyTitle: todayText.mineEmpty, emptyCaption: todayText.mineEmptyCaption },
-          theirs: {
-            waitingTitle: todayText.theirsWaiting(name),
-            waitingCaption: todayText.theirsWaitingCaption,
-            lockedTitle: todayText.theirsLocked(name),
-            lockedCaption: todayText.theirsLockedCaption,
-            label: todayText.theirsLabel(name),
-          },
-          cta: today.mine ? todayText.ctaNudge(name) : todayText.ctaTake,
-        }}
-        onCta={today.mine && today.theirs ? undefined : today.mine ? onNudge : onPick}
-        onMinePress={today.mine ? undefined : onPick}
-      />
-      <LivesPanel
-        key="week"
-        animateKey={memories.data ? key : undefined}
-        lives={link.lives}
-        max={MAX_LIVES}
-        count={todayText.livesCount(link.lives)}
-        weekTitle={todayText.weekTitle}
-        week={weekStrip(memories.data, today.day, today)}
-        accessibilityLabel={t.lives(link.lives)}
-      />
-      <Text key="todoTitle" variant="label" size={11} muted style={styles.todoTitle}>
-        {todayText.todoTitle}
-      </Text>
-      <TodoRow
-        key="todo"
-        tile={atMax ? <PetImage art="oeuf" size={38} /> : <Avatar size={34} pet={other.pet} hidden />}
-        tileGradient={atMax ? 'rose' : 'violet'}
-        title={atMax ? levelLabel.oeuf.title : todayText.nextTodo(link.level + 1, levelLabel[nextKey].title)}
-        subtitle={atMax ? todayText.maxText : levelLabel[nextKey].text}
-        chip={atMax ? undefined : todayText.nextChip(Math.max(0, progress.span - progress.into))}
-        onPress={onLevels}
-        accessibilityLabel={todayText.nextA11y}
-      />
+      <Stagger onceKey={`lien:${link.id}`} step={70}>
+        <LinkTodayHero
+          key="hero"
+          motionKey={link.id}
+          streak={streak}
+          streakUnit={todayText.streakUnit(streak)}
+          streakA11y={todayText.streakA11y(streak)}
+          title={copy.title}
+          text={copy.text}
+          myPet={link.myPet}
+          other={other}
+          me={{ label: todayText.me, wrote: today.mine }}
+          them={{ label: name, wrote: today.theirs }}
+          wroteLabel={todayText.wrote}
+          waitingLabel={todayText.waiting}
+          cta={today.mine ? todayText.ctaBack : todayText.ctaWrite(name)}
+          onCta={onWrite}
+          gradient={HERO_GRADIENT[state]}
+        />
+        <LivesPanel
+          key="week"
+          animateKey={key}
+          lives={link.lives}
+          max={MAX_LIVES}
+          count={todayText.livesCount(link.lives)}
+          weekTitle={todayText.weekTitle}
+          week={weekStrip(today)}
+          text={todayText.livesText}
+          accessibilityLabel={t.lives(link.lives)}
+        />
+        <Text key="todoTitle" variant="label" size={11} muted style={styles.todoTitle}>
+          {todayText.todoTitle}
+        </Text>
+        <TodoRow
+          key="todo"
+          tile={next ? <Avatar size={34} pet={other.pet} hidden /> : <PetImage art="oeuf" size={38} />}
+          tileGradient={next ? 'violet' : 'rose'}
+          title={next ? todayText.nextTodo(next.level, levelLabel[next.key].title) : levelLabel.oeuf.title}
+          subtitle={next ? levelLabel[next.key].text : todayText.maxText}
+          chip={next ? todayText.nextChip(next.xpLeft) : undefined}
+          onPress={onLevels}
+          accessibilityLabel={todayText.nextA11y}
+        />
+        <Milestones key="steps" link={link} />
       </Stagger>
+    </View>
+  );
+}
+
+const MILESTONE_ICON = { met: 'coeurs', level: 'etoiles', streak: 'flamme' } as const;
+
+/** Les étapes du lien (rencontre, niveaux passés, paliers de série), puis ses photos d'avant s'il y en a. */
+function Milestones({ link }: { link: Link }) {
+  const memories = useMemories(link.id);
+  if (memories.isPending) {
+    return (
+      <View style={styles.steps}>
+        <Skeleton height={24} width="40%" />
+        <Skeleton height={56} radius="lg" />
+        <Skeleton height={56} radius="lg" />
+      </View>
+    );
+  }
+  if (memories.isError) {
+    return <Banner tone="error" title={memText.loadError} text={memories.error.message} actionLabel={memText.retry} onAction={() => void memories.refetch()} />;
+  }
+  const { milestones, photos, stats } = memories.data;
+  const title = (m: (typeof milestones)[number]): string =>
+    m.kind === 'met' ? memText.met : m.kind === 'streak' ? memText.streak(m.value) : memText.level(m.value, levelLabel[LEVEL_KEYS[m.value - 1] ?? 'rendezvous'].title);
+  return (
+    <View style={styles.steps}>
+      <CountTitle title={memText.title} count={milestones.length} />
+      <Text size={13} muted>
+        {memText.stats(stats)}
+        {stats.bestStreak > 0 ? ` · ${memText.bestStreak(stats.bestStreak)}` : ''}
+      </Text>
+      {milestones.map((m) => (
+        <FeatureRow key={`${m.kind}:${m.value}`} icon={MILESTONE_ICON[m.kind]} title={title(m)} text={m.on ? shortDay(m.on) : memText.earlier} />
+      ))}
+      {photos.length > 0 ? (
+        <>
+          <CountTitle title={memText.photosTitle} count={photos.length} hint={link.level < 5 ? memText.blurredHint : undefined} />
+          <MemoryGrid days={photos} dayLabel={shortDay} blurred={link.level < 5} animateKey={link.id} />
+        </>
+      ) : null}
     </View>
   );
 }
@@ -491,7 +507,6 @@ function ChatComposer({
   setDraft,
   tone,
   setTone,
-  onAttach,
   notice,
   onNotice,
   rhythm,
@@ -504,7 +519,6 @@ function ChatComposer({
   setDraft: (v: string) => void;
   tone: ComposerTone | null;
   setTone: (v: ComposerTone | null) => void;
-  onAttach: () => void;
 }) {
   const send = useSendMessage(link.id);
   const ghost = link.status !== 'active';
@@ -543,40 +557,8 @@ function ChatComposer({
         tone={tone}
         onToneChange={setTone}
         toneLabels={chatText.tones}
-        onAttach={link.today.mine ? undefined : onAttach}
-        attachLabel={chatText.attach}
         sendLabel={chatText.send}
       />
-    </View>
-  );
-}
-
-// ── Souvenirs ───────────────────────────────────────────────────────────────
-function MemoriesBody({ link }: { link: Link }) {
-  const memories = useMemories(link.id);
-  const blurred = link.level < 5;
-  if (memories.isPending) {
-    return (
-      <View style={styles.body}>
-        <Skeleton height={200} radius="xl" />
-        <Skeleton height={120} radius="lg" />
-      </View>
-    );
-  }
-  if (memories.isError) {
-    return <Banner tone="error" title={memText.loadError} text={memories.error.message} actionLabel={memText.retry} onAction={() => void memories.refetch()} />;
-  }
-  const { days, stats } = memories.data;
-  return (
-    <View style={styles.body}>
-      <MemoriesPanel
-        kicker={memText.kicker(link.myPet.name, link.other.pet.name)}
-        title={memText.title}
-        text={memText.subtitle(stats.daysTogether, stats.bestStreak)}
-        pets={[link.myPet.species, link.other.pet.species]}
-      />
-      <CountTitle title={memText.photosTitle} count={stats.photos} hint={blurred && days.length > 0 ? memText.blurredHint : undefined} />
-      <MemoryGrid days={days} dayLabel={shortDay} blurred={blurred} emptyText={memText.empty} animateKey={link.id} />
     </View>
   );
 }
@@ -623,6 +605,7 @@ const styles = StyleSheet.create({
   // Maquettes du lien : blocs séparés de 10, 12 sous les onglets (dont 8 posés par l'en-tête du gabarit).
   body: { gap: 10, paddingTop: 4 },
   todoTitle: { letterSpacing: 1.32, marginTop: 4, marginLeft: 4 },
+  steps: { gap: 10, marginTop: 14 },
   padded: { paddingHorizontal: 16 },
   right: { alignSelf: 'flex-end' },
   grow: { flex: 1, minWidth: 0, gap: 4 },

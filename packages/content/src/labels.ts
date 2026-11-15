@@ -17,8 +17,8 @@ export const brand = {
 
 const fr = {
   tagline: 'Élève ton minimoa. Il te présente du monde.',
-  /** Aperçu d'un message photo dans la liste des chats. */
-  photoPreview: 'Photo du jour',
+  /** Aperçu d'une ancienne photo (message `photo`) dans la liste des chats. */
+  photoPreview: 'Photo',
   poleLabel: {
     casanier: 'casanier',
     sociable: 'sociable',
@@ -32,7 +32,7 @@ const fr = {
   gaugeLabel: {
     social: { low: 'casanier', high: 'sociable', hint: 'Elle bouge quand ton minimoa croise de nouvelles têtes.' },
     play: { low: 'posé', high: 'joueur', hint: 'Elle bouge avec les défis du jour.' },
-    tender: { low: 'piquant', high: 'tendre', hint: 'Elle bouge avec les photos, les mots doux et les vannes.' },
+    tender: { low: 'piquant', high: 'tendre', hint: 'Elle bouge avec les mots doux, les vannes et les jours où vous vous écrivez.' },
     talk: { low: 'discret', high: 'bavard', hint: 'Elle bouge avec les messages.' },
   } as Record<GaugeKey, { low: string; high: string; hint: string }>,
   formLabel: {
@@ -56,7 +56,8 @@ const fr = {
     met_new_pet: 'A croisé un nouveau minimoa',
     waved: 'A salué un minimoa',
     challenge_done: 'A relevé le défi du jour',
-    photo_sent: 'Photo du jour envoyée',
+    photo_sent: 'Photo partagée dans un lien',
+    wrote_together: 'Vous vous êtes écrit tous les deux',
     sweet_word: 'Un mot doux',
     tease: 'Une vanne',
     message_sent: 'A papoté',
@@ -112,7 +113,7 @@ const fr = {
     careDays: (n: number): string => `Occupe-toi de lui ${n} jour${n > 1 ? 's' : ''}`,
     links: (n: number): string => `Crée ${n} lien${n > 1 ? 's' : ''}`,
     bestLevel: (n: number): string => `Atteins le niveau ${n} dans un lien`,
-    bestStreak: (n: number): string => `Fais une série de ${n} photos du jour`,
+    bestStreak: (n: number): string => `Écrivez-vous ${n} jours d’affilée dans un lien`,
     challenges: (n: number): string => `Relève ${n} défi${n > 1 ? 's' : ''} du jour`,
     words: (n: number): string => `Reçois les 3 mots de ${n} pote${n > 1 ? 's' : ''}`,
   } as Record<string, (n: number) => string>,

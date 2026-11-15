@@ -72,7 +72,7 @@ export const ItemTile = memo(function ItemTile({
   premiumLabel,
   newLabel,
   wornLabel,
-  imageSize = 72,
+  imageSize = 64,
   onPress,
   accessibilityHint,
   imageRef,
@@ -120,7 +120,7 @@ export const ItemTile = memo(function ItemTile({
           <ItemImage id={id} size={imageSize} style={locked ? styles.locked : undefined} />
         </View>
       </Shake>
-      <Text variant="bodyBold" size={10.5} muted center numberOfLines={2} style={styles.caption}>
+      <Text variant="bodyBold" size={13} muted center numberOfLines={2} style={styles.caption}>
         {caption}
       </Text>
       {locked && progress ? (
@@ -164,15 +164,15 @@ const styles = StyleSheet.create({
   worn: { borderWidth: 2, borderColor: color.accent, backgroundColor: color.line },
   // `.tile.lock img` : opacité .32.
   locked: { opacity: 0.32 },
-  caption: { lineHeight: 12 },
+  caption: { lineHeight: 15 },
   // `.mini` : 70 % de large, 4 de haut.
   mini: { width: '70%', height: 4, marginTop: 2, borderRadius: radius.pill, backgroundColor: veil.glassStrong, overflow: 'hidden' },
   miniFill: { height: '100%', backgroundColor: color.accent },
   // `.tag` : en haut à droite, 9/800, pilule jaune (violette pour « bientôt »).
   tagBox: { position: 'absolute', top: 7, right: 7 },
-  tag: { paddingVertical: 3, paddingHorizontal: 7, borderRadius: radius.pill, backgroundColor: color.accent, overflow: 'hidden' },
+  tag: { paddingVertical: 1, paddingHorizontal: 8, borderRadius: radius.pill, backgroundColor: color.accent, overflow: 'hidden' },
   tagPremium: { backgroundColor: color.violet },
-  tagText: { letterSpacing: 0.36, lineHeight: 11 },
+  tagText: { letterSpacing: 0.2, lineHeight: 16 },
   shine: { position: 'absolute', top: -6, bottom: -6, left: 0, width: 12, backgroundColor: alpha(color.white, 0.45) },
   sparkle: { position: 'absolute', left: '50%', top: '50%' },
 });

@@ -1,14 +1,11 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Query } from '@nestjs/common';
 import {
-  ConfirmUploadBody,
   Iso,
   type Link,
   type LinkAction,
   type Memories,
   type MessagesPage,
   SendMessageBody,
-  UploadTicketBody,
-  type UploadTicket,
   Uuid,
 } from '@blowy/contract';
 import type { z } from 'zod';
@@ -25,10 +22,8 @@ import type { LinkActionResult } from '../application/link-action';
 import { ListLinks } from '../application/list-links.usecase';
 import { ListMessages } from '../application/list-messages.usecase';
 import { MarkRead } from '../application/mark-read.usecase';
-import { PhotoTicket } from '../application/photo-ticket.usecase';
 import { ReviveLink } from '../application/revive-link.usecase';
 import { SendMessage } from '../application/send-message.usecase';
-import { SendPhoto } from '../application/send-photo.usecase';
 import { LinkPresenter } from './link.presenter';
 
 const LinkId = new ZodPipe(Uuid);
@@ -44,8 +39,6 @@ export class LinksController {
     @Inject(SendMessage) private readonly sendMessage: SendMessage,
     @Inject(MarkRead) private readonly markRead: MarkRead,
     @Inject(ReviveLink) private readonly reviveLink: ReviveLink,
-    @Inject(PhotoTicket) private readonly photoTicket: PhotoTicket,
-    @Inject(SendPhoto) private readonly sendPhoto: SendPhoto,
     @Inject(GetMemories) private readonly getMemories: GetMemories,
     @Inject(LinkPresenter) private readonly presenter: LinkPresenter,
     @Inject(STORAGE) private readonly storage: Storage,
@@ -96,34 +89,14 @@ export class LinksController {
     return this.action(await this.reviveLink.execute(id, user.userId), user.userId);
   }
 
-  @Post(':id/photo/ticket')
-  @RateLimit('write')
-  async ticket(
-    @CurrentUser() user: AuthUser,
-    @Param('id', LinkId) id: string,
-    @Body(new ZodPipe(UploadTicketBody)) body: z.infer<typeof UploadTicketBody>,
-  ): Promise<UploadTicket> {
-    return this.photoTicket.execute(id, user.userId, body.contentType);
-  }
-
-  @Post(':id/photo')
-  @RateLimit('message')
-  async photo(
-    @CurrentUser() user: AuthUser,
-    @Param('id', LinkId) id: string,
-    @Body(new ZodPipe(ConfirmUploadBody)) body: z.infer<typeof ConfirmUploadBody>,
-  ): Promise<LinkAction> {
-    return this.action(await this.sendPhoto.execute(id, user.userId, body.path), user.userId);
-  }
-
   @Get(':id/memories')
   async memories(@CurrentUser() user: AuthUser, @Param('id', LinkId) id: string): Promise<Memories> {
     const result = await this.getMemories.execute(id, user.userId);
     const sign = (path: string | null): Promise<string | null> => (path ? this.storage.signedUrl(path, MEDIA_URL_SECONDS) : Promise.resolve(null));
-    const days = await Promise.all(
-      result.days.map(async (d) => ({ day: d.day, myPhotoUrl: await sign(d.myPath), theirPhotoUrl: await sign(d.theirPath) })),
+    const photos = await Promise.all(
+      result.photos.map(async (d) => ({ day: d.day, myPhotoUrl: await sign(d.myPath), theirPhotoUrl: await sign(d.theirPath) })),
     );
-    return { days, stats: result.stats };
+    return { milestones: result.milestones, photos, stats: { ...result.stats, photos: result.photoCount }, days: photos };
   }
 
   private async action(result: LinkActionResult, viewerId: string): Promise<LinkAction> {

@@ -49,13 +49,13 @@ import { CACHE, type Cache } from '../../../shared/cache';
 import type { Clock } from '../../../shared/clock';
 import { DomainError, errorText } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
-import { CLOCK, DAILY_PHOTOS, LINKS, MESSAGES, PETS, PROFILES } from '../../../shared/tokens';
+import { CLOCK, LINKS, MESSAGES, PETS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import type { PetsRepository } from '../../pets/ports';
 import { VISION_READER, type VisionReader } from '../../vision/tokens';
 import { LinkSession } from '../application/link-session';
 import type { LinkDraft } from '../application/link-draft';
-import type { DailyPhotosRepository, LinkRecord, LinksRepository, MessageRecord, MessagesRepository } from '../ports';
+import type { LinkRecord, LinksRepository, MessageRecord, MessagesRepository } from '../ports';
 import { CHAT_PET_STATE, CHAT_SETTINGS, type ChatLinkSettingRecord, type ChatPetStateRepository, type ChatSettingsRepository } from './ports';
 
 /** Réglages d'un lien vus par une personne (forme du contrat `LinkMinimoasZ`). */
@@ -88,7 +88,6 @@ export class ChatMinimoas {
     @Inject(CHAT_PET_STATE) private readonly states: ChatPetStateRepository,
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(MESSAGES) private readonly messages: MessagesRepository,
-    @Inject(DAILY_PHOTOS) private readonly photos: DailyPhotosRepository,
     @Inject(PETS) private readonly pets: PetsRepository,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(LinkSession) private readonly session: LinkSession,
@@ -308,7 +307,7 @@ export class ChatMinimoas {
 
   /**
    * Santé de chaque lien actif de la personne sur les 7 derniers jours, sans lire le contenu des messages
-   * (comptes par auteur, photos à deux, série, vies). Utilisé par le bilan de la semaine (chantier « rituels »).
+   * (comptes par auteur, jours où les deux ont écrit, série, vies). Utilisé par le bilan de la semaine (chantier « rituels »).
    */
   async linkHealth(userId: string, now: Date = this.clock.now()): Promise<LinkHealthView[]> {
     const all = await this.links.listForUsers([userId]);
@@ -323,15 +322,12 @@ export class ChatMinimoas {
     return Promise.all(
       active.map(async (link, i) => {
         const otherId = others[i] ?? '';
-        const [counts, photos] = await Promise.all([this.messages.countUserTextsSince(link.id, since), this.photos.listForLink(link.id)]);
-        const recent = photos.filter((p) => p.day >= sinceDay);
-        const byDay = new Map<string, Set<string>>();
-        for (const p of recent) byDay.set(p.day, (byDay.get(p.day) ?? new Set()).add(p.userId));
-        const duoPhotoDays = [...byDay.values()].filter((s) => s.size >= 2).length;
+        const counts = await this.messages.countUserTextsSince(link.id, since);
+        const duoDays = link.recentDays.filter((d) => d.day >= sinceDay && d.a && d.b).length;
         const health = linkHealthOf({
           mine: counts.get(userId) ?? 0,
           theirs: counts.get(otherId) ?? 0,
-          duoPhotoDays,
+          duoDays,
           streak: link.streak,
           lives: link.lives,
           ageDays: daysBetween(dayOf(new Date(link.createdAt)), today),

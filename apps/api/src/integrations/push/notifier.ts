@@ -6,7 +6,7 @@
 export const NOTIFIER = Symbol('NOTIFIER');
 
 export type NotificationKind =
-  | 'daily_challenge' | 'needs_out' | 'new_encounter' | 'waved' | 'message' | 'daily_photo'
+  | 'daily_challenge' | 'needs_out' | 'new_encounter' | 'waved' | 'message' | 'your_turn'
   | 'link_in_danger' | 'streak_in_danger' | 'habit_proof' | 'weekly_review' | 'item_unlocked'
   | 'words_received' | 'trial_reminder';
 

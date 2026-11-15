@@ -19,7 +19,7 @@ export { Sticker, type StickerProps, type StickerTone } from './Sticker';
 export { Text, type TextProps } from './Text';
 export { RichText, type RichTextProps, type TextRun } from './RichText';
 export { TextField, type TextFieldProps } from './TextField';
-export { countWords, Title, type TitleProps } from './Title';
+export { countWords, fitTitleSize, Title, titleWidthEm, type TitleProps } from './Title';
 export { DressedPet, type DressedPetProps } from './DressedPet';
 export { ItemImage, type ItemImageProps } from './ItemImage';
 export { PetBadge, type PetBadgeProps } from './PetBadge';

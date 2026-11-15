@@ -9,6 +9,7 @@ import { Text } from '../atoms/Text';
 import { AvatarPair } from '../molecules/AvatarPair';
 import { Hearts } from '../molecules/Hearts';
 import { LevelPill } from '../molecules/LevelPill';
+import { StreakPill } from '../molecules/StreakPill';
 import { layout } from '../lib/styles';
 import { color, extra, space, speciesColor, veil } from '../theme';
 import type { LinkLook } from '../types';
@@ -29,6 +30,12 @@ export interface LinkRowProps {
   ghostLabel?: string;
   /** Puce à côté du nom (« nouveau »). */
   newLabel?: string;
+  /** Série du lien (jours d'affilée où les deux se sont écrit) : pastille à flamme, absente à 0. */
+  streak?: number;
+  /** Unité de la série (« j »). */
+  streakUnit?: string;
+  /** Puce « à toi » : l'autre a écrit aujourd'hui, pas toi. */
+  turnLabel?: string;
   /** Lien mis en avant (pastille de niveau jaune). Défaut : s'il y a des non-lus. */
   highlight?: boolean;
   onPress: () => void;
@@ -39,7 +46,7 @@ export interface LinkRowProps {
 /** En dessous (ou à égalité), la vie du lien est en danger : le dernier cœur bat. */
 const DANGER_LIVES = 2;
 
-/** Ligne de la liste des chats : les deux pets, le nom, l'aperçu, les vies, le niveau, les non-lus. */
+/** Ligne de la liste des chats : les deux pets, le nom, l'aperçu, les vies, le niveau, la série, les non-lus. */
 export const LinkRow = memo(function LinkRow({
   link,
   timeLabel,
@@ -49,6 +56,9 @@ export const LinkRow = memo(function LinkRow({
   emptyPreview,
   ghostLabel,
   newLabel,
+  streak = 0,
+  streakUnit,
+  turnLabel,
   highlight,
   onPress,
   onLongPress,
@@ -58,7 +68,7 @@ export const LinkRow = memo(function LinkRow({
   const { other, myPet } = link;
   const unread = ghost ? 0 : link.unread;
   const preview = link.lastMessage?.preview ?? emptyPreview ?? '';
-  const a11y = accessibilityLabel ?? [other.displayName, preview, timeLabel, levelLabel].filter(Boolean).join(', ');
+  const a11y = accessibilityLabel ?? [other.displayName, preview, timeLabel, turnLabel, levelLabel].filter(Boolean).join(', ');
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} scaleTo={0.98} dimTo={0.85} accessibilityLabel={a11y} style={[layout.row, styles.row, ghost && styles.ghost]}>
       {ghost ? (
@@ -101,6 +111,8 @@ export const LinkRow = memo(function LinkRow({
             <>
               <Hearts lives={link.lives} size={14} beat={link.lives > 0 && link.lives <= DANGER_LIVES} />
               <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
+              {streak > 0 && streakUnit ? <StreakPill count={streak} label={streakUnit} style={styles.streak} /> : null}
+              {turnLabel ? <Chip label={turnLabel} tone="orange" size="sm" /> : null}
             </>
           )}
         </View>
@@ -116,4 +128,6 @@ const styles = StyleSheet.create({
   body: { gap: 3 },
   meta: { marginTop: 2 },
   ghost: { opacity: 0.45 },
+  // Même hauteur que les autres pastilles de la ligne.
+  streak: { height: 24, paddingHorizontal: space.sm },
 });

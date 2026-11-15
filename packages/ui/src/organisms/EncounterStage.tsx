@@ -131,7 +131,8 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
   }, [waveKey]);
   return (
     <Panel gradient="violet" radius={32} padding="none" style={styles.panel}>
-      <View style={layout.rowBetween}>
+      {/* Au-dessus des minimoas : leurs têtes dépassent de la scène, les puces restent lisibles et touchables. */}
+      <View style={[layout.rowBetween, styles.top]}>
         <IconButton glyph="back" label={backLabel} onPress={onBack} size={40} />
         {via ? (
           <Chip label={via.label} left={via.pet ? <Avatar size={18} pet={via.pet} hidden /> : undefined} style={[styles.chip, styles.via]} />
@@ -168,7 +169,7 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
         </PopIn>
       </View>
       <Appear delay={300}>
-        <Text variant="bodyHeavy" size={11} style={styles.says}>
+        <Text variant="bodyHeavy" size={13} style={styles.says}>
           {saysLabel}
         </Text>
       </Appear>
@@ -176,7 +177,7 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
       <Appear delay={360} style={styles.bottom}>
         <Title text={title} size={46} />
         {text ? (
-          <Text size={14} style={styles.text}>
+          <Text size={15} style={styles.text}>
             {text}
           </Text>
         ) : null}
@@ -187,8 +188,10 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
 
 const styles = StyleSheet.create({
   panel: { flexGrow: 1, paddingTop: 14, paddingHorizontal: 16, paddingBottom: 16 },
+  top: { zIndex: 3 },
   chip: { height: 26, paddingHorizontal: 11 },
-  via: { backgroundColor: alpha(color.white, 0.16), flexShrink: 1 },
+  // Fond sombre et opaque : la puce passe devant la houppe des minimoas et doit rester lisible.
+  via: { backgroundColor: alpha(color.dark, 0.72), flexShrink: 1 },
   right: { gap: 6 },
   stage: { height: 158, marginHorizontal: -16 },
   mine: { position: 'absolute', left: 16, bottom: -22 },
@@ -199,8 +202,8 @@ const styles = StyleSheet.create({
   themTag: { right: 30, top: 4 },
   meTilt: { transform: [{ rotate: '-6deg' }] },
   themTilt: { transform: [{ rotate: '5deg' }] },
-  says: { opacity: 0.85, marginTop: 30, marginBottom: 8, letterSpacing: 1.32, textTransform: 'uppercase' },
+  says: { opacity: 0.85, marginTop: 30, marginBottom: 8, letterSpacing: 1.04, textTransform: 'uppercase' },
   thread: { gap: 8 },
   bottom: { marginTop: 'auto', paddingTop: 10 },
-  text: { marginTop: 6, lineHeight: 19 },
+  text: { marginTop: 6, lineHeight: 20 },
 });

@@ -24,7 +24,7 @@ export { useReveal, type RevealOptions } from './reveal';
 export { currentMinute, hashString, isNight, makeSeed, mulberry32, type Seed, useSeed } from './seed';
 export { Shimmer, type ShimmerProps } from './Shimmer';
 export { TypingDots, type TypingDotsProps } from './TypingDots';
-export { HelloPeek, type HelloPeekProps } from './pets/HelloPeek';
+export { HelloPeek, type HelloPeekProps, useHelloWave } from './pets/HelloPeek';
 export { PetEntrance, type PetEntranceProps } from './pets/PetEntrance';
 export { KeyboardPeek, type KeyboardPeekProps } from './pets/KeyboardPeek';
 export { PetActor, type PetActorHandle, type PetActorProps, type PetActorReaction, type PetTouch } from './pets/PetActor';

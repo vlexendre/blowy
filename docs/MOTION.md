@@ -126,10 +126,10 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Son caractère | les barres de la vision se remplissent depuis le centre, l'une après l'autre | jauges du style en petit, même mouvement ; entrées en cascade |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
-| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger |
+| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger ; bandeau « Série en jeu » qui arrive après celui des rencontres |
 | Chat | la bulle envoyée monte depuis le champ | « … » avant un message de minimoa ; tête du minimoa qui sort avec sa bulle ; bouton envoyer qui se transforme ; cœur qui se brise ou revient ; interrupteur des minimoas (en-tête) qui fait « pop » et pâlit quand on les coupe ; accord de lecture : feuille à ressort, les deux minimoas montent du bas du panneau rose ; appui long sur un message : la bulle s'enfonce, la feuille « signaler » monte |
-| Aujourd'hui | la photo de l'autre se dévoile (flou qui se lève) quand les deux ont posté | flamme de série qui grandit ; jours de la semaine cochés un à un |
-| Souvenirs | photos qui se posent comme des cartes | compteurs |
+| Le lien | la série avance sous tes yeux quand le deuxième écrit : le chiffre défile d'un cran, la flamme saute (ressort `plush`), confettis depuis elle, vibration de fête (`LinkTodayHero`) | à la 1re visite, la flamme grandit et le chiffre défile depuis 0 ; jours de la semaine cochés un à un ; cartes en cascade (une fois par lien) |
+| Le lien : étapes | — | étapes en cascade ; photos d'avant qui se posent comme des cartes |
 | Niveaux | la marche atteinte s'allume | barre vers le niveau suivant ; confettis au passage |
 | Lien fantôme | le pet devient transparent et flotte | ranimer : les cœurs reviennent un à un |
 | Rencontres | les cartes arrivent en éventail | « saluer » : le minimoa fait signe, onde autour du bouton ; accepté : les deux minimoas se courent dessus et se cognent |

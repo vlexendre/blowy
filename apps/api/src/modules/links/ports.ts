@@ -1,4 +1,4 @@
-import type { Day, LinkState, PetRole } from '@blowy/domain';
+import type { Day, LinkSide, LinkState, PetRole } from '@blowy/domain';
 
 export interface LinkRecord extends LinkState {
   id: string;
@@ -12,7 +12,11 @@ export interface LinkRecord extends LinkState {
   createdAt: string;
 }
 
+/** Côté d'une personne dans le lien (`a` = user_a). */
+export const sideOf = (link: Pick<LinkRecord, 'userA'>, userId: string): LinkSide => (link.userA === userId ? 'a' : 'b');
+
 export type AuthorKind = 'user' | 'pet' | 'system';
+/** `photo` : ancienne photo du jour d'un lien (plus aucune n'est envoyée). */
 export type MessageKind = 'text' | 'photo' | 'event';
 
 export interface MessageRecord {
@@ -31,6 +35,10 @@ export interface MessageRecord {
   visibleTo?: string | null;
 }
 
+/**
+ * Ancienne photo du jour (table `daily_photos`, plus alimentée depuis la décision du 15 nov. 2026, spéc §24).
+ * Gardée pour les souvenirs des liens existants ; effacée avec le lien ou le compte (`DeleteMe`).
+ */
 export interface DailyPhotoRecord {
   id: string;
   linkId: string;
@@ -52,6 +60,13 @@ export interface LinksRepository {
   listDueForTick(today: Day, limit: number): Promise<LinkRecord[]>;
   /** Liens d'une personne par pages (ordre d'identifiant), tous statuts sauf archivés. */
   pageForUser(userId: string, after: string | null, limit: number): Promise<LinkRecord[]>;
+  /**
+   * Minuteur, rappel « à toi d'écrire » : liens actifs où quelqu'un a écrit aujourd'hui (`last_active_on = today`) et
+   * pas encore passés au rappel du jour (`write_reminder_on`), par ordre d'identifiant.
+   */
+  listForWriteReminder(today: Day, limit: number): Promise<LinkRecord[]>;
+  /** Marque ces liens comme passés au rappel du jour (idempotence du minuteur). */
+  markWriteReminder(ids: readonly string[], today: Day): Promise<void>;
 }
 
 export interface MessagesRepository {
@@ -77,10 +92,8 @@ export interface LinkReadsRepository {
   markRead(linkId: string, userId: string, at: string): Promise<void>;
 }
 
-export interface DailyPhotosRepository {
-  /** Faux si la personne a déjà envoyé sa photo ce jour-là dans ce lien. */
-  add(photo: DailyPhotoRecord): Promise<boolean>;
-  forDay(linkId: string, day: Day): Promise<DailyPhotoRecord[]>;
+/** Anciennes photos du jour, en lecture seule : souvenirs, visibilité dans le chat, suppression du compte. */
+export interface PastPhotosRepository {
+  /** Photos d'un lien, de la plus récente à la plus ancienne. */
   listForLink(linkId: string): Promise<DailyPhotoRecord[]>;
-  listForUser(userId: string): Promise<DailyPhotoRecord[]>;
 }

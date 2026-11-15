@@ -26,7 +26,7 @@ export const regles: LegalPage = {
 
     { h2: 'Geen naaktheid of seksuele inhoud', id: 'contenus' },
     {
-      p: 'Niet in berichten, niet als foto van de dag, niet als bewijsfoto. Ook geen gewelddadige, schokkende of illegale inhoud. De foto van de dag is je koffie, je uitzicht, je sneakers, je ochtendhoofd.',
+      p: 'Niet in berichten, niet als profielfoto, niet als bewijsfoto. Ook geen gewelddadige, schokkende of illegale inhoud. Een bewijsfoto is je sneakers, je boek, je bord: niet jij in je ondergoed.',
     },
 
     { h2: 'Wees jezelf', id: 'authenticite' },

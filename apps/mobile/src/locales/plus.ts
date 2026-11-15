@@ -56,9 +56,29 @@ export const plus = messages({
       fallback: 'Ton abonnement est actif.',
       manage: 'Gérer mon abonnement',
     },
+    /** Sous le bouton d'achat, dans la barre fixe : ce que l'achat engage (la mention complète est plus bas). */
+    ctaNote: {
+      trial: (price: string) => `Puis ${price}, renouvellement automatique. Annulable à tout moment dans Réglages.`,
+      plain: (price: string) => `${price}, renouvellement automatique. Annulable à tout moment dans Réglages.`,
+    },
     continueFree: 'Continuer gratuitement',
     restore: 'Restaurer mes achats',
     links: { terms: 'Conditions', privacy: 'Confidentialité', plusTerms: 'Conditions Blowy+' },
+    /**
+     * Avantages en bref, une ligne chacun sur deux colonnes (l'API donne la phrase longue, lue par le lecteur d'écran).
+     * La carte compte pour deux : toute la carte, et changer de ville.
+     */
+    perks: (pet: string) => ({
+      map_everywhere: ['Toute la carte', 'Changer de ville'],
+      more_encounters: ['Plus de rencontres'],
+      streak_jokers: ['Jokers de série'],
+      more_habits: ['6 habitudes'],
+      detailed_review: ['Bilan détaillé'],
+      free_rename: [`Renommer ${pet}`],
+      premium_items: ['Objets premium'],
+    }),
+    /** Frise de l'essai en bref, sous « Aujourd’hui · Jour 5 · Jour 7 » (le détail est dans la mention de renouvellement). */
+    timeline: ['Tout est ouvert', 'On te prévient', 'Premier paiement'],
     /** Avantages si l'API n'a pas répondu (la feuille montre alors une erreur). */
     perksFallback: ['Toute la carte', 'Changer de ville', 'Plus de rencontres', 'Jokers de série', '6 habitudes', 'Bilan détaillé', 'Renommer librement', 'Objets premium'],
   } as const,

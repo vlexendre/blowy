@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   joker: { backgroundColor: color.violet },
   missed: { backgroundColor: veil.line },
   today: { borderWidth: 2, borderStyle: 'dashed', borderColor: color.accent },
-  future: { borderWidth: 1, borderColor: alpha(color.white, 0.14) },
-  not_yet: { opacity: 0.35, borderWidth: 1, borderStyle: 'dotted', borderColor: alpha(color.white, 0.14) },
+  future: { borderWidth: 1.5, borderColor: alpha(color.white, 0.24) },
+  not_yet: { opacity: 0.6, borderWidth: 1.5, borderStyle: 'dotted', borderColor: alpha(color.white, 0.24) },
   text: { marginTop: space.md },
 });

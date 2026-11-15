@@ -126,7 +126,7 @@ export const confidentialite: LegalPage = {
     },
     {
       ul: [
-        '**Acuerdo de cada uno:** os lo pedimos a los dos, la primera vez que abrís el chat. Si uno lo rechaza, nadie lee: los minimoas solo reaccionan al ritmo del vínculo (silencios, fotos, retos).',
+        '**Acuerdo de cada uno:** os lo pedimos a los dos, la primera vez que abrís el chat. Si uno lo rechaza, nadie lee: los minimoas solo reaccionan al ritmo del vínculo (silencios, rachas, retos).',
         '**Retirada:** en cualquier momento, en las opciones del vínculo o en **Yo**. La lectura se detiene de inmediato para ese vínculo.',
         '**Cómo:** no se analiza cada mensaje. Cuando algo lo activa (un silencio, cierto número de mensajes), se envía una ventana corta de los últimos mensajes a nuestro proveedor de IA, que propone la reacción del minimoa. Como máximo 3 intervenciones al día por vínculo, y puedes desactivarlas para un vínculo.',
         '**Qué se guarda:** nada del análisis. Solo la reacción del minimoa aparece en el chat, como un mensaje.',
@@ -134,14 +134,14 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Las fotos del día y los recuerdos' },
+    { h3: 'La racha y las etapas de un vínculo' },
     {
       ul: [
-        '**Datos:** la foto del día que publicas en un vínculo y lo que guardas en vuestros recuerdos.',
-        '**Finalidad:** compartirla con la otra persona del vínculo y guardarla en vuestros recuerdos.',
-        '**Base jurídica:** ejecución del contrato.',
+        '**Datos:** los días en que cada uno de vosotros escribió en el vínculo (no el contenido de los mensajes) y las etapas del vínculo (encuentro, niveles alcanzados, récords de racha). En los vínculos anteriores al 15 de noviembre de 2026, las fotos que os habíais enviado, que se quedan en vuestros recuerdos; ya no recibimos fotos nuevas.',
+        '**Finalidad:** hacer vivir la racha del vínculo (los días seguidos en que os escribís los dos), sus vidas y sus niveles, y mostraros vuestros recuerdos.',
+        '**Base legal:** ejecución del contrato.',
         '**Plazo:** mientras exista el vínculo (mismas reglas que los mensajes).',
-        '**Acceso:** tú y la otra persona del vínculo. Las fotos se guardan en un espacio privado, accesible solo mediante enlaces temporales.',
+        '**Acceso:** tú y la otra persona del vínculo. Las fotos se guardan en un espacio privado, accesibles solo mediante enlaces temporales.',
       ],
     },
 
@@ -149,7 +149,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Datos:** el identificador técnico de tu teléfono para las notificaciones, tus ajustes por tipo de notificación, la hora elegida para el reto del día.',
-        '**Finalidad:** avisarte (reto del día, nuevo encuentro, mensaje, vínculo o racha en peligro, prueba pedida, balance, recordatorio del fin de la prueba). Horas de silencio de 22 h a 8 h; sin contar los mensajes, 3 al día como máximo. En iPhone, el widget y las actividades en directo usan los mismos datos.',
+        '**Finalidad:** avisarte (reto del día, nuevo encuentro, mensaje, «te toca escribir» por la noche, vínculo o racha en peligro, prueba pedida, balance, recordatorio del fin de la prueba). Horas de silencio de 22 h a 8 h; sin contar los mensajes, 3 al día como máximo. En iPhone, el widget y las actividades en directo usan los mismos datos.',
         '**Base jurídica:** tu consentimiento, dado con el permiso de tu teléfono. Lo retiras en los ajustes del teléfono o tipo por tipo en la app.',
         '**Plazo:** hasta que desactives las notificaciones o elimines tu cuenta.',
         '**Acceso:** nuestro proveedor de envío de notificaciones, y Apple o Google, que las hacen llegar a tu teléfono.',
@@ -257,9 +257,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Las personas que tu minimoa te presenta** ven tu nombre, tu minimoa, su estilo, vuestros puntos en común y una diferencia, y tu posición aproximada en el mapa (salvo en modo discreto).',
-        '**Tus vínculos** ven además vuestros mensajes, vuestras fotos del día y vuestros recuerdos.',
+        '**Tus vínculos** ven además vuestros mensajes, vuestra racha, las etapas de vuestro vínculo y vuestras fotos de antes, si las hay.',
         '**Quienes visitan tu página de «3 palabras» o tu invitación** ven tu nombre y tu minimoa.',
-        'Nadie ve tu dirección de correo, tu fecha de nacimiento, tu posición exacta, tus fotos de prueba ni tus respuestas al test de visión.',
+        'Nadie ve tu dirección de correo, tu fecha de nacimiento, tu posición exacta ni tus respuestas al test de visión. Tus fotos de prueba las verifica una IA: ningún humano las ve y se eliminan en 24 horas (salvo si las guardas en tus recuerdos privados).',
       ],
     },
 
@@ -299,7 +299,7 @@ export const confidentialite: LegalPage = {
           ['Ubicación', 'Solo la última posición redondeada y la zona aproximada del domicilio, sustituidas en cada actualización.'],
           ['Fotos de prueba', 'En 24 horas, salvo si las guardas en tus recuerdos privados.'],
           ['Lectura de mensajes por la IA', 'No se conserva nada después del análisis.'],
-          ['Mensajes, fotos del día, recuerdos', 'Mientras exista el vínculo.'],
+          ['Mensajes, racha, etapas y fotos de antes de un vínculo', 'Mientras exista el vínculo.'],
           ['Compras', 'El estado mientras exista la cuenta; las referencias de transacción hasta 10 años (obligaciones contables).'],
           ['Denuncias y decisiones de moderación', '1 año después del cierre del expediente, más si un procedimiento judicial lo exige.'],
           ['Expulsión definitiva', 'Un identificador técnico de la cuenta de Apple o Google, durante 3 años, para impedir un nuevo registro.'],

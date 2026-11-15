@@ -35,7 +35,7 @@ export const conditions: LegalPage = {
       ul: [
         '**Je kijk** wordt opgebouwd met een test bij het aanmelden, één vraag per dag, je gewoontes en de manier waarop je voor je minimoa zorgt. Hij is indicatief en wordt na verloop van tijd nauwkeuriger.',
         '**Ontmoetingen**: je minimoa stelt je alleen voor aan mensen van wie de compatibiliteit boven een drempel ligt. Niets gebeurt zonder jouw akkoord: jij zwaait, de ander accepteert, de band ontstaat. Hoe het werkt staat in het [privacybeleid](@confidentialite#compatibilite).',
-        '**Banden**: een chat, een foto van de dag, herinneringen, en levens die dalen als het stil blijft.',
+        '**Banden**: een chat, een reeks die groeit op elke dag dat jullie allebei schrijven, herinneringen, en levens die dalen als het stil blijft.',
         '**Je minimoa** heeft meters (sociaal, honger, energie, humeur), gewoontes om vol te houden, een reeks, voorwerpen. Hij gaat nooit dood.',
         '**De kaart** toont passende minimoas om je heen, op een bewust onnauwkeurige plek.',
       ],
@@ -65,7 +65,7 @@ export const conditions: LegalPage = {
     {
       ul: [
         'te intimideren, bedreigen, beledigen, vernederen, chanteren, of aan te zetten tot haat of geweld;',
-        'naaktheid of seksuele inhoud te sturen, ook als foto van de dag of bewijsfoto;',
+        'naaktheid of seksuele inhoud te sturen, ook als profielfoto of bewijsfoto;',
         'een minderjarige op welke manier ook te betrekken;',
         'illegale, gewelddadige of schokkende inhoud te plaatsen;',
         'je voor te doen als iemand anders, een nepprofiel of meerdere accounts aan te maken;',

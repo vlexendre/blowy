@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
   title: { letterSpacing: 1.32, textTransform: 'uppercase' },
   footer: { marginTop: 6, paddingVertical: space.sm, paddingHorizontal: space.md, borderRadius: 16, backgroundColor: color.card },
   detail: { minHeight: 66 },
-  detailText: { fontSize: 12.5, lineHeight: 16 },
+  detailText: { fontSize: 13, lineHeight: 17 },
   look: { marginTop: space.xs },
 });

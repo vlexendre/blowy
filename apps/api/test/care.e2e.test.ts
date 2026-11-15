@@ -5,7 +5,7 @@ const { careLabel } = labels.in('fr');
 import type { ApiClient } from '@blowy/api-client';
 import { ITEM_IDS, START_NEEDS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { type TestWorld, apiError, doToday, errorCode, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, apiError, doToday, errorCode, onboardBody, startWorld } from './helpers';
 
 type Person = { id: string; api: ApiClient };
 
@@ -122,15 +122,11 @@ describe('soins et garde-robe', () => {
     expect((await bob.api.pet.wardrobe()).items.find((i) => i.id === 'livre')?.goal).toEqual({ stat: 'challenges', have: 1, need: 2 });
   });
 
-  it('la meilleure série de photos reste acquise quand la série retombe', async () => {
+  it('la meilleure série d’un lien reste acquise quand la série retombe', async () => {
     const [link] = await alice.api.links.list();
     const linkId = link?.id ?? '';
     for (let day = 0; day < 2; day++) {
-      for (const p of [alice, bob]) {
-        const ticket = await p.api.links.photoTicket(linkId, 'image/jpeg');
-        await upload(ticket.uploadUrl);
-        await p.api.links.sendPhoto(linkId, ticket.path);
-      }
+      for (const p of [alice, bob]) await p.api.links.send(linkId, { body: 'coucou' });
       if (day === 0) world.clock.advanceDays(1);
     }
     expect((await alice.api.links.get(linkId)).streak).toBe(2);
@@ -138,7 +134,7 @@ describe('soins et garde-robe', () => {
 
     world.clock.advanceDays(3);
     expect((await alice.api.links.get(linkId)).streak).toBe(0);
-    // V7 : les paliers de 3 jours et plus suivent la série des défis du jour, plus celle des photos.
+    // V7 : les paliers de 3 jours et plus suivent la série des défis du jour, plus celle des liens.
     const fleurs = (await alice.api.pet.wardrobe()).items.find((i) => i.id === 'fleurs');
     expect(fleurs?.goal).toEqual({ stat: 'ritualStreak', have: 0, need: 3 });
     expect((await bob.api.pet.wardrobe()).items.find((i) => i.id === 'fleur')?.state).toBe('owned');

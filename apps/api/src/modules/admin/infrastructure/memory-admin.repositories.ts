@@ -272,6 +272,7 @@ export class MemoryMetricsSource implements MetricsSource {
       linksActive: links.filter((l) => l.status === 'active' && !effectiveGhost(l)).length,
       linksGhost: links.filter(effectiveGhost).length,
       linksArchived: links.filter((l) => l.status === 'archived').length,
+      linksWroteTogether: links.filter((l) => l.status === 'active' && l.recentDays.some((d) => d.day === day && d.a && d.b)).length,
       reportsOpened: reports.filter((r) => createdOn(r.createdAt) === day).length,
       reportsHandled: reports.filter((r) => r.review && createdOn(r.review.handledAt) === day).length,
       reportsOpen: reports.filter((r) => !r.review).length,

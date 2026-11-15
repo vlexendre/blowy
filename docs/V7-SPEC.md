@@ -60,7 +60,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 5. S'occuper de son minimoa : sortir d'abord
 
-- **Sociabilité** devient la jauge principale (grande, en haut). Elle monte quand tu sors, vois du monde, salues, écris, postes la photo du jour, tiens une habitude tournée vers les autres. Elle descend seule.
+- **Sociabilité** devient la jauge principale (grande, en haut). Elle monte quand tu sors, vois du monde, salues, écris (et plus encore les jours où vous vous écrivez tous les deux, §24), tiens une habitude tournée vers les autres. Elle descend seule.
 - Faim, énergie, humeur restent, en petit, avec les quatre gestes (nourrir, jouer, sieste, câlin).
 - **Forme** = 60 % sociabilité + 40 % des trois autres. En forme : il rencontre plus. Il boude : il ne rencontre personne. Il ne meurt jamais.
 - Le minimoa demande : « Tu es sorti aujourd'hui ? ». Réponses : « oui, j'ai vu du monde », « oui, un tour », « pas encore ». La localisation (app ouverte seulement) confirme un déplacement hors de la zone du domicile ; sinon c'est déclaratif, avec photo possible.
@@ -104,7 +104,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 - Chaque minimoa parle avec le caractère de son humain. Au plus 3 interventions par jour et par lien ; on peut les couper pour un lien.
 - **Confidentialité** (décision du 15 nov. : une IA lit les messages) :
   - Texte exact : « Aucun humain ne lit tes conversations. Si vous l'activez tous les deux, une IA lit vos messages pour que vos minimoas puissent réagir. Rien n'est conservé après. »
-  - Accord demandé à **chacun**, à la première ouverture du chat. Si l'un refuse, les minimoas ne réagissent qu'au rythme (silences, photos, défis), sans lire.
+  - Accord demandé à **chacun**, à la première ouverture du chat. Si l'un refuse, les minimoas ne réagissent qu'au rythme (silences, séries, défis), sans lire.
   - Réglage par défaut dans « Moi » (demander à chaque fois · toujours activer · ne jamais activer), appliqué à chaque nouveau chat : la question n'est alors pas posée, mais le chat affiche l'état en une ligne avec « Changer ». « Pour tous mes chats » s'applique en une fois aux chats existants.
   - Ce qu'on dit de l'autre (décision du 15 nov., 2e passe) : seulement « il l'a activé » ou « pas encore activé de son côté ». Un refus explicite et une question pas encore vue donnent la même réponse : on ne montre jamais « a refusé », pour ne mettre aucune pression et ne pas transformer un réglage de confidentialité en signal social (`consent.theirs` : `agreed` · `not_yet`).
   - Réglage visible et réversible dans les options du lien et dans « Moi ».
@@ -136,7 +136,8 @@ Toutes passent par un port `Pusher` (push Expo ; adaptateur mémoire) et un rég
 | Défi du jour | le matin, à l'heure choisie |
 | Ton minimoa a besoin de sortir | sociabilité basse, 1 par jour au plus |
 | Nouvelle rencontre · on t'a salué | à l'événement |
-| Message · photo du jour de l'autre | à l'événement |
+| Message | à l'événement |
+| À toi d'écrire (série d'un lien, §24) | le soir (19 h – 22 h), seulement si l'autre a écrit aujourd'hui et pas toi ; 1 par jour au plus, un envoi pour tous tes liens |
 | Lien en danger | quand il reste 2 vies |
 | Série en danger | le soir, seulement si le défi n'est pas fait |
 | Preuve d'habitude demandée | au moment choisi pour l'habitude |
@@ -204,7 +205,7 @@ De haut en bas : le minimoa et sa forme · **sa vision** (5 axes, barres simples
 - **Widget d'écran d'accueil** (petit et moyen) et **d'écran verrouillé** : le minimoa dans son état du moment, sa sociabilité, la série, et le défi du jour s'il n'est pas fait. Toucher ouvre le défi.
 - **Activité en direct / Dynamic Island** pour ce qui a un début et une fin :
   - le défi du jour accepté (temps restant jusqu'à minuit, série en jeu) ;
-  - la photo du jour d'un lien (« Léa a posté, à toi ») ;
+  - la série d'un lien, le soir (« Léa t'a écrit, à toi avant minuit », §24) ;
   - une sortie en cours déclarée (« Nino est de sortie »).
 - Données partagées par un groupe d'apps ; mises à jour par push. Pas d'activité permanente : Apple les limite à des événements bornés dans le temps.
 

@@ -131,10 +131,8 @@ export default function DailyChallengeScreen() {
             label={t.goWrite}
             variant="dark"
             size="lg"
-            onPress={() => {
-              close();
-              router.navigate('/(tabs)/chats');
-            }}
+            // Une seule action : fermer la modale et revenir sur l'onglet (jamais un second jeu d'onglets par-dessus).
+            onPress={() => router.dismissTo('/(tabs)/chats')}
           />
         );
       default:

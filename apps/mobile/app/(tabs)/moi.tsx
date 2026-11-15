@@ -7,7 +7,7 @@ import { RefreshControl, View } from 'react-native';
 import { ScreenMotion, usePorts, wordsUrl } from '@/core';
 import { useLinks } from '@/features/links';
 import { displayUrl, useCopyShare, useMe } from '@/features/me';
-import { openPlus, useSubscription } from '@/features/plus';
+import { openPlus, plusPerksLine, usePlusPerks, useSubscription } from '@/features/plus';
 import { useDiscreet } from '@/features/map';
 import { useLivePet } from '@/features/pet';
 import { common } from '@/locales/common';
@@ -24,6 +24,8 @@ export default function Moi() {
   const { purchases } = usePorts();
   const discreet = useDiscreet();
   const subscription = useSubscription(!!me.data?.plus);
+  // Les avantages viennent de la même source que la feuille Blowy+ (jamais une autre liste ici).
+  const perks = usePlusPerks(me.data?.pet.name ?? '');
 
   const refresh = (
     <RefreshControl
@@ -114,7 +116,7 @@ export default function Moi() {
         // Pas de prix ici : le montant facturé se lit sur la feuille Blowy+ (règle Apple 3.1.2, spéc §13).
         title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle : t.plusSoonTitle}
         // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule.
-        text={m.plus && subscription.data ? subscription.data.summary : t.plusText}
+        text={m.plus && subscription.data ? subscription.data.summary : plusPerksLine(perks)}
         ctaLabel={purchases.available && !m.plus ? t.plusCta : t.plusSoonCta}
         onPress={() => openPlus('generic')}
       />

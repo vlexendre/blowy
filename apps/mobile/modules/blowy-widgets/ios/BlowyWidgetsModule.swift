@@ -141,11 +141,11 @@ public class BlowyWidgetsModule: Module {
     return value
   }
 
-  /// Le défi d'abord dans la Dynamic Island, puis la photo, puis la sortie.
+  /// Le défi d'abord dans la Dynamic Island, puis la série d'un lien, puis la sortie.
   private static func relevance(_ kind: String) -> Double {
     switch kind {
     case "challenge": return 100
-    case "photo": return 75
+    case "link": return 75
     default: return 50
     }
   }

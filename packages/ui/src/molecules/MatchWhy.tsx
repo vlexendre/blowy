@@ -25,24 +25,23 @@ export interface MatchWhyProps {
 export function MatchWhy({ commonTitle, common, exploreTitle, explore, accessibilityLabel, style }: MatchWhyProps) {
   return (
     <View style={[styles.root, style]} accessible accessibilityLabel={accessibilityLabel}>
-      <View style={[layout.row, styles.line]}>
-        <Text variant="bodyHeavy" size={13} muted style={styles.label}>
-          {commonTitle}
+      {/* Une ligne qui dit tout (« 3 points communs · 1 différence à explorer »), puis les axes : pleins en commun, cerclé à explorer. */}
+      <Text variant="bodyHeavy" size={15}>
+        {commonTitle}
+        <Text variant="bodyHeavy" size={15} muted>
+          {` · ${exploreTitle}`}
         </Text>
+      </Text>
+      <View style={[layout.row, styles.line]}>
         {common.map((name) => (
           <View key={name} style={[styles.pill, styles.common]}>
-            <Text variant="bodyHeavy" size={13} color={color.accent}>
+            <Text variant="bodyHeavy" size={15} color={color.accent}>
               {name}
             </Text>
           </View>
         ))}
-      </View>
-      <View style={[layout.row, styles.line]}>
-        <Text variant="bodyHeavy" size={13} muted style={styles.label}>
-          {exploreTitle}
-        </Text>
         <View style={[styles.pill, styles.explore]}>
-          <Text variant="bodyHeavy" size={13}>
+          <Text variant="bodyHeavy" size={15}>
             {explore}
           </Text>
         </View>
@@ -52,10 +51,9 @@ export function MatchWhy({ commonTitle, common, exploreTitle, explore, accessibi
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 6 },
+  root: { gap: 8 },
   line: { flexWrap: 'wrap', gap: 6 },
-  label: { marginRight: 2 },
-  pill: { height: 26, paddingHorizontal: 10, borderRadius: 999, justifyContent: 'center' },
+  pill: { height: 30, paddingHorizontal: 11, borderRadius: 999, justifyContent: 'center' },
   common: { backgroundColor: alpha(color.accent, 0.14) },
-  explore: { borderWidth: 1.5, borderColor: veil.off },
+  explore: { borderWidth: 1.5, borderColor: veil.off, marginLeft: 4 },
 });

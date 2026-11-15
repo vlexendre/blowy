@@ -2,15 +2,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AppleRevocation } from '../../../integrations/auth/apple-revocation';
 import type { AuthAdmin } from '../../../integrations/auth/ports';
 import type { Storage } from '../../../integrations/storage/ports';
-import { AUTH_ADMIN, DAILY_PHOTOS, LINKS, PROFILES, STORAGE } from '../../../shared/tokens';
-import type { DailyPhotosRepository, LinksRepository } from '../../links/ports';
+import { AUTH_ADMIN, LINKS, PAST_PHOTOS, PROFILES, STORAGE } from '../../../shared/tokens';
+import type { LinksRepository, PastPhotosRepository } from '../../links/ports';
 import type { RitualPhotosRepository } from '../../rituels/ports';
 import { RITUAL_PHOTOS } from '../../rituels/tokens';
 import type { ProfilesRepository } from '../ports';
 
 /**
  * Suppression du compte (exigence App Store) : d'abord les médias, puis le compte d'authentification ;
- * la base supprime le reste en cascade. Ses liens disparaissent avec lui, photos des deux côtés comprises :
+ * la base supprime le reste en cascade. Ses liens disparaissent avec lui, anciennes photos du jour des deux côtés comprises :
  * leurs fichiers sont effacés ici, sinon plus rien ne les référencerait. Juste avant de supprimer le compte, le jeton
  * de Sign in with Apple est révoqué (exigence d'Apple) ; un échec d'Apple est journalisé et ne bloque rien.
  * Même chemin pour « Supprimer mon compte », la modération et la conservation des données.
@@ -19,7 +19,7 @@ import type { ProfilesRepository } from '../ports';
 export class DeleteMe {
   constructor(
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
-    @Inject(DAILY_PHOTOS) private readonly photos: DailyPhotosRepository,
+    @Inject(PAST_PHOTOS) private readonly photos: PastPhotosRepository,
     @Inject(LINKS) private readonly links: LinksRepository,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(AUTH_ADMIN) private readonly auth: AuthAdmin,

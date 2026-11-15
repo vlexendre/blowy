@@ -105,16 +105,41 @@ export type Database = {
           xp: number;
           level: number;
           streak: number;
+          /** Série du lien : jours d'affilée où les deux se sont écrit (20261115190000). */
+          best_streak: number;
+          duo_days: number;
           last_active_on: string;
           last_tick_on: string;
+          /** V6, plus écrite depuis 20261115190000 (remplacée par last_duo_day_on) ; à supprimer plus tard. */
           last_duo_photo_on: string | null;
+          last_duo_day_on: string | null;
+          recent_days: Json;
+          milestones: Json;
+          write_reminder_on: string | null;
           revived: boolean;
           message_xp_on: string | null;
           message_xp: number;
           last_message_at: string;
           created_at: string;
         },
-        'id' | 'status' | 'lives' | 'xp' | 'level' | 'streak' | 'last_duo_photo_on' | 'revived' | 'message_xp_on' | 'message_xp' | 'last_message_at' | 'created_at'
+        | 'id'
+        | 'status'
+        | 'lives'
+        | 'xp'
+        | 'level'
+        | 'streak'
+        | 'best_streak'
+        | 'duo_days'
+        | 'last_duo_photo_on'
+        | 'last_duo_day_on'
+        | 'recent_days'
+        | 'milestones'
+        | 'write_reminder_on'
+        | 'revived'
+        | 'message_xp_on'
+        | 'message_xp'
+        | 'last_message_at'
+        | 'created_at'
       >;
       messages: Table<
         {
@@ -132,6 +157,7 @@ export type Database = {
         'id' | 'author_id' | 'body' | 'media_path' | 'created_at' | 'pet_role' | 'visible_to'
       >;
       link_reads: Table<{ link_id: string; user_id: string; last_read_at: string }, 'last_read_at'>;
+      /** Anciennes photos du jour (V6) : lecture seule depuis 20261115190000, gardées pour les souvenirs des liens. */
       daily_photos: Table<
         { id: string; link_id: string; user_id: string; day: string; media_path: string; created_at: string },
         'id' | 'created_at'
@@ -400,6 +426,8 @@ export type Database = {
     Views: { [_ in never]: never };
     Functions: {
       admin_daily_metrics: { Args: { p_day: string }; Returns: Json };
+      /** Socle des chiffres du jour (20261115160000), appelé par `admin_daily_metrics` (20261115190000, + liens écrits à deux). */
+      admin_daily_metrics_base: { Args: { p_day: string }; Returns: Json };
       ai_take_user_call: { Args: { p_user: string; p_day: string; p_feature: string; p_max: number }; Returns: boolean };
       ritual_add_habits_kept: { Args: { p_user: string; p_n: number }; Returns: number };
       encounter_proposals_record: { Args: { p_day: string; p_user: string; p_proposed: number; p_score_sum: number }; Returns: undefined };

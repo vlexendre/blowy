@@ -33,12 +33,13 @@ export function EncountersHero({ kicker, title, text, species, action }: Encount
         </View>
       ) : null}
       <View style={[layout.rowBetween, styles.top]}>
-        <Text variant="bodyHeavy" size={11} style={styles.kicker}>
+        {/* Petits textes à l'encre sombre : le blanc ne tient pas le contraste sur le corail clair (AA). */}
+        <Text variant="bodyHeavy" size={13} color={color.dark} style={styles.kicker}>
           {kicker}
         </Text>
         {action ? (
           <Pressable onPress={action.onPress} accessibilityLabel={action.accessibilityLabel ?? action.label} haptic="selection" hitSlop={hitSlopFor(34)} style={[layout.row, styles.action]}>
-            <Text variant="bodyHeavy" size={12} color={color.dark}>
+            <Text variant="bodyHeavy" size={13} color={color.dark}>
               {action.label}
             </Text>
             {action.plus ? (
@@ -55,7 +56,7 @@ export function EncountersHero({ kicker, title, text, species, action }: Encount
       </View>
       <Title text={title} size={48} style={styles.title} />
       {text ? (
-        <Text size={14} style={styles.text}>
+        <Text variant="bodyBold" size={15} color={color.dark} style={styles.text}>
           {text}
         </Text>
       ) : null}
@@ -67,9 +68,9 @@ const styles = StyleSheet.create({
   panel: { height: 204, paddingTop: 16, paddingHorizontal: 18 },
   pet: { position: 'absolute', right: -40, bottom: -36 },
   top: { zIndex: 2 },
-  kicker: { letterSpacing: 1.32, textTransform: 'uppercase' },
+  kicker: { letterSpacing: 1.04, textTransform: 'uppercase' },
   action: { height: 34, paddingHorizontal: 14, gap: 6, borderRadius: 999, backgroundColor: color.white },
   plus: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
   title: { marginTop: 10, zIndex: 2 },
-  text: { marginTop: 8, maxWidth: 220, lineHeight: 19, zIndex: 2 },
+  text: { marginTop: 8, maxWidth: 220, lineHeight: 20, zIndex: 2 },
 });

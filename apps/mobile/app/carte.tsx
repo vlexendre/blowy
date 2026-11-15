@@ -164,6 +164,7 @@ export default function CarteScreen() {
       // Où vous en êtes, dit par l'API : salué (en attente), on t'a salué (répondre), ou rien encore.
       actionLabel={current.relation === 'waved' ? t.waved : current.relation === 'waved_you' ? t.wavedYou(current.user.displayName) : t.wave(current.user.pet.name)}
       actionLoading={wave.isPending && wave.variables === current.user.id}
+      actionDone={current.relation === 'waved'}
       onAction={() => {
         if (current.relation === 'waved') return;
         if (current.relation === 'waved_you') return router.push(`/rencontre/${current.user.id}`);
@@ -182,7 +183,7 @@ export default function CarteScreen() {
       {wave.isError ? <Banner tone="error" text={listText.actionError} onClose={() => wave.reset()} /> : null}
       {card}
       {!current && pins.length === 0 ? (
-        <Banner tone="info" text={t.empty} actionLabel={t.emptyAction} onAction={() => router.push('/rencontres')} actionBelow />
+        <Banner tone="info" text={t.empty} actionLabel={t.emptyAction} onAction={() => router.dismissTo('/(tabs)/rencontres')} actionBelow />
       ) : null}
       {!current ? (
         plus ? (

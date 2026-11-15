@@ -184,7 +184,7 @@ describe('rituels', () => {
       expect(out.line).toContain(outingText.confirmed);
     });
 
-    it('saluer, écrire, la photo du jour font monter la sociabilité ; sans sortir, elle baisse et le minimoa a besoin de sortir', async () => {
+    it('saluer, écrire, s’écrire à deux font monter la sociabilité ; sans sortir, elle baisse et le minimoa a besoin de sortir', async () => {
       const p = await newPerson(world);
       world.clock.advanceHours(20);
       const low = await p.api.rituals.today();

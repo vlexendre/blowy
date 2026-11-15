@@ -1,46 +1,55 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type Day, addDays, dayOf, daysBetween } from '@blowy/domain';
-import { DAILY_PHOTOS, MESSAGES } from '../../../shared/tokens';
-import type { DailyPhotosRepository, MessagesRepository } from '../ports';
+import { type Day, type LinkMilestoneKind, dayOf, daysBetween } from '@blowy/domain';
+import { MESSAGES, PAST_PHOTOS } from '../../../shared/tokens';
+import type { MessagesRepository, PastPhotosRepository } from '../ports';
 import { LinkSession } from './link-session';
+
+export interface MemoryMilestone {
+  kind: LinkMilestoneKind | 'met';
+  value: number;
+  on: Day | null;
+}
 
 export interface MemoryDayResult {
   day: Day;
   myPath: string | null;
-  /** Seulement si les deux ont envoyé leur photo ce jour-là. */
+  /** Seulement si les deux avaient envoyé leur photo ce jour-là. */
   theirPath: string | null;
 }
 
 export interface MemoriesResult {
-  days: MemoryDayResult[];
-  stats: { messages: number; photos: number; daysTogether: number; bestStreak: number };
+  milestones: MemoryMilestone[];
+  photos: MemoryDayResult[];
+  stats: { messages: number; daysTogether: number; duoDays: number; bestStreak: number };
+  /** Anciennes photos des deux, comptées (réponse des apps d'avant). */
+  photoCount: number;
 }
 
-/** Plus longue suite de jours consécutifs (triés du plus récent au plus ancien). */
-function longestRun(daysDesc: readonly Day[]): number {
-  let best = 0;
-  let run = 0;
-  let prev: Day | null = null;
-  for (const d of daysDesc) {
-    run = prev !== null && addDays(d, 1) === prev ? run + 1 : 1;
-    best = Math.max(best, run);
-    prev = d;
-  }
-  return best;
-}
+/** Plus récent d'abord ; une étape sans date (d'avant la migration) passe après les étapes datées, la rencontre en dernier. */
+const byRecency = (x: MemoryMilestone, y: MemoryMilestone): number => {
+  if (x.kind === 'met' || y.kind === 'met') return x.kind === 'met' ? 1 : -1;
+  if (x.on && y.on && x.on !== y.on) return y.on.localeCompare(x.on);
+  if (!x.on !== !y.on) return x.on ? -1 : 1;
+  if (x.kind !== y.kind) return x.kind === 'streak' ? -1 : 1;
+  return y.value - x.value;
+};
 
-/** Souvenirs : les jours où tu as envoyé ta photo ; celle de l'autre n'apparaît que si vous l'avez faite à deux. */
+/**
+ * Souvenirs d'un lien (spéc §24) : ses étapes (la rencontre, les niveaux passés, les paliers de série), quelques chiffres,
+ * et les anciennes photos du jour s'il y en a (la tienne ; celle de l'autre seulement si vous aviez posté tous les deux).
+ */
 @Injectable()
 export class GetMemories {
   constructor(
     @Inject(LinkSession) private readonly session: LinkSession,
-    @Inject(DAILY_PHOTOS) private readonly photos: DailyPhotosRepository,
+    @Inject(PAST_PHOTOS) private readonly photos: PastPhotosRepository,
     @Inject(MESSAGES) private readonly messages: MessagesRepository,
   ) {}
 
   async execute(linkId: string, userId: string): Promise<MemoriesResult> {
     const draft = await this.session.open(linkId, userId);
     await this.session.commit(draft);
+    const link = draft.link;
     const [photos, messageCount] = await Promise.all([this.photos.listForLink(linkId), this.messages.countUserMessages(linkId)]);
 
     const byDay = new Map<Day, { mine?: string; theirs?: string }>();
@@ -54,16 +63,19 @@ export class GetMemories {
       .filter(([, e]) => e.mine !== undefined)
       .sort(([a], [b]) => b.localeCompare(a))
       .map(([day, e]) => ({ day, myPath: e.mine ?? null, theirPath: e.mine && e.theirs ? e.theirs : null }));
-    const duoDays = days.filter((d) => d.theirPath !== null).map((d) => d.day);
 
+    const createdOn = dayOf(new Date(link.createdAt));
+    const milestones: MemoryMilestone[] = [...link.milestones.map((m) => ({ ...m })), { kind: 'met' as const, value: 0, on: createdOn }].sort(byRecency);
     return {
-      days,
+      milestones,
+      photos: days,
       stats: {
         messages: messageCount,
-        photos: photos.length,
-        daysTogether: daysBetween(dayOf(new Date(draft.link.createdAt)), draft.today) + 1,
-        bestStreak: Math.max(longestRun(duoDays), draft.link.streak),
+        daysTogether: daysBetween(createdOn, draft.today) + 1,
+        duoDays: link.duoDays,
+        bestStreak: Math.max(link.bestStreak, link.streak),
       },
+      photoCount: photos.length,
     };
   }
 }

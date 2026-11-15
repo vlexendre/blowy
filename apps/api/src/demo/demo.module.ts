@@ -7,6 +7,7 @@ import { VisionModule } from '../modules/vision/vision.module';
 import { RituelsModule } from '../modules/rituels/rituels.module';
 import { ONBOARDED_HOOK } from '../shared/tokens';
 import { DemoWorld } from './demo-world';
+import { DevDemoLinksController, LinksDemo } from './links-demo';
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
 
@@ -23,7 +24,8 @@ export class DemoModule {
       module: DemoModule,
       global: true,
       imports: [PetsModule, LinksModule, EncountersModule, VisionModule, RituelsModule],
-      providers: [DemoWorld, RituelsDemo, PlateformeDemo, { provide: ONBOARDED_HOOK, useExisting: DemoWorld }],
+      controllers: [DevDemoLinksController],
+      providers: [DemoWorld, RituelsDemo, PlateformeDemo, LinksDemo, { provide: ONBOARDED_HOOK, useExisting: DemoWorld }],
       exports: [ONBOARDED_HOOK],
     };
   }

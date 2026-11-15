@@ -26,7 +26,8 @@ export const PET_EVENT_KINDS = [
   'met_new_pet', // rencontre acceptée
   'waved', // a salué un pet croisé
   'challenge_done', // défi / jeu du jour terminé
-  'photo_sent', // photo du jour envoyée
+  'photo_sent', // ancienne photo du jour (V6) : gardé pour l'historique, plus émis
+  'wrote_together', // vous vous êtes écrit tous les deux aujourd'hui dans un lien (remplace la photo du jour)
   'sweet_word', // mot doux
   'tease', // vanne
   'message_sent', // message texte
@@ -52,6 +53,7 @@ const DELTAS: Record<Exclude<PetEventKind, 'three_words' | 'quiz'>, Partial<Gaug
   waved: { social: 4 },
   challenge_done: { play: 10 },
   photo_sent: { tender: 6, play: 2 },
+  wrote_together: { tender: 6, play: 2 },
   sweet_word: { tender: 8 },
   tease: { tender: -8, play: 3 },
   message_sent: { talk: 2 },

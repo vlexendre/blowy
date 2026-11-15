@@ -22,10 +22,14 @@ const sameState = (a: LinkState, b: LinkState): boolean =>
   a.xp === b.xp &&
   a.level === b.level &&
   a.streak === b.streak &&
+  a.bestStreak === b.bestStreak &&
+  a.duoDays === b.duoDays &&
   a.lastActiveOn === b.lastActiveOn &&
   a.lastTickOn === b.lastTickOn &&
-  a.lastDuoPhotoOn === b.lastDuoPhotoOn &&
-  a.revived === b.revived;
+  a.lastDuoDayOn === b.lastDuoDayOn &&
+  a.revived === b.revived &&
+  JSON.stringify(a.recentDays) === JSON.stringify(b.recentDays) &&
+  JSON.stringify(a.milestones) === JSON.stringify(b.milestones);
 
 /**
  * Brouillon d'une action dans un lien : l'état à jour et les messages à ajouter (personnes, pets, système).

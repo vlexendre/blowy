@@ -13,7 +13,7 @@ dollars US, hors TVA. Ce qui n'a pas pu être vérifié est signalé « **non v�
 | 100 k | 25 000 | 15 000 | 8 000 |
 | 1 M | 250 000 | 150 000 | 80 000 |
 
-Par personne active un jour donné : 2 liens actifs, 15 messages écrits, 0,5 photo du jour, 0,75 preuve d'habitude
+Par personne active un jour donné : 2 liens actifs, 15 messages écrits (plus de photo du jour depuis la spéc §24), 0,75 preuve d'habitude
 (la moitié des actifs tient une habitude, 1,5 preuve chacun), 5 push reçus. 40 % des liens ont l'accord des deux
 pour la lecture par l'IA. Ces ratios sont des hypothèses de travail, à remplacer par les chiffres réels de
 l'administration (« Coûts » et « Vue d'ensemble ») dès les premières semaines.
@@ -89,9 +89,10 @@ Volumes estimés (hypothèses du §1) :
   (voir la migration `20261115150000_plateforme.sql`) ; ranger `messages` par mois quand la table dépassera ~100 Go.
 - **Temps réel** : seulement les chats ouverts (≈ 30 % des messages livrés en direct, 2 destinataires) :
   à 1 M, ~22 M de messages par mois → ~42 $ ; ~2 400 connexions simultanées au pic → ~20 $.
-- **Fichiers** : photo du jour compressée sur le téléphone (~150 Ko), 0,5 par DAU et par jour ≈ 2,25 Mo par DAU et par
-  mois ; preuves d'habitude supprimées sous 24 h. À 1 M : ~180 Go de plus par mois, cumulatif (~1 To après 6 mois
-  ≈ 19 $ / mois) ; sortie des photos vues ~360 Go / mois → ~10 $ au-delà des 250 Go inclus.
+- **Fichiers** : depuis la spéc §24 (plus de photo du jour), presque rien ne s'accumule : preuves d'habitude
+  supprimées sous 24 h, photos de profil (une par personne, ~150 Ko), quelques défis photo gardés dans les souvenirs
+  privés ; les anciennes photos du jour des liens restent (lecture seule) mais ne grossissent plus. À 1 M : de
+  l'ordre de 10 Go de plus par mois, dans l'inclus ; sortie (photos de profil vues) ~50 Go / mois, dans l'inclus.
 - **Authentification** : c'est le poste qui grossit le plus — au-delà de 100 000 MAU, 0,00325 $ par MAU.
 
 ## 5. Hébergement de l'API
@@ -101,7 +102,7 @@ Volumes estimés (hypothèses du §1) :
 sur Hobby et Pro. Une instance 0,5 vCPU / 512 Mo tournant tout le mois ≈ 15 $. L'API est sans état (cache et
 limiteur en mémoire par instance, remplaçables par un cache partagé dans `PlateformeModule`) ; le minuteur est un
 appel HTTP toutes les 5 minutes (Railway cron ou `pg_cron` de Supabase, gratuit). Sortie JSON estimée à
-~0,5 Mo par DAU et par jour (les photos passent par des URL signées de Supabase, pas par l'API).
+~0,5 Mo par DAU et par jour (les photos de profil et de preuve passent par des URL signées de Supabase, pas par l'API).
 
 Non comptés ici : e-mails (Resend, peu d'envois : bienvenue, lien créé, coucou — tarif **non vérifié**),
 fond de carte Apple (MapKit, annoncé sans clé ni coût dans la spéc — **non vérifié**), nom de domaine.
@@ -116,9 +117,9 @@ fond de carte Apple (MapKit, annoncé sans clé ni coût dans la spéc — **non
 | Supabase : calcul (au-delà des 10 $ de crédit) | 0 $ | 0 $ | 5 $ (Small) | 100 $ (Large) |
 | Supabase : MAU d'auth au-delà de 100 000 | 0 $ | 0 $ | 0 $ | 488 $ (150 000 × 0,00325 $) |
 | Supabase : temps réel au-delà de l'inclus | 0 $ | 0 $ | 0 $ | ~60 $ |
-| Supabase : fichiers, disque, sortie au-delà de l'inclus | 0 $ | 0 $ | ~5 $ | ~35 $ (après 6 mois) |
+| Supabase : fichiers, disque, sortie au-delà de l'inclus | 0 $ | 0 $ | ~2 $ | ~10 $ (disque des messages) |
 | API (Railway) | 5 $ | 5–15 $ | 15–30 $ | 120–180 $ |
-| **Total estimé** | **≈ 5–30 $** | **≈ 35–45 $** | **≈ 90–100 $** | **≈ 1 200–1 250 $** |
+| **Total estimé** | **≈ 5–30 $** | **≈ 35–45 $** | **≈ 85–100 $** | **≈ 1 175–1 225 $** |
 | Par personne active du mois | — | ~0,016 $ | ~0,004 $ | ~0,005 $ |
 
 À retenir :

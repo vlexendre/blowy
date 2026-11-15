@@ -107,6 +107,7 @@ export function demoDailyStats(today: Day): { day: Day; metrics: DailyMetrics }[
         linksActive: Math.round(total * 0.74),
         linksGhost: Math.round(total * 0.11),
         linksArchived: Math.round(total * 0.05),
+        linksWroteTogether: Math.round(total * 0.74 * (0.41 + rand() * 0.05)),
         reportsOpened: Math.round(rand() * 4),
         reportsHandled: Math.round(rand() * 4),
         reportsOpen: 5,

@@ -24,6 +24,30 @@ export interface TitleProps {
   reveal?: number;
 }
 
+/** Chasse des capitales d'Anton (em, mesurée), pour estimer la largeur d'une ligne de titre sans la rendre. */
+const ANTON: Record<string, number> = {
+  A: 0.49, B: 0.48, C: 0.47, D: 0.49, E: 0.41, F: 0.4, G: 0.48, H: 0.5, I: 0.23, J: 0.47, K: 0.47, L: 0.4, M: 0.75, N: 0.5, O: 0.49,
+  P: 0.47, Q: 0.49, R: 0.48, S: 0.46, T: 0.4, U: 0.47, V: 0.47, W: 0.71, X: 0.48, Y: 0.45, Z: 0.41, '.': 0.23, ',': 0.24, '!': 0.23,
+  '’': 0.23, "'": 0.23, ' ': 0.23, '-': 0.31, '%': 1.06, '+': 0.36, '1': 0.33,
+};
+const glyphEm = (ch: string): number => ANTON[ch] ?? ANTON[ch.normalize('NFD')[0] ?? ''] ?? 0.49;
+
+/** Largeur (em) de la ligne la plus longue d'un titre. */
+export function titleWidthEm(text: TitleContent): number {
+  const raw = typeof text === 'string' ? text : text.map((s) => s.text).join('');
+  return Math.max(0, ...raw.toUpperCase().split('\n').map((line) => [...line.trim()].reduce((w, ch) => w + glyphEm(ch) + 0.005, 0)));
+}
+
+/**
+ * Corps d'un titre pour que sa ligne la plus longue tienne dans `width` (un mot ne se coupe jamais : « SOCIABLE » ne
+ * doit pas passer sous le minimoa). Entre `min` et `max`.
+ */
+export function fitTitleSize(text: TitleContent, max: number, width: number, min = 34): number {
+  const em = titleWidthEm(text);
+  if (em <= 0 || width <= 0) return max;
+  return Math.max(min, Math.min(max, Math.floor(width / em)));
+}
+
 /** Nombre de mots d'un titre (pour `reveal`). */
 export function countWords(text: TitleContent): number {
   return countRunWords(typeof text === 'string' ? [{ text }] : text);

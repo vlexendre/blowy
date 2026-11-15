@@ -27,7 +27,7 @@ export const common = messages({
     invite: {
       kicker: 'Invitation',
       title: (name: string, pet: string) => [{ text: `${name.toUpperCase()} ET ${pet.toUpperCase()}\n` }, { text: 'T’INVITENT.', dim: true }],
-      text: (pet: string) => `${pet} veut rencontrer ton minimoa. Si tu acceptes, vous avez un lien : 7 vies, des photos du jour et deux minimoas qui papotent.`,
+      text: (pet: string) => `${pet} veut rencontrer ton minimoa. Si tu acceptes, vous avez un lien : 7 vies, une série à tenir en vous écrivant chaque jour, et deux minimoas qui papotent.`,
       speech: (pet: string) => `On s’est déjà croisés, non ? Moi, c’est ${pet}.`,
       accept: 'Accepter',
       later: 'Pas maintenant',

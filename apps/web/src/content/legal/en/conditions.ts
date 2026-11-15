@@ -35,7 +35,7 @@ export const conditions: LegalPage = {
       ul: [
         '**Your vision** is built from a test at sign-up, one question a day, your habits and the way you look after your minimoa. It is indicative and gets more accurate over time.',
         '**Encounters**: your minimoa only introduces you to people whose compatibility is above a threshold. Nothing happens without your agreement: you wave, the other person accepts, the connection is created. How it works is explained in the [privacy policy](@confidentialite#compatibilite).',
-        '**Connections**: a chat, a photo of the day, memories, and lives that go down when the connection stays silent.',
+        '**Connections**: a chat, a streak that grows every day you both write, memories, and lives that go down when the connection stays silent.',
         '**Your minimoa** has gauges (sociability, hunger, energy, mood), habits to keep, a streak, items. It never dies.',
         '**The map** shows compatible minimoas around you, at a deliberately imprecise position.',
       ],
@@ -65,7 +65,7 @@ export const conditions: LegalPage = {
     {
       ul: [
         'harass, threaten, insult, humiliate, blackmail, or incite hatred or violence;',
-        'send nudity or sexual content, including as a photo of the day or a proof photo;',
+        'send nudity or sexual content, including as a profile photo or a proof photo;',
         'involve a minor in any way;',
         'post illegal, violent or shocking content;',
         'pretend to be someone else, create a fake profile or several accounts;',

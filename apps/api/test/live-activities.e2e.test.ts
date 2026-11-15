@@ -1,7 +1,8 @@
 /**
  * Activités en direct iOS (docs/WIDGETS.md) : charges ActivityKit conformes à la documentation d'Apple, adaptateur
  * APNs (HTTP/2, JWT ES256, en-têtes, jetons morts) contre un serveur HTTP/2 local, et événements de bout en bout en
- * mémoire : jetons rangés à part, photo démarrée par push, défi jamais démarré par push, fins, jetons refusés.
+ * mémoire : jetons rangés à part, série d'un lien démarrée par push avec le rappel du soir, défi jamais démarré par push,
+ * fins, jetons refusés.
  */
 import { generateKeyPairSync, verify } from 'node:crypto';
 import { createServer, type Http2Server } from 'node:http2';
@@ -14,18 +15,19 @@ import type { MemoryLiveActivities } from '../src/integrations/push/memory-live-
 import { MemoryPusher } from '../src/integrations/push/memory-pusher';
 import { PUSHER } from '../src/integrations/push/pusher';
 import { NOTIFIER, type Notifier } from '../src/integrations/push/notifier';
+import { LinkJobs } from '../src/modules/links/minimoas/link-jobs';
 import { NotificationJobs } from '../src/modules/notifications/notification-jobs';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { MEMORY_DB } from '../src/shared/tokens';
-import { type TestWorld, doToday, onboardBody, startWorld, upload } from './helpers';
+import { type TestWorld, doToday, onboardBody, startWorld } from './helpers';
 
 const NOW = new Date('2026-11-15T17:42:00Z');
-const attributes = { kind: 'photo' as const, pet: { name: 'Nino', species: 'nino' }, startedAt: 1794757320, url: 'blowy://link/x', otherName: 'Léa' };
+const attributes = { kind: 'link' as const, pet: { name: 'Nino', species: 'nino' }, startedAt: 1794757320, url: 'blowy://link/x', otherName: 'Léa' };
 const state = { endsAt: 1794783600, streak: 0, title: null, done: false };
 
 describe('charges ActivityKit', () => {
   it('démarrage : timestamp, event, content-state, attributes-type, attributes, alerte obligatoire, input-push-token ; dates en secondes', () => {
-    const p = liveStartPayload({ now: NOW, attributes, state, alert: { title: 'Léa a posté', body: 'À toi.' }, relevance: 75 });
+    const p = liveStartPayload({ now: NOW, attributes, state, alert: { title: 'Série avec Léa', body: 'À toi d’écrire avant minuit.' }, relevance: 75 });
     expect(p).toEqual({
       aps: {
         timestamp: Math.floor(NOW.getTime() / 1000),
@@ -35,7 +37,7 @@ describe('charges ActivityKit', () => {
         'relevance-score': 75,
         'attributes-type': 'BlowyActivityAttributes',
         attributes,
-        alert: { title: 'Léa a posté', body: 'À toi.' },
+        alert: { title: 'Série avec Léa', body: 'À toi d’écrire avant minuit.' },
         'input-push-token': 1,
       },
     });
@@ -140,7 +142,7 @@ describe('événements de bout en bout (mémoire)', () => {
   const START = 'a'.repeat(64);
   const UPDATE_1 = 'b'.repeat(64);
   const UPDATE_2 = 'c'.repeat(64);
-  const PHOTO = 'd'.repeat(64);
+  const LINK_UPDATE = 'd'.repeat(64);
 
   it('jetons rangés à part (jamais envoyés à Expo), un nouveau jeton update remplace l’ancien de la même activité', async () => {
     const a = world.client();
@@ -171,7 +173,7 @@ describe('événements de bout en bout (mémoire)', () => {
     expect(db.liveActivityTokens.has(UPDATE_2)).toBe(false);
   });
 
-  it('photo du jour : démarrée par push chez l’autre (alerte, pas de seconde notification iOS), terminée quand il poste', async () => {
+  it('série d’un lien : le rappel du soir démarre l’activité chez qui doit écrire (pas de seconde notification iOS), finie quand il écrit', async () => {
     const lea = world.client();
     const tom = world.client();
     const me = await lea.api.me.onboard(onboardBody({ displayName: 'Léa' }));
@@ -180,28 +182,41 @@ describe('événements de bout en bout (mémoire)', () => {
     await tom.api.notifications.registerDevice({ token: 'e'.repeat(64), platform: 'ios', timeZone: 'Europe/Paris', kind: 'apns_live_activity', liveActivity: { use: 'start' } });
     const [link] = await lea.api.links.list();
     const linkId = link?.id ?? '';
+    await lea.api.links.send(linkId, { body: 'Ce soir ?' });
     live.outbox.length = 0;
-    const before = pusher.outbox.filter((m) => m.to === 'ExponentPushToken[tom]' && m.data.kind === 'daily_photo').length;
-    const t = await lea.api.links.photoTicket(linkId, 'image/jpeg');
-    await upload(t.uploadUrl);
-    await lea.api.links.sendPhoto(linkId, t.path);
+    const yourTurn = () => pusher.outbox.filter((m) => m.to === 'ExponentPushToken[tom]' && m.data.kind === 'your_turn').length;
+    // L'après-midi : pas de rappel (la fenêtre est le soir, 19 h – 22 h à Paris).
+    await world.app.get(LinkJobs).runDue(world.clock.now());
+    expect(live.outbox).toHaveLength(0);
+    world.clock.advanceHours(8.5); // 19 h 30 à Paris
+    await world.app.get(LinkJobs).runDue(world.clock.now());
     const start = live.outbox.find((p) => p.payload.aps.event === 'start');
     expect(start).toMatchObject({
       token: 'e'.repeat(64),
       priority: 10,
-      payload: { aps: { 'attributes-type': 'BlowyActivityAttributes', attributes: { kind: 'photo', pet: { name: 'Gaston', species: 'gaston' }, url: `blowy://link/${linkId}`, otherName: 'Léa' }, 'input-push-token': 1 } },
+      payload: {
+        aps: {
+          'attributes-type': 'BlowyActivityAttributes',
+          attributes: { kind: 'link', pet: { name: 'Gaston', species: 'gaston' }, url: `blowy://link/${linkId}`, otherName: 'Léa' },
+          'content-state': { streak: 0, done: false, title: null },
+          'input-push-token': 1,
+        },
+      },
     });
+    expect(LiveActivityAttributesZ.strict().safeParse(start?.payload.aps.attributes).success).toBe(true);
     expect(`${start?.payload.aps.alert?.title} ${start?.payload.aps.alert?.body}`).toContain('Léa');
-    expect(pusher.outbox.filter((m) => m.to === 'ExponentPushToken[tom]' && m.data.kind === 'daily_photo').length).toBe(before);
+    // L'activité porte l'alerte : pas de seconde notification sur iOS.
+    expect(yourTurn()).toBe(0);
+    // Idempotent : un deuxième passage ne redémarre rien.
+    await world.app.get(LinkJobs).runDue(world.clock.now());
+    expect(live.outbox.filter((p) => p.payload.aps.event === 'start')).toHaveLength(1);
 
     // L'app reçoit le jeton de mise à jour de cette activité et l'enregistre (avec le lien).
-    await tom.api.notifications.registerDevice({ token: PHOTO, platform: 'ios', timeZone: 'Europe/Paris', kind: 'apns_live_activity', liveActivity: { use: 'update', activity: 'photo', activityId: 'p-1', linkId } });
+    await tom.api.notifications.registerDevice({ token: LINK_UPDATE, platform: 'ios', timeZone: 'Europe/Paris', kind: 'apns_live_activity', liveActivity: { use: 'update', activity: 'link', activityId: 'l-1', linkId } });
     live.outbox.length = 0;
-    const t2 = await tom.api.links.photoTicket(linkId, 'image/jpeg');
-    await upload(t2.uploadUrl);
-    await tom.api.links.sendPhoto(linkId, t2.path);
-    expect(live.outbox.filter((p) => p.token === PHOTO).map((p) => p.payload.aps.event)).toEqual(['end']);
-    expect(db.liveActivityTokens.has(PHOTO)).toBe(false);
+    await tom.api.links.send(linkId, { body: 'Avec plaisir' });
+    expect(live.outbox.filter((p) => p.token === LINK_UPDATE).map((p) => [p.payload.aps.event, p.payload.aps['content-state']?.done, p.payload.aps['content-state']?.streak])).toEqual([['end', true, 1]]);
+    expect(db.liveActivityTokens.has(LINK_UPDATE)).toBe(false);
   });
 
   it('minuit : les activités en cours sont terminées et retirées ; un jeton refusé par APNs est désactivé', async () => {
@@ -209,7 +224,7 @@ describe('événements de bout en bout (mémoire)', () => {
     await c.api.me.onboard(onboardBody({ displayName: 'Cy' }));
     const dead = 'f'.repeat(64);
     await c.api.notifications.registerDevice({ token: '1'.repeat(64), platform: 'ios', timeZone: 'Europe/Paris', kind: 'apns_live_activity', liveActivity: { use: 'update', activity: 'challenge', activityId: 'c-1' } });
-    await c.api.notifications.registerDevice({ token: dead, platform: 'ios', timeZone: 'Europe/Paris', kind: 'apns_live_activity', liveActivity: { use: 'update', activity: 'photo', activityId: 'c-2' } });
+    await c.api.notifications.registerDevice({ token: dead, platform: 'ios', timeZone: 'Europe/Paris', kind: 'apns_live_activity', liveActivity: { use: 'update', activity: 'link', activityId: 'c-2' } });
     live.markDead(dead);
     live.outbox.length = 0;
     world.clock.advanceDays(1);
@@ -224,7 +239,7 @@ describe('événements de bout en bout (mémoire)', () => {
     live.markDead(s);
     const { LiveActivities } = await import('../src/modules/notifications/live-activities');
     const service = world.app.get(LiveActivities, { strict: false });
-    expect(await service.startPhoto(c.id, { linkId: '00000000-0000-4000-8000-000000000000', otherName: 'X', alert: { title: 'X a posté', body: 'À toi.' } })).toBe(false);
+    expect(await service.startLinkStreak(c.id, { linkId: '00000000-0000-4000-8000-000000000000', otherName: 'X', streak: 2, alert: { title: 'Série avec X', body: 'À toi.' } })).toBe(false);
     expect(db.liveActivityTokens.get(s)?.disabledAt).not.toBeNull();
     void SECRET;
   });

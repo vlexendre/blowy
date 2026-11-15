@@ -58,7 +58,8 @@ export const rencontres = messages({
     lookingFor: { friends: 'Vous cherchez tous les deux des potes.', more: 'Vous cherchez tous les deux plus.', both: 'Vous cherchez tous les deux des potes, ou plus.' },
     /** Version courte du pourquoi, sur les cartes. */
     whyJoin: (title: string, items: string): string => `${title} : ${items}.`,
-    morePlus: { title: 'Plus de rencontres avec Blowy+', text: 'Une rencontre de plus chaque semaine.', cta: 'Voir' },
+    /** Le texte de l'avantage vient de l'API (`usePlusPerks`), comme sur la feuille Blowy+. */
+    morePlus: { title: 'Plus de rencontres avec Blowy+', cta: 'Voir' },
     shareMessage: (pet: string, url: string): string => `Viens rencontrer ${pet} sur Blowy : ${url}`,
     loadError: 'Impossible de charger les rencontres',
     retry: 'Réessayer',
@@ -134,9 +135,10 @@ export const carte = messages({
     owner: (name: string): string => `Le minimoa de ${name}`,
     compat: 'd’accord',
     wave: (pet: string): string => `Saluer ${pet}`,
-    waved: 'Salué · en attente',
+    /** Bouton de la fiche (demi-largeur) : court. */
+    waved: 'En attente',
     /** On t'a salué (repère `waved_you`) : la réponse se donne sur l'écran de la rencontre. */
-    wavedYou: (name: string): string => `${name} t’a fait signe · répondre`,
+    wavedYou: (_name: string): string => 'Répondre',
     open: 'Voir de plus près',
     /** Puce sous la zone (le nombre vient du serveur ; cachée à zéro). */
     beyondA11y: (label: string): string => `${label}. Avec Blowy+, toute la carte.`,

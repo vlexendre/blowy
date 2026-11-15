@@ -86,7 +86,6 @@ import {
   type PetReaction,
   PetStage,
   type PetLook,
-  PhotoTile,
   PetRise,
   PlanPicker,
   PrepChecklist,
@@ -117,8 +116,7 @@ import {
   Text,
   TextField,
   Title,
-  TodayCard,
-  type TodayCardLabels,
+  LinkTodayHero,
   UnlockSheet,
   UnlockToast,
   WardrobeGrid,
@@ -168,13 +166,13 @@ const events: PetEventLook[] = [
   { id: 'e4', kind: 'three_words', delta: { social: 6, talk: -5 }, at: '2026-11-07' },
 ];
 
-const todayLabels: TodayCardLabels = {
-  title: [{ text: 'UNE PHOTO\n' }, { text: 'PAR JOUR', dim: true }],
+/** Libellés de démo de la journée d'un lien (les vrais viennent de `locales/chats`, `today`). */
+const heroLabels = {
   streakUnit: 'jours',
-  hint: '+1 vie quand vous avez posté tous les deux.',
-  mine: { label: 'ta photo · 9:12', badge: 'posté ✓', emptyTitle: 'prends ta photo', emptyCaption: 'avant minuit' },
-  theirs: { waitingTitle: 'léa : en attente', waitingCaption: 'elle a jusqu’à minuit', lockedTitle: 'léa a posté', lockedCaption: 'poste la tienne pour voir', label: 'léa · 10:40' },
-  cta: 'relancer léa',
+  wroteLabel: 'A écrit',
+  waitingLabel: 'Pas encore',
+  me: (wrote: boolean) => ({ label: 'Toi', wrote }),
+  them: (wrote: boolean) => ({ label: 'Léa', wrote }),
 };
 
 const memoryDays = ['2026-10-12', '2026-10-19', '2026-10-27', '2026-11-03', '2026-11-08', '2026-11-10'].map((day) => ({ day, myPhotoUrl: photo(`me${day}`), theirPhotoUrl: photo(`lea${day}`) }));
@@ -182,9 +180,8 @@ const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'aoû
 const shortDay = (d: string): string => `${Number(d.slice(8, 10))} ${MONTHS[Number(d.slice(5, 7)) - 1] ?? ''}`;
 
 const tabs = [
-  { key: 'today', label: 'aujourd’hui' },
   { key: 'chat', label: 'chat' },
-  { key: 'memories', label: 'souvenirs' },
+  { key: 'lien', label: 'le lien' },
 ] as const;
 type LinkTab = (typeof tabs)[number]['key'];
 
@@ -502,11 +499,11 @@ function GalleryScreen() {
           </View>
           <Panel gradient="orange" padding="lg">
             <Text variant="label" dim>
-              photo du jour
+              série en jeu
             </Text>
             <Title text={[{ text: '2 LIENS ' }, { text: 'T’ATTENDENT', dim: true }]} size={26} />
             <Text variant="bodyBold" size={13}>
-              léa et malo veulent voir ta tête.
+              léa et malo t’ont écrit aujourd’hui. réponds avant minuit.
             </Text>
           </Panel>
         </Item>
@@ -683,19 +680,6 @@ function GalleryScreen() {
           <Banner tone="info" text="1 rencontre par semaine en gratuit. la prochaine dans 4 jours." onClose={noop} />
           <Banner tone="success" text="Lien copié." />
         </Item>
-        <Item name="PhotoTile">
-          <Panel gradient="orange" padding="md">
-            <View style={styles.row}>
-              <PhotoTile state="photo" uri={photo('me')} badge="posté ✓" label="ta photo · 9:12" style={styles.grow} />
-              <PhotoTile state="pending" species="suzie" title="léa : en attente" caption="elle a jusqu’à minuit" style={styles.grow} />
-            </View>
-            <Spacer size="sm" />
-            <View style={styles.row}>
-              <PhotoTile state="empty" title="prends ta photo" onPress={noop} style={styles.grow} />
-              <PhotoTile state="locked" title="léa a posté" caption="poste la tienne" style={styles.grow} />
-            </View>
-          </Panel>
-        </Item>
         <Item name="ChoiceCard">
           <ChoiceCard title="reste au chaud : plaid, série, pizza" caption="→ casanier" icon="gel" gradient="rose" onPress={noop} />
           <ChoiceCard title="sort. on verra bien où ça finit" caption="→ sociable" icon="confettis" gradient="accent" selected onPress={noop} />
@@ -750,7 +734,7 @@ function GalleryScreen() {
               value={draft}
               onChangeText={setDraft}
               onSend={() => setDraft('')}
-              placeholder="écris à léa (nino lit tout)"
+              placeholder="Écris à Léa"
               tone={tone}
               onToneChange={setTone}
               toneLabels={{ sweet: 'mot doux', tease: 'vanne' }}
@@ -759,11 +743,10 @@ function GalleryScreen() {
           </Frame>
           <Composer value="" onChangeText={noop} onSend={noop} placeholder="" disabled disabledText="lien fantôme : ranime-le pour écrire" />
         </Item>
-        <Item name="TodayCard (4 états)">
-          <TodayCard today={{ mine: true, theirs: false, myPhotoUrl: photo('me'), theirPhotoUrl: null }} otherPet={lea.pet} streak={12} labels={todayLabels} onCta={noop} />
-          <TodayCard today={{ mine: false, theirs: true, myPhotoUrl: null, theirPhotoUrl: null }} otherPet={lea.pet} streak={12} labels={{ ...todayLabels, cta: 'prendre ma photo' }} onCta={noop} />
-          <TodayCard today={{ mine: true, theirs: true, myPhotoUrl: photo('me'), theirPhotoUrl: photo('lea2') }} otherPet={lea.pet} streak={13} labels={todayLabels} />
-          <TodayCard today={{ mine: false, theirs: false, myPhotoUrl: null, theirPhotoUrl: null }} otherPet={malo.pet} streak={0} labels={{ ...todayLabels, cta: 'prendre ma photo' }} onCta={noop} gradient="coral" />
+        <Item name="LinkTodayHero (états du jour)">
+          <LinkTodayHero streak={12} streakUnit={heroLabels.streakUnit} title={[{ text: 'À TOI\n' }, { text: 'D’ÉCRIRE', dim: true }]} text="Léa t’a écrit. Réponds avant minuit et la série passe à 13." myPet={nino} other={lea} me={heroLabels.me(false)} them={heroLabels.them(true)} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Écrire à Léa" onCta={noop} motionKey="gallery-hero-1" />
+          <LinkTodayHero streak={13} streakUnit={heroLabels.streakUnit} title={[{ text: 'VOUS VOUS ÊTES\n' }, { text: 'ÉCRIT', dim: true }]} text="13 jours d’affilée. Demain, on remet ça." myPet={nino} other={lea} me={heroLabels.me(true)} them={heroLabels.them(true)} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Retourner au chat" onCta={noop} gradient="accent" />
+          <LinkTodayHero streak={0} streakUnit="jour" title={[{ text: 'UN MOT\n' }, { text: 'CHACUN', dim: true }]} text="Un message de chacun dans la journée, et votre série commence." myPet={nino} other={malo} me={heroLabels.me(false)} them={{ label: 'Malo', wrote: false }} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Écrire à Malo" onCta={noop} gradient="coral" />
         </Item>
         <Item name="LivesPanel">
           <LivesPanel
@@ -869,7 +852,7 @@ function GalleryScreen() {
           <MemoryGrid
             days={memoryDays}
             stats={{ messages: 412, photos: 41, daysTogether: 23, bestStreak: 12 }}
-            statLabels={{ messages: 'messages', photos: 'photos du jour', daysTogether: 'jours ensemble', bestStreak: 'meilleure série' }}
+            statLabels={{ messages: 'messages', photos: 'photos', daysTogether: 'jours ensemble', bestStreak: 'meilleure série' }}
             dayLabel={shortDay}
             blurred
             onDayPress={noop}
@@ -1026,9 +1009,9 @@ function GalleryScreen() {
         </Item>
         <Item name="LinkTemplate">
           <Frame height={600}>
-            <LinkTemplate other={lea} myPet={nino} lives={5} levelLabel="niveau 3 ›" onLevelPress={noop} onBack={noop} tabs={tabs} activeTab="today" onTabChange={noop} scroll>
+            <LinkTemplate other={lea} myPet={nino} lives={5} levelLabel="niveau 3 ›" onLevelPress={noop} onBack={noop} tabs={tabs} activeTab="lien" onTabChange={noop} scroll>
               <View style={styles.linkBody}>
-                <TodayCard today={{ mine: true, theirs: false, myPhotoUrl: photo('me'), theirPhotoUrl: null }} otherPet={lea.pet} streak={12} labels={todayLabels} onCta={noop} />
+                <LinkTodayHero streak={12} streakUnit={heroLabels.streakUnit} title={[{ text: 'SÉRIE\n' }, { text: 'EN JEU', dim: true }]} text="12 jours d’affilée. Un message de chacun avant minuit." myPet={nino} other={lea} me={heroLabels.me(false)} them={heroLabels.them(false)} wroteLabel={heroLabels.wroteLabel} waitingLabel={heroLabels.waitingLabel} cta="Écrire à Léa" onCta={noop} />
               </View>
             </LinkTemplate>
           </Frame>

@@ -37,7 +37,7 @@ import {
 import { errorText, timeLabel } from '@/features/links';
 import { useFreshPosition } from '@/features/map';
 import { useMe } from '@/features/me';
-import { openPlus } from '@/features/plus';
+import { openPlus, usePlusPerks } from '@/features/plus';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { rencontres as t } from '@/locales/rencontres';
@@ -71,6 +71,7 @@ export default function RencontresScreen() {
   const encounters = useLiveEncounters();
   const pet = usePet();
   const me = useMe();
+  const morePerk = usePlusPerks(me.data?.pet.name ?? '').find((p) => p.key === 'more_encounters');
   const location = useFreshPosition(me.data);
   const wave = useWave();
   const accept = useAcceptEncounter();
@@ -271,7 +272,7 @@ export default function RencontresScreen() {
       {encounters.data && !sulking && !noVision ? <DotNote text={t.filterNote(petName)} /> : null}
       {encounters.data ? <DotNote text={t.reminderShort} dot={color.mute} /> : null}
       {encounters.data && m && !m.plus && !sulking && !noVision ? (
-        <MapPlusStrip title={t.morePlus.title} text={t.morePlus.text} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
+        <MapPlusStrip title={t.morePlus.title} text={morePerk?.label ?? morePerk?.short[0] ?? ''} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
       ) : null}
 
       <EncounterHistory

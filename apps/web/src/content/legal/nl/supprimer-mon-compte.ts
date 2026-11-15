@@ -24,7 +24,7 @@ export const supprimerMonCompte: LegalPage = {
         'je account, je voornaam, je geboortedatum, je geslacht, wat je zoekt;',
         'je minimoa, zijn kijk, zijn stijl, zijn voorwerpen, je gewoontes, je reeks;',
         'je locatie en je geschatte thuisgebied;',
-        'je banden, met hun berichten, foto’s van de dag en herinneringen. **Ze verdwijnen ook voor de andere mensen**;',
+        'je banden, met hun berichten, foto’s en mijlpalen. **Ze verdwijnen ook voor de andere mensen**;',
         'als herinnering bewaarde bewijsfoto’s;',
         'de ontvangen “3 woorden”, je uitnodigingen;',
         'je instellingen en de toestemming om je meldingen te sturen.',

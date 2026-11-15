@@ -11,7 +11,7 @@ import type { Gauges } from '../gauges';
  * - nudge : relance après un long silence ;
  * - remark : remarque de temps en temps (dont réactions au premier message du jour, mots doux et vannes) ;
  * - guard : garde-fou quand le ton monte, visible par la seule personne concernée ;
- * - event : annonce de jeu (niveau, vies, photo à deux) — ni plafonnée ni coupée.
+ * - event : annonce de jeu (niveau, vies, série) — ni plafonnée ni coupée.
  */
 export const PET_ROLES = ['icebreaker', 'nudge', 'remark', 'guard', 'event'] as const;
 export type PetRole = (typeof PET_ROLES)[number];
@@ -190,8 +190,8 @@ export interface LinkWeekStats {
   /** Messages texte de la personne et de l'autre sur les 7 derniers jours. */
   mine: number;
   theirs: number;
-  /** Jours où les deux ont posté leur photo du jour. */
-  duoPhotoDays: number;
+  /** Jours (sur les 7 derniers) où les deux se sont écrit. */
+  duoDays: number;
   streak: number;
   lives: number;
   /** Âge du lien en jours. */
@@ -199,7 +199,7 @@ export interface LinkWeekStats {
 }
 
 /** Ce qu'on dit d'un lien — toujours positif ou neutre, jamais un reproche. */
-export const LINK_HEALTH_KEYS = ['new', 'quiet', 'photos', 'lively', 'one_sided', 'balanced'] as const;
+export const LINK_HEALTH_KEYS = ['new', 'quiet', 'together', 'lively', 'one_sided', 'balanced'] as const;
 export type LinkHealthKey = (typeof LINK_HEALTH_KEYS)[number];
 
 export interface LinkHealth {
@@ -211,12 +211,12 @@ export interface LinkHealth {
 export function linkHealthOf(s: LinkWeekStats): LinkHealth {
   const total = s.mine + s.theirs;
   const score = Math.round(
-    Math.min(1, s.lives / 7) * 40 + (Math.min(total, 40) / 40) * 30 + (Math.min(s.duoPhotoDays, 7) / 7) * 20 + (Math.min(s.streak, 7) / 7) * 10,
+    Math.min(1, s.lives / 7) * 40 + (Math.min(total, 40) / 40) * 30 + (Math.min(s.duoDays, 7) / 7) * 20 + (Math.min(s.streak, 7) / 7) * 10,
   );
   let key: LinkHealthKey;
   if (s.ageDays < 7) key = 'new';
-  else if (total === 0 && s.duoPhotoDays === 0) key = 'quiet';
-  else if (s.duoPhotoDays >= 3) key = 'photos';
+  else if (total === 0 && s.duoDays === 0) key = 'quiet';
+  else if (s.duoDays >= 5) key = 'together';
   else if (total >= 6 && Math.min(s.mine, s.theirs) / Math.max(s.mine, s.theirs) < 0.25) key = 'one_sided';
   else if (total >= 30) key = 'lively';
   else key = 'balanced';

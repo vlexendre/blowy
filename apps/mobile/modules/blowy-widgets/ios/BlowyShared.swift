@@ -98,13 +98,13 @@ struct BlowyFrame: Codable, Hashable {
 // MARK: - Activités en direct
 
 #if canImport(ActivityKit)
-/// Une seule définition pour les trois activités (défi accepté, photo d'un lien, sortie).
+/// Une seule définition pour les trois activités (défi accepté, série d'un lien, sortie).
 /// Le nom du type est la valeur `attributes-type` des push de démarrage : ne pas le renommer.
 struct BlowyActivityAttributes: ActivityAttributes {
   struct ContentState: Codable, Hashable {
     /// Fin, en secondes Unix.
     var endsAt: Double
-    /// Série en jeu (0 : rien à montrer).
+    /// Série en jeu, du défi ou du lien (0 : rien à montrer).
     var streak: Int
     /// Texte du défi ; nil : phrase générique.
     var title: String?
@@ -114,13 +114,13 @@ struct BlowyActivityAttributes: ActivityAttributes {
     var endDate: Date { Date(timeIntervalSince1970: endsAt) }
   }
 
-  /// challenge · photo · outing
+  /// challenge · link · outing
   var kind: String
   var pet: BlowyPet
   /// Début, en secondes Unix.
   var startedAt: Double
   var url: String
-  /// photo : prénom de la personne qui a posté.
+  /// link : prénom de l'autre personne du lien.
   var otherName: String?
 
   var startDate: Date { Date(timeIntervalSince1970: startedAt) }

@@ -32,7 +32,6 @@ export const moi = messages({
       plusTitle: [{ text: 'BLOWY+ ' }, { text: 'TOUTE LA CARTE', dim: true }],
       plusSoonTitle: [{ text: 'BLOWY+ ' }, { text: 'À VENIR', dim: true }],
       plusMemberTitle: [{ text: 'BLOWY+ ' }, { text: 'C’EST TOI', dim: true }],
-      plusText: '3 rencontres à la fois, la carte, la garde-robe, 2 gels de série.',
       plusCta: 'Essayer',
       plusSoonCta: 'Voir',
       rows: {
@@ -95,7 +94,8 @@ export const moi = messages({
         weekly_review: { title: 'Bilan de la semaine', subtitle: 'Dimanche soir' },
         unlocked: { title: 'Objet débloqué, 3 mots reçus', subtitle: 'Tout de suite' },
         encounters: { title: 'Nouvelle rencontre, on te fait signe', subtitle: 'Tout de suite' },
-        messages: { title: 'Messages et photo du jour', subtitle: 'Tout de suite' },
+        messages: { title: 'Messages', subtitle: 'Tout de suite' },
+        your_turn: { title: 'À toi d’écrire', subtitle: 'Le soir, quand on t’a écrit et pas toi. 1 par jour au plus' },
         link_in_danger: { title: 'Lien en danger', subtitle: 'Quand il reste 2 vies' },
         trial_reminder: { title: 'Fin de l’essai', subtitle: '2 jours avant le premier paiement' },
       },
@@ -147,7 +147,7 @@ export const moi = messages({
         {
           key: 'links',
           title: links === null ? 'Tes liens' : links === 0 ? 'Tes liens (tu n’en as pas encore)' : links === 1 ? 'Ton lien' : `Tes ${links} liens`,
-          subtitle: 'Messages, photos du jour, souvenirs. Ils disparaissent aussi pour les autres',
+          subtitle: 'Messages, photos, étapes. Ils disparaissent aussi pour les autres',
         },
         { key: 'photos', title: 'Tes photos de preuve gardées', subtitle: 'Et les « 3 mots » reçus, tes invitations' },
         { key: 'settings', title: 'Tes réglages', subtitle: 'Et l’autorisation de t’envoyer des notifications' },

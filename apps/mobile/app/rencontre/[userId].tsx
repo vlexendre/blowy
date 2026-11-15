@@ -186,7 +186,7 @@ export default function RencontreScreen() {
             tone="error"
             text={error instanceof ApiError && error.code === 'forbidden' && error === wave.error ? listText.waveSulk(myPetName) : errorText(error, listText.actionError)}
             actionLabel={error instanceof ApiError && error.code === 'forbidden' && error === wave.error ? listText.sulkAction : undefined}
-            onAction={() => router.navigate('/(tabs)/pet')}
+            onAction={() => router.dismissTo('/(tabs)/pet')}
           />
         ) : null}
         {reported ? <Banner tone="success" text={optionsText.reportDone} onClose={() => setReported(false)} closeLabel={optionsText.close} /> : null}

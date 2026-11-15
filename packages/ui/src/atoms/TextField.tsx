@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   input: { flex: 1, minWidth: 0, color: color.white, paddingVertical: space.md, minHeight: size.touch, outlineWidth: 0, outlineStyle: 'solid' },
   large: { ...type.bodyHeavy, fontSize: 20, lineHeight: 26 },
   // `.lbl` des maquettes : 11 px, approche .12 em, décalé de 4 px.
-  label: { fontSize: 11, lineHeight: 14, letterSpacing: 1.32, marginHorizontal: space.xs, marginBottom: space.xs + 2 },
+  label: { fontSize: 13, lineHeight: 16, letterSpacing: 1, marginHorizontal: space.xs, marginBottom: space.xs + 2 },
   hint: { marginHorizontal: space.xs + 2, marginTop: space.sm },
   right: { alignSelf: 'center' },
   inset: { borderRadius: radius.md, borderWidth: size.border, backgroundColor: color.card, paddingVertical: 9, paddingHorizontal: space.lg, gap: 1 },

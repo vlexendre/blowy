@@ -127,7 +127,7 @@ export default function ReviewScreen() {
           ))}
           {r.detailed ? (
             <>
-              <NoteCard kicker={t.detailedAxes} text={r.detailed.axes.join('\n')} icon={<Chip label={t.plusChip} tone="violet" size="sm" />} />
+              <NoteCard kicker={t.detailedAxes} text={r.detailed.axes.join('\n')} badge={<Chip label={t.plusChip} tone="violet" size="sm" />} />
               <NoteCard kicker={t.detailedLinks} text={r.detailed.links.join('\n')} />
             </>
           ) : me.data?.plus ? null : (

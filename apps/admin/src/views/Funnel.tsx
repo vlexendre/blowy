@@ -53,6 +53,13 @@ export function Funnel() {
               />
             </section>
             <Tile
+              label="Liens écrits à deux"
+              m={data.wroteTogether}
+              period={`le jour, sur ${fmtInt(data.links.active)} liens vivants`}
+              compare="sur 7 jours"
+              note="Compté à partir du 15 novembre 2026"
+            />
+            <Tile
               label="Compatibilité moyenne des rencontres proposées"
               m={data.averageCompatibility}
               period="sur 100, le jour"

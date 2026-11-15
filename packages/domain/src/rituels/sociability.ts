@@ -12,6 +12,7 @@ export const SOCIABILITY_GAIN: Partial<Record<PetEventKind, number>> = {
   message_sent: 2,
   sweet_word: 1,
   photo_sent: 8,
+  wrote_together: 8,
 };
 
 export const OUTING_ANSWERS = ['saw_people', 'walk', 'not_yet'] as const;

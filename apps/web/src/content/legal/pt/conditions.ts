@@ -35,7 +35,7 @@ export const conditions: LegalPage = {
       ul: [
         '**A visão** constrói-se com um teste no registo, uma pergunta por dia, os teus hábitos e a forma como cuidas do teu minimoa. É indicativa e vai ficando mais precisa com o tempo.',
         '**Os encontros**: o teu minimoa só te apresenta pessoas cuja compatibilidade ultrapassa um limiar. Nada acontece sem o teu acordo: cumprimentas, a outra pessoa aceita, a ligação é criada. O funcionamento está explicado na [política de privacidade](@confidentialite#compatibilite).',
-        '**As ligações**: um chat, uma foto do dia, recordações e vidas que descem quando a ligação fica em silêncio.',
+        '**As ligações**: um chat, uma série que cresce a cada dia em que vocês os dois escrevem, recordações e vidas que descem quando a ligação fica em silêncio.',
         '**O teu minimoa** tem indicadores (sociabilidade, fome, energia, humor), hábitos a manter, uma série, objetos. Nunca morre.',
         '**O mapa** mostra os minimoas compatíveis à tua volta, numa posição propositadamente imprecisa.',
       ],
@@ -65,7 +65,7 @@ export const conditions: LegalPage = {
     {
       ul: [
         'assediar, ameaçar, insultar, humilhar, chantagear, ou incitar ao ódio ou à violência;',
-        'enviar nudez ou conteúdo sexual, incluindo como foto do dia ou foto de prova;',
+        'enviar nudez ou conteúdo sexual, incluindo como foto de perfil ou foto de prova;',
         'envolver um menor de qualquer forma;',
         'publicar conteúdo ilegal, violento ou chocante;',
         'fazeres-te passar por outra pessoa, criar um perfil falso ou várias contas;',

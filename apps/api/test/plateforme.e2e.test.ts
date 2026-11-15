@@ -262,7 +262,9 @@ describe('minimoas dans le chat', () => {
     // Aucun accord : 12 messages → premier du jour + remarque au rythme, sans appel au modèle.
     await talk(a, b, linkId, 12);
     expect(model.calls.length).toBe(before);
-    let roles = petLines(await allMessages(a.api, linkId)).map((m) => m.petRole);
+    // Les annonces de jeu (`event` : niveau passé grâce au premier jour à deux) ne sont pas des interventions.
+    const interventions = (messages: readonly Message[]) => petLines(messages).filter((m) => m.petRole !== 'event');
+    const roles = interventions(await allMessages(a.api, linkId)).map((m) => m.petRole);
     expect(roles).toEqual(['icebreaker', 'remark', 'remark']);
     expect((await a.api.minimoas.get(linkId)).interventionsToday).toBe(3);
 
@@ -286,7 +288,7 @@ describe('minimoas dans le chat', () => {
     expect(call?.model).toBe('claude-haiku-5-5');
     expect(call?.prompt.split('\n').filter((l) => /^[AB]\s: /.test(l))).toHaveLength(8);
     expect(call?.prompt).not.toContain('Dan');
-    const last = petLines(await allMessages(a.api, linkId)).at(-1);
+    const last = interventions(await allMessages(a.api, linkId)).at(-1);
     expect(last).toMatchObject({ petRole: 'remark', body: 'Vous êtes d’accord sur plus de choses que vous ne croyez.' });
 
     // Retrait d'un accord : plus de lecture.
@@ -313,9 +315,11 @@ describe('minimoas dans le chat', () => {
     const { a, b, linkId } = await pair(world, ['Gaby', 'Hugo']);
     await b.api.minimoas.update(linkId, { muted: true });
     world.clock.advanceDays(1);
-    const count = petLines(await allMessages(a.api, linkId)).length;
+    // Coupés : plus aucune intervention ; les annonces du lien (niveau, vies) restent.
+    const interventions = async () => petLines(await allMessages(a.api, linkId)).filter((m) => m.petRole !== 'event');
+    const count = (await interventions()).length;
     await talk(a, b, linkId, 12);
-    expect(petLines(await allMessages(a.api, linkId))).toHaveLength(count);
+    expect(await interventions()).toHaveLength(count);
     const mine = await b.api.minimoas.mine();
     expect(mine.items.find((i) => i.linkId === linkId)).toMatchObject({ muted: true });
     expect(mine.text).toBe(chatConfidentialityText('fr'));
@@ -375,9 +379,10 @@ describe('minimoas dans le chat', () => {
       world.clock.advanceDays(1);
       await talk(a, b, linkId, 2);
     }
+    // Huit jours où les deux écrivent : « vous vous écrivez presque tous les jours ».
     const [health] = await minimoas.linkHealth(b.id);
-    expect(health).toMatchObject({ otherName: 'Mia', key: 'balanced' });
-    expect(health?.line).toBe('Avec Mia : vous vous répondez bien, l’un comme l’autre.');
+    expect(health).toMatchObject({ otherName: 'Mia', key: 'together' });
+    expect(health?.line).toBe('Avec Mia : vous vous écrivez presque tous les jours. Ça se voit.');
   });
 });
 
@@ -459,8 +464,11 @@ describe('notifications', () => {
   });
 
   it('langue du profil : textes français, repli sur le français pour une langue pas encore traduite', async () => {
-    expect(notificationText('fr', 'daily_photo', { name: 'Léa' })).toEqual({ title: 'Photo du jour', body: 'Léa a posté la sienne. À toi.' });
-    expect(notificationText('nl', 'daily_photo', { name: 'Léa' })).toEqual(notificationText('fr', 'daily_photo', { name: 'Léa' }));
+    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '0' })).toEqual({ title: 'Série avec Léa', body: '4 jours d’affilée. À toi d’écrire avant minuit.' });
+    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '0' })).toEqual({ title: 'Série avec Léa', body: 'Léa t’a écrit aujourd’hui. À toi avant minuit.' });
+    expect(notificationText('fr', 'your_turn', { name: 'Léa', count: '4', more: '2' }).body).toBe('À toi d’écrire avant minuit. Et dans 2 autres liens.');
+    expect(notificationText('en', 'your_turn', { name: 'Léa', count: '1' })).toEqual({ title: 'Streak with Léa', body: '1 day in a row. Your turn to write before midnight.' });
+    expect(notificationText('nl', 'your_turn', { name: 'Léa' })).toEqual(notificationText('fr', 'your_turn', { name: 'Léa' }));
     const e = world.client();
     await e.api.me.onboard(onboardBody({ displayName: 'Eva', locale: 'pt' }));
     await e.api.notifications.registerDevice({ token: 'ExponentPushToken[eva]', platform: 'ios', timeZone: 'Europe/Lisbon' });
