@@ -513,7 +513,7 @@ export const chat = messages({
     retry: 'Réessayer',
     today: 'Aujourd’hui',
     yesterday: 'Hier',
-    /** Nom au-dessus d'une réplique de minimoa : « nino · brise-glace ». */
+    /** Nom au-dessus d'une réplique de minimoa : « Nino · brise-glace ». */
     role: (role: 'icebreaker' | 'nudge' | 'remark' | 'guard' | 'event', name: string): string =>
       `${name} · ${{ icebreaker: 'brise-glace', nudge: 'relance', remark: 'remarque', guard: 'garde-fou, rien que pour toi', event: 'annonce' }[role]}`,
     /** Sous le fil, au-dessus du champ. */

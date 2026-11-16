@@ -135,8 +135,8 @@ export function ChatThread({
       const m = item.message;
       const isOtherSide = m.author === 'other' || m.author === 'other_pet';
       const pet = m.author === 'my_pet' ? myPet : m.author === 'other_pet' ? other.pet : undefined;
-      // Maquette : noms en minuscules au-dessus des bulles (« léa », « suzie »).
-      const plain = (m.author === 'other' ? (otherName ?? other.displayName) : pet?.name)?.toLowerCase();
+      // Noms tels qu'ils s'écrivent, majuscule comprise (« Léa », « Pépite · brise-glace »).
+      const plain = m.author === 'other' ? (otherName ?? other.displayName) : pet?.name;
       const name = plain && pet && m.petRole && roleLabel ? roleLabel(m.petRole, plain) : plain;
       const reportable = m.author === 'other' && m.kind !== 'event' && !!onMessageLongPress;
       const props: MessageBubbleProps = {

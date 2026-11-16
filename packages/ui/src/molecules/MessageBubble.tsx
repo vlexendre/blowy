@@ -82,7 +82,7 @@ export const MessageBubble = memo(function MessageBubble({
     return (
       <Animated.View entering={fade ? FadeIn : undefined} style={[styles.pill, isEvent ? styles.eventPill : null, entrance.row]} accessible accessibilityRole="text">
         {isEvent ? <Icon name="etoiles" size={16} /> : null}
-        <Text variant="bodyBold" size={12} muted={!isEvent} color={isEvent ? color.accent : undefined} center>
+        <Text variant="bodyBold" size={12} muted={!isEvent} color={isEvent ? color.accent : undefined} center style={styles.pillText}>
           {body ?? ''}
         </Text>
       </Animated.View>
@@ -272,5 +272,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     backgroundColor: veil.hairline,
   },
+  // Sans `flexShrink`, sur iPhone, le texte d'une rangée garde sa largeur d'une ligne et déborde de la pastille.
+  pillText: { flexShrink: 1 },
   eventPill: { backgroundColor: veil.glass, borderWidth: 1, borderColor: veil.glassStrong },
 });
