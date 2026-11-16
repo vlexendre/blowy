@@ -14,10 +14,12 @@ export interface CheckRowProps {
   onChange: (checked: boolean) => void;
   /** La phrase d'accord, écrite simplement. */
   label: string;
+  /** Précision sous la phrase, estompée (« Elle n'est montrée à personne… ») ; lue avec elle. */
+  detail?: string;
 }
 
 /** Accord explicite : une case à cocher (coche qui « pop ») et sa phrase ; toute la ligne se touche. */
-export function CheckRow({ checked, onChange, label }: CheckRowProps) {
+export function CheckRow({ checked, onChange, label, detail }: CheckRowProps) {
   const reduced = useReducedMotion();
   const p = useSharedValue(checked ? 1 : 0);
   useEffect(() => {
@@ -31,7 +33,7 @@ export function CheckRow({ checked, onChange, label }: CheckRowProps) {
       scaleTo={0.98}
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
-      accessibilityLabel={label}
+      accessibilityLabel={detail ? `${label} ${detail}` : label}
       style={[layout.row, styles.row, checked && styles.rowOn]}
     >
       <View style={[styles.box, checked && styles.boxOn]}>
@@ -39,15 +41,23 @@ export function CheckRow({ checked, onChange, label }: CheckRowProps) {
           <Glyph name="check" size={15} color={color.dark} />
         </Animated.View>
       </View>
-      <Text size={15} style={layout.grow}>
-        {label}
-      </Text>
+      <View style={[layout.grow, styles.texts]}>
+        <Text variant="bodyBold" size={15}>
+          {label}
+        </Text>
+        {detail ? (
+          <Text size={13} muted>
+            {detail}
+          </Text>
+        ) : null}
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   row: { gap: space.md, alignItems: 'center', minHeight: 56, paddingHorizontal: 14, paddingVertical: space.md, borderRadius: radius.md, backgroundColor: color.panel, borderWidth: 1, borderColor: alpha(color.white, 0.08) },
+  texts: { gap: space.xs },
   rowOn: { borderColor: alpha(color.accent, 0.6) },
   box: { width: 26, height: 26, borderRadius: 8, borderWidth: 2, borderColor: alpha(color.white, 0.4), alignItems: 'center', justifyContent: 'center' },
   boxOn: { borderColor: color.accent },

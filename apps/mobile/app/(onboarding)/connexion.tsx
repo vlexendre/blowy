@@ -7,7 +7,7 @@
  * d'Apple : adresse et code configurés sur le serveur, `POST /v1/review/session`). Toute autre adresse reçoit
  * « Adresse ou code incorrect. ». En mode local, le code de développement (000000) marche aussi.
  */
-import { Appear, AuthButton, Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, OptionalField, Stack, Text, TextField } from '@blowy/ui';
+import { Appear, AuthButton, Banner, Button, LegalNote, OnboardingPanel, OnboardingTemplate, Stack, TextField } from '@blowy/ui';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Linking } from 'react-native';
@@ -34,6 +34,7 @@ export default function Connexion() {
   const afterSignIn = useAfterSignIn();
   const [cancelled, setCancelled] = useState(false);
   const [pendingProvider, setPendingProvider] = useState<'apple' | 'google' | null>(null);
+  const [emailMode, setEmailMode] = useState(false);
 
   const go = (provider: 'apple' | 'google') => {
     setCancelled(false);
@@ -52,6 +53,7 @@ export default function Connexion() {
   };
 
   const busy = signIn.isPending || (signIn.isSuccess && !!signIn.data);
+  if (emailMode) return <EmailSignIn devHint={providers.includes('email')} onBack={() => setEmailMode(false)} />;
   return (
     <ScreenMotion>
       <OnboardingTemplate
@@ -73,7 +75,7 @@ export default function Connexion() {
                 { text: '.' },
               ]}
             />
-            <EmailSignIn devHint={providers.includes('email')} />
+            <Button label={t.email.toggle} variant="ghost" size="sm" onPress={() => setEmailMode(true)} />
           </Stack>
         }
       >
@@ -101,38 +103,64 @@ export default function Connexion() {
 }
 
 /**
- * Connexion par e-mail et code, repliée : visible de tous (rien de caché à la revue), utile seulement aux comptes qui
- * ont reçu un code (compte de revue d'Apple). En mode local, rappel du code de développement.
+ * Connexion par e-mail et code, sur son propre écran (ouvert par le lien sous les boutons) : visible de tous (rien de
+ * caché à la revue), utile seulement aux comptes qui ont reçu un code (compte de revue d'Apple). En mode local,
+ * rappel du code de développement.
  */
-function EmailSignIn({ devHint }: { devHint: boolean }) {
+function EmailSignIn({ devHint, onBack }: { devHint: boolean; onBack: () => void }) {
   const email = useDraft((d) => d.email);
+  const species = useDraft((d) => d.species);
+  const petName = useDraft((d) => d.petName);
   const set = useDraft((d) => d.set);
-  const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const signIn = useEmailCodeSignIn();
   const afterSignIn = useAfterSignIn();
   const e = t.email;
-  const submit = () => signIn.mutate({ email, code }, { onSuccess: async () => router.replace(await afterSignIn()) });
+  const ready = !!email.trim() && code.trim().length >= 4;
+  const submit = () => {
+    if (!ready || signIn.isPending) return;
+    signIn.mutate({ email, code }, { onSuccess: async () => router.replace(await afterSignIn()) });
+  };
   return (
-    <OptionalField toggleLabel={e.toggle} open={open} onOpen={() => setOpen(true)}>
-      <Text size={13} muted>
-        {e.lead}
-      </Text>
-      <TextField inset label={e.emailLabel} value={email} onChangeText={(v) => set({ email: v })} placeholder={e.emailPlaceholder} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} />
-      <TextField
-        inset
-        label={e.codeLabel}
-        value={code}
-        onChangeText={setCode}
-        placeholder={devHint ? LOCAL_CODE : e.codePlaceholder}
-        autoCapitalize="none"
-        autoCorrect={false}
-        secureTextEntry={!devHint}
-        maxLength={64}
-        hint={devHint ? t.dev.hint(LOCAL_CODE) : undefined}
-      />
-      {signIn.error ? <Banner tone="error" text={errorMessage(signIn.error)} /> : null}
-      <Button label={e.submit} variant="glass" size="sm" onPress={submit} loading={signIn.isPending} disabled={!email.trim() || code.trim().length < 4} />
-    </OptionalField>
+    <ScreenMotion>
+      <OnboardingTemplate
+        onBack={onBack}
+        backLabel={common.back}
+        host={{ species, line: e.host, highlight: e.highlight, seed: petName, name: petName }}
+        gap={12}
+        primaryLabel={e.submit}
+        primaryDisabled={!ready}
+        primaryLoading={signIn.isPending}
+        onPrimary={submit}
+      >
+        <TextField
+          label={e.emailLabel}
+          value={email}
+          onChangeText={(v) => set({ email: v })}
+          placeholder={e.emailPlaceholder}
+          keyboardType="email-address"
+          autoComplete="email"
+          textContentType="emailAddress"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoFocus
+          returnKeyType="next"
+        />
+        <TextField
+          label={e.codeLabel}
+          value={code}
+          onChangeText={setCode}
+          placeholder={devHint ? LOCAL_CODE : e.codePlaceholder}
+          autoCapitalize="none"
+          autoCorrect={false}
+          secureTextEntry={!devHint}
+          maxLength={64}
+          hint={devHint ? t.dev.hint(LOCAL_CODE) : e.lead}
+          returnKeyType="go"
+          onSubmitEditing={submit}
+        />
+        {signIn.error ? <Banner tone="error" text={errorMessage(signIn.error)} /> : null}
+      </OnboardingTemplate>
+    </ScreenMotion>
   );
 }

@@ -6,7 +6,7 @@
  */
 import type { Seeking, Whom } from '@blowy/contract';
 import { SEEKINGS, WHOMS } from '@blowy/domain';
-import { Appear, CheckRow, ChoiceCard, ChoiceGrid, OnboardingTemplate, Text } from '@blowy/ui';
+import { Appear, CheckRow, ChoiceCard, OnboardingTemplate, Text } from '@blowy/ui';
 import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -68,30 +68,36 @@ function ChercheStep() {
           onBack={() => setAskWhom(false)}
           backLabel={common.back}
           host={{ species, line: t.whomHost, highlight: t.whomHighlight, reactKey, seed: petName, name: petName }}
-          gap={14}
+          gap={12}
           primaryLabel={t.cta}
           primaryDisabled={!ok}
           onPrimary={() => router.push('/(onboarding)/naissance')}
           footnote={
-            consent ? undefined : (
+            consent || !whom ? undefined : (
               <Text size={13} muted center>
                 {t.consentHint}
               </Text>
             )
           }
         >
-          <Appear distance={10}>
-            <ChoiceGrid<Whom>
-              items={WHOMS.map((w) => ({ key: w, label: t.whom[w] }))}
-              selected={whom}
-              onSelect={(w) => {
-                setReactKey((n) => n + 1);
-                set({ whom: w });
-              }}
-            />
-          </Appear>
-          <Appear delay={80} distance={10}>
-            <CheckRow checked={consent} onChange={(v) => set({ sensitiveConsent: v })} label={t.consent} />
+          {WHOMS.map((w: Whom, i) => (
+            <Appear key={w} delay={60 + i * 60} distance={18} from="right">
+              <ChoiceCard
+                title={t.whom[w]}
+                compact
+                plain
+                marker
+                selected={whom === w}
+                tilt={i % 2 ? 2 : -2}
+                onPress={() => {
+                  setReactKey((n) => n + 1);
+                  set({ whom: w });
+                }}
+              />
+            </Appear>
+          ))}
+          <Appear delay={260} distance={10}>
+            <CheckRow checked={consent} onChange={(v) => set({ sensitiveConsent: v })} label={t.consent} detail={t.consentDetail} />
           </Appear>
         </OnboardingTemplate>
       </ScreenMotion>
