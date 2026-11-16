@@ -92,7 +92,6 @@ export default function Moi() {
         words={[]}
         received={wordsCount > 0}
         emptyText={t.wordsLead(petName)}
-        steps={t.wordsSteps(petName)}
         receivedText={t.wordsReceived(petName)}
         moreLabel={t.wordsMore(petName)}
         onMore={() => router.push('/pet/caractere')}

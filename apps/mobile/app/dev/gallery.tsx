@@ -821,12 +821,8 @@ function GalleryScreen() {
           <SuggestionCard
             suggestion={{ user: sasha, compatibility: 91, intro: 'ton humain perd à tous les quiz de gaston ? on va bien s’entendre 😏', waved: false }}
             ownerLabel="le minimoa de Sasha"
-            viaLabel="par Malo, pote de pote"
-            viaPet={malo.pet}
             badgeLabel="nouveau"
             compatLabel="d’accord"
-            tagline="deux joueurs, une piquante"
-            introLabel="pia, à nino"
             waveLabel="saluer pia"
             wavedLabel="salut envoyé"
             onWave={noop}

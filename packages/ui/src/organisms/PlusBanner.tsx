@@ -5,7 +5,7 @@ import { Panel } from '../atoms/Panel';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
-import { size, space } from '../theme';
+import { radius, size, space } from '../theme';
 import type { TitleContent } from '../types';
 
 export interface PlusBannerProps {
@@ -20,9 +20,10 @@ export interface PlusBannerProps {
 export function PlusBanner({ title, text, ctaLabel, onPress }: PlusBannerProps) {
   return (
     <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="link" accessibilityLabel={`${typeof title === 'string' ? title : title.map((s) => s.text).join('')}. ${text}`}>
-      <Panel gradient="wine" radius={26} padding="none" style={styles.panel}>
+      <Panel gradient="wine" radius={radius.card} padding="none" style={styles.panel}>
         <View style={styles.texts}>
-          <Title text={title} size={26} numberOfLines={1} />
+          {/* Deux lignes plutôt qu'un titre coupé (375 pt, langues longues). */}
+          <Title text={title} size={22} numberOfLines={2} />
           <Text variant="body" size={12} style={styles.text}>
             {text}
           </Text>
@@ -36,7 +37,7 @@ export function PlusBanner({ title, text, ctaLabel, onPress }: PlusBannerProps) 
 }
 
 const styles = StyleSheet.create({
-  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md + 2, paddingHorizontal: space.lg },
+  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.md + 2 },
   texts: { flex: 1, minWidth: 0 },
   text: { opacity: 0.85, marginTop: 2 },
   cta: { height: size.touch },

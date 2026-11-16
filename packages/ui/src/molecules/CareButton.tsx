@@ -6,6 +6,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 
 import { Loader } from '../atoms/Loader';
 import { Pressable } from '../atoms/Pressable';
+import { ProgressBar } from '../atoms/ProgressBar';
 import { Text } from '../atoms/Text';
 import { haptic, hapticFor } from '../lib/haptics';
 import { InkProvider } from '../lib/ink';
@@ -40,8 +41,22 @@ export interface CareButtonProps {
   lure?: PetLure;
   /** Diamètre du disque. Défaut 64. */
   size?: number;
+  /**
+   * Niveau du besoin que ce geste comble, en petite barre sous le libellé (faim sous « Nourrir ») : les besoins et
+   * les gestes se lisent d'un seul bloc. `accessibilityLabel` : « faim, 35 sur 100 », ajouté au libellé lu.
+   */
+  level?: CareLevel;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
+}
+
+/** Niveau d'un besoin porté par un bouton de soin. */
+export interface CareLevel {
+  /** De 0 (à plat) à 100 (comblé). */
+  value: number;
+  /** Sous ce seuil, la barre passe au rouge. Défaut 40. */
+  lowAt?: number;
+  accessibilityLabel: string;
 }
 
 /** Tenir ce temps avant de pouvoir glisser (un glissé immédiat fait défiler l'écran). */
@@ -62,6 +77,7 @@ export function CareButton({
   disabled,
   lure,
   size = 64,
+  level,
   accessibilityHint,
   style,
 }: CareButtonProps) {
@@ -205,7 +221,7 @@ export function CareButton({
       disabled={inactive}
       haptic={false}
       scaleTo={0.92}
-      accessibilityLabel={refused && refusedLabel ? `${label}, ${refusedLabel}` : label}
+      accessibilityLabel={[label, level?.accessibilityLabel, refused ? refusedLabel : null].filter(Boolean).join(', ')}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!inactive || !!refused, busy: !!loading }}
       style={[styles.root, refused && styles.off, disabled && !loading && styles.inactive, lifted && styles.lifted, style]}
@@ -228,9 +244,14 @@ export function CareButton({
           </InkProvider>
         </Animated.View>
       </Pulse>
-      <Text variant="bodyHeavy" size={12} center numberOfLines={1} color={color.white}>
+      <Text variant="bodyHeavy" size={13} center numberOfLines={1} color={color.white}>
         {label}
       </Text>
+      {level ? (
+        <View style={styles.level} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <ProgressBar value={level.value / 100} height={5} color={level.value < (level.lowAt ?? 40) ? color.danger : color.accent} />
+        </View>
+      ) : null}
     </Pressable>
   );
   if (!lure) return button;
@@ -243,7 +264,9 @@ export function CareButton({
 
 const styles = StyleSheet.create({
   // `.care` : colonne, écart 6, libellé 12/800.
-  root: { flex: 1, minWidth: sizes.touch, alignItems: 'center', gap: 6 },
+  root: { flex: 1, minWidth: sizes.touch, alignItems: 'center', gap: 5 },
+  // Barre du besoin sous le libellé : courte, centrée (le disque reste la cible).
+  level: { width: '62%', maxWidth: 52, marginTop: 1 },
   // Le picto porté passe devant les autres soins.
   lifted: { zIndex: 20, elevation: 20 },
   // `.care u` : disque 64 #221E3C, filet blanc 12 %.

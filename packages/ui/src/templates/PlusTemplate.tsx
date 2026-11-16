@@ -1,6 +1,7 @@
 import type { Outfit, Species } from '@blowy/domain';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -52,6 +53,10 @@ export interface PlusTemplateProps<K extends string> {
   /** Preuve concrète (nombre réel venu du serveur) : absente à zéro. */
   teaser?: { label: string; species: readonly Species[] } | null;
   perks: readonly { key: string; label: string; highlight?: boolean }[];
+  /** Avantages montrés d'abord (les autres se déplient sur place) ; défaut : tous. */
+  perksShown?: number;
+  /** Libellé qui déplie le reste (« Et 5 de plus »), avec le nombre caché. */
+  morePerksLabel?: string;
   /** Offres ; absentes pour un membre (`member`). */
   offers?: readonly PlusOfferView<K>[];
   selected?: K;
@@ -81,7 +86,9 @@ export interface PlusTemplateProps<K extends string> {
   ctaNote?: string | null;
 }
 
+/** Hauteur du panneau du haut ; plus bas sur un petit écran (375 × 667 : les deux offres restent au-dessus du pli). */
 const HEADER = 178;
+const HEADER_SHORT = 150;
 
 /** Un objet premium qui flotte près du minimoa (boucle douce, arrêtée avec « réduire les animations »). */
 function Floating({ id, size, delay, style }: { id: string; size: number; delay: number; style: object }) {
@@ -186,6 +193,8 @@ export function PlusTemplate<K extends string>({
   floatingItems = [],
   teaser,
   perks,
+  perksShown,
+  morePerksLabel,
   offers,
   selected,
   onSelect,
@@ -207,12 +216,16 @@ export function PlusTemplate<K extends string>({
   ctaNote,
 }: PlusTemplateProps<K>) {
   const insets = useSafeAreaInsets();
+  const short = useWindowDimensions().height < 740;
   // Dans une feuille (`SheetTemplate bare`) : la barre du haut sert de poignée, la croix et « continuer » font
   // redescendre la feuille, et tirer le contenu au-delà du haut la ferme.
   const sheet = useSheet();
   const top = sheet ? 12 : insets.top;
   const close = sheet ? sheet.close : onClose;
   const proceed = sheet ? sheet.close : onContinue;
+  const [allPerks, setAllPerks] = useState(false);
+  const cut = !allPerks && perksShown !== undefined && morePerksLabel && perks.length > perksShown + 1 ? perksShown : perks.length;
+  const shownPerks = perks.slice(0, cut);
   return (
     <View style={[styles.root, sheet && styles.rootSheet]}>
       <ScrollView
@@ -223,22 +236,22 @@ export function PlusTemplate<K extends string>({
         onScrollEndDrag={sheet ? (e) => e.nativeEvent.contentOffset.y < -70 && sheet.close() : undefined}
       >
         {/* Le panneau suit son contenu (titre, ligne de la raison, preuve concrète) : rien ne déborde quelle que soit la raison. */}
-        <View style={[styles.panel, { minHeight: HEADER + top - 6 }]}>
+        <View style={[styles.panel, { minHeight: (short ? HEADER_SHORT : HEADER) + top - 6 }]}>
           <View style={styles.panelFill}>
             <LinearGradient colors={plusGradient} style={StyleSheet.absoluteFill} />
           </View>
           {/* Son minimoa, habillé, entre par la droite ; les objets premium flottent autour. */}
-          <Appear from="right" distance={60} delay={120} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + 28 }]}>
-            <DressedPet species={pet.species} outfit={pet.outfit ?? undefined} size={150} mood="joie" accessibilityLabel={pet.name} />
+          <Appear from="right" distance={60} delay={120} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + (short ? 22 : 28) }]}>
+            <DressedPet species={pet.species} outfit={pet.outfit ?? undefined} size={short ? 124 : 150} mood="joie" accessibilityLabel={pet.name} />
           </Appear>
-          {floatingItems[0] ? <Floating id={floatingItems[0]} size={48} delay={0} style={{ top: top + 126, right: -4 }} /> : null}
+          {floatingItems[0] ? <Floating id={floatingItems[0]} size={48} delay={0} style={{ top: top + (short ? 100 : 126), right: -4 }} /> : null}
           {floatingItems[1] ? <Floating id={floatingItems[1]} size={44} delay={900} style={{ top: top + 4, right: 116 }} /> : null}
           <SheetHandle style={[layout.rowBetween, styles.top, { paddingTop: top - 6 + space.md }]}>
             <View />
             <IconButton glyph="close" variant="back" label={closeLabel} onPress={close} />
           </SheetHandle>
           <View style={styles.head}>
-            <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={64} style={styles.title} />
+            <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={short ? 52 : 64} style={short ? styles.titleShort : styles.title} />
             <Title text={[{ text: headline, dim: true }]} size={26} variant="h2" style={styles.headline} />
             {teaser ? (
               <Appear delay={260} style={[layout.row, styles.teaser]}>
@@ -257,7 +270,7 @@ export function PlusTemplate<K extends string>({
 
         <View style={styles.body}>
           <View style={styles.perks}>
-            {perks.map((p, i) => (
+            {shownPerks.map((p, i) => (
               <Appear key={p.key} delay={140 + Math.min(i, 8) * 35} distance={8} style={styles.perkCell}>
                 <View style={[layout.row, styles.perk]}>
                   <Glyph name="check" size={16} color={color.accent} />
@@ -267,6 +280,16 @@ export function PlusTemplate<K extends string>({
                 </View>
               </Appear>
             ))}
+            {cut < perks.length ? (
+              <Appear delay={140 + cut * 35} distance={8} style={styles.perkCell}>
+                <Pressable onPress={() => setAllPerks(true)} accessibilityRole="button" accessibilityLabel={morePerksLabel} style={[layout.row, styles.perk, styles.morePerks]}>
+                  <Glyph name="plus" size={16} color={color.mute} />
+                  <Text variant="bodyBold" size={15} muted style={[styles.perkText, styles.legalText]}>
+                    {morePerksLabel}
+                  </Text>
+                </Pressable>
+              </Appear>
+            ) : null}
           </View>
 
           {member ? (
@@ -366,6 +389,7 @@ const styles = StyleSheet.create({
   top: { paddingBottom: space.xs, paddingHorizontal: 14 },
   head: { paddingLeft: 20, paddingRight: 136, paddingBottom: space.lg },
   title: { lineHeight: 60 },
+  titleShort: { lineHeight: 50 },
   headline: { marginTop: 2 },
   teaser: { gap: space.sm, alignItems: 'center', marginTop: space.md },
   silhouettes: { alignItems: 'center' },
@@ -375,12 +399,13 @@ const styles = StyleSheet.create({
   perks: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 10 },
   perkCell: { width: '50%', paddingRight: space.xs },
   perk: { gap: 7, alignItems: 'center' },
+  morePerks: { minHeight: 44, marginVertical: -12 },
   perkText: { flex: 1, lineHeight: 20 },
   offers: {},
   offersList: { gap: space.sm },
   offer: { borderRadius: radius.lg - 6, borderWidth: 2, backgroundColor: color.panel },
-  offerOn: { borderColor: color.accent, paddingHorizontal: 18, paddingVertical: 14 },
-  offerOff: { borderColor: veil.glassStrong, paddingHorizontal: 18, minHeight: 56, justifyContent: 'center' },
+  offerOn: { borderColor: color.accent, paddingHorizontal: 14, paddingVertical: 12 },
+  offerOff: { borderColor: veil.glassStrong, paddingHorizontal: 14, minHeight: 52, justifyContent: 'center' },
   offerTop: { gap: space.sm, alignItems: 'flex-start' },
   offerShort: { gap: space.md },
   price: { marginTop: space.xs, lineHeight: 36 },
@@ -392,7 +417,7 @@ const styles = StyleSheet.create({
   timelineDot: { width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: veil.off, backgroundColor: color.card, marginBottom: space.xs },
   timelineDotOn: { backgroundColor: color.accent, borderColor: alpha(color.accent, 0.4) },
   timelineText: { lineHeight: 16, paddingHorizontal: 2 },
-  memberCard: { gap: space.md, padding: 18, borderRadius: radius.lg - 6, borderWidth: 2, borderColor: color.accent, backgroundColor: color.panel },
+  memberCard: { gap: space.md, padding: 14, borderRadius: radius.lg - 6, borderWidth: 2, borderColor: color.accent, backgroundColor: color.panel },
   actions: { gap: space.xs, paddingBottom: space.md },
   footer: { paddingHorizontal: 20, paddingTop: space.md, gap: space.xs, backgroundColor: color.night, borderTopWidth: 1, borderTopColor: veil.hairline },
   ctaNote: { lineHeight: 17, paddingHorizontal: space.sm },

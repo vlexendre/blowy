@@ -31,8 +31,9 @@ export default function ChatsScreen() {
     setRefreshing(false);
   };
 
+  // Un seul bandeau à la fois : les signes reçus d'abord ; sinon les séries en jeu (la ligne garde son « À toi »).
   const first = incoming[0];
-  const waitingFirst = waiting[0];
+  const waitingFirst = first ? undefined : waiting[0];
 
   return (
     <ScreenMotion>
@@ -58,7 +59,7 @@ export default function ChatsScreen() {
       ) : null}
 
       {waitingFirst ? (
-        <Appear once={`chats:turn:${waitingFirst.id}:${waitingFirst.today.day}`} delay={first ? 160 : 0}>
+        <Appear once={`chats:turn:${waitingFirst.id}:${waitingFirst.today.day}`}>
         <NudgeBanner
           gradient="orange"
           icon="flamme"

@@ -24,7 +24,7 @@ export { StepProgress, type StepProgressProps } from './StepProgress';
 export { StreakPill, type StreakPillProps } from './StreakPill';
 export { TodoRow, type TodoRowProps } from './TodoRow';
 export { TabBarItem, type TabBarItemProps } from './TabBarItem';
-export { CareButton, type CareButtonProps } from './CareButton';
+export { CareButton, type CareButtonProps, type CareLevel } from './CareButton';
 export { ItemTile, type ItemTileProps, type ItemTileState } from './ItemTile';
 export { needColor, NeedMeter, type NeedMeterProps } from './NeedMeter';
 export { SlotTabs, type SlotTabsProps } from './SlotTabs';
@@ -52,3 +52,4 @@ export { WHEEL_ROW, WheelColumn, type WheelColumnProps, WheelPicker, type WheelP
 export { AuthButton, type AuthButtonProps } from './AuthButton';
 export { CheckRow, type CheckRowProps } from './CheckRow';
 export { PointRow, type PointRowProps } from './PointRow';
+export { ShortcutRow, ShortcutTile, type ShortcutTileProps } from './ShortcutTile';

@@ -56,10 +56,10 @@ export function AxisCompare({ name, text, mine, theirs, mineColor = color.accent
   return (
     <View style={[layout.row, styles.row, divider ? styles.divider : null, style]}>
       <View style={[layout.grow, styles.text]}>
-        <Text variant="bodyHeavy" size={17}>
+        <Text variant="bodyHeavy" size={16}>
           {name}
         </Text>
-        <Text size={15} muted>
+        <Text size={14} muted>
           {text}
         </Text>
       </View>
@@ -93,7 +93,7 @@ function Marker({ side, nudge, hollow, fill, index }: { side: AxisSide | AxisLea
 }
 
 const styles = StyleSheet.create({
-  row: { gap: space.md, paddingVertical: space.md },
+  row: { gap: space.md, paddingVertical: 9 },
   divider: { borderTopWidth: 1, borderTopColor: veil.line },
   text: { gap: 2 },
   track: { width: TRACK, height: DOT + 8, justifyContent: 'center' },

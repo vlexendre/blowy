@@ -29,7 +29,7 @@ export function EncountersHero({ kicker, title, text, species, action }: Encount
     <Panel gradient="coral" radius={32} padding="none" style={styles.panel}>
       {species ? (
         <View style={styles.pet} pointerEvents="none">
-          <PetImage species={species} mood="cote" size={190} animation="breathe" />
+          <PetImage species={species} mood="cote" size={156} animation="breathe" />
         </View>
       ) : null}
       <View style={[layout.rowBetween, styles.top]}>
@@ -54,9 +54,9 @@ export function EncountersHero({ kicker, title, text, species, action }: Encount
           </Pressable>
         ) : null}
       </View>
-      <Title text={title} size={48} style={styles.title} />
+      <Title text={title} size={38} style={styles.title} />
       {text ? (
-        <Text variant="bodyBold" size={15} color={color.dark} style={styles.text}>
+        <Text variant="bodyBold" size={13} color={color.dark} style={styles.text}>
           {text}
         </Text>
       ) : null}
@@ -65,12 +65,12 @@ export function EncountersHero({ kicker, title, text, species, action }: Encount
 }
 
 const styles = StyleSheet.create({
-  panel: { height: 204, paddingTop: 16, paddingHorizontal: 18 },
-  pet: { position: 'absolute', right: -40, bottom: -36 },
+  panel: { minHeight: 150, paddingTop: 12, paddingBottom: 14, paddingHorizontal: 16 },
+  pet: { position: 'absolute', right: -32, bottom: -30 },
   top: { zIndex: 2 },
   kicker: { letterSpacing: 1.04, textTransform: 'uppercase' },
   action: { height: 34, paddingHorizontal: 14, gap: 6, borderRadius: 999, backgroundColor: color.white },
   plus: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
-  title: { marginTop: 10, zIndex: 2 },
-  text: { marginTop: 8, maxWidth: 220, lineHeight: 20, zIndex: 2 },
+  title: { marginTop: 6, zIndex: 2 },
+  text: { marginTop: 4, maxWidth: 220, lineHeight: 17, zIndex: 2 },
 });

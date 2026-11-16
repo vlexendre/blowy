@@ -42,7 +42,7 @@ export function NudgeBanner({ kicker, title, text, gradient = 'orange', icon, sp
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel} scaleTo={0.98} style={style}>
       <Animated.View style={[styles.open, open.panel]}>
-      <Panel gradient={gradient} radius="lg" padding="none" overflow style={styles.panel}>
+      <Panel gradient={gradient} radius={radius.card} padding="none" overflow style={styles.panel}>
         {icon ? <Flick name={icon} /> : null}
         <Animated.View style={[styles.body, open.body]}>
           <Text variant="label" size={11} style={styles.kicker}>
@@ -118,7 +118,7 @@ function Flick({ name }: { name: IconName }) {
 }
 
 const styles = StyleSheet.create({
-  panel: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 92, paddingVertical: 16, paddingHorizontal: 18, borderRadius: radius.lg },
+  panel: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 72, paddingVertical: 12, paddingHorizontal: 14, borderRadius: radius.card },
   icon: { transformOrigin: '50% 90%' },
   open: { transformOrigin: '50% 0%' },
   body: { flex: 1, minWidth: 0 },

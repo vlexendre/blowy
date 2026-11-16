@@ -152,7 +152,6 @@ export default function RencontreScreen() {
           me={myPet ? { pet: myPet, label: t.me(myPetName) } : undefined}
           them={{ pet: person.pet, label: t.them(person.pet.name, person.displayName) }}
           saysLabel={incoming ? t.theySay(person.pet.name) : t.saysTitle(myPetName)}
-          title={t.title}
           text={suggestion?.waved ? t.waitingText(person.displayName) : t.text(person.displayName)}
         >
           <MessageBubble
@@ -173,7 +172,6 @@ export default function RencontreScreen() {
             exploreTitle={explanation.exploreTitle}
             legend={axes?.hasMarkers ? { mine: t.legendMe, theirs: person.displayName } : undefined}
             kicker={together ?? undefined}
-            note={t.filterNote(myPetName)}
           />
         ) : (
           <>

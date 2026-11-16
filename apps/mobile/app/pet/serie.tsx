@@ -117,13 +117,9 @@ export default function StreakScreen() {
           <StreakWeek days={days} runs={runs} animateKey={s.week[0]?.day} />
           {s.current === 0 && s.best > 0 ? <TipRow icon={<Icon name="flamme" size={26} />} text={t.reset(s.best)} /> : null}
           <MilestoneTrack title={t.milestones} hint={hint} milestones={milestones} onceKey="streak:milestones" />
-          <TipRow
-            icon={<Icon name="etoiles" size={26} />}
-            disc={color.violet}
-            lead={t.jokers(s.jokersLeft)}
-            text={plus ? t.jokersText : `${t.jokersText} ${t.jokersPlus(plusJokers)}`}
-          />
-          {!plus ? <Button label={t.seePlus} variant="glass" size="md" onPress={() => openPlus('jokers')} /> : null}
+          <TipRow icon={<Icon name="etoiles" size={26} />} disc={color.violet} lead={t.jokers(s.jokersLeft)} text={t.jokersText} />
+          {/* Sans Blowy+ : ce qu'il change ici, en un lien discret (le seul bouton coloré reste « Voir le défi du jour »). */}
+          {!plus ? <Button label={t.jokersPlus(plusJokers)} variant="ghost" size="md" onPress={() => openPlus('jokers')} /> : null}
         </Stack>
       </ScreenTemplate>
     </ScreenMotion>

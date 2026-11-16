@@ -1,4 +1,4 @@
-/** Réglages (V6-Reglages) : compte, confidentialité (minimoas, position, bloqués), langue, aide et pages légales, déconnexion. */
+/** Réglages (V6-Reglages) : compte, confidentialité (position, bloqués), langue, aide et pages légales (en feuille), déconnexion. */
 import { Button, SettingsSection, SettingsTemplate, SheetTemplate, Stagger, Text } from '@blowy/ui';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { ScreenMotion, useApi } from '@/core';
-import { useDiscreet } from '@/features/map';
 import { openLegal, useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
 import { unregisterDevice } from '@/features/notifications';
@@ -23,8 +22,16 @@ export default function Reglages() {
   const me = useMe();
   const blocks = useBlocks();
   const signOut = useSignOut();
-  const discreet = useDiscreet();
   const [languageSheet, setLanguageSheet] = useState(false);
+  const [helpSheet, setHelpSheet] = useState(false);
+  /** Une page d'aide ou légale : la feuille se range d'abord. */
+  const legal = (page: Parameters<typeof openLegal>[0]) => {
+    const open = openLegal(page);
+    return () => {
+      setHelpSheet(false);
+      open();
+    };
+  };
   const version = Constants.expoConfig?.version ?? '1.0.0';
   const m = me.data;
 
@@ -39,7 +46,6 @@ export default function Reglages() {
         void unregisterDevice(api).finally(() => signOut.mutate(undefined, { onSuccess: () => router.replace('/(onboarding)/welcome') })),
     });
 
-  const identity = m ? moi.identite.seekingShort[m.identity.seeking] ?? '' : '';
   const languageName = t.languageNames[getLocale()] ?? getLocale();
 
   // Les sections arrivent en cascade (une fois) ; les lignes s'enfoncent au toucher, l'interrupteur file en ressort.
@@ -52,28 +58,20 @@ export default function Reglages() {
         title={t.sections.account}
         rows={[
           { key: 'account', title: t.rows.account.title, subtitle: m ? t.rows.account.subtitle(m.displayName) : undefined, onPress: () => router.push('/moi/compte') },
-          { key: 'identity', title: t.rows.identity.title, subtitle: identity ? t.rows.identity.subtitle(identity) : undefined, onPress: () => router.push('/moi/identite') },
           { key: 'plus', title: t.rows.plus.title, subtitle: t.rows.plus.subtitle(!!m?.plus), onPress: () => openPlus('generic') },
           { key: 'notifications', ...t.rows.notifications, onPress: () => router.push('/moi/notifications') },
         ]}
       />
+      {/* Qui tu es, le mode discret et l'IA sont sur l'onglet Moi : pas deux fois ici. */}
       <SettingsSection
         key="privacy"
         title={t.sections.privacy}
         rows={[
-          { key: 'ia', ...t.rows.ia, onPress: () => router.push('/moi/ia') },
           {
             key: 'location',
             title: t.rows.location.title,
             subtitle: t.rows.location.subtitle(!!m?.identity.location.consentAt),
             onPress: () => router.push('/moi/position'),
-          },
-          {
-            key: 'discreet',
-            ...t.rows.discreet,
-            switchValue: !!m?.identity.discreet,
-            onSwitchChange: (on: boolean) => discreet.mutate(on),
-            disabled: !m || discreet.isPending,
           },
           {
             key: 'blocked',
@@ -86,19 +84,10 @@ export default function Reglages() {
       <SettingsSection
         key="app"
         title={t.sections.app}
-        rows={[{ key: 'language', title: t.rows.language.title, subtitle: t.rows.language.subtitle(languageName), onPress: () => setLanguageSheet(true) }]}
-      />
-      <SettingsSection
-        key="help"
-        title={t.sections.help}
         rows={[
-          { key: 'help', ...t.rows.help, onPress: openLegal('assistance'), chevron: true },
-          { key: 'rules', ...t.rows.rules, onPress: openLegal('regles'), chevron: true },
-          { key: 'safety', ...t.rows.safety, onPress: openLegal('securite'), chevron: true },
-          { key: 'terms', ...t.rows.terms, onPress: openLegal('conditions'), chevron: true },
-          { key: 'privacy', ...t.rows.privacy, onPress: openLegal('confidentialite'), chevron: true },
-          { key: 'subscription', ...t.rows.subscription, onPress: openLegal('abonnement'), chevron: true },
-          { key: 'legal', ...t.rows.legal, onPress: openLegal('mentions-legales'), chevron: true },
+          { key: 'language', title: t.rows.language.title, subtitle: t.rows.language.subtitle(languageName), onPress: () => setLanguageSheet(true) },
+          // Aide et pages légales : une ligne, les sept liens dans une feuille.
+          { key: 'help', title: t.sections.help, onPress: () => setHelpSheet(true) },
         ]}
       />
       <SettingsSection
@@ -109,6 +98,20 @@ export default function Reglages() {
         ]}
       />
       </Stagger>
+
+      <SheetTemplate visible={helpSheet} onClose={() => setHelpSheet(false)} title={t.sections.help} closeLabel={common.close}>
+        <SettingsSection
+          rows={[
+            { key: 'help', ...t.rows.help, onPress: legal('assistance'), chevron: true },
+            { key: 'rules', ...t.rows.rules, onPress: legal('regles'), chevron: true },
+            { key: 'safety', ...t.rows.safety, onPress: legal('securite'), chevron: true },
+            { key: 'terms', ...t.rows.terms, onPress: legal('conditions'), chevron: true },
+            { key: 'privacy', ...t.rows.privacy, onPress: legal('confidentialite'), chevron: true },
+            { key: 'subscription', ...t.rows.subscription, onPress: legal('abonnement'), chevron: true },
+            { key: 'legal', ...t.rows.legal, onPress: legal('mentions-legales'), chevron: true },
+          ]}
+        />
+      </SheetTemplate>
 
       {/* La langue suit celle du téléphone : on dit laquelle, et où la changer. */}
       <SheetTemplate

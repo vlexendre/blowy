@@ -52,7 +52,6 @@ export default function Connexion() {
   };
 
   const busy = signIn.isPending || (signIn.isSuccess && !!signIn.data);
-  const note = providers.includes('apple') && !providers.includes('google') ? t.appleNote : t.googleNote;
   return (
     <ScreenMotion>
       <OnboardingTemplate
@@ -64,9 +63,6 @@ export default function Connexion() {
           <Stack gap={10}>
             {providers.includes('apple') ? <AppleButton label={t.apple} onPress={() => go('apple')} loading={busy && pendingProvider === 'apple'} /> : null}
             {providers.includes('google') ? <AuthButton provider="google" label={t.google} onPress={() => go('google')} loading={busy && pendingProvider === 'google'} disabled={busy && pendingProvider !== 'google'} /> : null}
-            <Text variant="bodyBold" size={15} center>
-              {note}
-            </Text>
             <LegalNote
               segments={[
                 { text: t.legalLead, strong: true },
@@ -87,7 +83,6 @@ export default function Connexion() {
           title={login ? t.loginTitle : t.title(petName)}
           titleSize={58}
           text={login ? t.loginText : t.text}
-          chips={login ? undefined : t.chips}
           pet={{ name: petName, species }}
           pose="joie"
         />

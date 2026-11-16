@@ -43,7 +43,6 @@ export default function AiAndYou() {
             {setProofs.isError ? <Banner key="error" tone="error" text={t.error} onClose={() => setProofs.reset()} /> : null}
             <SettingsSection
               key="proofs"
-              title={t.sections.proofs}
               rows={[
                 {
                   key: 'proofs',
@@ -58,20 +57,17 @@ export default function AiAndYou() {
             />
             <SettingsSection
               key="chats"
-              title={t.sections.chats}
-              rows={[{ key: 'chats', title: t.chats.title, subtitle: t.chats.subtitle, onPress: () => router.push('/moi/minimoas') }]}
+              rows={[{ key: 'chats', title: t.chats.title, onPress: () => router.push('/moi/minimoas') }]}
               footer={t.chats.footer}
             />
             <SettingsSection
               key="safety"
-              title={t.sections.safety}
               rows={[{ key: 'safety', title: t.safety.title, subtitle: t.safety.subtitle, chevron: false }]}
               footer={t.safety.footer(`${data.provider.name} (${data.provider.country})`)}
             />
             <SettingsSection
               key="review"
-              title={t.sections.review}
-              rows={[{ key: 'review', title: t.review.title, subtitle: t.review.subtitle, chevron: false }]}
+              rows={[{ key: 'review', title: t.review.title, chevron: false }]}
               footer={t.review.footer}
             />
             <SettingsSection key="policy" rows={[{ key: 'policy', title: t.policy, onPress: openLegal('confidentialite'), chevron: true }]} />

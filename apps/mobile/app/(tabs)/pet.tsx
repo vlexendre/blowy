@@ -1,12 +1,14 @@
 /**
- * Accueil de l'app (V6-GAccueil, V6-Boude) : le minimoa et sa sociabilité en vedette, la question du jour
- * (« tu as mis le nez dehors ? »), le défi du jour et la série, puis ses trois petits besoins et les quatre gestes.
+ * Accueil de l'app (V6-GAccueil, V6-Boude). Son travail : s'occuper du minimoa. Dans le premier écran : la scène
+ * (nom, forme, bulle, sociabilité) et les quatre soins, chacun avec la barre du besoin qu'il comble. Dessous, une seule
+ * carte « maintenant » (la plus pressée : test de vision, sortie s'il a besoin de sortir, preuve, défi, bilan, sortie),
+ * puis une rangée de tuiles (défi ou série, habitudes, garde-robe, caractère, et ce qui attend ailleurs).
  * À la première ouverture du jour, la carte du défi monte en plein écran (`/pet/defi`, décidé par le serveur).
  */
 import { ApiError } from '@blowy/api-client';
 import type { OutingAnswer } from '@blowy/contract';
-import { careLabel, formLabel, itemLabel, needLabel, shapeLabel, statGoalLabel } from '@/locales/content';
-import { type CareAction, urgentNeed } from '@blowy/domain';
+import { careLabel, needLabel, shapeLabel } from '@/locales/content';
+import { CARE_ACTIONS, CARE_EFFECTS, type CareAction, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Appear,
@@ -14,19 +16,20 @@ import {
   Banner,
   CareBar,
   CareIcon,
+  type CareLevel,
   ChallengeEntry,
   EntryCard,
-  EntryGroup,
   Glyph,
   HeroMeter,
   Icon,
   ItemImage,
-  NeedsPanel,
   OutingCard,
   PetHomeSkeleton,
   PetRefresh,
   type PetReaction,
   PetStage,
+  ShortcutRow,
+  ShortcutTile,
   Skeleton,
   StreakCelebration,
   StreakFlame,
@@ -55,6 +58,9 @@ const SAID_MS = 3500;
 /** Sous ce seuil, la sociabilité est son besoin principal : il demande à sortir. */
 const OUT_AT = 40;
 
+/** La carte « maintenant » sous les soins : une seule à la fois, la plus pressée. */
+type Now = 'vision' | 'outing' | 'proof' | 'challenge' | 'review';
+
 export default function PetHome() {
   const router = useRouter();
   const pet = useLivePet();
@@ -73,6 +79,8 @@ export default function PetHome() {
   const [said, setSaid] = useState<{ text: string; key: number } | null>(null);
   const [outingLine, setOutingLine] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  // Tuile « Sortie » touchée : la question du jour prend la place de la carte « maintenant ».
+  const [outingPinned, setOutingPinned] = useState(false);
   // Soin glissé de la barre jusqu'au pet : le pet le suit des yeux (même effet qu'un tap une fois lâché sur lui).
   const lure = usePetLure();
   // Un lien arrive au niveau où l'on se voit : un rappel calme, une fois par lien.
@@ -133,7 +141,7 @@ export default function PetHome() {
   if (!pet.data) {
     return (
       <ScreenMotion>
-        <TabTemplate gutter={14} gap={10} top={6} refreshControl={refreshControl}>
+        <TabTemplate gutter={14} top={6} refreshControl={refreshControl}>
           {pet.isPending ? (
             <PetHomeSkeleton />
           ) : (
@@ -159,8 +167,9 @@ export default function PetHome() {
       : d && !d.outing.canAnswer
         ? r.speechOutDone
         : pickLine(t.happy, p.needs);
-  const speech = said?.text ?? idleLine;
   const sulking = p.shape === 'boude';
+  // Il boude : c'est sa bulle qui le dit (plus de carte d'alerte).
+  const speech = said?.text ?? (sulking ? t.sulkSpeech : idleLine);
 
   const onCare = (action: CareAction) =>
     care.mutate(action, {
@@ -183,6 +192,7 @@ export default function PetHome() {
       {
         onSuccess: (res) => {
           setOutingLine(res.line);
+          setOutingPinned(false);
           say(res.line);
           play(answer === 'not_yet' ? 'wave' : 'joy');
           // De retour : l'activité « de sortie » (si elle tourne) affiche « de retour » puis s'efface.
@@ -192,27 +202,52 @@ export default function PetHome() {
     );
 
   const w = wardrobe.data;
-  const owned = w?.items.filter((i) => i.state === 'owned').length ?? 0;
   const next = w ? nextItem(w.items) : null;
-  const nextText = next
-    ? t.wardrobeNext(itemLabel[next.id] ?? next.id, statGoalLabel[next.goal.stat]?.(next.goal.need) ?? '', next.goal.have, next.goal.need)
-    : w
-      ? t.wardrobeAll
-      : t.wardrobeLoading;
   const careError = care.isError && !(care.error instanceof ApiError && care.error.code === 'already_done');
-  const habitsText = d ? (d.habitsDue > 0 ? r.home.habitsDue(d.habitsDue) : r.home.habitsQuiet) : r.home.habitsNone;
+  const habitsDue = d?.habitsDue ?? 0;
+  // Chaque soin porte la barre du besoin qu'il comble (jeu et câlin : l'humeur).
+  const levels = {} as Record<CareAction, CareLevel>;
+  for (const a of CARE_ACTIONS) {
+    const k = CARE_EFFECTS[a].fills;
+    const v = Math.round(p.needs[k]);
+    const n = needLabel[k];
+    const read = t.levelA11y(n?.name ?? k, v);
+    levels[a] = { value: v, lowAt: OUT_AT, accessibilityLabel: v < OUT_AT && n ? `${read}, ${n.low}` : read };
+  }
+
+  // Une seule carte « maintenant », la plus pressée ; le reste attend dans les tuiles (un tap).
+  const proof = d?.proofAsked[0] ?? null;
+  const pending: Record<Now, boolean> = {
+    vision: !!me.data && !me.data.visionTestDone,
+    outing: !!d,
+    proof: !!proof,
+    challenge: !!d && !challengeDone,
+    review: !!d?.unreadReviewId,
+  };
+  const order: Now[] = ['vision', ...(needsOut ? (['outing'] as const) : []), 'proof', 'challenge', 'review', 'outing'];
+  const now: Now | null = outingPinned && d ? 'outing' : (order.find((k) => pending[k]) ?? null);
+  const streakTile = !!streak && (challengeDone || now === 'challenge');
   const look = { species: p.species, outfit: p.outfit, name: p.name, id: p.id };
 
   return (
     <ScreenMotion>
       <PetRefresh species={p.species} refreshing={refreshing} onRefresh={refresh}>
         {(scroll) => (
-          <TabTemplate gutter={14} gap={10} top={6} {...scroll}>
+          <TabTemplate gutter={14} top={6} {...scroll}>
             <PetStage
               pet={p}
               title={p.name.toUpperCase()}
               shape={p.shape}
               shapeLabel={shapeLabel[p.shape]?.title}
+              onShapePress={
+                sulking
+                  ? () => {
+                      play('no');
+                      say(t.sulkWhy);
+                    }
+                  : undefined
+              }
+              shapeA11y={sulking ? t.sulkA11y : undefined}
               speech={speech}
               action={{ label: t.wardrobe, onPress: () => router.push('/pet/garde-robe'), accessibilityLabel: t.wardrobeA11y }}
               reaction={reaction}
@@ -233,79 +268,25 @@ export default function PetHome() {
               }
             />
 
-            {/* Pas encore de test de vision (inscrit sans le passer, ou compte V6) : pas de rencontres tant qu'il manque. */}
-            {me.data && !me.data.visionTestDone ? (
-              <Appear once="home:vision-test" delay={60}>
-                <EntryCard
-                  left={<Icon name="etoiles" size={34} />}
-                  title={r.home.visionTestTitle(p.name)}
-                  text={r.home.visionTestText}
-                  chevron
-                  onPress={() => router.push(VISION_TEST_ROUTE)}
-                />
-              </Appear>
-            ) : null}
+            {/* Les soins et ses besoins, d'un bloc : chaque geste porte la barre du besoin qu'il comble. */}
+            <Appear once="home:care" delay={60}>
+              <CareBar
+                labels={careLabel}
+                available={careAvailable(p.needs)}
+                hot={careHot(p.needs)}
+                levels={levels}
+                busy={care.isPending ? care.variables : null}
+                onCare={onCare}
+                lure={lure}
+                onRefused={(a) => {
+                  play('no');
+                  say(careLabel[a]?.refused ?? '');
+                }}
+              />
+            </Appear>
+            {careError ? <Banner tone="error" text={errorText(care.error, t.careError)} onClose={() => care.reset()} /> : null}
 
-            {sulking ? (
-              <Appear once="home:sulk" delay={60}>
-                <EntryCard tone="alert" left={<CareIcon name="door" size={30} color={color.danger} />} title={t.sulkTitle(p.name)} text={t.sulkText} />
-              </Appear>
-            ) : null}
-
-            {d ? (
-              <Appear once="home:outing" delay={100}>
-                <OutingCard
-                  question={d.outing.question}
-                  answers={d.outing.answers.map((a) => ({ ...a, emoji: r.outing.emoji[a.id] }))}
-                  picked={d.outing.answer}
-                  canAnswer={d.outing.canAnswer}
-                  busy={outing.isPending ? (outing.variables?.answer ?? null) : null}
-                  onAnswer={onOuting}
-                  line={outingLine}
-                  confirmedLabel={d.outing.confirmed ? r.outing.confirmed : null}
-                  highlight={needsOut}
-                />
-              </Appear>
-            ) : today.isPending ? (
-              <Skeleton height={150} radius="lg" />
-            ) : null}
-            {outing.isError ? <Banner tone="error" text={errorText(outing.error, r.outing.error)} onClose={() => outing.reset()} /> : null}
-
-            {d && streak ? (
-              <Appear once="home:challenge" delay={140}>
-                <ChallengeEntry
-                  kicker={r.entry.kicker(d.challenge.kindLabel)}
-                  title={d.challenge.text}
-                  caption={challengeDone ? r.entry.done : d.challenge.status === 'accepted' ? d.challenge.howTo : r.entry.todo}
-                  kind={d.challenge.kind}
-                  done={challengeDone}
-                  onPress={() => router.push('/pet/defi')}
-                  streak={{
-                    text: challengeDone ? String(streak.current) : r.entry.streakNext,
-                    lit: streak.current > 0,
-                    onPress: () => router.push('/pet/serie'),
-                    accessibilityLabel: r.entry.streakA11y(streak.current),
-                  }}
-                />
-              </Appear>
-            ) : today.isPending ? (
-              <Skeleton height={76} radius="lg" />
-            ) : today.isError ? (
-              <Banner tone="error" text={r.entry.error} actionLabel={r.entry.retry} onAction={() => void today.refetch()} />
-            ) : null}
-
-            {d?.unreadReviewId ? (
-              <Appear once={`home:review:${d.unreadReviewId}`} delay={80}>
-                <EntryCard
-                  left={<Icon name="cadeau" size={34} />}
-                  title={r.review.homeTitle}
-                  text={r.review.homeText(p.name)}
-                  chevron
-                  onPress={() => router.push({ pathname: '/pet/bilan/[id]', params: { id: d.unreadReviewId as string } })}
-                />
-              </Appear>
-            ) : null}
-
+            {/* Rappel de sécurité avant de se voir : gardé tel quel (une fois par lien, on le ferme). */}
             {meet ? (
               <Appear once={`home:meet:${meet.id}`} delay={150}>
                 <Banner
@@ -321,66 +302,147 @@ export default function PetHome() {
               </Appear>
             ) : null}
 
-            {d?.proofAsked.map((ask) => (
-              <Appear key={ask.habitRef} once={`home:proof:${ask.habitRef}`} delay={160}>
+            {/* Une seule carte « maintenant ». */}
+            {now === 'vision' ? (
+              <Appear once="home:vision-test" delay={100}>
                 <EntryCard
-                  left={<Glyph name="camera" size={26} color={color.accent} />}
-                  title={r.home.proofTitle(p.name)}
-                  text={ask.ask}
+                  left={<Icon name="etoiles" size={30} />}
+                  title={r.home.visionTestTitle}
+                  text={r.home.visionTestText}
                   chevron
-                  onPress={() => router.push({ pathname: '/pet/preuve', params: { ref: ask.habitRef } })}
+                  onPress={() => router.push(VISION_TEST_ROUTE)}
                 />
               </Appear>
-            ))}
-
-            <NeedsPanel needs={p.needs} labels={needLabel} />
-            <Appear once="home:care" delay={120}>
-              <CareBar
-                labels={careLabel}
-                available={careAvailable(p.needs)}
-                hot={careHot(p.needs)}
-                busy={care.isPending ? care.variables : null}
-                onCare={onCare}
-                lure={lure}
-                onRefused={(a) => {
-                  play('no');
-                  say(careLabel[a]?.refused ?? '');
-                }}
-              />
-            </Appear>
-            {careError ? <Banner tone="error" text={errorText(care.error, t.careError)} onClose={() => care.reset()} /> : null}
-
-            {/* Ses coins à lui, réunis dans une carte : habitudes, garde-robe, caractère. */}
-            <Appear once="home:more" delay={180}>
-              <EntryGroup>
+            ) : now === 'outing' && d ? (
+              <Appear once="home:outing" delay={100}>
+                <OutingCard
+                  compact
+                  question={d.outing.question}
+                  answers={d.outing.answers.map((a) => ({ ...a, emoji: r.outing.emoji[a.id], short: r.outing.short[a.id] }))}
+                  picked={d.outing.answer}
+                  canAnswer={d.outing.canAnswer}
+                  busy={outing.isPending ? (outing.variables?.answer ?? null) : null}
+                  onAnswer={onOuting}
+                  line={outingLine}
+                  confirmedLabel={d.outing.confirmed ? r.outing.confirmed : null}
+                  highlight={needsOut}
+                />
+              </Appear>
+            ) : now === 'proof' && proof ? (
+              <Appear once={`home:proof:${proof.habitRef}`} delay={100}>
                 <EntryCard
-                  inGroup
-                  left={<Glyph name="camera" size={26} color={color.accent} />}
-                  title={r.home.habitsTitle}
-                  text={habitsText}
+                  left={<Glyph name="camera" size={24} color={color.accent} />}
+                  title={r.home.proofTitle(p.name)}
+                  text={proof.ask}
                   chevron
+                  onPress={() => router.push({ pathname: '/pet/preuve', params: { ref: proof.habitRef } })}
+                />
+              </Appear>
+            ) : now === 'challenge' && d && streak ? (
+              <Appear once="home:challenge" delay={100}>
+                <ChallengeEntry
+                  compact
+                  kicker={r.entry.kicker(d.challenge.kindLabel)}
+                  title={d.challenge.text}
+                  kind={d.challenge.kind}
+                  done={challengeDone}
+                  onPress={() => router.push('/pet/defi')}
+                  streak={{
+                    text: streak.current > 0 ? String(streak.current) : r.entry.streakNext,
+                    lit: streak.current > 0,
+                    onPress: () => router.push('/pet/serie'),
+                    accessibilityLabel: r.entry.streakA11y(streak.current),
+                  }}
+                />
+              </Appear>
+            ) : now === 'review' && d?.unreadReviewId ? (
+              <Appear once={`home:review:${d.unreadReviewId}`} delay={100}>
+                <EntryCard
+                  left={<Icon name="cadeau" size={30} />}
+                  title={r.review.homeTitle}
+                  text={r.review.homeText(p.name)}
+                  chevron
+                  onPress={() => router.push({ pathname: '/pet/bilan/[id]', params: { id: d.unreadReviewId as string } })}
+                />
+              </Appear>
+            ) : today.isPending ? (
+              <Skeleton height={56} radius="lg" />
+            ) : null}
+            {outing.isError ? <Banner tone="error" text={errorText(outing.error, r.outing.error)} onClose={() => outing.reset()} /> : null}
+            {today.isError && !d ? <Banner tone="error" text={r.entry.error} actionLabel={r.entry.retry} onAction={() => void today.refetch()} /> : null}
+
+            {/* Le reste, en tuiles sans description : un tap chacune. */}
+            <Appear once="home:more" delay={160}>
+              <ShortcutRow>
+                {streak && d ? (
+                  streakTile ? (
+                    <ShortcutTile
+                      label={t.tiles.streak}
+                      icon={<Icon name="flamme" size={22} />}
+                      value={String(streak.current)}
+                      onPress={() => router.push('/pet/serie')}
+                      accessibilityLabel={r.entry.streakA11y(streak.current)}
+                    />
+                  ) : (
+                    <ShortcutTile
+                      label={t.tiles.challenge}
+                      icon={<Icon name="flamme" size={22} />}
+                      value={streak.current > 0 ? String(streak.current) : r.entry.streakNext}
+                      dot
+                      onPress={() => router.push('/pet/defi')}
+                      accessibilityLabel={`${r.entry.kicker(d.challenge.kindLabel)}, ${d.challenge.text}`}
+                    />
+                  )
+                ) : null}
+                <ShortcutTile
+                  label={t.tiles.habits}
+                  icon={<Glyph name="camera" size={22} color={color.accent} />}
+                  badge={habitsDue > 0 ? String(habitsDue) : undefined}
                   onPress={() => router.push('/pet/habitudes')}
+                  accessibilityLabel={t.habitsA11y(habitsDue)}
                 />
-                <EntryCard
-                  inGroup
-                  left={<ItemImage id={next?.id ?? p.outfit.head ?? 'couronne'} size={46} />}
-                  title={t.wardrobeTitle(owned, w?.items.length ?? 64)}
-                  text={nextText}
-                  badge={fresh.length ? t.newCount(fresh.length) : undefined}
-                  chevron={!fresh.length}
+                <ShortcutTile
+                  label={t.tiles.wardrobe}
+                  icon={<ItemImage id={next?.id ?? p.outfit.head ?? 'couronne'} size={30} />}
+                  badge={fresh.length ? String(fresh.length) : undefined}
                   onPress={() => router.push('/pet/garde-robe')}
-                  accessibilityLabel={`${t.wardrobeA11y}, ${t.wardrobeTitle(owned, w?.items.length ?? 64)}, ${nextText}`}
+                  accessibilityLabel={fresh.length ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}` : t.wardrobeA11y}
                 />
-                <EntryCard
-                  inGroup
-                  left={<Avatar size={40} pet={look} hidden />}
-                  title={t.character}
-                  text={t.characterText(formLabel[p.form], challengeDone)}
-                  chevron
+                <ShortcutTile
+                  label={t.tiles.character}
+                  icon={<Avatar size={26} pet={look} hidden />}
                   onPress={() => router.push('/pet/caractere')}
-                  accessibilityLabel={`${t.characterA11y}, ${t.characterText(formLabel[p.form], challengeDone)}`}
+                  accessibilityLabel={t.characterA11y}
                 />
-              </EntryGroup>
+                {/* Ce qui attend mais n'est pas la carte du moment. */}
+                {pending.review && now !== 'review' && d?.unreadReviewId ? (
+                  <ShortcutTile
+                    label={t.tiles.review}
+                    icon={<Icon name="cadeau" size={24} />}
+                    dot
+                    onPress={() => router.push({ pathname: '/pet/bilan/[id]', params: { id: d.unreadReviewId as string } })}
+                    accessibilityLabel={r.review.homeTitle}
+                  />
+                ) : null}
+                {proof && now !== 'proof' ? (
+                  <ShortcutTile
+                    label={t.tiles.proof}
+                    icon={<Glyph name="camera" size={22} color={color.accent} />}
+                    dot
+                    onPress={() => router.push({ pathname: '/pet/preuve', params: { ref: proof.habitRef } })}
+                    accessibilityLabel={`${r.home.proofTitle(p.name)}, ${proof.ask}`}
+                  />
+                ) : null}
+                {d?.outing.canAnswer && now !== 'outing' ? (
+                  <ShortcutTile
+                    label={t.tiles.outing}
+                    icon={<CareIcon name="door" size={24} color={color.accent} />}
+                    dot={needsOut}
+                    onPress={() => setOutingPinned(true)}
+                    accessibilityLabel={d.outing.question}
+                  />
+                ) : null}
+              </ShortcutRow>
             </Appear>
             {party ? (
               <StreakCelebration

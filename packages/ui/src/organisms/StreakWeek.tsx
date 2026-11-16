@@ -69,7 +69,7 @@ export function StreakWeek({ days, runs, animateKey }: StreakWeekProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 24, paddingHorizontal: space.lg, paddingVertical: space.lg },
+  card: { borderRadius: radius.card, paddingHorizontal: space.md + 2, paddingVertical: space.md + 2 },
   day: { alignItems: 'center', gap: space.xs + 2, minWidth: DOT },
   dot: { width: DOT, height: DOT, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
   done: { backgroundColor: color.accent },
@@ -78,5 +78,5 @@ const styles = StyleSheet.create({
   today: { borderWidth: 2, borderStyle: 'dashed', borderColor: color.accent },
   future: { borderWidth: 1.5, borderColor: alpha(color.white, 0.24) },
   not_yet: { opacity: 0.6, borderWidth: 1.5, borderStyle: 'dotted', borderColor: alpha(color.white, 0.24) },
-  text: { marginTop: space.md },
+  text: { marginTop: space.sm + 2 },
 });

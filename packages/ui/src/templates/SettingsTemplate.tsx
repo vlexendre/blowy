@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { IconButton } from '../atoms/IconButton';
 import { Text } from '../atoms/Text';
 import { Title, fitTitleSize } from '../atoms/Title';
-import { space, veil } from '../theme';
+import { density, space, veil } from '../theme';
 import type { TitleContent } from '../types';
 import { ScreenTemplate } from './ScreenTemplate';
 
@@ -19,7 +19,7 @@ export interface SettingsTemplateProps {
   children?: ReactNode;
   /** Boutons collés en bas (enregistrer, supprimer). */
   footer?: ReactNode;
-  /** Espace entre les blocs. Défaut 10 (`.wrap`). */
+  /** Espace entre les blocs. Défaut 8 (`density.gap`). */
   gap?: number;
   /** Phrase d'explication sous le titre. */
   intro?: string;
@@ -27,14 +27,14 @@ export interface SettingsTemplateProps {
   note?: string;
   /** Élément à droite du titre (V6-GardeRobe : puce « 13 / 64 »). */
   right?: ReactNode;
-  /** Corps du titre. Défaut 44 (V6-GardeRobe : 40). */
+  /** Corps du titre. Défaut 40. */
   titleSize?: number;
 }
 
 const MIN_SETTINGS_TITLE = 32;
 
 /** Sous-écran de Moi (réglages, compte, notifications, bloqués, supprimer) : retour rond + grand titre, blocs serrés. */
-export function SettingsTemplate({ title, onBack, backLabel, children, footer, gap = 10, intro, note, right, titleSize = 44 }: SettingsTemplateProps) {
+export function SettingsTemplate({ title, onBack, backLabel, children, footer, gap = density.gap, intro, note, right, titleSize = 40 }: SettingsTemplateProps) {
   // Un titre ne se coupe jamais (« MINHA LOCALIZAÇÃO ») : mesuré dans sa place, il réduit son corps (32 au moins).
   const [room, setRoom] = useState(0);
   const size = room > 0 ? fitTitleSize(title, titleSize, room - 2, MIN_SETTINGS_TITLE) : titleSize;

@@ -98,7 +98,12 @@ export default function ReviewScreen() {
               ]}
             />
           </Appear>
-          <Appear once={`review:${r.id}:noticed`} delay={200}>
+          {r.did.length ? (
+            <Appear once={`review:${r.id}:did`} delay={200}>
+              <NoteCard kicker={t.did} text={r.did.join('\n')} />
+            </Appear>
+          ) : null}
+          <Appear once={`review:${r.id}:noticed`} delay={260}>
             <NoteCard kicker={t.noticed(p.name)} text={r.noticed} icon={<Icon name="etoiles" size={30} />}>
               {moved?.size && movedAxis && movedPole ? (
                 <VisionMeter
@@ -112,14 +117,9 @@ export default function ReviewScreen() {
               ) : null}
             </NoteCard>
           </Appear>
-          <Appear once={`review:${r.id}:tip`} delay={260}>
+          <Appear once={`review:${r.id}:tip`} delay={320}>
             <NoteCard text={r.tip} icon={<Icon name="eclair" size={30} />} accent />
           </Appear>
-          {r.did.length ? (
-            <Appear once={`review:${r.id}:did`} delay={320}>
-              <NoteCard kicker={t.did} text={r.did.join('\n')} />
-            </Appear>
-          ) : null}
           {r.links.map((line, i) => (
             <Appear key={line} once={`review:${r.id}:link:${i}`} delay={360 + i * 45}>
               <TipRow icon={<Glyph name="heart" size={18} color={color.rose} />} text={line} />
@@ -140,7 +140,7 @@ export default function ReviewScreen() {
               accessibilityLabel={t.plusA11y}
             />
           )}
-          <Button label={t.all} variant="glass" onPress={() => router.push('/pet/bilans')} />
+          <Button label={t.all} variant="ghost" size="md" onPress={() => router.push('/pet/bilans')} />
         </Stack>
       </ScreenTemplate>
     </ScreenMotion>

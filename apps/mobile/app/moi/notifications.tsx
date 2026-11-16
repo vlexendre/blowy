@@ -5,7 +5,7 @@
  */
 import type { NotificationKindDto, NotificationSettings } from '@blowy/contract';
 import { MORNING_HOUR_MAX, MORNING_HOUR_MIN } from '@blowy/domain';
-import { Appear, Banner, Button, ChoiceGrid, DotNote, PetTip, SettingsSection, SettingsTemplate, SheetTemplate, Skeleton, Stack, Stagger, Text } from '@blowy/ui';
+import { Appear, Banner, Button, ChoiceGrid, DotNote, SettingsSection, SettingsTemplate, SheetTemplate, Skeleton, Stack, Stagger, Text } from '@blowy/ui';
 import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
@@ -19,7 +19,7 @@ import { moi } from '@/locales/moi';
 const t = moi.notifications;
 
 /** Une ligne de la maquette peut porter plusieurs types (« Nouvelle rencontre, on te fait signe ») : allumée si tous le sont. */
-type Row = { key: string; kinds: readonly NotificationKindDto[]; title: string; subtitle: string };
+type Row = { key: string; kinds: readonly NotificationKindDto[]; title: string; subtitle?: string };
 
 const HOURS = Array.from({ length: MORNING_HOUR_MAX - MORNING_HOUR_MIN + 1 }, (_, i) => MORNING_HOUR_MIN + i);
 
@@ -76,7 +76,7 @@ export default function Notifications() {
           )
         ) : (
           <Stagger onceKey="notifications" step={50}>
-            <PetTip key="tip" text={t.banner(petName, s.dailyCap)} species={pet?.species ?? 'nino'} />
+            <DotNote key="tip" text={t.banner(s.dailyCap)} />
             {Platform.OS === 'web' ? (
               <DotNote key="web" text={t.permission.web} />
             ) : permission === 'undetermined' ? (

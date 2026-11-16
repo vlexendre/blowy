@@ -11,7 +11,8 @@ import { useUiStrings } from '../lib/strings';
 export type BannerTone = 'error' | 'info' | 'success';
 
 export interface BannerProps {
-  text: string;
+  /** Le message ; facultatif quand le titre suffit. */
+  text?: string;
   title?: string;
   tone?: BannerTone;
   actionLabel?: string;
@@ -38,7 +39,7 @@ export function Banner({ text, title, tone = 'info', actionLabel, onAction, onCl
       <View style={[styles.dot, { backgroundColor: c }]} />
       <View style={layout.grow}>
         {title ? <Text variant="bodyBold" size={14}>{title}</Text> : null}
-        <Text variant="small">{text}</Text>
+        {text ? <Text variant="small">{text}</Text> : null}
         {actionBelow && actionLabel && onAction ? (
           <Pressable onPress={onAction} accessibilityLabel={actionLabel} style={styles.below}>
             <Text variant="bodyBold" size={15} color={c}>

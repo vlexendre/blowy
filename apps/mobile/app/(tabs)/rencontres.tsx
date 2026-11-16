@@ -1,11 +1,10 @@
 import { ApiError } from '@blowy/api-client';
 import { shapeLabel } from '@/locales/content';
-import type { EncounterHistoryItem, MatchExplanation, Suggestion } from '@blowy/contract';
+import type { EncounterHistoryItem, MatchExplanation } from '@blowy/contract';
 import { color } from '@blowy/tokens';
 import {
   Banner,
   Button,
-  DotNote,
   EmptyState,
   EncounterHistory,
   type EncounterHistoryEntry,
@@ -31,7 +30,6 @@ import {
   useLiveEncounters,
   useShareInvite,
   useWave,
-  lookingForLine,
   VISION_TEST_ROUTE,
   whyA11y,
 } from '@/features/encounters';
@@ -42,9 +40,6 @@ import { openPlus, usePlusPerks } from '@/features/plus';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { carte as carteText, rencontres as t } from '@/locales/rencontres';
-
-const viaLabel = (s: Suggestion): string =>
-  s.via === 'friend_of_friend' ? t.via.friend_of_friend(s.mutualName) : t.via[s.via]();
 
 /** Pourquoi, en une ligne (les phrases et les repères sont sur l'écran de la rencontre). */
 const why = (e: MatchExplanation) => (
@@ -161,7 +156,7 @@ export default function RencontresScreen() {
           onAction={() => void encounters.refetch()}
         />
       ) : null}
-      {shape === 'bof' ? <Banner tone="info" title={t.bofTitle(petName)} text={shapeLabel.bof?.text ?? ''} actionLabel={t.sulkAction} onAction={toPet} /> : null}
+      {shape === 'bof' ? <Banner tone="info" title={t.bofTitle(petName)} actionLabel={t.sulkAction} onAction={toPet} /> : null}
       {actionError ? (
         <Banner
           tone="error"
@@ -229,17 +224,14 @@ export default function RencontresScreen() {
         <SuggestionCard
           suggestion={s}
           ownerLabel={t.owner(s.user.displayName)}
-          viaLabel={viaLabel(s)}
           badgeLabel={s.via === 'new' ? t.badgeNew : undefined}
           compatLabel={t.compat}
-          tagline={lookingForLine(s.lookingFor, t.lookingFor) ?? undefined}
           why={why(s.explanation)}
-          introLabel={t.introLabel(petName)}
           waveLabel={t.wave(s.user.pet.name)}
           wavedLabel={t.waved}
           onWave={() => wave.mutate(s.user.id)}
           waving={wave.isPending && wave.variables === s.user.id}
-          openLabel={t.openTalk}
+          openLabel={t.open}
           onOpen={() => router.push(`/rencontre/${s.user.id}`)}
         />
         </FanIn>
@@ -275,8 +267,6 @@ export default function RencontresScreen() {
         <Button label={carteText.area.choose} variant="glass" size="sm" onPress={() => setAreaSheet(true)} />
       ) : null}
 
-      {encounters.data && !sulking && !noVision ? <DotNote text={t.filterNote(petName)} /> : null}
-      {encounters.data ? <DotNote text={t.reminderShort} dot={color.mute} /> : null}
       {encounters.data && m && !m.plus && !sulking && !noVision ? (
         <MapPlusStrip title={t.morePlus.title} text={morePerk?.label ?? morePerk?.short[0] ?? ''} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
       ) : null}

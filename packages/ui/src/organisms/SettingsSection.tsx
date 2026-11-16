@@ -3,7 +3,7 @@ import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Text } from '../atoms/Text';
 import { ListRow, type ListRowProps } from '../molecules/ListRow';
-import { color, size, space, type, veil } from '../theme';
+import { color, density, radius, size, space, type, veil } from '../theme';
 
 export interface SettingsSectionProps {
   title?: string;
@@ -52,17 +52,17 @@ export function SettingsSection({ title, rows, children, footer, variant = 'grou
 }
 
 const styles = StyleSheet.create({
-  base: { gap: space.sm + 2 },
+  base: { gap: space.sm },
   sec: { fontFamily: type.bodyHeavy.fontFamily, letterSpacing: 13 * 0.08, paddingHorizontal: space.xs + 2 },
   group: {
     backgroundColor: color.panel,
     borderWidth: size.border,
     borderColor: veil.line,
-    borderRadius: 24,
-    paddingHorizontal: space.lg,
+    borderRadius: radius.card,
+    paddingHorizontal: density.cardPad,
     paddingVertical: 2,
   },
   raised: { backgroundColor: color.card },
-  plainRow: { minHeight: 52, paddingHorizontal: space.xs, borderBottomColor: veil.line },
+  plainRow: { minHeight: density.listRow, paddingHorizontal: space.xs, borderBottomColor: veil.line },
   footer: { paddingHorizontal: space.xs + 2 },
 });

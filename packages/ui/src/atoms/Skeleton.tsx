@@ -15,6 +15,7 @@ export interface SkeletonProps {
 
 /** Bloc de chargement : un reflet glisse dessus (`Shimmer`) ; fixe si « réduire les animations » ou hors écran. */
 export function Skeleton({ width = '100%', height = 16, radius = 'sm', delay, style }: SkeletonProps) {
-  const r = radius === 'circle' ? height / 2 : radii[radius];
+  // `lg` imite une carte : il suit le rayon des cartes (`radius.card`, passe « densité »).
+  const r = radius === 'circle' ? height / 2 : radius === 'lg' ? radii.card : radii[radius];
   return <Shimmer width={width} height={height} radius={r} delay={delay} style={style} />;
 }

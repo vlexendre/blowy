@@ -26,22 +26,22 @@ export function MatchWhy({ commonTitle, common, exploreTitle, explore, accessibi
   return (
     <View style={[styles.root, style]} accessible accessibilityLabel={accessibilityLabel}>
       {/* Une ligne qui dit tout (« 3 points communs · 1 différence à explorer »), puis les axes : pleins en commun, cerclé à explorer. */}
-      <Text variant="bodyHeavy" size={15}>
+      <Text variant="bodyHeavy" size={13}>
         {commonTitle}
-        <Text variant="bodyHeavy" size={15} muted>
+        <Text variant="bodyHeavy" size={13} muted>
           {` · ${exploreTitle}`}
         </Text>
       </Text>
       <View style={[layout.row, styles.line]}>
         {common.map((name) => (
           <View key={name} style={[styles.pill, styles.common]}>
-            <Text variant="bodyHeavy" size={15} color={color.accent}>
+            <Text variant="bodyHeavy" size={14} color={color.accent}>
               {name}
             </Text>
           </View>
         ))}
         <View style={[styles.pill, styles.explore]}>
-          <Text variant="bodyHeavy" size={15}>
+          <Text variant="bodyHeavy" size={14}>
             {explore}
           </Text>
         </View>
@@ -51,9 +51,9 @@ export function MatchWhy({ commonTitle, common, exploreTitle, explore, accessibi
 }
 
 const styles = StyleSheet.create({
-  root: { gap: 8 },
+  root: { gap: 6 },
   line: { flexWrap: 'wrap', gap: 6 },
-  pill: { height: 30, paddingHorizontal: 11, borderRadius: 999, justifyContent: 'center' },
+  pill: { height: 26, paddingHorizontal: 10, borderRadius: 999, justifyContent: 'center' },
   common: { backgroundColor: alpha(color.accent, 0.14) },
   explore: { borderWidth: 1.5, borderColor: veil.off, marginLeft: 4 },
 });

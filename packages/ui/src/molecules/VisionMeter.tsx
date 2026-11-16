@@ -59,7 +59,7 @@ export function VisionMeter({ title, value, low, high, sticker, stickerKey = 0, 
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: radius.lg - 4, overflow: 'hidden', paddingHorizontal: 18, paddingTop: 14, paddingBottom: 12, gap: space.sm + 2 },
+  card: { borderRadius: radius.card, overflow: 'hidden', paddingHorizontal: 14, paddingTop: 12, paddingBottom: 12, gap: space.sm + 2 },
   head: { minHeight: 32, gap: space.sm },
   sticker: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: color.accent, transform: [{ rotate: '-4deg' }] },
   poles: { gap: space.md },

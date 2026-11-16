@@ -4,7 +4,7 @@ import { Card } from '../atoms/Card';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
 import { AxisBar } from '../molecules/AxisBar';
-import { space } from '../theme';
+import { radius, space } from '../theme';
 
 export interface VisionAxisLook {
   /** « Foyer ». */
@@ -33,7 +33,7 @@ export function VisionPanel({ title, hint, axes, footer }: VisionPanelProps) {
   return (
     <Card padding="none" style={styles.card}>
       <View style={[layout.rowBetween, styles.head]}>
-        <Text variant="bodyHeavy" size={20} accessibilityRole="header">
+        <Text variant="bodyHeavy" size={18} accessibilityRole="header">
           {title}
         </Text>
         {hint ? (
@@ -45,10 +45,10 @@ export function VisionPanel({ title, hint, axes, footer }: VisionPanelProps) {
       {axes.map((a, i) => (
         <View key={a.name} accessible accessibilityLabel={a.accessibilityLabel} style={styles.axis}>
           <View style={layout.rowBetween}>
-            <Text variant="bodyHeavy" size={16}>
+            <Text variant="bodyHeavy" size={15}>
               {a.name}
             </Text>
-            <Text size={14} muted numberOfLines={1} style={styles.lean}>
+            <Text size={13} muted numberOfLines={1} style={styles.lean}>
               {a.lean}
             </Text>
           </View>
@@ -56,7 +56,7 @@ export function VisionPanel({ title, hint, axes, footer }: VisionPanelProps) {
         </View>
       ))}
       {footer ? (
-        <Text size={15} muted style={styles.footer}>
+        <Text size={13} muted style={styles.footer}>
           {footer}
         </Text>
       ) : null}
@@ -65,10 +65,10 @@ export function VisionPanel({ title, hint, axes, footer }: VisionPanelProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 24, padding: space.lg, gap: space.md + 2 },
+  card: { borderRadius: radius.card, padding: space.md + 2, gap: space.md },
   head: { gap: space.sm, alignItems: 'baseline' },
   hint: { flexShrink: 1, textAlign: 'right' },
-  axis: { gap: space.sm },
+  axis: { gap: space.xs + 2 },
   lean: { flexShrink: 1, marginLeft: space.md, textAlign: 'right' },
-  footer: { marginTop: space.xs },
+  footer: { marginTop: 0 },
 });

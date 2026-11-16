@@ -7,7 +7,7 @@ import { Card } from '../atoms/Card';
 import { Pressable } from '../atoms/Pressable';
 import { Chip } from '../atoms/Chip';
 import { Text } from '../atoms/Text';
-import { alpha, color, size, veil } from '../theme';
+import { alpha, color, density, radius, size, veil } from '../theme';
 
 export interface EntryCardProps {
   /** « 13 objets sur 64 », « son caractère ». */
@@ -37,11 +37,11 @@ export function EntryCard({ title, text, left, badge, chevron, tone = 'default',
     <>
       {left ? <View style={styles.left}>{left}</View> : null}
       <View style={styles.body}>
-        <Text variant="bodyHeavy" size={17} numberOfLines={2}>
+        <Text variant="bodyHeavy" size={density.title} numberOfLines={2}>
           {title}
         </Text>
         {text ? (
-          <Text size={15} muted style={styles.text}>
+          <Text size={density.secondary} muted numberOfLines={2} style={styles.text}>
             {text}
           </Text>
         ) : null}
@@ -91,13 +91,13 @@ export function EntryGroup({ children, style }: { children: ReactNode; style?: S
 }
 
 const styles = StyleSheet.create({
-  // `.card` : rayon 24 ; ligne : écart 12, padding 10 14.
-  card: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 24, paddingVertical: 12, paddingHorizontal: 16, minHeight: 64 },
-  alert: { borderColor: alpha(color.danger, 0.5), paddingVertical: 14 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 16, minHeight: 64 },
-  group: { borderRadius: 24, overflow: 'hidden' },
-  hairline: { height: size.border, marginLeft: 74, backgroundColor: veil.hairline },
-  left: { width: 46, alignItems: 'center', justifyContent: 'center' },
+  // Échelle de densité : ligne de 56, écart 12, intérieur 8 × 14, rayon des cartes.
+  card: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: radius.card, paddingVertical: 8, paddingHorizontal: density.cardPad, minHeight: density.entryRow },
+  alert: { borderColor: alpha(color.danger, 0.5) },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, paddingHorizontal: density.cardPad, minHeight: density.entryRow },
+  group: { borderRadius: radius.card, overflow: 'hidden' },
+  hairline: { height: size.border, marginLeft: density.cardPad + 40 + 12, backgroundColor: veil.hairline },
+  left: { width: 40, alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, minWidth: 0 },
-  text: { lineHeight: 20, marginTop: 1 },
+  text: { lineHeight: 18, marginTop: 1 },
 });

@@ -52,7 +52,7 @@ export function OnboardingPanel({ title, titleSize = 60, gradient = 'coral', pet
     <Panel gradient={gradient} radius={32} padding="none" style={[styles.panel, compact && styles.compact]}>
       <View pointerEvents="none" style={styles.pet}>
         <Animated.View style={[styles.feet, popUp]}>
-          <PetImage species={pet.species} mood={pose} size={280} rotate={-7} animation="breathe" outline accessibilityLabel={pet.name} />
+          <PetImage species={pet.species} mood={pose} size={compact ? 220 : 280} rotate={-7} animation="breathe" outline accessibilityLabel={pet.name} />
         </Animated.View>
       </View>
       <Title text={title} size={titleSize} />
@@ -94,7 +94,7 @@ export function OnboardingPanel({ title, titleSize = 60, gradient = 'coral', pet
 const styles = StyleSheet.create({
   panel: { flexGrow: 1, minHeight: 440, paddingVertical: 24, paddingHorizontal: 22 },
   pet: { position: 'absolute', right: -70, bottom: -44 },
-  compact: { minHeight: 380 },
+  compact: { minHeight: 290 },
   textBox: { marginTop: space.md, maxWidth: '82%' },
   text: { lineHeight: 23 },
   chips: { marginTop: space.lg, gap: space.sm, alignItems: 'flex-start' },

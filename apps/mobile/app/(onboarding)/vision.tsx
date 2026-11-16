@@ -109,7 +109,7 @@ function VisionTest() {
         onBack={back}
         backLabel={i ? t.previous : common.back}
         gap={0}
-        host={{ species, line: q?.situation ?? '…', note: i === 0 ? t.note : undefined, reactKey, seed: petName, name: petName }}
+        host={{ species, line: q?.situation ?? '…', reactKey, seed: petName, name: petName }}
       >
         {q ? (
           <QuizStep
@@ -118,7 +118,7 @@ function VisionTest() {
             choices={q.choices.map((c, k) => ({ key: String(k), title: c, emoji: emoji?.[k] }))}
             selectedKey={selected === null ? null : String(selected)}
             onChoose={choose}
-            hint={t.hint}
+            hint={i === 0 ? t.hint : undefined}
             nudgeKey={i === 0 ? 'onboarding:vision' : undefined}
             peek={height >= 760 ? <PetImage species={species} mood={selected === null ? 'surpris' : 'joie'} size={132} animation="breathe" /> : undefined}
             below={

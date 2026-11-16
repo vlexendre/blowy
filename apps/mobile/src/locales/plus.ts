@@ -12,8 +12,8 @@ export const plus = messages({
     brand: 'blowy',
     /** Ligne estompée sous « BLOWY+ » : ce que la personne vient d'essayer de faire. */
     headline: {
-      generic: (pet: string) => `${up(pet)} EN VEUT PLUS.`,
-      onboarding: (pet: string) => `${up(pet)} EN VEUT PLUS.`,
+      generic: (pet: string) => `${up(pet)} TE PRÉSENTE PLUS DE MONDE.`,
+      onboarding: (pet: string) => `${up(pet)} TE PRÉSENTE PLUS DE MONDE.`,
       premium_item: (item: string) => `${up(item)}, ÇA LUI IRAIT BIEN.`,
       map: 'TOUTE LA CARTE, PAS QUE TA ZONE.',
       change_city: 'CHANGE DE VILLE SANS BOUGER.',
@@ -78,14 +78,16 @@ export const plus = messages({
     }),
     /** Frise de l'essai en bref, sous « Aujourd’hui · Jour 5 · Jour 7 » (le détail est dans la mention de renouvellement). */
     timeline: ['Tout est ouvert', 'On te prévient', 'Premier paiement'],
+    /** Sous les trois avantages montrés : déplie la liste complète. */
+    morePerks: (n: number) => `Et ${n} de plus`,
     /** Avantages si l'API n'a pas répondu (la feuille montre alors une erreur). */
     perksFallback: ['Toute la carte', 'Changer de ville', 'Plus de rencontres', 'Jokers de série', '6 habitudes', 'Bilan détaillé', 'Renommer librement', 'Objets premium'],
   } as const,
   en: {
     brand: 'blowy',
     headline: {
-      generic: (pet: string) => `${up(pet)} WANTS MORE.`,
-      onboarding: (pet: string) => `${up(pet)} WANTS MORE.`,
+      generic: (pet: string) => `${up(pet)} INTRODUCES YOU TO MORE PEOPLE.`,
+      onboarding: (pet: string) => `${up(pet)} INTRODUCES YOU TO MORE PEOPLE.`,
       premium_item: (item: string) => `${up(item)}: IT WOULD LOOK GREAT.`,
       map: 'THE WHOLE MAP, NOT JUST YOUR AREA.',
       change_city: 'CHANGE CITIES WITHOUT MOVING.',
@@ -143,13 +145,14 @@ export const plus = messages({
       premium_items: ['Premium items'],
     }),
     timeline: ['Everything unlocked', 'We remind you', 'First payment'],
+    morePerks: (n: number) => `And ${n} more`,
     perksFallback: ['The whole map', 'Change cities', 'More encounters', 'Streak jokers', '6 habits', 'Detailed review', 'Rename freely', 'Premium items'],
   },
   es: {
     brand: 'blowy',
     headline: {
-      generic: (pet: string) => `${up(pet)} QUIERE MÁS.`,
-      onboarding: (pet: string) => `${up(pet)} QUIERE MÁS.`,
+      generic: (pet: string) => `${up(pet)} TE PRESENTA A MÁS GENTE.`,
+      onboarding: (pet: string) => `${up(pet)} TE PRESENTA A MÁS GENTE.`,
       premium_item: (item: string) => `${up(item)}: LE QUEDARÍA GENIAL.`,
       map: 'TODO EL MAPA, NO SOLO TU ZONA.',
       change_city: 'CAMBIA DE CIUDAD SIN MOVERTE.',
@@ -207,13 +210,14 @@ export const plus = messages({
       premium_items: ['Objetos premium'],
     }),
     timeline: ['Todo disponible', 'Te avisamos', 'Primer pago'],
+    morePerks: (n: number) => `Y ${n} más`,
     perksFallback: ['Todo el mapa', 'Cambiar de ciudad', 'Más encuentros', 'Comodines de racha', '6 hábitos', 'Resumen detallado', 'Renombrar libremente', 'Objetos premium'],
   },
   pt: {
     brand: 'blowy',
     headline: {
-      generic: (pet: string) => `${up(pet)} QUER MAIS.`,
-      onboarding: (pet: string) => `${up(pet)} QUER MAIS.`,
+      generic: (pet: string) => `${up(pet)} TE APRESENTA MAIS GENTE.`,
+      onboarding: (pet: string) => `${up(pet)} TE APRESENTA MAIS GENTE.`,
       premium_item: (item: string) => `${up(item)}: IA FICAR ÓTIMO NELE.`,
       map: 'O MAPA INTEIRO, NÃO SÓ A SUA ÁREA.',
       change_city: 'MUDE DE CIDADE SEM SAIR DO LUGAR.',
@@ -271,13 +275,14 @@ export const plus = messages({
       premium_items: ['Itens premium'],
     }),
     timeline: ['Tudo liberado', 'A gente te avisa', 'Primeira cobrança'],
+    morePerks: (n: number) => `E mais ${n}`,
     perksFallback: ['O mapa inteiro', 'Mudar de cidade', 'Mais encontros', 'Coringas de sequência', '6 hábitos', 'Resumo detalhado', 'Renomear à vontade', 'Itens premium'],
   },
   nl: {
     brand: 'blowy',
     headline: {
-      generic: (pet: string) => `${up(pet)} WIL MEER.`,
-      onboarding: (pet: string) => `${up(pet)} WIL MEER.`,
+      generic: (pet: string) => `${up(pet)} STELT JE AAN MEER MENSEN VOOR.`,
+      onboarding: (pet: string) => `${up(pet)} STELT JE AAN MEER MENSEN VOOR.`,
       premium_item: (item: string) => `${up(item)}: DAT STAAT HEM GOED.`,
       map: 'DE HELE KAART, NIET ALLEEN JE GEBIED.',
       change_city: 'WISSEL VAN STAD ZONDER TE VERHUIZEN.',
@@ -335,6 +340,7 @@ export const plus = messages({
       premium_items: ['Premium-items'],
     }),
     timeline: ['Alles staat open', 'We sturen een seintje', 'Eerste betaling'],
+    morePerks: (n: number) => `En nog ${n}`,
     perksFallback: ['De hele kaart', 'Van stad wisselen', 'Meer ontmoetingen', 'Reeksjokers', '6 gewoontes', 'Uitgebreid overzicht', 'Vrij hernoemen', 'Premium-items'],
   },
 });

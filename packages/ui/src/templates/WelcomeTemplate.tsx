@@ -45,6 +45,9 @@ const PANEL_GAP = 32;
 /** Positions de la maquette, mesurées depuis le bas du panneau jaune (V6-Welcome, panneau bas à 682). */
 const CHAT_FROM_BOTTOM = [262, 188, 130] as const;
 const CHAT_WIDTH = [230, 200, 236] as const;
+/** Aperçu en deux messages (le pet, puis la personne) : plus bas, il ne passe jamais sur le titre (375 × 667). */
+const CHAT2_FROM_BOTTOM = [196, 116] as const;
+const CHAT2_WIDTH = [230, 200] as const;
 const PET_FROM_BOTTOM = 326;
 const PET_WIDTH = 380;
 
@@ -135,6 +138,9 @@ export function WelcomeTemplate({ brand, tagline, title, chat, pet, primaryLabel
   }, [reduced]);
   const peek = useAnimatedStyle(() => ({ transform: [{ translateX: enter.value * 240 }, { rotate: `${enter.value * 10 + rot.value}deg` }, { scaleY: sy.value }] }));
   const done = shown >= chat.length;
+  const two = chat.length <= 2;
+  const chatTop = (i: number) => panelBottom - ((two ? CHAT2_FROM_BOTTOM[i] : CHAT_FROM_BOTTOM[i]) ?? 0);
+  const chatWidth = (i: number) => (two ? CHAT2_WIDTH[i] : CHAT_WIDTH[i]);
   return (
     <View style={styles.root}>
       <Appear from="none" scale={0.96} duration={320} style={[styles.panel, { height: panelBottom - space.xs - 2 }]}>
@@ -178,7 +184,7 @@ export function WelcomeTemplate({ brand, tagline, title, chat, pet, primaryLabel
 
       {chat.map((m, i) =>
         i < shown || typing === i ? (
-          <View key={i} pointerEvents="none" style={[styles.chat, { top: panelBottom - (CHAT_FROM_BOTTOM[i] ?? 0), width: CHAT_WIDTH[i] }]}>
+          <View key={i} pointerEvents="none" style={[styles.chat, { top: chatTop(i), width: chatWidth(i) }]}>
             {i < shown ? (
               <Appear key="msg" from={m.from === 'me' ? 'right' : 'below'} distance={m.from === 'me' ? 18 : 8} scale={0.92} duration={200}>
                 <MessageBubble

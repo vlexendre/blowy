@@ -8,9 +8,9 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 | Rôle | Taille | Graisse | Exemple |
 |---|---|---|---|
 | Grand titre d'écran | Anton 40–64 (onglets 48–64, écrans poussés 40) | `Title`, capitales, 2ᵉ ligne `dim` | « SES / BILANS » |
-| Titre de carte, de ligne | 17 | `bodyHeavy` / `bodyBold` | « Ses habitudes » |
+| Titre de carte, de ligne | 16 | `bodyHeavy` / `bodyBold` | « Ses habitudes » |
 | Corps | 17 | `body` | une phrase de l'API |
-| Secondaire | 15 | `body`, `muted` | « Rien à faire aujourd'hui. » |
+| Secondaire | 13–15 (13 dans les cartes et lignes) | `body`, `muted` | « Rien à faire aujourd'hui. » |
 | Petite mention, légende, intertitre en capitales | 13 (jamais moins) | `small` / `label` | « CONFIDENTIALITÉ » |
 
 - **Plancher 13 pt** dans l'atome `Text` (`MIN_TEXT_SIZE`) : une taille plus petite est relevée, interlignage compris.
@@ -20,10 +20,17 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - Typographie française : `’`, `« »`, espaces insécables (`docs/I18N.md`).
 
 ## Espacements, rayons, cibles
-- Échelle : 4 · 8 · 12 · 16 · 24 · 32 · 48 (`space`). Marges latérales d'écran 20 (accueil : 14, comme la maquette).
-  Écart entre cartes 10–12 ; intérieur d'une carte 14–16.
-- Rayons : panneaux de couleur 32–36, cartes 24, lignes et tuiles 22, pilules 999 (`radius`).
-- Toute cible touchable fait au moins 44 × 44 pt (`size.touch`) ; boutons 40 / 48 / 56 de haut.
+- Échelle : 4 · 8 · 12 · 16 · 24 · 32 · 48 (`space`). Marges latérales d'écran 14–16 (accueil : 14, comme la maquette).
+- **Densité** (passe « affiner », `density` dans `packages/ui/src/theme.ts`, appliquée par les composants partagés — un
+  écran ne remet pas de marges à lui) : intérieur d'une carte 12–14 (`cardPad` 14), écart entre cartes 8 (`gap`, défaut de
+  `TabTemplate` et `SettingsTemplate`), ligne d'entrée 56 (`EntryCard`), ligne de liste 52 (`ListRow`), titre de carte 16,
+  secondaire 13 ; grand titre d'onglet 56, d'écran poussé 40.
+- Rayons : panneaux de couleur 32–36 (la scène du minimoa garde 32), cartes ordinaires 22 (`radius.card`), tuiles 18,
+  pilules 999 (`radius`). `radius.lg` (28) reste celui du site et de la barre d'onglets.
+- Toute cible touchable fait au moins 44 × 44 pt (`size.touch`) ; boutons 40 / 48 / 52 de haut.
+- Un écran = un travail, faisable dans le premier écran (390×844 et 375×667) ; une carte = un titre et au plus une ligne
+  grise ; les entrées secondaires deviennent des tuiles (`ShortcutTile` : picto + un mot, pastille ou point) ou passent
+  derrière un tap.
 
 ## Couleurs (rôles)
 - Fond `night`, cartes `panel` (un cran : `card`), filets `line` / `veil.hairline`.
@@ -39,8 +46,8 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - **Titre d'écran** : `Title` avec seconde ligne estompée ; écran poussé : bouton retour rond à gauche du titre
   (`SettingsTemplate`, `ScreenTemplate`) ; feuille : croix en haut à droite.
 - **Entrées vers d'autres écrans** : plusieurs à la suite → une seule carte `EntryGroup` de `EntryCard inGroup` (filet entre
-  les lignes) plutôt qu'une pile de cartes. Une entrée seule et urgente (test de vision, bilan non lu, minimoa qui boude)
-  reste une `EntryCard`.
+  les lignes) plutôt qu'une pile de cartes, ou des tuiles `ShortcutRow` quand le libellé suffit. Une entrée seule et urgente
+  (test de vision, bilan non lu) reste une `EntryCard` ; à l'accueil, une seule à la fois.
 - **Listes de réglages et d'historique** : `SettingsSection` (carte groupée, titre de section en capitales 13).
 - **Puces** : `Chip` ; puces d'étiquette inclinées sur les panneaux (−6° / +5°) ; jamais de puce translucide posée sur
   un minimoa (fond sombre opaque).

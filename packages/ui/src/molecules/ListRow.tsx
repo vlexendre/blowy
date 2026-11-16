@@ -6,7 +6,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Toggle } from '../atoms/Toggle';
 import { layout } from '../lib/styles';
-import { color, extra, size, space, veil } from '../theme';
+import { color, density, extra, size, space, veil } from '../theme';
 
 export interface ListRowProps {
   title: string;
@@ -55,11 +55,11 @@ export function ListRow({
     <>
       {left}
       <View style={layout.grow}>
-        <Text variant="bodyBold" size={17} color={destructive ? extra.dangerSoft : undefined}>
+        <Text variant="bodyBold" size={density.title} color={destructive ? extra.dangerSoft : undefined}>
           {title}
         </Text>
         {subtitle ? (
-          <Text size={15} muted style={styles.subtitle}>
+          <Text size={density.secondary} muted style={styles.subtitle}>
             {subtitle}
           </Text>
         ) : null}
@@ -83,8 +83,8 @@ export function ListRow({
 }
 
 const styles = StyleSheet.create({
-  base: { minHeight: 56, paddingVertical: space.sm + 2, gap: space.md },
-  subtitle: { marginTop: 1, lineHeight: 20 },
+  base: { minHeight: density.listRow, paddingVertical: space.sm, gap: space.md },
+  subtitle: { marginTop: 1, lineHeight: 18 },
   divider: { borderBottomWidth: size.border, borderBottomColor: veil.hairline },
   disabled: { opacity: 0.5 },
 });

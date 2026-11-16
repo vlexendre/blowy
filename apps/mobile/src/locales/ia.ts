@@ -44,8 +44,7 @@ export const ia = messages({
       title: [{ text: 'L’IA\n' }, { text: 'ET TOI', dim: true }] as TitleSegment[],
       back: 'Retour',
       lead: (provider: string, country: string): string =>
-        `Certaines fonctions passent par une IA fournie par ${provider} (${country}), notre prestataire. Voici ce qu’elle voit, et ce que tu as accepté.`,
-      sections: { proofs: 'Preuves d’habitude', chats: 'Lecture des chats', safety: 'Vérifications de sécurité', review: 'Bilan de la semaine' },
+        `Certaines fonctions passent par une IA de ${provider} (${country}), notre prestataire.`,
       proofs: {
         title: 'Vérifier mes preuves par une IA',
         on: (date: string): string => `Activé le ${date}. Ta photo réduite et le nom de l’habitude lui sont envoyés.`,
@@ -55,19 +54,17 @@ export const ia = messages({
       },
       chats: {
         title: 'Minimoas dans tes chats',
-        subtitle: 'Accord chat par chat, et pour les prochains',
         footer: 'Une IA lit vos derniers messages seulement si vous l’avez activé l’un et l’autre. Tu le retires chat par chat ou partout d’un coup.',
       },
       /** Vérifications de sécurité : photo de profil (toujours) et message qui laisse un doute (si vous avez accepté la lecture tous les deux). */
       safety: {
         title: 'Photo de profil et messages douteux',
-        subtitle: 'Toujours active : elle protège tout le monde',
+        subtitle: 'Toujours active',
         footer: (provider: string): string =>
           `Chaque photo de profil est vérifiée par ${provider} avant d’être montrée (nudité, personne qui semble mineure, violence, haine, pub) ; une photo refusée est effacée. Dans un chat où vous avez accepté tous les deux la lecture par une IA, un message qui laisse un doute (un lien, par exemple) peut aussi lui être envoyé, après l’envoi, pour vérifier qu’il respecte les règles. Ça ne se coupe pas, parce que ça protège tout le monde. Sans photo de profil, aucune photo ne part.`,
       },
       review: {
-        title: 'Reformulé par une IA',
-        subtitle: 'Sans aucun prénom ni nom',
+        title: 'Bilan reformulé par une IA',
         footer: 'Pour les semaines actives, une IA réécrit ton bilan. Elle ne reçoit que des chiffres et des phrases générales : jamais le prénom de tes liens ni le nom de ton minimoa. Rien à accepter.',
       },
       policy: 'Politique de confidentialité',
@@ -111,8 +108,7 @@ export const ia = messages({
       title: [{ text: 'AI\n' }, { text: 'AND YOU', dim: true }] as TitleSegment[],
       back: 'Back',
       lead: (provider: string, country: string): string =>
-        `Some features use an AI provided by ${provider} (${country}), our provider. Here is what it sees, and what you have agreed to.`,
-      sections: { proofs: 'Habit proofs', chats: 'Reading chats', safety: 'Safety checks', review: 'Weekly review' },
+        `Some features use an AI from ${provider} (${country}), our provider.`,
       proofs: {
         title: 'Check my proofs with AI',
         on: (date: string): string => `On since ${date}. Your downsized photo and the name of the habit are sent to it.`,
@@ -122,18 +118,16 @@ export const ia = messages({
       },
       chats: {
         title: 'Minimoas in your chats',
-        subtitle: 'Consent chat by chat, and for future chats',
         footer: 'An AI reads your latest messages only if both of you have turned it on. You can withdraw it chat by chat or everywhere at once.',
       },
       safety: {
         title: 'Profile photo and doubtful messages',
-        subtitle: 'Always on: it protects everyone',
+        subtitle: 'Always on',
         footer: (provider: string): string =>
           `Every profile photo is checked by ${provider} before it is shown (nudity, someone who looks underage, violence, hate, ads); a rejected photo is deleted. In a chat where you have both agreed to AI reading, a message that raises a doubt (a link, for example) may also be sent to it, after it is sent, to check that it follows the rules. This can’t be turned off, because it protects everyone. Without a profile photo, no photo is sent.`,
       },
       review: {
-        title: 'Rewritten by AI',
-        subtitle: 'No first names or other names',
+        title: 'Weekly review rewritten by AI',
         footer: 'For active weeks, an AI rewrites your review. It only receives numbers and general sentences: never the first names of your links or the name of your minimoa. Nothing to accept.',
       },
       policy: 'Privacy policy',
@@ -176,8 +170,7 @@ export const ia = messages({
       title: [{ text: 'LA IA\n' }, { text: 'Y TÚ', dim: true }] as TitleSegment[],
       back: 'Atrás',
       lead: (provider: string, country: string): string =>
-        `Algunas funciones pasan por una IA proporcionada por ${provider} (${country}), nuestro proveedor. Esto es lo que ve, y lo que has aceptado.`,
-      sections: { proofs: 'Pruebas de hábito', chats: 'Lectura de los chats', safety: 'Controles de seguridad', review: 'Resumen de la semana' },
+        `Algunas funciones pasan por una IA de ${provider} (${country}), nuestro proveedor.`,
       proofs: {
         title: 'Revisar mis pruebas con IA',
         on: (date: string): string => `Activado el ${date}. Se le envían tu foto reducida y el nombre del hábito.`,
@@ -187,18 +180,16 @@ export const ia = messages({
       },
       chats: {
         title: 'Minimoas en tus chats',
-        subtitle: 'Consentimiento chat por chat, y para los próximos',
         footer: 'Una IA lee sus últimos mensajes solo si ambas partes lo han activado. Puedes retirarlo chat por chat o en todos a la vez.',
       },
       safety: {
         title: 'Foto de perfil y mensajes dudosos',
-        subtitle: 'Siempre activo: protege a todo el mundo',
+        subtitle: 'Siempre activo',
         footer: (provider: string): string =>
           `Cada foto de perfil la revisa ${provider} antes de mostrarse (desnudos, personas que parezcan menores, violencia, odio, publicidad); una foto rechazada se borra. En un chat en el que ambas partes han aceptado la lectura por una IA, un mensaje que genere dudas (un enlace, por ejemplo) también puede enviársele, después de enviarse, para comprobar que respeta las normas. No se puede desactivar, porque protege a todo el mundo. Sin foto de perfil, no se envía ninguna foto.`,
       },
       review: {
-        title: 'Reescrito por una IA',
-        subtitle: 'Sin ningún nombre',
+        title: 'Resumen reescrito por una IA',
         footer: 'En las semanas con actividad, una IA reescribe tu resumen. Solo recibe cifras y frases generales: nunca el nombre de las personas de tus vínculos ni el de tu minimoa. Nada que aceptar.',
       },
       policy: 'Política de privacidad',
@@ -241,8 +232,7 @@ export const ia = messages({
       title: [{ text: 'A IA\n' }, { text: 'E VOCÊ', dim: true }] as TitleSegment[],
       back: 'Voltar',
       lead: (provider: string, country: string): string =>
-        `Algumas funções passam por uma IA fornecida por ${provider} (${country}), nosso fornecedor. Veja o que ela vê, e o que você aceitou.`,
-      sections: { proofs: 'Provas de hábito', chats: 'Leitura dos chats', safety: 'Verificações de segurança', review: 'Resumo da semana' },
+        `Algumas funções passam por uma IA da ${provider} (${country}), nosso fornecedor.`,
       proofs: {
         title: 'Verificar minhas provas com IA',
         on: (date: string): string => `Ativado em ${date}. Sua foto reduzida e o nome do hábito são enviados a ela.`,
@@ -252,18 +242,16 @@ export const ia = messages({
       },
       chats: {
         title: 'Minimoas nos seus chats',
-        subtitle: 'Consentimento chat por chat, e para os próximos',
         footer: 'Uma IA lê as últimas mensagens de vocês só se as duas partes tiverem ativado. Você pode retirar chat por chat ou em todos de uma vez.',
       },
       safety: {
         title: 'Foto de perfil e mensagens suspeitas',
-        subtitle: 'Sempre ativa: protege todo mundo',
+        subtitle: 'Sempre ativa',
         footer: (provider: string): string =>
           `Cada foto de perfil é verificada por ${provider} antes de ser exibida (nudez, pessoa que pareça menor de idade, violência, ódio, propaganda); uma foto recusada é apagada. Num chat em que as duas partes aceitaram a leitura por uma IA, uma mensagem que levante dúvida (um link, por exemplo) também pode ser enviada a ela, depois do envio, para verificar se respeita as regras. Isso não pode ser desativado, porque protege todo mundo. Sem foto de perfil, nenhuma foto é enviada.`,
       },
       review: {
-        title: 'Reescrito por uma IA',
-        subtitle: 'Sem nenhum nome',
+        title: 'Resumo reescrito por uma IA',
         footer: 'Nas semanas com atividade, uma IA reescreve seu resumo. Ela só recebe números e frases gerais: nunca o nome das pessoas dos seus vínculos nem o do seu minimoa. Nada para aceitar.',
       },
       policy: 'Política de privacidade',
@@ -306,8 +294,7 @@ export const ia = messages({
       title: [{ text: 'AI\n' }, { text: 'EN JIJ', dim: true }] as TitleSegment[],
       back: 'Terug',
       lead: (provider: string, country: string): string =>
-        `Sommige functies gebruiken een AI van ${provider} (${country}), onze leverancier. Dit is wat die ziet, en waarmee je akkoord bent gegaan.`,
-      sections: { proofs: 'Bewijzen van gewoontes', chats: 'Meelezen in chats', safety: 'Veiligheidscontroles', review: 'Weekoverzicht' },
+        `Sommige functies gebruiken een AI van ${provider} (${country}), onze leverancier.`,
       proofs: {
         title: 'Mijn bewijzen door AI laten controleren',
         on: (date: string): string => `Aangezet op ${date}. Je verkleinde foto en de naam van de gewoonte worden ernaartoe gestuurd.`,
@@ -317,18 +304,16 @@ export const ia = messages({
       },
       chats: {
         title: 'Minimoas in je chats',
-        subtitle: 'Toestemming per chat, en voor volgende chats',
         footer: 'Een AI leest jullie laatste berichten alleen als jullie het allebei hebben aangezet. Je trekt het in per chat of overal tegelijk.',
       },
       safety: {
         title: 'Profielfoto en twijfelachtige berichten',
-        subtitle: 'Altijd aan: het beschermt iedereen',
+        subtitle: 'Altijd aan',
         footer: (provider: string): string =>
           `Elke profielfoto wordt door ${provider} gecontroleerd voordat hij wordt getoond (naakt, iemand die minderjarig lijkt, geweld, haat, reclame); een geweigerde foto wordt gewist. In een chat waarin jullie allebei akkoord zijn gegaan met meelezen door een AI, kan een bericht dat twijfel oproept (een link, bijvoorbeeld) na verzending ook naar die AI worden gestuurd, om te controleren of het de regels naleeft. Dit kan niet uit, omdat het iedereen beschermt. Zonder profielfoto wordt er geen foto verstuurd.`,
       },
       review: {
-        title: 'Herschreven door een AI',
-        subtitle: 'Zonder enige voornaam of naam',
+        title: 'Weekoverzicht herschreven door een AI',
         footer: 'In actieve weken herschrijft een AI je overzicht. Die krijgt alleen cijfers en algemene zinnen: nooit de voornamen van je banden of de naam van je minimoa. Niets om mee akkoord te gaan.',
       },
       policy: 'Privacybeleid',

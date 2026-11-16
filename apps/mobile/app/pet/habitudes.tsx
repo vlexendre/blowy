@@ -1,6 +1,7 @@
 /**
- * Ses habitudes (V6-GHabitudes) : celles suivies (rythme, série, preuve du jour), les objets qu'elles font gagner,
- * et le catalogue. La limite (2 sans Blowy+, 6 avec) est dite telle quelle ; une ligne verrouillée ouvre Blowy+.
+ * Ses habitudes (V6-GHabitudes) : celles suivies (série, preuve du jour), les objets qu'elles font gagner. Le
+ * catalogue est dans la feuille « Ajouter une habitude » (la limite, 2 sans Blowy+, 6 avec, y est dite telle quelle ;
+ * une ligne verrouillée ouvre Blowy+) ; le rythme et « arrêter » dans la feuille « Régler » de chaque habitude.
  */
 import type { HabitDef } from '@blowy/contract';
 import { itemLabel } from '@/locales/content';
@@ -52,7 +53,11 @@ export default function HabitsScreen() {
   const remove = useRemoveHabit();
   const [adding, setAdding] = useState<HabitDef | null>(null);
   const [rhythm, setRhythm] = useState<HabitDef['rhythm']>('daily');
-  const [removing, setRemoving] = useState<{ ref: string; label: string } | null>(null);
+  /** Catalogue ouvert (feuille « Ajouter une habitude »). */
+  const [picking, setPicking] = useState(false);
+  /** Feuille « Régler » d'une habitude : son rythme, puis « arrêter » (confirmation dans la même feuille). */
+  const [editing, setEditing] = useState<{ ref: string; label: string } | null>(null);
+  const [confirmStop, setConfirmStop] = useState(false);
   const back = () => goBack('/(tabs)/pet');
 
   const h = habits.data;
@@ -65,9 +70,9 @@ export default function HabitsScreen() {
           <Banner tone="error" title={t.loadError} text="" actionLabel={t.retry} onAction={() => void Promise.all([habits.refetch(), catalogue.refetch()])} />
         ) : (
           <>
-            <Skeleton height={210} radius="xl" />
-            <Skeleton height={120} radius="lg" />
-            <Skeleton height={260} radius="lg" />
+            <Skeleton height={160} radius="lg" />
+            <Skeleton height={160} radius="lg" />
+            <Skeleton height={110} radius="lg" />
           </>
         )}
       </SettingsTemplate>
@@ -98,13 +103,25 @@ export default function HabitsScreen() {
 
   const startAdd = (def: HabitDef) => {
     if (full) {
-      if (!plus) openPlus('habits_limit');
+      // Blowy+ monte en feuille : on attend que le catalogue soit redescendu (iOS ne présente pas deux modales à la fois).
+      setPicking(false);
+      if (!plus) setTimeout(() => openPlus('habits_limit'), 320);
       return;
     }
     add.reset();
     setRhythm(def.rhythm);
+    setPicking(false);
     setAdding(def);
   };
+  const openEdit = (ref: string, label: string) => {
+    update.reset();
+    remove.reset();
+    setConfirmStop(false);
+    setEditing({ ref, label });
+  };
+  const edited = editing ? h.habits.find((x) => x.ref === editing.ref) : undefined;
+  /** « Ajouter une habitude » : tant qu'il en reste à ajouter (complet sans Blowy+ : les lignes ouvrent Blowy+). */
+  const canOpenCatalogue = available.length > 0 && !(full && plus);
 
   return (
     <ScreenMotion>
@@ -113,11 +130,12 @@ export default function HabitsScreen() {
         titleSize={40}
         onBack={back}
         backLabel={t.back}
-        intro={t.intro(name)}
         right={<Chip label={t.count(h.habits.length, h.limit)} tone="accent" accessibilityLabel={t.countA11y(h.habits.length, h.limit)} />}
-        footer={full && !plus ? <Button label={t.plusCta} variant="glass" onPress={() => openPlus('habits_limit')} /> : undefined}
+        footer={
+          canOpenCatalogue ? <Button label={t.add} icon="plus" variant={h.habits.length ? 'glass' : 'accent'} onPress={() => setPicking(true)} /> : undefined
+        }
       >
-        {h.habits.length === 0 ? <EmptyState species={pet.data?.pet.species} mood="neutre" title={t.emptyTitle} text={t.empty} /> : null}
+        {h.habits.length === 0 ? <EmptyState species={pet.data?.pet.species} mood="neutre" title={t.emptyTitle} text={t.empty(name)} /> : null}
         {h.habits.map((x, i) => {
           const weekly = x.rhythm === 'three_per_week';
           const askNow = x.today.askNow && !x.today.doneToday;
@@ -133,18 +151,13 @@ export default function HabitsScreen() {
                   label: x.today.doneToday ? t.doneToday : t.week(x.today.doneThisWeek, x.today.target),
                   itemId: nextHabitItem?.id ?? null,
                 }}
-                rhythms={cat.rhythms}
-                rhythm={x.rhythm}
-                rhythmBusy={update.isPending && update.variables?.ref === x.ref}
-                onRhythm={(r) => update.mutate({ ref: x.ref, rhythm: r })}
                 line={x.today.line}
                 action={x.today.due || askNow ? { label: t.prove, onPress: () => router.push({ pathname: '/pet/preuve', params: { ref: x.ref } }) } : null}
-                remove={{ label: t.remove, accessibilityLabel: t.removeA11y(x.label), onPress: () => setRemoving({ ref: x.ref, label: x.label }) }}
+                remove={{ label: t.settings, accessibilityLabel: t.settingsA11y(x.label), onPress: () => openEdit(x.ref, x.label) }}
               />
             </Appear>
           );
         })}
-        {update.isError ? <Banner tone="error" text={errorText(update.error, t.error)} onClose={() => update.reset()} /> : null}
 
         {milestones.length ? (
           <MilestoneTrack
@@ -155,51 +168,58 @@ export default function HabitsScreen() {
           />
         ) : null}
 
-        <Text variant="bodyHeavy" size={20} accessibilityRole="header">
-          {t.catalogue}
-        </Text>
-        <Text size={15} muted>
-          {plus ? t.limitPlus(h.limit) : t.limitFree(entitlements(false).habits, entitlements(true).habits)}
-        </Text>
-        {available.map((def, i) => {
-          const locked = full && !plus;
-          return (
-            <Appear key={def.id} once={`catalogue:${def.id}`} delay={staggerDelay(i)}>
-              <ListRow
-                title={def.label}
-                subtitle={def.social ? `${axisName(def.axis)} · ${t.social}` : axisName(def.axis)}
-                left={<Text size={26}>{t.emoji[def.id] ?? '✨'}</Text>}
-                right={
-                  locked ? (
-                    <Chip label={t.locked} tone="violet" left={<Glyph name="lock" size={12} color={color.white} />} />
-                  ) : full ? (
-                    <Chip label={t.full} tone="glass" />
-                  ) : (
-                    <Glyph name="plus" size={22} color={color.accent} />
-                  )
-                }
-                onPress={() => startAdd(def)}
-                disabled={full && plus}
-                accessibilityLabel={locked ? t.lockedA11y(def.label) : t.addA11y(def.label)}
-                divider={i < available.length - 1}
-              />
-            </Appear>
-          );
-        })}
       </SettingsTemplate>
 
+      {/* Le catalogue, puis l'habitude choisie : une seule feuille dont le contenu change. */}
       <SheetTemplate
-        visible={!!adding}
-        onClose={() => setAdding(null)}
-        title={adding ? t.addTitle(adding.label) : undefined}
+        visible={picking || !!adding}
+        onClose={() => {
+          setPicking(false);
+          setAdding(null);
+        }}
+        scroll={picking && !adding}
+        title={adding ? t.addTitle(adding.label) : t.add}
         footer={
-          <Button
-            label={t.addConfirm}
-            loading={add.isPending}
-            onPress={() => adding && add.mutate({ habitId: adding.id, rhythm }, { onSuccess: () => setAdding(null) })}
-          />
+          adding ? (
+            <Button
+              label={t.addConfirm}
+              loading={add.isPending}
+              onPress={() => add.mutate({ habitId: adding.id, rhythm }, { onSuccess: () => setAdding(null) })}
+            />
+          ) : undefined
         }
       >
+        {picking && !adding ? (
+          <>
+            <Text size={15} muted>
+              {plus ? t.limitPlus(h.limit) : t.limitFree(entitlements(false).habits, entitlements(true).habits)}
+            </Text>
+            {available.map((def, i) => {
+              const locked = full && !plus;
+              return (
+                <ListRow
+                  key={def.id}
+                  title={def.label}
+                  subtitle={def.social ? `${axisName(def.axis)} · ${t.social}` : axisName(def.axis)}
+                  left={<Text size={26}>{t.emoji[def.id] ?? '✨'}</Text>}
+                  right={
+                    locked ? (
+                      <Chip label={t.locked} tone="violet" left={<Glyph name="lock" size={12} color={color.white} />} />
+                    ) : full ? (
+                      <Chip label={t.full} tone="glass" />
+                    ) : (
+                      <Glyph name="plus" size={22} color={color.accent} />
+                    )
+                  }
+                  onPress={() => startAdd(def)}
+                  disabled={full && plus}
+                  accessibilityLabel={locked ? t.lockedA11y(def.label) : t.addA11y(def.label)}
+                  divider={i < available.length - 1}
+                />
+              );
+            })}
+          </>
+        ) : null}
         {adding ? (
           <>
             <Text size={17}>{t.addAsk(adding.ask)}</Text>
@@ -222,22 +242,46 @@ export default function HabitsScreen() {
       </SheetTemplate>
 
       <SheetTemplate
-        visible={!!removing}
-        onClose={() => setRemoving(null)}
-        title={removing ? t.removeTitle(removing.label) : undefined}
+        visible={!!editing}
+        onClose={() => setEditing(null)}
+        title={editing ? (confirmStop ? t.removeTitle(editing.label) : editing.label) : undefined}
         footer={
-          <>
-            <Button
-              label={t.removeConfirm}
-              variant="danger"
-              loading={remove.isPending}
-              onPress={() => removing && remove.mutate(removing.ref, { onSuccess: () => setRemoving(null) })}
-            />
-            <Button label={t.removeCancel} variant="ghost" onPress={() => setRemoving(null)} />
-          </>
+          confirmStop ? (
+            <>
+              <Button
+                label={t.removeConfirm}
+                variant="danger"
+                loading={remove.isPending}
+                onPress={() => editing && remove.mutate(editing.ref, { onSuccess: () => setEditing(null) })}
+              />
+              <Button label={t.removeCancel} variant="ghost" onPress={() => setConfirmStop(false)} />
+            </>
+          ) : (
+            <Button label={t.removeConfirm} variant="ghost" onPress={() => setConfirmStop(true)} />
+          )
         }
       >
-        <Text size={17}>{t.removeText}</Text>
+        {confirmStop ? (
+          <Text size={17}>{t.removeText}</Text>
+        ) : edited ? (
+          <>
+            <Text size={15} muted>
+              {t.rhythm}
+            </Text>
+            {cat.rhythms.map((r) => (
+              <ListRow
+                key={r.id}
+                title={r.label}
+                onPress={() => r.id !== edited.rhythm && update.mutate({ ref: edited.ref, rhythm: r.id })}
+                disabled={update.isPending}
+                right={edited.rhythm === r.id ? <Glyph name="check" size={18} color={color.accent} /> : undefined}
+                chevron={false}
+                accessibilityLabel={edited.rhythm === r.id ? t.rhythmA11y(r.label) : r.label}
+              />
+            ))}
+          </>
+        ) : null}
+        {update.isError ? <Banner tone="error" text={errorText(update.error, t.error)} /> : null}
         {remove.isError ? <Banner tone="error" text={errorText(remove.error, t.error)} /> : null}
       </SheetTemplate>
     </ScreenMotion>

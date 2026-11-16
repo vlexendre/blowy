@@ -208,6 +208,10 @@ function floatingFor(item: string | undefined): string[] {
 
 const TEASER_SPECIES: readonly Species[] = ['suzie', 'gaston', 'pia'];
 
+/** Avantages montrés avant « Et N de plus », dans cet ordre (après celui de la raison). */
+const PERKS_SHOWN = 3;
+const PERK_ORDER: readonly PlusPerk[] = ['more_encounters', 'map_everywhere', 'detailed_review', 'streak_jokers', 'more_habits', 'free_rename', 'premium_items'];
+
 function headlineFor(reason: PlusReason, petName: string, item?: string): string {
   if (reason === 'premium_item' && item) return t.headline.premium_item(itemLabel[item as keyof typeof itemLabel] ?? petName);
   const h = t.headline[reason === 'premium_item' ? 'generic' : reason];
@@ -247,7 +251,13 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   const perks = (data?.perks ?? []).flatMap((p) =>
     (short[p.key] ?? [p.label]).map((label, i) => ({ key: `${p.key}:${i}`, label, highlight: p.key === highlight })),
   );
-  perks.sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight));
+  // Trois avantages d'abord (celui de la raison en tête, puis les plus parlants) ; les autres se déplient sur place.
+  const rank = (key: string) => {
+    const i = PERK_ORDER.indexOf(key.split(':')[0] as PlusPerk);
+    // Une ligne par avantage d'abord (la seconde ligne de la carte, « Changer de ville », passe après).
+    return Number(key.split(':')[1] ?? 0) * 100 + (i < 0 ? PERK_ORDER.length : i);
+  };
+  perks.sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight) || rank(a.key) - rank(b.key));
 
   const views: PlusOfferView<PlanDto>[] = offers.map((o) => {
     const s = byId.get(o.productId);
@@ -310,6 +320,8 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
         floatingItems={floatingFor(item)}
         teaser={teaserCount > 0 && data?.teaser.label ? { label: data.teaser.label, species: TEASER_SPECIES } : null}
         perks={perks.length ? perks : t.perksFallback.map((label, i) => ({ key: String(i), label }))}
+        perksShown={PERKS_SHOWN}
+        morePerksLabel={t.morePerks(Math.max(0, (perks.length || t.perksFallback.length) - PERKS_SHOWN))}
         offers={views}
         selected={chosen}
         onSelect={(k) => {

@@ -32,6 +32,10 @@ export interface PetStageProps {
   shape?: Shape;
   /** Puce sous le nom (`shapeLabel[shape].title` : « en pleine forme »). */
   shapeLabel?: string;
+  /** Toucher la puce de forme (« Il boude » : il dit dans sa bulle ce que ça change). */
+  onShapePress?: () => void;
+  /** Libellé lu de la puce touchable. */
+  shapeA11y?: string;
   /** Ce que dit le pet (bulle sombre) ; chaque nouvelle phrase s'écrit mot à mot. */
   speech?: string;
   /** Bouton blanc en haut à droite (« garde-robe »). */
@@ -84,6 +88,8 @@ export function PetStage({
   title,
   shape,
   shapeLabel,
+  onShapePress,
+  shapeA11y,
   speech,
   action,
   reaction,
@@ -151,7 +157,9 @@ export function PetStage({
       <View style={styles.head} pointerEvents="box-none">
         <View style={styles.name}>
           <Title text={title ?? pet.name.toUpperCase()} size={40} numberOfLines={1} />
-          {shapeLabel ? <Chip label={shapeLabel} tone="dark" left={<View style={styles.dot} />} style={styles.chip} /> : null}
+          {shapeLabel ? (
+            <Chip label={shapeLabel} tone="dark" left={<View style={styles.dot} />} onPress={onShapePress} accessibilityLabel={shapeA11y} style={styles.chip} />
+          ) : null}
         </View>
         {action ? (
           <Button

@@ -1,7 +1,7 @@
 /**
  * Son caractère, rééquilibré (V6-GCaractere, spéc §15) : le minimoa et sa forme · sa vision (5 axes, « pour
  * l'instant », c'est elle qui choisit qui il présente) · son style (4 jauges, en petit, ne filtre personne) · ses
- * habitudes et leur série · son évolution · son nom (une fois tous les 60 jours, libre avec Blowy+).
+ * habitudes, son évolution, ses bilans, ses souvenirs (tuiles) · son nom (une fois tous les 60 jours, libre avec Blowy+).
  */
 import { gaugeLabel } from '@/locales/content';
 import { cleanPetName, dayOf, GAUGE_KEYS, nextRenameOn, PET_NAME_MAX, RENAME_COOLDOWN_DAYS } from '@blowy/domain';
@@ -10,8 +10,6 @@ import {
   Appear,
   Banner,
   Glyph,
-  EntryCard,
-  EntryGroup,
   Header,
   Icon,
   KeyboardPeek,
@@ -19,6 +17,8 @@ import {
   RenameCard,
   ScreenTemplate,
   Shake,
+  ShortcutRow,
+  ShortcutTile,
   Skeleton,
   Stack,
   StylePanel,
@@ -32,7 +32,7 @@ import { ScreenMotion } from '@/core';
 import { errorText, shortDay } from '@/features/links';
 import { usePet, useRenamePet } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
-import { useHabits, useStreak, useVision } from '@/features/rituals';
+import { useHabits, useVision } from '@/features/rituals';
 import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { pet as t } from '@/locales/pet';
@@ -48,7 +48,6 @@ export default function CharacterScreen() {
   const pet = usePet();
   const vision = useVision();
   const habits = useHabits();
-  const streak = useStreak();
   const rename = useRenamePet();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState('');
@@ -57,7 +56,7 @@ export default function CharacterScreen() {
 
   const refresh = async () => {
     setRefreshing(true);
-    await Promise.all([pet.refetch(), vision.refetch(), habits.refetch(), streak.refetch()]);
+    await Promise.all([pet.refetch(), vision.refetch(), habits.refetch()]);
     setRefreshing(false);
   };
   const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />;
@@ -109,7 +108,6 @@ export default function CharacterScreen() {
   const v = vision.data;
   const hs = habits.data?.habits ?? [];
   const bestHabit = hs.reduce((m, h) => Math.max(m, h.streak), 0);
-  const s = streak.data;
 
   return (
     <ScreenMotion>
@@ -186,29 +184,20 @@ export default function CharacterScreen() {
             />
           </Appear>
 
-          {/* Tout ce qui le fait avancer, réuni dans une carte. */}
+          {/* Ce qui le fait avancer, en tuiles sans description (la série est sur l'accueil et dans le défi). */}
           <Appear once="character:entries" delay={200}>
-            <EntryGroup>
-              <EntryCard
-                inGroup
-                left={<Glyph name="camera" size={26} color={color.accent} />}
-                title={c.habits}
-                text={c.habitsText(hs.length, bestHabit)}
-                chevron
+            <ShortcutRow>
+              <ShortcutTile
+                label={c.habits}
+                icon={<Glyph name="camera" size={22} color={color.accent} />}
+                value={hs.length ? String(hs.length) : undefined}
                 onPress={() => router.push('/pet/habitudes')}
+                accessibilityLabel={`${c.habits}, ${c.habitsText(hs.length, bestHabit)}`}
               />
-              <EntryCard
-                inGroup
-                left={<Icon name="flamme" size={34} />}
-                title={c.streak}
-                text={s ? c.streakText(s.current, s.best) : undefined}
-                chevron
-                onPress={() => router.push('/pet/serie')}
-              />
-              <EntryCard inGroup left={<Icon name="etoiles" size={34} />} title={c.evolution} text={c.evolutionText} chevron onPress={() => router.push('/pet/evolution')} />
-              <EntryCard inGroup left={<Icon name="cadeau" size={34} />} title={c.reviews} text={c.reviewsText} chevron onPress={() => router.push('/pet/bilans')} />
-              <EntryCard inGroup left={<Icon name="coeurs" size={34} />} title={c.memories} text={c.memoriesText} chevron onPress={() => router.push('/pet/souvenirs')} />
-            </EntryGroup>
+              <ShortcutTile label={c.evolution} icon={<Icon name="etoiles" size={24} />} onPress={() => router.push('/pet/evolution')} />
+              <ShortcutTile label={c.reviews} icon={<Icon name="cadeau" size={24} />} onPress={() => router.push('/pet/bilans')} />
+              <ShortcutTile label={c.memories} icon={<Icon name="coeurs" size={24} />} onPress={() => router.push('/pet/souvenirs')} />
+            </ShortcutRow>
           </Appear>
         </Stack>
         <UnlockCelebration />

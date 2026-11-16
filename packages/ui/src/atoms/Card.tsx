@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { InkProvider } from '../lib/ink';
-import { color, radius, size, space, veil } from '../theme';
+import { color, density, radius, size, space, veil } from '../theme';
 import { Pressable } from './Pressable';
 
 export interface CardProps {
@@ -24,7 +24,7 @@ export function Card({ children, tone = 'panel', highlight, padding = 'md', onPr
     tone === 'panel' && styles.panel,
     tone === 'raised' && styles.raised,
     // Sans `padding: 0` pour `none` : sur le web, le raccourci écraserait les `paddingHorizontal`… passés en style.
-    padding === 'none' ? null : { padding: space[padding] + (padding === 'md' ? 2 : 0) },
+    padding === 'none' ? null : { padding: padding === 'md' ? density.cardPad : space[padding] },
     highlight ? { borderColor: highlight } : null,
     style,
   ];
@@ -40,7 +40,7 @@ export function Card({ children, tone = 'panel', highlight, padding = 'md', onPr
 }
 
 const styles = StyleSheet.create({
-  base: { borderRadius: radius.lg, borderWidth: size.border, borderColor: veil.line },
+  base: { borderRadius: radius.card, borderWidth: size.border, borderColor: veil.line },
   panel: { backgroundColor: color.panel },
   raised: { backgroundColor: color.card },
 });

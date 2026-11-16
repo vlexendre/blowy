@@ -47,7 +47,6 @@ export default function Minimoas() {
         right: list.readingDefault === d ? <Glyph name="check" size={16} color={color.accent} /> : undefined,
         accessibilityLabel: t.defaultA11y(t.defaults[d].title, list.readingDefault === d),
       }))}
-      footer={t.defaultNote}
     />
   );
 
@@ -64,12 +63,9 @@ export default function Minimoas() {
           <Banner tone="error" title={t.loadError} text={(list.error ?? links.error)?.message ?? ''} actionLabel={common.retry} onAction={() => void Promise.all([list.refetch(), links.refetch()])} />
         ) : (
           <Stagger onceKey="moi:minimoas" step={50}>
-            <Text key="lead" size={15} muted>
-              {t.lead}
-            </Text>
-            {/* La phrase exacte de l'API. */}
+            {/* La phrase exacte de l'API : elle dit déjà qui lit quoi et qu'il faut l'accord des deux. */}
             {list.text ? (
-              <Text key="text" variant="bodyBold" size={17}>
+              <Text key="text" size={15}>
                 {list.text}
               </Text>
             ) : null}

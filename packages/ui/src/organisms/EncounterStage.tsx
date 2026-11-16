@@ -39,7 +39,8 @@ export interface EncounterStageProps {
   saysLabel: string;
   /** Les bulles des pets. */
   children?: ReactNode;
-  title: TitleContent;
+  /** Grand titre en bas du panneau (facultatif : une ligne de `text` suffit souvent). */
+  title?: TitleContent;
   text?: string;
   /** À incrémenter quand tu salues : ton pet fait signe, le sien sautille en réponse. */
   waveKey?: number;
@@ -53,7 +54,7 @@ export interface EncounterStageHandle {
   hidePets: () => void;
 }
 
-const PET = 196;
+const PET = 172;
 
 /** Pet de la scène : habillé (pose debout) quand il porte une tenue, sinon dans sa pose détourée. */
 function StagePet({ pet, pose, delay }: { pet: PetLook; pose: PetPose; delay?: number }) {
@@ -175,7 +176,7 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
       </Appear>
       <View style={styles.thread}>{children}</View>
       <Appear delay={360} style={styles.bottom}>
-        <Title text={title} size={46} />
+        {title ? <Title text={title} size={40} /> : null}
         {text ? (
           <Text size={15} style={styles.text}>
             {text}
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
   // Fond sombre et opaque : la puce passe devant la houppe des minimoas et doit rester lisible.
   via: { backgroundColor: alpha(color.dark, 0.72), flexShrink: 1 },
   right: { gap: 6 },
-  stage: { height: 158, marginHorizontal: -16 },
+  stage: { height: 138, marginHorizontal: -16 },
   mine: { position: 'absolute', left: 16, bottom: -22 },
   theirs: { position: 'absolute', right: 12, bottom: -22 },
   actor: { transformOrigin: '50% 100%' },
@@ -202,8 +203,8 @@ const styles = StyleSheet.create({
   themTag: { right: 30, top: 4 },
   meTilt: { transform: [{ rotate: '-6deg' }] },
   themTilt: { transform: [{ rotate: '5deg' }] },
-  says: { opacity: 0.85, marginTop: 30, marginBottom: 8, letterSpacing: 1.04, textTransform: 'uppercase' },
+  says: { opacity: 0.85, marginTop: 24, marginBottom: 6, letterSpacing: 1.04, textTransform: 'uppercase' },
   thread: { gap: 8 },
   bottom: { marginTop: 'auto', paddingTop: 10 },
-  text: { marginTop: 6, lineHeight: 20 },
+  text: { marginTop: 4, lineHeight: 20, opacity: 0.85 },
 });

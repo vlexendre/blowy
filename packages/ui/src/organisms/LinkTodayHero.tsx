@@ -93,7 +93,7 @@ export function LinkTodayHero({
     <Panel gradient={gradient} padding="none" style={styles.panel}>
       <View style={[layout.rowTop, styles.top]}>
         <View style={[layout.grow, styles.head]}>
-          <Title text={title} size={38} />
+          <Title text={title} size={32} />
           <Text variant="bodyBold" size={14} style={styles.text}>
             {text}
           </Text>
@@ -142,12 +142,12 @@ function Side({ label, wrote, wroteLabel, waitingLabel, avatar }: { label: strin
 
 // Même famille que la carte du jour de V6-Aujourdhui : `.panel` rayon 32, 16 16 14.
 const styles = StyleSheet.create({
-  panel: { borderRadius: 32, paddingTop: space.lg, paddingHorizontal: space.lg, paddingBottom: space.md + 2 },
+  panel: { borderRadius: 26, paddingTop: 14, paddingHorizontal: 14, paddingBottom: space.md },
   top: { gap: space.sm },
   head: { gap: space.xs },
   text: { lineHeight: 18, marginTop: space.xs },
   streak: { marginTop: -space.xs, marginRight: -2, transformOrigin: '50% 70%' },
-  sides: { gap: space.sm, marginTop: space.md + 2 },
+  sides: { gap: space.sm, marginTop: space.md },
   side: { gap: space.sm, paddingVertical: space.sm, paddingHorizontal: space.sm + 2, borderRadius: radius.lg, backgroundColor: veil.darkGlass },
   sideDone: { backgroundColor: veil.darkLabel },
   waiting: { opacity: opacity.mute },

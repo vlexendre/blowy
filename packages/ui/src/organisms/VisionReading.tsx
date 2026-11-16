@@ -67,7 +67,7 @@ export function VisionReading({ axes, note }: VisionReadingProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: radius.lg - 4, borderWidth: 1, borderColor: veil.line, backgroundColor: color.panel, padding: 18, gap: space.md + 2 },
+  card: { borderRadius: radius.card, borderWidth: 1, borderColor: veil.line, backgroundColor: color.panel, padding: 14, gap: space.md },
   axis: { gap: space.sm },
   poles: { gap: space.md },
   right: { textAlign: 'right' },

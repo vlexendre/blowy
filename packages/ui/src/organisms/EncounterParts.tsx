@@ -41,6 +41,19 @@ export function EncounterFrame({ tint, children, onPress, accessibilityLabel }: 
   );
 }
 
+/**
+ * Le haut d'une carte de rencontre (qui, pourquoi) qui ouvre le détail. Les boutons restent hors de cette zone : un
+ * bouton dans un bouton n'est pas joignable par VoiceOver.
+ */
+export function EncounterOpen({ children, onPress, accessibilityLabel }: { children: ReactNode; onPress?: () => void; accessibilityLabel?: string }) {
+  if (!onPress) return <View style={styles.open}>{children}</View>;
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel} scaleTo={0.99} dimTo={0.85} style={styles.open}>
+      {children}
+    </Pressable>
+  );
+}
+
 export interface EncounterHeadProps {
   person: PersonLook;
   /** Nom en Anton (le pet) ou phrase en gras (« Léa veut te rencontrer »). */
@@ -62,21 +75,21 @@ export function EncounterHead({ person, name, nameStyle = 'display', badge, owne
   return (
     <View style={[layout.row, styles.head]}>
       <Waver waveKey={waveKey}>
-        <Avatar size={58} pet={person.pet} uri={person.avatarUrl} face={person.face} name={person.displayName} ring={tint} />
+        <Avatar size={48} pet={person.pet} uri={person.avatarUrl} face={person.face} name={person.displayName} ring={tint} />
       </Waver>
       <View style={layout.grow}>
         <View style={[layout.row, styles.nameRow]}>
           {nameStyle === 'display' ? (
-            <Title text={name} size={28} numberOfLines={1} style={layout.shrink} />
+            <Title text={name} size={24} numberOfLines={1} style={layout.shrink} />
           ) : (
-            <Text variant="bodyBold" size={17} numberOfLines={2} style={layout.shrink}>
+            <Text variant="bodyBold" size={16} numberOfLines={2} style={layout.shrink}>
               {name}
             </Text>
           )}
           {badge}
         </View>
         {owner ? (
-          <Text size={15} muted numberOfLines={1} style={styles.owner}>
+          <Text size={13} muted numberOfLines={1} style={styles.owner}>
             {owner}
           </Text>
         ) : null}
@@ -121,7 +134,8 @@ function Waver({ waveKey, children }: { waveKey: number; children: ReactNode }) 
 }
 
 /** Ce qu'un pet raconte : « pia, à nino » puis sa bulle. */
-export function PetSays({ label, labelColor, text }: { label?: string; labelColor: string; text: string }) {
+/** `lines` : coupe la bulle (aperçu sur une carte ; la phrase entière est sur l'écran de la rencontre). */
+export function PetSays({ label, labelColor, text, lines }: { label?: string; labelColor: string; text: string; lines?: number }) {
   return (
     <View>
       {label ? (
@@ -130,7 +144,7 @@ export function PetSays({ label, labelColor, text }: { label?: string; labelColo
         </Text>
       ) : null}
       <View style={styles.bubble}>
-        <Text size={15} style={styles.bubbleText}>
+        <Text size={14} numberOfLines={lines} style={styles.bubbleText}>
           {text}
         </Text>
       </View>
@@ -139,14 +153,15 @@ export function PetSays({ label, labelColor, text }: { label?: string; labelColo
 }
 
 const styles = StyleSheet.create({
-  frame: { borderRadius: 24, borderWidth: 1, paddingVertical: 14, paddingHorizontal: 16, gap: 10, backgroundColor: color.panel, overflow: 'hidden' },
-  head: { gap: 12 },
+  frame: { borderRadius: 22, borderWidth: 1, paddingVertical: 12, paddingHorizontal: 14, gap: 10, backgroundColor: color.panel, overflow: 'hidden' },
+  head: { gap: 10 },
+  open: { gap: 10 },
   waver: { transformOrigin: '50% 90%' },
   nameRow: { gap: 8 },
   owner: { marginTop: 2 },
-  compat: { alignItems: 'flex-end', alignSelf: 'flex-start', paddingTop: 4 },
+  compat: { alignItems: 'flex-end', alignSelf: 'flex-start', paddingTop: 2 },
   compatInline: { gap: 6, alignItems: 'baseline' },
   who: { marginLeft: 4, marginBottom: 3 },
-  bubble: { alignSelf: 'flex-start', paddingVertical: 9, paddingHorizontal: 13, borderRadius: 20, borderBottomLeftRadius: 6, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
+  bubble: { alignSelf: 'flex-start', paddingVertical: 7, paddingHorizontal: 12, borderRadius: 20, borderBottomLeftRadius: 6, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
   bubbleText: { lineHeight: 20 },
 });

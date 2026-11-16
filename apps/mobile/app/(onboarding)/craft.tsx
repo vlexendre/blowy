@@ -73,7 +73,6 @@ function CraftStep() {
       />
       <TextField
         label={t.nameLabel}
-        hint={t.nameHint}
         error={refusal}
         value={name}
         onChangeText={(v) => set({ petName: v.slice(0, PET_NAME_MAX) })}

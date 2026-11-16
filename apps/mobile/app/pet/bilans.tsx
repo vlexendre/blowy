@@ -18,7 +18,7 @@ export default function ReviewsScreen() {
 
   return (
     <ScreenMotion>
-      <SettingsTemplate title={t.listTitle} titleSize={40} onBack={() => goBack('/pet/caractere')} backLabel={t.back} intro={t.listIntro}>
+      <SettingsTemplate title={t.listTitle} titleSize={40} onBack={() => goBack('/pet/caractere')} backLabel={t.back}>
         {reviews.isPending ? (
           <>
             <Skeleton height={64} radius="lg" />

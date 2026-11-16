@@ -37,11 +37,11 @@ export function MilestoneTrack({ title, hint, milestones, onceKey }: MilestoneTr
   return (
     <Card padding="none" style={styles.card}>
       <View style={styles.head}>
-        <Text variant="bodyHeavy" size={17} accessibilityRole="header">
+        <Text variant="bodyHeavy" size={16} accessibilityRole="header">
           {title}
         </Text>
         {hint ? (
-          <Text size={15} muted>
+          <Text size={13} muted>
             {hint}
           </Text>
         ) : null}
@@ -72,7 +72,7 @@ export function MilestoneTrack({ title, hint, milestones, onceKey }: MilestoneTr
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 24, paddingHorizontal: space.lg, paddingVertical: space.lg, gap: space.md },
+  card: { borderRadius: radius.card, paddingHorizontal: space.md + 2, paddingVertical: space.md + 2, gap: space.md },
   head: { gap: 2 },
   row: { flexDirection: 'row', justifyContent: 'space-between' },
   cell: { alignItems: 'center', gap: space.xs + 2 },

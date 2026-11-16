@@ -5,7 +5,7 @@ import { Card } from '../atoms/Card';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
 import { AxisBar } from '../molecules/AxisBar';
-import { space } from '../theme';
+import { radius, space } from '../theme';
 
 export interface StylePanelProps {
   /** « Son style ». */
@@ -66,7 +66,7 @@ export function StylePanel({ title, hint, gauges, footer }: StylePanelProps) {
         </View>
       </View>
       {footer ? (
-        <Text size={15} muted>
+        <Text size={13} muted>
           {footer}
         </Text>
       ) : null}
@@ -75,7 +75,7 @@ export function StylePanel({ title, hint, gauges, footer }: StylePanelProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 24, padding: space.lg, gap: space.md },
+  card: { borderRadius: radius.card, padding: space.md + 2, gap: space.sm + 2 },
   head: { gap: space.sm, alignItems: 'baseline' },
   hint: { flexShrink: 1, textAlign: 'right' },
   row: { columnGap: GAP, rowGap: space.md, alignItems: 'flex-start', flexWrap: 'wrap' },

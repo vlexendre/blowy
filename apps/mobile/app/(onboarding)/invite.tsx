@@ -1,8 +1,8 @@
-/** Invitations (V6-Invite) : partager son lien d'invitation et son lien « 3 mots ». */
-import { Appear, Banner, InvitePanel, OnboardingTemplate, Skeleton, WordsShareCard } from '@blowy/ui';
+/** Invitations (V6-Invite) : partager son lien d'invitation (le lien « 3 mots » est dans l'onglet Moi). */
+import { Appear, Banner, InvitePanel, OnboardingTemplate } from '@blowy/ui';
 import { router } from 'expo-router';
 
-import { inviteUrl, ScreenMotion, wordsUrl } from '@/core';
+import { inviteUrl, ScreenMotion } from '@/core';
 import { displayUrl, useCopyShare, useMe } from '@/features/me';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
@@ -12,17 +12,15 @@ const t = onboarding.invite;
 export default function Invite() {
   const me = useMe();
   const invite = useCopyShare();
-  const words = useCopyShare();
   // Blowy+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
   const next = () => router.push('/(onboarding)/paywall');
 
   const pet = me.data?.pet;
   const link = me.data ? inviteUrl(me.data.inviteCode) : '';
-  const wordsLink = me.data ? wordsUrl(me.data.wordsCode) : '';
 
   return (
     <ScreenMotion>
-    <OnboardingTemplate primaryLabel={t.cta} onPrimary={next} secondaryLabel={t.later} onSecondary={next}>
+    <OnboardingTemplate centerBody primaryLabel={t.cta} onPrimary={next}>
       {me.isError ? (
         <Appear key="error">
           <Banner tone="error" title={common.errorTitle} text={common.genericError} actionLabel={common.retry} onAction={() => void me.refetch()} />
@@ -40,26 +38,6 @@ export default function Invite() {
         shareLabel={t.share}
         onShare={() => void invite.share(t.shareMessage(pet?.name ?? '', link), link)}
       />
-      {me.data ? (
-        <Appear key="words" delay={120}>
-        <WordsShareCard
-          title={t.wordsTitle}
-          words={[]}
-          badge={t.wordsBadge}
-          emptyText={t.wordsEmpty(pet?.name ?? '')}
-          steps={t.wordsSteps(pet?.name ?? '')}
-          url={displayUrl(wordsLink)}
-          copyLabel={t.copy}
-          copiedLabel={t.copied}
-          copied={words.copied}
-          shareLabel={t.wordsShare}
-          onCopy={() => void words.copy(wordsLink)}
-          onShare={() => void words.share(t.wordsMessage(wordsLink), wordsLink)}
-        />
-        </Appear>
-      ) : me.isLoading ? (
-        <Skeleton height={150} radius="lg" />
-      ) : null}
     </OnboardingTemplate>
     </ScreenMotion>
   );

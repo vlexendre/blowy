@@ -38,24 +38,24 @@ export function MinimoaConsent({ title, subtitle, mine, theirs, text, notes, pol
     <View style={[styles.root, style]}>
       <Panel gradient="rose" radius="lg" padding="none" overflow={false} style={styles.panel}>
         <View style={styles.copy}>
-          <Title text={title} size={36} color={color.dark} />
+          <Title text={title} size={30} color={color.dark} />
           {subtitle ? (
-            <Text variant="bodyBold" size={15} color={color.dark} style={styles.subtitle}>
+            <Text variant="bodyBold" size={13} color={color.dark} style={styles.subtitle}>
               {subtitle}
             </Text>
           ) : null}
         </View>
         <View style={styles.pets} pointerEvents="none">
           <Appear from="below" distance={40} delay={120} duration={320}>
-            <PetImage species={mine.species} mood="cote" size={92} outline animation="breathe" />
+            <PetImage species={mine.species} mood="cote" size={72} outline animation="breathe" />
           </Appear>
           <Appear from="below" distance={40} delay={240} duration={320}>
-            <PetImage species={theirs.species} mood="joie" size={82} outline animation="breathe" delay={400} />
+            <PetImage species={theirs.species} mood="joie" size={64} outline animation="breathe" delay={400} />
           </Appear>
         </View>
       </Panel>
       <View style={styles.box} accessible accessibilityRole="text">
-        <Text variant="bodyBold" size={17} style={styles.boxText}>
+        <Text variant="bodyBold" size={15} style={styles.boxText}>
           {text}
         </Text>
       </View>
@@ -63,8 +63,8 @@ export function MinimoaConsent({ title, subtitle, mine, theirs, text, notes, pol
       {policy ? <Button label={policy.label} variant="link" size="sm" block={false} onPress={policy.onPress} style={styles.policy} /> : null}
       {notes.map((n) => (
         <View key={n.key} style={[layout.rowTop, styles.note]}>
-          <Icon name={n.icon} size={22} />
-          <Text size={15} muted style={layout.shrink}>
+          <Icon name={n.icon} size={20} />
+          <Text size={14} muted style={layout.shrink}>
             {n.text}
           </Text>
         </View>
@@ -74,13 +74,13 @@ export function MinimoaConsent({ title, subtitle, mine, theirs, text, notes, pol
 }
 
 const styles = StyleSheet.create({
-  root: { gap: space.md },
-  panel: { minHeight: 214, overflow: 'hidden' },
-  copy: { padding: space.lg, paddingBottom: 96, gap: space.xs },
-  subtitle: { lineHeight: 19, maxWidth: '58%' },
-  pets: { position: 'absolute', right: 6, bottom: -6, flexDirection: 'row', alignItems: 'flex-end' },
-  box: { padding: space.lg, borderRadius: 22, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
-  boxText: { lineHeight: 24 },
+  root: { gap: space.sm + 2 },
+  panel: { minHeight: 118, overflow: 'hidden' },
+  copy: { padding: 14, gap: space.xs, maxWidth: '64%' },
+  subtitle: { lineHeight: 17 },
+  pets: { position: 'absolute', right: 4, bottom: -4, flexDirection: 'row', alignItems: 'flex-end' },
+  box: { padding: 14, borderRadius: 20, backgroundColor: color.card, borderWidth: 1, borderColor: veil.glass },
+  boxText: { lineHeight: 21 },
   policy: { alignSelf: 'flex-start', marginTop: -space.xs },
   note: { gap: space.sm, paddingHorizontal: space.xs },
 });

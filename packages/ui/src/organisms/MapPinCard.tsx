@@ -83,12 +83,12 @@ export interface MapPlusStripProps {
 export function MapPlusStrip({ title, text, ctaLabel, onPress }: MapPlusStripProps) {
   return (
     <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="button" accessibilityLabel={`${title}. ${text}`}>
-      <Panel gradient="violet" radius={26} padding="none" style={styles.strip}>
+      <Panel gradient="violet" radius={22} padding="none" style={styles.strip}>
         <View style={layout.grow}>
-          <Text variant="bodyHeavy" size={17} color={color.white}>
+          <Text variant="bodyHeavy" size={15} color={color.white}>
             {title}
           </Text>
-          <Text size={15} color={alpha(color.white, 0.85)}>
+          <Text size={13} color={alpha(color.white, 0.85)} numberOfLines={1}>
             {text}
           </Text>
         </View>
@@ -117,6 +117,6 @@ const styles = StyleSheet.create({
   actions: { gap: space.sm },
   // Deux moitiés égales, quel que soit le libellé (aucun n'est rogné à 375 pt).
   half: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0 },
-  strip: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.lg },
+  strip: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: 10, paddingHorizontal: 14 },
   cta: { height: size.touch },
 });

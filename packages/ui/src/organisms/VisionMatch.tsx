@@ -46,14 +46,14 @@ export function VisionMatch({ commonTitle, common, exploreTitle, explore, legend
       {kicker ? (
         <Appear once={`vm:k:${kicker}`}>
           <View style={styles.kicker}>
-            <Text variant="bodyHeavy" size={15}>
+            <Text variant="bodyHeavy" size={13}>
               {kicker}
             </Text>
           </View>
         </Appear>
       ) : null}
       <View style={[layout.rowBetween, styles.head]}>
-        <Text variant="bodyHeavy" size={22} accessibilityRole="header" style={layout.shrink}>
+        <Text variant="bodyHeavy" size={17} accessibilityRole="header" style={layout.shrink}>
           {commonTitle}
         </Text>
         {legend ? <Legend {...legend} /> : null}
@@ -61,7 +61,7 @@ export function VisionMatch({ commonTitle, common, exploreTitle, explore, legend
       {common.map((a, i) => (
         <AxisCompare key={a.axis} name={a.name} text={a.text} mine={a.mine} theirs={a.theirs} trackLabel={a.trackLabel} index={i} />
       ))}
-      <Text variant="bodyHeavy" size={22} accessibilityRole="header" style={styles.second}>
+      <Text variant="bodyHeavy" size={17} accessibilityRole="header" style={styles.second}>
         {exploreTitle}
       </Text>
       <AxisCompare name={explore.name} text={explore.text} mine={explore.mine} theirs={explore.theirs} trackLabel={explore.trackLabel} index={common.length} />
@@ -90,14 +90,14 @@ const styles = StyleSheet.create({
   kicker: {
     alignSelf: 'flex-start',
     paddingHorizontal: space.md,
-    paddingVertical: space.sm,
-    marginBottom: space.md,
+    paddingVertical: 6,
+    marginBottom: space.sm,
     borderRadius: 999,
     backgroundColor: color.card,
     transform: [{ rotate: '-1.5deg' }],
   },
   head: { gap: space.sm, paddingBottom: space.xs },
-  second: { paddingTop: space.lg, paddingBottom: space.xs },
+  second: { paddingTop: space.md, paddingBottom: space.xs },
   legend: { gap: 5, flexShrink: 1, minWidth: 0 },
   dot: { width: 10, height: 10, borderRadius: 5, marginLeft: 4 },
   mine: { backgroundColor: color.accent },

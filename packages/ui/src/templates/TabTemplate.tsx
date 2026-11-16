@@ -7,7 +7,7 @@ import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { useTabBarSpace } from '../organisms/BottomTabBar';
 import { layout } from '../lib/styles';
-import { color, space } from '../theme';
+import { color, density, space } from '../theme';
 import type { TitleContent } from '../types';
 import { ScreenTemplate } from './ScreenTemplate';
 
@@ -23,14 +23,17 @@ export interface TabTemplateProps {
   refreshControl?: ReactElement<RefreshControlProps>;
   /** Marges latérales. Défaut 16 (V6-Pet / V6-Rencontres : 12). */
   gutter?: number;
-  /** Écart entre les blocs du contenu. Défaut 12. */
+  /** Écart entre les blocs du contenu. Défaut 8 (`density.gap`). */
   gap?: number;
-  /** Marge au-dessus du contenu. Défaut 12. */
+  /** Marge au-dessus du contenu. Défaut 8. */
   top?: number;
   /** Défilement (fonction ou gestionnaire Reanimated, ex. `PetRefresh`). */
   onScroll?: ScreenTemplateProps['onScroll'];
   scrollEventThrottle?: number;
 }
+
+/** Grand titre d'onglet (64 dans V6 ; 56 depuis la passe « densité »). */
+const TAB_TITLE = 56;
 
 /** Texte brut d'un titre (segments joints) pour le petit titre de la barre du haut. */
 const plain = (t: TitleContent): string => (typeof t === 'string' ? t : t.map((s) => s.text).join(''));
@@ -48,8 +51,8 @@ export function TabTemplate({
   scroll = true,
   refreshControl,
   gutter,
-  gap = space.md,
-  top = space.md,
+  gap = density.gap,
+  top = space.sm,
   onScroll,
   scrollEventThrottle,
 }: TabTemplateProps) {
@@ -77,7 +80,7 @@ export function TabTemplate({
                 </Text>
               </Text>
             ) : null}
-            {title ? <Title text={title} size={64} numberOfLines={1} style={brand ? styles.title : undefined} /> : null}
+            {title ? <Title text={title} size={TAB_TITLE} numberOfLines={1} style={brand ? styles.title : undefined} /> : null}
           </View>
           {right ? <View style={styles.right}>{right}</View> : null}
         </View>

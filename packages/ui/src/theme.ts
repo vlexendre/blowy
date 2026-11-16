@@ -90,10 +90,28 @@ export const onGradient: Record<GradientName, string> = {
 /** Opacités partagées. `dim` = la partie estompée des titres (`.dim` des maquettes). */
 export const opacity = { dim: 0.38, mute: 0.7, disabled: 0.4, ghost: 0.5 } as const;
 
+/**
+ * Échelle de densité (docs/DESIGN.md) : intérieur des cartes, écart entre blocs, hauteur des lignes, corps des textes.
+ * Les composants partagés la lisent ; un écran ne compense pas avec ses propres marges.
+ */
+export const density = {
+  /** Intérieur d'une carte ordinaire. */
+  cardPad: 14,
+  /** Écart entre deux cartes / blocs d'un écran. */
+  gap: 8,
+  /** Ligne d'entrée (visuel, titre, une ligne grise). */
+  entryRow: 56,
+  /** Ligne de liste (réglages, historique). */
+  listRow: 52,
+  /** Titre de carte / de ligne, et ligne secondaire. */
+  title: 16,
+  secondary: 13,
+} as const;
+
 /** Tailles d'interaction et de composants. */
 export const size = {
   touch: 44,
-  button: { sm: 40, md: 48, lg: 56 },
+  button: { sm: 40, md: 48, lg: 52 },
   tabBar: 66,
   heart: 14,
   border: 1,

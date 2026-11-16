@@ -4,8 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '../atoms/Button';
 import { layout } from '../lib/styles';
 import { speciesColor } from '../theme';
-import { CompatPill, EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
-import { useUiStrings } from '../lib/strings';
+import { EncounterFrame, EncounterHead, EncounterOpen, lighten, PetSays } from './EncounterParts';
 import type { IncomingLook } from '../types';
 
 export interface IncomingCardProps {
@@ -22,7 +21,7 @@ export interface IncomingCardProps {
   onDecline: () => void;
   accepting?: boolean;
   declining?: boolean;
-  /** Lien discret vers le détail (« voir de plus près »). */
+  /** Toucher le haut de la carte ouvre le détail (libellé lu : « voir de plus près »). */
   openLabel?: string;
   onOpen?: () => void;
   /**
@@ -34,16 +33,15 @@ export interface IncomingCardProps {
 
 /** Quelqu'un a salué ton pet : accepter (le lien se crée) ou décliner. */
 export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptLabel, declineLabel, onAccept, onDecline, accepting, declining, openLabel, onOpen, why, hideCompat }: IncomingCardProps) {
-  const uiStrings = useUiStrings();
   const { from, compatibility, intro } = incoming;
   const tint = speciesColor[from.pet.species];
   return (
     <EncounterFrame tint={tint}>
-      <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={null} />
-      {why}
-      {why && !hideCompat ? <CompatPill inline value={uiStrings.percent(compatibility)} label={compatLabel} /> : null}
-      {intro ? <PetSays text={intro} labelColor={lighten(tint, 0.3)} /> : null}
-      {openLabel && onOpen ? <Button label={openLabel} variant="ghost" size="sm" iconRight="chevron" onPress={onOpen} style={styles.open} /> : null}
+      <EncounterOpen onPress={onOpen} accessibilityLabel={openLabel ? `${openLabel}, ${title}` : undefined}>
+        <EncounterHead person={from} name={title} nameStyle="text" owner={ownerLabel} compatibility={why && !hideCompat ? compatibility : null} compatLabel={compatLabel} />
+        {why}
+        {intro ? <PetSays text={intro} labelColor={lighten(tint, 0.3)} lines={2} /> : null}
+      </EncounterOpen>
       <View style={[layout.row, styles.actions]}>
         <Button label={declineLabel} variant="ghost" size="md" labelSize={15} onPress={onDecline} loading={declining} disabled={accepting} block={false} style={[layout.fill, styles.cta]} />
         <Button label={acceptLabel} variant="accent" size="md" labelSize={15} onPress={onAccept} loading={accepting} disabled={declining} block={false} style={[layout.fill, styles.cta]} />
@@ -53,7 +51,6 @@ export function IncomingCard({ incoming, title, ownerLabel, compatLabel, acceptL
 }
 
 const styles = StyleSheet.create({
-  open: { alignSelf: 'flex-start' },
   actions: { gap: 8 },
   cta: { height: 44 },
 });

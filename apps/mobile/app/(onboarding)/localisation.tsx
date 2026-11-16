@@ -4,7 +4,7 @@
  * Refusé dans la demande du système : on le dit, et l'inscription continue. Accordé : la position est relevée en fond
  * (précision réduite), sans faire attendre.
  */
-import { Appear, Banner, OnboardingTemplate, PointRow, Text, ZonePreview } from '@blowy/ui';
+import { Appear, Banner, OnboardingTemplate, Text, ZonePreview } from '@blowy/ui';
 import type { Species } from '@blowy/domain';
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
@@ -68,8 +68,9 @@ function LocalisationStep() {
         }
       >
         <ZonePreview species={species} others={OTHERS[species]} radiusLabel={t.radius} accessibilityLabel={t.mapA11y} size={232} />
-        <PointRow glyph="people" disc="coral" title={t.zoneTitle} text={t.zoneText(petName)} />
-        <PointRow glyph="lock" disc="violet" title={t.exactTitle} text={t.exactText} />
+        <Text variant="bodyBold" size={15} muted center>
+          {t.line(petName)}
+        </Text>
         {denied ? (
           <Appear key="denied">
             <Banner tone="info" text={t.denied} />

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   card: { minHeight: 104, borderRadius: RADIUS },
   inner: { flexGrow: 1, minHeight: 104, borderRadius: RADIUS, justifyContent: 'center' },
   fill: { borderRadius: RADIUS },
-  row: { gap: 14, paddingHorizontal: 18, paddingVertical: space.lg },
+  row: { gap: 12, paddingHorizontal: 14, paddingVertical: space.md },
   emojiBox: { width: 38, alignItems: 'center' },
   emoji: { fontSize: 38, lineHeight: 44 },
   texts: { gap: 6 },

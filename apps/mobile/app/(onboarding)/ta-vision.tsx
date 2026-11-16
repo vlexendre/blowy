@@ -1,10 +1,10 @@
 /**
  * Ta vision, pour l'instant (V6-GTaVision) : le résultat du test, calculé sur le téléphone avec les règles du serveur.
- * Les cinq axes en barres simples (pas de chiffre, « assez sûr » / « à affiner »), la mention « indicatif », et la
- * phrase qui dit ce que ça change : le minimoa ne présentera que des gens compatibles.
+ * Le minimoa le dit dans sa bulle, avec ce que ça change (il ne présentera que des gens compatibles) ; dessous, les
+ * cinq axes en barres simples (pas de chiffre, « assez sûr » / « à affiner ») et la mention « indicatif ».
  */
 import { VISION_AXES, sideOf } from '@blowy/domain';
-import { Button, OnboardingTemplate, Stack, Text, VisionHero, VisionReading } from '@blowy/ui';
+import { OnboardingTemplate, VisionReading } from '@blowy/ui';
 import { Redirect, router } from 'expo-router';
 
 import { ScreenMotion } from '@/core';
@@ -44,17 +44,11 @@ function Result() {
         {...progressAt('ta-vision')}
         onBack={() => goBack('/(onboarding)/vision')}
         backLabel={common.back}
-        gap={16}
-        actions={
-          <Stack gap={14}>
-            <Text variant="bodyHeavy" size={18}>
-              {t.promise(petName)}
-            </Text>
-            <Button label={t.cta} iconRight="arrow" onPress={() => router.push('/(onboarding)/prenom')} />
-          </Stack>
-        }
+        host={{ species, line: t.host, highlight: t.highlight, seed: petName, name: petName }}
+        gap={14}
+        primaryLabel={t.cta}
+        onPrimary={() => router.push('/(onboarding)/prenom')}
       >
-        <VisionHero title={t.title} chips={t.chips(answers.length)} species={species} petLabel={petName} />
         <VisionReading axes={axes} note={visionLabels.profile.note} />
       </OnboardingTemplate>
     </ScreenMotion>

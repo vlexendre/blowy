@@ -38,7 +38,8 @@ export const speciesColor = { nino: color.lime, suzie: color.rose, gaston: color
 export const speciesGradient = { nino: 'coral', suzie: 'wine', gaston: 'violet', pia: 'accent' } as const satisfies Record<string, GradientName>;
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 } as const;
-export const radius = { sm: 12, md: 18, lg: 28, xl: 36, pill: 999 } as const;
+/** `card` : carte ordinaire de l'app (passe « densité » : 22 au lieu de 28) ; `lg` reste celui du site et de la barre d'onglets. */
+export const radius = { sm: 12, md: 18, card: 22, lg: 28, xl: 36, pill: 999 } as const;
 
 /** Noms de polices chargées par l'app (expo-google-fonts) ; le site utilise les mêmes familles. */
 export const font = {

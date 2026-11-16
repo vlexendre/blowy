@@ -11,6 +11,7 @@ import {
   CountTitle,
   EmptyState,
   FeatureRow,
+  Glyph,
   GhostPanel,
   Header,
   LinkTemplate,
@@ -20,6 +21,7 @@ import {
   MinimoaConsent,
   MinimoaSwitch,
   PetImage,
+  Pressable,
   ScreenTemplate,
   SheetTemplate,
   Skeleton,
@@ -192,7 +194,7 @@ export default function LinkScreen() {
               closeLabel={minimoaText.guideClose}
             />
           ) : active === 'chat' && mm && mm.consent.mine !== null && guide.seen === false ? (
-            <Banner tone="info" title={minimoaText.guideTitle} text={minimoaText.guideText} actionLabel={minimoaText.guideMore} onAction={() => setRolesOpen(true)} onClose={guide.dismiss} closeLabel={minimoaText.guideClose} actionBelow />
+            <Banner tone="info" title={minimoaText.guideTitle} actionLabel={minimoaText.guideMore} onAction={() => setRolesOpen(true)} onClose={guide.dismiss} closeLabel={minimoaText.guideClose} />
           ) : undefined
         }
         tabs={TABS}
@@ -210,6 +212,7 @@ export default function LinkScreen() {
               setTone={setTone}
               notice={notice}
               onNotice={setNotice}
+              onRhythm={() => setRolesOpen(true)}
               rhythm={mm ? (mm.muted ? chatText.rhythmMuted : mm.consent.reading ? chatText.rhythm(mm.maxPerDay) : chatText.rhythmNoReading(mm.maxPerDay)) : null}
             />
           ) : undefined
@@ -533,9 +536,12 @@ function ChatComposer({
   notice,
   onNotice,
   rhythm,
+  onRhythm,
 }: {
   link: Link;
   rhythm: string | null;
+  /** La ligne du rythme ouvre les rôles des minimoas (l'explication reste à un tap, jamais affichée en continu). */
+  onRhythm: () => void;
   notice: Notice | null;
   onNotice: (n: Notice | null) => void;
   draft: string;
@@ -573,9 +579,12 @@ function ChatComposer({
         <Banner tone="error" title={chatText.notSent} text={errorText(send.error, chatText.sendError, { link_not_active: chatText.ghostDisabled })} onClose={() => send.reset()} closeLabel={todayText.dismiss} />
       ) : null}
       {rhythm ? (
-        <Text size={13} muted center style={styles.rhythm}>
-          {rhythm}
-        </Text>
+        <Pressable onPress={onRhythm} accessibilityRole="button" accessibilityLabel={`${rhythm} ${chatText.rhythmA11y}`} hitSlop={12} dimTo={0.6} scaleTo={1} haptic={false} style={styles.rhythm}>
+          <Text size={13} muted numberOfLines={1} style={styles.shrink}>
+            {rhythm}
+          </Text>
+          <Glyph name="chevron" size={12} color={color.mute} />
+        </Pressable>
       ) : null}
       <Composer
         value={draft}
@@ -643,6 +652,7 @@ const styles = StyleSheet.create({
   nextRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   progress: { gap: 6, marginTop: 12 },
   composer: { gap: 8 },
-  rhythm: { paddingHorizontal: 20 },
+  rhythm: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingHorizontal: 20 },
+  shrink: { flexShrink: 1 },
   notice: { paddingTop: 12 },
 });

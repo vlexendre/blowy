@@ -20,10 +20,13 @@ export interface HabitCardProps<R extends string = string> {
   gradient?: GradientName;
   /** Vers le prochain objet : avancement et libellé (« La tasse à 1 habitude tenue »). */
   progress?: { value: number; label: string; itemId: string | null } | null;
-  /** Rythmes proposés et celui choisi. */
-  rhythms: readonly { id: R; label: string }[];
-  rhythm: R;
-  onRhythm: (id: R) => void;
+  /**
+   * Rythmes proposés et celui choisi, en deux pastilles dans la carte. Facultatif : l'écran des habitudes les range
+   * dans la feuille « Régler » (`settings`) pour garder la carte courte.
+   */
+  rhythms?: readonly { id: R; label: string }[];
+  rhythm?: R;
+  onRhythm?: (id: R) => void;
   /** Rythme en cours d'enregistrement. */
   rhythmBusy?: boolean;
   /** Puce d'état du jour (« Fait aujourd'hui », « 2/3 cette semaine »). */
@@ -32,37 +35,37 @@ export interface HabitCardProps<R extends string = string> {
   line?: string | null;
   /** Action du jour (« Montrer la preuve ») : bouton sombre. */
   action?: { label: string; onPress: () => void } | null;
-  /** « Arrêter cette habitude ». */
+  /** Lien discret à droite de l'action : « Arrêter », ou « Régler » (rythme, arrêter) en feuille. */
   remove?: { label: string; onPress: () => void; accessibilityLabel: string } | null;
 }
 
 /**
  * Une habitude suivie (V6-GHabitudes) : panneau en dégradé, picto, nom, rythme et série, barre vers l'objet qu'elle
- * fait gagner (image réelle), et le choix du rythme en deux pastilles.
+ * fait gagner (image réelle), l'action du jour, et (si fourni) le choix du rythme en deux pastilles.
  */
 export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'accent', progress, rhythms, rhythm, onRhythm, rhythmBusy = false, status, line, action, remove }: HabitCardProps<R>) {
   const ink = onGradient[gradient];
   const darkInk = ink === color.dark;
   return (
-    <Panel gradient={gradient} radius={28} padding="none" style={styles.panel}>
+    <Panel gradient={gradient} radius={radius.card} padding="none" style={styles.panel}>
       <View style={[layout.rowTop, styles.head]}>
         {emoji ? (
-          <Text size={30} style={styles.emoji} importantForAccessibility="no" accessibilityElementsHidden>
+          <Text size={26} style={styles.emoji} importantForAccessibility="no" accessibilityElementsHidden>
             {emoji}
           </Text>
         ) : null}
         <View style={layout.grow}>
-          <Text variant="bodyHeavy" size={18} accessibilityRole="header">
+          <Text variant="bodyHeavy" size={17} accessibilityRole="header">
             {title}
           </Text>
-          <Text variant="bodyBold" size={14} style={styles.meta}>
+          <Text variant="bodyBold" size={13} style={styles.meta}>
             {meta}
           </Text>
           {status ? <Chip label={status} tone={darkInk ? 'dark' : 'light'} size="sm" style={styles.status} /> : null}
         </View>
         {progress?.itemId ? (
           <View style={[styles.item, { backgroundColor: alpha(color.white, darkInk ? 0.4 : 0.18) }]}>
-            <ItemImage id={progress.itemId} size={46} />
+            <ItemImage id={progress.itemId} size={38} />
           </View>
         ) : null}
       </View>
@@ -75,10 +78,11 @@ export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'ac
         </View>
       ) : null}
       {line ? (
-        <Text variant="bodyBold" size={15}>
+        <Text variant="bodyBold" size={14}>
           {line}
         </Text>
       ) : null}
+      {rhythms && onRhythm ? (
       <View style={[layout.row, styles.track, { backgroundColor: alpha(color.dark, darkInk ? 0.22 : 0.3) }]} accessibilityRole="radiogroup">
         {rhythms.map((r) => {
           const on = r.id === rhythm;
@@ -101,8 +105,9 @@ export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'ac
           );
         })}
       </View>
+      ) : null}
       {action || remove ? (
-        <View style={[layout.row, styles.actions]}>
+        <View style={[layout.row, styles.actions, !action && styles.actionsEnd]}>
           {action ? <Button label={action.label} variant="dark" size="md" onPress={action.onPress} style={layout.fill} /> : null}
           {remove ? (
             <Pressable onPress={remove.onPress} accessibilityRole="button" accessibilityLabel={remove.accessibilityLabel} hitSlop={6} style={styles.remove}>
@@ -118,18 +123,19 @@ export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'ac
 }
 
 const styles = StyleSheet.create({
-  panel: { paddingHorizontal: space.lg, paddingTop: space.lg, paddingBottom: space.md + 2, gap: space.md },
+  panel: { paddingHorizontal: space.md + 2, paddingTop: space.md + 2, paddingBottom: space.sm + 2, gap: space.sm + 2 },
   head: { gap: space.md },
-  emoji: { lineHeight: 38 },
+  emoji: { lineHeight: 32 },
   meta: { opacity: 0.78, marginTop: 2 },
   status: { alignSelf: 'flex-start', marginTop: space.sm },
-  item: { width: 58, height: 58, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '4deg' }] },
+  item: { width: 48, height: 48, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '4deg' }] },
   progress: { gap: space.md },
   progressLabel: { maxWidth: '52%', textAlign: 'right' },
   track: { borderRadius: radius.pill, padding: 4, gap: 4 },
   seg: { flex: 1, minHeight: 44, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.sm },
   segOn: { backgroundColor: color.white },
   actions: { gap: space.md, justifyContent: 'space-between' },
+  actionsEnd: { justifyContent: 'flex-end' },
   remove: { minHeight: 44, minWidth: 44, justifyContent: 'center', paddingHorizontal: space.sm },
   removeText: { opacity: 0.72, textDecorationLine: 'underline' },
 });

@@ -9,7 +9,7 @@ import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { layout } from '../lib/styles';
 import { PopIn, Pulse } from '../motion/PopIn';
-import { alpha, color, radius, space, veil } from '../theme';
+import { alpha, color, density, radius, space, veil } from '../theme';
 
 export type ChallengeKindLook = 'question' | 'photo' | 'write' | 'go_out';
 
@@ -43,22 +43,24 @@ export interface ChallengeEntryProps {
   accessibilityLabel?: string;
   /** Puce de la série à droite (flamme + « 13 » ou « +1 ») : ouvre l'écran de la série. */
   streak?: { text: string; onPress: () => void; accessibilityLabel: string; lit?: boolean };
+  /** Forme courte (accueil) : une seule ligne, sans la légende. */
+  compact?: boolean;
 }
 
 /**
  * Le défi du jour en tête de l'accueil (V6-GAccueil) : filet jaune tant qu'il reste à faire, disque jaune avec le
  * picto du type, la série à droite. Fait : le disque passe en coche et le filet s'éteint.
  */
-export function ChallengeEntry({ kicker, title, caption, kind, icon, done = false, onPress, accessibilityLabel, streak }: ChallengeEntryProps) {
+export function ChallengeEntry({ kicker, title, caption, kind, icon, done = false, onPress, accessibilityLabel, streak, compact = false }: ChallengeEntryProps) {
   return (
     <Card
       padding="none"
       highlight={done ? undefined : color.accent}
       onPress={onPress}
       accessibilityLabel={accessibilityLabel ?? [kicker, title, caption].filter(Boolean).join(', ')}
-      style={[styles.card, !done && styles.todo]}
+      style={[styles.card, compact && styles.cardCompact, !done && styles.todo]}
     >
-      <View style={[styles.disc, done && styles.discDone]}>
+      <View style={[styles.disc, compact && styles.discCompact, done && styles.discDone]}>
         {done ? (
           <PopIn trigger="done">
             <Glyph name="check" size={20} color={color.dark} />
@@ -69,13 +71,13 @@ export function ChallengeEntry({ kicker, title, caption, kind, icon, done = fals
       </View>
       <View style={layout.grow}>
         {/* « Défi du jour · Un mot à un lien » : deux lignes plutôt qu'un type de défi coupé (langues plus longues). */}
-        <Text variant="label" size={12} color={done ? color.mute : color.accentSoft} numberOfLines={2}>
+        <Text variant="label" size={12} color={done ? color.mute : color.accentSoft} numberOfLines={compact ? 1 : 2}>
           {kicker}
         </Text>
-        <Text variant="bodyHeavy" size={16} numberOfLines={2} style={styles.title}>
+        <Text variant="bodyHeavy" size={compact ? 15 : 16} numberOfLines={compact ? 1 : 2} style={styles.title}>
           {title}
         </Text>
-        {caption ? (
+        {caption && !compact ? (
           <Text size={13} muted numberOfLines={2}>
             {caption}
           </Text>
@@ -99,7 +101,9 @@ export function ChallengeEntry({ kicker, title, caption, kind, icon, done = fals
 
 const styles = StyleSheet.create({
   // V6-GAccueil `.defi` : rayon 24, padding 12 14, disque jaune de 46.
-  card: { flexDirection: 'row', alignItems: 'center', gap: space.md, borderRadius: 24, paddingVertical: space.md, paddingHorizontal: space.md + 2, minHeight: 72 },
+  card: { flexDirection: 'row', alignItems: 'center', gap: space.md, borderRadius: radius.card, paddingVertical: space.sm + 2, paddingHorizontal: density.cardPad, minHeight: 64 },
+  cardCompact: { paddingVertical: space.xs + 2, paddingRight: space.sm, minHeight: density.entryRow },
+  discCompact: { width: 38, height: 38, borderRadius: 19 },
   todo: { backgroundColor: alpha(color.accent, 0.08) },
   disc: { width: 46, height: 46, borderRadius: 23, backgroundColor: color.accent, alignItems: 'center', justifyContent: 'center' },
   discDone: { backgroundColor: color.ok },

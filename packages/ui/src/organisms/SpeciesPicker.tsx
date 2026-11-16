@@ -2,7 +2,7 @@ import { SPECIES, type Species } from '@blowy/domain';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -42,20 +42,25 @@ export interface SpeciesPickerProps {
   pose?: PetPose;
   /** Le nom tapé : à chaque changement, le pet hoche la tête (il approuve). */
   nodKey?: string;
+  /** Hauteur de la scène ; défaut selon l'écran (300, ou 228 sous 740 pt de haut). */
+  stageHeight?: number;
 }
 
 const SWATCH = 48;
-const STAGE = 300;
-const PET = 300;
-const PET_H = Math.round(PET / RENDER_RATIO);
+/** Hauteur de la scène (et taille du grand pet) ; plus basse sur un petit écran (375 × 667 : tout tient avec le bouton). */
+const STAGE_TALL = 300;
+const STAGE_SHORT = 228;
 /** Le grand pet déborde de 18 pt sous la scène. */
 const PET_DROP = 18;
-/** Centre de la boîte du grand pet et centre des pastilles, depuis le haut de la scène. */
-const PET_CY = STAGE + PET_DROP - PET_H / 2;
-const SWATCH_CY = STAGE + 30 + SWATCH / 2;
-/** Échelle du pet quand il est « dans » sa pastille. */
-const TINY = SWATCH / PET + 0.02;
 const JUMP = 480;
+
+/** Géométrie de la scène : centre du grand pet et des pastilles depuis le haut, échelle du pet « dans » sa pastille. */
+function geometry(stage: number) {
+  const pet = stage;
+  const petH = Math.round(pet / RENDER_RATIO);
+  const gap = stage < STAGE_TALL ? 20 : 30;
+  return { stage, pet, gap, petCy: stage + PET_DROP - petH / 2, swatchCy: stage + gap + SWATCH / 2, tiny: SWATCH / pet + 0.02 };
+}
 
 /** Curieux qui passent la tête par les bords de la scène : côté (rotation de l'image), position le long du bord, penché vers le centre. */
 const PEEK = 84;
@@ -74,8 +79,11 @@ const PEEKERS = [
  * rentre dans la sienne, le fond change de couleur en fondu, et les trois autres passent la tête par les bords pour
  * regarder. Taper son nom (`nodKey`) le fait hocher la tête. Animations réduites : fondus seulement.
  */
-export function SpeciesPicker({ value, onChange, species = SPECIES, names, speech, speechHighlight, badge, pose = 'debout', nodKey }: SpeciesPickerProps) {
+export function SpeciesPicker({ value, onChange, species = SPECIES, names, speech, speechHighlight, badge, pose = 'debout', nodKey, stageHeight }: SpeciesPickerProps) {
   const reduced = useReducedMotion();
+  const { height: screenH } = useWindowDimensions();
+  const g = geometry(stageHeight ?? (screenH < 740 ? STAGE_SHORT : STAGE_TALL));
+  const { petCy: PET_CY, swatchCy: SWATCH_CY, tiny: TINY } = g;
   const look = craft[value];
   const [width, setWidth] = useState(0);
   const [prev, setPrev] = useState<Species | null>(null);
@@ -183,7 +191,7 @@ export function SpeciesPicker({ value, onChange, species = SPECIES, names, speec
 
   return (
     <View>
-      <View style={styles.stage} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <View style={[styles.stage, { height: g.stage }]} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
         {prev ? <LinearGradient colors={craft[prev].gradient} style={[StyleSheet.absoluteFill, styles.stageFill]} /> : null}
         <Animated.View style={[StyleSheet.absoluteFill, bgIn]}>
           <LinearGradient colors={look.gradient} style={[StyleSheet.absoluteFill, styles.stageFill]} />
@@ -198,7 +206,7 @@ export function SpeciesPicker({ value, onChange, species = SPECIES, names, speec
                   <PetImage
                     species={sp}
                     mood={pose}
-                    size={PET}
+                    size={g.pet}
                     rotate={4}
                     animation={role === 'hero' ? 'breathe' : 'none'}
                     outline
@@ -214,7 +222,7 @@ export function SpeciesPicker({ value, onChange, species = SPECIES, names, speec
         {width && !reduced ? (
           <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.peekClip]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {PEEKERS.map((p, i) => (
-              <Peeker key={p.edge} species={others[i] ?? value} spec={p} index={i} width={width} play={peekKey} />
+              <Peeker key={p.edge} species={others[i] ?? value} spec={p} index={i} width={width} stage={g.stage} play={peekKey} />
             ))}
           </View>
         ) : null}
@@ -237,7 +245,7 @@ export function SpeciesPicker({ value, onChange, species = SPECIES, names, speec
           <Image key={`p${sp}`} source={petImage(sp, 'surpris')} style={styles.preloadImg} />
         ))}
       </View>
-      <View accessibilityRole="radiogroup" style={[layout.rowBetween, styles.swatches]}>
+      <View accessibilityRole="radiogroup" style={[layout.rowBetween, { marginTop: g.gap }]}>
         {species.map((sp) => {
           const on = sp === value;
           return (
@@ -271,12 +279,14 @@ interface PeekerProps {
   spec: (typeof PEEKERS)[number];
   index: number;
   width: number;
+  /** Hauteur de la scène. */
+  stage: number;
   /** Change à chaque nouveau choix : le curieux sort, se penche, puis rentre. */
   play: number;
 }
 
 /** Un des trois autres pets : sort d'un bord de la scène, se penche vers le nouveau venu, rentre. */
-function Peeker({ species, spec, index, width, play }: PeekerProps) {
+function Peeker({ species, spec, index, width, stage, play }: PeekerProps) {
   const p = useSharedValue(0);
   const lean = useSharedValue(0);
   useEffect(() => {
@@ -289,8 +299,8 @@ function Peeker({ species, spec, index, width, play }: PeekerProps) {
   const center = (shown: SharedValue<number>) => {
     'worklet';
     const depth = PEEK_H / 2 - PEEK_H * PEEK_SHOWN * shown.value;
-    if (spec.edge === 'left') return { cx: -depth, cy: STAGE * spec.along };
-    if (spec.edge === 'right') return { cx: width + depth, cy: STAGE * spec.along };
+    if (spec.edge === 'left') return { cx: -depth, cy: stage * spec.along };
+    if (spec.edge === 'right') return { cx: width + depth, cy: stage * spec.along };
     return { cx: width * spec.along, cy: -depth };
   };
   const style = useAnimatedStyle(() => {
@@ -308,7 +318,7 @@ function Peeker({ species, spec, index, width, play }: PeekerProps) {
 }
 
 const styles = StyleSheet.create({
-  stage: { height: STAGE, borderRadius: radius.xl - 4 },
+  stage: { borderRadius: radius.xl - 4 },
   stageFill: { borderRadius: radius.xl - 4 },
   peekClip: { borderRadius: radius.xl - 4, overflow: 'hidden', zIndex: 3 },
   peeker: { position: 'absolute', left: 0, top: 0, width: PEEK, height: PEEK_H },
@@ -323,7 +333,6 @@ const styles = StyleSheet.create({
   speech: { position: 'absolute', top: space.lg, left: 14, transformOrigin: 'left bottom', zIndex: 4 },
   badge: { position: 'absolute', zIndex: 4, right: 14, bottom: 14, paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: color.white },
   badgeText: { lineHeight: 16 },
-  swatches: { marginTop: 30 },
   swatch: { width: SWATCH, height: SWATCH, borderRadius: radius.pill },
   swatchOff: { borderWidth: 2, borderColor: alpha(color.white, 0.25) },
   swatchOn: { transform: [{ scale: 1.08 }] },

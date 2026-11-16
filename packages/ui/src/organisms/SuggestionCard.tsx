@@ -2,7 +2,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { type ReactNode, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { hasOutfit } from '../assets/fit';
 import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
 import { Card } from '../atoms/Card';
@@ -13,9 +12,9 @@ import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
 import { PopIn } from '../motion/PopIn';
 import { useRipple, useRippleAnchor } from '../motion/Ripple';
-import { alpha, color, speciesColor } from '../theme';
-import { CompatPill, EncounterFrame, EncounterHead, lighten, PetSays } from './EncounterParts';
-import type { PetLook, SuggestionLook } from '../types';
+import { color, speciesColor } from '../theme';
+import { EncounterFrame, EncounterHead, EncounterOpen } from './EncounterParts';
+import type { SuggestionLook } from '../types';
 import { useUiStrings } from '../lib/strings';
 
 export interface SuggestionCardProps {
@@ -23,18 +22,10 @@ export interface SuggestionCardProps {
   suggestion: SuggestionLook;
   /** « le pet de Sasha ». */
   ownerLabel: string;
-  /** Comment ton pet l'a croisé (« par Malo, pote de pote »). */
-  viaLabel?: string;
-  /** Pet de l'intermédiaire (petit visage dans la puce « via »). */
-  viaPet?: PetLook;
   /** Puce à côté du nom (« nouveau »). */
   badgeLabel?: string;
   /** Sous le pourcentage (« d'accord »). */
   compatLabel: string;
-  /** Résumé du duo (« deux joueurs, une piquante »). */
-  tagline?: string;
-  /** Au-dessus de la bulle (« pia, à nino »). */
-  introLabel?: string;
   waveLabel: string;
   wavedLabel: string;
   onWave?: () => void;
@@ -44,7 +35,7 @@ export interface SuggestionCardProps {
   /** Légende de la tuile verrouillée (« par la bande du 11e »). */
   lockedCaption?: string;
   onLockedPress?: () => void;
-  /** Bouton secondaire vers le détail de la rencontre (« voir de plus près »). */
+  /** Toucher la carte ouvre le détail de la rencontre (ce qu'ils se sont dit, le pourquoi axe par axe). */
   openLabel?: string;
   onOpen?: () => void;
   /** Pourquoi ton minimoa la présente (`MatchWhy`), sous l'en-tête : le pourcentage n'est jamais seul. */
@@ -79,11 +70,14 @@ export function SuggestionCard(props: SuggestionCardProps) {
   return <SuggestionBody {...props} />;
 }
 
-/** Carte dépliée : « saluer » lance l'action, puis l'onde autour du bouton et le coucou de l'avatar (rien n'attend). */
+/**
+ * Carte d'une rencontre, courte : qui, pourquoi (avec le chiffre, jamais seul) et « saluer ». Le reste (d'où il vient,
+ * ce que ton minimoa en raconte, chaque axe) est sur l'écran de la rencontre, en touchant le haut de la carte.
+ * « Saluer » lance l'action, puis l'onde autour du bouton et le coucou de l'avatar (rien n'attend).
+ */
 function SuggestionBody(props: SuggestionCardProps) {
-  const uiStrings = useUiStrings();
-  const { suggestion, ownerLabel, viaLabel, viaPet, badgeLabel, compatLabel, tagline, introLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen, why } = props;
-  const { user, compatibility, intro, waved } = suggestion;
+  const { suggestion, ownerLabel, badgeLabel, compatLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen, why } = props;
+  const { user, compatibility, waved } = suggestion;
   const pet = user.pet;
   const tint = speciesColor[pet.species];
   const button = useRippleAnchor();
@@ -94,9 +88,9 @@ function SuggestionBody(props: SuggestionCardProps) {
     ripple(button.target(), { color: color.white });
     setWaves((n) => n + 1);
   };
-  const viaTint = viaPet ? speciesColor[viaPet.species] : null;
   return (
     <EncounterFrame tint={tint}>
+      <EncounterOpen onPress={onOpen} accessibilityLabel={openLabel ? `${openLabel}, ${pet.name}, ${ownerLabel}` : undefined}>
       <EncounterHead
         person={user}
         name={pet.name}
@@ -111,29 +105,13 @@ function SuggestionBody(props: SuggestionCardProps) {
         }
         waveKey={waves}
         owner={ownerLabel}
-        compatibility={null}
+        // Le chiffre, en petit à droite, et seulement avec son pourquoi juste en dessous.
+        compatibility={why ? compatibility : null}
+        compatLabel={compatLabel}
       />
-      {/* Le pourquoi d'abord ; le chiffre ensuite, en petit, et seulement avec lui. */}
       {why}
-      {why ? <CompatPill inline value={uiStrings.percent(compatibility)} label={compatLabel} /> : null}
-      {viaLabel || tagline ? (
-        <View style={[layout.row, styles.chips]}>
-          {viaLabel ? (
-            <Chip
-              label={viaLabel}
-              tone="glass"
-              ink={viaTint ? lighten(viaTint, 0.4) : undefined}
-              left={viaPet ? <Avatar size={16} pet={viaPet} hidden /> : undefined}
-              style={[styles.chip, viaTint ? { backgroundColor: alpha(viaTint, 0.18) } : null]}
-            />
-          ) : null}
-          {tagline ? <Chip label={tagline} tone="glass" style={styles.chip} /> : null}
-        </View>
-      ) : null}
-      {intro ? <PetSays label={introLabel} labelColor={lighten(tint, 0.3)} text={intro} /> : null}
-      {openLabel && onOpen ? (
-        <Button label={openLabel} variant="white" size="md" labelSize={15} onPress={onOpen} style={styles.cta} />
-      ) : waved ? null : (
+      </EncounterOpen>
+      {waved ? null : (
         <View {...button.props}>
           <Button label={waveLabel} variant="white" size="md" labelSize={15} onPress={wave} loading={waving} style={styles.cta} />
         </View>
@@ -144,9 +122,6 @@ function SuggestionBody(props: SuggestionCardProps) {
 
 const styles = StyleSheet.create({
   badge: { height: 22, paddingHorizontal: 9 },
-  chips: { gap: 6, flexWrap: 'wrap' },
-  // Une puce ne dépasse jamais de la carte (phrase plus longue dans une autre langue) : au pire, points de suspension.
-  chip: { height: 26, paddingHorizontal: 11, maxWidth: '100%' },
   cta: { height: 44 },
   locked: { gap: 6, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 24, minHeight: 44 },
   lockedRow: { gap: 8 },

@@ -3,7 +3,7 @@
  * 3 par jour, jamais la nuit), un seul « Continuer », puis la demande du système. Accordé : l'appareil sera enregistré
  * auprès de l'API une fois le compte créé (puis à chaque ouverture). Refusé : on le dit, et on continue.
  */
-import { Appear, Banner, NotifPreview, OnboardingTemplate, PointRow, Text } from '@blowy/ui';
+import { Appear, Banner, NotifPreview, OnboardingTemplate, Text } from '@blowy/ui';
 import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 
@@ -60,8 +60,9 @@ function NotificationsStep() {
         }
       >
         <NotifPreview species={species} app={t.app} items={t.items(petName)} accessibilityLabel={t.previewA11y} />
-        <PointRow glyph="check" disc="accent" title={t.capTitle} text={t.capText} />
-        <PointRow glyph="lock" disc="violet" title={t.nightTitle} text={t.nightText} />
+        <Text variant="bodyBold" size={15} muted center>
+          {t.line}
+        </Text>
         {denied ? (
           <Appear key="denied">
             <Banner tone="info" text={t.denied} />
