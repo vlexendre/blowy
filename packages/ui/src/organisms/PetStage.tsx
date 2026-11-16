@@ -1,6 +1,6 @@
 import type { Shape } from '@blowy/domain';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
 import { Button } from '../atoms/Button';
@@ -67,8 +67,12 @@ export interface PetStageProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Pet qui boude : `filter: saturate(.55) brightness(.8)` de V6-Boude. */
-const SULK_FILTER = 'saturate(0.55) brightness(0.8)';
+/**
+ * Pet qui boude : `filter: saturate(.55) brightness(.8)` de V6-Boude, sur le web seulement.
+ * Sur iPhone, `filter` ne sait pas désaturer, et `brightness` pose un rectangle gris opaque sur toute la toile
+ * (le fond transparent du pet devient gris clair). On l'éteint donc par l'opacité : il se fond dans le panneau sombre.
+ */
+const SULK_STYLE = Platform.OS === 'web' ? { filter: 'saturate(0.55) brightness(0.8)' } : { opacity: 0.78 };
 
 /**
  * Scène de l'accueil (V6-Accueil, V6-Boude) : grand panneau, nom en Anton, puce de forme, bouton garde-robe,
@@ -191,5 +195,5 @@ const styles = StyleSheet.create({
   meter: { position: 'absolute', left: 16, bottom: 14, width: 168, zIndex: 2 },
   // `.sq` : à 6 du bord droit, 6 sous le bas du panneau.
   pet: { position: 'absolute', right: 6, bottom: -6 },
-  sulk: { filter: SULK_FILTER },
+  sulk: SULK_STYLE,
 });
