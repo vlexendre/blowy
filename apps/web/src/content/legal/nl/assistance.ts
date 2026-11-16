@@ -1,7 +1,7 @@
 import type { LegalPage } from '../types';
 
 export const assistance: LegalPage = {
-  title: 'Hulp en contact — Blowy',
+  title: 'Hulp en contact — Minimoa',
   heading: 'Hulp',
   description: 'Een vraag, een bug, een probleem met iemand, met je abonnement of met je gegevens? De meest gezochte antwoorden, en hoe je ons schrijft.',
   intro: 'De vragen die we het vaakst krijgen. Niet gevonden? Schrijf ons: er antwoordt een mens, geen minimoa.',
@@ -38,7 +38,7 @@ export const assistance: LegalPage = {
           ],
         },
         {
-          q: 'Waarom vraagt Blowy om mijn locatie?',
+          q: 'Waarom vraagt Minimoa om mijn locatie?',
           a: [
             'Voor de kaart en ontmoetingen in de buurt, alleen als de app open is. Je exacte positie wordt nooit opgeslagen: we bewaren alleen een punt afgerond op ongeveer 300 m. Anderen zien een afgeronde en verschoven positie, en de discrete modus haalt je van de kaart. Zonder locatie kies je zelf je stad (Ontmoetingen, of Ik → Instellingen → Mijn locatie) en krijg je toch ontmoetingen.',
           ],
@@ -46,7 +46,7 @@ export const assistance: LegalPage = {
         {
           q: 'Wie leest mijn berichten?',
           a: [
-            'Niemand bij Blowy leest je gesprekken, behalve een gemeld bericht (gemeld door iemand of door ons automatische filter): een moderator leest dan dat bericht en de directe context ervan. Als jullie het allebei aanzetten, leest een AI, die van onze dienstverlener {{sub.ai.provider}}, jullie laatste berichten zodat jullie minimoa’s kunnen reageren; Blowy bewaart niets van dat meelezen. Je zet het uit in de opties van de band of via Ik → De AI en jij.',
+            'Niemand bij Minimoa leest je gesprekken, behalve een gemeld bericht (gemeld door iemand of door ons automatische filter): een moderator leest dan dat bericht en de directe context ervan. Als jullie het allebei aanzetten, leest een AI, die van onze dienstverlener {{sub.ai.provider}}, jullie laatste berichten zodat jullie minimoa’s kunnen reageren; Minimoa bewaart niets van dat meelezen. Je zet het uit in de opties van de band of via Ik → De AI en jij.',
           ],
         },
         {
@@ -68,15 +68,15 @@ export const assistance: LegalPage = {
           ],
         },
         {
-          q: 'Hoe zeg ik Blowy+ op?',
+          q: 'Hoe zeg ik Minimoa+ op?',
           a: [
-            'In de instellingen van je iPhone, niet in Blowy: Instellingen → je naam → Abonnementen (in de app brengt Ik → Blowy+ → Mijn abonnement beheren je erheen). Details in de [voorwaarden van Blowy+](@abonnement#annuler).',
+            'In de instellingen van je iPhone, niet in Minimoa: Instellingen → je naam → Abonnementen (in de app brengt Ik → Minimoa+ → Mijn abonnement beheren je erheen). Details in de [voorwaarden van Minimoa+](@abonnement#annuler).',
           ],
         },
         {
           q: 'Hoe krijg ik mijn geld terug?',
           a: [
-            'Betalingen lopen via Apple: Apple betaalt terug, volgens zijn voorwaarden. De link staat in de [voorwaarden van Blowy+](@abonnement#remboursements).',
+            'Betalingen lopen via Apple: Apple betaalt terug, volgens zijn voorwaarden. De link staat in de [voorwaarden van Minimoa+](@abonnement#remboursements).',
           ],
         },
         {

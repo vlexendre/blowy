@@ -1,7 +1,7 @@
 /**
- * Ce que Blowy+ ouvre, en un seul endroit. Les autres règles (habitudes, jokers, carte, renommage,
+ * Ce que Minimoa+ ouvre, en un seul endroit. Les autres règles (habitudes, jokers, carte, renommage,
  * bilan, rencontres) lisent ces limites au lieu de tester `plus` elles-mêmes.
- * Savoir si quelqu'un a Blowy+ reste le rôle de `hasPlus(profile, now)` côté API.
+ * Savoir si quelqu'un a Minimoa+ reste le rôle de `hasPlus(profile, now)` côté API.
  */
 export interface Entitlements {
   /** Nombre d'habitudes suivies en même temps. */
@@ -16,7 +16,7 @@ export interface Entitlements {
   freeRename: boolean;
   /** Bilan de la semaine détaillé (axes sur 4 semaines, audit de chaque lien). */
   detailedReview: boolean;
-  /** Rencontres supplémentaires par jour, ajoutées au quota qui dépend de la forme du minimoa (0 sans Blowy+). */
+  /** Rencontres supplémentaires par jour, ajoutées au quota qui dépend de la forme du minimoa (0 sans Minimoa+). */
   encounterBonus: 0 | 1;
   /** Objets premium de la garde-robe. */
   premiumItems: boolean;
@@ -49,6 +49,6 @@ export function entitlements(plus: boolean): Entitlements {
   return plus ? PLUS : FREE;
 }
 
-/** Ce que Blowy+ ajoute, dans l'ordre où le paywall le présente (clés de texte dans `@blowy/content`). */
+/** Ce que Minimoa+ ajoute, dans l'ordre où le paywall le présente (clés de texte dans `@blowy/content`). */
 export const PLUS_PERKS = ['map_everywhere', 'more_encounters', 'streak_jokers', 'more_habits', 'detailed_review', 'free_rename', 'premium_items'] as const;
 export type PlusPerk = (typeof PLUS_PERKS)[number];

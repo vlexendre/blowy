@@ -1,6 +1,6 @@
 /**
  * Le bilan de la semaine (V6-GBilan), présenté par le minimoa : ce que tu as fait, ce qu'il a remarqué de ta vision,
- * une idée pour la semaine, un mot par lien. Toujours positif (les phrases viennent de l'API). Blowy+ : le détail.
+ * une idée pour la semaine, un mot par lien. Toujours positif (les phrases viennent de l'API). Minimoa+ : le détail.
  */
 import { color } from '@blowy/tokens';
 import {

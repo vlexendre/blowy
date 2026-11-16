@@ -48,7 +48,7 @@ export interface PetsRepository {
   saveOutfit(petId: string, outfit: Outfit): Promise<void>;
   /**
    * Pets qui portent au moins un de ces objets, par identifiant croissant après `afterId` (pages du minuteur de la
-   * garde-robe : fin de Blowy+).
+   * garde-robe : fin de Minimoa+).
    */
   listWearing(itemIds: readonly string[], afterId: string | null, limit: number): Promise<PetRecord[]>;
   /** Monte `bestStreak` à `streak` pour les pets de ces personnes, s'il était plus bas. */

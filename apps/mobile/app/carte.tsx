@@ -1,7 +1,7 @@
 /**
  * La carte (spéc §10, maquette V6-GCarte) : ta zone, les minimoas compatibles en autocollants (positions arrondies du
  * serveur), des silhouettes floues au-delà et leur nombre (caché à zéro). Gratuit : la carte reste sur ta zone.
- * Blowy+ : navigation libre et « Changer de ville ». Mode discret. Sans localisation : ce qui manque et comment l'activer.
+ * Minimoa+ : navigation libre et « Changer de ville ». Mode discret. Sans localisation : ce qui manque et comment l'activer.
  * Vraie carte Apple sur iPhone ; ailleurs (web, module absent), la carte dessinée (`MapLayer`).
  */
 import type { MapPin } from '@blowy/contract';
@@ -58,7 +58,7 @@ export default function CarteScreen() {
   const land = useFirstTime('carte:land');
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
 
-  // Blowy+ : la carte a bougé → on relit ce qu'il y a là (après un court repos du doigt).
+  // Minimoa+ : la carte a bougé → on relit ce qu'il y a là (après un court repos du doigt).
   const pan = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
     if (pan.current) clearTimeout(pan.current);
@@ -244,7 +244,7 @@ export default function CarteScreen() {
         bottom={bottom}
       />
 
-      {/* Blowy+ : changer de ville sans bouger. */}
+      {/* Minimoa+ : changer de ville sans bouger. */}
       <SheetTemplate
         visible={citySheet}
         onClose={() => setCitySheet(false)}

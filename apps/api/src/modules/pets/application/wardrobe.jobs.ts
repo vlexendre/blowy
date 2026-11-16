@@ -9,7 +9,7 @@ import { Wardrobe } from './wardrobe';
 const BATCH = 200;
 
 /**
- * Travail planifié de la garde-robe (`modules/tick/jobs.ts`) : quand Blowy+ prend fin, le minimoa range ses objets
+ * Travail planifié de la garde-robe (`modules/tick/jobs.ts`) : quand Minimoa+ prend fin, le minimoa range ses objets
  * premium, même si sa personne n'ouvre pas l'app (ses liens et les rencontres ne les voient plus). Sa personne, elle,
  * le voit dès sa prochaine ouverture (`Wardrobe.settle` à chaque vue).
  * Parcourt par pages les pets qui portent un objet premium (curseur gardé en mémoire, repart du début à la fin) ;
@@ -38,7 +38,7 @@ export class WardrobeJobs {
       const after = await this.wardrobe.settle(pet, false);
       if (after !== pet) settled += 1;
     }
-    if (settled > 0) this.logger.log(`${settled} minimoa(s) ont rangé leurs objets premium (fin de Blowy+)`);
+    if (settled > 0) this.logger.log(`${settled} minimoa(s) ont rangé leurs objets premium (fin de Minimoa+)`);
     return settled;
   }
 }

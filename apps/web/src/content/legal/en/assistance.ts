@@ -1,7 +1,7 @@
 import type { LegalPage } from '../types';
 
 export const assistance: LegalPage = {
-  title: 'Help and contact — Blowy',
+  title: 'Help and contact — Minimoa',
   heading: 'Help',
   description: 'A question, a bug, a problem with someone, your subscription or your data? The most common answers, and how to write to us.',
   intro: 'The questions we get asked most. Not found it? Write to us: a human answers, not a minimoa.',
@@ -38,7 +38,7 @@ export const assistance: LegalPage = {
           ],
         },
         {
-          q: 'Why does Blowy ask for my location?',
+          q: 'Why does Minimoa ask for my location?',
           a: [
             'For the map and nearby encounters, only while the app is open. Your exact position is never stored: we only keep a point rounded to about 300 m. Others see a rounded and shifted position, and discreet mode removes you from the map. Without location, you pick your city by hand (Encounters, or Me → Settings → My location) and still get encounters.',
           ],
@@ -46,7 +46,7 @@ export const assistance: LegalPage = {
         {
           q: 'Who reads my messages?',
           a: [
-            'No one at Blowy reads your conversations, except a reported message (reported by someone or by our automatic filter): a moderator then reads that message and its immediate context. If you both switch it on, an AI, that of our provider {{sub.ai.provider}}, reads your latest messages so your minimoas can react; Blowy keeps nothing of that reading. You can turn it off in the connection’s options or in Me → AI and you.',
+            'No one at Minimoa reads your conversations, except a reported message (reported by someone or by our automatic filter): a moderator then reads that message and its immediate context. If you both switch it on, an AI, that of our provider {{sub.ai.provider}}, reads your latest messages so your minimoas can react; Minimoa keeps nothing of that reading. You can turn it off in the connection’s options or in Me → AI and you.',
           ],
         },
         {
@@ -68,15 +68,15 @@ export const assistance: LegalPage = {
           ],
         },
         {
-          q: 'How do I cancel Blowy+?',
+          q: 'How do I cancel Minimoa+?',
           a: [
-            'In your iPhone settings, not in Blowy: Settings → your name → Subscriptions (in the app, Me → Blowy+ → Manage my subscription takes you there). Details in the [Blowy+ terms](@abonnement#annuler).',
+            'In your iPhone settings, not in Minimoa: Settings → your name → Subscriptions (in the app, Me → Minimoa+ → Manage my subscription takes you there). Details in the [Minimoa+ terms](@abonnement#annuler).',
           ],
         },
         {
           q: 'How do I get a refund?',
           a: [
-            'Payments go through Apple: Apple issues refunds, under its terms. The link is in the [Blowy+ terms](@abonnement#remboursements).',
+            'Payments go through Apple: Apple issues refunds, under its terms. The link is in the [Minimoa+ terms](@abonnement#remboursements).',
           ],
         },
         {

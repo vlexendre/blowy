@@ -31,7 +31,7 @@ export interface SectionMeta {
 }
 
 export const meta = {
-  title: 'Blowy — Élève ton minimoa. Il te présente du monde.',
+  title: 'Minimoa — Élève ton minimoa. Il te présente du monde.',
   description: 'Élève ton minimoa. Il te présente du monde. Gratuit, zéro swipe, 18 ans et plus.',
 } as const;
 
@@ -44,7 +44,7 @@ export const sections = {
   photo: { id: 'photo', dot: 'La série', glow: ['#FF9A3D', '#FF5A3C', '#FFB800'] },
   rencontres: { id: 'rencontres', dot: 'Rencontres', glow: ['#FF5A3C', '#A98BFF', '#FF9A3D'] },
   mots: { id: 'mots', dot: '3 mots', glow: ['#FF8FC6', '#FFB800', '#A98BFF'] },
-  plus: { id: 'plus', dot: 'Blowy+', glow: ['#6D3DF0', '#FFB800', '#8C1D4F'] },
+  plus: { id: 'plus', dot: 'Minimoa+', glow: ['#6D3DF0', '#FFB800', '#8C1D4F'] },
   faq: { id: 'faq', dot: 'Questions', glow: ['#6D3DF0', '#A98BFF', '#FF8FC6'] },
   go: { id: 'go', dot: 'Télécharger', glow: ['#FFB800', '#FF8FC6', '#6D3DF0'] },
 } as const satisfies Record<string, SectionMeta>;
@@ -52,7 +52,7 @@ export type SectionId = keyof typeof sections;
 export const sectionOrder: SectionId[] = ['top', 'pet', 'caractere', 'chats', 'vies', 'photo', 'rencontres', 'mots', 'plus', 'faq', 'go'];
 
 export const nav = {
-  logoLabel: 'Blowy, retour en haut',
+  logoLabel: 'Minimoa, retour en haut',
   sectionsLabel: 'Sections',
   dotsLabel: 'Aller à la section',
   download: 'Télécharger',
@@ -61,7 +61,7 @@ export const nav = {
     { href: 'caractere', label: 'Caractère' },
     { href: 'chats', label: 'Chats' },
     { href: 'rencontres', label: 'Rencontres' },
-    { href: 'plus', label: 'Blowy+' },
+    { href: 'plus', label: 'Minimoa+' },
   ],
   /** section active → lien de nav allumé */
   activeMap: { pet: 'pet', caractere: 'caractere', chats: 'chats', vies: 'chats', photo: 'chats', rencontres: 'rencontres', mots: 'rencontres', plus: 'plus' } as Record<string, string>,
@@ -240,11 +240,11 @@ export const threeWords = {
 } as const;
 
 export const plus = {
-  title: [{ text: 'BLOWY+.' }, { text: 'POUR ALLER', dim: true }, { text: 'PLUS VITE.', dim: true }] as TitleLine[],
+  title: [{ text: 'MINIMOA+.' }, { text: 'POUR ALLER', dim: true }, { text: 'PLUS VITE.', dim: true }] as TitleLine[],
   lead: 'L’essentiel est gratuit, sans pub. Le plus, c’est pour aller plus vite.',
   free: { name: 'Gratuit', note: '0 €, pour toujours', items: ['1 rencontre par semaine', 'Chats et défis illimités', 'Séries et 7 vies', 'Zéro pub. Jamais.'] },
   pro: {
-    name: 'Blowy+',
+    name: 'Minimoa+',
     note: 'Essai 3 jours',
     items: ['3 rencontres à la fois', 'La carte des minimoas autour de toi', 'La garde-robe de ton minimoa', '2 gels de série par mois'],
     price: '4,99 €/mois',
@@ -264,7 +264,7 @@ export const faq = {
     { q: 'Mon minimoa peut mourir ?', a: 'Non, jamais. C’est le <b>lien</b> qui devient fantôme après 7 jours de silence. Et on peut le ranimer une fois.' },
     { q: 'C’est anonyme, les 3 mots ?', a: 'Oui. Tu vois les mots, pas qui les a choisis. Et on ne propose que des mots gentils.' },
     { q: 'À partir de quel âge ?', a: '<b>18 ans.</b> Tout le monde passe une vérification par selfie à l’inscription. Chaque minimoa a un vrai humain derrière.' },
-    { q: 'C’est payant ?', a: 'Non. Blowy est gratuit et sans pub. <b>Blowy+</b> (dès 4,99 €/mois) ajoute des rencontres, la carte et la garde-robe.' },
+    { q: 'C’est payant ?', a: 'Non. Minimoa est gratuit et sans pub. <b>Minimoa+</b> (dès 4,99 €/mois) ajoute des rencontres, la carte et la garde-robe.' },
   ],
 } as const;
 
@@ -282,5 +282,5 @@ export const footer = {
     { href: '/legal/confidentialite/', label: 'Confidentialité' },
     { href: '/legal/', label: 'Tout le légal' },
   ],
-  copyright: '© 2026 Blowy',
+  copyright: '© 2026 Minimoa',
 } as const;

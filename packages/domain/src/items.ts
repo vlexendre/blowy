@@ -128,13 +128,13 @@ export function itemProgress(i: Item, stats: PetStats): { have: number; need: nu
   return { have: Math.min(stats[i.unlock.stat], i.unlock.n), need: i.unlock.n };
 }
 
-/** Objets « premium » : inclus dans Blowy+, portables tant que l'abonnement dure. */
+/** Objets « premium » : inclus dans Minimoa+, portables tant que l'abonnement dure. */
 export const PREMIUM_ITEM_IDS: readonly string[] = ITEMS.filter((i) => i.unlock.kind === 'premium').map((i) => i.id);
 export const isPremiumItem = (id: string): boolean => BY_ID.get(id)?.unlock.kind === 'premium';
 
 /**
  * Objets possédés selon l'abonnement : ceux gagnés ou attribués (`owned`), plus tous les objets premium tant que
- * Blowy+ est actif (`premiumItems` de `entitlements`). Sans Blowy+, un objet premium n'est jamais possédé, même s'il
+ * Minimoa+ est actif (`premiumItems` de `entitlements`). Sans Minimoa+, un objet premium n'est jamais possédé, même s'il
  * avait été attribué autrement (monde de démo, ancien achat).
  */
 export function ownedWith(owned: Iterable<string>, premiumItems: boolean): Set<string> {
@@ -144,7 +144,7 @@ export function ownedWith(owned: Iterable<string>, premiumItems: boolean): Set<s
   return out;
 }
 
-/** Tenue sans les objets premium (fin de Blowy+ : le minimoa les range). Même objet rendu si rien ne change. */
+/** Tenue sans les objets premium (fin de Minimoa+ : le minimoa les range). Même objet rendu si rien ne change. */
 export function withoutPremium(outfit: Outfit): Outfit {
   if (!ITEM_SLOTS.some((slot) => outfit[slot] !== undefined && isPremiumItem(outfit[slot] as string))) return outfit;
   const out: Outfit = {};

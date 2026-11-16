@@ -72,7 +72,7 @@ function useActivityTokens(enabled: boolean) {
 
 /**
  * Tient les widgets et les activités en direct à jour. `gate` : celui du layout des onglets ; à la déconnexion,
- * les widgets repassent sur « Ouvre Blowy » et les activités sont retirées.
+ * les widgets repassent sur « Ouvre Minimoa » et les activités sont retirées.
  */
 export function useWidgetSync(gate: Gate): void {
   const ready = gate === 'ready' && widgets.available;

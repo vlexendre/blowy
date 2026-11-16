@@ -3,7 +3,7 @@
 Appli web d'administration (Vite + React, statique). Elle n'est qu'un client de l'API : chaque route `/admin/*`
 vérifie elle-même que l'adresse connectée figure dans `ADMIN_EMAILS`. Lecture seule, sauf la modération.
 
-Écrans : vue d'ensemble (comptes, actifs, rétention, Blowy+, série) · minimoas · liens et rencontres · modération
+Écrans : vue d'ensemble (comptes, actifs, rétention, Minimoa+, série) · minimoas · liens et rencontres · modération
 (signalements, contexte limité au message signalé, avertir / suspendre / supprimer / classer, comptes suspendus) ·
 journal · coûts de l'IA.
 

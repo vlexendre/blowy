@@ -16,7 +16,7 @@ export interface RenameCardProps {
   maxLength?: number;
   /**
    * Changement impossible pour l'instant : champ en lecture seule, pas de bouton « garder ce nom »,
-   * seulement `notice` et, s'il y en a une, `noticeAction` (Blowy+).
+   * seulement `notice` et, s'il y en a une, `noticeAction` (Minimoa+).
    */
   locked?: boolean;
   /** Ligne d'information avant de confirmer (quand ce sera possible, ou ce qu'implique ce changement). */

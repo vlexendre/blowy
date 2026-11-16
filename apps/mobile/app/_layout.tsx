@@ -39,10 +39,10 @@ export default function RootLayout() {
             <UiStringsProvider value={ui}>
               <MotionHost>
                 <StatusBar style="light" />
-                {/* Compte suspendu, jeton de notifications, achats Blowy+ arrivés hors d'un achat. */}
+                {/* Compte suspendu, jeton de notifications, achats Minimoa+ arrivés hors d'un achat. */}
                 <SessionBridges />
                 <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.night }, animation: 'slide_from_right' }}>
-                  {/* Blowy+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
+                  {/* Minimoa+ : feuille qui monte du bas par-dessus l'écran d'où on vient (Moi, garde-robe, carte). */}
                   <Stack.Screen name="moi/blowy-plus" options={SHEET} />
                   {/* Défi du jour : la carte monte en plein écran par-dessus l'accueil (elle fait sa montée elle-même). */}
                   <Stack.Screen name="pet/defi" options={SHEET} />

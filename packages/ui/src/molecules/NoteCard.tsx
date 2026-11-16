@@ -13,7 +13,7 @@ export interface NoteCardProps {
   text: string;
   /** Visuel à gauche (une icône carrée, 40 pt au plus). */
   icon?: ReactNode;
-  /** Pastille à droite de la petite ligne (« Blowy+ ») : jamais dans `icon`, trop étroit pour elle. */
+  /** Pastille à droite de la petite ligne (« Minimoa+ ») : jamais dans `icon`, trop étroit pour elle. */
   badge?: ReactNode;
   /** Filet d'accent (une idée, une proposition). */
   accent?: boolean;

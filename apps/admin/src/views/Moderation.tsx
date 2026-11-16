@@ -374,7 +374,7 @@ function ReportDrawer({ id, onClose, onDone }: { id: string; onClose: () => void
                     {data.context.map((m) => (
                       <div key={m.id} className={`msg ${m.author}${m.reported ? ' reported' : ''}`}>
                         <span className="who">
-                          {m.author === 'reporter' ? report.reporter?.displayName ?? 'Qui signale' : m.author === 'target' ? target?.displayName ?? 'Signalé' : m.author === 'minimoa' ? 'Minimoa' : 'Blowy'}
+                          {m.author === 'reporter' ? report.reporter?.displayName ?? 'Qui signale' : m.author === 'target' ? target?.displayName ?? 'Signalé' : m.author === 'minimoa' ? 'Minimoa' : 'Minimoa'}
                           {' · '}
                           {fmtDateTime(m.at)}
                           {m.reported && ' · signalé'}

@@ -280,7 +280,7 @@ function CareDemo() {
           worn={outfit[slot] ?? null}
           itemLabels={itemLabel}
           goalLabels={statGoalLabel}
-          premiumLabel="Blowy+"
+          premiumLabel="Minimoa+"
           wornLabel="porté"
           onSelect={(it) => {
             if (it.state === 'owned') setOutfit((o) => (o[it.slot] === it.id ? { ...o, [it.slot]: undefined } : { ...o, [it.slot]: it.id }));
@@ -368,7 +368,7 @@ function CareLevel() {
           <ItemTile id="toque" label="toque" state="locked" goalText="10 jours de soins" progress={{ have: 4, need: 10 }} onPress={noop} />
         </View>
         <View style={styles.row}>
-          <ItemTile id="aureole" label="auréole" state="premium" premiumLabel="Blowy+" onPress={noop} />
+          <ItemTile id="aureole" label="auréole" state="premium" premiumLabel="Minimoa+" onPress={noop} />
           <ItemTile id="tasse" label="tasse" state="owned" newLabel="nouveau" onPress={noop} />
           <ItemTile id="couronne" label="couronne" state="locked" goalText="niveau 7 d’un lien" progress={{ have: 3, need: 7 }} />
         </View>
@@ -828,7 +828,7 @@ function GalleryScreen() {
             onWave={noop}
           />
           <View style={styles.row}>
-            <SuggestionCard suggestion={{ user: malo, compatibility: 86, intro: '', waved: false }} ownerLabel="" compatLabel="" waveLabel="" wavedLabel="" locked lockedCaption="par la bande du 11e · blowy+" />
+            <SuggestionCard suggestion={{ user: malo, compatibility: 86, intro: '', waved: false }} ownerLabel="" compatLabel="" waveLabel="" wavedLabel="" locked lockedCaption="par la bande du 11e · minimoa+" />
             <SuggestionCard suggestion={{ user: lea, compatibility: 78, intro: '', waved: true }} ownerLabel="" compatLabel="" waveLabel="" wavedLabel="" locked lockedCaption="ton quartier · 600 m" />
           </View>
         </Item>
@@ -995,7 +995,7 @@ function GalleryScreen() {
         </Item>
         <Item name="TabTemplate">
           <Frame height={560}>
-            <TabTemplate brand="blowy" title={[{ text: 'CHATS' }, { text: ' · 5', dim: true }]} right={<IconButton glyph="plus" label="Nouveau chat" variant="accent" onPress={noop} />}>
+            <TabTemplate brand="minimoa" title={[{ text: 'CHATS' }, { text: ' · 5', dim: true }]} right={<IconButton glyph="plus" label="Nouveau chat" variant="accent" onPress={noop} />}>
               {links.slice(0, 2).map(({ link, time, author, level }) => (
                 <LinkRow key={link.other.displayName} link={link} timeLabel={time} levelLabel={level} previewAuthor={author} onPress={noop} />
               ))}

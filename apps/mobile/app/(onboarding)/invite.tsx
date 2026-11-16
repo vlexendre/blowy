@@ -12,7 +12,7 @@ const t = onboarding.invite;
 export default function Invite() {
   const me = useMe();
   const invite = useCopyShare();
-  // Blowy+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
+  // Minimoa+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
   const next = () => router.push('/(onboarding)/paywall');
 
   const pet = me.data?.pet;

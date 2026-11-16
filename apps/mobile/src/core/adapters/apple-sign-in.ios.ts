@@ -2,7 +2,7 @@
  * Connexion avec Apple sur iPhone (`expo-apple-authentication`, feuille système). Seule l'adresse e-mail est demandée :
  * l'API s'en sert pour les e-mails transactionnels ; le prénom, lui, est demandé dans l'inscription (« On t'appelle
  * comment ? »), donc le nom complet n'est pas demandé à Apple (règle : ne demander que ce qui sert).
- * La personne peut masquer son adresse (relais d'Apple) : rien ne change pour Blowy.
+ * La personne peut masquer son adresse (relais d'Apple) : rien ne change pour Minimoa.
  */
 import * as AppleAuthentication from 'expo-apple-authentication';
 

@@ -1,7 +1,7 @@
 import type { LegalPage } from '../types';
 
 export const cookies: LegalPage = {
-  title: 'Cookies — Blowy',
+  title: 'Cookies — Minimoa',
   heading: 'Cookies',
   description: 'The blowy.app website sets no cookies. What it loads from other services, and what those services receive.',
   intro: 'Short version: the blowy.app website sets no cookies. Here are the details, checked in its code.',
@@ -10,7 +10,7 @@ export const cookies: LegalPage = {
     {
       p: 'The blowy.app website sets **no cookies** and stores nothing in your browser’s storage (neither local storage nor session storage). It uses no audience measurement, no advertising and no social media buttons. That is why there is no consent banner.',
     },
-    { p: 'This page only covers the website. The Blowy app is covered by the [privacy policy](@confidentialite).' },
+    { p: 'This page only covers the website. The Minimoa app is covered by the [privacy policy](@confidentialite).' },
 
     { h2: 'What the website loads from other services', id: 'tiers' },
     {
@@ -23,7 +23,7 @@ export const cookies: LegalPage = {
           ['Google Fonts (Google)', 'The Anton and Bricolage Grotesque fonts', 'All'],
           ['cdnjs (Cloudflare)', 'The GSAP animation library', 'Home page'],
           ['Website host: {{siteHost.name}}', 'Serving the pages', 'All'],
-          ['Blowy app server (API)', 'Showing the person’s first name and minimoa, saving the words chosen', '“3 words” and invitation pages'],
+          ['Minimoa app server (API)', 'Showing the person’s first name and minimoa, saving the words chosen', '“3 words” and invitation pages'],
         ],
       },
     },

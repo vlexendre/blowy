@@ -1,7 +1,7 @@
 /**
  * Textes de l'inscription, dans l'ordre du parcours : bienvenue, entrée en scène, création du minimoa, test de vision,
  * ta vision, toi (« on t'appelle comment ? »), sexe, ce que tu cherches, naissance, localisation, notifications, promesse,
- * connexion, préparation, « tout est prêt », invitations ; puis l'écran « compte suspendu ». Blowy+ : `locales/plus.ts`.
+ * connexion, préparation, « tout est prêt », invitations ; puis l'écran « compte suspendu ». Minimoa+ : `locales/plus.ts`.
  * À partir de la création, c'est le minimoa qui parle : il pose les questions (première personne, tutoiement).
  */
 import { visionText } from '@blowy/content';
@@ -15,7 +15,7 @@ export const onboarding = messages({
     /** Lu sur la barre continue de l'inscription. */
     progressLabel: 'Avancement de l’inscription',
     welcome: {
-      brand: 'blowy',
+      brand: 'minimoa',
       sticker: 'Pas de swipe · pas de pub',
       title: [{ text: 'ÉLÈVE\nTON MINIMOA.\n' }, { text: 'IL TE PRÉSENTE\nDU MONDE.', dim: true }],
       petName: 'Nino',
@@ -103,7 +103,7 @@ export const onboarding = messages({
       whomHost: 'Tu veux rencontrer qui ?',
       whomHighlight: 'qui',
       whom: { femmes: 'Des femmes', hommes: 'Des hommes', tout_le_monde: 'Tout le monde' },
-      consent: 'J’accepte que Blowy utilise cette réponse pour choisir qui me présenter. Elle n’est montrée à personne, et je peux la retirer dans Moi.',
+      consent: 'J’accepte que Minimoa utilise cette réponse pour choisir qui me présenter. Elle n’est montrée à personne, et je peux la retirer dans Moi.',
       consentHint: 'Sans cet accord, choisis « Des potes ».',
       cta: 'Suivant',
     },
@@ -119,7 +119,7 @@ export const onboarding = messages({
       note: 'Réservé aux 18 ans et plus. Ta date n’est jamais affichée.',
       cta: 'Suivant',
       tooYoungTitle: [{ text: 'REVIENS\n' }, { text: 'À 18 ANS.', dim: true }],
-      tooYoungText: (pet: string) => `Blowy fait se rencontrer des adultes. ${pet} t’attendra, promis.`,
+      tooYoungText: (pet: string) => `Minimoa fait se rencontrer des adultes. ${pet} t’attendra, promis.`,
       tooYoungNote: 'Ton minimoa n’a pas été créé, et on n’a rien gardé sur toi.',
       tooYoungAction: 'Fermer',
     },
@@ -137,7 +137,7 @@ export const onboarding = messages({
     notifications: {
       host: 'Je te préviens quand quelqu’un te fait signe ?',
       highlight: 'quelqu’un te fait signe',
-      app: 'Blowy',
+      app: 'Minimoa',
       previewA11y: 'Exemples de notifications de ton minimoa.',
       items: (pet: string) => [
         { title: 'Quelqu’un te fait signe', body: `${pet} a croisé un minimoa compatible.`, time: 'maintenant' },
@@ -171,7 +171,7 @@ export const onboarding = messages({
       errors: {
         failed: 'La connexion n’a pas abouti. Réessaie.',
       },
-      legalLead: 'Blowy, c’est 18 ans et plus.',
+      legalLead: 'Minimoa, c’est 18 ans et plus.',
       legalBefore: ' En continuant, tu acceptes les ',
       legalTerms: 'conditions d’utilisation',
       legalAnd: ' et la ',
@@ -227,14 +227,14 @@ export const onboarding = messages({
       /** Après la copie (une coche se dessine à côté). */
       copied: 'Copié',
       share: 'Partager en story',
-      shareMessage: (pet: string, url: string) => `J’ai un minimoa sur Blowy, il s’appelle ${pet}. Viens, nos minimoas vont se plaire : ${url}`,
+      shareMessage: (pet: string, url: string) => `J’ai un minimoa sur Minimoa, il s’appelle ${pet}. Viens, nos minimoas vont se plaire : ${url}`,
       cta: 'C’est parti',
     },
     suspendu: {
       title: [{ text: 'COMPTE\n' }, { text: 'SUSPENDU.', dim: true }],
       fallback: 'Ton compte est suspendu, après des signalements.',
       support: 'Écrire à l’assistance',
-      supportSubject: 'Mon compte Blowy est suspendu',
+      supportSubject: 'Mon compte Minimoa est suspendu',
       deleteLabel: 'Supprimer mon compte',
       deleteTitle: 'Supprimer ton compte ?',
       deleteText: 'Ton minimoa, tes liens et tes messages seront effacés. C’est définitif.',
@@ -247,7 +247,7 @@ export const onboarding = messages({
     back: 'Back',
     progressLabel: 'Sign-up progress',
     welcome: {
-      brand: 'blowy',
+      brand: 'minimoa',
       sticker: 'No swiping · no ads',
       title: [{ text: 'RAISE\nYOUR MINIMOA.\n' }, { text: 'IT INTRODUCES\nYOU TO PEOPLE.', dim: true }],
       petName: 'Nino',
@@ -331,7 +331,7 @@ export const onboarding = messages({
       whomHost: 'Who do you want to meet?',
       whomHighlight: 'Who',
       whom: { femmes: 'Women', hommes: 'Men', tout_le_monde: 'Everyone' },
-      consent: 'I agree that Blowy may use this answer to choose who to introduce me to. It is not shown to anyone, and I can withdraw it in the Me tab.',
+      consent: 'I agree that Minimoa may use this answer to choose who to introduce me to. It is not shown to anyone, and I can withdraw it in the Me tab.',
       consentHint: 'Without this consent, choose “Friends”.',
       cta: 'Next',
     },
@@ -347,7 +347,7 @@ export const onboarding = messages({
       note: 'For people 18 and over only. Your date of birth is never shown.',
       cta: 'Next',
       tooYoungTitle: [{ text: 'COME BACK\n' }, { text: 'AT 18.', dim: true }],
-      tooYoungText: (pet: string) => `Blowy is for adults to meet each other. ${pet} will wait for you, promise.`,
+      tooYoungText: (pet: string) => `Minimoa is for adults to meet each other. ${pet} will wait for you, promise.`,
       tooYoungNote: 'Your minimoa wasn’t created, and we kept nothing about you.',
       tooYoungAction: 'Close',
     },
@@ -364,7 +364,7 @@ export const onboarding = messages({
     notifications: {
       host: 'Shall I tell you when someone waves at you?',
       highlight: 'someone waves at you',
-      app: 'Blowy',
+      app: 'Minimoa',
       previewA11y: 'Examples of notifications from your minimoa.',
       items: (pet: string) => [
         { title: 'Someone waved at you', body: `${pet} met a compatible minimoa.`, time: 'now' },
@@ -397,7 +397,7 @@ export const onboarding = messages({
       errors: {
         failed: 'Sign-in didn’t go through. Try again.',
       },
-      legalLead: 'Blowy is for ages 18 and up.',
+      legalLead: 'Minimoa is for ages 18 and up.',
       legalBefore: ' By continuing, you accept the ',
       legalTerms: 'terms of use',
       legalAnd: ' and the ',
@@ -449,14 +449,14 @@ export const onboarding = messages({
       copy: 'Copy',
       copied: 'Copied',
       share: 'Share to story',
-      shareMessage: (pet: string, url: string) => `I have a minimoa on Blowy, it’s called ${pet}. Come join, our minimoas will get along: ${url}`,
+      shareMessage: (pet: string, url: string) => `I have a minimoa on Minimoa, it’s called ${pet}. Come join, our minimoas will get along: ${url}`,
       cta: 'Here we go',
     },
     suspendu: {
       title: [{ text: 'ACCOUNT\n' }, { text: 'SUSPENDED.', dim: true }],
       fallback: 'Your account has been suspended following reports.',
       support: 'Contact support',
-      supportSubject: 'My Blowy account is suspended',
+      supportSubject: 'My Minimoa account is suspended',
       deleteLabel: 'Delete my account',
       deleteTitle: 'Delete your account?',
       deleteText: 'Your minimoa, your links and your messages will be erased. This is permanent.',
@@ -469,7 +469,7 @@ export const onboarding = messages({
     back: 'Atrás',
     progressLabel: 'Progreso del registro',
     welcome: {
-      brand: 'blowy',
+      brand: 'minimoa',
       sticker: 'Sin swipes · sin anuncios',
       title: [{ text: 'CRÍA\nA TU MINIMOA.\n' }, { text: 'ÉL TE PRESENTA\nA GENTE.', dim: true }],
       petName: 'Nino',
@@ -553,7 +553,7 @@ export const onboarding = messages({
       whomHost: '¿A quién quieres conocer?',
       whomHighlight: 'quién',
       whom: { femmes: 'Mujeres', hommes: 'Hombres', tout_le_monde: 'Todo el mundo' },
-      consent: 'Acepto que Blowy use esta respuesta para elegir a quién presentarme. No se muestra a nadie y puedo retirarla en la pestaña Yo.',
+      consent: 'Acepto que Minimoa use esta respuesta para elegir a quién presentarme. No se muestra a nadie y puedo retirarla en la pestaña Yo.',
       consentHint: 'Sin este consentimiento, elige «Amistad».',
       cta: 'Siguiente',
     },
@@ -569,7 +569,7 @@ export const onboarding = messages({
       note: 'Solo para mayores de 18 años. Tu fecha nunca se muestra.',
       cta: 'Siguiente',
       tooYoungTitle: [{ text: 'VUELVE\n' }, { text: 'A LOS 18.', dim: true }],
-      tooYoungText: (pet: string) => `Blowy es para que se conozcan personas adultas. ${pet} te esperará, prometido.`,
+      tooYoungText: (pet: string) => `Minimoa es para que se conozcan personas adultas. ${pet} te esperará, prometido.`,
       tooYoungNote: 'Tu minimoa no se ha creado y no hemos guardado nada sobre ti.',
       tooYoungAction: 'Cerrar',
     },
@@ -586,7 +586,7 @@ export const onboarding = messages({
     notifications: {
       host: '¿Te aviso cuando alguien te salude?',
       highlight: 'alguien te salude',
-      app: 'Blowy',
+      app: 'Minimoa',
       previewA11y: 'Ejemplos de notificaciones de tu minimoa.',
       items: (pet: string) => [
         { title: 'Alguien te ha saludado', body: `${pet} se ha cruzado con un minimoa compatible.`, time: 'ahora' },
@@ -619,7 +619,7 @@ export const onboarding = messages({
       errors: {
         failed: 'No se pudo iniciar sesión. Inténtalo de nuevo.',
       },
-      legalLead: 'Blowy es para mayores de 18 años.',
+      legalLead: 'Minimoa es para mayores de 18 años.',
       legalBefore: ' Al continuar, aceptas las ',
       legalTerms: 'condiciones de uso',
       legalAnd: ' y la ',
@@ -671,14 +671,14 @@ export const onboarding = messages({
       copy: 'Copiar',
       copied: 'Copiado',
       share: 'Compartir en historia',
-      shareMessage: (pet: string, url: string) => `Tengo un minimoa en Blowy, se llama ${pet}. Ven, nuestros minimoas se van a caer bien: ${url}`,
+      shareMessage: (pet: string, url: string) => `Tengo un minimoa en Minimoa, se llama ${pet}. Ven, nuestros minimoas se van a caer bien: ${url}`,
       cta: 'Adelante',
     },
     suspendu: {
       title: [{ text: 'CUENTA\n' }, { text: 'SUSPENDIDA.', dim: true }],
       fallback: 'Tu cuenta está suspendida tras varios reportes.',
       support: 'Escribir a soporte',
-      supportSubject: 'Mi cuenta de Blowy está suspendida',
+      supportSubject: 'Mi cuenta de Minimoa está suspendida',
       deleteLabel: 'Eliminar mi cuenta',
       deleteTitle: '¿Eliminar tu cuenta?',
       deleteText: 'Tu minimoa, tus vínculos y tus mensajes se borrarán. Es definitivo.',
@@ -691,7 +691,7 @@ export const onboarding = messages({
     back: 'Voltar',
     progressLabel: 'Progresso do cadastro',
     welcome: {
-      brand: 'blowy',
+      brand: 'minimoa',
       sticker: 'Sem swipe · sem anúncios',
       title: [{ text: 'CRIE\nSEU MINIMOA.\n' }, { text: 'ELE TE APRESENTA\nGENTE NOVA.', dim: true }],
       petName: 'Nino',
@@ -775,7 +775,7 @@ export const onboarding = messages({
       whomHost: 'Você quer conhecer quem?',
       whomHighlight: 'quem',
       whom: { femmes: 'Mulheres', hommes: 'Homens', tout_le_monde: 'Todo mundo' },
-      consent: 'Aceito que o Blowy use esta resposta para escolher quem me apresentar. Ela não é mostrada a ninguém, e posso retirá-la na aba Eu.',
+      consent: 'Aceito que o Minimoa use esta resposta para escolher quem me apresentar. Ela não é mostrada a ninguém, e posso retirá-la na aba Eu.',
       consentHint: 'Sem esse consentimento, escolha “Amizade”.',
       cta: 'Avançar',
     },
@@ -791,7 +791,7 @@ export const onboarding = messages({
       note: 'Só para maiores de 18 anos. Sua data nunca é exibida.',
       cta: 'Avançar',
       tooYoungTitle: [{ text: 'VOLTE\n' }, { text: 'AOS 18.', dim: true }],
-      tooYoungText: (pet: string) => `O Blowy é para pessoas adultas se conhecerem. ${pet} vai te esperar, prometo.`,
+      tooYoungText: (pet: string) => `O Minimoa é para pessoas adultas se conhecerem. ${pet} vai te esperar, prometo.`,
       tooYoungNote: 'Seu minimoa não foi criado, e não guardamos nada sobre você.',
       tooYoungAction: 'Fechar',
     },
@@ -808,7 +808,7 @@ export const onboarding = messages({
     notifications: {
       host: 'Posso te avisar quando alguém acenar para você?',
       highlight: 'alguém acenar para você',
-      app: 'Blowy',
+      app: 'Minimoa',
       previewA11y: 'Exemplos de notificações do seu minimoa.',
       items: (pet: string) => [
         { title: 'Alguém acenou para você', body: `${pet} cruzou com um minimoa compatível.`, time: 'agora' },
@@ -841,7 +841,7 @@ export const onboarding = messages({
       errors: {
         failed: 'Não foi possível entrar. Tente de novo.',
       },
-      legalLead: 'O Blowy é só para maiores de 18 anos.',
+      legalLead: 'O Minimoa é só para maiores de 18 anos.',
       legalBefore: ' Ao continuar, você aceita os ',
       legalTerms: 'termos de uso',
       legalAnd: ' e a ',
@@ -893,14 +893,14 @@ export const onboarding = messages({
       copy: 'Copiar',
       copied: 'Copiado',
       share: 'Compartilhar no story',
-      shareMessage: (pet: string, url: string) => `Tenho um minimoa no Blowy, ele se chama ${pet}. Vem também, nossos minimoas vão se dar bem: ${url}`,
+      shareMessage: (pet: string, url: string) => `Tenho um minimoa no Minimoa, ele se chama ${pet}. Vem também, nossos minimoas vão se dar bem: ${url}`,
       cta: 'Partiu',
     },
     suspendu: {
       title: [{ text: 'CONTA\n' }, { text: 'SUSPENSA.', dim: true }],
       fallback: 'Sua conta foi suspensa após denúncias.',
       support: 'Falar com o suporte',
-      supportSubject: 'Minha conta do Blowy está suspensa',
+      supportSubject: 'Minha conta do Minimoa está suspensa',
       deleteLabel: 'Excluir minha conta',
       deleteTitle: 'Excluir sua conta?',
       deleteText: 'Seu minimoa, seus vínculos e suas mensagens serão apagados. É definitivo.',
@@ -913,7 +913,7 @@ export const onboarding = messages({
     back: 'Terug',
     progressLabel: 'Voortgang van je aanmelding',
     welcome: {
-      brand: 'blowy',
+      brand: 'minimoa',
       sticker: 'Geen swipen · geen reclame',
       title: [{ text: 'VOED JE\nMINIMOA OP.\n' }, { text: 'HIJ STELT JE\nAAN MENSEN VOOR.', dim: true }],
       petName: 'Nino',
@@ -997,7 +997,7 @@ export const onboarding = messages({
       whomHost: 'Wie wil je ontmoeten?',
       whomHighlight: 'Wie',
       whom: { femmes: 'Vrouwen', hommes: 'Mannen', tout_le_monde: 'Iedereen' },
-      consent: 'Ik ga ermee akkoord dat Blowy dit antwoord gebruikt om te kiezen aan wie ik word voorgesteld. Het wordt aan niemand getoond en ik kan het intrekken onder Ik.',
+      consent: 'Ik ga ermee akkoord dat Minimoa dit antwoord gebruikt om te kiezen aan wie ik word voorgesteld. Het wordt aan niemand getoond en ik kan het intrekken onder Ik.',
       consentHint: 'Zonder deze toestemming kies je “Vrienden”.',
       cta: 'Volgende',
     },
@@ -1013,7 +1013,7 @@ export const onboarding = messages({
       note: 'Alleen voor 18 jaar en ouder. Je geboortedatum wordt nooit getoond.',
       cta: 'Volgende',
       tooYoungTitle: [{ text: 'KOM TERUG\n' }, { text: 'OP JE 18E.', dim: true }],
-      tooYoungText: (pet: string) => `Blowy laat volwassenen elkaar ontmoeten. ${pet} wacht op je, beloofd.`,
+      tooYoungText: (pet: string) => `Minimoa laat volwassenen elkaar ontmoeten. ${pet} wacht op je, beloofd.`,
       tooYoungNote: 'Je minimoa is niet aangemaakt, en we hebben niets over je bewaard.',
       tooYoungAction: 'Sluiten',
     },
@@ -1030,7 +1030,7 @@ export const onboarding = messages({
     notifications: {
       host: 'Zal ik het melden als iemand naar je zwaait?',
       highlight: 'iemand naar je zwaait',
-      app: 'Blowy',
+      app: 'Minimoa',
       previewA11y: 'Voorbeelden van meldingen van je minimoa.',
       items: (pet: string) => [
         { title: 'Iemand zwaait naar je', body: `${pet} kwam een compatibele minimoa tegen.`, time: 'nu' },
@@ -1063,7 +1063,7 @@ export const onboarding = messages({
       errors: {
         failed: 'Inloggen is niet gelukt. Probeer het opnieuw.',
       },
-      legalLead: 'Blowy is voor 18 jaar en ouder.',
+      legalLead: 'Minimoa is voor 18 jaar en ouder.',
       legalBefore: ' Door verder te gaan, ga je akkoord met de ',
       legalTerms: 'gebruiksvoorwaarden',
       legalAnd: ' en het ',
@@ -1115,14 +1115,14 @@ export const onboarding = messages({
       copy: 'Kopiëren',
       copied: 'Gekopieerd',
       share: 'Delen in je story',
-      shareMessage: (pet: string, url: string) => `Ik heb een minimoa op Blowy, hij heet ${pet}. Kom ook, onze minimoas gaan het goed met elkaar kunnen vinden: ${url}`,
+      shareMessage: (pet: string, url: string) => `Ik heb een minimoa op Minimoa, hij heet ${pet}. Kom ook, onze minimoas gaan het goed met elkaar kunnen vinden: ${url}`,
       cta: 'Aan de slag',
     },
     suspendu: {
       title: [{ text: 'ACCOUNT\n' }, { text: 'GESCHORST.', dim: true }],
       fallback: 'Je account is geschorst na meldingen.',
       support: 'Support mailen',
-      supportSubject: 'Mijn Blowy-account is geschorst',
+      supportSubject: 'Mijn Minimoa-account is geschorst',
       deleteLabel: 'Mijn account verwijderen',
       deleteTitle: 'Je account verwijderen?',
       deleteText: 'Je minimoa, je banden en je berichten worden gewist. Dit is definitief.',

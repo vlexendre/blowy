@@ -79,7 +79,7 @@ export interface MapPlusStripProps {
   onPress: () => void;
 }
 
-/** Bandeau Blowy+ de la carte (violet) : toute la bande se touche. */
+/** Bandeau Minimoa+ de la carte (violet) : toute la bande se touche. */
 export function MapPlusStrip({ title, text, ctaLabel, onPress }: MapPlusStripProps) {
   return (
     <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="button" accessibilityLabel={`${title}. ${text}`}>

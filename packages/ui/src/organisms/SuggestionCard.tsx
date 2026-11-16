@@ -30,7 +30,7 @@ export interface SuggestionCardProps {
   wavedLabel: string;
   onWave?: () => void;
   waving?: boolean;
-  /** Version verrouillée (Blowy+) : petite tuile floue. */
+  /** Version verrouillée (Minimoa+) : petite tuile floue. */
   locked?: boolean;
   /** Légende de la tuile verrouillée (« par la bande du 11e »). */
   lockedCaption?: string;

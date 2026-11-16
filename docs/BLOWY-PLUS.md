@@ -1,6 +1,6 @@
-# Blowy+ : ce qu'il faut créer côté Apple, et comment tester
+# Minimoa+ : ce qu'il faut créer côté Apple, et comment tester
 
-Blowy+ est vendu en achat intégré Apple et vérifié directement par notre API (aucun intermédiaire payant).
+Minimoa+ est vendu en achat intégré Apple et vérifié directement par notre API (aucun intermédiaire payant).
 L'API vérifie localement les transactions signées par Apple ; elle n'a besoin d'aucune clé secrète pour cela.
 
 ## Les offres
@@ -14,12 +14,12 @@ Les identifiants sont des réglages (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHL
 Connect, les changer aussi dans `apps/api/.env`. Les prix réellement affichés viennent de StoreKit (localisés) ;
 l'API ne fournit que des prix de repli.
 
-## Ce que Blowy+ ouvre, et la fin de l'abonnement
+## Ce que Minimoa+ ouvre, et la fin de l'abonnement
 
 Les limites viennent de `entitlements(hasPlus(...))` (`packages/domain/src/entitlements.ts`). Les objets premium de la
-garde-robe (`unlock.kind === 'premium'`, 13 objets) sont à la personne tant que Blowy+ est actif
-(`Wardrobe.state`, `ownedWith`) et se portent comme les autres ; sans Blowy+, leur fiche ouvre Blowy+
-(`openPlus('premium_item')`). **Quand Blowy+ prend fin, le minimoa les range** : à la prochaine ouverture de l'app par sa
+garde-robe (`unlock.kind === 'premium'`, 13 objets) sont à la personne tant que Minimoa+ est actif
+(`Wardrobe.state`, `ownedWith`) et se portent comme les autres ; sans Minimoa+, leur fiche ouvre Minimoa+
+(`openPlus('premium_item')`). **Quand Minimoa+ prend fin, le minimoa les range** : à la prochaine ouverture de l'app par sa
 personne (`Wardrobe.settle`), et pour les autres par le minuteur (`WardrobeJobs`, `modules/tick/jobs.ts`). Ils reviennent
 avec un nouvel abonnement. Le reste de la tenue ne bouge pas.
 
@@ -27,12 +27,12 @@ avec un nouvel abonnement. Le reste de la tenue ne bouge pas.
 
 1. **Contrat** : « Accords, taxes et banques » → accord des Apps payantes signé, coordonnées bancaires et fiscales
    remplies (sans cela, aucun achat ne fonctionne, même en bac à sable).
-2. **Groupe d'abonnements** : Mon app → Monétisation → Abonnements → créer le groupe **Blowy+**. Les deux offres
+2. **Groupe d'abonnements** : Mon app → Monétisation → Abonnements → créer le groupe **Minimoa+**. Les deux offres
    doivent être dans **le même groupe** (on ne peut avoir qu'un abonnement actif à la fois, et passer de l'un à l'autre).
 3. **Les deux abonnements** dans ce groupe :
-   - Référence « Blowy+ annuel », identifiant produit `app.blowy.plus.yearly`, durée **1 an**, prix 59,88 € (France ;
+   - Référence « Minimoa+ annuel », identifiant produit `app.blowy.plus.yearly`, durée **1 an**, prix 59,88 € (France ;
      laisser Apple calculer les autres pays ou les fixer), nom affiché et description en français (et EN, ES, PT, NL).
-   - Référence « Blowy+ mensuel », identifiant `app.blowy.plus.monthly`, durée **1 mois**, prix 14,99 €.
+   - Référence « Minimoa+ mensuel », identifiant `app.blowy.plus.monthly`, durée **1 mois**, prix 14,99 €.
    - Niveaux de service dans le groupe : annuel et mensuel au même niveau (mêmes avantages).
    - Ajouter une capture du paywall pour la revue de chaque abonnement.
 4. **L'essai gratuit** : sur l'abonnement annuel → Prix de l'abonnement → « Configurer une offre d'introduction » →
@@ -88,7 +88,7 @@ l'App Store Server API (voir `apps/api/README.md`).
 6. Annuler depuis Réglages → identifiant → Abonnements : notification `DID_CHANGE_RENEWAL_STATUS`, l'API passe
    `willRenew: false`.
 7. En bac à sable, Apple n'envoie chaque notification qu'une fois (pas de renvoi) : surveiller les journaux de l'API
-   (`[Blowy+]`).
+   (`[Minimoa+]`).
 8. Le journal `store_notifications` (table, lecture par la clé service) garde chaque notification 30 jours (journal technique) avec son
    résultat (`applied`, `unlinked`, `duplicate`, `ignored`, `test`).
 

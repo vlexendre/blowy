@@ -79,7 +79,7 @@ function Shell({ email }: { email: string }) {
     return () => window.removeEventListener('hashchange', on);
   }, []);
   useEffect(() => {
-    document.title = `${ROUTES.find(([k]) => k === route)?.[1]} · Blowy administration`;
+    document.title = `${ROUTES.find(([k]) => k === route)?.[1]} · Minimoa administration`;
     document.querySelector<HTMLElement>('main h1')?.focus?.();
   }, [route]);
 
@@ -95,7 +95,7 @@ function Shell({ email }: { email: string }) {
     <div className="shell">
       <aside className="side">
         <p className="brand">
-          Blowy<small>Administration</small>
+          Minimoa<small>Administration</small>
         </p>
         <nav className="nav" aria-label="Sections">
           {ROUTES.map(([k, label]) => (

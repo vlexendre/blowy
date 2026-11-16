@@ -1,7 +1,7 @@
 /**
  * Ses habitudes (V6-GHabitudes) : celles suivies (série, preuve du jour), les objets qu'elles font gagner. Le
- * catalogue est dans la feuille « Ajouter une habitude » (la limite, 2 sans Blowy+, 6 avec, y est dite telle quelle ;
- * une ligne verrouillée ouvre Blowy+) ; le rythme et « arrêter » dans la feuille « Régler » de chaque habitude.
+ * catalogue est dans la feuille « Ajouter une habitude » (la limite, 2 sans Minimoa+, 6 avec, y est dite telle quelle ;
+ * une ligne verrouillée ouvre Minimoa+) ; le rythme et « arrêter » dans la feuille « Régler » de chaque habitude.
  */
 import type { HabitDef } from '@blowy/contract';
 import { itemLabel } from '@/locales/content';
@@ -103,7 +103,7 @@ export default function HabitsScreen() {
 
   const startAdd = (def: HabitDef) => {
     if (full) {
-      // Blowy+ monte en feuille : on attend que le catalogue soit redescendu (iOS ne présente pas deux modales à la fois).
+      // Minimoa+ monte en feuille : on attend que le catalogue soit redescendu (iOS ne présente pas deux modales à la fois).
       setPicking(false);
       if (!plus) setTimeout(() => openPlus('habits_limit'), 320);
       return;
@@ -120,7 +120,7 @@ export default function HabitsScreen() {
     setEditing({ ref, label });
   };
   const edited = editing ? h.habits.find((x) => x.ref === editing.ref) : undefined;
-  /** « Ajouter une habitude » : tant qu'il en reste à ajouter (complet sans Blowy+ : les lignes ouvrent Blowy+). */
+  /** « Ajouter une habitude » : tant qu'il en reste à ajouter (complet sans Minimoa+ : les lignes ouvrent Minimoa+). */
   const canOpenCatalogue = available.length > 0 && !(full && plus);
 
   return (

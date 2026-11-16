@@ -18,7 +18,7 @@ import { DEMO_LEA, DEMO_MALO, DEMO_PEOPLE, DEMO_SASHA, demoMaloMessages } from '
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
 
-/** Blowy+ des personnes de démo qui portent des objets premium. */
+/** Minimoa+ des personnes de démo qui portent des objets premium. */
 const DEMO_PLUS_UNTIL = '2099-01-01T00:00:00.000Z';
 
 /**
@@ -68,7 +68,7 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
         avatarPath: null,
         inviteCode: p.inviteCode,
         wordsCode: p.wordsCode,
-        // Une personne qui porte des objets premium a Blowy+ (sans lui, son minimoa les range : audit B3).
+        // Une personne qui porte des objets premium a Minimoa+ (sans lui, son minimoa les range : audit B3).
         plusUntil: Object.values(p.outfit).some((id) => id !== undefined && isPremiumItem(id)) ? DEMO_PLUS_UNTIL : null,
         welcomeSentAt: now,
         createdAt: now,

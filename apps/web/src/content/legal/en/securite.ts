@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const securite: LegalPage = {
-  title: 'Safety and reporting — Blowy',
+  title: 'Safety and reporting — Minimoa',
   heading: 'Safety and reporting',
-  description: 'How to report or block someone in Blowy, what happens next, our advice for a first meeting, emergency numbers, and our child-safety policy.',
+  description: 'How to report or block someone in Minimoa, what happens next, our advice for a first meeting, emergency numbers, and our child-safety policy.',
   intro: 'How to report, block, protect yourself, and whom to call in an emergency.',
   body: [
     { note: '**In immediate danger?** Call **112** (emergency number anywhere in the European Union). In France: **17** (police), or text **114** if you cannot speak.' },
@@ -26,7 +26,7 @@ export const securite: LegalPage = {
     {
       ul: [
         'The moderation team is **notified by email** of every report: straight away for anything urgent (minor, threat), otherwise in a digest. **Target: a response within 24 hours**; beyond that, the report moves to the top of the queue.',
-        'A Blowy moderator reads **the reported message and its immediate context**, and nothing else from your conversations.',
+        'A Minimoa moderator reads **the reported message and its immediate context**, and nothing else from your conversations.',
         'Depending on how serious it is: content removal, warning, restriction, suspension or closure of the account. Anything illegal may be passed on to the authorities.',
         'An account reported as a minor by two different people is suspended automatically, until the moderator looks at it.',
         'The app confirms that your report has been sent. To protect everyone’s privacy, we do not keep you informed about the sanction.',
@@ -63,7 +63,7 @@ export const securite: LegalPage = {
         '**Trust yourself**: if something feels off, you can leave, without explaining.',
       ],
     },
-    { p: 'A compatibility score, however high, guarantees nothing about a person. Blowy does not verify users’ identity.' },
+    { p: 'A compatibility score, however high, guarantees nothing about a person. Minimoa does not verify users’ identity.' },
 
     { h2: 'Useful numbers', id: 'urgences' },
     {
@@ -87,7 +87,7 @@ export const securite: LegalPage = {
 
     { h2: 'Child safety', id: 'mineurs' },
     {
-      p: 'Blowy is only for adults aged 18 and over. The date of birth is asked before sign-in; under 18, sign-up stops and nothing is created.',
+      p: 'Minimoa is only for adults aged 18 and over. The date of birth is asked before sign-in; under 18, sign-up stops and nothing is created.',
     },
     {
       p: '**Zero tolerance** for any content or behaviour that sexualises or endangers a minor. As soon as we become aware of it: the content is removed, the account is closed permanently, and the facts are reported to the competent authorities.',

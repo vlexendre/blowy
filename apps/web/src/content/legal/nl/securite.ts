@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const securite: LegalPage = {
-  title: 'Veiligheid en melden — Blowy',
+  title: 'Veiligheid en melden — Minimoa',
   heading: 'Veiligheid en melden',
-  description: 'Hoe je iemand meldt of blokkeert in Blowy, wat er daarna gebeurt, onze tips voor een eerste afspraak, noodnummers en ons beleid voor de bescherming van minderjarigen.',
+  description: 'Hoe je iemand meldt of blokkeert in Minimoa, wat er daarna gebeurt, onze tips voor een eerste afspraak, noodnummers en ons beleid voor de bescherming van minderjarigen.',
   intro: 'Hoe je meldt, blokkeert, jezelf beschermt, en wie je belt in een noodgeval.',
   body: [
     { note: '**Direct in gevaar?** Bel **112** (alarmnummer in de hele Europese Unie). In Frankrijk: **17** (politie), of sms naar **114** als je niet kunt praten.' },
@@ -26,7 +26,7 @@ export const securite: LegalPage = {
     {
       ul: [
         'Het moderatieteam krijgt van elke melding **een e-mail**: meteen bij iets dringends (minderjarige, bedreiging), anders in een overzicht. **Doel: een reactie binnen 24 uur**; daarna komt de melding bovenaan de wachtrij.',
-        'Een moderator van Blowy leest **het gemelde bericht en de directe context**, en verder niets van je gesprekken.',
+        'Een moderator van Minimoa leest **het gemelde bericht en de directe context**, en verder niets van je gesprekken.',
         'Afhankelijk van de ernst: verwijdering van de inhoud, waarschuwing, beperking, opschorting of sluiting van het account. Wat illegaal is, kan aan de autoriteiten worden doorgegeven.',
         'Een account dat door twee verschillende mensen als minderjarig is gemeld, wordt automatisch geschorst tot de moderator ernaar kijkt.',
         'De app bevestigt dat je melding is verstuurd. Om ieders privacy te beschermen, houden we je niet op de hoogte van de sanctie.',
@@ -63,7 +63,7 @@ export const securite: LegalPage = {
         '**Luister naar jezelf**: voelt iets niet goed, dan kun je gaan, zonder uitleg.',
       ],
     },
-    { p: 'Een compatibiliteit, hoe hoog ook, garandeert niets over een persoon. Blowy controleert de identiteit van gebruikers niet.' },
+    { p: 'Een compatibiliteit, hoe hoog ook, garandeert niets over een persoon. Minimoa controleert de identiteit van gebruikers niet.' },
 
     { h2: 'Handige nummers', id: 'urgences' },
     {
@@ -87,7 +87,7 @@ export const securite: LegalPage = {
 
     { h2: 'Bescherming van minderjarigen', id: 'mineurs' },
     {
-      p: 'Blowy is alleen voor volwassenen van 18 jaar en ouder. De geboortedatum wordt gevraagd vóór het inloggen; onder de 18 stopt de aanmelding en wordt er niets aangemaakt.',
+      p: 'Minimoa is alleen voor volwassenen van 18 jaar en ouder. De geboortedatum wordt gevraagd vóór het inloggen; onder de 18 stopt de aanmelding en wordt er niets aangemaakt.',
     },
     {
       p: '**Nultolerantie** voor elke inhoud of elk gedrag dat een minderjarige seksualiseert of in gevaar brengt. Zodra we ervan weten: de inhoud wordt verwijderd, het account wordt definitief gesloten, en de feiten worden gemeld bij de bevoegde autoriteiten.',

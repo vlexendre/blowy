@@ -1,5 +1,5 @@
 /**
- * Sans localisation : choisir sa ville à la main (gratuit ; une fois tous les 30 jours sans Blowy+), parmi la même
+ * Sans localisation : choisir sa ville à la main (gratuit ; une fois tous les 30 jours sans Minimoa+), parmi la même
  * liste que « Changer de ville ». Le serveur arrondit et garde la ville comme zone ; les rencontres et la carte s'y
  * centrent.
  */

@@ -18,7 +18,7 @@ export interface LocationState {
 
 /**
  * Position (app ouverte seulement), zone du domicile, zone choisie à la main sans localisation (gratuit) et ville
- * choisie (Blowy+). Rien n'est enregistré sans accord explicite ; retirer l'accord efface la position.
+ * choisie (Minimoa+). Rien n'est enregistré sans accord explicite ; retirer l'accord efface la position.
  * Confidentialité : un relevé n'est jamais enregistré plus précis que la maille de ~300 m (`storedPoint`) ; le point
  * exact sert seulement, en mémoire et pendant la requête, à savoir si la personne est hors de sa zone (sortie).
  */
@@ -77,7 +77,7 @@ export class Locations {
 
   /**
    * Zone choisie à la main, sans localisation (gratuit) : une ville de la liste devient le centre des rencontres et de
-   * la carte. Gratuit : une fois tous les 30 jours ; Blowy+ : quand on veut. Choisir une zone vaut accord pour qu'elle
+   * la carte. Gratuit : une fois tous les 30 jours ; Minimoa+ : quand on veut. Choisir une zone vaut accord pour qu'elle
    * serve (la position du téléphone n'est pas demandée). Refusé si la zone vient déjà du téléphone.
    */
   async chooseArea(userId: string, city: ChosenCityRecord): Promise<LocationState> {
@@ -124,7 +124,7 @@ export class Locations {
     return { profile, place: null, plus: hasPlus(profile, this.clock.now()) };
   }
 
-  /** Changer de ville (Blowy+) : déplace le centre des rencontres, pas la zone montrée aux autres. */
+  /** Changer de ville (Minimoa+) : déplace le centre des rencontres, pas la zone montrée aux autres. */
   async chooseCity(userId: string, city: ChosenCityRecord): Promise<LocationState> {
     const s = await this.state(userId);
     if (!entitlements(s.plus).changeCity) throw new DomainError('forbidden', textOf(visionText, (t) => t.errors.changeCityPlus));

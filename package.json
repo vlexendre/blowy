@@ -2,7 +2,7 @@
   "name": "blowy",
   "private": true,
   "version": "1.0.0",
-  "description": "Blowy — Élève ton minimoa. Il te présente du monde.",
+  "description": "Minimoa — Élève ton minimoa. Il te présente du monde.",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22.12"

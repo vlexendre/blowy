@@ -1,5 +1,5 @@
 /**
- * Blowy+ : offres, essai gratuit et cycle de vie d'un abonnement (pur, sans horloge).
+ * Minimoa+ : offres, essai gratuit et cycle de vie d'un abonnement (pur, sans horloge).
  * Les magasins (Apple aujourd'hui, Google plus tard) envoient des événements signés ; l'API les vérifie,
  * les ramène à un `StoreEvent` et laisse `applyStoreEvent` calculer l'état. `plusUntilOf` donne ensuite
  * la valeur de `profiles.plus_until`, seule source de `hasPlus`.
@@ -143,7 +143,7 @@ export function applyStoreEvent(prev: SubscriptionState | null, e: StoreEvent): 
   };
 }
 
-/** Valeur de `profiles.plus_until` : jusqu'à quand Blowy+ est ouvert. Null si jamais ou plus du tout. */
+/** Valeur de `profiles.plus_until` : jusqu'à quand Minimoa+ est ouvert. Null si jamais ou plus du tout. */
 export function plusUntilOf(s: SubscriptionState | null): string | null {
   if (!s) return null;
   switch (s.status) {

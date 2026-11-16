@@ -1,4 +1,4 @@
-# Blowy — règles de design (app)
+# Minimoa — règles de design (app)
 
 Ce que la passe de finition V7 a fixé, pour que l'app reste une seule app. Le look est celui de V6 : le minimoa dans son
 panneau de couleur, autocollants et puces inclinées, grands titres Anton avec une seconde ligne estompée, barre d'onglets
@@ -36,7 +36,7 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - Fond `night`, cartes `panel` (un cran : `card`), filets `line` / `veil.hairline`.
 - Texte : blanc ; secondaire `mute` (7,4:1 sur `panel`).
 - Action principale : jaune `accent` avec encre sombre (10,8:1). Une seule par écran.
-- Danger `danger` (et `dangerSoft` pour une ligne destructive), succès `ok`, Blowy+ violet → corail.
+- Danger `danger` (et `dangerSoft` pour une ligne destructive), succès `ok`, Minimoa+ violet → corail.
 - Panneaux : dégradé de l'espèce (`speciesGradient`). Encre : `onGradient` (sombre sur jaune, orange, rose ; blanc sur
   corail, violet, lie-de-vin). **Petits textes sur le corail : encre sombre** (le blanc n'y tient pas 4,5:1). Le violet
   finit sur `#8253F4` pour que le blanc y tienne 4,5:1 partout.
@@ -55,7 +55,7 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
   bouton calme désactivé avec coche (« En attente »), pas un bouton jaune.
 - **Compatibilité** : le pourquoi d'abord (`MatchWhy` : une ligne « 3 points communs · 1 différence à explorer », puis les
   axes, pleins en commun, cerclé à explorer), le chiffre ensuite en petit (`CompatPill inline`), jamais seul.
-- **Feuilles** : `SheetTemplate` ; une feuille d'achat garde son action dans une barre fixe en bas (Blowy+ : bouton,
+- **Feuilles** : `SheetTemplate` ; une feuille d'achat garde son action dans une barre fixe en bas (Minimoa+ : bouton,
   ligne de renouvellement, « Restaurer mes achats · Conditions · Confidentialité »), le reste défile au-dessus.
 - **Chargement** : squelettes à la forme du contenu (`Skeleton`), `Loader` dans un bouton ; jamais de roue.
 - **Vide / erreur** : `EmptyState peek` (minimoa qui passe la tête, titre Anton court, une phrase, une action) ;
@@ -67,6 +67,6 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 
 ## À faire / à ne pas faire
 - Faire : une action principale jaune par écran ; dire la conséquence avant de demander (autorisations) ; textes courts,
-  adultes, au tutoiement, sans genre supposé ; les avantages Blowy+ lus d'une seule source (`usePlusPerks`).
+  adultes, au tutoiement, sans genre supposé ; les avantages Minimoa+ lus d'une seule source (`usePlusPerks`).
 - Ne pas faire : texte sous 13 pt ; texte blanc fin sur corail ; pourcentage sans explication ; empiler des cartes d'entrée ;
   `push` vers un onglet ; animation qui bloque ; un minimoa par-dessus une carte ; un prix écrit dans une phrase.

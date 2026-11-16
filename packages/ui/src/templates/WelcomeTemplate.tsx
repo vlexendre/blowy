@@ -23,7 +23,7 @@ import { alpha, color, gradient, motion, radius, shadow, size, space, veil } fro
 import type { PetLook, TitleContent } from '../types';
 
 export interface WelcomeTemplateProps {
-  /** Marque (« blowy ») : le point jaune est ajouté. */
+  /** Marque (« minimoa ») : le point jaune est ajouté. */
   brand: string;
   /** Puce à droite de la marque (« pas de swipe · pas de pub »). */
   tagline: string;

@@ -5,7 +5,7 @@ const isoOf = (ms: number | null): string | null => (ms === null ? null : new Da
 
 /**
  * Ramène une transaction Apple vérifiée (et, si connus, son renouvellement et sa notification) à un événement
- * du domaine. Null si le produit n'est pas un abonnement Blowy+.
+ * du domaine. Null si le produit n'est pas un abonnement Minimoa+.
  */
 export function appleStoreEvent(
   products: PlusProducts,
@@ -16,7 +16,7 @@ export function appleStoreEvent(
   const plan = planOfProduct(products, tx.productId);
   if (!plan) return null;
   // Offre d'introduction gratuite : `offerDiscountType` = FREE_TRIAL ; les magasins plus anciens ne donnent que
-  // `offerType` = 1 (introduction), et la seule offre d'introduction de Blowy+ est l'essai gratuit.
+  // `offerType` = 1 (introduction), et la seule offre d'introduction de Minimoa+ est l'essai gratuit.
   const freeTrial = tx.offerDiscountType === 'FREE_TRIAL' || (tx.offerDiscountType === null && tx.offerType === 1);
   const usableRenewal = renewal && renewal.originalTransactionId === tx.originalTransactionId ? renewal : null;
   return {

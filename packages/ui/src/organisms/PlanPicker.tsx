@@ -26,7 +26,7 @@ export interface PlanPickerProps<K extends string = string> {
   onChange: (key: K) => void;
 }
 
-/** Choix de la formule Blowy+ : cartes côte à côte, la choisie en blanc (elle rebondit quand on la choisit). */
+/** Choix de la formule Minimoa+ : cartes côte à côte, la choisie en blanc (elle rebondit quand on la choisit). */
 export function PlanPicker<K extends string>({ plans, value, onChange }: PlanPickerProps<K>) {
   return (
     <View accessibilityRole="radiogroup" style={[layout.row, styles.wrap]}>

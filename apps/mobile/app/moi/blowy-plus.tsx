@@ -1,5 +1,5 @@
 /**
- * Blowy+ en feuille, par-dessus l'écran d'où on vient (Moi, réglages, garde-robe, carte, habitudes, renommage, bilan) :
+ * Minimoa+ en feuille, par-dessus l'écran d'où on vient (Moi, réglages, garde-robe, carte, habitudes, renommage, bilan) :
  * `openPlus(raison, { item })`. Le titre dit ce que la personne vient d'essayer ; membre : l'état de l'abonnement et
  * « Gérer mon abonnement ». La fermer revient à l'écran d'en dessous.
  */

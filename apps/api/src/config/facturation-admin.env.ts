@@ -1,4 +1,4 @@
-/** Variables du chantier « facturation-admin » (Blowy+ et administration), validées au démarrage. */
+/** Variables du chantier « facturation-admin » (Minimoa+ et administration), validées au démarrage. */
 import { z } from 'zod';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);

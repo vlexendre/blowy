@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const regles: LegalPage = {
-  title: 'Community rules — Blowy',
+  title: 'Community rules — Minimoa',
   heading: 'Community rules',
-  description: 'Blowy’s rules: respect, consent, no harassment, no minors, no sexual content. What happens if they are not followed.',
+  description: 'Minimoa’s rules: respect, consent, no harassment, no minors, no sexual content. What happens if they are not followed.',
   intro: 'Minimoas, with real humans behind them. To keep this a place people want to come back to, a few simple rules.',
   body: [
     { h2: 'Respect people', id: 'respect' },
@@ -21,7 +21,7 @@ export const regles: LegalPage = {
 
     { h2: '18 and over, no exceptions', id: 'majeurs' },
     {
-      p: 'Blowy is for adults only. Any account belonging to a minor is deleted. Any content that sexualises a minor is removed, its author is banned, and we report it to the authorities. If you think you are talking to a minor, report them with the reason “Minor”.',
+      p: 'Minimoa is for adults only. Any account belonging to a minor is deleted. Any content that sexualises a minor is removed, its author is banned, and we report it to the authorities. If you think you are talking to a minor, report them with the reason “Minor”.',
     },
 
     { h2: 'No nudity or sexual content', id: 'contenus' },

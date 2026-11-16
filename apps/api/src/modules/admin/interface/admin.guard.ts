@@ -17,7 +17,7 @@ export class AdminGuard implements CanActivate {
     const user = ctx.switchToHttp().getRequest<Request & { user?: AuthUser }>().user;
     if (!user) throw new DomainError('unauthorized');
     const email = user.email?.trim().toLowerCase();
-    if (!email || !this.env.facturationAdmin.adminEmails.includes(email)) throw new DomainError('forbidden', 'Accès réservé à l’équipe Blowy.');
+    if (!email || !this.env.facturationAdmin.adminEmails.includes(email)) throw new DomainError('forbidden', 'Accès réservé à l’équipe Minimoa.');
     return true;
   }
 }

@@ -31,7 +31,7 @@ Les autres chantiers n'écrivent jamais dans les tables de la vision : ils appel
 
 ## Abonnement (chantier « facturation-admin »)
 
-- `hasPlus(profile, now)` existe déjà (`apps/api/src/modules/me/application/plus.ts`) et reste la seule façon de savoir si quelqu'un a Blowy+. La facturation met à jour `profiles.plus_until`.
+- `hasPlus(profile, now)` existe déjà (`apps/api/src/modules/me/application/plus.ts`) et reste la seule façon de savoir si quelqu'un a Minimoa+. La facturation met à jour `profiles.plus_until`.
 - Limites selon l'abonnement : `packages/domain/src/entitlements.ts`, `entitlements(plus: boolean)` → `{ habits: 2 | 6, jokersPerWeek: 1 | 3, mapEverywhere, changeCity, freeRename, detailedReview, encounterBonus }`. Créé par le chantier « facturation-admin » dès son démarrage ; les autres l'importent.
 
 ## IA (chantier « plateforme »)

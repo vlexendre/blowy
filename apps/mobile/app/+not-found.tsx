@@ -13,7 +13,7 @@ export default function NotFound() {
   return (
     <ScreenMotion>
     <ScreenTemplate scroll={false}>
-      <Stack.Screen options={{ title: 'blowy' }} />
+      <Stack.Screen options={{ title: 'minimoa' }} />
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <EmptyState peek species="gaston" mood="surpris" seed="not-found" title={t.title} text={t.text} actionLabel={t.action} onAction={() => router.replace('/')} />
       </View>

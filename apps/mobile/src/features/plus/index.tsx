@@ -1,5 +1,5 @@
 /**
- * Blowy+ : la feuille d'offre (paywall de l'inscription, « Moi › Blowy+ » et tous les points d'entrée de l'app via
+ * Minimoa+ : la feuille d'offre (paywall de l'inscription, « Moi › Minimoa+ » et tous les points d'entrée de l'app via
  * `openPlus(raison)`), les achats StoreKit vérifiés par l'API, la restauration et la synchronisation au lancement.
  *
  * Les faits viennent de l'API (`api.plus.paywall()` : offres, essai, avantages, nombre réel de personnes compatibles,
@@ -39,7 +39,7 @@ const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
 };
 
 /**
- * Ouvre la feuille Blowy+ par-dessus l'écran courant (modale transparente `moi/blowy-plus`). `item` : l'objet premium
+ * Ouvre la feuille Minimoa+ par-dessus l'écran courant (modale transparente `moi/blowy-plus`). `item` : l'objet premium
  * touché (il flotte près du minimoa). La fermer revient à l'écran d'en dessous.
  */
 export function openPlus(reason: PlusReason = 'generic', opts: { item?: string } = {}): void {
@@ -77,7 +77,7 @@ export function useStoreProducts(productIds: readonly string[]) {
 }
 
 /**
- * Les avantages de Blowy+, une seule source pour toute l'app : la liste et la phrase de l'API (`paywall.perks`, tirée de
+ * Les avantages de Minimoa+, une seule source pour toute l'app : la liste et la phrase de l'API (`paywall.perks`, tirée de
  * `entitlements`), avec leur forme courte de l'app. Avant que l'API ait répondu : les clés du domaine (`PLUS_PERKS`).
  * La feuille, l'onglet Moi et les rencontres lisent tous ici (jamais une phrase d'avantage écrite ailleurs).
  */
@@ -95,7 +95,7 @@ export function plusPerksLine(perks: ReturnType<typeof usePlusPerks>, max = 4): 
 }
 
 /**
- * Prix indicatifs de Blowy+ (domaine), mis en forme dans la langue et la région du téléphone. Sert aux lignes d'aperçu
+ * Prix indicatifs de Minimoa+ (domaine), mis en forme dans la langue et la région du téléphone. Sert aux lignes d'aperçu
  * hors de la feuille (« Moi »). Dans la feuille, les prix viennent du magasin ou de l'API.
  */
 export function plusPrices(plan: Plan = 'yearly'): { total: string; perMonth: string } {

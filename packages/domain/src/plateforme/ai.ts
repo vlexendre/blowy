@@ -47,7 +47,7 @@ export const microsToDollars = (micros: number): number => micros / 1_000_000;
  * Appels par personne et par jour, par fonction. Pensés pour que l'IA coûte presque rien :
  * - chat_remark : 4 (le chat est en plus plafonné à 3 interventions par lien et par jour, et seules les relances,
  *   remarques et garde-fous sur un lien où les deux ont dit oui appellent le modèle) ;
- * - habit_proof : 6 (2 habitudes gratuites, 6 avec Blowy+, une preuve par jour au plus) ;
+ * - habit_proof : 6 (2 habitudes gratuites, 6 avec Minimoa+, une preuve par jour au plus) ;
  * - weekly_review : 1 (le dimanche, comptes actifs seulement) ;
  * - moderation : 4 (confirmation d'un garde-fou déjà repéré par l'heuristique locale).
  */

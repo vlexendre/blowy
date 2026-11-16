@@ -9,7 +9,7 @@ import { alpha, color, radius, space } from '../theme';
 
 export interface NotifPreviewProps {
   species: Species;
-  /** Nom affiché en tête de chaque notification (« BLOWY »). */
+  /** Nom affiché en tête de chaque notification (« MINIMOA »). */
   app: string;
   items: readonly { title: string; body: string; time: string }[];
   accessibilityLabel: string;

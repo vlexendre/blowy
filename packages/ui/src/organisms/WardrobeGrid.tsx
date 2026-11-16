@@ -26,7 +26,7 @@ export interface WardrobeGridProps<T extends WardrobeItemLook = WardrobeItemLook
   itemLabels: Record<string, string>;
   /** Étapes courtes sous les objets à gagner (« 2 jours de soins »), appelées avec `goal.need`. */
   goalLabels: Record<string, (n: number) => string>;
-  /** Étiquette des objets premium (« Blowy+ »), possédés ou non. */
+  /** Étiquette des objets premium (« Minimoa+ »), possédés ou non. */
   premiumLabel: string;
   /** Étiquette de l'objet porté (« porté »). */
   wornLabel?: string;

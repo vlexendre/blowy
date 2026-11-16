@@ -53,12 +53,13 @@ export function ShortcutTile({ label, icon, value, badge, dot, onPress, accessib
   );
 }
 
-/** Une rangée de `ShortcutTile` de même largeur (4 par ligne ; au-delà, une seconde ligne). */
+/** Une rangée de `ShortcutTile` de même largeur : elles se partagent la ligne jusqu'à 4 ; au-delà, une seconde ligne. */
 export function ShortcutRow({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const tiles = Children.toArray(children).filter(isValidElement);
   // Largeur mesurée : toutes les tuiles ont la même, seconde ligne comprise.
   const [w, setW] = useState(0);
-  const cell = w > 0 ? { width: Math.floor((w - GAP * (PER_ROW - 1)) / PER_ROW) } : styles.cell;
+  const per = Math.min(PER_ROW, Math.max(2, tiles.length));
+  const cell = w > 0 ? { width: Math.floor((w - GAP * (per - 1)) / per) } : styles.cell;
   return (
     <View style={[styles.row, style]} onLayout={(e) => setW(e.nativeEvent.layout.width)}>
       {tiles.map((t, i) => (
@@ -79,12 +80,12 @@ const styles = StyleSheet.create({
   cell: { flexBasis: '22%', flexGrow: 1, maxWidth: '24%' },
   tile: {
     flexGrow: 1,
-    minHeight: 64,
+    minHeight: 72,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 3,
     paddingHorizontal: space.xs,
-    paddingVertical: space.sm,
+    paddingVertical: space.md,
     borderRadius: radius.md,
     backgroundColor: color.panel,
     borderWidth: size.border,

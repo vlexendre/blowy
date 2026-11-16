@@ -1,7 +1,7 @@
 {
   "ios": {
-    "NSCameraUsageDescription": "Blowy uses the camera for your profile photo, your habit proofs and photo challenges. Your profile photo is checked automatically by our AI provider before it is shown. A habit proof is only sent to it if you have agreed; no human looks at it. Proofs and challenge photos are deleted within 24 hours, except the ones you keep.",
-    "NSLocationWhenInUseUsageDescription": "Blowy uses your location, only while the app is open, to introduce you to compatible people near you and to confirm your outings. Your exact location is never saved: only a point rounded to about 300 m. Without it, you can choose your city by hand.",
-    "NSPhotoLibraryUsageDescription": "Blowy opens your photo library only for the profile photo you choose. It is checked automatically by our AI provider before it is shown."
+    "NSCameraUsageDescription": "Minimoa uses the camera for your profile photo, your habit proofs and photo challenges. Your profile photo is checked automatically by our AI provider before it is shown. A habit proof is only sent to it if you have agreed; no human looks at it. Proofs and challenge photos are deleted within 24 hours, except the ones you keep.",
+    "NSLocationWhenInUseUsageDescription": "Minimoa uses your location, only while the app is open, to introduce you to compatible people near you and to confirm your outings. Your exact location is never saved: only a point rounded to about 300 m. Without it, you can choose your city by hand.",
+    "NSPhotoLibraryUsageDescription": "Minimoa opens your photo library only for the profile photo you choose. It is checked automatically by our AI provider before it is shown."
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Blowy+ (chantier « facturation-admin ») : paywall, état de l'abonnement, achats vérifiés par l'API.
+ * Minimoa+ (chantier « facturation-admin ») : paywall, état de l'abonnement, achats vérifiés par l'API.
  *
  * Parcours de l'app :
  * 1. `GET plusPaywall` : offres (identifiants produit, montants facturés et périodes en données), essai, avantages,
@@ -48,7 +48,7 @@ export const PaywallOfferZ = z.object({
     perMonth: z.string().nullable(),
     /** « 7 jours gratuits, puis 59,88 € par an » ou null */
     trial: z.string().nullable(),
-    /** « Abonnement annuel Blowy+ » */
+    /** « Abonnement annuel Minimoa+ » */
     name: z.string(),
   }),
 });

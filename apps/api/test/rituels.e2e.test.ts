@@ -237,7 +237,7 @@ describe('rituels', () => {
       }
     });
 
-    it('Blowy+ : trois jokers par semaine', async () => {
+    it('Minimoa+ : trois jokers par semaine', async () => {
       const p = await newPerson(world);
       const db = world.app.get<MemoryDb>(MEMORY_DB);
       const profile = db.profiles.get(p.id);
@@ -256,7 +256,7 @@ describe('rituels', () => {
       verifier = world.app.get<MemoryHabitVerifier>(HABIT_VERIFIER);
     });
 
-    it('catalogue relié aux axes ; 2 habitudes sans Blowy+, 6 avec', async () => {
+    it('catalogue relié aux axes ; 2 habitudes sans Minimoa+, 6 avec', async () => {
       const cat = await p.api.rituals.habitCatalogue();
       expect(cat.habits.map((h) => h.id)).toEqual(HABITS.map((h) => h.id));
       expect(cat.habits.find((h) => h.id === 'marcher')).toMatchObject({ ask: 'Montre-moi tes baskets.', axis: 'rythme' });
@@ -486,7 +486,7 @@ describe('tâches planifiées des rituels', () => {
     expect(kinds(active.id).filter((k) => k === 'needs_out')).toHaveLength(1);
   });
 
-  it('bilan du dimanche soir : construit une fois, positif, notifié ; détaillé avec Blowy+ ; lu', async () => {
+  it('bilan du dimanche soir : construit une fois, positif, notifié ; détaillé avec Minimoa+ ; lu', async () => {
     const w = await startWorld();
     try {
       const spy = vi.spyOn(w.app.get<Notifier>(NOTIFIER), 'notify');

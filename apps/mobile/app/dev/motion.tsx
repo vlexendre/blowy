@@ -356,7 +356,7 @@ function PrimitivesBench() {
   );
 }
 
-/** Garde-robe : vols d'objets vers le pet et retour, cascade, cadenas, « Blowy+ », « nouveau ». */
+/** Garde-robe : vols d'objets vers le pet et retour, cascade, cadenas, « Minimoa+ », « nouveau ». */
 function WardrobeBench() {
   const [outfit, setOutfit] = useState<Outfit>({ head: 'casquette' });
   const [slot, setSlot] = useState<ItemSlot>('head');
@@ -425,7 +425,7 @@ function WardrobeBench() {
         worn={outfit[slot] ?? null}
         itemLabels={itemLabel}
         goalLabels={statGoalLabel}
-        premiumLabel="Blowy+"
+        premiumLabel="Minimoa+"
         wornLabel="porté"
         newIds={['bob', 'tasse']}
         newLabel="nouveau"

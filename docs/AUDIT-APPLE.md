@@ -1,4 +1,4 @@
-# Blowy face à l'App Review d'Apple — audit avant soumission
+# Minimoa face à l'App Review d'Apple — audit avant soumission
 
 Audit indépendant, lu le 15 novembre 2026 sur la branche `wip/soins-garde-robe` (dépôt `/home/claude/blowy`, lecture seule).
 Méthode : règles d'Apple relues à la source le même jour (liens et citations ci-dessous), code lu fichier par fichier,
@@ -16,7 +16,7 @@ parcourue avec l'API locale en mémoire (captures dans `/home/claude/work/audit/
 
 ## 1. Verdict
 
-**Non, Blowy ne passerait pas la revue aujourd'hui.** Le socle est sérieux (connexion Apple officielle, suppression de
+**Non, Minimoa ne passerait pas la revue aujourd'hui.** Le socle est sérieux (connexion Apple officielle, suppression de
 compte complète avec révocation du jeton Apple, signalement et blocage, paywall où le montant facturé est bien le prix
 le plus visible, aucun SDK de pistage, porte d'âge avant la connexion). Mais six points provoqueraient très
 probablement un refus, dont deux empêcheraient même l'examinateur de voir l'app correctement.
@@ -27,7 +27,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 |---|---|---|---|---|
 | B1 | L'examinateur ne peut pas atteindre les rencontres, les chats, l'IA du chat, le signalement ni le blocage : connexion Apple seule, aucun compte de démonstration, et rencontres limitées à 1,5 km autour de lui (il n'y a personne) | 2.1(a), 1.2 | Code + propriétaire | 1,5 à 3 j |
 | B2 | Les pages légales affichent « À COMPLÉTER » partout (éditeur, adresse, e-mails de contact, hébergeur, fournisseur d'IA…), et le site n'a pas pu être joint | 2.1(a), 1.5, 5.1.1(i), 3.1.2 | Propriétaire + juriste | 0,5 j une fois les infos réunies |
-| B3 | « Les objets premium » sont vendus dans Blowy+ mais jamais donnés aux abonnés ; la garde-robe dit « Bientôt disponible… Pas encore en vente » | 3.1.2(c), 2.3.1, 5.6 | Code | 2 h (retirer) ou 1 j (livrer) |
+| B3 | « Les objets premium » sont vendus dans Minimoa+ mais jamais donnés aux abonnés ; la garde-robe dit « Bientôt disponible… Pas encore en vente » | 3.1.2(c), 2.3.1, 5.6 | Code | 2 h (retirer) ou 1 j (livrer) |
 | B4 | Manifestes de confidentialité incomplets : l'extension des widgets et le module natif lisent le groupe d'apps (`UserDefaults(suiteName:)`) sans raison déclarée ; l'extension n'a aucun `PrivacyInfo.xcprivacy` | Required reason API (refus à l'envoi) | Code | 2 h |
 | B5 | Partage avec une IA tierce (Anthropic, États-Unis) sans le dire ni demander l'accord comme l'exige 5.1.2(i) depuis novembre 2025 : photos de preuve envoyées sans accord explicite, bilans de la semaine envoyés sans accord, lecture du chat qui ne dit pas que l'IA est un tiers ; « Rien n'est conservé » non garanti | 5.1.2(i), 5.1.1(i) | Code + juriste | 1 j |
 | B6 | Aucun filtrage du contenu publié : messages, prénoms, noms de minimoa, photos de profil passent tels quels | 1.2 (1er point) | Code | 1 à 2 j |
@@ -62,9 +62,9 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 | HIG Privacy (demandes d'autorisation) | https://developer.apple.com/design/human-interface-guidelines/privacy | « Include only one button and make it clear that it opens the system alert. » ; « don't provide a way for people to leave the screen or window without viewing the system alert » |
 | HIG Live Activities (journal : 13 oct. 2026) | https://developer.apple.com/design/human-interface-guidelines/live-activities | « tasks and events that have a defined beginning and end » ; « Avoid displaying sensitive information. » ; « Don't use a Live Activity to display ads or promotions » |
 
-**Ce qui a bougé récemment et compte pour Blowy**
+**Ce qui a bougé récemment et compte pour Minimoa**
 - Depuis le **16 novembre 2026 (demain)**, le questionnaire d'âge demande si l'app a des fonctions « Dating and
-  Relationships » et « Shared Location ». Blowy répond oui aux deux : **18+ obligatoire**, et au Brésil A18.
+  Relationships » et « Shared Location ». Minimoa répond oui aux deux : **18+ obligatoire**, et au Brésil A18.
 - Depuis novembre 2025, 5.1.2(i) nomme explicitement l'**IA tierce** : il faut le dire et obtenir un accord explicite.
 - Les lois d'« age assurance » (Texas, Utah, Louisiane ; Australie, Singapour, Brésil) s'appliquent selon les pays où
   l'app est distribuée. **Ambigu :** pour une app réservée aux adultes déjà classée 18+, Apple bloque elle-même le
@@ -72,7 +72,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
   obligations ». À faire trancher par le juriste ; le plus simple au lancement est de ne pas ouvrir ces pays-là.
 - Pas de règle propre aux apps de rencontre dans les Guidelines, en dehors de 4.3(b) (« dating … well established …
   we will not accept new submissions unless they offer a meaningfully different or improved experience ») et 1.1.4
-  (« hookup » apps). Blowy se distingue nettement (minimoa, vision, habitudes) : risque 4.3 faible.
+  (« hookup » apps). Minimoa se distingue nettement (minimoa, vision, habitudes) : risque 4.3 faible.
 
 ---
 
@@ -101,7 +101,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 
 ### B3. Une fonction vendue qui n'est pas livrée : les objets premium
 - **Règles :** 3.1.2(c) « Before asking a customer to subscribe, you should clearly describe what the user will get for the price » ; 5.6 « Apps should never … charge for features or content that are not delivered » ; 2.3.1(a) « promoting content or services that it does not actually offer ».
-- **Constat :** le paywall liste « Les objets premium » (`packages/content/src/v7/facturation-admin.ts:29`, visible dans `shots/_moi_blowy_plus_390x844.png`). Mais aucun code ne donne ces objets à un abonné : l'entitlement `premiumItems` (`packages/domain/src/entitlements.ts:41`) n'est lu nulle part, et le présentateur marque toujours un objet premium « premium » (`apps/api/src/modules/pets/interface/pet.presenter.ts:48`). La garde-robe dit « Bientôt disponible » et « Cet objet arrive avec Blowy+. Pas encore en vente : on te prévient dès qu'il l'est. » (`apps/mobile/src/locales/pet.ts:195-246`). Un examinateur qui achète en bac à sable puis ouvre la garde-robe verra que l'avantage n'existe pas.
+- **Constat :** le paywall liste « Les objets premium » (`packages/content/src/v7/facturation-admin.ts:29`, visible dans `shots/_moi_blowy_plus_390x844.png`). Mais aucun code ne donne ces objets à un abonné : l'entitlement `premiumItems` (`packages/domain/src/entitlements.ts:41`) n'est lu nulle part, et le présentateur marque toujours un objet premium « premium » (`apps/api/src/modules/pets/interface/pet.presenter.ts:48`). La garde-robe dit « Bientôt disponible » et « Cet objet arrive avec Minimoa+. Pas encore en vente : on te prévient dès qu'il l'est. » (`apps/mobile/src/locales/pet.ts:195-246`). Un examinateur qui achète en bac à sable puis ouvre la garde-robe verra que l'avantage n'existe pas.
 - **Correctif :** soit retirer `premium_items` de `PLUS_PERKS` et du texte « Toute la carte… objets premium » partout (paywall, description App Store, page `abonnement`) jusqu'à ce que ce soit prêt ; soit livrer : un abonné possède tous les objets `unlock.kind === 'premium'` tant que `hasPlus` est vrai, et la garde-robe le montre.
 - **Effort :** 2 h pour retirer, environ 1 jour pour livrer. **Qui :** code.
 
@@ -125,7 +125,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
   1. **Lecture du chat** : l'accord est bien demandé à chacun et vérifié côté serveur avant tout appel (`apps/api/src/modules/links/minimoas/chat-minimoas.ts:216` et `:282`) — bon. Mais le texte dit seulement « une IA lit vos messages » (`packages/content/src/v7/chat.ts:40-41`) : rien ne dit que c'est un prestataire extérieur, ni lequel, ni où.
   2. **Photos de preuve** : envoyées à l'IA (`apps/api/src/modules/rituels/infrastructure/adapters.ts:36-55`) sans écran d'accord ; seule une ligne sous le viseur (« Aucun humain ne la voit : une IA la vérifie », `apps/mobile/src/locales/rituels.ts:188`). Le texte d'autorisation de l'appareil photo dit même « Une preuve n'est vue par personne » (`apps/mobile/app.config.ts:18`).
   3. **Bilan de la semaine** : texte de la semaine, avec les prénoms des liens (« Avec Léa : … »), envoyé à l'IA (`adapters.ts:86-100`) sans aucun accord.
-  - « Rien n'est conservé après » (chat, politique de confidentialité) : vrai chez Blowy, mais l'API d'un fournisseur d'IA garde en général les requêtes un temps limité (journaux de sécurité) sauf accord particulier de non-conservation. Rien dans le dépôt ne montre un tel accord.
+  - « Rien n'est conservé après » (chat, politique de confidentialité) : vrai chez Minimoa, mais l'API d'un fournisseur d'IA garde en général les requêtes un temps limité (journaux de sécurité) sauf accord particulier de non-conservation. Rien dans le dépôt ne montre un tel accord.
 - **Correctif :**
   - Accord du chat : ajouter une phrase « Cette IA est un service d'Anthropic (États-Unis), qui traite les messages pour nous et ne s'en sert pas pour entraîner ses modèles » (à confirmer contractuellement) et le lien vers la politique.
   - Preuves : une feuille d'accord une seule fois, avant la première preuve (« Ta photo est envoyée, réduite, à notre prestataire d'IA Anthropic pour vérifier l'habitude. Aucun humain ne la voit. Supprimée sous 24 h. » · « D'accord » / « Valider sans photo »), retirable dans Moi. Sans accord : validation déclarative.
@@ -167,7 +167,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 - **Correctif :** envoyer aussi un e-mail (l'adresse relais d'Apple fonctionne), ou écrire « On t'envoie un rappel (si les notifications sont activées) ».
 - **Effort :** 2 h. **Qui :** code.
 
-### M4. Les avantages de Blowy+ ne disent pas la même chose d'un écran à l'autre
+### M4. Les avantages de Minimoa+ ne disent pas la même chose d'un écran à l'autre
 - **Règles :** 3.1.2(c), 2.3.1(a).
 - **Constat :** paywall : « Plus de rencontres chaque jour », « 3 jokers de série par semaine » ; onglet Moi : « 3 rencontres à la fois, la carte, la garde-robe, 2 gels de série. » (`apps/mobile/src/locales/moi.ts:35`) ; Rencontres : « Une rencontre de plus chaque semaine. » (`apps/mobile/src/locales/rencontres.ts:61`). Le code donne +1 rencontre **par jour** et 3 jokers par semaine (`packages/domain/src/entitlements.ts:36-44`).
 - **Correctif :** un seul jeu de phrases, tiré des mêmes clés que le paywall ; supprimer « la garde-robe » et « 2 gels ». **Effort :** 1 h. **Qui :** code.
@@ -191,14 +191,14 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 - **Règle :** 5.1.1(ii) « Ensure your purpose strings clearly and completely describe your use of the data. »
 - **Constat :**
   - Appareil photo (`app.config.ts:18`) : « pour ta photo du jour [retirée] et les preuves de tes habitudes. Une preuve n'est vue par personne » — faux (l'IA tierce la voit) et il manque le défi photo. Photothèque (`:53`) : « ta photo du jour ou ta photo de profil ».
-  - L'introspection montre des clés ajoutées par les modules avec un texte anglais générique : `NSLocationAlwaysAndWhenInUseUsageDescription` et `NSLocationAlwaysUsageDescription` (« Allow $(PRODUCT_NAME) to access your location »), `NSMotionUsageDescription`, `NSLocationTemporaryUsageDescriptionDictionary` (expo-location), `NSFaceIDUsageDescription` (expo-secure-store). Blowy n'utilise ni la position permanente, ni le mouvement, ni Face ID.
-- **Correctif :** camera : « Blowy utilise l'appareil photo pour les preuves de tes habitudes et les défis photo. Une preuve est vérifiée par une IA (aucun humain), puis supprimée sous 24 h. » ; photothèque : « Blowy accède à la photo que tu choisis pour ta photo de profil. » ; options des modules : `expo-location` avec `locationAlwaysAndWhenInUsePermission: false`, `locationAlwaysPermission: false` (selon les options du module en SDK 58), `expo-secure-store` avec `faceIDPermission: false` ; vérifier le `Info.plist` du build. Traduire si d'autres langues restent déclarées.
+  - L'introspection montre des clés ajoutées par les modules avec un texte anglais générique : `NSLocationAlwaysAndWhenInUseUsageDescription` et `NSLocationAlwaysUsageDescription` (« Allow $(PRODUCT_NAME) to access your location »), `NSMotionUsageDescription`, `NSLocationTemporaryUsageDescriptionDictionary` (expo-location), `NSFaceIDUsageDescription` (expo-secure-store). Minimoa n'utilise ni la position permanente, ni le mouvement, ni Face ID.
+- **Correctif :** camera : « Minimoa utilise l'appareil photo pour les preuves de tes habitudes et les défis photo. Une preuve est vérifiée par une IA (aucun humain), puis supprimée sous 24 h. » ; photothèque : « Minimoa accède à la photo que tu choisis pour ta photo de profil. » ; options des modules : `expo-location` avec `locationAlwaysAndWhenInUsePermission: false`, `locationAlwaysPermission: false` (selon les options du module en SDK 58), `expo-secure-store` avec `faceIDPermission: false` ; vérifier le `Info.plist` du build. Traduire si d'autres langues restent déclarées.
 - **Effort :** 1 h. **Qui :** code.
 
 ### M8. Sans la position, plus de rencontres du tout
 - **Règles :** 5.1.1(iv) « Where possible, provide alternative solutions for users who don't grant consent. For example, if a user declines to share Location, offer the ability to manually enter an address. » ; 5.1.2(i) « Your app may not require users to enable system functionalities (such as … location services) in order to access functionality ».
-- **Constat :** refuser la position coupe la carte et les rencontres proches (`app/(onboarding)/localisation.tsx`, `app/carte.tsx:110-129`) ; le choix d'une ville existe mais seulement avec Blowy+ (`changeCity`). Le reste de l'app marche.
-- **Correctif :** permettre à tout le monde, sans position, de choisir sa ville une fois (liste existante `rencontres.carte.cities`) pour recevoir des rencontres dans cette ville ; Blowy+ garde « changer de ville quand tu veux ».
+- **Constat :** refuser la position coupe la carte et les rencontres proches (`app/(onboarding)/localisation.tsx`, `app/carte.tsx:110-129`) ; le choix d'une ville existe mais seulement avec Minimoa+ (`changeCity`). Le reste de l'app marche.
+- **Correctif :** permettre à tout le monde, sans position, de choisir sa ville une fois (liste existante `rencontres.carte.cities`) pour recevoir des rencontres dans cette ville ; Minimoa+ garde « changer de ville quand tu veux ».
 - **Effort :** une demi-journée. **Qui :** code.
 
 ### M9. Signalements : personne n'est prévenu
@@ -273,7 +273,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 | User-Generated Content | **Oui** | prénoms, photos de profil, messages |
 | Social Media | Non | pas de fil qui diffuse largement |
 | Advertising | Non | |
-| Unrestricted Web Access | Non | les liens ouvrent seulement les pages de Blowy |
+| Unrestricted Web Access | Non | les liens ouvrent seulement les pages de Minimoa |
 | Parental Controls | Non | |
 | Age Assurance | Non (déclaration d'âge simple), sauf si l'API Declared Age Range est intégrée | |
 | Mature or Suggestive Themes | Infrequent | rencontres amoureuses |
@@ -311,7 +311,7 @@ Et dans la fiche, les visuels doivent rester « 4+ » (2.3.8) : pas de scène su
 Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas de ligne à part. **À relire une fois la photo du jour retirée** (ligne Photos) et une fois B5/M6 corrigés.
 
 ### 7.4 Abonnements
-- Groupe « Blowy+ » ; deux produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai gratuit 1 semaine en offre d'introduction) et `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) (`docs/BLOWY-PLUS.md`).
+- Groupe « Minimoa+ » ; deux produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai gratuit 1 semaine en offre d'introduction) et `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) (`docs/BLOWY-PLUS.md`).
 - Pour chacun : nom affiché et description dans chaque langue de la fiche ; **capture du paywall** pour la revue ; notes de revue.
 - **Le premier abonnement doit être joint à la version soumise** (page de la version › « In-App Purchases and Subscriptions » › sélectionner les deux), sinon l'examinateur ne trouve pas les produits (2.1(b)).
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
@@ -319,11 +319,11 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 ### 7.5 Adresses obligatoires
 - **Politique de confidentialité** : `https://blowy.app/legal/confidentialite` (champ App Privacy) — complète (B2).
 - **Assistance (Support URL)** : `https://blowy.app/legal/assistance`, avec un e-mail réel.
-- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Blowy, soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://blowy.app/legal/conditions » à la fin de la description (refus 3.1.2 fréquent sinon). Ajouter aussi le lien des conditions Blowy+ (`/legal/abonnement`).
+- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Minimoa, soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://blowy.app/legal/conditions » à la fin de la description (refus 3.1.2 fréquent sinon). Ajouter aussi le lien des conditions Minimoa+ (`/legal/abonnement`).
 - Fiche : pas de prix dans le nom, le sous-titre ni les captures (2.3.7) ; captures de l'app en usage (2.3.3) ; ne promettre que ce qui existe (pas « objets premium » tant que B3 n'est pas réglé).
 
 ### 7.6 Texte pour les notes de revue (à adapter une fois B1 fait)
-> Blowy is a French app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
+> Minimoa is a French app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
 > creature ("minimoa") that represents their outlook on life and introduces them only to people whose outlook is
 > compatible (score above 70%).
 >
@@ -352,7 +352,7 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 > within 24 h. Contact: `<e-mail>`. Account deletion: Moi › Réglages › Supprimer mon compte (immediate; revokes the
 > Sign in with Apple token).
 >
-> **Subscription Blowy+.** Moi › Blowy+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99.
+> **Subscription Minimoa+.** Moi › Minimoa+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99.
 > Purchases are verified by our server; sandbox purchases are accepted. "Restaurer mes achats" is on the same sheet.
 >
 > **Widgets and Live Activities.** Home/Lock Screen widgets show the creature, its mood and the streak. A Live Activity

@@ -2,7 +2,7 @@
  * Achats intégrés Apple (StoreKit 2) avec `expo-iap` (module Expo maintenu, compatible SDK 58). La vérification se
  * fait sur notre API, qui lit elle-même les transactions signées par Apple (aucun intermédiaire payant) :
  * l'app envoie la transaction signée (JWS, `purchaseToken` sur iOS) puis la termine une fois l'API d'accord.
- * - Achat : `appAccountToken` = identifiant de la personne (lie l'achat au compte Blowy).
+ * - Achat : `appAccountToken` = identifiant de la personne (lie l'achat au compte Minimoa).
  * - Restaurer : `AppStore.sync()` (`restorePurchases`) puis les abonnements en cours (`getAvailablePurchases`).
  * - Mises à jour (renouvellement, achat « en attente » validé, autre appareil) : `purchaseUpdatedListener`.
  */

@@ -1,13 +1,13 @@
 import type { LegalPage } from '../types';
 
 export const mentionsLegales: LegalPage = {
-  title: 'Mentions légales — Blowy',
+  title: 'Mentions légales — Minimoa',
   heading: 'Mentions légales',
-  description: "Qui édite Blowy, qui l'héberge et comment nous joindre.",
-  intro: "Qui édite l'application et le site Blowy, qui les héberge, et comment nous joindre.",
+  description: "Qui édite Minimoa, qui l'héberge et comment nous joindre.",
+  intro: "Qui édite l'application et le site Minimoa, qui les héberge, et comment nous joindre.",
   body: [
     { h2: 'Éditeur', id: 'editeur' },
-    { p: "Le site blowy.app et l'application Blowy sont édités par :" },
+    { p: "Le site blowy.app et l'application Minimoa sont édités par :" },
     {
       ul: [
         '**Dénomination :** {{publisher.name}}',
@@ -52,7 +52,7 @@ export const mentionsLegales: LegalPage = {
     },
     { h2: 'Propriété intellectuelle', id: 'propriete' },
     {
-      p: "La marque Blowy, les minimoas, les illustrations, les textes, les animations et le logiciel sont protégés par le droit de la propriété intellectuelle. Ils appartiennent à {{publisher.name}} ou à ses partenaires. Les reproduire ou les réutiliser sans autorisation est interdit, sauf ce que la loi permet (courte citation, copie privée).",
+      p: "La marque Minimoa, les minimoas, les illustrations, les textes, les animations et le logiciel sont protégés par le droit de la propriété intellectuelle. Ils appartiennent à {{publisher.name}} ou à ses partenaires. Les reproduire ou les réutiliser sans autorisation est interdit, sauf ce que la loi permet (courte citation, copie privée).",
     },
     {
       p: 'Polices du site : Anton et Bricolage Grotesque, sous licence SIL Open Font License. Animations de la page d’accueil : bibliothèque GSAP.',

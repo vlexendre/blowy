@@ -1,4 +1,4 @@
-/** Jetons de design Blowy V6 : nuit, panneaux de couleur, jaune d'accent. Partagés par l'app et le site. */
+/** Jetons de design Minimoa V6 : nuit, panneaux de couleur, jaune d'accent. Partagés par l'app et le site. */
 export const color = {
   night: '#0B0A14',
   panel: '#17142A',

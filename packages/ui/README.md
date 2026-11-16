@@ -1,4 +1,4 @@
-# @blowy/ui — design system Blowy V6
+# @blowy/ui — design system Minimoa V6
 
 Composants React Native (Expo SDK 58, RN 0.88, Reanimated 4) en design atomique. Nuit `#0B0A14`, grands panneaux
 en dégradé, titres Anton en capitales avec partie estompée, corps Bricolage Grotesque, accent jaune (texte sombre dessus).
@@ -676,7 +676,7 @@ fitAnchor(species, 'headTop' | 'eyes' | 'mouth' | 'ground' | …): { x, y }   //
 - **Web** : pas de tirage élastique (pas de pet dans `PetRefresh`, liste normale), pas de clavier (`KeyboardPeek` absent),
   pas de vibration. Les images du pet sont `pointerEvents: none` pour éviter le glisser-déposer d'image du navigateur.
 
-### Feuilles hautes (Blowy+)
+### Feuilles hautes (Minimoa+)
 ```ts
 SheetTemplate { …; asScreen?; bare?: boolean }   // bare : presque toute la hauteur, sans en-tête ni marges ; le contenu défile lui-même
 SheetHandle { children; style? }                  // zone qu'on tire pour descendre une feuille bare (barre du haut)

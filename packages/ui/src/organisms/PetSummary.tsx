@@ -25,7 +25,7 @@ export interface PetSummaryProps {
   items: readonly PetSummaryItem[];
   /** Bouton jaune (« son évolution »). */
   primary: PetSummaryAction;
-  /** Bouton verre (« garde-robe ») suivi de la puce « + » de Blowy+. */
+  /** Bouton verre (« garde-robe ») suivi de la puce « + » de Minimoa+. */
   secondary?: PetSummaryAction & { plus?: string };
 }
 

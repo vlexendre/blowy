@@ -141,7 +141,7 @@ describe('changement de nom du pet', () => {
     expect(view.rename).toEqual({ allowed: false, availableOn: '2027-01-10', unlimited: false });
     expect(await apiError(me.api.pet.rename('Bidule'))).toEqual({
       code: 'rename_locked',
-      message: 'Tu pourras renommer Pepito à partir du 10 janvier 2027. Avec Blowy+, pas d’attente.',
+      message: 'Tu pourras renommer Pepito à partir du 10 janvier 2027. Avec Minimoa+, pas d’attente.',
     });
     expect((await me.api.pet.rename(' Pepito ')).pet.name).toBe('Pepito');
     expect((await me.api.me.get()).pet.name).toBe('Pepito');
@@ -158,7 +158,7 @@ describe('changement de nom du pet', () => {
     expect(view.rename.availableOn).toBe('2027-03-11');
   });
 
-  it('Blowy+ : sans attente ; à la fin de Blowy+, l’attente part du dernier changement', async () => {
+  it('Minimoa+ : sans attente ; à la fin de Minimoa+, l’attente part du dernier changement', async () => {
     setPlus(new Date(world.clock.now().getTime() + 30 * 86_400_000));
     expect((await me.api.pet.get()).rename).toEqual({ allowed: true, availableOn: null, unlimited: true });
     expect((await me.api.pet.rename('Truc')).pet.name).toBe('Truc');

@@ -1,5 +1,5 @@
 /**
- * Textes de la feuille Blowy+ (paywall de l'inscription, « Moi › Blowy+ », points d'entrée `openPlus`). Les faits (offres,
+ * Textes de la feuille Minimoa+ (paywall de l'inscription, « Moi › Minimoa+ », points d'entrée `openPlus`). Les faits (offres,
  * avantages, frise de l'essai, mentions, nombre de personnes compatibles) viennent de l'API dans la langue de l'app ;
  * ici, seulement ce que l'app compose elle-même. Un prix n'est jamais écrit dans une phrase : il arrive mis en forme.
  */
@@ -9,8 +9,8 @@ const up = (s: string): string => s.toUpperCase();
 
 export const plus = messages({
   fr: {
-    brand: 'blowy',
-    /** Ligne estompée sous « BLOWY+ » : ce que la personne vient d'essayer de faire. */
+    brand: 'minimoa',
+    /** Ligne estompée sous « MINIMOA+ » : ce que la personne vient d'essayer de faire. */
     headline: {
       generic: (pet: string) => `${up(pet)} TE PRÉSENTE PLUS DE MONDE.`,
       onboarding: (pet: string) => `${up(pet)} TE PRÉSENTE PLUS DE MONDE.`,
@@ -39,11 +39,11 @@ export const plus = messages({
       unavailable: 'Disponible sur iPhone',
     },
     status: {
-      pending: 'Achat en attente de validation (contrôle parental ou paiement à confirmer). Blowy+ s’ouvrira tout seul.',
-      welcome: (pet: string) => `Bienvenue dans Blowy+. ${pet} est ravi.`,
+      pending: 'Achat en attente de validation (contrôle parental ou paiement à confirmer). Minimoa+ s’ouvrira tout seul.',
+      welcome: (pet: string) => `Bienvenue dans Minimoa+. ${pet} est ravi.`,
       failed: 'L’achat n’a pas abouti. Rien n’a été facturé. Réessaie dans un instant.',
       activation: 'Ton achat est passé chez Apple, mais on n’a pas pu l’activer. Touche « Restaurer mes achats » dans un instant.',
-      restored: 'Achats restaurés : Blowy+ est ouvert.',
+      restored: 'Achats restaurés : Minimoa+ est ouvert.',
       restoreNone: 'Aucun abonnement à restaurer sur ce compte Apple.',
       restoreError: 'La restauration n’a pas abouti. Réessaie.',
       loadError: 'Impossible de charger l’offre. Vérifie ta connexion.',
@@ -51,7 +51,7 @@ export const plus = messages({
       simulated: 'Mode dev : achat simulé, rien n’est facturé.',
     },
     member: {
-      title: 'Tu as Blowy+',
+      title: 'Tu as Minimoa+',
       fallback: 'Ton abonnement est actif.',
       manage: 'Gérer mon abonnement',
     },
@@ -62,7 +62,7 @@ export const plus = messages({
     },
     continueFree: 'Continuer gratuitement',
     restore: 'Restaurer mes achats',
-    links: { terms: 'Conditions', privacy: 'Confidentialité', plusTerms: 'Conditions Blowy+' },
+    links: { terms: 'Conditions', privacy: 'Confidentialité', plusTerms: 'Conditions Minimoa+' },
     /**
      * Avantages en bref, une ligne chacun sur deux colonnes (l'API donne la phrase longue, lue par le lecteur d'écran).
      * La carte compte pour deux : toute la carte, et changer de ville.
@@ -84,7 +84,7 @@ export const plus = messages({
     perksFallback: ['Toute la carte', 'Changer de ville', 'Plus de rencontres', 'Jokers de série', '6 habitudes', 'Bilan détaillé', 'Renommer librement', 'Objets premium'],
   } as const,
   en: {
-    brand: 'blowy',
+    brand: 'minimoa',
     headline: {
       generic: (pet: string) => `${up(pet)} INTRODUCES YOU TO MORE PEOPLE.`,
       onboarding: (pet: string) => `${up(pet)} INTRODUCES YOU TO MORE PEOPLE.`,
@@ -112,11 +112,11 @@ export const plus = messages({
       unavailable: 'Available on iPhone',
     },
     status: {
-      pending: 'Purchase awaiting approval (parental control or payment to confirm). Blowy+ will unlock on its own.',
-      welcome: (pet: string) => `Welcome to Blowy+. ${pet} is delighted.`,
+      pending: 'Purchase awaiting approval (parental control or payment to confirm). Minimoa+ will unlock on its own.',
+      welcome: (pet: string) => `Welcome to Minimoa+. ${pet} is delighted.`,
       failed: 'The purchase didn’t go through. Nothing was charged. Try again in a moment.',
       activation: 'Your purchase went through with Apple, but we couldn’t activate it. Tap “Restore purchases” in a moment.',
-      restored: 'Purchases restored: Blowy+ is unlocked.',
+      restored: 'Purchases restored: Minimoa+ is unlocked.',
       restoreNone: 'No subscription to restore on this Apple Account.',
       restoreError: 'Restoring didn’t go through. Try again.',
       loadError: 'Couldn’t load the offer. Check your connection.',
@@ -124,7 +124,7 @@ export const plus = messages({
       simulated: 'Dev mode: simulated purchase, nothing is charged.',
     },
     member: {
-      title: 'You have Blowy+',
+      title: 'You have Minimoa+',
       fallback: 'Your subscription is active.',
       manage: 'Manage my subscription',
     },
@@ -134,7 +134,7 @@ export const plus = messages({
     },
     continueFree: 'Continue for free',
     restore: 'Restore purchases',
-    links: { terms: 'Terms', privacy: 'Privacy', plusTerms: 'Blowy+ terms' },
+    links: { terms: 'Terms', privacy: 'Privacy', plusTerms: 'Minimoa+ terms' },
     perks: (pet: string) => ({
       map_everywhere: ['The whole map', 'Change cities'],
       more_encounters: ['More encounters'],
@@ -149,7 +149,7 @@ export const plus = messages({
     perksFallback: ['The whole map', 'Change cities', 'More encounters', 'Streak jokers', '6 habits', 'Detailed review', 'Rename freely', 'Premium items'],
   },
   es: {
-    brand: 'blowy',
+    brand: 'minimoa',
     headline: {
       generic: (pet: string) => `${up(pet)} TE PRESENTA A MÁS GENTE.`,
       onboarding: (pet: string) => `${up(pet)} TE PRESENTA A MÁS GENTE.`,
@@ -177,11 +177,11 @@ export const plus = messages({
       unavailable: 'Disponible en iPhone',
     },
     status: {
-      pending: 'Compra pendiente de aprobación (control parental o pago por confirmar). Blowy+ se activará solo.',
-      welcome: (pet: string) => `Te damos la bienvenida a Blowy+. ${pet} está encantado.`,
+      pending: 'Compra pendiente de aprobación (control parental o pago por confirmar). Minimoa+ se activará solo.',
+      welcome: (pet: string) => `Te damos la bienvenida a Minimoa+. ${pet} está encantado.`,
       failed: 'La compra no se ha completado. No se ha cobrado nada. Inténtalo de nuevo en un momento.',
       activation: 'Tu compra se ha hecho en Apple, pero no hemos podido activarla. Toca «Restaurar compras» en un momento.',
-      restored: 'Compras restauradas: Blowy+ está activo.',
+      restored: 'Compras restauradas: Minimoa+ está activo.',
       restoreNone: 'No hay ninguna suscripción que restaurar en esta cuenta de Apple.',
       restoreError: 'No se pudo restaurar. Inténtalo de nuevo.',
       loadError: 'No se pudo cargar la oferta. Revisa tu conexión.',
@@ -189,7 +189,7 @@ export const plus = messages({
       simulated: 'Modo dev: compra simulada, no se cobra nada.',
     },
     member: {
-      title: 'Tienes Blowy+',
+      title: 'Tienes Minimoa+',
       fallback: 'Tu suscripción está activa.',
       manage: 'Gestionar mi suscripción',
     },
@@ -199,7 +199,7 @@ export const plus = messages({
     },
     continueFree: 'Seguir gratis',
     restore: 'Restaurar compras',
-    links: { terms: 'Condiciones', privacy: 'Privacidad', plusTerms: 'Condiciones de Blowy+' },
+    links: { terms: 'Condiciones', privacy: 'Privacidad', plusTerms: 'Condiciones de Minimoa+' },
     perks: (pet: string) => ({
       map_everywhere: ['Todo el mapa', 'Cambiar de ciudad'],
       more_encounters: ['Más encuentros'],
@@ -214,7 +214,7 @@ export const plus = messages({
     perksFallback: ['Todo el mapa', 'Cambiar de ciudad', 'Más encuentros', 'Comodines de racha', '6 hábitos', 'Resumen detallado', 'Renombrar libremente', 'Objetos premium'],
   },
   pt: {
-    brand: 'blowy',
+    brand: 'minimoa',
     headline: {
       generic: (pet: string) => `${up(pet)} TE APRESENTA MAIS GENTE.`,
       onboarding: (pet: string) => `${up(pet)} TE APRESENTA MAIS GENTE.`,
@@ -242,11 +242,11 @@ export const plus = messages({
       unavailable: 'Disponível no iPhone',
     },
     status: {
-      pending: 'Compra aguardando aprovação (controle parental ou pagamento a confirmar). O Blowy+ vai ser liberado sozinho.',
-      welcome: (pet: string) => `Boas-vindas ao Blowy+. ${pet} está radiante.`,
+      pending: 'Compra aguardando aprovação (controle parental ou pagamento a confirmar). O Minimoa+ vai ser liberado sozinho.',
+      welcome: (pet: string) => `Boas-vindas ao Minimoa+. ${pet} está radiante.`,
       failed: 'A compra não foi concluída. Nada foi cobrado. Tente de novo daqui a pouco.',
       activation: 'Sua compra foi feita na Apple, mas não conseguimos ativá-la. Toque em “Restaurar compras” daqui a pouco.',
-      restored: 'Compras restauradas: o Blowy+ está liberado.',
+      restored: 'Compras restauradas: o Minimoa+ está liberado.',
       restoreNone: 'Nenhuma assinatura para restaurar nesta conta Apple.',
       restoreError: 'Não foi possível restaurar. Tente de novo.',
       loadError: 'Não foi possível carregar a oferta. Verifique sua conexão.',
@@ -254,7 +254,7 @@ export const plus = messages({
       simulated: 'Modo dev: compra simulada, nada é cobrado.',
     },
     member: {
-      title: 'Você tem Blowy+',
+      title: 'Você tem Minimoa+',
       fallback: 'Sua assinatura está ativa.',
       manage: 'Gerenciar minha assinatura',
     },
@@ -264,7 +264,7 @@ export const plus = messages({
     },
     continueFree: 'Continuar grátis',
     restore: 'Restaurar compras',
-    links: { terms: 'Termos', privacy: 'Privacidade', plusTerms: 'Termos do Blowy+' },
+    links: { terms: 'Termos', privacy: 'Privacidade', plusTerms: 'Termos do Minimoa+' },
     perks: (pet: string) => ({
       map_everywhere: ['O mapa inteiro', 'Mudar de cidade'],
       more_encounters: ['Mais encontros'],
@@ -279,7 +279,7 @@ export const plus = messages({
     perksFallback: ['O mapa inteiro', 'Mudar de cidade', 'Mais encontros', 'Coringas de sequência', '6 hábitos', 'Resumo detalhado', 'Renomear à vontade', 'Itens premium'],
   },
   nl: {
-    brand: 'blowy',
+    brand: 'minimoa',
     headline: {
       generic: (pet: string) => `${up(pet)} STELT JE AAN MEER MENSEN VOOR.`,
       onboarding: (pet: string) => `${up(pet)} STELT JE AAN MEER MENSEN VOOR.`,
@@ -307,11 +307,11 @@ export const plus = messages({
       unavailable: 'Beschikbaar op iPhone',
     },
     status: {
-      pending: 'Aankoop wacht op goedkeuring (ouderlijk toezicht of betaling nog te bevestigen). Blowy+ gaat vanzelf open.',
-      welcome: (pet: string) => `Welkom bij Blowy+. ${pet} is dolblij.`,
+      pending: 'Aankoop wacht op goedkeuring (ouderlijk toezicht of betaling nog te bevestigen). Minimoa+ gaat vanzelf open.',
+      welcome: (pet: string) => `Welkom bij Minimoa+. ${pet} is dolblij.`,
       failed: 'De aankoop is niet gelukt. Er is niets in rekening gebracht. Probeer het zo opnieuw.',
       activation: 'Je aankoop is bij Apple gelukt, maar we konden hem niet activeren. Tik zo op “Aankopen herstellen”.',
-      restored: 'Aankopen hersteld: Blowy+ staat open.',
+      restored: 'Aankopen hersteld: Minimoa+ staat open.',
       restoreNone: 'Geen abonnement om te herstellen op dit Apple-account.',
       restoreError: 'Herstellen is niet gelukt. Probeer het opnieuw.',
       loadError: 'Het aanbod kon niet worden geladen. Controleer je verbinding.',
@@ -319,7 +319,7 @@ export const plus = messages({
       simulated: 'Dev-modus: gesimuleerde aankoop, er wordt niets in rekening gebracht.',
     },
     member: {
-      title: 'Je hebt Blowy+',
+      title: 'Je hebt Minimoa+',
       fallback: 'Je abonnement is actief.',
       manage: 'Mijn abonnement beheren',
     },
@@ -329,7 +329,7 @@ export const plus = messages({
     },
     continueFree: 'Gratis doorgaan',
     restore: 'Aankopen herstellen',
-    links: { terms: 'Voorwaarden', privacy: 'Privacy', plusTerms: 'Voorwaarden Blowy+' },
+    links: { terms: 'Voorwaarden', privacy: 'Privacy', plusTerms: 'Voorwaarden Minimoa+' },
     perks: (pet: string) => ({
       map_everywhere: ['De hele kaart', 'Van stad wisselen'],
       more_encounters: ['Meer ontmoetingen'],

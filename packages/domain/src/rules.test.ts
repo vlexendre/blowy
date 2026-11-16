@@ -19,7 +19,7 @@ describe('changement de nom du pet', () => {
     expect(renameRule({ lastRenamedOn: '2027-12-31', today: '2028-02-28', plus: false })).toEqual({ allowed: false, availableOn: '2028-02-29', unlimited: false });
     expect(renameRule({ lastRenamedOn: '2027-12-31', today: '2028-02-29', plus: false }).allowed).toBe(true);
   });
-  it('Blowy+ : aucune attente', () => {
+  it('Minimoa+ : aucune attente', () => {
     expect(renameRule({ lastRenamedOn: '2026-11-15', today: '2026-11-15', plus: true })).toEqual({ allowed: true, availableOn: null, unlimited: true });
   });
 });

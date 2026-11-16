@@ -1,5 +1,5 @@
 /**
- * Textes de Blowy, par langue. Chaque dictionnaire se lit avec `.in(locale)` ; voir docs/I18N.md.
+ * Textes de Minimoa, par langue. Chaque dictionnaire se lit avec `.in(locale)` ; voir docs/I18N.md.
  */
 export * from './i18n/core';
 export * from './labels';

@@ -1,5 +1,5 @@
 /*
- * Styles globaux du site Blowy.
+ * Styles globaux du site Minimoa.
  * Les variables --color-*, --gradient-*, --radius-*, --space-* et --font-* sont générées depuis @blowy/tokens
  * dans src/layouts/Base.astro. Ce fichier définit les alias de la landing, la base, et les styles partagés :
  * fond, nav, points, panneaux (SnapSection), gros titres (SectionTitle), bulles (ChatBubble), boutons de store,

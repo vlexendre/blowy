@@ -11,12 +11,12 @@ import { brand } from '../labels';
 const fr = {
   /** Contenu refusé (code `content_refused`). On ne répète jamais le contenu refusé. */
   refused: {
-    displayName: 'Ce prénom ne peut pas être utilisé sur Blowy. Choisis-en un autre.',
+    displayName: 'Ce prénom ne peut pas être utilisé sur Minimoa. Choisis-en un autre.',
     petName: 'Ce nom ne peut pas être donné à un minimoa. Choisis-en un autre.',
     /** Un nom qui contient un lien, une adresse, un numéro ou un pseudo d’un autre réseau. */
     nameContact: 'Pas de lien, d’adresse, de numéro ni de pseudo dans un nom.',
-    message: 'Message non envoyé : il ne respecte pas les règles de la communauté de Blowy.',
-    messageScam: 'Message non envoyé : pas de liens vers de l’argent, de la crypto ou des plateformes payantes sur Blowy.',
+    message: 'Message non envoyé : il ne respecte pas les règles de la communauté de Minimoa.',
+    messageScam: 'Message non envoyé : pas de liens vers de l’argent, de la crypto ou des plateformes payantes sur Minimoa.',
     photo: 'Cette photo ne peut pas être ta photo de profil. Choisis-en une autre : toi, reconnaissable, sans nudité.',
   },
   /** Connexion du compte de revue : même message pour une mauvaise adresse et un mauvais code. */
@@ -25,18 +25,18 @@ const fr = {
   },
   /** Zone choisie à la main, sans localisation (gratuit). */
   area: {
-    changeLocked: (day: string) => `Tu pourras changer de zone à partir du ${day}. Avec Blowy+, quand tu veux.`,
+    changeLocked: (day: string) => `Tu pourras changer de zone à partir du ${day}. Avec Minimoa+, quand tu veux.`,
     fromPhone: 'Ta zone vient déjà de ta position. Pour en choisir une à la main, oublie d’abord ta position (Moi › Réglages › Ma position).',
   },
   /** E-mail du rappel de fin d’essai (jour 5), envoyé en plus de la notification. */
   trialEmail: {
-    subject: 'Ton essai Blowy+ se termine bientôt',
+    subject: 'Ton essai Minimoa+ se termine bientôt',
     title: 'Ton essai gratuit se termine bientôt.',
     lines: (i: { displayName: string; endsOn: string; price: string }) => [
       `Salut ${i.displayName},`,
-      `Ton essai gratuit de Blowy+ se termine le ${i.endsOn}. Ensuite, le premier paiement de ${i.price} est prélevé par Apple, puis chaque année.`,
-      'Tu veux garder Blowy+ ? Tu n’as rien à faire.',
-      'Tu préfères arrêter ? Annule au moins 24 heures avant la fin de l’essai : sur ton iPhone, Réglages, ton nom, puis Abonnements. Tu gardes Blowy+ jusqu’à la fin de l’essai.',
+      `Ton essai gratuit de Minimoa+ se termine le ${i.endsOn}. Ensuite, le premier paiement de ${i.price} est prélevé par Apple, puis chaque année.`,
+      'Tu veux garder Minimoa+ ? Tu n’as rien à faire.',
+      'Tu préfères arrêter ? Annule au moins 24 heures avant la fin de l’essai : sur ton iPhone, Réglages, ton nom, puis Abonnements. Tu gardes Minimoa+ jusqu’à la fin de l’essai.',
     ],
     cta: 'Gérer mon abonnement',
   },
@@ -97,27 +97,27 @@ type AuditText = typeof fr;
 
 const en: Translation<AuditText> = {
   refused: {
-    displayName: 'This first name can’t be used on Blowy. Pick another one.',
+    displayName: 'This first name can’t be used on Minimoa. Pick another one.',
     petName: 'A minimoa can’t be given this name. Pick another one.',
     nameContact: 'No links, addresses, numbers or usernames in a name.',
-    message: 'Message not sent: it doesn’t follow Blowy’s community rules.',
-    messageScam: 'Message not sent: no links to money, crypto or paid platforms on Blowy.',
+    message: 'Message not sent: it doesn’t follow Minimoa’s community rules.',
+    messageScam: 'Message not sent: no links to money, crypto or paid platforms on Minimoa.',
     photo: 'This photo can’t be your profile photo. Pick another one: you, recognizable, no nudity.',
   },
   trialEmail: {
-    subject: 'Your Blowy+ trial ends soon',
+    subject: 'Your Minimoa+ trial ends soon',
     title: 'Your free trial ends soon.',
     lines: (i: { displayName: string; endsOn: string; price: string }) => [
       `Hi ${i.displayName},`,
-      `Your free Blowy+ trial ends on ${i.endsOn}. After that, the first payment of ${i.price} is charged by Apple, then every year.`,
-      'Want to keep Blowy+? You don’t need to do anything.',
-      'Prefer to stop? Cancel at least 24 hours before the trial ends: on your iPhone, Settings, your name, then Subscriptions. You keep Blowy+ until the trial ends.',
+      `Your free Minimoa+ trial ends on ${i.endsOn}. After that, the first payment of ${i.price} is charged by Apple, then every year.`,
+      'Want to keep Minimoa+? You don’t need to do anything.',
+      'Prefer to stop? Cancel at least 24 hours before the trial ends: on your iPhone, Settings, your name, then Subscriptions. You keep Minimoa+ until the trial ends.',
     ],
     cta: 'Manage my subscription',
   },
   reviewSignIn: { wrong: 'Wrong address or code.' },
   area: {
-    changeLocked: (day: string) => `You can change your area from ${day}. With Blowy+, whenever you like.`,
+    changeLocked: (day: string) => `You can change your area from ${day}. With Minimoa+, whenever you like.`,
     fromPhone: 'Your area already comes from your location. To pick one by hand, forget your location first (Me › Settings › My location).',
   },
   lockScreen: { linkTitle: 'A link is waiting', linkBody: 'Your turn to write before midnight.' },
@@ -156,27 +156,27 @@ const en: Translation<AuditText> = {
 
 const es: Translation<AuditText> = {
   refused: {
-    displayName: 'Este nombre no se puede usar en Blowy. Elige otro.',
+    displayName: 'Este nombre no se puede usar en Minimoa. Elige otro.',
     petName: 'Este nombre no se le puede dar a un minimoa. Elige otro.',
     nameContact: 'Nada de enlaces, direcciones, números ni nombres de usuario en un nombre.',
-    message: 'Mensaje no enviado: no respeta las normas de la comunidad de Blowy.',
-    messageScam: 'Mensaje no enviado: en Blowy no se permiten enlaces a dinero, cripto ni plataformas de pago.',
+    message: 'Mensaje no enviado: no respeta las normas de la comunidad de Minimoa.',
+    messageScam: 'Mensaje no enviado: en Minimoa no se permiten enlaces a dinero, cripto ni plataformas de pago.',
     photo: 'Esta foto no puede ser tu foto de perfil. Elige otra: tú, reconocible, sin desnudos.',
   },
   trialEmail: {
-    subject: 'Tu prueba de Blowy+ termina pronto',
+    subject: 'Tu prueba de Minimoa+ termina pronto',
     title: 'Tu prueba gratuita termina pronto.',
     lines: (i: { displayName: string; endsOn: string; price: string }) => [
       `Hola, ${i.displayName}:`,
-      `Tu prueba gratuita de Blowy+ termina el ${i.endsOn}. Después, Apple cobrará el primer pago de ${i.price}, y luego cada año.`,
-      '¿Quieres seguir con Blowy+? No tienes que hacer nada.',
-      '¿Prefieres dejarlo? Cancela al menos 24 horas antes de que termine la prueba: en tu iPhone, Ajustes, tu nombre y luego Suscripciones. Conservas Blowy+ hasta el final de la prueba.',
+      `Tu prueba gratuita de Minimoa+ termina el ${i.endsOn}. Después, Apple cobrará el primer pago de ${i.price}, y luego cada año.`,
+      '¿Quieres seguir con Minimoa+? No tienes que hacer nada.',
+      '¿Prefieres dejarlo? Cancela al menos 24 horas antes de que termine la prueba: en tu iPhone, Ajustes, tu nombre y luego Suscripciones. Conservas Minimoa+ hasta el final de la prueba.',
     ],
     cta: 'Gestionar mi suscripción',
   },
   reviewSignIn: { wrong: 'Dirección o código incorrectos.' },
   area: {
-    changeLocked: (day: string) => `Podrás cambiar de zona a partir del ${day}. Con Blowy+, cuando quieras.`,
+    changeLocked: (day: string) => `Podrás cambiar de zona a partir del ${day}. Con Minimoa+, cuando quieras.`,
     fromPhone: 'Tu zona ya viene de tu ubicación. Para elegir una a mano, primero olvida tu ubicación (Yo › Ajustes › Mi ubicación).',
   },
   lockScreen: { linkTitle: 'Un vínculo te espera', linkBody: 'Te toca escribir antes de medianoche.' },
@@ -215,27 +215,27 @@ const es: Translation<AuditText> = {
 
 const pt: Translation<AuditText> = {
   refused: {
-    displayName: 'Esse nome não pode ser usado no Blowy. Escolha outro.',
+    displayName: 'Esse nome não pode ser usado no Minimoa. Escolha outro.',
     petName: 'Esse nome não pode ser dado a um minimoa. Escolha outro.',
     nameContact: 'Nada de links, endereços, números ou nomes de usuário em um nome.',
-    message: 'Mensagem não enviada: ela não respeita as regras da comunidade do Blowy.',
-    messageScam: 'Mensagem não enviada: no Blowy, nada de links para dinheiro, cripto ou plataformas pagas.',
+    message: 'Mensagem não enviada: ela não respeita as regras da comunidade do Minimoa.',
+    messageScam: 'Mensagem não enviada: no Minimoa, nada de links para dinheiro, cripto ou plataformas pagas.',
     photo: 'Essa foto não pode ser sua foto de perfil. Escolha outra: você, reconhecível, sem nudez.',
   },
   trialEmail: {
-    subject: 'Seu teste do Blowy+ está acabando',
+    subject: 'Seu teste do Minimoa+ está acabando',
     title: 'Seu teste gratuito está acabando.',
     lines: (i: { displayName: string; endsOn: string; price: string }) => [
       `Oi, ${i.displayName},`,
-      `Seu teste gratuito do Blowy+ termina em ${i.endsOn}. Depois, a Apple cobra o primeiro pagamento de ${i.price} e, em seguida, a cada ano.`,
-      'Quer continuar com o Blowy+? Você não precisa fazer nada.',
-      'Prefere parar? Cancele pelo menos 24 horas antes do fim do teste: no seu iPhone, em Ajustes, no seu nome e depois em Assinaturas. Você continua com o Blowy+ até o fim do teste.',
+      `Seu teste gratuito do Minimoa+ termina em ${i.endsOn}. Depois, a Apple cobra o primeiro pagamento de ${i.price} e, em seguida, a cada ano.`,
+      'Quer continuar com o Minimoa+? Você não precisa fazer nada.',
+      'Prefere parar? Cancele pelo menos 24 horas antes do fim do teste: no seu iPhone, em Ajustes, no seu nome e depois em Assinaturas. Você continua com o Minimoa+ até o fim do teste.',
     ],
     cta: 'Gerenciar minha assinatura',
   },
   reviewSignIn: { wrong: 'E-mail ou código incorreto.' },
   area: {
-    changeLocked: (day: string) => `Você poderá mudar de área a partir de ${day}. Com o Blowy+, quando quiser.`,
+    changeLocked: (day: string) => `Você poderá mudar de área a partir de ${day}. Com o Minimoa+, quando quiser.`,
     fromPhone: 'Sua área já vem da sua localização. Para escolher uma manualmente, primeiro esqueça sua localização (Eu › Ajustes › Minha localização).',
   },
   lockScreen: { linkTitle: 'Um vínculo te espera', linkBody: 'Sua vez de escrever antes da meia-noite.' },
@@ -274,27 +274,27 @@ const pt: Translation<AuditText> = {
 
 const nl: Translation<AuditText> = {
   refused: {
-    displayName: 'Deze voornaam kan niet worden gebruikt op Blowy. Kies een andere.',
+    displayName: 'Deze voornaam kan niet worden gebruikt op Minimoa. Kies een andere.',
     petName: 'Deze naam kan niet aan een minimoa worden gegeven. Kies een andere.',
     nameContact: 'Geen links, adressen, nummers of gebruikersnamen in een naam.',
-    message: 'Bericht niet verstuurd: het houdt zich niet aan de communityregels van Blowy.',
-    messageScam: 'Bericht niet verstuurd: geen links naar geld, crypto of betaalde platforms op Blowy.',
+    message: 'Bericht niet verstuurd: het houdt zich niet aan de communityregels van Minimoa.',
+    messageScam: 'Bericht niet verstuurd: geen links naar geld, crypto of betaalde platforms op Minimoa.',
     photo: 'Deze foto kan niet je profielfoto zijn. Kies een andere: jij, herkenbaar, zonder naakt.',
   },
   trialEmail: {
-    subject: 'Je Blowy+-proefperiode eindigt bijna',
+    subject: 'Je Minimoa+-proefperiode eindigt bijna',
     title: 'Je gratis proefperiode eindigt bijna.',
     lines: (i: { displayName: string; endsOn: string; price: string }) => [
       `Hoi ${i.displayName},`,
-      `Je gratis proefperiode van Blowy+ eindigt op ${i.endsOn}. Daarna schrijft Apple de eerste betaling van ${i.price} af, en vervolgens elk jaar.`,
-      'Wil je Blowy+ houden? Dan hoef je niets te doen.',
-      'Wil je liever stoppen? Zeg minstens 24 uur voor het einde van de proefperiode op: op je iPhone via Instellingen, je naam en dan Abonnementen. Je houdt Blowy+ tot het einde van de proefperiode.',
+      `Je gratis proefperiode van Minimoa+ eindigt op ${i.endsOn}. Daarna schrijft Apple de eerste betaling van ${i.price} af, en vervolgens elk jaar.`,
+      'Wil je Minimoa+ houden? Dan hoef je niets te doen.',
+      'Wil je liever stoppen? Zeg minstens 24 uur voor het einde van de proefperiode op: op je iPhone via Instellingen, je naam en dan Abonnementen. Je houdt Minimoa+ tot het einde van de proefperiode.',
     ],
     cta: 'Mijn abonnement beheren',
   },
   reviewSignIn: { wrong: 'Onjuist adres of onjuiste code.' },
   area: {
-    changeLocked: (day: string) => `Je kunt vanaf ${day} van gebied wisselen. Met Blowy+ wanneer je wilt.`,
+    changeLocked: (day: string) => `Je kunt vanaf ${day} van gebied wisselen. Met Minimoa+ wanneer je wilt.`,
     fromPhone: 'Je gebied komt al van je locatie. Wil je er zelf een kiezen, vergeet dan eerst je locatie (Ik › Instellingen › Mijn locatie).',
   },
   lockScreen: { linkTitle: 'Een band wacht op je', linkBody: 'Jouw beurt om te schrijven, vóór middernacht.' },
@@ -384,8 +384,8 @@ export function moderationAlertEmail(input: { kind: 'new' | 'overdue'; reports: 
   const plural = n > 1 ? 's' : '';
   const subject =
     input.kind === 'new'
-      ? `[Blowy] ${urgent > 0 ? `URGENT · ` : ''}${n} signalement${plural} à traiter`
-      : `[Blowy] ${n} signalement${plural} au-delà de ${input.targetHours} h`;
+      ? `[Minimoa] ${urgent > 0 ? `URGENT · ` : ''}${n} signalement${plural} à traiter`
+      : `[Minimoa] ${n} signalement${plural} au-delà de ${input.targetHours} h`;
   const lead =
     input.kind === 'new'
       ? `${n} nouveau${n > 1 ? 'x' : ''} signalement${plural}${urgent > 0 ? `, dont ${urgent} urgent${urgent > 1 ? 's' : ''} (mineur, menace) : à regarder maintenant` : ''}. Délai cible : ${input.targetHours} h.`

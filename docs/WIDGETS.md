@@ -85,7 +85,7 @@ Ne pas les modifier dans `ios/` : `prebuild --clean` repart de `targets/widget`.
 
 ### À regarder au premier lancement
 
-- [ ] Le build passe ; dans l'iPhone, Réglages › Blowy montre « Activités en direct ».
+- [ ] Le build passe ; dans l'iPhone, Réglages › Minimoa montre « Activités en direct ».
 - [ ] Ouvrir l'app connecté, aller sur l'accueil, puis ajouter le widget **petit** et **moyen** : le bon minimoa (espèce),
       la bonne forme (en forme / bof / boude, panneau lie-de-vin quand il boude), sociabilité, série, défi.
 - [ ] Galerie des widgets : noms « Ton minimoa » et « Ta série », aperçu avec Nino.
@@ -102,7 +102,7 @@ Ne pas les modifier dans `ios/` : `prebuild --clean` repart de `targets/widget`.
       s'efface.
 - [ ] Défi accepté le matin (9 h) : la carte affiche « avant minuit », passe en état périmé à 17 h et l'app la retire à
       la première ouverture après 17 h ; elle n'est pas relancée le même jour.
-- [ ] Se déconnecter : les widgets passent sur « Ouvre Blowy », les activités disparaissent.
+- [ ] Se déconnecter : les widgets passent sur « Ouvre Minimoa », les activités disparaissent.
 - [ ] Mode avion pendant une heure : le widget avance seul (la sociabilité baisse), sans appeler le réseau.
 
 ## Push des activités (côté API)

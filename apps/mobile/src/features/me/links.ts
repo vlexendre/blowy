@@ -1,5 +1,5 @@
 /**
- * Sorties de « Moi » : pages légales du site (dans la langue de l'app). Blowy+ : `openPlus` de `@/features/plus`.
+ * Sorties de « Moi » : pages légales du site (dans la langue de l'app). Minimoa+ : `openPlus` de `@/features/plus`.
  */
 import { Linking } from 'react-native';
 

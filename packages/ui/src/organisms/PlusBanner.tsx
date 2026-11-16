@@ -9,14 +9,14 @@ import { radius, size, space } from '../theme';
 import type { TitleContent } from '../types';
 
 export interface PlusBannerProps {
-  /** « BLOWY+ 4,99 €/MOIS » (partie estompée possible). */
+  /** « MINIMOA+ 4,99 €/MOIS » (partie estompée possible). */
   title: TitleContent;
   text: string;
   ctaLabel: string;
   onPress: () => void;
 }
 
-/** Bannière Blowy+ de Moi : panneau vin, titre Anton, bouton blanc. Toute la bannière est touchable. */
+/** Bannière Minimoa+ de Moi : panneau vin, titre Anton, bouton blanc. Toute la bannière est touchable. */
 export function PlusBanner({ title, text, ctaLabel, onPress }: PlusBannerProps) {
   return (
     <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="link" accessibilityLabel={`${typeof title === 'string' ? title : title.map((s) => s.text).join('')}. ${text}`}>

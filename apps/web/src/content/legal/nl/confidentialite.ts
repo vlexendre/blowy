@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const confidentialite: LegalPage = {
-  title: 'Privacybeleid — Blowy',
+  title: 'Privacybeleid — Minimoa',
   heading: 'Privacybeleid',
-  description: 'Welke gegevens Blowy gebruikt, waarvoor, op welke rechtsgrond, hoe lang, wie er toegang toe heeft en hoe je je rechten uitoefent.',
+  description: 'Welke gegevens Minimoa gebruikt, waarvoor, op welke rechtsgrond, hoe lang, wie er toegang toe heeft en hoe je je rechten uitoefent.',
   intro: 'Wat we over je weten, waarom, wie er toegang toe heeft, hoe lang we het bewaren en hoe je alles wist.',
   summary: {
     title: 'In het kort',
@@ -12,7 +12,7 @@ export const confidentialite: LegalPage = {
       'Wat je zoekt en wie je wilt ontmoeten kan je seksuele geaardheid verraden: we vragen je **uitdrukkelijke toestemming**, en je kunt die intrekken.',
       'Je **locatie** wordt alleen gebruikt als de app open is, en **nooit exact opgeslagen**: we bewaren alleen een punt afgerond op ongeveer 300 m en je gebied. Op de kaart zien anderen een afgeronde en verschoven positie, nooit live, en de **discrete modus** haalt je van de kaart. Zonder locatie kies je zelf je stad.',
       'Een **externe AI**, die van {{sub.ai.provider}} ({{sub.ai.location}}), wordt op vier plekken gebruikt, [hieronder](#ia) uitgelegd: het meelezen van chats als jullie het allebei aanzetten, je bewijsfoto’s als je dat accepteert, de veiligheidscontrole van profielfoto’s en van sommige berichten, en het weekoverzicht, verstuurd zonder enige naam.',
-      '**Niemand bij Blowy leest je gesprekken**, behalve een gemeld bericht (gemeld door iemand of door ons automatische filter) en de directe context ervan, gelezen door een moderator.',
+      '**Niemand bij Minimoa leest je gesprekken**, behalve een gemeld bericht (gemeld door iemand of door ons automatische filter) en de directe context ervan, gelezen door een moderator.',
       'Je kunt alles in de app aanpassen en je [account verwijderen](@supprimer-mon-compte) wanneer je wilt. Voor de rest: {{email.privacy}}.',
     ],
   },
@@ -20,10 +20,10 @@ export const confidentialite: LegalPage = {
   body: [
     { h2: '1. Wie is verantwoordelijk', id: 'responsable' },
     {
-      p: 'De verwerkingsverantwoordelijke is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, uitgever van de Blowy-app en -website ([juridische informatie](@mentions-legales)).',
+      p: 'De verwerkingsverantwoordelijke is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, uitgever van de Minimoa-app en -website ([juridische informatie](@mentions-legales)).',
     },
     { ul: ['Voor elke vraag over je gegevens: {{email.privacy}}.', 'Functionaris voor gegevensbescherming: {{dpo.name}}.'] },
-    { p: 'Dit beleid geldt voor de Blowy-app en de website blowy.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
+    { p: 'Dit beleid geldt voor de Minimoa-app en de website blowy.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
 
     { h2: '2. Wat we gebruiken, en waarom', id: 'donnees' },
     {
@@ -33,11 +33,11 @@ export const confidentialite: LegalPage = {
     { h3: 'Je account' },
     {
       ul: [
-        '**Gegevens:** de identificatie die Apple of Google ons stuurt als je inlogt, en het bijbehorende e-mailadres. Bij Apple kan dat een doorstuuradres zijn dat je echte adres verbergt. Bij Apple bewaren we ook een inlogtoken van Apple, dat alleen dient om de toegang van Blowy tot je Apple ID in te trekken als je je account verwijdert.',
+        '**Gegevens:** de identificatie die Apple of Google ons stuurt als je inlogt, en het bijbehorende e-mailadres. Bij Apple kan dat een doorstuuradres zijn dat je echte adres verbergt. Bij Apple bewaren we ook een inlogtoken van Apple, dat alleen dient om de toegang van Minimoa tot je Apple ID in te trekken als je je account verwijdert.',
         '**Doel:** je account aanmaken, je opnieuw laten inloggen, de toegang beveiligen en je mailen over je account (welkom, nieuwe band, herinnering aan het einde van de proefperiode, waarschuwing van de moderatie, bericht vóór verwijdering wegens inactiviteit).',
         '**Rechtsgrond:** uitvoering van de overeenkomst.',
         '**Bewaartermijn:** zolang je account bestaat. Bij verwijdering wordt het Apple-token eerst bij Apple ingetrokken en daarna gewist. Een account zonder inlog gedurende 2 jaar wordt verwijderd, na een waarschuwingsmail 30 dagen vooraf.',
-        '**Toegang:** het bevoegde Blowy-team, onze authenticatieprovider en onze e-mailprovider. Apple of Google weten dat je Blowy gebruikt, omdat het inloggen via hen loopt.',
+        '**Toegang:** het bevoegde Minimoa-team, onze authenticatieprovider en onze e-mailprovider. Apple of Google weten dat je Minimoa gebruikt, omdat het inloggen via hen loopt.',
       ],
     },
 
@@ -80,12 +80,12 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** je positie, **alleen als de app open is** (nooit op de achtergrond). **Ze wordt nooit als zodanig opgeslagen**: onze server bewaart alleen het midden van het vak van ongeveer 300 m waarin je je bevindt, en je geschatte woongebied dat daaruit wordt afgeleid (zelfde nauwkeurigheid). De exacte positie dient alleen, tijdens het verzoek, om te weten of je buiten je woongebied bent.',
-        '**Zonder locatie:** je kunt zelf je stad kiezen (gratis; eens per 30 dagen, of wanneer je wilt met Blowy+). We bewaren dan alleen de gekozen stad en het midden ervan, die als gebied dienen.',
+        '**Zonder locatie:** je kunt zelf je stad kiezen (gratis; eens per 30 dagen, of wanneer je wilt met Minimoa+). We bewaren dan alleen de gekozen stad en het midden ervan, die als gebied dienen.',
         '**Doel:** je de kaart tonen en de passende minimoa’s om je heen; je ontmoetingen in de buurt voorstellen; bevestigen dat een uitje echt buiten je woongebied plaatsvond, om de sociabiliteit van je minimoa te verhogen.',
         '**Wat anderen zien:** nooit je exacte positie. Ze zien een positie afgerond op ongeveer 300 m en verschoven, nooit live. De **discrete modus** haalt je helemaal van de kaart.',
         '**Rechtsgrond:** je toestemming, gegeven via de locatietoestemming van je telefoon of door je stad te kiezen. Je kunt die altijd intrekken: in de instellingen van je telefoon, of in de app (**Ik → Instellingen → Mijn locatie → Mijn locatie vergeten**), waarmee je positie en je gebied worden gewist.',
         '**Bewaartermijn:** het laatste afgeronde punt en je gebied (of de gekozen stad), vervangen bij elke update. We bewaren geen geschiedenis van je verplaatsingen.',
-        '**Toegang:** het bevoegde Blowy-team, onze hostingprovider en de leverancier van de kaartondergrond, die vanaf je telefoon het gebied ontvangt dat op het scherm staat.',
+        '**Toegang:** het bevoegde Minimoa-team, onze hostingprovider en de leverancier van de kaartondergrond, die vanaf je telefoon het gebied ontvangt dat op het scherm staat.',
       ],
     },
 
@@ -120,7 +120,7 @@ export const confidentialite: LegalPage = {
         '**Controle door een AI, alleen als je dat accepteert:** vóór je eerste bewijs vertelt de app je wat er wordt verstuurd, naar wie en waarom, en jij kiest. Accepteer je, dan wordt elke bewijsfoto verkleind en met de naam van de gewoonte (niet je voornaam, niet je locatie) naar {{sub.ai.provider}} gestuurd, die ja, nee of “weet niet zeker” antwoordt, met een zin; bij “weet niet zeker” vertrouwen we je. Weiger je, dan **gaat er geen enkele foto naar een AI**: je bevestigt de gewoonte op je woord, zonder foto, en je reeks gaat net zo goed door. Je kunt altijd van gedachten veranderen via **Ik → De AI en jij**. Foto’s van uitdagingen worden nooit naar een AI gestuurd.',
         '**Rechtsgrond:** je toestemming, voor de controle door de AI; uitvoering van de overeenkomst, voor de tijdelijke opslag.',
         '**Bewaartermijn:** **binnen 24 uur uit onze opslag gewist**, tenzij je ervoor kiest hem in je privéherinneringen te bewaren (daar blijft hij tot je hem niet meer bewaart of je account verwijdert).',
-        '**Toegang:** **geen mens ziet hem**, niet bij Blowy en nergens anders op Blowy. Alleen {{sub.ai.provider}} ontvangt een bewijsfoto, verkleind, als je dat hebt geaccepteerd.',
+        '**Toegang:** **geen mens ziet hem**, niet bij Minimoa en nergens anders op Minimoa. Alleen {{sub.ai.provider}} ontvangt een bewijsfoto, verkleind, als je dat hebt geaccepteerd.',
       ],
     },
     { p: 'Fotografeer liever geen andere mensen, documenten of gevoelige informatie.' },
@@ -137,7 +137,7 @@ export const confidentialite: LegalPage = {
       ],
     },
     {
-      note: 'De zin die de app jullie toont voordat jullie om toestemming wordt gevraagd: “Niemand bij Blowy leest je gesprekken, behalve een gemeld bericht en de paar berichten eromheen, voor de moderatie. Als jullie het allebei aanzetten, leest een AI jullie laatste berichten zodat jullie minimoa’s erop kunnen reageren. Deze AI wordt geleverd door {{sub.ai.provider}} ({{sub.ai.location}}), onze dienstverlener, die deze berichten namens ons ontvangt. Je kunt je toestemming intrekken wanneer je wilt.”',
+      note: 'De zin die de app jullie toont voordat jullie om toestemming wordt gevraagd: “Niemand bij Minimoa leest je gesprekken, behalve een gemeld bericht en de paar berichten eromheen, voor de moderatie. Als jullie het allebei aanzetten, leest een AI jullie laatste berichten zodat jullie minimoa’s erop kunnen reageren. Deze AI wordt geleverd door {{sub.ai.provider}} ({{sub.ai.location}}), onze dienstverlener, die deze berichten namens ons ontvangt. Je kunt je toestemming intrekken wanneer je wilt.”',
     },
     {
       ul: [
@@ -145,7 +145,7 @@ export const confidentialite: LegalPage = {
         '**Intrekken:** wanneer je wilt, in de opties van de band, of voor al je chats via **Ik → De AI en jij**. Het meelezen stopt direct.',
         '**Hoe:** geen analyse van elk bericht. Als iets het in gang zet (een stilte, een bepaald aantal berichten, een oplopende toon), wordt een kort venster met de laatste berichten naar {{sub.ai.provider}} gestuurd, met de afzenders gemarkeerd als A en B, zonder jullie voornamen; de AI stelt de reactie van de minimoa voor. Maximaal 3 tussenkomsten per dag per band, en je kunt ze per band uitzetten. Loopt de toon op, dan kan je minimoa je een pauze voorstellen: dat bericht is alleen voor jou zichtbaar.',
         '**Veiligheidscontrole:** in een chat waarin jullie allebei het meelezen hebben geaccepteerd, kan een bericht waarover ons filter twijfelt (een link, bijvoorbeeld) ook apart naar {{sub.ai.provider}} worden gestuurd, na verzending, om te controleren of het de regels respecteert. Zo niet, dan wordt het gemeld aan het moderatieteam.',
-        '**Wat er wordt bewaard:** bij Blowy niets van het verstuurde venster of van de analyse; alleen de reactie van de minimoa verschijnt in de chat, als bericht. Wat {{sub.ai.provider}} aan zijn kant bewaart, en hoe lang: {{ai.retention}}.',
+        '**Wat er wordt bewaard:** bij Minimoa niets van het verstuurde venster of van de analyse; alleen de reactie van de minimoa verschijnt in de chat, als bericht. Wat {{sub.ai.provider}} aan zijn kant bewaart, en hoe lang: {{ai.retention}}.',
         '**Rechtsgrond:** de toestemming van ieder van jullie.',
       ],
     },
@@ -153,7 +153,7 @@ export const confidentialite: LegalPage = {
     { h3: 'De reeks en de mijlpalen van een band' },
     {
       ul: [
-        '**Gegevens:** de dagen waarop ieder van jullie in de band schreef (niet de inhoud van de berichten) en de mijlpalen van de band (ontmoeting, bereikte niveaus, reeksrecords). Voor banden van vóór 15 november 2026 de “foto’s van de dag” die jullie elkaar daar stuurden: Blowy ontvangt er geen nieuwe meer, en de oude blijven in de herinneringen van de band.',
+        '**Gegevens:** de dagen waarop ieder van jullie in de band schreef (niet de inhoud van de berichten) en de mijlpalen van de band (ontmoeting, bereikte niveaus, reeksrecords). Voor banden van vóór 15 november 2026 de “foto’s van de dag” die jullie elkaar daar stuurden: Minimoa ontvangt er geen nieuwe meer, en de oude blijven in de herinneringen van de band.',
         '**Doel:** de reeks van de band laten leven (de dagen achter elkaar dat jullie allebei schrijven), de levens en de niveaus, en jullie je herinneringen laten zien.',
         '**Rechtsgrond:** uitvoering van de overeenkomst.',
         '**Bewaartermijn:** zolang de band bestaat (zelfde regels als de berichten): de oude foto’s van de dag worden gewist als de band wordt gewist, of als een van jullie zijn account verwijdert.',
@@ -172,14 +172,14 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Blowy+-aankopen' },
+    { h3: 'Minimoa+-aankopen' },
     {
       ul: [
         '**Gegevens:** het gekozen abonnement, de data van aankoop, proefperiode en verlenging, de status van het abonnement, de transactie-ID. **We ontvangen nooit je betaalgegevens**: Apple brengt het je in rekening.',
-        '**Doel:** de Blowy+-functies openen, de aankoop bij Apple controleren, de proefperiode en de herinnering beheren.',
+        '**Doel:** de Minimoa+-functies openen, de aankoop bij Apple controleren, de proefperiode en de herinnering beheren.',
         '**Rechtsgrond:** uitvoering van de overeenkomst; boekhoudkundige verplichtingen voor de transactiereferenties.',
         '**Bewaartermijn:** de status zolang je account bestaat; de transactiereferenties, losgekoppeld van je account als het wordt verwijderd, tot 10 jaar (boekhoudkundige verplichtingen).',
-        '**Toegang:** het bevoegde Blowy-team; Apple, volgens zijn eigen beleid.',
+        '**Toegang:** het bevoegde Minimoa-team; Apple, volgens zijn eigen beleid.',
       ],
     },
 
@@ -193,7 +193,7 @@ export const confidentialite: LegalPage = {
         '**Bezwaar maken:** je kunt tegen elke beslissing over jou, automatisch of niet, bezwaar maken door te mailen naar {{email.support}} (in de app heeft het scherm van een geschorst account daar een knop voor). Een mens bekijkt de beslissing opnieuw.',
         '**Rechtsgrond:** onze wettelijke verplichtingen (met name de digitaledienstenverordening) en ons gerechtvaardigd belang om de community veilig te houden.',
         '**Bewaartermijn:** zie de [tabel met bewaartermijnen](#durees). Als je je account verwijdert, blijven de meldingen over jou en het logboek van beslissingen bestaan tot ze worden gewist, zonder koppeling aan een account (het logboek bewaart de betrokken voornaam).',
-        '**Toegang:** de bevoegde moderators van Blowy, en de autoriteiten als de wet dat vereist. De gemelde persoon weet niet wie hem heeft gemeld. Een geblokkeerde persoon krijgt geen bericht.',
+        '**Toegang:** de bevoegde moderators van Minimoa, en de autoriteiten als de wet dat vereist. De gemelde persoon weet niet wie hem heeft gemeld. Een geblokkeerde persoon krijgt geen bericht.',
       ],
     },
 
@@ -201,7 +201,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** cijfers berekend uit de activiteit: aantal accounts, actieve accounts, retentie, abonnees en proefperiodes, reeksen, berichten van minimoa’s, voorgestelde en geaccepteerde ontmoetingen, AI-kosten. Om ze te berekenen noteren we de dagen waarop je de app opent, en de ontmoetingen die aan iedereen worden voorgesteld.',
-        '**Doel:** Blowy sturen en verbeteren, de kosten beheersen.',
+        '**Doel:** Minimoa sturen en verbeteren, de kosten beheersen.',
         '**Rechtsgrond:** ons gerechtvaardigd belang.',
         '**Hoe:** deze statistieken worden berekend uit onze eigen database, in een interne tool die voorbehouden is aan enkele bevoegde mensen. Er is geen tool voor bezoekersmetingen of reclame in de app. De interne tool geeft geen toegang tot gesprekken, behalve tot het gemelde bericht en de directe context ervan.',
         '**Bewaartermijn:** activiteitsdagen, 40 dagen; voorgestelde ontmoetingen, 30 dagen; teller van AI-gebruik per persoon, 2 dagen; interne ranglijst van de actiefste minimoa’s (voornaam en minimoa), 40 dagen. Geaggregeerde cijfers, waarmee je niet te identificeren bent, worden onbeperkt bewaard.',
@@ -243,7 +243,7 @@ export const confidentialite: LegalPage = {
     {
       ol: [
         '**Je kijk** wordt geplaatst op 5 assen: thuis (vrij, alleen ↔ een gezin stichten), wortels (hier blijven ↔ vertrekken), drive (tijd voor jezelf ↔ grote projecten), ritme (rustig, thuis ↔ intens, buiten), koers (van dag tot dag ↔ alles plannen). Elke as heeft een betrouwbaarheidsindex.',
-        '**Waar hij vandaan komt**, met startgewichten: test bij aanmelding 40% (daarna steeds minder), vraag van de dag 20%, gewoontes 25%, hoe je voor je minimoa zorgt 10%, de 3 woorden van je vrienden 5%. Hoe meer je Blowy gebruikt, hoe hoger de betrouwbaarheid.',
+        '**Waar hij vandaan komt**, met startgewichten: test bij aanmelding 40% (daarna steeds minder), vraag van de dag 20%, gewoontes 25%, hoe je voor je minimoa zorgt 10%, de 3 woorden van je vrienden 5%. Hoe meer je Minimoa gebruikt, hoe hoger de betrouwbaarheid.',
         '**De filters**: wat ieder zoekt, en voor “meer”, wie hij of zij wil ontmoeten; 18 jaar en ouder; het gebied; geblokkeerde mensen.',
         '**De score**: de nabijheid op de 5 assen, gewogen naar betrouwbaarheid. Voor “vrienden” telt de as thuis weinig; voor “meer” telt hij dubbel. De stijl (sociaal, speels, teder, kletserig) telt niet mee in de score.',
         '**De drempel**: onder 70% wordt niemand voorgesteld, ook al betekent dat minder mensen tonen.',
@@ -258,11 +258,11 @@ export const confidentialite: LegalPage = {
 
     { h2: '4. Kunstmatige intelligentie', id: 'ia' },
     {
-      p: 'Blowy gebruikt de AI van **{{sub.ai.provider}}** ({{sub.ai.location}}), een externe dienstverlener, op vier plekken en nergens anders. Alles is te zien, en wat ingetrokken kan worden, trek je in, in de app: **Ik → De AI en jij**.',
+      p: 'Minimoa gebruikt de AI van **{{sub.ai.provider}}** ({{sub.ai.location}}), een externe dienstverlener, op vier plekken en nergens anders. Alles is te zien, en wat ingetrokken kan worden, trek je in, in de app: **Ik → De AI en jij**.',
     },
     {
       table: {
-        head: ['Gebruik', 'Wanneer', 'Wat de dienstverlener ontvangt', 'Wat Blowy bewaart'],
+        head: ['Gebruik', 'Wanneer', 'Wat de dienstverlener ontvangt', 'Wat Minimoa bewaart'],
         rows: [
           [
             'Meelezen van chats',
@@ -325,7 +325,7 @@ export const confidentialite: LegalPage = {
       },
     },
     {
-      p: '**Apple en Google** zijn ook betrokken, voor eigen rekening en volgens hun eigen beleid: inloggen (Sign in with Apple, Google), distributie van de app (App Store, Google Play), betaling van Blowy+ (App Store) en bezorging van meldingen.',
+      p: '**Apple en Google** zijn ook betrokken, voor eigen rekening en volgens hun eigen beleid: inloggen (Sign in with Apple, Google), distributie van de app (App Store, Google Play), betaling van Minimoa+ (App Store) en bezorging van meldingen.',
     },
     { p: 'Ten slotte kunnen we verplicht zijn gegevens aan de autoriteiten te verstrekken, als de wet dat vereist.' },
 
@@ -345,7 +345,7 @@ export const confidentialite: LegalPage = {
           ['Locatie', 'Alleen het laatste afgeronde punt (ongeveer 300 m) en je gebied, of de gekozen stad, vervangen bij elke update. Gewist als je je locatie laat vergeten.'],
           ['Profielfoto', 'Zolang je hem houdt. De oude wordt gewist als je hem vervangt; een door de controle afgekeurde foto wordt direct gewist.'],
           ['Bewijs- en uitdagingsfoto’s', 'Binnen 24 uur, tenzij je ze in je privéherinneringen bewaart (tot je ze niet meer bewaart of je account verwijdert).'],
-          ['Wat naar de AI wordt gestuurd', 'Blowy bewaart niets, behalve het antwoord (reactie van de minimoa, oordeel over een bewijs, veiligheidsbeslissing, tekst van het overzicht). Bij de dienstverlener: {{ai.retention}}.'],
+          ['Wat naar de AI wordt gestuurd', 'Minimoa bewaart niets, behalve het antwoord (reactie van de minimoa, oordeel over een bewijs, veiligheidsbeslissing, tekst van het overzicht). Bij de dienstverlener: {{ai.retention}}.'],
           ['Berichten, reeks, mijlpalen en oude foto’s van de dag van een band', 'Zolang de band bestaat, dus tot een van jullie zijn account verwijdert.'],
           ['Aankopen', 'Status zolang het account bestaat; transactiereferenties tot 10 jaar (boekhoudkundige verplichtingen), losgekoppeld van het account als het wordt verwijderd.'],
           ['Behandelde meldingen en moderatiebeslissingen', '1 jaar na het sluiten van het dossier, alleen langer als de wet dat vereist.'],
@@ -381,7 +381,7 @@ export const confidentialite: LegalPage = {
 
     { h2: '10. Alleen voor volwassenen', id: 'mineurs' },
     {
-      p: 'Blowy is alleen voor mensen van 18 jaar en ouder. We vragen de geboortedatum vóór het inloggen; onder de 18 stopt de aanmelding en wordt er niets aangemaakt. We verzamelen niet bewust gegevens over minderjarigen. Als we te weten komen dat een account van een minderjarige is, wordt het verwijderd. Je kunt het ons vanuit de app laten weten met de reden “Minderjarige”; een account dat zo door twee verschillende mensen is gemeld, wordt geschorst tot een moderator ernaar kijkt.',
+      p: 'Minimoa is alleen voor mensen van 18 jaar en ouder. We vragen de geboortedatum vóór het inloggen; onder de 18 stopt de aanmelding en wordt er niets aangemaakt. We verzamelen niet bewust gegevens over minderjarigen. Als we te weten komen dat een account van een minderjarige is, wordt het verwijderd. Je kunt het ons vanuit de app laten weten met de reden “Minderjarige”; een account dat zo door twee verschillende mensen is gemeld, wordt geschorst tot een moderator ernaar kijkt.',
     },
 
     { h2: '11. Beveiliging', id: 'securite' },
@@ -391,7 +391,7 @@ export const confidentialite: LegalPage = {
         'We bewaren geen wachtwoorden: inloggen gaat via Apple of Google.',
         'Foto’s staan in een privéopslag, alleen bereikbaar via tijdelijke links.',
         'De toegang tot gegevens is beperkt tot de mensen die die nodig hebben; de beheertool is voorbehouden aan bevoegde mensen, alleen-lezen behalve voor moderatie, en de acties ervan worden gelogd.',
-        'We bewaren zo weinig mogelijk: locatie nooit exact opgeslagen, bewijs- en uitdagingsfoto’s binnen 24 uur gewist, niets bij Blowy bewaard van wat naar de AI wordt gestuurd.',
+        'We bewaren zo weinig mogelijk: locatie nooit exact opgeslagen, bewijs- en uitdagingsfoto’s binnen 24 uur gewist, niets bij Minimoa bewaard van wat naar de AI wordt gestuurd.',
       ],
     },
     {

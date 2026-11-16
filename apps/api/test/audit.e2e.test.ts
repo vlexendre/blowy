@@ -217,7 +217,7 @@ describe('audit App Store — côté serveur', () => {
       const fr = clientIn(w, 'fr');
       expect(await apiError(fr.api.me.onboard(onboardBody({ displayName: 'S@l0pe' })))).toEqual({
         code: 'content_refused',
-        message: 'Ce prénom ne peut pas être utilisé sur Blowy. Choisis-en un autre.',
+        message: 'Ce prénom ne peut pas être utilisé sur Minimoa. Choisis-en un autre.',
       });
       expect(await apiError(fr.api.me.onboard(onboardBody({ pet: { name: 'snap lea93', species: 'nino' } })))).toEqual({
         code: 'content_refused',
@@ -231,7 +231,7 @@ describe('audit App Store — côté serveur', () => {
       const en = clientIn(w, 'en');
       expect(await apiError(en.api.me.onboard(onboardBody({ displayName: 'B i t c h', locale: 'en' })))).toEqual({
         code: 'content_refused',
-        message: 'This first name can’t be used on Blowy. Pick another one.',
+        message: 'This first name can’t be used on Minimoa. Pick another one.',
       });
       await fr.api.me.onboard(onboardBody({ displayName: 'Lou' }));
       expect(await errorCode(fr.api.me.update({ displayName: 'connard' }))).toBe('content_refused');
@@ -254,9 +254,9 @@ describe('audit App Store — côté serveur', () => {
 
       expect(await apiError(a.api.links.send(linkId, { body: 'Je s@is où tu h4bites.' }))).toEqual({
         code: 'content_refused',
-        message: 'Message non envoyé : il ne respecte pas les règles de la communauté de Blowy.',
+        message: 'Message non envoyé : il ne respecte pas les règles de la communauté de Minimoa.',
       });
-      expect(await apiError(b.api.links.send(linkId, { body: 'I will kill you' }))).toMatchObject({ code: 'content_refused', message: 'Message not sent: it doesn’t follow Blowy’s community rules.' });
+      expect(await apiError(b.api.links.send(linkId, { body: 'I will kill you' }))).toMatchObject({ code: 'content_refused', message: 'Message not sent: it doesn’t follow Minimoa’s community rules.' });
       expect(await count()).toBe(sentBefore);
       // Urgent : l'équipe est prévenue tout de suite, sans le contenu ni les prénoms.
       const urgent = teamMails().slice(mails);
@@ -393,7 +393,7 @@ describe('audit App Store — côté serveur', () => {
       expect(teamMails()).toHaveLength(start); // pas urgent : attend le minuteur
       await tick();
       expect(teamMails()).toHaveLength(start + 1);
-      expect(teamMails().at(-1)?.subject).toBe('[Blowy] 1 signalement à traiter');
+      expect(teamMails().at(-1)?.subject).toBe('[Minimoa] 1 signalement à traiter');
       expect(teamMails().at(-1)?.text).not.toMatch(/Cible|insiste/);
 
       await reporters[1]?.api.safety.report({ userId: target.id, reason: 'faux_profil' });
@@ -403,7 +403,7 @@ describe('audit App Store — côté serveur', () => {
       await reporters[2]?.api.safety.report({ userId: target.id, reason: 'autre' });
       await tick();
       expect(teamMails()).toHaveLength(start + 2);
-      expect(teamMails().at(-1)?.subject).toBe('[Blowy] 2 signalements à traiter');
+      expect(teamMails().at(-1)?.subject).toBe('[Minimoa] 2 signalements à traiter');
 
       const admin = createAdminClient({ baseUrl: w.baseUrl, getToken: () => `test:${randomUUID()}:${ADMIN}` });
       const onTarget = () => admin.reports({ status: 'open', limit: 100 }).then((r) => r.items.filter((x) => x.target?.id === target.id));
@@ -412,7 +412,7 @@ describe('audit App Store — côté serveur', () => {
 
       // « Personne mineure » par deux personnes différentes : urgent, alerte immédiate, suspension de 72 h.
       await reporters[0]?.api.safety.report({ userId: target.id, reason: 'mineur' });
-      expect(teamMails().at(-1)?.subject).toMatch(/^\[Blowy\] URGENT/);
+      expect(teamMails().at(-1)?.subject).toMatch(/^\[Minimoa\] URGENT/);
       expect(await target.api.me.get()).toBeTruthy();
       await reporters[1]?.api.safety.report({ userId: target.id, reason: 'mineur' });
       expect(await errorCode(target.api.me.get())).toBe('suspended');
@@ -463,7 +463,7 @@ describe('audit App Store — côté serveur', () => {
       const jobs = w.app.get(BillingJobs);
       await jobs.runDue(w.clock.now());
       await jobs.runDue(w.clock.now());
-      const mails = w.outbox.filter((m) => m.to === relay && m.subject === 'Ton essai Blowy+ se termine bientôt');
+      const mails = w.outbox.filter((m) => m.to === relay && m.subject === 'Ton essai Minimoa+ se termine bientôt');
       expect(mails).toHaveLength(1);
       expect(mails[0]?.text.replace(/[  ]/g, ' ')).toMatch(/premier paiement de 59,88 €/);
       expect(mails[0]?.html).toContain('https://apps.apple.com/account/subscriptions');
@@ -489,7 +489,7 @@ describe('audit App Store — côté serveur', () => {
 
   // ── M8 ──────────────────────────────────────────────────────────────────────
   describe('M8 · zone choisie sans localisation, gratuite', () => {
-    it('sans position : choisir une ville donne carte et rencontres ; une fois tous les 30 jours sans Blowy+', async () => {
+    it('sans position : choisir une ville donne carte et rencontres ; une fois tous les 30 jours sans Minimoa+', async () => {
       const lyon = { label: 'Lyon', latitude: 45.76, longitude: 4.84 };
       const neighbour = w.client();
       await neighbour.api.me.onboard(onboardBody({ displayName: 'Voisine', location: { latitude: 45.761, longitude: 4.842 } }));
@@ -506,13 +506,13 @@ describe('audit App Store — côté serveur', () => {
       expect((await p.api.encounters.list()).suggestions.map((s) => s.user.id)).toContain(neighbour.id);
 
       expect(await apiError(p.api.vision.chooseArea({ label: 'Nantes', latitude: 47.22, longitude: -1.55 }))).toMatchObject({ code: 'forbidden' });
-      expect((await apiError(p.api.vision.chooseArea({ label: 'Nantes', latitude: 47.22, longitude: -1.55 }))).message).toMatch(/^Tu pourras changer de zone à partir du \d+ \p{L}+\. Avec Blowy\+, quand tu veux\.$/u);
+      expect((await apiError(p.api.vision.chooseArea({ label: 'Nantes', latitude: 47.22, longitude: -1.55 }))).message).toMatch(/^Tu pourras changer de zone à partir du \d+ \p{L}+\. Avec Minimoa\+, quand tu veux\.$/u);
       // Re-choisir la même ville ne relance pas l'attente.
       await p.api.vision.chooseArea(lyon);
       w.clock.advanceDays(31);
       expect((await p.api.vision.chooseArea({ label: 'Nantes', latitude: 47.22, longitude: -1.55 })).manualArea?.label).toBe('Nantes');
 
-      // Blowy+ : quand on veut.
+      // Minimoa+ : quand on veut.
       const plus = db.profiles.get(p.id);
       if (plus) db.profiles.set(p.id, { ...plus, plusUntil: addDays(dayOf(w.clock.now()), 30) + 'T00:00:00.000Z' });
       expect((await p.api.vision.chooseArea(lyon)).manualArea).toEqual({ label: 'Lyon', nextChangeOn: null });

@@ -42,7 +42,7 @@ const FR: ChatLines = {
   // App Review 5.1.2(i) : dire que l'IA est un tiers, lequel et où (audit B5). Pas de « aucun humain » : un message
   // signalé (par une personne ou par le filtre) et son contexte immédiat sont lus par la modération.
   confidentiality: (provider: string, country: string): string =>
-    `Personne chez Blowy ne lit tes conversations, sauf un message signalé et les quelques messages autour, pour la modération. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par ${provider} (${country}), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.`,
+    `Personne chez Minimoa ne lit tes conversations, sauf un message signalé et les quelques messages autour, pour la modération. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par ${provider} (${country}), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.`,
   /** Bandeaux du système dans le chat. */
   system: { linkCreated: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
 
@@ -120,7 +120,7 @@ const FR: ChatLines = {
 
 const EN: ChatLines = {
   confidentiality: (provider: string, country: string): string =>
-    `No one at Blowy reads your conversations, except a reported message and the few messages around it, for moderation. If you both turn it on, an AI reads your latest messages so your minimoas can react to them. This AI is provided by ${provider} (${country}), our provider, which receives these messages on our behalf. You can withdraw your consent whenever you want.`,
+    `No one at Minimoa reads your conversations, except a reported message and the few messages around it, for moderation. If you both turn it on, an AI reads your latest messages so your minimoas can react to them. This AI is provided by ${provider} (${country}), our provider, which receives these messages on our behalf. You can withdraw your consent whenever you want.`,
   system: { linkCreated: 'Your minimoas found each other. You can write to each other now.' },
   icebreaker: {
     foyer: [
@@ -196,7 +196,7 @@ const EN: ChatLines = {
 
 const ES: ChatLines = {
   confidentiality: (provider: string, country: string): string =>
-    `Nadie en Blowy lee tus conversaciones, salvo un mensaje reportado y los pocos mensajes que lo rodean, para la moderación. Si lo activan las dos personas, una IA lee sus últimos mensajes para que sus minimoas puedan reaccionar a ellos. Esta IA la proporciona ${provider} (${country}), nuestro proveedor, que recibe estos mensajes en nuestro nombre. Puedes retirar tu consentimiento cuando quieras.`,
+    `Nadie en Minimoa lee tus conversaciones, salvo un mensaje reportado y los pocos mensajes que lo rodean, para la moderación. Si lo activan las dos personas, una IA lee sus últimos mensajes para que sus minimoas puedan reaccionar a ellos. Esta IA la proporciona ${provider} (${country}), nuestro proveedor, que recibe estos mensajes en nuestro nombre. Puedes retirar tu consentimiento cuando quieras.`,
   system: { linkCreated: 'Sus minimoas se encontraron. Ya pueden escribirse.' },
   icebreaker: {
     foyer: [
@@ -272,7 +272,7 @@ const ES: ChatLines = {
 
 const PT: ChatLines = {
   confidentiality: (provider: string, country: string): string =>
-    `Ninguém no Blowy lê suas conversas, exceto uma mensagem denunciada e as poucas mensagens em volta dela, para a moderação. Se as duas pessoas ativarem, uma IA lê as últimas mensagens de vocês para que os minimoas de vocês possam reagir a elas. Essa IA é fornecida por ${provider} (${country}), nosso fornecedor, que recebe essas mensagens em nosso nome. Você pode retirar seu consentimento quando quiser.`,
+    `Ninguém no Minimoa lê suas conversas, exceto uma mensagem denunciada e as poucas mensagens em volta dela, para a moderação. Se as duas pessoas ativarem, uma IA lê as últimas mensagens de vocês para que os minimoas de vocês possam reagir a elas. Essa IA é fornecida por ${provider} (${country}), nosso fornecedor, que recebe essas mensagens em nosso nome. Você pode retirar seu consentimento quando quiser.`,
   system: { linkCreated: 'Os minimoas de vocês se encontraram. Agora vocês podem trocar mensagens.' },
   icebreaker: {
     foyer: [
@@ -348,7 +348,7 @@ const PT: ChatLines = {
 
 const NL: ChatLines = {
   confidentiality: (provider: string, country: string): string =>
-    `Niemand bij Blowy leest je gesprekken, behalve een gemeld bericht en de paar berichten eromheen, voor de moderatie. Als jullie het allebei aanzetten, leest een AI jullie laatste berichten zodat jullie minimoas erop kunnen reageren. Deze AI wordt geleverd door ${provider} (${country}), onze leverancier, die deze berichten namens ons ontvangt. Je kunt je toestemming intrekken wanneer je wilt.`,
+    `Niemand bij Minimoa leest je gesprekken, behalve een gemeld bericht en de paar berichten eromheen, voor de moderatie. Als jullie het allebei aanzetten, leest een AI jullie laatste berichten zodat jullie minimoas erop kunnen reageren. Deze AI wordt geleverd door ${provider} (${country}), onze leverancier, die deze berichten namens ons ontvangt. Je kunt je toestemming intrekken wanneer je wilt.`,
   system: { linkCreated: 'Jullie minimoas hebben elkaar gevonden. Jullie kunnen elkaar nu schrijven.' },
   icebreaker: {
     foyer: [

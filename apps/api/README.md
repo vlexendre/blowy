@@ -1,6 +1,6 @@
 # @blowy/api
 
-API REST de Blowy (NestJS 12, ESM). Seul écrivain de la base : l'app et le site passent par elle via
+API REST de Minimoa (NestJS 12, ESM). Seul écrivain de la base : l'app et le site passent par elle via
 `@blowy/api-client`. Le contrat (routes et schémas Zod) vit dans `packages/contract`.
 
 ## Lancer en local
@@ -50,7 +50,7 @@ curl -H 'Authorization: Bearer test:11111111-1111-4111-8111-111111111111' localh
 | `SUPABASE_URL` | — | requis avec `supabase` |
 | `SUPABASE_SERVICE_ROLE_KEY` | — | clé secrète (service) ; requise avec `supabase`, jamais dans l'app |
 | `RESEND_API_KEY` | vide | vide = e-mails dans la console |
-| `MAIL_FROM` | `Blowy <hello@blowy.app>` | expéditeur |
+| `MAIL_FROM` | `Minimoa <hello@blowy.app>` | expéditeur |
 | `WEB_URL` | `https://blowy.app` | liens des e-mails |
 | `CORS_ORIGINS` | vide | origines autorisées, séparées par des virgules |
 
@@ -231,7 +231,7 @@ lecture (`tickLink`) ; les reports, défis du matin et relances sont sélectionn
 un report de plus de 24 h est abandonné, et un défi du matin qui tomberait pendant les heures calmes (panne longue)
 est abandonné plutôt qu'envoyé la nuit. Un tick répété dans la même minute ne refait rien (`ran: false`).
 
-## Blowy+ et administration (chantier « facturation-admin »)
+## Minimoa+ et administration (chantier « facturation-admin »)
 
 Mise en place côté App Store : `docs/BLOWY-PLUS.md`. Appli web d'administration : `apps/admin/README.md`.
 
@@ -262,7 +262,7 @@ Aucune clé secrète : les achats se vérifient avec le certificat public d'Appl
 - Port `Billing` (`ports.ts`) : `AppleBilling` (réel, `infrastructure/apple/app-store-verifier.ts`), `MemoryBilling` (tests et local, « JWS » non signés `memory.<base64url>`), `GooglePlayBilling` (emplacement réservé, refuse tout).
 - `AppleBilling` vérifie localement chaque JWS comme la bibliothèque officielle d'Apple : `alg` ES256, chaîne `x5c` de 3 certificats, intermédiaire signé par **Apple Root CA - G3** (embarquée, empreinte SHA-256 `63:34:3A:…:91:79`) et portant l'extension 1.2.840.113635.100.6.2.1, feuille portant 1.2.840.113635.100.6.11.1, validité à la date de signature, signature ES256, puis bundle, Apple ID (production) et environnement. Pas de vérification OCSP en ligne (optionnelle chez Apple).
 - Les événements sont ramenés à un `StoreEvent` du domaine ; l'état est calculé par `applyStoreEvent` (`packages/domain/src/billing.ts`, testé) et `profiles.plus_until` par `plusUntilOf` (accès gardé pendant l'essai, la période payée et le délai de grâce ; coupé à la date d'un remboursement ou d'un retrait du partage familial).
-- Rattachement : `appAccountToken` (l'app doit passer `Me.id` à l'achat), sinon l'abonnement déjà connu, sinon la personne qui envoie la transaction. Une restauration depuis un autre compte Blowy déplace l'abonnement.
+- Rattachement : `appAccountToken` (l'app doit passer `Me.id` à l'achat), sinon l'abonnement déjà connu, sinon la personne qui envoie la transaction. Une restauration depuis un autre compte Minimoa déplace l'abonnement.
 - Idempotence : table `store_notifications` (clé `notificationUUID`) ; une notification déjà traitée rend `duplicate` (200). Signature refusée : 400. Erreur technique : 500, Apple renvoie (5 fois, à 1, 12, 24, 48 et 72 h).
 - Tâche `BillingJobs` (minuteur) : rappel de fin d'essai à partir du jour 5 (`Notifier.notify(userId, 'trial_reminder', { endsOn, price })`), entre 10 h et 20 h (Paris) sauf dans les 12 dernières heures, une seule fois par essai ; pas de rappel si l'essai est annulé. Purge des notifications de plus de 30 jours (journal technique, politique de confidentialité).
 - Non implémenté (et pas nécessaire pour démarrer) : appels à l'App Store Server API (Get All Subscription Statuses, Get Notification History) pour rattraper des notifications manquées après une panne longue ; ils demanderont une clé d'API In-App Purchase (`.p8`).

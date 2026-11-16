@@ -12,7 +12,7 @@ import type { TitleContent } from '../types';
 import { ScreenTemplate } from './ScreenTemplate';
 
 export interface TabTemplateProps {
-  /** Mot-marque au-dessus du titre (« blowy »), suivi du point jaune. */
+  /** Mot-marque au-dessus du titre (« minimoa »), suivi du point jaune. */
   brand?: string;
   /** Grand titre (« CHATS · 5 ») ; peut être omis si le contenu commence par un panneau. */
   title?: TitleContent;

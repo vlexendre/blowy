@@ -1,6 +1,6 @@
 # Mouvement — règles et inventaire
 
-Blowy est une app de peluches vivantes : tout ce qui est touché répond, et les pets jouent avec l'écran.
+Minimoa est une app de peluches vivantes : tout ce qui est touché répond, et les pets jouent avec l'écran.
 Le mouvement sert à trois choses : **répondre** (j'ai bien appuyé), **expliquer** (d'où ça vient, où ça va),
 **donner vie** (le pet existe même quand on ne fait rien). Rien d'autre.
 
@@ -137,7 +137,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Carte | les minimoas se posent dans la zone, du centre vers l'extérieur (une fois par session) | au repos, chaque autocollant flotte doucement (décalés) ; touché, il sautille et sa fiche glisse de la droite ; onde jaune autour de toi ; silhouettes floues qui respirent lentement ; « saluer » : onde depuis le bouton ; la puce « plus loin » et le pied arrivent après la carte |
 | Moi / réglages | — | interrupteurs à ressort ; lignes qui s'enfoncent ; copie du lien : coche ; suppression : minimoa qui fait non ; notifications : l'heure choisie passe en jaune avec un petit rebond |
 | Barre d'onglets | l'icône active rebondit, la pastille jaune glisse | pastilles qui « pop » à l'arrivée d'un message ; rarement (≈ 1 fois sur 10, 3 min de pause), le pet passe la tête au-dessus de l'onglet choisi ; retour dans l'app : parfois, il salue (une fois par session au plus) |
-| Feuilles | montée à ressort, fond qui s'assombrit | se ferment en glissant vers le bas, suivent le doigt ; Blowy+ : feuille haute (`bare`), on la tire par sa barre du haut ou en tirant le contenu au-delà du haut (iOS), la croix la fait redescendre |
+| Feuilles | montée à ressort, fond qui s'assombrit | se ferment en glissant vers le bas, suivent le doigt ; Minimoa+ : feuille haute (`bare`), on la tire par sa barre du haut ou en tirant le contenu au-delà du haut (iOS), la croix la fait redescendre |
 
 ### Détail : inscription et Moi
 - **Bienvenue** : le panneau se pose, le pet glisse depuis le bord droit (rogné par le panneau : la coupe du buste ne se

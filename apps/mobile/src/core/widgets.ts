@@ -94,13 +94,13 @@ export const widgets = {
     return attempt(false, (m) => m.setSnapshot(JSON.stringify(snapshot)));
   },
 
-  /** Déconnexion : les widgets repassent sur « Ouvre Blowy ». */
+  /** Déconnexion : les widgets repassent sur « Ouvre Minimoa ». */
   clear(): void {
     attempt(undefined, (m) => m.clearSnapshot());
   },
 
   activities: {
-    /** La personne autorise les activités en direct (Réglages › Blowy) et l'iPhone les gère (iOS 17+). */
+    /** La personne autorise les activités en direct (Réglages › Minimoa) et l'iPhone les gère (iOS 17+). */
     enabled(): boolean {
       return attempt(false, (m) => m.activitiesEnabled());
     },

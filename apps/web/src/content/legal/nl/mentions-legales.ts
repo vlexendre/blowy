@@ -1,13 +1,13 @@
 import type { LegalPage } from '../types';
 
 export const mentionsLegales: LegalPage = {
-  title: 'Colofon — Blowy',
+  title: 'Colofon — Minimoa',
   heading: 'Colofon',
-  description: 'Wie Blowy uitgeeft, wie het host en hoe je ons bereikt.',
-  intro: 'Wie de app en de website van Blowy uitgeeft, wie ze host, en hoe je ons bereikt.',
+  description: 'Wie Minimoa uitgeeft, wie het host en hoe je ons bereikt.',
+  intro: 'Wie de app en de website van Minimoa uitgeeft, wie ze host, en hoe je ons bereikt.',
   body: [
     { h2: 'Uitgever', id: 'editeur' },
-    { p: 'De website blowy.app en de app Blowy worden uitgegeven door:' },
+    { p: 'De website blowy.app en de app Minimoa worden uitgegeven door:' },
     {
       ul: [
         '**Naam:** {{publisher.name}}',
@@ -52,7 +52,7 @@ export const mentionsLegales: LegalPage = {
     },
     { h2: 'Intellectueel eigendom', id: 'propriete' },
     {
-      p: 'Het merk Blowy, de minimoas, de illustraties, teksten, animaties en software zijn beschermd door het intellectuele-eigendomsrecht. Ze zijn van {{publisher.name}} of haar partners. Ze kopiëren of hergebruiken zonder toestemming is verboden, behalve wat de wet toestaat (kort citaat, privékopie).',
+      p: 'Het merk Minimoa, de minimoas, de illustraties, teksten, animaties en software zijn beschermd door het intellectuele-eigendomsrecht. Ze zijn van {{publisher.name}} of haar partners. Ze kopiëren of hergebruiken zonder toestemming is verboden, behalve wat de wet toestaat (kort citaat, privékopie).',
     },
     { p: 'Lettertypen van de website: Anton en Bricolage Grotesque, onder de SIL Open Font License. Animaties op de homepage: de GSAP-bibliotheek.' },
   ],

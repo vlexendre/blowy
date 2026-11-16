@@ -2,7 +2,7 @@
  * Ce qui tourne en fond pendant toute la session (monté une fois dans `app/_layout.tsx`) :
  * - un compte suspendu par la modération (erreur `suspended` de l'API, n'importe où) → écran « compte suspendu » ;
  * - notifications permises → le jeton de l'appareil est envoyé à l'API à chaque ouverture (une fois par session) ;
- * - achats Blowy+ arrivés hors d'un achat (renouvellement, achat en attente validé) → vérifiés par l'API.
+ * - achats Minimoa+ arrivés hors d'un achat (renouvellement, achat en attente validé) → vérifiés par l'API.
  */
 import { ApiError } from '@blowy/api-client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

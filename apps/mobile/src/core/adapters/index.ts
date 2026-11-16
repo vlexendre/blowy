@@ -8,7 +8,7 @@ import { createSupabase, supabaseAuth, supabaseMedia, supabaseRealtime } from '.
 /** Racine de composition : choisit les adaptateurs selon la configuration. */
 export function createPorts(): Ports {
   if (config.auth === 'local') {
-    // Mode local : achat simulé (API en mémoire), pour tester Blowy+ de bout en bout sans Apple.
+    // Mode local : achat simulé (API en mémoire), pour tester Minimoa+ de bout en bout sans Apple.
     return { auth: localAuth(), realtime: pollingRealtime(), media: localMedia(), purchases: simulatedPurchases() };
   }
   const sb = createSupabase();

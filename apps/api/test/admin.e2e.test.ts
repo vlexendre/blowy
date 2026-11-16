@@ -111,7 +111,7 @@ describe('administration', () => {
       const { entry } = await admin.act({ action: 'warn', targetUserId: tom.id, reportId: item?.id, reason: 'Insistance après un refus.' });
       expect(entry).toMatchObject({ action: 'warn', adminEmail: ADMIN, targetName: 'Tom', reportId: item?.id });
       expect(w.outbox.length).toBe(before + 1);
-      expect(w.outbox[w.outbox.length - 1]).toMatchObject({ to: 'tom@exemple.fr', subject: 'Un avertissement de l’équipe Blowy' });
+      expect(w.outbox[w.outbox.length - 1]).toMatchObject({ to: 'tom@exemple.fr', subject: 'Un avertissement de l’équipe Minimoa' });
       expect((await admin.reports({ status: 'open' })).items.some((r) => r.id === item?.id)).toBe(false);
       const handled = (await admin.reports({ status: 'handled' })).items.find((r) => r.id === item?.id);
       expect(handled?.resolution).toMatchObject({ action: 'warn', by: ADMIN });

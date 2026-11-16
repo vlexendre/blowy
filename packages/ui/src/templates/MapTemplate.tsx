@@ -23,7 +23,7 @@ export interface MapTemplateProps {
   right?: ReactNode;
   /** Puce centrée au-dessus du pied (« 12 minimoas plus loin »). */
   badge?: ReactNode;
-  /** Pied : fiche choisie, bandeau Blowy+, boutons. */
+  /** Pied : fiche choisie, bandeau Minimoa+, boutons. */
   bottom?: ReactNode;
 }
 

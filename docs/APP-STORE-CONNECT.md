@@ -12,7 +12,7 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
   signé, banque et fiscalité remplies, statut de commerçant UE déclaré (audit M10).
 - Identifiants : `app.blowy` avec Sign in with Apple, Push Notifications, App Groups (`group.app.blowy`), Associated
   Domains ; `app.blowy.widget` avec App Groups (`docs/WIDGETS.md`). L'extension est déclarée **iPhone seulement**, comme
-  l'app (`supportsTablet: false`) : sur iPad, Blowy tourne en mode compatibilité iPhone.
+  l'app (`supportsTablet: false`) : sur iPad, Minimoa tourne en mode compatibilité iPhone.
 - Langue principale : français. Pays : commencer par la France / l'UE francophone tant que les traductions ne sont pas
   faites (audit M1) et que la question des États-Unis n'est pas tranchée (audit M5).
 - Version minimale : iOS 16.4 pour l'app ; widgets et activités en direct à partir d'iOS 17.
@@ -22,7 +22,7 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
 | Point | Où | Qui |
 |---|---|---|
 | Builds `preview` et `production` signés avec `aps-environment = production` (variable `BLOWY_APS_ENVIRONMENT` des profils, `apps/mobile/eas.json`) ; le client de développement garde `development`. Contrôler les entitlements du `.ipa` (`codesign -d --entitlements :- Blowy.app`). | EAS | propriétaire |
-| Rapport de confidentialité d'Xcode sur l'archive (Organizer › clic droit › *Generate Privacy Report*) : il doit lister le manifeste de l'app (`PrivacyInfo.xcprivacy` de la cible Blowy), celui de l'extension (`BlowyWidget.appex`, UserDefaults `1C8F.1`) et ceux des bibliothèques. Un e-mail « ITMS-91053 Missing API declaration » d'Apple après l'envoi = une raison manque : l'ajouter dans `ios.privacyManifests` (`apps/mobile/app.config.ts`). | Mac ou EAS | propriétaire |
+| Rapport de confidentialité d'Xcode sur l'archive (Organizer › clic droit › *Generate Privacy Report*) : il doit lister le manifeste de l'app (`PrivacyInfo.xcprivacy` de la cible Minimoa), celui de l'extension (`BlowyWidget.appex`, UserDefaults `1C8F.1`) et ceux des bibliothèques. Un e-mail « ITMS-91053 Missing API declaration » d'Apple après l'envoi = une raison manque : l'ajouter dans `ios.privacyManifests` (`apps/mobile/app.config.ts`). | Mac ou EAS | propriétaire |
 | Même version et même numéro de build pour l'app et l'extension (sinon avertissement ITMS-90473) : à vérifier dans l'onglet « Builds » de la première version envoyée. | App Store Connect | propriétaire |
 | `APPLE_TEAM_ID=<identifiant d'équipe>` dans les variables du build du site (Cloudflare Pages), puis vérifier `https://blowy.app/.well-known/apple-app-site-association` : `appIDs` doit contenir `<équipe>.app.blowy`. Sans la variable, le fichier ne déclare **aucune** app et les liens d'invitation et « 3 mots » s'ouvrent dans le navigateur. | Cloudflare | propriétaire |
 | API : migrations et déploiement dans l'ordre de `docs/LIVRAISON.md` (migrations `20261115190000` à `20261115210000` **avant** le code) ; `AI_PROVIDER_NAME` et `AI_PROVIDER_COUNTRY` laissés vides tant que le prestataire est Anthropic (États-Unis), sinon les renseigner **en même temps** que `SUBPROCESSORS.ai` des pages légales (`apps/web/src/config/legal.ts`). | Supabase, Railway | propriétaire |
@@ -38,7 +38,7 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
 | User-Generated Content | **Oui** | prénoms, photos de profil, messages |
 | Social Media | Non | pas de fil qui diffuse largement |
 | Advertising | Non | aucune publicité |
-| Unrestricted Web Access | Non | les liens ouvrent seulement les pages de Blowy |
+| Unrestricted Web Access | Non | les liens ouvrent seulement les pages de Minimoa |
 | Parental Controls | Non | |
 | Age Assurance | Non (déclaration d'âge simple), sauf si l'API Declared Age Range est intégrée | |
 | Mature or Suggestive Themes | Infrequent | rencontres amoureuses |
@@ -48,7 +48,7 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
 | Horror, violence, armes | None | |
 | Medical or Treatment Information | None | |
 | Health or Wellness Topics | None (ou Infrequent si la fiche parle de bien-être) | habitudes de vie |
-| Gambling, Simulated Gambling, Contests, Loot Boxes | None | les objets premium sont tous inclus dans Blowy+, sans tirage |
+| Gambling, Simulated Gambling, Contests, Loot Boxes | None | les objets premium sont tous inclus dans Minimoa+, sans tirage |
 | **Résultat attendu** | **18+** (Brésil : A18) | |
 
 Dans la fiche, les visuels restent « 4+ » (2.3.8) : pas de scène suggestive dans les captures.
@@ -93,15 +93,15 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 
 ## 4. Abonnements
 
-- Groupe « Blowy+ » ; deux produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai
+- Groupe « Minimoa+ » ; deux produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai
   gratuit 1 semaine en offre d'introduction) et `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai)
   (`docs/BLOWY-PLUS.md`).
 - Description de chaque produit (et de la fiche) : ne promettre que ce qui existe. Proposition :
   « Toute la carte et changer de ville, une rencontre de plus chaque jour, 3 jokers de série par semaine, jusqu'à 6
   habitudes, le bilan détaillé du dimanche, renommer ton minimoa quand tu veux, et tous les objets premium de la
   garde-robe tant que tu es abonné. »
-- **Objets premium (audit B3, livré)** : avec Blowy+, les 13 objets premium sont à la personne et se portent tout de
-  suite ; sans Blowy+, leur fiche ouvre Blowy+. **À la fin de l'abonnement, le minimoa les range** (ils redeviennent
+- **Objets premium (audit B3, livré)** : avec Minimoa+, les 13 objets premium sont à la personne et se portent tout de
+  suite ; sans Minimoa+, leur fiche ouvre Minimoa+. **À la fin de l'abonnement, le minimoa les range** (ils redeviennent
   verrouillés et reviennent avec un nouvel abonnement) ; la fiche de l'objet le dit. Rien d'autre n'est vendu à l'unité.
 - Pour chacun : nom affiché et description dans chaque langue de la fiche ; **capture du paywall** pour la revue ; notes
   de revue.
@@ -109,7 +109,7 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
   Subscriptions » › sélectionner les deux), sinon l'examinateur ne trouve pas les produits (2.1(b)).
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
 - Pour tester les objets premium en bac à sable : acheter l'annuel, ouvrir Mon minimoa › Garde-robe : le compteur
-  passe de N à N + 13, les objets « Blowy+ » se portent ; annuler et attendre la fin (accélérée en bac à sable) : ils
+  passe de N à N + 13, les objets « Minimoa+ » se portent ; annuler et attendre la fin (accélérée en bac à sable) : ils
   quittent le minimoa.
 
 ## 5. Adresses obligatoires
@@ -120,9 +120,9 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
   remplir dans `legal.ts` : e-mails de contact, DPO, hébergeurs, médiateur, garanties de transfert, durée de
   conservation chez le prestataire d'IA (`AI_TERMS.retention`, selon le contrat), rotation des sauvegardes.
 - **Assistance (Support URL)** : `https://blowy.app/legal/assistance`, avec un e-mail réel.
-- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Blowy,
+- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Minimoa,
   soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://blowy.app/legal/conditions » à la
-  fin de la description. Ajouter aussi le lien des conditions Blowy+ (`/legal/abonnement`), qui doit décrire les objets
+  fin de la description. Ajouter aussi le lien des conditions Minimoa+ (`/legal/abonnement`), qui doit décrire les objets
   premium comme en 4.
 - Fiche : pas de prix dans le nom, le sous-titre ni les captures (2.3.7) ; captures de l'app en usage (2.3.3).
 

@@ -7,7 +7,7 @@ import { fadeTo, useMotionActive, useReducedMotion } from '../lib/motion';
 import { color as palette, motion } from '../theme';
 
 export interface LoaderProps {
-  /** Couleur des boules. Défaut : l'encre courante (sombre sur un bouton jaune, blanche sur la nuit). `accent` : jaune Blowy. */
+  /** Couleur des boules. Défaut : l'encre courante (sombre sur un bouton jaune, blanche sur la nuit). `accent` : jaune Minimoa. */
   color?: string | 'accent';
   /** Diamètre d'une boule (pt). Défaut 8. */
   size?: number;

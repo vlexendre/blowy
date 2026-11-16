@@ -1,5 +1,5 @@
 /**
- * Le prestataire d'IA à qui Blowy envoie des données (lecture des chats, preuves d'habitude, bilan sans nom).
+ * Le prestataire d'IA à qui Minimoa envoie des données (lecture des chats, preuves d'habitude, bilan sans nom).
  * Les phrases ne le nomment jamais en dur : elles reçoivent son nom et son pays. La valeur réelle vient de la
  * configuration de l'API (`AI_PROVIDER_NAME`, `AI_PROVIDER_COUNTRY`) ; la valeur par défaut ci-dessous doit rester celle
  * de la politique de confidentialité (`apps/web/src/config/legal.ts`, `PROCESSORS.ai`).

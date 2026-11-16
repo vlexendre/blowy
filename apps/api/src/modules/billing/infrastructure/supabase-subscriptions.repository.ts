@@ -76,7 +76,7 @@ export class SupabaseSubscriptionsRepository implements SubscriptionsRepository 
 
   async setPlusUntil(userId: string, plusUntil: string | null): Promise<void> {
     const { error } = await this.client.from('profiles').update({ plus_until: plusUntil }).eq('id', userId);
-    check(error, 'mise à jour de Blowy+');
+    check(error, 'mise à jour de Minimoa+');
   }
 
   async trialsEndingBefore(endsBefore: string, limit: number): Promise<SubscriptionRecord[]> {

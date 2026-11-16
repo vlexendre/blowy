@@ -9,12 +9,12 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Applique un événement de magasin à l'abonnement et tient `profiles.plus_until` à jour.
- * Un abonnement appartient à l'identifiant Apple qui l'a payé : s'il est restauré depuis un autre compte Blowy,
- * il change de compte (l'ancien perd Blowy+).
+ * Un abonnement appartient à l'identifiant Apple qui l'a payé : s'il est restauré depuis un autre compte Minimoa,
+ * il change de compte (l'ancien perd Minimoa+).
  */
 @Injectable()
 export class Subscriptions {
-  private readonly logger = new Logger('Blowy+');
+  private readonly logger = new Logger('Minimoa+');
 
   constructor(
     @Inject(SUBSCRIPTIONS) private readonly subscriptions: SubscriptionsRepository,
@@ -42,7 +42,7 @@ export class Subscriptions {
     };
     await this.subscriptions.save(record);
     if (previousOwner && previousOwner !== owner) {
-      this.logger.log('abonnement restauré sur un autre compte : l’ancien perd Blowy+');
+      this.logger.log('abonnement restauré sur un autre compte : l’ancien perd Minimoa+');
       await this.refreshPlus(previousOwner);
     }
     if (owner) await this.refreshPlus(owner);

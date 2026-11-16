@@ -1,4 +1,4 @@
-# Architecture Blowy V7
+# Architecture Minimoa V7
 
 ```
 apps/mobile  Expo SDK 58 (React Native 0.88, expo-router)  ─┐
@@ -59,7 +59,7 @@ modules/<module>/
 Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conversation, étapes, rappel « à toi d'écrire » ; `links/minimoas` : les minimoas
 dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
-`notifications` (appareils, réglages, envoi, activités en direct), `billing` (Blowy+), `admin` (tableaux, modération),
+`notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
 `retention` (comptes inactifs, exclusions, purges), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
 règles du domaine `moderation.ts` puis IA si permise ; `ReportDesk`, seul créateur des signalements : priorité, escalade,
 suspension automatique, alertes de l'équipe), et `src/review` (compte de revue d'Apple et son monde d'exemple,
@@ -105,7 +105,7 @@ V6 : `profiles`, `pets`, `pet_events`, `pet_items`, `links`, `messages`, `link_r
 `word_votes`, `blocks`, `reports`. V7 : vision (`profile_places`, `vision_signals`, `vision_profiles`, `match_cache`),
 rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_photos`, `weekly_reviews`), plateforme
 (`ai_usage_daily`, `ai_user_calls`, `chat_link_settings`, `chat_pet_state`, `push_devices`, `live_activity_tokens`,
-`notification_settings`, `notification_log`, `push_receipts`, `tick_runs`), Blowy+ et administration (`subscriptions`,
+`notification_settings`, `notification_log`, `push_receipts`, `tick_runs`), Minimoa+ et administration (`subscriptions`,
 `store_notifications`, `account_suspensions`, `admin_audit_log`, `user_activity_days`, `admin_daily_stats`,
 `encounter_proposals`), conservation (`banned_identities`), manques (`apple_tokens`, `profiles.chat_reading_default`, `chat_link_settings.by_default`,
 `weekly_reviews.axis_moves`), série de la conversation (`links.best_streak`, `duo_days`, `last_duo_day_on`,
@@ -113,7 +113,7 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit
-La V7 (minimoa, vision, rituels, Blowy+) est décrite dans `docs/V7-SPEC.md` ; ce qui suit reste vrai de la V6.
+La V7 (minimoa, vision, rituels, Minimoa+) est décrite dans `docs/V7-SPEC.md` ; ce qui suit reste vrai de la V6.
 
 ### Base V6
 - Un pet par personne. 4 jauges à deux pôles (casanier↔sociable, posé↔joueur, piquant↔tendre, discret↔bavard) qui

@@ -40,7 +40,7 @@ export const toPetView = (r: PetViewResult): PetView => ({
 
 /**
  * Tout le catalogue, dans l'ordre : possédé, à gagner (avec l'étape) ou premium. Les objets premium sont possédés
- * tant que Blowy+ est actif (`WardrobeState.owned`), sinon `premium` (la fiche ouvre Blowy+) ; `plus` les signale.
+ * tant que Minimoa+ est actif (`WardrobeState.owned`), sinon `premium` (la fiche ouvre Minimoa+) ; `plus` les signale.
  */
 export const toWardrobe = (w: WardrobeState): Wardrobe => ({
   items: ITEMS.map((item) => {

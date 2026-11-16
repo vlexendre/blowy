@@ -1,13 +1,13 @@
 import type { LegalPage } from '../types';
 
 export const mentionsLegales: LegalPage = {
-  title: 'Legal notice — Blowy',
+  title: 'Legal notice — Minimoa',
   heading: 'Legal notice',
-  description: 'Who publishes Blowy, who hosts it and how to reach us.',
-  intro: 'Who publishes the Blowy app and website, who hosts them, and how to reach us.',
+  description: 'Who publishes Minimoa, who hosts it and how to reach us.',
+  intro: 'Who publishes the Minimoa app and website, who hosts them, and how to reach us.',
   body: [
     { h2: 'Publisher', id: 'editeur' },
-    { p: 'The blowy.app website and the Blowy app are published by:' },
+    { p: 'The blowy.app website and the Minimoa app are published by:' },
     {
       ul: [
         '**Company name:** {{publisher.name}}',
@@ -52,7 +52,7 @@ export const mentionsLegales: LegalPage = {
     },
     { h2: 'Intellectual property', id: 'propriete' },
     {
-      p: 'The Blowy brand, the minimoas, illustrations, texts, animations and software are protected by intellectual property law. They belong to {{publisher.name}} or its partners. Copying or reusing them without permission is forbidden, except where the law allows it (short quotation, private copy).',
+      p: 'The Minimoa brand, the minimoas, illustrations, texts, animations and software are protected by intellectual property law. They belong to {{publisher.name}} or its partners. Copying or reusing them without permission is forbidden, except where the law allows it (short quotation, private copy).',
     },
     { p: 'Website fonts: Anton and Bricolage Grotesque, under the SIL Open Font License. Home page animations: the GSAP library.' },
   ],

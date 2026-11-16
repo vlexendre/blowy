@@ -1,5 +1,5 @@
 /**
- * Configuration Expo de Blowy. Aucun secret ici : seules des variables EXPO_PUBLIC_* publiques sont lues par l'app.
+ * Configuration Expo de Minimoa. Aucun secret ici : seules des variables EXPO_PUBLIC_* publiques sont lues par l'app.
  * Profils EAS : development (client de dev), preview (interne), production (TestFlight / App Store).
  */
 import type { ConfigContext, ExpoConfig } from 'expo/config';
@@ -42,7 +42,7 @@ const apsEnvironment = (): 'development' | 'production' =>
       : 'development';
 
 /**
- * Manifeste de confidentialité de l'app (PrivacyInfo.xcprivacy de la cible Blowy ; audit B4). Raisons des « required
+ * Manifeste de confidentialité de l'app (PrivacyInfo.xcprivacy de la cible Minimoa ; audit B4). Raisons des « required
  * reason API » : celles du code de l'app (module local `blowy-widgets` : UserDefaults de l'app et du groupe d'apps) et
  * celles des bibliothèques liées statiquement dans l'exécutable (React Native, expo-constants, expo-notifications,
  * expo-system-ui, expo-file-system, expo-application, async-storage, react-native-maps), recopiées de leurs propres
@@ -90,7 +90,7 @@ const PRIVACY_MANIFEST = {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'Blowy',
+  name: 'Minimoa',
   slug: 'blowy',
   owner: EXPO_OWNER,
   version: '1.0.0',
@@ -166,7 +166,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     // Connexion : Apple (iPhone), Google par le navigateur du système (Android, web) ; docs/CONNEXION.md.
     'expo-apple-authentication',
     'expo-web-browser',
-    // Blowy+ : achats intégrés StoreKit 2 (vérifiés par l'API) ; docs/BLOWY-PLUS.md.
+    // Minimoa+ : achats intégrés StoreKit 2 (vérifiés par l'API) ; docs/BLOWY-PLUS.md.
     'expo-iap',
     // Widgets iOS et activités en direct : fichiers générés de l'extension, puis la cible elle-même (targets/widget).
     ...(WIDGETS ? ['./plugins/with-blowy-widgets', '@bacons/apple-targets'] : []),

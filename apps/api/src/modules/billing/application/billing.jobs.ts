@@ -21,7 +21,7 @@ export const parisHour = (now: Date): number =>
   Number(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Paris' }).format(now));
 
 /**
- * Travaux planifiés de Blowy+ (appelés par le minuteur, `modules/tick/jobs.ts`) :
+ * Travaux planifiés de Minimoa+ (appelés par le minuteur, `modules/tick/jobs.ts`) :
  * - le rappel promis sur la frise du paywall, à partir du jour 5 de l'essai, une seule fois par essai : en
  *   notification ET par e-mail quand le compte a une adresse (l'adresse relais d'Apple marche aussi). Le push peut être
  *   refusé, reporté ou coupé par la personne ; l'e-mail garantit que la promesse « on t'envoie un rappel » est tenue ;
@@ -30,7 +30,7 @@ export const parisHour = (now: Date): number =>
  */
 @Injectable()
 export class BillingJobs {
-  private readonly logger = new Logger('Blowy+');
+  private readonly logger = new Logger('Minimoa+');
 
   constructor(
     @Inject(SUBSCRIPTIONS) private readonly subscriptions: SubscriptionsRepository,

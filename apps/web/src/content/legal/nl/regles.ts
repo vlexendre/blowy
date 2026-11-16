@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const regles: LegalPage = {
-  title: 'Communityregels — Blowy',
+  title: 'Communityregels — Minimoa',
   heading: 'Communityregels',
-  description: 'De regels van Blowy: respect, toestemming, geen intimidatie, geen minderjarigen, geen seksuele inhoud. Wat er gebeurt als ze niet worden nageleefd.',
+  description: 'De regels van Minimoa: respect, toestemming, geen intimidatie, geen minderjarigen, geen seksuele inhoud. Wat er gebeurt als ze niet worden nageleefd.',
   intro: 'Minimoas, met echte mensen erachter. Om er een plek van te houden waar je graag terugkomt, een paar simpele regels.',
   body: [
     { h2: 'Respecteer mensen', id: 'respect' },
@@ -21,7 +21,7 @@ export const regles: LegalPage = {
 
     { h2: '18 jaar en ouder, zonder uitzondering', id: 'majeurs' },
     {
-      p: 'Blowy is alleen voor volwassenen. Elk account van een minderjarige wordt verwijderd. Elke inhoud die een minderjarige seksualiseert wordt verwijderd, de maker wordt uitgesloten en we melden het bij de autoriteiten. Denk je dat je met een minderjarige praat? Meld die persoon met de reden “Minderjarige”.',
+      p: 'Minimoa is alleen voor volwassenen. Elk account van een minderjarige wordt verwijderd. Elke inhoud die een minderjarige seksualiseert wordt verwijderd, de maker wordt uitgesloten en we melden het bij de autoriteiten. Denk je dat je met een minderjarige praat? Meld die persoon met de reden “Minderjarige”.',
     },
 
     { h2: 'Geen naaktheid of seksuele inhoud', id: 'contenus' },

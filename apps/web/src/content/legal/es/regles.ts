@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const regles: LegalPage = {
-  title: 'Normas de la comunidad — Blowy',
+  title: 'Normas de la comunidad — Minimoa',
   heading: 'Normas de la comunidad',
-  description: 'Las normas de Blowy: respeto, consentimiento, nada de acoso, nada de menores, nada de contenido sexual. Qué pasa si no se respetan.',
+  description: 'Las normas de Minimoa: respeto, consentimiento, nada de acoso, nada de menores, nada de contenido sexual. Qué pasa si no se respetan.',
   intro: 'Minimoas, y humanos de verdad detrás. Para que siga siendo un sitio al que apetezca volver, unas pocas normas sencillas.',
   body: [
     { h2: 'Respeta a la gente', id: 'respect' },
@@ -21,7 +21,7 @@ export const regles: LegalPage = {
 
     { h2: '18 años o más, sin excepciones', id: 'majeurs' },
     {
-      p: 'Blowy es solo para adultos. Toda cuenta de una persona menor de edad se elimina. Todo contenido que sexualice a un menor se retira, su autor es expulsado y lo denunciamos a las autoridades. Si crees que hablas con una persona menor, denúnciala con el motivo «Persona menor de edad».',
+      p: 'Minimoa es solo para adultos. Toda cuenta de una persona menor de edad se elimina. Todo contenido que sexualice a un menor se retira, su autor es expulsado y lo denunciamos a las autoridades. Si crees que hablas con una persona menor, denúnciala con el motivo «Persona menor de edad».',
     },
 
     { h2: 'Nada de desnudos ni de contenido sexual', id: 'contenus' },

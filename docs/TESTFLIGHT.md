@@ -1,4 +1,4 @@
-# Envoyer Blowy sur TestFlight
+# Envoyer Minimoa sur TestFlight
 
 Il faut : un compte Apple Developer (99 $/an), un compte Expo (gratuit), et l'API en ligne.
 Compter 30 à 45 minutes la première fois, dont 15 à 20 de build chez Expo.
@@ -58,7 +58,7 @@ Le numéro de build augmente tout seul (`autoIncrement`). Pour une nouvelle vers
 
 ## Ce qui n'est pas dans cette version
 
-- Achats Blowy+ : l'écran présente l'offre mais ne vend rien (il faudra RevenueCat ou StoreKit et des produits
+- Achats Minimoa+ : l'écran présente l'offre mais ne vend rien (il faudra RevenueCat ou StoreKit et des produits
   créés dans App Store Connect).
 - Notifications push.
 - Connexion avec Apple : la connexion se fait par code reçu par e-mail.

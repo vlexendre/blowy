@@ -137,7 +137,7 @@ describe('extension des widgets dans le projet Xcode', () => {
     [
       '\t\tA = {',
       '\t\t\tbuildSettings = {',
-      '\t\t\t\tINFOPLIST_FILE = Blowy/Info.plist;',
+      '\t\t\t\tINFOPLIST_FILE = Minimoa/Info.plist;',
       '\t\t\t\tMARKETING_VERSION = 1.0.0;',
       '\t\t\t\tTARGETED_DEVICE_FAMILY = 1;',
       '\t\t\t};',

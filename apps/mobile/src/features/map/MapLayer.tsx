@@ -2,7 +2,7 @@
  * La vraie carte (iPhone) : Apple Plans par react-native-maps (fournisseur par défaut sur iOS : ni clé, ni coût de
  * tuiles), en mode sombre et atténué, sans points d'intérêt. Par-dessus : la zone (cercle pointillé jaune), toi au
  * centre, les minimoas compatibles en autocollants aux positions arrondies du serveur, des silhouettes floues au-delà.
- * Gratuit : caméra fixée sur la zone (ni glisser ni zoomer). Blowy+ : navigation libre.
+ * Gratuit : caméra fixée sur la zone (ni glisser ni zoomer). Minimoa+ : navigation libre.
  * Ailleurs (Android sans clé Google, module natif absent, erreur du module) : la carte dessinée (`ZoneMap`).
  */
 import { color } from '@blowy/tokens';
@@ -52,7 +52,7 @@ function NativeMap({ module, center, radiusKm, me, pins, blurred = [], free, ins
   return (
     <MapView
       style={StyleSheet.absoluteFill}
-      // Gratuit : la caméra reste sur la zone (région imposée, gestes coupés). Blowy+ : région de départ, puis libre.
+      // Gratuit : la caméra reste sur la zone (région imposée, gestes coupés). Minimoa+ : région de départ, puis libre.
       region={free ? region : undefined}
       initialRegion={region}
       mapType="mutedStandard"

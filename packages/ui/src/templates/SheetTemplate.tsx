@@ -29,7 +29,7 @@ export interface SheetTemplateProps {
   /** Écran présenté en modale transparente par le routeur : pas de `Modal` natif. */
   asScreen?: boolean;
   /**
-   * Feuille haute « nue » (Blowy+) : presque toute la hauteur de l'écran, sans en-tête ni marges ; le contenu fait sa
+   * Feuille haute « nue » (Minimoa+) : presque toute la hauteur de l'écran, sans en-tête ni marges ; le contenu fait sa
    * mise en page et défile lui-même. On la tire vers le bas par sa poignée (`SheetHandle`, autour de la barre du
    * haut) ou en tirant le contenu au-delà du haut ; `useSheet().close()` la fait redescendre puis appelle `onClose`.
    */

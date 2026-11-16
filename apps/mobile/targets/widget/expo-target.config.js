@@ -7,7 +7,7 @@
 module.exports = (config) => ({
   type: 'widget',
   name: 'BlowyWidget',
-  displayName: 'Blowy',
+  displayName: 'Minimoa',
   bundleIdentifier: '.widget',
   // containerBackground et les widgets de l'écran verrouillé tels qu'écrits ici demandent iOS 17.
   deploymentTarget: '17.0',

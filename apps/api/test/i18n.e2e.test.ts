@@ -2,7 +2,7 @@
  * Langues : les textes de l'API suivent la langue de la personne.
  * - notifications, e-mails, répliques des minimoas : `profiles.locale` de la personne concernée ;
  * - réponses (erreurs, textes des écrans) : `Accept-Language` envoyé par l'app ;
- * - un texte pas encore traduit (`TODO`) retombe sur le français ; une langue que Blowy ne propose pas, sur l'anglais.
+ * - un texte pas encore traduit (`TODO`) retombe sur le français ; une langue que Minimoa ne propose pas, sur l'anglais.
  */
 import { createApiClient } from '@blowy/api-client';
 import { TODO, auditText, chatSystemText, defineMessages, textOf } from '@blowy/content';
@@ -65,7 +65,7 @@ describe('langues', () => {
     expect(await apiError(french.me.get())).toEqual({ code: 'not_onboarded', message: 'Crée d’abord ton minimoa.' });
     const spanish = createApiClient({ baseUrl: world.baseUrl, getToken: () => 'test:00000000-0000-4000-8000-0000000000aa', getLocale: () => 'es-ES' });
     expect((await apiError(spanish.me.get())).message).toBe('Primero crea tu minimoa.');
-    // Une langue que Blowy ne propose pas : l'anglais (spéc §23).
+    // Une langue que Minimoa ne propose pas : l'anglais (spéc §23).
     const german = createApiClient({ baseUrl: world.baseUrl, getToken: () => 'test:00000000-0000-4000-8000-0000000000aa', getLocale: () => 'de-DE' });
     expect((await apiError(german.me.get())).message).toBe('Create your minimoa first.');
   });

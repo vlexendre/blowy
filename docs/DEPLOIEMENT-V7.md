@@ -32,7 +32,7 @@ naît dans la migration « plateforme »).
    extension `app.blowy.widget` : *App Groups* (`docs/WIDGETS.md`).
 2. Keys › `+` › *Apple Push Notifications service (APNs)* : télécharger le `.p8` (une seule fois), noter son Key ID
    et le Team ID (Membership). Pour les activités en direct.
-3. Abonnements Blowy+ : groupe « Blowy+ », `app.blowy.plus.yearly` (59,88 €, essai de 7 jours) et
+3. Abonnements Minimoa+ : groupe « Minimoa+ », `app.blowy.plus.yearly` (59,88 €, essai de 7 jours) et
    `app.blowy.plus.monthly` (14,99 €), accord « Apps payantes » signé (`docs/BLOWY-PLUS.md` §1).
 4. Notifications serveur App Store **V2**, production et bac à sable :
    `https://<domaine de l'API>/v1/plus/apple/notifications` ; noter l'Apple ID numérique de l'app.
@@ -268,7 +268,7 @@ seulement un peu moins). Les positions arrondies ne reviennent pas (c'est voulu)
 2. **Puis le code.** Dès son arrivée, plus aucune photo de preuve ne part à l'IA tant que la personne n'a pas accepté
    (tout le monde part de « jamais demandé ») : les preuves envoyées par une ancienne version de l'app comptent comme
    « pas sûr » (on fait confiance), sans IA. La nouvelle app pose la question avant la première preuve.
-3. Le minuteur range les objets premium des personnes dont Blowy+ a pris fin (travail `wardrobe`), par pages de 200 ;
+3. Le minuteur range les objets premium des personnes dont Minimoa+ a pris fin (travail `wardrobe`), par pages de 200 ;
    rien à faire à la main. Aucune donnée à reprendre.
 
 Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées ; l'ancien code renverrait

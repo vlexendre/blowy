@@ -4,7 +4,7 @@
  *
  * - Sans position du téléphone, chacun peut choisir gratuitement une zone approximative (une ville de la liste) :
  *   elle sert de centre aux rencontres et à la carte, comme une zone du domicile. Gratuit : la changer au plus une fois
- *   tous les 30 jours (on déménage ; on ne se promène pas). Blowy+ (`changeCity`) : quand on veut, et « changer de
+ *   tous les 30 jours (on déménage ; on ne se promène pas). Minimoa+ (`changeCity`) : quand on veut, et « changer de
  *   ville » même avec la position.
  * - Ce qui est enregistré d'une position n'est jamais plus précis que la maille de ~300 m : le relevé exact sert
  *   seulement, en mémoire, à savoir si la personne est hors de sa zone (sortie), puis il est oublié.
@@ -12,7 +12,7 @@
 import { addDays, type Day } from './days';
 import { GRID_METERS, type GeoPoint, snapToGrid } from './vision';
 
-/** Jours entre deux changements de zone choisie à la main (sans Blowy+). */
+/** Jours entre deux changements de zone choisie à la main (sans Minimoa+). */
 export const MANUAL_AREA_CHANGE_DAYS = 30;
 
 /** D'où vient le centre d'une personne : la position du téléphone, ou une zone choisie à la main. */

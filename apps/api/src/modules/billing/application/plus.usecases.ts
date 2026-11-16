@@ -58,7 +58,7 @@ export function presentSubscription(record: SubscriptionRecord | null, now: Date
 /** Achat ou restauration envoyé par l'app : la transaction StoreKit 2 signée est vérifiée, puis appliquée. */
 @Injectable()
 export class SubmitPurchase {
-  private readonly logger = new Logger('Blowy+');
+  private readonly logger = new Logger('Minimoa+');
 
   constructor(
     @Inject(APPLE_BILLING) private readonly apple: Billing,
@@ -75,7 +75,7 @@ export class SubmitPurchase {
       const renewal: VerifiedRenewal | null = body.signedRenewalInfo ? await this.apple.verifyRenewal(body.signedRenewalInfo) : null;
       const event = appleStoreEvent(this.env.facturationAdmin.plusProducts, tx, renewal, null);
       if (!event) throw new DomainError('invalid', textOf(facturationText, (t) => t.plus.errors.unknownProduct));
-      if (tx.appAccountToken && tx.appAccountToken.toLowerCase() !== userId) this.logger.log('achat d’un autre compte Blowy restauré ici');
+      if (tx.appAccountToken && tx.appAccountToken.toLowerCase() !== userId) this.logger.log('achat d’un autre compte Minimoa restauré ici');
       const record = await this.subscriptions.apply(event, { claimedBy: userId, accountToken: tx.appAccountToken, environment: tx.environment });
       return presentSubscription(record, this.clock.now(), locale);
     } catch (err) {
@@ -103,7 +103,7 @@ export class GetSubscription {
 /** Faits du paywall : offres en données, essai, avantages, preuve concrète, mentions obligatoires. */
 @Injectable()
 export class GetPaywall {
-  private readonly logger = new Logger('Blowy+');
+  private readonly logger = new Logger('Minimoa+');
 
   constructor(
     @Inject(SUBSCRIPTIONS) private readonly subscriptions: SubscriptionsRepository,

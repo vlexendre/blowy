@@ -8,7 +8,7 @@ import { defineMessages } from './i18n/core';
 
 /** Marque, adresses : identiques dans toutes les langues. */
 export const brand = {
-  name: 'Blowy',
+  name: 'Minimoa',
   /** Phrase d'accroche française du site (le site est en français) ; les e-mails prennent `labels.in(locale).tagline`. */
   tagline: 'Élève ton minimoa. Il te présente du monde.',
   site: 'https://blowy.app',

@@ -1,5 +1,5 @@
 /**
- * Blowy+ à la fin de l'inscription (V6-GPlus) : la feuille monte par-dessus les invitations, après que la personne a
+ * Minimoa+ à la fin de l'inscription (V6-GPlus) : la feuille monte par-dessus les invitations, après que la personne a
  * créé son minimoa et vu sa vision. Son minimoa, ses chiffres ; « Continuer gratuitement » mène à l'app.
  */
 import { router } from 'expo-router';

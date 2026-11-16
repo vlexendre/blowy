@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const securite: LegalPage = {
-  title: 'Seguridad y denuncias — Blowy',
+  title: 'Seguridad y denuncias — Minimoa',
   heading: 'Seguridad y denuncias',
-  description: 'Cómo denunciar o bloquear a alguien en Blowy, qué pasa después, nuestros consejos para una primera cita, los números de emergencia y nuestra política de protección de menores.',
+  description: 'Cómo denunciar o bloquear a alguien en Minimoa, qué pasa después, nuestros consejos para una primera cita, los números de emergencia y nuestra política de protección de menores.',
   intro: 'Cómo denunciar, bloquear, protegerte y a quién llamar en caso de emergencia.',
   body: [
     { note: '**¿Peligro inmediato?** Llama al **112** (emergencias en toda la Unión Europea). En Francia: **17** (policía), o envía un SMS al **114** si no puedes hablar.' },
@@ -26,7 +26,7 @@ export const securite: LegalPage = {
     {
       ul: [
         'El equipo de moderación recibe **un aviso por correo** de cada denuncia: enseguida si es urgente (menor, amenaza), si no en un resumen. **Objetivo: una respuesta en 24 horas**; pasado ese plazo, la denuncia sube al principio de la cola.',
-        'Un moderador de Blowy lee **el mensaje denunciado y su contexto inmediato**, y nada más de tus conversaciones.',
+        'Un moderador de Minimoa lee **el mensaje denunciado y su contexto inmediato**, y nada más de tus conversaciones.',
         'Según la gravedad: retirada del contenido, advertencia, limitación, suspensión o cierre de la cuenta. Lo que es ilegal puede transmitirse a las autoridades.',
         'Una cuenta denunciada como menor por dos personas distintas queda suspendida automáticamente, hasta que la revise el moderador.',
         'La app te confirma que tu denuncia se ha enviado. Para proteger la intimidad de todos, no te informamos de la sanción.',
@@ -63,7 +63,7 @@ export const securite: LegalPage = {
         '**Hazte caso**: si algo no encaja, puedes irte, sin dar explicaciones.',
       ],
     },
-    { p: 'Una compatibilidad, aunque sea alta, no garantiza nada sobre una persona. Blowy no verifica la identidad de los usuarios.' },
+    { p: 'Una compatibilidad, aunque sea alta, no garantiza nada sobre una persona. Minimoa no verifica la identidad de los usuarios.' },
 
     { h2: 'Números útiles', id: 'urgences' },
     {
@@ -87,7 +87,7 @@ export const securite: LegalPage = {
 
     { h2: 'Protección de menores', id: 'mineurs' },
     {
-      p: 'Blowy es solo para adultos de 18 años o más. La fecha de nacimiento se pide antes de iniciar sesión; con menos de 18 años, el registro se detiene y no se crea nada.',
+      p: 'Minimoa es solo para adultos de 18 años o más. La fecha de nacimiento se pide antes de iniciar sesión; con menos de 18 años, el registro se detiene y no se crea nada.',
     },
     {
       p: '**Tolerancia cero** con cualquier contenido o comportamiento que sexualice o ponga en peligro a un menor. En cuanto lo sabemos: se retira el contenido, se cierra la cuenta definitivamente y los hechos se denuncian a las autoridades competentes.',

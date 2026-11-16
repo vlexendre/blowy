@@ -137,7 +137,7 @@ describe('route des notifications Apple avec l’adaptateur réel', () => {
     expect(forged.status).toBe(400);
     expect((await api.me.get()).plus).toBe(true);
 
-    // La vraie, signée correctement : Blowy+ se ferme.
+    // La vraie, signée correctement : Minimoa+ se ferme.
     const real = await post({ signedPayload: signJws({ ...refund, signedDate: START.getTime() + 60_000 }) });
     expect(await real.json()).toEqual({ ok: true, outcome: 'applied' });
     expect((await api.me.get()).plus).toBe(false);

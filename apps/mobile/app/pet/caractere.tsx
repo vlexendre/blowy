@@ -1,7 +1,7 @@
 /**
  * Son caractère, rééquilibré (V6-GCaractere, spéc §15) : le minimoa et sa forme · sa vision (5 axes, « pour
  * l'instant », c'est elle qui choisit qui il présente) · son style (4 jauges, en petit, ne filtre personne) · ses
- * habitudes, son évolution, ses bilans, ses souvenirs (tuiles) · son nom (une fois tous les 60 jours, libre avec Blowy+).
+ * habitudes, son évolution, ses bilans, ses souvenirs (tuiles) · son nom (une fois tous les 60 jours, libre avec Minimoa+).
  */
 import { gaugeLabel } from '@/locales/content';
 import { cleanPetName, dayOf, GAUGE_KEYS, nextRenameOn, PET_NAME_MAX, RENAME_COOLDOWN_DAYS } from '@blowy/domain';
@@ -80,7 +80,7 @@ export default function CharacterScreen() {
   }
 
   const { pet: p, rename: renameRule } = pet.data;
-  // Nom changé il y a moins de 60 jours (sans Blowy+) : champ en lecture seule, date et raccourci vers Blowy+.
+  // Nom changé il y a moins de 60 jours (sans Minimoa+) : champ en lecture seule, date et raccourci vers Minimoa+.
   const renameLocked = !renameRule.allowed;
   const renameNotice = renameLocked
     ? renameRule.availableOn

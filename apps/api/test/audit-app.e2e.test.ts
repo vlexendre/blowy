@@ -3,7 +3,7 @@
  * - B5 : aucune image de preuve n'arrive à la passerelle d'IA sans l'accord explicite de la personne ; l'accord se
  *   donne, se lit et se retire (`/v1/me/ai`) ; sans IA, l'habitude se valide quand même ; le bilan de la semaine
  *   n'envoie à l'IA ni le prénom des liens ni le nom du minimoa ; la phrase d'accord du chat nomme le prestataire ;
- * - B3 : les objets premium sont à la personne tant que Blowy+ dure (garde-robe, tenue), et rangés quand il prend fin.
+ * - B3 : les objets premium sont à la personne tant que Minimoa+ dure (garde-robe, tenue), et rangés quand il prend fin.
  */
 import { randomUUID } from 'node:crypto';
 import type { ApiClient } from '@blowy/api-client';
@@ -186,7 +186,7 @@ describe('audit App Store', () => {
       if (profile) profile.plusUntil = until;
     };
 
-    it('sans Blowy+ : visibles, marqués Blowy+, pas portables', async () => {
+    it('sans Minimoa+ : visibles, marqués Minimoa+, pas portables', async () => {
       const p = await newPerson(world, 'Yan');
       const w = await p.api.pet.wardrobe();
       const items = w.items.filter((i) => i.plus);
@@ -195,7 +195,7 @@ describe('audit App Store', () => {
       expect(await errorCode(p.api.pet.setOutfit({ head: premium }))).toBe('forbidden');
     });
 
-    it('avec Blowy+ : tous possédés et portables ; vus sur le minimoa', async () => {
+    it('avec Minimoa+ : tous possédés et portables ; vus sur le minimoa', async () => {
       const p = await newPerson(world, 'Zoé');
       setPlus(p, new Date(world.clock.now().getTime() + 30 * 86_400_000).toISOString());
       const w = await p.api.pet.wardrobe();
@@ -204,7 +204,7 @@ describe('audit App Store', () => {
       expect(view.pet.outfit).toEqual({ head: premium, face: 'lunettes_rondes' });
     });
 
-    it('fin de Blowy+ : rangés à la prochaine ouverture, et par le minuteur pour les autres ; reviennent avec Blowy+', async () => {
+    it('fin de Minimoa+ : rangés à la prochaine ouverture, et par le minuteur pour les autres ; reviennent avec Minimoa+', async () => {
       const p = await newPerson(world, 'Ali');
       const q = await newPerson(world, 'Bea');
       const soon = new Date(world.clock.now().getTime() + 3_600_000).toISOString();

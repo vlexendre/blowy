@@ -10,7 +10,7 @@ import { MemoryBilling } from './memory-billing';
 import { MemoryStoreNotificationsRepository, MemorySubscriptionsRepository } from './memory-subscriptions.repository';
 import { SupabaseStoreNotificationsRepository, SupabaseSubscriptionsRepository } from './supabase-subscriptions.repository';
 
-/** Dépôts et adaptateurs de Blowy+ : Apple réel avec Supabase, mémoire sinon ; Google Play réservé. */
+/** Dépôts et adaptateurs de Minimoa+ : Apple réel avec Supabase, mémoire sinon ; Google Play réservé. */
 export const billingProviders = (adapters: Adapters): Provider[] => [
   repository<SubscriptionsRepository>(SUBSCRIPTIONS, adapters, (db) => new MemorySubscriptionsRepository(db), (c) => new SupabaseSubscriptionsRepository(c)),
   repository<StoreNotificationsRepository>(STORE_NOTIFICATIONS, adapters, (db) => new MemoryStoreNotificationsRepository(db), (c) => new SupabaseStoreNotificationsRepository(c)),

@@ -55,7 +55,7 @@ const fr = {
     item_unlocked: { title: () => 'Nouvel objet', body: (v) => `${v.minimoa} a gagné : ${v.item}.` },
     words_received: { title: () => '3 mots pour toi', body: () => 'Un pote vient de choisir ses 3 mots sur toi.' },
     trial_reminder: {
-      title: () => 'Ton essai Blowy+ se termine bientôt',
+      title: () => 'Ton essai Minimoa+ se termine bientôt',
       body: (v) =>
         `L’essai gratuit se termine le ${v.endsOn}. Ensuite, premier paiement de ${v.price}. Pour l’éviter, annule dans les réglages de ton compte Apple, rubrique Abonnements.`,
     },
@@ -74,7 +74,7 @@ const fr = {
     weekly_review: 'Bilan de la semaine',
     item_unlocked: 'Objets débloqués',
     words_received: '3 mots reçus',
-    trial_reminder: 'Fin de l’essai Blowy+',
+    trial_reminder: 'Fin de l’essai Minimoa+',
   } as Record<NotificationKindKey, string>,
 };
 
@@ -104,7 +104,7 @@ export const notificationTexts = defineMessages({
       item_unlocked: { title: () => 'New item', body: (v) => `${v.minimoa} won: ${v.item}.` },
       words_received: { title: () => '3 words for you', body: () => 'A friend just picked their 3 words about you.' },
       trial_reminder: {
-        title: () => 'Your Blowy+ trial ends soon',
+        title: () => 'Your Minimoa+ trial ends soon',
         body: (v) =>
           `Your free trial ends on ${v.endsOn}. After that, the first payment of ${v.price} is charged. To avoid it, cancel in your Apple account settings, under Subscriptions.`,
       },
@@ -122,7 +122,7 @@ export const notificationTexts = defineMessages({
       weekly_review: 'Weekly review',
       item_unlocked: 'Unlocked items',
       words_received: '3 words received',
-      trial_reminder: 'End of Blowy+ trial',
+      trial_reminder: 'End of Minimoa+ trial',
     },
   },
   es: {
@@ -149,7 +149,7 @@ export const notificationTexts = defineMessages({
       item_unlocked: { title: () => 'Nuevo objeto', body: (v) => `${v.minimoa} ha ganado: ${v.item}.` },
       words_received: { title: () => '3 palabras para ti', body: () => 'Alguien de tu gente acaba de elegir sus 3 palabras sobre ti.' },
       trial_reminder: {
-        title: () => 'Tu prueba de Blowy+ termina pronto',
+        title: () => 'Tu prueba de Minimoa+ termina pronto',
         body: (v) =>
           `Tu prueba gratuita termina el ${v.endsOn}. Después, primer pago de ${v.price}. Para evitarlo, cancela en los ajustes de tu cuenta de Apple, en Suscripciones.`,
       },
@@ -167,7 +167,7 @@ export const notificationTexts = defineMessages({
       weekly_review: 'Resumen de la semana',
       item_unlocked: 'Objetos desbloqueados',
       words_received: '3 palabras recibidas',
-      trial_reminder: 'Fin de la prueba de Blowy+',
+      trial_reminder: 'Fin de la prueba de Minimoa+',
     },
   },
   pt: {
@@ -194,7 +194,7 @@ export const notificationTexts = defineMessages({
       item_unlocked: { title: () => 'Novo item', body: (v) => `${v.minimoa} ganhou: ${v.item}.` },
       words_received: { title: () => '3 palavras para você', body: () => 'Alguém da sua galera acabou de escolher 3 palavras sobre você.' },
       trial_reminder: {
-        title: () => 'Seu teste do Blowy+ está acabando',
+        title: () => 'Seu teste do Minimoa+ está acabando',
         body: (v) =>
           `O teste gratuito termina em ${v.endsOn}. Depois, primeira cobrança de ${v.price}. Para evitar, cancele nos ajustes da sua conta Apple, em Assinaturas.`,
       },
@@ -212,7 +212,7 @@ export const notificationTexts = defineMessages({
       weekly_review: 'Resumo da semana',
       item_unlocked: 'Itens desbloqueados',
       words_received: '3 palavras recebidas',
-      trial_reminder: 'Fim do teste do Blowy+',
+      trial_reminder: 'Fim do teste do Minimoa+',
     },
   },
   nl: {
@@ -239,7 +239,7 @@ export const notificationTexts = defineMessages({
       item_unlocked: { title: () => 'Nieuw item', body: (v) => `${v.minimoa} heeft gewonnen: ${v.item}.` },
       words_received: { title: () => '3 woorden voor jou', body: () => 'Iemand uit je vriendenkring heeft net 3 woorden over jou gekozen.' },
       trial_reminder: {
-        title: () => 'Je Blowy+-proefperiode eindigt bijna',
+        title: () => 'Je Minimoa+-proefperiode eindigt bijna',
         body: (v) =>
           `Je gratis proefperiode eindigt op ${v.endsOn}. Daarna volgt de eerste betaling van ${v.price}. Wil je dat niet, zeg dan op in de instellingen van je Apple-account, onder Abonnementen.`,
       },
@@ -257,7 +257,7 @@ export const notificationTexts = defineMessages({
       weekly_review: 'Weekoverzicht',
       item_unlocked: 'Ontgrendelde items',
       words_received: '3 woorden ontvangen',
-      trial_reminder: 'Einde Blowy+-proefperiode',
+      trial_reminder: 'Einde Minimoa+-proefperiode',
     },
   },
 });

@@ -38,7 +38,7 @@ public class BlowyWidgetsModule: Module {
       return true
     }
 
-    /// Déconnexion : les widgets repassent sur « ouvre Blowy ».
+    /// Déconnexion : les widgets repassent sur « ouvre Minimoa ».
     Function("clearSnapshot") { () -> Void in
       guard let defaults = BlowyStore.defaults, defaults.object(forKey: BlowyStore.snapshotKey) != nil else { return }
       defaults.removeObject(forKey: BlowyStore.snapshotKey)

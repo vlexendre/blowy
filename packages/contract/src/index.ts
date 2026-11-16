@@ -1,5 +1,5 @@
 /**
- * Contrat de l'API Blowy (REST /v1). Source de vérité partagée par l'API, l'app et le site.
+ * Contrat de l'API Minimoa (REST /v1). Source de vérité partagée par l'API, l'app et le site.
  * Tout ce qui traverse le réseau est décrit ici en Zod ; les types en sont dérivés.
  */
 import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LEVEL_KEYS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
@@ -66,12 +66,12 @@ export const PetViewZ = z.object({
   careDays: z.number().int(),
   /** Objets débloqués par cette action (à fêter à l'écran). */
   newItems: z.array(ItemIdZ),
-  /** Changement de nom : une fois tous les 60 jours (le nom donné à la création ne compte pas), sans attente avec Blowy+. */
+  /** Changement de nom : une fois tous les 60 jours (le nom donné à la création ne compte pas), sans attente avec Minimoa+. */
   rename: z.object({
     allowed: z.boolean(),
     /** Jour (Europe/Paris) à partir duquel le nom pourra changer ; null s'il le peut déjà. */
     availableOn: DayStr.nullable(),
-    /** Blowy+ : aucune attente entre deux changements. */
+    /** Minimoa+ : aucune attente entre deux changements. */
     unlimited: z.boolean(),
   }),
 });
@@ -84,11 +84,11 @@ export const WardrobeItemZ = z.object({
   id: ItemIdZ,
   slot: ItemSlotZ,
   /**
-   * owned : dans la garde-robe (portable) · locked : à gagner par une étape · premium : inclus dans Blowy+, que la
-   * personne n'a pas (la toucher ouvre Blowy+). Avec Blowy+, un objet premium est `owned` et `plus` vaut vrai.
+   * owned : dans la garde-robe (portable) · locked : à gagner par une étape · premium : inclus dans Minimoa+, que la
+   * personne n'a pas (la toucher ouvre Minimoa+). Avec Minimoa+, un objet premium est `owned` et `plus` vaut vrai.
    */
   state: z.enum(['owned', 'locked', 'premium']),
-  /** Objet premium (inclus dans Blowy+) : vrai qu'il soit possédé ou non. Absent des réponses des anciennes API. */
+  /** Objet premium (inclus dans Minimoa+) : vrai qu'il soit possédé ou non. Absent des réponses des anciennes API. */
   plus: z.boolean().optional(),
   /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
   goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept']), have: z.number().int(), need: z.number().int() }).nullable(),
@@ -331,14 +331,14 @@ export const MapZ = z.object({
   /** no_location : pas de position ou pas d'accord → ni carte ni rencontres proches (`message` le dit). */
   status: z.enum(['ok', 'no_location']),
   message: z.string().nullable(),
-  /** zone : ta zone seulement, carte fixe (gratuit) · everywhere : toute la carte (Blowy+). */
+  /** zone : ta zone seulement, carte fixe (gratuit) · everywhere : toute la carte (Minimoa+). */
   scope: z.enum(['zone', 'everywhere']),
-  /** Centre affiché (ta zone, la ville choisie ou l'endroit demandé avec Blowy+). */
+  /** Centre affiché (ta zone, la ville choisie ou l'endroit demandé avec Minimoa+). */
   center: LatLngZ.nullable(),
   /** Rayon visible autour du centre. */
   radiusKm: z.number(),
   pins: z.array(MapPinZ),
-  /** Au-delà du rayon visible (gratuit) : un nombre et des silhouettes floues. Vide avec Blowy+. */
+  /** Au-delà du rayon visible (gratuit) : un nombre et des silhouettes floues. Vide avec Minimoa+. */
   beyond: MapBeyondZ,
   /** Tu es en mode discret : tu n'apparais sur la carte de personne. */
   discreet: z.boolean(),
@@ -405,7 +405,7 @@ export const ERROR_CODES = [
   'link_not_active',
   'cannot_revive',
   'already_done',
-  /** Nom du pet changé il y a moins de 60 jours (sans Blowy+). */
+  /** Nom du pet changé il y a moins de 60 jours (sans Minimoa+). */
   'rename_locked',
   'rate_limited',
   /** Compte suspendu par la modération (le message dit jusqu'à quand). */

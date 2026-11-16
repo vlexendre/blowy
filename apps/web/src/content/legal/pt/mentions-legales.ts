@@ -1,13 +1,13 @@
 import type { LegalPage } from '../types';
 
 export const mentionsLegales: LegalPage = {
-  title: 'Informação legal — Blowy',
+  title: 'Informação legal — Minimoa',
   heading: 'Informação legal',
-  description: 'Quem edita o Blowy, quem o aloja e como nos contactar.',
-  intro: 'Quem edita a app e o site Blowy, quem os aloja e como nos contactar.',
+  description: 'Quem edita o Minimoa, quem o aloja e como nos contactar.',
+  intro: 'Quem edita a app e o site Minimoa, quem os aloja e como nos contactar.',
   body: [
     { h2: 'Editor', id: 'editeur' },
-    { p: 'O site blowy.app e a app Blowy são editados por:' },
+    { p: 'O site blowy.app e a app Minimoa são editados por:' },
     {
       ul: [
         '**Denominação social:** {{publisher.name}}',
@@ -52,7 +52,7 @@ export const mentionsLegales: LegalPage = {
     },
     { h2: 'Propriedade intelectual', id: 'propriete' },
     {
-      p: 'A marca Blowy, os minimoas, as ilustrações, os textos, as animações e o software estão protegidos pelo direito da propriedade intelectual. Pertencem a {{publisher.name}} ou aos seus parceiros. É proibido reproduzi-los ou reutilizá-los sem autorização, salvo o que a lei permite (citação curta, cópia privada).',
+      p: 'A marca Minimoa, os minimoas, as ilustrações, os textos, as animações e o software estão protegidos pelo direito da propriedade intelectual. Pertencem a {{publisher.name}} ou aos seus parceiros. É proibido reproduzi-los ou reutilizá-los sem autorização, salvo o que a lei permite (citação curta, cópia privada).',
     },
     { p: 'Tipos de letra do site: Anton e Bricolage Grotesque, sob a licença SIL Open Font License. Animações da página inicial: biblioteca GSAP.' },
   ],

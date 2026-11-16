@@ -1,5 +1,5 @@
 /**
- * Blowy+ de bout en bout avec l'adaptateur mémoire du port `Billing` (mêmes champs qu'Apple, sans signature) :
+ * Minimoa+ de bout en bout avec l'adaptateur mémoire du port `Billing` (mêmes champs qu'Apple, sans signature) :
  * paywall, achat, restauration, suite de notifications, idempotence, rappel du jour 5.
  */
 import { randomUUID } from 'node:crypto';
@@ -12,7 +12,7 @@ import { type TestWorld, apiError, onboardBody, startWorld } from './helpers';
 
 const DAY = 86_400_000;
 
-describe('Blowy+', () => {
+describe('Minimoa+', () => {
   let w: TestWorld;
   const sent: { userId: string; kind: string; vars?: Record<string, string> }[] = [];
 
@@ -75,7 +75,7 @@ describe('Blowy+', () => {
     const yearly = p.offers[0];
     // Espaces insécables (fines ou non) normalisées : seule la formulation compte ici.
     const plain = (o: Record<string, string | null> | undefined) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k, v?.replace(/[\u00a0\u202f]/g, ' ') ?? v]));
-    expect(plain(yearly?.labels)).toEqual({ price: '59,88 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,88 € par an', name: 'Abonnement annuel Blowy+' });
+    expect(plain(yearly?.labels)).toEqual({ price: '59,88 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,88 € par an', name: 'Abonnement annuel Minimoa+' });
     expect(yearly?.discountPercent).toBe(67);
     expect(p.trial).toMatchObject({ days: 7, reminderDay: 5, eligible: true });
     expect(p.trial.timeline.map((s) => s.day)).toEqual([0, 5, 7]);
@@ -147,7 +147,7 @@ describe('Blowy+', () => {
     expect((await api.me.get()).plus).toBe(true);
   });
 
-  it('restauré sur un autre compte Blowy : l’abonnement change de compte', async () => {
+  it('restauré sur un autre compte Minimoa : l’abonnement change de compte', async () => {
     const a = w.client();
     const b = w.client();
     await a.api.me.onboard(onboardBody());
@@ -167,7 +167,7 @@ describe('Blowy+', () => {
     expect(await apiError(api.plus.submitPurchase({ store: 'apple', signedTransaction: tx({ bundleId: 'com.autre' }) }))).toMatchObject({ code: 'invalid' });
     expect(await apiError(api.plus.submitPurchase({ store: 'apple', signedTransaction: tx({ productId: 'app.blowy.coins' }) }))).toMatchObject({
       code: 'invalid',
-      message: 'Ce produit n’est pas un abonnement Blowy+.',
+      message: 'Ce produit n’est pas un abonnement Minimoa+.',
     });
     const bad = await fetch(`${w.baseUrl}/v1/plus/apple/notifications`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ signedPayload: 'pas.un.jws.valide' }) });
     expect(bad.status).toBe(400);

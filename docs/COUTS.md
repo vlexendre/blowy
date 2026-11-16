@@ -1,4 +1,4 @@
-# Coûts de Blowy — modèle et estimations par palier
+# Coûts de Minimoa — modèle et estimations par palier
 
 Objectif (spéc §22) : tenir 1 M de téléchargements avec des coûts d'IA et d'API aussi bas que possible, et presque
 rien tant qu'il n'y a personne. Prix publics relevés le **15 novembre 2026** sur les pages citées ; tout montant en
@@ -70,7 +70,7 @@ Pire cas théorique (chaque actif atteint tous ses plafonds chaque jour) : ≈ 1
 | 1 M | 12 $ | 365 $ | **25 $** (à relever : avec 3 $, l'IA s'arrête chaque jour vers 10 h et les règles prennent le relais) |
 
 Leviers si la facture monte : baisser `AI_USER_BUDGETS` (sans redéploiement), passer le bilan en traitement par lots
-(−50 %, il n'est pas urgent), réserver le bilan par IA à Blowy+, couper `chat_remark` par l'interrupteur.
+(−50 %, il n'est pas urgent), réserver le bilan par IA à Minimoa+, couper `chat_remark` par l'interrupteur.
 
 ## 3. Notifications push
 

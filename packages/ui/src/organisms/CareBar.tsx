@@ -59,11 +59,11 @@ export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure,
 }
 
 const styles = StyleSheet.create({
-  // `.card.row`, à l'échelle de densité : padding 10 4, rayon des cartes.
+  // `.card.row`, à l'échelle de densité, aérée en hauteur : padding 16 4, rayon des cartes.
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: 10,
+    paddingVertical: 16,
     paddingHorizontal: 4,
     borderRadius: radius.card,
     backgroundColor: color.panel,

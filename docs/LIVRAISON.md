@@ -131,7 +131,7 @@ Aucune variable nouvelle n'est **requise pour démarrer**. Ce qui fait refuser l
 |---|---|---|
 | `REVIEW_EMAIL`, `REVIEW_CODE` | compte de revue d'Apple (`docs/APP-REVIEW.md` §2) | connexion par e-mail fermée : l'examinateur ne voit ni rencontres ni chats (refus B1) |
 | `ADMIN_EMAILS` | destinataires des alertes de signalement (et accès à l'administration) | aucune alerte, personne dans l'administration |
-| `RESEND_API_KEY`, `MAIL_FROM` | alertes de modération, rappel de fin d'essai par e-mail, prévenance d'inactivité | aucun e-mail (la page Blowy+ et la politique promettent le rappel par e-mail) |
+| `RESEND_API_KEY`, `MAIL_FROM` | alertes de modération, rappel de fin d'essai par e-mail, prévenance d'inactivité | aucun e-mail (la page Minimoa+ et la politique promettent le rappel par e-mail) |
 | `ADMIN_URL` (facultatif) | liens des alertes | défaut `WEB_URL` + `/admin` |
 | `ANTHROPIC_API_KEY` | lecture des chats, preuves, vérification des photos de profil, bilans | IA coupée : règles de repli, photos de profil publiées « à vérifier » |
 | `AI_PROVIDER_NAME`, `AI_PROVIDER_COUNTRY` (facultatives) | prestataire nommé dans l'app | « Anthropic », « US » : à ne changer qu'**en même temps** que `SUBPROCESSORS.ai` de `apps/web/src/config/legal.ts` |

@@ -499,6 +499,6 @@ export function updateHome(state: HomeState, fix: GeoPoint, at: string): HomeSta
   return { home: state.home, candidate: snapped, candidateSince: at };
 }
 
-/** Centre de recherche : la ville choisie (Blowy+) ou, sinon, la zone du domicile. */
+/** Centre de recherche : la ville choisie (Minimoa+) ou, sinon, la zone du domicile. */
 export const matchingCenter = (home: GeoPoint | null, chosen: GeoPoint | null, canChangeCity: boolean): GeoPoint | null =>
   canChangeCity && chosen ? chosen : home;

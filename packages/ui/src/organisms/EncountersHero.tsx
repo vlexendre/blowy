@@ -19,7 +19,7 @@ export interface EncountersHeroProps {
   title: TitleContent;
   text?: string;
   species?: Species;
-  /** Bouton blanc en haut à droite (« la carte »), avec la puce « + » de Blowy+. */
+  /** Bouton blanc en haut à droite (« la carte »), avec la puce « + » de Minimoa+. */
   action?: { label: string; onPress: () => void; accessibilityLabel?: string; plus?: string };
 }
 

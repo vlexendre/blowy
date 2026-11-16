@@ -43,7 +43,7 @@ export interface PlusOfferView<K extends string = string> {
 export interface PlusTemplateProps<K extends string> {
   onClose: () => void;
   closeLabel: string;
-  /** Marque du grand titre (« blowy ») : le « + » jaune est ajouté. */
+  /** Marque du grand titre (« minimoa ») : le « + » jaune est ajouté. */
   brand: string;
   /** Ligne estompée sous le titre : ce que la personne vient d'essayer, ou « Nino en veut plus. ». */
   headline: string;
@@ -80,7 +80,7 @@ export interface PlusTemplateProps<K extends string> {
   restoreLoading?: boolean;
   /** Liens de la barre fixe (conditions, confidentialité), à côté de « Restaurer mes achats ». */
   links?: readonly { label: string; onPress: () => void }[];
-  /** Liens sous la mention complète (conditions de Blowy+). */
+  /** Liens sous la mention complète (conditions de Minimoa+). */
   moreLinks?: readonly { label: string; onPress: () => void }[];
   /** Une ligne sous le bouton d'achat : le prix après l'essai, le renouvellement, l'annulation. */
   ctaNote?: string | null;
@@ -179,7 +179,7 @@ function OfferCard<K extends string>({ offer, on, onPress }: { offer: PlusOfferV
 }
 
 /**
- * Blowy+ (V6-GPlus) : feuille haute. En haut, le minimoa de la personne habillé avec les objets premium qui flottent, la
+ * Minimoa+ (V6-GPlus) : feuille haute. En haut, le minimoa de la personne habillé avec les objets premium qui flottent, la
  * preuve concrète (si le serveur en a une), puis les avantages, l'offre annuelle déployée (prix facturé en grand,
  * équivalent mensuel en petit, frise de l'essai), la mensuelle repliée, l'action, « Continuer gratuitement » neutre, le
  * renouvellement et la résiliation, « Restaurer mes achats » et les liens légaux. La croix est là tout de suite.
@@ -318,7 +318,7 @@ export function PlusTemplate<K extends string>({
             </Appear>
           ) : null}
 
-          {/* Sous l'offre : continuer sans payer, la mention complète du renouvellement, les conditions de Blowy+. */}
+          {/* Sous l'offre : continuer sans payer, la mention complète du renouvellement, les conditions de Minimoa+. */}
           <View style={styles.actions}>
             <Pressable onPress={proceed} accessibilityLabel={continueLabel} style={styles.secondary}>
               <InkProvider value={color.white}>

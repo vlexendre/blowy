@@ -94,7 +94,7 @@ private struct LockScreenActivityView: View {
 
 // MARK: - Morceaux
 
-/// « Défi accepté · Blowy » puis le titre (« Un café dehors », « À toi d'écrire », « Nino est de sortie »).
+/// « Défi accepté · Minimoa » puis le titre (« Un café dehors », « À toi d'écrire », « Nino est de sortie »).
 private struct ActivityTitle: View {
   let context: Context
   let compact: Bool

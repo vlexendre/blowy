@@ -34,7 +34,7 @@ export type VisionAnswer = z.infer<typeof VisionAnswerZ>;
 export const LatLngZ = z.object({ latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180) });
 export type LatLng = z.infer<typeof LatLngZ>;
 
-/** Ville choisie (Blowy+) : déplace le centre des rencontres sans bouger. `label` est le nom affiché, choisi par l'app. */
+/** Ville choisie (Minimoa+) : déplace le centre des rencontres sans bouger. `label` est le nom affiché, choisi par l'app. */
 export const ChosenCityZ = LatLngZ.extend({ label: z.string().trim().min(1).max(60) });
 export type ChosenCity = z.infer<typeof ChosenCityZ>;
 
@@ -46,9 +46,9 @@ export const LocationStatusZ = z.object({
   locatedAt: Iso.nullable(),
   /** Zone du domicile : centre arrondi à ~300 m et rayon. Elle ne bouge pas pour une sortie (seulement après 72 h ailleurs). */
   zone: z.object({ center: LatLngZ, radiusKm: z.number() }).nullable(),
-  /** Ville choisie (Blowy+), même si l'abonnement a pris fin. */
+  /** Ville choisie (Minimoa+), même si l'abonnement a pris fin. */
   chosenCity: ChosenCityZ.nullable(),
-  /** Vrai si la ville choisie sert en ce moment de centre (Blowy+ actif). */
+  /** Vrai si la ville choisie sert en ce moment de centre (Minimoa+ actif). */
   chosenCityActive: z.boolean(),
   /**
    * D'où vient la zone : `gps` (position du téléphone, arrondie) ou `manual` (zone choisie à la main, sans
@@ -57,7 +57,7 @@ export const LocationStatusZ = z.object({
   source: z.enum(['gps', 'manual']).nullable(),
   /**
    * Zone choisie à la main (sans localisation) : la ville et le premier jour où elle pourra changer (gratuit : 30 jours
-   * après le choix, ce jour peut être passé ; null avec Blowy+ : quand on veut). Null si la zone vient du téléphone.
+   * après le choix, ce jour peut être passé ; null avec Minimoa+ : quand on veut). Null si la zone vient du téléphone.
    */
   manualArea: z.object({ label: z.string(), nextChangeOn: z.string().nullable() }).nullable(),
 });
@@ -191,7 +191,7 @@ export const MatchExplanationZ = z.object({
 export type MatchExplanation = z.infer<typeof MatchExplanationZ>;
 
 // ── Carte : briques (le schéma complet MapZ est dans index.ts) ───────────────
-/** ?lat=&lng=&radiusKm= : Blowy+ seulement, pour regarder ailleurs (rayon de 25 km au plus). Sans paramètre : sa zone. */
+/** ?lat=&lng=&radiusKm= : Minimoa+ seulement, pour regarder ailleurs (rayon de 25 km au plus). Sans paramètre : sa zone. */
 export const MapQuery = z.object({
   lat: z.coerce.number().min(-90).max(90).optional(),
   lng: z.coerce.number().min(-180).max(180).optional(),
@@ -209,7 +209,7 @@ export const visionRoutes = {
   vision: () => '/v1/vision',
   /** POST : position relevée (app ouverte) · DELETE : oublier la position et retirer l'accord. */
   location: () => '/v1/me/location',
-  /** PUT : changer de ville (Blowy+) · DELETE : revenir à sa zone. */
+  /** PUT : changer de ville (Minimoa+) · DELETE : revenir à sa zone. */
   city: () => '/v1/me/city',
   /** PUT : choisir sa zone à la main, sans localisation (gratuit ; corps `ChosenCityZ`). DELETE `location` l'oublie. */
   area: () => '/v1/me/area',

@@ -95,7 +95,7 @@ export class MemoryDb {
   /** clé `${job}|${slot}` */
   readonly tickRuns = new Set<string>();
 
-  /** Blowy+ : abonnements (clé `${store}:${originalTransactionId}`) et notifications reçues des magasins. */
+  /** Minimoa+ : abonnements (clé `${store}:${originalTransactionId}`) et notifications reçues des magasins. */
   readonly subscriptions = new Map<string, SubscriptionRecord>();
   readonly storeNotifications = new Map<string, StoreNotificationRecord>();
   /** Administration : traitement des signalements (clé : identifiant du signalement = rang dans `reports` + 1). */

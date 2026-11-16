@@ -23,7 +23,7 @@ export interface SettingsTemplateProps {
   gap?: number;
   /** Phrase d'explication sous le titre. */
   intro?: string;
-  /** Petite mention centrée tout en bas (« blowy 1.0.0 »). */
+  /** Petite mention centrée tout en bas (« minimoa 1.0.0 »). */
   note?: string;
   /** Élément à droite du titre (V6-GardeRobe : puce « 13 / 64 »). */
   right?: ReactNode;

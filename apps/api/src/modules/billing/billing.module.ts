@@ -27,7 +27,7 @@ const compatibleNearby = (matchmaker: Matchmaker, profiles: ProfilesRepository, 
 });
 
 /**
- * Blowy+ : paywall, achats vérifiés auprès d'Apple, notifications du magasin, rappel de fin d'essai.
+ * Minimoa+ : paywall, achats vérifiés auprès d'Apple, notifications du magasin, rappel de fin d'essai.
  * Dépôts et adaptateurs (`billingProviders`) : fournis par CoreModule, selon BLOWY_ADAPTERS.
  */
 @Module({

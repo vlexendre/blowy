@@ -1,4 +1,4 @@
-/** Jetons d'injection du module Blowy+ (chantier « facturation-admin »). */
+/** Jetons d'injection du module Minimoa+ (chantier « facturation-admin »). */
 
 /** Port `Billing` d'Apple : vérifie les transactions, renouvellements et notifications signés (JWS). */
 export const APPLE_BILLING = Symbol('APPLE_BILLING');

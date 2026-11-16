@@ -37,7 +37,7 @@ export interface Seeker {
   /** Test de vision passé : sans lui, ni suggestions ni carte (et personne ne te voit). */
   testDone: boolean;
   plus: boolean;
-  /** Centre de recherche (ville choisie avec Blowy+, sinon zone du domicile) ; null sans position. */
+  /** Centre de recherche (ville choisie avec Minimoa+, sinon zone du domicile) ; null sans position. */
   center: GeoPoint | null;
 }
 
@@ -100,7 +100,7 @@ export class Matchmaker {
     return matches;
   }
 
-  /** Personnes compatibles autour d'un point quelconque (carte de Blowy+), sans cache. */
+  /** Personnes compatibles autour d'un point quelconque (carte de Minimoa+), sans cache. */
   async around(me: Seeker, center: GeoPoint, radiusKm: number, cap: number): Promise<CachedMatch[]> {
     if (!me.testDone || !isMatchable(me.vision)) return [];
     const places = await this.places.listInCells(cellsAround(center, radiusKm), CANDIDATE_CAP, me.profile.id);

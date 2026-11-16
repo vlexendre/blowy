@@ -53,3 +53,4 @@ export { AuthButton, type AuthButtonProps } from './AuthButton';
 export { CheckRow, type CheckRowProps } from './CheckRow';
 export { PointRow, type PointRowProps } from './PointRow';
 export { ShortcutRow, ShortcutTile, type ShortcutTileProps } from './ShortcutTile';
+export { StreakStrip, type StreakStripProps, type StreakStripStatus } from './StreakStrip';

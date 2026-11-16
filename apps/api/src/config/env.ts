@@ -19,7 +19,7 @@ const EnvSchema = z
     SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
     SUPABASE_SERVICE_ROLE_KEY: optionalString,
     RESEND_API_KEY: optionalString,
-    MAIL_FROM: z.string().default('Blowy <hello@blowy.app>'),
+    MAIL_FROM: z.string().default('Minimoa <hello@blowy.app>'),
     WEB_URL: z.string().url().default('https://blowy.app'),
     CORS_ORIGINS: z.string().default(''),
   })
@@ -45,7 +45,7 @@ export interface Env {
   corsOrigins: string[];
   /** IA, push et minuteur (chantier « plateforme »). */
   plateforme: PlateformeEnv;
-  /** Blowy+ et administration (chantier « facturation-admin »). */
+  /** Minimoa+ et administration (chantier « facturation-admin »). */
   facturationAdmin: FacturationAdminEnv;
   /** Révocation des jetons de Sign in with Apple à la suppression d'un compte. */
   appleSignIn: AppleSignInEnv;

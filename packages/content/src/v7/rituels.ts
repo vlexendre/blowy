@@ -234,7 +234,7 @@ const fr = {
   errors: {
     outingDone: 'Ta sortie du jour est déjà comptée. Merci pour l’air frais.',
     habitUnknown: 'Cette habitude n’existe pas.',
-    habitLimit: (limit: number): string => `Tu suis déjà ${limit} habitudes. Avec Blowy+, tu peux en suivre jusqu’à 6.`,
+    habitLimit: (limit: number): string => `Tu suis déjà ${limit} habitudes. Avec Minimoa+, tu peux en suivre jusqu’à 6.`,
     habitLimitPlus: 'Tu suis déjà 6 habitudes : c’est le maximum.',
     habitTaken: 'Tu suis déjà cette habitude.',
     habitNotFound: 'Cette habitude n’est plus suivie.',
@@ -277,7 +277,7 @@ const fr = {
       steady: (name: string): string => `Avec ${name} : un lien solide.`,
       growing: (name: string): string => `Avec ${name} : ça se construit, tranquillement.`,
     } as Record<LinkNote, (name: string, streak: number) => string>,
-    /** Blowy+ : détail par axe sur quatre semaines (`pole` en minuscules) et audit de chaque lien. */
+    /** Minimoa+ : détail par axe sur quatre semaines (`pole` en minuscules) et audit de chaque lien. */
     detailedAxisStable: (axis: string): string => `${axis} : stable.`,
     detailedAxis: (axis: string, signedDelta: string, pole: string): string => `${axis} : ${signedDelta} vers « ${pole} ».`,
     detailedLink: (name: string, level: number, lives: number): string => `Avec ${name} : niveau ${level}, ${plural(lives, 'vie', 'vies')}.`,
@@ -369,7 +369,7 @@ const en: Translation<RituelsText> = {
   errors: {
     outingDone: 'Today’s outing already counts. Thanks for the fresh air.',
     habitUnknown: 'This habit doesn’t exist.',
-    habitLimit: (limit: number): string => `You’re already tracking ${limit} habits. With Blowy+, you can track up to 6.`,
+    habitLimit: (limit: number): string => `You’re already tracking ${limit} habits. With Minimoa+, you can track up to 6.`,
     habitLimitPlus: 'You’re already tracking 6 habits: that’s the maximum.',
     habitTaken: 'You’re already tracking this habit.',
     habitNotFound: 'This habit isn’t being tracked anymore.',
@@ -498,7 +498,7 @@ const es: Translation<RituelsText> = {
   errors: {
     outingDone: 'Tu salida de hoy ya cuenta. Gracias por el aire fresco.',
     habitUnknown: 'Este hábito no existe.',
-    habitLimit: (limit: number): string => `Ya sigues ${limit} hábitos. Con Blowy+, puedes seguir hasta 6.`,
+    habitLimit: (limit: number): string => `Ya sigues ${limit} hábitos. Con Minimoa+, puedes seguir hasta 6.`,
     habitLimitPlus: 'Ya sigues 6 hábitos: es el máximo.',
     habitTaken: 'Ya sigues este hábito.',
     habitNotFound: 'Ya no sigues este hábito.',
@@ -627,7 +627,7 @@ const pt: Translation<RituelsText> = {
   errors: {
     outingDone: 'Sua saída de hoje já foi contada. Obrigado pelo ar fresco.',
     habitUnknown: 'Esse hábito não existe.',
-    habitLimit: (limit: number): string => `Você já acompanha ${limit} hábitos. Com o Blowy+, dá para acompanhar até 6.`,
+    habitLimit: (limit: number): string => `Você já acompanha ${limit} hábitos. Com o Minimoa+, dá para acompanhar até 6.`,
     habitLimitPlus: 'Você já acompanha 6 hábitos: é o máximo.',
     habitTaken: 'Você já acompanha esse hábito.',
     habitNotFound: 'Você não acompanha mais esse hábito.',
@@ -756,7 +756,7 @@ const nl: Translation<RituelsText> = {
   errors: {
     outingDone: 'Je uitje van vandaag telt al. Bedankt voor de frisse lucht.',
     habitUnknown: 'Deze gewoonte bestaat niet.',
-    habitLimit: (limit: number): string => `Je volgt al ${limit} gewoontes. Met Blowy+ kun je er tot 6 volgen.`,
+    habitLimit: (limit: number): string => `Je volgt al ${limit} gewoontes. Met Minimoa+ kun je er tot 6 volgen.`,
     habitLimitPlus: 'Je volgt al 6 gewoontes: dat is het maximum.',
     habitTaken: 'Je volgt deze gewoonte al.',
     habitNotFound: 'Deze gewoonte volg je niet meer.',

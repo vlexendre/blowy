@@ -23,9 +23,9 @@ export interface ItemTileProps {
   goalText?: string;
   /** Objet à gagner : avancement (mini barre). */
   progress?: { have: number; need: number };
-  /** Étiquette des objets premium (« Blowy+ »). */
+  /** Étiquette des objets premium (« Minimoa+ »). */
   premiumLabel?: string;
-  /** Objet premium possédé grâce à Blowy+ : garde l'étiquette violette (sauf porté ou nouveau). */
+  /** Objet premium possédé grâce à Minimoa+ : garde l'étiquette violette (sauf porté ou nouveau). */
   plus?: boolean;
   /** Étiquette d'un objet tout juste débloqué (« nouveau »). */
   newLabel?: string;
@@ -42,7 +42,7 @@ export interface ItemTileProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Reflet qui passe de temps en temps sur l'étiquette Blowy+ (boucle douce, coupée hors écran). */
+/** Reflet qui passe de temps en temps sur l'étiquette Minimoa+ (boucle douce, coupée hors écran). */
 function Shine() {
   const reduced = useReducedMotion();
   const active = useMotionActive();
@@ -61,8 +61,8 @@ function Shine() {
 }
 
 /**
- * Case d'un objet (`.tile` de V6-GardeRobe) : porté, possédé, à gagner (étape + mini barre) ou premium (Blowy+).
- * Verrouillé : l'objet tremble au toucher. Premium : un reflet passe sur l'étiquette Blowy+. Nouveau : l'étiquette arrive
+ * Case d'un objet (`.tile` de V6-GardeRobe) : porté, possédé, à gagner (étape + mini barre) ou premium (Minimoa+).
+ * Verrouillé : l'objet tremble au toucher. Premium : un reflet passe sur l'étiquette Minimoa+. Nouveau : l'étiquette arrive
  * en « pop » avec des étincelles, une fois. Porté / retiré : petit rebond.
  */
 export const ItemTile = memo(function ItemTile({
@@ -86,7 +86,7 @@ export const ItemTile = memo(function ItemTile({
   const locked = state === 'locked';
   const premium = state === 'premium';
   const isNew = !premium && !worn && !!newLabel;
-  // Objet Blowy+ possédé : l'étiquette violette reste, sauf quand « porté » ou « nouveau » ont quelque chose à dire.
+  // Objet Minimoa+ possédé : l'étiquette violette reste, sauf quand « porté » ou « nouveau » ont quelque chose à dire.
   const plusTag = !premium && !worn && !newLabel && plus ? premiumLabel : undefined;
   const violet = premium || plusTag !== undefined;
   const tag = premium ? premiumLabel : worn ? wornLabel : (newLabel ?? plusTag);
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   // `.mini` : 70 % de large, 4 de haut.
   mini: { width: '70%', height: 4, marginTop: 2, borderRadius: radius.pill, backgroundColor: veil.glassStrong, overflow: 'hidden' },
   miniFill: { height: '100%', backgroundColor: color.accent },
-  // `.tag` : en haut à droite, 9/800, pilule jaune (violette pour Blowy+).
+  // `.tag` : en haut à droite, 9/800, pilule jaune (violette pour Minimoa+).
   tagBox: { position: 'absolute', top: 7, right: 7 },
   tag: { paddingVertical: 1, paddingHorizontal: 8, borderRadius: radius.pill, backgroundColor: color.accent, overflow: 'hidden' },
   tagPremium: { backgroundColor: color.violet },

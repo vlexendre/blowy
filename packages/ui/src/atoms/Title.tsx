@@ -71,7 +71,7 @@ export function Title({ text, variant = 'h1', size, color, center, numberOfLines
       accessibilityLabel={accessibilityLabel ?? segments.map((s) => s.text).join('')}
       numberOfLines={numberOfLines}
       // Un titre ne se touche pas : `fitLineHeight` agrandit son cadre vers le haut (iOS, web) et il couvrirait
-      // les boutons juste au-dessus (la croix de Blowy+).
+      // les boutons juste au-dessus (la croix de Minimoa+).
       pointerEvents="none"
       style={[composed, fitLineHeight(composed, { lines: numberOfLines })]}
     >

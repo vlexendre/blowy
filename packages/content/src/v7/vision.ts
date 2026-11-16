@@ -89,7 +89,7 @@ const fr = {
     beyond: (n: number) => (n === 1 ? '1 minimoa plus loin' : `${n} minimoas plus loin`),
     noLocation: 'Sans ta position, pas de carte ni de rencontres près de toi.',
     discreet: 'Mode discret : tu n’apparais sur la carte de personne.',
-    plusHint: 'Avec Blowy+, toute la carte, et changer de ville.',
+    plusHint: 'Avec Minimoa+, toute la carte, et changer de ville.',
   },
   /** Messages d'erreur de la vision (renvoyés par l'API). */
   errors: {
@@ -99,8 +99,8 @@ const fr = {
     whomOnlyForMore: '« Qui tu veux rencontrer » ne sert que si tu cherches plus que des potes.',
     sensitiveConsent: 'Il faut ton accord pour enregistrer ce choix.',
     locationConsent: 'Il faut ton accord pour utiliser ta position.',
-    changeCityPlus: 'Changer de ville fait partie de Blowy+.',
-    mapEverywherePlus: 'Toute la carte fait partie de Blowy+.',
+    changeCityPlus: 'Changer de ville fait partie de Minimoa+.',
+    mapEverywherePlus: 'Toute la carte fait partie de Minimoa+.',
   },
 };
 
@@ -166,7 +166,7 @@ export const visionText = defineMessages({
       beyond: (n: number) => (n === 1 ? '1 minimoa farther away' : `${n} minimoas farther away`),
       noLocation: 'Without your location, no map and no encounters near you.',
       discreet: 'Discreet mode: you don’t appear on anyone’s map.',
-      plusHint: 'With Blowy+: the whole map, and switching cities.',
+      plusHint: 'With Minimoa+: the whole map, and switching cities.',
     },
     errors: {
       unknownQuestion: 'This situation doesn’t exist.',
@@ -175,8 +175,8 @@ export const visionText = defineMessages({
       whomOnlyForMore: '“Who you want to meet” only applies if you’re looking for more than friends.',
       sensitiveConsent: 'We need your consent to save this choice.',
       locationConsent: 'We need your consent to use your location.',
-      changeCityPlus: 'Switching cities is part of Blowy+.',
-      mapEverywherePlus: 'The whole map is part of Blowy+.',
+      changeCityPlus: 'Switching cities is part of Minimoa+.',
+      mapEverywherePlus: 'The whole map is part of Minimoa+.',
     },
   },
   es: {
@@ -239,7 +239,7 @@ export const visionText = defineMessages({
       beyond: (n: number) => (n === 1 ? '1 minimoa más lejos' : `${n} minimoas más lejos`),
       noLocation: 'Sin tu ubicación, no hay mapa ni encuentros cerca de ti.',
       discreet: 'Modo discreto: no apareces en el mapa de nadie.',
-      plusHint: 'Con Blowy+, todo el mapa y cambiar de ciudad.',
+      plusHint: 'Con Minimoa+, todo el mapa y cambiar de ciudad.',
     },
     errors: {
       unknownQuestion: 'Esta situación no existe.',
@@ -248,8 +248,8 @@ export const visionText = defineMessages({
       whomOnlyForMore: '«A quién quieres conocer» solo sirve si buscas algo más que amistad.',
       sensitiveConsent: 'Necesitamos tu consentimiento para guardar esta elección.',
       locationConsent: 'Necesitamos tu consentimiento para usar tu ubicación.',
-      changeCityPlus: 'Cambiar de ciudad forma parte de Blowy+.',
-      mapEverywherePlus: 'Todo el mapa forma parte de Blowy+.',
+      changeCityPlus: 'Cambiar de ciudad forma parte de Minimoa+.',
+      mapEverywherePlus: 'Todo el mapa forma parte de Minimoa+.',
     },
   },
   pt: {
@@ -312,7 +312,7 @@ export const visionText = defineMessages({
       beyond: (n: number) => (n === 1 ? '1 minimoa mais longe' : `${n} minimoas mais longe`),
       noLocation: 'Sem a sua localização, não tem mapa nem encontros perto de você.',
       discreet: 'Modo discreto: você não aparece no mapa de ninguém.',
-      plusHint: 'Com o Blowy+, o mapa inteiro e a troca de cidade.',
+      plusHint: 'Com o Minimoa+, o mapa inteiro e a troca de cidade.',
     },
     errors: {
       unknownQuestion: 'Essa situação não existe.',
@@ -321,8 +321,8 @@ export const visionText = defineMessages({
       whomOnlyForMore: '“Quem você quer conhecer” só vale se você procura mais do que amizade.',
       sensitiveConsent: 'Precisamos do seu consentimento para salvar essa escolha.',
       locationConsent: 'Precisamos do seu consentimento para usar sua localização.',
-      changeCityPlus: 'Trocar de cidade faz parte do Blowy+.',
-      mapEverywherePlus: 'O mapa inteiro faz parte do Blowy+.',
+      changeCityPlus: 'Trocar de cidade faz parte do Minimoa+.',
+      mapEverywherePlus: 'O mapa inteiro faz parte do Minimoa+.',
     },
   },
   nl: {
@@ -385,7 +385,7 @@ export const visionText = defineMessages({
       beyond: (n: number) => (n === 1 ? '1 minimoa verderop' : `${n} minimoas verderop`),
       noLocation: 'Zonder je locatie geen kaart en geen ontmoetingen bij jou in de buurt.',
       discreet: 'Discrete modus: je staat op niemands kaart.',
-      plusHint: 'Met Blowy+ de hele kaart, en van stad wisselen.',
+      plusHint: 'Met Minimoa+ de hele kaart, en van stad wisselen.',
     },
     errors: {
       unknownQuestion: 'Deze situatie bestaat niet.',
@@ -394,8 +394,8 @@ export const visionText = defineMessages({
       whomOnlyForMore: '„Wie je wilt ontmoeten” telt alleen als je meer zoekt dan vriendschap.',
       sensitiveConsent: 'We hebben je toestemming nodig om deze keuze op te slaan.',
       locationConsent: 'We hebben je toestemming nodig om je locatie te gebruiken.',
-      changeCityPlus: 'Van stad wisselen hoort bij Blowy+.',
-      mapEverywherePlus: 'De hele kaart hoort bij Blowy+.',
+      changeCityPlus: 'Van stad wisselen hoort bij Minimoa+.',
+      mapEverywherePlus: 'De hele kaart hoort bij Minimoa+.',
     },
   },
 });

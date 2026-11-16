@@ -1,6 +1,6 @@
 /**
  * La carte (spéc §10) et la position : ce que le serveur montre (zone, minimoas compatibles, silhouettes au-delà),
- * l'accord de localisation, le mode discret et la ville choisie (Blowy+).
+ * l'accord de localisation, le mode discret et la ville choisie (Minimoa+).
  * Une position n'est jamais exacte ni en temps réel : le serveur l'arrondit (~300 m) et la décale.
  */
 import type { ChosenCity, MapDto, Me } from '@blowy/contract';
@@ -19,7 +19,7 @@ export { AreaSheet } from './AreaSheet';
 
 export const mapKey = ['map'] as const;
 
-/** Où regarder (Blowy+ : ailleurs que sa zone). Sans valeur : sa zone. */
+/** Où regarder (Minimoa+ : ailleurs que sa zone). Sans valeur : sa zone. */
 export interface MapAt {
   lat: number;
   lng: number;
@@ -63,7 +63,7 @@ function useInvalidatePlace() {
 }
 
 /**
- * Accord de localisation du téléphone et de Blowy, et relevé de la position.
+ * Accord de localisation du téléphone et de Minimoa, et relevé de la position.
  * - `permission` : l'accord du téléphone (relu au retour dans l'app, après un passage par les Réglages) ;
  * - `enable()` : demande l'accord si besoin, relève la position et l'envoie (`consent: true` la première fois) ;
  * - `refresh()` : nouveau relevé, sans rien demander (app ouverte, accord déjà donné).
@@ -119,7 +119,7 @@ export function useLocation(me: Me | undefined) {
 
 /**
  * Relevé discret à l'ouverture d'un écran qui en a besoin (carte, rencontres) : seulement si la personne a déjà
- * donné son accord, à Blowy et au téléphone. Au plus une fois toutes les 10 minutes.
+ * donné son accord, à Minimoa et au téléphone. Au plus une fois toutes les 10 minutes.
  */
 let lastFix = 0;
 export function useFreshPosition(me: Me | undefined) {
@@ -170,7 +170,7 @@ export function useArea() {
   });
 }
 
-/** Blowy+ : changer de ville sans bouger, ou revenir à sa zone. */
+/** Minimoa+ : changer de ville sans bouger, ou revenir à sa zone. */
 export function useCity() {
   const api = useApi();
   const qc = useQueryClient();

@@ -1,5 +1,5 @@
 /**
- * Villes proposées pour « Changer de ville » (Blowy+) : centres arrondis au centième de degré. Les noms affichés
+ * Villes proposées pour « Changer de ville » (Minimoa+) : centres arrondis au centième de degré. Les noms affichés
  * sont dans `locales/rencontres.ts` (`carte.cities`), traduits ; `chooseCity` envoie le nom dans la langue de l'app.
  */
 export const CITIES = [

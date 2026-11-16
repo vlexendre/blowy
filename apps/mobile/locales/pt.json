@@ -1,7 +1,7 @@
 {
   "ios": {
-    "NSCameraUsageDescription": "O Blowy usa a câmera para sua foto de perfil, as provas dos seus hábitos e os desafios com foto. Sua foto de perfil é verificada automaticamente pelo nosso fornecedor de IA antes de ser exibida. Uma prova de hábito só é enviada a ele se você tiver aceitado; nenhum humano olha a foto. Provas e fotos de desafio são excluídas em até 24 h, exceto as que você guardar.",
-    "NSLocationWhenInUseUsageDescription": "O Blowy usa sua localização, só quando o app está aberto, para te apresentar pessoas compatíveis perto de você e confirmar suas saídas. Sua localização exata nunca é salva: só um ponto arredondado para cerca de 300 m. Sem ela, você pode escolher sua cidade manualmente.",
-    "NSPhotoLibraryUsageDescription": "O Blowy abre sua fototeca só para a foto de perfil que você escolher. Ela é verificada automaticamente pelo nosso fornecedor de IA antes de ser exibida."
+    "NSCameraUsageDescription": "O Minimoa usa a câmera para sua foto de perfil, as provas dos seus hábitos e os desafios com foto. Sua foto de perfil é verificada automaticamente pelo nosso fornecedor de IA antes de ser exibida. Uma prova de hábito só é enviada a ele se você tiver aceitado; nenhum humano olha a foto. Provas e fotos de desafio são excluídas em até 24 h, exceto as que você guardar.",
+    "NSLocationWhenInUseUsageDescription": "O Minimoa usa sua localização, só quando o app está aberto, para te apresentar pessoas compatíveis perto de você e confirmar suas saídas. Sua localização exata nunca é salva: só um ponto arredondado para cerca de 300 m. Sem ela, você pode escolher sua cidade manualmente.",
+    "NSPhotoLibraryUsageDescription": "O Minimoa abre sua fototeca só para a foto de perfil que você escolher. Ela é verificada automaticamente pelo nosso fornecedor de IA antes de ser exibida."
   }
 }

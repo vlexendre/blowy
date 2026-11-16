@@ -1,7 +1,7 @@
 import type { LegalPage } from '../types';
 
 export const cookies: LegalPage = {
-  title: 'Cookies — Blowy',
+  title: 'Cookies — Minimoa',
   heading: 'Cookies',
   description: 'De website blowy.app plaatst geen cookies. Wat de site laadt van andere diensten, en wat die diensten ontvangen.',
   intro: 'Korte versie: de website blowy.app plaatst geen cookies. Hier de details, gecontroleerd in de code.',
@@ -10,7 +10,7 @@ export const cookies: LegalPage = {
     {
       p: 'De website blowy.app plaatst **geen cookies** en slaat niets op in de opslag van je browser (geen local storage, geen session storage). Er zijn geen bezoekersstatistieken, geen reclame en geen knoppen van sociale netwerken. Daarom is er geen toestemmingsbanner.',
     },
-    { p: 'Deze pagina gaat alleen over de website. De app Blowy valt onder het [privacybeleid](@confidentialite).' },
+    { p: 'Deze pagina gaat alleen over de website. De app Minimoa valt onder het [privacybeleid](@confidentialite).' },
 
     { h2: 'Wat de website laadt van andere diensten', id: 'tiers' },
     {
@@ -23,7 +23,7 @@ export const cookies: LegalPage = {
           ['Google Fonts (Google)', 'De lettertypen Anton en Bricolage Grotesque', 'Alle'],
           ['cdnjs (Cloudflare)', 'De animatiebibliotheek GSAP', 'Homepage'],
           ['Hostingprovider van de website: {{siteHost.name}}', 'De pagina’s leveren', 'Alle'],
-          ['Server van de Blowy-app (API)', 'De voornaam en minimoa van de persoon tonen, de gekozen woorden opslaan', 'Pagina’s “3 woorden” en uitnodiging'],
+          ['Server van de Minimoa-app (API)', 'De voornaam en minimoa van de persoon tonen, de gekozen woorden opslaan', 'Pagina’s “3 woorden” en uitnodiging'],
         ],
       },
     },

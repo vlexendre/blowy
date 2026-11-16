@@ -95,7 +95,7 @@ export interface PurchasesPort {
   readonly simulated: boolean;
   /** Produits et prix localisés ; liste vide si le magasin ne répond pas (l'API sert alors de repli). */
   products(productIds: readonly string[]): Promise<StoreProduct[]>;
-  /** Achat d'un abonnement, lié au compte Blowy (`appAccountToken` = identifiant de la personne). */
+  /** Achat d'un abonnement, lié au compte Minimoa (`appAccountToken` = identifiant de la personne). */
   purchase(productId: string, accountToken: string): Promise<PurchaseOutcome>;
   /** « Restaurer mes achats » : resynchronise avec le magasin et rend les abonnements en cours. */
   restore(): Promise<SignedPurchase[]>;

@@ -1,5 +1,5 @@
 /**
- * Client typé de l'API Blowy. Sans dépendance à React ni à Supabase :
+ * Client typé de l'API Minimoa. Sans dépendance à React ni à Supabase :
  * on lui fournit l'URL de base et une fonction qui rend le jeton d'accès courant.
  */
 import {
@@ -188,12 +188,12 @@ export function createApiClient(opts: ApiClientOptions) {
       locate: (point: LatLng, consent?: boolean) => call('POST', visionRoutes.location(), LocationStatusZ, { ...point, ...(consent !== undefined ? { consent } : {}) }),
       /** Oublier la position et retirer l'accord. */
       forgetLocation: () => call('DELETE', visionRoutes.location(), LocationStatusZ),
-      /** Blowy+ : changer de ville sans bouger. */
+      /** Minimoa+ : changer de ville sans bouger. */
       chooseCity: (city: ChosenCity) => call('PUT', visionRoutes.city(), LocationStatusZ, city),
       clearCity: () => call('DELETE', visionRoutes.city(), LocationStatusZ),
-      /** Sans localisation : choisir sa zone à la main (gratuit ; une fois tous les 30 jours sans Blowy+). */
+      /** Sans localisation : choisir sa zone à la main (gratuit ; une fois tous les 30 jours sans Minimoa+). */
       chooseArea: (city: ChosenCity) => call('PUT', visionRoutes.area(), LocationStatusZ, city),
-      /** La carte : sa zone (gratuit) ; avec Blowy+, `at` pour regarder ailleurs. */
+      /** La carte : sa zone (gratuit) ; avec Minimoa+, `at` pour regarder ailleurs. */
       map: (at?: { lat: number; lng: number; radiusKm?: number }) =>
         call(
           'GET',
@@ -259,7 +259,7 @@ export function createApiClient(opts: ApiClientOptions) {
       report: (body: ReportBody) => call('POST', routes.reports(), OkZ, body),
     },
     /**
-     * Blowy+ (paywall et abonnement). Après un achat ou « Restaurer mes achats » StoreKit 2 (avec
+     * Minimoa+ (paywall et abonnement). Après un achat ou « Restaurer mes achats » StoreKit 2 (avec
      * `appAccountToken` = `Me.id`), envoyer `Transaction.jwsRepresentation` à `submitPurchase`.
      */
     plus: {
@@ -267,7 +267,7 @@ export function createApiClient(opts: ApiClientOptions) {
       paywall: () => call('GET', billingRoutes.plusPaywall(), PaywallZ),
       /** État de l'abonnement (essai jusqu'au…, se renouvelle le…, expiré) et lien pour le gérer. */
       subscription: () => call('GET', billingRoutes.plusSubscription(), SubscriptionZ),
-      /** Achat ou restauration : la transaction signée est vérifiée par le serveur, qui ouvre Blowy+. */
+      /** Achat ou restauration : la transaction signée est vérifiée par le serveur, qui ouvre Minimoa+. */
       submitPurchase: (body: SubmitPurchaseBody) => call('POST', billingRoutes.plusPurchases(), SubscriptionZ, body),
     },
     /**

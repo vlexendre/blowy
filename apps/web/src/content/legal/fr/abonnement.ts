@@ -1,37 +1,37 @@
 import type { LegalPage } from '../types';
 
 export const abonnement: LegalPage = {
-  title: "Conditions de l'abonnement Blowy+ — Blowy",
-  heading: "Conditions de l'abonnement Blowy+",
+  title: "Conditions de l'abonnement Minimoa+ — Minimoa",
+  heading: "Conditions de l'abonnement Minimoa+",
   description:
-    'Blowy+ : ce qu’il contient, les offres (59,88 € par an avec 7 jours gratuits, ou 14,99 € par mois), le renouvellement automatique, la facturation par Apple, comment annuler, ce qui se passe à la fin, la rétractation et les remboursements.',
-  intro: 'Ce que Blowy+ contient, ce qu’il coûte, comment il se renouvelle, et comment l’arrêter. Sans petites lignes.',
+    'Minimoa+ : ce qu’il contient, les offres (59,88 € par an avec 7 jours gratuits, ou 14,99 € par mois), le renouvellement automatique, la facturation par Apple, comment annuler, ce qui se passe à la fin, la rétractation et les remboursements.',
+  intro: 'Ce que Minimoa+ contient, ce qu’il coûte, comment il se renouvelle, et comment l’arrêter. Sans petites lignes.',
   summary: {
     title: 'En bref',
     items: [
       '**59,88 € par an**, avec **7 jours gratuits** au début, ou **14,99 € par mois**, sans essai.',
       'L’abonnement **se renouvelle automatiquement** tant que tu ne l’annules pas.',
-      'Blowy+ s’achète sur iPhone : c’est **Apple** qui te facture, et c’est dans les réglages de ton iPhone que tu l’annules.',
+      'Minimoa+ s’achète sur iPhone : c’est **Apple** qui te facture, et c’est dans les réglages de ton iPhone que tu l’annules.',
       'Au 5e jour de l’essai, on te prévient **par notification et par e-mail**.',
       'Supprimer l’app ou ton compte **n’annule pas** l’abonnement.',
-      'Blowy reste gratuit sans Blowy+.',
+      'Minimoa reste gratuit sans Minimoa+.',
     ],
   },
   body: [
-    { h2: 'Ce que Blowy+ ajoute', id: 'contenu' },
+    { h2: 'Ce que Minimoa+ ajoute', id: 'contenu' },
     {
       ul: [
-        '**Toute la carte**, et **changer de ville quand tu veux**, sans bouger. Sans Blowy+, tu vois ta zone (environ 1,5 km autour de toi) ; sans localisation, tu choisis ta ville à la main, au plus une fois tous les 30 jours.',
+        '**Toute la carte**, et **changer de ville quand tu veux**, sans bouger. Sans Minimoa+, tu vois ta zone (environ 1,5 km autour de toi) ; sans localisation, tu choisis ta ville à la main, au plus une fois tous les 30 jours.',
         '**Une rencontre de plus chaque jour.**',
-        '**3 jokers de série par semaine** pour protéger ta série (sans Blowy+ : un par semaine).',
-        '**Jusqu’à 6 habitudes** suivies en même temps (sans Blowy+ : 2).',
+        '**3 jokers de série par semaine** pour protéger ta série (sans Minimoa+ : un par semaine).',
+        '**Jusqu’à 6 habitudes** suivies en même temps (sans Minimoa+ : 2).',
         'Le **bilan détaillé du dimanche** : l’évolution de ta vision sur 4 semaines et l’audit de chaque lien.',
-        '**Renommer ton minimoa quand tu veux** (sans Blowy+ : une fois tous les 60 jours).',
+        '**Renommer ton minimoa quand tu veux** (sans Minimoa+ : une fois tous les 60 jours).',
         '**Tous les objets premium de la garde-robe** : ils sont à ton minimoa et se portent tout de suite, tant que l’abonnement dure.',
       ],
     },
     {
-      p: 'Le contenu exact peut évoluer avec l’app. Si on retire une fonction importante de Blowy+, on te prévient avant, et tu peux annuler.',
+      p: 'Le contenu exact peut évoluer avec l’app. Si on retire une fonction importante de Minimoa+, on te prévient avant, et tu peux annuler.',
     },
 
     { h2: 'Les offres et les prix', id: 'offres' },
@@ -52,17 +52,17 @@ export const abonnement: LegalPage = {
     {
       ul: [
         'L’essai de 7 jours concerne seulement l’offre annuelle, et seulement un nouvel abonnement, dans les conditions d’Apple (en général, un essai par compte Apple).',
-        'Pendant l’essai, tout Blowy+ est ouvert, et tu ne paies rien.',
+        'Pendant l’essai, tout Minimoa+ est ouvert, et tu ne paies rien.',
         'Au 5e jour, on t’envoie un rappel : il reste 2 jours. Il part par notification (si tu les as autorisées) et par e-mail, à l’adresse liée à ton compte Apple.',
         'Si tu n’annules pas **au moins 24 heures avant la fin de l’essai**, le premier paiement de 59,88 € est prélevé le 7e jour, et l’abonnement annuel commence.',
-        'Si tu annules pendant l’essai, tu gardes Blowy+ jusqu’à la fin des 7 jours, et tu ne paies rien.',
+        'Si tu annules pendant l’essai, tu gardes Minimoa+ jusqu’à la fin des 7 jours, et tu ne paies rien.',
       ],
     },
 
     { h2: 'Paiement et renouvellement automatique', id: 'renouvellement' },
     {
       ul: [
-        'L’achat se fait dans l’app, sur iPhone, par l’**App Store**. Le paiement est débité sur le moyen de paiement de ton compte Apple, à la confirmation de l’achat ou à la fin de l’essai. Sur Android et sur le web, Blowy+ n’est pas en vente ; un abonnement pris sur iPhone suit ton compte Blowy partout.',
+        'L’achat se fait dans l’app, sur iPhone, par l’**App Store**. Le paiement est débité sur le moyen de paiement de ton compte Apple, à la confirmation de l’achat ou à la fin de l’essai. Sur Android et sur le web, Minimoa+ n’est pas en vente ; un abonnement pris sur iPhone suit ton compte Minimoa partout.',
         'L’abonnement **se renouvelle automatiquement** pour la même durée (un an ou un mois), au même prix, sauf si tu l’annules **au moins 24 heures avant la fin de la période en cours**.',
         'Si le prix change, Apple te prévient avant, selon ses règles, et te demande ton accord quand elles l’exigent.',
         'On ne reçoit jamais tes coordonnées bancaires. Apple nous confirme seulement l’achat, que notre serveur vérifie auprès de lui.',
@@ -71,21 +71,21 @@ export const abonnement: LegalPage = {
     },
 
     { h2: 'Annuler', id: 'annuler' },
-    { p: 'Tu annules dans les réglages de ton iPhone, pas dans Blowy (dans l’app, **Moi → Blowy+ → Gérer mon abonnement** y mène) :' },
+    { p: 'Tu annules dans les réglages de ton iPhone, pas dans Minimoa (dans l’app, **Moi → Minimoa+ → Gérer mon abonnement** y mène) :' },
     {
-      ul: ['**iPhone :** Réglages → ton nom → Abonnements → Blowy → Annuler l’abonnement.'],
+      ul: ['**iPhone :** Réglages → ton nom → Abonnements → Minimoa → Annuler l’abonnement.'],
     },
     {
-      p: 'Après l’annulation, Blowy+ reste ouvert jusqu’à la fin de la période déjà payée, puis ton compte repasse en version gratuite. Ton minimoa, tes liens et tes données restent là.',
+      p: 'Après l’annulation, Minimoa+ reste ouvert jusqu’à la fin de la période déjà payée, puis ton compte repasse en version gratuite. Ton minimoa, tes liens et tes données restent là.',
     },
     {
-      note: '**Supprimer l’app ou ton compte Blowy n’annule pas l’abonnement.** Annule-le d’abord dans les réglages de ton iPhone, sinon il continue à être facturé.',
+      note: '**Supprimer l’app ou ton compte Minimoa n’annule pas l’abonnement.** Annule-le d’abord dans les réglages de ton iPhone, sinon il continue à être facturé.',
     },
 
-    { h2: 'Quand Blowy+ s’arrête', id: 'fin' },
+    { h2: 'Quand Minimoa+ s’arrête', id: 'fin' },
     {
       ul: [
-        'La carte revient à ta zone (ou à ta ville choisie à la main) ; la ville choisie avec Blowy+ reste notée et revient avec un nouvel abonnement.',
+        'La carte revient à ta zone (ou à ta ville choisie à la main) ; la ville choisie avec Minimoa+ reste notée et revient avec un nouvel abonnement.',
         'Une rencontre de moins par jour, un joker par semaine, le bilan du dimanche simple, le renommage une fois tous les 60 jours.',
         'Tes habitudes déjà suivies restent ; tu ne peux en ajouter qu’en dessous de 2.',
         'Ton minimoa **range les objets premium** : ils redeviennent verrouillés, et reviennent avec un nouvel abonnement.',
@@ -95,7 +95,7 @@ export const abonnement: LegalPage = {
 
     { h2: 'Droit de rétractation', id: 'retractation' },
     {
-      p: 'En tant que consommateur dans l’Union européenne, tu disposes en principe d’un délai de 14 jours pour te rétracter d’un contrat conclu à distance. Blowy+ est un service numérique fourni immédiatement : en t’abonnant, tu demandes que l’accès commence tout de suite. Si tu te rétractes dans ce délai, un montant proportionnel au service déjà fourni peut être retenu, dans les conditions prévues par la loi.',
+      p: 'En tant que consommateur dans l’Union européenne, tu disposes en principe d’un délai de 14 jours pour te rétracter d’un contrat conclu à distance. Minimoa+ est un service numérique fourni immédiatement : en t’abonnant, tu demandes que l’accès commence tout de suite. Si tu te rétractes dans ce délai, un montant proportionnel au service déjà fourni peut être retenu, dans les conditions prévues par la loi.',
     },
     {
       p: 'L’achat étant conclu avec Apple, la rétractation se demande auprès d’Apple :',
@@ -109,17 +109,17 @@ export const abonnement: LegalPage = {
 
     { h2: 'Remboursements', id: 'remboursements' },
     {
-      p: 'Les paiements étant encaissés par Apple, **seul Apple peut rembourser**, selon ses propres conditions. On ne peut pas le faire à leur place. Si Blowy+ n’a pas fonctionné comme prévu, écris-nous aussi à {{email.support}} : on t’aidera, et tes droits de consommateur (notamment la garantie légale de conformité) restent pleinement applicables.',
+      p: 'Les paiements étant encaissés par Apple, **seul Apple peut rembourser**, selon ses propres conditions. On ne peut pas le faire à leur place. Si Minimoa+ n’a pas fonctionné comme prévu, écris-nous aussi à {{email.support}} : on t’aidera, et tes droits de consommateur (notamment la garantie légale de conformité) restent pleinement applicables.',
     },
 
     { h2: 'Si ton compte est suspendu ou fermé', id: 'sanctions' },
     {
-      p: 'Si ton compte est fermé pour un manquement grave aux [conditions d’utilisation](@conditions), l’accès à Blowy+ s’arrête aussi. Pense à annuler l’abonnement dans les réglages de ton iPhone. Si on arrête le service, on te prévient au moins 30 jours avant, et on t’indique comment obtenir un remboursement de la période non utilisée.',
+      p: 'Si ton compte est fermé pour un manquement grave aux [conditions d’utilisation](@conditions), l’accès à Minimoa+ s’arrête aussi. Pense à annuler l’abonnement dans les réglages de ton iPhone. Si on arrête le service, on te prévient au moins 30 jours avant, et on t’indique comment obtenir un remboursement de la période non utilisée.',
     },
 
     { h2: 'Le reste', id: 'reste' },
     {
-      p: 'Ces conditions complètent les [conditions d’utilisation](@conditions), qui s’appliquent aussi à Blowy+ (notamment le droit applicable et la médiation). Les conditions d’Apple s’appliquent à l’achat lui-même. Une question : {{email.support}}.',
+      p: 'Ces conditions complètent les [conditions d’utilisation](@conditions), qui s’appliquent aussi à Minimoa+ (notamment le droit applicable et la médiation). Les conditions d’Apple s’appliquent à l’achat lui-même. Une question : {{email.support}}.',
     },
   ],
 };

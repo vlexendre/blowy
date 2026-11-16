@@ -7,14 +7,14 @@ export const common = {
   downloadTitle: 'Toi aussi, élève ton minimoa.',
   downloadText: 'Gratuit, zéro swipe, 18 ans et plus.',
   networkTitle: ['PAS DE', 'RÉSEAU.'],
-  networkText: 'Impossible de joindre Blowy. Vérifie ta connexion et réessaie.',
+  networkText: 'Impossible de joindre Minimoa. Vérifie ta connexion et réessaie.',
   busyText: 'Trop de demandes d’un coup. Attends une minute et réessaie.',
   genericText: 'Quelque chose s’est mal passé de notre côté. Réessaie dans un instant.',
 } as const;
 
 export const wordsPage = {
   meta: {
-    title: '3 mots — Blowy',
+    title: '3 mots — Minimoa',
     description: 'Choisis 3 mots pour décrire ton pote. C’est anonyme, et ça fait évoluer son minimoa.',
   },
   anonymous: '100 % anonyme',
@@ -47,15 +47,15 @@ export const wordsPage = {
 
 export const invitePage = {
   meta: {
-    title: 'Invitation — Blowy',
-    description: 'On t’invite sur Blowy. Élève ton minimoa, il te présente du monde.',
+    title: 'Invitation — Minimoa',
+    description: 'On t’invite sur Minimoa. Élève ton minimoa, il te présente du monde.',
   },
   label: 'Invitation',
-  title: ['{name}', 'T’INVITE', 'SUR BLOWY.'],
-  intro: '{pet}, son minimoa, t’attend déjà. Installe Blowy, crée ton minimoa, et vos deux minimoas se retrouvent.',
+  title: ['{name}', 'T’INVITE', 'SUR MINIMOA.'],
+  intro: '{pet}, son minimoa, t’attend déjà. Installe Minimoa, crée ton minimoa, et vos deux minimoas se retrouvent.',
   open: 'Ouvrir dans l’app',
   codeLabel: 'Ton code d’invitation',
-  codeHelp: 'Pas encore installé ? Télécharge Blowy, puis tape ce code à l’inscription.',
+  codeHelp: 'Pas encore installé ? Télécharge Minimoa, puis tape ce code à l’inscription.',
   copy: 'Copier',
   copied: 'Copié ✓',
   notFoundTitle: ['INVITATION', 'INTROUVABLE.'],
@@ -64,7 +64,7 @@ export const invitePage = {
 } as const;
 
 export const notFoundPage = {
-  meta: { title: 'Page introuvable — Blowy', description: 'Cette page n’existe pas.' },
+  meta: { title: 'Page introuvable — Minimoa', description: 'Cette page n’existe pas.' },
   title: ['PAGE', 'INTROUVABLE.'],
   text: 'Nino a cherché partout. Cette page n’existe pas, ou elle a déménagé.',
   petAlt: 'Nino, tout triste',

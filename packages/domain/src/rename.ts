@@ -1,6 +1,6 @@
 import { type Day, addDays, daysBetween } from './days';
 
-/** Après un changement de nom, le suivant n'est possible que 60 jours plus tard (sans attente avec Blowy+). */
+/** Après un changement de nom, le suivant n'est possible que 60 jours plus tard (sans attente avec Minimoa+). */
 export const RENAME_COOLDOWN_DAYS = 60;
 
 export interface RenameRule {
@@ -8,7 +8,7 @@ export interface RenameRule {
   allowed: boolean;
   /** Jour (Europe/Paris) à partir duquel il pourra changer ; null s'il le peut déjà. */
   availableOn: Day | null;
-  /** Blowy+ : aucune attente entre deux changements. */
+  /** Minimoa+ : aucune attente entre deux changements. */
   unlimited: boolean;
 }
 
@@ -28,5 +28,5 @@ export function renameRule({ lastRenamedOn, today, plus }: RenameInput): RenameR
   return { allowed: false, availableOn, unlimited: false };
 }
 
-/** Jour à partir duquel un nouveau changement sera possible si on renomme aujourd'hui (sans Blowy+). */
+/** Jour à partir duquel un nouveau changement sera possible si on renomme aujourd'hui (sans Minimoa+). */
 export const nextRenameOn = (today: Day): Day => addDays(today, RENAME_COOLDOWN_DAYS);

@@ -1,9 +1,9 @@
 import type { LegalPage } from '../types';
 
 export const confidentialite: LegalPage = {
-  title: 'Privacy policy — Blowy',
+  title: 'Privacy policy — Minimoa',
   heading: 'Privacy policy',
-  description: 'The data Blowy uses, why, on what legal basis, for how long, who can access it, and how to exercise your rights.',
+  description: 'The data Minimoa uses, why, on what legal basis, for how long, who can access it, and how to exercise your rights.',
   intro: 'What we know about you, why, who can access it, how long we keep it, and how to erase it all.',
   summary: {
     title: 'In short',
@@ -12,7 +12,7 @@ export const confidentialite: LegalPage = {
       'What you are looking for and whom you want to meet can reveal your sexual orientation: we ask for your **explicit consent**, and you can withdraw it.',
       'Your **location** is only used while the app is open, and **never stored exactly**: we only keep a point rounded to about 300 m and your area. On the map, others see a rounded and shifted position, never real-time, and **discreet mode** removes you from the map. Without location, you pick your city by hand.',
       'A **third-party AI**, that of {{sub.ai.provider}} ({{sub.ai.location}}), is used in four places, detailed [below](#ia): reading chats if you both switch it on, your proof photos if you accept, the safety check of profile photos and of some messages, and the weekly review, sent without any name.',
-      '**No one at Blowy reads your conversations**, except a reported message (reported by someone or by our automatic filter) and its immediate context, read by a moderator.',
+      '**No one at Minimoa reads your conversations**, except a reported message (reported by someone or by our automatic filter) and its immediate context, read by a moderator.',
       'You can change everything in the app and [delete your account](@supprimer-mon-compte) at any time. For anything else: {{email.privacy}}.',
     ],
   },
@@ -20,10 +20,10 @@ export const confidentialite: LegalPage = {
   body: [
     { h2: '1. Who is responsible', id: 'responsable' },
     {
-      p: 'The data controller is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, which publishes the Blowy app and website ([legal notice](@mentions-legales)).',
+      p: 'The data controller is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, which publishes the Minimoa app and website ([legal notice](@mentions-legales)).',
     },
     { ul: ['For any question about your data: {{email.privacy}}.', 'Data protection officer: {{dpo.name}}.'] },
-    { p: 'This policy covers the Blowy app and the blowy.app website. For the website’s cookies, see the [cookies page](@cookies).' },
+    { p: 'This policy covers the Minimoa app and the blowy.app website. For the website’s cookies, see the [cookies page](@cookies).' },
 
     { h2: '2. What we use, and why', id: 'donnees' },
     {
@@ -33,11 +33,11 @@ export const confidentialite: LegalPage = {
     { h3: 'Your account' },
     {
       ul: [
-        '**Data:** the identifier Apple or Google sends us when you sign in, and the associated email address. With Apple, this may be a relay address that hides your real one. With Apple, we also keep a sign-in token issued by Apple, used only to revoke Blowy’s access to your Apple ID when you delete your account.',
+        '**Data:** the identifier Apple or Google sends us when you sign in, and the associated email address. With Apple, this may be a relay address that hides your real one. With Apple, we also keep a sign-in token issued by Apple, used only to revoke Minimoa’s access to your Apple ID when you delete your account.',
         '**Purpose:** create your account, sign you back in, secure access, and write to you about your account (welcome, new connection, end-of-trial reminder, moderation warning, notice before deletion for inactivity).',
         '**Legal basis:** performance of the contract.',
         '**Retention:** as long as your account exists. On deletion, the Apple token is first revoked with Apple, then erased. An account with no sign-in for 2 years is deleted, after a warning email sent 30 days before.',
-        '**Access:** authorised Blowy staff, our authentication host, our email provider. Apple or Google know you use Blowy, since sign-in goes through them.',
+        '**Access:** authorised Minimoa staff, our authentication host, our email provider. Apple or Google know you use Minimoa, since sign-in goes through them.',
       ],
     },
 
@@ -80,12 +80,12 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** your position, **only while the app is open** (never in the background). **It is never stored as is**: our server only keeps the centre of the roughly 300 m square you are in, and your approximate home area derived from it (same precision). The exact position is only used, for the duration of the request, to tell whether you are outside your home area.',
-        '**Without location:** you can pick your city by hand (free; once every 30 days, or whenever you like with Blowy+). We then only keep the chosen city and its centre, which serve as your area.',
+        '**Without location:** you can pick your city by hand (free; once every 30 days, or whenever you like with Minimoa+). We then only keep the chosen city and its centre, which serve as your area.',
         '**Purpose:** show you the map and the compatible minimoas around you; offer you nearby encounters; confirm that an outing really happened outside your home area, to raise your minimoa’s sociability.',
         '**What others see:** never your exact position. They see a position rounded to about 300 m and shifted, never shown in real time. **Discreet mode** removes you from the map completely.',
         '**Legal basis:** your consent, given through your phone’s location permission, or by choosing your city. You can withdraw it at any time: in your phone settings, or in the app (**Me → Settings → My location → Forget my location**), which erases your position and your area.',
         '**Retention:** the last rounded point and your area (or the chosen city), replaced at each update. We do not keep a history of your movements.',
-        '**Access:** authorised Blowy staff, our host, and the map tile provider, which receives from your phone the area shown on screen.',
+        '**Access:** authorised Minimoa staff, our host, and the map tile provider, which receives from your phone the area shown on screen.',
       ],
     },
 
@@ -120,7 +120,7 @@ export const confidentialite: LegalPage = {
         '**Checked by an AI, only if you accept:** before your first proof, the app tells you what is sent, to whom and why, and you choose. If you accept, each proof photo is downsized and sent to {{sub.ai.provider}} with the habit’s name (not your first name, not your location), which answers yes, no or “not sure”, with a sentence; if “not sure”, we trust you. If you refuse, **no photo is sent to an AI**: you confirm the habit on your word, without a photo, and your streak moves on just the same. You can change your mind at any time in **Me → AI and you**. Challenge photos are never sent to an AI.',
         '**Legal basis:** your consent, for the AI check; performance of the contract, for temporary storage.',
         '**Retention:** **deleted from our storage within 24 hours**, unless you choose to keep it in your private memories (it stays there until you stop keeping it or delete your account).',
-        '**Access:** **no human sees it**, neither at Blowy nor anywhere else on Blowy. Only {{sub.ai.provider}} receives a proof photo, downsized, if you accepted.',
+        '**Access:** **no human sees it**, neither at Minimoa nor anywhere else on Minimoa. Only {{sub.ai.provider}} receives a proof photo, downsized, if you accepted.',
       ],
     },
     { p: 'Avoid photographing other people, documents or sensitive information.' },
@@ -137,7 +137,7 @@ export const confidentialite: LegalPage = {
       ],
     },
     {
-      note: 'The sentence the app shows you before asking for your consent: “No one at Blowy reads your conversations, except a reported message and the few messages around it, for moderation. If you both switch it on, an AI reads your latest messages so your minimoas can react to them. This AI is provided by {{sub.ai.provider}} ({{sub.ai.location}}), our provider, which receives these messages on our behalf. You can withdraw your consent at any time.”',
+      note: 'The sentence the app shows you before asking for your consent: “No one at Minimoa reads your conversations, except a reported message and the few messages around it, for moderation. If you both switch it on, an AI reads your latest messages so your minimoas can react to them. This AI is provided by {{sub.ai.provider}} ({{sub.ai.location}}), our provider, which receives these messages on our behalf. You can withdraw your consent at any time.”',
     },
     {
       ul: [
@@ -145,7 +145,7 @@ export const confidentialite: LegalPage = {
         '**Withdrawal:** at any time, in the connection’s options, or for all your chats in **Me → AI and you**. Reading stops immediately.',
         '**How:** no analysis on every message. When something triggers it (a silence, a certain number of messages, a rising tone), a short window of the latest messages is sent to {{sub.ai.provider}}, with the authors marked A and B, without your first names; the AI suggests the minimoa’s reaction. At most 3 interventions per day per connection, and you can turn them off for a connection. If the tone rises, your minimoa may suggest a break: that message is visible only to you.',
         '**Safety check:** in a chat where you have both accepted reading, a message our filter has doubts about (a link, for example) may also be sent on its own to {{sub.ai.provider}}, after it is sent, to check that it follows the rules. If it does not, it is reported to the moderation team.',
-        '**What is kept:** at Blowy, nothing from the window sent or from the analysis; only the minimoa’s reaction appears in the chat, as a message. What {{sub.ai.provider}} keeps on its side, and for how long: {{ai.retention}}.',
+        '**What is kept:** at Minimoa, nothing from the window sent or from the analysis; only the minimoa’s reaction appears in the chat, as a message. What {{sub.ai.provider}} keeps on its side, and for how long: {{ai.retention}}.',
         '**Legal basis:** the consent of each of you.',
       ],
     },
@@ -153,7 +153,7 @@ export const confidentialite: LegalPage = {
     { h3: 'A connection’s streak and milestones' },
     {
       ul: [
-        '**Data:** the days on which each of you wrote in the connection (not the content of the messages) and the connection’s milestones (meeting, levels reached, streak records). For connections from before 15 November 2026, the “daily photos” you had sent each other there: Blowy no longer receives new ones, and the old ones stay in the connection’s memories.',
+        '**Data:** the days on which each of you wrote in the connection (not the content of the messages) and the connection’s milestones (meeting, levels reached, streak records). For connections from before 15 November 2026, the “daily photos” you had sent each other there: Minimoa no longer receives new ones, and the old ones stay in the connection’s memories.',
         '**Purpose:** run the connection’s streak (the days in a row you both write), its lives and levels, and show you your memories.',
         '**Legal basis:** performance of the contract.',
         '**Retention:** as long as the connection exists (same rules as messages): old daily photos are erased when the connection is, or when either of you deletes their account.',
@@ -172,14 +172,14 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Blowy+ purchases' },
+    { h3: 'Minimoa+ purchases' },
     {
       ul: [
         '**Data:** the plan chosen, the purchase, trial and renewal dates, subscription status, transaction identifier. **We never receive your payment details**: Apple bills you.',
-        '**Purpose:** unlock Blowy+ features, verify the purchase with Apple, manage the trial and its reminder.',
+        '**Purpose:** unlock Minimoa+ features, verify the purchase with Apple, manage the trial and its reminder.',
         '**Legal basis:** performance of the contract; accounting obligations for transaction references.',
         '**Retention:** status as long as your account exists; transaction references, detached from your account if it is deleted, up to 10 years (accounting obligations).',
-        '**Access:** authorised Blowy staff; Apple, under its own policy.',
+        '**Access:** authorised Minimoa staff; Apple, under its own policy.',
       ],
     },
 
@@ -193,7 +193,7 @@ export const confidentialite: LegalPage = {
         '**Challenging a decision:** you can challenge any decision concerning you, automatic or not, by writing to {{email.support}} (in the app, the suspended-account screen has a button for this). A person reviews the decision.',
         '**Legal basis:** our legal obligations (in particular the Digital Services Act) and our legitimate interest in keeping the community safe.',
         '**Retention:** see the [retention table](#durees). If you delete your account, reports about you and the decision log remain until they are erased, no longer linked to any account (the log keeps the first name concerned).',
-        '**Access:** authorised Blowy moderators, and the authorities where the law requires it. The reported person does not know who reported them. A blocked person is not notified.',
+        '**Access:** authorised Minimoa moderators, and the authorities where the law requires it. The reported person does not know who reported them. A blocked person is not notified.',
       ],
     },
 
@@ -201,7 +201,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** figures calculated from activity: number of accounts, active accounts, retention, subscribers and trials, streaks, minimoa messages, encounters suggested and accepted, AI costs. To calculate them, we note the days on which you open the app, and the encounters suggested to each person.',
-        '**Purpose:** run and improve Blowy, control costs.',
+        '**Purpose:** run and improve Minimoa, control costs.',
         '**Legal basis:** our legitimate interest.',
         '**How:** these statistics are calculated from our own database, in an internal tool restricted to a few authorised people. There is no audience measurement or advertising tool in the app. The internal tool gives no access to conversations, except to a reported message and its immediate context.',
         '**Retention:** activity days, 40 days; suggested encounters, 30 days; per-person AI usage counter, 2 days; internal ranking of the most active minimoas (first name and minimoa), 40 days. Aggregated figures, which cannot identify you, are kept without limit.',
@@ -243,7 +243,7 @@ export const confidentialite: LegalPage = {
     {
       ol: [
         '**Your vision** is placed on 5 axes: home (free, solo ↔ start a family), roots (stay here ↔ move away), drive (time for yourself ↔ big projects), pace (calm, at home ↔ intense, out and about), course (day by day ↔ plan everything). Each axis has a confidence level.',
-        '**Where it comes from**, with starting weights: sign-up test 40% (then less and less), daily question 20%, habits 25%, how you look after your minimoa 10%, your friends’ 3 words 5%. The more you use Blowy, the higher the confidence.',
+        '**Where it comes from**, with starting weights: sign-up test 40% (then less and less), daily question 20%, habits 25%, how you look after your minimoa 10%, your friends’ 3 words 5%. The more you use Minimoa, the higher the confidence.',
         '**Filters**: what each person is looking for, and for “more”, whom they want to meet; 18 and over; area; blocked people.',
         '**The score**: closeness on the 5 axes, weighted by confidence. For “friends”, the home axis counts little; for “more”, it counts double. Style (sociable, playful, tender, chatty) is not part of the score.',
         '**The threshold**: below 70%, no one is suggested, even if that means showing fewer people.',
@@ -258,11 +258,11 @@ export const confidentialite: LegalPage = {
 
     { h2: '4. Artificial intelligence', id: 'ia' },
     {
-      p: 'Blowy uses the AI of **{{sub.ai.provider}}** ({{sub.ai.location}}), an outside provider, in four places and nowhere else. Everything can be seen, and what can be withdrawn can be withdrawn, in the app: **Me → AI and you**.',
+      p: 'Minimoa uses the AI of **{{sub.ai.provider}}** ({{sub.ai.location}}), an outside provider, in four places and nowhere else. Everything can be seen, and what can be withdrawn can be withdrawn, in the app: **Me → AI and you**.',
     },
     {
       table: {
-        head: ['Use', 'When', 'What the provider receives', 'What Blowy keeps'],
+        head: ['Use', 'When', 'What the provider receives', 'What Minimoa keeps'],
         rows: [
           [
             'Reading chats',
@@ -325,7 +325,7 @@ export const confidentialite: LegalPage = {
       },
     },
     {
-      p: '**Apple and Google** are also involved, on their own behalf and under their own policies: sign-in (Sign in with Apple, Google), app distribution (App Store, Google Play), Blowy+ payment (App Store), and notification delivery.',
+      p: '**Apple and Google** are also involved, on their own behalf and under their own policies: sign-in (Sign in with Apple, Google), app distribution (App Store, Google Play), Minimoa+ payment (App Store), and notification delivery.',
     },
     { p: 'Finally, we may have to disclose data to the authorities when the law requires it.' },
 
@@ -345,7 +345,7 @@ export const confidentialite: LegalPage = {
           ['Location', 'Only the last rounded point (about 300 m) and your area, or the chosen city, replaced at each update. Erased if you forget your location.'],
           ['Profile photo', 'As long as you keep it. The old one is erased when you change it; a photo rejected by the check is erased immediately.'],
           ['Proof and challenge photos', 'Within 24 hours, unless you keep them in your private memories (until you stop keeping them or delete your account).'],
-          ['What is sent to the AI', 'Nothing is kept at Blowy, except the answer (minimoa’s reaction, proof verdict, safety decision, review text). At the provider: {{ai.retention}}.'],
+          ['What is sent to the AI', 'Nothing is kept at Minimoa, except the answer (minimoa’s reaction, proof verdict, safety decision, review text). At the provider: {{ai.retention}}.'],
           ['A connection’s messages, streak, milestones and old daily photos', 'As long as the connection exists, that is, until either of you deletes their account.'],
           ['Purchases', 'Status as long as the account exists; transaction references up to 10 years (accounting obligations), detached from the account if it is deleted.'],
           ['Handled reports and moderation decisions', '1 year after the case is closed, longer only if the law requires it.'],
@@ -381,7 +381,7 @@ export const confidentialite: LegalPage = {
 
     { h2: '10. Adults only', id: 'mineurs' },
     {
-      p: 'Blowy is only for people aged 18 and over. We ask for the date of birth before sign-in; under 18, sign-up stops and nothing is created. We do not knowingly collect data about minors. If we learn that an account belongs to a minor, it is deleted. You can tell us from the app using the reason “Minor”; an account reported this way by two different people is suspended until a moderator looks at it.',
+      p: 'Minimoa is only for people aged 18 and over. We ask for the date of birth before sign-in; under 18, sign-up stops and nothing is created. We do not knowingly collect data about minors. If we learn that an account belongs to a minor, it is deleted. You can tell us from the app using the reason “Minor”; an account reported this way by two different people is suspended until a moderator looks at it.',
     },
 
     { h2: '11. Security', id: 'securite' },
@@ -391,7 +391,7 @@ export const confidentialite: LegalPage = {
         'No password is stored by us: sign-in goes through Apple or Google.',
         'Photos are in private storage, reachable only through temporary links.',
         'Access to data is limited to the people who need it; the admin tool is restricted to authorised people, read-only except for moderation, and its actions are logged.',
-        'We keep as little as possible: location never stored exactly, proof and challenge photos deleted within 24 hours, nothing kept at Blowy of what is sent to the AI.',
+        'We keep as little as possible: location never stored exactly, proof and challenge photos deleted within 24 hours, nothing kept at Minimoa of what is sent to the AI.',
       ],
     },
     {

@@ -51,7 +51,7 @@ const FRIEND_OF_FRIEND_CAP = 100;
  * Rencontres : les coucous reçus, puis les personnes que le minimoa présente. Seules passent les personnes
  * compatibles (filtres durs de la vision et seuil de 70) : amis d'amis d'abord (où qu'ils soient), puis
  * celles de la zone de recherche, les plus compatibles d'abord. Sans position : seulement les amis d'amis.
- * Le nombre de suggestions dépend de la forme du minimoa (`ENCOUNTER_QUOTA`, plus le bonus de Blowy+) :
+ * Le nombre de suggestions dépend de la forme du minimoa (`ENCOUNTER_QUOTA`, plus le bonus de Minimoa+) :
  * un minimoa qui boude ne présente personne ; les coucous reçus restent toujours visibles.
  */
 @Injectable()

@@ -1,4 +1,4 @@
-# Blowy
+# Minimoa
 
 > Élève ton minimoa. Il te présente du monde.
 
@@ -11,7 +11,7 @@ apps/web      Site marketing Astro + pages publiques (« 3 mots », invitation, 
 apps/admin    Administration web (Vite + React) : tableaux, modération, coûts de l'IA
 packages/     domain (règles pures) · contract (Zod) · api-client · content (textes) · tokens · ui (design atomique)
 supabase/     migrations SQL
-docs/         ARCHITECTURE.md · SCREENS.md · TESTFLIGHT.md · V7-SPEC.md · DEPLOIEMENT-V7.md · COUTS.md · BLOWY-PLUS.md · WIDGETS.md
+docs/         ARCHITECTURE.md · SCREENS.md · TESTFLIGHT.md · V7-SPEC.md · DEPLOIEMENT-V7.md · COUTS.md · MINIMOA-PLUS.md · WIDGETS.md
 ```
 
 ## Démarrer en local (sans aucun service externe)

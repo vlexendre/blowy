@@ -98,7 +98,7 @@ export class VisionController {
     return status(await this.locations.chooseCity(user.userId, { label: body.label, lat: body.latitude, lng: body.longitude }));
   }
 
-  /** Zone choisie à la main, sans localisation (gratuit ; une fois tous les 30 jours sans Blowy+). */
+  /** Zone choisie à la main, sans localisation (gratuit ; une fois tous les 30 jours sans Minimoa+). */
   @RateLimit('write')
   @Put('me/area')
   async chooseArea(@CurrentUser() user: AuthUser, @Body(new ZodPipe(ChosenCityZ)) body: z.infer<typeof ChosenCityZ>): Promise<LocationStatus> {

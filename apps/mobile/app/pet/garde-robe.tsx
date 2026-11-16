@@ -142,7 +142,7 @@ export default function WardrobeScreen() {
     setOpen(null);
     router.navigate(href);
   };
-  // Blowy+ monte en feuille : on attend que la fiche de l'objet soit redescendue (iOS ne présente pas deux
+  // Minimoa+ monte en feuille : on attend que la fiche de l'objet soit redescendue (iOS ne présente pas deux
   // modales à la fois).
   const toPlus = () => {
     const item = open?.id;

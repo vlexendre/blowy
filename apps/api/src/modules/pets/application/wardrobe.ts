@@ -15,10 +15,10 @@ export interface WardrobeState {
   stats: PetStats;
   /**
    * Objets possédés : ceux de `pet_items` et ceux déjà gagnés par les compteurs (un objet gagné reste gagné), plus tous
-   * les objets premium tant que Blowy+ est actif (`entitlements().premiumItems`) ; sans Blowy+, aucun objet premium.
+   * les objets premium tant que Minimoa+ est actif (`entitlements().premiumItems`) ; sans Minimoa+, aucun objet premium.
    */
   owned: ReadonlySet<string>;
-  /** Blowy+ actif : les objets premium sont à la personne. */
+  /** Minimoa+ actif : les objets premium sont à la personne. */
   plus: boolean;
 }
 
@@ -66,7 +66,7 @@ export class Wardrobe {
   }
 
   /**
-   * Fin de Blowy+ : le minimoa range ses objets premium (ils retournent dans la garde-robe, verrouillés, et reviennent
+   * Fin de Minimoa+ : le minimoa range ses objets premium (ils retournent dans la garde-robe, verrouillés, et reviennent
    * avec un nouvel abonnement). Fait ici à chaque vue par sa personne, et pour les autres par `WardrobeJobs`.
    */
   async settle<T extends PetRecord>(pet: T, plus: boolean): Promise<T> {

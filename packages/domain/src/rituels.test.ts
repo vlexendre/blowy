@@ -150,7 +150,7 @@ describe('série', () => {
     expect(jokersLeft(after, '2026-11-17', 1)).toBe(0);
     expect(jokersLeft(after, '2026-11-23', 1)).toBe(1);
   });
-  it('Blowy+ : trois jokers par semaine, puis remise à zéro', () => {
+  it('Minimoa+ : trois jokers par semaine, puis remise à zéro', () => {
     const s = run(['2026-11-09']);
     expect(settleStreak(s, '2026-11-13', 3)).toMatchObject({ current: 1, jokerDays: ['2026-11-10', '2026-11-11', '2026-11-12'] });
     expect(settleStreak(s, '2026-11-14', 3)).toMatchObject({ current: 0 });
@@ -197,7 +197,7 @@ describe('série', () => {
 });
 
 describe('habitudes', () => {
-  it('limites : 2 sans Blowy+, 6 avec', () => {
+  it('limites : 2 sans Minimoa+, 6 avec', () => {
     expect(canAddHabit(1, 2)).toBe(true);
     expect(canAddHabit(2, 2)).toBe(false);
     expect(canAddHabit(5, 6)).toBe(true);

@@ -1,4 +1,4 @@
-# Blowy V7 — le minimoa comme filtre
+# Minimoa V7 — le minimoa comme filtre
 
 Spéc issue des retours du 15 novembre 2026. Statut : **à valider sur la maquette (rangée G) avant de coder.**
 Ce qui est déjà en cours dans le code (corrections directes) n'est pas repris ici.
@@ -14,7 +14,7 @@ Trois choses doivent se comprendre sans lire :
 
 ## 2. Vocabulaire et ton
 
-- « pet » disparaît. Le personnage est un **minimoa** (un minimoa, des minimoas ; « ton minimoa », « le minimoa de Léa »). L'app reste **Blowy**, l'abonnement **Blowy+**.
+- « pet » disparaît. Le personnage est un **minimoa** (un minimoa, des minimoas ; « ton minimoa », « le minimoa de Léa »). L'app reste **Minimoa**, l'abonnement **Minimoa+**.
   - À vérifier avant lancement : proximité avec « Minimoys » (marque déposée, film *Arthur*).
 - Majuscule en début de phrase, ponctuation française (espaces insécables avant ? ! : ;). Les grands titres restent en capitales.
 - Public adulte (18+) : phrases courtes, tutoiement, humour sec plutôt que mignon. Pas d'emoji décoratif dans les titres.
@@ -68,7 +68,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 ## 6. Les habitudes
 
 - La personne choisit ses habitudes dans un catalogue relié aux axes (marcher, sport, lire, cuisiner, voir un ami, créer, apprendre, se coucher tôt…) et un rythme (tous les jours / 3 fois par semaine).
-- Gratuit : 2 habitudes. Blowy+ : 6.
+- Gratuit : 2 habitudes. Minimoa+ : 6.
 - Le minimoa **demande une preuve en photo** au bon moment (« Montre-moi tes baskets. »). Photo prise dans l'app, pas depuis la galerie.
 - **Une IA valide** : oui / non / pas sûr, avec une phrase gentille. En cas de « pas sûr », on fait confiance. La photo n'est vue par personne, sert à la validation et est supprimée sous 24 h, sauf si la personne la garde dans ses souvenirs privés.
 - **Accord explicite avant la première photo** (audit App Store B5, App Review 5.1.2(i)) : une feuille dit ce qui part (la photo réduite et le nom de l'habitude), à qui (le prestataire d'IA, nommé par la configuration), pourquoi, et la suppression sous 24 h ; deux choix, « Oui, vérifier par une IA » ou « Sans vérification par IA ». Sans accord, l'API n'envoie aucune image : l'habitude se valide sans photo (compte comme « pas sûr »). Accord retirable dans Moi › L'IA et toi.
@@ -81,13 +81,13 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 - À la **première ouverture du jour**, une carte monte en plein écran, présentée par le minimoa. On l'accepte ou on la range ; elle reste en tête de l'accueil jusqu'à minuit.
 - Types : répondre à une question, prendre une photo, écrire à un lien, sortir.
 - **La série** : chaque jour avec défi réussi = +1. Identité forte : la **mèche** du minimoa s'allume et grandit avec la série ; paliers 3, 7, 14, 30, 60, 100 jours qui débloquent des objets.
-- **Joker** : 1 par semaine offert (protège la série un jour manqué), davantage avec Blowy+. Pas de culpabilisation : un jour manqué sans joker remet la série à zéro, mais le record reste affiché.
+- **Joker** : 1 par semaine offert (protège la série un jour manqué), davantage avec Minimoa+. Pas de culpabilisation : un jour manqué sans joker remet la série à zéro, mais le record reste affiché.
 
 ## 8. Le bilan de la semaine
 
 - Chaque dimanche soir, le minimoa donne son bilan : ce que tu as fait (sorties, habitudes, série), ce qu'il a remarqué (comment ta vision bouge), un conseil pour la semaine, et un mot par lien actif (« Avec Léa : vous vous répondez vite. »).
 - **Toujours positif** : on nomme ce qui a marché, et le conseil est une proposition, jamais un reproche. Contrôlé par des modèles de phrases et un garde-fou côté serveur.
-- Blowy+ : bilan détaillé (évolution des axes sur 4 semaines, audit de chaque lien).
+- Minimoa+ : bilan détaillé (évolution des axes sur 4 semaines, audit de chaque lien).
 - Port `Coach` (texte par IA) avec adaptateur mémoire à base de modèles.
 
 ## 9. Les minimoas dans la conversation
@@ -113,15 +113,15 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 10. La carte
 
-- **Vraie carte**, au style Blowy (sombre, peu de détails, accents de la marque).
+- **Vraie carte**, au style Minimoa (sombre, peu de détails, accents de la marque).
 - Gratuit : tu vois **ta zone seulement** (rayon ~1,5 km), sans pouvoir déplacer la carte. Les minimoas compatibles y apparaissent ; au-delà, des silhouettes floues et un compteur (« 12 minimoas plus loin »).
-- Blowy+ : toute la carte, et **changer de ville** sans bouger.
+- Minimoa+ : toute la carte, et **changer de ville** sans bouger.
 - Sécurité : une position n'est jamais exacte (arrondie à ~300 m et décalée), jamais en temps réel, et un « mode discret » retire la personne de la carte.
 - La ville n'est plus demandée : on demande la localisation (app ouverte seulement). Sans elle, pas de carte ni de rencontres proches, et on le dit clairement.
 
 ## 11. Inscription et connexion
 
-Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **ce que tu cherches** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Blowy+ (feuille).
+Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **ce que tu cherches** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Minimoa+ (feuille).
 
 - **Connexion : Apple sur iPhone, Google sur Android.** Plus de code par e-mail (gardé seulement pour le mode local de développement).
 - Sexe : femme / homme / non-binaire / je préfère ne pas dire. Ce que tu cherches : des potes / plus / les deux ; si « plus » : des femmes / des hommes / tout le monde.
@@ -147,11 +147,11 @@ Toutes passent par un port `Pusher` (push Expo ; adaptateur mémoire) et un rég
 
 Un minuteur côté serveur (tâche planifiée qui appelle l'API) déclenche les envois programmés.
 
-## 13. Blowy+
+## 13. Minimoa+
 
 - Offres : **59,88 € par an** ou **14,99 € par mois**.
 - Contenu : toute la carte et changer de ville · plus de rencontres · jokers de série · 6 habitudes · bilan détaillé · renommer son minimoa librement · objets premium.
-- Objets premium (audit B3) : tous possédés et portables tant que Blowy+ dure ; à la fin de l'abonnement, le minimoa les range (verrouillés, de retour avec un nouvel abonnement).
+- Objets premium (audit B3) : tous possédés et portables tant que Minimoa+ dure ; à la fin de l'abonnement, le minimoa les range (verrouillés, de retour avec un nouvel abonnement).
 - Achat intégré Apple, vérifié côté serveur (port `Billing`), qui met à jour `plus` sur le profil.
 - **Conformité Apple (3.1.2)** — le paywall actuel n'est pas conforme sur un point : il affiche « 4,99 €/mois » en grand et « facturé 59,88 €/an » en petit. Apple exige que **le montant réellement facturé soit le prix le plus visible**. À faire :
   - « 59,88 € par an » en grand, « soit 4,99 € par mois » en petit ;
@@ -164,13 +164,13 @@ Un minuteur côté serveur (tâche planifiée qui appelle l'API) déclenche les 
 
 ## 14. Rétention : ce qu'on fait, ce qu'on ne fait pas
 
-On fait : série avec la mèche, défi du jour, évolution visible du minimoa, bilan du dimanche, objets à paliers, vies des liens, aperçu flouté de ce que Blowy+ ouvre, surprise rare (le minimoa qui passe la tête).
+On fait : série avec la mèche, défi du jour, évolution visible du minimoa, bilan du dimanche, objets à paliers, vies des liens, aperçu flouté de ce que Minimoa+ ouvre, surprise rare (le minimoa qui passe la tête).
 
 On ne fait pas : fausse urgence ou faux compte à rebours, culpabilisation (« tu abandonnes ton minimoa ? »), désabonnement caché, notifications trompeuses, prix barré inventé. Apple les refuse et le droit européen les sanctionne.
 
 ## 15. Page « Son caractère », rééquilibrée
 
-De haut en bas : le minimoa et sa forme · **sa vision** (5 axes, barres simples, « pour l'instant ») · son style (4 jauges, plus petites) · ses habitudes et leur série · son évolution. Le nom : modifiable une fois tous les 60 jours (libre avec Blowy+).
+De haut en bas : le minimoa et sa forme · **sa vision** (5 axes, barres simples, « pour l'instant ») · son style (4 jauges, plus petites) · ses habitudes et leur série · son évolution. Le nom : modifiable une fois tous les 60 jours (libre avec Minimoa+).
 
 ## 16. Passe d'interface
 
@@ -225,7 +225,7 @@ Une appli web séparée (`apps/admin`), réservée aux adresses autorisées (lis
 ## 21. Pages légales
 
 Éditeur : **Avec Trois E** (forme juridique, capital, SIREN, adresse, directeur de la publication : à compléter, laissés en champs de configuration).
-Pages, sur le site et liées depuis l'app : mentions légales · conditions d'utilisation · politique de confidentialité · conditions de l'abonnement Blowy+ · règles de la communauté · cookies · sécurité et signalement · supprimer son compte et ses données · assistance. En français (version qui fait foi) et traduites en ES, EN, PT, NL.
+Pages, sur le site et liées depuis l'app : mentions légales · conditions d'utilisation · politique de confidentialité · conditions de l'abonnement Minimoa+ · règles de la communauté · cookies · sécurité et signalement · supprimer son compte et ses données · assistance. En français (version qui fait foi) et traduites en ES, EN, PT, NL.
 
 ## 22. Coûts et montée en charge (objectif : 1 M de téléchargements, presque rien tant qu'il n'y a personne)
 

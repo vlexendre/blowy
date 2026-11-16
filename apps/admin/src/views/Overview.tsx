@@ -44,7 +44,7 @@ export function Overview() {
           </section>
 
           <section className="section" aria-labelledby="plus">
-            <h2 id="plus">Blowy+</h2>
+            <h2 id="plus">Minimoa+</h2>
             <div className="grid">
               <Tile label="Abonnés payants" m={data.plus.subscribers} period="à la fin du jour (délai de grâce inclus)" compare="sur 7 jours" accent />
               <Tile label="Essais en cours" m={data.plus.trials} period="à la fin du jour" compare="sur 7 jours" />

@@ -142,7 +142,7 @@ describe('signalements : priorité, escalade, alerte', () => {
 });
 
 describe('zone choisie sans localisation', () => {
-  it('gratuit : une fois tous les 30 jours ; Blowy+ : quand on veut', () => {
+  it('gratuit : une fois tous les 30 jours ; Minimoa+ : quand on veut', () => {
     expect(manualAreaChange({ setOn: null, today: '2026-11-15', anytime: false })).toEqual({ allowed: true, nextOn: null });
     expect(manualAreaChange({ setOn: '2026-11-10', today: '2026-11-15', anytime: false })).toEqual({ allowed: false, nextOn: '2026-12-10' });
     expect(manualAreaChange({ setOn: '2026-10-01', today: '2026-11-15', anytime: false }).allowed).toBe(true);

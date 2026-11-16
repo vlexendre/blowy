@@ -1,4 +1,4 @@
-/** Onglet Moi (V6-Moi) : profil, lien « 3 mots », chiffres, Blowy+, liste courte menant aux réglages. */
+/** Onglet Moi (V6-Moi) : profil, lien « 3 mots », chiffres, Minimoa+, liste courte menant aux réglages. */
 import { color, space } from '@blowy/tokens';
 import { Appear, Banner, PlusBanner, ProfileHero, SettingsSection, Skeleton, Stagger, StatTile, TabTemplate, WordsShareCard } from '@blowy/ui';
 import { router } from 'expo-router';
@@ -24,7 +24,7 @@ export default function Moi() {
   const { purchases } = usePorts();
   const discreet = useDiscreet();
   const subscription = useSubscription(!!me.data?.plus);
-  // Les avantages viennent de la même source que la feuille Blowy+ (jamais une autre liste ici).
+  // Les avantages viennent de la même source que la feuille Minimoa+ (jamais une autre liste ici).
   const perks = usePlusPerks(me.data?.pet.name ?? '');
 
   const refresh = (
@@ -112,7 +112,7 @@ export default function Moi() {
 
       <PlusBanner
         key="plus"
-        // Pas de prix ici : le montant facturé se lit sur la feuille Blowy+ (règle Apple 3.1.2, spéc §13).
+        // Pas de prix ici : le montant facturé se lit sur la feuille Minimoa+ (règle Apple 3.1.2, spéc §13).
         title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle : t.plusSoonTitle}
         // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule.
         text={m.plus && subscription.data ? subscription.data.summary : plusPerksLine(perks)}

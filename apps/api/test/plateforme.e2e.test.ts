@@ -252,7 +252,7 @@ describe('minimoas dans le chat', () => {
     expect(settings).toMatchObject({ consent: { mine: null, reading: false }, muted: false, interventionsToday: 1, maxPerDay: 3 });
     expect(settings.consent.text).toBe(chatConfidentialityText('fr'));
     expect(settings.consent.text).toBe(
-      'Personne chez Blowy ne lit tes conversations, sauf un message signalé et les quelques messages autour, pour la modération. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par Anthropic (États-Unis), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.',
+      'Personne chez Minimoa ne lit tes conversations, sauf un message signalé et les quelques messages autour, pour la modération. Si vous l’activez l’un et l’autre, une IA lit vos derniers messages pour que vos minimoas puissent y réagir. Cette IA est fournie par Anthropic (États-Unis), notre prestataire, qui reçoit ces messages pour nous. Tu peux retirer ton accord quand tu veux.',
     );
   });
 

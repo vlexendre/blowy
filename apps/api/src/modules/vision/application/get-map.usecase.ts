@@ -17,7 +17,7 @@ import { Matchmaker } from './matchmaker';
 export const PIN_CAP = 100;
 /** Silhouettes floues au plus au-delà de la zone. */
 export const BLUR_CAP = 24;
-/** Rayon par défaut quand Blowy+ regarde ailleurs. */
+/** Rayon par défaut quand Minimoa+ regarde ailleurs. */
 export const ELSEWHERE_RADIUS_KM = 10;
 
 export interface MapQueryInput {
@@ -50,7 +50,7 @@ export interface MapResult {
 
 /**
  * La carte. Gratuit : sa zone (~1,5 km) autour de son centre, carte fixe ; au-delà, un nombre et des silhouettes
- * floues. Blowy+ : toute la carte (autour de son centre ou d'un point demandé). Positions toujours arrondies et
+ * floues. Minimoa+ : toute la carte (autour de son centre ou d'un point demandé). Positions toujours arrondies et
  * décalées, tirées de la zone du domicile (jamais du dernier relevé). Personnes en mode discret : jamais montrées.
  * Mêmes règles que les rencontres : une personne déjà liée (lien vivant, fantôme ou archivé) ou dont un coucou a été
  * refusé (dans un sens ou dans l'autre) n'apparaît pas, ni en repère ni dans les silhouettes ; un coucou en attente

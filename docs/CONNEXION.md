@@ -1,6 +1,6 @@
 # Connexion : Apple sur iPhone, Google sur Android
 
-Blowy n'a plus de code par e-mail pour les vrais comptes (spéc. V7 §11). L'app ouvre la session Supabase avec le
+Minimoa n'a plus de code par e-mail pour les vrais comptes (spéc. V7 §11). L'app ouvre la session Supabase avec le
 fournisseur du téléphone, puis l'API lit le jeton Supabase comme avant (rien ne change côté API).
 
 | Où | Bouton | Comment |
@@ -35,7 +35,7 @@ Code : `apps/mobile/src/core/adapters/supabase.ts` (`signInWith`), `apple-sign-i
    `https://<projet>.supabase.co/auth/v1/callback`.
 3. Authentication → URL Configuration → **Redirect URLs** : ajouter `blowy://auth-callback` (Android) et
    `https://blowy.app/auth-callback` (web ; plus l'adresse de recette si elle diffère).
-4. Écran de consentement OAuth de Google : nom « Blowy », logo, liens vers `/legal/confidentialite` et
+4. Écran de consentement OAuth de Google : nom « Minimoa », logo, liens vers `/legal/confidentialite` et
    `/legal/conditions`, domaine `blowy.app` vérifié.
 
 ### 3. Réglages de l'app (publics, `EXPO_PUBLIC_*`)
@@ -54,7 +54,7 @@ Apple demande aux apps qui proposent Sign in with Apple de **révoquer les jeton
 supprimé (App Review 5.1.1(v) ; [TN3194](https://developer.apple.com/documentation/technotes/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple)).
 Supabase ne le fait pas : il ne garde pas les jetons des fournisseurs (« Provider tokens are intentionally not stored
 in your project's database ») et, en connexion native (`signInWithIdToken`), il ne reçoit que le jeton d'identité,
-qui ne sert pas à révoquer. Blowy suit donc le flux décrit par Apple :
+qui ne sert pas à révoquer. Minimoa suit donc le flux décrit par Apple :
 
 1. **À la connexion (iPhone)** : `expo-apple-authentication` rend aussi `authorizationCode` (valable 5 minutes, une
    seule fois). Juste après l'ouverture de la session Supabase, l'app l'envoie à `POST /v1/me/apple-authorization`
@@ -93,7 +93,7 @@ Les trois premières vont ensemble (sinon l'API refuse de démarrer). Sans elles
 d'avant). Avec les adaptateurs mémoire (local, tests), un Apple imité garde et « révoque » les jetons.
 
 ### Console Apple
-1. Certificates, Identifiers & Profiles → **Keys** → « + » → nom (« Blowy Sign in with Apple »), cocher
+1. Certificates, Identifiers & Profiles → **Keys** → « + » → nom (« Minimoa Sign in with Apple »), cocher
    **Sign in with Apple** → Configure → Primary App ID : `app.blowy` → Save → Continue → Register.
 2. **Télécharger la clé `.p8`** (une seule fois possible) et noter son **Key ID** ; le **Team ID** est en haut à droite
    du compte (Membership details).

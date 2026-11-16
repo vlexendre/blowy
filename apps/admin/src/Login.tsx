@@ -31,7 +31,7 @@ export function Login({ onSignedIn, denied }: { onSignedIn: (s: Session) => void
     <main className="login">
       <form onSubmit={submit} className="card" style={{ padding: 32 }} aria-labelledby="t">
         <p className="brand">
-          Blowy<small>Administration</small>
+          Minimoa<small>Administration</small>
         </p>
         <h1 id="t" style={{ fontSize: 26 }}>
           Connexion

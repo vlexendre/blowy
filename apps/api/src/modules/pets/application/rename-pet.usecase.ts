@@ -10,7 +10,7 @@ import { ContentFilter } from '../../moderation/content-filter';
 import { frenchDay, renameStateOf } from './rename-state';
 
 /**
- * Changer le nom de son pet : une fois tous les 60 jours (`renameRule`), sans attente avec Blowy+.
+ * Changer le nom de son pet : une fois tous les 60 jours (`renameRule`), sans attente avec Minimoa+.
  * Le nom donné à la création ne compte pas ; redonner le même nom ne compte pas non plus.
  */
 @Injectable()

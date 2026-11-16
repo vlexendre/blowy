@@ -181,14 +181,14 @@ describe('vision', () => {
     const again = (await ana.api.vision.map()).pins.find((p) => p.user.id === near.id);
     expect(again?.position).toEqual(pin?.position);
 
-    // Regarder ailleurs ou changer de ville : Blowy+.
+    // Regarder ailleurs ou changer de ville : Minimoa+.
     expect(await errorCode(ana.api.vision.map({ lat: LYON.latitude, lng: LYON.longitude }))).toBe('forbidden');
     expect(await errorCode(ana.api.vision.chooseCity({ label: 'Lyon', ...LYON }))).toBe('forbidden');
     // Jo, en mode discret, voit la carte et le sait.
     expect((await hidden.api.vision.map()).discreet).toBe(true);
   });
 
-  it('carte Blowy+ : toute la carte, ailleurs, et changer de ville déplace les rencontres', async () => {
+  it('carte Minimoa+ : toute la carte, ailleurs, et changer de ville déplace les rencontres', async () => {
     setPlus(ana.id, true);
     const map = await ana.api.vision.map();
     expect(map.scope).toBe('everywhere');

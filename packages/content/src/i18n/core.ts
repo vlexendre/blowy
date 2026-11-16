@@ -1,5 +1,5 @@
 /**
- * Socle des langues de Blowy (app, API, site). Pur : ni React, ni horloge, ni module natif.
+ * Socle des langues de Minimoa (app, API, site). Pur : ni React, ni horloge, ni module natif.
  *
  * Un « dictionnaire » = un objet de textes écrit en français (la langue source), plus une traduction par langue.
  * Une traduction a exactement les clés du français (une clé en trop ou en moins est une erreur de type) ;
@@ -127,8 +127,8 @@ export function shapeMismatches(source: unknown, translation: unknown, prefix = 
 // ── Choix de la langue ───────────────────────────────────────────────────────
 
 /**
- * Langue de Blowy à partir des langues préférées (étiquettes BCP 47, la préférée d'abord) :
- * la première proposée par Blowy, sinon l'anglais (spéc §23).
+ * Langue de Minimoa à partir des langues préférées (étiquettes BCP 47, la préférée d'abord) :
+ * la première proposée par Minimoa, sinon l'anglais (spéc §23).
  */
 export function pickLocale(tags: readonly (string | null | undefined)[]): Locale {
   for (const tag of tags) {
@@ -193,7 +193,7 @@ export const formatPrice = (locale: Locale, amountMinor: number, currency: strin
   formatNumber(locale, amountMinor / 100, { style: 'currency', currency, minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2 }, deviceTag);
 
 /**
- * Étiquette des dates : l'anglais de Blowy est américain (orthographe US), ses dates aussi (« November 22 »), quelle
+ * Étiquette des dates : l'anglais de Minimoa est américain (orthographe US), ses dates aussi (« November 22 »), quelle
  * que soit la région du téléphone ; les autres langues suivent la région de l'appareil.
  */
 const dateTag = (locale: Locale, deviceTag?: string | null): string => (locale === 'en' ? 'en-US' : intlTag(locale, deviceTag));

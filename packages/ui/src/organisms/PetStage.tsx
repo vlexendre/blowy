@@ -6,6 +6,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, wi
 import { Button } from '../atoms/Button';
 import { Chip } from '../atoms/Chip';
 import { Panel } from '../atoms/Panel';
+import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { ease, fadeTo, useReducedMotion } from '../lib/motion';
 import { SpeechBubble } from '../molecules/SpeechBubble';
@@ -21,6 +22,8 @@ export interface PetStageAction {
   label: string;
   onPress: () => void;
   accessibilityLabel?: string;
+  /** Pastille jaune en coin du bouton (« 2 » objets nouveaux dans la garde-robe). */
+  badge?: string;
 }
 
 export interface PetStageProps {
@@ -162,16 +165,25 @@ export function PetStage({
           ) : null}
         </View>
         {action ? (
-          <Button
-            label={action.label}
-            onPress={action.onPress}
-            accessibilityLabel={action.accessibilityLabel}
-            variant="white"
-            size="sm"
-            labelSize={14}
-            block={false}
-            style={styles.action}
-          />
+          <View>
+            <Button
+              label={action.label}
+              onPress={action.onPress}
+              accessibilityLabel={action.accessibilityLabel}
+              variant="white"
+              size="sm"
+              labelSize={14}
+              block={false}
+              style={styles.action}
+            />
+            {action.badge ? (
+              <View pointerEvents="none" style={styles.actionBadge}>
+                <Text variant="bodyHeavy" size={11} color={color.dark}>
+                  {action.badge}
+                </Text>
+              </View>
+            ) : null}
+          </View>
         ) : null}
       </View>
       {speech ? (
@@ -195,6 +207,20 @@ const styles = StyleSheet.create({
   chip: { marginTop: 4 },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: color.white },
   action: { height: 38 },
+  actionBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -4,
+    minWidth: 20,
+    height: 20,
+    paddingHorizontal: 5,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: color.accent,
+    borderWidth: 2,
+    borderColor: color.dark,
+  },
   // `.bubble` : à 16 du bord, 112 du haut, 150 de large au plus.
   speech: { position: 'absolute', left: 16, top: 112, maxWidth: 168, zIndex: 2 },
   // Avec une jauge vedette en bas : la bulle remonte sous la puce de forme.

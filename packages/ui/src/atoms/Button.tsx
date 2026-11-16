@@ -22,7 +22,7 @@ export interface ButtonProps {
   icon?: GlyphName | ReactNode;
   /** Pictogramme à droite (ex. `arrow`). */
   iconRight?: GlyphName;
-  /** Élément libre à droite du libellé (puce « + » de Blowy+). */
+  /** Élément libre à droite du libellé (puce « + » de Minimoa+). */
   trailing?: ReactNode;
   /** Corps du libellé ; défaut 17 (14 en `sm`). */
   labelSize?: number;

@@ -182,7 +182,7 @@ export type HabitDef = z.infer<typeof HabitDefZ>;
 export const HabitCatalogueZ = z.object({
   habits: z.array(HabitDefZ),
   rhythms: z.array(z.object({ id: HabitRhythmZ, label: z.string() })),
-  /** Habitudes suivies en même temps : 2 sans Blowy+, 6 avec. */
+  /** Habitudes suivies en même temps : 2 sans Minimoa+, 6 avec. */
   limit: z.number().int(),
   used: z.number().int(),
 });
@@ -307,7 +307,7 @@ export const WeeklyReviewZ = z.object({
     streak: z.number().int(),
     bestStreak: z.number().int(),
   }),
-  /** Blowy+ : chaque axe sur 4 semaines et l’état de chaque lien ; null sans Blowy+. */
+  /** Minimoa+ : chaque axe sur 4 semaines et l’état de chaque lien ; null sans Minimoa+. */
   detailed: z.object({ axes: z.array(z.string()), links: z.array(z.string()) }).nullable(),
   read: z.boolean(),
   at: Iso,

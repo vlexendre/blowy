@@ -1,18 +1,18 @@
 import type { LegalPage } from '../types';
 
 export const conditions: LegalPage = {
-  title: 'Gebruiksvoorwaarden — Blowy',
+  title: 'Gebruiksvoorwaarden — Minimoa',
   heading: 'Gebruiksvoorwaarden',
-  description: 'De overeenkomst tussen jou en Blowy: 18 jaar en ouder, je account, wat mag, je inhoud, moderatie, einde van de overeenkomst, toepasselijk recht.',
-  intro: 'De overeenkomst tussen jou en Blowy. Als je een account aanmaakt, ga je ermee akkoord. Neem vijf minuten om ze te lezen.',
+  description: 'De overeenkomst tussen jou en Minimoa: 18 jaar en ouder, je account, wat mag, je inhoud, moderatie, einde van de overeenkomst, toepasselijk recht.',
+  intro: 'De overeenkomst tussen jou en Minimoa. Als je een account aanmaakt, ga je ermee akkoord. Neem vijf minuten om ze te lezen.',
   summary: {
     title: 'In het kort',
     items: [
-      'Blowy is alleen voor **volwassenen van 18 jaar en ouder**. Eén account per persoon, voor een echte persoon.',
+      'Minimoa is alleen voor **volwassenen van 18 jaar en ouder**. Eén account per persoon, voor een echte persoon.',
       'Je **minimoa** draagt jouw kijk op het leven en stelt je voor aan mensen die bij je passen, als vrienden of meer. Zijn berichten zijn automatisch: het is geen persoon.',
       'Respecteer anderen en de [communityregels](@regles). Geen intimidatie, geen seksuele inhoud, niets waarbij een minderjarige betrokken is.',
-      'Je berichten en foto’s blijven van jou. Je geeft ons alleen het recht om ze te verwerken zodat Blowy werkt.',
-      'Blowy is gratis. **Blowy+** is een optioneel abonnement, betaald via de App Store, op iPhone ([voorwaarden van Blowy+](@abonnement)).',
+      'Je berichten en foto’s blijven van jou. Je geeft ons alleen het recht om ze te verwerken zodat Minimoa werkt.',
+      'Minimoa is gratis. **Minimoa+** is een optioneel abonnement, betaald via de App Store, op iPhone ([voorwaarden van Minimoa+](@abonnement)).',
       'Je kunt vertrekken wanneer je wilt: [je account verwijderen](@supprimer-mon-compte) doe je in de app.',
       'Frans recht is van toepassing. Is er een probleem, schrijf ons eerst; je kunt ook gratis naar een bemiddelaar.',
     ],
@@ -21,15 +21,15 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Wie we zijn', id: 'editeur' },
     {
-      p: 'De app Blowy en de website blowy.app worden uitgegeven door **{{publisher.name}}** (“Blowy”, “wij”). Alle gegevens staan in het [colofon](@mentions-legales). Schrijf ons: {{email.support}}.',
+      p: 'De app Minimoa en de website blowy.app worden uitgegeven door **{{publisher.name}}** (“Minimoa”, “wij”). Alle gegevens staan in het [colofon](@mentions-legales). Schrijf ons: {{email.support}}.',
     },
     {
-      p: 'Deze voorwaarden gelden voor elk gebruik van de app. De [communityregels](@regles), de [voorwaarden van het Blowy+-abonnement](@abonnement) en het [privacybeleid](@confidentialite) maken er deel van uit.',
+      p: 'Deze voorwaarden gelden voor elk gebruik van de app. De [communityregels](@regles), de [voorwaarden van het Minimoa+-abonnement](@abonnement) en het [privacybeleid](@confidentialite) maken er deel van uit.',
     },
 
-    { h2: '2. Wat Blowy is', id: 'service' },
+    { h2: '2. Wat Minimoa is', id: 'service' },
     {
-      p: 'Op Blowy voedt iedereen een **minimoa** op, een klein figuurtje dat zijn of haar kijk op het leven draagt: wat iemand voor zijn leven voor ogen heeft (een thuis en gezin, waar je wilt wonen, de plaats van werk, het ritme van elke dag, de lange termijn). De minimoa stelt zijn mens voor aan mensen met een passende kijk, als vrienden of meer, en waakt over elke band.',
+      p: 'Op Minimoa voedt iedereen een **minimoa** op, een klein figuurtje dat zijn of haar kijk op het leven draagt: wat iemand voor zijn leven voor ogen heeft (een thuis en gezin, waar je wilt wonen, de plaats van werk, het ritme van elke dag, de lange termijn). De minimoa stelt zijn mens voor aan mensen met een passende kijk, als vrienden of meer, en waakt over elke band.',
     },
     {
       ul: [
@@ -43,25 +43,25 @@ export const conditions: LegalPage = {
     {
       p: '**Minimoas zijn geen mensen.** Hun berichten, opmerkingen en het weekoverzicht worden automatisch gemaakt, met zinssjablonen of met kunstmatige intelligentie. Ze kunnen zich vergissen. Het is geen professioneel advies, geen medisch advies en geen garantie over iemand.',
     },
-    { p: 'Een compatibiliteit, hoe hoog ook, zegt niets over iemands eerlijkheid of bedoelingen. Blowy controleert de identiteit van mensen niet en doet geen onderzoek naar hen.' },
+    { p: 'Een compatibiliteit, hoe hoog ook, zegt niets over iemands eerlijkheid of bedoelingen. Minimoa controleert de identiteit van mensen niet en doet geen onderzoek naar hen.' },
 
-    { h2: '3. Wie Blowy mag gebruiken', id: 'age' },
+    { h2: '3. Wie Minimoa mag gebruiken', id: 'age' },
     {
       ul: [
         '**Je moet 18 jaar of ouder zijn.** We vragen je geboortedatum voordat je inlogt. Onder de 18 stopt de aanmelding en wordt er niets aangemaakt. Liegen over je leeftijd leidt tot sluiting van het account.',
         '**Eén account per persoon**, voor een echte persoon: jij. Geen gedeelde accounts, geen accounts op naam van iemand anders.',
-        'Je mag niet eerder van Blowy zijn uitgesloten, en de wet mag je het gebruik van dit soort dienst niet verbieden.',
+        'Je mag niet eerder van Minimoa zijn uitgesloten, en de wet mag je het gebruik van dit soort dienst niet verbieden.',
       ],
     },
 
     { h2: '4. Je account', id: 'compte' },
     {
-      p: 'Je logt in met **Apple** (op iPhone) of **Google** (op Android). Die diensten bevestigen je identiteit; we kennen je wachtwoord nooit. Houd de toegang tot dat Apple- of Google-account voor jezelf: wat er op je Blowy-account gebeurt, valt onder jouw verantwoordelijkheid. Denk je dat iemand erin is gekomen? Schrijf ons meteen.',
+      p: 'Je logt in met **Apple** (op iPhone) of **Google** (op Android). Die diensten bevestigen je identiteit; we kennen je wachtwoord nooit. Houd de toegang tot dat Apple- of Google-account voor jezelf: wat er op je Minimoa-account gebeurt, valt onder jouw verantwoordelijkheid. Denk je dat iemand erin is gekomen? Schrijf ons meteen.',
     },
     { p: 'De informatie die je geeft (voornaam, geboortedatum, wat je zoekt) moet kloppen en actueel zijn. Je kunt ze in de app aanpassen.' },
 
     { h2: '5. Wat mag, en wat niet', id: 'usage' },
-    { p: 'Je gebruikt Blowy met respect voor de wet, voor anderen en voor de [communityregels](@regles). Het is in het bijzonder verboden om:' },
+    { p: 'Je gebruikt Minimoa met respect voor de wet, voor anderen en voor de [communityregels](@regles). Het is in het bijzonder verboden om:' },
     {
       ul: [
         'te intimideren, bedreigen, beledigen, vernederen, chanteren, of aan te zetten tot haat of geweld;',
@@ -79,14 +79,14 @@ export const conditions: LegalPage = {
 
     { h2: '6. Je inhoud', id: 'contenus' },
     {
-      p: 'Je berichten, foto’s en antwoorden blijven van jou. Om Blowy te laten werken, geef je ons een **gratis, niet-exclusieve, wereldwijde licentie**, beperkt tot wat nodig is om: ze op te slaan, ze te bezorgen bij de mensen voor wie ze bedoeld zijn, ze in de app te tonen, ze technisch te verwerken (een foto verkleinen bijvoorbeeld) en, waar voorzien, ze automatisch te filteren en, waar voorzien, ze door een AI te laten analyseren (bewijsfoto’s, als je dat hebt geaccepteerd; berichten, als jullie dat allebei hebben aangezet; profielfoto en berichten die twijfel wekken, voor de veiligheid; zie het [privacybeleid](@confidentialite#ia)). Deze licentie loopt zolang de inhoud online staat en eindigt als die wordt verwijderd, behalve voor wat we moeten bewaren volgens het [privacybeleid](@confidentialite#durees).',
+      p: 'Je berichten, foto’s en antwoorden blijven van jou. Om Minimoa te laten werken, geef je ons een **gratis, niet-exclusieve, wereldwijde licentie**, beperkt tot wat nodig is om: ze op te slaan, ze te bezorgen bij de mensen voor wie ze bedoeld zijn, ze in de app te tonen, ze technisch te verwerken (een foto verkleinen bijvoorbeeld) en, waar voorzien, ze automatisch te filteren en, waar voorzien, ze door een AI te laten analyseren (bewijsfoto’s, als je dat hebt geaccepteerd; berichten, als jullie dat allebei hebben aangezet; profielfoto en berichten die twijfel wekken, voor de veiligheid; zie het [privacybeleid](@confidentialite#ia)). Deze licentie loopt zolang de inhoud online staat en eindigt als die wordt verwijderd, behalve voor wat we moeten bewaren volgens het [privacybeleid](@confidentialite#durees).',
     },
     { p: 'We gebruiken je inhoud niet voor reclame en we verkopen hem niet.' },
     { p: 'Je garandeert dat je het recht hebt om te plaatsen wat je plaatst, en dat het geen inbreuk maakt op de rechten van anderen (portretrecht, privacy, auteursrecht).' },
 
     { h2: '7. Melden, moderatie en sancties', id: 'moderation' },
     {
-      p: 'Je kunt iemand altijd melden of blokkeren vanuit de app ([hoe](@securite)). Elke melding waarschuwt het moderatieteam, dat ze bekijkt met als doel een reactie binnen 24 uur. Daarvoor kan een moderator van Blowy het gemelde bericht en de directe context lezen (de berichten eromheen). Buiten dit geval leest niemand bij Blowy je gesprekken; een AI leest ze alleen als jullie dat allebei hebben aangezet.',
+      p: 'Je kunt iemand altijd melden of blokkeren vanuit de app ([hoe](@securite)). Elke melding waarschuwt het moderatieteam, dat ze bekijkt met als doel een reactie binnen 24 uur. Daarvoor kan een moderator van Minimoa het gemelde bericht en de directe context lezen (de berichten eromheen). Buiten dit geval leest niemand bij Minimoa je gesprekken; een AI leest ze alleen als jullie dat allebei hebben aangezet.',
     },
     {
       p: 'Voornamen, minimoa-namen, berichten en profielfoto’s gaan door een **automatisch filter** voordat ze worden gepubliceerd: inhoud die duidelijk tegen de regels ingaat, wordt geweigerd, en de app vertelt je waarom; een grensgeval wordt wel verstuurd, maar gemeld aan de moderatie. In slechts twee gevallen wordt het account **automatisch geschorst**, maximaal 72 uur, terwijl een moderator ernaar kijkt: expliciete pedoseksuele woordenschat in een bericht, of een account dat door twee verschillende mensen als minderjarig is gemeld. De moderator heft de schorsing op of bevestigt ze.',
@@ -105,7 +105,7 @@ export const conditions: LegalPage = {
       p: 'Wat ernstig en illegaal is (inhoud met een minderjarige, een serieuze bedreiging bijvoorbeeld), melden we bij de autoriteiten. Als we een beslissing over jou nemen, geven we je de redenen, tenzij de wet dat verbiedt of het iemand in gevaar zou brengen. Je kunt ertegen in bezwaar gaan, of de beslissing nu automatisch was of niet, door binnen zes maanden te mailen naar {{email.support}}; een mens bekijkt de beslissing opnieuw.',
     },
 
-    { h2: '8. Kunstmatige intelligentie in Blowy', id: 'ia' },
+    { h2: '8. Kunstmatige intelligentie in Minimoa', id: 'ia' },
     {
       ul: [
         '**Berichten lezen**: alleen als jullie het allebei aanzetten, zodat jullie minimoa’s kunnen reageren. Jullie kunnen het altijd uitzetten.',
@@ -118,9 +118,9 @@ export const conditions: LegalPage = {
       p: 'Deze AI is die van {{sub.ai.provider}} ({{sub.ai.location}}), onze dienstverlener. Deze functies dienen het spel, het gesprek en de veiligheid. Geen ervan neemt een beslissing met rechtsgevolgen voor jou. De details, en wat de dienstverlener ontvangt, staan in het [privacybeleid](@confidentialite#ia); je toestemmingen zie en trek je in in de app, **Ik → De AI en jij**.',
     },
 
-    { h2: '9. Gratis, met Blowy+ als optie', id: 'blowy-plus' },
+    { h2: '9. Gratis, met Minimoa+ als optie', id: 'blowy-plus' },
     {
-      p: 'Blowy is gratis en zonder reclame. **Blowy+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple, op iPhone (een abonnement dat je op iPhone neemt, volgt je account op je andere apparaten). Wat het bevat, de prijzen, de gratis proefperiode, de verlenging en hoe je opzegt staan in de [voorwaarden van het Blowy+-abonnement](@abonnement).',
+      p: 'Minimoa is gratis en zonder reclame. **Minimoa+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple, op iPhone (een abonnement dat je op iPhone neemt, volgt je account op je andere apparaten). Wat het bevat, de prijzen, de gratis proefperiode, de verlenging en hoe je opzegt staan in de [voorwaarden van het Minimoa+-abonnement](@abonnement).',
     },
     {
       p: 'Voorwerpen, jokers, reeksen, levens en andere spelelementen hebben geen geldwaarde. Ze kunnen niet worden geruild, doorverkocht of terugbetaald, behalve waar de wet dat vereist.',
@@ -129,7 +129,7 @@ export const conditions: LegalPage = {
     { h2: '10. Einde van de overeenkomst', id: 'fin' },
     {
       ul: [
-        '**Jij** kunt vertrekken wanneer je wilt: in de app, **Ik → Instellingen → Mijn account verwijderen** ([wat er gewist wordt](@supprimer-mon-compte)). Je account verwijderen zegt een Blowy+-abonnement niet op: zeg het ook op in de instellingen van je iPhone.',
+        '**Jij** kunt vertrekken wanneer je wilt: in de app, **Ik → Instellingen → Mijn account verwijderen** ([wat er gewist wordt](@supprimer-mon-compte)). Je account verwijderen zegt een Minimoa+-abonnement niet op: zeg het ook op in de instellingen van je iPhone.',
         '**Wij** kunnen je account opschorten of sluiten als je je niet aan deze voorwaarden houdt, als de wet ons dat oplegt, of als iemands veiligheid op het spel staat. Behalve bij spoed of een ernstige overtreding waarschuwen we je vooraf en leggen we uit waarom.',
         'Als we met de dienst stoppen, laten we het je minstens 30 dagen van tevoren weten.',
       ],
@@ -137,7 +137,7 @@ export const conditions: LegalPage = {
 
     { h2: '11. Beschikbaarheid en aansprakelijkheid', id: 'responsabilite' },
     {
-      p: 'We doen ons best om Blowy altijd goed te laten werken. We kunnen niet garanderen dat er nooit storingen, bugs of onderbrekingen zijn, vooral tijdens een update. We kunnen de functies van de app aanpassen.',
+      p: 'We doen ons best om Minimoa altijd goed te laten werken. We kunnen niet garanderen dat er nooit storingen, bugs of onderbrekingen zijn, vooral tijdens een update. We kunnen de functies van de app aanpassen.',
     },
     {
       p: 'Iedereen is verantwoordelijk voor wat hij plaatst en hoe hij zich gedraagt. Afspreken in het echt doe je op eigen verantwoordelijkheid: lees onze [veiligheidstips](@securite#rencontre). We zijn niet aansprakelijk voor het gedrag van een andere gebruiker, noch voor indirecte schade, voor zover de wet dat toestaat.',
@@ -148,7 +148,7 @@ export const conditions: LegalPage = {
 
     { h2: '12. Intellectueel eigendom', id: 'propriete' },
     {
-      p: 'Het merk Blowy, de minimoas, de illustraties, teksten en software zijn van {{publisher.name}} of haar partners. We geven je een persoonlijk, niet-exclusief en niet-overdraagbaar recht om de app privé te gebruiken, zolang je account bestaat. Je mag screenshots van je eigen gesprekken delen, zonder anderen bloot te stellen.',
+      p: 'Het merk Minimoa, de minimoas, de illustraties, teksten en software zijn van {{publisher.name}} of haar partners. We geven je een persoonlijk, niet-exclusief en niet-overdraagbaar recht om de app privé te gebruiken, zolang je account bestaat. Je mag screenshots van je eigen gesprekken delen, zonder anderen bloot te stellen.',
     },
 
     { h2: '13. Wijzigingen', id: 'changements' },

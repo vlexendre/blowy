@@ -1,5 +1,5 @@
 /**
- * Ma position (spéc §10) : à quoi elle sert, l'accord, la zone, la ville choisie (Blowy+), et « l'oublier »
+ * Ma position (spéc §10) : à quoi elle sert, l'accord, la zone, la ville choisie (Minimoa+), et « l'oublier »
  * (`DELETE /v1/me/location` : position et accord effacés). Sans localisation : choisir sa ville à la main, gratuit
  * (`PUT /v1/me/area`, App Review 5.1.1(iv)).
  */

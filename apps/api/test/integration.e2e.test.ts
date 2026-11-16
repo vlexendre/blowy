@@ -2,7 +2,7 @@
  * Parcours complet V7 en mémoire, tous chantiers ensemble (« vision », « rituels », « plateforme »,
  * « facturation-admin » et l'intégration) : inscription avec le test, compatibilité expliquée, coucou de nuit (heures
  * calmes), lien, chat et minimoas avec accord (rôles, plafond), défi du jour et série, preuve d'habitude, bilan du
- * dimanche, Blowy+ (habitudes, carte), signalement → suspension (invisible, sans push), suppression (chaque table),
+ * dimanche, Minimoa+ (habitudes, carte), signalement → suspension (invisible, sans push), suppression (chaque table),
  * conservation (comptes inactifs, exclusion définitive, purge de la modération).
  */
 import { randomUUID } from 'node:crypto';
@@ -181,7 +181,7 @@ describe('parcours complet V7 (mémoire)', () => {
     expect(pushesTo('ExponentPushToken[ana]', 'weekly_review')).toHaveLength(1);
   });
 
-  it('Blowy+ acheté (facturation mémoire) : 6 habitudes au lieu de 2, toute la carte', async () => {
+  it('Minimoa+ acheté (facturation mémoire) : 6 habitudes au lieu de 2, toute la carte', async () => {
     cheerUp(ana.id, ben.id, dan.id);
     await ben.api.rituals.addHabit({ habitId: 'marcher' });
     await ben.api.rituals.addHabit({ habitId: 'lire' });
@@ -311,8 +311,8 @@ describe('parcours complet V7 (mémoire)', () => {
     await ben.api.me.get(); // Ben se connecte : sa date d'activité repart
     await jobs.runDue(w.clock.now());
     expect(mails()).toHaveLength(welcome + 1);
-    expect(mails().at(-1)?.subject).toBe('Ton compte Blowy va être supprimé');
-    expect(w.outbox.some((m) => m.to === 'ben@exemple.fr' && m.subject === 'Ton compte Blowy va être supprimé')).toBe(false);
+    expect(mails().at(-1)?.subject).toBe('Ton compte Minimoa va être supprimé');
+    expect(w.outbox.some((m) => m.to === 'ben@exemple.fr' && m.subject === 'Ton compte Minimoa va être supprimé')).toBe(false);
     await jobs.runDue(w.clock.now());
     expect(mails()).toHaveLength(welcome + 1); // une seule prévenance
     w.clock.advanceDays(29);

@@ -19,8 +19,8 @@ describe('espaces des phrases en plusieurs morceaux', () => {
   });
 
   it('jamais de double espace ni de morceau fait seulement d’espaces', () => {
-    const runs = normalizeRuns([{ text: 'BLOWY+ ' }, { text: ' ' }, { text: ' 4,99 €/MOIS', dim: true }]);
-    expect(texts(runs)).toEqual(['BLOWY+', ` 4,99${NB}€/MOIS`]);
+    const runs = normalizeRuns([{ text: 'MINIMOA+ ' }, { text: ' ' }, { text: ' 4,99 €/MOIS', dim: true }]);
+    expect(texts(runs)).toEqual(['MINIMOA+', ` 4,99${NB}€/MOIS`]);
     expect(normalizeRuns([{ text: 'A\n' }, { text: ' B' }]).map((r) => r.text)).toEqual(['A', '\nB']);
   });
 

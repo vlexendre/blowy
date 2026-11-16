@@ -91,8 +91,8 @@ export interface IncomingLook {
 }
 
 /**
- * Compatible avec `WardrobeItem` : `owned` (dans la garde-robe), `locked` (à gagner), `premium` (inclus dans Blowy+,
- * pas encore à la personne). `plus` : objet de Blowy+ (possédé ou non).
+ * Compatible avec `WardrobeItem` : `owned` (dans la garde-robe), `locked` (à gagner), `premium` (inclus dans Minimoa+,
+ * pas encore à la personne). `plus` : objet de Minimoa+ (possédé ou non).
  */
 export type WardrobeItemState = 'owned' | 'locked' | 'premium';
 export interface WardrobeItemLook {
@@ -107,7 +107,7 @@ export interface WardrobeItemLook {
 export interface TitleSegment {
   text: string;
   dim?: boolean;
-  /** Couleur propre au segment (ex. le « + » jaune de BLOWY+). */
+  /** Couleur propre au segment (ex. le « + » jaune de MINIMOA+). */
   color?: string;
 }
 export type TitleContent = string | readonly TitleSegment[];

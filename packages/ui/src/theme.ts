@@ -192,7 +192,7 @@ export const craft = {
   pia: { swatch: color.violet, gradient: gradient.violet },
 } as const satisfies Record<keyof typeof speciesColor, { swatch: string; gradient: readonly [string, string] }>;
 
-/** Grand panneau de Blowy+ (V6-Paywall) : prune vers lie-de-vin. */
+/** Grand panneau de Minimoa+ (V6-Paywall) : prune vers lie-de-vin. */
 export const plusGradient = ['#2A0F2E', extra.wineDeep] as const;
 
 /**

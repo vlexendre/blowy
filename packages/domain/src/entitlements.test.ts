@@ -3,7 +3,7 @@ import { PLUS_PERKS, entitlements } from './entitlements';
 import { PREMIUM_ITEM_IDS, cleanOutfit, ownedWith, withoutPremium } from './items';
 
 describe('entitlements', () => {
-  it('sans Blowy+ : 2 habitudes, 1 joker, sa zone seulement, pas de bonus', () => {
+  it('sans Minimoa+ : 2 habitudes, 1 joker, sa zone seulement, pas de bonus', () => {
     expect(entitlements(false)).toEqual({
       habits: 2,
       jokersPerWeek: 1,
@@ -15,7 +15,7 @@ describe('entitlements', () => {
       premiumItems: false,
     });
   });
-  it('avec Blowy+ : 6 habitudes, 3 jokers, toute la carte, bilan détaillé, renommage libre', () => {
+  it('avec Minimoa+ : 6 habitudes, 3 jokers, toute la carte, bilan détaillé, renommage libre', () => {
     expect(entitlements(true)).toEqual({
       habits: 6,
       jokersPerWeek: 3,
@@ -27,7 +27,7 @@ describe('entitlements', () => {
       premiumItems: true,
     });
   });
-  it('chaque avantage de Blowy+ est réellement plus généreux', () => {
+  it('chaque avantage de Minimoa+ est réellement plus généreux', () => {
     const free = entitlements(false);
     const plus = entitlements(true);
     expect(plus.habits).toBeGreaterThan(free.habits);
@@ -41,18 +41,18 @@ describe('entitlements', () => {
   });
 });
 
-describe('objets premium (Blowy+)', () => {
-  it('avec Blowy+ : tous les objets premium sont possédés, en plus de ceux gagnés', () => {
+describe('objets premium (Minimoa+)', () => {
+  it('avec Minimoa+ : tous les objets premium sont possédés, en plus de ceux gagnés', () => {
     const owned = ownedWith(['bob', 'casquette'], entitlements(true).premiumItems);
     expect(PREMIUM_ITEM_IDS.length).toBeGreaterThan(0);
     for (const id of PREMIUM_ITEM_IDS) expect(owned.has(id)).toBe(true);
     expect(owned.has('bob')).toBe(true);
   });
-  it('sans Blowy+ : aucun objet premium, même attribué autrement (démo, ancien achat)', () => {
+  it('sans Minimoa+ : aucun objet premium, même attribué autrement (démo, ancien achat)', () => {
     const owned = ownedWith(['bob', 'aureole'], entitlements(false).premiumItems);
     expect([...owned]).toEqual(['bob']);
   });
-  it('fin de Blowy+ : le minimoa range ses objets premium, garde le reste', () => {
+  it('fin de Minimoa+ : le minimoa range ses objets premium, garde le reste', () => {
     expect(withoutPremium({ head: 'aureole', face: 'lunettes_rondes', toy: 'skate' })).toEqual({ face: 'lunettes_rondes' });
     const plain = { head: 'bob' };
     expect(withoutPremium(plain)).toBe(plain);

@@ -86,7 +86,7 @@ du public et le code est limité en essais).
 Remplacer `<review e-mail>`, `<code>` et `<moderation e-mail>`.
 
 ```
-Blowy is an app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
+Minimoa is an app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
 creature ("minimoa") that represents their outlook on life and only introduces them to people whose outlook is
 compatible (above 70%), always with an explanation (3 things in common, 1 difference).
 
@@ -98,7 +98,7 @@ Sign in with Apple is the public sign-in. For review, use the email sign-in, whi
 The account opens with sample data visible to this account only (fictional people, never shown to real users,
 reset at every sign-in, written in the iPhone's language):
 - Encounters tab: an incoming introduction ("Accept" / "Not this time") and compatible people with the reasons.
-  "The map" (top right) shows the map of the area; Blowy+ shows the subscription.
+  "The map" (top right) shows the map of the area; Minimoa+ shows the subscription.
 - Chats tab: a chat with "Léa" (or another first name) and a link "in danger" (2 hearts left). On first opening of a
   chat, a sheet asks for consent to AI reading ("Turn on for this chat" / "No reading", see AI below). Léa has already
   agreed; if you agree too, the creatures can react to messages. When you write, the fictional person replies.
@@ -107,7 +107,7 @@ reset at every sign-in, written in the iPhone's language):
 - My minimoa tab: the daily challenge, a 6-day streak, two habits, and last week's review (weekly reviews are under
   My minimoa > Personality > Its reviews).
 - Me tab: "AI and you" (what the third-party AI sees, each consent), Settings (account, profile photo, location,
-  blocked people, legal pages, account deletion), Blowy+.
+  blocked people, legal pages, account deletion), Minimoa+.
 You can also create your own account with Sign in with Apple (no sample data then).
 If you delete the demo account, sign in again with the same email and code: sign-up takes about 2 minutes and the
 sample data is created again.
@@ -131,7 +131,7 @@ Every use is disclosed where the data is given and listed in Me > "AI and you", 
 only if BOTH people agree on the consent sheet shown at first opening of a chat (provider named, link to the privacy
 policy; change it later in the chat's "..." menu or in Me > "AI and you").
 (2) Habit proof photos: before the first proof, a sheet explains what is sent (the reduced photo and the habit name),
-to whom, why, and that Blowy deletes it within 24 h; the person picks "Yes, check with AI" or "No AI check" (the
+to whom, why, and that Minimoa deletes it within 24 h; the person picks "Yes, check with AI" or "No AI check" (the
 habit is then confirmed without any photo and counts the same). Without consent the server never sends an image.
 (3) Safety checks: every profile photo is checked before it is shown (nudity, apparent minors, violence, hate, ads);
 this is stated under the photo picker (Me > Settings > My account) and in the picker sheet before a photo is chosen.
@@ -156,8 +156,8 @@ SAFETY AND MODERATION
 - Contact: <moderation e-mail>. Account deletion: Me > Settings > Delete my account (immediate; revokes the Sign in
   with Apple token).
 
-SUBSCRIPTION BLOWY+
-Me > Blowy+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99. Purchases are verified by our
+SUBSCRIPTION MINIMOA+
+Me > Minimoa+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99. Purchases are verified by our
 server; sandbox purchases are accepted. "Restore purchases" is on the same sheet. A reminder is sent on day 5 of the
 trial by notification and by email.
 

@@ -22,7 +22,6 @@ import {
   Glyph,
   HeroMeter,
   Icon,
-  ItemImage,
   OutingCard,
   PetHomeSkeleton,
   PetRefresh,
@@ -30,6 +29,7 @@ import {
   PetStage,
   ShortcutRow,
   ShortcutTile,
+  StreakStrip,
   Skeleton,
   StreakCelebration,
   StreakFlame,
@@ -46,7 +46,7 @@ import { VISION_TEST_ROUTE } from '@/features/encounters';
 import { errorText, useLinks } from '@/features/links';
 import { openLegal, useMe } from '@/features/me';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
-import { careAvailable, careHot, nextItem, pickLine, useCare, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
+import { careAvailable, careHot, pickLine, useCare, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { useAwayFromHome, useOuting, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
@@ -202,7 +202,6 @@ export default function PetHome() {
     );
 
   const w = wardrobe.data;
-  const next = w ? nextItem(w.items) : null;
   const careError = care.isError && !(care.error instanceof ApiError && care.error.code === 'already_done');
   const habitsDue = d?.habitsDue ?? 0;
   // Chaque soin porte la barre du besoin qu'il comble (jeu et câlin : l'humeur).
@@ -234,6 +233,14 @@ export default function PetHome() {
       <PetRefresh species={p.species} refreshing={refreshing} onRefresh={refresh}>
         {(scroll) => (
           <TabTemplate gutter={14} top={6} {...scroll}>
+            {streak ? (
+              <StreakStrip
+                count={streak.current}
+                days={streak.week.map((w, i) => ({ letter: r.streak.letters[i] ?? '', status: w.status }))}
+                onPress={() => router.push('/pet/serie')}
+                accessibilityLabel={r.entry.streakA11y(streak.current)}
+              />
+            ) : null}
             <PetStage
               pet={p}
               title={p.name.toUpperCase()}
@@ -249,7 +256,12 @@ export default function PetHome() {
               }
               shapeA11y={sulking ? t.sulkA11y : undefined}
               speech={speech}
-              action={{ label: t.wardrobe, onPress: () => router.push('/pet/garde-robe'), accessibilityLabel: t.wardrobeA11y }}
+              action={{
+                label: t.wardrobe,
+                onPress: () => router.push('/pet/garde-robe'),
+                accessibilityLabel: fresh.length ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}` : t.wardrobeA11y,
+                badge: fresh.length ? String(fresh.length) : undefined,
+              }}
               reaction={reaction}
               reactionKey={reactionKey}
               petLabel={t.petA11y(p.name)}
@@ -374,25 +386,14 @@ export default function PetHome() {
             {/* Le reste, en tuiles sans description : un tap chacune. */}
             <Appear once="home:more" delay={160}>
               <ShortcutRow>
-                {streak && d ? (
-                  streakTile ? (
-                    <ShortcutTile
-                      label={t.tiles.streak}
-                      icon={<Icon name="flamme" size={22} />}
-                      value={String(streak.current)}
-                      onPress={() => router.push('/pet/serie')}
-                      accessibilityLabel={r.entry.streakA11y(streak.current)}
-                    />
-                  ) : (
-                    <ShortcutTile
-                      label={t.tiles.challenge}
-                      icon={<Icon name="flamme" size={22} />}
-                      value={streak.current > 0 ? String(streak.current) : r.entry.streakNext}
-                      dot
-                      onPress={() => router.push('/pet/defi')}
-                      accessibilityLabel={`${r.entry.kicker(d.challenge.kindLabel)}, ${d.challenge.text}`}
-                    />
-                  )
+                {streak && d && !streakTile ? (
+                  <ShortcutTile
+                    label={t.tiles.challenge}
+                    icon={<Icon name="etoiles" size={22} />}
+                    dot
+                    onPress={() => router.push('/pet/defi')}
+                    accessibilityLabel={`${r.entry.kicker(d.challenge.kindLabel)}, ${d.challenge.text}`}
+                  />
                 ) : null}
                 <ShortcutTile
                   label={t.tiles.habits}
@@ -400,13 +401,6 @@ export default function PetHome() {
                   badge={habitsDue > 0 ? String(habitsDue) : undefined}
                   onPress={() => router.push('/pet/habitudes')}
                   accessibilityLabel={t.habitsA11y(habitsDue)}
-                />
-                <ShortcutTile
-                  label={t.tiles.wardrobe}
-                  icon={<ItemImage id={next?.id ?? p.outfit.head ?? 'couronne'} size={30} />}
-                  badge={fresh.length ? String(fresh.length) : undefined}
-                  onPress={() => router.push('/pet/garde-robe')}
-                  accessibilityLabel={fresh.length ? `${t.wardrobeA11y}, ${t.newCount(fresh.length)}` : t.wardrobeA11y}
                 />
                 <ShortcutTile
                   label={t.tiles.character}

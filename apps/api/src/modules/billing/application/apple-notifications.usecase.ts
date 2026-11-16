@@ -16,7 +16,7 @@ export type NotificationOutcome = 'applied' | 'unlinked' | 'duplicate' | 'ignore
  */
 @Injectable()
 export class HandleAppleNotification {
-  private readonly logger = new Logger('Blowy+');
+  private readonly logger = new Logger('Minimoa+');
 
   constructor(
     @Inject(APPLE_BILLING) private readonly apple: Billing,

@@ -18,7 +18,7 @@ export interface VerifiedTransaction {
   /** `FREE_TRIAL`, `PAY_AS_YOU_GO`, `PAY_UP_FRONT`, `ONE_TIME` (absent des anciens magasins). */
   offerDiscountType: string | null;
   revocationDate: number | null;
-  /** UUID passé par l'app à l'achat (`appAccountToken`) : l'identifiant Blowy de la personne. */
+  /** UUID passé par l'app à l'achat (`appAccountToken`) : l'identifiant Minimoa de la personne. */
   appAccountToken: string | null;
   signedDate: number;
 }

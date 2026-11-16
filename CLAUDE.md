@@ -1,4 +1,4 @@
-# Blowy — guide pour Claude Code
+# Minimoa — guide pour Claude Code
 
 App sociale française : chacun élève un minimoa (le code l’appelle encore `pet`), les minimoas présentent du monde. Monorepo pnpm, TypeScript strict.
 Lire d'abord `docs/ARCHITECTURE.md` (règles) et `docs/SCREENS.md` (écrans). Textes en français (langue source), tutoiement, majuscule en début de phrase, jamais « pet » à l’écran : guide `docs/I18N.md`.
