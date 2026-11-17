@@ -18,6 +18,7 @@ import type { AiUsageRecord } from '../integrations/ai/usage-store';
 import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
 import type { GroupDayRecord, GroupMemberRecord, GroupMessageRecord, GroupRecord, TogetherProposalRecord } from '../modules/groups/ports';
 import type { AcquisitionRecord, CreatorRecord, GrowthEventRecord } from '../modules/growth/ports';
+import type { FounderRecord, QuizRecord, SignupRecord, ZoneRecord } from '../modules/quartiers/ports';
 import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
 
 export interface WordVoteRow {
@@ -132,6 +133,12 @@ export class MemoryDb {
   readonly growthEvents: GrowthEventRecord[] = [];
   /** clé `${day}|${metric}|${source}|${ref}` */
   readonly growthCounters = new Map<string, number>();
+  /** Quiz du site (clé code) et quartiers (docs/VIRALITE.md). */
+  readonly quizResults = new Map<string, QuizRecord>();
+  readonly quartierSettings = { threshold: 50, updatedAt: '' };
+  readonly quartiers = new Map<string, ZoneRecord>();
+  readonly quartierSignups = new Map<string, SignupRecord>();
+  readonly quartierFounders: FounderRecord[] = [];
 
   private sequence = 0;
   nextId(): string {
@@ -207,6 +214,11 @@ export class MemoryDb {
     this.acquisitions.delete(userId);
     for (const a of this.acquisitions.values()) if (a.referredBy === userId) a.referredBy = null;
     for (const e of this.growthEvents) if (e.userId === userId) e.userId = null;
+    for (const q of this.quartierSignups.values()) {
+      if (q.userId === userId) q.userId = null;
+      if (q.invitedByUser === userId) q.invitedByUser = null;
+    }
+    removeWhere(this.quartierFounders, (f) => f.userId === userId);
     for (const s of this.subscriptions.values()) if (s.userId === userId) s.userId = null;
     this.suspensions.delete(userId);
     this.accountActivity.delete(userId);

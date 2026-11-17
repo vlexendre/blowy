@@ -1,11 +1,11 @@
 """Images du site minimoa.app, tirées du pack des minimoas (packages/ui/assets) : poses en pied réduites, minimoas
-habillés (placements de l'app), bande finale, aperçus de liens (Open Graph 1200 × 630), favicon et icône Apple, police
-Anton auto-hébergée (sous-ensemble latin).
+habillés (placements de l'app), bande finale, poses du quiz « Quel minimoa es-tu ? », aperçus de liens (Open Graph 1200 × 630) en Allo ExtraBold
+(la police du site), favicon et icône Apple.
 
 Usage (depuis la racine du dépôt) :
   pnpm exec tsx apps/web/scripts/site-images/placements.mts > /tmp/minimoa-placements.json
   python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json
-Dépendances : Pillow (webp), fontTools + brotli (police). Sorties dans apps/web/public (fichiers versionnés).
+Dépendances : Pillow (webp). Sorties dans apps/web/public (fichiers versionnés).
 """
 import json
 import sys
@@ -18,8 +18,8 @@ ASSETS = ROOT / 'packages/ui/assets'
 PUB = ROOT / 'apps/web/public'
 OUT = PUB / 'img/m'
 OG = PUB / 'og'
-ANTON = ROOT / 'node_modules/@expo-google-fonts/anton/400Regular/Anton_400Regular.ttf'
 ALLO = ROOT / 'apps/mobile/assets/fonts/allo/Allo-ExtraBold.otf'
+ALLO_BOLD = ROOT / 'apps/mobile/assets/fonts/allo/Allo-Bold.otf'
 
 NIGHT = (11, 10, 20)
 INK = (20, 16, 31)
@@ -34,6 +34,11 @@ EXTRA = {
     'pia': ['coucou', 'check'],
 }
 EVO = ['casanier', 'equilibre', 'sociable', 'tendre', 'piquant', 'joueur']
+# Résultat du quiz : une pose par caractère, sur l'espèce qui le porte (TRAIT_SPECIES et TRAIT_POSE du domaine).
+QUIZ_POSES = {
+    'sociable': 'nino_corps_coucou', 'joueur': 'nino_corps_danse', 'tendre': 'suzie_corps_joie', 'bavard': 'suzie_corps_rit',
+    'pose': 'gaston_corps_pense', 'casanier': 'gaston_corps_assis', 'piquant': 'pia_corps_fier', 'discret': 'pia_corps_timide',
+}
 MISC = ['pomme', 'balle', 'coussin', 'peluche', 'canard', 'medaille', 'coffre', 'cookie', 'plante', 'lampe']
 
 
@@ -138,23 +143,23 @@ def og(name: str, panel: str, lines: list[str], dim_from: int, art: Image.Image,
     if panel == 'night':
         glow(im, (1000, 520), 340, (109, 61, 240), 90)
     d = ImageDraw.Draw(im)
-    # Titre Anton : la taille la plus grande qui tient dans la colonne de gauche.
+    # Titre en Allo ExtraBold (la police du site) : la taille la plus grande qui tient dans la colonne de gauche ;
+    # interlignage serré (assez pour les accents des capitales) pour garder l'impact.
     col_w, max_h = art_box[0] - 64 - 36, 420
-    size = 150
-    while size > 40:
-        f = ImageFont.truetype(str(ANTON), size)
-        widths = [d.textlength(l, font=f) for l in lines]
-        if max(widths) <= col_w and size * 1.1 * len(lines) <= max_h:
+    size = 130
+    while size > 36:
+        f = ImageFont.truetype(str(ALLO), size)
+        if max(d.textlength(l, font=f) for l in lines) <= col_w and size * 1.12 * len(lines) <= max_h:
             break
         size -= 2
-    f = ImageFont.truetype(str(ANTON), size)
-    lh = round(size * 1.1)
+    f = ImageFont.truetype(str(ALLO), size)
+    lh = round(size * 1.12)
     y = (H - lh * len(lines)) // 2 - 10
     bg_mid = mix(top, bottom, 0.5)
     for i, l in enumerate(lines):
         color = mix(fg, bg_mid, 0.42) if i >= dim_from else fg
         d.text((64, y + i * lh), l, font=f, fill=color + (255,), anchor='la')
-    small = ImageFont.truetype(str(ALLO), 30)
+    small = ImageFont.truetype(str(ALLO_BOLD), 30)
     logo = ImageFont.truetype(str(ALLO), 40)
     d.text((64, 52), 'minimoa', font=logo, fill=fg + (255,))
     lw = d.textlength('minimoa', font=logo)
@@ -215,6 +220,10 @@ def main() -> None:
         src = Image.open(ASSETS / 'misc' / f'{m}.webp').convert('RGBA')
         save_webp(src.crop(src.getbbox()), OUT / f'obj_{m}.webp', 160, 80)
 
+    # Quiz : une pose par caractère (720 de large : la carte story les dessine en grand).
+    for trait, name in QUIZ_POSES.items():
+        save_webp(pet(name).crop(pet(name).getbbox()), OUT / f'quiz_{trait}.webp', 720, 82)
+
     # Minimoas habillés (garde-robe), toile commune 600 × 720 pour aligner les pieds.
     dressed_ims = {}
     for o in placements:
@@ -233,7 +242,7 @@ def main() -> None:
     # Aperçus de liens (1200 × 630). Textes en français : la langue du site au moment du partage.
     tag = 'minimoa.app'
     trio = row(['suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_coucou'], -0.3, [0.78, 1.0, 0.8])
-    og('accueil', 'accent', ['ÉLÈVE TON', 'MINIMOA.', 'IL TE PRÉSENTE', 'DU MONDE.'], 2, trio, (620, 60, 1180, 610), tag)
+    og('accueil', 'accent', ['DES POTES', 'PRÈS DE', 'CHEZ TOI.'], 1, trio, (620, 60, 1180, 610), tag)
     og('i', 'violet', ['ON T’INVITE', 'SUR MINIMOA.'], 1, pet('nino_corps_coucou'), (760, 70, 1150, 600), tag)
     og('m', 'rose', ['DÉCRIS-MOI', 'EN 3 MOTS.', 'SOIS SYMPA.'], 1, pet('nino_corps_timide'), (770, 80, 1150, 600), 'Anonyme, et seulement des mots gentils')
     og('g', 'violet', ['TON GROUPE', 'T’ATTEND.'], 1, groupe, (650, 110, 1180, 610), tag)
@@ -243,6 +252,9 @@ def main() -> None:
     og('defi', 'orange', ['LE DÉFI', 'DU JOUR.'], 1, pet('nino_corps_pense'), (770, 80, 1150, 600), tag)
     og('habitudes', 'accent', ['TIENS TES', 'HABITUDES.', 'À PLUSIEURS.'], 2, groupe, (650, 110, 1180, 610), tag)
     og('carte', 'night', ['LA CARTE', 'DES MINIMOAS.'], 1, pet('nino_corps_marche'), (770, 80, 1150, 600), 'Position arrondie, jamais en direct')
+    quatre = row(['gaston_corps_pense', 'suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_fier'], -0.22, [0.84, 0.9, 1.0, 0.88])
+    og('quiz', 'violet', ['QUEL', 'MINIMOA', 'ES-TU ?'], 9, quatre, (600, 120, 1180, 610), 'minimoa.app/quiz')
+    og('quartier', 'accent', ['TON QUARTIER', 'OUVRE À 50.'], 1, groupe, (650, 110, 1180, 610), 'minimoa.app/quartier')
 
     # Icônes : Apple (180 × 180, fond jaune, Nino de face), PNG 32 × 32 et 192 × 192 de repli.
     face = Image.open(ASSETS / 'pets/nino_face.webp').convert('RGBA')
@@ -252,18 +264,6 @@ def main() -> None:
         bg.alpha_composite(f, ((size - f.width) // 2, round(size * 0.1)))
         bg.convert('RGB').save(PUB / name, 'PNG', optimize=True)
 
-    # Anton auto-hébergée : sous-ensemble latin (français, anglais, espagnol, portugais, néerlandais), woff2.
-    from fontTools import subset
-    font_dir = PUB / 'fonts/anton'
-    font_dir.mkdir(parents=True, exist_ok=True)
-    opts = subset.Options()
-    opts.flavor = 'woff2'
-    opts.layout_features = ['*']
-    f = subset.load_font(str(ANTON), opts)
-    sub = subset.Subsetter(opts)
-    sub.populate(unicodes=list(range(0x20, 0x7F)) + list(range(0xA0, 0x180)) + [0x2018, 0x2019, 0x201C, 0x201D, 0x2026, 0x2013, 0x2014, 0x20AC, 0x2022, 0x00B7, 0x202F, 0x2009, 0x2B])
-    sub.subset(f)
-    subset.save_font(f, str(font_dir / 'Anton.woff2'), opts)
     print('ok :', OUT, OG)
 
 

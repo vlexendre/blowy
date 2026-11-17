@@ -55,7 +55,7 @@ export const mentionsLegales: LegalPage = {
       p: "La marque Minimoa, les minimoas, les illustrations, les textes, les animations et le logiciel sont protégés par le droit de la propriété intellectuelle. Ils appartiennent à {{publisher.name}} ou à ses partenaires. Les reproduire ou les réutiliser sans autorisation est interdit, sauf ce que la loi permet (courte citation, copie privée).",
     },
     {
-      p: 'Polices du site : Anton et Allo (Josh Puckett), sous licence SIL Open Font License. Animations de la page d’accueil : bibliothèque GSAP.',
+      p: 'Police du site et de ses images : Allo (Josh Puckett), sous licence SIL Open Font License. Animations de la page d’accueil : bibliothèque GSAP.',
     },
   ],
 };

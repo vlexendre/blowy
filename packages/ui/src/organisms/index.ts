@@ -22,6 +22,7 @@ export { PetTip, type PetTipProps } from './PetTip';
 export { PhotoEditCard, type PhotoEditCardProps } from './PhotoEditCard';
 export { PetQuote, type PetQuoteProps } from './PetQuote';
 export { PlusBanner, type PlusBannerProps } from './PlusBanner';
+export { QuartierCard, type QuartierCardProps } from './QuartierCard';
 export { ProfileHero, type ProfileHeroProps } from './ProfileHero';
 export { PetSummary, type PetSummaryAction, type PetSummaryItem, type PetSummaryProps } from './PetSummary';
 export { type Plan, PlanPicker, type PlanPickerProps } from './PlanPicker';

@@ -13,6 +13,8 @@ notifications, anciens retours de connexion) ouvrent les mêmes écrans.
 | `/g/<id>` (identifiant) | `app/groupe/[id]` (membres seulement) | gardé, ouvert après l'inscription | `/g` « Ouvre Minimoa » |
 | `/g/<code>` (code court) | `app/g/[code]` : page « rejoindre » du lien d'invitation | gardé, ouvert après l'inscription ; source `group` gardée | `/g` : nom, habitude, jours tenus, membres (jamais de prénom), « Rejoindre dans l'app », code à taper |
 | `/c/<code>` | l'accueil (source `creator` gardée) | idem | `/c` : « De la part de … », stores, code à taper |
+| `/quiz/<code>` (`Q…`) | `app/quiz/[code]` : sans minimoa, l'espèce et le caractère du résultat sont repris dans le brouillon, puis l'inscription (source `quiz`) ; avec un minimoa, « Tu as déjà ton minimoa » | repris par l'inscription | `/quiz` : le résultat partagé, puis « Et toi ? » (le quiz, compté comme un défi) |
+| `/quartier/<code>` (`N…`) | `app/quartier/[code]` : le code part avec l'inscription (source `quartier`, objet « Fondateur » s'il est gagné) | idem | `/quartier/<zone>` : formulaire ou « C'est ouvert ! » ; `/quartier/confirmer?t=`, `/quartier/desinscription?t=` |
 | `minimoa://mots` | `app/mots` : ton lien « 3 mots » et ta carte résultat | gardé | (schéma seulement : bouton « J'ai déjà Minimoa » de `/m` après le vote) |
 | `/r/<id>` | `app/rencontre/[userId]` | gardé | `/r` |
 | `/l/<id>` | `app/link/[id]` | gardé | `/l` |
@@ -25,7 +27,7 @@ notifications, anciens retours de connexion) ouvrent les mêmes écrans.
 l'ajoute aux boutons `minimoa://…` ; l'app le garde comme source d'arrivée (`features/growth/attribution.ts`, la
 première source gagne, avant l'inscription seulement).
 
-Jamais ouverts dans l'app : `/legal/*`, `/_astro/*`, `/img/*`, `/m/*?web=1`, l'accueil.
+Jamais ouverts dans l'app : `/quiz` et `/quiz?ref=` (le quiz se fait sur le site ; seul `minimoa://quiz/<code>` ouvre l'app), `/quartier/*`, `/legal/*`, `/_astro/*`, `/img/*`, `/m/*?web=1`, l'accueil.
 Les chemins internes (`minimoa://link/<id>`, `blowy://pet/garde-robe`, `blowy://groupe/<id>`…) passent tels quels.
 `/g/<id>` (UUID) ouvre un groupe dont on est membre (sinon « introuvable ») ; `/g/<code>` (8 caractères) est le lien
 d'invitation du groupe (`POST /v1/groups/:id/link`, docs/GROUPES.md).

@@ -209,6 +209,19 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'El test «¿Qué minimoa eres?» y «Abre tu barrio» (web, sin cuenta)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Test:** tus respuestas sirven para calcular tu resultado durante la solicitud; solo guardamos **el resultado** (la especie, el carácter y los indicadores de partida) con un código corto, y el código del resultado de la persona que te retó, si la hay. No se asocia ningún nombre, dirección ni IP. El código permite volver a encontrar tu resultado y rellenar tu minimoa si lo escribes en la app. Se borra al cabo de un año.',
+        '**Abre tu barrio:** tu dirección de correo, el barrio elegido (en una lista o por código postal; **nunca tu ubicación**), tu idioma, la fecha de tu consentimiento y de tu confirmación, tu código para invitar y, si llegaste por el enlace de alguien, quién te invitó. Solo cuentas en el contador del barrio después de confirmar tu dirección (doble verificación). Te escribimos dos veces como máximo: la confirmación y la apertura del barrio.',
+        '**Finalidad:** avisarte de la apertura de tu barrio, mostrar el contador real (un número, nunca una dirección) y dar el objeto decorativo «Fundador» a las 3 primeras personas que invitaron en el barrio.',
+        '**Base jurídica:** tu consentimiento (casilla que nunca está marcada de antemano), que puedes retirar cuando quieras con el enlace de baja de cada correo.',
+        '**Plazo:** si no se confirma, la inscripción se borra en 7 días. Al darte de baja, la dirección se borra al momento. Tras el correo de apertura, la dirección se borra en 30 días; solo queda una línea anónima (barrio y código) para el contador y el objeto «Fundador».',
+        '**Acceso:** los correos se envían a través de nuestro proveedor de correo ({{sub.email.provider}}). La herramienta interna del equipo solo muestra contadores por barrio, nunca una dirección.',
+        '**En la web:** durante tu visita, el código de tu resultado se guarda en el almacenamiento de sesión de tu navegador (se borra al cerrar la pestaña) para volver a mostrarte tu resultado. Sin cookies.',
+      ],
+    },
+
     { h3: 'Estadísticas y administración' },
     {
       ul: [
@@ -363,6 +376,7 @@ export const confidentialite: LegalPage = {
           ['Denuncias tramitadas y decisiones de moderación', '1 año después del cierre del expediente, más tiempo solo si la ley lo exige.'],
           ['Exclusión definitiva', 'Una huella no reversible del identificador de Apple o Google de la cuenta, durante 3 años, para impedir un nuevo registro.'],
           ['Estadísticas', 'Días de actividad y clasificación interna nominativa: 40 días. Encuentros propuestos: 30 días. Cifras agregadas, que no permiten identificarte: sin límite.'],
+          ['Test de la web y «Abre tu barrio»', 'Resultado del test: 1 año. Inscripción sin confirmar: 7 días. Dirección de correo: hasta que te des de baja, o 30 días después del correo de apertura del barrio.'],
           ['Fuente de llegada y etapas del recorrido', 'Mientras exista tu cuenta; borradas o anonimizadas al eliminarla. Contadores diarios (visitas, primeros arranques, votos, compartidos), sin nadie detrás: sin límite.'],
           ['Registros técnicos de la app', '30 días como máximo. Los registros de nuestros proveedores de alojamiento siguen sus propios plazos.'],
           ['Intercambios con el soporte', '1 año después del cierre de la solicitud.'],

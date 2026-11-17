@@ -4,7 +4,7 @@ import { copyFileSync, mkdirSync, existsSync } from 'node:fs';
 
 const dist = new URL('../dist/', import.meta.url);
 mkdirSync(new URL('_lien/', dist), { recursive: true });
-for (const x of ['m', 'i', 'g', 'c', 'r', 'l']) {
+for (const x of ['m', 'i', 'g', 'c', 'r', 'l', 'quiz', 'quartier']) {
   const src = new URL(`${x}/index.html`, dist);
   if (!existsSync(src)) throw new Error(`page manquante : dist/${x}/index.html`);
   copyFileSync(src, new URL(`_lien/${x}.html`, dist));

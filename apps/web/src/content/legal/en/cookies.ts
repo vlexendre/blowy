@@ -8,7 +8,7 @@ export const cookies: LegalPage = {
   body: [
     { h2: 'What the website sets', id: 'depose' },
     {
-      p: 'The minimoa.app website sets **no cookies** and stores nothing in your browser’s storage (neither local storage nor session storage). It uses no audience measurement, no advertising and no social media buttons. That is why there is no consent banner.',
+      p: 'The minimoa.app website sets **no cookies** and doesn’t use your browser’s local storage. For the length of your visit only (session storage, cleared when you close the tab), it keeps the code of a link you opened and your quiz result code, to reuse them on the page; none of this is sent to track you. It uses no audience measurement, no advertising and no social media buttons. That is why there is no consent banner.',
     },
     { p: 'This page only covers the website. The Minimoa app is covered by the [privacy policy](@confidentialite).' },
 
@@ -22,6 +22,7 @@ export const cookies: LegalPage = {
         rows: [
           ['Website host: {{siteHost.name}}', 'Serving the pages', 'All'],
           ['Minimoa app server (API)', 'Showing the person’s first name and minimoa, saving the words chosen', '“3 words” and invitation pages'],
+          ['Minimoa app server (API)', 'Computing and keeping your quiz result, showing a neighbourhood counter, saving your sign-up', '“Which minimoa are you?” and “Open your neighbourhood” pages'],
         ],
       },
     },
@@ -36,7 +37,7 @@ export const cookies: LegalPage = {
 
     { h2: 'Staying in control', id: 'reglages' },
     {
-      p: 'Your browser lets you block or delete cookies and limit requests to other sites. The website stays readable if you block external fonts: it will use your device’s fonts.',
+      p: 'Your browser lets you block or delete cookies and limit requests to other sites. The website’s font (Allo) is served by the website itself: no font is loaded from another service.',
     },
     { p: 'Any question: {{email.privacy}}.' },
   ],

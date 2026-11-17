@@ -54,6 +54,6 @@ export const mentionsLegales: LegalPage = {
     {
       p: 'Het merk Minimoa, de minimoas, de illustraties, teksten, animaties en software zijn beschermd door het intellectuele-eigendomsrecht. Ze zijn van {{publisher.name}} of haar partners. Ze kopiëren of hergebruiken zonder toestemming is verboden, behalve wat de wet toestaat (kort citaat, privékopie).',
     },
-    { p: 'Lettertypen van de website: Anton en Allo (Josh Puckett), onder de SIL Open Font License. Animaties op de homepage: de GSAP-bibliotheek.' },
+    { p: 'Lettertype van de website en haar afbeeldingen: Allo (Josh Puckett), onder de SIL Open Font License. Animaties op de homepage: de GSAP-bibliotheek.' },
   ],
 };

@@ -209,6 +209,19 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'O quiz «Qual minimoa és tu?» e «Abre o teu bairro» (site, sem conta)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz:** as tuas respostas servem para calcular o teu resultado durante o pedido; guardamos **apenas o resultado** (a espécie, o carácter e os indicadores de partida) com um código curto, e o código do resultado da pessoa que te desafiou, se houver. Nenhum nome, endereço ou IP fica associado. O código permite voltar a encontrar o teu resultado e preencher o teu minimoa se o escreveres na app. Apagado ao fim de um ano.',
+        '**Abre o teu bairro:** o teu endereço de e-mail, o bairro escolhido (numa lista ou pelo código postal; **nunca a tua localização**), a tua língua, a data do teu consentimento e da tua confirmação, o teu código para convidar e, se chegaste pelo link de alguém, quem te convidou. Só contas no contador do bairro depois de confirmares o teu endereço (dupla confirmação). Escrevemos-te duas vezes no máximo: a confirmação e a abertura do bairro.',
+        '**Finalidade:** avisar-te da abertura do teu bairro, mostrar o contador real (um número, nunca um endereço) e oferecer o objeto decorativo «Fundador» às 3 primeiras pessoas que convidaram no bairro.',
+        '**Fundamento jurídico:** o teu consentimento (caixa nunca marcada à partida), que podes retirar a qualquer momento através do link de cancelamento presente em cada e-mail.',
+        '**Prazo:** se não for confirmada, a inscrição é apagada em 7 dias. Ao cancelares, o endereço é apagado de imediato. Depois do e-mail de abertura, o endereço é apagado em 30 dias; fica apenas uma linha anónima (bairro e código) para o contador e o objeto «Fundador».',
+        '**Acesso:** os e-mails são enviados através do nosso prestador de e-mail ({{sub.email.provider}}). A ferramenta interna da equipa só mostra contadores por bairro, nunca um endereço.',
+        '**No site:** durante a tua visita, o código do teu resultado fica guardado no armazenamento de sessão do teu navegador (apagado quando fechas o separador), para te voltar a mostrar o resultado. Sem cookies.',
+      ],
+    },
+
     { h3: 'Estatísticas e administração' },
     {
       ul: [
@@ -363,6 +376,7 @@ export const confidentialite: LegalPage = {
           ['Denúncias tratadas e decisões de moderação', '1 ano após o encerramento do processo, mais tempo só se a lei o exigir.'],
           ['Exclusão definitiva', 'Uma impressão não reversível do identificador Apple ou Google da conta, durante 3 anos, para impedir uma nova inscrição.'],
           ['Estatísticas', 'Dias de atividade e classificação interna nominativa: 40 dias. Encontros propostos: 30 dias. Números agregados, que não permitem identificar-te: sem limite.'],
+          ['Quiz do site e «Abre o teu bairro»', 'Resultado do quiz: 1 ano. Inscrição não confirmada: 7 dias. Endereço de e-mail: até cancelares, ou 30 dias depois do e-mail de abertura do bairro.'],
           ['Origem de chegada e etapas do percurso', 'Enquanto a tua conta existir; apagadas ou anonimizadas quando é apagada. Contadores diários (visitas, primeiros arranques, votos, partilhas), sem ninguém por trás: sem limite.'],
           ['Registos técnicos da app', '30 dias no máximo. Os registos dos nossos fornecedores de alojamento seguem os seus próprios prazos.'],
           ['Trocas com o apoio', '1 ano após o encerramento do pedido.'],

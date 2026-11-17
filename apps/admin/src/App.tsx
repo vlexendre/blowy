@@ -12,6 +12,7 @@ import { Growth } from './views/Growth';
 import { Minimoas } from './views/Minimoas';
 import { Moderation } from './views/Moderation';
 import { Overview } from './views/Overview';
+import { Quartiers } from './views/Quartiers';
 
 const ROUTES = [
   ['overview', 'Vue d’ensemble'],
@@ -19,6 +20,7 @@ const ROUTES = [
   ['funnel', 'Liens et rencontres'],
   ['growth', 'Croissance'],
   ['creators', 'Créateurs'],
+  ['quartiers', 'Quartiers'],
   ['moderation', 'Modération'],
   ['audit', 'Journal'],
   ['costs', 'Coûts IA'],
@@ -126,6 +128,7 @@ function Shell({ email }: { email: string }) {
         {route === 'funnel' && <Funnel />}
         {route === 'growth' && <Growth />}
         {route === 'creators' && <Creators />}
+        {route === 'quartiers' && <Quartiers />}
         {route === 'moderation' && <Moderation onCountsChange={refreshCounts} />}
         {route === 'audit' && <Audit />}
         {route === 'costs' && <Costs />}

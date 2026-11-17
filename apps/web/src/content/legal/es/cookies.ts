@@ -8,7 +8,7 @@ export const cookies: LegalPage = {
   body: [
     { h2: 'Lo que instala la web', id: 'depose' },
     {
-      p: 'La web minimoa.app no instala **ninguna cookie** y no guarda nada en el almacenamiento de tu navegador (ni almacenamiento local ni de sesión). No usa ninguna herramienta de medición de audiencia, publicidad ni botones de redes sociales. Por eso no hay banner de consentimiento.',
+      p: 'La web minimoa.app no instala **ninguna cookie** y no usa el almacenamiento local de tu navegador. Solo durante la visita (almacenamiento de sesión, que se borra al cerrar la pestaña), guarda el código de un enlace abierto y el código de tu resultado del test, para reutilizarlos en la página; nada de esto se envía para seguirte. No usa ninguna herramienta de medición de audiencia, publicidad ni botones de redes sociales. Por eso no hay banner de consentimiento.',
     },
     { p: 'Esta página solo se refiere a la web. La app Minimoa está cubierta por la [política de privacidad](@confidentialite).' },
 
@@ -22,6 +22,7 @@ export const cookies: LegalPage = {
         rows: [
           ['Proveedor de alojamiento de la web: {{siteHost.name}}', 'Servir las páginas', 'Todas'],
           ['Servidor de la app Minimoa (API)', 'Mostrar el nombre y el minimoa de la persona, guardar las palabras elegidas', 'Páginas de «3 palabras» e invitación'],
+          ['Servidor de la app Minimoa (API)', 'Calcular y guardar tu resultado del test, mostrar el contador de un barrio, guardar tu inscripción', 'Páginas «¿Qué minimoa eres?» y «Abre tu barrio»'],
         ],
       },
     },
@@ -36,7 +37,7 @@ export const cookies: LegalPage = {
 
     { h2: 'Mantener el control', id: 'reglages' },
     {
-      p: 'Tu navegador te permite bloquear o borrar las cookies y limitar las peticiones a otros sitios. La web seguirá siendo legible si bloqueas las fuentes externas: usará las de tu dispositivo.',
+      p: 'Tu navegador te permite bloquear o borrar las cookies y limitar las peticiones a otros sitios. La fuente de la web (Allo) la sirve la propia web: no se carga ninguna fuente desde otro servicio.',
     },
     { p: 'Cualquier pregunta: {{email.privacy}}.' },
   ],

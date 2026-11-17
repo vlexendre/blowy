@@ -93,7 +93,7 @@ export const WardrobeItemZ = z.object({
   /** Objet premium (inclus dans Minimoa+) : vrai qu'il soit possédé ou non. Absent des réponses des anciennes API. */
   plus: z.boolean().optional(),
   /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
-  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept', 'referrals']), have: z.number().int(), need: z.number().int() }).nullable(),
+  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept', 'referrals', 'founded']), have: z.number().int(), need: z.number().int() }).nullable(),
 });
 export type WardrobeItem = z.infer<typeof WardrobeItemZ>;
 export const WardrobeZ = z.object({ items: z.array(WardrobeItemZ), outfit: OutfitZ });
@@ -480,3 +480,4 @@ export * from './v7/revue';
 export * from './v7/ia';
 export * from './v7/groupes';
 export * from './v7/croissance';
+export * from './v7/quiz';

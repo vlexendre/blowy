@@ -109,4 +109,11 @@ describe('liens de croissance (docs/VIRALITE.md)', () => {
     expect(attributionFromUrl('https://minimoa.app/defi')).toBeNull();
     expect(attributionFromUrl('https://evil.example/c/lea')).toBeNull();
   });
+  it('quiz du site et quartier : repris par l’inscription, sans compte', () => {
+    expect(attributionFromUrl('minimoa://quiz/qab23cd?ref=QXY45ZZ')).toEqual({ source: 'quiz', ref: 'QAB23CD' });
+    expect(attributionFromUrl('minimoa://quartier/NAB23CDE')).toEqual({ source: 'quartier', ref: 'NAB23CDE' });
+    expect(appPathFromUrl('minimoa://quiz/qab23cd')).toBe('/quiz/QAB23CD');
+    expect(routeIncomingUrl('minimoa://quiz/QAB23CD', { initial: true, ready: false })).toEqual({ open: '/quiz/QAB23CD', park: null });
+    expect(needsAccount('/quartier/NAB23CDE')).toBe(false);
+  });
 });

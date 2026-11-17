@@ -10,6 +10,7 @@ import { RITUAL_STATES } from '../../rituels/tokens';
 import type { PetItemsRepository, PetRecord, PetsRepository, WordVotesRepository } from '../ports';
 import { PetCharacter } from './pet-character';
 import { Growth } from '../../growth/application/growth';
+import { QUARTIERS, type QuartiersRepository } from '../../quartiers/ports';
 
 export interface WardrobeState {
   pet: PetRecord;
@@ -39,7 +40,17 @@ export class Wardrobe {
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
     @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
+    @Optional() @Inject(QUARTIERS) private readonly quartiers: QuartiersRepository | null = null,
   ) {}
+
+  /** Quartiers fondés (objet « Fondateur ») ; jamais bloquant. */
+  private async founded(ownerId: string): Promise<number> {
+    try {
+      return (await this.quartiers?.foundedBy(ownerId)) ?? 0;
+    } catch {
+      return 0;
+    }
+  }
 
   /**
    * Ajoute à `pet_items` les objets gagnés que le pet n'a pas encore et rend ceux de cette fois-ci (à fêter).
@@ -84,12 +95,13 @@ export class Wardrobe {
   }
 
   async statsOf(pet: PetRecord): Promise<PetStats> {
-    const [links, challenges, words, rituals, referrals] = await Promise.all([
+    const [links, challenges, words, rituals, referrals, founded] = await Promise.all([
       this.links.listForUsers([pet.ownerId]),
       this.pets.countEvents(pet.id, 'challenge_done'),
       this.votes.count(pet.ownerId),
       this.rituals.find(pet.ownerId),
       this.growth?.referrals(pet.ownerId) ?? Promise.resolve(0),
+      this.founded(pet.ownerId),
     ]);
     return {
       careDays: pet.careDays,
@@ -104,6 +116,8 @@ export class Wardrobe {
       habitsKept: rituals?.habitsKept ?? 0,
       // Parrainage (objet « Parrain ») : cosmétique, sans achat.
       referrals,
+      // Fondateur d'un quartier (objet « Fondateur ») : cosmétique, sans achat.
+      founded,
     };
   }
 }
