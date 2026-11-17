@@ -1,10 +1,14 @@
 import type { Species } from '@blowy/domain';
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { type SharedValue, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
-import { PetImage } from '../atoms/PetImage';
+import type { BodyPose } from '../assets/pets';
+import { DressedPet } from '../atoms/DressedPet';
 import { ProgressBar } from '../atoms/ProgressBar';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
+import { ease, useReducedMotion } from '../lib/motion';
 import { useUiStrings } from '../lib/strings';
 import { layout } from '../lib/styles';
 import { Appear, Stagger } from '../motion/Appear';
@@ -29,7 +33,7 @@ export interface PrepChecklistProps {
 }
 
 /**
- * « On prépare son arrivée » : le pet au milieu, un pourcentage qui défile, une barre, et une liste qui se coche
+ * « On prépare son arrivée » : l'œuf du minimoa qui éclot au fil de la préparation (œuf, fêlé, éclosion, bébé), un pourcentage qui défile, une barre, et une liste qui se coche
  * ligne à ligne (coche dessinée ; la ligne en cours a ses « … »). Rien ici ne décide du rythme : l'écran passe
  * `percent` et l'état de chaque ligne. Animations réduites : les coches et le compteur arrivent sans mouvement.
  */
@@ -39,7 +43,7 @@ export function PrepChecklist({ species, title, percent, items, stalled, percent
   return (
     <View style={styles.wrap}>
       <Appear scale={0.9} distance={20}>
-        <PetImage species={species} mood={stalled ? 'triste' : p >= 100 ? 'joie' : 'neutre'} size={150} animation={stalled ? 'none' : 'breathe'} />
+        <Hatch species={species} step={hatchStep(p)} stalled={!!stalled} />
       </Appear>
       <Title text={title} size={40} center style={styles.title} />
       <CountUp value={p} from={0} variant="bodyHeavy" size={34} suffix={uiStrings.percentSuffix} accessibilityLabel={percentLabel?.(p)} style={styles.count} />
@@ -64,8 +68,47 @@ export function PrepChecklist({ species, title, percent, items, stalled, percent
 
 const DOT = 26;
 
+/** L'éclosion suit la préparation : l'œuf, l'œuf fêlé, l'éclosion, puis le bébé à 100 %. */
+const HATCH: readonly BodyPose[] = ['oeuf', 'oeuf_fele', 'eclosion', 'bebe'];
+const hatchStep = (p: number): number => (p >= 100 ? 3 : p >= 66 ? 2 : p >= 33 ? 1 : 0);
+const HATCH_SIZE = 150;
+
+function HatchFrame({ species, pose, index, step }: { species: Species; pose: BodyPose; index: number; step: SharedValue<number> }) {
+  const style = useAnimatedStyle(() => ({ opacity: Math.max(0, 1 - Math.abs(step.value - index)) }));
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, style]}>
+      <DressedPet species={species} pose={pose} size={HATCH_SIZE} animated={pose === 'bebe'} />
+    </Animated.View>
+  );
+}
+
+/**
+ * L'œuf qui éclot au fil de la préparation : fondu-enchaîné d'une étape à l'autre, et l'œuf qui tremble avant de se
+ * fêler. Animations réduites : le fondu seul. Arrêté sur une erreur : l'œuf attend, immobile.
+ */
+function Hatch({ species, step, stalled }: { species: Species; step: number; stalled: boolean }) {
+  const reduced = useReducedMotion();
+  const at = useSharedValue(step);
+  const wobble = useSharedValue(0);
+  useEffect(() => {
+    at.value = withTiming(step, { duration: reduced ? 200 : 420, easing: ease.inOut });
+    if (reduced || stalled || step === 0 || step === 3) return;
+    const w = (v: number) => withTiming(v, { duration: 70, easing: ease.inOut });
+    wobble.value = withSequence(w(-6), w(6), w(-4), w(4), w(0));
+  }, [step, reduced, stalled, at, wobble]);
+  const shake = useAnimatedStyle(() => ({ transform: [{ rotate: `${wobble.value}deg` }] }));
+  return (
+    <Animated.View style={[{ width: HATCH_SIZE, height: Math.round(HATCH_SIZE / 0.9) }, styles.hatch, shake]}>
+      {HATCH.map((pose, i) => (
+        <HatchFrame key={pose} species={species} pose={pose} index={i} step={at} />
+      ))}
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', alignItems: 'center' },
+  hatch: { transformOrigin: '50% 95%' },
   title: { marginTop: space.md },
   count: { marginTop: space.md },
   bar: { alignSelf: 'stretch', marginTop: space.md },

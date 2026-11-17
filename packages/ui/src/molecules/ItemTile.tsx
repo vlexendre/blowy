@@ -129,6 +129,12 @@ export const ItemTile = memo(function ItemTile({
       <Text variant="bodyBold" size={13} muted center numberOfLines={2} style={styles.caption}>
         {caption}
       </Text>
+      {premium || plus ? (
+        // Petite couronne en coin : objet Minimoa+.
+        <View style={styles.crown} pointerEvents="none">
+          <ItemImage id="couronne" size={16} />
+        </View>
+      ) : null}
       {locked && progress ? (
         <View style={styles.mini}>
           <View style={[styles.miniFill, { width: `${ratio * 100}%` }]} />
@@ -176,6 +182,7 @@ const styles = StyleSheet.create({
   miniFill: { height: '100%', backgroundColor: color.accent },
   // `.tag` : en haut à droite, 9/800, pilule jaune (violette pour Minimoa+).
   tagBox: { position: 'absolute', top: 7, right: 7 },
+  crown: { position: 'absolute', top: 6, left: 7 },
   tag: { paddingVertical: 1, paddingHorizontal: 8, borderRadius: radius.pill, backgroundColor: color.accent, overflow: 'hidden' },
   tagPremium: { backgroundColor: color.violet },
   tagText: { letterSpacing: 0.2, lineHeight: 16 },

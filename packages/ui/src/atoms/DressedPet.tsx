@@ -1,14 +1,15 @@
 import type { ItemSlot, Mood, Outfit, Species } from '@blowy/domain';
 import { Image } from 'expo-image';
-import { type ComponentProps, memo, useId } from 'react';
+import { type ComponentProps, memo, useEffect, useId } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import Svg, { Defs, G, Image as SvgImage, LinearGradient, Mask, Rect, Stop } from 'react-native-svg';
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Svg, { Defs, FeColorMatrix, FeGaussianBlur, Filter, G, Image as SvgImage, LinearGradient, Mask, Rect, Stop } from 'react-native-svg';
 
-import { type ItemPlacement, FIT_CANVAS, hasOutfit, outfitLayers } from '../assets/fit';
+import { type ItemPlacement, FIT_CANVAS, fitAnchor, hasOutfit, outfitLayers, poseArms } from '../assets/fit';
 import { itemImage } from '../assets/items';
 import { type BodyPose, bodyPoseFor, type PetPose, petBodyImage, RENDER_RATIO, type Src } from '../assets/pets';
-import { useLoop } from '../lib/motion';
+import { useLoop, useReducedMotion } from '../lib/motion';
+import { Burst } from '../motion/Burst';
 import { color, speciesColor } from '../theme';
 
 export interface DressedPetProps {
@@ -48,6 +49,9 @@ const VEIL = 0.08;
 const SHADE = 0.26;
 /** Ombre portée sur le minimoa : opacité et décalage (part de la taille de l'objet). */
 const DROP = { opacity: 0.34, x: 0.025, y: 0.06 };
+
+/** Ombre sur la fourrure : brun très sombre (l'opacité vient de `wear.fur`). */
+const furMatrix = (opacity: number) => [0, 0, 0, 0, 0.1, 0, 0, 0, 0, 0.05, 0, 0, 0, 0, 0, 0, 0, 0, opacity, 0].join(' ');
 
 const svgId = (raw: string) => raw.replace(/[^a-zA-Z0-9]/g, '');
 
@@ -95,7 +99,7 @@ function WornImage({ p, k, src, tint, part, uid }: { p: ItemPlacement; k: number
   const h = p.height;
   const at = p.wear.split?.at ?? 0;
   const soft = 0.05;
-  const id = `${uid}${svgId(p.id)}${part}`;
+  const id = `${uid}${svgId(p.image)}${part}`;
   const body = (
     <>
       <SvgImage href={src} x={0} y={0} width={w} height={h} preserveAspectRatio="none" />
@@ -133,6 +137,37 @@ function WornImage({ p, k, src, tint, part, uid }: { p: ItemPlacement; k: number
   );
 }
 
+/**
+ * Ombre portée d'un couvre-chef, limitée à la fourrure : la silhouette de l'objet, assombrie et floutée (filtre SVG),
+ * décalée vers le bas, et masquée par l'alpha du minimoa (elle ne déborde jamais sur le fond).
+ */
+function FurShadow({ p, k, src, pet, hidden, uid }: { p: ItemPlacement; k: number; src: Src; pet: Src; hidden?: boolean; uid: string }) {
+  const id = `${uid}${svgId(p.image)}f`;
+  const fs = p.wear.fur ?? { blur: 6, x: 3, y: 8, opacity: 0.35 };
+  const px = p.left + p.originX * p.width;
+  const py = p.top + p.originY * p.height;
+  const transform = `translate(${fs.x} ${fs.y}) translate(${px} ${py}) rotate(${p.rotate}) scale(1 ${p.scaleY}) translate(${-px} ${-py})`;
+  const pad = fs.blur * 4;
+  return (
+    <Svg pointerEvents="none" width={W * k} height={H * k} viewBox={`0 0 ${W} ${H}`} style={[StyleSheet.absoluteFill, { opacity: hidden ? 0 : p.wear.shadow }]}>
+      <Defs>
+        <Filter id={`${id}b`} filterUnits="userSpaceOnUse" x={p.left - pad} y={p.top - pad} width={p.width + pad * 2} height={p.height + pad * 2 + fs.y}>
+          <FeColorMatrix type="matrix" values={furMatrix(fs.opacity)} />
+          <FeGaussianBlur stdDeviation={fs.blur} />
+        </Filter>
+        <Mask id={`${id}m`} maskType="alpha" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          <SvgImage href={pet} x={0} y={0} width={W} height={H} />
+        </Mask>
+      </Defs>
+      <G mask={`url(#${id}m)`}>
+        <G filter={`url(#${id}b)`}>
+          <SvgImage href={src} x={p.left} y={p.top} width={p.width} height={p.height} preserveAspectRatio="none" transform={transform} />
+        </G>
+      </G>
+    </Svg>
+  );
+}
+
 interface LayerProps {
   p: ItemPlacement;
   k: number;
@@ -147,9 +182,9 @@ interface LayerProps {
 }
 
 function Layer({ p, k, hidden, tint, flat, part = 'all', drop = false, uid }: LayerProps) {
-  const src = itemImage(p.id);
+  const src = itemImage(p.image);
   if (src === undefined) return null;
-  if (flat) {
+  if (flat || p.wear.plain) {
     return <Image source={src} contentFit="fill" style={[boxStyle(p, k), { opacity: hidden ? 0 : 1 }]} />;
   }
   return (
@@ -166,7 +201,7 @@ function Layer({ p, k, hidden, tint, flat, part = 'all', drop = false, uid }: La
  * (bords d'un chapeau plus large), l'image du minimoa est transparente : le bord reste visible.
  */
 function Tuck({ p, k, pet, hidden, uid }: { p: ItemPlacement; k: number; pet: Src; hidden?: boolean; uid: string }) {
-  const id = `${uid}${svgId(p.id)}t`;
+  const id = `${uid}${svgId(p.image)}t`;
   const px = p.left + p.originX * p.width;
   const py = p.top + p.originY * p.height;
   const bottom = (1 - p.originY) * p.height * p.scaleY;
@@ -196,16 +231,101 @@ function Tuck({ p, k, pet, hidden, uid }: { p: ItemPlacement; k: number; pet: Sr
   );
 }
 
+const src = (p: ItemPlacement) => itemImage(p.image);
+
 /** Calques d'objets devant le minimoa, dans l'ordre : ombre, objet, fourrure par-dessus le bas d'un chapeau. */
-function FrontLayers({ layers, k, hidden, tint, flat, pet, uid }: { layers: ItemPlacement[]; k: number; hidden?: readonly string[]; tint: string; flat?: boolean; pet: Src; uid: string }) {
+/** Où couper les vêtements dans la pose : ligne des pieds, et bras passés devant le ventre (px de la toile). */
+interface ClothCut {
+  feet: number;
+  arms: { x: number; y: number; w: number; h: number }[];
+}
+
+/**
+ * Vêtement porté : coupé par la silhouette du minimoa (masque de son alpha) et effacé au-dessus des pieds (et, pour le
+ * tutu, au-dessus de sa ceinture), avec une ombre douce sur la fourrure ; puis le minimoa repasse devant là où un
+ * bras croise le ventre (bras croisés, pomme, ballon). Il ne dépasse jamais de la silhouette, quelle que soit la pose.
+ */
+function Cloth({ p, k, src, pet, cut, hidden, flat, uid }: { p: ItemPlacement; k: number; src: Src; pet: Src; cut: ClothCut; hidden?: boolean; flat?: boolean; uid: string }) {
+  const id = `${uid}${svgId(p.image)}c`;
+  const px = p.left + p.originX * p.width;
+  const py = p.top + p.originY * p.height;
+  const pose = `translate(${px} ${py}) rotate(${p.rotate}) scale(1 ${p.scaleY}) translate(${-px} ${-py})`;
+  const fs = p.wear.fur;
+  const waist = p.wear.clip?.waist;
+  // Tutu : sa jupe descend plus bas (le ventre la cache), sa ceinture s'efface dans la fourrure.
+  const bottom = waist !== null && waist !== undefined ? cut.feet + 24 : cut.feet;
+  const top = waist !== null && waist !== undefined ? p.top + p.height * waist : -1;
+  const cloth = <SvgImage href={src} x={p.left} y={p.top} width={p.width} height={p.height} preserveAspectRatio="none" transform={pose} />;
+  return (
+    <Svg pointerEvents="none" width={W * k} height={H * k} viewBox={`0 0 ${W} ${H}`} style={[StyleSheet.absoluteFill, { opacity: hidden ? 0 : 1 }]}>
+      <Defs>
+        <LinearGradient id={`${id}g`} gradientUnits="userSpaceOnUse" x1={0} y1={Math.max(0, top)} x2={0} y2={bottom + 6}>
+          <Stop offset={0} stopColor={color.white} stopOpacity={top > 0 ? 0 : 1} />
+          <Stop offset={top > 0 ? Math.min(0.5, 14 / Math.max(1, bottom + 6 - top)) : 0} stopColor={color.white} stopOpacity={1} />
+          <Stop offset={Math.max(0, 1 - 12 / Math.max(1, bottom + 6 - Math.max(0, top)))} stopColor={color.white} stopOpacity={1} />
+          <Stop offset={1} stopColor={color.white} stopOpacity={0} />
+        </LinearGradient>
+        <Mask id={`${id}f`} maskType="alpha" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          <Rect x={0} y={Math.max(0, top)} width={W} height={bottom + 6 - Math.max(0, top)} fill={`url(#${id}g)`} />
+        </Mask>
+        <Mask id={`${id}m`} maskType="alpha" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          <SvgImage href={pet} x={0} y={0} width={W} height={H} />
+        </Mask>
+        {fs && !flat ? (
+          <Filter id={`${id}b`} filterUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+            <FeColorMatrix type="matrix" values={furMatrix(fs.opacity)} />
+            <FeGaussianBlur stdDeviation={fs.blur} />
+          </Filter>
+        ) : null}
+        {cut.arms.length ? (
+          <>
+            <LinearGradient id={`${id}ag`} x1="0" y1="0" x2="0" y2="1">
+              <Stop offset={0} stopColor={color.white} stopOpacity={0} />
+              <Stop offset={0.18} stopColor={color.white} stopOpacity={1} />
+              <Stop offset={0.82} stopColor={color.white} stopOpacity={1} />
+              <Stop offset={1} stopColor={color.white} stopOpacity={0} />
+            </LinearGradient>
+            <Mask id={`${id}a`} maskType="alpha" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+              {cut.arms.map((r, i) => (
+                <Rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} rx={r.h * 0.3} fill={`url(#${id}ag)`} />
+              ))}
+            </Mask>
+          </>
+        ) : null}
+      </Defs>
+      <G mask={`url(#${id}m)`}>
+        <G mask={`url(#${id}f)`}>
+          {fs && !flat ? (
+            <G filter={`url(#${id}b)`} transform={`translate(${fs.x} ${fs.y})`}>
+              {cloth}
+            </G>
+          ) : null}
+          {cloth}
+        </G>
+      </G>
+      {cut.arms.length ? <SvgImage href={pet} x={0} y={0} width={W} height={H} mask={`url(#${id}a)`} /> : null}
+    </Svg>
+  );
+}
+
+function FrontLayers({ layers, k, hidden, tint, flat, pet, cut, uid }: { layers: ItemPlacement[]; k: number; hidden?: readonly string[]; tint: string; flat?: boolean; pet: Src; cut: ClothCut; uid: string }) {
   return (
     <>
       {layers.map((p) => {
         const h = hidden?.includes(p.id);
+        const img = src(p);
+        if (p.wear.clip && img !== undefined) {
+          return (
+            <View key={`${p.id}:${p.image}`} pointerEvents="none" style={StyleSheet.absoluteFill}>
+              <Cloth p={p} k={k} src={img} pet={pet} cut={cut} hidden={h} flat={flat} uid={uid} />
+            </View>
+          );
+        }
         const part = p.wear.split ? (p.wear.split.top === 'back' ? 'bottom' : 'top') : 'all';
         return (
-          <View key={p.id} pointerEvents="none" style={StyleSheet.absoluteFill}>
-            <Layer p={p} k={k} hidden={h} tint={tint} flat={flat} part={part} drop uid={uid} />
+          <View key={`${p.id}:${p.image}`} pointerEvents="none" style={StyleSheet.absoluteFill}>
+            {!flat && p.wear.fur && src(p) !== undefined ? <FurShadow p={p} k={k} src={src(p) as Src} pet={pet} hidden={h} uid={uid} /> : null}
+            <Layer p={p} k={k} hidden={h} tint={tint} flat={flat} part={part} drop={!p.wear.fur} uid={uid} />
             {!flat && p.wear.tuck > 0 ? <Tuck p={p} k={k} pet={pet} hidden={h} uid={uid} /> : null}
           </View>
         );
@@ -248,11 +368,21 @@ export const DressedPet = memo(function DressedPet({
   const body: BodyPose = bodyPoseFor(pose ?? mood ?? 'neutre');
   const layers = dressed ? outfitLayers(species, outfit, slots, body) : { back: [], front: [] };
   const base = petBodyImage(species, body);
+  const cut: ClothCut = { feet: fitAnchor(species, 'feet', body).y * H, arms: poseArms(species, body) };
   const tint = speciesColor[species];
   // Un objet enveloppant a sa partie arrière derrière le minimoa (dessinée en entier : le minimoa la couvre).
   const back = [...layers.back, ...layers.front.filter((p) => p.wear.split && !p.back)];
   const front = [...layers.front, ...layers.back.filter((p) => p.wear.split)];
   const isHead = (p: ItemPlacement) => p.slot === 'head' || p.slot === 'face';
+  // Calques arrière de la tête (arceau du casque) : ils suivent la tête avec le même retard que l'avant.
+  const bodyBack = back.filter((p) => !headStyle || !isHead(p));
+  const headBack = headStyle ? back.filter(isHead) : [];
+  const backLayer = (p: ItemPlacement) =>
+    p.wear.spin ? (
+      <Spinning key={`${p.id}:${p.image}`} p={p} k={k} hidden={hidden?.includes(p.id)} animated={animated} />
+    ) : (
+      <Layer key={`${p.id}:${p.image}`} p={p} k={k} hidden={hidden?.includes(p.id)} tint={tint} flat={flat} uid={`${uid}b`} />
+    );
   const bodyFront = front.filter((p) => !headStyle || !isHead(p));
   const headFront = headStyle ? front.filter(isHead) : [];
   return (
@@ -263,14 +393,17 @@ export const DressedPet = memo(function DressedPet({
       style={[{ width: size, height }, style]}
     >
       <Animated.View style={[styles.fill, styles.origin, breathe]}>
-        {back.map((p) => (
-          <Layer key={p.id} p={p} k={k} hidden={hidden?.includes(p.id)} tint={tint} flat={flat} uid={`${uid}b`} />
-        ))}
+        {bodyBack.map(backLayer)}
+        {headBack.length ? (
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { transformOrigin: `${HEAD_PIVOT.x * 100}% ${HEAD_PIVOT.y * 100}%` }, headStyle]}>
+            {headBack.map(backLayer)}
+          </Animated.View>
+        ) : null}
         <Image source={base} contentFit="contain" style={StyleSheet.absoluteFill} />
-        <FrontLayers layers={bodyFront} k={k} hidden={hidden} tint={tint} flat={flat} pet={base} uid={uid} />
+        <FrontLayers layers={bodyFront} k={k} hidden={hidden} tint={tint} flat={flat} pet={base} cut={cut} uid={uid} />
         {headStyle ? (
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { transformOrigin: `${HEAD_PIVOT.x * 100}% ${HEAD_PIVOT.y * 100}%` }, headStyle]}>
-            <FrontLayers layers={headFront} k={k} hidden={hidden} tint={tint} flat={flat} pet={base} uid={`${uid}h`} />
+            <FrontLayers layers={headFront} k={k} hidden={hidden} tint={tint} flat={flat} pet={base} cut={cut} uid={`${uid}h`} />
           </Animated.View>
         ) : null}
       </Animated.View>
@@ -278,10 +411,43 @@ export const DressedPet = memo(function DressedPet({
   );
 });
 
+/** Un tour en 30 s (aura). */
+const SPIN_MS = 30_000;
+
+/**
+ * Objet qui tourne lentement derrière le minimoa (aura de flocons), avec quelques scintillements autour. Immobile avec
+ * « réduire les animations » ou sans `animated` (vignettes, planches).
+ */
+function Spinning({ p, k, hidden, animated }: { p: ItemPlacement; k: number; hidden?: boolean; animated: boolean }) {
+  const reduced = useReducedMotion();
+  const turn = useSharedValue(0);
+  const on = animated && !reduced;
+  useEffect(() => {
+    if (!on) {
+      cancelAnimation(turn);
+      return;
+    }
+    turn.value = withRepeat(withTiming(360, { duration: SPIN_MS, easing: Easing.linear }), -1, false);
+    return () => cancelAnimation(turn);
+  }, [on, turn]);
+  const spin = useAnimatedStyle(() => ({ transform: [{ rotate: `${turn.value}deg` }] }));
+  const src = itemImage(p.image);
+  if (src === undefined) return null;
+  return (
+    <View pointerEvents="none" style={[boxStyle(p, k), { opacity: hidden ? 0 : 0.85 }]}>
+      <Animated.View style={[StyleSheet.absoluteFill, spin]}>
+        <Image source={src} contentFit="fill" style={StyleSheet.absoluteFill} />
+      </Animated.View>
+      {on ? <Burst kind="twinkle" loop seed={`aura:${p.id}`} count={4} spread={p.width * k * 0.42} size={p.width * k * 0.07} style={styles.center} /> : null}
+    </View>
+  );
+}
+
 /** Pivot des objets de la tête : le bas du visage (ils basculent autour du cou). */
 const HEAD_PIVOT = { x: 0.5, y: 0.62 };
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   origin: { transformOrigin: '50% 100%' },
+  center: { position: 'absolute', left: '50%', top: '50%' },
 });

@@ -21,6 +21,8 @@ export interface CareButtonProps {
   label: string;
   /** Picto (`CareIcon`) ou élément libre ; il prend l'encre du disque (sombre sur jaune, blanc sinon). */
   icon: ReactNode;
+  /** Ce qui voyage dans le jeton quand on glisse le soin jusqu'au pet (la nourriture, le jouet) ; défaut le picto. */
+  carry?: ReactNode;
   onPress?: () => void;
   /** Geste conseillé maintenant (`.care.hot` : disque jaune qui brille). */
   hot?: boolean;
@@ -68,6 +70,7 @@ const LIFT = 34;
 export function CareButton({
   label,
   icon,
+  carry,
   onPress,
   hot,
   refused,
@@ -238,7 +241,7 @@ export function CareButton({
                 style={[styles.token, { width: size - 6, height: size - 6, borderRadius: (size - 6) / 2 }, lifted && (lit ? styles.tokenHot : styles.tokenOn), carried]}
               >
                 {/* Porté, le picto voyage dans un jeton rond (lisible sur le panneau coloré du pet). */}
-                {icon}
+                {lifted && carry ? carry : icon}
               </Animated.View>
             )}
           </InkProvider>

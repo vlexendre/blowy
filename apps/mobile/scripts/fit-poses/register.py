@@ -4,7 +4,11 @@ import os, numpy as np, cv2, json, sys
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../..'))
 from PIL import Image
 A=os.path.join(ROOT, 'packages/ui/assets/pets/')
-P=['neutre','joie','triste','surpris','boude','dodo','mange','joue','marche','coucou','check','pense']
+P=['neutre','joie','triste','surpris','boude','dodo','mange','joue','marche','coucou','check','pense',
+   'colere','malade','timide','fier','rit','danse','accueil','assis','baille','bain','applaudit','fete',
+   'evo_sociable','evo_joueur','evo_casanier','evo_tendre','evo_piquant','bebe','eclosion','fantome','danger']
+# Tête bien plus petite (bébé) ou en partie cachée (éclosion) : recherche plus large. Les œufs n'ont pas de tête.
+SCALES={'bebe':np.arange(0.45,0.95,0.03),'eclosion':np.arange(0.6,1.12,0.03)}
 D=3  # réduction pour la recherche
 def load(path):
     im=np.asarray(Image.open(path).convert('RGBA')).astype(np.float32)
@@ -53,10 +57,14 @@ def apply(t,pt):
     dx=pt[0]-t['ref_c'][0]; dy=pt[1]-t['ref_c'][1]
     return [t['tgt_c'][0]+s*(dx*np.cos(th)-dy*np.sin(th)), t['tgt_c'][1]+s*(dx*np.sin(th)+dy*np.cos(th))]
 if __name__=='__main__':
-    out={}
-    for s in sys.argv[1:] or ['nino','suzie','gaston','pia']:
-        ref=load(f'{A}{s}_corps_neutre.webp'); out[s]={}
-        for p in P:
-            t=register(ref, load(f'{A}{s}_corps_{p}.webp'))
+    # Usage : register.py [espèce…] [--poses a,b] [--out fichier] ; fusionne avec register.json (poses non relancées gardées).
+    args=sys.argv[1:]; poses=P; dst=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'register.json')
+    if '--poses' in args: i=args.index('--poses'); poses=args[i+1].split(','); del args[i:i+2]
+    if '--out' in args: i=args.index('--out'); dst=args[i+1]; del args[i:i+2]
+    out=json.load(open(dst)) if os.path.exists(dst) else {}
+    for s in args or ['nino','suzie','gaston','pia']:
+        ref=load(f'{A}{s}_corps_neutre.webp'); out.setdefault(s,{})
+        for p in poses:
+            t=register(ref, load(f'{A}{s}_corps_{p}.webp' if not p.startswith('evo_') else f'{A}{s}_{p}.webp'), **({'scales':SCALES[p]} if p in SCALES else {}))
             out[s][p]=t; print(s,p,round(t['s'],2),t['rot'],[round(v) for v in t['tgt_c']],round(t['score'],3),flush=True)
-    json.dump(out,open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'register.json'),'w'),indent=1)
+    json.dump(out,open(dst,'w'),indent=1)

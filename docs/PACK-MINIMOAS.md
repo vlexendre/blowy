@@ -52,3 +52,20 @@ d'objets premium.
 - **C : à refaire** (les images actuelles sont des objets posés vus de face, sans partie cachée retirée) — liste
   dans le rapport de l'agent K (17 nov.) : en priorité cape, sac à dos, écharpe, casque audio (deux calques), puis les
   couvre-chefs par espèce.
+
+## Production du 17 nov. (ChatGPT, référence jointe à chaque planche)
+| Lot | Contenu | Fichiers source |
+|---|---|---|
+| Poses 1 | 12 poses × 4 (neutre, joie, triste, surpris, boude, dodo, mange, joue, marche, coucou, check, pense) | `work/mascots/<s>/cut` |
+| Poses 2 | 12 poses × 4 (colère, malade, timide, fier, rit, danse, accueil, assis, bâille, bain, applaudit, fête) | `work/mascots/<s>2p/cut` |
+| Variantes | 6 formes d'évolution en corps entier, bébé, œuf, œuf fêlé, éclosion, fantôme, en danger × 4 | `work/mascots/<s>_var/cut` |
+| Couvre-chefs | 12, un seul jeu pour les quatre (placement mesuré sur le front) | `work/mascots/items/nino2/cut` |
+| Visage | 12 + 6 versions à un verre pour Gaston | `work/mascots/items/visage/cut` |
+| Cou et dos | 12, dont 8 en deux calques (avant + `_dos`) | `work/mascots/items/cou/cut` |
+| Vêtements et objets tenus | 6 + 12 | `work/mascots/items/habits/cut` |
+| Soins et habitat | 24 (nourriture, jeux, repos et bain, habitat, récompenses) | `work/mascots/soins/cut` |
+| Minimoa+ hiver | 12 objets premium (dont une aura translucide) | `work/mascots/premium/cut` |
+
+Règles qui ont marché : chaque objet seul, calque séparé (il s'anime indépendamment du minimoa) ; plein et opaque ; jamais
+d'intérieur visible ni de trou (mèche, antennes, cornes passent derrière) ; lunettes sans branches ; objets enveloppants
+en deux calques ; vêtements faits pour un corps en boule, découpés par la silhouette du minimoa.

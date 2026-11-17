@@ -1,7 +1,8 @@
-import { MAX_LIVES } from '@blowy/domain';
+import { MAX_LIVES, type Outfit, type Species } from '@blowy/domain';
 import { StyleSheet, View } from 'react-native';
 
 import { Card } from '../atoms/Card';
+import { DressedPet } from '../atoms/DressedPet';
 import { Glyph } from '../atoms/Glyph';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
@@ -33,10 +34,12 @@ export interface LivesPanelProps {
   accessibilityLabel?: string;
   /** Clé de la semaine (ex. lien + jour) : à sa première apparition, les jours faits se cochent un à un. */
   animateKey?: string;
+  /** Lien en danger (1 ou 2 vies) : ton minimoa, assis et triste (« en danger »), à côté de l'explication. */
+  danger?: { species: Species; outfit?: Outfit | null } | null;
 }
 
 /** Les vies d'un lien et sa semaine (`.card` « cette semaine » de V6-Aujourdhui) : jours écrits à deux (coche), par un seul (« 1/2 »). */
-export function LivesPanel({ lives, max = MAX_LIVES, title, count, text, streak, streakUnit, week, weekTitle, accessibilityLabel, animateKey }: LivesPanelProps) {
+export function LivesPanel({ lives, max = MAX_LIVES, title, count, text, streak, streakUnit, week, weekTitle, accessibilityLabel, animateKey, danger }: LivesPanelProps) {
   const tick = useFirstTime(animateKey ? `week:${animateKey}` : undefined) && !!animateKey;
   let ticked = 0;
   return (
@@ -100,7 +103,14 @@ export function LivesPanel({ lives, max = MAX_LIVES, title, count, text, streak,
           })}
         </View>
       ) : null}
-      {text ? (
+      {text && danger ? (
+        <View style={[layout.row, layout.gapSm, styles.text]}>
+          <DressedPet species={danger.species} outfit={danger.outfit} pose="danger" size={52} animated />
+          <Text variant="small" color={veil.text} style={layout.grow}>
+            {text}
+          </Text>
+        </View>
+      ) : text ? (
         <Text variant="small" color={veil.text} style={styles.text}>
           {text}
         </Text>

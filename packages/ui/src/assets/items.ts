@@ -70,14 +70,51 @@ const ITEM_IMAGES = {
   skate: require('../../assets/items/skate.webp'),
   baguette: require('../../assets/items/baguette.webp'),
   potion: require('../../assets/items/potion.webp'),
+  // Collection Hiver (Minimoa+). La cape d'hiver n'a qu'un calque, porté dans le dos.
+  hiver_bonnet: require('../../assets/items/hiver_bonnet.webp'),
+  hiver_couronne: require('../../assets/items/hiver_couronne.webp'),
+  hiver_cache_oreilles: require('../../assets/items/hiver_cache_oreilles.webp'),
+  hiver_lunettes: require('../../assets/items/hiver_lunettes.webp'),
+  hiver_echarpe: require('../../assets/items/hiver_echarpe.webp'),
+  hiver_cape: require('../../assets/items/hiver_cape_dos.webp'),
+  hiver_moufles: require('../../assets/items/hiver_moufles.webp'),
+  hiver_chocolat: require('../../assets/items/hiver_chocolat.webp'),
+  hiver_boule_neige: require('../../assets/items/hiver_boule_neige.webp'),
+  hiver_sapin: require('../../assets/items/hiver_sapin.webp'),
+  hiver_bonhomme: require('../../assets/items/hiver_bonhomme.webp'),
+  hiver_aura: require('../../assets/items/hiver_aura.webp'),
 } as const satisfies Record<string, Src>;
 
-/** Identifiant d'objet connu du registre (les 64 de `ITEM_IDS`). */
+/**
+ * Variantes d'image propres à une espèce (Gaston n'a qu'un œil : lunettes et masque à un verre). Choisies par
+ * `fit.json` → `overrides.<espèce>.<id>.image`, lues par `itemImage(nom)` comme les autres.
+ */
+const VARIANT_IMAGES = {
+  lunettes_rondes_1: require('../../assets/items/lunettes_rondes_1.webp'),
+  lunettes_coeur_1: require('../../assets/items/lunettes_coeur_1.webp'),
+  lunettes_etoile_1: require('../../assets/items/lunettes_etoile_1.webp'),
+  lunettes_pixel_1: require('../../assets/items/lunettes_pixel_1.webp'),
+  masque_nuit_1: require('../../assets/items/masque_nuit_1.webp'),
+  monocle_1: require('../../assets/items/monocle_1.webp'),
+  // Calques arrière (`fit.json` → `items.<id>.back`) : la partie qui passe derrière le minimoa.
+  hiver_echarpe_dos: require('../../assets/items/hiver_echarpe_dos.webp'),
+  echarpe_dos: require('../../assets/items/echarpe_dos.webp'),
+  bandana_dos: require('../../assets/items/bandana_dos.webp'),
+  collier_perles_dos: require('../../assets/items/collier_perles_dos.webp'),
+  collier_coquillage_dos: require('../../assets/items/collier_coquillage_dos.webp'),
+  chaine_or_dos: require('../../assets/items/chaine_or_dos.webp'),
+  casque_audio_dos: require('../../assets/items/casque_audio_dos.webp'),
+  cape_dos: require('../../assets/items/cape_dos.webp'),
+  sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
+} as const satisfies Record<string, Src>;
+
+/** Identifiant d'objet connu du registre (les 76 de `ITEM_IDS`). */
 export type ItemId = keyof typeof ITEM_IMAGES;
 
 export const hasItemImage = (id: string): id is ItemId => Object.prototype.hasOwnProperty.call(ITEM_IMAGES, id);
 
-/** Image détourée d'un objet ; `undefined` pour un identifiant inconnu. */
+/** Image détourée d'un objet (ou d'une variante d'espèce : `lunettes_rondes_1`) ; `undefined` pour un nom inconnu. */
 export function itemImage(id: string): Src | undefined {
-  return hasItemImage(id) ? ITEM_IMAGES[id] : undefined;
+  if (hasItemImage(id)) return ITEM_IMAGES[id];
+  return Object.prototype.hasOwnProperty.call(VARIANT_IMAGES, id) ? VARIANT_IMAGES[id as keyof typeof VARIANT_IMAGES] : undefined;
 }

@@ -4,16 +4,16 @@ import Animated, { cancelAnimation, Easing, type SharedValue, useAnimatedStyle, 
 import Svg, { Path } from 'react-native-svg';
 
 import { useMotionActive, useReducedMotion } from '../lib/motion';
-import { color, extra, type } from '../theme';
+import { alpha, color, extra, type } from '../theme';
 import { hashString, makeSeed } from './seed';
 
-export type BurstKind = 'hearts' | 'stars' | 'sparkles' | 'confetti' | 'zzz';
+export type BurstKind = 'hearts' | 'stars' | 'sparkles' | 'confetti' | 'zzz' | 'bubbles' | 'twinkle';
 
 export interface BurstProps {
   kind: BurstKind;
   /** À incrémenter pour (re)jouer l'explosion. 0 = rien (sauf `loop`). */
   trigger?: number;
-  /** Joue en boucle tant que vrai (les « z » d'un pet qui dort). */
+  /** Joue en boucle tant que vrai (les « z » d'un pet qui dort, les bulles du bain). */
   loop?: boolean;
   /** Nombre de particules (défaut selon le genre ; 16 au plus). */
   count?: number;
@@ -51,6 +51,8 @@ const CONFIG: Record<BurstKind, { count: number; spread: number; size: number; d
   sparkles: { count: 5, spread: 34, size: 12, dur: 900 },
   confetti: { count: 16, spread: 160, size: 11, dur: 1500 },
   zzz: { count: 3, spread: 64, size: 20, dur: 1800 },
+  bubbles: { count: 6, spread: 120, size: 16, dur: 2600 },
+  twinkle: { count: 5, spread: 100, size: 12, dur: 1500 },
 };
 
 const PALETTE = [color.accent, color.rose, color.violet, color.coral, extra.sky, color.white] as const;
@@ -108,6 +110,30 @@ function makeParticles(kind: BurstKind, n: number, spread: number, size: number,
         };
       case 'zzz':
         return { delay: i * 560, dur: c.dur, angle: 0, dist: spread, size: size + i * 5, spin: r.range(-12, 6), sway: i * 7, tint: color.white };
+      case 'twinkle':
+        // Scintillements sur place (forme sociable) : chacun s'allume et s'éteint à son tour, autour du point d'origine.
+        return {
+          delay: i * 520 + r.range(0, 200),
+          dur: c.dur * r.range(0.8, 1.2),
+          angle: (i / n) * Math.PI * 2 + r.range(-0.5, 0.5),
+          dist: spread * r.range(0.55, 1),
+          size: size * r.range(0.6, 1.1),
+          spin: r.range(20, 60),
+          sway: 0,
+          tint: i % 3 === 1 ? color.white : color.accent,
+        };
+      case 'bubbles':
+        // `angle` : départ en x (part de la largeur, -0,5 … 0,5) ; elles montent lentement en ondulant, puis éclatent.
+        return {
+          delay: i * 470 + r.range(0, 160),
+          dur: c.dur * r.range(0.85, 1.15),
+          angle: (frac - 0.5) * 0.9 + r.range(-0.08, 0.08),
+          dist: spread * r.range(0.7, 1),
+          size: size * r.range(0.55, 1.2),
+          spin: r.range(1, 1.8),
+          sway: r.range(3, 8),
+          tint: color.white,
+        };
     }
   });
 }
@@ -150,6 +176,20 @@ const ParticleView = memo(function ParticleView({ kind, part, p, total }: { kind
           transform: [{ translateX: x }, { translateY: y }, { rotate: `${spin}deg` }, { scaleY: Math.cos(((spin * Math.PI) / 180) * part.sway) }],
         };
       }
+      case 'twinkle': {
+        const k = Math.sin(t * Math.PI);
+        return {
+          opacity: k,
+          transform: [{ translateX: Math.cos(part.angle) * part.dist }, { translateY: Math.sin(part.angle) * part.dist * 0.8 }, { rotate: `${part.spin * t}deg` }, { scale: 0.3 + 0.7 * k }],
+        };
+      }
+      case 'bubbles': {
+        const x = part.angle * part.dist * 0.9 + Math.sin(t * Math.PI * 2 * part.spin) * part.sway;
+        const y = -t * part.dist;
+        const pop = t > 0.9 ? (t - 0.9) / 0.1 : 0;
+        const o = t < 0.12 ? t / 0.12 : 1 - pop;
+        return { opacity: o * 0.9, transform: [{ translateX: x }, { translateY: y }, { scale: 0.55 + 0.45 * Math.min(1, t * 2.5) + pop * 0.35 }] };
+      }
       case 'zzz': {
         const x = part.sway + t * 26 + Math.sin(t * Math.PI * 2) * 4;
         const y = -t * part.dist;
@@ -166,11 +206,17 @@ const ParticleView = memo(function ParticleView({ kind, part, p, total }: { kind
         <Path d={HEART} fill={part.tint} />
       </Svg>
     );
-  else if (kind === 'stars' || kind === 'sparkles')
+  else if (kind === 'stars' || kind === 'sparkles' || kind === 'twinkle')
     body = (
       <Svg width={part.size} height={part.size} viewBox="0 0 24 24">
         <Path d={STAR} fill={part.tint} />
       </Svg>
+    );
+  else if (kind === 'bubbles')
+    body = (
+      <View style={[styles.bubble, { width: part.size, height: part.size, borderRadius: part.size / 2 }]}>
+        <View style={[styles.shine, { width: part.size * 0.26, height: part.size * 0.26, borderRadius: part.size, left: part.size * 0.2, top: part.size * 0.16 }]} />
+      </View>
     );
   else if (kind === 'confetti') body = <View style={{ width: part.size * 0.62, height: part.size, borderRadius: 2, backgroundColor: part.tint }} />;
   else body = <RNText style={[styles.z, { fontSize: part.size, lineHeight: part.size * 1.1, color: part.tint }]}>z</RNText>;
@@ -178,7 +224,7 @@ const ParticleView = memo(function ParticleView({ kind, part, p, total }: { kind
 });
 
 /**
- * Explosion de particules (cœurs, étoiles, scintillements, confettis, « z ») en vues simples : un seul moteur
+ * Explosion de particules (cœurs, étoiles, scintillements, confettis, « z », bulles) en vues simples : un seul moteur
  * d'animation par explosion, transformations et opacité seulement, particules créées une fois puis réutilisées.
  * Décoratif : ignoré par les lecteurs d'écran, ne capte aucun toucher. Rien avec « réduire les animations ».
  */
@@ -230,4 +276,6 @@ const styles = StyleSheet.create({
   origin: { width: 0, height: 0, overflow: 'visible' },
   particle: { position: 'absolute' },
   z: { fontFamily: type.h3.fontFamily, includeFontPadding: false },
+  bubble: { borderWidth: 1.5, borderColor: alpha(color.white, 0.85), backgroundColor: alpha(color.white, 0.16) },
+  shine: { position: 'absolute', backgroundColor: alpha(color.white, 0.9) },
 });

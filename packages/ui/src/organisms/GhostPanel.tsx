@@ -10,7 +10,7 @@ import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
 import { Chip } from '../atoms/Chip';
 import { IconButton } from '../atoms/IconButton';
-import { PetImage } from '../atoms/PetImage';
+import { DressedPet } from '../atoms/DressedPet';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { Banner } from '../molecules/Banner';
@@ -217,13 +217,14 @@ function GhostPet({ species, fading, reviving }: { species: Species; fading: boo
   return (
     <Animated.View pointerEvents="none" style={[styles.ghost, float]}>
       <Animated.View style={[StyleSheet.absoluteFill, sad]}>
-        <PetImage species={species} mood="triste" size={GHOST} />
+        <DressedPet species={species} pose="triste" size={GHOST} />
       </Animated.View>
       <Animated.View style={[StyleSheet.absoluteFill, ghost]}>
-        <PetImage species={species} mood="fantome" size={GHOST} />
+        {/* Le fantôme en pied du pack (lien à 0 vie). */}
+        <DressedPet species={species} pose="fantome" size={GHOST} />
       </Animated.View>
       <Animated.View style={[StyleSheet.absoluteFill, happy]}>
-        <PetImage species={species} mood="joie" size={GHOST} />
+        <DressedPet species={species} pose="joie" size={GHOST} />
       </Animated.View>
     </Animated.View>
   );

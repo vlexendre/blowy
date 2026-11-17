@@ -23,7 +23,16 @@ export type FullBodyPose = (typeof FULL_BODY_POSES)[number];
  * les bustes restent pour les petites tailles (avatars, listes, badges). Toutes se remplacent l'une l'autre sans saut :
  * même échelle par espèce, même ligne de sol. L'habillage a ses ancres mesurées pour chacune (`fit.json` → `poses`).
  */
-export const BODY_POSES = ['neutre', 'joie', 'triste', 'surpris', 'boude', 'dodo', 'mange', 'joue', 'marche', 'coucou', 'check', 'pense'] as const;
+export const BODY_POSES = [
+  'neutre', 'joie', 'triste', 'surpris', 'boude', 'dodo', 'mange', 'joue', 'marche', 'coucou', 'check', 'pense',
+  // Planche 2 : colère, malade (plaid et thermomètre), timide, fier, rit, danse, bras ouverts, assis, bâille, bain
+  // (bac et mousse), applaudit, fête (saut). Les bulles du bain et les confettis de la fête sont des particules (`PetActor`).
+  'colere', 'malade', 'timide', 'fier', 'rit', 'danse', 'accueil', 'assis', 'baille', 'bain', 'applaudit', 'fete',
+  // Variantes : les formes d'évolution en pied (`equilibre` = `neutre` ; mêmes fichiers que `petFormImage`), le bébé,
+  // l'œuf, l'œuf fêlé, l'éclosion, le fantôme (lien à 0 vie) et « en danger » (lien à 1–2 vies, minimoa délaissé).
+  'evo_sociable', 'evo_joueur', 'evo_casanier', 'evo_tendre', 'evo_piquant',
+  'bebe', 'oeuf', 'oeuf_fele', 'eclosion', 'fantome', 'danger',
+] as const;
 export type BodyPose = (typeof BODY_POSES)[number];
 
 const BODY_IMAGES: Record<Species, Record<BodyPose, Src>> = {
@@ -40,6 +49,29 @@ const BODY_IMAGES: Record<Species, Record<BodyPose, Src>> = {
     coucou: require('../../assets/pets/nino_corps_coucou.webp'),
     check: require('../../assets/pets/nino_corps_check.webp'),
     pense: require('../../assets/pets/nino_corps_pense.webp'),
+    colere: require('../../assets/pets/nino_corps_colere.webp'),
+    malade: require('../../assets/pets/nino_corps_malade.webp'),
+    timide: require('../../assets/pets/nino_corps_timide.webp'),
+    fier: require('../../assets/pets/nino_corps_fier.webp'),
+    rit: require('../../assets/pets/nino_corps_rit.webp'),
+    danse: require('../../assets/pets/nino_corps_danse.webp'),
+    accueil: require('../../assets/pets/nino_corps_accueil.webp'),
+    assis: require('../../assets/pets/nino_corps_assis.webp'),
+    baille: require('../../assets/pets/nino_corps_baille.webp'),
+    bain: require('../../assets/pets/nino_corps_bain.webp'),
+    applaudit: require('../../assets/pets/nino_corps_applaudit.webp'),
+    fete: require('../../assets/pets/nino_corps_fete.webp'),
+    evo_sociable: require('../../assets/pets/nino_evo_sociable.webp'),
+    evo_joueur: require('../../assets/pets/nino_evo_joueur.webp'),
+    evo_casanier: require('../../assets/pets/nino_evo_casanier.webp'),
+    evo_tendre: require('../../assets/pets/nino_evo_tendre.webp'),
+    evo_piquant: require('../../assets/pets/nino_evo_piquant.webp'),
+    bebe: require('../../assets/pets/nino_corps_bebe.webp'),
+    oeuf: require('../../assets/pets/nino_corps_oeuf.webp'),
+    oeuf_fele: require('../../assets/pets/nino_corps_oeuf_fele.webp'),
+    eclosion: require('../../assets/pets/nino_corps_eclosion.webp'),
+    fantome: require('../../assets/pets/nino_corps_fantome.webp'),
+    danger: require('../../assets/pets/nino_corps_danger.webp'),
   },
   suzie: {
     neutre: require('../../assets/pets/suzie_corps_neutre.webp'),
@@ -54,6 +86,29 @@ const BODY_IMAGES: Record<Species, Record<BodyPose, Src>> = {
     coucou: require('../../assets/pets/suzie_corps_coucou.webp'),
     check: require('../../assets/pets/suzie_corps_check.webp'),
     pense: require('../../assets/pets/suzie_corps_pense.webp'),
+    colere: require('../../assets/pets/suzie_corps_colere.webp'),
+    malade: require('../../assets/pets/suzie_corps_malade.webp'),
+    timide: require('../../assets/pets/suzie_corps_timide.webp'),
+    fier: require('../../assets/pets/suzie_corps_fier.webp'),
+    rit: require('../../assets/pets/suzie_corps_rit.webp'),
+    danse: require('../../assets/pets/suzie_corps_danse.webp'),
+    accueil: require('../../assets/pets/suzie_corps_accueil.webp'),
+    assis: require('../../assets/pets/suzie_corps_assis.webp'),
+    baille: require('../../assets/pets/suzie_corps_baille.webp'),
+    bain: require('../../assets/pets/suzie_corps_bain.webp'),
+    applaudit: require('../../assets/pets/suzie_corps_applaudit.webp'),
+    fete: require('../../assets/pets/suzie_corps_fete.webp'),
+    evo_sociable: require('../../assets/pets/suzie_evo_sociable.webp'),
+    evo_joueur: require('../../assets/pets/suzie_evo_joueur.webp'),
+    evo_casanier: require('../../assets/pets/suzie_evo_casanier.webp'),
+    evo_tendre: require('../../assets/pets/suzie_evo_tendre.webp'),
+    evo_piquant: require('../../assets/pets/suzie_evo_piquant.webp'),
+    bebe: require('../../assets/pets/suzie_corps_bebe.webp'),
+    oeuf: require('../../assets/pets/suzie_corps_oeuf.webp'),
+    oeuf_fele: require('../../assets/pets/suzie_corps_oeuf_fele.webp'),
+    eclosion: require('../../assets/pets/suzie_corps_eclosion.webp'),
+    fantome: require('../../assets/pets/suzie_corps_fantome.webp'),
+    danger: require('../../assets/pets/suzie_corps_danger.webp'),
   },
   gaston: {
     neutre: require('../../assets/pets/gaston_corps_neutre.webp'),
@@ -68,6 +123,29 @@ const BODY_IMAGES: Record<Species, Record<BodyPose, Src>> = {
     coucou: require('../../assets/pets/gaston_corps_coucou.webp'),
     check: require('../../assets/pets/gaston_corps_check.webp'),
     pense: require('../../assets/pets/gaston_corps_pense.webp'),
+    colere: require('../../assets/pets/gaston_corps_colere.webp'),
+    malade: require('../../assets/pets/gaston_corps_malade.webp'),
+    timide: require('../../assets/pets/gaston_corps_timide.webp'),
+    fier: require('../../assets/pets/gaston_corps_fier.webp'),
+    rit: require('../../assets/pets/gaston_corps_rit.webp'),
+    danse: require('../../assets/pets/gaston_corps_danse.webp'),
+    accueil: require('../../assets/pets/gaston_corps_accueil.webp'),
+    assis: require('../../assets/pets/gaston_corps_assis.webp'),
+    baille: require('../../assets/pets/gaston_corps_baille.webp'),
+    bain: require('../../assets/pets/gaston_corps_bain.webp'),
+    applaudit: require('../../assets/pets/gaston_corps_applaudit.webp'),
+    fete: require('../../assets/pets/gaston_corps_fete.webp'),
+    evo_sociable: require('../../assets/pets/gaston_evo_sociable.webp'),
+    evo_joueur: require('../../assets/pets/gaston_evo_joueur.webp'),
+    evo_casanier: require('../../assets/pets/gaston_evo_casanier.webp'),
+    evo_tendre: require('../../assets/pets/gaston_evo_tendre.webp'),
+    evo_piquant: require('../../assets/pets/gaston_evo_piquant.webp'),
+    bebe: require('../../assets/pets/gaston_corps_bebe.webp'),
+    oeuf: require('../../assets/pets/gaston_corps_oeuf.webp'),
+    oeuf_fele: require('../../assets/pets/gaston_corps_oeuf_fele.webp'),
+    eclosion: require('../../assets/pets/gaston_corps_eclosion.webp'),
+    fantome: require('../../assets/pets/gaston_corps_fantome.webp'),
+    danger: require('../../assets/pets/gaston_corps_danger.webp'),
   },
   pia: {
     neutre: require('../../assets/pets/pia_corps_neutre.webp'),
@@ -82,6 +160,29 @@ const BODY_IMAGES: Record<Species, Record<BodyPose, Src>> = {
     coucou: require('../../assets/pets/pia_corps_coucou.webp'),
     check: require('../../assets/pets/pia_corps_check.webp'),
     pense: require('../../assets/pets/pia_corps_pense.webp'),
+    colere: require('../../assets/pets/pia_corps_colere.webp'),
+    malade: require('../../assets/pets/pia_corps_malade.webp'),
+    timide: require('../../assets/pets/pia_corps_timide.webp'),
+    fier: require('../../assets/pets/pia_corps_fier.webp'),
+    rit: require('../../assets/pets/pia_corps_rit.webp'),
+    danse: require('../../assets/pets/pia_corps_danse.webp'),
+    accueil: require('../../assets/pets/pia_corps_accueil.webp'),
+    assis: require('../../assets/pets/pia_corps_assis.webp'),
+    baille: require('../../assets/pets/pia_corps_baille.webp'),
+    bain: require('../../assets/pets/pia_corps_bain.webp'),
+    applaudit: require('../../assets/pets/pia_corps_applaudit.webp'),
+    fete: require('../../assets/pets/pia_corps_fete.webp'),
+    evo_sociable: require('../../assets/pets/pia_evo_sociable.webp'),
+    evo_joueur: require('../../assets/pets/pia_evo_joueur.webp'),
+    evo_casanier: require('../../assets/pets/pia_evo_casanier.webp'),
+    evo_tendre: require('../../assets/pets/pia_evo_tendre.webp'),
+    evo_piquant: require('../../assets/pets/pia_evo_piquant.webp'),
+    bebe: require('../../assets/pets/pia_corps_bebe.webp'),
+    oeuf: require('../../assets/pets/pia_corps_oeuf.webp'),
+    oeuf_fele: require('../../assets/pets/pia_corps_oeuf_fele.webp'),
+    eclosion: require('../../assets/pets/pia_corps_eclosion.webp'),
+    fantome: require('../../assets/pets/pia_corps_fantome.webp'),
+    danger: require('../../assets/pets/pia_corps_danger.webp'),
   },
 };
 
@@ -94,10 +195,10 @@ const BODY_FOR: Record<PetPose, BodyPose> = {
   surpris: 'surpris',
   smug: 'pense',
   salut: 'coucou',
-  colere: 'boude',
+  colere: 'colere',
   dodo: 'dodo',
   fantome: 'triste',
-  malade: 'triste',
+  malade: 'malade',
   debout: 'neutre',
   trois_quarts: 'neutre',
   cote: 'marche',
@@ -113,6 +214,9 @@ export function bodyPoseFor(pose: string | null | undefined): BodyPose {
   if (isBodyPose(pose)) return pose;
   return (BODY_FOR as Record<string, BodyPose>)[pose] ?? 'neutre';
 }
+
+/** Pose de repos en pied d'une forme d'évolution (`equilibre` : `neutre`). */
+export const formBodyPose = (form: PetForm | null | undefined): BodyPose => (!form || form === 'equilibre' ? 'neutre' : (`evo_${form}` as BodyPose));
 
 /** Image du minimoa en pied dans une pose du pack (ou l'équivalent d'une humeur). */
 export const petBodyImage = (species: Species, pose: string = 'neutre'): Src => BODY_IMAGES[species][bodyPoseFor(pose)];
@@ -287,39 +391,39 @@ export const isFullBody = (pose: PetPose): pose is FullBodyPose => (FULL_BODY_PO
 /** Image d'une forme d'évolution pour une espèce. */
 export const petFormImage = (species: Species, form: PetForm): Src => FORM_IMAGES[species][form];
 
-/** Haut et hauteur du dessin dans chaque image d'évolution (fractions de la hauteur, mesurées sur les fichiers) : sert à cadrer la tête. */
+/** Haut et hauteur du dessin dans chaque forme d'évolution en pied (fractions de la hauteur, mesurées sur les fichiers) : sert à cadrer la tête. */
 export const FORM_BOX: Record<Species, Record<PetForm, { top: number; height: number }>> = {
   nino: {
-    equilibre: { top: 0.06, height: 0.9 },
-    casanier: { top: 0.193, height: 0.613 },
-    sociable: { top: 0.258, height: 0.702 },
-    joueur: { top: 0.168, height: 0.792 },
-    piquant: { top: 0.183, height: 0.634 },
-    tendre: { top: 0.12, height: 0.76 },
+    equilibre: { top: 0.062, height: 0.894 },
+    casanier: { top: 0.057, height: 0.899 },
+    sociable: { top: 0.063, height: 0.893 },
+    joueur: { top: 0.13, height: 0.826 },
+    piquant: { top: 0.049, height: 0.907 },
+    tendre: { top: 0.017, height: 0.939 },
   },
   suzie: {
-    equilibre: { top: 0.06, height: 0.9 },
-    casanier: { top: 0.173, height: 0.654 },
-    sociable: { top: 0.266, height: 0.694 },
-    joueur: { top: 0.149, height: 0.701 },
-    piquant: { top: 0.173, height: 0.654 },
-    tendre: { top: 0.12, height: 0.76 },
+    equilibre: { top: 0.062, height: 0.894 },
+    casanier: { top: 0.062, height: 0.893 },
+    sociable: { top: 0.066, height: 0.89 },
+    joueur: { top: 0.101, height: 0.854 },
+    piquant: { top: 0.05, height: 0.906 },
+    tendre: { top: 0.022, height: 0.934 },
   },
   gaston: {
-    equilibre: { top: 0.193, height: 0.767 },
-    casanier: { top: 0.479, height: 0.481 },
-    sociable: { top: 0.17, height: 0.66 },
-    joueur: { top: 0.157, height: 0.686 },
-    piquant: { top: 0.165, height: 0.67 },
-    tendre: { top: 0.162, height: 0.676 },
+    equilibre: { top: 0.186, height: 0.77 },
+    casanier: { top: 0.159, height: 0.797 },
+    sociable: { top: 0.139, height: 0.817 },
+    joueur: { top: 0.232, height: 0.724 },
+    piquant: { top: 0.121, height: 0.835 },
+    tendre: { top: 0.129, height: 0.827 },
   },
   pia: {
-    equilibre: { top: 0.274, height: 0.686 },
-    casanier: { top: 0.201, height: 0.598 },
-    sociable: { top: 0.192, height: 0.616 },
-    joueur: { top: 0.249, height: 0.711 },
-    piquant: { top: 0.149, height: 0.701 },
-    tendre: { top: 0.162, height: 0.676 },
+    equilibre: { top: 0.224, height: 0.732 },
+    casanier: { top: 0.194, height: 0.761 },
+    sociable: { top: 0.199, height: 0.757 },
+    joueur: { top: 0.272, height: 0.685 },
+    piquant: { top: 0.159, height: 0.797 },
+    tendre: { top: 0.165, height: 0.792 },
   },
 };
 

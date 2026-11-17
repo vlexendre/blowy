@@ -1,0 +1,58 @@
+{
+ "nino": {
+  "colere": 1.0,
+  "malade": 0.997,
+  "timide": 0.997,
+  "fier": 1.0,
+  "rit": 0.997,
+  "danse": 1.0,
+  "accueil": 1.018,
+  "assis": 0.999,
+  "baille": 0.997,
+  "bain": 0.999,
+  "applaudit": 1.0,
+  "fete": 1.0
+ },
+ "suzie": {
+  "colere": 1.03,
+  "malade": 1.026,
+  "timide": 1.03,
+  "fier": 1.03,
+  "rit": 1.026,
+  "danse": 1.03,
+  "accueil": 1.022,
+  "assis": 1.03,
+  "baille": 0.999,
+  "bain": 0.999,
+  "applaudit": 1.03,
+  "fete": 1.03
+ },
+ "gaston": {
+  "colere": 0.839,
+  "malade": 0.926,
+  "timide": 0.839,
+  "fier": 0.888,
+  "rit": 0.839,
+  "danse": 0.89,
+  "accueil": 1.018,
+  "assis": 0.836,
+  "baille": 0.836,
+  "bain": 0.955,
+  "applaudit": 0.839,
+  "fete": 0.868
+ },
+ "pia": {
+  "colere": 0.802,
+  "malade": 0.916,
+  "timide": 0.802,
+  "fier": 0.903,
+  "rit": 0.817,
+  "danse": 0.894,
+  "accueil": 1.018,
+  "assis": 0.817,
+  "baille": 0.819,
+  "bain": 0.945,
+  "applaudit": 0.817,
+  "fete": 0.882
+ }
+}

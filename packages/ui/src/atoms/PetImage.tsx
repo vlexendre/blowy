@@ -17,6 +17,7 @@ import {
   RENDER_RATIO,
   type Src,
 } from '../assets/pets';
+import { Burst } from '../motion/Burst';
 import { useLoop } from '../lib/motion';
 import { color } from '../theme';
 
@@ -111,6 +112,10 @@ export function PetImage(props: PetImageProps) {
           : null}
         <Image source={src} contentFit="contain" transition={120} style={StyleSheet.absoluteFill} />
       </Animated.View>
+      {/* Forme sociable : de petits scintillements autour d'elle (les étoiles de l'image sont pâles). */}
+      {props.form === 'sociable' && size >= 80 ? (
+        <Burst kind="twinkle" loop seed={`sociable:${props.species ?? ''}`} spread={size * 0.44} size={size * 0.07} style={[styles.twinkle, { left: size / 2, top: height * 0.42 }]} />
+      ) : null}
     </View>
   );
 }
@@ -118,4 +123,5 @@ export function PetImage(props: PetImageProps) {
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   origin: { transformOrigin: '50% 100%' },
+  twinkle: { position: 'absolute' },
 });

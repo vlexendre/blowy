@@ -1,0 +1,58 @@
+{
+ "nino": {
+  "evo_equilibre": 1.0,
+  "evo_sociable": 1.018,
+  "evo_joueur": 1.0,
+  "evo_casanier": 1.003,
+  "evo_tendre": 1.0,
+  "evo_piquant": 1.018,
+  "bebe": 1.0,
+  "oeuf": 1.003,
+  "oeuf_fele": 1.0,
+  "eclosion": 0.999,
+  "fantome": 1.0,
+  "danger": 1.0
+ },
+ "suzie": {
+  "evo_equilibre": 1.0,
+  "evo_sociable": 1.018,
+  "evo_joueur": 0.997,
+  "evo_casanier": 0.993,
+  "evo_tendre": 1.0,
+  "evo_piquant": 1.018,
+  "bebe": 1.0,
+  "oeuf": 0.997,
+  "oeuf_fele": 0.999,
+  "eclosion": 0.999,
+  "fantome": 0.997,
+  "danger": 0.993
+ },
+ "gaston": {
+  "evo_equilibre": 0.874,
+  "evo_sociable": 1.018,
+  "evo_joueur": 0.863,
+  "evo_casanier": 0.99,
+  "evo_tendre": 0.866,
+  "evo_piquant": 1.015,
+  "bebe": 0.863,
+  "oeuf": 0.863,
+  "oeuf_fele": 0.899,
+  "eclosion": 1.018,
+  "fantome": 0.861,
+  "danger": 0.97
+ },
+ "pia": {
+  "evo_equilibre": 0.881,
+  "evo_sociable": 1.013,
+  "evo_joueur": 0.824,
+  "evo_casanier": 0.956,
+  "evo_tendre": 0.864,
+  "evo_piquant": 0.991,
+  "bebe": 0.822,
+  "oeuf": 0.822,
+  "oeuf_fele": 0.848,
+  "eclosion": 0.966,
+  "fantome": 0.861,
+  "danger": 0.953
+ }
+}

@@ -214,7 +214,7 @@ function PrimitivesBench() {
   const [count, setCount] = useState(42);
   const [ratio, setRatio] = useState(0.35);
   const [gauge, setGauge] = useState(-20);
-  const [bursts, setBursts] = useState<Record<BurstKind, number>>({ hearts: 0, stars: 0, sparkles: 0, confetti: 0, zzz: 0 });
+  const [bursts, setBursts] = useState<Record<BurstKind, number>>({ hearts: 0, stars: 0, sparkles: 0, confetti: 0, zzz: 0, bubbles: 0, twinkle: 0 });
   const [line, setLine] = useState(0);
   const [on, setOn] = useState(false);
   const [radioOn, setRadio] = useState(0);

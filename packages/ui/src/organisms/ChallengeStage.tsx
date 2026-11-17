@@ -97,11 +97,11 @@ export function ChallengeStage({ pet, streak, kicker, title, text, rewards = [],
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Défi fait : il saute de joie (la mèche se rallume via `igniteKey`).
+  // Défi fait : il applaudit (la mèche se rallume via `igniteKey`).
   useEffect(() => {
     if (celebrateKey > 0) {
       hapticFor('celebrate');
-      actor.current?.react('joy');
+      actor.current?.react('clap');
     }
   }, [celebrateKey]);
 

@@ -1,7 +1,9 @@
 import { CARE_ACTIONS, type CareAction } from '@blowy/domain';
+import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
+import { type CareProp, propImage } from '../assets/misc';
 import { CareIcon } from '../atoms/CareIcon';
 import { type CareLevel, CareButton } from '../molecules/CareButton';
 import type { PetLure } from '../motion/pets/lure';
@@ -30,11 +32,13 @@ export interface CareBarProps {
   size?: number;
   /** Pictos à la place des `CareIcon`. */
   icons?: Partial<Record<CareAction, ReactNode>>;
+  /** Ce que chaque soin porte quand on le glisse jusqu'au pet (`careProp` : pomme, cookie, balle, coussin…). */
+  carry?: Partial<Record<CareAction, CareProp | null>>;
   style?: StyleProp<ViewStyle>;
 }
 
 /** Les quatre soins (nourrir, jouer, sieste, câlin) dans une carte, en disques ronds (V6-Accueil). */
-export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, levels, size = 56, icons, style }: CareBarProps) {
+export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, levels, size = 56, icons, carry, style }: CareBarProps) {
   return (
     <View style={[styles.card, style]}>
       {CARE_ACTIONS.map((a) => (
@@ -42,6 +46,7 @@ export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure,
           key={a}
           label={labels[a].action}
           icon={icons?.[a] ?? <CareIcon name={a} size={Math.round(size * 0.48)} />}
+          carry={carry?.[a] ? <Image source={propImage(carry[a] as CareProp)} contentFit="contain" style={{ width: Math.round(size * 0.62), height: Math.round(size * 0.62) }} /> : undefined}
           size={size}
           level={levels?.[a]}
           hot={!!hot?.[a]}

@@ -21,7 +21,7 @@ export {
 } from './MotionHost';
 export { PopIn, type PopInProps, Pulse, type PulseProps, Shake, type ShakeHandle, type ShakeProps } from './PopIn';
 export { useReveal, type RevealOptions } from './reveal';
-export { currentMinute, hashString, isNight, makeSeed, mulberry32, type Seed, useSeed } from './seed';
+export { currentMinute, hashString, isLateEvening, isNight, makeSeed, mulberry32, type Seed, useSeed } from './seed';
 export { Shimmer, type ShimmerProps } from './Shimmer';
 export { TypingDots, type TypingDotsProps } from './TypingDots';
 export { HelloPeek, type HelloPeekProps, useHelloWave } from './pets/HelloPeek';

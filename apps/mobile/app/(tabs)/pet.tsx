@@ -8,7 +8,7 @@
 import { ApiError } from '@blowy/api-client';
 import type { OutingAnswer } from '@blowy/contract';
 import { careLabel, needLabel, shapeLabel } from '@/locales/content';
-import { CARE_ACTIONS, CARE_EFFECTS, type CareAction, urgentNeed } from '@blowy/domain';
+import { CARE_ACTIONS, CARE_EFFECTS, type CareAction, STREAK_MILESTONES, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Appear,
@@ -17,6 +17,8 @@ import {
   CareBar,
   CareIcon,
   type CareLevel,
+  type CareProp,
+  careProp,
   ChallengeEntry,
   EntryCard,
   Glyph,
@@ -35,13 +37,14 @@ import {
   StreakFlame,
   TabTemplate,
   Text,
+  formBodyPose,
   isNight,
   useHelloWave,
   usePetLure,
 } from '@blowy/ui';
 import { useFocusEffect, useIsFocused, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, useWindowDimensions } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { VISION_TEST_ROUTE } from '@/features/encounters';
@@ -49,9 +52,9 @@ import { useTogether } from '@/features/groups';
 import { errorText, useLinks } from '@/features/links';
 import { openLegal, useMe } from '@/features/me';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
-import { careAvailable, careHot, homeEntrance, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
+import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
-import { useAwayFromHome, useOuting, useRitualsToday, useStreakParty } from '@/features/rituals';
+import { useAwayFromHome, useOuting, usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
 import { home as t } from '@/locales/pet';
 import { groupes } from '@/locales/groupes';
@@ -82,6 +85,15 @@ export default function PetHome() {
   const unlocksWaiting = useUnlocks((s) => s.queue.length > 0);
   const clearParty = useStreakParty((s) => s.clear);
   const [reaction, setReaction] = useState<PetReaction | null>(null);
+  // Objet du soin (la nourriture et le jouet tournent d'un soin à l'autre) : glissé jusqu'au pet, puis tenu par lui.
+  const [careTurn, setCareTurn] = useState(() => new Date().getDate());
+  const [reactionItem, setReactionItem] = useState<CareProp | null>(null);
+  // Délaissé (3 jours et plus sans ouvrir l'app) : « en danger » jusqu'au premier soin.
+  const [neglected, setNeglected] = useState(false);
+  // Petit habitat de la scène (flou d'arrière-plan) : pas sur les petits écrans.
+  const roomy = useWindowDimensions().height >= 700;
+  const memories = usePrivateMemories();
+  const lastPhoto = memories.data?.pages[0]?.items[0]?.url ?? null;
   const [reactionKey, setReactionKey] = useState(0);
   const [said, setSaid] = useState<{ text: string; key: number } | null>(null);
   const [outingLine, setOutingLine] = useState<string | null>(null);
@@ -113,16 +125,17 @@ export default function PetHome() {
     entered.current = true;
     const now = Date.now();
     const visit = useHomeVisit.getState();
-    const moment = homeEntrance({ last: visit.last, now, night: isNight(), sulking: shape === 'boude' });
+    const { moment, neglected: away3 } = homeEntrance({ last: visit.last, now, night: isNight(), sulking: shape === 'boude' });
     visit.mark(now);
+    if (away3) setNeglected(true);
     if (!moment) return;
     // Il part tout de suite (sinon on le verrait une image à sa place avant qu'il arrive) ; le coucou attend un peu.
     setTimeout(
       () => {
         play(moment);
-        if (moment === 'wave') say(t.hello);
+        if (moment === 'wave' || moment === 'welcome') say(t.hello);
       },
-      moment === 'arrive' ? 0 : 260,
+      moment === 'arrive' ? 0 : moment === 'welcome' ? 900 : 260,
     );
     // `play` et `say` ne changent que l'état local : lus au moment du moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,7 +169,8 @@ export default function PetHome() {
   );
 
   const say = (text: string) => setSaid((s) => ({ text, key: (s?.key ?? 0) + 1 }));
-  const play = (re: PetReaction) => {
+  const play = (re: PetReaction, item: CareProp | null = null) => {
+    setReactionItem(item);
     setReaction(re);
     setReactionKey((k) => k + 1);
   };
@@ -203,7 +217,9 @@ export default function PetHome() {
   const onCare = (action: CareAction) =>
     care.mutate(action, {
       onSuccess: () => {
-        play(action);
+        play(action, careProp(action, careTurn));
+        setCareTurn((n) => n + 1);
+        setNeglected(false);
         say(careLabel[action]?.done ?? '');
       },
       onError: (e) => {
@@ -298,6 +314,9 @@ export default function PetHome() {
               }}
               reaction={reaction}
               reactionKey={reactionKey}
+              reactionItem={reactionItem}
+              mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
+              habitat={roomy ? { photo: lastPhoto, night: isNight() } : null}
               petLabel={t.petA11y(p.name)}
               lure={lure}
               crest={streak ? <StreakFlame streak={streak.current} low={!streak.doneToday} igniteKey={streak.doneToday ? `${d?.day}:${streak.current}` : null} /> : null}
@@ -324,6 +343,7 @@ export default function PetHome() {
                 busy={care.isPending ? care.variables : null}
                 onCare={onCare}
                 lure={lure}
+                carry={{ feed: careProp('feed', careTurn), play: careProp('play', careTurn), nap: careProp('nap', careTurn) }}
                 onRefused={(a) => {
                   play('no');
                   say(careLabel[a]?.refused ?? '');
@@ -493,6 +513,7 @@ export default function PetHome() {
                 title={r.celebrate.title(party.streak)}
                 line={party.line ?? r.celebrate.fallback}
                 record={party.streak > 1 && party.streak >= party.best ? r.celebrate.record : null}
+                milestone={(STREAK_MILESTONES as readonly number[]).includes(party.streak)}
                 tapLabel={r.celebrate.tap}
                 onClose={clearParty}
               />
@@ -505,3 +526,4 @@ export default function PetHome() {
     </ScreenMotion>
   );
 }
+

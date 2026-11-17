@@ -1,8 +1,11 @@
-import type { Shape } from '@blowy/domain';
+import type { Mood, Shape } from '@blowy/domain';
+import { Image } from 'expo-image';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Platform, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withTiming } from 'react-native-reanimated';
 
+import { type CareProp, PROP_RATIO, propImage } from '../assets/misc';
+import type { BodyPose, PetPose } from '../assets/pets';
 import { Button } from '../atoms/Button';
 import { Chip } from '../atoms/Chip';
 import { Panel } from '../atoms/Panel';
@@ -50,6 +53,15 @@ export interface PetStageProps {
   reaction?: PetReaction | null;
   /** À incrémenter pour rejouer la même réaction. */
   reactionKey?: number;
+  /** Objet du soin joué (la nourriture, le jouet glissé jusqu'au pet) : tenu dans la pose `mange` / `joue`. */
+  reactionItem?: CareProp | null;
+  /** Pose de repos du pet (forme d'évolution en pied, `malade`, `danger`) ; défaut `neutre` (`boude` quand il boude). */
+  mood?: Mood | PetPose | BodyPose;
+  /**
+   * Petit habitat, flou d'arrière-plan : tapis sous le pet, plante et lampe de part et d'autre, cadre au mur (la
+   * dernière photo des souvenirs dedans, s'il y en a), veilleuse la nuit. Absent : rien (petits écrans).
+   */
+  habitat?: { photo?: string | null; night?: boolean } | null;
   /** @deprecated Les « z » sont dessinés par `PetActor`. */
   sleepGlyph?: string;
   /** Panneau ; défaut celui de l'espèce, lie-de-vin quand il boude. */
@@ -97,6 +109,9 @@ export function PetStage({
   action,
   reaction,
   reactionKey = 0,
+  reactionItem,
+  mood,
+  habitat,
   gradient,
   petSize = 236,
   height = 318,
@@ -120,12 +135,14 @@ export function PetStage({
   useEffect(() => {
     if (!reaction || played.current === reactionKey) return;
     played.current = reactionKey;
-    actor.current?.react(reaction);
+    actor.current?.react(reaction, reactionItem);
     if (reaction === 'nap') {
       dim.value = reduced
         ? withSequence(fadeTo(0.4, motion.base), withDelay(2200, fadeTo(0, motion.base)))
         : withSequence(withTiming(0.46, { duration: 520, easing: ease.inOut }), withDelay(2000, withTiming(0, { duration: 650, easing: ease.inOut })));
     }
+    // `reactionItem` accompagne la réaction : lu avec elle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reaction, reactionKey, reduced, dim]);
   const night = useAnimatedStyle(() => ({ opacity: dim.value }));
 
@@ -138,11 +155,13 @@ export function PetStage({
       style={[styles.panel, { height }, lifted && styles.lifted, style]}
     >
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.night, night]} />
+      {habitat ? <Habitat petSize={petSize} photo={habitat.photo ?? null} night={!!habitat.night} /> : null}
       <View ref={lure?.target} collapsable={false} style={[styles.pet, { width: petSize, height: Math.round(petSize / 0.9) }, sulking && styles.sulk]}>
         <PetActor
           ref={actor}
           species={pet.species}
           outfit={pet.outfit}
+          mood={mood}
           size={petSize}
           seed={pet.id ?? pet.name}
           sulking={sulking}
@@ -196,8 +215,41 @@ export function PetStage({
   );
 }
 
+/** Une pièce de l'habitat : image floue (profondeur de champ), en retrait. */
+function Decor({ name, width, style, blur = 2, opacity = 0.7 }: { name: CareProp; width: number; style: object; blur?: number; opacity?: number }) {
+  return <Image source={propImage(name)} contentFit="contain" blurRadius={blur} style={[styles.decor, { width, height: width / PROP_RATIO[name], opacity }, style]} />;
+}
+
+/**
+ * L'habitat de la scène, derrière le pet et discret : le tapis sous ses pieds, la plante à sa gauche, la lampe à sa
+ * droite, le cadre au mur avec la dernière photo des souvenirs, la veilleuse allumée la nuit. Rien ne capte le toucher.
+ */
+function Habitat({ petSize, photo, night }: { petSize: number; photo: string | null; night: boolean }) {
+  const frame = petSize * 0.2;
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <Decor name="cadre" width={frame} blur={1} opacity={0.55} style={{ right: petSize * 0.08, top: 58, transform: [{ rotate: '4deg' }] }} />
+      {photo ? (
+        <Image
+          source={{ uri: photo }}
+          contentFit="cover"
+          blurRadius={2}
+          style={[styles.decor, { right: petSize * 0.08 + frame * 0.22, top: 58 + frame * 0.22, width: frame * 0.56, height: frame * 0.56, opacity: 0.6, transform: [{ rotate: '4deg' }] }]}
+        />
+      ) : null}
+      <Decor name="tapis" width={petSize * 0.86} blur={0} opacity={0.5} style={{ right: 6 + petSize * 0.07, bottom: -petSize * 0.04 }} />
+      <Decor name="plante" width={petSize * 0.24} style={{ right: petSize * 0.86, bottom: 4 }} />
+      <Decor name={night ? 'veilleuse' : 'lampe'} width={petSize * (night ? 0.16 : 0.2)} blur={night ? 0 : 2} opacity={night ? 0.95 : 0.6} style={{ right: 2, bottom: 6 }} />
+      {night ? <View style={[styles.glow, { right: -petSize * 0.06, bottom: -petSize * 0.02, width: petSize * 0.36, height: petSize * 0.36, borderRadius: petSize }]} /> : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   panel: {},
+  decor: { position: 'absolute' },
+  // Halo de la veilleuse : un disque jaune très transparent.
+  glow: { position: 'absolute', backgroundColor: alpha(color.accent, 0.12) },
   // Pet attrapé : le panneau passe devant ses voisins et ne le rogne plus.
   lifted: { zIndex: 10, elevation: 10 },
   night: { borderRadius: 32, backgroundColor: alpha(color.night, 1) },

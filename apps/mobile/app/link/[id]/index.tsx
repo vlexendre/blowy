@@ -424,6 +424,7 @@ function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void
           week={weekStrip(today)}
           text={todayText.livesText}
           accessibilityLabel={t.lives(link.lives)}
+          danger={link.lives > 0 && link.lives <= 2 ? link.myPet : null}
         />
         {shared ? <SharedHabitsCard key="shared" {...shared} /> : null}
         <Text key="todoTitle" variant="label" size={11} muted style={styles.todoTitle}>

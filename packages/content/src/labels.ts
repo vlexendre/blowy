@@ -134,6 +134,7 @@ const fr = {
     ballon: 'ballon', coeur: 'cœur en peluche', livre: 'livre', tasse: 'tasse', bulle: 'bulle', baguette: 'baguette magique',
     ballons: 'ballons', skate: 'skate', manette: 'manette', pinceau: 'pinceau', micro: 'micro', gateau: 'part de gâteau',
     cadeau: 'cadeau', potion: 'potion', fleur: 'fleur en pot', doudou: 'doudou',
+    hiver_bonnet: 'bonnet d’hiver', hiver_couronne: 'diadème de givre', hiver_cache_oreilles: 'cache-oreilles', hiver_lunettes: 'masque de ski', hiver_echarpe: 'écharpe bleu nuit', hiver_cape: 'cape d’hiver', hiver_moufles: 'moufles', hiver_chocolat: 'chocolat chaud', hiver_boule_neige: 'boule à neige', hiver_sapin: 'petit sapin', hiver_bonhomme: 'bonhomme de neige', hiver_aura: 'aura de flocons',
   } as Record<string, string>,
 };
 
@@ -255,6 +256,7 @@ export const labels = defineMessages({
       ballon: 'ball', coeur: 'plush heart', livre: 'book', tasse: 'mug', bulle: 'bubble', baguette: 'magic wand',
       ballons: 'balloons', skate: 'skateboard', manette: 'controller', pinceau: 'paintbrush', micro: 'mic', gateau: 'slice of cake',
       cadeau: 'gift', potion: 'potion', fleur: 'potted flower', doudou: 'cuddly toy',
+      hiver_bonnet: 'winter beanie', hiver_couronne: 'frost tiara', hiver_cache_oreilles: 'earmuffs', hiver_lunettes: 'ski goggles', hiver_echarpe: 'midnight scarf', hiver_cape: 'winter cape', hiver_moufles: 'mittens', hiver_chocolat: 'hot chocolate', hiver_boule_neige: 'snow globe', hiver_sapin: 'little fir tree', hiver_bonhomme: 'snowman', hiver_aura: 'snowflake aura',
     },
   },
   es: {
@@ -373,6 +375,7 @@ export const labels = defineMessages({
       ballon: 'pelota', coeur: 'corazón de peluche', livre: 'libro', tasse: 'taza', bulle: 'burbuja', baguette: 'varita mágica',
       ballons: 'globos', skate: 'monopatín', manette: 'mando', pinceau: 'pincel', micro: 'micro', gateau: 'trozo de pastel',
       cadeau: 'regalo', potion: 'poción', fleur: 'flor en maceta', doudou: 'peluche',
+      hiver_bonnet: 'gorro de invierno', hiver_couronne: 'diadema de escarcha', hiver_cache_oreilles: 'orejeras', hiver_lunettes: 'gafas de esquí', hiver_echarpe: 'bufanda azul noche', hiver_cape: 'capa de invierno', hiver_moufles: 'manoplas', hiver_chocolat: 'chocolate caliente', hiver_boule_neige: 'bola de nieve', hiver_sapin: 'abeto pequeño', hiver_bonhomme: 'muñeco de nieve', hiver_aura: 'aura de copos',
     },
   },
   pt: {
@@ -491,6 +494,7 @@ export const labels = defineMessages({
       ballon: 'bola', coeur: 'coração de pelúcia', livre: 'livro', tasse: 'caneca', bulle: 'bolha', baguette: 'varinha mágica',
       ballons: 'balões', skate: 'skate', manette: 'controle', pinceau: 'pincel', micro: 'microfone', gateau: 'fatia de bolo',
       cadeau: 'presente', potion: 'poção', fleur: 'flor no vaso', doudou: 'naninha',
+      hiver_bonnet: 'gorro de inverno', hiver_couronne: 'tiara de geada', hiver_cache_oreilles: 'protetores de orelha', hiver_lunettes: 'óculos de esqui', hiver_echarpe: 'cachecol azul-noite', hiver_cape: 'capa de inverno', hiver_moufles: 'luvas', hiver_chocolat: 'chocolate quente', hiver_boule_neige: 'globo de neve', hiver_sapin: 'pinheirinho', hiver_bonhomme: 'boneco de neve', hiver_aura: 'aura de flocos',
     },
   },
   nl: {
@@ -609,6 +613,7 @@ export const labels = defineMessages({
       ballon: 'bal', coeur: 'knuffel­hart', livre: 'boek', tasse: 'mok', bulle: 'zeepbel', baguette: 'toverstaf',
       ballons: 'ballonnen', skate: 'skateboard', manette: 'controller', pinceau: 'penseel', micro: 'microfoon', gateau: 'taartpunt',
       cadeau: 'cadeautje', potion: 'toverdrank', fleur: 'bloem in pot', doudou: 'knuffel­dier',
+      hiver_bonnet: 'wintermuts', hiver_couronne: 'ijstiara', hiver_cache_oreilles: 'oorwarmers', hiver_lunettes: 'skibril', hiver_echarpe: 'nachtblauwe sjaal', hiver_cape: 'wintercape', hiver_moufles: 'wanten', hiver_chocolat: 'warme chocolademelk', hiver_boule_neige: 'sneeuwbol', hiver_sapin: 'kerstboompje', hiver_bonhomme: 'sneeuwpop', hiver_aura: 'sneeuwvlokkenaura',
     },
   },
 });

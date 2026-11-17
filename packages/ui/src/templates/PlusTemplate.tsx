@@ -248,7 +248,8 @@ export function PlusTemplate<K extends string>({
           </View>
           {/* Son minimoa, habillé, entre par la droite ; les objets premium flottent autour. */}
           <Appear from="right" distance={60} delay={120} duration={motion.slow} pointerEvents="none" style={[styles.pet, { top: top + (short ? 16 : 24) }]}>
-            <DressedPet species={pet.species} outfit={pet.outfit ?? undefined} size={short ? 100 : 136} mood="joie" accessibilityLabel={pet.name} />
+            {/* Vitrine : son minimoa dans la collection Hiver (bonnet, écharpe bleu nuit, aura de flocons), rendu en direct. */}
+            <DressedPet species={pet.species} outfit={PLUS_SHOWCASE} size={short ? 100 : 136} mood="joie" animated accessibilityLabel={pet.name} />
           </Appear>
           {floatingItems[0] ? <Floating id={floatingItems[0]} size={short ? 38 : 46} delay={0} style={{ top: top + (short ? 78 : 112), right: -4 }} /> : null}
           {floatingItems[1] ? <Floating id={floatingItems[1]} size={short ? 36 : 42} delay={900} style={{ top: top + 2, right: short ? 92 : 108 }} /> : null}
@@ -393,6 +394,9 @@ function LegalLink({ label, onPress, cell }: { label: string; onPress: () => voi
     </Pressable>
   );
 }
+
+/** Tenue de la vitrine Minimoa+ : la collection Hiver. */
+const PLUS_SHOWCASE: Outfit = { head: 'hiver_bonnet', body: 'hiver_echarpe', toy: 'hiver_aura' };
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: color.night },

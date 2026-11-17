@@ -1,6 +1,8 @@
 /**
  * Planche de contrôle de l'habillage (route : /dev/fit?species=nino) : 6 poses du pack × 12 objets représentatifs,
  * rendus comme dans l'app (`DressedPet`). Sert à vérifier à l'œil que chaque objet a l'air porté, pose par pose.
+ * `?winter=1` : la collection Hiver (Minimoa+) sur les 4 espèces, six tenues (`&pose=` pour une autre pose).
+ * `?sheet=2&species=pia` : les 12 poses de la planche 2 (ou `?sheet=var` : les variantes), nues puis habillées (deux tenues).
  * `?items=bob,cape` : seulement ces objets ; `?size=240` : cases plus grandes ; `?flat=1` : rendu simple (sans ombre, voile ni fourrure), pour comparer.
  */
 import type { Outfit, Species } from '@blowy/domain';
@@ -25,11 +27,121 @@ const ITEMS: Outfit[] = [
   { toy: 'doudou' },
 ];
 const CELL = 118;
+const FACES = ['lunettes_rondes', 'lunettes_coeur', 'lunettes_etoile', 'lunettes_pixel', 'masque_nuit', 'monocle', 'cache_oeil', 'moustache', 'nez_rouge', 'tetine', 'joues_roses', 'taches_rousseur'];
+const CLOTHES = ['sweat', 'teddy', 'salopette', 'tablier', 'tutu', 'bretelles'];
+const HELD = ['doudou', 'ballon', 'coeur', 'tasse', 'livre', 'fleur', 'ballons', 'gateau', 'cadeau', 'pinceau', 'micro', 'manette'];
+const NECK = ['echarpe', 'bandana', 'collier_perles', 'collier_coquillage', 'chaine_or', 'noeud_pap', 'noeud_violet', 'noeud', 'casque_audio', 'cape', 'sac_a_dos', 'ailes'];
+const HATS = ['bob', 'bonnet', 'casquette', 'casquette_envers', 'toque', 'sorcier', 'couronne', 'pirate', 'chapeau_fete', 'fleurs', 'chat', 'lapin'];
+const SHEET2: BodyPose[] = ['colere', 'malade', 'timide', 'fier', 'rit', 'danse', 'accueil', 'assis', 'baille', 'bain', 'applaudit', 'fete'];
+const SHEET_VAR: BodyPose[] = ['neutre', 'evo_sociable', 'evo_joueur', 'evo_casanier', 'evo_tendre', 'evo_piquant', 'bebe', 'oeuf', 'oeuf_fele', 'eclosion', 'fantome', 'danger'];
+/** Planche des poses : nu, puis deux tenues complètes (couvre-chef, lunettes, et l'écharpe ou le sweat). */
+const SHEET_OUTFITS: (Outfit | null)[] = [null, { head: 'bob', face: 'lunettes_rondes', body: 'echarpe' }, { head: 'casquette', face: 'lunettes_etoile', body: 'sweat' }];
+const WINTER: Outfit[] = [
+  { head: 'hiver_bonnet', face: 'hiver_lunettes', body: 'hiver_echarpe', toy: 'hiver_aura' },
+  { head: 'hiver_couronne', body: 'hiver_cape', toy: 'hiver_chocolat' },
+  { head: 'hiver_cache_oreilles', body: 'hiver_echarpe', toy: 'hiver_moufles' },
+  { head: 'hiver_bonnet', toy: 'hiver_boule_neige' },
+  { head: 'hiver_couronne', face: 'hiver_lunettes', toy: 'hiver_sapin' },
+  { head: 'hiver_cache_oreilles', body: 'hiver_cape', toy: 'hiver_bonhomme' },
+];
+/** Fond de la planche de référence (comparaison à l'œil). */
+const HAT_BG = color.panel;
 
 export default function FitBoard() {
-  const q = useLocalSearchParams<{ species?: string; flat?: string; size?: string; items?: string; stage?: string; shape?: string; hat?: string; pair?: string; wave?: string }>();
+  const q = useLocalSearchParams<{ species?: string; flat?: string; size?: string; items?: string; stage?: string; shape?: string; hat?: string; pair?: string; wave?: string; hats?: string; faces?: string; neck?: string; clothes?: string; held?: string; pose?: string; sheet?: string; winter?: string }>();
   const species = (['nino', 'suzie', 'gaston', 'pia'].includes(q.species ?? '') ? q.species : 'nino') as Species;
   const cell = Number(q.size) || CELL;
+  if (q.winter) {
+    const pose = (q.pose ?? 'neutre') as BodyPose;
+    return (
+      <ScrollView style={{ backgroundColor: HAT_BG }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', width: cell * WINTER.length }}>
+        {(['nino', 'suzie', 'gaston', 'pia'] as Species[]).flatMap((sp) =>
+          WINTER.map((outfit, i) => (
+            <View key={`${sp}${i}`} style={{ width: cell, height: cell / 0.9 + cell * 0.12, justifyContent: 'flex-end' }}>
+              <DressedPet species={sp} outfit={outfit} pose={pose} size={cell} flat={q.flat === '1'} />
+            </View>
+          )),
+        )}
+      </ScrollView>
+    );
+  }
+  if (q.sheet) {
+    const poses = q.sheet === 'var' ? SHEET_VAR : SHEET2;
+    return (
+      <ScrollView style={{ backgroundColor: HAT_BG }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', width: cell * poses.length }}>
+        {SHEET_OUTFITS.flatMap((outfit, i) =>
+          poses.map((pose) => (
+            <View key={`${i}${pose}`} style={{ width: cell, height: cell / 0.9 }}>
+              <DressedPet species={species} outfit={outfit} pose={pose} size={cell} flat={q.flat === '1'} />
+            </View>
+          )),
+        )}
+      </ScrollView>
+    );
+  }
+  if (q.faces) {
+    // Objets du visage (`?faces=1&pose=neutre`) : 4 espèces × 12, cadrés comme la planche de référence (zone 600×600
+    // de la toile à partir de (150, 180)).
+    const pose = (q.pose ?? 'neutre') as BodyPose;
+    const k = cell / 600;
+    return (
+      <ScrollView style={{ backgroundColor: HAT_BG }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', width: cell * 12 }}>
+        {(['nino', 'suzie', 'gaston', 'pia'] as Species[]).flatMap((sp) =>
+          FACES.map((id) => (
+            <View key={`${sp}${id}`} style={{ width: cell, height: cell, overflow: 'hidden' }}>
+              <DressedPet species={sp} outfit={{ face: id }} pose={pose} size={900 * k} flat={q.flat === '1'} style={{ position: 'absolute', left: -150 * k, top: -180 * k }} />
+            </View>
+          )),
+        )}
+      </ScrollView>
+    );
+  }
+  if (q.clothes || q.held) {
+    // Vêtements (`?clothes=1&pose=boude`) : 4 espèces × 6 ; objets tenus (`?held=1&pose=coucou`) : 4 espèces × 12.
+    const pose = (q.pose ?? 'neutre') as BodyPose;
+    const ids = q.clothes ? CLOTHES : HELD;
+    return (
+      <ScrollView style={{ backgroundColor: HAT_BG }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', width: cell * ids.length }}>
+        {(['nino', 'suzie', 'gaston', 'pia'] as Species[]).flatMap((sp) =>
+          ids.map((id) => (
+            <View key={`${sp}${id}`} style={{ width: cell, height: cell / 0.9 }}>
+              <DressedPet species={sp} outfit={q.clothes ? { body: id } : { toy: id }} pose={pose} size={cell} flat={q.flat === '1'} />
+            </View>
+          )),
+        )}
+      </ScrollView>
+    );
+  }
+  if (q.neck) {
+    // Cou et dos (`?neck=1&pose=neutre`) : 4 espèces × 12, deux calques (avant, arrière) quand l'objet entoure.
+    const pose = (q.pose ?? 'neutre') as BodyPose;
+    return (
+      <ScrollView style={{ backgroundColor: HAT_BG }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', width: cell * 6 }}>
+        {(['nino', 'suzie', 'gaston', 'pia'] as Species[]).flatMap((sp) =>
+          NECK.map((id) => (
+            <View key={`${sp}${id}`} style={{ width: cell, height: cell / 0.9 + cell * 0.1, justifyContent: 'flex-end' }}>
+              <DressedPet species={sp} outfit={id === 'casque_audio' || id === 'noeud' ? { head: id } : { body: id }} pose={pose} size={cell} flat={q.flat === '1'} />
+            </View>
+          )),
+        )}
+      </ScrollView>
+    );
+  }
+  if (q.hats) {
+    // Couvre-chefs (`?hats=1&pose=neutre`) : les 4 espèces × 12, mise en page de la planche de référence (6 colonnes).
+    const pose = (q.pose ?? 'neutre') as BodyPose;
+    return (
+      <ScrollView style={{ backgroundColor: HAT_BG }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', width: cell * 6 }}>
+        {(['nino', 'suzie', 'gaston', 'pia'] as Species[]).flatMap((sp) =>
+          HATS.map((id) => (
+            <View key={`${sp}${id}`} style={{ width: cell, height: cell / 0.9 + cell * 0.15, justifyContent: 'flex-end' }}>
+              <DressedPet species={sp} outfit={{ head: id }} pose={pose} size={cell} flat={q.flat === '1'} />
+            </View>
+          )),
+        )}
+      </ScrollView>
+    );
+  }
   if (q.pair) {
     // Rencontre (`?pair=1&wave=1`) : les deux minimoas face à face, habillés ; `wave` : on a salué (check / joie).
     return (

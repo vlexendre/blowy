@@ -5,6 +5,7 @@ import {
   CARE_EFFECTS,
   type CareAction,
   canCare,
+  careLevel,
   type ItemSlot,
   decayGauges,
   formOf,
@@ -13,6 +14,7 @@ import {
   type GaugeKey,
   type Gauges,
   NEED_KEYS,
+  type NeedKey,
   type Needs,
   type PetForm,
   urgentNeed,
@@ -254,12 +256,36 @@ export const useHomeVisit = create<{ last: number | null; mark: (at: number) => 
 /** Au-delà de cette absence, il fait coucou en te revoyant. */
 export const HELLO_AFTER_MS = 12 * 3600_000;
 
+/** Au-delà de cette absence, il t'accueille bras ouverts (au lieu du coucou) et il a l'air délaissé jusqu'au premier soin. */
+export const WELCOME_AFTER_MS = 3 * 24 * 3600_000;
+
 /**
  * Le petit moment joué à l'ouverture de l'accueil (un seul) : la nuit il dort et il boude quand il boude (rien à
- * jouer, sa pose de repos le dit) ; après plus de 12 h d'absence il fait coucou ; sinon il arrive en marchant.
+ * jouer, sa pose de repos le dit) ; après plus de 3 jours d'absence il t'accueille bras ouverts, après plus de 12 h
+ * il fait coucou ; sinon il arrive en marchant. `neglected` : plus de 3 jours sans ouvrir l'app (même la nuit).
  */
-export function homeEntrance(o: { last: number | null; now: number; night: boolean; sulking: boolean }): 'wave' | 'arrive' | null {
-  if (o.night || o.sulking) return null;
-  if (o.last !== null && o.now - o.last > HELLO_AFTER_MS) return 'wave';
-  return 'arrive';
+export function homeEntrance(o: { last: number | null; now: number; night: boolean; sulking: boolean }): {
+  moment: 'wave' | 'welcome' | 'arrive' | null;
+  neglected: boolean;
+} {
+  const away = o.last === null ? 0 : o.now - o.last;
+  const neglected = away > WELCOME_AFTER_MS;
+  if (o.night || o.sulking) return { moment: null, neglected };
+  if (neglected) return { moment: 'welcome', neglected };
+  if (away > HELLO_AFTER_MS) return { moment: 'wave', neglected };
+  return { moment: 'arrive', neglected };
+}
+
+/** Sous ce niveau des trois petits besoins (faim, énergie, humeur), il est malade (plaid et thermomètre). */
+export const SICK_BELOW = 20;
+
+/**
+ * Pose de repos sur la scène de l'accueil quand quelque chose ne va pas : délaissé (« en danger »), malade ; sinon
+ * `null` (la forme d'évolution en pied). Il boude : rien ici (la scène le dit).
+ */
+export function homeRest(o: { form: PetForm; needs: Record<NeedKey, number>; sulking: boolean; neglected: boolean }): 'danger' | 'malade' | null {
+  if (o.sulking) return null;
+  if (o.neglected) return 'danger';
+  if (careLevel(o.needs) < SICK_BELOW) return 'malade';
+  return null;
 }

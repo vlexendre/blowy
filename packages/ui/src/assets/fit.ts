@@ -11,7 +11,8 @@
  *   l'image est posée pour que son point `pivot` tombe sur P, puis tournée de `rot + tilt`° (sens horaire)
  *   et écrasée de `sy` verticalement autour de ce point.
  * Les objets de main se posent dans la main libre (`points.hand`) quand la pose en a une, sinon au sol à côté.
- * De profil (`face: false`), les objets du visage ne sont pas dessinés.
+ * De profil (`face: false`), les objets du visage ne sont pas dessinés ; une pose peut cacher des emplacements (`hide` :
+ * la tenue sous le plaid ou dans le bain, le couvre-chef reste).
  */
 import { type ItemSlot, itemById, type Outfit, type Species } from '@blowy/domain';
 
@@ -30,6 +31,15 @@ interface FitItem {
   sy?: number;
   /** `back` : derrière le pet (ailes, cape, sac à dos, serre-têtes). */
   z?: string;
+  /** Autre image pour cette espèce (`overrides.gaston.lunettes_rondes.image = lunettes_rondes_1`). */
+  image?: string;
+  /**
+   * Calque arrière d'un objet qui entoure le minimoa (écharpe, colliers, casque, cape, sac à dos) : dessiné derrière
+   * lui, avec ses propres réglages (les champs absents reprennent ceux de l'objet) ; image par défaut `<id>_dos`.
+   */
+  back?: Partial<FitItem>;
+  /** Compagnon posé au sol à côté (sapin, bonhomme de neige) : jamais tenu dans la main. */
+  ground?: boolean;
 }
 
 interface FitPose {
@@ -40,6 +50,10 @@ interface FitPose {
   scale: number;
   /** Faux de profil : les objets du visage ne sont pas dessinés. */
   face: boolean;
+  /** Zones [x0, y0, x1, y1] (fractions de la toile) où un bras passe devant le ventre. */
+  arms?: number[][];
+  /** Emplacements non dessinés dans cette pose (la tenue sous le plaid de `malade`, dans le bain). */
+  hide?: string[];
 }
 
 interface FitSpecies {
@@ -51,9 +65,16 @@ interface FitSpecies {
 }
 
 interface FitWear {
+  plain?: boolean;
+  /** Vêtement coupé par la silhouette ; nombre : ceinture effacée au-dessus de cette part de sa hauteur. */
+  clip?: boolean | number;
+  /** Vrai : ombre des couvre-chefs ; liste : [flou, x, y, opacité] (px de la toile). */
+  fur?: boolean | number[];
   tuck?: number;
   split?: (number | string)[];
   shadow?: number;
+  /** Tourne lentement sur lui-même, derrière le minimoa (aura). */
+  spin?: boolean;
 }
 
 interface FitData {
@@ -80,11 +101,32 @@ export interface ItemWear {
   split: { at: number; top: 'back' | 'front' } | null;
   /** Force de l'ombre portée sur le minimoa (0 : aucune). */
   shadow: number;
+  /** Image déjà « portée » (couvre-chefs refaits) : dessinée telle quelle, sans voile ni ombre propre. */
+  plain: boolean;
+  /** Ombre portée douce limitée à la fourrure (elle ne déborde pas sur le fond) ; `null` : aucune. */
+  fur: FurShadowSpec | null;
+  /** Vêtement : coupé par la silhouette du minimoa et effacé au-dessus des pieds ; `waist` : haut effacé (tutu). */
+  clip: { waist: number | null } | null;
+  /** Tourne lentement (aura de la collection Hiver), scintillements autour ; immobile si « réduire les animations ». */
+  spin: boolean;
 }
+
+/** Ombre portée sur la fourrure : flou, décalage (px de la toile 900×1000) et opacité. */
+export interface FurShadowSpec {
+  blur: number;
+  x: number;
+  y: number;
+  opacity: number;
+}
+
+/** Ombre des couvre-chefs (planche de référence des couvre-chefs). */
+const HAT_SHADOW: FurShadowSpec = { blur: 12, x: 4, y: 14, opacity: 0.47 };
 
 /** Un objet posé, en px de la toile 900×1000. */
 export interface ItemPlacement {
   id: string;
+  /** Nom de l'image à dessiner (`itemImage`) : l'objet, ou sa variante pour l'espèce. */
+  image: string;
   slot: ItemSlot;
   left: number;
   top: number;
@@ -104,11 +146,16 @@ export interface ItemPlacement {
 
 const SHADOW_BY_SLOT: Record<ItemSlot, number> = { head: 1, face: 0.7, body: 0.9, toy: 0.8 };
 
-function settings(species: Species, id: string): FitItem | null {
+function settings(species: Species, id: string, layer: 'front' | 'back' = 'front'): FitItem | null {
   const base = FIT.items[id];
   if (!base) return null;
   const override = FIT.overrides[species]?.[id];
-  return override ? { ...base, ...override } : base;
+  const s = override ? { ...base, ...override, back: base.back || override.back ? { ...base.back, ...override.back } : undefined } : base;
+  if (layer === 'front') return s;
+  if (!s.back) return null;
+  // Le calque arrière ne reprend pas l'image ni le décalage de l'avant (sauf s'il les redonne).
+  const { back, image: _image, ...front } = s;
+  return { ...front, ...back, image: back.image ?? `${id}_dos`, z: 'back' };
 }
 
 function wearOf(id: string, slot: ItemSlot): ItemWear {
@@ -119,6 +166,10 @@ function wearOf(id: string, slot: ItemSlot): ItemWear {
     tuck: w?.tuck ?? 0,
     split: typeof at === 'number' && (top === 'back' || top === 'front') ? { at, top } : null,
     shadow: w?.shadow ?? SHADOW_BY_SLOT[slot],
+    plain: w?.plain ?? false,
+    clip: w?.clip ? { waist: typeof w.clip === 'number' ? w.clip : null } : null,
+    spin: w?.spin ?? false,
+    fur: Array.isArray(w?.fur) ? { blur: w.fur[0] ?? 6, x: w.fur[1] ?? 3, y: w.fur[2] ?? 8, opacity: w.fur[3] ?? 0.35 } : w?.fur ? HAT_SHADOW : null,
   };
 }
 
@@ -135,21 +186,22 @@ const TILT_SHARE: Record<ItemSlot, number> = { head: 1, face: 1, body: 0.5, toy:
  * Placement d'un objet sur une espèce, dans une pose du pack (défaut : la pose `debout` historique) ;
  * `null` si l'objet ou l'ancre est inconnu, ou un objet du visage sur une pose de profil.
  */
-export function placeItem(species: Species, id: string, pose?: BodyPose): ItemPlacement | null {
-  const s = settings(species, id);
+export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 'front' | 'back' = 'front'): ItemPlacement | null {
+  const s = settings(species, id, layer);
   const sp = FIT.species[species];
   const slot = itemById(id)?.slot;
   if (!s || !sp || !slot) return null;
   const pf = poseFit(species, pose);
   if (pf && !pf.face && slot === 'face') return null;
-  const hand = pf && slot === 'toy' && s.anchor === 'toy' ? pf.points.hand : undefined;
+  if (pf?.hide?.includes(slot)) return null;
+  const hand = pf && slot === 'toy' && s.anchor === 'toy' && !s.ground ? pf.points.hand : undefined;
   const point = hand ?? (pf ? pf.points[s.anchor] : sp.points[s.anchor]);
   const measure = sp.sizes[s.size];
   if (!point || measure === undefined) return null;
   const scale = pf ? pf.scale : 1;
   const tilt = pf ? pf.tilt * TILT_SHARE[slot] : 0;
   // Tenu : un peu plus petit, pris par le bas (la main le serre), sans le décalage vers le côté.
-  const m = measure * FIT_CANVAS.width * (slot === 'toy' ? 1 : scale) * (hand ? 0.82 : 1);
+  const m = measure * FIT_CANVAS.width * (slot === 'toy' ? 1 : scale);
   const width = s.w * m;
   const height = width / s.ratio;
   const dx = hand ? 0 : (s.dx ?? 0) * m;
@@ -161,6 +213,7 @@ export function placeItem(species: Species, id: string, pose?: BodyPose): ItemPl
   const originY = hand ? 0.78 : (s.pivot[1] ?? 0.5);
   return {
     id,
+    image: s.image ?? id,
     slot,
     left: px - originX * width,
     top: py - originY * height,
@@ -191,6 +244,8 @@ export function outfitLayers(
     if (!id || !slots.includes(slot)) continue;
     const p = placeItem(species, id, pose);
     if (p) (p.back ? back : front).push(p);
+    const b = placeItem(species, id, pose, 'back');
+    if (b) back.push(b);
   }
   return { back, front };
 }
@@ -219,11 +274,14 @@ export function badgeFrame(species: Species, pose?: BodyPose): { cx: number; cy:
 }
 
 /** Ancres mesurées (`fit.json` → `species.<s>.points`, ou `poses.<pose>.points`). */
-export type FitAnchor = 'headTop' | 'crown' | 'eyes' | 'eyeL' | 'eyeR' | 'nose' | 'lip' | 'mouth' | 'cheeks' | 'neck' | 'torso' | 'ground' | 'toy' | 'hand';
+export type FitAnchor = 'headTop' | 'crown' | 'brow' | 'chest' | 'feet' | 'eyes' | 'eyeL' | 'eyeR' | 'nose' | 'lip' | 'mouth' | 'cheeks' | 'neck' | 'torso' | 'ground' | 'toy' | 'hand';
 
 const ANCHOR_FALLBACK: Record<FitAnchor, readonly [number, number]> = {
   headTop: [0.5, 0.27],
   crown: [0.5, 0.33],
+  brow: [0.5, 0.36],
+  chest: [0.5, 0.67],
+  feet: [0.5, 0.9],
   eyes: [0.5, 0.45],
   eyeL: [0.4, 0.45],
   eyeR: [0.62, 0.45],
@@ -247,6 +305,16 @@ export function fitAnchor(species: Species, anchor: FitAnchor, pose?: BodyPose |
   const p = pf?.points[anchor] ?? FIT.species[species]?.points[anchor];
   const f = ANCHOR_FALLBACK[anchor];
   return { x: p?.[0] ?? f[0], y: p?.[1] ?? f[1] };
+}
+
+/** Zones de la pose où un bras passe devant le ventre (px de la toile) : le minimoa y repasse devant sa tenue. */
+export function poseArms(species: Species, pose: BodyPose): { x: number; y: number; w: number; h: number }[] {
+  return (poseFit(species, pose)?.arms ?? []).map((r) => ({
+    x: (r[0] ?? 0) * FIT_CANVAS.width,
+    y: (r[1] ?? 0) * FIT_CANVAS.height,
+    w: ((r[2] ?? 0) - (r[0] ?? 0)) * FIT_CANVAS.width,
+    h: ((r[3] ?? 0) - (r[1] ?? 0)) * FIT_CANVAS.height,
+  }));
 }
 
 /** Inclinaison de la tête dans une pose (degrés, sens horaire). */

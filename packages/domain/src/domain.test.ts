@@ -66,9 +66,9 @@ describe('soins', () => {
 });
 
 describe('garde-robe', () => {
-  it('64 objets uniques, 4 emplacements, au moins deux de départ par emplacement', () => {
-    expect(ITEMS.length).toBe(64);
-    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(64);
+  it('76 objets uniques (dont les 12 de la collection Hiver), 4 emplacements, au moins deux de départ par emplacement', () => {
+    expect(ITEMS.length).toBe(76);
+    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(76);
     for (const slot of ITEM_SLOTS) expect(ITEMS.filter((i) => i.slot === slot && i.unlock.kind === 'start').length).toBeGreaterThanOrEqual(2);
   });
   it('débloque par étapes', () => {

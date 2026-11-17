@@ -1,5 +1,5 @@
 /**
- * Garde-robe : 64 objets dans 4 emplacements. Un objet se gagne par une étape (soins, liens, séries…)
+ * Garde-robe : 76 objets dans 4 emplacements (dont la collection Hiver de Minimoa+). Un objet se gagne par une étape (soins, liens, séries…)
  * ou s'achète (objets « premium »). Un seul objet porté par emplacement.
  */
 export const ITEM_SLOTS = ['head', 'face', 'body', 'toy'] as const;
@@ -111,6 +111,27 @@ export const ITEMS: readonly Item[] = [
   item('toy', 'skate', premium),
   item('toy', 'baguette', premium),
   item('toy', 'potion', premium),
+  // Minimoa+ · collection Hiver (premium) : bonnet, diadème de givre, cache-oreilles, masque de ski, écharpe bleu nuit,
+  // cape d'hiver (portée dans le dos), moufles, chocolat chaud, boule à neige, et deux compagnons posés à côté (sapin,
+  // bonhomme de neige) ; l'aura de flocons tourne lentement derrière le minimoa (emplacement « compagnon »).
+  item('head', 'hiver_bonnet', premium),
+  item('head', 'hiver_couronne', premium),
+  item('head', 'hiver_cache_oreilles', premium),
+  item('face', 'hiver_lunettes', premium),
+  item('body', 'hiver_echarpe', premium),
+  item('body', 'hiver_cape', premium),
+  item('toy', 'hiver_moufles', premium),
+  item('toy', 'hiver_chocolat', premium),
+  item('toy', 'hiver_boule_neige', premium),
+  item('toy', 'hiver_sapin', premium),
+  item('toy', 'hiver_bonhomme', premium),
+  item('toy', 'hiver_aura', premium),
+];
+
+/** Collection Hiver de Minimoa+ (ordre de la vitrine). */
+export const WINTER_ITEM_IDS: readonly string[] = [
+  'hiver_bonnet', 'hiver_couronne', 'hiver_cache_oreilles', 'hiver_lunettes', 'hiver_echarpe', 'hiver_cape',
+  'hiver_moufles', 'hiver_chocolat', 'hiver_boule_neige', 'hiver_sapin', 'hiver_bonhomme', 'hiver_aura',
 ];
 
 export const ITEM_IDS: readonly string[] = ITEMS.map((i) => i.id);

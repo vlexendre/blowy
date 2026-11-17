@@ -82,3 +82,8 @@ export function isNight(date: Date = new Date()): boolean {
   const h = date.getHours();
   return h >= 22 || h < 7;
 }
+
+/** Fin de soirée (22 h – minuit, heure locale) : il bâille avant de s'endormir. */
+export function isLateEvening(date: Date = new Date()): boolean {
+  return date.getHours() >= 22;
+}

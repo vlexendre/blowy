@@ -175,7 +175,8 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
         ) : null}
         <View style={styles.theirs} pointerEvents="none">
           <Actor ref={theirs} side={1} delay={200} waveKey={waveKey} answer hidden={hidden}>
-            <StagePet pet={them.pet} pose="coucou" then="joie" waveKey={waveKey} delay={500} />
+            {/* Première rencontre : il est un peu timide, puis répond d'un coucou quand tu salues. */}
+            <StagePet pet={them.pet} pose="timide" then="coucou" waveKey={waveKey} delay={500} />
           </Actor>
         </View>
         {me ? (
