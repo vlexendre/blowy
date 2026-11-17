@@ -17,7 +17,6 @@ import {
   GROUP_KINDS,
   GROUP_MAX_INVITES,
   GROUP_MAX_LIVES,
-  GROUP_MIN_INVITES,
   GROUP_NAME_MAX,
   GROUP_STATUSES,
   MEMBER_DAY_STATUSES,
@@ -164,8 +163,11 @@ export const CreateGroupBody = z
     kind: GroupKindZ,
     /** Habitude du catalogue (groupe d'habitude seulement). */
     habitId: z.string().min(1).max(40).optional(),
-    /** 2 à 7 personnes parmi tes liens vivants ; chacune reçoit une invitation. */
-    memberIds: z.array(Id).min(GROUP_MIN_INVITES).max(GROUP_MAX_INVITES),
+    /**
+     * Jusqu'à 7 personnes parmi tes liens vivants ; chacune reçoit une invitation. Peut être vide : le groupe se remplit
+     * avec son lien d'invitation (`minimoa.app/g/<code>`). Les anciennes apps en envoient au moins 2.
+     */
+    memberIds: z.array(Id).max(GROUP_MAX_INVITES),
   })
   .refine((b) => (b.kind === 'habit') === (b.habitId !== undefined), {
     message: 'habitId requis pour un groupe d’habitude, interdit sinon',

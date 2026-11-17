@@ -101,5 +101,10 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <a class="skip" href="#main">{skipLabel}</a>
     <slot />
     <slot name="footer" />
+    <script>
+      // `?ref=<code>` (créateur) : gardé le temps de la visite et ajouté aux boutons qui ouvrent l'app (docs/VIRALITE.md).
+      import { applyRef } from '../scripts/ref';
+      applyRef();
+    </script>
   </body>
 </html>

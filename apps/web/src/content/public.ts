@@ -34,9 +34,12 @@ export const wordsPage = {
   maxReached: '3 mots maximum. Retire un mot pour en choisir un autre.',
   sentReply: 'Reçu. J’ai déjà un peu changé.',
   sentList: 'Tu as dit :',
-  youTitle: ['ET TOI ?', 'PAS ENCORE DE MINIMOA.'],
-  youText: 'Crée le tien en 1 minute. Il te présentera du monde.',
-  youCta: 'Crée ton minimoa',
+  /** Après le vote (boucle « 3 mots », docs/VIRALITE.md) : créer le sien, sur le store ou dans l'app déjà installée. */
+  youTitle: ['ET TOI,', 'TES POTES TE', 'DÉCRIRAIENT', 'COMMENT ?'],
+  youText: 'Crée ton minimoa en 1 minute : ton lien « 3 mots » est prêt dès l’inscription. Tes potes votent, tu découvres tes 3 mots.',
+  youApp: 'J’ai déjà Minimoa : mon lien',
+  /** {code} : le code de ce lien « 3 mots » (dire qui t'a fait venir). */
+  youCode: 'Pour dire qui t’a fait venir, tape {code} dans « Un code ? » à l’inscription.',
   notFoundTitle: ['LIEN', 'INTROUVABLE.'],
   notFoundText: 'Ce lien « 3 mots » n’existe pas, ou plus. Demande à ton pote de te renvoyer le sien.',
   alreadyTitle: ['DÉJÀ', 'VOTÉ.'],

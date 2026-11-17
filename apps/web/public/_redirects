@@ -1,9 +1,10 @@
-# Cloudflare Pages : les liens partagés /m/CODE, /i/CODE, /g/ID, /r/ID et /l/ID servent la page statique
+# Cloudflare Pages : les liens partagés /m/CODE, /i/CODE, /g/ID ou /g/CODE, /c/CODE, /r/ID et /l/ID servent la page statique
 # correspondante (l'URL reste intacte). Sans l'app, /g, /r, /l, /plus, /defi, /habitudes et /carte affichent
 # « Ouvre Minimoa » (docs/DEEPLINKS.md). www.minimoa.app → minimoa.app : règle de redirection Cloudflare (domaine).
 /m/* /_lien/m 200
 /i/* /_lien/i 200
 /g/* /_lien/g 200
+/c/* /_lien/c 200
 /r/* /_lien/r 200
 /l/* /_lien/l 200
 

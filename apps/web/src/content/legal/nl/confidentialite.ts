@@ -197,6 +197,18 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'Waar je vandaan komt, en de stappen van je traject', id: 'croissance' },
+    {
+      ul: [
+        '**Gegevens:** hoe je bij Minimoa bent gekomen (de code van een maker, de „3 woorden”- of groepslink die je opende, een uitnodiging, of niets daarvan), **alleen** gelezen uit de link die je vóór je aanmelding opende of uit de code die je typte („Heb je een code?”); de persoon die je meenam, als die er is; en de belangrijkste stappen van je traject, elk één keer: aanmelding voltooid, eerste band, terugkomen 1, 7 en 30 dagen later, start van de proefperiode en eerste betaling voor Minimoa+.',
+        '**Wat we niet doen:** geen fingerprinting van je toestel (geen model, geen IP-adres, geen advertentie-ID), geen meettools van derden. Bezoeken aan openbare pagina’s („3 woorden”, uitnodiging, groep, makerscode), eerste keren dat de app opent, stemmen en delen worden alleen **per dag geteld**, zonder IP of ID: er zit niemand achter die tellers.',
+        '**Doel:** weten welke links en makers mensen brengen die blijven, het traject verbeteren, en het garderobe-item „Peter” geven aan wie iemand meenam en aan de nieuwkomer (een decoratief item, nooit gekoppeld aan een aankoop of een review).',
+        '**Rechtsgrond:** ons gerechtvaardigd belang.',
+        '**Bewaartermijn:** de herkomst en de stappen zolang je account bestaat. Verwijder je het, dan wordt de herkomst gewist en verliezen de stappen elke koppeling met jou (er blijft alleen een getal over). Dagtellers worden onbeperkt bewaard.',
+        '**Toegang:** een paar bevoegde teamleden, in de interne tool, alleen als cijfers. Een maker ziet nooit wie met zijn of haar code is gekomen.',
+      ],
+    },
+
     { h3: 'Statistieken en beheer' },
     {
       ul: [
@@ -351,6 +363,7 @@ export const confidentialite: LegalPage = {
           ['Behandelde meldingen en moderatiebeslissingen', '1 jaar na het sluiten van het dossier, alleen langer als de wet dat vereist.'],
           ['Definitieve uitsluiting', 'Een niet-omkeerbare vingerafdruk van de Apple- of Google-identificatie van het account, gedurende 3 jaar, om een nieuwe aanmelding te voorkomen.'],
           ['Statistieken', 'Activiteitsdagen en interne ranglijst met namen: 40 dagen. Voorgestelde ontmoetingen: 30 dagen. Geaggregeerde cijfers, waarmee je niet te identificeren bent: onbeperkt.'],
+          ['Herkomst en stappen van je traject', 'Zolang je account bestaat; gewist of geanonimiseerd bij verwijdering. Dagtellers (bezoeken, eerste keer openen, stemmen, delen), zonder persoon erachter: onbeperkt.'],
           ['Technische logboeken van de app', 'Maximaal 30 dagen. De logboeken van onze hostingproviders volgen hun eigen termijnen.'],
           ['Contact met de klantenservice', '1 jaar na het sluiten van het verzoek.'],
           ['Verzoeken om je rechten uit te oefenen', '5 jaar, zodat we kunnen aantonen dat we hebben geantwoord.'],

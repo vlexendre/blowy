@@ -8,6 +8,7 @@ import { OnboardingTemplate, VisionReading } from '@blowy/ui';
 import { Redirect, router } from 'expo-router';
 
 import { ScreenMotion } from '@/core';
+import { VisionShare } from '@/features/moments';
 import { lowerFirst, progressAt, surenessOf, useDraft, useDraftGate, useStep, visionDone, visionNow } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -50,6 +51,8 @@ function Result() {
         onPrimary={() => router.push('/(onboarding)/prenom')}
       >
         <VisionReading axes={axes} note={visionLabels.profile.note} />
+        {/* Le « moment capture d'écran » de l'inscription : facultatif, jamais bloquant. */}
+        <VisionShare profile={profile} pet={{ name: petName, species }} />
       </OnboardingTemplate>
     </ScreenMotion>
   );

@@ -17,3 +17,4 @@ export * from './area';
 export * from './review';
 export * from './groups';
 export * from './fidelite';
+export * from './growth';

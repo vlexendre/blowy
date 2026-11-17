@@ -5,8 +5,9 @@ import type { Href } from 'expo-router';
  * (Android) et les schémas `minimoa://` / `blowy://` (docs/DEEPLINKS.md).
  *
  * Adresses publiques courtes (celles qu'on partage, servies aussi par le site quand l'app n'est pas installée) :
- * /i/<code> invitation · /m/<code> 3 mots · /g/<id> groupe · /r/<id> rencontre · /l/<id> lien · /plus Minimoa+ ·
- * /defi défi du jour · /habitudes · /carte. Les chemins internes de l'app (`link/<id>`, `pet/…`, `groupe/<id>`…), ceux
+ * /i/<code> invitation · /m/<code> 3 mots · /g/<id> groupe (membres) · /g/<code> lien d'invitation d'un groupe ·
+ * /c/<code> code d'un créateur · /r/<id> rencontre · /l/<id> lien · /plus Minimoa+ · /defi défi du jour · /habitudes ·
+ * /carte · /mots (ton lien « 3 mots » et ton résultat). `?ref=<code>` sur n'importe quel lien : code d'un créateur. Les chemins internes de l'app (`link/<id>`, `pet/…`, `groupe/<id>`…), ceux
  * des notifications, passent tels quels.
  */
 
@@ -16,11 +17,16 @@ export const APP_SCHEMES = ['minimoa', 'blowy'] as const;
 export const WEB_HOSTS = ['minimoa.app', 'www.minimoa.app', 'blowy.app', 'www.blowy.app'] as const;
 
 const ID = '[\\w-]{1,64}';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Adresse courte → chemin de l'app. */
 const SHORT: readonly [RegExp, (id: string) => string][] = [
   [new RegExp(`^i/(${ID})/?$`), (c) => `/i/${c.toUpperCase()}`],
   [new RegExp(`^m/(${ID})/?$`), (c) => `/m/${c}`],
-  [new RegExp(`^g/(${ID})/?$`), (id) => `/groupe/${id}`],
+  // Un identifiant : le groupe (membres) ; un code court : la page « rejoindre » du lien d'invitation.
+  [new RegExp(`^g/(${ID})/?$`), (id) => (UUID.test(id) ? `/groupe/${id}` : `/g/${id.toUpperCase()}`)],
+  // Code d'un créateur : gardé comme source d'arrivée (`attributionFromUrl`), puis l'accueil.
+  [new RegExp(`^c/(${ID})/?$`), () => '/'],
+  [/^mots\/?$/, () => '/mots'],
   [new RegExp(`^r/(${ID})/?$`), (id) => `/rencontre/${id}`],
   [new RegExp(`^l/(${ID})/?$`), (id) => `/link/${id}`],
   [/^plus\/?$/, () => '/moi/blowy-plus'],
@@ -70,7 +76,7 @@ export const pathFromPushUrl = appPathFromUrl;
  */
 export function needsAccount(path: string): boolean {
   const p = path.split('?')[0] ?? '';
-  return /^\/(groupe|rencontre|link|moi|pet|carte|chats|rencontres)(\/|$)/.test(p);
+  return /^\/(groupe|g|mots|rencontre|link|moi|pet|carte|chats|rencontres)(\/|$)/.test(p);
 }
 
 /**
@@ -82,7 +88,30 @@ export function routeIncomingUrl(url: string, opts: { initial: boolean; ready: b
   const target = appPathFromUrl(url);
   if (!target) return { open: url, park: null };
   const path = String(target);
-  if (!needsAccount(path)) return { open: /^\/[im]\//.test(path) ? path : url, park: null };
+  // Invitation, 3 mots, code d'un créateur (l'accueil) : l'écran gère la session lui-même.
+  if (!needsAccount(path)) return { open: /^\/[im]\//.test(path) || path === '/' ? path : url, park: null };
   if (opts.ready && !opts.initial) return { open: path, park: null };
   return { open: opts.initial ? '/' : '', park: path };
+}
+
+export type LinkAttribution = { source: 'creator' | 'words' | 'group' | 'invite'; ref: string };
+const CODE = /^[A-Za-z0-9_-]{3,32}$/;
+
+/**
+ * D'où vient la personne, d'après un lien ouvert (docs/VIRALITE.md) : `?ref=<code>` ou `/c/<code>` (créateur), `/m/<code>`
+ * (« 3 mots »), `/g/<code>` (lien d'un groupe), `/i/<code>` (invitation). Null pour tout autre lien. Rien d'autre n'est lu
+ * sur l'appareil (aucune empreinte).
+ */
+export function attributionFromUrl(url: string): LinkAttribution | null {
+  const raw = rawPath(url);
+  if (raw === null) return null;
+  const [pathname = '', query = ''] = raw.replace(/#.*$/, '').split('?', 2);
+  const ref = new URLSearchParams(query).get('ref');
+  if (ref && CODE.test(ref)) return { source: 'creator', ref: ref.toUpperCase() };
+  const m = /^(c|m|g|i)\/([\w-]{3,64})\/?$/.exec(pathname);
+  if (!m || !m[2] || !CODE.test(m[2])) return null;
+  const code = m[2];
+  if (m[1] === 'g' && UUID.test(code)) return null;
+  const source = ({ c: 'creator', m: 'words', g: 'group', i: 'invite' } as const)[m[1] as 'c' | 'm' | 'g' | 'i'];
+  return { source, ref: m[1] === 'm' ? code : code.toUpperCase() };
 }

@@ -25,6 +25,8 @@ export const NOTIFICATION_KINDS = [
   'group_message',
   'group_life_lost',
   'group_asleep',
+  /** Quelqu'un rejoint ton groupe par son lien d'invitation (docs/VIRALITE.md). */
+  'group_joined',
   /** Fidélisation (docs/FIDELISATION.md) : les 7 premiers jours (J1, J3, J7). */
   'first_steps',
   /** Nouvelles du minimoa : absence de 3, 7 ou 14 jours, anniversaire d'un mois ou d'un an. */
@@ -61,6 +63,7 @@ export const DEFERRABLE_KINDS: readonly NotificationKindKey[] = [
   'together_proposal',
   'group_life_lost',
   'group_asleep',
+  'group_joined',
   'plus_account',
 ];
 export const isDeferrable = (kind: NotificationKindKey): boolean => DEFERRABLE_KINDS.includes(kind);

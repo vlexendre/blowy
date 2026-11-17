@@ -205,6 +205,18 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'D’où tu viens, et les étapes de ton parcours', id: 'croissance' },
+    {
+      ul: [
+        '**Données :** la façon dont tu es arrivé·e sur Minimoa (le code d’un créateur, le lien « 3 mots » ou le lien de groupe ouvert, une invitation, ou rien de tout ça), lue **seulement** dans le lien que tu as ouvert avant ton inscription ou dans le code que tu as tapé (« Un code ? ») ; la personne qui t’a fait venir, s’il y en a une ; et les grandes étapes de ton parcours, une fois chacune : inscription terminée, premier lien, retour 1, 7 et 30 jours après, début d’essai et premier paiement Minimoa+.',
+        '**Ce qu’on ne fait pas :** aucune empreinte de ton appareil (ni modèle, ni adresse IP, ni identifiant publicitaire), aucun outil de mesure tiers. Les visites des pages publiques (« 3 mots », invitation, groupe, code créateur), les premiers lancements de l’app, les votes et les partages sont seulement **comptés par jour**, sans IP ni identifiant : personne ne se cache derrière ces compteurs.',
+        '**But :** savoir quels liens et quels créateurs font venir des gens qui restent, améliorer le parcours, et offrir l’objet de garde-robe « Parrain » à la personne qui en a fait venir une autre et à celle qui arrive (objet décoratif, jamais lié à un achat ni à un avis).',
+        '**Base légale :** notre intérêt légitime.',
+        '**Durée :** la source et les étapes, tant que ton compte existe. Quand tu le supprimes, la source est effacée et les étapes perdent tout lien avec toi (il ne reste qu’un nombre). Les compteurs du jour sont gardés sans limite.',
+        '**Accès :** quelques personnes autorisées de l’équipe, dans l’outil interne, en chiffres seulement. Un créateur ne voit jamais qui est arrivé avec son code.',
+      ],
+    },
+
     { h3: 'Statistiques et administration' },
     {
       ul: [
@@ -365,6 +377,7 @@ export const confidentialite: LegalPage = {
           ['Signalements traités et décisions de modération', '1 an après la clôture du dossier, plus longtemps seulement si la loi l’impose.'],
           ['Exclusion définitive', 'Une empreinte non réversible de l’identifiant Apple ou Google du compte, pendant 3 ans, pour empêcher une réinscription.'],
           ['Statistiques', 'Jours d’activité et classement interne nominatif : 40 jours. Rencontres proposées : 30 jours. Chiffres agrégés, qui ne permettent pas de t’identifier : sans limite.'],
+          ['Source d’arrivée et étapes du parcours', 'Tant que ton compte existe ; effacées ou rendues anonymes à sa suppression. Compteurs du jour (visites, premiers lancements, votes, partages), sans personne derrière : sans limite.'],
           ['Journaux techniques de l’app', '30 jours au plus. Les journaux de nos hébergeurs suivent leurs propres durées.'],
           ['Échanges avec l’assistance', '1 an après la clôture de la demande.'],
           ['Demandes d’exercice de tes droits', '5 ans, pour pouvoir prouver qu’on y a répondu.'],

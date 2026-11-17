@@ -9,6 +9,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { keys, useApi } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
+import { currentAttribution } from '@/features/growth/attribution';
+import { useDeepLink } from '@/features/notifications/deeplink';
 import { getLocale } from '@/locales/runtime';
 
 import { readPosition } from './permissions';
@@ -42,7 +44,10 @@ interface DraftData {
   locationAnswer: PermissionAnswer | null;
   location: LatLng | null;
   notificationsAnswer: PermissionAnswer | null;
+  /** Code tapé à l'étape du prénom (« Un code ? ») : invitation, groupe, créateur ou « 3 mots ». */
   inviteCode: string;
+  /** Ce qu'est ce code (vérifié par l'API) ; null : pas vérifié ou inconnu (envoyé comme invitation, ignoré s'il ne l'est pas). */
+  codeKind: 'creator' | 'invite' | 'group' | 'words' | null;
   email: string;
   /** Dernier écran atteint (reprise). */
   step: OnboardingStep | null;
@@ -69,6 +74,7 @@ const empty: DraftData = {
   location: null,
   notificationsAnswer: null,
   inviteCode: '',
+  codeKind: null,
   email: '',
   step: null,
 };
@@ -162,11 +168,15 @@ export function adoptPendingInvite(): void {
 export function onboardBody(d: DraftData = useDraft.getState(), fix: LatLng | null = null): OnboardInput {
   const point = fix ?? d.location;
   const location = d.locationAnswer === 'granted' && point ? point : undefined;
+  const code = d.inviteCode.trim();
+  const kind = d.codeKind ?? null;
   return {
     displayName: d.displayName.trim(),
     birthdate: d.birthdate,
     pet: { name: d.petName.trim(), species: d.species },
-    inviteCode: d.inviteCode.trim() || undefined,
+    inviteCode: code && (kind === null || kind === 'invite') ? code : undefined,
+    // Un code tapé (créateur, groupe, « 3 mots ») passe avant le premier lien ouvert (docs/VIRALITE.md).
+    attribution: code && kind && kind !== 'invite' ? { source: kind, ref: code } : currentAttribution(),
     gender: d.gender ?? 'non_dit',
     locale: getLocale(),
     consents: { location: !!location },
@@ -189,6 +199,9 @@ export function useOnboard() {
     },
     onSuccess: (me: Me) => {
       qc.setQueryData(keys.me, me);
+      // Code d'un groupe tapé à l'inscription : sa page « rejoindre » s'ouvre juste après.
+      const d = useDraft.getState();
+      if (d.codeKind === 'group' && d.inviteCode.trim()) useDeepLink.getState().park(`/g/${d.inviteCode.trim().toUpperCase()}`);
       void qc.invalidateQueries({ queryKey: keys.links });
     },
   });

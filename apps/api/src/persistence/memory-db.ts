@@ -17,6 +17,7 @@ import type { ChatPetState, ChatReadingDefault } from '@blowy/domain';
 import type { AiUsageRecord } from '../integrations/ai/usage-store';
 import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
 import type { GroupDayRecord, GroupMemberRecord, GroupMessageRecord, GroupRecord, TogetherProposalRecord } from '../modules/groups/ports';
+import type { AcquisitionRecord, CreatorRecord, GrowthEventRecord } from '../modules/growth/ports';
 import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
 
 export interface WordVoteRow {
@@ -113,6 +114,8 @@ export class MemoryDb {
 
   /** Groupes (spéc §26) : groupes, membres (clé `${groupId}:${userId}`), messages, jours jugés, propositions « ensemble ». */
   readonly groups = new Map<string, GroupRecord>();
+  /** `groups.invite_code`, clé groupId. */
+  readonly groupInviteCodes = new Map<string, string>();
   readonly groupMembers = new Map<string, GroupMemberRecord>();
   readonly groupMessages: GroupMessageRecord[] = [];
   readonly groupDays = new Map<string, GroupDayRecord>();
@@ -122,6 +125,13 @@ export class MemoryDb {
   /** `lifecycle_messages` (messages de fidélisation déjà partis), clé `${userId}|${key}` → `sent_at`. */
   readonly lifecycleMessages = new Map<string, string>();
   /** `profiles.show_habits` vit sur le profil (`Profile.showHabits`). */
+
+  /** Croissance (docs/VIRALITE.md) : créateurs (clé code), sources d'arrivée (clé personne), étapes, compteurs du jour. */
+  readonly creators = new Map<string, CreatorRecord>();
+  readonly acquisitions = new Map<string, AcquisitionRecord>();
+  readonly growthEvents: GrowthEventRecord[] = [];
+  /** clé `${day}|${metric}|${source}|${ref}` */
+  readonly growthCounters = new Map<string, number>();
 
   private sequence = 0;
   nextId(): string {
@@ -194,6 +204,9 @@ export class MemoryDb {
     for (const [key, p] of this.togetherProposals) if (p.userId === userId) this.togetherProposals.delete(key);
     for (const key of [...this.habitJokers.keys()]) if (key.startsWith(`${userId}:`)) this.habitJokers.delete(key);
     for (const key of [...this.lifecycleMessages.keys()]) if (key.startsWith(`${userId}|`)) this.lifecycleMessages.delete(key);
+    this.acquisitions.delete(userId);
+    for (const a of this.acquisitions.values()) if (a.referredBy === userId) a.referredBy = null;
+    for (const e of this.growthEvents) if (e.userId === userId) e.userId = null;
     for (const s of this.subscriptions.values()) if (s.userId === userId) s.userId = null;
     this.suspensions.delete(userId);
     this.accountActivity.delete(userId);

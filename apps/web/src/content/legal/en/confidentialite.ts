@@ -197,6 +197,18 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'Where you came from, and the steps of your journey', id: 'croissance' },
+    {
+      ul: [
+        '**Data:** how you arrived on Minimoa (a creator’s code, the “3 words” link or group link you opened, an invitation, or none of these), read **only** from the link you opened before signing up or from the code you typed (“Got a code?”); the person who brought you, if any; and the main steps of your journey, once each: sign-up completed, first connection, coming back 1, 7 and 30 days later, Minimoa+ trial started and first payment.',
+        '**What we don’t do:** no fingerprinting of your device (no model, no IP address, no advertising identifier), no third-party analytics tool. Visits to public pages (“3 words”, invitation, group, creator code), first app launches, votes and shares are only **counted per day**, with no IP or identifier: there is no one behind these counters.',
+        '**Purpose:** knowing which links and creators bring people who stay, improving the journey, and giving the “Referral” wardrobe item to the person who brought someone and to the newcomer (a decorative item, never tied to a purchase or a review).',
+        '**Legal basis:** our legitimate interest.',
+        '**Retention:** the source and steps, as long as your account exists. When you delete it, the source is erased and the steps lose any link to you (only a number remains). Daily counters are kept without limit.',
+        '**Access:** a few authorized team members, in the internal tool, as figures only. A creator never sees who arrived with their code.',
+      ],
+    },
+
     { h3: 'Statistics and administration' },
     {
       ul: [
@@ -351,6 +363,7 @@ export const confidentialite: LegalPage = {
           ['Handled reports and moderation decisions', '1 year after the case is closed, longer only if the law requires it.'],
           ['Permanent ban', 'A non-reversible fingerprint of the account’s Apple or Google identifier, for 3 years, to prevent re-registration.'],
           ['Statistics', 'Activity days and named internal ranking: 40 days. Suggested encounters: 30 days. Aggregated figures, which cannot identify you: without limit.'],
+          ['Arrival source and journey steps', 'As long as your account exists; erased or anonymized when it’s deleted. Daily counters (visits, first launches, votes, shares), with no one behind them: without limit.'],
           ['The app’s technical logs', '30 days at most. Our hosts’ logs follow their own retention periods.'],
           ['Exchanges with support', '1 year after the request is closed.'],
           ['Requests to exercise your rights', '5 years, so we can prove we answered.'],

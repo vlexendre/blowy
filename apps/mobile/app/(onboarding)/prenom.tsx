@@ -1,9 +1,13 @@
-/** « On t'appelle comment ? » : un grand champ centré ; en dessous, le code d'invitation si on en a un. */
+/**
+ * « On t'appelle comment ? » : un grand champ centré ; en dessous, « Un code ? » (facultatif) : invitation, groupe,
+ * créateur ou « 3 mots ». L'API dit ce qu'il est ; un code inconnu n'empêche rien (docs/VIRALITE.md).
+ */
 import { OnboardingTemplate, OptionalField, TextField } from '@blowy/ui';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
+import { useCodeLookup } from '@/features/growth';
 import { progressAt, useDraft, useDraftGate, useStep } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
@@ -33,6 +37,13 @@ function PrenomStep() {
   const refusal = fix && params.reason && name === refusedName ? params.reason : null;
   // Arrivé par un lien d'invitation : le code est déjà là, le champ est ouvert.
   const [showInvite, setShowInvite] = useState(() => !!useDraft.getState().inviteCode);
+  const lookup = useCodeLookup(inviteCode);
+  const found = lookup.data ?? null;
+  useEffect(() => {
+    if (lookup.isSuccess) set({ codeKind: found?.kind ?? null });
+  }, [lookup.isSuccess, found, set]);
+  const codeHint = found ? t.codeFound[found.kind](found.label ?? found.code) : undefined;
+  const codeError = inviteCode.trim().length >= 3 && lookup.isSuccess && !found ? t.codeUnknown : undefined;
   const next = () => {
     if (!name.trim() || refusal) return;
     set({ displayName: name.trim() });
@@ -72,7 +83,9 @@ function PrenomStep() {
             inset
             label={t.inviteLabel}
             value={inviteCode}
-            onChangeText={(v) => set({ inviteCode: v.toUpperCase() })}
+            onChangeText={(v) => set({ inviteCode: v.toUpperCase(), codeKind: null })}
+            hint={codeHint}
+            error={codeError}
             placeholder={t.invitePlaceholder}
             autoCapitalize="characters"
             autoCorrect={false}

@@ -71,10 +71,16 @@ de l'app (`NSPrivacyCollectedDataTypes`, `apps/mobile/app.config.ts`) : changer 
 | User Content | Other User Content (réponses au test de vision et aux questions du jour, habitudes, « 3 mots », texte des signalements) | Oui | App Functionality, Product Personalization |
 | Identifiers | User ID | Oui | App Functionality |
 | Purchases | Purchase History | Oui | App Functionality |
-| Usage Data | Product Interaction (soins, séries, défis, rencontres acceptées ; sert aussi aux statistiques de l'administration) | Oui | App Functionality, Analytics |
+| Usage Data | Product Interaction (soins, séries, défis, rencontres acceptées ; étapes du parcours — inscription finie, premier lien, retour à J1/J7/J30, essai, paiement — et **source d'arrivée** : code créateur, lien « 3 mots », lien de groupe ou invitation, lue dans le lien ouvert ou le code tapé, depuis le 18 nov. 2026, `docs/VIRALITE.md`) | Oui | App Functionality, Analytics |
 | Other Data | Other Data Types (date de naissance, sexe) | Oui | App Functionality |
 | Diagnostics | — | Non, tant qu'aucun outil de rapport de plantage n'est ajouté | |
 | Health & Fitness | — | Non (habitudes déclarées, pas de mesure) | |
+
+**Croissance (18 nov. 2026).** Rien de neuf côté catégories : la source d'arrivée et les étapes du parcours sont de
+l'« Usage Data › Product Interaction », liées au compte, pour « Analytics » (déjà déclaré). Pas de « Tracking » :
+aucune empreinte d'appareil, aucun identifiant publicitaire, aucun SDK tiers ; le premier lancement et les visites des
+pages publiques ne sont que des compteurs par jour, sans identifiant ni IP. L'objet « Parrain » (garde-robe) récompense
+l'invitant et l'invité sans achat ni avis (règles 3.1.1 et 3.2.2(x) : aucune récompense contre une note ou un avis).
 
 **IA tierce.** Les données envoyées au prestataire d'IA (Anthropic, États-Unis), à Expo (notifications) et à
 l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas de ligne à part. Ce que l'app fait pour

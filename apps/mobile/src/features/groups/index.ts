@@ -4,9 +4,12 @@
  */
 import type { CreateGroupBody, GroupAction, GroupDetail, GroupMessage, GroupMessagesPage, GroupReportBody, Groups, Together } from '@blowy/contract';
 import { type InfiniteData, type QueryClient, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { keys, useApi } from '@/core';
+import { groupUrl, keys, useApi } from '@/core';
+import { useTrackShare } from '@/features/growth';
+import { useCopyShare } from '@/features/me';
+import { croissance } from '@/locales/croissance';
 
 export function useGroups() {
   const api = useApi();
@@ -165,6 +168,68 @@ export function useRenameGroup(id: string) {
 export function useReportGroup(id: string) {
   const api = useApi();
   return useMutation({ mutationFn: (body: GroupReportBody) => api.groups.report(id, body) });
+}
+
+// ── Lien d'invitation (`minimoa.app/g/<code>`, docs/VIRALITE.md) ────────────────
+
+/** Le lien du groupe (créé à la première demande) ; `enabled` : seulement quand on va le partager ou l'afficher. */
+export function useGroupLink(id: string, enabled = true) {
+  const api = useApi();
+  return useQuery({ queryKey: [...keys.group(id), 'link'], queryFn: () => api.groups.link(id), enabled, staleTime: Infinity });
+}
+
+export function useResetGroupLink(id: string) {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: () => api.groups.resetLink(id), onSuccess: (link) => qc.setQueryData([...keys.group(id), 'link'], link) });
+}
+
+/**
+ * « Inviter » : le lien du groupe dans la feuille de partage du téléphone, avec un texte prêt (le nom, l'habitude).
+ * Chaque partage est compté (sans contenu).
+ */
+export function useShareGroupInvite(group: GroupDetail) {
+  const api = useApi();
+  const qc = useQueryClient();
+  const copy = useCopyShare();
+  const track = useTrackShare();
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const share = useCallback(async () => {
+    setFailed(false);
+    setBusy(true);
+    try {
+      const link = await qc.fetchQuery({ queryKey: [...keys.group(group.id), 'link'], queryFn: () => api.groups.link(group.id), staleTime: Infinity });
+      const url = groupUrl(link.code);
+      track('group');
+      await copy.share(croissance.groupInvite.message(group.name, group.habit?.label ?? null, url), url);
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(false);
+    }
+  }, [api, qc, copy, track, group.id, group.name, group.habit?.label]);
+  return { share, busy, failed, copied: copy.copied, reset: () => setFailed(false) };
+}
+
+/** La page « rejoindre » d'un lien de groupe (publique : nom, habitude, jours tenus, nombre de membres). */
+export function useGroupPreview(code: string | null) {
+  const api = useApi();
+  return useQuery({ queryKey: ['groups', 'code', code], queryFn: () => api.groups.preview(code ?? ''), enabled: !!code, retry: false });
+}
+
+export function useJoinGroup() {
+  const api = useApi();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (code: string) => api.groups.join(code),
+    onSuccess: (g) => {
+      setDetail(qc, g);
+      void qc.invalidateQueries({ queryKey: keys.groups, exact: true });
+      // Rejoindre un groupe d'habitude peut ajouter l'habitude.
+      void qc.invalidateQueries({ queryKey: ['rituals', 'habits'] });
+    },
+  });
 }
 
 // ── « La tenir ensemble » ─────────────────────────────────────────────────────

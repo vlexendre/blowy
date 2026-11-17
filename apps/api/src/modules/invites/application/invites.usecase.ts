@@ -8,6 +8,7 @@ import type { Profile, ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
 import { Audience } from '../../safety/application/audience';
+import { Growth } from '../../growth/application/growth';
 
 export interface InviteResult {
   profile: Profile;
@@ -24,6 +25,7 @@ export class Invites {
     @Inject(CreateLink) private readonly createLink: CreateLink,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(Audience) private readonly audience: Audience,
+    @Inject(Growth) private readonly growth: Growth,
   ) {}
 
   /** Page publique d'une invitation : le prénom et le pet de la personne qui invite. */
@@ -31,6 +33,7 @@ export class Invites {
     const profile = await this.audience.publiclyVisible(await this.profiles.findByInviteCode(normalize(code)));
     const pet = profile ? await this.pets.findByOwner(profile.id) : null;
     if (!profile || !pet) throw new DomainError('not_found', errorText('inviteNotFound'));
+    await this.growth.visit('i');
     return { profile, pet: livePet(pet, this.clock.now()) };
   }
 

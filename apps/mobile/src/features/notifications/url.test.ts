@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { appPathFromUrl, needsAccount, pathFromPushUrl, routeIncomingUrl } from './url';
+import { appPathFromUrl, attributionFromUrl, needsAccount, pathFromPushUrl, routeIncomingUrl } from './url';
 
 const ID = '0b0c3d7e-1111-4111-8111-111111111111';
 
@@ -31,6 +31,9 @@ describe('appPathFromUrl : adresses courtes, deux schémas, deux domaines', () =
     ['i/abcd1234', '/i/ABCD1234'],
     ['m/k3Xy_9', '/m/k3Xy_9'],
     [`g/${ID}`, `/groupe/${ID}`],
+    ['g/k7p2xq9m', '/g/K7P2XQ9M'],
+    ['c/lea', '/'],
+    ['mots', '/mots'],
     [`r/${ID}`, `/rencontre/${ID}`],
     [`l/${ID}`, `/link/${ID}`],
     ['plus', '/moi/blowy-plus'],
@@ -83,5 +86,27 @@ describe('routeIncomingUrl', () => {
   it('autres liens (retour de connexion) : intacts', () => {
     const url = 'minimoa://auth-callback?code=a.b~c';
     expect(routeIncomingUrl(url, { initial: false, ready: false })).toEqual({ open: url, park: null });
+  });
+});
+
+describe('liens de croissance (docs/VIRALITE.md)', () => {
+  it('lien d’un groupe : la page « rejoindre », gardée jusqu’à la fin de l’inscription', () => {
+    expect(needsAccount('/g/K7P2XQ9M')).toBe(true);
+    expect(needsAccount('/mots')).toBe(true);
+    expect(routeIncomingUrl('https://minimoa.app/g/k7p2xq9m', { initial: false, ready: true })).toEqual({ open: '/g/K7P2XQ9M', park: null });
+    expect(routeIncomingUrl('https://minimoa.app/g/k7p2xq9m', { initial: true, ready: false })).toEqual({ open: '/', park: '/g/K7P2XQ9M' });
+  });
+  it('code d’un créateur : l’accueil', () => {
+    expect(routeIncomingUrl('https://minimoa.app/c/lea', { initial: true, ready: false })).toEqual({ open: '/', park: null });
+  });
+  it('source d’arrivée lue dans le lien, jamais ailleurs', () => {
+    expect(attributionFromUrl('https://minimoa.app/c/lea')).toEqual({ source: 'creator', ref: 'LEA' });
+    expect(attributionFromUrl('https://minimoa.app/m/k3Xy_9?ref=nino10')).toEqual({ source: 'creator', ref: 'NINO10' });
+    expect(attributionFromUrl('minimoa://m/k3Xy_9')).toEqual({ source: 'words', ref: 'k3Xy_9' });
+    expect(attributionFromUrl('https://minimoa.app/g/k7p2xq9m')).toEqual({ source: 'group', ref: 'K7P2XQ9M' });
+    expect(attributionFromUrl(`https://minimoa.app/g/${ID}`)).toBeNull();
+    expect(attributionFromUrl('https://minimoa.app/i/abcd1234')).toEqual({ source: 'invite', ref: 'ABCD1234' });
+    expect(attributionFromUrl('https://minimoa.app/defi')).toBeNull();
+    expect(attributionFromUrl('https://evil.example/c/lea')).toBeNull();
   });
 });

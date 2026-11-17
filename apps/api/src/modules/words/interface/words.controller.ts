@@ -35,6 +35,8 @@ export class WordsController {
   @Get(':code')
   async get(@Param('code', Code) code: string): Promise<WordsPage> {
     const { profile, pet } = await this.words.target(code);
+    // Visite de la page « 3 mots » (compteur du jour, sans IP ni code).
+    await this.words.visited();
     return { displayName: profile.displayName, pet: toPublicPet(pet, moodForShape(shapeOf(pet.needs))), words: WORD_KEYS };
   }
 

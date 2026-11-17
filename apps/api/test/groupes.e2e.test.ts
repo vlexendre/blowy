@@ -65,7 +65,8 @@ describe('groupes et habitudes partagées', () => {
   it('créer un groupe d’habitude : invitations, il démarre à 3 membres', async () => {
     expect(
       await errorCode(
-        a.api.groups.create({ name: 'Marche', kind: 'habit', habitId: 'marcher', memberIds: [b.id] }),
+        // Seuls des liens vivants s'invitent (un groupe peut aussi partir sans invitation : son lien le remplit).
+        a.api.groups.create({ name: 'Marche', kind: 'habit', habitId: 'marcher', memberIds: [randomUUID()] }),
       ),
     ).toBe('invalid');
     const created = await a.api.groups.create({

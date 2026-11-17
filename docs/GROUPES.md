@@ -12,6 +12,9 @@ administration) et `v7/rituels.ts` (`RigourZ`, `SharedHabitsZ`, `OnboardHabitZ`)
 - **Jour dû** : « tous les jours », chaque jour depuis la création ; « 3 fois par semaine », seulement le jour où le
   manquer rendrait l'objectif de la semaine impossible (semaine de départ au prorata).
 - **Groupe** : libre (un chat) ou d'habitude. 3 à 8 membres ; il démarre (`forming` → `active`) au 3ᵉ membre actif.
+  Il peut être créé sans invitation (18 nov.) et se remplir par son **lien d'invitation** `minimoa.app/g/<code>` :
+  rejoindre par le lien suit les mêmes règles qu'une invitation acceptée (8 au plus, limite de groupes, habitude ajoutée,
+  `Audience` : bloqué avec un membre ou monde de revue → introuvable) et prévient les autres membres (`group_joined`).
   Limite de groupes à la fois : `entitlements(plus).groups` (2 gratuit, 10 avec Minimoa+). On n'invite que ses liens
   vivants (`links.status = 'active'`). Accepter un groupe d'habitude ajoute l'habitude si besoin (dans sa limite).
 - **Jour d'un groupe d'habitude** : un membre est à jour s'il a tenu l'habitude ou posé un joker ; un jour où personne
@@ -54,6 +57,8 @@ administration) et `v7/rituels.ts` (`RigourZ`, `SharedHabitsZ`, `OnboardHabitZ`)
 | `POST /v1/groups` | `CreateGroupBody` → `GroupDetailZ` |
 | `GET /v1/groups/:id` · `PATCH` (renommer) | `GroupDetailZ` · `RenameGroupBody` → `GroupActionZ` |
 | `POST /v1/groups/:id/invite` | `InviteToGroupBody` → `GroupDetailZ` |
+| `POST /v1/groups/:id/link` · `POST /v1/groups/:id/link/reset` | `GroupInviteLinkZ` (code créé à la première demande d'un membre ; le créateur seul le change) |
+| `GET /v1/groups/code/:code` (public) · `POST /v1/groups/code/:code/join` | `GroupPreviewZ` (nom, habitude, jours tenus, membres, espèces ; jamais de prénom) · `GroupDetailZ` |
 | `POST /v1/groups/:id/accept` · `decline` · `leave` | `GroupDetailZ` · `OkZ` · `OkZ` |
 | `POST /v1/groups/:id/wake` | `GroupActionZ` |
 | `GET /v1/groups/:id/messages?before=` · `POST` | `GroupMessagesPageZ` · `SendGroupMessageBody` → `GroupActionZ` |

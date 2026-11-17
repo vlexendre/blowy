@@ -19,4 +19,10 @@ export class SupabaseWordVotesRepository implements WordVotesRepository {
     check(error, 'comptage des votes');
     return count ?? 0;
   }
+
+  async words(targetUser: string): Promise<string[][]> {
+    const { data, error } = await this.client.from('word_votes').select('words').eq('target_user', targetUser).order('created_at', { ascending: false }).limit(500);
+    check(error, 'lecture des votes');
+    return (data ?? []).map((r) => [...r.words]);
+  }
 }

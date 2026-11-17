@@ -53,6 +53,18 @@ export class MemoryGroupsRepository implements GroupsRepository {
       .slice(0, limit)
       .map(copy);
   }
+  async inviteCode(groupId: string): Promise<string | null> {
+    return this.db.groupInviteCodes.get(groupId) ?? null;
+  }
+  async setInviteCode(groupId: string, code: string): Promise<boolean> {
+    for (const [id, c] of this.db.groupInviteCodes) if (c === code && id !== groupId) return false;
+    this.db.groupInviteCodes.set(groupId, code);
+    return true;
+  }
+  async findByInviteCode(code: string): Promise<GroupRecord | null> {
+    for (const [id, c] of this.db.groupInviteCodes) if (c === code) return this.find(id);
+    return null;
+  }
 }
 
 const key = (groupId: string, userId: string): string => `${groupId}:${userId}`;

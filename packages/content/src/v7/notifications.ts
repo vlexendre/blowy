@@ -87,6 +87,7 @@ const fr = {
       body: (v) => `Il lui reste ${v.count} ${Number(v.count) > 1 ? 'vies' : 'vie'}. Aujourd’hui, on s’y remet ensemble.`,
     },
     group_asleep: { title: (v) => `« ${v.group} » s’est endormi`, body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.' },
+    group_joined: { title: (v) => `« ${v.group} » : ${v.name} arrive`, body: (v) => (Number(v.count) >= 3 ? `Vous êtes ${v.count}. Dis-lui bonjour.` : `Vous êtes ${v.count}. Encore une personne et la série démarre.`) },
     first_steps: {
       title: (v) => (v.step === 'd1' ? `${v.minimoa} a une idée` : v.step === 'd3' ? 'À plusieurs, c’est plus simple' : `Une semaine avec ${v.minimoa}`),
       body: (v) =>
@@ -171,6 +172,7 @@ const fr = {
     group_message: 'Messages de groupe',
     group_life_lost: 'Vie perdue d’un groupe',
     group_asleep: 'Groupe endormi',
+    group_joined: 'Arrivées dans un groupe',
     first_steps: 'Premiers pas',
     minimoa_news: 'Nouvelles de ton minimoa',
     plus_account: 'Ton abonnement Minimoa+',
@@ -221,6 +223,7 @@ export const notificationTexts = defineMessages({
         body: (v) => `${v.count} ${Number(v.count) === 1 ? 'life' : 'lives'} left. Today you pick it up together.`,
       },
       group_asleep: { title: (v) => `“${v.group}” fell asleep`, body: () => 'No lives left for now. Anyone can wake it up.' },
+      group_joined: { title: (v) => `${v.name} joined “${v.group}”`, body: (v) => (Number(v.count) >= 3 ? `There are ${v.count} of you now. Say hi.` : `There are ${v.count} of you. One more and the streak starts.`) },
       first_steps: {
         title: (v) => (v.step === 'd1' ? `${v.minimoa} has an idea` : v.step === 'd3' ? 'Easier together' : `One week with ${v.minimoa}`),
         body: (v) =>
@@ -304,6 +307,7 @@ export const notificationTexts = defineMessages({
       group_message: 'Group messages',
       group_life_lost: 'Group lost a life',
       group_asleep: 'Group asleep',
+      group_joined: 'Someone joined a group',
       first_steps: 'First steps',
       minimoa_news: 'News from your minimoa',
       plus_account: 'Your Minimoa+ subscription',
@@ -351,6 +355,7 @@ export const notificationTexts = defineMessages({
         body: (v) => `Le ${Number(v.count) === 1 ? 'queda' : 'quedan'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoy volvéis a empezar juntos.`,
       },
       group_asleep: { title: (v) => `«${v.group}» se ha dormido`, body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.' },
+      group_joined: { title: (v) => `${v.name} se une a «${v.group}»`, body: (v) => (Number(v.count) >= 3 ? `Ya sois ${v.count}. Salúdale.` : `Sois ${v.count}. Una persona más y empieza la racha.`) },
       first_steps: {
         title: (v) => (v.step === 'd1' ? `${v.minimoa} tiene una idea` : v.step === 'd3' ? 'Juntos es más fácil' : `Una semana con ${v.minimoa}`),
         body: (v) =>
@@ -434,6 +439,7 @@ export const notificationTexts = defineMessages({
       group_message: 'Mensajes de grupo',
       group_life_lost: 'Vida perdida de un grupo',
       group_asleep: 'Grupo dormido',
+      group_joined: 'Llegadas a un grupo',
       first_steps: 'Primeros pasos',
       minimoa_news: 'Noticias de tu minimoa',
       plus_account: 'Tu suscripción a Minimoa+',
@@ -481,6 +487,7 @@ export const notificationTexts = defineMessages({
         body: (v) => `${Number(v.count) === 1 ? 'Resta' : 'Restam'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoje vocês recomeçam juntos.`,
       },
       group_asleep: { title: (v) => `«${v.group}» adormeceu`, body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.' },
+      group_joined: { title: (v) => `${v.name} entrou em “${v.group}”`, body: (v) => (Number(v.count) >= 3 ? `Agora vocês são ${v.count}. Dê um oi.` : `Vocês são ${v.count}. Mais uma pessoa e a sequência começa.`) },
       first_steps: {
         title: (v) => (v.step === 'd1' ? `${v.minimoa} teve uma ideia` : v.step === 'd3' ? 'Junto fica mais fácil' : `Uma semana com ${v.minimoa}`),
         body: (v) =>
@@ -564,6 +571,7 @@ export const notificationTexts = defineMessages({
       group_message: 'Mensagens de grupo',
       group_life_lost: 'Vida perdida de um grupo',
       group_asleep: 'Grupo adormecido',
+      group_joined: 'Chegadas em um grupo',
       first_steps: 'Primeiros passos',
       minimoa_news: 'Notícias do seu minimoa',
       plus_account: 'Sua assinatura do Minimoa+',
@@ -611,6 +619,7 @@ export const notificationTexts = defineMessages({
         body: (v) => `Nog ${v.count} ${Number(v.count) === 1 ? 'leven' : 'levens'}. Vandaag pakken jullie het samen weer op.`,
       },
       group_asleep: { title: (v) => `“${v.group}” is in slaap gevallen`, body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.' },
+      group_joined: { title: (v) => `${v.name} doet mee in „${v.group}”`, body: (v) => (Number(v.count) >= 3 ? `Jullie zijn nu met ${v.count}. Zeg even hallo.` : `Jullie zijn met ${v.count}. Nog één persoon en de reeks begint.`) },
       first_steps: {
         title: (v) => (v.step === 'd1' ? `${v.minimoa} heeft een idee` : v.step === 'd3' ? 'Samen is makkelijker' : `Een week met ${v.minimoa}`),
         body: (v) =>
@@ -694,6 +703,7 @@ export const notificationTexts = defineMessages({
       group_message: 'Groepsberichten',
       group_life_lost: 'Groep verloor een leven',
       group_asleep: 'Groep in slaap',
+      group_joined: 'Nieuwe leden in een groep',
       first_steps: 'Eerste stappen',
       minimoa_news: 'Nieuws van je minimoa',
       plus_account: 'Je Minimoa+-abonnement',

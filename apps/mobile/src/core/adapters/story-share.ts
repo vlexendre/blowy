@@ -41,8 +41,9 @@ async function instagramReady(): Promise<boolean> {
  * Ouvre l'éditeur de story d'Instagram avec l'image en fond (`story`) ; sinon la feuille de partage du système avec
  * l'image et le message (`sheet`) ; `none` si la personne ferme la feuille ou si rien n'a pu s'ouvrir.
  */
-export async function shareStoryImage(imageUri: string, message: string): Promise<StoryShareResult> {
-  if (await instagramReady()) {
+/** `target: 'sheet'` : directement la feuille de partage (« Autre app »), sans essayer Instagram. */
+export async function shareStoryImage(imageUri: string, message: string, target: 'story' | 'sheet' = 'story'): Promise<StoryShareResult> {
+  if (target === 'story' && (await instagramReady())) {
     try {
       await Share.shareSingle({ social: Social.InstagramStories, appId: config.facebookAppId, backgroundImage: imageUri });
       return 'story';

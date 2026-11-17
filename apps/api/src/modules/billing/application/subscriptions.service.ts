@@ -5,6 +5,7 @@ import type { ProfilesRepository } from '../../me/ports';
 import type { SubscriptionRecord, SubscriptionsRepository } from '../ports';
 import { SUBSCRIPTIONS } from '../tokens';
 import { PlusNews } from './plus-news';
+import { Growth } from '../../growth/application/growth';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -22,6 +23,7 @@ export class Subscriptions {
     @Inject(SUBSCRIPTIONS) private readonly subscriptions: SubscriptionsRepository,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Optional() @Inject(PlusNews) private readonly news: PlusNews | null = null,
+    @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
   ) {}
 
   /**
@@ -51,6 +53,9 @@ export class Subscriptions {
     if (owner) await this.refreshPlus(owner);
     // Bienvenue, merci, paiement refusé ou rattrapé : une fois chacun (docs/FIDELISATION.md). Ne lève jamais.
     if (owner) await this.news?.afterApply(prev, record, event);
+    // Entonnoir : essai démarré, puis payant (une fois chacun).
+    if (owner && record.status === 'trial') await this.growth?.step(owner, 'trial');
+    if (owner && record.status === 'active') await this.growth?.step(owner, 'paid');
     return record;
   }
 

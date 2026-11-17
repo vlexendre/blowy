@@ -11534,6 +11534,17 @@
    "dx": 0.12,
    "ratio": 0.964
   },
+  "parrain": {
+   "anchor": "toy",
+   "size": "bodyw",
+   "w": 0.34,
+   "pivot": [
+    0.5,
+    1.0
+   ],
+   "dx": 0.12,
+   "ratio": 0.964
+  },
   "pinceau": {
    "anchor": "toy",
    "size": "bodyw",
@@ -12253,6 +12264,15 @@
    ]
   },
   "cadeau": {
+   "plain": true,
+   "fur": [
+    6,
+    3,
+    8,
+    0.3
+   ]
+  },
+  "parrain": {
    "plain": true,
    "fur": [
     6,

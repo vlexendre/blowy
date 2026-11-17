@@ -671,6 +671,7 @@ export const unlock = messages({
       words: (n: number): string => `${plural(n, 'pote a', 'potes ont')} donné leurs 3 mots.`,
       ritualStreak: (n: number): string => `${n} jours de série. La mèche brille.`,
       habitsKept: (n: number): string => `${plural(n, 'habitude tenue', 'habitudes tenues')}. Ça se voit.`,
+      referrals: (): string => 'Tu as fait venir quelqu’un, ou quelqu’un t’a fait venir. Merci.',
     } as Record<StatKey, (n: number) => string>,
     fallback: 'Il est rangé dans sa garde-robe.',
     wear: 'Il le porte',
@@ -688,6 +689,7 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'friend has', 'friends have')} given their 3 words.`,
       ritualStreak: (n: number): string => `${n}-day streak. The flame is burning bright.`,
       habitsKept: (n: number): string => `${count(n, 'habit kept', 'habits kept')}. It shows.`,
+      referrals: (): string => 'You brought someone along, or someone brought you. Thanks.',
     },
     fallback: 'It’s in its wardrobe.',
     wear: 'Put it on',
@@ -705,6 +707,7 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'persona ha', 'personas han')} dado sus 3 palabras.`,
       ritualStreak: (n: number): string => `${n} días de racha. La llama brilla.`,
       habitsKept: (n: number): string => `${count(n, 'hábito cumplido', 'hábitos cumplidos')}. Se nota.`,
+      referrals: (): string => 'Has traído a alguien, o alguien te ha traído. Gracias.',
     },
     fallback: 'Está guardado en su armario.',
     wear: 'Ponérselo',
@@ -722,6 +725,7 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'pessoa deu', 'pessoas deram')} suas 3 palavras.`,
       ritualStreak: (n: number): string => `${n} dias de sequência. A chama está acesa.`,
       habitsKept: (n: number): string => `${count(n, 'hábito mantido', 'hábitos mantidos')}. Dá para ver.`,
+      referrals: (): string => 'Você trouxe alguém, ou alguém trouxe você. Valeu.',
     },
     fallback: 'Está guardado no guarda-roupa dele.',
     wear: 'Vestir',
@@ -739,6 +743,7 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'vriend heeft', 'vrienden hebben')} hun 3 woorden gegeven.`,
       ritualStreak: (n: number): string => `${n} dagen reeks. Het vlammetje brandt.`,
       habitsKept: (n: number): string => `${count(n, 'gewoonte volgehouden', 'gewoontes volgehouden')}. Dat zie je.`,
+      referrals: (): string => 'Je hebt iemand meegenomen, of iemand nam jou mee. Dank je.',
     },
     fallback: 'Het ligt in zijn garderobe.',
     wear: 'Aantrekken',
@@ -770,6 +775,7 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 mots de ${n} potes` : '3 mots d’un pote'),
       ritualStreak: (n: number): string => `Série de ${n} jours`,
       habitsKept: (n: number): string => plural(n, 'habitude tenue', 'habitudes tenues'),
+      referrals: (): string => 'Inviter quelqu’un',
     } as Record<StatKey, (n: number) => string>,
     /** Titre de la fiche : le dernier mot estompé (« COURONNE DE / FLEURS »). */
     itemTitle: (name: string): TitleSegment[] => {
@@ -793,6 +799,7 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Personne n’a encore choisi tes 3 mots.' : `${plural(have, 'pote a', 'potes ont')} déjà répondu.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Pas encore de série.' : `Ton record : ${plural(have, 'jour', 'jours')}.`),
       habitsKept: (have: number): string => `${plural(have, 'habitude tenue', 'habitudes tenues')} pour l’instant.`,
+      referrals: (): string => 'Envoie ton invitation ou ton lien « 3 mots » : quand quelqu’un arrive grâce à toi, vous gagnez ce cadeau tous les deux.',
     } as Record<StatKey, (have: number) => string>,
     /** Raccourci vers l'endroit où on avance. */
     shortcut: {
@@ -804,6 +811,7 @@ export const wardrobe = messages({
       words: 'Partager mes 3 mots',
       ritualStreak: 'Relever le défi du jour',
       habitsKept: 'Tenir une habitude',
+      referrals: 'Inviter quelqu’un',
     } as Record<StatKey, string>,
     premiumNote: 'Inclus dans Minimoa+',
     /** Fiche d'un objet Minimoa+ : ouvre la feuille Minimoa+. */
@@ -835,6 +843,7 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 words from ${n} friends` : '3 words from a friend'),
       ritualStreak: (n: number): string => `${n}-day streak`,
       habitsKept: (n: number): string => count(n, 'habit kept', 'habits kept'),
+      referrals: (): string => 'Invite someone',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -856,6 +865,7 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Nobody has picked your 3 words yet.' : `${count(have, 'friend has', 'friends have')} already answered.`),
       ritualStreak: (have: number): string => (have === 0 ? 'No streak yet.' : `Your record: ${count(have, 'day', 'days')}.`),
       habitsKept: (have: number): string => `${count(have, 'habit kept', 'habits kept')} so far.`,
+      referrals: (): string => 'Send your invite or your “3 words” link: when someone joins thanks to you, you both get this gift.',
     },
     shortcut: {
       careDays: 'Take care of it',
@@ -866,6 +876,7 @@ export const wardrobe = messages({
       words: 'Share my 3 words',
       ritualStreak: 'Take the daily challenge',
       habitsKept: 'Keep a habit',
+      referrals: 'Invite someone',
     },
     premiumNote: 'Included in Minimoa+',
     premiumCta: 'See Minimoa+',
@@ -895,6 +906,7 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 palabras de ${n} personas` : '3 palabras de alguien'),
       ritualStreak: (n: number): string => `Racha de ${n} días`,
       habitsKept: (n: number): string => count(n, 'hábito cumplido', 'hábitos cumplidos'),
+      referrals: (): string => 'Invitar a alguien',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -916,6 +928,7 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Nadie ha elegido aún tus 3 palabras.' : `${count(have, 'persona ya ha', 'personas ya han')} respondido.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Aún no hay racha.' : `Tu récord: ${count(have, 'día', 'días')}.`),
       habitsKept: (have: number): string => `${count(have, 'hábito cumplido', 'hábitos cumplidos')} por ahora.`,
+      referrals: (): string => 'Envía tu invitación o tu enlace de «3 palabras»: cuando alguien llegue gracias a ti, los dos ganáis este regalo.',
     },
     shortcut: {
       careDays: 'Cuidarlo',
@@ -926,6 +939,7 @@ export const wardrobe = messages({
       words: 'Compartir mis 3 palabras',
       ritualStreak: 'Hacer el reto del día',
       habitsKept: 'Cumplir un hábito',
+      referrals: 'Invitar a alguien',
     },
     premiumNote: 'Incluido en Minimoa+',
     premiumCta: 'Ver Minimoa+',
@@ -955,6 +969,7 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 palavras de ${n} pessoas` : '3 palavras de alguém'),
       ritualStreak: (n: number): string => `Sequência de ${n} dias`,
       habitsKept: (n: number): string => count(n, 'hábito mantido', 'hábitos mantidos'),
+      referrals: (): string => 'Convidar alguém',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -976,6 +991,7 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Ninguém escolheu suas 3 palavras ainda.' : `${count(have, 'pessoa já respondeu', 'pessoas já responderam')}.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Ainda sem sequência.' : `Seu recorde: ${count(have, 'dia', 'dias')}.`),
       habitsKept: (have: number): string => `${count(have, 'hábito mantido', 'hábitos mantidos')} até agora.`,
+      referrals: (): string => 'Mande seu convite ou seu link de “3 palavras”: quando alguém chegar por você, os dois ganham este presente.',
     },
     shortcut: {
       careDays: 'Cuidar dele',
@@ -986,6 +1002,7 @@ export const wardrobe = messages({
       words: 'Compartilhar minhas 3 palavras',
       ritualStreak: 'Fazer o desafio do dia',
       habitsKept: 'Manter um hábito',
+      referrals: 'Convidar alguém',
     },
     premiumNote: 'Incluído no Minimoa+',
     premiumCta: 'Ver o Minimoa+',
@@ -1015,6 +1032,7 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 woorden van ${n} vrienden` : '3 woorden van een vriend'),
       ritualStreak: (n: number): string => `Reeks van ${n} dagen`,
       habitsKept: (n: number): string => count(n, 'gewoonte volgehouden', 'gewoontes volgehouden'),
+      referrals: (): string => 'Iemand uitnodigen',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -1036,6 +1054,7 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Nog niemand heeft je 3 woorden gekozen.' : `${count(have, 'vriend heeft', 'vrienden hebben')} al geantwoord.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Nog geen reeks.' : `Je record: ${count(have, 'dag', 'dagen')}.`),
       habitsKept: (have: number): string => `${count(have, 'gewoonte volgehouden', 'gewoontes volgehouden')} tot nu toe.`,
+      referrals: (): string => 'Stuur je uitnodiging of je „3 woorden”-link: komt er iemand dankzij jou, dan krijgen jullie allebei dit cadeau.',
     },
     shortcut: {
       careDays: 'Hem verzorgen',
@@ -1046,6 +1065,7 @@ export const wardrobe = messages({
       words: 'Mijn 3 woorden delen',
       ritualStreak: 'Uitdaging van de dag doen',
       habitsKept: 'Een gewoonte volhouden',
+      referrals: 'Iemand uitnodigen',
     },
     premiumNote: 'Inbegrepen bij Minimoa+',
     premiumCta: 'Bekijk Minimoa+',

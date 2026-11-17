@@ -221,7 +221,7 @@ function Frame({ height, children }: { height: number; children: ReactNode }) {
 
 // ── Soins et garde-robe ──────────────────────────────────────────────────────
 const SPECIES: readonly Species[] = ['nino', 'suzie', 'gaston', 'pia'];
-const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1, ritualStreak: 3, habitsKept: 1 };
+const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1, ritualStreak: 3, habitsKept: 1, referrals: 0 };
 const earned = new Set(earnedItems(demoStats));
 const wardrobe: WardrobeItemLook[] = ITEMS.map((i) => {
   const p = itemProgress(i, demoStats);

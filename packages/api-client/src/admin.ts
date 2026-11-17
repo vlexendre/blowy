@@ -20,6 +20,7 @@ import {
   adminRoutes,
 } from '@blowy/contract';
 import { AdminGroupZ, groupRoutes } from '@blowy/contract';
+import { AdminCreatorsZ, AdminGrowthZ, growthRoutes } from '@blowy/contract';
 import type { z } from 'zod';
 import { ApiError } from './index';
 
@@ -75,6 +76,11 @@ export function createAdminClient(opts: AdminClientOptions) {
     group: (id: string) => call('GET', groupRoutes.adminGroup(id), AdminGroupZ),
     /** Fermer un groupe (modération) : plus personne n'y écrit, le chat reste lisible par ses membres. */
     closeGroup: (id: string, reason: string) => call('POST', groupRoutes.adminGroupClose(id), AdminGroupZ, { reason }),
+    /** Croissance : entonnoir par source et par semaine, facteur K, boucle « 3 mots », groupes viables. */
+    growth: () => call('GET', growthRoutes.adminGrowth(), AdminGrowthZ),
+    creators: () => call('GET', growthRoutes.adminCreators(), AdminCreatorsZ),
+    createCreator: (code: string, name: string) => call('POST', growthRoutes.adminCreators(), AdminCreatorsZ, { code, name }),
+    updateCreator: (code: string, patch: { name?: string; active?: boolean }) => call('POST', growthRoutes.adminCreator(code), AdminCreatorsZ, patch),
   };
 }
 export type AdminClient = ReturnType<typeof createAdminClient>;

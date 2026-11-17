@@ -5,10 +5,13 @@
  * (`useDeepLink`, ouvert par les onglets). Tableau des chemins : docs/DEEPLINKS.md.
  */
 import { useDeepLink } from '@/features/notifications/deeplink';
+import { captureUrl } from '@/features/growth/attribution';
 import { routeIncomingUrl } from '@/features/notifications/url';
 
 export function redirectSystemPath({ path, initial }: { path: string; initial: boolean }): string {
   try {
+    // Source d'arrivée (créateur, 3 mots, groupe, invitation) : gardée avant l'inscription (docs/VIRALITE.md).
+    captureUrl(path);
     const state = useDeepLink.getState();
     const { open, park } = routeIncomingUrl(path, { initial, ready: state.ready });
     if (park) state.park(park);

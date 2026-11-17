@@ -389,6 +389,14 @@ export type Database = {
       push_receipts: Table<{ ticket_id: string; token: string; created_at: string }, 'created_at'>;
       /** Migration 20261117140000_hebdo_fidelisation : messages de fidélisation déjà partis (une ligne par personne et clé). */
       lifecycle_messages: Table<{ user_id: string; key: string; sent_at: string }, 'sent_at'>;
+      /** Croissance (20261118100000, docs/VIRALITE.md). */
+      creators: Table<{ code: string; name: string; active: boolean; created_at: string; updated_at: string }, 'active' | 'created_at' | 'updated_at'>;
+      acquisitions: Table<
+        { user_id: string; source: string; ref: string | null; referred_by: string | null; cohort_on: string; created_at: string },
+        'ref' | 'referred_by' | 'created_at'
+      >;
+      growth_events: Table<{ id: number; user_id: string | null; kind: string; source: string; cohort_on: string; created_at: string }, 'id' | 'user_id' | 'created_at'>;
+      growth_counters: Table<{ day: string; metric: string; source: string; ref: string; count: number }, 'source' | 'ref' | 'count'>;
       tick_runs: Table<{ job: string; slot: string; started_at: string; finished_at: string | null; done: number | null }, 'started_at' | 'finished_at' | 'done'>;
       ritual_states: Table<
         {
@@ -492,8 +500,11 @@ export type Database = {
           closed_reason: string | null;
           created_at: string;
           updated_at: string;
+          /** Code du lien d'invitation `minimoa.app/g/<code>` (20261118100000), null tant que personne ne l'a demandé. */
+          invite_code: string | null;
         },
         | 'id'
+        | 'invite_code'
         | 'habit_id'
         | 'status'
         | 'created_by'
@@ -555,6 +566,7 @@ export type Database = {
       ritual_add_habits_kept: { Args: { p_user: string; p_n: number }; Returns: number };
       encounter_proposals_record: { Args: { p_day: string; p_user: string; p_proposed: number; p_score_sum: number }; Returns: undefined };
       encounter_proposals_summary: { Args: { p_day: string }; Returns: Json };
+      growth_bump: { Args: { p_day: string; p_metric: string; p_source: string; p_ref: string }; Returns: undefined };
       places_in_cells: { Args: { p_cells: string[]; p_limit: number; p_exclude: string }; Returns: Database['public']['Tables']['profile_places']['Row'][] };
       ai_record_usage: {
         Args: {

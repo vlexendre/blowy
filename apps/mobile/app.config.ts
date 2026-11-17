@@ -18,7 +18,7 @@ const ASSOCIATED_DOMAINS = ['minimoa.app', 'www.minimoa.app'];
  */
 const SCHEMES = ['minimoa', 'blowy'];
 /** Chemins publics ouverts dans l'app (même liste que le site : apps/web/src/config/apple.ts). */
-const APP_LINK_PREFIXES = ['/i/', '/m/', '/g/', '/r/', '/l/'];
+const APP_LINK_PREFIXES = ['/i/', '/m/', '/g/', '/c/', '/r/', '/l/'];
 const APP_LINK_PAGES = ['/plus', '/defi', '/habitudes', '/carte'];
 /** À coller après `eas init` (voir docs/TESTFLIGHT.md). */
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? '01d6f37d-203a-4747-910b-6de4cfe50ed5';

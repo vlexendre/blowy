@@ -1,5 +1,80 @@
 ---
-/** /g/… (réécrit vers cette page, public/_redirects) : lien de l'app ouvert sans l'app. */
-import OpenInApp from '../../components/organisms/public/OpenInApp.astro';
+/**
+ * /g/… (réécrit vers cette page, public/_redirects). Deux cas (docs/DEEPLINKS.md) :
+ * - /g/<identifiant> : un groupe de l'app, ouvert sans l'app → « Ouvre Minimoa » (membres seulement) ;
+ * - /g/<code> : le lien d'invitation d'un groupe → nom, habitude, jours tenus, nombre de membres et leurs minimoas
+ *   (jamais de prénom ni de position), « Rejoindre dans l'app », stores et le code à taper à l'inscription.
+ * Tout se passe côté navigateur (scripts/group-page.ts) ; cinq langues, le français rendu au build.
+ */
+import Public from '../../layouts/Public.astro';
+import StateBlock from '../../components/molecules/StateBlock.astro';
+import StoreButtons from '../../components/molecules/StoreButtons.astro';
+import LoadingState from '../../components/organisms/public/LoadingState.astro';
+import NetworkError from '../../components/organisms/public/NetworkError.astro';
+import CodeBox from '../../components/organisms/public/CodeBox.astro';
+import { growthCopy } from '../../content/growth';
+import { openCopy } from '../../content/open';
+
+const t = growthCopy.fr.group;
+const open = openCopy.fr;
+const o = open.kinds.g;
 ---
-<OpenInApp kind="g" />
+<Public title={t.meta} description={t.description} noindex ogImage="/og/g.jpg" ogAlt={o.title.join(' ')}>
+  <LoadingState />
+
+  <section class="pub-state" data-state="open" data-open-kind="g" hidden>
+    <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
+    <h1 class="pub-title" data-t="title" tabindex="-1">{o.title.map((l, i) => <span class:list={['ln', { dim: i > 0 && o.title.length > 2 && i === o.title.length - 1 }]}>{l}</span>)}</h1>
+    <p class="pub-text" data-t="text">{o.text}</p>
+    <div class="pub-actions">
+      <a class="btn l" data-open href="minimoa://g" data-t="open">{open.open}</a>
+      <a class="btn g" href="/" data-t="home">{open.home}</a>
+    </div>
+    <div class="pub-dl">
+      <b data-t="downloadTitle">{open.downloadTitle}</b>
+      <p data-t="downloadText">{open.downloadText}</p>
+      <StoreButtons />
+    </div>
+  </section>
+
+  <section class="pub-state grp" data-state="ready" hidden aria-live="polite">
+    <span class="lbl" data-g="label">{t.label}</span>
+    <h1 class="pub-title" tabindex="-1" data-group-name></h1>
+    <div class="grp-chips">
+      <span class="grp-chip acc" data-group-habit></span>
+      <span class="grp-chip" data-group-members></span>
+    </div>
+    <div class="grp-pets" data-group-pets aria-hidden="true"></div>
+    <p class="pub-text" data-group-days></p>
+    <p class="grp-note" data-group-missing hidden></p>
+    <div class="pub-actions">
+      <a class="btn l" data-join href="minimoa://g" data-g="open">{t.open}</a>
+    </div>
+    <StoreButtons />
+    <CodeBox label={t.codeLabel} help={t.codeHelp} copy={growthCopy.fr.copy} box="group" />
+  </section>
+
+  <StateBlock state="not_found" title={t.notFoundTitle} text={t.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
+    <div class="pub-actions"><a class="btn l" href="/" data-g="home">{t.home}</a></div>
+    <div class="pub-dl">
+      <b data-g="downloadTitle">{t.downloadTitle}</b>
+      <p data-g="downloadText">{t.downloadText}</p>
+      <StoreButtons />
+    </div>
+  </StateBlock>
+  <NetworkError />
+</Public>
+<style is:global>
+.grp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.grp-chip{display:inline-flex;align-items:center;border-radius:999px;padding:7px 13px;font-size:14px;font-weight:800;background:rgba(255,255,255,.10)}
+.grp-chip.acc{background:var(--lime);color:var(--ink)}
+.grp-chip:empty{display:none}
+.grp-pets{display:flex;align-items:flex-end}
+.grp-pets img{width:64px;height:64px;border-radius:50%;margin-left:-12px;border:3px solid var(--night, #0B0A14);background:rgba(255,255,255,.08);object-fit:cover}
+.grp-pets img:first-child{margin-left:0}
+.grp-note{font-weight:800;color:var(--lime)}
+.grp-note[hidden]{display:none}
+</style>
+<script>
+  import '../../scripts/group-page';
+</script>

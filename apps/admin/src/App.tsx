@@ -6,7 +6,9 @@ import { Login } from './Login';
 import { Skeleton } from './ui';
 import { Audit } from './views/Audit';
 import { Costs } from './views/Costs';
+import { Creators } from './views/Creators';
 import { Funnel } from './views/Funnel';
+import { Growth } from './views/Growth';
 import { Minimoas } from './views/Minimoas';
 import { Moderation } from './views/Moderation';
 import { Overview } from './views/Overview';
@@ -15,6 +17,8 @@ const ROUTES = [
   ['overview', 'Vue d’ensemble'],
   ['minimoas', 'Minimoas'],
   ['funnel', 'Liens et rencontres'],
+  ['growth', 'Croissance'],
+  ['creators', 'Créateurs'],
   ['moderation', 'Modération'],
   ['audit', 'Journal'],
   ['costs', 'Coûts IA'],
@@ -120,6 +124,8 @@ function Shell({ email }: { email: string }) {
         {route === 'overview' && <Overview />}
         {route === 'minimoas' && <Minimoas />}
         {route === 'funnel' && <Funnel />}
+        {route === 'growth' && <Growth />}
+        {route === 'creators' && <Creators />}
         {route === 'moderation' && <Moderation onCountsChange={refreshCounts} />}
         {route === 'audit' && <Audit />}
         {route === 'costs' && <Costs />}

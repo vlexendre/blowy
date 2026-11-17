@@ -116,6 +116,7 @@ const fr = {
     bestStreak: (n: number): string => `Écrivez-vous ${n} jours d’affilée dans un lien`,
     challenges: (n: number): string => `Relève ${n} défi${n > 1 ? 's' : ''} du jour`,
     words: (n: number): string => `Reçois les 3 mots de ${n} pote${n > 1 ? 's' : ''}`,
+    referrals: (): string => 'Fais venir quelqu’un sur Minimoa',
   } as Record<string, (n: number) => string>,
   /** Noms des objets de la garde-robe (minuscules : ils s'insèrent dans les phrases). */
   itemLabel: {
@@ -133,7 +134,7 @@ const fr = {
     collier_coquillage: 'collier coquillage', tablier: 'tablier', noeud_pap: 'nœud papillon',
     ballon: 'ballon', coeur: 'cœur en peluche', livre: 'livre', tasse: 'tasse', bulle: 'bulle', baguette: 'baguette magique',
     ballons: 'ballons', skate: 'skate', manette: 'manette', pinceau: 'pinceau', micro: 'micro', gateau: 'part de gâteau',
-    cadeau: 'cadeau', potion: 'potion', fleur: 'fleur en pot', doudou: 'doudou',
+    cadeau: 'cadeau', parrain: 'cadeau du parrain', potion: 'potion', fleur: 'fleur en pot', doudou: 'doudou',
     hiver_bonnet: 'bonnet d’hiver', hiver_couronne: 'diadème de givre', hiver_cache_oreilles: 'cache-oreilles', hiver_lunettes: 'masque de ski', hiver_echarpe: 'écharpe bleu nuit', hiver_cape: 'cape d’hiver', hiver_moufles: 'moufles', hiver_chocolat: 'chocolat chaud', hiver_boule_neige: 'boule à neige', hiver_sapin: 'petit sapin', hiver_bonhomme: 'bonhomme de neige', hiver_aura: 'aura de flocons',
   } as Record<string, string>,
 };
@@ -239,6 +240,7 @@ export const labels = defineMessages({
       bestStreak: (n: number): string => `Hit a ${n}-day streak in a link`,
       challenges: (n: number): string => `Do ${n} daily challenge${n === 1 ? '' : 's'}`,
       words: (n: number): string => `Get 3 words from ${n} friend${n === 1 ? '' : 's'}`,
+      referrals: (): string => 'Bring someone to Minimoa',
     },
     itemLabel: {
       couronne: 'crown', fleurs: 'flower crown', chapeau_fete: 'party hat', sorcier: 'wizard hat',
@@ -255,7 +257,7 @@ export const labels = defineMessages({
       collier_coquillage: 'shell necklace', tablier: 'apron', noeud_pap: 'bow tie',
       ballon: 'ball', coeur: 'plush heart', livre: 'book', tasse: 'mug', bulle: 'bubble', baguette: 'magic wand',
       ballons: 'balloons', skate: 'skateboard', manette: 'controller', pinceau: 'paintbrush', micro: 'mic', gateau: 'slice of cake',
-      cadeau: 'gift', potion: 'potion', fleur: 'potted flower', doudou: 'cuddly toy',
+      cadeau: 'gift', parrain: 'referral gift', potion: 'potion', fleur: 'potted flower', doudou: 'cuddly toy',
       hiver_bonnet: 'winter beanie', hiver_couronne: 'frost tiara', hiver_cache_oreilles: 'earmuffs', hiver_lunettes: 'ski goggles', hiver_echarpe: 'midnight scarf', hiver_cape: 'winter cape', hiver_moufles: 'mittens', hiver_chocolat: 'hot chocolate', hiver_boule_neige: 'snow globe', hiver_sapin: 'little fir tree', hiver_bonhomme: 'snowman', hiver_aura: 'snowflake aura',
     },
   },
@@ -358,6 +360,7 @@ export const labels = defineMessages({
       bestStreak: (n: number): string => `Logra una racha de ${n} días en un vínculo`,
       challenges: (n: number): string => `Completa ${n} reto${n === 1 ? '' : 's'} del día`,
       words: (n: number): string => `Recibe las 3 palabras de ${n} persona${n === 1 ? '' : 's'}`,
+      referrals: (): string => 'Trae a alguien a Minimoa',
     },
     itemLabel: {
       couronne: 'corona', fleurs: 'corona de flores', chapeau_fete: 'gorro de fiesta', sorcier: 'sombrero de mago',
@@ -374,7 +377,7 @@ export const labels = defineMessages({
       collier_coquillage: 'collar de conchas', tablier: 'delantal', noeud_pap: 'pajarita',
       ballon: 'pelota', coeur: 'corazón de peluche', livre: 'libro', tasse: 'taza', bulle: 'burbuja', baguette: 'varita mágica',
       ballons: 'globos', skate: 'monopatín', manette: 'mando', pinceau: 'pincel', micro: 'micro', gateau: 'trozo de pastel',
-      cadeau: 'regalo', potion: 'poción', fleur: 'flor en maceta', doudou: 'peluche',
+      cadeau: 'regalo', parrain: 'regalo de padrino', potion: 'poción', fleur: 'flor en maceta', doudou: 'peluche',
       hiver_bonnet: 'gorro de invierno', hiver_couronne: 'diadema de escarcha', hiver_cache_oreilles: 'orejeras', hiver_lunettes: 'gafas de esquí', hiver_echarpe: 'bufanda azul noche', hiver_cape: 'capa de invierno', hiver_moufles: 'manoplas', hiver_chocolat: 'chocolate caliente', hiver_boule_neige: 'bola de nieve', hiver_sapin: 'abeto pequeño', hiver_bonhomme: 'muñeco de nieve', hiver_aura: 'aura de copos',
     },
   },
@@ -477,6 +480,7 @@ export const labels = defineMessages({
       bestStreak: (n: number): string => `Faça uma sequência de ${n} dias em um vínculo`,
       challenges: (n: number): string => `Cumpra ${n} desafio${n === 1 ? '' : 's'} do dia`,
       words: (n: number): string => `Receba as 3 palavras de ${n} pessoa${n === 1 ? '' : 's'}`,
+      referrals: (): string => 'Traga alguém para o Minimoa',
     },
     itemLabel: {
       couronne: 'coroa', fleurs: 'coroa de flores', chapeau_fete: 'chapéu de festa', sorcier: 'chapéu de mago',
@@ -493,7 +497,7 @@ export const labels = defineMessages({
       collier_coquillage: 'colar de conchas', tablier: 'avental', noeud_pap: 'gravata-borboleta',
       ballon: 'bola', coeur: 'coração de pelúcia', livre: 'livro', tasse: 'caneca', bulle: 'bolha', baguette: 'varinha mágica',
       ballons: 'balões', skate: 'skate', manette: 'controle', pinceau: 'pincel', micro: 'microfone', gateau: 'fatia de bolo',
-      cadeau: 'presente', potion: 'poção', fleur: 'flor no vaso', doudou: 'naninha',
+      cadeau: 'presente', parrain: 'presente de padrinho', potion: 'poção', fleur: 'flor no vaso', doudou: 'naninha',
       hiver_bonnet: 'gorro de inverno', hiver_couronne: 'tiara de geada', hiver_cache_oreilles: 'protetores de orelha', hiver_lunettes: 'óculos de esqui', hiver_echarpe: 'cachecol azul-noite', hiver_cape: 'capa de inverno', hiver_moufles: 'luvas', hiver_chocolat: 'chocolate quente', hiver_boule_neige: 'globo de neve', hiver_sapin: 'pinheirinho', hiver_bonhomme: 'boneco de neve', hiver_aura: 'aura de flocos',
     },
   },
@@ -596,6 +600,7 @@ export const labels = defineMessages({
       bestStreak: (n: number): string => `Haal een reeks van ${n} dagen in een band`,
       challenges: (n: number): string => `Doe ${n} ${n === 1 ? 'uitdaging' : 'uitdagingen'} van de dag`,
       words: (n: number): string => `Krijg de 3 woorden van ${n} ${n === 1 ? 'vriend' : 'vrienden'}`,
+      referrals: (): string => 'Breng iemand naar Minimoa',
     },
     itemLabel: {
       couronne: 'kroon', fleurs: 'bloemkrans', chapeau_fete: 'feest­hoedje', sorcier: 'tovenaars­hoed',
@@ -612,7 +617,7 @@ export const labels = defineMessages({
       collier_coquillage: 'schelpen­ketting', tablier: 'schort', noeud_pap: 'vlinderdas',
       ballon: 'bal', coeur: 'knuffel­hart', livre: 'boek', tasse: 'mok', bulle: 'zeepbel', baguette: 'toverstaf',
       ballons: 'ballonnen', skate: 'skateboard', manette: 'controller', pinceau: 'penseel', micro: 'microfoon', gateau: 'taartpunt',
-      cadeau: 'cadeautje', potion: 'toverdrank', fleur: 'bloem in pot', doudou: 'knuffel­dier',
+      cadeau: 'cadeautje', parrain: 'peterkado', potion: 'toverdrank', fleur: 'bloem in pot', doudou: 'knuffel­dier',
       hiver_bonnet: 'wintermuts', hiver_couronne: 'ijstiara', hiver_cache_oreilles: 'oorwarmers', hiver_lunettes: 'skibril', hiver_echarpe: 'nachtblauwe sjaal', hiver_cape: 'wintercape', hiver_moufles: 'wanten', hiver_chocolat: 'warme chocolademelk', hiver_boule_neige: 'sneeuwbol', hiver_sapin: 'kerstboompje', hiver_bonhomme: 'sneeuwpop', hiver_aura: 'sneeuwvlokkenaura',
     },
   },

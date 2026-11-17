@@ -197,6 +197,18 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'De dónde vienes, y las etapas de tu recorrido', id: 'croissance' },
+    {
+      ul: [
+        '**Datos:** cómo llegaste a Minimoa (el código de un creador, el enlace de «3 palabras» o de grupo que abriste, una invitación, o nada de eso), leído **solo** en el enlace que abriste antes de registrarte o en el código que escribiste («¿Tienes un código?»); la persona que te trajo, si la hay; y las grandes etapas de tu recorrido, una vez cada una: registro terminado, primer vínculo, regreso 1, 7 y 30 días después, inicio de la prueba y primer pago de Minimoa+.',
+        '**Lo que no hacemos:** ninguna huella de tu dispositivo (ni modelo, ni dirección IP, ni identificador publicitario), ninguna herramienta de medición de terceros. Las visitas a las páginas públicas («3 palabras», invitación, grupo, código de creador), los primeros arranques de la app, los votos y los compartidos solo se **cuentan por día**, sin IP ni identificador: no hay nadie detrás de esos contadores.',
+        '**Finalidad:** saber qué enlaces y qué creadores traen a gente que se queda, mejorar el recorrido, y regalar el objeto de armario «Padrino» a quien trajo a alguien y a quien llega (objeto decorativo, nunca ligado a una compra ni a una reseña).',
+        '**Base legal:** nuestro interés legítimo.',
+        '**Plazo:** la fuente y las etapas, mientras exista tu cuenta. Cuando la eliminas, la fuente se borra y las etapas pierden todo vínculo contigo (solo queda un número). Los contadores diarios se conservan sin límite.',
+        '**Acceso:** unas pocas personas autorizadas del equipo, en la herramienta interna, solo como cifras. Un creador nunca ve quién llegó con su código.',
+      ],
+    },
+
     { h3: 'Estadísticas y administración' },
     {
       ul: [
@@ -351,6 +363,7 @@ export const confidentialite: LegalPage = {
           ['Denuncias tramitadas y decisiones de moderación', '1 año después del cierre del expediente, más tiempo solo si la ley lo exige.'],
           ['Exclusión definitiva', 'Una huella no reversible del identificador de Apple o Google de la cuenta, durante 3 años, para impedir un nuevo registro.'],
           ['Estadísticas', 'Días de actividad y clasificación interna nominativa: 40 días. Encuentros propuestos: 30 días. Cifras agregadas, que no permiten identificarte: sin límite.'],
+          ['Fuente de llegada y etapas del recorrido', 'Mientras exista tu cuenta; borradas o anonimizadas al eliminarla. Contadores diarios (visitas, primeros arranques, votos, compartidos), sin nadie detrás: sin límite.'],
           ['Registros técnicos de la app', '30 días como máximo. Los registros de nuestros proveedores de alojamiento siguen sus propios plazos.'],
           ['Intercambios con el soporte', '1 año después del cierre de la solicitud.'],
           ['Solicitudes de ejercicio de tus derechos', '5 años, para poder demostrar que respondimos.'],

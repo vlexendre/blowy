@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { ITEMS, type PetStats, earnedItems, entitlements, itemById, ownedWith, withoutPremium } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { CLOCK, LINKS, PET_ITEMS, PETS, PROFILES, WORD_VOTES } from '../../../shared/tokens';
@@ -9,6 +9,7 @@ import type { RitualStatesRepository } from '../../rituels/ports';
 import { RITUAL_STATES } from '../../rituels/tokens';
 import type { PetItemsRepository, PetRecord, PetsRepository, WordVotesRepository } from '../ports';
 import { PetCharacter } from './pet-character';
+import { Growth } from '../../growth/application/growth';
 
 export interface WardrobeState {
   pet: PetRecord;
@@ -37,6 +38,7 @@ export class Wardrobe {
     @Inject(RITUAL_STATES) private readonly rituals: RitualStatesRepository,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
   ) {}
 
   /**
@@ -82,11 +84,12 @@ export class Wardrobe {
   }
 
   async statsOf(pet: PetRecord): Promise<PetStats> {
-    const [links, challenges, words, rituals] = await Promise.all([
+    const [links, challenges, words, rituals, referrals] = await Promise.all([
       this.links.listForUsers([pet.ownerId]),
       this.pets.countEvents(pet.id, 'challenge_done'),
       this.votes.count(pet.ownerId),
       this.rituals.find(pet.ownerId),
+      this.growth?.referrals(pet.ownerId) ?? Promise.resolve(0),
     ]);
     return {
       careDays: pet.careDays,
@@ -99,6 +102,8 @@ export class Wardrobe {
       // Rituels (V7) : record de la série des défis du jour, habitudes tenues.
       ritualStreak: rituals?.streak.best ?? 0,
       habitsKept: rituals?.habitsKept ?? 0,
+      // Parrainage (objet « Parrain ») : cosmétique, sans achat.
+      referrals,
     };
   }
 }

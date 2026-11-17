@@ -126,6 +126,67 @@ Plan de 14 jours (TikTok + Reels, mêmes vidéos) :
 - Pousser l'achat de contenu viral (fausses notes, faux chiffres, faux avis).
 - Promettre des rencontres là où le quartier est vide : ouvrir quartier par quartier.
 
+## Fait (18 novembre 2026)
+
+Le playbook « une boucle simple, un moment capture d'écran, des codes créateurs, chaque étape mesurée », construit de
+bout en bout (API, app, site, administration). Migration : `supabase/migrations/20261118100000_croissance.sql`.
+
+### 1. Lien d'invitation de groupe (boucle 2)
+- Code court par groupe (`groups.invite_code`, 8 caractères), créé à la première demande d'un membre
+  (`POST /v1/groups/:id/link`), changé par le créateur seul (`…/link/reset` : l'ancien lien ne marche plus).
+- `minimoa.app/g/<code>` : page publique (`apps/web/src/pages/g`, 5 langues) avec le nom, l'habitude, les jours tenus,
+  le nombre de membres et l'espèce de leurs minimoas, **jamais un prénom ni une position** ; « Rejoindre dans l'app »
+  (`minimoa://g/<code>`), stores, et le code à taper à l'inscription. `/g/<identifiant>` reste « Ouvre Minimoa ».
+- App : « Inviter avec un lien » dans « Le groupe » (feuille de partage avec un texte prêt), « Changer le lien »
+  (créateur), et sous 3 membres le bandeau « Il manque N personnes pour lancer la série » + « Inviter ». Page
+  « rejoindre » `app/g/[code]`. Un groupe peut maintenant se créer sans inviter personne.
+- Rejoindre (`POST /v1/groups/code/:code/join`) : mêmes règles qu'une invitation (8 au plus, limite de groupes, habitude
+  ajoutée, bloqué avec un membre ou compte suspendu : introuvable), message « X arrive » dans le chat et notification
+  `group_joined` aux autres membres (réglable dans Moi › Notifications).
+
+### 2. Boucle « 3 mots » complète (boucle 1)
+- Page `/m` après le vote : « Et toi, tes potes te décriraient comment ? », boutons des stores (« Bientôt » tant que
+  l'URL du store est vide) et « J'ai déjà Minimoa : mon lien » (`minimoa://mots`) ; le code du lien pour dire qui t'a
+  fait venir.
+- App `app/mots` (et « Voir mon résultat » sur Moi) : votes, et dès **3 votes** la carte résultat au format story
+  1080 × 1920 (le minimoa dans sa tenue, les 3 mots les plus votés en gros, `minimoa.app/m/<code>` pour voter encore),
+  « Partager en story » (Instagram) ou « Autre app ». `GET /v1/me/words` ; les mots restent ceux de la liste.
+
+### 3. Moments capture d'écran
+- `ShareCard` (`packages/ui`, même capture que `StoryCard`, docs/PARTAGE-STORY.md) et `MomentSheet`
+  (`apps/mobile/src/features/moments`).
+- (a) Résultat du test à l'inscription (« Mon minimoa est spontané et voyageur ») : bouton facultatif sur « Ta vision » ;
+  jamais l'axe « foyer », deux traits nets au plus (`visionTraits`). (b) Série du défi à 7 / 30 / 100 jours, à
+  l'accueil. (c) Groupe d'habitude à 7 et 30 jours, à l'ouverture du groupe (sans prénoms).
+- Une seule fois par palier (gardé sur le téléphone), jamais bloquant (« Plus tard »), désactivable (« Ne plus me
+  proposer », ou Moi › Réglages › « Proposer de partager mes moments »).
+
+### 4. Codes créateurs, parrainage, attribution
+- `minimoa.app/c/<code>` (page `apps/web/src/pages/c`, visite comptée) et `?ref=<code>` sur n'importe quel lien. Le
+  code arrive dans l'app **par le lien ouvert** (lien universel ou `minimoa://c/<code>`), ou **tapé à la main** à l'étape
+  du prénom (« Un code ? », qui reconnaît aussi une invitation, un groupe ou un lien « 3 mots »). Aucune empreinte.
+- Table `creators` gérée dans l'administration (« Créateurs » : ajouter, désactiver ; visites et comptes sur 12
+  semaines). Chaque compte garde sa source (`acquisitions` : creator, words, group, invite, store).
+- Objet de garde-robe « Parrain » (cadeau vert et corail) pour l'invité et la personne qui l'a fait venir (invitation ou
+  lien « 3 mots ») : cosmétique, sans achat, jamais lié à un avis.
+
+### 5. Entonnoir mesuré (sans SDK tiers)
+- Compteurs par jour sans IP ni identifiant (`growth_counters`) : visites de `/m`, `/g`, `/i`, `/c`, premier lancement
+  (une fois par installation), inscription terminée, votes, partages. Étapes de chaque compte, une fois chacune
+  (`growth_events`) : minimoa créé, premier lien, actif J1 / J7 / J30, essai, payant.
+- Administration › « Croissance » : par source et par semaine, chaque étape et le passage depuis la précédente ; facteur
+  K (partages / actifs de la semaine × comptes venus d'une personne / partages) ; boucle « 3 mots » (comptes venus d'un
+  lien / votes) ; groupes viables (3 membres ou plus à J7).
+- Politique de confidentialité (5 langues, « D'où tu viens, et les étapes de ton parcours ») et
+  `docs/APP-STORE-CONNECT.md` §3 à jour.
+
+### Limites connues
+- Sans empreinte, un code n'arrive pas tout seul à travers une installation depuis l'App Store : il faut ouvrir le lien
+  une fois l'app installée, ou taper le code. C'est voulu.
+- Le facteur K se lit à la semaine (partages et comptes venus d'une personne de la même semaine), pas par cohorte.
+- Les actifs de la semaine viennent des statistiques quotidiennes (`admin_daily_stats.wau`) : vides tant que la tâche
+  du minuteur ne les a pas calculées.
+
 ## Étude des comptes avec treg (à faire)
 treg sert à analyser, chiffres à l'appui, les publications de Bump, Finch, Locket, NGL et Timeleft (titres,
 couvertures, accroches qui marchent, rythme, style) et à en tirer des modèles prêts à remplir pour Minimoa. Il

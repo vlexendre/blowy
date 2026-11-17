@@ -62,6 +62,7 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
     case 'group_message':
     case 'group_life_lost':
     case 'group_asleep':
+    case 'group_joined':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://chats';
     case 'together_proposal':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://pet/habitudes';

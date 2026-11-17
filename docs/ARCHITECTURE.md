@@ -62,7 +62,8 @@ dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalement
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
 `notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
 `retention` (comptes inactifs, exclusions, purges), `fidelite` (premiers pas, nouvelles du minimoa pendant une absence,
-anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `groups` (groupes, « la tenir ensemble », jours jugés ;
+anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `growth` (codes créateurs,
+source d'arrivée, compteurs et étapes de l'entonnoir, tableau « Croissance » ; `Growth` et `Codes` globaux, docs/VIRALITE.md), `groups` (groupes, « la tenir ensemble », jours jugés ;
 `groups/sharing` : habitudes partagées et rigueur, module sans dépendance importé par les liens, les rencontres et les
 rituels ; docs/GROUPES.md), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
 règles du domaine `moderation.ts` puis IA si permise ; `ReportDesk`, seul créateur des signalements : priorité, escalade,
@@ -118,7 +119,8 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 `recent_days`, `milestones`, `write_reminder_on` ; `daily_photos` gardée en lecture seule pour les souvenirs), groupes
 (`groups`, `group_members`, `group_messages`, `group_days`, `together_proposals`, `habit_jokers`, `profiles.show_habits`,
 `reports.group_id`, `reports.group_message_id`), Minimoa+ hebdomadaire et fidélisation (`subscriptions.plan` accepte
-`weekly`, `lifecycle_messages`). Compartiment privé `media` (URL signées émises par l'API).
+`weekly`, `lifecycle_messages`), croissance (`groups.invite_code`, `creators`, `acquisitions`, `growth_events`,
+`growth_counters`). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit

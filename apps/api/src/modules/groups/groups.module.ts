@@ -8,7 +8,7 @@ import { GroupJobs } from './application/group.jobs';
 import { GroupsUseCases } from './application/groups.usecases';
 import { TogetherUseCases } from './application/together';
 import { GroupPresenter } from './interface/group.presenter';
-import { AdminGroupsController, GroupsController, TogetherController } from './interface/groups.controller';
+import { AdminGroupsController, GroupCodesController, GroupsController, TogetherController } from './interface/groups.controller';
 import { HabitSharingModule } from './sharing/habit-sharing.module';
 
 /**
@@ -17,7 +17,7 @@ import { HabitSharingModule } from './sharing/habit-sharing.module';
  */
 @Module({
   imports: [RituelsModule, VisionModule, HabitSharingModule],
-  controllers: [GroupsController, TogetherController, AdminGroupsController],
+  controllers: [GroupCodesController, GroupsController, TogetherController, AdminGroupsController],
   providers: [GroupCore, GroupPresenter, GroupsUseCases, GroupChat, TogetherUseCases, GroupJobs, AdminGuard],
   exports: [GroupJobs, GroupsUseCases, GroupCore],
 })

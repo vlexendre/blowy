@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 
 import { inviteUrl, ScreenMotion } from '@/core';
 import { displayUrl, useMe, useStoryShare } from '@/features/me';
+import { useTrackShare } from '@/features/growth';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -15,6 +16,7 @@ const t = onboarding.invite;
 export default function Invite() {
   const me = useMe();
   const invite = useStoryShare();
+  const track = useTrackShare();
   // Minimoa+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
   const next = () => router.push('/(onboarding)/paywall');
 
@@ -40,7 +42,10 @@ export default function Invite() {
         onCopy={() => void invite.copy(link)}
         shareLabel={t.share}
         sharing={invite.busy}
-        onShare={() => void invite.share(t.shareMessage(pet?.name ?? '', link), link)}
+        onShare={() => {
+          track('invite');
+          void invite.share(t.shareMessage(pet?.name ?? '', link), link);
+        }}
       />
       {pet && me.data ? (
         <StoryCard
