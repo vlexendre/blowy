@@ -15,9 +15,9 @@ const { kind } = Astro.props;
 const t = openCopy.fr;
 const c = t.kinds[kind];
 ---
-<Public title={c.meta} description={t.description} noindex>
+<Public title={c.meta} description={t.description} noindex ogImage={`/og/${kind}.jpg`} ogAlt={c.title.join(' ')}>
   <section class="pub-state" data-open-kind={kind}>
-    <img class="pub-pet" src="/img/nino_salut.webp" alt="" width="900" height="1000" />
+    <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
     <h1 class="pub-title" data-t="title">
       {c.title.map((l, i) => <span class:list={['ln', { dim: i > 0 && c.title.length > 2 && i === c.title.length - 1 }]}>{l}</span>)}
     </h1>

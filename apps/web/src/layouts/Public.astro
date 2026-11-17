@@ -11,10 +11,13 @@ interface Props {
   noindex?: boolean;
   /** Pleine page sans carte, sans barre ni fond animé : la page dessine tout elle-même (« 3 mots »). */
   bare?: boolean;
+  /** image d'aperçu de lien (1200 × 630) et son texte alternatif */
+  ogImage?: string;
+  ogAlt?: string;
 }
-const { title, description, noindex = false, bare = false } = Astro.props;
+const { title, description, noindex = false, bare = false, ogImage, ogAlt } = Astro.props;
 ---
-<Base title={title} description={description} noindex={noindex} bodyClass="pub-body">
+<Base title={title} description={description} noindex={noindex} bodyClass="pub-body" ogImage={ogImage} ogAlt={ogAlt}>
   {
     bare ? (
       <main id="main" class="pub-bare">

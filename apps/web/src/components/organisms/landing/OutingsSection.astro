@@ -1,0 +1,85 @@
+---
+/**
+ * 10. Sorties : la question du jour, la carte de sa zone (positions arrondies, jamais en direct, mode discret) et le
+ * rappel avant de se voir en vrai. La carte est dessinée (aucune vraie rue, aucune vraie position).
+ */
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { outings as c, sections } from '../../../content/landing';
+const m = c.map;
+---
+<SnapSection section={sections.sorties} panel="p-night s-out">
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="omap" data-r="card">
+    <div class="ogrid" aria-hidden="true">
+      <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+        <path d="M-10 210 C 80 190, 140 240, 230 200 S 360 150, 420 170" stroke="#2D2850" stroke-width="16" fill="none" />
+        <path d="M120 -10 L 150 320 M 290 -10 L 250 320 M -10 90 L 420 120" stroke="#221E3C" stroke-width="7" fill="none" />
+        <path d="M60 -10 L 40 320 M 350 -10 L 380 320 M -10 260 L 420 280 M -10 30 L 420 50" stroke="#1C1934" stroke-width="4" fill="none" />
+      </svg>
+      <span class="zone"></span>
+    </div>
+    <span class="lbl ozl">{m.label} · {m.zone}</span>
+    <span class="me"><img src="/img/nino_face.webp" alt="" width="44" height="44" loading="lazy" /></span>
+    {m.pins.map((p) => <span class="pin" style={`left:${p.x}%;top:${p.y}%`}><img src={`/img/${p.pet}_face.webp`} alt="" width="34" height="34" loading="lazy" /></span>)}
+    <span class="chip more">{m.more}</span>
+  </div>
+  <ul class="ofacts" role="list" data-r="up">{m.facts.map((f) => <li>{f}</li>)}</ul>
+  <div class="oside">
+    <div class="oq" data-r="card">
+      <img src={c.pet.src} alt={c.pet.alt} width="450" height="500" loading="lazy" decoding="async" />
+      <div>
+        <span class="who">{c.question.who}</span>
+        <p>{c.question.text}</p>
+        <div class="oans" aria-hidden="true">{c.question.answers.map((a) => <span>{a}</span>)}</div>
+      </div>
+    </div>
+    <div class="omeet hide-short" data-r="card">
+      <b>{c.meet.title}</b>
+      <p>{c.meet.text}</p>
+    </div>
+  </div>
+</SnapSection>
+<style is:global>
+.s-out{grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"tx" "map" "facts" "side"}
+.s-out .tx{grid-area:tx}
+.s-out .hd{--k:13}
+.omap{grid-area:map;position:relative;min-height:0;border-radius:24px;overflow:hidden;background:#141128;border:1px solid var(--line)}
+.ogrid,.ogrid svg{position:absolute;inset:0;width:100%;height:100%}
+.zone{position:absolute;left:50%;top:50%;width:min(70%,58vh);aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:2px dashed rgba(255,184,0,.7);background:radial-gradient(closest-side,rgba(255,184,0,.12),transparent)}
+.ozl{position:absolute;left:12px;top:10px;color:var(--mute)}
+.me{position:absolute;left:50%;top:50%;translate:-50% -50%;width:48px;height:48px;border-radius:50%;background:var(--lime);padding:3px;box-shadow:0 0 0 6px rgba(255,184,0,.25)}
+.me img{width:100%;height:100%;border-radius:50%;background:#fff}
+.pin{position:absolute;translate:-50% -50%;width:38px;height:38px;border-radius:50%;background:#fff;padding:2px;box-shadow:0 8px 16px rgba(0,0,0,.4)}
+.pin img{width:100%;height:100%;border-radius:50%}
+.pin::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+.chip.more{position:absolute;right:10px;bottom:10px;background:rgba(255,255,255,.12);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ofacts{grid-area:facts;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.ofacts li{font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
+.oside{grid-area:side;display:flex;flex-direction:column;gap:8px}
+.oq{display:flex;align-items:center;gap:10px;background:#fff;color:var(--ink);border-radius:20px;padding:6px 12px 8px 4px}
+.oq img{width:clamp(56px,9svh,96px);height:auto;flex:0 0 auto}
+.oq .who{font-size:11px;font-weight:800;color:var(--coral)}
+.oq p{font-weight:800;font-size:15px;margin:1px 0 6px}
+.oans{display:flex;flex-wrap:wrap;gap:4px}
+.oans span{font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;background:#F1ECF8}
+.omeet{border-radius:18px;padding:10px 14px;background:linear-gradient(160deg,rgba(255,90,60,.22),rgba(109,61,240,.22));border:1px solid var(--line)}
+.omeet b{font-weight:800;font-size:14px}
+.omeet p{font-size:12.5px;color:var(--mute);margin-top:2px}
+@media (max-width:899px) and (max-height:760px){.ofacts li:nth-child(3){display:none}}
+@media (min-width:900px){
+  .s-out{grid-template-columns:.9fr 1.1fr .8fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". map side" "tx map side" "facts map side" ". map side";column-gap:3vw;align-items:center}
+  .omap{height:min(80%,620px);align-self:center}
+  .ofacts{margin-top:2svh;flex-direction:column;align-items:flex-start}
+  .ofacts li{font-size:14px}
+  .oside{gap:14px}
+  .oq{flex-direction:column;align-items:flex-start;padding:16px}
+  .oq img{width:120px;align-self:center}
+  .oq p{font-size:18px}
+  .omeet{padding:16px}
+  .omeet b{font-size:16px}
+  .omeet p{font-size:14px}
+}
+</style>

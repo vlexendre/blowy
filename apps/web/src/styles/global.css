@@ -37,6 +37,12 @@
 *{box-sizing:border-box}
 html{overflow-x:clip}
 html.snap{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+/* Lenis (ordinateur) : il gère seul le défilement doux */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto !important}
+.lenis.lenis-stopped{overflow:hidden}
+/* calques animés en continu : peints une fois, déplacés par la carte graphique */
+.bob,.stk[data-r="stk"],.app .ico{will-change:transform}
 body{background:var(--bg);color:var(--white);font-family:var(--body);font-size:var(--t);line-height:1.35;overflow-x:clip;-webkit-font-smoothing:antialiased;margin:0}
 img{display:block;max-width:100%;height:auto}
 p,h1,h2,h3{margin:0}
@@ -53,13 +59,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
 
 /* ---------- fixed background layer ---------- */
 .bgx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:var(--bg)}
-.glow{position:absolute;width:80vmax;aspect-ratio:1;border-radius:50%;opacity:.5;will-change:transform}
-.glow.a{left:-30vmax;top:-30vmax;background:radial-gradient(closest-side,var(--c1),transparent)}
-.glow.b{right:-34vmax;top:10vh;background:radial-gradient(closest-side,var(--c2),transparent);opacity:.32}
-.glow.c{left:5vw;bottom:-46vmax;background:radial-gradient(closest-side,var(--c3),transparent);opacity:.36}
-.stars{position:absolute;inset:-30% 0;opacity:.7;background-image:radial-gradient(1.6px 1.6px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 82% 12%,#fff,transparent),radial-gradient(1.6px 1.6px at 70% 40%,#fff9,transparent),radial-gradient(1px 1px at 22% 62%,#fff,transparent),radial-gradient(1px 1px at 91% 70%,#fff,transparent),radial-gradient(1.6px 1.6px at 6% 88%,#fff9,transparent),radial-gradient(1px 1px at 48% 8%,#fff,transparent),radial-gradient(1px 1px at 58% 92%,#fff9,transparent),radial-gradient(1px 1px at 36% 33%,#fff8,transparent),radial-gradient(1.4px 1.4px at 64% 74%,#fff,transparent);background-size:100% 40%}
+.halo{position:absolute;inset:0;width:100%;height:100%}
+.stars{position:absolute;inset:0;opacity:.7;background-image:radial-gradient(1.6px 1.6px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 82% 12%,#fff,transparent),radial-gradient(1.6px 1.6px at 70% 40%,#fff9,transparent),radial-gradient(1px 1px at 22% 62%,#fff,transparent),radial-gradient(1px 1px at 91% 70%,#fff,transparent),radial-gradient(1.6px 1.6px at 6% 88%,#fff9,transparent),radial-gradient(1px 1px at 48% 8%,#fff,transparent),radial-gradient(1px 1px at 58% 92%,#fff9,transparent),radial-gradient(1px 1px at 36% 33%,#fff8,transparent),radial-gradient(1.4px 1.4px at 64% 74%,#fff,transparent);background-size:100% 40%}
 .grain{position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.drift{position:absolute;width:clamp(40px,5vw,72px);opacity:.45}
+.drift{position:absolute;will-change:transform;filter:none;width:clamp(40px,5vw,72px);opacity:.45}
 .drift.d1{left:3%;top:22%}.drift.d2{right:4%;top:12%}.drift.d3{left:46%;top:70%}.drift.d4{right:8%;top:80%}.drift.d5{left:18%;top:90%}.drift.d6{left:70%;top:40%}
 
 /* ---------- nav ---------- */
@@ -125,6 +128,8 @@ main{position:relative;z-index:1}
 .stores{display:flex;gap:10px;flex-wrap:wrap}
 .store{display:inline-flex;align-items:center;gap:10px;height:clamp(48px,6svh,58px);padding:0 20px 0 16px;border-radius:999px;background:#fff;color:var(--ink);text-align:left;line-height:1.05;box-shadow:0 10px 24px rgba(20,16,31,.18);transition:transform .2s}
 .store:hover{transform:translateY(-2px) scale(1.02)}
+.store.soon{cursor:default}
+.store.soon:hover{transform:none}
 .store svg{width:22px;height:22px;flex:0 0 auto}
 .store small{display:block;font-size:10.5px;font-weight:600;opacity:.7}
 .store b{display:block;font-size:16px;font-weight:800;letter-spacing:-.01em}

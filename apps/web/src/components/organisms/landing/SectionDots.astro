@@ -1,7 +1,11 @@
 ---
-/** Points de navigation verticaux (grand écran). */
-import { nav, sectionOrder, sections } from '../../../content/landing';
+/** Points de navigation verticaux (grand écran). `skip` : sections absentes de la page. */
+import { nav, sectionOrder, sections, type SectionId } from '../../../content/landing';
+interface Props {
+  skip?: SectionId[];
+}
+const { skip = [] } = Astro.props;
 ---
 <nav class="dots" aria-label={nav.dotsLabel}>
-  {sectionOrder.map((id) => <a href={`#${id}`} aria-label={sections[id].dot}></a>)}
+  {sectionOrder.filter((id) => !skip.includes(id)).map((id) => <a href={`#${sections[id].id}`} aria-label={sections[id].dot}></a>)}
 </nav>

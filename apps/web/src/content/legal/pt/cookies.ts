@@ -20,8 +20,6 @@ export const cookies: LegalPage = {
       table: {
         head: ['Serviço', 'Para quê', 'Em que páginas'],
         rows: [
-          ['Google Fonts (Google)', 'O tipo de letra Anton', 'Todas'],
-          ['cdnjs (Cloudflare)', 'A biblioteca de animação GSAP', 'Página inicial'],
           ['Fornecedor de alojamento do site: {{siteHost.name}}', 'Servir as páginas', 'Todas'],
           ['Servidor da app Minimoa (API)', 'Mostrar o nome e o minimoa da pessoa, guardar as palavras escolhidas', 'Páginas «3 palavras» e convite'],
         ],

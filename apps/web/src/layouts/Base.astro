@@ -1,10 +1,10 @@
 ---
 /**
- * Gabarit de base : <head> (méta, Open Graph, Twitter, favicon, polices), variables CSS issues de @blowy/tokens,
+ * Gabarit de base : <head> (méta, Open Graph, Twitter, favicon, polices auto-hébergées Anton et Allo), variables CSS issues de @blowy/tokens,
  * lien d'évitement, contenu, emplacement « footer ».
  */
 import { color, font, gradient, radius, space } from '@blowy/tokens';
-import { OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
+import { OG_ALT, OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
 import '../styles/global.css';
 
 interface Props {
@@ -15,7 +15,10 @@ interface Props {
   /** classe ajoutée à <body> */
   bodyClass?: string;
   noindex?: boolean;
+  /** image d'aperçu (1200 × 630), chemin relatif au site */
   ogImage?: string;
+  /** texte alternatif de l'image d'aperçu */
+  ogAlt?: string;
   /** langue du document (fr par défaut) */
   lang?: string;
   /** locale Open Graph (fr_FR par défaut) */
@@ -33,6 +36,7 @@ const {
   bodyClass,
   noindex = false,
   ogImage = OG_IMAGE,
+  ogAlt = OG_ALT,
   lang = 'fr',
   ogLocale = 'fr_FR',
   alternates = [],
@@ -64,6 +68,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={new URL(a.path, SITE_URL).href} />)}
     <meta name="theme-color" content={color.night} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <meta property="og:type" content="website" />
@@ -75,16 +80,18 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <meta property="og:image" content={ogUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content={ogUrl.endsWith('.png') ? 'image/png' : 'image/jpeg'} />
+    <meta property="og:image:alt" content={ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={ogAlt} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap" />
+    <link rel="preload" href="/fonts/anton/Anton.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/allo/AlloVariableFriendly.woff2" as="font" type="font/woff2" crossorigin />
     <style is:global>
+      @font-face { font-family: 'Anton'; src: url('/fonts/anton/Anton.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
       @font-face { font-family: 'Allo'; src: url('/fonts/allo/AlloVariableFriendly.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
     </style>
     <style is:inline set:html={tokenCss}></style>

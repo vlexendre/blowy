@@ -1,5 +1,5 @@
 ---
-/** 1. Hero : titre, bulles, boutons de store, nino qui salue sur sa colline. */
+/** 1. Hero : titre, bulles, boutons de store, Nino en pied qui fait coucou sur sa colline. */
 import Sticker from '../../atoms/Sticker.astro';
 import PetImage from '../../atoms/PetImage.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
@@ -20,7 +20,7 @@ import { hero, sections } from '../../../content/landing';
   </div>
   <div class="hstage">
     <div class="hill" aria-hidden="true"></div>
-    <div class="hpet" data-r="pop"><div class="bob" style="height:100%"><PetImage src={hero.pet.src} alt={hero.pet.alt} /></div></div>
+    <div class="hpet" data-r="pop"><div class="bob" style="height:100%"><PetImage src={hero.pet.src} alt={hero.pet.alt} width={720} height={800} fetchpriority="high" /></div></div>
     <ChatBubble bubble={hero.bubbles.b3} class="b3" />
   </div>
   <Sticker class="s1" src="/img/ic_etoiles.webp" reveal />
@@ -28,7 +28,7 @@ import { hero, sections } from '../../../content/landing';
 </SnapSection>
 <style is:global>
 .hero{grid-template-rows:auto auto auto minmax(0,1fr);text-align:center;justify-items:center}
-.hero .hd{--k:14;--hs:13svh;--hmax:150px}
+.hero .hd{--k:17;--hs:13svh;--hmax:150px}
 .hb-top{display:flex;flex-direction:column;gap:6px;width:100%}
 .hb-top .b2{align-self:flex-end}
 .hcta{display:flex;flex-direction:column;align-items:center;gap:8px}

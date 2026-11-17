@@ -1,15 +1,17 @@
 ---
-/** Image de pet (900×1000 par défaut). Sans `alt`, l'image est décorative. */
+/** Image d'un minimoa en pied (450×500 par défaut, toile 9:10 du pack). Sans `alt`, l'image est décorative. */
 interface Props {
   src: string;
   alt?: string;
   width?: number;
   height?: number;
   loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  decoding?: 'async' | 'sync' | 'auto';
   class?: string;
   id?: string;
   [attr: `data-${string}`]: string | undefined;
 }
-const { src, alt = '', width = 900, height = 1000, loading, class: cls, ...rest } = Astro.props;
+const { src, alt = '', width = 450, height = 500, loading, fetchpriority, decoding = 'async', class: cls, ...rest } = Astro.props;
 ---
-<img class={cls} src={src} alt={alt} width={width} height={height} loading={loading} {...rest} />
+<img class={cls} src={src} alt={alt} width={width} height={height} loading={loading} fetchpriority={fetchpriority} decoding={decoding} {...rest} />

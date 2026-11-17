@@ -4,12 +4,12 @@ export const abonnement: LegalPage = {
   title: 'Condições da subscrição Minimoa+ — Minimoa',
   heading: 'Condições da subscrição Minimoa+',
   description:
-    'Minimoa+: o que inclui, os planos (59,88 € por ano com 7 dias grátis, ou 14,99 € por mês), a renovação automática, a faturação pela Apple, como cancelar, o que acontece no fim, o direito de livre resolução e os reembolsos.',
+    'Minimoa+: o que inclui, os planos (59,88 € por ano com 7 dias grátis, 14,99 € por mês ou 2,99 € por semana), a renovação automática, a faturação pela Apple, como cancelar, o que acontece no fim, o direito de livre resolução e os reembolsos.',
   intro: 'O que o Minimoa+ inclui, quanto custa, como se renova e como o parar. Sem letras pequenas.',
   summary: {
     title: 'Em resumo',
     items: [
-      '**59,88 € por ano**, com **7 dias grátis** no início, ou **14,99 € por mês**, sem período experimental.',
+      '**59,88 € por ano**, com **7 dias grátis** no início, **14,99 € por mês** ou **2,99 € por semana**, sem período experimental.',
       'A subscrição **renova-se automaticamente** enquanto não a cancelares.',
       'O Minimoa+ compra-se no iPhone: é a **Apple** que te fatura, e é nas definições do teu iPhone que o cancelas.',
       'No 5.º dia do período experimental, avisamos-te **por notificação e por e-mail**.',
@@ -39,6 +39,7 @@ export const abonnement: LegalPage = {
         rows: [
           ['Anual', '59,88 € por ano, ou seja, 4,99 € por mês', '7 dias, depois 59,88 € por ano'],
           ['Mensal', '14,99 € por mês', 'Sem período experimental'],
+          ['Semanal', '2,99 € por semana', 'Sem período experimental'],
         ],
       },
     },

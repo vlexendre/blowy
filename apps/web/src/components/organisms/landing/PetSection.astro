@@ -1,100 +1,75 @@
 ---
-/** 2. Chacun son pet : sélecteur de couleur et liste des chats. */
-import PetImage from '../../atoms/PetImage.astro';
+/** 2. Il est vivant : choisir son minimoa, puis un soin = une pose en pied (une seule image, changée par le script). */
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { petSection as c, sections } from '../../../content/landing';
-const first = c.colors[0];
+import { alive as c, IMG, sections } from '../../../content/landing';
+const first = c.species.find((s) => s.key === c.initial) ?? c.species[0]!;
 ---
 <SnapSection section={sections.pet} panel="p-night s-pet">
   <SectionTitle lines={c.title}>
     <p class="lead hide-short" data-r="up">{c.lead}</p>
   </SectionTitle>
-  <div class="craft">
-    <div class="cstage" data-r="pop">
-      <div class="bob">
-        {
-          c.colors.map((col, i) => (
-            <PetImage class:list={['cimg', { on: i === 0 }]} data-c={col.key} src={`/img/craft_${col.key}.webp`} alt={`ton pet en ${col.label}`} loading={i === 0 ? undefined : 'lazy'} />
-          ))
-        }
-      </div>
+  <div class="astage" data-r="pop">
+    <div class="aglow" aria-hidden="true"></div>
+    <div class="bob">
+      <img id="apet" src={`${IMG}/${first.key}_${c.rest.pose}.webp`} alt={first.alt} width="450" height="500" loading="lazy" decoding="async" data-species={first.key} />
     </div>
-    <div class="cui" data-r="up">
-      <span class="lbl" style="color:var(--mute)" id="swl">{c.pickLabel}</span>
-      <div class="sw" role="group" aria-labelledby="swl">
-        {c.colors.map((col, i) => <button type="button" data-c={col.key} style={`--c:${col.swatch}`} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={col.label} />)}
-      </div>
-      <span class="nametag">{c.petName} <i id="cname">· {first.label}</i></span>
-    </div>
+    <p class="asay" aria-live="polite"><span id="asay">{c.rest.say}</span></p>
   </div>
-  <div class="chats" data-r="up">
-    <h3>{c.chatsTitle}</h3>
-    {
-      c.rows.map((r) => (
-        <div class:list={['row', { 'hide-short': r.short, gone: r.gone }]} data-r="row">
-          <span class="avs">{r.avatars.map((a) => <img src={`/img/${a}_face.webp`} alt="" />)}</span>
-          <span class="rt">
-            <b>
-              {r.name}
-              {r.isNew && (
-                <>
-                  {' '}
-                  <span class="new" style="display:inline">{c.newBadge}</span>
-                </>
-              )}
-            </b>
-            <span>
-              {r.pet && <i style={`color:${r.petColor}`}>{r.pet} :</i>} {r.text}
-            </span>
-          </span>
-          <span class="hz" style={r.gone ? 'color:var(--mute)' : undefined}>✦ {r.lives}</span>
-        </div>
-      ))
-    }
+  <div class="actl" data-r="up">
+    <div class="aspecies" role="group" aria-label={c.speciesLabel}>
+      {
+        c.species.map((s) => (
+          <button type="button" data-s={s.key} data-alt={s.alt} data-name={s.name} aria-pressed={s.key === first.key ? 'true' : 'false'}>
+            <img src={`/img/${s.key}_face.webp`} alt="" width="40" height="40" loading="lazy" />
+            <span>{s.name}</span>
+          </button>
+        ))
+      }
+    </div>
+    <div class="acare" role="group" aria-label={c.careLabel}>
+      {
+        c.actions.map((a) => (
+          <button type="button" data-pose={a.pose} data-say={a.say} data-label={a.label} aria-pressed="false">
+            <img src={`${IMG}/${a.icon}.webp`} alt="" width="40" height="40" loading="lazy" />
+            <span>{a.label}</span>
+          </button>
+        ))
+      }
+    </div>
   </div>
 </SnapSection>
 <style is:global>
-.s-pet{grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"tx" "craft" "chats"}
+.s-pet{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"tx" "stage" "ctl"}
 .s-pet .tx{grid-area:tx}
-.s-pet .hd{--k:13}
-.craft{grid-area:craft;display:grid;grid-template-columns:44% 1fr;gap:12px;align-items:center;min-height:0}
-.cstage{position:relative;height:clamp(130px,22svh,420px);display:flex;justify-content:center}
-.cstage .bob{position:relative;height:100%;aspect-ratio:9/10}
-.cimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .25s}
-.cimg.on{opacity:1}
-.cui{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
-.sw{display:grid;grid-template-columns:repeat(3,44px);gap:8px}
-.sw button{width:44px;height:44px;border-radius:50%;background:var(--c);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15);border:3px solid transparent;transition:transform .2s}
-.sw button[aria-pressed="true"]{border-color:#fff;transform:scale(1.08)}
-.sw button:hover{transform:scale(1.08)}
-.nametag{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:800;font-size:16px}
-.nametag i{font-style:normal;color:var(--mute);font-weight:500;font-size:13px}
-.chats{grid-area:chats;align-self:start;background:rgba(11,10,20,.82);border:1px solid var(--line);border-radius:24px;padding:6px;min-height:0;overflow:hidden}
-.chats h3{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.01em;padding:8px 12px 4px}
-.row{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:18px}
-.row+.row{border-top:1px solid rgba(255,255,255,.06)}
-.avs{display:flex;flex:0 0 auto}
-.avs img{width:clamp(34px,4.6svh,46px);height:clamp(34px,4.6svh,46px);border-radius:50%;border:2px solid var(--card);background:#fff;object-fit:cover}
-.avs img+img{margin-left:-14px}
-.rt{flex:1;min-width:0}
-.rt b{display:block;font-weight:800;font-size:15px}
-.rt span{display:block;color:var(--mute);font-size:var(--ts);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rt span i{font-style:normal;font-weight:800}
-.hz{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--rose);white-space:nowrap}
-.new{font-size:10px;font-weight:800;background:var(--lime);color:var(--ink);padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:2px}
-.row.gone{opacity:.42}
-.row.gone img{filter:grayscale(1)}
-.row.gone{display:none}
-@media (min-width:900px){.row.gone{display:flex}}
+.s-pet .hd{--k:12}
+.astage{grid-area:stage;position:relative;min-height:0;display:flex;justify-content:center;align-items:flex-end}
+.aglow{position:absolute;left:50%;bottom:0;translate:-50% 30%;width:min(92%,62svh);aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(255,184,0,.32),rgba(109,61,240,.18) 60%,transparent)}
+.astage .bob{position:relative;height:100%;max-height:min(520px,52svh);aspect-ratio:9/10}
+.astage img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 18px 24px rgba(0,0,0,.45));transition:opacity .2s}
+.asay{position:absolute;left:0;top:4%;z-index:2;max-width:56%;background:#fff;color:var(--ink);font-weight:700;font-size:clamp(13px,1.9svh,17px);line-height:1.25;padding:9px 14px;border-radius:20px 20px 20px 6px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.actl{grid-area:ctl;display:flex;flex-direction:column;gap:10px}
+.aspecies{display:flex;gap:6px}
+.aspecies button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 8px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-weight:800;font-size:13px;transition:background .2s,border-color .2s}
+.aspecies img{width:28px;height:28px;border-radius:50%;background:#fff;flex:0 0 auto}
+.aspecies button[aria-pressed="true"]{background:#fff;color:var(--ink);border-color:#fff}
+.acare{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.acare button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:62px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-weight:700;font-size:11.5px;transition:transform .2s,background .2s}
+.acare img{width:30px;height:30px;object-fit:contain}
+.acare button:hover{transform:translateY(-2px)}
+.acare button[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+@media (max-width:420px){.aspecies span{display:none}.aspecies img{width:32px;height:32px}}
 @media (min-width:900px){
-  .s-pet{grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx chats" "craft chats";column-gap:5vw}
-  .craft{grid-template-columns:1fr auto;align-self:end}
-  .cstage{height:min(46svh,440px)}
-  .chats{align-self:center;padding:10px}
-  .chats h3{font-size:28px;padding:10px 14px 6px}
-  .row{padding:12px 14px}
-  .rt b{font-size:17px}
+  .s-pet{grid-template-columns:1fr 1fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". stage" "tx stage" "ctl stage" ". stage";column-gap:4vw;align-items:center}
+  .astage{height:100%;align-items:center}
+  .astage .bob{max-height:min(640px,70svh)}
+  .asay{top:10%;left:2%;max-width:44%}
+  .actl{margin-top:2svh;max-width:560px;gap:14px}
+  .aspecies button{font-size:15px;min-height:52px}
+  .aspecies img{width:34px;height:34px}
+  .acare{grid-template-columns:repeat(3,1fr);gap:10px}
+  .acare button{flex-direction:row;gap:10px;min-height:56px;font-size:15px;justify-content:flex-start;padding:0 16px}
+  .acare img{width:34px;height:34px}
 }
-@media (max-width:899px) and (max-height:760px){.cstage{height:19svh}}
+@media (max-width:899px) and (max-height:760px){.acare button{min-height:52px}.acare img{width:24px;height:24px}}
 </style>
