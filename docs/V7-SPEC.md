@@ -144,12 +144,13 @@ Toutes passent par un port `Pusher` (push Expo ; adaptateur mémoire) et un rég
 | Preuve d'habitude demandée | au moment choisi pour l'habitude |
 | Bilan de la semaine | dimanche soir |
 | Objet débloqué · 3 mots reçus | à l'événement |
+| Premiers pas · nouvelles du minimoa · ton abonnement Minimoa+ | fidélisation (17 nov.) : J1/J3/J7, absences de 3/7/14 jours, anniversaires, moments de l'abonnement ; une par jour au plus, en journée (`docs/FIDELISATION.md`) |
 
 Un minuteur côté serveur (tâche planifiée qui appelle l'API) déclenche les envois programmés.
 
 ## 13. Minimoa+
 
-- Offres : **59,88 € par an** ou **14,99 € par mois**.
+- Offres : **59,88 € par an** (7 jours gratuits), **14,99 € par mois** ou **2,99 € par semaine** (ajoutée le 17 nov. ; remise de l'annuel toujours calculée contre la mensuelle).
 - Contenu : toute la carte et changer de ville · plus de rencontres · jokers de série · 6 habitudes · bilan détaillé · renommer son minimoa librement · objets premium.
 - Objets premium (audit B3) : tous possédés et portables tant que Minimoa+ dure ; à la fin de l'abonnement, le minimoa les range (verrouillés, de retour avec un nouvel abonnement).
 - Achat intégré Apple, vérifié côté serveur (port `Billing`), qui met à jour `plus` sur le profil.

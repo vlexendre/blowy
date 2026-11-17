@@ -8,6 +8,7 @@ import { VisionModule } from '../vision/vision.module';
 import { HandleAppleNotification } from './application/apple-notifications.usecase';
 import { BillingJobs } from './application/billing.jobs';
 import { GetPaywall, GetSubscription, SubmitPurchase } from './application/plus.usecases';
+import { PlusNews } from './application/plus-news';
 import { Subscriptions } from './application/subscriptions.service';
 import { BillingController } from './interface/billing.controller';
 import { COMPATIBLE_NEARBY, type CompatibleNearby } from './tokens';
@@ -27,7 +28,8 @@ const compatibleNearby = (matchmaker: Matchmaker, profiles: ProfilesRepository, 
 });
 
 /**
- * Minimoa+ : paywall, achats vérifiés auprès d'Apple, notifications du magasin, rappel de fin d'essai.
+ * Minimoa+ : paywall, achats vérifiés auprès d'Apple, notifications du magasin, rappel de fin d'essai, messages de
+ * l'abonnement (bienvenue, paiement refusé, au revoir, relance : `PlusNews`).
  * Dépôts et adaptateurs (`billingProviders`) : fournis par CoreModule, selon BLOWY_ADAPTERS.
  */
 @Module({
@@ -35,6 +37,7 @@ const compatibleNearby = (matchmaker: Matchmaker, profiles: ProfilesRepository, 
   controllers: [BillingController],
   providers: [
     { provide: COMPATIBLE_NEARBY, useFactory: compatibleNearby, inject: [Matchmaker, PROFILES, Audience] },
+    PlusNews,
     Subscriptions,
     SubmitPurchase,
     GetSubscription,

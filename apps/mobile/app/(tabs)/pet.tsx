@@ -8,7 +8,7 @@
 import { ApiError } from '@blowy/api-client';
 import type { OutingAnswer } from '@blowy/contract';
 import { careLabel, needLabel, shapeLabel } from '@/locales/content';
-import { CARE_ACTIONS, CARE_EFFECTS, type CareAction, STREAK_MILESTONES, urgentNeed } from '@blowy/domain';
+import { CARE_ACTIONS, CARE_EFFECTS, type CareAction, STREAK_MILESTONES, WELCOME_BACK_AFTER_DAYS, urgentNeed } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Appear,
@@ -54,6 +54,7 @@ import { openLegal, useMe } from '@/features/me';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
 import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
+import { WelcomeBack } from '@/features/pet/WelcomeBack';
 import { useAwayFromHome, useOuting, usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
 import { home as t } from '@/locales/pet';
@@ -90,6 +91,8 @@ export default function PetHome() {
   const [reactionItem, setReactionItem] = useState<CareProp | null>(null);
   // Délaissé (3 jours et plus sans ouvrir l'app) : « en danger » jusqu'au premier soin.
   const [neglected, setNeglected] = useState(false);
+  // Retour après 14 jours et plus : il t'accueille et dit ce qui s'est passé (fermé d'un tap).
+  const [welcomeBack, setWelcomeBack] = useState(false);
   // Petit habitat de la scène (flou d'arrière-plan) : pas sur les petits écrans.
   const roomy = useWindowDimensions().height >= 700;
   const memories = usePrivateMemories();
@@ -126,6 +129,7 @@ export default function PetHome() {
     const now = Date.now();
     const visit = useHomeVisit.getState();
     const { moment, neglected: away3 } = homeEntrance({ last: visit.last, now, night: isNight(), sulking: shape === 'boude' });
+    if (visit.last !== null && now - visit.last >= WELCOME_BACK_AFTER_DAYS * 86_400_000) setWelcomeBack(true);
     visit.mark(now);
     if (away3) setNeglected(true);
     if (!moment) return;
@@ -351,6 +355,9 @@ export default function PetHome() {
               />
             </Appear>
             {careError ? <Banner tone="error" text={errorText(care.error, t.careError)} onClose={() => care.reset()} /> : null}
+
+            {/* Retour après une longue absence : ce qui s'est passé pendant ce temps. */}
+            {welcomeBack ? <WelcomeBack petName={p.name} onClose={() => setWelcomeBack(false)} /> : null}
 
             {/* Rappel de sécurité avant de se voir : gardé tel quel (une fois par lien, on le ferme). */}
             {meet ? (

@@ -4,12 +4,12 @@ export const abonnement: LegalPage = {
   title: 'Minimoa+ subscription terms — Minimoa',
   heading: 'Minimoa+ subscription terms',
   description:
-    'Minimoa+: what it includes, the plans (€59.88 per year with 7 days free, or €14.99 per month), automatic renewal, billing by Apple, how to cancel, what happens at the end, withdrawal and refunds.',
+    'Minimoa+: what it includes, the plans (€59.88 per year with 7 days free, €14.99 per month or €2.99 per week), automatic renewal, billing by Apple, how to cancel, what happens at the end, withdrawal and refunds.',
   intro: 'What Minimoa+ includes, what it costs, how it renews, and how to stop it. No small print.',
   summary: {
     title: 'In short',
     items: [
-      '**€59.88 per year**, with **7 days free** at the start, or **€14.99 per month**, without a trial.',
+      '**€59.88 per year**, with **7 days free** at the start, **€14.99 per month** or **€2.99 per week**, without a trial.',
       'The subscription **renews automatically** until you cancel it.',
       'Minimoa+ is bought on iPhone: **Apple** bills you, and you cancel in your iPhone settings.',
       'On day 5 of the trial, we let you know **by notification and by email**.',
@@ -39,6 +39,7 @@ export const abonnement: LegalPage = {
         rows: [
           ['Annual', '€59.88 per year, i.e. €4.99 per month', '7 days, then €59.88 per year'],
           ['Monthly', '€14.99 per month', 'No trial'],
+          ['Weekly', '€2.99 per week', 'No trial'],
         ],
       },
     },

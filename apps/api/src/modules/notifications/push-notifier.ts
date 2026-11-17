@@ -65,11 +65,18 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://chats';
     case 'together_proposal':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://pet/habitudes';
+    case 'first_steps':
+      // J1 : les habitudes ; J3 : créer un groupe ; J7 : les rencontres.
+      return vars.step === 'd1' ? 'blowy://pet/habitudes' : vars.step === 'd3' ? 'blowy://groupe/nouveau' : 'blowy://rencontres';
+    case 'plus_account':
+      // L'au revoir mène au minimoa (rien à vendre) ; le reste à la feuille Minimoa+ (état, « Gérer mon abonnement »).
+      return vars.step === 'goodbye' ? 'blowy://pet' : 'blowy://moi/blowy-plus';
     case 'daily_challenge':
     case 'needs_out':
     case 'streak_in_danger':
     case 'habit_proof':
     case 'weekly_review':
+    case 'minimoa_news':
       return 'blowy://pet';
   }
 }

@@ -487,6 +487,18 @@ export const home = messages({
     meetText: 'Un lieu public, un proche prévenu, ton propre trajet. Et tu pars quand tu veux.',
     meetAction: 'Nos conseils',
     meetClose: 'C’est noté',
+    /** Retour après une longue absence (14 jours et plus) : il t'accueille et dit ce qui s'est passé, sans reproche. */
+    welcomeBackTitle: (pet: string): string => `Te revoilà. ${pet} t’attendait.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'messages non lus' : 'message non lu'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'personnes qui t’ont fait signe' : 'personne qui t’a fait signe'}` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Pendant ton absence : ${parts.join(' et ')}.` : 'Rien n’a bougé sans toi : reprends où tu veux.';
+    },
+    welcomeBackChats: 'Voir mes chats',
+    welcomeBackWaves: 'Voir qui',
+    welcomeBackClose: 'Merci',
     loadError: 'Impossible de charger ton minimoa',
     retry: 'Réessayer',
   },
@@ -514,6 +526,17 @@ export const home = messages({
     meetText: 'A public place, someone close in the loop, your own way there and back. And you leave whenever you want.',
     meetAction: 'Our tips',
     meetClose: 'Noted',
+    welcomeBackTitle: (pet: string): string => `You’re back. ${pet} was waiting for you.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} unread ${unread > 1 ? 'messages' : 'message'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'people' : 'person'} waved at you` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `While you were away: ${parts.join(' and ')}.` : 'Nothing moved without you: pick up wherever you like.';
+    },
+    welcomeBackChats: 'See my chats',
+    welcomeBackWaves: 'See who',
+    welcomeBackClose: 'Thanks',
     loadError: 'Couldn’t load your minimoa',
     retry: 'Try again',
   },
@@ -541,6 +564,17 @@ export const home = messages({
     meetText: 'Un lugar público, alguien de confianza al tanto, tu propio transporte. Y te vas cuando quieras.',
     meetAction: 'Nuestros consejos',
     meetClose: 'Entendido',
+    welcomeBackTitle: (pet: string): string => `Ya volviste. ${pet} te esperaba.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'mensajes sin leer' : 'mensaje sin leer'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'personas te han saludado' : 'persona te ha saludado'}` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Mientras no estabas: ${parts.join(' y ')}.` : 'Nada se ha movido sin ti: sigue donde quieras.';
+    },
+    welcomeBackChats: 'Ver mis chats',
+    welcomeBackWaves: 'Ver quién',
+    welcomeBackClose: 'Gracias',
     loadError: 'No se pudo cargar tu minimoa',
     retry: 'Reintentar',
   },
@@ -568,6 +602,17 @@ export const home = messages({
     meetText: 'Um lugar público, alguém próximo avisado, seu próprio transporte. E você vai embora quando quiser.',
     meetAction: 'Nossas dicas',
     meetClose: 'Anotado',
+    welcomeBackTitle: (pet: string): string => `Você voltou. ${pet} estava te esperando.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'mensagens não lidas' : 'mensagem não lida'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'pessoas acenaram para você' : 'pessoa acenou para você'}` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Enquanto você esteve fora: ${parts.join(' e ')}.` : 'Nada mudou sem você: continue de onde quiser.';
+    },
+    welcomeBackChats: 'Ver meus chats',
+    welcomeBackWaves: 'Ver quem',
+    welcomeBackClose: 'Obrigado',
     loadError: 'Não foi possível carregar seu minimoa',
     retry: 'Tentar de novo',
   },
@@ -595,6 +640,17 @@ export const home = messages({
     meetText: 'Een openbare plek, iemand die ervan weet, je eigen vervoer. En je gaat weg wanneer je wilt.',
     meetAction: 'Onze tips',
     meetClose: 'Genoteerd',
+    welcomeBackTitle: (pet: string): string => `Daar ben je weer. ${pet} wachtte op je.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'ongelezen berichten' : 'ongelezen bericht'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'mensen zwaaiden' : 'iemand zwaaide'} naar je` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Terwijl je weg was: ${parts.join(' en ')}.` : 'Er is niets veranderd zonder jou: ga verder waar je wilt.';
+    },
+    welcomeBackChats: 'Mijn chats bekijken',
+    welcomeBackWaves: 'Bekijk wie',
+    welcomeBackClose: 'Bedankt',
     loadError: 'Je minimoa kon niet worden geladen',
     retry: 'Opnieuw',
   },

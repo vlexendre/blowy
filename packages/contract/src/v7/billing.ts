@@ -31,14 +31,15 @@ export const PaywallOfferZ = z.object({
   plan: PlanZ,
   /** Identifiant du produit dans App Store Connect (à passer à `Product.products(for:)`). */
   productId: z.string(),
-  period: z.enum(['year', 'month']),
+  /** Période facturée (l'hebdomadaire est présentée après l'annuelle et la mensuelle). */
+  period: z.enum(['year', 'month', 'week']),
   /** Montant réellement facturé à chaque période : c'est le prix le plus visible (règle Apple 3.1.2). */
   billed: MoneyZ,
   /** Équivalent mensuel, à afficher en petit sous le prix facturé (annuel seulement). */
   perMonth: MoneyZ.nullable(),
   /** Jours d'essai gratuit (0 : pas d'essai). */
   trialDays: z.number().int().nonnegative(),
-  /** Remise exacte par rapport à douze mensualités (annuel seulement), en pour cent. */
+  /** Remise exacte par rapport à douze mensualités (annuel seulement, jamais calculée sur l'hebdomadaire), en pour cent. */
   discountPercent: z.number().int().nullable(),
   /** Textes de repli prêts à afficher (si StoreKit ne répond pas). */
   labels: z.object({

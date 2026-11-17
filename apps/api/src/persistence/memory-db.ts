@@ -119,6 +119,8 @@ export class MemoryDb {
   readonly togetherProposals = new Map<string, TogetherProposalRecord>();
   /** `habit_jokers`, clé `${userId}:${day}`. */
   readonly habitJokers = new Map<string, string>();
+  /** `lifecycle_messages` (messages de fidélisation déjà partis), clé `${userId}|${key}` → `sent_at`. */
+  readonly lifecycleMessages = new Map<string, string>();
   /** `profiles.show_habits` vit sur le profil (`Profile.showHabits`). */
 
   private sequence = 0;
@@ -191,6 +193,7 @@ export class MemoryDb {
     for (const m of this.groupMessages) if (m.authorId === userId) m.authorId = null;
     for (const [key, p] of this.togetherProposals) if (p.userId === userId) this.togetherProposals.delete(key);
     for (const key of [...this.habitJokers.keys()]) if (key.startsWith(`${userId}:`)) this.habitJokers.delete(key);
+    for (const key of [...this.lifecycleMessages.keys()]) if (key.startsWith(`${userId}|`)) this.lifecycleMessages.delete(key);
     for (const s of this.subscriptions.values()) if (s.userId === userId) s.userId = null;
     this.suspensions.delete(userId);
     this.accountActivity.delete(userId);

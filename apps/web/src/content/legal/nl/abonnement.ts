@@ -4,12 +4,12 @@ export const abonnement: LegalPage = {
   title: 'Voorwaarden van het Minimoa+-abonnement — Minimoa',
   heading: 'Voorwaarden van het Minimoa+-abonnement',
   description:
-    'Minimoa+: wat het bevat, de abonnementen (€ 59,88 per jaar met 7 dagen gratis, of € 14,99 per maand), automatische verlenging, facturatie door Apple, opzeggen, wat er aan het einde gebeurt, herroeping en terugbetalingen.',
+    'Minimoa+: wat het bevat, de abonnementen (€ 59,88 per jaar met 7 dagen gratis, € 14,99 per maand of € 2,99 per week), automatische verlenging, facturatie door Apple, opzeggen, wat er aan het einde gebeurt, herroeping en terugbetalingen.',
   intro: 'Wat Minimoa+ bevat, wat het kost, hoe het wordt verlengd en hoe je stopt. Zonder kleine lettertjes.',
   summary: {
     title: 'In het kort',
     items: [
-      '**€ 59,88 per jaar**, met **7 dagen gratis** aan het begin, of **€ 14,99 per maand**, zonder proefperiode.',
+      '**€ 59,88 per jaar**, met **7 dagen gratis** aan het begin, **€ 14,99 per maand** of **€ 2,99 per week**, zonder proefperiode.',
       'Het abonnement **wordt automatisch verlengd** zolang je het niet opzegt.',
       'Minimoa+ koop je op iPhone: **Apple** factureert je, en je zegt op in de instellingen van je iPhone.',
       'Op dag 5 van de proefperiode laten we het je weten **via een melding en per e-mail**.',
@@ -39,6 +39,7 @@ export const abonnement: LegalPage = {
         rows: [
           ['Jaarlijks', '€ 59,88 per jaar, oftewel € 4,99 per maand', '7 dagen, daarna € 59,88 per jaar'],
           ['Maandelijks', '€ 14,99 per maand', 'Geen proefperiode'],
+          ['Wekelijks', '€ 2,99 per week', 'Geen proefperiode'],
         ],
       },
     },

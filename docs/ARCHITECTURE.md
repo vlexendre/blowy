@@ -61,7 +61,8 @@ Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conv
 dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
 `notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
-`retention` (comptes inactifs, exclusions, purges), `groups` (groupes, « la tenir ensemble », jours jugés ;
+`retention` (comptes inactifs, exclusions, purges), `fidelite` (premiers pas, nouvelles du minimoa pendant une absence,
+anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `groups` (groupes, « la tenir ensemble », jours jugés ;
 `groups/sharing` : habitudes partagées et rigueur, module sans dépendance importé par les liens, les rencontres et les
 rituels ; docs/GROUPES.md), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
 règles du domaine `moderation.ts` puis IA si permise ; `ReportDesk`, seul créateur des signalements : priorité, escalade,
@@ -89,10 +90,12 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 `links` (vies rattrapées, « lien en danger », relances de 72 h, le soir « à toi d'écrire ») · `notifications` (reports des heures calmes, défi du
 jour à l'heure choisie — seul chemin d'envoi de `daily_challenge` —, activités en direct finies, reçus Expo, ménage) ·
 `rituels` (preuves demandées, besoin de sortir, série en danger, bilans du dimanche, photos privées de plus de 24 h) ·
-`billing` (rappel du jour 5 de l'essai, par push et par e-mail ; journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
+`billing` (rappel du jour 5 de l'essai, par push et par e-mail ; au revoir et relance unique après la fin de Minimoa+ ;
+journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
 apports `ADMIN_INSIGHTS`) · `retention` (prévenance puis suppression après 2 ans sans connexion, exclusions > 3 ans,
 modération > 1 an) · `moderation` (récapitulatif des signalements à l'équipe, escalade après 24 h, photos de profil à
-vérifier) · `wardrobe` · `groups` (jour des groupes d'habitude jugé le lendemain à midi : vies, série, sommeil). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
+vérifier) · `wardrobe` · `groups` (jour des groupes d'habitude jugé le lendemain à midi : vies, série, sommeil) · `fidelite` (premiers pas,
+absences, anniversaires, une passe par demi-heure). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
 
 ## App (`apps/mobile`)
 ```
@@ -114,7 +117,8 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 `weekly_reviews.axis_moves`), série de la conversation (`links.best_streak`, `duo_days`, `last_duo_day_on`,
 `recent_days`, `milestones`, `write_reminder_on` ; `daily_photos` gardée en lecture seule pour les souvenirs), groupes
 (`groups`, `group_members`, `group_messages`, `group_days`, `together_proposals`, `habit_jokers`, `profiles.show_habits`,
-`reports.group_id`, `reports.group_message_id`). Compartiment privé `media` (URL signées émises par l'API).
+`reports.group_id`, `reports.group_message_id`), Minimoa+ hebdomadaire et fidélisation (`subscriptions.plan` accepte
+`weekly`, `lifecycle_messages`). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit

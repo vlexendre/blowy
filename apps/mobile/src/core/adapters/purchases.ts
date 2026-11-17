@@ -18,7 +18,10 @@ export const noPurchases: PurchasesPort = {
 
 const DAY = 86_400_000;
 /** Prix que le magasin simulé du mode local annonce (ceux d'App Store Connect en France). Jamais utilisés sur un iPhone. */
-const SIM_PRICES = { yearly: 59.88, monthly: 14.99 } as const;
+const SIM_PRICES = { yearly: 59.88, monthly: 14.99, weekly: 2.99 } as const;
+/** Durée d'une période (ou de l'essai de l'annuelle) dans le magasin simulé, en jours. */
+const SIM_DAYS = { yearly: 7, monthly: 30, weekly: 7 } as const;
+type SimPlan = keyof typeof SIM_PRICES;
 /** Même identifiant d'app que l'API en mémoire (`APPLE_BUNDLE_ID`, `app.blowy` par défaut). */
 const LOCAL_BUNDLE = process.env.EXPO_PUBLIC_BUNDLE_ID ?? 'app.blowy';
 
@@ -34,14 +37,18 @@ const memoryJws = (payload: Record<string, unknown>): string => `memory.${base64
 
 /**
  * Achat simulé du mode local (API en mémoire, `EXPO_PUBLIC_AUTH=local`) : fabrique la transaction que StoreKit
- * aurait signée (annuel avec 7 jours d'essai, mensuel sans essai), pour tester tout le parcours sans Apple.
+ * aurait signée (annuel avec 7 jours d'essai, mensuel et hebdomadaire sans essai), pour tester tout le parcours sans Apple.
  * Rien n'est facturé ; une API réelle refuse ces transactions.
  */
-export function simulatedPurchases(products: { yearly: string; monthly: string } = { yearly: 'app.blowy.plus.yearly', monthly: 'app.blowy.plus.monthly' }): PurchasesPort {
+export function simulatedPurchases(
+  products: Readonly<Record<SimPlan, string>> = { yearly: 'app.blowy.plus.yearly', monthly: 'app.blowy.plus.monthly', weekly: 'app.blowy.plus.weekly' },
+): PurchasesPort {
   let last: SignedPurchase | null = null;
+  const planOf = (productId: string): SimPlan | undefined => (Object.keys(products) as SimPlan[]).find((k) => products[k] === productId);
   const make = (productId: string, accountToken: string | null): SignedPurchase => {
     const now = Date.now();
-    const yearly = productId === products.yearly;
+    const plan = planOf(productId) ?? 'monthly';
+    const yearly = plan === 'yearly';
     const id = `local-${now}`;
     const signedTransaction = memoryJws({
       transactionId: id,
@@ -49,7 +56,7 @@ export function simulatedPurchases(products: { yearly: string; monthly: string }
       bundleId: LOCAL_BUNDLE,
       productId,
       purchaseDate: now,
-      expiresDate: now + (yearly ? 7 : 30) * DAY,
+      expiresDate: now + SIM_DAYS[plan] * DAY,
       signedDate: now,
       environment: 'Sandbox',
       type: 'Auto-Renewable Subscription',
@@ -76,13 +83,12 @@ export function simulatedPurchases(products: { yearly: string; monthly: string }
       if (sim === 'slowprices') await new Promise((r) => setTimeout(r, 20_000));
       if (sim === 'noprices') throw new Error('store_unavailable');
       const euros = (n: number) => new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(n);
-      return productIds
-        .filter((id) => id === products.yearly || id === products.monthly)
-        .map((productId) => {
-          const yearly = productId === products.yearly;
-          const price = yearly ? SIM_PRICES.yearly : SIM_PRICES.monthly;
-          return { productId, displayPrice: euros(price), price, currency: 'EUR', introEligible: null, trialDays: yearly ? 7 : 0 };
-        });
+      return productIds.flatMap((productId) => {
+        const plan = planOf(productId);
+        if (!plan) return [];
+        const price = SIM_PRICES[plan];
+        return [{ productId, displayPrice: euros(price), price, currency: 'EUR', introEligible: null, trialDays: plan === 'yearly' ? 7 : 0 }];
+      });
     },
     async purchase(productId, accountToken) {
       // Le temps d'une feuille de paiement : on voit l'état « en cours » du bouton.

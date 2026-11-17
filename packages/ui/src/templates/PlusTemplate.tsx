@@ -35,6 +35,8 @@ export interface PlusOfferView<K extends string = string> {
   badge?: string | null;
   /** Ligne repliée (« Mensuel, sans essai »), avec le prix à droite. */
   short: string;
+  /** Nom court de l'offre (« Mensuel »), dans une case repliée à mi-largeur (deux offres repliées côte à côte). */
+  name?: string;
   /** Frise de l'essai : aujourd'hui → rappel → premier paiement. */
   timeline?: readonly { title: string; text: string }[] | null;
 }
@@ -133,7 +135,21 @@ function TrialTimeline({ steps }: { steps: readonly { title: string; text: strin
   );
 }
 
-function OfferCard<K extends string>({ offer, on, onPress, compact }: { offer: PlusOfferView<K>; on: boolean; onPress: () => void; compact: boolean }) {
+/**
+ * Offres en lignes : deux offres repliées voisines partagent une ligne (une case à mi-largeur chacune), pour que trois
+ * offres tiennent sur un écran sans défiler. L'offre choisie a toujours sa ligne entière, prix facturé en grand.
+ */
+function offerRows<K extends string>(offers: readonly PlusOfferView<K>[], selected: K | undefined): PlusOfferView<K>[][] {
+  const rows: PlusOfferView<K>[][] = [];
+  for (const o of offers) {
+    const last = rows[rows.length - 1];
+    if (o.key !== selected && last?.length === 1 && last[0]?.key !== selected) last.push(o);
+    else rows.push([o]);
+  }
+  return rows;
+}
+
+function OfferCard<K extends string>({ offer, on, onPress, compact, half }: { offer: PlusOfferView<K>; on: boolean; onPress: () => void; compact: boolean; half?: boolean }) {
   return (
     <Pressable
       onPress={onPress}
@@ -143,9 +159,19 @@ function OfferCard<K extends string>({ offer, on, onPress, compact }: { offer: P
       accessibilityRole="radio"
       accessibilityState={{ checked: on }}
       accessibilityLabel={[on ? offer.lead : offer.short, offer.price, offer.perMonth].filter(Boolean).join(', ')}
-      style={[styles.offer, on ? styles.offerOn : styles.offerOff]}
+      style={[styles.offer, on ? styles.offerOn : half ? styles.offerHalf : styles.offerOff]}
     >
-      {on ? (
+      {half && !on ? (
+        // Case à mi-largeur : le nom, puis le montant facturé et sa période (sur deux lignes s'il le faut, jamais coupé).
+        <View>
+          <Text variant="bodyBold" size={13} muted numberOfLines={1}>
+            {offer.name ?? offer.short}
+          </Text>
+          <Text variant="bodyHeavy" size={compact ? 14 : 15} numberOfLines={2} style={styles.halfPrice}>
+            {offer.price}
+          </Text>
+        </View>
+      ) : on ? (
         <View>
           <View style={[layout.rowBetween, styles.offerTop]}>
             <Text variant="bodyHeavy" size={15} style={layout.grow}>
@@ -187,7 +213,7 @@ function OfferCard<K extends string>({ offer, on, onPress, compact }: { offer: P
 /**
  * Minimoa+ (V6-GPlus) : feuille haute. En haut, le minimoa de la personne habillé avec les objets premium qui flottent, la
  * preuve concrète (si le serveur en a une), puis les avantages, l'offre annuelle déployée (prix facturé en grand,
- * équivalent mensuel en petit, frise de l'essai), la mensuelle repliée, l'action, « Continuer gratuitement » neutre, le
+ * équivalent mensuel en petit, frise de l'essai), les autres offres repliées (côte à côte quand elles se suivent), l'action, « Continuer gratuitement » neutre, le
  * renouvellement et la résiliation, « Restaurer mes achats » et les liens légaux. La croix est là tout de suite.
  */
 export function PlusTemplate<K extends string>({
@@ -230,13 +256,16 @@ export function PlusTemplate<K extends string>({
   const close = sheet ? sheet.close : onClose;
   const proceed = sheet ? sheet.close : onContinue;
   const [allPerks, setAllPerks] = useState(false);
-  const cut = !allPerks && perksShown !== undefined && morePerksLabel && perks.length > perksShown + 1 ? perksShown : perks.length;
+  // Trois offres : sur un petit écran, un seul avantage et « Et N de plus » (une ligne), le panneau un peu plus serré.
+  const many = (offers?.length ?? 0) > 2;
+  const shown = short && many && perksShown !== undefined ? Math.min(perksShown, 1) : perksShown;
+  const cut = !allPerks && shown !== undefined && morePerksLabel && perks.length > shown + 1 ? shown : perks.length;
   const shownPerks = perks.slice(0, cut);
   return (
     <View style={[styles.root, sheet && styles.rootSheet]}>
       <ScrollView
         style={layout.fill}
-        contentContainerStyle={[styles.content, { paddingBottom: space.lg }]}
+        contentContainerStyle={[styles.content, { paddingBottom: space.md }]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScrollEndDrag={sheet ? (e) => e.nativeEvent.contentOffset.y < -70 && sheet.close() : undefined}
@@ -257,7 +286,7 @@ export function PlusTemplate<K extends string>({
             <View />
             <IconButton glyph="close" variant="back" label={closeLabel} onPress={close} />
           </SheetHandle>
-          <View style={[styles.head, short && styles.headShort]}>
+          <View style={[styles.head, many && styles.headTight, short && styles.headShort]}>
             <Title text={[{ text: brand }, { text: '+', color: color.accent }]} size={short ? 44 : 56} style={short ? styles.titleShort : styles.title} />
             {/* Petit écran avec la preuve concrète : elle remplace la ligne de la raison. */}
             {short && teaser ? null : <Title text={[{ text: headline, dim: true }]} size={short ? 20 : 24} variant="h2" style={styles.headline} />}
@@ -316,9 +345,17 @@ export function PlusTemplate<K extends string>({
           ) : offers?.length ? (
             <Appear delay={220} style={styles.offers}>
               <View accessibilityRole="radiogroup" accessibilityLabel={offersLabel} style={styles.offersList}>
-                {offers.map((o) => (
-                  <OfferCard key={o.key} offer={o} on={o.key === selected} onPress={() => onSelect?.(o.key)} compact={short || !!status} />
-                ))}
+                {offerRows(offers, selected).map((row) =>
+                  row.length > 1 ? (
+                    <View key={row.map((o) => o.key).join('|')} style={styles.offerPair}>
+                      {row.map((o) => (
+                        <OfferCard key={o.key} offer={o} on={false} onPress={() => onSelect?.(o.key)} compact={short} half />
+                      ))}
+                    </View>
+                  ) : row[0] ? (
+                    <OfferCard key={row[0].key} offer={row[0]} on={row[0].key === selected} onPress={() => onSelect?.(row[0]?.key as K)} compact={short || !!status} />
+                  ) : null,
+                )}
               </View>
             </Appear>
           ) : null}
@@ -417,6 +454,7 @@ const styles = StyleSheet.create({
   top: { paddingBottom: space.xs, paddingHorizontal: 14 },
   head: { paddingLeft: 20, paddingRight: 136, paddingBottom: space.lg },
   title: { lineHeight: 52 },
+  headTight: { paddingBottom: space.md },
   // Petit écran : le titre remonte à hauteur de la croix (il est à gauche, elle à droite).
   headShort: { paddingBottom: space.md, marginTop: -34 },
   bodyShort: { gap: space.sm, paddingTop: space.sm },
@@ -438,11 +476,14 @@ const styles = StyleSheet.create({
   offers: {},
   offersList: { gap: space.sm },
   offer: { borderRadius: radius.lg - 6, borderWidth: 2, backgroundColor: color.panel },
-  offerOn: { borderColor: color.accent, paddingHorizontal: 14, paddingVertical: 12 },
-  offerOff: { borderColor: veil.glassStrong, paddingHorizontal: 14, minHeight: 52, justifyContent: 'center' },
+  offerOn: { borderColor: color.accent, paddingHorizontal: 14, paddingVertical: 10 },
+  offerOff: { borderColor: veil.glassStrong, paddingHorizontal: 14, minHeight: 48, justifyContent: 'center' },
+  offerPair: { flexDirection: 'row', gap: space.sm },
+  offerHalf: { flex: 1, borderColor: veil.glassStrong, paddingHorizontal: 12, paddingVertical: 8, minHeight: 52, justifyContent: 'center' },
+  halfPrice: { lineHeight: 20, marginTop: 2 },
   offerTop: { gap: space.sm, alignItems: 'flex-start' },
   offerShort: { gap: space.md },
-  price: { marginTop: space.xs, lineHeight: 36 },
+  price: { marginTop: space.xs, lineHeight: 34 },
   shortPrice: { flexShrink: 0 },
   badge: {
     paddingHorizontal: 11,
@@ -451,7 +492,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.accent,
     transform: [{ rotate: '3deg' }],
   },
-  timeline: { marginTop: space.md },
+  timeline: { marginTop: 12 },
   timelineLine: {
     position: 'absolute',
     top: 8,
@@ -480,12 +521,13 @@ const styles = StyleSheet.create({
     borderColor: color.accent,
     backgroundColor: color.panel,
   },
+  // « Continuer gratuitement » et « Conditions de Minimoa+ » sur une ligne, même à 375 de large (passe à la ligne s'il le faut).
   actions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    columnGap: space.lg,
+    columnGap: space.md,
   },
   footer: {
     paddingHorizontal: 20,

@@ -190,12 +190,15 @@ function offerPrices(o: PaywallOffer, store: StoreProduct | undefined, sellable:
   if (store) {
     const perMonth =
       o.period === 'year' && store.price !== null && store.currency ? formatPrice(Math.round((store.price * 100) / 12), store.currency) : null;
-    return { price: o.period === 'year' ? t.price.year(store.displayPrice) : t.price.month(store.displayPrice), perMonth: perMonth ? t.perMonth(perMonth) : null };
+    return { price: t.price[o.period](store.displayPrice), perMonth: perMonth ? t.perMonth(perMonth) : null };
   }
   return sellable ? null : { price: o.labels.price, perMonth: o.labels.perMonth };
 }
 
-/** Remise de l'annuel sur douze mensualités, calculée sur les prix du magasin (même devise) ; sinon aucune pastille. */
+/**
+ * Remise de l'annuel sur douze mensualités, calculée sur les prix du magasin (même devise) ; sinon aucune pastille.
+ * Jamais contre l'hebdomadaire (52 semaines donneraient un chiffre plus flatteur, mais trompeur).
+ */
 function storeDiscount(yearly: StoreProduct | undefined, monthly: StoreProduct | undefined): number | null {
   if (!yearly?.price || !monthly?.price || !yearly.currency || yearly.currency !== monthly.currency) return null;
   // Même règle que l'API (domaine), appliquée aux montants du magasin.
@@ -278,7 +281,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
     if (!prices) return [];
     const trialDays = sellable ? (s?.trialDays ?? 0) : o.trialDays;
     const eligible = trialDays > 0 && (s?.introEligible ?? data?.trial.eligible ?? false);
-    const name = o.period === 'year' ? t.plan.yearly : t.plan.monthly;
+    const name = t.plan[o.plan];
     const badge = sellable ? (o.period === 'year' ? discount : null) : o.discountPercent;
     return [
       {
@@ -288,6 +291,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
         perMonth: prices.perMonth,
         badge: badge ? t.badge(badge) : null,
         short: trialDays > 0 ? name : t.lead.noTrial(name),
+        name,
         trialDays: eligible ? trialDays : 0,
         // La frise (jour 0 · rappel · premier paiement) suppose l'essai de l'API ; autre durée dans le magasin : pas de frise.
         timeline: eligible && data && trialDays === data.trial.days ? data.trial.timeline.map((step, i) => ({ title: step.title, text: t.timeline[i] ?? step.text })) : null,

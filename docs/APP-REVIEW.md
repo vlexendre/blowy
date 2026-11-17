@@ -158,10 +158,12 @@ SAFETY AND MODERATION
 
 SUBSCRIPTION MINIMOA+
 Me > Minimoa+, or at the end of sign-up (skippable: close button at the top right, or "Continue for free"). Yearly with
-a 1-week free trial (introductory offer) or monthly; prices and the trial are read from StoreKit. The sheet shows the
+a 1-week free trial (introductory offer), monthly, or weekly (the last two without a trial); prices and the trial are
+read from StoreKit. The yearly discount badge compares the yearly price with twelve monthly payments only. The sheet shows the
 billed price, the trial length and the date of the first payment, auto-renewal and how to cancel, "Restore
 purchases", Terms of Use and Privacy Policy. Everything outside Minimoa+ is free. Purchases are verified by our
-server; sandbox purchases are accepted. A reminder is sent on day 5 of the trial by notification and by email.
+server; sandbox purchases are accepted. A reminder is sent on day 5 of the trial by notification and by email, with the
+end date, the amount and how to cancel.
 
 LOCATION AND PRIVACY LABELS
 Location is declared as Coarse Location: the exact point is never stored (see LOCATION above).

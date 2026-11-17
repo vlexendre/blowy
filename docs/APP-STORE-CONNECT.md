@@ -93,9 +93,10 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 
 ## 4. Abonnements
 
-- Groupe « Minimoa+ » ; deux produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai
-  gratuit 1 semaine en offre d'introduction) et `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai)
-  (`docs/BLOWY-PLUS.md`).
+- Groupe « Minimoa+ » ; trois produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai
+  gratuit 1 semaine en offre d'introduction), `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) et
+  `app.blowy.plus.weekly` (1 semaine, 2,99 €, sans essai) (`docs/BLOWY-PLUS.md`). Ordre d'affichage dans le groupe
+  (« Subscription Group » › ordre des niveaux) : annuel, mensuel, hebdomadaire, comme dans la feuille de l'app.
 - Description de chaque produit (et de la fiche) : ne promettre que ce qui existe. Proposition :
   « Toute la carte et changer de ville, une rencontre de plus chaque jour, 3 jokers de série par semaine, jusqu'à 6
   habitudes, le bilan détaillé du dimanche, renommer ton minimoa quand tu veux, et tous les objets premium de la
@@ -107,22 +108,30 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
   affiché du groupe « Minimoa+ » (c'est le nom que l'App Store montre dans Réglages › ton nom › Abonnements, il doit
   rester celui du titre du paywall).
 - **Chaque abonnement** : nom affiché qui reprend le titre du paywall et la durée, sans prix (le prix vient de
-  StoreKit) : FR « Minimoa+ annuel » / « Minimoa+ mensuel » ; EN « Minimoa+ Yearly » / « Minimoa+ Monthly » ; ES
-  « Minimoa+ anual » / « Minimoa+ mensual » ; PT « Minimoa+ anual » / « Minimoa+ mensal » ; NL « Minimoa+ jaarlijks » /
-  « Minimoa+ maandelijks ». Description (55 caractères au plus) : FR « Toute la carte, plus de rencontres, et plus
+  StoreKit) : FR « Minimoa+ annuel » / « Minimoa+ mensuel » / « Minimoa+ hebdomadaire » ; EN « Minimoa+ Yearly » /
+  « Minimoa+ Monthly » / « Minimoa+ Weekly » ; ES « Minimoa+ anual » / « Minimoa+ mensual » / « Minimoa+ semanal » ; PT
+  « Minimoa+ anual » / « Minimoa+ mensal » / « Minimoa+ semanal » ; NL « Minimoa+ jaarlijks » / « Minimoa+ maandelijks »
+  / « Minimoa+ wekelijks ». Description (55 caractères au plus) : FR « Toute la carte, plus de rencontres, et plus
   encore » (même idée dans chaque langue, sans promettre autre chose que la liste ci-dessus).
 - **Capture pour la revue** (obligatoire, une par abonnement) : la feuille Minimoa+ telle que l'examinateur la verra,
   avec le prix facturé, l'essai et sa date de fin, la mention de renouvellement, « Restaurer mes achats », « Conditions
   d'utilisation » et « Confidentialité » visibles. Modèle : `/home/claude/work/w3/p/after/390/01-onboarding-trial.png`
   (refaire la capture sur un iPhone en bac à sable, prix réels de StoreKit ; une capture du mode local porterait la
   mention « Mode dev »).
-- **Offre d'introduction** : seulement sur l'annuel, essai gratuit d'**1 semaine**, tous les pays. L'app lit la durée de
+- **Offre d'introduction** : seulement sur l'annuel, essai gratuit d'**1 semaine**, tous les pays. Aucune sur le mensuel
+  ni sur l'hebdomadaire (si un essai y était configuré un jour, la feuille l'annoncerait d'elle-même, lu dans StoreKit,
+  mais le rappel du jour 5 et la frise ne sont prévus que pour 7 jours : en parler avant). L'app lit la durée de
   l'essai dans StoreKit : sans offre configurée, la feuille n'annonce aucun essai (rien n'est promis que le magasin ne
   donne).
 - Notes de revue : `docs/APP-REVIEW.md`.
 - **Le premier abonnement doit être joint à la version soumise** (page de la version › « In-App Purchases and
-  Subscriptions » › sélectionner les deux), sinon l'examinateur ne trouve pas les produits (2.1(b)).
+  Subscriptions » › sélectionner les trois), sinon l'examinateur ne trouve pas les produits (2.1(b)). L'hebdomadaire,
+  ajouté après coup, doit lui aussi passer en revue avec une version (son état doit être « Prêt à soumettre » puis joint).
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
+  Elles portent aussi les messages de l'abonnement (bienvenue, paiement refusé, merci au renouvellement de l'annuel) :
+  sans elles, seule la bienvenue (achat dans l'app) et l'au revoir (minuteur) partent (`docs/FIDELISATION.md`).
+- **Offres de reconquête (win-back) et Retention Messaging** : aucune n'est configurée aujourd'hui ; textes prêts et
+  réglages proposés dans `docs/FIDELISATION.md` §4 (à créer seulement si le propriétaire le décide).
 - Pour tester les objets premium en bac à sable : acheter l'annuel, ouvrir Mon minimoa › Garde-robe : le compteur
   passe de N à N + 13, les objets « Minimoa+ » se portent ; annuler et attendre la fin (accélérée en bac à sable) : ils
   quittent le minimoa.

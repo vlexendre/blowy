@@ -243,7 +243,7 @@ Mise en place côté App Store : `docs/BLOWY-PLUS.md`. Appli web d'administratio
 | `APPLE_BUNDLE_ID` | Bundle iOS (défaut `app.blowy`), vérifié dans chaque transaction et notification. |
 | `APPLE_APP_APPLE_ID` | Apple ID numérique de l'app (App Store Connect → Informations sur l'app). **Requis en production** : vérifié sur les notifications de production. |
 | `APPLE_ACCEPT_SANDBOX` | `1` (défaut) : accepte les achats du bac à sable (TestFlight). `0` : les refuse. |
-| `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY` | Identifiants produit (défauts `app.blowy.plus.yearly`, `app.blowy.plus.monthly`). |
+| `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`, `PLUS_PRODUCT_WEEKLY` | Identifiants produit (défauts `app.blowy.plus.yearly`, `app.blowy.plus.monthly`, `app.blowy.plus.weekly`). |
 
 Aucune clé secrète : les achats se vérifient avec le certificat public d'Apple, embarqué dans le code.
 

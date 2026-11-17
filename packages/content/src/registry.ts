@@ -7,6 +7,7 @@ import { labels } from './labels';
 import { auditText } from './v7/audit';
 import { chatText } from './v7/chat';
 import { facturationText } from './v7/facturation-admin';
+import { fideliteText } from './v7/fidelite';
 import { groupesText } from './v7/groupes';
 import { notificationTexts } from './v7/notifications';
 import { rituelsText } from './v7/rituels';
@@ -26,4 +27,5 @@ export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = 
   facturation: facturationText,
   audit: auditText,
   groupes: groupesText,
+  fidelite: fideliteText,
 };

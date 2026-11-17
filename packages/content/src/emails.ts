@@ -17,10 +17,12 @@ const COLORS = { bg: '#0B0A14', card: '#16142A', text: '#F4F2FF', muted: '#A9A4C
 const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-interface Layout {
+export interface EmailLayout {
   title: string;
   paragraphs: readonly string[];
   cta: { label: string; url: string };
+  /** Ligne discrète sous le bouton (pourquoi cet e-mail, comment ne plus le recevoir). */
+  footer?: string;
 }
 
 interface WelcomeInput {
@@ -198,8 +200,8 @@ export const emailText = defineMessages({
   },
 });
 
-/** Les textes passés ici sont bruts : ils sont échappés au rendu. */
-function render(locale: Locale, subject: string, layout: Layout): Email {
+/** Mise en page commune des e-mails. Les textes passés ici sont bruts : ils sont échappés au rendu. */
+export function renderEmail(locale: Locale, subject: string, layout: EmailLayout): Email {
   const tagline = labels.in(locale).tagline;
   const sep = emailText.in(locale).ctaSeparator;
   const paras = layout.paragraphs
@@ -215,24 +217,34 @@ function render(locale: Locale, subject: string, layout: Layout): Email {
 <h1 style="margin:0 0 20px;font-size:24px;line-height:1.3;color:${COLORS.text}">${escapeHtml(layout.title)}</h1>
 ${paras}
 <p style="margin:28px 0 0"><a href="${escapeHtml(layout.cta.url)}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:${COLORS.accent};color:${COLORS.bg};font-weight:700;text-decoration:none">${escapeHtml(layout.cta.label)}</a></p>
+${layout.footer ? `<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:${COLORS.muted}">${escapeHtml(layout.footer)}</p>` : ''}
 </td></tr></table>
 <p style="margin:20px 0 0;font-size:12px;color:${COLORS.muted}">${escapeHtml(tagline)} · ${escapeHtml(brand.supportEmail)}</p>
 </td></tr></table></body></html>`;
-  const text = [layout.title, '', ...layout.paragraphs, '', `${layout.cta.label}${sep}${layout.cta.url}`, '', `${brand.name} — ${tagline}`].join('\n');
+  const text = [
+    layout.title,
+    '',
+    ...layout.paragraphs,
+    '',
+    `${layout.cta.label}${sep}${layout.cta.url}`,
+    ...(layout.footer ? ['', layout.footer] : []),
+    '',
+    `${brand.name} — ${tagline}`,
+  ].join('\n');
   return { subject, html, text };
 }
 
 export function welcomeEmail(locale: Locale, input: WelcomeInput): Email {
   const t = emailText.in(locale).welcome;
-  return render(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta(input), url: input.appUrl } });
+  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta(input), url: input.appUrl } });
 }
 
 export function waveReceivedEmail(locale: Locale, input: WaveInput): Email {
   const t = emailText.in(locale).wave;
-  return render(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
+  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
 }
 
 export function linkCreatedEmail(locale: Locale, input: LinkInput): Email {
   const t = emailText.in(locale).linkCreated;
-  return render(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
+  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
 }

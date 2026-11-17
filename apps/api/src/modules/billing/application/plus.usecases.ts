@@ -127,11 +127,12 @@ export class GetPaywall {
     const products = this.env.facturationAdmin.plusProducts;
     const web = this.env.webUrl;
     const legal = (page: string): string => `${web}${locale === 'fr' ? '' : `/${locale}`}/legal/${page}/`;
-    const discount = yearlyDiscountPercent();
+    // Remise de l'annuel contre douze mensualités (jamais contre l'hebdomadaire).
+    const discount = yearlyDiscountPercent(OFFERS.yearly, OFFERS.monthly);
     const offers = PLANS.map((plan) => {
       const o = OFFERS[plan];
       const billed = euros(o.amountMinor);
-      const price = o.period === 'year' ? plusText.price.year(billed) : plusText.price.month(billed);
+      const price = plusText.price[o.period](billed);
       const perMonth = o.period === 'year' ? monthlyEquivalentMinor(o) : null;
       return {
         plan,

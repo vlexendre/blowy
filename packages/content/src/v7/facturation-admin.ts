@@ -29,8 +29,8 @@ const fr = {
     premium_items: 'Tous les objets premium de la garde-robe',
   } as Record<PlusPerk, string>,
   plus: {
-    name: { yearly: 'Abonnement annuel Minimoa+', monthly: 'Abonnement mensuel Minimoa+' },
-    price: { year: (amount: string) => `${amount} par an`, month: (amount: string) => `${amount} par mois` },
+    name: { yearly: 'Abonnement annuel Minimoa+', monthly: 'Abonnement mensuel Minimoa+', weekly: 'Abonnement hebdomadaire Minimoa+' },
+    price: { year: (amount: string) => `${amount} par an`, month: (amount: string) => `${amount} par mois`, week: (amount: string) => `${amount} par semaine` },
     perMonth: (amount: string) => `soit ${amount} par mois`,
     trial: (days: number, price: string) => `${days} jours gratuits, puis ${price}`,
     timeline: (reminderDay: number, days: number) => [
@@ -95,8 +95,8 @@ const en: Translation<typeof fr> = {
     premium_items: 'All the premium wardrobe items',
   },
   plus: {
-    name: { yearly: 'Minimoa+ yearly subscription', monthly: 'Minimoa+ monthly subscription' },
-    price: { year: (amount: string) => `${amount} per year`, month: (amount: string) => `${amount} per month` },
+    name: { yearly: 'Minimoa+ yearly subscription', monthly: 'Minimoa+ monthly subscription', weekly: 'Minimoa+ weekly subscription' },
+    price: { year: (amount: string) => `${amount} per year`, month: (amount: string) => `${amount} per month`, week: (amount: string) => `${amount} per week` },
     perMonth: (amount: string) => `that’s ${amount} a month`,
     trial: (days: number, price: string) => `${days} days free, then ${price}`,
     timeline: (reminderDay: number, days: number) => [
@@ -159,8 +159,8 @@ const es: Translation<typeof fr> = {
     premium_items: 'Todos los objetos premium del armario',
   },
   plus: {
-    name: { yearly: 'Suscripción anual de Minimoa+', monthly: 'Suscripción mensual de Minimoa+' },
-    price: { year: (amount: string) => `${amount} al año`, month: (amount: string) => `${amount} al mes` },
+    name: { yearly: 'Suscripción anual de Minimoa+', monthly: 'Suscripción mensual de Minimoa+', weekly: 'Suscripción semanal de Minimoa+' },
+    price: { year: (amount: string) => `${amount} al año`, month: (amount: string) => `${amount} al mes`, week: (amount: string) => `${amount} a la semana` },
     perMonth: (amount: string) => `o sea, ${amount} al mes`,
     trial: (days: number, price: string) => `${days} días gratis, luego ${price}`,
     timeline: (reminderDay: number, days: number) => [
@@ -223,8 +223,8 @@ const pt: Translation<typeof fr> = {
     premium_items: 'Todos os itens premium do guarda-roupa',
   },
   plus: {
-    name: { yearly: 'Assinatura anual do Minimoa+', monthly: 'Assinatura mensal do Minimoa+' },
-    price: { year: (amount: string) => `${amount} por ano`, month: (amount: string) => `${amount} por mês` },
+    name: { yearly: 'Assinatura anual do Minimoa+', monthly: 'Assinatura mensal do Minimoa+', weekly: 'Assinatura semanal do Minimoa+' },
+    price: { year: (amount: string) => `${amount} por ano`, month: (amount: string) => `${amount} por mês`, week: (amount: string) => `${amount} por semana` },
     perMonth: (amount: string) => `ou seja, ${amount} por mês`,
     trial: (days: number, price: string) => `${days} dias grátis, depois ${price}`,
     timeline: (reminderDay: number, days: number) => [
@@ -287,8 +287,8 @@ const nl: Translation<typeof fr> = {
     premium_items: 'Alle premium items uit de garderobe',
   },
   plus: {
-    name: { yearly: 'Minimoa+ jaarabonnement', monthly: 'Minimoa+ maandabonnement' },
-    price: { year: (amount: string) => `${amount} per jaar`, month: (amount: string) => `${amount} per maand` },
+    name: { yearly: 'Minimoa+ jaarabonnement', monthly: 'Minimoa+ maandabonnement', weekly: 'Minimoa+ weekabonnement' },
+    price: { year: (amount: string) => `${amount} per jaar`, month: (amount: string) => `${amount} per maand`, week: (amount: string) => `${amount} per week` },
     perMonth: (amount: string) => `dat is ${amount} per maand`,
     trial: (days: number, price: string) => `${days} dagen gratis, daarna ${price}`,
     timeline: (reminderDay: number, days: number) => [

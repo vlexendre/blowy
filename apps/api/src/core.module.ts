@@ -35,6 +35,7 @@ import { adminProviders } from './modules/admin/infrastructure/providers';
 import { Audience } from './modules/safety/application/audience';
 import { retentionProviders } from './modules/retention/infrastructure/providers';
 import { groupsRepositories } from './modules/groups/infrastructure/providers';
+import { fideliteProviders } from './modules/fidelite/infrastructure/providers';
 import { MemoryDb } from './persistence/memory-db';
 import { createServiceClient } from './persistence/supabase';
 import { type Clock, ShiftedClock, systemClock } from './shared/clock';
@@ -84,6 +85,7 @@ export class CoreModule {
       ...adminProviders(env.adapters),
       ...retentionProviders(env.adapters),
       ...groupsRepositories(env.adapters),
+      ...fideliteProviders(env.adapters),
       // Qui est « utilisable » pour qui (supprimé, suspendu, bloqué, discret) : une seule règle, partout.
       Audience,
       // Sign in with Apple : jetons gardés à la connexion, révoqués à la suppression du compte.

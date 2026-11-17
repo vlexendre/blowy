@@ -9,7 +9,8 @@ export type NotificationKind =
   | 'daily_challenge' | 'needs_out' | 'new_encounter' | 'waved' | 'message' | 'your_turn'
   | 'link_in_danger' | 'streak_in_danger' | 'habit_proof' | 'weekly_review' | 'item_unlocked'
   | 'words_received' | 'trial_reminder'
-  | 'group_invite' | 'together_proposal' | 'group_message' | 'group_life_lost' | 'group_asleep';
+  | 'group_invite' | 'together_proposal' | 'group_message' | 'group_life_lost' | 'group_asleep'
+  | 'first_steps' | 'minimoa_news' | 'plus_account';
 
 export interface Notifier {
   /** Applique réglages, heures calmes et plafond ; ne lève jamais. */

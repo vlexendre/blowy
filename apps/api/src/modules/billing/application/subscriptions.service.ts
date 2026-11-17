@@ -1,14 +1,16 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { type StoreEvent, applyStoreEvent, plusUntilOf } from '@blowy/domain';
 import { PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import type { SubscriptionRecord, SubscriptionsRepository } from '../ports';
 import { SUBSCRIPTIONS } from '../tokens';
+import { PlusNews } from './plus-news';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Applique un événement de magasin à l'abonnement et tient `profiles.plus_until` à jour.
+ * Prévient la personne des moments qui comptent (`PlusNews`).
  * Un abonnement appartient à l'identifiant Apple qui l'a payé : s'il est restauré depuis un autre compte Minimoa,
  * il change de compte (l'ancien perd Minimoa+).
  */
@@ -19,6 +21,7 @@ export class Subscriptions {
   constructor(
     @Inject(SUBSCRIPTIONS) private readonly subscriptions: SubscriptionsRepository,
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
+    @Optional() @Inject(PlusNews) private readonly news: PlusNews | null = null,
   ) {}
 
   /**
@@ -46,6 +49,8 @@ export class Subscriptions {
       await this.refreshPlus(previousOwner);
     }
     if (owner) await this.refreshPlus(owner);
+    // Bienvenue, merci, paiement refusé ou rattrapé : une fois chacun (docs/FIDELISATION.md). Ne lève jamais.
+    if (owner) await this.news?.afterApply(prev, record, event);
     return record;
   }
 

@@ -46,6 +46,12 @@ export class NotificationSettings {
     return this.cache.wrap(`notif:settings:${userId}`, TTL_MS, async () => (await this.repo.get(userId)) ?? this.defaults(userId));
   }
 
+  /** Réglages de plusieurs personnes d'un coup (minuteur), valeurs par défaut pour qui n'a rien réglé. */
+  async resolveMany(userIds: readonly string[]): Promise<Map<string, NotificationSettingsRecord>> {
+    const found = new Map((await this.repo.forUsers(userIds)).map((s) => [s.userId, s]));
+    return new Map(userIds.map((id) => [id, found.get(id) ?? this.defaults(id)]));
+  }
+
   async view(userId: string): Promise<SettingsView> {
     const [s, devices, profile] = await Promise.all([this.resolve(userId), this.devices.forUser(userId), this.profiles.findById(userId)]);
     const lang = profile?.locale ?? 'fr';

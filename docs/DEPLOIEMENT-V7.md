@@ -32,8 +32,9 @@ naît dans la migration « plateforme »).
    extension `app.blowy.widget` : *App Groups* (`docs/WIDGETS.md`).
 2. Keys › `+` › *Apple Push Notifications service (APNs)* : télécharger le `.p8` (une seule fois), noter son Key ID
    et le Team ID (Membership). Pour les activités en direct.
-3. Abonnements Minimoa+ : groupe « Minimoa+ », `app.blowy.plus.yearly` (59,88 €, essai de 7 jours) et
-   `app.blowy.plus.monthly` (14,99 €), accord « Apps payantes » signé (`docs/BLOWY-PLUS.md` §1).
+3. Abonnements Minimoa+ : groupe « Minimoa+ », `app.blowy.plus.yearly` (59,88 €, essai de 7 jours),
+   `app.blowy.plus.monthly` (14,99 €) et `app.blowy.plus.weekly` (2,99 €), accord « Apps payantes » signé
+   (`docs/BLOWY-PLUS.md` §1).
 4. Notifications serveur App Store **V2**, production et bac à sable :
    `https://<domaine de l'API>/v1/plus/apple/notifications` ; noter l'Apple ID numérique de l'app.
 5. URL des conditions, de la confidentialité et des conditions de l'abonnement sur la fiche (`/legal/...`).
@@ -75,7 +76,7 @@ Facultatives (valeurs par défaut correctes) : `AI_PROVIDER`, `AI_PROVIDER_NAME`
 — le prestataire nommé dans les accords pour l'IA, à changer avec la politique de confidentialité —, `AI_MODEL_SMALL`, `AI_MODEL_MEDIUM`,
 `AI_KILL_SWITCH` (0), `AI_DAILY_CEILING_USD` (3), `AI_USER_BUDGETS`, `AI_PRICES_SMALL`, `AI_PRICES_MEDIUM`,
 `AI_EUR_PER_USD`, `PUSH_PROVIDER` (`expo`), `EXPO_ACCESS_TOKEN`, `TICK_BUDGET_MS` (20000), `APPLE_BUNDLE_ID`
-(`app.blowy`), `APPLE_ACCEPT_SANDBOX` (1, nécessaire pour TestFlight), `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`,
+(`app.blowy`), `APPLE_ACCEPT_SANDBOX` (1, nécessaire pour TestFlight), `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`, `PLUS_PRODUCT_WEEKLY`,
 `MAIL_FROM` (`Minimoa <hello@minimoa.app>`), `WEB_URL` (`https://minimoa.app`), `API_URL`, `PORT`. La liste commentée est dans `.env.example`.
 
 ## 3. Jour J, sans coupure : index des grosses tables
@@ -278,3 +279,24 @@ seulement un peu moins). Les positions arrondies ne reviennent pas (c'est voulu)
 
 Revenir en arrière : redéployer le code précédent suffit (les colonnes ajoutées sont ignorées ; l'ancien code renverrait
 les preuves à l'IA sans accord : à éviter une fois l'app publiée).
+
+## 12. Minimoa+ hebdomadaire et fidélisation (migration `20261117140000_hebdo_fidelisation.sql`)
+
+1. **Migration d'abord.** Elle remplace la contrainte du plan de `subscriptions` (`yearly`, `monthly`, `weekly`) posée
+   `not valid` puis validée (verrou court, lectures et écritures continuent ; aucune ligne ne peut échouer), crée l'index
+   partiel `subscriptions_expires_idx` (petite table) et la table `lifecycle_messages` (vide, RLS sans politique).
+   `lock_timeout` de 5 s ; rejouable. L'API d'avant n'en lit rien et continue de marcher.
+2. **Puis le code.** Sans la migration, un achat hebdomadaire serait refusé par la base, et le minuteur `fidelite`
+   échouerait (table absente).
+3. Variable facultative `PLUS_PRODUCT_WEEKLY` (défaut `app.blowy.plus.weekly`).
+4. **Premier passage du minuteur.** Les messages se rattrapent au plus 2 jours : au déploiement, seules les personnes
+   inscrites ou absentes depuis 1 à 16 jours, ou dont l'anniversaire tombe dans les 2 derniers jours, reçoivent un
+   message (un par jour, entre 11 h et 20 h à leur heure). Les abonnements arrêtés depuis moins d'une semaine reçoivent
+   l'au revoir, ceux arrêtés il y a 30 à 37 jours la relance. Pour ne rien envoyer aux anciens abonnements au premier
+   passage, insérer avant le déploiement, pour chacun, la clé `plus_winback` dans `lifecycle_messages` (requête dans
+   `docs/FIDELISATION.md` §6).
+5. Contrôles : la réponse du minuteur liste `fidelite` ; `select count(*) from lifecycle_messages` augmente en journée.
+
+Revenir en arrière : redéployer le code précédent suffit (la table et la valeur `weekly` sont ignorées ; un abonnement
+hebdomadaire déjà acheté resterait en base, mais l'ancien code ne le reconnaîtrait plus : à éviter une fois l'offre en
+vente).

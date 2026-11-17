@@ -2,7 +2,7 @@
  * Textes des notifications push (chantier « plateforme », spéc §12), par langue et par type.
  * Variables reçues du `Notifier` : name (prénom de l'autre), minimoa (nom d'un minimoa ; `petName` accepté),
  * count (`streak` accepté), more (nombre d'autres liens concernés), days, item (identifiant d'objet, traduit ici), endsOn (date ISO), price (centimes),
- * currency (défaut EUR). Les dates et les prix sont mis en forme dans la langue de la personne.
+ * currency (défaut EUR), step (variante d'un message de fidélisation). Les dates et les prix sont mis en forme dans la langue de la personne.
  * Pas d'emoji, pas de fausse urgence, pas de culpabilisation.
  */
 import type { Locale, NotificationKindKey } from '@blowy/domain';
@@ -31,9 +31,18 @@ export interface NotificationVars {
   group: string;
   /** Libellé d'une habitude du catalogue (identifiant `habit`, traduit ici). */
   habit: string;
+  /**
+   * Variante d'un message de fidélisation (docs/FIDELISATION.md) : `d1`, `d3`, `d7` (premiers pas), `absence` ou
+   * `anniversary` (nouvelles du minimoa, avec `days` ou `count` en mois), `welcome`, `renewed`, `recovered`,
+   * `billing_grace`, `billing_retry`, `goodbye`, `winback` (abonnement).
+   */
+  step: string;
 }
 
 type Template = (v: NotificationVars) => string;
+
+/** Texte d'une variante (`v.step`), ou le repli. */
+const pick = (texts: Readonly<Record<string, string>>, key: string, fallback: string): string => texts[key] ?? fallback;
 
 const fr = {
   /** Quand le nom du minimoa n'est pas passé. */
@@ -78,6 +87,69 @@ const fr = {
       body: (v) => `Il lui reste ${v.count} ${Number(v.count) > 1 ? 'vies' : 'vie'}. Aujourd’hui, on s’y remet ensemble.`,
     },
     group_asleep: { title: (v) => `« ${v.group} » s’est endormi`, body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.' },
+    first_steps: {
+      title: (v) => (v.step === 'd1' ? `${v.minimoa} a une idée` : v.step === 'd3' ? 'À plusieurs, c’est plus simple' : `Une semaine avec ${v.minimoa}`),
+      body: (v) =>
+        v.step === 'd1'
+          ? 'Choisis une habitude à tenir : il la suivra avec toi, un jour après l’autre.'
+          : v.step === 'd3'
+            ? `Crée un groupe avec des potes pour tenir une habitude ensemble. ${v.minimoa} adore la compagnie.`
+            : 'Fais un tour dans Rencontres : il y a peut-être quelqu’un à saluer près de chez toi.',
+    },
+    minimoa_news: {
+      title: (v) =>
+        v.step === 'anniversary'
+          ? Number(v.count) < 12
+            ? `Un mois avec ${v.minimoa}`
+            : Number(v.count) === 12
+              ? `Un an avec ${v.minimoa}`
+              : `${Math.floor(Number(v.count) / 12)} ans avec ${v.minimoa}`
+          : v.days === '3'
+            ? `${v.minimoa} se demande ce que tu deviens`
+            : v.days === '7'
+              ? `${v.minimoa} s’ennuie un peu`
+              : 'Deux semaines déjà',
+      body: (v) =>
+        v.step === 'anniversary'
+          ? Number(v.count) < 12
+            ? 'Un mois que vous faites équipe. Merci d’être là.'
+            : 'Joyeux anniversaire à vous deux. Viens voir le chemin parcouru.'
+          : v.days === '3'
+            ? 'Rien ne presse. Passe quand tu veux, il te garde ta place.'
+            : v.days === '7'
+              ? 'Il compte les nuages en t’attendant. Un petit tour quand tu as le temps ?'
+              : `${v.minimoa} t’attend, sans rancune. Tes liens ont peut-être des nouvelles pour toi.`,
+    },
+    plus_account: {
+      title: (v) =>
+        pick(
+          {
+            welcome: 'Bienvenue dans Minimoa+',
+            renewed: 'Une année de plus avec Minimoa+',
+            recovered: 'Minimoa+ est de nouveau ouvert',
+            billing_grace: 'Le paiement de Minimoa+ n’est pas passé',
+            billing_retry: 'Le paiement de Minimoa+ n’est pas passé',
+            goodbye: 'Minimoa+ s’arrête ici',
+            winback: `${v.minimoa} pense à toi`,
+          },
+          v.step,
+          'Minimoa+',
+        ),
+      body: (v) =>
+        pick(
+          {
+            welcome: `${v.minimoa} a sorti les objets premium. Toute la carte et plus de rencontres sont à toi.`,
+            renewed: `Ton abonnement annuel est renouvelé. Merci de rester : ${v.minimoa} garde ses objets premium.`,
+            recovered: 'Le paiement est passé. Merci, tout est rentré dans l’ordre.',
+            billing_grace: `Minimoa+ reste ouvert jusqu’au ${v.endsOn}. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.`,
+            billing_retry: 'Minimoa+ est en pause. Mets à jour ton moyen de paiement : Moi › Minimoa+ › Gérer mon abonnement.',
+            goodbye: `Merci pour ce bout de chemin. ${v.minimoa}, tes liens et tes habitudes restent là, gratuitement.`,
+            winback: 'Ça fait un mois que Minimoa+ s’est arrêté. Si l’envie revient, il est toujours là ; le reste continue comme avant.',
+          },
+          v.step,
+          '',
+        ),
+    },
   } as Record<NotificationKindKey, { title: Template; body: Template }>,
   /** Libellés des réglages par type (écran « Moi › Notifications »). */
   kindLabels: {
@@ -99,6 +171,9 @@ const fr = {
     group_message: 'Messages de groupe',
     group_life_lost: 'Vie perdue d’un groupe',
     group_asleep: 'Groupe endormi',
+    first_steps: 'Premiers pas',
+    minimoa_news: 'Nouvelles de ton minimoa',
+    plus_account: 'Ton abonnement Minimoa+',
   } as Record<NotificationKindKey, string>,
 };
 
@@ -146,6 +221,69 @@ export const notificationTexts = defineMessages({
         body: (v) => `${v.count} ${Number(v.count) === 1 ? 'life' : 'lives'} left. Today you pick it up together.`,
       },
       group_asleep: { title: (v) => `“${v.group}” fell asleep`, body: () => 'No lives left for now. Anyone can wake it up.' },
+      first_steps: {
+        title: (v) => (v.step === 'd1' ? `${v.minimoa} has an idea` : v.step === 'd3' ? 'Easier together' : `One week with ${v.minimoa}`),
+        body: (v) =>
+          v.step === 'd1'
+            ? 'Pick a habit to keep: it will follow along with you, one day at a time.'
+            : v.step === 'd3'
+              ? `Start a group with friends to keep a habit together. ${v.minimoa} loves company.`
+              : 'Take a look at Encounters: there might be someone near you to wave at.',
+      },
+      minimoa_news: {
+        title: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? `One month with ${v.minimoa}`
+              : Number(v.count) === 12
+                ? `One year with ${v.minimoa}`
+                : `${Math.floor(Number(v.count) / 12)} years with ${v.minimoa}`
+            : v.days === '3'
+              ? `${v.minimoa} wonders how you’re doing`
+              : v.days === '7'
+                ? `${v.minimoa} is a little bored`
+                : 'Two weeks already',
+        body: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? 'A month of being a team. Thanks for being here.'
+              : 'Happy anniversary to you both. Come and see how far you’ve come.'
+            : v.days === '3'
+              ? 'No rush. Drop by whenever you like, it’s saving your spot.'
+              : v.days === '7'
+                ? 'It’s counting clouds while it waits. A quick visit when you have time?'
+                : `${v.minimoa} is waiting for you, no hard feelings. Your links may have news for you.`,
+      },
+      plus_account: {
+        title: (v) =>
+          pick(
+            {
+              welcome: 'Welcome to Minimoa+',
+              renewed: 'Another year of Minimoa+',
+              recovered: 'Minimoa+ is back on',
+              billing_grace: 'Your Minimoa+ payment didn’t go through',
+              billing_retry: 'Your Minimoa+ payment didn’t go through',
+              goodbye: 'Minimoa+ stops here',
+              winback: `${v.minimoa} is thinking of you`,
+            },
+            v.step,
+            'Minimoa+',
+          ),
+        body: (v) =>
+          pick(
+            {
+              welcome: `${v.minimoa} got the premium items out. The whole map and more encounters are yours.`,
+              renewed: `Your yearly subscription has renewed. Thanks for staying: ${v.minimoa} keeps its premium items.`,
+              recovered: 'The payment went through. Thanks, everything’s back in order.',
+              billing_grace: `Minimoa+ stays open until ${v.endsOn}. Update your payment method: Me › Minimoa+ › Manage my subscription.`,
+              billing_retry: 'Minimoa+ is paused. Update your payment method: Me › Minimoa+ › Manage my subscription.',
+              goodbye: `Thanks for coming along. ${v.minimoa}, your links and your habits stay, for free.`,
+              winback: 'It’s been a month since Minimoa+ stopped. If you feel like it again, it’s still here; everything else carries on as before.',
+            },
+            v.step,
+            '',
+          ),
+      },
     },
     kindLabels: {
       daily_challenge: 'Daily challenge',
@@ -166,6 +304,9 @@ export const notificationTexts = defineMessages({
       group_message: 'Group messages',
       group_life_lost: 'Group lost a life',
       group_asleep: 'Group asleep',
+      first_steps: 'First steps',
+      minimoa_news: 'News from your minimoa',
+      plus_account: 'Your Minimoa+ subscription',
     },
   },
   es: {
@@ -210,6 +351,69 @@ export const notificationTexts = defineMessages({
         body: (v) => `Le ${Number(v.count) === 1 ? 'queda' : 'quedan'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoy volvéis a empezar juntos.`,
       },
       group_asleep: { title: (v) => `«${v.group}» se ha dormido`, body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.' },
+      first_steps: {
+        title: (v) => (v.step === 'd1' ? `${v.minimoa} tiene una idea` : v.step === 'd3' ? 'Juntos es más fácil' : `Una semana con ${v.minimoa}`),
+        body: (v) =>
+          v.step === 'd1'
+            ? 'Elige un hábito que mantener: lo seguirá contigo, día a día.'
+            : v.step === 'd3'
+              ? `Crea un grupo con amigos para mantener un hábito juntos. A ${v.minimoa} le encanta la compañía.`
+              : 'Echa un vistazo a Encuentros: quizá haya alguien cerca a quien saludar.',
+      },
+      minimoa_news: {
+        title: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? `Un mes con ${v.minimoa}`
+              : Number(v.count) === 12
+                ? `Un año con ${v.minimoa}`
+                : `${Math.floor(Number(v.count) / 12)} años con ${v.minimoa}`
+            : v.days === '3'
+              ? `${v.minimoa} se pregunta qué tal estás`
+              : v.days === '7'
+                ? `${v.minimoa} se aburre un poco`
+                : 'Ya van dos semanas',
+        body: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? 'Un mes formando equipo. Gracias por estar ahí.'
+              : 'Feliz aniversario a los dos. Ven a ver todo lo recorrido.'
+            : v.days === '3'
+              ? 'Sin prisa. Pásate cuando quieras, te guarda el sitio.'
+              : v.days === '7'
+                ? 'Cuenta nubes mientras te espera. ¿Una visita rápida cuando tengas tiempo?'
+                : `${v.minimoa} te espera, sin rencor. Puede que tus vínculos tengan novedades para ti.`,
+      },
+      plus_account: {
+        title: (v) =>
+          pick(
+            {
+              welcome: 'Te damos la bienvenida a Minimoa+',
+              renewed: 'Un año más de Minimoa+',
+              recovered: 'Minimoa+ vuelve a estar activo',
+              billing_grace: 'El pago de Minimoa+ no se ha realizado',
+              billing_retry: 'El pago de Minimoa+ no se ha realizado',
+              goodbye: 'Minimoa+ termina aquí',
+              winback: `${v.minimoa} piensa en ti`,
+            },
+            v.step,
+            'Minimoa+',
+          ),
+        body: (v) =>
+          pick(
+            {
+              welcome: `${v.minimoa} ha sacado los objetos premium. Todo el mapa y más encuentros son tuyos.`,
+              renewed: `Tu suscripción anual se ha renovado. Gracias por quedarte: ${v.minimoa} conserva sus objetos premium.`,
+              recovered: 'El pago se ha realizado. Gracias, todo vuelve a estar en orden.',
+              billing_grace: `Minimoa+ sigue abierto hasta el ${v.endsOn}. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.`,
+              billing_retry: 'Minimoa+ está en pausa. Actualiza tu método de pago: Yo › Minimoa+ › Gestionar mi suscripción.',
+              goodbye: `Gracias por este tramo del camino. ${v.minimoa}, tus vínculos y tus hábitos siguen aquí, gratis.`,
+              winback: 'Hace un mes que Minimoa+ terminó. Si te apetece volver, sigue aquí; todo lo demás continúa igual.',
+            },
+            v.step,
+            '',
+          ),
+      },
     },
     kindLabels: {
       daily_challenge: 'Reto del día',
@@ -230,6 +434,9 @@ export const notificationTexts = defineMessages({
       group_message: 'Mensajes de grupo',
       group_life_lost: 'Vida perdida de un grupo',
       group_asleep: 'Grupo dormido',
+      first_steps: 'Primeros pasos',
+      minimoa_news: 'Noticias de tu minimoa',
+      plus_account: 'Tu suscripción a Minimoa+',
     },
   },
   pt: {
@@ -274,6 +481,69 @@ export const notificationTexts = defineMessages({
         body: (v) => `${Number(v.count) === 1 ? 'Resta' : 'Restam'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoje vocês recomeçam juntos.`,
       },
       group_asleep: { title: (v) => `«${v.group}» adormeceu`, body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.' },
+      first_steps: {
+        title: (v) => (v.step === 'd1' ? `${v.minimoa} teve uma ideia` : v.step === 'd3' ? 'Junto fica mais fácil' : `Uma semana com ${v.minimoa}`),
+        body: (v) =>
+          v.step === 'd1'
+            ? 'Escolha um hábito para manter: ele vai acompanhar você, um dia de cada vez.'
+            : v.step === 'd3'
+              ? `Crie um grupo com amigos para manter um hábito juntos. ${v.minimoa} adora companhia.`
+              : 'Dê uma olhada em Encontros: talvez tenha alguém perto de você para cumprimentar.',
+      },
+      minimoa_news: {
+        title: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? `Um mês com ${v.minimoa}`
+              : Number(v.count) === 12
+                ? `Um ano com ${v.minimoa}`
+                : `${Math.floor(Number(v.count) / 12)} anos com ${v.minimoa}`
+            : v.days === '3'
+              ? `${v.minimoa} quer saber como você está`
+              : v.days === '7'
+                ? `${v.minimoa} está meio entediado`
+                : 'Já faz duas semanas',
+        body: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? 'Um mês formando uma dupla. Obrigado por estar aqui.'
+              : 'Feliz aniversário para vocês dois. Venha ver o caminho percorrido.'
+            : v.days === '3'
+              ? 'Sem pressa. Passe quando quiser, ele guarda o seu lugar.'
+              : v.days === '7'
+                ? 'Ele está contando nuvens enquanto espera. Uma visitinha quando tiver tempo?'
+                : `${v.minimoa} está esperando você, sem mágoa. Seus vínculos talvez tenham novidades.`,
+      },
+      plus_account: {
+        title: (v) =>
+          pick(
+            {
+              welcome: 'Boas-vindas ao Minimoa+',
+              renewed: 'Mais um ano de Minimoa+',
+              recovered: 'O Minimoa+ voltou',
+              billing_grace: 'O pagamento do Minimoa+ não foi aprovado',
+              billing_retry: 'O pagamento do Minimoa+ não foi aprovado',
+              goodbye: 'O Minimoa+ termina aqui',
+              winback: `${v.minimoa} está pensando em você`,
+            },
+            v.step,
+            'Minimoa+',
+          ),
+        body: (v) =>
+          pick(
+            {
+              welcome: `${v.minimoa} tirou os itens premium do armário. O mapa inteiro e mais encontros são seus.`,
+              renewed: `Sua assinatura anual foi renovada. Obrigado por ficar: ${v.minimoa} continua com os itens premium.`,
+              recovered: 'O pagamento foi aprovado. Obrigado, tudo voltou ao normal.',
+              billing_grace: `O Minimoa+ continua aberto até ${v.endsOn}. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.`,
+              billing_retry: 'O Minimoa+ está pausado. Atualize sua forma de pagamento: Eu › Minimoa+ › Gerenciar minha assinatura.',
+              goodbye: `Obrigado por esse pedaço do caminho. ${v.minimoa}, seus vínculos e seus hábitos continuam aqui, de graça.`,
+              winback: 'Faz um mês que o Minimoa+ terminou. Se der vontade de voltar, ele continua aqui; o resto segue igual.',
+            },
+            v.step,
+            '',
+          ),
+      },
     },
     kindLabels: {
       daily_challenge: 'Desafio do dia',
@@ -294,6 +564,9 @@ export const notificationTexts = defineMessages({
       group_message: 'Mensagens de grupo',
       group_life_lost: 'Vida perdida de um grupo',
       group_asleep: 'Grupo adormecido',
+      first_steps: 'Primeiros passos',
+      minimoa_news: 'Notícias do seu minimoa',
+      plus_account: 'Sua assinatura do Minimoa+',
     },
   },
   nl: {
@@ -338,6 +611,69 @@ export const notificationTexts = defineMessages({
         body: (v) => `Nog ${v.count} ${Number(v.count) === 1 ? 'leven' : 'levens'}. Vandaag pakken jullie het samen weer op.`,
       },
       group_asleep: { title: (v) => `“${v.group}” is in slaap gevallen`, body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.' },
+      first_steps: {
+        title: (v) => (v.step === 'd1' ? `${v.minimoa} heeft een idee` : v.step === 'd3' ? 'Samen is makkelijker' : `Een week met ${v.minimoa}`),
+        body: (v) =>
+          v.step === 'd1'
+            ? 'Kies een gewoonte om vol te houden: hij volgt hem met je mee, dag na dag.'
+            : v.step === 'd3'
+              ? `Begin een groep met vrienden om samen een gewoonte vol te houden. ${v.minimoa} houdt van gezelschap.`
+              : 'Kijk eens bij Ontmoetingen: misschien is er iemand in de buurt om naar te zwaaien.',
+      },
+      minimoa_news: {
+        title: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? `Een maand met ${v.minimoa}`
+              : Number(v.count) === 12
+                ? `Een jaar met ${v.minimoa}`
+                : `${Math.floor(Number(v.count) / 12)} jaar met ${v.minimoa}`
+            : v.days === '3'
+              ? `${v.minimoa} vraagt zich af hoe het met je gaat`
+              : v.days === '7'
+                ? `${v.minimoa} verveelt zich een beetje`
+                : 'Al twee weken',
+        body: (v) =>
+          v.step === 'anniversary'
+            ? Number(v.count) < 12
+              ? 'Een maand samen een team. Fijn dat je er bent.'
+              : 'Gefeliciteerd, jullie allebei. Kom kijken hoe ver jullie zijn gekomen.'
+            : v.days === '3'
+              ? 'Geen haast. Kom langs wanneer je wilt, hij houdt je plekje vrij.'
+              : v.days === '7'
+                ? 'Hij telt wolken terwijl hij wacht. Even langskomen als je tijd hebt?'
+                : `${v.minimoa} wacht op je, zonder wrok. Misschien hebben je banden nieuws voor je.`,
+      },
+      plus_account: {
+        title: (v) =>
+          pick(
+            {
+              welcome: 'Welkom bij Minimoa+',
+              renewed: 'Nog een jaar Minimoa+',
+              recovered: 'Minimoa+ staat weer aan',
+              billing_grace: 'De betaling voor Minimoa+ is niet gelukt',
+              billing_retry: 'De betaling voor Minimoa+ is niet gelukt',
+              goodbye: 'Minimoa+ stopt hier',
+              winback: `${v.minimoa} denkt aan je`,
+            },
+            v.step,
+            'Minimoa+',
+          ),
+        body: (v) =>
+          pick(
+            {
+              welcome: `${v.minimoa} heeft de premium items tevoorschijn gehaald. De hele kaart en meer ontmoetingen zijn van jou.`,
+              renewed: `Je jaarabonnement is verlengd. Bedankt dat je blijft: ${v.minimoa} houdt zijn premium items.`,
+              recovered: 'De betaling is gelukt. Bedankt, alles is weer in orde.',
+              billing_grace: `Minimoa+ blijft open tot ${v.endsOn}. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.`,
+              billing_retry: 'Minimoa+ is gepauzeerd. Werk je betaalmethode bij: Ik › Minimoa+ › Mijn abonnement beheren.',
+              goodbye: `Bedankt voor dit stukje van de weg. ${v.minimoa}, je banden en je gewoonten blijven, gratis.`,
+              winback: 'Minimoa+ is een maand geleden gestopt. Heb je weer zin, dan is het er nog; al de rest gaat gewoon door.',
+            },
+            v.step,
+            '',
+          ),
+      },
     },
     kindLabels: {
       daily_challenge: 'Uitdaging van de dag',
@@ -358,6 +694,9 @@ export const notificationTexts = defineMessages({
       group_message: 'Groepsberichten',
       group_life_lost: 'Groep verloor een leven',
       group_asleep: 'Groep in slaap',
+      first_steps: 'Eerste stappen',
+      minimoa_news: 'Nieuws van je minimoa',
+      plus_account: 'Je Minimoa+-abonnement',
     },
   },
 });
@@ -380,6 +719,7 @@ export function notificationVars(locale: Locale, vars: Readonly<Record<string, s
     price: vars.price && Number.isFinite(amount) && /^\d+$/.test(vars.price) ? formatPrice(locale, amount, vars.currency ?? 'EUR') : (vars.price ?? ''),
     group: vars.group ?? '',
     habit: vars.habit ? (habitById(vars.habit, locale)?.label ?? vars.habit) : '',
+    step: vars.step ?? '',
   };
 }
 

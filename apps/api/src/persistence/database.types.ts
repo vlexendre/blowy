@@ -260,6 +260,7 @@ export type Database = {
           original_transaction_id: string;
           user_id: string | null;
           product_id: string;
+          /** `yearly`, `monthly` ou `weekly` (migration 20261117140000_hebdo_fidelisation). */
           plan: string;
           status: string;
           expires_at: string | null;
@@ -386,6 +387,8 @@ export type Database = {
         'id' | 'link_id' | 'send_after' | 'vars' | 'created_at'
       >;
       push_receipts: Table<{ ticket_id: string; token: string; created_at: string }, 'created_at'>;
+      /** Migration 20261117140000_hebdo_fidelisation : messages de fidélisation déjà partis (une ligne par personne et clé). */
+      lifecycle_messages: Table<{ user_id: string; key: string; sent_at: string }, 'sent_at'>;
       tick_runs: Table<{ job: string; slot: string; started_at: string; finished_at: string | null; done: number | null }, 'started_at' | 'finished_at' | 'done'>;
       ritual_states: Table<
         {

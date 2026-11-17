@@ -22,6 +22,7 @@ import { RetentionModule } from './modules/retention/retention.module';
 import { ModerationModule } from './modules/moderation/moderation.module';
 import { ReviewModule } from './review/review.module';
 import { GroupsModule } from './modules/groups/groups.module';
+import { FideliteModule } from './modules/fidelite/fidelite.module';
 import { AuthGuard } from './shared/auth.guard';
 import { DevClockController } from './shared/dev-clock.controller';
 import { ErrorFilter } from './shared/error.filter';
@@ -50,6 +51,8 @@ export class AppModule {
         AdminModule.forRoot({ demo: env.demo }),
         RetentionModule,
         GroupsModule,
+        // Fidélisation : premiers pas, nouvelles du minimoa, anniversaires (docs/FIDELISATION.md).
+        FideliteModule,
         // Audit App Store : filtre des contenus et suite des signalements (global) ; compte de revue d'Apple.
         ModerationModule,
         ReviewModule.forRoot(env),

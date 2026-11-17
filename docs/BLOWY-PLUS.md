@@ -9,8 +9,14 @@ L'API vérifie localement les transactions signées par Apple ; elle n'a besoin 
 |---|---|---|---|
 | Annuelle | `app.blowy.plus.yearly` | 59,88 € par an | 7 jours gratuits (offre d'introduction) |
 | Mensuelle | `app.blowy.plus.monthly` | 14,99 € par mois | aucun |
+| Hebdomadaire | `app.blowy.plus.weekly` | 2,99 € par semaine | aucun |
 
-Les identifiants sont des réglages (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`) : s'ils changent dans App Store
+Ordre de la feuille : l'annuelle mise en avant (choisie par défaut, déployée), puis la mensuelle, puis l'hebdomadaire ;
+les deux offres repliées se partagent une ligne. La remise affichée sur l'annuelle (−67 %) se calcule **toujours contre
+douze mensualités**, sur les prix StoreKit (`yearlyDiscountPercent`), jamais contre 52 semaines de l'hebdomadaire ;
+l'hebdomadaire n'a ni équivalent mensuel ni pastille (aucune comparaison avec elle).
+
+Les identifiants sont des réglages (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`, `PLUS_PRODUCT_WEEKLY`) : s'ils changent dans App Store
 Connect, les changer aussi dans `apps/api/.env`. Sur iPhone, les prix **et la durée de l'essai** affichés viennent de
 StoreKit seul (localisés) : si StoreKit ne répond pas, la feuille n'affiche ni prix ni bouton d'achat (« Réessayer »).
 Les prix de l'API ne servent qu'à présenter l'offre là où rien n'est vendu (web, Android).
@@ -28,16 +34,19 @@ avec un nouvel abonnement. Le reste de la tenue ne bouge pas.
 
 1. **Contrat** : « Accords, taxes et banques » → accord des Apps payantes signé, coordonnées bancaires et fiscales
    remplies (sans cela, aucun achat ne fonctionne, même en bac à sable).
-2. **Groupe d'abonnements** : Mon app → Monétisation → Abonnements → créer le groupe **Minimoa+**. Les deux offres
+2. **Groupe d'abonnements** : Mon app → Monétisation → Abonnements → créer le groupe **Minimoa+**. Les trois offres
    doivent être dans **le même groupe** (on ne peut avoir qu'un abonnement actif à la fois, et passer de l'un à l'autre).
-3. **Les deux abonnements** dans ce groupe :
+3. **Les trois abonnements** dans ce groupe :
    - Référence « Minimoa+ annuel », identifiant produit `app.blowy.plus.yearly`, durée **1 an**, prix 59,88 € (France ;
      laisser Apple calculer les autres pays ou les fixer), nom affiché et description en français (et EN, ES, PT, NL).
    - Référence « Minimoa+ mensuel », identifiant `app.blowy.plus.monthly`, durée **1 mois**, prix 14,99 €.
-   - Niveaux de service dans le groupe : annuel et mensuel au même niveau (mêmes avantages).
+   - Référence « Minimoa+ hebdomadaire », identifiant `app.blowy.plus.weekly`, durée **1 semaine**, prix 2,99 €, sans
+     offre d'introduction.
+   - Niveaux de service dans le groupe : les trois au même niveau (mêmes avantages) ; passer de l'un à l'autre se fait
+     à la prochaine échéance (règle d'Apple pour un même niveau).
    - Ajouter une capture du paywall pour la revue de chaque abonnement.
 4. **L'essai gratuit** : sur l'abonnement annuel → Prix de l'abonnement → « Configurer une offre d'introduction » →
-   type **Essai gratuit**, durée **1 semaine**, tous les pays. Aucune offre sur le mensuel.
+   type **Essai gratuit**, durée **1 semaine**, tous les pays. Aucune offre sur le mensuel ni sur l'hebdomadaire.
 5. **Notifications serveur** : Mon app → Informations sur l'app → « Notifications du serveur App Store » →
    **Version 2** pour les deux URL :
    - Production : `https://<domaine de l'API>/v1/plus/apple/notifications`
@@ -56,6 +65,7 @@ APPLE_APP_APPLE_ID=<l'Apple ID numérique de l'app>
 APPLE_ACCEPT_SANDBOX=1
 PLUS_PRODUCT_YEARLY=app.blowy.plus.yearly
 PLUS_PRODUCT_MONTHLY=app.blowy.plus.monthly
+PLUS_PRODUCT_WEEKLY=app.blowy.plus.weekly
 ADMIN_EMAILS=<adresses de l'équipe, séparées par des virgules>
 ```
 
@@ -70,8 +80,9 @@ l'App Store Server API (voir `apps/api/README.md`).
    de personnes compatibles (0 : cacher le bloc), mention de renouvellement (plus affichée dans la feuille, qui tient sur
    un écran : sa teneur est sur la page « Conditions de Minimoa+ », liée). Les liens légaux de la feuille viennent de
    l'app (`legalUrl`, dans la langue de l'app), donc restent là même si l'API ne répond pas.
-2. `Product.products(for: [identifiants])` : prix **facturé** de StoreKit en grand (« 59,88 € par an »), équivalent
-   mensuel et remise (calculés sur les prix StoreKit) en petit ; essai seulement si l'offre d'introduction StoreKit est
+2. `Product.products(for: [identifiants])` (les trois identifiants que donne l'API) : prix **facturé** de StoreKit en
+   grand (« 59,88 € par an », « 2,99 € par semaine »), équivalent mensuel et remise de l'annuelle (calculés sur les prix
+   StoreKit, contre la mensuelle) en petit ; essai seulement si l'offre d'introduction StoreKit est
    un essai gratuit et `isEligibleForIntroOffer` ; sous le bouton : « 7 jours gratuits, puis 59,88 € par an à partir du
    24 novembre. Renouvellement automatique, annulable à tout moment dans Réglages › ton nom › Abonnements. »
    Règles Apple et preuves : `docs/AUDIT-APPLE.md`, « Minimoa+ et App Review ».
@@ -102,9 +113,18 @@ Dans l'app : `src/core/adapters/storekit.ios.ts` (StoreKit 2 par `expo-iap` : pr
 restauration, mises à jour au lancement), `features/plus` (`usePurchase`, `useRestore`, `usePlusSync`, `PlusOffer`,
 `openPlus(raison)`). Web et Android : rien n'est vendu (« Disponible sur iPhone »).
 En mode local (`EXPO_PUBLIC_AUTH=local`) : achat **simulé** (`simulatedPurchases`, `src/core/adapters/purchases.ts`) qui
-fabrique la transaction mémoire ci-dessous, avec un magasin simulé (59,88 € / 14,99 €, essai de 7 jours sur l'annuel) ;
+fabrique la transaction mémoire ci-dessous, avec un magasin simulé (59,88 € / 14,99 € / 2,99 €, essai de 7 jours sur
+l'annuel) ;
 banc d'essai : `globalThis.__BLOWY_IAP_SIM__ = 'cancel' | 'pending' | 'fail' | 'noprices' | 'slowprices'` (les deux
 derniers : le magasin ne répond pas, ou met 20 s).
+
+## 5. Ce que Minimoa+ dit à la personne
+
+Bienvenue (push + e-mail), rappel du jour 5 de l'essai (push + e-mail), merci au renouvellement de l'annuel, paiement
+refusé (délai de grâce ou pause, push + e-mail avec « Gérer mon abonnement »), paiement rattrapé, au revoir quand
+Minimoa+ s'arrête (push + e-mail : ce qu'on garde gratuitement), relance unique un mois après (sans offre). Branchés sur
+les achats envoyés par l'app et sur les notifications serveur v2 (`PlusNews`, `BillingJobs`) ; textes, délais et
+plafonds : `docs/FIDELISATION.md`.
 
 En local sans Apple : l'API en mémoire accepte des transactions fabriquées (`memoryJws` dans
 `src/modules/billing/infrastructure/memory-billing.ts`), utilisées par `test/billing.e2e.test.ts`.

@@ -5,12 +5,14 @@
  * la valeur de `profiles.plus_until`, seule source de `hasPlus`.
  */
 
-export const PLANS = ['yearly', 'monthly'] as const;
+/** Offres, dans l'ordre où le paywall les présente : l'annuelle mise en avant, puis la mensuelle, puis l'hebdomadaire. */
+export const PLANS = ['yearly', 'monthly', 'weekly'] as const;
 export type Plan = (typeof PLANS)[number];
+export type BillingPeriod = 'year' | 'month' | 'week';
 
 export interface Offer {
   plan: Plan;
-  period: 'year' | 'month';
+  period: BillingPeriod;
   /** Montant réellement facturé à chaque période, en centimes (prix de repli : l'app affiche le prix localisé du magasin). */
   amountMinor: number;
   currency: 'EUR';
@@ -18,19 +20,28 @@ export interface Offer {
   trialDays: number;
 }
 
-/** Durée de l'essai gratuit (offre annuelle seulement) et jour du rappel promis sur la frise du paywall. */
+/** Durée de l'essai gratuit (offre annuelle seulement ; ni la mensuelle ni l'hebdomadaire n'en ont) et jour du rappel promis sur la frise du paywall. */
 export const TRIAL_DAYS = 7;
 export const TRIAL_REMINDER_DAY = 5;
 
 export const OFFERS: Readonly<Record<Plan, Offer>> = Object.freeze({
   yearly: { plan: 'yearly', period: 'year', amountMinor: 5988, currency: 'EUR', trialDays: TRIAL_DAYS },
   monthly: { plan: 'monthly', period: 'month', amountMinor: 1499, currency: 'EUR', trialDays: 0 },
+  weekly: { plan: 'weekly', period: 'week', amountMinor: 299, currency: 'EUR', trialDays: 0 },
 });
 
-/** Équivalent mensuel d'une offre, en centimes, arrondi au centime inférieur (59,88 € par an → 4,99 € par mois). */
+/**
+ * Équivalent mensuel d'une offre annuelle, en centimes, arrondi au centime inférieur (59,88 € par an → 4,99 € par
+ * mois). Seule l'annuelle en affiche un : pour les autres, le montant facturé de la période (jamais de « soit … par
+ * mois » sous l'hebdomadaire, qui inviterait à une comparaison trompeuse).
+ */
 export const monthlyEquivalentMinor = (offer: Offer): number => (offer.period === 'year' ? Math.floor(offer.amountMinor / 12) : offer.amountMinor);
 
-/** Remise réelle de l'annuel par rapport à douze mensualités, en pour cent entier (59,88 contre 179,88 → 67). */
+/**
+ * Remise réelle de l'annuel par rapport à douze mensualités, en pour cent entier (59,88 contre 179,88 → 67).
+ * Toujours contre la mensuelle : jamais contre 52 semaines de l'hebdomadaire (chiffre plus flatteur, mais pas une
+ * offre que la personne paierait vraiment sur un an).
+ */
 export function yearlyDiscountPercent(yearly: Offer = OFFERS.yearly, monthly: Offer = OFFERS.monthly): number {
   const twelve = monthly.amountMinor * 12;
   return twelve <= 0 ? 0 : Math.round(((twelve - yearly.amountMinor) / twelve) * 100);

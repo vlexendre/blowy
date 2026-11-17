@@ -245,11 +245,11 @@ export const plus = {
   free: { name: 'Gratuit', note: '0 €, pour toujours', items: ['1 rencontre par semaine', 'Chats et défis illimités', 'Séries et 7 vies', 'Zéro pub. Jamais.'] },
   pro: {
     name: 'Minimoa+',
-    note: 'Essai 3 jours',
+    note: '7 jours offerts sur l’annuel',
     items: ['3 rencontres à la fois', 'La carte des minimoas autour de toi', 'La garde-robe de ton minimoa', '2 gels de série par mois'],
     price: '4,99 €/mois',
-    priceNote: 'Facturé 59,88 €/an · ou 14,99 € au mois',
-    cta: 'Essayer 3 jours',
+    priceNote: 'Facturé 59,88 €/an · ou 14,99 € au mois · ou 2,99 € la semaine',
+    cta: 'Essayer 7 jours',
   },
 } as const;
 

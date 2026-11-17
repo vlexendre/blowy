@@ -95,6 +95,9 @@ export const moi = messages({
         your_turn: { title: 'À toi d’écrire', subtitle: 'Le soir, 1 par jour au plus' },
         link_in_danger: { title: 'Lien en danger', subtitle: 'Quand il reste 2 vies' },
         trial_reminder: { title: 'Fin de l’essai', subtitle: '2 jours avant le premier paiement' },
+        first_steps: { title: 'Premiers pas', subtitle: 'Tes 7 premiers jours, 3 idées' },
+        minimoa_news: { title: 'Nouvelles de ton minimoa', subtitle: 'Quand tu t’absentes, vos anniversaires' },
+        plus_account: { title: 'Ton abonnement Minimoa+', subtitle: 'Bienvenue, paiement, fin' },
       },
       /** Accord du téléphone. */
       permission: {
@@ -323,6 +326,9 @@ export const moi = messages({
         your_turn: { title: 'Your turn to write', subtitle: 'In the evening, 1 a day at most' },
         link_in_danger: { title: 'Link in danger', subtitle: 'When 2 lives are left' },
         trial_reminder: { title: 'End of trial', subtitle: '2 days before the first payment' },
+        first_steps: { title: 'First steps', subtitle: 'Your first 7 days, 3 ideas' },
+        minimoa_news: { title: 'News from your minimoa', subtitle: 'When you’re away, your anniversaries' },
+        plus_account: { title: 'Your Minimoa+ subscription', subtitle: 'Welcome, payment, end' },
       },
       permission: {
         undetermined: { title: 'Notifications not on yet', text: 'Your phone hasn’t given permission yet. Your settings are kept.', action: 'Turn on notifications' },
@@ -540,6 +546,9 @@ export const moi = messages({
         your_turn: { title: 'Te toca escribir', subtitle: 'Por la noche, 1 al día como máximo' },
         link_in_danger: { title: 'Vínculo en peligro', subtitle: 'Cuando quedan 2 vidas' },
         trial_reminder: { title: 'Fin de la prueba', subtitle: '2 días antes del primer pago' },
+        first_steps: { title: 'Primeros pasos', subtitle: 'Tus 7 primeros días, 3 ideas' },
+        minimoa_news: { title: 'Noticias de tu minimoa', subtitle: 'Cuando no estás, vuestros aniversarios' },
+        plus_account: { title: 'Tu suscripción a Minimoa+', subtitle: 'Bienvenida, pago, final' },
       },
       permission: {
         undetermined: { title: 'Notificaciones aún no activadas', text: 'El teléfono aún no ha dado permiso. Tus ajustes se conservan.', action: 'Activar las notificaciones' },
@@ -757,6 +766,9 @@ export const moi = messages({
         your_turn: { title: 'Sua vez de escrever', subtitle: 'À noite, no máximo 1 por dia' },
         link_in_danger: { title: 'Vínculo em perigo', subtitle: 'Quando restam 2 vidas' },
         trial_reminder: { title: 'Fim do teste gratuito', subtitle: '2 dias antes da primeira cobrança' },
+        first_steps: { title: 'Primeiros passos', subtitle: 'Seus 7 primeiros dias, 3 ideias' },
+        minimoa_news: { title: 'Notícias do seu minimoa', subtitle: 'Quando você some, os aniversários de vocês' },
+        plus_account: { title: 'Sua assinatura do Minimoa+', subtitle: 'Boas-vindas, pagamento, fim' },
       },
       permission: {
         undetermined: { title: 'Notificações ainda não ativadas', text: 'O celular ainda não deu permissão. Seus ajustes ficam guardados.', action: 'Ativar notificações' },
@@ -974,6 +986,9 @@ export const moi = messages({
         your_turn: { title: 'Jouw beurt om te schrijven', subtitle: '’s Avonds, hooguit 1 per dag' },
         link_in_danger: { title: 'Band in gevaar', subtitle: 'Als er nog 2 levens over zijn' },
         trial_reminder: { title: 'Einde van de proefperiode', subtitle: '2 dagen voor de eerste betaling' },
+        first_steps: { title: 'Eerste stappen', subtitle: 'Je eerste 7 dagen, 3 ideeën' },
+        minimoa_news: { title: 'Nieuws van je minimoa', subtitle: 'Als je weg bent, jullie verjaardagen' },
+        plus_account: { title: 'Je Minimoa+-abonnement', subtitle: 'Welkom, betaling, einde' },
       },
       permission: {
         undetermined: { title: 'Meldingen nog niet aan', text: 'Je telefoon heeft nog geen toestemming gegeven. Je instellingen blijven bewaard.', action: 'Meldingen aanzetten' },

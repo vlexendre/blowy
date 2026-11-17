@@ -315,9 +315,9 @@ Et dans la fiche, les visuels doivent rester « 4+ » (2.3.8) : pas de scène su
 Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas de ligne à part. **À relire une fois la photo du jour retirée** (ligne Photos) et une fois B5/M6 corrigés.
 
 ### 7.4 Abonnements
-- Groupe « Minimoa+ » ; deux produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai gratuit 1 semaine en offre d'introduction) et `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) (`docs/BLOWY-PLUS.md`).
+- Groupe « Minimoa+ » ; trois produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai gratuit 1 semaine en offre d'introduction), `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) et `app.blowy.plus.weekly` (1 semaine, 2,99 €, sans essai) (`docs/BLOWY-PLUS.md`).
 - Pour chacun : nom affiché et description dans chaque langue de la fiche ; **capture du paywall** pour la revue ; notes de revue.
-- **Le premier abonnement doit être joint à la version soumise** (page de la version › « In-App Purchases and Subscriptions » › sélectionner les deux), sinon l'examinateur ne trouve pas les produits (2.1(b)).
+- **Le premier abonnement doit être joint à la version soumise** (page de la version › « In-App Purchases and Subscriptions » › sélectionner les trois ; l'hebdomadaire, nouveau, passe en revue avec la version qui l'affiche), sinon l'examinateur ne trouve pas les produits (2.1(b)).
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
 
 ### 7.5 Adresses obligatoires
@@ -356,8 +356,12 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 > within 24 h. Contact: `<e-mail>`. Account deletion: Moi › Réglages › Supprimer mon compte (immediate; revokes the
 > Sign in with Apple token).
 >
-> **Subscription Minimoa+.** Moi › Minimoa+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99.
-> Purchases are verified by our server; sandbox purchases are accepted. "Restaurer mes achats" is on the same sheet.
+> **Subscription Minimoa+.** Moi › Minimoa+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99,
+> weekly €2.99 (monthly and weekly without a trial); prices are read from StoreKit. The yearly discount badge compares
+> the yearly price with twelve monthly payments only, never with the weekly plan. Purchases are verified by our server;
+> sandbox purchases are accepted. "Restaurer mes achats" is on the same sheet. Subscribers get a reminder 2 days before
+> the end of the trial (date, amount, how to cancel), and service messages for a failed payment or the end of the
+> subscription; there is no countdown, no fake urgency and nothing is required to keep using the free app.
 >
 > **Widgets and Live Activities.** Home/Lock Screen widgets show the creature, its mood and the streak. A Live Activity
 > starts when the user accepts the daily challenge and ends at midnight.
@@ -380,8 +384,13 @@ Règles relues à la source ce jour : App Review Guidelines 3.1.1, 3.1.2(a)(b)(c
 16 octobre 2026) ; Schedule 2 §3.8(b) ; page « Auto-renewable subscriptions » ; HIG « Apple In-App Purchase » (17
 septembre 2026) ; EULA standard ; chemin d'annulation (support Apple). Ce que la feuille Minimoa+ respecte désormais :
 
-- Le **montant facturé** de chaque offre et sa période est le prix le plus grand (30 pt) ; équivalent mensuel et remise
-  en 13 pt, calculés sur les prix StoreKit.
+- Le **montant facturé** de chaque offre et sa période est le prix le plus grand (30 pt pour l'offre choisie, 14 à 15 pt
+  dans la case d'une offre repliée) ; équivalent mensuel et remise en 13 pt, calculés sur les prix StoreKit.
+- **Trois offres** (17 novembre) : annuelle mise en avant et choisie par défaut, puis mensuelle et hebdomadaire, repliées
+  côte à côte. La remise de l'annuelle se calcule contre douze mensualités seulement (jamais contre 52 semaines de
+  l'hebdomadaire, comparaison qui serait trompeuse) ; l'hebdomadaire n'a ni équivalent mensuel ni pastille ; sa période
+  est écrite en clair (« 2,99 € par semaine ») sur la case, dans le bouton (« M’abonner : 2,99 € par semaine ») et sous
+  le bouton (renouvellement automatique, où annuler).
 - **Prix et essai de StoreKit seulement** sur iPhone (`features/plus/index.tsx`, `core/adapters/storekit.ios.ts`) : si le
   magasin ne répond pas, ni prix ni bouton d'achat, « Réessayer » ; un essai n'est annoncé que si l'offre d'introduction
   StoreKit est un essai gratuit et que la personne y a droit.
@@ -390,13 +399,21 @@ septembre 2026) ; EULA standard ; chemin d'annulation (support Apple). Ce que la
 - « Restaurer mes achats », « Conditions d'utilisation » et « Confidentialité » toujours visibles, liens construits par
   l'app (présents même si l'API ne répond pas) ; les conditions du site renvoient au contrat de licence standard d'Apple.
 - Croix active dès l'ouverture, « Continuer gratuitement », paywall de l'inscription passable ; l'app reste gratuite.
-- **Toute la feuille tient sur un écran, sans défiler** (390 × 844 et 375 × 667, fr/pt/nl, tous les états) ; la mention
+- **Toute la feuille tient sur un écran, sans défiler** (390 × 844 et 375 × 667, fr/en/es/pt/nl, tous les états ; avec
+  trois offres, revérifié le 17 novembre en retranchant les marges de sécurité d'un vrai iPhone : 375 × 647 et
+  390 × 771 sur le web, 14 pt de marge au plus juste ; sur un petit écran, un seul avantage puis « Et N de plus ») ; la mention
   longue de renouvellement est sur la page « Conditions de Minimoa+ », liée dans la feuille ; pas d'interrupteur
   d'essai, pas d'urgence.
 - Membre : état et « Gérer mon abonnement » (feuille système), aucune relance d'achat.
 
-Reste au propriétaire (App Store Connect) : noms affichés et localisations du groupe, capture de revue de la feuille sur
-iPhone, EULA standard + liens à la fin de la description (`docs/APP-STORE-CONNECT.md` §4-5). Reste à vérifier sur iPhone
+Reste au propriétaire (App Store Connect) : noms affichés et localisations du groupe (dont l'hebdomadaire), capture de
+revue de la feuille sur iPhone pour chacun des trois abonnements, EULA standard + liens à la fin de la description
+(`docs/APP-STORE-CONNECT.md` §4-5).
+
+Messages autour de l'abonnement (17 novembre, `docs/FIDELISATION.md`) : rappel 2 jours avant la fin de l'essai (date,
+montant, comment annuler), bienvenue, paiement refusé (avec « Gérer mon abonnement »), au revoir sans pression (ce qu'on
+garde gratuitement), une seule relance un mois après, sans offre tant qu'aucune n'existe dans App Store Connect ; aucune
+fausse urgence, aucun « ton minimoa va mourir » (3.1.2, 5.6 et règles des pratiques trompeuses). Reste à vérifier sur iPhone
 en bac à sable : lecture de l'essai par `expo-iap`, feuille de gestion. Risque connu : le rappel du jour 5 écrit le prix
 de référence en euros (à corriger avant une vente hors zone euro).
 
