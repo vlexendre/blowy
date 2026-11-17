@@ -91,8 +91,8 @@ export interface PlusTemplateProps<K extends string> {
  * Hauteur du panneau du haut. La feuille tient sur un écran sans défiler (390 × 844 comme 375 × 667) : sur un petit
  * écran le panneau, le titre et le minimoa rapetissent.
  */
-const HEADER = 156;
-const HEADER_SHORT = 112;
+const HEADER = 196;
+const HEADER_SHORT = 124;
 
 const STATUS_TINT = { info: color.accent, success: color.ok, error: color.danger } as const;
 

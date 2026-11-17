@@ -19,7 +19,12 @@ export * from './vision';
 export * from './permissions';
 
 /** Les écrans du parcours d'inscription qu'on peut reprendre (nom de la route dans `app/(onboarding)`). */
-export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'sexe', 'habitudes', 'naissance', 'localisation', 'notifications', 'promesse', 'connexion'] as const;
+/**
+ * Inscription courte (8 écrans jusqu'au minimoa vivant) : création, test, résultat, prénom (et « Tu es… »), naissance,
+ * connexion, préparation, « tout est prêt ». La position et les notifications se demandent au moment où elles servent
+ * (accueil), les habitudes après la première journée, les invitations depuis l'accueil.
+ */
+export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'naissance', 'connexion'] as const;
 export type OnboardingStep = (typeof RESUMABLE)[number];
 
 export type PermissionAnswer = 'granted' | 'denied' | 'unavailable';
@@ -121,20 +126,28 @@ export const isValidBirthdate = (v: string): boolean => /^\d{4}-\d{2}-\d{2}$/.te
 /** Le test est complet : une réponse par situation. */
 export const visionDone = (answers: readonly VisionAnswer[]): boolean => VISION_TEST_IDS.every((id) => answers.some((a) => a.questionId === id));
 
-/** Le brouillon a tout ce qu'il faut pour créer le compte et le minimoa. */
+/** Le brouillon a tout ce qu'il faut pour créer le compte et le minimoa (« Tu es… » est facultatif). */
 export function isDraftComplete(d: DraftData = useDraft.getState()): boolean {
-  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && !!d.gender && visionDone(d.visionAnswers);
+  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && visionDone(d.visionAnswers);
 }
 
 /** Le brouillon a un minimoa (sinon, l'inscription repart de la création). */
 export const hasDraftPet = (): boolean => !!useDraft.getState().petName.trim();
 
 /**
- * Écran de reprise connu. Un brouillon d'avant le 17 nov. peut encore s'être arrêté sur « ce que tu cherches »
- * (étape retirée, spéc. §27) : il reprend à l'étape qui suivait.
+ * Écran de reprise connu. Un ancien brouillon peut s'être arrêté sur une étape retirée (« ce que tu cherches », sexe,
+ * habitudes, position, notifications, promesse) : il reprend à l'étape qui suit dans le parcours court.
  */
+const LEGACY_STEP: Readonly<Record<string, OnboardingStep>> = {
+  cherche: 'naissance',
+  sexe: 'naissance',
+  habitudes: 'naissance',
+  localisation: 'connexion',
+  notifications: 'connexion',
+  promesse: 'connexion',
+};
 const knownStep = (step: string | null): OnboardingStep | null =>
-  step === 'cherche' ? 'habitudes' : step && (RESUMABLE as readonly string[]).includes(step) ? (step as OnboardingStep) : null;
+  step ? (LEGACY_STEP[step] ?? ((RESUMABLE as readonly string[]).includes(step) ? (step as OnboardingStep) : null)) : null;
 
 const stepHref = (step: OnboardingStep): Href => `/(onboarding)/${step}` as Href;
 
@@ -222,12 +235,7 @@ const FLOW: readonly [OnboardingStep, number][] = [
   ['vision', 12],
   ['ta-vision', 1],
   ['prenom', 1],
-  ['sexe', 1],
-  ['habitudes', 1],
   ['naissance', 1],
-  ['localisation', 1],
-  ['notifications', 1],
-  ['promesse', 1],
   ['connexion', 1],
 ];
 const FLOW_TOTAL = FLOW.reduce((n, [, w]) => n + w, 0) + 1;

@@ -6,8 +6,8 @@ export const rencontres = messages({
   fr: {
     kicker: 'Cette semaine',
     title: (pet: string, n: number | null): TitleSegment[] => [
-      { text: `${pet.toUpperCase()} A CROISÉ\n` },
-      { text: n === null ? '…' : n === 0 ? 'PERSONNE.' : `${n} ${n > 1 ? 'MINIMOAS' : 'MINIMOA'}.`, dim: true },
+      { text: `${pet.toUpperCase()} A TROUVÉ\n` },
+      { text: n === null ? '…' : n === 0 ? 'PERSONNE.' : `${n} ${n > 1 ? 'PERSONNES' : 'PERSONNE'}.`, dim: true },
     ],
     text: 'Seulement des visions qui vont avec la tienne.',
     map: 'La carte',
@@ -75,8 +75,8 @@ export const rencontres = messages({
   en: {
     kicker: 'This week',
     title: (pet: string, n: number | null): TitleSegment[] => [
-      { text: `${pet.toUpperCase()} MET\n` },
-      { text: n === null ? '…' : n === 0 ? 'NO ONE.' : `${n} ${n === 1 ? 'MINIMOA' : 'MINIMOAS'}.`, dim: true },
+      { text: `${pet.toUpperCase()} FOUND\n` },
+      { text: n === null ? '…' : n === 0 ? 'NO ONE.' : `${n} ${n === 1 ? 'PERSON' : 'PEOPLE'}.`, dim: true },
     ],
     text: 'Only visions that go with yours.',
     map: 'The map',
@@ -137,8 +137,8 @@ export const rencontres = messages({
   es: {
     kicker: 'Esta semana',
     title: (pet: string, n: number | null): TitleSegment[] => [
-      { text: n === 0 ? `${pet.toUpperCase()} NO CONOCIÓ\n` : `${pet.toUpperCase()} CONOCIÓ\n` },
-      { text: n === null ? '…' : n === 0 ? 'A NADIE.' : `A ${n} ${n === 1 ? 'MINIMOA' : 'MINIMOAS'}.`, dim: true },
+      { text: n === 0 ? `${pet.toUpperCase()} NO ENCONTRÓ\n` : `${pet.toUpperCase()} ENCONTRÓ\n` },
+      { text: n === null ? '…' : n === 0 ? 'A NADIE.' : `A ${n} ${n === 1 ? 'PERSONA' : 'PERSONAS'}.`, dim: true },
     ],
     text: 'Solo visiones que encajan con la tuya.',
     map: 'El mapa',
@@ -199,8 +199,8 @@ export const rencontres = messages({
   pt: {
     kicker: 'Esta semana',
     title: (pet: string, n: number | null): TitleSegment[] => [
-      { text: n === 0 ? `${pet.toUpperCase()} NÃO VIU\n` : `${pet.toUpperCase()} VIU\n` },
-      { text: n === null ? '…' : n === 0 ? 'NINGUÉM.' : `${n} ${n === 1 ? 'MINIMOA' : 'MINIMOAS'}.`, dim: true },
+      { text: n === 0 ? `${pet.toUpperCase()} NÃO ACHOU\n` : `${pet.toUpperCase()} ACHOU\n` },
+      { text: n === null ? '…' : n === 0 ? 'NINGUÉM.' : `${n} ${n === 1 ? 'PESSOA' : 'PESSOAS'}.`, dim: true },
     ],
     text: 'Só visões que combinam com a sua.',
     map: 'O mapa',
@@ -261,8 +261,8 @@ export const rencontres = messages({
   nl: {
     kicker: 'Deze week',
     title: (pet: string, n: number | null): TitleSegment[] => [
-      { text: `${pet.toUpperCase()} ZAG\n` },
-      { text: n === null ? '…' : n === 0 ? 'NIEMAND.' : `${n} ${n === 1 ? 'MINIMOA' : 'MINIMOAS'}.`, dim: true },
+      { text: `${pet.toUpperCase()} VOND\n` },
+      { text: n === null ? '…' : n === 0 ? 'NIEMAND.' : `${n} ${n === 1 ? 'PERSOON' : 'MENSEN'}.`, dim: true },
     ],
     text: 'Alleen visies die bij de jouwe passen.',
     map: 'De kaart',

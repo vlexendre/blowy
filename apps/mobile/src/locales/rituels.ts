@@ -188,7 +188,7 @@ export const rituels = messages({
         plantes: '🪴',
       } as Record<string, string>,
       /** Repli si la vision n'est pas encore chargée. */
-      axis: { foyer: 'Famille ou liberté', ancrage: 'Ici ou ailleurs', elan: 'Projets ou temps libre', rythme: 'Calme ou dehors', cap: 'Prévoir ou improviser' } as Record<VisionAxis, string>,
+      axis: { foyer: 'Liberté ou famille', ancrage: 'Ici ou ailleurs', elan: 'Temps libre ou projets', rythme: 'Calme ou dehors', cap: 'Improviser ou prévoir' } as Record<VisionAxis, string>,
     },
     /** Preuve en photo (V6-GPreuve) et photo du défi. */
     proof: {
@@ -292,7 +292,7 @@ export const rituels = messages({
       habitsText: (n: number, best: number): string =>
         n === 0 ? 'Aucune pour l’instant' : `${n} ${plural(n, { one: 'habitude', other: 'habitudes' })}${best > 0 ? ` · série de ${best}` : ''}`,
       evolution: 'Évolution',
-      reviews: 'Bilans',
+      reviews: 'Semaines',
       memories: 'Souvenirs',
       visionError: 'Sa vision n’a pas chargé.',
     },
@@ -444,7 +444,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Family or freedom', ancrage: 'Here or elsewhere', elan: 'Projects or free time', rythme: 'Calm or out and about', cap: 'Plan or improvise' },
+      axis: { foyer: 'Freedom or family', ancrage: 'Here or elsewhere', elan: 'Free time or projects', rythme: 'Calm or out and about', cap: 'Improvise or plan' },
     },
     proof: {
       close: 'Close',
@@ -686,7 +686,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Familia o libertad', ancrage: 'Aquí o en otro lugar', elan: 'Proyectos o tiempo libre', rythme: 'Calma o salir', cap: 'Planear o improvisar' },
+      axis: { foyer: 'Libertad o familia', ancrage: 'Aquí o en otro lugar', elan: 'Tiempo libre o proyectos', rythme: 'Calma o salir', cap: 'Improvisar o planear' },
     },
     proof: {
       close: 'Cerrar',
@@ -928,7 +928,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Família ou liberdade', ancrage: 'Aqui ou em outro lugar', elan: 'Projetos ou tempo livre', rythme: 'Calma ou sair', cap: 'Planejar ou improvisar' },
+      axis: { foyer: 'Liberdade ou família', ancrage: 'Aqui ou em outro lugar', elan: 'Tempo livre ou projetos', rythme: 'Calma ou sair', cap: 'Improvisar ou planejar' },
     },
     proof: {
       close: 'Fechar',
@@ -1170,7 +1170,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Gezin of vrijheid', ancrage: 'Hier of elders', elan: 'Projecten of vrije tijd', rythme: 'Rustig of erop uit', cap: 'Plannen of improviseren' },
+      axis: { foyer: 'Vrijheid of gezin', ancrage: 'Hier of elders', elan: 'Vrije tijd of projecten', rythme: 'Rustig of erop uit', cap: 'Improviseren of plannen' },
     },
     proof: {
       close: 'Sluiten',

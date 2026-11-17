@@ -46,11 +46,11 @@ const fr = {
     intro: '12 situations, une par écran. Il n’y a pas de bonne réponse.',
   },
   axes: {
-    foyer: { name: 'Famille ou liberté', low: 'Libre, léger', high: 'La famille d’abord', about: 'La place de la famille et du chez-soi.' },
+    foyer: { name: 'Liberté ou famille', low: 'Libre, léger', high: 'La famille d’abord', about: 'La place de la famille et du chez-soi.' },
     ancrage: { name: 'Ici ou ailleurs', low: 'Rester ici', high: 'Partir', about: 'Où vivre : ici, ailleurs, à l’étranger.' },
-    elan: { name: 'Projets ou temps libre', low: 'Du temps pour soi', high: 'De grands projets', about: 'La place du travail et de l’ambition.' },
+    elan: { name: 'Temps libre ou projets', low: 'Du temps pour soi', high: 'De grands projets', about: 'La place du travail et de l’ambition.' },
     rythme: { name: 'Calme ou dehors', low: 'Calme, chez soi', high: 'Intense, dehors', about: 'Le quotidien que tu veux.' },
-    cap: { name: 'Prévoir ou improviser', low: 'Au jour le jour', high: 'Tout prévoir', about: 'Long terme, argent, organisation.' },
+    cap: { name: 'Improviser ou prévoir', low: 'Au jour le jour', high: 'Tout prévoir', about: 'Long terme, argent, organisation.' },
   } as Record<VisionAxis, VisionAxisText>,
   /** Où la personne penche sur un axe (pôles en minuscules). */
   side: {
@@ -126,11 +126,11 @@ export const visionText = defineMessages({
       intro: '12 situations, one per screen. There’s no right answer.',
     },
     axes: {
-      foyer: { name: 'Family or freedom', low: 'Free and light', high: 'Family first', about: 'How much room family and home take.' },
+      foyer: { name: 'Freedom or family', low: 'Free and light', high: 'Family first', about: 'How much room family and home take.' },
       ancrage: { name: 'Here or elsewhere', low: 'Staying here', high: 'Moving away', about: 'Where to live: here, elsewhere, abroad.' },
-      elan: { name: 'Projects or free time', low: 'Personal time', high: 'Big ambitions', about: 'How much room work and ambition take.' },
+      elan: { name: 'Free time or projects', low: 'Personal time', high: 'Big ambitions', about: 'How much room work and ambition take.' },
       rythme: { name: 'Calm or out and about', low: 'Calm, at home', high: 'Intense, going out', about: 'The everyday life you want.' },
-      cap: { name: 'Plan or improvise', low: 'Day by day', high: 'Planning it all', about: 'The long term, money, organization.' },
+      cap: { name: 'Improvise or plan', low: 'Day by day', high: 'Planning it all', about: 'The long term, money, organization.' },
     },
     side: {
       mid: (low: string, high: string) => `In between: ${low} or ${high}.`,
@@ -196,11 +196,11 @@ export const visionText = defineMessages({
       intro: '12 situaciones, una por pantalla. No hay respuestas correctas.',
     },
     axes: {
-      foyer: { name: 'Familia o libertad', low: 'Libre, ligero', high: 'La familia primero', about: 'El lugar de la familia y del hogar.' },
+      foyer: { name: 'Libertad o familia', low: 'Libre, ligero', high: 'La familia primero', about: 'El lugar de la familia y del hogar.' },
       ancrage: { name: 'Aquí o en otro lugar', low: 'Quedarse aquí', high: 'Irse lejos', about: 'Dónde vivir: aquí, en otro lugar, en el extranjero.' },
-      elan: { name: 'Proyectos o tiempo libre', low: 'Tiempo propio', high: 'Grandes proyectos', about: 'El lugar del trabajo y de la ambición.' },
+      elan: { name: 'Tiempo libre o proyectos', low: 'Tiempo propio', high: 'Grandes proyectos', about: 'El lugar del trabajo y de la ambición.' },
       rythme: { name: 'Calma o salir', low: 'Calma, en casa', high: 'Vida intensa, fuera', about: 'El día a día que quieres.' },
-      cap: { name: 'Planear o improvisar', low: 'Día a día', high: 'Planearlo todo', about: 'Largo plazo, dinero, organización.' },
+      cap: { name: 'Improvisar o planear', low: 'Día a día', high: 'Planearlo todo', about: 'Largo plazo, dinero, organización.' },
     },
     side: {
       mid: (low: string, high: string) => `A medio camino: ${low} o ${high}.`,
@@ -266,11 +266,11 @@ export const visionText = defineMessages({
       intro: '12 situações, uma por tela. Não existe resposta certa.',
     },
     axes: {
-      foyer: { name: 'Família ou liberdade', low: 'Livre, leve', high: 'A família primeiro', about: 'O lugar da família e do lar.' },
+      foyer: { name: 'Liberdade ou família', low: 'Livre, leve', high: 'A família primeiro', about: 'O lugar da família e do lar.' },
       ancrage: { name: 'Aqui ou em outro lugar', low: 'Ficar aqui', high: 'Ir embora', about: 'Onde viver: aqui, em outro lugar, no exterior.' },
-      elan: { name: 'Projetos ou tempo livre', low: 'Tempo livre', high: 'Grandes projetos', about: 'O espaço do trabalho e da ambição.' },
+      elan: { name: 'Tempo livre ou projetos', low: 'Tempo livre', high: 'Grandes projetos', about: 'O espaço do trabalho e da ambição.' },
       rythme: { name: 'Calma ou sair', low: 'Calma, em casa', high: 'Agito, na rua', about: 'O dia a dia que você quer.' },
-      cap: { name: 'Planejar ou improvisar', low: 'Um dia de cada vez', high: 'Planejar tudo', about: 'Longo prazo, dinheiro, organização.' },
+      cap: { name: 'Improvisar ou planejar', low: 'Um dia de cada vez', high: 'Planejar tudo', about: 'Longo prazo, dinheiro, organização.' },
     },
     side: {
       mid: (low: string, high: string) => `No meio-termo: ${low} ou ${high}.`,
@@ -336,11 +336,11 @@ export const visionText = defineMessages({
       intro: '12 situaties, één per scherm. Er is geen goed antwoord.',
     },
     axes: {
-      foyer: { name: 'Gezin of vrijheid', low: 'Vrij, licht', high: 'Familie eerst', about: 'De plek van familie en thuis.' },
+      foyer: { name: 'Vrijheid of gezin', low: 'Vrij, licht', high: 'Familie eerst', about: 'De plek van familie en thuis.' },
       ancrage: { name: 'Hier of elders', low: 'Hier blijven', high: 'Vertrekken', about: 'Waar je woont: hier, elders, in het buitenland.' },
-      elan: { name: 'Projecten of vrije tijd', low: 'Tijd voor jezelf', high: 'Grote projecten', about: 'De plek van werk en ambitie.' },
+      elan: { name: 'Vrije tijd of projecten', low: 'Tijd voor jezelf', high: 'Grote projecten', about: 'De plek van werk en ambitie.' },
       rythme: { name: 'Rustig of erop uit', low: 'Rustig, thuis', high: 'Druk, buiten de deur', about: 'Het dagelijks leven dat je wilt.' },
-      cap: { name: 'Plannen of improviseren', low: 'Van dag tot dag', high: 'Alles plannen', about: 'Lange termijn, geld, organisatie.' },
+      cap: { name: 'Improviseren of plannen', low: 'Van dag tot dag', high: 'Alles plannen', about: 'Lange termijn, geld, organisatie.' },
     },
     side: {
       mid: (low: string, high: string) => `Ertussenin: ${low} of ${high}.`,

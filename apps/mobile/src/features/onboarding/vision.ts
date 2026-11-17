@@ -57,10 +57,11 @@ export const surenessOf = (confidence: number): Sureness => (confidence >= 60 ? 
 
 /**
  * Les traits les plus marqués d'une vision, pour la phrase de synthèse du résultat : 3 au plus, du plus net au moins
- * net ; un axe resté au milieu (|valeur| < 20) n'en donne pas.
+ * net ; un axe resté au milieu (|valeur| < 20) n'en donne pas. L'axe « foyer » n'y figure pas (rien qui sonne
+ * « couple » dans la phrase qu'on lit en premier ; il reste dans le détail).
  */
 export function strongestTraits(profile: VisionProfile, max = 3): { axis: VisionAxis; side: 'low' | 'high' }[] {
-  return VISION_AXES.map((axis) => ({ axis, value: profile[axis].value, weight: Math.abs(profile[axis].value) * (0.5 + profile[axis].confidence / 200) }))
+  return VISION_AXES.filter((axis) => axis !== 'foyer').map((axis) => ({ axis, value: profile[axis].value, weight: Math.abs(profile[axis].value) * (0.5 + profile[axis].confidence / 200) }))
     .filter((a) => Math.abs(a.value) >= 20)
     .sort((a, b) => b.weight - a.weight || VISION_AXES.indexOf(a.axis) - VISION_AXES.indexOf(b.axis))
     .slice(0, max)

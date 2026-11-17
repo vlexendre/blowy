@@ -184,7 +184,7 @@ export function VisionShare({ profile, pet }: { profile: VisionProfile; pet: Pet
   const url = config.webUrl;
   return (
     <>
-      <Button label={v.cta} icon="share" variant="link" size="sm" onPress={() => setOpen(true)} />
+      <Button label={v.cta} icon="share" variant="glass" size="md" onPress={() => setOpen(true)} block />
       <MomentSheet
         visible={open}
         onClose={() => setOpen(false)}
