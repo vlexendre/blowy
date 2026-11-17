@@ -18,7 +18,7 @@ export interface PlusBannerProps {
   onPress: () => void;
 }
 
-/** Bandeau Minimoa+ de Moi : une rangée basse sur fond vin, titre Anton, une ligne, petit bouton. Toute la rangée est touchable. */
+/** Bandeau Minimoa+ de Moi : une rangée basse sur fond vin, Titre, une ligne, petit bouton. Toute la rangée est touchable. */
 export function PlusBanner({ title, text, ctaLabel, onPress }: PlusBannerProps) {
   const label = `${typeof title === 'string' ? title : title.map((s) => s.text).join('')}. ${text}`;
   return (

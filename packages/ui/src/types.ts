@@ -103,7 +103,7 @@ export interface WardrobeItemLook {
   goal: { stat: string; have: number; need: number } | null;
 }
 
-/** Segment d'un titre Anton : `dim` rend la partie estompée des maquettes. */
+/** Segment d'un Titre : `dim` rend la partie estompée des maquettes. */
 export interface TitleSegment {
   text: string;
   dim?: boolean;

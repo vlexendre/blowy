@@ -13,7 +13,7 @@ import type { TitleContent } from '../types';
 export interface ItemDetailProps {
   /** Identifiant de l'objet. */
   id: string;
-  /** « LA COURONNE » (Anton, partie estompée). */
+  /** « LA COURONNE » (titre, partie estompée). */
   title: TitleContent;
   /** Où il se porte (« se pose sur la tête… »). */
   text?: string;

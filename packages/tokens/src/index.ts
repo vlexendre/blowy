@@ -41,10 +41,14 @@ export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 }
 /** `card` : carte ordinaire de l'app (passe « densité » : 22 au lieu de 28) ; `lg` reste celui du site et de la barre d'onglets. */
 export const radius = { sm: 12, md: 18, card: 22, lg: 28, xl: 36, pill: 999 } as const;
 
-/** Noms de polices chargées par l'app (expo-google-fonts) ; le site utilise les mêmes familles. */
+/**
+ * Polices de l'app : Allo partout (Josh Puckett, SIL OFL 1.1, fichiers statiques à l'arrondi 50 :
+ * `apps/mobile/assets/fonts/allo`), titres compris (Allo ExtraBold en capitales). Le site garde sa propre famille de
+ * titres (`web.display`).
+ */
 export const font = {
-  display: 'Anton_400Regular',
-  /** Allo (Josh Puckett, SIL OFL 1.1), fichiers statiques à l'arrondi 50 : `apps/mobile/assets/fonts/allo`. */
+  /** Titres : Allo ExtraBold, en capitales, chasse un peu resserrée (`displayTracking`). */
+  display: 'Allo_800ExtraBold',
   body: 'Allo_500Medium',
   bodyBold: 'Allo_700Bold',
   /** Graisse 800 : la plus employée des maquettes (boutons, puces, libellés, noms). */
@@ -52,11 +56,29 @@ export const font = {
   web: { display: "'Anton', sans-serif", body: "'Allo', sans-serif" },
 } as const;
 
+/**
+ * Les tailles de titre des maquettes ont été dessinées pour une police étroite ; Allo ExtraBold est environ 1,4 fois
+ * plus large. Toute taille de titre écrite dans le code (`size={40}`) est une taille « de maquette » : elle est rendue à
+ * `DISPLAY_SCALE` près (`displaySize`), pour que les lignes gardent la même longueur.
+ */
+export const DISPLAY_SCALE = 0.74;
+/** Taille réellement rendue d'un titre écrit à la taille de maquette `n`. */
+export const displaySize = (n: number): number => Math.round(n * DISPLAY_SCALE);
+/** Approche des titres (em) : légèrement resserrée, pour garder l'impact des capitales. */
+export const displayTracking = -0.02;
+/** Interlignage des titres (proportion du corps rendu). */
+export const displayLeading = 1.02;
+
+const display = (n: number) => {
+  const px = displaySize(n);
+  return { fontFamily: font.display, fontSize: px, lineHeight: Math.round(px * displayLeading), letterSpacing: px * displayTracking, textTransform: 'uppercase' } as const;
+};
+
 export const type = {
-  hero: { fontFamily: font.display, fontSize: 56, lineHeight: 58, textTransform: 'uppercase' },
-  h1: { fontFamily: font.display, fontSize: 40, lineHeight: 42, textTransform: 'uppercase' },
-  h2: { fontFamily: font.display, fontSize: 28, lineHeight: 31, textTransform: 'uppercase' },
-  h3: { fontFamily: font.display, fontSize: 20, lineHeight: 23, textTransform: 'uppercase' },
+  hero: display(56),
+  h1: display(40),
+  h2: display(28),
+  h3: display(20),
   body: { fontFamily: font.body, fontSize: 16, lineHeight: 22 },
   bodyBold: { fontFamily: font.bodyBold, fontSize: 16, lineHeight: 22 },
   bodyHeavy: { fontFamily: font.bodyHeavy, fontSize: 16, lineHeight: 22 },

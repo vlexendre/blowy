@@ -31,7 +31,7 @@ const MAX_TITLE = 32;
 const MIN_TITLE = 22;
 /** Ce qui n'est pas le texte dans la largeur de l'écran (estimation avant la mesure) : marges de l'onglet et du panneau, avatar, écarts, chevron. */
 const AROUND = 24 + 28 + AVATAR + 8 + space.md * 2 + 28;
-/** Marge sur la chasse estimée d'Anton (crénage, rendu web). */
+/** Marge sur la chasse estimée des titres (crénage, rendu web). */
 const SAFE = 0.92;
 
 /**

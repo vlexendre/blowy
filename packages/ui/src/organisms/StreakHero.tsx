@@ -37,7 +37,7 @@ export interface StreakHeroProps {
 const PET = 200;
 
 /**
- * Haut de l'écran de la série (V6-GSerie) : le grand chiffre en Anton qui défile depuis 0, le minimoa à droite avec
+ * Haut de l'écran de la série (V6-GSerie) : le grand chiffre en capitales (police des titres) qui défile depuis 0, le minimoa à droite avec
  * sa mèche allumée (à sa taille du jour), qui se rallume à la première visite de la session. Panneau lie-de-vin.
  */
 export function StreakHero({ pet, count, title, line, badge, record = false, low = false, onBack, backLabel, petLabel }: StreakHeroProps) {

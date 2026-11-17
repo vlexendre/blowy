@@ -2,7 +2,7 @@ import type { TypeName } from '@blowy/tokens';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
-import { Text } from '../atoms/Text';
+import { renderedSize, Text } from '../atoms/Text';
 import { digitPosition, shownCount } from '../lib/count';
 import { useAnimatedNumber } from '../lib/motion';
 import { motion, type } from '../theme';
@@ -95,7 +95,7 @@ export function CountUp({
   // Le rebond reste dans le mouvement ; le nombre écrit, lui, ne dépasse jamais la cible.
   const bounds = [start ?? Math.abs(target), Math.abs(target)] as const;
   const base = type[variant];
-  const fontSize = size ?? base.fontSize;
+  const fontSize = renderedSize(variant, size);
   const line = Math.round(fontSize * (base.lineHeight / base.fontSize));
   const digits = Math.max(1, String(Math.abs(target)).length);
   const places = Array.from({ length: digits }, (_, i) => 10 ** (digits - 1 - i));

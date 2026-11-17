@@ -2,6 +2,8 @@ import { Text as RNText, type StyleProp, StyleSheet, type TextStyle } from 'reac
 
 import { useInk } from '../lib/ink';
 import { countRunWords, normalizeRuns, revealTokens } from '../lib/runs';
+import { DISPLAY_SCALE, displayLeading, displaySize, displayTracking } from '@blowy/tokens';
+
 import { alpha, opacity, type } from '../theme';
 import type { TitleContent, TitleSegment } from '../types';
 import { fitLineHeight } from './Text';
@@ -24,18 +26,22 @@ export interface TitleProps {
   reveal?: number;
 }
 
-/** Chasse des capitales d'Anton (em, mesurée), pour estimer la largeur d'une ligne de titre sans la rendre. */
-const ANTON: Record<string, number> = {
-  A: 0.49, B: 0.48, C: 0.47, D: 0.49, E: 0.41, F: 0.4, G: 0.48, H: 0.5, I: 0.23, J: 0.47, K: 0.47, L: 0.4, M: 0.75, N: 0.5, O: 0.49,
-  P: 0.47, Q: 0.49, R: 0.48, S: 0.46, T: 0.4, U: 0.47, V: 0.47, W: 0.71, X: 0.48, Y: 0.45, Z: 0.41, '.': 0.23, ',': 0.24, '!': 0.23,
-  '’': 0.23, "'": 0.23, ' ': 0.23, '-': 0.31, '%': 1.06, '+': 0.36, '1': 0.33,
+/** Chasse des capitales d'Allo ExtraBold (em, mesurée), pour estimer la largeur d'une ligne de titre sans la rendre. */
+const ALLO: Record<string, number> = {
+  A: 0.754, B: 0.656, C: 0.736, D: 0.715, E: 0.607, F: 0.576, G: 0.751, H: 0.735, I: 0.275, J: 0.581, K: 0.724, L: 0.558, M: 0.926,
+  N: 0.752, O: 0.768, P: 0.643, Q: 0.776, R: 0.652, S: 0.646, T: 0.658, U: 0.712, V: 0.752, W: 1.046, X: 0.748, Y: 0.734, Z: 0.666,
+  '.': 0.341, ',': 0.341, '!': 0.347, '?': 0.565, ':': 0.341, '’': 0.319, "'": 0.343, ' ': 0.209, '-': 0.458, '%': 0.968, '+': 0.665,
+  '0': 0.677, '1': 0.429, '2': 0.623, '3': 0.642, '4': 0.674, '5': 0.619, '6': 0.647, '7': 0.574, '8': 0.65, '9': 0.647,
 };
-const glyphEm = (ch: string): number => ANTON[ch] ?? ANTON[ch.normalize('NFD')[0] ?? ''] ?? 0.49;
+const glyphEm = (ch: string): number => (ALLO[ch] ?? ALLO[ch.normalize('NFD')[0] ?? ''] ?? 0.7) + displayTracking;
 
-/** Largeur (em) de la ligne la plus longue d'un titre. */
+/**
+ * Largeur de la ligne la plus longue d'un titre, par point de taille « de maquette » (la taille passée à `Title`) :
+ * multiplier par la taille donne des points.
+ */
 export function titleWidthEm(text: TitleContent): number {
   const raw = typeof text === 'string' ? text : text.map((s) => s.text).join('');
-  return Math.max(0, ...raw.toUpperCase().split('\n').map((line) => [...line.trim()].reduce((w, ch) => w + glyphEm(ch) + 0.005, 0)));
+  return Math.max(0, ...raw.toUpperCase().split('\n').map((line) => [...line.trim()].reduce((w, ch) => w + glyphEm(ch), 0))) * DISPLAY_SCALE;
 }
 
 /**
@@ -53,16 +59,15 @@ export function countWords(text: TitleContent): number {
   return countRunWords(typeof text === 'string' ? [{ text }] : text);
 }
 
-/** Titre Anton en capitales, avec sa partie estompée. */
+/** Titre en capitales (Allo ExtraBold), avec sa partie estompée. `size` est une taille de maquette (`displaySize`). */
 export function Title({ text, variant = 'h1', size, color, center, numberOfLines, style, accessibilityLabel, reveal }: TitleProps) {
   const contextInk = useInk();
   const ink = color ?? contextInk;
   const segments = typeof text === 'string' ? [{ text }] : text;
   // Un seul `Text` parent ; espaces des jointures au début du morceau suivant (voir `lib/runs`).
   const runs = normalizeRuns(segments);
-  const fontSize = size ?? type[variant].fontSize;
-  // `.d` des maquettes : interlignage .96, approche .005 em.
-  const metrics = { fontSize, lineHeight: Math.round(fontSize * 0.96), letterSpacing: fontSize * 0.005 };
+  const fontSize = size === undefined ? type[variant].fontSize : displaySize(size);
+  const metrics = { fontSize, lineHeight: Math.round(fontSize * displayLeading), letterSpacing: fontSize * displayTracking };
   const dimColor = alpha(ink, opacity.dim);
   const composed = [type[variant], styles.base, { color: ink }, metrics, center && styles.center, style];
   return (

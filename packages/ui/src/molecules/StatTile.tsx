@@ -1,3 +1,4 @@
+import { displayLeading, displaySize } from '@blowy/tokens';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { Card } from '../atoms/Card';
@@ -6,7 +7,7 @@ import { CountUp } from '../motion/CountUp';
 import { space, type } from '../theme';
 
 export interface StatTileProps {
-  /** Valeur en Anton (« 6 », « 12 J »). */
+  /** Valeur en capitales (police des titres) (« 6 », « 12 J »). */
   value: string;
   label: string;
   /** Couleur de la valeur. Défaut blanc. */
@@ -22,9 +23,9 @@ export interface StatTileProps {
 }
 
 const VALUE = 30;
-const LINE = Math.round(VALUE * 0.96);
+const LINE = Math.round(displaySize(VALUE) * displayLeading);
 /** Interlignage du compteur (celui de `h2` à ce corps). */
-const COUNT_LINE = Math.round(VALUE * (type.h2.lineHeight / type.h2.fontSize));
+const COUNT_LINE = Math.round(displaySize(VALUE) * (type.h2.lineHeight / type.h2.fontSize));
 
 /** Tuile chiffre + légende (`.card` 10 × 12 de Moi). */
 export function StatTile({ value, label, color, count, suffix, onPress, style }: StatTileProps) {
