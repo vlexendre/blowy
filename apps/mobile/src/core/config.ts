@@ -15,6 +15,8 @@ export const config = {
    * `1` : envoyer à l'API les jetons APNs des activités en direct (`kind: 'apns_live_activity'`). À n'activer que
    * lorsque l'API range ce type de jeton à part (sinon il serait pris pour un jeton Expo) : docs/WIDGETS.md.
    */
+  /** Identifiant de l'app Meta (public), exigé par Instagram pour recevoir une image en story. Vide : feuille de partage du système. */
+  facebookAppId: process.env.EXPO_PUBLIC_FACEBOOK_APP_ID ?? '',
   liveActivityPush: process.env.EXPO_PUBLIC_LIVE_ACTIVITY_PUSH === '1',
 } as const;
 

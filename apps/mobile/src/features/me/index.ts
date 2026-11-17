@@ -1,10 +1,10 @@
 import type { UpdateMeBody } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Share } from 'react-native';
+import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Share, type View } from 'react-native';
 
-import { keys, useApi, usePorts } from '@/core';
+import { captureStory, keys, shareStoryImage, useApi, usePorts } from '@/core';
 
 export function useMe(enabled = true) {
   const api = useApi();
@@ -84,6 +84,33 @@ export function useCopyShare() {
     [copy],
   );
   return { copied, copy, share };
+}
+
+/**
+ * Partage de l'invitation en story : capture l'image (`StoryCard`), puis l'éditeur de story d'Instagram, sinon la
+ * feuille de partage du système avec l'image ; si l'image n'a pas pu être faite (web), le lien en texte.
+ */
+export function useStoryShare() {
+  const card = useRef<ComponentRef<typeof View>>(null);
+  const [busy, setBusy] = useState(false);
+  const { copied, copy, share: shareText } = useCopyShare();
+  const share = useCallback(
+    async (message: string, url: string) => {
+      if (busy) return;
+      setBusy(true);
+      try {
+        const image = await captureStory(card);
+        if (!image) return await shareText(message, url);
+        const result = await shareStoryImage(image, message);
+        // Rien ne s'est ouvert (ni Instagram ni la feuille) : au moins le lien.
+        if (result === 'none' && Platform.OS !== 'ios') await shareText(message, url);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [busy, shareText],
+  );
+  return { card, busy, share, copied, copy };
 }
 
 /** Adresse affichée sans protocole (« blowy.app/i/ABCD1234 »). */

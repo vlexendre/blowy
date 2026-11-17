@@ -123,6 +123,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       NSPhotoLibraryUsageDescription: PHOTOS_TEXT,
       // Activités en direct (défi accepté, série d'un lien, sortie) : docs/WIDGETS.md.
       NSSupportsLiveActivities: true,
+      // Partage de l'invitation en story : savoir si Instagram est là avant de lui passer l'image.
+      LSApplicationQueriesSchemes: ['instagram-stories'],
     },
     privacyManifests: PRIVACY_MANIFEST,
   },

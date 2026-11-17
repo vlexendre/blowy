@@ -1,9 +1,12 @@
-/** Invitations (V6-Invite) : partager son lien d'invitation (le lien « 3 mots » est dans l'onglet Moi). */
-import { Appear, Banner, InvitePanel, OnboardingTemplate } from '@blowy/ui';
+/**
+ * Invitations (V6-Invite) : partager son lien d'invitation (le lien « 3 mots » est dans l'onglet Moi). « Partager en
+ * story » envoie une image (`StoryCard`, capturée hors de l'écran) dans l'éditeur de story d'Instagram.
+ */
+import { Appear, Banner, InvitePanel, OnboardingTemplate, StoryCard } from '@blowy/ui';
 import { router } from 'expo-router';
 
 import { inviteUrl, ScreenMotion } from '@/core';
-import { displayUrl, useCopyShare, useMe } from '@/features/me';
+import { displayUrl, useMe, useStoryShare } from '@/features/me';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -11,7 +14,7 @@ const t = onboarding.invite;
 
 export default function Invite() {
   const me = useMe();
-  const invite = useCopyShare();
+  const invite = useStoryShare();
   // Minimoa+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
   const next = () => router.push('/(onboarding)/paywall');
 
@@ -36,8 +39,21 @@ export default function Invite() {
         copiedLabel={t.copied}
         onCopy={() => void invite.copy(link)}
         shareLabel={t.share}
+        sharing={invite.busy}
         onShare={() => void invite.share(t.shareMessage(pet?.name ?? '', link), link)}
       />
+      {pet && me.data ? (
+        <StoryCard
+          ref={invite.card}
+          offscreen
+          brand={onboarding.welcome.brand}
+          title={t.story.title}
+          line={t.story.line(pet.name)}
+          pet={{ name: pet.name, species: pet.species }}
+          callout={t.story.callout}
+          url={displayUrl(link)}
+        />
+      ) : null}
     </OnboardingTemplate>
     </ScreenMotion>
   );

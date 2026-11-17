@@ -43,6 +43,7 @@ export { WardrobeGrid, type WardrobeGridHandle, type WardrobeGridProps } from '.
 export { OnboardingPanel, type OnboardingPanelProps } from './OnboardingPanel';
 export { AgeGate, type AgeGateProps } from './AgeGate';
 export { InvitePanel, type InvitePanelProps } from './InvitePanel';
+export { STORY_SIZE, StoryCard, type StoryCardProps } from './StoryCard';
 export { type PrepItemState, PrepChecklist, type PrepChecklistProps } from './PrepChecklist';
 export { PromiseStage, type PromiseStageProps } from './PromiseStage';
 export { ReadyHero, type ReadyHeroProps } from './ReadyHero';

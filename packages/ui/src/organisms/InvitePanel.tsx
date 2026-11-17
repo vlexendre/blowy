@@ -28,13 +28,15 @@ export interface InvitePanelProps {
   onCopy: () => void;
   shareLabel: string;
   onShare: () => void;
+  /** L'image de la story se prépare : le bouton montre son chargement. */
+  sharing?: boolean;
 }
 
 /**
  * Panneau violet d'invitation (V6-Invite) : promesse, pet qui salue, lien à copier et bouton de partage.
  * Le pet entre par la droite et fait coucou ; copier le lien dessine une coche. Animations réduites : fondus.
  */
-export function InvitePanel({ title, text, pet, url, copyLabel, copied, copiedLabel, onCopy, shareLabel, onShare }: InvitePanelProps) {
+export function InvitePanel({ title, text, pet, url, copyLabel, copied, copiedLabel, onCopy, shareLabel, onShare, sharing }: InvitePanelProps) {
   const cut = url ? url.lastIndexOf('/') + 1 : 0;
   return (
     <Panel gradient="violet" radius={32} padding="none" style={styles.panel}>
@@ -67,7 +69,7 @@ export function InvitePanel({ title, text, pet, url, copyLabel, copied, copiedLa
               style={styles.copy}
             />
           </View>
-          <Button label={shareLabel} variant="dark" onPress={onShare} style={styles.share} />
+          <Button label={shareLabel} variant="dark" onPress={onShare} loading={sharing} style={styles.share} />
         </Appear>
       ) : (
         <>
