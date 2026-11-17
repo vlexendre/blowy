@@ -67,8 +67,17 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
     case 'together_proposal':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://pet/habitudes';
     case 'first_steps':
-      // J1 : les habitudes ; J3 : créer un groupe ; J7 : les rencontres.
-      return vars.step === 'd1' ? 'blowy://pet/habitudes' : vars.step === 'd3' ? 'blowy://groupe/nouveau' : 'blowy://rencontres';
+      // J1 : le lien « 3 mots » ; J2 : les habitudes ; J3 : un groupe par lien ; J5 : les rencontres ; J7 : l'accueil
+      // (le bilan de la semaine et la carte à partager).
+      return vars.step === 'd1'
+        ? 'blowy://mots'
+        : vars.step === 'd2'
+          ? 'blowy://pet/habitudes'
+          : vars.step === 'd3'
+            ? 'blowy://groupe/nouveau'
+            : vars.step === 'd5'
+              ? 'blowy://rencontres'
+              : 'blowy://pet';
     case 'plus_account':
       // L'au revoir mène au minimoa (rien à vendre) ; le reste à la feuille Minimoa+ (état, « Gérer mon abonnement »).
       return vars.step === 'goodbye' ? 'blowy://pet' : 'blowy://moi/blowy-plus';

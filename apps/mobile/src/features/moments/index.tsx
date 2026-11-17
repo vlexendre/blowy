@@ -169,6 +169,31 @@ export function StreakMoment({ streak }: { streak: number | null | undefined }) 
   );
 }
 
+const WEEK_MOMENTS = [7] as const;
+const DAY_MS = 86_400_000;
+
+/** J7 : une semaine avec son minimoa, une carte à partager, proposée une fois (docs/FIDELISATION.md, premiers pas). */
+export function FirstWeekMoment({ bornAt }: { bornAt: string | null | undefined }) {
+  const days = bornAt ? Math.floor((Date.now() - Date.parse(bornAt)) / DAY_MS) : null;
+  const { step, dismiss } = useMomentOffer('week', days !== null && days >= 7 && days < 14 ? days : null, WEEK_MOMENTS);
+  const me = useMe(step !== null);
+  if (step === null || !me.data) return null;
+  const c = t.moments.week;
+  const url = inviteUrl(me.data.inviteCode);
+  const pet = me.data.pet;
+  return (
+    <MomentSheet
+      visible
+      onClose={dismiss}
+      title={c.sheetTitle}
+      text={c.text}
+      message={c.message(pet.name, url)}
+      offerNever
+      card={{ title: c.title(pet.name), big: { value: '7', unit: c.unit }, pet: { name: pet.name, species: pet.species, outfit: pet.outfit }, callout: c.callout, url, gradient: 'violet' }}
+    />
+  );
+}
+
 /** « Ton minimoa est … » : deux traits au plus, jamais l'axe « foyer » (rien de sensible). */
 export function visionHeadline(profile: VisionProfile): string {
   const v = t.moments.vision;

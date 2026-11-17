@@ -57,7 +57,7 @@ import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
 import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
-import { StreakMoment } from '@/features/moments';
+import { FirstWeekMoment, StreakMoment } from '@/features/moments';
 import { useAwayFromHome, useOuting, usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
 import { accueil as a } from '@/locales/accueil';
@@ -468,6 +468,8 @@ export default function PetHome() {
             )}
             {/* Palier 7 / 30 / 100 jours : une carte à partager, une fois, après la fête (docs/VIRALITE.md). */}
             {!party && !welcomeBack ? <StreakMoment streak={streak?.current} /> : null}
+            {/* J7 : une semaine avec lui, une carte à partager (une fois ; pas le jour d'un palier de série). */}
+            {!party && !welcomeBack && (streak?.current ?? 0) < 7 ? <FirstWeekMoment bornAt={p.bornAt} /> : null}
           </TabTemplate>
         )}
       </PetRefresh>

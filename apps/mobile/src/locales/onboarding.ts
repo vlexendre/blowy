@@ -75,7 +75,7 @@ export const onboarding = messages({
       /** La phrase de synthèse, en tête du résultat : les traits les plus marqués (2 ou 3), sans genre supposé. */
       summary: {
         lead: (traits: readonly string[]): string => `Tu es plutôt quelqu’un qui ${listFr(traits)}.`,
-        even: 'Chez toi, rien d’extrême : un peu de tout.',
+        even: 'Chez toi, rien d’extrême : un peu de tout.',
         traits: {
           foyer: { low: 'tient à sa liberté', high: 'met la famille en premier' },
           ancrage: { low: 'tient à son coin', high: 'a envie d’ailleurs' },

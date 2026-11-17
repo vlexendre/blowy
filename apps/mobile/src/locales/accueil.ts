@@ -19,34 +19,34 @@ export const accueil = messages({
     wavedAction: 'Répondre',
     /** Un lien t'a écrit. */
     wrote: (name: string): string => `${name} t’a écrit`,
-    wroteText: (preview: string): string => `« ${preview} »`,
+    wroteText: (preview: string): string => `« ${preview} »`,
     wroteAction: 'Répondre',
     /** Ton groupe d'habitude, aujourd'hui. */
-    group: (name: string, up: number, due: number): string => `${name} : ${up}/${due} ont tenu aujourd’hui`,
-    groupMine: { done: 'Toi, c’est fait. Un mot pour les autres ?', todo: 'Il manque toi. Les autres comptent dessus.' },
+    group: (name: string, up: number, due: number): string => `${name} : ${up}/${due} ont tenu aujourd’hui`,
+    groupMine: { done: 'Toi, c’est fait. Un mot pour les autres ?', todo: 'Il manque toi. Les autres comptent dessus.' },
     groupAction: 'Ouvrir le groupe',
     /** Test de vision pas passé. */
     visionTitle: 'Dis-lui comment tu vois la vie',
-    visionText: '12 situations, 2 minutes : c’est ce qui choisit qui il te présente.',
+    visionText: '12 situations, 2 minutes : c’est ce qui choisit qui il te présente.',
     visionAction: 'Commencer',
     /** Pas de position : l'explication, puis la demande du téléphone (au moment où elle sert). */
     locationTitle: (pet: string): string => `${pet} cherche des gens près de chez toi`,
-    locationText: 'Pour ça, il doit savoir dans quel coin tu es, quand l’app est ouverte. Jamais ta position exacte : un cercle d’environ 1,5 km.',
+    locationText: 'Pour ça, il doit savoir dans quel coin tu es, quand l’app est ouverte. Jamais ta position exacte : un cercle d’environ 1,5 km.',
     locationAction: 'Continuer',
     locationDenied: 'Sans ta position, il ne présente que des potes de tes potes. Tu peux l’activer dans les Réglages.',
     locationSettings: 'Ouvrir les Réglages',
     /** Personne pour l'instant. */
     emptyTitle: (pet: string): string => `${pet} cherche encore`,
-    emptyText: 'Personne de compatible près de toi pour l’instant : tu es parmi les premiers ici. Invite 2 potes, leurs potes suivront.',
+    emptyText: 'Personne de compatible près de toi pour l’instant : tu es parmi les premiers ici. Invite 2 potes, leurs potes suivront.',
     emptyAction: 'Inviter des potes',
     /** Notifications, demandées quand elles servent (une fois que quelqu'un peut te faire signe). */
-    notifAsk: 'Je te préviens quand quelqu’un te fait signe ?',
+    notifAsk: 'Je te préviens quand quelqu’un te fait signe ?',
     notifAction: 'Oui, préviens-moi',
     /** La règle, en une phrase. */
     rule: 'Plus tu sors, plus il te présente de monde.',
     /** Tuiles sous les soins. */
     tiles: { question: 'Question', challenge: 'Défi', habits: 'Habitudes', more: 'Tout sur lui' },
-    moreA11y: (pet: string): string => `Tout sur ${pet} : caractère, série, bilans, souvenirs`,
+    moreA11y: (pet: string): string => `Tout sur ${pet} : caractère, série, bilans, souvenirs`,
     /** Touché, le minimoa reçoit un câlin. */
     petA11yCuddle: (pet: string): string => `${pet}. Touche-le pour un câlin`,
   },

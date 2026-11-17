@@ -11,10 +11,16 @@ import { type Day, addDays, daysBetween } from './days';
 
 // ── Rétention de l'app ──────────────────────────────────────────────────────
 
-/** Les premiers pas : J1 (habitudes), J3 (groupes), J7 (première rencontre). */
+/**
+ * Les premiers pas, chacun mène à des gens : J1 le lien « 3 mots » (tes potes te décrivent), J2 la première habitude,
+ * J3 rejoindre ou créer un groupe par son lien, J5 la première personne présentée, J7 ta première semaine (le bilan et
+ * la carte à partager).
+ */
 export const FIRST_STEPS = [
   { step: 'd1', day: 1 },
+  { step: 'd2', day: 2 },
   { step: 'd3', day: 3 },
+  { step: 'd5', day: 5 },
   { step: 'd7', day: 7 },
 ] as const;
 export type FirstStep = (typeof FIRST_STEPS)[number]['step'];
@@ -29,11 +35,19 @@ export const WELCOME_BACK_AFTER_DAYS = 14;
 
 /** Rattrapage : un message manqué (heure locale hors de la fenêtre, minuteur arrêté) part encore ce nombre de jours après. */
 export const FIDELITE_CATCH_UP_DAYS = 2;
-/** Les premiers pas ont une fenêtre d'un jour (J1 et J3 ne se chevauchent pas). */
+/**
+ * Rattrapage d'un premier pas : un jour, sauf si le suivant tombe le lendemain (J1, J2, J3 : chacun son jour), pour que
+ * deux premiers pas ne se chevauchent jamais.
+ */
 const FIRST_STEPS_CATCH_UP_DAYS = 1;
+const catchUpOf = (i: number): number => {
+  const next = FIRST_STEPS[i + 1];
+  const s = FIRST_STEPS[i];
+  return next && s ? Math.min(FIRST_STEPS_CATCH_UP_DAYS, next.day - s.day - 1) : FIRST_STEPS_CATCH_UP_DAYS;
+};
 /**
  * Pendant les 10 premiers jours (la semaine d'accueil, son rattrapage et la fenêtre de l'absence de 7 jours), les premiers
- * pas remplacent les messages d'absence : une personne inscrite qui n'est pas revenue reçoit J1, J3, J7, puis rien
+ * pas remplacent les messages d'absence : une personne inscrite qui n'est pas revenue reçoit J1, J2, J3, J5, J7, puis rien
  * avant l'absence de 14 jours.
  */
 export const FIRST_WEEK_DAYS = 10;
@@ -87,9 +101,12 @@ export function absenceDue(lastActiveOn: Day, today: Day): AbsenceDays | null {
   return null;
 }
 
-/** Premier pas dû aujourd'hui (J1, J3, J7 après l'inscription) ; null sinon. */
+/** Premier pas dû aujourd'hui (J1, J2, J3, J5, J7 après l'inscription) ; null sinon. */
 export function firstStepDue(createdOn: Day, today: Day): FirstStep | null {
-  for (const s of [...FIRST_STEPS].reverse()) if (within(addDays(createdOn, s.day), today, FIRST_STEPS_CATCH_UP_DAYS)) return s.step;
+  for (let i = FIRST_STEPS.length - 1; i >= 0; i--) {
+    const s = FIRST_STEPS[i];
+    if (s && within(addDays(createdOn, s.day), today, catchUpOf(i))) return s.step;
+  }
   return null;
 }
 

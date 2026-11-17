@@ -41,13 +41,16 @@ describe('fidélisation : rétention de l’app', () => {
     expect(addMonths('2026-11-17', 2)).toBe('2027-01-17');
   });
 
-  it('premiers pas : J1, J3, J7, un jour de rattrapage chacun, sans chevauchement', () => {
+  it('premiers pas : J1, J2, J3, J5, J7, sans chevauchement (rattrapage d’un jour seulement quand le suivant est loin)', () => {
     expect(firstStepDue('2026-11-10', '2026-11-10')).toBeNull();
     expect(firstStepDue('2026-11-10', '2026-11-11')).toBe('d1');
-    expect(firstStepDue('2026-11-10', '2026-11-12')).toBe('d1');
+    expect(firstStepDue('2026-11-10', '2026-11-12')).toBe('d2');
     expect(firstStepDue('2026-11-10', '2026-11-13')).toBe('d3');
-    expect(firstStepDue('2026-11-10', '2026-11-15')).toBeNull();
+    expect(firstStepDue('2026-11-10', '2026-11-14')).toBe('d3');
+    expect(firstStepDue('2026-11-10', '2026-11-15')).toBe('d5');
+    expect(firstStepDue('2026-11-10', '2026-11-16')).toBe('d5');
     expect(firstStepDue('2026-11-10', '2026-11-17')).toBe('d7');
+    expect(firstStepDue('2026-11-10', '2026-11-18')).toBe('d7');
     expect(firstStepDue('2026-11-10', '2026-11-19')).toBeNull();
   });
 

@@ -71,6 +71,15 @@ export const croissance = messages({
     },
     /** Moments à partager. */
     moments: {
+      /** J7 : une semaine avec son minimoa (une fois). */
+      week: {
+        sheetTitle: 'Une semaine ensemble',
+        text: 'Ta première semaine. Une carte pour ta story, ou pour toi.',
+        title: (pet: string): TitleSegment[] => [{ text: 'UNE SEMAINE\n' }, { text: `AVEC ${pet.toUpperCase()}.`, dim: true }],
+        unit: 'JOURS ENSEMBLE',
+        callout: 'Le tien te présente du monde :',
+        message: (pet: string, url: string): string => `Une semaine avec ${pet}, mon minimoa. Il me présente du monde près de chez moi. Viens\u00a0: ${url}`,
+      },
       streak: {
         sheetTitle: (n: number): string => `${n} jours d’affilée`,
         text: 'Une carte pour ta story. Tu peux aussi la garder pour toi.',
@@ -168,6 +177,14 @@ export const croissance = messages({
       more: 'See my result',
     },
     moments: {
+      week: {
+        sheetTitle: 'One week together',
+        text: 'Your first week. A card for your story, or just for you.',
+        title: (pet: string): TitleSegment[] => [{ text: 'ONE WEEK\n' }, { text: `WITH ${pet.toUpperCase()}.`, dim: true }],
+        unit: 'DAYS TOGETHER',
+        callout: 'Yours introduces you to people:',
+        message: (pet: string, url: string): string => `One week with ${pet}, my minimoa. It introduces me to people near me. Come: ${url}`,
+      },
       streak: {
         sheetTitle: (n: number): string => `${n} days in a row`,
         text: 'A card for your story. You can also keep it to yourself.',
@@ -263,6 +280,14 @@ export const croissance = messages({
       more: 'Ver mi resultado',
     },
     moments: {
+      week: {
+        sheetTitle: 'Una semana juntos',
+        text: 'Tu primera semana. Una tarjeta para tu story, o para ti.',
+        title: (pet: string): TitleSegment[] => [{ text: 'UNA SEMANA\n' }, { text: `CON ${pet.toUpperCase()}.`, dim: true }],
+        unit: 'DÍAS JUNTOS',
+        callout: 'El tuyo te presenta gente:',
+        message: (pet: string, url: string): string => `Una semana con ${pet}, mi minimoa. Me presenta gente cerca de casa. Ven: ${url}`,
+      },
       streak: {
         sheetTitle: (n: number): string => `${n} días seguidos`,
         text: 'Una tarjeta para tu historia. También puedes guardarla para ti.',
@@ -358,6 +383,14 @@ export const croissance = messages({
       more: 'Ver meu resultado',
     },
     moments: {
+      week: {
+        sheetTitle: 'Uma semana juntos',
+        text: 'Sua primeira semana. Um cartão para o seu story, ou só para você.',
+        title: (pet: string): TitleSegment[] => [{ text: 'UMA SEMANA\n' }, { text: `COM ${pet.toUpperCase()}.`, dim: true }],
+        unit: 'DIAS JUNTOS',
+        callout: 'O seu te apresenta gente:',
+        message: (pet: string, url: string): string => `Uma semana com ${pet}, meu minimoa. Ele me apresenta gente perto de casa. Vem: ${url}`,
+      },
       streak: {
         sheetTitle: (n: number): string => `${n} dias seguidos`,
         text: 'Um card para os seus stories. Você também pode guardar só para você.',
@@ -453,6 +486,14 @@ export const croissance = messages({
       more: 'Mijn resultaat bekijken',
     },
     moments: {
+      week: {
+        sheetTitle: 'Een week samen',
+        text: 'Je eerste week. Een kaart voor je story, of voor jezelf.',
+        title: (pet: string): TitleSegment[] => [{ text: 'EEN WEEK\n' }, { text: `MET ${pet.toUpperCase()}.`, dim: true }],
+        unit: 'DAGEN SAMEN',
+        callout: 'De jouwe stelt je aan mensen voor:',
+        message: (pet: string, url: string): string => `Een week met ${pet}, mijn minimoa. Hij stelt me voor aan mensen bij mij in de buurt. Kom: ${url}`,
+      },
       streak: {
         sheetTitle: (n: number): string => `${n} dagen op rij`,
         text: 'Een kaart voor je story. Je mag hem ook voor jezelf houden.',
