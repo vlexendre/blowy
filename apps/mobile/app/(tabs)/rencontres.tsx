@@ -1,5 +1,4 @@
 import { ApiError } from '@blowy/api-client';
-import { shapeLabel } from '@/locales/content';
 import type { EncounterHistoryItem, MatchExplanation } from '@blowy/contract';
 import { color } from '@blowy/tokens';
 import {
@@ -102,7 +101,7 @@ export default function RencontresScreen() {
   const m = me.data;
   const noVision = m ? !m.visionTestDone : false;
   const noPlace = m ? !m.identity.location.consentAt || !m.identity.location.zone : false;
-  const empty = !!encounters.data && !sulking && incoming.length + suggestions.length === 0;
+  const empty = !!encounters.data && incoming.length + suggestions.length === 0;
 
   const refresh = async () => {
     setRefreshing(true);
@@ -162,7 +161,7 @@ export default function RencontresScreen() {
           onAction={() => void encounters.refetch()}
         />
       ) : null}
-      {shape === 'bof' ? <Banner tone="info" title={t.bofTitle(petName)} actionLabel={t.sulkAction} onAction={toPet} /> : null}
+      {shape === 'bof' || sulking ? <Banner tone="info" title={t.bofTitle(petName)} actionLabel={t.sulkAction} onAction={toPet} /> : null}
       {actionError ? (
         <Banner
           tone="error"
@@ -177,16 +176,6 @@ export default function RencontresScreen() {
         />
       ) : null}
 
-      {sulking ? (
-        <EmptyState
-          species={myPet?.species ?? 'nino'}
-          mood="colere"
-          title={t.sulkTitle(petName)}
-          text={shapeLabel.boude?.text}
-          actionLabel={t.sulkAction}
-          onAction={toPet}
-        />
-      ) : null}
 
       {encounters.isPending ? (
         <>
@@ -244,7 +233,7 @@ export default function RencontresScreen() {
       ))}
 
       {/* Personne : on dit pourquoi, et ce qui aide (test de vision, localisation, inviter). */}
-      {encounters.data && !sulking && noVision ? (
+      {encounters.data && noVision ? (
         <EmptyState
           peek
           seed={myPet?.id}
@@ -280,12 +269,12 @@ export default function RencontresScreen() {
           onAction={() => void invite.share()}
         />
       ) : null}
-      {encounters.data && !sulking && !noVision && noPlace ? placeBanner : null}
-      {encounters.data && !sulking && !noVision && noPlace && !(denied || location.result === 'denied') ? (
+      {encounters.data && !noVision && noPlace ? placeBanner : null}
+      {encounters.data && !noVision && noPlace && !(denied || location.result === 'denied') ? (
         <Button label={carteText.area.choose} variant="glass" size="sm" onPress={() => setAreaSheet(true)} />
       ) : null}
 
-      {encounters.data && m && !m.plus && !sulking && !noVision ? (
+      {encounters.data && m && !m.plus && !noVision ? (
         <MapPlusStrip title={t.morePlus.title} text={morePerk?.label ?? morePerk?.short[0] ?? ''} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
       ) : null}
 
