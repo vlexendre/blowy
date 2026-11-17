@@ -253,3 +253,32 @@ FR, EN, ES, PT, NL, selon la langue du téléphone (repli : anglais ; français 
 - **Dans le lien**, l'onglet « Aujourd'hui » devient l'état du lien du jour : la série, « à toi d'écrire » ou « vous vous êtes écrit aujourd'hui », la semaine, les vies, le niveau et ce qu'il débloque. « Souvenirs » garde les étapes du lien (rencontre, niveaux passés, records de série) et les photos que les deux se sont envoyées dans le chat si le chat en permet.
 - **Rappels** : « lien en danger » reste ; « série avec X : à toi d'écrire avant minuit » remplace le rappel de photo, une fois par jour au plus et seulement si l'autre a déjà écrit. L'activité en direct correspondante remplace celle de la photo.
 - Ne sont **pas** concernés : la photo de profil (floue pour l'autre jusqu'au niveau 5), les photos de preuve d'habitude, le défi du jour de type photo, ni la série personnelle (celle de la mèche), qui reste liée au défi du jour.
+
+## 25. Habitudes partagées et rigueur (décision du 17 nov.)
+
+Les habitudes deviennent un lien possible entre deux personnes. La vision reste le moteur de l'appariement (seuil 70) ; une habitude commune n'ouvre aucune rencontre à elle seule.
+
+- **Dans l'inscription** : une étape « Tes habitudes », après « Tu cherches quoi ? » et avant la date de naissance. Jusqu'à 2 habitudes du catalogue, rythme « tous les jours » par défaut, « Plus tard » possible. Elles partent avec la création du compte (`habits` dans `POST /v1/me/onboard`).
+- **Visibilité, dite au moment du choix** : le nom de tes habitudes, leur série et ta rigueur sont montrés aux personnes que ton minimoa te présente et à tes liens. Jamais les photos de preuve, jamais l'heure. Réglage « Montrer mes habitudes » dans Moi (activé par défaut ; coupé : rien n'est montré et aucune suggestion « ensemble »).
+- **Rigueur** (jauge) : sur les 28 derniers jours, part des jours dus où l'habitude a été tenue. Un jour couvert par un joker ne compte ni pour ni contre. Moins de 7 jours dus : « trop tôt pour le dire », pas de chiffre. Rigueur d'une personne : moyenne de ses habitudes actives, pondérée par les jours dus. Calcul pur dans `packages/domain`.
+- **Habitude commune** : sur la fiche d'une rencontre et dans l'onglet « Le lien », une carte « Vous tenez tous les deux : Sport » compare les deux séries et les deux rigueurs. Dans la liste des rencontres, une habitude commune ne fait que départager deux visions de même force.
+- Les habitudes de l'autre passent par `Audience` : rien pour une personne bloquée, suspendue, supprimée, ou qui a coupé le réglage.
+
+## 26. Groupes (décision du 17 nov.)
+
+On peut se retrouver à plusieurs. Deux sortes de groupes, un seul modèle.
+
+- **Créer** : onglet Chats › « Nouveau groupe ». Un nom (passé au filtre de contenu), puis 2 à 7 personnes choisies parmi ses liens vivants. Chacune reçoit une invitation et doit accepter. Le groupe démarre à 3 membres, 8 au plus. Gratuit : 2 groupes ; Minimoa+ : 10.
+- **Qui voit quoi** : dans le groupe, chacun voit des autres ce qu'un lien voit (prénom, minimoa), rien de plus : ni position, ni âge, ni vision. Deux personnes dont l'une a bloqué l'autre ne sont jamais dans le même groupe : l'invitation n'arrive pas ; bloquer un membre fait quitter le groupe à celui qui bloque. Tout passe par `Audience`.
+- **Le chat du groupe** : messages texte, même filtre de contenu, même signalement (un message, un membre, le groupe) et même phrase de confidentialité que les liens. **Aucune lecture par une IA dans un groupe** : les minimoas n'y parlent que pour des événements (arrivée, palier de série, vie perdue, groupe endormi).
+- **Groupe libre** : un chat entre potes, sans vies ni série.
+- **Groupe d'habitude (« la tenir ensemble »)** : lié à une habitude du catalogue que chaque membre tient.
+  - Chaque jour (heure de Paris), un membre est « à jour » s'il a tenu l'habitude ce jour-là ou posé un joker. Les jours où l'habitude n'est due pour personne ne comptent pas.
+  - **Série du groupe** : +1 quand tous sont à jour.
+  - **Vies** : 5. Un jour où au moins un membre n'est pas à jour en coûte une. Une semaine entière sans faute en rend une (5 au plus). À zéro, le groupe **s'endort** : série à zéro, chat toujours lisible ; n'importe quel membre peut le réveiller (5 vies, série 0).
+  - **Jokers** : les mêmes que ceux de la série du défi (1 par semaine, 3 avec Minimoa+). On peut en poser un pour un jour manqué jusqu'au lendemain midi.
+  - **Transparence** : le groupe montre l'état du jour de chacun (tenu, joker, manqué). C'est dit avant de rejoindre.
+- **Suggestion « la tenir ensemble »** : quand au moins 2 personnes de ta zone (celle de la carte) tiennent la même habitude que toi, ont une vision compatible (seuil 70), montrent leurs habitudes et ne sont pas en mode discret, l'écran Habitudes (et une tuile de l'accueil) propose : « 3 personnes près de toi tiennent aussi Sport. La tenir ensemble ? ». Seul le nombre est montré. Dire oui envoie la proposition ; les identités n'apparaissent qu'entre ceux qui ont dit oui, quand le groupe démarre (3 membres). Aucune position n'est transmise, pas même arrondie : la réponse ne contient qu'un nombre.
+- **Notifications** : invitation à un groupe, proposition « ensemble », message de groupe (dans le plafond habituel), vie perdue, groupe endormi.
+- **Administration** : les groupes et leurs signalements apparaissent dans la modération ; un groupe peut être fermé.
+- **Données** : tables `groups`, `group_members`, `group_messages`, `group_days` ; l'API seul écrivain ; temps réel des messages pour les membres seulement.
