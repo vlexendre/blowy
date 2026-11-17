@@ -28,7 +28,7 @@ export const supprimerMonCompte: LegalPage = {
     { h2: 'Ce qui est effacé tout de suite', id: 'efface' },
     {
       ul: [
-        'ton compte, ton prénom, ta date de naissance, ton sexe, ce que tu cherches, ta photo de profil ;',
+        'ton compte, ton prénom, ta date de naissance, ton sexe, ta photo de profil ;',
         'ton jeton de connexion Apple, après avoir révoqué auprès d’Apple l’accès de Minimoa à ton identifiant ;',
         'ton minimoa, sa vision, son style, ses objets, tes habitudes, ta série ;',
         'ta position arrondie, ta zone de domicile approximative ou ta ville choisie ;',

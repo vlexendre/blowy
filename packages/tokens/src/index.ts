@@ -44,11 +44,12 @@ export const radius = { sm: 12, md: 18, card: 22, lg: 28, xl: 36, pill: 999 } as
 /** Noms de polices chargées par l'app (expo-google-fonts) ; le site utilise les mêmes familles. */
 export const font = {
   display: 'Anton_400Regular',
-  body: 'BricolageGrotesque_500Medium',
-  bodyBold: 'BricolageGrotesque_700Bold',
+  /** Allo (Josh Puckett, SIL OFL 1.1), fichiers statiques à l'arrondi 50 : `apps/mobile/assets/fonts/allo`. */
+  body: 'Allo_500Medium',
+  bodyBold: 'Allo_700Bold',
   /** Graisse 800 : la plus employée des maquettes (boutons, puces, libellés, noms). */
-  bodyHeavy: 'BricolageGrotesque_800ExtraBold',
-  web: { display: "'Anton', sans-serif", body: "'Bricolage Grotesque', sans-serif" },
+  bodyHeavy: 'Allo_800ExtraBold',
+  web: { display: "'Anton', sans-serif", body: "'Allo', sans-serif" },
 } as const;
 
 export const type = {

@@ -1,0 +1,394 @@
+{
+ "nino": {
+  "neutre": {
+   "raw_h": 588,
+   "raw_w": 464,
+   "cut_h": 896,
+   "cut_w": 719,
+   "c": 1.0,
+   "true_w": 707
+  },
+  "joie": {
+   "raw_h": 534,
+   "raw_w": 514,
+   "cut_h": 828,
+   "cut_w": 796,
+   "c": 0.983,
+   "true_w": 783
+  },
+  "triste": {
+   "raw_h": 574,
+   "raw_w": 436,
+   "cut_h": 873,
+   "cut_w": 676,
+   "c": 1.002,
+   "true_w": 664
+  },
+  "surpris": {
+   "raw_h": 578,
+   "raw_w": 555,
+   "cut_h": 880,
+   "cut_w": 860,
+   "c": 1.001,
+   "true_w": 846
+  },
+  "boude": {
+   "raw_h": 603,
+   "raw_w": 416,
+   "cut_h": 918,
+   "cut_w": 648,
+   "c": 1.001,
+   "true_w": 634
+  },
+  "dodo": {
+   "raw_h": 584,
+   "raw_w": 435,
+   "cut_h": 894,
+   "cut_w": 668,
+   "c": 0.995,
+   "true_w": 663
+  },
+  "mange": {
+   "raw_h": 612,
+   "raw_w": 430,
+   "cut_h": 931,
+   "cut_w": 670,
+   "c": 1.002,
+   "true_w": 655
+  },
+  "joue": {
+   "raw_h": 613,
+   "raw_w": 432,
+   "cut_h": 932,
+   "cut_w": 670,
+   "c": 1.002,
+   "true_w": 658
+  },
+  "marche": {
+   "raw_h": 598,
+   "raw_w": 402,
+   "cut_h": 908,
+   "cut_w": 624,
+   "c": 1.004,
+   "true_w": 613
+  },
+  "coucou": {
+   "raw_h": 606,
+   "raw_w": 522,
+   "cut_h": 921,
+   "cut_w": 807,
+   "c": 1.003,
+   "true_w": 795
+  },
+  "check": {
+   "raw_h": 596,
+   "raw_w": 502,
+   "cut_h": 909,
+   "cut_w": 778,
+   "c": 0.999,
+   "true_w": 765
+  },
+  "pense": {
+   "raw_h": 604,
+   "raw_w": 437,
+   "cut_h": 922,
+   "cut_w": 679,
+   "c": 0.998,
+   "true_w": 666
+  }
+ },
+ "suzie": {
+  "neutre": {
+   "raw_h": 603,
+   "raw_w": 516,
+   "cut_h": 896,
+   "cut_w": 770,
+   "c": 1.0,
+   "true_w": 767
+  },
+  "joie": {
+   "raw_h": 582,
+   "raw_w": 537,
+   "cut_h": 881,
+   "cut_w": 805,
+   "c": 0.982,
+   "true_w": 798
+  },
+  "triste": {
+   "raw_h": 601,
+   "raw_w": 460,
+   "cut_h": 893,
+   "cut_w": 690,
+   "c": 1.0,
+   "true_w": 684
+  },
+  "surpris": {
+   "raw_h": 625,
+   "raw_w": 590,
+   "cut_h": 917,
+   "cut_w": 876,
+   "c": 1.013,
+   "true_w": 877
+  },
+  "boude": {
+   "raw_h": 625,
+   "raw_w": 435,
+   "cut_h": 930,
+   "cut_w": 658,
+   "c": 0.999,
+   "true_w": 646
+  },
+  "dodo": {
+   "raw_h": 577,
+   "raw_w": 483,
+   "cut_h": 865,
+   "cut_w": 724,
+   "c": 0.991,
+   "true_w": 718
+  },
+  "mange": {
+   "raw_h": 619,
+   "raw_w": 455,
+   "cut_h": 918,
+   "cut_w": 685,
+   "c": 1.002,
+   "true_w": 676
+  },
+  "joue": {
+   "raw_h": 638,
+   "raw_w": 488,
+   "cut_h": 948,
+   "cut_w": 736,
+   "c": 1.0,
+   "true_w": 725
+  },
+  "marche": {
+   "raw_h": 626,
+   "raw_w": 415,
+   "cut_h": 934,
+   "cut_w": 629,
+   "c": 0.996,
+   "true_w": 617
+  },
+  "coucou": {
+   "raw_h": 630,
+   "raw_w": 536,
+   "cut_h": 933,
+   "cut_w": 800,
+   "c": 1.003,
+   "true_w": 796
+  },
+  "check": {
+   "raw_h": 628,
+   "raw_w": 547,
+   "cut_h": 930,
+   "cut_w": 815,
+   "c": 1.003,
+   "true_w": 813
+  },
+  "pense": {
+   "raw_h": 633,
+   "raw_w": 463,
+   "cut_h": 936,
+   "cut_w": 697,
+   "c": 1.005,
+   "true_w": 688
+  }
+ },
+ "gaston": {
+  "neutre": {
+   "raw_h": 573,
+   "raw_w": 552,
+   "cut_h": 895,
+   "cut_w": 876,
+   "c": 1.0,
+   "true_w": 862
+  },
+  "joie": {
+   "raw_h": 543,
+   "raw_w": 571,
+   "cut_h": 832,
+   "cut_w": 875,
+   "c": 1.019,
+   "true_w": 892
+  },
+  "triste": {
+   "raw_h": 563,
+   "raw_w": 496,
+   "cut_h": 877,
+   "cut_w": 791,
+   "c": 1.003,
+   "true_w": 775
+  },
+  "surpris": {
+   "raw_h": 580,
+   "raw_w": 630,
+   "cut_h": 792,
+   "cut_w": 876,
+   "c": 1.144,
+   "true_w": 984
+  },
+  "boude": {
+   "raw_h": 613,
+   "raw_w": 512,
+   "cut_h": 955,
+   "cut_w": 818,
+   "c": 1.003,
+   "true_w": 800
+  },
+  "dodo": {
+   "raw_h": 581,
+   "raw_w": 510,
+   "cut_h": 912,
+   "cut_w": 799,
+   "c": 0.995,
+   "true_w": 797
+  },
+  "mange": {
+   "raw_h": 595,
+   "raw_w": 513,
+   "cut_h": 925,
+   "cut_w": 818,
+   "c": 1.005,
+   "true_w": 801
+  },
+  "joue": {
+   "raw_h": 600,
+   "raw_w": 550,
+   "cut_h": 931,
+   "cut_w": 876,
+   "c": 1.007,
+   "true_w": 859
+  },
+  "marche": {
+   "raw_h": 622,
+   "raw_w": 478,
+   "cut_h": 958,
+   "cut_w": 763,
+   "c": 1.014,
+   "true_w": 747
+  },
+  "coucou": {
+   "raw_h": 612,
+   "raw_w": 569,
+   "cut_h": 925,
+   "cut_w": 876,
+   "c": 1.033,
+   "true_w": 889
+  },
+  "check": {
+   "raw_h": 618,
+   "raw_w": 574,
+   "cut_h": 922,
+   "cut_w": 876,
+   "c": 1.047,
+   "true_w": 897
+  },
+  "pense": {
+   "raw_h": 623,
+   "raw_w": 516,
+   "cut_h": 958,
+   "cut_w": 824,
+   "c": 1.016,
+   "true_w": 806
+  }
+ },
+ "pia": {
+  "neutre": {
+   "raw_h": 562,
+   "raw_w": 547,
+   "cut_h": 880,
+   "cut_w": 875,
+   "c": 1.0,
+   "true_w": 857
+  },
+  "joie": {
+   "raw_h": 543,
+   "raw_w": 565,
+   "cut_h": 856,
+   "cut_w": 876,
+   "c": 0.993,
+   "true_w": 885
+  },
+  "triste": {
+   "raw_h": 530,
+   "raw_w": 492,
+   "cut_h": 844,
+   "cut_w": 803,
+   "c": 0.983,
+   "true_w": 770
+  },
+  "surpris": {
+   "raw_h": 580,
+   "raw_w": 623,
+   "cut_h": 801,
+   "cut_w": 877,
+   "c": 1.134,
+   "true_w": 976
+  },
+  "boude": {
+   "raw_h": 586,
+   "raw_w": 498,
+   "cut_h": 931,
+   "cut_w": 825,
+   "c": 0.986,
+   "true_w": 780
+  },
+  "dodo": {
+   "raw_h": 531,
+   "raw_w": 508,
+   "cut_h": 851,
+   "cut_w": 820,
+   "c": 0.977,
+   "true_w": 795
+  },
+  "mange": {
+   "raw_h": 562,
+   "raw_w": 489,
+   "cut_h": 895,
+   "cut_w": 820,
+   "c": 0.983,
+   "true_w": 766
+  },
+  "joue": {
+   "raw_h": 582,
+   "raw_w": 567,
+   "cut_h": 874,
+   "cut_w": 874,
+   "c": 1.043,
+   "true_w": 888
+  },
+  "marche": {
+   "raw_h": 618,
+   "raw_w": 465,
+   "cut_h": 958,
+   "cut_w": 754,
+   "c": 1.01,
+   "true_w": 728
+  },
+  "coucou": {
+   "raw_h": 601,
+   "raw_w": 577,
+   "cut_h": 895,
+   "cut_w": 875,
+   "c": 1.051,
+   "true_w": 903
+  },
+  "check": {
+   "raw_h": 603,
+   "raw_w": 555,
+   "cut_h": 930,
+   "cut_w": 875,
+   "c": 1.015,
+   "true_w": 869
+  },
+  "pense": {
+   "raw_h": 603,
+   "raw_w": 504,
+   "cut_h": 958,
+   "cut_w": 830,
+   "c": 0.986,
+   "true_w": 789
+  }
+ }
+}

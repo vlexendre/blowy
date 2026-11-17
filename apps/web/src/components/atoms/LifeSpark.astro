@@ -1,0 +1,9 @@
+---
+/** Vie d'un lien (allumée ou éteinte) : une étincelle, pas un cœur (spéc. V7 §27). */
+interface Props {
+  off?: boolean;
+}
+const { off = false } = Astro.props;
+const d = 'M16 1C17.4 10.4 19.6 13.2 31 15C19.6 16.8 17.4 19.6 16 29C14.6 19.6 12.4 16.8 1 15C12.4 13.2 14.6 10.4 16 1Z';
+---
+<svg viewBox="0 0 32 30" class:list={[{ off }]}><path class="o" d={d}></path><path class="f" d={d}></path></svg>

@@ -7,7 +7,7 @@ import { Chip } from '../atoms/Chip';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { AvatarPair } from '../molecules/AvatarPair';
-import { Hearts } from '../molecules/Hearts';
+import { LifeSparks } from '../molecules/LifeSparks';
 import { LevelPill } from '../molecules/LevelPill';
 import { StreakPill } from '../molecules/StreakPill';
 import { layout } from '../lib/styles';
@@ -43,7 +43,7 @@ export interface LinkRowProps {
   accessibilityLabel?: string;
 }
 
-/** En dessous (ou à égalité), la vie du lien est en danger : le dernier cœur bat. */
+/** En dessous (ou à égalité), la vie du lien est en danger : la dernière étincelle palpite. */
 const DANGER_LIVES = 2;
 
 /** Ligne de la liste des chats : les deux pets, le nom, l'aperçu, les vies, le niveau, la série, les non-lus. */
@@ -109,7 +109,7 @@ export const LinkRow = memo(function LinkRow({
             ghostLabel ? <Chip label={ghostLabel} size="sm" /> : null
           ) : (
             <>
-              <Hearts lives={link.lives} size={14} beat={link.lives > 0 && link.lives <= DANGER_LIVES} />
+              <LifeSparks lives={link.lives} size={14} beat={link.lives > 0 && link.lives <= DANGER_LIVES} />
               <LevelPill label={levelLabel} tone={(highlight ?? unread > 0) ? 'accent' : 'glass'} size="sm" />
               {streak > 0 && streakUnit ? <StreakPill count={streak} label={streakUnit} style={styles.streak} /> : null}
               {turnLabel ? <Chip label={turnLabel} tone="orange" size="sm" /> : null}

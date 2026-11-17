@@ -71,11 +71,11 @@ describe('audit App Store — côté serveur', () => {
       const session = await w.anonymous.review.session({ email: ' Review@Blowy.app ', code: REVIEW_CODE });
       expect(session).toMatchObject({ email: REVIEW_EMAIL, worldReset: false });
       reviewer = { id: session.userId, api: createApiClient({ baseUrl: w.baseUrl, getToken: () => session.accessToken }) };
-      await reviewer.api.me.onboard(onboardBody({ displayName: 'Apple', location: CUPERTINO, whom: 'femmes', seeking: 'les_deux', gender: 'homme', consents: { sensitive: true, location: true } }));
+      await reviewer.api.me.onboard(onboardBody({ displayName: 'Apple', location: CUPERTINO, gender: 'homme', consents: { location: true } }));
 
       const fixtures = [...db.profiles.values()].filter((p) => p.reviewWorld === reviewer.id && p.id !== reviewer.id);
       expect(fixtures).toHaveLength(8);
-      expect(fixtures.every((f) => f.gender === 'femme')).toBe(true);
+      expect(new Set(fixtures.map((f) => f.gender)).size).toBeGreaterThan(1);
       expect(fixtures.map((f) => f.id).sort()).toEqual([0, 1, 2, 3, 4, 5, 6, 7].map((s) => reviewFixtureId(reviewer.id, s)).sort());
       // Comptes fictifs : adresses réservées, jamais d'e-mail.
       expect(fixtures.every((f) => /\.invalid$/.test(db.authEmails.get(f.id) ?? ''))).toBe(true);
@@ -200,7 +200,7 @@ describe('audit App Store — côté serveur', () => {
       const s = await w.anonymous.review.session({ email: REVIEW_EMAIL, code: REVIEW_CODE });
       expect(s.worldReset).toBe(false);
       const again = createApiClient({ baseUrl: w.baseUrl, getToken: () => s.accessToken });
-      await again.me.onboard(onboardBody({ displayName: 'Apple', location: undefined, consents: { sensitive: false, location: false } }));
+      await again.me.onboard(onboardBody({ displayName: 'Apple', location: undefined, consents: { location: false } }));
       const me = await again.me.get();
       expect(me.identity.location).toMatchObject({ source: 'manual', manualArea: { label: 'Paris' } });
       const map = await again.vision.map();
@@ -494,7 +494,7 @@ describe('audit App Store — côté serveur', () => {
       const neighbour = w.client();
       await neighbour.api.me.onboard(onboardBody({ displayName: 'Voisine', location: { latitude: 45.761, longitude: 4.842 } }));
       const p = w.client();
-      await p.api.me.onboard(onboardBody({ displayName: 'Hugo', location: undefined, consents: { sensitive: false, location: false } }));
+      await p.api.me.onboard(onboardBody({ displayName: 'Hugo', location: undefined, consents: { location: false } }));
       expect((await p.api.vision.map()).status).toBe('no_location');
 
       const status = await p.api.vision.chooseArea(lyon);

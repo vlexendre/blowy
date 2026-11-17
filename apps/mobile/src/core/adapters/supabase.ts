@@ -1,6 +1,5 @@
 import 'react-native-url-polyfill/auto';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { UploadTicket } from '@blowy/contract';
 import { createClient, type Session as SbSession, type SupabaseClient } from '@supabase/supabase-js';
 import * as Linking from 'expo-linking';
@@ -12,6 +11,7 @@ import { AuthError, type AuthPort, type AuthProvider, type MediaPort, type Picke
 import { appleSignIn } from './apple-sign-in';
 import { pickImage } from './image-picker';
 import { reviewSession } from './review-session';
+import { sessionStorage } from './session-storage';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
@@ -20,7 +20,7 @@ const BUCKET = 'media';
 export function createSupabase(): SupabaseClient {
   const client = createClient(config.supabaseUrl, config.supabaseKey, {
     // PKCE : la connexion Google revient avec un `code` échangé par l'app (exchangeCodeForSession), jamais un jeton dans l'URL.
-    auth: { storage: AsyncStorage, autoRefreshToken: true, persistSession: true, detectSessionInUrl: false, flowType: 'pkce' },
+    auth: { storage: sessionStorage(), autoRefreshToken: true, persistSession: true, detectSessionInUrl: false, flowType: 'pkce' },
   });
   // Le rafraîchissement du jeton ne tourne que quand l'app est au premier plan.
   if (Platform.OS !== 'web') {
@@ -163,6 +163,11 @@ export function supabaseRealtime(sb: SupabaseClient): RealtimePort {
         .on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, (payload) => {
           const row = payload.new as { id?: string };
           onChange({ linkId: row.id ?? null });
+        })
+        // Groupes (spéc. §26) : RLS « membres : lire les messages de leurs groupes » (membres actifs seulement).
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'group_messages' }, (payload) => {
+          const row = payload.new as { group_id?: string };
+          onChange({ linkId: null, groupId: row.group_id ?? null });
         })
         .subscribe();
       return () => {

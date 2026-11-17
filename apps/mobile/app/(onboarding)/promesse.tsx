@@ -1,7 +1,7 @@
 /**
  * La promesse (avant la connexion) : le pet demande une seule chose, venir le voir chaque jour, et dit pourquoi (un pet
  * négligé boude et ne fait plus de rencontres : la vraie règle de `packages/domain/src/care.ts`). On maintient « promis »
- * (un simple tap marche aussi) : l'anneau se remplit, le pet saute de joie dans des cœurs, puis on continue.
+ * (un simple tap marche aussi) : l'anneau se remplit, le pet saute de joie dans des étoiles, puis on continue.
  * Rien n'est enregistré : c'est un moment, pas un réglage.
  */
 import { HoldButton, PromiseStage, StageTemplate, Text } from '@blowy/ui';

@@ -138,6 +138,7 @@ export function ChallengeStage({ pet, streak, kicker, title, text, rewards = [],
                   species={pet.species}
                   outfit={pet.outfit}
                   size={PET}
+                  mood="pense"
                   seed={pet.id ?? pet.name}
                   shadow={false}
                   sleepAfter={null}

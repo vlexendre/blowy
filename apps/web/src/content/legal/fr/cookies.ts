@@ -20,7 +20,7 @@ export const cookies: LegalPage = {
       table: {
         head: ['Service', 'Pourquoi', 'Sur quelles pages'],
         rows: [
-          ['Google Fonts (Google)', 'Les polices Anton et Bricolage Grotesque', 'Toutes'],
+          ['Google Fonts (Google)', 'La police Anton', 'Toutes'],
           ['cdnjs (Cloudflare)', 'La bibliothèque d’animation GSAP', 'Page d’accueil'],
           ['Hébergeur du site : {{siteHost.name}}', 'Servir les pages', 'Toutes'],
           ['Serveur de l’app Minimoa (API)', 'Afficher le prénom et le minimoa de la personne, enregistrer les mots choisis', 'Pages « 3 mots » et invitation'],

@@ -70,7 +70,7 @@ function inline(style: StyleProp<TextStyle>): TextStyle {
 }
 
 /** Hauteur de ligne naturelle d'iOS (ascendante + descendante, en em) des polices de l'app. */
-const NATURAL_LINE: Record<string, number> = { [font.display]: 1.505, [font.body]: 1.2, [font.bodyBold]: 1.2, [font.bodyHeavy]: 1.2 };
+const NATURAL_LINE: Record<string, number> = { [font.display]: 1.505, [font.body]: 1.21, [font.bodyBold]: 1.21, [font.bodyHeavy]: 1.21 };
 /** Marge de sécurité au-dessus des capitales accentuées d'Anton (É, À…), en em. */
 const ACCENT_ROOM = 0.25;
 

@@ -23,7 +23,7 @@
   --g-night:linear-gradient(180deg,rgba(23,20,42,.86) 0%,rgba(34,30,60,.86) 100%);
   --c1:#6D3DF0; --c2:#FFB800; --c3:#FF5A3C;
   --display:'Anton',Impact,'Arial Narrow Bold',sans-serif;
-  --body:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --body:'Allo',system-ui,-apple-system,'Segoe UI',sans-serif;
   --navh:56px; --navpad:10px;
   --top:calc(env(safe-area-inset-top,0px) + var(--navh) + var(--navpad) * 2);
   --bot:12px;

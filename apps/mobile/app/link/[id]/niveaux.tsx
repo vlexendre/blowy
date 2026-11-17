@@ -87,7 +87,7 @@ function DuoArt({ mine, theirs }: { mine: Species; theirs: Species }) {
   return (
     <View style={styles.duo}>
       <PetImage species={mine} mood="joie" size={112} animation="breathe" />
-      <PetImage species={theirs} mood="amour" size={112} animation="breathe" delay={400} style={styles.duoSecond} />
+      <PetImage species={theirs} mood="salut" size={112} animation="breathe" delay={400} style={styles.duoSecond} />
     </View>
   );
 }

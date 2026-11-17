@@ -8,6 +8,7 @@
 import type { Locale, NotificationKindKey } from '@blowy/domain';
 import { defineMessages, formatDate, formatPrice } from '../i18n/core';
 import { labels } from '../labels';
+import { habitById } from './rituels';
 
 export interface NotificationText {
   title: string;
@@ -26,6 +27,10 @@ export interface NotificationVars {
   item: string;
   endsOn: string;
   price: string;
+  /** Nom d'un groupe (tel que ses membres l'ont choisi). */
+  group: string;
+  /** Libellé d'une habitude du catalogue (identifiant `habit`, traduit ici). */
+  habit: string;
 }
 
 type Template = (v: NotificationVars) => string;
@@ -59,6 +64,20 @@ const fr = {
       body: (v) =>
         `L’essai gratuit se termine le ${v.endsOn}. Ensuite, premier paiement de ${v.price}. Pour l’éviter, annule dans les réglages de ton compte Apple, rubrique Abonnements.`,
     },
+    group_invite: {
+      title: (v) => `${v.name} t’invite dans « ${v.group} »`,
+      body: (v) => (v.habit ? `Un groupe pour tenir une habitude ensemble : ${v.habit}. À toi de dire oui.` : 'Un groupe entre potes. À toi de dire oui.'),
+    },
+    together_proposal: {
+      title: (v) => (v.group ? `« ${v.group} » démarre` : `${v.habit}, à plusieurs ?`),
+      body: (v) => (v.group ? `Vous êtes ${v.count} à tenir la même habitude : ${v.habit}. Dis bonjour.` : 'Des personnes près de toi tiennent aussi cette habitude. La tenir ensemble ?'),
+    },
+    group_message: { title: (v) => v.group, body: (v) => `${v.name} a écrit dans le groupe.` },
+    group_life_lost: {
+      title: (v) => `« ${v.group} » perd une vie`,
+      body: (v) => `Il lui reste ${v.count} ${Number(v.count) > 1 ? 'vies' : 'vie'}. Aujourd’hui, on s’y remet ensemble.`,
+    },
+    group_asleep: { title: (v) => `« ${v.group} » s’est endormi`, body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.' },
   } as Record<NotificationKindKey, { title: Template; body: Template }>,
   /** Libellés des réglages par type (écran « Moi › Notifications »). */
   kindLabels: {
@@ -75,6 +94,11 @@ const fr = {
     item_unlocked: 'Objets débloqués',
     words_received: '3 mots reçus',
     trial_reminder: 'Fin de l’essai Minimoa+',
+    group_invite: 'Invitations à un groupe',
+    together_proposal: 'La tenir ensemble',
+    group_message: 'Messages de groupe',
+    group_life_lost: 'Vie perdue d’un groupe',
+    group_asleep: 'Groupe endormi',
   } as Record<NotificationKindKey, string>,
 };
 
@@ -108,6 +132,20 @@ export const notificationTexts = defineMessages({
         body: (v) =>
           `Your free trial ends on ${v.endsOn}. After that, the first payment of ${v.price} is charged. To avoid it, cancel in your Apple account settings, under Subscriptions.`,
       },
+      group_invite: {
+        title: (v) => `${v.name} invites you to “${v.group}”`,
+        body: (v) => (v.habit ? `A group to keep a habit together: ${v.habit}. Your call.` : 'A group with friends. Your call.'),
+      },
+      together_proposal: {
+        title: (v) => (v.group ? `“${v.group}” is starting` : `${v.habit}, together?`),
+        body: (v) => (v.group ? `${v.count} of you keep the same habit: ${v.habit}. Say hi.` : 'People near you keep this habit too. Keep it together?'),
+      },
+      group_message: { title: (v) => v.group, body: (v) => `${v.name} wrote in the group.` },
+      group_life_lost: {
+        title: (v) => `“${v.group}” lost a life`,
+        body: (v) => `${v.count} ${Number(v.count) === 1 ? 'life' : 'lives'} left. Today you pick it up together.`,
+      },
+      group_asleep: { title: (v) => `“${v.group}” fell asleep`, body: () => 'No lives left for now. Anyone can wake it up.' },
     },
     kindLabels: {
       daily_challenge: 'Daily challenge',
@@ -123,6 +161,11 @@ export const notificationTexts = defineMessages({
       item_unlocked: 'Unlocked items',
       words_received: '3 words received',
       trial_reminder: 'End of Minimoa+ trial',
+      group_invite: 'Group invitations',
+      together_proposal: 'Keep it together',
+      group_message: 'Group messages',
+      group_life_lost: 'Group lost a life',
+      group_asleep: 'Group asleep',
     },
   },
   es: {
@@ -153,6 +196,20 @@ export const notificationTexts = defineMessages({
         body: (v) =>
           `Tu prueba gratuita termina el ${v.endsOn}. Después, primer pago de ${v.price}. Para evitarlo, cancela en los ajustes de tu cuenta de Apple, en Suscripciones.`,
       },
+      group_invite: {
+        title: (v) => `${v.name} te invita a «${v.group}»`,
+        body: (v) => (v.habit ? `Un grupo para mantener un hábito juntos: ${v.habit}. Tú decides.` : 'Un grupo entre amigos. Tú decides.'),
+      },
+      together_proposal: {
+        title: (v) => (v.group ? `«${v.group}» empieza` : `${v.habit}, ¿en grupo?`),
+        body: (v) => (v.group ? `Sois ${v.count} con el mismo hábito: ${v.habit}. Saluda.` : 'Hay gente cerca de ti con este hábito. ¿Lo mantenéis juntos?'),
+      },
+      group_message: { title: (v) => v.group, body: (v) => `${v.name} ha escrito en el grupo.` },
+      group_life_lost: {
+        title: (v) => `«${v.group}» pierde una vida`,
+        body: (v) => `Le ${Number(v.count) === 1 ? 'queda' : 'quedan'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoy volvéis a empezar juntos.`,
+      },
+      group_asleep: { title: (v) => `«${v.group}» se ha dormido`, body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.' },
     },
     kindLabels: {
       daily_challenge: 'Reto del día',
@@ -168,6 +225,11 @@ export const notificationTexts = defineMessages({
       item_unlocked: 'Objetos desbloqueados',
       words_received: '3 palabras recibidas',
       trial_reminder: 'Fin de la prueba de Minimoa+',
+      group_invite: 'Invitaciones a un grupo',
+      together_proposal: 'Mantenerlo juntos',
+      group_message: 'Mensajes de grupo',
+      group_life_lost: 'Vida perdida de un grupo',
+      group_asleep: 'Grupo dormido',
     },
   },
   pt: {
@@ -198,6 +260,20 @@ export const notificationTexts = defineMessages({
         body: (v) =>
           `O teste gratuito termina em ${v.endsOn}. Depois, primeira cobrança de ${v.price}. Para evitar, cancele nos ajustes da sua conta Apple, em Assinaturas.`,
       },
+      group_invite: {
+        title: (v) => `${v.name} te convida para «${v.group}»`,
+        body: (v) => (v.habit ? `Um grupo para manter um hábito juntos: ${v.habit}. Você decide.` : 'Um grupo entre amigos. Você decide.'),
+      },
+      together_proposal: {
+        title: (v) => (v.group ? `«${v.group}» começou` : `${v.habit}, em grupo?`),
+        body: (v) => (v.group ? `Vocês são ${v.count} com o mesmo hábito: ${v.habit}. Diga oi.` : 'Tem gente perto de você com este hábito. Manter juntos?'),
+      },
+      group_message: { title: (v) => v.group, body: (v) => `${v.name} escreveu no grupo.` },
+      group_life_lost: {
+        title: (v) => `«${v.group}» perdeu uma vida`,
+        body: (v) => `${Number(v.count) === 1 ? 'Resta' : 'Restam'} ${v.count} ${Number(v.count) === 1 ? 'vida' : 'vidas'}. Hoje vocês recomeçam juntos.`,
+      },
+      group_asleep: { title: (v) => `«${v.group}» adormeceu`, body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.' },
     },
     kindLabels: {
       daily_challenge: 'Desafio do dia',
@@ -213,6 +289,11 @@ export const notificationTexts = defineMessages({
       item_unlocked: 'Itens desbloqueados',
       words_received: '3 palavras recebidas',
       trial_reminder: 'Fim do teste do Minimoa+',
+      group_invite: 'Convites para grupos',
+      together_proposal: 'Manter juntos',
+      group_message: 'Mensagens de grupo',
+      group_life_lost: 'Vida perdida de um grupo',
+      group_asleep: 'Grupo adormecido',
     },
   },
   nl: {
@@ -243,6 +324,20 @@ export const notificationTexts = defineMessages({
         body: (v) =>
           `Je gratis proefperiode eindigt op ${v.endsOn}. Daarna volgt de eerste betaling van ${v.price}. Wil je dat niet, zeg dan op in de instellingen van je Apple-account, onder Abonnementen.`,
       },
+      group_invite: {
+        title: (v) => `${v.name} nodigt je uit voor “${v.group}”`,
+        body: (v) => (v.habit ? `Een groep om samen een gewoonte vol te houden: ${v.habit}. Jij beslist.` : 'Een groep met vrienden. Jij beslist.'),
+      },
+      together_proposal: {
+        title: (v) => (v.group ? `“${v.group}” gaat van start` : `${v.habit}, samen?`),
+        body: (v) => (v.group ? `Jullie zijn met ${v.count} met dezelfde gewoonte: ${v.habit}. Zeg hallo.` : 'Mensen bij jou in de buurt hebben deze gewoonte ook. Samen volhouden?'),
+      },
+      group_message: { title: (v) => v.group, body: (v) => `${v.name} schreef in de groep.` },
+      group_life_lost: {
+        title: (v) => `“${v.group}” verliest een leven`,
+        body: (v) => `Nog ${v.count} ${Number(v.count) === 1 ? 'leven' : 'levens'}. Vandaag pakken jullie het samen weer op.`,
+      },
+      group_asleep: { title: (v) => `“${v.group}” is in slaap gevallen`, body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.' },
     },
     kindLabels: {
       daily_challenge: 'Uitdaging van de dag',
@@ -258,6 +353,11 @@ export const notificationTexts = defineMessages({
       item_unlocked: 'Ontgrendelde items',
       words_received: '3 woorden ontvangen',
       trial_reminder: 'Einde Minimoa+-proefperiode',
+      group_invite: 'Uitnodigingen voor een groep',
+      together_proposal: 'Samen volhouden',
+      group_message: 'Groepsberichten',
+      group_life_lost: 'Groep verloor een leven',
+      group_asleep: 'Groep in slaap',
     },
   },
 });
@@ -278,6 +378,8 @@ export function notificationVars(locale: Locale, vars: Readonly<Record<string, s
     item: labels.in(locale).itemLabel[item] ?? item,
     endsOn: vars.endsOn && isIsoDate(vars.endsOn) ? formatDate(locale, vars.endsOn, { day: 'numeric', month: 'long' }) : (vars.endsOn ?? ''),
     price: vars.price && Number.isFinite(amount) && /^\d+$/.test(vars.price) ? formatPrice(locale, amount, vars.currency ?? 'EUR') : (vars.price ?? ''),
+    group: vars.group ?? '',
+    habit: vars.habit ? (habitById(vars.habit, locale)?.label ?? vars.habit) : '',
   };
 }
 

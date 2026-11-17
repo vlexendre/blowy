@@ -1,4 +1,4 @@
-import type { AxisLeans, AxisSide, GeoPoint, MatchMode, VisionAxis, VisionProfile, VisionSignal } from '@blowy/domain';
+import type { AxisLeans, AxisSide, GeoPoint, VisionAxis, VisionProfile, VisionSignal } from '@blowy/domain';
 
 // ── Position ────────────────────────────────────────────────────────────────
 export interface ChosenCityRecord extends GeoPoint {
@@ -60,7 +60,6 @@ export interface VisionStore {
 export interface CachedMatch {
   userId: string;
   score: number;
-  mode: MatchMode;
   /** `leans` : où penche chacun (côté et cran) ; absent des entrées écrites avant son ajout (le cache est alors refait). */
   common: readonly { axis: VisionAxis; side: AxisSide; leans?: AxisLeans }[];
   explore: { axis: VisionAxis; mine: AxisSide; theirs: AxisSide; leans?: AxisLeans };

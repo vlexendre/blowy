@@ -35,6 +35,10 @@ import { HABIT_CHECKS, HABIT_VERIFIER, HABITS, RITUAL_PHOTOS, RITUAL_STATES } fr
 import { RitualNotifications, RitualsContext } from './rituals-context';
 import { requestLocale } from '../../../shared/locale';
 import { AiConsents } from '../../ai-consents/application/ai-consents.service';
+import type { Rigour } from '@blowy/contract';
+import type { HabitJokersRepository } from '../../groups/ports';
+import { HABIT_JOKERS } from '../../groups/tokens';
+import { pictureOf, toRigourDto } from '../../groups/sharing/habit-sharing';
 
 /** Fenêtre relue pour les séries d'habitude (au-delà, la série affichée plafonne). */
 export const HABIT_HISTORY_DAYS = 120;
@@ -49,7 +53,7 @@ const lineFor = (verdict: ProofVerdict, seed: string): string => pickLine(rituel
 const defOf = (habit: HabitRecord): HabitDef =>
   habitById(habit.habitId, requestLocale()) ?? { id: habit.habitId, axis: 'rythme', lean: 0, social: false, sociability: 0, rhythm: habit.rhythm, proofHour: habit.proofHour, label: habit.habitId, ask: '' };
 
-export function toHabitDto(habit: HabitRecord, checks: readonly HabitCheckRecord[], today: Day, hour: number): Habit {
+export function toHabitDto(habit: HabitRecord, checks: readonly HabitCheckRecord[], today: Day, hour: number, rigour?: Rigour): Habit {
   const def = defOf(habit);
   const mine = checks.filter((c) => c.habitRef === habit.id);
   const keptDays = mine.filter((c) => proofCounts(c.verdict)).map((c) => c.day);
@@ -75,6 +79,7 @@ export function toHabitDto(habit: HabitRecord, checks: readonly HabitCheckRecord
     },
     streak: habitStreak(habit.rhythm, keptDays, today),
     since: habit.createdAt,
+    ...(rigour ? { rigour } : {}),
   };
 }
 
@@ -107,6 +112,7 @@ export class HabitsService {
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(IDS) private readonly ids: Ids,
     @Inject(AiConsents) private readonly aiConsents: AiConsents,
+    @Inject(HABIT_JOKERS) private readonly jokers: HabitJokersRepository,
   ) {}
 
   async catalogue(userId: string): Promise<HabitCatalogue> {
@@ -120,15 +126,32 @@ export class HabitsService {
   }
 
   /** Habitudes suivies avec leur état du jour. */
-  async list(userId: string): Promise<{ habits: Habit[]; limit: number; canAdd: boolean }> {
+  /** Habitudes suivies avec leur état du jour, leur rigueur (spéc §25) et la tienne, et le réglage « Montrer mes habitudes ». */
+  async list(userId: string): Promise<{ habits: Habit[]; limit: number; canAdd: boolean; rigour: Rigour; shared: boolean }> {
     const [profile, active] = await Promise.all([this.ctx.profile(userId), this.habits.listActive(userId)]);
     const today = this.ctx.today();
-    const checks = await this.checks.listSince(
-      active.map((h) => h.id),
-      addDays(today, -HABIT_HISTORY_DAYS),
+    const [checks, jokers] = await Promise.all([
+      this.checks.listSince(
+        active.map((h) => h.id),
+        addDays(today, -HABIT_HISTORY_DAYS),
+      ),
+      this.jokers.listSince([userId], addDays(today, -40)),
+    ]);
+    const picture = pictureOf(
+      active,
+      checks,
+      jokers.map((j) => j.day),
+      today,
     );
+    const rigourOf = new Map(picture.habits.map((h) => [h.record.id, toRigourDto(h.rigour)]));
     const limit = this.ctx.limitsOf(profile).habits;
-    return { habits: active.map((h) => toHabitDto(h, checks, today, this.ctx.hour())), limit, canAdd: canAddHabit(active.length, limit) };
+    return {
+      habits: active.map((h) => toHabitDto(h, checks, today, this.ctx.hour(), rigourOf.get(h.id))),
+      limit,
+      canAdd: canAddHabit(active.length, limit),
+      rigour: toRigourDto(picture.rigour),
+      shared: profile.showHabits !== false,
+    };
   }
 
   /** Habitudes dont la preuve est demandée maintenant (accueil), et celles à faire aujourd'hui. */

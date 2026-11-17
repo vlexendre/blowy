@@ -166,6 +166,43 @@ export type OutingResult = z.infer<typeof OutingResultZ>;
 export const HabitRhythmZ = z.enum(HABIT_RHYTHMS);
 export const ProofVerdictZ = z.enum(PROOF_VERDICTS);
 
+// ── Rigueur et habitudes partagées (spéc §25) ──────────────────────────────
+/** Rigueur (jauge) : `value` de 0 à 100, ou null avec `tooEarly` (moins de 7 jours dus sur 28). */
+export const RigourZ = z.object({
+  value: z.number().int().min(0).max(100).nullable(),
+  tooEarly: z.boolean(),
+  /** Jours dus comptés sur la période (pour dire « sur N jours »). */
+  dueDays: z.number().int().min(0),
+});
+export type Rigour = z.infer<typeof RigourZ>;
+
+const SideZ = z.object({
+  rhythm: HabitRhythmZ,
+  /** Jours (tous les jours) ou semaines (3 fois par semaine) d'affilée. */
+  streak: z.number().int().min(0),
+  rigour: RigourZ,
+});
+
+/** « Vous tenez tous les deux : Sport » : les deux séries et les deux rigueurs. Jamais de photo ni d'heure. */
+export const SharedHabitZ = z.object({
+  habitId: z.string(),
+  label: z.string(),
+  mine: SideZ,
+  theirs: SideZ,
+});
+export type SharedHabit = z.infer<typeof SharedHabitZ>;
+
+/**
+ * Habitudes communes avec une autre personne (fiche d'une rencontre, onglet « Le lien »). Vide si l'une des deux a
+ * coupé « Montrer mes habitudes », est bloquée, suspendue ou supprimée (`Audience`), ou si rien n'est commun.
+ */
+export const SharedHabitsZ = z.object({
+  habits: z.array(SharedHabitZ),
+  /** Rigueur de l'autre sur toutes ses habitudes ; null quand rien n'est montré. */
+  theirRigour: RigourZ.nullable(),
+});
+export type SharedHabits = z.infer<typeof SharedHabitsZ>;
+
 export const HabitDefZ = z.object({
   id: z.string(),
   label: z.string(),
@@ -213,10 +250,20 @@ export const HabitZ = z.object({
   /** Jours (tous les jours) ou semaines (3 fois par semaine) d’affilée. */
   streak: z.number().int(),
   since: Iso,
+  /** Rigueur sur 28 jours (spéc §25) ; absente des réponses des anciennes API. */
+  rigour: RigourZ.optional(),
 });
 export type Habit = z.infer<typeof HabitZ>;
 
-export const HabitsZ = z.object({ habits: z.array(HabitZ), limit: z.number().int(), canAdd: z.boolean() });
+export const HabitsZ = z.object({
+  habits: z.array(HabitZ),
+  limit: z.number().int(),
+  canAdd: z.boolean(),
+  /** Ta rigueur sur toutes tes habitudes actives, pondérée par les jours dus (spéc §25). */
+  rigour: RigourZ.optional(),
+  /** Réglage « Montrer mes habitudes » (Moi) : coupé, rien n'est montré et aucune suggestion « ensemble ». */
+  shared: z.boolean().optional(),
+});
 export type Habits = z.infer<typeof HabitsZ>;
 
 export const AddHabitBody = z.object({
@@ -226,6 +273,9 @@ export const AddHabitBody = z.object({
   proofHour: z.number().int().min(6).max(21).optional(),
 });
 export type AddHabitBody = z.infer<typeof AddHabitBody>;
+/** Habitude choisie pendant l'inscription (étape « Tes habitudes », 2 au plus, « tous les jours » par défaut). */
+export const OnboardHabitZ = z.object({ habitId: z.string().min(1).max(40), rhythm: HabitRhythmZ.optional() });
+export type OnboardHabit = z.infer<typeof OnboardHabitZ>;
 export const UpdateHabitBody = z.object({ rhythm: HabitRhythmZ.optional(), proofHour: z.number().int().min(6).max(21).optional() });
 export type UpdateHabitBody = z.infer<typeof UpdateHabitBody>;
 

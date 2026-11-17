@@ -13,6 +13,7 @@ import { Wave } from '../application/wave.usecase';
 import { toEncounterHistoryDto, toEncountersDto } from './encounters.presenter';
 import type { Locale } from '@blowy/content';
 import { ReqLocale } from '../../../shared/locale';
+import { HabitSharing } from '../../groups/sharing/habit-sharing';
 
 const EncounterId = new ZodPipe(Uuid);
 const Before = new ZodPipe(Iso.datetime({ offset: true }).optional());
@@ -25,11 +26,28 @@ export class EncountersController {
     @Inject(Wave) private readonly wave: Wave,
     @Inject(AnswerEncounter) private readonly answer: AnswerEncounter,
     @Inject(LinkPresenter) private readonly links: LinkPresenter,
+    @Inject(HabitSharing) private readonly sharing: HabitSharing,
   ) {}
 
   @Get()
   async list(@CurrentUser() user: AuthUser, @ReqLocale() locale: Locale): Promise<Encounters> {
-    return toEncountersDto(await this.listEncounters.execute(user.userId), locale);
+    const dto = toEncountersDto(await this.listEncounters.execute(user.userId), locale);
+    // Habitudes tenues tous les deux (spéc §25) ; à vision égale, une habitude commune passe devant (ordre stable sinon).
+    const shown = new Set(dto.suggestions.map((s) => s.user.id));
+    const shared = await this.sharing.sharedWith(user.userId, [...shown, ...dto.incoming.map((i) => i.from.id)], shown);
+    const count = (id: string): number => shared.get(id)?.habits.length ?? 0;
+    const suggestions: Encounters['suggestions'] = [];
+    for (const s of dto.suggestions) {
+      // Ne remonte que dans une suite de visions de même force, du même côté (amis d'amis, puis autour).
+      let at = suggestions.length;
+      while (at > 0) {
+        const prev = suggestions[at - 1];
+        if (!prev || prev.via !== s.via || prev.compatibility !== s.compatibility || count(prev.user.id) >= count(s.user.id)) break;
+        at -= 1;
+      }
+      suggestions.splice(at, 0, { ...s, sharedHabits: shared.get(s.user.id) });
+    }
+    return { ...dto, suggestions, incoming: dto.incoming.map((inc) => ({ ...inc, sharedHabits: shared.get(inc.from.id) })) };
   }
 
   @Get('history')

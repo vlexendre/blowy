@@ -17,11 +17,13 @@ import {
   ListRow,
   type Milestone,
   MilestoneTrack,
+  RigourGauge,
   SettingsTemplate,
   SheetTemplate,
   Skeleton,
   staggerDelay,
   Text,
+  TogetherCard,
 } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -33,6 +35,8 @@ import { usePet, useWardrobe } from '@/features/pet';
 import { useAddHabit, useHabitCatalogue, useHabits, useRemoveHabit, useUpdateHabit, useVision } from '@/features/rituals';
 import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
+import { rigourView, useProposeTogether, useTogether, useWithdrawTogether } from '@/features/groups';
+import { groupes, groupesShared } from '@/locales/groupes';
 import { rituels } from '@/locales/rituels';
 import { upperFirst } from '@/locales/runtime';
 import { entitlements } from '@blowy/domain';
@@ -59,6 +63,12 @@ export default function HabitsScreen() {
   const [editing, setEditing] = useState<{ ref: string; label: string } | null>(null);
   const [confirmStop, setConfirmStop] = useState(false);
   const back = () => goBack('/(tabs)/pet');
+  // « La tenir ensemble » (spéc. §26) : un nombre par habitude ; rien si « Montrer mes habitudes » est coupé.
+  const together = useTogether(habits.data?.shared !== false);
+  const propose = useProposeTogether();
+  const withdraw = useWithdrawTogether();
+  /** Groupes « ensemble » démarrés pendant cette visite (habitude → groupe). */
+  const [started, setStarted] = useState<Record<string, string>>({});
 
   const h = habits.data;
   const cat = catalogue.data;
@@ -135,6 +145,14 @@ export default function HabitsScreen() {
           canOpenCatalogue ? <Button label={t.add} icon="plus" variant={h.habits.length ? 'glass' : 'accent'} onPress={() => setPicking(true)} /> : undefined
         }
       >
+        {h.habits.length > 0 && h.rigour ? (
+          <RigourGauge
+            value={h.rigour.value}
+            label={groupes.rigour.mine}
+            valueLabel={rigourView(h.rigour).valueLabel}
+            accessibilityLabel={rigourView(h.rigour).accessibilityLabel}
+          />
+        ) : null}
         {h.habits.length === 0 ? <EmptyState species={pet.data?.pet.species} mood="neutre" title={t.emptyTitle} text={t.empty(name)} /> : null}
         {h.habits.map((x, i) => {
           const weekly = x.rhythm === 'three_per_week';
@@ -152,12 +170,42 @@ export default function HabitsScreen() {
                   itemId: nextHabitItem?.id ?? null,
                 }}
                 line={x.today.line}
+                rigour={x.rigour ? rigourView(x.rigour) : null}
                 action={x.today.due || askNow ? { label: t.prove, onPress: () => router.push({ pathname: '/pet/preuve', params: { ref: x.ref } }) } : null}
                 remove={{ label: t.settings, accessibilityLabel: t.settingsA11y(x.label), onPress: () => openEdit(x.ref, x.label) }}
               />
             </Appear>
           );
         })}
+
+        {(together.data?.suggestions ?? []).map((sug) => {
+          const groupId = started[sug.habitId];
+          const state = groupId ? 'started' : sug.proposed ? 'waiting' : 'idle';
+          return (
+            <Appear key={`together:${sug.habitId}`} once={`habits:together:${sug.habitId}`}>
+              <TogetherCard
+                emoji={t.emoji[sug.habitId]}
+                text={sug.text}
+                state={state}
+                stateLine={state === 'started' ? groupes.together.started : groupes.together.waiting}
+                actionLabel={state === 'started' ? groupes.together.open : state === 'waiting' ? groupes.together.withdraw : groupes.together.propose}
+                loading={(propose.isPending && propose.variables === sug.habitId) || (withdraw.isPending && withdraw.variables === sug.habitId)}
+                onAction={() => {
+                  if (groupId) return router.push(`/groupe/${groupId}`);
+                  if (sug.proposed) return withdraw.mutate(sug.habitId);
+                  propose.mutate(sug.habitId, {
+                    onSuccess: (r) => {
+                      if (r.status === 'started' && r.groupId) setStarted((m) => ({ ...m, [sug.habitId]: r.groupId as string }));
+                    },
+                  });
+                }}
+              />
+            </Appear>
+          );
+        })}
+        {propose.isError || withdraw.isError ? (
+          <Banner tone="error" text={errorText(propose.error ?? withdraw.error, groupes.together.error)} onClose={() => (propose.reset(), withdraw.reset())} closeLabel={t.retry} />
+        ) : null}
 
         {milestones.length ? (
           <MilestoneTrack
@@ -194,6 +242,12 @@ export default function HabitsScreen() {
             <Text size={15} muted>
               {plus ? t.limitPlus(h.limit) : t.limitFree(entitlements(false).habits, entitlements(true).habits)}
             </Text>
+            {/* Dit au moment de choisir (spéc. §25), sauf si « Montrer mes habitudes » est coupé. */}
+            {h.shared !== false ? (
+              <Text size={13} muted>
+                {groupesShared.habitsVisibility}
+              </Text>
+            ) : null}
             {available.map((def, i) => {
               const locked = full && !plus;
               return (
@@ -287,3 +341,4 @@ export default function HabitsScreen() {
     </ScreenMotion>
   );
 }
+

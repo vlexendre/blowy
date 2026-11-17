@@ -35,16 +35,15 @@ describe('manques signalés par l’app', () => {
     return (await b.api.invites.accept(code)).id;
   };
 
-  it('explication : où penche chacun sur les 4 axes (côté et cran), rien de plus ; ce que vous cherchez tous les deux', async () => {
-    const ana = await person('Ana', { gender: 'femme', seeking: 'les_deux', whom: 'hommes', consents: { sensitive: true, location: true } });
-    const ben = await person('Ben', { gender: 'homme', seeking: 'les_deux', whom: 'femmes', consents: { sensitive: true, location: true } });
-    const cam = await person('Cam', { gender: 'homme', seeking: 'potes' });
+  it('explication : où penche chacun sur les 4 axes (côté et cran), rien de plus ; rien sur ce que chacun cherche', async () => {
+    const ana = await person('Ana', { gender: 'femme', consents: { location: true } });
+    const ben = await person('Ben', { gender: 'homme', consents: { location: true } });
+    const cam = await person('Cam', { gender: 'homme' });
 
     const { suggestions } = await ana.api.encounters.list();
     const toBen = suggestions.find((s) => s.user.id === ben.id);
     const toCam = suggestions.find((s) => s.user.id === cam.id);
-    expect(toBen?.lookingFor).toBe('both');
-    expect(toCam?.lookingFor).toBe('friends');
+    expect(toCam).toBeDefined();
     const e = toBen?.explanation;
     for (const axis of [...(e?.common ?? []), e?.explore]) {
       expect(axis?.mine).toMatchObject({ side: expect.stringMatching(/^(low|mid|high)$/), strength: expect.stringMatching(/^(light|clear|strong)$/) });
@@ -54,18 +53,17 @@ describe('manques signalés par l’app', () => {
     expect(e?.common.every((c) => JSON.stringify(c.mine) === JSON.stringify(c.theirs))).toBe(true);
     // Toujours rien de « qui » ni de valeur chiffrée.
     const json = JSON.stringify(suggestions);
-    for (const word of ['whom', 'seeking', '"value"', 'confidence']) expect(json).not.toContain(word);
+    for (const word of ['whom', 'seeking', 'lookingFor', '"value"', 'confidence']) expect(json).not.toContain(word);
 
-    // Un coucou reçu porte aussi ce que vous cherchez tous les deux, et ses repères.
+    // Un coucou reçu porte aussi ses repères.
     await cam.api.encounters.wave(ana.id);
     const incoming = (await ana.api.encounters.list()).incoming.find((i) => i.from.id === cam.id);
-    expect(incoming?.lookingFor).toBe('friends');
     expect(incoming?.explanation?.explore.theirs).toBeDefined();
 
     // Carte : les mêmes repères, et où vous en êtes.
     const pin = (await ben.api.vision.map()).pins.find((p) => p.user.id === ana.id);
     expect(pin?.explanation.common[0]?.mine).toBeDefined();
-    expect(pin?.lookingFor).toBe('both');
+    expect(pin).not.toHaveProperty('lookingFor');
   });
 
   it('carte : coucou envoyé ou reçu dit sur le repère ; liens et refus disparaissent comme dans les rencontres', async () => {

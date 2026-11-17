@@ -6,7 +6,7 @@ import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
 import { extra, space } from '../theme';
 import type { TitleContent } from '../types';
-import { Hearts } from './Hearts';
+import { LifeSparks } from './LifeSparks';
 
 export interface LivesCardProps {
   /** « 5 VIES / SUR 7 ». */
@@ -20,13 +20,13 @@ export interface LivesCardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Rappel des vies d'un lien (carte du bas de V6-Lien) : titre, cœurs, règle. */
+/** Rappel des vies d'un lien (carte du bas de V6-Lien) : titre, vies, règle. */
 export function LivesCard({ title, lives, max, ghost, text, accessibilityLabel, style }: LivesCardProps) {
   return (
     <Card padding="none" style={[styles.card, style]}>
       <View style={layout.rowBetween}>
         <Title text={title} size={22} />
-        <Hearts lives={lives} max={max} ghost={ghost} size={14} accessibilityLabel={accessibilityLabel} />
+        <LifeSparks lives={lives} max={max} ghost={ghost} size={14} accessibilityLabel={accessibilityLabel} />
       </View>
       <Text variant="body" size={13} color={extra.preview} style={styles.text}>
         {text}

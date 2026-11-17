@@ -17,6 +17,7 @@ import { VISION_SIGNALS, type VisionSignals } from '../modules/vision/tokens';
 import { DEMO_LEA, DEMO_MALO, DEMO_PEOPLE, DEMO_SASHA, demoMaloMessages } from './demo';
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
+import { GroupesDemo } from './groupes-demo';
 
 /** Minimoa+ des personnes de démo qui portent des objets premium. */
 const DEMO_PLUS_UNTIL = '2099-01-01T00:00:00.000Z';
@@ -46,6 +47,7 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     @Inject(VISION_SIGNALS) private readonly vision: VisionSignals,
     @Inject(RituelsDemo) private readonly rituels: RituelsDemo,
     @Inject(PlateformeDemo) private readonly plateforme: PlateformeDemo,
+    @Inject(GroupesDemo) private readonly groupes: GroupesDemo,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
   ) {}
@@ -59,11 +61,8 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
         displayName: p.displayName,
         birthdate: p.birthdate,
         gender: p.identity.gender,
-        seeking: p.identity.seeking,
-        whom: p.identity.whom,
         locale: 'fr',
         discreet: p.identity.discreet,
-        sensitiveConsentAt: p.identity.whom ? now : null,
         locationConsentAt: p.place ? now : null,
         avatarPath: null,
         inviteCode: p.inviteCode,
@@ -101,6 +100,7 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     }
     await this.createLink.execute({ by: DEMO_MALO, with: DEMO_SASHA });
     await this.rituels.seed();
+    await this.groupes.seed();
     await this.plateforme.seed();
     this.logger.log(`monde de démo prêt : ${DEMO_PEOPLE.map((p) => p.displayName).join(', ')}`);
   }
@@ -126,6 +126,7 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
       for (const m of demoMaloMessages(locale)) await this.sendMessage.execute({ linkId: link.id, userId: DEMO_MALO, body: m.body, tone: m.tone });
     });
     await this.attempt('bilan de la semaine passée', () => this.rituels.welcome(userId));
+    await this.attempt('groupes', () => this.groupes.welcome(userId));
   }
 
   private async attempt(what: string, run: () => Promise<unknown>): Promise<void> {

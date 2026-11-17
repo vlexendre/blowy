@@ -1,18 +1,14 @@
-import type { Day, Gender, Locale, Seeking, Whom } from '@blowy/domain';
+import type { Day, Gender, Locale } from '@blowy/domain';
 
 export interface Profile {
   id: string;
   displayName: string;
   birthdate: Day;
-  /** Qui la personne est et ce qu'elle cherche (chantier « vision »). `whom` : jamais montré aux autres. */
+  /** Sexe (« Tu es… ») : accords grammaticaux et statistiques ; ne filtre rien (spéc. §27). */
   gender: Gender;
-  seeking: Seeking;
-  whom: Whom | null;
   locale: Locale;
   /** Mode discret : absente de la carte des autres. */
   discreet: boolean;
-  /** Accord explicite pour « qui tu veux rencontrer ». */
-  sensitiveConsentAt: string | null;
   /** Accord explicite pour la position. */
   locationConsentAt: string | null;
   avatarPath: string | null;
@@ -29,12 +25,14 @@ export interface Profile {
   reviewWorld?: string | null;
   /** Photo de profil vérifiée par le filtre (null : pas encore, le minuteur s'en charge). */
   avatarCheckedAt?: string | null;
+  /** « Montrer mes habitudes » (spéc §25) ; absent : activé. */
+  showHabits?: boolean;
 }
 
 export type ProfilePatch = Partial<
   Pick<
     Profile,
-    'displayName' | 'avatarPath' | 'welcomeSentAt' | 'gender' | 'seeking' | 'whom' | 'locale' | 'discreet' | 'sensitiveConsentAt' | 'locationConsentAt' | 'reviewWorld' | 'avatarCheckedAt'
+    'displayName' | 'avatarPath' | 'welcomeSentAt' | 'gender' | 'locale' | 'discreet' | 'locationConsentAt' | 'reviewWorld' | 'avatarCheckedAt' | 'showHabits'
   >
 >;
 

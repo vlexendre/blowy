@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { fitAnchor, hasOutfit } from '../../assets/fit';
-import { isFullBody, type PetPose, petImage, RENDER_RATIO } from '../../assets/pets';
+import { BODY_POSES, type BodyPose, bodyPoseFor, isFullBody, type PetPose, petBodyImage, petImage, RENDER_RATIO } from '../../assets/pets';
 import { DressedPet } from '../../atoms/DressedPet';
 import { Icon } from '../../atoms/Icon';
 import { hapticFor } from '../../lib/haptics';
@@ -42,13 +42,15 @@ import type { PetLure } from './lure';
 import { Bang, SoftShadow, Strawberry, SweatDrop } from './PetProps';
 
 /** Réactions qu'on peut demander au pet (`ref.current.react(…)`). */
-export type PetActorReaction = 'feed' | 'play' | 'nap' | 'cuddle' | 'joy' | 'no' | 'wave' | 'surprise';
+export type PetActorReaction = 'feed' | 'play' | 'nap' | 'cuddle' | 'joy' | 'no' | 'wave' | 'surprise' | 'arrive' | 'check' | 'think';
 
 export interface PetActorHandle {
   /** Joue une réaction (soins, garde-robe, refus…). */
   react: (kind: PetActorReaction) => void;
   /** Réveille le pet s'il dort (en sursaut). */
   wake: () => void;
+  /** Prend une pose du pack un moment (`ms`, défaut 1,6 s), puis revient au repos. */
+  strike: (pose: BodyPose, ms?: number) => void;
 }
 
 /** Ce que le doigt a fait au pet. */
@@ -60,8 +62,13 @@ export interface PetActorProps {
   outfit?: Outfit | null;
   /** Largeur de la toile (hauteur = size / 0,9). */
   size: number;
-  /** Pose de repos sans tenue. Défaut `debout`. */
-  mood?: Mood | PetPose;
+  /** Pose de repos : humeur, ancienne pose ou pose du pack (`pense`, `check`…). Défaut `debout` (en pied : `neutre`). */
+  mood?: Mood | PetPose | BodyPose;
+  /**
+   * Corps entiers du pack pour toutes les humeurs (fondu-enchaîné entre deux poses, même ligne de sol) au lieu des
+   * bustes. Défaut : vrai dès 96 pt de large ou avec une tenue ; les petites tailles gardent les bustes.
+   */
+  body?: boolean;
   /** Id du pet : graine de son hasard (règle 8). */
   seed?: string;
   /** Il boude : mouvements plus lents et lourds, humeurs tristes. */
@@ -98,9 +105,31 @@ export interface PetActorProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Humeurs jouées au repos (corps sans tenue). */
-const IDLE_MOODS: readonly PetPose[] = ['joie', 'smug', 'amour', 'surpris', 'salut'];
+/**
+ * Humeurs jouées au repos (corps sans tenue). Pas « amour » (yeux en cœur) : au repos, deux minimoas côte à côte ne
+ * doivent pas avoir l'air amoureux (spéc. §27) ; il reste pour le câlin, l'affection pour son propre minimoa.
+ */
+const IDLE_MOODS: readonly PetPose[] = ['joie', 'smug', 'surpris', 'salut'];
 const SULK_MOODS: readonly PetPose[] = ['triste', 'colere'];
+/** En pied : les mêmes moments, avec les poses du pack (il réfléchit, fait coucou, sautille de joie). */
+const BODY_IDLE: readonly BodyPose[] = ['joie', 'pense', 'surpris', 'coucou'];
+const BODY_SULK: readonly BodyPose[] = ['triste', 'boude'];
+/** Largeur à partir de laquelle le pet vivant passe aux corps entiers du pack. */
+const BODY_MIN = 96;
+/** Pose du pack jouée par chaque réaction (en pied). */
+const REACTION_POSE: Record<PetActorReaction, BodyPose> = {
+  feed: 'mange',
+  play: 'joue',
+  nap: 'dodo',
+  cuddle: 'joie',
+  joy: 'joie',
+  no: 'boude',
+  wave: 'coucou',
+  surprise: 'surpris',
+  arrive: 'marche',
+  check: 'check',
+  think: 'pense',
+};
 const BUSTS: readonly PetPose[] = ['neutre', 'salut', 'joie', 'smug', 'amour', 'surpris', 'triste', 'colere', 'dodo'];
 /** Les bustes s'arrêtent à 84 % de la toile, le corps entier touche le sol à 95,5 % : on les pose au sol. */
 const BUST_DROP = 0.115;
@@ -169,6 +198,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     outfit,
     size,
     mood = 'debout',
+    body: bodyProp,
     seed: seedId,
     sulking = false,
     idle = true,
@@ -195,17 +225,22 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   const insets = useSafeAreaInsets();
   const win = useWindowDimensions();
   const dressed = hasOutfit(outfit);
+  /** En pied (poses du pack, objets portés qui suivent la pose) ou en bustes (petites tailles). */
+  const body = bodyProp ?? (dressed || size >= BODY_MIN);
   const h = Math.round(size / RENDER_RATIO);
-  const head = fitAnchor(species, 'headTop');
-  const mouth = fitAnchor(species, 'mouth');
-  const ground = fitAnchor(species, 'ground');
-  const restIsBody = isFullBody(mood as PetPose) || mood === 'debout';
+  /** Pose de repos en pied (il boude : bras croisés). */
+  const restBody: BodyPose = sulking && (mood === 'debout' || mood === 'neutre') ? 'boude' : bodyPoseFor(mood);
+  const anchorPose = body ? restBody : undefined;
+  const head = fitAnchor(species, 'headTop', anchorPose);
+  const mouth = fitAnchor(species, 'mouth', anchorPose);
+  const ground = fitAnchor(species, 'ground', anchorPose);
+  const restIsBody = body || isFullBody(mood as PetPose) || mood === 'debout';
   const crestSide = crestSize ?? Math.round(size * 0.26);
   /** Avec une humeur en buste (sommeil, joie…), la tête est plus bas : le décor de la tête descend avec elle. */
   const crestDrop = (BUST_CREST_SHIFT[species] ?? 0.15) * h;
 
   // — État lent (React) : humeur affichée, sommeil, accessoires en scène, particules.
-  const [expr, setExpr] = useState<PetPose | null>(null);
+  const [expr, setExpr] = useState<PetPose | BodyPose | null>(null);
   const [asleep, setAsleep] = useState(false);
   const [napping, setNapping] = useState(false);
   const [prop, setProp] = useState<'food' | 'ball' | null>(null);
@@ -274,15 +309,15 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   const exprTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastIdle = useRef<string | undefined>(undefined);
 
-  /** Humeur affichée un moment (corps sans tenue), puis retour au repos. */
+  /** Humeur affichée un moment, puis retour au repos (en pied : la pose du pack la plus proche). */
   const express = useCallback(
-    (pose: PetPose | null, ms = 1200) => {
-      if (dressed) return;
+    (pose: PetPose | BodyPose | null, ms = 1200) => {
+      if (dressed && !body) return;
       if (exprTimer.current) clearTimeout(exprTimer.current);
       setExpr(pose);
       if (pose && ms > 0) exprTimer.current = setTimeout(() => setExpr(asleepRef.current ? 'dodo' : null), ms);
     },
-    [dressed],
+    [dressed, body],
   );
   useEffect(
     () => () => {
@@ -293,8 +328,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
 
   // Changement d'humeur : le pet s'écrase un instant et l'image change au creux de l'écrasement (pas de fantôme
   // entre deux poses de formes différentes), puis il se redresse en ressort.
-  const showExpr = !dressed && !!expr && expr !== mood;
-  const lastExpr = useRef<PetPose | null>(null);
+  const showExpr = body ? !!expr && bodyPoseFor(expr) !== restBody : !dressed && !!expr && expr !== mood;
+  const lastExpr = useRef<PetPose | BodyPose | null>(null);
   if (showExpr && expr) lastExpr.current = expr;
   useEffect(() => {
     const to = showExpr ? 1 : 0;
@@ -302,14 +337,16 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
       exprO.value = fadeTo(to, motion.fast);
       return;
     }
-    exprO.value = withDelay(70, withTiming(to, { duration: 20 }));
+    // En pied : fondu-enchaîné court (même ligne de sol, rien ne saute) au creux d'un petit rebond ; en buste :
+    // l'image change d'un coup au creux de l'écrasement (deux bustes de formes différentes ne se fondent pas bien).
+    exprO.value = body ? withDelay(40, withTiming(to, { duration: 130, easing: ease.inOut })) : withDelay(70, withTiming(to, { duration: 20 }));
     if (!busy.current && !asleepRef.current) {
       sy.value = withSequence(withTiming(0.9, { duration: 80, easing: ease.out }), withSpring(1, springs.pop));
       sx.value = withSequence(withTiming(1.07, { duration: 80, easing: ease.out }), withSpring(1, springs.pop));
     }
-  }, [expr, showExpr, reduced, exprO, sx, sy]);
+  }, [expr, showExpr, reduced, exprO, sx, sy, body]);
 
-  // Précharge des humeurs (évite un blanc au premier changement).
+  // Précharge des humeurs ou des poses (évite un blanc au premier changement).
   useEffect(() => {
     const id = setTimeout(() => setPreload(true), 1200);
     return () => clearTimeout(id);
@@ -489,8 +526,11 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           no: 'colere',
           wave: 'salut',
           surprise: 'surpris',
+          arrive: 'neutre',
+          check: 'salut',
+          think: 'smug',
         };
-        express(pose[kind], kind === 'nap' ? 2400 : 1400);
+        if (kind !== 'arrive') express(body ? REACTION_POSE[kind] : pose[kind], kind === 'nap' ? 2400 : 1400);
         if (kind === 'surprise') showBang();
         if (kind === 'no') showSweat();
         done(1400);
@@ -498,6 +538,21 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
       }
       switch (kind) {
         case 'feed': {
+          if (body) {
+            // En pied : il ouvre la bouche, puis croque la pomme (pose « mange »), à petits coups.
+            express('surpris', 0);
+            sy.value = withTiming(1.04, { duration: 220 });
+            later(220, () => {
+              express('mange', 1500);
+              hapticFor('press');
+              const c = (v: number) => withTiming(v, { duration: 110, easing: ease.inOut });
+              sy.value = withSequence(c(0.92), c(1.03), c(0.93), c(1.03), c(0.95), withSpring(1, PLUSH));
+              sx.value = withSequence(c(1.05), c(0.98), c(1.05), c(0.98), c(1.03), withSpring(1, PLUSH));
+            });
+            later(1100, () => setStars((n) => n + 1));
+            done(1700);
+            break;
+          }
           setProp('food');
           foodP.value = 0;
           express('surpris', 420);
@@ -519,6 +574,30 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         }
         case 'play': {
           setProp('ball');
+          if (body) {
+            // En pied : la balle arrive en rebondissant, il l'attrape et la garde contre lui (pose « joue »).
+            const C = 900;
+            ballO.value = 1;
+            ballX.value = size * 0.8;
+            ballY.value = -size * 0.5;
+            ballR.value = 0;
+            ballX.value = withTiming(0, { duration: C, easing: Easing.out(Easing.quad) });
+            ballR.value = withTiming(-420, { duration: C, easing: Easing.linear });
+            const b = (to: number, d: number, up: boolean) => withTiming(to, { duration: d, easing: up ? Easing.out(Easing.quad) : Easing.in(Easing.quad) });
+            ballY.value = withSequence(b(0, 300, false), b(-size * 0.3, 260, true), b(-size * 0.12, 340, false));
+            ballO.value = withDelay(C - 60, withTiming(0, { duration: 90 }));
+            express('surpris', 0);
+            later(C - 80, () => {
+              express('joue', 1700);
+              hapticFor('press');
+              squish(0);
+            });
+            later(C + 500, () => hop(size * 0.12));
+            later(C + 900, () => setSparkles((n) => n + 1));
+            later(C + 120, () => setProp(null));
+            done(C + 1800);
+            break;
+          }
           const D = 1500;
           ballO.value = 1;
           ballX.value = size * 0.8;
@@ -571,7 +650,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           break;
         }
         case 'cuddle': {
-          express('amour', 1700);
+          express(body ? 'joie' : 'amour', 1700);
           setLove((n) => n + 1);
           hapticFor('land');
           sx.value = withSequence(withTiming(1.12, { duration: 170, easing: ease.out }), withTiming(1.08, { duration: 380 }), withSpring(1, PLUSH));
@@ -592,7 +671,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           break;
         }
         case 'no': {
-          express('colere', 1100);
+          express(body ? 'boude' : 'colere', 1300);
           showSweat();
           const s = (v: number, d = 75) => withTiming(v, { duration: d, easing: ease.inOut });
           rot.value = withSequence(s(-9), s(8), s(-7), s(5), s(-3), withSpring(0, PLUSH));
@@ -601,10 +680,10 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           break;
         }
         case 'wave': {
-          express('salut', 1700);
+          express(body ? 'coucou' : 'salut', 1700);
           const s = (v: number) => withTiming(v, { duration: 260, easing: ease.inOut });
           rot.value = withSequence(s(-6), s(6), s(-5), s(4), withSpring(0, PLUSH));
-          if (dressed) setSparkles((n) => n + 1);
+          if (dressed && !body) setSparkles((n) => n + 1);
           hop(size * 0.08, 0, 0);
           done(1500);
           break;
@@ -616,12 +695,58 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           done(900);
           break;
         }
+        case 'arrive': {
+          // Il arrive en marchant depuis la gauche (de profil), à petits pas, puis se tourne vers nous.
+          const steps = 4;
+          const from = -size * 0.75;
+          const T = 230;
+          express('marche', 0);
+          x.value = from;
+          x.value = withTiming(0, { duration: steps * T, easing: Easing.out(Easing.quad) });
+          const st = (v: number) => withTiming(v, { duration: T / 2, easing: ease.inOut });
+          const bob: ReturnType<typeof st>[] = [];
+          for (let i = 0; i < steps; i++) bob.push(st(-size * 0.025), st(0));
+          y.value = withSequence(...bob);
+          rot.value = withSequence(...Array.from({ length: steps }, (_, i) => st(i % 2 ? -3 : 3)), withSpring(0, PLUSH));
+          later(steps * T, () => {
+            express(null);
+            hapticFor('land');
+            sy.value = withSequence(withTiming(0.93, { duration: 90, easing: ease.out }), withSpring(1, springs.pop));
+          });
+          done(steps * T + 300);
+          break;
+        }
+        case 'check': {
+          express(body ? 'check' : 'salut', 1600);
+          hop(size * 0.1);
+          later(420, () => setSparkles((n) => n + 1));
+          done(1400);
+          break;
+        }
+        case 'think': {
+          express(body ? 'pense' : 'smug', 1800);
+          rot.value = withSequence(withSpring(-4, springs.soft), withDelay(900, withSpring(0, springs.soft)));
+          done(1600);
+          break;
+        }
       }
     },
-    [reduced, express, showBang, showSweat, clearTimers, later, armSleep, hop, size, dressed, foodP, ballO, ballX, ballY, ballR, rot, sx, sy, x, amp],
+    [reduced, express, showBang, showSweat, clearTimers, later, armSleep, hop, squish, size, dressed, body, foodP, ballO, ballX, ballY, ballR, rot, sx, sy, x, y, amp],
   );
 
-  useImperativeHandle(ref, () => ({ react, wake }), [react, wake]);
+  const strike = useCallback(
+    (pose: BodyPose, ms = 1600) => {
+      if (asleepRef.current) {
+        setAsleep(false);
+        asleepRef.current = false;
+      }
+      armSleep();
+      express(body ? pose : null, ms);
+    },
+    [armSleep, express, body],
+  );
+
+  useImperativeHandle(ref, () => ({ react, wake, strike }), [react, wake, strike]);
 
   // — Objet porté vers lui (soin glissé) : il le suit des yeux, puis ouvre la bouche quand il arrive tout près.
   const lureZone = useRef(0);
@@ -698,6 +823,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           );
         } else if (what === 'turn') {
           rot.value = withSequence(withSpring(-5, springs.soft), withDelay(1400, withSpring(0, springs.soft)));
+        } else if (body) {
+          express(seed.pick<PetPose | BodyPose>(sulking ? BODY_SULK : BODY_IDLE, expr ?? undefined), 1500);
         } else if (dressed) {
           setSparkles((n) => n + 1);
           sy.value = withSequence(withTiming(0.95, { duration: 100 }), withSpring(1, PLUSH));
@@ -711,7 +838,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     return () => clearTimeout(id);
     // `expr` lu au moment du tirage seulement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idle, reduced, active, sulking, dressed, seed, hop, express, size, rot, sy, x, free]);
+  }, [idle, reduced, active, sulking, dressed, body, seed, hop, express, size, rot, sy, x, free]);
 
   // — Toucher.
   const lastTap = useRef(0);
@@ -969,7 +1096,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
 
   // — Styles animés.
   const drop = BUST_DROP * h;
-  const body = useAnimatedStyle(() => {
+  const bodyStyle = useAnimatedStyle(() => {
     const groundHit = free.value === 0 && y.value > 0 ? Math.min(0.26, (y.value / size) * 1.3) : 0;
     const yy = free.value === 0 && y.value > 0 ? 0 : y.value;
     const b = breath.value * amp.value;
@@ -998,12 +1125,18 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     return { opacity: (1 - lift * 0.6) * (1 - away), transform: [{ translateX: x.value * 0.9 }, { scaleX: 1 - lift * 0.45 }, { scaleY: 1 - lift * 0.3 }] };
   });
   const restStyle = useAnimatedStyle(() => ({ opacity: 1 - exprO.value }));
-  const crestBust = restIsBody && !dressed && (lastExpr.current ? !isFullBody(lastExpr.current) : false);
-  const crestStyle = useAnimatedStyle(() => ({ transform: [{ translateY: crestBust ? exprO.value * crestDrop : 0 }] }));
+  const crestBust = !body && restIsBody && !dressed && (lastExpr.current ? !isFullBody(lastExpr.current as PetPose) : false);
+  // En pied : la mèche passe du haut de la tête de la pose de repos à celui de la pose jouée (tête penchée, assis…).
+  const exprHead = body && lastExpr.current ? fitAnchor(species, 'headTop', bodyPoseFor(lastExpr.current)) : head;
+  const crestDX = (exprHead.x - head.x) * size;
+  const crestDY = (exprHead.y - head.y) * h;
+  const crestStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: exprO.value * crestDX }, { translateY: crestBust ? exprO.value * crestDrop : exprO.value * crestDY }],
+  }));
   const exprStyle = useAnimatedStyle(() => ({ opacity: exprO.value }));
   const signs = useAnimatedStyle(() => ({
     // Suivent le corps (même porté vers le bas) ; au sol, ils ne s'enfoncent pas avec l'écrasement.
-    transform: [{ translateX: lagX.value }, { translateY: (free.value ? lagY.value : Math.min(0, lagY.value)) + (restIsBody ? exprO.value * drop * 0.8 : 0) }],
+    transform: [{ translateX: lagX.value }, { translateY: (free.value ? lagY.value : Math.min(0, lagY.value)) + (restIsBody && !body ? exprO.value * drop * 0.8 : 0) }],
   }));
   const bangStyle = useAnimatedStyle(() => ({
     opacity: Math.min(1, bang.value),
@@ -1034,9 +1167,12 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   }));
 
   const expressive = lastExpr.current;
-  const exprIsBust = expressive ? !isFullBody(expressive) : false;
+  const exprIsBust = !body && expressive ? !isFullBody(expressive as PetPose) : false;
   const bustOffset = restIsBody && exprIsBust ? drop : 0;
-  const busts = useMemo(() => (preload && !dressed ? BUSTS : []), [preload, dressed]);
+  const busts = useMemo(() => (preload && !dressed && !body ? BUSTS : []), [preload, dressed, body]);
+  const bodies = useMemo(() => (preload && body ? BODY_POSES : []), [preload, body]);
+  /** Les « z » partent du haut de la tête endormie (pose `dodo` en pied). */
+  const sleepHead = body ? fitAnchor(species, 'headTop', 'dodo') : head;
 
   return (
     <View
@@ -1058,9 +1194,20 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         </Animated.View>
       ) : null}
       <GestureDetector gesture={gesture} touchAction="pan-y">
-        <Animated.View style={[styles.fill, styles.origin, body]}>
+        <Animated.View style={[styles.fill, styles.origin, bodyStyle]}>
           {/* Les images ne captent rien : le doigt agit sur le corps (pas de glisser-déposer d'image sur le web). */}
-          {dressed ? (
+          {body ? (
+            <>
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, restStyle]}>
+                <DressedPet species={species} outfit={outfit} size={size} pose={restBody} hidden={hiddenItems} headStyle={reduced ? undefined : headLag} style={styles.inert} />
+              </Animated.View>
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, exprStyle]}>
+                {expressive ? (
+                  <DressedPet species={species} outfit={outfit} size={size} pose={bodyPoseFor(expressive)} hidden={hiddenItems} headStyle={reduced ? undefined : headLag} style={styles.inert} />
+                ) : null}
+              </Animated.View>
+            </>
+          ) : dressed ? (
             <DressedPet species={species} outfit={outfit} size={size} hidden={hiddenItems} headStyle={reduced ? undefined : headLag} style={styles.inert} />
           ) : (
             <>
@@ -1128,7 +1275,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         />
         {asleep || napping ? (
           reduced ? (
-            <View style={[styles.abs, { left: headX + size * 0.16, top: headY - size * 0.06 }]}>
+            <View style={[styles.abs, { left: sleepHead.x * size + size * 0.16, top: (body ? sleepHead.y * h : headY) - size * 0.06 }]}>
               <Bang size={Math.round(size * 0.12)} mark="z" />
             </View>
           ) : (
@@ -1137,7 +1284,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
               loop
               size={size * 0.1}
               spread={size * 0.42}
-              style={[styles.abs, { left: headX + size * 0.14, top: headY + (restIsBody && !dressed ? drop * 0.9 : 0) }]}
+              style={[styles.abs, { left: sleepHead.x * size + size * 0.14, top: body ? sleepHead.y * h : headY + (restIsBody && !dressed ? drop * 0.9 : 0) }]}
             />
           )
         ) : null}
@@ -1152,10 +1299,13 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           <Icon name="balle" size={ballSize} />
         </Animated.View>
       ) : null}
-      {busts.length ? (
+      {busts.length || bodies.length ? (
         <View pointerEvents="none" style={styles.preload} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           {busts.map((b) => (
             <Image key={b} source={petImage(species, b)} style={styles.preloadImg} />
+          ))}
+          {bodies.map((b) => (
+            <Image key={b} source={petBodyImage(species, b)} style={styles.preloadImg} />
           ))}
         </View>
       ) : null}

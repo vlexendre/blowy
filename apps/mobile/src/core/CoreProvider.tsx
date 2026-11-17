@@ -51,6 +51,11 @@ export const keys = {
   /** Rituels : accueil du jour (défi, série, sortie…) et série seule (lecture légère, widgets). */
   ritualsToday: ['rituals', 'today'] as const,
   ritualsStreak: ['rituals', 'streak'] as const,
+  /** Groupes (spéc. §26) : liste, détail et messages sont rangés sous `groups`. */
+  groups: ['groups'] as const,
+  group: (id: string) => ['groups', id] as const,
+  groupMessages: (id: string) => ['groups', id, 'messages'] as const,
+  together: ['together'] as const,
 };
 
 function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | null | undefined }) {
@@ -58,7 +63,12 @@ function RealtimeBridge({ ports, session }: { ports: Ports; session: Session | n
   const userId = session?.userId;
   useEffect(() => {
     if (!userId) return;
-    return ports.realtime.subscribe(({ linkId }) => {
+    return ports.realtime.subscribe(({ linkId, groupId }) => {
+      if (groupId) {
+        // Messages d'un groupe : sa conversation, son détail et la liste (non-lus) sont relus.
+        void qc.invalidateQueries({ queryKey: keys.groups });
+        return;
+      }
       void qc.invalidateQueries({ queryKey: linkId ? keys.link(linkId) : keys.links });
       void qc.invalidateQueries({ queryKey: keys.links, exact: true });
     });

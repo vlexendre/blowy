@@ -1,71 +1,97 @@
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { Avatar } from '../atoms/Avatar';
+import { Glyph } from '../atoms/Glyph';
 import { Panel } from '../atoms/Panel';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
-import { Title } from '../atoms/Title';
-import { PortraitTile } from '../molecules/PortraitTile';
+import { Title, titleWidthEm } from '../atoms/Title';
 import { PopIn } from '../motion/PopIn';
-import { space } from '../theme';
+import { alpha, color, radius, space } from '../theme';
 import type { PetLook, TitleContent } from '../types';
 
 export interface ProfileHeroProps {
-  /** « ALEX. / ET NINO. » */
+  /** « ALEX. / ET BISCOTTE. » (deux lignes au plus, `\n` entre les deux). */
   title: TitleContent;
-  /** « ta photo reste floue jusqu'au niveau 5 de chaque lien. » */
-  hint: string;
+  /** Une ligne courte sous le nom (« 42 jours ensemble »). */
+  caption?: string;
+  /** Ta photo : toujours nette pour toi. Sans photo, ton minimoa prend sa place. */
   photoUri?: string | null;
-  /** Libellé lu de la photo. */
-  photoLabel: string;
   pet: PetLook;
-  /** Fond et anneau de la pastille du pet (défaut : couleur de l'espèce). */
-  petColor: string;
-  onPhotoPress?: () => void;
+  /** Libellé lu de l'en-tête entier (« Ton profil. Touche pour modifier ton nom ou ta photo. »). */
+  accessibilityLabel: string;
+  onPress?: () => void;
 }
 
-const TILE_W = 104;
-const TILE_H = 128;
-const BADGE = 48;
+const AVATAR = 68;
+const BADGE = 28;
+/** Corps du nom : 32 au plus, réduit pour que la ligne la plus longue tienne (prénoms et noms de minimoa longs, 375 pt). */
+const MAX_TITLE = 32;
+const MIN_TITLE = 22;
+/** Ce qui n'est pas le texte dans la largeur de l'écran (estimation avant la mesure) : marges de l'onglet et du panneau, avatar, écarts, chevron. */
+const AROUND = 24 + 28 + AVATAR + 8 + space.md * 2 + 28;
+/** Marge sur la chasse estimée d'Anton (crénage, rendu web). */
+const SAFE = 0.92;
 
 /**
- * Panneau rose de Moi : ta photo, ton pet en pastille, ton nom et celui du pet. Ta photo est toujours nette pour toi :
- * le flou ne sert qu'aux autres, avant le niveau 5 d'un lien (`hint` l'explique).
+ * En-tête de Moi : qui tu es, en une ligne de regard. Ta photo (nette pour toi) avec ton minimoa en pastille, ou ton
+ * minimoa seul tant que tu n'as pas de photo ; ton nom et le sien ; une ligne courte. Tout l'en-tête mène à ton compte
+ * (nom, photo). Ce que voient les autres de ta photo s'explique sur l'écran de la photo, pas ici.
  */
-export function ProfileHero({ title, hint, photoUri, photoLabel, pet, petColor, onPhotoPress }: ProfileHeroProps) {
-  const photo = (
-    <>
-      <PortraitTile uri={photoUri} width={TILE_W} height={TILE_H} accessibilityLabel={photoLabel} />
-      {/* Le pet arrive en « pop » sur le coin de ta photo. */}
-      <PopIn delay={220} from={0.3} style={styles.badge} pointerEvents="none">
-        <Avatar size={BADGE} pet={pet} hidden bg={petColor} ring={petColor} accessibilityLabel={pet.name} />
-      </PopIn>
-    </>
-  );
-  return (
-    <Panel gradient="rose" radius={32} padding="lg" style={styles.panel}>
-      {onPhotoPress ? (
-        <Pressable onPress={onPhotoPress} accessibilityLabel={photoLabel} scaleTo={0.97}>
-          {photo}
-        </Pressable>
-      ) : (
-        <View>{photo}</View>
-      )}
-      <View style={styles.texts}>
-        <Title text={title} size={50} />
-        <Text variant="body" size={13} style={styles.hint}>
-          {hint}
-        </Text>
+export function ProfileHero({ title, caption, photoUri, pet, accessibilityLabel, onPress }: ProfileHeroProps) {
+  const { width } = useWindowDimensions();
+  // Largeur réelle de la colonne de texte une fois mesurée ; avant, une estimation depuis la largeur de l'écran.
+  const [measured, setMeasured] = useState(0);
+  const avail = (measured || width - AROUND) * SAFE;
+  const em = titleWidthEm(title);
+  const size = Math.floor(Math.max(MIN_TITLE, Math.min(MAX_TITLE, em > 0 ? avail / em : MAX_TITLE)));
+  const body = (
+    <Panel gradient="rose" radius={radius.card + 2} padding="none" style={styles.panel}>
+      <View style={styles.face}>
+        {photoUri ? (
+          <>
+            <Avatar size={AVATAR} uri={photoUri} ring={color.white} />
+            {/* Le minimoa arrive en « pop » sur le coin de ta photo. */}
+            <PopIn delay={220} from={0.3} style={styles.badge} pointerEvents="none">
+              <Avatar size={BADGE} pet={pet} hidden ring={color.white} />
+            </PopIn>
+          </>
+        ) : (
+          <PopIn delay={120} from={0.6}>
+            <Avatar size={AVATAR} pet={pet} hidden ring={color.white} />
+          </PopIn>
+        )}
       </View>
+      <View style={styles.texts} onLayout={(e) => setMeasured(Math.round(e.nativeEvent.layout.width))}>
+        <Title text={title} size={size} numberOfLines={2} />
+        {caption ? (
+          <Text variant="bodyBold" size={13} numberOfLines={1} style={styles.caption}>
+            {caption}
+          </Text>
+        ) : null}
+      </View>
+      {onPress ? (
+        <View style={styles.more} pointerEvents="none">
+          <Glyph name="chevron" size={16} color={color.dark} />
+        </View>
+      ) : null}
     </Panel>
+  );
+  if (!onPress) return <View accessible accessibilityLabel={accessibilityLabel}>{body}</View>;
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={accessibilityLabel} scaleTo={0.98}>
+      {body}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  // La pastille du pet déborde de 16 à droite de la photo : l'écart la laisse hors du texte.
-  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md + 12 },
-  // L'anneau (2 + 2 pt) déborde du disque de 48 : la pastille est à -12 / -10 du coin, comme `.ava`.
-  badge: { position: 'absolute', right: -12 - 4, bottom: -10 - 4 },
+  panel: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md + 2, paddingHorizontal: space.md + 2 },
+  face: { width: AVATAR + 8, height: AVATAR + 8, alignItems: 'center', justifyContent: 'center' },
+  // La pastille du minimoa déborde un peu du coin bas-droit de la photo.
+  badge: { position: 'absolute', right: -4, bottom: -2 },
   texts: { flex: 1, minWidth: 0 },
-  hint: { marginTop: 6 },
+  caption: { marginTop: 4, opacity: 0.75 },
+  more: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: alpha(color.dark, 0.08) },
 });

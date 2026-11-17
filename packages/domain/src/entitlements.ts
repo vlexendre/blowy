@@ -20,6 +20,8 @@ export interface Entitlements {
   encounterBonus: 0 | 1;
   /** Objets premium de la garde-robe. */
   premiumItems: boolean;
+  /** Groupes à la fois, membre ou en formation (spéc §26). */
+  groups: 2 | 10;
 }
 
 const FREE: Entitlements = Object.freeze({
@@ -31,6 +33,7 @@ const FREE: Entitlements = Object.freeze({
   detailedReview: false,
   encounterBonus: 0,
   premiumItems: false,
+  groups: 2,
 });
 
 const PLUS: Entitlements = Object.freeze({
@@ -42,6 +45,7 @@ const PLUS: Entitlements = Object.freeze({
   detailedReview: true,
   encounterBonus: 1,
   premiumItems: true,
+  groups: 10,
 });
 
 /** Limites selon l'abonnement. Pur : `plus` vient de `hasPlus(profile, now)`. */

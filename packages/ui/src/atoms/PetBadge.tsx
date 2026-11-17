@@ -22,7 +22,7 @@ const SLOTS = ['body', 'face', 'head'] as const;
 
 /** Médaillon rond du pet habillé : tête et épaules, avec les objets de la tête et du visage (rangées de chat, en-têtes). */
 export function PetBadge({ species, outfit, size = 44, background, ring, accessibilityLabel, style }: PetBadgeProps) {
-  const frame = badgeFrame(species);
+  const frame = badgeFrame(species, 'neutre');
   const k = size / frame.side;
   const disc = (
     <View style={[styles.disc, { width: size, height: size, backgroundColor: background ?? speciesColor[species] }]}>
@@ -30,6 +30,8 @@ export function PetBadge({ species, outfit, size = 44, background, ring, accessi
         species={species}
         outfit={outfit}
         slots={SLOTS}
+        pose="neutre"
+        flat
         size={FIT_CANVAS.width * k}
         style={{ position: 'absolute', left: -(frame.cx - frame.side / 2) * k, top: -(frame.cy - frame.side / 2) * k }}
       />

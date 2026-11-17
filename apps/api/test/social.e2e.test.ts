@@ -122,7 +122,8 @@ describe('vie sociale et sécurité', () => {
     expect((await carol.api.encounters.list()).suggestions.some((s) => s.user.id === bob.id)).toBe(false);
     expect(await alice.api.safety.blocks()).toEqual([{ userId: bob.id, displayName: 'Bobby' }]);
     expect(await errorCode(bob.api.encounters.wave(alice.id))).toBe('not_found');
-    expect(await errorCode(bob.api.invites.accept(aliceInvite))).toBe('forbidden');
+    // Comme le coucou : introuvable, rien ne trahit le blocage (audit du 17 nov.).
+    expect(await errorCode(bob.api.invites.accept(aliceInvite))).toBe('not_found');
 
     await alice.api.safety.report({ userId: bob.id, linkId: aliceToBob?.id, reason: 'harcelement', details: 'messages insistants' });
     expect(await errorCode(alice.api.safety.report({ userId: carol.id, linkId: aliceToBob?.id, reason: 'autre' }))).toBe('not_found');
@@ -191,7 +192,7 @@ describe('configuration', () => {
       expect(history.items).toHaveLength(1);
       expect(history.items[0]).toMatchObject({ person: { displayName: 'Malo' }, direction: 'received', outcome: 'linked', linkId: link?.id });
       // Pets de démo habillés ; la nouvelle personne part avec les objets de départ.
-      expect(enc.incoming[0]?.from.pet.outfit).toEqual({ head: 'noeud', face: 'lunettes_coeur' });
+      expect(enc.incoming[0]?.from.pet.outfit).toEqual({ head: 'noeud', face: 'lunettes_etoile' });
       expect(link?.other.pet.outfit).toEqual({ head: 'casquette', body: 'echarpe' });
       expect(enc.suggestions.find((s) => s.user.displayName === 'Sasha')?.user.pet.outfit).toEqual({ head: 'cornes', toy: 'skate' });
       const wardrobe = await me.api.pet.wardrobe();

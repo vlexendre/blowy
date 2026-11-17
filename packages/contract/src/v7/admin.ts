@@ -101,6 +101,8 @@ export const AdminReportItemZ = z.object({
   reporter: AdminPersonZ.nullable(),
   target: AdminPersonZ.extend({ suspended: z.boolean(), /** Fin de la suspension (null : sans fin, ou pas suspendu). */ suspendedUntil: z.string().nullable(), openReports: z.number().int(), totalReports: z.number().int() }).nullable(),
   linkId: z.string().nullable(),
+  /** Signalement dans un groupe (message, membre ou le groupe) : `GET /admin/groups/:id`, fermeture possible. */
+  groupId: z.string().nullable().optional(),
   hasMessage: z.boolean(),
   resolution: z.object({ action: ModerationActionKindZ, at: z.string(), by: z.string() }).nullable(),
   /** File de modération : urgent (mineur, menace), haut (haine, arnaque, plusieurs personnes), normal. */

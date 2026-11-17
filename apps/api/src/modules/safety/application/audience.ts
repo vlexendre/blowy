@@ -12,7 +12,11 @@ import type { BlocksRepository } from '../ports';
  * - `suggest` : proposée en rencontre, coucou reçu, page d'invitation ou « 3 mots », compteur du paywall ;
  * - `map` : épingle sur la carte (en plus : pas en mode discret, position consentie).
  */
-export type AudiencePurpose = 'suggest' | 'map';
+export type AudiencePurpose = 'suggest' | 'map' | 'group' | 'habits' | 'together';
+// - `group` : membre d'un groupe vu par un autre membre, invitation à un groupe (mêmes règles que `suggest`) ;
+// - `habits` : ses habitudes, leur série et sa rigueur (en plus : réglage « Montrer mes habitudes » activé, spéc §25) ;
+// - `together` : compté dans une suggestion « la tenir ensemble » (en plus : habitudes montrées, pas en mode discret,
+//   position consentie, spéc §26).
 
 /**
  * Seul endroit qui décide si une personne est « utilisable » pour une autre (docs/ARCHITECTURE.md) :
@@ -49,7 +53,8 @@ export class Audience {
     return wanted.flatMap((id) => {
       const p = byId.get(id);
       if (!p || blocked.has(id) || suspended.has(id) || !world(p.reviewWorld)) return [];
-      if (purpose === 'map' && (p.discreet || !p.locationConsentAt)) return [];
+      if ((purpose === 'map' || purpose === 'together') && (p.discreet || !p.locationConsentAt)) return [];
+      if ((purpose === 'habits' || purpose === 'together') && p.showHabits === false) return [];
       return [p];
     });
   }

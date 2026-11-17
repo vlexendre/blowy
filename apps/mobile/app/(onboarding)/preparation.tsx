@@ -1,6 +1,6 @@
 /**
  * Préparation (après la connexion) : c'est ici que le compte et le minimoa sont vraiment créés (`useOnboard`, avec
- * tout le brouillon : vision, sexe, ce que tu cherches et l'accord, position, langue du téléphone, invitation). Le pet au milieu,
+ * tout le brouillon : vision, sexe, position, langue du téléphone, invitation). Le pet au milieu,
  * un pourcentage, une barre et 4 lignes qui se cochent. La barre est un décor honnête : la dernière ligne et 100 %
  * n'arrivent qu'une fois la création réussie, 2,5 s au plus de plus que le serveur, et un tap passe le reste.
  * Erreur : tout s'arrête sur place, le message et « réessayer » ; jamais de faux 100 %. Un nom refusé par le filtre

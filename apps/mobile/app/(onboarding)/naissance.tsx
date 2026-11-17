@@ -80,7 +80,7 @@ function NaissanceStep({ onTooYoung }: { onTooYoung: (v: { name: string; species
     <ScreenMotion>
       <OnboardingTemplate
         {...progressAt('naissance')}
-        onBack={() => goBack('/(onboarding)/cherche')}
+        onBack={() => goBack('/(onboarding)/habitudes')}
         backLabel={common.back}
         host={{ species, line: t.host, highlight: t.highlight, seed: petName, name: petName }}
         gap={14}

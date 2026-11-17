@@ -81,6 +81,7 @@ export default function Compte() {
       <PhotoEditCard
         key="photo"
         uri={m.avatarUrl}
+        pet={m.pet}
         photoLabel={t.photoLabel}
         hint={t.photoHint}
         actionLabel={m.avatarUrl ? t.photoChange : t.photoAdd}

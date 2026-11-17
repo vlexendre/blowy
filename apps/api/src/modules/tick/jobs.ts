@@ -11,6 +11,7 @@ import { AdminStatsJobs } from '../admin/application/stats.jobs';
 import { RetentionJobs } from '../retention/application/retention.jobs';
 import { WardrobeJobs } from '../pets/application/wardrobe.jobs';
 import { ModerationJobs } from '../moderation/moderation.jobs';
+import { GroupJobs } from '../groups/application/group.jobs';
 import type { TickJobClass } from './tick-job';
 
 export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
@@ -22,4 +23,5 @@ export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
   { name: 'retention', job: RetentionJobs },
   { name: 'moderation', job: ModerationJobs },
   { name: 'wardrobe', job: WardrobeJobs },
+  { name: 'groups', job: GroupJobs },
 ];

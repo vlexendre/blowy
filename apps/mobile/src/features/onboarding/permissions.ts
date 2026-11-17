@@ -9,6 +9,8 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+import { currentPosition } from '@/features/map/location';
+
 import type { PermissionAnswer } from './index';
 
 /** Demande la position « app ouverte seulement » (jamais en arrière-plan). */
@@ -21,20 +23,9 @@ export async function askLocation(): Promise<PermissionAnswer> {
   }
 }
 
-/** Point approximatif (précision réduite suffit : l'API arrondit à ~300 m). Null si rien en 8 s. */
+/** Point du moment (précision moyenne : l'API arrondit à ~300 m), jamais une position en cache vieille. Null si rien en 10 s. */
 export async function readPosition(): Promise<LatLng | null> {
-  try {
-    const last = Platform.OS === 'web' ? null : await Location.getLastKnownPositionAsync({ maxAge: 10 * 60_000 });
-    const pos =
-      last ??
-      (await Promise.race([
-        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
-        new Promise<null>((r) => setTimeout(() => r(null), 8000)),
-      ]));
-    return pos ? { latitude: pos.coords.latitude, longitude: pos.coords.longitude } : null;
-  } catch {
-    return null;
-  }
+  return currentPosition();
 }
 
 /** Demande d'envoyer des notifications (alerte, son, pastille). */

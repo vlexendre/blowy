@@ -17,7 +17,7 @@ export interface PromiseStageProps {
   title: TitleContent;
   /** Pourquoi c'est important (la vraie règle du jeu, en une phrase). */
   text: string;
-  /** À incrémenter quand la promesse est faite : le pet saute de joie dans des cœurs. */
+  /** À incrémenter quand la promesse est faite : le pet saute de joie dans des étoiles. */
   cheerKey?: number;
   /** Graine du pet (règle 8). */
   seed?: string;
@@ -26,7 +26,7 @@ export interface PromiseStageProps {
 
 /**
  * La promesse de l'inscription : la demande du pet en grand, pourquoi en une ligne, et le pet vivant au milieu
- * (on peut le toucher). `cheerKey` : il saute de joie et des cœurs s'envolent. Le bouton à maintenir (`HoldButton`)
+ * (on peut le toucher). `cheerKey` : il saute de joie et des étoiles s'envolent. Le bouton à maintenir (`HoldButton`)
  * va dans le pied du gabarit. Le pet rapetisse sur les petits écrans pour ne jamais toucher le pied.
  */
 export function PromiseStage({ species, kicker, title, text, cheerKey = 0, seed, petLabel }: PromiseStageProps) {
@@ -57,7 +57,7 @@ export function PromiseStage({ species, kicker, title, text, cheerKey = 0, seed,
           <Appear delay={260} scale={0.85} distance={24}>
             <PetActor ref={actor} species={species} mood="neutre" size={size} seed={seed} sleepAfter={null} accessibilityLabel={petLabel} />
           </Appear>
-          <Burst kind="hearts" trigger={cheerKey} seed={seed} spread={size * 0.7} style={[styles.burst, { top: size * 0.25 }]} />
+          <Burst kind="stars" trigger={cheerKey} seed={seed} spread={size * 0.7} style={[styles.burst, { top: size * 0.25 }]} />
         </View>
       </View>
     </View>

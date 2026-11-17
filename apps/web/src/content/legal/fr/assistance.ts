@@ -28,7 +28,7 @@ export const assistance: LegalPage = {
         {
           q: 'C’est quoi, un minimoa ?',
           a: [
-            'Ton minimoa, c’est toi en petit : il porte ta vision de la vie et tes habitudes. Il te présente des gens dont la vision est compatible avec la tienne, pour devenir potes ou plus. Plus tu t’en occupes (en sortant, en tenant tes habitudes), plus il te présente de monde. Il ne meurt jamais.',
+            'Ton minimoa, c’est toi en petit : il porte ta vision de la vie et tes habitudes. Il te présente des gens dont la vision est compatible avec la tienne pour créer des liens. Ce qu’ils deviennent vous regarde. Plus tu t’en occupes (en sortant, en tenant tes habitudes), plus il te présente de monde. Il ne meurt jamais.',
           ],
         },
         {

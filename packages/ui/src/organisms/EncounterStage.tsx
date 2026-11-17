@@ -6,10 +6,8 @@ import { Avatar } from '../atoms/Avatar';
 import { Chip } from '../atoms/Chip';
 import { IconButton } from '../atoms/IconButton';
 import { Panel } from '../atoms/Panel';
-import { hasOutfit } from '../assets/fit';
-import type { PetPose } from '../assets/pets';
+import type { BodyPose } from '../assets/pets';
 import { DressedPet } from '../atoms/DressedPet';
-import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { hapticFor } from '../lib/haptics';
@@ -56,10 +54,29 @@ export interface EncounterStageHandle {
 
 const PET = 172;
 
-/** Pet de la scène : habillé (pose debout) quand il porte une tenue, sinon dans sa pose détourée. */
-function StagePet({ pet, pose, delay }: { pet: PetLook; pose: PetPose; delay?: number }) {
-  if (hasOutfit(pet.outfit)) return <DressedPet species={pet.species} outfit={pet.outfit} size={PET * 0.92} animated delay={delay} />;
-  return <PetImage species={pet.species} mood={pose} size={PET} outline animation="breathe" delay={delay} />;
+/**
+ * Minimoa de la scène, en pied et habillé : `pose` au repos, `then` une fois qu'on a salué (fondu-enchaîné court,
+ * le rebond est joué par `Actor`). Animations réduites : fondu seul.
+ */
+function StagePet({ pet, pose, then, waveKey, delay }: { pet: PetLook; pose: BodyPose; then: BodyPose; waveKey: number; delay?: number }) {
+  const reduced = useReducedMotion();
+  const after = useSharedValue(waveKey ? 1 : 0);
+  useEffect(() => {
+    if (!waveKey) return;
+    after.value = reduced ? fadeTo(1, motion.fast) : withTiming(1, { duration: 140, easing: ease.inOut });
+  }, [waveKey, reduced, after]);
+  const a = useAnimatedStyle(() => ({ opacity: 1 - after.value }));
+  const b = useAnimatedStyle(() => ({ opacity: after.value }));
+  return (
+    <View style={{ width: PET, height: Math.round(PET / 0.9) }}>
+      <Animated.View style={[StyleSheet.absoluteFill, a]}>
+        <DressedPet species={pet.species} outfit={pet.outfit} size={PET} pose={pose} animated delay={delay} />
+      </Animated.View>
+      <Animated.View style={[StyleSheet.absoluteFill, b]}>
+        <DressedPet species={pet.species} outfit={pet.outfit} size={PET} pose={then} animated delay={delay} />
+      </Animated.View>
+    </View>
+  );
 }
 
 /**
@@ -151,13 +168,14 @@ export const EncounterStage = forwardRef<EncounterStageHandle, EncounterStagePro
         {me ? (
           <View style={styles.mine} pointerEvents="none">
             <Actor ref={mine} side={-1} delay={80} waveKey={waveKey} hidden={hidden}>
-              <StagePet pet={me.pet} pose={waveKey ? 'salut' : 'cote'} />
+              {/* Il arrive de profil vers l'autre ; quand tu salues, il lève la main pour un check. */}
+              <StagePet pet={me.pet} pose="marche" then="check" waveKey={waveKey} />
             </Actor>
           </View>
         ) : null}
         <View style={styles.theirs} pointerEvents="none">
           <Actor ref={theirs} side={1} delay={200} waveKey={waveKey} answer hidden={hidden}>
-            <StagePet pet={them.pet} pose="salut" delay={500} />
+            <StagePet pet={them.pet} pose="coucou" then="joie" waveKey={waveKey} delay={500} />
           </Actor>
         </View>
         {me ? (

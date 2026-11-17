@@ -23,6 +23,7 @@ import {
   PetImage,
   Pressable,
   ScreenTemplate,
+  SharedHabitsCard,
   SheetTemplate,
   Skeleton,
   Stagger,
@@ -37,6 +38,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
+import { sharedHabitsView } from '@/features/groups';
 import { openLegal } from '@/features/me';
 import { MEET_LEVEL, useMeetReminders } from '@/features/safety';
 import { home as homeText } from '@/locales/pet';
@@ -376,6 +378,8 @@ function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void
   const meetSeen = useMeetReminders((s) => s.seen);
   const dismissMeet = useMeetReminders((s) => s.dismiss);
   const meet = link.status === 'active' && link.level >= MEET_LEVEL && !meetSeen.includes(link.id);
+  // Habitudes tenues tous les deux (spéc. §25) : absentes sans habitude commune ou si l'un des deux a coupé le réglage.
+  const shared = sharedHabitsView(link.sharedHabits, name);
   return (
     <View style={styles.body}>
       <Stagger onceKey={`lien:${link.id}`} step={70}>
@@ -421,6 +425,7 @@ function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void
           text={todayText.livesText}
           accessibilityLabel={t.lives(link.lives)}
         />
+        {shared ? <SharedHabitsCard key="shared" {...shared} /> : null}
         <Text key="todoTitle" variant="label" size={11} muted style={styles.todoTitle}>
           {todayText.todoTitle}
         </Text>
@@ -440,7 +445,7 @@ function LienBody({ link, onWrite, onLevels }: { link: Link; onWrite: () => void
   );
 }
 
-const MILESTONE_ICON = { met: 'coeurs', level: 'etoiles', streak: 'flamme' } as const;
+const MILESTONE_ICON = { met: 'confettis', level: 'etoiles', streak: 'flamme' } as const;
 
 /** Les étapes du lien (rencontre, niveaux passés, paliers de série), puis ses photos d'avant s'il y en a. */
 function Milestones({ link }: { link: Link }) {

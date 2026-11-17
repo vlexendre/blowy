@@ -28,7 +28,7 @@ export const assistance: LegalPage = {
         {
           q: 'Wat is een minimoa?',
           a: [
-            'Je minimoa is jij in het klein: hij draagt je kijk op het leven en je gewoontes. Hij stelt je voor aan mensen met een passende kijk, als vrienden of meer. Hoe beter je voor hem zorgt (door naar buiten te gaan, je gewoontes vol te houden), hoe meer mensen hij je voorstelt. Hij gaat nooit dood.',
+            'Je minimoa is jij in het klein: hij draagt je kijk op het leven en je gewoontes. Hij stelt je voor aan mensen met een passende kijk om banden te leggen. Wat ze worden, is aan jullie. Hoe beter je voor hem zorgt (door naar buiten te gaan, je gewoontes vol te houden), hoe meer mensen hij je voorstelt. Hij gaat nooit dood.',
           ],
         },
         {

@@ -222,59 +222,13 @@ export function testSignals(answers: readonly VisionAnswer[], at: string): Visio
   return out;
 }
 
-// ── Qui on est, qui on cherche ───────────────────────────────────────────────
+// ── Qui on est ───────────────────────────────────────────────────────────────
 
+/** Sexe (« Tu es… ») : demandé pour les accords grammaticaux et les statistiques ; il ne filtre rien (spéc. §27). */
 export const GENDERS = ['femme', 'homme', 'non_binaire', 'non_dit'] as const;
 export type Gender = (typeof GENDERS)[number];
-/** Des potes, plus, ou les deux. */
-export const SEEKINGS = ['potes', 'plus', 'les_deux'] as const;
-export type Seeking = (typeof SEEKINGS)[number];
-/** Pour « plus » : qui la personne veut rencontrer. Donnée sensible : sert au filtre, n'est jamais montrée aux autres. */
-export const WHOMS = ['femmes', 'hommes', 'tout_le_monde'] as const;
-export type Whom = (typeof WHOMS)[number];
 export const LOCALES = ['fr', 'en', 'es', 'pt', 'nl'] as const;
 export type Locale = (typeof LOCALES)[number];
-
-export interface Seeker {
-  gender: Gender;
-  seeking: Seeking;
-  /** Null quand la personne ne cherche que des potes. */
-  whom: Whom | null;
-}
-
-/** Façon dont deux personnes peuvent se rencontrer. */
-export type MatchMode = 'potes' | 'plus';
-
-const accepts = (whom: Whom | null, gender: Gender): boolean =>
-  whom === 'tout_le_monde' || (whom === 'femmes' && gender === 'femme') || (whom === 'hommes' && gender === 'homme');
-const wantsMoreWith = (a: Seeker, b: Seeker): boolean => a.seeking !== 'potes' && accepts(a.whom, b.gender);
-const openToFriends = (s: Seeker): boolean => s.seeking !== 'plus';
-
-/**
- * Filtre « ce que chacun cherche » : « plus » seulement si c'est réciproque (chacun cherche plus, et le sexe de
- * l'autre correspond à qui il veut rencontrer) ; sinon « potes » si les deux sont ouverts à des potes ; sinon rien.
- * Une personne qui n'a pas dit son sexe n'entre dans « plus » qu'avec quelqu'un qui cherche « tout le monde ».
- */
-export function matchMode(a: Seeker, b: Seeker): MatchMode | null {
-  if (wantsMoreWith(a, b) && wantsMoreWith(b, a)) return 'plus';
-  if (openToFriends(a) && openToFriends(b)) return 'potes';
-  return null;
-}
-
-/**
- * Ce que deux personnes cherchent toutes les deux, une fois le filtre réciproque passé (« Vous cherchez tous les
- * deux… ») : friends (des potes) · more (plus) · both (les deux : plus, et des potes aussi). Rien sur « qui » :
- * « more » ou « both » ne sortent que si c'est réciproque, ce que la présentation elle-même implique déjà.
- * null : ils ne peuvent pas se rencontrer (`matchMode` vaut null).
- */
-export const LOOKING_FOR = ['friends', 'more', 'both'] as const;
-export type LookingFor = (typeof LOOKING_FOR)[number];
-export function mutualLookingFor(a: Seeker, b: Seeker): LookingFor | null {
-  const mode = matchMode(a, b);
-  if (mode === null) return null;
-  if (mode === 'potes') return 'friends';
-  return openToFriends(a) && openToFriends(b) ? 'both' : 'more';
-}
 
 // ── Compatibilité ────────────────────────────────────────────────────────────
 
@@ -284,11 +238,11 @@ export const MATCH_THRESHOLD = 70;
 export const CLOSENESS_SPAN = 150;
 /** Un axe peu connu compte quand même un peu : sinon deux profils neufs n'auraient aucun score. */
 export const MIN_AXIS_TRUST = 0.15;
-/** Foyer : compte peu entre potes, double pour « plus ». */
-export const AXIS_WEIGHTS: Readonly<Record<MatchMode, Readonly<Record<VisionAxis, number>>>> = {
-  potes: { foyer: 0.25, ancrage: 1, elan: 1, rythme: 1, cap: 1 },
-  plus: { foyer: 2, ancrage: 1, elan: 1, rythme: 1, cap: 1 },
-};
+/**
+ * Poids des axes. On ne demande plus ce que les gens cherchent (spéc. §27) : un seul jeu de poids, celui d'une
+ * relation qui se crée, où le Foyer compte peu (la nature du lien regarde les gens).
+ */
+export const AXIS_WEIGHTS: Readonly<Record<VisionAxis, number>> = { foyer: 0.25, ancrage: 1, elan: 1, rythme: 1, cap: 1 };
 
 /** Proximité sur un axe, de 0 à 1. */
 export const closeness = (a: number, b: number): number => Math.max(0, 1 - Math.abs(a - b) / CLOSENESS_SPAN);
@@ -315,19 +269,18 @@ export interface ToExplore {
 export interface Compatibility {
   /** De 0 à 100. Jamais montré seul : toujours avec l'explication. */
   score: number;
-  mode: MatchMode;
   /** Les 3 axes les plus proches. */
   common: readonly [CommonPoint, CommonPoint, CommonPoint];
   /** L'axe le plus éloigné parmi les deux autres. */
   explore: ToExplore;
 }
 
-/** Score de 0 à 100 : proximité sur les 5 axes, pondérée par la confiance commune et le poids de l'axe selon le mode. */
-export function visionScore(me: VisionProfile, other: VisionProfile, mode: MatchMode): number {
+/** Score de 0 à 100 : proximité sur les 5 axes, pondérée par la confiance commune et le poids de l'axe. */
+export function visionScore(me: VisionProfile, other: VisionProfile): number {
   let sum = 0;
   let weight = 0;
   for (const axis of VISION_AXES) {
-    const w = AXIS_WEIGHTS[mode][axis] * axisTrust(me[axis], other[axis]);
+    const w = AXIS_WEIGHTS[axis] * axisTrust(me[axis], other[axis]);
     sum += w * closeness(me[axis].value, other[axis].value);
     weight += w;
   }
@@ -338,12 +291,12 @@ export function visionScore(me: VisionProfile, other: VisionProfile, mode: Match
  * Compatibilité et explication (« 3 points communs, 1 différence à explorer »).
  * Classement des axes : proximité décroissante, puis poids × confiance décroissant, puis ordre des axes.
  */
-export function compatibilityOf(me: VisionProfile, other: VisionProfile, mode: MatchMode): Compatibility {
+export function compatibilityOf(me: VisionProfile, other: VisionProfile): Compatibility {
   const ranked = VISION_AXES.map((axis, index) => ({
     axis,
     index,
     close: closeness(me[axis].value, other[axis].value),
-    weight: AXIS_WEIGHTS[mode][axis] * axisTrust(me[axis], other[axis]),
+    weight: AXIS_WEIGHTS[axis] * axisTrust(me[axis], other[axis]),
   })).sort((a, b) => b.close - a.close || b.weight - a.weight || a.index - b.index);
   const [c1, c2, c3, r1, r2] = ranked as [(typeof ranked)[number], (typeof ranked)[number], (typeof ranked)[number], (typeof ranked)[number], (typeof ranked)[number]];
   const leans = (axis: VisionAxis): AxisLeans => ({ mine: axisLean(me[axis]), theirs: axisLean(other[axis]) });
@@ -351,8 +304,7 @@ export function compatibilityOf(me: VisionProfile, other: VisionProfile, mode: M
   // Différence à explorer : la plus grande des deux restantes (r2 est la moins proche, sauf égalité où r1 l'emporte par l'ordre).
   const far = r2.close < r1.close ? r2 : r1.close < r2.close ? r1 : r1.weight >= r2.weight ? r1 : r2;
   return {
-    score: visionScore(me, other, mode),
-    mode,
+    score: visionScore(me, other),
     common: [common(c1), common(c2), common(c3)],
     explore: { axis: far.axis, mine: sideOf(me[far.axis].value), theirs: sideOf(other[far.axis].value), leans: leans(far.axis) },
   };
@@ -360,7 +312,7 @@ export function compatibilityOf(me: VisionProfile, other: VisionProfile, mode: M
 
 // ── Filtres durs ─────────────────────────────────────────────────────────────
 
-export interface MatchPerson extends Seeker {
+export interface MatchPerson {
   id: string;
   birthdate: Day;
   vision: VisionProfile;
@@ -377,17 +329,15 @@ export interface MatchContext {
 }
 
 /**
- * Appariement complet : filtres durs (soi, blocages, 18+, ce que chacun cherche, zone), puis profil assez connu,
+ * Appariement complet : filtres durs (soi, blocages, 18+, zone), puis profil assez connu,
  * puis seuil. Rend null si l'autre ne doit pas être présenté.
  */
 export function match(me: MatchPerson, other: MatchPerson, ctx: MatchContext): Compatibility | null {
   if (me.id === other.id || ctx.blocked.has(other.id)) return null;
   if (ageOn(me.birthdate, ctx.today) < MIN_AGE || ageOn(other.birthdate, ctx.today) < MIN_AGE) return null;
   if (ctx.radiusKm !== null && (ctx.distanceKm === null || ctx.distanceKm > ctx.radiusKm)) return null;
-  const mode = matchMode(me, other);
-  if (!mode) return null;
   if (!isMatchable(me.vision) || !isMatchable(other.vision)) return null;
-  const c = compatibilityOf(me.vision, other.vision, mode);
+  const c = compatibilityOf(me.vision, other.vision);
   return c.score >= MATCH_THRESHOLD ? c : null;
 }
 
@@ -483,17 +433,29 @@ export const NO_HOME: HomeState = Object.freeze({ home: null, candidate: null, c
 /** Hors de la zone du domicile (sert à confirmer une sortie). Sans domicile connu : non. */
 export const isAwayFromHome = (home: GeoPoint | null, at: GeoPoint): boolean => home !== null && distanceKm(home, at) > ZONE_RADIUS_KM;
 
+/** Premiers jours après l'accord de localisation : la zone se cale (le tout premier relevé est souvent faux). */
+export const HOME_SETTLE_HOURS = 72;
+/** Pendant ces premiers jours, un autre endroit revu une heure plus tard devient la zone (au lieu de 72 h). */
+export const HOME_SETTLE_CONFIRM_MINUTES = 60;
+
+/** Vrai pendant les premiers jours qui suivent l'accord de localisation (`consentAt`). */
+export const isHomeSettling = (consentAt: string | null, at: string): boolean =>
+  consentAt !== null && new Date(at).getTime() - new Date(consentAt).getTime() < HOME_SETTLE_HOURS * 3_600_000;
+
 /**
  * Nouvelle position relevée (app ouverte). La zone ne bouge pas pour une sortie : elle ne déménage que si
  * la personne est vue au même autre endroit pendant au moins 72 h.
+ * `settling` (premiers jours après l'accord, `isHomeSettling`) : le premier relevé (inscription, position en cache du
+ * téléphone, inscription faite ailleurs) n'enferme pas la zone ; un autre endroit revu une heure plus tard la remplace.
  */
-export function updateHome(state: HomeState, fix: GeoPoint, at: string): HomeState {
+export function updateHome(state: HomeState, fix: GeoPoint, at: string, settling = false): HomeState {
   const snapped = snapToGrid(fix, GRID_METERS);
   if (!state.home) return { home: snapped, candidate: null, candidateSince: null };
   if (distanceKm(state.home, fix) <= ZONE_RADIUS_KM) return { home: state.home, candidate: null, candidateSince: null };
   if (state.candidate && state.candidateSince && distanceKm(state.candidate, fix) <= ZONE_RADIUS_KM) {
     const hours = (new Date(at).getTime() - new Date(state.candidateSince).getTime()) / 3_600_000;
-    if (hours >= HOME_MOVE_HOURS) return { home: state.candidate, candidate: null, candidateSince: null };
+    const needed = settling ? HOME_SETTLE_CONFIRM_MINUTES / 60 : HOME_MOVE_HOURS;
+    if (hours >= needed) return { home: state.candidate, candidate: null, candidateSince: null };
     return state;
   }
   return { home: state.home, candidate: snapped, candidateSince: at };

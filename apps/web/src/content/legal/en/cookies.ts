@@ -20,7 +20,7 @@ export const cookies: LegalPage = {
       table: {
         head: ['Service', 'Why', 'On which pages'],
         rows: [
-          ['Google Fonts (Google)', 'The Anton and Bricolage Grotesque fonts', 'All'],
+          ['Google Fonts (Google)', 'The Anton font', 'All'],
           ['cdnjs (Cloudflare)', 'The GSAP animation library', 'Home page'],
           ['Website host: {{siteHost.name}}', 'Serving the pages', 'All'],
           ['Minimoa app server (API)', 'Showing the person’s first name and minimoa, saving the words chosen', '“3 words” and invitation pages'],

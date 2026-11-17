@@ -17,6 +17,106 @@ export type PetPose = Mood | (typeof PET_POSES)[number];
 export const FULL_BODY_POSES = ['debout', 'trois_quarts', 'cote', 'dos'] as const satisfies readonly PetPose[];
 export type FullBodyPose = (typeof FULL_BODY_POSES)[number];
 
+/**
+ * Poses en corps entier du pack (toile 900×1000 commune, pieds sur la ligne y = 958) : `<espèce>_corps_<pose>.webp`.
+ * Elles servent partout où le minimoa est montré en grand (scène de l'accueil, garde-robe, rencontre, défi, série) ;
+ * les bustes restent pour les petites tailles (avatars, listes, badges). Toutes se remplacent l'une l'autre sans saut :
+ * même échelle par espèce, même ligne de sol. L'habillage a ses ancres mesurées pour chacune (`fit.json` → `poses`).
+ */
+export const BODY_POSES = ['neutre', 'joie', 'triste', 'surpris', 'boude', 'dodo', 'mange', 'joue', 'marche', 'coucou', 'check', 'pense'] as const;
+export type BodyPose = (typeof BODY_POSES)[number];
+
+const BODY_IMAGES: Record<Species, Record<BodyPose, Src>> = {
+  nino: {
+    neutre: require('../../assets/pets/nino_corps_neutre.webp'),
+    joie: require('../../assets/pets/nino_corps_joie.webp'),
+    triste: require('../../assets/pets/nino_corps_triste.webp'),
+    surpris: require('../../assets/pets/nino_corps_surpris.webp'),
+    boude: require('../../assets/pets/nino_corps_boude.webp'),
+    dodo: require('../../assets/pets/nino_corps_dodo.webp'),
+    mange: require('../../assets/pets/nino_corps_mange.webp'),
+    joue: require('../../assets/pets/nino_corps_joue.webp'),
+    marche: require('../../assets/pets/nino_corps_marche.webp'),
+    coucou: require('../../assets/pets/nino_corps_coucou.webp'),
+    check: require('../../assets/pets/nino_corps_check.webp'),
+    pense: require('../../assets/pets/nino_corps_pense.webp'),
+  },
+  suzie: {
+    neutre: require('../../assets/pets/suzie_corps_neutre.webp'),
+    joie: require('../../assets/pets/suzie_corps_joie.webp'),
+    triste: require('../../assets/pets/suzie_corps_triste.webp'),
+    surpris: require('../../assets/pets/suzie_corps_surpris.webp'),
+    boude: require('../../assets/pets/suzie_corps_boude.webp'),
+    dodo: require('../../assets/pets/suzie_corps_dodo.webp'),
+    mange: require('../../assets/pets/suzie_corps_mange.webp'),
+    joue: require('../../assets/pets/suzie_corps_joue.webp'),
+    marche: require('../../assets/pets/suzie_corps_marche.webp'),
+    coucou: require('../../assets/pets/suzie_corps_coucou.webp'),
+    check: require('../../assets/pets/suzie_corps_check.webp'),
+    pense: require('../../assets/pets/suzie_corps_pense.webp'),
+  },
+  gaston: {
+    neutre: require('../../assets/pets/gaston_corps_neutre.webp'),
+    joie: require('../../assets/pets/gaston_corps_joie.webp'),
+    triste: require('../../assets/pets/gaston_corps_triste.webp'),
+    surpris: require('../../assets/pets/gaston_corps_surpris.webp'),
+    boude: require('../../assets/pets/gaston_corps_boude.webp'),
+    dodo: require('../../assets/pets/gaston_corps_dodo.webp'),
+    mange: require('../../assets/pets/gaston_corps_mange.webp'),
+    joue: require('../../assets/pets/gaston_corps_joue.webp'),
+    marche: require('../../assets/pets/gaston_corps_marche.webp'),
+    coucou: require('../../assets/pets/gaston_corps_coucou.webp'),
+    check: require('../../assets/pets/gaston_corps_check.webp'),
+    pense: require('../../assets/pets/gaston_corps_pense.webp'),
+  },
+  pia: {
+    neutre: require('../../assets/pets/pia_corps_neutre.webp'),
+    joie: require('../../assets/pets/pia_corps_joie.webp'),
+    triste: require('../../assets/pets/pia_corps_triste.webp'),
+    surpris: require('../../assets/pets/pia_corps_surpris.webp'),
+    boude: require('../../assets/pets/pia_corps_boude.webp'),
+    dodo: require('../../assets/pets/pia_corps_dodo.webp'),
+    mange: require('../../assets/pets/pia_corps_mange.webp'),
+    joue: require('../../assets/pets/pia_corps_joue.webp'),
+    marche: require('../../assets/pets/pia_corps_marche.webp'),
+    coucou: require('../../assets/pets/pia_corps_coucou.webp'),
+    check: require('../../assets/pets/pia_corps_check.webp'),
+    pense: require('../../assets/pets/pia_corps_pense.webp'),
+  },
+};
+
+/** Pose en corps entier qui exprime une humeur ou une ancienne pose (`amour` → `joie`, `salut` → `coucou`…). */
+const BODY_FOR: Record<PetPose, BodyPose> = {
+  neutre: 'neutre',
+  joie: 'joie',
+  triste: 'triste',
+  amour: 'joie',
+  surpris: 'surpris',
+  smug: 'pense',
+  salut: 'coucou',
+  colere: 'boude',
+  dodo: 'dodo',
+  fantome: 'triste',
+  malade: 'triste',
+  debout: 'neutre',
+  trois_quarts: 'neutre',
+  cote: 'marche',
+  dos: 'neutre',
+  face: 'neutre',
+};
+
+export const isBodyPose = (v: string): v is BodyPose => (BODY_POSES as readonly string[]).includes(v);
+
+/** Pose du corps pour une humeur, une ancienne pose ou une pose du pack ; inconnue → `neutre`. */
+export function bodyPoseFor(pose: string | null | undefined): BodyPose {
+  if (!pose) return 'neutre';
+  if (isBodyPose(pose)) return pose;
+  return (BODY_FOR as Record<string, BodyPose>)[pose] ?? 'neutre';
+}
+
+/** Image du minimoa en pied dans une pose du pack (ou l'équivalent d'une humeur). */
+export const petBodyImage = (species: Species, pose: string = 'neutre'): Src => BODY_IMAGES[species][bodyPoseFor(pose)];
+
 const SPECIES_IMAGES: Record<Species, Record<PetPose, Src>> = {
   nino: {
     neutre: require('../../assets/pets/nino_neutre.webp'),

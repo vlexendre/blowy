@@ -11,8 +11,9 @@ L'API vérifie localement les transactions signées par Apple ; elle n'a besoin 
 | Mensuelle | `app.blowy.plus.monthly` | 14,99 € par mois | aucun |
 
 Les identifiants sont des réglages (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`) : s'ils changent dans App Store
-Connect, les changer aussi dans `apps/api/.env`. Les prix réellement affichés viennent de StoreKit (localisés) ;
-l'API ne fournit que des prix de repli.
+Connect, les changer aussi dans `apps/api/.env`. Sur iPhone, les prix **et la durée de l'essai** affichés viennent de
+StoreKit seul (localisés) : si StoreKit ne répond pas, la feuille n'affiche ni prix ni bouton d'achat (« Réessayer »).
+Les prix de l'API ne servent qu'à présenter l'offre là où rien n'est vendu (web, Android).
 
 ## Ce que Minimoa+ ouvre, et la fin de l'abonnement
 
@@ -66,9 +67,14 @@ l'App Store Server API (voir `apps/api/README.md`).
 ## 3. Ce que fait l'app (`apps/mobile/src/features/plus`, StoreKit par `expo-iap`)
 
 1. `GET /v1/plus/paywall` (`api.plus.paywall()`) pour les faits : produits, frise de l'essai, avantages, nombre
-   de personnes compatibles (0 : cacher le bloc), mentions de renouvellement, liens légaux.
-2. `Product.products(for: [identifiants])`, afficher le prix **facturé** de StoreKit en grand (« 59,88 € par an »),
-   l'équivalent mensuel en petit, « 7 jours gratuits, puis 59,88 € par an » si `isEligibleForIntroOffer`.
+   de personnes compatibles (0 : cacher le bloc), mention de renouvellement (plus affichée dans la feuille, qui tient sur
+   un écran : sa teneur est sur la page « Conditions de Minimoa+ », liée). Les liens légaux de la feuille viennent de
+   l'app (`legalUrl`, dans la langue de l'app), donc restent là même si l'API ne répond pas.
+2. `Product.products(for: [identifiants])` : prix **facturé** de StoreKit en grand (« 59,88 € par an »), équivalent
+   mensuel et remise (calculés sur les prix StoreKit) en petit ; essai seulement si l'offre d'introduction StoreKit est
+   un essai gratuit et `isEligibleForIntroOffer` ; sous le bouton : « 7 jours gratuits, puis 59,88 € par an à partir du
+   24 novembre. Renouvellement automatique, annulable à tout moment dans Réglages › ton nom › Abonnements. »
+   Règles Apple et preuves : `docs/AUDIT-APPLE.md`, « Minimoa+ et App Review ».
 3. Acheter avec l'option `appAccountToken(UUID(uuidString: me.id))`.
 4. Envoyer `transaction.jwsRepresentation` (et la `renewalInfo` signée si disponible) à
    `POST /v1/plus/purchases` (`api.plus.submitPurchase`), puis `transaction.finish()`.
@@ -96,7 +102,9 @@ Dans l'app : `src/core/adapters/storekit.ios.ts` (StoreKit 2 par `expo-iap` : pr
 restauration, mises à jour au lancement), `features/plus` (`usePurchase`, `useRestore`, `usePlusSync`, `PlusOffer`,
 `openPlus(raison)`). Web et Android : rien n'est vendu (« Disponible sur iPhone »).
 En mode local (`EXPO_PUBLIC_AUTH=local`) : achat **simulé** (`simulatedPurchases`, `src/core/adapters/purchases.ts`) qui
-fabrique la transaction mémoire ci-dessous ; banc d'essai : `globalThis.__BLOWY_IAP_SIM__ = 'cancel' | 'pending' | 'fail'`.
+fabrique la transaction mémoire ci-dessous, avec un magasin simulé (59,88 € / 14,99 €, essai de 7 jours sur l'annuel) ;
+banc d'essai : `globalThis.__BLOWY_IAP_SIM__ = 'cancel' | 'pending' | 'fail' | 'noprices' | 'slowprices'` (les deux
+derniers : le magasin ne répond pas, ou met 20 s).
 
 En local sans Apple : l'API en mémoire accepte des transactions fabriquées (`memoryJws` dans
 `src/modules/billing/infrastructure/memory-billing.ts`), utilisées par `test/billing.e2e.test.ts`.

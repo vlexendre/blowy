@@ -122,7 +122,7 @@ export default function ReviewScreen() {
           </Appear>
           {r.links.map((line, i) => (
             <Appear key={line} once={`review:${r.id}:link:${i}`} delay={360 + i * 45}>
-              <TipRow icon={<Glyph name="heart" size={18} color={color.rose} />} text={line} />
+              <TipRow icon={<Glyph name="people" size={18} color={color.rose} />} text={line} />
             </Appear>
           ))}
           {r.detailed ? (

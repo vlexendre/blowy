@@ -5,7 +5,7 @@ import { Card } from '../atoms/Card';
 import { Glyph } from '../atoms/Glyph';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
-import { Hearts } from '../molecules/Hearts';
+import { LifeSparks } from '../molecules/LifeSparks';
 import { StreakPill } from '../molecules/StreakPill';
 import { layout } from '../lib/styles';
 import { PopIn } from '../motion/PopIn';
@@ -20,7 +20,7 @@ export interface LivesPanelProps {
   max?: number;
   /** Grand titre facultatif (« 5 VIES / SUR 7 ») ; sinon l'en-tête est `weekTitle`. */
   title?: TitleContent;
-  /** Compteur à droite des cœurs (« 5/7 »). */
+  /** Compteur à droite des étincelles (« 5/7 »). */
   count?: string;
   /** Explication des règles. */
   text?: string;
@@ -50,7 +50,7 @@ export function LivesPanel({ lives, max = MAX_LIVES, title, count, text, streak,
           </Text>
         ) : null}
         <View style={[layout.row, layout.gapSm]}>
-          <Hearts lives={lives} max={max} size={14} accessibilityLabel={accessibilityLabel} />
+          <LifeSparks lives={lives} max={max} size={14} accessibilityLabel={accessibilityLabel} />
           {count ? (
             <Text variant="bodyBold" size={13}>
               {count}

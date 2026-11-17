@@ -50,6 +50,7 @@ export function StreakHero({ pet, count, title, line, badge, record = false, low
           species={pet.species}
           outfit={pet.outfit}
           size={PET}
+          mood="joie"
           seed={pet.id ?? pet.name}
           sleepAfter={null}
           crest={<StreakFlame streak={count} size={Math.round(PET * 0.32)} low={low} igniteKey={ignite} />}

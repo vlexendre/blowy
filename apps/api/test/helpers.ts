@@ -75,7 +75,7 @@ export const onboardBody = (overrides: Partial<OnboardInput> = {}): OnboardInput
   birthdate: '1997-05-04',
   visionAnswers: visionAnswers(0),
   location: PARIS,
-  consents: { sensitive: false, location: true },
+  consents: { location: true },
   pet: { name: 'Nino', species: 'nino' },
   quiz: { social: 10 },
   ...overrides,

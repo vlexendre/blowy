@@ -5,7 +5,7 @@
  * Les deux repères viennent de l'API (`mine` / `theirs` de chaque axe : un côté et un cran, jamais une valeur) : rien
  * n'est deviné ici. Une réponse plus ancienne sans repères : pas de piste. Jamais un pourcentage seul.
  */
-import type { LookingForDto, MatchExplanation } from '@blowy/contract';
+import type { MatchExplanation } from '@blowy/contract';
 import type { AxisLean } from '@blowy/domain';
 import type { VisionMatchAxis } from '@blowy/ui';
 import type { VisionAnswer } from '@blowy/contract';
@@ -44,9 +44,6 @@ export function matchAxes(e: MatchExplanation, otherName: string, words: AxisWor
   const explore = toAxis(e.explore);
   return { common, explore, hasMarkers: [...common, explore].some((a) => !!a.mine || !!a.theirs) };
 }
-
-/** « Vous cherchez tous les deux des potes. » : la phrase venue de `lookingFor` (null : rien à dire). */
-export const lookingForLine = (v: LookingForDto | null | undefined, words: Record<LookingForDto, string>): string | null => (v ? words[v] : null);
 
 /** Une phrase lue pour la version courte (cartes) : « 3 points communs : Foyer, Rythme, Cap. 1 différence à explorer : Ancrage. ». */
 export const whyA11y = (e: MatchExplanation, join: (title: string, items: string) => string): string =>

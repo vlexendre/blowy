@@ -43,6 +43,36 @@ function signed(p: Purchase): SignedPurchase | null {
   };
 }
 
+/** Ce que StoreKit dit d'un abonnement (champs `expo-iap` lus ici). */
+interface StoreKitSubscription {
+  id: string;
+  displayPrice: string;
+  price?: number | null;
+  currency?: string;
+  subscriptionGroupIdIOS?: string | null;
+  introductoryPricePaymentModeIOS?: string | null;
+  introductoryPriceNumberOfPeriodsIOS?: string | null;
+  introductoryPriceSubscriptionPeriodIOS?: string | null;
+  subscriptionOffers?: readonly { type?: string | null; paymentMode?: string | null; period?: { unit: string; value: number } | null; periodCount?: number | null }[] | null;
+}
+
+const UNIT_DAYS: Record<string, number> = { day: 1, week: 7, month: 30, year: 365 };
+
+/**
+ * Durée de l'essai gratuit de l'offre d'introduction (0 : aucune). Lue dans StoreKit, pas dans l'API : on n'affiche un
+ * essai que si App Store Connect en a vraiment un.
+ */
+function freeTrialDays(p: StoreKitSubscription): number {
+  if (p.introductoryPricePaymentModeIOS === 'free-trial') {
+    const unit = UNIT_DAYS[p.introductoryPriceSubscriptionPeriodIOS ?? ''] ?? 0;
+    const n = Number(p.introductoryPriceNumberOfPeriodsIOS ?? '1') || 1;
+    if (unit) return unit * n;
+  }
+  const intro = p.subscriptionOffers?.find((o) => o.type === 'introductory' && o.paymentMode === 'free-trial');
+  if (intro?.period) return (UNIT_DAYS[intro.period.unit] ?? 0) * intro.period.value * (intro.periodCount ?? 1);
+  return 0;
+}
+
 const isCancel = (e: unknown): boolean => (e as { code?: string }).code === 'user-cancelled';
 
 export function storeKitPurchases(): PurchasesPort {
@@ -50,19 +80,17 @@ export function storeKitPurchases(): PurchasesPort {
     available: true,
     simulated: false,
     async products(productIds) {
-      try {
-        await connect();
-        const list = (await fetchProducts({ skus: [...productIds], type: 'subs' })) ?? [];
-        const out: StoreProduct[] = [];
-        for (const p of list as readonly { id: string; displayPrice: string; price?: number | null; currency?: string; subscriptionGroupIdIOS?: string | null }[]) {
-          let introEligible: boolean | null = null;
-          if (p.subscriptionGroupIdIOS) introEligible = await isEligibleForIntroOfferIOS(p.subscriptionGroupIdIOS).catch(() => null);
-          out.push({ productId: p.id, displayPrice: p.displayPrice, price: p.price ?? null, currency: p.currency ?? null, introEligible });
-        }
-        return out;
-      } catch {
-        return [];
+      // Pas de `catch` ici : si le magasin ne répond pas, la feuille le dit et ne montre aucun prix (Apple 3.1.2).
+      await connect();
+      const list = ((await fetchProducts({ skus: [...productIds], type: 'subs' })) ?? []) as readonly StoreKitSubscription[];
+      const out: StoreProduct[] = [];
+      for (const p of list) {
+        if (!p.id || !p.displayPrice) continue;
+        let introEligible: boolean | null = null;
+        if (p.subscriptionGroupIdIOS) introEligible = await isEligibleForIntroOfferIOS(p.subscriptionGroupIdIOS).catch(() => null);
+        out.push({ productId: p.id, displayPrice: p.displayPrice, price: p.price ?? null, currency: p.currency ?? null, introEligible, trialDays: freeTrialDays(p) });
       }
+      return out;
     },
     async purchase(productId, accountToken) {
       await connect();

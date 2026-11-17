@@ -73,7 +73,7 @@ export function OutfitPreview({
     () => ({
       itemRect: async (id) => {
         const box = await measureInWindow(petBox);
-        const p = placeItem(species, id);
+        const p = placeItem(species, id, 'neutre');
         if (!box || !p) return box;
         const k = box.width / FIT_CANVAS.width;
         return { x: box.x + p.left * k, y: box.y + p.top * k, width: p.width * k, height: p.height * k };

@@ -19,6 +19,12 @@ export const NOTIFICATION_KINDS = [
   'item_unlocked',
   'words_received',
   'trial_reminder',
+  /** Groupes (spéc §26) : invitation, proposition « la tenir ensemble » (ou groupe démarré), message de groupe, vie perdue, groupe endormi. */
+  'group_invite',
+  'together_proposal',
+  'group_message',
+  'group_life_lost',
+  'group_asleep',
 ] as const;
 export type NotificationKindKey = (typeof NOTIFICATION_KINDS)[number];
 
@@ -38,11 +44,22 @@ export const MESSAGE_PUSH_COOLDOWN_MINUTES = 5;
  * (un message se voit à l'ouverture ; un rappel programmé hors de propos n'a plus de sens le lendemain, comme « à toi d'écrire
  * avant minuit »).
  */
-export const DEFERRABLE_KINDS: readonly NotificationKindKey[] = ['new_encounter', 'waved', 'words_received', 'item_unlocked', 'link_in_danger', 'trial_reminder'];
+export const DEFERRABLE_KINDS: readonly NotificationKindKey[] = [
+  'new_encounter',
+  'waved',
+  'words_received',
+  'item_unlocked',
+  'link_in_danger',
+  'trial_reminder',
+  'group_invite',
+  'together_proposal',
+  'group_life_lost',
+  'group_asleep',
+];
 export const isDeferrable = (kind: NotificationKindKey): boolean => DEFERRABLE_KINDS.includes(kind);
 
 /** Une fois par jour local au plus (par lien pour `link_in_danger`). */
-export const ONCE_A_DAY_KINDS: readonly NotificationKindKey[] = ['daily_challenge', 'needs_out', 'streak_in_danger', 'link_in_danger', 'your_turn', 'weekly_review', 'trial_reminder'];
+export const ONCE_A_DAY_KINDS: readonly NotificationKindKey[] = ['daily_challenge', 'needs_out', 'streak_in_danger', 'link_in_danger', 'your_turn', 'weekly_review', 'trial_reminder', 'together_proposal'];
 export const isOnceADay = (kind: NotificationKindKey): boolean => ONCE_A_DAY_KINDS.includes(kind);
 
 /** Un report attend au plus 24 h ; au-delà il est abandonné. */

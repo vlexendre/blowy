@@ -119,4 +119,4 @@ export function useEncounter(userId: string) {
   return { ...query, incoming, suggestion };
 }
 
-export { lookingForLine, matchAxes, useMyVision, useRetakeVisionTest, VISION_TEST_ROUTE, visionKey, whyA11y, type AxisWords } from './vision';
+export { matchAxes, useMyVision, useRetakeVisionTest, VISION_TEST_ROUTE, visionKey, whyA11y, type AxisWords } from './vision';

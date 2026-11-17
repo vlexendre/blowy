@@ -24,7 +24,6 @@ import {
   isMatchable,
   leastConfidentAxis,
   match,
-  matchMode,
   matchingCenter,
   readAxis,
   recencyWeight,
@@ -34,6 +33,9 @@ import {
   testSignals,
   testWeight,
   updateHome,
+  isHomeSettling,
+  HOME_SETTLE_HOURS,
+  HOME_SETTLE_CONFIRM_MINUTES,
   visionProfile,
   visionScore,
 } from './vision';
@@ -168,61 +170,44 @@ describe('test de vision', () => {
   });
 });
 
-describe('ce que chacun cherche', () => {
-  const s = (gender: 'femme' | 'homme' | 'non_binaire' | 'non_dit', seeking: 'potes' | 'plus' | 'les_deux', whom: 'femmes' | 'hommes' | 'tout_le_monde' | null = null) => ({ gender, seeking, whom });
-  it('potes avec potes', () => expect(matchMode(s('femme', 'potes'), s('homme', 'potes'))).toBe('potes'));
-  it('plus réciproque', () => expect(matchMode(s('femme', 'plus', 'hommes'), s('homme', 'les_deux', 'femmes'))).toBe('plus'));
-  it('plus non réciproque, mais les deux ouverts aux potes', () => expect(matchMode(s('femme', 'les_deux', 'hommes'), s('homme', 'les_deux', 'hommes'))).toBe('potes'));
-  it('plus seulement d’un côté, potes de l’autre : rien', () => expect(matchMode(s('femme', 'plus', 'hommes'), s('homme', 'potes'))).toBeNull());
-  it('plus des deux côtés, sexe qui ne correspond pas : rien', () => expect(matchMode(s('femme', 'plus', 'femmes'), s('homme', 'plus', 'femmes'))).toBeNull());
-  it('sexe non dit : « plus » seulement avec « tout le monde »', () => {
-    expect(matchMode(s('non_dit', 'plus', 'tout_le_monde'), s('femme', 'plus', 'tout_le_monde'))).toBe('plus');
-    expect(matchMode(s('non_dit', 'plus', 'tout_le_monde'), s('femme', 'plus', 'hommes'))).toBeNull();
-    expect(matchMode(s('non_binaire', 'les_deux', 'tout_le_monde'), s('femme', 'les_deux', 'femmes'))).toBe('potes');
-  });
-});
-
 describe('compatibilité', () => {
   it('identiques : 100 ; opposés aux pôles : 0', () => {
-    expect(visionScore(profile({ foyer: 50, cap: -30 }), profile({ foyer: 50, cap: -30 }), 'potes')).toBe(100);
+    expect(visionScore(profile({ foyer: 50, cap: -30 }), profile({ foyer: 50, cap: -30 }))).toBe(100);
     const hi = profile({ foyer: 100, ancrage: 100, elan: 100, rythme: 100, cap: 100 });
     const lo = profile({ foyer: -100, ancrage: -100, elan: -100, rythme: -100, cap: -100 });
-    expect(visionScore(hi, lo, 'plus')).toBe(0);
+    expect(visionScore(hi, lo)).toBe(0);
     expect(CLOSENESS_SPAN).toBe(150);
   });
 
-  it('Foyer compte double pour « plus », peu pour « potes »', () => {
-    expect(AXIS_WEIGHTS.plus.foyer).toBe(2);
-    expect(AXIS_WEIGHTS.potes.foyer).toBe(0.25);
+  it('un seul jeu de poids : Foyer compte peu (on ne demande plus ce que les gens cherchent)', () => {
+    expect(AXIS_WEIGHTS.foyer).toBe(0.25);
     const me = profile({ foyer: 90 });
     const other = profile({ foyer: -60 });
-    // Foyer seul diffère (écart 150 → proximité 0) : 4 axes sur 4,25 entre potes, 4 sur 6 pour plus.
-    expect(visionScore(me, other, 'potes')).toBe(94);
-    expect(visionScore(me, other, 'plus')).toBe(67);
+    // Foyer seul diffère (écart 150 → proximité 0) : 4 axes sur 4,25.
+    expect(visionScore(me, other)).toBe(94);
   });
 
   it('la confiance pondère : un axe peu sûr compte moins', () => {
     const me = profile({ cap: 100 });
     const sure = profile({ cap: -50 });
     const unsure = { ...profile({}), cap: { value: -50, confidence: 5 } };
-    expect(visionScore(me, unsure, 'potes')).toBeGreaterThan(visionScore(me, sure, 'potes'));
+    expect(visionScore(me, unsure)).toBeGreaterThan(visionScore(me, sure));
   });
 
   it('explication : 3 axes les plus proches en commun, 1 différence à explorer', () => {
     const me = profile({ foyer: 80, ancrage: -60, elan: 10, rythme: 50, cap: 70 });
     const other = profile({ foyer: 70, ancrage: -55, elan: 15, rythme: -40, cap: 20 });
-    const c = compatibilityOf(me, other, 'plus');
+    const c = compatibilityOf(me, other);
     expect(c.common.map((p) => p.axis)).toEqual(['ancrage', 'elan', 'foyer']);
     expect(c.common[0]).toMatchObject({ axis: 'ancrage', side: 'low' });
     expect(c.common[1]).toMatchObject({ axis: 'elan', side: 'mid' });
     expect(c.explore).toMatchObject({ axis: 'rythme', mine: 'high', theirs: 'low' });
-    expect(c.mode).toBe('plus');
   });
 
   it('égalité de proximité : ordre stable par poids puis par ordre des axes', () => {
-    const c = compatibilityOf(profile({}), profile({}), 'plus');
-    expect(c.common.map((p) => p.axis)).toEqual(['foyer', 'ancrage', 'elan']);
-    expect(c.explore.axis).toBe('rythme');
+    const c = compatibilityOf(profile({}), profile({}));
+    expect(c.common.map((p) => p.axis)).toEqual(['ancrage', 'elan', 'rythme']);
+    expect(c.explore.axis).toBe('cap');
   });
 });
 
@@ -230,9 +215,6 @@ describe('appariement : filtres durs et seuil', () => {
   const base = (id: string, vision: VisionProfile, over: Partial<MatchPerson> = {}): MatchPerson => ({
     id,
     birthdate: '1995-01-01',
-    gender: 'femme',
-    seeking: 'potes',
-    whom: null,
     vision,
     ...over,
   });
@@ -249,7 +231,7 @@ describe('appariement : filtres durs et seuil', () => {
     // Un seul axe sûr, les autres à confiance minimale : le score suit la proximité de cet axe.
     const lone = (v: number): VisionProfile => ({ ...profile({}, 0), cap: { value: v, confidence: 100 }, foyer: { value: 0, confidence: 1 }, elan: { value: 0, confidence: 1 }, rythme: { value: 0, confidence: 1 } });
     const find = (target: number): number => {
-      for (let v = 0; v <= 100; v++) if (visionScore(lone(-100), lone(-100 + v), 'potes') === target) return v;
+      for (let v = 0; v <= 100; v++) if (visionScore(lone(-100), lone(-100 + v)) === target) return v;
       throw new Error(`pas de score ${target}`);
     };
     const at70 = find(70);
@@ -258,7 +240,7 @@ describe('appariement : filtres durs et seuil', () => {
     expect(match(base('a', lone(-100)), base('b', lone(-100 + at69)), ctx)).toBeNull();
   });
 
-  it('bloqué, soi-même, mineur, hors zone, sans position, ce qu’on cherche : jamais', () => {
+  it('bloqué, soi-même, mineur, hors zone, sans position : jamais', () => {
     const other = base('b', me.vision);
     expect(match(me, other, ctx)).not.toBeNull();
     expect(match(me, base('a', me.vision), ctx)).toBeNull();
@@ -267,7 +249,6 @@ describe('appariement : filtres durs et seuil', () => {
     expect(match(me, other, { ...ctx, distanceKm: 25 })).toBeNull();
     expect(match(me, other, { ...ctx, distanceKm: null })).toBeNull();
     expect(match(me, other, { ...ctx, distanceKm: null, radiusKm: null })).not.toBeNull();
-    expect(match(me, base('b', me.vision, { seeking: 'plus', whom: 'hommes' }), ctx)).toBeNull();
   });
 
   it('profil inconnu : pas proposé', () => {
@@ -324,6 +305,26 @@ describe('positions : arrondi, décalage, zone du domicile', () => {
     expect(updateHome(h, lyon, later(HOME_MOVE_HOURS)).home).toEqual(snapToGrid(lyon, GRID_METERS));
     // Retour à la maison : le candidat est oublié.
     expect(updateHome(h, paris, later(1)).candidate).toBeNull();
+  });
+
+  it('zone du domicile, premiers jours : un premier relevé faux ne l\'enferme pas (Paris 14e → Saint-Cloud)', () => {
+    const consent = '2026-11-17T08:10:00Z';
+    const at = (min: number) => new Date(new Date(consent).getTime() + min * 60_000).toISOString();
+    const wrong = { lat: 48.8402, lng: 2.3201 };
+    const real = { lat: 48.8443, lng: 2.2196 };
+    expect(isHomeSettling(consent, at(4))).toBe(true);
+    expect(isHomeSettling(consent, at(HOME_SETTLE_HOURS * 60))).toBe(false);
+    expect(isHomeSettling(null, at(4))).toBe(false);
+    let h = updateHome(NO_HOME, wrong, at(0), true);
+    h = updateHome(h, real, at(4), true);
+    expect(h.home).toEqual(snapToGrid(wrong, GRID_METERS));
+    // Revu au même endroit une heure plus tard : c'est la zone.
+    expect(updateHome(h, real, at(4 + HOME_SETTLE_CONFIRM_MINUTES - 1), true).home).toEqual(snapToGrid(wrong, GRID_METERS));
+    const settled = updateHome(h, real, at(4 + HOME_SETTLE_CONFIRM_MINUTES), true);
+    expect(settled.home).toEqual(snapToGrid(real, GRID_METERS));
+    expect(distanceKm(settled.home!, real)).toBeLessThan(0.3);
+    // Après les premiers jours : la règle des 72 h.
+    expect(updateHome(h, real, at(4 + HOME_SETTLE_CONFIRM_MINUTES), false).home).toEqual(snapToGrid(wrong, GRID_METERS));
   });
 
   it('centre de recherche : la ville choisie seulement avec le droit de changer de ville', () => {

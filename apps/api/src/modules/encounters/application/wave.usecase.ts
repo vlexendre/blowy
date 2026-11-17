@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { encounterIntroLine, waveReceivedEmail } from '@blowy/content';
-import { compatibility, matchMode, shapeOf } from '@blowy/domain';
+import { compatibility, shapeOf } from '@blowy/domain';
 import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier as PushNotifier } from '../../../integrations/push/notifier';
@@ -50,8 +50,6 @@ export class Wave {
     if (!me || !myPet) throw new DomainError('not_onboarded');
     // Une personne bloquée (dans un sens ou l'autre), suspendue ou supprimée est introuvable (Audience).
     if (!target || !targetPet || !(await this.audience.reachable(userId, targetId))) throw new DomainError('not_found', errorText('personNotFound'));
-    // Ce que chacun cherche (filtre dur de la vision) : sinon, rien ne trahit pourquoi, la personne est « introuvable ».
-    if (!matchMode(me, target)) throw new DomainError('not_found', errorText('personNotFound'));
     const [a, b] = userId < targetId ? [userId, targetId] : [targetId, userId];
     const link = await this.links.findBetween(a, b);
     if (link && link.status !== 'archived') throw new DomainError('conflict', errorText('alreadyLinked'));

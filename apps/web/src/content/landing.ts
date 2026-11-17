@@ -142,7 +142,7 @@ export const chats = {
   leadBold: 'Sans rien télécharger de plus.',
   phone: {
     name: 'Léa',
-    status: '♥ 5 · niv. 3',
+    status: '✦ 5 · niv. 3',
     tabs: ['Aujourd’hui', 'Chat', 'Souvenirs'],
     activeTab: 1,
     messages: [
@@ -168,7 +168,7 @@ export const lives = {
   lead: 'Chaque lien a 7 vies, et un jour de silence en coûte une. À zéro, le lien devient fantôme 👻',
   start: 5,
   total: 7,
-  /** texte sous les cœurs, de 5 vies à 0 */
+  /** texte sous les étincelles, de 5 vies à 0 */
   lines: ['vies avec Tom. Il ne répond plus trop…', '4 jours sans nouvelles…', 'Nino commence à s’inquiéter', 'Ça ne sent pas bon', 'Dernière vie. Écris-lui !', 'Lien fantôme 👻'],
   /** ce que dit nino, de 5 vies à 0 */
   says: ['Tom ? T’es là ?', 'Tom ?', 'Allô la Terre', 'Je deviens tout pâle', 'Dernière chance', 'Bouh. Ghosté.'],

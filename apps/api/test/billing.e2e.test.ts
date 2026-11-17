@@ -81,7 +81,11 @@ describe('Minimoa+', () => {
     expect(p.trial.timeline.map((s) => s.day)).toEqual([0, 5, 7]);
     expect(p.perks.map((x) => x.key)).toContain('more_habits');
     expect(p.teaser).toEqual({ compatibleNearby: 0, label: null });
-    expect(p.legal.plusTermsUrl).toMatch(/\/legal\/abonnement$/);
+    expect(p.legal.plusTermsUrl).toMatch(/\/legal\/abonnement\/$/);
+    expect(p.legal.termsUrl).not.toMatch(/\/(en|es|pt|nl)\/legal\//);
+    // Apple 3.1.2 : renouvellement automatique, paiement par Apple, où annuler.
+    expect(p.renewalNotice).toMatch(/automatiquement/);
+    expect(p.renewalNotice).toMatch(/Réglages › ton nom › Abonnements/);
     expect(p.continueFreeLabel).toBe('Continuer gratuitement');
     expect(p.subscription).toMatchObject({ phase: 'none', plus: false });
   });

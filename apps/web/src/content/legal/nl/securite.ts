@@ -3,7 +3,7 @@ import type { LegalPage } from '../types';
 export const securite: LegalPage = {
   title: 'Veiligheid en melden — Minimoa',
   heading: 'Veiligheid en melden',
-  description: 'Hoe je iemand meldt of blokkeert in Minimoa, wat er daarna gebeurt, onze tips voor een eerste afspraak, noodnummers en ons beleid voor de bescherming van minderjarigen.',
+  description: 'Hoe je iemand meldt of blokkeert in Minimoa, wat er daarna gebeurt, onze tips voor een eerste ontmoeting in het echt, noodnummers en ons beleid voor de bescherming van minderjarigen.',
   intro: 'Hoe je meldt, blokkeert, jezelf beschermt, en wie je belt in een noodgeval.',
   body: [
     { note: '**Direct in gevaar?** Bel **112** (alarmnummer in de hele Europese Unie). In Frankrijk: **17** (politie), of sms naar **114** als je niet kunt praten.' },
@@ -55,7 +55,7 @@ export const securite: LegalPage = {
       ul: [
         '**Neem je tijd.** Praat eerst in de app. Als iemand je opjaagt, is dat een signaal.',
         '**Een openbare plek**, de eerste keer: een café, een druk park. Niet bij jou thuis, niet bij de ander.',
-        '**Laat iemand het weten**: waar, wanneer, met wie. Spreek een berichtje af tijdens of na de afspraak.',
+        '**Laat iemand het weten**: waar, wanneer, met wie. Spreek een berichtje af tijdens of na de ontmoeting.',
         '**Blijf zelfstandig**: ga en kom terug op eigen gelegenheid. Houd je telefoon opgeladen.',
         '**Geef niet te snel** je adres, je werkplek of privégegevens.',
         '**Nooit geld.** Niemand heeft een goede reden om je erom te vragen. Meld het.',

@@ -26,7 +26,7 @@ export class ReviewPlaces {
     const fixtures = new Set((await this.profiles.listFixtures(world)).map((p) => p.id));
     const now = this.clock.now().toISOString();
     let n = 0;
-    for (const f of reviewWorldPlan(reviewer)) {
+    for (const f of reviewWorldPlan()) {
       const id = reviewFixtureId(world, f.slot);
       if (!fixtures.has(id)) continue;
       const home = storedPoint(offsetPoint(center, f.distanceKm, f.bearing));

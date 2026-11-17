@@ -8,7 +8,7 @@ import {
   theirConsentOf,
 } from './plateforme';
 import { type StreakState, ZERO_STREAK, axisMoves, completeStreakDay, nextStreakMilestone, streakRunDays, streakWeek } from './rituels';
-import { type AxisReading, EMPTY_VISION, type Seeker, type VisionProfile, axisLean, compatibilityOf, mutualLookingFor } from './vision';
+import { type AxisReading, EMPTY_VISION, type VisionProfile, axisLean, compatibilityOf } from './vision';
 
 const at = (value: number, confidence = 80): AxisReading => ({ value, confidence });
 const profile = (p: Partial<VisionProfile>): VisionProfile => ({ ...EMPTY_VISION, ...p });
@@ -26,7 +26,7 @@ describe('où penche chacun sur un axe (repères de l’explication)', () => {
   it('l’explication porte les deux repères sur les 3 points communs et la différence, cohérents avec les côtés', () => {
     const me = profile({ foyer: at(80), ancrage: at(-60), elan: at(40), rythme: at(70), cap: at(-75) });
     const other = profile({ foyer: at(70), ancrage: at(-55), elan: at(35), rythme: at(65), cap: at(70) });
-    const c = compatibilityOf(me, other, 'potes');
+    const c = compatibilityOf(me, other);
     for (const p of c.common) {
       expect(p.leans.mine).toEqual(axisLean(me[p.axis]));
       expect(p.leans.theirs).toEqual(axisLean(other[p.axis]));
@@ -37,18 +37,6 @@ describe('où penche chacun sur un axe (repères de l’explication)', () => {
     expect(c.explore.leans.theirs.side).toBe(c.explore.theirs);
     // Rien d'autre que le côté et le cran : pas de valeur ni de confiance.
     expect(Object.keys(c.common[0].leans.theirs).sort()).toEqual(['side', 'strength']);
-  });
-});
-
-describe('ce que vous cherchez tous les deux', () => {
-  const s = (gender: Seeker['gender'], seeking: Seeker['seeking'], whom: Seeker['whom'] = null): Seeker => ({ gender, seeking, whom });
-  it('potes, plus ou les deux, seulement ce qui est réciproque', () => {
-    expect(mutualLookingFor(s('femme', 'potes'), s('homme', 'les_deux', 'femmes'))).toBe('friends');
-    expect(mutualLookingFor(s('femme', 'les_deux', 'hommes'), s('homme', 'les_deux', 'femmes'))).toBe('both');
-    expect(mutualLookingFor(s('femme', 'plus', 'hommes'), s('homme', 'les_deux', 'femmes'))).toBe('more');
-    // « Plus » d'un côté seulement (qui ne correspond pas) : ils restent potes, sans rien dire de « qui ».
-    expect(mutualLookingFor(s('femme', 'les_deux', 'femmes'), s('homme', 'les_deux', 'femmes'))).toBe('friends');
-    expect(mutualLookingFor(s('femme', 'plus', 'femmes'), s('homme', 'potes'))).toBeNull();
   });
 });
 

@@ -19,6 +19,7 @@ import {
   ModerationResultZ,
   adminRoutes,
 } from '@blowy/contract';
+import { AdminGroupZ, groupRoutes } from '@blowy/contract';
 import type { z } from 'zod';
 import { ApiError } from './index';
 
@@ -70,6 +71,10 @@ export function createAdminClient(opts: AdminClientOptions) {
     audit: (q: Partial<AdminAuditQuery> = {}) => call('GET', adminRoutes.audit() + qs(q), AdminAuditZ),
     suspensions: (cursor?: string) => call('GET', adminRoutes.suspensions() + qs({ cursor }), AdminSuspensionsZ),
     aiCosts: (days = 30) => call('GET', adminRoutes.aiCosts() + qs({ days }), AdminAiCostsZ),
+    /** Groupe signalé (`AdminReportItem.groupId`) : nom, état, membres ; aucune lecture des messages ici. */
+    group: (id: string) => call('GET', groupRoutes.adminGroup(id), AdminGroupZ),
+    /** Fermer un groupe (modération) : plus personne n'y écrit, le chat reste lisible par ses membres. */
+    closeGroup: (id: string, reason: string) => call('POST', groupRoutes.adminGroupClose(id), AdminGroupZ, { reason }),
   };
 }
 export type AdminClient = ReturnType<typeof createAdminClient>;

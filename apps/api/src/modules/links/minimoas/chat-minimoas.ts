@@ -461,7 +461,7 @@ export class ChatMinimoas {
     try {
       const [pa, pb] = await Promise.all([this.vision.profileOf(a), this.vision.profileOf(b)]);
       if (!isMatchable(pa) || !isMatchable(pb)) return null;
-      return compatibilityOf(pa, pb, 'potes').common[0].axis;
+      return compatibilityOf(pa, pb).common[0].axis;
     } catch {
       return null;
     }

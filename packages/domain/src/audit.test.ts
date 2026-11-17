@@ -8,7 +8,6 @@ import {
   distanceKm,
   fixtureVision,
   manualAreaChange,
-  matchMode,
   offsetPoint,
   parseAiModeration,
   reportAlertDue,
@@ -160,18 +159,11 @@ describe('zone choisie sans localisation', () => {
 });
 
 describe('monde du compte de revue', () => {
-  it('rend des personnes fictives compatibles, quoi que cherche le compte', () => {
-    for (const reviewer of [
-      { gender: 'homme', seeking: 'plus', whom: 'femmes' },
-      { gender: 'femme', seeking: 'plus', whom: 'hommes' },
-      { gender: 'non_dit', seeking: 'les_deux', whom: 'tout_le_monde' },
-      { gender: 'non_binaire', seeking: 'potes', whom: null },
-    ] as const) {
-      const plan = reviewWorldPlan(reviewer);
-      expect(plan).toHaveLength(8);
-      for (const f of plan) expect(matchMode(reviewer, f), `${reviewer.whom} ${f.gender}`).not.toBeNull();
-    }
-    expect(reviewWorldPlan({ gender: 'homme', seeking: 'plus', whom: 'femmes' }).every((f) => f.gender === 'femme')).toBe(true);
+  it('rend 8 personnes fictives variées, sans rien sur ce que chacun cherche', () => {
+    const plan = reviewWorldPlan();
+    expect(plan).toHaveLength(8);
+    expect(new Set(plan.map((f) => f.gender)).size).toBeGreaterThan(1);
+    for (const f of plan) expect(Object.keys(f)).not.toContain('seeking');
   });
   it('identifiants stables par monde, distincts entre mondes', () => {
     const a = reviewFixtureId('11111111-1111-4111-8111-111111111111', 0);

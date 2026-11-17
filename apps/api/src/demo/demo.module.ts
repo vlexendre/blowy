@@ -11,6 +11,9 @@ import { DevDemoLinksController, LinksDemo } from './links-demo';
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
 import { ReviewWorld } from '../review/review-world';
+import { GroupsModule } from '../modules/groups/groups.module';
+import { TOGETHER_FIXTURES } from '../modules/groups/tokens';
+import { GroupesDemo, demoTogetherFixtures } from './groupes-demo';
 
 /** Le compte de revue d'Apple d'abord (son monde d'exemple, partout) ; sinon le monde de démo (local) ou rien. */
 const hookWith = (review: ReviewWorld, demo: OnboardedHook | null): OnboardedHook => ({
@@ -35,16 +38,19 @@ export class DemoModule {
     return {
       module: DemoModule,
       global: true,
-      imports: [PetsModule, LinksModule, EncountersModule, VisionModule, RituelsModule],
+      imports: [PetsModule, LinksModule, EncountersModule, VisionModule, RituelsModule, GroupsModule],
       controllers: [DevDemoLinksController],
       providers: [
         DemoWorld,
         RituelsDemo,
         PlateformeDemo,
         LinksDemo,
+        GroupesDemo,
+        // « La tenir ensemble » : personnes de démo comptées dans la zone de la personne qui arrive (local seulement).
+        { provide: TOGETHER_FIXTURES, useValue: demoTogetherFixtures },
         { provide: ONBOARDED_HOOK, useFactory: (review: ReviewWorld, demo: DemoWorld) => hookWith(review, demo), inject: [ReviewWorld, DemoWorld] },
       ],
-      exports: [ONBOARDED_HOOK],
+      exports: [ONBOARDED_HOOK, TOGETHER_FIXTURES],
     };
   }
 }

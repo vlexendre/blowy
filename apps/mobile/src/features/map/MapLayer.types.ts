@@ -1,8 +1,10 @@
-import type { ZoneMapProps } from '@blowy/ui';
+import type { MapPoint, ZoneMapProps } from '@blowy/ui';
 
 export interface MapLayerProps extends ZoneMapProps {
   /** Gratuit : la caméra reste sur la zone. Minimoa+ : on peut glisser et zoomer. */
   free: boolean;
   /** Minimoa+ : la carte a bougé (centre et rayon visibles), pour relire ce qu'il y a là. */
   onRegionChange?: (at: { lat: number; lng: number; radiusKm: number }) => void;
+  /** Où placer « toi » : le centre de ta zone (Minimoa+ peut regarder ailleurs ; toi, tu restes chez toi). Défaut : `center`. */
+  mePosition?: MapPoint;
 }

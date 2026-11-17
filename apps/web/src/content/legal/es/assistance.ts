@@ -28,7 +28,7 @@ export const assistance: LegalPage = {
         {
           q: '¿Qué es un minimoa?',
           a: [
-            'Tu minimoa eres tú en pequeño: lleva tu visión de la vida y tus hábitos. Te presenta a personas cuya visión es compatible con la tuya, para ser amigos o algo más. Cuanto más lo cuidas (saliendo, manteniendo tus hábitos), más gente te presenta. Nunca muere.',
+            'Tu minimoa eres tú en pequeño: lleva tu visión de la vida y tus hábitos. Te presenta a personas cuya visión es compatible con la tuya para crear vínculos. Lo que lleguen a ser depende de vosotros. Cuanto más lo cuidas (saliendo, manteniendo tus hábitos), más gente te presenta. Nunca muere.',
           ],
         },
         {

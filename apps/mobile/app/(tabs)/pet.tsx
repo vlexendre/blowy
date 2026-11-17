@@ -34,6 +34,8 @@ import {
   StreakCelebration,
   StreakFlame,
   TabTemplate,
+  Text,
+  isNight,
   useHelloWave,
   usePetLure,
 } from '@blowy/ui';
@@ -43,14 +45,16 @@ import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { VISION_TEST_ROUTE } from '@/features/encounters';
+import { useTogether } from '@/features/groups';
 import { errorText, useLinks } from '@/features/links';
 import { openLegal, useMe } from '@/features/me';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
-import { careAvailable, careHot, pickLine, useCare, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
+import { careAvailable, careHot, homeEntrance, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { useAwayFromHome, useOuting, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
 import { home as t } from '@/locales/pet';
+import { groupes } from '@/locales/groupes';
 import { rituels as r } from '@/locales/rituels';
 
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
@@ -67,6 +71,9 @@ export default function PetHome() {
   const wardrobe = useWardrobe();
   const today = useRitualsToday();
   const me = useMe();
+  // Une suggestion « ensemble » pas encore acceptée : une tuile de plus (jamais une carte).
+  const together = useTogether(me.data?.showHabits !== false);
+  const togetherTip = together.data?.suggestions.find((x) => !x.proposed);
   const care = useCare();
   const outing = useOuting();
   const away = useAwayFromHome(me.data?.identity.location.zone);
@@ -98,6 +105,28 @@ export default function PetHome() {
     },
     { seed: pet.data?.pet.id, active: focused },
   );
+  // Un moment par ouverture : il arrive en marchant, ou fait coucou après plus de 12 h (rien la nuit ni quand il boude).
+  const entered = useRef(false);
+  const shape = pet.data?.pet.shape;
+  useEffect(() => {
+    if (entered.current || !shape) return;
+    entered.current = true;
+    const now = Date.now();
+    const visit = useHomeVisit.getState();
+    const moment = homeEntrance({ last: visit.last, now, night: isNight(), sulking: shape === 'boude' });
+    visit.mark(now);
+    if (!moment) return;
+    // Il part tout de suite (sinon on le verrait une image à sa place avant qu'il arrive) ; le coucou attend un peu.
+    setTimeout(
+      () => {
+        play(moment);
+        if (moment === 'wave') say(t.hello);
+      },
+      moment === 'arrive' ? 0 : 260,
+    );
+    // `play` et `say` ne changent que l'état local : lus au moment du moment.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shape]);
 
   useEffect(() => {
     if (!said) return;
@@ -194,7 +223,12 @@ export default function PetHome() {
           setOutingLine(res.line);
           setOutingPinned(false);
           say(res.line);
-          play(answer === 'not_yet' ? 'wave' : 'joy');
+          // Pas encore : il réfléchit ; sorti : il rentre en marchant, puis saute de joie.
+          if (answer === 'not_yet') play('think');
+          else {
+            play('arrive');
+            setTimeout(() => play('joy'), 1250);
+          }
           // De retour : l'activité « de sortie » (si elle tourne) affiche « de retour » puis s'efface.
           if (answer !== 'not_yet') void endOuting();
         },
@@ -337,7 +371,9 @@ export default function PetHome() {
                   onAnswer={onOuting}
                   line={outingLine}
                   confirmedLabel={d.outing.confirmed ? r.outing.confirmed : null}
-                  highlight={needsOut}
+                  doneLabel={r.outing.done}
+                  stayId="not_yet"
+                  highlight={needsOut || (sulking && d.outing.canAnswer)}
                 />
               </Appear>
             ) : now === 'proof' && proof ? (
@@ -434,6 +470,16 @@ export default function PetHome() {
                     dot={needsOut}
                     onPress={() => setOutingPinned(true)}
                     accessibilityLabel={d.outing.question}
+                  />
+                ) : null}
+                {/* « La tenir ensemble » (spéc. §26) : des personnes près de toi tiennent la même habitude. */}
+                {togetherTip ? (
+                  <ShortcutTile
+                    label={groupes.together.tile}
+                    icon={<Text size={20}>{r.habits.emoji[togetherTip.habitId] ?? '🤝'}</Text>}
+                    dot
+                    onPress={() => router.push('/pet/habitudes')}
+                    accessibilityLabel={togetherTip.text}
                   />
                 ) : null}
               </ShortcutRow>

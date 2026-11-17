@@ -44,12 +44,12 @@ const fr = {
     tendre: 'tendre',
   } as Record<PetForm, string>,
   levelLabel: {
-    rendezvous: { title: 'Le rendez-vous', text: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
+    rendezvous: { title: 'La rencontre', text: 'Vos minimoas se sont trouvés. Vous pouvez vous écrire.' },
     jouent: { title: 'Ils jouent ensemble', text: 'Les minimoas lancent des défis dans le chat.' },
-    emmenagent: { title: 'Ils emménagent', text: 'Vos minimoas partagent une maison, vos souvenirs s’y rangent.' },
+    emmenagent: { title: 'Leur coin à eux', text: 'Vos minimoas ont un endroit rien qu’à eux, vos souvenirs s’y rangent.' },
     visage_flou: { title: 'Le visage flou', text: 'Vos photos de profil apparaissent, floues.' },
     revelation: { title: 'La révélation', text: 'Les visages deviennent nets.' },
-    irl: { title: 'Le premier rendez-vous', text: 'Vos minimoas vous proposent de vous voir en vrai.' },
+    irl: { title: 'Se voir en vrai', text: 'Vos minimoas vous proposent de vous voir en vrai.' },
     oeuf: { title: 'L’œuf', text: 'Un œuf apparaît. Il éclora de ce que vous êtes devenus.' },
   } as Record<LevelKey, { title: string; text: string }>,
   eventLabel: {
@@ -167,12 +167,12 @@ export const labels = defineMessages({
       tendre: 'sweet',
     },
     levelLabel: {
-      rendezvous: { title: 'The rendezvous', text: 'Your minimoas found each other. You can write to each other.' },
+      rendezvous: { title: 'The meeting', text: 'Your minimoas found each other. You can write to each other.' },
       jouent: { title: 'Playing together', text: 'The minimoas start challenges in the chat.' },
-      emmenagent: { title: 'Moving in', text: 'Your minimoas share a home, where your memories are kept.' },
+      emmenagent: { title: 'Their hangout', text: 'Your minimoas have a place of their own, where your memories are kept.' },
       visage_flou: { title: 'The blurry face', text: 'Your profile photos appear, blurred.' },
       revelation: { title: 'The reveal', text: 'Faces come into focus.' },
-      irl: { title: 'The first date', text: 'Your minimoas suggest you meet in real life.' },
+      irl: { title: 'Meeting in person', text: 'Your minimoas suggest you meet in real life.' },
       oeuf: { title: 'The egg', text: 'An egg appears. It will hatch from who you’ve become.' },
     },
     eventLabel: {
@@ -285,12 +285,12 @@ export const labels = defineMessages({
       tendre: 'tierno',
     },
     levelLabel: {
-      rendezvous: { title: 'La cita', text: 'Sus minimoas se han encontrado. Ya pueden escribirse.' },
+      rendezvous: { title: 'El encuentro', text: 'Sus minimoas se han encontrado. Ya pueden escribirse.' },
       jouent: { title: 'Juegan juntos', text: 'Los minimoas lanzan retos en el chat.' },
-      emmenagent: { title: 'Se mudan juntos', text: 'Sus minimoas comparten una casa donde se guardan sus recuerdos.' },
+      emmenagent: { title: 'Su guarida', text: 'Sus minimoas tienen un rincón propio donde se guardan sus recuerdos.' },
       visage_flou: { title: 'La cara borrosa', text: 'Aparecen sus fotos de perfil, borrosas.' },
       revelation: { title: 'La revelación', text: 'Las caras se vuelven nítidas.' },
-      irl: { title: 'La primera cita', text: 'Sus minimoas les proponen verse en persona.' },
+      irl: { title: 'Verse en persona', text: 'Sus minimoas les proponen verse en persona.' },
       oeuf: { title: 'El huevo', text: 'Aparece un huevo. Nacerá de lo que han llegado a ser.' },
     },
     eventLabel: {
@@ -405,10 +405,10 @@ export const labels = defineMessages({
     levelLabel: {
       rendezvous: { title: 'O ponto de encontro', text: 'Os minimoas de vocês se encontraram. Vocês já podem conversar.' },
       jouent: { title: 'Brincam juntos', text: 'Os minimoas lançam desafios no chat.' },
-      emmenagent: { title: 'Vão morar juntos', text: 'Os minimoas de vocês dividem uma casa, onde ficam guardadas as suas lembranças.' },
+      emmenagent: { title: 'O cantinho deles', text: 'Os minimoas de vocês têm um cantinho só deles, onde ficam guardadas as suas lembranças.' },
       visage_flou: { title: 'O rosto borrado', text: 'As fotos de perfil de vocês aparecem, borradas.' },
       revelation: { title: 'A revelação', text: 'Os rostos ficam nítidos.' },
-      irl: { title: 'O primeiro encontro', text: 'Os minimoas sugerem que vocês se vejam pessoalmente.' },
+      irl: { title: 'Ao vivo', text: 'Os minimoas sugerem que vocês se vejam pessoalmente.' },
       oeuf: { title: 'O ovo', text: 'Aparece um ovo. Ele vai nascer do que vocês se tornaram.' },
     },
     eventLabel: {
@@ -521,12 +521,12 @@ export const labels = defineMessages({
       tendre: 'lief',
     },
     levelLabel: {
-      rendezvous: { title: 'Het afspraakje', text: 'Jullie minimoas hebben elkaar gevonden. Jullie kunnen elkaar schrijven.' },
+      rendezvous: { title: 'De ontmoeting', text: 'Jullie minimoas hebben elkaar gevonden. Jullie kunnen elkaar schrijven.' },
       jouent: { title: 'Ze spelen samen', text: 'De minimoas dagen elkaar uit in de chat.' },
-      emmenagent: { title: 'Ze gaan samenwonen', text: 'Jullie minimoas delen een huis, waar jullie herinneringen bewaard worden.' },
+      emmenagent: { title: 'Hun stek', text: 'Jullie minimoas hebben een eigen plek, waar jullie herinneringen bewaard worden.' },
       visage_flou: { title: 'Het wazige gezicht', text: 'Jullie profielfoto’s verschijnen, wazig.' },
       revelation: { title: 'De onthulling', text: 'De gezichten worden scherp.' },
-      irl: { title: 'De eerste date', text: 'Jullie minimoas stellen voor om elkaar in het echt te zien.' },
+      irl: { title: 'In het echt', text: 'Jullie minimoas stellen voor om elkaar in het echt te zien.' },
       oeuf: { title: 'Het ei', text: 'Er verschijnt een ei. Het komt uit met wie jullie geworden zijn.' },
     },
     eventLabel: {

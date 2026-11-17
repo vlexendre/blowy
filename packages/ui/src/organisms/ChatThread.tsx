@@ -43,6 +43,11 @@ export interface ChatThreadProps {
   onMessageLongPress?: (message: MessageLook) => void;
   /** Libellé lu de l'appui long. */
   longPressHint?: string;
+  /**
+   * Groupe (plusieurs autres) : qui a écrit un message `other` (clé, prénom, personne pour l'avatar). Deux messages
+   * de suite de deux membres différents ne se regroupent pas. Sans lui : `other` pour tous.
+   */
+  whoIs?: (message: MessageLook) => { key: string; name: string; person: Pick<PersonLook, 'displayName' | 'avatarUrl' | 'face' | 'pet'> } | undefined;
   contentStyle?: StyleProp<ViewStyle>;
 }
 
@@ -76,6 +81,7 @@ export function ChatThread({
   roleLabel,
   onMessageLongPress,
   longPressHint,
+  whoIs,
   contentStyle,
 }: ChatThreadProps) {
   // Messages déjà là : ceux qui arrivent ensuite (plus récents que tous) entrent en scène.
@@ -115,13 +121,14 @@ export function ChatThread({
         out.push({ kind: 'day', key: `day:${day}`, label: dayLabel(day) });
         prev = null;
       }
-      const continued = !!prev && prev.author === m.author && groupable(prev) && groupable(m);
+      const continued =
+        !!prev && prev.author === m.author && groupable(prev) && groupable(m) && (!whoIs || m.author !== 'other' || whoIs(prev)?.key === whoIs(m)?.key);
       out.push({ kind: 'msg', key: m.id, message: m, continued });
       prevDay = day;
       prev = m;
     }
     return out.reverse();
-  }, [messages, dayKey, dayLabel]);
+  }, [messages, dayKey, dayLabel, whoIs]);
 
   const renderItem = useCallback<ListRenderItem<Row>>(
     ({ item, index }) => {
@@ -135,16 +142,19 @@ export function ChatThread({
       const m = item.message;
       const isOtherSide = m.author === 'other' || m.author === 'other_pet';
       const pet = m.author === 'my_pet' ? myPet : m.author === 'other_pet' ? other.pet : undefined;
+      const who = m.author === 'other' ? whoIs?.(m) : undefined;
+      const sender = who?.person ?? other;
       // Noms tels qu'ils s'écrivent, majuscule comprise (« Léa », « Pépite · brise-glace »).
-      const plain = m.author === 'other' ? (otherName ?? other.displayName) : pet?.name;
+      const plain = m.author === 'other' ? (who?.name ?? otherName ?? other.displayName) : pet?.name;
       const name = plain && pet && m.petRole && roleLabel ? roleLabel(m.petRole, plain) : plain;
       const reportable = m.author === 'other' && m.kind !== 'event' && !!onMessageLongPress;
       const props: MessageBubbleProps = {
         message: m,
         name,
         pet,
-        person: isOtherSide ? other : undefined,
-        hiddenFace: m.author === 'other' && other.face === 'hidden',
+        person: isOtherSide ? sender : undefined,
+        // Groupe : chaque membre se reconnaît à son minimoa (pas le disque dégradé du visage caché d'un lien).
+        hiddenFace: m.author === 'other' && sender.face === 'hidden' && !who,
         continued: item.continued,
         onPhotoPress: onPhotoPress ? () => onPhotoPress(m) : undefined,
         lockedPhotoLabel,
@@ -157,7 +167,7 @@ export function ChatThread({
       if (!f) return settle(<MessageBubble {...props} />);
       return <FreshBubble {...props} petRank={f.petRank} />;
     },
-    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel, typingLabel, roleLabel, onMessageLongPress, longPressHint, fresh],
+    [myPet, other, otherName, onPhotoPress, lockedPhotoLabel, typingLabel, roleLabel, onMessageLongPress, longPressHint, fresh, whoIs],
   );
 
   if (messages.length === 0 && empty) return <View style={[styles.empty, contentStyle]}>{empty}</View>;

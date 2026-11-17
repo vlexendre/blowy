@@ -98,6 +98,8 @@ export class MemoryModerationRepository implements ModerationRepository {
         targetUser: r.targetUser,
         linkId: r.linkId,
         messageId: r.messageId ?? null,
+        groupId: r.groupId ?? null,
+        groupMessageId: r.groupMessageId ?? null,
         reason: r.reason,
         details: r.details,
         createdAt: r.createdAt,

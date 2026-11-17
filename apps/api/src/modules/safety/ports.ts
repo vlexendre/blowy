@@ -19,6 +19,9 @@ export interface ReportRecord {
   linkId: string | null;
   /** Message signalé, dans `linkId` (null : signalement de la personne, sans message précis). */
   messageId?: string | null;
+  /** Signalement dans un groupe (spéc §26) : le groupe, et le message signalé s'il y en a un. */
+  groupId?: string | null;
+  groupMessageId?: string | null;
   reason: string;
   details: string | null;
   createdAt: string;

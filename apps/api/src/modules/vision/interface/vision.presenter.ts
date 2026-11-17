@@ -80,10 +80,7 @@ export function toLocationStatus(profile: Profile, place: PlaceRecord | null, pl
 
 export const toIdentity = (profile: Profile, place: PlaceRecord | null, plus: boolean): Identity => ({
   gender: profile.gender,
-  seeking: profile.seeking,
-  whom: profile.whom,
   locale: profile.locale,
   discreet: profile.discreet,
-  sensitiveConsentAt: profile.sensitiveConsentAt,
   location: toLocationStatus(profile, place, plus),
 });

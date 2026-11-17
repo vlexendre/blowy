@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { textOf, visionText } from '@blowy/content';
-import { BLUR_GRID_METERS, type GeoPoint, type LookingFor, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, mutualLookingFor, snapToGrid } from '@blowy/domain';
+import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, snapToGrid } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
@@ -34,7 +34,6 @@ export interface MapPinResult {
   pet: PetRecord;
   match: CachedMatch;
   relation: PinRelation;
-  lookingFor: LookingFor | null;
 }
 
 export interface MapResult {
@@ -128,7 +127,7 @@ export class GetMap {
     const pins = shownInside.flatMap((m): MapPinResult[] => {
       const p = visible.get(m.userId);
       const pet = pets.get(m.userId);
-      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId), lookingFor: mutualLookingFor(profile, p) }] : [];
+      return p && pet ? [{ profile: p, pet, match: m, relation: relationOf(m.userId) }] : [];
     });
 
     const blurred = new Map<string, GeoPoint>();

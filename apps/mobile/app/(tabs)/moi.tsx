@@ -1,6 +1,6 @@
-/** Onglet Moi (V6-Moi) : profil, lien « 3 mots », chiffres, Minimoa+, liste courte menant aux réglages. */
+/** Onglet Moi (V6-Moi) : qui tu es (en-tête), lien « 3 mots », chiffres non nuls, Minimoa+ en une rangée, liste courte menant aux réglages. */
 import { color, space } from '@blowy/tokens';
-import { Appear, Banner, PlusBanner, ProfileHero, SettingsSection, Skeleton, Stagger, StatTile, TabTemplate, WordsShareCard } from '@blowy/ui';
+import { Appear, Banner, PlusBanner, ProfileHero, SettingsSection, Skeleton, Stagger, StatLine, TabTemplate, WordsShareCard } from '@blowy/ui';
 import { router } from 'expo-router';
 import { RefreshControl, View } from 'react-native';
 
@@ -42,16 +42,16 @@ export default function Moi() {
   if (!me.data) {
     return (
       <ScreenMotion>
-      <TabTemplate gutter={12} gap={10} top={6}>
+      <TabTemplate gutter={12} gap={8} top={6}>
         {me.isError ? (
           <Appear key="error">
             <Banner tone="error" title={common.errorTitle} text={t.errorText} actionLabel={common.retry} onAction={() => void me.refetch()} />
           </Appear>
         ) : (
           <View style={{ gap: space.md }} accessibilityLabel={common.loading}>
-            <Skeleton height={160} radius="xl" />
-            <Skeleton height={150} radius="lg" />
-            <Skeleton height={72} radius="lg" />
+            <Skeleton height={100} radius="lg" />
+            <Skeleton height={124} radius="lg" />
+            <Skeleton height={56} radius="lg" />
           </View>
         )}
       </TabTemplate>
@@ -66,57 +66,54 @@ export default function Moi() {
   const linkList = links.data ?? [];
   const bestStreak = linkList.reduce((best, l) => Math.max(best, l.streak), 0);
   const days = Math.max(1, Math.floor((Date.now() - Date.parse(m.pet.bornAt)) / DAY_MS) + 1);
-  const seeking = moi.identite.seekingShort[m.identity.seeking] ?? '';
+  // Seuls les chiffres non nuls : pour un nouveau compte, la rangée n'apparaît pas.
+  const stats = [
+    { key: 'links', value: linkList.length, label: t.stats.links(linkList.length) },
+    { key: 'streak', value: bestStreak, label: t.stats.streak(bestStreak), color: color.orange },
+  ].filter((s) => s.value > 0);
+  const member = m.plus;
 
   // Les blocs arrivent en cascade à la première visite seulement (l'onglet reste monté) ; les chiffres défilent.
   return (
     <ScreenMotion>
-    <TabTemplate refreshControl={refresh} gutter={12} gap={10} top={6}>
+    <TabTemplate refreshControl={refresh} gutter={12} gap={8} top={6}>
       <Stagger onceKey="moi" step={55}>
       <ProfileHero
         key="hero"
         title={t.title(m.displayName, petName)}
-        hint={t.photoHint}
+        caption={t.together(days)}
+        // Ta photo est toujours nette pour toi ; le flou pour les autres s'explique sur Mon compte, à côté de la photo.
         photoUri={m.avatarUrl}
-        photoLabel={t.photoLabel}
         pet={m.pet}
-        petColor={color.accent}
-        onPhotoPress={() => router.push('/moi/compte')}
+        accessibilityLabel={t.heroLabel(m.displayName, petName)}
+        onPress={() => router.push('/moi/compte')}
       />
 
       <WordsShareCard
         key="words"
         title={t.wordsTitle}
-        countLabel={t.wordsCount(wordsCount)}
-        badge={t.wordsBadge}
-        words={[]}
-        received={wordsCount > 0}
-        emptyText={t.wordsLead(petName)}
-        receivedText={t.wordsReceived(petName)}
-        moreLabel={t.wordsMore(petName)}
+        badge={wordsCount > 0 ? t.wordsCount(wordsCount) : t.wordsBadge}
+        badgeOn={wordsCount > 0}
+        text={t.wordsLead(petName)}
+        moreLabel={wordsCount > 0 ? t.wordsMore(petName) : undefined}
         onMore={() => router.push('/pet/caractere')}
-        url={displayUrl(wordsLink)}
-        copyLabel={t.copy}
+        shareLabel={t.wordsShareCta}
+        onShare={() => void words.share(t.wordsMessage(wordsLink), wordsLink)}
+        copyLabel={`${t.copy} ${displayUrl(wordsLink)}`}
         copiedLabel={t.copied}
         copied={words.copied}
-        shareLabel={t.wordsShareCta}
         onCopy={() => void words.copy(wordsLink)}
-        onShare={() => void words.share(t.wordsMessage(wordsLink), wordsLink)}
       />
 
-      <View key="stats" style={{ flexDirection: 'row', gap: space.sm }}>
-        <StatTile value={links.data ? String(linkList.length) : '–'} count={links.data ? linkList.length : undefined} label={t.stats.links} />
-        <StatTile value={t.streakValue(bestStreak)} count={links.data ? bestStreak : undefined} suffix={t.streakSuffix} label={t.stats.streak} color={color.orange} />
-        <StatTile value={String(days)} count={days} label={t.stats.days(petName)} color={color.accent} />
-      </View>
+      {stats.length ? <StatLine key="stats" items={stats} /> : null}
 
       <PlusBanner
         key="plus"
         // Pas de prix ici : le montant facturé se lit sur la feuille Minimoa+ (règle Apple 3.1.2, spéc §13).
-        title={m.plus ? t.plusMemberTitle : purchases.available ? t.plusTitle : t.plusSoonTitle}
-        // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule.
-        text={m.plus && subscription.data ? subscription.data.summary : plusPerksLine(perks)}
-        ctaLabel={purchases.available && !m.plus ? t.plusCta : t.plusSoonCta}
+        title={t.plusTitle}
+        // Membre : l'état de l'abonnement (essai jusqu'au…, se renouvelle le…) tel que l'API le formule ; sinon deux avantages.
+        text={member && subscription.data ? subscription.data.summary : plusPerksLine(perks, 2)}
+        ctaLabel={member ? undefined : purchases.available ? t.plusCta : t.plusSoonCta}
         onPress={() => openPlus('generic')}
       />
 
@@ -124,7 +121,6 @@ export default function Moi() {
         key="rows"
         variant="plain"
         rows={[
-          { key: 'seeking', title: t.rows.seeking.title, subtitle: t.rows.seeking.subtitle(seeking), onPress: () => router.push('/moi/identite') },
           {
             key: 'discreet',
             title: t.rows.discreet.title,

@@ -30,6 +30,8 @@ const reportFromRow = (r: ReportRow): AdminReportRow => ({
   targetUser: r.target_user,
   linkId: r.link_id,
   messageId: r.message_id,
+  groupId: r.group_id ?? null,
+  groupMessageId: r.group_message_id ?? null,
   reason: r.reason,
   details: r.details,
   createdAt: iso(r.created_at),

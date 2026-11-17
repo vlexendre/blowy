@@ -1,9 +1,9 @@
 /**
  * Monde d'exemple du compte de revue d'Apple (App Review 2.1(a)) : personnes fictives, visibles de ce seul compte,
- * construites pour être compatibles avec lui quoi qu'il ait répondu (sexe, ce qu'il cherche, vision). Pur : l'API
+ * construites pour être compatibles avec lui quoi qu'il ait répondu (vision). Pur : l'API
  * écrit les lignes (marquées `review_world`) ; ici, seulement le plan.
  */
-import type { Gender, GeoPoint, Seeker, Seeking, VisionAxis, Whom } from './vision';
+import type { Gender, GeoPoint, VisionAxis } from './vision';
 import { VISION_AXES, clampVision, unitFromSeed } from './vision';
 import type { Species } from './pet';
 
@@ -25,8 +25,6 @@ export interface ReviewFixturePlan {
   role: ReviewRole;
   displayName: string;
   gender: Gender;
-  seeking: Seeking;
-  whom: Whom | null;
   birthdate: string;
   species: Species;
   petName: string;
@@ -79,19 +77,12 @@ const DELTAS: readonly (readonly number[])[] = [
   [12, 6, -8, -10, 38],
 ];
 
-/** Sexe des personnes fictives : ceux que le compte de revue accepte, et variés quand il accepte tout le monde. */
-function gendersFor(reviewer: Seeker): readonly Gender[] {
-  if (reviewer.seeking !== 'potes' && reviewer.whom === 'femmes') return ['femme'];
-  if (reviewer.seeking !== 'potes' && reviewer.whom === 'hommes') return ['homme'];
-  return ['femme', 'homme', 'non_binaire', 'femme', 'homme', 'femme', 'homme', 'non_binaire'];
-}
+/** Sexe des personnes fictives : variés (il ne filtre rien, spéc. §27). */
+const GENDER_MIX: readonly Gender[] = ['femme', 'homme', 'non_binaire', 'femme', 'homme', 'femme', 'homme', 'non_binaire'];
 
-/**
- * Plan des 8 personnes fictives, compatibles avec le compte de revue : elles cherchent « les deux » et « tout le
- * monde » (le filtre réciproque passe donc toujours dans leur sens), leur sexe est l'un de ceux que le compte accepte.
- */
-export function reviewWorldPlan(reviewer: Seeker): ReviewFixturePlan[] {
-  const genders = gendersFor(reviewer);
+/** Plan des 8 personnes fictives, compatibles avec le compte de revue (la vision et la zone suffisent). */
+export function reviewWorldPlan(): ReviewFixturePlan[] {
+  const genders = GENDER_MIX;
   const used = new Map<Gender, number>();
   return ROLES.map((r, slot) => {
     const gender = genders[slot % genders.length] ?? 'femme';
@@ -105,8 +96,6 @@ export function reviewWorldPlan(reviewer: Seeker): ReviewFixturePlan[] {
       role: r.role,
       displayName: NAMES[gender][n % NAMES[gender].length] ?? 'Sasha',
       gender,
-      seeking: 'les_deux',
-      whom: 'tout_le_monde',
       birthdate: BIRTHDATES[slot] ?? '1996-01-01',
       species: pet.species,
       petName: pet.name,

@@ -55,6 +55,9 @@ export interface AdminReportRow {
   targetUser: string | null;
   linkId: string | null;
   messageId: string | null;
+  /** Signalement dans un groupe (spéc §26) : le groupe et le message signalé. */
+  groupId?: string | null;
+  groupMessageId?: string | null;
   reason: string;
   details: string | null;
   createdAt: string;

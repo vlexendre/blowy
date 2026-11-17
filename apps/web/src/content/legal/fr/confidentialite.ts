@@ -10,7 +10,7 @@ export const confidentialite: LegalPage = {
     title: 'En bref',
     items: [
       'On utilise tes données pour une chose : faire vivre ton minimoa et te présenter des gens compatibles. **Pas de publicité, pas de revente.**',
-      'Ce que tu cherches et qui tu veux rencontrer peut révéler ton orientation sexuelle : on te demande un **accord explicite**, et tu peux le retirer.',
+      'On ne te demande pas ce que tu cherches : ton minimoa crée des liens, leur nature vous regarde. **Aucune donnée sur ton orientation n’est collectée.**',
       'Ta **position** n’est utilisée que quand l’app est ouverte, et **jamais enregistrée exacte** : on garde seulement un point arrondi à environ 300 m et ta zone. Sur la carte, les autres voient une position arrondie et décalée, jamais en temps réel, et le **mode discret** te retire de la carte. Sans localisation, tu choisis ta ville à la main.',
       'Une **IA tierce**, celle de {{sub.ai.provider}} ({{sub.ai.location}}), intervient à quatre endroits, détaillés [plus bas](#ia) : la lecture des chats si vous l’activez tous les deux, tes photos de preuve si tu l’acceptes, la vérification de sécurité des photos de profil et de certains messages, et le bilan de la semaine, envoyé sans aucun nom.',
       '**Personne chez Minimoa ne lit tes conversations**, sauf un message signalé (par quelqu’un ou par notre filtre automatique) et son contexte immédiat, lus par un modérateur.',
@@ -72,15 +72,15 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Ton sexe, ce que tu cherches, qui tu veux rencontrer', id: 'sensibles' },
+    { h3: 'Ton sexe', id: 'sexe' },
     {
       ul: [
-        '**Données :** ton sexe (femme, homme, non-binaire, ou « je préfère ne pas dire ») ; ce que tu cherches (des potes, plus, ou les deux) ; si tu cherches « plus », qui tu veux rencontrer (des femmes, des hommes, tout le monde).',
-        '**Pourquoi c’est sensible :** ensemble, ces réponses peuvent révéler ton **orientation sexuelle**, une donnée protégée par l’article 9 du RGPD.',
-        '**But :** ne te présenter que des personnes qui cherchent la même chose que toi, et qui veulent rencontrer quelqu’un comme toi.',
-        '**Base légale :** ton **consentement explicite**, demandé à l’inscription avant que tu répondes. Tu peux le retirer : dans l’app (**Moi → Réglages → Qui tu es, ce que tu cherches → Retirer mon accord**), ou en supprimant ton compte. Sans ces réponses, on ne peut pas te proposer de rencontres « plus ».',
-        '**Durée :** tant que ton compte existe, ou jusqu’à ce que tu retires ton accord ou modifies tes réponses.',
-        '**Accès :** l’algorithme de rencontres. Ces réponses servent au filtrage : une personne qui t’est présentée peut en déduire que vous cherchez la même chose. Elles ne sont jamais affichées, jamais utilisées pour de la publicité ni transmises à un tiers.',
+        '**Données :** ton sexe (femme, homme, non-binaire, ou « je préfère ne pas dire »).',
+        '**But :** accorder les textes de l’app, et des statistiques sans nom. **Il ne sert pas à choisir qui ton minimoa te présente.**',
+        '**Base légale :** notre intérêt légitime. « Je préfère ne pas dire » reste toujours possible, et tu peux changer ta réponse dans l’app (**Moi → Réglages → Qui tu es**).',
+        '**Durée :** tant que ton compte existe.',
+        '**Accès :** toi seul. Il n’est jamais montré aux autres.',
+        'On ne te demande pas ce que tu cherches ni qui tu veux rencontrer : ton minimoa crée des liens, leur nature vous regarde. Les réponses données à ces questions avant le 17 novembre 2026, et l’accord qui allait avec, ont été effacées.',
       ],
     },
 
@@ -254,8 +254,8 @@ export const confidentialite: LegalPage = {
       ol: [
         '**Ta vision** est placée sur 5 axes : foyer (libre, en solo ↔ fonder un foyer), ancrage (rester ici ↔ partir), élan (du temps pour soi ↔ de grands projets), rythme (calme, chez soi ↔ intense, dehors), cap (au jour le jour ↔ tout prévoir). Chaque axe a un indice de confiance.',
         '**D’où elle vient**, avec des poids de départ : test d’inscription 40 % (puis de moins en moins), question du jour 20 %, habitudes 25 %, façon de t’occuper de ton minimoa 10 %, les 3 mots de tes potes 5 %. Plus tu utilises Minimoa, plus la confiance monte.',
-        '**Les filtres** : ce que chacun cherche, et pour « plus », qui il veut rencontrer ; 18 ans et plus ; la zone ; les personnes bloquées.',
-        '**Le score** : la proximité sur les 5 axes, pondérée par la confiance. Pour « potes », l’axe foyer compte peu ; pour « plus », il compte double. Le style (sociable, joueur, tendre, bavard) n’entre pas dans le score.',
+        '**Les filtres** : 18 ans et plus ; la zone ; les personnes bloquées. Ni ton sexe ni celui des autres ne filtrent qui t’est présenté.',
+        '**Le score** : la proximité sur les 5 axes, pondérée par la confiance ; l’axe foyer compte moins que les autres. Le style (sociable, joueur, tendre, bavard) n’entre pas dans le score.',
         '**Le seuil** : en dessous de 70 %, personne n’est proposé, quitte à en montrer moins.',
         '**L’explication** : chaque rencontre dit pourquoi, avec 3 points communs et 1 différence à explorer. Jamais un chiffre seul.',
         '**Le nombre de rencontres** dépend aussi de la forme de ton minimoa (plus tu t’en occupes, plus il te présente de monde) et de ton abonnement.',
@@ -316,7 +316,7 @@ export const confidentialite: LegalPage = {
         '**Les personnes que ton minimoa te présente** voient ton prénom, ton minimoa, son style, vos points communs et une différence, et ta position approximative sur la carte (sauf en mode discret).',
         '**Tes liens** voient en plus vos messages, votre série, les étapes de votre lien, vos anciennes photos du jour s’il y en a, et ta photo de profil si tu en as une (cachée jusqu’au niveau 4, floue au niveau 4, nette à partir du niveau 5).',
         '**Les visiteurs de ta page « 3 mots » ou de ton invitation** voient ton prénom et ton minimoa.',
-        'Personne ne voit ton adresse e-mail, ta date de naissance, ce que tu as répondu sur ton sexe et qui tu veux rencontrer, ni tes réponses au test de vision. Ta position exacte n’est enregistrée nulle part. Tes photos de preuve ne sont vues par aucun humain, et elles sont supprimées sous 24 h (sauf si tu les gardes dans tes souvenirs privés).',
+        'Personne ne voit ton adresse e-mail, ta date de naissance, ton sexe, ni tes réponses au test de vision. Ta position exacte n’est enregistrée nulle part. Tes photos de preuve ne sont vues par aucun humain, et elles sont supprimées sous 24 h (sauf si tu les gardes dans tes souvenirs privés).',
       ],
     },
 
@@ -380,7 +380,7 @@ export const confidentialite: LegalPage = {
         '**accéder** à tes données et en obtenir une copie ;',
         'les faire **corriger** (beaucoup se modifient directement dans l’app) ;',
         'les faire **effacer** ([supprimer ton compte](@supprimer-mon-compte) le fait d’un coup) ;',
-        '**retirer ton consentement** quand il fonde un traitement (données sensibles, localisation, vérification des photos de preuve par l’IA, lecture des messages par l’IA, notifications), sans que cela remette en cause ce qui a été fait avant ;',
+        '**retirer ton consentement** quand il fonde un traitement (localisation, vérification des photos de preuve par l’IA, lecture des messages par l’IA, notifications), sans que cela remette en cause ce qui a été fait avant ;',
         't’**opposer** à un traitement fondé sur notre intérêt légitime, ou en demander la **limitation** ;',
         'récupérer les données que tu nous as fournies dans un format lisible par une machine (**portabilité**) ;',
         'définir des **directives** sur le sort de tes données après ton décès.',

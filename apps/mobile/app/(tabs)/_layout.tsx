@@ -3,6 +3,7 @@ import { BottomTabBar, type BottomTabItem } from '@blowy/ui';
 import { Redirect, Tabs, useIsFocused } from 'expo-router';
 
 import { useEncounters } from '@/features/encounters';
+import { useGroups } from '@/features/groups';
 import { totalUnread, useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useGate } from '@/features/session';
@@ -25,13 +26,14 @@ export default function TabsLayout() {
   // Notification touchée (même app fermée) → son écran ; appareil réenregistré au retour au premier plan.
   useNotificationsBridge(gate);
   const links = useLinks();
+  const groups = useGroups();
   const encounters = useEncounters();
   const pet = usePet().data?.pet;
   // Faux quand un écran est poussé par-dessus les onglets (lien, garde-robe…) : aucun pet décoratif alors.
   const focused = useIsFocused();
   const items: BottomTabItem<TabKey>[] = [
     { key: 'pet', label: tabs.pet, glyph: 'heart' },
-    { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) },
+    { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) + (groups.data?.groups.reduce((n, g) => n + g.unread, 0) ?? 0) + (groups.data?.invitations.length ?? 0) },
     { key: 'rencontres', label: tabs.rencontres, glyph: 'people', badge: encounters.data?.incoming.length ?? 0 },
     { key: 'moi', label: tabs.moi, glyph: 'person' },
   ];

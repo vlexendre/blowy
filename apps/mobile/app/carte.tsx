@@ -228,6 +228,8 @@ export default function CarteScreen() {
             insetTop={190}
             insetBottom={200}
             me={{ pet: m.pet, label: t.me, accessibilityLabel: t.meA11y(m.pet.name) }}
+            // Toi : au centre de ta zone, même quand Minimoa+ regarde ailleurs (sauf ville choisie : tu y es « sans bouger »).
+            mePosition={cityActive ? undefined : (m.identity.location.zone?.center ?? undefined)}
             blurred={beyond?.blurred ?? []}
             pins={pins.map((p) => ({
               key: p.user.id,

@@ -28,7 +28,7 @@ export const assistance: LegalPage = {
         {
           q: 'What is a minimoa?',
           a: [
-            'Your minimoa is a small version of you: it carries your vision of life and your habits. It introduces you to people whose vision is compatible with yours, as friends or more. The more you look after it (by going out, keeping your habits), the more people it introduces you to. It never dies.',
+            'Your minimoa is a small version of you: it carries your vision of life and your habits. It introduces you to people whose vision is compatible with yours to create connections. What they become is up to you. The more you look after it (by going out, keeping your habits), the more people it introduces you to. It never dies.',
           ],
         },
         {

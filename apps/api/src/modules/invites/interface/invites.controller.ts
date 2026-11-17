@@ -3,6 +3,7 @@ import type { Invite, Link } from '@blowy/contract';
 import { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
+import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { LinkPresenter } from '../../links/interface/link.presenter';
 import { shapeOf } from '@blowy/domain';
@@ -20,12 +21,14 @@ export class InvitesController {
   ) {}
 
   @Public()
+  @RateLimit('lookup')
   @Get(':code')
   async get(@Param('code', Code) code: string): Promise<Invite> {
     const { profile, pet } = await this.invites.get(code);
     return { displayName: profile.displayName, pet: toPublicPet(pet, moodForShape(shapeOf(pet.needs))) };
   }
 
+  @RateLimit('lookup')
   @Post(':code/accept')
   async accept(@CurrentUser() user: AuthUser, @Param('code', Code) code: string): Promise<Link> {
     return this.links.link(await this.invites.accept(code, user.userId), user.userId);

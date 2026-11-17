@@ -14,9 +14,11 @@ import { useMe } from '@/features/me';
 import { useNotificationSettings, usePushPermission, useUpdateNotificationSettings } from '@/features/notifications';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
+import { groupes } from '@/locales/groupes';
 import { moi } from '@/locales/moi';
 
 const t = moi.notifications;
+const g = groupes.notifications;
 
 /** Une ligne de la maquette peut porter plusieurs types (« Nouvelle rencontre, on te fait signe ») : allumée si tous le sont. */
 type Row = { key: string; kinds: readonly NotificationKindDto[]; title: string; subtitle?: string };
@@ -47,6 +49,13 @@ export default function Notifications() {
     { key: 'messages', kinds: ['message'], ...t.rows.messages },
     { key: 'turn', kinds: ['your_turn'], ...t.rows.your_turn },
     { key: 'danger', kinds: ['link_in_danger'], ...t.rows.link_in_danger },
+  ];
+  // Groupes (spéc. §26) : vie perdue et groupe endormi tiennent sur une ligne.
+  const groupRows: Row[] = [
+    { key: 'group_invite', kinds: ['group_invite'], ...g.group_invite },
+    { key: 'together', kinds: ['together_proposal'], ...g.together_proposal },
+    { key: 'group_message', kinds: ['group_message'], ...g.group_message },
+    { key: 'group_lives', kinds: ['group_life_lost', 'group_asleep'], ...g.group_lives },
   ];
   const plusRows: Row[] = [{ key: 'trial', kinds: ['trial_reminder'], ...t.rows.trial_reminder }];
 
@@ -93,6 +102,7 @@ export default function Notifications() {
             />
             <SettingsSection key="pet" title={t.sections.pet} rows={toRows(s, petRows)} />
             <SettingsSection key="links" title={t.sections.links} rows={toRows(s, linkRows)} />
+            <SettingsSection key="groups" title={g.section} rows={toRows(s, groupRows)} />
             <SettingsSection key="plus" title={t.sections.plus} rows={toRows(s, plusRows)} />
           </Stagger>
         )}

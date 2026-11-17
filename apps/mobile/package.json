@@ -21,7 +21,6 @@
     "@blowy/tokens": "workspace:*",
     "@blowy/ui": "workspace:*",
     "@expo-google-fonts/anton": "^0.4.1",
-    "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
     "@expo/metro-runtime": "~58.0.16",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.119.0",

@@ -1,6 +1,6 @@
 import type { Db } from '../../../persistence/database.types';
 import { check, iso, isoOrNull } from '../../../persistence/supabase';
-import type { Gender, Locale, Seeking, Whom } from '@blowy/domain';
+import type { Gender, Locale } from '@blowy/domain';
 import type { Profile, ProfilePatch, ProfilesRepository } from '../ports';
 
 interface ProfileRow {
@@ -8,11 +8,8 @@ interface ProfileRow {
   display_name: string;
   birthdate: string;
   gender: string;
-  seeking: string;
-  whom: string | null;
   locale: string;
   discreet: boolean;
-  sensitive_consent_at: string | null;
   location_consent_at: string | null;
   avatar_path: string | null;
   invite_code: string;
@@ -22,6 +19,7 @@ interface ProfileRow {
   created_at: string;
   review_world?: string | null;
   avatar_checked_at?: string | null;
+  show_habits?: boolean;
 }
 
 const fromRow = (r: ProfileRow): Profile => ({
@@ -30,11 +28,8 @@ const fromRow = (r: ProfileRow): Profile => ({
   birthdate: r.birthdate,
   // Valeurs bornées par les contraintes CHECK de la migration « vision ».
   gender: r.gender as Gender,
-  seeking: r.seeking as Seeking,
-  whom: r.whom as Whom | null,
   locale: r.locale as Locale,
   discreet: r.discreet,
-  sensitiveConsentAt: isoOrNull(r.sensitive_consent_at),
   locationConsentAt: isoOrNull(r.location_consent_at),
   avatarPath: r.avatar_path,
   inviteCode: r.invite_code,
@@ -44,6 +39,7 @@ const fromRow = (r: ProfileRow): Profile => ({
   createdAt: iso(r.created_at),
   reviewWorld: r.review_world ?? null,
   avatarCheckedAt: isoOrNull(r.avatar_checked_at ?? null),
+  showHabits: r.show_habits ?? true,
 });
 
 export class SupabaseProfilesRepository implements ProfilesRepository {
@@ -84,11 +80,8 @@ export class SupabaseProfilesRepository implements ProfilesRepository {
       display_name: p.displayName,
       birthdate: p.birthdate,
       gender: p.gender,
-      seeking: p.seeking,
-      whom: p.whom,
       locale: p.locale,
       discreet: p.discreet,
-      sensitive_consent_at: p.sensitiveConsentAt,
       location_consent_at: p.locationConsentAt,
       avatar_path: p.avatarPath,
       invite_code: p.inviteCode,
@@ -105,16 +98,14 @@ export class SupabaseProfilesRepository implements ProfilesRepository {
     const row: Partial<ProfileRow> = {};
     if (patch.displayName !== undefined) row.display_name = patch.displayName;
     if (patch.gender !== undefined) row.gender = patch.gender;
-    if (patch.seeking !== undefined) row.seeking = patch.seeking;
-    if (patch.whom !== undefined) row.whom = patch.whom;
     if (patch.locale !== undefined) row.locale = patch.locale;
     if (patch.discreet !== undefined) row.discreet = patch.discreet;
-    if (patch.sensitiveConsentAt !== undefined) row.sensitive_consent_at = patch.sensitiveConsentAt;
     if (patch.locationConsentAt !== undefined) row.location_consent_at = patch.locationConsentAt;
     if (patch.avatarPath !== undefined) row.avatar_path = patch.avatarPath;
     if (patch.welcomeSentAt !== undefined) row.welcome_sent_at = patch.welcomeSentAt;
     if (patch.reviewWorld !== undefined) row.review_world = patch.reviewWorld;
     if (patch.avatarCheckedAt !== undefined) row.avatar_checked_at = patch.avatarCheckedAt;
+    if (patch.showHabits !== undefined) row.show_habits = patch.showHabits;
     const { data, error } = await this.table.update(row).eq('id', id).select('*').single();
     check(error, 'mise à jour du profil');
     return fromRow(data as ProfileRow);

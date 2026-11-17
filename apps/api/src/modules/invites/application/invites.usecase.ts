@@ -44,6 +44,8 @@ export class Invites {
     // Monde d'exemple du compte de revue d'Apple, d'un côté ou de l'autre : introuvable (jamais de lien avec un vrai compte).
     if (!owner || (owner.reviewWorld ?? null) !== (me.reviewWorld ?? null)) throw new DomainError('not_found', errorText('inviteNotFound'));
     if (owner.id === userId) throw new DomainError('conflict', errorText('inviteOwn'));
+    // Bloqué dans un sens ou dans l'autre, suspendu : introuvable, comme la page publique (rien ne trahit un blocage).
+    if (!(await this.audience.reachable(userId, owner.id))) throw new DomainError('not_found', errorText('inviteNotFound'));
     return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id });
   }
 }

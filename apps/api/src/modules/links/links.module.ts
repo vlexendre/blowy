@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PetsModule } from '../pets/pets.module';
+import { HabitSharingModule } from '../groups/sharing/habit-sharing.module';
 import { ArchiveLink } from './application/archive-link.usecase';
 import { CreateLink } from './application/create-link.usecase';
 import { GetLink } from './application/get-link.usecase';
@@ -18,7 +19,7 @@ import { LinkJobs } from './minimoas/link-jobs';
 import { LinkMinimoasController } from './minimoas/link-minimoas.controller';
 
 @Module({
-  imports: [PetsModule],
+  imports: [PetsModule, HabitSharingModule],
   controllers: [LinksController, LinkMinimoasController],
   providers: [
     LinkSession,

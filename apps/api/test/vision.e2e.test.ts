@@ -4,7 +4,7 @@ import { MATCH_THRESHOLD, ZONE_RADIUS_KM, distanceKm } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { MEMORY_DB } from '../src/shared/tokens';
-import { PARIS, type TestWorld, apiError, errorCode, onboardBody, startWorld, visionAnswers } from './helpers';
+import { PARIS, type TestWorld, errorCode, onboardBody, startWorld, visionAnswers } from './helpers';
 
 type Client = { id: string; api: ApiClient };
 
@@ -54,21 +54,17 @@ describe('vision', () => {
     }
   });
 
-  it('inscription : sexe, ce que tu cherches, qui, accords, position et test ; rien de créé si c’est incohérent', async () => {
+  it('inscription : sexe, accords, position et test ; rien de créé si c’est incohérent', async () => {
     const c = world.client();
-    const base = { displayName: 'Ana', gender: 'femme' as const, seeking: 'plus' as const };
-    // « plus » sans dire qui, « qui » sans accord, « qui » pour des potes, position sans accord, situation inconnue.
-    expect((await apiError(c.api.me.onboard(onboardBody(base)))).code).toBe('invalid');
-    expect((await apiError(c.api.me.onboard(onboardBody({ ...base, whom: 'hommes' })))).message).toContain('accord');
-    expect(await errorCode(c.api.me.onboard(onboardBody({ displayName: 'Ana', whom: 'hommes', consents: { sensitive: true, location: true } })))).toBe('invalid');
-    expect(await errorCode(c.api.me.onboard(onboardBody({ displayName: 'Ana', consents: { sensitive: false, location: false } })))).toBe('invalid');
+    const base = { displayName: 'Ana', gender: 'femme' as const };
+    // Position sans accord, situation inconnue, trop jeune.
+    expect(await errorCode(c.api.me.onboard(onboardBody({ displayName: 'Ana', consents: { location: false } })))).toBe('invalid');
     expect(await errorCode(c.api.me.onboard(onboardBody({ displayName: 'Ana', visionAnswers: [{ questionId: 'astrologie', choice: 0 }] })))).toBe('invalid');
-    expect(await errorCode(c.api.me.onboard(onboardBody({ ...base, whom: 'hommes', birthdate: '2010-01-01', consents: { sensitive: true, location: true } })))).toBe('too_young');
+    expect(await errorCode(c.api.me.onboard(onboardBody({ ...base, birthdate: '2010-01-01' })))).toBe('too_young');
     expect(await errorCode(c.api.me.get())).toBe('not_onboarded');
 
-    const me = await c.api.me.onboard(onboardBody({ ...base, whom: 'hommes', locale: 'fr', consents: { sensitive: true, location: true } }));
-    expect(me.identity).toMatchObject({ gender: 'femme', seeking: 'plus', whom: 'hommes', locale: 'fr', discreet: false });
-    expect(me.identity.sensitiveConsentAt).toBe(world.clock.now().toISOString());
+    const me = await c.api.me.onboard(onboardBody({ ...base, locale: 'fr' }));
+    expect(me.identity).toMatchObject({ gender: 'femme', locale: 'fr', discreet: false });
     expect(me.identity.location.consentAt).not.toBeNull();
     // Zone du domicile : arrondie, jamais la position exacte.
     const zone = me.identity.location.zone;
@@ -96,20 +92,18 @@ describe('vision', () => {
   });
 
   it('rencontres : seulement les compatibles (filtres durs et seuil), expliquées, sans révéler « qui »', async () => {
-    const ben = await person('Ben', { gender: 'homme', seeking: 'les_deux', whom: 'femmes', consents: { sensitive: true, location: true }, location: NEAR });
-    // Cherche la même chose, juste à côté, mais vision opposée : sous le seuil.
-    const cleo = await person('Cléo', { gender: 'homme', seeking: 'plus', whom: 'femmes', consents: { sensitive: true, location: true }, visionAnswers: visionAnswers(1), location: NEAR });
+    const ben = await person('Ben', { gender: 'homme', location: NEAR });
+    // Juste à côté, mais vision opposée : sous le seuil.
+    const cleo = await person('Cléo', { gender: 'homme', visionAnswers: visionAnswers(1), location: NEAR });
     // Même vision, mais à Lyon : hors zone.
-    const dan = await person('Dan', { gender: 'homme', seeking: 'plus', whom: 'femmes', consents: { sensitive: true, location: true }, location: LYON });
-    // Même vision, ne cherche que « plus » avec des hommes : Ana (femme) n'entre pas dans ses critères.
-    const eli = await person('Éli', { gender: 'homme', seeking: 'plus', whom: 'hommes', consents: { sensitive: true, location: true }, location: NEAR });
+    const dan = await person('Dan', { gender: 'homme', location: LYON });
     // Pas de position : pas de rencontres proches.
-    const fay = await person('Fay', { location: undefined, consents: { sensitive: false, location: false } });
+    const fay = await person('Fay', { location: undefined, consents: { location: false } });
 
     const { suggestions } = await ana.api.encounters.list();
     const ids = suggestions.map((s) => s.user.id);
     expect(ids).toContain(ben.id);
-    for (const absent of [cleo.id, dan.id, eli.id, fay.id]) expect(ids).not.toContain(absent);
+    for (const absent of [cleo.id, dan.id, fay.id]) expect(ids).not.toContain(absent);
     const benSuggestion = suggestions.find((s) => s.user.id === ben.id);
     expect(benSuggestion?.via).toBe('nearby');
     expect(benSuggestion?.compatibility).toBeGreaterThanOrEqual(MATCH_THRESHOLD);
@@ -117,10 +111,11 @@ describe('vision', () => {
     expect(benSuggestion?.explanation.explore.text).toContain('À explorer');
     expect(benSuggestion?.intro).toContain('Ben'.slice(0, 0) + (benSuggestion?.explanation.common[0]?.text ?? '-'));
     for (const s of suggestions) expect(s.compatibility).toBeGreaterThanOrEqual(MATCH_THRESHOLD);
-    // Rien de « qui tu veux rencontrer » ni de ce que l'autre cherche dans ce que l'on voit des autres.
+    // Rien de ce que l'autre cherche dans ce que l'on voit des autres.
     const json = JSON.stringify(suggestions);
     expect(json).not.toContain('whom');
     expect(json).not.toContain('seeking');
+    expect(json).not.toContain('lookingFor');
     expect(json).not.toContain('identity');
 
     // Sans position : personne de proche, et la carte le dit.
@@ -129,28 +124,51 @@ describe('vision', () => {
     expect(fayMap).toMatchObject({ status: 'no_location', pins: [] });
     expect(fayMap.message).toContain('Sans ta position');
 
-    // Saluer quelqu'un qui ne cherche pas ce que tu cherches : introuvable.
-    expect(await errorCode(ana.api.encounters.wave(eli.id))).toBe('not_found');
-
     // Bloquer retire tout de suite (le cache du jour n'y change rien).
     await ana.api.safety.block(ben.id);
     expect((await ana.api.encounters.list()).suggestions.map((s) => s.user.id)).not.toContain(ben.id);
     await ana.api.safety.unblock(ben.id);
   });
 
-  it('les suggestions sont gardées un jour ; un changement de ta part les recalcule', async () => {
+  it('les suggestions sont gardées un jour', async () => {
     const before = (await ana.api.encounters.list()).suggestions.map((s) => s.user.id);
-    const gus = await person('Gus', { gender: 'homme', seeking: 'plus', whom: 'femmes', consents: { sensitive: true, location: true }, location: NEAR });
+    const gus = await person('Gus', { gender: 'homme', location: NEAR });
     expect((await ana.api.encounters.list()).suggestions.map((s) => s.user.id)).toEqual(before);
     world.clock.advanceDays(1);
     cheerUp(ana.id);
     expect((await ana.api.encounters.list()).suggestions.map((s) => s.user.id)).toContain(gus.id);
-    // Retirer l'accord : « qui » est effacé et on repasse à « potes » ; « plus » sans accord est refusé.
-    const me = await ana.api.me.update({ sensitiveConsent: false });
-    expect(me.identity).toMatchObject({ seeking: 'potes', whom: null, sensitiveConsentAt: null });
-    expect(await errorCode(ana.api.me.update({ seeking: 'plus' }))).toBe('invalid');
-    // Ana cherche désormais des potes ou plus (avec des hommes) : les « potes » de la suite la rencontrent en potes.
-    await ana.api.me.update({ seeking: 'les_deux', whom: 'hommes', sensitiveConsent: true });
+  });
+
+  it('ce que les gens cherchent n’existe plus (spéc. §27) : champs d’une ancienne app ignorés, aucun filtre « qui »', async () => {
+    // Une ancienne app envoie encore « ce que tu cherches », « qui » et l'accord sensible : l'inscription passe, rien n'est gardé.
+    const legacy = (name: string, gender: 'femme' | 'homme', whom: 'femmes' | 'hommes') =>
+      ({ ...onboardBody({ displayName: name, gender, location: NEAR }), seeking: 'plus', whom, consents: { sensitive: true, location: true } }) as unknown as ReturnType<typeof onboardBody>;
+    const kim = world.client();
+    const me = await kim.api.me.onboard(legacy('Kim', 'homme', 'hommes'));
+    expect(me.identity).toMatchObject({ gender: 'homme', discreet: false });
+    expect(me.identity.location.consentAt).not.toBeNull();
+    const stored = db.profiles.get(kim.id) as unknown as Record<string, unknown>;
+    for (const key of ['seeking', 'whom', 'sensitiveConsentAt']) expect(stored).not.toHaveProperty(key);
+    // La réponse brute de l'API non plus.
+    const raw = await (await fetch(`${world.baseUrl}/v1/me`, { headers: { authorization: `Bearer test:${kim.id}` } })).text();
+    expect(raw).toContain('"gender"');
+    for (const key of ['seeking', 'whom', 'sensitiveConsent']) expect(raw).not.toContain(key);
+    // Pareil pour une mise à jour d'une ancienne app : acceptée, ignorée.
+    const updated = await kim.api.me.update({ seeking: 'les_deux', whom: 'femmes', sensitiveConsent: true } as unknown as Parameters<typeof kim.api.me.update>[0]);
+    expect(updated.identity.gender).toBe('homme');
+    expect(db.profiles.get(kim.id)).not.toHaveProperty('whom');
+
+    // Plus de filtre « qui » : Kim (qui « cherchait des hommes ») et Ana (femme, même vision, à côté) se voient l'un l'autre,
+    // et Ana peut le saluer.
+    cheerUp(ana.id);
+    cheerUp(kim.id);
+    world.clock.advanceDays(1);
+    cheerUp(ana.id);
+    cheerUp(kim.id);
+    expect((await ana.api.encounters.list()).suggestions.map((s) => s.user.id)).toContain(kim.id);
+    expect((await kim.api.encounters.list()).suggestions.map((s) => s.user.id)).toContain(ana.id);
+    await ana.api.encounters.wave(kim.id);
+    expect((await kim.api.encounters.list()).incoming.map((i) => i.from.id)).toContain(ana.id);
   });
 
   it('carte gratuite : sa zone seulement, positions arrondies, silhouettes floues au-delà, mode discret respecté', async () => {
@@ -221,7 +239,7 @@ describe('vision', () => {
   });
 
   it('position : accord exigé, oubli possible, zone stable lors d’une sortie', async () => {
-    const kim = await person('Kim', { location: undefined, consents: { sensitive: false, location: false } });
+    const kim = await person('Kim', { location: undefined, consents: { location: false } });
     expect(await errorCode(kim.api.vision.locate(PARIS))).toBe('forbidden');
     const first = await kim.api.vision.locate(PARIS, true);
     expect(first.consentAt).not.toBeNull();

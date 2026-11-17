@@ -14,7 +14,7 @@ import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { Banner } from '../molecules/Banner';
-import { Hearts } from '../molecules/Hearts';
+import { LifeSparks } from '../molecules/LifeSparks';
 import { InkProvider } from '../lib/ink';
 import { ease, fadeTo, springs, useLoop, useReducedMotion } from '../lib/motion';
 import { Appear } from '../motion/Appear';
@@ -53,7 +53,7 @@ export interface GhostPanelProps {
   backLabel?: string;
   /** Puce de l'en-tête (« Tom · lien fantôme »). */
   badge?: string;
-  /** Libellé lu des cœurs (« 0 vie sur 7 »). */
+  /** Libellé lu des vies (« 0 vie sur 7 »). */
   livesLabel?: string;
   /**
    * Clé du lien : à la première visite, ton pet perd ses couleurs sous tes yeux (il devient transparent et
@@ -107,7 +107,7 @@ export function GhostPanel({
         <View style={[layout.row, styles.head]}>
           {onBack ? <IconButton glyph="back" label={backLabel ?? uiStrings.back} onPress={onBack} size={40} style={styles.back} /> : null}
           {badge ? <Chip label={badge} tone="glass" /> : null}
-          <Hearts lives={0} max={MAX_LIVES} ghost size={14} accessibilityLabel={livesLabel} style={styles.hearts} />
+          <LifeSparks lives={0} max={MAX_LIVES} ghost size={14} accessibilityLabel={livesLabel} style={styles.lives} />
         </View>
         <Appear delay={60}>
           <Title text={title} size={76} style={styles.title} />
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, minHeight: 640, paddingHorizontal: 18 },
   head: { gap: 10 },
   back: { backgroundColor: veil.track },
-  hearts: { marginLeft: 'auto' },
+  lives: { marginLeft: 'auto' },
   title: { marginTop: 22 },
   text: { marginTop: 10, maxWidth: 300 },
   // Scène de 270 : le fantôme (290, 18 sous le haut) et sa bulle en haut à gauche.

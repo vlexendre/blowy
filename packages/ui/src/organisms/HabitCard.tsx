@@ -7,6 +7,7 @@ import { Panel } from '../atoms/Panel';
 import { Pressable } from '../atoms/Pressable';
 import { ProgressBar } from '../atoms/ProgressBar';
 import { Text } from '../atoms/Text';
+import { RigourGauge } from '../molecules/RigourGauge';
 import { layout } from '../lib/styles';
 import { alpha, color, type GradientName, onGradient, radius, space } from '../theme';
 
@@ -35,6 +36,8 @@ export interface HabitCardProps<R extends string = string> {
   line?: string | null;
   /** Action du jour (« Montrer la preuve ») : bouton sombre. */
   action?: { label: string; onPress: () => void } | null;
+  /** Rigueur sur 28 jours (spéc. §25) : jauge sous l'avancement. */
+  rigour?: { value: number | null; label: string; valueLabel: string; accessibilityLabel?: string } | null;
   /** Lien discret à droite de l'action : « Arrêter », ou « Régler » (rythme, arrêter) en feuille. */
   remove?: { label: string; onPress: () => void; accessibilityLabel: string } | null;
 }
@@ -43,7 +46,7 @@ export interface HabitCardProps<R extends string = string> {
  * Une habitude suivie (V6-GHabitudes) : panneau en dégradé, picto, nom, rythme et série, barre vers l'objet qu'elle
  * fait gagner (image réelle), l'action du jour, et (si fourni) le choix du rythme en deux pastilles.
  */
-export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'accent', progress, rhythms, rhythm, onRhythm, rhythmBusy = false, status, line, action, remove }: HabitCardProps<R>) {
+export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'accent', progress, rhythms, rhythm, onRhythm, rhythmBusy = false, status, line, action, remove, rigour }: HabitCardProps<R>) {
   const ink = onGradient[gradient];
   const darkInk = ink === color.dark;
   return (
@@ -77,6 +80,7 @@ export function HabitCard<R extends string>({ title, meta, emoji, gradient = 'ac
           </Text>
         </View>
       ) : null}
+      {rigour ? <RigourGauge value={rigour.value} label={rigour.label} valueLabel={rigour.valueLabel} accessibilityLabel={rigour.accessibilityLabel} ink={darkInk ? 'dark' : 'light'} /> : null}
       {line ? (
         <Text variant="bodyBold" size={14}>
           {line}

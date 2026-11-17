@@ -67,6 +67,17 @@ import {
   compteRoutes,
 } from '@blowy/contract';
 import { ReviewResetZ, type ReviewSessionBody, ReviewSessionZ, reviewRoutes } from '@blowy/contract';
+import {
+  type CreateGroupBody,
+  GroupActionZ,
+  GroupDetailZ,
+  GroupMessagesPageZ,
+  type GroupReportBody,
+  GroupsZ,
+  TogetherResultZ,
+  TogetherZ,
+  groupRoutes,
+} from '@blowy/contract';
 import { z } from 'zod';
 
 export class ApiError extends Error {
@@ -251,6 +262,32 @@ export function createApiClient(opts: ApiClientOptions) {
       reviews: (before?: string) => call('GET', ritualRoutes.reviews() + (before ? `?before=${encodeURIComponent(before)}` : ''), WeeklyReviewsZ),
       review: (id: string) => call('GET', ritualRoutes.review(id), WeeklyReviewZ),
       readReview: (id: string) => call('POST', ritualRoutes.reviewRead(id), WeeklyReviewZ),
+    },
+    /**
+     * Groupes (spéc §26) : libres (un chat) ou d'habitude (série, vies, état du jour de chacun, jokers). Aucune IA ne
+     * lit un groupe. Le temps réel (`group_messages`, membres seulement) sert à rafraîchir `messages`.
+     */
+    groups: {
+      list: () => call('GET', groupRoutes.groups(), GroupsZ),
+      create: (body: CreateGroupBody) => call('POST', groupRoutes.groups(), GroupDetailZ, body),
+      get: (id: string) => call('GET', groupRoutes.group(id), GroupDetailZ),
+      rename: (id: string, name: string) => call('PATCH', groupRoutes.group(id), GroupActionZ, { name }),
+      invite: (id: string, memberIds: string[]) => call('POST', groupRoutes.invite(id), GroupDetailZ, { memberIds }),
+      accept: (id: string) => call('POST', groupRoutes.accept(id), GroupDetailZ),
+      decline: (id: string) => call('POST', groupRoutes.decline(id), OkZ),
+      leave: (id: string) => call('POST', groupRoutes.leave(id), OkZ),
+      wake: (id: string) => call('POST', groupRoutes.wake(id), GroupActionZ),
+      /** Par pages : passer le `nextBefore` de la page précédente. */
+      messages: (id: string, before?: string) => call('GET', groupRoutes.messages(id) + (before ? `?before=${encodeURIComponent(before)}` : ''), GroupMessagesPageZ),
+      send: (id: string, body: string) => call('POST', groupRoutes.messages(id), GroupActionZ, { body }),
+      read: (id: string) => call('POST', groupRoutes.read(id), OkZ),
+      /** Joker pour le jour du groupe : aujourd'hui, ou hier jusqu'à midi (`GroupDetail.jokers.canPlaceFor`). */
+      joker: (id: string, day: string) => call('POST', groupRoutes.joker(id), GroupActionZ, { day }),
+      report: (id: string, body: GroupReportBody) => call('POST', groupRoutes.report(id), OkZ, body),
+      /** « La tenir ensemble » : un nombre par habitude, jamais d'identité ni de position. */
+      together: () => call('GET', groupRoutes.together(), TogetherZ),
+      proposeTogether: (habitId: string) => call('POST', groupRoutes.together(), TogetherResultZ, { habitId }),
+      withdrawTogether: (habitId: string) => call('DELETE', groupRoutes.togetherHabit(habitId), OkZ),
     },
     safety: {
       blocks: () => call('GET', routes.blocks(), BlockedList),

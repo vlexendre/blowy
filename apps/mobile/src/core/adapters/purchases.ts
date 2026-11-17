@@ -2,7 +2,10 @@ import { Platform } from 'react-native';
 
 import type { PurchasesPort, SignedPurchase } from '../ports';
 
-/** Pas de magasin ici (web, Android tant que Google Play n'est pas branché) : l'offre est présentée, rien n'est vendu. */
+/**
+ * Pas de magasin ici (web, Android tant que Google Play n'est pas branché) : l'offre est présentée avec les prix de
+ * référence de l'API, sans bouton d'achat ; rien n'est vendu.
+ */
 export const noPurchases: PurchasesPort = {
   available: false,
   simulated: false,
@@ -14,6 +17,8 @@ export const noPurchases: PurchasesPort = {
 };
 
 const DAY = 86_400_000;
+/** Prix que le magasin simulé du mode local annonce (ceux d'App Store Connect en France). Jamais utilisés sur un iPhone. */
+const SIM_PRICES = { yearly: 59.88, monthly: 14.99 } as const;
 /** Même identifiant d'app que l'API en mémoire (`APPLE_BUNDLE_ID`, `app.blowy` par défaut). */
 const LOCAL_BUNDLE = process.env.EXPO_PUBLIC_BUNDLE_ID ?? 'app.blowy';
 
@@ -64,7 +69,21 @@ export function simulatedPurchases(products: { yearly: string; monthly: string }
   return {
     available: true,
     simulated: true,
-    products: async () => [],
+    async products(productIds) {
+      // Ce que StoreKit répondrait en France (le magasin du mode local). Banc d'essai : `noprices` (le magasin ne répond
+      // pas), `slowprices` (il met 20 s).
+      const sim = (globalThis as { __BLOWY_IAP_SIM__?: string }).__BLOWY_IAP_SIM__;
+      if (sim === 'slowprices') await new Promise((r) => setTimeout(r, 20_000));
+      if (sim === 'noprices') throw new Error('store_unavailable');
+      const euros = (n: number) => new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(n);
+      return productIds
+        .filter((id) => id === products.yearly || id === products.monthly)
+        .map((productId) => {
+          const yearly = productId === products.yearly;
+          const price = yearly ? SIM_PRICES.yearly : SIM_PRICES.monthly;
+          return { productId, displayPrice: euros(price), price, currency: 'EUR', introEligible: null, trialDays: yearly ? 7 : 0 };
+        });
+    },
     async purchase(productId, accountToken) {
       // Le temps d'une feuille de paiement : on voit l'état « en cours » du bouton.
       await new Promise((r) => setTimeout(r, 600));

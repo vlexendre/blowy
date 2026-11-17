@@ -40,7 +40,7 @@ const fr = {
     ],
     teaser: (n: number) => (n === 1 ? '1 personne compatible près de chez toi' : `${n} personnes compatibles près de chez toi`),
     renewalNotice:
-      'L’abonnement se renouvelle automatiquement à la fin de chaque période, au même prix, sauf si tu l’annules au moins 24 h avant. Tu peux l’annuler à tout moment dans les réglages de ton identifiant Apple (Abonnements). Le paiement est prélevé sur ton compte Apple.',
+      'Le paiement est prélevé sur ton compte Apple à la confirmation de l’achat ou, avec l’essai gratuit, à la fin de l’essai. L’abonnement se renouvelle automatiquement pour la même durée et au même prix, sauf si tu l’annules au moins 24 h avant la fin de la période en cours. Annule à tout moment dans Réglages › ton nom › Abonnements.',
     continueFree: 'Continuer gratuitement',
     restore: 'Restaurer mes achats',
     summary: {
@@ -106,7 +106,7 @@ const en: Translation<typeof fr> = {
     ],
     teaser: (n: number) => (n === 1 ? '1 compatible person near you' : `${n} compatible people near you`),
     renewalNotice:
-      'The subscription renews automatically at the end of each period, at the same price, unless you cancel it at least 24 hours before the end of the period. You can cancel it at any time in your Apple Account settings (Subscriptions). Payment is charged to your Apple Account.',
+      'Payment is charged to your Apple Account when you confirm the purchase or, with the free trial, when the trial ends. The subscription renews automatically for the same length and at the same price unless you cancel it at least 24 hours before the end of the current period. Cancel anytime in Settings › your name › Subscriptions.',
     continueFree: 'Continue for free',
     restore: 'Restore purchases',
     summary: {
@@ -170,7 +170,7 @@ const es: Translation<typeof fr> = {
     ],
     teaser: (n: number) => (n === 1 ? '1 persona compatible cerca de ti' : `${n} personas compatibles cerca de ti`),
     renewalNotice:
-      'La suscripción se renueva automáticamente al final de cada periodo, al mismo precio, salvo que la canceles al menos 24 horas antes del final del periodo. Puedes cancelarla en cualquier momento en los ajustes de tu cuenta de Apple (Suscripciones). El pago se carga en tu cuenta de Apple.',
+      'El pago se carga en tu cuenta de Apple al confirmar la compra o, con la prueba gratis, al final de la prueba. La suscripción se renueva automáticamente por la misma duración y al mismo precio, salvo que la canceles al menos 24 horas antes del final del periodo en curso. Cancela cuando quieras en Ajustes › tu nombre › Suscripciones.',
     continueFree: 'Seguir gratis',
     restore: 'Restaurar compras',
     summary: {
@@ -234,7 +234,7 @@ const pt: Translation<typeof fr> = {
     ],
     teaser: (n: number) => (n === 1 ? '1 pessoa compatível perto de você' : `${n} pessoas compatíveis perto de você`),
     renewalNotice:
-      'A assinatura é renovada automaticamente no fim de cada período, pelo mesmo preço, a não ser que você a cancele pelo menos 24 horas antes do fim do período. Você pode cancelar a qualquer momento nos ajustes da sua Conta Apple (Assinaturas). O pagamento é cobrado na sua Conta Apple.',
+      'O pagamento é cobrado na sua Conta Apple na confirmação da compra ou, com o teste gratuito, no fim do teste. A assinatura é renovada automaticamente pela mesma duração e pelo mesmo preço, a não ser que você a cancele pelo menos 24 horas antes do fim do período atual. Cancele quando quiser em Ajustes › seu nome › Assinaturas.',
     continueFree: 'Continuar grátis',
     restore: 'Restaurar compras',
     summary: {
@@ -298,7 +298,7 @@ const nl: Translation<typeof fr> = {
     ],
     teaser: (n: number) => (n === 1 ? '1 compatibel persoon bij jou in de buurt' : `${n} compatibele mensen bij jou in de buurt`),
     renewalNotice:
-      'Het abonnement wordt aan het einde van elke periode automatisch verlengd, tegen dezelfde prijs, tenzij je het minstens 24 uur voor het einde van de periode opzegt. Je kunt het op elk moment opzeggen in de instellingen van je Apple-account (Abonnementen). De betaling wordt via je Apple-account in rekening gebracht.',
+      'De betaling wordt via je Apple-account in rekening gebracht bij het bevestigen van de aankoop of, met de gratis proefperiode, aan het einde daarvan. Het abonnement wordt automatisch verlengd voor dezelfde duur en tegen dezelfde prijs, tenzij je het minstens 24 uur voor het einde van de lopende periode opzegt. Altijd opzegbaar via Instellingen › je naam › Abonnementen.',
     continueFree: 'Gratis doorgaan',
     restore: 'Aankopen herstellen',
     summary: {

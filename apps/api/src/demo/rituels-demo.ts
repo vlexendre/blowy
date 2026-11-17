@@ -40,7 +40,8 @@ export class RituelsDemo {
       // Un défi fait pour chaque jour compté par la série : l'historique dit la même chose que le compteur.
       await this.seedDoneDays(d.id, [...streakRunDays(streak)]);
       for (const habitId of d.habits) {
-        await this.habits.create({ id: this.ids.uuid(), userId: d.id, habitId, rhythm: 'daily', proofHour: 18, createdAt: now.toISOString(), archivedAt: null, askedOn: null });
+        // Suivies depuis 30 jours : séries et rigueurs ont de quoi se montrer (habitudes partagées, groupes).
+        await this.habits.create({ id: this.ids.uuid(), userId: d.id, habitId, rhythm: 'daily', proofHour: 18, createdAt: `${addDays(today, -30)}T07:00:00.000Z`, archivedAt: null, askedOn: null });
       }
     }
   }

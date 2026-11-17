@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { auditText, formatDate, textOf, visionText } from '@blowy/content';
-import { type GeoPoint, NO_HOME, cellOf, entitlements, isAwayFromHome, manualAreaChange, storedPoint, updateHome } from '@blowy/domain';
+import { type GeoPoint, NO_HOME, cellOf, entitlements, isAwayFromHome, isHomeSettling, manualAreaChange, storedPoint, updateHome } from '@blowy/domain';
 import { ReviewPlaces } from '../../../review/review-places';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
@@ -49,7 +49,10 @@ export class Locations {
     const stored = await this.places.find(userId);
     // Une zone choisie à la main cède la place au premier vrai relevé (la zone repart de la position).
     const before = stored?.source === 'manual' ? null : stored;
-    const home = updateHome(before ? { home: before.home, candidate: before.candidate, candidateSince: before.candidateSince } : NO_HOME, point, now);
+    // Premiers jours après l'accord : la zone se cale vite sur les vrais relevés (le premier, pris à l'inscription ou en
+    // cache dans le téléphone, peut être ailleurs). Ensuite, elle ne déménage qu'après 72 h ailleurs.
+    const settling = isHomeSettling(profile.locationConsentAt, now);
+    const home = updateHome(before ? { home: before.home, candidate: before.candidate, candidateSince: before.candidateSince } : NO_HOME, point, now, settling);
     if (!home.home) throw new Error('zone du domicile non calculée');
     const place: PlaceRecord = {
       userId,

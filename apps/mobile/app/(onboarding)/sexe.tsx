@@ -38,7 +38,7 @@ function SexeStep() {
     useDraft.getState().set({ gender: g });
     setReactKey((n) => n + 1);
     // La carte s'incline, le minimoa réagit, puis la question suivante (rien n'attend la fin de l'animation).
-    timer.current = setTimeout(() => router.push('/(onboarding)/cherche'), 360);
+    timer.current = setTimeout(() => router.push('/(onboarding)/habitudes'), 360);
   };
 
   return (

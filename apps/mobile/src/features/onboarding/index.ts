@@ -1,4 +1,4 @@
-import type { Gender, LatLng, Me, OnboardInput, Seeking, VisionAnswer, Whom } from '@blowy/contract';
+import type { Gender, LatLng, Me, OnboardInput, VisionAnswer } from '@blowy/contract';
 import { type Species, VISION_TEST_IDS } from '@blowy/domain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -11,11 +11,13 @@ import { keys, useApi } from '@/core';
 import { usePendingInvite } from '@/features/encounters';
 import { getLocale } from '@/locales/runtime';
 
+import { readPosition } from './permissions';
+
 export * from './vision';
 export * from './permissions';
 
 /** Les écrans du parcours d'inscription qu'on peut reprendre (nom de la route dans `app/(onboarding)`). */
-export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'sexe', 'cherche', 'naissance', 'localisation', 'notifications', 'promesse', 'connexion'] as const;
+export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'sexe', 'habitudes', 'naissance', 'localisation', 'notifications', 'promesse', 'connexion'] as const;
 export type OnboardingStep = (typeof RESUMABLE)[number];
 
 export type PermissionAnswer = 'granted' | 'denied' | 'unavailable';
@@ -33,11 +35,8 @@ interface DraftData {
   visionAnswers: VisionAnswer[];
   displayName: string;
   gender: Gender | null;
-  seeking: Seeking | null;
-  /** Pour « plus » ou « les deux » seulement. */
-  whom: Whom | null;
-  /** Accord explicite pour « qui tu veux rencontrer » (donnée sensible). */
-  sensitiveConsent: boolean;
+  /** Étape « Tes habitudes » (spéc. §25) : identifiants du catalogue, 2 au plus (vide : « Plus tard »). */
+  habits: string[];
   birthdate: string;
   /** Réponse à la demande de position, et le point relevé si elle est accordée. */
   locationAnswer: PermissionAnswer | null;
@@ -64,9 +63,7 @@ const empty: DraftData = {
   visionAnswers: [],
   displayName: '',
   gender: null,
-  seeking: null,
-  whom: null,
-  sensitiveConsent: false,
+  habits: [],
   birthdate: '',
   locationAnswer: null,
   location: null,
@@ -89,7 +86,8 @@ export const useDraft = create<Draft>()(
       name: 'blowy.onboarding.draft',
       version: 2,
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ set: _s, answer: _a, unanswer: _u, reset: _r, ...data }) => data,
+      // La position n'est jamais gardée sur le téléphone : relevée à nouveau au moment de créer le compte.
+      partialize: ({ set: _s, answer: _a, unanswer: _u, reset: _r, location: _l, ...data }) => data,
       // Une version plus ancienne du brouillon (quiz de caractère, ville) : on repart de zéro.
       migrate: () => empty,
     },
@@ -117,17 +115,20 @@ export const isValidBirthdate = (v: string): boolean => /^\d{4}-\d{2}-\d{2}$/.te
 /** Le test est complet : une réponse par situation. */
 export const visionDone = (answers: readonly VisionAnswer[]): boolean => VISION_TEST_IDS.every((id) => answers.some((a) => a.questionId === id));
 
-/** « Qui tu cherches » est complet : potes, ou plus/les deux avec « qui » et l'accord explicite. */
-export const seekingDone = (d: Pick<DraftData, 'seeking' | 'whom' | 'sensitiveConsent'>): boolean =>
-  d.seeking === 'potes' || (!!d.seeking && !!d.whom && d.sensitiveConsent);
-
 /** Le brouillon a tout ce qu'il faut pour créer le compte et le minimoa. */
 export function isDraftComplete(d: DraftData = useDraft.getState()): boolean {
-  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && !!d.gender && seekingDone(d) && visionDone(d.visionAnswers);
+  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && !!d.gender && visionDone(d.visionAnswers);
 }
 
 /** Le brouillon a un minimoa (sinon, l'inscription repart de la création). */
 export const hasDraftPet = (): boolean => !!useDraft.getState().petName.trim();
+
+/**
+ * Écran de reprise connu. Un brouillon d'avant le 17 nov. peut encore s'être arrêté sur « ce que tu cherches »
+ * (étape retirée, spéc. §27) : il reprend à l'étape qui suivait.
+ */
+const knownStep = (step: string | null): OnboardingStep | null =>
+  step === 'cherche' ? 'habitudes' : step && (RESUMABLE as readonly string[]).includes(step) ? (step as OnboardingStep) : null;
 
 const stepHref = (step: OnboardingStep): Href => `/(onboarding)/${step}` as Href;
 
@@ -138,14 +139,16 @@ const stepHref = (step: OnboardingStep): Href => `/(onboarding)/${step}` as Href
 export function resumeOnboarding(): Href {
   const d = useDraft.getState();
   if (isDraftComplete(d)) return '/(onboarding)/preparation';
-  if (hasDraftPet() && d.step && d.step !== 'connexion') return stepHref(d.step);
+  const step = knownStep(d.step);
+  if (hasDraftPet() && step && step !== 'connexion') return stepHref(step);
   return '/(onboarding)/craft';
 }
 
 /** Sans session : l'inscription en cours (écran où la personne s'était arrêtée) ou la bienvenue. */
 export function signedOutStart(): Href {
   const d = useDraft.getState();
-  return hasDraftPet() && d.step ? stepHref(d.step) : '/(onboarding)/welcome';
+  const step = knownStep(d.step);
+  return hasDraftPet() && step ? stepHref(step) : '/(onboarding)/welcome';
 }
 
 /** Un code d'invitation reçu par lien est recopié dans le brouillon (gardé si la personne quitte l'app). */
@@ -156,22 +159,21 @@ export function adoptPendingInvite(): void {
 }
 
 /** Le corps de `POST /v1/me/onboard` à partir du brouillon (contrat : `OnboardInput`). */
-export function onboardBody(d: DraftData = useDraft.getState()): OnboardInput {
-  const seeking = d.seeking ?? 'potes';
-  const whom = seeking === 'potes' ? undefined : (d.whom ?? undefined);
-  const location = d.locationAnswer === 'granted' && d.location ? d.location : undefined;
+export function onboardBody(d: DraftData = useDraft.getState(), fix: LatLng | null = null): OnboardInput {
+  const point = fix ?? d.location;
+  const location = d.locationAnswer === 'granted' && point ? point : undefined;
   return {
     displayName: d.displayName.trim(),
     birthdate: d.birthdate,
     pet: { name: d.petName.trim(), species: d.species },
     inviteCode: d.inviteCode.trim() || undefined,
     gender: d.gender ?? 'non_dit',
-    seeking,
-    ...(whom ? { whom } : {}),
     locale: getLocale(),
-    consents: { sensitive: !!whom && d.sensitiveConsent, location: !!location },
+    consents: { location: !!location },
     ...(location ? { location } : {}),
     visionAnswers: d.visionAnswers,
+    // Brouillon d'avant l'étape : pas de champ, aucune habitude (« tous les jours » par défaut côté serveur).
+    habits: (d.habits ?? []).slice(0, 2).map((habitId) => ({ habitId })),
   };
 }
 
@@ -179,7 +181,12 @@ export function useOnboard() {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => api.me.onboard(onboardBody()),
+    mutationFn: async () => {
+      const d = useDraft.getState();
+      // Position du moment, pas celle de l'écran « localisation » (parfois une position en cache, ou d'ailleurs).
+      const fix = d.locationAnswer === 'granted' ? await readPosition() : null;
+      return api.me.onboard(onboardBody(d, fix));
+    },
     onSuccess: (me: Me) => {
       qc.setQueryData(keys.me, me);
       void qc.invalidateQueries({ queryKey: keys.links });
@@ -203,7 +210,7 @@ const FLOW: readonly [OnboardingStep, number][] = [
   ['ta-vision', 1],
   ['prenom', 1],
   ['sexe', 1],
-  ['cherche', 1],
+  ['habitudes', 1],
   ['naissance', 1],
   ['localisation', 1],
   ['notifications', 1],

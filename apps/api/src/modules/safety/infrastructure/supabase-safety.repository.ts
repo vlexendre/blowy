@@ -50,6 +50,8 @@ export class SupabaseReportsRepository implements ReportsRepository {
       target_user: r.targetUser,
       link_id: r.linkId,
       message_id: r.messageId ?? null,
+      group_id: r.groupId ?? null,
+      group_message_id: r.groupMessageId ?? null,
       reason: r.reason,
       details: r.details,
       created_at: r.createdAt,

@@ -126,6 +126,7 @@ export class GetPaywall {
     ]);
     const products = this.env.facturationAdmin.plusProducts;
     const web = this.env.webUrl;
+    const legal = (page: string): string => `${web}${locale === 'fr' ? '' : `/${locale}`}/legal/${page}/`;
     const discount = yearlyDiscountPercent();
     const offers = PLANS.map((plan) => {
       const o = OFFERS[plan];
@@ -156,7 +157,8 @@ export class GetPaywall {
       perks: PLUS_PERKS.map((key) => ({ key, label: plusPerkText[key] })),
       teaser: { compatibleNearby: count, label: count > 0 ? plusText.teaser(count) : null },
       renewalNotice: plusText.renewalNotice,
-      legal: { termsUrl: `${web}/legal/conditions`, privacyUrl: `${web}/legal/confidentialite`, plusTermsUrl: `${web}/legal/abonnement` },
+      // Pages du site dans la langue de la requête (le français, qui fait foi, est à la racine).
+      legal: { termsUrl: legal('conditions'), privacyUrl: legal('confidentialite'), plusTermsUrl: legal('abonnement') },
       continueFreeLabel: plusText.continueFree,
       restoreLabel: plusText.restore,
       subscription: presentSubscription(record, this.clock.now(), locale),

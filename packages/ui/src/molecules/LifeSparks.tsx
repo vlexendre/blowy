@@ -16,43 +16,48 @@ import Svg, { Path } from 'react-native-svg';
 import { hapticFor } from '../lib/haptics';
 import { useInk } from '../lib/ink';
 import { ease, fadeTo, springs, useMotionActive, useReducedMotion } from '../lib/motion';
-import { extra, motion, size as sizes } from '../theme';
+import { color, motion, size as sizes } from '../theme';
 
-export interface HeartsProps {
+export interface LifeSparksProps {
   /** Vies restantes. */
   lives: number;
   max?: number;
-  /** Taille d'un cœur. Défaut 14. */
+  /** Taille d'une étincelle. Défaut 14. */
   size?: number;
-  /** Lien fantôme : tous les cœurs éteints. */
+  /** Lien fantôme : toutes les étincelles éteintes. */
   ghost?: boolean;
   /**
-   * Vies montrées au premier rendu, avant d'aller vers `lives` (ex. 0 après « ranimer » : les cœurs reviennent un à
-   * un). Défaut : `lives` (aucune animation à l'apparition).
+   * Vies montrées au premier rendu, avant d'aller vers `lives` (ex. 0 après « ranimer » : les étincelles se
+   * rallument une à une). Défaut : `lives` (aucune animation à l'apparition).
    */
   from?: number;
-  /** Vie en danger : le dernier cœur allumé bat (deux battements, une pause), tant que l'écran est visible. */
+  /** Vie en danger : la dernière étincelle allumée palpite (deux battements, une pause), tant que l'écran est visible. */
   beat?: boolean;
   /** Libellé lu (« 5 vies sur 7 ») ; défaut « 5/7 ». */
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
 
-/** `clip-path` des cœurs de la maquette (`.hearts i`, 14 × 13). */
-const HEART = 'M7 13 C2 9 0 6.5 0 4 A3.6 3.6 0 0 1 7 2.6 A3.6 3.6 0 0 1 14 4 C14 6.5 12 9 7 13 Z';
+/**
+ * Étincelle à quatre branches (14 × 13). Les vies d'un lien ne sont plus des cœurs (spéc. §27 : rien de romantique
+ * imposé, la nature du lien regarde les gens) ; les cœurs restent pour l'affection envers son propre minimoa.
+ */
+const SPARK = 'M7 0 C7.6 4.2 8.6 5.6 14 6.5 C8.6 7.4 7.6 8.8 7 13 C6.4 8.8 5.4 7.4 0 6.5 C5.4 5.6 6.4 4.2 7 0 Z';
+/** Couleur d'une vie allumée : le jaune d'accent (étincelle). */
+const LIT = color.accent;
 const OFF = 0.2;
-/** Décalage entre deux cœurs qui reviennent. */
+/** Décalage entre deux étincelles qui se rallument. */
 const RETURN_STEP = 110;
 
 /**
- * Les vies d'un lien : n cœurs pleins sur 7, les perdus estompés.
- * Un cœur perdu se brise (deux moitiés qui tombent) ; un cœur regagné revient en « pop », un par un.
+ * Les vies d'un lien : n étincelles allumées sur 7, les perdues estompées.
+ * Une étincelle perdue se brise (deux moitiés qui tombent) ; une regagnée revient en « pop », une par une.
  */
-export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, from, beat, accessibilityLabel, style }: HeartsProps) {
+export function LifeSparks({ lives, max = MAX_LIVES, size = sizes.heart, ghost, from, beat, accessibilityLabel, style }: LifeSparksProps) {
   const ink = useInk();
   const clamp = (n: number) => Math.max(0, Math.min(max, n));
   const on = clamp(ghost ? 0 : lives);
-  // Vies du rendu précédent : point de départ des cœurs qui changent.
+  // Vies du rendu précédent : point de départ des étincelles qui changent.
   const prev = useRef(from === undefined ? on : clamp(from));
   const before = prev.current;
   useEffect(() => {
@@ -62,7 +67,7 @@ export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, from
   return (
     <View accessible accessibilityRole="text" accessibilityLabel={accessibilityLabel ?? `${on}/${max}`} style={[styles.row, { gap: Math.max(2, Math.round(size / 5)) }, style]}>
       {Array.from({ length: max }, (_, i) => (
-        <Heart
+        <Spark
           key={i}
           lit={i < on}
           was={i < before}
@@ -80,7 +85,7 @@ export function Hearts({ lives, max = MAX_LIVES, size = sizes.heart, ghost, from
   );
 }
 
-function Heart({
+function Spark({
   lit,
   was,
   order,
@@ -122,7 +127,7 @@ function Heart({
       const t = setTimeout(() => hapticFor(last && returning > 1 ? 'success' : 'select'), delay);
       return () => clearTimeout(t);
     }
-    // Perdu : le cœur plein disparaît, ses deux moitiés tombent ; il reste le cœur éteint.
+    // Perdue : l'étincelle allumée disparaît, ses deux moitiés tombent ; il reste l'étincelle éteinte.
     if (reduced) {
       o.value = fadeTo(OFF, motion.base);
       return;
@@ -155,7 +160,7 @@ function Heart({
     <View style={{ width: size, height }}>
       <Animated.View style={animated}>
         <Svg width={size} height={height} viewBox="0 0 14 13">
-          <Path d={HEART} fill={lit ? extra.heart : ink} />
+          <Path d={SPARK} fill={lit ? LIT : ink} />
         </Svg>
       </Animated.View>
       {breaking ? <Broken key={breaking} size={size} height={height} onDone={() => setBreaking(0)} /> : null}
@@ -163,7 +168,7 @@ function Heart({
   );
 }
 
-/** Une moitié du cœur brisé : petite fêlure (écart de 1 pt), puis chute en arc en tournant. */
+/** Une moitié de l'étincelle brisée : petite fêlure (écart de 1 pt), puis chute en arc en tournant. */
 function halfStyle(p: number, side: -1 | 1, size: number) {
   'worklet';
   const crack = Math.min(1, p / 0.18);
@@ -178,7 +183,7 @@ function halfStyle(p: number, side: -1 | 1, size: number) {
   };
 }
 
-/** Cœur brisé : les deux moitiés s'écartent en tournant, tombent et s'effacent. */
+/** Étincelle brisée : les deux moitiés s'écartent en tournant, tombent et s'effacent. */
 function Broken({ size, height, onDone }: { size: number; height: number; onDone: () => void }) {
   const t = useSharedValue(0);
   useEffect(() => {
@@ -194,12 +199,12 @@ function Broken({ size, height, onDone }: { size: number; height: number; onDone
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.row]}>
       <Animated.View style={[styles.half, { width: w, height, transformOrigin: '100% 100%' }, left]}>
         <Svg width={size} height={height} viewBox="0 0 14 13">
-          <Path d={HEART} fill={extra.heart} />
+          <Path d={SPARK} fill={LIT} />
         </Svg>
       </Animated.View>
       <Animated.View style={[styles.half, { width: w, height, transformOrigin: '0% 100%' }, right]}>
         <Svg width={size} height={height} viewBox="0 0 14 13" style={{ marginLeft: -w }}>
-          <Path d={HEART} fill={extra.heart} />
+          <Path d={SPARK} fill={LIT} />
         </Svg>
       </Animated.View>
     </View>

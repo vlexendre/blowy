@@ -12,8 +12,9 @@ planificateur (Railway cron ou pg_cron) ── POST /internal/tick toutes les 5 
 
 ## Règles
 1. **Un seul écrivain** : l'API. L'app ne parle à Supabase que pour la session et pour s'abonner en temps réel aux
-   tables `messages` et `links` : ce sont les deux seules politiques RLS (lecture par les membres du lien ; un garde-fou
-   n'est livré qu'à la personne concernée). Toutes les autres tables ont la RLS sans politique (profil, vision, positions,
+   tables `messages`, `links` et `group_messages` : seules politiques RLS, lecture par les membres du lien (un garde-fou
+   n'est livré qu'à la personne concernée) ou du groupe (`group_members` : ses propres lignes, pour la politique des
+   messages ; docs/GROUPES.md). Toutes les autres tables ont la RLS sans politique (profil, vision, positions,
    « qui tu veux rencontrer », abonnements, administration, usage de l'IA). Toute donnée affichée vient de l'API, le temps
    réel ne sert qu'à déclencher un rafraîchissement. Vérifié par `pnpm --filter @blowy/api check:schema`.
 2. **Le contrat d'abord** : `packages/contract` (Zod) décrit chaque requête et réponse. L'API valide les entrées avec,
@@ -60,7 +61,9 @@ Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conv
 dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
 `notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
-`retention` (comptes inactifs, exclusions, purges), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
+`retention` (comptes inactifs, exclusions, purges), `groups` (groupes, « la tenir ensemble », jours jugés ;
+`groups/sharing` : habitudes partagées et rigueur, module sans dépendance importé par les liens, les rencontres et les
+rituels ; docs/GROUPES.md), `tick` (minuteur), `health`, `moderation` (filtre des contenus :
 règles du domaine `moderation.ts` puis IA si permise ; `ReportDesk`, seul créateur des signalements : priorité, escalade,
 suspension automatique, alertes de l'équipe), et `src/review` (compte de revue d'Apple et son monde d'exemple,
 `docs/APP-REVIEW.md` ; « qui voit qui » reste dans `Audience`, par `profiles.review_world`).
@@ -89,7 +92,7 @@ jour à l'heure choisie — seul chemin d'envoi de `daily_challenge` —, activi
 `billing` (rappel du jour 5 de l'essai, par push et par e-mail ; journal des magasins > 30 j) · `admin-stats` (chiffres de chaque jour terminé,
 apports `ADMIN_INSIGHTS`) · `retention` (prévenance puis suppression après 2 ans sans connexion, exclusions > 3 ans,
 modération > 1 an) · `moderation` (récapitulatif des signalements à l'équipe, escalade après 24 h, photos de profil à
-vérifier). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
+vérifier) · `wardrobe` · `groups` (jour des groupes d'habitude jugé le lendemain à midi : vies, série, sommeil). Chaque travail est réservé par créneau d'une minute (`tick_runs`) et borné par `TICK_BUDGET_MS`.
 
 ## App (`apps/mobile`)
 ```
@@ -109,7 +112,9 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 `store_notifications`, `account_suspensions`, `admin_audit_log`, `user_activity_days`, `admin_daily_stats`,
 `encounter_proposals`), conservation (`banned_identities`), manques (`apple_tokens`, `profiles.chat_reading_default`, `chat_link_settings.by_default`,
 `weekly_reviews.axis_moves`), série de la conversation (`links.best_streak`, `duo_days`, `last_duo_day_on`,
-`recent_days`, `milestones`, `write_reminder_on` ; `daily_photos` gardée en lecture seule pour les souvenirs). Compartiment privé `media` (URL signées émises par l'API).
+`recent_days`, `milestones`, `write_reminder_on` ; `daily_photos` gardée en lecture seule pour les souvenirs), groupes
+(`groups`, `group_members`, `group_messages`, `group_days`, `together_proposals`, `habit_jokers`, `profiles.show_habits`,
+`reports.group_id`, `reports.group_message_id`). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit

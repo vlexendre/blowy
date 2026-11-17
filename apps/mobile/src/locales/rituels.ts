@@ -41,6 +41,8 @@ export const rituels = messages({
       /** Réponses courtes (puces de l'accueil). */
       short: { saw_people: 'Vu du monde', walk: 'Un tour', not_yet: 'Pas encore' } as Record<OutingAnswer, string>,
       confirmed: 'Confirmé par ta position',
+      /** Ligne de l'accueil une fois la sortie comptée. */
+      done: 'Sortie comptée',
       error: 'Ta réponse n’est pas partie. Réessaie.',
     },
     /** Défi du jour : la ligne de l'accueil. */
@@ -309,6 +311,7 @@ export const rituels = messages({
       emoji: { saw_people: '🙌', walk: '🚶', not_yet: '🛋️' },
       short: { saw_people: 'Saw people', walk: 'A walk', not_yet: 'Not yet' },
       confirmed: 'Confirmed by your location',
+      done: 'Outing counted',
       error: 'Your answer didn’t go through. Try again.',
     },
     entry: {
@@ -550,6 +553,7 @@ export const rituels = messages({
       emoji: { saw_people: '🙌', walk: '🚶', not_yet: '🛋️' },
       short: { saw_people: 'Vi gente', walk: 'Una vuelta', not_yet: 'Aún no' },
       confirmed: 'Confirmado por tu ubicación',
+      done: 'Salida contada',
       error: 'Tu respuesta no se envió. Inténtalo de nuevo.',
     },
     entry: {
@@ -791,6 +795,7 @@ export const rituels = messages({
       emoji: { saw_people: '🙌', walk: '🚶', not_yet: '🛋️' },
       short: { saw_people: 'Vi gente', walk: 'Uma volta', not_yet: 'Ainda não' },
       confirmed: 'Confirmado pela sua localização',
+      done: 'Saída contada',
       error: 'Sua resposta não foi enviada. Tente de novo.',
     },
     entry: {
@@ -1032,6 +1037,7 @@ export const rituels = messages({
       emoji: { saw_people: '🙌', walk: '🚶', not_yet: '🛋️' },
       short: { saw_people: 'Mensen gezien', walk: 'Een rondje', not_yet: 'Nog niet' },
       confirmed: 'Bevestigd door je locatie',
+      done: 'Uitje geteld',
       error: 'Je antwoord is niet verstuurd. Probeer het opnieuw.',
     },
     entry: {

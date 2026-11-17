@@ -45,7 +45,7 @@ Les noms historiques (`motion.press`, `motion.pop`, `fast`, `base`, `slow`, `bre
 `Appear` (fondu + montée + légère échelle, `delay`, `once` pour les listes), `Stagger` (cascade d'enfants), `PopIn`,
 `Shake` (erreur), `Pulse` (attirer l'œil, 2 battements puis repos), `CountUp` (nombre qui défile comme un compteur
 mécanique), barres animées (`ProgressBar`, `NeedMeter`, `GaugeBar` : dépassement léger, transformations seulement),
-`Shimmer` (squelettes, `Skeleton`), `Loader` (chargement en ligne : trois boules de poils qui rebondissent), `Burst` (cœurs, étoiles, étincelles, confettis, « z » en vues simples),
+`Shimmer` (squelettes, `Skeleton`), `Loader` (chargement en ligne : trois boules de poils qui rebondissent), `Burst` (cœurs — seulement pour l'affection envers son propre minimoa, jamais pour une relation (spéc. §27) —, étoiles, étincelles, confettis, « z » en vues simples),
 `TypingDots`, `useFlyTo` (un objet vole d'un point à un autre), `useBurst` (explosion au-dessus de tout), `useReveal`
 (mot à mot : bulles, titres), feuille à ressort (`SheetTemplate`), interrupteur à ressort (`Toggle`), indicateur d'onglet
 glissant (`SegmentedTabs`, `SlotTabs`, `BottomTabBar`), petite scène en plusieurs temps (`useSceneSteps`), bouton à
@@ -58,6 +58,13 @@ la tête, et met les boucles en pause quand l'app passe en arrière-plan. Chaque
 premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` → « Mouvement ».
 
 ## Les pets jouent avec l'écran (`PetActor`, `PetPeek`, `PetRefresh`, `KeyboardPeek`, `HelloPeek`, `PetEntrance`, `PetRise`)
+- **Poses du pack** (`PetActor` dès 96 pt ou habillé) : chaque humeur est une pose en pied (même ligne de sol) ; on
+  passe de l'une à l'autre en fondu-enchaîné de 130 ms au creux d'un petit rebond (fondu seul en animations réduites).
+  Soins : `mange` (il croque la pomme), `joue` (il attrape la balle et la garde), `dodo`, câlin `joie` ; refus `boude` ;
+  `arrive` (il entre en marchant, de profil), `check`, `think` (`pense`), `wave` (`coucou`) ; `strike(pose)` en tient une.
+  Accueil, un moment par ouverture : il arrive en marchant, ou fait coucou après plus de 12 h ; la nuit il dort, quand il
+  boude il garde les bras croisés. Réponse à la sortie : « pas encore » → il réfléchit ; sorti → il rentre en marchant
+  puis saute de joie.
 - **Au repos** : respiration (écrasement léger), petit saut de temps en temps, changement d'expression bref
   (les 9 émotions de chaque espèce servent à ça ; habillé, il s'exprime par le corps et de petits signes : étincelles,
   goutte, « ! », « z »), regard vers ce qu'on vient de toucher. L'humeur change au creux d'un petit écrasement
@@ -113,7 +120,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Caractère (quiz) | la carte choisie s'incline et part | la jauge de la question file vers le pôle choisi et s'éclaire dès le toucher ; 1re question sans toucher : les deux cartes se soulèvent l'une après l'autre (deux fois, une fois par session) ; l'hôte saute de joie à chaque réponse ; la bulle se réécrit |
 | Caractère (temps fort) | le pet sort du bas de l'écran dans des étoiles | verdict mot à mot ; puces des deux traits en « pop » ; il regarde autour |
 | Prénom / date / ville | — | grand champ souligné qui s'allume au focus ; date fausse : secousse ; trop jeune : pet triste qui se retourne |
-| Promesse | l'anneau se remplit autour de « promis » (`HoldButton`) | le bouton s'enfonce pendant l'appui ; plein : coche dessinée, le pet saute de joie, cœurs |
+| Promesse | l'anneau se remplit autour de « promis » (`HoldButton`) | le bouton s'enfonce pendant l'appui ; plein : coche dessinée, le pet saute de joie, étoiles |
 | Compte (code) | chaque chiffre fait « pop » | secousse sur code faux ; coche dessinée sur code bon ; connexion : le pet regarde par-dessus le clavier |
 | Préparation | les lignes se cochent une à une (`PrepChecklist`) | pourcentage qui défile, barre avec dépassement ; erreur : tout s'arrête, le pet s'inquiète |
 | Tout est prêt | le pet saute de joie, confettis (`ReadyHero`) | titre mot à mot puis la phrase |
@@ -126,12 +133,12 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 | Son caractère | les barres de la vision se remplissent depuis le centre, l'une après l'autre | jauges du style en petit, même mouvement ; entrées en cascade |
 | Garde-robe | l'objet vole de sa tuile jusqu'au pet, qui rebondit | tuiles en cascade ; objet verrouillé qui tremble ; « bientôt » qui brille ; indicateur d'emplacement glissant ; « nouveau » qui scintille ; retirer : l'objet saute du pet et rentre dans sa case |
 | Objet débloqué | l'objet tombe, rebondit, confettis | titre mot à mot ; tap pour passer |
-| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; cœurs qui battent quand une vie est en danger ; bandeau « Série en jeu » qui arrive après celui des rencontres |
-| Chat | la bulle envoyée monte depuis le champ | « … » avant un message de minimoa ; tête du minimoa qui sort avec sa bulle ; bouton envoyer qui se transforme ; cœur qui se brise ou revient ; interrupteur des minimoas (en-tête) qui fait « pop » et pâlit quand on les coupe ; accord de lecture : feuille à ressort, les deux minimoas montent du bas du panneau rose ; appui long sur un message : la bulle s'enfonce, la feuille « signaler » monte |
+| Chats | bandeau « Nino a croisé quelqu’un » qui s'ouvre | lignes en cascade ; pastille non-lu qui rebondit ; étincelles de vie qui palpitent quand une vie est en danger ; bandeau « Série en jeu » qui arrive après celui des rencontres |
+| Chat | la bulle envoyée monte depuis le champ | « … » avant un message de minimoa ; tête du minimoa qui sort avec sa bulle ; bouton envoyer qui se transforme ; étincelle de vie qui se brise ou revient ; interrupteur des minimoas (en-tête) qui fait « pop » et pâlit quand on les coupe ; accord de lecture : feuille à ressort, les deux minimoas montent du bas du panneau rose ; appui long sur un message : la bulle s'enfonce, la feuille « signaler » monte |
 | Le lien | la série avance sous tes yeux quand le deuxième écrit : le chiffre défile d'un cran, la flamme saute (ressort `plush`), confettis depuis elle, vibration de fête (`LinkTodayHero`) | à la 1re visite, la flamme grandit et le chiffre défile depuis 0 ; jours de la semaine cochés un à un ; cartes en cascade (une fois par lien) |
 | Le lien : étapes | — | étapes en cascade ; photos d'avant qui se posent comme des cartes |
 | Niveaux | la marche atteinte s'allume | barre vers le niveau suivant ; confettis au passage |
-| Lien fantôme | le pet devient transparent et flotte | ranimer : les cœurs reviennent un à un |
+| Lien fantôme | le pet devient transparent et flotte | ranimer : les étincelles de vie se rallument une à une |
 | Rencontres | les cartes arrivent en éventail | « saluer » : le minimoa fait signe, onde autour du bouton ; accepté : les deux minimoas se courent dessus et se cognent |
 | Une rencontre | les deux minimoas entrent par leur côté | les repères « toi » et l'autre glissent du centre de chaque piste vers leur tiers, l'un après l'autre (ressort `pop`) ; « saluer » : ton minimoa fait signe, onde |
 | Carte | les minimoas se posent dans la zone, du centre vers l'extérieur (une fois par session) | au repos, chaque autocollant flotte doucement (décalés) ; touché, il sautille et sa fiche glisse de la droite ; onde jaune autour de toi ; silhouettes floues qui respirent lentement ; « saluer » : onde depuis le bouton ; la puce « plus loin » et le pied arrivent après la carte |
@@ -141,7 +148,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
 
 ### Détail : inscription et Moi
 - **Bienvenue** : le panneau se pose, le pet glisse depuis le bord droit (rogné par le panneau : la coupe du buste ne se
-  voit jamais) et salue ; « … » puis chaque message ; le bouton respire une fois. Touché : il s'écrase, un cœur s'envole.
+  voit jamais) et salue ; « … » puis chaque message ; le bouton respire une fois. Touché : il s'écrase, des étincelles s'envolent.
 - **Entrée en scène** (`StageTemplate` + `PetRise` + `useSceneSteps`) : nino, suzie, gaston puis pia montent du bord bas
   (ressort `plush`, rognés par le bord : la coupe du buste reste sous l'écran), clignent des yeux (l'image « dodo » posée
   par-dessus, opacité seule) ou regardent autour d'eux, puis redescendent quand le suivant arrive ; une grande ligne par
@@ -156,7 +163,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   touche jamais les puces), étoiles en se posant, verdict mot à mot, puces en « pop », « touche pour continuer ».
 - **Promesse** : maintenir « promis » remplit l'anneau en 1,1 s (deux demi-disques qui tournent : rotations seules) ;
   un simple tap le termine seul en 0,28 s (accessibilité). Plein : vibration « fête », coche, le pet saute dans des
-  cœurs, la suite arrive 1,4 s plus tard (toucher le bouton plein y va tout de suite). Animations réduites : plein d'un
+  étoiles, la suite arrive 1,4 s plus tard (toucher le bouton plein y va tout de suite). Animations réduites : plein d'un
   coup, en fondu.
 - **Préparation** : **seule exception** à « jamais retarder une action », dans ces limites : une ligne cochée toutes les
   0,52 s, la dernière (et 100 %) seulement après la réussite de la création, 2,5 s au plus de plus que le serveur, un tap

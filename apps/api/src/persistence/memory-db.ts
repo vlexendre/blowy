@@ -16,6 +16,7 @@ import type { DailyChallengeRecord, HabitCheckRecord, HabitRecord, RitualPhotoRe
 import type { ChatPetState, ChatReadingDefault } from '@blowy/domain';
 import type { AiUsageRecord } from '../integrations/ai/usage-store';
 import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
+import type { GroupDayRecord, GroupMemberRecord, GroupMessageRecord, GroupRecord, TogetherProposalRecord } from '../modules/groups/ports';
 import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
 
 export interface WordVoteRow {
@@ -110,6 +111,16 @@ export class MemoryDb {
   readonly bannedIdentities = new Map<string, { bannedAt: string; until: string }>();
   readonly purgedReports = new Set<string>();
 
+  /** Groupes (spéc §26) : groupes, membres (clé `${groupId}:${userId}`), messages, jours jugés, propositions « ensemble ». */
+  readonly groups = new Map<string, GroupRecord>();
+  readonly groupMembers = new Map<string, GroupMemberRecord>();
+  readonly groupMessages: GroupMessageRecord[] = [];
+  readonly groupDays = new Map<string, GroupDayRecord>();
+  readonly togetherProposals = new Map<string, TogetherProposalRecord>();
+  /** `habit_jokers`, clé `${userId}:${day}`. */
+  readonly habitJokers = new Map<string, string>();
+  /** `profiles.show_habits` vit sur le profil (`Profile.showHabits`). */
+
   private sequence = 0;
   nextId(): string {
     this.sequence += 1;
@@ -172,6 +183,14 @@ export class MemoryDb {
     for (const [id, e] of this.encounters) if (e.fromUser === userId || e.toUser === userId) this.encounters.delete(id);
     for (const key of [...this.encounterProposals.keys()]) if (key.endsWith(`:${userId}`)) this.encounterProposals.delete(key);
     for (const [key, b] of this.blocks) if (b.blocker === userId || b.blocked === userId) this.blocks.delete(key);
+    for (const [key, m] of this.groupMembers) {
+      if (m.userId === userId) this.groupMembers.delete(key);
+      else if (m.invitedBy === userId) m.invitedBy = null;
+    }
+    for (const g of this.groups.values()) if (g.createdBy === userId) g.createdBy = null;
+    for (const m of this.groupMessages) if (m.authorId === userId) m.authorId = null;
+    for (const [key, p] of this.togetherProposals) if (p.userId === userId) this.togetherProposals.delete(key);
+    for (const key of [...this.habitJokers.keys()]) if (key.startsWith(`${userId}:`)) this.habitJokers.delete(key);
     for (const s of this.subscriptions.values()) if (s.userId === userId) s.userId = null;
     this.suspensions.delete(userId);
     this.accountActivity.delete(userId);

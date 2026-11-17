@@ -10,7 +10,7 @@ export const conditions: LegalPage = {
     title: 'En bref',
     items: [
       'Minimoa est réservé aux **adultes de 18 ans et plus**. Un compte par personne, pour une vraie personne.',
-      'Ton **minimoa** porte ta vision de la vie et te présente des gens compatibles, pour devenir potes ou plus. Ses messages sont automatiques : ce n’est pas une personne.',
+      'Ton **minimoa** porte ta vision de la vie et te présente des gens compatibles pour créer des liens. Ce qu’ils deviennent vous regarde. Ses messages sont automatiques : ce n’est pas une personne.',
       'Respecte les autres et les [règles de la communauté](@regles). Pas de harcèlement, pas de contenu sexuel, rien qui implique un mineur.',
       'Tes messages et tes photos restent à toi. Tu nous donnes seulement le droit de les traiter pour faire marcher Minimoa.',
       'Minimoa est gratuit. **Minimoa+** est un abonnement facultatif, payé via l’App Store, sur iPhone ([conditions de Minimoa+](@abonnement)).',
@@ -30,7 +30,7 @@ export const conditions: LegalPage = {
 
     { h2: "2. Ce qu'est Minimoa", id: 'service' },
     {
-      p: 'Sur Minimoa, chacun élève un **minimoa**, un petit personnage qui porte sa vision de la vie : ce que la personne projette pour sa vie (foyer, lieu de vie, place du travail, rythme du quotidien, long terme). Le minimoa présente sa personne à des gens dont la vision est compatible, pour devenir potes ou plus, et veille sur chaque lien.',
+      p: 'Sur Minimoa, chacun élève un **minimoa**, un petit personnage qui porte sa vision de la vie : ce que la personne projette pour sa vie (foyer, lieu de vie, place du travail, rythme du quotidien, long terme). Le minimoa présente sa personne à des gens dont la vision est compatible, pour faire connaissance, et veille sur chaque lien.',
     },
     {
       ul: [
@@ -62,7 +62,7 @@ export const conditions: LegalPage = {
       p: 'Tu te connectes avec **Apple** (sur iPhone) ou **Google** (sur Android). Ces services nous confirment ton identité ; on ne connaît pas ton mot de passe. Garde l’accès à ce compte Apple ou Google pour toi : ce qui se passe sur ton compte Minimoa est sous ta responsabilité. Si tu penses que quelqu’un y a accédé, écris-nous tout de suite.',
     },
     {
-      p: 'Les informations que tu donnes (prénom, date de naissance, ce que tu cherches) doivent être vraies et à jour. Tu peux les modifier dans l’app.',
+      p: 'Les informations que tu donnes (prénom, date de naissance, sexe) doivent être vraies et à jour. Tu peux les modifier dans l’app.',
     },
 
     { h2: '5. Ce qui est permis, et ce qui ne l’est pas', id: 'usage' },
@@ -126,6 +126,9 @@ export const conditions: LegalPage = {
     { h2: '9. Gratuit, et Minimoa+ en option', id: 'blowy-plus' },
     {
       p: 'Minimoa est gratuit et sans publicité. **Minimoa+** est un abonnement facultatif qui ouvre des fonctions en plus. Il est vendu et facturé par Apple, sur iPhone (un abonnement pris sur iPhone suit ton compte sur tes autres appareils). Ses prix, ce qu’il contient, son essai gratuit, son renouvellement et la façon de l’annuler sont dans les [conditions de l’abonnement Minimoa+](@abonnement).',
+    },
+    {
+      p: 'Si tu as téléchargé Minimoa sur l’App Store, le [contrat de licence standard d’Apple pour les applications](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (« Licensed Application End User License Agreement ») s’applique aussi à l’app.',
     },
     {
       p: 'Les objets, jokers, séries, vies et autres éléments du jeu n’ont aucune valeur monétaire. Ils ne s’échangent pas, ne se revendent pas et ne se remboursent pas, sauf ce que la loi impose.',

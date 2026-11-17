@@ -11,7 +11,6 @@ import {
   entitlements,
   isMatchable,
   match,
-  matchMode,
   matchingCenter,
   cellsAround,
   shownPosition,
@@ -44,16 +43,12 @@ export interface Seeker {
 const asPerson = (profile: Profile, vision: VisionProfile): MatchPerson => ({
   id: profile.id,
   birthdate: profile.birthdate,
-  gender: profile.gender,
-  seeking: profile.seeking,
-  whom: profile.whom,
   vision,
 });
 
 const toCached = (userId: string, c: Compatibility, d: number, home: GeoPoint): CachedMatch => ({
   userId,
   score: c.score,
-  mode: c.mode,
   common: c.common.map((p) => ({ axis: p.axis, side: p.side, leans: p.leans })),
   explore: { ...c.explore },
   distanceKm: Math.round(d * 100) / 100,
@@ -149,7 +144,7 @@ export class Matchmaker {
     for (const other of others) {
       const vision = visionById.get(other.id);
       if (!vision || !isMatchable(vision)) continue;
-      out.set(other.id, compatibilityOf(me.vision, vision, matchMode(me.profile, other) ?? 'potes'));
+      out.set(other.id, compatibilityOf(me.vision, vision));
     }
     return out;
   }

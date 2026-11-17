@@ -5,7 +5,7 @@ Ce qui est déjà en cours dans le code (corrections directes) n'est pas repris 
 
 ## 1. L'idée en une phrase
 
-Ton **minimoa** te ressemble : il porte ta vision de la vie. Il ne te présente que des gens dont la vision est compatible avec la tienne, pour devenir potes ou plus, et il veille sur chaque lien.
+Ton **minimoa** te ressemble : il porte ta vision de la vie. Il ne te présente que des gens dont la vision est compatible avec la tienne, et il veille sur chaque lien. Ce que deviennent ces liens regarde les gens (§27).
 
 Trois choses doivent se comprendre sans lire :
 1. le minimoa, c'est moi en petit (ma vision, mes habitudes) ;
@@ -34,7 +34,7 @@ Deux couches, bien séparées à l'écran.
 | Rythme | calme, chez soi | intense, dehors | le quotidien voulu |
 | Cap | au jour le jour | tout prévoir | long terme, argent, planification |
 
-Pour « potes », l'axe Foyer pèse peu ; pour « plus », il pèse double. On ne demande ni religion, ni opinions politiques, ni santé.
+Un seul jeu de poids : l'axe Foyer pèse peu (0,25), les autres 1 (§27 : on ne demande plus ce que les gens cherchent). On ne demande ni religion, ni opinions politiques, ni santé.
 
 **Le style** (donne sa personnalité au minimoa, ne filtre pas) — les 4 jauges actuelles : sociable, joueur, tendre, bavard.
 
@@ -52,7 +52,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 4. L'appariement
 
-- **Filtres durs** : ce que chacun cherche (potes / plus / les deux), et pour « plus » qui il veut rencontrer ; 18+ ; zone ; personnes bloquées.
+- **Filtres durs** : 18+ ; zone ; personnes bloquées (plus de filtre « ce que chacun cherche » ni « qui », §27).
 - **Score de compatibilité** : proximité sur les 5 axes de vision, pondérée par la confiance de chaque axe. Le style ne compte pas dans le score ; il sert aux sujets de conversation.
 - **Seuil** : un minimoa ne présente que des personnes au-dessus de 70 %. En dessous, personne n'est proposé, quitte à en montrer moins.
 - **L'audit** : chaque rencontre explique pourquoi. « 3 points communs » (les axes les plus proches) et « 1 différence à explorer ». Jamais de chiffre seul.
@@ -121,10 +121,10 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 11. Inscription et connexion
 
-Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **ce que tu cherches** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Minimoa+ (feuille).
+Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Minimoa+ (feuille).
 
 - **Connexion : Apple sur iPhone, Google sur Android.** Plus de code par e-mail (gardé seulement pour le mode local de développement).
-- Sexe : femme / homme / non-binaire / je préfère ne pas dire. Ce que tu cherches : des potes / plus / les deux ; si « plus » : des femmes / des hommes / tout le monde.
+- Sexe : femme / homme / non-binaire / je préfère ne pas dire (ne filtre rien, §27). « Ce que tu cherches » est retiré (§27).
 - Moins de 18 ans : arrêt avant la connexion, rien n'est créé.
 - Chaque étape : une question, posée par le minimoa, réponse en grand, animée.
 
@@ -258,7 +258,7 @@ FR, EN, ES, PT, NL, selon la langue du téléphone (repli : anglais ; français 
 
 Les habitudes deviennent un lien possible entre deux personnes. La vision reste le moteur de l'appariement (seuil 70) ; une habitude commune n'ouvre aucune rencontre à elle seule.
 
-- **Dans l'inscription** : une étape « Tes habitudes », après « Tu cherches quoi ? » et avant la date de naissance. Jusqu'à 2 habitudes du catalogue, rythme « tous les jours » par défaut, « Plus tard » possible. Elles partent avec la création du compte (`habits` dans `POST /v1/me/onboard`).
+- **Dans l'inscription** : une étape « Tes habitudes », après « Tu es… » et avant la date de naissance. Jusqu'à 2 habitudes du catalogue, rythme « tous les jours » par défaut, « Plus tard » possible. Elles partent avec la création du compte (`habits` dans `POST /v1/me/onboard`).
 - **Visibilité, dite au moment du choix** : le nom de tes habitudes, leur série et ta rigueur sont montrés aux personnes que ton minimoa te présente et à tes liens. Jamais les photos de preuve, jamais l'heure. Réglage « Montrer mes habitudes » dans Moi (activé par défaut ; coupé : rien n'est montré et aucune suggestion « ensemble »).
 - **Rigueur** (jauge) : sur les 28 derniers jours, part des jours dus où l'habitude a été tenue. Un jour couvert par un joker ne compte ni pour ni contre. Moins de 7 jours dus : « trop tôt pour le dire », pas de chiffre. Rigueur d'une personne : moyenne de ses habitudes actives, pondérée par les jours dus. Calcul pur dans `packages/domain`.
 - **Habitude commune** : sur la fiche d'une rencontre et dans l'onglet « Le lien », une carte « Vous tenez tous les deux : Sport » compare les deux séries et les deux rigueurs. Dans la liste des rencontres, une habitude commune ne fait que départager deux visions de même force.

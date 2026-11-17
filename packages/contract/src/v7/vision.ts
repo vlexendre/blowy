@@ -1,29 +1,21 @@
 /**
- * Contrat « vision » : qui est la personne, ce qu'elle cherche, sa vision de la vie (5 axes), la compatibilité
- * expliquée et la carte. Ce fichier ne dépend que de zod et du domaine (pas de `../index`, pour éviter un import
+ * Contrat « vision » : qui est la personne, sa vision de la vie (5 axes), la compatibilité expliquée et la carte. Ce fichier ne dépend que de zod et du domaine (pas de `../index`, pour éviter un import
  * circulaire) ; les schémas qui ont besoin d'une personne (`PersonZ`) sont dans `index.ts` (SuggestionZ, MapZ).
- *
- * Données sensibles : le sexe et « qui tu veux rencontrer » peuvent révéler l'orientation sexuelle.
- * « Qui tu veux rencontrer » n'est jamais montré aux autres : il sert seulement à filtrer. Il exige un accord
- * explicite (horodaté), comme la position.
  */
-import { AXIS_SIDES, AXIS_STRENGTHS, GENDERS, LOCALES, LOOKING_FOR, SEEKINGS, VISION_AXES, WHOMS } from '@blowy/domain';
+import { AXIS_SIDES, AXIS_STRENGTHS, GENDERS, LOCALES, VISION_AXES } from '@blowy/domain';
 import { z } from 'zod';
 
 const Iso = z.string();
 
-// ── Qui tu es, ce que tu cherches ────────────────────────────────────────────
-/** femme · homme · non_binaire · non_dit (« je préfère ne pas dire »). */
+// ── Qui tu es ────────────────────────────────────────────────────────────────
+/**
+ * femme · homme · non_binaire · non_dit (« je préfère ne pas dire »). Ne filtre rien (spéc. §27). On ne demande plus
+ * ce que les gens cherchent : `seeking`, `whom` et `consents.sensitive` envoyés par une ancienne app sont ignorés.
+ */
 export const GenderZ = z.enum(GENDERS);
-/** potes · plus · les_deux. */
-export const SeekingZ = z.enum(SEEKINGS);
-/** Pour « plus » ou « les deux » : femmes · hommes · tout_le_monde. Jamais visible par les autres. */
-export const WhomZ = z.enum(WHOMS);
 /** Langue des textes renvoyés par l'API. */
 export const LocaleZ = z.enum(LOCALES);
 export type Gender = z.infer<typeof GenderZ>;
-export type Seeking = z.infer<typeof SeekingZ>;
-export type Whom = z.infer<typeof WhomZ>;
 export type Locale = z.infer<typeof LocaleZ>;
 
 /** Une réponse au test de vision : l'identifiant de la situation et le choix (0 ou 1). */
@@ -66,22 +58,15 @@ export type LocationStatus = z.infer<typeof LocationStatusZ>;
 /** Le bloc « qui tu es » de `Me` : vu seulement par la personne. */
 export const IdentityZ = z.object({
   gender: GenderZ,
-  seeking: SeekingZ,
-  /** Null quand la personne ne cherche que des potes. */
-  whom: WhomZ.nullable(),
   locale: LocaleZ,
   /** Mode discret : la personne n'apparaît sur la carte de personne (elle reste proposée en rencontre). */
   discreet: z.boolean(),
-  /** Accord pour « qui tu veux rencontrer ». */
-  sensitiveConsentAt: Iso.nullable(),
   location: LocationStatusZ,
 });
 export type Identity = z.infer<typeof IdentityZ>;
 
 /** Accords donnés à l'écran (cases à cocher explicites). L'API horodate chaque accord. */
 export const ConsentsZ = z.object({
-  /** Accord pour enregistrer « qui tu veux rencontrer » (obligatoire dès que `whom` est envoyé). */
-  sensitive: z.boolean().default(false),
   /** Accord pour utiliser la position (obligatoire dès qu'une position est envoyée). */
   location: z.boolean().default(false),
 });
@@ -89,28 +74,19 @@ export const ConsentsZ = z.object({
 /** Champs « qui tu es » de l'inscription (ajoutés à OnboardBody). */
 export const OnboardIdentityFields = {
   gender: GenderZ.default('non_dit'),
-  seeking: SeekingZ.default('potes'),
-  /** Requis si `seeking` vaut « plus » ou « les_deux » ; interdit pour « potes ». Demande `consents.sensitive`. */
-  whom: WhomZ.nullable().optional(),
   locale: LocaleZ.default('fr'),
-  consents: ConsentsZ.default({ sensitive: false, location: false }),
+  consents: ConsentsZ.default({ location: false }),
   /** Position relevée pendant l'inscription (demande `consents.location`). */
   location: LatLngZ.optional(),
   /** Réponses au test de vision, passé avant la connexion. */
   visionAnswers: z.array(VisionAnswerZ).max(24).default([]),
 };
 
-/**
- * Champs « qui tu es » modifiables (ajoutés à UpdateMeBody). Passer à « potes » efface `whom` ;
- * `sensitiveConsent: false` retire l'accord, efface `whom` et repasse à « potes ».
- */
+/** Champs « qui tu es » modifiables (ajoutés à UpdateMeBody). `seeking`, `whom`, `sensitiveConsent` d'une ancienne app : ignorés. */
 export const UpdateIdentityFields = {
   gender: GenderZ.optional(),
-  seeking: SeekingZ.optional(),
-  whom: WhomZ.nullable().optional(),
   locale: LocaleZ.optional(),
   discreet: z.boolean().optional(),
-  sensitiveConsent: z.boolean().optional(),
 };
 
 /** Position relevée à l'ouverture de l'app. `consent: true` la première fois (accord horodaté). */
@@ -128,12 +104,6 @@ export const AxisSideZ = z.enum(AXIS_SIDES);
  */
 export const AxisLeanZ = z.object({ side: AxisSideZ, strength: z.enum(AXIS_STRENGTHS) });
 export type AxisLeanDto = z.infer<typeof AxisLeanZ>;
-/**
- * Ce que vous cherchez tous les deux, une fois le filtre réciproque passé (« Vous cherchez tous les deux… ») :
- * friends (des potes) · more (plus) · both (les deux). Jamais « qui » l'autre veut rencontrer.
- */
-export const LookingForZ = z.enum(LOOKING_FOR);
-export type LookingForDto = z.infer<typeof LookingForZ>;
 
 
 /** Le test : 12 situations à deux choix, une par écran (public : il se passe avant la connexion). */

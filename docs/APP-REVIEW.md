@@ -17,7 +17,7 @@ Review Information. Le reste d'App Store Connect (classement d'âge, App Privacy
   unique échangé aussitôt côté serveur, aucun e-mail envoyé) ; l'app la pose avec `setSession`.
 - À l'inscription de ce compte, **puis à chaque connexion par le code**, le serveur lui pose un **monde d'exemple**
   remis à neuf, visible de lui seul (`profiles.review_world`, règle dans `Audience`) :
-  - 8 personnes fictives compatibles avec lui (sexe et recherche accordés aux siens, vision proche de la sienne),
+  - 8 personnes fictives compatibles avec lui (vision proche de la sienne, sexes variés : il ne filtre rien),
     autour de sa zone (sans zone : Paris, posée comme zone choisie à la main), et qui suivent sa zone s'il en change ;
   - un **coucou reçu** (Rencontres) ; des **rencontres expliquées** (3 points communs, 1 différence) ; des
     « potes de potes » proposés même sans position ;
@@ -86,7 +86,7 @@ du public et le code est limité en essais).
 Remplacer `<review e-mail>`, `<code>` et `<moderation e-mail>`.
 
 ```
-Minimoa is an app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
+Minimoa is an app for adults (18+) to get to know compatible people nearby; what those connections become is up to them. Each user raises a small
 creature ("minimoa") that represents their outlook on life and only introduces them to people whose outlook is
 compatible (above 70%), always with an explanation (3 things in common, 1 difference).
 
@@ -99,7 +99,7 @@ The account opens with sample data visible to this account only (fictional peopl
 reset at every sign-in, written in the iPhone's language):
 - Encounters tab: an incoming introduction ("Accept" / "Not this time") and compatible people with the reasons.
   "The map" (top right) shows the map of the area; Minimoa+ shows the subscription.
-- Chats tab: a chat with "Léa" (or another first name) and a link "in danger" (2 hearts left). On first opening of a
+- Chats tab: a chat with "Léa" (or another first name) and a link "in danger" (2 lives left). On first opening of a
   chat, a sheet asks for consent to AI reading ("Turn on for this chat" / "No reading", see AI below). Léa has already
   agreed; if you agree too, the creatures can react to messages. When you write, the fictional person replies.
 - Each chat has two tabs at the top: "Chat" (the conversation) and "The link" (who wrote today, the week, lives, next
@@ -157,9 +157,11 @@ SAFETY AND MODERATION
   with Apple token).
 
 SUBSCRIPTION MINIMOA+
-Me > Minimoa+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99. Purchases are verified by our
-server; sandbox purchases are accepted. "Restore purchases" is on the same sheet. A reminder is sent on day 5 of the
-trial by notification and by email.
+Me > Minimoa+, or at the end of sign-up (skippable: close button at the top right, or "Continue for free"). Yearly with
+a 1-week free trial (introductory offer) or monthly; prices and the trial are read from StoreKit. The sheet shows the
+billed price, the trial length and the date of the first payment, auto-renewal and how to cancel, "Restore
+purchases", Terms of Use and Privacy Policy. Everything outside Minimoa+ is free. Purchases are verified by our
+server; sandbox purchases are accepted. A reminder is sent on day 5 of the trial by notification and by email.
 
 LOCATION AND PRIVACY LABELS
 Location is declared as Coarse Location: the exact point is never stored (see LOCATION above).

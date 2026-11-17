@@ -34,7 +34,7 @@ const LOAD_MAX = 700;
 
 /**
  * Les deux pets se courent dessus en sautillant, se cognent (écrasés l'un contre l'autre), rebondissent en
- * arrière, des cœurs et des étoiles jaillissent du point de contact, puis ils s'effacent. Joué au-dessus de tout
+ * arrière (un « check » d'épaule, entre potes), des étoiles et des confettis jaillissent du point de contact, puis ils s'effacent. Joué au-dessus de tout
  * (calque du `MotionHost`), transparent aux touchers : la navigation qui suit l'acceptation n'attend pas.
  */
 function Bump({ left, right, from, y, size, onEnd }: Required<Pick<PetBumpOptions, 'left' | 'right' | 'size'>> & { from?: PetBumpOptions['from']; y?: number; onEnd: () => void }) {
@@ -112,7 +112,7 @@ function Bump({ left, right, from, y, size, onEnd }: Required<Pick<PetBumpOption
       {boom ? (
         <>
           <Burst kind="stars" trigger={boom} count={8} spread={58} style={[styles.spot, spot]} />
-          <Burst kind="hearts" trigger={boom} count={6} spread={110} style={[styles.spot, spot]} />
+          <Burst kind="confetti" trigger={boom} count={10} spread={110} style={[styles.spot, spot]} />
         </>
       ) : null}
     </View>

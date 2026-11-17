@@ -47,8 +47,6 @@ export const rencontres = messages({
       deniedWeb: 'Ton navigateur bloque la localisation. Autorise-la dans les réglages du site.',
       unavailable: 'Position introuvable pour l’instant. Réessaie dehors ou dans un moment.',
     },
-    /** Ce que vous cherchez tous les deux (`lookingFor` de l'API ; jamais « qui »). */
-    lookingFor: { friends: 'Vous cherchez tous les deux des potes.', more: 'Vous cherchez tous les deux plus.', both: 'Vous cherchez tous les deux des potes, ou plus.' },
     /** Version courte du pourquoi, sur les cartes. */
     whyJoin: (title: string, items: string): string => `${title} : ${items}.`,
     /** Le texte de l'avantage vient de l'API (`usePlusPerks`), comme sur la feuille Minimoa+. */
@@ -117,7 +115,6 @@ export const rencontres = messages({
       deniedWeb: 'Your browser is blocking location. Allow it in the site settings.',
       unavailable: 'Can’t find your location right now. Try again outside or in a moment.',
     },
-    lookingFor: { friends: 'You’re both looking for friends.', more: 'You’re both looking for more.', both: 'You’re both looking for friends, or more.' },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     morePlus: { title: 'Minimoa+', cta: 'See' },
     shareMessage: (pet: string, url: string): string => `Come meet ${pet} on Minimoa: ${url}`,
@@ -180,7 +177,6 @@ export const rencontres = messages({
       deniedWeb: 'Tu navegador bloquea la ubicación. Permítela en los ajustes del sitio.',
       unavailable: 'No encontramos tu ubicación por ahora. Inténtalo en la calle o dentro de un rato.',
     },
-    lookingFor: { friends: 'Ambas partes buscan amistad.', more: 'Ambas partes buscan algo más.', both: 'Ambas partes buscan amistad, o algo más.' },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     morePlus: { title: 'Minimoa+', cta: 'Ver' },
     shareMessage: (pet: string, url: string): string => `Ven a conocer a ${pet} en Minimoa: ${url}`,
@@ -243,7 +239,6 @@ export const rencontres = messages({
       deniedWeb: 'Seu navegador está bloqueando a localização. Permita nos ajustes do site.',
       unavailable: 'Não encontramos sua localização agora. Tente de novo ao ar livre ou daqui a pouco.',
     },
-    lookingFor: { friends: 'Vocês buscam amizade.', more: 'Vocês buscam algo mais.', both: 'Vocês buscam amizade, ou algo mais.' },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     morePlus: { title: 'Minimoa+', cta: 'Ver' },
     shareMessage: (pet: string, url: string): string => `Vem conhecer ${pet} no Minimoa: ${url}`,
@@ -306,7 +301,6 @@ export const rencontres = messages({
       deniedWeb: 'Je browser blokkeert locatie. Sta het toe in de site-instellingen.',
       unavailable: 'Je locatie is nu niet te vinden. Probeer het buiten opnieuw, of straks.',
     },
-    lookingFor: { friends: 'Jullie zoeken allebei vrienden.', more: 'Jullie zoeken allebei meer.', both: 'Jullie zoeken allebei vrienden, of meer.' },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     morePlus: { title: 'Minimoa+', cta: 'Bekijken' },
     shareMessage: (pet: string, url: string): string => `Kom ${pet} ontmoeten op Minimoa: ${url}`,

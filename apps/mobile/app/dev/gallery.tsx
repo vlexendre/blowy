@@ -52,7 +52,7 @@ import {
   Glyph,
   GLYPHS,
   Header,
-  Hearts,
+  LifeSparks,
   Icon,
   ICON_NAMES,
   IconButton,
@@ -619,10 +619,10 @@ function GalleryScreen() {
       </Level>
 
       <Level title="MOLÉCULES">
-        <Item name="Hearts">
-          <Hearts lives={5} accessibilityLabel="5 vies sur 7" />
-          <Hearts lives={7} size={18} />
-          <Hearts lives={0} ghost />
+        <Item name="LifeSparks">
+          <LifeSparks lives={5} accessibilityLabel="5 vies sur 7" />
+          <LifeSparks lives={7} size={18} />
+          <LifeSparks lives={0} ghost />
         </Item>
         <Item name="GaugeBar">
           <GaugeBar value={45} low="casanier" high="sociable" caption="sociabilité · +45" selected onPress={noop} />
@@ -937,18 +937,16 @@ function GalleryScreen() {
         </Item>
         <Item name="WordsShareCard">
           <WordsShareCard
-            title="décris-moi en 3 mots"
-            countLabel="9 potes ont répondu"
-            words={[
-              { label: 'drôle', count: 6 },
-              { label: 'loyal', count: 4 },
-              { label: 'un peu chaos', count: 3 },
-            ]}
-            url="blowy.app/alex"
-            copyLabel="copier"
-            copiedLabel="copié ✓"
+            title="Décris-moi en 3 mots"
+            badge="9 réponses"
+            badgeOn
+            text="Tes potes façonnent le caractère de Nino."
+            moreLabel="Voir le caractère de Nino"
+            onMore={noop}
+            copyLabel="Copier"
+            copiedLabel="Copié"
             copied={copied}
-            shareLabel="en story"
+            shareLabel="Partager le lien"
             onCopy={() => setCopied(true)}
             onShare={noop}
           />

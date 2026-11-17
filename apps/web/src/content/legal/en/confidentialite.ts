@@ -9,7 +9,7 @@ export const confidentialite: LegalPage = {
     title: 'In short',
     items: [
       'We use your data for one thing: bringing your minimoa to life and introducing you to compatible people. **No advertising, no selling.**',
-      'What you are looking for and whom you want to meet can reveal your sexual orientation: we ask for your **explicit consent**, and you can withdraw it.',
+      'We do not ask what you are looking for: your minimoa creates connections, and what they become is up to you. **No data about your orientation is collected.**',
       'Your **location** is only used while the app is open, and **never stored exactly**: we only keep a point rounded to about 300 m and your area. On the map, others see a rounded and shifted position, never real-time, and **discreet mode** removes you from the map. Without location, you pick your city by hand.',
       'A **third-party AI**, that of {{sub.ai.provider}} ({{sub.ai.location}}), is used in four places, detailed [below](#ia): reading chats if you both switch it on, your proof photos if you accept, the safety check of profile photos and of some messages, and the weekly review, sent without any name.',
       '**No one at Minimoa reads your conversations**, except a reported message (reported by someone or by our automatic filter) and its immediate context, read by a moderator.',
@@ -64,15 +64,15 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Your gender, what you are looking for, whom you want to meet', id: 'sensibles' },
+    { h3: 'Your gender', id: 'sexe' },
     {
       ul: [
-        '**Data:** your gender (woman, man, non-binary, or “I’d rather not say”); what you are looking for (friends, more, or both); if you are looking for “more”, whom you want to meet (women, men, everyone).',
-        '**Why it is sensitive:** together, these answers can reveal your **sexual orientation**, data protected by Article 9 of the GDPR.',
-        '**Purpose:** only introduce you to people who are looking for the same thing as you, and who want to meet someone like you.',
-        '**Legal basis:** your **explicit consent**, asked at sign-up before you answer. You can withdraw it in the app (**Me → Settings → Who you are, what you’re looking for → Withdraw my consent**), or by deleting your account. Without these answers, we cannot offer you “more” encounters.',
-        '**Retention:** as long as your account exists, or until you withdraw your consent or change your answers.',
-        '**Access:** the matching algorithm. These answers are used for filtering: a person introduced to you may infer that you are looking for the same thing. They are never displayed, never used for advertising or passed on to a third party.',
+        '**Data:** your gender (woman, man, non-binary, or “I’d rather not say”).',
+        '**Purpose:** wording the app’s texts correctly, and statistics without names. **It is not used to choose whom your minimoa introduces you to.**',
+        '**Legal basis:** our legitimate interest. “I’d rather not say” is always an option, and you can change your answer in the app (**Me → Settings → Who you are**).',
+        '**Retention:** as long as your account exists.',
+        '**Access:** only you. It is never shown to others.',
+        'We do not ask what you are looking for or whom you want to meet: your minimoa creates connections, and what they become is up to you. Answers given to these questions before November 17, 2026, and the consent that came with them, have been erased.',
       ],
     },
 
@@ -244,8 +244,8 @@ export const confidentialite: LegalPage = {
       ol: [
         '**Your vision** is placed on 5 axes: home (free, solo ↔ start a family), roots (stay here ↔ move away), drive (time for yourself ↔ big projects), pace (calm, at home ↔ intense, out and about), course (day by day ↔ plan everything). Each axis has a confidence level.',
         '**Where it comes from**, with starting weights: sign-up test 40% (then less and less), daily question 20%, habits 25%, how you look after your minimoa 10%, your friends’ 3 words 5%. The more you use Minimoa, the higher the confidence.',
-        '**Filters**: what each person is looking for, and for “more”, whom they want to meet; 18 and over; area; blocked people.',
-        '**The score**: closeness on the 5 axes, weighted by confidence. For “friends”, the home axis counts little; for “more”, it counts double. Style (sociable, playful, tender, chatty) is not part of the score.',
+        '**Filters**: 18 and over; area; blocked people. Neither your gender nor anyone else’s filters who is introduced to you.',
+        '**The score**: closeness on the 5 axes, weighted by confidence. The home axis counts less than the others. Style (sociable, playful, tender, chatty) is not part of the score.',
         '**The threshold**: below 70%, no one is suggested, even if that means showing fewer people.',
         '**The explanation**: every encounter says why, with 3 things in common and 1 difference to explore. Never a bare number.',
         '**The number of encounters** also depends on your minimoa’s condition (the more you look after it, the more people it introduces you to) and on your subscription.',
@@ -304,7 +304,7 @@ export const confidentialite: LegalPage = {
         '**People your minimoa introduces you to** see your first name, your minimoa, its style, what you have in common and one difference, and your approximate position on the map (unless you are in discreet mode).',
         '**Your connections** also see your messages, your streak, your connection’s milestones, your old daily photos if any, and your profile photo if you have one (hidden until level 4, blurred at level 4, sharp from level 5).',
         '**Visitors to your “3 words” page or your invitation** see your first name and your minimoa.',
-        'No one sees your email address, your date of birth, what you answered about your gender and whom you want to meet, or your vision test answers. Your exact position is not stored anywhere. Your proof photos are seen by no human, and they are deleted within 24 hours (unless you keep them in your private memories).',
+        'No one sees your email address, your date of birth, your gender, or your vision test answers. Your exact position is not stored anywhere. Your proof photos are seen by no human, and they are deleted within 24 hours (unless you keep them in your private memories).',
       ],
     },
 
@@ -366,7 +366,7 @@ export const confidentialite: LegalPage = {
         '**access** your data and get a copy;',
         'have it **corrected** (much of it can be changed directly in the app);',
         'have it **erased** ([deleting your account](@supprimer-mon-compte) does it in one go);',
-        '**withdraw your consent** where it is the basis for processing (sensitive data, location, AI check of proof photos, message reading by the AI, notifications), without affecting what was done before;',
+        '**withdraw your consent** where it is the basis for processing (location, AI check of proof photos, message reading by the AI, notifications), without affecting what was done before;',
         '**object** to processing based on our legitimate interest, or ask for it to be **restricted**;',
         'get the data you gave us in a machine-readable format (**portability**);',
         'set **instructions** for what happens to your data after your death.',

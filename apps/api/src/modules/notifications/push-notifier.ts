@@ -58,6 +58,13 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
       return 'blowy://pet/caractere';
     case 'trial_reminder':
       return 'blowy://moi/blowy-plus';
+    case 'group_invite':
+    case 'group_message':
+    case 'group_life_lost':
+    case 'group_asleep':
+      return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://chats';
+    case 'together_proposal':
+      return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://pet/habitudes';
     case 'daily_challenge':
     case 'needs_out':
     case 'streak_in_danger':

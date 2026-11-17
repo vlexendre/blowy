@@ -1,7 +1,7 @@
 # @blowy/ui — design system Minimoa V6
 
 Composants React Native (Expo SDK 58, RN 0.88, Reanimated 4) en design atomique. Nuit `#0B0A14`, grands panneaux
-en dégradé, titres Anton en capitales avec partie estompée, corps Bricolage Grotesque, accent jaune (texte sombre dessus).
+en dégradé, titres Anton en capitales avec partie estompée, corps Allo (Josh Puckett, SIL OFL), accent jaune (texte sombre dessus).
 
 ```ts
 import { Button, LinkRow, LinkTodayHero, ScreenTemplate } from '@blowy/ui';
@@ -264,9 +264,9 @@ GaugeBarProps = { value: number; low: string; high: string; caption?: string; ta
 ```ts
 HeaderProps = { onBack?: () => void; backLabel?: string; backGlyph?: 'back' | 'close'; title?: string; subtitle?: string; center?: ReactNode; right?: ReactNode; style?: StyleProp<ViewStyle>; }
 ```
-#### `Hearts` — `src/molecules/Hearts.tsx`
+#### `LifeSparks` — `src/molecules/LifeSparks.tsx`
 ```ts
-HeartsProps = { lives: number; max?: number; size?: number; ghost?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
+LifeSparksProps = { lives: number; max?: number; size?: number; ghost?: boolean; accessibilityLabel?: string; style?: StyleProp<ViewStyle>; }
 ```
 #### `ItemTile` — `src/molecules/ItemTile.tsx`
 ```ts
@@ -463,7 +463,7 @@ PrepChecklistProps = { species: Species; title: TitleContent; percent: number /*
 #### `PromiseStage` — `src/organisms/PromiseStage.tsx`
 ```ts
 PromiseStageProps = { species: Species; kicker: string; title: TitleContent; text: string; cheerKey?: number; seed?: string; petLabel?: string; }
-// la promesse : demande en grand, pourquoi en une ligne, PetActor au milieu de la place libre ; cheerKey : saut de joie + cœurs
+// la promesse : demande en grand, pourquoi en une ligne, PetActor au milieu de la place libre ; cheerKey : saut de joie + étoiles
 ```
 #### `ReadyHero` — `src/organisms/ReadyHero.tsx`
 ```ts
@@ -724,7 +724,7 @@ useRippleAnchor(): { props /* à étaler sur la View du bouton */; target() }   
 usePetBump(): ({ left: Species; right: Species; from?: { left?: Rect; right?: Rect }; y?; size?: 132 }) => void
                                           // « accepté » : les deux pets se courent dessus et se cognent (calque, après la navigation)
 useTypingPause(duration?: 800, delay?: 250, key?): boolean   // vrai pendant les « … » d'un pet ; faux si animations réduites
-Hearts     { …; from?: number; beat?: boolean }   // cœur perdu : se brise ; regagné : « pop » un par un ; `beat` : vie en danger
+LifeSparks { …; from?: number; beat?: boolean }   // vies d'un lien en étincelles (jamais de cœurs pour une relation, spéc. §27) ; perdue : se brise ; regagnée : « pop » une par une ; `beat` : vie en danger
 MessageBubble { …; fade?: true; typing?: boolean; enter?: 'send' | 'receive'; typingLabel? }
 ChatThread { …; typingLabel?: (name) => string }  // message arrivé : le mien monte du champ, celui d'un pet écrit « … » d'abord
 NudgeBanner { …; reveal?: string }        // s'ouvre depuis le haut, le pet jaillit et fait signe (1re apparition de la clé)
@@ -733,7 +733,7 @@ LivesPanel { …; animateKey?: string }     // jours de la semaine cochés un à
 MemoryGrid { …; animateKey?: string }     // photos qui se posent comme des cartes
 CountTitle { title; count; from?: 0; size?: 24; hint? }   // « VOS ÉTAPES · 4 », le nombre défile
 LevelLadder { …; animateKey?: string; celebrate?: boolean }   // rail qui monte, marche atteinte qui s'allume, confettis
-LinkTemplate { …; livesFrom?: number; levelUp?: number }       // cœurs qui reviennent (ranimé) ; pastille + confettis au passage
+LinkTemplate { …; livesFrom?: number; levelUp?: number }       // étincelles qui se rallument (ranimé) ; pastille + confettis au passage
 GhostPanel { …; revealKey?: string }      // le pet perd ses couleurs et flotte ; « ranimer » : il les reprend
 EncounterStage { …; waveKey?: number }    ref: EncounterStageHandle { petRects(); hidePets() }
 EncounterHead { …; waveKey?: number }     // l'avatar fait coucou

@@ -73,13 +73,13 @@ describe('parcours complet V7 (mémoire)', () => {
   it('inscription : nouveaux champs et test passé avant le compte ; sans test, inscrite mais signalée et sans suggestion', async () => {
     ana = w.client(randomUUID(), 'ana@exemple.fr');
     const meAna = await ana.api.me.onboard(
-      onboardBody({ displayName: 'Ana', gender: 'femme', seeking: 'les_deux', whom: 'hommes', consents: { sensitive: true, location: true }, location: PARIS }),
+      onboardBody({ displayName: 'Ana', gender: 'femme', consents: { location: true }, location: PARIS }),
     );
-    expect(meAna).toMatchObject({ visionTestDone: true, identity: { gender: 'femme', seeking: 'les_deux', whom: 'hommes' } });
+    expect(meAna).toMatchObject({ visionTestDone: true, identity: { gender: 'femme' } });
     ben = w.client(randomUUID(), 'ben@exemple.fr');
-    await ben.api.me.onboard(onboardBody({ displayName: 'Ben', gender: 'homme', seeking: 'plus', whom: 'femmes', consents: { sensitive: true, location: true }, location: NEAR, pet: { name: 'Gaston', species: 'gaston' } }));
+    await ben.api.me.onboard(onboardBody({ displayName: 'Ben', gender: 'homme', consents: { location: true }, location: NEAR, pet: { name: 'Gaston', species: 'gaston' } }));
     dan = w.client(randomUUID(), 'dan@exemple.fr');
-    await dan.api.me.onboard(onboardBody({ displayName: 'Dan', gender: 'homme', seeking: 'les_deux', whom: 'femmes', consents: { sensitive: true, location: true }, location: NEAR }));
+    await dan.api.me.onboard(onboardBody({ displayName: 'Dan', gender: 'homme', consents: { location: true }, location: NEAR }));
 
     // Test incomplet : refusé, rien n'est créé. Sans réponse : inscrite, `visionTestDone` faux, aucune suggestion.
     const carl = w.client();

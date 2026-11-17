@@ -21,7 +21,7 @@ export const supprimerMonCompte: LegalPage = {
     { h2: 'Wat meteen wordt gewist', id: 'efface' },
     {
       ul: [
-        'je account, je voornaam, je geboortedatum, je geslacht, wat je zoekt, je profielfoto;',
+        'je account, je voornaam, je geboortedatum, je geslacht, je profielfoto;',
         'je Apple-inlogtoken, nadat de toegang van Minimoa tot je Apple ID bij Apple is ingetrokken;',
         'je minimoa, zijn kijk, zijn stijl, zijn voorwerpen, je gewoontes, je reeks;',
         'je afgeronde positie, je geschatte woongebied of de stad die je koos;',

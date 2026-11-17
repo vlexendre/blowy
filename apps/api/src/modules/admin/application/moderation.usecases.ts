@@ -25,6 +25,8 @@ import { reportCursor } from '../infrastructure/memory-admin.repositories';
 import type { AdminReportRow, AuditLogRepository, AuditRecord, ModerationRepository, SuspensionsRepository } from '../ports';
 import { AUDIT_LOG, MODERATION, SUSPENSIONS } from '../tokens';
 import { AccountGate } from './account-gate';
+import type { GroupMessagesRepository } from '../../groups/ports';
+import { GROUP_MESSAGES } from '../../groups/tokens';
 
 /** Délai cible de traitement d'un signalement. */
 export const REPORT_TARGET_HOURS = 24;
@@ -55,6 +57,7 @@ export class Moderation {
     @Inject(AccountGate) private readonly gate: AccountGate,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(Bans) private readonly bans: Bans,
+    @Inject(GROUP_MESSAGES) private readonly groupMessages: GroupMessagesRepository,
   ) {}
 
   async list(query: AdminReportsQuery): Promise<AdminReports> {
@@ -90,6 +93,19 @@ export class Moderation {
    * signalement (lien dont la personne qui signale est membre, vérifié à la création du signalement).
    */
   private async context(row: AdminReportRow): Promise<AdminContextMessage[]> {
+    // Groupe : même règle (le message signalé et ses voisins immédiats) ; un événement est montré par son code.
+    if (row.groupId && row.groupMessageId) {
+      const around = await this.groupMessages.context(row.groupId, row.groupMessageId, CONTEXT_AROUND);
+      return around.map((m) => ({
+        id: m.id,
+        at: m.createdAt,
+        author: m.authorKind === 'pet' ? 'minimoa' : m.authorKind === 'system' ? 'system' : m.authorId === row.reporter ? 'reporter' : m.authorId === row.targetUser ? 'target' : 'system',
+        kind: m.kind,
+        body: m.kind === 'text' ? m.body : m.event,
+        photoUrl: null,
+        reported: m.id === row.groupMessageId,
+      }));
+    }
     if (!row.linkId || !row.messageId) return [];
     const messages = await this.reports.context(row.linkId, row.messageId, CONTEXT_AROUND);
     return Promise.all(
@@ -220,7 +236,8 @@ export class Moderation {
           ? { ...target, suspended, suspendedUntil: suspended ? (activeSuspension.get(target.id) ?? null) : null, openReports: c?.open ?? 0, totalReports: c?.total ?? 0 }
           : null,
         linkId: r.linkId,
-        hasMessage: r.messageId !== null,
+        groupId: r.groupId ?? null,
+        hasMessage: r.messageId !== null || (r.groupMessageId ?? null) !== null,
         resolution: r.handledAt && r.resolution && r.handledBy ? { action: r.resolution, at: r.handledAt, by: r.handledBy } : null,
         priority: priorityOfRank(r.priority),
         source: r.source,

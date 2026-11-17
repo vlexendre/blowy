@@ -8,6 +8,7 @@ import { Public } from '../../../shared/auth.guard';
 import { DomainError } from '../../../shared/errors';
 import { RateLimiter } from '../../../shared/rate-limiter';
 import { CLOCK } from '../../../shared/tokens';
+import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { moodForShape } from '../../pets/application/pet-catch-up';
 import { toPublicPet } from '../../pets/interface/pet.presenter';
@@ -30,6 +31,7 @@ export class WordsController {
     this.limiter = new RateLimiter(clock, VOTES_PER_WINDOW, WINDOW_MS);
   }
 
+  @RateLimit('lookup')
   @Get(':code')
   async get(@Param('code', Code) code: string): Promise<WordsPage> {
     const { profile, pet } = await this.words.target(code);

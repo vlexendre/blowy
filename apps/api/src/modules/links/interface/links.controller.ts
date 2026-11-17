@@ -27,6 +27,7 @@ import { SendMessage } from '../application/send-message.usecase';
 import { ContentFilter } from '../../moderation/content-filter';
 import { REVIEW_REPLIES, type ReviewReplies } from '../../../review/review-replies';
 import { LinkPresenter } from './link.presenter';
+import { HabitSharing } from '../../groups/sharing/habit-sharing';
 
 const LinkId = new ZodPipe(Uuid);
 const Before = new ZodPipe(Iso.datetime({ offset: true }).optional());
@@ -45,6 +46,7 @@ export class LinksController {
     @Inject(LinkPresenter) private readonly presenter: LinkPresenter,
     @Inject(STORAGE) private readonly storage: Storage,
     @Inject(ContentFilter) private readonly filter: ContentFilter,
+    @Inject(HabitSharing) private readonly sharing: HabitSharing,
     @Optional() @Inject(REVIEW_REPLIES) private readonly review: ReviewReplies | null,
   ) {}
 
@@ -55,7 +57,10 @@ export class LinksController {
 
   @Get(':id')
   async get(@CurrentUser() user: AuthUser, @Param('id', LinkId) id: string): Promise<Link> {
-    return this.presenter.link(await this.getLink.execute(id, user.userId), user.userId);
+    const link = await this.presenter.link(await this.getLink.execute(id, user.userId), user.userId);
+    // Onglet « Le lien » : habitudes tenues tous les deux (spéc §25), si chacun les montre (`Audience`).
+    const shared = (await this.sharing.sharedWith(user.userId, [link.other.id])).get(link.other.id);
+    return shared ? { ...link, sharedHabits: shared } : link;
   }
 
   @Delete(':id')

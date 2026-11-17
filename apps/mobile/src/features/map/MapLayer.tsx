@@ -7,7 +7,7 @@
  */
 import { color } from '@blowy/tokens';
 import { alpha, MapBlob, MapSticker, ZoneMap } from '@blowy/ui';
-import { Component, type ReactNode, useMemo } from 'react';
+import { Component, type ReactNode, useMemo, useRef } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import type { MapLayerProps } from './MapLayer.types';
@@ -37,8 +37,10 @@ export function MapLayer(props: MapLayerProps) {
   );
 }
 
-function NativeMap({ module, center, radiusKm, me, pins, blurred = [], free, insetTop = 140, insetBottom = 200, onRegionChange }: MapLayerProps & { module: MapsModule }) {
+function NativeMap({ module, center, radiusKm, me, mePosition, pins, blurred = [], free, insetTop = 140, insetBottom = 200, onRegionChange }: MapLayerProps & { module: MapsModule }) {
   const { default: MapView, Marker, Circle } = module;
+  // Minimoa+ : seul un geste de la personne déplace ce qu'on regarde (pas le calage de la carte à l'ouverture).
+  const touched = useRef(false);
   // Toute la zone visible (avec une marge), dans la partie de l'écran que ni l'en-tête ni la fiche ne couvrent.
   const region = useMemo(() => {
     const spanKm = radiusKm * 2 * 1.25;
@@ -70,8 +72,11 @@ function NativeMap({ module, center, radiusKm, me, pins, blurred = [], free, ins
       zoomTapEnabled={!free}
       cameraZoomRange={{ minCenterCoordinateDistance: 600, maxCenterCoordinateDistance: free ? 6000 : 80_000 }}
       mapPadding={{ top: insetTop, bottom: insetBottom, left: 0, right: 0 }}
+      onTouchStart={() => {
+        touched.current = true;
+      }}
       onRegionChangeComplete={(r) => {
-        if (free || !onRegionChange) return;
+        if (free || !onRegionChange || !touched.current) return;
         onRegionChange({ lat: r.latitude, lng: r.longitude, radiusKm: Math.min(25, Math.max(0.5, (r.latitudeDelta * KM_PER_DEG) / 2)) });
       }}
     >
@@ -82,7 +87,7 @@ function NativeMap({ module, center, radiusKm, me, pins, blurred = [], free, ins
         </Marker>
       ))}
       {me ? (
-        <Marker coordinate={center} anchor={{ x: 0.5, y: 0.35 }} zIndex={5}>
+        <Marker coordinate={mePosition ?? center} anchor={{ x: 0.5, y: 0.35 }} zIndex={5}>
           <MapSticker pet={me.pet} label={me.label} me accessibilityLabel={me.accessibilityLabel} size={58} />
         </Marker>
       ) : null}

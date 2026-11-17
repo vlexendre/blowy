@@ -95,9 +95,6 @@ const fr = {
   errors: {
     unknownQuestion: 'Cette situation n’existe pas.',
     incompleteTest: 'Réponds aux 12 situations du test, une fois chacune. Tu peux aussi le passer plus tard.',
-    whomRequired: 'Dis-nous qui tu veux rencontrer.',
-    whomOnlyForMore: '« Qui tu veux rencontrer » ne sert que si tu cherches plus que des potes.',
-    sensitiveConsent: 'Il faut ton accord pour enregistrer ce choix.',
     locationConsent: 'Il faut ton accord pour utiliser ta position.',
     changeCityPlus: 'Changer de ville fait partie de Minimoa+.',
     mapEverywherePlus: 'Toute la carte fait partie de Minimoa+.',
@@ -171,9 +168,6 @@ export const visionText = defineMessages({
     errors: {
       unknownQuestion: 'This situation doesn’t exist.',
       incompleteTest: 'Answer all 12 situations in the test, once each. You can also take it later.',
-      whomRequired: 'Tell us who you want to meet.',
-      whomOnlyForMore: '“Who you want to meet” only applies if you’re looking for more than friends.',
-      sensitiveConsent: 'We need your consent to save this choice.',
       locationConsent: 'We need your consent to use your location.',
       changeCityPlus: 'Switching cities is part of Minimoa+.',
       mapEverywherePlus: 'The whole map is part of Minimoa+.',
@@ -244,9 +238,6 @@ export const visionText = defineMessages({
     errors: {
       unknownQuestion: 'Esta situación no existe.',
       incompleteTest: 'Responde a las 12 situaciones del test, una vez cada una. También puedes hacerlo más tarde.',
-      whomRequired: 'Dinos a quién quieres conocer.',
-      whomOnlyForMore: '«A quién quieres conocer» solo sirve si buscas algo más que amistad.',
-      sensitiveConsent: 'Necesitamos tu consentimiento para guardar esta elección.',
       locationConsent: 'Necesitamos tu consentimiento para usar tu ubicación.',
       changeCityPlus: 'Cambiar de ciudad forma parte de Minimoa+.',
       mapEverywherePlus: 'Todo el mapa forma parte de Minimoa+.',
@@ -317,9 +308,6 @@ export const visionText = defineMessages({
     errors: {
       unknownQuestion: 'Essa situação não existe.',
       incompleteTest: 'Responda às 12 situações do teste, uma vez cada. Você também pode fazer depois.',
-      whomRequired: 'Diga quem você quer conhecer.',
-      whomOnlyForMore: '“Quem você quer conhecer” só vale se você procura mais do que amizade.',
-      sensitiveConsent: 'Precisamos do seu consentimento para salvar essa escolha.',
       locationConsent: 'Precisamos do seu consentimento para usar sua localização.',
       changeCityPlus: 'Trocar de cidade faz parte do Minimoa+.',
       mapEverywherePlus: 'O mapa inteiro faz parte do Minimoa+.',
@@ -390,9 +378,6 @@ export const visionText = defineMessages({
     errors: {
       unknownQuestion: 'Deze situatie bestaat niet.',
       incompleteTest: 'Beantwoord alle 12 situaties van de test, elk één keer. Je kunt hem ook later doen.',
-      whomRequired: 'Vertel ons wie je wilt ontmoeten.',
-      whomOnlyForMore: '„Wie je wilt ontmoeten” telt alleen als je meer zoekt dan vriendschap.',
-      sensitiveConsent: 'We hebben je toestemming nodig om deze keuze op te slaan.',
       locationConsent: 'We hebben je toestemming nodig om je locatie te gebruiken.',
       changeCityPlus: 'Van stad wisselen hoort bij Minimoa+.',
       mapEverywherePlus: 'De hele kaart hoort bij Minimoa+.',

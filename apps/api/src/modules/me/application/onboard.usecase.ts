@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { OnboardBody } from '@blowy/contract';
-import { facturationText, textOf, visionText, welcomeEmail } from '@blowy/content';
+import { facturationText, habitById, rituelsText, textOf, visionText, welcomeEmail } from '@blowy/content';
 import { GAUGE_KEYS, type Gauges, MIN_AGE, START_NEEDS, ZERO_GAUGES, ageOn, clampGauge, cleanPetName } from '@blowy/domain';
 import type { Env } from '../../../config/env';
 import { Notifier } from '../../../integrations/mailer/notifier';
@@ -13,11 +13,11 @@ import { Bans } from '../../retention/application/bans';
 import { PetCharacter } from '../../pets/application/pet-character';
 import { Wardrobe } from '../../pets/application/wardrobe';
 import type { PetsRepository } from '../../pets/ports';
-import { DEFAULT_IDENTITY, type IdentityState, applyIdentity } from '../../vision/application/identity';
 import { Locations } from '../../vision/application/locations';
 import { VisionRecorder } from '../../vision/application/vision-recorder';
 import { checkAnswers } from '../../vision/application/vision.usecases';
 import { ContentFilter } from '../../moderation/content-filter';
+import { HabitsService } from '../../rituels/application/habits.service';
 import type { OnboardedHook, Profile, ProfilesRepository } from '../ports';
 
 export interface OnboardInput {
@@ -51,6 +51,7 @@ export class Onboard {
     @Inject(ENV) private readonly env: Env,
     @Inject(Bans) private readonly bans: Bans,
     @Inject(ContentFilter) private readonly filter: ContentFilter,
+    @Inject(HabitsService) private readonly habits: HabitsService,
   ) {}
 
   async execute({ userId, email, body }: OnboardInput): Promise<void> {
@@ -67,8 +68,13 @@ export class Onboard {
     this.filter.checkName('display_name', body.displayName, body.locale);
     this.filter.checkName('pet_name', body.pet.name, body.locale);
     const nowIso = this.clock.now().toISOString();
-    const identity = applyIdentity(DEFAULT_IDENTITY, { gender: body.gender, seeking: body.seeking, whom: body.whom ?? null, sensitiveConsent: body.consents.sensitive || undefined }, nowIso);
+    // On ne demande plus ce que les gens cherchent (spéc. §27) : `seeking`, `whom`, `consents.sensitive` d'une ancienne app sont ignorés.
+    const identity = { gender: body.gender };
     if (body.location && !body.consents.location) throw new DomainError('invalid', textOf(visionText, (t) => t.errors.locationConsent));
+    // Étape « Tes habitudes » (spéc §25) : habitudes du catalogue, 2 au plus, sans doublon.
+    if (body.habits.some((h) => !habitById(h.habitId)) || new Set(body.habits.map((h) => h.habitId)).size !== body.habits.length) {
+      throw new DomainError('invalid', textOf(rituelsText, (t) => t.errors.habitUnknown));
+    }
 
     const profile = existing
       ? await this.profiles.update(userId, { ...identity, locale: body.locale, ...(body.consents.location && !existing.locationConsentAt ? { locationConsentAt: nowIso } : {}) })
@@ -99,6 +105,14 @@ export class Onboard {
     await this.character.apply(userId, 'quiz', { extra: gauges });
     // Objets de départ, avant tout lien : ils ne sont pas « nouveaux » à la première vue du pet.
     await this.wardrobe.sync(userId);
+    // Habitudes choisies à l'inscription (« tous les jours » par défaut) ; une inscription reprise ne les double pas.
+    for (const h of body.habits) {
+      try {
+        await this.habits.add(userId, h.habitId, h.rhythm ?? 'daily');
+      } catch (err) {
+        if (!(err instanceof DomainError && err.code === 'conflict')) throw err;
+      }
+    }
 
     if (body.inviteCode) await this.joinInviter(userId, body.inviteCode.trim().toUpperCase());
     if (!profile.welcomeSentAt) {
@@ -112,7 +126,7 @@ export class Onboard {
     }
   }
 
-  private async createProfile(userId: string, body: OnboardBody, identity: IdentityState): Promise<Profile> {
+  private async createProfile(userId: string, body: OnboardBody, identity: Pick<Profile, 'gender'>): Promise<Profile> {
     const now = this.clock.now().toISOString();
     const profile: Profile = {
       id: userId,

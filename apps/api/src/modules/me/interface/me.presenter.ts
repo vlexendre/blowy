@@ -27,6 +27,7 @@ export class MePresenter {
       plus,
       visionTestDone,
       pet: toPetDto(pet),
+      showHabits: profile.showHabits !== false,
     };
   }
 }

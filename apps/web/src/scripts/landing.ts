@@ -325,9 +325,9 @@ function main(): void {
     }
   });
 
-  /* 5. les cœurs se vident de 5 à 0, le lien devient fantôme, puis il est ranimé */
+  /* 5. les étincelles s'éteignent de 5 à 0, le lien devient fantôme, puis il est ranimé */
   (() => {
-    const hs = $$<SVGSVGElement>('.hearts svg');
+    const hs = $$<SVGSVGElement>('.sparks svg');
     const num = $('#lnum');
     const txt = $('#ltxt');
     const say = $('#gsay');

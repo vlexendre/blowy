@@ -21,7 +21,7 @@ export const supprimerMonCompte: LegalPage = {
     { h2: 'What is erased straight away', id: 'efface' },
     {
       ul: [
-        'your account, first name, date of birth, gender, what you are looking for, your profile photo;',
+        'your account, first name, date of birth, gender, your profile photo;',
         'your Apple sign-in token, after Minimoa’s access to your Apple ID has been revoked with Apple;',
         'your minimoa, its vision, style and items, your habits, your streak;',
         'your rounded position, your approximate home area or the city you picked;',

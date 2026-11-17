@@ -24,7 +24,8 @@ export class SupabaseAuthVerifier implements AuthVerifier {
       this.cache.delete(token);
       return null;
     }
-    const user: AuthUser = { userId: data.user.id, email: data.user.email ?? null };
+    // Une adresse non confirmée ne vaut rien (accès administrateur, compte de revue) : seulement si elle est vérifiée.
+    const user: AuthUser = { userId: data.user.id, email: data.user.email_confirmed_at ? (data.user.email ?? null) : null };
     if (this.cache.size >= CACHE_MAX) this.cache.clear();
     this.cache.set(token, { user, until: now + CACHE_TTL_MS });
     return user;

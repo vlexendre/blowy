@@ -21,7 +21,9 @@ import {
 import { useFocusEffect } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { keys, useApi } from '@/core';
 
@@ -240,4 +242,24 @@ export function formHistory(events: readonly PetEvent[], current: PetForm, max =
   for (const step of byMonth.values()) if (past[past.length - 1]?.form !== step.form) past.push(step);
   while (past[past.length - 1]?.form === current) past.pop();
   return [...past.slice(-(max - 1)), { form: current, since: null }];
+}
+
+// ── Accueil : un moment par ouverture ───────────────────────────────────────
+
+/** Dernière ouverture de l'accueil (mémoire de l'appareil). */
+export const useHomeVisit = create<{ last: number | null; mark: (at: number) => void }>()(
+  persist((set) => ({ last: null, mark: (at) => set({ last: at }) }), { name: 'blowy.home-visit', storage: createJSONStorage(() => AsyncStorage) }),
+);
+
+/** Au-delà de cette absence, il fait coucou en te revoyant. */
+export const HELLO_AFTER_MS = 12 * 3600_000;
+
+/**
+ * Le petit moment joué à l'ouverture de l'accueil (un seul) : la nuit il dort et il boude quand il boude (rien à
+ * jouer, sa pose de repos le dit) ; après plus de 12 h d'absence il fait coucou ; sinon il arrive en marchant.
+ */
+export function homeEntrance(o: { last: number | null; now: number; night: boolean; sulking: boolean }): 'wave' | 'arrive' | null {
+  if (o.night || o.sulking) return null;
+  if (o.last !== null && o.now - o.last > HELLO_AFTER_MS) return 'wave';
+  return 'arrive';
 }

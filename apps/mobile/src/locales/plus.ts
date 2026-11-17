@@ -37,6 +37,7 @@ export const plus = messages({
       trial: (days: number) => `Commencer mes ${days} jours gratuits`,
       subscribe: (price: string) => `M’abonner : ${price}`,
       unavailable: 'Disponible sur iPhone',
+      retry: 'Réessayer',
     },
     status: {
       pending: 'Achat en attente de validation (contrôle parental ou paiement à confirmer). Minimoa+ s’ouvrira tout seul.',
@@ -47,6 +48,7 @@ export const plus = messages({
       restoreNone: 'Aucun abonnement à restaurer sur ce compte Apple.',
       restoreError: 'La restauration n’a pas abouti. Réessaie.',
       loadError: 'Impossible de charger l’offre. Vérifie ta connexion.',
+      pricesError: 'L’App Store ne répond pas : pas de prix pour l’instant. Réessaie.',
       unavailable: 'L’abonnement se prend pour l’instant sur iPhone, dans l’app.',
       simulated: 'Mode dev : achat simulé, rien n’est facturé.',
     },
@@ -55,14 +57,18 @@ export const plus = messages({
       fallback: 'Ton abonnement est actif.',
       manage: 'Gérer mon abonnement',
     },
-    /** Sous le bouton d'achat, dans la barre fixe : ce que l'achat engage (la mention complète est plus bas). */
+    /**
+     * Sous le bouton d'achat, dans la barre fixe : l'essai, la date et le prix du premier paiement, le renouvellement
+     * automatique et où annuler (Apple 3.1.2 ; la mention complète est plus bas). Le prix vient de l'App Store.
+     */
     ctaNote: {
-      trial: (price: string) => `Puis ${price}, renouvellement automatique. Annulable à tout moment dans Réglages.`,
-      plain: (price: string) => `${price}, renouvellement automatique. Annulable à tout moment dans Réglages.`,
+      trial: (days: number, price: string, date: string) =>
+        `${days} jours gratuits, puis ${price} à partir du ${date}. Renouvellement automatique, annulable à tout moment dans Réglages › ton nom › Abonnements.`,
+      plain: (price: string) => `${price}, renouvellement automatique. Annulable à tout moment dans Réglages › ton nom › Abonnements.`,
     },
     continueFree: 'Continuer gratuitement',
     restore: 'Restaurer mes achats',
-    links: { terms: 'Conditions', privacy: 'Confidentialité', plusTerms: 'Conditions Minimoa+' },
+    links: { terms: 'Conditions d’utilisation', privacy: 'Confidentialité', plusTerms: 'Conditions de Minimoa+' },
     /**
      * Avantages en bref, une ligne chacun sur deux colonnes (l'API donne la phrase longue, lue par le lecteur d'écran).
      * La carte compte pour deux : toute la carte, et changer de ville.
@@ -110,6 +116,7 @@ export const plus = messages({
       trial: (days: number) => `Start my ${days} free days`,
       subscribe: (price: string) => `Subscribe: ${price}`,
       unavailable: 'Available on iPhone',
+      retry: 'Try again',
     },
     status: {
       pending: 'Purchase awaiting approval (parental control or payment to confirm). Minimoa+ will unlock on its own.',
@@ -120,6 +127,7 @@ export const plus = messages({
       restoreNone: 'No subscription to restore on this Apple Account.',
       restoreError: 'Restoring didn’t go through. Try again.',
       loadError: 'Couldn’t load the offer. Check your connection.',
+      pricesError: 'The App Store isn’t responding: no prices for now. Try again.',
       unavailable: 'For now, you can subscribe on iPhone, in the app.',
       simulated: 'Dev mode: simulated purchase, nothing is charged.',
     },
@@ -129,12 +137,13 @@ export const plus = messages({
       manage: 'Manage my subscription',
     },
     ctaNote: {
-      trial: (price: string) => `Then ${price}, renews automatically. Cancel anytime in Settings.`,
-      plain: (price: string) => `${price}, renews automatically. Cancel anytime in Settings.`,
+      trial: (days: number, price: string, date: string) =>
+        `${days} days free, then ${price} starting ${date}. Renews automatically; cancel anytime in Settings › your name › Subscriptions.`,
+      plain: (price: string) => `${price}, renews automatically. Cancel anytime in Settings › your name › Subscriptions.`,
     },
     continueFree: 'Continue for free',
     restore: 'Restore purchases',
-    links: { terms: 'Terms', privacy: 'Privacy', plusTerms: 'Minimoa+ terms' },
+    links: { terms: 'Terms of Use', privacy: 'Privacy Policy', plusTerms: 'Minimoa+ terms' },
     perks: (pet: string) => ({
       map_everywhere: ['The whole map', 'Change cities'],
       more_encounters: ['More encounters'],
@@ -175,6 +184,7 @@ export const plus = messages({
       trial: (days: number) => `Empezar mis ${days} días gratis`,
       subscribe: (price: string) => `Suscribirme: ${price}`,
       unavailable: 'Disponible en iPhone',
+      retry: 'Reintentar',
     },
     status: {
       pending: 'Compra pendiente de aprobación (control parental o pago por confirmar). Minimoa+ se activará solo.',
@@ -185,6 +195,7 @@ export const plus = messages({
       restoreNone: 'No hay ninguna suscripción que restaurar en esta cuenta de Apple.',
       restoreError: 'No se pudo restaurar. Inténtalo de nuevo.',
       loadError: 'No se pudo cargar la oferta. Revisa tu conexión.',
+      pricesError: 'El App Store no responde: de momento no hay precios. Inténtalo de nuevo.',
       unavailable: 'Por ahora, la suscripción se contrata en iPhone, desde la app.',
       simulated: 'Modo dev: compra simulada, no se cobra nada.',
     },
@@ -194,12 +205,13 @@ export const plus = messages({
       manage: 'Gestionar mi suscripción',
     },
     ctaNote: {
-      trial: (price: string) => `Luego ${price}, renovación automática. Cancela cuando quieras en Ajustes.`,
-      plain: (price: string) => `${price}, renovación automática. Cancela cuando quieras en Ajustes.`,
+      trial: (days: number, price: string, date: string) =>
+        `${days} días gratis, luego ${price} a partir del ${date}. Renovación automática; cancela cuando quieras en Ajustes › tu nombre › Suscripciones.`,
+      plain: (price: string) => `${price}, renovación automática. Cancela cuando quieras en Ajustes › tu nombre › Suscripciones.`,
     },
     continueFree: 'Seguir gratis',
     restore: 'Restaurar compras',
-    links: { terms: 'Condiciones', privacy: 'Privacidad', plusTerms: 'Condiciones de Minimoa+' },
+    links: { terms: 'Condiciones de uso', privacy: 'Privacidad', plusTerms: 'Condiciones de Minimoa+' },
     perks: (pet: string) => ({
       map_everywhere: ['Todo el mapa', 'Cambiar de ciudad'],
       more_encounters: ['Más encuentros'],
@@ -240,6 +252,7 @@ export const plus = messages({
       trial: (days: number) => `Começar meus ${days} dias grátis`,
       subscribe: (price: string) => `Assinar: ${price}`,
       unavailable: 'Disponível no iPhone',
+      retry: 'Tentar de novo',
     },
     status: {
       pending: 'Compra aguardando aprovação (controle parental ou pagamento a confirmar). O Minimoa+ vai ser liberado sozinho.',
@@ -250,6 +263,7 @@ export const plus = messages({
       restoreNone: 'Nenhuma assinatura para restaurar nesta conta Apple.',
       restoreError: 'Não foi possível restaurar. Tente de novo.',
       loadError: 'Não foi possível carregar a oferta. Verifique sua conexão.',
+      pricesError: 'A App Store não está respondendo: sem preços por enquanto. Tente de novo.',
       unavailable: 'Por enquanto, a assinatura é feita no iPhone, pelo app.',
       simulated: 'Modo dev: compra simulada, nada é cobrado.',
     },
@@ -259,12 +273,13 @@ export const plus = messages({
       manage: 'Gerenciar minha assinatura',
     },
     ctaNote: {
-      trial: (price: string) => `Depois ${price}, renovação automática. Cancele quando quiser em Ajustes.`,
-      plain: (price: string) => `${price}, renovação automática. Cancele quando quiser em Ajustes.`,
+      trial: (days: number, price: string, date: string) =>
+        `${days} dias grátis, depois ${price} a partir de ${date}. Renovação automática; cancele quando quiser em Ajustes › seu nome › Assinaturas.`,
+      plain: (price: string) => `${price}, renovação automática. Cancele quando quiser em Ajustes › seu nome › Assinaturas.`,
     },
     continueFree: 'Continuar grátis',
     restore: 'Restaurar compras',
-    links: { terms: 'Termos', privacy: 'Privacidade', plusTerms: 'Termos do Minimoa+' },
+    links: { terms: 'Termos de uso', privacy: 'Privacidade', plusTerms: 'Termos do Minimoa+' },
     perks: (pet: string) => ({
       map_everywhere: ['O mapa inteiro', 'Mudar de cidade'],
       more_encounters: ['Mais encontros'],
@@ -305,6 +320,7 @@ export const plus = messages({
       trial: (days: number) => `Start mijn ${days} gratis dagen`,
       subscribe: (price: string) => `Abonneren: ${price}`,
       unavailable: 'Beschikbaar op iPhone',
+      retry: 'Opnieuw proberen',
     },
     status: {
       pending: 'Aankoop wacht op goedkeuring (ouderlijk toezicht of betaling nog te bevestigen). Minimoa+ gaat vanzelf open.',
@@ -315,6 +331,7 @@ export const plus = messages({
       restoreNone: 'Geen abonnement om te herstellen op dit Apple-account.',
       restoreError: 'Herstellen is niet gelukt. Probeer het opnieuw.',
       loadError: 'Het aanbod kon niet worden geladen. Controleer je verbinding.',
+      pricesError: 'De App Store reageert niet: nog geen prijzen. Probeer het opnieuw.',
       unavailable: 'Abonneren kan voorlopig alleen op iPhone, in de app.',
       simulated: 'Dev-modus: gesimuleerde aankoop, er wordt niets in rekening gebracht.',
     },
@@ -324,12 +341,13 @@ export const plus = messages({
       manage: 'Mijn abonnement beheren',
     },
     ctaNote: {
-      trial: (price: string) => `Daarna ${price}, automatische verlenging. Altijd opzegbaar via Instellingen.`,
-      plain: (price: string) => `${price}, automatische verlenging. Altijd opzegbaar via Instellingen.`,
+      trial: (days: number, price: string, date: string) =>
+        `${days} dagen gratis, daarna ${price} vanaf ${date}. Wordt automatisch verlengd; altijd opzegbaar via Instellingen › je naam › Abonnementen.`,
+      plain: (price: string) => `${price}, wordt automatisch verlengd. Altijd opzegbaar via Instellingen › je naam › Abonnementen.`,
     },
     continueFree: 'Gratis doorgaan',
     restore: 'Aankopen herstellen',
-    links: { terms: 'Voorwaarden', privacy: 'Privacy', plusTerms: 'Voorwaarden Minimoa+' },
+    links: { terms: 'Voorwaarden', privacy: 'Privacybeleid', plusTerms: 'Voorwaarden Minimoa+' },
     perks: (pet: string) => ({
       map_everywhere: ['De hele kaart', 'Van stad wisselen'],
       more_encounters: ['Meer ontmoetingen'],

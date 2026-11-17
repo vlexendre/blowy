@@ -26,9 +26,12 @@ export const AUTOMATIC_MODERATOR = 'filtre automatique';
 
 export interface FileReportInput {
   reporter: string | null;
-  targetUser: string;
+  /** Personne signalée ; null pour un groupe signalé en entier (ni priorité par personne, ni suspension). */
+  targetUser: string | null;
   linkId?: string | null;
   messageId?: string | null;
+  groupId?: string | null;
+  groupMessageId?: string | null;
   reason: string;
   details: string | null;
   source: 'person' | 'filter';
@@ -56,7 +59,7 @@ export class ReportDesk {
 
   async file(input: FileReportInput): Promise<void> {
     const now = this.clock.now();
-    const people = await this.profiles.findByIds([input.targetUser, ...(input.reporter ? [input.reporter] : [])]);
+    const people = await this.profiles.findByIds([...(input.targetUser ? [input.targetUser] : []), ...(input.reporter ? [input.reporter] : [])]);
     const target = people.find((p) => p.id === input.targetUser) ?? null;
     const review = people.some((p) => !!p.reviewWorld);
     await this.reports.add({
@@ -64,6 +67,8 @@ export class ReportDesk {
       targetUser: input.targetUser,
       linkId: input.linkId ?? null,
       messageId: input.messageId ?? null,
+      groupId: input.groupId ?? null,
+      groupMessageId: input.groupMessageId ?? null,
       reason: input.reason,
       details: input.details,
       createdAt: now.toISOString(),
@@ -75,6 +80,8 @@ export class ReportDesk {
       escalatedAt: null,
     });
     if (review) return;
+    // Un groupe signalé en entier : pas de personne visée, donc ni priorité par personne ni suspension (récapitulatif).
+    if (input.targetUser === null) return;
 
     const counts = await this.reports.openReportersOf(input.targetUser);
     const priority = priorityRank(reportPriority({ reason: input.reason, category: input.category, distinctReporters: counts.distinct, distinctMinorReporters: counts.minor }));

@@ -13,6 +13,7 @@ describe('entitlements', () => {
       detailedReview: false,
       encounterBonus: 0,
       premiumItems: false,
+      groups: 2,
     });
   });
   it('avec Minimoa+ : 6 habitudes, 3 jokers, toute la carte, bilan détaillé, renommage libre', () => {
@@ -25,6 +26,7 @@ describe('entitlements', () => {
       detailedReview: true,
       encounterBonus: 1,
       premiumItems: true,
+      groups: 10,
     });
   });
   it('chaque avantage de Minimoa+ est réellement plus généreux', () => {

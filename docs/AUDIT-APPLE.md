@@ -161,6 +161,10 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 - **Correctif :** une barre fixe en bas : bouton d'achat, une ligne « Renouvellement automatique à 59,88 €/an, annulable à tout moment dans Réglages », puis « Restaurer · Conditions · Confidentialité » ; la frise et les avantages défilent au-dessus.
 - **Effort :** une demi-journée. **Qui :** code.
 
+- **Fait (17 novembre 2026)** : barre fixe avec bouton, note (essai, date et prix du premier paiement, renouvellement,
+  « Réglages › ton nom › Abonnements »), « Restaurer mes achats · Conditions d'utilisation · Confidentialité ». Détail
+  dans « Minimoa+ et App Review » plus bas.
+
 ### M3. « On t'envoie un rappel » : seulement si les notifications sont permises
 - **Règles :** 3.1.2(a) (« trick users into purchasing a subscription under false pretenses ») ; 5.6.
 - **Constat :** la frise promet « Jour 5 — On t'envoie un rappel avant la fin de l'essai » (`packages/content/src/v7/facturation-admin.ts:38`). Le rappel part uniquement en notification push (`apps/api/src/modules/billing/application/billing.jobs.ts:56`). Si la personne a refusé les notifications (proposé pendant l'inscription), elle ne reçoit rien.
@@ -209,7 +213,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 
 ### M10. Compte développeur : entité juridique et statut de commerçant (UE)
 - **Règles :** 5.1.1(ix) « Apps that … require sensitive user information should be submitted by a legal entity that provides the services, and not by an individual developer » ; règlement européen sur les services numériques (DSA) : statut de « trader » dans App Store Connect.
-- **Constat :** l'app collecte des données sensibles (orientation déductible). Le compte doit être celui de la société Avec Trois E (adhésion « Organisation », numéro D-U-N-S), et le nom du vendeur sur l'App Store doit être celui de la société. Pour vendre dans l'UE, le statut de commerçant doit être déclaré (adresse, téléphone, e-mail publiés sur la fiche) ; sans lui, l'app n'est pas proposée dans l'UE.
+- **Constat :** l'app ne collecte plus de données sensibles depuis §27 (17 nov. : plus de « ce que tu cherches » ni de « qui tu veux rencontrer »), mais elle met en relation des personnes réelles et vend un abonnement. Le compte doit être celui de la société Avec Trois E (adhésion « Organisation », numéro D-U-N-S), et le nom du vendeur sur l'App Store doit être celui de la société. Pour vendre dans l'UE, le statut de commerçant doit être déclaré (adresse, téléphone, e-mail publiés sur la fiche) ; sans lui, l'app n'est pas proposée dans l'UE.
 - **Effort :** quelques jours de démarches. **Qui :** propriétaire.
 
 ### M11. Le partage de la position (« Shared Location ») et la sécurité des rencontres
@@ -249,7 +253,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 9. **Aucun pistage** : pas de SDK de publicité ni de mesure d'audience ; ATT inutile.
 10. **Chiffrement** : `ITSAppUsesNonExemptEncryption: false` (HTTPS seulement), correct.
 11. **Pas de demande d'avis maison** (5.6.1) ; pas de fausse urgence ni de compte à rebours ; la promesse « Viens me voir chaque jour » reste légère.
-12. **Données sensibles** (sexe, « qui tu veux rencontrer ») : accord explicite par case à cocher, retirable dans Moi (`app/(onboarding)/cherche.tsx`).
+12. **Pas de données sensibles** (§27) : on ne demande plus ce que les gens cherchent ni qui ils veulent rencontrer ; le sexe reste demandé (« je préfère ne pas dire » possible) et ne filtre rien.
 13. **Porte d'âge avant la connexion**, rien d'enregistré sous 18 ans, double contrôle côté serveur.
 14. **iPad** : `supportsTablet: false` (`app.config.ts:36`) ; l'app tourne en mode compatibilité iPhone, ce qui est accepté. Icône 1024 × 1024 sans transparence ; écran de lancement présent.
 
@@ -267,7 +271,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 ### 7.2 Classement d'âge (questionnaire en vigueur au 16 novembre 2026)
 | Question | Réponse | Pourquoi |
 |---|---|---|
-| Dating and Relationships | **Oui** | rencontres « plus » entre personnes réelles → 18+ minimum |
+| Dating and Relationships | **Oui** | l'app fait se rencontrer des personnes réelles ; la nature du lien n'est pas demandée (§27), mais des relations peuvent naître → 18+ minimum |
 | Shared Location | **Oui** | les autres voient ta position approximative sur la carte |
 | Messaging and Chat | **Oui** | chat entre liens |
 | User-Generated Content | **Oui** | prénoms, photos de profil, messages |
@@ -276,7 +280,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 | Unrestricted Web Access | Non | les liens ouvrent seulement les pages de Minimoa |
 | Parental Controls | Non | |
 | Age Assurance | Non (déclaration d'âge simple), sauf si l'API Declared Age Range est intégrée | |
-| Mature or Suggestive Themes | Infrequent | rencontres amoureuses |
+| Mature or Suggestive Themes | Infrequent | aucun thème suggestif montré par l'app depuis §27 ; « Infrequent » par prudence (des adultes s'écrivent librement), « None » défendable : décision du propriétaire |
 | Alcohol, Tobacco, or Drug Use or References | Infrequent | « apéro », 🍻 dans quelques textes |
 | Profanity or Crude Humor | None (le contenu des gens est couvert par UGC) | |
 | Sexual Content or Nudity | None | |
@@ -296,7 +300,7 @@ Et dans la fiche, les visuels doivent rester « 4+ » (2.3.8) : pas de scène su
 | Contact Info | Email Address | Oui (relais Apple possible) | App Functionality |
 | Contact Info | Name | Oui (prénom ou surnom) | App Functionality |
 | Location | **Precise Location** (tant que M6 n'est pas corrigé) ; Coarse Location si l'API arrondit à moins de 3 décimales avant d'enregistrer | Oui | App Functionality |
-| Sensitive Info | Sensitive Info (orientation sexuelle déductible du sexe et de « qui tu veux rencontrer ») | Oui | App Functionality |
+| Sensitive Info | Sensitive Info | **Non** (depuis §27 : plus de « qui tu veux rencontrer » ; anciennes réponses effacées par `20261117130000_sans_recherche.sql`) | — |
 | User Content | Emails or Text Messages (chat) | Oui | App Functionality |
 | User Content | Photos or Videos (photo de profil, preuves d'habitude, défis photo ; photos du jour tant qu'elles existent) | Oui | App Functionality |
 | User Content | Customer Support | Oui (e-mails) | App Functionality |
@@ -323,7 +327,7 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 - Fiche : pas de prix dans le nom, le sous-titre ni les captures (2.3.7) ; captures de l'app en usage (2.3.3) ; ne promettre que ce qui existe (pas « objets premium » tant que B3 n'est pas réglé).
 
 ### 7.6 Texte pour les notes de revue (à adapter une fois B1 fait)
-> Minimoa is a French app for adults (18+) to meet compatible people for friendship or dating. Each user raises a small
+> Minimoa is a French app for adults (18+) to get to know compatible people nearby; what those connections become is up to them. Each user raises a small
 > creature ("minimoa") that represents their outlook on life and introduces them only to people whose outlook is
 > compatible (score above 70%).
 >
@@ -369,6 +373,32 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 - **Contrats** : contrat avec Anthropic (conservation, entraînement, transfert hors UE), droits sur les visuels, recherche de marque « minimoa ».
 - **Modération réelle** : qui traite les signalements, à quel rythme.
 - **Retrait de la photo du jour** : en cours ; à relire ensuite (textes d'autorisation, politique, écran de suppression, App Privacy).
+
+## Minimoa+ et App Review (revu le 17 novembre 2026)
+
+Règles relues à la source ce jour : App Review Guidelines 3.1.1, 3.1.2(a)(b)(c), 2.3.1, 2.3.2, 5.1.1(i), 5.6 (version du
+16 octobre 2026) ; Schedule 2 §3.8(b) ; page « Auto-renewable subscriptions » ; HIG « Apple In-App Purchase » (17
+septembre 2026) ; EULA standard ; chemin d'annulation (support Apple). Ce que la feuille Minimoa+ respecte désormais :
+
+- Le **montant facturé** de chaque offre et sa période est le prix le plus grand (30 pt) ; équivalent mensuel et remise
+  en 13 pt, calculés sur les prix StoreKit.
+- **Prix et essai de StoreKit seulement** sur iPhone (`features/plus/index.tsx`, `core/adapters/storekit.ios.ts`) : si le
+  magasin ne répond pas, ni prix ni bouton d'achat, « Réessayer » ; un essai n'est annoncé que si l'offre d'introduction
+  StoreKit est un essai gratuit et que la personne y a droit.
+- Sous le bouton : durée de l'essai, prix ensuite **et date du premier paiement**, renouvellement automatique, où
+  annuler (« Réglages › ton nom › Abonnements ») ; mention complète plus bas (paiement, renouvellement, 24 h).
+- « Restaurer mes achats », « Conditions d'utilisation » et « Confidentialité » toujours visibles, liens construits par
+  l'app (présents même si l'API ne répond pas) ; les conditions du site renvoient au contrat de licence standard d'Apple.
+- Croix active dès l'ouverture, « Continuer gratuitement », paywall de l'inscription passable ; l'app reste gratuite.
+- **Toute la feuille tient sur un écran, sans défiler** (390 × 844 et 375 × 667, fr/pt/nl, tous les états) ; la mention
+  longue de renouvellement est sur la page « Conditions de Minimoa+ », liée dans la feuille ; pas d'interrupteur
+  d'essai, pas d'urgence.
+- Membre : état et « Gérer mon abonnement » (feuille système), aucune relance d'achat.
+
+Reste au propriétaire (App Store Connect) : noms affichés et localisations du groupe, capture de revue de la feuille sur
+iPhone, EULA standard + liens à la fin de la description (`docs/APP-STORE-CONNECT.md` §4-5). Reste à vérifier sur iPhone
+en bac à sable : lecture de l'essai par `expo-iap`, feuille de gestion. Risque connu : le rappel du jour 5 écrit le prix
+de référence en euros (à corriger avant une vente hors zone euro).
 
 ## 9. Ordre conseillé
 

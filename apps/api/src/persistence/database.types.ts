@@ -42,6 +42,8 @@ export type Database = {
           review_world: string | null;
           /** Migration 20261115200000_audit : photo de profil vérifiée par le filtre. */
           avatar_checked_at: string | null;
+          /** Migration 20261117120000_groupes : « Montrer mes habitudes » (spéc §25). */
+          show_habits: boolean;
         },
         | 'gender'
         | 'seeking'
@@ -61,6 +63,7 @@ export type Database = {
         | 'ai_proofs_consent_at'
         | 'review_world'
         | 'avatar_checked_at'
+        | 'show_habits'
       >;
       pets: Table<
         {
@@ -200,6 +203,9 @@ export type Database = {
           review: boolean;
           alerted_at: string | null;
           escalated_at: string | null;
+          /** Migration 20261117120000_groupes : signalement dans un groupe (message, membre ou le groupe). */
+          group_id: string | null;
+          group_message_id: string | null;
         },
         | 'id'
         | 'reporter'
@@ -217,6 +223,8 @@ export type Database = {
         | 'review'
         | 'alerted_at'
         | 'escalated_at'
+        | 'group_id'
+        | 'group_message_id'
       >;
       // ── Vision (migration 20261115130000_vision) ──
       profile_places: Table<
@@ -460,6 +468,80 @@ export type Database = {
         'did' | 'link_lines' | 'coached' | 'detailed' | 'vision' | 'read_at' | 'created_at' | 'axis_moves'
       >;
       apple_tokens: Table<{ user_id: string; refresh_token: string; client_id: string; created_at: string; updated_at: string }, 'created_at' | 'updated_at'>;
+      // ── Habitudes partagées et groupes (migration 20261117120000_groupes) ──
+      habit_jokers: Table<{ user_id: string; day: string; created_at: string }, 'created_at'>;
+      groups: Table<
+        {
+          id: string;
+          name: string;
+          kind: 'habit' | 'free';
+          habit_id: string | null;
+          status: 'forming' | 'active' | 'asleep' | 'closed';
+          created_by: string | null;
+          lives: number;
+          streak: number;
+          best_streak: number;
+          clean_days: number;
+          started_on: string | null;
+          evaluated_through: string | null;
+          from_together: boolean;
+          closed_at: string | null;
+          closed_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        | 'id'
+        | 'habit_id'
+        | 'status'
+        | 'created_by'
+        | 'lives'
+        | 'streak'
+        | 'best_streak'
+        | 'clean_days'
+        | 'started_on'
+        | 'evaluated_through'
+        | 'from_together'
+        | 'closed_at'
+        | 'closed_reason'
+        | 'created_at'
+        | 'updated_at'
+      >;
+      group_members: Table<
+        {
+          group_id: string;
+          user_id: string;
+          status: 'invited' | 'active' | 'declined' | 'left';
+          invited_by: string | null;
+          joined_at: string | null;
+          left_at: string | null;
+          last_read_at: string | null;
+          notified_at: string | null;
+          created_at: string;
+        },
+        'invited_by' | 'joined_at' | 'left_at' | 'last_read_at' | 'notified_at' | 'created_at'
+      >;
+      group_messages: Table<
+        {
+          id: string;
+          group_id: string;
+          author_kind: 'user' | 'pet' | 'system';
+          author_id: string | null;
+          kind: 'text' | 'event';
+          body: string | null;
+          event: string | null;
+          event_vars: Json;
+          created_at: string;
+        },
+        'id' | 'author_id' | 'body' | 'event' | 'event_vars' | 'created_at'
+      >;
+      group_days: Table<
+        { group_id: string; day: string; outcome: 'kept' | 'missed' | 'skipped'; members: Json; lives_after: number; streak_after: number; created_at: string },
+        'members' | 'created_at'
+      >;
+      together_proposals: Table<
+        { id: string; user_id: string; habit_id: string; status: 'waiting' | 'matched' | 'withdrawn'; group_id: string | null; created_at: string; updated_at: string },
+        'id' | 'status' | 'group_id' | 'created_at' | 'updated_at'
+      >;
     };
     Views: { [_ in never]: never };
     Functions: {

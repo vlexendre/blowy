@@ -7,7 +7,8 @@
  * 2. compare chaque table et chaque colonne avec `src/persistence/database.types.ts` (présence, type, null,
  *    colonnes facultatives à l'insertion) et les fonctions appelées par l'API ;
  * 3. vérifie la RLS : activée sur chaque table, seules politiques permises (lecture des liens et des messages par
- *    leurs membres, règle 1 de docs/ARCHITECTURE.md), temps réel limité à `messages` et `links`, aucune fonction
+ *    leurs membres, des messages d'un groupe par ses membres, règle 1 de docs/ARCHITECTURE.md), temps réel limité à
+ *    `messages`, `links` et `group_messages`, aucune fonction
  *    exécutable par anon / authenticated, et un essai réel de la politique des messages (garde-fou privé).
  *
  * Usage (depuis apps/api) : PGHOST=/chemin/socket PGPORT=5432 PGUSER=postgres node scripts/check-schema.mjs
@@ -187,6 +188,9 @@ for (const [table, rls] of query(`select c.relname, c.relrowsecurity from pg_cla
 const ALLOWED_POLICIES = new Map([
   ['links', 'membres : lire leurs liens'],
   ['messages', 'membres : lire les messages de leurs liens'],
+  // Groupes (20261117120000_groupes) : même modèle que les liens.
+  ['group_members', 'membres : lire leurs adhésions'],
+  ['group_messages', 'membres : lire les messages de leurs groupes'],
 ]);
 const policies = query(`select tablename, policyname, cmd, array_to_string(roles, ',') from pg_policies where schemaname = 'public'`);
 for (const [table, name, cmd, roles] of policies) {
@@ -195,7 +199,7 @@ for (const [table, name, cmd, roles] of policies) {
 }
 for (const [table, name] of ALLOWED_POLICIES) if (!policies.some((p) => p[0] === table && p[1] === name)) errors.push(`politique attendue absente : ${table} « ${name} »`);
 const realtime = query(`select tablename from pg_publication_tables where pubname = 'supabase_realtime' order by 1`).map((r) => r[0]);
-if (realtime.join(',') !== 'links,messages') errors.push(`temps réel : ${realtime.join(', ') || 'aucune table'} (attendu : links, messages)`);
+if (realtime.join(',') !== 'group_messages,links,messages') errors.push(`temps réel : ${realtime.join(', ') || 'aucune table'} (attendu : group_messages, links, messages)`);
 for (const [fn, role] of query(`
   select p.proname, r.rolname from pg_proc p join pg_namespace n on n.oid = p.pronamespace, (values ('anon'), ('authenticated')) as r(rolname)
   where n.nspname = 'public' and has_function_privilege(r.rolname, p.oid, 'EXECUTE') and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')`)) {
@@ -219,6 +223,10 @@ insert into public.links (id, user_a, user_b, last_active_on, last_tick_on) valu
 insert into public.messages (link_id, author_kind, author_id, kind, body) values ('11111111-1111-4111-8111-111111111111', 'user', '${A}', 'text', 'salut');
 insert into public.messages (link_id, author_kind, author_id, kind, body, pet_role, visible_to) values ('11111111-1111-4111-8111-111111111111', 'pet', '${B}', 'text', 'pause ?', 'guard', '${B}');
 insert into public.profile_places (user_id, last_lat, last_lng, located_at, home_lat, home_lng, home_cell) values ('${A}', 48.8, 2.3, now(), 48.8, 2.3, '488:23');
+insert into public.groups (id, name, kind) values ('22222222-2222-4222-8222-222222222222', 'G', 'free');
+insert into public.group_members (group_id, user_id, status) values
+  ('22222222-2222-4222-8222-222222222222', '${A}', 'active'), ('22222222-2222-4222-8222-222222222222', '${B}', 'left');
+insert into public.group_messages (group_id, author_kind, author_id, kind, body) values ('22222222-2222-4222-8222-222222222222', 'user', '${A}', 'text', 'salut le groupe');
 `);
 const seen = (who, sql) => Number(psql(['-d', db, '-At', '-c', `begin; set local role authenticated; set local request.jwt.claim.sub = '${who}'; ${sql}; rollback;`]).trim().split('\n').filter(Boolean).at(-1));
 const checks = [
@@ -229,6 +237,12 @@ const checks = [
   [C, 'select count(*) from public.links', 0, 'C ne voit pas le lien'],
   [A, 'select count(*) from public.profiles', 0, 'A ne lit pas les profils en direct (API seulement)'],
   [A, 'select count(*) from public.profile_places', 0, 'A ne lit pas les positions en direct'],
+  [A, 'select count(*) from public.group_messages', 1, 'A, membre, voit le message du groupe'],
+  [B, 'select count(*) from public.group_messages', 0, 'B, parti du groupe, ne voit plus ses messages'],
+  [C, 'select count(*) from public.group_messages', 0, 'C ne voit rien du groupe'],
+  [C, 'select count(*) from public.group_members', 0, 'C ne voit pas qui est dans le groupe'],
+  [A, 'select count(*) from public.group_members', 1, 'A ne voit que sa propre adhésion'],
+  [A, 'select count(*) from public.groups', 0, 'A ne lit pas les groupes en direct (API seulement)'],
 ];
 for (const [who, sql, expected, label] of checks) {
   const got = seen(who, sql);

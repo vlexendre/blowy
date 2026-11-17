@@ -22,6 +22,8 @@ export const RATE_LIMITS = {
   write: { max: 30, windowMs: 60_000 },
   /** Routes qui peuvent appeler un modèle d'IA (preuves d'habitude…). */
   ai: { max: 6, windowMs: 60_000 },
+  /** Pages publiques par code (invitation, « 3 mots ») : par IP, contre l'essai de codes en masse. */
+  lookup: { max: 30, windowMs: 60_000 },
 } as const;
 export type RateLimitBucket = keyof typeof RATE_LIMITS;
 

@@ -26,11 +26,14 @@ export interface MapAt {
   radiusKm?: number;
 }
 
+const round3 = (v: number): number => Math.round(v * 1000) / 1000;
+
 export function useMap(at?: MapAt | null) {
   const api = useApi();
   return useQuery({
     queryKey: [...mapKey, at ? `${at.lat.toFixed(3)},${at.lng.toFixed(3)},${at.radiusKm ?? ''}` : 'zone'],
-    queryFn: () => api.vision.map(at ?? undefined),
+    // Ce qu'on regarde (Minimoa+), pas où l'on est ; envoyé arrondi au millième (~100 m) quand même.
+    queryFn: () => api.vision.map(at ? { lat: round3(at.lat), lng: round3(at.lng), radiusKm: at.radiusKm } : undefined),
     placeholderData: (prev) => prev,
   });
 }

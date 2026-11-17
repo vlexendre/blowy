@@ -136,7 +136,7 @@ export class ReviewWorld implements OnboardedHook {
     // Vision du compte (test d'inscription) : les personnes fictives en partent.
     const mine = await this.vision.profileOf(world);
     const base = Object.fromEntries(VISION_AXES.map((a) => [a, mine[a].value])) as Record<VisionAxis, number>;
-    const plan = reviewWorldPlan(reviewer);
+    const plan = reviewWorldPlan();
     const ids = plan.map((f) => reviewFixtureId(world, f.slot));
     for (const f of plan) {
       const id = ids[f.slot] as string;
@@ -146,11 +146,8 @@ export class ReviewWorld implements OnboardedHook {
         displayName: f.displayName,
         birthdate: f.birthdate,
         gender: f.gender,
-        seeking: f.seeking,
-        whom: f.whom,
         locale: reviewer.locale,
         discreet: false,
-        sensitiveConsentAt: nowIso,
         locationConsentAt: nowIso,
         avatarPath: null,
         inviteCode: this.code(),

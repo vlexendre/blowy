@@ -9,7 +9,7 @@ export const conditions: LegalPage = {
     title: 'In het kort',
     items: [
       'Minimoa is alleen voor **volwassenen van 18 jaar en ouder**. Eén account per persoon, voor een echte persoon.',
-      'Je **minimoa** draagt jouw kijk op het leven en stelt je voor aan mensen die bij je passen, als vrienden of meer. Zijn berichten zijn automatisch: het is geen persoon.',
+      'Je **minimoa** draagt jouw kijk op het leven en stelt je voor aan mensen die bij je passen om banden te leggen. Wat ze worden, is aan jullie. Zijn berichten zijn automatisch: het is geen persoon.',
       'Respecteer anderen en de [communityregels](@regles). Geen intimidatie, geen seksuele inhoud, niets waarbij een minderjarige betrokken is.',
       'Je berichten en foto’s blijven van jou. Je geeft ons alleen het recht om ze te verwerken zodat Minimoa werkt.',
       'Minimoa is gratis. **Minimoa+** is een optioneel abonnement, betaald via de App Store, op iPhone ([voorwaarden van Minimoa+](@abonnement)).',
@@ -29,7 +29,7 @@ export const conditions: LegalPage = {
 
     { h2: '2. Wat Minimoa is', id: 'service' },
     {
-      p: 'Op Minimoa voedt iedereen een **minimoa** op, een klein figuurtje dat zijn of haar kijk op het leven draagt: wat iemand voor zijn leven voor ogen heeft (een thuis en gezin, waar je wilt wonen, de plaats van werk, het ritme van elke dag, de lange termijn). De minimoa stelt zijn mens voor aan mensen met een passende kijk, als vrienden of meer, en waakt over elke band.',
+      p: 'Op Minimoa voedt iedereen een **minimoa** op, een klein figuurtje dat zijn of haar kijk op het leven draagt: wat iemand voor zijn leven voor ogen heeft (een thuis en gezin, waar je wilt wonen, de plaats van werk, het ritme van elke dag, de lange termijn). De minimoa stelt zijn mens voor aan mensen met een passende kijk, om elkaar te leren kennen, en waakt over elke band.',
     },
     {
       ul: [
@@ -58,7 +58,7 @@ export const conditions: LegalPage = {
     {
       p: 'Je logt in met **Apple** (op iPhone) of **Google** (op Android). Die diensten bevestigen je identiteit; we kennen je wachtwoord nooit. Houd de toegang tot dat Apple- of Google-account voor jezelf: wat er op je Minimoa-account gebeurt, valt onder jouw verantwoordelijkheid. Denk je dat iemand erin is gekomen? Schrijf ons meteen.',
     },
-    { p: 'De informatie die je geeft (voornaam, geboortedatum, wat je zoekt) moet kloppen en actueel zijn. Je kunt ze in de app aanpassen.' },
+    { p: 'De informatie die je geeft (voornaam, geboortedatum, geslacht) moet kloppen en actueel zijn. Je kunt ze in de app aanpassen.' },
 
     { h2: '5. Wat mag, en wat niet', id: 'usage' },
     { p: 'Je gebruikt Minimoa met respect voor de wet, voor anderen en voor de [communityregels](@regles). Het is in het bijzonder verboden om:' },
@@ -121,6 +121,9 @@ export const conditions: LegalPage = {
     { h2: '9. Gratis, met Minimoa+ als optie', id: 'blowy-plus' },
     {
       p: 'Minimoa is gratis en zonder reclame. **Minimoa+** is een optioneel abonnement dat extra functies ontgrendelt. Het wordt verkocht en gefactureerd door Apple, op iPhone (een abonnement dat je op iPhone neemt, volgt je account op je andere apparaten). Wat het bevat, de prijzen, de gratis proefperiode, de verlenging en hoe je opzegt staan in de [voorwaarden van het Minimoa+-abonnement](@abonnement).',
+    },
+    {
+      p: 'Heb je Minimoa uit de App Store gedownload, dan geldt voor de app ook Apples [standaard licentieovereenkomst voor apps](https://www.apple.com/legal/internet-services/itunes/dev/stdeula/) (“Licensed Application End User License Agreement”).',
     },
     {
       p: 'Voorwerpen, jokers, reeksen, levens en andere spelelementen hebben geen geldwaarde. Ze kunnen niet worden geruild, doorverkocht of terugbetaald, behalve waar de wet dat vereist.',

@@ -1,6 +1,6 @@
 /** Monde de démonstration (mode mémoire, BLOWY_DEMO=1) : huit personnes fixes, leurs minimoas, leur vision et leur zone. */
 import { type Locale, auditText } from '@blowy/content';
-import type { Gauges, Gender, GeoPoint, Needs, Outfit, Seeking, Species, VisionAxis, Whom } from '@blowy/domain';
+import type { Gauges, Gender, GeoPoint, Needs, Outfit, Species, VisionAxis } from '@blowy/domain';
 
 export const DEMO_LEA = '00000000-0000-4000-8000-00000000000a';
 export const DEMO_MALO = '00000000-0000-4000-8000-00000000000b';
@@ -15,8 +15,8 @@ export interface DemoPerson {
   id: string;
   displayName: string;
   birthdate: string;
-  /** Qui la personne est et ce qu'elle cherche (vision). */
-  identity: { gender: Gender; seeking: Seeking; whom: Whom | null; discreet: boolean };
+  /** Qui la personne est (vision). */
+  identity: { gender: Gender; discreet: boolean };
   /** Zone du domicile (null : pas de position, donc ni carte ni rencontres proches). */
   place: GeoPoint | null;
   /** Vision posée au démarrage (réponses de test et questions du jour sur chaque axe). */
@@ -35,20 +35,20 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     id: DEMO_LEA,
     displayName: 'Léa',
     birthdate: '1998-04-12',
-    identity: { gender: 'femme', seeking: 'les_deux', whom: 'tout_le_monde', discreet: false },
+    identity: { gender: 'femme', discreet: false },
     place: { lat: 48.861, lng: 2.379 },
     vision: { foyer: 40, ancrage: -30, elan: 30, rythme: 40, cap: 30 },
     inviteCode: 'LEADEMO2',
     wordsCode: 'LEAMOTS2',
     pet: { name: 'Suzie', species: 'suzie', gauges: { social: 40, play: 20, tender: 30, talk: 10 } },
     needs: { hunger: 90, energy: 85, mood: 95, sociability: 85 },
-    outfit: { head: 'noeud', face: 'lunettes_coeur' },
+    outfit: { head: 'noeud', face: 'lunettes_etoile' },
   },
   {
     id: DEMO_MALO,
     displayName: 'Malo',
     birthdate: '1996-09-30',
-    identity: { gender: 'homme', seeking: 'potes', whom: null, discreet: false },
+    identity: { gender: 'homme', discreet: false },
     place: { lat: 45.764, lng: 4.8357 },
     vision: { foyer: -20, ancrage: 60, elan: 70, rythme: 50, cap: -30 },
     inviteCode: 'MALODEMO',
@@ -61,7 +61,7 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     id: DEMO_SASHA,
     displayName: 'Sasha',
     birthdate: '2000-01-21',
-    identity: { gender: 'non_binaire', seeking: 'potes', whom: null, discreet: false },
+    identity: { gender: 'non_binaire', discreet: false },
     place: { lat: 48.853, lng: 2.349 },
     vision: { foyer: 0, ancrage: 10, elan: -30, rythme: -50, cap: 20 },
     inviteCode: 'SASHADEM',
@@ -75,7 +75,7 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     id: DEMO_INES,
     displayName: 'Inès',
     birthdate: '1994-06-02',
-    identity: { gender: 'femme', seeking: 'potes', whom: null, discreet: false },
+    identity: { gender: 'femme', discreet: false },
     place: { lat: 48.859, lng: 2.37 },
     vision: { foyer: 70, ancrage: -40, elan: 20, rythme: -30, cap: 60 },
     inviteCode: 'INESDEMO',
@@ -88,7 +88,7 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     id: DEMO_YANIS,
     displayName: 'Yanis',
     birthdate: '1992-02-17',
-    identity: { gender: 'homme', seeking: 'les_deux', whom: 'tout_le_monde', discreet: false },
+    identity: { gender: 'homme', discreet: false },
     place: { lat: 48.872, lng: 2.36 },
     vision: { foyer: 60, ancrage: -20, elan: 40, rythme: -10, cap: 50 },
     inviteCode: 'YANISDEM',
@@ -101,7 +101,7 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     id: DEMO_CHLOE,
     displayName: 'Chloé',
     birthdate: '1999-11-08',
-    identity: { gender: 'femme', seeking: 'plus', whom: 'hommes', discreet: false },
+    identity: { gender: 'femme', discreet: false },
     place: { lat: 48.854, lng: 2.357 },
     vision: { foyer: -70, ancrage: 70, elan: 60, rythme: 70, cap: -60 },
     inviteCode: 'CHLOEDEM',
@@ -114,7 +114,7 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     id: DEMO_NOE,
     displayName: 'Noé',
     birthdate: '1990-08-23',
-    identity: { gender: 'homme', seeking: 'potes', whom: null, discreet: false },
+    identity: { gender: 'homme', discreet: false },
     place: { lat: 48.8638, lng: 2.4485 },
     vision: { foyer: 50, ancrage: -50, elan: 0, rythme: -40, cap: 40 },
     inviteCode: 'NOEDEMO2',
@@ -128,7 +128,7 @@ export const DEMO_PEOPLE: readonly DemoPerson[] = [
     displayName: 'Jade',
     birthdate: '1997-03-14',
     // Mode discret : proposée en rencontre si compatible, jamais sur la carte.
-    identity: { gender: 'femme', seeking: 'les_deux', whom: 'femmes', discreet: true },
+    identity: { gender: 'femme', discreet: true },
     place: { lat: 48.8397, lng: 2.2399 },
     vision: { foyer: -50, ancrage: 60, elan: 50, rythme: 60, cap: -40 },
     inviteCode: 'JADEDEMO',

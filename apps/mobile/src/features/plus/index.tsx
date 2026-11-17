@@ -3,12 +3,13 @@
  * `openPlus(raison)`), les achats StoreKit vérifiés par l'API, la restauration et la synchronisation au lancement.
  *
  * Les faits viennent de l'API (`api.plus.paywall()` : offres, essai, avantages, nombre réel de personnes compatibles,
- * mentions, liens légaux) ; les prix affichés viennent du magasin (StoreKit, localisés) quand il répond, sinon de l'API.
- * Le montant facturé est toujours le prix le plus visible (Apple 3.1.2) ; « Continuer gratuitement » est toujours là.
+ * mentions). Là où l'on peut acheter, les prix et la durée de l'essai viennent du magasin seul (StoreKit, localisés) :
+ * s'il ne répond pas, aucun prix ni bouton d'achat (jamais un prix inventé). Les prix de l'API ne servent qu'à présenter
+ * l'offre là où rien n'est vendu (web, Android). Règles Apple suivies : `docs/AUDIT-APPLE.md` (« Minimoa+ et App Review »).
  */
 import { ApiError } from '@blowy/api-client';
 import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
-import { ITEMS, OFFERS, type Plan, PLUS_PERKS, type PlusPerk, monthlyEquivalentMinor, type Species } from '@blowy/domain';
+import { ITEMS, OFFERS, PLUS_PERKS, type PlusPerk, type Species, yearlyDiscountPercent } from '@blowy/domain';
 import { PlusTemplate, type PlusOfferView, SheetTemplate } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -16,10 +17,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 
 import { keys, type SignedPurchase, type StoreProduct, useApi, usePorts, useSession } from '@/core';
+import { openLegal } from '@/features/me/links';
 import { itemLabel } from '@/locales/content';
 import { common } from '@/locales/common';
 import { plus as t } from '@/locales/plus';
-import { formatPrice } from '@/locales/runtime';
+import { formatDate, formatPrice } from '@/locales/runtime';
 
 // ── Ouvrir la feuille depuis n'importe où ────────────────────────────────────
 
@@ -64,7 +66,7 @@ export function useSubscription(enabled = true) {
   return useQuery({ queryKey: plusKeys.subscription, queryFn: api.plus.subscription, enabled: enabled && !!session });
 }
 
-/** Prix localisés du magasin pour ces produits (liste vide : on prend ceux de l'API). */
+/** Prix localisés du magasin pour ces produits (erreur : le magasin n'a pas répondu ; rien n'est alors proposé). */
 export function useStoreProducts(productIds: readonly string[]) {
   const { purchases } = usePorts();
   return useQuery({
@@ -72,7 +74,7 @@ export function useStoreProducts(productIds: readonly string[]) {
     queryFn: () => purchases.products(productIds),
     enabled: purchases.available && productIds.length > 0,
     staleTime: 30 * 60_000,
-    retry: false,
+    retry: 1,
   });
 }
 
@@ -92,15 +94,6 @@ export function usePlusPerks(petName: string): { key: PlusPerk; label: string | 
 /** Les avantages en une ligne (« Toute la carte · Changer de ville · … »), pour un bandeau. */
 export function plusPerksLine(perks: ReturnType<typeof usePlusPerks>, max = 4): string {
   return perks.flatMap((p) => p.short).slice(0, max).join(' · ');
-}
-
-/**
- * Prix indicatifs de Minimoa+ (domaine), mis en forme dans la langue et la région du téléphone. Sert aux lignes d'aperçu
- * hors de la feuille (« Moi »). Dans la feuille, les prix viennent du magasin ou de l'API.
- */
-export function plusPrices(plan: Plan = 'yearly'): { total: string; perMonth: string } {
-  const o = OFFERS[plan];
-  return { total: formatPrice(o.amountMinor, o.currency), perMonth: formatPrice(monthlyEquivalentMinor(o), o.currency) };
 }
 
 /** Envoie une transaction signée à l'API, puis la termine chez Apple (seulement si l'API l'a acceptée). */
@@ -189,14 +182,25 @@ export function usePlusSync(enabled: boolean) {
 
 // ── La feuille ───────────────────────────────────────────────────────────────
 
-/** Prix d'une offre : StoreKit d'abord (localisé), l'API en repli. */
-function offerPrices(o: PaywallOffer, store: StoreProduct | undefined) {
+/**
+ * Prix d'une offre. Là où l'on achète : seulement ceux du magasin (montant facturé, équivalent mensuel calculé dessus) ;
+ * produit absent : l'offre n'est pas proposée. Ailleurs (web, Android) : les prix de référence de l'API, pour information.
+ */
+function offerPrices(o: PaywallOffer, store: StoreProduct | undefined, sellable: boolean): { price: string; perMonth: string | null } | null {
   if (store) {
     const perMonth =
       o.period === 'year' && store.price !== null && store.currency ? formatPrice(Math.round((store.price * 100) / 12), store.currency) : null;
     return { price: o.period === 'year' ? t.price.year(store.displayPrice) : t.price.month(store.displayPrice), perMonth: perMonth ? t.perMonth(perMonth) : null };
   }
-  return { price: o.labels.price, perMonth: o.labels.perMonth };
+  return sellable ? null : { price: o.labels.price, perMonth: o.labels.perMonth };
+}
+
+/** Remise de l'annuel sur douze mensualités, calculée sur les prix du magasin (même devise) ; sinon aucune pastille. */
+function storeDiscount(yearly: StoreProduct | undefined, monthly: StoreProduct | undefined): number | null {
+  if (!yearly?.price || !monthly?.price || !yearly.currency || yearly.currency !== monthly.currency) return null;
+  // Même règle que l'API (domaine), appliquée aux montants du magasin.
+  const pct = yearlyDiscountPercent({ ...OFFERS.yearly, amountMinor: Math.round(yearly.price * 100) }, { ...OFFERS.monthly, amountMinor: Math.round(monthly.price * 100) });
+  return pct >= 5 ? pct : null;
 }
 
 /** Objets premium montrés autour du minimoa : celui qu'on vient de toucher d'abord. */
@@ -237,7 +241,6 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   const offers = data?.offers ?? [];
   const store = useStoreProducts(offers.map((o) => o.productId));
   const [plan, setPlan] = useState<PlanDto | null>(null);
-  const chosen = plan ?? data?.defaultPlan ?? 'yearly';
   const buy = usePurchase();
   const restore = useRestore();
   const [status, setStatus] = useState<{ tone: 'info' | 'success' | 'error'; text: string } | null>(null);
@@ -259,30 +262,50 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   };
   perks.sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight) || rank(a.key) - rank(b.key));
 
-  const views: PlusOfferView<PlanDto>[] = offers.map((o) => {
+  // Là où l'on achète (iPhone, ou magasin simulé du mode local), seul le magasin donne prix et essai.
+  const sellable = purchases.available;
+  const storeDown = sellable && store.isError;
+  const storeLoading = sellable && offers.length > 0 && store.isLoading;
+  const yearlyStore = byId.get(offers.find((o) => o.period === 'year')?.productId ?? '');
+  const monthlyStore = byId.get(offers.find((o) => o.period === 'month')?.productId ?? '');
+  const discount = sellable ? storeDiscount(yearlyStore, monthlyStore) : null;
+  const views: (PlusOfferView<PlanDto> & { trialDays: number })[] = (storeLoading || storeDown ? [] : offers).flatMap((o) => {
     const s = byId.get(o.productId);
-    const prices = offerPrices(o, s);
-    const eligible = o.trialDays > 0 && (s?.introEligible ?? data?.trial.eligible ?? true);
+    const prices = offerPrices(o, s, sellable);
+    if (!prices) return [];
+    const trialDays = sellable ? (s?.trialDays ?? 0) : o.trialDays;
+    const eligible = trialDays > 0 && (s?.introEligible ?? data?.trial.eligible ?? false);
     const name = o.period === 'year' ? t.plan.yearly : t.plan.monthly;
-    return {
-      key: o.plan,
-      lead: eligible ? t.lead.trial(name, o.trialDays) : o.trialDays > 0 ? name : t.lead.noTrial(name),
-      price: prices.price,
-      perMonth: prices.perMonth,
-      badge: o.discountPercent ? t.badge(o.discountPercent) : null,
-      short: o.trialDays > 0 ? name : t.lead.noTrial(name),
-      timeline: eligible && data ? data.trial.timeline.map((step, i) => ({ title: step.title, text: t.timeline[i] ?? step.text })) : null,
-    };
+    const badge = sellable ? (o.period === 'year' ? discount : null) : o.discountPercent;
+    return [
+      {
+        key: o.plan,
+        lead: eligible ? t.lead.trial(name, trialDays) : trialDays > 0 ? name : t.lead.noTrial(name),
+        price: prices.price,
+        perMonth: prices.perMonth,
+        badge: badge ? t.badge(badge) : null,
+        short: trialDays > 0 ? name : t.lead.noTrial(name),
+        trialDays: eligible ? trialDays : 0,
+        // La frise (jour 0 · rappel · premier paiement) suppose l'essai de l'API ; autre durée dans le magasin : pas de frise.
+        timeline: eligible && data && trialDays === data.trial.days ? data.trial.timeline.map((step, i) => ({ title: step.title, text: t.timeline[i] ?? step.text })) : null,
+      },
+    ];
   });
-  const current = offers.find((o) => o.plan === chosen);
+  // Le choix de la personne, sinon l'offre par défaut de l'API, sinon la première proposée.
+  const chosen: PlanDto = [plan, data?.defaultPlan].find((k): k is PlanDto => !!k && views.some((v) => v.key === k)) ?? views[0]?.key ?? 'yearly';
+  const current = views.length ? offers.find((o) => o.plan === chosen) : undefined;
   const currentView = views.find((v) => v.key === chosen);
-  const trialing = !!currentView?.timeline;
+  const trialDays = currentView?.trialDays ?? 0;
+  // Fin de l'essai : la date du premier paiement, dite à côté du bouton.
+  const firstPayment = trialDays > 0 ? formatDate(new Date(Date.now() + trialDays * 86_400_000), { day: 'numeric', month: 'long' }) : null;
+  const unavailable = paywall.isError || storeDown;
+  const retry = () => {
+    setStatus(null);
+    if (paywall.isError) void paywall.refetch();
+    if (storeDown) void store.refetch();
+  };
 
-  const cta = !purchases.available
-    ? t.cta.unavailable
-    : trialing && current
-      ? t.cta.trial(current.trialDays)
-      : t.cta.subscribe(currentView?.price ?? '');
+  const cta = unavailable ? t.cta.retry : !sellable ? t.cta.unavailable : trialDays > 0 ? t.cta.trial(trialDays) : t.cta.subscribe(currentView?.price ?? '');
 
   const doBuy = () => {
     if (!current) return;
@@ -307,7 +330,6 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
     void Linking.openURL(sub?.manageUrl ?? 'https://apps.apple.com/account/subscriptions');
   };
 
-  const legal = data?.legal;
   const teaserCount = data?.teaser.compatibleNearby ?? 0;
   return (
     <SheetTemplate asScreen bare visible onClose={onClose} closeLabel={common.close}>
@@ -329,20 +351,21 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
           setStatus(null);
         }}
         offersLabel={t.offersLabel}
-        ctaLabel={paywall.isError ? undefined : cta}
-        onCta={purchases.available && current && !buy.isPending ? doBuy : undefined}
-        ctaDisabled={!purchases.available || !current}
-        ctaLoading={buy.isPending || paywall.isLoading}
+        ctaLabel={cta}
+        onCta={unavailable ? retry : sellable && current && !buy.isPending ? doBuy : undefined}
+        ctaDisabled={unavailable ? paywall.isFetching || store.isFetching : !sellable || !current}
+        ctaLoading={buy.isPending || paywall.isLoading || storeLoading}
         status={
           status ??
           (paywall.isError
             ? { tone: 'error', text: t.status.loadError }
-            : !purchases.available && data
-              ? { tone: 'info', text: t.status.unavailable }
-              : purchases.simulated && data && !isMember
-                ? { tone: 'info', text: t.status.simulated }
+            : storeDown
+              ? { tone: 'error', text: t.status.pricesError }
+              : !sellable && data
+                ? { tone: 'info', text: t.status.unavailable }
                 : null)
         }
+        devNote={purchases.simulated && data && !isMember ? t.status.simulated : null}
         member={
           isMember
             ? { title: t.member.title, summary: sub?.summary ?? t.member.fallback, manageLabel: sub?.store === 'apple' || purchases.available ? t.member.manage : undefined, onManage: () => void manage() }
@@ -350,20 +373,16 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
         }
         continueLabel={isMember ? common.close : (data?.continueFreeLabel ?? t.continueFree)}
         onContinue={onContinue}
-        renewalNotice={isMember ? null : (data?.renewalNotice ?? null)}
         restoreLabel={data?.restoreLabel ?? t.restore}
         onRestore={purchases.available ? doRestore : undefined}
         restoreLoading={restore.isPending}
-        links={
-          legal
-            ? [
-                { label: t.links.terms, onPress: () => void Linking.openURL(legal.termsUrl) },
-                { label: t.links.privacy, onPress: () => void Linking.openURL(legal.privacyUrl) },
-              ]
-            : []
-        }
-        moreLinks={legal ? [{ label: t.links.plusTerms, onPress: () => void Linking.openURL(legal.plusTermsUrl) }] : []}
-        ctaNote={isMember || !currentView ? null : trialing ? t.ctaNote.trial(currentView.price) : t.ctaNote.plain(currentView.price)}
+        // Liens de l'app (pas de l'API) : là même si l'offre n'a pas chargé.
+        links={[
+          { label: t.links.terms, onPress: openLegal('conditions') },
+          { label: t.links.privacy, onPress: openLegal('confidentialite') },
+        ]}
+        moreLinks={[{ label: t.links.plusTerms, onPress: openLegal('abonnement') }]}
+        ctaNote={isMember || !currentView ? null : firstPayment ? t.ctaNote.trial(trialDays, currentView.price, firstPayment) : t.ctaNote.plain(currentView.price)}
       />
     </SheetTemplate>
   );

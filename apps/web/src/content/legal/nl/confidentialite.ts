@@ -9,7 +9,7 @@ export const confidentialite: LegalPage = {
     title: 'In het kort',
     items: [
       'We gebruiken je gegevens voor één ding: je minimoa tot leven brengen en je voorstellen aan mensen die bij je passen. **Geen reclame, geen doorverkoop.**',
-      'Wat je zoekt en wie je wilt ontmoeten kan je seksuele geaardheid verraden: we vragen je **uitdrukkelijke toestemming**, en je kunt die intrekken.',
+      'We vragen niet wat je zoekt: je minimoa legt banden, en wat ze worden is aan jullie. **We verzamelen geen gegevens over je geaardheid.**',
       'Je **locatie** wordt alleen gebruikt als de app open is, en **nooit exact opgeslagen**: we bewaren alleen een punt afgerond op ongeveer 300 m en je gebied. Op de kaart zien anderen een afgeronde en verschoven positie, nooit live, en de **discrete modus** haalt je van de kaart. Zonder locatie kies je zelf je stad.',
       'Een **externe AI**, die van {{sub.ai.provider}} ({{sub.ai.location}}), wordt op vier plekken gebruikt, [hieronder](#ia) uitgelegd: het meelezen van chats als jullie het allebei aanzetten, je bewijsfoto’s als je dat accepteert, de veiligheidscontrole van profielfoto’s en van sommige berichten, en het weekoverzicht, verstuurd zonder enige naam.',
       '**Niemand bij Minimoa leest je gesprekken**, behalve een gemeld bericht (gemeld door iemand of door ons automatische filter) en de directe context ervan, gelezen door een moderator.',
@@ -64,15 +64,15 @@ export const confidentialite: LegalPage = {
       ],
     },
 
-    { h3: 'Je geslacht, wat je zoekt, wie je wilt ontmoeten', id: 'sensibles' },
+    { h3: 'Je geslacht', id: 'sexe' },
     {
       ul: [
-        '**Gegevens:** je geslacht (vrouw, man, non-binair of “zeg ik liever niet”); wat je zoekt (vrienden, meer of allebei); als je “meer” zoekt, wie je wilt ontmoeten (vrouwen, mannen, iedereen).',
-        '**Waarom dit gevoelig is:** samen kunnen deze antwoorden je **seksuele geaardheid** verraden, een gegeven dat wordt beschermd door artikel 9 van de AVG.',
-        '**Doel:** je alleen voorstellen aan mensen die hetzelfde zoeken als jij en die iemand zoals jij willen ontmoeten.',
-        '**Rechtsgrond:** je **uitdrukkelijke toestemming**, gevraagd bij de aanmelding voordat je antwoordt. Je kunt die intrekken in de app (**Ik → Instellingen → Wie je bent, wat je zoekt → Mijn toestemming intrekken**) of door je account te verwijderen. Zonder deze antwoorden kunnen we je geen ontmoetingen voor “meer” voorstellen.',
-        '**Bewaartermijn:** zolang je account bestaat, of tot je je toestemming intrekt of je antwoorden wijzigt.',
-        '**Toegang:** het algoritme voor ontmoetingen. Deze antwoorden dienen om te filteren: iemand aan wie je wordt voorgesteld, kan afleiden dat jullie hetzelfde zoeken. Ze worden nooit getoond, nooit gebruikt voor reclame en nooit aan derden doorgegeven.',
+        '**Gegevens:** je geslacht (vrouw, man, non-binair of “zeg ik liever niet”).',
+        '**Doel:** de teksten van de app goed formuleren, en statistieken zonder namen. **Het wordt niet gebruikt om te kiezen aan wie je minimoa je voorstelt.**',
+        '**Rechtsgrond:** ons gerechtvaardigd belang. “Zeg ik liever niet” kan altijd, en je kunt je antwoord in de app wijzigen (**Ik → Instellingen → Wie je bent**).',
+        '**Bewaartermijn:** zolang je account bestaat.',
+        '**Toegang:** alleen jij. Het wordt nooit aan anderen getoond.',
+        'We vragen niet wat je zoekt of wie je wilt ontmoeten: je minimoa legt banden, en wat ze worden is aan jullie. Antwoorden op die vragen van vóór 17 november 2026, en de toestemming die erbij hoorde, zijn gewist.',
       ],
     },
 
@@ -244,8 +244,8 @@ export const confidentialite: LegalPage = {
       ol: [
         '**Je kijk** wordt geplaatst op 5 assen: thuis (vrij, alleen ↔ een gezin stichten), wortels (hier blijven ↔ vertrekken), drive (tijd voor jezelf ↔ grote projecten), ritme (rustig, thuis ↔ intens, buiten), koers (van dag tot dag ↔ alles plannen). Elke as heeft een betrouwbaarheidsindex.',
         '**Waar hij vandaan komt**, met startgewichten: test bij aanmelding 40% (daarna steeds minder), vraag van de dag 20%, gewoontes 25%, hoe je voor je minimoa zorgt 10%, de 3 woorden van je vrienden 5%. Hoe meer je Minimoa gebruikt, hoe hoger de betrouwbaarheid.',
-        '**De filters**: wat ieder zoekt, en voor “meer”, wie hij of zij wil ontmoeten; 18 jaar en ouder; het gebied; geblokkeerde mensen.',
-        '**De score**: de nabijheid op de 5 assen, gewogen naar betrouwbaarheid. Voor “vrienden” telt de as thuis weinig; voor “meer” telt hij dubbel. De stijl (sociaal, speels, teder, kletserig) telt niet mee in de score.',
+        '**De filters**: 18 jaar en ouder; het gebied; geblokkeerde mensen. Jouw geslacht en dat van anderen filteren niet wie je wordt voorgesteld.',
+        '**De score**: de nabijheid op de 5 assen, gewogen naar betrouwbaarheid. De as thuis telt minder dan de andere. De stijl (sociaal, speels, teder, kletserig) telt niet mee in de score.',
         '**De drempel**: onder 70% wordt niemand voorgesteld, ook al betekent dat minder mensen tonen.',
         '**De uitleg**: elke ontmoeting zegt waarom, met 3 overeenkomsten en 1 verschil om te ontdekken. Nooit een los cijfer.',
         '**Het aantal ontmoetingen** hangt ook af van de conditie van je minimoa (hoe beter je voor hem zorgt, hoe meer mensen hij je voorstelt) en van je abonnement.',
@@ -304,7 +304,7 @@ export const confidentialite: LegalPage = {
         '**Mensen aan wie je minimoa je voorstelt** zien je voornaam, je minimoa, zijn stijl, wat jullie gemeen hebben en één verschil, en je geschatte positie op de kaart (behalve in de discrete modus).',
         '**Je banden** zien daarnaast jullie berichten, jullie reeks, de mijlpalen van jullie band, jullie oude foto’s van de dag als die er zijn, en je profielfoto als je er een hebt (verborgen tot niveau 4, wazig op niveau 4, scherp vanaf niveau 5).',
         '**Bezoekers van je “3 woorden”-pagina of je uitnodiging** zien je voornaam en je minimoa.',
-        'Niemand ziet je e-mailadres, je geboortedatum, wat je hebt geantwoord over je geslacht en wie je wilt ontmoeten, of je antwoorden op de kijk-test. Je exacte positie wordt nergens opgeslagen. Je bewijsfoto’s worden door geen mens gezien, en binnen 24 uur gewist (tenzij je ze in je privéherinneringen bewaart).',
+        'Niemand ziet je e-mailadres, je geboortedatum, je geslacht, of je antwoorden op de kijk-test. Je exacte positie wordt nergens opgeslagen. Je bewijsfoto’s worden door geen mens gezien, en binnen 24 uur gewist (tenzij je ze in je privéherinneringen bewaart).',
       ],
     },
 
@@ -366,7 +366,7 @@ export const confidentialite: LegalPage = {
         '**inzage** krijgen in je gegevens en een kopie ontvangen;',
         'ze laten **corrigeren** (veel ervan pas je direct in de app aan);',
         'ze laten **wissen** ([je account verwijderen](@supprimer-mon-compte) doet dat in één keer);',
-        'je **toestemming intrekken** als die de basis is voor een verwerking (gevoelige gegevens, locatie, controle van bewijsfoto’s door de AI, meelezen van berichten door de AI, meldingen), zonder dat dit afdoet aan wat eerder is gedaan;',
+        'je **toestemming intrekken** als die de basis is voor een verwerking (locatie, controle van bewijsfoto’s door de AI, meelezen van berichten door de AI, meldingen), zonder dat dit afdoet aan wat eerder is gedaan;',
         '**bezwaar maken** tegen een verwerking op basis van ons gerechtvaardigd belang, of om **beperking** ervan vragen;',
         'de gegevens die je ons hebt gegeven terugkrijgen in een machineleesbaar formaat (**overdraagbaarheid**);',
         '**instructies** geven over wat er na je overlijden met je gegevens gebeurt.',

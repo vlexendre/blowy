@@ -32,7 +32,7 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
 
 | Question | Réponse | Pourquoi |
 |---|---|---|
-| Dating and Relationships | **Oui** | rencontres « plus » entre personnes réelles → 18+ minimum |
+| Dating and Relationships | **Oui** | l'app fait se rencontrer des personnes réelles ; la nature du lien n'est pas demandée (§27), mais des relations peuvent naître → 18+ minimum |
 | Shared Location | **Oui** | les autres voient ta position approximative sur la carte |
 | Messaging and Chat | **Oui** | chat entre liens |
 | User-Generated Content | **Oui** | prénoms, photos de profil, messages |
@@ -41,7 +41,7 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
 | Unrestricted Web Access | Non | les liens ouvrent seulement les pages de Minimoa |
 | Parental Controls | Non | |
 | Age Assurance | Non (déclaration d'âge simple), sauf si l'API Declared Age Range est intégrée | |
-| Mature or Suggestive Themes | Infrequent | rencontres amoureuses |
+| Mature or Suggestive Themes | Infrequent | aucun thème suggestif montré par l'app depuis §27 ; « Infrequent » par prudence (des adultes s'écrivent librement), « None » défendable : décision du propriétaire |
 | Alcohol, Tobacco, or Drug Use or References | Infrequent | « apéro », 🍻 dans quelques textes |
 | Profanity or Crude Humor | None (le contenu des gens est couvert par UGC) | |
 | Sexual Content or Nudity | None | |
@@ -64,7 +64,7 @@ de l'app (`NSPrivacyCollectedDataTypes`, `apps/mobile/app.config.ts`) : changer 
 | Contact Info | Email Address | Oui (relais Apple possible) | App Functionality |
 | Contact Info | Name | Oui (prénom ou surnom) | App Functionality |
 | Location | **Coarse Location** : l'API n'enregistre jamais le point exact, seulement le centre de sa maille de ~300 m et la zone du domicile (même maille), ou la ville choisie à la main (audit M6, corrigé ; le manifeste déclare `CoarseLocation`, vérifié par `plugins/ios-release.test.ts`). Le point exact ne sert qu'en mémoire, pendant la requête (sortie hors de la zone). | Oui | App Functionality |
-| Sensitive Info | Sensitive Info (orientation sexuelle déductible du sexe et de « qui tu veux rencontrer ») | Oui | App Functionality |
+| Sensitive Info | Sensitive Info | **Non** (depuis §27 : plus de « qui tu veux rencontrer » ; anciennes réponses effacées par `20261117130000_sans_recherche.sql`) | — |
 | User Content | Emails or Text Messages (chat) | Oui | App Functionality |
 | User Content | Photos or Videos (photo de profil, preuves d'habitude, défis photo ; anciennes photos du jour encore gardées dans les souvenirs des liens) | Oui | App Functionality |
 | User Content | Customer Support | Oui (e-mails) | App Functionality |
@@ -103,8 +103,23 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 - **Objets premium (audit B3, livré)** : avec Minimoa+, les 13 objets premium sont à la personne et se portent tout de
   suite ; sans Minimoa+, leur fiche ouvre Minimoa+. **À la fin de l'abonnement, le minimoa les range** (ils redeviennent
   verrouillés et reviennent avec un nouvel abonnement) ; la fiche de l'objet le dit. Rien d'autre n'est vendu à l'unité.
-- Pour chacun : nom affiché et description dans chaque langue de la fiche ; **capture du paywall** pour la revue ; notes
-  de revue.
+- **Groupe d'abonnements, localisations** (Abonnements › Minimoa+ › Localisation, pour fr, en, es, pt, nl) : nom
+  affiché du groupe « Minimoa+ » (c'est le nom que l'App Store montre dans Réglages › ton nom › Abonnements, il doit
+  rester celui du titre du paywall).
+- **Chaque abonnement** : nom affiché qui reprend le titre du paywall et la durée, sans prix (le prix vient de
+  StoreKit) : FR « Minimoa+ annuel » / « Minimoa+ mensuel » ; EN « Minimoa+ Yearly » / « Minimoa+ Monthly » ; ES
+  « Minimoa+ anual » / « Minimoa+ mensual » ; PT « Minimoa+ anual » / « Minimoa+ mensal » ; NL « Minimoa+ jaarlijks » /
+  « Minimoa+ maandelijks ». Description (55 caractères au plus) : FR « Toute la carte, plus de rencontres, et plus
+  encore » (même idée dans chaque langue, sans promettre autre chose que la liste ci-dessus).
+- **Capture pour la revue** (obligatoire, une par abonnement) : la feuille Minimoa+ telle que l'examinateur la verra,
+  avec le prix facturé, l'essai et sa date de fin, la mention de renouvellement, « Restaurer mes achats », « Conditions
+  d'utilisation » et « Confidentialité » visibles. Modèle : `/home/claude/work/w3/p/after/390/01-onboarding-trial.png`
+  (refaire la capture sur un iPhone en bac à sable, prix réels de StoreKit ; une capture du mode local porterait la
+  mention « Mode dev »).
+- **Offre d'introduction** : seulement sur l'annuel, essai gratuit d'**1 semaine**, tous les pays. L'app lit la durée de
+  l'essai dans StoreKit : sans offre configurée, la feuille n'annonce aucun essai (rien n'est promis que le magasin ne
+  donne).
+- Notes de revue : `docs/APP-REVIEW.md`.
 - **Le premier abonnement doit être joint à la version soumise** (page de la version › « In-App Purchases and
   Subscriptions » › sélectionner les deux), sinon l'examinateur ne trouve pas les produits (2.1(b)).
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
@@ -120,10 +135,15 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
   remplir dans `legal.ts` : e-mails de contact, DPO, hébergeurs, médiateur, garanties de transfert, durée de
   conservation chez le prestataire d'IA (`AI_TERMS.retention`, selon le contrat), rotation des sauvegardes.
 - **Assistance (Support URL)** : `https://blowy.app/legal/assistance`, avec un e-mail réel.
-- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Minimoa,
-  soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://blowy.app/legal/conditions » à la
-  fin de la description. Ajouter aussi le lien des conditions Minimoa+ (`/legal/abonnement`), qui doit décrire les objets
-  premium comme en 4.
+- **Conditions d'utilisation (EULA)** : choisir le **contrat de licence standard d'Apple** (Informations sur l'app ›
+  Contrat de licence : laisser « Contrat de licence standard ») ; nos conditions le citent et y renvoient
+  (`/legal/conditions`, partie 9, dans les cinq langues). **Et** finir la description de la fiche, dans chaque langue,
+  par : « Conditions d'utilisation : https://blowy.app/legal/conditions · Confidentialité :
+  https://blowy.app/legal/confidentialite · Conditions de Minimoa+ : https://blowy.app/legal/abonnement » (EN :
+  `https://blowy.app/en/legal/...`, etc.). Sans ce lien dans les métadonnées, refus 3.1.2 fréquent (« A functional link
+  to the Terms of Use (EULA) »). La page `abonnement` doit décrire les objets premium comme en 4.
+- La description de la fiche dit que Minimoa est gratuit et que Minimoa+ est un abonnement facultatif (2.3.2), sans prix
+  écrit (il change selon le pays).
 - Fiche : pas de prix dans le nom, le sous-titre ni les captures (2.3.7) ; captures de l'app en usage (2.3.3).
 
 ## 6. Notes de revue et compte de revue

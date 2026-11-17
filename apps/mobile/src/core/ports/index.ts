@@ -45,8 +45,8 @@ export interface AuthPort {
 }
 
 export interface RealtimePort {
-  /** Appelle `onChange` à chaque nouveau message ou changement d'un lien de la personne connectée. */
-  subscribe(onChange: (event: { linkId: string | null }) => void): () => void;
+  /** Appelle `onChange` à chaque nouveau message ou changement d'un lien (ou message d'un groupe, `groupId`) de la personne connectée. */
+  subscribe(onChange: (event: { linkId: string | null; groupId?: string | null }) => void): () => void;
 }
 
 export interface PickedImage {
@@ -71,6 +71,11 @@ export interface StoreProduct {
   currency: string | null;
   /** Essai gratuit possible pour ce compte Apple (null : inconnu, on se fie à l'API). */
   introEligible: boolean | null;
+  /**
+   * Jours d'essai gratuit de l'offre d'introduction configurée dans App Store Connect (0 : aucun essai). C'est la seule
+   * durée d'essai affichée sur un vrai iPhone : on ne promet que ce que le magasin facturera.
+   */
+  trialDays: number;
 }
 
 /** Une transaction signée à faire vérifier par l'API (`api.plus.submitPurchase`), puis à terminer. */
@@ -93,7 +98,10 @@ export interface PurchasesPort {
   readonly available: boolean;
   /** Achat simulé du mode local (API en mémoire) : rien n'est facturé. */
   readonly simulated: boolean;
-  /** Produits et prix localisés ; liste vide si le magasin ne répond pas (l'API sert alors de repli). */
+  /**
+   * Produits et prix localisés du magasin. Rejette si le magasin ne répond pas : la feuille n'affiche alors aucun prix ni
+   * bouton d'achat (jamais un prix inventé). Un produit absent de la liste n'est pas proposé.
+   */
   products(productIds: readonly string[]): Promise<StoreProduct[]>;
   /** Achat d'un abonnement, lié au compte Minimoa (`appAccountToken` = identifiant de la personne). */
   purchase(productId: string, accountToken: string): Promise<PurchaseOutcome>;

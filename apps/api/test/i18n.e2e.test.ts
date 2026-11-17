@@ -122,7 +122,7 @@ describe('monde de revue dans la langue de l’examinateur', () => {
   async function visit(locale: 'en' | 'fr', onboardLocale?: 'en' | 'fr') {
     const session = await createApiClient({ baseUrl: world.baseUrl, getLocale: () => locale }).review.session(REVIEW);
     const api = createApiClient({ baseUrl: world.baseUrl, getToken: () => session.accessToken, getLocale: () => locale });
-    if (onboardLocale) await api.me.onboard(onboardBody({ displayName: 'Apple', locale: onboardLocale, consents: { sensitive: true, location: false }, location: undefined }));
+    if (onboardLocale) await api.me.onboard(onboardBody({ displayName: 'Apple', locale: onboardLocale, consents: { location: false }, location: undefined }));
     return api;
   }
 

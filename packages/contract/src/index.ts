@@ -4,8 +4,9 @@
  */
 import { CARE_ACTIONS, ENCOUNTER_OUTCOMES, GAUGE_KEYS, ITEM_IDS, ITEM_SLOTS, LEVEL_KEYS, LINK_STATUSES, MOODS, PET_EVENT_KINDS, SHAPES, SPECIES, WORD_KEYS } from '@blowy/domain';
 import { z } from 'zod';
-import { IdentityZ, LatLngZ, LookingForZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
+import { IdentityZ, LatLngZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
 import { PetRoleZ } from './v7/plateforme';
+import { OnboardHabitZ, SharedHabitsZ } from './v7/rituels';
 
 export const API_PREFIX = '/v1';
 
@@ -116,6 +117,8 @@ export const MeZ = z.object({
    */
   visionTestDone: z.boolean(),
   pet: PetZ,
+  /** Réglage « Montrer mes habitudes » (spéc §25, activé par défaut) ; absent des réponses des anciennes API. */
+  showHabits: z.boolean().optional(),
 });
 export type Me = z.infer<typeof MeZ>;
 
@@ -128,14 +131,21 @@ export const OnboardBody = z.object({
   quiz: GaugesZ.partial().default({}),
   /** Code d'invitation reçu, s'il y en a un. */
   inviteCode: z.string().optional(),
-  /** Sexe, ce que tu cherches, langue, accords, position et réponses au test de vision (voir v7/vision.ts). La ville n'est plus demandée. */
+  /** Sexe, langue, accords, position et réponses au test de vision (voir v7/vision.ts). La ville n'est plus demandée. */
   ...OnboardIdentityFields,
+  /** Étape « Tes habitudes » (spéc §25) : 2 au plus, « Plus tard » envoie une liste vide. */
+  habits: z.array(OnboardHabitZ).max(2).default([]),
 });
 export type OnboardBody = z.infer<typeof OnboardBody>;
 /** Ce que l'app envoie (les champs à valeur par défaut sont facultatifs). */
 export type OnboardInput = z.input<typeof OnboardBody>;
 
-export const UpdateMeBody = z.object({ displayName: z.string().trim().min(1).max(24).optional(), ...UpdateIdentityFields });
+export const UpdateMeBody = z.object({
+  displayName: z.string().trim().min(1).max(24).optional(),
+  ...UpdateIdentityFields,
+  /** « Montrer mes habitudes » (spéc §25). */
+  showHabits: z.boolean().optional(),
+});
 export type UpdateMeBody = z.infer<typeof UpdateMeBody>;
 
 // ── Personnes et liens ─────────────────────────────────────────────────────
@@ -204,6 +214,8 @@ export const LinkZ = z.object({
   lastMessage: z.object({ preview: z.string(), at: Iso }).nullable(),
   today: TodayZ,
   createdAt: Iso,
+  /** Habitudes tenues tous les deux (onglet « Le lien ») : seulement dans `GET /v1/links/:id`. */
+  sharedHabits: SharedHabitsZ.optional(),
 });
 export type Link = z.infer<typeof LinkZ>;
 
@@ -281,8 +293,8 @@ export const SuggestionZ = z.object({
   /** Ce que ton pet raconte de cette rencontre. */
   intro: z.string(),
   waved: z.boolean(),
-  /** Ce que vous cherchez tous les deux (potes, plus, les deux) ; jamais « qui ». */
-  lookingFor: LookingForZ.nullable().optional(),
+  /** Habitudes tenues tous les deux (« Vous tenez tous les deux : Sport »), avec les deux séries et rigueurs. */
+  sharedHabits: SharedHabitsZ.optional(),
 });
 export type Suggestion = z.infer<typeof SuggestionZ>;
 
@@ -294,8 +306,7 @@ export const IncomingZ = z.object({
   explanation: MatchExplanationZ.nullable(),
   intro: z.string(),
   at: Iso,
-  /** Ce que vous cherchez tous les deux ; null si vos recherches ne se rejoignent pas. */
-  lookingFor: LookingForZ.nullable().optional(),
+  sharedHabits: SharedHabitsZ.optional(),
 });
 export type Incoming = z.infer<typeof IncomingZ>;
 
@@ -324,7 +335,6 @@ export const MapPinZ = z.object({
   relation: MapPinRelationZ.optional(),
   /** Coucou reçu (relation `waved_you`) : à accepter ou refuser comme dans les rencontres. */
   encounterId: Uuid.nullable().optional(),
-  lookingFor: LookingForZ.nullable().optional(),
 });
 export type MapPin = z.infer<typeof MapPinZ>;
 export const MapZ = z.object({
@@ -462,3 +472,4 @@ export * from './v7/rituels';
 export * from './v7/compte';
 export * from './v7/revue';
 export * from './v7/ia';
+export * from './v7/groupes';

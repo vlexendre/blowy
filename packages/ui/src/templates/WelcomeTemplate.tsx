@@ -83,7 +83,7 @@ function TypingBubble({ pet }: { pet: PetLook }) {
 /**
  * Écran d'accueil (V6-Welcome) : grand panneau jaune, promesse, aperçu de chat avec le pet, puis les deux actions.
  * Mouvement : le panneau se pose, le pet passe la tête par la droite et salue, puis le chat s'écrit message par
- * message (« … » avant ceux du pet) ; à la fin, le bouton respire une fois. Le pet se touche (cœurs) et s'attrape.
+ * message (« … » avant ceux du pet) ; à la fin, le bouton respire une fois. Le pet se touche (étincelles) et s'attrape.
  * Rien n'attend : les boutons répondent tout de suite. Animations réduites : tout est là, en fondu.
  */
 export function WelcomeTemplate({ brand, tagline, title, chat, pet, primaryLabel, onPrimary, secondaryLabel, onSecondary }: WelcomeTemplateProps) {
@@ -103,7 +103,7 @@ export function WelcomeTemplate({ brand, tagline, title, chat, pet, primaryLabel
     const w = (v: number) => withTiming(v, { duration: 230, easing: ease.inOut });
     rot.value = withSequence(w(-5), w(4), w(-3), w(2), withSpring(0, springs.soft));
   };
-  // Touché : il s'écrase, rit, un cœur s'envole (il salue encore une fois sur deux).
+  // Touché : il s'écrase, rit, des étincelles s'envolent (il salue encore une fois sur deux).
   const touched = useRef(0);
   const touch = () => {
     hapticFor('press');
@@ -178,7 +178,7 @@ export function WelcomeTemplate({ brand, tagline, title, chat, pet, primaryLabel
               <PetImage species={pet.species} mood="salut" size={PET_WIDTH} animation="breathe" style={shadow.lift} />
             </Pressable>
           </Animated.View>
-          <Burst kind="hearts" trigger={hearts} seed={`welcome:${hearts % 3}`} count={hearts % 2 ? 3 : 4} spread={150} size={34} style={styles.hearts} />
+          <Burst kind="sparkles" trigger={hearts} seed={`welcome:${hearts % 3}`} count={hearts % 2 ? 3 : 4} spread={150} size={34} style={styles.hearts} />
         </View>
       </View>
 

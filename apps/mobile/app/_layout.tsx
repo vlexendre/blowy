@@ -1,5 +1,4 @@
 import { Anton_400Regular } from '@expo-google-fonts/anton';
-import { BricolageGrotesque_500Medium, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
 import { color } from '@blowy/tokens';
 import { MotionHost } from '@blowy/ui';
 import { useFonts } from 'expo-font';
@@ -21,7 +20,13 @@ void SplashScreen.preventAutoHideAsync();
 const SHEET = { presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } } as const;
 
 export default function RootLayout() {
-  const [fontsReady, fontError] = useFonts({ Anton_400Regular, BricolageGrotesque_500Medium, BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold });
+  const [fontsReady, fontError] = useFonts({
+    Anton_400Regular,
+    // Allo (SIL OFL 1.1, licence jointe dans assets/fonts/allo/OFL.txt).
+    Allo_500Medium: require('../assets/fonts/allo/Allo-Medium.otf'),
+    Allo_700Bold: require('../assets/fonts/allo/Allo-Bold.otf'),
+    Allo_800ExtraBold: require('../assets/fonts/allo/Allo-ExtraBold.otf'),
+  });
 
   useEffect(() => {
     if (fontsReady || fontError) void SplashScreen.hideAsync();
