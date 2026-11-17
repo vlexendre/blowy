@@ -141,16 +141,16 @@ export const groupes = messages({
     },
     /** Rigueur et habitudes partagées. */
     rigour: {
-      label: 'Rigueur',
-      mine: 'Ta rigueur',
+      label: 'Régularité',
+      mine: 'Ta régularité',
       tooEarly: 'Trop tôt',
       tooEarlyLong: 'Trop tôt pour le dire',
-      a11y: (value: string, days: number) => `Rigueur : ${value}, sur ${days} jours dus`,
+      a11y: (value: string, days: number) => `Régularité : ${value}, sur ${days} jours dus`,
       sharedTitle: 'Vous tenez tous les deux',
       sharedTitleOne: (habit: string) => `Vous tenez tous les deux : ${habit}`,
-      theirs: (name: string, value: string) => `Rigueur de ${name} : ${value}`,
+      theirs: (name: string, value: string) => `Régularité de ${name} : ${value}`,
       you: 'Toi',
-      sideA11y: (name: string, streak: number, rigour: string) => `${name} : série de ${streak}, rigueur ${rigour}`,
+      sideA11y: (name: string, streak: number, rigour: string) => `${name} : série de ${streak}, régularité ${rigour}`,
     },
     /** Inscription : « Tes habitudes ». */
     onboarding: {
@@ -162,7 +162,7 @@ export const groupes = messages({
     /** Moi › Réglages. */
     settings: {
       showHabits: 'Montrer mes habitudes',
-      showHabitsText: 'Nom, série et rigueur, à tes liens et rencontres',
+      showHabitsText: 'Nom, série et régularité, à tes liens et rencontres',
       saveError: 'Le réglage n’a pas été enregistré. Réessaie.',
     },
     /** Moi › Notifications. */
@@ -752,16 +752,16 @@ export const groupes = messages({
       error: 'Dat lukte niet. Probeer het opnieuw.',
     },
     rigour: {
-      label: 'Discipline',
-      mine: 'Jouw discipline',
+      label: 'Regelmaat',
+      mine: 'Jouw regelmaat',
       tooEarly: 'Te vroeg',
       tooEarlyLong: 'Nog te vroeg om te zeggen',
-      a11y: (value: string, days: number) => `Discipline: ${value}, over ${days} dagen`,
+      a11y: (value: string, days: number) => `Regelmaat: ${value}, over ${days} dagen`,
       sharedTitle: 'Jullie houden allebei vol',
       sharedTitleOne: (habit: string) => `Jullie houden allebei vol: ${habit}`,
-      theirs: (name: string, value: string) => `Discipline van ${name}: ${value}`,
+      theirs: (name: string, value: string) => `Regelmaat van ${name}: ${value}`,
       you: 'Jij',
-      sideA11y: (name: string, streak: number, rigour: string) => `${name}: reeks van ${streak}, discipline ${rigour}`,
+      sideA11y: (name: string, streak: number, rigour: string) => `${name}: reeks van ${streak}, regelmaat ${rigour}`,
     },
     onboarding: {
       host: (name: string) => `Een of twee gewoontes om vol te houden, ${name}?`,
@@ -771,7 +771,7 @@ export const groupes = messages({
     },
     settings: {
       showHabits: 'Mijn gewoontes tonen',
-      showHabitsText: 'Naam, reeks en discipline, aan je banden en wie je ontmoet',
+      showHabitsText: 'Naam, reeks en regelmaat, aan je banden en wie je ontmoet',
       saveError: 'De instelling is niet opgeslagen. Probeer het opnieuw.',
     },
     notifications: {

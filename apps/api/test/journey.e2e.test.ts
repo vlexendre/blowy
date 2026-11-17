@@ -52,7 +52,7 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
     await alice.api.encounters.wave(bob.id);
     await alice.api.encounters.wave(bob.id); // idempotent
     expect((await alice.api.encounters.list()).suggestions.find((s) => s.user.id === bob.id)?.waved).toBe(true);
-    expect(world.outbox.at(-1)).toMatchObject({ to: 'bob@example.com', subject: 'Gaston a croisé le minimoa de Alice' });
+    expect(world.outbox.at(-1)).toMatchObject({ to: 'bob@example.com', subject: 'Alice te fait signe' });
 
     const incoming = (await bob.api.encounters.list()).incoming;
     expect(incoming).toHaveLength(1);

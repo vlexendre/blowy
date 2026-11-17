@@ -10,7 +10,7 @@ import type { IncomingLook } from '../types';
 export interface IncomingCardProps {
   /** La demande reçue (objet `Incoming` du contrat accepté tel quel). */
   incoming: IncomingLook;
-  /** « Sasha veut te rencontrer ». */
+  /** « Sasha te fait signe ». */
   title: string;
   /** « pia, le pet de Sasha ». */
   ownerLabel?: string;

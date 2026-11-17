@@ -83,9 +83,9 @@ const fr = {
   },
   /** Ce que ton minimoa dit d'une rencontre : d'où il la connaît, puis le premier point commun. */
   intro: {
-    friend: [(mutual: string) => `Je l’ai croisé chez ${mutual}.`, (mutual: string) => `C’est un pote du minimoa de ${mutual}.`] as readonly ((mutual: string) => string)[],
-    nearby: ['Il traîne dans ton quartier.', 'On s’est croisés pas loin de chez toi.'] as readonly string[],
-    other: ['Tout nouveau dans le coin.', 'On s’est croisés en balade.'] as readonly string[],
+    friend: [(mutual: string) => `Je l’ai rencontré chez ${mutual}.`, (mutual: string) => `C’est un pote du minimoa de ${mutual}.`] as readonly ((mutual: string) => string)[],
+    nearby: ['Il traîne dans ton quartier.', 'Il habite pas loin de chez toi.'] as readonly string[],
+    other: ['Tout nouveau dans le coin.', 'Je l’ai rencontré en balade.'] as readonly string[],
   },
   map: {
     /** Silhouettes floues au-delà de la zone. */

@@ -30,7 +30,7 @@ const fr = {
     bavard: 'bavard',
   } as Record<string, string>,
   gaugeLabel: {
-    social: { low: 'casanier', high: 'sociable', hint: 'Elle bouge quand ton minimoa croise de nouvelles têtes.' },
+    social: { low: 'casanier', high: 'sociable', hint: 'Elle bouge quand ton minimoa rencontre de nouvelles têtes.' },
     play: { low: 'posé', high: 'joueur', hint: 'Elle bouge avec les défis du jour.' },
     tender: { low: 'piquant', high: 'tendre', hint: 'Elle bouge avec les mots doux, les vannes et les jours où vous vous écrivez.' },
     talk: { low: 'discret', high: 'bavard', hint: 'Elle bouge avec les messages.' },
@@ -53,7 +53,7 @@ const fr = {
     oeuf: { title: 'L’œuf', text: 'Un œuf apparaît. Il éclora de ce que vous êtes devenus.' },
   } as Record<LevelKey, { title: string; text: string }>,
   eventLabel: {
-    met_new_pet: 'A croisé un nouveau minimoa',
+    met_new_pet: 'A rencontré un nouveau minimoa',
     waved: 'A salué un minimoa',
     challenge_done: 'A relevé le défi du jour',
     photo_sent: 'Photo partagée dans un lien',
@@ -104,8 +104,8 @@ const fr = {
     cuddle: { action: 'Câlin', done: 'Ronron.', refused: 'Il est déjà comblé.' },
   } as Record<string, { action: string; done: string; refused: string }>,
   shapeLabel: {
-    en_forme: { title: 'En pleine forme', text: 'Il sort, il croise du monde.' },
-    bof: { title: 'Un peu à plat', text: 'Il croise moins de monde. Occupe-toi de lui.' },
+    en_forme: { title: 'En pleine forme', text: 'Il sort, il voit du monde.' },
+    bof: { title: 'Un peu à plat', text: 'Un soin, une sortie, et ça repart.' },
     boude: { title: 'Il boude', text: 'Il te présente quand même quelqu’un chaque jour. Plus tu sors, plus il te présente de monde.' },
   } as Record<string, { title: string; text: string }>,
   slotLabel: { head: 'Tête', face: 'Visage', body: 'Tenue', toy: 'Objets' } as Record<string, string>,
@@ -229,7 +229,7 @@ export const labels = defineMessages({
     },
     shapeLabel: {
       en_forme: { title: 'Doing great', text: 'It goes out and meets people.' },
-      bof: { title: 'A bit flat', text: 'It meets fewer people. Take care of it.' },
+      bof: { title: 'A bit flat', text: 'A little care, an outing, and it bounces back.' },
       boude: { title: 'It’s sulking', text: 'It still introduces you to someone every day. The more you go out, the more people it introduces.' },
     },
     slotLabel: { head: 'Head', face: 'Face', body: 'Outfit', toy: 'Items' },
@@ -349,7 +349,7 @@ export const labels = defineMessages({
     },
     shapeLabel: {
       en_forme: { title: 'En plena forma', text: 'Sale y conoce gente.' },
-      bof: { title: 'Un poco apagado', text: 'Conoce a menos gente. Ocúpate de él.' },
+      bof: { title: 'Un poco apagado', text: 'Un mimo, una salida, y vuelve a estar bien.' },
       boude: { title: 'Está enfurruñado', text: 'Aun así te presenta a alguien cada día. Cuanto más sales, más gente te presenta.' },
     },
     slotLabel: { head: 'Cabeza', face: 'Cara', body: 'Ropa', toy: 'Objetos' },
@@ -469,7 +469,7 @@ export const labels = defineMessages({
     },
     shapeLabel: {
       en_forme: { title: 'Em plena forma', text: 'Ele sai e conhece gente.' },
-      bof: { title: 'Meio pra baixo', text: 'Ele conhece menos gente. Cuide dele.' },
+      bof: { title: 'Meio pra baixo', text: 'Um carinho, uma saída, e ele se anima de novo.' },
       boude: { title: 'Está emburrado', text: 'Mesmo assim, ele te apresenta alguém todo dia. Quanto mais você sai, mais gente ele apresenta.' },
     },
     slotLabel: { head: 'Cabeça', face: 'Rosto', body: 'Roupa', toy: 'Objetos' },
@@ -589,7 +589,7 @@ export const labels = defineMessages({
     },
     shapeLabel: {
       en_forme: { title: 'In topvorm', text: 'Hij gaat op pad en ontmoet mensen.' },
-      bof: { title: 'Een beetje futloos', text: 'Hij ontmoet minder mensen. Zorg voor hem.' },
+      bof: { title: 'Een beetje futloos', text: 'Wat zorg, een uitje, en hij knapt weer op.' },
       boude: { title: 'Hij mokt', text: 'Toch stelt hij je elke dag aan iemand voor. Hoe meer je eropuit gaat, hoe meer mensen hij voorstelt.' },
     },
     slotLabel: { head: 'Hoofd', face: 'Gezicht', body: 'Outfit', toy: 'Spullen' },

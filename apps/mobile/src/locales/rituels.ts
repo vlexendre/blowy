@@ -27,9 +27,9 @@ export const rituels = messages({
   fr: {
     /** Jauge vedette de l'accueil. */
     meter: {
-      label: 'Sociabilité',
+      label: 'Envie de sortir',
       suffix: ' %',
-      a11y: (n: number): string => `Sociabilité : ${n} sur 100`,
+      a11y: (n: number): string => `Envie de sortir : ${n} sur 100`,
     },
     /** Ce que dit le minimoa quand il a besoin de sortir (3 phrases, choisies selon son état). */
     speechOut: ['On sort ? Même un petit tour.', 'J’ai besoin d’air. Et de monde.', 'Dehors, il paraît qu’il y a des gens.'],
@@ -55,7 +55,7 @@ export const rituels = messages({
     },
     /** Carte plein écran du défi (V6-GDefi). */
     card: {
-      kicker: (day: string): string => `Défi du jour · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
+      kicker: (day: string, question = false): string => `${question ? 'Question du jour' : 'Défi du jour'} · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
       /** Titre : le type du défi en capitales, le dernier mot estompé. */
       title: (kindLabel: string): TitleSegment[] => {
         const words = kindLabel.toUpperCase().replace(/\.$/, '').split(' ');
@@ -67,7 +67,7 @@ export const rituels = messages({
       rewardItemText: (left: number): string => (left <= 1 ? 'Gagné ce soir' : `Plus que ${days(left)}`),
       rewardVision: 'Ta vision',
       rewardVisionText: (axis: string | null): string => (axis ? `« ${axis} » s’affine` : 'Elle s’affine'),
-      rewardSocial: 'Sociabilité',
+      rewardSocial: 'Envie de sortir',
       rewardSocialText: 'Elle remonte',
       accept: 'J’y vais',
       later: 'Plus tard',
@@ -134,7 +134,7 @@ export const rituels = messages({
     /** Habitudes (V6-GHabitudes). */
     habits: {
       back: 'Retour',
-      title: [{ text: 'SES ' }, { text: 'HABITUDES', dim: true }] as TitleSegment[],
+      title: [{ text: 'TES ' }, { text: 'HABITUDES', dim: true }] as TitleSegment[],
       count: (used: number, limit: number): string => `${used}/${limit}`,
       countA11y: (used: number, limit: number): string => `${used} sur ${limit}`,
       meta: (axis: string, streak: number, weekly: boolean, hour: number): string =>
@@ -147,7 +147,7 @@ export const rituels = messages({
       itemsLabel: (n: number): string => `${n} ×`,
       doneToday: 'Fait aujourd’hui',
       week: (done: number, target: number): string => `${done}/${target} cette semaine`,
-      prove: 'Montrer la preuve',
+      prove: 'Prendre en photo',
       settings: 'Régler',
       settingsA11y: (label: string): string => `Régler l’habitude ${label}`,
       rhythm: 'À quel rythme ?',
@@ -258,7 +258,7 @@ export const rituels = messages({
       detailedAxes: 'Tes axes sur 4 semaines',
       detailedLinks: 'Chaque lien',
       all: 'Tous tes bilans',
-      listTitle: [{ text: 'SES ' }, { text: 'BILANS', dim: true }] as TitleSegment[],
+      listTitle: [{ text: 'TES ' }, { text: 'SEMAINES', dim: true }] as TitleSegment[],
       row: (weekStart: string): string => `Semaine du ${formatDate(weekStart, { day: 'numeric', month: 'long' })}`,
       unread: 'Nouveau',
       empty: [{ text: 'PAS ENCORE\n' }, { text: 'DE BILAN.', dim: true }] as TitleSegment[],
@@ -267,7 +267,7 @@ export const rituels = messages({
       loadError: 'Le bilan n’a pas chargé.',
       retry: 'Réessayer',
       /** Carte de l'accueil quand un bilan n'est pas lu. */
-      homeTitle: 'Le bilan de la semaine est là',
+      homeTitle: 'Ta semaine est là',
       homeText: (pet: string): string => `${pet} te raconte ta semaine.`,
     },
     /** Accueil : lignes vers les rituels. */
@@ -275,7 +275,7 @@ export const rituels = messages({
       /** Compte sans test de vision : l'entrée vers `/vision-test`. */
       visionTestTitle: 'Passe ton test de vision',
       visionTestText: '2 minutes. Sans lui, pas de rencontres.',
-      proofTitle: (pet: string): string => `${pet} demande une preuve`,
+      proofTitle: (pet: string): string => `${pet} veut voir une photo`,
     },
     /** Son caractère, rééquilibré (§15). */
     character: {
@@ -301,9 +301,9 @@ export const rituels = messages({
   },
   en: {
     meter: {
-      label: 'Sociability',
+      label: 'Up for going out',
       suffix: '%',
-      a11y: (n: number): string => `Sociability: ${n} out of 100`,
+      a11y: (n: number): string => `Up for going out: ${n} out of 100`,
     },
     speechOut: ['Shall we go out? Even just a quick walk.', 'I need air. And people.', 'Apparently there are people outside.'],
     speechOutDone: 'Fresh air feels good.',
@@ -322,14 +322,14 @@ export const rituels = messages({
       retry: 'Try again',
     },
     card: {
-      kicker: (day: string): string => `Daily challenge · ${formatDate(day, { weekday: 'long', month: 'long', day: 'numeric' })}`,
+      kicker: (day: string, question = false): string => `${question ? 'Question of the day' : 'Daily challenge'} · ${formatDate(day, { weekday: 'long', month: 'long', day: 'numeric' })}`,
       title: lastWordDim,
       rewardStreak: (n: number): string => `Streak ${n}`,
       rewardStreakText: 'One more day',
       rewardItemText: (left: number): string => (left <= 1 ? 'Earned tonight' : `Only ${daysEn(left)} to go`),
       rewardVision: 'Your vision',
       rewardVisionText: (axis: string | null): string => (axis ? `“${axis}” gets sharper` : 'It gets sharper'),
-      rewardSocial: 'Sociability',
+      rewardSocial: 'Up for going out',
       rewardSocialText: 'It goes back up',
       accept: 'I’m in',
       later: 'Later',
@@ -391,7 +391,7 @@ export const rituels = messages({
     },
     habits: {
       back: 'Back',
-      title: [{ text: 'ITS ' }, { text: 'HABITS', dim: true }],
+      title: [{ text: 'YOUR ' }, { text: 'HABITS', dim: true }],
       count: (used: number, limit: number): string => `${used}/${limit}`,
       countA11y: (used: number, limit: number): string => `${used} of ${limit}`,
       meta: (axis: string, streak: number, weekly: boolean, hour: number): string =>
@@ -404,7 +404,7 @@ export const rituels = messages({
       itemsLabel: (n: number): string => `${n}×`,
       doneToday: 'Done today',
       week: (done: number, target: number): string => `${done}/${target} this week`,
-      prove: 'Show the proof',
+      prove: 'Take a photo',
       settings: 'Adjust',
       settingsA11y: (label: string): string => `Adjust the habit ${label}`,
       rhythm: 'How often?',
@@ -519,7 +519,7 @@ export const rituels = messages({
     home: {
       visionTestTitle: 'Take your vision test',
       visionTestText: '2 minutes. Without it, no encounters.',
-      proofTitle: (pet: string): string => `${pet} is asking for proof`,
+      proofTitle: (pet: string): string => `${pet} wants to see a photo`,
     },
     character: {
       vision: 'Its vision',
@@ -543,9 +543,9 @@ export const rituels = messages({
   },
   es: {
     meter: {
-      label: 'Sociabilidad',
+      label: 'Ganas de salir',
       suffix: ' %',
-      a11y: (n: number): string => `Sociabilidad: ${n} de 100`,
+      a11y: (n: number): string => `Ganas de salir: ${n} de 100`,
     },
     speechOut: ['¿Salimos? Aunque sea una vuelta.', 'Necesito aire. Y gente.', 'Dicen que ahí fuera hay gente.'],
     speechOutDone: 'Qué bien sienta el aire fresco.',
@@ -564,14 +564,14 @@ export const rituels = messages({
       retry: 'Reintentar',
     },
     card: {
-      kicker: (day: string): string => `Reto del día · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
+      kicker: (day: string, question = false): string => `${question ? 'Pregunta del día' : 'Reto del día'} · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
       title: lastWordDim,
       rewardStreak: (n: number): string => `Racha ${n}`,
       rewardStreakText: 'Un día más',
       rewardItemText: (left: number): string => (left <= 1 ? 'Lo ganas esta noche' : `Solo faltan ${daysEs(left)}`),
       rewardVision: 'Tu visión',
       rewardVisionText: (axis: string | null): string => (axis ? `«${axis}» se afina` : 'Se afina'),
-      rewardSocial: 'Sociabilidad',
+      rewardSocial: 'Ganas de salir',
       rewardSocialText: 'Vuelve a subir',
       accept: '¡Vamos!',
       later: 'Más tarde',
@@ -633,7 +633,7 @@ export const rituels = messages({
     },
     habits: {
       back: 'Atrás',
-      title: [{ text: 'SUS ' }, { text: 'HÁBITOS', dim: true }],
+      title: [{ text: 'TUS ' }, { text: 'HÁBITOS', dim: true }],
       count: (used: number, limit: number): string => `${used}/${limit}`,
       countA11y: (used: number, limit: number): string => `${used} de ${limit}`,
       meta: (axis: string, streak: number, weekly: boolean, hour: number): string =>
@@ -646,7 +646,7 @@ export const rituels = messages({
       itemsLabel: (n: number): string => `${n} ×`,
       doneToday: 'Hecho hoy',
       week: (done: number, target: number): string => `${done}/${target} esta semana`,
-      prove: 'Mostrar la prueba',
+      prove: 'Hacer la foto',
       settings: 'Ajustar',
       settingsA11y: (label: string): string => `Ajustar el hábito ${label}`,
       rhythm: '¿Con qué frecuencia?',
@@ -761,7 +761,7 @@ export const rituels = messages({
     home: {
       visionTestTitle: 'Haz tu test de visión',
       visionTestText: '2 minutos. Sin él, no hay encuentros.',
-      proofTitle: (pet: string): string => `${pet} pide una prueba`,
+      proofTitle: (pet: string): string => `${pet} quiere ver una foto`,
     },
     character: {
       vision: 'Su visión',
@@ -785,9 +785,9 @@ export const rituels = messages({
   },
   pt: {
     meter: {
-      label: 'Sociabilidade',
+      label: 'Vontade de sair',
       suffix: '%',
-      a11y: (n: number): string => `Sociabilidade: ${n} de 100`,
+      a11y: (n: number): string => `Vontade de sair: ${n} de 100`,
     },
     speechOut: ['Vamos sair? Nem que seja uma voltinha.', 'Preciso de ar. E de gente.', 'Dizem que lá fora tem gente.'],
     speechOutDone: 'Ar fresco faz bem.',
@@ -806,14 +806,14 @@ export const rituels = messages({
       retry: 'Tentar de novo',
     },
     card: {
-      kicker: (day: string): string => `Desafio do dia · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
+      kicker: (day: string, question = false): string => `${question ? 'Pergunta do dia' : 'Desafio do dia'} · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
       title: lastWordDim,
       rewardStreak: (n: number): string => `Sequência ${n}`,
       rewardStreakText: 'Mais um dia',
       rewardItemText: (left: number): string => (left <= 1 ? 'Ganho hoje à noite' : `Faltam só ${daysPt(left)}`),
       rewardVision: 'Sua visão',
       rewardVisionText: (axis: string | null): string => (axis ? `“${axis}” se refina` : 'Ela se refina'),
-      rewardSocial: 'Sociabilidade',
+      rewardSocial: 'Vontade de sair',
       rewardSocialText: 'Ela volta a subir',
       accept: 'Bora',
       later: 'Mais tarde',
@@ -875,7 +875,7 @@ export const rituels = messages({
     },
     habits: {
       back: 'Voltar',
-      title: [{ text: 'OS ' }, { text: 'HÁBITOS', dim: true }],
+      title: [{ text: 'SEUS ' }, { text: 'HÁBITOS', dim: true }],
       count: (used: number, limit: number): string => `${used}/${limit}`,
       countA11y: (used: number, limit: number): string => `${used} de ${limit}`,
       meta: (axis: string, streak: number, weekly: boolean, hour: number): string =>
@@ -888,7 +888,7 @@ export const rituels = messages({
       itemsLabel: (n: number): string => `${n}×`,
       doneToday: 'Feito hoje',
       week: (done: number, target: number): string => `${done}/${target} nesta semana`,
-      prove: 'Mostrar a prova',
+      prove: 'Tirar a foto',
       settings: 'Ajustar',
       settingsA11y: (label: string): string => `Ajustar o hábito ${label}`,
       rhythm: 'Com que frequência?',
@@ -1003,7 +1003,7 @@ export const rituels = messages({
     home: {
       visionTestTitle: 'Faça seu teste de visão',
       visionTestText: '2 minutos. Sem ele, nada de encontros.',
-      proofTitle: (pet: string): string => `${pet} está pedindo uma prova`,
+      proofTitle: (pet: string): string => `${pet} quer ver uma foto`,
     },
     character: {
       vision: 'A visão dele',
@@ -1027,9 +1027,9 @@ export const rituels = messages({
   },
   nl: {
     meter: {
-      label: 'Sociale energie',
+      label: 'Zin om eropuit te gaan',
       suffix: '%',
-      a11y: (n: number): string => `Sociale energie: ${n} van 100`,
+      a11y: (n: number): string => `Zin om eropuit te gaan: ${n} van 100`,
     },
     speechOut: ['Gaan we naar buiten? Al is het maar een rondje.', 'Ik heb lucht nodig. En mensen.', 'Buiten schijnen mensen te zijn.'],
     speechOutDone: 'Frisse lucht, dat doet goed.',
@@ -1048,14 +1048,14 @@ export const rituels = messages({
       retry: 'Opnieuw',
     },
     card: {
-      kicker: (day: string): string => `Uitdaging van de dag · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
+      kicker: (day: string, question = false): string => `${question ? 'Vraag van de dag' : 'Uitdaging van de dag'} · ${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}`,
       title: lastWordDim,
       rewardStreak: (n: number): string => `Reeks ${n}`,
       rewardStreakText: 'Een dag erbij',
       rewardItemText: (left: number): string => (left <= 1 ? 'Vanavond binnen' : `Nog maar ${daysNl(left)}`),
       rewardVision: 'Jouw visie',
       rewardVisionText: (axis: string | null): string => (axis ? `„${axis}” wordt scherper` : 'Ze wordt scherper'),
-      rewardSocial: 'Sociale energie',
+      rewardSocial: 'Zin om eropuit te gaan',
       rewardSocialText: 'Die stijgt weer',
       accept: 'Ik ga ervoor',
       later: 'Later',
@@ -1130,7 +1130,7 @@ export const rituels = messages({
       itemsLabel: (n: number): string => `${n}×`,
       doneToday: 'Vandaag gedaan',
       week: (done: number, target: number): string => `${done}/${target} deze week`,
-      prove: 'Bewijs laten zien',
+      prove: 'Foto maken',
       settings: 'Aanpassen',
       settingsA11y: (label: string): string => `Gewoonte ${label} aanpassen`,
       rhythm: 'Hoe vaak?',
@@ -1245,7 +1245,7 @@ export const rituels = messages({
     home: {
       visionTestTitle: 'Doe je visietest',
       visionTestText: '2 minuten. Zonder test geen ontmoetingen.',
-      proofTitle: (pet: string): string => `${pet} vraagt om bewijs`,
+      proofTitle: (pet: string): string => `${pet} wil een foto zien`,
     },
     character: {
       vision: 'Zijn visie',
