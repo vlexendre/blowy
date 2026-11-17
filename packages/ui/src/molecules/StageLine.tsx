@@ -6,7 +6,7 @@ import { useReveal } from '../motion/reveal';
 import type { TitleContent } from '../types';
 
 export interface StageLineProps {
-  /** Grande ligne centrée (titre Anton, partie estompée possible). */
+  /** Grande ligne centrée (Titre, partie estompée possible). */
   text: TitleContent;
   /** Corps. Défaut 46. */
   size?: number;

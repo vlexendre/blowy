@@ -53,10 +53,10 @@ const fr = {
     cta: (i: WelcomeInput) => `Voir ${i.petName}`,
   },
   wave: {
-    subject: (i: WaveInput) => `${i.petName} a croisé le minimoa de ${i.fromName}`,
+    subject: (i: WaveInput) => `${i.fromName} te fait signe`,
     title: (i: WaveInput) => `${i.fromPetName} est passé dire bonjour.`,
     paragraphs: (i: WaveInput) => [
-      `Salut ${i.displayName}, ${i.petName} a croisé ${i.fromPetName}, le minimoa de ${i.fromName}.`,
+      `Salut ${i.displayName}, ${i.fromName} te fait signe : son minimoa, ${i.fromPetName}, est venu voir ${i.petName}.`,
       'Si tu acceptes, vos minimoas se rencontrent et vous pouvez vous écrire.',
     ],
     cta: 'Voir la rencontre',
@@ -87,10 +87,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `See ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} met ${i.fromName}’s minimoa`,
+      subject: (i: WaveInput) => `${i.fromName} is waving at you`,
       title: (i: WaveInput) => `${i.fromPetName} stopped by to say hi.`,
       paragraphs: (i: WaveInput) => [
-        `Hi ${i.displayName}, ${i.petName} met ${i.fromPetName}, ${i.fromName}’s minimoa.`,
+        `Hi ${i.displayName}, ${i.fromName} is waving at you: their minimoa, ${i.fromPetName}, came to see ${i.petName}.`,
         'If you accept, your minimoas meet and you can write to each other.',
       ],
       cta: 'See the encounter',
@@ -118,10 +118,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `Ver a ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} se ha cruzado con el minimoa de ${i.fromName}`,
+      subject: (i: WaveInput) => `${i.fromName} te saluda`,
       title: (i: WaveInput) => `${i.fromPetName} ha pasado a saludar.`,
       paragraphs: (i: WaveInput) => [
-        `Hola, ${i.displayName}: ${i.petName} se ha cruzado con ${i.fromPetName}, el minimoa de ${i.fromName}.`,
+        `Hola, ${i.displayName}: ${i.fromName} te saluda. Su minimoa, ${i.fromPetName}, vino a ver a ${i.petName}.`,
         'Si aceptas, sus minimoas se conocen y podrás escribirle.',
       ],
       cta: 'Ver el encuentro',
@@ -149,10 +149,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `Ver ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} cruzou com o minimoa de ${i.fromName}`,
+      subject: (i: WaveInput) => `${i.fromName} está acenando para você`,
       title: (i: WaveInput) => `${i.fromPetName} passou para dar um oi.`,
       paragraphs: (i: WaveInput) => [
-        `Oi, ${i.displayName}! ${i.petName} cruzou com ${i.fromPetName}, o minimoa de ${i.fromName}.`,
+        `Oi, ${i.displayName}! ${i.fromName} está acenando para você: o minimoa dela, ${i.fromPetName}, veio ver ${i.petName}.`,
         'Se você aceitar, os minimoas de vocês se conhecem e vocês podem conversar.',
       ],
       cta: 'Ver o encontro',
@@ -180,10 +180,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `Bekijk ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} kwam de minimoa van ${i.fromName} tegen`,
+      subject: (i: WaveInput) => `${i.fromName} zwaait naar je`,
       title: (i: WaveInput) => `${i.fromPetName} kwam even hallo zeggen.`,
       paragraphs: (i: WaveInput) => [
-        `Hoi ${i.displayName}, ${i.petName} kwam ${i.fromPetName} tegen, de minimoa van ${i.fromName}.`,
+        `Hoi ${i.displayName}, ${i.fromName} zwaait naar je: diens minimoa, ${i.fromPetName}, kwam bij ${i.petName} langs.`,
         'Als je accepteert, ontmoeten jullie minimoas elkaar en kunnen jullie elkaar schrijven.',
       ],
       cta: 'Bekijk de ontmoeting',

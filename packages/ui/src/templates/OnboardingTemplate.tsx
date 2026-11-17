@@ -42,7 +42,7 @@ export interface OnboardingTemplateProps {
   backLabel?: string;
   /** Petite ligne jaune au-dessus du titre (`.lbl` jaune). */
   kicker?: string;
-  /** Titre Anton avec sa partie estompée (« TON PET, / TON VIBE »). */
+  /** Titre avec sa partie estompée (« TON PET, / TON VIBE »). */
   title?: TitleContent;
   /** Corps du titre. Défaut 60 (V6-Craft). */
   titleSize?: number;

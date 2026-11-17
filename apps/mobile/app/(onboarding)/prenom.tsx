@@ -1,8 +1,10 @@
 /**
- * « On t'appelle comment ? » : un grand champ centré ; en dessous, « Un code ? » (facultatif) : invitation, groupe,
- * créateur ou « 3 mots ». L'API dit ce qu'il est ; un code inconnu n'empêche rien (docs/VIRALITE.md).
+ * « On t'appelle comment ? » : un grand champ centré ; dessous, « Tu es… » en quatre puces (facultatif, vu par toi
+ * seul : l'ancien écran « sexe », fondu ici) ; puis « Un code ? » (facultatif) : invitation, groupe, créateur ou
+ * « 3 mots ». L'API dit ce qu'il est ; un code inconnu n'empêche rien (docs/VIRALITE.md).
  */
-import { OnboardingTemplate, OptionalField, TextField } from '@blowy/ui';
+import { GENDERS } from '@blowy/domain';
+import { ChipChoice, OnboardingTemplate, OptionalField, TextField } from '@blowy/ui';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 
@@ -30,6 +32,7 @@ function PrenomStep() {
   const petName = useDraft((d) => d.petName);
   const name = useDraft((d) => d.displayName);
   const inviteCode = useDraft((d) => d.inviteCode);
+  const gender = useDraft((d) => d.gender);
   const set = useDraft((d) => d.set);
   // Revenu de la préparation : prénom refusé par le filtre (`?fix=1&reason=…`). La raison reste affichée tant que le
   // prénom n'a pas changé ; valider relance la création.
@@ -55,7 +58,7 @@ function PrenomStep() {
     if (!name.trim() || refusal) return;
     set({ displayName: name.trim() });
     if (fix) router.replace('/(onboarding)/preparation');
-    else router.push('/(onboarding)/sexe');
+    else router.push('/(onboarding)/naissance');
   };
   return (
     <ScreenMotion>
@@ -84,6 +87,14 @@ function PrenomStep() {
           returnKeyType="next"
           onSubmitEditing={next}
           accessibilityLabel={t.nameLabel}
+        />
+        <ChipChoice
+          center
+          label={onboarding.sexe.ask}
+          options={GENDERS.map((g) => ({ key: g, label: onboarding.sexe.options[g] }))}
+          selected={gender}
+          onSelect={(g) => set({ gender: g })}
+          note={onboarding.sexe.note}
         />
         <OptionalField toggleLabel={t.inviteToggle} open={showInvite} onOpen={() => setShowInvite(true)}>
           <TextField

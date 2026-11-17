@@ -56,7 +56,7 @@ export function EncounterOpen({ children, onPress, accessibilityLabel }: { child
 
 export interface EncounterHeadProps {
   person: PersonLook;
-  /** Nom en Anton (le pet) ou phrase en gras (« Léa veut te rencontrer »). */
+  /** Nom en capitales (police des titres) (le pet) ou phrase en gras (« Léa te fait signe »). */
   name: string;
   nameStyle?: 'display' | 'text';
   badge?: ReactNode;

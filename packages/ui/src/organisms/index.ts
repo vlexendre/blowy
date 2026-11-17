@@ -80,3 +80,4 @@ export { GroupInviteRow, type GroupInviteRowProps } from './GroupInviteRow';
 export { SharedHabitsCard, type SharedHabitsCardProps, type SharedHabitSide } from './SharedHabitsCard';
 export { TogetherCard, type TogetherCardProps } from './TogetherCard';
 export { ShareCard, type ShareCardProps } from './ShareCard';
+export { PeopleCard, type PeopleCardProps } from './PeopleCard';

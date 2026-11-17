@@ -4,6 +4,7 @@
  * habitudes, son évolution, ses bilans, ses souvenirs (tuiles) · son nom (une fois tous les 60 jours, libre avec Minimoa+).
  */
 import { gaugeLabel } from '@/locales/content';
+import { onboarding } from '@/locales/onboarding';
 import { cleanPetName, dayOf, GAUGE_KEYS, nextRenameOn, PET_NAME_MAX, RENAME_COOLDOWN_DAYS } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
@@ -159,7 +160,7 @@ export default function CharacterScreen() {
                 title={c.vision}
                 hint={c.visionHint}
                 axes={v.axes.map((a) => ({
-                  name: a.name,
+                  name: onboarding.taVision.axisQuestion(a.name),
                   value: a.value,
                   confidence: a.confidence,
                   lean: a.side === 'mid' ? c.between : lowerFirst(a.side === 'high' ? a.highLabel : a.lowLabel),

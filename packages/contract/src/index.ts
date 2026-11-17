@@ -319,7 +319,7 @@ export type Incoming = z.infer<typeof IncomingZ>;
 export const EncountersZ = z.object({
   incoming: z.array(IncomingZ),
   suggestions: z.array(SuggestionZ),
-  /** Forme du pet : un pet qui boude ne croise plus personne (suggestions vides). */
+  /** Forme du minimoa (humeur) : elle ne bloque plus les présentations (au moins une par jour, même s'il boude). */
   petShape: ShapeZ,
 });
 export type Encounters = z.infer<typeof EncountersZ>;

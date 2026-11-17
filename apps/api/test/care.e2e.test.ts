@@ -176,7 +176,7 @@ describe('un pet qui boude ne sort plus', () => {
     expect(await apiError(carol.api.pet.care('play'))).toEqual({ code: 'already_done', message: careLabel.play?.refused });
   });
 
-  it('pas de suggestions, coucou refusé, coucous reçus toujours visibles et acceptables ; repart après des soins', async () => {
+  it('il boude mais présente quand même, salue quand même ; coucous reçus visibles et acceptables ; repart après des soins', async () => {
     const dana = world.client();
     const eli = world.client();
     const fred = world.client();
@@ -188,9 +188,9 @@ describe('un pet qui boude ne sort plus', () => {
 
     const sulking = await dana.api.encounters.list();
     expect(sulking.petShape).toBe('boude');
-    expect(sulking.suggestions).toEqual([]);
+    // Les soins ne bloquent pas les gens : au moins une présentation par jour, même quand il boude.
+    expect(sulking.suggestions.length).toBeGreaterThanOrEqual(1);
     expect(sulking.incoming.map((i) => i.from.displayName)).toEqual(['Fred']);
-    expect(await apiError(dana.api.encounters.wave(eli.id))).toEqual({ code: 'forbidden', message: 'Ton minimoa boude. Occupe-toi de lui avant de saluer.' });
 
     // Vu par les autres : un pet qui boude a l'air triste.
     const seen = (await fred.api.encounters.list()).suggestions.find((s) => s.user.id === eli.id);
@@ -204,9 +204,9 @@ describe('un pet qui boude ne sort plus', () => {
     const cuddled = await dana.api.pet.care('cuddle');
     // Sociabilité : 35 après 30 h, +12 pour la rencontre acceptée avec Fred.
     expect(cuddled.pet.needs).toEqual({ sociability: 47, hunger: 40, energy: 50, mood: 20 });
+    await dana.api.encounters.wave(eli.id); // saluer, même sans être en forme : +4 de sociabilité
     expect(cuddled.pet.shape).toBe('bof');
     expect((await dana.api.encounters.list()).petShape).toBe('bof');
-    await dana.api.encounters.wave(eli.id); // saluer : +4 de sociabilité
 
     const played = await dana.api.pet.care('play');
     expect(played.pet).toMatchObject({ needs: { sociability: 51, hunger: 40, energy: 40, mood: 50 }, wellbeing: 48, shape: 'bof' });
@@ -216,7 +216,7 @@ describe('un pet qui boude ne sort plus', () => {
     expect((await dana.api.pet.get()).pet).toMatchObject({ wellbeing: 72, shape: 'en_forme' });
   });
 
-  it('le quota de suggestions dépend de la forme', async () => {
+  it('le quota de suggestions dépend de la sociabilité seule, pas des soins', async () => {
     const people: Person[] = [];
     for (let i = 0; i < 9; i++) {
       const p = world.client();
@@ -226,9 +226,14 @@ describe('un pet qui boude ne sort plus', () => {
     const [first] = people;
     if (!first) throw new Error('personne');
     expect((await first.api.encounters.list()).suggestions.length).toBeGreaterThan(6);
+    // 10 h plus tard : sociabilité 65, faim basse ; il est « bof » mais présente toujours autant.
     world.clock.advanceHours(10);
     const tired = await first.api.encounters.list();
     expect(tired.petShape).toBe('bof');
-    expect(tired.suggestions).toHaveLength(6);
+    expect(tired.suggestions.length).toBeGreaterThan(6);
+    // Sans sortir pendant 2 jours : sociabilité basse, quota réduit, jamais nul.
+    world.clock.advanceHours(40);
+    const low = await first.api.encounters.list();
+    expect(low.suggestions).toHaveLength(3);
   });
 });

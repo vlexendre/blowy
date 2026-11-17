@@ -2,7 +2,9 @@
  * S'occuper de son minimoa. Le besoin principal est la **sociabilité** (V7) : elle monte quand la personne
  * sort, voit du monde, salue, écrit, s'écrit chaque jour avec un lien ou tient une habitude tournée vers les autres,
  * et descend seule. Trois petits besoins (faim, énergie, humeur) se comblent avec les quatre gestes.
- * Tous vont de 0 (à plat) à 100 (comblé). Un minimoa négligé boude — il ne meurt jamais — et ne fait plus de rencontres.
+ * Tous vont de 0 (à plat) à 100 (comblé). Un minimoa négligé boude — il ne meurt jamais. Les soins jouent sur son
+ * humeur et son caractère, jamais sur l'accès aux gens : le nombre de présentations ne dépend que de la sociabilité
+ * (« plus tu sors, plus il te présente de monde »), avec au moins une présentation par jour.
  * Moteur pur : le temps écoulé est passé en paramètre, rattrapé à la lecture.
  */
 import type { PetEventKind } from './gauges';
@@ -96,8 +98,22 @@ export const shapeOf = (needs: Needs): Shape => {
   return w >= 60 ? 'en_forme' : w >= 30 ? 'bof' : 'boude';
 };
 
-/** Conséquence sur les rencontres : un pet en forme croise plus de monde, un pet qui boude ne sort plus. */
-export const ENCOUNTER_QUOTA: Record<Shape, number> = { en_forme: 20, bof: 6, boude: 0 };
+/**
+ * Présentations du jour, selon la sociabilité seule (sortir, voir du monde, écrire, tenir une habitude avec d'autres).
+ * Les petits besoins (faim, énergie, humeur) n'y jouent pas : un minimoa mal nourri ou qui boude présente quand même.
+ */
+export const ENCOUNTER_QUOTA = { high: 20, mid: 8, low: 3 } as const;
+/** Plancher : au moins une présentation par jour quand quelqu'un de compatible existe, quoi qu'il arrive au minimoa. */
+export const MIN_DAILY_INTRODUCTIONS = 1;
+/** Au-dessus de ce niveau de sociabilité, le quota est plein. */
+export const SOCIABILITY_HIGH = 60;
+
+/** Nombre de personnes que le minimoa peut présenter aujourd'hui (avant le bonus de Minimoa+). */
+export function encounterQuota(needs: Pick<Needs, 'sociability'>): number {
+  const s = needs.sociability;
+  const q = s >= SOCIABILITY_HIGH ? ENCOUNTER_QUOTA.high : s >= SOCIABILITY_LOW ? ENCOUNTER_QUOTA.mid : ENCOUNTER_QUOTA.low;
+  return Math.max(MIN_DAILY_INTRODUCTIONS, q);
+}
 
 /** Sous ce seuil, le minimoa « a besoin de sortir » (notification, une par jour au plus). */
 export const SOCIABILITY_LOW = 35;

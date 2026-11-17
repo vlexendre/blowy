@@ -147,7 +147,7 @@ export default function DailyChallengeScreen() {
     <ChallengeStage
       pet={{ species: p.species, outfit: p.outfit, name: p.name, id: p.id }}
       streak={streak.current}
-      kicker={t.kicker(c.day)}
+      kicker={t.kicker(c.day, c.kind === 'question')}
       title={t.title(c.kindLabel)}
       text={c.text}
       rewards={rewards}

@@ -5,9 +5,19 @@
  * À partir de la création, c'est le minimoa qui parle : il pose les questions (première personne, tutoiement).
  */
 import { visionText } from '@blowy/content';
+import type { VisionAxis } from '@blowy/domain';
 import { liveMessages, messages } from './runtime';
 
 const up = (s: string): string => s.toUpperCase();
+
+/** « a, b et c » (et les équivalents des autres langues). */
+const list = (and: string, comma = ', ') => (items: readonly string[]): string =>
+  items.length <= 1 ? (items[0] ?? '') : `${items.slice(0, -1).join(comma)}${and}${items[items.length - 1]}`;
+const listFr = list(' et ');
+const listEn = list(' and ');
+const listEs = list(' y ');
+const listPt = list(' e ');
+const listNl = list(' en ');
 
 export const onboarding = messages({
   fr: {
@@ -17,25 +27,14 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Pas de swipe · pas de pub',
-      title: [{ text: 'ÉLÈVE\nTON MINIMOA.\n' }, { text: 'IL TE PRÉSENTE\nDU MONDE.', dim: true }],
+      title: [{ text: 'DES GENS\nPRÈS DE CHEZ TOI.\n' }, { text: 'TON MINIMOA\nTE LES PRÉSENTE.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'J’ai croisé quelqu’un 👀' },
+        { from: 'pet', text: 'J’ai trouvé quelqu’un pour toi 👀' },
         { from: 'me', text: 'Présente-nous !' },
       ],
       create: 'Créer mon minimoa',
       login: 'J’ai déjà un compte',
-    },
-    entree: {
-      /** Une ligne par minimoa, dans l'ordre où ils sortent du bas de l'écran (nino, suzie, gaston, pia). */
-      lines: [
-        [{ text: 'PSST.\n' }, { text: 'SALUT.', dim: true }],
-        [{ text: 'ON EST\n' }, { text: 'QUATRE.', dim: true }],
-        [{ text: 'CHACUN CHERCHE\n' }, { text: 'SON HUMAIN.', dim: true }],
-        [{ text: 'LEQUEL\n' }, { text: 'SERA LE TIEN ?', dim: true }],
-      ],
-      skip: 'Passer',
-      tap: 'Touche pour la suite',
     },
     craft: {
       title: [{ text: 'TON MINIMOA,\n' }, { text: 'TOI EN PETIT.', dim: true }],
@@ -53,7 +52,7 @@ export const onboarding = messages({
       note: 'Réponds pour toi, pas pour faire bien.',
       /** Sous les deux cartes. */
       hint: 'Touche la carte qui te ressemble. Pas de bonne réponse.',
-      meterTitle: (axis: string) => `Ta vision · ${axis}`,
+      meterTitle: (axis: string) => `${axis} ?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis} : ${pole}`,
       previous: 'Situation précédente',
@@ -62,15 +61,32 @@ export const onboarding = messages({
     },
     /** Ta vision, pour l'instant : le résultat du test. */
     taVision: {
-      host: 'Voilà ta vision, pour l’instant. Je ne te présenterai que des gens qui vont avec.',
-      highlight: 'ta vision',
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name} ?`,
+      host: 'Voilà comment tu vois la vie, pour l’instant.',
+      highlight: 'comment tu vois la vie',
       chips: (n: number) => [`${n} situations`, '2 minutes'] as const,
-      sureness: { sure: 'sûr', fairly: 'assez sûr', refine: 'à affiner' },
+      sureness: { sure: 'net', fairly: 'assez net', refine: 'encore flou' },
       axisA11y: (name: string, line: string, sureness: string) => `${name} : ${line}, ${sureness}`,
       between: 'entre les deux',
       lean: (pole: string) => `plutôt ${pole}`,
       promise: (pet: string) => `${pet} ne te présentera que des gens compatibles.`,
-      cta: 'C’est moi, ça',
+      cta: 'Montre-moi qui me ressemble',
+      /** La phrase de synthèse, en tête du résultat : les traits les plus marqués (2 ou 3), sans genre supposé. */
+      summary: {
+        lead: (traits: readonly string[]): string => `Tu es plutôt quelqu’un qui ${listFr(traits)}.`,
+        even: 'Chez toi, rien d’extrême : un peu de tout.',
+        traits: {
+          foyer: { low: 'tient à sa liberté', high: 'met la famille en premier' },
+          ancrage: { low: 'tient à son coin', high: 'a envie d’ailleurs' },
+          elan: { low: 'garde du temps pour soi', high: 'a de grands projets' },
+          rythme: { low: 'aime le calme', high: 'aime quand ça bouge' },
+          cap: { low: 'vit au jour le jour', high: 'aime prévoir' },
+        } as Record<VisionAxis, { low: string; high: string }>,
+        then: (pet: string) => `${pet} te présentera des gens qui vont avec. Le reste se précise avec tes réponses du jour.`,
+        detail: 'Le détail',
+      },
+      note: 'Indicatif : ça se précise avec tes réponses du jour.',
     },
     toi: {
       nameHost: 'On t’appelle comment ?',
@@ -92,6 +108,8 @@ export const onboarding = messages({
       cta: 'Continuer',
     },
     sexe: {
+      /** Sur l'écran du prénom, au-dessus des quatre puces (facultatif). */
+      ask: 'Tu es…',
       host: (name: string) => `Salut, ${name}. Tu es…`,
       options: {
         femme: 'Une femme',
@@ -116,43 +134,6 @@ export const onboarding = messages({
       tooYoungText: (pet: string) => `Minimoa fait se rencontrer des adultes. ${pet} t’attendra, promis.`,
       tooYoungNote: 'Ton minimoa n’a pas été créé, et on n’a rien gardé sur toi.',
       tooYoungAction: 'Fermer',
-    },
-    localisation: {
-      host: 'Je peux voir dans quel coin tu es, quand l’app est ouverte ?',
-      highlight: 'dans quel coin',
-      radius: '1,5 km autour de toi',
-      mapA11y: 'Ta zone : un cercle d’environ 1,5 km autour de toi, avec des minimoas compatibles.',
-      /** Une seule ligne : le bénéfice et la garantie (le détail est dans Moi › Réglages › Ma position). */
-      line: (pet: string) => `${pet} te présente du monde autour de toi. Jamais ta position exacte.`,
-      refuseNote: 'Sinon, tu choisiras ta ville à la main.',
-      denied: 'D’accord. Choisis ta ville dans Rencontres. Activable plus tard dans Moi › Réglages.',
-      cta: 'Continuer',
-    },
-    notifications: {
-      host: 'Je te préviens quand quelqu’un te fait signe ?',
-      highlight: 'quelqu’un te fait signe',
-      app: 'Minimoa',
-      previewA11y: 'Exemples de notifications de ton minimoa.',
-      items: (pet: string) => [
-        { title: 'Quelqu’un te fait signe', body: `${pet} a croisé un minimoa compatible.`, time: 'maintenant' },
-        { title: 'Ton défi du jour', body: 'Une question, deux minutes.', time: '8 h 30' },
-      ],
-      line: '3 par jour au plus hors messages, jamais la nuit.',
-      refuseNote: 'Sinon, les nouvelles t’attendront dans l’app.',
-      denied: 'D’accord. Activable plus tard dans Moi.',
-      cta: 'Continuer',
-    },
-    promesse: {
-      // La vraie règle (packages/domain/src/care.ts) : un minimoa négligé boude et ne fait plus de rencontres.
-      kicker: (pet: string) => `${pet} te demande une seule chose`,
-      title: [{ text: 'VIENS ME VOIR\n' }, { text: 'CHAQUE JOUR.', dim: true }],
-      text: 'Plus tu sors, plus il rencontre. Oublié, il boude et ne présente plus personne.',
-      hold: 'Promis',
-      held: 'Promis.',
-      holdHint: 'Reste appuyé',
-      holdA11y: 'Reste appuyé, ou touche une fois',
-      after: (pet: string) => `${pet} t’attend demain. Et après-demain.`,
-      cta: 'Continuer',
     },
     connexion: {
       title: (pet: string) => [{ text: 'ON GARDE\n' }, { text: `${up(pet)} ?`, dim: true }],
@@ -213,12 +194,12 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'TOUT EST PRÊT,\n' }, { text: `${up(name)} !`, dim: true }],
-      text: (pet: string) => `${pet} est arrivé. Il a déjà hâte de te présenter du monde.`,
+      text: (pet: string) => `${pet} est arrivé. Plus tu sors, plus il te présente de monde.`,
       cta: 'On y va',
     },
     invite: {
       title: [{ text: 'DONNE-LUI\n' }, { text: 'DES POTES', dim: true }],
-      text: 'Il croise d’abord les minimoas de tes potes.',
+      text: 'Il présente d’abord les potes de tes potes.',
       copy: 'Copier',
       /** Après la copie (une coche se dessine à côté). */
       copied: 'Copié',
@@ -250,24 +231,14 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'No swiping · no ads',
-      title: [{ text: 'RAISE\nYOUR MINIMOA.\n' }, { text: 'IT INTRODUCES\nYOU TO PEOPLE.', dim: true }],
+      title: [{ text: 'PEOPLE\nNEAR YOU.\n' }, { text: 'YOUR MINIMOA\nINTRODUCES THEM.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'I met someone 👀' },
+        { from: 'pet', text: 'I found someone for you 👀' },
         { from: 'me', text: 'Introduce us!' },
       ],
       create: 'Create my minimoa',
       login: 'I already have an account',
-    },
-    entree: {
-      lines: [
-        [{ text: 'PSST.\n' }, { text: 'HI.', dim: true }],
-        [{ text: 'THERE ARE\n' }, { text: 'FOUR OF US.', dim: true }],
-        [{ text: 'WE’RE EACH LOOKING\n' }, { text: 'FOR A HUMAN.', dim: true }],
-        [{ text: 'WHICH ONE\n' }, { text: 'WILL BE YOURS?', dim: true }],
-      ],
-      skip: 'Skip',
-      tap: 'Tap to continue',
     },
     craft: {
       title: [{ text: 'YOUR MINIMOA,\n' }, { text: 'A MINI YOU.', dim: true }],
@@ -283,7 +254,7 @@ export const onboarding = messages({
     vision: {
       note: 'Answer for you, not to look good.',
       hint: 'Tap the card that sounds like you. There’s no right answer.',
-      meterTitle: (axis: string) => `Your vision · ${axis}`,
+      meterTitle: (axis: string) => `${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Previous situation',
@@ -291,15 +262,31 @@ export const onboarding = messages({
       loadErrorText: 'Couldn’t load the situations. Check your connection.',
     },
     taVision: {
-      host: 'Here’s your vision, for now. I’ll only introduce you to people who fit it.',
-      highlight: 'your vision',
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name}?`,
+      host: 'Here’s how you see life, for now.',
+      highlight: 'how you see life',
       chips: (n: number) => [`${n} situations`, '2 minutes'] as const,
       sureness: { sure: 'clear', fairly: 'fairly clear', refine: 'still fuzzy' },
       axisA11y: (name: string, line: string, sureness: string) => `${name}: ${line}, ${sureness}`,
       between: 'in between',
       lean: (pole: string) => `mostly ${pole}`,
       promise: (pet: string) => `${pet} will only introduce you to compatible people.`,
-      cta: 'That’s me',
+      cta: 'Show me who’s like me',
+      summary: {
+        lead: (traits: readonly string[]): string => `You’re someone who ${listEn(traits)}.`,
+        even: 'Nothing extreme about you: a bit of everything.',
+        traits: {
+          foyer: { low: 'values their freedom', high: 'puts family first' },
+          ancrage: { low: 'loves where they are', high: 'feels the pull of elsewhere' },
+          elan: { low: 'keeps time for themselves', high: 'has big projects' },
+          rythme: { low: 'likes it calm', high: 'likes it lively' },
+          cap: { low: 'lives day by day', high: 'likes to plan ahead' },
+        },
+        then: (pet: string) => `${pet} will introduce you to people who fit. The rest sharpens with your daily answers.`,
+        detail: 'The details',
+      },
+      note: 'A rough guide: it sharpens with your daily answers.',
     },
     toi: {
       nameHost: 'What should I call you?',
@@ -321,6 +308,8 @@ export const onboarding = messages({
       cta: 'Continue',
     },
     sexe: {
+      /** Sur l'écran du prénom, au-dessus des quatre puces (facultatif). */
+      ask: 'You are…',
       host: (name: string) => `Hi, ${name}. You are…`,
       options: {
         femme: 'A woman',
@@ -345,41 +334,6 @@ export const onboarding = messages({
       tooYoungText: (pet: string) => `Minimoa is for adults to meet each other. ${pet} will wait for you, promise.`,
       tooYoungNote: 'Your minimoa wasn’t created, and we kept nothing about you.',
       tooYoungAction: 'Close',
-    },
-    localisation: {
-      host: 'Can I see what area you’re in, while the app is open?',
-      highlight: 'what area',
-      radius: '1.5 km around you',
-      mapA11y: 'Your area: a circle of about 1.5 km around you, with compatible minimoas.',
-      line: (pet: string) => `${pet} introduces you to people nearby. Never your exact location.`,
-      refuseNote: 'If not, you’ll pick your city by hand.',
-      denied: 'Okay. Pick your city in Encounters. You can turn it on later in Me › Settings.',
-      cta: 'Continue',
-    },
-    notifications: {
-      host: 'Shall I tell you when someone waves at you?',
-      highlight: 'someone waves at you',
-      app: 'Minimoa',
-      previewA11y: 'Examples of notifications from your minimoa.',
-      items: (pet: string) => [
-        { title: 'Someone waved at you', body: `${pet} met a compatible minimoa.`, time: 'now' },
-        { title: 'Your daily challenge', body: 'One question, two minutes.', time: '8:30' },
-      ],
-      line: '3 a day at most besides messages, never at night.',
-      refuseNote: 'If not, news will wait for you in the app.',
-      denied: 'Okay. You can turn them on later in the Me tab.',
-      cta: 'Continue',
-    },
-    promesse: {
-      kicker: (pet: string) => `${pet} asks you for just one thing`,
-      title: [{ text: 'COME SEE ME\n' }, { text: 'EVERY DAY.', dim: true }],
-      text: 'The more you go out, the more it meets. Forget it, and it sulks and introduces no one.',
-      hold: 'Promise',
-      held: 'Promised.',
-      holdHint: 'Press and hold',
-      holdA11y: 'Press and hold, or tap once',
-      after: (pet: string) => `${pet} will be waiting tomorrow. And the day after.`,
-      cta: 'Continue',
     },
     connexion: {
       title: (pet: string) => [{ text: 'KEEPING\n' }, { text: `${up(pet)}?`, dim: true }],
@@ -437,12 +391,12 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'ALL SET,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} has arrived. It can’t wait to introduce you to people.`,
+      text: (pet: string) => `${pet} has arrived. The more you go out, the more people it introduces you to.`,
       cta: 'Let’s go',
     },
     invite: {
       title: [{ text: 'GIVE IT\n' }, { text: 'SOME FRIENDS', dim: true }],
-      text: 'It meets your friends’ minimoas first.',
+      text: 'It introduces your friends’ friends first.',
       copy: 'Copy',
       copied: 'Copied',
       share: 'Share to story',
@@ -473,24 +427,14 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Sin swipes · sin anuncios',
-      title: [{ text: 'CRÍA\nA TU MINIMOA.\n' }, { text: 'ÉL TE PRESENTA\nA GENTE.', dim: true }],
+      title: [{ text: 'GENTE\nCERCA DE TI.\n' }, { text: 'TU MINIMOA\nTE LA PRESENTA.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Conocí a alguien 👀' },
+        { from: 'pet', text: 'Encontré a alguien para ti 👀' },
         { from: 'me', text: '¡Preséntanos!' },
       ],
       create: 'Crear mi minimoa',
       login: 'Ya tengo una cuenta',
-    },
-    entree: {
-      lines: [
-        [{ text: 'PSST.\n' }, { text: 'HOLA.', dim: true }],
-        [{ text: 'SOMOS\n' }, { text: 'CUATRO.', dim: true }],
-        [{ text: 'CADA UNO BUSCA\n' }, { text: 'A SU HUMANO.', dim: true }],
-        [{ text: '¿CUÁL\n' }, { text: 'SERÁ EL TUYO?', dim: true }],
-      ],
-      skip: 'Saltar',
-      tap: 'Toca para seguir',
     },
     craft: {
       title: [{ text: 'TU MINIMOA,\n' }, { text: 'TÚ EN MINI.', dim: true }],
@@ -506,7 +450,7 @@ export const onboarding = messages({
     vision: {
       note: 'Responde por ti, no para quedar bien.',
       hint: 'Toca la carta que más se parece a ti. No hay respuesta correcta.',
-      meterTitle: (axis: string) => `Tu visión · ${axis}`,
+      meterTitle: (axis: string) => `¿${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Situación anterior',
@@ -514,15 +458,31 @@ export const onboarding = messages({
       loadErrorText: 'No se pudieron cargar las situaciones. Revisa tu conexión.',
     },
     taVision: {
-      host: 'Esta es tu visión, por ahora. Solo te presentaré a gente que encaje con ella.',
-      highlight: 'tu visión',
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `¿${name}?`,
+      host: 'Así ves la vida, por ahora.',
+      highlight: 'ves la vida',
       chips: (n: number) => [`${n} situaciones`, '2 minutos'] as const,
-      sureness: { sure: 'claro', fairly: 'bastante claro', refine: 'por afinar' },
+      sureness: { sure: 'claro', fairly: 'bastante claro', refine: 'aún difuso' },
       axisA11y: (name: string, line: string, sureness: string) => `${name}: ${line}, ${sureness}`,
       between: 'a medio camino',
       lean: (pole: string) => `más bien ${pole}`,
       promise: (pet: string) => `${pet} solo te presentará a gente compatible.`,
-      cta: 'Así soy yo',
+      cta: 'Enséñame quién se me parece',
+      summary: {
+        lead: (traits: readonly string[]): string => `Eres más bien alguien que ${listEs(traits)}.`,
+        even: 'Nada extremo en ti: un poco de todo.',
+        traits: {
+          foyer: { low: 'cuida su libertad', high: 'pone la familia primero' },
+          ancrage: { low: 'quiere a su rincón', high: 'sueña con otros lugares' },
+          elan: { low: 'guarda tiempo para sí', high: 'tiene grandes proyectos' },
+          rythme: { low: 'busca la calma', high: 'busca movimiento' },
+          cap: { low: 'vive al día', high: 'planea con tiempo' },
+        },
+        then: (pet: string) => `${pet} te presentará a gente que encaje. El resto se afina con tus respuestas del día.`,
+        detail: 'El detalle',
+      },
+      note: 'Orientativo: se afina con tus respuestas del día.',
     },
     toi: {
       nameHost: '¿Cómo te llamo?',
@@ -544,6 +504,8 @@ export const onboarding = messages({
       cta: 'Continuar',
     },
     sexe: {
+      /** Sur l'écran du prénom, au-dessus des quatre puces (facultatif). */
+      ask: 'Eres…',
       host: (name: string) => `Hola, ${name}. Eres…`,
       options: {
         femme: 'Una mujer',
@@ -568,41 +530,6 @@ export const onboarding = messages({
       tooYoungText: (pet: string) => `Minimoa es para que se conozcan personas adultas. ${pet} te esperará, prometido.`,
       tooYoungNote: 'Tu minimoa no se ha creado y no hemos guardado nada sobre ti.',
       tooYoungAction: 'Cerrar',
-    },
-    localisation: {
-      host: '¿Puedo ver por qué zona andas cuando la app está abierta?',
-      highlight: 'por qué zona',
-      radius: '1,5 km a tu alrededor',
-      mapA11y: 'Tu zona: un círculo de unos 1,5 km a tu alrededor, con minimoas compatibles.',
-      line: (pet: string) => `${pet} te presenta a gente cerca de ti. Nunca tu ubicación exacta.`,
-      refuseNote: 'Si no, elegirás tu ciudad a mano.',
-      denied: 'De acuerdo. Elige tu ciudad en Encuentros. Puedes activarla más tarde en Yo › Ajustes.',
-      cta: 'Continuar',
-    },
-    notifications: {
-      host: '¿Te aviso cuando alguien te salude?',
-      highlight: 'alguien te salude',
-      app: 'Minimoa',
-      previewA11y: 'Ejemplos de notificaciones de tu minimoa.',
-      items: (pet: string) => [
-        { title: 'Alguien te ha saludado', body: `${pet} se ha cruzado con un minimoa compatible.`, time: 'ahora' },
-        { title: 'Tu reto del día', body: 'Una pregunta, dos minutos.', time: '8:30' },
-      ],
-      line: 'Máximo 3 al día sin contar los mensajes, nunca de noche.',
-      refuseNote: 'Si no, las novedades te esperarán en la app.',
-      denied: 'De acuerdo. Puedes activarlas más tarde en la pestaña Yo.',
-      cta: 'Continuar',
-    },
-    promesse: {
-      kicker: (pet: string) => `${pet} solo te pide una cosa`,
-      title: [{ text: 'VEN A VERME\n' }, { text: 'CADA DÍA.', dim: true }],
-      text: 'Cuanto más sales, más gente conoce. Si lo olvidas, se enfurruña y no te presenta a nadie.',
-      hold: 'Prometido',
-      held: 'Prometido.',
-      holdHint: 'Mantén pulsado',
-      holdA11y: 'Mantén pulsado o toca una vez',
-      after: (pet: string) => `${pet} te espera mañana. Y pasado mañana.`,
-      cta: 'Continuar',
     },
     connexion: {
       title: (pet: string) => [{ text: '¿NOS QUEDAMOS\n' }, { text: `CON ${up(pet)}?`, dim: true }],
@@ -660,12 +587,12 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: '¡TODO LISTO,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} ya está aquí. Tiene muchas ganas de presentarte a gente.`,
+      text: (pet: string) => `${pet} ya está aquí. Cuanto más sales, más gente te presenta.`,
       cta: 'Vamos',
     },
     invite: {
       title: [{ text: 'DALE\n' }, { text: 'COMPAÑÍA', dim: true }],
-      text: 'Primero se cruza con los minimoas de tu gente.',
+      text: 'Primero te presenta a las amistades de tu gente.',
       copy: 'Copiar',
       copied: 'Copiado',
       share: 'Compartir en historia',
@@ -696,24 +623,14 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Sem swipe · sem anúncios',
-      title: [{ text: 'CRIE\nSEU MINIMOA.\n' }, { text: 'ELE TE APRESENTA\nGENTE NOVA.', dim: true }],
+      title: [{ text: 'GENTE\nPERTO DE VOCÊ.\n' }, { text: 'SEU MINIMOA\nTE APRESENTA.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Cruzei com alguém 👀' },
+        { from: 'pet', text: 'Achei alguém pra você 👀' },
         { from: 'me', text: 'Me apresenta!' },
       ],
       create: 'Criar meu minimoa',
       login: 'Já tenho uma conta',
-    },
-    entree: {
-      lines: [
-        [{ text: 'PSIU.\n' }, { text: 'OI.', dim: true }],
-        [{ text: 'SOMOS\n' }, { text: 'QUATRO.', dim: true }],
-        [{ text: 'CADA UM PROCURA\n' }, { text: 'O SEU HUMANO.', dim: true }],
-        [{ text: 'QUAL\n' }, { text: 'VAI SER O SEU?', dim: true }],
-      ],
-      skip: 'Pular',
-      tap: 'Toque para continuar',
     },
     craft: {
       title: [{ text: 'SEU MINIMOA,\n' }, { text: 'VOCÊ EM MINIATURA.', dim: true }],
@@ -729,7 +646,7 @@ export const onboarding = messages({
     vision: {
       note: 'Responda por você, não para fazer bonito.',
       hint: 'Toque no cartão que tem a sua cara. Não existe resposta certa.',
-      meterTitle: (axis: string) => `Sua visão · ${axis}`,
+      meterTitle: (axis: string) => `${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Situação anterior',
@@ -737,15 +654,31 @@ export const onboarding = messages({
       loadErrorText: 'Não foi possível carregar as situações. Verifique sua conexão.',
     },
     taVision: {
-      host: 'Essa é a sua visão, por enquanto. Só vou te apresentar gente que combina com ela.',
-      highlight: 'sua visão',
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name}?`,
+      host: 'É assim que você vê a vida, por enquanto.',
+      highlight: 'você vê a vida',
       chips: (n: number) => [`${n} situações`, '2 minutos'] as const,
-      sureness: { sure: 'claro', fairly: 'bem claro', refine: 'a refinar' },
+      sureness: { sure: 'claro', fairly: 'bem claro', refine: 'ainda vago' },
       axisA11y: (name: string, line: string, sureness: string) => `${name}: ${line}, ${sureness}`,
       between: 'no meio-termo',
       lean: (pole: string) => `mais para ${pole}`,
       promise: (pet: string) => `${pet} só vai te apresentar gente compatível.`,
-      cta: 'Tem a minha cara',
+      cta: 'Me mostra quem combina comigo',
+      summary: {
+        lead: (traits: readonly string[]): string => `Você é mais alguém que ${listPt(traits)}.`,
+        even: 'Nada de extremos: um pouco de tudo.',
+        traits: {
+          foyer: { low: 'preza a liberdade', high: 'põe a família em primeiro lugar' },
+          ancrage: { low: 'gosta do seu canto', high: 'sonha com outros lugares' },
+          elan: { low: 'guarda tempo para si', high: 'tem grandes projetos' },
+          rythme: { low: 'gosta de calma', high: 'gosta de agito' },
+          cap: { low: 'vive um dia de cada vez', high: 'gosta de planejar' },
+        },
+        then: (pet: string) => `${pet} vai te apresentar gente que combina. O resto se ajusta com as suas respostas do dia.`,
+        detail: 'Os detalhes',
+      },
+      note: 'Indicativo: se ajusta com as suas respostas do dia.',
     },
     toi: {
       nameHost: 'Como posso te chamar?',
@@ -767,6 +700,8 @@ export const onboarding = messages({
       cta: 'Continuar',
     },
     sexe: {
+      /** Sur l'écran du prénom, au-dessus des quatre puces (facultatif). */
+      ask: 'Você é…',
       host: (name: string) => `Oi, ${name}. Você é…`,
       options: {
         femme: 'Uma mulher',
@@ -791,41 +726,6 @@ export const onboarding = messages({
       tooYoungText: (pet: string) => `O Minimoa é para pessoas adultas se conhecerem. ${pet} vai te esperar, prometo.`,
       tooYoungNote: 'Seu minimoa não foi criado, e não guardamos nada sobre você.',
       tooYoungAction: 'Fechar',
-    },
-    localisation: {
-      host: 'Posso ver em que região você está, quando o app estiver aberto?',
-      highlight: 'em que região',
-      radius: '1,5 km ao seu redor',
-      mapA11y: 'Sua área: um círculo de cerca de 1,5 km ao seu redor, com minimoas compatíveis.',
-      line: (pet: string) => `${pet} te apresenta gente por perto. Nunca sua localização exata.`,
-      refuseNote: 'Se não, você escolhe sua cidade manualmente.',
-      denied: 'Tudo bem. Escolha sua cidade em Encontros. Dá para ativar depois em Eu › Ajustes.',
-      cta: 'Continuar',
-    },
-    notifications: {
-      host: 'Posso te avisar quando alguém acenar para você?',
-      highlight: 'alguém acenar para você',
-      app: 'Minimoa',
-      previewA11y: 'Exemplos de notificações do seu minimoa.',
-      items: (pet: string) => [
-        { title: 'Alguém acenou para você', body: `${pet} cruzou com um minimoa compatível.`, time: 'agora' },
-        { title: 'Seu desafio do dia', body: 'Uma pergunta, dois minutos.', time: '8h30' },
-      ],
-      line: 'No máximo 3 por dia fora as mensagens, nunca à noite.',
-      refuseNote: 'Se não, as novidades vão te esperar no app.',
-      denied: 'Tudo bem. Dá para ativar depois na aba Eu.',
-      cta: 'Continuar',
-    },
-    promesse: {
-      kicker: (pet: string) => `${pet} só te pede uma coisa`,
-      title: [{ text: 'VENHA ME VER\n' }, { text: 'TODO DIA.', dim: true }],
-      text: 'Quanto mais você sai, mais gente ele conhece. Esquecido, ele emburra e não apresenta ninguém.',
-      hold: 'Prometo',
-      held: 'Prometido.',
-      holdHint: 'Segure',
-      holdA11y: 'Segure, ou toque uma vez',
-      after: (pet: string) => `${pet} te espera amanhã. E depois de amanhã.`,
-      cta: 'Continuar',
     },
     connexion: {
       title: (pet: string) => [{ text: 'FICAMOS\n' }, { text: `COM ${up(pet)}?`, dim: true }],
@@ -883,12 +783,12 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'TUDO PRONTO,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} chegou. Já está doido para te apresentar gente.`,
+      text: (pet: string) => `${pet} chegou. Quanto mais você sai, mais gente ele te apresenta.`,
       cta: 'Vamos lá',
     },
     invite: {
       title: [{ text: 'ARRUME\n' }, { text: 'UMA GALERA', dim: true }],
-      text: 'Ele encontra primeiro os minimoas da sua galera.',
+      text: 'Ele apresenta primeiro os amigos da sua galera.',
       copy: 'Copiar',
       copied: 'Copiado',
       share: 'Compartilhar no story',
@@ -919,24 +819,14 @@ export const onboarding = messages({
     welcome: {
       brand: 'minimoa',
       sticker: 'Geen swipen · geen reclame',
-      title: [{ text: 'VOED JE\nMINIMOA OP.\n' }, { text: 'HIJ STELT JE\nAAN MENSEN VOOR.', dim: true }],
+      title: [{ text: 'MENSEN\nBIJ JOU IN DE BUURT.\n' }, { text: 'JE MINIMOA\nSTELT ZE VOOR.', dim: true }],
       petName: 'Nino',
       chat: [
-        { from: 'pet', text: 'Ik kwam iemand tegen 👀' },
+        { from: 'pet', text: 'Ik heb iemand voor je gevonden 👀' },
         { from: 'me', text: 'Stel ons voor!' },
       ],
       create: 'Mijn minimoa maken',
       login: 'Ik heb al een account',
-    },
-    entree: {
-      lines: [
-        [{ text: 'PSST.\n' }, { text: 'HOI.', dim: true }],
-        [{ text: 'WE ZIJN\n' }, { text: 'MET Z’N VIEREN.', dim: true }],
-        [{ text: 'IEDER ZOEKT\n' }, { text: 'ZIJN MENS.', dim: true }],
-        [{ text: 'WELKE\n' }, { text: 'WORDT DE JOUWE?', dim: true }],
-      ],
-      skip: 'Overslaan',
-      tap: 'Tik om verder te gaan',
     },
     craft: {
       title: [{ text: 'JOUW MINIMOA,\n' }, { text: 'EEN MINI-JIJ.', dim: true }],
@@ -952,7 +842,7 @@ export const onboarding = messages({
     vision: {
       note: 'Antwoord voor jezelf, niet om goed over te komen.',
       hint: 'Tik op de kaart die bij je past. Er is geen goed antwoord.',
-      meterTitle: (axis: string) => `Jouw visie · ${axis}`,
+      meterTitle: (axis: string) => `${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Vorige situatie',
@@ -960,15 +850,31 @@ export const onboarding = messages({
       loadErrorText: 'De situaties konden niet worden geladen. Controleer je verbinding.',
     },
     taVision: {
-      host: 'Dit is je visie, voor nu. Ik stel je alleen voor aan mensen die erbij passen.',
-      highlight: 'je visie',
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name}?`,
+      host: 'Zo kijk jij naar het leven, voor nu.',
+      highlight: 'naar het leven',
       chips: (n: number) => [`${n} situaties`, '2 minuten'] as const,
       sureness: { sure: 'zeker', fairly: 'vrij zeker', refine: 'nog vaag' },
       axisA11y: (name: string, line: string, sureness: string) => `${name}: ${line}, ${sureness}`,
       between: 'ertussenin',
       lean: (pole: string) => `eerder ${pole}`,
       promise: (pet: string) => `${pet} stelt je alleen voor aan mensen die bij je passen.`,
-      cta: 'Dat ben ik',
+      cta: 'Laat zien wie op me lijkt',
+      summary: {
+        lead: (traits: readonly string[]): string => `Je bent eerder iemand die ${listNl(traits)}.`,
+        even: 'Niets extreems aan jou: van alles een beetje.',
+        traits: {
+          foyer: { low: 'de eigen vrijheid koestert', high: 'familie op één zet' },
+          ancrage: { low: 'aan de eigen plek hecht', high: 'naar elders verlangt' },
+          elan: { low: 'tijd voor zichzelf houdt', high: 'grote plannen heeft' },
+          rythme: { low: 'van rust houdt', high: 'van drukte houdt' },
+          cap: { low: 'van dag tot dag leeft', high: 'graag vooruit plant' },
+        },
+        then: (pet: string) => `${pet} stelt je voor aan mensen die erbij passen. De rest wordt scherper met je dagelijkse antwoorden.`,
+        detail: 'De details',
+      },
+      note: 'Een indicatie: die wordt scherper met je dagelijkse antwoorden.',
     },
     toi: {
       nameHost: 'Hoe mag ik je noemen?',
@@ -990,6 +896,8 @@ export const onboarding = messages({
       cta: 'Doorgaan',
     },
     sexe: {
+      /** Sur l'écran du prénom, au-dessus des quatre puces (facultatif). */
+      ask: 'Je bent…',
       host: (name: string) => `Hoi ${name}. Je bent…`,
       options: {
         femme: 'Een vrouw',
@@ -1014,41 +922,6 @@ export const onboarding = messages({
       tooYoungText: (pet: string) => `Minimoa laat volwassenen elkaar ontmoeten. ${pet} wacht op je, beloofd.`,
       tooYoungNote: 'Je minimoa is niet aangemaakt, en we hebben niets over je bewaard.',
       tooYoungAction: 'Sluiten',
-    },
-    localisation: {
-      host: 'Mag ik zien in welke buurt je bent, als de app open is?',
-      highlight: 'in welke buurt',
-      radius: '1,5 km om je heen',
-      mapA11y: 'Je gebied: een cirkel van ongeveer 1,5 km om je heen, met compatibele minimoas.',
-      line: (pet: string) => `${pet} stelt je voor aan mensen in de buurt. Nooit je exacte locatie.`,
-      refuseNote: 'Anders kies je zelf je stad.',
-      denied: 'Oké. Kies je stad in Ontmoetingen. Later aan te zetten via Ik › Instellingen.',
-      cta: 'Doorgaan',
-    },
-    notifications: {
-      host: 'Zal ik het melden als iemand naar je zwaait?',
-      highlight: 'iemand naar je zwaait',
-      app: 'Minimoa',
-      previewA11y: 'Voorbeelden van meldingen van je minimoa.',
-      items: (pet: string) => [
-        { title: 'Iemand zwaait naar je', body: `${pet} kwam een compatibele minimoa tegen.`, time: 'nu' },
-        { title: 'Je uitdaging van de dag', body: 'Eén vraag, twee minuten.', time: '8:30' },
-      ],
-      line: 'Hooguit 3 per dag naast berichten, nooit ’s nachts.',
-      refuseNote: 'Anders wacht het nieuws op je in de app.',
-      denied: 'Oké. Later aan te zetten onder Ik.',
-      cta: 'Doorgaan',
-    },
-    promesse: {
-      kicker: (pet: string) => `${pet} vraagt je maar één ding`,
-      title: [{ text: 'KOM ELKE DAG\n' }, { text: 'BIJ ME LANGS.', dim: true }],
-      text: 'Hoe vaker je op pad gaat, hoe meer hij ontmoet. Vergeet je hem, dan mokt hij en stelt hij niemand voor.',
-      hold: 'Beloofd',
-      held: 'Beloofd.',
-      holdHint: 'Houd ingedrukt',
-      holdA11y: 'Houd ingedrukt, of tik één keer',
-      after: (pet: string) => `${pet} wacht morgen op je. En overmorgen.`,
-      cta: 'Doorgaan',
     },
     connexion: {
       title: (pet: string) => [{ text: 'HOUDEN WE\n' }, { text: `${up(pet)}?`, dim: true }],
@@ -1106,12 +979,12 @@ export const onboarding = messages({
     },
     pret: {
       title: (name: string) => [{ text: 'ALLES KLAAR,\n' }, { text: `${up(name)}!`, dim: true }],
-      text: (pet: string) => `${pet} is er. Hij wil je nu al aan mensen voorstellen.`,
+      text: (pet: string) => `${pet} is er. Hoe meer je eropuit gaat, hoe meer mensen hij je voorstelt.`,
       cta: 'Daar gaan we',
     },
     invite: {
       title: [{ text: 'GEEF HEM\n' }, { text: 'VRIENDEN', dim: true }],
-      text: 'Hij ontmoet eerst de minimoas van je vrienden.',
+      text: 'Hij stelt eerst de vrienden van je vrienden voor.',
       copy: 'Kopiëren',
       copied: 'Gekopieerd',
       share: 'Delen in je story',

@@ -54,7 +54,7 @@ const EDIT = 28;
 const TITLE_SHARE = 0.52;
 const SPEECH_W = 150;
 
-/** Grand pet sur un panneau en dégradé, avec son nom en Anton (maquette V6-Pet). Habillé quand `pet.outfit` contient un objet. */
+/** Grand pet sur un panneau en dégradé, avec son nom en capitales (police des titres) (maquette V6-Pet). Habillé quand `pet.outfit` contient un objet. */
 export function PetHero({ pet, title, moodLabel, formLabel, speech, gradient, pose = 'debout', showForm, onPetPress, petLabel, onEdit, editLabel }: PetHeroProps) {
   const win = useWindowDimensions();
   const [panelW, setPanelW] = useState(win.width - 40);

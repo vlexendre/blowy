@@ -94,7 +94,7 @@ export interface PetStageProps {
 const SULK_STYLE = Platform.OS === 'web' ? { filter: 'saturate(0.55) brightness(0.8)' } : { opacity: 0.78 };
 
 /**
- * Scène de l'accueil (V6-Accueil, V6-Boude) : grand panneau, nom en Anton, puce de forme, bouton garde-robe,
+ * Scène de l'accueil (V6-Accueil, V6-Boude) : grand panneau, nom en capitales (police des titres), puce de forme, bouton garde-robe,
  * bulle du pet (qui s'écrit), et le pet vivant (`PetActor`) en bas à droite qui réagit aux soins et au toucher.
  * Attrapé, le pet sort du panneau (il passe au premier plan le temps du geste).
  */

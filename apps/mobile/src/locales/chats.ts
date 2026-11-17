@@ -46,7 +46,7 @@ export const chats = messages({
     title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
     newChat: 'Rencontrer un nouveau minimoa',
     wavesKicker: 'Rencontres',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} A CROISÉ ` }, { text: 'QUELQU’UN', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} A TROUVÉ ` }, { text: 'QUELQU’UN', dim: true }],
     wavesText: (names: string[]): string =>
       names.length === 1 ? `${names[0]} te fait signe. Tu réponds ?` : `${names.slice(0, -1).join(', ')} et ${names.at(-1)} te font signe.`,
     wavesA11y: (n: number): string => `${n} ${n > 1 ? 'personnes te font signe' : 'personne te fait signe'}. Ouvrir les rencontres.`,
@@ -80,7 +80,7 @@ export const chats = messages({
     title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
     newChat: 'Meet a new minimoa',
     wavesKicker: 'Encounters',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} MET ` }, { text: 'SOMEONE', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} FOUND ` }, { text: 'SOMEONE', dim: true }],
     wavesText: (names: string[]): string =>
       names.length === 1 ? `${names[0]} waved at you. Wave back?` : `${names.slice(0, -1).join(', ')} and ${names.at(-1)} waved at you.`,
     wavesA11y: (n: number): string => `${n} ${n === 1 ? 'person' : 'people'} waved at you. Open encounters.`,
@@ -112,7 +112,7 @@ export const chats = messages({
     title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
     newChat: 'Conocer a un nuevo minimoa',
     wavesKicker: 'Encuentros',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} SE CRUZÓ CON ` }, { text: 'ALGUIEN', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} ENCONTRÓ A ` }, { text: 'ALGUIEN', dim: true }],
     wavesText: (names: string[]): string =>
       names.length === 1 ? `${names[0]} te ha saludado. ¿Respondes?` : `${names.slice(0, -1).join(', ')} y ${names.at(-1)} te han saludado.`,
     wavesA11y: (n: number): string => `${n} ${n === 1 ? 'persona te ha saludado' : 'personas te han saludado'}. Abrir encuentros.`,
@@ -144,7 +144,7 @@ export const chats = messages({
     title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
     newChat: 'Conhecer um novo minimoa',
     wavesKicker: 'Encontros',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} CRUZOU COM ` }, { text: 'ALGUÉM', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} ACHOU ` }, { text: 'ALGUÉM', dim: true }],
     wavesText: (names: string[]): string =>
       names.length === 1 ? `${names[0]} acenou para você. Vai responder?` : `${names.slice(0, -1).join(', ')} e ${names.at(-1)} acenaram para você.`,
     wavesA11y: (n: number): string => `${n} ${n === 1 ? 'pessoa acenou' : 'pessoas acenaram'} para você. Abrir encontros.`,
@@ -176,7 +176,7 @@ export const chats = messages({
     title: (n: number): TitleSegment[] => [{ text: 'CHATS' }, ...(n > 0 ? [{ text: ` · ${n}`, dim: true }] : [])],
     newChat: 'Een nieuwe minimoa ontmoeten',
     wavesKicker: 'Ontmoetingen',
-    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} KWAM ` }, { text: 'IEMAND TEGEN', dim: true }],
+    wavesTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()} VOND ` }, { text: 'IEMAND', dim: true }],
     wavesText: (names: string[]): string =>
       names.length === 1 ? `${names[0]} zwaait naar je. Zwaai je terug?` : `${names.slice(0, -1).join(', ')} en ${names.at(-1)} zwaaien naar je.`,
     wavesA11y: (n: number): string => `${n} ${n === 1 ? 'persoon zwaait' : 'personen zwaaien'} naar je. Ontmoetingen openen.`,

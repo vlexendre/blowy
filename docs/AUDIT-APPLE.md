@@ -201,7 +201,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 
 ### M8. Sans la position, plus de rencontres du tout
 - **Règles :** 5.1.1(iv) « Where possible, provide alternative solutions for users who don't grant consent. For example, if a user declines to share Location, offer the ability to manually enter an address. » ; 5.1.2(i) « Your app may not require users to enable system functionalities (such as … location services) in order to access functionality ».
-- **Constat :** refuser la position coupe la carte et les rencontres proches (`app/(onboarding)/localisation.tsx`, `app/carte.tsx:110-129`) ; le choix d'une ville existe mais seulement avec Minimoa+ (`changeCity`). Le reste de l'app marche.
+- **Constat :** refuser la position coupe la carte et les rencontres proches (carte « aujourd'hui » de l'accueil, `app/(tabs)/pet.tsx` ; `app/carte.tsx:110-129`) ; le choix d'une ville existe mais seulement avec Minimoa+ (`changeCity`). Le reste de l'app marche.
 - **Correctif :** permettre à tout le monde, sans position, de choisir sa ville une fois (liste existante `rencontres.carte.cities`) pour recevoir des rencontres dans cette ville ; Minimoa+ garde « changer de ville quand tu veux ».
 - **Effort :** une demi-journée. **Qui :** code.
 
@@ -252,7 +252,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 8. **Android et web** n'achètent rien (« Disponible sur iPhone ») ; un abonnement acheté sur iPhone suit le compte : 3.1.3(b).
 9. **Aucun pistage** : pas de SDK de publicité ni de mesure d'audience ; ATT inutile.
 10. **Chiffrement** : `ITSAppUsesNonExemptEncryption: false` (HTTPS seulement), correct.
-11. **Pas de demande d'avis maison** (5.6.1) ; pas de fausse urgence ni de compte à rebours ; la promesse « Viens me voir chaque jour » reste légère.
+11. **Pas de demande d'avis maison** (5.6.1) ; pas de fausse urgence ni de compte à rebours ; plus d'écran « promesse » dans l'inscription (17 nov.).
 12. **Pas de données sensibles** (§27) : on ne demande plus ce que les gens cherchent ni qui ils veulent rencontrer ; le sexe reste demandé (« je préfère ne pas dire » possible) et ne filtre rien.
 13. **Porte d'âge avant la connexion**, rien d'enregistré sous 18 ans, double contrôle côté serveur.
 14. **iPad** : `supportsTablet: false` (`app.config.ts:36`) ; l'app tourne en mode compatibilité iPhone, ce qui est accepté. Icône 1024 × 1024 sans transparence ; écran de lancement présent.

@@ -1,7 +1,7 @@
 # @blowy/ui — design system Minimoa V6
 
 Composants React Native (Expo SDK 58, RN 0.88, Reanimated 4) en design atomique. Nuit `#0B0A14`, grands panneaux
-en dégradé, titres Anton en capitales avec partie estompée, corps Allo (Josh Puckett, SIL OFL), accent jaune (texte sombre dessus).
+en dégradé, titres Allo ExtraBold en capitales avec partie estompée, corps Allo (Josh Puckett, SIL OFL), accent jaune (texte sombre dessus).
 
 ```ts
 import { Button, LinkRow, LinkTodayHero, ScreenTemplate } from '@blowy/ui';
@@ -447,7 +447,7 @@ PetStageProps = { pet: PetLook & { id?: string }; title?: TitleContent; shape?: 
 // lure : soin glissé depuis CareBar ; le pet le suit des yeux, se penche, ouvre la bouche (surpris) quand il arrive tout près
 type PetReaction = PetActorReaction   // feed : fraise croquée · play : balle et sauts · nap : lumière baissée + z · cuddle : cœurs · joy · no · wave · surprise
 // le pet est un PetActor (attrapable par défaut : le panneau passe devant et ne le rogne plus pendant le geste) ; la bulle s'écrit
-// V6-Accueil : panneau 318, nom Anton 40 + puce de forme, bouton blanc (garde-robe), bulle, pet habillé en bas à droite
+// V6-Accueil : panneau 318, nom Allo ExtraBold 40 + puce de forme, bouton blanc (garde-robe), bulle, pet habillé en bas à droite
 // shape `boude` : panneau lie-de-vin et pet éteint (V6-Boude) ; tout coupé si « réduire les animations »
 ```
 #### `PlanPicker` — `src/organisms/PlanPicker.tsx`

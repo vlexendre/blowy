@@ -62,7 +62,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 - **Sociabilité** devient la jauge principale (grande, en haut). Elle monte quand tu sors, vois du monde, salues, écris (et plus encore les jours où vous vous écrivez tous les deux, §24), tiens une habitude tournée vers les autres. Elle descend seule.
 - Faim, énergie, humeur restent, en petit, avec les quatre gestes (nourrir, jouer, sieste, câlin).
-- **Forme** = 60 % sociabilité + 40 % des trois autres. En forme : il rencontre plus. Il boude : il ne rencontre personne. Il ne meurt jamais.
+- **Forme** = 60 % sociabilité + 40 % des trois autres. Elle joue sur son humeur et son caractère, pas sur les gens : le nombre de présentations ne dépend que de la sociabilité (« plus tu sors, plus il te présente de monde », `encounterQuota`), jamais moins d'une par jour, même quand il boude. Il ne meurt jamais.
 - Le minimoa demande : « Tu es sorti aujourd'hui ? ». Réponses : « oui, j'ai vu du monde », « oui, un tour », « pas encore ». La localisation (app ouverte seulement) confirme un déplacement hors de la zone du domicile ; sinon c'est déclaratif, avec photo possible.
 
 ## 6. Les habitudes
@@ -121,7 +121,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 11. Inscription et connexion
 
-Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Minimoa+ (feuille).
+Ordre (parcours court, 17 nov.) : Bienvenue → créer son minimoa → **test de vision (12)** → ton résultat (phrase de synthèse, carte à partager) → « On t'appelle comment ? » et « Tu es… » (facultatif) → **date de naissance (sélecteur à roues), avant la connexion** → **connexion** → il s'installe → tout est prêt → Minimoa+ (feuille) → accueil. La position et les notifications se demandent sur l'accueil quand elles servent (explication d'abord, un seul bouton), les habitudes après la première journée (J2), les invitations depuis l'accueil (carte « inviter des potes »).
 
 - **Connexion : Apple sur iPhone, Google sur Android.** Plus de code par e-mail (gardé seulement pour le mode local de développement).
 - Sexe : femme / homme / non-binaire / je préfère ne pas dire (ne filtre rien, §27). « Ce que tu cherches » est retiré (§27).

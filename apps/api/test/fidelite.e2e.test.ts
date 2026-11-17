@@ -209,7 +209,7 @@ describe('Fidélisation', () => {
   });
 
   describe('nouvelles du minimoa', () => {
-    it('J1, J3, J7, rien pendant la semaine d’accueil, absence de 14 jours avec e-mail, anniversaire d’un mois ; une par jour', async () => {
+    it('premiers pas J1, J3, J5, J7 (J2 pas rattrapé), rien pendant la semaine d’accueil, absence de 14 jours avec e-mail, anniversaire d’un mois ; une par jour', async () => {
       const jobs = w.app.get(FideliteJobs, { strict: false });
       const db = w.app.get<MemoryDb>(MEMORY_DB, { strict: false });
       // Monde neuf : on repart du 11 novembre à 11 h (Paris) pour des dates lisibles.
@@ -232,34 +232,36 @@ describe('Fidélisation', () => {
       await jobs.runDue(at(1));
       await jobs.runDue(at(1, 10, 30));
       expect(news().map((s) => [s.kind, s.vars.step])).toEqual([['first_steps', 'd1']]);
-      expect(notificationText('fr', 'first_steps', news()[0]?.vars ?? {}).title).toBe('Nino a une idée');
+      expect(notificationText('fr', 'first_steps', news()[0]?.vars ?? {}).title).toBe('Nino veut savoir qui tu es');
       // Hors du créneau de la demi-heure : rien n'est relu.
       expect(await jobs.runDue(at(3, 10, 12))).toBe(0);
       // La nuit (2 h à Paris) : rien.
       await jobs.runDue(at(3, 1));
       expect(news()).toHaveLength(1);
       await jobs.runDue(at(3));
+      await jobs.runDue(at(5));
       await jobs.runDue(at(7));
-      expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd7']);
-      expect(notificationText('fr', 'first_steps', news()[2]?.vars ?? {}).body).toMatch(/Rencontres/);
+      // Le jour 2 est passé sans envoi (minuteur arrêté) : J2 n'est pas rattrapé le jour 3, J3 part à sa place.
+      expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd5', 'd7']);
+      expect(notificationText('fr', 'first_steps', news()[2]?.vars ?? {}).body).toMatch(/présente/);
       // Jours 8 à 13 : ni premiers pas ni absence de 7 jours (semaine d'accueil).
       for (const day of [8, 9, 10, 11, 12, 13]) await jobs.runDue(at(day));
-      expect(news()).toHaveLength(3);
+      expect(news()).toHaveLength(4);
       // 14 jours sans ouvrir l'app : nouvelle du minimoa et e-mail, avec ce qui s'est passé.
       await jobs.runDue(at(14));
-      expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd7', 'absence']);
-      expect(news()[3]?.vars.days).toBe('14');
-      expect(notificationText('fr', 'minimoa_news', news()[3]?.vars ?? {}).body).toBe('Nino t’attend, sans rancune. Tes liens ont peut-être des nouvelles pour toi.');
+      expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd5', 'd7', 'absence']);
+      expect(news()[4]?.vars.days).toBe('14');
+      expect(notificationText('fr', 'minimoa_news', news()[4]?.vars ?? {}).body).toBe('Nino t’attend, sans rancune. Tes liens ont peut-être des nouvelles pour toi.');
       const absence = mails(email).filter((m) => m.subject === 'Nino te garde ta place');
       expect(absence).toHaveLength(1);
       expect(absence[0]?.text).toMatch(/1 personne t’a fait signe/);
       expect(absence[0]?.text).toMatch(/coupe « Nouvelles de ton minimoa » dans Moi › Réglages › Notifications/);
       await jobs.runDue(at(15));
-      expect(news()).toHaveLength(4);
+      expect(news()).toHaveLength(5);
       // Un mois avec son minimoa.
       await jobs.runDue(at(30));
-      expect(news()[4]).toMatchObject({ kind: 'minimoa_news', vars: { step: 'anniversary', count: '1' } });
-      expect(notificationText('fr', 'minimoa_news', news()[4]?.vars ?? {}).title).toBe('Un mois avec Nino');
+      expect(news()[5]).toMatchObject({ kind: 'minimoa_news', vars: { step: 'anniversary', count: '1' } });
+      expect(notificationText('fr', 'minimoa_news', news()[5]?.vars ?? {}).title).toBe('Un mois avec Nino');
       expect(START.getTime()).toBeLessThanOrEqual(created);
     });
 

@@ -1,6 +1,7 @@
 /**
- * Invitations (V6-Invite) : partager son lien d'invitation (le lien « 3 mots » est dans l'onglet Moi). « Partager en
- * story » envoie une image (`StoryCard`, capturée hors de l'écran) dans l'éditeur de story d'Instagram.
+ * Invitations (V6-Invite), ouvertes depuis l'accueil (plus dans l'inscription) : partager son lien d'invitation (le lien
+ * « 3 mots » est dans l'onglet Moi). « Partager en story » envoie une image (`StoryCard`, capturée hors de l'écran) dans
+ * l'éditeur de story d'Instagram.
  */
 import { Appear, Banner, InvitePanel, OnboardingTemplate, StoryCard } from '@blowy/ui';
 import { router } from 'expo-router';
@@ -17,15 +18,14 @@ export default function Invite() {
   const me = useMe();
   const invite = useStoryShare();
   const track = useTrackShare();
-  // Minimoa+ monte en feuille par-dessus cet écran ; la fermer (croix, glisser, « continuer ») mène à l'app.
-  const next = () => router.push('/(onboarding)/paywall');
+  const next = () => (router.canGoBack() ? router.back() : router.replace('/(tabs)/pet'));
 
   const pet = me.data?.pet;
   const link = me.data ? inviteUrl(me.data.inviteCode) : '';
 
   return (
     <ScreenMotion>
-    <OnboardingTemplate centerBody primaryLabel={t.cta} onPrimary={next}>
+    <OnboardingTemplate centerBody onBack={next} backLabel={common.back} primaryLabel={t.cta} onPrimary={next}>
       {me.isError ? (
         <Appear key="error">
           <Banner tone="error" title={common.errorTitle} text={common.genericError} actionLabel={common.retry} onAction={() => void me.refetch()} />

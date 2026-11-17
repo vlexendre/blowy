@@ -262,7 +262,7 @@ const fr = {
       calm: (v: ReviewVars): string => `Une semaine calme. ${v.petName} en a profité pour se reposer.`,
     } as Record<ReviewHighlight, (v: ReviewVars) => string>,
     /** `axis` : nom de l'axe en minuscules ; `pole` : le pôle vers lequel la vision bouge. */
-    noticed: (axis: string, pole: string): string => `Ta vision bouge un peu sur ${axis} : plutôt « ${pole} », pour l’instant.`,
+    noticed: (axis: string, pole: string): string => `Ta vision bouge un peu sur « ${axis} » : plutôt « ${pole} », pour l’instant.`,
     noticedSteady: 'Ta vision garde son cap cette semaine.',
     tip: {
       go_out: 'Une idée pour la semaine : une sortie de plus, même courte.',
@@ -395,7 +395,7 @@ const en: Translation<RituelsText> = {
       streak: (v: ReviewVars): string => `Your streak is at ${v.streak} days. The flame is burning bright.`,
       calm: (v: ReviewVars): string => `A calm week. ${v.petName} made the most of it to rest.`,
     },
-    noticed: (axis: string, pole: string): string => `Your vision is shifting a little on the ${axis} front: leaning “${pole}”, for now.`,
+    noticed: (axis: string, pole: string): string => `Your vision is shifting a little on “${axis}”: leaning “${pole}”, for now.`,
     noticedSteady: 'Your vision held its course this week.',
     tip: {
       go_out: 'An idea for the week: one more outing, even a short one.',
@@ -524,7 +524,7 @@ const es: Translation<RituelsText> = {
       streak: (v: ReviewVars): string => `Tu racha va por ${v.streak} días. La llama brilla.`,
       calm: (v: ReviewVars): string => `Una semana tranquila. ${v.petName} aprovechó para descansar.`,
     },
-    noticed: (axis: string, pole: string): string => `Tu visión se mueve un poco en el eje ${axis}: más bien «${pole}», por ahora.`,
+    noticed: (axis: string, pole: string): string => `Tu visión se mueve un poco en «${axis}»: más bien «${pole}», por ahora.`,
     noticedSteady: 'Tu visión mantiene el rumbo esta semana.',
     tip: {
       go_out: 'Una idea para la semana: una salida más, aunque sea corta.',
@@ -653,7 +653,7 @@ const pt: Translation<RituelsText> = {
       streak: (v: ReviewVars): string => `Sua sequência está em ${v.streak} dias. A chama brilha.`,
       calm: (v: ReviewVars): string => `Uma semana calma. ${v.petName} aproveitou para descansar.`,
     },
-    noticed: (axis: string, pole: string): string => `Sua visão está mudando um pouco no eixo ${axis}: mais para “${pole}”, por enquanto.`,
+    noticed: (axis: string, pole: string): string => `Sua visão está mudando um pouco em “${axis}”: mais para “${pole}”, por enquanto.`,
     noticedSteady: 'Sua visão manteve o rumo esta semana.',
     tip: {
       go_out: 'Uma ideia para a semana: mais uma saída, mesmo que curtinha.',
@@ -782,7 +782,7 @@ const nl: Translation<RituelsText> = {
       streak: (v: ReviewVars): string => `Je reeks staat op ${v.streak} dagen. Het vlammetje gloeit.`,
       calm: (v: ReviewVars): string => `Een rustige week. ${v.petName} heeft lekker uitgerust.`,
     },
-    noticed: (axis: string, pole: string): string => `Je visie verschuift een beetje op het vlak van ${axis}: eerder “${pole}”, voorlopig.`,
+    noticed: (axis: string, pole: string): string => `Je visie verschuift een beetje bij „${axis}”: eerder “${pole}”, voorlopig.`,
     noticedSteady: 'Je visie houdt deze week koers.',
     tip: {
       go_out: 'Een idee voor deze week: nog één uitje, al is het kort.',

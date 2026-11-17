@@ -835,7 +835,7 @@ function GalleryScreen() {
         <Item name="IncomingCard">
           <IncomingCard
             incoming={{ from: sasha, compatibility: 91, intro: 'nino, t’es le minimoa dont gaston parle tout le temps ?' }}
-            title="Sasha veut te rencontrer"
+            title="Sasha te fait signe"
             ownerLabel="pia, le minimoa de Sasha"
             compatLabel="d’accord"
             acceptLabel="accepter"

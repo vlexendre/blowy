@@ -60,9 +60,11 @@ Ce que l'API ne sait pas, ou ne fait pas exprès :
 
 | Message | Déclencheur | Canal | Délai | Texte FR (titre / corps) | Plafond |
 |---|---|---|---|---|---|
-| Premiers pas, J1 | Inscription il y a 1 jour (`profiles.created_at`) | Push (`first_steps`) → ouvre Habitudes | Jour 1 (rattrapé jusqu'au jour 2), fenêtre 11 h – 20 h | « Nino a une idée » / « Choisis une habitude à tenir : il la suivra avec toi, un jour après l’autre. » | Une fois |
-| Premiers pas, J3 | Inscription il y a 3 jours | Push → ouvre « Nouveau groupe » | Jour 3 (jusqu'au jour 4) | « À plusieurs, c’est plus simple » / « Crée un groupe avec des potes pour tenir une habitude ensemble. Nino adore la compagnie. » | Une fois |
-| Premiers pas, J7 | Inscription il y a 7 jours | Push → ouvre Rencontres | Jour 7 (jusqu'au jour 8) | « Une semaine avec Nino » / « Fais un tour dans Rencontres : il y a peut-être quelqu’un à saluer près de chez toi. » | Une fois |
+| Premiers pas, J1 | Inscription il y a 1 jour (`profiles.created_at`) | Push (`first_steps`) → ouvre « Tes 3 mots » | Jour 1 seulement, fenêtre 11 h – 20 h | « Nino veut savoir qui tu es » / « Envoie ton lien « 3 mots » à 3 potes : ils te décrivent, sans compte, et il te connaît mieux. » | Une fois |
+| Premiers pas, J2 | Inscription il y a 2 jours | Push → ouvre Habitudes | Jour 2 seulement | « Nino a une idée » / « Choisis une habitude à tenir : il la suivra avec toi, et des gens près de chez toi la tiennent peut-être aussi. » | Une fois |
+| Premiers pas, J3 | Inscription il y a 3 jours | Push → ouvre « Nouveau groupe » (on peut le créer seul et envoyer son lien) | Jour 3 (jusqu'au jour 4) | « À plusieurs, c’est plus simple » / « Rejoins un groupe par son lien, ou crée le tien et envoie-le à 2 potes. Il démarre à 3. » | Une fois |
+| Premiers pas, J5 | Inscription il y a 5 jours | Push → ouvre Rencontres | Jour 5 (jusqu'au jour 6) | « Nino a cherché pour toi » / « Viens voir qui il te présente près de chez toi. Il te dit pourquoi ; rien ne se passe sans toi. » | Une fois |
+| Premiers pas, J7 | Inscription il y a 7 jours | Push → ouvre l'accueil, où la carte « Une semaine avec Nino » est proposée une fois (`FirstWeekMoment`) avec le bilan s'il est là | Jour 7 (jusqu'au jour 8) | « Une semaine avec Nino » / « Ta première semaine est là : ce qui a bougé, et une carte à partager. » | Une fois |
 | Absence de 3 jours | 3 jours sans ouvrir l'app (`profiles.last_active_on`) ; compte de plus de 10 jours | Push (`minimoa_news`) → ouvre l'accueil | Jours 3 à 5 d'absence | « Nino se demande ce que tu deviens » / « Rien ne presse. Passe quand tu veux, il te garde ta place. » | Une fois par absence |
 | Absence de 7 jours | 7 jours sans ouvrir l'app | Push | Jours 7 à 9 | « Nino s’ennuie un peu » / « Il compte les nuages en t’attendant. Un petit tour quand tu as le temps ? » | Une fois par absence |
 | Absence de 14 jours | 14 jours sans ouvrir l'app | Push + e-mail (coupé avec « Nouvelles de ton minimoa ») | Jours 14 à 16 | Push : « Deux semaines déjà » / « Nino t’attend, sans rancune. Tes liens ont peut-être des nouvelles pour toi. » — E-mail « Nino te garde ta place » : « Deux semaines sans nouvelles de toi sur Minimoa. Rien de grave : la vie, ça occupe. » puis ce qui s'est passé (messages non lus, personnes qui ont fait signe, seulement celles qu'on peut encore lui montrer) ou « Rien ne presse : tout est là où tu l’as laissé. », et « si tu préfères faire une pause, c’est très bien aussi » | Une fois par absence ; rien au-delà (pas de relance à 30, 60, 90 jours) |
@@ -73,7 +75,7 @@ Ce que l'API ne sait pas, ou ne fait pas exprès :
 
 Ordre si deux tombent le même jour : anniversaire, puis absence, puis premiers pas ; l'autre attend le lendemain s'il est
 encore dans sa fenêtre. Pendant les 10 premiers jours, les premiers pas remplacent les absences (une personne qui ne
-revient pas après l'inscription reçoit J1, J3, J7, puis l'absence de 14 jours, et c'est tout).
+revient pas après l'inscription reçoit J1, J2, J3, J5, J7, puis l'absence de 14 jours, et c'est tout). J1, J2 et J3 se suivent : ils ne se rattrapent pas le lendemain (`catchUpOf`).
 
 Les textes des cinq langues : `packages/content/src/v7/notifications.ts` (push), `packages/content/src/v7/fidelite.ts`
 (e-mails), `apps/mobile/src/locales/pet.ts` (« Te revoilà »), `apps/mobile/src/locales/plus.ts` (bienvenue dans la
