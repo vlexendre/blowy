@@ -9,11 +9,11 @@ import { testSignals, VISION_AXES, VISION_TEST, type VisionAxis, type VisionProf
 export const VISION_EMOJI: Readonly<Record<string, readonly [string, string]>> = {
   dimanche: ['🛋️', '🧺'],
   enfants: ['🍝', '🥂'],
-  mutation: ['📦', '🏡'],
+  mutation: ['📦', '📍'],
   heritage: ['🐷', '🎟️'],
   promotion: ['📈', '🌙'],
   vacances: ['🎒', '📅'],
-  appartement: ['🔑', '😰'],
+  appartement: ['🏡', '🎒'],
   vendredi: ['🪩', '🛏️'],
   cinq_ans: ['🏘️', '✈️'],
   projet: ['🛠️', '🏖️'],
@@ -54,3 +54,15 @@ export function visionNow(answers: readonly VisionAnswer[], now: Date = new Date
 /** À quel point le minimoa est sûr d'un axe, en trois mots (jamais un chiffre). */
 export type Sureness = 'sure' | 'fairly' | 'refine';
 export const surenessOf = (confidence: number): Sureness => (confidence >= 60 ? 'sure' : confidence >= 35 ? 'fairly' : 'refine');
+
+/**
+ * Les traits les plus marqués d'une vision, pour la phrase de synthèse du résultat : 3 au plus, du plus net au moins
+ * net ; un axe resté au milieu (|valeur| < 20) n'en donne pas.
+ */
+export function strongestTraits(profile: VisionProfile, max = 3): { axis: VisionAxis; side: 'low' | 'high' }[] {
+  return VISION_AXES.map((axis) => ({ axis, value: profile[axis].value, weight: Math.abs(profile[axis].value) * (0.5 + profile[axis].confidence / 200) }))
+    .filter((a) => Math.abs(a.value) >= 20)
+    .sort((a, b) => b.weight - a.weight || VISION_AXES.indexOf(a.axis) - VISION_AXES.indexOf(b.axis))
+    .slice(0, max)
+    .map((a) => ({ axis: a.axis, side: a.value < 0 ? ('low' as const) : ('high' as const) }));
+}

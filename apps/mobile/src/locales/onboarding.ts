@@ -5,9 +5,19 @@
  * À partir de la création, c'est le minimoa qui parle : il pose les questions (première personne, tutoiement).
  */
 import { visionText } from '@blowy/content';
+import type { VisionAxis } from '@blowy/domain';
 import { liveMessages, messages } from './runtime';
 
 const up = (s: string): string => s.toUpperCase();
+
+/** « a, b et c » (et les équivalents des autres langues). */
+const list = (and: string, comma = ', ') => (items: readonly string[]): string =>
+  items.length <= 1 ? (items[0] ?? '') : `${items.slice(0, -1).join(comma)}${and}${items[items.length - 1]}`;
+const listFr = list(' et ');
+const listEn = list(' and ');
+const listEs = list(' y ');
+const listPt = list(' e ');
+const listNl = list(' en ');
 
 export const onboarding = messages({
   fr: {
@@ -53,7 +63,7 @@ export const onboarding = messages({
       note: 'Réponds pour toi, pas pour faire bien.',
       /** Sous les deux cartes. */
       hint: 'Touche la carte qui te ressemble. Pas de bonne réponse.',
-      meterTitle: (axis: string) => `Ta vision · ${axis}`,
+      meterTitle: (axis: string) => `${axis} ?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis} : ${pole}`,
       previous: 'Situation précédente',
@@ -62,15 +72,32 @@ export const onboarding = messages({
     },
     /** Ta vision, pour l'instant : le résultat du test. */
     taVision: {
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name} ?`,
       host: 'Voilà ta vision, pour l’instant. Je ne te présenterai que des gens qui vont avec.',
       highlight: 'ta vision',
       chips: (n: number) => [`${n} situations`, '2 minutes'] as const,
-      sureness: { sure: 'sûr', fairly: 'assez sûr', refine: 'à affiner' },
+      sureness: { sure: 'net', fairly: 'assez net', refine: 'encore flou' },
       axisA11y: (name: string, line: string, sureness: string) => `${name} : ${line}, ${sureness}`,
       between: 'entre les deux',
       lean: (pole: string) => `plutôt ${pole}`,
       promise: (pet: string) => `${pet} ne te présentera que des gens compatibles.`,
-      cta: 'C’est moi, ça',
+      cta: 'Montre-moi qui me ressemble',
+      /** La phrase de synthèse, en tête du résultat : les traits les plus marqués (2 ou 3), sans genre supposé. */
+      summary: {
+        lead: (traits: readonly string[]): string => `Tu es plutôt quelqu’un qui ${listFr(traits)}.`,
+        even: 'Chez toi, rien d’extrême : un peu de tout.',
+        traits: {
+          foyer: { low: 'tient à sa liberté', high: 'met la famille en premier' },
+          ancrage: { low: 'tient à son coin', high: 'a envie d’ailleurs' },
+          elan: { low: 'garde du temps pour soi', high: 'a de grands projets' },
+          rythme: { low: 'aime le calme', high: 'aime quand ça bouge' },
+          cap: { low: 'vit au jour le jour', high: 'aime prévoir' },
+        } as Record<VisionAxis, { low: string; high: string }>,
+        then: (pet: string) => `${pet} te présentera des gens qui vont avec. Le reste se précise avec tes réponses du jour.`,
+        detail: 'Le détail',
+      },
+      note: 'Indicatif : ça se précise avec tes réponses du jour.',
     },
     toi: {
       nameHost: 'On t’appelle comment ?',
@@ -281,7 +308,7 @@ export const onboarding = messages({
     vision: {
       note: 'Answer for you, not to look good.',
       hint: 'Tap the card that sounds like you. There’s no right answer.',
-      meterTitle: (axis: string) => `Your vision · ${axis}`,
+      meterTitle: (axis: string) => `${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Previous situation',
@@ -289,6 +316,8 @@ export const onboarding = messages({
       loadErrorText: 'Couldn’t load the situations. Check your connection.',
     },
     taVision: {
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name}?`,
       host: 'Here’s your vision, for now. I’ll only introduce you to people who fit it.',
       highlight: 'your vision',
       chips: (n: number) => [`${n} situations`, '2 minutes'] as const,
@@ -297,7 +326,21 @@ export const onboarding = messages({
       between: 'in between',
       lean: (pole: string) => `mostly ${pole}`,
       promise: (pet: string) => `${pet} will only introduce you to compatible people.`,
-      cta: 'That’s me',
+      cta: 'Show me who’s like me',
+      summary: {
+        lead: (traits: readonly string[]): string => `You’re someone who ${listEn(traits)}.`,
+        even: 'Nothing extreme about you: a bit of everything.',
+        traits: {
+          foyer: { low: 'values their freedom', high: 'puts family first' },
+          ancrage: { low: 'loves where they are', high: 'feels the pull of elsewhere' },
+          elan: { low: 'keeps time for themselves', high: 'has big projects' },
+          rythme: { low: 'likes it calm', high: 'likes it lively' },
+          cap: { low: 'lives day by day', high: 'likes to plan ahead' },
+        },
+        then: (pet: string) => `${pet} will introduce you to people who fit. The rest sharpens with your daily answers.`,
+        detail: 'The details',
+      },
+      note: 'A rough guide: it sharpens with your daily answers.',
     },
     toi: {
       nameHost: 'What should I call you?',
@@ -502,7 +545,7 @@ export const onboarding = messages({
     vision: {
       note: 'Responde por ti, no para quedar bien.',
       hint: 'Toca la carta que más se parece a ti. No hay respuesta correcta.',
-      meterTitle: (axis: string) => `Tu visión · ${axis}`,
+      meterTitle: (axis: string) => `¿${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Situación anterior',
@@ -510,15 +553,31 @@ export const onboarding = messages({
       loadErrorText: 'No se pudieron cargar las situaciones. Revisa tu conexión.',
     },
     taVision: {
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `¿${name}?`,
       host: 'Esta es tu visión, por ahora. Solo te presentaré a gente que encaje con ella.',
       highlight: 'tu visión',
       chips: (n: number) => [`${n} situaciones`, '2 minutos'] as const,
-      sureness: { sure: 'claro', fairly: 'bastante claro', refine: 'por afinar' },
+      sureness: { sure: 'claro', fairly: 'bastante claro', refine: 'aún difuso' },
       axisA11y: (name: string, line: string, sureness: string) => `${name}: ${line}, ${sureness}`,
       between: 'a medio camino',
       lean: (pole: string) => `más bien ${pole}`,
       promise: (pet: string) => `${pet} solo te presentará a gente compatible.`,
-      cta: 'Así soy yo',
+      cta: 'Enséñame quién se me parece',
+      summary: {
+        lead: (traits: readonly string[]): string => `Eres más bien alguien que ${listEs(traits)}.`,
+        even: 'Nada extremo en ti: un poco de todo.',
+        traits: {
+          foyer: { low: 'cuida su libertad', high: 'pone la familia primero' },
+          ancrage: { low: 'quiere a su rincón', high: 'sueña con otros lugares' },
+          elan: { low: 'guarda tiempo para sí', high: 'tiene grandes proyectos' },
+          rythme: { low: 'busca la calma', high: 'busca movimiento' },
+          cap: { low: 'vive al día', high: 'planea con tiempo' },
+        },
+        then: (pet: string) => `${pet} te presentará a gente que encaje. El resto se afina con tus respuestas del día.`,
+        detail: 'El detalle',
+      },
+      note: 'Orientativo: se afina con tus respuestas del día.',
     },
     toi: {
       nameHost: '¿Cómo te llamo?',
@@ -723,7 +782,7 @@ export const onboarding = messages({
     vision: {
       note: 'Responda por você, não para fazer bonito.',
       hint: 'Toque no cartão que tem a sua cara. Não existe resposta certa.',
-      meterTitle: (axis: string) => `Sua visão · ${axis}`,
+      meterTitle: (axis: string) => `${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Situação anterior',
@@ -731,15 +790,31 @@ export const onboarding = messages({
       loadErrorText: 'Não foi possível carregar as situações. Verifique sua conexão.',
     },
     taVision: {
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name}?`,
       host: 'Essa é a sua visão, por enquanto. Só vou te apresentar gente que combina com ela.',
       highlight: 'sua visão',
       chips: (n: number) => [`${n} situações`, '2 minutos'] as const,
-      sureness: { sure: 'claro', fairly: 'bem claro', refine: 'a refinar' },
+      sureness: { sure: 'claro', fairly: 'bem claro', refine: 'ainda vago' },
       axisA11y: (name: string, line: string, sureness: string) => `${name}: ${line}, ${sureness}`,
       between: 'no meio-termo',
       lean: (pole: string) => `mais para ${pole}`,
       promise: (pet: string) => `${pet} só vai te apresentar gente compatível.`,
-      cta: 'Tem a minha cara',
+      cta: 'Me mostra quem combina comigo',
+      summary: {
+        lead: (traits: readonly string[]): string => `Você é mais alguém que ${listPt(traits)}.`,
+        even: 'Nada de extremos: um pouco de tudo.',
+        traits: {
+          foyer: { low: 'preza a liberdade', high: 'põe a família em primeiro lugar' },
+          ancrage: { low: 'gosta do seu canto', high: 'sonha com outros lugares' },
+          elan: { low: 'guarda tempo para si', high: 'tem grandes projetos' },
+          rythme: { low: 'gosta de calma', high: 'gosta de agito' },
+          cap: { low: 'vive um dia de cada vez', high: 'gosta de planejar' },
+        },
+        then: (pet: string) => `${pet} vai te apresentar gente que combina. O resto se ajusta com as suas respostas do dia.`,
+        detail: 'Os detalhes',
+      },
+      note: 'Indicativo: se ajusta com as suas respostas do dia.',
     },
     toi: {
       nameHost: 'Como posso te chamar?',
@@ -944,7 +1019,7 @@ export const onboarding = messages({
     vision: {
       note: 'Antwoord voor jezelf, niet om goed over te komen.',
       hint: 'Tik op de kaart die bij je past. Er is geen goed antwoord.',
-      meterTitle: (axis: string) => `Jouw visie · ${axis}`,
+      meterTitle: (axis: string) => `${axis}?`,
       sticker: (pole: string) => `+ ${pole}`,
       meterA11y: (axis: string, pole: string) => `${axis}: ${pole}`,
       previous: 'Vorige situatie',
@@ -952,6 +1027,8 @@ export const onboarding = messages({
       loadErrorText: 'De situaties konden niet worden geladen. Controleer je verbinding.',
     },
     taVision: {
+      /** Un axe affiché en question simple (« Ici ou ailleurs ? »). */
+      axisQuestion: (name: string) => `${name}?`,
       host: 'Dit is je visie, voor nu. Ik stel je alleen voor aan mensen die erbij passen.',
       highlight: 'je visie',
       chips: (n: number) => [`${n} situaties`, '2 minuten'] as const,
@@ -960,7 +1037,21 @@ export const onboarding = messages({
       between: 'ertussenin',
       lean: (pole: string) => `eerder ${pole}`,
       promise: (pet: string) => `${pet} stelt je alleen voor aan mensen die bij je passen.`,
-      cta: 'Dat ben ik',
+      cta: 'Laat zien wie op me lijkt',
+      summary: {
+        lead: (traits: readonly string[]): string => `Je bent eerder iemand die ${listNl(traits)}.`,
+        even: 'Niets extreems aan jou: van alles een beetje.',
+        traits: {
+          foyer: { low: 'de eigen vrijheid koestert', high: 'familie op één zet' },
+          ancrage: { low: 'aan de eigen plek hecht', high: 'naar elders verlangt' },
+          elan: { low: 'tijd voor zichzelf houdt', high: 'grote plannen heeft' },
+          rythme: { low: 'van rust houdt', high: 'van drukte houdt' },
+          cap: { low: 'van dag tot dag leeft', high: 'graag vooruit plant' },
+        },
+        then: (pet: string) => `${pet} stelt je voor aan mensen die erbij passen. De rest wordt scherper met je dagelijkse antwoorden.`,
+        detail: 'De details',
+      },
+      note: 'Een indicatie: die wordt scherper met je dagelijkse antwoorden.',
     },
     toi: {
       nameHost: 'Hoe mag ik je noemen?',

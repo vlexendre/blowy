@@ -188,7 +188,7 @@ export const rituels = messages({
         plantes: '🪴',
       } as Record<string, string>,
       /** Repli si la vision n'est pas encore chargée. */
-      axis: { foyer: 'Foyer', ancrage: 'Ancrage', elan: 'Élan', rythme: 'Rythme', cap: 'Cap' } as Record<VisionAxis, string>,
+      axis: { foyer: 'Famille ou liberté', ancrage: 'Ici ou ailleurs', elan: 'Projets ou temps libre', rythme: 'Calme ou dehors', cap: 'Prévoir ou improviser' } as Record<VisionAxis, string>,
     },
     /** Preuve en photo (V6-GPreuve) et photo du défi. */
     proof: {
@@ -444,7 +444,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Family', ancrage: 'Roots', elan: 'Ambition', rythme: 'Pace', cap: 'Horizon' },
+      axis: { foyer: 'Family or freedom', ancrage: 'Here or elsewhere', elan: 'Projects or free time', rythme: 'Calm or out and about', cap: 'Plan or improvise' },
     },
     proof: {
       close: 'Close',
@@ -686,7 +686,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Hogar', ancrage: 'Raíces', elan: 'Ambición', rythme: 'Ritmo', cap: 'Horizonte' },
+      axis: { foyer: 'Familia o libertad', ancrage: 'Aquí o en otro lugar', elan: 'Proyectos o tiempo libre', rythme: 'Calma o salir', cap: 'Planear o improvisar' },
     },
     proof: {
       close: 'Cerrar',
@@ -928,7 +928,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Família', ancrage: 'Raízes', elan: 'Ambição', rythme: 'Ritmo', cap: 'Horizonte' },
+      axis: { foyer: 'Família ou liberdade', ancrage: 'Aqui ou em outro lugar', elan: 'Projetos ou tempo livre', rythme: 'Calma ou sair', cap: 'Planejar ou improvisar' },
     },
     proof: {
       close: 'Fechar',
@@ -1170,7 +1170,7 @@ export const rituels = messages({
         decouvrir: '🧭',
         plantes: '🪴',
       },
-      axis: { foyer: 'Gezin', ancrage: 'Wortels', elan: 'Ambitie', rythme: 'Ritme', cap: 'Horizon' },
+      axis: { foyer: 'Gezin of vrijheid', ancrage: 'Hier of elders', elan: 'Projecten of vrije tijd', rythme: 'Rustig of erop uit', cap: 'Plannen of improviseren' },
     },
     proof: {
       close: 'Sluiten',
