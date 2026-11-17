@@ -106,7 +106,7 @@ const fr = {
   shapeLabel: {
     en_forme: { title: 'En pleine forme', text: 'Il sort, il croise du monde.' },
     bof: { title: 'Un peu à plat', text: 'Il croise moins de monde. Occupe-toi de lui.' },
-    boude: { title: 'Il boude', text: 'Il ne sort plus et ne croise personne. Nourris-le, joue, laisse-le dormir.' },
+    boude: { title: 'Il boude', text: 'Il te présente quand même quelqu’un chaque jour. Plus tu sors, plus il te présente de monde.' },
   } as Record<string, { title: string; text: string }>,
   slotLabel: { head: 'Tête', face: 'Visage', body: 'Tenue', toy: 'Objets' } as Record<string, string>,
   statGoalLabel: {
@@ -230,7 +230,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'Doing great', text: 'It goes out and meets people.' },
       bof: { title: 'A bit flat', text: 'It meets fewer people. Take care of it.' },
-      boude: { title: 'It’s sulking', text: 'It stays in and meets no one. Feed it, play, let it sleep.' },
+      boude: { title: 'It’s sulking', text: 'It still introduces you to someone every day. The more you go out, the more people it introduces.' },
     },
     slotLabel: { head: 'Head', face: 'Face', body: 'Outfit', toy: 'Items' },
     statGoalLabel: {
@@ -350,7 +350,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'En plena forma', text: 'Sale y conoce gente.' },
       bof: { title: 'Un poco apagado', text: 'Conoce a menos gente. Ocúpate de él.' },
-      boude: { title: 'Está enfurruñado', text: 'Ya no sale ni conoce a nadie. Dale de comer, juega con él, déjalo dormir.' },
+      boude: { title: 'Está enfurruñado', text: 'Aun así te presenta a alguien cada día. Cuanto más sales, más gente te presenta.' },
     },
     slotLabel: { head: 'Cabeza', face: 'Cara', body: 'Ropa', toy: 'Objetos' },
     statGoalLabel: {
@@ -470,7 +470,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'Em plena forma', text: 'Ele sai e conhece gente.' },
       bof: { title: 'Meio pra baixo', text: 'Ele conhece menos gente. Cuide dele.' },
-      boude: { title: 'Está emburrado', text: 'Não sai mais e não conhece ninguém. Dê comida, brinque, deixe ele dormir.' },
+      boude: { title: 'Está emburrado', text: 'Mesmo assim, ele te apresenta alguém todo dia. Quanto mais você sai, mais gente ele apresenta.' },
     },
     slotLabel: { head: 'Cabeça', face: 'Rosto', body: 'Roupa', toy: 'Objetos' },
     statGoalLabel: {
@@ -590,7 +590,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'In topvorm', text: 'Hij gaat op pad en ontmoet mensen.' },
       bof: { title: 'Een beetje futloos', text: 'Hij ontmoet minder mensen. Zorg voor hem.' },
-      boude: { title: 'Hij mokt', text: 'Hij gaat niet meer op pad en ontmoet niemand. Geef hem eten, speel, laat hem slapen.' },
+      boude: { title: 'Hij mokt', text: 'Toch stelt hij je elke dag aan iemand voor. Hoe meer je eropuit gaat, hoe meer mensen hij voorstelt.' },
     },
     slotLabel: { head: 'Hoofd', face: 'Gezicht', body: 'Outfit', toy: 'Spullen' },
     statGoalLabel: {

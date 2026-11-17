@@ -75,7 +75,7 @@ Ce qu'il faut faire chez Minimoa :
 3. **Les 7 premiers jours scénarisés** : J1 créer + 3 mots ; J2 première habitude ; J3 rejoindre ou créer un
    groupe ; J5 première personne présentée ; J7 bilan + palier « 7 jours » partageable. Les messages de
    fidélisation (`docs/FIDELISATION.md`) suivent déjà ce calendrier : vérifier qu'ils pointent vers ces actions.
-4. **Ne jamais bloquer les rencontres par les soins** (aujourd'hui un minimoa qui boude ne présente personne).
+4. **Ne jamais bloquer les rencontres par les soins** (fait : `encounterQuota`, sociabilité seule, au moins une présentation par jour).
 5. **Le dimanche** : le bilan de la semaine comme rendez-vous (« Ta semaine avec Nino »), partageable.
 6. **Mesurer** J1 / J7 / J30 par canal d'arrivée (3 mots, groupe, App Store, TikTok).
 

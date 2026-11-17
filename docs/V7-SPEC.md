@@ -62,7 +62,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 - **Sociabilité** devient la jauge principale (grande, en haut). Elle monte quand tu sors, vois du monde, salues, écris (et plus encore les jours où vous vous écrivez tous les deux, §24), tiens une habitude tournée vers les autres. Elle descend seule.
 - Faim, énergie, humeur restent, en petit, avec les quatre gestes (nourrir, jouer, sieste, câlin).
-- **Forme** = 60 % sociabilité + 40 % des trois autres. En forme : il rencontre plus. Il boude : il ne rencontre personne. Il ne meurt jamais.
+- **Forme** = 60 % sociabilité + 40 % des trois autres. Elle joue sur son humeur et son caractère, pas sur les gens : le nombre de présentations ne dépend que de la sociabilité (« plus tu sors, plus il te présente de monde », `encounterQuota`), jamais moins d'une par jour, même quand il boude. Il ne meurt jamais.
 - Le minimoa demande : « Tu es sorti aujourd'hui ? ». Réponses : « oui, j'ai vu du monde », « oui, un tour », « pas encore ». La localisation (app ouverte seulement) confirme un déplacement hors de la zone du domicile ; sinon c'est déclaratif, avec photo possible.
 
 ## 6. Les habitudes
