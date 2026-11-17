@@ -1,9 +1,16 @@
 /**
  * Animations et interactions de la landing (port fidèle de la maquette validée).
- * GSAP 3.12.5 + ScrollTrigger sont chargés depuis cdnjs (balises is:inline dans src/pages/index.astro) et lus sur
- * `window`. Sans GSAP, ou avec « réduire les animations », tout reste utilisable et statique.
+ * GSAP + ScrollTrigger et Lenis (défilement doux et aimanté sur ordinateur) sont servis par le site (npm), posés sur
+ * `window` pour le code historique. Sans GSAP, ou avec « réduire les animations », tout reste utilisable et statique.
  */
+import { gsap as gsapLib } from 'gsap';
+import { ScrollTrigger as STLib } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+import Snap from 'lenis/snap';
 import { alive, character, IMG, lives, nav, threeWords, type MoodKey } from '../content/landing';
+
+gsapLib.registerPlugin(STLib);
+Object.assign(window, { gsap: gsapLib, ScrollTrigger: STLib });
 
 // ── Typage minimal de la partie de GSAP utilisée ────────────────────────────
 type Target = Element | Element[] | string | object | null;
@@ -259,18 +266,49 @@ function main(): void {
       });
     return;
   }
-  gsap.registerPlugin(ST);
 
-  /* la couleur du fond suit la section active */
-  const root = $('.bgx');
-  function setGlow(s: HTMLElement, i: number): void {
-    if (!gsap) return;
-    const c = (s.dataset.glow ?? '').split(',');
-    gsap.to(root, { '--c1': c[0], '--c2': c[1], '--c3': c[2], duration: reduce ? 0 : 1.4, ease: 'power2.inOut', overwrite: 'auto' });
-    if (!reduce) {
-      gsap.to('.glow.a', { x: `${((i % 3) - 1) * 12}vw`, y: `${(i % 2) * 10}vh`, duration: 2, ease: 'power2.inOut', overwrite: 'auto' });
-      gsap.to('.glow.b', { x: `${-(((i + 1) % 3) - 1) * 10}vw`, y: `${((i + 1) % 2) * 14}vh`, duration: 2.2, ease: 'power2.inOut', overwrite: 'auto' });
+  /* halos du fond : dessinés dans un petit canvas (1/8 de la taille de l'écran) que la carte graphique agrandit.
+     Trois dégradés géants en calques coûtaient trop à composer à chaque image ; ici, un seul calque fixe. */
+  const cv = $<HTMLCanvasElement>('.bgx canvas.halo');
+  const ctx = cv?.getContext('2d') ?? null;
+  const glow = { a: '#6D3DF0', b: '#FFB800', c: '#FF5A3C', ax: 0, ay: 0, bx: 0, by: 0, cx: 0, cy: 0 };
+  const K = 8;
+  function drawHalos(): void {
+    if (!cv || !ctx) return;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const w = Math.ceil(W / K);
+    const h = Math.ceil(H / K);
+    if (cv.width !== w || cv.height !== h) {
+      cv.width = w;
+      cv.height = h;
     }
+    const vmax = Math.max(W, H) / 100;
+    ctx.clearRect(0, 0, w, h);
+    const r = 40 * vmax;
+    const blob = (x: number, y: number, color: string, alpha: number) => {
+      const g = ctx.createRadialGradient(x / K, y / K, 0, x / K, y / K, r / K);
+      g.addColorStop(0, color);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+    };
+    blob(10 * vmax + (glow.ax * W) / 100, 10 * vmax + (glow.ay * H) / 100, glow.a, 0.5);
+    blob(W - 6 * vmax + (glow.bx * W) / 100, (10 * H) / 100 + 40 * vmax + (glow.by * H) / 100, glow.b, 0.32);
+    blob((5 * W) / 100 + 40 * vmax + glow.cx * vmax, H + 6 * vmax + glow.cy * vmax, glow.c, 0.36);
+    ctx.globalAlpha = 1;
+  }
+  drawHalos();
+  window.addEventListener('resize', drawHalos);
+  function setGlow(s: HTMLElement, i: number): void {
+    const c = (s.dataset.glow ?? '').split(',');
+    const to: Record<string, string | number> = {};
+    if (c[0]) to.a = c[0];
+    if (c[1]) to.b = c[1];
+    if (c[2]) to.c = c[2];
+    if (!reduce) Object.assign(to, { ax: ((i % 3) - 1) * 12, ay: (i % 2) * 10, bx: -(((i + 1) % 3) - 1) * 10, by: ((i + 1) % 2) * 14 });
+    gsapLib.to(glow, { ...to, duration: reduce ? 0 : 1.6, ease: 'power2.inOut', overwrite: 'auto', onUpdate: drawHalos });
   }
   secs.forEach((s, i) => {
     ST.create({
@@ -289,6 +327,18 @@ function main(): void {
 
   if (reduce) return;
 
+  /* défilement : sur ordinateur (souris, pavé tactile), Lenis lisse la molette et aimante chaque section en douceur ;
+     au doigt, le défilement natif et l'aimantation CSS restent (déjà fluides sur téléphone) */
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.documentElement.classList.remove('snap');
+    const lenis = new Lenis({ lerp: 0.12, anchors: true });
+    lenis.on('scroll', () => STLib.update());
+    gsapLib.ticker.add((t) => lenis.raf(t * 1000));
+    gsapLib.ticker.lagSmoothing(0);
+    const snap = new Snap(lenis, { type: 'proximity', distanceThreshold: '35%', duration: 0.8, easing: (t) => 1 - Math.pow(1 - t, 4), debounce: 160 });
+    snap.addElements(secs, { align: 'start' });
+  }
+
   /* découpe des titres en mots (les états cachés ne sont posés que par JS) */
   document.documentElement.classList.add('js-split');
   $$('.hd .ln').forEach((ln) => {
@@ -306,12 +356,11 @@ function main(): void {
   });
 
   /* mouvement d'ambiance du fond */
-  gsap.to('.stars', { yPercent: -20, ease: 'none', scrollTrigger: { trigger: document.documentElement, start: 0, end: 'max', scrub: 1.2 } });
   $$('.drift').forEach((d, i) => {
     gsap.to(d, { y: (i % 2 ? -1 : 1) * (120 + i * 40), rotation: i % 2 ? 40 : -50, ease: 'none', scrollTrigger: { trigger: document.documentElement, start: 0, end: 'max', scrub: 1.5 } });
     gsap.to(d, { x: i % 2 ? 14 : -14, duration: 4 + i * 0.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
   });
-  gsap.to('.glow.c', { xPercent: 10, yPercent: -8, duration: 10, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+  gsapLib.to(glow, { cx: 8, cy: -6.4, duration: 10, yoyo: true, repeat: -1, ease: 'sine.inOut', onUpdate: drawHalos });
 
   /* panneaux : grandissent en arrivant, s'enfoncent en partant */
   secs.forEach((s) => {
@@ -322,12 +371,24 @@ function main(): void {
       .to(p, { scale: 0.93, opacity: 0.55, ease: 'none', duration: 1 });
   });
 
-  /* mouvement au repos : les pets respirent, les autocollants oscillent */
+  /* mouvement au repos : les pets respirent, les autocollants oscillent — seulement quand leur section est à l'écran */
+  const loopsOf = new Map<Element, gsap.core.Tween[]>();
+  const keep = (el: Element, tw: gsap.core.Tween) => {
+    const s = el.closest('.sec');
+    if (!s) return;
+    const l = loopsOf.get(s) ?? [];
+    l.push(tw);
+    loopsOf.set(s, l);
+  };
   $$('.bob').forEach((b, i) => {
-    gsap.to(b, { y: -8, scaleY: 1.025, scaleX: 0.985, transformOrigin: '50% 100%', duration: 1.6 + (i % 3) * 0.25, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.2 });
+    keep(b, gsapLib.to(b, { y: -8, scaleY: 1.025, scaleX: 0.985, transformOrigin: '50% 100%', duration: 1.6 + (i % 3) * 0.25, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.2 }));
   });
   $$('.stk[data-r="stk"], .app .ico').forEach((s, i) => {
-    gsap.to(s, { rotation: i % 2 ? 8 : -8, y: -5, duration: 2.2 + (i % 4) * 0.3, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.15 });
+    keep(s, gsapLib.to(s, { rotation: i % 2 ? 8 : -8, y: -5, duration: 2.2 + (i % 4) * 0.3, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.15 }));
+  });
+  loopsOf.forEach((tws, s) => {
+    tws.forEach((t) => t.pause());
+    STLib.create({ trigger: s, start: 'top bottom', end: 'bottom top', onToggle: (self) => tws.forEach((t) => (self.isActive ? t.resume() : t.pause())) });
   });
 
   /* entrées : une timeline par section, jouée quand la section s'aimante */
