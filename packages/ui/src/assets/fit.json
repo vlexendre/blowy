@@ -11624,15 +11624,15 @@
    "ratio": 1.6026
   },
   "hiver_cache_oreilles": {
-   "anchor": "eyes",
+   "anchor": "brow",
    "size": "brow",
    "w": 1.5,
    "pivot": [
     0.5,
-    0.72
+    0.62
    ],
    "ratio": 1.1868,
-   "dy": 0.0
+   "dy": -0.04
   },
   "hiver_lunettes": {
    "anchor": "eyes",
@@ -11666,15 +11666,16 @@
    }
   },
   "hiver_cape": {
-   "anchor": "ground",
-   "size": "brow",
-   "w": 1.75,
+   "anchor": "neck",
+   "size": "bodyw",
+   "w": 1.5,
    "pivot": [
     0.5,
-    0.97
+    0.08
    ],
    "ratio": 1.2,
-   "dy": 0,
+   "dy": -0.02,
+   "sy": 0.36,
    "z": "back"
   },
   "hiver_moufles": {
@@ -11750,9 +11751,6 @@
  "overrides": {
   "nino": {
    "casque_audio": {
-    "w": 1.65
-   },
-   "hiver_cache_oreilles": {
     "w": 1.65
    }
   },

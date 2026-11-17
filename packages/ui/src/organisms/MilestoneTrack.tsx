@@ -1,5 +1,7 @@
+import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 
+import { propImage } from '../assets/misc';
 import { Card } from '../atoms/Card';
 import { Glyph } from '../atoms/Glyph';
 import { ItemImage } from '../atoms/ItemImage';
@@ -37,9 +39,13 @@ export function MilestoneTrack({ title, hint, milestones, onceKey }: MilestoneTr
   return (
     <Card padding="none" style={styles.card}>
       <View style={styles.head}>
-        <Text variant="bodyHeavy" size={16} accessibilityRole="header">
-          {title}
-        </Text>
+        <View style={styles.titleRow}>
+          {/* La médaille des paliers (décor). */}
+          <Image source={propImage('medaille')} contentFit="contain" style={styles.medal} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+          <Text variant="bodyHeavy" size={16} accessibilityRole="header">
+            {title}
+          </Text>
+        </View>
         {hint ? (
           <Text size={13} muted>
             {hint}
@@ -72,6 +78,8 @@ export function MilestoneTrack({ title, hint, milestones, onceKey }: MilestoneTr
 }
 
 const styles = StyleSheet.create({
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  medal: { width: 18, height: 25 },
   card: { borderRadius: radius.card, paddingHorizontal: space.md + 2, paddingVertical: space.md + 2, gap: space.md },
   head: { gap: 2 },
   row: { flexDirection: 'row', justifyContent: 'space-between' },

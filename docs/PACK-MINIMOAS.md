@@ -45,6 +45,26 @@ d'objets premium.
   `BODY_POSES`, `petBodyImage`, `bodyPoseFor` (humeur → pose : `amour` → `joie`, `salut` → `coucou`, `colere` → `boude`…).
   Utilisées par `PetActor` dès 96 pt ou habillé (fondu-enchaîné entre poses), `DressedPet`, `EncounterStage`
   (`marche` → `check`, `coucou` → `joie`), défi (`pense`), série (`joie`). Les bustes restent pour les petites tailles.
+- **A, planche 2 : intégrée.** 48 corps de plus (colère, malade, timide, fier, rit, danse, accueil, assis, bâille, bain,
+  applaudit, fête) : réparés (antennes de Suzie et corne de Pia en fête, mousse de Pia), même échelle que la planche 1
+  (taille de la tête recalée sur `neutre` par les yeux), pieds sur y = 958 (`scripts/fit-poses/pack2.py`). Confettis
+  (fête) et bulles (bain) en particules (`Burst`), muettes avec « réduire les animations ». Moments : refus → `colere`,
+  besoins à plat → `malade`, première rencontre → `timide`, palier de série → `fier` puis `fete` (coffre et médaille),
+  câlin → `rit`, repos → `assis` et parfois `danse` (rarement `bain` : aucune habitude douche/bain au catalogue), retour
+  après plus de 3 jours → `accueil`, fin de soirée → `baille` puis `dodo`, défi relevé → `applaudit`.
+- **B : intégrée.** Formes d'évolution en pied (mêmes noms de fichiers `<espèce>_evo_<forme>`, scintillements de la
+  forme sociable en particules), bébé, œuf, œuf fêlé, éclosion, fantôme, en danger (`<espèce>_corps_<variante>`, poses
+  du registre). Accueil : la forme courante au repos ; préparation : œuf → fêlé → éclosion → bébé ; fantôme dans le
+  panneau d'un lien à 0 vie ; « en danger » pour un lien à 1–2 vies (onglet Le lien) et pour un minimoa délaissé
+  (3 jours sans ouvrir l'app, jusqu'au premier soin). Pas de tenue sur l'œuf, l'éclosion, le fantôme ; couvre-chef
+  seul sur le bébé.
+- **D : intégrée en partie.** 24 éléments (`packages/ui/assets/misc`, registre `assets/misc.ts`) : la nourriture et le
+  jouet du soin tournent (glissés jusqu'au pet, puis tenus dans `mange` / `joue`), coussin et plaid pour la sieste,
+  canard et brosse au bain, petit habitat flou sur la scène (tapis, plante, lampe, cadre avec la dernière photo des
+  souvenirs, veilleuse la nuit ; masqué sous 700 pt de haut), coffre et médaille aux paliers de série.
+- **E : collection Hiver** (12 objets premium, Minimoa+) : bonnet, diadème, cache-oreilles, masque de ski, écharpe
+  bleu nuit (dos recoloré), cape (dans le dos), moufles, chocolat, boule à neige, sapin et bonhomme (posés à côté),
+  aura de flocons (tourne derrière le minimoa). Vitrine du paywall : son minimoa en bonnet, écharpe et aura.
 - **Habillage porté** : ancres mesurées par pose (`fit.json` → `species.<s>.poses`, script
   `apps/mobile/scripts/fit-poses/`), rendu « porté » dans `DressedPet` (ombre portée, voile de fourrure, ombre propre en
   bas à droite, fourrure devant le bas des couvre-chefs, objets enveloppants en deux calques, objet tenu dans la main

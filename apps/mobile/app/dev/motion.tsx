@@ -10,6 +10,7 @@ import {
   BottomTabBar,
   Burst,
   type BurstKind,
+  type CareProp,
   Button,
   CareBar,
   ChallengeCard,
@@ -65,7 +66,12 @@ import { StyleSheet, View } from 'react-native';
 import { ScreenMotion } from '@/core';
 
 const SPECIES: readonly Species[] = ['nino', 'suzie', 'gaston', 'pia'];
-const REACTIONS: readonly PetActorReaction[] = ['feed', 'play', 'nap', 'cuddle', 'joy', 'no', 'wave', 'surprise'];
+const REACTIONS: readonly PetActorReaction[] = [
+  'feed', 'play', 'nap', 'cuddle', 'joy', 'no', 'wave', 'surprise',
+  'proud', 'party', 'welcome', 'shy', 'clap', 'laugh', 'dance', 'sit', 'yawn', 'bath',
+];
+/** Objet porté par la réaction (`?item=cookie`) : nourriture ou jouet tenu dans la pose. */
+const REACTION_ITEM: Partial<Record<PetActorReaction, CareProp>> = { feed: 'cookie', play: 'peluche' };
 const EDGES: readonly PeekEdge[] = ['bottom-right', 'bottom-left', 'left', 'right', 'top'];
 const BURSTS: readonly BurstKind[] = ['hearts', 'stars', 'sparkles', 'confetti', 'zzz'];
 const LOOK: Outfit = { head: 'casquette', face: 'lunettes_rondes', body: 'echarpe', toy: 'ballon' };
@@ -136,7 +142,7 @@ function ActorBench() {
       <Text muted>{log}</Text>
       <Row>
         {REACTIONS.map((r) => (
-          <Button key={r} label={r} size="chip" variant="glass" block={false} onPress={() => actor.current?.react(r)} accessibilityLabel={`réaction ${r}`} />
+          <Button key={r} label={r} size="chip" variant="glass" block={false} onPress={() => actor.current?.react(r, REACTION_ITEM[r])} accessibilityLabel={`réaction ${r}`} />
         ))}
       </Row>
     </Section>
