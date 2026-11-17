@@ -22,7 +22,7 @@ describe('groupes et habitudes partagées', () => {
     (await p.api.rituals.habits()).habits.find((h) => h.habitId === habitId)?.ref ?? '';
 
   beforeAll(async () => {
-    w = await startWorld({ ADMIN_EMAILS: 'ops@blowy.app' });
+    w = await startWorld({ ADMIN_EMAILS: 'ops@minimoa.app' });
     db = w.app.get<MemoryDb>(MEMORY_DB);
     const people: P[] = [];
     for (const name of ['Alix', 'Bao', 'Cyd', 'Dani']) {
@@ -205,7 +205,7 @@ describe('groupes et habitudes partagées', () => {
   it('administration : le signalement porte le groupe ; voir et fermer un groupe', async () => {
     const admin = createAdminClient({
       baseUrl: w.baseUrl,
-      getToken: () => `test:${randomUUID()}:ops@blowy.app`,
+      getToken: () => `test:${randomUUID()}:ops@minimoa.app`,
     });
     const reports = await admin.reports({ status: 'open' });
     const item = reports.items.find((r) => r.groupId === g1 && r.reporter?.id === b.id);
@@ -224,7 +224,7 @@ describe('groupes et habitudes partagées', () => {
     // Un compte qui n'est pas dans ADMIN_EMAILS : refusé.
     const other = createAdminClient({
       baseUrl: w.baseUrl,
-      getToken: () => `test:${randomUUID()}:x@blowy.app`,
+      getToken: () => `test:${randomUUID()}:x@minimoa.app`,
     });
     expect(await errorCode(other.group(g1))).toBe('forbidden');
   });

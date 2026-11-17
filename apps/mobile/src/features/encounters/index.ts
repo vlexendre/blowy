@@ -89,7 +89,7 @@ export function useDeclineEncounter() {
   });
 }
 
-/** Code d'invitation reçu par un lien blowy://i/CODE, en attente d'être accepté. */
+/** Code d’invitation reçu par un lien (https://minimoa.app/i/CODE ou minimoa://i/CODE), en attente d'être accepté. */
 export const usePendingInvite = create<{ code: string | null; set: (code: string | null) => void }>((set) => ({
   code: null,
   set: (code) => set({ code }),

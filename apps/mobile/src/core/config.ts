@@ -6,7 +6,7 @@ const isLocalApi = /^http:\/\/(localhost|127\.0\.0\.1|10\.0\.2\.2)(:|\/|$)/.test
 
 export const config = {
   apiUrl,
-  webUrl: process.env.EXPO_PUBLIC_WEB_URL ?? 'https://blowy.app',
+  webUrl: process.env.EXPO_PUBLIC_WEB_URL ?? 'https://minimoa.app',
   supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? '',
   supabaseKey: process.env.EXPO_PUBLIC_SUPABASE_KEY ?? '',
   /** `local` : connexion factice (code 000000) pour le développement, avec l'API en mode mémoire. */

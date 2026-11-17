@@ -86,7 +86,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
   - Les rencontres demandent des personnes compatibles à moins d'environ 1,5 km (`docs/V7-SPEC.md` §10). L'examinateur est en général aux États-Unis : personne. Les écrans Rencontres et Chats resteront vides ; l'accord de lecture par l'IA, les répliques des minimoas, « Signaler » et « Bloquer » (dans `app/rencontre/[userId].tsx:198` et `app/link/[id]/options.tsx`) sont inatteignables.
 - **Pourquoi c'est un risque :** refus classique « We were unable to review your app as it crashed / appears incomplete » ou « we could not locate the reporting mechanism ». Avec un chat entre inconnus et une IA qui lit les messages, Apple voudra le voir.
 - **Correctif :** un **compte de revue** côté serveur :
-  1. une connexion par e-mail et code, activée en production **seulement** pour une adresse listée dans `apps/api/.env` (par exemple `REVIEW_EMAILS=review@blowy.app`), cachée derrière un lien discret « J'ai un code de démonstration » sous le bouton Apple (le bouton Apple reste le seul moyen pour le public) ;
+  1. une connexion par e-mail et code, activée en production **seulement** pour une adresse listée dans `apps/api/.env` (par exemple `REVIEW_EMAILS=review@minimoa.app`), cachée derrière un lien discret « J'ai un code de démonstration » sous le bouton Apple (le bouton Apple reste le seul moyen pour le public) ;
   2. à la connexion de ce compte, un monde de démonstration **visible de lui seul** (le `DemoWorld` existant, rebranché sur Supabase) : une rencontre reçue, une rencontre proposée, un lien ouvert avec des messages, l'accord de lecture déjà donné par l'autre personne fictive, une habitude avec preuve demandée, un défi photo ; positions de démonstration recentrées sur la position de l'examinateur, ou ville choisie ;
   3. ces personnes fictives ne doivent **jamais** être montrées à de vrais utilisateurs (`Audience`), sinon c'est de faux profils dans une app de rencontre (5.6) ;
   4. les identifiants dans les notes de revue (section 7).
@@ -94,9 +94,9 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 
 ### B2. Pages légales à trous et site injoignable
 - **Règles :** 2.1(a) « placeholder text, empty websites, and other temporary content should be scrubbed before submission » ; 1.5 « Make sure your app and its Support URL include an easy way to contact you » ; 5.1.1(i) la politique doit « Confirm that any third party with whom an app shares user data … will provide the same or equal protection » ; page Abonnements : « your app and App Store metadata must include links to your Terms of Use and Privacy Policy ».
-- **Constat :** `apps/web/src/config/legal.ts:10-70` : `TODO = 'À COMPLÉTER'` pour la forme juridique, le capital, le SIREN, l'adresse, le téléphone, le directeur de la publication, **les trois e-mails de contact** (assistance, données, sécurité), le DPO, les hébergeurs, le médiateur et **tous les sous-traitants** (dont `ai`). Le site déjà construit (`apps/web/dist/legal/*/index.html`) contient ces « À COMPLÉTER » sur les dix pages. L'app pointe vers ces pages depuis le paywall, la connexion et les réglages (`https://blowy.app/legal/...`). Depuis l'environnement d'audit, `https://blowy.app` n'a pas répondu (erreur 502 du proxy) : impossible de dire s'il est en ligne. Le fichier `apps/web/public/.well-known/apple-app-site-association` contient encore `TEAMID.app.blowy`.
-- **Incohérence :** l'app affiche `hello@blowy.app` comme assistance (`packages/content/src/labels.ts:15`), la page Assistance affiche « À COMPLÉTER ».
-- **Correctif :** remplir tous les champs, nommer chaque sous-traitant (base et stockage, hébergement de l'API, IA : Anthropic, e-mails, notifications : Expo, carte : Apple), mettre le site en ligne, vérifier chaque lien depuis un iPhone, remplacer `TEAMID`. Vérifier que `hello@blowy.app` reçoit bien le courrier.
+- **Constat :** `apps/web/src/config/legal.ts:10-70` : `TODO = 'À COMPLÉTER'` pour la forme juridique, le capital, le SIREN, l'adresse, le téléphone, le directeur de la publication, **les trois e-mails de contact** (assistance, données, sécurité), le DPO, les hébergeurs, le médiateur et **tous les sous-traitants** (dont `ai`). Le site déjà construit (`apps/web/dist/legal/*/index.html`) contient ces « À COMPLÉTER » sur les dix pages. L'app pointe vers ces pages depuis le paywall, la connexion et les réglages (`https://minimoa.app/legal/...`). Depuis l'environnement d'audit, `https://minimoa.app` n'a pas répondu (erreur 502 du proxy) : impossible de dire s'il est en ligne. Le fichier `apps/web/public/.well-known/apple-app-site-association` contient encore `TEAMID.app.blowy`.
+- **Incohérence :** l'app affiche `hello@minimoa.app` comme assistance (`packages/content/src/labels.ts:15`), la page Assistance affiche « À COMPLÉTER ».
+- **Correctif :** remplir tous les champs, nommer chaque sous-traitant (base et stockage, hébergement de l'API, IA : Anthropic, e-mails, notifications : Expo, carte : Apple), mettre le site en ligne, vérifier chaque lien depuis un iPhone, remplacer `TEAMID`. Vérifier que `hello@minimoa.app` reçoit bien le courrier.
 - **Effort :** une demi-journée une fois les informations réunies. **Qui :** propriétaire, juriste.
 
 ### B3. Une fonction vendue qui n'est pas livrée : les objets premium
@@ -321,9 +321,9 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
 
 ### 7.5 Adresses obligatoires
-- **Politique de confidentialité** : `https://blowy.app/legal/confidentialite` (champ App Privacy) — complète (B2).
-- **Assistance (Support URL)** : `https://blowy.app/legal/assistance`, avec un e-mail réel.
-- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Minimoa, soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://blowy.app/legal/conditions » à la fin de la description (refus 3.1.2 fréquent sinon). Ajouter aussi le lien des conditions Minimoa+ (`/legal/abonnement`).
+- **Politique de confidentialité** : `https://minimoa.app/legal/confidentialite` (champ App Privacy) — complète (B2).
+- **Assistance (Support URL)** : `https://minimoa.app/legal/assistance`, avec un e-mail réel.
+- **Conditions d'utilisation (EULA)** : soit le champ « Licence Agreement » personnalisé avec les conditions de Minimoa, soit le contrat standard d'Apple **et** un lien « Conditions d'utilisation : https://minimoa.app/legal/conditions » à la fin de la description (refus 3.1.2 fréquent sinon). Ajouter aussi le lien des conditions Minimoa+ (`/legal/abonnement`).
 - Fiche : pas de prix dans le nom, le sous-titre ni les captures (2.3.7) ; captures de l'app en usage (2.3.3) ; ne promettre que ce qui existe (pas « objets premium » tant que B3 n'est pas réglé).
 
 ### 7.6 Texte pour les notes de revue (à adapter une fois B1 fait)
@@ -332,7 +332,7 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 > compatible (score above 70%).
 >
 > **Demo account.** Sign in with Apple is the only public sign-in. For review, tap "J'ai un code de démonstration"
-> below the Apple button, enter `review@blowy.app`, then the code `<code>`. This account comes with sample data visible
+> below the Apple button, enter `review@minimoa.app`, then the code `<code>`. This account comes with sample data visible
 > only to it: an incoming introduction (Rencontres tab), an open chat with "Léa" (Chats tab), a pending habit proof
 > and today's challenge (Mon minimoa tab). You can also create your own account with Sign in with Apple.
 >

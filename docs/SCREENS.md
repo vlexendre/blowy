@@ -21,7 +21,7 @@ présentation dans `app/**` (uniquement de la mise en page triviale passée par 
 | `app/(onboarding)/notifications.tsx` | — | même principe : `NotifPreview` (exemples), « 3 par jour au plus », « jamais la nuit », puis la demande du système ; l'appareil est enregistré auprès de l'API après la création du compte (`SessionBridges`) ; web : pas de demande |
 | `app/(onboarding)/promesse.tsx` | — | la promesse : `HoldButton` (maintenir ou toucher), rien n'est enregistré ; → connexion, ou préparation si déjà connecté |
 | `app/(onboarding)/connexion.tsx` | V6-GConnexion | « On garde <minimoa> ? » (`OnboardingPanel` jaune, puces) ; `useProviders()` : « Continuer avec Apple » (bouton officiel, iPhone) ou « Continuer avec Google » (Android, web) via `useSignInWith` ; annulé → ligne neutre, échec → bannière « Réessayer » ; `mode=login` : « Te revoilà. », sans barre ; suite par `useAfterSignIn` ; mode local : boutons simulés + « Mode dev : e-mail et code » replié (docs/CONNEXION.md) |
-| `app/(onboarding)/auth-callback.tsx` | — | retour de la page Google (`blowy://auth-callback`, `/auth-callback`) : referme la fenêtre (web) ou revient en arrière |
+| `app/(onboarding)/auth-callback.tsx` | — | retour de la page Google (`minimoa://auth-callback`, ancien `blowy://auth-callback`, `/auth-callback`) : referme la fenêtre (web) ou revient en arrière |
 | `app/(onboarding)/preparation.tsx` | — | `useOnboard` (la vraie création : `onboardBody()` avec vision, sexe, position et accord, langue, invitation) + `usePrepTicker` (barre honnête : 100 % seulement après la réussite) ; erreur → bannière « Réessayer » ; `too_young` → `AgeGate` ; `already_onboarded` → accueil |
 | `app/(onboarding)/pret.tsx` | — | `useMe` : « tout est prêt, <prénom> ! », un bouton → invitations |
 | `app/(onboarding)/invite.tsx` | V6-Invite | `useMe` : lien d'invitation + lien « 3 mots » à partager |
@@ -100,6 +100,9 @@ préparation (création réelle) → tout est prêt → invitations → Minimoa+
 - **Notifications** : jeton envoyé à l'ouverture par `SessionBridges` (une fois par session) et au retour au premier plan
   (`useNotificationsBridge`, monté par les onglets) ; une notification touchée ouvre `PushData.url` (`blowy://…`), même
   app fermée (`getLastNotificationResponseAsync`) ; retrait du jeton à la déconnexion et à la suppression. Web : rien.
+- **Liens universels et schémas** (`https://minimoa.app/…`, `minimoa://`, `blowy://`) : `app/+native-intent.ts`, même
+  lecteur que les notifications (`features/notifications/url.ts`) ; `app/m/[code].tsx` ouvre le vote « 3 mots » du site
+  dans le navigateur de l'app. Chemins et attente de l'inscription : docs/DEEPLINKS.md.
 - **Minimoa+** depuis ces écrans : `openPlus(raison)` de `features/plus` (`map`, `encounters`, `generic`).
 
 ## Rituels (V7 §5 à §8)

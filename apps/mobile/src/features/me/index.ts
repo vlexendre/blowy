@@ -113,7 +113,7 @@ export function useStoryShare() {
   return { card, busy, share, copied, copy };
 }
 
-/** Adresse affichée sans protocole (« blowy.app/i/ABCD1234 »). */
+/** Adresse affichée sans protocole (« minimoa.app/i/ABCD1234 »). */
 export const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '');
 
 /** E-mail affiché à moitié caché : « a•••@avectroise.fr ». */

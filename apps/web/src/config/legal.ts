@@ -45,7 +45,7 @@ export const CONTACT = {
 /** Délégué à la protection des données (nom ou « non désigné »). */
 export const DPO = { name: TODO } as const;
 
-/** Hébergeur du site blowy.app (article 6 III de la LCEN). */
+/** Hébergeur du site minimoa.app (article 6 III de la LCEN). */
 export const SITE_HOST = { name: TODO, address: TODO, phone: TODO } as const;
 
 /**

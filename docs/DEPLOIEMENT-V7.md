@@ -43,6 +43,11 @@ naît dans la migration « plateforme »).
    **Google** (identifiants OAuth) ; garder le code par e-mail seulement pour le mode local.
 2. Faire une **sauvegarde** (Database › Backups) ou vérifier la sauvegarde du jour (point de retour, étape 7).
 3. Noter la chaîne de connexion directe (pas le pooler en mode transaction) pour les étapes 3 et 4.
+4. Authentication › URL Configuration : Site URL `https://minimoa.app` ; Redirect URLs `minimoa://auth-callback`,
+   `blowy://auth-callback`, `https://minimoa.app/auth-callback` (docs/CONNEXION.md).
+
+**Cloudflare Pages** (site `minimoa.app`) : `APPLE_TEAM_ID` dans les variables du build, `www.minimoa.app` servi sans
+redirection pour `/.well-known/*` ; liens profonds : docs/DEEPLINKS.md.
 
 **Expo / EAS** : profil de production avec `EXPO_PUBLIC_API_URL` de la nouvelle API ; ne pas activer encore
 `EXPO_PUBLIC_LIVE_ACTIVITY_PUSH` (étape 6).
@@ -71,7 +76,7 @@ Facultatives (valeurs par défaut correctes) : `AI_PROVIDER`, `AI_PROVIDER_NAME`
 `AI_KILL_SWITCH` (0), `AI_DAILY_CEILING_USD` (3), `AI_USER_BUDGETS`, `AI_PRICES_SMALL`, `AI_PRICES_MEDIUM`,
 `AI_EUR_PER_USD`, `PUSH_PROVIDER` (`expo`), `EXPO_ACCESS_TOKEN`, `TICK_BUDGET_MS` (20000), `APPLE_BUNDLE_ID`
 (`app.blowy`), `APPLE_ACCEPT_SANDBOX` (1, nécessaire pour TestFlight), `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`,
-`MAIL_FROM`, `WEB_URL`, `API_URL`, `PORT`. La liste commentée est dans `.env.example`.
+`MAIL_FROM` (`Minimoa <hello@minimoa.app>`), `WEB_URL` (`https://minimoa.app`), `API_URL`, `PORT`. La liste commentée est dans `.env.example`.
 
 ## 3. Jour J, sans coupure : index des grosses tables
 

@@ -3,12 +3,12 @@ import type { LegalPage } from '../types';
 export const cookies: LegalPage = {
   title: 'Cookies — Minimoa',
   heading: 'Cookies',
-  description: 'De website blowy.app plaatst geen cookies. Wat de site laadt van andere diensten, en wat die diensten ontvangen.',
-  intro: 'Korte versie: de website blowy.app plaatst geen cookies. Hier de details, gecontroleerd in de code.',
+  description: 'De website minimoa.app plaatst geen cookies. Wat de site laadt van andere diensten, en wat die diensten ontvangen.',
+  intro: 'Korte versie: de website minimoa.app plaatst geen cookies. Hier de details, gecontroleerd in de code.',
   body: [
     { h2: 'Wat de website plaatst', id: 'depose' },
     {
-      p: 'De website blowy.app plaatst **geen cookies** en slaat niets op in de opslag van je browser (geen local storage, geen session storage). Er zijn geen bezoekersstatistieken, geen reclame en geen knoppen van sociale netwerken. Daarom is er geen toestemmingsbanner.',
+      p: 'De website minimoa.app plaatst **geen cookies** en slaat niets op in de opslag van je browser (geen local storage, geen session storage). Er zijn geen bezoekersstatistieken, geen reclame en geen knoppen van sociale netwerken. Daarom is er geen toestemmingsbanner.',
     },
     { p: 'Deze pagina gaat alleen over de website. De app Minimoa valt onder het [privacybeleid](@confidentialite).' },
 

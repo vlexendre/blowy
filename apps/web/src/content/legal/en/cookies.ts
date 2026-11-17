@@ -3,12 +3,12 @@ import type { LegalPage } from '../types';
 export const cookies: LegalPage = {
   title: 'Cookies — Minimoa',
   heading: 'Cookies',
-  description: 'The blowy.app website sets no cookies. What it loads from other services, and what those services receive.',
-  intro: 'Short version: the blowy.app website sets no cookies. Here are the details, checked in its code.',
+  description: 'The minimoa.app website sets no cookies. What it loads from other services, and what those services receive.',
+  intro: 'Short version: the minimoa.app website sets no cookies. Here are the details, checked in its code.',
   body: [
     { h2: 'What the website sets', id: 'depose' },
     {
-      p: 'The blowy.app website sets **no cookies** and stores nothing in your browser’s storage (neither local storage nor session storage). It uses no audience measurement, no advertising and no social media buttons. That is why there is no consent banner.',
+      p: 'The minimoa.app website sets **no cookies** and stores nothing in your browser’s storage (neither local storage nor session storage). It uses no audience measurement, no advertising and no social media buttons. That is why there is no consent banner.',
     },
     { p: 'This page only covers the website. The Minimoa app is covered by the [privacy policy](@confidentialite).' },
 

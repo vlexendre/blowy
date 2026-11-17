@@ -23,7 +23,7 @@ export const confidentialite: LegalPage = {
       p: 'De verwerkingsverantwoordelijke is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, uitgever van de Minimoa-app en -website ([juridische informatie](@mentions-legales)).',
     },
     { ul: ['Voor elke vraag over je gegevens: {{email.privacy}}.', 'Functionaris voor gegevensbescherming: {{dpo.name}}.'] },
-    { p: 'Dit beleid geldt voor de Minimoa-app en de website blowy.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
+    { p: 'Dit beleid geldt voor de Minimoa-app en de website minimoa.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
 
     { h2: '2. Wat we gebruiken, en waarom', id: 'donnees' },
     {
@@ -320,7 +320,7 @@ export const confidentialite: LegalPage = {
           email: 'Versturen van e-mails (account, herinnering aan het einde van de proefperiode, moderatiewaarschuwingen)',
           push: 'Versturen van meldingen',
           maps: 'Kaartondergrond',
-          site: 'Hosting van de website blowy.app',
+          site: 'Hosting van de website minimoa.app',
         },
       },
     },

@@ -21,10 +21,10 @@ revue et compte de revue : `docs/APP-REVIEW.md`. Ordre de mise en production : `
 
 | Point | Où | Qui |
 |---|---|---|
-| Builds `preview` et `production` signés avec `aps-environment = production` (variable `BLOWY_APS_ENVIRONMENT` des profils, `apps/mobile/eas.json`) ; le client de développement garde `development`. Contrôler les entitlements du `.ipa` (`codesign -d --entitlements :- Blowy.app`). | EAS | propriétaire |
+| Builds `preview` et `production` signés avec `aps-environment = production` (variable `BLOWY_APS_ENVIRONMENT` des profils, `apps/mobile/eas.json`) ; le client de développement garde `development`. Contrôler les entitlements du `.ipa` (`codesign -d --entitlements :- Minimoa.app`). | EAS | propriétaire |
 | Rapport de confidentialité d'Xcode sur l'archive (Organizer › clic droit › *Generate Privacy Report*) : il doit lister le manifeste de l'app (`PrivacyInfo.xcprivacy` de la cible Minimoa), celui de l'extension (`BlowyWidget.appex`, UserDefaults `1C8F.1`) et ceux des bibliothèques. Un e-mail « ITMS-91053 Missing API declaration » d'Apple après l'envoi = une raison manque : l'ajouter dans `ios.privacyManifests` (`apps/mobile/app.config.ts`). | Mac ou EAS | propriétaire |
 | Même version et même numéro de build pour l'app et l'extension (sinon avertissement ITMS-90473) : à vérifier dans l'onglet « Builds » de la première version envoyée. | App Store Connect | propriétaire |
-| `APPLE_TEAM_ID=<identifiant d'équipe>` dans les variables du build du site (Cloudflare Pages), puis vérifier `https://blowy.app/.well-known/apple-app-site-association` : `appIDs` doit contenir `<équipe>.app.blowy`. Sans la variable, le fichier ne déclare **aucune** app et les liens d'invitation et « 3 mots » s'ouvrent dans le navigateur. | Cloudflare | propriétaire |
+| `APPLE_TEAM_ID=<identifiant d'équipe>` dans les variables du build du site (Cloudflare Pages), puis vérifier `https://minimoa.app/.well-known/apple-app-site-association` : `appIDs` doit contenir `<équipe>.app.blowy`. Sans la variable, le fichier ne déclare **aucune** app et les liens partagés (invitation, « 3 mots », groupe…) s'ouvrent dans le navigateur. Chemins et vérification : docs/DEEPLINKS.md. | Cloudflare | propriétaire |
 | API : migrations et déploiement dans l'ordre de `docs/LIVRAISON.md` (migrations `20261115190000` à `20261115210000` **avant** le code) ; `AI_PROVIDER_NAME` et `AI_PROVIDER_COUNTRY` laissés vides tant que le prestataire est Anthropic (États-Unis), sinon les renseigner **en même temps** que `SUBPROCESSORS.ai` des pages légales (`apps/web/src/config/legal.ts`). | Supabase, Railway | propriétaire |
 | Pages légales remplies, en ligne, et à jour pour l'IA (voir 5. et le rapport de l'audit, B2 et B5). | site | propriétaire, juriste |
 
@@ -129,18 +129,18 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 
 ## 5. Adresses obligatoires
 
-- **Politique de confidentialité** : `https://blowy.app/legal/confidentialite` (champ App Privacy). Réécrite le 15
+- **Politique de confidentialité** : `https://minimoa.app/legal/confidentialite` (champ App Privacy). Réécrite le 15
   novembre 2026 d'après le code (prestataire d'IA lu dans `apps/web/src/config/legal.ts`, quatre usages, position
   jamais exacte, filtre et suspensions automatiques, durées réellement appliquées, plus de photo du jour). Reste à
   remplir dans `legal.ts` : e-mails de contact, DPO, hébergeurs, médiateur, garanties de transfert, durée de
   conservation chez le prestataire d'IA (`AI_TERMS.retention`, selon le contrat), rotation des sauvegardes.
-- **Assistance (Support URL)** : `https://blowy.app/legal/assistance`, avec un e-mail réel.
+- **Assistance (Support URL)** : `https://minimoa.app/legal/assistance`, avec un e-mail réel.
 - **Conditions d'utilisation (EULA)** : choisir le **contrat de licence standard d'Apple** (Informations sur l'app ›
   Contrat de licence : laisser « Contrat de licence standard ») ; nos conditions le citent et y renvoient
   (`/legal/conditions`, partie 9, dans les cinq langues). **Et** finir la description de la fiche, dans chaque langue,
-  par : « Conditions d'utilisation : https://blowy.app/legal/conditions · Confidentialité :
-  https://blowy.app/legal/confidentialite · Conditions de Minimoa+ : https://blowy.app/legal/abonnement » (EN :
-  `https://blowy.app/en/legal/...`, etc.). Sans ce lien dans les métadonnées, refus 3.1.2 fréquent (« A functional link
+  par : « Conditions d'utilisation : https://minimoa.app/legal/conditions · Confidentialité :
+  https://minimoa.app/legal/confidentialite · Conditions de Minimoa+ : https://minimoa.app/legal/abonnement » (EN :
+  `https://minimoa.app/en/legal/...`, etc.). Sans ce lien dans les métadonnées, refus 3.1.2 fréquent (« A functional link
   to the Terms of Use (EULA) »). La page `abonnement` doit décrire les objets premium comme en 4.
 - La description de la fiche dit que Minimoa est gratuit et que Minimoa+ est un abonnement facultatif (2.3.2), sans prix
   écrit (il change selon le pays).

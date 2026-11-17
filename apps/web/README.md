@@ -1,4 +1,4 @@
-# @blowy/web — site blowy.app
+# @blowy/web — site minimoa.app
 
 Site statique Astro : la landing, les pages publiques reliées à l'API (« 3 mots » et invitation), les pages légales et l'aide.
 
@@ -8,7 +8,8 @@ Site statique Astro : la landing, les pages publiques reliées à l'API (« 3 mo
 |---|---|
 | `/` | Landing : 11 sections plein écran aimantées, animations GSAP |
 | `/m/CODE` (ou `/m/?c=CODE`) | « 3 mots » : choisir 3 mots pour quelqu'un (`GET`/`POST /v1/words/:code`) |
-| `/i/CODE` (ou `/i/?c=CODE`) | Invitation : ouvrir dans l'app (`blowy://i/CODE`) ou installer (`GET /v1/invites/:code`) |
+| `/i/CODE` (ou `/i/?c=CODE`) | Invitation : ouvrir dans l'app (`minimoa://i/CODE`) ou installer (`GET /v1/invites/:code`) |
+| `/g/ID`, `/r/ID`, `/l/ID`, `/plus`, `/defi`, `/habitudes`, `/carte` | « Ouvre Minimoa » : lien de l'app ouvert sans l'app (bouton `minimoa://…` et stores), cinq langues selon le navigateur (docs/DEEPLINKS.md) |
 | `/confidentialite`, `/conditions`, `/regles`, `/support` | Pages de texte |
 | `/404` | Page introuvable |
 | `/sitemap.xml`, `/robots.txt`, `/.well-known/apple-app-site-association` | Référencement et liens universels iOS |
@@ -38,7 +39,8 @@ pnpm --filter @blowy/web preview
 |---|---|---|
 | `PUBLIC_API_URL` | `http://localhost:3000` | URL de base de l'API (sans `/v1`). Injectée **au build** dans le code client. |
 | `APPLE_TEAM_ID` | (aucun) | Identifiant d'équipe Apple (10 caractères) pour `/.well-known/apple-app-site-association`. Absent : le fichier ne déclare aucune app (liens universels désactivés) et le build l'écrit en avertissement. **Obligatoire en production.** |
-| `BLOWY_BUNDLE_ID` | `app.blowy` | Identifiant de l'app iOS, le même que `apps/mobile/app.config.ts`. |
+| `BLOWY_BUNDLE_ID` | `app.blowy` | Identifiant de l'app iOS et Android, le même que `apps/mobile/app.config.ts` (ne change pas avec le nom Minimoa). |
+| `ANDROID_SHA256` | (aucun) | Empreintes SHA-256 du certificat de signature Android (`AA:BB:…`, séparées par des virgules) pour `/.well-known/assetlinks.json`. Absent : liste vide (liens d'app Android non vérifiés). |
 
 ## Déploiement sur Cloudflare Pages
 
@@ -47,11 +49,12 @@ pnpm --filter @blowy/web preview
    - Commande : `pnpm --filter @blowy/web build`
    - Répertoire de sortie : `apps/web/dist`
    - Répertoire racine : la racine du dépôt (pour que pnpm voie l'espace de travail)
-   - Variables : `PUBLIC_API_URL=https://api.blowy.app` (par exemple), `APPLE_TEAM_ID=<identifiant d'équipe>` et `NODE_VERSION=22`
-3. Domaine personnalisé : `blowy.app`.
+   - Variables : `PUBLIC_API_URL=https://api.minimoa.app` (par exemple), `APPLE_TEAM_ID=<identifiant d'équipe>` et `NODE_VERSION=22`
+3. Domaines personnalisés : `minimoa.app` et `www.minimoa.app` (la redirection de `www` vers le domaine nu doit
+   épargner `/.well-known/*` et `/apple-app-site-association` : Apple ne suit pas les redirections, docs/DEEPLINKS.md).
 
-`public/_redirects` sert `/m/*` et `/i/*` avec la page statique correspondante (statut 200, l'URL reste intacte).
-`public/_headers` sert `apple-app-site-association` en `application/json` et pose des en-têtes de cache et de sécurité.
+`public/_redirects` sert `/m/*`, `/i/*`, `/g/*`, `/r/*` et `/l/*` avec la page statique correspondante (statut 200, l'URL reste intacte).
+`public/_headers` sert `apple-app-site-association` (aux deux adresses) et `assetlinks.json` en `application/json` et pose des en-têtes de cache et de sécurité.
 
 ## À compléter avant la mise en ligne
 

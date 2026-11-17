@@ -47,10 +47,13 @@ function authError(message: string, status?: number): AuthError {
  */
 export const platformProviders = (): readonly AuthProvider[] => (Platform.OS === 'ios' ? ['apple'] : ['google']);
 
-/** Adresse de retour de la connexion Google (`blowy://auth-callback`, ou la même origine sur le web). */
+/**
+ * Adresse de retour de la connexion Google (`minimoa://auth-callback`, ou la même origine sur le web). L'app accepte
+ * aussi `blowy://auth-callback` (second schéma) ; les deux sont à lister dans Supabase (docs/CONNEXION.md).
+ */
 export function oauthRedirect(): string {
   if (Platform.OS === 'web' && typeof window !== 'undefined') return `${window.location.origin}/auth-callback`;
-  return Linking.createURL('auth-callback');
+  return Linking.createURL('auth-callback', { scheme: 'minimoa' });
 }
 
 /** La session ouverte par le fournisseur (absente : échec, jamais une annulation). */

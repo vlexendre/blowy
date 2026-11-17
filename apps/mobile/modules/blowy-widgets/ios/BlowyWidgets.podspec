@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.description    = s.summary
   s.license        = 'UNLICENSED'
   s.author         = 'Blowy'
-  s.homepage       = 'https://blowy.app'
+  s.homepage       = 'https://minimoa.app'
   s.platforms      = { :ios => '16.4' }
   s.swift_version  = '5.9'
   s.source         = { git: '' }

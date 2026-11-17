@@ -11,8 +11,8 @@ export const brand = {
   name: 'Minimoa',
   /** Phrase d'accroche française du site (le site est en français) ; les e-mails prennent `labels.in(locale).tagline`. */
   tagline: 'Élève ton minimoa. Il te présente du monde.',
-  site: 'https://blowy.app',
-  supportEmail: 'hello@blowy.app',
+  site: 'https://minimoa.app',
+  supportEmail: 'hello@minimoa.app',
 } as const;
 
 const fr = {

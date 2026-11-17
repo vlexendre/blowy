@@ -218,7 +218,7 @@ export const encounters = {
 export const threeWords = {
   title: [{ text: 'DÉCRIS-MOI' }, { text: 'EN 3 MOTS.', dim: true }, { text: 'SOIS SYMPA.', dim: true }] as TitleLine[],
   leadBefore: 'Ton lien',
-  leadLink: 'blowy.app/alex',
+  leadLink: 'minimoa.app/alex',
   leadAfter: 'en story. Tes potes votent en anonyme, et leurs mots font évoluer ton minimoa.',
   cardLabel: 'Anonyme · choisis-en 3',
   question: 'DÉCRIS ALEX',

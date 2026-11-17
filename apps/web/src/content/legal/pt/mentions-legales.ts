@@ -7,7 +7,7 @@ export const mentionsLegales: LegalPage = {
   intro: 'Quem edita a app e o site Minimoa, quem os aloja e como nos contactar.',
   body: [
     { h2: 'Editor', id: 'editeur' },
-    { p: 'O site blowy.app e a app Minimoa são editados por:' },
+    { p: 'O site minimoa.app e a app Minimoa são editados por:' },
     {
       ul: [
         '**Denominação social:** {{publisher.name}}',
@@ -23,7 +23,7 @@ export const mentionsLegales: LegalPage = {
     { h2: 'Diretor da publicação', id: 'publication' },
     { p: '{{publisher.publicationDirector}}' },
     { h2: 'Alojamento', id: 'hebergement' },
-    { h3: 'O site blowy.app' },
+    { h3: 'O site minimoa.app' },
     { ul: ['**Fornecedor:** {{siteHost.name}}', '**Morada:** {{siteHost.address}}', '**Telefone:** {{siteHost.phone}}'] },
     { h3: 'Os dados da app' },
     {

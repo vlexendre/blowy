@@ -6,13 +6,13 @@ export const SITE_NAME = brand.name;
 export const TAGLINE = brand.tagline;
 export const SUPPORT_EMAIL = brand.supportEmail;
 
-// TODO(propriétaire) : remplacer par l'URL réelle de la fiche App Store (https://apps.apple.com/fr/app/blowy/idXXXXXXXXXX).
+// TODO(propriétaire) : remplacer par l'URL réelle de la fiche App Store (https://apps.apple.com/fr/app/minimoa/idXXXXXXXXXX).
 export const APP_STORE_URL = 'https://apps.apple.com/app/blowy';
-// TODO(propriétaire) : vérifier l'identifiant Android définitif.
+// TODO(propriétaire) : vérifier l'identifiant Android définitif (`app.blowy` : l'identifiant de l'app ne change pas).
 export const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.blowy';
 
-/** Schéma du lien profond ouvert par l'app (blowy://i/CODE). */
-export const DEEP_LINK_SCHEME = 'blowy://';
+/** Schéma du lien profond ouvert par l'app (minimoa://i/CODE ; l'app accepte aussi l'ancien blowy://). */
+export const DEEP_LINK_SCHEME = 'minimoa://';
 
 /** URL de l'API, injectée au build (PUBLIC_API_URL). */
 export const API_URL: string = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';

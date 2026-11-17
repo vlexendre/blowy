@@ -27,7 +27,7 @@ import { PARIS, type TestWorld, apiError, doToday, errorCode, onboardBody, start
 
 type Person = { id: string; api: ApiClient };
 const SECRET = 'secret-du-minuteur-parcours-complet';
-const ADMIN = 'ops@blowy.app';
+const ADMIN = 'ops@minimoa.app';
 /** ~300 m de la place de la République. */
 const NEAR = { latitude: 48.87, longitude: 2.366 };
 

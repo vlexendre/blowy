@@ -50,8 +50,8 @@ curl -H 'Authorization: Bearer test:11111111-1111-4111-8111-111111111111' localh
 | `SUPABASE_URL` | — | requis avec `supabase` |
 | `SUPABASE_SERVICE_ROLE_KEY` | — | clé secrète (service) ; requise avec `supabase`, jamais dans l'app |
 | `RESEND_API_KEY` | vide | vide = e-mails dans la console |
-| `MAIL_FROM` | `Minimoa <hello@blowy.app>` | expéditeur |
-| `WEB_URL` | `https://blowy.app` | liens des e-mails |
+| `MAIL_FROM` | `Minimoa <hello@minimoa.app>` | expéditeur |
+| `WEB_URL` | `https://minimoa.app` | liens des e-mails |
 | `CORS_ORIGINS` | vide | origines autorisées, séparées par des virgules |
 
 L'API refuse de démarrer si la configuration est incohérente (production + mémoire, Supabase sans URL ou clé).
@@ -196,7 +196,7 @@ des liens (vies, « lien en danger ») et relances, reports du matin, défi du j
 morts), ménage.
 
 ```bash
-curl -fsS -X POST -H "x-tick-secret: $INTERNAL_TICK_SECRET" https://api.blowy.app/internal/tick
+curl -fsS -X POST -H "x-tick-secret: $INTERNAL_TICK_SECRET" https://api.minimoa.app/internal/tick
 ```
 
 Appeler toutes les 5 minutes, depuis un planificateur gratuit :
@@ -214,7 +214,7 @@ select cron.schedule(
   '*/5 * * * *',
   $$
   select net.http_post(
-    url := 'https://api.blowy.app/internal/tick',
+    url := 'https://api.minimoa.app/internal/tick',
     headers := jsonb_build_object(
       'content-type', 'application/json',
       'x-tick-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'tick_secret')

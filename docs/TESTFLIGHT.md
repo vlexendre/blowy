@@ -6,9 +6,9 @@ Compter 30 à 45 minutes la première fois, dont 15 à 20 de build chez Expo.
 ## 0. Avant le build
 
 1. **Mettre l'API en ligne** (voir `apps/api/README.md`) avec `BLOWY_ENV=production`, `BLOWY_ADAPTERS=supabase`,
-   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `MAIL_FROM`, `WEB_URL`, `CORS_ORIGINS=https://blowy.app`.
+   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `MAIL_FROM`, `WEB_URL`, `CORS_ORIGINS=https://minimoa.app`.
    Vérifier : `curl https://<ton-api>/health` répond `{"ok":true}`.
-2. **Indiquer son adresse à l'app** : dans `apps/mobile/eas.json`, remplacer `https://api.blowy.app` par l'URL réelle
+2. **Indiquer son adresse à l'app** : dans `apps/mobile/eas.json`, remplacer `https://api.minimoa.app` par l'URL réelle
    (profils `preview` et `production`).
 3. **Codes de connexion** : dans Supabase → Authentication → Emails, coller `supabase/templates/code.html`
    (le code à 6 chiffres, `{{ .Token }}`) dans les modèles « Confirm signup » **et** « Magic Link » : le premier part
@@ -49,7 +49,7 @@ Si l'identifiant `app.blowy` est déjà pris sur un autre compte Apple : lancer 
 2. La question sur le chiffrement est déjà réglée (`ITSAppUsesNonExemptEncryption = false`).
 3. **Testeurs internes** (jusqu'à 100 membres de l'équipe) : disponibles tout de suite, sans validation.
 4. **Testeurs externes** : Apple relit le build (souvent moins de 24 h). Prévoir un compte de démonstration et
-   l'adresse de la politique de confidentialité (`https://blowy.app/confidentialite`).
+   l'adresse de la politique de confidentialité (`https://minimoa.app/confidentialite`).
 
 ## Versions suivantes
 
@@ -62,5 +62,5 @@ Le numéro de build augmente tout seul (`autoIncrement`). Pour une nouvelle vers
   créés dans App Store Connect).
 - Notifications push.
 - Connexion avec Apple : la connexion se fait par code reçu par e-mail.
-- Liens universels `https://blowy.app/i/…` : remplacer `TEAMID` dans
-  `apps/web/public/.well-known/apple-app-site-association` par l'identifiant d'équipe Apple.
+- Liens universels `https://minimoa.app/…` : `APPLE_TEAM_ID` dans les variables du build du site (Cloudflare Pages),
+  voir docs/DEEPLINKS.md.

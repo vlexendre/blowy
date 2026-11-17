@@ -1,7 +1,7 @@
 /**
- * Retour de la page de connexion de Google (`blowy://auth-callback`, ou `/auth-callback` sur le web). Le navigateur du
- * système rend l'adresse à l'écran de connexion, qui échange le code ; ici on ne fait que refermer la fenêtre (web) ou
- * revenir à l'écran d'avant (si le système a aussi ouvert ce lien dans l'app).
+ * Retour de la page de connexion de Google (`minimoa://auth-callback`, l'ancien `blowy://auth-callback`, ou
+ * `/auth-callback` sur le web). Le navigateur du système rend l'adresse à l'écran de connexion, qui échange le code ;
+ * ici on ne fait que refermer la fenêtre (web) ou revenir à l'écran d'avant (si le système a aussi ouvert ce lien dans l'app).
  */
 import { ScreenTemplate, Loader } from '@blowy/ui';
 import { router } from 'expo-router';

@@ -50,7 +50,7 @@ Review Information. Le reste d'App Store Connect (classement d'âge, App Privacy
 ### Railway (service de l'API), variables
 | Variable | Valeur | Note |
 |---|---|---|
-| `REVIEW_EMAIL` | une adresse à vous, par ex. `appreview@blowy.app` | une seule ; jamais publiée ailleurs que dans les notes de revue |
+| `REVIEW_EMAIL` | une adresse à vous, par ex. `appreview@minimoa.app` | une seule ; jamais publiée ailleurs que dans les notes de revue |
 | `REVIEW_CODE` | 10 caractères au moins, tirés au hasard (par ex. `openssl rand -hex 6`) | l'API refuse de démarrer en production avec moins de 10 |
 | `ADMIN_EMAILS` | adresses de l'équipe de modération | reçoivent les alertes de signalements (audit M9) |
 | `ADMIN_URL` | facultatif : adresse de l'administration | liens des alertes ; défaut `WEB_URL` + `/admin` |

@@ -1,4 +1,4 @@
-/** Page d'invitation : charge l'invitation, propose d'ouvrir l'app (blowy://i/CODE) ou de l'installer. */
+/** Page d'invitation : charge l'invitation, propose d'ouvrir l'app (minimoa://i/CODE) ou de l'installer. */
 import { api, failureOf } from '../lib/api';
 import { readCode } from '../lib/code';
 import { setPetImage } from '../lib/pet';

@@ -30,7 +30,7 @@ export const confidentialite: LegalPage = {
       ],
     },
     {
-      p: 'Cette politique s’applique à l’app Minimoa et au site blowy.app. Pour les cookies du site, voir la [page cookies](@cookies).',
+      p: 'Cette politique s’applique à l’app Minimoa et au site minimoa.app. Pour les cookies du site, voir la [page cookies](@cookies).',
     },
 
     { h2: "2. Ce qu'on utilise, et pourquoi", id: 'donnees' },
@@ -334,7 +334,7 @@ export const confidentialite: LegalPage = {
           email: 'Envoi des e-mails (compte, rappel de fin d’essai, alertes de modération)',
           push: 'Envoi des notifications',
           maps: 'Fond de carte',
-          site: 'Hébergement du site blowy.app',
+          site: 'Hébergement du site minimoa.app',
         },
       },
     },

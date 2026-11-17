@@ -23,7 +23,7 @@ export const confidentialite: LegalPage = {
       p: 'O responsável pelo tratamento é **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, que edita a app e o site Minimoa ([aviso legal](@mentions-legales)).',
     },
     { ul: ['Para qualquer pergunta sobre os teus dados: {{email.privacy}}.', 'Encarregado da proteção de dados: {{dpo.name}}.'] },
-    { p: 'Esta política aplica-se à app Minimoa e ao site blowy.app. Para os cookies do site, consulta a [página de cookies](@cookies).' },
+    { p: 'Esta política aplica-se à app Minimoa e ao site minimoa.app. Para os cookies do site, consulta a [página de cookies](@cookies).' },
 
     { h2: '2. O que usamos, e para quê', id: 'donnees' },
     {
@@ -320,7 +320,7 @@ export const confidentialite: LegalPage = {
           email: 'Envio de e-mails (conta, lembrete de fim do período experimental, alertas de moderação)',
           push: 'Envio de notificações',
           maps: 'Mapa de fundo',
-          site: 'Alojamento do site blowy.app',
+          site: 'Alojamento do site minimoa.app',
         },
       },
     },

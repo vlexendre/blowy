@@ -5,8 +5,21 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 const NIGHT = '#0B0A14';
+/**
+ * L'app s'appelle Minimoa mais garde l'identifiant `app.blowy` (et les achats `app.blowy.plus.*`) : un identifiant
+ * d'app ne se renomme pas sur l'App Store. Idem pour les clés `blowy.*` rangées sur l'appareil (session, brouillon).
+ */
 const BUNDLE_ID = process.env.BLOWY_BUNDLE_ID ?? 'app.blowy';
-const ASSOCIATED_DOMAIN = 'blowy.app';
+/** Liens universels (iOS) et liens d'app (Android) : docs/DEEPLINKS.md. `www` redirige vers le domaine nu. */
+const ASSOCIATED_DOMAINS = ['minimoa.app', 'www.minimoa.app'];
+/**
+ * Schémas : `minimoa` d'abord (celui que l'app fabrique, retour de connexion compris), `blowy` gardé pour les liens
+ * déjà envoyés, les widgets et les anciens retours de connexion.
+ */
+const SCHEMES = ['minimoa', 'blowy'];
+/** Chemins publics ouverts dans l'app (même liste que le site : apps/web/src/config/apple.ts). */
+const APP_LINK_PREFIXES = ['/i/', '/m/', '/g/', '/r/', '/l/'];
+const APP_LINK_PAGES = ['/plus', '/defi', '/habitudes', '/carte'];
 /** À coller après `eas init` (voir docs/TESTFLIGHT.md). */
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? '01d6f37d-203a-4747-910b-6de4cfe50ed5';
 const EXPO_OWNER = process.env.EXPO_OWNER ?? 'alexendre.o';
@@ -95,7 +108,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   owner: EXPO_OWNER,
   version: '1.0.0',
   orientation: 'portrait',
-  scheme: 'blowy',
+  scheme: SCHEMES,
   userInterfaceStyle: 'dark',
   backgroundColor: NIGHT,
   icon: './assets/images/icon.png',
@@ -104,7 +117,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: BUNDLE_ID,
     ...(APPLE_TEAM_ID ? { appleTeamId: APPLE_TEAM_ID } : {}),
     supportsTablet: false,
-    associatedDomains: [`applinks:${ASSOCIATED_DOMAIN}`],
+    associatedDomains: ASSOCIATED_DOMAINS.map((d) => `applinks:${d}`),
     // « Continuer avec Apple » (capacité Sign in with Apple de l'identifiant d'app) : docs/CONNEXION.md.
     usesAppleSignIn: true,
     entitlements: {
@@ -131,6 +144,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: BUNDLE_ID,
     adaptiveIcon: { foregroundImage: './assets/images/adaptive-foreground.png', backgroundColor: '#FFB800' },
+    // Liens d'app vérifiés : le site sert /.well-known/assetlinks.json (empreinte ANDROID_SHA256 du build du site).
+    intentFilters: [
+      {
+        action: 'VIEW',
+        autoVerify: true,
+        category: ['BROWSABLE', 'DEFAULT'],
+        data: ASSOCIATED_DOMAINS.flatMap((host) => [
+          ...APP_LINK_PREFIXES.map((pathPrefix) => ({ scheme: 'https', host, pathPrefix })),
+          ...APP_LINK_PAGES.map((path) => ({ scheme: 'https', host, path })),
+        ]),
+      },
+    ],
   },
   web: { bundler: 'metro', output: 'single', favicon: './assets/images/icon.png' },
   plugins: [

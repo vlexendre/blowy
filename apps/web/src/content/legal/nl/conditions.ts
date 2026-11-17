@@ -21,7 +21,7 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Wie we zijn', id: 'editeur' },
     {
-      p: 'De app Minimoa en de website blowy.app worden uitgegeven door **{{publisher.name}}** (“Minimoa”, “wij”). Alle gegevens staan in het [colofon](@mentions-legales). Schrijf ons: {{email.support}}.',
+      p: 'De app Minimoa en de website minimoa.app worden uitgegeven door **{{publisher.name}}** (“Minimoa”, “wij”). Alle gegevens staan in het [colofon](@mentions-legales). Schrijf ons: {{email.support}}.',
     },
     {
       p: 'Deze voorwaarden gelden voor elk gebruik van de app. De [communityregels](@regles), de [voorwaarden van het Minimoa+-abonnement](@abonnement) en het [privacybeleid](@confidentialite) maken er deel van uit.',

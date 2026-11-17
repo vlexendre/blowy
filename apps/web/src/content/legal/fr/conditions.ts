@@ -22,7 +22,7 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Qui sommes-nous', id: 'editeur' },
     {
-      p: "L'application Minimoa et le site blowy.app sont édités par **{{publisher.name}}** (« Minimoa », « nous »). Ses coordonnées complètes sont dans les [mentions légales](@mentions-legales). Pour nous écrire : {{email.support}}.",
+      p: "L'application Minimoa et le site minimoa.app sont édités par **{{publisher.name}}** (« Minimoa », « nous »). Ses coordonnées complètes sont dans les [mentions légales](@mentions-legales). Pour nous écrire : {{email.support}}.",
     },
     {
       p: 'Ces conditions s’appliquent à toute utilisation de l’app. Les [règles de la communauté](@regles), les [conditions de l’abonnement Minimoa+](@abonnement) et la [politique de confidentialité](@confidentialite) en font partie.',

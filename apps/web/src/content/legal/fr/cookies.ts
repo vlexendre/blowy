@@ -3,12 +3,12 @@ import type { LegalPage } from '../types';
 export const cookies: LegalPage = {
   title: 'Cookies — Minimoa',
   heading: 'Cookies',
-  description: 'Le site blowy.app ne dépose aucun cookie. Ce qu’il charge depuis d’autres services, et ce que ces services reçoivent.',
-  intro: 'Version courte : le site blowy.app ne dépose aucun cookie. Voici le détail, vérifié dans son code.',
+  description: 'Le site minimoa.app ne dépose aucun cookie. Ce qu’il charge depuis d’autres services, et ce que ces services reçoivent.',
+  intro: 'Version courte : le site minimoa.app ne dépose aucun cookie. Voici le détail, vérifié dans son code.',
   body: [
     { h2: 'Ce que le site dépose', id: 'depose' },
     {
-      p: 'Le site blowy.app ne dépose **aucun cookie** et n’enregistre rien dans le stockage de ton navigateur (ni stockage local, ni stockage de session). Il n’utilise aucun outil de mesure d’audience, aucune publicité et aucun bouton de réseau social. C’est pour ça qu’il n’y a pas de bandeau de consentement.',
+      p: 'Le site minimoa.app ne dépose **aucun cookie** et n’enregistre rien dans le stockage de ton navigateur (ni stockage local, ni stockage de session). Il n’utilise aucun outil de mesure d’audience, aucune publicité et aucun bouton de réseau social. C’est pour ça qu’il n’y a pas de bandeau de consentement.',
     },
     { p: 'Cette page concerne seulement le site. L’app Minimoa est couverte par la [politique de confidentialité](@confidentialite).' },
 

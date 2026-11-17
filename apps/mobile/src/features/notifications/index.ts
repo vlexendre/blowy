@@ -25,10 +25,12 @@ import {
   storedPushToken,
   takeLaunchTap,
 } from './push';
+import { useDeepLink } from './deeplink';
 import { pathFromPushUrl } from './url';
 
 export type { PushPermission } from './push';
-export { pathFromPushUrl } from './url';
+export { appPathFromUrl, pathFromPushUrl } from './url';
+export { useDeepLink } from './deeplink';
 
 export const notificationKeys = { settings: ['notifications', 'settings'] as const };
 
@@ -110,6 +112,16 @@ export function useNotificationsBridge(gate: Gate): void {
     // Démarrage à froid : la notification qui a ouvert l'app, une fois les onglets prêts.
     void takeLaunchTap().then((tap) => tap && open(tap));
     return onTap(open);
+  }, [ready]);
+
+  // Liens universels et schémas de l'app reçus avant que le compte soit prêt (`app/+native-intent.ts`) : ouverts ici.
+  useEffect(() => {
+    const deepLink = useDeepLink.getState();
+    deepLink.setReady(ready);
+    if (!ready) return;
+    const path = deepLink.take();
+    if (path) router.push(path as Href);
+    return () => useDeepLink.getState().setReady(false);
   }, [ready]);
 }
 

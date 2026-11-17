@@ -21,7 +21,7 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Who we are', id: 'editeur' },
     {
-      p: 'The Minimoa app and the blowy.app website are published by **{{publisher.name}}** (“Minimoa”, “we”). Full details are in the [legal notice](@mentions-legales). To write to us: {{email.support}}.',
+      p: 'The Minimoa app and the minimoa.app website are published by **{{publisher.name}}** (“Minimoa”, “we”). Full details are in the [legal notice](@mentions-legales). To write to us: {{email.support}}.',
     },
     {
       p: 'These terms apply to any use of the app. The [community rules](@regles), the [Minimoa+ subscription terms](@abonnement) and the [privacy policy](@confidentialite) are part of them.',

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /m/
 Disallow: /i/
 
-Sitemap: https://blowy.app/sitemap.xml
+Sitemap: https://minimoa.app/sitemap.xml

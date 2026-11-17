@@ -20,18 +20,18 @@ Toute autre adresse montre « Cette adresse n'a pas accès à l'administration �
 ## Construire et déployer (hébergement statique)
 
 ```
-VITE_API_URL=https://api.blowy.app \
+VITE_API_URL=https://api.minimoa.app \
 VITE_SUPABASE_URL=https://<projet>.supabase.co \
 VITE_SUPABASE_ANON_KEY=<clé publique anon> \
 pnpm build:admin          # → apps/admin/dist
 ```
 
 Servir `apps/admin/dist` tel quel (Cloudflare Pages, Netlify, un bucket statique…) : aucune réécriture d'URL
-nécessaire (navigation par `#/…`). Conseillé : un sous-domaine dédié (ex. `admin.blowy.app`) et, si l'hébergeur le
+nécessaire (navigation par `#/…`). Conseillé : un sous-domaine dédié (ex. `admin.minimoa.app`) et, si l'hébergeur le
 permet, une protection d'accès supplémentaire (Cloudflare Access…). Les variables `VITE_*` sont publiques : n'y mettre
 aucun secret (jamais la clé service de Supabase).
 
-Côté API : ajouter l'origine de l'admin à `CORS_ORIGINS` (ex. `https://admin.blowy.app`).
+Côté API : ajouter l'origine de l'admin à `CORS_ORIGINS` (ex. `https://admin.minimoa.app`).
 
 ## Donner l'accès à quelqu'un
 

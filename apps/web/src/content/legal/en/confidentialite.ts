@@ -23,7 +23,7 @@ export const confidentialite: LegalPage = {
       p: 'The data controller is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, which publishes the Minimoa app and website ([legal notice](@mentions-legales)).',
     },
     { ul: ['For any question about your data: {{email.privacy}}.', 'Data protection officer: {{dpo.name}}.'] },
-    { p: 'This policy covers the Minimoa app and the blowy.app website. For the website’s cookies, see the [cookies page](@cookies).' },
+    { p: 'This policy covers the Minimoa app and the minimoa.app website. For the website’s cookies, see the [cookies page](@cookies).' },
 
     { h2: '2. What we use, and why', id: 'donnees' },
     {
@@ -320,7 +320,7 @@ export const confidentialite: LegalPage = {
           email: 'Sending emails (account, end-of-trial reminder, moderation alerts)',
           push: 'Sending notifications',
           maps: 'Map tiles',
-          site: 'Hosting of the blowy.app website',
+          site: 'Hosting of the minimoa.app website',
         },
       },
     },

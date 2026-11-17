@@ -14,7 +14,7 @@ import { MESSAGES } from '../src/shared/tokens';
 import type { MessagesRepository } from '../src/modules/links/ports';
 import { type TestWorld, apiError, onboardBody, startWorld } from './helpers';
 
-const ADMIN = 'ops@blowy.app';
+const ADMIN = 'ops@minimoa.app';
 
 describe('administration', () => {
   let w: TestWorld;
@@ -22,7 +22,7 @@ describe('administration', () => {
   const asAdmin = (email: string) => createAdminClient({ baseUrl: w.baseUrl, getToken: () => `test:${randomUUID()}:${email}` });
 
   beforeAll(async () => {
-    w = await startWorld({ ADMIN_EMAILS: ` Ops@Blowy.app , autre@blowy.app` });
+    w = await startWorld({ ADMIN_EMAILS: ` Ops@Minimoa.app , autre@minimoa.app` });
     admin = asAdmin(ADMIN);
   });
   afterAll(() => w.close());
@@ -60,7 +60,7 @@ describe('administration', () => {
 
     it('adresse autorisée (casse et espaces ignorés) : accès', async () => {
       expect(await admin.me()).toEqual({ email: ADMIN, admin: true });
-      expect(await asAdmin('autre@blowy.app').overview()).toMatchObject({ asOf: null });
+      expect(await asAdmin('autre@minimoa.app').overview()).toMatchObject({ asOf: null });
     });
   });
 
