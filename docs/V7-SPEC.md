@@ -282,3 +282,13 @@ On peut se retrouver à plusieurs. Deux sortes de groupes, un seul modèle.
 - **Notifications** : invitation à un groupe, proposition « ensemble », message de groupe (dans le plafond habituel), vie perdue, groupe endormi.
 - **Administration** : les groupes et leurs signalements apparaissent dans la modération ; un groupe peut être fermé.
 - **Données** : tables `groups`, `group_members`, `group_messages`, `group_days` ; l'API seul écrivain ; temps réel des messages pour les membres seulement.
+
+## 27. Des relations, pas un site de rencontre (décision du 17 nov., 9 h 37)
+
+Minimoa crée des relations ; leur nature (amitié, plus) regarde les gens, elle n'est jamais posée sur la table.
+
+- **On ne demande plus ce que les gens cherchent.** L'étape « Tu cherches quoi ? » (potes / plus / les deux) et son second temps « Tu veux rencontrer qui ? » avec l'accord sur la donnée sensible disparaissent de l'inscription. La ligne « Ce que tu cherches » disparaît de Moi et de l'identité. Plus aucun filtre « qui » dans l'appariement : la vision (seuil 70) et la zone suffisent.
+- **Données déjà enregistrées** : les réponses `seeking`, `whom` et l'accord sensible sont effacées par une migration (donnée sensible qu'on ne sert plus à rien) ; les colonnes restent le temps d'un nettoyage ultérieur. Le contrat ne les accepte plus en entrée et ne les renvoie plus.
+- **Rien de romantique imposé** : pas de minimoas qui s'embrassent, pas de cœurs pour un lien ou une rencontre, pas de « le courant passe », « crush », « date », « plus que ça ». Les gestes des minimoas entre eux sont ceux de potes (coucou, check, épaule contre épaule, petite danse, partage d'un objet). Les cœurs restent possibles là où ils désignent l'affection pour son propre minimoa (soins), pas une relation entre deux personnes. Le cœur des vies d'un lien devient un autre symbole neutre (flamme, étincelle ou pastille de vie).
+- **Textes** : « personnes », « monde », « lien », « rencontre » au sens de faire connaissance. Pages légales, App Store et notes de revue suivent (plus de « données sensibles sur l'orientation » collectées).
+- **Genre** (« Tu es… ») : il reste demandé pour l'instant (accords grammaticaux, statistiques d'administration), mais ne filtre plus rien.
