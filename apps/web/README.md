@@ -66,9 +66,9 @@ pnpm --filter @blowy/web preview
 
 ## Images
 
-- **Minimoas, aperçus de liens, icônes, police Anton** : générés depuis le pack (`packages/ui/assets`) par
+- **Minimoas, aperçus de liens, icônes, titres des images en Allo** : générés depuis le pack (`packages/ui/assets`) par
   `scripts/site-images/` et versionnés dans `public/` (`img/m/`, `og/`, `apple-touch-icon.png`, `icon-*.png`,
-  `favicon-32.png`, `fonts/anton/`). Les tenues portées reprennent les placements de l'app (`outfitLayers`).
+  `favicon-32.png`). Les tenues portées reprennent les placements de l'app (`outfitLayers`).
   ```sh
   pnpm exec tsx apps/web/scripts/site-images/placements.mts > /tmp/minimoa-placements.json
   python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json   # Pillow, fontTools, brotli

@@ -1,5 +1,5 @@
-import type { Gender, LatLng, Me, OnboardInput, VisionAnswer } from '@blowy/contract';
-import { type Species, VISION_TEST_IDS } from '@blowy/domain';
+import type { Gender, LatLng, Me, OnboardInput, QuizResultDto, VisionAnswer } from '@blowy/contract';
+import { type Gauges, type Species, VISION_TEST_IDS } from '@blowy/domain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
@@ -47,7 +47,9 @@ interface DraftData {
   /** Code tapé à l'étape du prénom (« Un code ? ») : invitation, groupe, créateur ou « 3 mots ». */
   inviteCode: string;
   /** Ce qu'est ce code (vérifié par l'API) ; null : pas vérifié ou inconnu (envoyé comme invitation, ignoré s'il ne l'est pas). */
-  codeKind: 'creator' | 'invite' | 'group' | 'words' | null;
+  codeKind: 'creator' | 'invite' | 'group' | 'words' | 'quiz' | 'quartier' | null;
+  /** Caractère de départ venu du quiz du site (« Quel minimoa es-tu ? ») : les jauges du résultat ; null sinon. */
+  quizGauges: Gauges | null;
   email: string;
   /** Dernier écran atteint (reprise). */
   step: OnboardingStep | null;
@@ -75,6 +77,7 @@ const empty: DraftData = {
   notificationsAnswer: null,
   inviteCode: '',
   codeKind: null,
+  quizGauges: null,
   email: '',
   step: null,
 };
@@ -164,6 +167,20 @@ export function adoptPendingInvite(): void {
   if (code && !d.inviteCode) d.set({ inviteCode: code });
 }
 
+/**
+ * Résultat du quiz du site repris (lien `minimoa://quiz/<code>` ou code tapé) : l'espèce et le caractère de départ du
+ * minimoa ; le nom suit l'espèce tant que la personne ne l'a pas changé. Le code part avec l'inscription (source « quiz »).
+ */
+export function adoptQuizResult(r: QuizResultDto, speciesName: (s: Species) => string, isDefaultName: (name: string) => boolean): void {
+  const d = useDraft.getState();
+  d.set({
+    species: r.species,
+    quizGauges: r.gauges,
+    ...(isDefaultName(d.petName) ? { petName: speciesName(r.species) } : {}),
+    ...(!d.inviteCode || d.codeKind === 'quiz' ? { inviteCode: r.code, codeKind: 'quiz' as const } : {}),
+  });
+}
+
 /** Le corps de `POST /v1/me/onboard` à partir du brouillon (contrat : `OnboardInput`). */
 export function onboardBody(d: DraftData = useDraft.getState(), fix: LatLng | null = null): OnboardInput {
   const point = fix ?? d.location;
@@ -174,6 +191,8 @@ export function onboardBody(d: DraftData = useDraft.getState(), fix: LatLng | nu
     displayName: d.displayName.trim(),
     birthdate: d.birthdate,
     pet: { name: d.petName.trim(), species: d.species },
+    // Caractère de départ du quiz du site, s'il a été repris.
+    ...(d.quizGauges ? { quiz: d.quizGauges } : {}),
     inviteCode: code && (kind === null || kind === 'invite') ? code : undefined,
     // Un code tapé (créateur, groupe, « 3 mots ») passe avant le premier lien ouvert (docs/VIRALITE.md).
     attribution: code && kind && kind !== 'invite' ? { source: kind, ref: code } : currentAttribution(),
@@ -205,6 +224,12 @@ export function useOnboard() {
       void qc.invalidateQueries({ queryKey: keys.links });
     },
   });
+}
+
+/** Un résultat du quiz du site (public, avant la connexion). */
+export function useQuizResult(code: string | null) {
+  const api = useApi();
+  return useQuery({ queryKey: ['quiz', code], queryFn: () => api.quiz.result(code ?? ''), enabled: !!code, staleTime: 60 * 60_000, retry: false });
 }
 
 /** Les 12 situations, servies par l'API dans la langue de l'app (public : avant la connexion). */

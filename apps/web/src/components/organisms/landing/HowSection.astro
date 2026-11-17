@@ -1,0 +1,47 @@
+---
+/** 2. Comment ça marche, en 3 étapes (audit R3) : créer son minimoa, il présente des gens près de chez toi, vous vous voyez. */
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { IMG, how, sections } from '../../../content/landing';
+---
+<SnapSection section={sections.comment} panel="p-night s-how">
+  <SectionTitle lines={how.title} />
+  <ol class="how" role="list">
+    {
+      how.steps.map((s) => (
+        <li class="how-step" data-r="card">
+          <span class="how-n" aria-hidden="true">{s.n}</span>
+          <div class="how-tx">
+            <h3>{s.title}</h3>
+            <em>{s.meta}</em>
+            <p class="hide-short">{s.text}</p>
+          </div>
+          <img class="how-pet" src={`${IMG}/${s.pet}.webp`} alt="" width="450" height="500" loading="lazy" decoding="async" />
+        </li>
+      ))
+    }
+  </ol>
+  <div class="how-cta" data-r="up">
+    <a class="btn l" href={how.cta.href}>{how.cta.label}</a>
+    <a class="btn g" href={how.quartier.href}>{how.quartier.label}</a>
+  </div>
+</SnapSection>
+<style is:global>
+.s-how{grid-template-rows:auto minmax(0,1fr) auto;align-content:start}
+.s-how .hd{--k:10;--hs:9svh;--hmax:110px}
+.how{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:clamp(8px,1.4svh,16px);min-height:0}
+.how-step{position:relative;display:flex;align-items:center;gap:clamp(10px,1.6svh,18px);padding:clamp(12px,2svh,24px) clamp(14px,2vw,26px);border-radius:clamp(20px,2.6vw,32px);background:rgba(255,255,255,.07);border:1px solid var(--line);overflow:hidden;min-height:0}
+.how-n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:clamp(40px,6svh,64px);height:clamp(40px,6svh,64px);border-radius:50%;background:var(--lime);color:var(--ink);font-family:var(--display);font-weight:800;font-size:clamp(20px,3.2svh,34px)}
+.how-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.how-tx h3{font-family:var(--display);font-weight:800;font-size:clamp(17px,min(2vw,2.8svh),30px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance}
+.how-tx em{font-style:normal;font-weight:800;font-size:clamp(12px,1.7svh,16px);color:var(--lime);text-transform:uppercase;letter-spacing:.06em}
+.how-tx p{font-size:var(--ts);color:var(--mute);line-height:1.35;margin-top:2px}
+.how-pet{flex:0 0 auto;width:clamp(64px,11svh,150px);height:auto;margin:-8px -6px -18px 0;filter:drop-shadow(0 10px 14px rgba(0,0,0,.35))}
+.how-cta{display:flex;flex-wrap:wrap;gap:10px}
+@media (min-width:900px){
+  .how{grid-template-columns:repeat(3,1fr);align-items:stretch}
+  .how-step{flex-direction:column;align-items:flex-start;justify-content:flex-start}
+  .how-pet{position:absolute;right:4%;bottom:-6%;width:clamp(110px,16svh,190px);margin:0}
+  .how-tx{padding-right:0;max-width:78%}
+}
+</style>

@@ -8,12 +8,14 @@ import { useEffect, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
 import { useCodeLookup } from '@/features/growth';
-import { progressAt, useDraft, useDraftGate, useStep } from '@/features/onboarding';
+import { adoptQuizResult, progressAt, useDraft, useDraftGate, useQuizResult, useStep } from '@/features/onboarding';
 import { goBack } from '@/features/session';
 import { common } from '@/locales/common';
 import { onboarding } from '@/locales/onboarding';
 
 const t = onboarding.toi;
+const names = common.speciesNames;
+const isDefaultName = (name: string): boolean => !name.trim() || Object.values(names).some((n) => n === name.trim());
 
 export default function Prenom() {
   const gate = useDraftGate();
@@ -42,6 +44,11 @@ function PrenomStep() {
   useEffect(() => {
     if (lookup.isSuccess) set({ codeKind: found?.kind ?? null });
   }, [lookup.isSuccess, found, set]);
+  // Code du quiz du site : le minimoa reprend l'espèce et le caractère du résultat.
+  const quiz = useQuizResult(found?.kind === 'quiz' ? found.code : null);
+  useEffect(() => {
+    if (quiz.data) adoptQuizResult(quiz.data, (s) => names[s], isDefaultName);
+  }, [quiz.data]);
   const codeHint = found ? t.codeFound[found.kind](found.label ?? found.code) : undefined;
   const codeError = inviteCode.trim().length >= 3 && lookup.isSuccess && !found ? t.codeUnknown : undefined;
   const next = () => {

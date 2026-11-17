@@ -7,7 +7,8 @@ import type { Href } from 'expo-router';
  * Adresses publiques courtes (celles qu'on partage, servies aussi par le site quand l'app n'est pas installée) :
  * /i/<code> invitation · /m/<code> 3 mots · /g/<id> groupe (membres) · /g/<code> lien d'invitation d'un groupe ·
  * /c/<code> code d'un créateur · /r/<id> rencontre · /l/<id> lien · /plus Minimoa+ · /defi défi du jour · /habitudes ·
- * /carte · /mots (ton lien « 3 mots » et ton résultat). `?ref=<code>` sur n'importe quel lien : code d'un créateur. Les chemins internes de l'app (`link/<id>`, `pet/…`, `groupe/<id>`…), ceux
+ * /carte · /mots (ton lien « 3 mots » et ton résultat) · /quiz/<code> résultat du quiz du site · /quartier/<code> inscription
+ * « Ouvre ton quartier ». `?ref=<code>` sur n'importe quel lien : code d'un créateur. Les chemins internes de l'app (`link/<id>`, `pet/…`, `groupe/<id>`…), ceux
  * des notifications, passent tels quels.
  */
 
@@ -27,6 +28,9 @@ const SHORT: readonly [RegExp, (id: string) => string][] = [
   // Code d'un créateur : gardé comme source d'arrivée (`attributionFromUrl`), puis l'accueil.
   [new RegExp(`^c/(${ID})/?$`), () => '/'],
   [/^mots\/?$/, () => '/mots'],
+  // Résultat du quiz du site et inscription « Ouvre ton quartier » : repris par l'inscription (docs/VIRALITE.md).
+  [new RegExp(`^quiz/(${ID})/?$`), (c) => `/quiz/${c.toUpperCase()}`],
+  [new RegExp(`^quartier/(${ID})/?$`), (c) => `/quartier/${c.toUpperCase()}`],
   [new RegExp(`^r/(${ID})/?$`), (id) => `/rencontre/${id}`],
   [new RegExp(`^l/(${ID})/?$`), (id) => `/link/${id}`],
   [/^plus\/?$/, () => '/moi/blowy-plus'],
@@ -89,12 +93,12 @@ export function routeIncomingUrl(url: string, opts: { initial: boolean; ready: b
   if (!target) return { open: url, park: null };
   const path = String(target);
   // Invitation, 3 mots, code d'un créateur (l'accueil) : l'écran gère la session lui-même.
-  if (!needsAccount(path)) return { open: /^\/[im]\//.test(path) || path === '/' ? path : url, park: null };
+  if (!needsAccount(path)) return { open: /^\/(i|m|quiz|quartier)\//.test(path) || path === '/' ? path : url, park: null };
   if (opts.ready && !opts.initial) return { open: path, park: null };
   return { open: opts.initial ? '/' : '', park: path };
 }
 
-export type LinkAttribution = { source: 'creator' | 'words' | 'group' | 'invite'; ref: string };
+export type LinkAttribution = { source: 'creator' | 'words' | 'group' | 'invite' | 'quiz' | 'quartier'; ref: string };
 const CODE = /^[A-Za-z0-9_-]{3,32}$/;
 
 /**
@@ -106,6 +110,9 @@ export function attributionFromUrl(url: string): LinkAttribution | null {
   const raw = rawPath(url);
   if (raw === null) return null;
   const [pathname = '', query = ''] = raw.replace(/#.*$/, '').split('?', 2);
+  // Résultat du quiz, inscription au quartier : la page elle-même dit d'où vient la personne.
+  const web = /^(quiz|quartier)\/([A-Za-z0-9]{6,12})\/?$/.exec(pathname);
+  if (web?.[2]) return { source: web[1] as 'quiz' | 'quartier', ref: web[2].toUpperCase() };
   const ref = new URLSearchParams(query).get('ref');
   if (ref && CODE.test(ref)) return { source: 'creator', ref: ref.toUpperCase() };
   const m = /^(c|m|g|i)\/([\w-]{3,64})\/?$/.exec(pathname);

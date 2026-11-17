@@ -7,6 +7,7 @@ import {
   type GrowthEventKind,
   type SharePage,
   type ShareKind,
+  type WebStep,
   activeMilestone,
   dayOf,
   isCreatorCode,
@@ -72,6 +73,11 @@ export class Growth {
 
   share(kind: ShareKind): Promise<void> {
     return this.bump(`share_${kind}`);
+  }
+
+  /** Étape du site sans compte (quiz, quartier) ; `source` : `ref` (venu d'un défi) ou le type de partage. */
+  web(step: WebStep, source = ''): Promise<void> {
+    return this.bump(step, source);
   }
 
   /** Une étape d'un compte (premier lien, essai, payant…), une fois ; rien si la source du compte n'est pas connue. */

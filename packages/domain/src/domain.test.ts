@@ -66,9 +66,9 @@ describe('soins', () => {
 });
 
 describe('garde-robe', () => {
-  it('77 objets uniques (dont les 12 de la collection Hiver et le « Parrain »), 4 emplacements, au moins deux de départ par emplacement', () => {
-    expect(ITEMS.length).toBe(77);
-    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(77);
+  it('78 objets uniques (dont les 12 de la collection Hiver, le « Parrain » et le « Fondateur »), 4 emplacements, au moins deux de départ par emplacement', () => {
+    expect(ITEMS.length).toBe(78);
+    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(78);
     for (const slot of ITEM_SLOTS) expect(ITEMS.filter((i) => i.slot === slot && i.unlock.kind === 'start').length).toBeGreaterThanOrEqual(2);
   });
   it('débloque par étapes', () => {

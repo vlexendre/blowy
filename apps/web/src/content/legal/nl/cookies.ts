@@ -8,7 +8,7 @@ export const cookies: LegalPage = {
   body: [
     { h2: 'Wat de website plaatst', id: 'depose' },
     {
-      p: 'De website minimoa.app plaatst **geen cookies** en slaat niets op in de opslag van je browser (geen local storage, geen session storage). Er zijn geen bezoekersstatistieken, geen reclame en geen knoppen van sociale netwerken. Daarom is er geen toestemmingsbanner.',
+      p: 'De website minimoa.app plaatst **geen cookies** en gebruikt de local storage van je browser niet. Alleen tijdens je bezoek (session storage, gewist als je het tabblad sluit) bewaart ze de code van een geopende link en je quizresultaatcode, om ze op de pagina te hergebruiken; niets daarvan wordt verstuurd om je te volgen. Er zijn geen bezoekersstatistieken, geen reclame en geen knoppen van sociale netwerken. Daarom is er geen toestemmingsbanner.',
     },
     { p: 'Deze pagina gaat alleen over de website. De app Minimoa valt onder het [privacybeleid](@confidentialite).' },
 
@@ -22,6 +22,7 @@ export const cookies: LegalPage = {
         rows: [
           ['Hostingprovider van de website: {{siteHost.name}}', 'De pagina’s leveren', 'Alle'],
           ['Server van de Minimoa-app (API)', 'De voornaam en minimoa van de persoon tonen, de gekozen woorden opslaan', 'Pagina’s “3 woorden” en uitnodiging'],
+          ['Server van de Minimoa-app (API)', 'Je quizresultaat berekenen en bewaren, de teller van een buurt tonen, je aanmelding opslaan', 'Pagina’s „Welke minimoa ben jij?” en „Open je buurt”'],
         ],
       },
     },
@@ -36,7 +37,7 @@ export const cookies: LegalPage = {
 
     { h2: 'Zelf de regie houden', id: 'reglages' },
     {
-      p: 'Met je browser kun je cookies blokkeren of verwijderen en verzoeken naar andere sites beperken. De website blijft leesbaar als je externe lettertypen blokkeert: dan gebruikt hij die van je toestel.',
+      p: 'Met je browser kun je cookies blokkeren of verwijderen en verzoeken naar andere sites beperken. Het lettertype van de website (Allo) komt van de website zelf: er wordt geen lettertype van een andere dienst geladen.',
     },
     { p: 'Een vraag: {{email.privacy}}.' },
   ],

@@ -87,6 +87,16 @@ import {
   type ShareBody,
   growthRoutes,
 } from '@blowy/contract';
+import {
+  MyQuartierZ,
+  QuartierConfirmedZ,
+  QuartierJoinedZ,
+  type QuartierJoinBody,
+  QuizResultZ,
+  type QuizSubmitBody,
+  ZoneStatusZ,
+  quizRoutes,
+} from '@blowy/contract';
 import { z } from 'zod';
 
 export class ApiError extends Error {
@@ -246,6 +256,21 @@ export function createApiClient(opts: ApiClientOptions) {
       share: (kind: ShareBody['kind']) => call('POST', growthRoutes.share(), OkZ, { kind }),
       /** `page: true` : visite de la page d'un créateur (site). */
       code: (code: string, page = false) => call('GET', growthRoutes.code(code) + (page ? '?page=c' : ''), CodeLookupZ),
+    },
+    /** « Quel minimoa es-tu ? » (site, sans compte) : commencé, réponses → résultat gardé sous un code, partage. */
+    quiz: {
+      start: (ref?: string) => call('POST', quizRoutes.start(), OkZ, ref ? { ref } : {}),
+      submit: (body: QuizSubmitBody) => call('POST', quizRoutes.submit(), QuizResultZ, body),
+      result: (code: string) => call('GET', quizRoutes.result(code), QuizResultZ),
+      share: (kind: 'story' | 'link' | 'challenge') => call('POST', quizRoutes.share(), OkZ, { kind }),
+    },
+    /** « Ouvre ton quartier » : compteur réel, inscription (double opt-in), confirmation, désinscription ; le tien (compte). */
+    quartiers: {
+      status: (zone: string) => call('GET', quizRoutes.zone(zone), ZoneStatusZ),
+      join: (body: QuartierJoinBody) => call('POST', quizRoutes.join(), QuartierJoinedZ, body),
+      confirm: (token: string) => call('POST', quizRoutes.confirm(), QuartierConfirmedZ, { token }),
+      unsubscribe: (token: string) => call('POST', quizRoutes.unsubscribe(), OkZ, { token }),
+      mine: () => call('GET', quizRoutes.mine(), MyQuartierZ),
     },
     /**
      * Rituels : sortie du jour, défi du jour, série, habitudes et preuves en photo, souvenirs privés, bilans.

@@ -39,13 +39,14 @@ export type Species = 'nino' | 'suzie' | 'gaston' | 'pia';
 export const IMG = '/img/m';
 
 export const meta = {
-  title: 'Minimoa — Élève ton minimoa. Il te présente du monde.',
+  title: 'Minimoa — Des potes près de chez toi.',
   description:
-    'Élève ton minimoa, tiens tes habitudes, seul ou en groupe. Il te présente des gens dont la vision de la vie va avec la tienne. Gratuit, zéro swipe, 18 ans et plus.',
+    'Ton minimoa te présente des gens près de chez toi qui voient la vie comme toi. Pour de vrai. Fais le quiz « Quel minimoa es-tu ? », ouvre ton quartier. Gratuit, zéro swipe, 18 ans et plus.',
 } as const;
 
 export const sections = {
   top: { id: 'top', dot: 'Accueil', glow: ['#FFB800', '#6D3DF0', '#FF8FC6'] },
+  comment: { id: 'comment', dot: 'Comment ça marche', glow: ['#6D3DF0', '#FFB800', '#FF8FC6'] },
   pet: { id: 'pet', dot: 'Il est vivant', glow: ['#6D3DF0', '#FFB800', '#FF5A3C'] },
   garde: { id: 'garde-robe', dot: 'Garde-robe', glow: ['#FF9A3D', '#FF5A3C', '#FFB800'] },
   caractere: { id: 'caractere', dot: 'Caractère', glow: ['#A98BFF', '#6D3DF0', '#FF8FC6'] },
@@ -63,7 +64,7 @@ export const sections = {
 } as const satisfies Record<string, SectionMeta>;
 export type SectionId = keyof typeof sections;
 /** Ordre des sections (la galerie « ecrans » n'apparaît que si des captures sont présentes : voir index.astro). */
-export const sectionOrder: SectionId[] = ['top', 'pet', 'garde', 'caractere', 'habitudes', 'groupes', 'chats', 'vies', 'rencontres', 'sorties', 'mots', 'ecrans', 'plus', 'faq', 'go'];
+export const sectionOrder: SectionId[] = ['top', 'comment', 'pet', 'garde', 'caractere', 'habitudes', 'groupes', 'chats', 'vies', 'rencontres', 'sorties', 'mots', 'ecrans', 'plus', 'faq', 'go'];
 
 export const nav = {
   logoLabel: 'Minimoa, retour en haut',
@@ -98,15 +99,30 @@ export const stores = {
   google: { small: 'Disponible sur', soon: 'Bientôt sur', name: 'Google Play' },
 } as const;
 
+/** Haut de page : le bénéfice d'abord (audit R1), le personnage ensuite ; le quiz est l'action principale. */
 export const hero = {
-  title: [{ text: 'ÉLÈVE TON MINIMOA.' }, { text: 'IL TE PRÉSENTE', dim: true }, { text: 'DU MONDE.', dim: true }] as TitleLine[],
+  title: [{ text: 'DES POTES' }, { text: 'PRÈS DE', dim: true }, { text: 'CHEZ TOI.', dim: true }] as TitleLine[],
+  lead: 'Ton minimoa te présente des gens qui voient la vie comme toi. Pour de vrai.',
+  primary: { label: 'Quel minimoa es-tu ?', href: '/quiz' },
+  secondary: { label: 'Ouvre ton quartier', href: '/quartier' },
   bubbles: {
     b1: { who: 'Léa', whoColor: '#8C1D4F', text: 'On marche demain matin ?', avatar: { letter: 'L', bg: 'var(--rose)' } },
-    b2: { who: 'Nino', whoColor: 'var(--ink)', text: 'Je lui ai déjà dit oui 😈', avatar: { img: '/img/nino_face.webp' }, dark: true },
     b3: { who: 'Malo', whoColor: 'var(--ink)', text: 'Attends. Il peut faire ça ?', avatar: { letter: 'M', bg: 'var(--orange)' } },
   } satisfies Record<string, BubbleCopy>,
   tag: 'Gratuit · zéro swipe · 18 ans et plus',
   pet: { src: `${IMG}/hero_nino.webp`, alt: 'Nino, un minimoa vert à mèche orange, qui te fait coucou' },
+} as const;
+
+/** « Comment ça marche » en 3 étapes (audit R3), juste après le haut de page. */
+export const how = {
+  title: [{ text: 'COMMENT' }, { text: 'ÇA MARCHE.', dim: true }] as TitleLine[],
+  steps: [
+    { n: '1', title: 'Crée ton minimoa', meta: '2 min', text: 'Un quiz, un nom, une tenue. Il te ressemble.', pet: 'nino_coucou' },
+    { n: '2', title: 'Il te présente des gens près de chez toi', meta: 'et dit pourquoi', text: '3 points communs, 1 différence à explorer. Jamais un chiffre seul.', pet: 'suzie_joie' },
+    { n: '3', title: 'Vous vous écrivez, vous vous voyez', meta: 'rien sans ton accord', text: 'Tu salues, l’autre accepte. Personne ne t’écrit sans ton oui.', pet: 'pia_check' },
+  ],
+  cta: { label: 'Quel minimoa es-tu ?', href: '/quiz' },
+  quartier: { label: 'Ton quartier ouvre à 50', href: '/quartier' },
 } as const;
 
 /** « Il est vivant » : les quatre minimoas, et un geste par soin (chaque geste a sa pose en pied). */

@@ -7,6 +7,9 @@
 /c/* /_lien/c 200
 /r/* /_lien/r 200
 /l/* /_lien/l 200
+# Quiz (/quiz/<code> : un résultat partagé) et quartiers (/quartier/<zone>, /quartier/confirmer, /quartier/desinscription).
+/quiz/* /_lien/quiz 200
+/quartier/* /_lien/quartier 200
 
 # Anciennes adresses des pages légales → /legal/… (l'app publiée lie /conditions et /confidentialite).
 /conditions /legal/conditions/ 301

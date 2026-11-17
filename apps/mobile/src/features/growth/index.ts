@@ -8,10 +8,12 @@
 import type { CodeLookup, ShareBody } from '@blowy/contract';
 import { ApiError } from '@blowy/api-client';
 import { useQuery } from '@tanstack/react-query';
+import * as Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Share } from 'react-native';
 
-import { keys, useApi, useSession } from '@/core';
+import { keys, quartierUrl, useApi, useSession } from '@/core';
 import { captureUrl, currentAttribution, useAttribution } from './attribution';
 
 export { captureUrl, currentAttribution, useAttribution } from './attribution';
@@ -73,4 +75,32 @@ export function useCodeLookup(code: string) {
     staleTime: 5 * 60_000,
     retry: false,
   });
+}
+
+/** Le quartier de ta zone (« Ouvre ton quartier ») : compteur réel, ou null hors des quartiers de la liste. */
+export function useMyQuartier(enabled = true) {
+  const api = useApi();
+  return useQuery({ queryKey: ['quartier', 'mine'], queryFn: api.quartiers.mine, enabled, staleTime: 5 * 60_000 });
+}
+
+/** Partage le lien de ton quartier avec ton code (feuille native ; sur le web, copie). Compté comme une invitation. */
+export function useShareQuartier(message: (zone: string, missing: number, url: string) => string) {
+  const q = useMyQuartier();
+  const track = useTrackShare();
+  const [copied, setCopied] = useState(false);
+  const share = useCallback(async () => {
+    const s = q.data?.status;
+    if (!s || !q.data) return;
+    const text = message(s.label, s.missing, quartierUrl(s.zone, q.data.inviteCode));
+    track('invite');
+    try {
+      if (Platform.OS === 'web') throw new Error('web');
+      await Share.share({ message: text });
+    } catch {
+      await Clipboard.setStringAsync(text).catch(() => undefined);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  }, [q.data, message, track]);
+  return { quartier: q, share, copied };
 }

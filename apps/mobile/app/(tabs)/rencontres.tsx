@@ -13,6 +13,7 @@ import {
   IncomingCard,
   MapPlusStrip,
   MatchWhy,
+  QuartierCard,
   Skeleton,
   SuggestionCard,
   TabTemplate,
@@ -33,12 +34,14 @@ import {
   VISION_TEST_ROUTE,
   whyA11y,
 } from '@/features/encounters';
+import { useShareQuartier } from '@/features/growth';
 import { errorText, timeLabel } from '@/features/links';
 import { AreaSheet, useFreshPosition } from '@/features/map';
 import { useMe } from '@/features/me';
 import { openPlus, usePlusPerks } from '@/features/plus';
 import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
+import { quartier as quartierText } from '@/locales/quartier';
 import { carte as carteText, rencontres as t } from '@/locales/rencontres';
 
 /** Pourquoi, en une ligne (les phrases et les repères sont sur l'écran de la rencontre). */
@@ -73,6 +76,9 @@ export default function RencontresScreen() {
   const accept = useAcceptEncounter();
   const decline = useDeclineEncounter();
   const invite = useShareInvite(t.shareMessage);
+  // « Ouvre ton quartier » : le compteur réel de ta zone quand personne n'est à te présenter (docs/VIRALITE.md).
+  const quartier = useShareQuartier(quartierText.card.message);
+  const zone = quartier.quartier.data?.status ?? null;
   const history = useEncounterHistory();
   const refetchHistory = history.refetch;
   useFocusEffect(
@@ -250,7 +256,19 @@ export default function RencontresScreen() {
           onAction={() => router.push(VISION_TEST_ROUTE)}
         />
       ) : null}
-      {empty && !noVision ? (
+      {empty && !noVision && zone ? (
+        <QuartierCard
+          kicker={quartierText.card.kicker}
+          title={zone.open ? quartierText.card.openTitle(zone.label) : quartierText.card.title(zone.label)}
+          counter={zone.open ? quartierText.card.openCounter(zone.count) : quartierText.card.counter(zone.count, zone.threshold, zone.label)}
+          progress={zone.open ? 1 : zone.count / Math.max(1, zone.threshold)}
+          text={zone.open ? quartierText.card.openText(petName) : quartierText.card.text(petName)}
+          actionLabel={quartier.copied ? quartierText.card.copied : quartierText.card.action}
+          onAction={() => void quartier.share()}
+          species={myPet?.species ?? 'nino'}
+        />
+      ) : null}
+      {empty && !noVision && !zone ? (
         <EmptyState
           peek
           seed={myPet?.id}

@@ -187,6 +187,43 @@ bout en bout (API, app, site, administration). Migration : `supabase/migrations/
 - Les actifs de la semaine viennent des statistiques quotidiennes (`admin_daily_stats.wau`) : vides tant que la tâche
   du minuteur ne les a pas calculées.
 
+## Fait (18 novembre 2026, 2) : passer le mur du téléchargement et le démarrage à vide
+
+Migration : `supabase/migrations/20261118120000_quiz_quartiers.sql` (tables `quiz_results`, `quartier_settings`,
+`quartiers`, `quartier_signups`, `quartier_founders` ; sources `quiz` et `quartier` ; compteurs `quiz_*`, `quartier_*`).
+
+### « Quel minimoa es-tu ? » (`minimoa.app/quiz`)
+- 7 situations neutres (amitié, quotidien, sorties), 3 réponses, sans compte (`packages/domain/src/quiz.ts`, textes
+  `packages/content/src/v7/quiz.ts`, 5 langues). Le résultat est un vrai caractère de l'app (pôle dominant des 4 jauges)
+  et l'espèce qui le porte (sociable, joueur : Nino ; tendre, bavard : Suzie ; posé, casanier : Gaston ; piquant,
+  discret : Pia), une phrase de profil, un second trait s'il est net.
+- L'API garde seulement le résultat sous un code `Q…` (1 an) ; aucune donnée sur la personne. `/quiz/<code>` montre
+  le résultat (le sien) ou « Et toi ? » (celui d'un autre, qui lance le quiz compté comme un défi).
+- Carte story 1080 × 1920 dessinée dans le navigateur (`apps/web/src/lib/story-card.ts`, composition de `ShareCard`,
+  police Allo), « Partager en story » (fichier via la feuille de partage, sinon téléchargement), « Copier le lien »
+  (`/quiz/<code>`), « Défie tes potes » (`/quiz?ref=<code>`).
+- Reprise dans l'app : `minimoa://quiz/<code>` (« J'ai déjà Minimoa ») ou le code tapé dans « Un code ? » : espèce,
+  nom par défaut et jauges de départ pré-remplis ; source d'arrivée `quiz`.
+- Entonnoir (`growth_counters`) : `quiz_start` (source `ref` si défi), `quiz_done`, `quiz_share` (story, lien, défi).
+  Administration › Croissance : tableau du quiz avec son facteur K (partages / terminés × défis commencés / partages).
+
+### Ouvre ton quartier (`minimoa.app/quartier`)
+- Quartier choisi dans une liste (arrondissements de Paris, Lyon, Marseille ; grandes villes) ou par code postal ;
+  jamais de position. Vrai compteur : adresses confirmées (double opt-in Resend), désinscriptions déduites.
+- Lien pour inviter (`/quartier/<zone>?ref=<code>`, après confirmation ; depuis l'app, le code d'invitation du compte) :
+  l'invité fait avancer le quartier ; les 3 premiers inviteurs reçoivent l'objet « Fondateur » à l'ouverture.
+- `QuartierJobs` (minuteur) : ouvre au seuil (50, réglable dans Administration › Quartiers, ouverture à la main
+  possible), pose les fondateurs, envoie « Ton quartier est ouvert » une fois, efface les inscriptions non confirmées
+  (7 j) et les adresses prévenues (30 j).
+- App : Rencontres vide montre le compteur réel du quartier de ta zone et « Invite 3 personnes de ton quartier »
+  (`GET /v1/me/quartier`). Hors quartier connu : l'état vide d'avant.
+
+### Landing
+- Haut de page « Des potes près de chez toi. », action principale « Quel minimoa es-tu ? », secondaire « Ouvre ton
+  quartier » ; « Comment ça marche » en 3 étapes juste après. Bulle « Je lui ai déjà dit oui 😈 » retirée.
+- Police : Allo partout (titres en 800), Anton retirée du site ; images Open Graph régénérées en Allo
+  (`scripts/site-images/build.py`), nouvelles `og/quiz.jpg` et `og/quartier.jpg`.
+
 ## Étude des comptes avec treg (à faire)
 treg sert à analyser, chiffres à l'appui, les publications de Bump, Finch, Locket, NGL et Timeleft (titres,
 couvertures, accroches qui marchent, rythme, style) et à en tirer des modèles prêts à remplir pour Minimoa. Il
