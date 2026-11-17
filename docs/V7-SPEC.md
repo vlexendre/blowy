@@ -121,7 +121,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 11. Inscription et connexion
 
-Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Minimoa+ (feuille).
+Ordre (parcours court, 17 nov.) : Bienvenue → créer son minimoa → **test de vision (12)** → ton résultat (phrase de synthèse, carte à partager) → « On t'appelle comment ? » et « Tu es… » (facultatif) → **date de naissance (sélecteur à roues), avant la connexion** → **connexion** → il s'installe → tout est prêt → Minimoa+ (feuille) → accueil. La position et les notifications se demandent sur l'accueil quand elles servent (explication d'abord, un seul bouton), les habitudes après la première journée (J2), les invitations depuis l'accueil (carte « inviter des potes »).
 
 - **Connexion : Apple sur iPhone, Google sur Android.** Plus de code par e-mail (gardé seulement pour le mode local de développement).
 - Sexe : femme / homme / non-binaire / je préfère ne pas dire (ne filtre rien, §27). « Ce que tu cherches » est retiré (§27).
