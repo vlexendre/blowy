@@ -264,7 +264,10 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
 
   // Là où l'on achète (iPhone, ou magasin simulé du mode local), seul le magasin donne prix et essai.
   const sellable = purchases.available;
-  const storeDown = sellable && store.isError;
+  // Le magasin a répondu, mais sans aucun de nos produits (produits absents ou pas prêts dans App Store Connect, accord
+  // « Paid Apps » non signé…) : même traitement qu'une panne, jamais un bouton d'achat sans prix.
+  const storeEmpty = sellable && store.isSuccess && offers.length > 0 && !offers.some((o) => byId.has(o.productId));
+  const storeDown = sellable && (store.isError || storeEmpty);
   const storeLoading = sellable && offers.length > 0 && store.isLoading;
   const yearlyStore = byId.get(offers.find((o) => o.period === 'year')?.productId ?? '');
   const monthlyStore = byId.get(offers.find((o) => o.period === 'month')?.productId ?? '');
@@ -360,7 +363,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
           (paywall.isError
             ? { tone: 'error', text: t.status.loadError }
             : storeDown
-              ? { tone: 'error', text: t.status.pricesError }
+              ? { tone: 'error', text: storeEmpty ? t.status.noOffers : t.status.pricesError }
               : !sellable && data
                 ? { tone: 'info', text: t.status.unavailable }
                 : null)
