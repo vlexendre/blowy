@@ -1,0 +1,49 @@
+---
+/**
+ * 12. L'app, en vrai : les captures de l'App Store en bande horizontale (défilement aimanté, images paresseuses,
+ * srcset 360/720). Alimentée par public/img/store (scripts/store-images.mjs) ; sans capture, rien n'est rendu.
+ */
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { screens as c, sections } from '../../../content/landing';
+import { storeShots, storeSrc, storeWidths } from '../../../lib/store-shots';
+const small = storeWidths[0] ?? 360;
+---
+{
+  storeShots.length > 0 && (
+    <SnapSection section={sections.ecrans} panel="p-night s-scr">
+      <SectionTitle lines={c.title}>
+        <p class="lead" data-r="up">{c.lead}</p>
+      </SectionTitle>
+      <ul class="shots" role="list" aria-label={c.listLabel} tabindex="0">
+        {storeShots.map((s, i) => (
+          <li>
+            <img
+              src={storeSrc(s.name, small)}
+              srcset={storeWidths.map((w) => `${storeSrc(s.name, w)} ${w}w`).join(', ')}
+              sizes="(min-width: 900px) 30vh, 46vw"
+              width={s.width}
+              height={s.height}
+              alt={s.alt ?? c.alt(i + 1, storeShots.length)}
+              loading="lazy"
+              decoding="async"
+            />
+          </li>
+        ))}
+      </ul>
+    </SnapSection>
+  )
+}
+<style is:global>
+.s-scr{grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx" "shots"}
+.s-scr .tx{grid-area:tx}
+.s-scr .hd{--k:8}
+.shots{grid-area:shots;list-style:none;margin:0 calc(var(--px) * -1);padding:4px var(--px) 10px;display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:var(--px);min-height:0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.shots li{flex:0 0 auto;height:100%;scroll-snap-align:start}
+.shots img{height:100%;width:auto;aspect-ratio:1290/2796;border-radius:clamp(14px,2.4svh,26px);box-shadow:0 18px 40px rgba(0,0,0,.4);background:var(--card)}
+.shots:focus-visible{outline-offset:-3px}
+@media (min-width:900px){
+  .s-scr{grid-template-columns:.7fr 1.3fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"tx shots";column-gap:3vw;align-items:center}
+  .shots{margin:0 calc(var(--px) * -1) 0 0;padding:8px var(--px) 12px 0;height:min(100%,760px);gap:18px;align-self:center}
+}
+</style>

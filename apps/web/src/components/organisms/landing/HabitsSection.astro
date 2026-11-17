@@ -1,0 +1,106 @@
+---
+/** 5. Habitudes : deux habitudes avec série et rigueur, la série de la semaine (joker compris), le défi du jour. */
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { habits as c, sections } from '../../../content/landing';
+const w = c.week;
+---
+<SnapSection section={sections.habitudes} panel="p-lime s-hab" light>
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <div class="hcards">
+    {
+      c.cards.map((h) => (
+        <div class="hcard" data-r="card">
+          <span class="he" aria-hidden="true">{h.emoji}</span>
+          <div class="hm">
+            <b>{h.name}</b>
+            <span>{h.rhythm}</span>
+          </div>
+          <div class="hs">
+            <b>{h.streak}</b>
+            <span>{c.streakUnit}</span>
+          </div>
+          <div class="hr">
+            <span>{c.rigourLabel}</span>
+            {h.rigour === null ? (
+              <i class="early">{c.tooEarly}</i>
+            ) : (
+              <span class="rbar" role="meter" aria-label={`${c.rigourLabel} : ${h.name}`} aria-valuemin="0" aria-valuemax="100" aria-valuenow={String(h.rigour)}>
+                <i style={`width:${h.rigour}%`}></i>
+              </span>
+              <em class="rval">{h.rigour} %</em>
+            )}
+          </div>
+        </div>
+      ))
+    }
+    <div class="hweek" data-r="card">
+      <span class="lbl">{w.label}</span>
+      <ol>
+        {
+          w.days.map((d) => (
+            <li class={d.s}>
+              <span class="dd">{d.d}</span>
+              <span class="sr">{d.s ? w.legend[d.s] : ''}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="hide-short">{w.note}</p>
+    </div>
+  </div>
+  <div class="hdefi" data-r="up">
+    <img src={c.pet.src} alt={c.pet.alt} width="450" height="500" loading="lazy" decoding="async" />
+    <div>
+      <span class="lbl">{c.challenge.label}</span>
+      <p>{c.challenge.text}</p>
+      <div class="hbtn" aria-hidden="true"><span class="btn k">{c.challenge.go}</span><span class="btn g">{c.challenge.later}</span></div>
+    </div>
+  </div>
+</SnapSection>
+<style is:global>
+.s-hab{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"tx" "cards" "defi"}
+.s-hab .tx{grid-area:tx}
+.s-hab .hd{--k:20}
+.hcards{grid-area:cards;display:flex;flex-direction:column;gap:8px;min-height:0;justify-content:center}
+.hcard{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"e m s" "r r r";align-items:center;column-gap:10px;row-gap:6px;background:#fff;border-radius:20px;padding:10px 14px;box-shadow:0 10px 24px rgba(120,70,0,.16)}
+.he{grid-area:e;font-size:24px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#FFF4D1}
+.hm{grid-area:m;display:flex;flex-direction:column;line-height:1.15}
+.hm b{font-weight:800;font-size:16px}
+.hm span{font-size:12px;font-weight:600;color:var(--mute-d)}
+.hs{grid-area:s;display:flex;align-items:baseline;gap:4px}
+.hs b{font-family:var(--display);font-weight:400;font-size:28px;line-height:1}
+.hs span{font-size:11px;font-weight:700;color:var(--mute-d)}
+.hr{grid-area:r;display:flex;align-items:center;gap:10px;font-size:11.5px;font-weight:700;color:var(--mute-d)}
+.rbar{position:relative;flex:1;height:12px;border-radius:999px;background:#F1ECF8;overflow:hidden}
+.rbar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--ink)}
+.rval{font-style:normal;font-weight:800;font-size:13px;color:var(--ink);min-width:3.2em;text-align:right}
+.hr .early{flex:1;font-style:normal;text-align:right;color:var(--ink)}
+.hweek{background:var(--ink);color:#fff;border-radius:20px;padding:10px 14px}
+.hweek .lbl{color:var(--mute)}
+.hweek ol{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.hweek li{display:flex;align-items:center;justify-content:center;aspect-ratio:1;max-height:42px;border-radius:50%;background:rgba(255,255,255,.08);font-weight:800;font-size:13px;color:var(--mute)}
+.hweek li.done{background:var(--lime);color:var(--ink)}
+.hweek li.joker{background:#6FB7FF;color:var(--ink)}
+.hweek li.today{box-shadow:inset 0 0 0 2px var(--lime);color:#fff}
+.hweek p{margin-top:8px;font-size:12px;color:var(--mute);line-height:1.35}
+.hdefi{grid-area:defi;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.4);border-radius:22px;padding:8px 14px 8px 4px}
+.hdefi img{width:clamp(70px,11svh,120px);height:auto;flex:0 0 auto}
+.hdefi p{font-weight:800;font-size:clamp(14px,2svh,18px);line-height:1.25;margin:2px 0 8px}
+.hdefi .lbl{opacity:.7}
+.hbtn{display:flex;gap:6px}
+.hbtn .btn{height:38px;padding:0 14px;font-size:13px}
+.s-hab .btn.g{background:transparent;border:1px solid rgba(20,16,31,.3);color:var(--ink)}
+@media (min-width:900px){
+  .s-hab{grid-template-columns:1.05fr .95fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". cards" "tx cards" "defi cards" ". cards";column-gap:4vw;align-items:center}
+  .hcards{gap:14px;max-width:520px;width:100%;justify-self:center}
+  .hcard{padding:16px 20px;row-gap:10px}
+  .hm b{font-size:19px}
+  .hs b{font-size:38px}
+  .hweek{padding:16px 20px}
+  .hdefi{margin-top:3svh;max-width:560px}
+}
+@media (max-width:899px) and (max-height:760px){.hcard{padding:8px 12px}.he{width:34px;height:34px;font-size:20px}.hdefi img{width:62px}}
+</style>

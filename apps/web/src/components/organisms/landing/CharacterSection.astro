@@ -1,10 +1,10 @@
 ---
-/** 3. Caractère : nino change de forme, les 4 jauges bougent. */
+/** 4. Caractère : Nino change de forme (six formes en pied), les 4 jauges bougent. */
 import PetImage from '../../atoms/PetImage.astro';
 import Sticker from '../../atoms/Sticker.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { character as c, sections } from '../../../content/landing';
+import { character as c, IMG, sections } from '../../../content/landing';
 const initial = c.presets[c.initial];
 const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v) / 2}%`;
 ---
@@ -14,7 +14,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
   </SectionTitle>
   <div class="cars" data-r="pop">
     <div class="bob">
-      {c.moods.map((m) => <PetImage class={m.key === c.initial ? 'on' : undefined} data-m={m.key} src={`/img/nino_evo_${m.key}.webp`} alt={m.alt} loading={m.key === c.initial ? undefined : 'lazy'} />)}
+      {c.moods.map((m) => <PetImage class={m.key === c.initial ? 'on' : undefined} data-m={m.key} src={`${IMG}/nino_evo_${m.key}.webp`} alt={m.alt} loading="lazy" />)}
     </div>
   </div>
   <div class="gauges" data-r="up" aria-live="polite">
@@ -31,7 +31,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
     }
   </div>
   <div class="moods" role="group" aria-label={c.groupLabel} data-r="up">
-    {c.moods.map((m) => <button type="button" data-m={m.key} aria-pressed={m.key === c.initial ? 'true' : 'false'}>{m.key}</button>)}
+    {c.moods.map((m) => <button type="button" data-m={m.key} aria-pressed={m.key === c.initial ? 'true' : 'false'}>{m.label}</button>)}
   </div>
   <Sticker class="s3" src="/img/ic_eclair.webp" reveal />
 </SnapSection>
@@ -40,7 +40,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
 .s-car .tx{grid-area:tx}
 .s-car .hd{--k:19}
 .cars{grid-area:stage;position:relative;min-height:0;display:flex;justify-content:center;align-items:center}
-.cars .bob{position:relative;height:100%;max-height:clamp(150px,30svh,520px);aspect-ratio:9/10}
+.cars .bob{position:relative;width:100%;height:auto;max-height:clamp(150px,30svh,520px);aspect-ratio:9/10}
 .cars img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0}
 .cars img.on{opacity:1}
 .gauges{grid-area:gauges;align-self:center;display:flex;flex-direction:column;gap:clamp(8px,1.6svh,18px);background:rgba(20,16,31,.28);border:1px solid rgba(255,255,255,.18);border-radius:22px;padding:clamp(12px,1.8svh,22px)}
@@ -60,7 +60,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
   .s-car{grid-template-columns:1.25fr .85fr .8fr;grid-template-rows:minmax(0,1fr) auto;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". stage gauges" "tx stage gauges" "moods stage gauges" ". stage gauges";column-gap:3vw;align-items:center}
   .moods{margin-top:1svh}
   .cars{height:100%}
-  .cars .bob{max-height:min(66svh,620px)}
+  .cars .bob{width:auto;height:100%;max-height:min(66svh,620px)}
   .g .gl{font-size:14px}
   .tr{height:12px}
 }

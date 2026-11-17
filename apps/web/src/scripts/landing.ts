@@ -3,7 +3,7 @@
  * GSAP 3.12.5 + ScrollTrigger sont chargés depuis cdnjs (balises is:inline dans src/pages/index.astro) et lus sur
  * `window`. Sans GSAP, ou avec « réduire les animations », tout reste utilisable et statique.
  */
-import { character, lives, nav, photo, threeWords, type MoodKey } from '../content/landing';
+import { alive, character, IMG, lives, nav, threeWords, type MoodKey } from '../content/landing';
 
 // ── Typage minimal de la partie de GSAP utilisée ────────────────────────────
 type Target = Element | Element[] | string | object | null;
@@ -82,15 +82,54 @@ function main(): void {
       .to(box, { scaleY: 1, scaleX: 1, duration: 0.7, ease: 'elastic.out(1,.45)' });
   }
 
-  /* 2. couleur du pet */
-  const cimgs = $$<HTMLImageElement>('.cimg');
-  const swatches = $$<HTMLButtonElement>('.sw button');
-  const cname = $('#cname');
-  swatches.forEach((b) => {
+  /* 2. il est vivant : une espèce, puis un soin = une pose en pied (une seule image, préchargée avant l'échange) */
+  const apet = $<HTMLImageElement>('#apet');
+  const asay = $('#asay');
+  const speciesBtns = $$<HTMLButtonElement>('.aspecies button');
+  const careBtns = $$<HTMLButtonElement>('.acare button');
+  let species: string = alive.initial;
+  let pose: string = alive.rest.pose;
+  let poseLabel = '';
+  const poseSrc = (s: string, p: string) => `${IMG}/${s}_${p}.webp`;
+  function showPose(): void {
+    if (!apet) return;
+    const sp = alive.species.find((x) => x.key === species);
+    const src = poseSrc(species, pose);
+    const next = new Image();
+    next.src = src;
+    const apply = () => {
+      apet.src = src;
+      apet.alt = poseLabel && sp ? alive.poseAlt(sp.name, poseLabel) : (sp?.alt ?? '');
+    };
+    const box = apet.parentElement;
+    const go = () => {
+      if (!G || !box) return apply();
+      G.timeline()
+        .to(box, { scaleY: 0.86, scaleX: 1.1, duration: 0.12, ease: 'power2.in', transformOrigin: '50% 100%' })
+        .add(apply)
+        .to(box, { scaleY: 1, scaleX: 1, duration: 0.7, ease: 'elastic.out(1,.45)' });
+    };
+    if (next.complete) go();
+    else {
+      next.onload = go;
+      next.onerror = apply;
+    }
+  }
+  speciesBtns.forEach((b) => {
     b.addEventListener('click', () => {
-      swatches.forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
-      if (cname) cname.textContent = `· ${b.getAttribute('aria-label') ?? ''}`;
-      swapImg(cimgs, 'data-c', b.dataset.c ?? '');
+      speciesBtns.forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+      species = b.dataset.s ?? species;
+      showPose();
+    });
+  });
+  careBtns.forEach((b) => {
+    b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-pressed') === 'true';
+      careBtns.forEach((o) => o.setAttribute('aria-pressed', !on && o === b ? 'true' : 'false'));
+      pose = on ? alive.rest.pose : (b.dataset.pose ?? alive.rest.pose);
+      poseLabel = on ? '' : (b.dataset.label ?? '');
+      if (asay) asay.textContent = on ? alive.rest.say : (b.dataset.say ?? '');
+      showPose();
     });
   });
 
@@ -287,7 +326,7 @@ function main(): void {
   $$('.bob').forEach((b, i) => {
     gsap.to(b, { y: -8, scaleY: 1.025, scaleX: 0.985, transformOrigin: '50% 100%', duration: 1.6 + (i % 3) * 0.25, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.2 });
   });
-  $$('.stk[data-r="stk"], .app .ico, .plan .gel, .flame img').forEach((s, i) => {
+  $$('.stk[data-r="stk"], .app .ico').forEach((s, i) => {
     gsap.to(s, { rotation: i % 2 ? 8 : -8, y: -5, duration: 2.2 + (i % 4) * 0.3, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.15 });
   });
 
@@ -363,33 +402,6 @@ function main(): void {
     });
     tl.to(gh, { opacity: 0, duration: 0.5 }).to(sad, { opacity: 1, duration: 0.5 }, '<').to({}, { duration: 1.6 });
     ST.create({ trigger: '#vies', start: 'top 60%', end: 'bottom 40%', onToggle: (self) => (self.isActive ? tl.play() : tl.pause()) });
-  })();
-
-  /* 6. léa poste, la série passe de 11 à 12, +1 vie */
-  (() => {
-    const st = $('#least');
-    const num = $('#streak');
-    const p1 = $('#plus1');
-    if (!st || !num) return;
-    const tl = gsap.timeline({ repeat: -1, repeatDelay: 2.5, paused: true });
-    tl.add(() => {
-      st.textContent = photo.theirs.waiting;
-      st.classList.remove('ok');
-      num.textContent = photo.streakBefore;
-    })
-      .set(p1, { scale: 0, opacity: 0 })
-      .to({}, { duration: 1.4 })
-      .add(() => {
-        st.textContent = photo.theirs.posted;
-        st.classList.add('ok');
-      })
-      .fromTo('.tile.b', { scale: 0.94 }, { scale: 1, duration: 0.6, ease: 'back.out(3)' })
-      .add(() => {
-        num.textContent = photo.streakAfter;
-      }, '+=.3')
-      .fromTo('.flame', { scale: 1.35 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1,.4)' }, '<')
-      .to(p1, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(2.5)' }, '-=.3');
-    ST.create({ trigger: '#photo', start: 'top 60%', end: 'bottom 40%', onToggle: (self) => (self.isActive ? tl.play() : tl.pause()) });
   })();
 
   window.addEventListener('load', () => ST.refresh());
