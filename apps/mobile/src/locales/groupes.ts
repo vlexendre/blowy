@@ -172,6 +172,7 @@ export const groupes = messages({
       together_proposal: { title: 'La tenir ensemble', subtitle: 'Quand un groupe se forme' },
       group_message: { title: 'Messages de groupe' },
       group_lives: { title: 'Vies d’un groupe', subtitle: 'Vie perdue, groupe endormi' },
+      group_joined: { title: 'Arrivées dans un groupe', subtitle: 'Quelqu’un rejoint par le lien' },
     },
   },
   en: {
@@ -324,6 +325,7 @@ export const groupes = messages({
       together_proposal: { title: 'Keep it together', subtitle: 'When a group forms' },
       group_message: { title: 'Group messages' },
       group_lives: { title: 'Group lives', subtitle: 'Life lost, group asleep' },
+      group_joined: { title: 'Someone joins a group', subtitle: 'When someone joins with the link' },
     },
   },
   es: {
@@ -476,6 +478,7 @@ export const groupes = messages({
       together_proposal: { title: 'Cumplirlo juntos', subtitle: 'Cuando se forma un grupo' },
       group_message: { title: 'Mensajes de grupo' },
       group_lives: { title: 'Vidas de un grupo', subtitle: 'Vida perdida, grupo dormido' },
+      group_joined: { title: 'Llegadas a un grupo', subtitle: 'Alguien se une con el enlace' },
     },
   },
   pt: {
@@ -628,6 +631,7 @@ export const groupes = messages({
       together_proposal: { title: 'Manter juntos', subtitle: 'Quando um grupo se forma' },
       group_message: { title: 'Mensagens de grupo' },
       group_lives: { title: 'Vidas de um grupo', subtitle: 'Vida perdida, grupo dormindo' },
+      group_joined: { title: 'Entradas em um grupo', subtitle: 'Alguém entra pelo link' },
     },
   },
   nl: {
@@ -780,6 +784,7 @@ export const groupes = messages({
       together_proposal: { title: 'Samen volhouden', subtitle: 'Als er een groep ontstaat' },
       group_message: { title: 'Groepsberichten' },
       group_lives: { title: 'Levens van een groep', subtitle: 'Leven kwijt, groep slaapt' },
+      group_joined: { title: 'Nieuwe leden in een groep', subtitle: 'Iemand komt erbij via de link' },
     },
   },
 });
