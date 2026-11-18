@@ -70,6 +70,20 @@ export class SupabaseEncountersRepository implements EncountersRepository {
     check(error, "lecture de l'historique des rencontres");
     return (data as EncounterRow[]).map(fromRow);
   }
+
+  // `status_at` ≥ `created_at` toujours : le filtre sur `status_at` suit les index (from_user | to_user, status_at),
+  // puis `created_at` garde exactement la fenêtre demandée.
+  async listSentSince(fromUser: string, since: string): Promise<EncounterRecord[]> {
+    const { data, error } = await this.table.select('*').eq('from_user', fromUser).gte('status_at', since).gte('created_at', since).limit(2000);
+    check(error, 'lecture des coucous envoyés');
+    return (data as EncounterRow[]).map(fromRow);
+  }
+
+  async listReceivedSince(toUser: string, since: string): Promise<EncounterRecord[]> {
+    const { data, error } = await this.table.select('*').eq('to_user', toUser).gte('status_at', since).gte('created_at', since).limit(2000);
+    check(error, 'lecture des coucous reçus');
+    return (data as EncounterRow[]).map(fromRow);
+  }
 }
 
 /** `encounter_proposals` : écriture et total d'un jour par deux fonctions SQL (une requête chacune, clé primaire). */

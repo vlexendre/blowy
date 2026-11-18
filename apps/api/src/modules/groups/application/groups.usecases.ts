@@ -3,7 +3,9 @@ import { habitById } from '@blowy/content';
 import type { CreateGroupBody, GroupAction, GroupDetail, GroupInviteLink, GroupPreview, GroupReportBody, Groups } from '@blowy/contract';
 import {
   type Day,
+  GROUP_INVITES_PER_DAY,
   GROUP_MAX_MEMBERS,
+  GROUP_MEMBER_STATUSES,
   NEW_GROUP_HABIT_STATE,
   canJoinAnotherGroup,
   canPlaceJokerFor,
@@ -18,8 +20,9 @@ import {
   wakeGroup,
   addDays,
   normalizeCode,
+  withinDaily,
 } from '@blowy/domain';
-import { DomainError } from '../../../shared/errors';
+import { DomainError, errorText } from '../../../shared/errors';
 import { Audience } from '../../safety/application/audience';
 import { Growth } from '../../growth/application/growth';
 import { requestLocale } from '../../../shared/locale';
@@ -149,6 +152,18 @@ export class GroupsUseCases {
     }
   }
 
+  /**
+   * Pas d'invitations en masse : GROUP_INVITES_PER_DAY par jour (création comprise), comptées sur les lignes de membres
+   * que la personne a invitées dans tous ses groupes (même quittés).
+   */
+  private async checkInviteBudget(by: string, adding: number): Promise<void> {
+    if (adding === 0) return;
+    const mine = await this.core.members.listForUser(by, GROUP_MEMBER_STATUSES);
+    const rows = await this.core.members.listForGroups([...new Set(mine.map((m) => m.groupId))]);
+    const sent = rows.filter((m) => m.invitedBy === by).map((m) => m.createdAt);
+    if (!withinDaily(sent, this.core.now(), GROUP_INVITES_PER_DAY, adding)) throw new DomainError('rate_limited', errorText('groupInvitesDaily'));
+  }
+
   /** Écrit les invitations et prévient celles qui arrivent (les autres restent en attente, invisibles). */
   private async sendInvitations(loaded: LoadedGroup, by: string, ids: readonly string[]): Promise<void> {
     const now = this.core.now().toISOString();
@@ -194,6 +209,7 @@ export class GroupsUseCases {
       );
     await this.checkLimit(userId);
     await this.checkLinks(userId, ids);
+    await this.checkInviteBudget(userId, ids.length);
     if (body.kind === 'habit' && body.habitId) await this.ensureHabit(userId, body.habitId);
     const now = this.core.now().toISOString();
     const group: GroupRecord = {
@@ -251,6 +267,7 @@ export class GroupsUseCases {
         groupError((t) => t.full),
       );
     await this.checkLinks(userId, ids);
+    await this.checkInviteBudget(userId, ids.length);
     await this.sendInvitations(loaded, userId, ids);
     return this.detail(userId, groupId);
   }

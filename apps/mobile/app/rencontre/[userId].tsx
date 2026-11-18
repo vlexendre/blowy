@@ -28,7 +28,7 @@ import { useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { matchAxes, useAcceptEncounter, useDeclineEncounter, useEncounter, useWave } from '@/features/encounters';
+import { isWaveLimit, matchAxes, useAcceptEncounter, useDeclineEncounter, useEncounter, useWave, useWaveBlock } from '@/features/encounters';
 import { sharedHabitsView } from '@/features/groups';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
 import { usePet } from '@/features/pet';
@@ -67,7 +67,9 @@ export default function RencontreScreen() {
   const via = suggestion ? (suggestion.via === 'friend_of_friend' ? listText.via.friend_of_friend(suggestion.mutualName) : listText.via[suggestion.via]()) : null;
   const myPet = pet.data?.pet;
   const myPetName = myPet?.name ?? chatsText.yourPet;
-  const error = wave.error ?? accept.error ?? decline.error;
+  // Trop de coucous : bouton désactivé et une explication, pas un écran d'erreur.
+  const waveBlock = useWaveBlock(wave.error);
+  const error = (isWaveLimit(wave.error) ? null : wave.error) ?? accept.error ?? decline.error;
 
   const header = (
     <Header
@@ -133,7 +135,7 @@ export default function RencontreScreen() {
     <Button label={t.waved} variant="ghost" icon="check" disabled />
   ) : (
     <View {...waveButton.props}>
-      <Button label={t.wave(person.pet.name)} onPress={onWave} loading={wave.isPending} />
+      <Button label={t.wave(person.pet.name)} onPress={onWave} loading={wave.isPending} disabled={!!waveBlock} />
     </View>
   );
 
@@ -178,6 +180,7 @@ export default function RencontreScreen() {
           <DotNote text={t.unknownVision} />
         )}
         {shared ? <SharedHabitsCard {...shared} /> : null}
+        {waveBlock && !incoming && !suggestion?.waved ? <Banner tone="info" text={waveBlock} /> : null}
         {error ? (
           <Banner
             tone="error"

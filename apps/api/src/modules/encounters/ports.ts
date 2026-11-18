@@ -40,4 +40,8 @@ export interface EncountersRepository {
    * `statusAt` strictement avant `before`, de la plus récente à la plus ancienne, `limit` au plus.
    */
   listHistory(userId: string, before: string | null, limit: number): Promise<EncounterRecord[]>;
+  /** Coucous envoyés par la personne depuis `since` (`createdAt`, tous statuts) : plafonds et repérage des abus. */
+  listSentSince(fromUser: string, since: string): Promise<EncounterRecord[]>;
+  /** Coucous reçus depuis `since` (`createdAt`, tous statuts) : plafond des e-mails de signe. */
+  listReceivedSince(toUser: string, since: string): Promise<EncounterRecord[]>;
 }

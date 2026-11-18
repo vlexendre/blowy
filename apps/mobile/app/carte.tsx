@@ -35,8 +35,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { useLiveEncounters, useWave, whyA11y } from '@/features/encounters';
+import { isWaveLimit, useLiveEncounters, useWave, useWaveBlock, whyA11y } from '@/features/encounters';
 import { AreaSheet, CITIES, type MapAt, useCity, useDiscreet, useFreshPosition, useMap, useMarkWaved } from '@/features/map';
+import { errorText } from '@/features/links';
 import { MapLayer } from '@/features/map/MapLayer';
 import { useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
@@ -53,6 +54,8 @@ export default function CarteScreen() {
   const map = useMap(at);
   const encounters = useLiveEncounters();
   const wave = useWave();
+  // Trop de coucous (plafond du jour, coucous en attente) : « Faire signe » désactivé, la fiche dit pourquoi.
+  const waveBlock = useWaveBlock(wave.error);
   const discreet = useDiscreet();
   const city = useCity();
   const [selected, setSelected] = useState<string | null>(null);
@@ -199,6 +202,8 @@ export default function CarteScreen() {
       actionLabel={current.relation === 'waved' ? t.waved : current.relation === 'waved_you' ? t.wavedYou(current.user.displayName) : t.wave(current.user.pet.name)}
       actionLoading={wave.isPending && wave.variables === current.user.id}
       actionDone={current.relation === 'waved'}
+      actionDisabled={current.relation === 'none' && !!waveBlock}
+      actionNote={waveBlock ?? undefined}
       onAction={() => {
         if (current.relation === 'waved') return;
         if (current.relation === 'waved_you') return router.push(`/rencontre/${current.user.id}`);
@@ -214,7 +219,7 @@ export default function CarteScreen() {
     <>
       {m.identity.discreet && !current ? <Banner tone="info" text={t.discreetOn} /> : null}
       {discreet.isError ? <Banner tone="error" text={listText.actionError} onClose={() => discreet.reset()} /> : null}
-      {wave.isError ? <Banner tone="error" text={listText.actionError} onClose={() => wave.reset()} /> : null}
+      {wave.isError && !isWaveLimit(wave.error) ? <Banner tone="error" text={errorText(wave.error, listText.actionError)} onClose={() => wave.reset()} /> : null}
       {card}
       {!current && pins.length === 0 ? (
         <Banner tone="info" text={t.emptyShort} actionLabel={t.emptyAction} onAction={() => router.dismissTo('/(tabs)/rencontres')} actionBelow />

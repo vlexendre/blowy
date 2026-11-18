@@ -51,6 +51,14 @@ export class MemoryReportsRepository implements ReportsRepository {
     return { id, reason: r.reason, source: r.source ?? 'person', category: r.category ?? null, priority: r.priority ?? 0, createdAt: r.createdAt };
   }
 
+  async createdBySince(reporter: string, since: string): Promise<string[]> {
+    return this.db.reports.filter((r) => r.reporter === reporter && r.createdAt >= since).map((r) => r.createdAt);
+  }
+
+  async hasOpenFiltered(targetUser: string, category: string): Promise<boolean> {
+    return this.live().some((x) => x.open && x.r.targetUser === targetUser && x.r.source === 'filter' && x.r.category === category);
+  }
+
   async openReportersOf(targetUser: string): Promise<{ distinct: number; minor: number }> {
     const open = this.live().filter((x) => x.open && x.r.targetUser === targetUser && x.r.reporter !== null && (x.r.source ?? 'person') === 'person');
     return { distinct: new Set(open.map((x) => x.r.reporter)).size, minor: new Set(open.filter((x) => x.r.reason === 'mineur').map((x) => x.r.reporter)).size };

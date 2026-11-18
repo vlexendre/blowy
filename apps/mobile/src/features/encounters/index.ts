@@ -1,3 +1,4 @@
+import { ApiError } from '@blowy/api-client';
 import type { EncounterHistoryItem, Encounters } from '@blowy/contract';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from 'expo-router';
@@ -47,6 +48,21 @@ export function useEncounterHistory() {
     }
   }
   return { ...query, items };
+}
+
+/** Refus « trop de coucous » de l'API (plafond du jour ou coucous en attente). */
+export const isWaveLimit = (error: unknown): error is ApiError => error instanceof ApiError && error.code === 'wave_limit';
+
+/**
+ * Plus de coucou possible pour l'instant : la phrase à montrer (dite par l'API, dans ta langue), sinon null.
+ * Lu dans les rencontres (et sur la carte), relues après chaque coucou ; sans elles (API plus ancienne), un refus
+ * `wave_limit` tout frais suffit.
+ */
+export function useWaveBlock(lastError?: unknown): string | null {
+  const { data } = useEncounters();
+  const fresh = isWaveLimit(lastError) ? lastError.message : null;
+  if (data?.waves) return data.waves.blocked ? (data.waves.message ?? fresh) : null;
+  return fresh;
 }
 
 /** Saluer : rien ne se passe sans ce tap. */

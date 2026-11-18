@@ -5,6 +5,7 @@ import { CLOCK, ENCOUNTERS } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
 import type { LinkRecord } from '../../links/ports';
 import type { EncounterRecord, EncountersRepository } from '../ports';
+import { WaveGuard } from './wave-guard';
 
 /** Réponse à un coucou reçu : seule la personne saluée peut accepter ou refuser. */
 @Injectable()
@@ -13,6 +14,7 @@ export class AnswerEncounter {
     @Inject(ENCOUNTERS) private readonly encounters: EncountersRepository,
     @Inject(CreateLink) private readonly createLink: CreateLink,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(WaveGuard) private readonly guard: WaveGuard,
   ) {}
 
   async accept(encounterId: string, userId: string): Promise<LinkRecord> {
@@ -27,7 +29,11 @@ export class AnswerEncounter {
   async decline(encounterId: string, userId: string): Promise<void> {
     const encounter = await this.received(encounterId, userId);
     if (encounter.status === 'accepted') throw new DomainError('conflict', errorText('alreadyLinked'));
-    if (encounter.status !== 'declined') await this.encounters.setStatus(encounter.id, 'declined', this.clock.now().toISOString());
+    if (encounter.status !== 'declined') {
+      await this.encounters.setStatus(encounter.id, 'declined', this.clock.now().toISOString());
+      // Beaucoup de refus après ses coucous : la modération est prévenue (repérage, jamais de suspension).
+      await this.guard.watch(encounter.fromUser);
+    }
   }
 
   private async received(encounterId: string, userId: string): Promise<EncounterRecord> {

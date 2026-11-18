@@ -53,6 +53,10 @@ export interface ReportsRepository {
   add(report: ReportRecord): Promise<void>;
   /** Personnes signalées par `reporter`. */
   reportedBy(reporter: string): Promise<Set<string>>;
+  /** Instants (ISO) des signalements faits par `reporter` depuis `since` : plafond quotidien des signalements. */
+  createdBySince(reporter: string, since: string): Promise<string[]>;
+  /** Un signalement ouvert du filtre automatique existe-t-il déjà sur ce compte avec cette catégorie ? */
+  hasOpenFiltered(targetUser: string, category: string): Promise<boolean>;
   /** Signalements ouverts d'autres personnes sur ce compte : combien de personnes différentes, dont « mineur ». */
   openReportersOf(targetUser: string): Promise<{ distinct: number; minor: number }>;
   /** Monte la priorité des signalements ouverts sur ce compte (jamais ne la baisse). */

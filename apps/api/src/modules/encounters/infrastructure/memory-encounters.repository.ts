@@ -38,6 +38,14 @@ export class MemoryEncountersRepository implements EncountersRepository {
       .slice(0, limit)
       .map((e) => ({ ...e }));
   }
+
+  async listSentSince(fromUser: string, since: string): Promise<EncounterRecord[]> {
+    return [...this.db.encounters.values()].filter((e) => e.fromUser === fromUser && e.createdAt >= since).map((e) => ({ ...e }));
+  }
+
+  async listReceivedSince(toUser: string, since: string): Promise<EncounterRecord[]> {
+    return [...this.db.encounters.values()].filter((e) => e.toUser === toUser && e.createdAt >= since).map((e) => ({ ...e }));
+  }
 }
 
 export class MemoryProposalsRepository implements ProposalsRepository {

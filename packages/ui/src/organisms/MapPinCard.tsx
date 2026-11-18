@@ -30,13 +30,16 @@ export interface MapPinCardProps {
   actionLoading?: boolean;
   /** Déjà fait (salué, en attente) : bouton calme, désactivé, coche. */
   actionDone?: boolean;
+  /** Action impossible pour l'instant (trop de coucous aujourd'hui) : bouton désactivé, et `actionNote` dit pourquoi. */
+  actionDisabled?: boolean;
+  actionNote?: string;
   /** Bouton secondaire (« Voir de plus près »). */
   secondaryLabel?: string;
   onSecondary?: () => void;
 }
 
 /** Fiche flottante du minimoa choisi sur la carte : qui, pourquoi, et une action. Saluer lance une onde. */
-export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, actionLabel, onAction, actionLoading, actionDone, secondaryLabel, onSecondary }: MapPinCardProps) {
+export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, actionLabel, onAction, actionLoading, actionDone, actionDisabled, actionNote, secondaryLabel, onSecondary }: MapPinCardProps) {
   const anchor = useRippleAnchor();
   const ripple = useRipple();
   const act = () => {
@@ -63,10 +66,15 @@ export function MapPinCard({ motionKey, pet, owner, compat, compatLabel, why, ac
             {actionDone ? (
               <Button label={actionLabel} variant="glass" size="md" icon="check" disabled />
             ) : (
-              <Button label={actionLabel} size="md" onPress={act} loading={actionLoading} />
+              <Button label={actionLabel} size="md" onPress={act} loading={actionLoading} disabled={actionDisabled} />
             )}
           </View>
         </View>
+        {actionDisabled && actionNote && !actionDone ? (
+          <Text size={14} muted>
+            {actionNote}
+          </Text>
+        ) : null}
       </Appear>
     </View>
   );

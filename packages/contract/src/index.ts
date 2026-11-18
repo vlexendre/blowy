@@ -316,11 +316,25 @@ export const IncomingZ = z.object({
 });
 export type Incoming = z.infer<typeof IncomingZ>;
 
+/**
+ * Où en sont tes signes (garde-fous contre les ajouts en masse, `packages/domain/src/anti-spam.ts`) : `blocked`
+ * daily (plafond du jour atteint) · pending (trop de signes sans réponse) · null (tu peux faire signe). `message` dit
+ * pourquoi, dans ta langue, quand c'est bloqué : l'app désactive « Faire signe » et l'affiche.
+ */
+export const WavesZ = z.object({
+  left: z.number().int(),
+  blocked: z.enum(['daily', 'pending']).nullable(),
+  message: z.string().nullable(),
+});
+export type Waves = z.infer<typeof WavesZ>;
+
 export const EncountersZ = z.object({
   incoming: z.array(IncomingZ),
   suggestions: z.array(SuggestionZ),
   /** Forme du minimoa (humeur) : elle ne bloque plus les présentations (au moins une par jour, même s'il boude). */
   petShape: ShapeZ,
+  /** Tes signes du jour (aussi pour la carte). Absent d'une API plus ancienne. */
+  waves: WavesZ.optional(),
 });
 export type Encounters = z.infer<typeof EncountersZ>;
 
@@ -428,6 +442,8 @@ export const ERROR_CODES = [
   'suspended',
   /** Contenu refusé par le filtre (nom, message, photo de profil) : le message dit pourquoi, sans répéter le contenu. */
   'content_refused',
+  /** Trop de signes : plafond du jour atteint, ou trop de signes en attente (le message dit lequel). */
+  'wave_limit',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

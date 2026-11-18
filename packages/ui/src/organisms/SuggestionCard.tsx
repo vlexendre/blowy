@@ -30,6 +30,8 @@ export interface SuggestionCardProps {
   wavedLabel: string;
   onWave?: () => void;
   waving?: boolean;
+  /** Plus de coucou possible pour l'instant (plafond du jour, coucous en attente) : bouton désactivé. */
+  waveDisabled?: boolean;
   /** Version verrouillée (Minimoa+) : petite tuile floue. */
   locked?: boolean;
   /** Légende de la tuile verrouillée (« par la bande du 11e »). */
@@ -76,7 +78,7 @@ export function SuggestionCard(props: SuggestionCardProps) {
  * « Saluer » lance l'action, puis l'onde autour du bouton et le coucou de l'avatar (rien n'attend).
  */
 function SuggestionBody(props: SuggestionCardProps) {
-  const { suggestion, ownerLabel, badgeLabel, compatLabel, waveLabel, wavedLabel, onWave, waving, openLabel, onOpen, why } = props;
+  const { suggestion, ownerLabel, badgeLabel, compatLabel, waveLabel, wavedLabel, onWave, waving, waveDisabled, openLabel, onOpen, why } = props;
   const { user, compatibility, waved } = suggestion;
   const pet = user.pet;
   const tint = speciesColor[pet.species];
@@ -113,7 +115,7 @@ function SuggestionBody(props: SuggestionCardProps) {
       </EncounterOpen>
       {waved ? null : (
         <View {...button.props}>
-          <Button label={waveLabel} variant="white" size="md" labelSize={15} onPress={wave} loading={waving} style={styles.cta} />
+          <Button label={waveLabel} variant="white" size="md" labelSize={15} onPress={wave} loading={waving} disabled={waveDisabled} style={styles.cta} />
         </View>
       )}
     </EncounterFrame>

@@ -26,10 +26,12 @@ import { ScreenMotion } from '@/core';
 import {
   useAcceptEncounter,
   useDeclineEncounter,
+  isWaveLimit,
   useEncounterHistory,
   useLiveEncounters,
   useShareInvite,
   useWave,
+  useWaveBlock,
   VISION_TEST_ROUTE,
   whyA11y,
 } from '@/features/encounters';
@@ -93,7 +95,9 @@ export default function RencontresScreen() {
   const petName = myPet?.name ?? chatsText.yourPet;
   const incoming = encounters.data?.incoming ?? [];
   const suggestions = encounters.data?.suggestions ?? [];
-  const actionError = wave.error ?? accept.error ?? decline.error;
+  // Trop de coucous (plafond du jour, coucous en attente) : pas une erreur, une explication et des boutons désactivés.
+  const waveBlock = useWaveBlock(wave.error);
+  const actionError = (isWaveLimit(wave.error) ? null : wave.error) ?? accept.error ?? decline.error;
   const shape = encounters.data?.petShape;
   const sulking = shape === 'boude';
   const sulkWave = wave.error instanceof ApiError && wave.error.code === 'forbidden';
@@ -214,6 +218,8 @@ export default function RencontresScreen() {
         </FanIn>
       ))}
 
+      {waveBlock && suggestions.some((s) => !s.waved) ? <Banner tone="info" text={waveBlock} /> : null}
+
       {suggestions.map((s, n) => (
         <FanIn key={s.user.id} index={incoming.length + n} once={`rencontres:s:${s.user.id}`} delay={120}>
         <SuggestionCard
@@ -226,6 +232,7 @@ export default function RencontresScreen() {
           wavedLabel={t.waved}
           onWave={() => wave.mutate(s.user.id)}
           waving={wave.isPending && wave.variables === s.user.id}
+          waveDisabled={!!waveBlock}
           openLabel={t.open}
           onOpen={() => router.push(`/rencontre/${s.user.id}`)}
         />

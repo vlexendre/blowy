@@ -7,12 +7,14 @@
  *   vocabulaire pédocriminel explicite repéré par le filtre, ou au moins deux personnes différentes qui signalent un
  *   compte comme mineur. Écrite dans le journal de modération (« filtre automatique »), levée ou confirmée par l'équipe ;
  * - un signalement urgent prévient l'équipe tout de suite ; les autres partent en récapitulatif (minuteur).
+ * - au plus `REPORTS_PER_DAY` signalements par personne et par jour (`rate_limited`) ;
  * Le monde d'exemple du compte de revue d'Apple est mis à part : signalement enregistré (l'examinateur le voit
  * marcher), mais ni priorité, ni suspension, ni alerte, ni statistique.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { type ModerationCategory, autoSuspensionHours, priorityRank, reportPriority } from '@blowy/domain';
+import { type ModerationCategory, REPORTS_PER_DAY, autoSuspensionHours, priorityRank, reportPriority, withinDaily } from '@blowy/domain';
 import type { Clock } from '../../shared/clock';
+import { DomainError, errorText } from '../../shared/errors';
 import { CLOCK, PROFILES, REPORTS } from '../../shared/tokens';
 import { AccountGate } from '../admin/application/account-gate';
 import type { AuditLogRepository, SuspensionsRepository } from '../admin/ports';
@@ -59,6 +61,11 @@ export class ReportDesk {
 
   async file(input: FileReportInput): Promise<void> {
     const now = this.clock.now();
+    // Pas de quoi noyer la modération : REPORTS_PER_DAY signalements par personne et par jour (bloquer reste possible).
+    if (input.source === 'person' && input.reporter) {
+      const done = await this.reports.createdBySince(input.reporter, new Date(now.getTime() - 26 * 3_600_000).toISOString());
+      if (!withinDaily(done, now, REPORTS_PER_DAY)) throw new DomainError('rate_limited', errorText('reportsDaily'));
+    }
     const people = await this.profiles.findByIds([...(input.targetUser ? [input.targetUser] : []), ...(input.reporter ? [input.reporter] : [])]);
     const target = people.find((p) => p.id === input.targetUser) ?? null;
     const review = people.some((p) => !!p.reviewWorld);

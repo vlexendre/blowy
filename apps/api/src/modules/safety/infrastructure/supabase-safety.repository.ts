@@ -71,6 +71,18 @@ export class SupabaseReportsRepository implements ReportsRepository {
     return new Set((data ?? []).flatMap((r) => (r.target_user ? [r.target_user] : [])));
   }
 
+  async createdBySince(reporter: string, since: string): Promise<string[]> {
+    const { data, error } = await this.client.from('reports').select('created_at').eq('reporter', reporter).gte('created_at', since).limit(500);
+    check(error, 'lecture des signalements');
+    return (data ?? []).map((r) => r.created_at);
+  }
+
+  async hasOpenFiltered(targetUser: string, category: string): Promise<boolean> {
+    const { data, error } = await this.client.from('reports').select('id').eq('target_user', targetUser).eq('source', 'filter').eq('category', category).is('handled_at', null).limit(1);
+    check(error, 'lecture des signalements');
+    return (data ?? []).length > 0;
+  }
+
   async openReportersOf(targetUser: string): Promise<{ distinct: number; minor: number }> {
     const { data, error } = await this.client.from('reports').select('reporter, reason').eq('target_user', targetUser).is('handled_at', null).eq('source', 'person').not('reporter', 'is', null).limit(500);
     check(error, 'lecture des signalements');

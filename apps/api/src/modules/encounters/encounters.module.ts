@@ -7,12 +7,13 @@ import { AnswerEncounter } from './application/answer-encounter.usecase';
 import { ListEncounterHistory } from './application/list-encounter-history.usecase';
 import { ListEncounters } from './application/list-encounters.usecase';
 import { Wave } from './application/wave.usecase';
+import { WaveGuard } from './application/wave-guard';
 import { EncountersController } from './interface/encounters.controller';
 
 @Module({
   imports: [PetsModule, LinksModule, VisionModule, HabitSharingModule],
   controllers: [EncountersController],
-  providers: [ListEncounters, ListEncounterHistory, Wave, AnswerEncounter],
-  exports: [Wave, AnswerEncounter],
+  providers: [ListEncounters, ListEncounterHistory, Wave, AnswerEncounter, WaveGuard],
+  exports: [Wave, AnswerEncounter, WaveGuard],
 })
 export class EncountersModule {}

@@ -133,6 +133,15 @@ export class Matchmaker {
   }
 
   /**
+   * Une personne que la carte de Minimoa+ peut montrer n'importe où (`around` autour d'un point quelconque) : position
+   * consentie, test passé, filtres durs et seuil. Sert au contrôle d'un coucou envoyé depuis la carte.
+   */
+  async matchAnywhere(me: Seeker, other: Profile): Promise<boolean> {
+    if (!other.locationConsentAt || !(await this.places.find(other.id))) return false;
+    return (await this.matchAmong(me, [other])).has(other.id);
+  }
+
+  /**
    * Explication pour quelqu'un qui t'a salué (il est passé par ses propres filtres) : sans seuil ;
    * null si l'une des deux visions est trop peu connue.
    */

@@ -22,6 +22,7 @@ const fr = {
     rate_limited: 'Doucement. Réessaie dans un moment.',
     suspended: 'Ton compte est suspendu.',
     content_refused: 'Ce contenu ne respecte pas les règles de Minimoa.',
+    wave_limit: 'Tu as fait signe à beaucoup de monde aujourd’hui. Reviens demain.',
     internal: 'Une erreur est survenue.',
   },
   /** « Ta demande n’est pas valide (champ : name). » */
@@ -60,6 +61,11 @@ const fr = {
   uploadEmpty: 'Le fichier est vide.',
   uploadExpired: 'Ce lien d’envoi n’est plus valable.',
   devClockHours: 'Indique un nombre d’heures (1 à 1440).',
+  waveDaily: 'Tu as fait signe à beaucoup de monde aujourd’hui. Reviens demain.',
+  wavePending: 'Beaucoup de tes signes attendent encore une réponse. Laisse-leur le temps de répondre : tu pourras refaire signe ensuite.',
+  groupInvitesDaily: 'Tu as envoyé beaucoup d’invitations aujourd’hui. Reviens demain.',
+  inviteAcceptsDaily: 'Tu as accepté beaucoup d’invitations aujourd’hui. Reviens demain.',
+  reportsDaily: 'Tu as déjà fait beaucoup de signalements aujourd’hui. L’équipe les regarde. En attendant, tu peux bloquer la personne.',
 };
 
 export const apiErrorText = defineMessages({
@@ -81,6 +87,7 @@ export const apiErrorText = defineMessages({
       rate_limited: 'Easy. Try again in a moment.',
       suspended: 'Your account is suspended.',
       content_refused: 'This content doesn’t follow Minimoa’s rules.',
+      wave_limit: 'You’ve waved at lots of people today. Come back tomorrow.',
       internal: 'Something went wrong.',
     },
     invalidField: (where: string) => `Your request isn’t valid (${where}).`,
@@ -118,6 +125,11 @@ export const apiErrorText = defineMessages({
     uploadEmpty: 'The file is empty.',
     uploadExpired: 'This upload link is no longer valid.',
     devClockHours: 'Enter a number of hours (1 to 1440).',
+    waveDaily: 'You’ve waved at lots of people today. Come back tomorrow.',
+    wavePending: 'Lots of your waves are still waiting for an answer. Give people time to reply: you can wave again after that.',
+    groupInvitesDaily: 'You’ve sent lots of invitations today. Come back tomorrow.',
+    inviteAcceptsDaily: 'You’ve accepted lots of invitations today. Come back tomorrow.',
+    reportsDaily: 'You’ve already sent lots of reports today. The team is looking at them. In the meantime, you can block this person.',
   },
   es: {
     defaults: {
@@ -136,6 +148,7 @@ export const apiErrorText = defineMessages({
       rate_limited: 'Con calma. Vuelve a intentarlo dentro de un momento.',
       suspended: 'Tu cuenta está suspendida.',
       content_refused: 'Este contenido no respeta las normas de Minimoa.',
+      wave_limit: 'Hoy has saludado a mucha gente. Vuelve mañana.',
       internal: 'Se ha producido un error.',
     },
     invalidField: (where: string) => `Tu solicitud no es válida (${where}).`,
@@ -173,6 +186,11 @@ export const apiErrorText = defineMessages({
     uploadEmpty: 'El archivo está vacío.',
     uploadExpired: 'Este enlace de subida ya no es válido.',
     devClockHours: 'Indica un número de horas (de 1 a 1440).',
+    waveDaily: 'Hoy has saludado a mucha gente. Vuelve mañana.',
+    wavePending: 'Muchos de tus saludos aún esperan respuesta. Dales tiempo para responder: después podrás volver a saludar.',
+    groupInvitesDaily: 'Hoy has enviado muchas invitaciones. Vuelve mañana.',
+    inviteAcceptsDaily: 'Hoy has aceptado muchas invitaciones. Vuelve mañana.',
+    reportsDaily: 'Hoy ya has hecho muchas denuncias. El equipo las está revisando. Mientras tanto, puedes bloquear a esta persona.',
   },
   pt: {
     defaults: {
@@ -191,6 +209,7 @@ export const apiErrorText = defineMessages({
       rate_limited: 'Calma. Tente de novo daqui a pouco.',
       suspended: 'Sua conta está suspensa.',
       content_refused: 'Este conteúdo não segue as regras do Minimoa.',
+      wave_limit: 'Você acenou para muita gente hoje. Volte amanhã.',
       internal: 'Ocorreu um erro.',
     },
     invalidField: (where: string) => `Sua solicitação não é válida (${where}).`,
@@ -228,6 +247,11 @@ export const apiErrorText = defineMessages({
     uploadEmpty: 'O arquivo está vazio.',
     uploadExpired: 'Este link de envio não é mais válido.',
     devClockHours: 'Informe um número de horas (de 1 a 1440).',
+    waveDaily: 'Você acenou para muita gente hoje. Volte amanhã.',
+    wavePending: 'Muitos dos seus acenos ainda esperam resposta. Dê um tempo para as pessoas responderem: depois você pode acenar de novo.',
+    groupInvitesDaily: 'Você enviou muitos convites hoje. Volte amanhã.',
+    inviteAcceptsDaily: 'Você aceitou muitos convites hoje. Volte amanhã.',
+    reportsDaily: 'Você já fez muitas denúncias hoje. A equipe está analisando. Enquanto isso, você pode bloquear essa pessoa.',
   },
   nl: {
     defaults: {
@@ -246,6 +270,7 @@ export const apiErrorText = defineMessages({
       rate_limited: 'Rustig aan. Probeer het zo opnieuw.',
       suspended: 'Je account is geschorst.',
       content_refused: 'Deze inhoud houdt zich niet aan de regels van Minimoa.',
+      wave_limit: 'Je hebt vandaag naar veel mensen gezwaaid. Kom morgen terug.',
       internal: 'Er ging iets mis.',
     },
     invalidField: (where: string) => `Je verzoek is niet geldig (${where}).`,
@@ -283,6 +308,11 @@ export const apiErrorText = defineMessages({
     uploadEmpty: 'Het bestand is leeg.',
     uploadExpired: 'Deze uploadlink is niet meer geldig.',
     devClockHours: 'Geef een aantal uren op (1 tot 1440).',
+    waveDaily: 'Je hebt vandaag naar veel mensen gezwaaid. Kom morgen terug.',
+    wavePending: 'Veel van je zwaaitjes wachten nog op antwoord. Geef mensen de tijd om te reageren: daarna kun je weer zwaaien.',
+    groupInvitesDaily: 'Je hebt vandaag veel uitnodigingen verstuurd. Kom morgen terug.',
+    inviteAcceptsDaily: 'Je hebt vandaag veel uitnodigingen geaccepteerd. Kom morgen terug.',
+    reportsDaily: 'Je hebt vandaag al veel meldingen gedaan. Het team bekijkt ze. Je kunt deze persoon intussen blokkeren.',
   },
 });
 export type ApiErrorText = typeof fr;

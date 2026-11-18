@@ -113,10 +113,10 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     // dernière personne arrivée (démo locale : une langue à la fois), pour que tout son monde lui parle dans sa langue.
     await this.speak(locale);
     // Chaque geste est indépendant : la personne a pu s'inscrire avec le code de Léa ou de Malo (déjà liés).
-    await this.attempt('coucou de Léa', () => this.wave.execute(DEMO_LEA, userId));
+    await this.attempt('coucou de Léa', () => this.wave.execute(DEMO_LEA, userId, { demo: true }));
     // Rencontre déjà acceptée avec Malo (refusée si la personne est arrivée par le code de Malo : déjà liés).
     await this.attempt('rencontre avec Malo', async () => {
-      await this.wave.execute(DEMO_MALO, userId);
+      await this.wave.execute(DEMO_MALO, userId, { demo: true });
       const encounter = await this.encounters.findPair(DEMO_MALO, userId);
       if (encounter) await this.answer.accept(encounter.id, userId);
     });

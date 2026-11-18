@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type VisionVia, visionIntroLine, wavedAtYouLine } from '@blowy/content';
-import { type Shape, encounterQuota, entitlements, shapeOf } from '@blowy/domain';
+import { type Shape, type WaveAllowance, encounterQuota, entitlements, shapeOf } from '@blowy/domain';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
@@ -15,6 +15,7 @@ import type { BlocksRepository } from '../../safety/ports';
 import { Matchmaker } from '../../vision/application/matchmaker';
 import { type ExplanationInput, firstCommonLine } from '../../vision/interface/vision.presenter';
 import { ENCOUNTER_PROPOSALS, type EncounterRecord, type EncountersRepository, type ProposalsRepository } from '../ports';
+import { WaveGuard } from './wave-guard';
 
 export interface Candidate {
   profile: Profile;
@@ -40,6 +41,8 @@ export interface EncountersResult {
   incoming: IncomingResult[];
   suggestions: SuggestionResult[];
   petShape: Shape;
+  /** Où en sont tes coucous (plafond du jour, attente) : l'app désactive « Faire signe » quand c'est bloqué. */
+  waves: WaveAllowance;
 }
 
 /** Amis d'amis examinés au plus (ils échappent au filtre de zone, pas aux autres). */
@@ -66,6 +69,7 @@ export class ListEncounters {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(Audience) private readonly audience: Audience,
     @Inject(ENCOUNTER_PROPOSALS) private readonly proposals: ProposalsRepository,
+    @Inject(WaveGuard) private readonly guard: WaveGuard,
   ) {}
 
   /** Plus grand nombre de suggestions déjà noté par personne et par jour (dans cette instance) : une écriture quand il augmente. */
@@ -165,6 +169,7 @@ export class ListEncounters {
 
     const suggestions = [...fofOut, ...nearbyOut].slice(0, quota);
     await this.recordProposals(userId, today, suggestions, !!me.reviewWorld);
-    return { incoming: incomingOut, suggestions, petShape };
+    const waves = await this.guard.allowance(me);
+    return { incoming: incomingOut, suggestions, petShape, waves };
   }
 }

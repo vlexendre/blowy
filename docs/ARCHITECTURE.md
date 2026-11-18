@@ -58,7 +58,8 @@ modules/<module>/
   <module>.module.ts          racine de composition
 ```
 Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conversation, étapes, rappel « à toi d'écrire » ; `links/minimoas` : les minimoas
-dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
+dans le chat), `encounters` (`WaveGuard` : on ne salue que qui l'app a montré, plafonds de coucous par jour et en attente,
+e-mails de signe plafonnés, repérage des envois en masse pour la modération ; règles `packages/domain/src/anti-spam.ts`), `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
 `notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
 `retention` (comptes inactifs, exclusions, purges), `fidelite` (premiers pas, nouvelles du minimoa pendant une absence,

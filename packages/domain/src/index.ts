@@ -20,3 +20,4 @@ export * from './fidelite';
 export * from './growth';
 export * from './quiz';
 export * from './quartiers';
+export * from './anti-spam';

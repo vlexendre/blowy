@@ -1,3 +1,4 @@
+import { blockedMessage } from '../application/wave-guard';
 import type { Locale } from '@blowy/content';
 import type { EncounterHistory, Encounters } from '@blowy/contract';
 import { toPerson } from '../../me/interface/person.presenter';
@@ -30,6 +31,7 @@ export const toEncountersDto = (r: EncountersResult, locale: Locale = 'fr'): Enc
     waved: s.waved,
   })),
   petShape: r.petShape,
+  waves: { left: r.waves.left, blocked: r.waves.blocked, message: blockedMessage(r.waves.blocked, locale) },
 });
 
 export const toEncounterHistoryDto = (page: HistoryPage): EncounterHistory => ({

@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { INVITE_ACCEPTS_PER_DAY, withinDaily } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError, errorText } from '../../../shared/errors';
-import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
+import { CLOCK, LINKS, PETS, PROFILES } from '../../../shared/tokens';
 import { CreateLink } from '../../links/application/create-link.usecase';
-import type { LinkRecord } from '../../links/ports';
+import type { LinkRecord, LinksRepository } from '../../links/ports';
 import type { Profile, ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import type { PetRecord, PetsRepository } from '../../pets/ports';
@@ -26,6 +27,7 @@ export class Invites {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(Audience) private readonly audience: Audience,
     @Inject(Growth) private readonly growth: Growth,
+    @Inject(LINKS) private readonly links: LinksRepository,
   ) {}
 
   /** Page publique d'une invitation : le prénom et le pet de la personne qui invite. */
@@ -49,6 +51,13 @@ export class Invites {
     if (owner.id === userId) throw new DomainError('conflict', errorText('inviteOwn'));
     // Bloqué dans un sens ou dans l'autre, suspendu : introuvable, comme la page publique (rien ne trahit un blocage).
     if (!(await this.audience.reachable(userId, owner.id))) throw new DomainError('not_found', errorText('inviteNotFound'));
+    // Pas de liens en masse avec une liste de codes : INVITE_ACCEPTS_PER_DAY nouveaux liens par jour au plus.
+    const mine = await this.links.listForUsers([userId]);
+    const [a, b] = userId < owner.id ? [userId, owner.id] : [owner.id, userId];
+    const already = mine.some((l) => l.userA === a && l.userB === b && l.status !== 'archived');
+    if (!already && !withinDaily(mine.map((l) => l.createdAt), this.clock.now(), INVITE_ACCEPTS_PER_DAY)) {
+      throw new DomainError('rate_limited', errorText('inviteAcceptsDaily'));
+    }
     return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id });
   }
 }

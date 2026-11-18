@@ -1,4 +1,5 @@
 /** Historique des rencontres (acceptées, refusées, envoyées) et changement de nom du pet limité à un tous les 60 jours. */
+import { randomUUID } from 'node:crypto';
 import type { ApiClient } from '@blowy/api-client';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { MemoryDb } from '../src/persistence/memory-db';
@@ -94,11 +95,14 @@ describe('historique des rencontres', () => {
   it('par pages de 20, du plus récent au plus ancien', async () => {
     const zed = await join('Zed');
     const names = Array.from({ length: 23 }, (_, i) => `Pote${String(i).padStart(2, '0')}`);
+    // 23 coucous dépassent les plafonds du jour et de l'attente (anti-spam) : écrits directement, une minute d'écart.
+    const db = world.app.get<MemoryDb>(MEMORY_DB);
     for (const name of names) {
       const other = await join(name);
       world.clock.advanceMinutes(1);
-      await zed.api.encounters.wave(other.id);
-      await zed.api.pet.care('feed').catch(() => undefined); // garde Zed en forme : un pet qui boude ne salue plus
+      const at = world.clock.now().toISOString();
+      const id = randomUUID();
+      db.encounters.set(id, { id, fromUser: zed.id, toUser: other.id, status: 'waved', intro: null, createdAt: at, statusAt: at });
     }
     const first = await zed.api.encounters.history();
     expect(first.items).toHaveLength(20);
