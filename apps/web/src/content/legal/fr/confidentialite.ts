@@ -26,7 +26,7 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         'Pour toute question sur tes données : {{email.privacy}}.',
-        'Délégué à la protection des données : {{dpo.name}}.',
+        'Nous n’avons pas désigné de délégué à la protection des données (DPO) : toutes tes demandes sur tes données vont à {{email.privacy}}.',
       ],
     },
     {

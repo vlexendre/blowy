@@ -22,7 +22,7 @@ export const confidentialite: LegalPage = {
     {
       p: 'The data controller is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, which publishes the Minimoa app and website ([legal notice](@mentions-legales)).',
     },
-    { ul: ['For any question about your data: {{email.privacy}}.', 'Data protection officer: {{dpo.name}}.'] },
+    { ul: ['For any question about your data: {{email.privacy}}.', 'We have not appointed a data protection officer (DPO): all your requests about your data go to {{email.privacy}}.'] },
     { p: 'This policy covers the Minimoa app and the minimoa.app website. For the website’s cookies, see the [cookies page](@cookies).' },
 
     { h2: '2. What we use, and why', id: 'donnees' },

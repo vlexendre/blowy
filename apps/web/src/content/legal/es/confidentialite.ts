@@ -22,7 +22,7 @@ export const confidentialite: LegalPage = {
     {
       p: 'El responsable del tratamiento es **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, que edita la app y el sitio web de Minimoa ([aviso legal](@mentions-legales)).',
     },
-    { ul: ['Para cualquier pregunta sobre tus datos: {{email.privacy}}.', 'Delegado de protección de datos: {{dpo.name}}.'] },
+    { ul: ['Para cualquier pregunta sobre tus datos: {{email.privacy}}.', 'No hemos designado un delegado de protección de datos (DPD): todas tus solicitudes sobre tus datos van a {{email.privacy}}.'] },
     { p: 'Esta política se aplica a la app Minimoa y al sitio minimoa.app. Para las cookies del sitio, consulta la [página de cookies](@cookies).' },
 
     { h2: '2. Lo que usamos, y para qué', id: 'donnees' },

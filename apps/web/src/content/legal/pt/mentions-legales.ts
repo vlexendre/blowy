@@ -30,7 +30,7 @@ export const mentionsLegales: LegalPage = {
       ul: [
         '**Fornecedor:** {{dataHost.name}}',
         '**Morada:** {{dataHost.address}}',
-        '**Telefone:** {{dataHost.phone}}',
+        '**Contacto:** {{dataHost.contact}}',
         '**Localização dos servidores:** {{dataHost.region}}',
       ],
     },

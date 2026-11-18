@@ -22,7 +22,7 @@ export const confidentialite: LegalPage = {
     {
       p: 'De verwerkingsverantwoordelijke is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, uitgever van de Minimoa-app en -website ([juridische informatie](@mentions-legales)).',
     },
-    { ul: ['Voor elke vraag over je gegevens: {{email.privacy}}.', 'Functionaris voor gegevensbescherming: {{dpo.name}}.'] },
+    { ul: ['Voor elke vraag over je gegevens: {{email.privacy}}.', 'We hebben geen functionaris voor gegevensbescherming (FG) aangesteld: al je verzoeken over je gegevens gaan naar {{email.privacy}}.'] },
     { p: 'Dit beleid geldt voor de Minimoa-app en de website minimoa.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
 
     { h2: '2. Wat we gebruiken, en waarom', id: 'donnees' },
