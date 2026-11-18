@@ -9,7 +9,8 @@
   "wear.<id> : rendu « porté » : tuck (part basse du couvre-chef recouverte par la fourrure), split [y, 'back'|'front'] (objet enveloppant en deux calques : au-dessus de y, derrière ou devant le minimoa), shadow (force de l'ombre portée, 0 = aucune).",
   "wear.<id>.plain : objet dessiné tel quel (sans voile ni ombre propre : l'image est déjà « portée ») ; wear.<id>.fur : ombre portée limitée à la fourrure (douce, décalée vers le bas). Ancre `brow` (front) et mesure `brow` (largeur du front) : couvre-chefs, mesurés comme la planche de référence (scripts/wear_test.py).",
   "Mesure `face` (objets du visage) : écart des yeux sur la pose neutre (Gaston ×1,6) ; overrides.<s>.<id>.image : image propre à l'espèce (Gaston : lunettes à un verre, `_1`).",
-  "Vêtements : ancre `chest` (bouche + 55 px) ou `feet` (tutu), mesure `bodyw` (largeur du corps au torse) ; wear.clip : vrai = coupé par la silhouette du minimoa et effacé au-dessus des pieds, nombre = en plus, effacé au-dessus de cette part de sa hauteur (ceinture du tutu). poses.<p>.arms : zones [x0, y0, x1, y1] où un bras passe devant le ventre (le minimoa y est redessiné par-dessus la tenue)."
+  "Vêtements : ancre `chest` (bouche + 55 px) ou `feet` (tutu), mesure `bodyw` (largeur du corps au torse) ; wear.clip : vrai = coupé par la silhouette du minimoa et effacé au-dessus des pieds, nombre = en plus, effacé au-dessus de cette part de sa hauteur (ceinture du tutu). poses.<p>.arms : zones [x0, y0, x1, y1] où un bras passe devant le ventre (le minimoa y est redessiné par-dessus la tenue).",
+  "items.<id>.profile (et back.profile) : réglages remplacés sur une pose de profil (face: false, tourné vers la droite) : sac à dos derrière le dos avec une seule bretelle, écharpes et cache-oreilles resserrés."
  ],
  "canvas": [
   900,
@@ -11353,19 +11354,34 @@
    ],
    "ratio": 1.4667,
    "back": {
-    "w": 0.9,
+    "anchor": "neck",
+    "size": "bodyw",
+    "w": 1.12,
     "pivot": [
      0.5,
-     0.5
+     0.4
     ],
-    "ratio": 0.9439,
-    "dx": 0.6,
-    "dy": -0.62,
-    "rot": -8,
-    "anchor": "neck"
+    "ratio": 1.222,
+    "dx": 0,
+    "dy": -0.22,
+    "rot": 0,
+    "profile": {
+     "dx": -0.36,
+     "w": 0.66,
+     "dy": -0.2,
+     "rot": -8
+    },
+    "sy": 0.85
    },
    "dy": -0.04,
-   "sy": 0.8
+   "sy": 0.8,
+   "profile": {
+    "image": "sac_a_dos_profil",
+    "ratio": 0.5221,
+    "w": 0.44,
+    "dx": -0.12,
+    "rot": -6
+   }
   },
   "sac_main": {
    "anchor": "torso",

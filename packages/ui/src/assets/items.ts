@@ -106,6 +106,8 @@ const VARIANT_IMAGES = {
   cape_dos: require('../../assets/items/cape_dos.webp'),
   hiver_cape_dos: require('../../assets/items/hiver_cape_dos.webp'),
   sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
+  // Pose de profil (`fit.json` → `items.<id>.profile.image`) : une seule bretelle.
+  sac_a_dos_profil: require('../../assets/items/sac_a_dos_profil.webp'),
 } as const satisfies Record<string, Src>;
 
 /** Identifiant d'objet connu du registre (les 76 de `ITEM_IDS`). */

@@ -40,6 +40,11 @@ interface FitItem {
   back?: Partial<FitItem>;
   /** Compagnon posé au sol à côté (sapin, bonhomme de neige) : jamais tenu dans la main. */
   ground?: boolean;
+  /**
+   * Réglages remplacés sur une pose de profil (`face: false`, minimoa tourné vers la droite) : le sac passe derrière
+   * le dos (à gauche), l'écharpe se resserre sur le cou vu de côté.
+   */
+  profile?: Partial<Omit<FitItem, 'profile' | 'back'>>;
 }
 
 interface FitPose {
@@ -154,7 +159,7 @@ function settings(species: Species, id: string, layer: 'front' | 'back' = 'front
   if (layer === 'front') return s;
   if (!s.back) return null;
   // Le calque arrière ne reprend pas l'image ni le décalage de l'avant (sauf s'il les redonne).
-  const { back, image: _image, ...front } = s;
+  const { back, image: _image, profile: _profile, ...front } = s;
   return { ...front, ...back, image: back.image ?? `${id}_dos`, z: 'back' };
 }
 
@@ -187,11 +192,12 @@ const TILT_SHARE: Record<ItemSlot, number> = { head: 1, face: 1, body: 0.5, toy:
  * `null` si l'objet ou l'ancre est inconnu, ou un objet du visage sur une pose de profil.
  */
 export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 'front' | 'back' = 'front'): ItemPlacement | null {
-  const s = settings(species, id, layer);
+  const s0 = settings(species, id, layer);
   const sp = FIT.species[species];
   const slot = itemById(id)?.slot;
-  if (!s || !sp || !slot) return null;
+  if (!s0 || !sp || !slot) return null;
   const pf = poseFit(species, pose);
+  const s = pf && !pf.face && s0.profile ? { ...s0, ...s0.profile } : s0;
   if (pf && !pf.face && slot === 'face') return null;
   if (pf?.hide?.includes(slot)) return null;
   const hand = pf && slot === 'toy' && s.anchor === 'toy' && !s.ground ? pf.points.hand : undefined;
