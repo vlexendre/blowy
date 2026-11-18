@@ -39,10 +39,12 @@ interface Props {
   noindex?: boolean;
   /** Pleine page sans carte, sans barre ni fond animé : la page dessine tout elle-même (« 3 mots »). */
   bare?: boolean;
+  /** Barre, fond et pied de page, mais sans la carte centrée : la page pose sa propre mise en page (« quartier »). */
+  wide?: boolean;
   /** image d'aperçu de lien (1200 × 630) ; une fonction pour une image par langue */
   ogImage?: string | ((locale: Locale) => string);
 }
-const { meta, shell, seoPath, noindex = false, bare = false } = Astro.props;
+const { meta, shell, seoPath, noindex = false, bare = false, wide = false } = Astro.props;
 const locale: Locale = shell ? DEFAULT_LOCALE : (Astro.props.locale ?? DEFAULT_LOCALE);
 const m = meta(locale);
 const ogImage = typeof Astro.props.ogImage === 'function' ? Astro.props.ogImage(locale) : Astro.props.ogImage;
@@ -99,11 +101,17 @@ const metas = Object.fromEntries(LOCALES.map((l) => [l, { ...meta(l), lang: HTML
           ) : (
             <>
               <TopBar locale={l} langLinks={langLinks} />
-              <main id="main" class="pub">
-                <div class="pub-card">
+              {wide ? (
+                <main id="main" class="pub pub-wide">
                   <Fragment set:html={html} />
-                </div>
-              </main>
+                </main>
+              ) : (
+                <main id="main" class="pub">
+                  <div class="pub-card">
+                    <Fragment set:html={html} />
+                  </div>
+                </main>
+              )}
             </>
           )}
           <SiteFooter class="pub-foot" locale={l} langLinks={langLinks} />
@@ -117,11 +125,17 @@ const metas = Object.fromEntries(LOCALES.map((l) => [l, { ...meta(l), lang: HTML
           ) : (
             <>
               <TopBar locale={l} />
-              <main id="main" class="pub">
-                <div class="pub-card">
+              {wide ? (
+                <main id="main" class="pub pub-wide">
                   <Fragment set:html={html} />
-                </div>
-              </main>
+                </main>
+              ) : (
+                <main id="main" class="pub">
+                  <div class="pub-card">
+                    <Fragment set:html={html} />
+                  </div>
+                </main>
+              )}
             </>
           )}
           <SiteFooter class="pub-foot" locale={l} />
@@ -195,4 +209,6 @@ const metas = Object.fromEntries(LOCALES.map((l) => [l, { ...meta(l), lang: HTML
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
 .pub-foot{margin:0 auto 16px;width:calc(100% - 32px)}
+.pub-wide{display:block;width:100%;max-width:1360px;margin:0 auto}
+.pub-wide>.pub-card{margin:0 auto;max-width:600px}
 </style>

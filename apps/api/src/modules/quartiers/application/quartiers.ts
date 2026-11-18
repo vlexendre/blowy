@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { AdminQuartiers, MyQuartier, QuartierConfirmed, QuartierJoinBody, QuartierJoined, ZoneStatus } from '@blowy/contract';
+import type { AdminQuartiers, MyQuartier, QuartierBoard, QuartierConfirmed, QuartierJoinBody, QuartierJoined, ZoneStatus } from '@blowy/contract';
 import { quartierConfirmEmail, zoneLabel } from '@blowy/content';
 import {
   type Locale,
@@ -30,9 +30,15 @@ import { QUARTIERS, type QuartiersRepository, type SignupRecord, type ZoneCounts
  * (Resend), désinscription en un clic, le quartier de la zone d'une personne de l'app, et l'administration (seuil,
  * ouverture à la main). L'ouverture au seuil, les fondateurs et l'e-mail d'ouverture sont faits par `QuartierJobs`.
  */
+/** Le classement public est gardé un court instant (une liste pour toutes les visites de la page). */
+export const BOARD_TTL_MS = 60_000;
+/** Lignes du classement public au plus. */
+export const BOARD_MAX_ITEMS = 100;
+
 @Injectable()
 export class Quartiers {
   private readonly logger = new Logger('Quartiers');
+  private readonly boards = new Map<Locale, { at: number; board: QuartierBoard }>();
 
   constructor(
     @Inject(QUARTIERS) private readonly repo: QuartiersRepository,
@@ -61,6 +67,31 @@ export class Quartiers {
     const zone = this.zoneOrThrow(zoneId);
     const [record, counts, threshold] = await Promise.all([this.repo.findZone(zone.id), this.repo.counts([zone.id]), this.repo.threshold()]);
     return this.statusOf(zone.id, record, counts.get(zone.id), threshold, locale);
+  }
+
+  /**
+   * Classement public : les quartiers qui ont au moins une inscription confirmée (ou déjà ouverts), du plus proche de
+   * l'ouverture au plus loin. Seulement des compteurs (aucune adresse, aucune date) ; gardé `BOARD_TTL_MS`.
+   */
+  async board(locale: Locale): Promise<QuartierBoard> {
+    const now = this.clock.now().getTime();
+    const cached = this.boards.get(locale);
+    if (cached && now - cached.at < BOARD_TTL_MS) return cached.board;
+    const [zones, threshold] = await Promise.all([this.repo.listZones(), this.repo.threshold()]);
+    const known = zones.filter((z) => zoneById(z.zone));
+    const counts = await this.repo.counts(known.map((z) => z.zone));
+    const all = known
+      .map((z) => this.statusOf(z.zone, z, counts.get(z.zone), threshold, locale))
+      .filter((s) => s.count > 0 || s.open)
+      .sort((a, b) => Number(a.open) - Number(b.open) || a.missing - b.missing || b.count - a.count || a.zone.localeCompare(b.zone));
+    const board: QuartierBoard = {
+      threshold,
+      total: all.reduce((n, s) => n + s.count, 0),
+      zones: all.length,
+      items: all.slice(0, BOARD_MAX_ITEMS),
+    };
+    this.boards.set(locale, { at: now, board });
+    return board;
   }
 
   private now(): string {

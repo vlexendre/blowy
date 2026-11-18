@@ -9,6 +9,7 @@ import { publicText } from './public';
 import { quizCopy } from './quiz';
 import { growthCopy } from './growth';
 import { openCopy } from './open';
+import { quartierXpCopy } from './quartier';
 
 export const siteDictionaries: Record<string, Record<Locale, unknown>> = {
   landing: landingText,
@@ -17,4 +18,5 @@ export const siteDictionaries: Record<string, Record<Locale, unknown>> = {
   quiz: quizCopy,
   growth: growthCopy,
   open: openCopy,
+  quartier: quartierXpCopy,
 };

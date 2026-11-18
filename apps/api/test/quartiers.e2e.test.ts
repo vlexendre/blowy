@@ -87,6 +87,25 @@ describe('quiz et quartiers', () => {
       expect(w.outbox.length).toBe(before + 1);
     });
 
+    it('classement public : seulement des compteurs, quartiers avec du monde, gardé une minute', async () => {
+      calm();
+      const board = await w.anonymous.quartiers.board();
+      expect(board).toEqual({ threshold: 50, total: 1, zones: 1, items: [{ zone: 'paris-11', label: 'Paris 11e', count: 1, threshold: 50, missing: 49, open: false }] });
+      // Une inscription non confirmée ne compte pas ; une confirmée apparaît après la minute de cache.
+      const n = w.outbox.length;
+      await w.anonymous.quartiers.join({ zone: 'lyon-3', email: 'board@exemple.fr', consent: true, locale: 'fr' });
+      await w.anonymous.quartiers.join({ zone: 'lyon-3', email: 'board2@exemple.fr', consent: true, locale: 'fr' });
+      await w.anonymous.quartiers.confirm(tokenOf(w.outbox[n]?.html ?? ''));
+      expect(await w.anonymous.quartiers.board()).toEqual(board);
+      calm();
+      const fresh = await w.anonymous.quartiers.board();
+      expect(fresh.items.map((i) => [i.zone, i.count])).toEqual([['lyon-3', 1], ['paris-11', 1]]);
+      expect(fresh).toMatchObject({ total: 2, zones: 2 });
+      expect(JSON.stringify(fresh)).not.toContain('@');
+      // Lyon revient à zéro pour la suite.
+      for (const s of [...db.quartierSignups.values()]) if (s.email?.startsWith('board')) db.quartierSignups.delete(s.id);
+    });
+
     it('inviter fait avancer son quartier ; le compte de l’app voit le compteur de sa zone', async () => {
       calm();
       for (const [i, ref] of [first, first, undefined].entries()) {

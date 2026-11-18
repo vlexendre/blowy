@@ -1,12 +1,13 @@
 ---
 /**
- * « Ouvre ton quartier » dans une langue (docs/VIRALITE.md) : formulaire, quartier ouvert, confirmation, désinscription.
+ * « Ouvre ton quartier » dans une langue (docs/VIRALITE.md) : l'expérience (organism QuartierExpedition), quartier
+ * ouvert, confirmation, désinscription. Page en mode `wide` (layouts/Public.astro) : les autres états gardent leur carte.
  * Rendu par pages/quartier (français), pages/[lang]/quartier et pages/lien/quartier (copie servie pour
- * /quartier/<zone>, /quartier/confirmer, /quartier/desinscription). Logique : scripts/quartier-page.ts.
+ * /quartier/<zone>, /quartier/confirmer, /quartier/desinscription). Logique : scripts/quartier-page.ts et scripts/quartier-xp.ts.
  */
 import StoreButtons from '../molecules/StoreButtons.astro';
 import CodeBox from '../organisms/public/CodeBox.astro';
-import QuartierForm from '../organisms/public/QuartierForm.astro';
+import QuartierExpedition from '../organisms/public/QuartierExpedition.astro';
 import { quizCopy } from '../../content/quiz';
 import { growthCopy } from '../../content/growth';
 import { localePath, type Locale } from '../../i18n/site';
@@ -17,16 +18,13 @@ interface Props {
 const { locale } = Astro.props;
 const t = quizCopy[locale].quartier;
 ---
-<section class="pub-state pub-loading" data-state="loading" aria-live="polite" aria-busy="true" hidden>
+<section class="pub-state pub-card pub-loading" data-state="loading" aria-live="polite" aria-busy="true" hidden>
     <div class="spin" aria-hidden="true"></div>
   </section>
 
-  <section class="pub-state" data-state="form">
-    <img class="pub-pet qp-pet" src="/img/m/groupe.webp" alt="" width="700" height="460" />
-    <QuartierForm level={1} locale={locale} />
-  </section>
+  <QuartierExpedition locale={locale} />
 
-  <section class="pub-state" data-state="open" hidden>
+  <section class="pub-state pub-card" data-state="open" hidden>
     <img class="pub-pet qp-pet" src="/img/m/bande_fete.webp" alt="" width="1200" height="520" />
     <h1 class="pub-title" tabindex="-1">{t.openTitle}</h1>
     <p class="qp-zone" data-qp-zone></p>
@@ -36,7 +34,7 @@ const t = quizCopy[locale].quartier;
     <div class="pub-actions"><a class="btn g" data-qp-open href="minimoa://quartier">{t.openApp}</a></div>
   </section>
 
-  <section class="pub-state" data-state="confirmed" hidden>
+  <section class="pub-state pub-card" data-state="confirmed" hidden>
     <img class="pub-pet" src="/img/m/nino_applaudit.webp" alt="" width="450" height="500" />
     <h1 class="pub-title" tabindex="-1">{t.confirmTitle}</h1>
     <p class="pub-text">{t.confirmText}</p>
@@ -58,13 +56,13 @@ const t = quizCopy[locale].quartier;
     <a class="btn w" href={localePath(locale, '/quiz/')}>{quizCopy[locale].quiz.result.cardKicker}</a>
   </section>
 
-  <section class="pub-state" data-state="unsubscribed" hidden>
+  <section class="pub-state pub-card" data-state="unsubscribed" hidden>
     <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
     <h1 class="pub-title" tabindex="-1">{t.unsubTitle}</h1>
     <p class="pub-text">{t.unsubText}</p>
   </section>
 
-  <section class="pub-state" data-state="link_failed" hidden>
+  <section class="pub-state pub-card" data-state="link_failed" hidden>
     <img class="pub-pet" src="/img/nino_triste.webp" alt="" width="900" height="1000" />
     <p class="pub-text">{t.confirmFail}</p>
     <div class="pub-actions"><a class="btn l" href={localePath(locale, '/quartier/')}>{t.submit}</a></div>

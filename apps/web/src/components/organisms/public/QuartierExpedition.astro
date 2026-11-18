@@ -1,0 +1,318 @@
+---
+/**
+ * « Ouvre ton quartier », l'expérience (page /quartier/) : Nino se présente (intro passable, une fois par visite),
+ * la carte des quartiers qui ont du monde (contours Natural Earth chargés à la demande, aucun service externe), trois
+ * étapes (quartier → minimoa → pass), le pass de fondateur·rice à partager, le classement réel.
+ * Tout le formulaire est dans la page dès le départ : les animations ne sont qu'un plus (scripts/quartier-xp.ts).
+ * Consentement : case non cochée, texte de `quizCopy[l].quartier.consent`, lien vers la politique de confidentialité.
+ */
+import { SPECIES, ZONE_CITIES } from '@blowy/domain';
+import { cityName } from '@blowy/content';
+import { speciesGradient } from '@blowy/tokens';
+import { quizCopy, SPECIES_NAMES } from '../../../content/quiz';
+import { quartierXpCopy } from '../../../content/quartier';
+import { MAP_H, MAP_W } from '../../../lib/quartier-map';
+import { legalPath } from '../../../i18n/legal';
+import { fill, type Locale } from '../../../i18n/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const q = quizCopy[locale].quartier;
+const x = quartierXpCopy[locale];
+const face = (s: string) => `/img/v/${s}_face-128.webp`;
+---
+<section class="pub-state qx" data-state="form" data-quartier-xp>
+  <div class="qx-intro" data-qx-intro role="region" aria-label={x.intro.label} hidden>
+    <div class="qx-intro-lines" data-qx-lines aria-live="polite"></div>
+    <img class="qx-intro-pet" src="/img/v/nino_coucou-320.webp" srcset="/img/v/nino_coucou-240.webp 240w, /img/v/nino_coucou-320.webp 320w" sizes="190px" alt="" width="450" height="500" fetchpriority="high" />
+    <button type="button" class="qx-skip" data-qx-skip>{x.intro.skip}</button>
+  </div>
+
+  <header class="qx-hero">
+    <h1 class="qx-title pub-title" tabindex="-1">{x.title}</h1>
+    <p class="qx-lead" data-qx-lead>{fill(x.lead, { n: 50 })}</p>
+    <a class="btn l qx-cta" href="#qx-city" data-qx-cta>{x.cta}</a>
+    <p class="qx-live" data-qx-live aria-hidden="true"><span data-qx-live-signups></span><span data-qx-live-zones></span></p>
+  </header>
+
+  <figure class="qx-map" data-qx-map>
+    <div class="qx-stage" role="img" aria-label={x.mapLabel} style={`aspect-ratio:${MAP_W}/${MAP_H};--ar:${(MAP_W / MAP_H).toFixed(4)}`}>
+      <svg class="qx-svg" viewBox={`0 0 ${MAP_W} ${MAP_H}`} data-qx-svg aria-hidden="true" focusable="false"></svg>
+      <div class="qx-pins" data-qx-pins aria-hidden="true"></div>
+      <div class="qx-here" data-qx-here aria-hidden="true" hidden>
+        <i class="qx-here-ping"></i>
+        <img class="qx-here-pet" data-qx-here-img src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
+        <span class="qx-here-tag" data-qx-here-tag></span>
+      </div>
+    </div>
+    <figcaption class="qx-legend">{x.mapLegend}</figcaption>
+  </figure>
+
+  <form class="qx-panel" data-qx-form novalidate>
+    <ol class="qx-steps">
+      <li class="qx-step is-on" data-qx-step="1">
+        <h2 class="qx-step-title"><b aria-hidden="true">1</b>{x.zoneTitle}</h2>
+        <div class="qx-row">
+          <label class="qx-field">
+            <span>{q.city}</span>
+            <select id="qx-city" data-qx-city>
+              <option value="">{q.cityPick}</option>
+              {ZONE_CITIES.map((c) => <option value={c}>{cityName(c, locale)}</option>)}
+            </select>
+          </label>
+          <label class="qx-field" data-qx-district-wrap hidden>
+            <span>{q.zone}</span>
+            <select data-qx-district></select>
+          </label>
+        </div>
+        <label class="qx-field qx-postal">
+          <span>{q.or} {q.postal.toLowerCase()}</span>
+          <input data-qx-postal inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="75011" aria-describedby="qx-postal-hint" />
+          <small id="qx-postal-hint">{q.postalHint}</small>
+        </label>
+
+        <div class="qx-gauge" data-qx-gauge hidden>
+          <p class="qx-gauge-num"><b data-qx-count>0</b><span data-qx-of></span></p>
+          <p class="qx-gauge-for" data-qx-for></p>
+          <div class="qx-seats" data-qx-seats aria-hidden="true"></div>
+          <p class="qx-gauge-note" data-qx-note></p>
+          <a class="btn w qx-gauge-open" data-qx-open-link href="#" hidden>{x.gaugeOpenLink}</a>
+          <p class="sr" aria-live="polite" data-qx-gauge-sr></p>
+        </div>
+      </li>
+
+      <li class="qx-step" data-qx-step="2">
+        <fieldset class="qx-species">
+          <legend class="qx-step-title"><b aria-hidden="true">2</b>{x.petTitle}</legend>
+          <p class="qx-hint">{x.petText}</p>
+          <div class="qx-pets">
+            {
+              SPECIES.map((s, i) => (
+                <label class="qx-pet" style={`--pc:var(--color-${s === 'nino' ? 'lime' : s === 'suzie' ? 'rose' : s === 'gaston' ? 'orange' : 'violet'})`}>
+                  <input type="radio" name="qx-species" value={s} checked={i === 0} data-qx-species />
+                  <img src={face(s)} alt="" width="128" height="128" loading="lazy" />
+                  <span>{SPECIES_NAMES[s]}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+      </li>
+
+      <li class="qx-step" data-qx-step="3">
+        <h2 class="qx-step-title"><b aria-hidden="true">3</b>{x.passTitle}</h2>
+        <p class="qx-hint">{x.passText}</p>
+        <label class="qx-field">
+          <span>{q.email}</span>
+          <input data-qx-email type="email" autocomplete="email" inputmode="email" required placeholder={q.emailPlaceholder} />
+        </label>
+        <label class="qx-consent">
+          <input type="checkbox" data-qx-consent />
+          <span><span>{q.consent}</span> <a href={legalPath(locale, 'confidentialite')}>{q.privacy}</a></span>
+        </label>
+        <p class="qx-error" data-qx-error role="alert" hidden></p>
+        <button type="submit" class="btn l qx-submit" data-qx-submit>{x.submit}</button>
+      </li>
+    </ol>
+  </form>
+
+  <div class="qx-done" data-qx-done hidden>
+    <article class="qx-pass" data-qx-pass data-sp="nino" style={SPECIES.map((s) => `--g-${s}:var(--gradient-${speciesGradient[s]})`).join(';')}>
+      <p class="qx-pass-top"><span class="qx-pass-logo">minimoa</span><span>{x.passKicker}</span></p>
+      <img class="qx-pass-pet" data-qx-pass-img src="/img/m/nino_danse.webp" alt="" width="450" height="500" loading="lazy" />
+      <p class="qx-pass-zone" data-qx-pass-zone></p>
+      <p class="qx-pass-scout" data-qx-pass-scout></p>
+      <p class="qx-pass-stamp">{x.passStatus}</p>
+      <div class="qx-pass-foot">
+        <span data-qx-pass-goal></span>
+        <span class="qx-pass-link" data-qx-link></span>
+      </div>
+    </article>
+    <div class="qx-after">
+      <h2 class="qx-done-title" tabindex="-1" data-qx-done-title>{q.sentTitle}</h2>
+      <p class="qx-hint">{q.sentText}</p>
+      <p class="qx-hint">{q.inviteText}</p>
+      <div class="pub-actions">
+        <button type="button" class="btn l" data-qx-share>{x.sharePass}</button>
+        <button type="button" class="btn g" data-qx-copy>{q.copy}</button>
+      </div>
+      <p class="sr" aria-live="assertive" data-qx-done-sr></p>
+    </div>
+  </div>
+
+  <section class="qx-board" data-qx-board aria-labelledby="qx-board-title" hidden>
+    <h2 class="qx-board-title" id="qx-board-title">{x.boardTitle}</h2>
+    <p class="qx-hint">{x.boardText}</p>
+    <ol class="qx-rank" data-qx-rank></ol>
+  </section>
+</section>
+
+<style is:global>
+/* ---------- mise en page ---------- */
+.pub-state.qx{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(18px,4vw,28px);align-items:start;padding-bottom:24px}
+.pub-state.qx[hidden]{display:none}
+.qx-hero{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding-top:clamp(4px,2vw,24px)}
+.qx-title{font-size:clamp(40px,11.2vw,96px);line-height:.88;letter-spacing:-.03em;max-width:9.5em;text-wrap:balance}
+.qx-lead{font-size:clamp(16px,4.2vw,19px);line-height:1.42;color:var(--mute);max-width:30em;text-wrap:pretty}
+.qx-cta{box-shadow:0 14px 34px rgba(255,184,0,.28)}
+.qx-live{display:flex;flex-wrap:wrap;gap:8px}
+.qx-live{min-height:32px}
+.qx-live[aria-hidden="true"]{visibility:hidden}
+.qx-live span{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px 0 11px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-weight:700;font-size:13px}
+.qx-live span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px 2px rgba(255,184,0,.6)}
+.qx-live span:empty{display:none}
+.qx-panel,.qx-done,.qx-stage,.qx-board{scroll-margin-top:calc(var(--top) + 12px)}
+.qx-hint{color:var(--mute);font-size:15px;line-height:1.45;text-wrap:pretty}
+@media (min-width:1000px){
+  .pub-state.qx{grid-template-columns:minmax(0,480px) minmax(0,1fr);grid-template-areas:"hero map" "panel map" "board board";column-gap:clamp(32px,4vw,64px);row-gap:28px}
+  .qx-hero{grid-area:hero;padding-top:40px}
+  .qx-map{grid-area:map;position:sticky;top:calc(var(--top) + 12px)}
+  .qx-panel,.qx-done{grid-area:panel}
+  .qx-board{grid-area:board}
+  .qx-title{font-size:clamp(52px,5vw,80px)}
+}
+
+/* ---------- intro ---------- */
+.qx-intro{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;background:radial-gradient(70% 50% at 50% 100%,rgba(109,61,240,.35),transparent 70%),var(--bg);cursor:pointer;text-align:center}
+.qx-intro[hidden]{display:none}
+.qx-intro-lines{position:relative;min-height:3.2em;display:grid;place-items:center;width:min(100%,15em);font-family:var(--display);font-weight:800;font-size:clamp(30px,8.4vw,64px);line-height:1;letter-spacing:-.02em;text-wrap:balance}
+.qx-intro-lines p{grid-area:1/1}
+.qx-intro em{font-style:normal;color:var(--lime);position:relative;display:inline-block}
+.qx-intro em::after{content:"";position:absolute;left:-2%;right:-2%;bottom:-.08em;height:.14em;border-radius:99px;background:var(--lime);transform-origin:0 50%;animation:qx-ink .6s .25s cubic-bezier(.2,.8,.2,1) both}
+.qx-intro-pet{width:clamp(120px,32vw,190px);height:auto;filter:var(--stk)}
+.qx-skip{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;height:44px;padding:0 18px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:800;font-size:15px}
+.qx-spark{position:absolute;width:var(--z,18px);height:var(--z,18px);pointer-events:none;background:var(--lime);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.qx-bubble{position:absolute;border-radius:50%;pointer-events:none;border:2px solid rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
+@keyframes qx-ink{from{transform:scaleX(0)}}
+
+/* ---------- carte ---------- */
+.qx-map{margin:0;display:flex;flex-direction:column;gap:10px}
+.qx-stage{position:relative;width:min(100%,calc((100svh - var(--top) - 70px) * var(--ar,1)));min-width:min(100%,300px);margin:0 auto;overflow:hidden;border-radius:var(--r);background:radial-gradient(60% 55% at 45% 45%,rgba(109,61,240,.28),transparent 70%),radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.4px) 0 0/18px 18px,var(--color-panel);border:1px solid var(--line);isolation:isolate}
+.qx-svg{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .8s}
+.qx-svg.is-in{opacity:1}
+.qx-svg .ctx{fill:rgba(255,255,255,.035);stroke:rgba(255,255,255,.1);stroke-width:1}
+.qx-svg .land{fill:url(#qx-land);fill-opacity:.8;stroke:rgba(255,255,255,.75);stroke-width:1.4;stroke-linejoin:round}
+.qx-svg .ctx,.qx-svg .land{vector-effect:non-scaling-stroke}
+.qx-pins{position:absolute;inset:0}
+.qx-dot{position:absolute;left:0;top:0;width:var(--d,6px);height:var(--d,6px);margin:calc(var(--d,6px) / -2) 0 0 calc(var(--d,6px) / -2);border-radius:50%;background:rgba(255,255,255,.4)}
+.qx-dot.is-live{background:radial-gradient(circle,#fff 0 18%,var(--color-accent-soft) 30%,var(--lime) 62%);box-shadow:0 0 calc(var(--d) * .7) calc(var(--d) * .2) rgba(255,184,0,.55)}
+.qx-dot.is-live::after{content:"";position:absolute;inset:-10%;border-radius:50%;border:1.5px solid rgba(255,210,63,.7);animation:qx-ping 2.6s var(--dl,0s) ease-out infinite}
+.qx-dot.is-open{background:var(--color-ok);box-shadow:0 0 14px 4px rgba(61,220,151,.5)}
+.qx-dot.is-zone{opacity:0;transition:opacity .4s}
+.qx-stage.is-zoomed .qx-dot.is-zone{opacity:1}
+.qx-dot.is-agg{transition:opacity .4s}
+.qx-stage.is-zoomed .qx-dot.is-agg{opacity:0}
+@keyframes qx-ping{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+.qx-here{position:absolute;left:0;top:0;width:0;height:0;z-index:2}
+.qx-here[hidden]{display:none}
+.qx-here-ping{position:absolute;left:-14px;top:-7px;width:28px;height:14px;border-radius:50%;background:rgba(255,184,0,.45);box-shadow:0 0 18px 6px rgba(255,184,0,.4)}
+.qx-here-pet{position:absolute;left:0;bottom:2px;width:clamp(70px,20vw,120px);max-width:none;height:auto;translate:-50% 0;transform-origin:50% 100%;filter:var(--stk)}
+.qx-here-tag{position:absolute;left:0;top:12px;translate:-50% 0;white-space:nowrap;padding:6px 12px;border-radius:999px;background:#fff;color:var(--ink);font-weight:800;font-size:14px;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.qx-here-tag:empty{display:none}
+.qx-legend{color:var(--mute);font-size:13px;line-height:1.4;padding:0 6px}
+
+/* ---------- étapes ---------- */
+.qx-panel{position:relative;border-radius:var(--r);background:var(--g-night);border:1px solid var(--line);padding:clamp(18px,5vw,32px);box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.qx-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:26px}
+.qx-step{display:flex;flex-direction:column;gap:12px}
+.qx-step[hidden]{display:none}
+.qx-step+.qx-step{padding-top:24px;border-top:1px dashed rgba(255,255,255,.16)}
+.qx-step-title{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:clamp(22px,5.6vw,28px);line-height:1;letter-spacing:-.01em;padding:0;margin:0}
+.qx-step-title b{flex:0 0 auto;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.3);font-size:18px;transition:background .3s,border-color .3s,color .3s}
+.qx-step.is-on .qx-step-title b{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.qx-row{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:520px){.qx-row{grid-template-columns:1fr 1fr}}
+.qx-field{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+.qx-field[hidden]{display:none}
+.qx-field small{font-weight:500;color:var(--mute);font-size:13px}
+.qx select,.qx input[type="email"],.qx input[inputmode="numeric"]{height:54px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;font:inherit;font-size:17px;font-weight:700;padding:0 14px;width:100%}
+.qx select option{color:var(--ink)}
+.qx select:focus-visible,.qx input:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.qx-postal input{max-width:12em}
+
+/* jauge : une place par inscription à atteindre */
+.qx-gauge{display:flex;flex-direction:column;gap:6px;margin-top:4px;padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.qx-gauge[hidden]{display:none}
+.qx-gauge-num{display:flex;align-items:baseline;gap:10px;font-family:var(--display);font-weight:800;line-height:.9}
+.qx-gauge-num b{font-size:clamp(64px,18vw,96px);color:var(--lime);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.qx-gauge-num span{font-size:22px;color:var(--mute)}
+.qx-gauge-for{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.05}
+.qx-seats{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin:10px 0 4px;max-width:340px}
+.qx-seats.is-bar{display:block;height:14px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.qx-seats.is-bar i{display:block;height:100%;width:var(--p,0%);background:var(--lime);border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.qx-seat{aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.1)}
+.qx-seat.on{background:var(--lime);box-shadow:0 0 8px rgba(255,184,0,.6)}
+.qx-seat.you{background:transparent;border:2px dashed var(--pc,var(--color-lime));animation:qx-you 1.6s ease-in-out infinite}
+@keyframes qx-you{50%{transform:scale(1.2)}}
+.qx-gauge-note{font-weight:700;font-size:15px}
+.qx-gauge-open{align-self:flex-start;margin-top:6px}
+.qx-gauge-open[hidden]{display:none}
+
+/* minimoa */
+.qx-species{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.qx-pets{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.qx-pet{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:20px;background:rgba(255,255,255,.05);border:2px solid transparent;cursor:pointer;font-weight:800;font-size:14px;transition:transform .2s,border-color .2s,background .2s}
+.qx-pet input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.qx-pet img{width:100%;max-width:72px;aspect-ratio:1;border-radius:50%;background:var(--pc);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.qx-pet:has(input:checked){border-color:var(--pc);background:color-mix(in srgb,var(--pc) 14%,transparent)}
+.qx-pet:has(input:checked) img{transform:scale(1.08) rotate(-4deg)}
+.qx-pet:has(input:focus-visible){outline:3px solid var(--lime);outline-offset:3px}
+
+/* e-mail et consentement */
+.qx-consent{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:var(--mute)}
+.qx-consent input{width:22px;height:22px;flex:0 0 auto;margin:1px 0 0;accent-color:var(--lime)}
+.qx-consent a{color:#fff;text-decoration:underline}
+.qx-error{color:#FF8F6B;font-weight:700;font-size:14px}
+.qx-error[hidden]{display:none}
+.qx-submit{align-self:stretch;height:58px;font-size:18px}
+@media (min-width:520px){.qx-submit{align-self:flex-start;padding:0 34px}}
+
+/* ---------- pass de fondateur·rice ---------- */
+.qx-done{display:flex;flex-direction:column;align-items:center;gap:22px}
+.qx-done[hidden]{display:none}
+.qx-pass{--g:var(--g-nino);--fg:#fff;position:relative;width:min(100%,360px);aspect-ratio:3/4.3;display:flex;flex-direction:column;align-items:center;padding:18px 22px 0;border-radius:30px;background:var(--g);color:var(--fg);text-align:center;box-shadow:0 30px 60px rgba(0,0,0,.45);isolation:isolate;overflow:hidden;
+  -webkit-mask:radial-gradient(circle 15px at 0 76%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 15px at 100% 76%,#0000 97%,#000) right/51% 100% no-repeat;
+  mask:radial-gradient(circle 15px at 0 76%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 15px at 100% 76%,#0000 97%,#000) right/51% 100% no-repeat}
+.qx-pass::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(100% 60% at 50% 0%,rgba(255,255,255,.3),transparent 60%)}
+.qx-pass[data-sp="suzie"]{--g:var(--g-suzie)}
+.qx-pass[data-sp="gaston"]{--g:var(--g-gaston)}
+.qx-pass[data-sp="pia"]{--g:var(--g-pia);--fg:var(--ink)}
+.qx-pass-top{display:flex;justify-content:space-between;align-items:center;width:100%;font-weight:800;font-size:13px}
+.qx-pass-logo{font-size:20px;letter-spacing:-.04em}
+.qx-pass-pet{width:58%;height:auto;margin:6px 0 -4px;filter:var(--stk)}
+.qx-pass-zone{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(30px,9vw,40px);line-height:.92;letter-spacing:-.02em;text-wrap:balance}
+.qx-pass-scout{font-weight:700;font-size:14px;opacity:.85;margin-top:6px}
+.qx-pass-stamp{margin:auto 0;padding:6px 12px;border:2.5px solid currentColor;border-radius:10px;font-weight:800;font-size:13px;rotate:-4deg;opacity:.9}
+.qx-pass-foot{flex:0 0 24%;align-self:stretch;margin:0 -22px;display:flex;flex-direction:column;justify-content:center;gap:4px;border-top:2px dashed color-mix(in srgb,var(--fg) 45%,transparent);font-weight:800;font-size:14px}
+.qx-pass-link{font-size:12px;opacity:.8;overflow-wrap:anywhere;padding:0 24px}
+.qx-after{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;max-width:28em}
+.qx-done-title{font-family:var(--display);font-weight:800;font-size:clamp(28px,7vw,40px);line-height:1;outline:none}
+.qx-after .pub-actions{justify-content:center}
+.qx-confetti{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
+.qx-confetti i{position:absolute;left:0;top:0;display:block}
+.qx-confetti img{position:absolute;left:0;top:0;width:44px;height:auto;filter:var(--stk)}
+
+/* ---------- classement ---------- */
+.qx-board{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.qx-board[hidden]{display:none}
+.qx-board-title{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(30px,7.6vw,52px);line-height:.92;letter-spacing:-.02em}
+.qx-rank{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:760px){.qx-rank{grid-template-columns:1fr 1fr;column-gap:14px}}
+.qx-rank button{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:14px 16px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid var(--line);text-align:left;transition:background .2s,transform .2s}
+.qx-rank button:hover{background:rgba(255,255,255,.09);transform:translateY(-1px)}
+.qx-rank-n{grid-row:span 2;font-family:var(--display);font-weight:800;font-size:28px;color:var(--mute);min-width:1.4em}
+.qx-rank li:first-child .qx-rank-n{color:var(--lime)}
+.qx-rank-name{font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qx-rank-count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.qx-rank-bar{grid-column:2/4;height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.qx-rank-bar i{display:block;height:100%;border-radius:99px;background:var(--lime)}
+.qx-rank-open{padding:3px 10px;border-radius:999px;background:var(--color-ok);color:var(--ink);font-size:13px}
+
+@media (prefers-reduced-motion:reduce){
+  .qx-dot.is-live::after,.qx-seat.you{animation:none}
+  .qx-intro em::after{animation:none}
+  .qx-svg,.qx-dot.is-zone,.qx-seats.is-bar i{transition:none}
+}
+</style>

@@ -96,6 +96,7 @@ import {
   QuizResultZ,
   type QuizSubmitBody,
   ZoneStatusZ,
+  QuartierBoardZ,
   quizRoutes,
 } from '@blowy/contract';
 import { z } from 'zod';
@@ -267,6 +268,8 @@ export function createApiClient(opts: ApiClientOptions) {
     },
     /** « Ouvre ton quartier » : compteur réel, inscription (double opt-in), confirmation, désinscription ; le tien (compte). */
     quartiers: {
+      /** Les quartiers qui ont du monde, du plus proche de l'ouverture au plus loin (compteurs seulement). */
+      board: () => call('GET', quizRoutes.board(), QuartierBoardZ),
       status: (zone: string) => call('GET', quizRoutes.zone(zone), ZoneStatusZ),
       join: (body: QuartierJoinBody) => call('POST', quizRoutes.join(), QuartierJoinedZ, body),
       confirm: (token: string) => call('POST', quizRoutes.confirm(), QuartierConfirmedZ, { token }),

@@ -217,6 +217,11 @@ Migration : `supabase/migrations/20261118120000_quiz_quartiers.sql` (tables `qui
   (7 j) et les adresses prévenues (30 j).
 - App : Rencontres vide montre le compteur réel du quartier de ta zone et « Invite 3 personnes de ton quartier »
   (`GET /v1/me/quartier`). Hors quartier connu : l'état vide d'avant.
+- Page (`QuartierExpedition`, `scripts/quartier-xp.ts`) : intro de Nino (une fois par visite, passable, jamais avec
+  « réduire les animations »), carte maison (Natural Earth via `world-atlas`, `public/geo/quartiers.json` généré par
+  `scripts/quartier-map.mts`, chargé à la demande, aucune tuile externe), vol vers le quartier, jauge réelle, pass de
+  fondateur·rice à partager, classement. Classement et lumières : `GET /v1/quartiers` (public, compteurs confirmés
+  seulement, gardé 60 s, limité comme les autres routes publiques) ; sans données, rien n'est affiché.
 
 ### Landing
 - Haut de page « Des potes près de chez toi. », action principale « Quel minimoa es-tu ? », secondaire « Ouvre ton

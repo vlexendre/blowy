@@ -67,6 +67,19 @@ export type QuartierJoined = z.infer<typeof QuartierJoinedZ>;
 
 /** `POST` public : confirmer ou se désinscrire (jeton reçu par e-mail). */
 export const QuartierTokenBody = z.object({ token: z.string().trim().regex(/^[A-Za-z0-9_-]{20,64}$/) });
+/**
+ * `GET` public : les quartiers qui ont du monde (inscriptions confirmées), du plus proche de l'ouverture au plus loin.
+ * Rien que des compteurs : ni adresse, ni date, ni personne. `total` / `zones` : sur tous les quartiers, même ceux qui
+ * ne tiennent pas dans `items`.
+ */
+export const QuartierBoardZ = z.object({
+  threshold: z.number().int(),
+  total: z.number().int(),
+  zones: z.number().int(),
+  items: z.array(ZoneStatusZ),
+});
+export type QuartierBoard = z.infer<typeof QuartierBoardZ>;
+
 /** Après confirmation : le compteur et le code pour inviter (`minimoa.app/quartier/<zone>?ref=<code>`). */
 export const QuartierConfirmedZ = z.object({ status: ZoneStatusZ, code: z.string() });
 export type QuartierConfirmed = z.infer<typeof QuartierConfirmedZ>;
@@ -96,6 +109,7 @@ export const quizRoutes = {
   submit: () => '/v1/quiz/results',
   result: (code: string) => `/v1/quiz/results/${encodeURIComponent(code)}`,
   share: () => '/v1/quiz/share',
+  board: () => '/v1/quartiers',
   zone: (zone: string) => `/v1/quartiers/${encodeURIComponent(zone)}`,
   join: () => '/v1/quartiers/join',
   confirm: () => '/v1/quartiers/confirm',

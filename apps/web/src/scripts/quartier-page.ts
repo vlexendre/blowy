@@ -1,10 +1,11 @@
-/** Page « Ouvre ton quartier » : formulaire, quartier ouvert, confirmation, désinscription (voir pages/quartier). */
+/** Page « Ouvre ton quartier » : l'expérience (scripts/quartier-xp.ts), quartier ouvert, confirmation, désinscription (voir pages/quartier). */
 import { ZONE_ID_RE, isSignupCode } from '@blowy/domain';
 import { api } from '../lib/api';
 import { DEEP_LINK_SCHEME } from '../config/site';
 import { bindCopy, withRef } from './ref';
 import { showState } from './public-page';
-import { mountQuartierForm, renderCounter, showInvite } from './quartier-form';
+import { renderCounter, showInvite } from './quartier-form';
+import { mountQuartierXp } from './quartier-xp';
 import { growthCopy } from '../content/growth';
 import { locale } from './quiz-shared';
 
@@ -59,9 +60,9 @@ async function load(): Promise<void> {
       // Quartier inconnu ou pas de réseau : le formulaire, sans quartier choisi.
     }
   }
-  const form = $('[data-quartier-form]');
-  if (form) mountQuartierForm(form, { zone, ref });
   showState('form', false);
+  const xp = $('[data-quartier-xp]');
+  if (xp) mountQuartierXp(xp, { zone, ref });
 }
 
 void load();

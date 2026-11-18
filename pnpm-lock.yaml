@@ -306,6 +306,12 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.12
         version: 0.9.12(prettier@3.10.0)(typescript@6.0.3)
+      topojson-client:
+        specifier: 3.1.0
+        version: 3.1.0
+      world-atlas:
+        specifier: 2.0.2
+        version: 2.0.2
 
   packages/api-client:
     dependencies:
@@ -5018,6 +5024,10 @@ packages:
     resolution: {integrity: sha512-s9euYHM//T3loJtbNUYdbAzsMlvKBeRS+XCLFy+UGosMQH19Hwjap5k19i4PPAEJJBsVIpMpVTxl4fIqCuNfUg==}
     engines: {node: '>=14.16'}
 
+  topojson-client@3.1.0:
+    resolution: {integrity: sha512-605uxS6bcYxGXw9qi62XyrV6Q3xwbndjachmNxu8HWTtVPxZfEJN9fd/SZS1Q54Sn2y0TMyMxFj/cJINqGHrKw==}
+    hasBin: true
+
   toqr@0.1.1:
     resolution: {integrity: sha512-FWAPzCIHZHnrE/5/w9MPk0kK25hSQSH2IKhYh9PyjS3SG/+IEMvlwIHbhz+oF7xl54I+ueZlVnMjyzdSwLmAwA==}
 
@@ -5494,6 +5504,9 @@ packages:
     resolution: {integrity: sha512-Tb2FUhB4vUsGQlfSquQLYkApkuPAFQXGFzxWKHHumVz2dK+X1RUm/HnID4+TfIGYJ1kTcwOaCk/buYCEJr6YjQ==}
     engines: {node: '>=20.11'}
     hasBin: true
+
+  world-atlas@2.0.2:
+    resolution: {integrity: sha512-IXfV0qwlKXpckz1FhwXVwKRjiIhOnWttOskm5CtxMsjgE/MXAYRHWJqgXOpM8IkcPBoXnyTU5lFHcYa5ChG0LQ==}
 
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
@@ -10877,6 +10890,10 @@ snapshots:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
 
+  topojson-client@3.1.0:
+    dependencies:
+      commander: 2.20.3
+
   toqr@0.1.1: {}
 
   tr46@0.0.3: {}
@@ -11239,6 +11256,8 @@ snapshots:
       isexe: 2.0.0
 
   why-is-node-running@3.2.1: {}
+
+  world-atlas@2.0.2: {}
 
   wrap-ansi@7.0.0:
     dependencies:

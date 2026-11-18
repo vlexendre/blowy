@@ -9,7 +9,7 @@ import QuartierBody from '../../components/templates/QuartierBody.astro';
 import { quizCopy } from '../../content/quiz';
 import type { Locale } from '../../i18n/site';
 ---
-<Public shell="subpath" seoPath="/quartier/" meta={(l) => quizCopy[l].quartier.meta} ogImage="/og/quartier.jpg">
+<Public shell="subpath" wide seoPath="/quartier/" meta={(l) => quizCopy[l].quartier.meta} ogImage="/og/quartier.jpg">
   {(l: Locale) => <QuartierBody locale={l} />}
 </Public>
 <script>

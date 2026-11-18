@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Inject, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Inject, Param, Post, UseGuards } from '@nestjs/common';
 import {
   AdminQuartierSettingsBody,
   type AdminQuartiers,
   type MyQuartier,
+  type QuartierBoard,
   type QuartierConfirmed,
   QuartierJoinBody,
   type QuartierJoined,
@@ -67,6 +68,16 @@ export class QuartiersController {
   async share(@Body(new ZodPipe(QuizShareBody)) body: z.infer<typeof QuizShareBody>): Promise<{ ok: true }> {
     await this.quiz.share(body.kind);
     return { ok: true };
+  }
+
+  /** Le classement des quartiers (compteurs seulement), gardé une minute par l'API et par les navigateurs. */
+  @Public()
+  @RateLimit('lookup')
+  @Get('quartiers')
+  @Header('Cache-Control', 'public, max-age=60')
+  @Header('Vary', 'Accept-Language')
+  board(@ReqLocale() locale: Locale): Promise<QuartierBoard> {
+    return this.quartiers.board(locale);
   }
 
   @Public()
