@@ -8,7 +8,9 @@ d=json.load(open(P)); out={}
 for sp in ['suzie','pia']:
   out[sp]={}
   for pose,pf in d['species'][sp]['poses'].items():
-    try: im=Image.open(f'{PETS}/{sp}_corps_{pose}.webp').convert('RGBA').resize((900,1000))
+    f=f'{PETS}/{sp}_corps_{pose}.webp'
+    if not os.path.exists(f): f=f'{PETS}/{sp}_{pose}.webp'
+    try: im=Image.open(f).convert('RGBA').resize((900,1000))
     except Exception: continue
     arr=np.asarray(im).astype(int); a=arr[...,3]>128
     r,g,b=arr[...,0],arr[...,1],arr[...,2]
@@ -22,6 +24,11 @@ for sp in ['suzie','pia']:
       reg=a&(r>215)&(g>165)&(b<g+12); reg[int(br-30):]=False
       reg=ndi.binary_opening(reg,iterations=3)
     lab,n=ndi.label(reg)
+    if n<2 and sp=='pia':
+      # cornes de la couleur du corps (fantôme) : ce qui dépasse au-dessus du crâne
+      ht=pf['points']['headTop'][1]*1000
+      reg=a.copy(); reg[int(ht+25):]=False; reg=ndi.binary_erosion(reg,iterations=4)
+      lab,n=ndi.label(reg)
     if n<2: out[sp][pose]=None; continue
     sizes=ndi.sum(reg,lab,range(1,n+1)); idx=np.argsort(sizes)[::-1][:2]
     if sizes[idx[1]]<0.2*sizes[idx[0]] or sizes[idx[1]]<150: out[sp][pose]=None; continue
@@ -30,11 +37,18 @@ for sp in ['suzie','pia']:
     rad=[float(np.sqrt(sizes[i]/np.pi)) for i in idx]
     out[sp][pose]={'L':[round(cs[0][0],4),round(cs[0][1],4)],'R':[round(cs[1][0],4),round(cs[1][1],4)],'r':round(sum(rad)/2,1)}
 json.dump(out,open(os.path.join(HERE,'tips.json'),'w'),indent=1)
+for sp in out:
+  for pose,v in out[sp].items():
+    # mesures faites à la main (evo_casanier, evo_piquant de Suzie) gardées quand la détection échoue
+    if v and pose in d['species'][sp]['poses']: d['species'][sp]['poses'][pose]['tips']=v['L']+v['R']
+open(P,'w').write(json.dumps(d,ensure_ascii=False,indent=1)+'\n')
 # planche
 for sp in out:
   cells=[]
   for pose,v in out[sp].items():
-    im=Image.open(f'{PETS}/{sp}_corps_{pose}.webp').convert('RGBA').resize((900,1000)); bg=Image.new('RGBA',im.size,(30,30,50,255)); bg.alpha_composite(im); dr=ImageDraw.Draw(bg)
+    f=f'{PETS}/{sp}_corps_{pose}.webp'
+    if not os.path.exists(f): f=f'{PETS}/{sp}_{pose}.webp'
+    im=Image.open(f).convert('RGBA').resize((900,1000)); bg=Image.new('RGBA',im.size,(30,30,50,255)); bg.alpha_composite(im); dr=ImageDraw.Draw(bg)
     if v:
       for k in 'LR': x,y=v[k][0]*900,v[k][1]*1000; dr.ellipse((x-12,y-12,x+12,y+12),outline=(0,255,0),width=5)
     else: dr.text((20,20),'NONE',fill=(255,0,0))

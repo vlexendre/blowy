@@ -245,8 +245,10 @@ export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 
   if (own.anchor === 'tips') {
     const at = pf?.tips ? placeOnTips(id, slot, own, pf.tips) : null;
     if (at) return at;
+    // Pose sans pompons ni cornes visibles (sous la mousse du bain, fantôme, œuf, poils hérissés) : pas d'objet.
+    if (pf) return null;
   }
-  // Ancre `tips` sans mesure sur cette pose : le réglage commun de l'objet.
+  // Ancre `tips` sans pose (pose `debout` historique) : le réglage commun de l'objet.
   const s0 = own.anchor === 'tips' ? settings(species, id, layer, false) : own;
   if (!s0) return null;
   const s = pf && !pf.face && s0.profile ? { ...s0, ...s0.profile } : s0;

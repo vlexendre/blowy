@@ -6643,7 +6643,13 @@
      },
      "tilt": -1.0,
      "scale": 0.96,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3629,
+      0.1564,
+      0.6609,
+      0.156
+     ]
     },
     "evo_joueur": {
      "points": {
@@ -6714,7 +6720,13 @@
      },
      "tilt": -14.7,
      "scale": 0.813,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2381,
+      0.2494,
+      0.5085,
+      0.1888
+     ]
     },
     "evo_casanier": {
      "points": {
@@ -6785,7 +6797,13 @@
      },
      "tilt": -5.9,
      "scale": 0.92,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2822,
+      0.18,
+      0.6067,
+      0.158
+     ]
     },
     "evo_tendre": {
      "points": {
@@ -6856,7 +6874,13 @@
      },
      "tilt": -7.9,
      "scale": 0.964,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3398,
+      0.1212,
+      0.6307,
+      0.1176
+     ]
     },
     "evo_piquant": {
      "points": {
@@ -6927,7 +6951,13 @@
      },
      "tilt": -7.6,
      "scale": 1.004,
-     "face": true
+     "face": true,
+     "tips": [
+      0.325,
+      0.154,
+      0.6456,
+      0.136
+     ]
     },
     "bebe": {
      "points": {
@@ -14252,7 +14282,13 @@
      },
      "tilt": -12.6,
      "scale": 1.025,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3007,
+      0.3536,
+      0.5656,
+      0.3124
+     ]
     },
     "evo_casanier": {
      "points": {
@@ -14323,7 +14359,13 @@
      },
      "tilt": -2.8,
      "scale": 1.188,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3045,
+      0.2635,
+      0.6426,
+      0.2475
+     ]
     },
     "evo_tendre": {
      "points": {
@@ -14394,7 +14436,13 @@
      },
      "tilt": -5.5,
      "scale": 1.2,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2874,
+      0.25,
+      0.6495,
+      0.2223
+     ]
     },
     "evo_piquant": {
      "points": {
@@ -14465,7 +14513,13 @@
      },
      "tilt": -5.8,
      "scale": 1.359,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2812,
+      0.2529,
+      0.663,
+      0.2167
+     ]
     },
     "bebe": {
      "points": {
