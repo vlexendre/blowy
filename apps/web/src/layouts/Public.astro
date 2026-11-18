@@ -1,44 +1,154 @@
 ---
-/** Gabarit des pages publiques (3 mots, invitation, 404) : fond de nuit, carte centrée, pied de page. */
+/**
+ * Gabarit des pages publiques (quiz, quartier, pages de partage, 404) : fond de nuit, barre du haut, carte centrée,
+ * pied de page. Le contenu est une fonction de la langue : `<Public …>{(l) => <… locale={l} />}</Public>`.
+ *
+ * Deux modes :
+ * - une langue (`locale`) : page indexée (/quiz/, /en/quiz/…), hreflang des cinq langues (`seoPath`), sélecteur de langue ;
+ * - `shell` : page de partage à adresse unique (/m/…, /g/…, 404…). Les cinq langues sont rendues au build : le français
+ *   dans la page, les autres dans des <template>. Un petit script, avant ceux de la page, met à la place celle du
+ *   téléphone (règle de l'app : français si le téléphone est en français, sinon la langue proposée, anglais en repli),
+ *   ou celle de `?lang=xx`. `shell="subpath"` (copie servie pour /quiz/<code>, /quartier/<zone>) : seulement quand
+ *   l'adresse a un chemin ou un code après la page ; sinon la page reste en français.
+ *   Les scripts de page lisent ensuite la langue dans <html lang> (`i18n/client.ts`).
+ */
 import Base from './Base.astro';
 import Background from '../components/organisms/landing/Background.astro';
 import TopBar from '../components/organisms/TopBar.astro';
 import SiteFooter from '../components/organisms/SiteFooter.astro';
+import { siteText } from '../content/site';
+import { DEFAULT_LOCALE, HTML_LANG, LOCALES, OG_LOCALE, localePath, pageAlternates, type Locale, type SeoPage } from '../i18n/site';
 
-interface Props {
+interface Meta {
   title: string;
   description: string;
+  /** texte alternatif de l'image d'aperçu */
+  ogAlt?: string;
+}
+interface Props {
+  /** titre et description de la page dans une langue */
+  meta: (locale: Locale) => Meta;
+  /** langue de la page (mode « une langue ») */
+  locale?: Locale;
+  /** page de partage : les cinq langues, choisies par le navigateur */
+  shell?: 'always' | 'subpath';
+  /** chemin français d'une page indexée (balises hreflang, sélecteur de langue, canonique) */
+  seoPath?: SeoPage;
   noindex?: boolean;
   /** Pleine page sans carte, sans barre ni fond animé : la page dessine tout elle-même (« 3 mots »). */
   bare?: boolean;
-  /** image d'aperçu de lien (1200 × 630) et son texte alternatif */
-  ogImage?: string;
-  ogAlt?: string;
+  /** image d'aperçu de lien (1200 × 630) ; une fonction pour une image par langue */
+  ogImage?: string | ((locale: Locale) => string);
 }
-const { title, description, noindex = false, bare = false, ogImage, ogAlt } = Astro.props;
+const { meta, shell, seoPath, noindex = false, bare = false } = Astro.props;
+const locale: Locale = shell ? DEFAULT_LOCALE : (Astro.props.locale ?? DEFAULT_LOCALE);
+const m = meta(locale);
+const ogImage = typeof Astro.props.ogImage === 'function' ? Astro.props.ogImage(locale) : Astro.props.ogImage;
+const langLinks = seoPath ? LOCALES.map((l) => ({ locale: l, href: localePath(l, seoPath) })) : undefined;
+
+/** Une langue de la page, rendue en HTML (barre, carte, pied de page). */
+async function render(l: Locale): Promise<string> {
+  const body = await Astro.slots.render('default', [l]);
+  return body;
+}
+const variants = shell ? await Promise.all(LOCALES.map(async (l) => [l, await render(l)] as const)) : [[locale, await render(locale)] as const];
+const metas = Object.fromEntries(LOCALES.map((l) => [l, { ...meta(l), lang: HTML_LANG[l], skip: siteText[l].skip }]));
 ---
-<Base title={title} description={description} noindex={noindex} bodyClass="pub-body" ogImage={ogImage} ogAlt={ogAlt}>
+<Base
+  title={m.title}
+  description={m.description}
+  noindex={noindex}
+  bodyClass="pub-body"
+  ogImage={ogImage}
+  ogAlt={m.ogAlt}
+  lang={HTML_LANG[locale]}
+  ogLocale={OG_LOCALE[locale]}
+  ogLocaleAlternates={seoPath || shell ? LOCALES.filter((l) => l !== locale).map((l) => OG_LOCALE[l]) : []}
+  alternates={seoPath ? pageAlternates(seoPath) : []}
+  canonicalPath={seoPath ? localePath(locale, seoPath) : undefined}
+  skipLabel={siteText[locale].skip}
+>
+  {!bare && <Background />}
   {
-    bare ? (
-      <main id="main" class="pub-bare">
-        <slot />
-      </main>
-    ) : (
-      <>
-        <Background />
-        <TopBar />
-        <main id="main" class="pub">
-          <div class="pub-card">
-            <slot />
-          </div>
-        </main>
-      </>
+    variants.map(([l, html]) =>
+      l === locale ? (
+        <div class="pub-variant" data-variant-host>
+          {bare ? (
+            <main id="main" class="pub-bare">
+              <Fragment set:html={html} />
+            </main>
+          ) : (
+            <>
+              <TopBar locale={l} langLinks={langLinks} />
+              <main id="main" class="pub">
+                <div class="pub-card">
+                  <Fragment set:html={html} />
+                </div>
+              </main>
+            </>
+          )}
+          <SiteFooter class="pub-foot" locale={l} langLinks={langLinks} />
+        </div>
+      ) : (
+        <template data-variant={l}>
+          {bare ? (
+            <main id="main" class="pub-bare">
+              <Fragment set:html={html} />
+            </main>
+          ) : (
+            <>
+              <TopBar locale={l} />
+              <main id="main" class="pub">
+                <div class="pub-card">
+                  <Fragment set:html={html} />
+                </div>
+              </main>
+            </>
+          )}
+          <SiteFooter class="pub-foot" locale={l} />
+        </template>
+      ),
     )
   }
-  <SiteFooter slot="footer" class="pub-foot" />
+  {
+    shell && (
+      <script is:inline define:vars={{ metas, mode: shell }}>
+        (function () {
+          var L = ['fr', 'en', 'es', 'pt', 'nl'];
+          var pick = null;
+          var q = new URLSearchParams(location.search).get('lang');
+          if (q && L.indexOf(q) >= 0) pick = q;
+          else {
+            var deep = mode === 'always' || location.pathname.split('/').filter(Boolean).length > 1 || /[?&](ref|c|t|code|z|a)=/.test(location.search);
+            if (!deep) return;
+            var ls = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+            for (var i = 0; i < ls.length && !pick; i++) {
+              var b = String(ls[i] || '').toLowerCase().split(/[-_]/)[0];
+              if (L.indexOf(b) >= 0) pick = b;
+            }
+            if (!pick) pick = 'en';
+          }
+          if (pick === 'fr') return;
+          var t = document.querySelector('template[data-variant="' + pick + '"]');
+          var host = document.querySelector('[data-variant-host]');
+          if (!t || !host) return;
+          host.replaceChildren(t.content.cloneNode(true));
+          var m = metas[pick];
+          document.documentElement.lang = m.lang;
+          document.title = m.title;
+          var d = document.querySelector('meta[name="description"]');
+          if (d) d.setAttribute('content', m.description);
+          var skip = document.querySelector('a.skip');
+          if (skip) skip.textContent = m.skip;
+        })();
+      </script>
+    )
+  }
+  <slot name="after" />
 </Base>
 <style is:global>
 .pub-body{min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+.pub-variant{flex:1;display:flex;flex-direction:column}
 .pub{position:relative;z-index:1;flex:1;display:flex;justify-content:center;align-items:flex-start;padding:calc(var(--top) + 8px) max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px))}
 .pub-card{position:relative;width:100%;max-width:600px;border-radius:var(--r);background:var(--g-night);border:1px solid var(--line);padding:clamp(20px,5vw,40px);box-shadow:0 24px 60px rgba(0,0,0,.35);isolation:isolate;overflow:hidden}
 .pub-card::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(90% 60% at 80% 0%,rgba(109,61,240,.28),transparent 60%)}

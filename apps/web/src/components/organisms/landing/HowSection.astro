@@ -2,28 +2,36 @@
 /** 2. Comment ça marche, en 3 étapes (audit R3) : créer son minimoa, il présente des gens près de chez toi, vous vous voyez. */
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { IMG, how, sections } from '../../../content/landing';
+import { HOW_PETS, IMG, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { localePath } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const how = landingText[locale].how;
 ---
 <SnapSection section={sections.comment} panel="p-night s-how">
   <SectionTitle lines={how.title} />
   <ol class="how" role="list">
     {
-      how.steps.map((s) => (
+      how.steps.map((s, i) => (
         <li class="how-step" data-r="card">
-          <span class="how-n" aria-hidden="true">{s.n}</span>
+          <span class="how-n" aria-hidden="true">{i + 1}</span>
           <div class="how-tx">
             <h3>{s.title}</h3>
             <em>{s.meta}</em>
             <p class="hide-short">{s.text}</p>
           </div>
-          <img class="how-pet" src={`${IMG}/${s.pet}.webp`} alt="" width="450" height="500" loading="lazy" decoding="async" />
+          <img class="how-pet" src={`${IMG}/${HOW_PETS[i] ?? 'nino_coucou'}.webp`} alt="" width="450" height="500" loading="lazy" decoding="async" />
         </li>
       ))
     }
   </ol>
   <div class="how-cta" data-r="up">
-    <a class="btn l" href={how.cta.href}>{how.cta.label}</a>
-    <a class="btn g" href={how.quartier.href}>{how.quartier.label}</a>
+    <a class="btn l" href={localePath(locale, '/quiz/')}>{how.cta}</a>
+    <a class="btn g" href={localePath(locale, '/quartier/')}>{how.quartier}</a>
   </div>
 </SnapSection>
 <style is:global>

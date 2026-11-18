@@ -4,7 +4,7 @@
  * - /g/<identifiant> : un groupe de l'app, ouvert sans l'app → « Ouvre Minimoa » (membres seulement) ;
  * - /g/<code> : le lien d'invitation d'un groupe → nom, habitude, jours tenus, nombre de membres et leurs minimoas
  *   (jamais de prénom ni de position), « Rejoindre dans l'app », stores et le code à taper à l'inscription.
- * Tout se passe côté navigateur (scripts/group-page.ts) ; cinq langues, le français rendu au build.
+ * Cinq langues rendues au build, celle du téléphone montrée ; le reste côté navigateur (scripts/group-page.ts).
  */
 import Public from '../../layouts/Public.astro';
 import StateBlock from '../../components/molecules/StateBlock.astro';
@@ -12,57 +12,48 @@ import StoreButtons from '../../components/molecules/StoreButtons.astro';
 import LoadingState from '../../components/organisms/public/LoadingState.astro';
 import NetworkError from '../../components/organisms/public/NetworkError.astro';
 import CodeBox from '../../components/organisms/public/CodeBox.astro';
+import OpenState from '../../components/organisms/public/OpenState.astro';
 import { growthCopy } from '../../content/growth';
 import { openCopy } from '../../content/open';
-
-const t = growthCopy.fr.group;
-const open = openCopy.fr;
-const o = open.kinds.g;
+import { localePath, type Locale } from '../../i18n/site';
 ---
-<Public title={t.meta} description={t.description} noindex ogImage="/og/g.jpg" ogAlt={o.title.join(' ')}>
-  <LoadingState />
-
-  <section class="pub-state" data-state="open" data-open-kind="g" hidden>
-    <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
-    <h1 class="pub-title" data-t="title" tabindex="-1">{o.title.map((l, i) => <span class:list={['ln', { dim: i > 0 && o.title.length > 2 && i === o.title.length - 1 }]}>{l}</span>)}</h1>
-    <p class="pub-text" data-t="text">{o.text}</p>
-    <div class="pub-actions">
-      <a class="btn l" data-open href="minimoa://g" data-t="open">{open.open}</a>
-      <a class="btn g" href="/" data-t="home">{open.home}</a>
-    </div>
-    <div class="pub-dl">
-      <b data-t="downloadTitle">{open.downloadTitle}</b>
-      <p data-t="downloadText">{open.downloadText}</p>
-      <StoreButtons />
-    </div>
-  </section>
-
-  <section class="pub-state grp" data-state="ready" hidden aria-live="polite">
-    <span class="lbl" data-g="label">{t.label}</span>
-    <h1 class="pub-title" tabindex="-1" data-group-name></h1>
-    <div class="grp-chips">
-      <span class="grp-chip acc" data-group-habit></span>
-      <span class="grp-chip" data-group-members></span>
-    </div>
-    <div class="grp-pets" data-group-pets aria-hidden="true"></div>
-    <p class="pub-text" data-group-days></p>
-    <p class="grp-note" data-group-missing hidden></p>
-    <div class="pub-actions">
-      <a class="btn l" data-join href="minimoa://g" data-g="open">{t.open}</a>
-    </div>
-    <StoreButtons />
-    <CodeBox label={t.codeLabel} help={t.codeHelp} copy={growthCopy.fr.copy} box="group" />
-  </section>
-
-  <StateBlock state="not_found" title={t.notFoundTitle} text={t.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
-    <div class="pub-actions"><a class="btn l" href="/" data-g="home">{t.home}</a></div>
-    <div class="pub-dl">
-      <b data-g="downloadTitle">{t.downloadTitle}</b>
-      <p data-g="downloadText">{t.downloadText}</p>
-      <StoreButtons />
-    </div>
-  </StateBlock>
-  <NetworkError />
+<Public shell="always" noindex ogImage="/og/g.jpg" meta={(l) => ({ title: growthCopy[l].group.meta, description: growthCopy[l].group.description, ogAlt: openCopy[l].kinds.g.title.join(' ') })}>
+  {
+    (l: Locale) => {
+      const t = growthCopy[l].group;
+      return (
+        <>
+          <LoadingState locale={l} />
+          <OpenState locale={l} kind="g" hidden />
+          <section class="pub-state grp" data-state="ready" hidden aria-live="polite">
+            <span class="lbl">{t.label}</span>
+            <h1 class="pub-title" tabindex="-1" data-group-name />
+            <div class="grp-chips">
+              <span class="grp-chip acc" data-group-habit />
+              <span class="grp-chip" data-group-members />
+            </div>
+            <div class="grp-pets" data-group-pets aria-hidden="true" />
+            <p class="pub-text" data-group-days />
+            <p class="grp-note" data-group-missing hidden />
+            <div class="pub-actions">
+              <a class="btn l" data-join href="minimoa://g">{t.open}</a>
+            </div>
+            <StoreButtons locale={l} />
+            <CodeBox label={t.codeLabel} help={t.codeHelp} copy={growthCopy[l].copy} box="group" />
+          </section>
+          <StateBlock state="not_found" title={t.notFoundTitle} text={t.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
+            <div class="pub-actions"><a class="btn l" href={localePath(l, '/')}>{t.home}</a></div>
+            <div class="pub-dl">
+              <b>{t.downloadTitle}</b>
+              <p>{t.downloadText}</p>
+              <StoreButtons locale={l} />
+            </div>
+          </StateBlock>
+          <NetworkError locale={l} />
+        </>
+      );
+    }
+  }
 </Public>
 <style is:global>
 .grp-chips{display:flex;flex-wrap:wrap;gap:8px}

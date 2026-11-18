@@ -1,11 +1,11 @@
 /**
  * Pages « Ouvre Minimoa » : ce qu'affiche le site quand un lien de l'app (groupe, rencontre, lien, Minimoa+, défi,
- * habitudes, carte) est ouvert sans l'app. Cinq langues ; le français est rendu au build, le navigateur choisit la
- * langue du téléphone (`scripts/open-page.ts`). Tableau des chemins : docs/DEEPLINKS.md.
+ * habitudes, carte) est ouvert sans l'app. Cinq langues ; les cinq rendues au build, le navigateur montre celle du
+ * téléphone (`layouts/Public.astro`, mode `shell`). Tableau des chemins : docs/DEEPLINKS.md.
  */
 
-export const OPEN_LOCALES = ['fr', 'en', 'es', 'pt', 'nl'] as const;
-export type OpenLocale = (typeof OPEN_LOCALES)[number];
+import type { Locale } from '../i18n/site';
+
 export type OpenKind = 'g' | 'r' | 'l' | 'plus' | 'defi' | 'habitudes' | 'carte';
 
 interface OpenCopy {
@@ -25,7 +25,7 @@ interface OpenLang {
   kinds: Record<OpenKind, OpenCopy>;
 }
 
-export const openCopy: Record<OpenLocale, OpenLang> = {
+export const openCopy: Record<Locale, OpenLang> = {
   fr: {
     open: 'Ouvrir dans l’app',
     downloadTitle: 'Pas encore l’app ?',
@@ -107,12 +107,3 @@ export const openCopy: Record<OpenLocale, OpenLang> = {
     },
   },
 };
-
-/** Première langue du navigateur que le site connaît, sinon le français. */
-export function pickOpenLocale(languages: readonly string[]): OpenLocale {
-  for (const l of languages) {
-    const base = l.toLowerCase().split('-')[0] as OpenLocale;
-    if ((OPEN_LOCALES as readonly string[]).includes(base)) return base;
-  }
-  return 'fr';
-}

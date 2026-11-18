@@ -5,6 +5,7 @@ habillés (placements de l'app), bande finale, poses du quiz « Quel minimoa es-
 Usage (depuis la racine du dépôt) :
   pnpm exec tsx apps/web/scripts/site-images/placements.mts > /tmp/minimoa-placements.json
   python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json
+  python3 -I apps/web/scripts/site-images/build.py --og-locales   # seulement les aperçus traduits (og/<langue>/)
 Dépendances : Pillow (webp). Sorties dans apps/web/public (fichiers versionnés).
 """
 import json
@@ -135,7 +136,7 @@ PANELS = {
 }
 
 
-def og(name: str, panel: str, lines: list[str], dim_from: int, art: Image.Image, art_box: tuple, tagline: str) -> None:
+def og(name: str, panel: str, lines: list[str], dim_from: int, art: Image.Image, art_box: tuple, tagline: str, out_dir: Path | None = None) -> None:
     W, H = 1200, 630
     top, bottom, fg = PANELS[panel]
     im = vgrad(W, H, top, bottom)
@@ -180,8 +181,9 @@ def og(name: str, panel: str, lines: list[str], dim_from: int, art: Image.Image,
     layer.paste(shadow, (sx, sy))
     im.alpha_composite(layer)
     im.alpha_composite(a, (ax, ay))
-    OG.mkdir(parents=True, exist_ok=True)
-    im.convert('RGB').save(OG / f'{name}.jpg', 'JPEG', quality=86, optimize=True, progressive=True)
+    out = out_dir or OG
+    out.mkdir(parents=True, exist_ok=True)
+    im.convert('RGB').save(out / f'{name}.jpg', 'JPEG', quality=86, optimize=True, progressive=True)
 
 
 def row(names: list[str], gap: float = -0.12, scales: list[float] | None = None) -> Image.Image:
@@ -205,7 +207,33 @@ def row(names: list[str], gap: float = -0.12, scales: list[float] | None = None)
     return out
 
 
+# Aperçus des pages indexées traduites (landing, quiz, quartier) : og/<langue>/<page>.jpg, mêmes scènes que le
+# français. Les pages de partage (/m/, /i/, /g/…) gardent l'aperçu français : une adresse pour toutes les langues, et les
+# robots d'aperçu ne lancent pas le script qui choisit la langue.
+OG_LOCALES = {
+    'en': {'accueil': ['FRIENDS', 'NEAR', 'YOU.'], 'quiz': ['WHICH', 'MINIMOA', 'ARE YOU?'], 'quartier': ['YOUR', 'NEIGHBORHOOD', 'OPENS AT 50.']},
+    'es': {'accueil': ['AMIGOS', 'CERCA', 'DE TI.'], 'quiz': ['¿QUÉ', 'MINIMOA', 'ERES?'], 'quartier': ['TU BARRIO', 'ABRE CON 50.']},
+    'pt': {'accueil': ['AMIGOS', 'PERTO', 'DE VOCÊ.'], 'quiz': ['QUAL', 'MINIMOA', 'É VOCÊ?'], 'quartier': ['SEU BAIRRO', 'ABRE COM 50.']},
+    'nl': {'accueil': ['VRIENDEN', 'BIJ JOU', 'IN DE BUURT.'], 'quiz': ['WELKE', 'MINIMOA', 'BEN JIJ?'], 'quartier': ['JE BUURT', 'GAAT OPEN', 'BIJ 50.']},
+}
+
+
+def og_locales() -> None:
+    trio = row(['suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_coucou'], -0.3, [0.78, 1.0, 0.8])
+    quatre = row(['gaston_corps_pense', 'suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_fier'], -0.22, [0.84, 0.9, 1.0, 0.88])
+    groupe = row(['suzie_corps_joie', 'nino_corps_check', 'gaston_corps_applaudit'], -0.18, [0.92, 1.0, 0.9])
+    for loc, t in OG_LOCALES.items():
+        out = OG / loc
+        og('accueil', 'accent', t['accueil'], 1, trio, (620, 60, 1180, 610), 'minimoa.app', out)
+        og('quiz', 'violet', t['quiz'], 9, quatre, (600, 120, 1180, 610), f'minimoa.app/{loc}/quiz', out)
+        og('quartier', 'accent', t['quartier'], 1, groupe, (650, 110, 1180, 610), f'minimoa.app/{loc}/quartier', out)
+    print('ok :', ', '.join(str(OG / l) for l in OG_LOCALES))
+
+
 def main() -> None:
+    if '--og-locales' in sys.argv:
+        og_locales()
+        return
     placements = json.loads(Path(sys.argv[1]).read_text()) if len(sys.argv) > 1 else []
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -255,6 +283,7 @@ def main() -> None:
     quatre = row(['gaston_corps_pense', 'suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_fier'], -0.22, [0.84, 0.9, 1.0, 0.88])
     og('quiz', 'violet', ['QUEL', 'MINIMOA', 'ES-TU ?'], 9, quatre, (600, 120, 1180, 610), 'minimoa.app/quiz')
     og('quartier', 'accent', ['TON QUARTIER', 'OUVRE À 50.'], 1, groupe, (650, 110, 1180, 610), 'minimoa.app/quartier')
+    og_locales()
 
     # Icônes : Apple (180 × 180, fond jaune, Nino de face), PNG 32 × 32 et 192 × 192 de repli.
     face = Image.open(ASSETS / 'pets/nino_face.webp').convert('RGBA')

@@ -6,7 +6,7 @@ import type { ZoneStatus } from '@blowy/contract';
 import { zoneOfPostalCode } from '@blowy/domain';
 import { api, failureOf } from '../lib/api';
 import { SITE_URL } from '../config/site';
-import { copyText, fill, flash, locale, shareOrCopy, t } from './quiz-i18n';
+import { copyText, fill, flash, locale, shareOrCopy, t } from './quiz-shared';
 
 const q = t.quartier;
 

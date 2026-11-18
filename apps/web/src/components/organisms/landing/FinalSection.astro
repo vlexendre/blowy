@@ -6,18 +6,26 @@ import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import StoreButtons from '../../molecules/StoreButtons.astro';
 import SiteFooter from '../SiteFooter.astro';
-import { final as c, sections } from '../../../content/landing';
+import { FINAL_BAND, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+  langLinks: { locale: Locale; href: string }[];
+}
+const { locale, langLinks } = Astro.props;
+const c = landingText[locale].final;
 ---
 <SnapSection section={sections.go} panel="p-lime s-go" light class="last">
   <SectionTitle lines={c.title} />
-  <StoreButtons reveal />
+  <StoreButtons reveal locale={locale} />
   <div class="gstage" data-r="pop">
     <div class="hill" aria-hidden="true"></div>
-    <div class="bob"><PetImage src={c.band.src} alt={c.band.alt} width={c.band.width} height={c.band.height} loading="lazy" /></div>
+    <div class="bob"><PetImage src={FINAL_BAND.src} alt={c.bandAlt} width={FINAL_BAND.width} height={FINAL_BAND.height} loading="lazy" /></div>
   </div>
   <Sticker class="s4" src="/img/ic_cadeau.webp" reveal />
   <Sticker class="s5" src="/img/ic_confettis.webp" reveal />
-  <SiteFooter slot="after" logoHref="#top" />
+  <SiteFooter slot="after" logoHref="#top" locale={locale} langLinks={langLinks} />
 </SnapSection>
 <style is:global>
 .sec.last{display:flex;flex-direction:column;gap:8px}

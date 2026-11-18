@@ -2,47 +2,51 @@
 /**
  * « Ton quartier ouvre à 50 » : choix du quartier (ville puis arrondissement, ou code postal ; jamais de position),
  * e-mail, consentement explicite (case non cochée), compteur réel du quartier choisi. Après l'envoi : « Regarde tes
- * e-mails » et le lien du quartier à partager. Rempli et traduit par scripts/quartier-form.ts.
+ * e-mails » et le lien du quartier à partager. Rempli par scripts/quartier-form.ts, dans la langue de la page.
  */
 import { ZONES, ZONE_CITIES } from '@blowy/domain';
+import { cityName } from '@blowy/content';
 import { quizCopy } from '../../../content/quiz';
+import { legalPath } from '../../../i18n/legal';
+import type { Locale } from '../../../i18n/site';
 
 interface Props {
   /** Titre de niveau 1 (page quartier) ou 2 (fin du quiz). */
   level?: 1 | 2;
+  locale: Locale;
 }
-const { level = 2 } = Astro.props;
+const { level = 2, locale } = Astro.props;
 const Tag = level === 1 ? 'h1' : 'h2';
-const t = quizCopy.fr.quartier;
+const t = quizCopy[locale].quartier;
 const data = {
   districts: Object.fromEntries(ZONE_CITIES.map((c) => [c, ZONES.filter((z) => z.city === c && z.district).map((z) => ({ id: z.id, n: z.district }))])),
   cities: Object.fromEntries(ZONES.filter((z) => !z.district).map((z) => [z.city, z.id])),
 };
 ---
 <section class="qf" data-quartier-form>
-  <span class="lbl" data-q="quartier.label">{t.label}</span>
+  <span class="lbl">{t.label}</span>
   <Tag class="pub-title qf-title" tabindex="-1" data-qf-title>{t.title.replace('{n}', '50')}</Tag>
-  <p class="pub-text" data-q="quartier.text">{t.text}</p>
+  <p class="pub-text">{t.text}</p>
 
   <form class="qf-form" data-qf-form novalidate>
     <div class="qf-row">
       <label class="qf-field">
-        <span data-q="quartier.city">{t.city}</span>
+        <span>{t.city}</span>
         <select data-qf-city>
-          <option value="" data-q="quartier.cityPick">{t.cityPick}</option>
-          {ZONE_CITIES.map((c) => <option value={c} data-city={c}>{c}</option>)}
+          <option value="">{t.cityPick}</option>
+          {ZONE_CITIES.map((c) => <option value={c}>{cityName(c, locale)}</option>)}
         </select>
       </label>
       <label class="qf-field" data-qf-district-wrap hidden>
-        <span data-q="quartier.zone">{t.zone}</span>
+        <span>{t.zone}</span>
         <select data-qf-district></select>
       </label>
     </div>
-    <p class="qf-or"><span data-q="quartier.or">{t.or}</span></p>
+    <p class="qf-or"><span>{t.or}</span></p>
     <label class="qf-field">
-      <span data-q="quartier.postal">{t.postal}</span>
+      <span>{t.postal}</span>
       <input data-qf-postal inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="75011" />
-      <small data-q="quartier.postalHint">{t.postalHint}</small>
+      <small>{t.postalHint}</small>
     </label>
 
     <div class="qf-counter" data-qf-counter hidden aria-live="polite">
@@ -51,29 +55,29 @@ const data = {
     </div>
 
     <label class="qf-field">
-      <span data-q="quartier.email">{t.email}</span>
-      <input data-qf-email type="email" autocomplete="email" inputmode="email" required placeholder={t.emailPlaceholder} data-q-placeholder="quartier.emailPlaceholder" />
+      <span>{t.email}</span>
+      <input data-qf-email type="email" autocomplete="email" inputmode="email" required placeholder={t.emailPlaceholder} />
     </label>
     <label class="qf-consent">
       <input type="checkbox" data-qf-consent />
-      <span><span data-q="quartier.consent">{t.consent}</span> <a href="/legal/confidentialite/" data-q="quartier.privacy" data-qf-privacy>{t.privacy}</a></span>
+      <span><span>{t.consent}</span> <a href={legalPath(locale, 'confidentialite')} data-qf-privacy>{t.privacy}</a></span>
     </label>
     <p class="qf-error" data-qf-error role="alert" hidden></p>
-    <button type="submit" class="btn l qf-submit" data-qf-submit data-q="quartier.submit">{t.submit}</button>
+    <button type="submit" class="btn l qf-submit" data-qf-submit>{t.submit}</button>
   </form>
 
   <div class="qf-sent" data-qf-sent hidden>
-    <b class="qf-sent-title" data-q="quartier.sentTitle">{t.sentTitle}</b>
-    <p class="pub-text" data-q="quartier.sentText">{t.sentText}</p>
+    <b class="qf-sent-title">{t.sentTitle}</b>
+    <p class="pub-text">{t.sentText}</p>
   </div>
 
   <div class="qf-invite" data-qf-invite hidden>
-    <b class="qf-sent-title" data-q="quartier.inviteTitle">{t.inviteTitle}</b>
-    <p class="pub-text" data-q="quartier.inviteText">{t.inviteText}</p>
+    <b class="qf-sent-title">{t.inviteTitle}</b>
+    <p class="pub-text">{t.inviteText}</p>
     <output class="qf-link" data-qf-link></output>
     <div class="pub-actions">
-      <button type="button" class="btn l" data-qf-share data-q="quartier.inviteShare">{t.inviteShare}</button>
-      <button type="button" class="btn g" data-qf-copy data-q="quartier.copy">{t.copy}</button>
+      <button type="button" class="btn l" data-qf-share>{t.inviteShare}</button>
+      <button type="button" class="btn g" data-qf-copy>{t.copy}</button>
     </div>
   </div>
   <script type="application/json" data-qf-districts set:html={JSON.stringify(data)}></script>

@@ -1,18 +1,32 @@
 # @blowy/web — site minimoa.app
 
 Site statique Astro : la landing, les pages publiques reliées à l'API (« 3 mots » et invitation), les pages légales et l'aide.
+Cinq langues (fr, en, es, pt, nl) : voir « Langues » plus bas et `docs/I18N.md`.
 
 ## Pages
 
 | URL | Rôle |
 |---|---|
-| `/` | Landing : 15 sections plein écran aimantées (minimoa vivant, garde-robe, caractère, habitudes, groupes, chats, vies, rencontres, sorties, 3 mots, captures de l'app, Minimoa+, questions), animations GSAP |
+| `/`, `/en/`, `/es/`, `/pt/`, `/nl/` | Landing : 15 sections plein écran aimantées (minimoa vivant, garde-robe, caractère, habitudes, groupes, chats, vies, rencontres, sorties, 3 mots, captures de l'app, Minimoa+, questions), animations GSAP |
 | `/m/CODE` (ou `/m/?c=CODE`) | « 3 mots » : choisir 3 mots pour quelqu'un (`GET`/`POST /v1/words/:code`) |
 | `/i/CODE` (ou `/i/?c=CODE`) | Invitation : ouvrir dans l'app (`minimoa://i/CODE`) ou installer (`GET /v1/invites/:code`) |
 | `/g/ID`, `/r/ID`, `/l/ID`, `/plus`, `/defi`, `/habitudes`, `/carte` | « Ouvre Minimoa » : lien de l'app ouvert sans l'app (bouton `minimoa://…` et stores), cinq langues selon le navigateur (docs/DEEPLINKS.md) |
-| `/confidentialite`, `/conditions`, `/regles`, `/support` | Pages de texte |
+| `/quiz/`, `/quartier/` (et `/<langue>/quiz/`, `/<langue>/quartier/`) | Quiz « Quel minimoa es-tu ? », « Ouvre ton quartier » |
+| `/legal/…`, `/<langue>/legal/…` | Pages légales (le français fait foi) ; `/confidentialite`, `/conditions`, `/regles`, `/support` y redirigent |
 | `/404` | Page introuvable |
 | `/sitemap.xml`, `/robots.txt`, `/.well-known/apple-app-site-association` | Référencement et liens universels iOS |
+
+## Langues
+
+- Pages indexées (landing, quiz, quartier, légal) : une page statique par langue, français à la racine, les autres sous
+  `/<langue>/` ; balises `hreflang` (+ `x-default`), canonique, `og:locale:alternate`, `sitemap.xml` avec les
+  `xhtml:link`, sélecteur de langue dans la barre et le pied de page, bannière « Available in English » si le navigateur
+  préfère une autre langue (jamais de redirection).
+- Pages de partage (`/m/`, `/i/`, `/g/`, `/c/`, `/r/`, `/l/`, `/plus`, `/defi`, `/habitudes`, `/carte`, 404, `/quiz/<code>`,
+  `/quartier/<zone>`) : une adresse, les cinq langues dans la page, celle du téléphone montrée (`layouts/Public.astro`,
+  mode `shell`, `?lang=xx` pour forcer). Leur aperçu de lien reste français (les robots d'aperçu ne lancent pas de script).
+- Textes : `src/content/landing-text/<langue>.ts` (landing), `src/content/{site,public,quiz,growth,open}.ts` ;
+  `pnpm i18n:check` vérifie les cinq langues.
 
 ## Développement
 
@@ -74,20 +88,29 @@ pnpm --filter @blowy/web preview
   python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json   # Pillow, fontTools, brotli
   ```
   Aperçus 1200 × 630 : `og/accueil.jpg` (landing et défaut), `og/{i,m,g,r,l,plus,defi,habitudes,carte}.jpg` (pages
-  de partage, en français).
+  de partage, en français), `og/<langue>/{accueil,quiz,quartier}.jpg` (pages indexées traduites ; seules :
+  `build.py --og-locales`).
 - **Captures de l'App Store** (section « L'app, en vrai ») : `node apps/web/scripts/store-images.mjs [dossier]`
   (défaut `/home/claude/work/store/out/fr/6.9`) → `public/img/store/*-{360,720}.webp` + `manifest.json` (textes
-  alternatifs tirés du README des captures). Sans `manifest.json`, la section et son point de navigation disparaissent.
+  alternatifs tirés du README des captures). Captures anglaises (pages /en/) : `node apps/web/scripts/store-images.mjs
+  /home/claude/work/store/out/en/1320x2868 en` → `public/img/store/en/`. Les autres langues montrent les captures
+  françaises ; les textes alternatifs viennent des textes du site (`screens.shots`). Sans `manifest.json`, la section et
+  son point de navigation disparaissent.
 
 ## Organisation
 
 ```
 src/
   config/site.ts              constantes : stores, contact, entité légale, URL de l'API
-  content/landing.ts          textes de la landing (lus par les organismes et par le script d'animation)
-  content/public.ts           textes des pages /m/, /i/ et 404
+  i18n/site.ts                langues, chemins (`localePath`), hreflang, `siteMessages`
+  i18n/client.ts              langue de la page côté navigateur (scripts)
+  content/landing.ts          données de la landing (ancres, images, valeurs des démos)
+  content/landing-text/       textes de la landing, un fichier par langue (le script d'animation reçoit les siens en JSON)
+  content/site.ts             barre, pied de page, stores, sélecteur et bannière de langue
+  content/public.ts           textes des pages /m/, /i/ et 404 (cinq langues)
+  components/templates/       LandingPage, QuizBody, QuartierBody (une langue en prop)
   layouts/Base.astro          <head>, méta, Open Graph, polices auto-hébergées, variables CSS issues de @blowy/tokens, lien d'évitement
-  layouts/Public.astro        gabarit des pages /m/, /i/, 404
+  layouts/Public.astro        gabarit des pages publiques : une langue (pages indexées) ou les cinq (pages de partage)
   layouts/Prose.astro         gabarit des pages de texte
   components/atoms/           Logo, Button, StoreBadge, Sticker, PetImage, LifeSpark, Chip, Avatar
   components/molecules/       StoreButtons, SectionTitle, ChatBubble, PhoneFrame, FaqItem, SnapSection, StateBlock

@@ -26,4 +26,4 @@ export const API_URL: string = import.meta.env.PUBLIC_API_URL ?? 'http://localho
 
 /** Aperçu de lien par défaut (1200 × 630, scripts/site-images/build.py) ; chaque page de partage a le sien (/og/<page>.jpg). */
 export const OG_IMAGE = '/og/accueil.jpg';
-export const OG_ALT = 'Nino, Suzie et Pia, des minimoas tout poilus, à côté du titre « Élève ton minimoa. Il te présente du monde. »';
+export const OG_ALT = 'Nino, Suzie et Pia, des minimoas tout poilus, à côté du titre « Des potes près de chez toi. »';

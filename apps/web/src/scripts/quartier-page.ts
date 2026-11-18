@@ -6,17 +6,15 @@ import { bindCopy, withRef } from './ref';
 import { showState } from './public-page';
 import { mountQuartierForm, renderCounter, showInvite } from './quartier-form';
 import { growthCopy } from '../content/growth';
-import { locale, t, translateCodeBox, translatePage } from './quiz-i18n';
+import { locale } from './quiz-shared';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s);
 const params = new URLSearchParams(window.location.search);
-const seg = window.location.pathname.split('/').filter(Boolean)[1] ?? params.get('a') ?? params.get('z') ?? '';
+const parts = window.location.pathname.split('/').filter(Boolean);
+const seg = parts[parts.indexOf('quartier') + 1] ?? params.get('a') ?? params.get('z') ?? '';
 const token = params.get('t');
 
 async function load(): Promise<void> {
-  translatePage();
-  if (locale !== 'fr') document.title = t.quartier.meta.title;
-  translateCodeBox('quartier', { codeLabel: growthCopy[locale].ref.label, codeHelp: t.quartier.codeHelp, copy: growthCopy[locale].copy });
   if ((seg === 'confirmer' || seg === 'desinscription') && token) {
     showState('loading', false);
     try {

@@ -5,6 +5,7 @@
  */
 import { color, font, gradient, radius, space } from '@blowy/tokens';
 import { OG_ALT, OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
+import LangBanner from '../components/organisms/LangBanner.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -23,6 +24,12 @@ interface Props {
   lang?: string;
   /** locale Open Graph (fr_FR par défaut) */
   ogLocale?: string;
+  /** autres locales Open Graph de la même page (og:locale:alternate) */
+  ogLocaleAlternates?: string[];
+  /** chemin canonique (par défaut : le chemin servi au build) */
+  canonicalPath?: string;
+  /** bannière « Available in English » (par défaut : dès qu'il y a des versions dans d'autres langues) */
+  langBanner?: boolean;
   /** versions dans d'autres langues (balises hreflang) ; chemins relatifs au site */
   alternates?: { hreflang: string; path: string }[];
   /** texte du lien d'évitement */
@@ -40,9 +47,12 @@ const {
   lang = 'fr',
   ogLocale = 'fr_FR',
   alternates = [],
+  ogLocaleAlternates = [],
+  canonicalPath,
   skipLabel = 'aller au contenu',
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+const langBanner = Astro.props.langBanner ?? (alternates.length > 0 && !noindex);
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, SITE_URL).href;
 const ogUrl = new URL(ogImage, SITE_URL).href;
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
@@ -75,6 +85,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:locale" content={ogLocale} />
+    {ogLocaleAlternates.map((l) => <meta property="og:locale:alternate" content={l} />)}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -100,6 +111,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <a class="skip" href="#main">{skipLabel}</a>
     <slot />
     <slot name="footer" />
+    {langBanner && <LangBanner />}
     <script>
       // `?ref=<code>` (créateur) : gardé le temps de la visite et ajouté aux boutons qui ouvrent l'app (docs/VIRALITE.md).
       import { applyRef } from '../scripts/ref';

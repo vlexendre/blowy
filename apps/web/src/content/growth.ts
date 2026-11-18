@@ -3,9 +3,7 @@
  * créateur (/c/<code>). Cinq langues ; le français est rendu au build, le navigateur choisit la langue du téléphone.
  * `{x}` : rempli par le script de la page.
  */
-import { type OpenLocale, pickOpenLocale } from './open';
-
-export { pickOpenLocale as pickGrowthLocale };
+import type { Locale } from '../i18n/site';
 
 interface GroupCopy {
   meta: string;
@@ -49,7 +47,7 @@ export interface GrowthCopy {
   copied: string;
 }
 
-export const growthCopy: Record<OpenLocale, GrowthCopy> = {
+export const growthCopy: Record<Locale, GrowthCopy> = {
   fr: {
     group: {
       meta: 'Rejoins un groupe — Minimoa',

@@ -9,7 +9,14 @@ import PetImage from '../../atoms/PetImage.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { IMG, lives as c, sections } from '../../../content/landing';
+import { IMG, LIVES, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = { ...landingText[locale].lives, ...LIVES };
 const sparks = Array.from({ length: c.total }, (_, i) => i >= c.start);
 ---
 <SnapSection section={sections.vies} panel="p-wine s-vies">
@@ -27,7 +34,7 @@ const sparks = Array.from({ length: c.total }, (_, i) => i >= c.start);
       <PetImage class="gs" src={`${IMG}/nino_danger.webp`} loading="lazy" />
       <PetImage class="gt" src={`${IMG}/nino_fantome.webp`} alt={c.ghostAlt} loading="lazy" />
     </div>
-    <ChatBubble bubble={{ who: c.bubbleWho, whoColor: 'var(--rose)', text: c.says[0], avatar: { img: '/img/nino_face.webp' }, dark: true }} class="say" textId="gsay" />
+    <ChatBubble bubble={{ who: 'Nino', whoColor: 'var(--rose)', text: c.says[0], avatar: { img: '/img/nino_face.webp' }, dark: true }} class="say" textId="gsay" />
   </div>
 </SnapSection>
 <style is:global>

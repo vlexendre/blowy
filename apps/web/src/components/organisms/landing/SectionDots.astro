@@ -1,11 +1,15 @@
 ---
 /** Points de navigation verticaux (grand écran). `skip` : sections absentes de la page. */
-import { nav, sectionOrder, sections, type SectionId } from '../../../content/landing';
+import { sectionOrder, sections, type SectionId } from '../../../content/landing';
+import { landingText } from '../../../content/landing-text';
+import type { Locale } from '../../../i18n/site';
 interface Props {
+  locale: Locale;
   skip?: SectionId[];
 }
-const { skip = [] } = Astro.props;
+const { locale, skip = [] } = Astro.props;
+const t = landingText[locale];
 ---
-<nav class="dots" aria-label={nav.dotsLabel}>
-  {sectionOrder.filter((id) => !skip.includes(id)).map((id) => <a href={`#${sections[id].id}`} aria-label={sections[id].dot}></a>)}
+<nav class="dots" aria-label={t.nav.dotsLabel}>
+  {sectionOrder.filter((id) => !skip.includes(id)).map((id) => <a href={`#${sections[id].id}`} aria-label={t.dots[id]}></a>)}
 </nav>

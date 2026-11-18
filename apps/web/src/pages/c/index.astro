@@ -3,26 +3,36 @@
  * Code d'un créateur : /c/<code> (réécrit vers cette page). « De la part de … », stores, « J'ai déjà Minimoa »
  * (minimoa://c/CODE) et le code à taper à l'inscription (« Un code ? »). La visite est comptée par l'API (sans IP).
  * Aucune empreinte : la source n'arrive dans l'app que par ce lien ouvert, ou par le code tapé (docs/VIRALITE.md).
+ * Cinq langues rendues au build, celle du téléphone montrée.
  */
 import Public from '../../layouts/Public.astro';
 import StoreButtons from '../../components/molecules/StoreButtons.astro';
 import LoadingState from '../../components/organisms/public/LoadingState.astro';
 import CodeBox from '../../components/organisms/public/CodeBox.astro';
 import { growthCopy } from '../../content/growth';
-
-const t = growthCopy.fr.creator;
+import { publicText } from '../../content/public';
+import type { Locale } from '../../i18n/site';
 ---
-<Public title={t.meta} description={t.description} noindex ogImage="/og/i.jpg" ogAlt="Nino, un minimoa vert, qui fait coucou.">
-  <LoadingState />
-  <section class="pub-state" data-state="ready" hidden aria-live="polite">
-    <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
-    <span class="lbl" data-c="label">{t.label}</span>
-    <h1 class="pub-title" tabindex="-1" data-creator-title></h1>
-    <p class="pub-text" data-creator-text>{t.intro}</p>
-    <div class="pub-actions"><a class="btn l" data-open href="minimoa://" data-c="open">{t.open}</a></div>
-    <StoreButtons />
-    <CodeBox label={t.codeLabel} help={t.codeHelp} copy={growthCopy.fr.copy} box="creator" />
-  </section>
+<Public shell="always" noindex ogImage="/og/i.jpg" meta={(l) => ({ title: growthCopy[l].creator.meta, description: growthCopy[l].creator.description, ogAlt: publicText[l].invite.ogAlt })}>
+  {
+    (l: Locale) => {
+      const t = growthCopy[l].creator;
+      return (
+        <>
+          <LoadingState locale={l} />
+          <section class="pub-state" data-state="ready" hidden aria-live="polite">
+            <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
+            <span class="lbl">{t.label}</span>
+            <h1 class="pub-title" tabindex="-1" data-creator-title />
+            <p class="pub-text" data-creator-text>{t.intro}</p>
+            <div class="pub-actions"><a class="btn l" data-open href="minimoa://">{t.open}</a></div>
+            <StoreButtons locale={l} />
+            <CodeBox label={t.codeLabel} help={t.codeHelp} copy={growthCopy[l].copy} box="creator" />
+          </section>
+        </>
+      );
+    }
+  }
 </Public>
 <script>
   import '../../scripts/creator-page';

@@ -5,26 +5,36 @@ import PetImage from '../../atoms/PetImage.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { hero, sections } from '../../../content/landing';
+import { HERO_PET, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { localePath } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const hero = landingText[locale].hero;
+const b1 = { who: hero.b1.who, whoColor: '#8C1D4F', text: hero.b1.text, avatar: { letter: 'L', bg: 'var(--rose)' } };
+const b3 = { who: hero.b3.who, whoColor: 'var(--ink)', text: hero.b3.text, avatar: { letter: 'M', bg: 'var(--orange)' } };
 ---
 <SnapSection section={sections.top} panel="p-lime hero" light>
   <div class="hb-top">
-    <ChatBubble bubble={hero.bubbles.b1} class="b1" />
+    <ChatBubble bubble={b1} class="b1" />
   </div>
   <SectionTitle lines={hero.title} level={1}>
     <p class="lead hlead" data-r="up">{hero.lead}</p>
   </SectionTitle>
   <div class="hcta" data-r="up">
     <div class="hbtns">
-      <a class="btn k hgo" href={hero.primary.href}>{hero.primary.label}</a>
-      <a class="btn w" href={hero.secondary.href}>{hero.secondary.label}</a>
+      <a class="btn k hgo" href={localePath(locale, '/quiz/')}>{hero.primary}</a>
+      <a class="btn w" href={localePath(locale, '/quartier/')}>{hero.secondary}</a>
     </div>
     <p class="tag">{hero.tag}</p>
   </div>
   <div class="hstage">
     <div class="hill" aria-hidden="true"></div>
-    <div class="hpet" data-r="pop"><div class="bob" style="height:100%"><PetImage src={hero.pet.src} alt={hero.pet.alt} width={720} height={800} fetchpriority="high" /></div></div>
-    <ChatBubble bubble={hero.bubbles.b3} class="b3" />
+    <div class="hpet" data-r="pop"><div class="bob" style="height:100%"><PetImage src={HERO_PET} alt={hero.petAlt} width={720} height={800} fetchpriority="high" /></div></div>
+    <ChatBubble bubble={b3} class="b3" />
   </div>
   <Sticker class="s1" src="/img/ic_etoiles.webp" reveal />
   <Sticker class="s2" src="/img/ic_confettis.webp" reveal />

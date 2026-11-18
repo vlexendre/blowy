@@ -1,80 +1,16 @@
 ---
 /**
- * « Ouvre ton quartier » (docs/VIRALITE.md). Une page, plusieurs chemins (réécrits vers elle par public/_redirects) :
- * - /quartier, /quartier/<zone>?ref=<code> : le formulaire (quartier, e-mail, consentement) et le compteur réel ;
- *   un quartier déjà ouvert : « C'est ouvert ! », stores, et le code de l'e-mail (`?code=`) à reprendre dans l'app ;
- * - /quartier/confirmer?t=<jeton> : confirmation (double opt-in), compteur, lien pour inviter (`?ref=` : ton code) ;
- * - /quartier/desinscription?t=<jeton> : désinscription en un clic (l'adresse est effacée).
- * Tout se passe côté navigateur (scripts/quartier-page.ts) ; cinq langues, français au build.
+ * /quartier/ en français (page indexée). Traductions : pages/[lang]/quartier ; liens partagés (/quartier/…) : pages/lien/quartier.
+ * Voir components/templates/QuartierBody.astro.
  */
 import Public from '../../layouts/Public.astro';
-import StoreButtons from '../../components/molecules/StoreButtons.astro';
-import CodeBox from '../../components/organisms/public/CodeBox.astro';
-import QuartierForm from '../../components/organisms/public/QuartierForm.astro';
+import QuartierBody from '../../components/templates/QuartierBody.astro';
 import { quizCopy } from '../../content/quiz';
-import { growthCopy } from '../../content/growth';
-
-const t = quizCopy.fr.quartier;
+import type { Locale } from '../../i18n/site';
 ---
-<Public title={t.meta.title} description={t.meta.description} ogImage="/og/quartier.jpg" ogAlt="Trois minimoas sur une colline, à côté du titre « Ton quartier ouvre à 50. »">
-  <section class="pub-state pub-loading" data-state="loading" aria-live="polite" aria-busy="true" hidden>
-    <div class="spin" aria-hidden="true"></div>
-  </section>
-
-  <section class="pub-state" data-state="form">
-    <img class="pub-pet qp-pet" src="/img/m/groupe.webp" alt="" width="700" height="460" />
-    <QuartierForm level={1} />
-  </section>
-
-  <section class="pub-state" data-state="open" hidden>
-    <img class="pub-pet qp-pet" src="/img/m/bande_fete.webp" alt="" width="1200" height="520" />
-    <h1 class="pub-title" tabindex="-1" data-q="quartier.openTitle">{t.openTitle}</h1>
-    <p class="qp-zone" data-qp-zone></p>
-    <p class="pub-text" data-q="quartier.openText">{t.openText}</p>
-    <StoreButtons />
-    <CodeBox label={growthCopy.fr.ref.label} help={t.codeHelp} copy={growthCopy.fr.copy} box="quartier" hidden />
-    <div class="pub-actions"><a class="btn g" data-qp-open href="minimoa://quartier" data-q="quartier.openApp">{t.openApp}</a></div>
-  </section>
-
-  <section class="pub-state" data-state="confirmed" hidden>
-    <img class="pub-pet" src="/img/m/nino_applaudit.webp" alt="" width="450" height="500" />
-    <h1 class="pub-title" tabindex="-1" data-q="quartier.confirmTitle">{t.confirmTitle}</h1>
-    <p class="pub-text" data-q="quartier.confirmText">{t.confirmText}</p>
-    <div class="qf" data-qp-confirmed>
-      <div class="qf-counter" data-qf-counter hidden aria-live="polite">
-        <div class="qf-bar"><i data-qf-bar></i></div>
-        <b data-qf-count></b>
-      </div>
-      <div class="qf-invite" data-qf-invite hidden>
-        <b class="qf-sent-title" data-q="quartier.inviteTitle">{t.inviteTitle}</b>
-        <p class="pub-text" data-q="quartier.inviteText">{t.inviteText}</p>
-        <output class="qf-link" data-qf-link></output>
-        <div class="pub-actions">
-          <button type="button" class="btn l" data-qf-share data-q="quartier.inviteShare">{t.inviteShare}</button>
-          <button type="button" class="btn g" data-qf-copy data-q="quartier.copy">{t.copy}</button>
-        </div>
-      </div>
-    </div>
-    <a class="btn w" href="/quiz" data-q="quiz.result.cardKicker">{quizCopy.fr.quiz.result.cardKicker}</a>
-  </section>
-
-  <section class="pub-state" data-state="unsubscribed" hidden>
-    <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
-    <h1 class="pub-title" tabindex="-1" data-q="quartier.unsubTitle">{t.unsubTitle}</h1>
-    <p class="pub-text" data-q="quartier.unsubText">{t.unsubText}</p>
-  </section>
-
-  <section class="pub-state" data-state="link_failed" hidden>
-    <img class="pub-pet" src="/img/nino_triste.webp" alt="" width="900" height="1000" />
-    <p class="pub-text" data-q="quartier.confirmFail">{t.confirmFail}</p>
-    <div class="pub-actions"><a class="btn l" href="/quartier" data-q="quartier.submit">{t.submit}</a></div>
-  </section>
+<Public locale="fr" seoPath="/quartier/" meta={(l) => quizCopy[l].quartier.meta} ogImage="/og/quartier.jpg">
+  {(l: Locale) => <QuartierBody locale={l} />}
 </Public>
-<style is:global>
-.qp-pet{width:min(420px,86%);height:auto}
-.qp-zone{font-family:var(--display);font-weight:800;font-size:28px;color:var(--lime)}
-.qp-zone:empty{display:none}
-</style>
 <script>
   import '../../scripts/quartier-page';
 </script>

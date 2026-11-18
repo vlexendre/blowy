@@ -1,0 +1,61 @@
+---
+/**
+ * Sélecteur de langue discret : liens vers la même page dans les autres langues (pages indexées seulement).
+ * `menu` : pastille « FR » qui déplie la liste (barre du haut), sans script (<details>) ; `inline` : liste en ligne (pied de page).
+ */
+import { HTML_LANG, LOCALE_NAME, type Locale } from '../../i18n/site';
+import { siteText } from '../../content/site';
+
+interface Props {
+  locale: Locale;
+  links: { locale: Locale; href: string }[];
+  variant?: 'menu' | 'inline';
+  class?: string;
+}
+const { locale, links, variant = 'menu', class: cls } = Astro.props;
+const label = siteText[locale].language;
+---
+{
+  variant === 'menu' ? (
+    <details class:list={['lsw', cls]} data-lsw>
+      <summary aria-label={`${label} : ${LOCALE_NAME[locale]}`}>
+        <span aria-hidden="true">{locale.toUpperCase()}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </summary>
+      <ul role="list">
+        {links.map((l) => (
+          <li>
+            <a href={l.href} hreflang={HTML_LANG[l.locale]} lang={HTML_LANG[l.locale]} aria-current={l.locale === locale ? 'page' : undefined}>
+              {LOCALE_NAME[l.locale]}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  ) : (
+    <nav class:list={['lsw-inline', cls]} aria-label={label}>
+      {links.map((l) => (
+        <a href={l.href} hreflang={HTML_LANG[l.locale]} lang={HTML_LANG[l.locale]} aria-current={l.locale === locale ? 'page' : undefined}>
+          {LOCALE_NAME[l.locale]}
+        </a>
+      ))}
+    </nav>
+  )
+}
+<style is:global>
+.lsw{position:relative;flex:0 0 auto}
+.lsw summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border-radius:999px;font-weight:800;font-size:13px;letter-spacing:.04em;color:inherit}
+.lsw summary::-webkit-details-marker{display:none}
+.lsw summary:hover{background:rgba(255,255,255,.1)}
+.lsw summary svg{width:14px;height:14px;transition:transform .2s}
+.lsw[open] summary svg{transform:rotate(180deg)}
+.lsw ul{position:absolute;right:0;top:calc(100% + 8px);z-index:60;list-style:none;margin:0;padding:6px;min-width:170px;border-radius:18px;background:#1B1830;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.lsw li a{display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;color:#fff;font-weight:700;font-size:15px}
+.lsw li a:hover{background:rgba(255,255,255,.08)}
+.lsw li a[aria-current="page"]{background:var(--lime);color:var(--ink)}
+.lsw-inline{display:flex;flex-wrap:wrap;gap:2px}
+.lsw-inline a{display:flex;align-items:center;min-height:44px;padding:0 8px;border-radius:10px}
+.lsw-inline a:hover{color:#fff}
+.lsw-inline a[aria-current="page"]{color:#fff;font-weight:800}
+@media (prefers-reduced-motion:reduce){.lsw summary svg{transition:none}}
+</style>

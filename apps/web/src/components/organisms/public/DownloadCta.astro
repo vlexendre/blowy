@@ -1,13 +1,20 @@
 ---
-/** Appel à télécharger l'app (boutons de store). */
+/** Appel à télécharger l'app (boutons de store), et la boîte « Ton code » si la visite vient d'un `?ref=`. */
 import StoreButtons from '../../molecules/StoreButtons.astro';
 import CodeBox from './CodeBox.astro';
-import { common } from '../../../content/public';
+import { publicText } from '../../../content/public';
 import { growthCopy } from '../../../content/growth';
+import type { Locale } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const common = publicText[locale].common;
+const g = growthCopy[locale];
 ---
 <div class="pub-dl">
   <b>{common.downloadTitle}</b>
   <p>{common.downloadText}</p>
-  <StoreButtons />
-  <CodeBox label={growthCopy.fr.ref.label} help={growthCopy.fr.ref.help} copy={growthCopy.fr.copy} box="ref" hidden />
+  <StoreButtons locale={locale} />
+  <CodeBox label={g.ref.label} help={g.ref.help} copy={g.copy} box="ref" hidden />
 </div>

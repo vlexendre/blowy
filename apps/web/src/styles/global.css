@@ -75,8 +75,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
 .links a:hover,.links a.on{color:var(--white);background:rgba(255,255,255,.08)}
 .dl{margin-left:auto;display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:800;font-size:15px;white-space:nowrap;transition:transform .2s}
 .dl:hover{transform:scale(1.04)}
+.nav-end{margin-left:auto}
+.nav-end .dl{margin-left:0}
+.pill>.lsw{margin-left:auto}
+.pill>.lsw+.dl{margin-left:4px}
 .dl svg{width:16px;height:16px}
-@media (min-width:900px){.links{display:flex}.links+.dl{margin-left:8px}.dl{height:48px;padding:0 22px}}
+@media (min-width:900px){.links{display:flex}.links+.dl{margin-left:8px}.links+.lsw{margin-left:8px}.dl{height:48px;padding:0 22px}}
 
 .dots{position:fixed;right:max(24px, env(safe-area-inset-right, 0px));top:50%;translate:0 -50%;z-index:40;display:none;flex-direction:column;gap:4px;padding:8px 4px;border-radius:999px;background:var(--glass);border:1px solid var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .dots a{display:flex;align-items:center;justify-content:center;width:20px;height:20px}

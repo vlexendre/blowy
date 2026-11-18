@@ -5,7 +5,14 @@
  */
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { outings as c, sections } from '../../../content/landing';
+import { MAP_PINS, OUTINGS_PET, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].outings;
 const m = c.map;
 ---
 <SnapSection section={sections.sorties} panel="p-night s-out">
@@ -23,15 +30,15 @@ const m = c.map;
     </div>
     <span class="lbl ozl">{m.label} · {m.zone}</span>
     <span class="me"><img src="/img/nino_face.webp" alt="" width="44" height="44" loading="lazy" /></span>
-    {m.pins.map((p) => <span class="pin" style={`left:${p.x}%;top:${p.y}%`}><img src={`/img/${p.pet}_face.webp`} alt="" width="34" height="34" loading="lazy" /></span>)}
+    {MAP_PINS.map((p) => <span class="pin" style={`left:${p.x}%;top:${p.y}%`}><img src={`/img/${p.pet}_face.webp`} alt="" width="34" height="34" loading="lazy" /></span>)}
     <span class="chip more">{m.more}</span>
   </div>
   <ul class="ofacts" role="list" data-r="up">{m.facts.map((f) => <li>{f}</li>)}</ul>
   <div class="oside">
     <div class="oq" data-r="card">
-      <img src={c.pet.src} alt={c.pet.alt} width="450" height="500" loading="lazy" decoding="async" />
+      <img src={OUTINGS_PET} alt={c.petAlt} width="450" height="500" loading="lazy" decoding="async" />
       <div>
-        <span class="who">{c.question.who}</span>
+        <span class="who">Nino</span>
         <p>{c.question.text}</p>
         <div class="oans" aria-hidden="true">{c.question.answers.map((a) => <span>{a}</span>)}</div>
       </div>

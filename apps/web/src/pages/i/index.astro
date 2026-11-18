@@ -1,21 +1,31 @@
 ---
-/** Invitation : /i/CODE (réécrit vers cette page) ou /i/?c=CODE. */
+/** Invitation : /i/CODE (réécrit vers cette page) ou /i/?c=CODE. Cinq langues, celle du téléphone. */
 import Public from '../../layouts/Public.astro';
 import StateBlock from '../../components/molecules/StateBlock.astro';
 import LoadingState from '../../components/organisms/public/LoadingState.astro';
 import NetworkError from '../../components/organisms/public/NetworkError.astro';
 import DownloadCta from '../../components/organisms/public/DownloadCta.astro';
 import InviteCard from '../../components/organisms/public/InviteCard.astro';
-import { common, invitePage as c } from '../../content/public';
+import { publicText } from '../../content/public';
+import { localePath, type Locale } from '../../i18n/site';
 ---
-<Public title={c.meta.title} description={c.meta.description} noindex ogImage="/og/i.jpg" ogAlt="Nino, un minimoa vert, qui fait coucou à côté du titre « On t’invite sur Minimoa. »">
-  <LoadingState />
-  <InviteCard />
-  <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
-    <div class="pub-actions"><a class="btn l" href="/">{common.home}</a></div>
-    <DownloadCta />
-  </StateBlock>
-  <NetworkError />
+<Public shell="always" noindex ogImage="/og/i.jpg" meta={(l) => ({ ...publicText[l].invite.meta, ogAlt: publicText[l].invite.ogAlt })}>
+  {
+    (l: Locale) => {
+      const c = publicText[l].invite;
+      return (
+        <>
+          <LoadingState locale={l} />
+          <InviteCard locale={l} />
+          <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
+            <div class="pub-actions"><a class="btn l" href={localePath(l, '/')}>{publicText[l].common.home}</a></div>
+            <DownloadCta locale={l} />
+          </StateBlock>
+          <NetworkError locale={l} />
+        </>
+      );
+    }
+  }
 </Public>
 <script>
   import '../../scripts/invite-page';

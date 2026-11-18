@@ -5,14 +5,25 @@ import FaqItem from '../../molecules/FaqItem.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { SUPPORT_EMAIL } from '../../../config/site';
-import { faq as c, IMG, sections } from '../../../content/landing';
+import { IMG, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { OFFERS, TRIAL_DAYS } from '@blowy/domain';
+import { formatPrice } from '@blowy/content';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].faq;
+const price = (minor: number) => formatPrice(locale, minor, 'EUR');
+const items = [...c.items, { q: c.price.q, a: c.price.a(price(OFFERS.yearly.amountMinor), TRIAL_DAYS, price(OFFERS.monthly.amountMinor), price(OFFERS.weekly.amountMinor)) }];
 ---
 <SnapSection section={sections.faq} panel="p-night s-faq">
   <SectionTitle lines={c.title}>
     <p class="side">{c.sideBefore} <a href={`mailto:${SUPPORT_EMAIL}`}>{c.sideLink}</a>{c.sideAfter}</p>
   </SectionTitle>
   <div class="faq" data-r="up">
-    {c.items.map((i) => <FaqItem question={i.q} answer={i.a} />)}
+    {items.map((i) => <FaqItem question={i.q} answer={i.a} />)}
   </div>
   <PetImage class="fq" src={`${IMG}/suzie_coucou.webp`} loading="lazy" />
 </SnapSection>

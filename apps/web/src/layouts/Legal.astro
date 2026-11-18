@@ -35,10 +35,12 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
   bodyClass="prose-body"
   lang={locale}
   ogLocale={LOCALE_REGION[locale].og}
+  ogLocaleAlternates={LOCALES.filter((l) => l !== locale).map((l) => LOCALE_REGION[l].og)}
+  canonicalPath={legalPath(locale, slug)}
   alternates={legalAlternates(slug)}
   skipLabel={ui.skip}
 >
-  <TopBar downloadLabel={ui.download} />
+  <TopBar locale={locale} downloadLabel={ui.download} />
   <main id="main" class="prose-main">
     <article class="prose">
       <header class="prose-head">
@@ -105,7 +107,7 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
       }
     </article>
   </main>
-  <SiteFooter slot="footer" class="prose-foot" links={footerLinks} label={ui.footerLabel} />
+  <SiteFooter slot="footer" class="prose-foot" locale={locale} links={footerLinks} label={ui.footerLabel} />
 </Base>
 <style is:global>
 .prose-body{background:var(--bg)}

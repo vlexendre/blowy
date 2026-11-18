@@ -7,7 +7,21 @@ import { gsap as gsapLib } from 'gsap';
 import { ScrollTrigger as STLib } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import Snap from 'lenis/snap';
-import { alive, character, IMG, lives, nav, threeWords, type MoodKey } from '../content/landing';
+import { ALIVE, IMG, LIVES, MOOD_INITIAL, MOOD_PRESETS, NAV_ACTIVE, WORDS_MAX, type MoodKey } from '../content/landing';
+import { fill } from '../i18n/site';
+
+/** Textes de la langue de la page (components/templates/LandingPage.astro). */
+interface ScriptText {
+  restSay: string;
+  poseAlt: string;
+  evoPrefix: string;
+  evoEmpty: string;
+  lines: string[];
+  says: string[];
+  revived: string;
+  revivedSay: string;
+}
+const text = JSON.parse(document.getElementById('landing-text')?.textContent ?? '{}') as ScriptText;
 
 gsapLib.registerPlugin(STLib);
 Object.assign(window, { gsap: gsapLib, ScrollTrigger: STLib });
@@ -63,7 +77,7 @@ function main(): void {
       if (k === i) d.setAttribute('aria-current', 'true');
       else d.removeAttribute('aria-current');
     });
-    const n = nav.activeMap[secs[i]?.id ?? ''];
+    const n = NAV_ACTIVE[secs[i]?.id ?? ''];
     navLinks.forEach((a) => a.classList.toggle('on', a.dataset.nav === n));
   }
   setActive(0);
@@ -94,19 +108,20 @@ function main(): void {
   const asay = $('#asay');
   const speciesBtns = $$<HTMLButtonElement>('.aspecies button');
   const careBtns = $$<HTMLButtonElement>('.acare button');
-  let species: string = alive.initial;
-  let pose: string = alive.rest.pose;
+  let species: string = ALIVE.initial;
+  let pose: string = ALIVE.restPose;
   let poseLabel = '';
   const poseSrc = (s: string, p: string) => `${IMG}/${s}_${p}.webp`;
   function showPose(): void {
     if (!apet) return;
-    const sp = alive.species.find((x) => x.key === species);
+    const sp = speciesBtns.find((b) => b.dataset.s === species);
     const src = poseSrc(species, pose);
     const next = new Image();
     next.src = src;
     const apply = () => {
       apet.src = src;
-      apet.alt = poseLabel && sp ? alive.poseAlt(sp.name, poseLabel) : (sp?.alt ?? '');
+      const name = sp?.dataset.name ?? '';
+      apet.alt = poseLabel && sp ? fill(text.poseAlt, { name, action: poseLabel.toLocaleLowerCase(document.documentElement.lang) }) : (sp?.dataset.alt ?? '');
     };
     const box = apet.parentElement;
     const go = () => {
@@ -133,16 +148,16 @@ function main(): void {
     b.addEventListener('click', () => {
       const on = b.getAttribute('aria-pressed') === 'true';
       careBtns.forEach((o) => o.setAttribute('aria-pressed', !on && o === b ? 'true' : 'false'));
-      pose = on ? alive.rest.pose : (b.dataset.pose ?? alive.rest.pose);
+      pose = on ? ALIVE.restPose : (b.dataset.pose ?? ALIVE.restPose);
       poseLabel = on ? '' : (b.dataset.label ?? '');
-      if (asay) asay.textContent = on ? alive.rest.say : (b.dataset.say ?? '');
+      if (asay) asay.textContent = on ? text.restSay : (b.dataset.say ?? '');
       showPose();
     });
   });
 
   /* 3. caractère : les boutons changent nino et les jauges */
   const gEls = $$('.g');
-  let gVals: number[] = [...character.presets[character.initial]];
+  let gVals: number[] = [...MOOD_PRESETS[MOOD_INITIAL]];
   function drawG(i: number, v: number): void {
     const g = gEls[i];
     if (!g) return;
@@ -167,7 +182,7 @@ function main(): void {
       moodBtns.forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
       const m = b.dataset.m as MoodKey;
       swapImg(carImgs, 'data-m', m);
-      const target = character.presets[m];
+      const target = MOOD_PRESETS[m];
       if (!target) return;
       if (!G) {
         gVals = [...target];
@@ -199,17 +214,17 @@ function main(): void {
     if (!evoEl) return;
     const out = [...new Set(pressed().map((w) => `+ ${w.dataset.g ?? ''}`))];
     if (!out.length) {
-      evoEl.textContent = threeWords.evoEmpty;
+      evoEl.textContent = text.evoEmpty;
       return;
     }
     const b = document.createElement('b');
     b.textContent = out.join(' · ');
-    evoEl.replaceChildren(`${threeWords.evoPrefix} `, b);
+    evoEl.replaceChildren(`${text.evoPrefix} `, b);
   }
   words.forEach((w) => {
     w.addEventListener('click', () => {
       const on = w.getAttribute('aria-pressed') === 'true';
-      if (!on && pressed().length >= threeWords.max) pressed()[0]?.setAttribute('aria-pressed', 'false');
+      if (!on && pressed().length >= WORDS_MAX) pressed()[0]?.setAttribute('aria-pressed', 'false');
       w.setAttribute('aria-pressed', on ? 'false' : 'true');
       if (G) G.fromTo(w, { scale: 0.85 }, { scale: 1, duration: 0.5, ease: 'back.out(3)' });
       evo();
@@ -436,29 +451,29 @@ function main(): void {
     if (!num || !txt || !say) return;
     const setN = (n: number) => {
       hs.forEach((h, k) => h.classList.toggle('off', k >= n));
-      num.textContent = `${n}/${lives.total}`;
-      txt.textContent = lives.lines[lives.start - n] ?? '';
-      say.textContent = lives.says[lives.start - n] ?? '';
+      num.textContent = `${n}/${LIVES.total}`;
+      txt.textContent = text.lines[LIVES.start - n] ?? '';
+      say.textContent = text.says[LIVES.start - n] ?? '';
     };
     const tl = gsap.timeline({ repeat: -1, paused: true, repeatDelay: 0.6 });
-    tl.add(() => setN(lives.start)).set(gh, { opacity: 0 }).set(sad, { opacity: 1 }).to({}, { duration: 1.2 });
-    for (let n = lives.start - 1; n >= 0; n--) {
+    tl.add(() => setN(LIVES.start)).set(gh, { opacity: 0 }).set(sad, { opacity: 1 }).to({}, { duration: 1.2 });
+    for (let n = LIVES.start - 1; n >= 0; n--) {
       tl.add(() => setN(n));
       tl.fromTo(hs[n] ?? null, { scale: 1.4, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.5, ease: 'back.out(3)' });
       tl.to({}, { duration: 0.75 });
     }
     tl.to(sad, { opacity: 0, duration: 0.6 }, '-=.4').to(gh, { opacity: 1, duration: 0.8 }, '<');
     tl.to({}, { duration: 2.4 });
-    tl.to(hs.slice(0, lives.start), {
+    tl.to(hs.slice(0, LIVES.start), {
       scale: 1.3,
       duration: 0.25,
       stagger: 0.06,
       yoyo: true,
       repeat: 1,
       onStart: () => {
-        setN(lives.start);
-        txt.textContent = lives.revived;
-        say.textContent = lives.revivedSay;
+        setN(LIVES.start);
+        txt.textContent = text.revived;
+        say.textContent = text.revivedSay;
       },
     });
     tl.to(gh, { opacity: 0, duration: 0.5 }).to(sad, { opacity: 1, duration: 0.5 }, '<').to({}, { duration: 1.6 });

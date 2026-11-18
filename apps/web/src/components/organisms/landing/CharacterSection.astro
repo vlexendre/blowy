@@ -4,8 +4,15 @@ import PetImage from '../../atoms/PetImage.astro';
 import Sticker from '../../atoms/Sticker.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { character as c, IMG, sections } from '../../../content/landing';
-const initial = c.presets[c.initial];
+import { IMG, MOODS, MOOD_INITIAL, MOOD_PRESETS, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].character;
+const initial = MOOD_PRESETS[MOOD_INITIAL];
 const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v) / 2}%`;
 ---
 <SnapSection section={sections.caractere} panel="p-violet s-car">
@@ -14,7 +21,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
   </SectionTitle>
   <div class="cars" data-r="pop">
     <div class="bob">
-      {c.moods.map((m) => <PetImage class={m.key === c.initial ? 'on' : undefined} data-m={m.key} src={`${IMG}/nino_evo_${m.key}.webp`} alt={m.alt} loading="lazy" />)}
+      {MOODS.map((m) => <PetImage class={m === MOOD_INITIAL ? 'on' : undefined} data-m={m} src={`${IMG}/nino_evo_${m}.webp`} alt={c.moods[m].alt} loading="lazy" />)}
     </div>
   </div>
   <div class="gauges" data-r="up" aria-live="polite">
@@ -31,7 +38,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
     }
   </div>
   <div class="moods" role="group" aria-label={c.groupLabel} data-r="up">
-    {c.moods.map((m) => <button type="button" data-m={m.key} aria-pressed={m.key === c.initial ? 'true' : 'false'}>{m.label}</button>)}
+    {MOODS.map((m) => <button type="button" data-m={m} aria-pressed={m === MOOD_INITIAL ? 'true' : 'false'}>{c.moods[m].label}</button>)}
   </div>
   <Sticker class="s3" src="/img/ic_eclair.webp" reveal />
 </SnapSection>

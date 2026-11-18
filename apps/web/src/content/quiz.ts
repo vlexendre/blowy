@@ -4,12 +4,10 @@
  * partage). Les situations, les caractères et les noms des quartiers viennent de `@blowy/content` (`quizText`).
  * `{x}` : rempli par le script de la page.
  */
-import { type OpenLocale, pickOpenLocale } from './open';
-
-export { pickOpenLocale as pickQuizLocale };
+import type { Locale } from '../i18n/site';
 
 export interface QuizPageCopy {
-  meta: { title: string; description: string };
+  meta: { title: string; description: string; ogAlt: string };
   intro: { kicker: string; title: readonly string[]; text: string; start: string; facts: string };
   progress: string;
   back: string;
@@ -43,7 +41,7 @@ export interface QuizPageCopy {
 }
 
 export interface QuartierCopy {
-  meta: { title: string; description: string };
+  meta: { title: string; description: string; ogAlt: string };
   label: string;
   /** « Ton quartier ouvre à {n}. » */
   title: string;
@@ -89,12 +87,12 @@ export interface QuizLang {
   quartier: QuartierCopy;
 }
 
-export const quizCopy: Record<OpenLocale, QuizLang> = {
+export const quizCopy: Record<Locale, QuizLang> = {
   fr: {
     quiz: {
       meta: {
         title: 'Quel minimoa es-tu ? — Minimoa',
-        description: '7 situations, 60 secondes, sans compte. Découvre ton minimoa et défie tes potes.',
+        description: '7 situations, 60 secondes, sans compte. Découvre ton minimoa et défie tes potes.', ogAlt: 'Les quatre minimoas à côté du titre « Quel minimoa es-tu ? »',
       },
       intro: {
         kicker: 'Le quiz',
@@ -137,7 +135,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
     quartier: {
       meta: {
         title: 'Ouvre ton quartier — Minimoa',
-        description: 'Minimoa ouvre quartier par quartier. Inscris-toi, invite tes voisins : à 50, ton quartier ouvre.',
+        description: 'Minimoa ouvre quartier par quartier. Inscris-toi, invite tes voisins : à 50, ton quartier ouvre.', ogAlt: 'Trois minimoas sur une colline, à côté du titre « Ton quartier ouvre à 50. »',
       },
       label: 'Ouvre ton quartier',
       title: 'Ton quartier ouvre à {n}.',
@@ -184,7 +182,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
   },
   en: {
     quiz: {
-      meta: { title: 'Which minimoa are you? — Minimoa', description: '7 situations, 60 seconds, no account. Find your minimoa and challenge your friends.' },
+      meta: { title: 'Which minimoa are you? — Minimoa', description: '7 situations, 60 seconds, no account. Find your minimoa and challenge your friends.', ogAlt: 'The four minimoas next to the title “Which minimoa are you?”' },
       intro: {
         kicker: 'The quiz',
         title: ['WHICH', 'MINIMOA', 'ARE YOU?'],
@@ -219,28 +217,28 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
       notFound: 'This result doesn’t exist, or no longer does. Take the quiz!',
     },
     quartier: {
-      meta: { title: 'Open your neighbourhood — Minimoa', description: 'Minimoa opens neighbourhood by neighbourhood. Sign up, invite your neighbours: at 50, yours opens.' },
-      label: 'Open your neighbourhood',
-      title: 'Your neighbourhood opens at {n}.',
-      text: 'Minimoa opens neighbourhood by neighbourhood, so your minimoa really has people to introduce you to. Sign up: we’ll tell you when it opens.',
+      meta: { title: 'Open your neighborhood — Minimoa', description: 'Minimoa opens neighborhood by neighborhood. Sign up, invite your neighbors: at 50, yours opens.', ogAlt: 'Three minimoas on a hill, next to the title “Your neighborhood opens at 50.”' },
+      label: 'Open your neighborhood',
+      title: 'Your neighborhood opens at {n}.',
+      text: 'Minimoa opens neighborhood by neighborhood, so your minimoa really has people to introduce you to. Sign up: we’ll tell you when it opens.',
       city: 'City',
       cityPick: 'Pick your city',
-      zone: 'Neighbourhood',
-      postal: 'Postcode',
-      postalHint: 'City not in the list? Type your French postcode.',
+      zone: 'Neighborhood',
+      postal: 'Postal code',
+      postalHint: 'City not in the list? Type your French postal code.',
       or: 'or',
       email: 'Your email',
       emailPlaceholder: 'you@example.com',
-      consent: 'I agree that Minimoa keeps my email and neighbourhood to tell me when it opens (two emails at most). One-click unsubscribe.',
+      consent: 'I agree that Minimoa keeps my email and neighborhood to tell me when it opens (two emails at most). One-click unsubscribe.',
       privacy: 'Privacy policy',
       submit: 'Let me know',
       sending: 'Sending…',
       counter: '{count} / {threshold} to open {zone}',
       counterOpen: '{zone} is open',
       sentTitle: 'Check your inbox.',
-      sentText: 'A confirmation link is on its way. You count in the neighbourhood once confirmed.',
-      inviteTitle: 'Invite your neighbours',
-      inviteText: 'Everyone who signs up with your link moves your neighbourhood forward. The first 3 to invite get the founder medal when it opens.',
+      sentText: 'A confirmation link is on its way. You count in the neighborhood once confirmed.',
+      inviteTitle: 'Invite your neighbors',
+      inviteText: 'Everyone who signs up with your link moves your neighborhood forward. The first 3 to invite get the founder medal when it opens.',
       inviteShare: 'Invite',
       inviteMessage: '{missing} more people needed to open Minimoa in {zone}. Sign up:',
       copy: 'Copy link',
@@ -248,14 +246,14 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
       openTitle: 'It’s open!',
       openText: 'Install Minimoa: your minimoa introduces you to people near you.',
       openApp: 'I already have Minimoa',
-      codeHelp: 'Type this code in “Got a code?” when you sign up: it keeps your neighbourhood.',
+      codeHelp: 'Type this code in “Got a code?” when you sign up: it keeps your neighborhood.',
       confirmTitle: 'Confirmed.',
-      confirmText: 'You count in your neighbourhood. Invite your neighbours so it opens sooner.',
+      confirmText: 'You count in your neighborhood. Invite your neighbors so it opens sooner.',
       confirmFail: 'This link no longer works. Sign up again, it takes ten seconds.',
       unsubTitle: 'Done.',
       unsubText: 'Your address is erased. You won’t receive anything more from this list.',
       errors: {
-        zone: 'Pick your neighbourhood, or type a 5-digit postcode.',
+        zone: 'Pick your neighborhood, or type a 5-digit postal code.',
         email: 'This email address doesn’t look valid.',
         consent: 'Tick the box so we can let you know.',
         generic: 'Something went wrong. Try again in a moment.',
@@ -265,7 +263,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
   },
   es: {
     quiz: {
-      meta: { title: '¿Qué minimoa eres? — Minimoa', description: '7 situaciones, 60 segundos, sin cuenta. Descubre tu minimoa y reta a tus amigos.' },
+      meta: { title: '¿Qué minimoa eres? — Minimoa', description: '7 situaciones, 60 segundos, sin cuenta. Descubre tu minimoa y reta a tus amigos.', ogAlt: 'Los cuatro minimoas junto al título «¿Qué minimoa eres?»' },
       intro: {
         kicker: 'El test',
         title: ['¿QUÉ', 'MINIMOA', 'ERES?'],
@@ -300,7 +298,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
       notFound: 'Este resultado no existe o ya no está. ¡Haz el test!',
     },
     quartier: {
-      meta: { title: 'Abre tu barrio — Minimoa', description: 'Minimoa abre barrio a barrio. Apúntate, invita a tus vecinos: con 50, tu barrio abre.' },
+      meta: { title: 'Abre tu barrio — Minimoa', description: 'Minimoa abre barrio a barrio. Apúntate, invita a tus vecinos: con 50, tu barrio abre.', ogAlt: 'Tres minimoas en una colina, junto al título «Tu barrio abre con 50.»' },
       label: 'Abre tu barrio',
       title: 'Tu barrio abre con {n}.',
       text: 'Minimoa abre barrio a barrio, para que tu minimoa tenga de verdad gente que presentarte. Apúntate: te avisamos cuando abra.',
@@ -346,7 +344,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
   },
   pt: {
     quiz: {
-      meta: { title: 'Qual minimoa é você? — Minimoa', description: '7 situações, 60 segundos, sem conta. Descubra seu minimoa e desafie seus amigos.' },
+      meta: { title: 'Qual minimoa é você? — Minimoa', description: '7 situações, 60 segundos, sem conta. Descubra seu minimoa e desafie seus amigos.', ogAlt: 'Os quatro minimoas ao lado do título “Qual minimoa é você?”' },
       intro: {
         kicker: 'O quiz',
         title: ['QUAL', 'MINIMOA', 'É VOCÊ?'],
@@ -381,7 +379,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
       notFound: 'Este resultado não existe ou não existe mais. Faça o quiz!',
     },
     quartier: {
-      meta: { title: 'Abra seu bairro — Minimoa', description: 'O Minimoa abre bairro por bairro. Inscreva-se, convide seus vizinhos: com 50, seu bairro abre.' },
+      meta: { title: 'Abra seu bairro — Minimoa', description: 'O Minimoa abre bairro por bairro. Inscreva-se, convide seus vizinhos: com 50, seu bairro abre.', ogAlt: 'Três minimoas numa colina, ao lado do título “Seu bairro abre com 50.”' },
       label: 'Abra seu bairro',
       title: 'Seu bairro abre com {n}.',
       text: 'O Minimoa abre bairro por bairro, para que seu minimoa tenha mesmo gente para te apresentar. Inscreva-se: avisamos na abertura.',
@@ -427,7 +425,7 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
   },
   nl: {
     quiz: {
-      meta: { title: 'Welke minimoa ben jij? — Minimoa', description: '7 situaties, 60 seconden, geen account. Ontdek je minimoa en daag je vrienden uit.' },
+      meta: { title: 'Welke minimoa ben jij? — Minimoa', description: '7 situaties, 60 seconden, geen account. Ontdek je minimoa en daag je vrienden uit.', ogAlt: 'De vier minimoa’s naast de titel „Welke minimoa ben jij?”' },
       intro: {
         kicker: 'De quiz',
         title: ['WELKE', 'MINIMOA', 'BEN JIJ?'],
@@ -462,14 +460,14 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
       notFound: 'Dit resultaat bestaat niet (meer). Doe de quiz!',
     },
     quartier: {
-      meta: { title: 'Open je buurt — Minimoa', description: 'Minimoa gaat buurt per buurt open. Meld je aan, nodig je buren uit: bij 50 gaat je buurt open.' },
+      meta: { title: 'Open je buurt — Minimoa', description: 'Minimoa gaat buurt per buurt open. Meld je aan, nodig je buren uit: bij 50 gaat je buurt open.', ogAlt: 'Drie minimoa’s op een heuvel, naast de titel „Je buurt gaat open bij 50.”' },
       label: 'Open je buurt',
       title: 'Je buurt gaat open bij {n}.',
       text: 'Minimoa gaat buurt per buurt open, zodat je minimoa echt mensen heeft om je aan voor te stellen. Meld je aan: we laten het je weten bij de opening.',
       city: 'Stad',
       cityPick: 'Kies je stad',
       zone: 'Buurt',
-      postal: 'Postcode',
+      postal: 'Postal code',
       postalHint: 'Staat je stad er niet bij? Typ je Franse postcode.',
       or: 'of',
       email: 'Je e-mail',
@@ -508,12 +506,6 @@ export const quizCopy: Record<OpenLocale, QuizLang> = {
   },
 };
 
-/** Le texte d'un chemin (`quiz.result.copy`) dans une langue ; `null` si ce n'est pas une feuille texte. */
-export function copyAt(lang: QuizLang, path: string): string | null {
-  let v: unknown = lang;
-  for (const k of path.split('.')) v = v && typeof v === 'object' ? (v as Record<string, unknown>)[k] : undefined;
-  return typeof v === 'string' ? v : null;
-}
 
 /** Nom des espèces (les mêmes dans toutes les langues). */
 export const SPECIES_NAMES = { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' } as const;

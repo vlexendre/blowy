@@ -3,8 +3,18 @@
 import Sticker from '../../atoms/Sticker.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { sections, threeWords as c } from '../../../content/landing';
-const on = c.words.filter((w) => w.on).map((w) => `+ ${w.gauge}`);
+import { WORD_DEMO, WORDS_PET, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { labels } from '@blowy/content';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].threeWords;
+const pole = labels.in(locale).poleLabel;
+const words = WORD_DEMO.map((w, i) => ({ ...w, label: c.words[i] ?? '', pole: pole[w.gauge] ?? w.gauge }));
+const on = words.filter((w) => w.on).map((w) => `+ ${w.pole}`);
 ---
 <SnapSection section={sections.mots} panel="p-rose s-mots" light>
   <SectionTitle lines={c.title}>
@@ -15,11 +25,11 @@ const on = c.words.filter((w) => w.on).map((w) => `+ ${w.gauge}`);
       <span class="lbl">{c.cardLabel}</span>
       <p class="q">{c.question} <span>{c.questionAccent}</span></p>
       <div class="words" role="group" aria-label={c.groupLabel}>
-        {c.words.map((w) => <button type="button" data-g={w.gauge} aria-pressed={w.on ? 'true' : 'false'} class={w.short ? 'hide-short' : undefined}>{w.label}</button>)}
+        {words.map((w) => <button type="button" data-g={w.pole} aria-pressed={w.on ? 'true' : 'false'} class={w.short ? 'hide-short' : undefined}>{w.label}</button>)}
       </div>
       <p class="evo" aria-live="polite"><img src="/img/nino_face.webp" alt="" /><span id="evo">{c.evoPrefix} <b>{on.join(' · ')}</b></span></p>
       <div class="link"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>{c.leadLink}</div>
-      <Sticker class="mnino" src={c.pet} width={450} height={500} loading="lazy" reveal />
+      <Sticker class="mnino" src={WORDS_PET} width={450} height={500} loading="lazy" reveal />
     </div>
   </div>
 </SnapSection>

@@ -1,0 +1,28 @@
+---
+/**
+ * Bannière « Available in English » : sur une page indexée, si le navigateur préfère une autre langue proposée par le
+ * site, un lien vers la même page dans cette langue (lu dans les balises hreflang). Jamais de redirection automatique.
+ * Fermée une fois, elle ne revient plus (localStorage). Textes : `content/site.ts`.
+ */
+import { HTML_LANG, LOCALES } from '../../i18n/site';
+import { siteText } from '../../content/site';
+
+const texts = Object.fromEntries(LOCALES.map((l) => [l, { ...siteText[l].banner, lang: HTML_LANG[l] }]));
+---
+<div class="lang-banner" data-lang-banner hidden>
+  <a data-lb-link href="/"><span data-lb-text></span> <b data-lb-go></b></a>
+  <button type="button" data-lb-close><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" /></svg></button>
+  <script type="application/json" data-lb-texts set:html={JSON.stringify(texts)}></script>
+</div>
+<style is:global>
+.lang-banner{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom,0px));translate:-50% 0;z-index:80;display:flex;align-items:center;gap:4px;max-width:calc(100% - 24px);padding:4px 4px 4px 16px;border-radius:999px;background:#fff;color:var(--ink);box-shadow:0 14px 34px rgba(0,0,0,.35);font-size:14px}
+.lang-banner[hidden]{display:none}
+.lang-banner a{display:flex;align-items:center;gap:6px;min-height:40px;font-weight:600}
+.lang-banner a b{font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.lang-banner button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;flex:0 0 auto}
+.lang-banner button:hover{background:rgba(20,16,31,.08)}
+.lang-banner svg{width:18px;height:18px}
+</style>
+<script>
+  import '../../scripts/lang-banner';
+</script>

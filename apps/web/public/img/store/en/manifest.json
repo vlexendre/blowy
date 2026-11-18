@@ -1,0 +1,50 @@
+{
+  "widths": [
+    360,
+    720
+  ],
+  "shots": [
+    {
+      "name": "01-accroche",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    },
+    {
+      "name": "02-minimoa-vivant",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    },
+    {
+      "name": "03-habitudes",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    },
+    {
+      "name": "04-groupes",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    },
+    {
+      "name": "05-irl",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    },
+    {
+      "name": "06-garde-robe",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    },
+    {
+      "name": "07-quartier",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
+    }
+  ]
+}

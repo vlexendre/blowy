@@ -1,0 +1,91 @@
+---
+/**
+ * Landing dans une langue : sections plein écran aimantées (la galerie des captures n'apparaît que si elles sont là).
+ * Même page, même script d'animation (Lenis, GSAP, halo) pour les cinq langues : seuls les textes changent ; ceux dont
+ * le script a besoin lui sont passés en JSON (`#landing-text`).
+ */
+import Base from '../../layouts/Base.astro';
+import Background from '../organisms/landing/Background.astro';
+import NavBar from '../organisms/landing/NavBar.astro';
+import SectionDots from '../organisms/landing/SectionDots.astro';
+import Hero from '../organisms/landing/Hero.astro';
+import HowSection from '../organisms/landing/HowSection.astro';
+import PetSection from '../organisms/landing/PetSection.astro';
+import WardrobeSection from '../organisms/landing/WardrobeSection.astro';
+import CharacterSection from '../organisms/landing/CharacterSection.astro';
+import HabitsSection from '../organisms/landing/HabitsSection.astro';
+import GroupsSection from '../organisms/landing/GroupsSection.astro';
+import ChatsSection from '../organisms/landing/ChatsSection.astro';
+import LivesSection from '../organisms/landing/LivesSection.astro';
+import EncountersSection from '../organisms/landing/EncountersSection.astro';
+import OutingsSection from '../organisms/landing/OutingsSection.astro';
+import WordsSection from '../organisms/landing/WordsSection.astro';
+import ScreensSection from '../organisms/landing/ScreensSection.astro';
+import PlusSection from '../organisms/landing/PlusSection.astro';
+import FaqSection from '../organisms/landing/FaqSection.astro';
+import FinalSection from '../organisms/landing/FinalSection.astro';
+import { HERO_PET, type SectionId } from '../../content/landing';
+import { landingText } from '../../content/landing-text';
+import { siteText } from '../../content/site';
+import { HTML_LANG, LOCALES, OG_LOCALE, localePath, pageAlternates, type Locale } from '../../i18n/site';
+import { storeShotsFor } from '../../lib/store-shots';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = landingText[locale];
+const skip: SectionId[] = storeShotsFor(locale) ? [] : ['ecrans'];
+const langLinks = LOCALES.map((l) => ({ locale: l, href: localePath(l, '/') }));
+/** Textes lus par scripts/landing.ts (le reste est déjà dans la page). */
+const scriptText = {
+  restSay: t.alive.restSay,
+  poseAlt: t.alive.poseAlt,
+  evoPrefix: t.threeWords.evoPrefix,
+  evoEmpty: t.threeWords.evoEmpty,
+  lines: t.lives.lines,
+  says: t.lives.says,
+  revived: t.lives.revived,
+  revivedSay: t.lives.revivedSay,
+};
+---
+<Base
+  title={t.meta.title}
+  description={t.meta.description}
+  htmlClass="snap"
+  ogImage={`/og/${locale === 'fr' ? '' : `${locale}/`}accueil.jpg`}
+  ogAlt={t.meta.ogAlt}
+  lang={HTML_LANG[locale]}
+  ogLocale={OG_LOCALE[locale]}
+  ogLocaleAlternates={LOCALES.filter((l) => l !== locale).map((l) => OG_LOCALE[l])}
+  alternates={pageAlternates('/')}
+  canonicalPath={localePath(locale, '/')}
+  skipLabel={siteText[locale].skip}
+>
+  <link slot="head" rel="preload" as="image" href={HERO_PET} fetchpriority="high" />
+  <Background />
+  <NavBar locale={locale} langLinks={langLinks} />
+  <SectionDots locale={locale} skip={skip} />
+  <main id="main">
+    <Hero locale={locale} />
+    <HowSection locale={locale} />
+    <PetSection locale={locale} />
+    <WardrobeSection locale={locale} />
+    <CharacterSection locale={locale} />
+    <HabitsSection locale={locale} />
+    <GroupsSection locale={locale} />
+    <ChatsSection locale={locale} />
+    <LivesSection locale={locale} />
+    <EncountersSection locale={locale} />
+    <OutingsSection locale={locale} />
+    <WordsSection locale={locale} />
+    <ScreensSection locale={locale} />
+    <PlusSection locale={locale} />
+    <FaqSection locale={locale} />
+    <FinalSection locale={locale} langLinks={langLinks} />
+  </main>
+  <script type="application/json" id="landing-text" set:html={JSON.stringify(scriptText)} />
+  <script>
+    import '../../scripts/landing';
+  </script>
+</Base>
