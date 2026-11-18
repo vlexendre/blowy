@@ -1,0 +1,31 @@
+---
+/** Fil d'Ariane visible (les données structurées BreadcrumbList sont ajoutées par le gabarit). Le dernier élément est la page. */
+interface Props {
+  items: readonly { name: string; path: string }[];
+  label: string;
+}
+const { items, label } = Astro.props;
+---
+<nav class="crumbs" aria-label={label}>
+  <ol>
+    {
+      items.map((it, i) =>
+        i === items.length - 1 ? (
+          <li aria-current="page">{it.name}</li>
+        ) : (
+          <li>
+            <a href={it.path}>{it.name}</a>
+          </li>
+        ),
+      )
+    }
+  </ol>
+</nav>
+<style is:global>
+.crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;font-size:14px;color:var(--mute)}
+.crumbs li{display:flex;align-items:center}
+.crumbs li+li::before{content:"/";margin:0 8px;opacity:.5}
+.crumbs a{display:inline-flex;align-items:center;min-height:32px;color:#fff;font-weight:700;text-decoration:underline;text-decoration-color:rgba(255,255,255,.3);text-underline-offset:3px}
+.crumbs a:hover{text-decoration-color:currentColor}
+.crumbs [aria-current]{color:var(--mute)}
+</style>

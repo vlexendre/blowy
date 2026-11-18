@@ -1,0 +1,26 @@
+---
+/** Liste de liens en cartes (villes proches, guides) : titre, phrase courte. */
+interface Props {
+  title?: string;
+  items: readonly { href: string; title: string; text?: string }[];
+  /** niveau du titre de la liste */
+  level?: 2 | 3;
+}
+const { title, items, level = 2 } = Astro.props;
+const Tag = level === 2 ? 'h2' : 'h3';
+---
+<section class="ed-more">
+  {title && <Tag>{title}</Tag>}
+  <ul class="ed-cards">
+    {
+      items.map((it) => (
+        <li>
+          <a href={it.href}>
+            <b>{it.title}</b>
+            {it.text && <span>{it.text}</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -1,0 +1,27 @@
+---
+/** /guides/ : les cinq guides. */
+import Editorial from '../../layouts/Editorial.astro';
+import LinkCards from '../../components/organisms/editorial/LinkCards.astro';
+import AppCta from '../../components/organisms/editorial/AppCta.astro';
+import { GUIDE_LIST, guidePath } from '../../content/editorial/guides';
+import { CITY_LIST, cityPath } from '../../content/editorial/villes';
+import { editorialUi } from '../../content/editorial/ui';
+import { SITE_URL } from '../../config/site';
+
+const t = editorialUi.guides;
+const itemList = {
+  '@type': 'ItemList',
+  name: t.h1,
+  itemListElement: GUIDE_LIST.map((g, i) => ({ '@type': 'ListItem', position: i + 1, name: g.h1, url: new URL(guidePath(g.slug), SITE_URL).href })),
+};
+---
+<Editorial title={t.meta.title} description={t.meta.description} path={t.path} ogImage="/og/guides.jpg" ogAlt={t.ogAlt} crumbs={[{ name: t.crumb, path: t.path }]} jsonLd={[itemList]} preloadImage="/img/m/bande_fete.webp">
+  <header class="ed-head">
+    <h1>{t.h1}</h1>
+    <p class="ed-lead">{t.lead}</p>
+    <img class="ed-art wide" src="/img/m/bande_fete.webp" alt="Nino, Suzie, Gaston et Pia, quatre minimoas, qui font la fête" width="1200" height="421" fetchpriority="high" decoding="async" />
+  </header>
+  <LinkCards title={t.listTitle} items={GUIDE_LIST.map((g) => ({ href: guidePath(g.slug), title: g.short, text: g.meta.description }))} />
+  <LinkCards title={editorialUi.cities.h1} items={CITY_LIST.map((c) => ({ href: cityPath(c.slug), title: c.name }))} />
+  <AppCta />
+</Editorial>

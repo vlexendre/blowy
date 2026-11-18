@@ -1,0 +1,69 @@
+---
+/**
+ * Une page ville (« Se faire des amis à Paris ») : en-tête, sections propres à la ville, Minimoa dans cette ville,
+ * « Ouvre ton quartier », quiz, FAQ, villes proches et guides. Textes : content/editorial/villes/<ville>.ts.
+ */
+import QuartierCta from '../organisms/editorial/QuartierCta.astro';
+import FaqList from '../organisms/editorial/FaqList.astro';
+import LinkCards from '../organisms/editorial/LinkCards.astro';
+import type { CityPage } from '../../content/editorial/types';
+import { CITIES, cityPath } from '../../content/editorial/villes';
+import { GUIDES, guidePath } from '../../content/editorial/guides';
+import { editorialUi, frDate } from '../../content/editorial/ui';
+import { renderBlock, renderSection } from '../../lib/editorial-render';
+
+interface Props {
+  city: CityPage;
+}
+const { city } = Astro.props;
+const t = editorialUi.city;
+const near = city.near.map((s) => ({ href: cityPath(s), title: CITIES[s].name, text: CITIES[s].h1 }));
+const guides = city.guides.map((s) => ({ href: guidePath(s), title: GUIDES[s].short }));
+const wide = city.image.width > city.image.height * 1.2;
+---
+<article>
+  <header class="ed-head">
+    <h1>{city.h1}</h1>
+    <p class="ed-lead">{city.lead}</p>
+    <img class:list={['ed-art', { wide }]} src={city.image.src} alt={city.image.alt} width={city.image.width} height={city.image.height} fetchpriority="high" decoding="async" />
+  </header>
+
+  <div class="ed-prose">
+    <Fragment set:html={city.sections.map(renderSection).join('')} />
+  </div>
+
+  <section class="ed-card ed-prose ed-mm" aria-labelledby="ed-mm-title">
+    <h2 id="ed-mm-title">{city.minimoa.title}</h2>
+    <Fragment set:html={city.minimoa.blocks.map(renderBlock).join('')} />
+  </section>
+
+  <QuartierCta city={city.name} text={city.quartier.text} zones={city.quartier.zones} />
+
+  <aside class="ed-card ed-quiz" aria-labelledby="ed-quiz-title">
+    <img src="/img/m/quiz_sociable.webp" alt="" width="720" height="820" loading="lazy" decoding="async" />
+    <div>
+      <h2 id="ed-quiz-title">{t.quizTitle}</h2>
+      <p>{t.quizText}</p>
+      <div class="ed-actions"><a class="btn l" href="/quiz/">{t.quizCta}</a></div>
+    </div>
+  </aside>
+
+  <FaqList title={t.faqTitle} faq={city.faq} />
+
+  <LinkCards title={t.nearTitle} items={near} />
+  <LinkCards title={t.guidesTitle} items={[...guides, { href: editorialUi.cities.path, title: editorialUi.cities.h1 }]} />
+
+  <p class="ed-updated">{t.updated} <time datetime={city.updated}>{frDate(city.updated)}</time></p>
+</article>
+<style is:global>
+.ed-mm{max-width:none}
+.ed-mm p{max-width:44em}
+.ed-quiz{display:grid;gap:14px;align-items:center}
+.ed-quiz img{width:120px;height:auto}
+.ed-quiz h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,5vw,38px);line-height:.98;color:#fff;margin:0 0 8px}
+.ed-quiz p{color:#E7E4F2;font-size:17px;line-height:1.5;max-width:34em}
+@media (min-width:700px){.ed-quiz{grid-template-columns:auto 1fr;gap:28px}.ed-quiz img{width:150px}}
+</style>
+<script>
+  import '../../scripts/editorial-quartier';
+</script>

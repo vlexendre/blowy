@@ -1,0 +1,43 @@
+---
+/** /guides/<guide>/ : un guide (docs/SEO.md §3), en français seulement. */
+import Editorial from '../../layouts/Editorial.astro';
+import GuideBody from '../../components/templates/GuideBody.astro';
+import { GUIDE_LIST, guidePath } from '../../content/editorial/guides';
+import { editorialUi } from '../../content/editorial/ui';
+import type { GuidePage } from '../../content/editorial/types';
+import { SITE_NAME, SITE_URL } from '../../config/site';
+import { faqJsonLd } from '../../lib/editorial-render';
+import { ogAltFor } from '../../lib/editorial-og';
+
+export function getStaticPaths() {
+  return GUIDE_LIST.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
+}
+const { guide } = Astro.props as { guide: GuidePage };
+const path = guidePath(guide.slug);
+const url = new URL(path, SITE_URL).href;
+const og = `/og/guides/${guide.slug}.jpg`;
+const article = {
+  '@type': 'Article',
+  headline: guide.h1,
+  description: guide.meta.description,
+  image: new URL(og, SITE_URL).href,
+  datePublished: guide.published,
+  dateModified: guide.updated,
+  inLanguage: 'fr-FR',
+  mainEntityOfPage: url,
+  author: { '@type': 'Organization', name: editorialUi.guide.author, url: SITE_URL },
+  publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL, logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', SITE_URL).href } },
+};
+---
+<Editorial
+  title={guide.meta.title}
+  description={guide.meta.description}
+  path={path}
+  ogImage={og}
+  ogAlt={ogAltFor(guide.h1)}
+  crumbs={[{ name: editorialUi.guides.crumb, path: editorialUi.guides.path }, { name: guide.short, path }]}
+  jsonLd={[article, ...(guide.faq.length ? [faqJsonLd(guide.faq)] : [])]}
+  preloadImage={guide.image.src}
+>
+  <GuideBody guide={guide} />
+</Editorial>

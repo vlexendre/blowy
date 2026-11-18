@@ -1,0 +1,75 @@
+---
+/**
+ * Un guide : en-tête (auteur, dates, temps de lecture), sommaire, sections, FAQ, sources, autres guides, villes et
+ * encadré Minimoa. Textes : content/editorial/guides/<guide>.ts.
+ */
+import FaqList from '../organisms/editorial/FaqList.astro';
+import LinkCards from '../organisms/editorial/LinkCards.astro';
+import AppCta from '../organisms/editorial/AppCta.astro';
+import type { GuidePage } from '../../content/editorial/types';
+import { GUIDES, guidePath } from '../../content/editorial/guides';
+import { CITY_LIST, cityPath } from '../../content/editorial/villes';
+import { editorialUi, frDate } from '../../content/editorial/ui';
+import { inline, renderSection, slugify } from '../../lib/editorial-render';
+import { guideWords } from '../../lib/editorial-pages';
+
+interface Props {
+  guide: GuidePage;
+}
+const { guide } = Astro.props;
+const t = editorialUi.guide;
+const minutes = Math.max(1, Math.round(guideWords(guide) / 220));
+const related = guide.related.map((s) => ({ href: guidePath(s), title: GUIDES[s].short, text: GUIDES[s].meta.description }));
+const cities = CITY_LIST.map((c) => ({ href: cityPath(c.slug), title: c.name }));
+const wide = guide.image.width > guide.image.height * 1.2;
+---
+<article>
+  <header class="ed-head">
+    <h1>{guide.h1}</h1>
+    <p class="ed-lead">{guide.lead}</p>
+    <p class="ed-byline">
+      <span>{t.by} {t.author}</span>
+      <span>{t.published} <time datetime={guide.published}>{frDate(guide.published)}</time>{guide.updated !== guide.published && <>, {t.updated} <time datetime={guide.updated}>{frDate(guide.updated)}</time></>}</span>
+      <span>{t.reading(minutes)}</span>
+    </p>
+    <img class:list={['ed-art', { wide }]} src={guide.image.src} alt={guide.image.alt} width={guide.image.width} height={guide.image.height} fetchpriority="high" decoding="async" />
+  </header>
+
+  <nav class="ed-toc" aria-labelledby="ed-toc-title">
+    <h2 id="ed-toc-title">{t.tocTitle}</h2>
+    <ol>
+      {guide.sections.map((s) => <li><a href={`#${slugify(s.title)}`} set:html={inline(s.title)} /></li>)}
+      <li><a href={`#${slugify(t.faqTitle)}`}>{t.faqTitle}</a></li>
+    </ol>
+  </nav>
+
+  <div class="ed-prose">
+    <Fragment set:html={guide.sections.map(renderSection).join('')} />
+  </div>
+
+  <FaqList title={t.faqTitle} faq={guide.faq} />
+
+  <section class="ed-prose ed-sources" aria-labelledby="ed-sources-title">
+    <h2 id="ed-sources-title">{t.sourcesTitle}</h2>
+    <ol>
+      {guide.sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a></li>)}
+    </ol>
+  </section>
+
+  <AppCta />
+
+  <LinkCards title={t.relatedTitle} items={[...related, { href: editorialUi.guides.path, title: editorialUi.guides.h1 }]} />
+  <LinkCards title={t.citiesTitle} items={cities} />
+</article>
+<style is:global>
+.ed-toc{max-width:720px;margin:0 0 8px;padding:16px 20px 6px;border-radius:22px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.ed-toc h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:20px;color:#fff;margin:0 0 8px}
+.ed-toc ol{margin:0 0 10px;padding-left:1.3em;font-size:16px;line-height:1.5}
+.ed-toc li{margin:4px 0}
+.ed-toc li::marker{color:var(--lime);font-weight:800}
+.ed-toc a{color:#E7E4F2;font-weight:600;text-decoration:underline;text-decoration-color:rgba(255,255,255,.25);text-underline-offset:3px}
+.ed-toc a:hover{color:#fff;text-decoration-color:currentColor}
+.ed-sources ol{font-size:15px;line-height:1.5}
+.ed-sources a{font-weight:600;color:#E7E4F2;text-decoration-color:rgba(255,255,255,.35)}
+.ed-sources a:hover{color:var(--lime)}
+</style>

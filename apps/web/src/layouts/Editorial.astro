@@ -1,0 +1,109 @@
+---
+/**
+ * Gabarit des pages éditoriales (villes, guides et leurs sommaires) : français seulement, sans hreflang ni bannière de
+ * langue, canonique, données structurées (JSON-LD), fil d'Ariane visible, barre du haut et pied de page du site.
+ * Aucune animation lourde (ni GSAP ni Lenis) : une page de lecture, rapide sur mobile.
+ */
+import Base from './Base.astro';
+import TopBar from '../components/organisms/TopBar.astro';
+import SiteFooter from '../components/organisms/SiteFooter.astro';
+import Breadcrumbs from '../components/molecules/Breadcrumbs.astro';
+import { SITE_URL } from '../config/site';
+import { breadcrumbJsonLd, jsonLdScript } from '../lib/editorial-render';
+import { editorialUi } from '../content/editorial/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  /** chemin canonique, avec la barre finale */
+  path: string;
+  ogImage?: string;
+  ogAlt?: string;
+  /** fil d'Ariane, sans l'accueil (ajouté ici) ; le dernier élément est la page */
+  crumbs: readonly { name: string; path: string }[];
+  /** autres données structurées de la page (Article, FAQPage, ItemList…) */
+  jsonLd?: readonly Record<string, unknown>[];
+  /** image à précharger (illustration du haut de page) */
+  preloadImage?: string;
+}
+const { title, description, path, ogImage, ogAlt, crumbs, jsonLd = [], preloadImage } = Astro.props;
+const trail = [{ name: editorialUi.home, path: '/' }, ...crumbs];
+const graph = [...jsonLd, breadcrumbJsonLd(trail.map((c) => ({ name: c.name, url: new URL(c.path, SITE_URL).href })))];
+---
+<Base title={title} description={description} canonicalPath={path} ogImage={ogImage} ogAlt={ogAlt} bodyClass="ed-body" langBanner={false}>
+  <script slot="head" is:inline type="application/ld+json" set:html={jsonLdScript(graph)} />
+  {preloadImage && <link slot="head" rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+  <TopBar locale="fr" />
+  <main id="main" class="ed-main">
+    <Breadcrumbs items={trail} label={editorialUi.breadcrumbLabel} />
+    <slot />
+  </main>
+  <SiteFooter slot="footer" class="ed-foot" locale="fr" />
+</Base>
+<style is:global>
+.ed-body{background:var(--bg)}
+.ed-main{position:relative;padding:calc(var(--top) + 12px) max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px));max-width:1120px;margin:0 auto}
+.ed-main::before{content:"";position:absolute;inset:0 0 auto 0;height:560px;z-index:-1;pointer-events:none;background:radial-gradient(60% 70% at 15% 0%,rgba(109,61,240,.38),transparent 70%),radial-gradient(40% 50% at 92% 8%,rgba(255,184,0,.16),transparent 70%)}
+.ed-foot{margin:0 auto 16px;width:calc(100% - 32px)}
+
+/* En-tête : titre, chapeau, illustration */
+.ed-head{display:grid;gap:18px;align-items:end;margin:8px 0 28px}
+.ed-head h1{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(38px,9vw,76px);line-height:.92;letter-spacing:-.02em;color:#fff;text-wrap:balance;overflow-wrap:break-word;hyphens:auto}
+.ed-kicker{display:inline-flex;align-self:start;justify-self:start;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;background:var(--lime);color:var(--ink);font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ed-lead{font-size:clamp(18px,2.2vw,21px);line-height:1.5;color:#fff;font-weight:600;max-width:36em;text-wrap:pretty}
+.ed-byline{font-size:14px;color:var(--mute);display:flex;flex-wrap:wrap;gap:4px 12px}
+.ed-art{justify-self:center;width:min(300px,62vw);height:auto;filter:drop-shadow(0 18px 24px rgba(0,0,0,.4))}
+.ed-art.wide{width:min(520px,92vw)}
+@media (min-width:860px){
+  .ed-head{grid-template-columns:minmax(0,1fr) auto;column-gap:40px}
+  .ed-head>.ed-art{grid-column:2;grid-row:1 / span 4;align-self:center}
+}
+
+/* Corps : colonne de lecture */
+.ed-prose{max-width:720px;font-size:17.5px;line-height:1.65;color:#E7E4F2;overflow-wrap:break-word}
+.ed-prose h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(24px,4.6vw,34px);line-height:1.02;letter-spacing:-.01em;color:#fff;margin:48px 0 14px;text-wrap:balance;scroll-margin-top:calc(var(--top) + 8px)}
+.ed-prose h3{font-size:19px;font-weight:800;color:#fff;margin:26px 0 8px;line-height:1.3}
+.ed-prose p,.ed-prose ul,.ed-prose ol{margin:0 0 14px}
+.ed-prose ul,.ed-prose ol{padding-left:1.3em}
+.ed-prose li{margin:6px 0}
+.ed-prose li::marker{color:var(--lime);font-weight:800}
+.ed-prose strong{color:#fff}
+.ed-prose a,.ed-link{color:var(--lime);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.ed-prose a:hover,.ed-link:hover{text-decoration-thickness:2px}
+.ed-note{padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-left:4px solid var(--lime);font-size:16px}
+.ed-sec:first-child h2{margin-top:8px}
+
+/* Encadrés (Minimoa, quartier, quiz) */
+.ed-card{position:relative;margin:40px 0 0;padding:clamp(20px,4vw,32px);border-radius:var(--r);background:var(--g-night);border:1px solid var(--line);overflow:hidden;isolation:isolate}
+.ed-card::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(90% 60% at 85% 0%,rgba(109,61,240,.3),transparent 60%)}
+.ed-card.lime{background:var(--g-lime);color:var(--ink);border:0}
+.ed-card.lime::before{background:radial-gradient(120% 70% at 50% 0%,rgba(255,255,255,.25),transparent 60%)}
+.ed-card h2{margin-top:0}
+.ed-card.lime h2,.ed-card.lime strong{color:var(--ink)}
+.ed-card.lime p{color:var(--ink)}
+.ed-card .lbl{display:block;margin-bottom:8px;color:var(--mute)}
+.ed-card.lime .lbl{color:var(--mute-d)}
+.ed-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.ed-actions .btn{height:52px;font-size:16px}
+
+/* FAQ */
+.ed-faq{display:flex;flex-direction:column;gap:8px}
+.ed-faq details{border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.ed-faq details[open]{background:rgba(255,255,255,.08)}
+.ed-faq summary{cursor:pointer;list-style:none;padding:16px 52px 16px 18px;font-weight:800;color:#fff;position:relative;font-size:17px;line-height:1.35;border-radius:18px}
+.ed-faq summary::-webkit-details-marker{display:none}
+.ed-faq summary::after{content:"+";position:absolute;right:14px;top:50%;translate:0 -50%;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
+.ed-faq details[open] summary::after{content:"–";background:var(--lime);color:var(--ink)}
+.ed-faq details>div{padding:0 18px 6px}
+
+/* Listes de liens en cartes (villes, guides) */
+.ed-cards{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr))}
+.ed-cards a{display:flex;flex-direction:column;gap:4px;height:100%;padding:16px 18px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;text-decoration:none;transition:background .2s,transform .2s}
+.ed-cards a:hover{background:rgba(255,255,255,.11);transform:translateY(-2px)}
+.ed-cards b{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.05;text-transform:uppercase;letter-spacing:-.01em}
+.ed-cards span{font-size:14.5px;line-height:1.4;color:var(--mute);font-weight:500}
+.ed-more{margin-top:48px}
+.ed-more h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(22px,4vw,28px);line-height:1.05;color:#fff;margin:0 0 14px}
+.ed-updated{margin-top:36px;font-size:14px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){.ed-cards a{transition:none}.ed-cards a:hover{transform:none}}
+</style>

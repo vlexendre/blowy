@@ -1,0 +1,74 @@
+---
+/**
+ * « Ouvre ton quartier » sur une page ville : une zone (ville entière) → bouton vers /quartier/<zone> et compteur réel
+ * lu à l'API côté navigateur (scripts/editorial-quartier.ts, chargé quand l'encadré approche de l'écran) ; plusieurs
+ * zones (arrondissements de Paris, Lyon, Marseille) → une pastille par arrondissement, sans compteur.
+ */
+import { zoneById } from '@blowy/domain';
+import { editorialUi } from '../../../content/editorial/ui';
+import { quizCopy } from '../../../content/quiz';
+import { fill } from '../../../i18n/site';
+import { inline } from '../../../lib/editorial-render';
+
+interface Props {
+  city: string;
+  text: string;
+  zones: readonly string[];
+}
+const { city, text, zones } = Astro.props;
+const t = editorialUi.quartier;
+const q = quizCopy.fr.quartier;
+const label = (id: string): string => {
+  const z = zoneById(id);
+  if (!z) throw new Error(`Zone inconnue : ${id}`);
+  return z.district ? t.district(z.city, z.district) : z.city;
+};
+const single = zones.length === 1 ? zones[0]! : null;
+---
+<section class="ed-card ed-qt" aria-labelledby="ed-qt-title" data-ed-quartier={single ?? undefined} data-counter={q.counter} data-open={q.counterOpen}>
+  <span class="lbl">{t.label}</span>
+  <h2 id="ed-qt-title" class="ed-qt-title">{t.title}</h2>
+  <p class="ed-qt-text" set:html={inline(text)} />
+  {
+    single ? (
+      <>
+        <div class="ed-qt-counter" data-ed-counter hidden aria-live="polite">
+          <div class="ed-qt-bar">
+            <i data-ed-bar />
+          </div>
+          <b data-ed-count />
+        </div>
+        <div class="ed-actions">
+          <a class="btn l" href={`/quartier/${single}`}>{fill(t.single, { zone: city })}</a>
+        </div>
+      </>
+    ) : (
+      <>
+        <p class="ed-qt-pick">{t.pick}</p>
+        <ul class="ed-qt-zones">
+          {zones.map((z) => (
+            <li>
+              <a href={`/quartier/${z}`}>{label(z)}</a>
+            </li>
+          ))}
+        </ul>
+        <a class="ed-link ed-qt-other" href="/quartier/">{t.other}</a>
+      </>
+    )
+  }
+</section>
+<style is:global>
+.ed-qt-title{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(30px,6vw,48px);line-height:.95;letter-spacing:-.02em;color:#fff;margin:0 0 12px}
+.ed-qt-text{font-size:17px;line-height:1.5;color:#E7E4F2;max-width:34em}
+.ed-qt-counter{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding:14px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--line);max-width:420px}
+.ed-qt-counter[hidden]{display:none}
+.ed-qt-bar{height:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+.ed-qt-bar i{display:block;height:100%;width:0;border-radius:999px;background:var(--lime);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.ed-qt-counter b{font-size:17px;font-weight:800}
+.ed-qt-pick{margin:18px 0 10px;font-weight:800;color:#fff}
+.ed-qt-zones{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.ed-qt-zones a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:#fff;font-weight:700;font-size:15px;text-decoration:none}
+.ed-qt-zones a:hover{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.ed-qt-other{display:inline-block;margin-top:16px}
+@media (prefers-reduced-motion:reduce){.ed-qt-bar i{transition:none}}
+</style>
