@@ -19,6 +19,6 @@ import { HabitSharingModule } from './sharing/habit-sharing.module';
   imports: [RituelsModule, VisionModule, HabitSharingModule],
   controllers: [GroupCodesController, GroupsController, TogetherController, AdminGroupsController],
   providers: [GroupCore, GroupPresenter, GroupsUseCases, GroupChat, TogetherUseCases, GroupJobs, AdminGuard],
-  exports: [GroupJobs, GroupsUseCases, GroupCore],
+  exports: [GroupJobs, GroupsUseCases, GroupCore, GroupChat],
 })
 export class GroupsModule {}

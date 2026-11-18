@@ -18,6 +18,7 @@ import { DEMO_LEA, DEMO_MALO, DEMO_PEOPLE, DEMO_SASHA, demoMaloMessages } from '
 import { PlateformeDemo } from './plateforme-demo';
 import { RituelsDemo } from './rituels-demo';
 import { GroupesDemo } from './groupes-demo';
+import { SeedBoot } from './seed/seed-boot';
 
 /** Minimoa+ des personnes de démo qui portent des objets premium. */
 const DEMO_PLUS_UNTIL = '2099-01-01T00:00:00.000Z';
@@ -48,6 +49,7 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     @Inject(RituelsDemo) private readonly rituels: RituelsDemo,
     @Inject(PlateformeDemo) private readonly plateforme: PlateformeDemo,
     @Inject(GroupesDemo) private readonly groupes: GroupesDemo,
+    @Inject(SeedBoot) private readonly seedBoot: SeedBoot,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(IDS) private readonly ids: Ids,
   ) {}
@@ -103,11 +105,16 @@ export class DemoWorld implements OnApplicationBootstrap, OnboardedHook {
     await this.groupes.seed();
     await this.plateforme.seed();
     this.logger.log(`monde de démo prêt : ${DEMO_PEOPLE.map((p) => p.displayName).join(', ')}`);
+    // Semis d'un environnement de test (BLOWY_SEED_CITIES), après le monde de démo : jamais en même temps.
+    await this.seedBoot.start();
   }
 
   async onOnboarded(userId: string): Promise<void> {
     if (DEMO_PEOPLE.some((p) => p.id === userId)) return;
-    const locale = (await this.profiles.findById(userId))?.locale ?? 'fr';
+    const me = await this.profiles.findById(userId);
+    // Monde à part (compte de revue, semis de test) : les personnes de démo ne le croisent jamais.
+    if (me?.reviewWorld) return;
+    const locale = me?.locale ?? 'fr';
     await this.refreshNeeds();
     // Les répliques des minimoas sont écrites dans la langue de leur humain : les personnes de démo prennent celle de la
     // dernière personne arrivée (démo locale : une langue à la fois), pour que tout son monde lui parle dans sa langue.
