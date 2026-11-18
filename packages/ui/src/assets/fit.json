@@ -11288,26 +11288,26 @@
    "dy": -0.1
   },
   "sweat": {
-   "anchor": "chest",
+   "anchor": "mouth",
    "size": "bodyw",
-   "w": 0.95,
+   "w": 1.0,
    "pivot": [
     0.5,
-    0.0
+    0.27
    ],
-   "ratio": 1.1476,
-   "dy": -0.14
+   "ratio": 1.2215,
+   "dy": 0.17
   },
   "teddy": {
-   "anchor": "chest",
+   "anchor": "mouth",
    "size": "bodyw",
-   "w": 0.95,
+   "w": 1.0,
    "pivot": [
     0.5,
-    0.0
+    0.27
    ],
-   "ratio": 1.1954,
-   "dy": -0.14
+   "ratio": 1.2141,
+   "dy": 0.17
   },
   "tablier": {
    "anchor": "chest",
