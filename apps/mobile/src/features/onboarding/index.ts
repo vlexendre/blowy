@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { keys, useApi } from '@/core';
+import { trackAccountCreated } from '@/features/analytics';
 import { usePendingInvite } from '@/features/encounters';
 import { currentAttribution } from '@/features/growth/attribution';
 import { useDeepLink } from '@/features/notifications/deeplink';
@@ -231,6 +232,8 @@ export function useOnboard() {
     },
     onSuccess: (me: Me) => {
       qc.setQueryData(keys.me, me);
+      // Statistiques d'usage : seulement avec l'accord (donné juste avant, sur l'écran « statistiques »).
+      trackAccountCreated();
       // Code d'un groupe tapé à l'inscription : sa page « rejoindre » s'ouvre juste après.
       const d = useDraft.getState();
       if (d.codeKind === 'group' && d.inviteCode.trim()) useDeepLink.getState().park(`/g/${d.inviteCode.trim().toUpperCase()}`);

@@ -174,6 +174,14 @@ export const onboarding = messages({
         submit: 'Se connecter',
       },
     },
+    /** Juste avant la création du compte : statistiques d’usage (Amplitude), seulement si la personne dit oui. */
+    statistiques: {
+      title: [{ text: 'AIDE-NOUS À\n' }, { text: 'AMÉLIORER MINIMOA', dim: true }],
+      text: 'Des statistiques d’usage anonymes, envoyées à Amplitude (États-Unis), ne sont collectées qu’avec ton accord, modifiable à tout moment dans Moi › Réglages.',
+      accept: 'Oui, je participe',
+      refuse: 'Non merci',
+      policy: 'Politique de confidentialité',
+    },
     preparation: {
       title: (pet: string) => [{ text: 'ON PRÉPARE\n' }, { text: `L’ARRIVÉE DE ${up(pet)}`, dim: true }],
       items: (pet: string) => [
@@ -373,6 +381,13 @@ export const onboarding = messages({
         submit: 'Sign in',
       },
     },
+    statistiques: {
+      title: [{ text: 'HELP US\n' }, { text: 'IMPROVE MINIMOA', dim: true }],
+      text: 'Anonymous usage statistics, sent to Amplitude (United States), are only collected with your agreement, which you can change at any time in Me › Settings.',
+      accept: 'Yes, count me in',
+      refuse: 'No thanks',
+      policy: 'Privacy policy',
+    },
     preparation: {
       title: (pet: string) => [{ text: 'GETTING READY\n' }, { text: `FOR ${up(pet)}`, dim: true }],
       items: (pet: string) => [
@@ -568,6 +583,13 @@ export const onboarding = messages({
         codePlaceholder: 'Tu código',
         submit: 'Iniciar sesión',
       },
+    },
+    statistiques: {
+      title: [{ text: 'AYÚDANOS A\n' }, { text: 'MEJORAR MINIMOA', dim: true }],
+      text: 'Las estadísticas de uso anónimas, enviadas a Amplitude (Estados Unidos), solo se recogen con tu permiso, que puedes cambiar cuando quieras en Yo › Ajustes.',
+      accept: 'Sí, participo',
+      refuse: 'No, gracias',
+      policy: 'Política de privacidad',
     },
     preparation: {
       title: (pet: string) => [{ text: 'PREPARAMOS\n' }, { text: `LA LLEGADA DE ${up(pet)}`, dim: true }],
@@ -765,6 +787,13 @@ export const onboarding = messages({
         submit: 'Entrar',
       },
     },
+    statistiques: {
+      title: [{ text: 'AJUDE A\n' }, { text: 'MELHORAR O MINIMOA', dim: true }],
+      text: 'Estatísticas de uso anônimas, enviadas à Amplitude (Estados Unidos), só são coletadas com a sua permissão, que você pode mudar a qualquer momento em Eu › Ajustes.',
+      accept: 'Sim, quero participar',
+      refuse: 'Não, obrigado',
+      policy: 'Política de privacidade',
+    },
     preparation: {
       title: (pet: string) => [{ text: 'PREPARANDO\n' }, { text: `A CHEGADA DE ${up(pet)}`, dim: true }],
       items: (pet: string) => [
@@ -960,6 +989,13 @@ export const onboarding = messages({
         codePlaceholder: 'Je code',
         submit: 'Inloggen',
       },
+    },
+    statistiques: {
+      title: [{ text: 'HELP ONS\n' }, { text: 'MINIMOA BETER MAKEN', dim: true }],
+      text: 'Anonieme gebruiksstatistieken, verstuurd naar Amplitude (Verenigde Staten), worden alleen verzameld met jouw toestemming, die je altijd kunt wijzigen in Ik › Instellingen.',
+      accept: 'Ja, ik doe mee',
+      refuse: 'Nee, bedankt',
+      policy: 'Privacybeleid',
     },
     preparation: {
       title: (pet: string) => [{ text: `${up(pet)} KOMT\n` }, { text: 'ERAAN.', dim: true }],

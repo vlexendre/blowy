@@ -81,7 +81,8 @@ const apsEnvironment = (): 'development' | 'production' =>
  * celles des bibliothèques liées statiquement dans l'exécutable (React Native, expo-constants, expo-notifications,
  * expo-system-ui, expo-file-system, expo-application, async-storage, react-native-maps), recopiées de leurs propres
  * manifestes comme le conseille Expo (Apple lit mal ceux des pods statiques). Données collectées : celles du tableau
- * « App Privacy » (docs/APP-STORE-CONNECT.md), toutes liées à la personne, aucune pour du pistage.
+ * « App Privacy » (docs/APP-STORE-CONNECT.md), toutes liées à la personne sauf l'identifiant d'appareil des statistiques
+ * d'usage (Amplitude, seulement avec l'accord), aucune pour du pistage.
  * Le manifeste de l'extension des widgets est `targets/widget/PrivacyInfo.xcprivacy` ; celui du module, dans son pod.
  */
 const PRIVACY_MANIFEST = {
@@ -113,10 +114,12 @@ const PRIVACY_MANIFEST = {
       ['PurchaseHistory', ['AppFunctionality']],
       ['ProductInteraction', ['AppFunctionality', 'Analytics']],
       ['OtherDataTypes', ['AppFunctionality']],
+      // Statistiques d'usage (Amplitude), seulement avec l'accord : identifiant aléatoire de l'appareil, jamais relié au compte.
+      ['DeviceID', ['Analytics'], false],
     ] as const
-  ).map(([type, purposes]) => ({
+  ).map(([type, purposes, linked]: readonly [string, readonly string[], boolean?]) => ({
     NSPrivacyCollectedDataType: `NSPrivacyCollectedDataType${type}`,
-    NSPrivacyCollectedDataTypeLinked: true,
+    NSPrivacyCollectedDataTypeLinked: linked ?? true,
     NSPrivacyCollectedDataTypeTracking: false,
     NSPrivacyCollectedDataTypePurposes: purposes.map((p) => `NSPrivacyCollectedDataTypePurpose${p}`),
   })),

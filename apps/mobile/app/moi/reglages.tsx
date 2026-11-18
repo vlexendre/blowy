@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { ScreenMotion, useApi } from '@/core';
+import { setAnalyticsConsent, useAnalyticsConsent } from '@/features/analytics';
 import { openLegal, useMe, useUpdateMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
 import { unregisterDevice } from '@/features/notifications';
@@ -55,6 +56,7 @@ export default function Reglages() {
   const languageName = t.languageNames[getLocale()] ?? getLocale();
 
   const momentsOn = useMoments((x) => x.enabled);
+  const analyticsOn = useAnalyticsConsent((x) => x.choice === 'granted');
   // Les sections arrivent en cascade (une fois) ; les lignes s'enfoncent au toucher, l'interrupteur file en ressort.
   return (
     <ScreenMotion>
@@ -106,6 +108,14 @@ export default function Reglages() {
                 },
               ),
             disabled: !m || updateMe.isPending,
+          },
+          // Statistiques d'usage (Amplitude, États-Unis) : coupées tant que la personne n'a pas dit oui.
+          {
+            key: 'analytics',
+            title: t.rows.analytics.title,
+            subtitle: t.rows.analytics.subtitle(analyticsOn),
+            switchValue: analyticsOn,
+            onSwitchChange: (on: boolean) => setAnalyticsConsent(on),
           },
           {
             key: 'blocked',

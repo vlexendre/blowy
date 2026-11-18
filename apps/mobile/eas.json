@@ -39,7 +39,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://REMPLACER-REF-DEV.supabase.co",
         "EXPO_PUBLIC_SUPABASE_KEY": "REMPLACER-CLE-PUBLIABLE-DEV",
         "EXPO_PUBLIC_AUTH": "supabase",
-        "BLOWY_APS_ENVIRONMENT": "production"
+        "BLOWY_APS_ENVIRONMENT": "production",
+        "EXPO_PUBLIC_AMPLITUDE_API_KEY": "f52a6230487aadb1997cb3c1e3359454"
       },
       "node": "22.23.4"
     },
@@ -51,7 +52,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://sqxebllmatfflopqddaw.supabase.co",
         "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM",
         "EXPO_PUBLIC_AUTH": "supabase",
-        "BLOWY_APS_ENVIRONMENT": "production"
+        "BLOWY_APS_ENVIRONMENT": "production",
+        "EXPO_PUBLIC_AMPLITUDE_API_KEY": "f52a6230487aadb1997cb3c1e3359454"
       },
       "node": "22.23.4"
     }

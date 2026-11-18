@@ -41,7 +41,8 @@ describe('manifestes de confidentialité (B4)', () => {
     expect(collected.length).toBeGreaterThan(5);
     for (const c of collected) {
       expect(c.NSPrivacyCollectedDataTypeTracking).toBe(false);
-      expect(c.NSPrivacyCollectedDataTypeLinked).toBe(true);
+      // Seul l'identifiant d'appareil des statistiques d'usage (Amplitude, avec accord) n'est pas relié au compte.
+      expect(c.NSPrivacyCollectedDataTypeLinked).toBe(c.NSPrivacyCollectedDataType !== 'NSPrivacyCollectedDataTypeDeviceID');
     }
     for (const t of ['EmailAddress', 'PhotosorVideos', 'EmailsOrTextMessages', 'SensitiveInfo', 'PurchaseHistory', 'CoarseLocation']) {
       expect(collected.map((c) => c.NSPrivacyCollectedDataType)).toContain(`NSPrivacyCollectedDataType${t}`);

@@ -13,6 +13,7 @@ import { Redirect, router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
+import { useAnalyticsConsent, useAnalyticsConsentHydrated } from '@/features/analytics';
 import { usePendingInvite } from '@/features/encounters';
 import { isDraftComplete, PREP_LINES, useDraft, useDraftHydrated, useOnboard, usePrepTicker } from '@/features/onboarding';
 import { errorMessage, useSignOut } from '@/features/session';
@@ -29,7 +30,13 @@ export default function Preparation() {
 function PrepGate() {
   // Lu une fois : le brouillon est vidé dès que la création a réussi.
   const [ok] = useState(() => isDraftComplete());
-  return ok ? <Prep /> : <Redirect href="/" />;
+  const analyticsHydrated = useAnalyticsConsentHydrated();
+  const analyticsChoice = useAnalyticsConsent((s) => s.choice);
+  if (!ok) return <Redirect href="/" />;
+  if (!analyticsHydrated) return null;
+  // Statistiques d'usage : la question se pose juste avant la création du compte, une seule fois.
+  if (analyticsChoice === null) return <Redirect href="/(onboarding)/statistiques" />;
+  return <Prep />;
 }
 
 function Prep() {

@@ -13,6 +13,7 @@
     "export:web": "expo export --platform web"
   },
   "dependencies": {
+    "@amplitude/analytics-react-native": "^1.13.2",
     "@bacons/apple-targets": "5.0.0",
     "@blowy/api-client": "workspace:*",
     "@blowy/content": "workspace:*",

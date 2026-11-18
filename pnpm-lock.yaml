@@ -109,6 +109,9 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@amplitude/analytics-react-native':
+        specifier: ^1.13.2
+        version: 1.13.2(react-native@0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@bacons/apple-targets':
         specifier: 5.0.0
         version: 5.0.0(expo@58.0.24)(typescript@6.0.3)
@@ -397,6 +400,24 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  '@amplitude/analytics-connector@1.7.0':
+    resolution: {integrity: sha512-HTnunOzcN+CdJUxdaim3E/CA5xbYRng4rpYvobjzl2ud2BXtpJdRnGuVmPKskYYyUTkz7X6QIOQPYlAgcGaWcg==}
+
+  '@amplitude/analytics-core@2.62.1':
+    resolution: {integrity: sha512-YQbd7PybZVrp8SkRtuMwXC8nXBEElztaA3ZUqnJl5TDohp19igCYcVHym5kgk9EsAg28z1YpUOMR4iTsVzMDQQ==}
+
+  '@amplitude/analytics-react-native@1.13.2':
+    resolution: {integrity: sha512-VTEicuzS+F+kti1z7gIAuckrWTBE3m6XP70/fTo7su1/+l6Wgi1cY32B/6Jb8JXihRRJoY6MsOLq9Kca+pK20g==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
+  '@amplitude/plugin-network-capture-browser@1.11.1':
+    resolution: {integrity: sha512-R6+xk65vMb5UjBMg0PviSEO30KWpNrHRFDrRMaMRpWhFFzY669vaEaEm/1GE9Z8PtIdt9dlywfo/zNggDuCUwQ==}
+
+  '@amplitude/ua-parser-js@0.7.33':
+    resolution: {integrity: sha512-wKEtVR4vXuPT9cVEIJkYWnlF++Gx3BdLatPBM+SZ1ztVIvnhdGBZR/mn9x/PzyrMcRlZmyi6L56I2J3doVBnjA==}
 
   '@astrojs/astro2tsx@0.1.4':
     resolution: {integrity: sha512-5dJqY4i1AlXxcsSFHkaegnrgdVs9J4U93y/YF0xmvmSOcNYVQnf4db3IhvqHZ5v8biLPlPlFmlYsqHj0c4/ZSA==}
@@ -1900,6 +1921,11 @@ packages:
       '@types/react':
         optional: true
 
+  '@react-native-async-storage/async-storage@1.24.0':
+    resolution: {integrity: sha512-W4/vbwUOYOjco0x3toB8QCr7EjIP6nE9G7o8PMguvvjYT5Awg09lyV4enACRx4s++PPulBiBSjL0KTFx2u0Z/g==}
+    peerDependencies:
+      react-native: ^0.0.0-0 || >=0.60 <1.0
+
   '@react-native-async-storage/async-storage@2.2.0':
     resolution: {integrity: sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==}
     peerDependencies:
@@ -2398,6 +2424,9 @@ packages:
 
   '@types/yargs@17.0.35':
     resolution: {integrity: sha512-qUHkeCyQFxMXg79wQfTtfndEC+N9ZZg76HJftDJp+qH2tV7Gj4OJi7l+PiWwJ+pWtW8GwSmqsDj/oymhrTWXjg==}
+
+  '@types/zen-observable@0.8.3':
+    resolution: {integrity: sha512-fbF6oTd4sGGy0xjHPKAt+eS2CrxJ3+6gQ3FGcBoIJR2TLAyCkCyI8JqZNy+FeON0AhVgNJoUumVoZQjBFUqHkw==}
 
   '@ungap/structured-clone@1.4.0':
     resolution: {integrity: sha512-1mEZtMKPM09vDmQt5y7YvmN2+DFTP7Tg0EWXdic8/C6VRnpb33e4ghisCIE3WZjsE2N8mf+QV1Zqh7ZFYLWInQ==}
@@ -4717,6 +4746,9 @@ packages:
   safe-buffer@5.2.1:
     resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
 
+  safe-json-stringify@1.2.0:
+    resolution: {integrity: sha512-gH8eh2nZudPQO6TytOvbxnuhYBOvDBBLW52tz5q6X58lJcd/tkmqFR+5Z9adS8aJtURSXWThWy/xJtJwixErvg==}
+
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
@@ -5614,6 +5646,9 @@ packages:
     resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
     engines: {node: '>=12.20'}
 
+  zen-observable@0.10.0:
+    resolution: {integrity: sha512-iI3lT0iojZhKwT5DaFy2Ce42n3yFcLdFyOh01G7H0flMY60P8MJuVFEoJoNwXlmAyQ45GrjL6AcZmmlv8A5rbw==}
+
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
@@ -5648,6 +5683,33 @@ snapshots:
   2g@1.0.1(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
+
+  '@amplitude/analytics-connector@1.7.0': {}
+
+  '@amplitude/analytics-core@2.62.1':
+    dependencies:
+      '@amplitude/analytics-connector': 1.7.0
+      '@types/zen-observable': 0.8.3
+      safe-json-stringify: 1.2.0
+      tslib: 2.9.1
+      zen-observable: 0.10.0
+
+  '@amplitude/analytics-react-native@1.13.2(react-native@0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      '@amplitude/analytics-core': 2.62.1
+      '@amplitude/plugin-network-capture-browser': 1.11.1
+      '@amplitude/ua-parser-js': 0.7.33
+      '@react-native-async-storage/async-storage': 1.24.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0))
+      react: 19.3.0
+      react-native: 0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0)
+      tslib: 2.9.1
+
+  '@amplitude/plugin-network-capture-browser@1.11.1':
+    dependencies:
+      '@amplitude/analytics-core': 2.62.1
+      tslib: 2.9.1
+
+  '@amplitude/ua-parser-js@0.7.33': {}
 
   '@astrojs/astro2tsx@0.1.4':
     dependencies:
@@ -7383,6 +7445,11 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
+  '@react-native-async-storage/async-storage@1.24.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0))':
+    dependencies:
+      merge-options: 3.0.4
+      react-native: 0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0)
+
   '@react-native-async-storage/async-storage@2.2.0(react-native@0.88.1(@babel/core@7.29.13)(@react-native/metro-config@0.88.1(@babel/core@7.29.13))(@types/react@19.3.0)(react@19.3.0))':
     dependencies:
       merge-options: 3.0.4
@@ -7864,6 +7931,8 @@ snapshots:
   '@types/yargs@17.0.35':
     dependencies:
       '@types/yargs-parser': 21.0.3
+
+  '@types/zen-observable@0.8.3': {}
 
   '@ungap/structured-clone@1.4.0': {}
 
@@ -10521,6 +10590,8 @@ snapshots:
 
   safe-buffer@5.2.1: {}
 
+  safe-json-stringify@1.2.0: {}
+
   safer-buffer@2.1.2: {}
 
   sandbox-cli-detector@0.2.0: {}
@@ -11350,6 +11421,8 @@ snapshots:
       yargs-parser: 22.0.0
 
   yocto-queue@1.2.2: {}
+
+  zen-observable@0.10.0: {}
 
   zod@4.6.7: {}
 

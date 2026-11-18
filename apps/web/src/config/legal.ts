@@ -203,6 +203,13 @@ export const SUBPROCESSORS = {
     safeguard: SCC,
   },
   /**
+   * Amplitude, Inc. (San Francisco, États-Unis), statistiques d'usage de l'app, seulement avec l'accord de la personne :
+   * « Amplitude is self-certified under the EU-US Data Privacy Framework (DPF) » et « Amplitude's Data Processing
+   * Agreements (DPAs) incorporate the EU Standard Contractual Clauses (SCCs) » (https://amplitude.com/security-and-privacy,
+   * lu le 18 novembre 2026). Projet en région US (`serverZone: 'US'`).
+   */
+  analytics: { provider: 'Amplitude', location: US, safeguard: DPF_AND_SCC },
+  /**
    * Cloudflare, Inc. : certifié au Data Privacy Framework (https://www.cloudflare.com/privacypolicy/) ; son DPA prévoit les
    * clauses contractuelles types si la certification tombe (https://www.cloudflare.com/en-us/dpa/, clauses 6.2 et 6.4).
    * Pages servies depuis le réseau mondial de Cloudflare, au plus près du visiteur.

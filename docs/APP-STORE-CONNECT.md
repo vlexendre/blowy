@@ -55,8 +55,9 @@ Dans la fiche, les visuels restent « 4+ » (2.3.8) : pas de scène suggestive d
 
 ## 3. App Privacy (étiquettes), d'après les flux réels du code
 
-« Tracking » : **non** pour tout (aucun SDK de publicité ni de mesure ; `NSPrivacyTracking` vaut `false` dans les trois
-manifestes). Toutes les données ci-dessous sont **liées à l'identité**. Ce tableau est aussi déclaré dans le manifeste
+« Tracking » : **non** pour tout (aucun SDK de publicité ; un seul outil de mesure, Amplitude, seulement avec l'accord ;
+`NSPrivacyTracking` vaut `false` dans les trois manifestes). Toutes les données ci-dessous sont **liées à l'identité**,
+sauf l'identifiant d'appareil d'Amplitude. Ce tableau est aussi déclaré dans le manifeste
 de l'app (`NSPrivacyCollectedDataTypes`, `apps/mobile/app.config.ts`) : changer l'un, c'est changer l'autre.
 
 | Catégorie Apple | Type | Collecté ? | Finalités |
@@ -70,8 +71,9 @@ de l'app (`NSPrivacyCollectedDataTypes`, `apps/mobile/app.config.ts`) : changer 
 | User Content | Customer Support | Oui (e-mails) | App Functionality |
 | User Content | Other User Content (réponses au test de vision et aux questions du jour, habitudes, « 3 mots », texte des signalements) | Oui | App Functionality, Product Personalization |
 | Identifiers | User ID | Oui | App Functionality |
+| Identifiers | Device ID (identifiant aléatoire créé par le SDK Amplitude, seulement si la personne a dit oui ; jamais relié au compte : pas de `setUserId`) | Oui, **non lié** à l'identité | Analytics |
 | Purchases | Purchase History | Oui | App Functionality |
-| Usage Data | Product Interaction (soins, séries, défis, rencontres acceptées ; étapes du parcours — inscription finie, premier lien, retour à J1/J7/J30, essai, paiement — et **source d'arrivée** : code créateur, lien « 3 mots », lien de groupe ou invitation, lue dans le lien ouvert ou le code tapé, depuis le 18 nov. 2026, `docs/VIRALITE.md`) | Oui | App Functionality, Analytics |
+| Usage Data | Product Interaction (événements Amplitude, avec accord : pour l'instant `Account Created` ; soins, séries, défis, rencontres acceptées ; étapes du parcours — inscription finie, premier lien, retour à J1/J7/J30, essai, paiement — et **source d'arrivée** : code créateur, lien « 3 mots », lien de groupe ou invitation, lue dans le lien ouvert ou le code tapé, depuis le 18 nov. 2026, `docs/VIRALITE.md`) | Oui | App Functionality, Analytics |
 | Other Data | Other Data Types (date de naissance, sexe) | Oui | App Functionality |
 | Diagnostics | — | Non, tant qu'aucun outil de rapport de plantage n'est ajouté | |
 | Health & Fitness | — | Non (habitudes déclarées, pas de mesure) | |

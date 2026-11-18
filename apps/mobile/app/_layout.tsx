@@ -12,8 +12,22 @@ import { CoreProvider, LocaleRoot } from '@/core';
 import { UiStringsProvider } from '@blowy/ui';
 import { ui } from '@/locales/ui';
 import { SessionBridges } from '@/features/session';
+import { init } from '@amplitude/analytics-react-native';
+import { analyticsConsentLoaded } from '@/features/analytics';
 
 void SplashScreen.preventAutoHideAsync();
+
+// Statistiques d'usage (Amplitude) : initialisé une fois, mais rien ne part sans l'accord (`optOut` tant qu'il manque).
+const amplitudeKey = process.env.EXPO_PUBLIC_AMPLITUDE_API_KEY;
+if (!amplitudeKey) {
+  console.error('[amplitude] EXPO_PUBLIC_AMPLITUDE_API_KEY is not set — no events will be sent');
+} else {
+  void analyticsConsentLoaded().then((granted) => {
+    // serverZone is 'US' by default; pass 'EU' only for EU-residency projects.
+    // Second arg is userId — use undefined when unknown; do NOT pass the options object here.
+    init(amplitudeKey, undefined, { serverZone: 'US', optOut: !granted });
+  });
+}
 
 /** Écran présenté en feuille : modale transparente, l'écran fait sa feuille lui-même (`SheetTemplate asScreen`). */
 const SHEET = { presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } } as const;
