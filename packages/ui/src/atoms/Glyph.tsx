@@ -1,9 +1,11 @@
 import type { ReactElement } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
+import Svg, { Path } from 'react-native-svg';
+
 import { useInk } from '../lib/ink';
 
-/** Pictogrammes d'interface dessinés en vues (aucune dépendance SVG). */
+/** Pictogrammes d'interface dessinés en vues (l'étoile seule est un tracé SVG). */
 export const GLYPHS = [
   'back',
   'chevron',
@@ -14,6 +16,9 @@ export const GLYPHS = [
   'send',
   'arrow',
   'lock',
+  'unlock',
+  'bell',
+  'star',
   'heart',
   'chat',
   'person',
@@ -173,6 +178,34 @@ function draw(name: GlyphName, s: number, c: string, sw: number, filled: boolean
           <View style={{ width: s * 0.42, height: s * 0.36, borderWidth: sw, borderBottomWidth: 0, borderColor: c, borderTopLeftRadius: s, borderTopRightRadius: s }} />
           <View style={{ width: s * 0.66, height: s * 0.46, borderRadius: s * 0.1, backgroundColor: c }} />
         </View>
+      );
+    case 'unlock':
+      // Cadenas ouvert : l'anse relevée et décalée à droite.
+      return (
+        <View style={styles.center}>
+          <View style={{ width: s * 0.42, height: s * 0.34, borderWidth: sw, borderBottomWidth: 0, borderColor: c, borderTopLeftRadius: s, borderTopRightRadius: s, transform: [{ translateX: s * 0.2 }, { translateY: -s * 0.06 }] }} />
+          <View style={{ width: s * 0.66, height: s * 0.46, borderRadius: s * 0.1, backgroundColor: c }} />
+        </View>
+      );
+    case 'bell':
+      return (
+        <View style={[styles.center, { paddingTop: s * 0.04 }]}>
+          <View style={{ width: s * 0.58, height: s * 0.5, backgroundColor: c, borderTopLeftRadius: s, borderTopRightRadius: s, borderBottomLeftRadius: s * 0.04, borderBottomRightRadius: s * 0.04 }} />
+          <View style={{ width: s * 0.82, height: s * 0.12, borderRadius: s, backgroundColor: c, marginTop: -s * 0.02 }} />
+          <View style={{ width: s * 0.2, height: s * 0.12, borderBottomLeftRadius: s, borderBottomRightRadius: s, backgroundColor: c, marginTop: s * 0.04 }} />
+        </View>
+      );
+    case 'star':
+      return (
+        <Svg width={s} height={s} viewBox="0 0 24 24">
+          <Path
+            d="M12 2.6l2.82 5.92 6.48.82-4.76 4.48 1.2 6.42L12 17.1l-5.74 3.14 1.2-6.42L2.7 9.34l6.48-.82z"
+            fill={c}
+            stroke={c}
+            strokeWidth={1.6}
+            strokeLinejoin="round"
+          />
+        </Svg>
       );
     case 'heart':
       return heart(s, c);

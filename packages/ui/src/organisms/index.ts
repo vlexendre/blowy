@@ -81,3 +81,6 @@ export { SharedHabitsCard, type SharedHabitsCardProps, type SharedHabitSide } fr
 export { TogetherCard, type TogetherCardProps } from './TogetherCard';
 export { ShareCard, type ShareCardProps } from './ShareCard';
 export { PeopleCard, type PeopleCardProps } from './PeopleCard';
+export { PlusHero, type PlusHeroPose, type PlusHeroProps } from './PlusHero';
+export { type PlusPlanCard, PlusPlanCards, type PlusPlanCardsProps } from './PlusPlanCards';
+export { TrialTimeline, type TrialStepView, type TrialTimelineProps } from './TrialTimeline';

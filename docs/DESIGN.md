@@ -56,7 +56,8 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - **Compatibilité** : le pourquoi d'abord (`MatchWhy` : une ligne « 3 points communs · 1 différence à explorer », puis les
   axes, pleins en commun, cerclé à explorer), le chiffre ensuite en petit (`CompatPill inline`), jamais seul.
 - **Feuilles** : `SheetTemplate` ; une feuille d'achat garde son action dans une barre fixe en bas (Minimoa+ : bouton,
-  ligne de renouvellement, « Restaurer mes achats · Conditions · Confidentialité »), le reste défile au-dessus.
+  ligne de renouvellement, « Restaurer mes achats · Conditions · Confidentialité »), le reste au-dessus (Minimoa+ :
+  `docs/PAYWALL.md`).
 - **Chargement** : squelettes à la forme du contenu (`Skeleton`), `Loader` dans un bouton ; jamais de roue.
 - **Vide / erreur** : `EmptyState peek` (minimoa qui passe la tête, titre court, une phrase, une action) ;
   erreur de requête : `Banner tone="error"` avec « Réessayer ».

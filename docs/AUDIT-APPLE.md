@@ -384,24 +384,28 @@ Règles relues à la source ce jour : App Review Guidelines 3.1.1, 3.1.2(a)(b)(c
 16 octobre 2026) ; Schedule 2 §3.8(b) ; page « Auto-renewable subscriptions » ; HIG « Apple In-App Purchase » (17
 septembre 2026) ; EULA standard ; chemin d'annulation (support Apple). Ce que la feuille Minimoa+ respecte désormais :
 
-- Le **montant facturé** de chaque offre et sa période est le prix le plus grand (30 pt pour l'offre choisie, 14 à 15 pt
-  dans la case d'une offre repliée) ; équivalent mensuel et remise en 13 pt, calculés sur les prix StoreKit.
-- **Trois offres** (17 novembre) : annuelle mise en avant et choisie par défaut, puis mensuelle et hebdomadaire, repliées
-  côte à côte. La remise de l'annuelle se calcule contre douze mensualités seulement (jamais contre 52 semaines de
+- Le **montant facturé** de chaque offre et sa période est le prix le plus grand (montant en 20 à 23 pt dans chaque
+  carte, période juste dessous ; feuille refaite le 18 novembre, `docs/PAYWALL.md`) ; équivalent mensuel et remise en
+  13 pt, calculés sur les prix StoreKit ; le bouton répète l'action et le prix (« Commencer mes 7 jours gratuits » /
+  « puis 59,88 € par an »).
+- **Trois offres** (17 novembre) : trois cartes côte à côte, l'annuelle à gauche, choisie par défaut, avec la pastille
+  de remise. La remise de l'annuelle se calcule contre douze mensualités seulement (jamais contre 52 semaines de
   l'hebdomadaire, comparaison qui serait trompeuse) ; l'hebdomadaire n'a ni équivalent mensuel ni pastille ; sa période
   est écrite en clair (« 2,99 € par semaine ») sur la case, dans le bouton (« M’abonner : 2,99 € par semaine ») et sous
   le bouton (renouvellement automatique, où annuler).
 - **Prix et essai de StoreKit seulement** sur iPhone (`features/plus/index.tsx`, `core/adapters/storekit.ios.ts`) : si le
   magasin ne répond pas, ni prix ni bouton d'achat, « Réessayer » ; un essai n'est annoncé que si l'offre d'introduction
   StoreKit est un essai gratuit et que la personne y a droit.
-- Sous le bouton : durée de l'essai, prix ensuite **et date du premier paiement**, renouvellement automatique, où
-  annuler (« Réglages › ton nom › Abonnements ») ; mention complète plus bas (paiement, renouvellement, 24 h).
+- Dans et sous le bouton : durée de l'essai, prix ensuite **et date du premier paiement**, renouvellement automatique, où
+  annuler (« Réglages › ton nom › Abonnements ») ; frise verticale (aujourd'hui → rappel du jour 5 → premier paiement,
+  ou sans essai : paiement → renouvellement → annulable) ; mention complète sur la page « Conditions de Minimoa+ ».
 - « Restaurer mes achats », « Conditions d'utilisation » et « Confidentialité » toujours visibles, liens construits par
   l'app (présents même si l'API ne répond pas) ; les conditions du site renvoient au contrat de licence standard d'Apple.
 - Croix active dès l'ouverture, « Continuer gratuitement », paywall de l'inscription passable ; l'app reste gratuite.
 - **Toute la feuille tient sur un écran, sans défiler** (390 × 844 et 375 × 667, fr/en/es/pt/nl, tous les états ; avec
   trois offres, revérifié le 17 novembre en retranchant les marges de sécurité d'un vrai iPhone : 375 × 647 et
-  390 × 771 sur le web, 14 pt de marge au plus juste ; sur un petit écran, un seul avantage puis « Et N de plus ») ; la mention
+  390 × 771 sur le web ; refait le 18 novembre après la refonte : 8 pt de marge au plus juste ; sur un petit écran, une
+  seule pose du minimoa et un seul avantage puis « Et N de plus ») ; la mention
   longue de renouvellement est sur la page « Conditions de Minimoa+ », liée dans la feuille ; pas d'interrupteur
   d'essai, pas d'urgence.
 - Membre : état et « Gérer mon abonnement » (feuille système), aucune relance d'achat.
