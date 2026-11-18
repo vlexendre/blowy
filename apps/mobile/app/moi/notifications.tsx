@@ -58,12 +58,10 @@ export default function Notifications() {
     { key: 'group_invite', kinds: ['group_invite'], ...g.group_invite },
     { key: 'together', kinds: ['together_proposal'], ...g.together_proposal },
     { key: 'group_message', kinds: ['group_message'], ...g.group_message },
+    { key: 'group_joined', kinds: ['group_joined'], ...g.group_joined },
     { key: 'group_lives', kinds: ['group_life_lost', 'group_asleep'], ...g.group_lives },
   ];
-  const plusRows: Row[] = [
-    { key: 'trial', kinds: ['trial_reminder'], ...t.rows.trial_reminder },
-    { key: 'plus_account', kinds: ['plus_account'], ...t.rows.plus_account },
-  ];
+  const plusRows: Row[] = [{ key: 'plus_account', kinds: ['plus_account'], ...t.rows.plus_account }];
 
   const toRows = (s: NotificationSettings, rows: Row[]) =>
     rows.map((r) => ({
@@ -109,7 +107,17 @@ export default function Notifications() {
             <SettingsSection key="pet" title={t.sections.pet} rows={toRows(s, petRows)} />
             <SettingsSection key="links" title={t.sections.links} rows={toRows(s, linkRows)} />
             <SettingsSection key="groups" title={g.section} rows={toRows(s, groupRows)} />
-            <SettingsSection key="plus" title={t.sections.plus} rows={toRows(s, plusRows)} />
+            <SettingsSection
+              key="plus"
+              title={t.sections.plus}
+              rows={[
+                // Rappel de fin d'essai : promis par le paywall, toujours envoyé (pas d'interrupteur).
+                { key: 'trial', ...t.rows.trial_reminder },
+                ...toRows(s, plusRows),
+                // Offres : accord explicite, désactivé par défaut (App Review 4.5.4).
+                { key: 'marketing', ...t.rows.marketing, switchValue: s.marketing === true, onSwitchChange: (on: boolean) => update.mutate({ marketing: on }) },
+              ]}
+            />
           </Stagger>
         )}
         {update.isError ? (

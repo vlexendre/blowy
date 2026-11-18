@@ -1,20 +1,38 @@
 /**
- * Implémentation du port `Notifier` (docs/V7-INTERFACES.md) : réglage par type → une fois par jour → heures calmes
- * (22 h – 8 h locales : report au matin ou abandon) → plafond (3 par jour hors messages) → délai entre messages ;
- * puis texte dans la langue du profil, données du lien profond et état compact pour les widgets, envoi par lots,
- * jetons invalides désactivés. `notify` ne lève jamais : un échec de push ne fait pas échouer l'action.
+ * Implémentation du port `Notifier` (docs/NOTIFICATIONS.md, règles dans `packages/domain/src/plateforme/notifications.ts`) :
+ * destinataire suspendu ou personne concernée (`about`) invisible pour lui (bloquée, suspendue, supprimée : Audience) →
+ * rien ; puis la décision du domaine (réglage, accord marketing, premier plan, fenêtre locale, une fois par jour,
+ * regroupement des rafales, heures calmes, décroissance, plafonds, délai par conversation) ; puis le texte dans la langue
+ * du profil, le lien profond, l'état compact des widgets et l'action « Ne plus recevoir » ; envoi par lots, jetons
+ * invalides désactivés. `notify` ne lève jamais : un échec de push ne fait pas échouer l'action.
+ *
+ * Variables reconnues en plus du texte : `about` (identifiant de la personne concernée, jamais affiché), `linkId`,
+ * `groupId` (conversation), `step` (variante), `expiresAt` (ISO, après quoi la notification n'a plus de sens).
  */
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { PushData, WidgetState } from '@blowy/contract';
 import { notificationText } from '@blowy/content';
-import { DEFERRED_MAX_HOURS, type NotificationKindKey, capExempt, decideNotification, localTimeOf, nextLocalHour } from '@blowy/domain';
+import {
+  DEFERRED_MAX_HOURS,
+  type NotificationHistoryEntry,
+  type NotificationKindKey,
+  addDays,
+  categoryOf,
+  decideNotification,
+  localTimeOf,
+  mergeNotificationVars,
+  nextLocalHour,
+} from '@blowy/domain';
 import type { NotificationKind, Notifier } from '../../integrations/push/notifier';
 import { PUSHER, type PushMessage, type Pusher } from '../../integrations/push/pusher';
 import type { Clock } from '../../shared/clock';
 import { CLOCK, PROFILES } from '../../shared/tokens';
 import type { ProfilesRepository } from '../me/ports';
+import type { RetentionRepository } from '../retention/ports';
+import { RETENTION } from '../retention/ports';
 import { Audience } from '../safety/application/audience';
 import { LiveActivities } from './live-activities';
+import { NotificationPresence } from './notification-presence';
 import { NotificationSettings } from './notification-settings';
 import {
   type DevicesRepository,
@@ -27,35 +45,58 @@ import {
   type PushReceiptsRepository,
 } from './ports';
 
+/** Catégorie iOS/Android enregistrée par l'app : une action « Ne plus recevoir » (coupe la catégorie du type). */
+export const MUTE_CATEGORY = 'minimoa_mute';
+
 /** Les deux listes de types (contrat de l'interface et domaine) doivent rester identiques. */
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never;
 const kindsMatch: Same<NotificationKind, NotificationKindKey> = true;
 void kindsMatch;
 
 /**
- * Types liés à un lien : « une fois par jour » et délai entre messages se comptent par lien. `your_turn` n'en fait pas
- * partie : un seul rappel par personne et par jour, qui résume tous ses liens.
+ * Conversation (lien ou groupe) d'une notification : délai entre deux pushs, « une fois par jour » par lien, paquet
+ * d'une rafale, conversation ouverte au premier plan. `your_turn` n'en a pas : un seul rappel par jour qui résume
+ * tous les liens.
  */
-const PER_LINK: readonly NotificationKind[] = ['message', 'link_in_danger'];
+export function conversationKey(kind: NotificationKind, vars: Readonly<Record<string, string>>): string | null {
+  switch (kind) {
+    case 'message':
+    case 'link_in_danger':
+      return vars.linkId ?? null;
+    case 'group_message':
+    case 'group_joined':
+    case 'group_invite':
+    case 'group_life_lost':
+    case 'group_asleep':
+      return vars.groupId ?? null;
+    default:
+      return null;
+  }
+}
+
+/** Plusieurs personnes ou conversations dans un paquet. */
+const grouped = (vars: Readonly<Record<string, string>>): boolean => Number(vars.others) > 0 || vars.multi === '1';
 
 /** Lien profond (routes expo-router de l'app) ; `vars.path` (commençant par « / ») le remplace. */
 export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, string>>): string {
   if (vars.path?.startsWith('/')) return `blowy:/${vars.path}`;
   switch (kind) {
     case 'message':
+      return vars.linkId && !grouped(vars) ? `blowy://link/${vars.linkId}` : 'blowy://chats';
     case 'link_in_danger':
       return vars.linkId ? `blowy://link/${vars.linkId}` : 'blowy://chats';
     case 'your_turn':
       // Plusieurs liens attendent : la liste des chats ; un seul : son chat.
       return vars.linkId && !(Number(vars.more) > 0) ? `blowy://link/${vars.linkId}` : 'blowy://chats';
     case 'new_encounter':
-      return vars.linkId ? `blowy://link/${vars.linkId}` : 'blowy://rencontres';
+      return vars.linkId && !grouped(vars) ? `blowy://link/${vars.linkId}` : 'blowy://chats';
     case 'waved':
       return 'blowy://rencontres';
     case 'item_unlocked':
       return 'blowy://pet/garde-robe';
     case 'words_received':
-      return 'blowy://pet/caractere';
+      // Le résultat des 3 mots (et le lien à renvoyer).
+      return 'blowy://mots';
     case 'trial_reminder':
       return 'blowy://moi/blowy-plus';
     case 'group_invite':
@@ -82,10 +123,13 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
       // L'au revoir mène au minimoa (rien à vendre) ; le reste à la feuille Minimoa+ (état, « Gérer mon abonnement »).
       return vars.step === 'goodbye' ? 'blowy://pet' : 'blowy://moi/blowy-plus';
     case 'daily_challenge':
-    case 'needs_out':
     case 'streak_in_danger':
+      return 'blowy://pet/defi';
     case 'habit_proof':
+      return 'blowy://pet/habitudes';
     case 'weekly_review':
+      return 'blowy://pet/bilans';
+    case 'needs_out':
     case 'minimoa_news':
       return 'blowy://pet';
   }
@@ -121,6 +165,8 @@ export class PushNotifier implements Notifier {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(Audience) private readonly audience: Audience,
     @Inject(LiveActivities) private readonly live: LiveActivities,
+    @Inject(NotificationPresence) private readonly presence: NotificationPresence,
+    @Optional() @Inject(RETENTION) private readonly activity: RetentionRepository | null = null,
   ) {}
 
   async notify(userId: string, kind: NotificationKind, vars: Record<string, string> = {}): Promise<void> {
@@ -146,50 +192,85 @@ export class PushNotifier implements Notifier {
     }
   }
 
-  private async process(userId: string, kind: NotificationKind, vars: Record<string, string>, queued: NotificationLogRecord | null): Promise<boolean> {
+  private async process(userId: string, kind: NotificationKind, input: Record<string, string>, queued: NotificationLogRecord | null): Promise<boolean> {
+    const drop = async (): Promise<false> => {
+      if (queued) await this.log.close(queued.id, 'dropped');
+      return false;
+    };
     const settings = await this.settings.resolve(userId);
     const devices = (await this.devices.forUser(userId)).filter((d) => d.kind === 'expo');
     // Compte suspendu : aucun push (Audience) ; un report en attente est abandonné.
-    if (devices.length === 0 || !(await this.audience.canNotify(userId))) {
-      if (queued) await this.log.close(queued.id, 'dropped');
-      return false;
-    }
+    if (devices.length === 0 || !(await this.audience.canNotify(userId))) return drop();
+    // Jamais une notification au sujet d'une personne bloquée (dans un sens ou l'autre), suspendue ou supprimée.
+    const about = input.about;
+    if (about && about !== userId && !(await this.audience.visibleIds(userId, [about], 'group')).has(about)) return drop();
+
     const now = this.clock.now();
     const local = localTimeOf(now, settings.timeZone);
-    const linkId = PER_LINK.includes(kind) ? (vars.linkId ?? null) : null;
-    const today = await this.log.forUserDay(userId, local.day);
-    const sent = today.filter((l) => l.status === 'sent');
-    const same = sent.filter((l) => l.kind === kind && l.linkId === linkId);
+    const log = await this.log.forUserDays(userId, [addDays(local.day, -3), addDays(local.day, -2), addDays(local.day, -1), local.day]);
+    const keyOfRow = (l: NotificationLogRecord): string | null => l.vars?.key ?? l.linkId ?? null;
+    const key = queued ? keyOfRow(queued) : conversationKey(kind, input);
+    const { key: _bucket, ...vars } = input;
+    void _bucket;
+    const history: NotificationHistoryEntry[] = log
+      .filter((l) => l.id !== queued?.id)
+      .map((l) => ({ id: l.id, kind: l.kind, key: keyOfRow(l), localDay: l.localDay, status: l.status, at: l.createdAt, sendAfter: l.sendAfter }));
+    const lastOpenAt = await this.lastOpenAt(userId, devices, now);
     const decision = decideNotification({
       kind,
+      step: vars.step ?? null,
+      key,
       enabled: !settings.disabledKinds.includes(kind),
+      marketingOptIn: settings.marketingOptInAt !== null,
       now,
       timeZone: settings.timeZone,
-      sentTodayCounted: sent.filter((l) => !capExempt(l.kind)).length,
-      alreadyToday: same.length > 0,
-      lastSameAt: same.map((l) => l.createdAt).sort().at(-1) ?? null,
+      history,
+      lastOpenAt,
+      foreground: await this.presence.of(userId),
+      expiresAt: vars.expiresAt ?? (kind === 'trial_reminder' ? (vars.endsOn ?? null) : null),
       fromQueue: queued !== null,
     });
 
+    const linkColumn = kind === 'message' || kind === 'link_in_danger' || kind === 'new_encounter' ? (vars.linkId ?? null) : null;
     if (decision.action === 'defer') {
-      // Un seul report par type (et lien) et par nuit.
-      if (!today.some((l) => l.status === 'deferred' && l.kind === kind && l.linkId === linkId)) {
-        await this.log.add({ userId, kind, linkId, localDay: local.day, status: 'deferred', sendAfter: decision.until.toISOString(), vars, createdAt: now.toISOString() });
-      }
+      await this.log.add({
+        userId,
+        kind,
+        linkId: linkColumn,
+        localDay: local.day,
+        status: 'deferred',
+        sendAfter: decision.until.toISOString(),
+        vars: { ...vars, ...(decision.bucket !== null ? { key: decision.bucket } : {}) },
+        createdAt: now.toISOString(),
+      });
       return false;
     }
-    if (decision.action === 'skip') {
-      if (queued) await this.log.close(queued.id, 'dropped');
+    if (decision.action === 'merge') {
+      const pending = log.find((l) => l.id === decision.into);
+      const { key: bucket, ...prev } = pending?.vars ?? {};
+      await this.log.merge(decision.into, { ...mergeNotificationVars(prev, vars), ...(bucket ? { key: bucket } : {}) });
       return false;
     }
-    if (queued && !(await this.log.close(queued.id, 'sent'))) return false; // déjà envoyé par un autre tick
+    if (decision.action === 'skip') return drop();
+    if (queued) {
+      if (!(await this.log.close(queued.id, 'sent', { at: now.toISOString(), localDay: local.day }))) return false; // déjà envoyé par un autre tick
+    } else {
+      await this.log.add({ userId, kind, linkId: linkColumn, localDay: local.day, status: 'sent', sendAfter: null, vars: key ? { key } : null, createdAt: now.toISOString() });
+    }
 
     const profile = await this.profiles.findById(userId);
     const lang = profile?.locale ?? 'fr';
     const text = notificationText(lang, kind, vars);
     const endsAt = nextLocalHour(now, settings.timeZone, 0).toISOString();
     const state = widgetState(kind, vars, endsAt);
-    const data: PushData = { kind, url: deepLink(kind, vars), ...(vars.linkId ? { linkId: vars.linkId } : {}), ...(state ? { state } : {}) };
+    const single = !grouped(vars);
+    const data: PushData = {
+      kind,
+      url: deepLink(kind, vars),
+      ...(vars.linkId && single ? { linkId: vars.linkId } : {}),
+      ...(vars.groupId ? { groupId: vars.groupId } : {}),
+      ...(state ? { state } : {}),
+    };
     // Activités en direct (docs/WIDGETS.md) : seul « à toi d'écrire » démarre par push (série du lien mis en avant) ;
     // le défi du jour n'est jamais démarré ici (l'app le démarre quand il est accepté), la série en danger met à jour
     // son activité.
@@ -200,9 +281,19 @@ export class PushNotifier implements Notifier {
     if (kind === 'streak_in_danger') await this.live.updateChallenge(userId, { streak: Number(vars.streak ?? vars.count ?? 0) || 0, title: null });
     // Activité démarrée avec son alerte : pas de seconde notification sur iOS.
     const targets = liveStarted ? devices.filter((d) => d.platform !== 'ios') : devices;
-    const delivered = targets.length > 0 ? await this.deliver(targets, { title: text.title, body: text.body, data }) : liveStarted;
-    await this.log.add({ userId, kind, linkId, localDay: local.day, status: 'sent', sendAfter: null, vars: null, createdAt: now.toISOString() });
-    return delivered;
+    const content: Omit<PushMessage, 'to'> = { title: text.title, body: text.body, data, ...(categoryOf(kind) ? { categoryId: MUTE_CATEGORY } : {}) };
+    return targets.length > 0 ? this.deliver(targets, content) : liveStarted;
+  }
+
+  /**
+   * Dernière ouverture : la plus récente entre l'appareil vu (chaque retour au premier plan) et le dernier jour
+   * d'activité du compte (`profiles.last_active_on`, compté jusqu'à la fin de ce jour).
+   */
+  private async lastOpenAt(userId: string, devices: readonly PushDeviceRecord[], now: Date): Promise<string | null> {
+    const seen = devices.map((d) => d.lastSeenAt).sort().at(-1) ?? null;
+    const day = this.activity ? await this.activity.lastActiveOn(userId) : null;
+    const dayEnd = day ? new Date(Math.min(now.getTime(), Date.parse(`${day}T23:59:59Z`))).toISOString() : null;
+    return [seen, dayEnd].filter((x): x is string => x !== null).sort().at(-1) ?? null;
   }
 
   private async deliver(devices: readonly PushDeviceRecord[], content: Omit<PushMessage, 'to'>): Promise<boolean> {

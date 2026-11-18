@@ -61,7 +61,7 @@ Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conv
 dans le chat), `encounters` (`WaveGuard` : on ne salue que qui l'app a montré, plafonds de coucous par jour et en attente,
 e-mails de signe plafonnés, repérage des envois en masse pour la modération ; règles `packages/domain/src/anti-spam.ts`), `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
-`notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
+`notifications` (appareils, réglages, présence, envoi, activités en direct ; règles : `docs/NOTIFICATIONS.md`), `billing` (Minimoa+), `admin` (tableaux, modération),
 `retention` (comptes inactifs, exclusions, purges), `fidelite` (premiers pas, nouvelles du minimoa pendant une absence,
 anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `growth` (codes créateurs,
 source d'arrivée, compteurs et étapes de l'entonnoir, tableau « Croissance » ; `Growth` et `Codes` globaux, docs/VIRALITE.md), `groups` (groupes, « la tenir ensemble », jours jugés ;

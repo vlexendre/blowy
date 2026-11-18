@@ -15,6 +15,12 @@ export class SupabaseRetentionRepository implements RetentionRepository {
     check(error, 'dernier jour d’activité');
   }
 
+  async lastActiveOn(userId: string): Promise<Day | null> {
+    const { data, error } = await this.client.from('profiles').select('last_active_on').eq('id', userId).maybeSingle();
+    check(error, 'dernier jour d’activité');
+    return data?.last_active_on ?? null;
+  }
+
   async listToNotice(cutoff: Day, limit: number): Promise<InactiveAccount[]> {
     const { data, error } = await this.client
       .from('profiles')

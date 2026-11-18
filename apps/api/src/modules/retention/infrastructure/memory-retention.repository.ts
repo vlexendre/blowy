@@ -19,6 +19,12 @@ export class MemoryRetentionRepository implements RetentionRepository {
     if (!a || a.lastActiveOn < day) this.db.accountActivity.set(userId, { lastActiveOn: day, noticedOn: null });
   }
 
+  async lastActiveOn(userId: string): Promise<Day | null> {
+    const p = this.db.profiles.get(userId);
+    if (!p) return null;
+    return this.db.accountActivity.get(userId)?.lastActiveOn ?? dayOf(new Date(p.createdAt));
+  }
+
   async listToNotice(cutoff: Day, limit: number): Promise<InactiveAccount[]> {
     return this.accounts()
       .filter((a) => a.lastActiveOn <= cutoff && a.noticedOn === null)

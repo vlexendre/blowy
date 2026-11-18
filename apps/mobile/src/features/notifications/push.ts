@@ -11,11 +11,29 @@ export type PushPermission = 'granted' | 'undetermined' | 'denied' | 'unsupporte
 
 const TOKEN_KEY = 'blowy.push.token';
 
-/** Une notification arrivée app ouverte s'affiche quand même (bandeau et centre de notifications). */
-export function setForegroundHandler(): void {
+/**
+ * App ouverte : rien pour l'écran déjà ouvert (`isOpen`, la conversation qu'on lit) ; le reste en bandeau discret, sans
+ * son (l'API n'envoie déjà plus, au premier plan, que les messages d'une autre conversation et les échéances).
+ */
+export function setForegroundHandler(isOpen: (data: unknown) => boolean = () => false): void {
   Notifications.setNotificationHandler({
-    handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
+    handleNotification: async (n) => {
+      const hide = isOpen(n.request.content.data);
+      return { shouldShowBanner: !hide, shouldShowList: !hide, shouldPlaySound: false, shouldSetBadge: false };
+    },
   });
+}
+
+/** Catégorie envoyée par l'API (`MUTE_CATEGORY`) : une action « Ne plus recevoir ce genre » sur la notification. */
+export const MUTE_CATEGORY = 'minimoa_mute';
+export const MUTE_ACTION = 'mute';
+
+export async function registerMuteCategory(buttonTitle: string): Promise<void> {
+  try {
+    await Notifications.setNotificationCategoryAsync(MUTE_CATEGORY, [{ identifier: MUTE_ACTION, buttonTitle, options: { opensAppToForeground: true, isDestructive: true } }]);
+  } catch {
+    // Sans catégorie : la notification reste, sans l'action.
+  }
 }
 
 const fromStatus = (p: Notifications.NotificationPermissionsStatus): PushPermission => {
@@ -80,8 +98,8 @@ export async function forgetPushToken(): Promise<void> {
 
 export const pushPlatform = (): 'ios' | 'android' | null => (Platform.OS === 'ios' || Platform.OS === 'android' ? Platform.OS : null);
 
-/** Données d'une notification touchée (le `data` du push), ou null. */
-type Tap = { data: unknown; id: string };
+/** Données d'une notification touchée (le `data` du push) et l'action choisie (`MUTE_ACTION`, ou l'ouverture). */
+type Tap = { data: unknown; id: string; action?: string };
 
 /** Notification touchée qui a ouvert l'app (démarrage à froid), une seule fois. */
 export async function takeLaunchTap(): Promise<Tap | null> {
@@ -89,7 +107,7 @@ export async function takeLaunchTap(): Promise<Tap | null> {
     const last = await Notifications.getLastNotificationResponseAsync();
     if (!last) return null;
     await Notifications.clearLastNotificationResponseAsync();
-    return { data: last.notification.request.content.data, id: last.notification.request.identifier };
+    return { data: last.notification.request.content.data, id: last.notification.request.identifier, action: last.actionIdentifier };
   } catch {
     return null;
   }
@@ -98,7 +116,7 @@ export async function takeLaunchTap(): Promise<Tap | null> {
 /** Notifications touchées pendant que l'app tourne. */
 export function onTap(listener: (tap: Tap) => void): () => void {
   try {
-    const sub = Notifications.addNotificationResponseReceivedListener((r) => listener({ data: r.notification.request.content.data, id: r.notification.request.identifier }));
+    const sub = Notifications.addNotificationResponseReceivedListener((r) => listener({ data: r.notification.request.content.data, id: r.notification.request.identifier, action: r.actionIdentifier }));
     return () => sub.remove();
   } catch {
     return () => undefined;

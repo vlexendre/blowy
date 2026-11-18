@@ -369,8 +369,8 @@ export type Database = {
         'kind' | 'created_at' | 'last_seen_at' | 'disabled_at'
       >;
       notification_settings: Table<
-        { user_id: string; time_zone: string; morning_hour: number; disabled_kinds: string[]; next_morning_at: string | null; updated_at: string },
-        'time_zone' | 'morning_hour' | 'disabled_kinds' | 'next_morning_at' | 'updated_at'
+        { user_id: string; time_zone: string; morning_hour: number; disabled_kinds: string[]; next_morning_at: string | null; updated_at: string; marketing_opt_in_at: string | null },
+        'time_zone' | 'morning_hour' | 'disabled_kinds' | 'next_morning_at' | 'updated_at' | 'marketing_opt_in_at'
       >;
       notification_log: Table<
         {

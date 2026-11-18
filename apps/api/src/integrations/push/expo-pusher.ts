@@ -36,7 +36,7 @@ export class ExpoPusher implements Pusher {
   async send(messages: readonly PushMessage[]): Promise<PushTicket[]> {
     const out: PushTicket[] = [];
     for (const batch of chunks(messages, SEND_BATCH)) {
-      const body = batch.map((m) => ({ to: m.to, title: m.title, body: m.body, data: m.data, sound: m.sound ?? 'default', ...(m.channelId ? { channelId: m.channelId } : {}) }));
+      const body = batch.map((m) => ({ to: m.to, title: m.title, body: m.body, data: m.data, sound: m.sound ?? 'default', ...(m.channelId ? { channelId: m.channelId } : {}), ...(m.categoryId ? { categoryId: m.categoryId } : {}) }));
       const json = await this.post<{ data?: ExpoTicket[] }>(EXPO_SEND_URL, body);
       const tickets = json.data ?? [];
       batch.forEach((_, i) => {

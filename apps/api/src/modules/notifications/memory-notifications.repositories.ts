@@ -43,7 +43,7 @@ export class MemoryNotificationSettingsRepository implements NotificationSetting
 
   async get(userId: string): Promise<NotificationSettingsRecord | null> {
     const s = this.db.notificationSettings.get(userId);
-    return s ? { ...s, disabledKinds: [...s.disabledKinds] } : null;
+    return s ? { ...s, marketingOptInAt: s.marketingOptInAt ?? null, disabledKinds: [...s.disabledKinds] } : null;
   }
 
   async forUsers(userIds: readonly string[]): Promise<NotificationSettingsRecord[]> {
@@ -74,7 +74,18 @@ export class MemoryNotificationLogRepository implements NotificationLogRepositor
   }
 
   async forUserDay(userId: string, localDay: Day): Promise<NotificationLogRecord[]> {
-    return this.db.notificationLog.filter((l) => l.userId === userId && l.localDay === localDay).map((l) => ({ ...l }));
+    return this.db.notificationLog.filter((l) => l.userId === userId && l.localDay === localDay).map((l) => ({ ...l, vars: l.vars ? { ...l.vars } : null }));
+  }
+
+  async forUserDays(userId: string, localDays: readonly Day[]): Promise<NotificationLogRecord[]> {
+    return this.db.notificationLog.filter((l) => l.userId === userId && localDays.includes(l.localDay)).map((l) => ({ ...l, vars: l.vars ? { ...l.vars } : null }));
+  }
+
+  async merge(id: string, vars: Record<string, string>): Promise<boolean> {
+    const row = this.db.notificationLog.find((l) => l.id === id);
+    if (!row || row.status !== 'deferred') return false;
+    row.vars = { ...vars };
+    return true;
   }
 
   async dueDeferred(at: string, limit: number): Promise<NotificationLogRecord[]> {
@@ -85,11 +96,15 @@ export class MemoryNotificationLogRepository implements NotificationLogRepositor
       .map((l) => ({ ...l }));
   }
 
-  async close(id: string, status: 'sent' | 'dropped'): Promise<boolean> {
+  async close(id: string, status: 'sent' | 'dropped', sent?: { at: string; localDay: Day }): Promise<boolean> {
     const row = this.db.notificationLog.find((l) => l.id === id);
     if (!row || row.status !== 'deferred') return false;
     row.status = status;
-    row.vars = null;
+    row.vars = row.vars?.key ? { key: row.vars.key } : null;
+    if (status === 'sent' && sent) {
+      row.createdAt = sent.at;
+      row.localDay = sent.localDay;
+    }
     return true;
   }
 

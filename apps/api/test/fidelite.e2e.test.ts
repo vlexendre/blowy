@@ -251,7 +251,7 @@ describe('Fidélisation', () => {
       await jobs.runDue(at(14));
       expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd5', 'd7', 'absence']);
       expect(news()[4]?.vars.days).toBe('14');
-      expect(notificationText('fr', 'minimoa_news', news()[4]?.vars ?? {}).body).toBe('Nino t’attend, sans rancune. Tes liens ont peut-être des nouvelles pour toi.');
+      expect(notificationText('fr', 'minimoa_news', news()[4]?.vars ?? {}).body).toBe('Nino va bien. Tes liens ont peut-être des nouvelles pour toi.');
       const absence = mails(email).filter((m) => m.subject === 'Nino te garde ta place');
       expect(absence).toHaveLength(1);
       expect(absence[0]?.text).toMatch(/1 personne t’a fait signe/);

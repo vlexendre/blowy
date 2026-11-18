@@ -58,6 +58,6 @@ export class Invites {
     if (!already && !withinDaily(mine.map((l) => l.createdAt), this.clock.now(), INVITE_ACCEPTS_PER_DAY)) {
       throw new DomainError('rate_limited', errorText('inviteAcceptsDaily'));
     }
-    return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id });
+    return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id, via: 'invite' });
   }
 }

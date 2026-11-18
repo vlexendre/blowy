@@ -1,19 +1,21 @@
 import { Body, Controller, Get, Inject, Patch, Post } from '@nestjs/common';
-import { type NotificationSettings as SettingsDto, NotificationSettingsBody, RegisterDeviceBody, RemoveDeviceBody } from '@blowy/contract';
+import { type NotificationSettings as SettingsDto, NotificationSettingsBody, PresenceBody, RegisterDeviceBody, RemoveDeviceBody } from '@blowy/contract';
 import type { z } from 'zod';
 import type { AuthUser } from '../../integrations/auth/ports';
 import { CurrentUser } from '../../shared/auth.guard';
 import { RateLimit } from '../../shared/user-rate-limit';
 import { ZodPipe } from '../../shared/zod.pipe';
 import { LiveActivities } from './live-activities';
+import { NotificationPresence } from './notification-presence';
 import { NotificationSettings } from './notification-settings';
 
-/** Appareils (`/v1/devices`) et réglages des notifications (`/v1/notifications/settings`). */
+/** Appareils (`/v1/devices`), réglages des notifications (`/v1/notifications/settings`) et présence de l'app. */
 @Controller('v1')
 export class NotificationsController {
   constructor(
     @Inject(NotificationSettings) private readonly settings: NotificationSettings,
     @Inject(LiveActivities) private readonly live: LiveActivities,
+    @Inject(NotificationPresence) private readonly presence: NotificationPresence,
   ) {}
 
   @Post('devices')
@@ -45,5 +47,12 @@ export class NotificationsController {
   @RateLimit('write')
   async update(@CurrentUser() user: AuthUser, @Body(new ZodPipe(NotificationSettingsBody)) body: z.infer<typeof NotificationSettingsBody>): Promise<SettingsDto> {
     return this.settings.update(user.userId, body);
+  }
+
+  /** Premier plan et conversation ouverte (pas de push pour ce qu'on a sous les yeux). Pas de limite d'écriture : signal léger, gardé en cache. */
+  @Post('notifications/presence')
+  async setPresence(@CurrentUser() user: AuthUser, @Body(new ZodPipe(PresenceBody)) body: z.infer<typeof PresenceBody>): Promise<{ ok: true }> {
+    await this.presence.set(user.userId, body);
+    return { ok: true };
   }
 }

@@ -6,7 +6,8 @@
 import type { ApiClient } from '@blowy/api-client';
 import { type NotificationSettings, type NotificationSettingsBody, PushDataZ } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { type Href, router } from 'expo-router';
+import { NOTIFICATION_CATEGORIES, categoryOf } from '@blowy/domain';
+import { type Href, router, usePathname } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
@@ -15,14 +16,17 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { useApi } from '@/core';
 import type { Gate } from '@/features/session';
+import { moi } from '@/locales/moi';
 
 import {
   forgetPushToken,
   getPermission,
   getPushToken,
+  MUTE_ACTION,
   onTap,
   type PushPermission,
   pushPlatform,
+  registerMuteCategory,
   requestPermission,
   setForegroundHandler,
   storedPushToken,
@@ -73,19 +77,59 @@ export async function unregisterDevice(api: ApiClient): Promise<void> {
   await forgetPushToken();
 }
 
+/** Conversation ouverte d'après le chemin (`/link/<id>`, `/groupe/<id>`), pour la présence et le bandeau. */
+export function openConversation(path: string): { linkId?: string; groupId?: string } {
+  const link = /^\/link\/([0-9a-f-]{36})\/?$/i.exec(path);
+  if (link?.[1]) return { linkId: link[1] };
+  const group = /^\/groupe\/([0-9a-f-]{36})\/?$/i.exec(path);
+  if (group?.[1]) return { groupId: group[1] };
+  return {};
+}
+
+/** Chemin affiché en ce moment (lu par le gestionnaire des notifications reçues app ouverte). */
+let currentPath = '';
+const isOpenNow = (data: unknown): boolean => {
+  const parsed = PushDataZ.safeParse(data);
+  if (!parsed.success) return false;
+  const open = openConversation(currentPath);
+  return (parsed.data.linkId !== undefined && open.linkId === parsed.data.linkId) || (parsed.data.groupId !== undefined && open.groupId === parsed.data.groupId);
+};
+
+/** La présence est renouvelée toutes les 2 minutes au premier plan (l'API la garde 150 s). */
+const PRESENCE_EVERY_MS = 120_000;
+
 /**
  * Pont des notifications, monté avec les onglets (personne connectée) :
  * - au retour au premier plan : enregistre l'appareil si l'accord est déjà donné (met aussi le fuseau à jour) ;
- * - une notification touchée (même app fermée) ouvre son écran.
+ * - présence (premier plan, conversation ouverte) envoyée à l'API : pas de push pour ce qu'on a sous les yeux ;
+ * - une notification touchée (même app fermée) ouvre son écran ; « Ne plus recevoir ce genre » coupe sa catégorie.
  */
 export function useNotificationsBridge(gate: Gate): void {
   const api = useApi();
   const qc = useQueryClient();
   const ready = gate === 'ready';
+  const pathname = usePathname();
+  currentPath = pathname;
 
   useEffect(() => {
-    setForegroundHandler();
+    setForegroundHandler(isOpenNow);
+    void registerMuteCategory(moi.notifications.mute);
   }, []);
+
+  // Présence : au premier plan, à chaque changement d'écran, toutes les 2 minutes ; « en arrière-plan » en partant.
+  useEffect(() => {
+    if (!ready || !pushPlatform()) return;
+    const send = (foreground: boolean) => void api.notifications.presence({ foreground, ...(foreground ? openConversation(pathname) : {}) }).catch(() => undefined);
+    if (AppState.currentState === 'active') send(true);
+    const timer = setInterval(() => {
+      if (AppState.currentState === 'active') send(true);
+    }, PRESENCE_EVERY_MS);
+    const sub = AppState.addEventListener('change', (s) => send(s === 'active'));
+    return () => {
+      clearInterval(timer);
+      sub.remove();
+    };
+  }, [ready, api, pathname]);
 
   useEffect(() => {
     if (!ready) return;
@@ -104,18 +148,28 @@ export function useNotificationsBridge(gate: Gate): void {
   const handled = useRef(new Set<string>());
   useEffect(() => {
     if (!ready) return;
-    const open = (tap: { data: unknown; id: string }) => {
+    const open = (tap: { data: unknown; id: string; action?: string }) => {
       if (handled.current.has(tap.id)) return;
       handled.current.add(tap.id);
       const parsed = PushDataZ.safeParse(tap.data);
       if (!parsed.success) return;
+      if (tap.action === MUTE_ACTION) {
+        // Désinscription en un geste : toute la catégorie du type (la même ligne que dans Moi › Notifications).
+        const category = categoryOf(parsed.data.kind);
+        if (category) {
+          const kinds = Object.fromEntries(NOTIFICATION_CATEGORIES[category].map((k) => [k, false]));
+          void api.notifications.updateSettings({ kinds }).then((s) => qc.setQueryData(notificationKeys.settings, s), () => undefined);
+        }
+        router.push('/moi/notifications');
+        return;
+      }
       const path = pathFromPushUrl(parsed.data.url);
       if (path) router.push(path);
     };
     // Démarrage à froid : la notification qui a ouvert l'app, une fois les onglets prêts.
     void takeLaunchTap().then((tap) => tap && open(tap));
     return onTap(open);
-  }, [ready]);
+  }, [ready, api, qc]);
 
   // Liens universels et schémas de l'app reçus avant que le compte soit prêt (`app/+native-intent.ts`) : ouverts ici.
   useEffect(() => {
@@ -146,7 +200,7 @@ export function useUpdateNotificationSettings() {
       if (before) {
         const kinds = { ...before.kinds };
         for (const [k, v] of Object.entries(body.kinds ?? {})) if (typeof v === 'boolean') kinds[k as keyof typeof kinds] = v;
-        qc.setQueryData<NotificationSettings>(notificationKeys.settings, { ...before, kinds, morningHour: body.morningHour ?? before.morningHour });
+        qc.setQueryData<NotificationSettings>(notificationKeys.settings, { ...before, kinds, morningHour: body.morningHour ?? before.morningHour, marketing: body.marketing ?? before.marketing });
       }
       return { before };
     },

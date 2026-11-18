@@ -52,7 +52,7 @@ export class SupabaseDevicesRepository implements DevicesRepository {
   }
 }
 
-type SettingsRow = { user_id: string; time_zone: string; morning_hour: number; disabled_kinds: string[]; next_morning_at: string | null; updated_at: string };
+type SettingsRow = { user_id: string; time_zone: string; morning_hour: number; disabled_kinds: string[]; next_morning_at: string | null; updated_at: string; marketing_opt_in_at?: string | null };
 const settingsFrom = (r: SettingsRow): NotificationSettingsRecord => ({
   userId: r.user_id,
   timeZone: r.time_zone,
@@ -60,6 +60,7 @@ const settingsFrom = (r: SettingsRow): NotificationSettingsRecord => ({
   // Un type retiré (ex. `daily_photo`, migré en `your_turn` par 20261115190000) est ignoré.
   disabledKinds: r.disabled_kinds.filter((k): k is NotificationKindKey => (NOTIFICATION_KINDS as readonly string[]).includes(k)),
   nextMorningAt: isoOrNull(r.next_morning_at),
+  marketingOptInAt: isoOrNull(r.marketing_opt_in_at ?? null),
   updatedAt: iso(r.updated_at),
 });
 
@@ -89,6 +90,7 @@ export class SupabaseNotificationSettingsRepository implements NotificationSetti
       morning_hour: s.morningHour,
       disabled_kinds: s.disabledKinds,
       next_morning_at: s.nextMorningAt,
+      marketing_opt_in_at: s.marketingOptInAt,
       updated_at: s.updatedAt,
     });
     check(error, 'enregistrement des réglages des notifications');
@@ -139,6 +141,20 @@ export class SupabaseNotificationLogRepository implements NotificationLogReposit
     return (data ?? []).map(logFrom);
   }
 
+  async forUserDays(userId: string, localDays: readonly Day[]): Promise<NotificationLogRecord[]> {
+    if (localDays.length === 0) return [];
+    // Index notification_log_user_day_idx.
+    const { data, error } = await this.client.from('notification_log').select('*').eq('user_id', userId).in('local_day', [...localDays]).limit(1000);
+    check(error, 'journal des notifications');
+    return (data ?? []).map(logFrom);
+  }
+
+  async merge(id: string, vars: Record<string, string>): Promise<boolean> {
+    const { data, error } = await this.client.from('notification_log').update({ vars }).eq('id', Number(id)).eq('status', 'deferred').select('id');
+    check(error, 'notification reportée');
+    return (data ?? []).length > 0;
+  }
+
   async dueDeferred(at: string, limit: number): Promise<NotificationLogRecord[]> {
     // Index partiel notification_log_deferred_idx.
     const { data, error } = await this.client.from('notification_log').select('*').eq('status', 'deferred').lte('send_after', at).order('send_after').limit(limit);
@@ -146,8 +162,16 @@ export class SupabaseNotificationLogRepository implements NotificationLogReposit
     return (data ?? []).map(logFrom);
   }
 
-  async close(id: string, status: 'sent' | 'dropped'): Promise<boolean> {
-    const { data, error } = await this.client.from('notification_log').update({ status, vars: null }).eq('id', Number(id)).eq('status', 'deferred').select('id');
+  async close(id: string, status: 'sent' | 'dropped', sent?: { at: string; localDay: Day }): Promise<boolean> {
+    const { data: row, error: readError } = await this.client.from('notification_log').select('vars').eq('id', Number(id)).maybeSingle();
+    check(readError, 'notification reportée');
+    const key = row?.vars && typeof row.vars === 'object' && !Array.isArray(row.vars) ? (row.vars as Record<string, unknown>).key : undefined;
+    const patch = {
+      status,
+      vars: typeof key === 'string' ? { key } : null,
+      ...(status === 'sent' && sent ? { created_at: sent.at, local_day: sent.localDay } : {}),
+    };
+    const { data, error } = await this.client.from('notification_log').update(patch).eq('id', Number(id)).eq('status', 'deferred').select('id');
     check(error, 'notification reportée');
     return (data ?? []).length > 0;
   }

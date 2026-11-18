@@ -187,6 +187,7 @@ export class GroupsUseCases {
           groupId: loaded.group.id,
           group: loaded.group.name,
           name: inviter.displayName,
+          about: by,
           ...(loaded.group.habitId ? { habit: loaded.group.habitId } : {}),
         });
       }
@@ -384,7 +385,7 @@ export class GroupsUseCases {
     await this.core.notify(
       loaded.active.map((m) => m.userId),
       'group_joined',
-      { groupId: g.id, group: g.name, name: me.displayName, count: String(loaded.active.length + 1) },
+      { groupId: g.id, group: g.name, name: me.displayName, about: userId, count: String(loaded.active.length + 1) },
     );
     await this.startIfReady(await this.core.load(g.id));
     return this.detail(userId, g.id);

@@ -48,6 +48,8 @@ export interface NotificationSettingsRecord {
   disabledKinds: NotificationKindKey[];
   /** Prochain envoi du défi du jour ; null si aucun appareil ou défi coupé. */
   nextMorningAt: string | null;
+  /** Accord explicite pour les offres en push (App Review 4.5.4), ISO ; null : pas d'accord. */
+  marketingOptInAt: string | null;
   updatedAt: string;
 }
 
@@ -71,7 +73,10 @@ export interface NotificationLogRecord {
   localDay: Day;
   status: NotificationStatus;
   sendAfter: string | null;
-  /** Variables d'un report (prénoms), effacées à l'envoi. Jamais de contenu de message. */
+  /**
+   * Variables d'un report (prénoms, compteurs du regroupement), effacées à l'envoi. Pour un envoi : seulement `key`
+   * (conversation ou paquet). Jamais de contenu de message.
+   */
   vars: Record<string, string> | null;
   createdAt: string;
 }
@@ -80,10 +85,18 @@ export interface NotificationLogRepository {
   add(entry: Omit<NotificationLogRecord, 'id'>): Promise<void>;
   /** Envois et reports d'une personne pour un jour local. */
   forUserDay(userId: string, localDay: Day): Promise<NotificationLogRecord[]>;
+  /** Envois et reports d'une personne pour plusieurs jours locaux (décroissance, rafales autour de minuit). */
+  forUserDays(userId: string, localDays: readonly Day[]): Promise<NotificationLogRecord[]>;
+  /** Remplace les variables d'un report encore en attente (regroupement). Faux s'il est déjà clos. */
+  merge(id: string, vars: Record<string, string>): Promise<boolean>;
   /** Reports dont l'heure est venue, les plus anciens d'abord. */
   dueDeferred(at: string, limit: number): Promise<NotificationLogRecord[]>;
-  /** Clôt un report (envoyé ou abandonné) et efface ses variables. Faux s'il était déjà clos (idempotence). */
-  close(id: string, status: 'sent' | 'dropped'): Promise<boolean>;
+  /**
+   * Clôt un report (envoyé ou abandonné) et réduit ses variables à `key`. Envoyé : `sent` donne l'instant et le jour
+   * local de l'envoi (le report compte alors comme un envoi de ce jour-là, une seule fois). Faux s'il était déjà clos
+   * (idempotence).
+   */
+  close(id: string, status: 'sent' | 'dropped', sent?: { at: string; localDay: Day }): Promise<boolean>;
   purge(before: string): Promise<number>;
 }
 
