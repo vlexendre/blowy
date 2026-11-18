@@ -40,7 +40,7 @@ import { motion } from '../../theme';
 import { Burst } from '../Burst';
 import { isLateEvening, isNight, useSeed } from '../seed';
 import type { PetLure } from './lure';
-import { Bang, SoftShadow, Strawberry, SweatDrop } from './PetProps';
+import { Bang, SoftShadow, Strawberry, WorryDrop } from './PetProps';
 
 /**
  * Réactions qu'on peut demander au pet (`ref.current.react(…)`). Planche 2 : `proud` (fier, puis fête et confettis :
@@ -319,7 +319,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   const returning = useSharedValue(0);
   const exprO = useSharedValue(0);
   const bang = useSharedValue(0);
-  const sweat = useSharedValue(0);
+  const goutte = useSharedValue(0);
   const lagX = useSharedValue(0);
   const lagY = useSharedValue(0);
   const lagR = useSharedValue(0);
@@ -511,12 +511,12 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
           withDelay(520, withTiming(0, { duration: motion.fast })),
         );
   }, [bang, reduced]);
-  const showSweat = useCallback(() => {
-    sweat.value = 0;
-    sweat.value = reduced
+  const showWorry = useCallback(() => {
+    goutte.value = 0;
+    goutte.value = reduced
       ? withSequence(fadeTo(1, motion.fast), withDelay(800, fadeTo(0)))
       : withTiming(1, { duration: 1100, easing: Easing.inOut(Easing.quad) });
-  }, [sweat, reduced]);
+  }, [goutte, reduced]);
 
   const sleepTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const armSleep = useCallback(() => {
@@ -622,7 +622,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         }
         if (kind !== 'arrive') express(body ? REACTION_POSE[kind] : pose[kind], kind === 'nap' ? 2400 : kind === 'bath' ? 3200 : 1400);
         if (kind === 'surprise') showBang();
-        if (kind === 'no') showSweat();
+        if (kind === 'no') showWorry();
         done(1400);
         return;
       }
@@ -763,7 +763,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         }
         case 'no': {
           express('colere', 1300);
-          showSweat();
+          showWorry();
           const s = (v: number, d = 75) => withTiming(v, { duration: d, easing: ease.inOut });
           rot.value = withSequence(s(-9), s(8), s(-7), s(5), s(-3), withSpring(0, PLUSH));
           sy.value = withSequence(withTiming(0.96, { duration: 120 }), withSpring(1, springs.pop));
@@ -904,7 +904,7 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         }
       }
     },
-    [reduced, express, showBang, showSweat, clearTimers, later, armSleep, hop, squish, size, dressed, body, foodP, ballO, ballX, ballY, ballR, rot, sx, sy, x, y, amp],
+    [reduced, express, showBang, showWorry, clearTimers, later, armSleep, hop, squish, size, dressed, body, foodP, ballO, ballX, ballY, ballR, rot, sx, sy, x, y, amp],
   );
 
   const strike = useCallback(
@@ -1321,8 +1321,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     opacity: Math.min(1, bang.value),
     transform: [{ scale: bang.value }, { rotate: `${(1 - bang.value) * -30}deg` }],
   }));
-  const sweatStyle = useAnimatedStyle(() => {
-    const t = sweat.value;
+  const goutteStyle = useAnimatedStyle(() => {
+    const t = goutte.value;
     return { opacity: t <= 0 ? 0 : t < 0.15 ? t / 0.15 : t > 0.8 ? (1 - t) / 0.2 : 1, transform: [{ translateY: t * 14 }] };
   });
   const headX = head.x * size;
@@ -1441,8 +1441,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         <Animated.View style={[styles.abs, { left: headX + size * 0.12, top: headY - size * 0.1 }, bangStyle]}>
           <Bang size={Math.round(size * 0.13)} />
         </Animated.View>
-        <Animated.View style={[styles.abs, { left: headX + size * 0.2, top: headY + size * 0.02 }, sweatStyle]}>
-          <SweatDrop size={Math.round(size * 0.11)} />
+        <Animated.View style={[styles.abs, { left: headX + size * 0.2, top: headY + size * 0.02 }, goutteStyle]}>
+          <WorryDrop size={Math.round(size * 0.11)} />
         </Animated.View>
         <Burst
           kind="hearts"

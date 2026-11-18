@@ -41,7 +41,7 @@ export function SoftShadow({ width, height, opacity = 0.42 }: { width: number; h
 }
 
 /** Goutte de sueur (gêne, refus). */
-export function SweatDrop({ size }: { size: number }) {
+export function WorryDrop({ size }: { size: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path d="M12 2.5c3.6 5.1 6.2 8.6 6.2 12.1A6.2 6.2 0 0 1 12 20.8a6.2 6.2 0 0 1-6.2-6.2c0-3.5 2.6-7 6.2-12.1z" fill={extra.sky} />

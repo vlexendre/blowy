@@ -43,15 +43,11 @@ const ITEM_IMAGES = {
   noeud_pap: require('../../assets/items/noeud_pap.webp'),
   sac_a_dos: require('../../assets/items/sac_a_dos.webp'),
   salopette: require('../../assets/items/salopette.webp'),
-  sweat: require('../../assets/items/sweat.webp'),
   bretelles: require('../../assets/items/bretelles.webp'),
-  tablier: require('../../assets/items/tablier.webp'),
   collier_perles: require('../../assets/items/collier_perles.webp'),
   collier_coquillage: require('../../assets/items/collier_coquillage.webp'),
   sac_main: require('../../assets/items/sac_main.webp'),
   cape: require('../../assets/items/cape.webp'),
-  teddy: require('../../assets/items/teddy.webp'),
-  tutu: require('../../assets/items/tutu.webp'),
   chaine_or: require('../../assets/items/chaine_or.webp'),
   ailes: require('../../assets/items/ailes.webp'),
   ballon: require('../../assets/items/ballon.webp'),
@@ -106,9 +102,6 @@ const VARIANT_IMAGES = {
   cape_dos: require('../../assets/items/cape_dos.webp'),
   hiver_cape_dos: require('../../assets/items/hiver_cape_dos.webp'),
   sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
-  // Corps sans manches (`fit.json` → `items.<id>.sleeve.image`) : les manches sont les bras recolorés de la pose.
-  sweat_corps: require('../../assets/items/sweat_corps.webp'),
-  teddy_corps: require('../../assets/items/teddy_corps.webp'),
   // Pose de profil (`fit.json` → `items.<id>.profile.image`) : une seule bretelle.
   sac_a_dos_profil: require('../../assets/items/sac_a_dos_profil.webp'),
   // Portés sur les attributs de l'espèce (ancre `tips`) : pompons de Suzie, cornes de Pia.
@@ -121,7 +114,7 @@ const VARIANT_IMAGES = {
   casque_audio_profil: require('../../assets/items/casque_audio_profil.webp'),
 } as const satisfies Record<string, Src>;
 
-/** Identifiant d'objet connu du registre (les 76 de `ITEM_IDS`). */
+/** Identifiant d'objet connu du registre (les 74 de `ITEM_IDS`). */
 export type ItemId = keyof typeof ITEM_IMAGES;
 
 export const hasItemImage = (id: string): id is ItemId => Object.prototype.hasOwnProperty.call(ITEM_IMAGES, id);

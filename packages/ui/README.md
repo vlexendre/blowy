@@ -64,7 +64,7 @@ badgeFrame(species): { cx, cy, side }              // cadre du médaillon (tête
 - `overrides.<espèce>.<id>` : seulement quand c'est nécessaire (Gaston n'a qu'un œil : lunettes agrandies et centrées sur
   l'œil, masque, cache-œil recentré ; la houppe de Nino : chapeaux un peu plus larges ; casque audio remonté chez Nino et Pia).
 
-Les vêtements (`sweat`, `salopette`, `teddy`, `tablier`, `bretelles`, `tutu`) partent du col (`neck`) et sont écrasés (`sy`)
+Les vêtements (`salopette`, `bretelles`) partent du col (`neck`) et sont écrasés (`sy`)
 parce que ces pets sont surtout une tête : il n'y a que ~250 px entre la bouche et les pieds.
 
 Pour régler un objet : modifier `fit.json`, régénérer les planches (script Python/PIL hors dépôt qui applique exactement le même

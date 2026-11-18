@@ -196,11 +196,11 @@ describe('configuration', () => {
       expect(link?.other.pet.outfit).toEqual({ head: 'casquette', body: 'echarpe' });
       expect(enc.suggestions.find((s) => s.user.displayName === 'Sasha')?.user.pet.outfit).toEqual({ head: 'cornes', toy: 'skate' });
       const wardrobe = await me.api.pet.wardrobe();
-      expect(wardrobe.items.filter((i) => i.state === 'owned')).toHaveLength(8 + 3); // + objets du premier lien (avec Malo)
+      expect(wardrobe.items.filter((i) => i.state === 'owned')).toHaveLength(8 + 2); // + objets du premier lien (avec Malo) : chapeau de fête, bulle
       const view = await me.api.pet.get();
       // Rencontre acceptée avec Malo : +12 de sociabilité.
       expect(view.pet.needs).toEqual({ ...START_NEEDS, sociability: START_NEEDS.sociability + 12 });
-      expect(view.newItems).toEqual(['chapeau_fete', 'noeud_pap', 'bulle']);
+      expect(view.newItems).toEqual(['chapeau_fete', 'bulle']);
     } finally {
       await world.close();
     }

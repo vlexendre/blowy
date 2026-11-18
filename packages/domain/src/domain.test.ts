@@ -39,7 +39,7 @@ describe('jours', () => {
 
 
 import { applyCare, canCare, decayNeeds, shapeOf, START_NEEDS, urgentNeed, wellbeing, encounterQuota } from './care';
-import { cleanOutfit, earnedItems, itemById, itemProgress, ITEMS, ITEM_SLOTS, ZERO_STATS } from './items';
+import { cleanOutfit, earnedItems, itemById, itemProgress, ITEMS, ITEM_SLOTS, knownOutfit, ownedWith, ZERO_STATS } from './items';
 
 describe('soins', () => {
   it('les besoins baissent puis remontent', () => {
@@ -67,9 +67,9 @@ describe('soins', () => {
 });
 
 describe('garde-robe', () => {
-  it('78 objets uniques (dont les 12 de la collection Hiver, le « Parrain » et le « Fondateur »), 4 emplacements, au moins deux de départ par emplacement', () => {
-    expect(ITEMS.length).toBe(78);
-    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(78);
+  it('74 objets uniques (dont les 12 de la collection Hiver, le « Parrain » et le « Fondateur »), 4 emplacements, au moins deux de départ par emplacement', () => {
+    expect(ITEMS.length).toBe(74);
+    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(74);
     for (const slot of ITEM_SLOTS) expect(ITEMS.filter((i) => i.slot === slot && i.unlock.kind === 'start').length).toBeGreaterThanOrEqual(2);
   });
   it('débloque par étapes', () => {
@@ -84,5 +84,24 @@ describe('garde-robe', () => {
   it('nettoie une tenue', () => {
     const owned = new Set(['bob', 'echarpe']);
     expect(cleanOutfit({ head: 'bob', face: 'bob', body: 'cape', toy: 'inconnu' }, owned)).toEqual({ head: 'bob' });
+  });
+  it('objets retirés du jeu (vêtements pensés pour un corps humain) : plus au catalogue, ignorés partout', () => {
+    const retired = ['sw' + 'eat', 'ted' + 'dy', 'tab' + 'lier', 'tu' + 'tu'];
+    for (const id of retired) expect(itemById(id)).toBeUndefined();
+    // Une vieille ligne `pet_items` ou une vieille tenue en base ne plante rien : l'objet disparaît.
+    expect([...ownedWith(['bob', ...retired], true)].some((id) => retired.includes(id))).toBe(false);
+    expect(knownOutfit({ head: 'bob', body: retired[0], toy: 42 })).toEqual({ head: 'bob' });
+    expect(knownOutfit(null)).toEqual({});
+    expect(knownOutfit('n’importe quoi')).toEqual({});
+    expect(cleanOutfit({ head: 'bob', body: retired[1] }, new Set(['bob', retired[1] as string]))).toEqual({ head: 'bob' });
+  });
+  it('chaque compteur garde son nombre de paliers ; défis 7 et habitudes 30 donnent un objet du cou', () => {
+    const steps = (stat: string) => new Set(ITEMS.flatMap((i) => (i.unlock.kind === 'stat' && i.unlock.stat === stat ? [i.unlock.n] : [])));
+    expect([...steps('challenges')].sort((a, b) => a - b)).toEqual([1, 2, 3, 5, 7, 10, 15]);
+    expect([...steps('habitsKept')].sort((a, b) => a - b)).toEqual([1, 5, 15, 30]);
+    expect([...steps('links')].sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5]);
+    expect([...steps('bestLevel')].sort((a, b) => a - b)).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(earnedItems({ ...ZERO_STATS, challenges: 7 })).toContain('noeud_pap');
+    expect(earnedItems({ ...ZERO_STATS, habitsKept: 30 })).toContain('collier_perles');
   });
 });

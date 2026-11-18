@@ -5,6 +5,8 @@ const { careLabel } = labels.in('fr');
 import type { ApiClient } from '@blowy/api-client';
 import { ITEM_IDS, START_NEEDS } from '@blowy/domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import type { MemoryDb } from '../src/persistence/memory-db';
+import { MEMORY_DB } from '../src/shared/tokens';
 import { type TestWorld, apiError, doToday, errorCode, onboardBody, startWorld } from './helpers';
 
 type Person = { id: string; api: ApiClient };
@@ -108,7 +110,7 @@ describe('soins et garde-robe', () => {
     expect(seenByBob.myPet.outfit).toEqual({});
 
     const first = await bob.api.pet.get();
-    expect(first.newItems).toEqual(['chapeau_fete', 'noeud_pap', 'bulle']);
+    expect(first.newItems).toEqual(['chapeau_fete', 'bulle']);
     expect((await bob.api.pet.get()).newItems).toEqual([]);
     const goal = (await bob.api.pet.wardrobe()).items.find((i) => i.id === 'chapeau_fete');
     expect(goal).toMatchObject({ state: 'owned', goal: { stat: 'links', have: 1, need: 1 } });
@@ -235,5 +237,27 @@ describe('un pet qui boude ne sort plus', () => {
     world.clock.advanceHours(40);
     const low = await first.api.encounters.list();
     expect(low.suggestions).toHaveLength(3);
+  });
+
+  it('un objet retiré du jeu (vieille tenue, vieille ligne pet_items) est ignoré à la lecture et retiré à la prochaine écriture', async () => {
+    const carol = world.client();
+    await carol.api.me.onboard(onboardBody({ displayName: 'Carol', pet: { name: 'Pia', species: 'pia' } }));
+    const db = world.app.get<MemoryDb>(MEMORY_DB);
+    const pet = [...db.pets.values()].find((p) => p.ownerId === carol.id);
+    if (!pet) throw new Error('pet introuvable');
+    const retired = 'sw' + 'eat';
+    pet.outfit = { head: 'bob', body: retired };
+    db.petItems.push({ petId: pet.id, itemId: retired, source: 'milestone', acquiredAt: new Date().toISOString() });
+
+    const view = await carol.api.pet.get();
+    expect(view.pet.outfit).toEqual({ head: 'bob' });
+    expect(view.newItems).not.toContain(retired);
+    const wardrobe = await carol.api.pet.wardrobe();
+    expect(wardrobe.outfit).toEqual({ head: 'bob' });
+    expect(wardrobe.items.map((i) => i.id)).not.toContain(retired);
+    expect(await errorCode(carol.api.pet.setOutfit({ head: 'bob', body: retired } as never))).toBeTruthy();
+
+    await carol.api.pet.setOutfit({ head: 'casquette' });
+    expect(db.pets.get(pet.id)?.outfit).toEqual({ head: 'casquette' });
   });
 });

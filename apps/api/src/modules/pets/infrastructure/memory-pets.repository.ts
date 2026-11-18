@@ -1,8 +1,9 @@
-import type { Needs, Outfit, PetEventKind } from '@blowy/domain';
+import { type Needs, type Outfit, type PetEventKind, knownOutfit } from '@blowy/domain';
 import type { MemoryDb } from '../../../persistence/memory-db';
 import type { PetEventRecord, PetRecord, PetsRepository } from '../ports';
 
-const copy = (p: PetRecord): PetRecord => ({ ...p, gauges: { ...p.gauges }, needs: { ...p.needs }, outfit: { ...p.outfit } });
+// Comme l'adaptateur Supabase : une tenue relue ne garde que des objets du catalogue.
+const copy = (p: PetRecord): PetRecord => ({ ...p, gauges: { ...p.gauges }, needs: { ...p.needs }, outfit: knownOutfit(p.outfit) });
 
 export class MemoryPetsRepository implements PetsRepository {
   constructor(private readonly db: MemoryDb) {}

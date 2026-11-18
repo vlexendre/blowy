@@ -35,14 +35,14 @@ const SPECIES: Species[] = ['nino', 'suzie', 'gaston', 'pia'];
 /** Taille des minimoas dans la vitrine Minimoa+. */
 const SMALL = 68;
 const FACES = ['lunettes_rondes', 'lunettes_coeur', 'lunettes_etoile', 'lunettes_pixel', 'masque_nuit', 'monocle', 'cache_oeil', 'moustache', 'nez_rouge', 'tetine', 'joues_roses', 'taches_rousseur'];
-const CLOTHES = ['sweat', 'teddy', 'salopette', 'tablier', 'tutu', 'bretelles'];
+const CLOTHES = ['salopette', 'bretelles'];
 const HELD = ['doudou', 'ballon', 'coeur', 'tasse', 'livre', 'fleur', 'ballons', 'gateau', 'cadeau', 'pinceau', 'micro', 'manette'];
 const NECK = ['echarpe', 'bandana', 'collier_perles', 'collier_coquillage', 'chaine_or', 'noeud_pap', 'noeud_violet', 'noeud', 'casque_audio', 'cape', 'sac_a_dos', 'ailes'];
 const HATS = ['bob', 'bonnet', 'casquette', 'casquette_envers', 'toque', 'sorcier', 'couronne', 'pirate', 'chapeau_fete', 'fleurs', 'chat', 'lapin'];
 const SHEET2: BodyPose[] = ['colere', 'malade', 'timide', 'fier', 'rit', 'danse', 'accueil', 'assis', 'baille', 'bain', 'applaudit', 'fete'];
 const SHEET_VAR: BodyPose[] = ['neutre', 'evo_sociable', 'evo_joueur', 'evo_casanier', 'evo_tendre', 'evo_piquant', 'bebe', 'oeuf', 'oeuf_fele', 'eclosion', 'fantome', 'danger'];
-/** Planche des poses : nu, puis deux tenues complètes (couvre-chef, lunettes, et l'écharpe ou le sweat). */
-const SHEET_OUTFITS: (Outfit | null)[] = [null, { head: 'bob', face: 'lunettes_rondes', body: 'echarpe' }, { head: 'casquette', face: 'lunettes_etoile', body: 'sweat' }];
+/** Planche des poses : nu, puis deux tenues complètes (couvre-chef, lunettes, et l'écharpe ou la salopette). */
+const SHEET_OUTFITS: (Outfit | null)[] = [null, { head: 'bob', face: 'lunettes_rondes', body: 'echarpe' }, { head: 'casquette', face: 'lunettes_etoile', body: 'salopette' }];
 const WINTER: Outfit[] = [
   { head: 'hiver_bonnet', face: 'hiver_lunettes', body: 'hiver_echarpe', toy: 'hiver_aura' },
   { head: 'hiver_couronne', body: 'hiver_cape', toy: 'hiver_chocolat' },

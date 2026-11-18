@@ -233,8 +233,8 @@ const wardrobe: WardrobeItemLook[] = ITEMS.map((i) => {
   };
 });
 const looks: Record<Species, Outfit> = {
-  nino: { head: 'bob', face: 'lunettes_coeur', body: 'sweat', toy: 'skate' },
-  suzie: { head: 'lapin', face: 'taches_rousseur', body: 'tutu', toy: 'doudou' },
+  nino: { head: 'bob', face: 'lunettes_coeur', body: 'bandana', toy: 'skate' },
+  suzie: { head: 'lapin', face: 'taches_rousseur', body: 'collier_perles', toy: 'doudou' },
   gaston: { head: 'pirate', face: 'cache_oeil', body: 'cape', toy: 'cadeau' },
   pia: { head: 'sorcier', face: 'monocle', body: 'ailes', toy: 'potion' },
 };

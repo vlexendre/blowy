@@ -1,4 +1,4 @@
-import { type Gauges, ITEM_SLOTS, type Needs, type Outfit, type PetEventKind, type Species, itemById } from '@blowy/domain';
+import { type Gauges, ITEM_SLOTS, type Needs, type Outfit, type PetEventKind, type Species, knownOutfit } from '@blowy/domain';
 import type { Db } from '../../../persistence/database.types';
 import { check, iso } from '../../../persistence/supabase';
 import type { PetEventRecord, PetRecord, PetsRepository } from '../ports';
@@ -34,18 +34,6 @@ interface PetEventRow {
   created_at: string;
 }
 
-/** Tenue lue en base (jsonb) : on ne garde que des objets connus, chacun dans son emplacement. */
-function outfitFromJson(value: unknown): Outfit {
-  const out: Outfit = {};
-  if (typeof value !== 'object' || value === null) return out;
-  const raw = value as Record<string, unknown>;
-  for (const slot of ITEM_SLOTS) {
-    const id = raw[slot];
-    if (typeof id === 'string' && itemById(id)?.slot === slot) out[slot] = id;
-  }
-  return out;
-}
-
 const fromRow = (r: PetRow): PetRecord => ({
   id: r.id,
   ownerId: r.owner_id,
@@ -58,7 +46,7 @@ const fromRow = (r: PetRow): PetRecord => ({
   careDays: r.care_days,
   lastCareOn: r.last_care_on,
   bestStreak: r.best_streak,
-  outfit: outfitFromJson(r.outfit),
+  outfit: knownOutfit(r.outfit),
   renamedAt: r.renamed_at ? iso(r.renamed_at) : null,
   createdAt: iso(r.created_at),
 });

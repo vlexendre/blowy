@@ -1,5 +1,5 @@
 /**
- * Garde-robe : 78 objets dans 4 emplacements (dont la collection Hiver de Minimoa+). Un objet se gagne par une étape (soins, liens, séries…)
+ * Garde-robe : 74 objets dans 4 emplacements (dont la collection Hiver de Minimoa+). Un objet se gagne par une étape (soins, liens, séries…)
  * ou s'achète (objets « premium »). Un seul objet porté par emplacement.
  */
 export const ITEM_SLOTS = ['head', 'face', 'body', 'toy'] as const;
@@ -87,18 +87,16 @@ export const ITEMS: readonly Item[] = [
   item('body', 'echarpe', start),
   item('body', 'bandana', start),
   item('body', 'noeud_violet', at('careDays', 3)),
-  item('body', 'noeud_pap', at('links', 1)),
+  // Défis 7 : nœud papillon (avant : au 1er lien, qui garde chapeau de fête et bulle).
+  item('body', 'noeud_pap', at('challenges', 7)),
   item('body', 'sac_a_dos', at('links', 5)),
   item('body', 'salopette', at('habitsKept', 15)),
-  item('body', 'sweat', at('challenges', 7)),
   item('body', 'bretelles', at('words', 2)),
-  item('body', 'tablier', at('habitsKept', 30)),
-  item('body', 'collier_perles', at('bestLevel', 3)),
+  // Habitudes 30 : collier de perles (avant : niveau 3 d'un lien, qui garde les oreilles de lapin).
+  item('body', 'collier_perles', at('habitsKept', 30)),
   item('body', 'collier_coquillage', at('ritualStreak', 60)),
   item('body', 'sac_main', at('bestLevel', 6)),
   item('body', 'cape', at('ritualStreak', 30)),
-  item('body', 'teddy', premium),
-  item('body', 'tutu', premium),
   item('body', 'chaine_or', premium),
   item('body', 'ailes', premium),
   // Jouets et objets
@@ -171,7 +169,8 @@ export const isPremiumItem = (id: string): boolean => BY_ID.get(id)?.unlock.kind
  */
 export function ownedWith(owned: Iterable<string>, premiumItems: boolean): Set<string> {
   const out = new Set<string>();
-  for (const id of owned) if (premiumItems || !isPremiumItem(id)) out.add(id);
+  // Un objet retiré du catalogue (ligne `pet_items` d'avant) n'est plus possédé : ignoré, jamais une erreur.
+  for (const id of owned) if (BY_ID.has(id) && (premiumItems || !isPremiumItem(id))) out.add(id);
   if (premiumItems) for (const id of PREMIUM_ITEM_IDS) out.add(id);
   return out;
 }
@@ -183,6 +182,21 @@ export function withoutPremium(outfit: Outfit): Outfit {
   for (const slot of ITEM_SLOTS) {
     const id = outfit[slot];
     if (id && !isPremiumItem(id)) out[slot] = id;
+  }
+  return out;
+}
+
+/**
+ * Tenue lue en base (jsonb, ou tout autre valeur) : seulement des objets du catalogue, chacun dans son emplacement.
+ * Un objet retiré du jeu disparaît à la lecture, puis de la base à la prochaine écriture de la tenue.
+ */
+export function knownOutfit(value: unknown): Outfit {
+  const out: Outfit = {};
+  if (typeof value !== 'object' || value === null) return out;
+  const raw = value as Record<string, unknown>;
+  for (const slot of ITEM_SLOTS) {
+    const id = raw[slot];
+    if (typeof id === 'string' && BY_ID.get(id)?.slot === slot) out[slot] = id;
   }
   return out;
 }
