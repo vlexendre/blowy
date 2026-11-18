@@ -33,9 +33,11 @@ describe('signes : plafond du jour', () => {
 
   it('bloque au-delà de 15 signes en attente ; les refusés, acceptés ou trop anciens ne comptent plus', () => {
     const old = waves(WAVE_MAX_PENDING, { createdAt: at(3) });
-    expect(waveAllowance({ sent: old, now: NOW, plus: true })).toMatchObject({ pending: 15, left: 0, blocked: 'pending' });
+    expect(waveAllowance({ sent: old, now: NOW, plus: false })).toMatchObject({ pending: 15, left: 0, blocked: 'pending' });
     const answered = old.map((w, k) => (k < 2 ? { ...w, status: 'declined' as const } : w));
-    expect(waveAllowance({ sent: answered, now: NOW, plus: true })).toMatchObject({ pending: 13, left: 2, blocked: null });
+    expect(waveAllowance({ sent: answered, now: NOW, plus: false })).toMatchObject({ pending: 13, left: 2, blocked: null });
+    // Minimoa+ : jusqu'à 25 en attente, assez pour ses 20 signes du jour.
+    expect(waveAllowance({ sent: old, now: NOW, plus: true })).toMatchObject({ pending: 15, maxPending: 25, left: 10, blocked: null });
     const expired = waves(WAVE_MAX_PENDING, { createdAt: at(15) });
     expect(waveAllowance({ sent: expired, now: NOW, plus: false }).blocked).toBeNull();
   });

@@ -4,7 +4,7 @@
  * autres ajouts (invitations par lien, signalements).
  */
 import type { ApiClient } from '@blowy/api-client';
-import { WAVE_EMAILS_PER_RECIPIENT_PER_DAY, WAVE_MAX_PENDING, INVITE_ACCEPTS_PER_DAY, REPORTS_PER_DAY } from '@blowy/domain';
+import { WAVE_DAILY_PLUS, WAVE_EMAILS_PER_RECIPIENT_PER_DAY, WAVE_MAX_PENDING, INVITE_ACCEPTS_PER_DAY, REPORTS_PER_DAY } from '@blowy/domain';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { MEMORY_DB } from '../src/shared/tokens';
@@ -88,7 +88,7 @@ describe('anti-spam des coucous', () => {
     const freeStart = (await free.api.encounters.list()).waves;
     const plusStart = (await plus.api.encounters.list()).waves;
     expect(freeStart).toMatchObject({ left: 10, blocked: null });
-    expect(plusStart).toMatchObject({ left: WAVE_MAX_PENDING, blocked: null });
+    expect(plusStart).toMatchObject({ left: WAVE_DAILY_PLUS, blocked: null });
 
     const first = await waveUntilRefused(free, targets);
     expect(first.sent).toBe(freeStart?.left);
@@ -100,7 +100,7 @@ describe('anti-spam des coucous', () => {
     await free.api.encounters.wave(targets[0]?.id ?? '');
 
     const plusRun = await waveUntilRefused(plus, targets);
-    expect(plusRun.sent).toBe(WAVE_MAX_PENDING);
+    expect(plusRun.sent).toBe(WAVE_DAILY_PLUS);
     expect(plusRun.refusal?.code).toBe('wave_limit');
 
     world.clock.advanceDays(1);

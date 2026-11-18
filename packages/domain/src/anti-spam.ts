@@ -19,6 +19,11 @@ export const WAVE_DAILY_PLUS = 20;
 export const WAVE_DAILY_ABSOLUTE = 25;
 /** Signes sans réponse au plus : au-delà, il faut des réponses, ou que les plus anciens sortent de la fenêtre. */
 export const WAVE_MAX_PENDING = 15;
+/** Avec Minimoa+ : assez pour profiter de ses 20 signes du jour dès le premier jour. */
+export const WAVE_MAX_PENDING_PLUS = 25;
+
+/** Signes sans réponse au plus : 15 sans Minimoa+, 25 avec. */
+export const maxPendingWaves = (i: { plus: boolean }): number => (i.plus ? WAVE_MAX_PENDING_PLUS : WAVE_MAX_PENDING);
 /** Un signe sans réponse depuis plus longtemps ne compte plus dans l'attente (il reste visible chez l'autre). */
 export const WAVE_PENDING_DAYS = 14;
 /** E-mails « on t'a fait signe » reçus par jour au plus ; les suivants restent dans l'app (et le push a son plafond). */
@@ -67,9 +72,10 @@ export function waveAllowance(i: { sent: readonly SentWave[]; now: Date; plus: b
   );
   const dailyCap = dailyWaveCap(i);
   const pending = i.sent.filter((w) => isPendingWave(w, i.now)).length;
-  const left = Math.max(0, Math.min(dailyCap - sentToday, WAVE_MAX_PENDING - pending));
-  const blocked: WaveBlock | null = sentToday >= dailyCap ? 'daily' : pending >= WAVE_MAX_PENDING ? 'pending' : null;
-  return { sentToday, dailyCap, pending, maxPending: WAVE_MAX_PENDING, left, blocked };
+  const maxPending = maxPendingWaves(i);
+  const left = Math.max(0, Math.min(dailyCap - sentToday, maxPending - pending));
+  const blocked: WaveBlock | null = sentToday >= dailyCap ? 'daily' : pending >= maxPending ? 'pending' : null;
+  return { sentToday, dailyCap, pending, maxPending, left, blocked };
 }
 
 /** Un e-mail de signe peut-il partir ? `receivedToday` compte les signes reçus aujourd'hui, celui-ci compris. */
