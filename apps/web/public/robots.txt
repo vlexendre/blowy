@@ -1,6 +1,6 @@
+# Les pages de partage (/m/, /i/, /g/…) sont en noindex : elles restent ouvertes aux robots pour que les aperçus de
+# liens (X, Slack, iMessage…) s'affichent. Ne pas les remettre en Disallow.
 User-agent: *
 Allow: /
-Disallow: /m/
-Disallow: /i/
 
 Sitemap: https://minimoa.app/sitemap.xml

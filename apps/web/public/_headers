@@ -15,14 +15,18 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
+# Images du site : régénérées sous le même nom par scripts/site-images (rare) → 7 jours, puis revalidation en arrière-plan.
+# Les variantes /img/v/ portent leur largeur, pas leur contenu : même règle.
 /img/*
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 
+# Aperçus de liens : réécrits sous le même nom à chaque refonte → 1 jour, revalidation en arrière-plan pendant 7 jours.
 /og/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+# Police : nom à empreinte (scripts/fonts/subset-allo.sh), jamais réécrite → un an.
 /fonts/*
-  Cache-Control: public, max-age=2592000
+  Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
 
 /_astro/*

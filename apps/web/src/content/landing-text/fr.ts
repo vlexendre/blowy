@@ -7,9 +7,9 @@ import type { TitleLine } from '../landing';
 
 export const fr = {
   meta: {
-    title: 'Minimoa — Des potes près de chez toi',
+    title: 'Minimoa — L’app pour se faire des potes près de chez toi',
     description:
-      'Ton minimoa te présente des gens près de chez toi qui voient la vie comme toi. Fais le quiz, ouvre ton quartier. Gratuit, zéro swipe, 18 ans et plus.',
+      'L’app pour se faire des amis près de chez toi : ton minimoa te présente des gens qui voient la vie comme toi. Gratuit, zéro swipe, 18 ans et plus.',
     ogAlt: 'Nino, Suzie et Pia, des minimoas tout poilus, à côté du titre « Des potes près de chez toi. »',
   },
   dots: {

@@ -4,7 +4,7 @@ export const abonnement: LegalPage = {
   title: "Conditions de l'abonnement Minimoa+ — Minimoa",
   heading: "Conditions de l'abonnement Minimoa+",
   description:
-    'Minimoa+ : ce qu’il contient, les offres (59,88 € par an avec 7 jours gratuits, 14,99 € par mois ou 2,99 € par semaine), le renouvellement automatique, la facturation par Apple, comment annuler, ce qui se passe à la fin, la rétractation et les remboursements.',
+    'Minimoa+ : ce qu’il contient, ses offres et leurs prix, le renouvellement automatique, la facturation par Apple, comment annuler, les remboursements.',
   intro: 'Ce que Minimoa+ contient, ce qu’il coûte, comment il se renouvelle, et comment l’arrêter. Sans petites lignes.',
   summary: {
     title: 'En bref',

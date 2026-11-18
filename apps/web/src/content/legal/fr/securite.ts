@@ -4,7 +4,7 @@ export const securite: LegalPage = {
   title: 'Sécurité et signalement — Minimoa',
   heading: 'Sécurité et signalement',
   description:
-    'Comment signaler ou bloquer quelqu’un dans Minimoa, ce qui se passe ensuite, nos conseils pour une première rencontre, les numéros d’urgence, et notre politique de protection des mineurs.',
+    'Signaler ou bloquer quelqu’un dans Minimoa, la suite, nos conseils pour une première rencontre, les numéros d’urgence, la protection des mineurs.',
   intro: 'Comment signaler, bloquer, se protéger, et qui appeler en cas d’urgence.',
   body: [
     { note: '**En danger immédiat ?** Appelle le **17** (police) ou le **112** (urgences, partout dans l’Union européenne). Par SMS si tu ne peux pas parler : **114**.' },

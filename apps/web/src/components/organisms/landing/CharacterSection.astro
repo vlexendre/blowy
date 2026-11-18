@@ -21,7 +21,7 @@ const fill = (v: number) => `left:${50 + Math.min(0, v) / 2}%;width:${Math.abs(v
   </SectionTitle>
   <div class="cars" data-r="pop">
     <div class="bob">
-      {MOODS.map((m) => <PetImage class={m === MOOD_INITIAL ? 'on' : undefined} data-m={m} src={`${IMG}/nino_evo_${m}.webp`} alt={c.moods[m].alt} loading="lazy" />)}
+      {MOODS.map((m) => <PetImage class={m === MOOD_INITIAL ? 'on' : undefined} data-m={m} src={`${IMG}/nino_evo_${m}.webp`} alt={c.moods[m].alt} loading="lazy" sizes="(min-width: 900px) 340px, 140px" />)}
     </div>
   </div>
   <div class="gauges" data-r="up" aria-live="polite">

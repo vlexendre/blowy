@@ -1,5 +1,6 @@
 ---
 /** 2. Il est vivant : choisir son minimoa, puis un soin = une pose en pied (une seule image, changée par le script). */
+import { smallest } from '../../../lib/img';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { ALIVE, IMG, SPECIES_NAME, sections } from '../../../content/landing';
@@ -27,8 +28,8 @@ const first = ALIVE.initial;
     <div class="aspecies" role="group" aria-label={c.speciesLabel}>
       {
         ALIVE.species.map((s) => (
-          <button type="button" data-s={s} data-alt={c.speciesAlt[s]} data-name={SPECIES_NAME[s]} aria-pressed={s === first ? 'true' : 'false'}>
-            <img src={`/img/${s}_face.webp`} alt="" width="40" height="40" loading="lazy" />
+          <button type="button" data-s={s} data-alt={c.speciesAlt[s]} data-name={SPECIES_NAME[s]} aria-label={SPECIES_NAME[s]} aria-pressed={s === first ? 'true' : 'false'}>
+            <img src={smallest(`/img/${s}_face.webp`)} alt="" width="40" height="40" loading="lazy" />
             <span>{SPECIES_NAME[s]}</span>
           </button>
         ))

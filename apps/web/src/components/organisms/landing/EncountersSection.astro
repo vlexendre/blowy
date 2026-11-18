@@ -1,5 +1,6 @@
 ---
 /** 9. Rencontres : deux minimoas qui se tapent dans la main, le pourquoi (points communs, une différence), rien sans ton tap. */
+import { responsive, smallest } from '../../../lib/img';
 import Button from '../../atoms/Button.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
@@ -12,15 +13,15 @@ interface Props {
 }
 const { locale } = Astro.props;
 const c = landingText[locale].encounters;
-const m1 = { who: 'Pia', text: c.m1, avatar: { img: '/img/pia_face.webp' } };
-const m2 = { who: 'Nino', text: c.m2, avatar: { img: '/img/nino_face.webp' }, me: true };
+const m1 = { who: 'Pia', text: c.m1, avatar: { img: smallest('/img/pia_face.webp') } };
+const m2 = { who: 'Nino', text: c.m2, avatar: { img: smallest('/img/nino_face.webp') }, me: true };
 ---
 <SnapSection section={sections.rencontres} panel="p-coral s-meet">
   <SectionTitle lines={c.title}>
     <p class="lead" data-r="up">{c.lead}</p>
   </SectionTitle>
   <div class="mstage">
-    <div class="mduo" data-r="pop"><div class="bob"><img src={DUO.src} alt={c.duoAlt} width={DUO.width} height={DUO.height} loading="lazy" decoding="async" /></div></div>
+    <div class="mduo" data-r="pop"><div class="bob"><img src={DUO.src} alt={c.duoAlt} width={DUO.width} height={DUO.height} loading="lazy" decoding="async" {...responsive(DUO.src, '(min-width: 900px) 350px, 200px')} /></div></div>
     <ChatBubble bubble={m1} class="m1" />
     <ChatBubble bubble={m2} class="m2" />
   </div>

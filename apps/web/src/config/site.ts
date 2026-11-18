@@ -16,6 +16,12 @@ const storeUrl = (raw: string | undefined): string | null => (raw && /^https:\/\
 export const APP_STORE_URL: string | null = storeUrl(import.meta.env.PUBLIC_APP_STORE_URL);
 export const PLAY_STORE_URL: string | null = storeUrl(import.meta.env.PUBLIC_PLAY_STORE_URL);
 
+/**
+ * Identifiant Apple de l'app (App Store Connect › Informations de l'app › Identifiant Apple) : bannière Safari
+ * `apple-itunes-app` des pages indexées et JSON-LD `MobileApplication` (lib/structured-data.ts).
+ */
+export const APP_STORE_ID = '6833895780';
+
 /** Schéma du lien profond ouvert par l'app (minimoa://i/CODE ; l'app accepte aussi l'ancien blowy://). */
 export const DEEP_LINK_SCHEME = 'minimoa://';
 

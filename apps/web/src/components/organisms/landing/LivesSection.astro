@@ -3,6 +3,7 @@
  * 8. 7 vies : les étincelles s'éteignent, le lien devient fantôme, puis il est ranimé. La série du lien (ancienne section
  * « photo ») est dite dans le chapeau ; l'ancre #photo reste pour les liens déjà partagés.
  */
+import { smallest } from '../../../lib/img';
 import Chip from '../../atoms/Chip.astro';
 import LifeSpark from '../../atoms/LifeSpark.astro';
 import PetImage from '../../atoms/PetImage.astro';
@@ -31,10 +32,10 @@ const sparks = Array.from({ length: c.total }, (_, i) => i >= c.start);
   </div>
   <div class="ghost" data-r="pop">
     <div class="bob">
-      <PetImage class="gs" src={`${IMG}/nino_danger.webp`} loading="lazy" />
-      <PetImage class="gt" src={`${IMG}/nino_fantome.webp`} alt={c.ghostAlt} loading="lazy" />
+      <PetImage class="gs" src={`${IMG}/nino_danger.webp`} loading="lazy" sizes="(min-width: 900px) 260px, 160px" />
+      <PetImage class="gt" src={`${IMG}/nino_fantome.webp`} alt={c.ghostAlt} loading="lazy" sizes="(min-width: 900px) 260px, 160px" />
     </div>
-    <ChatBubble bubble={{ who: 'Nino', whoColor: 'var(--rose)', text: c.says[0], avatar: { img: '/img/nino_face.webp' }, dark: true }} class="say" textId="gsay" />
+    <ChatBubble bubble={{ who: 'Nino', whoColor: 'var(--rose)', text: c.says[0], avatar: { img: smallest('/img/nino_face.webp') }, dark: true }} class="say" textId="gsay" />
   </div>
 </SnapSection>
 <style is:global>

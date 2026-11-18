@@ -3,8 +3,7 @@ import type { LegalPage } from '../types';
 export const securite: LegalPage = {
   title: 'Segurança e denúncias — Minimoa',
   heading: 'Segurança e denúncias',
-  description:
-    'Como denunciar ou bloquear alguém no Minimoa, o que acontece depois, nossas dicas para um primeiro encontro, os números de emergência e a nossa política de proteção de menores de idade.',
+  description: 'Como denunciar ou bloquear alguém no Minimoa, o que acontece depois, dicas para um primeiro encontro, números de emergência e proteção de menores.',
   intro: 'Como denunciar, bloquear, se proteger, e para quem ligar numa emergência.',
   body: [
     { note: '**Em perigo imediato?** Ligue **17** (polícia) ou **112** (emergências, em qualquer lugar da União Europeia). Por SMS, se você não puder falar: **114**.' },

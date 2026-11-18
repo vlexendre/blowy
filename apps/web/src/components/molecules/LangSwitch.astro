@@ -18,8 +18,8 @@ const label = siteText[locale].language;
 {
   variant === 'menu' ? (
     <details class:list={['lsw', cls]} data-lsw>
-      <summary aria-label={`${label} : ${LOCALE_NAME[locale]}`}>
-        <span aria-hidden="true">{locale.toUpperCase()}</span>
+      <summary>
+        <span>{locale.toUpperCase()}</span><span class="lsw-sr">{` · ${label}${locale === 'fr' ? '\u00a0:' : ':'} ${LOCALE_NAME[locale]}`}</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
       </summary>
       <ul role="list">
@@ -46,6 +46,7 @@ const label = siteText[locale].language;
 .lsw{position:relative;flex:0 0 auto}
 .lsw summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border-radius:999px;font-weight:800;font-size:13px;letter-spacing:.04em;color:inherit}
 .lsw summary::-webkit-details-marker{display:none}
+.lsw-sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .lsw summary:hover{background:rgba(255,255,255,.1)}
 .lsw summary svg{width:14px;height:14px;transition:transform .2s}
 .lsw[open] summary svg{transform:rotate(180deg)}

@@ -4,7 +4,7 @@ export const abonnement: LegalPage = {
   title: 'Condiciones de la suscripción Minimoa+ — Minimoa',
   heading: 'Condiciones de la suscripción Minimoa+',
   description:
-    'Minimoa+: lo que incluye, los planes (59,88 € al año con 7 días gratis, 14,99 € al mes o 2,99 € a la semana), la renovación automática, la facturación por Apple, cómo cancelar, qué pasa al final, el desistimiento y los reembolsos.',
+    'Minimoa+: lo que incluye, planes y precios, renovación automática, facturación por Apple, cómo cancelar, desistimiento y reembolsos.',
   intro: 'Qué incluye Minimoa+, cuánto cuesta, cómo se renueva y cómo pararlo. Sin letra pequeña.',
   summary: {
     title: 'En resumen',

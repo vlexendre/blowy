@@ -1,5 +1,6 @@
 ---
 /** 5. Habitudes : deux habitudes avec série et rigueur, la série de la semaine (joker compris), le défi du jour. */
+import { responsive } from '../../../lib/img';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { HABIT_CARDS, HABITS_PET, WEEK_STATES, sections } from '../../../content/landing';
@@ -62,7 +63,7 @@ const days = w.days.map((d, i) => ({ d, s: WEEK_STATES[i] }));
     </div>
   </div>
   <div class="hdefi" data-r="up">
-    <img src={HABITS_PET} alt={c.petAlt} width="450" height="500" loading="lazy" decoding="async" />
+    <img src={HABITS_PET} alt={c.petAlt} width="450" height="500" loading="lazy" decoding="async" {...responsive(HABITS_PET, '(min-width: 900px) 120px, 90px')} />
     <div>
       <span class="lbl">{c.challenge.label}</span>
       <p>{c.challenge.text}</p>

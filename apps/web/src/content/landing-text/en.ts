@@ -3,9 +3,9 @@ import type { LandingText } from './fr';
 
 export const en: LandingText = {
   meta: {
-    title: 'Minimoa — Friends near you, for real',
+    title: 'Minimoa — The app to make friends near you',
     description:
-      'Your minimoa introduces you to people nearby who see life the way you do. Take the quiz, open your neighborhood. Free, zero swiping, 18+.',
+      'The app to make friends near you: your minimoa introduces you to people who see life the way you do. Take the quiz. Free, zero swiping, 18+.',
     ogAlt: 'Nino, Suzie and Pia, fuzzy little minimoas, next to the title “Friends near you.”',
   },
   dots: {

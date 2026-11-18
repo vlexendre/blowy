@@ -8,16 +8,14 @@ import { SUPPORT_EMAIL } from '../../../config/site';
 import { IMG, sections } from '../../../content/landing';
 import type { Locale } from '../../../i18n/site';
 import { landingText } from '../../../content/landing-text';
-import { OFFERS, TRIAL_DAYS } from '@blowy/domain';
-import { formatPrice } from '@blowy/content';
 import { editorialUi } from '../../../content/editorial/ui';
+import { faqItems } from '../../../lib/faq';
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 const c = landingText[locale].faq;
-const price = (minor: number) => formatPrice(locale, minor, 'EUR');
-const items = [...c.items, { q: c.price.q, a: c.price.a(price(OFFERS.yearly.amountMinor), TRIAL_DAYS, price(OFFERS.monthly.amountMinor), price(OFFERS.weekly.amountMinor)) }];
+const items = faqItems(locale);
 ---
 <SnapSection section={sections.faq} panel="p-night s-faq">
   <SectionTitle lines={c.title}>
@@ -33,7 +31,7 @@ const items = [...c.items, { q: c.price.q, a: c.price.a(price(OFFERS.yearly.amou
   <div class="faq" data-r="up">
     {items.map((i) => <FaqItem question={i.q} answer={i.a} />)}
   </div>
-  <PetImage class="fq" src={`${IMG}/suzie_coucou.webp`} loading="lazy" />
+  <PetImage class="fq" src={`${IMG}/suzie_coucou.webp`} loading="lazy" sizes="250px" />
 </SnapSection>
 <style is:global>
 .s-faq{grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx" "faq"}

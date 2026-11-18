@@ -11,7 +11,9 @@ import { LEGAL_UPDATED_ISO } from '../config/legal';
 import type { LegalUi } from '../content/legal/types';
 import { DEFAULT_LOCALE, LEGAL_SLUGS, LOCALES, LOCALE_NAME, LOCALE_REGION, formatDate, legalAlternates, legalPath, type LegalSlug, type Locale } from '../i18n/legal';
 import { allKnown, inline, type Heading } from '../lib/legal-render';
-import { HTML_LANG } from '../i18n/site';
+import { HTML_LANG, localePath } from '../i18n/site';
+import { SITE_NAME } from '../config/site';
+import { breadcrumb, pageName } from '../lib/structured-data';
 
 interface Props {
   locale: Locale;
@@ -29,6 +31,12 @@ const { locale, slug, ui, title, heading, description, intro, summary, toc } = A
 const updated = formatDate(LEGAL_UPDATED_ISO, locale);
 const footerLinks = ui.footerLinks.map((l) => ({ href: l.slug === 'index' ? legalPath(locale) : legalPath(locale, l.slug), label: l.label }));
 const others = LEGAL_SLUGS.filter((s) => s !== slug);
+/** Fil d'Ariane : Minimoa › Informations légales › page. */
+const crumbs = [
+  { name: SITE_NAME, path: localePath(locale, '/') },
+  { name: pageName(ui.index.title), path: legalPath(locale) },
+  ...(slug ? [{ name: pageName(title), path: legalPath(locale, slug) }] : []),
+];
 ---
 <Base
   title={title}
@@ -40,6 +48,7 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
   canonicalPath={legalPath(locale, slug)}
   alternates={legalAlternates(slug)}
   skipLabel={ui.skip}
+  structuredData={[breadcrumb(crumbs)]}
 >
   <TopBar locale={locale} downloadLabel={ui.download} />
   <main id="main" class="prose-main">

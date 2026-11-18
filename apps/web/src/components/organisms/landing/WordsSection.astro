@@ -1,5 +1,6 @@
 ---
 /** 11. 3 mots : la story « décris alex en 3 mots », 3 mots maximum. */
+import { smallest } from '../../../lib/img';
 import Sticker from '../../atoms/Sticker.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
@@ -27,7 +28,7 @@ const on = words.filter((w) => w.on).map((w) => `+ ${w.pole}`);
       <div class="words" role="group" aria-label={c.groupLabel}>
         {words.map((w) => <button type="button" data-g={w.pole} aria-pressed={w.on ? 'true' : 'false'} class={w.short ? 'hide-short' : undefined}>{w.label}</button>)}
       </div>
-      <p class="evo" aria-live="polite"><img src="/img/nino_face.webp" alt="" /><span id="evo">{c.evoPrefix} <b>{on.join(' · ')}</b></span></p>
+      <p class="evo" aria-live="polite"><img src={smallest('/img/nino_face.webp')} alt="" loading="lazy" /><span id="evo">{c.evoPrefix} <b>{on.join(' · ')}</b></span></p>
       <div class="link"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>{c.leadLink}</div>
       <Sticker class="mnino" src={WORDS_PET} width={450} height={500} loading="lazy" reveal />
     </div>
