@@ -11165,23 +11165,15 @@
   },
   "echarpe": {
    "anchor": "mouth",
-   "size": "brow",
-   "w": 1.0,
+   "size": "bodyw",
+   "w": 0.97,
    "pivot": [
     0.5,
-    0.1
+    0.06
    ],
-   "ratio": 1.0934,
-   "dy": 0.13,
-   "back": {
-    "w": 0.95,
-    "pivot": [
-     0.5,
-     0.75
-    ],
-    "ratio": 2.1436,
-    "dy": 0.12
-   }
+   "ratio": 1.7544,
+   "dy": 0.03,
+   "sy": 0.95
   },
   "bandana": {
    "anchor": "mouth",

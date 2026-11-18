@@ -99,7 +99,6 @@ const VARIANT_IMAGES = {
   masque_nuit_1: require('../../assets/items/masque_nuit_1.webp'),
   monocle_1: require('../../assets/items/monocle_1.webp'),
   // Calques arrière (`fit.json` → `items.<id>.back`) : la partie qui passe derrière le minimoa.
-  echarpe_dos: require('../../assets/items/echarpe_dos.webp'),
   bandana_dos: require('../../assets/items/bandana_dos.webp'),
   collier_perles_dos: require('../../assets/items/collier_perles_dos.webp'),
   collier_coquillage_dos: require('../../assets/items/collier_coquillage_dos.webp'),
