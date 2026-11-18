@@ -30,6 +30,9 @@ garde-robe (`unlock.kind === 'premium'`, 13 objets) sont à la personne tant que
 personne (`Wardrobe.settle`), et pour les autres par le minuteur (`WardrobeJobs`, `modules/tick/jobs.ts`). Ils reviennent
 avec un nouvel abonnement. Le reste de la tenue ne bouge pas.
 
+Collections saisonnières (Hiver : jusqu'au 31 janvier 2027), essayage, « Vu de loin », moments clés et mesure de la
+conversion par déclencheur : `docs/DESIR.md`.
+
 ## 1. Dans App Store Connect
 
 1. **Contrat** : « Accords, taxes et banques » → accord des Apps payantes signé, coordonnées bancaires et fiscales

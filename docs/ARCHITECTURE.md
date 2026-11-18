@@ -120,7 +120,8 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 (`groups`, `group_members`, `group_messages`, `group_days`, `together_proposals`, `habit_jokers`, `profiles.show_habits`,
 `reports.group_id`, `reports.group_message_id`), Minimoa+ hebdomadaire et fidélisation (`subscriptions.plan` accepte
 `weekly`, `lifecycle_messages`), croissance (`groups.invite_code`, `creators`, `acquisitions`, `growth_events`,
-`growth_counters`). Compartiment privé `media` (URL signées émises par l'API).
+`growth_counters`), désir de Minimoa+ (`growth_counters` : `plus_*` par déclencheur ; `pet_items.source` = `collection` ;
+docs/DESIR.md). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit

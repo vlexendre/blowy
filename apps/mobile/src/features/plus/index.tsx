@@ -355,7 +355,8 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   const byId = useMemo(() => new Map((store.data ?? []).map((p) => [p.productId, p])), [store.data]);
   const highlight = REASON_PERK[reason];
   // Une phrase « Titre : explication » par avantage (celle de l'API reste celle du lecteur d'écran), celui de la raison en tête.
-  const lines: Record<PlusPerk, readonly string[]> = t.perkLines(pet.name, PREMIUM.length);
+  // Objets premium : les permanents, plus ceux de la collection en cours (jamais ceux d'une collection finie).
+  const lines: Record<PlusPerk, readonly string[]> = t.perkLines(pet.name, PREMIUM.length + (data?.collection?.items.length ?? 0));
   const perkKeys: PlusPerk[] = data?.perks.length ? data.perks.map((p) => p.key).filter((k) => k in lines) : [...PLUS_PERKS];
   const perks: PlusPerkView[] = perkKeys
     .map((key) => {

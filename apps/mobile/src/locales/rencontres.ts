@@ -53,7 +53,7 @@ export const rencontres = messages({
     /** « Vu de loin » : de vraies personnes compatibles hors de ta zone (nombre et phrase de l'API). */
     far: {
       kicker: 'Vu de loin',
-      text: (pet: string) => `Ils sont sur la carte, hors de ta zone. Avec Minimoa+, tu les vois tous, et ${pet} t’en présente un de plus chaque jour.`,
+      text: (pet: string) => `Sur la carte, hors de ta zone. Avec Minimoa+, toute la carte s’ouvre, et ${pet} te présente une personne de plus chaque jour.`,
       cta: 'Les voir avec Minimoa+',
     },
     morePlus: { title: 'Minimoa+', cta: 'Voir' },
@@ -124,7 +124,7 @@ export const rencontres = messages({
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     far: {
       kicker: 'Seen from afar',
-      text: (pet: string) => `They’re on the map, outside your area. With Minimoa+, you see them all, and ${pet} introduces you to one more every day.`,
+      text: (pet: string) => `On the map, outside your area. With Minimoa+, the whole map opens up, and ${pet} introduces you to one more person every day.`,
       cta: 'See them with Minimoa+',
     },
     morePlus: { title: 'Minimoa+', cta: 'See' },
@@ -191,7 +191,7 @@ export const rencontres = messages({
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     far: {
       kicker: 'Visto de lejos',
-      text: (pet: string) => `Están en el mapa, fuera de tu zona. Con Minimoa+, los ves a todos, y ${pet} te presenta a uno más cada día.`,
+      text: (pet: string) => `En el mapa, fuera de tu zona. Con Minimoa+, se abre todo el mapa, y ${pet} te presenta a una persona más cada día.`,
       cta: 'Verlos con Minimoa+',
     },
     morePlus: { title: 'Minimoa+', cta: 'Ver' },
@@ -258,7 +258,7 @@ export const rencontres = messages({
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     far: {
       kicker: 'Visto de longe',
-      text: (pet: string) => `Eles estão no mapa, fora da sua área. Com o Minimoa+, você vê todos, e ${pet} te apresenta mais um por dia.`,
+      text: (pet: string) => `No mapa, fora da sua área. Com o Minimoa+, o mapa inteiro se abre, e ${pet} te apresenta mais uma pessoa por dia.`,
       cta: 'Ver com o Minimoa+',
     },
     morePlus: { title: 'Minimoa+', cta: 'Ver' },
@@ -325,7 +325,7 @@ export const rencontres = messages({
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
     far: {
       kicker: 'Van ver gezien',
-      text: (pet: string) => `Ze staan op de kaart, buiten je zone. Met Minimoa+ zie je ze allemaal, en ${pet} stelt je elke dag aan één persoon meer voor.`,
+      text: (pet: string) => `Op de kaart, buiten je zone. Met Minimoa+ gaat de hele kaart open, en ${pet} stelt je elke dag aan één persoon meer voor.`,
       cta: 'Bekijk ze met Minimoa+',
     },
     morePlus: { title: 'Minimoa+', cta: 'Bekijken' },
@@ -373,7 +373,7 @@ export const rencontre = messages({
     apartSide: (name: string): string => `Toi et ${name}, pas du même côté`,
     unknownVision: 'Visions pas encore comparables : fie-toi à ce que racontent vos minimoas.',
     /** Objet premium porté par l'autre minimoa (déjà visible sur lui) : l'essayer sur le sien (docs/DESIR.md). */
-    wornBy: (name: string, item: string) => `${name} lui a mis ${item} · Minimoa+`,
+    wornBy: (name: string, item: string) => `Porté par ${name} : ${item} · Minimoa+`,
     tryIt: (pet: string) => `Essayer sur ${pet}`,
   },
   en: {
@@ -398,7 +398,7 @@ export const rencontre = messages({
     sameSide: (name: string): string => `You and ${name}, on the same side`,
     apartSide: (name: string): string => `You and ${name}, not on the same side`,
     unknownVision: 'Your visions can’t be compared yet: trust what your minimoas say.',
-    wornBy: (name: string, item: string) => `${name} gave theirs ${item} · Minimoa+`,
+    wornBy: (name: string, item: string) => `Worn by ${name}: ${item} · Minimoa+`,
     tryIt: (pet: string) => `Try on ${pet}`,
   },
   es: {
@@ -423,7 +423,7 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Tú y ${name}, del mismo lado`,
     apartSide: (name: string): string => `Tú y ${name}, no del mismo lado`,
     unknownVision: 'Aún no se pueden comparar sus visiones: fíate de lo que cuentan los minimoas.',
-    wornBy: (name: string, item: string) => `${name} le puso ${item} · Minimoa+`,
+    wornBy: (name: string, item: string) => `Lo lleva ${name}: ${item} · Minimoa+`,
     tryIt: (pet: string) => `Probar en ${pet}`,
   },
   pt: {
@@ -448,7 +448,7 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Você e ${name}, do mesmo lado`,
     apartSide: (name: string): string => `Você e ${name}, em lados diferentes`,
     unknownVision: 'Ainda não dá para comparar as visões: confie no que os minimoas contam.',
-    wornBy: (name: string, item: string) => `${name} colocou ${item} nele · Minimoa+`,
+    wornBy: (name: string, item: string) => `Usado por ${name}: ${item} · Minimoa+`,
     tryIt: (pet: string) => `Provar em ${pet}`,
   },
   nl: {
@@ -473,7 +473,7 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Jij en ${name}, aan dezelfde kant`,
     apartSide: (name: string): string => `Jij en ${name}, niet aan dezelfde kant`,
     unknownVision: 'Jullie visies zijn nog niet te vergelijken: vertrouw op wat jullie minimoas vertellen.',
-    wornBy: (name: string, item: string) => `${name} gaf hem ${item} · Minimoa+`,
+    wornBy: (name: string, item: string) => `Gedragen door ${name}: ${item} · Minimoa+`,
     tryIt: (pet: string) => `Pas op ${pet}`,
   },
 });

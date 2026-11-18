@@ -38,34 +38,47 @@ export interface FarAwayCardProps {
 export function FarAwayCard({ kicker, title, text, ctaLabel, onPress, species, count }: FarAwayCardProps) {
   return (
     <Appear>
-      <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="button" accessibilityLabel={`${kicker}. ${title} ${text}`}>
-        <Panel gradient="violet" radius={24} padding="none" style={styles.far}>
-          <View style={[layout.row, styles.farHead]}>
-            <View style={[layout.row, styles.stack]} accessible={false}>
-              {species.slice(0, 4).map((s, i) => (
-                <Avatar key={`${s}${i}`} size={38} pet={{ name: s, species: s }} blurred cutout style={i ? styles.next : null} />
-              ))}
+      <Panel gradient="violet" radius={24} padding="none" style={styles.far}>
+        <View style={[layout.row, styles.farHead]}>
+          <View style={[layout.row, styles.stack]} accessible={false}>
+            {species.slice(0, Math.min(3, count)).map((s, i) => (
+              <Avatar
+                key={`${s}${i}`}
+                size={38}
+                pet={{ name: s, species: s }}
+                blurred
+                cutout
+                style={i ? styles.next : null}
+              />
+            ))}
+            {/* Autant de silhouettes que de personnes (3 au plus), puis le reste en nombre : jamais plus qu'en vrai. */}
+            {count > 3 ? (
               <View style={[styles.more, styles.next]}>
                 <Text variant="bodyHeavy" size={13} color={color.white}>
-                  {`+${count}`}
+                  {`+${count - 3}`}
                 </Text>
               </View>
-            </View>
-            <Text variant="bodyHeavy" size={12} color={alpha(color.white, 0.8)} style={styles.kicker}>
-              {kicker.toUpperCase()}
-            </Text>
+            ) : null}
           </View>
-          <Text variant="bodyHeavy" size={17} color={color.white}>
-            {title}
+          <Text variant="bodyHeavy" size={12} color={alpha(color.white, 0.8)} style={styles.kicker}>
+            {kicker.toUpperCase()}
           </Text>
-          <Text size={13} color={alpha(color.white, 0.85)}>
-            {text}
-          </Text>
-          <View pointerEvents="none" importantForAccessibility="no-hide-descendants">
-            <Button label={ctaLabel} variant="white" size="sm" />
-          </View>
-        </Panel>
-      </Pressable>
+        </View>
+        <Text variant="bodyHeavy" size={17} color={color.white}>
+          {title}
+        </Text>
+        <Text size={13} color={alpha(color.white, 0.85)}>
+          {text}
+        </Text>
+        <Button
+          label={ctaLabel}
+          variant="white"
+          size="sm"
+          block
+          onPress={onPress}
+          accessibilityLabel={`${ctaLabel}. ${title}`}
+        />
+      </Panel>
     </Appear>
   );
 }
@@ -139,7 +152,14 @@ export function TryOnBar({ title, text, keepLabel, onKeep, removeLabel, onRemove
           {text}
         </Text>
         <View style={[layout.row, styles.tryActions]}>
-          <Button label={keepLabel} variant="white" size="sm" onPress={onKeep} block={false} style={layout.grow} />
+          <Button
+            label={keepLabel}
+            variant="white"
+            size="sm"
+            onPress={onKeep}
+            block={false}
+            style={layout.grow}
+          />
           <Button label={removeLabel} variant="ghost" size="sm" onPress={onRemove} block={false} />
         </View>
       </Panel>
@@ -162,7 +182,12 @@ export interface WornPremiumProps {
 /** Un objet premium vu sur un autre minimoa (déjà visible sur lui), et l'essayer sur le sien. */
 export function WornPremium({ item, label, actionLabel, onPress }: WornPremiumProps) {
   return (
-    <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="button" accessibilityLabel={`${label}. ${actionLabel}`}>
+    <Pressable
+      onPress={onPress}
+      scaleTo={0.98}
+      accessibilityRole="button"
+      accessibilityLabel={`${label}. ${actionLabel}`}
+    >
       <View style={[layout.row, styles.worn]}>
         <View style={styles.itemBox}>
           <ItemImage id={item} size={30} />
@@ -194,10 +219,24 @@ const styles = StyleSheet.create({
     borderColor: alpha(color.white, 0.4),
   },
   kicker: { letterSpacing: 1 },
-  collection: { padding: space.md, gap: space.sm, borderRadius: radius.lg, borderWidth: 1, borderColor: veil.glass, backgroundColor: color.card },
+  collection: {
+    padding: space.md,
+    gap: space.sm,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: veil.glass,
+    backgroundColor: color.card,
+  },
   collectionHead: { alignItems: 'center', gap: space.md },
   items: { gap: 6 },
-  itemBox: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: color.panel },
+  itemBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: color.panel,
+  },
   tryOn: { padding: space.md, gap: 6 },
   tryActions: { gap: space.sm, marginTop: 4, alignItems: 'center' },
   worn: {
