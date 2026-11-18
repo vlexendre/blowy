@@ -50,6 +50,12 @@ export const rencontres = messages({
     /** Version courte du pourquoi, sur les cartes. */
     whyJoin: (title: string, items: string): string => `${title} : ${items}.`,
     /** Le texte de l'avantage vient de l'API (`usePlusPerks`), comme sur la feuille Minimoa+. */
+    /** « Vu de loin » : de vraies personnes compatibles hors de ta zone (nombre et phrase de l'API). */
+    far: {
+      kicker: 'Vu de loin',
+      text: (pet: string) => `Ils sont sur la carte, hors de ta zone. Avec Minimoa+, tu les vois tous, et ${pet} t’en présente un de plus chaque jour.`,
+      cta: 'Les voir avec Minimoa+',
+    },
     morePlus: { title: 'Minimoa+', cta: 'Voir' },
     shareMessage: (pet: string, url: string): string => `Viens rencontrer ${pet} sur Minimoa : ${url}`,
     loadError: 'Impossible de charger les rencontres',
@@ -116,6 +122,11 @@ export const rencontres = messages({
       unavailable: 'Can’t find your location right now. Try again outside or in a moment.',
     },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
+    far: {
+      kicker: 'Seen from afar',
+      text: (pet: string) => `They’re on the map, outside your area. With Minimoa+, you see them all, and ${pet} introduces you to one more every day.`,
+      cta: 'See them with Minimoa+',
+    },
     morePlus: { title: 'Minimoa+', cta: 'See' },
     shareMessage: (pet: string, url: string): string => `Come meet ${pet} on Minimoa: ${url}`,
     loadError: 'Couldn’t load encounters',
@@ -178,6 +189,11 @@ export const rencontres = messages({
       unavailable: 'No encontramos tu ubicación por ahora. Inténtalo en la calle o dentro de un rato.',
     },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
+    far: {
+      kicker: 'Visto de lejos',
+      text: (pet: string) => `Están en el mapa, fuera de tu zona. Con Minimoa+, los ves a todos, y ${pet} te presenta a uno más cada día.`,
+      cta: 'Verlos con Minimoa+',
+    },
     morePlus: { title: 'Minimoa+', cta: 'Ver' },
     shareMessage: (pet: string, url: string): string => `Ven a conocer a ${pet} en Minimoa: ${url}`,
     loadError: 'No se pudieron cargar los encuentros',
@@ -240,6 +256,11 @@ export const rencontres = messages({
       unavailable: 'Não encontramos sua localização agora. Tente de novo ao ar livre ou daqui a pouco.',
     },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
+    far: {
+      kicker: 'Visto de longe',
+      text: (pet: string) => `Eles estão no mapa, fora da sua área. Com o Minimoa+, você vê todos, e ${pet} te apresenta mais um por dia.`,
+      cta: 'Ver com o Minimoa+',
+    },
     morePlus: { title: 'Minimoa+', cta: 'Ver' },
     shareMessage: (pet: string, url: string): string => `Vem conhecer ${pet} no Minimoa: ${url}`,
     loadError: 'Não foi possível carregar os encontros',
@@ -302,6 +323,11 @@ export const rencontres = messages({
       unavailable: 'Je locatie is nu niet te vinden. Probeer het buiten opnieuw, of straks.',
     },
     whyJoin: (title: string, items: string): string => `${title}: ${items}.`,
+    far: {
+      kicker: 'Van ver gezien',
+      text: (pet: string) => `Ze staan op de kaart, buiten je zone. Met Minimoa+ zie je ze allemaal, en ${pet} stelt je elke dag aan één persoon meer voor.`,
+      cta: 'Bekijk ze met Minimoa+',
+    },
     morePlus: { title: 'Minimoa+', cta: 'Bekijken' },
     shareMessage: (pet: string, url: string): string => `Kom ${pet} ontmoeten op Minimoa: ${url}`,
     loadError: 'Ontmoetingen konden niet worden geladen',
@@ -346,6 +372,9 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Toi et ${name}, du même côté`,
     apartSide: (name: string): string => `Toi et ${name}, pas du même côté`,
     unknownVision: 'Visions pas encore comparables : fie-toi à ce que racontent vos minimoas.',
+    /** Objet premium porté par l'autre minimoa (déjà visible sur lui) : l'essayer sur le sien (docs/DESIR.md). */
+    wornBy: (name: string, item: string) => `${name} lui a mis ${item} · Minimoa+`,
+    tryIt: (pet: string) => `Essayer sur ${pet}`,
   },
   en: {
     back: 'Back',
@@ -369,6 +398,8 @@ export const rencontre = messages({
     sameSide: (name: string): string => `You and ${name}, on the same side`,
     apartSide: (name: string): string => `You and ${name}, not on the same side`,
     unknownVision: 'Your visions can’t be compared yet: trust what your minimoas say.',
+    wornBy: (name: string, item: string) => `${name} gave theirs ${item} · Minimoa+`,
+    tryIt: (pet: string) => `Try on ${pet}`,
   },
   es: {
     back: 'Atrás',
@@ -392,6 +423,8 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Tú y ${name}, del mismo lado`,
     apartSide: (name: string): string => `Tú y ${name}, no del mismo lado`,
     unknownVision: 'Aún no se pueden comparar sus visiones: fíate de lo que cuentan los minimoas.',
+    wornBy: (name: string, item: string) => `${name} le puso ${item} · Minimoa+`,
+    tryIt: (pet: string) => `Probar en ${pet}`,
   },
   pt: {
     back: 'Voltar',
@@ -415,6 +448,8 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Você e ${name}, do mesmo lado`,
     apartSide: (name: string): string => `Você e ${name}, em lados diferentes`,
     unknownVision: 'Ainda não dá para comparar as visões: confie no que os minimoas contam.',
+    wornBy: (name: string, item: string) => `${name} colocou ${item} nele · Minimoa+`,
+    tryIt: (pet: string) => `Provar em ${pet}`,
   },
   nl: {
     back: 'Terug',
@@ -438,6 +473,8 @@ export const rencontre = messages({
     sameSide: (name: string): string => `Jij en ${name}, aan dezelfde kant`,
     apartSide: (name: string): string => `Jij en ${name}, niet aan dezelfde kant`,
     unknownVision: 'Jullie visies zijn nog niet te vergelijken: vertrouw op wat jullie minimoas vertellen.',
+    wornBy: (name: string, item: string) => `${name} gaf hem ${item} · Minimoa+`,
+    tryIt: (pet: string) => `Pas op ${pet}`,
   },
 });
 
@@ -470,6 +507,9 @@ export const carte = messages({
     discreet: 'Discret',
     discreetA11y: (on: boolean): string => (on ? 'Mode discret activé : tu n’apparais sur la carte de personne' : 'Mode discret désactivé : les minimoas compatibles te voient sur la carte, position arrondie'),
     discreetOn: 'Mode discret : tu n’apparais sur la carte de personne. Les rencontres, elles, continuent.',
+    /** Au-delà de la zone : le vrai nombre de la carte (`beyond`), et combien à 85 % ou plus. */
+    plusFar: (n: number) => (n === 1 ? '1 compatible hors de ta zone' : `${n} compatibles hors de ta zone`),
+    plusFarText: (strong: number) => (strong > 0 ? `Dont ${strong} à plus de 85 % · Minimoa+` : 'Les voir avec Minimoa+'),
     plusTitle: 'Toute la carte, d’autres villes',
     plusText: 'Avec Minimoa+',
     plusCta: 'Voir',
@@ -553,6 +593,8 @@ export const carte = messages({
     discreet: 'Discreet',
     discreetA11y: (on: boolean): string => (on ? 'Discreet mode on: you don’t appear on anyone’s map' : 'Discreet mode off: compatible minimoas see you on the map, location rounded'),
     discreetOn: 'Discreet mode: you don’t appear on anyone’s map. Encounters keep going.',
+    plusFar: (n: number) => (n === 1 ? '1 match outside your area' : `${n} matches outside your area`),
+    plusFarText: (strong: number) => (strong > 0 ? `${strong} of them over 85% · Minimoa+` : 'See them with Minimoa+'),
     plusTitle: 'The whole map, other cities',
     plusText: 'With Minimoa+',
     plusCta: 'See',
@@ -633,6 +675,8 @@ export const carte = messages({
     discreet: 'Discreto',
     discreetA11y: (on: boolean): string => (on ? 'Modo discreto activado: no apareces en el mapa de nadie' : 'Modo discreto desactivado: los minimoas compatibles te ven en el mapa, con la ubicación redondeada'),
     discreetOn: 'Modo discreto: no apareces en el mapa de nadie. Los encuentros, en cambio, siguen.',
+    plusFar: (n: number) => (n === 1 ? '1 compatible fuera de tu zona' : `${n} compatibles fuera de tu zona`),
+    plusFarText: (strong: number) => (strong > 0 ? `${strong} por encima del 85 % · Minimoa+` : 'Verlos con Minimoa+'),
     plusTitle: 'Todo el mapa, otras ciudades',
     plusText: 'Con Minimoa+',
     plusCta: 'Ver',
@@ -713,6 +757,8 @@ export const carte = messages({
     discreet: 'Discreto',
     discreetA11y: (on: boolean): string => (on ? 'Modo discreto ativado: você não aparece no mapa de ninguém' : 'Modo discreto desativado: os minimoas compatíveis te veem no mapa, com a localização arredondada'),
     discreetOn: 'Modo discreto: você não aparece no mapa de ninguém. Os encontros continuam.',
+    plusFar: (n: number) => (n === 1 ? '1 compatível fora da sua área' : `${n} compatíveis fora da sua área`),
+    plusFarText: (strong: number) => (strong > 0 ? `${strong} acima de 85% · Minimoa+` : 'Ver com o Minimoa+'),
     plusTitle: 'O mapa inteiro, outras cidades',
     plusText: 'Com Minimoa+',
     plusCta: 'Ver',
@@ -793,6 +839,8 @@ export const carte = messages({
     discreet: 'Discreet',
     discreetA11y: (on: boolean): string => (on ? 'Discrete modus aan: je staat op niemands kaart' : 'Discrete modus uit: compatibele minimoas zien je op de kaart, met afgeronde locatie'),
     discreetOn: 'Discrete modus: je staat op niemands kaart. De ontmoetingen gaan gewoon door.',
+    plusFar: (n: number) => (n === 1 ? '1 match buiten je zone' : `${n} matches buiten je zone`),
+    plusFarText: (strong: number) => (strong > 0 ? `Waarvan ${strong} boven de 85% · Minimoa+` : 'Bekijk ze met Minimoa+'),
     plusTitle: 'De hele kaart, andere steden',
     plusText: 'Met Minimoa+',
     plusCta: 'Bekijken',

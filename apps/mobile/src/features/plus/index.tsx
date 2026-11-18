@@ -9,7 +9,7 @@
  */
 import { ApiError } from '@blowy/api-client';
 import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
-import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, type PlusPerk, type Species, yearlyDiscountPercent } from '@blowy/domain';
+import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, PLUS_TRIGGERS, type PlusPerk, collectionOfItem, type PlusTrigger, type Species, yearlyDiscountPercent } from '@blowy/domain';
 import { type IconName, PlusTemplate, type PlusHeroPose, type PlusOfferView, type PlusPerkView, SheetTemplate } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -26,9 +26,12 @@ import { noteReviewPurchase } from '@/features/review';
 
 // ── Ouvrir la feuille depuis n'importe où ────────────────────────────────────
 
-/** Ce que la personne vient d'essayer de faire : le titre de la feuille et l'avantage mis en tête en dépendent. */
-export const PLUS_REASONS = ['generic', 'onboarding', 'premium_item', 'map', 'change_city', 'habits_limit', 'rename', 'detailed_review', 'jokers', 'encounters'] as const;
-export type PlusReason = (typeof PLUS_REASONS)[number];
+/**
+ * Ce que la personne vient d'essayer de faire, ou le moment qui l'amène : le titre de la feuille et l'avantage mis en
+ * tête en dépendent, et chaque ouverture est comptée par déclencheur (docs/DESIR.md). Liste du domaine.
+ */
+export const PLUS_REASONS = PLUS_TRIGGERS;
+export type PlusReason = PlusTrigger;
 
 const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
   premium_item: 'premium_items',
@@ -39,7 +42,16 @@ const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
   detailed_review: 'detailed_review',
   jokers: 'streak_jokers',
   encounters: 'more_encounters',
+  far_away: 'map_everywhere',
+  try_on: 'premium_items',
+  worn_by: 'premium_items',
+  collection: 'premium_items',
+  moment_first_link: 'more_encounters',
+  moment_streak_7: 'streak_jokers',
 };
+
+/** Raisons dont le titre parle de l'objet touché (essayé, vu sur un autre minimoa). */
+const ITEM_REASONS: readonly PlusReason[] = ['premium_item', 'try_on', 'worn_by'];
 
 /**
  * Ouvre la feuille Minimoa+ par-dessus l'écran courant (modale transparente `moi/blowy-plus`). `item` : l'objet premium
@@ -98,8 +110,13 @@ export function plusPerksLine(perks: ReturnType<typeof usePlusPerks>, max = 4): 
 }
 
 /** Envoie une transaction signée à l'API, puis la termine chez Apple (seulement si l'API l'a acceptée). */
-async function submit(api: ReturnType<typeof useApi>, p: SignedPurchase): Promise<Subscription> {
-  const sub = await api.plus.submitPurchase({ store: 'apple', signedTransaction: p.signedTransaction, ...(p.signedRenewalInfo ? { signedRenewalInfo: p.signedRenewalInfo } : {}) });
+async function submit(api: ReturnType<typeof useApi>, p: SignedPurchase, trigger?: PlusReason): Promise<Subscription> {
+  const sub = await api.plus.submitPurchase({
+    store: 'apple',
+    signedTransaction: p.signedTransaction,
+    ...(p.signedRenewalInfo ? { signedRenewalInfo: p.signedRenewalInfo } : {}),
+    ...(trigger ? { trigger } : {}),
+  });
   await p.finish();
   return sub;
 }
@@ -117,7 +134,7 @@ function useRefreshPlus() {
 export type BuyResult = { status: 'purchased'; subscription: Subscription } | { status: 'pending' } | { status: 'cancelled' };
 
 /** Achat : StoreKit (lié au compte par `appAccountToken`), vérification par l'API, puis `me` relu. */
-export function usePurchase() {
+export function usePurchase(trigger?: PlusReason) {
   const api = useApi();
   const { purchases } = usePorts();
   const qc = useQueryClient();
@@ -128,7 +145,7 @@ export function usePurchase() {
       const out = await purchases.purchase(productId, me.id);
       if (out.status !== 'purchased') return out;
       try {
-        return { status: 'purchased', subscription: await submit(api, out.purchase) };
+        return { status: 'purchased', subscription: await submit(api, out.purchase, trigger) };
       } catch (e) {
         // Payé chez Apple mais pas encore activé : la transaction reste ouverte, StoreKit la redonnera (et « restaurer »).
         throw new PlusActivationError(e);
@@ -183,6 +200,39 @@ export function usePlusSync(enabled: boolean) {
   }, [enabled, purchases, api]);
 }
 
+// ── Mesure et moments clés (docs/DESIR.md) ───────────────────────────────────
+
+/** Compte l'ouverture de la feuille par déclencheur, une fois par ouverture (jamais bloquant, rien pour un membre). */
+function usePlusOpened(reason: PlusReason, enabled: boolean) {
+  const api = useApi();
+  useEffect(() => {
+    if (enabled) api.plus.opened(reason).catch(() => undefined);
+    // Une fois par feuille.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
+let momentAsked = false;
+/**
+ * Moment clé (premier lien, 7 jours de série) : quand l'accueil est calme, demande une fois par lancement au serveur
+ * s'il y a un moment à saluer ; le serveur décide et plafonne (une fois par moment, jamais deux propositions fortes en
+ * moins de 3 jours, jamais le jour de l'inscription, jamais avec Minimoa+). Alors seulement, la feuille s'ouvre.
+ */
+export function usePlusMoment(calm: boolean, plus: boolean | undefined) {
+  const api = useApi();
+  useEffect(() => {
+    if (!calm || plus !== false || momentAsked) return;
+    momentAsked = true;
+    // Le serveur a réservé le moment : la feuille s'ouvre même si l'accueil change entre-temps.
+    api.plus
+      .moment()
+      .then(({ moment }) => {
+        if (moment) setTimeout(() => openPlus(moment === 'first_link' ? 'moment_first_link' : 'moment_streak_7'), 700);
+      })
+      .catch(() => undefined);
+  }, [calm, plus, api]);
+}
+
 // ── La feuille ───────────────────────────────────────────────────────────────
 
 /**
@@ -220,7 +270,7 @@ function storeDiscount(yearly: StoreProduct | undefined, monthly: StoreProduct |
 }
 
 /** Objets premium montrés autour du minimoa : celui qu'on vient de toucher d'abord. */
-const PREMIUM = ITEMS.filter((i) => i.unlock.kind === 'premium').map((i) => i.id);
+const PREMIUM = ITEMS.filter((i) => i.unlock.kind === 'premium' && !collectionOfItem(i.id)).map((i) => i.id);
 function floatingFor(item: string | undefined): string[] {
   const rest = ['lunettes_pixel', 'aureole', ...PREMIUM].filter((id, i, all) => id !== item && all.indexOf(id) === i);
   return item && PREMIUM.includes(item) ? [item, rest[0] ?? 'aureole'] : rest.slice(0, 2);
@@ -247,16 +297,32 @@ const HERO: readonly { perk: PlusPerk; pose: PlusHeroPose['pose'] }[] = [
   { perk: 'premium_items', pose: 'fier' },
 ];
 
-/** Tenue de la vitrine (collection Hiver) ; l'objet premium qu'on vient de toucher prend sa place. */
-const SHOWCASE: Outfit = { head: 'hiver_bonnet', body: 'hiver_echarpe', toy: 'hiver_aura' };
-function showcaseFor(item: string | undefined): Outfit {
+/**
+ * Tenue de la vitrine : la collection saisonnière en cours (venue de l'API, avec sa vraie date de fin), sinon des objets
+ * premium permanents (jamais l'objet d'une collection finie, qu'on ne peut plus avoir). L'objet touché prend sa place.
+ */
+const SHOWCASE: Outfit = { head: 'aureole', face: 'lunettes_pixel', body: 'chaine_or' };
+function showcaseFor(item: string | undefined, collection: readonly string[] | null): Outfit {
+  const base: Outfit = { ...SHOWCASE };
+  if (collection?.length) {
+    for (const slot of ['head', 'body', 'toy'] as const) {
+      const pick = ITEMS.find((i) => i.slot === slot && collection.includes(i.id));
+      if (pick) base[slot] = pick.id;
+    }
+    if (collection.some((id) => ITEMS.find((i) => i.id === id)?.slot === 'face')) delete base.face;
+  }
   const touched = item ? ITEMS.find((i) => i.id === item && i.unlock.kind === 'premium') : undefined;
-  return touched ? { ...SHOWCASE, [touched.slot as ItemSlot]: touched.id } : SHOWCASE;
+  return touched ? { ...base, [touched.slot as ItemSlot]: touched.id } : base;
 }
 
-function headlineFor(reason: PlusReason, petName: string, item?: string): string {
-  if (reason === 'premium_item' && item) return t.headline.premium_item(itemLabel[item as keyof typeof itemLabel] ?? petName);
-  const h = t.headline[reason === 'premium_item' ? 'generic' : reason];
+function headlineFor(reason: PlusReason, petName: string, item?: string, collectionUntil?: string | null): string {
+  const label = item ? itemLabel[item as keyof typeof itemLabel] : undefined;
+  if (ITEM_REASONS.includes(reason)) {
+    return label ? t.headline[reason as 'premium_item' | 'try_on' | 'worn_by'](label) : typeof t.headline.generic === 'function' ? t.headline.generic(petName) : t.headline.generic;
+  }
+  // La date de fin vient du serveur ; hors saison, le titre général.
+  if (reason === 'collection') return collectionUntil ? t.headline.collection(collectionUntil) : t.headline.generic(petName);
+  const h = t.headline[reason];
   return typeof h === 'function' ? h(petName) : h;
 }
 
@@ -279,7 +345,8 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   const offers = data?.offers ?? [];
   const store = useStoreProducts(offers.map((o) => o.productId));
   const [plan, setPlan] = useState<PlanDto | null>(null);
-  const buy = usePurchase();
+  const buy = usePurchase(reason);
+  usePlusOpened(reason, !member);
   const restore = useRestore();
   const [status, setStatus] = useState<{ tone: 'info' | 'success' | 'error'; text: string } | null>(null);
   const sub = data?.subscription;
@@ -301,7 +368,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
     key: h.perk,
     pose: h.pose,
     label: short[h.perk][0] ?? '',
-    outfit: h.perk === 'premium_items' ? showcaseFor(item) : (pet.outfit ?? null),
+    outfit: h.perk === 'premium_items' ? showcaseFor(item, data?.collection?.items ?? null) : (pet.outfit ?? null),
   }));
 
   // Là où l'on achète (iPhone, ou magasin simulé du mode local), seul le magasin donne prix et essai.
@@ -396,7 +463,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
         onClose={onClose}
         closeLabel={common.close}
         brand={t.brand}
-        headline={headlineFor(reason, pet.name, item)}
+        headline={headlineFor(reason, pet.name, item, data?.collection ? formatDate(new Date(`${data.collection.until}T12:00:00Z`), { day: 'numeric', month: 'long' }) : null)}
         pet={{ species: pet.species, name: pet.name }}
         poses={poses}
         floatingItems={floatingFor(item)}

@@ -57,7 +57,8 @@ import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
 import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
-import { FirstWeekMoment, StreakMoment } from '@/features/moments';
+import { FirstWeekMoment, StreakMoment, useShareMomentPending } from '@/features/moments';
+import { usePlusMoment } from '@/features/plus';
 import { maybeAskForReview, useReviewMemory } from '@/features/review';
 import { useAwayFromHome, useOuting, usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
@@ -188,6 +189,13 @@ export default function PetHome() {
   const challengePending = !!challenge?.present && presented.current !== challenge.day;
   const peopleSettled = people.kind !== 'loading' && people.kind !== 'vision' && (people.kind !== 'location' || sessions >= 2);
   usePushIntroOnce(push.permission, focused && !!pet.data && !!today.data && !busyCelebrating && !welcomeBack && !challengePending && peopleSettled);
+  // Moment clé (premier lien, 7 jours de série) : Minimoa+ proposé une fois, quand tout est calme et après les cartes à
+  // partager et la demande des notifications ; le serveur décide et plafonne (docs/DESIR.md).
+  const sharePending = useShareMomentPending(today.data?.streak.current, pet.data?.pet.bornAt);
+  usePlusMoment(
+    focused && !!pet.data && !!today.data && !busyCelebrating && !welcomeBack && !challengePending && peopleSettled && !sharePending && push.permission !== 'undetermined',
+    me.data?.plus,
+  );
 
   const say = (text: string) => setSaid((s) => ({ text, key: (s?.key ?? 0) + 1 }));
   const play = (re: PetReaction, item: CareProp | null = null) => {

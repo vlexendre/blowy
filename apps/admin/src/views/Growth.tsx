@@ -236,6 +236,33 @@ export function Growth() {
                 </tbody>
               </table>
             </section>
+            <section className="card" aria-labelledby="g-plus">
+              <h2 id="g-plus">
+                Minimoa+ par déclencheur <span className="hint">12 semaines : feuille ouverte, essais, paiements (docs/DESIR.md)</span>
+              </h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Déclencheur</th>
+                    <th className="num">Ouvertures</th>
+                    <th className="num">Essais</th>
+                    <th className="num">Paiements</th>
+                    <th className="num">Conversion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.plus.map((r) => (
+                    <tr key={r.trigger}>
+                      <td>{r.trigger}</td>
+                      <td className="num">{fmtInt(r.opens)}</td>
+                      <td className="num">{fmtInt(r.trials)}</td>
+                      <td className="num">{fmtInt(r.paid)}</td>
+                      <td className="num">{fmtPct(r.rate)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
           </div>
         </>
       ) : null}
