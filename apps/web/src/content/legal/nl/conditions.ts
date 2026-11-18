@@ -162,7 +162,7 @@ export const conditions: LegalPage = {
     { h2: '14. Toepasselijk recht, geschillen en bemiddeling', id: 'litiges' },
     { p: 'Op deze voorwaarden is **Frans recht** van toepassing. Woon je in een ander EU-land, dan behoud je de bescherming van de dwingende regels van je land.' },
     { p: 'Is er een probleem? Schrijf ons eerst op {{email.support}}: we zoeken samen een oplossing.' },
-    { p: 'Lost je schriftelijke klacht niets op, dan kun je binnen een jaar na je klacht gratis terecht bij de consumentenbemiddelaar waar wij onder vallen:' },
+    { requires: ['mediator.name'], p: 'Lost je schriftelijke klacht niets op, dan kun je binnen een jaar na je klacht gratis terecht bij de consumentenbemiddelaar waar wij onder vallen:' },
     { ul: ['**Bemiddelaar:** {{mediator.name}}', '**Adres:** {{mediator.address}}', '**Website:** {{mediator.website}}'] },
     {
       p: 'Komen we er niet uit, dan gaat het geschil naar de bevoegde Franse rechter. Als consument kun je ook naar de rechter van de plaats waar je woonde bij het aanmelden of op het moment van de gebeurtenis.',
