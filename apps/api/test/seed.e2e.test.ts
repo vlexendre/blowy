@@ -46,12 +46,32 @@ describe('semis de test : garde-fous de configuration', () => {
     expect(configRefusals({ ...SAFE, SUPABASE_SERVICE_ROLE_KEY: jwtFor('abcdefghijklmnopqrst') }, 'supabase')).toEqual([]);
   });
 
-  it('3. une adresse vers minimoa.app (ou un sous-domaine) → refus', () => {
-    expect(configRefusals({ ...SAFE, API_URL: 'https://api.minimoa.app' }, 'supabase')[0]).toMatch(/API_URL pointe vers minimoa\.app/);
+  it('3. une adresse vers un hôte de la production (site, www, API, admin) → refus', () => {
+    expect(configRefusals({ ...SAFE, API_URL: 'https://api.minimoa.app' }, 'supabase')[0]).toMatch(/API_URL pointe vers api\.minimoa\.app \(production\)/);
     expect(configRefusals({ ...SAFE, WEB_URL: 'https://minimoa.app/' }, 'supabase')).toHaveLength(1);
+    expect(configRefusals({ ...SAFE, WEB_URL: 'https://www.minimoa.app' }, 'supabase')).toHaveLength(1);
+    expect(configRefusals({ ...SAFE, WEB_URL: 'https://MINIMOA.APP.' }, 'supabase')).toHaveLength(1);
     expect(configRefusals({ ...SAFE, EXPO_PUBLIC_API_URL: 'api.minimoa.app' }, 'supabase')).toHaveLength(1);
+    expect(configRefusals({ ...SAFE, ADMIN_URL: 'https://admin.minimoa.app/' }, 'supabase')).toHaveLength(1);
     expect(configRefusals({ ...SAFE, CORS_ORIGINS: 'http://localhost:8081,https://admin.minimoa.app' }, 'supabase')).toHaveLength(1);
+    expect(configRefusals({ ...SAFE, CORS_ORIGINS: 'https://dev.minimoa.app,https://minimoa.app' }, 'supabase')).toHaveLength(1);
     expect(configRefusals({ ...SAFE, API_URL: 'https://notminimoa.app' }, 'supabase')).toEqual([]);
+  });
+
+  it('3 bis. les adresses du dev (dev, api-dev, admin-dev.minimoa.app) sont permises', () => {
+    const dev = {
+      ...SAFE,
+      BLOWY_ENV: 'staging',
+      API_URL: 'https://api-dev.minimoa.app',
+      WEB_URL: 'https://dev.minimoa.app',
+      ADMIN_URL: 'https://admin-dev.minimoa.app',
+      CORS_ORIGINS: 'https://dev.minimoa.app,https://admin-dev.minimoa.app,http://localhost:8081',
+      EXPO_PUBLIC_API_URL: 'https://api-dev.minimoa.app',
+    };
+    expect(configRefusals(dev, 'supabase')).toEqual([]);
+    // Les autres garde-fous tiennent toujours avec les adresses du dev.
+    expect(configRefusals({ ...dev, BLOWY_ENV: 'production' }, 'supabase')).toHaveLength(1);
+    expect(configRefusals({ ...dev, SUPABASE_URL: 'https://sqxebllmatfflopqddaw.supabase.co' }, 'supabase')).toHaveLength(1);
   });
 
   it('aucune option ne contourne les garde-fous', () => {

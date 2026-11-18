@@ -4,13 +4,23 @@ import { type PlateformeEnv, loadPlateformeEnv } from './plateforme.env';
 import { type FacturationAdminEnv, loadFacturationAdminEnv } from './facturation-admin.env';
 import { type AppleSignInEnv, loadAppleSignInEnv } from './apple-signin.env';
 import { type AuditEnv, loadAuditEnv } from './audit.env';
+import { hostsOf, isProductionHost, namesProductionSupabase } from './production-targets';
+
+/**
+ * Environnement de l'API (docs/ENVIRONNEMENTS.md) :
+ * - `local` : poste de travail (démo et outils de développement possibles) ;
+ * - `staging` : le dev déployé (https://api-dev.minimoa.app, branche `dev`), avec son propre projet Supabase ; ne doit
+ *   jamais pointer vers la production, n'accepte que les achats du bac à sable, n'envoie d'e-mails qu'à MAIL_ALLOWLIST ;
+ * - `production` : https://api.minimoa.app.
+ */
+export type BlowyEnv = 'local' | 'staging' | 'production';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
 
 const EnvSchema = z
   .object({
-    BLOWY_ENV: z.enum(['local', 'production']).default('local'),
+    BLOWY_ENV: z.enum(['local', 'staging', 'production']).default('local'),
     BLOWY_ADAPTERS: z.enum(['memory', 'supabase']).default('memory'),
     BLOWY_DEMO: z.preprocess(emptyToUndefined, z.enum(['0', '1']).default('0')),
     PORT: z.coerce.number().int().min(0).max(65535).default(3000),
@@ -20,6 +30,11 @@ const EnvSchema = z
     SUPABASE_SERVICE_ROLE_KEY: optionalString,
     RESEND_API_KEY: optionalString,
     MAIL_FROM: z.string().default('Minimoa <hello@minimoa.app>'),
+    /**
+     * Hors production : seuls ces destinataires reçoivent les e-mails de l'API (adresses ou domaines `@exemple.fr`,
+     * séparés par des virgules) ; les autres sont journalisés (domaine seulement) puis écartés. Ignorée en production.
+     */
+    MAIL_ALLOWLIST: optionalString,
     WEB_URL: z.string().url().default('https://minimoa.app'),
     CORS_ORIGINS: z.string().default(''),
     /** Semis d'un environnement de test au démarrage de la démo locale (docs/SEED-TEST.md) : villes (`all` : toutes). */
@@ -36,10 +51,43 @@ const EnvSchema = z
     if (env.BLOWY_ADAPTERS === 'supabase' && (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY)) {
       ctx.addIssue({ code: 'custom', message: 'SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY sont requis avec BLOWY_ADAPTERS=supabase' });
     }
+    if (env.BLOWY_ENV === 'staging') {
+      // Un environnement Railway dupliqué depuis la production garde ses variables : refuser de démarrer plutôt que
+      // d'écrire dans la base de production ou d'envoyer vers ses adresses.
+      for (const key of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'] as const) {
+        const v = env[key];
+        if (v && namesProductionSupabase(v)) ctx.addIssue({ code: 'custom', message: `BLOWY_ENV=staging : ${key} désigne le projet Supabase de production` });
+      }
+      for (const key of ['API_URL', 'WEB_URL'] as const) {
+        const v = env[key];
+        if (v && hostsOf(v).some(isProductionHost)) {
+          // WEB_URL a pour défaut https://minimoa.app : en staging, il faut la poser (https://dev.minimoa.app).
+          ctx.addIssue({ code: 'custom', message: `BLOWY_ENV=staging : ${key} pointe vers la production${key === 'WEB_URL' ? ' (à poser : https://dev.minimoa.app)' : ''}` });
+        }
+      }
+    }
   });
 
+/** Liste d'envoi des e-mails hors production : adresses exactes et domaines (`@exemple.fr`), en minuscules. */
+export interface MailAllowList {
+  emails: string[];
+  domains: string[];
+}
+
+function parseMailAllowList(raw: string | undefined): MailAllowList | null {
+  if (!raw) return null;
+  const items = raw
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter((s) => s.length > 0);
+  if (items.length === 0) return null;
+  const bad = items.filter((s) => !/^[^@\s]*@[^@\s]+\.[^@\s]+$/.test(s));
+  if (bad.length > 0) throw new Error(`configuration invalide — MAIL_ALLOWLIST : « ${bad.join(', ')} » n'est ni une adresse ni un domaine @exemple.fr`);
+  return { emails: items.filter((s) => !s.startsWith('@')), domains: items.filter((s) => s.startsWith('@')).map((s) => s.slice(1)) };
+}
+
 export interface Env {
-  env: 'local' | 'production';
+  env: BlowyEnv;
   adapters: 'memory' | 'supabase';
   demo: boolean;
   port: number;
@@ -47,6 +95,8 @@ export interface Env {
   supabase: { url: string; serviceRoleKey: string } | null;
   resendApiKey: string | null;
   mailFrom: string;
+  /** Destinataires permis hors production (null : pas de filtre ; toujours null en production). */
+  mailAllowList: MailAllowList | null;
   webUrl: string;
   corsOrigins: string[];
   /** IA, push et minuteur (chantier « plateforme »). */
@@ -91,6 +141,7 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     supabase: e.SUPABASE_URL && e.SUPABASE_SERVICE_ROLE_KEY ? { url: e.SUPABASE_URL, serviceRoleKey: e.SUPABASE_SERVICE_ROLE_KEY } : null,
     resendApiKey: e.RESEND_API_KEY ?? null,
     mailFrom: e.MAIL_FROM,
+    mailAllowList: e.BLOWY_ENV === 'production' ? null : parseMailAllowList(e.MAIL_ALLOWLIST),
     webUrl: e.WEB_URL.replace(/\/$/, ''),
     corsOrigins: e.CORS_ORIGINS.split(',')
       .map((o) => o.trim())

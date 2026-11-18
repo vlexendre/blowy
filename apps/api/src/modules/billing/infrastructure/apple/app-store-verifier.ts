@@ -26,6 +26,8 @@ export interface AppleBillingOptions {
   /** Vérifié sur les notifications de production (obligatoire en production). */
   appAppleId: number | null;
   acceptSandbox: boolean;
+  /** Accepter l'environnement Production d'Apple (défaut : oui). Non en staging : bac à sable seulement. */
+  acceptProduction?: boolean;
   /** Racines de confiance (PEM). Par défaut : Apple Root CA - G3. Les tests passent leur propre racine. */
   rootCertificates?: readonly string[];
 }
@@ -132,7 +134,10 @@ export class AppleBilling implements Billing {
   }
 
   private checkEnvironment(env: AppleEnvironment): void {
-    if (env === 'Production') return;
+    if (env === 'Production') {
+      if (this.options.acceptProduction === false) fail('environnement refusé : Production (API de dev, bac à sable seulement)');
+      return;
+    }
     // Xcode et LocalTesting sont signés par un certificat local : jamais acceptés par le serveur.
     if (env === 'Sandbox' && this.options.acceptSandbox) return;
     fail(`environnement refusé : ${env}`);

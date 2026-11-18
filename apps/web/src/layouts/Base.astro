@@ -4,7 +4,7 @@
  * lien d'évitement, contenu, emplacement « footer ».
  */
 import { color, font, gradient, radius, space } from '@blowy/tokens';
-import { APP_STORE_ID, OG_ALT, OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
+import { APP_STORE_ID, IS_DEV_SITE, OG_ALT, OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
 import { jsonLd } from '../lib/structured-data';
 import LangBanner from '../components/organisms/LangBanner.astro';
 import '../styles/global.css';
@@ -72,6 +72,8 @@ const tokenVars = [
 const tokenCss = `:root{${tokenVars.join(';')}}`;
 /** Police Allo réduite (scripts/fonts/subset-allo.sh) : nom à empreinte, mise en cache un an. */
 const ALLO_FONT = '/fonts/allo/allo-latin.10665227.woff2';
+/** Bandeau « DEV » du site de test : coin bas gauche, au-dessus de tout, ne capte aucun clic. Absent en production. */
+const DEV_RIBBON_CSS = `.env-ribbon{position:fixed;left:-44px;bottom:18px;z-index:2147483647;width:150px;rotate:45deg;padding:4px 0;background:${color.danger};color:${color.white};font:800 13px/1 var(--font-body);letter-spacing:.2em;text-align:center;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.35)}`;
 ---
 <!doctype html>
 <html lang={lang} class={htmlClass}>
@@ -81,6 +83,8 @@ const ALLO_FONT = '/fonts/allo/allo-latin.10665227.woff2';
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {/* Site de test (PUBLIC_SITE_ENV=dev) : aucune page indexée ni suivie. La méta propre à la page reste à côté. */}
+    {IS_DEV_SITE && <meta name="robots" content="noindex,nofollow" />}
     {noindex && <meta name="robots" content="noindex" />}
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={new URL(a.path, SITE_URL).href} />)}
     {!noindex && <meta name="apple-itunes-app" content={`app-id=${APP_STORE_ID}`} />}
@@ -111,10 +115,12 @@ const ALLO_FONT = '/fonts/allo/allo-latin.10665227.woff2';
     <style is:inline set:html={`@font-face{font-family:'Allo';src:url('${ALLO_FONT}') format('woff2');font-weight:400 800;font-style:normal;font-display:swap}`}></style>
     <style is:inline set:html={tokenCss}></style>
     <script type="application/ld+json" set:html={jsonLd(structuredData)} />
+    {IS_DEV_SITE && <style is:inline set:html={DEV_RIBBON_CSS}></style>}
     <slot name="head" />
   </head>
   <body class={bodyClass}>
     <a class="skip" href="#main">{skipLabel}</a>
+    {IS_DEV_SITE && <div class="env-ribbon" title="dev.minimoa.app : environnement de test, pas la production">DEV</div>}
     <slot />
     <slot name="footer" />
     {langBanner && <LangBanner />}

@@ -29,6 +29,20 @@
       },
       "node": "22.23.4"
     },
+    "dev": {
+      "autoIncrement": true,
+      "env": {
+        "BLOWY_APP_ENV": "dev",
+        "BLOWY_WIDGETS": "off",
+        "EXPO_PUBLIC_API_URL": "https://api-dev.minimoa.app",
+        "EXPO_PUBLIC_WEB_URL": "https://dev.minimoa.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://REMPLACER-REF-DEV.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_KEY": "REMPLACER-CLE-PUBLIABLE-DEV",
+        "EXPO_PUBLIC_AUTH": "supabase",
+        "BLOWY_APS_ENVIRONMENT": "production"
+      },
+      "node": "22.23.4"
+    },
     "production": {
       "autoIncrement": true,
       "env": {
@@ -47,6 +61,11 @@
       "ios": {
         "language": "fr-FR",
         "ascAppId": "6833895780"
+      }
+    },
+    "dev": {
+      "ios": {
+        "language": "fr-FR"
       }
     }
   }

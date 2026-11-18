@@ -2,6 +2,7 @@ import 'react-native-url-polyfill/auto';
 
 import type { UploadTicket } from '@blowy/contract';
 import { createClient, type Session as SbSession, type SupabaseClient } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { AppState, Platform } from 'react-native';
@@ -50,10 +51,13 @@ export const platformProviders = (): readonly AuthProvider[] => (Platform.OS ===
 /**
  * Adresse de retour de la connexion Google (`minimoa://auth-callback`, ou la même origine sur le web). L'app accepte
  * aussi `blowy://auth-callback` (second schéma) ; les deux sont à lister dans Supabase (docs/CONNEXION.md).
+ * App « Minimoa Dev » : son seul schéma, `minimoa-dev://auth-callback` (app.config.ts, docs/ENVIRONNEMENTS.md).
  */
 export function oauthRedirect(): string {
   if (Platform.OS === 'web' && typeof window !== 'undefined') return `${window.location.origin}/auth-callback`;
-  return Linking.createURL('auth-callback', { scheme: 'minimoa' });
+  const configured = Constants.expoConfig?.scheme;
+  const scheme = (Array.isArray(configured) ? configured[0] : configured) ?? 'minimoa';
+  return Linking.createURL('auth-callback', { scheme });
 }
 
 /** La session ouverte par le fournisseur (absente : échec, jamais une annulation). */

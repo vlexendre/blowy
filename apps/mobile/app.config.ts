@@ -1,37 +1,55 @@
 /**
  * Configuration Expo de Minimoa. Aucun secret ici : seules des variables EXPO_PUBLIC_* publiques sont lues par l'app.
- * Profils EAS : development (client de dev), preview (interne), production (TestFlight / App Store).
+ * Profils EAS : development (client de dev), preview (interne), production (TestFlight / App Store), et `dev` : l'app
+ * « Minimoa Dev » de l'environnement de dev (docs/ENVIRONNEMENTS.md).
  */
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 const NIGHT = '#0B0A14';
 /**
- * L'app s'appelle Minimoa mais garde l'identifiant `app.blowy` (et les achats `app.blowy.plus.*`) : un identifiant
- * d'app ne se renomme pas sur l'App Store. Idem pour les clés `blowy.*` rangées sur l'appareil (session, brouillon).
+ * Identité de l'app selon l'environnement, relue à chaque appel (les tests changent l'environnement).
+ * `BLOWY_APP_ENV=dev` (profil EAS `dev`) : app « Minimoa Dev », branchée sur l'API et le Supabase de dev, installable à
+ * côté de l'app publiée : son propre identifiant (`app.blowy.dev`), son icône marquée « DEV », son schéma `minimoa-dev`
+ * et ses liens universels sur dev.minimoa.app seulement (docs/ENVIRONNEMENTS.md). Rien ne change pour les autres profils.
  */
-const BUNDLE_ID = process.env.BLOWY_BUNDLE_ID ?? 'app.blowy';
-/** Liens universels (iOS) et liens d'app (Android) : docs/DEEPLINKS.md. `www` redirige vers le domaine nu. */
-const ASSOCIATED_DOMAINS = ['minimoa.app', 'www.minimoa.app'];
-/**
- * Schémas : `minimoa` d'abord (celui que l'app fabrique, retour de connexion compris), `blowy` gardé pour les liens
- * déjà envoyés, les widgets et les anciens retours de connexion.
- */
-const SCHEMES = ['minimoa', 'blowy'];
+function identity() {
+  const APP_ENV: 'dev' | 'production' = process.env.BLOWY_APP_ENV === 'dev' ? 'dev' : 'production';
+  const DEV = APP_ENV === 'dev';
+  // Profil `dev` d'eas.json : la référence et la clé publiable du projet Supabase de dev sont à remplir avant un build.
+  if (DEV && process.env.EAS_BUILD && /REMPLACER/.test(`${process.env.EXPO_PUBLIC_SUPABASE_URL ?? ''} ${process.env.EXPO_PUBLIC_SUPABASE_KEY ?? ''}`)) {
+    throw new Error('eas.json › build.dev : remplir EXPO_PUBLIC_SUPABASE_URL et EXPO_PUBLIC_SUPABASE_KEY du projet Supabase de dev (docs/ENVIRONNEMENTS.md).');
+  }
+  /**
+   * L'app s'appelle Minimoa mais garde l'identifiant `app.blowy` (et les achats `app.blowy.plus.*`) : un identifiant
+   * d'app ne se renomme pas sur l'App Store. Idem pour les clés `blowy.*` rangées sur l'appareil (session, brouillon).
+   */
+  const BUNDLE_ID = process.env.BLOWY_BUNDLE_ID ?? (DEV ? 'app.blowy.dev' : 'app.blowy');
+  /** Liens universels (iOS) et liens d'app (Android) : docs/DEEPLINKS.md. `www` redirige vers le domaine nu. */
+  const ASSOCIATED_DOMAINS = DEV ? ['dev.minimoa.app'] : ['minimoa.app', 'www.minimoa.app'];
+  /**
+   * Schémas : `minimoa` d'abord (celui que l'app fabrique, retour de connexion compris), `blowy` gardé pour les liens
+   * déjà envoyés, les widgets et les anciens retours de connexion. App de dev : `minimoa-dev` seul (aucun lien de la
+   * production ne l'ouvre, et elle n'ouvre jamais ceux de la production).
+   */
+  const SCHEMES = DEV ? ['minimoa-dev'] : ['minimoa', 'blowy'];
+  /** Groupe d'apps partagé avec l'extension des widgets (état des widgets). À créer dans le portail Apple : docs/WIDGETS.md. */
+  const APP_GROUP = `group.${BUNDLE_ID}`;
+  /**
+   * `BLOWY_WIDGETS=off` : build sans l'extension des widgets ni le groupe d'apps (cible `app.blowy.widget` absente).
+   * Provisoire, tant qu'Apple refuse d'enregistrer de nouveaux identifiants pour l'équipe (contrats en attente). Le
+   * profil `dev` le pose : un seul identifiant à créer (`app.blowy.dev`).
+   */
+  const WIDGETS = process.env.BLOWY_WIDGETS !== 'off';
+  return { APP_ENV, DEV, BUNDLE_ID, ASSOCIATED_DOMAINS, SCHEMES, APP_GROUP, WIDGETS };
+}
 /** Chemins publics ouverts dans l'app (même liste que le site : apps/web/src/config/apple.ts). */
 const APP_LINK_PREFIXES = ['/i/', '/m/', '/g/', '/c/', '/r/', '/l/'];
 const APP_LINK_PAGES = ['/plus', '/defi', '/habitudes', '/carte'];
 /** À coller après `eas init` (voir docs/TESTFLIGHT.md). */
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? '01d6f37d-203a-4747-910b-6de4cfe50ed5';
 const EXPO_OWNER = process.env.EXPO_OWNER ?? 'alexendre.o';
-/** Groupe d'apps partagé avec l'extension des widgets (état des widgets). À créer dans le portail Apple : docs/WIDGETS.md. */
-const APP_GROUP = `group.${BUNDLE_ID}`;
 /** Identifiant d'équipe Apple (10 caractères) : utile à `@bacons/apple-targets` pour signer l'extension hors EAS. */
 const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID;
-/**
- * `BLOWY_WIDGETS=off` : build sans l'extension des widgets ni le groupe d'apps (cible `app.blowy.widget` absente).
- * Provisoire, tant qu'Apple refuse d'enregistrer de nouveaux identifiants pour l'équipe (contrats en attente).
- */
-const WIDGETS = process.env.BLOWY_WIDGETS !== 'off';
 /**
  * Textes des autorisations iOS : une seule source, `./locales/fr.json` (français, langue source), repris tels quels dans
  * `Info.plist` ; chaque langue a son `InfoPlist.strings` par `locales` (hors français : la phrase française en attendant
@@ -104,9 +122,11 @@ const PRIVACY_MANIFEST = {
   })),
 };
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
+export default ({ config }: ConfigContext): ExpoConfig => {
+  const { APP_ENV, DEV, BUNDLE_ID, ASSOCIATED_DOMAINS, SCHEMES, APP_GROUP, WIDGETS } = identity();
+  return {
   ...config,
-  name: 'Minimoa',
+  name: DEV ? 'Minimoa Dev' : 'Minimoa',
   slug: 'blowy',
   owner: EXPO_OWNER,
   version: '1.0.0',
@@ -114,11 +134,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: SCHEMES,
   userInterfaceStyle: 'dark',
   backgroundColor: NIGHT,
-  icon: './assets/images/icon.png',
+  icon: DEV ? './assets/images/icon-dev.png' : './assets/images/icon.png',
   runtimeVersion: { policy: 'appVersion' },
   ios: {
     // Icônes iOS 18 : claire, sombre (fond posé par le système), teintée.
-    icon: { light: './assets/images/icon.png', dark: './assets/images/icon-dark.png', tinted: './assets/images/icon-tinted.png' },
+    // App de dev : une seule icône, marquée « DEV » (assets/images/icon-dev.png).
+    icon: DEV ? './assets/images/icon-dev.png' : { light: './assets/images/icon.png', dark: './assets/images/icon-dark.png', tinted: './assets/images/icon-tinted.png' },
     bundleIdentifier: BUNDLE_ID,
     ...(APPLE_TEAM_ID ? { appleTeamId: APPLE_TEAM_ID } : {}),
     supportsTablet: false,
@@ -210,5 +231,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   // Textes système iOS (autorisations) par langue : français écrit, les autres à traduire (docs/I18N.md).
   locales: { fr: './locales/fr.json', en: './locales/en.json', es: './locales/es.json', pt: './locales/pt.json', nl: './locales/nl.json' },
   experiments: { typedRoutes: true },
-  extra: { router: {}, eas: EAS_PROJECT_ID ? { projectId: EAS_PROJECT_ID } : {} },
-});
+  extra: { router: {}, appEnv: APP_ENV, eas: EAS_PROJECT_ID ? { projectId: EAS_PROJECT_ID } : {} },
+  };
+};

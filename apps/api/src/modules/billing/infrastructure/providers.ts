@@ -19,7 +19,7 @@ export const billingProviders = (adapters: Adapters): Provider[] => [
     provide: APPLE_BILLING,
     useFactory: (env: Env): Billing => {
       const { apple } = env.facturationAdmin;
-      return adapters === 'memory' ? new MemoryBilling(apple.bundleId) : new AppleBilling({ bundleId: apple.bundleId, appAppleId: apple.appAppleId, acceptSandbox: apple.acceptSandbox });
+      return adapters === 'memory' ? new MemoryBilling(apple.bundleId) : new AppleBilling({ bundleId: apple.bundleId, appAppleId: apple.appAppleId, acceptSandbox: apple.acceptSandbox, acceptProduction: apple.acceptProduction });
     },
     inject: [ENV],
   },

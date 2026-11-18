@@ -1,6 +1,8 @@
-# Administration (https://admin.minimoa.app, projet Cloudflare Pages à part). Jamais indexée, jamais encadrée.
+# Modèle de dist/_headers, rempli au build par vite.config.ts (`adminHeaders`) : {{API_ORIGIN}} vient de VITE_API_URL,
+# {{SUPABASE_ORIGIN}} de VITE_SUPABASE_URL. Production : https://api.minimoa.app et https://sqxebllmatfflopqddaw.supabase.co ;
+# dev (admin-dev.minimoa.app) : https://api-dev.minimoa.app et le projet Supabase de dev (docs/ENVIRONNEMENTS.md).
+# Administration (projet Cloudflare Pages à part). Jamais indexée, jamais encadrée.
 # CSP : seulement l'admin elle-même, l'API et le projet Supabase (connexion par code e-mail, photos signalées en URL signées).
-# Changer d'API ou de projet Supabase = changer cette ligne (et VITE_API_URL, VITE_SUPABASE_URL du build).
 /*
   X-Robots-Tag: noindex, nofollow, noarchive
   X-Frame-Options: DENY
@@ -9,7 +11,7 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
   Strict-Transport-Security: max-age=31536000
   Cross-Origin-Opener-Policy: same-origin
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://sqxebllmatfflopqddaw.supabase.co; connect-src https://api.minimoa.app https://sqxebllmatfflopqddaw.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: {{SUPABASE_ORIGIN}}; connect-src {{API_ORIGIN}} {{SUPABASE_ORIGIN}}; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
 
 # La page elle-même : jamais en cache (une nouvelle version et un accès retiré se voient tout de suite).
 /

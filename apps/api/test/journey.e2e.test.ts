@@ -3,7 +3,7 @@
  * (chaque réponse est donc validée par les schémas du contrat).
  */
 import type { ApiClient } from '@blowy/api-client';
-import type { Link } from '@blowy/contract';
+import { HealthZ, type Link } from '@blowy/contract';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { type TestWorld, errorCode, onboardBody, seedPastPhoto, startWorld } from './helpers';
 
@@ -23,7 +23,7 @@ describe('parcours : rencontre, chat, vies, série de la conversation, niveaux',
   it('répond à /health et refuse sans jeton', async () => {
     expect(await world.anonymous.me.get().catch((e: { code: string }) => e.code)).toBe('unauthorized');
     const res = await fetch(`${world.baseUrl}/health`);
-    expect(await res.json()).toEqual({ ok: true });
+    expect(HealthZ.parse(await res.json())).toEqual({ ok: true, env: 'local' });
   });
 
   it('refuse les moins de 18 ans puis inscrit deux personnes', async () => {

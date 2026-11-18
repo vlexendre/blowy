@@ -5,7 +5,7 @@
 import type { ZoneStatus } from '@blowy/contract';
 import { zoneOfPostalCode } from '@blowy/domain';
 import { api, failureOf } from '../lib/api';
-import { SITE_URL } from '../config/site';
+import { LINK_URL } from '../config/site';
 import { copyText, fill, flash, locale, shareOrCopy, t } from './quiz-shared';
 
 const q = t.quartier;
@@ -18,7 +18,7 @@ export interface QuartierFormOptions {
 }
 
 /** Lien du quartier à partager (`?ref=` : ton code, une fois l'adresse confirmée). */
-export const quartierLink = (zone: string, ref?: string | null): string => `${SITE_URL}/quartier/${zone}${ref ? `?ref=${encodeURIComponent(ref)}` : ''}`;
+export const quartierLink = (zone: string, ref?: string | null): string => `${LINK_URL}/quartier/${zone}${ref ? `?ref=${encodeURIComponent(ref)}` : ''}`;
 
 /** Compteur : barre et « 38 / 50 pour ouvrir Paris 11e ». */
 export function renderCounter(root: ParentNode, s: ZoneStatus): void {

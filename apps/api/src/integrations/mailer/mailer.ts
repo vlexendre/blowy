@@ -40,3 +40,34 @@ export class ConsoleMailer implements Mailer {
     this.logger.log(`e-mail « ${mail.subject} » → @${mail.to.split('@')[1] ?? '?'}`);
   }
 }
+
+/** Destinataires permis : adresses exactes et domaines (sans « @ »), en minuscules. */
+export interface MailRecipients {
+  emails: readonly string[];
+  domains: readonly string[];
+}
+
+export const recipientAllowed = (to: string, allow: MailRecipients): boolean => {
+  const address = to.trim().toLowerCase();
+  const domain = address.split('@')[1] ?? '';
+  return allow.emails.includes(address) || allow.domains.includes(domain);
+};
+
+/**
+ * Hors production (`MAIL_ALLOWLIST`, docs/ENVIRONNEMENTS.md) : seuls les destinataires de la liste reçoivent l'e-mail ;
+ * les autres sont journalisés (sujet et domaine, jamais l'adresse complète) puis écartés sans erreur, pour que le dev,
+ * qui partage la clé Resend de la production, n'écrive jamais à quelqu'un par erreur.
+ */
+export class AllowListMailer implements Mailer {
+  private readonly logger = new Logger('Mailer');
+
+  constructor(
+    private readonly inner: Mailer,
+    private readonly allow: MailRecipients,
+  ) {}
+
+  async send(mail: OutgoingMail): Promise<void> {
+    if (recipientAllowed(mail.to, this.allow)) return this.inner.send(mail);
+    this.logger.log(`e-mail « ${mail.subject} » → @${mail.to.split('@')[1] ?? '?'} écarté (hors MAIL_ALLOWLIST)`);
+  }
+}

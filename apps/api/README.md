@@ -42,7 +42,7 @@ curl -H 'Authorization: Bearer test:11111111-1111-4111-8111-111111111111' localh
 
 | Variable | Défaut | Rôle |
 |---|---|---|
-| `BLOWY_ENV` | `local` | `local` ou `production` |
+| `BLOWY_ENV` | `local` | `local`, `staging` (le dev déployé, https://api-dev.minimoa.app) ou `production` ; dit par `GET /health` (docs/ENVIRONNEMENTS.md) |
 | `BLOWY_ADAPTERS` | `memory` | `memory` ou `supabase` — **la production refuse `memory`** |
 | `BLOWY_DEMO` | `0` | `1` = monde de démo (seulement en `local` + `memory`) |
 | `PORT` | `3000` | port d'écoute |
@@ -51,10 +51,14 @@ curl -H 'Authorization: Bearer test:11111111-1111-4111-8111-111111111111' localh
 | `SUPABASE_SERVICE_ROLE_KEY` | — | clé secrète (service) ; requise avec `supabase`, jamais dans l'app |
 | `RESEND_API_KEY` | vide | vide = e-mails dans la console |
 | `MAIL_FROM` | `Minimoa <hello@minimoa.app>` | expéditeur |
-| `WEB_URL` | `https://minimoa.app` | liens des e-mails |
+| `MAIL_ALLOWLIST` | vide | hors production : seuls ces destinataires (adresses ou `@domaine`, séparés par des virgules) reçoivent les e-mails ; les autres sont journalisés (domaine) et écartés. Ignorée en production |
+| `WEB_URL` | `https://minimoa.app` | liens des e-mails ; **à poser en staging** (`https://dev.minimoa.app`) |
 | `CORS_ORIGINS` | vide | origines autorisées, séparées par des virgules |
 
 L'API refuse de démarrer si la configuration est incohérente (production + mémoire, Supabase sans URL ou clé).
+En `staging`, elle refuse aussi tout ce qui désigne la production (projet Supabase `sqxebllmatfflopqddaw`, `API_URL`,
+`WEB_URL` ou `ADMIN_URL` sur minimoa.app, www, api ou admin), `REVENUECAT_APPLE_NOTIFICATIONS_URL`, et un `REVIEW_CODE`
+de moins de 10 caractères ; elle n'accepte que les achats du bac à sable d'Apple (docs/ENVIRONNEMENTS.md).
 
 ## Comment les adaptateurs basculent
 

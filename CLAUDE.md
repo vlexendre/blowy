@@ -14,6 +14,7 @@ Lire d'abord `docs/ARCHITECTURE.md` (règles) et `docs/SCREENS.md` (écrans). Te
 - Minuteur en local : `INTERNAL_TICK_SECRET=<24 caractères>` puis `curl -X POST -H "x-tick-secret: …" localhost:3000/internal/tick`
 - Schéma après une migration : `PGHOST=… PGPORT=… PGUSER=postgres pnpm --filter @blowy/api check:schema` (PostgreSQL local seulement)
 - Semis d'un environnement de test (jamais la production) : `docs/SEED-TEST.md`
+- Environnements (production `main`, dev `dev` : dev.minimoa.app, api-dev, admin-dev) : `docs/ENVIRONNEMENTS.md`
 - Mise en production V7 : `docs/DEPLOIEMENT-V7.md`
 - TestFlight : `docs/TESTFLIGHT.md`
 

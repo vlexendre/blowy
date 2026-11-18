@@ -26,6 +26,13 @@ export async function createApp(env: Env, options: CreateAppOptions = {}): Promi
   // Derrière le proxy de l'hébergeur : l'IP réelle sert au limiteur de la page « 3 mots ».
   app.set('trust proxy', 1);
   app.disable('x-powered-by');
+  // Hors production (dev déployé : api-dev.minimoa.app) : aucune réponse indexée.
+  if (env.env !== 'production') {
+    app.use((_req: unknown, res: { setHeader(name: string, value: string): void }, next: () => void) => {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      next();
+    });
+  }
   app.enableCors({ origin: env.corsOrigins, methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'], allowedHeaders: ['authorization', 'content-type', 'accept-language'] });
   // Langue de la requête (Accept-Language), lisible partout pendant la requête (`requestLocale()`).
   app.use(withRequestLocale);

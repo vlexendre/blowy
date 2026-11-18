@@ -12,10 +12,13 @@ import type { Href } from 'expo-router';
  * des notifications, passent tels quels.
  */
 
-/** Schémas de l'app : `minimoa` (actuel), `blowy` (liens déjà envoyés, widgets, anciennes notifications). */
-export const APP_SCHEMES = ['minimoa', 'blowy'] as const;
-/** Domaines du site dont l'app ouvre les liens (`blowy.app` : anciennes notifications). */
-export const WEB_HOSTS = ['minimoa.app', 'www.minimoa.app', 'blowy.app', 'www.blowy.app'] as const;
+/**
+ * Schémas de l'app : `minimoa` (actuel), `blowy` (liens déjà envoyés, widgets, anciennes notifications), `minimoa-dev`
+ * (app « Minimoa Dev », docs/ENVIRONNEMENTS.md). Seuls ceux d'app.config.ts parviennent à l'app ; lire les autres ne coûte rien.
+ */
+export const APP_SCHEMES = ['minimoa', 'blowy', 'minimoa-dev'] as const;
+/** Domaines du site dont l'app ouvre les liens (`blowy.app` : anciennes notifications ; `dev.minimoa.app` : le dev). */
+export const WEB_HOSTS = ['minimoa.app', 'www.minimoa.app', 'blowy.app', 'www.blowy.app', 'dev.minimoa.app'] as const;
 
 const ID = '[\\w-]{1,64}';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

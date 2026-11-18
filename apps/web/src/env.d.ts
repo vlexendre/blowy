@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_APP_STORE_URL?: string;
   /** Fiche Google Play (https://play.google.com/…). Absente : « Bientôt sur Google Play », sans lien. */
   readonly PUBLIC_PLAY_STORE_URL?: string;
+  /** `dev` : site de test (noindex, bandeau « DEV », robots.txt fermé). Absent ou `production` : minimoa.app. */
+  readonly PUBLIC_SITE_ENV?: string;
 }
 
 interface ImportMeta {

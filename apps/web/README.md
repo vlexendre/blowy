@@ -56,6 +56,7 @@ pnpm --filter @blowy/web preview
 | `PUBLIC_PLAY_STORE_URL` | (aucun) | Fiche Google Play. Absente : « Bientôt sur Google Play », sans lien. |
 | `APPLE_TEAM_ID` | (aucun) | Identifiant d'équipe Apple (10 caractères) pour `/.well-known/apple-app-site-association`. Absent : le fichier ne déclare aucune app (liens universels désactivés) et le build l'écrit en avertissement. **Obligatoire en production.** |
 | `BLOWY_BUNDLE_ID` | `app.blowy` | Identifiant de l'app iOS et Android, le même que `apps/mobile/app.config.ts` (ne change pas avec le nom Minimoa). |
+| `PUBLIC_SITE_ENV` | (aucun = production) | `dev` : site de test https://dev.minimoa.app (docs/ENVIRONNEMENTS.md). Chaque page reçoit `<meta name="robots" content="noindex,nofollow">` et un bandeau « DEV » ; `scripts/site-env.mjs` réécrit `robots.txt` (`Disallow: /`, sans plan du site), retire `sitemap.xml` et ajoute `X-Robots-Tag: noindex, nofollow` sur `/*` dans `_headers`. Les liens fabriqués pour être partagés (quiz, quartier) visent dev.minimoa.app et les boutons d'app le schéma `minimoa-dev://` (app « Minimoa Dev ») ; canonique, hreflang, JSON-LD et og:url restent sur https://minimoa.app. Toute autre valeur que `dev`/`production` arrête le build. **Jamais dans les variables de production.** |
 | `ANDROID_SHA256` | (aucun) | Empreintes SHA-256 du certificat de signature Android (`AA:BB:…`, séparées par des virgules) pour `/.well-known/assetlinks.json`. Absent : liste vide (liens d'app Android non vérifiés). |
 
 ## Déploiement sur Cloudflare Pages
@@ -68,6 +69,9 @@ pnpm --filter @blowy/web preview
    - Variables : `PUBLIC_API_URL=https://api.minimoa.app` (par exemple), `APPLE_TEAM_ID=<identifiant d'équipe>` et `NODE_VERSION=22`
 3. Domaines personnalisés : `minimoa.app` et `www.minimoa.app` (la redirection de `www` vers le domaine nu doit
    épargner `/.well-known/*` et `/apple-app-site-association` : Apple ne suit pas les redirections, docs/DEEPLINKS.md).
+
+Site de test (branche `dev`) : même projet, variables de l'environnement **Preview** et domaine `dev.minimoa.app`
+rattaché à la branche (docs/ENVIRONNEMENTS.md).
 
 `public/_redirects` sert `/m/*`, `/i/*`, `/g/*`, `/r/*` et `/l/*` avec la page statique correspondante (statut 200, l'URL reste intacte).
 `public/_headers` sert `apple-app-site-association` (aux deux adresses) et `assetlinks.json` en `application/json` et pose des en-têtes de cache et de sécurité.

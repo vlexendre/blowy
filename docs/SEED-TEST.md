@@ -1,6 +1,6 @@
 # Semis d’un environnement de test
 
-Remplit une base **de test** (API locale en mémoire, Supabase local, projet Supabase de test ou de préproduction) avec des comptes de test réalistes dans les villes du site, et des inscriptions « Ouvre ton quartier ». Code : `apps/api/src/demo/seed/`.
+Remplit une base **de test** (API locale en mémoire, Supabase local, projet Supabase de dev, docs/ENVIRONNEMENTS.md) avec des comptes de test réalistes dans les villes du site, et des inscriptions « Ouvre ton quartier ». Code : `apps/api/src/demo/seed/`.
 
 ## À ne jamais faire
 
@@ -47,6 +47,26 @@ pnpm --filter @blowy/api seed:test --adopt testeur@exemple.fr
 pnpm --filter @blowy/api seed:test --purge
 ```
 
+### Semer l'environnement de dev (dev.minimoa.app)
+
+Depuis un poste, contre le projet Supabase **de dev** (jamais `sqxebllmatfflopqddaw`), clés lues dans le shell :
+
+```sh
+export BLOWY_ENV=staging BLOWY_ADAPTERS=supabase
+export SUPABASE_URL=https://<ref-dev>.supabase.co SUPABASE_SERVICE_ROLE_KEY=…   # clé secrète du projet de DEV
+export API_URL=https://api-dev.minimoa.app WEB_URL=https://dev.minimoa.app       # facultatif ; permis par les garde-fous
+pnpm --filter @blowy/api seed:test --dry-run
+pnpm --filter @blowy/api seed:test --cities paris,lyon --per-city 20 --seed 1
+pnpm --filter @blowy/api seed:test --adopt testeur@exemple.fr   # le compte doit d'abord exister (inscrit dans « Minimoa Dev »)
+```
+
+Ou avec les variables de l'environnement Railway « dev » : `railway link` (choisir le projet, l'environnement `dev` et
+le service de l'API), puis `railway run pnpm --filter @blowy/api seed:test --dry-run`. Elles y sont toutes vérifiées : si une
+variable du dev désignait la production (copie d'un environnement dupliqué), le semis refuse.
+
+Le semis écrit directement dans la base de dev par la clé secrète ; l'API de dev n'a pas besoin d'être arrêtée. Pour
+repartir de zéro : `--purge`, puis semer de nouveau.
+
 Options : `--cities` (défaut : toutes les villes du site, `ZONES` de `packages/domain/src/quartiers.ts`), `--per-city`, `--seed` (même graine, même plan), `--dry-run`, `--purge`, `--adopt`, `--help`. Sur Supabase, compter quelques minutes par centaine de comptes (chaque geste passe par l’API). L’IA, les push et les e-mails sont coupés pendant le semis.
 
 ## Garde-fous
@@ -55,7 +75,7 @@ Vérifiés par le script avant de démarrer, puis par `Seeder` à chaque semis, 
 
 1. `BLOWY_ENV` vaut `local`, `test` ou `staging` (obligatoire avec Supabase) ; l’API chargée ne doit pas être en production.
 2. Aucune variable d’environnement ne désigne le projet Supabase de production (`sqxebllmatfflopqddaw`) : adresse, hôte ou utilisateur de base, ou clé au format JWT qui le nomme.
-3. Aucune adresse configurée (`…_URL`, `…_HOST`, `…_ORIGIN(S)`) ne pointe vers `minimoa.app` ou un de ses sous-domaines.
+3. Aucune adresse configurée (`…_URL`, `…_HOST`, `…_ORIGIN(S)`) ne pointe vers un hôte de la production : `minimoa.app`, `www.minimoa.app`, `api.minimoa.app`, `admin.minimoa.app` (liste : `apps/api/src/config/production-targets.ts`). Les adresses du dev (`dev.minimoa.app`, `api-dev.minimoa.app`, `admin-dev.minimoa.app`) sont permises.
 4. La base ne contient pas plus de 20 comptes qui ne sont ni du semis, ni des personnes fictives du compte de revue, ni le compte de revue configuré : au-delà, elle ressemble à une base réelle.
 
 Un deuxième semis sur une base déjà semée est refusé : purger d’abord.
@@ -66,4 +86,4 @@ Un deuxième semis sur une base déjà semée est refusé : purger d’abord.
 
 ## Tests
 
-`apps/api/test/seed.e2e.test.ts` : chaque garde-fou refuse seul une configuration de production, aucune option ne les contourne, le plan est déterministe, le semis en mémoire pose les comptes prévus, `Audience` les cache à un vrai compte, et la purge rend la base exactement telle qu’avant.
+`apps/api/test/seed.e2e.test.ts` : chaque garde-fou refuse seul une configuration de production, les adresses du dev passent (et les autres garde-fous tiennent avec elles), aucune option ne les contourne, le plan est déterministe, le semis en mémoire pose les comptes prévus, `Audience` les cache à un vrai compte, et la purge rend la base exactement telle qu’avant.

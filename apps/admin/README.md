@@ -42,19 +42,25 @@ Variables de build (Production ; toutes **publiques**, elles finissent dans le J
 | `NODE_VERSION` | `22` (aussi dans `.nvmrc`) |
 | `PNPM_VERSION` | `10.28.0` (celle de `packageManager`) |
 
-Ne pas poser `VITE_AUTH` (défaut `supabase`). Jamais la clé service de Supabase ni aucun secret dans une variable
+Ne pas poser `VITE_AUTH` (défaut `supabase`) ni `VITE_APP_ENV` en production.
+
+**Admin de dev (https://admin-dev.minimoa.app)** : même projet Pages, branche `dev` en prévisualisation, variables de
+l'environnement Preview : `VITE_APP_ENV=dev` (bandeau « DEV » et titre « DEV · … »), `VITE_API_URL=https://api-dev.minimoa.app`,
+`VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` du projet Supabase de dev (docs/ENVIRONNEMENTS.md). Jamais la clé service de Supabase ni aucun secret dans une variable
 `VITE_*`. Puis Domaines personnalisés › `admin.minimoa.app` (Cloudflare crée l'enregistrement DNS si la zone
 `minimoa.app` est chez lui). Conseillé en plus : Cloudflare Access (Zero Trust) devant `admin.minimoa.app`.
 
-Ce que `public/` ajoute au build (copié tel quel dans `dist/`) :
-- `_headers` : `X-Robots-Tag: noindex, nofollow, noarchive`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
+Ce que le build ajoute à `dist/` :
+- `_headers`, **généré** depuis `_headers.template` par `vite.config.ts` : `X-Robots-Tag: noindex, nofollow, noarchive`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
   une CSP stricte (`default-src 'none'` ; scripts, styles et polices de l'admin seulement ; requêtes vers
   `https://api.minimoa.app` et le projet Supabase ; images de l'admin et de Supabase Storage, pour les photos
-  signalées), `Cache-Control: no-store` sur la page, cache long sur `/assets/*` (noms à empreinte). Changer d'API ou de
-  projet Supabase = changer aussi la CSP de ce fichier ;
-- `_redirects` : `/* /index.html 200` (la navigation est en `#/…`, mais toute adresse profonde rouvre l'admin) ;
-- `robots.txt` : `Disallow: /` ; et `<meta name="robots" content="noindex,nofollow">` dans `index.html` ;
-- les polices (Allo et Anton, licences OFL à côté), servies par l'admin elle-même : aucune origine tierce.
+  signalées), `Cache-Control: no-store` sur la page, cache long sur `/assets/*` (noms à empreinte). Les origines de la
+  CSP viennent de `VITE_API_URL` et `VITE_SUPABASE_URL` : la même source sert la production et le dev. Sur Cloudflare
+  Pages (`CF_PAGES=1`), le build échoue si l'une manque ou n'est pas en https ;
+- depuis `public/` (copié tel quel) :
+  - `_redirects` : `/* /index.html 200` (la navigation est en `#/…`, mais toute adresse profonde rouvre l'admin) ;
+  - `robots.txt` : `Disallow: /` ; et `<meta name="robots" content="noindex,nofollow">` dans `index.html` ;
+  - les polices (Allo et Anton, licences OFL à côté), servies par l'admin elle-même : aucune origine tierce.
 
 Côté API (Railway) : `CORS_ORIGINS` doit contenir `https://admin.minimoa.app` (en plus du site),
 `ADMIN_URL=https://admin.minimoa.app` (liens des alertes de modération), `ADMIN_EMAILS` liste l'équipe.

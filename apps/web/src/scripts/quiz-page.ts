@@ -8,7 +8,7 @@ import type { QuizResultDto } from '@blowy/contract';
 import { QUIZ, type QuizAnswer, isQuizCode } from '@blowy/domain';
 import { api, failureOf } from '../lib/api';
 import { canvasToFile, drawStoryCard } from '../lib/story-card';
-import { DEEP_LINK_SCHEME, SITE_URL } from '../config/site';
+import { DEEP_LINK_SCHEME, LINK_URL } from '../config/site';
 import { SPECIES_NAMES } from '../content/quiz';
 import { growthCopy } from '../content/growth';
 import { bindCopy, withRef } from './ref';
@@ -21,7 +21,7 @@ import { browserLocale, localeOfPath, localePath } from '../i18n/site';
 const KEY = 'minimoa.quiz.mine';
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s);
 const r = t.quiz.result;
-const host = SITE_URL.replace(/^https?:\/\//, '');
+const host = LINK_URL.replace(/^https?:\/\//, '');
 
 function readQuizCode(): string | null {
   const parts = window.location.pathname.split('/').filter(Boolean);
@@ -139,8 +139,8 @@ async function showResult(res: QuizResultDto): Promise<void> {
   const open = $<HTMLAnchorElement>('[data-quiz-open]');
   if (open) open.href = withRef(`${DEEP_LINK_SCHEME}quiz/${res.code}`);
 
-  const resultUrl = `${SITE_URL}/quiz/${res.code}`;
-  const challengeUrl = `${SITE_URL}/quiz?ref=${res.code}`;
+  const resultUrl = `${LINK_URL}/quiz/${res.code}`;
+  const challengeUrl = `${LINK_URL}/quiz?ref=${res.code}`;
   const note = $('[data-quiz-note]');
   const say = (text: string) => {
     if (!note) return;

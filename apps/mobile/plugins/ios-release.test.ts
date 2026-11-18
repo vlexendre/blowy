@@ -134,6 +134,52 @@ describe('autorisations iOS', () => {
   });
 });
 
+describe('app « Minimoa Dev » (profil EAS dev, docs/ENVIRONNEMENTS.md)', () => {
+  const withEnv = (env: Record<string, string | undefined>): ExpoConfig => {
+    const saved = { ...process.env };
+    for (const [k, v] of Object.entries(env)) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+    try {
+      return appConfig({ config: {} } as Parameters<typeof appConfig>[0]) as ExpoConfig;
+    } finally {
+      process.env = saved;
+    }
+  };
+  const eas = JSON.parse(fs.readFileSync(path.join(mobile, 'eas.json'), 'utf8')) as { build: Record<string, { env?: Record<string, string> }> };
+
+  it('identité à part, installable à côté de l’app publiée', () => {
+    const dev = withEnv({ ...eas.build.dev?.env, EAS_BUILD: undefined, BLOWY_BUNDLE_ID: undefined });
+    expect(dev.name).toBe('Minimoa Dev');
+    expect(dev.ios?.bundleIdentifier).toBe('app.blowy.dev');
+    expect(dev.android?.package).toBe('app.blowy.dev');
+    expect(dev.scheme).toEqual(['minimoa-dev']);
+    expect(dev.ios?.associatedDomains).toEqual(['applinks:dev.minimoa.app']);
+    expect(dev.icon).toBe('./assets/images/icon-dev.png');
+    expect(dev.ios?.entitlements?.['aps-environment']).toBe('production');
+    expect(dev.ios?.entitlements?.['com.apple.security.application-groups']).toBeUndefined();
+    expect(fs.existsSync(path.join(mobile, 'assets/images/icon-dev.png'))).toBe(true);
+  });
+
+  it('le profil dev vise l’API et le site de dev, jamais la production', () => {
+    const env = eas.build.dev?.env ?? {};
+    expect(env.EXPO_PUBLIC_API_URL).toBe('https://api-dev.minimoa.app');
+    expect(env.EXPO_PUBLIC_WEB_URL).toBe('https://dev.minimoa.app');
+    expect(JSON.stringify(env)).not.toMatch(/sqxebllmatfflopqddaw|api\.minimoa\.app/);
+    // Un build EAS avec la clé encore à remplir s'arrête.
+    if (/REMPLACER/.test(`${env.EXPO_PUBLIC_SUPABASE_URL} ${env.EXPO_PUBLIC_SUPABASE_KEY}`)) expect(() => withEnv({ ...env, EAS_BUILD: 'true' })).toThrow(/Supabase de dev/);
+  });
+
+  it('les autres profils gardent l’app publiée', () => {
+    const prod = withEnv({ ...eas.build.production?.env, BLOWY_APP_ENV: undefined, BLOWY_BUNDLE_ID: undefined });
+    expect(prod.name).toBe('Minimoa');
+    expect(prod.ios?.bundleIdentifier).toBe('app.blowy');
+    expect(prod.scheme).toEqual(['minimoa', 'blowy']);
+    expect(prod.ios?.associatedDomains).toEqual(['applinks:minimoa.app', 'applinks:www.minimoa.app']);
+  });
+});
+
 describe('extension des widgets dans le projet Xcode', () => {
   const pbx = (family: string, version: string) =>
     [

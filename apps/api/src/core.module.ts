@@ -17,7 +17,7 @@ import {
   MemoryAppleTokenStore,
   SupabaseAppleTokenStore,
 } from './integrations/auth/apple-revocation';
-import { ConsoleMailer, ResendMailer } from './integrations/mailer/mailer';
+import { AllowListMailer, ConsoleMailer, type Mailer, ResendMailer } from './integrations/mailer/mailer';
 import { Notifier } from './integrations/mailer/notifier';
 import { MemoryStorage } from './integrations/storage/memory-storage';
 import type { PublicUrl } from './integrations/storage/ports';
@@ -71,7 +71,11 @@ export class CoreModule {
       { provide: PUBLIC_URL, useValue: publicUrl },
       {
         provide: MAILER,
-        useFactory: () => (env.resendApiKey ? new ResendMailer(env.resendApiKey, env.mailFrom) : new ConsoleMailer()),
+        useFactory: (): Mailer => {
+          const mailer = env.resendApiKey ? new ResendMailer(env.resendApiKey, env.mailFrom) : new ConsoleMailer();
+          // Hors production, MAIL_ALLOWLIST filtre les destinataires (env.mailAllowList est toujours null en production).
+          return env.mailAllowList ? new AllowListMailer(mailer, env.mailAllowList) : mailer;
+        },
       },
       Notifier,
       ...(env.adapters === 'memory' ? memoryAdapters() : supabaseAdapters(env)),

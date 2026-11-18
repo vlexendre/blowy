@@ -6,6 +6,7 @@
 import { type AiFeatureKey, type AiPrice, type AiTier, DEFAULT_AI_PRICES, dollarsToMicros, parseAiBudgets } from '@blowy/domain';
 import { DEFAULT_AI_PROCESSOR } from '@blowy/content';
 import { z } from 'zod';
+import type { BlowyEnv } from './env';
 
 const emptyToUndefined = (v: unknown): unknown => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 const optionalString = z.preprocess(emptyToUndefined, z.string().optional());
@@ -75,7 +76,7 @@ const parsePrices = (raw: string | undefined, base: AiPrice): AiPrice => {
 };
 
 /** Lit et valide les variables ; lève une erreur lisible (sans valeur de secret) si elles sont incohérentes. */
-export function loadPlateformeEnv(source: Record<string, string | undefined>, blowyEnv: 'local' | 'production', adapters: 'memory' | 'supabase'): PlateformeEnv {
+export function loadPlateformeEnv(source: Record<string, string | undefined>, blowyEnv: BlowyEnv, adapters: 'memory' | 'supabase'): PlateformeEnv {
   const parsed = PlateformeSchema.safeParse(source);
   if (!parsed.success) {
     const details = parsed.error.issues.map((i) => `${i.path.join('.') || 'env'} : ${i.message}`).join(' ; ');

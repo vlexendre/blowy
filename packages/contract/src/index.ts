@@ -470,6 +470,11 @@ export type RefusedField = (typeof REFUSED_FIELDS)[number];
 export const ApiErrorZ = z.object({ error: z.object({ code: z.enum(ERROR_CODES), message: z.string(), field: z.enum(REFUSED_FIELDS).optional() }) });
 export type ApiErrorBody = z.infer<typeof ApiErrorZ>;
 
+/** `GET /health` : vivante, et dans quel environnement (rien d'autre : ni version, ni configuration). */
+export const API_ENVS = ['local', 'staging', 'production'] as const;
+export const HealthZ = z.object({ ok: z.literal(true), env: z.enum(API_ENVS) });
+export type HealthDto = z.infer<typeof HealthZ>;
+
 // ── Table des routes ───────────────────────────────────────────────────────
 export const routes = {
   health: () => '/health',

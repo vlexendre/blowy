@@ -3,6 +3,9 @@
  * les raisons de refus, en français. Aucune option ne les contourne (pas de `--force`) : le semis ne doit jamais
  * pouvoir toucher la production, où de faux comptes présentés comme vrais tromperaient les gens.
  */
+import { PRODUCTION_SUPABASE_REF, hostsOf, isProductionHost, namesProductionSupabase } from '../../config/production-targets';
+
+export { PRODUCTION_DOMAIN, PRODUCTION_HOSTS, PRODUCTION_SUPABASE_REF } from '../../config/production-targets';
 
 /** Domaine réservé (RFC 2606 : `.invalid` n'existe jamais) : toute adresse du semis en est. */
 export const SEED_DOMAIN = 'seed.minimoa.invalid';
@@ -13,10 +16,6 @@ export const SEED_WORLD_ID = '5eed5eed-0000-4000-8000-000000000000';
 export const SEED_WORLD_EMAIL = `monde@${SEED_DOMAIN}`;
 /** Date de création posée sur un quartier créé par le semis (reconnu à la purge). */
 export const SEED_ZONE_CREATED_AT = '2000-01-01T00:00:00.000Z';
-/** Projet Supabase de production. */
-export const PRODUCTION_SUPABASE_REF = 'sqxebllmatfflopqddaw';
-/** Domaine de production (et tous ses sous-domaines). */
-export const PRODUCTION_DOMAIN = 'minimoa.app';
 /** Environnements où le semis peut tourner. */
 export const SEED_ENVS = ['local', 'test', 'staging'] as const;
 /** Au-delà de ce nombre de comptes qui ressemblent à de vrais comptes, la base n'est pas une base de test : refus. */
@@ -48,40 +47,13 @@ export function isExpectedAccount(email: string | null | undefined, reviewEmail:
 
 const URL_KEY = /(URL|URI|HOST|ORIGIN|ORIGINS|ENDPOINT)$/i;
 
-function hostsOf(value: string): string[] {
-  const out: string[] = [];
-  for (const part of value.split(/[\s,;]+/)) {
-    if (!part) continue;
-    const withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(part) ? part : `http://${part}`;
-    try {
-      out.push(new URL(withScheme).hostname.toLowerCase());
-    } catch {
-      // pas une adresse : ignorée
-    }
-  }
-  return out;
-}
-
-const isProductionHost = (host: string): boolean => host === PRODUCTION_DOMAIN || host.endsWith(`.${PRODUCTION_DOMAIN}`);
-
-/** Référence de projet inscrite dans une clé Supabase au format JWT (clés « anon » et « service_role » historiques). */
-function jwtRef(key: string): string | null {
-  const parts = key.split('.');
-  if (parts.length !== 3 || !parts[1]) return null;
-  try {
-    const payload = JSON.parse(Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')) as { ref?: unknown };
-    return typeof payload.ref === 'string' ? payload.ref : null;
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Garde-fous qui se lisent dans la configuration (1 à 3). Le quatrième (la base contient-elle déjà de vrais comptes ?)
  * demande la base : `Seeder` le vérifie juste après.
  * 1. `BLOWY_ENV` vaut `local`, `test` ou `staging` (obligatoire avec Supabase ; absent en mémoire : `local`) ;
  * 2. aucune variable ne désigne le projet Supabase de production (adresse, hôte de base, clé) ;
- * 3. aucune adresse configurée ne pointe vers `minimoa.app` ou un de ses sous-domaines.
+ * 3. aucune adresse configurée ne pointe vers un hôte de la production (`minimoa.app`, `www.`, `api.`, `admin.`) ;
+ *    celles du dev (`dev.minimoa.app`, `api-dev.minimoa.app`, `admin-dev.minimoa.app`) sont permises.
  */
 export function configRefusals(source: EnvSource, mode: SeedTargetMode): string[] {
   const reasons: string[] = [];
@@ -93,13 +65,13 @@ export function configRefusals(source: EnvSource, mode: SeedTargetMode): string[
   }
   for (const [key, raw] of Object.entries(source)) {
     if (typeof raw !== 'string' || raw === '') continue;
-    const value = raw.toLowerCase();
-    if (value.includes(PRODUCTION_SUPABASE_REF) || jwtRef(raw) === PRODUCTION_SUPABASE_REF) {
+    if (namesProductionSupabase(raw)) {
       reasons.push(`${key} désigne le projet Supabase de production (${PRODUCTION_SUPABASE_REF}) : retire cette variable ou pointe vers un projet de test.`);
       continue;
     }
-    if (URL_KEY.test(key) && hostsOf(raw).some(isProductionHost)) {
-      reasons.push(`${key} pointe vers ${PRODUCTION_DOMAIN} (production) : utilise une adresse de test ou locale.`);
+    const prod = URL_KEY.test(key) ? hostsOf(raw).find(isProductionHost) : undefined;
+    if (prod) {
+      reasons.push(`${key} pointe vers ${prod} (production) : utilise une adresse de test (dev.minimoa.app, api-dev.minimoa.app…) ou locale.`);
     }
   }
   return reasons;

@@ -28,6 +28,10 @@ RUN pnpm --filter @blowy/api build \
 
 # ---------------------------------------------------------------------------
 FROM node:22-alpine AS runtime
+# Valeurs par défaut de l'image. Les variables du service Railway (ou `docker run -e`) sont posées dans le conteneur au
+# démarrage et l'emportent sur ces ENV : l'environnement Railway « dev » pose BLOWY_ENV=staging et la même image tourne
+# en staging. Sans variable, l'image reste en production (le service de production n'a rien à poser).
+# Contrôle après déploiement : GET /health répond {"ok":true,"env":"staging"} (dev) ou "production".
 ENV NODE_ENV=production BLOWY_ENV=production BLOWY_ADAPTERS=supabase PORT=3000
 WORKDIR /app
 COPY --from=build --chown=node:node /out/package.json ./package.json
