@@ -1,4 +1,4 @@
-import type { Locale } from '@blowy/content';
+import { type Locale, visionText } from '@blowy/content';
 import type { EncounterHistory, Encounters } from '@blowy/contract';
 import { toPerson } from '../../me/interface/person.presenter';
 import { shapeOf } from '@blowy/domain';
@@ -30,6 +30,7 @@ export const toEncountersDto = (r: EncountersResult, locale: Locale = 'fr'): Enc
     waved: s.waved,
   })),
   petShape: r.petShape,
+  far: r.far ? { count: r.far.count, strong: r.far.strong, label: visionText.in(locale).map.far(r.far.count, r.far.strong) } : null,
 });
 
 export const toEncounterHistoryDto = (page: HistoryPage): EncounterHistory => ({

@@ -44,7 +44,7 @@ export const toMapDto = (r: MapResult, locale: Locale = 'fr'): MapDto => ({
     relation: p.relation.kind,
     encounterId: p.relation.kind === 'waved_you' ? p.relation.encounterId : null,
   })),
-  beyond: { count: r.beyond.count, label: visionText.in(locale).map.beyond(r.beyond.count), blurred: r.beyond.blurred.map(latLng) },
+  beyond: { count: r.beyond.count, strong: r.beyond.strong, label: visionText.in(locale).map.beyond(r.beyond.count), blurred: r.beyond.blurred.map(latLng) },
   discreet: r.discreet,
   canChangeCity: r.canChangeCity,
 });

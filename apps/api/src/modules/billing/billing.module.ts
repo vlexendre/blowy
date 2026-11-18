@@ -9,6 +9,7 @@ import { HandleAppleNotification } from './application/apple-notifications.useca
 import { BillingJobs } from './application/billing.jobs';
 import { GetPaywall, GetSubscription, SubmitPurchase } from './application/plus.usecases';
 import { PlusNews } from './application/plus-news';
+import { PlusMoments, PlusOpens } from './application/plus-desire';
 import { Subscriptions } from './application/subscriptions.service';
 import { BillingController } from './interface/billing.controller';
 import { COMPATIBLE_NEARBY, type CompatibleNearby } from './tokens';
@@ -44,6 +45,8 @@ const compatibleNearby = (matchmaker: Matchmaker, profiles: ProfilesRepository, 
     GetPaywall,
     HandleAppleNotification,
     BillingJobs,
+    PlusMoments,
+    PlusOpens,
   ],
   exports: [BillingJobs, Subscriptions],
 })

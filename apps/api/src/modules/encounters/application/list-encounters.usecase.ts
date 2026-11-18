@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type VisionVia, visionIntroLine, wavedAtYouLine } from '@blowy/content';
-import { type Shape, encounterQuota, entitlements, shapeOf } from '@blowy/domain';
+import { type FarSummary, type Shape, ZONE_RADIUS_KM, encounterQuota, entitlements, farSummary, shapeOf } from '@blowy/domain';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
@@ -40,6 +40,8 @@ export interface EncountersResult {
   incoming: IncomingResult[];
   suggestions: SuggestionResult[];
   petShape: Shape;
+  /** « Vu de loin » (sans Minimoa+) : vraies personnes compatibles au-delà de la zone, pas encore présentées ; null sinon. */
+  far: FarSummary | null;
 }
 
 /** Amis d'amis examinés au plus (ils échappent au filtre de zone, pas aux autres). */
@@ -165,6 +167,20 @@ export class ListEncounters {
 
     const suggestions = [...fofOut, ...nearbyOut].slice(0, quota);
     await this.recordProposals(userId, today, suggestions, !!me.reviewWorld);
-    return { incoming: incomingOut, suggestions, petShape };
+    const far = seeker.plus ? null : await this.farAway(userId, nearby, new Set([...suggestions.map((s) => s.profile.id), ...myWaves]));
+    return { incoming: incomingOut, suggestions, petShape, far };
+  }
+
+  /**
+   * « Vu de loin » (docs/DESIR.md) : les personnes compatibles au-delà de la zone (la carte gratuite ne les montre
+   * pas), ni présentées aujourd'hui ni déjà saluées, et montrables sur la carte (Audience `map` : ni discrètes, ni
+   * bloquées, ni suspendues). Un nombre seulement ; null s'il n'y a personne.
+   */
+  private async farAway(userId: string, nearby: readonly { userId: string; distanceKm: number; score: number }[], shown: ReadonlySet<string>): Promise<FarSummary | null> {
+    const beyond = nearby.filter((m) => m.distanceKm > ZONE_RADIUS_KM && !shown.has(m.userId));
+    if (beyond.length === 0) return null;
+    const visible = new Set((await this.audience.visible(userId, beyond.map((m) => m.userId), 'map')).map((p) => p.id));
+    const summary = farSummary(beyond.filter((m) => visible.has(m.userId)).map((m) => m.score));
+    return summary.count > 0 ? summary : null;
   }
 }

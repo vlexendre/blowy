@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { Paywall, SubmitPurchaseBody, Subscription } from '@blowy/contract';
 import { type Locale, formatDate, formatPrice, plusPerkTextIn, plusTextIn, textOf, facturationText } from '@blowy/content';
 import {
@@ -7,6 +7,8 @@ import {
   PLUS_PERKS,
   TRIAL_DAYS,
   TRIAL_REMINDER_DAY,
+  currentCollection,
+  dayOf,
   monthlyEquivalentMinor,
   subscriptionView,
   yearlyDiscountPercent,
@@ -18,6 +20,7 @@ import { CLOCK, ENV, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import { type Billing, BillingVerificationError, type SubscriptionRecord, type SubscriptionsRepository, type VerifiedRenewal } from '../ports';
 import { APPLE_BILLING, COMPATIBLE_NEARBY, type CompatibleNearby, SUBSCRIPTIONS } from '../tokens';
+import { Growth } from '../../growth/application/growth';
 import { appleStoreEvent } from './store-event';
 import { Subscriptions } from './subscriptions.service';
 
@@ -66,6 +69,8 @@ export class SubmitPurchase {
     @Inject(PROFILES) private readonly profiles: ProfilesRepository,
     @Inject(ENV) private readonly env: Env,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(SUBSCRIPTIONS) private readonly records: SubscriptionsRepository,
+    @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
   ) {}
 
   async execute(userId: string, body: SubmitPurchaseBody, locale: Locale = 'fr'): Promise<Subscription> {
@@ -76,8 +81,12 @@ export class SubmitPurchase {
       const event = appleStoreEvent(this.env.facturationAdmin.plusProducts, tx, renewal, null);
       if (!event) throw new DomainError('invalid', textOf(facturationText, (t) => t.plus.errors.unknownProduct));
       if (tx.appAccountToken && tx.appAccountToken.toLowerCase() !== userId) this.logger.log('achat d’un autre compte Minimoa restauré ici');
+      const before = presentSubscription(await this.records.latestForUser(userId), this.clock.now(), locale).plus;
       const record = await this.subscriptions.apply(event, { claimedBy: userId, accountToken: tx.appAccountToken, environment: tx.environment });
-      return presentSubscription(record, this.clock.now(), locale);
+      const after = presentSubscription(record, this.clock.now(), locale);
+      // Conversion par déclencheur (docs/DESIR.md) : seulement quand Minimoa+ s'ouvre (pas une restauration d'un abonnement en cours).
+      if (!before && after.plus && (after.phase === 'trial' || after.phase === 'active')) await this.growth?.plus(after.phase === 'trial' ? 'plus_trial' : 'plus_paid', body.trigger ?? null);
+      return after;
     } catch (err) {
       if (err instanceof BillingVerificationError) {
         this.logger.warn(`achat refusé : ${err.reason}`);
@@ -151,6 +160,8 @@ export class GetPaywall {
       };
     });
     const count = Math.max(0, Math.floor(compatible));
+    const subscription = presentSubscription(record, this.clock.now(), locale);
+    const season = currentCollection(dayOf(this.clock.now()));
     return {
       offers,
       defaultPlan: 'yearly',
@@ -162,7 +173,11 @@ export class GetPaywall {
       legal: { termsUrl: legal('conditions'), privacyUrl: legal('confidentialite'), plusTermsUrl: legal('abonnement') },
       continueFreeLabel: plusText.continueFree,
       restoreLabel: plusText.restore,
-      subscription: presentSubscription(record, this.clock.now(), locale),
+      subscription,
+      // Collection saisonnière en cours, avec sa vraie date de fin (docs/DESIR.md).
+      collection: season
+        ? { id: season.collection.id, until: season.collection.until, daysLeft: season.daysLeft, items: [...season.collection.items], kept: subscription.plus }
+        : null,
     };
   }
 }

@@ -11,7 +11,7 @@
  * 3. `GET plusSubscription` : état à afficher dans « Moi » (essai jusqu'au…, se renouvelle le…, expiré).
  * Le serveur reçoit aussi les notifications d'Apple (`plusAppleNotifications`, appelé par Apple, pas par l'app).
  */
-import { PLANS, PLUS_PERKS } from '@blowy/domain';
+import { COLLECTION_IDS, ITEM_IDS, PLANS, PLUS_MOMENTS, PLUS_PERKS, PLUS_TRIGGERS } from '@blowy/domain';
 import { z } from 'zod';
 
 const API = '/v1';
@@ -78,6 +78,26 @@ export const SubscriptionZ = z.object({
 });
 export type Subscription = z.infer<typeof SubscriptionZ>;
 
+/** D'où la feuille a été ouverte (mesure de la conversion par déclencheur, docs/DESIR.md). */
+export const PlusTriggerZ = z.enum(PLUS_TRIGGERS);
+export type PlusTriggerDto = z.infer<typeof PlusTriggerZ>;
+
+/**
+ * Collection saisonnière en cours : une vraie date de fin, tenue par le serveur (docs/DESIR.md). Après `until`, ses
+ * objets ne sont plus donnés ; ceux qui les ont eus avec Minimoa+ pendant la collection les gardent.
+ */
+export const SeasonalCollectionZ = z.object({
+  id: z.enum(COLLECTION_IDS),
+  /** Dernier jour (inclus, heure de Paris), « AAAA-MM-JJ ». */
+  until: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  /** Jours restants, aujourd'hui et le dernier jour compris. */
+  daysLeft: z.number().int().positive(),
+  items: z.array(z.enum(ITEM_IDS as [string, ...string[]])),
+  /** Tu as Minimoa+ : ces objets sont à toi et le restent après la fin (tant que Minimoa+ est actif). */
+  kept: z.boolean(),
+});
+export type SeasonalCollectionDto = z.infer<typeof SeasonalCollectionZ>;
+
 export const PaywallZ = z.object({
   offers: z.array(PaywallOfferZ),
   /** Offre présélectionnée. */
@@ -101,6 +121,8 @@ export const PaywallZ = z.object({
   continueFreeLabel: z.string(),
   restoreLabel: z.string(),
   subscription: SubscriptionZ,
+  /** Collection saisonnière en cours (vitrine de la feuille), null hors saison. */
+  collection: SeasonalCollectionZ.nullable().default(null),
 });
 export type Paywall = z.infer<typeof PaywallZ>;
 
@@ -113,10 +135,23 @@ export const SubmitPurchaseBody = z.object({
   signedTransaction: Jws,
   /** `Product.SubscriptionInfo.RenewalInfo` signé (`jwsRepresentation`), si l'app l'a. */
   signedRenewalInfo: Jws.optional(),
+  /** D'où la feuille avait été ouverte (compté par déclencheur, sans personne derrière). */
+  trigger: PlusTriggerZ.optional(),
 });
 export type SubmitPurchaseBody = z.infer<typeof SubmitPurchaseBody>;
 
 /** Corps envoyé par Apple (App Store Server Notifications V2). */
+/** La feuille s'est ouverte (compteur du jour par déclencheur). */
+export const PlusOpenBody = z.object({ trigger: PlusTriggerZ });
+export type PlusOpenBody = z.infer<typeof PlusOpenBody>;
+
+/**
+ * Moment clé à saluer d'une proposition Minimoa+ (première rencontre réussie, 7 jours de série), décidé et réservé par
+ * le serveur : une fois par moment, jamais deux propositions fortes en moins de 3 jours. null : rien à proposer.
+ */
+export const PlusMomentZ = z.object({ moment: z.enum(PLUS_MOMENTS).nullable() });
+export type PlusMomentDto = z.infer<typeof PlusMomentZ>;
+
 export const AppleNotificationBody = z.object({ signedPayload: z.string().min(20).max(100_000) });
 
 
@@ -124,6 +159,10 @@ export const billingRoutes = {
   plusPaywall: () => `${API}/plus/paywall`,
   plusSubscription: () => `${API}/plus/subscription`,
   plusPurchases: () => `${API}/plus/purchases`,
+  /** `POST` (`PlusOpenBody`) : la feuille s'est ouverte. */
+  plusOpens: () => `${API}/plus/opens`,
+  /** `POST` : y a-t-il un moment clé à saluer maintenant ? (réservé s'il y en a un). */
+  plusMoment: () => `${API}/plus/moment`,
   /** URL à déclarer dans App Store Connect (production et bac à sable). */
   plusAppleNotifications: () => `${API}/plus/apple/notifications`,
 } as const;

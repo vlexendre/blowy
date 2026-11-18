@@ -5,6 +5,8 @@ import {
   type Day,
   type GrowthCounterMetric,
   type GrowthEventKind,
+  type PlusStep,
+  type PlusTrigger,
   type SharePage,
   type ShareKind,
   type WebStep,
@@ -78,6 +80,11 @@ export class Growth {
   /** Étape du site sans compte (quiz, quartier) ; `source` : `ref` (venu d'un défi) ou le type de partage. */
   web(step: WebStep, source = ''): Promise<void> {
     return this.bump(step, source);
+  }
+
+  /** Minimoa+ : feuille ouverte, essai, premier paiement, par déclencheur (aucune personne derrière ; docs/DESIR.md). */
+  plus(step: PlusStep, trigger: PlusTrigger | null): Promise<void> {
+    return this.bump(step, trigger ?? '');
   }
 
   /** Une étape d'un compte (premier lien, essai, payant…), une fois ; rien si la source du compte n'est pas connue. */

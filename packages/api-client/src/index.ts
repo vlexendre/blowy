@@ -50,7 +50,7 @@ import {
   WeeklyReviewsZ,
   ritualRoutes,
 } from '@blowy/contract';
-import { PaywallZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
+import { PaywallZ, type PlusOpenBody, PlusMomentZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
 import { AiConsentsZ, HabitDoneResultZ, aiRoutes } from '@blowy/contract';
 import {
   type LinkMinimoasBody,
@@ -360,6 +360,10 @@ export function createApiClient(opts: ApiClientOptions) {
       subscription: () => call('GET', billingRoutes.plusSubscription(), SubscriptionZ),
       /** Achat ou restauration : la transaction signée est vérifiée par le serveur, qui ouvre Minimoa+. */
       submitPurchase: (body: SubmitPurchaseBody) => call('POST', billingRoutes.plusPurchases(), SubscriptionZ, body),
+      /** La feuille s'est ouverte, avec son déclencheur (mesure seulement ; jamais bloquant). */
+      opened: (trigger: PlusOpenBody['trigger']) => call('POST', billingRoutes.plusOpens(), OkZ, { trigger }),
+      /** Moment clé à saluer maintenant, décidé et plafonné par le serveur (null : rien). */
+      moment: () => call('POST', billingRoutes.plusMoment(), PlusMomentZ),
     },
     /**
      * Les minimoas dans le chat : accord de lecture par l'IA (à demander à la première ouverture du chat quand

@@ -61,7 +61,8 @@ export interface PetsRepository {
   countEvents(petId: string, kind: PetEventKind): Promise<number>;
 }
 
-export type ItemSource = 'start' | 'milestone' | 'purchase';
+/** `collection` : objet d'une collection saisonnière reçu avec Minimoa+ pendant la collection (gardé après sa fin). */
+export type ItemSource = 'start' | 'milestone' | 'purchase' | 'collection';
 
 /** Objets possédés par un pet (table `pet_items`). */
 export interface PetItemsRepository {

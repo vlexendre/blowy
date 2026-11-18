@@ -170,7 +170,13 @@ export const MapQuery = z.object({
 export type MapQuery = z.infer<typeof MapQuery>;
 
 /** Silhouettes floues au-delà de ce qu'on peut voir : un nombre et des positions grossières (~2 km), sans identité. */
-export const MapBeyondZ = z.object({ count: z.number().int().min(0), label: z.string(), blurred: z.array(LatLngZ) });
+export const MapBeyondZ = z.object({
+  count: z.number().int().min(0),
+  /** Dont celles à 85 % ou plus (`STRONG_MATCH`). */
+  strong: z.number().int().min(0).default(0),
+  label: z.string(),
+  blurred: z.array(LatLngZ),
+});
 
 export const visionRoutes = {
   /** GET, public : le test. POST (connecté) : le repasser. */
