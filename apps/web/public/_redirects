@@ -8,8 +8,11 @@
 /r/* /_lien/r 200
 /l/* /_lien/l 200
 # Quiz (/quiz/<code> : un résultat partagé) et quartiers (/quartier/<zone>, /quartier/confirmer, /quartier/desinscription).
-/quiz/* /_lien/quiz 200
-/quartier/* /_lien/quartier 200
+# « :x » (un segment non vide) et non « * » : « * » attrape aussi /quiz/ et /quartier/ (pages indexées).
+/quiz/:code /_lien/quiz 200
+/quiz/:code/ /_lien/quiz 200
+/quartier/:zone /_lien/quartier 200
+/quartier/:zone/ /_lien/quartier 200
 
 # Anciennes adresses des pages légales → /legal/… (l'app publiée lie /conditions et /confidentialite).
 /conditions /legal/conditions/ 301
