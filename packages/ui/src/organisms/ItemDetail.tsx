@@ -23,12 +23,14 @@ export interface ItemDetailProps {
   note?: string;
   /** Bouton jaune vers l'endroit où on avance (« aller dans mes chats »). */
   action?: { label: string; onPress: () => void };
+  /** Action secondaire au-dessus (« L'essayer sur Nino »). */
+  secondary?: { label: string; onPress: () => void };
   closeLabel: string;
   onClose: () => void;
 }
 
 /** Fiche d'un objet de la garde-robe (V6-Objet) : visuel, nom, étape à franchir et raccourci. À poser dans une feuille. */
-export function ItemDetail({ id, title, text, goal, note, action, closeLabel, onClose }: ItemDetailProps) {
+export function ItemDetail({ id, title, text, goal, note, action, secondary, closeLabel, onClose }: ItemDetailProps) {
   return (
     <View style={styles.root}>
       <View style={styles.head}>
@@ -63,6 +65,7 @@ export function ItemDetail({ id, title, text, goal, note, action, closeLabel, on
           ) : null}
         </Card>
       ) : null}
+      {secondary ? <Button label={secondary.label} variant="glass" onPress={secondary.onPress} /> : null}
       <View style={styles.actions}>
         {action ? <Button label={action.label} onPress={action.onPress} block={false} style={styles.primary} /> : null}
         <Button label={closeLabel} variant="ghost" onPress={onClose} block={false} style={action ? styles.close : styles.primary} />

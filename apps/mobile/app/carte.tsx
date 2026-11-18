@@ -229,7 +229,12 @@ export default function CarteScreen() {
           // Un seul bouton en bas : revenir à sa zone se fait depuis la pilule de zone, en haut.
           <Button label={t.city} variant="glass" size="md" onPress={() => setCitySheet(true)} />
         ) : (
-          <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlus('map')} />
+          // Au-delà de la zone : le vrai nombre du serveur (silhouettes floues sur la carte), sinon l'avantage seul.
+          (beyond?.count ?? 0) > 0 ? (
+            <MapPlusStrip title={t.plusFar(beyond?.count ?? 0)} text={t.plusFarText(beyond?.strong ?? 0)} ctaLabel={t.plusCta} onPress={() => openPlus('far_away')} />
+          ) : (
+            <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlus('map')} />
+          )
         )
       ) : null}
     </>

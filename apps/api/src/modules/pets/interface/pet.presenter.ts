@@ -1,5 +1,5 @@
-import type { Pet, PetEvent, PetView, PublicPet, Wardrobe } from '@blowy/contract';
-import { ITEMS, type Mood, formOf, itemProgress, shapeOf, traitsOf, wellbeing } from '@blowy/domain';
+import type { Pet, PetEvent, PetView, PublicPet, SeasonalCollectionDto, Wardrobe } from '@blowy/contract';
+import { ITEMS, type Mood, formOf, itemAvailable, itemProgress, shapeOf, traitsOf, wellbeing } from '@blowy/domain';
 import type { WardrobeState } from '../application/wardrobe';
 import type { PetViewResult } from '../application/get-pet-view.usecase';
 import type { PetEventRecord, PetRecord } from '../ports';
@@ -43,7 +43,8 @@ export const toPetView = (r: PetViewResult): PetView => ({
  * tant que Minimoa+ est actif (`WardrobeState.owned`), sinon `premium` (la fiche ouvre Minimoa+) ; `plus` les signale.
  */
 export const toWardrobe = (w: WardrobeState): Wardrobe => ({
-  items: ITEMS.map((item) => {
+  // Objets d'une collection finie que la personne n'a pas gardés : plus proposés (docs/DESIR.md).
+  items: ITEMS.filter((item) => itemAvailable(item.id, w.today, w.kept)).map((item) => {
     const progress = itemProgress(item, w.stats);
     const premium = item.unlock.kind === 'premium';
     return {
@@ -55,4 +56,17 @@ export const toWardrobe = (w: WardrobeState): Wardrobe => ({
     };
   }),
   outfit: w.pet.outfit,
+  collection: toCollection(w.collection, w.kept),
 });
+
+/** Collection saisonnière en cours, avec sa vraie date de fin ; `kept` : tous ses objets sont déjà à la personne. */
+export const toCollection = (c: WardrobeState['collection'], kept: ReadonlySet<string>): SeasonalCollectionDto | null =>
+  c
+    ? {
+        id: c.collection.id,
+        until: c.collection.until,
+        daysLeft: c.daysLeft,
+        items: [...c.collection.items],
+        kept: c.collection.items.every((id) => kept.has(id)),
+      }
+    : null;

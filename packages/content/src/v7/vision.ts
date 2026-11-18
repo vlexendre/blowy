@@ -90,6 +90,9 @@ const fr = {
   map: {
     /** Silhouettes floues au-delà de la zone. */
     beyond: (n: number) => (n === 1 ? '1 minimoa plus loin' : `${n} minimoas plus loin`),
+    /** « Vu de loin » (rencontres) : de vraies personnes compatibles au-delà de la zone, pas encore présentées. */
+    far: (n: number, strong: number) =>
+      `${n === 1 ? '1 minimoa compatible de plus' : `${n} autres minimoas compatibles`} au-delà de ta zone${strong > 0 ? `, dont ${strong} à plus de 85 %` : ''}.`,
     noLocation: 'Sans ta position, pas de carte ni de rencontres près de toi.',
     discreet: 'Mode discret : tu n’apparais sur la carte de personne.',
     plusHint: 'Avec Minimoa+, toute la carte, et changer de ville.',
@@ -164,6 +167,8 @@ export const visionText = defineMessages({
     },
     map: {
       beyond: (n: number) => (n === 1 ? '1 minimoa farther away' : `${n} minimoas farther away`),
+      far: (n: number, strong: number) =>
+        `${n === 1 ? '1 more compatible minimoa' : `${n} more compatible minimoas`} beyond your area${strong > 0 ? `, ${strong} of them over 85%` : ''}.`,
       noLocation: 'Without your location, no map and no encounters near you.',
       discreet: 'Discreet mode: you don’t appear on anyone’s map.',
       plusHint: 'With Minimoa+: the whole map, and switching cities.',
@@ -234,6 +239,8 @@ export const visionText = defineMessages({
     },
     map: {
       beyond: (n: number) => (n === 1 ? '1 minimoa más lejos' : `${n} minimoas más lejos`),
+      far: (n: number, strong: number) =>
+        `${n === 1 ? 'Otro minimoa compatible' : `Otros ${n} minimoas compatibles`} más allá de tu zona${strong > 0 ? `, ${strong} de ellos por encima del 85 %` : ''}.`,
       noLocation: 'Sin tu ubicación, no hay mapa ni encuentros cerca de ti.',
       discreet: 'Modo discreto: no apareces en el mapa de nadie.',
       plusHint: 'Con Minimoa+, todo el mapa y cambiar de ciudad.',
@@ -304,6 +311,8 @@ export const visionText = defineMessages({
     },
     map: {
       beyond: (n: number) => (n === 1 ? '1 minimoa mais longe' : `${n} minimoas mais longe`),
+      far: (n: number, strong: number) =>
+        `${n === 1 ? 'Mais 1 minimoa compatível' : `Mais ${n} minimoas compatíveis`} além da sua área${strong > 0 ? `, ${strong} deles acima de 85%` : ''}.`,
       noLocation: 'Sem a sua localização, não tem mapa nem encontros perto de você.',
       discreet: 'Modo discreto: você não aparece no mapa de ninguém.',
       plusHint: 'Com o Minimoa+, o mapa inteiro e a troca de cidade.',
@@ -374,6 +383,8 @@ export const visionText = defineMessages({
     },
     map: {
       beyond: (n: number) => (n === 1 ? '1 minimoa verderop' : `${n} minimoas verderop`),
+      far: (n: number, strong: number) =>
+        `${n === 1 ? 'Nog 1 passende minimoa' : `Nog ${n} passende minimoas`} buiten je zone${strong > 0 ? `, waarvan ${strong} boven de 85%` : ''}.`,
       noLocation: 'Zonder je locatie geen kaart en geen ontmoetingen bij jou in de buurt.',
       discreet: 'Discrete modus: je staat op niemands kaart.',
       plusHint: 'Met Minimoa+ de hele kaart, en van stad wisselen.',

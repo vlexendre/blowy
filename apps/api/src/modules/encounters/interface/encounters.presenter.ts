@@ -1,5 +1,5 @@
 import { blockedMessage } from '../application/wave-guard';
-import type { Locale } from '@blowy/content';
+import { type Locale, visionText } from '@blowy/content';
 import type { EncounterHistory, Encounters } from '@blowy/contract';
 import { toPerson } from '../../me/interface/person.presenter';
 import { shapeOf } from '@blowy/domain';
@@ -32,6 +32,7 @@ export const toEncountersDto = (r: EncountersResult, locale: Locale = 'fr'): Enc
   })),
   petShape: r.petShape,
   waves: { left: r.waves.left, blocked: r.waves.blocked, message: blockedMessage(r.waves.blocked, locale) },
+  far: r.far ? { count: r.far.count, strong: r.far.strong, label: visionText.in(locale).map.far(r.far.count, r.far.strong) } : null,
 });
 
 export const toEncounterHistoryDto = (page: HistoryPage): EncounterHistory => ({

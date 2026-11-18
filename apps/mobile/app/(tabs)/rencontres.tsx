@@ -8,6 +8,7 @@ import {
   EncounterHistory,
   type EncounterHistoryEntry,
   EncountersHero,
+  FarAwayCard,
   FanIn,
   IncomingCard,
   MapPlusStrip,
@@ -44,6 +45,9 @@ import { usePet } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { quartier as quartierText } from '@/locales/quartier';
 import { carte as carteText, rencontres as t } from '@/locales/rencontres';
+
+/** Silhouettes du « vu de loin » : un décor, jamais les formes des vraies personnes. */
+const FAR_SPECIES = ['suzie', 'gaston', 'pia', 'nino'] as const;
 
 /** Pourquoi, en une ligne (les phrases et les repères sont sur l'écran de la rencontre). */
 const why = (e: MatchExplanation) => (
@@ -281,7 +285,19 @@ export default function RencontresScreen() {
         <Button label={carteText.area.choose} variant="glass" size="sm" onPress={() => setAreaSheet(true)} />
       ) : null}
 
-      {encounters.data && m && !m.plus && !noVision ? (
+      {/* Vu de loin : de vraies personnes compatibles hors de ta zone, comptées par le serveur (docs/DESIR.md). */}
+      {encounters.data?.far && m && !m.plus ? (
+        <FarAwayCard
+          kicker={t.far.kicker}
+          title={encounters.data.far.label}
+          text={t.far.text(petName)}
+          ctaLabel={t.far.cta}
+          onPress={() => openPlus('far_away')}
+          species={FAR_SPECIES}
+          count={encounters.data.far.count}
+        />
+      ) : null}
+      {encounters.data && m && !m.plus && !noVision && !encounters.data.far ? (
         <MapPlusStrip title={t.morePlus.title} text={morePerk?.label ?? morePerk?.short[0] ?? ''} ctaLabel={t.morePlus.cta} onPress={() => openPlus('encounters')} />
       ) : null}
 

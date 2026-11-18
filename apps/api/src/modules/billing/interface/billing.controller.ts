@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, Inject, Post } from '@nestjs/common';
-import { AppleNotificationBody, type Paywall, SubmitPurchaseBody, type Subscription } from '@blowy/contract';
+import { AppleNotificationBody, type Paywall, PlusOpenBody, type PlusMomentDto, SubmitPurchaseBody, type Subscription } from '@blowy/contract';
 import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
@@ -9,6 +9,7 @@ import { type Locale, facturationText, textOf } from '@blowy/content';
 import { ZodPipe } from '../../../shared/zod.pipe';
 import { HandleAppleNotification } from '../application/apple-notifications.usecase';
 import { GetPaywall, GetSubscription, SubmitPurchase } from '../application/plus.usecases';
+import { PlusMoments, PlusOpens } from '../application/plus-desire';
 
 @Controller('v1/plus')
 export class BillingController {
@@ -17,7 +18,24 @@ export class BillingController {
     @Inject(GetSubscription) private readonly subscription: GetSubscription,
     @Inject(SubmitPurchase) private readonly submit: SubmitPurchase,
     @Inject(HandleAppleNotification) private readonly appleNotification: HandleAppleNotification,
+    @Inject(PlusOpens) private readonly opens: PlusOpens,
+    @Inject(PlusMoments) private readonly moments: PlusMoments,
   ) {}
+
+  /** La feuille s'est ouverte (compteur par déclencheur ; mesure seulement). */
+  @Post('opens')
+  @HttpCode(200)
+  async opened(@Body(new ZodPipe(PlusOpenBody)) body: z.infer<typeof PlusOpenBody>): Promise<{ ok: true }> {
+    await this.opens.record(body.trigger);
+    return { ok: true };
+  }
+
+  /** Moment clé à saluer maintenant, décidé et réservé par le serveur (plafond : docs/DESIR.md). */
+  @Post('moment')
+  @HttpCode(200)
+  async moment(@CurrentUser() user: AuthUser): Promise<PlusMomentDto> {
+    return { moment: await this.moments.claim(user.userId) };
+  }
 
   @Get('paywall')
   async getPaywall(@CurrentUser() user: AuthUser, @ReqLocale() locale: Locale): Promise<Paywall> {

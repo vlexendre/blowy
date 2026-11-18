@@ -1,10 +1,11 @@
 /** Garde-robe (V6-GardeRobe, V6-Objet) : la tenue en direct, les 4 emplacements, porter ou retirer, comment gagner le reste. */
 import type { WardrobeItem } from '@blowy/contract';
 import { itemLabel, slotLabel, statGoalLabel } from '@/locales/content';
-import { ITEM_SLOTS, type ItemSlot, type StatKey } from '@blowy/domain';
+import { ITEM_SLOTS, type ItemSlot, type StatKey, itemById } from '@blowy/domain';
 import {
   Banner,
   Chip,
+  CollectionBanner,
   ItemDetail,
   ItemImage,
   OutfitPreview,
@@ -13,11 +14,12 @@ import {
   SheetTemplate,
   Skeleton,
   SlotTabs,
+  TryOnBar,
   useFlyTo,
   WardrobeGrid,
   type WardrobeGridHandle,
 } from '@blowy/ui';
-import { type Href, useRouter } from 'expo-router';
+import { type Href, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { ScreenMotion } from '@/core';
@@ -26,6 +28,7 @@ import { usePet, useSetOutfit, useUnlocks, useWardrobe, withItem } from '@/featu
 import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
 import { wardrobe as t } from '@/locales/pet';
+import { formatDate } from '@/locales/runtime';
 
 /** Où l'on avance vers chaque étape. */
 const SHORTCUT: Record<StatKey, Href> = {
@@ -51,6 +54,9 @@ export default function WardrobeScreen() {
   const [newIds] = useState(() => useUnlocks.getState().fresh);
   const [slot, setSlot] = useState<ItemSlot>('head');
   const [open, setOpen] = useState<WardrobeItem | null>(null);
+  // Essayage d'un objet premium (aperçu sur son minimoa, jamais enregistré) ; `?try=` : vu sur un autre minimoa.
+  const params = useLocalSearchParams<{ try?: string; from?: string }>();
+  const [tryOn, setTryOn] = useState<string | null>(() => (typeof params.try === 'string' && itemById(params.try)?.unlock.kind === 'premium' ? params.try : null));
   // Objets en vol vers le pet : portés tout de suite (optimiste), montrés sur lui à l'atterrissage.
   const [incoming, setIncoming] = useState<string[]>([]);
   const preview = useRef<OutfitPreviewHandle>(null);
@@ -85,6 +91,11 @@ export default function WardrobeScreen() {
     );
   }
 
+  // Un objet essayé qu'on possède déjà (ou qui n'est plus proposé) : pas d'essayage.
+  const trying = tryOn && w.items.some((i) => i.id === tryOn && i.state === 'premium') ? tryOn : null;
+  const tryItem = trying ? itemById(trying) : undefined;
+  const shown = tryItem ? { ...w.outfit, [tryItem.slot]: tryItem.id } : w.outfit;
+  const season = w.collection;
   const owned = w.items.filter((i) => i.state === 'owned').length;
   const total = w.items.length;
   const badges = Object.fromEntries(ITEM_SLOTS.map((s) => [s, w.items.some((i) => i.slot === s && newIds.includes(i.id))])) as Record<ItemSlot, boolean>;
@@ -109,6 +120,7 @@ export default function WardrobeScreen() {
     });
   };
   const select = async (item: WardrobeItem) => {
+    if (item.state === 'owned') setTryOn(null);
     if (item.state !== 'owned') {
       setOpen(item);
       return;
@@ -151,6 +163,15 @@ export default function WardrobeScreen() {
     setOpen(null);
     setTimeout(() => openPlus('premium_item', item ? { item } : {}), 320);
   };
+  /** Essayer l'objet premium ouvert sur son minimoa : la fiche descend, il le porte (aperçu). */
+  const tryIt = () => {
+    const item = open;
+    setOpen(null);
+    if (!item) return;
+    setSlot(item.slot);
+    setTryOn(item.id);
+    preview.current?.react('joy');
+  };
 
   const name = open ? (itemLabel[open.id] ?? open.id) : '';
   const goal = open?.goal;
@@ -166,7 +187,7 @@ export default function WardrobeScreen() {
       >
         <OutfitPreview
           species={p.species}
-          outfit={w.outfit}
+          outfit={shown}
           slotLabels={slotLabel}
           itemLabels={itemLabel}
           emptyLabel={t.empty}
@@ -177,6 +198,16 @@ export default function WardrobeScreen() {
           seed={p.id}
           previewRef={preview}
         />
+        {tryItem ? (
+          <TryOnBar
+            title={t.tryTitle(itemLabel[tryItem.id] ?? tryItem.id, p.name)}
+            text={t.tryText}
+            keepLabel={t.tryKeep}
+            onKeep={() => openPlus(params.from === 'worn' && tryItem.id === params.try ? 'worn_by' : 'try_on', { item: tryItem.id })}
+            removeLabel={t.tryRemove}
+            onRemove={() => setTryOn(null)}
+          />
+        ) : null}
         <SlotTabs labels={slotLabel} active={slot} onChange={setSlot} badges={badges} />
         {setOutfit.isError ? <Banner tone="error" text={errorText(setOutfit.error, t.outfitError)} onClose={() => setOutfit.reset()} /> : null}
         <WardrobeGrid
@@ -193,6 +224,16 @@ export default function WardrobeScreen() {
           onSelect={(item) => void select(item)}
           gridRef={grid}
         />
+        {/* Collection saisonnière : sa vraie date de fin vient du serveur (docs/DESIR.md). */}
+        {season ? (
+          <CollectionBanner
+            kicker={t.collection.name[season.id]}
+            title={t.collection.title(formatDate(new Date(`${season.until}T12:00:00Z`), { day: 'numeric', month: 'long' }), season.daysLeft)}
+            text={season.kept ? t.collection.kept : t.collection.text}
+            items={season.items}
+            action={season.kept ? null : { label: t.collection.cta, onPress: () => openPlus('collection') }}
+          />
+        ) : null}
 
         <SheetTemplate
           visible={!!open}
@@ -217,6 +258,7 @@ export default function WardrobeScreen() {
                       ? { label: t.shortcut[goal.stat], onPress: () => go(SHORTCUT[goal.stat]) }
                       : undefined
                 }
+                secondary={open.state === 'premium' ? { label: t.tryOn(p.name), onPress: tryIt } : undefined}
                 closeLabel={t.close}
                 onClose={() => setOpen(null)}
               />

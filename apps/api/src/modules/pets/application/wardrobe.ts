@@ -1,5 +1,20 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
-import { ITEMS, type PetStats, earnedItems, entitlements, itemById, ownedWith, withoutPremium } from '@blowy/domain';
+import {
+  type Day,
+  ITEMS,
+  type PetStats,
+  type SeasonalCollection,
+  collectionItemsToKeep,
+  currentCollection,
+  dayOf,
+  earnedItems,
+  entitlements,
+  itemAvailable,
+  itemById,
+  ownedWith,
+  withoutPremium,
+  withoutUnavailable,
+} from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { CLOCK, LINKS, PET_ITEMS, PETS, PROFILES, WORD_VOTES } from '../../../shared/tokens';
 import { hasPlus } from '../../me/application/plus';
@@ -22,6 +37,12 @@ export interface WardrobeState {
   owned: ReadonlySet<string>;
   /** Minimoa+ actif : les objets premium sont à la personne. */
   plus: boolean;
+  /** Jour (Paris) de la lecture. */
+  today: Day;
+  /** Objets de collection gardés (reçus avec Minimoa+ pendant la collection). */
+  kept: ReadonlySet<string>;
+  /** Collection saisonnière en cours et jours restants (null hors saison). */
+  collection: { collection: SeasonalCollection; daysLeft: number } | null;
 }
 
 /**
@@ -60,7 +81,8 @@ export class Wardrobe {
   async sync(ownerId: string): Promise<string[]> {
     const loaded = await this.character.load(ownerId);
     const [stats, owned, plus] = await Promise.all([this.statsOf(loaded), this.items.list(loaded.id), this.plusOf(ownerId)]);
-    const pet = await this.settle(loaded, plus);
+    const kept = await this.keepCollection(loaded.id, owned, plus);
+    const pet = await this.settle(loaded, plus, kept);
     const have = new Set(owned);
     const missing = earnedItems(stats).filter((id) => !have.has(id));
     if (missing.length === 0) return [];
@@ -74,17 +96,47 @@ export class Wardrobe {
   async state(ownerId: string): Promise<WardrobeState> {
     const loaded = await this.character.load(ownerId);
     const [stats, owned, plus] = await Promise.all([this.statsOf(loaded), this.items.list(loaded.id), this.plusOf(ownerId)]);
-    const pet = await this.settle(loaded, plus);
-    return { pet, stats, plus, owned: ownedWith([...owned, ...earnedItems(stats)], entitlements(plus).premiumItems) };
+    const kept = await this.keepCollection(loaded.id, owned, plus);
+    const pet = await this.settle(loaded, plus, kept);
+    const today = this.today();
+    const all = ownedWith([...owned, ...earnedItems(stats)], entitlements(plus).premiumItems);
+    // Collection finie : ses objets ne sont plus à personne, sauf à ceux qui les ont gardés.
+    const available = new Set([...all].filter((id) => itemAvailable(id, today, kept)));
+    return { pet, stats, plus, owned: available, today, kept, collection: currentCollection(today) };
+  }
+
+  private today(): Day {
+    return dayOf(this.clock.now());
+  }
+
+  /**
+   * Minimoa+ pendant une collection saisonnière : ses objets sont gardés (`pet_items`, source `collection`), pour la
+   * suite (docs/DESIR.md). Rend les objets de collection gardés. Jamais bloquant pour la lecture.
+   */
+  private async keepCollection(petId: string, owned: readonly string[], plus: boolean): Promise<Set<string>> {
+    const kept = new Set(owned);
+    const add = collectionItemsToKeep(plus, this.today(), kept);
+    if (add.length === 0) return kept;
+    try {
+      await this.items.addMany(petId, add.map((itemId) => ({ itemId, source: 'collection' as const })), this.clock.now().toISOString());
+      for (const id of add) kept.add(id);
+    } catch {
+      // Réessayé à la prochaine lecture.
+    }
+    return kept;
   }
 
   /**
    * Fin de Minimoa+ : le minimoa range ses objets premium (ils retournent dans la garde-robe, verrouillés, et reviennent
    * avec un nouvel abonnement). Fait ici à chaque vue par sa personne, et pour les autres par `WardrobeJobs`.
    */
-  async settle<T extends PetRecord>(pet: T, plus: boolean): Promise<T> {
-    if (entitlements(plus).premiumItems) return pet;
-    const outfit = withoutPremium(pet.outfit);
+  async settle<T extends PetRecord>(pet: T, plus: boolean, kept?: ReadonlySet<string>): Promise<T> {
+    // Avec Minimoa+ : seuls les objets d'une collection finie et jamais reçue sont rangés.
+    const outfit = entitlements(plus).premiumItems
+      ? kept
+        ? withoutUnavailable(pet.outfit, this.today(), kept)
+        : pet.outfit
+      : withoutPremium(pet.outfit);
     if (outfit === pet.outfit) return pet;
     await this.pets.saveOutfit(pet.id, outfit);
     return { ...pet, outfit };

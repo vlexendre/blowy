@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native';
 import { Avatar } from '../atoms/Avatar';
 import { Button } from '../atoms/Button';
 import { Panel } from '../atoms/Panel';
-import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { Title } from '../atoms/Title';
 import { layout } from '../lib/styles';
@@ -89,22 +88,19 @@ export interface MapPlusStripProps {
 
 /** Bandeau Minimoa+ de la carte (violet) : toute la bande se touche. */
 export function MapPlusStrip({ title, text, ctaLabel, onPress }: MapPlusStripProps) {
+  // Le bouton porte l'action (pas de bouton dans un bouton : interdit en HTML sur le web).
   return (
-    <Pressable onPress={onPress} scaleTo={0.98} accessibilityRole="button" accessibilityLabel={`${title}. ${text}`}>
-      <Panel gradient="violet" radius={22} padding="none" style={styles.strip}>
-        <View style={layout.grow}>
-          <Text variant="bodyHeavy" size={15} color={color.white}>
-            {title}
-          </Text>
-          <Text size={13} color={alpha(color.white, 0.85)} numberOfLines={1}>
-            {text}
-          </Text>
-        </View>
-        <View pointerEvents="none" importantForAccessibility="no-hide-descendants">
-          <Button label={ctaLabel} variant="white" size="sm" block={false} style={styles.cta} />
-        </View>
-      </Panel>
-    </Pressable>
+    <Panel gradient="violet" radius={22} padding="none" style={styles.strip}>
+      <View style={layout.grow} accessible accessibilityLabel={`${title}. ${text}`}>
+        <Text variant="bodyHeavy" size={15} color={color.white}>
+          {title}
+        </Text>
+        <Text size={13} color={alpha(color.white, 0.85)} numberOfLines={1}>
+          {text}
+        </Text>
+      </View>
+      <Button label={ctaLabel} variant="white" size="sm" block={false} style={styles.cta} onPress={onPress} accessibilityLabel={`${ctaLabel}. ${title}`} />
+    </Panel>
   );
 }
 

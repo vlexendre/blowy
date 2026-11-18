@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { textOf, visionText } from '@blowy/content';
-import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, snapToGrid } from '@blowy/domain';
+import { BLUR_GRID_METERS, type GeoPoint, MATCH_RADIUS_KM, ZONE_RADIUS_KM, entitlements, farSummary, snapToGrid } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK, ENCOUNTERS, LINKS, PETS, PROFILES } from '../../../shared/tokens';
@@ -42,7 +42,8 @@ export interface MapResult {
   center: GeoPoint | null;
   radiusKm: number;
   pins: MapPinResult[];
-  beyond: { count: number; blurred: GeoPoint[] };
+  /** Au-delà de la zone (gratuit) : vraies personnes compatibles, dont `strong` à 85 % ou plus ; positions grossières. */
+  beyond: { count: number; strong: number; blurred: GeoPoint[] };
   discreet: boolean;
   canChangeCity: boolean;
 }
@@ -91,7 +92,7 @@ export class GetMap {
     const elsewhere = query.lat !== undefined && query.lng !== undefined ? { lat: query.lat, lng: query.lng } : null;
     if (elsewhere && !can.mapEverywhere) throw new DomainError('forbidden', textOf(visionText, (t) => t.errors.mapEverywherePlus));
     const base = { scope: can.mapEverywhere ? ('everywhere' as const) : ('zone' as const), discreet: profile.discreet, canChangeCity: can.changeCity };
-    if (!me.center) return { ...base, status: 'no_location', center: null, radiusKm: ZONE_RADIUS_KM, pins: [], beyond: { count: 0, blurred: [] } };
+    if (!me.center) return { ...base, status: 'no_location', center: null, radiusKm: ZONE_RADIUS_KM, pins: [], beyond: { count: 0, strong: 0, blurred: [] } };
 
     let center = me.center;
     let radiusKm = ZONE_RADIUS_KM;
@@ -136,6 +137,6 @@ export class GetMap {
       const cell = snapToGrid(m.shown, BLUR_GRID_METERS);
       blurred.set(`${cell.lat},${cell.lng}`, cell);
     }
-    return { ...base, status: 'ok', center, radiusKm, pins, beyond: { count: shownOutside.length, blurred: [...blurred.values()] } };
+    return { ...base, status: 'ok', center, radiusKm, pins, beyond: { count: shownOutside.length, strong: farSummary(shownOutside.map((m) => m.score)).strong, blurred: [...blurred.values()] } };
   }
 }

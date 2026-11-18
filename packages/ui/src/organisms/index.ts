@@ -84,3 +84,13 @@ export { PeopleCard, type PeopleCardProps } from './PeopleCard';
 export { PlusHero, type PlusHeroPose, type PlusHeroProps } from './PlusHero';
 export { type PlusPlanCard, PlusPlanCards, type PlusPlanCardsProps } from './PlusPlanCards';
 export { TrialTimeline, type TrialStepView, type TrialTimelineProps } from './TrialTimeline';
+export {
+  CollectionBanner,
+  type CollectionBannerProps,
+  FarAwayCard,
+  type FarAwayCardProps,
+  TryOnBar,
+  type TryOnBarProps,
+  WornPremium,
+  type WornPremiumProps,
+} from './DesireCards';

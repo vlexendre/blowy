@@ -8,6 +8,7 @@ import { IdentityZ, LatLngZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityField
 import { PetRoleZ } from './v7/plateforme';
 import { OnboardHabitZ, SharedHabitsZ } from './v7/rituels';
 import { AttributionZ } from './v7/croissance';
+import { SeasonalCollectionZ } from './v7/billing';
 
 export const API_PREFIX = '/v1';
 
@@ -96,7 +97,12 @@ export const WardrobeItemZ = z.object({
   goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept', 'referrals', 'founded']), have: z.number().int(), need: z.number().int() }).nullable(),
 });
 export type WardrobeItem = z.infer<typeof WardrobeItemZ>;
-export const WardrobeZ = z.object({ items: z.array(WardrobeItemZ), outfit: OutfitZ });
+export const WardrobeZ = z.object({
+  items: z.array(WardrobeItemZ),
+  outfit: OutfitZ,
+  /** Collection saisonnière en cours, avec sa vraie date de fin (null hors saison ; docs/DESIR.md). */
+  collection: SeasonalCollectionZ.nullable().default(null),
+});
 export type Wardrobe = z.infer<typeof WardrobeZ>;
 export const OutfitBody = z.object({ outfit: OutfitZ });
 
@@ -328,9 +334,17 @@ export const WavesZ = z.object({
 });
 export type Waves = z.infer<typeof WavesZ>;
 
+/**
+ * « Vu de loin » (sans Minimoa+) : de vraies personnes compatibles autour de toi (20 km), montrables sur la carte,
+ * que le minimoa ne t'a pas encore présentées. Un nombre seulement, jamais d'identité. null : rien à dire (Minimoa+, ou personne).
+ */
+export const FarAwayZ = z.object({ count: z.number().int().positive(), strong: z.number().int().min(0), label: z.string() });
+export type FarAway = z.infer<typeof FarAwayZ>;
+
 export const EncountersZ = z.object({
   incoming: z.array(IncomingZ),
   suggestions: z.array(SuggestionZ),
+  far: FarAwayZ.nullable().default(null),
   /** Forme du minimoa (humeur) : elle ne bloque plus les présentations (au moins une par jour, même s'il boude). */
   petShape: ShapeZ,
   /** Tes signes du jour (aussi pour la carte). Absent d'une API plus ancienne. */

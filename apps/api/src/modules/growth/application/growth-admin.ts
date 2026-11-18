@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { AdminCreator, AdminCreators, AdminGrowth } from '@blowy/contract';
-import { type Day, FUNNEL_STEPS, addDays, dayOf, growthReport, lastWeeks, membersAt } from '@blowy/domain';
+import { type Day, FUNNEL_STEPS, addDays, dayOf, growthReport, lastWeeks, membersAt, plusTriggerReport } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { CLOCK } from '../../../shared/tokens';
@@ -61,7 +61,7 @@ export class GrowthAdmin {
       return { createdOn, membersAtD7: membersAt(g.members, d7) };
     });
     const r = growthReport({ today, weeks, counters, events, activeUsers, groups: groupRows });
-    return { ...r, steps: [...FUNNEL_STEPS] };
+    return { ...r, steps: [...FUNNEL_STEPS], plus: plusTriggerReport(counters) };
   }
 
   async listCreators(): Promise<AdminCreators> {

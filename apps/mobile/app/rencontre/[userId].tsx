@@ -19,6 +19,7 @@ import {
   Stack,
   usePetBump,
   VisionMatch,
+  WornPremium,
   useRipple,
   useRippleAnchor,
   useTypingPause,
@@ -32,6 +33,9 @@ import { isWaveLimit, matchAxes, useAcceptEncounter, useDeclineEncounter, useEnc
 import { sharedHabitsView } from '@/features/groups';
 import { ConfirmSheet, errorText, ReportSheet } from '@/features/links';
 import { usePet } from '@/features/pet';
+import { useMe } from '@/features/me';
+import { itemLabel } from '@/locales/content';
+import { dayOf, isPremiumItem, itemAvailable } from '@blowy/domain';
 import { useBlock } from '@/features/safety';
 import { chat as chatText, chats as chatsText, options as optionsText } from '@/locales/chats';
 import { rencontre as t, rencontres as listText } from '@/locales/rencontres';
@@ -44,6 +48,7 @@ export default function RencontreScreen() {
   const router = useRouter();
   const encounter = useEncounter(userId);
   const pet = usePet();
+  const me = useMe();
   const wave = useWave();
   const accept = useAcceptEncounter();
   const decline = useDeclineEncounter();
@@ -102,6 +107,7 @@ export default function RencontreScreen() {
 
   // « Vous tenez tous les deux : Sport » (spéc. §25) : les deux séries, les deux rigueurs ; absent sans habitude commune.
   const shared = sharedHabitsView(incoming?.sharedHabits ?? suggestion?.sharedHabits, person.displayName);
+  const worn = Object.values(person.pet.outfit ?? {}).find((id): id is string => typeof id === 'string' && isPremiumItem(id) && itemAvailable(id, dayOf(new Date()), new Set())) ?? null;
   const axes = explanation ? matchAxes(explanation, person.displayName, { same: t.sameSide, apart: t.apartSide }) : null;
 
   /** Accepté : le lien s'ouvre tout de suite ; les deux pets quittent la scène pour se cogner au centre. */
@@ -181,6 +187,15 @@ export default function RencontreScreen() {
         )}
         {shared ? <SharedHabitsCard {...shared} /> : null}
         {waveBlock && !incoming && !suggestion?.waved ? <Banner tone="info" text={waveBlock} /> : null}
+        {/* Objet premium déjà visible sur son minimoa : l'essayer sur le sien (aperçu, docs/DESIR.md). */}
+        {worn && me.data && !me.data.plus ? (
+          <WornPremium
+            item={worn}
+            label={t.wornBy(person.displayName, itemLabel[worn] ?? worn)}
+            actionLabel={t.tryIt(myPetName)}
+            onPress={() => router.push({ pathname: '/pet/garde-robe', params: { try: worn, from: 'worn' } })}
+          />
+        ) : null}
         {error ? (
           <Banner
             tone="error"

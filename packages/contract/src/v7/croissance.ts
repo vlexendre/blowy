@@ -119,6 +119,10 @@ export const AdminGrowthZ = z.object({
     .array(z.object({ week: Day, started: z.number().int(), challenged: z.number().int(), done: z.number().int(), shared: z.number().int(), joined: z.number().int(), k: z.number().nullable() }))
     .default([]),
   quartiers: z.array(z.object({ week: Day, joins: z.number().int(), confirmed: z.number().int(), joined: z.number().int() })).default([]),
+  /** Minimoa+ par déclencheur sur les 12 semaines : ouvertures de la feuille, essais, paiements (docs/DESIR.md). */
+  plus: z
+    .array(z.object({ trigger: z.string(), opens: z.number().int(), trials: z.number().int(), paid: z.number().int(), rate: z.number().nullable() }))
+    .default([]),
 });
 export type AdminGrowth = z.infer<typeof AdminGrowthZ>;
 

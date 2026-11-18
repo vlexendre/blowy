@@ -94,7 +94,10 @@ export const QUIZ_SHARE_KINDS = ['story', 'link', 'challenge'] as const;
 export type QuizShareKind = (typeof QUIZ_SHARE_KINDS)[number];
 
 /** Compteurs agrégés par jour (aucune personne derrière) : visites, premiers lancements, inscriptions, votes, partages. */
-export type GrowthCounterMetric = `visit_${SharePage}` | 'first_open' | 'signup' | 'words_vote' | `share_${ShareKind}` | WebStep;
+/** Feuille Minimoa+ ouverte, essai commencé, premier paiement ; `source` = le déclencheur (docs/DESIR.md). */
+export const PLUS_STEPS = ['plus_open', 'plus_trial', 'plus_paid'] as const;
+export type PlusStep = (typeof PLUS_STEPS)[number];
+export type GrowthCounterMetric = `visit_${SharePage}` | 'first_open' | 'signup' | 'words_vote' | `share_${ShareKind}` | WebStep | PlusStep;
 export const GROWTH_COUNTER_METRICS: readonly GrowthCounterMetric[] = [
   ...SHARE_PAGES.map((p) => `visit_${p}` as const),
   'first_open',
@@ -102,6 +105,7 @@ export const GROWTH_COUNTER_METRICS: readonly GrowthCounterMetric[] = [
   'words_vote',
   ...SHARE_KINDS.map((k) => `share_${k}` as const),
   ...WEB_STEPS,
+  ...PLUS_STEPS,
 ];
 
 /** J1 / J7 / J30 : actif ce jour-là exactement (jour 0 = l'inscription). */
