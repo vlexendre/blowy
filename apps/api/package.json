@@ -9,7 +9,8 @@
     "start": "node --env-file-if-exists=.env dist/main.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check:schema": "node scripts/check-schema.mjs"
+    "check:schema": "node scripts/check-schema.mjs",
+    "seed:test": "tsx src/demo/seed/cli.ts"
   },
   "dependencies": {
     "@blowy/content": "workspace:*",

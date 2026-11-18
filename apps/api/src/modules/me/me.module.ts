@@ -15,5 +15,7 @@ import { MePresenter } from './interface/me.presenter';
   imports: [PetsModule, LinksModule, VisionModule, RituelsModule],
   controllers: [MeController],
   providers: [GetMe, Onboard, UpdateMe, DeleteMe, Avatar, MePresenter],
+  // Le semis d'un environnement de test inscrit ses comptes par le vrai cas d'usage (demo/seed).
+  exports: [Onboard],
 })
 export class MeModule {}

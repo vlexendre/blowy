@@ -22,6 +22,12 @@ const EnvSchema = z
     MAIL_FROM: z.string().default('Minimoa <hello@minimoa.app>'),
     WEB_URL: z.string().url().default('https://minimoa.app'),
     CORS_ORIGINS: z.string().default(''),
+    /** Semis d'un environnement de test au démarrage de la démo locale (docs/SEED-TEST.md) : villes (`all` : toutes). */
+    BLOWY_SEED_CITIES: optionalString,
+    BLOWY_SEED_PER_CITY: z.preprocess(emptyToUndefined, z.coerce.number().int().min(1).max(500).optional()),
+    BLOWY_SEED: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).optional()),
+    /** `1` : chaque nouvelle inscription locale rejoint le monde du semis (elle voit ses comptes). */
+    BLOWY_SEED_ADOPT: z.preprocess(emptyToUndefined, z.enum(['0', '1']).default('0')),
   })
   .superRefine((env, ctx) => {
     if (env.BLOWY_ENV === 'production' && env.BLOWY_ADAPTERS === 'memory') {
@@ -51,6 +57,17 @@ export interface Env {
   appleSignIn: AppleSignInEnv;
   /** Compte de revue d'Apple et alertes de modération (audit App Store). */
   audit: AuditEnv;
+  /** Semis au démarrage (démo locale en mémoire seulement) ; null sinon. */
+  seed: SeedBootEnv | null;
+}
+
+export interface SeedBootEnv {
+  cities: string[];
+  perCity: number | null;
+  seed: number;
+  adoptNewcomers: boolean;
+  /** La configuration reçue, relue par les garde-fous du semis. */
+  source: Readonly<Record<string, string | undefined>>;
 }
 
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
@@ -60,6 +77,7 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     throw new Error(`configuration invalide — ${details}`);
   }
   const e = parsed.data;
+  const demo = e.BLOWY_DEMO === '1' && e.BLOWY_ENV === 'local' && e.BLOWY_ADAPTERS === 'memory';
   const facturationAdmin = loadFacturationAdminEnv(source, {
     env: e.BLOWY_ENV,
     demo: e.BLOWY_DEMO === '1' && e.BLOWY_ENV === 'local' && e.BLOWY_ADAPTERS === 'memory',
@@ -67,7 +85,7 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
   return {
     env: e.BLOWY_ENV,
     adapters: e.BLOWY_ADAPTERS,
-    demo: e.BLOWY_DEMO === '1' && e.BLOWY_ENV === 'local' && e.BLOWY_ADAPTERS === 'memory',
+    demo,
     port: e.PORT,
     apiUrl: (e.API_URL ?? `http://localhost:${e.PORT}`).replace(/\/$/, ''),
     supabase: e.SUPABASE_URL && e.SUPABASE_SERVICE_ROLE_KEY ? { url: e.SUPABASE_URL, serviceRoleKey: e.SUPABASE_SERVICE_ROLE_KEY } : null,
@@ -81,5 +99,9 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     facturationAdmin,
     appleSignIn: loadAppleSignInEnv(source, e.BLOWY_ADAPTERS, facturationAdmin.apple.bundleId),
     audit: loadAuditEnv(source, { env: e.BLOWY_ENV, webUrl: e.WEB_URL.replace(/\/$/, '') }),
+    seed:
+      demo && e.BLOWY_SEED_CITIES
+        ? { cities: e.BLOWY_SEED_CITIES.split(','), perCity: e.BLOWY_SEED_PER_CITY ?? null, seed: e.BLOWY_SEED ?? 1, adoptNewcomers: e.BLOWY_SEED_ADOPT === '1', source }
+        : null,
   };
 }

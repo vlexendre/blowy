@@ -60,7 +60,8 @@ export class QuartierJobs implements TickJob {
         const zone = zoneById(s.zone);
         // Noté avant l'envoi : un deuxième passage ne renvoie jamais le même e-mail.
         await this.repo.updateSignup(s.id, { openMailSentAt: at });
-        if (!zone || !s.email || !s.token) continue;
+        // Adresses réservées (`.invalid`, RFC 2606 : semis d'un environnement de test) : jamais d'envoi.
+        if (!zone || !s.email || !s.token || /\.invalid$/i.test(s.email)) continue;
         let founders = founderCache.get(s.zone);
         if (!founders) {
           founders = new Set((await this.repo.founders(s.zone)).map((f) => f.signupId ?? ''));

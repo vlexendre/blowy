@@ -11,6 +11,6 @@ import { PetsController } from './interface/pets.controller';
 @Module({
   controllers: [PetsController],
   providers: [PetCharacter, Wardrobe, WardrobeJobs, GetPetView, RenamePet, CarePet, SetOutfit],
-  exports: [PetCharacter, Wardrobe, WardrobeJobs],
+  exports: [PetCharacter, Wardrobe, WardrobeJobs, CarePet, SetOutfit],
 })
 export class PetsModule {}
