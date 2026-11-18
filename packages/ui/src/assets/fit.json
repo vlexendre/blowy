@@ -11669,23 +11669,14 @@
   "hiver_echarpe": {
    "anchor": "mouth",
    "size": "brow",
-   "w": 1.0,
+   "w": 1.38,
    "pivot": [
     0.5,
     0.1
    ],
    "ratio": 0.9853,
-   "dy": 0.13,
-   "back": {
-    "w": 0.95,
-    "pivot": [
-     0.5,
-     0.75
-    ],
-    "ratio": 2.1436,
-    "dy": 0.12,
-    "image": "hiver_echarpe_dos"
-   }
+   "dy": 0.08,
+   "sy": 0.8
   },
   "hiver_cape": {
    "anchor": "neck",
@@ -12358,6 +12349,10 @@
   },
   "hiver_echarpe": {
    "plain": true,
+   "split": [
+    0.19,
+    "back"
+   ],
    "fur": [
     6,
     3,
