@@ -6,10 +6,17 @@
 import { GAUGE_KEYS, WORD_KEYS } from '@blowy/domain';
 import { labels } from '@blowy/content';
 
-// Le site est en français.
-const { gaugeLabel, wordLabel } = labels.in('fr');
 import StoreButtons from '../../molecules/StoreButtons.astro';
-import { wordsPage as c } from '../../../content/public';
+import { publicText } from '../../../content/public';
+import { localePath, type Locale } from '../../../i18n/site';
+import { siteText } from '../../../content/site';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const { gaugeLabel, wordLabel } = labels.in(locale);
+const c = publicText[locale].words;
 
 /** Inclinaison des mots choisis (degrés), dans l'ordre des mots. */
 const ROT = [-4, 3, -2, 4, 0, -3, 2, -5, 4, -2, 3, -4];
@@ -17,7 +24,7 @@ const hasTpl = (s: string) => /\{\w+\}/.test(s);
 ---
 <section class="pub-state mots" data-state="form" hidden aria-live="polite">
   <div class="mots-top">
-    <a href="/" class="mots-logo" aria-label="Minimoa, accueil">minimoa<i>.</i></a>
+    <a href={localePath(locale, '/')} class="mots-logo" aria-label={siteText[locale].homeLabel}>minimoa<i>.</i></a>
     <span class="mots-chip">{c.anonymous}</span>
   </div>
 
@@ -85,7 +92,7 @@ const hasTpl = (s: string) => /\{\w+\}/.test(s);
     <div class="mots-you">
       <h2 class="mots-title you">{c.youTitle.map((l, i) => <span class:list={['ln', { dim: i > 0 }]}>{l}</span>)}</h2>
       <p class="mots-intro you">{c.youText}</p>
-      <StoreButtons class="mots-stores" />
+      <StoreButtons class="mots-stores" locale={locale} />
       <a href="minimoa://mots" class="mots-cta" data-own-link>
         {c.youApp}
         <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>

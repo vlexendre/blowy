@@ -2,7 +2,15 @@
 /** 3. Garde-robe : quatre minimoas habillés d'objets portés (mêmes placements que l'app), et comment on les gagne. */
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { IMG, sections, wardrobe as c } from '../../../content/landing';
+import { IMG, LOOKS, SPECIES_NAME, STREAK_STEPS, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { fill } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].wardrobe;
 ---
 <SnapSection section={sections.garde} panel="p-orange s-garde" light>
   <SectionTitle lines={c.title}>
@@ -10,22 +18,22 @@ import { IMG, sections, wardrobe as c } from '../../../content/landing';
   </SectionTitle>
   <ul class="looks" role="list">
     {
-      c.looks.map((l, i) => (
-        <li class:list={['look', { plus: l.plus }]} data-r="card" style={`--i:${i}`}>
+      LOOKS.map((l, i) => (
+        <li class:list={['look', { plus: 'plus' in l && l.plus }]} data-r="card" style={`--i:${i}`}>
           <div class="bob">
-            <img src={`${IMG}/tenue_${l.name}.webp`} alt={c.alt(l.who, l.items)} width="500" height="600" loading="lazy" decoding="async" />
+            <img src={`${IMG}/tenue_${l.name}.webp`} alt={fill(c.alt, { who: SPECIES_NAME[l.who], items: c.looks[l.name].items.toLocaleLowerCase(locale) })} width="500" height="600" loading="lazy" decoding="async" />
           </div>
           <p class="lk">
-            <b>{l.who}</b>
-            <span>{l.how}</span>
+            <b>{SPECIES_NAME[l.who]}</b>
+            <span>{c.looks[l.name].how}</span>
           </p>
         </li>
       ))
     }
   </ul>
-  <div class="steps hide-short" data-r="up" aria-label={c.rewards.label}>
-    <span class="lbl">{c.rewards.label}</span>
-    <ol>{c.rewards.steps.map((s) => <li>{s}</li>)}</ol>
+  <div class="steps hide-short" data-r="up" aria-label={c.rewards}>
+    <span class="lbl">{c.rewards}</span>
+    <ol>{STREAK_STEPS.map((s) => <li>{s}</li>)}</ol>
   </div>
 </SnapSection>
 <style is:global>

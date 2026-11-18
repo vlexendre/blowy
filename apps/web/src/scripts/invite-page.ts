@@ -3,9 +3,11 @@ import { api, failureOf } from '../lib/api';
 import { readCode } from '../lib/code';
 import { setPetImage } from '../lib/pet';
 import { DEEP_LINK_SCHEME } from '../config/site';
-import { common, fill, invitePage as c } from '../content/public';
+import { fill, publicText } from '../content/public';
+import { currentLocale } from '../i18n/client';
 import { fillTemplates, onRetry, showState } from './public-page';
 
+const { common, invite: c } = publicText[currentLocale()];
 const code = readCode('i');
 const errorText = document.querySelector<HTMLElement>('[data-state="error"] .pub-text');
 

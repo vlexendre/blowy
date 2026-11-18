@@ -3,8 +3,16 @@
 import LifeSpark from '../../atoms/LifeSpark.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { groups as c, sections } from '../../../content/landing';
-const g = c.card;
+import { GROUP_CARD, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { fill } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].groups;
+const g = { ...GROUP_CARD, ...c.card, members: GROUP_CARD.members.map((m, i) => ({ ...m, ...(c.card.members[i] ?? { name: '', state: '' }) })) };
 const sparks = Array.from({ length: g.livesMax }, (_, i) => i >= g.lives);
 ---
 <SnapSection section={sections.groupes} panel="p-violet s-grp">
@@ -16,7 +24,7 @@ const sparks = Array.from({ length: g.livesMax }, (_, i) => i >= g.lives);
       <div class="gh">
         <span class="he" aria-hidden="true">{g.emoji}</span>
         <b>{g.name}</b>
-        <span class="gsp" role="img" aria-label={`${g.lives} vies sur ${g.livesMax}`}>{sparks.map((off) => <LifeSpark off={off} />)}</span>
+        <span class="gsp" role="img" aria-label={fill(g.livesAria, { n: g.lives, max: g.livesMax })}>{sparks.map((off) => <LifeSpark off={off} />)}</span>
       </div>
       <div class="gst"><b>{g.streak}</b><span>{g.streakUnit}</span><em>{g.today}</em></div>
       <ul class="gm" role="list">

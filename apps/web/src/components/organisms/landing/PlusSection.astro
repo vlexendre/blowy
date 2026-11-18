@@ -1,12 +1,28 @@
 ---
 /**
- * 13. Minimoa+ : gratuit contre Minimoa+. Le montant facturé (59,88 € par an) est le prix le plus visible, l'équivalent
+ * 13. Minimoa+ : gratuit contre Minimoa+. Le montant facturé (l'annuel) est le prix le plus visible, l'équivalent
  * mensuel en petit (Apple 3.1.2, spéc. V7 §13) ; les autres offres et le renouvellement sont écrits en clair.
  */
 import Button from '../../atoms/Button.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { plus as c, sections } from '../../../content/landing';
+import { PLUS_PET, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { OFFERS, TRIAL_DAYS, monthlyEquivalentMinor } from '@blowy/domain';
+import { formatPrice } from '@blowy/content';
+import { legalPath } from '../../../i18n/legal';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].plus;
+/** Montants : offres du domaine (docs/BLOWY-PLUS.md), mis en forme dans la langue. */
+const price = (minor: number) => formatPrice(locale, minor, 'EUR');
+const year = price(OFFERS.yearly.amountMinor);
+const month = price(OFFERS.monthly.amountMinor);
+const week = price(OFFERS.weekly.amountMinor);
+const yearMonthly = price(monthlyEquivalentMinor(OFFERS.yearly));
 ---
 <SnapSection section={sections.plus} panel="p-night s-plus">
   <SectionTitle lines={c.title}>
@@ -14,16 +30,16 @@ import { plus as c, sections } from '../../../content/landing';
   </SectionTitle>
   <div class="plans">
     <div class="plan free" data-r="card">
-      <h3>{c.free.name} <small>{c.free.note}</small></h3>
+      <h3>{c.free.name} <small>{c.free.note(price(0))}</small></h3>
       <ul>{c.free.items.map((i) => <li>{i}</li>)}</ul>
     </div>
     <div class="plan pro" data-r="card">
-      <h3>{c.pro.name} <small>{c.pro.note}</small></h3>
+      <h3>{c.pro.name} <small>{c.pro.note(TRIAL_DAYS)}</small></h3>
       <ul>{c.pro.items.map((i) => <li>{i}</li>)}</ul>
-      <div class="price"><b>{c.pro.price}</b><span>{c.pro.priceNote}</span></div>
-      <p class="pfine">{c.pro.others} {c.pro.renew} <a href={c.pro.termsHref}>{c.pro.terms}</a></p>
-      <Button variant="l" href={c.pro.ctaHref}>{c.pro.cta}</Button>
-      <img class="pia" src={c.pet.src} alt={c.pet.alt} width="500" height="600" loading="lazy" decoding="async" />
+      <div class="price"><b>{c.pro.price(year)}</b><span>{c.pro.priceNote(yearMonthly, TRIAL_DAYS)}</span></div>
+      <p class="pfine">{c.pro.others(month, week)} {c.pro.renew} <a href={legalPath(locale, 'abonnement')}>{c.pro.terms}</a></p>
+      <Button variant="l" href="/plus">{c.pro.cta}</Button>
+      <img class="pia" src={PLUS_PET} alt={c.petAlt} width="500" height="600" loading="lazy" decoding="async" />
     </div>
   </div>
 </SnapSection>

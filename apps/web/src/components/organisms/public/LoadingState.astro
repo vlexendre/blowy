@@ -1,8 +1,13 @@
 ---
 /** État « chargement ». */
-import { common } from '../../../content/public';
+import { publicText } from '../../../content/public';
+import type { Locale } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
 ---
 <section class="pub-state pub-loading" data-state="loading" aria-live="polite" aria-busy="true">
   <div class="spin" aria-hidden="true"></div>
-  <p>{common.loading}</p>
+  <p>{publicText[locale].common.loading}</p>
 </section>

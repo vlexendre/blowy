@@ -6,11 +6,12 @@ import { api } from '../lib/api';
 import { readCode } from '../lib/code';
 import { DEEP_LINK_SCHEME } from '../config/site';
 import { fill } from '../content/public';
-import { growthCopy, pickGrowthLocale } from '../content/growth';
+import { growthCopy } from '../content/growth';
+import { currentLocale } from '../i18n/client';
 import { bindCopy } from './ref';
 import { showState } from './public-page';
 
-const locale = pickGrowthLocale(navigator.languages ?? [navigator.language]);
+const locale = currentLocale();
 const g = growthCopy[locale];
 const t = g.creator;
 const code = readCode('c')?.toUpperCase() ?? null;
@@ -23,18 +24,6 @@ function title(lines: readonly string[], name: string): void {
 }
 
 async function load(): Promise<void> {
-  if (locale !== 'fr') {
-    document.documentElement.lang = locale;
-    document.title = t.meta;
-    document.querySelectorAll<HTMLElement>('[data-c]').forEach((el) => {
-      const v = t[el.dataset.c as keyof typeof t];
-      if (typeof v === 'string') el.textContent = v;
-    });
-    document.querySelectorAll<HTMLElement>('[data-code-box="creator"] [data-t]').forEach((el) => {
-      const k = el.dataset.t;
-      el.textContent = k === 'codeLabel' ? t.codeLabel : k === 'codeHelp' ? t.codeHelp : k === 'copy' ? g.copy : el.textContent;
-    });
-  }
   showState('loading', false);
   let name: string | null = null;
   if (code) {

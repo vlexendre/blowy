@@ -1,13 +1,15 @@
 ---
 /** Les deux boutons de store côte à côte. */
 import StoreBadge from '../atoms/StoreBadge.astro';
+import type { Locale } from '../../i18n/site';
 interface Props {
   class?: string;
   reveal?: boolean;
+  locale: Locale;
 }
-const { class: cls, reveal = false } = Astro.props;
+const { class: cls, reveal = false, locale } = Astro.props;
 ---
 <div class:list={['stores', cls]} data-r={reveal ? 'up' : undefined}>
-  <StoreBadge store="apple" />
-  <StoreBadge store="google" />
+  <StoreBadge store="apple" locale={locale} />
+  <StoreBadge store="google" locale={locale} />
 </div>

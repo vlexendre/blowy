@@ -4,7 +4,9 @@
  * Échoue (code 1) si :
  * - une langue a une clé en trop ou en moins par rapport au français (garde-fou en plus des types) ;
  * - le mot « pet » apparaît dans un texte français vu par les gens (dictionnaires, écrans, kit d'interface, site) ;
- * - un composant du kit d'interface (`packages/ui`) contient un texte écrit en dur.
+ * - un composant du kit d'interface (`packages/ui`) contient un texte écrit en dur ;
+ * - un dictionnaire du site (`apps/web/src/content`) n'a pas la même forme dans les cinq langues, renvoie au français
+ *   (`TODO` : interdit sur le site, chaque langue est publiée), ou dit « pet » dans une langue.
  * Affiche ensuite, pour chaque langue, le nombre de textes encore en français (`TODO`) par dictionnaire.
  * `--list` affiche aussi les clés non traduites.
  */
@@ -23,6 +25,7 @@ import {
   untranslatedPaths,
 } from '../packages/content/src/index';
 import { registeredMessages } from '../apps/mobile/src/locales/runtime';
+import { siteDictionaries } from '../apps/web/src/content/registry';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const list = process.argv.includes('--list');
@@ -138,6 +141,48 @@ for (const file of walk(path.join(root, 'packages/ui/src'))) {
     if ((l.jsx || FRENCH.test(t)) && /[a-zà-ÿ]/i.test(t) && !/^(left|right|center|top|bottom)( \w+)*$/.test(t)) problems.push(`${rel(file)}:${l.line} : texte en dur « ${t.slice(0, 60)} »`);
   }
 }
+
+// ── 4. Le site (apps/web) : cinq langues complètes ──────────────────────────
+
+/** Feuilles dont la forme diffère du français (types : clés, tableaux, fonctions), et toute trace de `TODO`. */
+function siteShape(fr: unknown, other: unknown, at: string, out: string[]): void {
+  if (other === TODO) return void out.push(`${at || '(tout)'} : TODO`);
+  if (typeof fr === 'function' || typeof fr === 'string' || typeof fr === 'number' || typeof fr === 'boolean') {
+    if (typeof other !== typeof fr) out.push(`${at} : ${typeof other} au lieu de ${typeof fr}`);
+    return;
+  }
+  if (Array.isArray(fr)) {
+    if (!Array.isArray(other)) return void out.push(`${at} : pas un tableau`);
+    other.forEach((v, i) => fr.length && siteShape(fr[Math.min(i, fr.length - 1)], v, `${at}[${i}]`, out));
+    return;
+  }
+  if (fr && typeof fr === 'object') {
+    if (!other || typeof other !== 'object') return void out.push(`${at} : pas un objet`);
+    const a = Object.keys(fr);
+    const b = Object.keys(other);
+    for (const k of a) if (!b.includes(k)) out.push(`${at}.${k} : manquant`);
+    for (const k of b) if (!a.includes(k)) out.push(`${at}.${k} : en trop`);
+    for (const k of a) if (b.includes(k)) siteShape((fr as Record<string, unknown>)[k], (other as Record<string, unknown>)[k], at ? `${at}.${k}` : k, out);
+  }
+}
+let siteLeaves = 0;
+for (const [name, d] of Object.entries(siteDictionaries)) {
+  siteLeaves += leafPaths(d.fr).length;
+  for (const locale of LOCALES) {
+    const found: string[] = [];
+    if (locale !== SOURCE_LOCALE) siteShape(d.fr, d[locale], '', found);
+    for (const f of found) problems.push(`web/${name} [${locale}] : ${f}`);
+    const texts: { at: string; text: string }[] = [];
+    strings(d[locale], '', texts);
+    const seen = new Set<string>();
+    for (const { at, text } of texts) {
+      if (isIdentifier(text) || !PET.test(text) || seen.has(at)) continue;
+      seen.add(at);
+      problems.push(`web/${name} [${locale}].${at} : « pet » dans « ${text} »`);
+    }
+  }
+}
+console.log(`Site : ${siteLeaves} textes français dans ${Object.keys(siteDictionaries).length} dictionnaires, traduits dans les quatre autres langues.`);
 
 // ── Rapport ──────────────────────────────────────────────────────────────────
 

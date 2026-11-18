@@ -2,13 +2,19 @@
 /** Invitation : qui t'invite, son pet, ouvrir dans l'app, stores, et le code à taper à l'inscription. */
 import StateBlock from '../../molecules/StateBlock.astro';
 import StoreButtons from '../../molecules/StoreButtons.astro';
-import { invitePage as c } from '../../../content/public';
+import { publicText } from '../../../content/public';
+import type { Locale } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = publicText[locale].invite;
 ---
 <StateBlock state="ready" title={c.title} text={c.intro}>
   <img slot="pet" class="pub-pet" data-pet alt="" width="900" height="1000" />
   <span slot="before" class="lbl">{c.label}</span>
   <div class="pub-actions"><a class="btn l" data-open href="/">{c.open}</a></div>
-  <StoreButtons />
+  <StoreButtons locale={locale} />
   <div class="code-box">
     <span class="lbl" id="code-label">{c.codeLabel}</span>
     <div class="code-row">

@@ -1,25 +1,35 @@
 ---
-/** « 3 mots » (V6-Mots) : /m/CODE (réécrit vers cette page) ou /m/?c=CODE. Tout se passe côté navigateur. */
+/** « 3 mots » (V6-Mots) : /m/CODE (réécrit vers cette page) ou /m/?c=CODE. Cinq langues, celle du téléphone ; tout le reste côté navigateur. */
 import Public from '../../layouts/Public.astro';
 import StateBlock from '../../components/molecules/StateBlock.astro';
 import LoadingState from '../../components/organisms/public/LoadingState.astro';
 import NetworkError from '../../components/organisms/public/NetworkError.astro';
 import DownloadCta from '../../components/organisms/public/DownloadCta.astro';
 import WordsPicker from '../../components/organisms/public/WordsPicker.astro';
-import { common, wordsPage as c } from '../../content/public';
+import { publicText } from '../../content/public';
+import { localePath, type Locale } from '../../i18n/site';
 ---
-<Public title={c.meta.title} description={c.meta.description} noindex bare ogImage="/og/m.jpg" ogAlt="Nino, un minimoa vert, intimidé, à côté du titre « Décris-moi en 3 mots. Sois sympa. »">
-  <LoadingState />
-  <WordsPicker />
-  <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
-    <div class="pub-actions"><a class="btn l" href="/">{common.home}</a></div>
-    <DownloadCta />
-  </StateBlock>
-  <StateBlock state="already_done" title={c.alreadyTitle} text={c.alreadyTextNoName}>
-    <img slot="pet" class="pub-pet" data-pet-already src="/img/nino_smug.webp" alt="" width="900" height="1000" />
-    <DownloadCta />
-  </StateBlock>
-  <NetworkError />
+<Public shell="always" noindex bare ogImage="/og/m.jpg" meta={(l) => ({ ...publicText[l].words.meta, ogAlt: publicText[l].words.ogAlt })}>
+  {
+    (l: Locale) => {
+      const c = publicText[l].words;
+      return (
+        <>
+          <LoadingState locale={l} />
+          <WordsPicker locale={l} />
+          <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>
+            <div class="pub-actions"><a class="btn l" href={localePath(l, '/')}>{publicText[l].common.home}</a></div>
+            <DownloadCta locale={l} />
+          </StateBlock>
+          <StateBlock state="already_done" title={c.alreadyTitle} text={c.alreadyTextNoName}>
+            <img slot="pet" class="pub-pet" data-pet-already src="/img/nino_smug.webp" alt="" width="900" height="1000" />
+            <DownloadCta locale={l} />
+          </StateBlock>
+          <NetworkError locale={l} />
+        </>
+      );
+    }
+  }
 </Public>
 <script>
   import '../../scripts/words-page';

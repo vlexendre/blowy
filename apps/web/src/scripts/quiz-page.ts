@@ -14,7 +14,9 @@ import { growthCopy } from '../content/growth';
 import { bindCopy, withRef } from './ref';
 import { showState } from './public-page';
 import { mountQuartierForm } from './quartier-form';
-import { copyText, fill, flash, locale, qt, shareOrCopy, t, translateCodeBox, translatePage } from './quiz-i18n';
+import { copyText, fill, flash, locale, qt, shareOrCopy, t } from './quiz-shared';
+import { sharePathKeepingLocale } from '../i18n/client';
+import { browserLocale, localeOfPath, localePath } from '../i18n/site';
 
 const KEY = 'minimoa.quiz.mine';
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector<T>(s);
@@ -23,7 +25,9 @@ const host = SITE_URL.replace(/^https?:\/\//, '');
 
 function readQuizCode(): string | null {
   const parts = window.location.pathname.split('/').filter(Boolean);
-  const raw = new URLSearchParams(window.location.search).get('c') ?? (parts[0] === 'quiz' && parts[1] && parts[1] !== 'index.html' ? parts[1] : null);
+  const i = parts.indexOf('quiz');
+  const seg = i >= 0 ? parts[i + 1] : undefined;
+  const raw = new URLSearchParams(window.location.search).get('c') ?? (seg && seg !== 'index.html' ? seg : null);
   return raw && isQuizCode(raw) ? raw.toUpperCase() : null;
 }
 function readRef(): string | null {
@@ -38,11 +42,6 @@ const mine = (): string | null => {
   }
 };
 
-function setTitleLines(el: HTMLElement | null, lines: readonly string[]): void {
-  el?.replaceChildren(
-    ...lines.map((l, i) => Object.assign(document.createElement('span'), { className: i === 1 ? 'ln acc' : 'ln', textContent: l })),
-  );
-}
 
 // ── Le quiz ────────────────────────────────────────────────────────────────
 let ref: string | null = readRef();
@@ -110,7 +109,7 @@ async function finish(): Promise<void> {
     } catch {
       // Navigation privée : le résultat reste à l'écran.
     }
-    history.replaceState(null, '', `/quiz/${result.code}`);
+    history.replaceState(null, '', sharePathKeepingLocale(`/quiz/${result.code}`));
     await showResult(result);
   } catch (e) {
     const err = $('[data-quiz-error]');
@@ -220,14 +219,21 @@ function showShared(res: QuizResultDto): void {
   showState('shared');
 }
 
+/**
+ * Un défi (`/quiz?ref=CODE`) arrive sur la page française indexée : il est envoyé à quelqu'un dont on ne connaît pas
+ * la langue, donc on l'ouvre dans celle de son téléphone. Jamais sans `?ref=` (pas de redirection selon la langue).
+ */
+function followChallengeLanguage(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  if (!readRef() || params.has('lang') || localeOfPath(window.location.pathname) !== 'fr' || locale !== 'fr') return false;
+  const phone = browserLocale(navigator.languages?.length ? navigator.languages : [navigator.language]) ?? 'en';
+  if (phone === 'fr') return false;
+  window.location.replace(`${localePath(phone, '/quiz/')}${window.location.search}`);
+  return true;
+}
+
 async function load(): Promise<void> {
-  translatePage();
-  if (locale !== 'fr') {
-    document.title = t.quiz.meta.title;
-    setTitleLines($('[data-quiz-intro-title]'), t.quiz.intro.title);
-    setTitleLines($('[data-state="shared"] .pub-title'), t.quiz.shared.title);
-  }
-  translateCodeBox('quiz', { codeLabel: r.codeLabel, codeHelp: r.keepText, copy: growthCopy[locale].copy });
+  if (followChallengeLanguage()) return;
   document.querySelectorAll<HTMLButtonElement>('[data-quiz-start]').forEach((b) => b.addEventListener('click', start));
   $('[data-quiz-back]')?.addEventListener('click', () => {
     if (index > 0) {

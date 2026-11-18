@@ -1,11 +1,24 @@
 ---
-/** Page introuvable, avec nino tout triste. */
+/** Page introuvable, avec Nino tout triste ; servie pour toute adresse inconnue, dans la langue du téléphone. */
 import Public from '../layouts/Public.astro';
 import StateBlock from '../components/molecules/StateBlock.astro';
-import { common, notFoundPage as c } from '../content/public';
+import { publicText } from '../content/public';
+import { legalPath } from '../i18n/legal';
+import { localePath, type Locale } from '../i18n/site';
 ---
-<Public title={c.meta.title} description={c.meta.description} noindex>
-  <StateBlock state="404" title={c.title} text={c.text} pet={{ src: '/img/m/nino_triste.webp', alt: c.petAlt }} visible>
-    <div class="pub-actions"><a class="btn l" href="/">{common.home}</a><a class="btn g" href="/legal/assistance/">aide</a></div>
-  </StateBlock>
+<Public shell="always" noindex meta={(l) => publicText[l].notFound.meta}>
+  {
+    (l: Locale) => {
+      const c = publicText[l].notFound;
+      const common = publicText[l].common;
+      return (
+        <StateBlock state="404" title={c.title} text={c.text} pet={{ src: '/img/m/nino_triste.webp', alt: c.petAlt }} visible>
+          <div class="pub-actions">
+            <a class="btn l" href={localePath(l, '/')}>{common.home}</a>
+            <a class="btn g" href={legalPath(l, 'assistance')}>{common.help}</a>
+          </div>
+        </StateBlock>
+      );
+    }
+  }
 </Public>

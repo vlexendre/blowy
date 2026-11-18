@@ -1,0 +1,35 @@
+---
+/**
+ * « Ouvre Minimoa », dans une langue : un lien de l'app (groupe, rencontre, lien, Minimoa+, défi, habitudes, carte)
+ * ouvert sans l'app. Bouton vers l'app (`minimoa://`, même chemin, posé par scripts/open-page.ts) et stores.
+ */
+import StoreButtons from '../../molecules/StoreButtons.astro';
+import { openCopy, type OpenKind } from '../../../content/open';
+import { localePath, type Locale } from '../../../i18n/site';
+
+interface Props {
+  locale: Locale;
+  kind: OpenKind;
+  /** caché tant que la page n'a pas décidé (page /g/…) */
+  hidden?: boolean;
+}
+const { locale, kind, hidden = false } = Astro.props;
+const t = openCopy[locale];
+const c = t.kinds[kind];
+---
+<section class="pub-state" data-state="open" data-open-kind={kind} hidden={hidden}>
+  <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
+  <h1 class="pub-title" tabindex="-1">
+    {c.title.map((l, i) => <span class:list={['ln', { dim: i > 0 && c.title.length > 2 && i === c.title.length - 1 }]}>{l}</span>)}
+  </h1>
+  <p class="pub-text">{c.text}</p>
+  <div class="pub-actions">
+    <a class="btn l" data-open href={`minimoa://${kind}`}>{t.open}</a>
+    <a class="btn g" href={localePath(locale, '/')}>{t.home}</a>
+  </div>
+  <div class="pub-dl">
+    <b>{t.downloadTitle}</b>
+    <p>{t.downloadText}</p>
+    <StoreButtons locale={locale} />
+  </div>
+</section>

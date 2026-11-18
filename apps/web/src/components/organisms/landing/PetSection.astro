@@ -2,8 +2,15 @@
 /** 2. Il est vivant : choisir son minimoa, puis un soin = une pose en pied (une seule image, changée par le script). */
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { alive as c, IMG, sections } from '../../../content/landing';
-const first = c.species.find((s) => s.key === c.initial) ?? c.species[0]!;
+import { ALIVE, IMG, SPECIES_NAME, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].alive;
+const first = ALIVE.initial;
 ---
 <SnapSection section={sections.pet} panel="p-night s-pet">
   <SectionTitle lines={c.title}>
@@ -12,27 +19,27 @@ const first = c.species.find((s) => s.key === c.initial) ?? c.species[0]!;
   <div class="astage" data-r="pop">
     <div class="aglow" aria-hidden="true"></div>
     <div class="bob">
-      <img id="apet" src={`${IMG}/${first.key}_${c.rest.pose}.webp`} alt={first.alt} width="450" height="500" loading="lazy" decoding="async" data-species={first.key} />
+      <img id="apet" src={`${IMG}/${first}_${ALIVE.restPose}.webp`} alt={c.speciesAlt[first]} width="450" height="500" loading="lazy" decoding="async" data-species={first} />
     </div>
-    <p class="asay" aria-live="polite"><span id="asay">{c.rest.say}</span></p>
+    <p class="asay" aria-live="polite"><span id="asay">{c.restSay}</span></p>
   </div>
   <div class="actl" data-r="up">
     <div class="aspecies" role="group" aria-label={c.speciesLabel}>
       {
-        c.species.map((s) => (
-          <button type="button" data-s={s.key} data-alt={s.alt} data-name={s.name} aria-pressed={s.key === first.key ? 'true' : 'false'}>
-            <img src={`/img/${s.key}_face.webp`} alt="" width="40" height="40" loading="lazy" />
-            <span>{s.name}</span>
+        ALIVE.species.map((s) => (
+          <button type="button" data-s={s} data-alt={c.speciesAlt[s]} data-name={SPECIES_NAME[s]} aria-pressed={s === first ? 'true' : 'false'}>
+            <img src={`/img/${s}_face.webp`} alt="" width="40" height="40" loading="lazy" />
+            <span>{SPECIES_NAME[s]}</span>
           </button>
         ))
       }
     </div>
     <div class="acare" role="group" aria-label={c.careLabel}>
       {
-        c.actions.map((a) => (
-          <button type="button" data-pose={a.pose} data-say={a.say} data-label={a.label} aria-pressed="false">
+        ALIVE.actions.map((a) => (
+          <button type="button" data-pose={a.pose} data-say={c.actions[a.key].say} data-label={c.actions[a.key].label} aria-pressed="false">
             <img src={`${IMG}/${a.icon}.webp`} alt="" width="40" height="40" loading="lazy" />
-            <span>{a.label}</span>
+            <span>{c.actions[a.key].label}</span>
           </button>
         ))
       }

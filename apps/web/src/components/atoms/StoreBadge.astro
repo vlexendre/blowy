@@ -1,16 +1,19 @@
 ---
-/** Bouton de store (App Store ou Google Play). Les URL viennent de src/config/site.ts ; sans URL : « Bientôt sur », sans lien. */
+/** Bouton de store (App Store ou Google Play), dans la langue de la page (le lien reste le même : le store gère la langue). Les URL viennent de src/config/site.ts ; sans URL : « Bientôt sur », sans lien. */
 import { APP_STORE_URL, PLAY_STORE_URL } from '../../config/site';
-import { stores } from '../../content/landing';
+import { siteText } from '../../content/site';
+import type { Locale } from '../../i18n/site';
 
 interface Props {
   store: 'apple' | 'google';
   /** fond encre au lieu de blanc (par défaut : Google Play) */
   dark?: boolean;
+  locale: Locale;
 }
-const { store, dark = store === 'google' } = Astro.props;
+const { store, dark = store === 'google', locale } = Astro.props;
 const href = store === 'apple' ? APP_STORE_URL : PLAY_STORE_URL;
-const copy = stores[store];
+const copy = siteText[locale].stores[store];
+const name = store === 'apple' ? 'App Store' : 'Google Play';
 const Tag = href ? 'a' : 'span';
 ---
 <Tag class:list={['store', { dk: dark, soon: !href }]} href={href ?? undefined} rel={href ? 'noopener' : undefined}>
@@ -21,5 +24,5 @@ const Tag = href ? 'a' : 'span';
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#00D7FE" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z" /><path fill="#00F076" d="M16.7 8.7 13.4 12 3.6 2.3c.3-.2.8-.2 1.2 0z" /><path fill="#FF3A44" d="M16.7 15.3 4.8 21.7c-.4.2-.9.2-1.2 0l9.8-9.7z" /><path fill="#FFD400" d="m16.7 8.7 3.6 2c.9.5.9 1.8 0 2.3l-3.6 2.3-3.3-3.3z" /></svg>
     )
   }
-  <span><small>{href ? copy.small : copy.soon}</small><b>{copy.name}</b></span>
+  <span><small>{href ? copy.small : copy.soon}</small><b>{name}</b></span>
 </Tag>

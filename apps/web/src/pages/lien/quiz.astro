@@ -1,0 +1,17 @@
+---
+/**
+ * Copie de /quiz/ servie pour les liens partagés (/quiz/<…>, public/_redirects → dist/_lien/quiz.html, voir
+ * scripts/share-shells.mjs) : les cinq langues, celle du téléphone montrée dès qu'il y a un chemin ou un code après
+ * /quiz/ (sinon le français, comme la page indexée dont elle garde la canonique et les hreflang).
+ */
+import Public from '../../layouts/Public.astro';
+import QuizBody from '../../components/templates/QuizBody.astro';
+import { quizCopy } from '../../content/quiz';
+import type { Locale } from '../../i18n/site';
+---
+<Public shell="subpath" seoPath="/quiz/" meta={(l) => quizCopy[l].quiz.meta} ogImage="/og/quiz.jpg">
+  {(l: Locale) => <QuizBody locale={l} />}
+</Public>
+<script>
+  import '../../scripts/quiz-page';
+</script>

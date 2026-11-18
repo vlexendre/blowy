@@ -2,16 +2,18 @@
 import type { WordsPage } from '@blowy/contract';
 import { deltaForWords, GAUGE_KEYS, type GaugeKey, type Mood } from '@blowy/domain';
 import { labels } from '@blowy/content';
-
-/** Le site est en français. */
-const { wordLabel } = labels.in('fr');
+import { currentLocale } from '../i18n/client';
 import { api, failureOf } from '../lib/api';
 import { DEEP_LINK_SCHEME } from '../config/site';
 import { readCode } from '../lib/code';
 import { setPetImage } from '../lib/pet';
-import { common, fill, wordsPage as c } from '../content/public';
+import { fill, publicText } from '../content/public';
 import { fillTemplates, onRetry, showState } from './public-page';
 import { withRef } from './ref';
+
+const locale = currentLocale();
+const { wordLabel } = labels.in(locale);
+const { common, words: c } = publicText[locale];
 
 const MAX = 3;
 const code = readCode('m');

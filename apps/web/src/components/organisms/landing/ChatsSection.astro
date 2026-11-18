@@ -4,8 +4,16 @@ import Sticker from '../../atoms/Sticker.astro';
 import PhoneFrame from '../../molecules/PhoneFrame.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { chats as c, sections } from '../../../content/landing';
-const p = c.phone;
+import { CHAT_APP_ICONS, CHAT_MESSAGES, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].chats;
+const p = { ...c.phone, messages: CHAT_MESSAGES.map((m, i) => ({ ...m, ...(c.phone.messages[i] ?? { who: '', text: '' }) })) };
+const apps = c.apps.map((a, i) => ({ ...a, icon: CHAT_APP_ICONS[i] ?? 'ic_etoiles', short: i === 2 }));
 ---
 <SnapSection section={sections.chats} panel="p-rose s-chat" light>
   <SectionTitle lines={c.title}>
@@ -14,7 +22,7 @@ const p = c.phone;
   </SectionTitle>
   <PhoneFrame>
     <div class="ph-h"><span class="avs"><img src="/img/nino_face.webp" alt="" /><img src="/img/suzie_face.webp" alt="" /></span><b>{p.name}</b><span class="hz">{p.status}</span></div>
-    <div class="tabs">{p.tabs.map((t, i) => <span class={i === p.activeTab ? 'on' : undefined}>{t}</span>)}</div>
+    <div class="tabs">{p.tabs.map((t, i) => <span class={i === 0 ? 'on' : undefined}>{t}</span>)}</div>
     <div class="feed">
       {
         p.messages.map((m) =>
@@ -36,7 +44,7 @@ const p = c.phone;
   </PhoneFrame>
   <div class="apps">
     {
-      c.apps.map((a) => (
+      apps.map((a) => (
         <div class:list={['app', { 'hide-short': a.short }]} data-r="card">
           <span class="lbl">{a.label}</span>
           <h4>{a.title}</h4>

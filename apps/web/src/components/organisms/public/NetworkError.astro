@@ -1,8 +1,14 @@
 ---
 /** État « erreur » commun aux pages publiques, avec bouton réessayer. */
 import StateBlock from '../../molecules/StateBlock.astro';
-import { common } from '../../../content/public';
+import { publicText } from '../../../content/public';
+import { localePath, type Locale } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const common = publicText[locale].common;
 ---
 <StateBlock state="error" title={common.networkTitle} text={common.networkText} pet={{ src: '/img/nino_surpris.webp', alt: '' }}>
-  <div class="pub-actions"><button type="button" class="btn l" data-retry>{common.retry}</button><a class="btn g" href="/">{common.home}</a></div>
+  <div class="pub-actions"><button type="button" class="btn l" data-retry>{common.retry}</button><a class="btn g" href={localePath(locale, '/')}>{common.home}</a></div>
 </StateBlock>

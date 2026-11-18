@@ -1,0 +1,17 @@
+---
+/**
+ * Copie de /quartier/ servie pour les liens partagés (/quartier/<…>, public/_redirects → dist/_lien/quartier.html, voir
+ * scripts/share-shells.mjs) : les cinq langues, celle du téléphone montrée dès qu'il y a un chemin ou un code après
+ * /quartier/ (sinon le français, comme la page indexée dont elle garde la canonique et les hreflang).
+ */
+import Public from '../../layouts/Public.astro';
+import QuartierBody from '../../components/templates/QuartierBody.astro';
+import { quizCopy } from '../../content/quiz';
+import type { Locale } from '../../i18n/site';
+---
+<Public shell="subpath" seoPath="/quartier/" meta={(l) => quizCopy[l].quartier.meta} ogImage="/og/quartier.jpg">
+  {(l: Locale) => <QuartierBody locale={l} />}
+</Public>
+<script>
+  import '../../scripts/quartier-page';
+</script>

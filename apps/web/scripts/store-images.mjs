@@ -6,16 +6,25 @@
  * avec le texte alternatif de chaque capture pris dans le README des captures (tableau « Ordre, titres, textes
  * alternatifs », dernière colonne) s'il est trouvé deux dossiers au-dessus. Sans capture, la section n'apparaît pas.
  *
- * Usage : node apps/web/scripts/store-images.mjs [dossier-source]
+ * Usage : node apps/web/scripts/store-images.mjs [dossier-source] [langue]
+ * Sans langue : captures françaises (public/img/store/). Avec `en` (par ex. …/out/en/1320x2868) : public/img/store/en/,
+ * montrées sur les pages /en/ ; une langue sans dossier à elle montre les captures françaises (src/lib/store-shots.ts).
+ * Les textes alternatifs affichés viennent des textes du site (`screens.shots`, cinq langues) ; le manifeste garde
+ * celui du README (français) en repli.
  * Outil de conversion : ImageMagick (`magick` ou `convert`, avec libwebp), sinon Python + Pillow.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SRC = process.argv[2] ?? '/home/claude/work/store/out/fr/6.9';
-const OUT = fileURLToPath(new URL('../public/img/store/', import.meta.url));
+const LOCALE = process.argv[3] ?? '';
+if (LOCALE && !/^(en|es|pt|nl)$/.test(LOCALE)) {
+  console.error(`Langue inconnue : ${LOCALE} (en, es, pt ou nl ; rien pour le français)`);
+  process.exit(1);
+}
+const OUT = fileURLToPath(new URL(`../public/img/store/${LOCALE ? `${LOCALE}/` : ''}`, import.meta.url));
 const WIDTHS = [360, 720];
 const QUALITY = 80;
 
@@ -80,10 +89,11 @@ function readAlts() {
   }
   return alts;
 }
-const alts = readAlts();
+const alts = LOCALE ? new Map() : readAlts();
 
-rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
+// Les fichiers de cette langue seulement (les sous-dossiers des autres langues restent).
+for (const f of readdirSync(OUT)) if (statSync(join(OUT, f)).isFile()) rmSync(join(OUT, f));
 const shots = files.map((f, i) => {
   const src = join(SRC, f);
   const stem = basename(f, '.png').replace(/_\d+x\d+$/, '');

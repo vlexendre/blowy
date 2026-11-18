@@ -1,23 +1,39 @@
 ---
-/** Pied de page : logo, liens d'aide et légaux, copyright. */
+/** Pied de page : logo, liens d'aide et légaux (pages légales de la même langue), langues de la page, copyright. */
 import Logo from '../atoms/Logo.astro';
-import { footer } from '../../content/landing';
+import LangSwitch from '../molecules/LangSwitch.astro';
+import { siteText } from '../../content/site';
+import { legalPath } from '../../i18n/legal';
+import { localePath, type Locale } from '../../i18n/site';
+
 interface Props {
+  locale: Locale;
   logoHref?: string;
   class?: string;
-  /** liens (pages traduites) ; par défaut ceux de la landing */
+  /** liens (pages légales) ; par défaut aide, mentions, conditions, confidentialité et sommaire, dans la langue */
   links?: readonly { href: string; label: string }[];
   /** aria-label de la navigation */
   label?: string;
+  /** la même page dans chaque langue (pages indexées) */
+  langLinks?: { locale: Locale; href: string }[];
 }
-const { logoHref = '/', class: cls, links = footer.links, label = footer.legalLabel } = Astro.props;
+const { locale, logoHref = localePath(locale, '/'), class: cls, langLinks } = Astro.props;
+const t = siteText[locale].footer;
+const links =
+  Astro.props.links ??
+  (['assistance', 'mentions-legales', 'conditions', 'confidentialite', 'index'] as const).map((s) => ({
+    href: s === 'index' ? legalPath(locale) : legalPath(locale, s),
+    label: t.links[s],
+  }));
+const label = Astro.props.label ?? t.label;
 ---
 <footer class:list={['foot', cls]}>
   <Logo href={logoHref} />
   <nav aria-label={label}>
     {links.map((l) => <a href={l.href}>{l.label}</a>)}
   </nav>
-  <span>{footer.copyright}</span>
+  {langLinks && langLinks.length > 1 && <LangSwitch locale={locale} links={langLinks} variant="inline" />}
+  <span>© 2026 Minimoa</span>
 </footer>
 <style is:global>
 .foot{flex:0 0 auto;position:relative;z-index:2;background:var(--bg);border-radius:16px;padding:0 10px;max-width:1600px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:4px 14px;flex-wrap:wrap;font-size:13px;color:var(--mute)}

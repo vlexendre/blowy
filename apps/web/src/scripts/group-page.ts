@@ -1,19 +1,21 @@
 /**
  * Page /g/… : un identifiant de groupe → « Ouvre Minimoa » (scripts/open-page.ts) ; un code court → la page publique du
  * lien d'invitation (nom, habitude, jours tenus, nombre de membres, espèces des minimoas ; jamais de prénom), le
- * bouton « Rejoindre dans l'app » (minimoa://g/CODE) et le code à taper à l'inscription. Langue du navigateur.
+ * bouton « Rejoindre dans l'app » (minimoa://g/CODE) et le code à taper à l'inscription. Textes dans la langue de la page.
  */
 import type { GroupPreview } from '@blowy/contract';
 import { api, failureOf } from '../lib/api';
 import { readCode } from '../lib/code';
 import { DEEP_LINK_SCHEME } from '../config/site';
-import { common, fill } from '../content/public';
-import { growthCopy, pickGrowthLocale } from '../content/growth';
+import { fill, publicText } from '../content/public';
+import { growthCopy } from '../content/growth';
+import { currentLocale } from '../i18n/client';
 import { bindCopy, withRef } from './ref';
 import { onRetry, showState } from './public-page';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const locale = pickGrowthLocale(navigator.languages ?? [navigator.language]);
+const locale = currentLocale();
+const common = publicText[locale].common;
 const t = growthCopy[locale].group;
 const code = readCode('g');
 const errorText = document.querySelector<HTMLElement>('[data-state="error"] .pub-text');
@@ -24,28 +26,6 @@ const set = (sel: string, text: string) => {
 };
 const count = (forms: { one: string; other: string }, n: number) => fill(n === 1 ? forms.one : forms.other, { n });
 
-function translateStatic(): void {
-  if (locale === 'fr') return;
-  document.documentElement.lang = locale;
-  document.title = t.meta;
-  document.querySelectorAll<HTMLElement>('[data-g]').forEach((el) => {
-    const key = el.dataset.g as keyof typeof t;
-    const v = t[key];
-    if (typeof v === 'string') el.textContent = v;
-  });
-  const nf = document.querySelector<HTMLElement>('[data-state="not_found"]');
-  if (nf) {
-    const title = nf.querySelector<HTMLElement>('.pub-title');
-    if (title) title.replaceChildren(...t.notFoundTitle.map((l) => Object.assign(document.createElement('span'), { className: 'ln', textContent: l })));
-    const text = nf.querySelector<HTMLElement>('.pub-text');
-    if (text) text.textContent = t.notFoundText;
-  }
-  const box = document.querySelector<HTMLElement>('[data-code-box="group"]');
-  box?.querySelectorAll<HTMLElement>('[data-t]').forEach((el) => {
-    const k = el.dataset.t;
-    el.textContent = k === 'codeLabel' ? t.codeLabel : k === 'codeHelp' ? t.codeHelp : k === 'copy' ? growthCopy[locale].copy : el.textContent;
-  });
-}
 
 function render(g: GroupPreview, c: string): void {
   set('[data-group-name]', g.name);
@@ -80,7 +60,6 @@ async function load(): Promise<void> {
     await import('./open-page');
     return;
   }
-  translateStatic();
   if (!code) return showState('not_found', false);
   showState('loading', false);
   try {

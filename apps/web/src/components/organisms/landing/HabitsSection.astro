@@ -2,8 +2,18 @@
 /** 5. Habitudes : deux habitudes avec série et rigueur, la série de la semaine (joker compris), le défi du jour. */
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { habits as c, sections } from '../../../content/landing';
+import { HABIT_CARDS, HABITS_PET, WEEK_STATES, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+import { fill } from '../../../i18n/site';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].habits;
 const w = c.week;
+const cards = HABIT_CARDS.map((h, i) => ({ ...h, ...(c.cards[i] ?? { name: '', rhythm: '' }) }));
+const days = w.days.map((d, i) => ({ d, s: WEEK_STATES[i] }));
 ---
 <SnapSection section={sections.habitudes} panel="p-lime s-hab" light>
   <SectionTitle lines={c.title}>
@@ -11,7 +21,7 @@ const w = c.week;
   </SectionTitle>
   <div class="hcards">
     {
-      c.cards.map((h) => (
+      cards.map((h) => (
         <div class="hcard" data-r="card">
           <span class="he" aria-hidden="true">{h.emoji}</span>
           <div class="hm">
@@ -27,10 +37,10 @@ const w = c.week;
             {h.rigour === null ? (
               <i class="early">{c.tooEarly}</i>
             ) : (
-              <span class="rbar" role="meter" aria-label={`${c.rigourLabel} : ${h.name}`} aria-valuemin="0" aria-valuemax="100" aria-valuenow={String(h.rigour)}>
+              <span class="rbar" role="meter" aria-label={fill(c.rigourAria, { label: c.rigourLabel, name: h.name })} aria-valuemin="0" aria-valuemax="100" aria-valuenow={String(h.rigour)}>
                 <i style={`width:${h.rigour}%`}></i>
               </span>
-              <em class="rval">{h.rigour} %</em>
+              <em class="rval">{fill(c.percent, { n: h.rigour })}</em>
             )}
           </div>
         </div>
@@ -40,7 +50,7 @@ const w = c.week;
       <span class="lbl">{w.label}</span>
       <ol>
         {
-          w.days.map((d) => (
+          days.map((d) => (
             <li class={d.s}>
               <span class="dd">{d.d}</span>
               <span class="sr">{d.s ? w.legend[d.s] : ''}</span>
@@ -52,7 +62,7 @@ const w = c.week;
     </div>
   </div>
   <div class="hdefi" data-r="up">
-    <img src={c.pet.src} alt={c.pet.alt} width="450" height="500" loading="lazy" decoding="async" />
+    <img src={HABITS_PET} alt={c.petAlt} width="450" height="500" loading="lazy" decoding="async" />
     <div>
       <span class="lbl">{c.challenge.label}</span>
       <p>{c.challenge.text}</p>

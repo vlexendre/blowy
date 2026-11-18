@@ -1,38 +1,23 @@
 ---
 /**
- * « Ouvre Minimoa » : page d'un lien de l'app ouvert sans l'app (groupe, rencontre, lien, Minimoa+, défi, habitudes,
- * carte). Bouton vers l'app (schéma `minimoa://`, même chemin) et stores. Rendue en français, traduite dans le
- * navigateur (`scripts/open-page.ts`).
+ * Page « Ouvre Minimoa » (/plus, /defi, /habitudes, /carte, /r/…, /l/…) : une adresse, cinq langues, celle du téléphone
+ * montrée (layouts/Public.astro, mode `shell`). Aperçu de lien en français (les robots d'aperçu ne lancent pas de script).
  */
 import Public from '../../../layouts/Public.astro';
-import StoreButtons from '../../molecules/StoreButtons.astro';
+import OpenState from './OpenState.astro';
 import { openCopy, type OpenKind } from '../../../content/open';
+import type { Locale } from '../../../i18n/site';
 
 interface Props {
   kind: OpenKind;
 }
 const { kind } = Astro.props;
-const t = openCopy.fr;
-const c = t.kinds[kind];
 ---
-<Public title={c.meta} description={t.description} noindex ogImage={`/og/${kind}.jpg`} ogAlt={c.title.join(' ')}>
-  <section class="pub-state" data-open-kind={kind}>
-    <img class="pub-pet" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" />
-    <h1 class="pub-title" data-t="title">
-      {c.title.map((l, i) => <span class:list={['ln', { dim: i > 0 && c.title.length > 2 && i === c.title.length - 1 }]}>{l}</span>)}
-    </h1>
-    <p class="pub-text" data-t="text">{c.text}</p>
-    <div class="pub-actions">
-      <a class="btn l" data-open href={`minimoa://${kind}`} data-t="open">{t.open}</a>
-      <a class="btn g" href="/" data-t="home">{t.home}</a>
-    </div>
-    <div class="pub-dl">
-      <b data-t="downloadTitle">{t.downloadTitle}</b>
-      <p data-t="downloadText">{t.downloadText}</p>
-      <StoreButtons />
-    </div>
-  </section>
+<Public
+  shell="always"
+  noindex
+  ogImage={`/og/${kind}.jpg`}
+  meta={(l) => ({ title: openCopy[l].kinds[kind].meta, description: openCopy[l].description, ogAlt: openCopy[l].kinds[kind].title.join(' ') })}
+>
+  {(l: Locale) => <OpenState locale={l} kind={kind} />}
 </Public>
-<script>
-  import '../../../scripts/open-page';
-</script>

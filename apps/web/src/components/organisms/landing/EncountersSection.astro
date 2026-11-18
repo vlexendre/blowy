@@ -4,16 +4,25 @@ import Button from '../../atoms/Button.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { encounters as c, sections } from '../../../content/landing';
+import { DUO, sections } from '../../../content/landing';
+import type { Locale } from '../../../i18n/site';
+import { landingText } from '../../../content/landing-text';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = landingText[locale].encounters;
+const m1 = { who: 'Pia', text: c.m1, avatar: { img: '/img/pia_face.webp' } };
+const m2 = { who: 'Nino', text: c.m2, avatar: { img: '/img/nino_face.webp' }, me: true };
 ---
 <SnapSection section={sections.rencontres} panel="p-coral s-meet">
   <SectionTitle lines={c.title}>
     <p class="lead" data-r="up">{c.lead}</p>
   </SectionTitle>
   <div class="mstage">
-    <div class="mduo" data-r="pop"><div class="bob"><img src={c.duo.src} alt={c.duo.alt} width={c.duo.width} height={c.duo.height} loading="lazy" decoding="async" /></div></div>
-    <ChatBubble bubble={c.m1} class="m1" />
-    <ChatBubble bubble={c.m2} class="m2" />
+    <div class="mduo" data-r="pop"><div class="bob"><img src={DUO.src} alt={c.duoAlt} width={DUO.width} height={DUO.height} loading="lazy" decoding="async" /></div></div>
+    <ChatBubble bubble={m1} class="m1" />
+    <ChatBubble bubble={m2} class="m2" />
   </div>
   <div class="mwhy" data-r="up">
     <span class="lbl">{c.why.label}</span>

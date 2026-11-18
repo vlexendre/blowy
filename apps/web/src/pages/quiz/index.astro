@@ -1,119 +1,16 @@
 ---
 /**
- * « Quel minimoa es-tu ? » (docs/VIRALITE.md) : /quiz (le quiz), /quiz/<code> (un résultat partagé, réécrit vers cette
- * page par public/_redirects), /quiz?ref=<code> (un défi : le quiz, compté comme venu d'un pote). Sans compte, mobile
- * d'abord, sans animation lourde. Tout se passe côté navigateur (scripts/quiz-page.ts) ; cinq langues, français au build.
+ * /quiz/ en français (page indexée). Traductions : pages/[lang]/quiz ; liens partagés (/quiz/…) : pages/lien/quiz.
+ * Voir components/templates/QuizBody.astro.
  */
 import Public from '../../layouts/Public.astro';
-import StoreButtons from '../../components/molecules/StoreButtons.astro';
-import CodeBox from '../../components/organisms/public/CodeBox.astro';
-import QuartierForm from '../../components/organisms/public/QuartierForm.astro';
+import QuizBody from '../../components/templates/QuizBody.astro';
 import { quizCopy } from '../../content/quiz';
-import { growthCopy } from '../../content/growth';
-
-const t = quizCopy.fr.quiz;
-const pets = ['nino', 'suzie', 'gaston', 'pia'];
+import type { Locale } from '../../i18n/site';
 ---
-<Public title={t.meta.title} description={t.meta.description} ogImage="/og/quiz.jpg" ogAlt="Les quatre minimoas à côté du titre « Quel minimoa es-tu ? »">
-  <section class="pub-state quiz-intro" data-state="intro">
-    <span class="lbl" data-q="quiz.intro.kicker">{t.intro.kicker}</span>
-    <h1 class="pub-title" tabindex="-1" data-quiz-intro-title>{t.intro.title.map((l, i) => <span class:list={['ln', { acc: i === 1 }]}>{l}</span>)}</h1>
-    <p class="pub-text" data-q="quiz.intro.text">{t.intro.text}</p>
-    <div class="quiz-faces" aria-hidden="true">{pets.map((p) => <img src={`/img/${p}_face.webp`} alt="" width="72" height="72" />)}</div>
-    <button type="button" class="btn l quiz-go" data-quiz-start data-q="quiz.intro.start">{t.intro.start}</button>
-    <p class="quiz-facts" data-q="quiz.intro.facts">{t.intro.facts}</p>
-  </section>
-
-  <section class="pub-state quiz-q" data-state="question" hidden>
-    <div class="quiz-top">
-      <button type="button" class="quiz-back" data-quiz-back data-q="quiz.back">{t.back}</button>
-      <span class="quiz-step" data-quiz-step></span>
-    </div>
-    <div class="quiz-progress" aria-hidden="true"><i data-quiz-bar></i></div>
-    <h2 class="quiz-prompt" tabindex="-1" data-quiz-prompt></h2>
-    <div class="quiz-choices" data-quiz-choices role="group"></div>
-  </section>
-
-  <section class="pub-state pub-loading" data-state="computing" hidden aria-live="polite" aria-busy="true">
-    <div class="spin" aria-hidden="true"></div>
-    <p data-q="quiz.computing">{t.computing}</p>
-  </section>
-
-  <section class="pub-state quiz-result" data-state="result" hidden>
-    <span class="lbl" data-q="quiz.result.kicker">{t.result.kicker}</span>
-    <h1 class="pub-title" tabindex="-1" data-quiz-headline></h1>
-    <span class="quiz-pill" data-quiz-species></span>
-    <p class="quiz-sentence" data-quiz-sentence></p>
-    <p class="quiz-second" data-quiz-second></p>
-    <figure class="quiz-card">
-      <img data-quiz-card alt="" width="1080" height="1920" />
-    </figure>
-    <div class="pub-actions quiz-actions">
-      <button type="button" class="btn l" data-quiz-story data-q="quiz.result.story">{t.result.story}</button>
-      <button type="button" class="btn w" data-quiz-challenge data-q="quiz.result.challenge">{t.result.challenge}</button>
-      <button type="button" class="btn g" data-quiz-copy data-q="quiz.result.copy">{t.result.copy}</button>
-    </div>
-    <p class="quiz-note" data-quiz-note role="status" hidden></p>
-
-    <div class="pub-dl quiz-keep">
-      <b data-q="quiz.result.keepTitle">{t.result.keepTitle}</b>
-      <CodeBox label={t.result.codeLabel} help={t.result.keepText} copy={growthCopy.fr.copy} box="quiz" />
-      <div class="pub-actions"><a class="btn g" data-quiz-open href="minimoa://quiz" data-q="quiz.result.open">{t.result.open}</a></div>
-      <StoreButtons />
-    </div>
-
-    <div class="pub-dl"><QuartierForm /></div>
-    <a class="quiz-again" href="/quiz" data-q="quiz.result.again">{t.result.again}</a>
-  </section>
-
-  <section class="pub-state quiz-shared" data-state="shared" hidden>
-    <img class="pub-pet" data-quiz-shared-pet src="/img/m/quiz_sociable.webp" alt="" width="720" height="800" />
-    <span class="quiz-pill" data-quiz-shared-species></span>
-    <span class="lbl" data-q="quiz.shared.kicker">{t.shared.kicker}</span>
-    <h1 class="pub-title" tabindex="-1">{t.shared.title.map((l, i) => <span class:list={['ln', { acc: i === 1 }]} data-q-line={i}>{l}</span>)}</h1>
-    <p class="pub-text" data-q="quiz.shared.text">{t.shared.text}</p>
-    <button type="button" class="btn l quiz-go" data-quiz-start data-q="quiz.shared.cta">{t.shared.cta}</button>
-  </section>
-
-  <section class="pub-state" data-state="error" hidden>
-    <img class="pub-pet" src="/img/nino_surpris.webp" alt="" width="900" height="1000" />
-    <p class="pub-text" data-quiz-error>{t.error}</p>
-    <div class="pub-actions"><a class="btn l" href="/quiz" data-q="quiz.result.again">{t.result.again}</a></div>
-  </section>
+<Public locale="fr" seoPath="/quiz/" meta={(l) => quizCopy[l].quiz.meta} ogImage="/og/quiz.jpg">
+  {(l: Locale) => <QuizBody locale={l} />}
 </Public>
-<style is:global>
-.quiz-intro .pub-title,.quiz-shared .pub-title{font-size:clamp(46px,14vw,84px)}
-.quiz-faces{display:flex;gap:6px}
-.quiz-faces img{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);border:3px solid rgba(255,255,255,.12);object-fit:cover}
-.quiz-go{min-width:200px}
-.quiz-facts{font-size:13px;font-weight:700;color:var(--mute)}
-.quiz-top{display:flex;justify-content:space-between;align-items:center;width:100%}
-.quiz-back{min-height:44px;padding:0 4px;font-weight:800;color:var(--mute)}
-.quiz-back[hidden]{visibility:hidden;display:block}
-.quiz-step{font-weight:800;font-size:15px;color:var(--mute)}
-.quiz-progress{width:100%;height:8px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
-.quiz-progress i{display:block;height:100%;width:0;background:var(--lime);border-radius:999px;transition:width .35s ease}
-.quiz-prompt{font-family:var(--display);font-weight:800;font-size:clamp(26px,7vw,38px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance;margin:6px 0 4px;outline:none}
-.quiz-choices{display:flex;flex-direction:column;gap:10px;width:100%}
-.quiz-choice{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:14px 18px;border-radius:22px;background:rgba(255,255,255,.07);border:1px solid var(--line);text-align:left;font-size:17px;font-weight:700;line-height:1.3;transition:transform .15s,background .15s}
-.quiz-choice:hover{background:rgba(255,255,255,.12)}
-.quiz-choice:active{transform:scale(.98)}
-.quiz-choice b{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--lime);color:var(--ink);font-weight:800}
-.quiz-choice[aria-pressed="true"]{background:rgba(255,184,0,.18);border-color:var(--lime)}
-.quiz-result .pub-title{font-size:clamp(38px,11vw,64px)}
-.quiz-pill{display:inline-flex;align-items:center;border-radius:999px;padding:8px 16px;background:var(--lime);color:var(--ink);font-weight:800;font-size:17px}
-.quiz-pill:empty{display:none}
-.quiz-sentence{font-size:19px;font-weight:600;line-height:1.4;text-wrap:pretty}
-.quiz-second{font-size:15px;font-weight:700;color:var(--mute)}
-.quiz-second:empty{display:none}
-.quiz-card{margin:4px 0;align-self:center;width:min(300px,72vw);aspect-ratio:9/16;border-radius:24px;overflow:hidden;background:rgba(255,255,255,.06);box-shadow:0 24px 50px rgba(0,0,0,.4)}
-.quiz-card img{width:100%;height:100%;object-fit:cover}
-.quiz-actions .btn{flex:1 1 auto}
-.quiz-note{font-weight:700;color:var(--lime)}
-.quiz-note[hidden]{display:none}
-.quiz-again{font-weight:800;color:var(--mute);text-decoration:underline;align-self:center;min-height:44px;display:inline-flex;align-items:center}
-@media (prefers-reduced-motion:reduce){.quiz-progress i,.quiz-choice{transition:none}}
-</style>
 <script>
   import '../../scripts/quiz-page';
 </script>

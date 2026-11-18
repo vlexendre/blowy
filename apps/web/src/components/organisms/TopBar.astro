@@ -1,18 +1,30 @@
 ---
-/** Barre du haut des pages secondaires : logo vers l'accueil et bouton « télécharger ». */
+/** Barre du haut des pages secondaires : logo vers l'accueil de la langue, sélecteur de langue (pages indexées) et « télécharger ». */
 import Logo from '../atoms/Logo.astro';
-import { nav } from '../../content/landing';
+import LangSwitch from '../molecules/LangSwitch.astro';
+import { siteText } from '../../content/site';
+import { localePath, type Locale } from '../../i18n/site';
 interface Props {
-  /** libellé du bouton « télécharger » (pages traduites) */
+  locale: Locale;
+  /** libellé du bouton « télécharger » (par défaut celui de la langue) */
   downloadLabel?: string;
-  /** libellé du logo pour les lecteurs d'écran */
-  homeLabel?: string;
+  /** la même page dans chaque langue */
+  langLinks?: { locale: Locale; href: string }[];
 }
-const { downloadLabel = nav.download, homeLabel = 'minimoa, accueil' } = Astro.props;
+const { locale, langLinks } = Astro.props;
+const t = siteText[locale];
+const downloadLabel = Astro.props.downloadLabel ?? t.download;
+const home = localePath(locale, '/');
 ---
 <header class="nav">
   <div class="pill">
-    <Logo href="/" label={homeLabel} />
-    <a class="dl" href="/#go"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11m0 0 4.5-4.5M12 14l-4.5-4.5M5 19h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{downloadLabel}</a>
+    <Logo href={home} label={t.homeLabel} />
+    <span class="nav-end">
+      {langLinks && langLinks.length > 1 && <LangSwitch locale={locale} links={langLinks} />}
+      <a class="dl" href={`${home}#go`}><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3v11m0 0 4.5-4.5M12 14l-4.5-4.5M5 19h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{downloadLabel}</a>
+    </span>
   </div>
 </header>
+<style is:global>
+.nav-end{display:flex;align-items:center;gap:4px}
+</style>
