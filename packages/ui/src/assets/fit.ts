@@ -51,6 +51,12 @@ interface FitItem {
    * écart (× `w`) et leur angle. Sans mesure sur la pose : réglage commun de l'objet.
    */
   pair?: number[];
+  /**
+   * Vêtement à manches longues : sur une pose dont les bras sont mesurés (`poses.<p>.sleeves`), le corps du vêtement
+   * prend l'image sans manches `image` et chaque bras est recoloré (fourrure → tissu, l'ombre de la fourrure reste) en
+   * `color`, le poignet en `cuff` (RVB 0–255).
+   */
+  sleeve?: { color: number[]; cuff: number[]; image?: string; ratio?: number };
 }
 
 interface FitPose {
@@ -67,6 +73,8 @@ interface FitPose {
   hide?: string[];
   /** Bouts des pompons (Suzie) ou des cornes (Pia) : [xG, yG, xD, yD] (fractions de la toile). */
   tips?: number[];
+  /** Bras hors du ventre (scripts/fit-poses/sleeves.py) : par bras, [manche, poignet], polygones x,y,… (fractions). */
+  sleeves?: number[][][];
 }
 
 interface FitSpecies {
@@ -74,6 +82,8 @@ interface FitSpecies {
   sizes: Record<string, number>;
   /** Médaillon (tête + épaules) : centre x, centre y, côté — normalisés. */
   badge: number[];
+  /** Luminance moyenne de la fourrure (0–1) : ramène la fourrure recolorée en manche à la couleur du tissu. */
+  furL?: number;
   poses?: Record<string, FitPose>;
 }
 
@@ -155,6 +165,32 @@ export interface ItemPlacement {
   /** Tenu dans la main (sinon, pour un objet de main, posé au sol). */
   held: boolean;
   wear: ItemWear;
+  /** Manches posées sur les bras de la pose (vêtement à manches, pose aux bras mesurés). */
+  sleeves?: SleevePlacement;
+}
+
+/** Manches d'un vêtement sur une pose : bras en px de la toile, couleurs du tissu et du poignet (0–1, déjà ramenées). */
+export interface SleevePlacement {
+  arms: { sleeve: string; cuff: string }[];
+  color: readonly [number, number, number];
+  cuff: readonly [number, number, number];
+}
+
+const toPoints = (flat: number[]) => {
+  const out: string[] = [];
+  for (let i = 0; i + 1 < flat.length; i += 2) out.push(`${((flat[i] ?? 0) * FIT_CANVAS.width).toFixed(1)},${((flat[i + 1] ?? 0) * FIT_CANVAS.height).toFixed(1)}`);
+  return out.join(' ');
+};
+
+function sleevesFor(species: Species, s: FitItem, pf: FitPose | null): SleevePlacement | undefined {
+  if (!s.sleeve || !pf?.sleeves?.length) return undefined;
+  const gain = 1 / (FIT.species[species]?.furL ?? 0.6);
+  const rgb = (c: number[]) => [((c[0] ?? 0) / 255) * gain, ((c[1] ?? 0) / 255) * gain, ((c[2] ?? 0) / 255) * gain] as const;
+  return {
+    arms: pf.sleeves.map(([sl = [], cu = []]) => ({ sleeve: toPoints(sl), cuff: toPoints(cu) })),
+    color: rgb(s.sleeve.color),
+    cuff: rgb(s.sleeve.cuff),
+  };
 }
 
 const SHADOW_BY_SLOT: Record<ItemSlot, number> = { head: 1, face: 0.7, body: 0.9, toy: 0.8 };
@@ -224,8 +260,9 @@ export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 
   const tilt = pf ? pf.tilt * TILT_SHARE[slot] : 0;
   // Tenu : un peu plus petit, pris par le bas (la main le serre), sans le décalage vers le côté.
   const m = measure * FIT_CANVAS.width * (slot === 'toy' ? 1 : scale);
+  const sleeves = layer === 'front' ? sleevesFor(species, s, pf) : undefined;
   const width = s.w * m;
-  const height = width / s.ratio;
+  const height = width / ((sleeves && s.sleeve?.ratio) || s.ratio);
   const dx = hand ? 0 : (s.dx ?? 0) * m;
   const dy = hand ? 0 : (s.dy ?? 0) * m;
   const t = (tilt * Math.PI) / 180;
@@ -235,7 +272,8 @@ export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 
   const originY = hand ? 0.78 : (s.pivot[1] ?? 0.5);
   return {
     id,
-    image: s.image ?? id,
+    image: (sleeves && s.sleeve?.image) || (s.image ?? id),
+    sleeves,
     slot,
     left: px - originX * width,
     top: py - originY * height,
