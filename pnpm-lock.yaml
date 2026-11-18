@@ -327,6 +327,9 @@ importers:
       '@blowy/domain':
         specifier: workspace:*
         version: link:../domain
+      '@blowy/tokens':
+        specifier: workspace:*
+        version: link:../tokens
 
   packages/contract:
     dependencies:

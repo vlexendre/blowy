@@ -40,7 +40,7 @@ planificateur (Railway cron ou pg_cron) ── POST /internal/tick toutes les 5 
 | `@blowy/domain` | règles pures | rien |
 | `@blowy/contract` | schémas Zod + table des routes | domain, zod |
 | `@blowy/api-client` | client HTTP typé | contract |
-| `@blowy/content` | socle des langues (`i18n/core`), libellés, voix des minimoas, défis, e-mails, erreurs de l'API, par langue | domain |
+| `@blowy/content` | socle des langues (`i18n/core`), libellés, voix des minimoas, défis, e-mails (mise en page `email/`), erreurs de l'API, par langue | domain, tokens |
 | `@blowy/tokens` | couleurs, dégradés, typo, espacements | rien |
 | `@blowy/ui` | composants React Native (atomique) | tokens, domain |
 

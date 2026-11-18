@@ -20,6 +20,13 @@
 /img/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 
+# E-mails : images et police lues depuis les boîtes de réception (packages/content/src/email, scripts/email-images.py).
+# Un e-mail envoyé garde ces adresses pour toujours : ne jamais renommer ni supprimer un fichier de /email/.
+/email/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Access-Control-Allow-Origin: *
+  X-Robots-Tag: noindex
+
 # Aperçus de liens : réécrits sous le même nom à chaque refonte → 1 jour, revalidation en arrière-plan pendant 7 jours.
 /og/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800

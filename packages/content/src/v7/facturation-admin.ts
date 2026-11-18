@@ -5,6 +5,8 @@
  */
 import type { Locale, PlusPerk } from '@blowy/domain';
 import { type Translation, defineMessages, formatDate, formatPrice } from '../i18n/core';
+import { emailChromeText } from '../email/chrome';
+import { renderEmail } from '../email/layout';
 import { brand } from '../labels';
 
 /** « 59,99 € » à partir de centimes (français). Préférer `formatPrice(locale, …)`. */
@@ -353,21 +355,29 @@ export const moderationTextIn = (locale: Locale) => {
   return {
     suspended: (until: string | null): string => (until ? t.suspendedUntil(formatDate(locale, until)) : t.suspended),
     warningEmail: (input: WarningInput) => {
-      const lines = t.warningLines(input);
-      const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      const html = `<!doctype html><html lang="${locale}"><body style="margin:0;padding:32px 16px;background:#0B0A14;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#F4F2FF">${lines
-        .map((l) => `<p style="max-width:520px;margin:0 auto 16px;font-size:16px;line-height:1.5">${esc(l)}</p>`)
-        .join('')}</body></html>`;
-      return { subject: t.warningSubject, html, text: lines.join('\n\n') };
+      const v = emailChromeText.in(locale).moderationWarning;
+      const [hello = '', intro = '', reason = '', ...rest] = t.warningLines(input);
+      return renderEmail(locale, t.warningSubject, {
+        scene: 'gaston-neutre',
+        eyebrow: v.eyebrow,
+        preheader: v.preheader,
+        bubble: v.bubble,
+        title: t.warningSubject,
+        paragraphs: [hello, intro, { kind: 'quote', text: reason }, ...rest],
+      });
     },
     banned: t.banned,
     inactivityEmail: (input: { displayName: string; deleteOn: string }) => {
-      const lines = t.inactivityLines({ displayName: input.displayName, deleteOn: formatDate(locale, input.deleteOn) });
-      const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      const html = `<!doctype html><html lang="${locale}"><body style="margin:0;padding:32px 16px;background:#0B0A14;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#F4F2FF">${lines
-        .map((l) => `<p style="max-width:520px;margin:0 auto 16px;font-size:16px;line-height:1.5">${esc(l)}</p>`)
-        .join('')}</body></html>`;
-      return { subject: t.inactivitySubject, html, text: lines.join('\n\n') };
+      const v = emailChromeText.in(locale).inactivity;
+      const deleteOn = formatDate(locale, input.deleteOn);
+      return renderEmail(locale, t.inactivitySubject, {
+        scene: 'suzie-dodo',
+        eyebrow: v.eyebrow,
+        preheader: v.preheader(deleteOn),
+        bubble: v.bubble,
+        title: t.inactivitySubject,
+        paragraphs: t.inactivityLines({ displayName: input.displayName, deleteOn }),
+      });
     },
   };
 };

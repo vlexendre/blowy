@@ -1,29 +1,16 @@
 /**
  * E-mails transactionnels, par langue. Fonctions pures qui rendent { subject, html, text }.
- * HTML simple et responsive (tableau unique, styles en ligne), fond sombre, accent jaune.
+ * Mise en page commune et habillage (minimoas, bulles, texte d'aperçu) : `email/layout.ts`, `email/chrome.ts`.
  */
 import type { Locale } from '@blowy/domain';
+import { emailChromeText } from './email/chrome';
+import { type Email, renderEmail } from './email/layout';
 import { defineMessages } from './i18n/core';
-import { brand, labels } from './labels';
 
-export interface Email {
-  subject: string;
-  html: string;
-  text: string;
-}
-
-const COLORS = { bg: '#0B0A14', card: '#16142A', text: '#F4F2FF', muted: '#A9A4C7', accent: '#FFB800' } as const;
-
-const escapeHtml = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-export interface EmailLayout {
-  title: string;
-  paragraphs: readonly string[];
-  cta: { label: string; url: string };
-  /** Ligne discrète sous le bouton (pourquoi cet e-mail, comment ne plus le recevoir). */
-  footer?: string;
-}
+export { type Email, type EmailBlock, type EmailLayout, renderEmail } from './email/layout';
+export { EMAIL_ART, EMAIL_ASSETS_URL, EMAIL_FACES, type EmailScene, emailArtUrl } from './email/art';
+export { emailChromeText } from './email/chrome';
+export { SAMPLE as EMAIL_SAMPLE, emailSamples, supabaseTemplates } from './email/samples';
 
 interface WelcomeInput {
   displayName: string;
@@ -40,8 +27,6 @@ interface LinkInput extends WelcomeInput {
 }
 
 const fr = {
-  /** Séparateur entre un libellé et une adresse (« Ouvrir : https://… »). */
-  ctaSeparator: ' : ',
   welcome: {
     subject: (i: WelcomeInput) => `Bienvenue, ${i.displayName}`,
     title: (i: WelcomeInput) => `${i.petName} est né.`,
@@ -75,7 +60,6 @@ const fr = {
 export const emailText = defineMessages({
   fr,
   en: {
-    ctaSeparator: ': ',
     welcome: {
       subject: (i: WelcomeInput) => `Welcome, ${i.displayName}`,
       title: (i: WelcomeInput) => `${i.petName} is born.`,
@@ -106,7 +90,6 @@ export const emailText = defineMessages({
     },
   },
   es: {
-    ctaSeparator: ': ',
     welcome: {
       subject: (i: WelcomeInput) => `Te damos la bienvenida, ${i.displayName}`,
       title: (i: WelcomeInput) => `${i.petName} ha nacido.`,
@@ -137,7 +120,6 @@ export const emailText = defineMessages({
     },
   },
   pt: {
-    ctaSeparator: ': ',
     welcome: {
       subject: (i: WelcomeInput) => `Boas-vindas, ${i.displayName}`,
       title: (i: WelcomeInput) => `${i.petName} nasceu.`,
@@ -168,7 +150,6 @@ export const emailText = defineMessages({
     },
   },
   nl: {
-    ctaSeparator: ': ',
     welcome: {
       subject: (i: WelcomeInput) => `Welkom, ${i.displayName}`,
       title: (i: WelcomeInput) => `${i.petName} is geboren.`,
@@ -200,51 +181,44 @@ export const emailText = defineMessages({
   },
 });
 
-/** Mise en page commune des e-mails. Les textes passés ici sont bruts : ils sont échappés au rendu. */
-export function renderEmail(locale: Locale, subject: string, layout: EmailLayout): Email {
-  const tagline = labels.in(locale).tagline;
-  const sep = emailText.in(locale).ctaSeparator;
-  const paras = layout.paragraphs
-    .map((p) => `<p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:${COLORS.text}">${escapeHtml(p)}</p>`)
-    .join('');
-  const html = `<!doctype html>
-<html lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(subject)}</title></head>
-<body style="margin:0;padding:0;background:${COLORS.bg};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg}"><tr><td align="center" style="padding:32px 16px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:${COLORS.card};border-radius:20px">
-<tr><td style="padding:32px 28px">
-<p style="margin:0 0 24px;font-size:14px;font-weight:700;letter-spacing:.08em;color:${COLORS.accent}">${escapeHtml(brand.name.toLowerCase())}</p>
-<h1 style="margin:0 0 20px;font-size:24px;line-height:1.3;color:${COLORS.text}">${escapeHtml(layout.title)}</h1>
-${paras}
-<p style="margin:28px 0 0"><a href="${escapeHtml(layout.cta.url)}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:${COLORS.accent};color:${COLORS.bg};font-weight:700;text-decoration:none">${escapeHtml(layout.cta.label)}</a></p>
-${layout.footer ? `<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:${COLORS.muted}">${escapeHtml(layout.footer)}</p>` : ''}
-</td></tr></table>
-<p style="margin:20px 0 0;font-size:12px;color:${COLORS.muted}">${escapeHtml(tagline)} · ${escapeHtml(brand.supportEmail)}</p>
-</td></tr></table></body></html>`;
-  const text = [
-    layout.title,
-    '',
-    ...layout.paragraphs,
-    '',
-    `${layout.cta.label}${sep}${layout.cta.url}`,
-    ...(layout.footer ? ['', layout.footer] : []),
-    '',
-    `${brand.name} — ${tagline}`,
-  ].join('\n');
-  return { subject, html, text };
-}
-
 export function welcomeEmail(locale: Locale, input: WelcomeInput): Email {
   const t = emailText.in(locale).welcome;
-  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta(input), url: input.appUrl } });
+  const v = emailChromeText.in(locale).welcome;
+  return renderEmail(locale, t.subject(input), {
+    scene: 'nino-coucou',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(input),
+    bubble: v.bubble(input),
+    title: t.title(input),
+    paragraphs: t.paragraphs(input),
+    cta: { label: t.cta(input), url: input.appUrl },
+  });
 }
 
 export function waveReceivedEmail(locale: Locale, input: WaveInput): Email {
   const t = emailText.in(locale).wave;
-  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
+  const v = emailChromeText.in(locale).wave;
+  return renderEmail(locale, t.subject(input), {
+    scene: 'suzie-coucou',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(input),
+    bubble: v.bubble(input),
+    title: t.title(input),
+    paragraphs: t.paragraphs(input),
+    cta: { label: t.cta, url: input.appUrl },
+  });
 }
 
 export function linkCreatedEmail(locale: Locale, input: LinkInput): Email {
   const t = emailText.in(locale).linkCreated;
-  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
+  const v = emailChromeText.in(locale).linkCreated;
+  return renderEmail(locale, t.subject(input), {
+    scene: 'duo-rencontre',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(input),
+    bubble: v.bubble,
+    title: t.title(input),
+    paragraphs: t.paragraphs(input),
+    cta: { label: t.cta, url: input.appUrl },
+  });
 }

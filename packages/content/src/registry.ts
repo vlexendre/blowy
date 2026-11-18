@@ -1,6 +1,7 @@
 /** Tous les dictionnaires partagés, nommés (pour `pnpm i18n:check`). */
 import { apiErrorText } from './api-errors';
 import { challengeText } from './challenges';
+import { emailChromeText } from './email/chrome';
 import { emailText } from './emails';
 import type { Messages } from './i18n/core';
 import { labels } from './labels';
@@ -20,6 +21,7 @@ export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = 
   challenges: challengeText,
   voice: voiceText,
   emails: emailText,
+  emailChrome: emailChromeText,
   apiErrors: apiErrorText,
   vision: visionText,
   chat: chatText,

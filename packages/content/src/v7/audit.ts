@@ -6,7 +6,8 @@
  */
 import type { Locale, ModerationCategory } from '@blowy/domain';
 import { type Translation, defineMessages, formatDate, formatPrice } from '../i18n/core';
-import { brand } from '../labels';
+import { emailChromeText } from '../email/chrome';
+import { type Email, renderEmail } from '../email/layout';
 
 const fr = {
   /** Contenu refusé (code `content_refused`). On ne répète jamais le contenu refusé. */
@@ -345,20 +346,34 @@ export function refusedText(locale: Locale, surface: 'display_name' | 'pet_name'
 /** Adresse où gérer ses abonnements Apple (ouvre Réglages › Abonnements sur iPhone). */
 export const APPLE_SUBSCRIPTIONS_URL = 'https://apps.apple.com/account/subscriptions';
 
-const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
 /** E-mail du rappel de fin d'essai, dans la langue de la personne (date et prix mis en forme). */
-export function trialReminderEmail(locale: Locale, input: { displayName: string; endsOn: string; amountMinor: number; currency: string }): { subject: string; html: string; text: string } {
+export function trialReminderEmail(locale: Locale, input: { displayName: string; endsOn: string; amountMinor: number; currency: string }): Email {
   const t = auditText.in(locale).trialEmail;
-  const lines = t.lines({ displayName: input.displayName, endsOn: formatDate(locale, input.endsOn, { day: 'numeric', month: 'long' }), price: formatPrice(locale, input.amountMinor, input.currency) });
-  const html = `<!doctype html><html lang="${locale}"><head><meta charset="utf-8"><title>${esc(t.subject)}</title></head><body style="margin:0;padding:32px 16px;background:#0B0A14;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#F4F2FF">
-<h1 style="max-width:520px;margin:0 auto 20px;font-size:22px">${esc(t.title)}</h1>
-${lines.map((l) => `<p style="max-width:520px;margin:0 auto 16px;font-size:16px;line-height:1.5">${esc(l)}</p>`).join('')}
-<p style="max-width:520px;margin:24px auto 0"><a href="${APPLE_SUBSCRIPTIONS_URL}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#FFB800;color:#0B0A14;font-weight:700;text-decoration:none">${esc(t.cta)}</a></p>
-<p style="max-width:520px;margin:24px auto 0;font-size:12px;color:#A9A4C7">${esc(brand.name)} · ${esc(brand.supportEmail)}</p>
-</body></html>`;
-  const text = [t.title, '', ...lines, '', `${t.cta} : ${APPLE_SUBSCRIPTIONS_URL}`, '', `${brand.name} · ${brand.supportEmail}`].join('\n');
-  return { subject: t.subject, html, text };
+  const v = emailChromeText.in(locale).trialReminder;
+  const endsOn = formatDate(locale, input.endsOn, { day: 'numeric', month: 'long' });
+  const price = formatPrice(locale, input.amountMinor, input.currency);
+  const [hello = '', when = '', ...rest] = t.lines({ displayName: input.displayName, endsOn, price });
+  return renderEmail(locale, t.subject, {
+    scene: 'pia-assis',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader({ endsOn, price }),
+    bubble: v.bubble,
+    title: t.title,
+    paragraphs: [
+      hello,
+      when,
+      {
+        kind: 'facts',
+        items: [
+          { label: v.facts.endsOn, value: endsOn },
+          { label: v.facts.price, value: price },
+          { label: v.facts.cancel, value: v.facts.cancelPath },
+        ],
+      },
+      ...rest,
+    ],
+    cta: { label: t.cta, url: APPLE_SUBSCRIPTIONS_URL },
+  });
 }
 
 // ── Équipe de modération (français seulement, comme l'administration) ────────
@@ -378,7 +393,7 @@ const PRIORITY_FR = { urgent: 'URGENT', high: 'prioritaire', normal: 'normal' } 
  * Récapitulatif envoyé à `ADMIN_EMAILS` : jamais le contenu signalé ni les prénoms (un e-mail sort du système),
  * seulement le motif, la priorité, l'âge et le lien vers l'administration.
  */
-export function moderationAlertEmail(input: { kind: 'new' | 'overdue'; reports: readonly TeamReportLine[]; adminUrl: string; targetHours: number }): { subject: string; html: string; text: string } {
+export function moderationAlertEmail(input: { kind: 'new' | 'overdue'; reports: readonly TeamReportLine[]; adminUrl: string; targetHours: number }): Email {
   const urgent = input.reports.filter((r) => r.priority === 'urgent').length;
   const n = input.reports.length;
   const plural = n > 1 ? 's' : '';
@@ -395,14 +410,14 @@ export function moderationAlertEmail(input: { kind: 'new' | 'overdue'; reports: 
   const lines = input.reports.slice(0, 50).map(line);
   const more = n > 50 ? [`… et ${n - 50} autre(s).`] : [];
   const url = `${input.adminUrl.replace(/\/$/, '')}/moderation`;
-  const text = [lead, '', ...lines, ...more, '', `Ouvrir la file : ${url}`, '', 'Aucun contenu ni prénom dans cet e-mail : tout est dans l’administration.'].join('\n');
-  const html = `<!doctype html><html lang="fr"><body style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:24px">
-<p style="font-size:16px"><strong>${esc(lead)}</strong></p>
-<ul>${[...lines, ...more].map((l) => `<li style="margin:4px 0">${esc(l)}</li>`).join('')}</ul>
-<p><a href="${esc(url)}">Ouvrir la file de modération</a></p>
-<p style="color:#666;font-size:12px">Aucun contenu ni prénom dans cet e-mail : tout est dans l’administration.</p>
-</body></html>`;
-  return { subject, html, text };
+  return renderEmail('fr', subject, {
+    scene: 'pia-check',
+    eyebrow: 'Équipe de modération',
+    preheader: lead,
+    title: input.kind === 'new' ? 'Signalements à traiter' : 'Signalements en retard',
+    paragraphs: [lead, ...[...lines, ...more].map((l) => `· ${l}`), 'Aucun contenu ni prénom dans cet e-mail : tout est dans l’administration.'],
+    cta: { label: 'Ouvrir la file de modération', url },
+  });
 }
 
 // ── Consignes de l'IA de modération (stables, en français ; réponse d'un mot) ─

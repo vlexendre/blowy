@@ -7,7 +7,8 @@
  * aucune allusion amoureuse (spéc §27). Les dates et les montants arrivent déjà mis en forme.
  */
 import type { Locale } from '@blowy/domain';
-import { type Email, renderEmail } from '../emails';
+import { emailChromeText } from '../email/chrome';
+import { type Email, renderEmail } from '../email/layout';
 import { type Translation, defineMessages } from '../i18n/core';
 import { brand } from '../labels';
 import { APPLE_SUBSCRIPTIONS_URL } from './audit';
@@ -408,7 +409,12 @@ export const fideliteText = defineMessages({ fr, en, es, pt, nl });
 /** Bienvenue dans Minimoa+ (service : part même si les notifications de l'abonnement sont coupées). */
 export function plusWelcomeEmail(locale: Locale, input: PlusWelcomeInput & { appUrl: string }): Email {
   const t = fideliteText.in(locale);
+  const v = emailChromeText.in(locale).plusWelcome;
   return renderEmail(locale, t.plusWelcome.subject, {
+    scene: 'pia-fete',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader,
+    bubble: v.bubble(input),
     title: t.plusWelcome.title(input),
     paragraphs: t.plusWelcome.paragraphs(input),
     cta: { label: t.plusWelcome.cta(input), url: input.appUrl },
@@ -419,7 +425,12 @@ export function plusWelcomeEmail(locale: Locale, input: PlusWelcomeInput & { app
 /** Paiement refusé (service) : délai de grâce ou pause, et où mettre à jour son moyen de paiement. */
 export function plusBillingEmail(locale: Locale, input: PlusBillingInput): Email {
   const t = fideliteText.in(locale);
+  const v = emailChromeText.in(locale).plusBilling;
   return renderEmail(locale, t.plusBilling.subject, {
+    scene: 'gaston-pense',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader,
+    bubble: v.bubble,
     title: t.plusBilling.title,
     paragraphs: t.plusBilling.paragraphs(input),
     cta: { label: t.plusBilling.cta, url: APPLE_SUBSCRIPTIONS_URL },
@@ -430,7 +441,12 @@ export function plusBillingEmail(locale: Locale, input: PlusBillingInput): Email
 /** Au revoir (service) : ce qu'on garde gratuitement, sans rien demander. */
 export function plusGoodbyeEmail(locale: Locale, input: PlusGoodbyeInput & { appUrl: string }): Email {
   const t = fideliteText.in(locale);
+  const v = emailChromeText.in(locale).plusGoodbye;
   return renderEmail(locale, t.plusGoodbye.subject, {
+    scene: 'suzie-timide',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(input),
+    bubble: v.bubble,
     title: t.plusGoodbye.title,
     paragraphs: t.plusGoodbye.paragraphs(input),
     cta: { label: t.plusGoodbye.cta(input), url: input.appUrl },
@@ -441,7 +457,12 @@ export function plusGoodbyeEmail(locale: Locale, input: PlusGoodbyeInput & { app
 /** Relance unique, un mois après la fin (sans offre : il n'y en a pas dans App Store Connect aujourd'hui). */
 export function plusWinbackEmail(locale: Locale, input: Person & { appUrl: string }): Email {
   const t = fideliteText.in(locale);
+  const v = emailChromeText.in(locale).plusWinback;
   return renderEmail(locale, t.plusWinback.subject(input), {
+    scene: 'nino-pense',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(input),
+    bubble: v.bubble(input),
     title: t.plusWinback.title,
     paragraphs: t.plusWinback.paragraphs(input),
     cta: { label: t.plusWinback.cta, url: input.appUrl },
@@ -452,7 +473,12 @@ export function plusWinbackEmail(locale: Locale, input: Person & { appUrl: strin
 /** Longue absence (14 jours) : ce qui s'est passé pendant ce temps, sans reproche. */
 export function longAbsenceEmail(locale: Locale, input: AbsenceInput & { appUrl: string }): Email {
   const t = fideliteText.in(locale);
+  const v = emailChromeText.in(locale).longAbsence;
   return renderEmail(locale, t.longAbsence.subject(input), {
+    scene: 'gaston-assis',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(input),
+    bubble: v.bubble(input),
     title: t.longAbsence.title,
     paragraphs: t.longAbsence.paragraphs(input),
     cta: { label: t.longAbsence.cta(input), url: input.appUrl },

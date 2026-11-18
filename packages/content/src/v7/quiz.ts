@@ -5,7 +5,8 @@
  */
 import type { Locale, QuizTrait, Zone } from '@blowy/domain';
 import { defineMessages } from '../i18n/core';
-import { type Email, emailText, renderEmail } from '../emails';
+import { emailChromeText } from '../email/chrome';
+import { type Email, renderEmail } from '../email/layout';
 
 interface Question {
   prompt: string;
@@ -367,21 +368,33 @@ export function zoneLabel(zone: Pick<Zone, 'city' | 'district' | 'postalCode'>, 
 
 export function quartierConfirmEmail(locale: Locale, i: { zone: string; threshold: number; confirmUrl: string; unsubscribeUrl: string }): Email {
   const t = quizText.in(locale).emails;
+  const v = emailChromeText.in(locale).quartierConfirm;
   return renderEmail(locale, t.confirm.subject, {
+    scene: 'gaston-joie',
+    eyebrow: v.eyebrow,
+    preheader: v.preheader(i.zone),
+    bubble: v.bubble(i.zone),
     title: t.confirm.title(i.zone),
     paragraphs: t.confirm.paragraphs(i.zone, i.threshold),
     cta: { label: t.confirm.cta, url: i.confirmUrl },
-    footer: `${t.confirm.footer} ${t.unsubscribe}${emailText.in(locale).ctaSeparator}${i.unsubscribeUrl}`,
+    footer: t.confirm.footer,
+    unsubscribe: { label: t.unsubscribe, url: i.unsubscribeUrl },
   });
 }
 
 export function quartierOpenEmail(locale: Locale, i: { zone: string; code: string; founder: boolean; appUrl: string; unsubscribeUrl: string }): Email {
   const t = quizText.in(locale).emails.open;
+  const v = emailChromeText.in(locale).quartierOpen;
   return renderEmail(locale, t.subject(i.zone), {
+    scene: 'bande-fete',
+    eyebrow: i.zone,
+    preheader: v.preheader(i.zone),
+    bubble: v.bubble,
     title: t.title(i.zone),
-    paragraphs: [...t.paragraphs(i.zone), ...(i.founder ? [t.founder(i.zone)] : []), t.code(i.code)],
+    paragraphs: [...t.paragraphs(i.zone), ...(i.founder ? [t.founder(i.zone)] : []), { kind: 'code', label: v.codeLabel, value: i.code, text: t.code(i.code) }],
     cta: { label: t.cta, url: i.appUrl },
-    footer: `${t.footer} ${quizText.in(locale).emails.unsubscribe}${emailText.in(locale).ctaSeparator}${i.unsubscribeUrl}`,
+    footer: t.footer,
+    unsubscribe: { label: quizText.in(locale).emails.unsubscribe, url: i.unsubscribeUrl },
   });
 }
 

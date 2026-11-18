@@ -18,6 +18,7 @@
     "test": "pnpm i18n:check && pnpm -r --if-present test",
     "i18n:check": "tsx scripts/i18n-check.mts",
     "i18n:list": "tsx scripts/i18n-check.mts --list",
+    "emails:preview": "tsx scripts/email-previews.mts",
     "format": "prettier --write ."
   },
   "devDependencies": {
