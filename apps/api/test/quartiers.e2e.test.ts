@@ -97,7 +97,11 @@ describe('quiz et quartiers', () => {
       }
       lea = w.client();
       await lea.api.me.onboard(onboardBody({ displayName: 'Léa', location: { latitude: 48.858, longitude: 2.381 } }));
+      // Code de compte qui a la forme d'un code d'inscription (`N` + 7) : l'invitation doit quand même compter pour Léa.
+      const leaProfile = db.profiles.get(lea.id);
+      if (leaProfile) db.profiles.set(lea.id, { ...leaProfile, inviteCode: 'NZZZ2345' });
       const mine = await lea.api.quartiers.mine();
+      expect(mine.inviteCode).toBe('NZZZ2345');
       expect(mine.status).toMatchObject({ zone: 'paris-11', count: 4, missing: 46, open: false });
       const n = w.outbox.length;
       calm();

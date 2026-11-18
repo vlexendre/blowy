@@ -3,7 +3,7 @@ import type { LegalPage } from '../types';
 export const regles: LegalPage = {
   title: 'Regras da comunidade — Minimoa',
   heading: 'Regras da comunidade',
-  description: 'As regras do Minimoa: respeito, consentimento, nada de assédio, nada de menores de idade, nada de conteúdo sexual. O que acontece se elas não forem respeitadas.',
+  description: 'As regras do Minimoa: respeito, consentimento, nada de assédio, de menores de idade nem de conteúdo sexual. E o que acontece se não forem respeitadas.',
   intro: 'Minimoas, e humanos de verdade por trás deles. Para continuar sendo um lugar onde dá vontade de voltar, algumas regras simples.',
   body: [
     { h2: 'Respeite as pessoas', id: 'respect' },

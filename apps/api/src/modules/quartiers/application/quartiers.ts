@@ -78,9 +78,11 @@ export class Quartiers {
     const none = { invitedByUser: null, invitedBySignup: null };
     if (!ref) return none;
     const code = normalizeCode(ref);
+    // Un code de compte (8 caractères) peut avoir la forme d'un code d'inscription (`N` + 7) : on ne conclut à une
+    // inscription que si elle existe, sinon on cherche le compte.
     if (isSignupCode(code)) {
       const s = await this.repo.findSignup({ code });
-      return s && s.id !== self?.id ? { invitedByUser: null, invitedBySignup: s.id } : none;
+      if (s) return s.id !== self?.id ? { invitedByUser: null, invitedBySignup: s.id } : none;
     }
     const p = await this.audience.publiclyVisible(await this.profiles.findByInviteCode(code));
     return p && !p.reviewWorld ? { invitedByUser: p.id, invitedBySignup: null } : none;

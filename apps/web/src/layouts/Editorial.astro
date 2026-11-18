@@ -9,7 +9,7 @@ import TopBar from '../components/organisms/TopBar.astro';
 import SiteFooter from '../components/organisms/SiteFooter.astro';
 import Breadcrumbs from '../components/molecules/Breadcrumbs.astro';
 import { SITE_URL } from '../config/site';
-import { breadcrumbJsonLd, jsonLdScript } from '../lib/editorial-render';
+import { breadcrumbJsonLd } from '../lib/editorial-render';
 import { editorialUi } from '../content/editorial/ui';
 
 interface Props {
@@ -30,8 +30,7 @@ const { title, description, path, ogImage, ogAlt, crumbs, jsonLd = [], preloadIm
 const trail = [{ name: editorialUi.home, path: '/' }, ...crumbs];
 const graph = [...jsonLd, breadcrumbJsonLd(trail.map((c) => ({ name: c.name, url: new URL(c.path, SITE_URL).href })))];
 ---
-<Base title={title} description={description} canonicalPath={path} ogImage={ogImage} ogAlt={ogAlt} bodyClass="ed-body" langBanner={false}>
-  <script slot="head" is:inline type="application/ld+json" set:html={jsonLdScript(graph)} />
+<Base title={title} description={description} canonicalPath={path} ogImage={ogImage} ogAlt={ogAlt} bodyClass="ed-body" langBanner={false} structuredData={graph}>
   {preloadImage && <link slot="head" rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
   <TopBar locale="fr" />
   <main id="main" class="ed-main">
