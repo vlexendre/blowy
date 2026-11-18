@@ -11277,15 +11277,16 @@
    "dy": 0.15
   },
   "salopette": {
-   "anchor": "chest",
+   "anchor": "mouth",
    "size": "bodyw",
-   "w": 0.9,
+   "w": 0.95,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.2046,
-   "dy": -0.1
+   "ratio": 1.005,
+   "dy": 0.02,
+   "sy": 0.52
   },
   "sweat": {
    "anchor": "mouth",
