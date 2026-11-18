@@ -2,6 +2,7 @@
   "ios": {
     "NSCameraUsageDescription": "Minimoa utilise l’appareil photo pour ta photo de profil, les preuves de tes habitudes et les défis photo. Ta photo de profil est vérifiée automatiquement par notre prestataire d’IA avant d’être montrée. Une preuve d’habitude ne lui est envoyée que si tu l’as accepté ; aucun humain ne la regarde. Preuves et photos de défi sont supprimées sous 24 h, sauf celles que tu gardes.",
     "NSLocationWhenInUseUsageDescription": "Minimoa utilise ta position, seulement quand l’app est ouverte, pour te présenter des personnes compatibles près de toi et confirmer tes sorties. Ta position exacte n’est jamais enregistrée : seulement un point arrondi à environ 300 m. Sans elle, tu peux choisir ta ville à la main.",
+    "NSPhotoLibraryAddUsageDescription": "Minimoa enregistre dans tes photos seulement l’image que tu choisis d’enregistrer.",
     "NSPhotoLibraryUsageDescription": "Minimoa ouvre ta photothèque seulement pour la photo de profil que tu choisis. Elle est vérifiée automatiquement par notre prestataire d’IA avant d’être montrée."
   }
 }

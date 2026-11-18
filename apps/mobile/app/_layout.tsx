@@ -51,6 +51,8 @@ export default function RootLayout() {
                   <Stack.Screen name="pet/defi" options={SHEET} />
                   {/* Preuve en photo : plein écran qui monte du bas, hors des onglets. */}
                   <Stack.Screen name="pet/preuve" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+                  {/* Avant la demande de notifications : plein écran, on n'en sort que par « Continuer » (HIG Privacy). */}
+                  <Stack.Screen name="pet/notifications" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
                 </Stack>
               </MotionHost>
             </UiStringsProvider>

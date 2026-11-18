@@ -7,8 +7,11 @@ import type { ApiClient } from '@blowy/api-client';
 import { type NotificationSettings, type NotificationSettingsBody, PushDataZ } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type Href, router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { useApi } from '@/core';
 import type { Gate } from '@/features/session';
@@ -177,4 +180,37 @@ export function usePushPermission() {
     return next;
   }, [api, qc]);
   return { permission, ask };
+}
+
+/**
+ * Écran d'avant-demande (`/pet/notifications`) : montré une seule fois par installation (App Review 4.5.4 : jamais
+ * obligatoire, jamais en échange de quoi que ce soit). Ensuite, la demande ne revient que si la personne la fait
+ * elle-même dans Moi › Réglages › Notifications (ou « Ouvrir les Réglages » après un refus).
+ */
+export const usePushIntro = create<{ seenAt: number | null; markSeen: () => void }>()(
+  persist((set) => ({ seenAt: null, markSeen: () => set({ seenAt: Date.now() }) }), {
+    name: 'blowy.push.intro',
+    storage: createJSONStorage(() => AsyncStorage),
+  }),
+);
+
+/** Délai avant l'écran d'avant-demande : l'accueil s'affiche et son minimoa arrive d'abord. */
+const PUSH_INTRO_DELAY_MS = 1600;
+
+/**
+ * Ouvre l'écran d'avant-demande une fois, au premier bon moment sur l'accueil : `when` vrai (accueil affiché, rien
+ * d'autre en cours : fête, défi du jour qui monte, demande de position), accord du téléphone jamais demandé.
+ */
+export function usePushIntroOnce(permission: PushPermission | null, when: boolean): void {
+  const seen = usePushIntro((s) => s.seenAt !== null);
+  const [hydrated, setHydrated] = useState(() => usePushIntro.persist.hasHydrated());
+  useEffect(() => (hydrated ? undefined : usePushIntro.persist.onFinishHydration(() => setHydrated(true))), [hydrated]);
+  useEffect(() => {
+    if (!hydrated || seen || !when || permission !== 'undetermined') return;
+    const id = setTimeout(() => {
+      usePushIntro.getState().markSeen();
+      router.push('/pet/notifications');
+    }, PUSH_INTRO_DELAY_MS);
+    return () => clearTimeout(id);
+  }, [hydrated, seen, when, permission]);
 }

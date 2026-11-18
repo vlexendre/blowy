@@ -10,6 +10,7 @@ import { create } from 'zustand';
 
 import { keys, useApi, usePorts } from '@/core';
 import { useUnlocks } from '@/features/pet';
+import { maybeAskForReview } from '@/features/review';
 
 export { awayFromHome, useAwayFromHome } from './location';
 
@@ -224,6 +225,8 @@ export function useProof(ref: string) {
       void qc.invalidateQueries({ queryKey: keys.ritualsToday });
       void qc.invalidateQueries({ queryKey: keys.pet });
       if (r.kept) void qc.invalidateQueries({ queryKey: ritualKeys.memories });
+      // Habitude validée : un bon moment pour une note, une fois le verdict et sa phrase affichés.
+      if (r.verdict === 'yes' && r.counted) maybeAskForReview('proof_validated', 3500);
     },
   });
 }

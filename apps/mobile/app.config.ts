@@ -35,14 +35,17 @@ const WIDGETS = process.env.BLOWY_WIDGETS !== 'off';
 /**
  * Textes des autorisations iOS : une seule source, `./locales/fr.json` (français, langue source), repris tels quels dans
  * `Info.plist` ; chaque langue a son `InfoPlist.strings` par `locales` (hors français : la phrase française en attendant
- * la passe de traduction, docs/I18N.md). Seules ces trois autorisations existent : `ios-release.test.ts` le vérifie.
+ * la passe de traduction, docs/I18N.md). Seules ces quatre autorisations existent : `ios-release.test.ts` le vérifie.
+ * `NSPhotoLibraryAddUsageDescription` : « Enregistrer l'image » de la feuille de partage (story d'invitation,
+ * react-native-share) ; sans ce texte, iOS ferme l'app.
  */
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const IOS_TEXT = (require('./locales/fr.json') as { ios: Record<IosPurpose, string> }).ios;
-type IosPurpose = 'NSCameraUsageDescription' | 'NSLocationWhenInUseUsageDescription' | 'NSPhotoLibraryUsageDescription';
+type IosPurpose = 'NSCameraUsageDescription' | 'NSLocationWhenInUseUsageDescription' | 'NSPhotoLibraryUsageDescription' | 'NSPhotoLibraryAddUsageDescription';
 const CAMERA_TEXT = IOS_TEXT.NSCameraUsageDescription;
 const LOCATION_TEXT = IOS_TEXT.NSLocationWhenInUseUsageDescription;
 const PHOTOS_TEXT = IOS_TEXT.NSPhotoLibraryUsageDescription;
+const PHOTOS_ADD_TEXT = IOS_TEXT.NSPhotoLibraryAddUsageDescription;
 /**
  * Jetons APNs (activités en direct) : `development` pour le client de développement, `production` pour les builds
  * signés pour TestFlight, l'App Store ou la distribution interne (profils EAS `preview` et `production`, eas.json).
@@ -136,6 +139,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       // Textes d'autorisation traduits (`locales`) même si l'app n'a pas de traduction native de son nom.
       CFBundleAllowMixedLocalizations: true,
       NSPhotoLibraryUsageDescription: PHOTOS_TEXT,
+      // Ajout seul (sans lecture) : l'image qu'on choisit d'enregistrer depuis la feuille de partage.
+      NSPhotoLibraryAddUsageDescription: PHOTOS_ADD_TEXT,
       // Activités en direct (défi accepté, série d'un lien, sortie) : docs/WIDGETS.md.
       NSSupportsLiveActivities: true,
       // Partage de l'invitation en story : savoir si Instagram est là avant de lui passer l'image.

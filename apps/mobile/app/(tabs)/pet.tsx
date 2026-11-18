@@ -49,19 +49,21 @@ import { Platform, RefreshControl, useWindowDimensions } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { VISION_TEST_ROUTE } from '@/features/encounters';
 import { errorText, useLinks } from '@/features/links';
-import { useLocation } from '@/features/map';
+import { AreaSheet, useLocation } from '@/features/map';
 import { openLegal, useMe } from '@/features/me';
-import { usePushPermission } from '@/features/notifications';
+import { usePushIntroOnce, usePushPermission } from '@/features/notifications';
 import { type PeopleToday, usePeopleToday } from '@/features/people';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
 import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
 import { FirstWeekMoment, StreakMoment } from '@/features/moments';
+import { maybeAskForReview, useReviewMemory } from '@/features/review';
 import { useAwayFromHome, useOuting, usePrivateMemories, useRitualsToday, useStreakParty } from '@/features/rituals';
 import { endOuting } from '@/features/widgets';
 import { accueil as a } from '@/locales/accueil';
 import { home as t } from '@/locales/pet';
+import { carte } from '@/locales/rencontres';
 import { rituels as r } from '@/locales/rituels';
 
 /** Durée d'affichage d'une réplique après un soin (« miam. », « il n'a plus faim. »). */
@@ -78,10 +80,13 @@ export default function PetHome() {
   const wardrobe = useWardrobe();
   const today = useRitualsToday();
   const me = useMe();
-  const people = usePeopleToday(me.data);
   const location = useLocation(me.data);
   const push = usePushPermission();
   const [locationDenied, setLocationDenied] = useState(false);
+  // Refusée maintenant, ou déjà refusée pour de bon (iOS ne redemande plus : il faut passer par les Réglages).
+  const locationRefused = locationDenied || (location.permission?.status === 'denied' && !location.permission.canAskAgain);
+  const people = usePeopleToday(me.data, { locationRefused });
+  const [areaSheet, setAreaSheet] = useState(false);
   const care = useCare();
   const outing = useOuting();
   const away = useAwayFromHome(me.data?.identity.location.zone);
@@ -175,6 +180,14 @@ export default function PetHome() {
       return () => clearTimeout(id);
     }, [challenge?.present, challenge?.day, busyCelebrating, router]),
   );
+
+  // Notifications : l'écran d'avant-demande monte une fois, au premier passage calme sur l'accueil (rien d'autre en
+  // cours : ni fête, ni défi du jour qui va monter, ni retour après une longue absence). La demande de position passe
+  // d'abord ; si elle reste sans réponse, les notifications se proposent quand même à partir de la 2e session.
+  const sessions = useReviewMemory((s) => s.sessions);
+  const challengePending = !!challenge?.present && presented.current !== challenge.day;
+  const peopleSettled = people.kind !== 'loading' && people.kind !== 'vision' && (people.kind !== 'location' || sessions >= 2);
+  usePushIntroOnce(push.permission, focused && !!pet.data && !!today.data && !busyCelebrating && !welcomeBack && !challengePending && peopleSettled);
 
   const say = (text: string) => setSaid((s) => ({ text, key: (s?.key ?? 0) + 1 }));
   const play = (re: PetReaction, item: CareProp | null = null) => {
@@ -295,17 +308,18 @@ export default function PetHome() {
               <PeopleNow
                 state={people}
                 petName={p.name}
-                locationDenied={locationDenied}
+                locationDenied={locationRefused}
                 locating={location.sending}
                 onLocate={() => {
-                  if (locationDenied) location.openSettings();
+                  if (locationRefused && Platform.OS !== 'web') location.openSettings();
                   else void location.enable().then((res) => setLocationDenied(res === 'denied'));
                 }}
-                askPush={push.permission === 'undetermined' && Platform.OS !== 'web'}
-                onAskPush={() => void push.ask()}
+                onChooseCity={() => setAreaSheet(true)}
                 open={(href) => router.push(href)}
               />
             </Appear>
+            {/* Sans position : choisir sa ville à la main (gratuit, App Review 5.1.1(iv)). */}
+            <AreaSheet visible={areaSheet} onClose={() => setAreaSheet(false)} />
 
             <PetStage
               pet={p}
@@ -461,7 +475,11 @@ export default function PetHome() {
                 record={party.streak > 1 && party.streak >= party.best ? r.celebrate.record : null}
                 milestone={(STREAK_MILESTONES as readonly number[]).includes(party.streak)}
                 tapLabel={r.celebrate.tap}
-                onClose={clearParty}
+                onClose={() => {
+                  // Palier de série (7, 30, 100 jours…) fêté : un bon moment pour une note, juste après la fête.
+                  if ((STREAK_MILESTONES as readonly number[]).includes(party.streak)) maybeAskForReview('streak_milestone', 900);
+                  clearParty();
+                }}
               />
             ) : (
               <UnlockCelebration />
@@ -486,8 +504,7 @@ function PeopleNow({
   locationDenied,
   locating,
   onLocate,
-  askPush,
-  onAskPush,
+  onChooseCity,
   open,
 }: {
   state: PeopleToday;
@@ -495,16 +512,10 @@ function PeopleNow({
   locationDenied: boolean;
   locating: boolean;
   onLocate: () => void;
-  askPush: boolean;
-  onAskPush: () => void;
+  onChooseCity: () => void;
   open: (href: Href) => void;
 }) {
   if (state.kind === 'loading') return <Skeleton height={150} radius="lg" />;
-  // Les notifications se demandent quand elles servent : une fois que quelqu'un peut te faire signe.
-  const notif =
-    askPush && state.kind !== 'vision' && state.kind !== 'location' ? (
-      <Button label={a.notifAction} hint={a.notifAsk} variant="glass" size="sm" icon="bell" onPress={onAskPush} block />
-    ) : null;
   switch (state.kind) {
     case 'waved':
       return (
@@ -515,7 +526,6 @@ function PeopleNow({
           people={[state.pet]}
           actionLabel={a.wavedAction}
           onPress={() => open('/(tabs)/rencontres')}
-          footer={notif}
         />
       );
     case 'wrote':
@@ -527,7 +537,6 @@ function PeopleNow({
           people={[state.pet]}
           actionLabel={a.wroteAction}
           onPress={() => open({ pathname: '/link/[id]', params: { id: state.linkId } })}
-          footer={notif}
         />
       );
     case 'present':
@@ -539,7 +548,6 @@ function PeopleNow({
           people={state.people}
           actionLabel={a.presentAction}
           onPress={() => open('/(tabs)/rencontres')}
-          footer={notif}
         />
       );
     case 'group':
@@ -551,7 +559,6 @@ function PeopleNow({
           text={state.mineDone ? a.groupMine.done : a.groupMine.todo}
           actionLabel={a.groupAction}
           onPress={() => open({ pathname: '/groupe/[id]', params: { id: state.groupId } })}
-          footer={notif}
         />
       );
     case 'vision':
@@ -565,6 +572,7 @@ function PeopleNow({
           actionLabel={locationDenied ? a.locationSettings : a.locationAction}
           loading={locating}
           onPress={onLocate}
+          footer={locationDenied ? <Button label={carte.area.choose} variant="glass" size="sm" onPress={onChooseCity} block /> : undefined}
         />
       );
     case 'empty':
@@ -576,7 +584,6 @@ function PeopleNow({
           text={a.emptyText}
           actionLabel={a.emptyAction}
           onPress={() => open('/(onboarding)/invite')}
-          footer={notif}
         />
       );
   }

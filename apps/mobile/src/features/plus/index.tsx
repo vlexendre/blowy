@@ -22,6 +22,7 @@ import { itemLabel } from '@/locales/content';
 import { common } from '@/locales/common';
 import { plus as t } from '@/locales/plus';
 import { formatDate, formatPrice } from '@/locales/runtime';
+import { noteReviewPurchase } from '@/features/review';
 
 // ── Ouvrir la feuille depuis n'importe où ────────────────────────────────────
 
@@ -134,6 +135,8 @@ export function usePurchase() {
       }
     },
     onSuccess: (r) => {
+      // Pas de demande de note juste après un achat (features/review).
+      if (r.status !== 'cancelled') noteReviewPurchase();
       if (r.status === 'purchased') refresh(r.subscription);
     },
   });

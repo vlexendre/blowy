@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 import { create } from 'zustand';
 
 import { keys, useApi } from '@/core';
+import { maybeAskForReview } from '@/features/review';
 
 /** Les rencontres : aucun temps réel ne les signale, alors elles sont relues chaque minute (saluts reçus, saluts acceptés). */
 export function useEncounters() {
@@ -73,6 +74,8 @@ export function useAcceptEncounter() {
   return useMutation({
     mutationFn: (id: string) => api.encounters.accept(id),
     onSuccess: () => {
+      // Un lien vient de naître : un bon moment pour une note (après la course des deux minimoas et l'ouverture du chat).
+      maybeAskForReview('encounter_accepted', 4000);
       void qc.invalidateQueries({ queryKey: keys.encounters });
       void qc.invalidateQueries({ queryKey: keys.links });
       void qc.invalidateQueries({ queryKey: keys.pet });

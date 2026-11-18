@@ -24,7 +24,7 @@ const reasonsOf = (types: readonly ApiType[] | undefined, category: string): str
 const readManifest = (file: string) => plist.default.parse(fs.readFileSync(path.join(mobile, file), 'utf8'));
 
 /** Les seules autorisations que l'app demande (Info.plist). */
-const PURPOSES = ['NSCameraUsageDescription', 'NSLocationWhenInUseUsageDescription', 'NSPhotoLibraryUsageDescription'];
+const PURPOSES = ['NSCameraUsageDescription', 'NSLocationWhenInUseUsageDescription', 'NSPhotoLibraryUsageDescription', 'NSPhotoLibraryAddUsageDescription'];
 
 describe('manifestes de confidentialité (B4)', () => {
   it("app : pas de pistage, UserDefaults de l'app et du groupe d'apps, raisons des bibliothèques liées, données déclarées", () => {
@@ -73,7 +73,7 @@ describe('manifestes de confidentialité (B4)', () => {
 });
 
 describe('autorisations iOS', () => {
-  it('seulement caméra, position pendant l’utilisation et photothèque ; aucun texte générique de module', () => {
+  it('seulement caméra, position pendant l’utilisation, photothèque et ajout à la photothèque ; aucun texte générique de module', () => {
     const info = config.ios?.infoPlist ?? {};
     const usage = Object.keys(info).filter((k) => /UsageDescription/.test(k));
     expect(usage.sort()).toEqual([...PURPOSES].sort());
@@ -93,7 +93,7 @@ describe('autorisations iOS', () => {
     expect(config.ios?.supportsTablet).toBe(false);
   });
 
-  it('chaque langue déclarée a les trois textes ; le français est celui de l’Info.plist et dit vrai', () => {
+  it('chaque langue déclarée a les quatre textes ; le français est celui de l’Info.plist et dit vrai', () => {
     const info = config.ios?.infoPlist ?? {};
     for (const [lang, file] of Object.entries(config.locales ?? {})) {
       const strings = (JSON.parse(fs.readFileSync(path.join(mobile, String(file)), 'utf8')) as { ios: Record<string, string> }).ios;
@@ -105,6 +105,8 @@ describe('autorisations iOS', () => {
     expect(camera).toMatch(/IA/);
     expect(camera).not.toMatch(/vue par personne|n’est vue par personne|photo du jour/);
     expect(String(info.NSPhotoLibraryUsageDescription)).not.toMatch(/photo du jour/);
+    // Enregistrer une image (feuille de partage) : sans ce texte, iOS ferme l'app.
+    expect(String(info.NSPhotoLibraryAddUsageDescription)).toMatch(/seulement l’image que tu choisis/);
     // La position n'est jamais gardée exacte : le texte le dit, et ne promet rien d'autre.
     expect(String(info.NSLocationWhenInUseUsageDescription)).toMatch(/300 m/);
     expect(String(info.NSLocationWhenInUseUsageDescription)).not.toMatch(/arrière-plan|en continu/);

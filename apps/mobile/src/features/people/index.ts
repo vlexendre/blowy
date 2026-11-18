@@ -1,7 +1,8 @@
 /**
  * « Les gens d'abord » (accueil) : ce que ton minimoa a pour toi aujourd'hui, en un seul état, le plus important
- * d'abord. Un signe reçu, puis un message d'un lien, puis les personnes à présenter, puis ton groupe d'habitude ;
- * sinon ce qui lui manque pour présenter quelqu'un (test de vision, position), sinon personne pour l'instant
+ * d'abord. Un signe reçu, puis un message d'un lien, puis la demande de position (tant qu'elle n'a pas été refusée :
+ * tout nouveau compte la voit dès l'accueil), puis les personnes à présenter, puis ton groupe d'habitude ; sinon ce
+ * qui lui manque (test de vision, position refusée : réglages ou ville à la main), sinon personne pour l'instant
  * (inviter). Tout vient des requêtes déjà en cache (rencontres, liens, groupes, profil) : aucune requête de plus.
  */
 import type { Me, PublicPet } from '@blowy/contract';
@@ -22,7 +23,7 @@ export type PeopleToday =
 
 const DONE_STATUSES: readonly string[] = ['kept', 'joker', 'not_due'];
 
-export function usePeopleToday(me: Me | undefined): PeopleToday {
+export function usePeopleToday(me: Me | undefined, opts: { locationRefused?: boolean } = {}): PeopleToday {
   const encounters = useEncounters();
   const links = useLinks();
   const groups = useGroups();
@@ -33,6 +34,9 @@ export function usePeopleToday(me: Me | undefined): PeopleToday {
   if (first) return { kind: 'waved', name: first.from.displayName, pet: first.from.pet, more: waved.length - 1 };
   const unread = (links.data ?? []).filter((l) => l.status !== 'archived' && l.unread > 0).sort((a, b) => (b.lastMessage?.at ?? '').localeCompare(a.lastMessage?.at ?? ''))[0];
   if (unread) return { kind: 'wrote', linkId: unread.id, name: unread.other.displayName, pet: unread.other.pet, preview: unread.lastMessage?.preview ?? null };
+  const loc = me.identity.location;
+  const noPlace = !loc.consentAt && !loc.zone && !loc.chosenCityActive;
+  if (noPlace && me.visionTestDone && !opts.locationRefused) return { kind: 'location' };
   const fresh = (e?.suggestions ?? []).filter((s) => !s.waved);
   if (fresh.length) return { kind: 'present', count: fresh.length, people: fresh.slice(0, 3).map((s) => s.user.pet), mutual: fresh.find((s) => s.mutualName)?.mutualName ?? null };
   const group = (groups.data?.groups ?? []).find((g) => g.status === 'active' && g.habit && g.habit.today.due > 0);
@@ -41,7 +45,6 @@ export function usePeopleToday(me: Me | undefined): PeopleToday {
     return { kind: 'group', groupId: group.id, name: group.name, upToDate: t.upToDate, due: t.due, mineDone: DONE_STATUSES.includes(t.mine) };
   }
   if (!me.visionTestDone) return { kind: 'vision' };
-  const loc = me.identity.location;
-  if (!loc.consentAt && !loc.zone && !loc.chosenCityActive) return { kind: 'location' };
+  if (noPlace) return { kind: 'location' };
   return { kind: 'empty' };
 }
