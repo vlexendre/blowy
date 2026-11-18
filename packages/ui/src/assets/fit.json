@@ -15177,15 +15177,15 @@
    "sy": 1.18,
    "profile": {
     "image": "casque_audio_profil",
-    "ratio": 1.2558,
-    "w": 0.68,
+    "ratio": 0.9025,
+    "w": 0.8,
     "pivot": [
-     0.22,
-     0.72
+     0.655,
+     0.755
     ],
-    "dx": -0.05,
-    "dy": 0.05,
-    "rot": -50,
+    "dx": -0.2,
+    "dy": 0.02,
+    "rot": 14,
     "sy": 1.0
    }
   },
@@ -15529,14 +15529,15 @@
    }
   },
   "tablier": {
-   "anchor": "chest",
+   "anchor": "mouth",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.9,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.2591
+   "ratio": 1.2591,
+   "dy": 0.06
   },
   "tutu": {
    "anchor": "feet",
@@ -15769,15 +15770,16 @@
    "ratio": 0.964
   },
   "fondateur": {
-   "anchor": "toy",
-   "size": "bodyw",
-   "w": 0.26,
+   "anchor": "mouth",
+   "size": "brow",
+   "w": 0.32,
    "pivot": [
     0.5,
-    1.0
+    0.0
    ],
-   "dx": 0.12,
-   "ratio": 0.718
+   "dx": 0,
+   "ratio": 0.718,
+   "dy": 0.1
   },
   "pinceau": {
    "anchor": "toy",
@@ -15785,10 +15787,11 @@
    "w": 0.34,
    "pivot": [
     0.5,
-    1.0
+    0.8
    ],
-   "dx": 0.12,
-   "ratio": 0.7972
+   "dx": 0.05,
+   "ratio": 0.7972,
+   "rot": 72
   },
   "micro": {
    "anchor": "toy",
@@ -15796,10 +15799,11 @@
    "w": 0.34,
    "pivot": [
     0.5,
-    1.0
+    0.8
    ],
-   "dx": 0.12,
-   "ratio": 0.7722
+   "dx": 0.05,
+   "ratio": 0.7722,
+   "rot": 72
   },
   "manette": {
    "anchor": "toy",
@@ -15881,16 +15885,16 @@
    "sy": 1.22,
    "profile": {
     "image": "hiver_cache_oreilles_profil",
-    "ratio": 1.2857,
-    "w": 0.68,
+    "ratio": 0.8757,
+    "w": 0.8,
     "pivot": [
-     0.22,
-     0.72
+     0.668,
+     0.713
     ],
-    "dx": -0.05,
-    "dy": 0.05,
+    "dx": -0.2,
+    "dy": 0.02,
     "sy": 1.0,
-    "rot": -50
+    "rot": 14
    }
   },
   "hiver_lunettes": {
@@ -15951,12 +15955,12 @@
   "hiver_moufles": {
    "anchor": "toy",
    "size": "bodyw",
-   "w": 0.46,
+   "w": 0.5,
    "pivot": [
     0.5,
     1.0
    ],
-   "dx": 0.12,
+   "dx": 0.02,
    "ratio": 1.0907
   },
   "hiver_chocolat": {
@@ -16588,7 +16592,7 @@
     6,
     3,
     8,
-    0.3
+    0.35
    ]
   },
   "pinceau": {
