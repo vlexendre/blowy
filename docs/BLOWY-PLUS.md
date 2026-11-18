@@ -11,8 +11,8 @@ L'API vérifie localement les transactions signées par Apple ; elle n'a besoin 
 | Mensuelle | `app.blowy.plus.monthly` | 14,99 € par mois | aucun |
 | Hebdomadaire | `app.blowy.plus.weekly` | 2,99 € par semaine | aucun |
 
-Ordre de la feuille : l'annuelle mise en avant (choisie par défaut, déployée), puis la mensuelle, puis l'hebdomadaire ;
-les deux offres repliées se partagent une ligne. La remise affichée sur l'annuelle (−67 %) se calcule **toujours contre
+Ordre de la feuille : trois cartes côte à côte, l'annuelle (choisie par défaut, pastille de remise), la mensuelle,
+l'hebdomadaire (structure complète : `docs/PAYWALL.md`). La remise affichée sur l'annuelle (−67 %) se calcule **toujours contre
 douze mensualités**, sur les prix StoreKit (`yearlyDiscountPercent`), jamais contre 52 semaines de l'hebdomadaire ;
 l'hebdomadaire n'a ni équivalent mensuel ni pastille (aucune comparaison avec elle).
 

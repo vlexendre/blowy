@@ -61,3 +61,4 @@ export { AvatarStack, type AvatarStackProps } from './AvatarStack';
 export { PickTiles, type PickTilesProps } from './PickTiles';
 export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
 export { ChipChoice, type ChipChoiceOption, type ChipChoiceProps } from './ChipChoice';
+export { PerkLine, type PerkLineProps } from './PerkLine';

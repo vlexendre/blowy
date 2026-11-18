@@ -5,7 +5,7 @@ export { SettingsTemplate, type SettingsTemplateProps } from './SettingsTemplate
 export { SheetHandle, SheetTemplate, type SheetTemplateProps, useSheet } from './SheetTemplate';
 export { TabTemplate, type TabTemplateProps } from './TabTemplate';
 export { WelcomeTemplate, type WelcomeTemplateProps } from './WelcomeTemplate';
-export { PlusTemplate, type PlusTemplateProps, type PlusOfferView } from './PlusTemplate';
+export { PlusTemplate, type PlusTemplateProps, type PlusOfferView, type PlusPerkView } from './PlusTemplate';
 export { StageTemplate, type StageTemplateProps } from './StageTemplate';
 export { MapTemplate, type MapTemplateProps } from './MapTemplate';
 export { GroupTemplate, type GroupTemplateProps } from './GroupTemplate';

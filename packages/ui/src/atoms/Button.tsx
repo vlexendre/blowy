@@ -28,6 +28,8 @@ export interface ButtonProps {
   labelSize?: number;
   /** Complément estompé après le libellé (« (une seule fois) »). */
   hint?: string;
+  /** Seconde ligne, plus petite, sous le libellé (prix de l'offre de Minimoa+) : le bouton grandit d'autant. */
+  subLabel?: string | null;
   loading?: boolean;
   disabled?: boolean;
   /** Pleine largeur ; défaut : vrai sauf en `sm`. */
@@ -51,7 +53,7 @@ const VARIANTS: Record<ButtonVariant, { bg: string; ink: string; border?: string
 const isGlyph = (v: unknown): v is GlyphName => typeof v === 'string';
 
 /** Bouton pilule des maquettes (`.btn`). */
-export function Button({ label, onPress, variant = 'accent', size = 'lg', icon, iconRight, trailing, labelSize, hint, loading, disabled, block, accessibilityLabel, accessibilityHint, style }: ButtonProps) {
+export function Button({ label, onPress, variant = 'accent', size = 'lg', icon, iconRight, trailing, labelSize, hint, subLabel, loading, disabled, block, accessibilityLabel, accessibilityHint, style }: ButtonProps) {
   const v = VARIANTS[variant];
   const small = size === 'sm' || size === 'chip';
   const h = sizes.button[size === 'chip' ? 'sm' : size];
@@ -63,13 +65,14 @@ export function Button({ label, onPress, variant = 'accent', size = 'lg', icon, 
     <Pressable
       onPress={onPress}
       disabled={off}
-      accessibilityLabel={accessibilityLabel ?? (hint ? `${label} ${hint}` : label)}
+      accessibilityLabel={accessibilityLabel ?? [label, hint, subLabel].filter(Boolean).join(' ')}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!off, busy: !!loading }}
       hitSlop={h < sizes.touch ? (sizes.touch - h) / 2 : undefined}
       style={[
         styles.base,
-        { height: h, backgroundColor: v.bg, paddingHorizontal: size === 'chip' ? space.md + 2 : size === 'sm' ? space.lg : space.xl - 2 },
+        subLabel ? { minHeight: h + 10, paddingVertical: 6 } : { height: h },
+        { backgroundColor: v.bg, paddingHorizontal: size === 'chip' ? space.md + 2 : size === 'sm' ? space.lg : space.xl - 2 },
         v.border ? { borderWidth: sizes.border, borderColor: v.border } : null,
         full ? styles.block : styles.inline,
         disabled && !loading ? styles.disabled : null,
@@ -87,6 +90,11 @@ export function Button({ label, onPress, variant = 'accent', size = 'lg', icon, 
           {iconRight ? <Glyph name={iconRight} size={glyphSize} /> : null}
           {trailing}
         </View>
+        {subLabel ? (
+          <Text variant="bodyBold" size={Math.max(13, fontSize - 3)} numberOfLines={1} style={[styles.subLabel, loading ? styles.hidden : null]}>
+            {subLabel}
+          </Text>
+        ) : null}
         {loading ? (
           <View pointerEvents="none" style={styles.loader}>
             <Loader color={v.ink} size={small ? 6 : 8} />
@@ -104,5 +112,6 @@ const styles = StyleSheet.create({
   content: { gap: space.sm + 2 },
   disabled: { opacity: opacity.disabled },
   hidden: { opacity: 0 },
+  subLabel: { marginTop: 1 },
   loader: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' },
 });

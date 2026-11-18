@@ -196,6 +196,12 @@ export const craft = {
 export const plusGradient = ['#2A0F2E', extra.wineDeep] as const;
 
 /**
+ * Fond de la feuille Minimoa+ : un voile violet de la marque en haut (derrière le titre et les minimoas) qui se fond
+ * dans la nuit avant les offres ; le texte blanc y tient 4,5:1 partout.
+ */
+export const plusBackdrop = { colors: ['#3B1B78', '#2A0F2E', color.night] as const, locations: [0, 0.38, 0.7] as const };
+
+/**
  * Couleur d'un pet dans les conversations (disque d'avatar, nom au-dessus des bulles) :
  * toutes les maquettes mettent Nino en jaune d'accent, les autres à la couleur de leur pelage.
  */

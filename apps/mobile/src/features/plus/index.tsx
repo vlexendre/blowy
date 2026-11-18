@@ -9,8 +9,8 @@
  */
 import { ApiError } from '@blowy/api-client';
 import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
-import { ITEMS, OFFERS, PLUS_PERKS, type PlusPerk, type Species, yearlyDiscountPercent } from '@blowy/domain';
-import { PlusTemplate, type PlusOfferView, SheetTemplate } from '@blowy/ui';
+import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, type PlusPerk, type Species, yearlyDiscountPercent } from '@blowy/domain';
+import { type IconName, PlusTemplate, type PlusHeroPose, type PlusOfferView, type PlusPerkView, SheetTemplate } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -186,13 +186,23 @@ export function usePlusSync(enabled: boolean) {
  * Prix d'une offre. Là où l'on achète : seulement ceux du magasin (montant facturé, équivalent mensuel calculé dessus) ;
  * produit absent : l'offre n'est pas proposée. Ailleurs (web, Android) : les prix de référence de l'API, pour information.
  */
-function offerPrices(o: PaywallOffer, store: StoreProduct | undefined, sellable: boolean): { price: string; perMonth: string | null } | null {
+function offerPrices(
+  o: PaywallOffer,
+  store: StoreProduct | undefined,
+  sellable: boolean,
+): { amount: string; price: string; perMonth: string | null; perMonthShort: string | null } | null {
   if (store) {
     const perMonth =
       o.period === 'year' && store.price !== null && store.currency ? formatPrice(Math.round((store.price * 100) / 12), store.currency) : null;
-    return { price: t.price[o.period](store.displayPrice), perMonth: perMonth ? t.perMonth(perMonth) : null };
+    return {
+      amount: store.displayPrice,
+      price: t.price[o.period](store.displayPrice),
+      perMonth: perMonth ? t.perMonth(perMonth) : null,
+      perMonthShort: perMonth ? t.perMonthShort(perMonth) : null,
+    };
   }
-  return sellable ? null : { price: o.labels.price, perMonth: o.labels.perMonth };
+  if (sellable) return null;
+  return { amount: o.billed.display, price: o.labels.price, perMonth: o.labels.perMonth, perMonthShort: o.perMonth ? t.perMonthShort(o.perMonth.display) : null };
 }
 
 /**
@@ -215,9 +225,31 @@ function floatingFor(item: string | undefined): string[] {
 
 const TEASER_SPECIES: readonly Species[] = ['suzie', 'gaston', 'pia'];
 
-/** Avantages montrés avant « Et N de plus », dans cet ordre (après celui de la raison). */
-const PERKS_SHOWN = 3;
-const PERK_ORDER: readonly PlusPerk[] = ['more_encounters', 'map_everywhere', 'detailed_review', 'streak_jokers', 'more_habits', 'free_rename', 'premium_items'];
+/** Ordre des lignes d'avantages (après celui de la raison). */
+const PERK_ORDER: readonly PlusPerk[] = ['more_encounters', 'map_everywhere', 'premium_items', 'streak_jokers', 'detailed_review', 'more_habits', 'free_rename'];
+/** Icône 3D de chaque avantage. */
+const PERK_ICON: Record<PlusPerk, IconName> = {
+  more_encounters: 'coeurs',
+  map_everywhere: 'balle',
+  premium_items: 'cadeau',
+  streak_jokers: 'flamme',
+  detailed_review: 'eclair',
+  more_habits: 'etoiles',
+  free_rename: 'confettis',
+};
+/** Les trois avantages illustrés par une pose du minimoa, sous le titre (le dernier en tenue premium). */
+const HERO: readonly { perk: PlusPerk; pose: PlusHeroPose['pose'] }[] = [
+  { perk: 'more_encounters', pose: 'coucou' },
+  { perk: 'map_everywhere', pose: 'marche' },
+  { perk: 'premium_items', pose: 'fier' },
+];
+
+/** Tenue de la vitrine (collection Hiver) ; l'objet premium qu'on vient de toucher prend sa place. */
+const SHOWCASE: Outfit = { head: 'hiver_bonnet', body: 'hiver_echarpe', toy: 'hiver_aura' };
+function showcaseFor(item: string | undefined): Outfit {
+  const touched = item ? ITEMS.find((i) => i.id === item && i.unlock.kind === 'premium') : undefined;
+  return touched ? { ...SHOWCASE, [touched.slot as ItemSlot]: touched.id } : SHOWCASE;
+}
 
 function headlineFor(reason: PlusReason, petName: string, item?: string): string {
   if (reason === 'premium_item' && item) return t.headline.premium_item(itemLabel[item as keyof typeof itemLabel] ?? petName);
@@ -252,18 +284,22 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
 
   const byId = useMemo(() => new Map((store.data ?? []).map((p) => [p.productId, p])), [store.data]);
   const highlight = REASON_PERK[reason];
-  // Libellés courts de l'app (une ligne chacun) ; la phrase de l'API reste pour un avantage que l'app ne connaît pas.
-  const short = t.perks(pet.name) as Partial<Record<string, readonly string[]>>;
-  const perks = (data?.perks ?? []).flatMap((p) =>
-    (short[p.key] ?? [p.label]).map((label, i) => ({ key: `${p.key}:${i}`, label, highlight: p.key === highlight })),
-  );
-  // Trois avantages d'abord (celui de la raison en tête, puis les plus parlants) ; les autres se déplient sur place.
-  const rank = (key: string) => {
-    const i = PERK_ORDER.indexOf(key.split(':')[0] as PlusPerk);
-    // Une ligne par avantage d'abord (la seconde ligne de la carte, « Changer de ville », passe après).
-    return Number(key.split(':')[1] ?? 0) * 100 + (i < 0 ? PERK_ORDER.length : i);
-  };
-  perks.sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight) || rank(a.key) - rank(b.key));
+  // Une phrase « Titre : explication » par avantage (celle de l'API reste celle du lecteur d'écran), celui de la raison en tête.
+  const lines: Record<PlusPerk, readonly string[]> = t.perkLines(pet.name, PREMIUM.length);
+  const perkKeys: PlusPerk[] = data?.perks.length ? data.perks.map((p) => p.key).filter((k) => k in lines) : [...PLUS_PERKS];
+  const perks: PlusPerkView[] = perkKeys
+    .map((key) => {
+      const [title = '', text = ''] = lines[key];
+      return { key, icon: PERK_ICON[key], title: t.colon(title), text, label: data?.perks.find((p) => p.key === key)?.label, highlight: key === highlight };
+    })
+    .sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight) || PERK_ORDER.indexOf(a.key as PlusPerk) - PERK_ORDER.indexOf(b.key as PlusPerk));
+  const short = t.perks(pet.name) as Record<PlusPerk, readonly string[]>;
+  const poses: PlusHeroPose[] = HERO.map((h) => ({
+    key: h.perk,
+    pose: h.pose,
+    label: short[h.perk][0] ?? '',
+    outfit: h.perk === 'premium_items' ? showcaseFor(item) : (pet.outfit ?? null),
+  }));
 
   // Là où l'on achète (iPhone, ou magasin simulé du mode local), seul le magasin donne prix et essai.
   const sellable = purchases.available;
@@ -286,15 +322,26 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
     return [
       {
         key: o.plan,
-        lead: eligible ? t.lead.trial(name, trialDays) : trialDays > 0 ? name : t.lead.noTrial(name),
-        price: prices.price,
-        perMonth: prices.perMonth,
+        name: t.planCard[o.plan],
+        amount: prices.amount,
+        period: t.period[o.period],
+        perMonth: prices.perMonthShort,
         badge: badge ? t.badge(badge) : null,
-        short: trialDays > 0 ? name : t.lead.noTrial(name),
-        name,
+        price: prices.price,
+        accessibilityLabel: [eligible ? t.lead.trial(name, trialDays) : name, prices.price, prices.perMonth, badge ? t.badge(badge) : null].filter(Boolean).join(', '),
         trialDays: eligible ? trialDays : 0,
-        // La frise (jour 0 · rappel · premier paiement) suppose l'essai de l'API ; autre durée dans le magasin : pas de frise.
-        timeline: eligible && data && trialDays === data.trial.days ? data.trial.timeline.map((step, i) => ({ title: step.title, text: t.timeline[i] ?? step.text })) : null,
+        // Frise de l'essai (jour 0 · rappel · premier paiement) si elle correspond à l'essai de l'API (autre durée dans le
+        // magasin : pas de frise) ; sans droit à l'essai, la frise dit le paiement, le renouvellement et l'annulation.
+        timeline:
+          eligible && data && trialDays === data.trial.days
+            ? data.trial.timeline.map((step, i) => ({ title: t.colon(step.title), text: t.timeline[i] ?? step.text }))
+            : eligible
+              ? null
+              : [
+                  { title: t.colon(t.noTrial.today[0]), text: t.noTrial.today[1], glyph: 'unlock' as const },
+                  { title: t.colon(t.noTrial.every[o.period]), text: t.noTrial.renews, glyph: 'star' as const },
+                  { title: t.colon(t.noTrial.anytime[0]), text: t.noTrial.anytime[1], glyph: 'check' as const },
+                ],
       },
     ];
   });
@@ -313,6 +360,8 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
   };
 
   const cta = unavailable ? t.cta.retry : !sellable ? t.cta.unavailable : trialDays > 0 ? t.cta.trial(trialDays) : t.cta.subscribe(currentView?.price ?? '');
+  // Avec l'essai, le bouton dit aussi ce qui sera facturé ensuite, et à quelle période.
+  const ctaSub = !unavailable && sellable && trialDays > 0 && currentView ? t.ctaThen(currentView.price) : null;
 
   const doBuy = () => {
     if (!current) return;
@@ -345,12 +394,13 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
         closeLabel={common.close}
         brand={t.brand}
         headline={headlineFor(reason, pet.name, item)}
-        pet={{ species: pet.species, outfit: pet.outfit ?? undefined, name: pet.name }}
+        pet={{ species: pet.species, name: pet.name }}
+        poses={poses}
         floatingItems={floatingFor(item)}
         teaser={teaserCount > 0 && data?.teaser.label ? { label: data.teaser.label, species: TEASER_SPECIES } : null}
-        perks={perks.length ? perks : t.perksFallback.map((label, i) => ({ key: String(i), label }))}
-        perksShown={PERKS_SHOWN}
-        morePerksLabel={t.morePerks(Math.max(0, (perks.length || t.perksFallback.length) - PERKS_SHOWN))}
+        perks={perks}
+        heroPerks={HERO.map((h) => h.perk)}
+        morePerksLabel={t.morePerks}
         offers={views}
         selected={chosen}
         onSelect={(k) => {
@@ -359,6 +409,7 @@ export function PlusOffer({ pet, reason = 'generic', item, member = false, onClo
         }}
         offersLabel={t.offersLabel}
         ctaLabel={cta}
+        ctaSubLabel={ctaSub}
         onCta={unavailable ? retry : sellable && current && !buy.isPending ? doBuy : undefined}
         ctaDisabled={unavailable ? paywall.isFetching || store.isFetching : !sellable || !current}
         ctaLoading={buy.isPending || paywall.isLoading || storeLoading}
