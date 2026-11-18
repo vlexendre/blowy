@@ -7,5 +7,5 @@ export { TabTemplate, type TabTemplateProps } from './TabTemplate';
 export { WelcomeTemplate, type WelcomeTemplateProps } from './WelcomeTemplate';
 export { PlusTemplate, type PlusTemplateProps, type PlusOfferView, type PlusPerkView } from './PlusTemplate';
 export { StageTemplate, type StageTemplateProps } from './StageTemplate';
-export { MapTemplate, type MapTemplateProps } from './MapTemplate';
+export { type MapFrame, MapTemplate, type MapTemplateProps } from './MapTemplate';
 export { GroupTemplate, type GroupTemplateProps } from './GroupTemplate';

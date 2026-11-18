@@ -445,10 +445,15 @@ export const carte = messages({
   fr: {
     back: 'Retour',
     title: [{ text: 'AUTOUR ' }, { text: 'DE TOI', dim: true }] as TitleSegment[],
-    /** Ce qu'on montre vraiment : la zone, arrondie, jamais en direct. */
-    subtitle: (km: string): string => `Ta zone : ${km} km. Positions arrondies, jamais en direct.`,
-    subtitleCity: (city: string, km: string): string => `${city}, ${km} km autour. Positions arrondies, jamais en direct.`,
-    subtitleEverywhere: (km: string): string => `${km} km autour de toi. Positions arrondies, jamais en direct.`,
+    /** Où l'on est (pilule sous le titre) : ta zone, la ville choisie (Minimoa+), ou ailleurs (carte déplacée). */
+    zoneHome: (km: string): string => `Ta zone · ${km} km`,
+    zoneHomeNamed: (city: string, km: string): string => `Ta zone · ${city} · ${km} km`,
+    zoneCity: (city: string, km: string): string => `Tu regardes ${city} · ${km} km`,
+    zoneAway: 'Tu regardes ailleurs',
+    recenter: 'Recentrer',
+    recenterA11y: 'Recentrer la carte sur ta zone',
+    /** Ce qu'on montre vraiment : arrondi, jamais en direct. */
+    privacy: 'Positions arrondies, jamais en direct.',
     me: 'Toi',
     meA11y: (pet: string): string => `${pet}, ton minimoa, au centre de ta zone`,
     pinA11y: (pet: string, name: string): string => `${pet}, le minimoa de ${name}. Voir pourquoi`,
@@ -494,6 +499,8 @@ export const carte = messages({
       barcelone: 'Barcelone',
     },
     empty: 'Personne de compatible dans ta zone pour l’instant. Ton minimoa préfère attendre que te présenter n’importe qui.',
+    /** Bandeau court en bas de la carte (la mention légale d'Apple Plans reste visible au-dessus). */
+    emptyShort: 'Personne de compatible ici pour l’instant.',
     emptyAction: 'Voir mes rencontres',
     /** Pas de localisation : ce qui manque, et comment l'activer. */
     noLocation: {
@@ -526,9 +533,13 @@ export const carte = messages({
   en: {
     back: 'Back',
     title: [{ text: 'AROUND ' }, { text: 'YOU', dim: true }] as TitleSegment[],
-    subtitle: (km: string): string => `Your area: ${km} km. Locations rounded, never live.`,
-    subtitleCity: (city: string, km: string): string => `${city}, ${km} km around. Locations rounded, never live.`,
-    subtitleEverywhere: (km: string): string => `${km} km around you. Locations rounded, never live.`,
+    zoneHome: (km: string): string => `Your area · ${km} km`,
+    zoneHomeNamed: (city: string, km: string): string => `Your area · ${city} · ${km} km`,
+    zoneCity: (city: string, km: string): string => `Viewing ${city} · ${km} km`,
+    zoneAway: 'Viewing somewhere else',
+    recenter: 'Recenter',
+    recenterA11y: 'Recenter the map on your area',
+    privacy: 'Locations rounded, never live.',
     me: 'You',
     meA11y: (pet: string): string => `${pet}, your minimoa, in the middle of your area`,
     pinA11y: (pet: string, name: string): string => `${pet}, ${name}’s minimoa. See why`,
@@ -571,6 +582,7 @@ export const carte = messages({
       barcelone: 'Barcelona',
     },
     empty: 'No one compatible in your area for now. Your minimoa would rather wait than introduce you to just anyone.',
+    emptyShort: 'No one compatible here for now.',
     emptyAction: 'See my encounters',
     noLocation: {
       title: [{ text: 'WHERE ARE YOU,\n' }, { text: 'ROUGHLY?', dim: true }] as TitleSegment[],
@@ -601,9 +613,13 @@ export const carte = messages({
   es: {
     back: 'Atrás',
     title: [{ text: 'A TU ' }, { text: 'ALREDEDOR', dim: true }] as TitleSegment[],
-    subtitle: (km: string): string => `Tu zona: ${km} km. Ubicaciones redondeadas, nunca en directo.`,
-    subtitleCity: (city: string, km: string): string => `${city}, ${km} km a la redonda. Ubicaciones redondeadas, nunca en directo.`,
-    subtitleEverywhere: (km: string): string => `${km} km a tu alrededor. Ubicaciones redondeadas, nunca en directo.`,
+    zoneHome: (km: string): string => `Tu zona · ${km} km`,
+    zoneHomeNamed: (city: string, km: string): string => `Tu zona · ${city} · ${km} km`,
+    zoneCity: (city: string, km: string): string => `Estás viendo ${city} · ${km} km`,
+    zoneAway: 'Estás viendo otra zona',
+    recenter: 'Recentrar',
+    recenterA11y: 'Recentrar el mapa en tu zona',
+    privacy: 'Ubicaciones redondeadas, nunca en directo.',
     me: 'Tú',
     meA11y: (pet: string): string => `${pet}, tu minimoa, en el centro de tu zona`,
     pinA11y: (pet: string, name: string): string => `${pet}, el minimoa de ${name}. Ver por qué`,
@@ -646,6 +662,7 @@ export const carte = messages({
       barcelone: 'Barcelona',
     },
     empty: 'Por ahora no hay nadie compatible en tu zona. Tu minimoa prefiere esperar a presentarte a cualquiera.',
+    emptyShort: 'Por ahora no hay nadie compatible aquí.',
     emptyAction: 'Ver mis encuentros',
     noLocation: {
       title: [{ text: '¿DÓNDE ESTÁS,\n' }, { text: 'MÁS O MENOS?', dim: true }] as TitleSegment[],
@@ -676,9 +693,13 @@ export const carte = messages({
   pt: {
     back: 'Voltar',
     title: [{ text: 'PERTO ' }, { text: 'DE VOCÊ', dim: true }] as TitleSegment[],
-    subtitle: (km: string): string => `Sua área: ${km} km. Localizações arredondadas, nunca ao vivo.`,
-    subtitleCity: (city: string, km: string): string => `${city}, ${km} km ao redor. Localizações arredondadas, nunca ao vivo.`,
-    subtitleEverywhere: (km: string): string => `${km} km ao seu redor. Localizações arredondadas, nunca ao vivo.`,
+    zoneHome: (km: string): string => `Sua área · ${km} km`,
+    zoneHomeNamed: (city: string, km: string): string => `Sua área · ${city} · ${km} km`,
+    zoneCity: (city: string, km: string): string => `Você está vendo ${city} · ${km} km`,
+    zoneAway: 'Você está vendo outro lugar',
+    recenter: 'Recentralizar',
+    recenterA11y: 'Recentralizar o mapa na sua área',
+    privacy: 'Localizações arredondadas, nunca ao vivo.',
     me: 'Você',
     meA11y: (pet: string): string => `${pet}, seu minimoa, no centro da sua área`,
     pinA11y: (pet: string, name: string): string => `${pet}, o minimoa de ${name}. Ver por quê`,
@@ -721,6 +742,7 @@ export const carte = messages({
       barcelone: 'Barcelona',
     },
     empty: 'Ninguém compatível na sua área por enquanto. Seu minimoa prefere esperar a te apresentar qualquer um.',
+    emptyShort: 'Ninguém compatível aqui por enquanto.',
     emptyAction: 'Ver meus encontros',
     noLocation: {
       title: [{ text: 'ONDE VOCÊ ESTÁ,\n' }, { text: 'MAIS OU MENOS?', dim: true }] as TitleSegment[],
@@ -751,9 +773,13 @@ export const carte = messages({
   nl: {
     back: 'Terug',
     title: [{ text: 'OM JE ' }, { text: 'HEEN', dim: true }] as TitleSegment[],
-    subtitle: (km: string): string => `Je gebied: ${km} km. Locaties afgerond, nooit live.`,
-    subtitleCity: (city: string, km: string): string => `${city}, ${km} km eromheen. Locaties afgerond, nooit live.`,
-    subtitleEverywhere: (km: string): string => `${km} km om je heen. Locaties afgerond, nooit live.`,
+    zoneHome: (km: string): string => `Je gebied · ${km} km`,
+    zoneHomeNamed: (city: string, km: string): string => `Je gebied · ${city} · ${km} km`,
+    zoneCity: (city: string, km: string): string => `Je bekijkt ${city} · ${km} km`,
+    zoneAway: 'Je kijkt ergens anders',
+    recenter: 'Centreren',
+    recenterA11y: 'De kaart centreren op je gebied',
+    privacy: 'Locaties afgerond, nooit live.',
     me: 'Jij',
     meA11y: (pet: string): string => `${pet}, je minimoa, in het midden van je gebied`,
     pinA11y: (pet: string, name: string): string => `${pet}, de minimoa van ${name}. Bekijk waarom`,
@@ -796,6 +822,7 @@ export const carte = messages({
       barcelone: 'Barcelona',
     },
     empty: 'Nog niemand compatibel in je gebied. Je minimoa wacht liever dan dat hij je aan zomaar iemand voorstelt.',
+    emptyShort: 'Nog niemand compatibel hier.',
     emptyAction: 'Mijn ontmoetingen bekijken',
     noLocation: {
       title: [{ text: 'WAAR BEN JE,\n' }, { text: 'ONGEVEER?', dim: true }] as TitleSegment[],

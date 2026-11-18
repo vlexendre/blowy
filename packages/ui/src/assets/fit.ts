@@ -327,6 +327,26 @@ export function badgeFrame(species: Species, pose?: BodyPose): { cx: number; cy:
   return { cx: ((b[0] ?? 0.5) + dx) * FIT_CANVAS.width, cy: ((b[1] ?? 0.45) + dy) * FIT_CANVAS.height, side: (b[2] ?? 0.75) * k * FIT_CANVAS.width };
 }
 
+/**
+ * Cadre du médaillon qui garde en entier ce qui dépasse de la tête (couronne, chapeau pointu, oreilles de lapin,
+ * cornes) : le haut du cadre remonte jusqu'à l'objet le plus haut (plus une marge), le bas ne bouge pas, le cadre
+ * reste carré et centré sur la tête. Sans objet qui dépasse : `badgeFrame`. Agrandi au plus de `maxGrow`.
+ */
+export function badgeFrameFitting(species: Species, outfit: Outfit | null | undefined, pose?: BodyPose, maxGrow = 1.3): { cx: number; cy: number; side: number } {
+  const f = badgeFrame(species, pose);
+  if (!hasOutfit(outfit)) return f;
+  const { back, front } = outfitLayers(species, outfit, ['head', 'face'], pose);
+  const tops = [...back, ...front].map((p) => p.top);
+  if (!tops.length) return f;
+  const margin = f.side * 0.04;
+  const top = f.cy - f.side / 2;
+  const bottom = f.cy + f.side / 2;
+  const wanted = Math.min(...tops) - margin;
+  if (wanted >= top) return f;
+  const side = Math.min(f.side * maxGrow, bottom - wanted);
+  return { cx: f.cx, cy: bottom - side / 2, side };
+}
+
 /** Ancres mesurées (`fit.json` → `species.<s>.points`, ou `poses.<pose>.points`). */
 export type FitAnchor = 'headTop' | 'crown' | 'brow' | 'chest' | 'feet' | 'eyes' | 'eyeL' | 'eyeR' | 'nose' | 'lip' | 'mouth' | 'cheeks' | 'neck' | 'torso' | 'ground' | 'toy' | 'hand';
 

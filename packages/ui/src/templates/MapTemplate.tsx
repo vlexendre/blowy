@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { type ReactNode, useState } from 'react';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from '../atoms/IconButton';
@@ -11,14 +11,32 @@ import { Appear } from '../motion/Appear';
 import { alpha, color, space } from '../theme';
 import type { TitleContent } from '../types';
 
+/**
+ * Ce que l'en-tête et le pied laissent voir de la carte, en points depuis les bords de l'écran (mesuré) : la carte
+ * y centre sa zone, et y range la mention légale d'Apple Plans (jamais sous un panneau).
+ */
+export interface MapFrame {
+  /** Bas de l'en-tête (titre, zone). */
+  top: number;
+  /** Haut du pied (fiche, bandeaux, boutons), compté depuis le bas de l'écran. */
+  bottom: number;
+  /** Zones sûres de l'écran (encoche, barre d'accueil). */
+  safeTop: number;
+  safeBottom: number;
+  /** Vrai une fois l'en-tête et le pied mesurés (avant : des valeurs par défaut). */
+  measured: boolean;
+}
+
 export interface MapTemplateProps {
-  /** La carte (vraie ou dessinée), en plein écran sous tout le reste. */
-  map: ReactNode;
+  /** La carte (vraie ou dessinée), en plein écran sous tout le reste ; en fonction, elle reçoit la partie visible. */
+  map: ReactNode | ((frame: MapFrame) => ReactNode);
   title: TitleContent;
   /** « Ta zone : 1,5 km. Positions arrondies, jamais en direct. ». */
   subtitle?: string;
   onBack: () => void;
   backLabel: string;
+  /** Sous le titre : où l'on est (`MapZoneBar`), à la place du sous-titre. */
+  zone?: ReactNode;
   /** À droite du titre (interrupteur « discret »). */
   right?: ReactNode;
   /** Puce centrée au-dessus du pied (« 12 minimoas plus loin »). */
@@ -31,12 +49,26 @@ export interface MapTemplateProps {
  * Écran de carte (maquette V6-GCarte) : la carte en plein écran, l'en-tête sur un fondu nuit (le titre reste lisible
  * sur la carte), et un pied flottant. Rien d'autre ne bouge ici : la vedette est la carte (les minimoas qui se posent).
  */
-export function MapTemplate({ map, title, subtitle, onBack, backLabel, right, badge, bottom }: MapTemplateProps) {
+export function MapTemplate({ map, title, subtitle, zone, onBack, backLabel, right, badge, bottom }: MapTemplateProps) {
   const insets = useSafeAreaInsets();
+  const [head, setHead] = useState<number | null>(null);
+  const [foot, setFoot] = useState<number | null>(null);
+  const footGap = space.md + insets.bottom;
+  const frame: MapFrame = {
+    // Le fondu sous l'en-tête laisse voir la carte : on n'en garde que le haut.
+    top: Math.round((head ?? insets.top + 220) - space.xxl + space.sm),
+    bottom: Math.round(bottom || badge ? footGap + (foot ?? 120) + space.sm : insets.bottom + space.md),
+    safeTop: insets.top,
+    safeBottom: insets.bottom,
+    measured: head !== null && (foot !== null || !(bottom || badge)),
+  };
+  const onHead = (e: LayoutChangeEvent) => setHead(e.nativeEvent.layout.height);
+  const onFoot = (e: LayoutChangeEvent) => setFoot(e.nativeEvent.layout.height);
   return (
     <View style={styles.root}>
-      {map}
+      {typeof map === 'function' ? map(frame) : map}
       <LinearGradient
+        onLayout={onHead}
         pointerEvents="box-none"
         colors={[color.night, alpha(color.night, 0.92), alpha(color.night, 0)]}
         locations={[0, 0.55, 1]}
@@ -53,15 +85,18 @@ export function MapTemplate({ map, title, subtitle, onBack, backLabel, right, ba
             {subtitle}
           </Text>
         ) : null}
+        {zone ? <View style={styles.zone}>{zone}</View> : null}
       </LinearGradient>
       {bottom || badge ? (
-        <Appear once="map:bottom" delay={320} distance={30} duration={300} style={[styles.bottom, { bottom: space.md + insets.bottom }]} pointerEvents="box-none">
-          {badge ? (
-            <View style={styles.badge} pointerEvents="box-none">
-              {badge}
-            </View>
-          ) : null}
-          {bottom}
+        <Appear once="map:bottom" delay={320} distance={30} duration={300} style={[styles.bottom, { bottom: footGap }]} pointerEvents="box-none">
+          <View onLayout={onFoot} pointerEvents="box-none" style={styles.footCol}>
+            {badge ? (
+              <View style={styles.badge} pointerEvents="box-none">
+                {badge}
+              </View>
+            ) : null}
+            {bottom}
+          </View>
         </Appear>
       ) : null}
     </View>
@@ -73,6 +108,8 @@ const styles = StyleSheet.create({
   head: { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: 20, paddingBottom: space.xxl, gap: space.xs },
   topRow: { gap: space.sm, marginBottom: space.xs },
   subtitle: { maxWidth: 300 },
-  bottom: { position: 'absolute', left: 14, right: 14, gap: space.sm },
+  zone: { marginTop: space.xs },
+  bottom: { position: 'absolute', left: 14, right: 14 },
+  footCol: { gap: space.sm },
   badge: { flexDirection: 'row', justifyContent: 'center', paddingBottom: space.xs },
 });

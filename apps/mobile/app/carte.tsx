@@ -2,6 +2,9 @@
  * La carte (spéc §10, maquette V6-GCarte) : ta zone, les minimoas compatibles en autocollants (positions arrondies du
  * serveur), des silhouettes floues au-delà et leur nombre (caché à zéro). Gratuit : la carte reste sur ta zone.
  * Minimoa+ : navigation libre et « Changer de ville ». Mode discret. Sans localisation : ce qui manque et comment l'activer.
+ * Sous le titre, où l'on est (`MapZoneBar`) : « Ta zone · 1,5 km », « Tu regardes Lyon · 20 km » (et « Revenir à ma
+ * zone »), « Tu regardes ailleurs » (et « Recentrer »). La caméra montre la zone en entier entre l'en-tête et le pied
+ * mesurés (`MapFrame`), et la mention légale d'Apple Plans reste au-dessus du pied.
  * Vraie carte Apple sur iPhone ; ailleurs (web, module absent), la carte dessinée (`MapLayer`).
  */
 import type { MapPin } from '@blowy/contract';
@@ -16,6 +19,7 @@ import {
   MapPinCard,
   MapPlusStrip,
   MapTemplate,
+  MapZoneBar,
   MatchWhy,
   PillToggle,
   ScreenTemplate,
@@ -54,6 +58,10 @@ export default function CarteScreen() {
   const [selected, setSelected] = useState<string | null>(null);
   const [citySheet, setCitySheet] = useState(false);
   const [areaSheet, setAreaSheet] = useState(false);
+  // « Recentrer » : la caméra revient sur la zone (elle y revient aussi seule quand la zone change).
+  const [focus, setFocus] = useState(0);
+  // Ta zone (ou la ville choisie) : le cercle et le calage de la caméra, gardés quand Minimoa+ regarde ailleurs.
+  const [home, setHome] = useState<{ center: { latitude: number; longitude: number }; radiusKm: number } | null>(null);
   const markWaved = useMarkWaved();
   const land = useFirstTime('carte:land');
   const back = () => (router.canGoBack() ? router.back() : router.replace('/rencontres'));
@@ -70,6 +78,12 @@ export default function CarteScreen() {
 
   const m = me.data;
   const data = map.data;
+  const homeCenter = !at && data?.center ? data.center : null;
+  const homeRadius = data?.radiusKm ?? 0;
+  useEffect(() => {
+    if (homeCenter) setHome({ center: homeCenter, radiusKm: homeRadius });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeCenter?.latitude, homeCenter?.longitude, homeRadius]);
   const plus = !!m && entitlements(m.plus).mapEverywhere;
   const petName = m?.pet.name ?? chatsText.yourPet;
   const known = useMemo(() => {
@@ -139,13 +153,29 @@ export default function CarteScreen() {
   }
 
   // ── La carte ─────────────────────────────────────────────────────────────
-  const center = data.center;
+  // La zone (cercle, caméra) : celle qu'on vient de lire, ou celle gardée quand Minimoa+ regarde ailleurs.
+  const zone = !at || !home ? { center: data.center, radiusKm: data.radiusKm } : home;
   const pins = data.pins;
   const current: MapPin | null = pins.find((p) => p.user.id === selected) ?? null;
-  const km = formatNumber(data.radiusKm, { maximumFractionDigits: 1 });
+  const km = formatNumber(zone.radiusKm, { maximumFractionDigits: 1 });
   const chosen = m.identity.location.chosenCity;
   const cityActive = m.identity.location.chosenCityActive && !!chosen;
-  const subtitle = cityActive && chosen ? t.subtitleCity(chosen.label, km) : data.scope === 'everywhere' ? t.subtitleEverywhere(km) : t.subtitle(km);
+  const manual = m.identity.location.manualArea?.label ?? null;
+  // Où l'on est : ta zone, la ville choisie (Minimoa+), ou ailleurs (Minimoa+ a déplacé la carte).
+  const panned = plus && !!at;
+  const recenter = () => {
+    setAt(null);
+    setSelected(null);
+    setFocus((f) => f + 1);
+  };
+  const backHome = () => city.clear.mutate(undefined, { onSuccess: recenter });
+  const zoneBar = panned ? (
+    <MapZoneBar label={t.zoneAway} away note={t.privacy} actionLabel={t.recenter} actionA11y={t.recenterA11y} onAction={recenter} />
+  ) : cityActive && chosen ? (
+    <MapZoneBar label={t.zoneCity(chosen.label, km)} away note={t.privacy} actionLabel={t.cityBack} onAction={backHome} actionLoading={city.clear.isPending} />
+  ) : (
+    <MapZoneBar label={manual ? t.zoneHomeNamed(manual, km) : t.zoneHome(km)} note={t.privacy} />
+  );
   // Les silhouettes et leur nombre viennent du serveur : rien à zéro.
   const beyond = data.beyond.count > 0 ? data.beyond : null;
 
@@ -187,14 +217,12 @@ export default function CarteScreen() {
       {wave.isError ? <Banner tone="error" text={listText.actionError} onClose={() => wave.reset()} /> : null}
       {card}
       {!current && pins.length === 0 ? (
-        <Banner tone="info" text={t.empty} actionLabel={t.emptyAction} onAction={() => router.dismissTo('/(tabs)/rencontres')} actionBelow />
+        <Banner tone="info" text={t.emptyShort} actionLabel={t.emptyAction} onAction={() => router.dismissTo('/(tabs)/rencontres')} actionBelow />
       ) : null}
       {!current ? (
         plus ? (
-          <Stack gap={8}>
-            <Button label={t.city} variant="white" size="md" onPress={() => setCitySheet(true)} />
-            {cityActive ? <Button label={t.cityBack} variant="ghost" size="md" loading={city.clear.isPending} onPress={() => city.clear.mutate()} /> : null}
-          </Stack>
+          // Un seul bouton en bas : revenir à sa zone se fait depuis la pilule de zone, en haut.
+          <Button label={t.city} variant="glass" size="md" onPress={() => setCitySheet(true)} />
         ) : (
           <MapPlusStrip title={t.plusTitle} text={t.plusText} ctaLabel={t.plusCta} onPress={() => openPlus('map')} />
         )
@@ -206,7 +234,7 @@ export default function CarteScreen() {
     <ScreenMotion>
       <MapTemplate
         title={t.title}
-        subtitle={subtitle}
+        zone={zoneBar}
         onBack={back}
         backLabel={t.back}
         right={
@@ -218,15 +246,19 @@ export default function CarteScreen() {
             disabled={discreet.isPending}
           />
         }
-        map={
+        map={(frame) => (
           <MapLayer
-            center={center}
-            radiusKm={data.radiusKm}
+            center={zone.center}
+            radiusKm={zone.radiusKm}
             free={!plus}
             onRegionChange={plus ? onRegionChange : undefined}
             land={land}
-            insetTop={190}
-            insetBottom={200}
+            insetTop={frame.top}
+            insetBottom={frame.bottom}
+            safeTop={frame.safeTop}
+            safeBottom={frame.safeBottom}
+            measured={frame.measured}
+            focusKey={focus}
             me={{ pet: m.pet, label: t.me, accessibilityLabel: t.meA11y(m.pet.name) }}
             // Toi : au centre de ta zone, même quand Minimoa+ regarde ailleurs (sauf ville choisie : tu y es « sans bouger »).
             mePosition={cityActive ? undefined : (m.identity.location.zone?.center ?? undefined)}
@@ -241,7 +273,7 @@ export default function CarteScreen() {
               onPress: () => setSelected((s) => (s === p.user.id ? null : p.user.id)),
             }))}
           />
-        }
+        )}
         badge={beyond && !current ? <Sticker label={beyond.label} tone="white" rotate={-2} font="body" /> : undefined}
         bottom={bottom}
       />
@@ -253,7 +285,23 @@ export default function CarteScreen() {
         title={t.cityTitle}
         closeLabel={t.back}
         scroll
-        footer={cityActive ? <Button label={t.cityBack} variant="ghost" onPress={() => city.clear.mutate(undefined, { onSuccess: () => setCitySheet(false) })} loading={city.clear.isPending} /> : undefined}
+        footer={
+          cityActive ? (
+            <Button
+              label={t.cityBack}
+              variant="ghost"
+              onPress={() =>
+                city.clear.mutate(undefined, {
+                  onSuccess: () => {
+                    recenter();
+                    setCitySheet(false);
+                  },
+                })
+              }
+              loading={city.clear.isPending}
+            />
+          ) : undefined
+        }
       >
         <Text size={15} muted>
           {t.cityText}
@@ -268,8 +316,7 @@ export default function CarteScreen() {
               { label: t.cities[c.id], latitude: c.latitude, longitude: c.longitude },
               {
                 onSuccess: () => {
-                  setAt(null);
-                  setSelected(null);
+                  recenter();
                   setCitySheet(false);
                 },
               },
