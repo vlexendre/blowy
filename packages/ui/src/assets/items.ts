@@ -78,7 +78,7 @@ const ITEM_IMAGES = {
   hiver_cache_oreilles: require('../../assets/items/hiver_cache_oreilles.webp'),
   hiver_lunettes: require('../../assets/items/hiver_lunettes.webp'),
   hiver_echarpe: require('../../assets/items/hiver_echarpe.webp'),
-  hiver_cape: require('../../assets/items/hiver_cape_dos.webp'),
+  hiver_cape: require('../../assets/items/hiver_cape.webp'),
   hiver_moufles: require('../../assets/items/hiver_moufles.webp'),
   hiver_chocolat: require('../../assets/items/hiver_chocolat.webp'),
   hiver_boule_neige: require('../../assets/items/hiver_boule_neige.webp'),
@@ -105,6 +105,7 @@ const VARIANT_IMAGES = {
   collier_coquillage_dos: require('../../assets/items/collier_coquillage_dos.webp'),
   chaine_or_dos: require('../../assets/items/chaine_or_dos.webp'),
   cape_dos: require('../../assets/items/cape_dos.webp'),
+  hiver_cape_dos: require('../../assets/items/hiver_cape_dos.webp'),
   sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
 } as const satisfies Record<string, Src>;
 

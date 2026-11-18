@@ -11672,17 +11672,27 @@
    "sy": 0.95
   },
   "hiver_cape": {
-   "anchor": "neck",
+   "anchor": "mouth",
    "size": "bodyw",
-   "w": 1.5,
+   "w": 1.0,
    "pivot": [
     0.5,
-    0.08
+    0.1
    ],
-   "ratio": 1.2,
-   "dy": -0.02,
-   "sy": 0.36,
-   "z": "back"
+   "ratio": 2.0296,
+   "dy": 0.04,
+   "back": {
+    "anchor": "ground",
+    "size": "bodyw",
+    "w": 1.5,
+    "pivot": [
+     0.5,
+     0.95
+    ],
+    "ratio": 1.3487,
+    "dy": 0,
+    "sy": 0.78
+   }
   },
   "hiver_moufles": {
    "anchor": "toy",
@@ -12346,7 +12356,13 @@
    ]
   },
   "hiver_cape": {
-   "plain": true
+   "plain": true,
+   "fur": [
+    6,
+    3,
+    8,
+    0.35
+   ]
   },
   "hiver_moufles": {
    "plain": true,
