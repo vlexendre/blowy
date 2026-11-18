@@ -179,7 +179,7 @@ export const countOf = (locale: Locale, n: number, forms: { one: string; other: 
   `${formatNumber(locale, n)} ${plural(locale, n, forms)}`;
 
 /** Région par défaut d'une langue, quand l'appareil ne la donne pas (serveur, e-mails). */
-export const DEFAULT_REGION_TAG: Readonly<Record<Locale, string>> = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', pt: 'pt-PT', nl: 'nl-NL' };
+export const DEFAULT_REGION_TAG: Readonly<Record<Locale, string>> = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', pt: 'pt-BR', nl: 'nl-NL' };
 
 /** Étiquette à passer à `Intl` : celle de l'appareil si elle est de la même langue, sinon la région par défaut. */
 export const intlTag = (locale: Locale, deviceTag?: string | null): string =>

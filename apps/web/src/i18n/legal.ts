@@ -51,7 +51,7 @@ export const LOCALE_REGION: Record<Locale, { intl: string; og: string }> = {
   fr: { intl: 'fr-FR', og: 'fr_FR' },
   en: { intl: 'en-GB', og: 'en_GB' },
   es: { intl: 'es-ES', og: 'es_ES' },
-  pt: { intl: 'pt-PT', og: 'pt_PT' },
+  pt: { intl: 'pt-BR', og: 'pt_BR' },
   nl: { intl: 'nl-NL', og: 'nl_NL' },
 };
 

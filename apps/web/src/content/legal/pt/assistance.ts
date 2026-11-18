@@ -1,26 +1,26 @@
 import type { LegalPage } from '../types';
 
 export const assistance: LegalPage = {
-  title: 'Ajuda e contacto — Minimoa',
-  heading: 'Ajuda',
-  description: 'Uma pergunta, um erro, um problema com alguém, com a tua subscrição ou com os teus dados? As respostas mais procuradas e como nos escrever.',
-  intro: 'As perguntas que mais nos fazem. Não encontraste a tua? Escreve-nos: responde um humano, não um minimoa.',
+  title: 'Suporte e contato — Minimoa',
+  heading: 'Suporte',
+  description: 'Uma dúvida, um bug, um problema com alguém, com a sua assinatura ou com os seus dados? As respostas mais procuradas, e como falar com a gente.',
+  intro: 'As perguntas que mais recebemos. Não achou? Escreva para a gente: quem responde é um humano, não um minimoa.',
   body: [
-    { h2: 'Escreve-nos', id: 'contact' },
+    { h2: 'Fale com a gente', id: 'contact' },
     {
       table: {
-        head: ['Para', 'Escreve para'],
+        head: ['Para', 'Escreva para'],
         rows: [
-          ['Uma pergunta, um erro, uma ideia', '{{email.support}}'],
-          ['Os teus dados pessoais', '{{email.privacy}}'],
-          ['Um problema de segurança, um conteúdo ilegal, um menor', '{{email.safety}}, e denuncia também a pessoa na app'],
+          ['Uma dúvida, um bug, uma ideia', '{{email.support}}'],
+          ['Seus dados pessoais', '{{email.privacy}}'],
+          ['Um problema de segurança, um conteúdo ilegal, um menor de idade', '{{email.safety}}, e denuncie também a pessoa no app'],
         ],
       },
     },
     {
-      p: 'Se for um erro, diz-nos o modelo do teu telemóvel, a versão da app (no fundo de **Eu → Definições**) e o que estavas a fazer. Respondemos em francês ou em inglês.',
+      p: 'Para um bug, diga o modelo do seu celular, a versão do app (no fim de **Eu → Ajustes**) e o que você estava fazendo. Respondemos em francês ou em inglês.',
     },
-    { note: '**Em perigo imediato?** Não esperes pela nossa resposta: liga **112** (ou **17** em França). Vê [segurança e denúncias](@securite).' },
+    { note: '**Em perigo imediato?** Não espere a nossa resposta: ligue **17** ou **112**. Veja [segurança e denúncias](@securite).' },
 
     { h2: 'Perguntas frequentes', id: 'faq' },
     {
@@ -28,75 +28,75 @@ export const assistance: LegalPage = {
         {
           q: 'O que é um minimoa?',
           a: [
-            'O teu minimoa és tu em pequeno: transporta a tua visão da vida e os teus hábitos. Apresenta-te pessoas cuja visão é compatível com a tua para criar vínculos. O que eles se tornam é convosco. Quanto mais cuidas dele (saindo, mantendo os teus hábitos), mais gente te apresenta. Nunca morre.',
+            'Seu minimoa é você em miniatura: ele leva a sua visão de vida e os seus hábitos. Ele te apresenta pessoas com uma visão compatível com a sua para criar vínculos. O que esses vínculos vão virar é com vocês. Quanto mais você cuida dele (saindo, mantendo seus hábitos), mais gente ele te apresenta. Ele nunca morre.',
           ],
         },
         {
-          q: 'Como é que o meu minimoa escolhe quem me apresentar?',
+          q: 'Como meu minimoa escolhe quem me apresentar?',
           a: [
-            'Compara a tua visão (5 eixos: lar, raízes, impulso, ritmo, rumo) com a dos outros, e só apresenta pessoas acima de 70% de compatibilidade. Cada encontro explica porquê: 3 pontos em comum e 1 diferença. Os detalhes estão na [política de privacidade](@confidentialite#compatibilite).',
+            'Ele compara a sua visão (5 eixos: lar, raízes, impulso, ritmo, rumo) com a dos outros, e só apresenta pessoas acima de 70% de compatibilidade. Cada encontro explica por quê: 3 pontos em comum e 1 diferença. Os detalhes estão na [política de privacidade](@confidentialite#compatibilite).',
           ],
         },
         {
-          q: 'Porque é que o Minimoa pede a minha localização?',
+          q: 'Por que o Minimoa pede a minha localização?',
           a: [
-            'Para o mapa e os encontros próximos, só com a app aberta. A tua posição exata nunca é guardada: guardamos apenas um ponto arredondado a cerca de 300 m. Os outros veem uma posição arredondada e deslocada, e o modo discreto tira-te do mapa. Sem localização, escolhes a tua cidade à mão (Encontros, ou Eu → Definições → A minha localização) e continuas a ter encontros.',
+            'Para o mapa e os encontros por perto, só com o app aberto. Sua localização exata nunca é registrada: guardamos apenas um ponto arredondado para cerca de 300 m. Os outros veem uma posição arredondada e deslocada, e o modo discreto tira você do mapa. Sem localização, você escolhe sua cidade manualmente (Encontros, ou Eu → Ajustes → Minha localização) e continua tendo encontros.',
           ],
         },
         {
           q: 'Quem lê as minhas mensagens?',
           a: [
-            'Ninguém no Minimoa lê as tuas conversas, exceto uma mensagem denunciada (por alguém ou pelo nosso filtro automático): um moderador lê então essa mensagem e o seu contexto imediato. Se a ativarem os dois, uma IA, a do nosso fornecedor {{sub.ai.provider}}, lê as vossas últimas mensagens para que os vossos minimoas possam reagir; o Minimoa não guarda nada dessa leitura. Podes desativá-la nas opções da ligação ou em Eu → A IA e tu.',
+            'Ninguém no Minimoa lê suas conversas, exceto uma mensagem denunciada (por alguém ou pelo nosso filtro automático): nesse caso, um moderador lê essa mensagem e o contexto imediato dela. Se vocês dois ativarem, uma IA, a do nosso fornecedor {{sub.ai.provider}}, lê as últimas mensagens de vocês para que os minimoas possam reagir; no Minimoa, nada dessa leitura é guardado. Você pode desativar nas opções do vínculo ou em Eu → A IA e você.',
           ],
         },
         {
-          q: 'O que acontece às minhas fotos de prova?',
+          q: 'O que acontece com as minhas fotos de prova?',
           a: [
-            'Antes da tua primeira prova, a app pergunta-te se uma IA ({{sub.ai.provider}}) pode verificar as tuas fotos. Se aceitares, a foto reduzida é-lhe enviada; caso contrário, validas os teus hábitos sob palavra, sem foto. Nenhum ser humano vê as tuas fotos de prova, e são apagadas em 24 horas, exceto se as guardares nas tuas recordações privadas. Podes mudar de ideias em Eu → A IA e tu.',
+            'Antes da sua primeira prova, o app pergunta se uma IA ({{sub.ai.provider}}) pode verificar suas fotos. Se você aceitar, a foto reduzida é enviada a ela; senão, você confirma seus hábitos na base da palavra, sem foto. Nenhum humano vê suas fotos de prova, e elas são excluídas em até 24 h, a não ser que você as guarde nas suas lembranças privadas. Você muda de ideia em Eu → A IA e você.',
           ],
         },
         {
-          q: 'Porque é que a minha mensagem, o meu nome ou a minha foto foi recusado?',
+          q: 'Por que minha mensagem, meu nome ou minha foto foi recusado?',
           a: [
-            'Os nomes, os nomes de minimoa, as mensagens e as fotos de perfil passam por um filtro automático, que bloqueia o que viola claramente as [regras da comunidade](@regles). A app diz-te porquê, e o teu texto fica lá para o alterares. Achas que é um erro? Escreve para {{email.support}}: uma pessoa vai ver.',
+            'Os nomes, os nomes de minimoa, as mensagens e as fotos de perfil passam por um filtro automático, que barra o que viola claramente as [regras da comunidade](@regles). O app diz por quê, e o seu texto continua lá para você editar. Acha que foi um erro? Escreva para {{email.support}}: uma pessoa vai analisar.',
           ],
         },
         {
-          q: 'Já não consigo iniciar sessão. O que faço?',
+          q: 'Não consigo mais entrar. O que fazer?',
           a: [
-            'O início de sessão passa pela Apple (iPhone) ou pela Google (Android). Usa o mesmo ID Apple ou a mesma conta Google que na inscrição. A tua conta está suspensa? O ecrã diz-te até quando, e permite-te escrever ao apoio para contestar. Se continuar sem funcionar, escreve-nos para {{email.support}}.',
+            'O login é feito pela Apple (iPhone) ou pelo Google (Android). Use o mesmo ID Apple ou a mesma Conta do Google do cadastro. Sua conta está suspensa? A tela diz até quando, e permite escrever ao suporte para contestar. Se ainda não funcionar, escreva para {{email.support}}.',
           ],
         },
         {
-          q: 'Como cancelo o Minimoa+?',
+          q: 'Como cancelar o Minimoa+?',
           a: [
-            'Nas definições do teu iPhone, não no Minimoa: Definições → o teu nome → Subscrições (na app, Eu → Minimoa+ → Gerir a minha subscrição leva-te lá). Detalhes nas [condições do Minimoa+](@abonnement#annuler).',
+            'Nos ajustes do seu iPhone, não no Minimoa: Ajustes → seu nome → Assinaturas (no app, Eu → Minimoa+ → Gerenciar minha assinatura leva até lá). Detalhes nos [termos do Minimoa+](@abonnement#annuler).',
           ],
         },
         {
-          q: 'Como obtenho um reembolso?',
+          q: 'Como pedir um reembolso?',
           a: [
-            'Os pagamentos passam pela Apple: é a Apple que reembolsa, segundo as suas condições. A ligação está nas [condições do Minimoa+](@abonnement#remboursements).',
+            'Os pagamentos passam pela Apple: é a Apple que reembolsa, de acordo com as condições dela. O link está nos [termos do Minimoa+](@abonnement#remboursements).',
           ],
         },
         {
-          q: 'Como denuncio ou bloqueio alguém?',
-          a: [
-            'No chat ou no encontro, menu «…» no canto superior direito e depois Denunciar ou Bloquear; num chat, um toque longo numa mensagem permite denunciá-la. Vê [segurança e denúncias](@securite).',
-          ],
+          q: 'Como denunciar ou bloquear alguém?',
+          a: ['No chat ou no encontro, menu “…” no canto superior direito, depois Denunciar ou Bloquear; num chat, tocar e segurar uma mensagem permite denunciá-la. Veja [segurança e denúncias](@securite).'],
         },
         {
-          q: 'Como elimino a minha conta?',
-          a: ['Eu → Definições → Eliminar a minha conta. Está tudo explicado na página [eliminar a minha conta](@supprimer-mon-compte).'],
+          q: 'Como excluir minha conta?',
+          a: ['Eu → Ajustes → Excluir minha conta. Tudo está explicado na página [excluir minha conta](@supprimer-mon-compte).'],
         },
         {
-          q: 'Como obtenho uma cópia dos meus dados?',
-          a: ['Escreve para {{email.privacy}}. Respondemos no prazo de um mês. Os teus direitos estão detalhados na [política de privacidade](@confidentialite#droits).'],
+          q: 'Como obter uma cópia dos meus dados?',
+          a: ['Escreva para {{email.privacy}}. Respondemos em até um mês. Seus direitos estão detalhados na [política de privacidade](@confidentialite#droits).'],
         },
       ],
     },
 
-    { h2: 'Lê também', id: 'documents' },
-    { p: '[Termos de utilização](@conditions) · [Privacidade](@confidentialite) · [Regras da comunidade](@regles) · [Informação legal](@mentions-legales)' },
+    { h2: 'Leia também', id: 'documents' },
+    {
+      p: '[Termos de uso](@conditions) · [Privacidade](@confidentialite) · [Regras da comunidade](@regles) · [Informações legais](@mentions-legales)',
+    },
   ],
 };

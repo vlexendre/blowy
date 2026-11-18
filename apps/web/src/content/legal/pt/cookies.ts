@@ -3,42 +3,42 @@ import type { LegalPage } from '../types';
 export const cookies: LegalPage = {
   title: 'Cookies — Minimoa',
   heading: 'Cookies',
-  description: 'O site minimoa.app não instala nenhum cookie. O que carrega de outros serviços e o que esses serviços recebem.',
-  intro: 'Versão curta: o site minimoa.app não instala nenhum cookie. Aqui estão os detalhes, verificados no seu código.',
+  description: 'O site minimoa.app não grava nenhum cookie. O que ele carrega de outros serviços, e o que esses serviços recebem.',
+  intro: 'Versão curta: o site minimoa.app não grava nenhum cookie. Aqui estão os detalhes, conferidos no código dele.',
   body: [
-    { h2: 'O que o site instala', id: 'depose' },
+    { h2: 'O que o site grava', id: 'depose' },
     {
-      p: 'O site minimoa.app não instala **nenhum cookie** e não usa o armazenamento local do teu navegador. Só durante a visita (armazenamento de sessão, apagado quando fechas o separador), guarda o código de um link aberto e o código do teu resultado do quiz, para os reutilizar na página; nada disto é enviado para te seguir. Não usa nenhuma ferramenta de medição de audiência, publicidade nem botões de redes sociais. É por isso que não há banner de consentimento.',
+      p: 'O site minimoa.app não grava **nenhum cookie** e não usa o armazenamento local do seu navegador. Só durante a visita (armazenamento de sessão, apagado quando a aba é fechada), ele guarda o código de um link aberto e o código do seu resultado no quiz, para reutilizá-los na página; nada disso é enviado para te rastrear. Ele não usa nenhuma ferramenta de medição de audiência, nenhuma publicidade e nenhum botão de rede social. É por isso que não existe aviso de consentimento.',
     },
-    { p: 'Esta página diz respeito apenas ao site. A app Minimoa está coberta pela [política de privacidade](@confidentialite).' },
+    { p: 'Esta página trata só do site. O app Minimoa é coberto pela [política de privacidade](@confidentialite).' },
 
     { h2: 'O que o site carrega de outros serviços', id: 'tiers' },
     {
-      p: 'Para ser apresentado, o site carrega alguns ficheiros de outros servidores. Estes serviços não instalam cookies por esta via, mas, como qualquer servidor web, recebem o teu endereço IP e informações técnicas sobre o teu navegador:',
+      p: 'Para ser exibido, o site carrega alguns arquivos de outros servidores. Esses serviços não gravam cookies por esse meio, mas recebem, como qualquer servidor web, o seu endereço IP e informações técnicas sobre o seu navegador:',
     },
     {
       table: {
-        head: ['Serviço', 'Para quê', 'Em que páginas'],
+        head: ['Serviço', 'Para quê', 'Em quais páginas'],
         rows: [
-          ['Fornecedor de alojamento do site: {{siteHost.name}}', 'Servir as páginas', 'Todas'],
-          ['Servidor da app Minimoa (API)', 'Mostrar o nome e o minimoa da pessoa, guardar as palavras escolhidas', 'Páginas «3 palavras» e convite'],
-          ['Servidor da app Minimoa (API)', 'Calcular e guardar o teu resultado do quiz, mostrar o contador de um bairro, guardar a tua inscrição', 'Páginas «Qual minimoa és tu?» e «Abre o teu bairro»'],
+          ['Hospedagem do site: {{siteHost.name}}', 'Entregar as páginas', 'Todas'],
+          ['Servidor do app Minimoa (API)', 'Mostrar o nome e o minimoa da pessoa, registrar as palavras escolhidas', 'Páginas “3 palavras” e convite'],
+          ['Servidor do app Minimoa (API)', 'Calcular e guardar seu resultado no quiz, mostrar o contador de um bairro, registrar sua inscrição', 'Páginas “Qual minimoa é você?” e “Abra seu bairro”'],
         ],
       },
     },
     {
-      p: 'Nas páginas «3 palavras», guardamos uma impressão não reversível do teu endereço IP e do teu navegador para limitar votos duplicados (vê a [política de privacidade](@confidentialite#donnees)).',
+      p: 'Nas páginas “3 palavras”, guardamos uma impressão irreversível do seu endereço IP e do seu navegador para limitar votos duplicados (veja a [política de privacidade](@confidentialite#donnees)).',
     },
 
-    { h2: 'Se isto mudar', id: 'changements' },
+    { h2: 'Se isso mudar', id: 'changements' },
     {
-      p: 'Se um dia o site instalar cookies que não sejam estritamente necessários (medição de audiência, por exemplo), pediremos o teu consentimento antes, com um verdadeiro botão «recusar», e esta página será atualizada.',
+      p: 'Se um dia o site gravar cookies que não sejam estritamente necessários (medição de audiência, por exemplo), vamos pedir sua concordância antes, com um botão “recusar” de verdade, e esta página será atualizada.',
     },
 
-    { h2: 'Manter o controlo', id: 'reglages' },
+    { h2: 'Manter o controle', id: 'reglages' },
     {
-      p: 'O teu navegador permite-te bloquear ou apagar cookies e limitar os pedidos a outros sites. O tipo de letra do site (Allo) é servido pelo próprio site: nenhum tipo de letra é carregado de outro serviço.',
+      p: 'Seu navegador permite bloquear ou apagar cookies e limitar as requisições a outros sites. A fonte do site (Allo) é servida pelo próprio site: nenhuma fonte é carregada de outro serviço.',
     },
-    { p: 'Alguma pergunta: {{email.privacy}}.' },
+    { p: 'Alguma dúvida? {{email.privacy}}.' },
   ],
 };

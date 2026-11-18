@@ -11,6 +11,7 @@ import { LEGAL_UPDATED_ISO } from '../config/legal';
 import type { LegalUi } from '../content/legal/types';
 import { DEFAULT_LOCALE, LEGAL_SLUGS, LOCALES, LOCALE_NAME, LOCALE_REGION, formatDate, legalAlternates, legalPath, type LegalSlug, type Locale } from '../i18n/legal';
 import { allKnown, inline, type Heading } from '../lib/legal-render';
+import { HTML_LANG } from '../i18n/site';
 
 interface Props {
   locale: Locale;
@@ -33,7 +34,7 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
   title={title}
   description={description}
   bodyClass="prose-body"
-  lang={locale}
+  lang={HTML_LANG[locale]}
   ogLocale={LOCALE_REGION[locale].og}
   ogLocaleAlternates={LOCALES.filter((l) => l !== locale).map((l) => LOCALE_REGION[l].og)}
   canonicalPath={legalPath(locale, slug)}
@@ -47,7 +48,7 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
         <nav class="langs" aria-label={ui.languageLabel}>
           {
             LOCALES.map((l) => (
-              <a href={legalPath(l, slug)} hreflang={l} lang={l} aria-current={l === locale ? 'page' : undefined}>
+              <a href={legalPath(l, slug)} hreflang={HTML_LANG[l]} lang={HTML_LANG[l]} aria-current={l === locale ? 'page' : undefined}>
                 {LOCALE_NAME[l]}
               </a>
             ))

@@ -1,19 +1,19 @@
 import type { LegalPage } from '../types';
 
 export const abonnement: LegalPage = {
-  title: 'Condições da subscrição Minimoa+ — Minimoa',
-  heading: 'Condições da subscrição Minimoa+',
+  title: 'Termos da assinatura Minimoa+ — Minimoa',
+  heading: 'Termos da assinatura Minimoa+',
   description:
-    'Minimoa+: o que inclui, os planos (59,88 € por ano com 7 dias grátis, 14,99 € por mês ou 2,99 € por semana), a renovação automática, a faturação pela Apple, como cancelar, o que acontece no fim, o direito de livre resolução e os reembolsos.',
-  intro: 'O que o Minimoa+ inclui, quanto custa, como se renova e como o parar. Sem letras pequenas.',
+    'Minimoa+: o que inclui, os planos (€ 59,88 por ano com 7 dias grátis, € 14,99 por mês ou € 2,99 por semana), a renovação automática, a cobrança pela Apple, como cancelar, o que acontece no fim, o direito de arrependimento e os reembolsos.',
+  intro: 'O que o Minimoa+ inclui, quanto custa, como é renovado e como cancelar. Sem letras miúdas.',
   summary: {
     title: 'Em resumo',
     items: [
-      '**59,88 € por ano**, com **7 dias grátis** no início, **14,99 € por mês** ou **2,99 € por semana**, sem período experimental.',
-      'A subscrição **renova-se automaticamente** enquanto não a cancelares.',
-      'O Minimoa+ compra-se no iPhone: é a **Apple** que te fatura, e é nas definições do teu iPhone que o cancelas.',
-      'No 5.º dia do período experimental, avisamos-te **por notificação e por e-mail**.',
-      'Eliminar a app ou a tua conta **não cancela** a subscrição.',
+      '**€ 59,88 por ano**, com **7 dias grátis** no início, **€ 14,99 por mês** ou **€ 2,99 por semana**, sem teste grátis.',
+      'A assinatura **é renovada automaticamente** enquanto você não cancelar.',
+      'O Minimoa+ é comprado no iPhone: quem te cobra é a **Apple**, e é nos ajustes do seu iPhone que você cancela.',
+      'No 5º dia do teste, avisamos você **por notificação e por e-mail**.',
+      'Apagar o app ou excluir sua conta **não cancela** a assinatura.',
       'O Minimoa continua gratuito sem o Minimoa+.',
     ],
   },
@@ -21,94 +21,106 @@ export const abonnement: LegalPage = {
     { h2: 'O que o Minimoa+ acrescenta', id: 'contenu' },
     {
       ul: [
-        '**O mapa inteiro**, e **mudar de cidade quando quiseres**, sem sair do sítio. Sem o Minimoa+, vês a tua zona (cerca de 1,5 km à tua volta); sem localização, escolhes a tua cidade à mão, no máximo uma vez a cada 30 dias.',
-        '**Mais um encontro por dia.**',
-        '**3 jokers de série por semana** para proteger a tua série (sem o Minimoa+: um por semana).',
-        '**Até 6 hábitos** ao mesmo tempo (sem o Minimoa+: 2).',
-        'O **resumo detalhado de domingo**: a evolução da tua visão em 4 semanas e o balanço de cada ligação.',
-        '**Mudar o nome do teu minimoa quando quiseres** (sem o Minimoa+: uma vez a cada 60 dias).',
-        '**Todos os objetos premium do guarda-roupa**: são do teu minimoa e podem ser usados logo, enquanto a subscrição durar.',
+        '**O mapa inteiro**, e **mudar de cidade quando quiser**, sem sair do lugar. Sem o Minimoa+, você vê a sua região (cerca de 1,5 km ao seu redor); sem localização, você escolhe sua cidade manualmente, no máximo uma vez a cada 30 dias.',
+        '**Um encontro a mais por dia.**',
+        '**3 coringas de sequência por semana** para proteger sua sequência (sem o Minimoa+: um por semana).',
+        '**Até 6 hábitos** acompanhados ao mesmo tempo (sem o Minimoa+: 2).',
+        'O **resumo detalhado de domingo**: a evolução da sua visão em 4 semanas e a análise de cada vínculo.',
+        '**Renomear seu minimoa quando quiser** (sem o Minimoa+: uma vez a cada 60 dias).',
+        '**Todos os itens premium do guarda-roupa**: eles são do seu minimoa e podem ser usados na hora, enquanto a assinatura durar.',
       ],
     },
-    { p: 'O conteúdo exato pode evoluir com a app. Se retirarmos uma função importante do Minimoa+, avisamos-te antes, e podes cancelar.' },
+    {
+      p: 'O conteúdo exato pode mudar com o app. Se tirarmos uma função importante do Minimoa+, avisamos antes, e você pode cancelar.',
+    },
 
-    { h2: 'Planos e preços', id: 'offres' },
+    { h2: 'Os planos e os preços', id: 'offres' },
     {
       table: {
-        head: ['Plano', 'Preço', 'Período experimental'],
+        head: ['Plano', 'Preço', 'Teste grátis'],
         rows: [
-          ['Anual', '59,88 € por ano, ou seja, 4,99 € por mês', '7 dias, depois 59,88 € por ano'],
-          ['Mensal', '14,99 € por mês', 'Sem período experimental'],
-          ['Semanal', '2,99 € por semana', 'Sem período experimental'],
+          ['Anual', '€ 59,88 por ano, ou seja, € 4,99 por mês', '7 dias, depois € 59,88 por ano'],
+          ['Mensal', '€ 14,99 por mês', 'Sem teste grátis'],
+          ['Semanal', '€ 2,99 por semana', 'Sem teste grátis'],
         ],
       },
     },
     {
-      p: 'Os preços incluem todos os impostos, para França. Noutros países, a App Store mostra o preço na tua moeda, que pode ser diferente. O preço que conta é o que a App Store mostra no momento em que confirmas a compra.',
+      p: 'Os preços incluem todos os impostos, para a França. Em outros países, a App Store mostra o preço na sua moeda, que pode ser diferente. O preço que vale é o exibido pela App Store no momento em que você confirma a compra.',
     },
 
-    { h2: 'O período experimental gratuito', id: 'essai' },
+    { h2: 'O teste grátis', id: 'essai' },
     {
       ul: [
-        'O período experimental de 7 dias aplica-se só ao plano anual, e só a uma nova subscrição, nas condições da Apple (em geral, um período experimental por conta Apple).',
-        'Durante o período experimental, todo o Minimoa+ está aberto e não pagas nada.',
-        'No 5.º dia, enviamos-te um lembrete: faltam 2 dias. Chega por notificação (se as autorizaste) e por e-mail, para o endereço associado à tua conta Apple.',
-        'Se não cancelares **pelo menos 24 horas antes do fim do período experimental**, o primeiro pagamento de 59,88 € é cobrado no 7.º dia e a subscrição anual começa.',
-        'Se cancelares durante o período experimental, manténs o Minimoa+ até ao fim dos 7 dias e não pagas nada.',
+        'O teste de 7 dias vale só para o plano anual, e só para uma nova assinatura, nas condições da Apple (em geral, um teste por conta Apple).',
+        'Durante o teste, todo o Minimoa+ fica liberado, e você não paga nada.',
+        'No 5º dia, mandamos um lembrete: faltam 2 dias. Ele chega por notificação (se você as autorizou) e por e-mail, no endereço ligado à sua conta Apple.',
+        'Se você não cancelar **pelo menos 24 horas antes do fim do teste**, o primeiro pagamento de € 59,88 é cobrado no 7º dia, e a assinatura anual começa.',
+        'Se você cancelar durante o teste, continua com o Minimoa+ até o fim dos 7 dias, e não paga nada.',
       ],
     },
 
     { h2: 'Pagamento e renovação automática', id: 'renouvellement' },
     {
       ul: [
-        'A compra faz-se na app, no iPhone, através da **App Store**. O pagamento é debitado no meio de pagamento da tua conta Apple, ao confirmares a compra ou no fim do período experimental. No Android e na web, o Minimoa+ não está à venda; uma subscrição feita no iPhone acompanha a tua conta Minimoa em todo o lado.',
-        'A subscrição **renova-se automaticamente** pelo mesmo período (um ano ou um mês), ao mesmo preço, exceto se a cancelares **pelo menos 24 horas antes do fim do período em curso**.',
-        'Se o preço mudar, a Apple avisa-te antes, segundo as suas regras, e pede o teu acordo quando estas o exigem.',
-        'Nunca recebemos os teus dados bancários. A Apple só nos confirma a compra, que o nosso servidor verifica junto dela.',
-        'Mudaste de telemóvel? Usa **Restaurar compras** na app, com a mesma conta Apple.',
+        'A compra é feita no app, no iPhone, pela **App Store**. O pagamento é cobrado na forma de pagamento da sua conta Apple, na confirmação da compra ou no fim do teste. No Android e na web, o Minimoa+ não está à venda; uma assinatura feita no iPhone acompanha sua conta Minimoa em todo lugar.',
+        'A assinatura **é renovada automaticamente** pelo mesmo período (um ano ou um mês), pelo mesmo preço, a não ser que você cancele **pelo menos 24 horas antes do fim do período atual**.',
+        'Se o preço mudar, a Apple avisa você antes, de acordo com as regras dela, e pede sua concordância quando essas regras exigem.',
+        'Nunca recebemos seus dados bancários. A Apple só nos confirma a compra, que o nosso servidor verifica com ela.',
+        'Trocou de celular? Use **Restaurar compras** no app, com a mesma conta Apple.',
       ],
     },
 
     { h2: 'Cancelar', id: 'annuler' },
-    { p: 'Cancelas nas definições do teu iPhone, não no Minimoa (na app, **Eu → Minimoa+ → Gerir a minha subscrição** leva-te lá):' },
-    { ul: ['**iPhone:** Definições → o teu nome → Subscrições → Minimoa → Cancelar subscrição.'] },
+    { p: 'Você cancela nos ajustes do seu iPhone, não no Minimoa (no app, **Eu → Minimoa+ → Gerenciar assinatura** leva até lá):' },
     {
-      p: 'Depois de cancelares, o Minimoa+ fica aberto até ao fim do período já pago, e depois a tua conta volta à versão gratuita. O teu minimoa, as tuas ligações e os teus dados ficam.',
+      ul: ['**iPhone:** Ajustes → seu nome → Assinaturas → Minimoa → Cancelar Assinatura.'],
     },
-    { note: '**Eliminar a app ou a tua conta Minimoa não cancela a subscrição.** Cancela-a primeiro nas definições do teu iPhone, senão continuas a ser cobrado.' },
+    {
+      p: 'Depois do cancelamento, o Minimoa+ continua liberado até o fim do período já pago, e então sua conta volta para a versão gratuita. Seu minimoa, seus vínculos e seus dados continuam lá.',
+    },
+    {
+      note: '**Apagar o app ou excluir sua conta Minimoa não cancela a assinatura.** Cancele primeiro nos ajustes do seu iPhone; senão, ela continua sendo cobrada.',
+    },
 
     { h2: 'Quando o Minimoa+ termina', id: 'fin' },
     {
       ul: [
-        'O mapa volta à tua zona (ou à cidade escolhida à mão); a cidade escolhida com o Minimoa+ fica guardada e volta com uma nova subscrição.',
-        'Menos um encontro por dia, um joker por semana, o resumo de domingo simples, mudança de nome uma vez a cada 60 dias.',
-        'Os hábitos que já segues ficam; só podes acrescentar um se tiveres menos de 2.',
-        'O teu minimoa **arruma os objetos premium**: voltam a ficar bloqueados, e regressam com uma nova subscrição.',
-        'Nada mais é apagado: o teu minimoa, as tuas ligações, as tuas séries e os objetos ganhos ficam.',
+        'O mapa volta para a sua região (ou para a cidade escolhida manualmente); a cidade escolhida com o Minimoa+ fica registrada e volta com uma nova assinatura.',
+        'Um encontro a menos por dia, um coringa por semana, o resumo de domingo simples, renomear uma vez a cada 60 dias.',
+        'Os hábitos que você já acompanha continuam; você só pode acrescentar novos se tiver menos de 2.',
+        'Seu minimoa **guarda os itens premium**: eles voltam a ficar bloqueados, e voltam com uma nova assinatura.',
+        'Nada mais é apagado: seu minimoa, seus vínculos, suas sequências e os itens que você ganhou continuam.',
       ],
     },
 
-    { h2: 'Direito de livre resolução', id: 'retractation' },
+    { h2: 'Direito de arrependimento', id: 'retractation' },
     {
-      p: 'Enquanto consumidor na União Europeia, dispões em princípio de 14 dias para resolver um contrato celebrado à distância. O Minimoa+ é um serviço digital prestado de imediato: ao subscrever, pedes que o acesso comece logo. Se exerceres a livre resolução nesse prazo, pode ser retido um montante proporcional ao serviço já prestado, nas condições previstas na lei.',
+      p: 'Como consumidor na União Europeia, você tem, em princípio, um prazo de 14 dias para desistir de um contrato celebrado a distância. O Minimoa+ é um serviço digital fornecido imediatamente: ao assinar, você pede que o acesso comece na hora. Se desistir dentro desse prazo, um valor proporcional ao serviço já fornecido pode ser retido, nas condições previstas pela lei.',
     },
-    { p: 'Como a compra é feita com a Apple, a livre resolução pede-se junto da Apple:' },
-    { ul: ['**Apple:** [reportaproblem.apple.com](https://reportaproblem.apple.com), ou a partir do histórico de compras da tua conta.'] },
-    { p: 'Durante o período experimental gratuito, não há nada a resolver: basta cancelar antes do fim para não pagar nada.' },
+    {
+      p: 'Como a compra é feita com a Apple, o arrependimento é pedido à Apple:',
+    },
+    {
+      ul: [
+        '**Apple:** [reportaproblem.apple.com](https://reportaproblem.apple.com), ou pelo histórico de compras da sua conta.',
+      ],
+    },
+    { p: 'Durante o teste grátis, não há nada do que se arrepender: basta cancelar antes do fim para não pagar nada.' },
 
     { h2: 'Reembolsos', id: 'remboursements' },
     {
-      p: 'Como os pagamentos são cobrados pela Apple, **só a Apple pode reembolsar**, segundo as suas próprias condições. Não o podemos fazer no lugar dela. Se o Minimoa+ não funcionou como previsto, escreve-nos também para {{email.support}}: ajudamos-te, e os teus direitos de consumidor (nomeadamente a garantia legal de conformidade) continuam plenamente aplicáveis.',
+      p: 'Como os pagamentos são recebidos pela Apple, **só a Apple pode reembolsar**, de acordo com as condições dela. Não podemos fazer isso no lugar dela. Se o Minimoa+ não funcionou como previsto, escreva também para {{email.support}}: vamos te ajudar, e os seus direitos de consumidor (em especial a garantia legal de conformidade) continuam valendo integralmente.',
     },
 
-    { h2: 'Se a tua conta for suspensa ou encerrada', id: 'sanctions' },
+    { h2: 'Se sua conta for suspensa ou encerrada', id: 'sanctions' },
     {
-      p: 'Se a tua conta for encerrada por uma violação grave das [condições de utilização](@conditions), o acesso ao Minimoa+ também termina. Lembra-te de cancelar a subscrição nas definições do teu iPhone. Se encerrarmos o serviço, avisamos-te pelo menos 30 dias antes e indicamos-te como obter o reembolso do período não utilizado.',
+      p: 'Se sua conta for encerrada por uma violação grave dos [termos de uso](@conditions), o acesso ao Minimoa+ também termina. Lembre-se de cancelar a assinatura nos ajustes do seu iPhone. Se encerrarmos o serviço, avisamos com pelo menos 30 dias de antecedência e explicamos como obter o reembolso do período não usado.',
     },
 
     { h2: 'O resto', id: 'reste' },
     {
-      p: 'Estas condições completam as [condições de utilização](@conditions), que também se aplicam ao Minimoa+ (nomeadamente a lei aplicável e a mediação). As condições da Apple aplicam-se à compra em si. Qualquer pergunta: {{email.support}}.',
+      p: 'Estes termos complementam os [termos de uso](@conditions), que também se aplicam ao Minimoa+ (em especial a lei aplicável e a mediação). Os termos da Apple se aplicam à compra em si. Alguma dúvida? {{email.support}}.',
     },
   ],
 };
