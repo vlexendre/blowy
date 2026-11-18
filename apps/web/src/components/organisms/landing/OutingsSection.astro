@@ -3,6 +3,7 @@
  * 10. Sorties : la question du jour, la carte de sa zone (positions arrondies, jamais en direct, mode discret) et le
  * rappel avant de se voir en vrai. La carte est dessinée (aucune vraie rue, aucune vraie position).
  */
+import { responsive, smallest } from '../../../lib/img';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { MAP_PINS, OUTINGS_PET, sections } from '../../../content/landing';
@@ -29,14 +30,14 @@ const m = c.map;
       <span class="zone"></span>
     </div>
     <span class="lbl ozl">{m.label} · {m.zone}</span>
-    <span class="me"><img src="/img/nino_face.webp" alt="" width="44" height="44" loading="lazy" /></span>
-    {MAP_PINS.map((p) => <span class="pin" style={`left:${p.x}%;top:${p.y}%`}><img src={`/img/${p.pet}_face.webp`} alt="" width="34" height="34" loading="lazy" /></span>)}
+    <span class="me"><img src={smallest('/img/nino_face.webp')} alt="" width="44" height="44" loading="lazy" /></span>
+    {MAP_PINS.map((p) => <span class="pin" style={`left:${p.x}%;top:${p.y}%`}><img src={smallest(`/img/${p.pet}_face.webp`)} alt="" width="34" height="34" loading="lazy" /></span>)}
     <span class="chip more">{m.more}</span>
   </div>
   <ul class="ofacts" role="list" data-r="up">{m.facts.map((f) => <li>{f}</li>)}</ul>
   <div class="oside">
     <div class="oq" data-r="card">
-      <img src={OUTINGS_PET} alt={c.petAlt} width="450" height="500" loading="lazy" decoding="async" />
+      <img src={OUTINGS_PET} alt={c.petAlt} width="450" height="500" loading="lazy" decoding="async" {...responsive(OUTINGS_PET, '130px')} />
       <div>
         <span class="who">Nino</span>
         <p>{c.question.text}</p>

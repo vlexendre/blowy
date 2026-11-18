@@ -2,11 +2,14 @@
  * Animations et interactions de la landing (port fidèle de la maquette validée).
  * GSAP + ScrollTrigger et Lenis (défilement doux et aimanté sur ordinateur) sont servis par le site (npm), posés sur
  * `window` pour le code historique. Sans GSAP, ou avec « réduire les animations », tout reste utilisable et statique.
+ *
+ * Chargement : le hero s'anime tout de suite ; le reste se met en place par petites tâches (`pause()` rend la main au
+ * navigateur entre deux) pour ne pas bloquer le premier affichage ni les premiers gestes. Lenis n'est téléchargé que sur
+ * ordinateur (pointeur fin). Nino du hero (image principale de la page) n'est jamais rendu transparent : il grandit
+ * (`data-r="grow"`) au lieu d'apparaître en fondu.
  */
 import { gsap as gsapLib } from 'gsap';
 import { ScrollTrigger as STLib } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
-import Snap from 'lenis/snap';
 import { ALIVE, IMG, LIVES, MOOD_INITIAL, MOOD_PRESETS, NAV_ACTIVE, WORDS_MAX, type MoodKey } from '../content/landing';
 import { fill } from '../i18n/site';
 
@@ -61,10 +64,16 @@ declare global {
   }
 }
 
+/** Rend la main au navigateur (affichage, gestes) avant la suite de l'initialisation. */
+const pause = (): Promise<void> => {
+  const s = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+  return s?.yield ? s.yield() : new Promise((r) => setTimeout(r, 0));
+};
+
 const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => r.querySelector<T>(s);
 const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = document) => Array.from(r.querySelectorAll<T>(s));
 
-function main(): void {
+async function main(): Promise<void> {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const G: Gsap | null = window.gsap && !reduce ? window.gsap : null;
   const secs = $$('.sec');
@@ -282,6 +291,8 @@ function main(): void {
     return;
   }
 
+  await pause();
+
   /* halos du fond : dessinés dans un petit canvas (1/8 de la taille de l'écran) que la carte graphique agrandit.
      Trois dégradés géants en calques coûtaient trop à composer à chaque image ; ici, un seul calque fixe. */
   const cv = $<HTMLCanvasElement>('.bgx canvas.halo');
@@ -345,13 +356,15 @@ function main(): void {
   /* défilement : sur ordinateur (souris, pavé tactile), Lenis lisse la molette et aimante chaque section en douceur ;
      au doigt, le défilement natif et l'aimantation CSS restent (déjà fluides sur téléphone) */
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    document.documentElement.classList.remove('snap');
-    const lenis = new Lenis({ lerp: 0.12, anchors: true });
-    lenis.on('scroll', () => STLib.update());
-    gsapLib.ticker.add((t) => lenis.raf(t * 1000));
-    gsapLib.ticker.lagSmoothing(0);
-    const snap = new Snap(lenis, { type: 'proximity', distanceThreshold: '35%', duration: 0.8, easing: (t) => 1 - Math.pow(1 - t, 4), debounce: 160 });
-    snap.addElements(secs, { align: 'start' });
+    void Promise.all([import('lenis'), import('lenis/snap')]).then(([{ default: Lenis }, { default: Snap }]) => {
+      document.documentElement.classList.remove('snap');
+      const lenis = new Lenis({ lerp: 0.12, anchors: true });
+      lenis.on('scroll', () => STLib.update());
+      gsapLib.ticker.add((t) => lenis.raf(t * 1000));
+      gsapLib.ticker.lagSmoothing(0);
+      const snap = new Snap(lenis, { type: 'proximity', distanceThreshold: '35%', duration: 0.8, easing: (t) => 1 - Math.pow(1 - t, 4), debounce: 160 });
+      snap.addElements(secs, { align: 'start' });
+    });
   }
 
   /* découpe des titres en mots (les états cachés ne sont posés que par JS) */
@@ -370,12 +383,52 @@ function main(): void {
     });
   });
 
+  /* entrées : une timeline par section, jouée quand la section s'aimante (le hero d'abord, tout de suite) */
+  const entrance = (s: HTMLElement, si: number): void => {
+    const tl = gsap.timeline({ paused: true, defaults: { ease: 'power4.out' } });
+    const ws = $$('.hd .w>span', s);
+    const dims = $$('.hd .ln.dim .w', s);
+    tl.from(ws, { yPercent: 115, rotation: 4, duration: 0.9, stagger: 0.05 }, 0);
+    if (dims.length) tl.fromTo(dims, { opacity: 0.38 }, { opacity: 1, duration: 0.35, stagger: 0.07, ease: 'power1.out', yoyo: true, repeat: 1, repeatDelay: 0.15 }, 0.5);
+    let t = 0.25;
+    $$('[data-r]', s).forEach((el) => {
+      const r = el.dataset.r;
+      if (r === 'up') tl.from(el, { y: 30, opacity: 0, duration: 0.8 }, (t += 0.06));
+      else if (r === 'pop') tl.from(el, { y: 60, scale: 0.6, opacity: 0, duration: 1, ease: 'back.out(1.6)', transformOrigin: '50% 100%' }, 0.3);
+      else if (r === 'grow') tl.from(el, { y: 60, scale: 0.6, duration: 1, ease: 'back.out(1.6)', transformOrigin: '50% 100%' }, 0.3);
+      else if (r === 'bub') {
+        const right = el.classList.contains('me') || el.classList.contains('b3') || el.classList.contains('m2');
+        tl.from(el, { y: 18, scale: 0.6, opacity: 0, duration: 0.6, ease: 'back.out(2)', transformOrigin: right ? '100% 100%' : '0% 100%' }, (t += 0.14));
+      } else if (r === 'stk') tl.from(el, { scale: 0, rotation: -40, opacity: 0, duration: 0.8, ease: 'back.out(2.4)' }, (t += 0.05));
+      else if (r === 'card') tl.from(el, { y: 50, rotation: '-=8', opacity: 0, duration: 0.9, ease: 'back.out(1.4)' }, (t += 0.1));
+      else if (r === 'row') tl.from(el, { x: 30, opacity: 0, duration: 0.6 }, (t += 0.06));
+      else if (r === 'msg') tl.from(el, { y: 20, scale: 0.8, opacity: 0, duration: 0.55, ease: 'back.out(2)', transformOrigin: '0% 100%' }, (t += 0.2));
+    });
+    let played = false;
+    const play = () => {
+      if (played) return;
+      played = true;
+      tl.play(0);
+    };
+    ST.create({ trigger: s, start: 'top 65%', end: 'bottom 35%', onEnter: play, onEnterBack: play });
+    if (si === 0) play();
+    else if (s.getBoundingClientRect().bottom < 0) {
+      played = true;
+      tl.progress(1);
+    }
+  };
+  if (secs[0]) entrance(secs[0], 0);
+
+  await pause();
+
   /* mouvement d'ambiance du fond */
   $$('.drift').forEach((d, i) => {
     gsap.to(d, { y: (i % 2 ? -1 : 1) * (120 + i * 40), rotation: i % 2 ? 40 : -50, ease: 'none', scrollTrigger: { trigger: document.documentElement, start: 0, end: 'max', scrub: 1.5 } });
     gsap.to(d, { x: i % 2 ? 14 : -14, duration: 4 + i * 0.6, yoyo: true, repeat: -1, ease: 'sine.inOut' });
   });
   gsapLib.to(glow, { cx: 8, cy: -6.4, duration: 10, yoyo: true, repeat: -1, ease: 'sine.inOut', onUpdate: drawHalos });
+
+  await pause();
 
   /* panneaux : grandissent en arrivant, s'enfoncent en partant */
   secs.forEach((s) => {
@@ -385,6 +438,8 @@ function main(): void {
       .fromTo(p, { scale: 0.9, opacity: 0.5 }, { scale: 1, opacity: 1, ease: 'none', duration: 1 })
       .to(p, { scale: 0.93, opacity: 0.55, ease: 'none', duration: 1 });
   });
+
+  await pause();
 
   /* mouvement au repos : les pets respirent, les autocollants oscillent — seulement quand leur section est à l'écran */
   const loopsOf = new Map<Element, gsap.core.Tween[]>();
@@ -406,39 +461,11 @@ function main(): void {
     STLib.create({ trigger: s, start: 'top bottom', end: 'bottom top', onToggle: (self) => tws.forEach((t) => (self.isActive ? t.resume() : t.pause())) });
   });
 
-  /* entrées : une timeline par section, jouée quand la section s'aimante */
-  secs.forEach((s, si) => {
-    const tl = gsap.timeline({ paused: true, defaults: { ease: 'power4.out' } });
-    const ws = $$('.hd .w>span', s);
-    const dims = $$('.hd .ln.dim .w', s);
-    tl.from(ws, { yPercent: 115, rotation: 4, duration: 0.9, stagger: 0.05 }, 0);
-    if (dims.length) tl.fromTo(dims, { opacity: 0.38 }, { opacity: 1, duration: 0.35, stagger: 0.07, ease: 'power1.out', yoyo: true, repeat: 1, repeatDelay: 0.15 }, 0.5);
-    let t = 0.25;
-    $$('[data-r]', s).forEach((el) => {
-      const r = el.dataset.r;
-      if (r === 'up') tl.from(el, { y: 30, opacity: 0, duration: 0.8 }, (t += 0.06));
-      else if (r === 'pop') tl.from(el, { y: 60, scale: 0.6, opacity: 0, duration: 1, ease: 'back.out(1.6)', transformOrigin: '50% 100%' }, 0.3);
-      else if (r === 'bub') {
-        const right = el.classList.contains('me') || el.classList.contains('b3') || el.classList.contains('m2');
-        tl.from(el, { y: 18, scale: 0.6, opacity: 0, duration: 0.6, ease: 'back.out(2)', transformOrigin: right ? '100% 100%' : '0% 100%' }, (t += 0.14));
-      } else if (r === 'stk') tl.from(el, { scale: 0, rotation: -40, opacity: 0, duration: 0.8, ease: 'back.out(2.4)' }, (t += 0.05));
-      else if (r === 'card') tl.from(el, { y: 50, rotation: '-=8', opacity: 0, duration: 0.9, ease: 'back.out(1.4)' }, (t += 0.1));
-      else if (r === 'row') tl.from(el, { x: 30, opacity: 0, duration: 0.6 }, (t += 0.06));
-      else if (r === 'msg') tl.from(el, { y: 20, scale: 0.8, opacity: 0, duration: 0.55, ease: 'back.out(2)', transformOrigin: '0% 100%' }, (t += 0.2));
-    });
-    let played = false;
-    const play = () => {
-      if (played) return;
-      played = true;
-      tl.play(0);
-    };
-    ST.create({ trigger: s, start: 'top 65%', end: 'bottom 35%', onEnter: play, onEnterBack: play });
-    if (si === 0) play();
-    else if (s.getBoundingClientRect().bottom < 0) {
-      played = true;
-      tl.progress(1);
-    }
-  });
+  for (let si = 1; si < secs.length; si++) {
+    await pause();
+    const s = secs[si];
+    if (s) entrance(s, si);
+  }
 
   /* 5. les étincelles s'éteignent de 5 à 0, le lien devient fantôme, puis il est ranimé */
   (() => {
@@ -483,4 +510,4 @@ function main(): void {
   window.addEventListener('load', () => ST.refresh());
 }
 
-main();
+void main();

@@ -1,5 +1,6 @@
 ---
 /** 3. Garde-robe : quatre minimoas habillés d'objets portés (mêmes placements que l'app), et comment on les gagne. */
+import { responsive } from '../../../lib/img';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { IMG, LOOKS, SPECIES_NAME, STREAK_STEPS, sections } from '../../../content/landing';
@@ -21,7 +22,7 @@ const c = landingText[locale].wardrobe;
       LOOKS.map((l, i) => (
         <li class:list={['look', { plus: 'plus' in l && l.plus }]} data-r="card" style={`--i:${i}`}>
           <div class="bob">
-            <img src={`${IMG}/tenue_${l.name}.webp`} alt={fill(c.alt, { who: SPECIES_NAME[l.who], items: c.looks[l.name].items.toLocaleLowerCase(locale) })} width="500" height="600" loading="lazy" decoding="async" />
+            <img src={`${IMG}/tenue_${l.name}.webp`} alt={fill(c.alt, { who: SPECIES_NAME[l.who], items: c.looks[l.name].items.toLocaleLowerCase(locale) })} width="500" height="600" loading="lazy" decoding="async" {...responsive(`${IMG}/tenue_${l.name}.webp`, '(min-width: 900px) 240px, 36vw')} />
           </div>
           <p class="lk">
             <b>{SPECIES_NAME[l.who]}</b>

@@ -1,5 +1,6 @@
 ---
 /** 7. Il vit dans tes chats : téléphone avec la conversation, et les rôles des minimoas. */
+import { smallest } from '../../../lib/img';
 import Sticker from '../../atoms/Sticker.astro';
 import PhoneFrame from '../../molecules/PhoneFrame.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
@@ -21,14 +22,14 @@ const apps = c.apps.map((a, i) => ({ ...a, icon: CHAT_APP_ICONS[i] ?? 'ic_etoile
     <p class="cpriv hide-short" data-r="up">{c.privacy}</p>
   </SectionTitle>
   <PhoneFrame>
-    <div class="ph-h"><span class="avs"><img src="/img/nino_face.webp" alt="" /><img src="/img/suzie_face.webp" alt="" /></span><b>{p.name}</b><span class="hz">{p.status}</span></div>
+    <div class="ph-h"><span class="avs"><img src={smallest('/img/nino_face.webp')} alt="" loading="lazy" /><img src={smallest('/img/suzie_face.webp')} alt="" loading="lazy" /></span><b>{p.name}</b><span class="hz">{p.status}</span></div>
     <div class="tabs">{p.tabs.map((t, i) => <span class={i === 0 ? 'on' : undefined}>{t}</span>)}</div>
     <div class="feed">
       {
         p.messages.map((m) =>
           m.kind === 'pet' ? (
             <div class="m pet" data-r="msg">
-              <img src={`/img/${m.pet}_face.webp`} alt="" />
+              <img src={smallest(`/img/${m.pet}_face.webp`)} alt="" loading="lazy" />
               <div style={m.border ? `border-color:${m.border}` : undefined}><span class="n" style={`color:${m.color}`}>{m.who}</span>{m.text}</div>
             </div>
           ) : m.kind === 'me' ? (
@@ -38,7 +39,7 @@ const apps = c.apps.map((a, i) => ({ ...a, icon: CHAT_APP_ICONS[i] ?? 'ic_etoile
           ),
         )
       }
-      <div class="mini" data-r="msg"><img src="/img/ic_flamme.webp" alt="" />{p.mini}</div>
+      <div class="mini" data-r="msg"><img src="/img/ic_flamme.webp" alt="" loading="lazy" />{p.mini}</div>
     </div>
     <div class="inp"><span>{p.input}</span><i aria-hidden="true">↑</i></div>
   </PhoneFrame>
@@ -47,9 +48,9 @@ const apps = c.apps.map((a, i) => ({ ...a, icon: CHAT_APP_ICONS[i] ?? 'ic_etoile
       apps.map((a) => (
         <div class:list={['app', { 'hide-short': a.short }]} data-r="card">
           <span class="lbl">{a.label}</span>
-          <h4>{a.title}</h4>
+          <h3>{a.title}</h3>
           <p>{a.text}</p>
-          <Sticker class="ico" src={`/img/${a.icon}.webp`} />
+          <Sticker class="ico" src={`/img/${a.icon}.webp`} loading="lazy" />
         </div>
       ))
     }
@@ -84,7 +85,7 @@ const apps = c.apps.map((a, i) => ({ ...a, icon: CHAT_APP_ICONS[i] ?? 'ic_etoile
 .app{background:#fff;color:var(--ink);border-radius:18px;padding:10px 12px;box-shadow:0 14px 30px rgba(20,16,31,.22);position:relative}
 .app:nth-child(1){rotate:4deg}.app:nth-child(2){rotate:-3deg;margin-left:8px}.app:nth-child(3){rotate:3deg}
 .app .lbl{font-size:9px;color:rgba(20,16,31,.55)}
-.app h4{margin:2px 0 4px;font-family:var(--display);font-weight:800;font-size:clamp(15px,2.3svh,26px);line-height:1;text-transform:uppercase}
+.app h3{margin:2px 0 4px;font-family:var(--display);font-weight:800;font-size:clamp(15px,2.3svh,26px);line-height:1;text-transform:uppercase}
 .app p{font-size:11px;font-weight:600;color:var(--mute-d)}
 .cpriv{display:none;font-size:12px;font-weight:600;line-height:1.35;max-width:34em;margin-top:8px;opacity:.72}
 .app .ico{position:absolute;right:-10px;top:-12px;width:clamp(30px,4.4svh,48px)}

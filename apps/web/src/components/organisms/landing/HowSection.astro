@@ -1,5 +1,6 @@
 ---
 /** 2. Comment ça marche, en 3 étapes (audit R3) : créer son minimoa, il présente des gens près de chez toi, vous vous voyez. */
+import { responsive } from '../../../lib/img';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { HOW_PETS, IMG, sections } from '../../../content/landing';
@@ -24,7 +25,7 @@ const how = landingText[locale].how;
             <em>{s.meta}</em>
             <p class="hide-short">{s.text}</p>
           </div>
-          <img class="how-pet" src={`${IMG}/${HOW_PETS[i] ?? 'nino_coucou'}.webp`} alt="" width="450" height="500" loading="lazy" decoding="async" />
+          <img class="how-pet" src={`${IMG}/${HOW_PETS[i] ?? 'nino_coucou'}.webp`} alt="" width="450" height="500" loading="lazy" decoding="async" {...responsive(`${IMG}/${HOW_PETS[i] ?? 'nino_coucou'}.webp`, '(min-width: 900px) 190px, 150px')} />
         </li>
       ))
     }

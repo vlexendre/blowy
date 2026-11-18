@@ -77,6 +77,8 @@ export const NAV_ACTIVE: Record<string, NavLink> = {
 };
 
 export const HERO_PET = `${IMG}/hero_nino.webp`;
+/** Largeur affichée de Nino du hero (sa hauteur suit l'écran) : `sizes` de l'image et de son préchargement. */
+export const HERO_SIZES = '(min-width: 900px) 34vh, 60vw';
 export const HOW_PETS = ['nino_coucou', 'suzie_joie', 'pia_check'] as const;
 
 /** « Il est vivant » : les quatre minimoas, et un geste par soin (chaque geste a sa pose en pied). */

@@ -18,7 +18,7 @@ export const ui: LegalUi = {
   index: {
     title: 'Informations légales — Minimoa',
     heading: 'Informations légales',
-    description: 'Tous les documents légaux de Minimoa : mentions légales, conditions, confidentialité, Minimoa+, règles, cookies, sécurité, suppression du compte, assistance.',
+    description: 'Tous les documents légaux de Minimoa : mentions légales, conditions, confidentialité, Minimoa+, règles, cookies, sécurité, suppression du compte, aide.',
     intro: 'Tout ce qui encadre Minimoa, au même endroit. La version française fait foi.',
     publisherTitle: 'Qui édite Minimoa',
     publisherText:

@@ -3,7 +3,7 @@ import type { LegalPage } from '../types';
 export const securite: LegalPage = {
   title: 'Veiligheid en melden — Minimoa',
   heading: 'Veiligheid en melden',
-  description: 'Hoe je iemand meldt of blokkeert in Minimoa, wat er daarna gebeurt, onze tips voor een eerste ontmoeting in het echt, noodnummers en ons beleid voor de bescherming van minderjarigen.',
+  description: 'Iemand melden of blokkeren in Minimoa, wat er daarna gebeurt, tips voor een eerste ontmoeting, noodnummers en de bescherming van minderjarigen.',
   intro: 'Hoe je meldt, blokkeert, jezelf beschermt, en wie je belt in een noodgeval.',
   body: [
     { note: '**Direct in gevaar?** Bel **112** (alarmnummer in de hele Europese Unie). In Frankrijk: **17** (politie), of sms naar **114** als je niet kunt praten.' },

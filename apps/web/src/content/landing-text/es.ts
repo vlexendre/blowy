@@ -3,9 +3,9 @@ import type { LandingText } from './fr';
 
 export const es: LandingText = {
   meta: {
-    title: 'Minimoa — Amigos cerca de ti, de verdad',
+    title: 'Minimoa — La app para hacer amigos cerca de ti',
     description:
-      'Tu minimoa te presenta a gente cerca de ti que ve la vida como tú. Haz el test, abre tu barrio. Gratis, sin swipes, para mayores de 18.',
+      'La app para hacer amigos cerca de ti: tu minimoa te presenta a gente que ve la vida como tú. Haz el test. Gratis, sin swipes, para mayores de 18.',
     ogAlt: 'Nino, Suzie y Pia, minimoas peluditos, junto al título «Amigos cerca de ti.»',
   },
   dots: {

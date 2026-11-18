@@ -8,7 +8,7 @@ const { avatar } = Astro.props;
 ---
 {
   'img' in avatar ? (
-    <img class="av" src={avatar.img} alt="" />
+    <img class="av" src={avatar.img} alt="" loading="lazy" decoding="async" />
   ) : (
     <span class="av h" style={`background:${avatar.bg}`} aria-hidden="true">{avatar.letter}</span>
   )

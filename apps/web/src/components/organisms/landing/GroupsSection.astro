@@ -1,5 +1,6 @@
 ---
 /** 6. Groupes : un groupe d'habitude (vies, série, état du jour de chacun, joker), « la tenir ensemble », un groupe libre. */
+import { smallest } from '../../../lib/img';
 import LifeSpark from '../../atoms/LifeSpark.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
@@ -31,7 +32,7 @@ const sparks = Array.from({ length: g.livesMax }, (_, i) => i >= g.lives);
         {
           g.members.map((m) => (
             <li>
-              <img src={`/img/${m.pet}_face.webp`} alt="" width="36" height="36" loading="lazy" />
+              <img src={smallest(`/img/${m.pet}_face.webp`)} alt="" width="36" height="36" loading="lazy" />
               <b>{m.name}</b>
               <span class={m.tone}>{m.state}</span>
             </li>
@@ -46,7 +47,7 @@ const sparks = Array.from({ length: g.livesMax }, (_, i) => i >= g.lives);
       <small class="hide-short">{c.together.note}</small>
     </div>
     <div class="gfree hide-short" data-r="card">
-      <span class="avs"><img src="/img/gaston_face.webp" alt="" width="30" height="30" loading="lazy" /><img src="/img/pia_face.webp" alt="" width="30" height="30" loading="lazy" /><img src="/img/nino_face.webp" alt="" width="30" height="30" loading="lazy" /></span>
+      <span class="avs"><img src={smallest('/img/gaston_face.webp')} alt="" width="30" height="30" loading="lazy" /><img src={smallest('/img/pia_face.webp')} alt="" width="30" height="30" loading="lazy" /><img src={smallest('/img/nino_face.webp')} alt="" width="30" height="30" loading="lazy" /></span>
       <span><b>{c.free.name}</b><small>{c.free.kind} · {c.free.text}</small></span>
     </div>
   </div>
@@ -84,7 +85,8 @@ const sparks = Array.from({ length: g.livesMax }, (_, i) => i >= g.lives);
 .gtog p{font-weight:800;font-size:15px;line-height:1.25;margin-top:2px}
 .gtog small{display:block;font-size:11.5px;font-weight:600;color:var(--mute-d);margin-top:4px}
 .gfree{display:flex;align-items:center;gap:10px;background:rgba(20,16,31,.3);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:8px 12px}
-.gfree .avs img{width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid var(--violet-d)}
+.gfree .avs{display:flex;flex:0 0 auto}
+.gfree .avs img{flex:0 0 auto;width:30px;height:30px;object-fit:cover;border-radius:50%;background:#fff;border:2px solid var(--violet-d)}
 .gfree .avs img+img{margin-left:-10px}
 .gfree b{display:block;font-weight:800;font-size:14px}
 .gfree small{display:block;font-size:11.5px;opacity:.8}

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/share-shells.mjs && node scripts/check-no-todo.mjs",
+    "build": "astro build && node scripts/share-shells.mjs && node scripts/check-no-todo.mjs && node scripts/check-structured-data.mjs",
     "preview": "astro preview",
     "typecheck": "astro check"
   },

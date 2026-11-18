@@ -4,7 +4,8 @@
  * lien d'évitement, contenu, emplacement « footer ».
  */
 import { color, font, gradient, radius, space } from '@blowy/tokens';
-import { OG_ALT, OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
+import { APP_STORE_ID, OG_ALT, OG_IMAGE, SITE_NAME, SITE_URL } from '../config/site';
+import { jsonLd } from '../lib/structured-data';
 import LangBanner from '../components/organisms/LangBanner.astro';
 import '../styles/global.css';
 
@@ -34,6 +35,8 @@ interface Props {
   alternates?: { hreflang: string; path: string }[];
   /** texte du lien d'évitement */
   skipLabel?: string;
+  /** nœuds JSON-LD propres à la page (l'éditeur et le site sont toujours là) : lib/structured-data.ts */
+  structuredData?: Record<string, unknown>[];
 }
 
 const {
@@ -50,6 +53,7 @@ const {
   ogLocaleAlternates = [],
   canonicalPath,
   skipLabel = 'aller au contenu',
+  structuredData = [],
 } = Astro.props;
 const langBanner = Astro.props.langBanner ?? (alternates.length > 0 && !noindex);
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, SITE_URL).href;
@@ -66,6 +70,8 @@ const tokenVars = [
   `--font-body:${font.web.body}`,
 ];
 const tokenCss = `:root{${tokenVars.join(';')}}`;
+/** Police Allo réduite (scripts/fonts/subset-allo.sh) : nom à empreinte, mise en cache un an. */
+const ALLO_FONT = '/fonts/allo/allo-latin.10665227.woff2';
 ---
 <!doctype html>
 <html lang={lang} class={htmlClass}>
@@ -77,6 +83,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={new URL(a.path, SITE_URL).href} />)}
+    {!noindex && <meta name="apple-itunes-app" content={`app-id=${APP_STORE_ID}`} />}
     <meta name="theme-color" content={color.night} />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
@@ -100,11 +107,10 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <meta name="twitter:image" content={ogUrl} />
     <meta name="twitter:image:alt" content={ogAlt} />
 
-    <link rel="preload" href="/fonts/allo/AlloVariableFriendly.woff2" as="font" type="font/woff2" crossorigin />
-    <style is:global>
-      @font-face { font-family: 'Allo'; src: url('/fonts/allo/AlloVariableFriendly.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
-    </style>
+    <link rel="preload" href={ALLO_FONT} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={`@font-face{font-family:'Allo';src:url('${ALLO_FONT}') format('woff2');font-weight:400 800;font-style:normal;font-display:swap}`}></style>
     <style is:inline set:html={tokenCss}></style>
+    <script type="application/ld+json" set:html={jsonLd(structuredData)} />
     <slot name="head" />
   </head>
   <body class={bodyClass}>

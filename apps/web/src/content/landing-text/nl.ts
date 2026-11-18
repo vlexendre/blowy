@@ -3,9 +3,9 @@ import type { LandingText } from './fr';
 
 export const nl: LandingText = {
   meta: {
-    title: 'Minimoa — Vrienden bij jou in de buurt',
+    title: 'Minimoa — De app om vrienden te maken in je buurt',
     description:
-      'Je minimoa stelt je voor aan mensen in je buurt die het leven zien zoals jij. Doe de quiz, open je buurt. Gratis, nul swipes, vanaf 18 jaar.',
+      'De app om vrienden te maken in je buurt: je minimoa stelt je voor aan mensen die het leven zien zoals jij. Gratis, nul swipes, vanaf 18 jaar.',
     ogAlt: 'Nino, Suzie en Pia, harige minimoa’s, naast de titel „Vrienden bij jou in de buurt.”',
   },
   dots: {

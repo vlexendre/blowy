@@ -4,7 +4,7 @@ export const abonnement: LegalPage = {
   title: 'Minimoa+ subscription terms — Minimoa',
   heading: 'Minimoa+ subscription terms',
   description:
-    'Minimoa+: what it includes, the plans (€59.88 per year with 7 days free, €14.99 per month or €2.99 per week), automatic renewal, billing by Apple, how to cancel, what happens at the end, withdrawal and refunds.',
+    'Minimoa+: what it includes, plans and prices, automatic renewal, billing by Apple, how to cancel, withdrawal and refunds.',
   intro: 'What Minimoa+ includes, what it costs, how it renews, and how to stop it. No small print.',
   summary: {
     title: 'In short',

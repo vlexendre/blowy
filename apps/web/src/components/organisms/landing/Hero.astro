@@ -5,7 +5,7 @@ import PetImage from '../../atoms/PetImage.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { HERO_PET, sections } from '../../../content/landing';
+import { HERO_PET, HERO_SIZES, sections } from '../../../content/landing';
 import type { Locale } from '../../../i18n/site';
 import { landingText } from '../../../content/landing-text';
 import { localePath } from '../../../i18n/site';
@@ -33,7 +33,7 @@ const b3 = { who: hero.b3.who, whoColor: 'var(--ink)', text: hero.b3.text, avata
   </div>
   <div class="hstage">
     <div class="hill" aria-hidden="true"></div>
-    <div class="hpet" data-r="pop"><div class="bob" style="height:100%"><PetImage src={HERO_PET} alt={hero.petAlt} width={720} height={800} fetchpriority="high" /></div></div>
+    <div class="hpet" data-r="grow"><div class="bob" style="height:100%"><PetImage src={HERO_PET} alt={hero.petAlt} width={720} height={800} fetchpriority="high" sizes={HERO_SIZES} /></div></div>
     <ChatBubble bubble={b3} class="b3" />
   </div>
   <Sticker class="s1" src="/img/ic_etoiles.webp" reveal />

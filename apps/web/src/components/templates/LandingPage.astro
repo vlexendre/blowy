@@ -24,7 +24,10 @@ import ScreensSection from '../organisms/landing/ScreensSection.astro';
 import PlusSection from '../organisms/landing/PlusSection.astro';
 import FaqSection from '../organisms/landing/FaqSection.astro';
 import FinalSection from '../organisms/landing/FinalSection.astro';
-import { HERO_PET, type SectionId } from '../../content/landing';
+import { HERO_PET, HERO_SIZES, type SectionId } from '../../content/landing';
+import { srcsetOf } from '../../lib/img';
+import { faqItems } from '../../lib/faq';
+import { faqPage, mobileApplication, plainText } from '../../lib/structured-data';
 import { landingText } from '../../content/landing-text';
 import { siteText } from '../../content/site';
 import { HTML_LANG, LOCALES, OG_LOCALE, localePath, pageAlternates, type Locale } from '../../i18n/site';
@@ -37,6 +40,14 @@ const { locale } = Astro.props;
 const t = landingText[locale];
 const skip: SectionId[] = storeShotsFor(locale) ? [] : ['ecrans'];
 const langLinks = LOCALES.map((l) => ({ locale: l, href: localePath(l, '/') }));
+const structuredData = [
+  mobileApplication({ description: t.meta.description, inLanguage: HTML_LANG[locale] }),
+  faqPage({
+    url: localePath(locale, '/'),
+    inLanguage: HTML_LANG[locale],
+    items: faqItems(locale).map((i) => ({ question: plainText(i.q), answer: plainText(i.a) })),
+  }),
+];
 /** Textes lus par scripts/landing.ts (le reste est déjà dans la page). */
 const scriptText = {
   restSay: t.alive.restSay,
@@ -61,8 +72,9 @@ const scriptText = {
   alternates={pageAlternates('/')}
   canonicalPath={localePath(locale, '/')}
   skipLabel={siteText[locale].skip}
+  structuredData={structuredData}
 >
-  <link slot="head" rel="preload" as="image" href={HERO_PET} fetchpriority="high" />
+  <link slot="head" rel="preload" as="image" href={HERO_PET} imagesrcset={srcsetOf(HERO_PET)} imagesizes={HERO_SIZES} fetchpriority="high" />
   <Background />
   <NavBar locale={locale} langLinks={langLinks} />
   <SectionDots locale={locale} skip={skip} />

@@ -6,7 +6,8 @@ export default defineConfig({
   site: 'https://minimoa.app',
   output: 'static',
   trailingSlash: 'ignore',
-  build: { format: 'directory' },
+  // CSS dans la page : aucune feuille ne bloque le premier affichage (petit site, ~10 Ko compressés par page).
+  build: { format: 'directory', inlineStylesheets: 'always' },
   // Anciennes adresses des pages légales (déjà liées depuis l'app) : pages de redirection en statique,
   // doublées d'une 301 dans public/_redirects pour Cloudflare Pages.
   redirects: {

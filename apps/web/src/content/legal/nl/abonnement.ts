@@ -4,7 +4,7 @@ export const abonnement: LegalPage = {
   title: 'Voorwaarden van het Minimoa+-abonnement — Minimoa',
   heading: 'Voorwaarden van het Minimoa+-abonnement',
   description:
-    'Minimoa+: wat het bevat, de abonnementen (€ 59,88 per jaar met 7 dagen gratis, € 14,99 per maand of € 2,99 per week), automatische verlenging, facturatie door Apple, opzeggen, wat er aan het einde gebeurt, herroeping en terugbetalingen.',
+    'Minimoa+: wat het bevat, abonnementen en prijzen, automatische verlenging, facturatie door Apple, opzeggen, herroeping en terugbetalingen.',
   intro: 'Wat Minimoa+ bevat, wat het kost, hoe het wordt verlengd en hoe je stopt. Zonder kleine lettertjes.',
   summary: {
     title: 'In het kort',
