@@ -99,13 +99,11 @@ const VARIANT_IMAGES = {
   masque_nuit_1: require('../../assets/items/masque_nuit_1.webp'),
   monocle_1: require('../../assets/items/monocle_1.webp'),
   // Calques arrière (`fit.json` → `items.<id>.back`) : la partie qui passe derrière le minimoa.
-  hiver_echarpe_dos: require('../../assets/items/hiver_echarpe_dos.webp'),
   echarpe_dos: require('../../assets/items/echarpe_dos.webp'),
   bandana_dos: require('../../assets/items/bandana_dos.webp'),
   collier_perles_dos: require('../../assets/items/collier_perles_dos.webp'),
   collier_coquillage_dos: require('../../assets/items/collier_coquillage_dos.webp'),
   chaine_or_dos: require('../../assets/items/chaine_or_dos.webp'),
-  casque_audio_dos: require('../../assets/items/casque_audio_dos.webp'),
   cape_dos: require('../../assets/items/cape_dos.webp'),
   sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
 } as const satisfies Record<string, Src>;

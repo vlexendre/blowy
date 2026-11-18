@@ -10998,22 +10998,14 @@
   "casque_audio": {
    "anchor": "eyes",
    "size": "brow",
-   "w": 1.5,
+   "w": 1.6,
    "pivot": [
     0.5,
-    0.72
+    0.64
    ],
-   "ratio": 1.2292,
-   "dy": 0.0,
-   "back": {
-    "w": 1.3,
-    "pivot": [
-     0.5,
-     1.0
-    ],
-    "ratio": 1.8028,
-    "dy": -0.25
-   }
+   "ratio": 2.5,
+   "dy": -0.13,
+   "sy": 1.18
   },
   "aureole": {
    "anchor": "headTop",
@@ -11646,15 +11638,16 @@
    "ratio": 1.6026
   },
   "hiver_cache_oreilles": {
-   "anchor": "brow",
+   "anchor": "eyes",
    "size": "brow",
    "w": 1.5,
    "pivot": [
     0.5,
-    0.62
+    0.68
    ],
-   "ratio": 1.1868,
-   "dy": -0.04
+   "ratio": 2.5503,
+   "dy": -0.12,
+   "sy": 1.22
   },
   "hiver_lunettes": {
    "anchor": "eyes",
@@ -11668,15 +11661,15 @@
   },
   "hiver_echarpe": {
    "anchor": "mouth",
-   "size": "brow",
-   "w": 1.38,
+   "size": "bodyw",
+   "w": 0.97,
    "pivot": [
     0.5,
-    0.1
+    0.06
    ],
-   "ratio": 0.9853,
-   "dy": 0.08,
-   "sy": 0.8
+   "ratio": 1.7677,
+   "dy": 0.03,
+   "sy": 0.95
   },
   "hiver_cape": {
    "anchor": "neck",
@@ -11762,11 +11755,7 @@
   }
  },
  "overrides": {
-  "nino": {
-   "casque_audio": {
-    "w": 1.65
-   }
-  },
+  "nino": {},
   "pia": {},
   "gaston": {
    "bob": {
@@ -12349,10 +12338,6 @@
   },
   "hiver_echarpe": {
    "plain": true,
-   "split": [
-    0.19,
-    "back"
-   ],
    "fur": [
     6,
     3,
