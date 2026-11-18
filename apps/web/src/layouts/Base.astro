@@ -68,7 +68,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     {noindex && <meta name="robots" content="noindex" />}
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={new URL(a.path, SITE_URL).href} />)}
     <meta name="theme-color" content={color.night} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 

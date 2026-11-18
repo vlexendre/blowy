@@ -114,6 +114,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   icon: './assets/images/icon.png',
   runtimeVersion: { policy: 'appVersion' },
   ios: {
+    // Icônes iOS 18 : claire, sombre (fond posé par le système), teintée.
+    icon: { light: './assets/images/icon.png', dark: './assets/images/icon-dark.png', tinted: './assets/images/icon-tinted.png' },
     bundleIdentifier: BUNDLE_ID,
     ...(APPLE_TEAM_ID ? { appleTeamId: APPLE_TEAM_ID } : {}),
     supportsTablet: false,
@@ -143,7 +145,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: BUNDLE_ID,
-    adaptiveIcon: { foregroundImage: './assets/images/adaptive-foreground.png', backgroundColor: '#FFB800' },
+    adaptiveIcon: { foregroundImage: './assets/images/adaptive-foreground.png', backgroundColor: '#7F32FC', monochromeImage: './assets/images/adaptive-monochrome.png' },
     // Liens d'app vérifiés : le site sert /.well-known/assetlinks.json (empreinte ANDROID_SHA256 du build du site).
     intentFilters: [
       {
