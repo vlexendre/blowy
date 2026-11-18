@@ -11332,14 +11332,16 @@
    "ratio": 1.4101
   },
   "bretelles": {
-   "anchor": "chest",
+   "anchor": "mouth",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.88,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.2257
+   "ratio": 0.9412,
+   "dy": 0.02,
+   "sy": 0.6
   },
   "sac_a_dos": {
    "anchor": "mouth",
