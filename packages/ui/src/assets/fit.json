@@ -11010,14 +11010,13 @@
   "aureole": {
    "anchor": "headTop",
    "size": "crown",
-   "w": 0.75,
+   "w": 0.7,
    "pivot": [
     0.5,
     0.6
    ],
-   "dy": -0.24,
-   "ratio": 1.2959,
-   "z": "back"
+   "dy": -0.42,
+   "ratio": 1.2959
   },
   "lunettes_rondes": {
    "anchor": "eyes",
@@ -11489,7 +11488,7 @@
   "ballons": {
    "anchor": "toy",
    "size": "bodyw",
-   "w": 0.4,
+   "w": 0.55,
    "pivot": [
     0.5,
     1.0
@@ -11690,7 +11689,7 @@
   "hiver_moufles": {
    "anchor": "toy",
    "size": "bodyw",
-   "w": 0.34,
+   "w": 0.46,
    "pivot": [
     0.5,
     1.0
