@@ -3,9 +3,9 @@ import { Image } from 'expo-image';
 import { type ComponentProps, memo, useEffect, useId } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import Svg, { Defs, FeColorMatrix, FeGaussianBlur, Filter, G, Image as SvgImage, LinearGradient, Mask, Rect, Stop } from 'react-native-svg';
+import Svg, { Defs, FeColorMatrix, FeGaussianBlur, Filter, G, Image as SvgImage, LinearGradient, Mask, Polygon, Rect, Stop } from 'react-native-svg';
 
-import { type ItemPlacement, FIT_CANVAS, fitAnchor, hasOutfit, outfitLayers, poseArms } from '../assets/fit';
+import { type ItemPlacement, type SleevePlacement, FIT_CANVAS, fitAnchor, hasOutfit, outfitLayers, poseArms } from '../assets/fit';
 import { itemImage } from '../assets/items';
 import { type BodyPose, bodyPoseFor, type PetPose, petBodyImage, RENDER_RATIO, type Src } from '../assets/pets';
 import { useLoop, useReducedMotion } from '../lib/motion';
@@ -304,7 +304,48 @@ function Cloth({ p, k, src, pet, cut, hidden, flat, uid }: { p: ItemPlacement; k
         </G>
       </G>
       {cut.arms.length ? <SvgImage href={pet} x={0} y={0} width={W} height={H} mask={`url(#${id}a)`} /> : null}
+      {p.sleeves ? <Sleeves s={p.sleeves} pet={pet} id={`${id}s`} /> : null}
     </Svg>
+  );
+}
+
+/** Fourrure → tissu : la luminance de la fourrure, teintée de la couleur du tissu (l'ombre et le relief restent). */
+const tintMatrix = ([r, g, b]: readonly [number, number, number]) =>
+  [r * 0.3, r * 0.59, r * 0.11, 0, 0, g * 0.3, g * 0.59, g * 0.11, 0, 0, b * 0.3, b * 0.59, b * 0.11, 0, 0, 0, 0, 0, 1, 0].join(' ');
+
+/**
+ * Manches d'un vêtement : les bras de la pose (polygones mesurés), redessinés depuis le minimoa lui-même et recolorés
+ * en tissu, puis le poignet un ton plus loin ; la patte reste nue. Les manches suivent donc chaque pose (bras levés,
+ * coucou, danse) sans image par pose.
+ */
+function Sleeves({ s, pet, id }: { s: SleevePlacement; pet: Src; id: string }) {
+  return (
+    <>
+      <Defs>
+        <Filter id={`${id}c`} filterUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          <FeColorMatrix type="matrix" values={tintMatrix(s.color)} />
+        </Filter>
+        <Filter id={`${id}k`} filterUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          <FeColorMatrix type="matrix" values={tintMatrix(s.cuff)} />
+        </Filter>
+        <Mask id={`${id}m`} maskType="alpha" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          {s.arms.map((a, i) => (
+            <Polygon key={i} points={a.sleeve} fill={color.white} />
+          ))}
+        </Mask>
+        <Mask id={`${id}n`} maskType="alpha" maskUnits="userSpaceOnUse" x={0} y={0} width={W} height={H}>
+          {s.arms.map((a, i) => (
+            <Polygon key={i} points={a.cuff} fill={color.white} />
+          ))}
+        </Mask>
+      </Defs>
+      <G mask={`url(#${id}m)`}>
+        <SvgImage href={pet} x={0} y={0} width={W} height={H} filter={`url(#${id}c)`} />
+      </G>
+      <G mask={`url(#${id}n)`}>
+        <SvgImage href={pet} x={0} y={0} width={W} height={H} filter={`url(#${id}k)`} />
+      </G>
+    </>
   );
 }
 

@@ -106,6 +106,9 @@ const VARIANT_IMAGES = {
   cape_dos: require('../../assets/items/cape_dos.webp'),
   hiver_cape_dos: require('../../assets/items/hiver_cape_dos.webp'),
   sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
+  // Corps sans manches (`fit.json` → `items.<id>.sleeve.image`) : les manches sont les bras recolorés de la pose.
+  sweat_corps: require('../../assets/items/sweat_corps.webp'),
+  teddy_corps: require('../../assets/items/teddy_corps.webp'),
   // Pose de profil (`fit.json` → `items.<id>.profile.image`) : une seule bretelle.
   sac_a_dos_profil: require('../../assets/items/sac_a_dos_profil.webp'),
   // Portés sur les attributs de l'espèce (ancre `tips`) : pompons de Suzie, cornes de Pia.

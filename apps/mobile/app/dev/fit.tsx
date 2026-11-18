@@ -5,7 +5,7 @@
  * `?sheet=2&species=pia` : les 12 poses de la planche 2 (ou `?sheet=var` : les variantes), nues puis habillées (deux tenues).
  * `?items=bob,cape` : seulement ces objets ; `?size=240` : cases plus grandes ; `?flat=1` : rendu simple (sans ombre, voile ni fourrure), pour comparer.
  * `?board=hiver_echarpe` : banc d'un objet, 4 espèces × 7 poses représentatives en grand, puis la même chose à 68 pt
- * (taille de la vitrine Minimoa+) ; `?bare=1` : sans l'objet (référence).
+ * (taille de la vitrine Minimoa+) ; `?bare=1` : sans l'objet (référence) ; `&poses=joie,danse` : d'autres poses.
  */
 import { itemById, type Outfit, type Species } from '@blowy/domain';
 import { color } from '@blowy/tokens';
@@ -55,7 +55,7 @@ const WINTER: Outfit[] = [
 const HAT_BG = color.panel;
 
 export default function FitBoard() {
-  const q = useLocalSearchParams<{ species?: string; flat?: string; size?: string; items?: string; stage?: string; shape?: string; hat?: string; pair?: string; wave?: string; hats?: string; faces?: string; neck?: string; clothes?: string; held?: string; pose?: string; sheet?: string; winter?: string; board?: string; bare?: string }>();
+  const q = useLocalSearchParams<{ species?: string; flat?: string; size?: string; items?: string; stage?: string; shape?: string; hat?: string; pair?: string; wave?: string; hats?: string; faces?: string; neck?: string; clothes?: string; held?: string; pose?: string; sheet?: string; winter?: string; board?: string; bare?: string; poses?: string }>();
   const species = (['nino', 'suzie', 'gaston', 'pia'].includes(q.species ?? '') ? q.species : 'nino') as Species;
   const cell = Number(q.size) || CELL;
   if (q.board) {
@@ -63,12 +63,13 @@ export default function FitBoard() {
     const slot = itemById(id)?.slot ?? 'body';
     const outfit: Outfit | null = q.bare ? null : { [slot]: id };
     const big = Number(q.size) || 200;
+    const poses = q.poses ? (q.poses.split(',') as BodyPose[]) : BOARD_POSES;
     return (
-      <ScrollView style={{ backgroundColor: color.night }} contentContainerStyle={{ padding: 8, width: (big + 4) * BOARD_POSES.length + 16 }}>
-        <Text size={15}>{`${id} · ${BOARD_POSES.join(' · ')}`}</Text>
+      <ScrollView style={{ backgroundColor: color.night }} contentContainerStyle={{ padding: 8, width: (big + 4) * poses.length + 16 }}>
+        <Text size={15}>{`${id} · ${poses.join(' · ')}`}</Text>
         {SPECIES.map((sp) => (
           <View key={sp} style={{ flexDirection: 'row' }}>
-            {BOARD_POSES.map((pose) => (
+            {poses.map((pose) => (
               <View key={pose} style={{ width: big, height: big / 0.9 + big * 0.08, margin: 2, borderRadius: 14, backgroundColor: color.panel, justifyContent: 'flex-end' }}>
                 <DressedPet species={sp} outfit={outfit} pose={pose} size={big} />
               </View>
@@ -77,7 +78,7 @@ export default function FitBoard() {
         ))}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
           {SPECIES.flatMap((sp) =>
-            BOARD_POSES.slice(0, 3).map((pose) => (
+            poses.slice(0, 3).map((pose) => (
               <View key={sp + pose} style={{ width: SMALL + 8, height: SMALL / 0.9 + 12, margin: 2, borderRadius: 10, backgroundColor: color.panel, alignItems: 'center', justifyContent: 'flex-end' }}>
                 <DressedPet species={sp} outfit={outfit} pose={pose} size={SMALL} />
               </View>
