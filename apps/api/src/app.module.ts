@@ -24,6 +24,7 @@ import { ReviewModule } from './review/review.module';
 import { GroupsModule } from './modules/groups/groups.module';
 import { FideliteModule } from './modules/fidelite/fidelite.module';
 import { GrowthModule } from './modules/growth/growth.module';
+import { QuartiersModule } from './modules/quartiers/quartiers.module';
 import { AuthGuard } from './shared/auth.guard';
 import { DevClockController } from './shared/dev-clock.controller';
 import { ErrorFilter } from './shared/error.filter';
@@ -56,6 +57,7 @@ export class AppModule {
         FideliteModule,
         // Croissance : codes, premier lancement, partages, tableau de l'administration (docs/VIRALITE.md).
         GrowthModule,
+        QuartiersModule,
         // Audit App Store : filtre des contenus et suite des signalements (global) ; compte de revue d'Apple.
         ModerationModule,
         ReviewModule.forRoot(env),

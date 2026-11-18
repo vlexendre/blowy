@@ -18,7 +18,7 @@ export interface StatLineProps {
 }
 
 /**
- * Quelques chiffres sur une seule rangée basse : le nombre (Anton, qui défile depuis 0 à la première apparition) et
+ * Quelques chiffres sur une seule rangée basse : le nombre (titre, qui défile depuis 0 à la première apparition) et
  * ce qu'il compte, à côté. Filet fin entre deux chiffres. Rien n'est rendu sans chiffre.
  */
 export function StatLine({ items }: StatLineProps) {

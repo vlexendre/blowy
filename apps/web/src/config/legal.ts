@@ -10,7 +10,7 @@
 export const TODO = 'À COMPLÉTER';
 
 /** Date de dernière mise à jour des pages légales (affichée dans chaque langue). */
-export const LEGAL_UPDATED_ISO = '2026-11-15';
+export const LEGAL_UPDATED_ISO = '2026-11-18';
 
 /** Éditeur du site et de l'application. */
 export const PUBLISHER = {

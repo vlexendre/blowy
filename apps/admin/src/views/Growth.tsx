@@ -24,6 +24,8 @@ const SOURCES: readonly (readonly [Source, string])[] = [
   ['words', '3 mots'],
   ['group', 'Groupes'],
   ['invite', 'Invitations'],
+  ['quiz', 'Quiz du site'],
+  ['quartier', 'Quartiers'],
   ['store', 'App Store'],
 ];
 
@@ -170,6 +172,65 @@ export function Growth() {
                       <td className="num">{fmtInt(r.eligible)}</td>
                       <td className="num">{fmtInt(r.viable)}</td>
                       <td className="num">{fmtPct(r.rate)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          </div>
+
+          <div className="grid-2 section">
+            <section className="card" aria-labelledby="g-quiz">
+              <h2 id="g-quiz">
+                Quiz « Quel minimoa es-tu ? » <span className="hint">K = partages / terminés × commencés depuis un défi / partages</span>
+              </h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Semaine</th>
+                    <th className="num">Commencés</th>
+                    <th className="num">dont défis</th>
+                    <th className="num">Terminés</th>
+                    <th className="num">Partagés</th>
+                    <th className="num">Comptes</th>
+                    <th className="num">K</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...data.quiz].reverse().map((r) => (
+                    <tr key={r.week}>
+                      <td>{fmtDayShort(r.week)}</td>
+                      <td className="num">{fmtInt(r.started)}</td>
+                      <td className="num">{fmtInt(r.challenged)}</td>
+                      <td className="num">{fmtInt(r.done)}</td>
+                      <td className="num">{fmtInt(r.shared)}</td>
+                      <td className="num">{fmtInt(r.joined)}</td>
+                      <td className="num">{r.k === null ? '—' : r.k.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+            <section className="card" aria-labelledby="g-quartiers">
+              <h2 id="g-quartiers">
+                Quartiers <span className="hint">inscriptions, confirmations, comptes venus d’une inscription</span>
+              </h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Semaine</th>
+                    <th className="num">Inscriptions</th>
+                    <th className="num">Confirmées</th>
+                    <th className="num">Comptes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...data.quartiers].reverse().map((r) => (
+                    <tr key={r.week}>
+                      <td>{fmtDayShort(r.week)}</td>
+                      <td className="num">{fmtInt(r.joins)}</td>
+                      <td className="num">{fmtInt(r.confirmed)}</td>
+                      <td className="num">{fmtInt(r.joined)}</td>
                     </tr>
                   ))}
                 </tbody>

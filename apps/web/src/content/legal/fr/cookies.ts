@@ -8,7 +8,7 @@ export const cookies: LegalPage = {
   body: [
     { h2: 'Ce que le site dépose', id: 'depose' },
     {
-      p: 'Le site minimoa.app ne dépose **aucun cookie** et n’enregistre rien dans le stockage de ton navigateur (ni stockage local, ni stockage de session). Il n’utilise aucun outil de mesure d’audience, aucune publicité et aucun bouton de réseau social. C’est pour ça qu’il n’y a pas de bandeau de consentement.',
+      p: 'Le site minimoa.app ne dépose **aucun cookie** et n’utilise pas le stockage local de ton navigateur. Le temps de la visite seulement (stockage de session, effacé à la fermeture de l’onglet), il garde le code d’un lien ouvert et le code de ton résultat au quiz, pour les réutiliser sur la page ; rien de tout ça n’est envoyé pour te suivre. Il n’utilise aucun outil de mesure d’audience, aucune publicité et aucun bouton de réseau social. C’est pour ça qu’il n’y a pas de bandeau de consentement.',
     },
     { p: 'Cette page concerne seulement le site. L’app Minimoa est couverte par la [politique de confidentialité](@confidentialite).' },
 
@@ -22,6 +22,7 @@ export const cookies: LegalPage = {
         rows: [
           ['Hébergeur du site : {{siteHost.name}}', 'Servir les pages', 'Toutes'],
           ['Serveur de l’app Minimoa (API)', 'Afficher le prénom et le minimoa de la personne, enregistrer les mots choisis', 'Pages « 3 mots » et invitation'],
+          ['Serveur de l’app Minimoa (API)', 'Calculer et garder ton résultat au quiz, afficher le compteur d’un quartier, enregistrer ton inscription', 'Pages « Quel minimoa es-tu ? » et « Ouvre ton quartier »'],
         ],
       },
     },
@@ -36,7 +37,7 @@ export const cookies: LegalPage = {
 
     { h2: 'Garder la main', id: 'reglages' },
     {
-      p: 'Ton navigateur te permet de bloquer ou supprimer les cookies et de limiter les requêtes vers d’autres sites. Le site restera lisible si tu bloques les polices externes : il utilisera celles de ton appareil.',
+      p: 'Ton navigateur te permet de bloquer ou supprimer les cookies et de limiter les requêtes vers d’autres sites. La police du site (Allo) est servie par le site lui-même : aucune police n’est chargée depuis un autre service.',
     },
     { p: 'Une question : {{email.privacy}}.' },
   ],

@@ -5,6 +5,7 @@ import Background from '../components/organisms/landing/Background.astro';
 import NavBar from '../components/organisms/landing/NavBar.astro';
 import SectionDots from '../components/organisms/landing/SectionDots.astro';
 import Hero from '../components/organisms/landing/Hero.astro';
+import HowSection from '../components/organisms/landing/HowSection.astro';
 import PetSection from '../components/organisms/landing/PetSection.astro';
 import WardrobeSection from '../components/organisms/landing/WardrobeSection.astro';
 import CharacterSection from '../components/organisms/landing/CharacterSection.astro';
@@ -30,6 +31,7 @@ const skip: SectionId[] = storeShots.length ? [] : ['ecrans'];
   <SectionDots skip={skip} />
   <main id="main">
     <Hero />
+    <HowSection />
     <PetSection />
     <WardrobeSection />
     <CharacterSection />

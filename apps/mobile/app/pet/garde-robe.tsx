@@ -38,6 +38,7 @@ const SHORTCUT: Record<StatKey, Href> = {
   ritualStreak: '/pet/serie',
   habitsKept: '/pet/habitudes',
   referrals: '/(tabs)/moi',
+  founded: '/(tabs)/rencontres',
 };
 
 export default function WardrobeScreen() {

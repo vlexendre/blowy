@@ -22,7 +22,7 @@
   --g-wine:linear-gradient(180deg,#2A0F2E 0%,#8C1D4F 100%);
   --g-night:linear-gradient(180deg,rgba(23,20,42,.86) 0%,rgba(34,30,60,.86) 100%);
   --c1:#6D3DF0; --c2:#FFB800; --c3:#FF5A3C;
-  --display:'Anton',Impact,'Arial Narrow Bold',sans-serif;
+  --display:'Allo',system-ui,-apple-system,'Segoe UI',sans-serif;
   --body:'Allo',system-ui,-apple-system,'Segoe UI',sans-serif;
   --navh:56px; --navpad:10px;
   --top:calc(env(safe-area-inset-top,0px) + var(--navh) + var(--navpad) * 2);
@@ -100,9 +100,10 @@ main{position:relative;z-index:1}
 .p-night::before{background:radial-gradient(90% 60% at 80% 0%,rgba(109,61,240,.25),transparent 60%)}
 .p-wine::before{background:radial-gradient(90% 60% at 50% 100%,rgba(255,90,60,.25),transparent 60%)}
 
-/* headline: Anton, 3 nowrap lines, sized to the column (cqi) and the screen height (svh) */
+/* grands titres : Allo ExtraBold (800) en capitales, lignes insécables, interlignage serré et approche négative pour
+   garder l'impact ; taille calée sur la colonne (cqi, ~0,64 em par caractère) et la hauteur d'écran (svh) */
 .tx{container-type:inline-size;width:100%;min-width:0}
-.hd{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.95;letter-spacing:.005em;font-size:clamp(28px,min(var(--hs,10svh),calc(100cqi / (var(--k,12) * .48))),var(--hmax,124px))}
+.hd{font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.98;letter-spacing:-.015em;word-spacing:.08em;font-size:clamp(26px,min(calc(var(--hs,10svh) * .86),calc(100cqi / (var(--k,12) * .64))),calc(var(--hmax,124px) * .86))}
 .ln{display:block;white-space:nowrap}
 .dim{opacity:.38}
 .js-split .ln.dim{opacity:1}

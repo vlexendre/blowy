@@ -43,7 +43,7 @@ const fr = {
     'Aucun humain ne lit vos messages, et aucune IA non plus : dans un groupe, les minimoas ne parlent que des événements.',
   /** Dit au moment de choisir ses habitudes (inscription, écran Habitudes). */
   habitsVisibility:
-    'Le nom de tes habitudes, leur série et ta rigueur sont montrés aux personnes que ton minimoa te présente et à tes liens. Jamais les photos de preuve, jamais l’heure.',
+    'Le nom de tes habitudes, leur série et ta régularité sont montrés aux personnes que ton minimoa te présente et à tes liens. Jamais les photos de preuve, jamais l’heure.',
   /** Suggestion « la tenir ensemble » (écran Habitudes, tuile de l'accueil). */
   together: (count: number, habit: string) =>
     `${count} personnes près de toi tiennent la même habitude : ${habit}. La tenir ensemble ?`,

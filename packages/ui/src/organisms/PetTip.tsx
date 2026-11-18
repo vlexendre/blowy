@@ -19,7 +19,7 @@ export interface PetTipProps {
   mood?: Mood | PetPose;
   /** `accent` : panneau jaune, texte gras (notifications) ; `card` : carte sombre, texte discret (bloqués) ; `wine` : panneau vin avec titre (supprimer). */
   tone?: 'accent' | 'card' | 'wine';
-  /** Titre Anton (ton `wine`). */
+  /** Titre (ton `wine`). */
   title?: TitleContent;
   /**
    * Pet vivant (respire, se touche) qu'on peut faire réagir : `ref.current?.react('no')` (il fait non de la tête).

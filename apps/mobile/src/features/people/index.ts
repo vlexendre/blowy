@@ -1,0 +1,47 @@
+/**
+ * « Les gens d'abord » (accueil) : ce que ton minimoa a pour toi aujourd'hui, en un seul état, le plus important
+ * d'abord. Un signe reçu, puis un message d'un lien, puis les personnes à présenter, puis ton groupe d'habitude ;
+ * sinon ce qui lui manque pour présenter quelqu'un (test de vision, position), sinon personne pour l'instant
+ * (inviter). Tout vient des requêtes déjà en cache (rencontres, liens, groupes, profil) : aucune requête de plus.
+ */
+import type { Me, PublicPet } from '@blowy/contract';
+
+import { useEncounters } from '@/features/encounters';
+import { useGroups } from '@/features/groups';
+import { useLinks } from '@/features/links';
+
+export type PeopleToday =
+  | { kind: 'loading' }
+  | { kind: 'waved'; name: string; pet: PublicPet; more: number }
+  | { kind: 'wrote'; linkId: string; name: string; pet: PublicPet; preview: string | null }
+  | { kind: 'present'; count: number; people: PublicPet[]; mutual: string | null }
+  | { kind: 'group'; groupId: string; name: string; upToDate: number; due: number; mineDone: boolean }
+  | { kind: 'vision' }
+  | { kind: 'location' }
+  | { kind: 'empty' };
+
+const DONE_STATUSES: readonly string[] = ['kept', 'joker', 'not_due'];
+
+export function usePeopleToday(me: Me | undefined): PeopleToday {
+  const encounters = useEncounters();
+  const links = useLinks();
+  const groups = useGroups();
+  if (!me || (encounters.isPending && links.isPending)) return { kind: 'loading' };
+  const e = encounters.data;
+  const waved = e?.incoming ?? [];
+  const first = waved[0];
+  if (first) return { kind: 'waved', name: first.from.displayName, pet: first.from.pet, more: waved.length - 1 };
+  const unread = (links.data ?? []).filter((l) => l.status !== 'archived' && l.unread > 0).sort((a, b) => (b.lastMessage?.at ?? '').localeCompare(a.lastMessage?.at ?? ''))[0];
+  if (unread) return { kind: 'wrote', linkId: unread.id, name: unread.other.displayName, pet: unread.other.pet, preview: unread.lastMessage?.preview ?? null };
+  const fresh = (e?.suggestions ?? []).filter((s) => !s.waved);
+  if (fresh.length) return { kind: 'present', count: fresh.length, people: fresh.slice(0, 3).map((s) => s.user.pet), mutual: fresh.find((s) => s.mutualName)?.mutualName ?? null };
+  const group = (groups.data?.groups ?? []).find((g) => g.status === 'active' && g.habit && g.habit.today.due > 0);
+  if (group?.habit) {
+    const t = group.habit.today;
+    return { kind: 'group', groupId: group.id, name: group.name, upToDate: t.upToDate, due: t.due, mineDone: DONE_STATUSES.includes(t.mine) };
+  }
+  if (!me.visionTestDone) return { kind: 'vision' };
+  const loc = me.identity.location;
+  if (!loc.consentAt && !loc.zone && !loc.chosenCityActive) return { kind: 'location' };
+  return { kind: 'empty' };
+}

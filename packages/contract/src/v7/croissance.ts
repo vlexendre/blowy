@@ -28,7 +28,7 @@ export type ShareBody = z.infer<typeof ShareBody>;
 
 /** Un code tapé ou lu dans un lien : ce qu'il est, et un libellé sûr à montrer (nom du créateur, du groupe, prénom de qui invite). */
 export const CodeLookupZ = z.object({
-  kind: z.enum(['creator', 'invite', 'group', 'words']),
+  kind: z.enum(['creator', 'invite', 'group', 'words', 'quiz', 'quartier']),
   code: z.string(),
   label: z.string().nullable(),
 });
@@ -114,6 +114,11 @@ export const AdminGrowthZ = z.object({
   ),
   words: z.array(z.object({ week: Day, votes: z.number().int(), joined: z.number().int(), loopRate: z.number().nullable() })),
   groups: z.array(z.object({ week: Day, created: z.number().int(), eligible: z.number().int(), viable: z.number().int(), rate: z.number().nullable() })),
+  /** Quiz du site (absent des réponses d'une ancienne API). */
+  quiz: z
+    .array(z.object({ week: Day, started: z.number().int(), challenged: z.number().int(), done: z.number().int(), shared: z.number().int(), joined: z.number().int(), k: z.number().nullable() }))
+    .default([]),
+  quartiers: z.array(z.object({ week: Day, joins: z.number().int(), confirmed: z.number().int(), joined: z.number().int() })).default([]),
 });
 export type AdminGrowth = z.infer<typeof AdminGrowthZ>;
 

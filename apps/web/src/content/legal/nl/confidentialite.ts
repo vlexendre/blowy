@@ -209,6 +209,19 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'De quiz „Welke minimoa ben jij?” en „Open je buurt” (website, zonder account)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz:** je antwoorden worden gebruikt om tijdens het verzoek je resultaat te berekenen; we bewaren **alleen het resultaat** (soort, karakter en startmeters) onder een korte code, plus de resultaatcode van wie je uitdaagde, als die er is. Er hangt geen naam, adres of IP aan. Met de code vind je je resultaat terug en vul je je minimoa vooraf in als je hem in de app typt. Na een jaar gewist.',
+        '**Open je buurt:** je e-mailadres, de gekozen buurt (uit een lijst of via postcode; **nooit je locatie**), je taal, de datum van je toestemming en bevestiging, je uitnodigingscode en, als je via iemands link kwam, wie je uitnodigde. Je telt pas mee in de buurtteller nadat je je adres hebt bevestigd (dubbele bevestiging). We schrijven je hooguit twee keer: de bevestiging en de opening van de buurt.',
+        '**Doel:** je laten weten wanneer je buurt opengaat, de echte teller tonen (een getal, nooit een adres) en het decoratieve voorwerp „Oprichter” geven aan de eerste 3 mensen die in de buurt uitnodigden.',
+        '**Rechtsgrond:** je toestemming (een vakje dat nooit vooraf is aangevinkt), die je op elk moment intrekt via de afmeldlink in elke e-mail.',
+        '**Bewaartermijn:** niet bevestigd: binnen 7 dagen gewist. Afmelden wist het adres meteen. Na de openingsmail wordt het adres binnen 30 dagen gewist; er blijft alleen een anonieme regel (buurt en code) over voor de teller en het voorwerp „Oprichter”.',
+        '**Toegang:** e-mails gaan via onze e-mailprovider ({{sub.email.provider}}). De interne tool van het team toont alleen tellers per buurt, nooit een adres.',
+        '**Op de website:** tijdens je bezoek wordt je resultaatcode bewaard in de sessieopslag van je browser (gewist als je het tabblad sluit), om je resultaat opnieuw te tonen. Geen cookies.',
+      ],
+    },
+
     { h3: 'Statistieken en beheer' },
     {
       ul: [
@@ -363,6 +376,7 @@ export const confidentialite: LegalPage = {
           ['Behandelde meldingen en moderatiebeslissingen', '1 jaar na het sluiten van het dossier, alleen langer als de wet dat vereist.'],
           ['Definitieve uitsluiting', 'Een niet-omkeerbare vingerafdruk van de Apple- of Google-identificatie van het account, gedurende 3 jaar, om een nieuwe aanmelding te voorkomen.'],
           ['Statistieken', 'Activiteitsdagen en interne ranglijst met namen: 40 dagen. Voorgestelde ontmoetingen: 30 dagen. Geaggregeerde cijfers, waarmee je niet te identificeren bent: onbeperkt.'],
+          ['Websitequiz en „Open je buurt”', 'Quizresultaat: 1 jaar. Niet-bevestigde aanmelding: 7 dagen. E-mailadres: tot je je afmeldt, of 30 dagen na de openingsmail van de buurt.'],
           ['Herkomst en stappen van je traject', 'Zolang je account bestaat; gewist of geanonimiseerd bij verwijdering. Dagtellers (bezoeken, eerste keer openen, stemmen, delen), zonder persoon erachter: onbeperkt.'],
           ['Technische logboeken van de app', 'Maximaal 30 dagen. De logboeken van onze hostingproviders volgen hun eigen termijnen.'],
           ['Contact met de klantenservice', '1 jaar na het sluiten van het verzoek.'],

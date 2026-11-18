@@ -54,6 +54,6 @@ export const mentionsLegales: LegalPage = {
     {
       p: 'The Minimoa brand, the minimoas, illustrations, texts, animations and software are protected by intellectual property law. They belong to {{publisher.name}} or its partners. Copying or reusing them without permission is forbidden, except where the law allows it (short quotation, private copy).',
     },
-    { p: 'Website fonts: Anton and Allo (Josh Puckett), under the SIL Open Font License. Home page animations: the GSAP library.' },
+    { p: 'Website font, also used in its images: Allo (Josh Puckett), under the SIL Open Font License. Home page animations: the GSAP library.' },
   ],
 };

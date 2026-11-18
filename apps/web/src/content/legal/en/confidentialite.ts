@@ -209,6 +209,19 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'The “Which minimoa are you?” quiz and “Open your neighbourhood” (website, no account)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz:** your answers are used to compute your result during the request; we keep **only the result** (species, character and starting gauges) under a short code, plus the result code of the person who challenged you, if any. No name, no address, no IP is attached. The code lets you find your result again and pre-fill your minimoa if you type it in the app. Erased after one year.',
+        '**Open your neighbourhood:** your email address, the neighbourhood you picked (from a list or by postcode; **never your location**), your language, the date of your consent and confirmation, your invite code and, if you came through someone’s link, who invited you. You only count in the neighbourhood counter once you’ve confirmed your address (double opt-in). We write to you twice at most: the confirmation, then the neighbourhood opening.',
+        '**Purpose:** to tell you when your neighbourhood opens, show the real counter (a number, never an address), and give the decorative “Founder” item to the first 3 people who invited others in the neighbourhood.',
+        '**Legal basis:** your consent (a checkbox, never pre-ticked), which you can withdraw at any time with the unsubscribe link in every email.',
+        '**Retention:** if not confirmed, the sign-up is erased within 7 days. Unsubscribing erases the address at once. After the opening email, the address is erased within 30 days; only an anonymous row (neighbourhood and code) remains for the counter and the “Founder” item.',
+        '**Access:** emails are sent through our email provider ({{sub.email.provider}}). The team’s internal tool only shows counts per neighbourhood, never an address.',
+        '**On the website:** during your visit, your result code is kept in your browser’s session storage (cleared when you close the tab) to show you your result again. No cookies.',
+      ],
+    },
+
     { h3: 'Statistics and administration' },
     {
       ul: [
@@ -363,6 +376,7 @@ export const confidentialite: LegalPage = {
           ['Handled reports and moderation decisions', '1 year after the case is closed, longer only if the law requires it.'],
           ['Permanent ban', 'A non-reversible fingerprint of the account’s Apple or Google identifier, for 3 years, to prevent re-registration.'],
           ['Statistics', 'Activity days and named internal ranking: 40 days. Suggested encounters: 30 days. Aggregated figures, which cannot identify you: without limit.'],
+          ['Website quiz and “Open your neighbourhood”', 'Quiz result: 1 year. Unconfirmed sign-up: 7 days. Email address: until you unsubscribe, or 30 days after the neighbourhood opening email.'],
           ['Arrival source and journey steps', 'As long as your account exists; erased or anonymized when it’s deleted. Daily counters (visits, first launches, votes, shares), with no one behind them: without limit.'],
           ['The app’s technical logs', '30 days at most. Our hosts’ logs follow their own retention periods.'],
           ['Exchanges with support', '1 year after the request is closed.'],

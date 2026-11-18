@@ -89,13 +89,26 @@ const fr = {
     group_asleep: { title: (v) => `« ${v.group} » s’est endormi`, body: () => 'Plus de vies pour l’instant. N’importe qui peut le réveiller.' },
     group_joined: { title: (v) => `« ${v.group} » : ${v.name} arrive`, body: (v) => (Number(v.count) >= 3 ? `Vous êtes ${v.count}. Dis-lui bonjour.` : `Vous êtes ${v.count}. Encore une personne et la série démarre.`) },
     first_steps: {
-      title: (v) => (v.step === 'd1' ? `${v.minimoa} a une idée` : v.step === 'd3' ? 'À plusieurs, c’est plus simple' : `Une semaine avec ${v.minimoa}`),
+      title: (v) =>
+        v.step === 'd1'
+          ? `${v.minimoa} veut savoir qui tu es`
+          : v.step === 'd2'
+            ? `${v.minimoa} a une idée`
+            : v.step === 'd3'
+              ? 'À plusieurs, c’est plus simple'
+              : v.step === 'd5'
+                ? `${v.minimoa} a cherché pour toi`
+                : `Une semaine avec ${v.minimoa}`,
       body: (v) =>
         v.step === 'd1'
-          ? 'Choisis une habitude à tenir : il la suivra avec toi, un jour après l’autre.'
-          : v.step === 'd3'
-            ? `Crée un groupe avec des potes pour tenir une habitude ensemble. ${v.minimoa} adore la compagnie.`
-            : 'Fais un tour dans Rencontres : il y a peut-être quelqu’un à saluer près de chez toi.',
+          ? 'Envoie ton lien « 3 mots » à 3 potes : ils te décrivent, sans compte, et il te connaît mieux.'
+          : v.step === 'd2'
+            ? 'Choisis une habitude à tenir : il la suivra avec toi, et des gens près de chez toi la tiennent peut-être aussi.'
+            : v.step === 'd3'
+              ? 'Rejoins un groupe par son lien, ou crée le tien et envoie-le à 2 potes. Il démarre à 3.'
+              : v.step === 'd5'
+                ? 'Viens voir qui il te présente près de chez toi. Il te dit pourquoi ; rien ne se passe sans toi.'
+                : 'Ta première semaine est là : ce qui a bougé, et une carte à partager.',
     },
     minimoa_news: {
       title: (v) =>
@@ -225,13 +238,26 @@ export const notificationTexts = defineMessages({
       group_asleep: { title: (v) => `“${v.group}” fell asleep`, body: () => 'No lives left for now. Anyone can wake it up.' },
       group_joined: { title: (v) => `${v.name} joined “${v.group}”`, body: (v) => (Number(v.count) >= 3 ? `There are ${v.count} of you now. Say hi.` : `There are ${v.count} of you. One more and the streak starts.`) },
       first_steps: {
-        title: (v) => (v.step === 'd1' ? `${v.minimoa} has an idea` : v.step === 'd3' ? 'Easier together' : `One week with ${v.minimoa}`),
+        title: (v) =>
+          v.step === 'd1'
+            ? `${v.minimoa} wants to know who you are`
+            : v.step === 'd2'
+              ? `${v.minimoa} has an idea`
+              : v.step === 'd3'
+                ? 'Easier together'
+                : v.step === 'd5'
+                  ? `${v.minimoa} looked around for you`
+                  : `One week with ${v.minimoa}`,
         body: (v) =>
           v.step === 'd1'
-            ? 'Pick a habit to keep: it will follow along with you, one day at a time.'
-            : v.step === 'd3'
-              ? `Start a group with friends to keep a habit together. ${v.minimoa} loves company.`
-              : 'Take a look at Encounters: there might be someone near you to wave at.',
+            ? 'Send your “3 words” link to 3 friends: they describe you, no account needed, and it gets to know you better.'
+            : v.step === 'd2'
+              ? 'Pick a habit to keep: it will follow along with you, and people near you might keep it too.'
+              : v.step === 'd3'
+                ? 'Join a group with its link, or start yours and send it to 2 friends. It starts at 3.'
+                : v.step === 'd5'
+                  ? 'Come see who it’s introducing you to near you. It tells you why; nothing happens without you.'
+                  : 'Your first week is here: what changed, and a card to share.',
       },
       minimoa_news: {
         title: (v) =>
@@ -357,13 +383,26 @@ export const notificationTexts = defineMessages({
       group_asleep: { title: (v) => `«${v.group}» se ha dormido`, body: () => 'Sin vidas por ahora. Cualquiera puede despertarlo.' },
       group_joined: { title: (v) => `${v.name} se une a «${v.group}»`, body: (v) => (Number(v.count) >= 3 ? `Ya sois ${v.count}. Salúdale.` : `Sois ${v.count}. Una persona más y empieza la racha.`) },
       first_steps: {
-        title: (v) => (v.step === 'd1' ? `${v.minimoa} tiene una idea` : v.step === 'd3' ? 'Juntos es más fácil' : `Una semana con ${v.minimoa}`),
+        title: (v) =>
+          v.step === 'd1'
+            ? `${v.minimoa} quiere saber cómo eres`
+            : v.step === 'd2'
+              ? `${v.minimoa} tiene una idea`
+              : v.step === 'd3'
+                ? 'Juntos es más fácil'
+                : v.step === 'd5'
+                  ? `${v.minimoa} ha buscado por ti`
+                  : `Una semana con ${v.minimoa}`,
         body: (v) =>
           v.step === 'd1'
-            ? 'Elige un hábito que mantener: lo seguirá contigo, día a día.'
-            : v.step === 'd3'
-              ? `Crea un grupo con amigos para mantener un hábito juntos. A ${v.minimoa} le encanta la compañía.`
-              : 'Echa un vistazo a Encuentros: quizá haya alguien cerca a quien saludar.',
+            ? 'Envía tu enlace «3 palabras» a 3 amistades: te describen sin cuenta, y te conoce mejor.'
+            : v.step === 'd2'
+              ? 'Elige un hábito que mantener: lo seguirá contigo, y quizá gente cerca de ti también lo mantiene.'
+              : v.step === 'd3'
+                ? 'Únete a un grupo con su enlace, o crea el tuyo y envíalo a 2 amistades. Empieza con 3.'
+                : v.step === 'd5'
+                  ? 'Ven a ver a quién te presenta cerca de ti. Te dice por qué; nada pasa sin ti.'
+                  : 'Tu primera semana ya está aquí: lo que ha cambiado, y una tarjeta para compartir.',
       },
       minimoa_news: {
         title: (v) =>
@@ -489,13 +528,26 @@ export const notificationTexts = defineMessages({
       group_asleep: { title: (v) => `«${v.group}» adormeceu`, body: () => 'Sem vidas por enquanto. Qualquer pessoa pode acordá-lo.' },
       group_joined: { title: (v) => `${v.name} entrou em “${v.group}”`, body: (v) => (Number(v.count) >= 3 ? `Agora vocês são ${v.count}. Dê um oi.` : `Vocês são ${v.count}. Mais uma pessoa e a sequência começa.`) },
       first_steps: {
-        title: (v) => (v.step === 'd1' ? `${v.minimoa} teve uma ideia` : v.step === 'd3' ? 'Junto fica mais fácil' : `Uma semana com ${v.minimoa}`),
+        title: (v) =>
+          v.step === 'd1'
+            ? `${v.minimoa} quer saber quem você é`
+            : v.step === 'd2'
+              ? `${v.minimoa} teve uma ideia`
+              : v.step === 'd3'
+                ? 'Junto fica mais fácil'
+                : v.step === 'd5'
+                  ? `${v.minimoa} procurou por você`
+                  : `Uma semana com ${v.minimoa}`,
         body: (v) =>
           v.step === 'd1'
-            ? 'Escolha um hábito para manter: ele vai acompanhar você, um dia de cada vez.'
-            : v.step === 'd3'
-              ? `Crie um grupo com amigos para manter um hábito juntos. ${v.minimoa} adora companhia.`
-              : 'Dê uma olhada em Encontros: talvez tenha alguém perto de você para cumprimentar.',
+            ? 'Mande seu link “3 palavras” para 3 amigos: eles te descrevem, sem conta, e ele te conhece melhor.'
+            : v.step === 'd2'
+              ? 'Escolha um hábito para manter: ele acompanha você, e talvez gente perto de você mantenha também.'
+              : v.step === 'd3'
+                ? 'Entre num grupo pelo link, ou crie o seu e mande para 2 amigos. Ele começa com 3.'
+                : v.step === 'd5'
+                  ? 'Venha ver quem ele te apresenta perto de você. Ele diz por quê; nada acontece sem você.'
+                  : 'Sua primeira semana chegou: o que mudou, e um cartão para compartilhar.',
       },
       minimoa_news: {
         title: (v) =>
@@ -621,13 +673,26 @@ export const notificationTexts = defineMessages({
       group_asleep: { title: (v) => `“${v.group}” is in slaap gevallen`, body: () => 'Even geen levens meer. Iedereen kan de groep wakker maken.' },
       group_joined: { title: (v) => `${v.name} doet mee in „${v.group}”`, body: (v) => (Number(v.count) >= 3 ? `Jullie zijn nu met ${v.count}. Zeg even hallo.` : `Jullie zijn met ${v.count}. Nog één persoon en de reeks begint.`) },
       first_steps: {
-        title: (v) => (v.step === 'd1' ? `${v.minimoa} heeft een idee` : v.step === 'd3' ? 'Samen is makkelijker' : `Een week met ${v.minimoa}`),
+        title: (v) =>
+          v.step === 'd1'
+            ? `${v.minimoa} wil weten wie je bent`
+            : v.step === 'd2'
+              ? `${v.minimoa} heeft een idee`
+              : v.step === 'd3'
+                ? 'Samen is makkelijker'
+                : v.step === 'd5'
+                  ? `${v.minimoa} heeft voor je gezocht`
+                  : `Een week met ${v.minimoa}`,
         body: (v) =>
           v.step === 'd1'
-            ? 'Kies een gewoonte om vol te houden: hij volgt hem met je mee, dag na dag.'
-            : v.step === 'd3'
-              ? `Begin een groep met vrienden om samen een gewoonte vol te houden. ${v.minimoa} houdt van gezelschap.`
-              : 'Kijk eens bij Ontmoetingen: misschien is er iemand in de buurt om naar te zwaaien.',
+            ? 'Stuur je “3 woorden”-link naar 3 vrienden: ze beschrijven je, zonder account, en hij leert je beter kennen.'
+            : v.step === 'd2'
+              ? 'Kies een gewoonte om vol te houden: hij volgt die met je, en mensen in je buurt houden haar misschien ook vol.'
+              : v.step === 'd3'
+                ? 'Sluit je aan bij een groep via de link, of start je eigen en stuur hem naar 2 vrienden. Hij start bij 3.'
+                : v.step === 'd5'
+                  ? 'Kom kijken aan wie hij je voorstelt in je buurt. Hij zegt waarom; niets gebeurt zonder jou.'
+                  : 'Je eerste week is er: wat er veranderde, en een kaart om te delen.',
       },
       minimoa_news: {
         title: (v) =>

@@ -12,6 +12,7 @@ import { groupesText } from './v7/groupes';
 import { notificationTexts } from './v7/notifications';
 import { rituelsText } from './v7/rituels';
 import { visionText } from './v7/vision';
+import { quizText } from './v7/quiz';
 import { voiceText } from './voice';
 
 export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = {
@@ -28,4 +29,5 @@ export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = 
   audit: auditText,
   groupes: groupesText,
   fidelite: fideliteText,
+  quiz: quizText,
 };

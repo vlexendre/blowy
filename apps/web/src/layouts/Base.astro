@@ -1,6 +1,6 @@
 ---
 /**
- * Gabarit de base : <head> (méta, Open Graph, Twitter, favicon, polices auto-hébergées Anton et Allo), variables CSS issues de @blowy/tokens,
+ * Gabarit de base : <head> (méta, Open Graph, Twitter, favicon, police auto-hébergée Allo (titres en 800)), variables CSS issues de @blowy/tokens,
  * lien d'évitement, contenu, emplacement « footer ».
  */
 import { color, font, gradient, radius, space } from '@blowy/tokens';
@@ -51,7 +51,8 @@ const tokenVars = [
   ...Object.entries(gradient).map(([k, [a, b]]) => `--gradient-${kebab(k)}:linear-gradient(180deg,${a} 0%,${b} 100%)`),
   ...Object.entries(radius).map(([k, v]) => `--radius-${k}:${v}px`),
   ...Object.entries(space).map(([k, v]) => `--space-${k}:${v}px`),
-  `--font-display:${font.web.display}`,
+  // Le site n'a qu'une police : Allo, titres compris (graisse 800).
+  `--font-display:'Allo', sans-serif`,
   `--font-body:${font.web.body}`,
 ];
 const tokenCss = `:root{${tokenVars.join(';')}}`;
@@ -67,7 +68,7 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     {noindex && <meta name="robots" content="noindex" />}
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={new URL(a.path, SITE_URL).href} />)}
     <meta name="theme-color" content={color.night} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
@@ -88,10 +89,8 @@ const tokenCss = `:root{${tokenVars.join(';')}}`;
     <meta name="twitter:image" content={ogUrl} />
     <meta name="twitter:image:alt" content={ogAlt} />
 
-    <link rel="preload" href="/fonts/anton/Anton.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/allo/AlloVariableFriendly.woff2" as="font" type="font/woff2" crossorigin />
     <style is:global>
-      @font-face { font-family: 'Anton'; src: url('/fonts/anton/Anton.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
       @font-face { font-family: 'Allo'; src: url('/fonts/allo/AlloVariableFriendly.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
     </style>
     <style is:inline set:html={tokenCss}></style>

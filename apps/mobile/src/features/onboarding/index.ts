@@ -1,5 +1,5 @@
-import type { Gender, LatLng, Me, OnboardInput, VisionAnswer } from '@blowy/contract';
-import { type Species, VISION_TEST_IDS } from '@blowy/domain';
+import type { Gender, LatLng, Me, OnboardInput, QuizResultDto, VisionAnswer } from '@blowy/contract';
+import { type Gauges, type Species, VISION_TEST_IDS } from '@blowy/domain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Href } from 'expo-router';
@@ -19,7 +19,12 @@ export * from './vision';
 export * from './permissions';
 
 /** Les écrans du parcours d'inscription qu'on peut reprendre (nom de la route dans `app/(onboarding)`). */
-export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'sexe', 'habitudes', 'naissance', 'localisation', 'notifications', 'promesse', 'connexion'] as const;
+/**
+ * Inscription courte (8 écrans jusqu'au minimoa vivant) : création, test, résultat, prénom (et « Tu es… »), naissance,
+ * connexion, préparation, « tout est prêt ». La position et les notifications se demandent au moment où elles servent
+ * (accueil), les habitudes après la première journée, les invitations depuis l'accueil.
+ */
+export const RESUMABLE = ['craft', 'vision', 'ta-vision', 'prenom', 'naissance', 'connexion'] as const;
 export type OnboardingStep = (typeof RESUMABLE)[number];
 
 export type PermissionAnswer = 'granted' | 'denied' | 'unavailable';
@@ -47,7 +52,9 @@ interface DraftData {
   /** Code tapé à l'étape du prénom (« Un code ? ») : invitation, groupe, créateur ou « 3 mots ». */
   inviteCode: string;
   /** Ce qu'est ce code (vérifié par l'API) ; null : pas vérifié ou inconnu (envoyé comme invitation, ignoré s'il ne l'est pas). */
-  codeKind: 'creator' | 'invite' | 'group' | 'words' | null;
+  codeKind: 'creator' | 'invite' | 'group' | 'words' | 'quiz' | 'quartier' | null;
+  /** Caractère de départ venu du quiz du site (« Quel minimoa es-tu ? ») : les jauges du résultat ; null sinon. */
+  quizGauges: Gauges | null;
   email: string;
   /** Dernier écran atteint (reprise). */
   step: OnboardingStep | null;
@@ -75,6 +82,7 @@ const empty: DraftData = {
   notificationsAnswer: null,
   inviteCode: '',
   codeKind: null,
+  quizGauges: null,
   email: '',
   step: null,
 };
@@ -121,20 +129,28 @@ export const isValidBirthdate = (v: string): boolean => /^\d{4}-\d{2}-\d{2}$/.te
 /** Le test est complet : une réponse par situation. */
 export const visionDone = (answers: readonly VisionAnswer[]): boolean => VISION_TEST_IDS.every((id) => answers.some((a) => a.questionId === id));
 
-/** Le brouillon a tout ce qu'il faut pour créer le compte et le minimoa. */
+/** Le brouillon a tout ce qu'il faut pour créer le compte et le minimoa (« Tu es… » est facultatif). */
 export function isDraftComplete(d: DraftData = useDraft.getState()): boolean {
-  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && !!d.gender && visionDone(d.visionAnswers);
+  return !!d.petName.trim() && !!d.displayName.trim() && isValidBirthdate(d.birthdate) && visionDone(d.visionAnswers);
 }
 
 /** Le brouillon a un minimoa (sinon, l'inscription repart de la création). */
 export const hasDraftPet = (): boolean => !!useDraft.getState().petName.trim();
 
 /**
- * Écran de reprise connu. Un brouillon d'avant le 17 nov. peut encore s'être arrêté sur « ce que tu cherches »
- * (étape retirée, spéc. §27) : il reprend à l'étape qui suivait.
+ * Écran de reprise connu. Un ancien brouillon peut s'être arrêté sur une étape retirée (« ce que tu cherches », sexe,
+ * habitudes, position, notifications, promesse) : il reprend à l'étape qui suit dans le parcours court.
  */
+const LEGACY_STEP: Readonly<Record<string, OnboardingStep>> = {
+  cherche: 'naissance',
+  sexe: 'naissance',
+  habitudes: 'naissance',
+  localisation: 'connexion',
+  notifications: 'connexion',
+  promesse: 'connexion',
+};
 const knownStep = (step: string | null): OnboardingStep | null =>
-  step === 'cherche' ? 'habitudes' : step && (RESUMABLE as readonly string[]).includes(step) ? (step as OnboardingStep) : null;
+  step ? (LEGACY_STEP[step] ?? ((RESUMABLE as readonly string[]).includes(step) ? (step as OnboardingStep) : null)) : null;
 
 const stepHref = (step: OnboardingStep): Href => `/(onboarding)/${step}` as Href;
 
@@ -164,6 +180,20 @@ export function adoptPendingInvite(): void {
   if (code && !d.inviteCode) d.set({ inviteCode: code });
 }
 
+/**
+ * Résultat du quiz du site repris (lien `minimoa://quiz/<code>` ou code tapé) : l'espèce et le caractère de départ du
+ * minimoa ; le nom suit l'espèce tant que la personne ne l'a pas changé. Le code part avec l'inscription (source « quiz »).
+ */
+export function adoptQuizResult(r: QuizResultDto, speciesName: (s: Species) => string, isDefaultName: (name: string) => boolean): void {
+  const d = useDraft.getState();
+  d.set({
+    species: r.species,
+    quizGauges: r.gauges,
+    ...(isDefaultName(d.petName) ? { petName: speciesName(r.species) } : {}),
+    ...(!d.inviteCode || d.codeKind === 'quiz' ? { inviteCode: r.code, codeKind: 'quiz' as const } : {}),
+  });
+}
+
 /** Le corps de `POST /v1/me/onboard` à partir du brouillon (contrat : `OnboardInput`). */
 export function onboardBody(d: DraftData = useDraft.getState(), fix: LatLng | null = null): OnboardInput {
   const point = fix ?? d.location;
@@ -174,6 +204,8 @@ export function onboardBody(d: DraftData = useDraft.getState(), fix: LatLng | nu
     displayName: d.displayName.trim(),
     birthdate: d.birthdate,
     pet: { name: d.petName.trim(), species: d.species },
+    // Caractère de départ du quiz du site, s'il a été repris.
+    ...(d.quizGauges ? { quiz: d.quizGauges } : {}),
     inviteCode: code && (kind === null || kind === 'invite') ? code : undefined,
     // Un code tapé (créateur, groupe, « 3 mots ») passe avant le premier lien ouvert (docs/VIRALITE.md).
     attribution: code && kind && kind !== 'invite' ? { source: kind, ref: code } : currentAttribution(),
@@ -207,6 +239,12 @@ export function useOnboard() {
   });
 }
 
+/** Un résultat du quiz du site (public, avant la connexion). */
+export function useQuizResult(code: string | null) {
+  const api = useApi();
+  return useQuery({ queryKey: ['quiz', code], queryFn: () => api.quiz.result(code ?? ''), enabled: !!code, staleTime: 60 * 60_000, retry: false });
+}
+
 /** Les 12 situations, servies par l'API dans la langue de l'app (public : avant la connexion). */
 export function useVisionTest() {
   const api = useApi();
@@ -222,12 +260,7 @@ const FLOW: readonly [OnboardingStep, number][] = [
   ['vision', 12],
   ['ta-vision', 1],
   ['prenom', 1],
-  ['sexe', 1],
-  ['habitudes', 1],
   ['naissance', 1],
-  ['localisation', 1],
-  ['notifications', 1],
-  ['promesse', 1],
   ['connexion', 1],
 ];
 const FLOW_TOTAL = FLOW.reduce((n, [, w]) => n + w, 0) + 1;

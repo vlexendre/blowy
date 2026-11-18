@@ -11,8 +11,11 @@ import { GROUP_MIN_MEMBERS } from './groups';
 import type { VisionAxis, VisionProfile } from './vision';
 
 // ── Sources d'arrivée ──────────────────────────────────────────────────────
-/** creator : code d'un créateur · words : lien « 3 mots » · group : lien de groupe · invite : invitation personnelle · store : rien (App Store). */
-export const ACQUISITION_SOURCES = ['creator', 'words', 'group', 'invite', 'store'] as const;
+/**
+ * creator : code d'un créateur · words : lien « 3 mots » · group : lien de groupe · invite : invitation personnelle ·
+ * quiz : résultat du quiz « Quel minimoa es-tu ? » · quartier : inscription « Ouvre ton quartier » · store : rien (App Store).
+ */
+export const ACQUISITION_SOURCES = ['creator', 'words', 'group', 'invite', 'quiz', 'quartier', 'store'] as const;
 export type AcquisitionSource = (typeof ACQUISITION_SOURCES)[number];
 /** Sources où une personne en a fait venir une autre (facteur K). */
 export const REFERRAL_SOURCES: readonly AcquisitionSource[] = ['words', 'group', 'invite'];
@@ -36,6 +39,10 @@ export interface AttributionFacts {
   wordsOwnerId: string | null;
   /** Groupe dont le lien a été ouvert (`claimed.ref` = son code). */
   groupId: string | null;
+  /** Résultat du quiz repris (`claimed.ref` = son code), s'il existe. */
+  quizCode?: string | null;
+  /** Inscription « Ouvre ton quartier » reprise (`claimed.ref` = son code), s'il existe. */
+  signupCode?: string | null;
 }
 
 export interface Attribution {
@@ -56,6 +63,8 @@ export function resolveAttribution(f: AttributionFacts, self: string): Attributi
   if (c?.source === 'words' && f.wordsOwnerId && f.wordsOwnerId !== self) return { source: 'words', ref: null, referredBy: f.wordsOwnerId };
   if (c?.source === 'group' && f.groupId) return { source: 'group', ref: f.groupId, referredBy: null };
   if (c?.source === 'creator' && f.creatorCode) return { source: 'creator', ref: f.creatorCode, referredBy: null };
+  if (c?.source === 'quiz' && f.quizCode) return { source: 'quiz', ref: f.quizCode, referredBy: null };
+  if (c?.source === 'quartier' && f.signupCode) return { source: 'quartier', ref: f.signupCode, referredBy: null };
   return { source: 'store', ref: null, referredBy: null };
 }
 
@@ -74,14 +83,25 @@ export const sourceOfPage = (page: SharePage): AcquisitionSource => PAGE_SOURCE[
 export const SHARE_KINDS = ['invite', 'words', 'group', 'moment'] as const;
 export type ShareKind = (typeof SHARE_KINDS)[number];
 
+/**
+ * Étapes du site, sans compte (docs/VIRALITE.md) : quiz commencé (`source` = `ref` s'il vient d'un « Défie tes potes »),
+ * terminé, partagé ; inscription au quartier envoyée, confirmée.
+ */
+export const WEB_STEPS = ['quiz_start', 'quiz_done', 'quiz_share', 'quartier_join', 'quartier_confirm'] as const;
+export type WebStep = (typeof WEB_STEPS)[number];
+/** Partages du résultat du quiz : en story (image), lien copié, défi envoyé aux potes. */
+export const QUIZ_SHARE_KINDS = ['story', 'link', 'challenge'] as const;
+export type QuizShareKind = (typeof QUIZ_SHARE_KINDS)[number];
+
 /** Compteurs agrégés par jour (aucune personne derrière) : visites, premiers lancements, inscriptions, votes, partages. */
-export type GrowthCounterMetric = `visit_${SharePage}` | 'first_open' | 'signup' | 'words_vote' | `share_${ShareKind}`;
+export type GrowthCounterMetric = `visit_${SharePage}` | 'first_open' | 'signup' | 'words_vote' | `share_${ShareKind}` | WebStep;
 export const GROWTH_COUNTER_METRICS: readonly GrowthCounterMetric[] = [
   ...SHARE_PAGES.map((p) => `visit_${p}` as const),
   'first_open',
   'signup',
   'words_vote',
   ...SHARE_KINDS.map((k) => `share_${k}` as const),
+  ...WEB_STEPS,
 ];
 
 /** J1 / J7 / J30 : actif ce jour-là exactement (jour 0 = l'inscription). */
@@ -143,6 +163,13 @@ export interface GrowthReport {
   k: { week: Day; shares: number; activeUsers: number | null; referred: number; sharesPerUser: number | null; conversion: number | null; k: number | null }[];
   words: { week: Day; votes: number; joined: number; loopRate: number | null }[];
   groups: { week: Day; created: number; eligible: number; viable: number; rate: number | null }[];
+  /**
+   * Quiz du site : commencés (dont venus d'un défi), terminés, partagés, comptes venus d'un résultat. Facteur K du quiz =
+   * (partages / terminés) × (commencés depuis un défi / partages).
+   */
+  quiz: { week: Day; started: number; challenged: number; done: number; shared: number; joined: number; k: number | null }[];
+  /** Quartiers : inscriptions envoyées, confirmées, comptes venus d'une inscription. */
+  quartiers: { week: Day; joins: number; confirmed: number; joined: number }[];
 }
 
 const ratio = (a: number, b: number | null): number | null => (b && b > 0 ? a / b : null);
@@ -181,6 +208,9 @@ export function growthReport(input: {
   };
   const shares = new Map<Day, number>();
   const votes = new Map<Day, number>();
+  const web = new Map<string, number>();
+  const webAdd = (week: Day, key: string, n: number) => web.set(`${week}|${key}`, (web.get(`${week}|${key}`) ?? 0) + n);
+  const webGet = (week: Day, key: string) => web.get(`${week}|${key}`) ?? 0;
   for (const c of input.counters) {
     const week = mondayOf(c.day);
     const visit = /^visit_(m|g|i|c)$/.exec(c.metric);
@@ -189,6 +219,10 @@ export function growthReport(input: {
     else if (c.metric === 'signup') add(week, asSource(c.source), 'signup', c.count);
     else if (c.metric === 'words_vote') votes.set(week, (votes.get(week) ?? 0) + c.count);
     else if (c.metric.startsWith('share_')) shares.set(week, (shares.get(week) ?? 0) + c.count);
+    else if ((WEB_STEPS as readonly string[]).includes(c.metric)) {
+      webAdd(week, c.metric, c.count);
+      if (c.metric === 'quiz_start' && c.source === 'ref') webAdd(week, 'challenged', c.count);
+    }
   }
   const referred = new Map<Day, number>();
   const wordsJoined = new Map<Day, number>();
@@ -198,6 +232,7 @@ export function growthReport(input: {
     if (e.kind !== 'onboarded') continue;
     if (REFERRAL_SOURCES.includes(e.source)) referred.set(week, (referred.get(week) ?? 0) + 1);
     if (e.source === 'words') wordsJoined.set(week, (wordsJoined.get(week) ?? 0) + 1);
+    if (e.source === 'quiz' || e.source === 'quartier') webAdd(week, `joined_${e.source}`, 1);
   }
   const funnel: GrowthReport['funnel'] = [];
   for (const week of weeks) for (const source of ['all', ...ACQUISITION_SOURCES] as const) funnel.push({ week, source, counts: cells.get(`${week}|${source}`) ?? zeroCounts() });
@@ -221,7 +256,16 @@ export function growthReport(input: {
     const viable = eligible.filter((g) => g.membersAtD7 >= GROUP_MIN_MEMBERS).length;
     return { week, created: rows.length, eligible: eligible.length, viable, rate: ratio(viable, eligible.length) };
   });
-  return { weeks, funnel, k, words, groups };
+  const quiz = weeks.map((week) => {
+    const done = webGet(week, 'quiz_done');
+    const shared = webGet(week, 'quiz_share');
+    const challenged = webGet(week, 'challenged');
+    const perDone = ratio(shared, done);
+    const conv = ratio(challenged, shared);
+    return { week, started: webGet(week, 'quiz_start'), challenged, done, shared, joined: webGet(week, 'joined_quiz'), k: perDone !== null && conv !== null ? perDone * conv : null };
+  });
+  const quartiers = weeks.map((week) => ({ week, joins: webGet(week, 'quartier_join'), confirmed: webGet(week, 'quartier_confirm'), joined: webGet(week, 'joined_quartier') }));
+  return { weeks, funnel, k, words, groups, quiz, quartiers };
 }
 
 const asSource = (s: string): AcquisitionSource => ((ACQUISITION_SOURCES as readonly string[]).includes(s) ? (s as AcquisitionSource) : 'store');

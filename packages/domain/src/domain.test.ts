@@ -38,7 +38,7 @@ describe('jours', () => {
 });
 
 
-import { applyCare, canCare, decayNeeds, shapeOf, START_NEEDS, urgentNeed, wellbeing, ENCOUNTER_QUOTA } from './care';
+import { applyCare, canCare, decayNeeds, shapeOf, START_NEEDS, urgentNeed, wellbeing, encounterQuota } from './care';
 import { cleanOutfit, earnedItems, itemById, itemProgress, ITEMS, ITEM_SLOTS, ZERO_STATS } from './items';
 
 describe('soins', () => {
@@ -50,7 +50,8 @@ describe('soins', () => {
     expect(shapeOf(tired)).toBe('bof');
     const flat = decayNeeds(START_NEEDS, 30);
     expect(shapeOf(flat)).toBe('boude');
-    expect(ENCOUNTER_QUOTA[shapeOf(flat)]).toBe(0);
+    // Il boude, mais présente encore quelqu'un : les soins ne bloquent pas les gens.
+    expect(encounterQuota(flat)).toBeGreaterThan(0);
     expect(urgentNeed(tired)).toBe('hunger');
     const fed = applyCare(applyCare(tired, 'feed'), 'feed');
     expect(fed.hunger).toBe(90);
@@ -66,9 +67,9 @@ describe('soins', () => {
 });
 
 describe('garde-robe', () => {
-  it('77 objets uniques (dont les 12 de la collection Hiver et le « Parrain »), 4 emplacements, au moins deux de départ par emplacement', () => {
-    expect(ITEMS.length).toBe(77);
-    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(77);
+  it('78 objets uniques (dont les 12 de la collection Hiver, le « Parrain » et le « Fondateur »), 4 emplacements, au moins deux de départ par emplacement', () => {
+    expect(ITEMS.length).toBe(78);
+    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(78);
     for (const slot of ITEM_SLOTS) expect(ITEMS.filter((i) => i.slot === slot && i.unlock.kind === 'start').length).toBeGreaterThanOrEqual(2);
   });
   it('débloque par étapes', () => {

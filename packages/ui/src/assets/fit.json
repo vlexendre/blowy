@@ -11545,6 +11545,17 @@
    "dx": 0.12,
    "ratio": 0.964
   },
+  "fondateur": {
+   "anchor": "toy",
+   "size": "bodyw",
+   "w": 0.26,
+   "pivot": [
+    0.5,
+    1.0
+   ],
+   "dx": 0.12,
+   "ratio": 0.718
+  },
   "pinceau": {
    "anchor": "toy",
    "size": "bodyw",
@@ -12273,6 +12284,15 @@
    ]
   },
   "parrain": {
+   "plain": true,
+   "fur": [
+    6,
+    3,
+    8,
+    0.3
+   ]
+  },
+  "fondateur": {
    "plain": true,
    "fur": [
     6,

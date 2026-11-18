@@ -20,7 +20,7 @@ import {
   adminRoutes,
 } from '@blowy/contract';
 import { AdminGroupZ, groupRoutes } from '@blowy/contract';
-import { AdminCreatorsZ, AdminGrowthZ, growthRoutes } from '@blowy/contract';
+import { AdminCreatorsZ, AdminGrowthZ, AdminQuartiersZ, growthRoutes, quizRoutes } from '@blowy/contract';
 import type { z } from 'zod';
 import { ApiError } from './index';
 
@@ -81,6 +81,10 @@ export function createAdminClient(opts: AdminClientOptions) {
     creators: () => call('GET', growthRoutes.adminCreators(), AdminCreatorsZ),
     createCreator: (code: string, name: string) => call('POST', growthRoutes.adminCreators(), AdminCreatorsZ, { code, name }),
     updateCreator: (code: string, patch: { name?: string; active?: boolean }) => call('POST', growthRoutes.adminCreator(code), AdminCreatorsZ, patch),
+    /** Quartiers : compteurs réels, seuil d'ouverture, ouverture à la main. */
+    quartiers: () => call('GET', quizRoutes.adminList(), AdminQuartiersZ),
+    setQuartierThreshold: (threshold: number) => call('POST', quizRoutes.adminSettings(), AdminQuartiersZ, { threshold }),
+    openQuartier: (zone: string) => call('POST', quizRoutes.adminOpen(zone), AdminQuartiersZ),
   };
 }
 export type AdminClient = ReturnType<typeof createAdminClient>;

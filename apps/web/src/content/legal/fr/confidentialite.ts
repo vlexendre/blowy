@@ -217,6 +217,19 @@ export const confidentialite: LegalPage = {
       ],
     },
 
+    { h3: 'Le quiz « Quel minimoa es-tu ? » et « Ouvre ton quartier » (site, sans compte)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz :** tes réponses servent à calculer ton résultat dans la requête ; on ne garde **que le résultat** (l’espèce, le caractère et les jauges de départ), sous un code court, et le code du résultat de la personne qui t’a défié, s’il y en a un. Aucun nom, aucune adresse, aucune IP n’y est attaché. Le code sert à retrouver ton résultat et à pré-remplir ton minimoa si tu le tapes dans l’app. Effacé au bout d’un an.',
+        '**Ouvre ton quartier :** ton adresse e-mail, le quartier choisi (dans une liste ou par code postal ; **jamais ta position**), ta langue, la date de ton accord et de ta confirmation, ton code pour inviter et, si tu es venu·e par le lien de quelqu’un, qui t’a invité·e. Tu comptes dans le compteur du quartier seulement après avoir confirmé ton adresse (double vérification). On t’écrit deux fois au plus : la confirmation, puis l’ouverture du quartier.',
+        '**But :** te prévenir de l’ouverture de ton quartier, afficher le vrai compteur (un nombre, jamais une adresse), et offrir l’objet décoratif « Fondateur » aux 3 premières personnes qui ont invité dans le quartier.',
+        '**Base légale :** ton consentement (case à cocher, jamais cochée d’avance), retirable à tout moment par le lien de désinscription présent dans chaque e-mail.',
+        '**Durée :** non confirmée, l’inscription est effacée sous 7 jours. Désinscription : l’adresse est effacée tout de suite. Après l’e-mail d’ouverture, l’adresse est effacée sous 30 jours ; il ne reste qu’une ligne anonyme (quartier et code) pour le compteur et l’objet « Fondateur ».',
+        '**Accès :** l’envoi des e-mails passe par notre prestataire d’e-mails ({{sub.email.provider}}). L’outil interne de l’équipe ne montre que des compteurs par quartier, jamais d’adresse.',
+        '**Sur le site :** pendant ta visite, le code de ton résultat est gardé dans le stockage de session de ton navigateur (effacé quand tu fermes l’onglet), pour te remontrer ton résultat. Aucun cookie.',
+      ],
+    },
+
     { h3: 'Statistiques et administration' },
     {
       ul: [
@@ -377,6 +390,7 @@ export const confidentialite: LegalPage = {
           ['Signalements traités et décisions de modération', '1 an après la clôture du dossier, plus longtemps seulement si la loi l’impose.'],
           ['Exclusion définitive', 'Une empreinte non réversible de l’identifiant Apple ou Google du compte, pendant 3 ans, pour empêcher une réinscription.'],
           ['Statistiques', 'Jours d’activité et classement interne nominatif : 40 jours. Rencontres proposées : 30 jours. Chiffres agrégés, qui ne permettent pas de t’identifier : sans limite.'],
+          ['Quiz du site et « Ouvre ton quartier »', 'Résultat du quiz : 1 an. Inscription non confirmée : 7 jours. Adresse e-mail : jusqu’à ta désinscription, ou 30 jours après l’e-mail d’ouverture du quartier.'],
           ['Source d’arrivée et étapes du parcours', 'Tant que ton compte existe ; effacées ou rendues anonymes à sa suppression. Compteurs du jour (visites, premiers lancements, votes, partages), sans personne derrière : sans limite.'],
           ['Journaux techniques de l’app', '30 jours au plus. Les journaux de nos hébergeurs suivent leurs propres durées.'],
           ['Échanges avec l’assistance', '1 an après la clôture de la demande.'],

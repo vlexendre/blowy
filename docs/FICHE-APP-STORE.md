@@ -22,7 +22,7 @@ Captures et vidéos : `/home/claude/work/store/out/README.md`. Classement d'âge
 
 **Nom** (7/30) : `Minimoa`
 
-**Sous-titre** (30/30) : `Il te fait rencontrer du monde`
+**Sous-titre** (25/30) : `Des potes près de chez toi`
 
 **Texte promotionnel** (≤ 170, modifiable sans nouvelle version) :
 `Nouveau : les groupes. Tenez une habitude à plusieurs, chaque jour, et gardez vos vies ensemble. Ton minimoa t'attend.`
@@ -33,7 +33,7 @@ Captures et vidéos : `/home/claude/work/store/out/README.md`. Classement d'âge
 **Description** :
 
 ```
-Élève ton minimoa. Il te fait rencontrer du monde.
+Des potes près de chez toi.
 
 Minimoa, c'est une petite créature qui vit dans ton téléphone. Tu t'en occupes chaque jour : tu la nourris, tu joues avec elle, tu l'habilles. En échange, elle te présente des gens près de chez toi qui voient la vie un peu comme toi. Pour de vrai.
 
@@ -72,7 +72,7 @@ Conditions de Minimoa+ : https://minimoa.app/legal/abonnement
 
 **Name**: `Minimoa`
 
-**Subtitle** (25/30): `It helps you meet people`
+**Subtitle** (26/30): `Friends near you, for real`
 
 **Promotional text**:
 `New: groups. Keep a habit together, every day, and share your lives. Your minimoa is waiting for you.`
@@ -83,7 +83,7 @@ Conditions de Minimoa+ : https://minimoa.app/legal/abonnement
 **Description**:
 
 ```
-Raise your minimoa. It helps you meet people.
+Friends near you, for real.
 
 A minimoa is a little creature that lives in your phone. You look after it every day: you feed it, play with it, dress it up. In return, it introduces you to people near you who see life a bit like you do. For real.
 

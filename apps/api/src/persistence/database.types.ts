@@ -397,6 +397,33 @@ export type Database = {
       >;
       growth_events: Table<{ id: number; user_id: string | null; kind: string; source: string; cohort_on: string; created_at: string }, 'id' | 'user_id' | 'created_at'>;
       growth_counters: Table<{ day: string; metric: string; source: string; ref: string; count: number }, 'source' | 'ref' | 'count'>;
+      /** Quiz et quartiers (20261118120000, docs/VIRALITE.md). */
+      quiz_results: Table<
+        { code: string; species: string; trait: string; second_trait: string | null; gauges: Json; ref: string | null; locale: string; created_at: string },
+        'second_trait' | 'ref' | 'locale' | 'created_at'
+      >;
+      quartier_settings: Table<{ id: boolean; threshold: number; updated_at: string }, 'id' | 'threshold' | 'updated_at'>;
+      quartiers: Table<{ zone: string; opened_at: string | null; opened_by: string | null; created_at: string }, 'opened_at' | 'opened_by' | 'created_at'>;
+      quartier_signups: Table<
+        {
+          id: string;
+          zone: string;
+          email: string | null;
+          locale: string;
+          code: string;
+          token: string | null;
+          invited_by_user: string | null;
+          invited_by_signup: string | null;
+          consent_at: string;
+          confirmed_at: string | null;
+          unsubscribed_at: string | null;
+          open_mail_sent_at: string | null;
+          user_id: string | null;
+          created_at: string;
+        },
+        'id' | 'email' | 'locale' | 'token' | 'invited_by_user' | 'invited_by_signup' | 'confirmed_at' | 'unsubscribed_at' | 'open_mail_sent_at' | 'user_id' | 'created_at'
+      >;
+      quartier_founders: Table<{ zone: string; rank: number; user_id: string | null; signup_id: string | null; created_at: string }, 'user_id' | 'signup_id' | 'created_at'>;
       tick_runs: Table<{ job: string; slot: string; started_at: string; finished_at: string | null; done: number | null }, 'started_at' | 'finished_at' | 'done'>;
       ritual_states: Table<
         {

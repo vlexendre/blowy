@@ -13,6 +13,7 @@ import { WardrobeJobs } from '../pets/application/wardrobe.jobs';
 import { ModerationJobs } from '../moderation/moderation.jobs';
 import { GroupJobs } from '../groups/application/group.jobs';
 import { FideliteJobs } from '../fidelite/application/fidelite.jobs';
+import { QuartierJobs } from '../quartiers/application/quartier.jobs';
 import type { TickJobClass } from './tick-job';
 
 export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
@@ -26,4 +27,5 @@ export const TICK_JOBS: ReadonlyArray<{ name: string; job: TickJobClass }> = [
   { name: 'wardrobe', job: WardrobeJobs },
   { name: 'groups', job: GroupJobs },
   { name: 'fidelite', job: FideliteJobs },
+  { name: 'quartiers', job: QuartierJobs },
 ];

@@ -55,9 +55,9 @@ const fr = {
     (other: string, days: number) => `Série de ${days} jours. Je fais semblant de ne pas compter. Je compte.`,
   ] as Line<[string, number]>,
   encounterWhere: {
-    friend: [(mutual: string) => `Je l’ai croisé chez ${mutual}.`, (mutual: string) => `C’est un pote du minimoa de ${mutual}.`] as Line<[string]>,
-    nearby: ['On n’habite pas loin l’un de l’autre.', 'On s’est croisés dans le quartier.'] as readonly string[],
-    other: ['On s’est croisés en balade.', 'Tout nouveau dans le coin.'] as readonly string[],
+    friend: [(mutual: string) => `Je l’ai rencontré chez ${mutual}.`, (mutual: string) => `C’est un pote du minimoa de ${mutual}.`] as Line<[string]>,
+    nearby: ['On n’habite pas loin l’un de l’autre.', 'Il traîne dans ton quartier.'] as readonly string[],
+    other: ['Je l’ai rencontré en balade.', 'Tout nouveau dans le coin.'] as readonly string[],
   },
   encounterVibe: {
     high: ['On a tout de suite accroché.', 'On se ressemble beaucoup.'] as readonly string[],

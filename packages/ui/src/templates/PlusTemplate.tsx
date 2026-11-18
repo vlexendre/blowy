@@ -91,8 +91,8 @@ export interface PlusTemplateProps<K extends string> {
  * Hauteur du panneau du haut. La feuille tient sur un écran sans défiler (390 × 844 comme 375 × 667) : sur un petit
  * écran le panneau, le titre et le minimoa rapetissent.
  */
-const HEADER = 156;
-const HEADER_SHORT = 112;
+const HEADER = 196;
+const HEADER_SHORT = 124;
 
 const STATUS_TINT = { info: color.accent, success: color.ok, error: color.danger } as const;
 
@@ -453,14 +453,14 @@ const styles = StyleSheet.create({
   floating: { position: 'absolute' },
   top: { paddingBottom: space.xs, paddingHorizontal: 14 },
   head: { paddingLeft: 20, paddingRight: 136, paddingBottom: space.lg },
-  title: { lineHeight: 52 },
+  title: { lineHeight: 42 },
   headTight: { paddingBottom: space.md },
   // Petit écran : le titre remonte à hauteur de la croix (il est à gauche, elle à droite).
   headShort: { paddingBottom: space.md, marginTop: -34 },
   bodyShort: { gap: space.sm, paddingTop: space.sm },
   status: { gap: space.sm, alignItems: 'center', paddingHorizontal: space.xs },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
-  titleShort: { lineHeight: 42 },
+  titleShort: { lineHeight: 34 },
   headline: { marginTop: 2 },
   teaser: { gap: space.sm, alignItems: 'center', marginTop: space.md },
   silhouettes: { alignItems: 'center' },
