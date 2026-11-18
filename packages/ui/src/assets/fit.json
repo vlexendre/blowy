@@ -10998,34 +10998,25 @@
   "casque_audio": {
    "anchor": "eyes",
    "size": "brow",
-   "w": 1.5,
+   "w": 1.6,
    "pivot": [
     0.5,
-    0.72
+    0.64
    ],
-   "ratio": 1.2292,
-   "dy": 0.0,
-   "back": {
-    "w": 1.3,
-    "pivot": [
-     0.5,
-     1.0
-    ],
-    "ratio": 1.8028,
-    "dy": -0.25
-   }
+   "ratio": 2.5,
+   "dy": -0.13,
+   "sy": 1.18
   },
   "aureole": {
    "anchor": "headTop",
    "size": "crown",
-   "w": 0.75,
+   "w": 0.7,
    "pivot": [
     0.5,
     0.6
    ],
-   "dy": -0.24,
-   "ratio": 1.2959,
-   "z": "back"
+   "dy": -0.42,
+   "ratio": 1.2959
   },
   "lunettes_rondes": {
    "anchor": "eyes",
@@ -11173,23 +11164,15 @@
   },
   "echarpe": {
    "anchor": "mouth",
-   "size": "brow",
-   "w": 1.0,
+   "size": "bodyw",
+   "w": 0.97,
    "pivot": [
     0.5,
-    0.1
+    0.06
    ],
-   "ratio": 1.0934,
-   "dy": 0.13,
-   "back": {
-    "w": 0.95,
-    "pivot": [
-     0.5,
-     0.75
-    ],
-    "ratio": 2.1436,
-    "dy": 0.12
-   }
+   "ratio": 1.7544,
+   "dy": 0.03,
+   "sy": 0.95
   },
   "bandana": {
    "anchor": "mouth",
@@ -11296,32 +11279,35 @@
   "salopette": {
    "anchor": "chest",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.9,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.2046
+   "ratio": 1.2046,
+   "dy": -0.1
   },
   "sweat": {
    "anchor": "chest",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.95,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.1476
+   "ratio": 1.1476,
+   "dy": -0.14
   },
   "teddy": {
    "anchor": "chest",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.95,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.1954
+   "ratio": 1.1954,
+   "dy": -0.14
   },
   "tablier": {
    "anchor": "chest",
@@ -11336,12 +11322,12 @@
   "tutu": {
    "anchor": "feet",
    "size": "bodyw",
-   "w": 0.92,
+   "w": 1.0,
    "pivot": [
     0.5,
     0.62
    ],
-   "dy": 0.037,
+   "dy": -0.08,
    "ratio": 1.4101
   },
   "bretelles": {
@@ -11357,25 +11343,26 @@
   "sac_a_dos": {
    "anchor": "mouth",
    "size": "brow",
-   "w": 1.0,
+   "w": 1.3,
    "pivot": [
     0.5,
     0.02
    ],
    "ratio": 1.4667,
    "back": {
-    "w": 0.8,
+    "w": 0.9,
     "pivot": [
      0.5,
      0.5
     ],
     "ratio": 0.9439,
-    "dx": 0.5,
-    "dy": -0.25,
-    "rot": -10,
+    "dx": 0.6,
+    "dy": -0.62,
+    "rot": -8,
     "anchor": "neck"
    },
-   "dy": 0.1
+   "dy": -0.04,
+   "sy": 0.8
   },
   "sac_main": {
    "anchor": "torso",
@@ -11385,10 +11372,10 @@
     0.5,
     0.02
    ],
-   "dx": 0.42,
-   "rot": -6,
+   "dx": 0.33,
+   "rot": -10,
    "ratio": 0.7798,
-   "dy": -0.24
+   "dy": -0.3
   },
   "cape": {
    "anchor": "mouth",
@@ -11504,7 +11491,7 @@
   "ballons": {
    "anchor": "toy",
    "size": "bodyw",
-   "w": 0.4,
+   "w": 0.55,
    "pivot": [
     0.5,
     1.0
@@ -11646,55 +11633,66 @@
    "ratio": 1.6026
   },
   "hiver_cache_oreilles": {
-   "anchor": "brow",
+   "anchor": "eyes",
    "size": "brow",
    "w": 1.5,
    "pivot": [
     0.5,
-    0.62
+    0.68
    ],
-   "ratio": 1.1868,
-   "dy": -0.04
+   "ratio": 2.5503,
+   "dy": -0.12,
+   "sy": 1.22
   },
   "hiver_lunettes": {
    "anchor": "eyes",
    "size": "face",
-   "w": 1.2,
+   "w": 1.36,
    "pivot": [
     0.5,
-    0.5
+    0.52
    ],
-   "ratio": 1.5513
+   "ratio": 1.8961
   },
   "hiver_echarpe": {
    "anchor": "mouth",
-   "size": "brow",
-   "w": 1.38,
+   "size": "bodyw",
+   "w": 0.97,
+   "pivot": [
+    0.5,
+    0.06
+   ],
+   "ratio": 1.7677,
+   "dy": 0.03,
+   "sy": 0.95
+  },
+  "hiver_cape": {
+   "anchor": "mouth",
+   "size": "bodyw",
+   "w": 1.0,
    "pivot": [
     0.5,
     0.1
    ],
-   "ratio": 0.9853,
-   "dy": 0.08,
-   "sy": 0.8
-  },
-  "hiver_cape": {
-   "anchor": "neck",
-   "size": "bodyw",
-   "w": 1.5,
-   "pivot": [
-    0.5,
-    0.08
-   ],
-   "ratio": 1.2,
-   "dy": -0.02,
-   "sy": 0.36,
-   "z": "back"
+   "ratio": 2.0296,
+   "dy": 0.04,
+   "back": {
+    "anchor": "ground",
+    "size": "bodyw",
+    "w": 1.5,
+    "pivot": [
+     0.5,
+     0.95
+    ],
+    "ratio": 1.3487,
+    "dy": 0,
+    "sy": 0.78
+   }
   },
   "hiver_moufles": {
    "anchor": "toy",
    "size": "bodyw",
-   "w": 0.34,
+   "w": 0.46,
    "pivot": [
     0.5,
     1.0
@@ -11751,23 +11749,23 @@
   "hiver_aura": {
    "anchor": "torso",
    "size": "bodyw",
-   "w": 1.55,
+   "w": 1.38,
    "pivot": [
     0.5,
     0.5
    ],
-   "ratio": 1.0386,
-   "dy": -0.12,
+   "ratio": 0.9705,
+   "dy": -0.16,
    "z": "back"
   }
  },
  "overrides": {
-  "nino": {
-   "casque_audio": {
-    "w": 1.65
+  "nino": {},
+  "pia": {
+   "hiver_lunettes": {
+    "w": 1.8
    }
   },
-  "pia": {},
   "gaston": {
    "bob": {
     "w": 1.062,
@@ -11857,7 +11855,7 @@
     "dy": 0.08
    },
    "hiver_lunettes": {
-    "w": 0.95
+    "w": 1.34
    }
   },
   "suzie": {}
@@ -12349,10 +12347,6 @@
   },
   "hiver_echarpe": {
    "plain": true,
-   "split": [
-    0.19,
-    "back"
-   ],
    "fur": [
     6,
     3,
@@ -12361,7 +12355,13 @@
    ]
   },
   "hiver_cape": {
-   "plain": true
+   "plain": true,
+   "fur": [
+    6,
+    3,
+    8,
+    0.35
+   ]
   },
   "hiver_moufles": {
    "plain": true,

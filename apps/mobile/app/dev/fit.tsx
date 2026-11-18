@@ -4,8 +4,10 @@
  * `?winter=1` : la collection Hiver (Minimoa+) sur les 4 espèces, six tenues (`&pose=` pour une autre pose).
  * `?sheet=2&species=pia` : les 12 poses de la planche 2 (ou `?sheet=var` : les variantes), nues puis habillées (deux tenues).
  * `?items=bob,cape` : seulement ces objets ; `?size=240` : cases plus grandes ; `?flat=1` : rendu simple (sans ombre, voile ni fourrure), pour comparer.
+ * `?board=hiver_echarpe` : banc d'un objet, 4 espèces × 7 poses représentatives en grand, puis la même chose à 68 pt
+ * (taille de la vitrine Minimoa+) ; `?bare=1` : sans l'objet (référence).
  */
-import type { Outfit, Species } from '@blowy/domain';
+import { itemById, type Outfit, type Species } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import { type BodyPose, DressedPet, EncounterStage, PetStage, Text } from '@blowy/ui';
 import { useLocalSearchParams } from 'expo-router';
@@ -27,6 +29,11 @@ const ITEMS: Outfit[] = [
   { toy: 'doudou' },
 ];
 const CELL = 118;
+/** Banc d'un objet : poses représentatives (neutre, joie, fier, coucou, marche, assis, danse). */
+const BOARD_POSES: BodyPose[] = ['neutre', 'joie', 'fier', 'coucou', 'marche', 'assis', 'danse'];
+const SPECIES: Species[] = ['nino', 'suzie', 'gaston', 'pia'];
+/** Taille des minimoas dans la vitrine Minimoa+. */
+const SMALL = 68;
 const FACES = ['lunettes_rondes', 'lunettes_coeur', 'lunettes_etoile', 'lunettes_pixel', 'masque_nuit', 'monocle', 'cache_oeil', 'moustache', 'nez_rouge', 'tetine', 'joues_roses', 'taches_rousseur'];
 const CLOTHES = ['sweat', 'teddy', 'salopette', 'tablier', 'tutu', 'bretelles'];
 const HELD = ['doudou', 'ballon', 'coeur', 'tasse', 'livre', 'fleur', 'ballons', 'gateau', 'cadeau', 'pinceau', 'micro', 'manette'];
@@ -48,9 +55,38 @@ const WINTER: Outfit[] = [
 const HAT_BG = color.panel;
 
 export default function FitBoard() {
-  const q = useLocalSearchParams<{ species?: string; flat?: string; size?: string; items?: string; stage?: string; shape?: string; hat?: string; pair?: string; wave?: string; hats?: string; faces?: string; neck?: string; clothes?: string; held?: string; pose?: string; sheet?: string; winter?: string }>();
+  const q = useLocalSearchParams<{ species?: string; flat?: string; size?: string; items?: string; stage?: string; shape?: string; hat?: string; pair?: string; wave?: string; hats?: string; faces?: string; neck?: string; clothes?: string; held?: string; pose?: string; sheet?: string; winter?: string; board?: string; bare?: string }>();
   const species = (['nino', 'suzie', 'gaston', 'pia'].includes(q.species ?? '') ? q.species : 'nino') as Species;
   const cell = Number(q.size) || CELL;
+  if (q.board) {
+    const id = q.board;
+    const slot = itemById(id)?.slot ?? 'body';
+    const outfit: Outfit | null = q.bare ? null : { [slot]: id };
+    const big = Number(q.size) || 200;
+    return (
+      <ScrollView style={{ backgroundColor: color.night }} contentContainerStyle={{ padding: 8, width: (big + 4) * BOARD_POSES.length + 16 }}>
+        <Text size={15}>{`${id} · ${BOARD_POSES.join(' · ')}`}</Text>
+        {SPECIES.map((sp) => (
+          <View key={sp} style={{ flexDirection: 'row' }}>
+            {BOARD_POSES.map((pose) => (
+              <View key={pose} style={{ width: big, height: big / 0.9 + big * 0.08, margin: 2, borderRadius: 14, backgroundColor: color.panel, justifyContent: 'flex-end' }}>
+                <DressedPet species={sp} outfit={outfit} pose={pose} size={big} />
+              </View>
+            ))}
+          </View>
+        ))}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
+          {SPECIES.flatMap((sp) =>
+            BOARD_POSES.slice(0, 3).map((pose) => (
+              <View key={sp + pose} style={{ width: SMALL + 8, height: SMALL / 0.9 + 12, margin: 2, borderRadius: 10, backgroundColor: color.panel, alignItems: 'center', justifyContent: 'flex-end' }}>
+                <DressedPet species={sp} outfit={outfit} pose={pose} size={SMALL} />
+              </View>
+            )),
+          )}
+        </View>
+      </ScrollView>
+    );
+  }
   if (q.winter) {
     const pose = (q.pose ?? 'neutre') as BodyPose;
     return (
