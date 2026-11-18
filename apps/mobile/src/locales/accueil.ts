@@ -51,7 +51,7 @@ export const accueil = messages({
       items: (pet: string) => [
         { title: 'Quelqu’un te fait signe', body: `${pet} a croisé un minimoa compatible.`, time: 'maintenant' },
         { title: 'Ta série est en jeu', body: `${pet} t’attend avant minuit pour la garder.`, time: '20 h' },
-        { title: 'Ton essai se termine bientôt', body: 'Un rappel avant le premier paiement de Minimoa+.', time: '9 h' },
+        { title: 'Léa t’a écrit', body: 'Dimanche, marché puis café ?', time: '9 h' },
       ],
       line: '3 par jour au plus hors messages, jamais la nuit. Tu choisis quoi recevoir dans Moi › Réglages.',
       cta: 'Continuer',
@@ -101,7 +101,7 @@ export const accueil = messages({
       items: (pet: string) => [
         { title: 'Someone is waving at you', body: `${pet} met a compatible minimoa.`, time: 'now' },
         { title: 'Your streak is on the line', body: `${pet} is waiting for you before midnight to keep it.`, time: '8 PM' },
-        { title: 'Your trial ends soon', body: 'A reminder before your first Minimoa+ payment.', time: '9 AM' },
+        { title: 'Léa wrote to you', body: 'Sunday: market, then coffee?', time: '9 AM' },
       ],
       line: '3 a day at most besides messages, never at night. You choose what you get in Me › Settings.',
       cta: 'Continue',
@@ -148,7 +148,7 @@ export const accueil = messages({
       items: (pet: string) => [
         { title: 'Alguien te saluda', body: `${pet} se ha cruzado con un minimoa compatible.`, time: 'ahora' },
         { title: 'Tu racha está en juego', body: `${pet} te espera antes de medianoche para mantenerla.`, time: '20:00' },
-        { title: 'Tu prueba termina pronto', body: 'Un aviso antes del primer pago de Minimoa+.', time: '9:00' },
+        { title: 'Léa te ha escrito', body: '¿El domingo, mercado y luego café?', time: '9:00' },
       ],
       line: 'Como mucho 3 al día sin contar los mensajes, nunca de noche. Tú eliges qué recibir en Yo › Ajustes.',
       cta: 'Continuar',
@@ -195,7 +195,7 @@ export const accueil = messages({
       items: (pet: string) => [
         { title: 'Alguém está acenando para você', body: `${pet} cruzou com um minimoa compatível.`, time: 'agora' },
         { title: 'Sua sequência está em jogo', body: `${pet} te espera antes da meia-noite para mantê-la.`, time: '20h' },
-        { title: 'Seu teste termina em breve', body: 'Um lembrete antes do primeiro pagamento do Minimoa+.', time: '9h' },
+        { title: 'Léa te escreveu', body: 'Domingo: feira e depois um café?', time: '9h' },
       ],
       line: 'No máximo 3 por dia fora as mensagens, nunca à noite. Você escolhe o que receber em Eu › Ajustes.',
       cta: 'Continuar',
@@ -242,7 +242,7 @@ export const accueil = messages({
       items: (pet: string) => [
         { title: 'Iemand zwaait naar je', body: `${pet} kwam een minimoa tegen die bij je past.`, time: 'nu' },
         { title: 'Je reeks staat op het spel', body: `${pet} wacht voor middernacht op je om hem te houden.`, time: '20:00' },
-        { title: 'Je proefperiode loopt bijna af', body: 'Een herinnering vóór je eerste betaling voor Minimoa+.', time: '9:00' },
+        { title: 'Léa heeft je geschreven', body: 'Zondag markt en daarna koffie?', time: '9:00' },
       ],
       line: 'Hooguit 3 per dag naast berichten, nooit ’s nachts. Je kiest zelf wat je krijgt in Ik › Instellingen.',
       cta: 'Doorgaan',
