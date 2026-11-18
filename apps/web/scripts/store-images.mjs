@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
  * Captures de l'App Store → galerie de la landing.
- * Lit les PNG 1290 × 2796 d'un dossier (par défaut /home/claude/work/store/out/fr/6.9), les convertit en webp à deux
+ * Lit les PNG 1320 × 2868 d'un dossier (par défaut /home/claude/work/store/out4/fr/1320x2868), les convertit en webp à deux
  * largeurs (360 et 720 px) dans apps/web/public/img/store/, et écrit manifest.json (lu par la section « L'app, en vrai »),
  * avec le texte alternatif de chaque capture pris dans le README des captures (tableau « Ordre, titres, textes
  * alternatifs », dernière colonne) s'il est trouvé deux dossiers au-dessus. Sans capture, la section n'apparaît pas.
  *
  * Usage : node apps/web/scripts/store-images.mjs [dossier-source] [langue]
- * Sans langue : captures françaises (public/img/store/). Avec `en` (par ex. …/out/en/1320x2868) : public/img/store/en/,
+ * Sans langue : captures françaises (public/img/store/). Avec `en` (par ex. …/out4/en/1320x2868) : public/img/store/en/,
  * montrées sur les pages /en/ ; une langue sans dossier à elle montre les captures françaises (src/lib/store-shots.ts).
  * Les textes alternatifs affichés viennent des textes du site (`screens.shots`, cinq langues) ; le manifeste garde
  * celui du README (français) en repli.
@@ -18,7 +18,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, wri
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SRC = process.argv[2] ?? '/home/claude/work/store/out/fr/6.9';
+const SRC = process.argv[2] ?? '/home/claude/work/store/out4/fr/1320x2868';
 const LOCALE = process.argv[3] ?? '';
 if (LOCALE && !/^(en|es|pt|nl)$/.test(LOCALE)) {
   console.error(`Langue inconnue : ${LOCALE} (en, es, pt ou nl ; rien pour le français)`);
@@ -78,7 +78,7 @@ if (!files.length) {
   process.exit(1);
 }
 
-/** Textes alternatifs du README des captures : « | 1 | 01-accroche | … | texte | ». */
+/** Textes alternatifs du README des captures : « | 1 | 01-des-potes | … | texte | ». */
 function readAlts() {
   const readme = resolve(SRC, '..', '..', 'README.md');
   const alts = new Map();

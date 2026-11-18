@@ -10,7 +10,7 @@ export const fr = {
     title: 'Minimoa — L’app pour se faire des potes près de chez toi',
     description:
       'L’app pour se faire des amis près de chez toi : ton minimoa te présente des gens qui voient la vie comme toi. Gratuit, zéro swipe, 18 ans et plus.',
-    ogAlt: 'Nino, Suzie et Pia, des minimoas tout poilus, à côté du titre « Des potes près de chez toi. »',
+    ogAlt: 'Nino croque une pomme, puis fait un check à Suzie, le minimoa de Léa, sous le titre « Prends soin de ton minimoa. Il te présente des potes. »',
   },
   dots: {
     top: 'Accueil',
@@ -38,18 +38,19 @@ export const fr = {
   },
   hero: {
     title: [{ text: 'DES POTES' }, { text: 'PRÈS DE', dim: true }, { text: 'CHEZ TOI.', dim: true }] as TitleLine[],
-    lead: 'Ton minimoa te présente des gens qui voient la vie comme toi. Pour de vrai.',
+    lead: 'Tu prends soin de ton minimoa. Lui te présente des gens qui voient la vie comme toi.',
     primary: 'Quel minimoa es-tu ?',
     secondary: 'Ouvre ton quartier',
     b1: { who: 'Léa', text: 'On marche demain matin ?' },
-    b3: { who: 'Malo', text: 'Attends. Il peut faire ça ?' },
     tag: 'Gratuit · zéro swipe · 18 ans et plus',
-    petAlt: 'Nino, un minimoa vert à mèche orange, qui te fait coucou',
+    loop: { label: 'Minimoa en deux temps', care: 'Tu prends soin de lui', meet: 'Il te présente des gens' },
+    careAlt: 'Nino, un minimoa vert à mèche orange, croque une pomme',
+    meetAlt: 'Nino fait un check à Suzie, le minimoa de Léa',
   },
   how: {
     title: [{ text: 'COMMENT' }, { text: 'ÇA MARCHE.', dim: true }] as TitleLine[],
     steps: [
-      { title: 'Crée ton minimoa', meta: '2 min', text: 'Un quiz, un nom, une tenue. Il te ressemble.' },
+      { title: 'Prends soin de ton minimoa', meta: 'chaque jour', text: 'Nourris-le, joue, sors : plus tu sors, plus il te présente de monde.' },
       { title: 'Il te présente des gens près de chez toi', meta: 'et dit pourquoi', text: '3 points communs, 1 différence à explorer. Jamais un chiffre seul.' },
       { title: 'Vous vous écrivez, vous vous voyez', meta: 'rien sans ton accord', text: 'Tu salues, l’autre accepte. Personne ne t’écrit sans ton oui.' },
     ],
@@ -236,13 +237,13 @@ export const fr = {
     listLabel: 'Écrans de l’app',
     /** Texte alternatif de chaque capture (nom de fichier sans largeur). */
     shots: {
-      '01-accroche': 'Nino, un minimoa vert à mèche orange, bras ouverts dans une prairie, avec Suzie, Pia et Gaston ; au-dessus, la carte « Cette semaine, Nino a croisé 5 minimoas » de l’app.',
-      '02-minimoa-vivant': 'L’accueil de l’app : Nino en casquette et écharpe, sa sociabilité, et les quatre soins en grand ; Nino croque une pomme.',
-      '03-habitudes': 'L’écran Habitudes (Marcher, Lire), la carte « Vous tenez tous les deux : Marcher » et la proposition « La tenir ensemble ».',
-      '04-groupes': 'Le chat du groupe « Marche du matin » et l’état du jour de chaque membre (tenu, pas encore) ; Suzie et Nino se font un check.',
-      '05-irl': 'Le groupe « Les potes du 11e » qui prévoit un apéro, la rencontre de Nino et Pia, et la question « Tu as mis le nez dehors aujourd’hui ? ».',
-      '06-garde-robe': 'La garde-robe : Nino habillé, des objets à gagner et des objets Minimoa+, entourés de chapeaux, d’une couronne et d’une écharpe.',
-      '07-quartier': 'La carte « Autour de toi » : ta zone de 1,5 km et les minimoas compatibles à des positions arrondies ; le défi du jour.',
+      '01-des-potes': '« Des potes près de chez toi. » L’accueil de l’app : la carte « Léa te fait signe » (son minimoa, Suzie, est venu dire bonjour) et Nino, en chapeau de fête et monocle, à 92 % d’envie de sortir ; Suzie et Pia saluent autour.',
+      '02-pourquoi': '« Qui voient la vie comme toi. » La rencontre de Nino et Pia, compatibles à 83 %, et la carte « Léa te fait signe » : 78 % compatibles, 3 points communs, 1 différence à explorer, « Pas cette fois » ou « Accepter ».',
+      '03-groupe': '« Une habitude, à plusieurs. » Le groupe « Marche du matin » : qui a tenu aujourd’hui, la semaine en cours, l’habitude Marcher à prouver en photo et « Il manque 2 personnes pour lancer la série » ; Suzie et Nino se saluent.',
+      '04-sortie': '« Vois-les pour de vrai. » Le chat du groupe « Les potes du 11e », où Malo propose un apéro jeudi et Yanis ramène des chips, et ce que Nino dit de Pia, rencontrée par Malo ; Pia éclate de rire.',
+      '05-soins': '« Il prend soin de toi. » Nino et ses soins (Nourrir, Jouer, Sieste), et la carte « Moi, en 3 mots » où ses potes le décrivent : drôle, tendre, cash ; Nino croque une pomme.',
+      '06-garde-robe': '« Habille-le comme toi. » La garde-robe : Nino en chapeau de fête et monocle, 14 objets sur 74, des objets à gagner par séries de jours et des objets Minimoa+ (auréole, cornes, tricorne de pirate, bonnet d’hiver), entourés d’une casquette, d’un bob, d’une couronne et d’une écharpe.',
+      '07-quartier': '« Ton quartier, en vrai. » La carte « Autour de toi » : ta zone de 1,5 km, Yanis, Inès et Léa à des positions arrondies, le mode discret, et la carte « Cette semaine, Nino a trouvé 5 personnes ».',
     } as Record<string, string>,
   },
   plus: {

@@ -6,7 +6,7 @@ export const es: LandingText = {
     title: 'Minimoa — La app para hacer amigos cerca de ti',
     description:
       'La app para hacer amigos cerca de ti: tu minimoa te presenta a gente que ve la vida como tú. Haz el test. Gratis, sin swipes, para mayores de 18.',
-    ogAlt: 'Nino, Suzie y Pia, minimoas peluditos, junto al título «Amigos cerca de ti.»',
+    ogAlt: 'Nino muerde una manzana y luego choca la mano con Suzie, el minimoa de Léa, bajo el título «Cuida de tu minimoa. Te presenta a amigos.»',
   },
   dots: {
     top: 'Inicio',
@@ -34,18 +34,19 @@ export const es: LandingText = {
   },
   hero: {
     title: [{ text: 'AMIGOS' }, { text: 'CERCA', dim: true }, { text: 'DE TI.', dim: true }],
-    lead: 'Tu minimoa te presenta a gente que ve la vida como tú. De verdad.',
+    lead: 'Tú cuidas de tu minimoa. Él te presenta a gente que ve la vida como tú.',
     primary: '¿Qué minimoa eres?',
     secondary: 'Abre tu barrio',
     b1: { who: 'Léa', text: '¿Caminamos mañana por la mañana?' },
-    b3: { who: 'Malo', text: 'Espera. ¿Puede hacer eso?' },
     tag: 'Gratis · sin swipes · mayores de 18',
-    petAlt: 'Nino, un minimoa verde con un mechón naranja, saludándote',
+    loop: { label: 'Minimoa en dos pasos', care: 'Cuidas de él', meet: 'Te presenta a gente' },
+    careAlt: 'Nino, un minimoa verde con un mechón naranja, muerde una manzana',
+    meetAlt: 'Nino choca la mano con Suzie, el minimoa de Léa',
   },
   how: {
     title: [{ text: 'CÓMO' }, { text: 'FUNCIONA.', dim: true }],
     steps: [
-      { title: 'Crea tu minimoa', meta: '2 min', text: 'Un test, un nombre, un look. Se parece a ti.' },
+      { title: 'Cuida de tu minimoa', meta: 'cada día', text: 'Dale de comer, juega, sal: cuanto más sales, a más gente te presenta.' },
       { title: 'Te presenta a gente cerca de ti', meta: 'y te dice por qué', text: '3 cosas en común, 1 diferencia por explorar. Nunca una cifra sin más.' },
       { title: 'Os escribís, os veis', meta: 'nada sin tu permiso', text: 'Tú saludas, la otra persona acepta. Nadie te escribe sin tu sí.' },
     ],
@@ -223,13 +224,13 @@ export const es: LandingText = {
     frenchShots: '(Capturas en francés.)',
     listLabel: 'Pantallas de la app',
     shots: {
-      '01-accroche': 'Nino, un minimoa verde con un mechón naranja, con los brazos abiertos en una pradera junto a Suzie, Pia y Gaston; encima, la tarjeta de la app «Esta semana, Nino se ha cruzado con 5 minimoas».',
-      '02-minimoa-vivant': 'La pantalla de inicio: Nino con gorra y bufanda, su sociabilidad y los cuatro cuidados en grande; Nino muerde una manzana.',
-      '03-habitudes': 'La pantalla Hábitos (Caminar, Leer), la tarjeta «Los dos mantenéis: Caminar» y la propuesta «Mantenerlo juntos».',
-      '04-groupes': 'El chat del grupo «Paseo matutino» y cómo va cada miembro hoy; Suzie y Nino chocan los puños.',
-      '05-irl': 'Un grupo de amigos que organiza unas cañas, el encuentro de Nino y Pia, y la pregunta «¿Has salido a la calle hoy?».',
-      '06-garde-robe': 'El armario: Nino vestido, objetos por ganar y objetos Minimoa+, rodeado de sombreros, una corona y una bufanda.',
-      '07-quartier': 'El mapa «A tu alrededor»: tu zona de 1,5 km y los minimoas compatibles en ubicaciones redondeadas; el reto del día.',
+      '01-des-potes': '«Amigos cerca de ti.» La pantalla de inicio: la tarjeta «Léa te saluda» (su minimoa, Suzie, ha venido a decir hola) y Nino, con gorro de fiesta y monóculo, con un 92 % de ganas de salir; Suzie y Pia saludan alrededor.',
+      '02-pourquoi': '«Que ven la vida como tú.» El encuentro de Nino y Pia, compatibles al 83 %, y la tarjeta «Léa te saluda»: 78 % compatibles, 3 puntos en común, 1 diferencia por explorar, «Esta vez no» o «Aceptar».',
+      '03-groupe': '«Un hábito, entre varios.» El grupo «Paseo matutino»: quién ha cumplido hoy, la semana en curso, el hábito Caminar que se demuestra con una foto y «Faltan 2 personas para empezar la racha»; Suzie y Nino se saludan.',
+      '04-sortie': '«Veos de verdad.» El chat del grupo «Los colegas del 11», donde Malo propone unas cañas el jueves y Yanis lleva patatas fritas, y lo que Nino cuenta de Pia, conocida a través de Malo; Pia se parte de risa.',
+      '05-soins': '«Cuida de ti.» Nino y sus cuidados (Dar de comer, Jugar, Siesta), y la tarjeta «Yo, en 3 palabras» donde sus amigos lo describen: gracioso, tierno, directo; Nino muerde una manzana.',
+      '06-garde-robe': '«Vístelo como tú.» El armario: Nino con gorro de fiesta y monóculo, 14 objetos de 74, objetos que se ganan con rachas de días y objetos Minimoa+ (aureola, cuernos, sombrero pirata, gorro de invierno), rodeado de una gorra, un sombrero de pescador, una corona y una bufanda.',
+      '07-quartier': '«Tu barrio, de verdad.» El mapa «A tu alrededor»: tu zona de 1,5 km, Yanis, Inès y Léa en ubicaciones redondeadas, el modo discreto y la tarjeta «Esta semana, Nino ha encontrado 5 personas».',
     },
   },
   plus: {

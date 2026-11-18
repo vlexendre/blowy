@@ -20,12 +20,13 @@ MANIFEST = ROOT / 'apps/web/src/lib/img-variants.json'
 # affichées avec `srcset` (pas celles que le script de la landing change de `src`, comme #apet).
 RULES = [
     ('img/*_face.webp', [128]),  # visages : affichés de 28 à 48 px
-    ('img/m/hero_nino.webp', [320, 480]),
+    ('img/m/hero_soin.webp', [200, 300]),
+    ('img/m/hero_rencontre.webp', [420, 640, 900]),
     ('img/m/bande_fete.webp', [600, 900]),
     ('img/m/duo_check.webp', [360, 480]),
     ('img/m/nino_evo_*.webp', [240, 320]),
     ('img/m/tenue_*.webp', [240, 320]),
-    *[(f'img/m/{n}.webp', [240, 320]) for n in ['nino_coucou', 'suzie_joie', 'pia_check', 'nino_danger', 'nino_fantome', 'nino_fier', 'nino_marche', 'suzie_coucou']],
+    *[(f'img/m/{n}.webp', [240, 320]) for n in ['nino_coucou', 'nino_mange', 'suzie_joie', 'pia_check', 'nino_danger', 'nino_fantome', 'nino_fier', 'nino_marche', 'suzie_coucou']],
 ]
 
 

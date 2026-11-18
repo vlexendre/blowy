@@ -5,46 +5,46 @@
   ],
   "shots": [
     {
-      "name": "01-accroche",
-      "width": 1290,
-      "height": 2796,
-      "alt": "Nino, un minimoa vert à mèche orange, bras ouverts dans une prairie, avec Suzie, Pia et Gaston ; au-dessus, la carte « Cette semaine, Nino a croisé 5 minimoas » de l'app."
+      "name": "01-des-potes",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     },
     {
-      "name": "02-minimoa-vivant",
-      "width": 1290,
-      "height": 2796,
-      "alt": "L'accueil de l'app : Nino en casquette et écharpe, sa sociabilité, et les quatre soins en grand ; Nino croque une pomme."
+      "name": "02-pourquoi",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     },
     {
-      "name": "03-habitudes",
-      "width": 1290,
-      "height": 2796,
-      "alt": "L'écran Habitudes (Marcher, Lire), la carte « Vous tenez tous les deux : Marcher » et la proposition « La tenir ensemble »."
+      "name": "03-groupe",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     },
     {
-      "name": "04-groupes",
-      "width": 1290,
-      "height": 2796,
-      "alt": "Le chat du groupe « Marche du matin » et l'état du jour de chaque membre (tenu, pas encore) ; Suzie et Nino se font un check."
+      "name": "04-sortie",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     },
     {
-      "name": "05-irl",
-      "width": 1290,
-      "height": 2796,
-      "alt": "Le groupe « Les potes du 11e » qui prévoit un apéro, la rencontre de Nino et Pia, et la question « Tu as mis le nez dehors aujourd'hui ? »."
+      "name": "05-soins",
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     },
     {
       "name": "06-garde-robe",
-      "width": 1290,
-      "height": 2796,
-      "alt": "La garde-robe : Nino habillé, des objets à gagner et des objets Minimoa+, entourés de chapeaux, d'une couronne et d'une écharpe."
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     },
     {
       "name": "07-quartier",
-      "width": 1290,
-      "height": 2796,
-      "alt": "La carte « Autour de toi » : ta zone de 1,5 km et les minimoas compatibles à des positions arrondies ; le défi du jour."
+      "width": 1320,
+      "height": 2868,
+      "alt": null
     }
   ]
 }

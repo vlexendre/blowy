@@ -6,7 +6,7 @@ export const en: LandingText = {
     title: 'Minimoa — The app to make friends near you',
     description:
       'The app to make friends near you: your minimoa introduces you to people who see life the way you do. Take the quiz. Free, zero swiping, 18+.',
-    ogAlt: 'Nino, Suzie and Pia, fuzzy little minimoas, next to the title “Friends near you.”',
+    ogAlt: 'Nino biting into an apple, then high-fiving Suzie, Léa’s minimoa, under the title “Take care of your minimoa. It introduces you to friends.”',
   },
   dots: {
     top: 'Home',
@@ -34,18 +34,19 @@ export const en: LandingText = {
   },
   hero: {
     title: [{ text: 'FRIENDS' }, { text: 'NEAR', dim: true }, { text: 'YOU.', dim: true }],
-    lead: 'Your minimoa introduces you to people who see life the way you do. For real.',
+    lead: 'You take care of your minimoa. It introduces you to people who see life the way you do.',
     primary: 'Which minimoa are you?',
     secondary: 'Open your neighborhood',
     b1: { who: 'Léa', text: 'Walk tomorrow morning?' },
-    b3: { who: 'Malo', text: 'Wait. It can do that?' },
     tag: 'Free · zero swiping · 18+',
-    petAlt: 'Nino, a green minimoa with an orange tuft, waving at you',
+    loop: { label: 'Minimoa in two steps', care: 'You take care of it', meet: 'It introduces you to people' },
+    careAlt: 'Nino, a green minimoa with an orange tuft, biting into an apple',
+    meetAlt: 'Nino high-fiving Suzie, Léa’s minimoa',
   },
   how: {
     title: [{ text: 'HOW' }, { text: 'IT WORKS.', dim: true }],
     steps: [
-      { title: 'Create your minimoa', meta: '2 min', text: 'A quiz, a name, an outfit. It’s just like you.' },
+      { title: 'Take care of your minimoa', meta: 'every day', text: 'Feed it, play, get out: the more you go out, the more people it introduces.' },
       { title: 'It introduces you to people nearby', meta: 'and says why', text: '3 things in common, 1 difference to explore. Never just a number.' },
       { title: 'You chat, you meet up', meta: 'nothing without your OK', text: 'You wave, they accept. Nobody can write to you unless you say yes.' },
     ],
@@ -223,13 +224,13 @@ export const en: LandingText = {
     frenchShots: '(Screenshots in French.)',
     listLabel: 'App screens',
     shots: {
-      '01-accroche': 'Nino, a green minimoa with an orange tuft, arms wide open in a meadow with Suzie, Pia and Gaston; above them, the app card “This week, Nino met 5 minimoas”.',
-      '02-minimoa-vivant': 'The app’s home screen: Nino in a cap and scarf, his sociability and the four kinds of care up close; Nino bites into an apple.',
-      '03-habitudes': 'The Habits screen (Walk, Read), the card “You both keep up: Walk” and the suggestion “Keep it up together”.',
-      '04-groupes': 'The “Morning walk” group: each member’s status today (kept, not yet), this week’s streak and the card “You both keep: Walk”; Suzie and Nino bump fists.',
-      '05-irl': 'Nino meeting Pia, what they have in common and one difference to explore, the “Wave at Pia” button and the question “Did you step outside today?”.',
-      '06-garde-robe': 'The wardrobe: Nino dressed up, items to earn and Minimoa+ items, surrounded by hats, a crown and a scarf.',
-      '07-quartier': 'The “Around you” map: your 1.5 km zone and compatible minimoas at rounded positions; today’s challenge.',
+      '01-des-potes': '“Friends near you, for real.” The app’s home screen: the card “Léa is waving at you” (their minimoa, Suzie, came to say hi) and Nino, in a party hat and monocle, 92% up for going out; Suzie and Pia wave around him.',
+      '02-pourquoi': '“Who see life like you do.” Nino meeting Pia, 83% compatible, and the card “Léa is waving at you”: 78% compatible, 3 things in common, 1 difference to explore, “Not this time” or “Accept”.',
+      '03-groupe': '“One habit, together.” The “Morning walk” group: who kept it today, this week so far, the Walk habit to prove with a photo and “2 more people needed to start the streak”; Suzie and Nino wave.',
+      '04-sortie': '“See them for real.” What Nino says about Pia, met through Malo, and the list of matches: Pia, 83% compatible, with the “Wave at Pia” button, then Basile; Pia bursts out laughing.',
+      '05-soins': '“It looks after you.” Nino and his care (Feed, Play, Nap), and the card “Me, in 3 words” where his friends describe him: funny, gentle, calm; Nino bites into an apple.',
+      '06-garde-robe': '“Dress it like you.” The wardrobe: Nino in a party hat and monocle, 14 items out of 74, items earned with day streaks and Minimoa+ items (halo, horns, pirate hat, winter beanie), surrounded by a cap, a bucket hat, a crown and a scarf.',
+      '07-quartier': '“Your block, for real.” The “Around you” map: your 1.5 km zone, Yanis, Inès and Léa at rounded positions, discreet mode, and the card “This week, Nino found 5 people”.',
     },
   },
   plus: {

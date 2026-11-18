@@ -82,18 +82,30 @@ pnpm --filter @blowy/web preview
 
 - **Minimoas, aperçus de liens, icônes, titres des images en Allo** : générés depuis le pack (`packages/ui/assets`) par
   `scripts/site-images/` et versionnés dans `public/` (`img/m/`, `og/`, `apple-touch-icon.png`, `icon-*.png`,
-  `favicon-32.png`). Les tenues portées reprennent les placements de l'app (`outfitLayers`).
+  `favicon-32.png`), puis `scripts/site-images/variants.py` pour les versions réduites (`img/v/`, `srcset`).
   ```sh
-  pnpm exec tsx apps/web/scripts/site-images/placements.mts > /tmp/minimoa-placements.json
-  python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json   # Pillow, fontTools, brotli
+  python3 -I apps/web/scripts/site-images/build.py              # Pillow, fontTools, brotli
+  python3 -I apps/web/scripts/site-images/build.py --boucle     # seulement le hero et l'aperçu de la landing
+  python3 -I apps/web/scripts/site-images/variants.py
   ```
-  Aperçus 1200 × 630 : `og/accueil.jpg` (landing et défaut), `og/{i,m,g,r,l,plus,defi,habitudes,carte}.jpg` (pages
-  de partage, en français), `og/<langue>/{accueil,quiz,quartier}.jpg` (pages indexées traduites ; seules :
-  `build.py --og-locales`).
+  Hero : la boucle en deux temps, `img/m/hero_soin.webp` (Nino qui mange : tu prends soin de lui) et
+  `img/m/hero_rencontre.webp` (Nino et Suzie, le minimoa de Léa : il te présente quelqu'un), textes dans la page.
+  Aperçus 1200 × 630 : `og/accueil.jpg` (landing et défaut : la même boucle, titre « Prends soin de ton minimoa. Il te
+  présente des potes. »), `og/{i,m,g,r,l,plus,defi,habitudes,carte}.jpg` (pages de partage, en français),
+  `og/<langue>/{accueil,quiz,quartier}.jpg` (pages indexées traduites ; seules : `build.py --og-locales`).
+- **Tenues de la garde-robe** (`img/m/tenue_*.webp`, 500 × 600) : rendues par l'app elle-même (`DressedPet`, route de
+  développement `/dev/look`), puis posées sur une toile commune. App lancée en web
+  (`cd apps/mobile && EXPO_PUBLIC_AUTH=local npx expo start --web`), puis :
+  ```sh
+  node apps/web/scripts/site-images/looks.mjs http://localhost:8081 /tmp/minimoa-looks   # Playwright
+  python3 -I apps/web/scripts/site-images/build.py --looks /tmp/minimoa-looks
+  python3 -I apps/web/scripts/site-images/variants.py
+  ```
+  Les tenues (`LOOKS` de `looks.mjs`) vont avec `LOOKS` de `src/content/landing.ts` et `wardrobe.looks` (cinq langues).
 - **Captures de l'App Store** (section « L'app, en vrai ») : `node apps/web/scripts/store-images.mjs [dossier]`
-  (défaut `/home/claude/work/store/out/fr/6.9`) → `public/img/store/*-{360,720}.webp` + `manifest.json` (textes
+  (défaut `/home/claude/work/store/out4/fr/1320x2868`) → `public/img/store/*-{360,720}.webp` + `manifest.json` (textes
   alternatifs tirés du README des captures). Captures anglaises (pages /en/) : `node apps/web/scripts/store-images.mjs
-  /home/claude/work/store/out/en/1320x2868 en` → `public/img/store/en/`. Les autres langues montrent les captures
+  /home/claude/work/store/out4/en/1320x2868 en` → `public/img/store/en/`. Les autres langues montrent les captures
   françaises ; les textes alternatifs viennent des textes du site (`screens.shots`). Sans `manifest.json`, la section et
   son point de navigation disparaissent.
 

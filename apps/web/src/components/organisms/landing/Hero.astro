@@ -1,11 +1,14 @@
 ---
-/** 1. Hero : le bénéfice (« Des potes près de chez toi. »), le quiz en action principale, « Ouvre ton quartier », Nino en pied sur sa colline. */
+/**
+ * 1. Hero : le bénéfice (« Des potes près de chez toi. »), la boucle en deux temps (tu prends soin de ton minimoa → il te
+ * présente quelqu'un), le quiz en action principale, « Ouvre ton quartier ».
+ */
 import Sticker from '../../atoms/Sticker.astro';
 import PetImage from '../../atoms/PetImage.astro';
 import ChatBubble from '../../molecules/ChatBubble.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
-import { HERO_PET, HERO_SIZES, sections } from '../../../content/landing';
+import { HERO_CARE, HERO_CARE_SIZES, HERO_PET, HERO_SIZES, sections } from '../../../content/landing';
 import type { Locale } from '../../../i18n/site';
 import { landingText } from '../../../content/landing-text';
 import { localePath } from '../../../i18n/site';
@@ -15,12 +18,8 @@ interface Props {
 const { locale } = Astro.props;
 const hero = landingText[locale].hero;
 const b1 = { who: hero.b1.who, whoColor: '#8C1D4F', text: hero.b1.text, avatar: { letter: 'L', bg: 'var(--rose)' } };
-const b3 = { who: hero.b3.who, whoColor: 'var(--ink)', text: hero.b3.text, avatar: { letter: 'M', bg: 'var(--orange)' } };
 ---
 <SnapSection section={sections.top} panel="p-lime hero" light>
-  <div class="hb-top">
-    <ChatBubble bubble={b1} class="b1" />
-  </div>
   <SectionTitle lines={hero.title} level={1}>
     <p class="lead hlead" data-r="up">{hero.lead}</p>
   </SectionTitle>
@@ -33,35 +32,68 @@ const b3 = { who: hero.b3.who, whoColor: 'var(--ink)', text: hero.b3.text, avata
   </div>
   <div class="hstage">
     <div class="hill" aria-hidden="true"></div>
-    <div class="hpet" data-r="grow"><div class="bob" style="height:100%"><PetImage src={HERO_PET} alt={hero.petAlt} width={720} height={800} fetchpriority="high" sizes={HERO_SIZES} /></div></div>
-    <ChatBubble bubble={b3} class="b3" />
+    <ol class="hloop" role="list" aria-label={hero.loop.label}>
+      <li class="hl hl-care">
+        <span class="hl-step" data-r="up"><b aria-hidden="true">1</b>{hero.loop.care}</span>
+        <div class="hl-art" data-r="grow"><div class="bob"><PetImage src={HERO_CARE} alt={hero.careAlt} width={550} height={760} sizes={HERO_CARE_SIZES} /></div></div>
+      </li>
+      <li class="hl hl-meet">
+        <span class="hl-step" data-r="up"><b aria-hidden="true">2</b>{hero.loop.meet}</span>
+        <div class="hl-art" data-r="grow"><div class="bob"><PetImage src={HERO_PET} alt={hero.meetAlt} width={1177} height={760} fetchpriority="high" sizes={HERO_SIZES} /></div></div>
+      </li>
+    </ol>
+    <ChatBubble bubble={b1} class="b1" />
   </div>
   <Sticker class="s1" src="/img/ic_etoiles.webp" reveal />
   <Sticker class="s2" src="/img/ic_confettis.webp" reveal />
 </SnapSection>
 <style is:global>
-.hero{grid-template-rows:auto auto auto minmax(0,1fr);text-align:center;justify-items:center}
+.hero{grid-template-rows:auto auto minmax(0,1fr);text-align:center;justify-items:center}
 .hero .hd{--k:10;--hs:12svh;--hmax:150px}
 .hero .hlead{margin-left:auto;margin-right:auto;font-weight:700;font-size:clamp(16px,min(1.6vw,2.4svh),24px);max-width:24em}
-.hb-top{display:flex;flex-direction:column;gap:6px;width:100%}
 .hcta{display:flex;flex-direction:column;align-items:center;gap:8px}
 .hbtns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .hbtns .btn{height:clamp(50px,6.4svh,60px);font-size:clamp(15px,2svh,18px);padding:0 24px}
 .hgo{box-shadow:0 12px 28px rgba(20,16,31,.28)}
 .hstage{position:relative;width:100%;height:100%;min-height:0}
-.hpet{position:absolute;left:50%;bottom:-6%;height:112%;translate:-50% 0;transform-origin:50% 100%}
-.hpet img{height:100%;width:auto;max-width:none;filter:drop-shadow(0 18px 24px rgba(20,16,31,.35))}
-.hero .b3{position:absolute;right:0;top:0;z-index:2}
+.hero .hill{width:min(140%,calc(100svh * .95));aspect-ratio:2/1;translate:-50% 50%}
+/* La boucle : deux temps côte à côte (pastille, puis image ; pieds sur la même ligne), une flèche entre les deux.
+   Hauteur des images (--H) : celle de la scène, bornée par sa largeur (largeurs des deux images : 0,724 H et 1,549 H). */
+.hstage{container-type:size}
+.hloop{--g:clamp(26px,5vw,90px);--cap:48px;--H:min(100cqh - var(--cap),(100cqw - var(--g) - 8px) / 2.273);list-style:none;margin:0;padding:0;position:absolute;inset:0;display:flex;justify-content:center;align-items:flex-end;gap:var(--g)}
+.hl{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px}
+.hl-art{transform-origin:50% 100%;margin-bottom:calc(var(--H) * -.03)}
+.hl img{display:block;height:var(--H);width:auto;max-width:none;filter:drop-shadow(0 14px 18px rgba(20,16,31,.32))}
+.hl-step{display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 5px;border-radius:999px;background:var(--ink);color:var(--white);font-weight:800;font-size:clamp(12px,min(1.3vw,1.8svh),16px);line-height:1.15;white-space:nowrap;box-shadow:0 8px 18px rgba(20,16,31,.22)}
+.hl-step b{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--lime);color:var(--ink);font-family:var(--display);font-weight:800}
+.hl-care::after{content:'→';position:absolute;right:calc(var(--g) / -2);bottom:calc(var(--H) * .5);translate:50% 0;display:grid;place-items:center;width:clamp(34px,4.4svh,46px);aspect-ratio:1;border-radius:50%;background:var(--white);color:var(--ink);font-family:var(--display);font-weight:800;font-size:clamp(18px,2.4svh,24px);line-height:1;box-shadow:0 8px 18px rgba(20,16,31,.22)}
+@container (max-height:330px){.hero .b1{display:none}}
+.hero .b1{position:absolute;right:0;top:0;z-index:2}
 .hero .s1{position:absolute;left:4%;top:8%;width:clamp(40px,6svh,70px)}
 .hero .s2{position:absolute;right:6%;top:6%;width:clamp(38px,5.5svh,64px)}
+@media (max-width:599px){
+  /* Téléphone : en diagonale (le soin en haut à gauche, la rencontre en bas à droite), pour garder les minimoas grands. */
+  .hero .b1{display:none}
+  .hloop{display:block}
+  .hl{position:absolute}
+  .hl-care{left:0;top:0;flex-direction:row-reverse;align-items:center;gap:10px}
+  .hl-care img{height:min(30cqh,30cqw)}
+  .hl-care::after{display:none}
+  .hl-meet{right:0;bottom:0;align-items:flex-end;gap:6px}
+  .hl-meet img{height:min(70cqh - 34px,(100cqw - 4px) / 1.549)}
+  .hl-step{font-size:13px;padding:4px 11px 4px 4px;gap:6px}
+}
 @media (min-width:900px){
   .hero{grid-template-rows:auto;align-content:start}
-  .hb-top{display:contents}
   .hero .bub{position:absolute;z-index:2}
-  .hero .b1{left:6%;top:52%}
-  .hero .b3{right:6%;top:52%}
   .hcta{position:relative;z-index:3;margin-top:clamp(10px,1.6svh,18px)}
-  .hstage{position:absolute;left:0;right:0;bottom:0;height:38%}
+  .hstage{position:absolute;left:0;right:0;bottom:0;height:40%}
+  .hero .b1{right:6%;top:40%}
+  /* Pastilles à côté des images (au-dessus, elles mordraient sur les boutons) : le soin à gauche, la rencontre à droite. */
+  .hloop{--cap:0px}
+  .hl-step{position:absolute;bottom:58%;z-index:2}
+  .hl-care .hl-step{right:calc(100% + 4px)}
+  .hl-meet .hl-step{left:calc(100% - 10px);bottom:30%}
   .hero .s1{left:8%;top:14%}
   .hero .s2{right:9%;top:16%}
 }

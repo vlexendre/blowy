@@ -76,10 +76,17 @@ export const NAV_ACTIVE: Record<string, NavLink> = {
   plus: 'plus',
 };
 
-export const HERO_PET = `${IMG}/hero_nino.webp`;
-/** Largeur affichée de Nino du hero (sa hauteur suit l'écran) : `sizes` de l'image et de son préchargement. */
-export const HERO_SIZES = '(min-width: 900px) 34vh, 60vw';
-export const HOW_PETS = ['nino_coucou', 'suzie_joie', 'pia_check'] as const;
+/**
+ * La boucle du hero (scripts/site-images/build.py `--boucle`) : Nino qui mange (tu prends soin de lui), puis Nino qui
+ * fait un check à Suzie, le minimoa de Léa (il te présente quelqu'un). Même échelle, même hauteur (550 × 760, 1177 × 760).
+ * La rencontre est l'image principale de la page (préchargée).
+ */
+export const HERO_PET = `${IMG}/hero_rencontre.webp`;
+export const HERO_CARE = `${IMG}/hero_soin.webp`;
+/** Largeur affichée des deux images (leur hauteur suit l'écran) : `sizes` des images et du préchargement. */
+export const HERO_SIZES = '(min-width: 900px) 52vh, 62vw';
+export const HERO_CARE_SIZES = '(min-width: 900px) 25vh, 30vw';
+export const HOW_PETS = ['nino_mange', 'suzie_joie', 'pia_check'] as const;
 
 /** « Il est vivant » : les quatre minimoas, et un geste par soin (chaque geste a sa pose en pied). */
 export const ALIVE = {

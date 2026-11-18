@@ -1,10 +1,12 @@
 """Images du site minimoa.app, tirées du pack des minimoas (packages/ui/assets) : poses en pied réduites, minimoas
-habillés (placements de l'app), bande finale, poses du quiz « Quel minimoa es-tu ? », aperçus de liens (Open Graph 1200 × 630) en Allo ExtraBold
-(la police du site), favicon et icône Apple.
+habillés (capturés dans l'app), la boucle du hero (soin → rencontre), bande finale, poses du quiz « Quel minimoa es-tu ? »,
+aperçus de liens (Open Graph 1200 × 630) en Allo ExtraBold (la police du site), favicon et icône Apple.
 
 Usage (depuis la racine du dépôt) :
-  pnpm exec tsx apps/web/scripts/site-images/placements.mts > /tmp/minimoa-placements.json
-  python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json
+  python3 -I apps/web/scripts/site-images/build.py
+  python3 -I apps/web/scripts/site-images/build.py --boucle   # seulement le hero et l'aperçu de la landing (cinq langues)
+  node apps/web/scripts/site-images/looks.mjs http://localhost:8081 /tmp/minimoa-looks   # tenues rendues par l'app
+  python3 -I apps/web/scripts/site-images/build.py --looks /tmp/minimoa-looks              # → img/m/tenue_*.webp
   python3 -I apps/web/scripts/site-images/build.py --og-locales   # seulement les aperçus traduits (og/<langue>/)
   pnpm exec tsx apps/web/scripts/site-images/editorial-og.mts > /tmp/minimoa-og-pages.json
   python3 -I apps/web/scripts/site-images/build.py --og-pages /tmp/minimoa-og-pages.json   # villes et guides (og/villes/, og/guides/)
@@ -14,7 +16,7 @@ import json
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[4]
 ASSETS = ROOT / 'packages/ui/assets'
@@ -57,48 +59,15 @@ def save_webp(im: Image.Image, path: Path, width: int, q: int = 80) -> None:
 
 # ── Minimoas habillés ──────────────────────────────────────────────────────────────────────────────────────────────
 
-PAD = 260  # marge au-dessus de la toile (couvre-chefs qui dépassent)
+# Les tenues de la garde-robe sont capturées dans l'app (DressedPet, route /dev/look : scripts/site-images/looks.mjs),
+# puis posées ici sur la toile commune (`--looks <dossier>`) : img/m/tenue_<nom>.webp, 500 × 600, pieds alignés.
 
-
-def item_layer(p: dict, size: tuple[int, int]) -> Image.Image:
-    """L'objet posé et tourné comme dans l'app (pivot `origin`, sens horaire), sur une toile transparente."""
-    src = Image.open(ASSETS / 'items' / f"{p['image']}.webp").convert('RGBA')
-    w, h = max(1, round(p['width'])), max(1, round(p['height'] * p['scaleY']))
-    src = src.resize((w, h), Image.LANCZOS)
-    layer = Image.new('RGBA', size, (0, 0, 0, 0))
-    left, top = round(p['left']), round(p['top'] + PAD + p['height'] * p['originY'] * (1 - p['scaleY']))
-    layer.alpha_composite(src, (left, top)) if left >= 0 and top >= 0 else layer.paste(src, (left, top), src)
-    if p['rotate']:
-        cx, cy = p['left'] + p['originX'] * p['width'], p['top'] + PAD + p['originY'] * p['height']
-        layer = layer.rotate(-p['rotate'], resample=Image.BICUBIC, center=(cx, cy))
-    return layer
-
-
-def fur_shadow(layer: Image.Image, body_alpha: Image.Image, spec: dict, strength: float) -> Image.Image:
-    """Ombre de l'objet sur la fourrure : silhouette sombre, floue, décalée, limitée à l'alpha du minimoa."""
-    a = layer.getchannel('A').point(lambda v: round(v * spec['opacity'] * strength))
-    a = ImageChops.offset(a, round(spec['x']), round(spec['y'])).filter(ImageFilter.GaussianBlur(spec['blur']))
-    a = ImageChops.multiply(a, body_alpha)
-    sh = Image.new('RGBA', layer.size, (26, 13, 0, 0))
-    sh.putalpha(a)
-    return sh
-
-
-def dressed(o: dict) -> Image.Image:
-    size = (900, 1000 + PAD)
-    canvas = Image.new('RGBA', size, (0, 0, 0, 0))
-    body = Image.new('RGBA', size, (0, 0, 0, 0))
-    body.alpha_composite(pet(f"{o['species']}_corps_{o['pose']}"), (0, PAD))
-    for p in o['layers']['back']:
-        canvas.alpha_composite(item_layer(p, size))
-    canvas.alpha_composite(body)
-    body_alpha = body.getchannel('A')
-    for p in o['layers']['front']:
-        layer = item_layer(p, size)
-        if p['wear'].get('fur') and p['slot'] != 'toy':
-            canvas.alpha_composite(fur_shadow(layer, body_alpha, p['wear']['fur'], p['wear']['shadow']))
-        canvas.alpha_composite(layer)
-    return canvas.crop(canvas.getbbox())
+def looks(src_dir: str) -> None:
+    for f in sorted(Path(src_dir).glob('*.png')):
+        im = Image.open(f).convert('RGBA')
+        im = fit_canvas(im.crop(im.getbbox()), 900, 1080, 0.97)
+        save_webp(im, OUT / f'tenue_{f.stem}.webp', 500, 80)
+        print('tenue :', f.stem)
 
 
 def fit_canvas(im: Image.Image, w: int, h: int, foot: float = 0.96) -> Image.Image:
@@ -213,23 +182,158 @@ def row(names: list[str], gap: float = -0.12, scales: list[float] | None = None)
 # français. Les pages de partage (/m/, /i/, /g/…) gardent l'aperçu français : une adresse pour toutes les langues, et les
 # robots d'aperçu ne lancent pas le script qui choisit la langue.
 OG_LOCALES = {
-    'en': {'accueil': ['FRIENDS', 'NEAR', 'YOU.'], 'quiz': ['WHICH', 'MINIMOA', 'ARE YOU?'], 'quartier': ['YOUR', 'NEIGHBORHOOD', 'OPENS AT 50.']},
-    'es': {'accueil': ['AMIGOS', 'CERCA', 'DE TI.'], 'quiz': ['¿QUÉ', 'MINIMOA', 'ERES?'], 'quartier': ['TU BARRIO', 'ABRE CON 50.']},
-    'pt': {'accueil': ['AMIGOS', 'PERTO', 'DE VOCÊ.'], 'quiz': ['QUAL', 'MINIMOA', 'É VOCÊ?'], 'quartier': ['SEU BAIRRO', 'ABRE COM 50.']},
-    'nl': {'accueil': ['VRIENDEN', 'BIJ JOU', 'IN DE BUURT.'], 'quiz': ['WELKE', 'MINIMOA', 'BEN JIJ?'], 'quartier': ['JE BUURT', 'GAAT OPEN', 'BIJ 50.']},
+    'en': {'quiz': ['WHICH', 'MINIMOA', 'ARE YOU?'], 'quartier': ['YOUR', 'NEIGHBORHOOD', 'OPENS AT 50.']},
+    'es': {'quiz': ['¿QUÉ', 'MINIMOA', 'ERES?'], 'quartier': ['TU BARRIO', 'ABRE CON 50.']},
+    'pt': {'quiz': ['QUAL', 'MINIMOA', 'É VOCÊ?'], 'quartier': ['SEU BAIRRO', 'ABRE COM 50.']},
+    'nl': {'quiz': ['WELKE', 'MINIMOA', 'BEN JIJ?'], 'quartier': ['JE BUURT', 'GAAT OPEN', 'BIJ 50.']},
 }
 
 
 def og_locales() -> None:
-    trio = row(['suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_coucou'], -0.3, [0.78, 1.0, 0.8])
     quatre = row(['gaston_corps_pense', 'suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_fier'], -0.22, [0.84, 0.9, 1.0, 0.88])
     groupe = row(['suzie_corps_joie', 'nino_corps_check', 'gaston_corps_applaudit'], -0.18, [0.92, 1.0, 0.9])
     for loc, t in OG_LOCALES.items():
         out = OG / loc
-        og('accueil', 'accent', t['accueil'], 1, trio, (620, 60, 1180, 610), 'minimoa.app', out)
+        og_boucle(loc)
         og('quiz', 'violet', t['quiz'], 9, quatre, (600, 120, 1180, 610), f'minimoa.app/{loc}/quiz', out)
         og('quartier', 'accent', t['quartier'], 1, groupe, (650, 110, 1180, 610), f'minimoa.app/{loc}/quartier', out)
     print('ok :', ', '.join(str(OG / l) for l in OG_LOCALES))
+
+
+# ── La boucle : tu prends soin de ton minimoa → il te présente quelqu'un ───────────────────────────────────────────
+# Visuels du hero (img/m/hero_soin.webp, img/m/hero_rencontre.webp, même échelle : le texte est dans la page) et aperçu
+# de lien de la landing (og/accueil.jpg et og/<langue>/accueil.jpg) : deux cartes, le soin puis la rencontre.
+
+BOUCLE_TEXT = {
+    'fr': {'title': ['PRENDS SOIN DE TON MINIMOA.', 'IL TE PRÉSENTE DES POTES.'], 'care': 'Nourrir · Jouer · Câlin', 'wave': 'Léa te fait signe', 'near': 'Près de chez toi'},
+    'en': {'title': ['TAKE CARE OF YOUR MINIMOA.', 'IT INTRODUCES YOU TO FRIENDS.'], 'care': 'Feed · Play · Cuddle', 'wave': 'Léa is waving at you', 'near': 'Near you'},
+    'es': {'title': ['CUIDA DE TU MINIMOA.', 'TE PRESENTA A AMIGOS.'], 'care': 'Comer · Jugar · Mimos', 'wave': 'Léa te saluda', 'near': 'Cerca de ti'},
+    'pt': {'title': ['CUIDE DO SEU MINIMOA.', 'ELE TE APRESENTA AMIGOS.'], 'care': 'Comer · Brincar · Carinho', 'wave': 'Léa acenou para você', 'near': 'Perto de você'},
+    'nl': {'title': ['ZORG VOOR JE MINIMOA.', 'HIJ STELT JE VRIENDEN VOOR.'], 'care': 'Eten · Spelen · Knuffel', 'wave': 'Léa zwaait naar je', 'near': 'Bij jou in de buurt'},
+}
+
+
+def boucle_art() -> tuple[Image.Image, Image.Image]:
+    """Nino qui mange (le soin) et Nino qui fait un check à Suzie, le minimoa de Léa (la rencontre), à la même échelle."""
+    soin = pet('nino_corps_mange')
+    soin = soin.crop(soin.getbbox())
+    rencontre = row(['nino_corps_check', ImageOps.mirror(pet('suzie_corps_check'))], -0.2)
+    return soin, rencontre
+
+
+def hero_boucle() -> None:
+    soin, rencontre = boucle_art()
+    k = 760 / rencontre.height  # 2× la hauteur affichée (≈ 380 px)
+    save_webp(soin, OUT / 'hero_soin.webp', round(soin.width * k), 80)
+    save_webp(rencontre, OUT / 'hero_rencontre.webp', round(rencontre.width * k), 80)
+    print('hero :', soin.height / rencontre.height, 'hauteur relative du soin')
+
+
+def rounded(size: tuple[int, int], r: int, fill: tuple) -> Image.Image:
+    im = Image.new('RGBA', size, (0, 0, 0, 0))
+    ImageDraw.Draw(im).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), r, fill=fill)
+    return im
+
+
+def pill(im: Image.Image, center: tuple[int, int], text: str, font: ImageFont.FreeTypeFont, fg: tuple, bg: tuple, avatar: Image.Image | None = None, pad: int = 18, max_w: int = 10_000) -> None:
+    """Pastille arrondie (avec un visage rond à gauche si `avatar`), police réduite si elle dépasse `max_w`."""
+    d = ImageDraw.Draw(im)
+    while True:
+        tw = d.textlength(text, font=font)
+        h = round(font.size * 1.9)
+        aw = (h - 10 + 8) if avatar is not None else 0
+        if tw + pad * 2 + aw <= max_w or font.size <= 18:
+            break
+        font = ImageFont.truetype(font.path, font.size - 1)
+    w = round(tw + pad * 2 + aw)
+    x, y = center[0] - w // 2, center[1] - h // 2
+    sh = Image.new('RGBA', im.size, (0, 0, 0, 0))
+    sh.alpha_composite(rounded((w, h), h // 2, (20, 16, 31, 70)), (x, y + 6))
+    im.alpha_composite(sh.filter(ImageFilter.GaussianBlur(8)))
+    im.alpha_composite(rounded((w, h), h // 2, bg + (255,)), (x, y))
+    if avatar is not None:
+        a = avatar.resize((h - 10, h - 10), Image.LANCZOS)
+        m = Image.new('L', a.size, 0)
+        ImageDraw.Draw(m).ellipse((0, 0, a.width - 1, a.height - 1), fill=255)
+        disc = Image.new('RGBA', a.size, (255, 196, 223, 255))
+        disc.alpha_composite(a)
+        im.paste(disc, (x + 5 + pad // 3, y + 5), m)
+        x += aw - pad // 3
+    ImageDraw.Draw(im).text((x + pad, y + h / 2), text, font=font, fill=fg + (255,), anchor='lm')
+
+
+def og_boucle(locale: str) -> None:
+    t = BOUCLE_TEXT[locale]
+    W, H, M = 1200, 630, 64
+    top, bottom, fg = PANELS['accent']
+    im = vgrad(W, H, top, bottom)
+    glow(im, (980, 120), 360, (255, 255, 255), 46)
+    d = ImageDraw.Draw(im)
+    logo = ImageFont.truetype(str(ALLO), 36)
+    d.text((M, M), 'minimoa', font=logo, fill=fg + (255,), anchor='la')
+    lw = d.textlength('minimoa', font=logo)
+    d.text((M + lw, M), '.', font=logo, fill=INK + (255,), anchor='la')
+    small = ImageFont.truetype(str(ALLO_BOLD), 28)
+    bg_mid = mix(top, bottom, 0.5)
+    d.text((W - M, M + 4), 'minimoa.app', font=small, fill=mix(fg, bg_mid, 0.75) + (255,), anchor='ra')
+    # Titre : deux lignes, la plus grande taille qui tient dans la largeur utile.
+    size = 72
+    while size > 30:
+        f = ImageFont.truetype(str(ALLO), size)
+        if max(d.textlength(l, font=f) for l in t['title']) <= W - 2 * M:
+            break
+        size -= 1
+    f = ImageFont.truetype(str(ALLO), size)
+    lh = round(size * 1.08)
+    y0 = 128
+    for i, l in enumerate(t['title']):
+        d.text((M, y0 + i * lh), l, font=f, fill=(fg if i == 0 else mix(fg, bg_mid, 0.42)) + (255,), anchor='la')
+    # Deux cartes : le soin, puis la rencontre (flèche entre les deux).
+    soin, rencontre = boucle_art()
+    cy0, cy1 = y0 + 2 * lh + 22, H - M
+    ch = cy1 - cy0
+    gap = 62
+    c1w = 318
+    c2w = W - 2 * M - c1w - gap
+    cards = Image.new('RGBA', im.size, (0, 0, 0, 0))
+    cards.alpha_composite(rounded((c1w, ch), 34, (255, 255, 255, 92)), (M, cy0))
+    cards.alpha_composite(rounded((c2w, ch), 34, (255, 255, 255, 92)), (M + c1w + gap, cy0))
+    im.alpha_composite(cards)
+    # Pieds sur le bas de la carte (un peu de marge), même échelle pour les deux scènes.
+    k = (ch - 50) / rencontre.height
+    r = rencontre.resize((round(rencontre.width * k), round(rencontre.height * k)), Image.LANCZOS)
+    s_ = soin.resize((round(soin.width * k), round(soin.height * k)), Image.LANCZOS)
+    foot = cy1 - 30
+    x2 = M + c1w + gap
+    im.alpha_composite(s_, (M + (c1w - s_.width) // 2, foot - s_.height))
+    im.alpha_composite(r, (x2 + 66, foot - r.height))
+    room = (x2 + 66 + r.width + 4, W - M - 14)  # place libre à droite de la scène
+    side = sum(room) // 2  # centre de la place libre à droite de la scène
+    # Pastilles (dans la carte, à l'abri des bords).
+    lab = ImageFont.truetype(str(ALLO_BOLD), 25)
+    pill(im, (M + c1w // 2, cy1 - 30), t['care'], lab, (255, 255, 255), INK, max_w=c1w - 24)
+    face = Image.open(ASSETS / 'pets/suzie_face.webp').convert('RGBA')
+    pill(im, (side, cy0 + ch // 2 - 34), t['wave'], ImageFont.truetype(str(ALLO_BOLD), 26), INK, (255, 255, 255), face, max_w=room[1] - room[0])
+    pill(im, (side, cy0 + ch // 2 + 34), t['near'], lab, (255, 255, 255), INK, max_w=room[1] - room[0])
+    # Numéros et flèche.
+    num = ImageFont.truetype(str(ALLO), 30)
+    for i, x in enumerate([M + 20, M + c1w + gap + 20]):
+        d = ImageDraw.Draw(im)
+        d.ellipse((x, cy0 + 16, x + 44, cy0 + 60), fill=INK + (255,))
+        d.text((x + 22, cy0 + 39), str(i + 1), font=num, fill=(255, 210, 63, 255), anchor='mm')
+    ax0, ax1, ay = M + c1w + 12, M + c1w + gap - 12, cy0 + ch // 2
+    d.line((ax0, ay, ax1 - 6, ay), fill=INK + (255,), width=8)
+    d.polygon([(ax1, ay), (ax1 - 20, ay - 16), (ax1 - 20, ay + 16)], fill=INK + (255,))
+    out = OG if locale == 'fr' else OG / locale
+    out.mkdir(parents=True, exist_ok=True)
+    im.convert('RGB').save(out / 'accueil.jpg', 'JPEG', quality=86, optimize=True, progressive=True)
+    print('aperçu :', out / 'accueil.jpg')
+
+
+def boucle() -> None:
+    hero_boucle()
+    for loc in BOUCLE_TEXT:
+        og_boucle(loc)
 
 
 # Aperçus des pages villes et guides (français seulement) : og/villes.jpg, og/villes/<ville>.jpg, og/guides.jpg,
@@ -259,14 +363,18 @@ def main() -> None:
     if '--og-pages' in sys.argv:
         og_pages(sys.argv[sys.argv.index('--og-pages') + 1])
         return
-    placements = json.loads(Path(sys.argv[1]).read_text()) if len(sys.argv) > 1 else []
+    if '--looks' in sys.argv:
+        looks(sys.argv[sys.argv.index('--looks') + 1])
+        return
+    if '--boucle' in sys.argv:
+        boucle()
+        return
     OUT.mkdir(parents=True, exist_ok=True)
 
     # Poses en pied (toile 900 × 1000 réduite : 450 × 500, 2× pour ~225 px affichés ; héros plus grand).
     for s in SPECIES:
         for pose in CARE_POSES + EXTRA[s]:
             save_webp(pet(f'{s}_corps_{pose}'), OUT / f'{s}_{pose}.webp', 450, 78)
-    save_webp(pet('nino_corps_coucou'), OUT / 'hero_nino.webp', 720, 80)
     for e in EVO:
         save_webp(pet(f'nino_evo_{e}'), OUT / f'nino_evo_{e}.webp', 450, 78)
     for m in MISC:
@@ -277,12 +385,9 @@ def main() -> None:
     for trait, name in QUIZ_POSES.items():
         save_webp(pet(name).crop(pet(name).getbbox()), OUT / f'quiz_{trait}.webp', 720, 82)
 
-    # Minimoas habillés (garde-robe), toile commune 600 × 720 pour aligner les pieds.
-    dressed_ims = {}
-    for o in placements:
-        im = fit_canvas(dressed(o), 900, 1080, 0.97)
-        dressed_ims[o['name']] = im
-        save_webp(im, OUT / f"tenue_{o['name']}.webp", 500, 80)
+    # Minimoas habillés (garde-robe) : capturés dans l'app (`--looks`), relus ici pour l'aperçu de Minimoa+.
+    pia_hiver = OUT / 'tenue_pia_hiver.webp'
+    pia_hiver = Image.open(pia_hiver).convert('RGBA') if pia_hiver.exists() else pet('pia_corps_neutre')
 
     # Bande finale : les quatre qui font la fête.
     band = row(['nino_corps_danse', 'suzie_corps_fete', 'gaston_corps_applaudit', 'pia_corps_rit'], -0.14, [1.0, 0.94, 0.92, 0.96])
@@ -294,14 +399,13 @@ def main() -> None:
 
     # Aperçus de liens (1200 × 630). Textes en français : la langue du site au moment du partage.
     tag = 'minimoa.app'
-    trio = row(['suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_coucou'], -0.3, [0.78, 1.0, 0.8])
-    og('accueil', 'accent', ['DES POTES', 'PRÈS DE', 'CHEZ TOI.'], 1, trio, (620, 60, 1180, 610), tag)
+    boucle()  # hero et aperçu de la landing (cinq langues)
     og('i', 'violet', ['ON T’INVITE', 'SUR MINIMOA.'], 1, pet('nino_corps_coucou'), (760, 70, 1150, 600), tag)
     og('m', 'rose', ['DÉCRIS-MOI', 'EN 3 MOTS.', 'SOIS SYMPA.'], 1, pet('nino_corps_timide'), (770, 80, 1150, 600), 'Anonyme, et seulement des mots gentils')
     og('g', 'violet', ['TON GROUPE', 'T’ATTEND.'], 1, groupe, (650, 110, 1180, 610), tag)
     og('r', 'coral', ['UN MINIMOA', 'VEUT TE DIRE', 'SALUT.'], 2, duo, (650, 110, 1180, 610), tag)
     og('l', 'wine', ['TON LIEN', 'T’ATTEND.'], 1, row(['nino_corps_coucou', 'suzie_corps_coucou'], -0.16), (650, 110, 1180, 610), tag)
-    og('plus', 'night', ['MINIMOA+'], 9, dressed_ims.get('pia_hiver', pet('pia_corps_neutre')), (720, 50, 1150, 610), 'minimoa.app/plus')
+    og('plus', 'night', ['MINIMOA+'], 9, pia_hiver.crop(pia_hiver.getbbox()), (720, 50, 1150, 610), 'minimoa.app/plus')
     og('defi', 'orange', ['LE DÉFI', 'DU JOUR.'], 1, pet('nino_corps_pense'), (770, 80, 1150, 600), tag)
     og('habitudes', 'accent', ['TIENS TES', 'HABITUDES.', 'À PLUSIEURS.'], 2, groupe, (650, 110, 1180, 610), tag)
     og('carte', 'night', ['LA CARTE', 'DES MINIMOAS.'], 1, pet('nino_corps_marche'), (770, 80, 1150, 600), 'Position arrondie, jamais en direct')

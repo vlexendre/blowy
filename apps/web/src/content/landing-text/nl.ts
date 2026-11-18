@@ -6,7 +6,7 @@ export const nl: LandingText = {
     title: 'Minimoa — De app om vrienden te maken in je buurt',
     description:
       'De app om vrienden te maken in je buurt: je minimoa stelt je voor aan mensen die het leven zien zoals jij. Gratis, nul swipes, vanaf 18 jaar.',
-    ogAlt: 'Nino, Suzie en Pia, harige minimoa’s, naast de titel „Vrienden bij jou in de buurt.”',
+    ogAlt: 'Nino neemt een hap van een appel en geeft daarna Suzie, de minimoa van Léa, een high five, onder de titel „Zorg voor je minimoa. Hij stelt je vrienden voor.”',
   },
   dots: {
     top: 'Home',
@@ -34,18 +34,19 @@ export const nl: LandingText = {
   },
   hero: {
     title: [{ text: 'VRIENDEN' }, { text: 'BIJ JOU', dim: true }, { text: 'IN DE BUURT.', dim: true }],
-    lead: 'Je minimoa stelt je voor aan mensen die het leven zien zoals jij. Echt.',
+    lead: 'Jij zorgt voor je minimoa. Hij stelt je voor aan mensen die het leven zien zoals jij.',
     primary: 'Welke minimoa ben jij?',
     secondary: 'Open je buurt',
     b1: { who: 'Léa', text: 'Morgenochtend samen wandelen?' },
-    b3: { who: 'Malo', text: 'Wacht. Kan hij dat?' },
     tag: 'Gratis · nul swipes · vanaf 18 jaar',
-    petAlt: 'Nino, een groene minimoa met een oranje kuif, die naar je zwaait',
+    loop: { label: 'Minimoa in twee stappen', care: 'Jij zorgt voor hem', meet: 'Hij stelt je mensen voor' },
+    careAlt: 'Nino, een groene minimoa met een oranje kuif, neemt een hap van een appel',
+    meetAlt: 'Nino geeft Suzie, de minimoa van Léa, een high five',
   },
   how: {
     title: [{ text: 'HOE' }, { text: 'HET WERKT.', dim: true }],
     steps: [
-      { title: 'Maak je minimoa', meta: '2 min', text: 'Een quiz, een naam, een outfit. Hij lijkt op jou.' },
+      { title: 'Zorg voor je minimoa', meta: 'elke dag', text: 'Eten, spelen, naar buiten: hoe vaker je weggaat, hoe meer mensen hij voorstelt.' },
       { title: 'Hij stelt je voor aan mensen in je buurt', meta: 'en zegt waarom', text: '3 dingen gemeen, 1 verschil om te ontdekken. Nooit zomaar een getal.' },
       { title: 'Jullie schrijven, jullie spreken af', meta: 'niets zonder jouw ja', text: 'Jij zwaait, de ander accepteert. Niemand schrijft je zonder jouw ja.' },
     ],
@@ -223,13 +224,13 @@ export const nl: LandingText = {
     frenchShots: '(Screenshots in het Frans.)',
     listLabel: 'Schermen van de app',
     shots: {
-      '01-accroche': 'Nino, een groene minimoa met een oranje kuif, met open armen in een weide met Suzie, Pia en Gaston; erboven de kaart uit de app „Deze week kwam Nino 5 minimoa’s tegen”.',
-      '02-minimoa-vivant': 'Het startscherm van de app: Nino met petje en sjaal, hoe sociaal hij is en de vier soorten zorg in het groot; Nino neemt een hap van een appel.',
-      '03-habitudes': 'Het scherm Gewoontes (Wandelen, Lezen), de kaart „Jullie houden allebei vol: Wandelen” en het voorstel „Samen volhouden”.',
-      '04-groupes': 'De chat van de groep „Ochtendwandeling” en hoe elk lid er vandaag voor staat; Suzie en Nino geven elkaar een boks.',
-      '05-irl': 'Een vriendengroep die een borrel plant, Nino die Pia ontmoet, en de vraag „Ben je vandaag buiten geweest?”.',
-      '06-garde-robe': 'De garderobe: Nino aangekleed, items om te verdienen en Minimoa+-items, omringd door hoeden, een kroon en een sjaal.',
-      '07-quartier': 'De kaart „Om je heen”: je zone van 1,5 km en passende minimoa’s op afgeronde posities; de uitdaging van de dag.',
+      '01-des-potes': '„Vrienden bij jou in de buurt.” Het startscherm: de kaart „Léa zwaait naar je” (haar minimoa, Suzie, kwam even hallo zeggen) en Nino, met feesthoedje en monocle, heeft 92% zin om uit te gaan; Suzie en Pia zwaaien eromheen.',
+      '02-pourquoi': '„Die het leven zien zoals jij.” Nino ontmoet Pia, 83% match, en de kaart „Léa zwaait naar je”: 78% match, 3 dingen gemeen, 1 verschil om te ontdekken, „Deze keer niet” of „Accepteren”.',
+      '03-groupe': '„Eén gewoonte, met z’n allen.” De groep „Ochtendwandeling”: wie het vandaag volhield, de week tot nu toe, de gewoonte Wandelen om met een foto te bewijzen en „Nog 2 mensen nodig om de reeks te starten”; Suzie en Nino zwaaien.',
+      '04-sortie': '„Zie ze in het echt.” De chat van de groep „De vrienden uit de 11e”, waar Malo donderdag een borrel voorstelt en Yanis chips meeneemt, en wat Nino vertelt over Pia, ontmoet via Malo; Pia ligt dubbel van het lachen.',
+      '05-soins': '„Hij zorgt voor jou.” Nino en zijn zorg (Eten geven, Spelen, Dutje), en de kaart „Ik, in 3 woorden” waarin zijn vrienden hem beschrijven: grappig, lief, eerlijk; Nino neemt een hap van een appel.',
+      '06-garde-robe': '„Kleed hem aan zoals jij.” De garderobe: Nino met feesthoedje en monocle, 14 van de 74 items, items die je verdient met reeksen dagen en Minimoa+-items (aureool, hoorns, piratenhoed, wintermuts), omringd door een baseballcap, een vissershoedje, een kroon en een sjaal.',
+      '07-quartier': '„Jouw buurt, in het echt.” De kaart „Om je heen”: je zone van 1,5 km, Yanis, Inès en Léa op afgeronde posities, de discrete modus en de kaart „Deze week vond Nino 5 mensen”.',
     },
   },
   plus: {
