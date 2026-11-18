@@ -11754,13 +11754,13 @@
   "hiver_aura": {
    "anchor": "torso",
    "size": "bodyw",
-   "w": 1.55,
+   "w": 1.38,
    "pivot": [
     0.5,
     0.5
    ],
-   "ratio": 1.0386,
-   "dy": -0.12,
+   "ratio": 0.9705,
+   "dy": -0.16,
    "z": "back"
   }
  },
