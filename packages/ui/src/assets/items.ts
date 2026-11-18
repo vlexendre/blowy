@@ -108,6 +108,10 @@ const VARIANT_IMAGES = {
   sac_a_dos_dos: require('../../assets/items/sac_a_dos_dos.webp'),
   // Pose de profil (`fit.json` → `items.<id>.profile.image`) : une seule bretelle.
   sac_a_dos_profil: require('../../assets/items/sac_a_dos_profil.webp'),
+  // Portés sur les attributs de l'espèce (ancre `tips`) : pompons de Suzie, cornes de Pia.
+  antennes_tips: require('../../assets/items/antennes_tips.webp'),
+  cornes_tips: require('../../assets/items/cornes_tips.webp'),
+  cornes_profil: require('../../assets/items/cornes_profil.webp'),
 } as const satisfies Record<string, Src>;
 
 /** Identifiant d'objet connu du registre (les 76 de `ITEM_IDS`). */

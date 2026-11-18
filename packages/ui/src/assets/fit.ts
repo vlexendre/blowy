@@ -45,6 +45,12 @@ interface FitItem {
    * le dos (à gauche), l'écharpe se resserre sur le cou vu de côté.
    */
   profile?: Partial<Omit<FitItem, 'profile' | 'back'>>;
+  /**
+   * Ancre `tips` (objet porté SUR un attribut de l'espèce : pompons de Suzie, cornes de Pia) : les deux points de l'image
+   * [xG, yG, xD, yD] (fractions) posés sur les deux bouts mesurés de la pose (`poses.<p>.tips`) ; l'image suit leur
+   * écart (× `w`) et leur angle. Sans mesure sur la pose : réglage commun de l'objet.
+   */
+  pair?: number[];
 }
 
 interface FitPose {
@@ -59,6 +65,8 @@ interface FitPose {
   arms?: number[][];
   /** Emplacements non dessinés dans cette pose (la tenue sous le plaid de `malade`, dans le bain). */
   hide?: string[];
+  /** Bouts des pompons (Suzie) ou des cornes (Pia) : [xG, yG, xD, yD] (fractions de la toile). */
+  tips?: number[];
 }
 
 interface FitSpecies {
@@ -151,10 +159,10 @@ export interface ItemPlacement {
 
 const SHADOW_BY_SLOT: Record<ItemSlot, number> = { head: 1, face: 0.7, body: 0.9, toy: 0.8 };
 
-function settings(species: Species, id: string, layer: 'front' | 'back' = 'front'): FitItem | null {
+function settings(species: Species, id: string, layer: 'front' | 'back' = 'front', own = true): FitItem | null {
   const base = FIT.items[id];
   if (!base) return null;
-  const override = FIT.overrides[species]?.[id];
+  const override = own ? FIT.overrides[species]?.[id] : undefined;
   const s = override ? { ...base, ...override, back: base.back || override.back ? { ...base.back, ...override.back } : undefined } : base;
   if (layer === 'front') return s;
   if (!s.back) return null;
@@ -192,11 +200,19 @@ const TILT_SHARE: Record<ItemSlot, number> = { head: 1, face: 1, body: 0.5, toy:
  * `null` si l'objet ou l'ancre est inconnu, ou un objet du visage sur une pose de profil.
  */
 export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 'front' | 'back' = 'front'): ItemPlacement | null {
-  const s0 = settings(species, id, layer);
+  const set = settings(species, id, layer);
   const sp = FIT.species[species];
   const slot = itemById(id)?.slot;
-  if (!s0 || !sp || !slot) return null;
+  if (!set || !sp || !slot) return null;
   const pf = poseFit(species, pose);
+  const own = pf && !pf.face && set.profile ? { ...set, ...set.profile } : set;
+  if (own.anchor === 'tips') {
+    const at = pf?.tips ? placeOnTips(id, slot, own, pf.tips) : null;
+    if (at) return at;
+  }
+  // Ancre `tips` sans mesure sur cette pose : le réglage commun de l'objet.
+  const s0 = own.anchor === 'tips' ? settings(species, id, layer, false) : own;
+  if (!s0) return null;
   const s = pf && !pf.face && s0.profile ? { ...s0, ...s0.profile } : s0;
   if (pf && !pf.face && slot === 'face') return null;
   if (pf?.hide?.includes(slot)) return null;
@@ -231,6 +247,38 @@ export function placeItem(species: Species, id: string, pose?: BodyPose, layer: 
     originY,
     back: s.z === 'back',
     held: !!hand,
+    wear: wearOf(id, slot),
+  };
+}
+
+/** Objet posé sur les deux bouts mesurés (pompons, cornes) : écart, angle et milieu de l'image sur ceux de la pose. */
+function placeOnTips(id: string, slot: ItemSlot, s: FitItem, tips: number[]): ItemPlacement | null {
+  const pair = s.pair;
+  if (!pair || pair.length < 4 || tips.length < 4) return null;
+  const [ax = 0, ay = 0, bx = 0, by = 0] = tips.map((v, i) => v * (i % 2 ? FIT_CANVAS.height : FIT_CANVAS.width));
+  const [ix0 = 0.2, iy0 = 0.5, ix1 = 0.8, iy1 = 0.5] = pair;
+  const span = ix1 - ix0;
+  if (span <= 0) return null;
+  const width = (Math.hypot(bx - ax, by - ay) / span) * s.w;
+  const height = width / s.ratio;
+  const originX = (ix0 + ix1) / 2;
+  const originY = (iy0 + iy1) / 2;
+  const px = (ax + bx) / 2 + (s.dx ?? 0) * width;
+  const py = (ay + by) / 2 + (s.dy ?? 0) * width;
+  return {
+    id,
+    image: s.image ?? id,
+    slot,
+    left: px - originX * width,
+    top: py - originY * height,
+    width,
+    height,
+    rotate: (Math.atan2(by - ay, bx - ax) * 180) / Math.PI + (s.rot ?? 0),
+    scaleY: s.sy ?? 1,
+    originX,
+    originY,
+    back: s.z === 'back',
+    held: false,
     wear: wearOf(id, slot),
   };
 }

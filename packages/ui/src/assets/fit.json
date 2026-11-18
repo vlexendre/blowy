@@ -10,7 +10,8 @@
   "wear.<id>.plain : objet dessiné tel quel (sans voile ni ombre propre : l'image est déjà « portée ») ; wear.<id>.fur : ombre portée limitée à la fourrure (douce, décalée vers le bas). Ancre `brow` (front) et mesure `brow` (largeur du front) : couvre-chefs, mesurés comme la planche de référence (scripts/wear_test.py).",
   "Mesure `face` (objets du visage) : écart des yeux sur la pose neutre (Gaston ×1,6) ; overrides.<s>.<id>.image : image propre à l'espèce (Gaston : lunettes à un verre, `_1`).",
   "Vêtements : ancre `chest` (bouche + 55 px) ou `feet` (tutu), mesure `bodyw` (largeur du corps au torse) ; wear.clip : vrai = coupé par la silhouette du minimoa et effacé au-dessus des pieds, nombre = en plus, effacé au-dessus de cette part de sa hauteur (ceinture du tutu). poses.<p>.arms : zones [x0, y0, x1, y1] où un bras passe devant le ventre (le minimoa y est redessiné par-dessus la tenue).",
-  "items.<id>.profile (et back.profile) : réglages remplacés sur une pose de profil (face: false, tourné vers la droite) : sac à dos derrière le dos avec une seule bretelle, écharpes et cache-oreilles resserrés."
+  "items.<id>.profile (et back.profile) : réglages remplacés sur une pose de profil (face: false, tourné vers la droite) : sac à dos derrière le dos avec une seule bretelle, écharpes et cache-oreilles resserrés.",
+  "poses.<p>.tips (Suzie, Pia) : centres des deux pompons / cornes, mesurés par apps/mobile/scripts/fit-poses/tips.py ; ancre `tips` + pair [xG,yG,xD,yD] dans l'image : l'objet est porté SUR ces attributs (serre-tête antennes de Suzie, cornes de Pia) au lieu d'en ajouter une seconde paire."
  ],
  "canvas": [
   900,
@@ -2867,7 +2868,13 @@
      },
      "tilt": 0.0,
      "scale": 1.0,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3195,
+      0.159,
+      0.669,
+      0.1538
+     ]
     },
     "joie": {
      "points": {
@@ -2938,7 +2945,13 @@
      },
      "tilt": -6.0,
      "scale": 1.0,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2541,
+      0.1857,
+      0.5811,
+      0.1647
+     ]
     },
     "triste": {
      "points": {
@@ -3013,7 +3026,13 @@
      },
      "tilt": 0.0,
      "scale": 1.0,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3188,
+      0.1627,
+      0.6816,
+      0.1626
+     ]
     },
     "surpris": {
      "points": {
@@ -3088,7 +3107,13 @@
      },
      "tilt": 0.0,
      "scale": 0.96,
-     "face": true
+     "face": true,
+     "tips": [
+      0.335,
+      0.132,
+      0.6693,
+      0.131
+     ]
     },
     "boude": {
      "points": {
@@ -3167,6 +3192,12 @@
        1,
        0.805
       ]
+     ],
+     "tips": [
+      0.3878,
+      0.1255,
+      0.7485,
+      0.1444
      ]
     },
     "dodo": {
@@ -3246,6 +3277,12 @@
        1,
        0.958
       ]
+     ],
+     "tips": [
+      0.2658,
+      0.2444,
+      0.618,
+      0.1876
      ]
     },
     "mange": {
@@ -3325,6 +3362,12 @@
        1,
        0.835
       ]
+     ],
+     "tips": [
+      0.3284,
+      0.1493,
+      0.6595,
+      0.1337
      ]
     },
     "joue": {
@@ -3404,6 +3447,12 @@
        1,
        0.958
       ]
+     ],
+     "tips": [
+      0.2105,
+      0.1543,
+      0.5652,
+      0.1014
      ]
     },
     "marche": {
@@ -3475,7 +3524,13 @@
      },
      "tilt": -10.0,
      "scale": 0.88,
-     "face": false
+     "face": false,
+     "tips": [
+      0.3183,
+      0.1355,
+      0.5236,
+      0.1081
+     ]
     },
     "coucou": {
      "points": {
@@ -3550,7 +3605,13 @@
      },
      "tilt": -4.0,
      "scale": 0.92,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3281,
+      0.144,
+      0.6456,
+      0.1153
+     ]
     },
     "check": {
      "points": {
@@ -3625,7 +3686,13 @@
      },
      "tilt": -12.0,
      "scale": 0.92,
-     "face": true
+     "face": true,
+     "tips": [
+      0.1973,
+      0.1494,
+      0.4962,
+      0.117
+     ]
     },
     "pense": {
      "points": {
@@ -3708,6 +3775,12 @@
        1,
        0.82
       ]
+     ],
+     "tips": [
+      0.2216,
+      0.1699,
+      0.5568,
+      0.1106
      ]
     },
     "colere": {
@@ -3787,6 +3860,12 @@
        1,
        0.82
       ]
+     ],
+     "tips": [
+      0.357,
+      0.1142,
+      0.6501,
+      0.1175
      ]
     },
     "malade": {
@@ -3861,6 +3940,12 @@
      "face": true,
      "hide": [
       "body"
+     ],
+     "tips": [
+      0.3354,
+      0.112,
+      0.6475,
+      0.1117
      ]
     },
     "timide": {
@@ -3940,6 +4025,12 @@
        1,
        0.71
       ]
+     ],
+     "tips": [
+      0.3059,
+      0.1352,
+      0.6002,
+      0.1061
      ]
     },
     "fier": {
@@ -4011,7 +4102,13 @@
      },
      "tilt": -2.0,
      "scale": 0.84,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3276,
+      0.1075,
+      0.5683,
+      0.1119
+     ]
     },
     "rit": {
      "points": {
@@ -4090,6 +4187,12 @@
        1,
        0.75
       ]
+     ],
+     "tips": [
+      0.2478,
+      0.1702,
+      0.5138,
+      0.1337
      ]
     },
     "danse": {
@@ -4161,7 +4264,13 @@
      },
      "tilt": -14.0,
      "scale": 0.84,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2306,
+      0.1272,
+      0.4871,
+      0.0933
+     ]
     },
     "accueil": {
      "points": {
@@ -4236,7 +4345,13 @@
      },
      "tilt": 0.0,
      "scale": 0.84,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3313,
+      0.1517,
+      0.6223,
+      0.1503
+     ]
     },
     "assis": {
      "points": {
@@ -4307,7 +4422,13 @@
      },
      "tilt": 0.0,
      "scale": 0.92,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3365,
+      0.166,
+      0.6429,
+      0.1673
+     ]
     },
     "baille": {
      "points": {
@@ -4386,6 +4507,12 @@
        0.8,
        0.68
       ]
+     ],
+     "tips": [
+      0.2726,
+      0.1189,
+      0.5495,
+      0.0867
      ]
     },
     "bain": {
@@ -4461,6 +4588,12 @@
      "hide": [
       "body",
       "toy"
+     ],
+     "tips": [
+      0.2673,
+      0.1189,
+      0.537,
+      0.0766
      ]
     },
     "applaudit": {
@@ -4540,6 +4673,12 @@
        1,
        0.71
       ]
+     ],
+     "tips": [
+      0.2769,
+      0.0963,
+      0.5478,
+      0.087
      ]
     },
     "fete": {
@@ -4611,7 +4750,13 @@
      },
      "tilt": -14.0,
      "scale": 0.84,
-     "face": true
+     "face": true,
+     "tips": [
+      0.216,
+      0.2018,
+      0.4798,
+      0.1718
+     ]
     },
     "evo_sociable": {
      "points": {
@@ -5040,6 +5185,12 @@
      "face": true,
      "hide": [
       "body"
+     ],
+     "tips": [
+      0.4074,
+      0.3275,
+      0.6035,
+      0.3279
      ]
     },
     "oeuf": {
@@ -5194,6 +5345,12 @@
       "face",
       "body",
       "toy"
+     ],
+     "tips": [
+      0.3576,
+      0.0796,
+      0.662,
+      0.0797
      ]
     },
     "eclosion": {
@@ -5271,6 +5428,12 @@
       "face",
       "body",
       "toy"
+     ],
+     "tips": [
+      0.2867,
+      0.0743,
+      0.5902,
+      0.0701
      ]
     },
     "fantome": {
@@ -5346,6 +5509,12 @@
      "hide": [
       "body",
       "toy"
+     ],
+     "tips": [
+      0.3758,
+      0.1058,
+      0.6771,
+      0.1076
      ]
     },
     "danger": {
@@ -5417,7 +5586,13 @@
      },
      "tilt": 0.0,
      "scale": 0.96,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3503,
+      0.1395,
+      0.6564,
+      0.1364
+     ]
     }
    }
   },
@@ -8271,7 +8446,13 @@
      },
      "tilt": 0.0,
      "scale": 1.14,
-     "face": true
+     "face": true,
+     "tips": [
+      0.341,
+      0.2457,
+      0.6497,
+      0.238
+     ]
     },
     "joie": {
      "points": {
@@ -8342,7 +8523,13 @@
      },
      "tilt": -6.0,
      "scale": 1.049,
-     "face": true
+     "face": true,
+     "tips": [
+      0.304,
+      0.279,
+      0.5932,
+      0.2465
+     ]
     },
     "triste": {
      "points": {
@@ -8417,7 +8604,13 @@
      },
      "tilt": 0.0,
      "scale": 1.14,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3511,
+      0.2726,
+      0.643,
+      0.2692
+     ]
     },
     "surpris": {
      "points": {
@@ -8492,7 +8685,13 @@
      },
      "tilt": -2.0,
      "scale": 1.094,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3393,
+      0.2246,
+      0.6349,
+      0.2095
+     ]
     },
     "boude": {
      "points": {
@@ -8571,6 +8770,12 @@
        1,
        0.775
       ]
+     ],
+     "tips": [
+      0.3777,
+      0.1941,
+      0.6923,
+      0.2333
      ]
     },
     "dodo": {
@@ -8650,6 +8855,12 @@
        1,
        0.958
       ]
+     ],
+     "tips": [
+      0.2857,
+      0.3151,
+      0.5951,
+      0.2679
      ]
     },
     "mange": {
@@ -8729,6 +8940,12 @@
        1,
        0.82
       ]
+     ],
+     "tips": [
+      0.3296,
+      0.2423,
+      0.6394,
+      0.2238
      ]
     },
     "joue": {
@@ -8808,6 +9025,12 @@
        1,
        0.94
       ]
+     ],
+     "tips": [
+      0.2404,
+      0.2472,
+      0.5667,
+      0.2072
      ]
     },
     "marche": {
@@ -8954,7 +9177,13 @@
      },
      "tilt": -4.0,
      "scale": 1.094,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3505,
+      0.2011,
+      0.6541,
+      0.1793
+     ]
     },
     "check": {
      "points": {
@@ -9029,7 +9258,13 @@
      },
      "tilt": -6.0,
      "scale": 1.049,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2757,
+      0.2149,
+      0.5555,
+      0.1806
+     ]
     },
     "pense": {
      "points": {
@@ -9112,6 +9347,12 @@
        1,
        0.79
       ]
+     ],
+     "tips": [
+      0.2793,
+      0.1992,
+      0.593,
+      0.1561
      ]
     },
     "colere": {
@@ -9191,6 +9432,12 @@
        1,
        0.84
       ]
+     ],
+     "tips": [
+      0.3411,
+      0.2922,
+      0.6502,
+      0.2888
      ]
     },
     "malade": {
@@ -9265,6 +9512,12 @@
      "face": true,
      "hide": [
       "body"
+     ],
+     "tips": [
+      0.3526,
+      0.2974,
+      0.6512,
+      0.2927
      ]
     },
     "timide": {
@@ -9344,6 +9597,12 @@
        1,
        0.87
       ]
+     ],
+     "tips": [
+      0.3335,
+      0.2997,
+      0.6293,
+      0.2808
      ]
     },
     "fier": {
@@ -9415,7 +9674,13 @@
      },
      "tilt": -2.0,
      "scale": 1.186,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3157,
+      0.2757,
+      0.5951,
+      0.2538
+     ]
     },
     "rit": {
      "points": {
@@ -9494,6 +9759,12 @@
        1,
        0.84
       ]
+     ],
+     "tips": [
+      0.3061,
+      0.2847,
+      0.6115,
+      0.2535
      ]
     },
     "danse": {
@@ -9565,7 +9836,13 @@
      },
      "tilt": -12.0,
      "scale": 1.049,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2807,
+      0.2906,
+      0.5487,
+      0.2381
+     ]
     },
     "accueil": {
      "points": {
@@ -9640,7 +9917,13 @@
      },
      "tilt": 0.0,
      "scale": 1.094,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3534,
+      0.3021,
+      0.6428,
+      0.3005
+     ]
     },
     "assis": {
      "points": {
@@ -9711,7 +9994,13 @@
      },
      "tilt": 0.0,
      "scale": 1.231,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3363,
+      0.2885,
+      0.6532,
+      0.2877
+     ]
     },
     "baille": {
      "points": {
@@ -9790,6 +10079,12 @@
        0.75,
        0.77
       ]
+     ],
+     "tips": [
+      0.315,
+      0.2536,
+      0.6284,
+      0.233
      ]
     },
     "bain": {
@@ -9944,6 +10239,12 @@
        1,
        0.8
       ]
+     ],
+     "tips": [
+      0.318,
+      0.2443,
+      0.6195,
+      0.2352
      ]
     },
     "fete": {
@@ -10015,7 +10316,13 @@
      },
      "tilt": -10.0,
      "scale": 1.049,
-     "face": true
+     "face": true,
+     "tips": [
+      0.2933,
+      0.2805,
+      0.5583,
+      0.2484
+     ]
     },
     "evo_sociable": {
      "points": {
@@ -10444,6 +10751,12 @@
      "face": true,
      "hide": [
       "body"
+     ],
+     "tips": [
+      0.3658,
+      0.4284,
+      0.6287,
+      0.4219
      ]
     },
     "oeuf": {
@@ -10598,6 +10911,12 @@
       "face",
       "body",
       "toy"
+     ],
+     "tips": [
+      0.3354,
+      0.2167,
+      0.6463,
+      0.2003
      ]
     },
     "eclosion": {
@@ -10821,7 +11140,13 @@
      },
      "tilt": 0.0,
      "scale": 1.277,
-     "face": true
+     "face": true,
+     "tips": [
+      0.3237,
+      0.277,
+      0.6627,
+      0.2675
+     ]
     }
    }
   }
@@ -11783,6 +12108,34 @@
   "pia": {
    "hiver_lunettes": {
     "w": 1.8
+   },
+   "cornes": {
+    "anchor": "tips",
+    "image": "cornes_tips",
+    "pair": [
+     0.1585,
+     0.7499,
+     0.8405,
+     0.7444
+    ],
+    "ratio": 3.5217,
+    "w": 1.15,
+    "z": "front",
+    "dy": 0.06,
+    "profile": {
+     "anchor": "headTop",
+     "size": "brow",
+     "image": "cornes_profil",
+     "ratio": 1.5028,
+     "w": 0.5,
+     "pivot": [
+      0.45,
+      0.9
+     ],
+     "dx": -0.24,
+     "dy": 0.12,
+     "rot": -8
+    }
    }
   },
   "gaston": {
@@ -11877,7 +12230,21 @@
     "w": 1.34
    }
   },
-  "suzie": {}
+  "suzie": {
+   "antennes": {
+    "anchor": "tips",
+    "image": "antennes_tips",
+    "pair": [
+     0.1973,
+     0.3896,
+     0.8016,
+     0.3936
+    ],
+    "ratio": 1.9672,
+    "w": 1.1,
+    "z": "front"
+   }
+  }
  },
  "wear": {
   "bob": {
