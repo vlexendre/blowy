@@ -4,12 +4,12 @@ import type { View } from 'react-native';
 
 type ViewRef = RefObject<ComponentRef<typeof View> | null>;
 
-export type StoryShareResult = 'story' | 'sheet' | 'none';
+export type StoryShareResult = 'story' | 'sheet' | 'failed';
 
 export async function captureStory(_view: ViewRef): Promise<string | null> {
   return null;
 }
 
 export async function shareStoryImage(_imageUri: string, _message: string, _target: 'story' | 'sheet' = 'story'): Promise<StoryShareResult> {
-  return 'none';
+  return 'failed';
 }

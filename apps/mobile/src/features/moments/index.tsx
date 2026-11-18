@@ -14,6 +14,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { useTrackShare } from '@/features/growth';
 import { config, inviteUrl } from '@/core';
 import { displayUrl, useMe, useStoryShare } from '@/features/me';
+import { common } from '@/locales/common';
 import { croissance } from '@/locales/croissance';
 
 const t = croissance;
@@ -120,7 +121,7 @@ export function MomentSheet({
       scroll
       footer={
         <>
-          <Button label={t.share.story} icon="share" loading={story.busy} onPress={() => go('story')} />
+          <Button label={story.copied ? common.copied : t.share.story} icon="share" loading={story.busy} onPress={() => go('story')} />
           <Button label={t.share.sheet} variant="glass" disabled={story.busy} onPress={() => go('sheet')} />
           <Button label={t.share.later} variant="ghost" onPress={onClose} />
           {offerNever ? (

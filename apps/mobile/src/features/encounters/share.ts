@@ -2,7 +2,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useCallback, useState } from 'react';
 import { Platform, Share } from 'react-native';
 
-import { inviteUrl } from '@/core';
+import { inviteUrl, presentShare } from '@/core';
 import { useTrackShare } from '@/features/growth';
 import { useMe } from '@/features/me';
 
@@ -16,14 +16,13 @@ export function useShareInvite(message: (pet: string, url: string) => string) {
     const url = inviteUrl(me.data.inviteCode);
     const text = message(me.data.pet.name, url);
     track('invite');
-    try {
-      if (Platform.OS === 'web') throw new Error('web');
-      await Share.share({ message: text });
-    } catch {
+    const copyInstead = async () => {
       await Clipboard.setStringAsync(text).catch(() => undefined);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    }
+    };
+    // Feuille qui n'a pas pu s'ouvrir (ou web) : le texte est copié, jamais rien.
+    if (Platform.OS === 'web' || !(await presentShare(() => Share.share({ message: text }), () => void copyInstead()))) await copyInstead();
   }, [me.data, message, track]);
   return { share, copied, ready: !!me.data };
 }

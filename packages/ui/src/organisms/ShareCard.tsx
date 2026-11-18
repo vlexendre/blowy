@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { DressedPet } from '../atoms/DressedPet';
 import { Panel } from '../atoms/Panel';
 import { Text } from '../atoms/Text';
+import { captureOnly } from '../lib/styles';
 import { Title } from '../atoms/Title';
 import { color, type GradientName, onGradient, radius, space } from '../theme';
 import type { PetLook, TitleContent } from '../types';
@@ -28,7 +29,7 @@ export interface ShareCardProps {
   /** Lien affiché sans protocole ; la fin (le code) est mise en couleur. */
   url: string;
   gradient?: GradientName;
-  /** Hors de l'écran : seulement pour la capture (les lecteurs d'écran l'ignorent). */
+  /** Seulement pour la capture : montée dans l'écran mais transparente (`captureOnly`), ignorée des lecteurs d'écran. */
   offscreen?: boolean;
   /** Aperçu réduit dans l'app (0,5 : moitié de la taille d'une story). */
   scale?: number;
@@ -101,7 +102,7 @@ export function ShareCard({ ref, brand, kicker, title, words, big, pet, callout,
   );
   if (offscreen) {
     return (
-      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.offscreen}>
+      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={captureOnly.host}>
         {card}
       </View>
     );
@@ -119,7 +120,6 @@ export function ShareCard({ ref, brand, kicker, title, words, big, pet, callout,
 }
 
 const styles = StyleSheet.create({
-  offscreen: { position: 'absolute', left: -10000, top: 0 },
   preview: { alignSelf: 'center', overflow: 'hidden', borderRadius: radius.lg },
   card: { ...STORY_SIZE, overflow: 'hidden', backgroundColor: color.dark },
   fill: { flex: 1, paddingTop: 56, paddingHorizontal: 24 },

@@ -12,6 +12,7 @@ import { ScreenMotion, wordsUrl } from '@/core';
 import { useTrackShare } from '@/features/growth';
 import { displayUrl, useCopyShare, useMe, useMyWords, useStoryShare } from '@/features/me';
 import { goBack } from '@/features/session';
+import { common } from '@/locales/common';
 import { wordLabel } from '@/locales/content';
 import { croissance } from '@/locales/croissance';
 
@@ -69,12 +70,12 @@ export default function MyWords() {
         footer={
           top.length ? (
             <>
-              <Button label={croissance.share.story} icon="share" loading={story.busy} onPress={() => share('story')} />
+              <Button label={story.copied ? common.copied : croissance.share.story} icon="share" loading={story.busy} onPress={() => share('story')} />
               <Button label={croissance.share.sheet} variant="glass" disabled={story.busy} onPress={() => share('sheet')} />
             </>
           ) : (
             <Button
-              label={t.shareLink}
+              label={link.copied ? common.copied : t.shareLink}
               icon="share"
               onPress={() => {
                 track('words');
