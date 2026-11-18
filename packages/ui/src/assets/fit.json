@@ -11279,32 +11279,35 @@
   "salopette": {
    "anchor": "chest",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.9,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.2046
+   "ratio": 1.2046,
+   "dy": -0.1
   },
   "sweat": {
    "anchor": "chest",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.95,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.1476
+   "ratio": 1.1476,
+   "dy": -0.14
   },
   "teddy": {
    "anchor": "chest",
    "size": "bodyw",
-   "w": 0.8,
+   "w": 0.95,
    "pivot": [
     0.5,
     0.0
    ],
-   "ratio": 1.1954
+   "ratio": 1.1954,
+   "dy": -0.14
   },
   "tablier": {
    "anchor": "chest",
