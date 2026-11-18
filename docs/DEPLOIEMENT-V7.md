@@ -32,7 +32,7 @@ naît dans la migration « plateforme »).
    extension `app.blowy.widget` : *App Groups* (`docs/WIDGETS.md`).
 2. Keys › `+` › *Apple Push Notifications service (APNs)* : télécharger le `.p8` (une seule fois), noter son Key ID
    et le Team ID (Membership). Pour les activités en direct.
-3. Abonnements Minimoa+ : groupe « Minimoa+ », `app.blowy.plus.yearly` (59,88 €, essai de 7 jours),
+3. Abonnements Minimoa+ : groupe « Minimoa+ », `app.blowy.plus.yearly` (59,99 €, essai de 7 jours),
    `app.blowy.plus.monthly` (14,99 €) et `app.blowy.plus.weekly` (2,99 €), accord « Apps payantes » signé
    (`docs/BLOWY-PLUS.md` §1).
 4. Notifications serveur App Store **V2**, production et bac à sable :

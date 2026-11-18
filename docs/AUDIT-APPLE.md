@@ -156,9 +156,9 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 
 ### M2. Paywall : conditions et liens sous la ligne de flottaison
 - **Règles :** 3.1.2(c) ; page Abonnements (« Full renewal price, shown clearly and prominently » ; liens conditions et confidentialité).
-- **Constat :** le prix facturé est bien le plus visible (« 59,88 € par an » en 30 pt, « soit 4,99 € par mois » en 13 pt), l'essai est bien expliqué (« 7 jours gratuits, puis », frise jour 0 / 5 / 7), la croix est visible tout de suite, « Continuer gratuitement » et « Restaurer mes achats » existent (`packages/ui/src/templates/PlusTemplate.tsx`). Mais sur un iPhone de 390 × 844 points, **le bouton d'achat, la mention de renouvellement, la restauration et les liens légaux sont sous le pli** (`shots/_moi_blowy_plus_390x844.png`, `shots/_moi_blowy_plus_375x667.png`) ; la mention de renouvellement est en 13 pt grisé après le bouton.
+- **Constat :** le prix facturé est bien le plus visible (« 59,99 € par an » en 30 pt, « soit 4,99 € par mois » en 13 pt), l'essai est bien expliqué (« 7 jours gratuits, puis », frise jour 0 / 5 / 7), la croix est visible tout de suite, « Continuer gratuitement » et « Restaurer mes achats » existent (`packages/ui/src/templates/PlusTemplate.tsx`). Mais sur un iPhone de 390 × 844 points, **le bouton d'achat, la mention de renouvellement, la restauration et les liens légaux sont sous le pli** (`shots/_moi_blowy_plus_390x844.png`, `shots/_moi_blowy_plus_375x667.png`) ; la mention de renouvellement est en 13 pt grisé après le bouton.
 - **Pourquoi :** refus fréquents quand les conditions de renouvellement ou les liens ne sont pas visibles près du bouton d'achat.
-- **Correctif :** une barre fixe en bas : bouton d'achat, une ligne « Renouvellement automatique à 59,88 €/an, annulable à tout moment dans Réglages », puis « Restaurer · Conditions · Confidentialité » ; la frise et les avantages défilent au-dessus.
+- **Correctif :** une barre fixe en bas : bouton d'achat, une ligne « Renouvellement automatique à 59,99 €/an, annulable à tout moment dans Réglages », puis « Restaurer · Conditions · Confidentialité » ; la frise et les avantages défilent au-dessus.
 - **Effort :** une demi-journée. **Qui :** code.
 
 - **Fait (17 novembre 2026)** : barre fixe avec bouton, note (essai, date et prix du premier paiement, renouvellement,
@@ -247,7 +247,7 @@ probablement un refus, dont deux empêcheraient même l'examinateur de voir l'ap
 3. **Signalement et blocage** depuis une rencontre (`app/rencontre/[userId].tsx:198-199`), depuis le lien et sur un message (appui long → `/link/[id]/signaler`), avec motifs dont « Personne mineure ».
 4. **Écrans d'avant-autorisation** (position, notifications) : un seul bouton « Continuer » qui ouvre la demande du système, conséquence d'un refus écrite, inscription qui continue après un refus. C'est exactement ce que demande la HIG ; l'absence de « Plus tard » est voulue et correcte.
 5. **Notifications** non obligatoires, sans publicité (« Jamais de pub »), heures calmes, réglage par type : 4.5.4 respecté.
-6. **Paywall** : montant facturé en plus gros, équivalent mensuel en petit, remise exacte (59,88 € contre 12 × 14,99 € = 179,88 €, soit −67 %), durée de l'essai et prix ensuite, « Continuer gratuitement », croix visible tout de suite, « Restaurer mes achats », « Gérer mon abonnement » pour les membres, prix venant de StoreKit (localisés). Reste M2, M3, M4 et B3.
+6. **Paywall** : montant facturé en plus gros, équivalent mensuel en petit, remise exacte (59,99 € contre 12 × 14,99 € = 179,88 €, soit −67 %), durée de l'essai et prix ensuite, « Continuer gratuitement », croix visible tout de suite, « Restaurer mes achats », « Gérer mon abonnement » pour les membres, prix venant de StoreKit (localisés). Reste M2, M3, M4 et B3.
 7. **Achat** : StoreKit 2 via `expo-iap`, transactions vérifiées par signature côté serveur, `appAccountToken`. Le bac à sable est accepté par défaut (`APPLE_ACCEPT_SANDBOX=1`, `apps/api/src/config/facturation-admin.env.ts:14`) : **ne jamais le passer à 0**, les achats de l'examinateur sont des achats bac à sable contre le serveur de production.
 8. **Android et web** n'achètent rien (« Disponible sur iPhone ») ; un abonnement acheté sur iPhone suit le compte : 3.1.3(b).
 9. **Aucun pistage** : pas de SDK de publicité ni de mesure d'audience ; ATT inutile.
@@ -315,7 +315,7 @@ Et dans la fiche, les visuels doivent rester « 4+ » (2.3.8) : pas de scène su
 Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas de ligne à part. **À relire une fois la photo du jour retirée** (ligne Photos) et une fois B5/M6 corrigés.
 
 ### 7.4 Abonnements
-- Groupe « Minimoa+ » ; trois produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai gratuit 1 semaine en offre d'introduction), `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) et `app.blowy.plus.weekly` (1 semaine, 2,99 €, sans essai) (`docs/BLOWY-PLUS.md`).
+- Groupe « Minimoa+ » ; trois produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,99 €, essai gratuit 1 semaine en offre d'introduction), `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) et `app.blowy.plus.weekly` (1 semaine, 2,99 €, sans essai) (`docs/BLOWY-PLUS.md`).
 - Pour chacun : nom affiché et description dans chaque langue de la fiche ; **capture du paywall** pour la revue ; notes de revue.
 - **Le premier abonnement doit être joint à la version soumise** (page de la version › « In-App Purchases and Subscriptions » › sélectionner les trois ; l'hebdomadaire, nouveau, passe en revue avec la version qui l'affiche), sinon l'examinateur ne trouve pas les produits (2.1(b)).
 - Notifications serveur App Store v2 vers `https://<API>/v1/plus/apple/notifications` (production et bac à sable).
@@ -356,7 +356,7 @@ Les données envoyées à Anthropic, Expo (notifications) et à l'hébergeur son
 > within 24 h. Contact: `<e-mail>`. Account deletion: Moi › Réglages › Supprimer mon compte (immediate; revokes the
 > Sign in with Apple token).
 >
-> **Subscription Minimoa+.** Moi › Minimoa+, or after sign-up. Yearly €59.88 with a 7-day free trial, monthly €14.99,
+> **Subscription Minimoa+.** Moi › Minimoa+, or after sign-up. Yearly €59.99 with a 7-day free trial, monthly €14.99,
 > weekly €2.99 (monthly and weekly without a trial); prices are read from StoreKit. The yearly discount badge compares
 > the yearly price with twelve monthly payments only, never with the weekly plan. Purchases are verified by our server;
 > sandbox purchases are accepted. "Restaurer mes achats" is on the same sheet. Subscribers get a reminder 2 days before
@@ -387,7 +387,7 @@ septembre 2026) ; EULA standard ; chemin d'annulation (support Apple). Ce que la
 - Le **montant facturé** de chaque offre et sa période est le prix le plus grand (montant en 20 à 23 pt dans chaque
   carte, période juste dessous ; feuille refaite le 18 novembre, `docs/PAYWALL.md`) ; équivalent mensuel et remise en
   13 pt, calculés sur les prix StoreKit ; le bouton répète l'action et le prix (« Commencer mes 7 jours gratuits » /
-  « puis 59,88 € par an »).
+  « puis 59,99 € par an »).
 - **Trois offres** (17 novembre) : trois cartes côte à côte, l'annuelle à gauche, choisie par défaut, avec la pastille
   de remise. La remise de l'annuelle se calcule contre douze mensualités seulement (jamais contre 52 semaines de
   l'hebdomadaire, comparaison qui serait trompeuse) ; l'hebdomadaire n'a ni équivalent mensuel ni pastille ; sa période

@@ -9,7 +9,7 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'En bref',
     items: [
-      '**59,88 € par an**, avec **7 jours gratuits** au début, **14,99 € par mois** ou **2,99 € par semaine**, sans essai.',
+      '**59,99 € par an**, avec **7 jours gratuits** au début, **14,99 € par mois** ou **2,99 € par semaine**, sans essai.',
       'L’abonnement **se renouvelle automatiquement** tant que tu ne l’annules pas.',
       'Minimoa+ s’achète sur iPhone : c’est **Apple** qui te facture, et c’est dans les réglages de ton iPhone que tu l’annules.',
       'Au 5e jour de l’essai, on te prévient **par notification et par e-mail**.',
@@ -39,7 +39,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Offre', 'Prix', 'Essai gratuit'],
         rows: [
-          ['Annuelle', '59,88 € par an, soit 4,99 € par mois', '7 jours, puis 59,88 € par an'],
+          ['Annuelle', '59,99 € par an, soit 4,99 € par mois', '7 jours, puis 59,99 € par an'],
           ['Mensuelle', '14,99 € par mois', 'Pas d’essai'],
           ['Hebdomadaire', '2,99 € par semaine', 'Pas d’essai'],
         ],
@@ -55,7 +55,7 @@ export const abonnement: LegalPage = {
         'L’essai de 7 jours concerne seulement l’offre annuelle, et seulement un nouvel abonnement, dans les conditions d’Apple (en général, un essai par compte Apple).',
         'Pendant l’essai, tout Minimoa+ est ouvert, et tu ne paies rien.',
         'Au 5e jour, on t’envoie un rappel : il reste 2 jours. Il part par notification (si tu les as autorisées) et par e-mail, à l’adresse liée à ton compte Apple.',
-        'Si tu n’annules pas **au moins 24 heures avant la fin de l’essai**, le premier paiement de 59,88 € est prélevé le 7e jour, et l’abonnement annuel commence.',
+        'Si tu n’annules pas **au moins 24 heures avant la fin de l’essai**, le premier paiement de 59,99 € est prélevé le 7e jour, et l’abonnement annuel commence.',
         'Si tu annules pendant l’essai, tu gardes Minimoa+ jusqu’à la fin des 7 jours, et tu ne paies rien.',
       ],
     },

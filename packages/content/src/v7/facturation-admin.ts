@@ -7,7 +7,7 @@ import type { Locale, PlusPerk } from '@blowy/domain';
 import { type Translation, defineMessages, formatDate, formatPrice } from '../i18n/core';
 import { brand } from '../labels';
 
-/** « 59,88 € » à partir de centimes (français). Préférer `formatPrice(locale, …)`. */
+/** « 59,99 € » à partir de centimes (français). Préférer `formatPrice(locale, …)`. */
 export const euros = (amountMinor: number): string => formatPrice('fr', amountMinor, 'EUR');
 
 /** « 22 novembre » (fuseau Europe/Paris, français). Préférer `formatDate(locale, …)`. */

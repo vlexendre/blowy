@@ -30,7 +30,7 @@ Refonte du 18 novembre 2026, inspirée de références de paywalls envoyées par
    les autres écrans). L'objet premium qu'on vient de toucher habille la troisième pose.
 5. **Avantages restants** en lignes « **Titre :** explication » avec une icône 3D (celui de la raison en tête, en
    jaune) ; deux lignes, puis « Et N de plus » qui déplie. Le lecteur d'écran lit la phrase de l'API.
-6. **Offres en trois cartes côte à côte** : durée (« 1 an »), **montant facturé en grand** (« 59,88 € »), période
+6. **Offres en trois cartes côte à côte** : durée (« 1 an »), **montant facturé en grand** (« 59,99 € »), période
    dessous (« par an »), équivalent mensuel en petit (annuelle seulement) ; la carte choisie est remplie du dégradé
    violet, bord jaune, coche ronde ; pastille « Économise 67 % » au-dessus de l'annuelle.
 7. **Frise verticale** (cadenas ouvert → cloche → étoile, sur une barre violet → corail) :
@@ -41,7 +41,7 @@ Refonte du 18 novembre 2026, inspirée de références de paywalls envoyées par
      la même forme d'une offre à l'autre (rien ne saute sous le doigt).
 8. **« Continuer gratuitement »** et « Conditions de Minimoa+ » (mention complète du renouvellement).
 9. **Barre fixe** : bouton jaune large et arrondi, l'action puis le prix sur deux lignes (« Commencer mes 7 jours
-   gratuits » / « puis 59,88 € par an » ; sans essai, « M'abonner : 14,99 € par mois ») ; dessous, la date du premier
+   gratuits » / « puis 59,99 € par an » ; sans essai, « M'abonner : 14,99 € par mois ») ; dessous, la date du premier
    paiement, « Renouvellement automatique, annulable à tout moment dans Réglages › ton nom › Abonnements » ; puis la
    ligne discrète « Restaurer mes achats · Conditions · Confidentialité ».
 

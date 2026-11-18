@@ -9,7 +9,7 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'En resumen',
     items: [
-      '**59,88 € al año**, con **7 días gratis** al principio, **14,99 € al mes** o **2,99 € a la semana**, sin prueba.',
+      '**59,99 € al año**, con **7 días gratis** al principio, **14,99 € al mes** o **2,99 € a la semana**, sin prueba.',
       'La suscripción **se renueva automáticamente** mientras no la canceles.',
       'Minimoa+ se compra en iPhone: te factura **Apple**, y se cancela en los ajustes de tu iPhone.',
       'El día 5 de la prueba te avisamos **por notificación y por correo**.',
@@ -37,7 +37,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Plan', 'Precio', 'Prueba gratuita'],
         rows: [
-          ['Anual', '59,88 € al año, es decir, 4,99 € al mes', '7 días, después 59,88 € al año'],
+          ['Anual', '59,99 € al año, es decir, 4,99 € al mes', '7 días, después 59,99 € al año'],
           ['Mensual', '14,99 € al mes', 'Sin prueba'],
           ['Semanal', '2,99 € a la semana', 'Sin prueba'],
         ],
@@ -53,7 +53,7 @@ export const abonnement: LegalPage = {
         'La prueba de 7 días solo se aplica al plan anual, y solo a una suscripción nueva, en las condiciones de Apple (normalmente, una prueba por cuenta de Apple).',
         'Durante la prueba, todo Minimoa+ está abierto y no pagas nada.',
         'El día 5 te enviamos un recordatorio: quedan 2 días. Llega por notificación (si las has permitido) y por correo, a la dirección vinculada a tu cuenta de Apple.',
-        'Si no cancelas **al menos 24 horas antes del final de la prueba**, el primer pago de 59,88 € se cobra el día 7 y empieza la suscripción anual.',
+        'Si no cancelas **al menos 24 horas antes del final de la prueba**, el primer pago de 59,99 € se cobra el día 7 y empieza la suscripción anual.',
         'Si cancelas durante la prueba, conservas Minimoa+ hasta el final de los 7 días y no pagas nada.',
       ],
     },

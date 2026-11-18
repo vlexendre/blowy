@@ -928,7 +928,7 @@ function GalleryScreen() {
           </Panel>
           <PlanPicker
             plans={[
-              { key: 'year', title: 'à l’année', price: '4,99 €', unit: '/mois', caption: 'facturé 59,88 €/an', badge: '−67 %' },
+              { key: 'year', title: 'à l’année', price: '4,99 €', unit: '/mois', caption: 'facturé 59,99 €/an', badge: '−67 %' },
               { key: 'month', title: 'au mois', price: '14,99 €', unit: '/mois', caption: 'sans engagement' },
             ]}
             value={plan}

@@ -14,7 +14,7 @@ export interface PlusPlanCard<K extends string = string> {
   key: K;
   /** Durée courte (« 1 an »). */
   name: string;
-  /** Montant facturé à chaque période (« 59,88 € ») : le prix le plus grand de la carte. */
+  /** Montant facturé à chaque période (« 59,99 € ») : le prix le plus grand de la carte. */
   amount: string;
   /** Période facturée, juste sous le montant (« par an »). */
   period: string;

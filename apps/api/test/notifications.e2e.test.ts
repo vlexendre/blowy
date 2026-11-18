@@ -89,7 +89,7 @@ describe('notifications : logique', () => {
     await notifier.notify(rita.id, 'waved', { name: 'Tom' });
     expect(sentTo(rita.token)).toHaveLength(3);
     await notifier.notify(rita.id, 'message', { name: 'Léa', linkId: uuid(3) });
-    await notifier.notify(rita.id, 'trial_reminder', { endsOn: '2026-11-13T10:00:00Z', price: '5988', currency: 'EUR' });
+    await notifier.notify(rita.id, 'trial_reminder', { endsOn: '2026-11-13T10:00:00Z', price: '5999', currency: 'EUR' });
     expect(sentTo(rita.token).map((m) => m.data.kind)).toEqual(['daily_challenge', 'habit_proof', 'group_invite', 'message', 'trial_reminder']);
     // Le rappel de fin d'essai ne propose pas « Ne plus recevoir ».
     expect(sentTo(rita.token).at(-1)?.categoryId).toBeUndefined();
@@ -165,10 +165,10 @@ describe('notifications : logique', () => {
     expect(settings.kinds.trial_reminder).toBe(true);
     expect(settings.mandatory).toEqual(['trial_reminder']);
     world.clock.advanceHours(12); // 23 h à Paris
-    await notifier.notify(tia.id, 'trial_reminder', { endsOn: new Date(world.clock.now().getTime() + 4 * 3_600_000).toISOString(), price: '5988' });
+    await notifier.notify(tia.id, 'trial_reminder', { endsOn: new Date(world.clock.now().getTime() + 4 * 3_600_000).toISOString(), price: '5999' });
     expect(sentTo(tia.token)).toHaveLength(1);
     const uma = await person('Uma');
-    await notifier.notify(uma.id, 'trial_reminder', { endsOn: new Date(world.clock.now().getTime() + 48 * 3_600_000).toISOString(), price: '5988' });
+    await notifier.notify(uma.id, 'trial_reminder', { endsOn: new Date(world.clock.now().getTime() + 48 * 3_600_000).toISOString(), price: '5999' });
     expect(sentTo(uma.token)).toHaveLength(0);
     world.clock.advanceHours(9);
     await tick();

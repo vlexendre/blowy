@@ -69,7 +69,7 @@ describe('Minimoa+', () => {
     const p = await api.plus.paywall();
     expect(p.defaultPlan).toBe('yearly');
     expect(p.offers.map((o) => [o.plan, o.productId, o.billed.amountMinor, o.period, o.trialDays])).toEqual([
-      ['yearly', 'app.blowy.plus.yearly', 5988, 'year', 7],
+      ['yearly', 'app.blowy.plus.yearly', 5999, 'year', 7],
       ['monthly', 'app.blowy.plus.monthly', 1499, 'month', 0],
       ['weekly', 'app.blowy.plus.weekly', 299, 'week', 0],
     ]);
@@ -79,7 +79,7 @@ describe('Minimoa+', () => {
     const yearly = p.offers[0];
     // Espaces insécables (fines ou non) normalisées : seule la formulation compte ici.
     const plain = (o: Record<string, string | null> | undefined) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k, v?.replace(/[\u00a0\u202f]/g, ' ') ?? v]));
-    expect(plain(yearly?.labels)).toEqual({ price: '59,88 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,88 € par an', name: 'Abonnement annuel Minimoa+' });
+    expect(plain(yearly?.labels)).toEqual({ price: '59,99 € par an', perMonth: 'soit 4,99 € par mois', trial: '7 jours gratuits, puis 59,99 € par an', name: 'Abonnement annuel Minimoa+' });
     expect(yearly?.discountPercent).toBe(67);
     expect(p.trial).toMatchObject({ days: 7, reminderDay: 5, eligible: true });
     expect(p.trial.timeline.map((s) => s.day)).toEqual([0, 5, 7]);
@@ -204,10 +204,10 @@ describe('Minimoa+', () => {
     const reminders = mine();
     expect(reminders.map((r) => r.userId)).toEqual([a.id]);
     // Variables en données (date ISO, centimes) : la notification les met en forme dans la langue de la personne.
-    expect(reminders[0]?.vars).toMatchObject({ price: '5988', currency: 'EUR' });
+    expect(reminders[0]?.vars).toMatchObject({ price: '5999', currency: 'EUR' });
     const reminderText = notificationText('fr', 'trial_reminder', reminders[0]?.vars ?? {});
     expect(reminderText.title).toMatch(/^Ton essai Minimoa\+ se termine le \d+ \p{L}+$/u);
-    expect(reminderText.body.replace(/[\u00a0\u202f]/g, ' ')).toMatch(/^Ensuite, premier paiement de 59,88 €\./u);
+    expect(reminderText.body.replace(/[\u00a0\u202f]/g, ' ')).toMatch(/^Ensuite, premier paiement de 59,99 €\./u);
     await jobs.runDue(at(5.5));
     await jobs.runDue(at(6));
     expect(mine()).toHaveLength(1);

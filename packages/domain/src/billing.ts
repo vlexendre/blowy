@@ -25,20 +25,20 @@ export const TRIAL_DAYS = 7;
 export const TRIAL_REMINDER_DAY = 5;
 
 export const OFFERS: Readonly<Record<Plan, Offer>> = Object.freeze({
-  yearly: { plan: 'yearly', period: 'year', amountMinor: 5988, currency: 'EUR', trialDays: TRIAL_DAYS },
+  yearly: { plan: 'yearly', period: 'year', amountMinor: 5999, currency: 'EUR', trialDays: TRIAL_DAYS },
   monthly: { plan: 'monthly', period: 'month', amountMinor: 1499, currency: 'EUR', trialDays: 0 },
   weekly: { plan: 'weekly', period: 'week', amountMinor: 299, currency: 'EUR', trialDays: 0 },
 });
 
 /**
- * Équivalent mensuel d'une offre annuelle, en centimes, arrondi au centime inférieur (59,88 € par an → 4,99 € par
+ * Équivalent mensuel d'une offre annuelle, en centimes, arrondi au centime inférieur (59,99 € par an → 4,99 € par
  * mois). Seule l'annuelle en affiche un : pour les autres, le montant facturé de la période (jamais de « soit … par
  * mois » sous l'hebdomadaire, qui inviterait à une comparaison trompeuse).
  */
 export const monthlyEquivalentMinor = (offer: Offer): number => (offer.period === 'year' ? Math.floor(offer.amountMinor / 12) : offer.amountMinor);
 
 /**
- * Remise réelle de l'annuel par rapport à douze mensualités, en pour cent entier (59,88 contre 179,88 → 67).
+ * Remise réelle de l'annuel par rapport à douze mensualités, en pour cent entier (59,99 contre 179,88 → 67).
  * Toujours contre la mensuelle : jamais contre 52 semaines de l'hebdomadaire (chiffre plus flatteur, mais pas une
  * offre que la personne paierait vraiment sur un an).
  */

@@ -14,7 +14,7 @@ export interface Plan<K extends string = string> {
   price: string;
   /** « /mois ». */
   unit?: string;
-  /** « facturé 59,88 €/an ». */
+  /** « facturé 59,99 €/an ». */
   caption?: string;
   /** Pastille (« −67 % »). */
   badge?: string;

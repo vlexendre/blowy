@@ -150,17 +150,17 @@ Un minuteur côté serveur (tâche planifiée qui appelle l'API) déclenche les 
 
 ## 13. Minimoa+
 
-- Offres : **59,88 € par an** (7 jours gratuits), **14,99 € par mois** ou **2,99 € par semaine** (ajoutée le 17 nov. ; remise de l'annuel toujours calculée contre la mensuelle).
+- Offres : **59,99 € par an** (7 jours gratuits), **14,99 € par mois** ou **2,99 € par semaine** (ajoutée le 17 nov. ; remise de l'annuel toujours calculée contre la mensuelle).
 - Contenu : toute la carte et changer de ville · plus de rencontres · jokers de série · 6 habitudes · bilan détaillé · renommer son minimoa librement · objets premium.
 - Objets premium (audit B3) : tous possédés et portables tant que Minimoa+ dure ; à la fin de l'abonnement, le minimoa les range (verrouillés, de retour avec un nouvel abonnement).
 - Achat intégré Apple, vérifié côté serveur (port `Billing`), qui met à jour `plus` sur le profil.
-- **Conformité Apple (3.1.2)** — le paywall actuel n'est pas conforme sur un point : il affiche « 4,99 €/mois » en grand et « facturé 59,88 €/an » en petit. Apple exige que **le montant réellement facturé soit le prix le plus visible**. À faire :
-  - « 59,88 € par an » en grand, « soit 4,99 € par mois » en petit ;
+- **Conformité Apple (3.1.2)** — le paywall actuel n'est pas conforme sur un point : il affiche « 4,99 €/mois » en grand et « facturé 59,99 €/an » en petit. Apple exige que **le montant réellement facturé soit le prix le plus visible**. À faire :
+  - « 59,99 € par an » en grand, « soit 4,99 € par mois » en petit ;
   - nom de l'abonnement, durée, prix, renouvellement automatique et comment annuler, lisibles sans défiler ;
   - liens fonctionnels vers les conditions d'utilisation et la politique de confidentialité ;
   - « Restaurer mes achats » ;
   - bouton de fermeture visible tout de suite ;
-  - la remise affichée doit être exacte (59,88 € contre 179,88 € = −67 %, c'est le cas).
+  - la remise affichée doit être exacte (59,99 € contre 179,88 € = −67 %, c'est le cas).
 - Le paywall monte du bas, hors navigation.
 
 ## 14. Rétention : ce qu'on fait, ce qu'on ne fait pas
@@ -193,8 +193,8 @@ De haut en bas : le minimoa et sa forme · **sa vision** (5 axes, barres simples
 
 ## 18. Essai gratuit et inscription pensée pour convertir
 
-- **7 jours gratuits sur l'offre annuelle**, puis 59,88 € par an. L'offre mensuelle (14,99 €) n'a pas d'essai.
-- Affichage conforme Apple : « 7 jours gratuits, puis 59,88 € par an » ; le montant facturé reste le prix le plus visible.
+- **7 jours gratuits sur l'offre annuelle**, puis 59,99 € par an. L'offre mensuelle (14,99 €) n'a pas d'essai.
+- Affichage conforme Apple : « 7 jours gratuits, puis 59,99 € par an » ; le montant facturé reste le prix le plus visible.
 - Ce qui donne envie, sans tromper :
   1. **L'investissement** : la personne a créé son minimoa et passé le test avant de voir une offre.
   2. **Le résultat personnalisé** : « ta vision » juste avant.

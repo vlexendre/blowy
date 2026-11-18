@@ -7,7 +7,7 @@ L'API vérifie localement les transactions signées par Apple ; elle n'a besoin 
 
 | Offre | Identifiant produit (par défaut) | Prix | Essai |
 |---|---|---|---|
-| Annuelle | `app.blowy.plus.yearly` | 59,88 € par an | 7 jours gratuits (offre d'introduction) |
+| Annuelle | `app.blowy.plus.yearly` | 59,99 € par an | 7 jours gratuits (offre d'introduction) |
 | Mensuelle | `app.blowy.plus.monthly` | 14,99 € par mois | aucun |
 | Hebdomadaire | `app.blowy.plus.weekly` | 2,99 € par semaine | aucun |
 
@@ -40,7 +40,7 @@ conversion par déclencheur : `docs/DESIR.md`.
 2. **Groupe d'abonnements** : Mon app → Monétisation → Abonnements → créer le groupe **Minimoa+**. Les trois offres
    doivent être dans **le même groupe** (on ne peut avoir qu'un abonnement actif à la fois, et passer de l'un à l'autre).
 3. **Les trois abonnements** dans ce groupe :
-   - Référence « Minimoa+ annuel », identifiant produit `app.blowy.plus.yearly`, durée **1 an**, prix 59,88 € (France ;
+   - Référence « Minimoa+ annuel », identifiant produit `app.blowy.plus.yearly`, durée **1 an**, prix 59,99 € (France ;
      laisser Apple calculer les autres pays ou les fixer), nom affiché et description en français (et EN, ES, PT, NL).
    - Référence « Minimoa+ mensuel », identifiant `app.blowy.plus.monthly`, durée **1 mois**, prix 14,99 €.
    - Référence « Minimoa+ hebdomadaire », identifiant `app.blowy.plus.weekly`, durée **1 semaine**, prix 2,99 €, sans
@@ -84,9 +84,9 @@ l'App Store Server API (voir `apps/api/README.md`).
    un écran : sa teneur est sur la page « Conditions de Minimoa+ », liée). Les liens légaux de la feuille viennent de
    l'app (`legalUrl`, dans la langue de l'app), donc restent là même si l'API ne répond pas.
 2. `Product.products(for: [identifiants])` (les trois identifiants que donne l'API) : prix **facturé** de StoreKit en
-   grand (« 59,88 € par an », « 2,99 € par semaine »), équivalent mensuel et remise de l'annuelle (calculés sur les prix
+   grand (« 59,99 € par an », « 2,99 € par semaine »), équivalent mensuel et remise de l'annuelle (calculés sur les prix
    StoreKit, contre la mensuelle) en petit ; essai seulement si l'offre d'introduction StoreKit est
-   un essai gratuit et `isEligibleForIntroOffer` ; sous le bouton : « 7 jours gratuits, puis 59,88 € par an à partir du
+   un essai gratuit et `isEligibleForIntroOffer` ; sous le bouton : « 7 jours gratuits, puis 59,99 € par an à partir du
    24 novembre. Renouvellement automatique, annulable à tout moment dans Réglages › ton nom › Abonnements. »
    Règles Apple et preuves : `docs/AUDIT-APPLE.md`, « Minimoa+ et App Review ».
 3. Acheter avec l'option `appAccountToken(UUID(uuidString: me.id))`.
@@ -116,7 +116,7 @@ Dans l'app : `src/core/adapters/storekit.ios.ts` (StoreKit 2 par `expo-iap` : pr
 restauration, mises à jour au lancement), `features/plus` (`usePurchase`, `useRestore`, `usePlusSync`, `PlusOffer`,
 `openPlus(raison)`). Web et Android : rien n'est vendu (« Disponible sur iPhone »).
 En mode local (`EXPO_PUBLIC_AUTH=local`) : achat **simulé** (`simulatedPurchases`, `src/core/adapters/purchases.ts`) qui
-fabrique la transaction mémoire ci-dessous, avec un magasin simulé (59,88 € / 14,99 € / 2,99 €, essai de 7 jours sur
+fabrique la transaction mémoire ci-dessous, avec un magasin simulé (59,99 € / 14,99 € / 2,99 €, essai de 7 jours sur
 l'annuel) ;
 banc d'essai : `globalThis.__BLOWY_IAP_SIM__ = 'cancel' | 'pending' | 'fail' | 'noprices' | 'slowprices'` (les deux
 derniers : le magasin ne répond pas, ou met 20 s).

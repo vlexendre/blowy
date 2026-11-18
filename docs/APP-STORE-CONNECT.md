@@ -99,7 +99,7 @@ l'hébergeur sont déjà couvertes par les lignes ci-dessus (prestataires) : pas
 
 ## 4. Abonnements
 
-- Groupe « Minimoa+ » ; trois produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,88 €, essai
+- Groupe « Minimoa+ » ; trois produits dans le même groupe, même niveau : `app.blowy.plus.yearly` (1 an, 59,99 €, essai
   gratuit 1 semaine en offre d'introduction), `app.blowy.plus.monthly` (1 mois, 14,99 €, sans essai) et
   `app.blowy.plus.weekly` (1 semaine, 2,99 €, sans essai) (`docs/BLOWY-PLUS.md`). Ordre d'affichage dans le groupe
   (« Subscription Group » › ordre des niveaux) : annuel, mensuel, hebdomadaire, comme dans la feuille de l'app.

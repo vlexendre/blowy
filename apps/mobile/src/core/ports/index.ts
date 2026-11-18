@@ -75,9 +75,9 @@ export interface MediaPort {
 /** Prix localisé d'un produit, tel que le magasin le donne (StoreKit). */
 export interface StoreProduct {
   productId: string;
-  /** Prix facturé mis en forme par le magasin (« 59,88 € »). */
+  /** Prix facturé mis en forme par le magasin (« 59,99 € »). */
   displayPrice: string;
-  /** Montant en unités (59.88) et devise, pour calculer l'équivalent mensuel. Null si inconnu. */
+  /** Montant en unités (59.99) et devise, pour calculer l'équivalent mensuel. Null si inconnu. */
   price: number | null;
   currency: string | null;
   /** Essai gratuit possible pour ce compte Apple (null : inconnu, on se fie à l'API). */

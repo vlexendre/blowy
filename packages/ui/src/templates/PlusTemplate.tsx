@@ -22,7 +22,7 @@ import { SheetHandle, useSheet } from './SheetTemplate';
 
 /** Une offre telle que la feuille la montre (les prix arrivent mis en forme : jamais écrits dans le kit). */
 export interface PlusOfferView<K extends string = string> extends PlusPlanCard<K> {
-  /** Montant facturé et sa période ensemble (« 59,88 € par an »). */
+  /** Montant facturé et sa période ensemble (« 59,99 € par an »). */
   price: string;
   /**
    * Frise : l'essai (aujourd'hui → rappel → premier paiement) si la personne y a droit, sinon ce qui se passe sans essai
@@ -71,7 +71,7 @@ export interface PlusTemplateProps<K extends string> {
   offersLabel?: string;
   /** Bouton d'achat : l'action (« Commencer mes 7 jours gratuits »)… */
   ctaLabel?: string;
-  /** …et, dessous, le montant facturé et sa période (« puis 59,88 € par an »). */
+  /** …et, dessous, le montant facturé et sa période (« puis 59,99 € par an »). */
   ctaSubLabel?: string | null;
   onCta?: () => void;
   ctaDisabled?: boolean;

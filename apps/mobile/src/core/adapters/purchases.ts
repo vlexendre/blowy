@@ -18,7 +18,7 @@ export const noPurchases: PurchasesPort = {
 
 const DAY = 86_400_000;
 /** Prix que le magasin simulé du mode local annonce (ceux d'App Store Connect en France). Jamais utilisés sur un iPhone. */
-const SIM_PRICES = { yearly: 59.88, monthly: 14.99, weekly: 2.99 } as const;
+const SIM_PRICES = { yearly: 59.99, monthly: 14.99, weekly: 2.99 } as const;
 /** Durée d'une période (ou de l'essai de l'annuelle) dans le magasin simulé, en jours. */
 const SIM_DAYS = { yearly: 7, monthly: 30, weekly: 7 } as const;
 type SimPlan = keyof typeof SIM_PRICES;

@@ -465,7 +465,7 @@ describe('audit App Store — côté serveur', () => {
       await jobs.runDue(w.clock.now());
       const mails = w.outbox.filter((m) => m.to === relay && m.subject === 'Ton essai Minimoa+ se termine bientôt');
       expect(mails).toHaveLength(1);
-      expect(mails[0]?.text.replace(/[  ]/g, ' ')).toMatch(/premier paiement de 59,88 €/);
+      expect(mails[0]?.text.replace(/[  ]/g, ' ')).toMatch(/premier paiement de 59,99 €/);
       expect(mails[0]?.html).toContain('https://apps.apple.com/account/subscriptions');
     });
   });

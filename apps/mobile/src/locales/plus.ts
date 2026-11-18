@@ -31,7 +31,7 @@ export const plus = messages({
     lead: {
       trial: (plan: string, days: number) => `${plan} · ${days} jours gratuits, puis`,
     },
-    /** Montant facturé à partir du prix du magasin (« 59,88 € »). */
+    /** Montant facturé à partir du prix du magasin (« 59,99 € »). */
     price: { year: (p: string) => `${p} par an`, month: (p: string) => `${p} par mois`, week: (p: string) => `${p} par semaine` },
     perMonth: (p: string) => `soit ${p} par mois`,
     badge: (percent: number) => `Économise ${percent} %`,

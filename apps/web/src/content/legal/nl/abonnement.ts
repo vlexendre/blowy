@@ -9,7 +9,7 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'In het kort',
     items: [
-      '**€ 59,88 per jaar**, met **7 dagen gratis** aan het begin, **€ 14,99 per maand** of **€ 2,99 per week**, zonder proefperiode.',
+      '**€ 59,99 per jaar**, met **7 dagen gratis** aan het begin, **€ 14,99 per maand** of **€ 2,99 per week**, zonder proefperiode.',
       'Het abonnement **wordt automatisch verlengd** zolang je het niet opzegt.',
       'Minimoa+ koop je op iPhone: **Apple** factureert je, en je zegt op in de instellingen van je iPhone.',
       'Op dag 5 van de proefperiode laten we het je weten **via een melding en per e-mail**.',
@@ -37,7 +37,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Abonnement', 'Prijs', 'Gratis proefperiode'],
         rows: [
-          ['Jaarlijks', '€ 59,88 per jaar, oftewel € 4,99 per maand', '7 dagen, daarna € 59,88 per jaar'],
+          ['Jaarlijks', '€ 59,99 per jaar, oftewel € 4,99 per maand', '7 dagen, daarna € 59,99 per jaar'],
           ['Maandelijks', '€ 14,99 per maand', 'Geen proefperiode'],
           ['Wekelijks', '€ 2,99 per week', 'Geen proefperiode'],
         ],
@@ -53,7 +53,7 @@ export const abonnement: LegalPage = {
         'De proefperiode van 7 dagen geldt alleen voor het jaarabonnement, en alleen voor een nieuw abonnement, onder de voorwaarden van Apple (meestal één proefperiode per Apple-account).',
         'Tijdens de proefperiode is heel Minimoa+ open en betaal je niets.',
         'Op dag 5 sturen we je een herinnering: nog 2 dagen. Die komt via een melding (als je die hebt toegestaan) en per e-mail, naar het adres van je Apple-account.',
-        'Zeg je niet **minstens 24 uur voor het einde van de proefperiode** op, dan wordt op dag 7 de eerste betaling van € 59,88 afgeschreven en begint het jaarabonnement.',
+        'Zeg je niet **minstens 24 uur voor het einde van de proefperiode** op, dan wordt op dag 7 de eerste betaling van € 59,99 afgeschreven en begint het jaarabonnement.',
         'Zeg je op tijdens de proefperiode, dan houd je Minimoa+ tot het einde van de 7 dagen en betaal je niets.',
       ],
     },

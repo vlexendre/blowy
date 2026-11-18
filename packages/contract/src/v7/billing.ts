@@ -23,7 +23,7 @@ export const PlusPhaseZ = z.enum(['none', 'trial', 'active', 'grace', 'billing_r
 export type PlusPhase = z.infer<typeof PlusPhaseZ>;
 export const StoreZ = z.enum(['apple', 'google']);
 
-/** Montant en centimes et son affichage français de repli (« 59,88 € »). */
+/** Montant en centimes et son affichage français de repli (« 59,99 € »). */
 export const MoneyZ = z.object({ amountMinor: z.number().int().nonnegative(), currency: z.literal('EUR'), display: z.string() });
 export type Money = z.infer<typeof MoneyZ>;
 
@@ -43,11 +43,11 @@ export const PaywallOfferZ = z.object({
   discountPercent: z.number().int().nullable(),
   /** Textes de repli prêts à afficher (si StoreKit ne répond pas). */
   labels: z.object({
-    /** « 59,88 € par an » */
+    /** « 59,99 € par an » */
     price: z.string(),
     /** « soit 4,99 € par mois » ou null */
     perMonth: z.string().nullable(),
-    /** « 7 jours gratuits, puis 59,88 € par an » ou null */
+    /** « 7 jours gratuits, puis 59,99 € par an » ou null */
     trial: z.string().nullable(),
     /** « Abonnement annuel Minimoa+ » */
     name: z.string(),

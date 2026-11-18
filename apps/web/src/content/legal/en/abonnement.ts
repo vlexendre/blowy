@@ -9,7 +9,7 @@ export const abonnement: LegalPage = {
   summary: {
     title: 'In short',
     items: [
-      '**€59.88 per year**, with **7 days free** at the start, **€14.99 per month** or **€2.99 per week**, without a trial.',
+      '**€59.99 per year**, with **7 days free** at the start, **€14.99 per month** or **€2.99 per week**, without a trial.',
       'The subscription **renews automatically** until you cancel it.',
       'Minimoa+ is bought on iPhone: **Apple** bills you, and you cancel in your iPhone settings.',
       'On day 5 of the trial, we let you know **by notification and by email**.',
@@ -37,7 +37,7 @@ export const abonnement: LegalPage = {
       table: {
         head: ['Plan', 'Price', 'Free trial'],
         rows: [
-          ['Annual', '€59.88 per year, i.e. €4.99 per month', '7 days, then €59.88 per year'],
+          ['Annual', '€59.99 per year, i.e. €4.99 per month', '7 days, then €59.99 per year'],
           ['Monthly', '€14.99 per month', 'No trial'],
           ['Weekly', '€2.99 per week', 'No trial'],
         ],
@@ -53,7 +53,7 @@ export const abonnement: LegalPage = {
         'The 7-day trial only applies to the annual plan, and only to a new subscription, under Apple’s conditions (usually one trial per Apple account).',
         'During the trial, all of Minimoa+ is unlocked and you pay nothing.',
         'On day 5, we send you a reminder: 2 days left. It goes out by notification (if you allowed them) and by email, to the address linked to your Apple account.',
-        'If you do not cancel **at least 24 hours before the trial ends**, the first payment of €59.88 is taken on day 7 and the annual subscription begins.',
+        'If you do not cancel **at least 24 hours before the trial ends**, the first payment of €59.99 is taken on day 7 and the annual subscription begins.',
         'If you cancel during the trial, you keep Minimoa+ until the end of the 7 days and pay nothing.',
       ],
     },
