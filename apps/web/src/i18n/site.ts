@@ -19,7 +19,8 @@ export type TranslatedLocale = Exclude<Locale, 'fr'>;
 
 /**
  * Variante de chaque langue sur le site. Portugais du Brésil et anglais américain, comme l'app
- * (`apps/mobile/src/locales`, « você », « celular ») ; les pages légales, elles, sont en portugais européen.
+ * (`apps/mobile/src/locales`, « você », « celular »), pages légales comprises (`<html lang="pt-BR">`). Les balises hreflang
+ * gardent le code de langue seul (`pt`), une seule version par langue.
  */
 export const HTML_LANG: Record<Locale, string> = { fr: 'fr', en: 'en', es: 'es', pt: 'pt-BR', nl: 'nl' };
 export const OG_LOCALE: Record<Locale, string> = { fr: 'fr_FR', en: 'en_US', es: 'es_ES', pt: 'pt_BR', nl: 'nl_NL' };

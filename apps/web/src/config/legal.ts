@@ -144,7 +144,7 @@ export const SUBPROCESSORS = {
       'Données dans l’UE ; clauses contractuelles types pour l’accès depuis l’extérieur de l’UE',
       'Data in the EU; standard contractual clauses for access from outside the EU',
       'Datos en la UE; cláusulas contractuales tipo para el acceso desde fuera de la UE',
-      'Dados na UE; cláusulas contratuais-tipo para o acesso a partir de fora da UE',
+      'Dados na UE; cláusulas contratuais-tipo para o acesso de fora da UE',
       'Gegevens in de EU; modelcontractbepalingen voor toegang van buiten de EU',
     ),
   },
@@ -155,12 +155,12 @@ export const SUBPROCESSORS = {
    */
   api: {
     provider: 'Railway',
-    location: L('Pays-Bas (Amsterdam)', 'Netherlands (Amsterdam)', 'Países Bajos (Ámsterdam)', 'Países Baixos (Amesterdão)', 'Nederland (Amsterdam)'),
+    location: L('Pays-Bas (Amsterdam)', 'Netherlands (Amsterdam)', 'Países Bajos (Ámsterdam)', 'Países Baixos (Amsterdã)', 'Nederland (Amsterdam)'),
     safeguard: L(
       'Données dans l’UE ; clauses contractuelles types pour l’accès depuis l’extérieur de l’UE',
       'Data in the EU; standard contractual clauses for access from outside the EU',
       'Datos en la UE; cláusulas contractuales tipo para el acceso desde fuera de la UE',
-      'Dados na UE; cláusulas contratuais-tipo para o acesso a partir de fora da UE',
+      'Dados na UE; cláusulas contratuais-tipo para o acesso de fora da UE',
       'Gegevens in de EU; modelcontractbepalingen voor toegang van buiten de EU',
     ),
   },
@@ -238,7 +238,7 @@ export const AI_TERMS = {
     'effacé de ses serveurs sous 30 jours, sauf un contenu repéré comme contraire à ses règles d’usage (gardé jusqu’à 2 ans) ; jamais utilisé pour entraîner ses modèles',
     'deleted from its servers within 30 days, except content flagged as breaching its usage policy (kept for up to 2 years); never used to train its models',
     'se borra de sus servidores en un plazo de 30 días, salvo un contenido detectado como contrario a sus normas de uso (conservado hasta 2 años); nunca se usa para entrenar sus modelos',
-    'apagado dos seus servidores no prazo de 30 dias, exceto um conteúdo identificado como contrário às suas regras de utilização (guardado até 2 anos); nunca usado para treinar os seus modelos',
+    'apagado dos servidores do fornecedor em até 30 dias, exceto conteúdo identificado como contrário às regras de uso dele (guardado por até 2 anos); nunca usado para treinar os modelos dele',
     'binnen 30 dagen van zijn servers gewist, behalve inhoud die als in strijd met zijn gebruiksregels is aangemerkt (tot 2 jaar bewaard); nooit gebruikt om zijn modellen te trainen',
   ),
 } as const;

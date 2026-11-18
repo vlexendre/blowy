@@ -1,56 +1,63 @@
 import type { LegalPage } from '../types';
 
 export const supprimerMonCompte: LegalPage = {
-  title: 'Eliminar a minha conta e os meus dados — Minimoa',
-  heading: 'Eliminar a minha conta',
-  description: 'Como eliminar a tua conta Minimoa e os teus dados, o que é apagado e quando, o que é guardado e porquê.',
-  intro: 'Podes eliminar a tua conta e os teus dados quando quiseres, diretamente na app. Eis como, e o que isso apaga.',
+  title: 'Excluir minha conta e meus dados — Minimoa',
+  heading: 'Excluir minha conta',
+  description: 'Como excluir sua conta Minimoa e seus dados, o que é apagado e quando, o que é guardado e por quê.',
+  intro: 'Você pode excluir sua conta e seus dados quando quiser, direto no app. Veja como, e o que isso apaga.',
   body: [
-    { h2: 'Na app', id: 'app' },
-    { ol: ['Abre o separador **Eu**.', 'Toca em **Definições**.', 'Toca em **Eliminar a minha conta**.', 'Escreve a palavra de confirmação indicada no ecrã.'] },
-    { p: 'É imediato e definitivo: depois não é possível recuperar nada.' },
+    { h2: 'No app', id: 'app' },
     {
-      note: '**Tens Minimoa+?** Eliminar a tua conta não cancela a subscrição. Cancela-a primeiro nas definições do teu iPhone ([como fazer](@abonnement#annuler)).',
+      ol: [
+        'Abra a aba **Eu**.',
+        'Toque em **Ajustes**.',
+        'Toque em **Excluir minha conta**.',
+        'Digite “excluir” para confirmar.',
+      ],
+    },
+    { p: 'É imediato e definitivo: não dá para recuperar nada depois.' },
+    {
+      note: '**Você tem o Minimoa+?** Excluir sua conta não cancela a assinatura. Cancele primeiro nos ajustes do seu iPhone ([como fazer](@abonnement#annuler)).',
     },
 
-    { h2: 'Sem a app', id: 'sans-app' },
+    { h2: 'Sem o app', id: 'sans-app' },
     {
-      p: 'Já não tens acesso à app? Escreve para {{email.privacy}}, se possível a partir do endereço de e-mail associado à tua conta Apple ou Google, pedindo a eliminação da tua conta. Podemos pedir-te que confirmes que a conta é tua. Tratamos do assunto no prazo máximo de um mês e confirmamos quando estiver feito.',
+      p: 'Não tem mais acesso ao app? Escreva para {{email.privacy}}, de preferência pelo endereço de e-mail ligado à sua conta Apple ou Google, pedindo a exclusão da sua conta. Podemos pedir que você confirme que a conta é mesmo sua. Cuidamos disso em no máximo um mês, e confirmamos quando estiver feito.',
     },
 
-    { h2: 'O que é apagado de imediato', id: 'efface' },
+    { h2: 'O que é apagado na hora', id: 'efface' },
     {
       ul: [
-        'a tua conta, o teu nome, a tua data de nascimento, o teu sexo, a tua foto de perfil;',
-        'o teu token de início de sessão Apple, depois de revogado junto da Apple o acesso do Minimoa ao teu ID Apple;',
-        'o teu minimoa, a sua visão, o seu estilo, os seus objetos, os teus hábitos, a tua série;',
-        'a tua posição arredondada, a tua zona de residência aproximada ou a cidade que escolheste;',
-        'as tuas ligações, com as suas mensagens, antigas fotos do dia e etapas. **Também desaparecem para as outras pessoas**;',
-        'as tuas fotos de prova e de desafio, guardadas como recordação ou ainda não apagadas;',
-        'as «3 palavras» recebidas, os teus convites;',
-        'as tuas definições e a autorização para te enviar notificações.',
+        'sua conta, seu nome, sua data de nascimento, seu sexo, sua foto de perfil;',
+        'seu token de login da Apple, depois de revogar junto à Apple o acesso do Minimoa ao seu identificador;',
+        'seu minimoa, a visão dele, o estilo dele, os itens dele, seus hábitos, sua sequência;',
+        'sua localização arredondada, sua região de residência aproximada ou a cidade escolhida;',
+        'seus vínculos, com as mensagens, as antigas fotos do dia e as etapas deles. **Eles também desaparecem para as outras pessoas**;',
+        'suas fotos de prova e de desafio, guardadas como lembrança ou ainda não apagadas;',
+        'as “3 palavras” recebidas, seus convites;',
+        'seus ajustes e a autorização para te enviar notificações.',
       ],
     },
 
-    { h2: 'O que é guardado, e porquê', id: 'garde' },
+    { h2: 'O que é guardado, e por quê', id: 'garde' },
     {
       table: {
-        head: ['O quê', 'Porquê', 'Durante quanto tempo'],
+        head: ['O quê', 'Por quê', 'Por quanto tempo'],
         rows: [
-          ['Cópias de segurança técnicas', 'Poder restaurar o serviço em caso de avaria', 'Substituídas à medida que rodam: {{dataHost.backupRetention}}'],
-          ['Denúncias e decisões de moderação', 'Segurança dos outros e obrigações legais. Já não estão ligadas a nenhuma conta; o registo das decisões guarda o nome em causa.', '1 ano após o encerramento do processo (uma denúncia ainda aberta: até ser tratada, e depois 1 ano), mais tempo só se a lei o exigir'],
-          ['Em caso de exclusão definitiva: uma impressão não reversível do teu identificador Apple ou Google', 'Impedir uma nova inscrição', '3 anos'],
-          ['Referências das compras Minimoa+', 'Obrigações contabilísticas. Já não estão ligadas a nenhuma conta.', 'Até 10 anos'],
-          ['Dias de atividade e classificação interna (estatísticas)', 'Calcular os números do serviço', '40 dias no máximo'],
-          ['Estatísticas agregadas', 'Gerir o serviço. Não permitem identificar-te.', 'Sem limite'],
+          ['Backups técnicos', 'Poder restaurar o serviço em caso de falha', 'Substituídos conforme a rotação deles: {{dataHost.backupRetention}}'],
+          ['Denúncias e decisões de moderação', 'Segurança dos outros e obrigações legais. Elas deixam de estar ligadas a uma conta; o registro das decisões guarda o nome envolvido.', '1 ano após o encerramento do caso (uma denúncia ainda aberta: até ser tratada, depois 1 ano), mais tempo só se a lei exigir'],
+          ['Em caso de banimento definitivo: uma impressão irreversível do seu identificador Apple ou Google', 'Impedir um novo cadastro', '3 anos'],
+          ['Referências das compras do Minimoa+', 'Obrigações contábeis. Elas deixam de estar ligadas a uma conta.', 'Até 10 anos'],
+          ['Dias de atividade e classificação interna (estatísticas)', 'Calcular os números do serviço', 'No máximo 40 dias'],
+          ['Estatísticas agregadas', 'Gerir o serviço. Elas não permitem identificar você.', 'Sem limite'],
         ],
       },
     },
     {
-      p: 'As «3 palavras» que escolheste para outras pessoas ficam na conta delas: são anónimas. A Apple ou a Google guardam os seus próprios dados de compra e de início de sessão, segundo as suas políticas. Com a Apple, a eliminação também retira o Minimoa das apps que usam o teu ID Apple; com a Google, podes fazê-lo a partir da tua conta Google. O que já foi enviado ao nosso fornecedor de IA segue o que ele guarda do seu lado ([política de privacidade](@confidentialite#ia)).',
+      p: 'As “3 palavras” que você escolheu para outras pessoas continuam na conta delas: são anônimas. A Apple ou o Google guardam os próprios dados de compra e de login, conforme as políticas deles. Com a Apple, a exclusão também tira o Minimoa dos apps que usam seu ID Apple; com o Google, você pode fazer isso pela sua Conta do Google. O que já foi enviado ao nosso fornecedor de IA segue o que ele guarda do lado dele ([política de privacidade](@confidentialite#ia)).',
     },
 
-    { h2: 'Uma pergunta', id: 'question' },
-    { p: 'Escreve para {{email.privacy}}. O detalhe do que guardamos e porquê está na [política de privacidade](@confidentialite#durees).' },
+    { h2: 'Alguma dúvida', id: 'question' },
+    { p: 'Escreva para {{email.privacy}}. Os detalhes do que guardamos e por quê estão na [política de privacidade](@confidentialite#durees).' },
   ],
 };
