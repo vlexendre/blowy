@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { encounterIntroLine, waveReceivedEmail } from '@blowy/content';
 import { compatibility } from '@blowy/domain';
 import type { Env } from '../../../config/env';
@@ -15,6 +15,7 @@ import type { ProfilesRepository } from '../../me/ports';
 import { livePet } from '../../pets/application/pet-catch-up';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetsRepository } from '../../pets/ports';
+import { NotificationChannels } from '../../notifications/notification-channels';
 import { Audience } from '../../safety/application/audience';
 import type { EncountersRepository } from '../ports';
 import { WaveGuard } from './wave-guard';
@@ -42,6 +43,7 @@ export class Wave {
     @Inject(NOTIFIER) private readonly push: PushNotifier,
     @Inject(Audience) private readonly audience: Audience,
     @Inject(WaveGuard) private readonly guard: WaveGuard,
+    @Optional() @Inject(NotificationChannels) private readonly channels: NotificationChannels | null = null,
   ) {}
 
   /** `demo` : monde de démo local seulement (ses personnes saluent la nouvelle venue sans passer par les garde-fous). */
@@ -85,15 +87,17 @@ export class Wave {
       await this.createLink.execute({ by: userId, with: targetId, notify: targetId });
       return;
     }
-    // Un e-mail par expéditeur et destinataire (la paire est unique) ; au-delà de quelques-uns par jour, l'app suffit.
-    if (await this.guard.emailAllowed(targetId)) {
+    // E-mail en repli seulement (aucun appareil qui reçoit les push, type non coupé : docs/NOTIFICATIONS.md), un par
+    // expéditeur et destinataire (la paire est unique), et quelques-uns par jour au plus ; sinon l'app suffit.
+    const emailOk = (!this.channels || (await this.channels.emailAllowed(targetId, 'wave_received'))) && (await this.guard.emailAllowed(targetId));
+    if (emailOk) {
       await this.notifier.notify(
         targetId,
         waveReceivedEmail(target.locale, { displayName: target.displayName, petName: targetPet.name, fromName: me.displayName, fromPetName: myPet.name, appUrl: this.env.webUrl }),
       );
     }
     // Le push suit les réglages, les heures calmes et le plafond quotidien des notifications (`PushNotifier`).
-    await this.push.notify(targetId, 'waved', { name: me.displayName, minimoa: myPet.name });
+    await this.push.notify(targetId, 'waved', { name: me.displayName, minimoa: myPet.name, about: userId });
     if (!options.demo) await this.guard.watch(userId);
   }
 }
