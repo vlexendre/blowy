@@ -1,6 +1,6 @@
 export { config, groupUrl, inviteUrl, quartierUrl, wordsUrl } from './config';
 export { CoreProvider, keys, useApi, usePorts, useSession } from './CoreProvider';
-export { AuthError } from './ports';
+export { AuthError, MediaAccessError } from './ports';
 export type { AuthProvider, PickedImage, Ports, PurchaseOutcome, Session, SignedPurchase, StoreProduct } from './ports';
 export { LOCAL_CODE } from './adapters/local';
 export { captureStory, shareStoryImage, type StoryShareResult } from './adapters/story-share';

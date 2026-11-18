@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Pressable as RNPressable, ScrollView, type StyleProp, StyleSheet, useWindowDimensions, View, type ViewStyle } from 'react-native';
+import { Modal, Platform, Pressable as RNPressable, ScrollView, type StyleProp, StyleSheet, useWindowDimensions, View, type ViewStyle } from 'react-native';
 import { GestureDetector, GestureHandlerRootView, type PanGestureConfig, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,6 +39,11 @@ export interface SheetTemplateProps {
    * feuille vers le bas par sa barre du haut (poignée et en-tête).
    */
   scroll?: boolean;
+  /**
+   * Appelé une fois la feuille tout à fait fermée (fenêtre native retirée). iOS refuse de présenter un autre écran
+   * (appareil photo, photothèque, feuille de partage) tant qu'une fenêtre se ferme : ouvrir ces écrans ici.
+   */
+  onClosed?: () => void;
 }
 
 interface SheetControl {
@@ -76,7 +81,7 @@ const RISE = { ...springs.soft, stiffness: 190, damping: 21 } as const;
  * On peut la tirer vers le bas : elle suit le doigt (élastique vers le haut) et se ferme si on la lâche assez bas
  * ou assez vite, sinon elle remonte. Elle redescend en glissant à la fermeture. Animations réduites : fondus.
  */
-export function SheetTemplate({ visible, onClose, title, children, footer, closeLabel: closeLabelProp, header, asScreen, bare, scroll }: SheetTemplateProps) {
+export function SheetTemplate({ visible, onClose, title, children, footer, closeLabel: closeLabelProp, header, asScreen, bare, scroll, onClosed }: SheetTemplateProps) {
   const uiStrings = useUiStrings();
   const closeLabel = closeLabelProp ?? uiStrings.close;
   const insets = useSafeAreaInsets();
@@ -128,6 +133,30 @@ export function SheetTemplate({ visible, onClose, title, children, footer, close
 
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
+  const closedRef = useRef(onClosed);
+  closedRef.current = onClosed;
+  // Fenêtre native retirée : iOS le dit (`onDismiss`) ; ailleurs, juste après le démontage. Filet : si iOS ne le
+  // dit pas, on appelle quand même un peu plus tard (une seule fois par fermeture).
+  const closedFired = useRef(true);
+  const fireClosed = () => {
+    if (closedFired.current) return;
+    closedFired.current = true;
+    closedRef.current?.();
+  };
+  const wasMounted = useRef(mounted);
+  useEffect(() => {
+    const closing = wasMounted.current && !mounted;
+    wasMounted.current = mounted;
+    if (mounted) {
+      closedFired.current = false;
+      return;
+    }
+    if (!closing) return;
+    const native = Platform.OS === 'ios' && !asScreen;
+    const id = setTimeout(fireClosed, native ? 700 : 0);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, asScreen]);
   /** Stable : le geste n'est pas recréé à chaque rendu (il serait annulé pendant qu'on tire). */
   const dismiss = useCallback(() => {
     dismissed.current = true;
@@ -263,7 +292,7 @@ export function SheetTemplate({ visible, onClose, title, children, footer, close
   ) : null;
   if (asScreen) return content;
   return (
-    <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+    <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} onDismiss={fireClosed} statusBarTranslucent>
       <GestureHandlerRootView style={layout.fill}>{content}</GestureHandlerRootView>
     </Modal>
   );

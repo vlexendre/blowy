@@ -7,10 +7,10 @@
 import { ApiError } from '@blowy/api-client';
 import { Appear, Banner, Button, InlineField, PhotoEditCard, SettingsTemplate, SheetTemplate, Skeleton, Stagger, Text } from '@blowy/ui';
 import { space } from '@blowy/tokens';
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Linking, View } from 'react-native';
 
-import { ScreenMotion, useSession } from '@/core';
+import { MediaAccessError, ScreenMotion, useSession } from '@/core';
 import { useAiConsents } from '@/features/ai';
 import { maskEmail, useMe, useSetAvatar, useUpdateMe } from '@/features/me';
 import { errorMessage, goBack } from '@/features/session';
@@ -19,6 +19,7 @@ import { moi } from '@/locales/moi';
 
 const t = moi.compte;
 const refusedOf = (e: unknown): string | null => (e instanceof ApiError && e.code === 'content_refused' ? e.message : null);
+const accessOf = (e: unknown): MediaAccessError | null => (e instanceof MediaAccessError ? e : null);
 
 export default function Compte() {
   const me = useMe();
@@ -36,9 +37,17 @@ export default function Compte() {
     if (me.data) setName(me.data.displayName);
   }, [me.data?.displayName]);
 
+  // La feuille se ferme d'abord ; l'appareil photo ou la photothèque s'ouvre une fois la fenêtre retirée
+  // (`onClosed`) : iOS ne présente rien par-dessus une fenêtre qui se ferme.
+  const pending = useRef<'camera' | 'library' | null>(null);
   const pick = (source: 'camera' | 'library') => {
+    pending.current = source;
     setSheet(false);
-    avatar.mutate(source);
+  };
+  const onSheetClosed = () => {
+    const source = pending.current;
+    pending.current = null;
+    if (source) avatar.mutate(source);
   };
 
   const dirty = !!me.data && name.trim() !== me.data.displayName;
@@ -91,13 +100,25 @@ export default function Compte() {
       />
       {avatar.isError ? (
         <Appear key="photo-error">
-          <Banner
-            tone="error"
-            title={refusedOf(avatar.error) ? t.photoRefusedTitle : undefined}
-            text={refusedOf(avatar.error) ?? t.photoError}
-            onClose={() => avatar.reset()}
-            closeLabel={common.close}
-          />
+          {accessOf(avatar.error) ? (
+            <Banner
+              tone="info"
+              title={t.accessTitle}
+              text={accessOf(avatar.error)?.source === 'camera' ? t.accessCamera : t.accessLibrary}
+              actionLabel={t.openSettings}
+              onAction={() => void Linking.openSettings()}
+              onClose={() => avatar.reset()}
+              closeLabel={common.close}
+            />
+          ) : (
+            <Banner
+              tone="error"
+              title={refusedOf(avatar.error) ? t.photoRefusedTitle : undefined}
+              text={refusedOf(avatar.error) ?? t.photoError}
+              onClose={() => avatar.reset()}
+              closeLabel={common.close}
+            />
+          )}
         </Appear>
       ) : null}
       {avatar.data === true ? (
@@ -137,7 +158,7 @@ export default function Compte() {
         </Appear>
       ) : null}
 
-      <SheetTemplate visible={sheet} onClose={() => setSheet(false)} title={t.sheetTitle} closeLabel={common.close}>
+      <SheetTemplate visible={sheet} onClose={() => setSheet(false)} onClosed={onSheetClosed} title={t.sheetTitle} closeLabel={common.close}>
         <View style={{ gap: space.sm }}>
           <Text size={15} muted>
             {photoCheck} {t.photoCheckAccept}

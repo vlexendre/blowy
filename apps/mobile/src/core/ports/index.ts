@@ -54,8 +54,19 @@ export interface PickedImage {
   contentType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/heic';
 }
 
+/** Accès à l'appareil photo ou à la photothèque refusé ; `canAskAgain` faux : seuls les Réglages peuvent le rouvrir. */
+export class MediaAccessError extends Error {
+  constructor(
+    readonly source: 'camera' | 'library',
+    readonly canAskAgain: boolean,
+  ) {
+    super(`media_access_denied:${source}`);
+    this.name = 'MediaAccessError';
+  }
+}
+
 export interface MediaPort {
-  /** Ouvre l'appareil photo ou la photothèque ; null si la personne annule ou refuse l'accès. */
+  /** Ouvre l'appareil photo ou la photothèque ; null si la personne annule ; `MediaAccessError` si l'accès est refusé. */
   pick(source: 'camera' | 'library'): Promise<PickedImage | null>;
   /** Envoie le fichier vers l'emplacement réservé par l'API. */
   upload(ticket: UploadTicket, image: PickedImage): Promise<void>;
