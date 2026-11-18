@@ -112,6 +112,10 @@ const VARIANT_IMAGES = {
   antennes_tips: require('../../assets/items/antennes_tips.webp'),
   cornes_tips: require('../../assets/items/cornes_tips.webp'),
   cornes_profil: require('../../assets/items/cornes_profil.webp'),
+  echarpe_profil: require('../../assets/items/echarpe_profil.webp'),
+  hiver_echarpe_profil: require('../../assets/items/hiver_echarpe_profil.webp'),
+  hiver_cache_oreilles_profil: require('../../assets/items/hiver_cache_oreilles_profil.webp'),
+  casque_audio_profil: require('../../assets/items/casque_audio_profil.webp'),
 } as const satisfies Record<string, Src>;
 
 /** Identifiant d'objet connu du registre (les 76 de `ITEM_IDS`). */

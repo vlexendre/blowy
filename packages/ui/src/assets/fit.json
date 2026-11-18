@@ -11331,7 +11331,20 @@
    ],
    "ratio": 2.5,
    "dy": -0.13,
-   "sy": 1.18
+   "sy": 1.18,
+   "profile": {
+    "image": "casque_audio_profil",
+    "ratio": 1.2558,
+    "w": 0.68,
+    "pivot": [
+     0.22,
+     0.72
+    ],
+    "dx": -0.05,
+    "dy": 0.05,
+    "rot": -50,
+    "sy": 1.0
+   }
   },
   "aureole": {
    "anchor": "headTop",
@@ -11498,7 +11511,17 @@
    ],
    "ratio": 1.7544,
    "dy": 0.03,
-   "sy": 0.95
+   "sy": 0.95,
+   "profile": {
+    "image": "echarpe_profil",
+    "ratio": 1.5945,
+    "w": 0.95,
+    "pivot": [
+     0.48,
+     0.12
+    ],
+    "dx": -0.02
+   }
   },
   "bandana": {
    "anchor": "mouth",
@@ -11986,7 +12009,20 @@
    ],
    "ratio": 2.5503,
    "dy": -0.12,
-   "sy": 1.22
+   "sy": 1.22,
+   "profile": {
+    "image": "hiver_cache_oreilles_profil",
+    "ratio": 1.2857,
+    "w": 0.68,
+    "pivot": [
+     0.22,
+     0.72
+    ],
+    "dx": -0.05,
+    "dy": 0.05,
+    "sy": 1.0,
+    "rot": -50
+   }
   },
   "hiver_lunettes": {
    "anchor": "eyes",
@@ -12008,7 +12044,17 @@
    ],
    "ratio": 1.7677,
    "dy": 0.03,
-   "sy": 0.95
+   "sy": 0.95,
+   "profile": {
+    "image": "hiver_echarpe_profil",
+    "ratio": 1.6317,
+    "w": 0.95,
+    "pivot": [
+     0.48,
+     0.12
+    ],
+    "dx": -0.02
+   }
   },
   "hiver_cape": {
    "anchor": "mouth",
