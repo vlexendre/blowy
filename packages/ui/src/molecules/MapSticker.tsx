@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
-import { Avatar } from '../atoms/Avatar';
+import { PetBadge } from '../atoms/PetBadge';
 import { Pressable } from '../atoms/Pressable';
 import { Text } from '../atoms/Text';
 import { hapticFor } from '../lib/haptics';
@@ -30,7 +30,8 @@ export interface MapStickerProps {
 }
 
 /**
- * Un minimoa sur la carte (maquette V6-GCarte) : visage en autocollant cerclé de blanc, prénom en puce dessous.
+ * Un minimoa sur la carte (maquette V6-GCarte) : médaillon (`PetBadge`) centré dans un autocollant cerclé de blanc,
+ * prénom en puce dessous.
  * Il se pose en rebondissant, flotte doucement au repos, sautille quand on le touche. Animations réduites : posé, fixe.
  */
 export function MapSticker({ pet, label, selected, me, onPress, accessibilityLabel, landDelay = null, floatDelay = 0, size = 56, style }: MapStickerProps) {
@@ -67,7 +68,8 @@ export function MapSticker({ pet, label, selected, me, onPress, accessibilityLab
   const content = (
     <Animated.View style={[styles.col, body]}>
       <View style={[styles.face, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }, selected ? styles.faceOn : null]}>
-        <Avatar size={size} pet={pet} hidden bg={me ? color.accent : tint} />
+        {/* Le médaillon (tête et épaules, objets de la tête compris), cadré pareil pour les 4 espèces, habillé ou non. */}
+        <PetBadge species={pet.species} outfit={pet.outfit} size={size} background={me ? color.accent : tint} roomy style={styles.badge} />
       </View>
       <View style={[styles.chip, me || selected ? styles.chipOn : null]}>
         <Text variant="bodyHeavy" size={13} color={color.dark} numberOfLines={1}>
@@ -116,6 +118,7 @@ export function MapBlob({ size = 54, delay = 0, style }: MapBlobProps) {
 
 const styles = StyleSheet.create({
   col: { alignItems: 'center', gap: space.xs },
+  badge: { alignSelf: 'center' },
   face: { alignItems: 'center', justifyContent: 'center', backgroundColor: color.white, shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 0, height: 6 } },
   faceOn: { borderWidth: 3, borderColor: color.accent, transform: [{ scale: 1.1 }] },
   chip: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, backgroundColor: color.white, maxWidth: 110, transform: [{ rotate: '-3deg' }] },

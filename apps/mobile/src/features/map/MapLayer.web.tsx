@@ -5,6 +5,6 @@ import type { MapLayerProps } from './MapLayer.types';
 
 export type { MapLayerProps } from './MapLayer.types';
 
-export function MapLayer({ free: _free, onRegionChange: _onRegionChange, mePosition: _mePosition, ...props }: MapLayerProps) {
+export function MapLayer({ free: _free, onRegionChange: _onRegionChange, mePosition: _mePosition, focusKey: _focusKey, safeTop: _safeTop, safeBottom: _safeBottom, measured: _measured, ...props }: MapLayerProps) {
   return <ZoneMap {...props} />;
 }

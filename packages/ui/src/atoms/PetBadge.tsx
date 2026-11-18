@@ -1,7 +1,7 @@
 import type { Outfit, Species } from '@blowy/domain';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { badgeFrame, FIT_CANVAS } from '../assets/fit';
+import { badgeFrame, badgeFrameFitting, FIT_CANVAS } from '../assets/fit';
 import { color, radius, size as sizes, speciesColor } from '../theme';
 import { DressedPet } from './DressedPet';
 
@@ -14,6 +14,8 @@ export interface PetBadgeProps {
   background?: string;
   /** Anneau de couleur autour (séparé par un liseré nuit), comme `Avatar`. */
   ring?: string;
+  /** Cadre élargi vers le haut pour garder en entier un objet qui dépasse de la tête (couronne, chapeau, cornes). */
+  roomy?: boolean;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -21,8 +23,8 @@ export interface PetBadgeProps {
 const SLOTS = ['body', 'face', 'head'] as const;
 
 /** Médaillon rond du pet habillé : tête et épaules, avec les objets de la tête et du visage (rangées de chat, en-têtes). */
-export function PetBadge({ species, outfit, size = 44, background, ring, accessibilityLabel, style }: PetBadgeProps) {
-  const frame = badgeFrame(species, 'neutre');
+export function PetBadge({ species, outfit, size = 44, background, ring, roomy, accessibilityLabel, style }: PetBadgeProps) {
+  const frame = roomy ? badgeFrameFitting(species, outfit, 'neutre') : badgeFrame(species, 'neutre');
   const k = size / frame.side;
   const disc = (
     <View style={[styles.disc, { width: size, height: size, backgroundColor: background ?? speciesColor[species] }]}>

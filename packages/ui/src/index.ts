@@ -1,7 +1,7 @@
 export * from './assets/pets';
 export { itemImage, hasItemImage, type ItemId } from './assets/items';
 export { CARE_PROPS, type CareProp, careProp, propImage, PROP_RATIO } from './assets/misc';
-export { FIT_CANVAS, placeItem, outfitLayers, hasOutfit, badgeFrame, fitAnchor, type FitAnchor, type ItemPlacement } from './assets/fit';
+export { FIT_CANVAS, placeItem, outfitLayers, hasOutfit, badgeFrame, badgeFrameFitting, fitAnchor, type FitAnchor, type ItemPlacement } from './assets/fit';
 export * from './atoms';
 export * from './molecules';
 export * from './organisms';
