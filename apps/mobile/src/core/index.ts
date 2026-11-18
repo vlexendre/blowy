@@ -4,6 +4,7 @@ export { AuthError, MediaAccessError } from './ports';
 export type { AuthProvider, PickedImage, Ports, PurchaseOutcome, Session, SignedPurchase, StoreProduct } from './ports';
 export { LOCAL_CODE } from './adapters/local';
 export { captureStory, shareStoryImage, type StoryShareResult } from './adapters/story-share';
+export { presentShare, settleUi } from './share-sheet';
 export { ScreenMotion } from './motion';
 export { LocaleRoot, useAppLocale } from './locale';
 export { widgets } from './widgets';

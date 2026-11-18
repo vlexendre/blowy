@@ -1,6 +1,6 @@
 /**
  * Invitations (V6-Invite), ouvertes depuis l'accueil (plus dans l'inscription) : partager son lien d'invitation (le lien
- * « 3 mots » est dans l'onglet Moi). « Partager en story » envoie une image (`StoryCard`, capturée hors de l'écran) dans
+ * « 3 mots » est dans l'onglet Moi). « Partager en story » envoie une image (`StoryCard`, montée transparente pour la capture) dans
  * l'éditeur de story d'Instagram.
  */
 import { Appear, Banner, InvitePanel, OnboardingTemplate, StoryCard } from '@blowy/ui';

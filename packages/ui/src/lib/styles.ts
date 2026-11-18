@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { radius, size, space, veil } from '../theme';
 
@@ -30,3 +30,12 @@ export function hitSlopFor(visual: number): { top: number; bottom: number; left:
   const pad = Math.max(0, Math.ceil((size.touch - visual) / 2));
   return pad > 0 ? { top: pad, bottom: pad, left: pad, right: pad } : undefined;
 }
+
+/**
+ * Image faite pour être capturée (`captureRef`) et que personne ne voit : montée DANS l'écran (en haut à gauche, sous
+ * le reste, transparente). Une vue repoussée hors de la fenêtre (left: -10000) peut sortir vide ou faire échouer la
+ * capture sur iOS. Sur le web, rien n'est capturé : pas affichée du tout.
+ */
+export const captureOnly = StyleSheet.create({
+  host: Platform.OS === 'web' ? { display: 'none' } : { position: 'absolute', left: 0, top: 0, opacity: 0, zIndex: -1 },
+});

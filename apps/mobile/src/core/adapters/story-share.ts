@@ -6,24 +6,48 @@
  * même image. Sur le web : `story-share.web.ts`.
  */
 import type { ComponentRef, RefObject } from 'react';
-import { Linking, Platform, type View } from 'react-native';
+import { Linking, Platform, Share as SystemShare, type View } from 'react-native';
 import Share, { Social } from 'react-native-share';
 import { captureRef } from 'react-native-view-shot';
 
 import { config } from '../config';
+import { presentShare } from '../share-sheet';
 
 type ViewRef = RefObject<ComponentRef<typeof View> | null>;
 
-export type StoryShareResult = 'story' | 'sheet' | 'none';
+/** `story` : éditeur d'Instagram ouvert ; `sheet` : feuille du système ouverte ; `failed` : rien n'a pu s'ouvrir. */
+export type StoryShareResult = 'story' | 'sheet' | 'failed';
 
-/** Capture la vue en PNG 1080 × 1920 (fichier temporaire) ; null si la capture échoue. */
-export async function captureStory(view: ViewRef): Promise<string | null> {
-  if (!view.current) return null;
+/**
+ * Petite capture d'essai : une image vide (transparente) pèse quelques centaines d'octets, la vraie carte (dégradé,
+ * texte, minimoa) bien plus. Évite de partager une image vide quand iOS n'a rien dessiné.
+ */
+const PROBE = { width: 54, height: 96 } as const;
+const PROBE_MIN_CHARS = 1200;
+
+async function snap(view: ViewRef, options: Parameters<typeof captureRef>[1]): Promise<string | null> {
   try {
-    return await captureRef(view, { format: 'png', quality: 1, result: 'tmpfile', width: 1080, height: 1920 });
+    return await captureRef(view, options);
   } catch {
     return null;
   }
+}
+
+/**
+ * Capture la vue en PNG 1080 × 1920 (fichier temporaire, `file://…`) ; null si elle échoue ou sort vide. Sur iOS, deux
+ * façons de dessiner : `drawViewHierarchyInRect` (par défaut), puis `renderInContext`, qui ne dépend ni de la fenêtre
+ * ni de la transparence de la vue (la carte est montée transparente, `captureOnly`).
+ */
+export async function captureStory(view: ViewRef): Promise<string | null> {
+  if (!view.current) return null;
+  const ways = Platform.OS === 'ios' ? [false, true] : [false];
+  for (const useRenderInContext of ways) {
+    const probe = await snap(view, { format: 'png', result: 'base64', ...PROBE, useRenderInContext });
+    if (!probe || probe.length < PROBE_MIN_CHARS) continue;
+    const file = await snap(view, { format: 'png', quality: 1, result: 'tmpfile', width: 1080, height: 1920, useRenderInContext });
+    if (file) return file.startsWith('/') ? `file://${file}` : file;
+  }
+  return null;
 }
 
 async function instagramReady(): Promise<boolean> {
@@ -39,9 +63,11 @@ async function instagramReady(): Promise<boolean> {
 
 /**
  * Ouvre l'éditeur de story d'Instagram avec l'image en fond (`story`) ; sinon la feuille de partage du système avec
- * l'image et le message (`sheet`) ; `none` si la personne ferme la feuille ou si rien n'a pu s'ouvrir.
+ * l'image et le message, qui contient le lien (`sheet`) ; `failed` si rien n'a pu s'ouvrir : l'appelant partage alors
+ * le lien seul. `target: 'sheet'` : directement la feuille (« Autre app »), sans essayer Instagram.
+ * Sur iOS, la feuille est celle de React Native (`Share.share` avec le fichier en `url`) : image + texte, sans dépendre
+ * du module natif de `react-native-share`.
  */
-/** `target: 'sheet'` : directement la feuille de partage (« Autre app »), sans essayer Instagram. */
 export async function shareStoryImage(imageUri: string, message: string, target: 'story' | 'sheet' = 'story'): Promise<StoryShareResult> {
   if (target === 'story' && (await instagramReady())) {
     try {
@@ -51,10 +77,10 @@ export async function shareStoryImage(imageUri: string, message: string, target:
       // Instagram n'a pas voulu : la feuille du système prend le relais.
     }
   }
-  try {
-    await Share.open({ url: imageUri, type: 'image/png', message, failOnCancel: false });
-    return 'sheet';
-  } catch {
-    return 'none';
-  }
+  const opened = await presentShare(() =>
+    Platform.OS === 'ios'
+      ? SystemShare.share({ url: imageUri, message })
+      : Share.open({ url: imageUri, type: 'image/png', message, failOnCancel: false }),
+  );
+  return opened ? 'sheet' : 'failed';
 }

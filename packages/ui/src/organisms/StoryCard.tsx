@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { Panel } from '../atoms/Panel';
 import { PetImage } from '../atoms/PetImage';
 import { Text } from '../atoms/Text';
+import { captureOnly } from '../lib/styles';
 import { Title } from '../atoms/Title';
 import { color, gradient, radius, space } from '../theme';
 import type { PetLook, TitleContent } from '../types';
@@ -25,8 +26,8 @@ export interface StoryCardProps {
   /** Lien affiché sans protocole ; la fin (le code) est mise en couleur. */
   url: string;
   /**
-   * Hors de l'écran : l'image n'est faite que pour être capturée, personne ne la voit dans l'app (et les lecteurs
-   * d'écran l'ignorent).
+   * Pour la capture seulement : montée dans l'écran mais transparente (`captureOnly`), personne ne la voit dans l'app
+   * (et les lecteurs d'écran l'ignorent).
    */
   offscreen?: boolean;
 }
@@ -42,7 +43,7 @@ export function StoryCard({ ref, brand, title, line, pet, callout, url, offscree
       pointerEvents={offscreen ? 'none' : undefined}
       accessibilityElementsHidden={offscreen}
       importantForAccessibility={offscreen ? 'no-hide-descendants' : undefined}
-      style={offscreen ? styles.offscreen : undefined}
+      style={offscreen ? captureOnly.host : undefined}
     >
       <View ref={ref} collapsable={false} style={styles.card}>
         <Panel gradient="violet" radius={0} padding="none" style={styles.fill}>
@@ -81,7 +82,6 @@ export function StoryCard({ ref, brand, title, line, pet, callout, url, offscree
 }
 
 const styles = StyleSheet.create({
-  offscreen: { position: 'absolute', left: -10000, top: 0 },
   card: { ...STORY_SIZE, overflow: 'hidden', backgroundColor: color.dark },
   fill: { flex: 1, paddingTop: 56, paddingHorizontal: 24 },
   brand: { marginBottom: space.md },

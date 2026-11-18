@@ -13,7 +13,7 @@ import * as Linking from 'expo-linking';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Share } from 'react-native';
 
-import { keys, quartierUrl, useApi, useSession } from '@/core';
+import { keys, presentShare, quartierUrl, useApi, useSession } from '@/core';
 import { captureUrl, currentAttribution, useAttribution } from './attribution';
 
 export { captureUrl, currentAttribution, useAttribution } from './attribution';
@@ -93,14 +93,13 @@ export function useShareQuartier(message: (zone: string, missing: number, url: s
     if (!s || !q.data) return;
     const text = message(s.label, s.missing, quartierUrl(s.zone, q.data.inviteCode));
     track('invite');
-    try {
-      if (Platform.OS === 'web') throw new Error('web');
-      await Share.share({ message: text });
-    } catch {
+    const copyInstead = async () => {
       await Clipboard.setStringAsync(text).catch(() => undefined);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    }
+    };
+    // Feuille qui n'a pas pu s'ouvrir (ou web) : le texte est copié, jamais rien.
+    if (Platform.OS === 'web' || !(await presentShare(() => Share.share({ message: text }), () => void copyInstead()))) await copyInstead();
   }, [q.data, message, track]);
   return { quartier: q, share, copied };
 }

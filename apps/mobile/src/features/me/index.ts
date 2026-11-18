@@ -4,7 +4,7 @@ import * as Clipboard from 'expo-clipboard';
 import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Share, type View } from 'react-native';
 
-import { captureStory, keys, shareStoryImage, useApi, usePorts } from '@/core';
+import { captureStory, keys, presentShare, shareStoryImage, useApi, usePorts } from '@/core';
 
 /** Ton lien « 3 mots » et ton résultat (les 3 mots les plus choisis, à partir de 3 votes). */
 export function useMyWords(enabled = true) {
@@ -59,7 +59,8 @@ export function useDeleteAccount() {
 
 /**
  * Copier et partager un lien. `copied` reste vrai 2 s après une copie.
- * Sur le web sans partage natif, partager revient à copier.
+ * Partager ouvre la feuille du système ; si elle n'a pas pu s'ouvrir (ou sur le web sans partage natif), le lien est
+ * copié à la place (`copied` le montre) : jamais rien.
  */
 export function useCopyShare() {
   const [copied, setCopied] = useState(false);
@@ -78,14 +79,17 @@ export function useCopyShare() {
     timer.current = setTimeout(() => setCopied(false), 2000);
   }, []);
   const share = useCallback(
-    async (message: string, url: string) => {
+    async (message: string, url: string): Promise<'sheet' | 'copied'> => {
       const canShareOnWeb = Platform.OS === 'web' && typeof navigator !== 'undefined' && typeof navigator.share === 'function';
-      if (Platform.OS === 'web' && !canShareOnWeb) return copy(url);
-      try {
-        await Share.share(Platform.OS === 'ios' ? { message, url } : { message });
-      } catch {
+      if (Platform.OS === 'web' && !canShareOnWeb) {
         await copy(url);
+        return 'copied';
       }
+      const fallback = () => void copy(url);
+      const opened = await presentShare(() => Share.share(Platform.OS === 'ios' ? { message, url } : { message }), fallback);
+      if (opened) return 'sheet';
+      await copy(url);
+      return 'copied';
     },
     [copy],
   );
@@ -93,28 +97,33 @@ export function useCopyShare() {
 }
 
 /**
- * Partage de l'invitation en story : capture l'image (`StoryCard`), puis l'éditeur de story d'Instagram, sinon la
- * feuille de partage du système avec l'image ; si l'image n'a pas pu être faite (web), le lien en texte.
+ * Partage en story : capture l'image (`StoryCard`, `ShareCard`), puis l'éditeur de story d'Instagram, sinon la feuille
+ * de partage du système avec l'image et le lien. À chaque échec (capture vide ou impossible, Instagram ou feuille qui
+ * refusent), repli sur le lien seul, puis sur la copie du lien : quelque chose s'ouvre toujours. `busy` : en cours.
  */
 export function useStoryShare() {
   const card = useRef<ComponentRef<typeof View>>(null);
   const [busy, setBusy] = useState(false);
+  const running = useRef(false);
   const { copied, copy, share: shareText } = useCopyShare();
   const share = useCallback(
     async (message: string, url: string, target: 'story' | 'sheet' = 'story') => {
-      if (busy) return;
+      if (running.current) return;
+      running.current = true;
       setBusy(true);
       try {
-        const image = await captureStory(card);
-        if (!image) return await shareText(message, url);
-        const result = await shareStoryImage(image, message, target);
-        // Rien ne s'est ouvert (ni Instagram ni la feuille) : au moins le lien.
-        if (result === 'none' && Platform.OS !== 'ios') await shareText(message, url);
+        const image = await captureStory(card).catch(() => null);
+        if (image) {
+          const result = await shareStoryImage(image, message, target).catch(() => 'failed' as const);
+          if (result !== 'failed') return;
+        }
+        await shareText(message, url);
       } finally {
+        running.current = false;
         setBusy(false);
       }
     },
-    [busy, shareText],
+    [shareText],
   );
   return { card, busy, share, copied, copy };
 }
