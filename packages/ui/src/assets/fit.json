@@ -11320,12 +11320,12 @@
   "tutu": {
    "anchor": "feet",
    "size": "bodyw",
-   "w": 0.92,
+   "w": 1.0,
    "pivot": [
     0.5,
     0.62
    ],
-   "dy": 0.037,
+   "dy": -0.08,
    "ratio": 1.4101
   },
   "bretelles": {
@@ -11341,25 +11341,26 @@
   "sac_a_dos": {
    "anchor": "mouth",
    "size": "brow",
-   "w": 1.0,
+   "w": 1.3,
    "pivot": [
     0.5,
     0.02
    ],
    "ratio": 1.4667,
    "back": {
-    "w": 0.8,
+    "w": 0.9,
     "pivot": [
      0.5,
      0.5
     ],
     "ratio": 0.9439,
-    "dx": 0.5,
-    "dy": -0.25,
-    "rot": -10,
+    "dx": 0.6,
+    "dy": -0.62,
+    "rot": -8,
     "anchor": "neck"
    },
-   "dy": 0.1
+   "dy": -0.04,
+   "sy": 0.8
   },
   "sac_main": {
    "anchor": "torso",
@@ -11369,10 +11370,10 @@
     0.5,
     0.02
    ],
-   "dx": 0.42,
-   "rot": -6,
+   "dx": 0.33,
+   "rot": -10,
    "ratio": 0.7798,
-   "dy": -0.24
+   "dy": -0.3
   },
   "cape": {
    "anchor": "mouth",
