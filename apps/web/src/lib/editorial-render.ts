@@ -7,8 +7,20 @@ import type { Block, Faq, Section } from '../content/editorial/types';
 const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** Une ligne de texte en HTML (gras, liens). */
+/**
+ * Typographie française : espace insécable avant « ? ! ; : » et à l'intérieur des guillemets, pour qu'un signe ne se
+ * retrouve jamais seul en début de ligne (fine insécable U+202F avant ? ! ;, insécable U+00A0 avant : et dans « »).
+ */
+export function typo(text: string): string {
+  return text
+    .replace(/ ([?!;])/g, '\u202f$1')
+    .replace(/ :/g, '\u00a0:')
+    .replace(/« /g, '«\u00a0')
+    .replace(/ »/g, '\u00a0»');
+}
+
 export function inline(text: string): string {
-  return esc(text)
+  return typo(esc(text))
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, label: string, href: string) => {
       const external = /^https?:\/\//.test(href);
