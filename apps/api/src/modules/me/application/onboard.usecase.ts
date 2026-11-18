@@ -171,7 +171,7 @@ export class Onboard {
     // Le compte de revue d'Apple et ses personnes fictives ne se lient jamais à un vrai compte.
     if (!inviter || inviter.id === userId || inviter.reviewWorld) return;
     try {
-      await this.createLink.execute({ by: userId, with: inviter.id, notify: inviter.id });
+      await this.createLink.execute({ by: userId, with: inviter.id, notify: inviter.id, via: 'invite' });
     } catch (err) {
       this.logger.warn(`lien d'invitation non créé : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
     }

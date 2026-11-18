@@ -161,10 +161,12 @@ describe('événements de bout en bout (mémoire)', () => {
     // Le défi du jour ne démarre jamais d'activité par push.
     await world.app.get<Notifier>(NOTIFIER).notify(a.id, 'daily_challenge', { minimoa: 'Nino' });
     expect(live.outbox.filter((p) => p.payload.aps.event === 'start')).toHaveLength(0);
-    // Série en danger : mise à jour de l'activité du défi.
+    // Série en danger (le soir, heure de la personne) : mise à jour de l'activité du défi.
+    world.clock.advanceHours(8);
     await world.app.get<Notifier>(NOTIFIER).notify(a.id, 'streak_in_danger', { streak: '4' });
     const update = live.outbox.at(-1);
     expect(update).toMatchObject({ token: UPDATE_2, priority: 10, payload: { aps: { event: 'update', 'content-state': { streak: 4, done: false, title: null } } } });
+    world.clock.advanceHours(-8);
     // Défi relevé : fin (état final 15 min), jeton oublié.
     live.outbox.length = 0;
     await doToday(a);

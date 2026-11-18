@@ -44,8 +44,8 @@ export type NotificationKindKey = (typeof NOTIFICATION_KINDS)[number];
  * - `direct` : quelqu'un t'écrit, ou répond à ton signe (lien créé) ; jamais plafonné ;
  * - `urgent` : une échéance qui te concerne (fin d'essai, paiement refusé) ; jamais plafonné, jamais coupé par le report ;
  * - `social` : des gens font un geste vers toi (signe, 3 mots, invitation, arrivée, série d'un lien) ;
- * - `ritual` : rappels de tes rituels (défi, série, preuve, bilan, besoin de sortir, objets, vie d'un groupe) ;
- * - `news` : nouvelles du minimoa, premiers pas, vie de l'abonnement ;
+ * - `ritual` : rappels de tes rituels (défi, série, preuve, besoin de sortir, objets, vie d'un groupe) ;
+ * - `news` : comptes rendus et nouvelles (bilan de la semaine, nouvelles du minimoa, premiers pas, vie de l'abonnement) ;
  * - `marketing` : une offre (relance Minimoa+) ; seulement avec l'accord explicite de la personne.
  */
 export const NOTIFICATION_TIERS = ['direct', 'urgent', 'social', 'ritual', 'news', 'marketing'] as const;
@@ -74,11 +74,11 @@ export function notificationTierOf(kind: NotificationKindKey, step?: string | nu
     case 'needs_out':
     case 'streak_in_danger':
     case 'habit_proof':
-    case 'weekly_review':
     case 'item_unlocked':
     case 'group_life_lost':
     case 'group_asleep':
       return 'ritual';
+    case 'weekly_review':
     case 'first_steps':
     case 'minimoa_news':
       return 'news';
@@ -134,7 +134,7 @@ export const isQuietHour = (hour: number): boolean => hour >= QUIET_START_HOUR |
 export const NOTIFICATION_DAILY_CAP = 3;
 /** Plafond par priorité (dans le plafond global). */
 export const TIER_DAILY_CAPS: Readonly<Partial<Record<NotificationTier, number>>> = { social: 3, ritual: 2, news: 1, marketing: 1 };
-/** Place gardée pour les gens : rappels, nouvelles et marketing ne prennent jamais la dernière place du jour. */
+/** Place gardée pour les gens : rappels de rituels et marketing ne prennent jamais la dernière place du jour. */
 export const PEOPLE_RESERVE = 1;
 export const isCappedTier = (tier: NotificationTier): boolean => TIER_DAILY_CAPS[tier] !== undefined;
 /** Hors plafond : messages directs, réponses à ton signe, échéances. */
@@ -376,7 +376,7 @@ export function decideNotification(i: NotificationInput): NotificationDecision {
     const counted = sentToday.filter((h) => isCappedTier(notificationTierOf(h.kind)));
     if (counted.length >= NOTIFICATION_DAILY_CAP) return { action: 'skip', reason: 'cap' };
     if (counted.filter((h) => notificationTierOf(h.kind) === tier).length >= (TIER_DAILY_CAPS[tier] ?? NOTIFICATION_DAILY_CAP)) return { action: 'skip', reason: 'cap' };
-    if (tier !== 'social' && counted.length >= NOTIFICATION_DAILY_CAP - PEOPLE_RESERVE) return { action: 'skip', reason: 'cap' };
+    if ((tier === 'ritual' || tier === 'marketing') && counted.length >= NOTIFICATION_DAILY_CAP - PEOPLE_RESERVE) return { action: 'skip', reason: 'cap' };
   }
 
   if (COOLDOWN_KINDS.includes(i.kind) && !i.fromQueue) {
@@ -409,7 +409,7 @@ export function mergeNotificationVars(prev: Readonly<Record<string, string>>, ne
   if (next.about) people.add(next.about);
   const n = (Number(prev.n) || 1) + 1;
   const others = people.size > 0 ? people.size - 1 : n - 1;
-  const out: Record<string, string> = { ...prev, n: String(n), others: String(others) };
+  const out: Record<string, string> = { ...prev, n: String(n), others: String(others), ...(next.count ? { count: next.count } : {}) };
   if (people.size > 0) out.people = [...people].slice(0, MAX_GROUPED_PEOPLE).join(',');
   // Plusieurs conversations dans le paquet : le lien profond mène à la liste.
   if (next.linkId && prev.linkId && next.linkId !== prev.linkId) out.multi = '1';

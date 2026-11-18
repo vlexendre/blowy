@@ -58,6 +58,7 @@ import {
   MyMinimoasZ,
   NotificationSettingsZ,
   type NotificationSettingsBody,
+  type PresenceBody,
   type RegisterDeviceBody,
   plateformeRoutes,
   type ChatReadingDefaultDto,
@@ -384,6 +385,8 @@ export function createApiClient(opts: ApiClientOptions) {
       removeDevice: (token: string) => call('POST', plateformeRoutes.devicesRemove(), OkZ, { token }),
       settings: () => call('GET', plateformeRoutes.notificationSettings(), NotificationSettingsZ),
       updateSettings: (body: NotificationSettingsBody) => call('PATCH', plateformeRoutes.notificationSettings(), NotificationSettingsZ, body),
+      /** Premier plan et conversation ouverte : pas de push pour ce qu'on a déjà sous les yeux. */
+      presence: (body: PresenceBody) => call('POST', plateformeRoutes.notificationPresence(), OkZ, body),
     },
   };
 }

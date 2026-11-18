@@ -41,10 +41,10 @@ describe('langues', () => {
       await c.api.notifications.registerDevice({ token: p.token, platform: 'ios', timeZone: 'Europe/Paris' });
       await notifier.notify(c.id, 'waved', { name: 'Léa', minimoa: 'Suzie' });
     }
-    expect(sentTo('ExponentPushToken[i18n-en]')[0]).toMatchObject({ title: 'Léa waved at you', body: 'Their minimoa stopped by to say hi to yours.' });
-    expect(sentTo('ExponentPushToken[i18n-fr]')[0]).toMatchObject({ title: 'Léa te salue', body: 'Son minimoa est passé dire bonjour au tien.' });
-    expect(sentTo('ExponentPushToken[i18n-nl]')[0]).toMatchObject({ title: 'Léa zwaait naar je', body: 'De minimoa van Léa kwam de jouwe even gedag zeggen.' });
-    expect(sentTo('ExponentPushToken[i18n-es]')[0]).toMatchObject({ title: 'Léa te ha saludado' });
+    expect(sentTo('ExponentPushToken[i18n-en]')[0]).toMatchObject({ title: 'Léa waved at you', body: 'Come and see who it is, and wave back whenever you like.' });
+    expect(sentTo('ExponentPushToken[i18n-fr]')[0]).toMatchObject({ title: 'Léa te fait signe', body: 'Viens voir qui c’est et réponds quand tu veux.' });
+    expect(sentTo('ExponentPushToken[i18n-nl]')[0]).toMatchObject({ title: 'Léa zwaait naar je', body: 'Kom kijken wie het is en zwaai terug wanneer je wilt.' });
+    expect(sentTo('ExponentPushToken[i18n-es]')[0]).toMatchObject({ title: 'Léa te saluda' });
     expect(sentTo('ExponentPushToken[i18n-pt]')[0]).toMatchObject({ title: 'Léa acenou para você' });
   });
 

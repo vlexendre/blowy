@@ -96,7 +96,7 @@ export class GroupChat {
     await this.core.notify(
       toNotify.map((m) => m.userId),
       'group_message',
-      { groupId, group: group.name, name: profile.displayName },
+      { groupId, group: group.name, name: profile.displayName, about: userId },
     );
     return this.groups.action(userId, groupId, [record]);
   }

@@ -435,14 +435,17 @@ describe('notifications', () => {
     await c.api.me.onboard(onboardBody({ displayName: 'Carla' }));
     const token = 'ExponentPushToken[carla]';
     await c.api.notifications.registerDevice({ token, platform: 'android', timeZone: 'Europe/Paris' });
-    for (let i = 0; i < 5; i++) await notifier.notify(c.id, 'waved', { name: `P${i}`, minimoa: 'Pia' });
+    await notifier.notify(c.id, 'waved', { name: 'P0', minimoa: 'Pia' });
+    await notifier.notify(c.id, 'words_received');
+    await notifier.notify(c.id, 'group_invite', { name: 'P1', group: 'Run', groupId: '00000000-0000-4000-8000-0000000000a1' });
+    await notifier.notify(c.id, 'group_invite', { name: 'P2', group: 'Yoga', groupId: '00000000-0000-4000-8000-0000000000a2' });
     expect(sentTo(token)).toHaveLength(3);
     await notifier.notify(c.id, 'message', { name: 'Zoé', linkId: '00000000-0000-4000-8000-000000000001' });
     expect(sentTo(token)).toHaveLength(4);
-    expect(sentTo(token)[0]).toMatchObject({ title: 'P0 te salue', data: { kind: 'waved', url: 'blowy://rencontres' } });
+    expect(sentTo(token)[0]).toMatchObject({ title: 'P0 te fait signe', data: { kind: 'waved', url: 'blowy://rencontres' } });
   });
 
-  it('heures calmes dans le fuseau de la personne : report au matin (une fois) ou abandon', async () => {
+  it('heures calmes dans le fuseau de la personne : report au matin (regroupé) ou abandon', async () => {
     const d = world.client();
     await d.api.me.onboard(onboardBody({ displayName: 'Dora' }));
     const token = 'ExponentPushToken[dora]';
@@ -451,17 +454,19 @@ describe('notifications', () => {
     await notifier.notify(d.id, 'message', { name: 'Zoé', linkId: '00000000-0000-4000-8000-000000000002' });
     await notifier.notify(d.id, 'waved', { name: 'Zoé', minimoa: 'Pia' });
     await notifier.notify(d.id, 'waved', { name: 'Zoé', minimoa: 'Pia' });
+    await notifier.notify(d.id, 'needs_out', { minimoa: 'Pia' });
     expect(sentTo(token)).toHaveLength(0);
-    expect(db.notificationLog.filter((l) => l.userId === d.id && l.status === 'deferred')).toHaveLength(1);
+    // Un report pour les messages de la nuit, un pour les signes ; le rappel est abandonné.
+    expect(db.notificationLog.filter((l) => l.userId === d.id && l.status === 'deferred')).toHaveLength(2);
     await tick();
     expect(sentTo(token)).toHaveLength(0);
     world.clock.advanceHours(3); // 8 h à New York
     await tick();
-    expect(sentTo(token)).toHaveLength(1);
-    expect(sentTo(token)[0]?.data.kind).toBe('waved');
+    expect(sentTo(token).map((m) => m.data.kind).sort()).toEqual(['message', 'waved']);
+    expect(sentTo(token).find((m) => m.data.kind === 'waved')?.title).toBe('Zoé et 1 autre t’ont fait signe');
     world.clock.advanceMinutes(2);
     await tick();
-    expect(sentTo(token)).toHaveLength(1);
+    expect(sentTo(token)).toHaveLength(2);
   });
 
   it('langue du profil : chaque notification dans la langue de la personne', async () => {
@@ -475,7 +480,7 @@ describe('notifications', () => {
     await e.api.me.onboard(onboardBody({ displayName: 'Eva', locale: 'pt' }));
     await e.api.notifications.registerDevice({ token: 'ExponentPushToken[eva]', platform: 'ios', timeZone: 'Europe/Lisbon' });
     await notifier.notify(e.id, 'words_received');
-    expect(sentTo('ExponentPushToken[eva]')[0]).toMatchObject({ title: '3 palavras para você', data: { url: 'blowy://pet/caractere' } });
+    expect(sentTo('ExponentPushToken[eva]')[0]).toMatchObject({ title: '3 palavras para você', data: { url: 'blowy://mots' } });
     expect(sentTo('ExponentPushToken[eva]')[0]?.title).not.toBe(notificationText('fr', 'words_received').title);
   });
 
@@ -487,6 +492,7 @@ describe('notifications', () => {
     expect((await f.api.notifications.settings()).hasDevice).toBe(false);
 
     await f.api.notifications.registerDevice({ token: 'ExponentPushToken[late-invalid-2]', platform: 'ios', timeZone: 'Europe/Paris' });
+    world.clock.advanceMinutes(61); // hors de la fenêtre de regroupement
     await notifier.notify(f.id, 'words_received');
     expect(sentTo('ExponentPushToken[late-invalid-2]')).toHaveLength(1);
     expect((await f.api.notifications.settings()).hasDevice).toBe(true);
@@ -509,7 +515,7 @@ describe('notifications', () => {
     while (world.clock.now().toISOString() < (next ?? '')) world.clock.advanceMinutes(30);
     await tick();
     expect(morning()).toHaveLength(1);
-    expect(morning()[0]?.data).toMatchObject({ url: 'blowy://pet', state: { challengePending: true } });
+    expect(morning()[0]?.data).toMatchObject({ url: 'blowy://pet/defi', state: { challengePending: true } });
     // Seul chemin d'envoi : le minuteur de la plateforme, avec le défi choisi par les rituels.
     expect(morning()[0]?.body).toContain('Nino');
     expect(today.challenge.status).toBe('offered');

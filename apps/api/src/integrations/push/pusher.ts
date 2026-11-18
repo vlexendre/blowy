@@ -15,6 +15,8 @@ export interface PushMessage {
   sound?: 'default';
   /** Android : canal de notification. */
   channelId?: string;
+  /** Catégorie d'actions enregistrée par l'app (« Ne plus recevoir »). */
+  categoryId?: string;
 }
 
 export type PushTicket = { status: 'ok'; id: string } | { status: 'error'; invalidToken: boolean; message: string };

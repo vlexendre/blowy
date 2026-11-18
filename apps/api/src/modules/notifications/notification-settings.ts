@@ -4,11 +4,13 @@ import { notificationKindLabel } from '@blowy/content';
 import {
   DEFAULT_MORNING_HOUR,
   DEFAULT_NOTIFICATION_TIMEZONE,
+  MANDATORY_KINDS,
   NOTIFICATION_DAILY_CAP,
   NOTIFICATION_KINDS,
   type NotificationKindKey,
   QUIET_END_HOUR,
   QUIET_START_HOUR,
+  isMandatory,
   isValidTimeZone,
   nextLocalHour,
 } from '@blowy/domain';
@@ -29,6 +31,8 @@ export interface SettingsView {
   dailyCap: typeof NOTIFICATION_DAILY_CAP;
   labels: Record<NotificationKindKey, string>;
   hasDevice: boolean;
+  marketing: boolean;
+  mandatory: NotificationKindKey[];
 }
 
 @Injectable()
@@ -55,7 +59,7 @@ export class NotificationSettings {
   async view(userId: string): Promise<SettingsView> {
     const [s, devices, profile] = await Promise.all([this.resolve(userId), this.devices.forUser(userId), this.profiles.findById(userId)]);
     const lang = profile?.locale ?? 'fr';
-    const kinds = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, !s.disabledKinds.includes(k)])) as Record<NotificationKindKey, boolean>;
+    const kinds = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, isMandatory(k) || !s.disabledKinds.includes(k)])) as Record<NotificationKindKey, boolean>;
     const labels = Object.fromEntries(NOTIFICATION_KINDS.map((k) => [k, notificationKindLabel(lang, k)])) as Record<NotificationKindKey, string>;
     return {
       kinds,
@@ -65,23 +69,29 @@ export class NotificationSettings {
       dailyCap: NOTIFICATION_DAILY_CAP,
       labels,
       hasDevice: devices.some((d) => d.kind === 'expo'),
+      marketing: s.marketingOptInAt !== null,
+      mandatory: [...MANDATORY_KINDS],
     };
   }
 
-  async update(userId: string, patch: { kinds?: Partial<Record<NotificationKindKey, boolean>>; morningHour?: number; timeZone?: string }): Promise<SettingsView> {
+  async update(userId: string, patch: { kinds?: Partial<Record<NotificationKindKey, boolean>>; morningHour?: number; timeZone?: string; marketing?: boolean }): Promise<SettingsView> {
     if (patch.timeZone !== undefined && !isValidTimeZone(patch.timeZone)) throw new DomainError('invalid', errorText('unknownTimeZone'));
     const current = await this.resolve(userId);
     const disabled = new Set(current.disabledKinds);
     for (const [k, on] of Object.entries(patch.kinds ?? {}) as [NotificationKindKey, boolean | undefined][]) {
-      if (on === true) disabled.delete(k);
-      if (on === false) disabled.add(k);
+      if (on === true || isMandatory(k)) disabled.delete(k);
+      else if (on === false) disabled.add(k);
     }
+    const now = this.clock.now().toISOString();
+    // Accord marketing : daté à l'activation (preuve), effacé au retrait.
+    const marketingOptInAt = patch.marketing === undefined ? current.marketingOptInAt : patch.marketing ? (current.marketingOptInAt ?? now) : null;
     const next = this.withMorning({
       ...current,
       disabledKinds: NOTIFICATION_KINDS.filter((k) => disabled.has(k)),
       morningHour: patch.morningHour ?? current.morningHour,
       timeZone: patch.timeZone ?? current.timeZone,
-      updatedAt: this.clock.now().toISOString(),
+      marketingOptInAt,
+      updatedAt: now,
     }, (await this.devices.forUser(userId)).length > 0);
     await this.save(next);
     return this.view(userId);
@@ -117,7 +127,7 @@ export class NotificationSettings {
   }
 
   private defaults(userId: string): NotificationSettingsRecord {
-    return { userId, timeZone: DEFAULT_NOTIFICATION_TIMEZONE, morningHour: DEFAULT_MORNING_HOUR, disabledKinds: [], nextMorningAt: null, updatedAt: this.clock.now().toISOString() };
+    return { userId, timeZone: DEFAULT_NOTIFICATION_TIMEZONE, morningHour: DEFAULT_MORNING_HOUR, disabledKinds: [], nextMorningAt: null, marketingOptInAt: null, updatedAt: this.clock.now().toISOString() };
   }
 
   /** Recalcule le prochain envoi du matin (rien sans appareil ou défi coupé). */

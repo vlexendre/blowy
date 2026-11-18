@@ -49,6 +49,6 @@ export class Invites {
     if (owner.id === userId) throw new DomainError('conflict', errorText('inviteOwn'));
     // Bloqué dans un sens ou dans l'autre, suspendu : introuvable, comme la page publique (rien ne trahit un blocage).
     if (!(await this.audience.reachable(userId, owner.id))) throw new DomainError('not_found', errorText('inviteNotFound'));
-    return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id });
+    return this.createLink.execute({ by: userId, with: owner.id, notify: owner.id, via: 'invite' });
   }
 }

@@ -6,7 +6,9 @@
 import { type DynamicModule, Module, type Provider } from '@nestjs/common';
 import type { Env } from '../../config/env';
 import { chatMinimoasRepositories } from '../../modules/links/minimoas/providers';
+import { NotificationChannels } from '../../modules/notifications/notification-channels';
 import { NotificationJobs } from '../../modules/notifications/notification-jobs';
+import { NotificationPresence } from '../../modules/notifications/notification-presence';
 import { NotificationSettings } from '../../modules/notifications/notification-settings';
 import { NotificationsController } from '../../modules/notifications/notifications.controller';
 import { notificationsRepositories } from '../../modules/notifications/providers';
@@ -76,6 +78,8 @@ export class PlateformeModule {
       ...chatMinimoasRepositories(env.adapters),
       repository<TickRunsRepository>(TICK_RUNS, env.adapters, (db) => new MemoryTickRunsRepository(db), (c) => new SupabaseTickRunsRepository(c)),
       NotificationSettings,
+      NotificationPresence,
+      NotificationChannels,
       PushNotifier,
       { provide: NOTIFIER, useExisting: PushNotifier },
       NotificationJobs,

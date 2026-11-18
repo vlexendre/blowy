@@ -11,6 +11,7 @@ import type { Ids } from '../../../shared/ids';
 import { BLOCKS, CLOCK, ENV, IDS, LINKS, PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
 import { PetCharacter } from '../../pets/application/pet-character';
+import { NotificationChannels } from '../../notifications/notification-channels';
 import { Audience } from '../../safety/application/audience';
 import type { BlocksRepository } from '../../safety/ports';
 import type { LinkRecord, LinksRepository } from '../ports';
@@ -21,8 +22,10 @@ export interface CreateLinkInput {
   /** Personne qui déclenche (accepte la rencontre, utilise le code d'invitation). */
   by: string;
   with: string;
-  /** Personne prévenue par e-mail de la création. */
+  /** Personne prévenue de la création (push, ou e-mail si elle ne reçoit pas les push). */
   notify?: string;
+  /** Pourquoi : réponse à son signe (défaut) ou invitation acceptée (texte de la notification). */
+  via?: 'wave' | 'invite';
 }
 
 /**
@@ -47,6 +50,7 @@ export class CreateLink {
     @Inject(ENV) private readonly env: Env,
     @Inject(Audience) private readonly audience: Audience,
     @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
+    @Optional() @Inject(NotificationChannels) private readonly channels: NotificationChannels | null = null,
   ) {}
 
   async execute(input: CreateLinkInput): Promise<LinkRecord> {
@@ -92,10 +96,13 @@ export class CreateLink {
     // Entonnoir : premier lien de chacun (une fois).
     await this.growth?.step(input.by, 'first_link');
     await this.growth?.step(input.with, 'first_link');
-    if (input.notify) await this.sendCreatedEmail(input.notify, draft.otherOf(input.notify), draft.pair(input.notify));
     if (input.notify) {
+      // Une seule notification : le push ; l'e-mail seulement si la personne ne reçoit pas les push (docs/NOTIFICATIONS.md).
+      if (!this.channels || (await this.channels.emailAllowed(input.notify, 'link_created'))) {
+        await this.sendCreatedEmail(input.notify, draft.otherOf(input.notify), draft.pair(input.notify));
+      }
       const by = await this.profiles.findById(input.by);
-      await this.push.notify(input.notify, 'new_encounter', { linkId: draft.link.id, name: by?.displayName ?? '' });
+      await this.push.notify(input.notify, 'new_encounter', { linkId: draft.link.id, name: by?.displayName ?? '', about: input.by, step: input.via ?? 'wave' });
     }
     return draft.link;
   }

@@ -87,7 +87,7 @@ export class SendMessage {
     if (effect.firstToday) await this.live.endLinkStreak(userId, link.id, effect.state.streak);
     // Push : jamais le contenu du message, seulement le prénom (un envoi par lien toutes les 5 minutes au plus).
     const me = await this.profiles.findById(userId);
-    await this.notifier.notify(other, 'message', { linkId: link.id, name: me?.displayName ?? '' });
+    await this.notifier.notify(other, 'message', { linkId: link.id, name: me?.displayName ?? '', about: userId });
     return { link: draft.link, messages };
   }
 }

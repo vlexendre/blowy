@@ -205,7 +205,9 @@ describe('Minimoa+', () => {
     expect(reminders.map((r) => r.userId)).toEqual([a.id]);
     // Variables en données (date ISO, centimes) : la notification les met en forme dans la langue de la personne.
     expect(reminders[0]?.vars).toMatchObject({ price: '5988', currency: 'EUR' });
-    expect(notificationText('fr', 'trial_reminder', reminders[0]?.vars ?? {}).body.replace(/[\u00a0\u202f]/g, ' ')).toMatch(/^L’essai gratuit se termine le \d+ \p{L}+\. Ensuite, premier paiement de 59,88 €\./u);
+    const reminderText = notificationText('fr', 'trial_reminder', reminders[0]?.vars ?? {});
+    expect(reminderText.title).toMatch(/^Ton essai Minimoa\+ se termine le \d+ \p{L}+$/u);
+    expect(reminderText.body.replace(/[\u00a0\u202f]/g, ' ')).toMatch(/^Ensuite, premier paiement de 59,88 €\./u);
     await jobs.runDue(at(5.5));
     await jobs.runDue(at(6));
     expect(mine()).toHaveLength(1);

@@ -156,6 +156,13 @@ export const NotificationSettingsZ = z.object({
   labels: z.record(NotificationKindZ, z.string()),
   /** Au moins un appareil enregistré. */
   hasDevice: z.boolean(),
+  /**
+   * Accord explicite pour les offres (relance Minimoa+), désactivé par défaut (App Review 4.5.4). Absent : ancienne
+   * API (traité comme non).
+   */
+  marketing: z.boolean().optional(),
+  /** Types qu'on ne peut pas couper (rappel de fin d'essai). */
+  mandatory: z.array(NotificationKindZ).optional(),
 });
 export type NotificationSettings = z.infer<typeof NotificationSettingsZ>;
 
@@ -163,8 +170,22 @@ export const NotificationSettingsBody = z.object({
   kinds: z.partialRecord(NotificationKindZ, z.boolean()).optional(),
   morningHour: z.number().int().min(8).max(21).optional(),
   timeZone: z.string().min(1).max(64).optional(),
+  /** Accord pour les offres (marketing). */
+  marketing: z.boolean().optional(),
 });
 export type NotificationSettingsBody = z.infer<typeof NotificationSettingsBody>;
+
+/**
+ * Présence de l'app (`POST /v1/notifications/presence`) : au premier plan, et la conversation ouverte (lien ou groupe).
+ * Envoyée au retour au premier plan, au changement d'écran, toutes les 2 minutes au premier plan, et au départ
+ * (`foreground: false`). Au premier plan, pas de push pour la conversation ouverte ni pour les rappels.
+ */
+export const PresenceBody = z.object({
+  foreground: z.boolean(),
+  linkId: Id.optional(),
+  groupId: Id.optional(),
+});
+export type PresenceBody = z.infer<typeof PresenceBody>;
 
 /**
  * État compact pour les widgets iOS et les activités en direct (spéc §19). Présent dans `data.state`
@@ -190,6 +211,8 @@ export const PushDataZ = z.object({
   kind: NotificationKindZ,
   url: z.string(),
   linkId: Id.optional(),
+  /** Groupe concerné (messages de groupe) : l'app ne montre rien si ce groupe est ouvert. */
+  groupId: Id.optional(),
   state: WidgetStateZ.optional(),
 });
 export type PushData = z.infer<typeof PushDataZ>;
@@ -275,5 +298,6 @@ export const plateformeRoutes = {
   devices: () => `${API}/devices`,
   devicesRemove: () => `${API}/devices/remove`,
   notificationSettings: () => `${API}/notifications/settings`,
+  notificationPresence: () => `${API}/notifications/presence`,
   tick: () => '/internal/tick',
 } as const;

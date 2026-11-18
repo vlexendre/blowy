@@ -13,6 +13,8 @@ export interface InactiveAccount {
 export interface RetentionRepository {
   /** Dernier jour d'activité (au plus une écriture par personne et par jour) ; efface la prévenance. */
   touch(userId: string, day: Day): Promise<void>;
+  /** Dernier jour d'activité d'une personne (null : profil inconnu). Lu par les notifications (décroissance). */
+  lastActiveOn(userId: string): Promise<Day | null>;
   /** Comptes inactifs depuis `lastActiveOn <= cutoff` et pas encore prévenus, les plus anciens d'abord. */
   listToNotice(cutoff: Day, limit: number): Promise<InactiveAccount[]>;
   /** Comptes inactifs depuis `lastActiveOn <= cutoff` et prévenus au plus tard le `noticedBy`. */
