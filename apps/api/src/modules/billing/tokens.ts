@@ -6,6 +6,8 @@ export const APPLE_BILLING = Symbol('APPLE_BILLING');
 export const GOOGLE_BILLING = Symbol('GOOGLE_BILLING');
 export const SUBSCRIPTIONS = Symbol('SUBSCRIPTIONS');
 export const STORE_NOTIFICATIONS = Symbol('STORE_NOTIFICATIONS');
+/** Relais des notifications Apple vers RevenueCat (`REVENUECAT_APPLE_NOTIFICATIONS_URL`), désactivé sans URL. */
+export const APPLE_NOTIFICATION_RELAY = Symbol('APPLE_NOTIFICATION_RELAY');
 
 /**
  * Nombre réel de personnes compatibles dans la zone d'une personne, pour le paywall.

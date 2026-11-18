@@ -53,6 +53,7 @@ PGHOST=/chemin/du/socket PGPORT=5432 PGUSER=postgres pnpm --filter @blowy/api ch
 
 - **API** : `docker build -f apps/api/Dockerfile -t blowy-api .` puis n'importe quel hébergeur de conteneurs (voir `apps/api/README.md`), plus le minuteur (`POST /internal/tick` toutes les 5 min). V7 : ordre complet dans `docs/DEPLOIEMENT-V7.md`.
 - **Site** : Cloudflare Pages, commande `pnpm --filter @blowy/web build`, dossier `apps/web/dist`.
+- **Administration** : https://admin.minimoa.app, projet Cloudflare Pages à part, commande `pnpm --filter @blowy/admin build`, dossier `apps/admin/dist` (variables : `apps/admin/README.md`).
 - **App** : voir `docs/TESTFLIGHT.md`.
 
 Architecture et règles : `docs/ARCHITECTURE.md`.

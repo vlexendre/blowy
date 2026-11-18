@@ -1,4 +1,7 @@
 /* Administration Minimoa. Toutes les couleurs viennent des variables posées par theme.ts (@blowy/tokens). */
+/* Polices servies par l'admin elle-même (CSP stricte : aucune origine tierce, voir public/_headers). Licences OFL à côté. */
+@font-face { font-family: 'Allo'; src: url('/fonts/allo/AlloVariableFriendly.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Anton'; src: url('/fonts/anton/anton-latin.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 body {

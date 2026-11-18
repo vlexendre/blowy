@@ -15,6 +15,18 @@ const Schema = z.object({
   PLUS_PRODUCT_YEARLY: z.preprocess(emptyToUndefined, z.string().default('app.blowy.plus.yearly')),
   PLUS_PRODUCT_MONTHLY: z.preprocess(emptyToUndefined, z.string().default('app.blowy.plus.monthly')),
   PLUS_PRODUCT_WEEKLY: z.preprocess(emptyToUndefined, z.string().default('app.blowy.plus.weekly')),
+  /**
+   * Facultatif : « Apple Server Notification URL » de l'app iOS dans RevenueCat. Chaque notification Apple traitée y est
+   * relayée telle quelle (tableaux de bord RevenueCat, docs/BLOWY-PLUS.md §6). Absente : rien n'est relayé.
+   */
+  REVENUECAT_APPLE_NOTIFICATIONS_URL: z.preprocess(
+    emptyToUndefined,
+    z
+      .string()
+      .url()
+      .refine((u) => u.startsWith('https://'), { message: 'adresse https attendue' })
+      .optional(),
+  ),
 });
 
 export interface FacturationAdminEnv {
@@ -22,6 +34,8 @@ export interface FacturationAdminEnv {
   adminEmails: string[];
   apple: { bundleId: string; appAppleId: number | null; acceptSandbox: boolean };
   plusProducts: { yearly: string; monthly: string; weekly: string };
+  /** Relais des notifications Apple vers RevenueCat ; `null` : aucun relais. */
+  revenueCat: { appleNotificationsUrl: string | null };
 }
 
 export function loadFacturationAdminEnv(source: Record<string, string | undefined>, mode: { env: 'local' | 'production'; demo: boolean }): FacturationAdminEnv {
@@ -41,5 +55,6 @@ export function loadFacturationAdminEnv(source: Record<string, string | undefine
     adminEmails: emails.length === 0 && mode.demo ? ['admin@blowy.local'] : emails,
     apple: { bundleId: e.APPLE_BUNDLE_ID, appAppleId: e.APPLE_APP_APPLE_ID ?? null, acceptSandbox: e.APPLE_ACCEPT_SANDBOX === '1' },
     plusProducts: { yearly: e.PLUS_PRODUCT_YEARLY, monthly: e.PLUS_PRODUCT_MONTHLY, weekly: e.PLUS_PRODUCT_WEEKLY },
+    revenueCat: { appleNotificationsUrl: e.REVENUECAT_APPLE_NOTIFICATIONS_URL ?? null },
   };
 }

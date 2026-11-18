@@ -131,3 +131,51 @@ plafonds : `docs/FIDELISATION.md`.
 
 En local sans Apple : l'API en mémoire accepte des transactions fabriquées (`memoryJws` dans
 `src/modules/billing/infrastructure/memory-billing.ts`), utilisées par `test/billing.e2e.test.ts`.
+
+## 6. RevenueCat (tableaux de bord)
+
+RevenueCat sert **seulement** à ses tableaux de bord (revenus, essais, conversions, résiliations) et à ses alertes. Pas
+de SDK dans l'app, pas de nouveau build : l'API reste seule juge de Minimoa+ (`subscriptions`, `profiles.plus_until`).
+
+**Comment ça marche.** Apple n'accepte qu'une URL de notifications serveur par environnement : elle reste celle de
+l'API (`https://api.minimoa.app/v1/plus/apple/notifications`, production **et** bac à sable). L'API traite la
+notification comme avant, répond à Apple, puis relaie le corps reçu, octet pour octet (`{"signedPayload": …}`), à
+l'URL de RevenueCat (`REVENUECAT_APPLE_NOTIFICATIONS_URL`), sans attendre : la réponse à Apple, son code et son délai ne
+changent pas, donc aucun renvoi d'Apple à cause de RevenueCat. Relayé : toute notification à la signature valide
+(renvois d'Apple compris, RevenueCat les déduplique), production comme bac à sable (RevenueCat les reçoit sur la même
+URL). Pas relayé : une notification refusée (400), ou une panne de notre côté (500 : Apple renverra, et on relaiera
+alors). Envoi : délai de 5 s, un nouvel essai sur erreur réseau, délai dépassé ou 5xx, aucun sur 4xx ; un échec est
+journalisé (`[RevenueCat]`, hôte et code, jamais le contenu) et n'a aucun effet chez nous. RevenueCat revérifie de toute
+façon les reçus dans les heures qui suivent. Sans la variable : rien n'est relayé.
+Code : port `AppleNotificationRelay` (`modules/billing/ports.ts`), adaptateurs `infrastructure/revenuecat-relay.ts`
+(HTTP réel, mémoire, désactivé), route `interface/billing.controller.ts` ; tests `test/revenuecat-relay.e2e.test.ts`.
+
+**Côté RevenueCat (une fois)** :
+1. Créer le projet, puis l'app **App Store** avec le bundle ID `app.blowy`.
+2. Clé In-App Purchase : App Store Connect › Utilisateurs et accès › Intégrations › **In-App Purchase** › générer une
+   clé, télécharger le `.p8` (une seule fois), noter son Key ID et l'Issuer ID ; la téléverser dans l'app RevenueCat
+   (réglages de l'app › *In-app purchase key configuration*). RevenueCat s'en sert pour lire les transactions chez Apple.
+3. Facultatif : une clé **App Store Connect API** (Utilisateurs et accès › Intégrations › App Store Connect API, rôle
+   « App Manager » ou « Finance ») pour que RevenueCat importe produits et prix.
+4. Dans l'app RevenueCat, section *Apple Server to Server notification settings* : copier l'**Apple Server Notification
+   URL** et la coller dans Railway, variable `REVENUECAT_APPLE_NOTIFICATIONS_URL` (https). Ne **pas** cliquer « Apply in
+   App Store Connect » et ne pas changer l'URL dans App Store Connect : elle doit rester celle de l'API.
+5. Activer **Track new purchases from server-to-server notifications** (sans cela, RevenueCat ignore les achats
+   qu'aucun SDK ne lui a annoncés, c'est-à-dire tous les nôtres).
+6. Notifications en direct : intégration **Slack** de RevenueCat (Integrations › Slack) et l'app mobile RevenueCat.
+7. Contrôle : App Store Connect › « Envoyer une notification de test » → l'API répond `{"ok":true,"outcome":"test"}`
+   et la notification apparaît dans RevenueCat ; sinon, chercher `[RevenueCat]` dans les journaux de l'API.
+
+**Ce que RevenueCat ne voit pas, et qui il nomme.**
+- Sans SDK, RevenueCat ne connaît **que les personnes qui ont acheté ou commencé un essai** : aucune personne gratuite,
+  donc pas de taux de conversion depuis l'installation ni de « clients actifs » au sens de RevenueCat. Ces chiffres-là
+  restent dans l'administration (`admin_daily_stats`, entonnoir).
+- L'app passe `appAccountToken` = `Me.id` (UUID Supabase de la personne) à chaque achat
+  (`src/core/adapters/storekit.ios.ts`, `requestPurchase({ request: { apple: { sku, appAccountToken } } })`). D'après
+  la documentation de RevenueCat, un nouvel achat est rattaché à l'App User ID **égal** à `appAccountToken` s'il existe
+  déjà chez RevenueCat ; sinon RevenueCat crée un identifiant anonyme (`$RCAnonymousID:…`). Sans SDK, aucun client
+  n'existe d'avance chez RevenueCat : il faut donc s'attendre à des identifiants **anonymes** comme « customer id »
+  (pas l'`originalTransactionId`). Pour retrouver la personne : l'`originalTransactionId` affiché dans la fiche du client
+  RevenueCat → `subscriptions.original_transaction_id` → `user_id`. Si l'on veut un jour des clients nommés par
+  `Me.id`, il faudra les créer chez RevenueCat avant l'achat (API REST de RevenueCat, avec une clé secrète côté API) :
+  non fait.

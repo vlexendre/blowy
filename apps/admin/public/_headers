@@ -1,0 +1,27 @@
+# Administration (https://admin.minimoa.app, projet Cloudflare Pages à part). Jamais indexée, jamais encadrée.
+# CSP : seulement l'admin elle-même, l'API et le projet Supabase (connexion par code e-mail, photos signalées en URL signées).
+# Changer d'API ou de projet Supabase = changer cette ligne (et VITE_API_URL, VITE_SUPABASE_URL du build).
+/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=31536000
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://sqxebllmatfflopqddaw.supabase.co; connect-src https://api.minimoa.app https://sqxebllmatfflopqddaw.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+
+# La page elle-même : jamais en cache (une nouvelle version et un accès retiré se voient tout de suite).
+/
+  Cache-Control: no-store
+
+/index.html
+  Cache-Control: no-store
+
+# Fichiers à empreinte de Vite : jamais réécrits sous le même nom.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Polices sans empreinte dans le nom : une semaine.
+/fonts/*
+  Cache-Control: public, max-age=604800

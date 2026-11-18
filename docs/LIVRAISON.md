@@ -80,7 +80,7 @@ relancer. Contrôle : `select max(version) from supabase_migrations.schema_migra
 **Étape C — le code** : fusionner la branche dans `main` et pousser. Railway déploie l'API ; attendre le healthcheck
 `/health` vert. Puis, dans la foulée :
 - site (`apps/web`, Cloudflare Pages) : build et publication (pages légales du 15 novembre, voir §5) ;
-- administration (`pnpm build:admin`) : republier ;
+- administration (https://admin.minimoa.app, projet Cloudflare Pages à part) : se republie seule à la poussée (`apps/admin/README.md`) ;
 - app : publier le build EAS dans TestFlight.
 
 **Étape D — juste après le déploiement de l'API : les deux rattrapages** (rejouables, sans effet la deuxième fois ;
@@ -132,7 +132,9 @@ Aucune variable nouvelle n'est **requise pour démarrer**. Ce qui fait refuser l
 | `REVIEW_EMAIL`, `REVIEW_CODE` | compte de revue d'Apple (`docs/APP-REVIEW.md` §2) | connexion par e-mail fermée : l'examinateur ne voit ni rencontres ni chats (refus B1) |
 | `ADMIN_EMAILS` | destinataires des alertes de signalement (et accès à l'administration) | aucune alerte, personne dans l'administration |
 | `RESEND_API_KEY`, `MAIL_FROM` | alertes de modération, rappel de fin d'essai par e-mail, prévenance d'inactivité | aucun e-mail (la page Minimoa+ et la politique promettent le rappel par e-mail) |
-| `ADMIN_URL` (facultatif) | liens des alertes | défaut `WEB_URL` + `/admin` |
+| `ADMIN_URL` | liens des alertes : `https://admin.minimoa.app` | défaut `WEB_URL` + `/admin`, qui n'existe pas (404) |
+| `CORS_ORIGINS` | `https://minimoa.app,https://www.minimoa.app,https://admin.minimoa.app` (site et administration) | l'administration ne peut pas appeler l'API |
+| `REVENUECAT_APPLE_NOTIFICATIONS_URL` (facultative, https) | relaie chaque notification Apple à RevenueCat, pour ses tableaux de bord (`docs/BLOWY-PLUS.md` §6) | rien n'est relayé ; Minimoa+ marche pareil |
 | `ANTHROPIC_API_KEY` | lecture des chats, preuves, vérification des photos de profil, bilans | IA coupée : règles de repli, photos de profil publiées « à vérifier » |
 | `AI_PROVIDER_NAME`, `AI_PROVIDER_COUNTRY` (facultatives) | prestataire nommé dans l'app | « Anthropic », « US » : à ne changer qu'**en même temps** que `SUBPROCESSORS.ai` de `apps/web/src/config/legal.ts` |
 | `APPLE_SIGNIN_KEY_P8`, `APPLE_SIGNIN_KEY_ID`, `APPLE_SIGNIN_TEAM_ID` | révocation du jeton Apple à la suppression du compte (`docs/CONNEXION.md`) | la révocation est ignorée (exigence d'Apple non tenue) |

@@ -17,6 +17,8 @@ export interface CreateAppOptions extends CoreOverrides {
 export async function createApp(env: Env, options: CreateAppOptions = {}): Promise<NestExpressApplication> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(env, { clock: options.clock }), {
     bodyParser: false,
+    // Corps JSON brut gardé (`req.rawBody`) : la notification Apple est relayée à RevenueCat telle que reçue.
+    rawBody: true,
     logger: options.logger ?? ['log', 'warn', 'error'],
   });
   app.useBodyParser('json', { limit: '100kb' });

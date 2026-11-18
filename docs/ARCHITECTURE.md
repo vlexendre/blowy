@@ -3,11 +3,11 @@
 ```
 apps/mobile  Expo SDK 58 (React Native 0.88, expo-router)  ─┐
 apps/web     Astro 7 (site marketing, pages publiques)      ├─ @blowy/api-client ─ REST /v1 ─► apps/api (NestJS 12)
-apps/admin   Vite + React (administration, /admin/*)       ─┘                                   │ clé service
+apps/admin   Vite + React (admin.minimoa.app)              ─┘                                   │ clé service
 apps/mobile ── supabase-js : session (Apple, Google ; code e-mail en local) + temps réel ────► Supabase (Postgres, Auth, Storage)
 planificateur (Railway cron ou pg_cron) ── POST /internal/tick toutes les 5 min ──► apps/api ──► Resend (e-mails)
                                                                                     apps/api ──► Expo push · APNs (activités en direct)
-                                                                                    apps/api ──► Anthropic (IA, via AiGateway) · Apple (achats)
+                                                                                    apps/api ──► Anthropic (IA, via AiGateway) · Apple (achats) · RevenueCat (relais)
 ```
 
 ## Règles
@@ -85,6 +85,7 @@ Injection explicite partout (`@Inject(JETON)`) : pas de `emitDecoratorMetadata`,
 | `Pusher` | Expo push | `MemoryPusher` (`outbox`) |
 | `LiveActivityPusher` | APNs HTTP/2 (clé `.p8`) | `MemoryLiveActivities` |
 | `Billing` | vérification locale des JWS d'Apple | `memoryJws` |
+| `AppleNotificationRelay` (notifications Apple relayées à RevenueCat, `docs/BLOWY-PLUS.md` §6) | POST HTTP, 5 s, un nouvel essai ; désactivé sans `REVENUECAT_APPLE_NOTIFICATIONS_URL` | `MemoryAppleNotificationRelay` (`sent`) |
 | `HabitVerifier`, `Coach` | IA via `AiGateway` (repli : « pas sûr », modèles de phrases) | déterministes |
 | dépôts de chaque module | `supabase-*.repository.ts` | `memory-*` sur `MemoryDb` (cascades comprises) |
 

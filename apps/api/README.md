@@ -244,6 +244,7 @@ Mise en place côté App Store : `docs/BLOWY-PLUS.md`. Appli web d'administratio
 | `APPLE_APP_APPLE_ID` | Apple ID numérique de l'app (App Store Connect → Informations sur l'app). **Requis en production** : vérifié sur les notifications de production. |
 | `APPLE_ACCEPT_SANDBOX` | `1` (défaut) : accepte les achats du bac à sable (TestFlight). `0` : les refuse. |
 | `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`, `PLUS_PRODUCT_WEEKLY` | Identifiants produit (défauts `app.blowy.plus.yearly`, `app.blowy.plus.monthly`, `app.blowy.plus.weekly`). |
+| `REVENUECAT_APPLE_NOTIFICATIONS_URL` | Facultative, https. « Apple Server Notification URL » de RevenueCat : chaque notification Apple traitée y est relayée telle quelle, sans attendre (tableaux de bord ; `docs/BLOWY-PLUS.md` §6). Vide : rien n'est relayé. |
 
 Aucune clé secrète : les achats se vérifient avec le certificat public d'Apple, embarqué dans le code.
 

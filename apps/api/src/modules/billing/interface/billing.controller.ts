@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Inject, Logger, Post, type RawBodyRequest, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { AppleNotificationBody, type Paywall, PlusOpenBody, type PlusMomentDto, SubmitPurchaseBody, type Subscription } from '@blowy/contract';
 import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
@@ -10,9 +11,13 @@ import { ZodPipe } from '../../../shared/zod.pipe';
 import { HandleAppleNotification } from '../application/apple-notifications.usecase';
 import { GetPaywall, GetSubscription, SubmitPurchase } from '../application/plus.usecases';
 import { PlusMoments, PlusOpens } from '../application/plus-desire';
+import type { AppleNotificationRelay } from '../ports';
+import { APPLE_NOTIFICATION_RELAY } from '../tokens';
 
 @Controller('v1/plus')
 export class BillingController {
+  private readonly logger = new Logger('RevenueCat');
+
   constructor(
     @Inject(GetPaywall) private readonly paywall: GetPaywall,
     @Inject(GetSubscription) private readonly subscription: GetSubscription,
@@ -20,6 +25,7 @@ export class BillingController {
     @Inject(HandleAppleNotification) private readonly appleNotification: HandleAppleNotification,
     @Inject(PlusOpens) private readonly opens: PlusOpens,
     @Inject(PlusMoments) private readonly moments: PlusMoments,
+    @Inject(APPLE_NOTIFICATION_RELAY) private readonly relay: AppleNotificationRelay,
   ) {}
 
   /** La feuille s'est ouverte (compteur par déclencheur ; mesure seulement). */
@@ -58,13 +64,24 @@ export class BillingController {
     return this.submit.execute(user.userId, body, locale);
   }
 
-  /** App Store Server Notifications V2 (appelé par Apple ; authentifié par la signature, pas par un jeton). */
+  /**
+   * App Store Server Notifications V2 (appelé par Apple ; authentifié par la signature, pas par un jeton).
+   * Relais RevenueCat (docs/BLOWY-PLUS.md §6) : APRÈS notre traitement, seulement pour une notification à la signature
+   * valide (renvois compris : RevenueCat déduplique), et sans l'attendre : la réponse à Apple, son code et son délai
+   * restent ceux d'avant. Une erreur technique de notre côté (500) ne relaie rien : Apple renverra, on relaiera alors.
+   */
   @Public()
   @Post('apple/notifications')
   @HttpCode(200)
-  async apple(@Body(new ZodPipe(AppleNotificationBody)) body: z.infer<typeof AppleNotificationBody>): Promise<{ ok: true; outcome: string }> {
+  async apple(
+    @Body(new ZodPipe(AppleNotificationBody)) body: z.infer<typeof AppleNotificationBody>,
+    @Req() req: RawBodyRequest<Request>,
+  ): Promise<{ ok: true; outcome: string }> {
     const outcome = await this.appleNotification.execute(body.signedPayload);
     if (outcome === 'rejected') throw new DomainError('invalid', textOf(facturationText, (t) => t.plus.errors.notificationRejected));
+    // Le corps reçu d'Apple, octet pour octet (`rawBody`, app.ts) ; à défaut, le même JSON réécrit.
+    const raw = req.rawBody ? req.rawBody.toString('utf8') : JSON.stringify({ signedPayload: body.signedPayload });
+    this.relay.forward(raw).catch(() => this.logger.warn('relais de la notification Apple en échec'));
     return { ok: true, outcome };
   }
 }

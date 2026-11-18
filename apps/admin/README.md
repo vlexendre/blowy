@@ -17,21 +17,56 @@ VITE_AUTH=local VITE_API_URL=http://localhost:3464 pnpm dev:admin      # http://
 Connexion : `admin@blowy.local`, code `000000` (en démo, c'est l'adresse autorisée par défaut).
 Toute autre adresse montre « Cette adresse n'a pas accès à l'administration ».
 
-## Construire et déployer (hébergement statique)
+## Mettre en ligne : https://admin.minimoa.app (projet Cloudflare Pages à part)
 
-```
-VITE_API_URL=https://api.minimoa.app \
-VITE_SUPABASE_URL=https://<projet>.supabase.co \
-VITE_SUPABASE_ANON_KEY=<clé publique anon> \
-pnpm build:admin          # → apps/admin/dist
-```
+L'administration a son propre projet Cloudflare Pages, branché au même dépôt GitHub que le site, et son propre domaine.
+Le site (`apps/web`) n'en sait rien. Réglages du projet (Workers & Pages › Créer › Pages › Connecter à Git) :
 
-Servir `apps/admin/dist` tel quel (Cloudflare Pages, Netlify, un bucket statique…) : aucune réécriture d'URL
-nécessaire (navigation par `#/…`). Conseillé : un sous-domaine dédié (ex. `admin.minimoa.app`) et, si l'hébergeur le
-permet, une protection d'accès supplémentaire (Cloudflare Access…). Les variables `VITE_*` sont publiques : n'y mettre
-aucun secret (jamais la clé service de Supabase).
+| Réglage | Valeur |
+|---|---|
+| Préréglage du framework | Aucun |
+| Commande de build | `pnpm --filter @blowy/admin build` |
+| Répertoire de sortie | `apps/admin/dist` |
+| Répertoire racine | *(vide : la racine du dépôt, pour que pnpm voie l'espace de travail et `pnpm-lock.yaml`)* |
+| Branche de production | `main` |
 
-Côté API : ajouter l'origine de l'admin à `CORS_ORIGINS` (ex. `https://admin.minimoa.app`).
+Cloudflare installe les dépendances tout seul (`pnpm install`, il voit `pnpm-lock.yaml`), comme pour le site.
+
+Variables de build (Production ; toutes **publiques**, elles finissent dans le JavaScript servi) :
+
+| Variable | Valeur |
+|---|---|
+| `VITE_API_URL` | `https://api.minimoa.app` |
+| `VITE_SUPABASE_URL` | `https://sqxebllmatfflopqddaw.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | `sb_publishable_tO2WBMeLyfZTxzMkC8-9xA_M_fG0DQM` (clé publiable, la même que l'app dans `apps/mobile/eas.json`) |
+| `NODE_VERSION` | `22` (aussi dans `.nvmrc`) |
+| `PNPM_VERSION` | `10.28.0` (celle de `packageManager`) |
+
+Ne pas poser `VITE_AUTH` (défaut `supabase`). Jamais la clé service de Supabase ni aucun secret dans une variable
+`VITE_*`. Puis Domaines personnalisés › `admin.minimoa.app` (Cloudflare crée l'enregistrement DNS si la zone
+`minimoa.app` est chez lui). Conseillé en plus : Cloudflare Access (Zero Trust) devant `admin.minimoa.app`.
+
+Ce que `public/` ajoute au build (copié tel quel dans `dist/`) :
+- `_headers` : `X-Robots-Tag: noindex, nofollow, noarchive`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
+  une CSP stricte (`default-src 'none'` ; scripts, styles et polices de l'admin seulement ; requêtes vers
+  `https://api.minimoa.app` et le projet Supabase ; images de l'admin et de Supabase Storage, pour les photos
+  signalées), `Cache-Control: no-store` sur la page, cache long sur `/assets/*` (noms à empreinte). Changer d'API ou de
+  projet Supabase = changer aussi la CSP de ce fichier ;
+- `_redirects` : `/* /index.html 200` (la navigation est en `#/…`, mais toute adresse profonde rouvre l'admin) ;
+- `robots.txt` : `Disallow: /` ; et `<meta name="robots" content="noindex,nofollow">` dans `index.html` ;
+- les polices (Allo et Anton, licences OFL à côté), servies par l'admin elle-même : aucune origine tierce.
+
+Côté API (Railway) : `CORS_ORIGINS` doit contenir `https://admin.minimoa.app` (en plus du site),
+`ADMIN_URL=https://admin.minimoa.app` (liens des alertes de modération), `ADMIN_EMAILS` liste l'équipe.
+
+Côté Supabase : la connexion est un code à 6 chiffres saisi dans la page (`signInWithOtp` puis `verifyOtp`), sans
+redirection : **aucune** URL à ajouter dans Authentication › URL Configuration. Il faut en revanche le fournisseur
+**Email** activé (il l'est déjà pour le compte de revue), le modèle « Magic Link » avec le code `{{ .Token }}`
+(`supabase/templates/code.html`, docs/TESTFLIGHT.md §0) et, de préférence, un SMTP (Resend) : sans lui Supabase
+n'envoie que quelques e-mails par heure.
+
+Construire en local comme Cloudflare : `VITE_API_URL=… VITE_SUPABASE_URL=… VITE_SUPABASE_ANON_KEY=… pnpm build:admin`
+(→ `apps/admin/dist`).
 
 ## Donner l'accès à quelqu'un
 

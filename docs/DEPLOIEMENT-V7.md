@@ -65,7 +65,8 @@ Requises en production :
 | `APPLE_APP_APPLE_ID` | Apple ID numérique de l'app (l'API refuse de démarrer sans lui en production) |
 | `INTERNAL_TICK_SECRET` | 24 caractères au moins (sans lui, la route du minuteur n'existe pas) |
 | `ADMIN_EMAILS` | adresses de l'équipe (vide : personne n'entre dans l'administration) |
-| `CORS_ORIGINS` | site et administration |
+| `CORS_ORIGINS` | site et administration : `https://minimoa.app,https://www.minimoa.app,https://admin.minimoa.app` |
+| `ADMIN_URL` | `https://admin.minimoa.app` (liens des alertes de modération ; défaut `WEB_URL` + `/admin`, qui n'existe pas) |
 
 Conseillées : `RESEND_API_KEY`, `MAIL_FROM` (sinon aucun e-mail : ni bienvenue, ni avertissement, ni prévenance
 d'inactivité) ; `ANTHROPIC_API_KEY` (sinon l'IA est coupée et les règles prennent le relais) ;
@@ -77,7 +78,9 @@ Facultatives (valeurs par défaut correctes) : `AI_PROVIDER`, `AI_PROVIDER_NAME`
 `AI_KILL_SWITCH` (0), `AI_DAILY_CEILING_USD` (3), `AI_USER_BUDGETS`, `AI_PRICES_SMALL`, `AI_PRICES_MEDIUM`,
 `AI_EUR_PER_USD`, `PUSH_PROVIDER` (`expo`), `EXPO_ACCESS_TOKEN`, `TICK_BUDGET_MS` (20000), `APPLE_BUNDLE_ID`
 (`app.blowy`), `APPLE_ACCEPT_SANDBOX` (1, nécessaire pour TestFlight), `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`, `PLUS_PRODUCT_WEEKLY`,
-`MAIL_FROM` (`Minimoa <hello@minimoa.app>`), `WEB_URL` (`https://minimoa.app`), `API_URL`, `PORT`. La liste commentée est dans `.env.example`.
+`MAIL_FROM` (`Minimoa <hello@minimoa.app>`), `WEB_URL` (`https://minimoa.app`), `API_URL`, `PORT`,
+`REVENUECAT_APPLE_NOTIFICATIONS_URL` (https ; relaie les notifications Apple à RevenueCat pour ses tableaux de bord,
+`docs/BLOWY-PLUS.md` §6 ; absente : rien n'est relayé). La liste commentée est dans `.env.example`.
 
 ## 3. Jour J, sans coupure : index des grosses tables
 
@@ -126,8 +129,10 @@ comptes inactifs ; un tick manqué est rattrapé au suivant. Contrôle : la rép
 1. Build EAS de production, TestFlight, puis revue (prévoir un compte de démonstration).
 2. Une fois l'API déployée **avec** la clé APNs : `EXPO_PUBLIC_LIVE_ACTIVITY_PUSH=1` dans les profils de
    `apps/mobile/eas.json`, nouveau build (les jetons d'activité en direct sont alors envoyés à l'API).
-3. Administration (`apps/admin`) : build statique (`pnpm build:admin`), hébergé avec `VITE_API_URL` de l'API ; les
-   adresses autorisées sont celles d'`ADMIN_EMAILS`.
+3. Administration (`apps/admin`) : **https://admin.minimoa.app**, projet Cloudflare Pages à part, branché au même
+   dépôt (jamais indexée : `X-Robots-Tag`, `robots.txt`, balise `robots`). Réglages du projet, variables de build,
+   en-têtes, connexion et accès : `apps/admin/README.md` § « Mettre en ligne ». Côté API : `CORS_ORIGINS` contient
+   `https://admin.minimoa.app`, `ADMIN_URL=https://admin.minimoa.app`, `ADMIN_EMAILS` liste l'équipe.
 
 ## 7. Revenir en arrière
 

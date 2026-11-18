@@ -120,3 +120,12 @@ export interface StoreNotificationsRepository {
 export type PlusProducts = Readonly<Record<Plan, string>>;
 export const planOfProduct = (products: PlusProducts, productId: string): Plan | null =>
   PLANS.find((plan) => products[plan] === productId) ?? null;
+
+/**
+ * Relais des notifications App Store Server (V2) vers un autre destinataire (RevenueCat, pour ses tableaux de bord ;
+ * docs/BLOWY-PLUS.md §6). Apple ne permet qu'une URL : l'API traite la notification, répond à Apple, puis relaie le corps
+ * reçu tel quel. `forward` ne lève jamais : un échec est journalisé (sans le contenu) et n'a aucun effet sur nous.
+ */
+export interface AppleNotificationRelay {
+  forward(rawBody: string): Promise<void>;
+}
