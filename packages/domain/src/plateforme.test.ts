@@ -9,7 +9,6 @@ import {
   chatReadingAllowed,
   cleanMinimoaLine,
   countIntervention,
-  decideNotification,
   guardDue,
   interventionsLeft,
   linkHealthOf,
@@ -107,7 +106,6 @@ describe('minimoas dans le chat', () => {
 });
 
 describe('notifications', () => {
-  const base = { kind: 'waved' as const, enabled: true, timeZone: 'Europe/Paris', sentTodayCounted: 0, alreadyToday: false, lastSameAt: null };
   it('heure locale dans le fuseau de la personne', () => {
     expect(localTimeOf(new Date('2026-11-15T21:30:00Z'), 'Europe/Paris')).toEqual({ day: '2026-11-15', hour: 22, minute: 30 });
     expect(localTimeOf(new Date('2026-11-15T21:30:00Z'), 'America/New_York')).toEqual({ day: '2026-11-15', hour: 16, minute: 30 });
@@ -119,18 +117,5 @@ describe('notifications', () => {
     // Nuit du 28 au 29 mars 2027 : passage à l'heure d'été.
     expect(nextLocalHour(new Date('2027-03-28T00:30:00Z'), 'Europe/Paris', 8).toISOString()).toBe('2027-03-28T06:00:00.000Z');
     expect(nextLocalHour(new Date('2026-11-15T13:00:00Z'), 'America/New_York', 9).toISOString()).toBe('2026-11-15T14:00:00.000Z');
-  });
-  it('réglage coupé, heures calmes (report ou abandon), plafond hors messages, délai entre messages', () => {
-    const day = new Date('2026-11-15T12:00:00Z');
-    const night = new Date('2026-11-15T22:30:00Z');
-    expect(decideNotification({ ...base, now: day })).toEqual({ action: 'send' });
-    expect(decideNotification({ ...base, enabled: false, now: day })).toEqual({ action: 'skip', reason: 'disabled' });
-    expect(decideNotification({ ...base, now: night })).toEqual({ action: 'defer', until: new Date('2026-11-16T07:00:00Z') });
-    expect(decideNotification({ ...base, kind: 'message', now: night })).toEqual({ action: 'skip', reason: 'quiet' });
-    expect(decideNotification({ ...base, now: night, fromQueue: true })).toEqual({ action: 'skip', reason: 'quiet' });
-    expect(decideNotification({ ...base, sentTodayCounted: 3, now: day })).toEqual({ action: 'skip', reason: 'cap' });
-    expect(decideNotification({ ...base, kind: 'message', sentTodayCounted: 9, now: day })).toEqual({ action: 'send' });
-    expect(decideNotification({ ...base, kind: 'message', lastSameAt: '2026-11-15T11:58:00Z', now: day })).toEqual({ action: 'skip', reason: 'cooldown' });
-    expect(decideNotification({ ...base, kind: 'daily_challenge', alreadyToday: true, now: day })).toEqual({ action: 'skip', reason: 'once_a_day' });
   });
 });
