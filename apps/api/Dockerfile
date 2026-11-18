@@ -11,6 +11,7 @@ COPY apps/api/package.json apps/api/
 COPY packages/domain/package.json packages/domain/
 COPY packages/contract/package.json packages/contract/
 COPY packages/content/package.json packages/content/
+COPY packages/tokens/package.json packages/tokens/
 COPY packages/api-client/package.json packages/api-client/
 RUN pnpm install --frozen-lockfile --filter "@blowy/api..."
 
@@ -18,6 +19,7 @@ RUN pnpm install --frozen-lockfile --filter "@blowy/api..."
 COPY packages/domain/src packages/domain/src
 COPY packages/contract/src packages/contract/src
 COPY packages/content/src packages/content/src
+COPY packages/tokens/src packages/tokens/src
 COPY apps/api/src apps/api/src
 COPY apps/api/tsconfig.json apps/api/tsup.config.ts apps/api/
 RUN pnpm --filter @blowy/api build \
