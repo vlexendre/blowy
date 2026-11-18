@@ -1,12 +1,28 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { trialReminderEmail } from '@blowy/content';
-import { OFFERS, TECHNICAL_LOG_DAYS, TRIAL_DAYS, TRIAL_REMINDER_DAY, trialReminderDue } from '@blowy/domain';
+import {
+  OFFERS,
+  PLUS_WINBACK_AFTER_DAYS,
+  PLUS_WINBACK_WINDOW_DAYS,
+  TECHNICAL_LOG_DAYS,
+  TRIAL_DAYS,
+  TRIAL_REMINDER_DAY,
+  isFideliteHour,
+  isFideliteSlot,
+  localTimeOf,
+  plusGoodbyeDue,
+  plusWinbackDue,
+  subscriptionView,
+  trialReminderDue,
+} from '@blowy/domain';
 import { Notifier as MailNotifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import { PROFILES } from '../../../shared/tokens';
 import type { ProfilesRepository } from '../../me/ports';
-import type { StoreNotificationsRepository, SubscriptionsRepository } from '../ports';
+import { NotificationSettings } from '../../notifications/notification-settings';
+import type { StoreNotificationsRepository, SubscriptionRecord, SubscriptionsRepository } from '../ports';
 import { STORE_NOTIFICATIONS, SUBSCRIPTIONS } from '../tokens';
+import { PlusNews } from './plus-news';
 
 const DAY_MS = 86_400_000;
 const BATCH = 200;
@@ -16,6 +32,8 @@ export const REMINDER_HOURS = { from: 10, to: 20 } as const;
 const LAST_CALL_MS = 12 * 3_600_000;
 /** Journal technique des notifications des magasins : 30 jours (politique de confidentialité ; Apple renvoie au plus 72 h). */
 const NOTIFICATIONS_KEPT_DAYS = TECHNICAL_LOG_DAYS;
+/** Au revoir et relance : échéances des 60 derniers jours (la fin réelle peut suivre l'échéance d'un délai de grâce). */
+const FAREWELL_LOOKBACK_DAYS = PLUS_WINBACK_AFTER_DAYS + PLUS_WINBACK_WINDOW_DAYS + 23;
 
 export const parisHour = (now: Date): number =>
   Number(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Paris' }).format(now));
@@ -25,8 +43,11 @@ export const parisHour = (now: Date): number =>
  * - le rappel promis sur la frise du paywall, à partir du jour 5 de l'essai, une seule fois par essai : en
  *   notification ET par e-mail quand le compte a une adresse (l'adresse relais d'Apple marche aussi). Le push peut être
  *   refusé, reporté ou coupé par la personne ; l'e-mail garantit que la promesse « on t'envoie un rappel » est tenue ;
+ * - l'au revoir quand Minimoa+ s'est arrêté (dans la semaine), puis la relance unique un mois après (`PlusNews`, en
+ *   journée à l'heure de la personne, une passe par demi-heure) ;
  * - la purge des notifications des magasins de plus de 30 jours (journal technique).
- * Idempotent : le rappel est marqué envoyé avant l'envoi (au plus un rappel par essai).
+ * Idempotent : le rappel est marqué envoyé avant l'envoi (au plus un rappel par essai) ; l'au revoir et la relance
+ * réservent leur clé dans `lifecycle_messages`.
  */
 @Injectable()
 export class BillingJobs {
@@ -38,10 +59,13 @@ export class BillingJobs {
     @Inject(NOTIFIER) private readonly notifier: Notifier,
     @Optional() @Inject(MailNotifier) private readonly mail: MailNotifier | null = null,
     @Optional() @Inject(PROFILES) private readonly profiles: ProfilesRepository | null = null,
+    @Optional() @Inject(PlusNews) private readonly news: PlusNews | null = null,
+    @Optional() @Inject(NotificationSettings) private readonly settings: NotificationSettings | null = null,
   ) {}
 
   async runDue(now: Date, deadline?: number): Promise<number> {
-    const sent = await this.sendTrialReminders(now, deadline);
+    let sent = await this.sendTrialReminders(now, deadline);
+    if (isFideliteSlot(now)) sent += await this.sendFarewells(now, deadline);
     if (deadline === undefined || Date.now() < deadline) {
       await this.notifications.purge(new Date(now.getTime() - NOTIFICATIONS_KEPT_DAYS * DAY_MS).toISOString());
     }
@@ -67,6 +91,33 @@ export class BillingJobs {
       sent += 1;
     }
     if (sent > 0) this.logger.log(`${sent} rappel(s) de fin d’essai envoyé(s)`);
+    return sent;
+  }
+
+  /**
+   * Au revoir (Minimoa+ arrêté depuis moins d'une semaine) et relance unique (un mois après), si la personne n'a pas
+   * repris Minimoa+ entre-temps (son abonnement le plus récent fait foi). Entre 11 h et 20 h, heure de la personne.
+   */
+  private async sendFarewells(now: Date, deadline?: number): Promise<number> {
+    if (!this.news || !this.settings) return 0;
+    const from = new Date(now.getTime() - FAREWELL_LOOKBACK_DAYS * DAY_MS).toISOString();
+    const candidates: { s: SubscriptionRecord; step: 'goodbye' | 'winback' }[] = [];
+    for (const s of await this.subscriptions.endedBetween(from, now.toISOString(), BATCH * 5)) {
+      if (plusGoodbyeDue(s, now)) candidates.push({ s, step: 'goodbye' });
+      else if (plusWinbackDue(s, now)) candidates.push({ s, step: 'winback' });
+    }
+    if (candidates.length === 0) return 0;
+    const settings = await this.settings.resolveMany([...new Set(candidates.flatMap((c) => (c.s.userId ? [c.s.userId] : [])))]);
+    let sent = 0;
+    for (const { s, step } of candidates) {
+      if (deadline !== undefined && Date.now() >= deadline) break;
+      const tz = s.userId ? settings.get(s.userId)?.timeZone : undefined;
+      if (!s.userId || !tz || !isFideliteHour(localTimeOf(now, tz).hour)) continue;
+      // Repris depuis (autre abonnement, ou le même renouvelé) : ni au revoir ni relance.
+      if (subscriptionView(await this.subscriptions.latestForUser(s.userId), now).plus) continue;
+      if (await this.news.farewell(s, step, now)) sent += 1;
+    }
+    if (sent > 0) this.logger.log(`${sent} message(s) de fin d’abonnement envoyé(s)`);
     return sent;
   }
 

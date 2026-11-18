@@ -10,7 +10,7 @@ import SiteFooter from '../components/organisms/SiteFooter.astro';
 import { LEGAL_UPDATED_ISO } from '../config/legal';
 import type { LegalUi } from '../content/legal/types';
 import { DEFAULT_LOCALE, LEGAL_SLUGS, LOCALES, LOCALE_NAME, LOCALE_REGION, formatDate, legalAlternates, legalPath, type LegalSlug, type Locale } from '../i18n/legal';
-import { inline, type Heading } from '../lib/legal-render';
+import { allKnown, inline, type Heading } from '../lib/legal-render';
 
 interface Props {
   locale: Locale;
@@ -67,7 +67,7 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
           <aside class="summary" aria-labelledby="summary-title">
             <h2 id="summary-title">{summary.title}</h2>
             <ul>
-              {summary.items.map((i) => (
+              {summary.items.filter((i) => allKnown(i)).map((i) => (
                 <li set:html={inline(i, locale)} />
               ))}
             </ul>
@@ -113,10 +113,10 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
 .prose-main::before{content:"";position:absolute;inset:0 0 auto 0;height:520px;z-index:-1;pointer-events:none;background:radial-gradient(60% 70% at 20% 0%,rgba(109,61,240,.35),transparent 70%),radial-gradient(40% 50% at 90% 10%,rgba(255,184,0,.14),transparent 70%)}
 .prose{max-width:720px;margin:0 auto;font-size:17px;line-height:1.6;color:#E7E4F2;overflow-wrap:break-word}
 .prose-head{margin-bottom:28px}
-.prose h1{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(40px,10vw,80px);line-height:.95;color:#fff;overflow-wrap:break-word;hyphens:auto;text-wrap:balance}
+.prose h1{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(34px,8.5vw,66px);line-height:.92;letter-spacing:-.02em;color:#fff;overflow-wrap:break-word;hyphens:auto;text-wrap:balance}
 .prose .prose-intro{margin-top:22px;font-size:19px;color:#fff;font-weight:600;text-wrap:pretty}
 .prose .prose-date{margin:12px 0 0;font-size:14px;color:var(--mute)}
-.prose h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(26px,5vw,34px);line-height:1.05;color:#fff;margin:44px 0 12px;letter-spacing:.01em;scroll-margin-top:calc(var(--top) + 8px);text-wrap:balance}
+.prose h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(22px,4.4vw,30px);line-height:1.05;color:#fff;margin:44px 0 12px;letter-spacing:-.01em;scroll-margin-top:calc(var(--top) + 8px);text-wrap:balance}
 .prose h3{font-size:18px;font-weight:800;color:#fff;margin:26px 0 8px;scroll-margin-top:calc(var(--top) + 8px)}
 .prose p,.prose ul,.prose ol,.prose dl,.prose table{margin:0 0 14px}
 .prose ul,.prose ol{padding-left:1.3em}
@@ -138,7 +138,6 @@ const others = LEGAL_SLUGS.filter((s) => s !== slug);
 .prose summary::after{content:"+";position:absolute;right:16px;top:50%;translate:0 -50%;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
 .prose details[open] summary::after{content:"–";background:var(--lime);color:var(--ink)}
 .prose details>div{padding:0 18px 4px}
-.prose mark.todo{background:var(--lime);color:var(--ink);font-weight:800;padding:1px 6px;border-radius:6px;white-space:nowrap}
 .langs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
 .prose .langs a{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#E7E4F2;font-size:14px;font-weight:700;text-decoration:none}
 .prose .langs a:hover{background:rgba(255,255,255,.1)}

@@ -78,6 +78,25 @@ import {
   TogetherZ,
   groupRoutes,
 } from '@blowy/contract';
+import {
+  type AttributionDto,
+  CodeLookupZ,
+  GroupInviteLinkZ,
+  GroupPreviewZ,
+  MyWordsZ,
+  type ShareBody,
+  growthRoutes,
+} from '@blowy/contract';
+import {
+  MyQuartierZ,
+  QuartierConfirmedZ,
+  QuartierJoinedZ,
+  type QuartierJoinBody,
+  QuizResultZ,
+  type QuizSubmitBody,
+  ZoneStatusZ,
+  quizRoutes,
+} from '@blowy/contract';
 import { z } from 'zod';
 
 export class ApiError extends Error {
@@ -224,6 +243,34 @@ export function createApiClient(opts: ApiClientOptions) {
     words: {
       get: (code: string) => call('GET', routes.words(code), WordsPageZ),
       send: (code: string, words: string[]) => call('POST', routes.words(code), OkZ, { words }),
+      /** Ton lien et ton résultat (les 3 mots les plus choisis, à partir de 3 votes). */
+      mine: () => call('GET', growthRoutes.myWords(), MyWordsZ),
+    },
+    /**
+     * Croissance (docs/VIRALITE.md), sans SDK tiers ni identifiant d'appareil : premier lancement (public, une fois par
+     * installation), inscription terminée, partages ; ce qu'est un code tapé ou lu dans un lien.
+     */
+    growth: {
+      firstOpen: (body: AttributionDto) => call('POST', growthRoutes.firstOpen(), OkZ, body),
+      signup: (body: AttributionDto) => call('POST', growthRoutes.signup(), OkZ, body),
+      share: (kind: ShareBody['kind']) => call('POST', growthRoutes.share(), OkZ, { kind }),
+      /** `page: true` : visite de la page d'un créateur (site). */
+      code: (code: string, page = false) => call('GET', growthRoutes.code(code) + (page ? '?page=c' : ''), CodeLookupZ),
+    },
+    /** « Quel minimoa es-tu ? » (site, sans compte) : commencé, réponses → résultat gardé sous un code, partage. */
+    quiz: {
+      start: (ref?: string) => call('POST', quizRoutes.start(), OkZ, ref ? { ref } : {}),
+      submit: (body: QuizSubmitBody) => call('POST', quizRoutes.submit(), QuizResultZ, body),
+      result: (code: string) => call('GET', quizRoutes.result(code), QuizResultZ),
+      share: (kind: 'story' | 'link' | 'challenge') => call('POST', quizRoutes.share(), OkZ, { kind }),
+    },
+    /** « Ouvre ton quartier » : compteur réel, inscription (double opt-in), confirmation, désinscription ; le tien (compte). */
+    quartiers: {
+      status: (zone: string) => call('GET', quizRoutes.zone(zone), ZoneStatusZ),
+      join: (body: QuartierJoinBody) => call('POST', quizRoutes.join(), QuartierJoinedZ, body),
+      confirm: (token: string) => call('POST', quizRoutes.confirm(), QuartierConfirmedZ, { token }),
+      unsubscribe: (token: string) => call('POST', quizRoutes.unsubscribe(), OkZ, { token }),
+      mine: () => call('GET', quizRoutes.mine(), MyQuartierZ),
     },
     /**
      * Rituels : sortie du jour, défi du jour, série, habitudes et preuves en photo, souvenirs privés, bilans.
@@ -284,6 +331,13 @@ export function createApiClient(opts: ApiClientOptions) {
       /** Joker pour le jour du groupe : aujourd'hui, ou hier jusqu'à midi (`GroupDetail.jokers.canPlaceFor`). */
       joker: (id: string, day: string) => call('POST', groupRoutes.joker(id), GroupActionZ, { day }),
       report: (id: string, body: GroupReportBody) => call('POST', groupRoutes.report(id), OkZ, body),
+      /** Le lien d'invitation (`minimoa.app/g/<code>`), créé à la première demande. */
+      link: (id: string) => call('POST', growthRoutes.groupLink(id), GroupInviteLinkZ),
+      /** Un nouveau code (créateur du groupe) : l'ancien lien ne marche plus. */
+      resetLink: (id: string) => call('POST', growthRoutes.groupLinkReset(id), GroupInviteLinkZ),
+      /** Public : la page d'un groupe par son code (nom, habitude, jours tenus, nombre de membres). */
+      preview: (code: string) => call('GET', growthRoutes.groupByCode(code), GroupPreviewZ),
+      join: (code: string) => call('POST', growthRoutes.groupJoin(code), GroupDetailZ),
       /** « La tenir ensemble » : un nombre par habitude, jamais d'identité ni de position. */
       together: () => call('GET', groupRoutes.together(), TogetherZ),
       proposeTogether: (habitId: string) => call('POST', groupRoutes.together(), TogetherResultZ, { habitId }),

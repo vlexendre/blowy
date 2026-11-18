@@ -221,7 +221,7 @@ function Frame({ height, children }: { height: number; children: ReactNode }) {
 
 // ── Soins et garde-robe ──────────────────────────────────────────────────────
 const SPECIES: readonly Species[] = ['nino', 'suzie', 'gaston', 'pia'];
-const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1, ritualStreak: 3, habitsKept: 1 };
+const demoStats = { careDays: 4, links: 2, bestLevel: 3, bestStreak: 3, challenges: 2, words: 1, ritualStreak: 3, habitsKept: 1, referrals: 0, founded: 0 };
 const earned = new Set(earnedItems(demoStats));
 const wardrobe: WardrobeItemLook[] = ITEMS.map((i) => {
   const p = itemProgress(i, demoStats);
@@ -835,7 +835,7 @@ function GalleryScreen() {
         <Item name="IncomingCard">
           <IncomingCard
             incoming={{ from: sasha, compatibility: 91, intro: 'nino, t’es le minimoa dont gaston parle tout le temps ?' }}
-            title="Sasha veut te rencontrer"
+            title="Sasha te fait signe"
             ownerLabel="pia, le minimoa de Sasha"
             compatLabel="d’accord"
             acceptLabel="accepter"

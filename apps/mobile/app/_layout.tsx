@@ -1,4 +1,3 @@
-import { Anton_400Regular } from '@expo-google-fonts/anton';
 import { color } from '@blowy/tokens';
 import { MotionHost } from '@blowy/ui';
 import { useFonts } from 'expo-font';
@@ -21,7 +20,6 @@ const SHEET = { presentation: 'transparentModal', animation: 'fade', contentStyl
 
 export default function RootLayout() {
   const [fontsReady, fontError] = useFonts({
-    Anton_400Regular,
     // Allo (SIL OFL 1.1, licence jointe dans assets/fonts/allo/OFL.txt).
     Allo_500Medium: require('../assets/fonts/allo/Allo-Medium.otf'),
     Allo_700Bold: require('../assets/fonts/allo/Allo-Bold.otf'),

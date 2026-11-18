@@ -6,6 +6,12 @@ import { Platform, Share, type View } from 'react-native';
 
 import { captureStory, keys, shareStoryImage, useApi, usePorts } from '@/core';
 
+/** Ton lien « 3 mots » et ton résultat (les 3 mots les plus choisis, à partir de 3 votes). */
+export function useMyWords(enabled = true) {
+  const api = useApi();
+  return useQuery({ queryKey: ['me', 'words'], queryFn: api.words.mine, enabled, staleTime: 30_000 });
+}
+
 export function useMe(enabled = true) {
   const api = useApi();
   return useQuery({ queryKey: keys.me, queryFn: api.me.get, enabled });
@@ -95,13 +101,13 @@ export function useStoryShare() {
   const [busy, setBusy] = useState(false);
   const { copied, copy, share: shareText } = useCopyShare();
   const share = useCallback(
-    async (message: string, url: string) => {
+    async (message: string, url: string, target: 'story' | 'sheet' = 'story') => {
       if (busy) return;
       setBusy(true);
       try {
         const image = await captureStory(card);
         if (!image) return await shareText(message, url);
-        const result = await shareStoryImage(image, message);
+        const result = await shareStoryImage(image, message, target);
         // Rien ne s'est ouvert (ni Instagram ni la feuille) : au moins le lien.
         if (result === 'none' && Platform.OS !== 'ios') await shareText(message, url);
       } finally {
@@ -113,7 +119,7 @@ export function useStoryShare() {
   return { card, busy, share, copied, copy };
 }
 
-/** Adresse affichée sans protocole (« blowy.app/i/ABCD1234 »). */
+/** Adresse affichée sans protocole (« minimoa.app/i/ABCD1234 »). */
 export const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '');
 
 /** E-mail affiché à moitié caché : « a•••@avectroise.fr ». */

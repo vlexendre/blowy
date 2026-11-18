@@ -2,7 +2,8 @@
  * Ce qui tourne en fond pendant toute la session (monté une fois dans `app/_layout.tsx`) :
  * - un compte suspendu par la modération (erreur `suspended` de l'API, n'importe où) → écran « compte suspendu » ;
  * - notifications permises → le jeton de l'appareil est envoyé à l'API à chaque ouverture (une fois par session) ;
- * - achats Minimoa+ arrivés hors d'un achat (renouvellement, achat en attente validé) → vérifiés par l'API.
+ * - achats Minimoa+ arrivés hors d'un achat (renouvellement, achat en attente validé) → vérifiés par l'API ;
+ * - premier lancement et inscription terminée → comptés une fois (docs/VIRALITE.md).
  */
 import { ApiError } from '@blowy/api-client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +14,7 @@ import { Platform } from 'react-native';
 import { keys, useApi, useSession } from '@/core';
 import { pushToken } from '@/features/onboarding';
 import { usePlusSync } from '@/features/plus';
+import { useGrowthBridge } from '@/features/growth';
 
 const SUSPENDED = '/suspendu';
 
@@ -55,6 +57,8 @@ export function SessionBridges() {
   const ready = !!session && me.isSuccess;
   useSuspendedWatch();
   usePlusSync(ready);
+  // Premier lancement et inscription terminée (une fois chacun, sans identifiant d'appareil).
+  useGrowthBridge();
   const registered = useRef<string | null>(null);
   useEffect(() => {
     if (!ready || !session || registered.current === session.userId) return;

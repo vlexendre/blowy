@@ -8,6 +8,7 @@ import { CLOCK, ENV } from '../../../shared/tokens';
 import { RETENTION, type RetentionRepository } from '../../retention/ports';
 import type { ActivityRepository, SuspensionsRepository } from '../ports';
 import { ACTIVITY, SUSPENSIONS } from '../tokens';
+import { Growth } from '../../growth/application/growth';
 
 const CACHE_TTL_MS = 30_000;
 const CACHE_MAX = 20_000;
@@ -45,6 +46,7 @@ export class AccountGate {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(RETENTION) private readonly retention: RetentionRepository,
     @Optional() @Inject(ENV) private readonly env: Env | null = null,
+    @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
   ) {}
 
   async check(user: AuthUser, req: GateRequest): Promise<void> {
@@ -98,7 +100,8 @@ export class AccountGate {
     this.seen.add(userId);
     // Jour d'activité (statistiques) et dernier jour d'activité du compte (comptes inactifs supprimés après 2 ans).
     // Le compte de revue n'entre pas dans les statistiques ; il garde seulement son dernier jour d'activité.
-    Promise.all([review ? Promise.resolve() : this.activity.touch(userId, day), this.retention.touch(userId, day)]).catch((err: unknown) => {
+    // Entonnoir : J1, J7, J30 après l'inscription (jamais pour le compte de revue).
+    Promise.all([review ? Promise.resolve() : this.activity.touch(userId, day), this.retention.touch(userId, day), review ? Promise.resolve() : this.growth?.active(userId, day)]).catch((err: unknown) => {
       this.seen.delete(userId);
       this.logger.warn(`jour d’activité non noté : ${err instanceof Error ? err.message : 'erreur'}`);
     });

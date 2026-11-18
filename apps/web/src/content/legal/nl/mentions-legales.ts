@@ -7,7 +7,7 @@ export const mentionsLegales: LegalPage = {
   intro: 'Wie de app en de website van Minimoa uitgeeft, wie ze host, en hoe je ons bereikt.',
   body: [
     { h2: 'Uitgever', id: 'editeur' },
-    { p: 'De website blowy.app en de app Minimoa worden uitgegeven door:' },
+    { p: 'De website minimoa.app en de app Minimoa worden uitgegeven door:' },
     {
       ul: [
         '**Naam:** {{publisher.name}}',
@@ -23,14 +23,14 @@ export const mentionsLegales: LegalPage = {
     { h2: 'Verantwoordelijke uitgever', id: 'publication' },
     { p: '{{publisher.publicationDirector}}' },
     { h2: 'Hosting', id: 'hebergement' },
-    { h3: 'De website blowy.app' },
+    { h3: 'De website minimoa.app' },
     { ul: ['**Hostingprovider:** {{siteHost.name}}', '**Adres:** {{siteHost.address}}', '**Telefoon:** {{siteHost.phone}}'] },
     { h3: 'De gegevens van de app' },
     {
       ul: [
         '**Hostingprovider:** {{dataHost.name}}',
         '**Adres:** {{dataHost.address}}',
-        '**Telefoon:** {{dataHost.phone}}',
+        '**Contact:** {{dataHost.contact}}',
         '**Locatie van de servers:** {{dataHost.region}}',
       ],
     },
@@ -54,6 +54,6 @@ export const mentionsLegales: LegalPage = {
     {
       p: 'Het merk Minimoa, de minimoas, de illustraties, teksten, animaties en software zijn beschermd door het intellectuele-eigendomsrecht. Ze zijn van {{publisher.name}} of haar partners. Ze kopiëren of hergebruiken zonder toestemming is verboden, behalve wat de wet toestaat (kort citaat, privékopie).',
     },
-    { p: 'Lettertypen van de website: Anton en Allo (Josh Puckett), onder de SIL Open Font License. Animaties op de homepage: de GSAP-bibliotheek.' },
+    { p: 'Lettertype van de website en haar afbeeldingen: Allo (Josh Puckett), onder de SIL Open Font License. Animaties op de homepage: de GSAP-bibliotheek.' },
   ],
 };

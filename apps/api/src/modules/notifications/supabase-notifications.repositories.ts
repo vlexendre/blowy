@@ -72,6 +72,16 @@ export class SupabaseNotificationSettingsRepository implements NotificationSetti
     return data ? settingsFrom(data) : null;
   }
 
+  async forUsers(userIds: readonly string[]): Promise<NotificationSettingsRecord[]> {
+    const out: NotificationSettingsRecord[] = [];
+    for (let i = 0; i < userIds.length; i += 200) {
+      const { data, error } = await this.client.from('notification_settings').select('*').in('user_id', [...userIds.slice(i, i + 200)]);
+      check(error, 'réglages des notifications');
+      out.push(...(data ?? []).map(settingsFrom));
+    }
+    return out;
+  }
+
   async save(s: NotificationSettingsRecord): Promise<void> {
     const { error } = await this.client.from('notification_settings').upsert({
       user_id: s.userId,

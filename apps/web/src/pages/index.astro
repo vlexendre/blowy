@@ -1,42 +1,52 @@
 ---
-/** Landing : 11 sections plein écran aimantées. */
+/** Landing : sections plein écran aimantées (la galerie des captures n'apparaît que si elles sont là). */
 import Base from '../layouts/Base.astro';
 import Background from '../components/organisms/landing/Background.astro';
 import NavBar from '../components/organisms/landing/NavBar.astro';
 import SectionDots from '../components/organisms/landing/SectionDots.astro';
 import Hero from '../components/organisms/landing/Hero.astro';
+import HowSection from '../components/organisms/landing/HowSection.astro';
 import PetSection from '../components/organisms/landing/PetSection.astro';
+import WardrobeSection from '../components/organisms/landing/WardrobeSection.astro';
 import CharacterSection from '../components/organisms/landing/CharacterSection.astro';
+import HabitsSection from '../components/organisms/landing/HabitsSection.astro';
+import GroupsSection from '../components/organisms/landing/GroupsSection.astro';
 import ChatsSection from '../components/organisms/landing/ChatsSection.astro';
 import LivesSection from '../components/organisms/landing/LivesSection.astro';
-import PhotoSection from '../components/organisms/landing/PhotoSection.astro';
 import EncountersSection from '../components/organisms/landing/EncountersSection.astro';
+import OutingsSection from '../components/organisms/landing/OutingsSection.astro';
 import WordsSection from '../components/organisms/landing/WordsSection.astro';
+import ScreensSection from '../components/organisms/landing/ScreensSection.astro';
 import PlusSection from '../components/organisms/landing/PlusSection.astro';
 import FaqSection from '../components/organisms/landing/FaqSection.astro';
 import FinalSection from '../components/organisms/landing/FinalSection.astro';
-import { meta } from '../content/landing';
+import { hero, meta, type SectionId } from '../content/landing';
+import { storeShots } from '../lib/store-shots';
+const skip: SectionId[] = storeShots.length ? [] : ['ecrans'];
 ---
-<Base title={meta.title} description={meta.description} htmlClass="snap">
-  <link slot="head" rel="preload" as="image" href="/img/nino_salut.webp" />
+<Base title={meta.title} description={meta.description} htmlClass="snap" ogImage="/og/accueil.jpg">
+  <link slot="head" rel="preload" as="image" href={hero.pet.src} fetchpriority="high" />
   <Background />
   <NavBar />
-  <SectionDots />
+  <SectionDots skip={skip} />
   <main id="main">
     <Hero />
+    <HowSection />
     <PetSection />
+    <WardrobeSection />
     <CharacterSection />
+    <HabitsSection />
+    <GroupsSection />
     <ChatsSection />
     <LivesSection />
-    <PhotoSection />
     <EncountersSection />
+    <OutingsSection />
     <WordsSection />
+    <ScreensSection />
     <PlusSection />
     <FaqSection />
     <FinalSection />
   </main>
-  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script>
     import '../scripts/landing';
   </script>

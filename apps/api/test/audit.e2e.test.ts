@@ -19,9 +19,9 @@ import { Background } from '../src/shared/background';
 import { MEMORY_DB } from '../src/shared/tokens';
 import { type TestWorld, PARIS, apiError, errorCode, onboardBody, startWorld, upload } from './helpers';
 
-const REVIEW_EMAIL = 'review@blowy.app';
+const REVIEW_EMAIL = 'review@minimoa.app';
 const REVIEW_CODE = '4815162342';
-const ADMIN = 'ops@blowy.app';
+const ADMIN = 'ops@minimoa.app';
 const CUPERTINO = { latitude: 37.3349, longitude: -122.009 };
 const SYDNEY = { latitude: -33.8688, longitude: 151.2093 };
 
@@ -68,7 +68,7 @@ describe('audit App Store — côté serveur', () => {
     });
 
     it('ouvre une session ; à l’inscription, le monde d’exemple est posé autour du compte', async () => {
-      const session = await w.anonymous.review.session({ email: ' Review@Blowy.app ', code: REVIEW_CODE });
+      const session = await w.anonymous.review.session({ email: ' Review@Minimoa.app ', code: REVIEW_CODE });
       expect(session).toMatchObject({ email: REVIEW_EMAIL, worldReset: false });
       reviewer = { id: session.userId, api: createApiClient({ baseUrl: w.baseUrl, getToken: () => session.accessToken }) };
       await reviewer.api.me.onboard(onboardBody({ displayName: 'Apple', location: CUPERTINO, gender: 'homme', consents: { location: true } }));

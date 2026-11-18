@@ -90,6 +90,9 @@ export function storeKitPurchases(): PurchasesPort {
         if (p.subscriptionGroupIdIOS) introEligible = await isEligibleForIntroOfferIOS(p.subscriptionGroupIdIOS).catch(() => null);
         out.push({ productId: p.id, displayPrice: p.displayPrice, price: p.price ?? null, currency: p.currency ?? null, introEligible, trialDays: freeTrialDays(p) });
       }
+      // Diagnostic (journal de l'appareil) : identifiants demandés que le magasin ne connaît pas.
+      const missing = productIds.filter((id) => !out.some((o) => o.productId === id));
+      if (missing.length) console.warn('[Minimoa+] produits introuvables dans l’App Store :', missing.join(', '));
       return out;
     },
     async purchase(productId, accountToken) {

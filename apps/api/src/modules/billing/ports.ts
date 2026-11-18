@@ -1,4 +1,4 @@
-import type { Plan, Store, SubscriptionState } from '@blowy/domain';
+import { type Plan, PLANS, type Store, type SubscriptionState } from '@blowy/domain';
 
 export type AppleEnvironment = 'Production' | 'Sandbox' | 'Xcode' | 'LocalTesting';
 
@@ -85,6 +85,11 @@ export interface SubscriptionsRepository {
   markTrialReminded(store: Store, originalTransactionId: string, trialEndsAt: string): Promise<void>;
   /** Un essai a-t-il déjà été utilisé par cette personne ? */
   trialUsedBy(userId: string): Promise<boolean>;
+  /**
+   * Abonnements rattachés à quelqu'un, ni remboursés ni retirés, dont l'échéance tombe entre `from` et `to` (au revoir
+   * et relance, `BillingJobs`), par échéance croissante. Index `subscriptions_expires_idx`.
+   */
+  endedBetween(from: string, to: string, limit: number): Promise<SubscriptionRecord[]>;
 }
 
 export interface StoreNotificationRecord {
@@ -108,10 +113,10 @@ export interface StoreNotificationsRepository {
   purge(before: string): Promise<number>;
 }
 
-/** Correspondance produit → offre, depuis la configuration (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`). */
-export interface PlusProducts {
-  yearly: string;
-  monthly: string;
-}
+/**
+ * Correspondance produit → offre, depuis la configuration (`PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`,
+ * `PLUS_PRODUCT_WEEKLY`).
+ */
+export type PlusProducts = Readonly<Record<Plan, string>>;
 export const planOfProduct = (products: PlusProducts, productId: string): Plan | null =>
-  productId === products.yearly ? 'yearly' : productId === products.monthly ? 'monthly' : null;
+  PLANS.find((plan) => products[plan] === productId) ?? null;

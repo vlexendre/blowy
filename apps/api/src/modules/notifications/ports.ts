@@ -53,6 +53,8 @@ export interface NotificationSettingsRecord {
 
 export interface NotificationSettingsRepository {
   get(userId: string): Promise<NotificationSettingsRecord | null>;
+  /** Réglages enregistrés de plusieurs personnes (absentes : jamais réglées). */
+  forUsers(userIds: readonly string[]): Promise<NotificationSettingsRecord[]>;
   save(settings: NotificationSettingsRecord): Promise<void>;
   /** Personnes dont le défi du jour est à envoyer (`next_morning_at <= at`), par lots. */
   dueMorning(at: string, limit: number): Promise<NotificationSettingsRecord[]>;

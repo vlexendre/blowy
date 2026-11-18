@@ -30,6 +30,8 @@ export interface CareBarProps {
   levels?: Partial<Record<CareAction, CareLevel>>;
   /** Diamètre des disques. Défaut 56. */
   size?: number;
+  /** Gestes montrés, dans l'ordre (défaut : les quatre). L'accueil n'en montre que trois : le câlin se fait en touchant le minimoa. */
+  actions?: readonly CareAction[];
   /** Pictos à la place des `CareIcon`. */
   icons?: Partial<Record<CareAction, ReactNode>>;
   /** Ce que chaque soin porte quand on le glisse jusqu'au pet (`careProp` : pomme, cookie, balle, coussin…). */
@@ -38,10 +40,10 @@ export interface CareBarProps {
 }
 
 /** Les quatre soins (nourrir, jouer, sieste, câlin) dans une carte, en disques ronds (V6-Accueil). */
-export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, levels, size = 56, icons, carry, style }: CareBarProps) {
+export function CareBar({ labels, available, onCare, onRefused, hot, busy, lure, levels, size = 56, actions = CARE_ACTIONS, icons, carry, style }: CareBarProps) {
   return (
     <View style={[styles.card, style]}>
-      {CARE_ACTIONS.map((a) => (
+      {actions.map((a) => (
         <CareButton
           key={a}
           label={labels[a].action}

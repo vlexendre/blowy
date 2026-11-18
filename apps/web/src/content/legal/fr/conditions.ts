@@ -22,7 +22,7 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Qui sommes-nous', id: 'editeur' },
     {
-      p: "L'application Minimoa et le site blowy.app sont édités par **{{publisher.name}}** (« Minimoa », « nous »). Ses coordonnées complètes sont dans les [mentions légales](@mentions-legales). Pour nous écrire : {{email.support}}.",
+      p: "L'application Minimoa et le site minimoa.app sont édités par **{{publisher.name}}** (« Minimoa », « nous »). Ses coordonnées complètes sont dans les [mentions légales](@mentions-legales). Pour nous écrire : {{email.support}}.",
     },
     {
       p: 'Ces conditions s’appliquent à toute utilisation de l’app. Les [règles de la communauté](@regles), les [conditions de l’abonnement Minimoa+](@abonnement) et la [politique de confidentialité](@confidentialite) en font partie.',
@@ -168,6 +168,7 @@ export const conditions: LegalPage = {
     { p: 'Ces conditions sont régies par le **droit français**. Si tu vis dans un autre pays de l’Union européenne, tu gardes la protection des règles impératives de ton pays.' },
     { p: 'En cas de problème, écris-nous d’abord à {{email.support}} : on cherchera une solution amiable.' },
     {
+      requires: ['mediator.name'],
       p: 'Si ta réclamation écrite n’aboutit pas, tu peux saisir gratuitement le médiateur de la consommation dont nous relevons, dans l’année qui suit ta réclamation :',
     },
     { ul: ['**Médiateur :** {{mediator.name}}', '**Adresse :** {{mediator.address}}', '**Site :** {{mediator.website}}'] },

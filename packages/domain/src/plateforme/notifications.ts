@@ -25,6 +25,14 @@ export const NOTIFICATION_KINDS = [
   'group_message',
   'group_life_lost',
   'group_asleep',
+  /** Quelqu'un rejoint ton groupe par son lien d'invitation (docs/VIRALITE.md). */
+  'group_joined',
+  /** Fidélisation (docs/FIDELISATION.md) : les 7 premiers jours (J1, J3, J7). */
+  'first_steps',
+  /** Nouvelles du minimoa : absence de 3, 7 ou 14 jours, anniversaire d'un mois ou d'un an. */
+  'minimoa_news',
+  /** Ton abonnement Minimoa+ : bienvenue, renouvellement annuel, paiement refusé, fin, relance unique un mois après. */
+  'plus_account',
 ] as const;
 export type NotificationKindKey = (typeof NOTIFICATION_KINDS)[number];
 
@@ -55,11 +63,13 @@ export const DEFERRABLE_KINDS: readonly NotificationKindKey[] = [
   'together_proposal',
   'group_life_lost',
   'group_asleep',
+  'group_joined',
+  'plus_account',
 ];
 export const isDeferrable = (kind: NotificationKindKey): boolean => DEFERRABLE_KINDS.includes(kind);
 
 /** Une fois par jour local au plus (par lien pour `link_in_danger`). */
-export const ONCE_A_DAY_KINDS: readonly NotificationKindKey[] = ['daily_challenge', 'needs_out', 'streak_in_danger', 'link_in_danger', 'your_turn', 'weekly_review', 'trial_reminder', 'together_proposal'];
+export const ONCE_A_DAY_KINDS: readonly NotificationKindKey[] = ['daily_challenge', 'needs_out', 'streak_in_danger', 'link_in_danger', 'your_turn', 'weekly_review', 'trial_reminder', 'together_proposal', 'first_steps', 'minimoa_news'];
 export const isOnceADay = (kind: NotificationKindKey): boolean => ONCE_A_DAY_KINDS.includes(kind);
 
 /** Un report attend au plus 24 h ; au-delà il est abandonné. */

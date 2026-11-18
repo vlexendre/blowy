@@ -236,7 +236,7 @@ export const evolution = messages({
     story: {
       equilibre: 'Un peu de tout.',
       casanier: 'Que du canapé.',
-      sociable: 'Des minimoas croisés.',
+      sociable: 'Du monde rencontré.',
       joueur: 'Toujours partant.',
       piquant: 'La vanne facile.',
       tendre: 'Que des câlins.',
@@ -475,10 +475,10 @@ export const home = messages({
     characterA11y: 'Ouvrir son caractère',
     /** Tuiles sous les soins : un mot chacune. */
     tiles: { challenge: 'Défi', habits: 'Habitudes', character: 'Caractère', review: 'Bilan', proof: 'Preuve', outing: 'Sortie' },
-    habitsA11y: (n: number): string => (n > 0 ? `Ses habitudes, ${n} à faire aujourd’hui` : 'Ses habitudes'),
+    habitsA11y: (n: number): string => (n > 0 ? `Tes habitudes, ${n} à faire aujourd’hui` : 'Tes habitudes'),
     /** Il boude : sa bulle le dit ; toucher la puce « Il boude » lui fait dire ce que ça change. */
     sulkSpeech: 'Je boude. Emmène-moi dehors.',
-    sulkWhy: 'Tant que je boude : ni rencontre ni salut. Tes liens, eux, continuent.',
+    sulkWhy: 'Je boude, mais je te présente quand même quelqu’un chaque jour. Plus tu sors, plus je te présente de monde.',
     sulkA11y: 'Il boude. Toucher pour savoir ce que ça change',
     /** Barre du besoin sous chaque soin (lue avec le libellé du soin). */
     levelA11y: (need: string, n: number): string => `${need} : ${n} sur 100`,
@@ -487,6 +487,18 @@ export const home = messages({
     meetText: 'Un lieu public, un proche prévenu, ton propre trajet. Et tu pars quand tu veux.',
     meetAction: 'Nos conseils',
     meetClose: 'C’est noté',
+    /** Retour après une longue absence (14 jours et plus) : il t'accueille et dit ce qui s'est passé, sans reproche. */
+    welcomeBackTitle: (pet: string): string => `Te revoilà. ${pet} t’attendait.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'messages non lus' : 'message non lu'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'personnes qui t’ont fait signe' : 'personne qui t’a fait signe'}` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Pendant ton absence : ${parts.join(' et ')}.` : 'Rien n’a bougé sans toi : reprends où tu veux.';
+    },
+    welcomeBackChats: 'Voir mes chats',
+    welcomeBackWaves: 'Voir qui',
+    welcomeBackClose: 'Merci',
     loadError: 'Impossible de charger ton minimoa',
     retry: 'Réessayer',
   },
@@ -505,15 +517,26 @@ export const home = messages({
     newCount: (n: number): string => (n > 1 ? `${n} new` : '1 new'),
     characterA11y: 'Open its personality',
     tiles: { challenge: 'Challenge', habits: 'Habits', character: 'Personality', review: 'Review', proof: 'Proof', outing: 'Outing' },
-    habitsA11y: (n: number): string => (n > 0 ? `Its habits, ${n} to do today` : 'Its habits'),
+    habitsA11y: (n: number): string => (n > 0 ? `Your habits, ${n} to do today` : 'Your habits'),
     sulkSpeech: 'I’m sulking. Take me outside.',
-    sulkWhy: 'While I sulk: no encounters, no waves. Your links carry on.',
+    sulkWhy: 'I’m sulking, but I still introduce you to someone every day. The more you go out, the more people I introduce.',
     sulkA11y: 'Sulking. Tap to see what it changes',
     levelA11y: (need: string, n: number): string => `${need}: ${n} out of 100`,
     meetTitle: (name: string): string => `Before you meet ${name}`,
     meetText: 'A public place, someone close in the loop, your own way there and back. And you leave whenever you want.',
     meetAction: 'Our tips',
     meetClose: 'Noted',
+    welcomeBackTitle: (pet: string): string => `You’re back. ${pet} was waiting for you.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} unread ${unread > 1 ? 'messages' : 'message'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'people' : 'person'} waved at you` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `While you were away: ${parts.join(' and ')}.` : 'Nothing moved without you: pick up wherever you like.';
+    },
+    welcomeBackChats: 'See my chats',
+    welcomeBackWaves: 'See who',
+    welcomeBackClose: 'Thanks',
     loadError: 'Couldn’t load your minimoa',
     retry: 'Try again',
   },
@@ -532,15 +555,26 @@ export const home = messages({
     newCount: (n: number): string => (n > 1 ? `${n} nuevos` : '1 nuevo'),
     characterA11y: 'Abrir su carácter',
     tiles: { challenge: 'Reto', habits: 'Hábitos', character: 'Carácter', review: 'Resumen', proof: 'Prueba', outing: 'Salida' },
-    habitsA11y: (n: number): string => (n > 0 ? `Sus hábitos, ${n} pendientes hoy` : 'Sus hábitos'),
+    habitsA11y: (n: number): string => (n > 0 ? `Tus hábitos, ${n} pendientes hoy` : 'Tus hábitos'),
     sulkSpeech: 'Estoy enfurruñado. Sácame a la calle.',
-    sulkWhy: 'Mientras esté enfurruñado: ni encuentros ni saludos. Tus vínculos siguen.',
+    sulkWhy: 'Estoy enfurruñado, pero aun así te presento a alguien cada día. Cuanto más sales, más gente te presento.',
     sulkA11y: 'Está enfurruñado. Toca para saber qué cambia',
     levelA11y: (need: string, n: number): string => `${need}: ${n} de 100`,
     meetTitle: (name: string): string => `Antes de ver a ${name}`,
     meetText: 'Un lugar público, alguien de confianza al tanto, tu propio transporte. Y te vas cuando quieras.',
     meetAction: 'Nuestros consejos',
     meetClose: 'Entendido',
+    welcomeBackTitle: (pet: string): string => `Ya volviste. ${pet} te esperaba.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'mensajes sin leer' : 'mensaje sin leer'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'personas te han saludado' : 'persona te ha saludado'}` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Mientras no estabas: ${parts.join(' y ')}.` : 'Nada se ha movido sin ti: sigue donde quieras.';
+    },
+    welcomeBackChats: 'Ver mis chats',
+    welcomeBackWaves: 'Ver quién',
+    welcomeBackClose: 'Gracias',
     loadError: 'No se pudo cargar tu minimoa',
     retry: 'Reintentar',
   },
@@ -559,15 +593,26 @@ export const home = messages({
     newCount: (n: number): string => (n > 1 ? `${n} novos` : '1 novo'),
     characterA11y: 'Ver o jeito dele',
     tiles: { challenge: 'Desafio', habits: 'Hábitos', character: 'Jeito', review: 'Resumo', proof: 'Prova', outing: 'Saída' },
-    habitsA11y: (n: number): string => (n > 0 ? `Os hábitos dele, ${n} para hoje` : 'Os hábitos dele'),
+    habitsA11y: (n: number): string => (n > 0 ? `Seus hábitos, ${n} para hoje` : 'Seus hábitos'),
     sulkSpeech: 'Tô emburrado. Me leva pra rua.',
-    sulkWhy: 'Enquanto eu estiver emburrado: nada de encontros nem acenos. Seus vínculos continuam.',
+    sulkWhy: 'Tô emburrado, mas mesmo assim te apresento alguém todo dia. Quanto mais você sai, mais gente eu apresento.',
     sulkA11y: 'Está emburrado. Toque para saber o que muda',
     levelA11y: (need: string, n: number): string => `${need}: ${n} de 100`,
     meetTitle: (name: string): string => `Antes de encontrar ${name}`,
     meetText: 'Um lugar público, alguém próximo avisado, seu próprio transporte. E você vai embora quando quiser.',
     meetAction: 'Nossas dicas',
     meetClose: 'Anotado',
+    welcomeBackTitle: (pet: string): string => `Você voltou. ${pet} estava te esperando.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'mensagens não lidas' : 'mensagem não lida'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'pessoas acenaram para você' : 'pessoa acenou para você'}` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Enquanto você esteve fora: ${parts.join(' e ')}.` : 'Nada mudou sem você: continue de onde quiser.';
+    },
+    welcomeBackChats: 'Ver meus chats',
+    welcomeBackWaves: 'Ver quem',
+    welcomeBackClose: 'Obrigado',
     loadError: 'Não foi possível carregar seu minimoa',
     retry: 'Tentar de novo',
   },
@@ -586,15 +631,26 @@ export const home = messages({
     newCount: (n: number): string => (n > 1 ? `${n} nieuw` : '1 nieuw'),
     characterA11y: 'Zijn karakter openen',
     tiles: { challenge: 'Uitdaging', habits: 'Gewoontes', character: 'Karakter', review: 'Overzicht', proof: 'Bewijs', outing: 'Uitje' },
-    habitsA11y: (n: number): string => (n > 0 ? `Zijn gewoontes, ${n} te doen vandaag` : 'Zijn gewoontes'),
+    habitsA11y: (n: number): string => (n > 0 ? `Je gewoontes, ${n} te doen vandaag` : 'Je gewoontes'),
     sulkSpeech: 'Ik mok. Neem me mee naar buiten.',
-    sulkWhy: 'Zolang ik mok: geen ontmoetingen, niet zwaaien. Je banden gaan gewoon door.',
+    sulkWhy: 'Ik mok, maar ik stel je toch elke dag aan iemand voor. Hoe meer je eropuit gaat, hoe meer mensen ik voorstel.',
     sulkA11y: 'Hij mokt. Tik om te zien wat dat verandert',
     levelA11y: (need: string, n: number): string => `${need}: ${n} van 100`,
     meetTitle: (name: string): string => `Voor je ${name} ziet`,
     meetText: 'Een openbare plek, iemand die ervan weet, je eigen vervoer. En je gaat weg wanneer je wilt.',
     meetAction: 'Onze tips',
     meetClose: 'Genoteerd',
+    welcomeBackTitle: (pet: string): string => `Daar ben je weer. ${pet} wachtte op je.`,
+    welcomeBack: (unread: number, waves: number): string => {
+      const parts = [
+        unread > 0 ? `${unread} ${unread > 1 ? 'ongelezen berichten' : 'ongelezen bericht'}` : null,
+        waves > 0 ? `${waves} ${waves > 1 ? 'mensen zwaaiden' : 'iemand zwaaide'} naar je` : null,
+      ].filter((p): p is string => p !== null);
+      return parts.length ? `Terwijl je weg was: ${parts.join(' en ')}.` : 'Er is niets veranderd zonder jou: ga verder waar je wilt.';
+    },
+    welcomeBackChats: 'Mijn chats bekijken',
+    welcomeBackWaves: 'Bekijk wie',
+    welcomeBackClose: 'Bedankt',
     loadError: 'Je minimoa kon niet worden geladen',
     retry: 'Opnieuw',
   },
@@ -615,6 +671,8 @@ export const unlock = messages({
       words: (n: number): string => `${plural(n, 'pote a', 'potes ont')} donné leurs 3 mots.`,
       ritualStreak: (n: number): string => `${n} jours de série. La mèche brille.`,
       habitsKept: (n: number): string => `${plural(n, 'habitude tenue', 'habitudes tenues')}. Ça se voit.`,
+      referrals: (): string => 'Tu as fait venir quelqu’un, ou quelqu’un t’a fait venir. Merci.',
+      founded: (): string => 'Tu as invité parmi les premiers : ton quartier t’en remercie.',
     } as Record<StatKey, (n: number) => string>,
     fallback: 'Il est rangé dans sa garde-robe.',
     wear: 'Il le porte',
@@ -632,6 +690,8 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'friend has', 'friends have')} given their 3 words.`,
       ritualStreak: (n: number): string => `${n}-day streak. The flame is burning bright.`,
       habitsKept: (n: number): string => `${count(n, 'habit kept', 'habits kept')}. It shows.`,
+      referrals: (): string => 'You brought someone along, or someone brought you. Thanks.',
+      founded: (): string => 'You were among the first to invite: your neighbourhood thanks you.',
     },
     fallback: 'It’s in its wardrobe.',
     wear: 'Put it on',
@@ -649,6 +709,8 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'persona ha', 'personas han')} dado sus 3 palabras.`,
       ritualStreak: (n: number): string => `${n} días de racha. La llama brilla.`,
       habitsKept: (n: number): string => `${count(n, 'hábito cumplido', 'hábitos cumplidos')}. Se nota.`,
+      referrals: (): string => 'Has traído a alguien, o alguien te ha traído. Gracias.',
+      founded: (): string => 'Invitaste entre los primeros: tu barrio te lo agradece.',
     },
     fallback: 'Está guardado en su armario.',
     wear: 'Ponérselo',
@@ -666,6 +728,8 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'pessoa deu', 'pessoas deram')} suas 3 palavras.`,
       ritualStreak: (n: number): string => `${n} dias de sequência. A chama está acesa.`,
       habitsKept: (n: number): string => `${count(n, 'hábito mantido', 'hábitos mantidos')}. Dá para ver.`,
+      referrals: (): string => 'Você trouxe alguém, ou alguém trouxe você. Valeu.',
+      founded: (): string => 'Você convidou entre os primeiros: seu bairro agradece.',
     },
     fallback: 'Está guardado no guarda-roupa dele.',
     wear: 'Vestir',
@@ -683,6 +747,8 @@ export const unlock = messages({
       words: (n: number): string => `${count(n, 'vriend heeft', 'vrienden hebben')} hun 3 woorden gegeven.`,
       ritualStreak: (n: number): string => `${n} dagen reeks. Het vlammetje brandt.`,
       habitsKept: (n: number): string => `${count(n, 'gewoonte volgehouden', 'gewoontes volgehouden')}. Dat zie je.`,
+      referrals: (): string => 'Je hebt iemand meegenomen, of iemand nam jou mee. Dank je.',
+      founded: (): string => 'Je nodigde als een van de eersten uit: je buurt bedankt je.',
     },
     fallback: 'Het ligt in zijn garderobe.',
     wear: 'Aantrekken',
@@ -714,6 +780,8 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 mots de ${n} potes` : '3 mots d’un pote'),
       ritualStreak: (n: number): string => `Série de ${n} jours`,
       habitsKept: (n: number): string => plural(n, 'habitude tenue', 'habitudes tenues'),
+      referrals: (): string => 'Inviter quelqu’un',
+      founded: (): string => 'Fonder ton quartier',
     } as Record<StatKey, (n: number) => string>,
     /** Titre de la fiche : le dernier mot estompé (« COURONNE DE / FLEURS »). */
     itemTitle: (name: string): TitleSegment[] => {
@@ -737,6 +805,8 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Personne n’a encore choisi tes 3 mots.' : `${plural(have, 'pote a', 'potes ont')} déjà répondu.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Pas encore de série.' : `Ton record : ${plural(have, 'jour', 'jours')}.`),
       habitsKept: (have: number): string => `${plural(have, 'habitude tenue', 'habitudes tenues')} pour l’instant.`,
+      referrals: (): string => 'Envoie ton invitation ou ton lien « 3 mots » : quand quelqu’un arrive grâce à toi, vous gagnez ce cadeau tous les deux.',
+      founded: (): string => 'Sois parmi les 3 premiers à inviter des voisins avant l’ouverture de ton quartier.',
     } as Record<StatKey, (have: number) => string>,
     /** Raccourci vers l'endroit où on avance. */
     shortcut: {
@@ -748,6 +818,8 @@ export const wardrobe = messages({
       words: 'Partager mes 3 mots',
       ritualStreak: 'Relever le défi du jour',
       habitsKept: 'Tenir une habitude',
+      referrals: 'Inviter quelqu’un',
+      founded: 'Inviter mes voisins',
     } as Record<StatKey, string>,
     premiumNote: 'Inclus dans Minimoa+',
     /** Fiche d'un objet Minimoa+ : ouvre la feuille Minimoa+. */
@@ -779,6 +851,8 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 words from ${n} friends` : '3 words from a friend'),
       ritualStreak: (n: number): string => `${n}-day streak`,
       habitsKept: (n: number): string => count(n, 'habit kept', 'habits kept'),
+      referrals: (): string => 'Invite someone',
+      founded: (): string => 'Found your neighbourhood',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -800,6 +874,8 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Nobody has picked your 3 words yet.' : `${count(have, 'friend has', 'friends have')} already answered.`),
       ritualStreak: (have: number): string => (have === 0 ? 'No streak yet.' : `Your record: ${count(have, 'day', 'days')}.`),
       habitsKept: (have: number): string => `${count(have, 'habit kept', 'habits kept')} so far.`,
+      referrals: (): string => 'Send your invite or your “3 words” link: when someone joins thanks to you, you both get this gift.',
+      founded: (): string => 'Be one of the first 3 to invite neighbours before your neighbourhood opens.',
     },
     shortcut: {
       careDays: 'Take care of it',
@@ -810,6 +886,8 @@ export const wardrobe = messages({
       words: 'Share my 3 words',
       ritualStreak: 'Take the daily challenge',
       habitsKept: 'Keep a habit',
+      referrals: 'Invite someone',
+      founded: 'Invite my neighbours',
     },
     premiumNote: 'Included in Minimoa+',
     premiumCta: 'See Minimoa+',
@@ -839,6 +917,8 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 palabras de ${n} personas` : '3 palabras de alguien'),
       ritualStreak: (n: number): string => `Racha de ${n} días`,
       habitsKept: (n: number): string => count(n, 'hábito cumplido', 'hábitos cumplidos'),
+      referrals: (): string => 'Invitar a alguien',
+      founded: (): string => 'Fundar tu barrio',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -860,6 +940,8 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Nadie ha elegido aún tus 3 palabras.' : `${count(have, 'persona ya ha', 'personas ya han')} respondido.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Aún no hay racha.' : `Tu récord: ${count(have, 'día', 'días')}.`),
       habitsKept: (have: number): string => `${count(have, 'hábito cumplido', 'hábitos cumplidos')} por ahora.`,
+      referrals: (): string => 'Envía tu invitación o tu enlace de «3 palabras»: cuando alguien llegue gracias a ti, los dos ganáis este regalo.',
+      founded: (): string => 'Sé de las 3 primeras personas en invitar a vecinos antes de que abra tu barrio.',
     },
     shortcut: {
       careDays: 'Cuidarlo',
@@ -870,6 +952,8 @@ export const wardrobe = messages({
       words: 'Compartir mis 3 palabras',
       ritualStreak: 'Hacer el reto del día',
       habitsKept: 'Cumplir un hábito',
+      referrals: 'Invitar a alguien',
+      founded: 'Invitar a mis vecinos',
     },
     premiumNote: 'Incluido en Minimoa+',
     premiumCta: 'Ver Minimoa+',
@@ -899,6 +983,8 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 palavras de ${n} pessoas` : '3 palavras de alguém'),
       ritualStreak: (n: number): string => `Sequência de ${n} dias`,
       habitsKept: (n: number): string => count(n, 'hábito mantido', 'hábitos mantidos'),
+      referrals: (): string => 'Convidar alguém',
+      founded: (): string => 'Fundar seu bairro',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -920,6 +1006,8 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Ninguém escolheu suas 3 palavras ainda.' : `${count(have, 'pessoa já respondeu', 'pessoas já responderam')}.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Ainda sem sequência.' : `Seu recorde: ${count(have, 'dia', 'dias')}.`),
       habitsKept: (have: number): string => `${count(have, 'hábito mantido', 'hábitos mantidos')} até agora.`,
+      referrals: (): string => 'Mande seu convite ou seu link de “3 palavras”: quando alguém chegar por você, os dois ganham este presente.',
+      founded: (): string => 'Seja uma das 3 primeiras pessoas a convidar vizinhos antes de o seu bairro abrir.',
     },
     shortcut: {
       careDays: 'Cuidar dele',
@@ -930,6 +1018,8 @@ export const wardrobe = messages({
       words: 'Compartilhar minhas 3 palavras',
       ritualStreak: 'Fazer o desafio do dia',
       habitsKept: 'Manter um hábito',
+      referrals: 'Convidar alguém',
+      founded: 'Convidar meus vizinhos',
     },
     premiumNote: 'Incluído no Minimoa+',
     premiumCta: 'Ver o Minimoa+',
@@ -959,6 +1049,8 @@ export const wardrobe = messages({
       words: (n: number): string => (n > 1 ? `3 woorden van ${n} vrienden` : '3 woorden van een vriend'),
       ritualStreak: (n: number): string => `Reeks van ${n} dagen`,
       habitsKept: (n: number): string => count(n, 'gewoonte volgehouden', 'gewoontes volgehouden'),
+      referrals: (): string => 'Iemand uitnodigen',
+      founded: (): string => 'Je buurt oprichten',
     },
     itemTitle: (name: string): TitleSegment[] => {
       const words = name.toUpperCase().split(' ');
@@ -980,6 +1072,8 @@ export const wardrobe = messages({
       words: (have: number): string => (have === 0 ? 'Nog niemand heeft je 3 woorden gekozen.' : `${count(have, 'vriend heeft', 'vrienden hebben')} al geantwoord.`),
       ritualStreak: (have: number): string => (have === 0 ? 'Nog geen reeks.' : `Je record: ${count(have, 'dag', 'dagen')}.`),
       habitsKept: (have: number): string => `${count(have, 'gewoonte volgehouden', 'gewoontes volgehouden')} tot nu toe.`,
+      referrals: (): string => 'Stuur je uitnodiging of je „3 woorden”-link: komt er iemand dankzij jou, dan krijgen jullie allebei dit cadeau.',
+      founded: (): string => 'Hoor bij de eerste 3 die buren uitnodigen voordat je buurt opengaat.',
     },
     shortcut: {
       careDays: 'Hem verzorgen',
@@ -990,6 +1084,8 @@ export const wardrobe = messages({
       words: 'Mijn 3 woorden delen',
       ritualStreak: 'Uitdaging van de dag doen',
       habitsKept: 'Een gewoonte volhouden',
+      referrals: 'Iemand uitnodigen',
+      founded: 'Mijn buren uitnodigen',
     },
     premiumNote: 'Inbegrepen bij Minimoa+',
     premiumCta: 'Bekijk Minimoa+',

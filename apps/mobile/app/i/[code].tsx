@@ -1,4 +1,4 @@
-/** Lien d'invitation (blowy://i/CODE, https://blowy.app/i/CODE) : voir qui t'invite et accepter. */
+/** Lien d'invitation (https://minimoa.app/i/CODE, minimoa://i/CODE, blowy://i/CODE) : voir qui t'invite et accepter. */
 import { ApiError } from '@blowy/api-client';
 import { space } from '@blowy/tokens';
 import { Banner, Button, EmptyState, Header, InvitationPanel, ScreenTemplate, Skeleton, Stack, usePetBump } from '@blowy/ui';

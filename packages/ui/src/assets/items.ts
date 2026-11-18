@@ -66,6 +66,8 @@ const ITEM_IMAGES = {
   cadeau: require('../../assets/items/cadeau.webp'),
   pinceau: require('../../assets/items/pinceau.webp'),
   micro: require('../../assets/items/micro.webp'),
+  parrain: require('../../assets/items/parrain.webp'),
+  fondateur: require('../../assets/items/fondateur.webp'),
   manette: require('../../assets/items/manette.webp'),
   skate: require('../../assets/items/skate.webp'),
   baguette: require('../../assets/items/baguette.webp'),

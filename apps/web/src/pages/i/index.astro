@@ -8,7 +8,7 @@ import DownloadCta from '../../components/organisms/public/DownloadCta.astro';
 import InviteCard from '../../components/organisms/public/InviteCard.astro';
 import { common, invitePage as c } from '../../content/public';
 ---
-<Public title={c.meta.title} description={c.meta.description} noindex>
+<Public title={c.meta.title} description={c.meta.description} noindex ogImage="/og/i.jpg" ogAlt="Nino, un minimoa vert, qui fait coucou à côté du titre « On t’invite sur Minimoa. »">
   <LoadingState />
   <InviteCard />
   <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>

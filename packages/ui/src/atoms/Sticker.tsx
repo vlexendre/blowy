@@ -10,7 +10,7 @@ export interface StickerProps {
   tone?: StickerTone;
   /** Inclinaison en degrés. Défaut -4. */
   rotate?: number;
-  /** `display` : Anton capitales (« MDR NON ») ; `body` : gras minuscule (« nino · toi »). */
+  /** `display` : titre en capitales (« MDR NON ») ; `body` : gras minuscule (« nino · toi »). */
   font?: 'display' | 'body';
   size?: 'sm' | 'md';
   style?: StyleProp<ViewStyle>;

@@ -33,10 +33,13 @@ Code : `apps/mobile/src/core/adapters/supabase.ts` (`signInWith`), `apple-sign-i
 2. **Google** : activer, coller le **Client ID** et le **Client secret** d'un identifiant OAuth « Application Web » créé
    dans Google Cloud Console (APIs & Services → Credentials). Dans Google Cloud, « Authorized redirect URIs » :
    `https://<projet>.supabase.co/auth/v1/callback`.
-3. Authentication → URL Configuration → **Redirect URLs** : ajouter `blowy://auth-callback` (Android) et
-   `https://blowy.app/auth-callback` (web ; plus l'adresse de recette si elle diffère).
+3. Authentication → URL Configuration → **Redirect URLs** : ajouter `minimoa://auth-callback` (l'adresse que l'app
+   envoie désormais, Android), garder `blowy://auth-callback` (anciens builds ; l'app accepte les deux schémas) et
+   `https://minimoa.app/auth-callback` (web ; plus l'adresse de recette si elle diffère). Site URL : `https://minimoa.app`.
+   **À faire par le propriétaire** : sans `minimoa://auth-callback` dans la liste, Supabase renvoie vers la Site URL
+   et la connexion Google ne revient pas dans l'app (docs/DEEPLINKS.md).
 4. Écran de consentement OAuth de Google : nom « Minimoa », logo, liens vers `/legal/confidentialite` et
-   `/legal/conditions`, domaine `blowy.app` vérifié.
+   `/legal/conditions`, domaine `minimoa.app` vérifié.
 
 ### 3. Réglages de l'app (publics, `EXPO_PUBLIC_*`)
 `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_KEY` (clé publique « anon/publishable »), `EXPO_PUBLIC_API_URL`,

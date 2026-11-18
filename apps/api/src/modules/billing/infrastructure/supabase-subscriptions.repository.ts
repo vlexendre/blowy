@@ -105,6 +105,20 @@ export class SupabaseSubscriptionsRepository implements SubscriptionsRepository 
     check(error, 'lecture des essais');
     return (count ?? 0) > 0;
   }
+
+  async endedBetween(from: string, to: string, limit: number): Promise<SubscriptionRecord[]> {
+    // Index partiel `subscriptions_expires_idx` (hors remboursés et retirés).
+    const { data, error } = await this.table
+      .select('*')
+      .not('status', 'in', '(refunded,revoked)')
+      .not('user_id', 'is', null)
+      .gte('expires_at', from)
+      .lte('expires_at', to)
+      .order('expires_at', { ascending: true })
+      .limit(limit);
+    check(error, 'abonnements arrivés à échéance');
+    return (data ?? []).map(fromRow);
+  }
 }
 
 export class SupabaseStoreNotificationsRepository implements StoreNotificationsRepository {

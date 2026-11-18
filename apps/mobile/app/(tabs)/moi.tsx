@@ -12,6 +12,8 @@ import { useDiscreet } from '@/features/map';
 import { useLivePet } from '@/features/pet';
 import { common } from '@/locales/common';
 import { moi } from '@/locales/moi';
+import { croissance } from '@/locales/croissance';
+import { useTrackShare } from '@/features/growth';
 
 const t = moi.tab;
 const DAY_MS = 86_400_000;
@@ -21,6 +23,7 @@ export default function Moi() {
   const pet = useLivePet();
   const links = useLinks();
   const words = useCopyShare();
+  const track = useTrackShare();
   const { purchases } = usePorts();
   const discreet = useDiscreet();
   const subscription = useSubscription(!!me.data?.plus);
@@ -95,10 +98,14 @@ export default function Moi() {
         badge={wordsCount > 0 ? t.wordsCount(wordsCount) : t.wordsBadge}
         badgeOn={wordsCount > 0}
         text={t.wordsLead(petName)}
-        moreLabel={wordsCount > 0 ? t.wordsMore(petName) : undefined}
-        onMore={() => router.push('/pet/caractere')}
+        // Des mots sont arrivés : ton résultat et la carte à partager en story (dès 3 votes).
+        moreLabel={wordsCount > 0 ? croissance.words.more : undefined}
+        onMore={() => router.push('/mots')}
         shareLabel={t.wordsShareCta}
-        onShare={() => void words.share(t.wordsMessage(wordsLink), wordsLink)}
+        onShare={() => {
+          track('words');
+          void words.share(t.wordsMessage(wordsLink), wordsLink);
+        }}
         copyLabel={`${t.copy} ${displayUrl(wordsLink)}`}
         copiedLabel={t.copied}
         copied={words.copied}

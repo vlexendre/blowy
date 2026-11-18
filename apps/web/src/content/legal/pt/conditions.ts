@@ -21,7 +21,7 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Quem somos', id: 'editeur' },
     {
-      p: 'A app Minimoa e o site blowy.app são editados por **{{publisher.name}}** («Minimoa», «nós»). Os dados completos estão na [informação legal](@mentions-legales). Para nos escreveres: {{email.support}}.',
+      p: 'A app Minimoa e o site minimoa.app são editados por **{{publisher.name}}** («Minimoa», «nós»). Os dados completos estão na [informação legal](@mentions-legales). Para nos escreveres: {{email.support}}.',
     },
     {
       p: 'Estes termos aplicam-se a qualquer utilização da app. As [regras da comunidade](@regles), as [condições da subscrição Minimoa+](@abonnement) e a [política de privacidade](@confidentialite) fazem parte deles.',
@@ -162,7 +162,7 @@ export const conditions: LegalPage = {
     { h2: '14. Lei aplicável, litígios e mediação', id: 'litiges' },
     { p: 'Estes termos regem-se pela **lei francesa**. Se vives noutro país da União Europeia, manténs a proteção das normas imperativas do teu país.' },
     { p: 'Se houver um problema, escreve-nos primeiro para {{email.support}}: procuraremos uma solução amigável.' },
-    { p: 'Se a tua reclamação escrita não resolver a situação, podes recorrer gratuitamente ao mediador de consumo a que estamos vinculados, no prazo de um ano após a reclamação:' },
+    { requires: ['mediator.name'], p: 'Se a tua reclamação escrita não resolver a situação, podes recorrer gratuitamente ao mediador de consumo a que estamos vinculados, no prazo de um ano após a reclamação:' },
     { ul: ['**Mediador:** {{mediator.name}}', '**Morada:** {{mediator.address}}', '**Site:** {{mediator.website}}'] },
     {
       p: 'Na falta de acordo, o litígio é submetido aos tribunais franceses competentes. Se fores consumidor, também podes recorrer ao tribunal do lugar onde vivias no momento do registo ou do facto.',

@@ -44,6 +44,14 @@ export class MemorySubscriptionsRepository implements SubscriptionsRepository {
   async trialUsedBy(userId: string): Promise<boolean> {
     return [...this.db.subscriptions.values()].some((s) => s.userId === userId && s.trialUsed);
   }
+
+  async endedBetween(from: string, to: string, limit: number): Promise<SubscriptionRecord[]> {
+    return [...this.db.subscriptions.values()]
+      .filter((s) => s.userId !== null && s.status !== 'refunded' && s.status !== 'revoked' && s.expiresAt !== null && t(s.expiresAt) >= t(from) && t(s.expiresAt) <= t(to))
+      .sort((a, b) => t(a.expiresAt) - t(b.expiresAt))
+      .slice(0, limit)
+      .map((s) => ({ ...s }));
+  }
 }
 
 export class MemoryStoreNotificationsRepository implements StoreNotificationsRepository {

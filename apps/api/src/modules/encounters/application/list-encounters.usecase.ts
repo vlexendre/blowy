@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type VisionVia, visionIntroLine, wavedAtYouLine } from '@blowy/content';
-import { ENCOUNTER_QUOTA, type Shape, entitlements, shapeOf } from '@blowy/domain';
+import { type Shape, encounterQuota, entitlements, shapeOf } from '@blowy/domain';
 import { type Clock, todayOf } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
 import { seedOf } from '../../../shared/seed';
@@ -49,8 +49,9 @@ const FRIEND_OF_FRIEND_CAP = 100;
  * Rencontres : les coucous reçus, puis les personnes que le minimoa présente. Seules passent les personnes
  * compatibles (filtres durs de la vision et seuil de 70) : amis d'amis d'abord (où qu'ils soient), puis
  * celles de la zone de recherche, les plus compatibles d'abord. Sans position : seulement les amis d'amis.
- * Le nombre de suggestions dépend de la forme du minimoa (`ENCOUNTER_QUOTA`, plus le bonus de Minimoa+) :
- * un minimoa qui boude ne présente personne ; les coucous reçus restent toujours visibles.
+ * Le nombre de suggestions dépend de la sociabilité seule (`encounterQuota`, plus le bonus de Minimoa+) : plus la
+ * personne sort, plus il présente de monde ; jamais moins d'une par jour, même quand il boude (les soins ne bloquent
+ * pas les gens). Les coucous reçus restent toujours visibles.
  */
 @Injectable()
 export class ListEncounters {
@@ -98,7 +99,7 @@ export class ListEncounters {
     ]);
     const otherOf = (a: string, b: string): string => (a === userId ? b : a);
     const petShape = shapeOf(myPet.needs);
-    const quota = petShape === 'boude' ? 0 : ENCOUNTER_QUOTA[petShape] + entitlements(seeker.plus).encounterBonus;
+    const quota = encounterQuota(myPet.needs) + entitlements(seeker.plus).encounterBonus;
 
     const linked = new Set(myLinks.map((l) => otherOf(l.userA, l.userB)));
     const declined = new Set(involved.filter((e) => e.status === 'declined').map((e) => otherOf(e.fromUser, e.toUser)));

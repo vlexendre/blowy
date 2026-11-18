@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
-import { deltaForWords } from '@blowy/domain';
+import type { MyWords } from '@blowy/contract';
+import { WORDS_RESULT_MIN_VOTES, deltaForWords, topWords } from '@blowy/domain';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import type { Clock } from '../../../shared/clock';
 import { DomainError, errorText } from '../../../shared/errors';
@@ -10,6 +11,7 @@ import { livePet } from '../../pets/application/pet-catch-up';
 import { PetCharacter } from '../../pets/application/pet-character';
 import type { PetRecord, PetsRepository, WordVotesRepository } from '../../pets/ports';
 import { Audience } from '../../safety/application/audience';
+import { Growth } from '../../growth/application/growth';
 
 export interface WordsTarget {
   profile: Profile;
@@ -36,6 +38,7 @@ export class Words {
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(NOTIFIER) private readonly notifier: Notifier,
     @Inject(Audience) private readonly audience: Audience,
+    @Inject(Growth) private readonly growth: Growth,
   ) {}
 
   async target(code: string): Promise<WordsTarget> {
@@ -44,6 +47,18 @@ export class Words {
     const pet = profile ? await this.pets.findByOwner(profile.id) : null;
     if (!profile || !pet) throw new DomainError('not_found', errorText('wordsNotFound'));
     return { profile, pet: livePet(pet, this.clock.now()) };
+  }
+
+  /** Ton lien et ton résultat : les 3 mots les plus choisis, à partir de 3 votes (personne n'est reconnaissable). */
+  async mine(userId: string): Promise<MyWords> {
+    const profile = await this.profiles.findById(userId);
+    if (!profile) throw new DomainError('not_onboarded');
+    const votes = await this.votes.words(userId);
+    return { code: profile.wordsCode, votes: await this.votes.count(userId), top: votes.length >= WORDS_RESULT_MIN_VOTES ? topWords(votes) : [], minVotes: WORDS_RESULT_MIN_VOTES };
+  }
+
+  visited(): Promise<void> {
+    return this.growth.visit('m');
   }
 
   async vote(input: VoteInput): Promise<void> {
@@ -55,5 +70,6 @@ export class Words {
     if (!added) throw new DomainError('already_done', errorText('wordsAlready'));
     await this.character.apply(profile.id, 'three_words', { extra: deltaForWords(input.words) });
     await this.notifier.notify(profile.id, 'words_received');
+    await this.growth.vote();
   }
 }

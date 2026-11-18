@@ -225,8 +225,8 @@ export class AdminDemo implements OnApplicationBootstrap {
     await report(DEMO_REPORTED.karim, DEMO_REPORTED.zoe, 'mineur', 0.6, { details: 'Elle a l’air très jeune sur sa photo.' });
 
     // Deux traités (le journal et la suspension viennent du vrai chemin de modération).
-    await this.moderation.act('moderation@blowy.app', { action: 'suspend', targetUserId: DEMO_REPORTED.karim, reportId: '1', reason: 'Faux profil : photos reprises d’un autre compte.', days: 7 });
-    await this.moderation.act('moderation@blowy.app', { action: 'warn', targetUserId: DEMO_REPORTED.theo, reportId: '2', reason: 'Insistance après un refus. Premier avertissement.' });
+    await this.moderation.act('moderation@minimoa.app', { action: 'suspend', targetUserId: DEMO_REPORTED.karim, reportId: '1', reason: 'Faux profil : photos reprises d’un autre compte.', days: 7 });
+    await this.moderation.act('moderation@minimoa.app', { action: 'warn', targetUserId: DEMO_REPORTED.theo, reportId: '2', reason: 'Insistance après un refus. Premier avertissement.' });
     this.logger.log('administration de démo prête : 60 jours de chiffres, 6 signalements');
   }
 }

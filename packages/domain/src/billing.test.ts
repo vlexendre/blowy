@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   OFFERS,
+  PLANS,
   type StoreEvent,
   type SubscriptionState,
   applyStoreEvent,
@@ -48,8 +49,12 @@ describe('offres', () => {
     expect(OFFERS.yearly.trialDays).toBe(7);
     expect(OFFERS.monthly.amountMinor).toBe(1499);
     expect(OFFERS.monthly.trialDays).toBe(0);
+    expect(OFFERS.weekly).toMatchObject({ period: 'week', amountMinor: 299, trialDays: 0 });
+    expect(PLANS).toEqual(['yearly', 'monthly', 'weekly']);
     expect(monthlyEquivalentMinor(OFFERS.yearly)).toBe(499);
     expect(yearlyDiscountPercent()).toBe(67);
+    // La remise se calcule toujours contre la mensuelle, jamais contre 52 semaines de l'hebdomadaire.
+    expect(yearlyDiscountPercent(OFFERS.yearly, OFFERS.monthly)).toBe(67);
   });
 });
 

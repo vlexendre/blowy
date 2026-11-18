@@ -8,7 +8,7 @@ import DownloadCta from '../../components/organisms/public/DownloadCta.astro';
 import WordsPicker from '../../components/organisms/public/WordsPicker.astro';
 import { common, wordsPage as c } from '../../content/public';
 ---
-<Public title={c.meta.title} description={c.meta.description} noindex bare>
+<Public title={c.meta.title} description={c.meta.description} noindex bare ogImage="/og/m.jpg" ogAlt="Nino, un minimoa vert, intimidé, à côté du titre « Décris-moi en 3 mots. Sois sympa. »">
   <LoadingState />
   <WordsPicker />
   <StateBlock state="not_found" title={c.notFoundTitle} text={c.notFoundText} pet={{ src: '/img/nino_triste.webp', alt: '' }}>

@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { IdentityZ, LatLngZ, MapBeyondZ, MatchExplanationZ, OnboardIdentityFields, UpdateIdentityFields } from './v7/vision';
 import { PetRoleZ } from './v7/plateforme';
 import { OnboardHabitZ, SharedHabitsZ } from './v7/rituels';
+import { AttributionZ } from './v7/croissance';
 
 export const API_PREFIX = '/v1';
 
@@ -92,7 +93,7 @@ export const WardrobeItemZ = z.object({
   /** Objet premium (inclus dans Minimoa+) : vrai qu'il soit possédé ou non. Absent des réponses des anciennes API. */
   plus: z.boolean().optional(),
   /** Étape à franchir (objets à gagner) : compteur concerné et avancement. */
-  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept']), have: z.number().int(), need: z.number().int() }).nullable(),
+  goal: z.object({ stat: z.enum(['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept', 'referrals', 'founded']), have: z.number().int(), need: z.number().int() }).nullable(),
 });
 export type WardrobeItem = z.infer<typeof WardrobeItemZ>;
 export const WardrobeZ = z.object({ items: z.array(WardrobeItemZ), outfit: OutfitZ });
@@ -131,6 +132,11 @@ export const OnboardBody = z.object({
   quiz: GaugesZ.partial().default({}),
   /** Code d'invitation reçu, s'il y en a un. */
   inviteCode: z.string().optional(),
+  /**
+   * D'où vient la personne (docs/VIRALITE.md) : le premier lien ouvert (`/c/<code>`, `?ref=`, `/m/`, `/g/`) ou le code
+   * tapé à l'étape « Un code ? ». Vérifié par l'API ; un code inconnu est ignoré (`store`).
+   */
+  attribution: AttributionZ.optional(),
   /** Sexe, langue, accords, position et réponses au test de vision (voir v7/vision.ts). La ville n'est plus demandée. */
   ...OnboardIdentityFields,
   /** Étape « Tes habitudes » (spéc §25) : 2 au plus, « Plus tard » envoie une liste vide. */
@@ -313,7 +319,7 @@ export type Incoming = z.infer<typeof IncomingZ>;
 export const EncountersZ = z.object({
   incoming: z.array(IncomingZ),
   suggestions: z.array(SuggestionZ),
-  /** Forme du pet : un pet qui boude ne croise plus personne (suggestions vides). */
+  /** Forme du minimoa (humeur) : elle ne bloque plus les présentations (au moins une par jour, même s'il boude). */
   petShape: ShapeZ,
 });
 export type Encounters = z.infer<typeof EncountersZ>;
@@ -473,3 +479,5 @@ export * from './v7/compte';
 export * from './v7/revue';
 export * from './v7/ia';
 export * from './v7/groupes';
+export * from './v7/croissance';
+export * from './v7/quiz';

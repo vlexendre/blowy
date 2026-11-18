@@ -31,7 +31,7 @@ describe('espaces des phrases en plusieurs morceaux', () => {
   it('espace insécable avant ? ! : ; même à cheval sur deux morceaux', () => {
     expect(frenchSpaces('on sort ce soir ? oui : non ; « ok »')).toBe(`on sort ce soir${NB}? oui${NB}: non${NB}; «${NB}ok${NB}»`);
     expect(joined(normalizeRuns([{ text: 'salut ' }, { text: 'Tom' }, { text: ' !' }]))).toBe(`salut Tom${NB}!`);
-    expect(frenchSpaces('https://blowy.app/x 10:30')).toBe('https://blowy.app/x 10:30');
+    expect(frenchSpaces('https://minimoa.app/x 10:30')).toBe('https://minimoa.app/x 10:30');
     expect(frenchSpaces('14,99 €/mois · −67 %')).toBe(`14,99${NB}€/mois · −67${NB}%`);
   });
 

@@ -12,7 +12,7 @@ import { ScreenTemplate } from './ScreenTemplate';
 const GUTTER = 14;
 
 export interface SettingsTemplateProps {
-  /** Grand titre Anton à côté du retour (« RÉGLAGES », « MON COMPTE. »). */
+  /** Grand Titre à côté du retour (« RÉGLAGES », « MON COMPTE. »). */
   title: TitleContent;
   onBack: () => void;
   backLabel: string;

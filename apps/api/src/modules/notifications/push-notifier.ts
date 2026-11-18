@@ -62,14 +62,31 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
     case 'group_message':
     case 'group_life_lost':
     case 'group_asleep':
+    case 'group_joined':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://chats';
     case 'together_proposal':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://pet/habitudes';
+    case 'first_steps':
+      // J1 : le lien « 3 mots » ; J2 : les habitudes ; J3 : un groupe par lien ; J5 : les rencontres ; J7 : l'accueil
+      // (le bilan de la semaine et la carte à partager).
+      return vars.step === 'd1'
+        ? 'blowy://mots'
+        : vars.step === 'd2'
+          ? 'blowy://pet/habitudes'
+          : vars.step === 'd3'
+            ? 'blowy://groupe/nouveau'
+            : vars.step === 'd5'
+              ? 'blowy://rencontres'
+              : 'blowy://pet';
+    case 'plus_account':
+      // L'au revoir mène au minimoa (rien à vendre) ; le reste à la feuille Minimoa+ (état, « Gérer mon abonnement »).
+      return vars.step === 'goodbye' ? 'blowy://pet' : 'blowy://moi/blowy-plus';
     case 'daily_challenge':
     case 'needs_out':
     case 'streak_in_danger':
     case 'habit_proof':
     case 'weekly_review':
+    case 'minimoa_news':
       return 'blowy://pet';
   }
 }

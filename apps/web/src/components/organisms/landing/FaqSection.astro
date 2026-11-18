@@ -5,7 +5,7 @@ import FaqItem from '../../molecules/FaqItem.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { SUPPORT_EMAIL } from '../../../config/site';
-import { faq as c, sections } from '../../../content/landing';
+import { faq as c, IMG, sections } from '../../../content/landing';
 ---
 <SnapSection section={sections.faq} panel="p-night s-faq">
   <SectionTitle lines={c.title}>
@@ -14,7 +14,7 @@ import { faq as c, sections } from '../../../content/landing';
   <div class="faq" data-r="up">
     {c.items.map((i) => <FaqItem question={i.q} answer={i.a} />)}
   </div>
-  <PetImage class="fq" src="/img/suzie_joie.webp" loading="lazy" />
+  <PetImage class="fq" src={`${IMG}/suzie_coucou.webp`} loading="lazy" />
 </SnapSection>
 <style is:global>
 .s-faq{grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx" "faq"}

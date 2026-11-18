@@ -17,6 +17,8 @@ import {
   CreateGroupBody,
   type GroupAction,
   type GroupDetail,
+  type GroupInviteLink,
+  type GroupPreview,
   GroupJokerBody,
   type GroupMessagesPage,
   GroupReportBody,
@@ -32,7 +34,7 @@ import {
 } from '@blowy/contract';
 import { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
-import { CurrentUser } from '../../../shared/auth.guard';
+import { CurrentUser, Public } from '../../../shared/auth.guard';
 import { DomainError } from '../../../shared/errors';
 import { RateLimit } from '../../../shared/user-rate-limit';
 import { ZodPipe } from '../../../shared/zod.pipe';
@@ -45,6 +47,7 @@ import { TogetherUseCases } from '../application/together';
 const GroupId = new ZodPipe(Uuid);
 const Before = new ZodPipe(Iso.datetime({ offset: true }).optional());
 const HabitId = new ZodPipe(z.string().min(1).max(40));
+const LinkCode = new ZodPipe(z.string().trim().regex(/^[A-Za-z0-9]{4,16}$/));
 
 /** Groupes (spéc §26) : `/v1/groups`. Chaque route vérifie que la personne est membre (ou invitée pour répondre). */
 @Controller('v1/groups')
@@ -91,6 +94,22 @@ export class GroupsController {
     @Body(new ZodPipe(InviteToGroupBody)) body: z.infer<typeof InviteToGroupBody>,
   ): Promise<GroupDetail> {
     return this.groups.invite(user.userId, id, body.memberIds);
+  }
+
+  /** Le lien d'invitation du groupe (code créé à la première demande). */
+  @Post(':id/link')
+  @RateLimit('write')
+  @HttpCode(200)
+  link(@CurrentUser() user: AuthUser, @Param('id', GroupId) id: string): Promise<GroupInviteLink> {
+    return this.groups.inviteLink(user.userId, id);
+  }
+
+  /** Un nouveau code (créateur) : l'ancien lien ne marche plus. */
+  @Post(':id/link/reset')
+  @RateLimit('write')
+  @HttpCode(200)
+  resetLink(@CurrentUser() user: AuthUser, @Param('id', GroupId) id: string): Promise<GroupInviteLink> {
+    return this.groups.resetInviteLink(user.userId, id);
   }
 
   @Post(':id/accept')
@@ -165,6 +184,29 @@ export class GroupsController {
   ): Promise<{ ok: true }> {
     await this.groups.report(user.userId, id, body);
     return { ok: true };
+  }
+}
+
+/**
+ * Lien d'invitation d'un groupe (`minimoa.app/g/<code>`) : la page publique (nom, habitude, jours tenus, nombre de
+ * membres ; jamais de prénom ni de position) et « rejoindre ».
+ */
+@Controller('v1/groups/code')
+export class GroupCodesController {
+  constructor(@Inject(GroupsUseCases) private readonly groups: GroupsUseCases) {}
+
+  @Public()
+  @RateLimit('lookup')
+  @Get(':code')
+  preview(@Param('code', LinkCode) code: string): Promise<GroupPreview> {
+    return this.groups.preview(code);
+  }
+
+  @Post(':code/join')
+  @RateLimit('write')
+  @HttpCode(200)
+  join(@CurrentUser() user: AuthUser, @Param('code', LinkCode) code: string): Promise<GroupDetail> {
+    return this.groups.joinByCode(user.userId, code);
   }
 }
 

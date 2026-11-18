@@ -23,7 +23,7 @@ export interface HeroMeterProps {
 
 /**
  * La jauge vedette du minimoa (V6-GAccueil) : dans un verre sombre posé sur son panneau, le nom en jaune, le chiffre
- * en Anton qui défile depuis 0 à la première apparition, et la barre qui se remplit avec un léger dépassement.
+ * en capitales (police des titres) qui défile depuis 0 à la première apparition, et la barre qui se remplit avec un léger dépassement.
  */
 export function HeroMeter({ label, value, suffix, lowAt = 40, note, accessibilityLabel, style }: HeroMeterProps) {
   const v = Math.max(0, Math.min(100, Math.round(value)));

@@ -7,7 +7,7 @@ import { AgeCard, AgeGate, DateWheel, type DateParts, OnboardingTemplate, Screen
 import { Redirect, router } from 'expo-router';
 import { useMemo, useState } from 'react';
 
-import { ScreenMotion } from '@/core';
+import { ScreenMotion, useSession } from '@/core';
 import { isValidBirthdate, progressAt, useDraft, useDraftGate, useStep } from '@/features/onboarding';
 import { goBack, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
@@ -54,6 +54,7 @@ function NaissanceStep({ onTooYoung }: { onTooYoung: (v: { name: string; species
   useStep('naissance');
   const species = useDraft((d) => d.species);
   const petName = useDraft((d) => d.petName);
+  const session = useSession();
   const today = dayOf(new Date());
   const thisYear = Number(today.slice(0, 4));
   const [date, setDate] = useState<DateParts>(() => {
@@ -73,14 +74,15 @@ function NaissanceStep({ onTooYoung }: { onTooYoung: (v: { name: string; species
       return;
     }
     useDraft.getState().set({ birthdate: iso });
-    router.push('/(onboarding)/localisation');
+    // Déjà connecté (compte sans minimoa) : pas besoin de repasser par la connexion.
+    router.push(session ? '/(onboarding)/preparation' : '/(onboarding)/connexion');
   };
 
   return (
     <ScreenMotion>
       <OnboardingTemplate
         {...progressAt('naissance')}
-        onBack={() => goBack('/(onboarding)/habitudes')}
+        onBack={() => goBack('/(onboarding)/prenom')}
         backLabel={common.back}
         host={{ species, line: t.host, highlight: t.highlight, seed: petName, name: petName }}
         gap={14}

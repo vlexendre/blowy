@@ -1,8 +1,9 @@
 ---
-/** 9. Minimoa+ : gratuit contre minimoa+. */
+/**
+ * 13. Minimoa+ : gratuit contre Minimoa+. Le montant facturé (59,88 € par an) est le prix le plus visible, l'équivalent
+ * mensuel en petit (Apple 3.1.2, spéc. V7 §13) ; les autres offres et le renouvellement sont écrits en clair.
+ */
 import Button from '../../atoms/Button.astro';
-import PetImage from '../../atoms/PetImage.astro';
-import Sticker from '../../atoms/Sticker.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
 import SnapSection from '../../molecules/SnapSection.astro';
 import { plus as c, sections } from '../../../content/landing';
@@ -20,11 +21,11 @@ import { plus as c, sections } from '../../../content/landing';
       <h3>{c.pro.name} <small>{c.pro.note}</small></h3>
       <ul>{c.pro.items.map((i) => <li>{i}</li>)}</ul>
       <div class="price"><b>{c.pro.price}</b><span>{c.pro.priceNote}</span></div>
-      <Button variant="l" href="#go">{c.pro.cta}</Button>
-      <Sticker class="gel" src="/img/ic_gel.webp" />
+      <p class="pfine">{c.pro.others} {c.pro.renew} <a href={c.pro.termsHref}>{c.pro.terms}</a></p>
+      <Button variant="l" href={c.pro.ctaHref}>{c.pro.cta}</Button>
+      <img class="pia" src={c.pet.src} alt={c.pet.alt} width="500" height="600" loading="lazy" decoding="async" />
     </div>
   </div>
-  <PetImage class="gas" src="/img/gaston_smug.webp" loading="lazy" />
 </SnapSection>
 <style is:global>
 .s-plus{grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tx" "plans"}
@@ -32,31 +33,40 @@ import { plus as c, sections } from '../../../content/landing';
 .s-plus .hd{--k:11}
 .plans{grid-area:plans;display:flex;flex-direction:column;gap:10px;min-height:0}
 .plan{border-radius:22px;padding:clamp(12px,1.9svh,26px);background:rgba(255,255,255,.05);border:1px solid var(--line);position:relative}
-.plan h3{font-family:var(--display);font-weight:400;font-size:clamp(22px,3.2svh,38px);line-height:1;text-transform:uppercase;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.plan h3{font-family:var(--display);font-weight:800;font-size:clamp(22px,3.2svh,38px);line-height:1;text-transform:uppercase;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .plan h3 small{font-family:var(--body);font-size:13px;font-weight:700;color:var(--mute);text-transform:none}
 .plan ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:5px;font-size:var(--ts);font-weight:600}
 .plan li{display:flex;gap:8px;align-items:baseline}
 .plan li::before{content:"";flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--mute);translate:0 -1px}
 .plan.free ul{grid-template-columns:1fr 1fr;column-gap:12px}
+.plan.free li:nth-child(5){display:none}
 .plan.pro{background:linear-gradient(160deg,rgba(255,184,0,.16),rgba(109,61,240,.18));border:2px solid var(--lime)}
-.plan.pro h3{color:var(--lime)}
+.plan.pro h3{color:var(--lime);padding-right:0}
+.plan.pro ul{grid-template-columns:1fr 1fr;column-gap:12px}
+@media (max-width:899px){.s-plus .lead{display:none}.plan .pia{display:none}}
 .plan.pro li::before{background:var(--lime)}
 .price{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-top:10px}
-.price b{font-family:var(--display);font-weight:400;font-size:clamp(28px,4.4svh,54px);line-height:1}
-.price span{font-size:12px;color:var(--mute);font-weight:600}
+.price b{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4svh,54px);line-height:1}
+.price span{font-size:13px;color:#fff;font-weight:700;opacity:.8}
+.pfine{font-size:11px;line-height:1.35;color:var(--mute);margin-top:6px;max-width:44em}
+.pfine a{color:#fff;text-decoration:underline;text-underline-offset:2px}
 .plan .btn{margin-top:10px;height:46px}
-.plan .gel{position:absolute;right:14px;top:-16px;width:clamp(40px,6svh,70px);rotate:10deg}
-.s-plus .gas{display:none}
+.plan .pia{position:absolute;right:-4px;top:28px;width:clamp(76px,22%,170px);height:auto;rotate:6deg;pointer-events:none;filter:drop-shadow(0 12px 18px rgba(0,0,0,.45))}
 @media (min-width:900px){
-  .s-plus{grid-template-columns:.95fr 1.25fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"tx plans";column-gap:4vw;align-items:center}
+  .s-plus{grid-template-columns:.85fr 1.35fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"tx plans";column-gap:4vw;align-items:center}
   .plans{flex-direction:row;align-items:stretch}
-  .plan{flex:1;display:flex;flex-direction:column}
-  .plan.free ul{grid-template-columns:1fr}
+  .plan{display:flex;flex-direction:column}
+  .plan.free{flex:.8}
+  .plan.pro{flex:1.2}
+  .plan.free ul,.plan.pro ul{grid-template-columns:1fr}
+  .plan.free li:nth-child(5){display:flex}
   .plan ul{gap:10px;margin-top:16px}
   .plan .btn{margin-top:auto}
-  .price{margin:18px 0 16px}
-  .s-plus .gas{display:block;position:absolute;left:3%;bottom:-6%;width:min(24svh,240px);rotate:6deg}
+  .price{margin:18px 0 6px}
+  .pfine{margin-bottom:16px;font-size:12px}
+  .plan .pia{top:54px;right:-14px;width:min(26%,170px)}
+  .plan.pro ul{padding-right:24%}
   .s-plus .tx{align-self:start;padding-top:2svh}
 }
-@media (max-width:899px) and (max-height:760px){.plan{padding:12px 14px}.plan ul{gap:3px;margin-top:6px}.price{margin-top:6px}.plan .btn{margin-top:8px;height:44px}}
+@media (max-width:899px) and (max-height:760px){.plan{padding:12px 14px}.plan ul{gap:3px;margin-top:6px}.price{margin-top:6px}.plan .btn{margin-top:8px;height:44px}.pfine{font-size:10.5px}}
 </style>

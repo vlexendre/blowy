@@ -1,6 +1,6 @@
 /**
  * Configuration lue au build (variables Vite, publiques : aucune n'est un secret).
- * - VITE_API_URL : URL de l'API (ex. https://api.blowy.app)
+ * - VITE_API_URL : URL de l'API (ex. https://api.minimoa.app)
  * - VITE_AUTH : `supabase` (défaut) ou `local` (API en mémoire, code 000000)
  * - VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY : projet Supabase (clé publique « anon »)
  */

@@ -1,13 +1,13 @@
 # Minimoa — règles de design (app)
 
 Ce que la passe de finition V7 a fixé, pour que l'app reste une seule app. Le look est celui de V6 : le minimoa dans son
-panneau de couleur, autocollants et puces inclinées, grands titres Anton avec une seconde ligne estompée, barre d'onglets
+panneau de couleur, autocollants et puces inclinées, grands titres en Allo ExtraBold avec une seconde ligne estompée, barre d'onglets
 flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine, on ne redessine pas.
 
 ## Texte
 | Rôle | Taille | Graisse | Exemple |
 |---|---|---|---|
-| Grand titre d'écran | Anton 40–64 (onglets 48–64, écrans poussés 40) | `Title`, capitales, 2ᵉ ligne `dim` | « SES / BILANS » |
+| Grand titre d'écran | Allo ExtraBold 40–64 en taille de maquette, rendue × 0,74 (`displaySize`) (onglets 48–64, écrans poussés 40) | `Title`, capitales, 2ᵉ ligne `dim` | « SES / BILANS » |
 | Titre de carte, de ligne | 16 | `bodyHeavy` / `bodyBold` | « Ses habitudes » |
 | Corps | 17 | `body` | une phrase de l'API |
 | Secondaire | 13–15 (13 dans les cartes et lignes) | `body`, `muted` | « Rien à faire aujourd'hui. » |
@@ -15,7 +15,7 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 
 - **Plancher 13 pt** dans l'atome `Text` (`MIN_TEXT_SIZE`) : une taille plus petite est relevée, interlignage compris.
   Seule exception : les libellés de la barre d'onglets (`tabLabel`, 10 pt comme iOS, toujours avec une icône).
-- Un titre Anton ne coupe jamais un mot : devant un minimoa, `fitTitleSize` réduit le corps pour que le mot le plus long
+- Un titre ne coupe jamais un mot : devant un minimoa, `fitTitleSize` réduit le corps pour que le mot le plus long
   tienne (`PetHero`). Pas de mot orphelin dans un grand titre : couper avec `\n` dans la source.
 - Typographie française : `’`, `« »`, espaces insécables (`docs/I18N.md`).
 
@@ -58,7 +58,7 @@ flottante en verre, minimoas habillés, animations (`docs/MOTION.md`). On affine
 - **Feuilles** : `SheetTemplate` ; une feuille d'achat garde son action dans une barre fixe en bas (Minimoa+ : bouton,
   ligne de renouvellement, « Restaurer mes achats · Conditions · Confidentialité »), le reste défile au-dessus.
 - **Chargement** : squelettes à la forme du contenu (`Skeleton`), `Loader` dans un bouton ; jamais de roue.
-- **Vide / erreur** : `EmptyState peek` (minimoa qui passe la tête, titre Anton court, une phrase, une action) ;
+- **Vide / erreur** : `EmptyState peek` (minimoa qui passe la tête, titre court, une phrase, une action) ;
   erreur de requête : `Banner tone="error"` avec « Réessayer ».
 - **Navigation** : depuis un écran poussé ou une modale vers un onglet, `router.dismissTo('/(tabs)/…')` (jamais `push`
   d'une route d'onglet : on empilerait une seconde barre d'onglets).

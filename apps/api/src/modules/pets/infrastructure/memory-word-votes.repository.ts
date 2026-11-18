@@ -13,4 +13,8 @@ export class MemoryWordVotesRepository implements WordVotesRepository {
   async count(targetUser: string): Promise<number> {
     return this.db.wordVotes.filter((v) => v.targetUser === targetUser).length;
   }
+
+  async words(targetUser: string): Promise<string[][]> {
+    return this.db.wordVotes.filter((v) => v.targetUser === targetUser).slice(-500).map((v) => [...v.words]);
+  }
 }

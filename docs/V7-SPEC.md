@@ -62,7 +62,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 - **Sociabilité** devient la jauge principale (grande, en haut). Elle monte quand tu sors, vois du monde, salues, écris (et plus encore les jours où vous vous écrivez tous les deux, §24), tiens une habitude tournée vers les autres. Elle descend seule.
 - Faim, énergie, humeur restent, en petit, avec les quatre gestes (nourrir, jouer, sieste, câlin).
-- **Forme** = 60 % sociabilité + 40 % des trois autres. En forme : il rencontre plus. Il boude : il ne rencontre personne. Il ne meurt jamais.
+- **Forme** = 60 % sociabilité + 40 % des trois autres. Elle joue sur son humeur et son caractère, pas sur les gens : le nombre de présentations ne dépend que de la sociabilité (« plus tu sors, plus il te présente de monde », `encounterQuota`), jamais moins d'une par jour, même quand il boude. Il ne meurt jamais.
 - Le minimoa demande : « Tu es sorti aujourd'hui ? ». Réponses : « oui, j'ai vu du monde », « oui, un tour », « pas encore ». La localisation (app ouverte seulement) confirme un déplacement hors de la zone du domicile ; sinon c'est déclaratif, avec photo possible.
 
 ## 6. Les habitudes
@@ -121,7 +121,7 @@ On ne montre jamais de diagnostic. Formulation : « ta vision, pour l'instant »
 
 ## 11. Inscription et connexion
 
-Ordre : Bienvenue → entrée en scène → créer son minimoa → **test de vision (12)** → « On t'appelle comment ? » → **sexe** → **date de naissance (sélecteur à roues), avant la connexion** → localisation → notifications → la promesse → **connexion** → il s'installe → tout est prêt → invitation → Minimoa+ (feuille).
+Ordre (parcours court, 17 nov.) : Bienvenue → créer son minimoa → **test de vision (12)** → ton résultat (phrase de synthèse, carte à partager) → « On t'appelle comment ? » et « Tu es… » (facultatif) → **date de naissance (sélecteur à roues), avant la connexion** → **connexion** → il s'installe → tout est prêt → Minimoa+ (feuille) → accueil. La position et les notifications se demandent sur l'accueil quand elles servent (explication d'abord, un seul bouton), les habitudes après la première journée (J2), les invitations depuis l'accueil (carte « inviter des potes »).
 
 - **Connexion : Apple sur iPhone, Google sur Android.** Plus de code par e-mail (gardé seulement pour le mode local de développement).
 - Sexe : femme / homme / non-binaire / je préfère ne pas dire (ne filtre rien, §27). « Ce que tu cherches » est retiré (§27).
@@ -144,12 +144,13 @@ Toutes passent par un port `Pusher` (push Expo ; adaptateur mémoire) et un rég
 | Preuve d'habitude demandée | au moment choisi pour l'habitude |
 | Bilan de la semaine | dimanche soir |
 | Objet débloqué · 3 mots reçus | à l'événement |
+| Premiers pas · nouvelles du minimoa · ton abonnement Minimoa+ | fidélisation (17 nov.) : J1/J3/J7, absences de 3/7/14 jours, anniversaires, moments de l'abonnement ; une par jour au plus, en journée (`docs/FIDELISATION.md`) |
 
 Un minuteur côté serveur (tâche planifiée qui appelle l'API) déclenche les envois programmés.
 
 ## 13. Minimoa+
 
-- Offres : **59,88 € par an** ou **14,99 € par mois**.
+- Offres : **59,88 € par an** (7 jours gratuits), **14,99 € par mois** ou **2,99 € par semaine** (ajoutée le 17 nov. ; remise de l'annuel toujours calculée contre la mensuelle).
 - Contenu : toute la carte et changer de ville · plus de rencontres · jokers de série · 6 habitudes · bilan détaillé · renommer son minimoa librement · objets premium.
 - Objets premium (audit B3) : tous possédés et portables tant que Minimoa+ dure ; à la fin de l'abonnement, le minimoa les range (verrouillés, de retour avec un nouvel abonnement).
 - Achat intégré Apple, vérifié côté serveur (port `Billing`), qui met à jour `plus` sur le profil.

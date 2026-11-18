@@ -17,10 +17,12 @@ const COLORS = { bg: '#0B0A14', card: '#16142A', text: '#F4F2FF', muted: '#A9A4C
 const escapeHtml = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-interface Layout {
+export interface EmailLayout {
   title: string;
   paragraphs: readonly string[];
   cta: { label: string; url: string };
+  /** Ligne discrète sous le bouton (pourquoi cet e-mail, comment ne plus le recevoir). */
+  footer?: string;
 }
 
 interface WelcomeInput {
@@ -51,10 +53,10 @@ const fr = {
     cta: (i: WelcomeInput) => `Voir ${i.petName}`,
   },
   wave: {
-    subject: (i: WaveInput) => `${i.petName} a croisé le minimoa de ${i.fromName}`,
+    subject: (i: WaveInput) => `${i.fromName} te fait signe`,
     title: (i: WaveInput) => `${i.fromPetName} est passé dire bonjour.`,
     paragraphs: (i: WaveInput) => [
-      `Salut ${i.displayName}, ${i.petName} a croisé ${i.fromPetName}, le minimoa de ${i.fromName}.`,
+      `Salut ${i.displayName}, ${i.fromName} te fait signe : son minimoa, ${i.fromPetName}, est venu voir ${i.petName}.`,
       'Si tu acceptes, vos minimoas se rencontrent et vous pouvez vous écrire.',
     ],
     cta: 'Voir la rencontre',
@@ -85,10 +87,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `See ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} met ${i.fromName}’s minimoa`,
+      subject: (i: WaveInput) => `${i.fromName} is waving at you`,
       title: (i: WaveInput) => `${i.fromPetName} stopped by to say hi.`,
       paragraphs: (i: WaveInput) => [
-        `Hi ${i.displayName}, ${i.petName} met ${i.fromPetName}, ${i.fromName}’s minimoa.`,
+        `Hi ${i.displayName}, ${i.fromName} is waving at you: their minimoa, ${i.fromPetName}, came to see ${i.petName}.`,
         'If you accept, your minimoas meet and you can write to each other.',
       ],
       cta: 'See the encounter',
@@ -116,10 +118,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `Ver a ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} se ha cruzado con el minimoa de ${i.fromName}`,
+      subject: (i: WaveInput) => `${i.fromName} te saluda`,
       title: (i: WaveInput) => `${i.fromPetName} ha pasado a saludar.`,
       paragraphs: (i: WaveInput) => [
-        `Hola, ${i.displayName}: ${i.petName} se ha cruzado con ${i.fromPetName}, el minimoa de ${i.fromName}.`,
+        `Hola, ${i.displayName}: ${i.fromName} te saluda. Su minimoa, ${i.fromPetName}, vino a ver a ${i.petName}.`,
         'Si aceptas, sus minimoas se conocen y podrás escribirle.',
       ],
       cta: 'Ver el encuentro',
@@ -147,10 +149,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `Ver ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} cruzou com o minimoa de ${i.fromName}`,
+      subject: (i: WaveInput) => `${i.fromName} está acenando para você`,
       title: (i: WaveInput) => `${i.fromPetName} passou para dar um oi.`,
       paragraphs: (i: WaveInput) => [
-        `Oi, ${i.displayName}! ${i.petName} cruzou com ${i.fromPetName}, o minimoa de ${i.fromName}.`,
+        `Oi, ${i.displayName}! ${i.fromName} está acenando para você: o minimoa dela, ${i.fromPetName}, veio ver ${i.petName}.`,
         'Se você aceitar, os minimoas de vocês se conhecem e vocês podem conversar.',
       ],
       cta: 'Ver o encontro',
@@ -178,10 +180,10 @@ export const emailText = defineMessages({
       cta: (i: WelcomeInput) => `Bekijk ${i.petName}`,
     },
     wave: {
-      subject: (i: WaveInput) => `${i.petName} kwam de minimoa van ${i.fromName} tegen`,
+      subject: (i: WaveInput) => `${i.fromName} zwaait naar je`,
       title: (i: WaveInput) => `${i.fromPetName} kwam even hallo zeggen.`,
       paragraphs: (i: WaveInput) => [
-        `Hoi ${i.displayName}, ${i.petName} kwam ${i.fromPetName} tegen, de minimoa van ${i.fromName}.`,
+        `Hoi ${i.displayName}, ${i.fromName} zwaait naar je: diens minimoa, ${i.fromPetName}, kwam bij ${i.petName} langs.`,
         'Als je accepteert, ontmoeten jullie minimoas elkaar en kunnen jullie elkaar schrijven.',
       ],
       cta: 'Bekijk de ontmoeting',
@@ -198,8 +200,8 @@ export const emailText = defineMessages({
   },
 });
 
-/** Les textes passés ici sont bruts : ils sont échappés au rendu. */
-function render(locale: Locale, subject: string, layout: Layout): Email {
+/** Mise en page commune des e-mails. Les textes passés ici sont bruts : ils sont échappés au rendu. */
+export function renderEmail(locale: Locale, subject: string, layout: EmailLayout): Email {
   const tagline = labels.in(locale).tagline;
   const sep = emailText.in(locale).ctaSeparator;
   const paras = layout.paragraphs
@@ -215,24 +217,34 @@ function render(locale: Locale, subject: string, layout: Layout): Email {
 <h1 style="margin:0 0 20px;font-size:24px;line-height:1.3;color:${COLORS.text}">${escapeHtml(layout.title)}</h1>
 ${paras}
 <p style="margin:28px 0 0"><a href="${escapeHtml(layout.cta.url)}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:${COLORS.accent};color:${COLORS.bg};font-weight:700;text-decoration:none">${escapeHtml(layout.cta.label)}</a></p>
+${layout.footer ? `<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:${COLORS.muted}">${escapeHtml(layout.footer)}</p>` : ''}
 </td></tr></table>
 <p style="margin:20px 0 0;font-size:12px;color:${COLORS.muted}">${escapeHtml(tagline)} · ${escapeHtml(brand.supportEmail)}</p>
 </td></tr></table></body></html>`;
-  const text = [layout.title, '', ...layout.paragraphs, '', `${layout.cta.label}${sep}${layout.cta.url}`, '', `${brand.name} — ${tagline}`].join('\n');
+  const text = [
+    layout.title,
+    '',
+    ...layout.paragraphs,
+    '',
+    `${layout.cta.label}${sep}${layout.cta.url}`,
+    ...(layout.footer ? ['', layout.footer] : []),
+    '',
+    `${brand.name} — ${tagline}`,
+  ].join('\n');
   return { subject, html, text };
 }
 
 export function welcomeEmail(locale: Locale, input: WelcomeInput): Email {
   const t = emailText.in(locale).welcome;
-  return render(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta(input), url: input.appUrl } });
+  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta(input), url: input.appUrl } });
 }
 
 export function waveReceivedEmail(locale: Locale, input: WaveInput): Email {
   const t = emailText.in(locale).wave;
-  return render(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
+  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
 }
 
 export function linkCreatedEmail(locale: Locale, input: LinkInput): Email {
   const t = emailText.in(locale).linkCreated;
-  return render(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
+  return renderEmail(locale, t.subject(input), { title: t.title(input), paragraphs: t.paragraphs(input), cta: { label: t.cta, url: input.appUrl } });
 }

@@ -1,0 +1,58 @@
+---
+/** 3. Garde-robe : quatre minimoas habillés d'objets portés (mêmes placements que l'app), et comment on les gagne. */
+import SectionTitle from '../../molecules/SectionTitle.astro';
+import SnapSection from '../../molecules/SnapSection.astro';
+import { IMG, sections, wardrobe as c } from '../../../content/landing';
+---
+<SnapSection section={sections.garde} panel="p-orange s-garde" light>
+  <SectionTitle lines={c.title}>
+    <p class="lead" data-r="up">{c.lead}</p>
+  </SectionTitle>
+  <ul class="looks" role="list">
+    {
+      c.looks.map((l, i) => (
+        <li class:list={['look', { plus: l.plus }]} data-r="card" style={`--i:${i}`}>
+          <div class="bob">
+            <img src={`${IMG}/tenue_${l.name}.webp`} alt={c.alt(l.who, l.items)} width="500" height="600" loading="lazy" decoding="async" />
+          </div>
+          <p class="lk">
+            <b>{l.who}</b>
+            <span>{l.how}</span>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="steps hide-short" data-r="up" aria-label={c.rewards.label}>
+    <span class="lbl">{c.rewards.label}</span>
+    <ol>{c.rewards.steps.map((s) => <li>{s}</li>)}</ol>
+  </div>
+</SnapSection>
+<style is:global>
+.s-garde{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"tx" "looks" "steps"}
+.s-garde .tx{grid-area:tx}
+.s-garde .hd{--k:12}
+.looks{grid-area:looks;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;min-height:0}
+.look{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:0;border-radius:22px;background:rgba(255,255,255,.28);padding:6px 6px 8px}
+.look .bob{flex:1;min-height:0;display:flex;justify-content:center;width:100%}
+.look img{height:100%;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(120,40,0,.3))}
+.lk{display:flex;flex-direction:column;align-items:center;text-align:center;line-height:1.15}
+.lk b{font-weight:800;font-size:14px}
+.lk span{font-size:11.5px;font-weight:700;color:var(--mute-d)}
+.look.plus{background:var(--ink);color:#fff}
+.look.plus .lk span{color:var(--lime)}
+.steps{grid-area:steps;display:flex;align-items:center;gap:10px}
+.steps .lbl{opacity:.7}
+.steps ol{list-style:none;margin:0;padding:0;display:flex;gap:6px}
+.steps li{display:flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 8px;border-radius:999px;background:var(--ink);color:var(--lime);font-family:var(--display);font-weight:800;font-size:17px}
+@media (min-width:900px){
+  .s-garde{grid-template-columns:.8fr 1.6fr;grid-template-rows:1fr auto auto 1fr;grid-template-areas:". looks" "tx looks" "steps looks" ". looks";column-gap:3vw;align-items:center}
+  .looks{grid-template-columns:repeat(4,1fr);grid-template-rows:auto;align-self:center;gap:12px}
+  .look{aspect-ratio:5/7.4}
+  .look .bob{align-items:flex-end}
+  .look{padding:14px 10px 16px;rotate:calc((var(--i) - 1.5) * 1.6deg)}
+  .lk b{font-size:17px}
+  .lk span{font-size:13px}
+  .steps{margin-top:2svh}
+}
+</style>

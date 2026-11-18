@@ -1,0 +1,110 @@
+---
+/**
+ * « Ton quartier ouvre à 50 » : choix du quartier (ville puis arrondissement, ou code postal ; jamais de position),
+ * e-mail, consentement explicite (case non cochée), compteur réel du quartier choisi. Après l'envoi : « Regarde tes
+ * e-mails » et le lien du quartier à partager. Rempli et traduit par scripts/quartier-form.ts.
+ */
+import { ZONES, ZONE_CITIES } from '@blowy/domain';
+import { quizCopy } from '../../../content/quiz';
+
+interface Props {
+  /** Titre de niveau 1 (page quartier) ou 2 (fin du quiz). */
+  level?: 1 | 2;
+}
+const { level = 2 } = Astro.props;
+const Tag = level === 1 ? 'h1' : 'h2';
+const t = quizCopy.fr.quartier;
+const data = {
+  districts: Object.fromEntries(ZONE_CITIES.map((c) => [c, ZONES.filter((z) => z.city === c && z.district).map((z) => ({ id: z.id, n: z.district }))])),
+  cities: Object.fromEntries(ZONES.filter((z) => !z.district).map((z) => [z.city, z.id])),
+};
+---
+<section class="qf" data-quartier-form>
+  <span class="lbl" data-q="quartier.label">{t.label}</span>
+  <Tag class="pub-title qf-title" tabindex="-1" data-qf-title>{t.title.replace('{n}', '50')}</Tag>
+  <p class="pub-text" data-q="quartier.text">{t.text}</p>
+
+  <form class="qf-form" data-qf-form novalidate>
+    <div class="qf-row">
+      <label class="qf-field">
+        <span data-q="quartier.city">{t.city}</span>
+        <select data-qf-city>
+          <option value="" data-q="quartier.cityPick">{t.cityPick}</option>
+          {ZONE_CITIES.map((c) => <option value={c} data-city={c}>{c}</option>)}
+        </select>
+      </label>
+      <label class="qf-field" data-qf-district-wrap hidden>
+        <span data-q="quartier.zone">{t.zone}</span>
+        <select data-qf-district></select>
+      </label>
+    </div>
+    <p class="qf-or"><span data-q="quartier.or">{t.or}</span></p>
+    <label class="qf-field">
+      <span data-q="quartier.postal">{t.postal}</span>
+      <input data-qf-postal inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="75011" />
+      <small data-q="quartier.postalHint">{t.postalHint}</small>
+    </label>
+
+    <div class="qf-counter" data-qf-counter hidden aria-live="polite">
+      <div class="qf-bar"><i data-qf-bar></i></div>
+      <b data-qf-count></b>
+    </div>
+
+    <label class="qf-field">
+      <span data-q="quartier.email">{t.email}</span>
+      <input data-qf-email type="email" autocomplete="email" inputmode="email" required placeholder={t.emailPlaceholder} data-q-placeholder="quartier.emailPlaceholder" />
+    </label>
+    <label class="qf-consent">
+      <input type="checkbox" data-qf-consent />
+      <span><span data-q="quartier.consent">{t.consent}</span> <a href="/legal/confidentialite/" data-q="quartier.privacy" data-qf-privacy>{t.privacy}</a></span>
+    </label>
+    <p class="qf-error" data-qf-error role="alert" hidden></p>
+    <button type="submit" class="btn l qf-submit" data-qf-submit data-q="quartier.submit">{t.submit}</button>
+  </form>
+
+  <div class="qf-sent" data-qf-sent hidden>
+    <b class="qf-sent-title" data-q="quartier.sentTitle">{t.sentTitle}</b>
+    <p class="pub-text" data-q="quartier.sentText">{t.sentText}</p>
+  </div>
+
+  <div class="qf-invite" data-qf-invite hidden>
+    <b class="qf-sent-title" data-q="quartier.inviteTitle">{t.inviteTitle}</b>
+    <p class="pub-text" data-q="quartier.inviteText">{t.inviteText}</p>
+    <output class="qf-link" data-qf-link></output>
+    <div class="pub-actions">
+      <button type="button" class="btn l" data-qf-share data-q="quartier.inviteShare">{t.inviteShare}</button>
+      <button type="button" class="btn g" data-qf-copy data-q="quartier.copy">{t.copy}</button>
+    </div>
+  </div>
+  <script type="application/json" data-qf-districts set:html={JSON.stringify(data)}></script>
+</section>
+<style is:global>
+.qf{display:flex;flex-direction:column;gap:14px;width:100%}
+.qf-title{font-size:clamp(34px,9vw,56px)}
+.qf-form{display:flex;flex-direction:column;gap:12px;width:100%}
+.qf-row{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:520px){.qf-row{grid-template-columns:1fr 1fr}}
+.qf-field{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+.qf-field[hidden]{display:none}
+.qf-field small{font-weight:500;color:var(--mute);font-size:13px}
+.qf select,.qf input[type="email"],.qf input[inputmode="numeric"]{height:52px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;font:inherit;font-size:16px;font-weight:600;padding:0 14px;width:100%}
+.qf select option{color:var(--ink)}
+.qf select:focus,.qf input:focus{outline:3px solid var(--lime);outline-offset:1px}
+.qf-or{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:13px;font-weight:700}
+.qf-or::before,.qf-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.qf-counter{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.qf-counter[hidden]{display:none}
+.qf-bar{height:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+.qf-bar i{display:block;height:100%;width:0;border-radius:999px;background:var(--lime);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.qf-counter b{font-size:17px;font-weight:800}
+.qf-consent{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.4;color:var(--mute)}
+.qf-consent input{width:22px;height:22px;flex:0 0 auto;margin:1px 0 0;accent-color:var(--lime)}
+.qf-consent a{color:#fff;text-decoration:underline}
+.qf-error{color:#FF8F6B;font-weight:700;font-size:14px}
+.qf-error[hidden],.qf-sent[hidden],.qf-invite[hidden]{display:none}
+.qf-submit{align-self:flex-start}
+.qf-sent,.qf-invite{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:20px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.25)}
+.qf-sent-title{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05;letter-spacing:-.01em}
+.qf-link{font-weight:800;color:var(--lime);overflow-wrap:anywhere;user-select:all}
+@media (prefers-reduced-motion:reduce){.qf-bar i{transition:none}}
+</style>

@@ -43,6 +43,9 @@ export default function Notifications() {
     { key: 'proof', kinds: ['habit_proof'], ...t.rows.habit_proof },
     { key: 'review', kinds: ['weekly_review'], ...t.rows.weekly_review },
     { key: 'unlocked', kinds: ['item_unlocked', 'words_received'], ...t.rows.unlocked },
+    // Fidélisation (docs/FIDELISATION.md) : coupe aussi les e-mails du même genre.
+    { key: 'first_steps', kinds: ['first_steps'], ...t.rows.first_steps },
+    { key: 'news', kinds: ['minimoa_news'], ...t.rows.minimoa_news },
   ];
   const linkRows: Row[] = [
     { key: 'encounters', kinds: ['new_encounter', 'waved'], ...t.rows.encounters },
@@ -57,7 +60,10 @@ export default function Notifications() {
     { key: 'group_message', kinds: ['group_message'], ...g.group_message },
     { key: 'group_lives', kinds: ['group_life_lost', 'group_asleep'], ...g.group_lives },
   ];
-  const plusRows: Row[] = [{ key: 'trial', kinds: ['trial_reminder'], ...t.rows.trial_reminder }];
+  const plusRows: Row[] = [
+    { key: 'trial', kinds: ['trial_reminder'], ...t.rows.trial_reminder },
+    { key: 'plus_account', kinds: ['plus_account'], ...t.rows.plus_account },
+  ];
 
   const toRows = (s: NotificationSettings, rows: Row[]) =>
     rows.map((r) => ({

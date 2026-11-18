@@ -7,7 +7,7 @@ export const mentionsLegales: LegalPage = {
   intro: 'Quién edita la app y la web de Minimoa, quién las aloja y cómo contactarnos.',
   body: [
     { h2: 'Editor', id: 'editeur' },
-    { p: 'La web blowy.app y la app Minimoa están editadas por:' },
+    { p: 'La web minimoa.app y la app Minimoa están editadas por:' },
     {
       ul: [
         '**Denominación social:** {{publisher.name}}',
@@ -23,14 +23,14 @@ export const mentionsLegales: LegalPage = {
     { h2: 'Director de la publicación', id: 'publication' },
     { p: '{{publisher.publicationDirector}}' },
     { h2: 'Alojamiento', id: 'hebergement' },
-    { h3: 'La web blowy.app' },
+    { h3: 'La web minimoa.app' },
     { ul: ['**Proveedor:** {{siteHost.name}}', '**Dirección:** {{siteHost.address}}', '**Teléfono:** {{siteHost.phone}}'] },
     { h3: 'Los datos de la app' },
     {
       ul: [
         '**Proveedor:** {{dataHost.name}}',
         '**Dirección:** {{dataHost.address}}',
-        '**Teléfono:** {{dataHost.phone}}',
+        '**Contacto:** {{dataHost.contact}}',
         '**Ubicación de los servidores:** {{dataHost.region}}',
       ],
     },
@@ -54,6 +54,6 @@ export const mentionsLegales: LegalPage = {
     {
       p: 'La marca Minimoa, los minimoas, las ilustraciones, los textos, las animaciones y el software están protegidos por el derecho de propiedad intelectual. Pertenecen a {{publisher.name}} o a sus socios. Está prohibido reproducirlos o reutilizarlos sin autorización, salvo lo que permita la ley (cita breve, copia privada).',
     },
-    { p: 'Fuentes de la web: Anton y Allo (Josh Puckett), con licencia SIL Open Font License. Animaciones de la página de inicio: biblioteca GSAP.' },
+    { p: 'Fuente de la web y de sus imágenes: Allo (Josh Puckett), con licencia SIL Open Font License. Animaciones de la página de inicio: biblioteca GSAP.' },
   ],
 };

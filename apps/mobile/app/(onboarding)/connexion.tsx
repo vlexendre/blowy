@@ -58,7 +58,7 @@ export default function Connexion() {
     <ScreenMotion>
       <OnboardingTemplate
         {...(signup ? progressAt('connexion') : {})}
-        onBack={() => goBack(login ? '/(onboarding)/welcome' : '/(onboarding)/promesse')}
+        onBack={() => goBack(login ? '/(onboarding)/welcome' : '/(onboarding)/naissance')}
         backLabel={common.back}
         gap={14}
         actions={

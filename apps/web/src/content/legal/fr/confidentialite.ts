@@ -26,11 +26,11 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         'Pour toute question sur tes données : {{email.privacy}}.',
-        'Délégué à la protection des données : {{dpo.name}}.',
+        'Nous n’avons pas désigné de délégué à la protection des données (DPO) : toutes tes demandes sur tes données vont à {{email.privacy}}.',
       ],
     },
     {
-      p: 'Cette politique s’applique à l’app Minimoa et au site blowy.app. Pour les cookies du site, voir la [page cookies](@cookies).',
+      p: 'Cette politique s’applique à l’app Minimoa et au site minimoa.app. Pour les cookies du site, voir la [page cookies](@cookies).',
     },
 
     { h2: "2. Ce qu'on utilise, et pourquoi", id: 'donnees' },
@@ -173,9 +173,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Données :** le jeton technique de ton téléphone pour les notifications, tes réglages par type de notification, l’heure choisie pour le défi du jour ; sur iPhone, les jetons des activités en direct.',
-        '**But :** te prévenir (défi du jour, nouvelle rencontre, message, « à toi d’écrire » le soir, lien ou série en danger, preuve demandée, bilan, rappel de fin d’essai). Heures calmes de 22 h à 8 h ; hors messages, 3 par jour au plus. Le rappel de fin d’essai part aussi par e-mail, même si les notifications sont coupées. Sur iPhone, le widget et les activités en direct utilisent les mêmes données ; une activité en direct sur l’écran verrouillé ne montre jamais le prénom de quelqu’un.',
-        '**Base légale :** ton consentement pour les notifications, donné via l’autorisation de ton téléphone (tu le retires dans les réglages du téléphone ou type par type dans l’app) ; exécution du contrat pour les e-mails liés à ton compte et à ton abonnement.',
-        '**Durée :** jusqu’à ce que tu désactives les notifications ou supprimes ton compte.',
+        '**But :** te prévenir (défi du jour, nouvelle rencontre, message, « à toi d’écrire » le soir, lien ou série en danger, preuve demandée, bilan, rappel de fin d’essai ; premiers pas les 7 premiers jours, nouvelles de ton minimoa quand tu t’absentes et à vos anniversaires, messages de ton abonnement Minimoa+). Heures calmes de 22 h à 8 h ; hors messages, 3 par jour au plus. Le rappel de fin d’essai et les e-mails de ton abonnement (bienvenue, paiement refusé, fin) partent aussi par e-mail, même si les notifications sont coupées. L’e-mail après 14 jours d’absence et la relance unique un mois après la fin de Minimoa+ se coupent avec le même réglage que la notification (« Nouvelles de ton minimoa », « Ton abonnement Minimoa+ »). Sur iPhone, le widget et les activités en direct utilisent les mêmes données ; une activité en direct sur l’écran verrouillé ne montre jamais le prénom de quelqu’un.',
+        '**Base légale :** ton consentement pour les notifications, donné via l’autorisation de ton téléphone (tu le retires dans les réglages du téléphone ou type par type dans l’app) ; exécution du contrat pour les e-mails liés à ton compte et à ton abonnement ; intérêt légitime pour l’e-mail d’absence et la relance après la fin de Minimoa+ (tu t’y opposes en coupant le réglage).',
+        '**Durée :** jusqu’à ce que tu désactives les notifications ou supprimes ton compte. La liste des messages déjà envoyés (seulement leur type et leur date, pour ne jamais envoyer deux fois le même) est gardée 400 jours au plus.',
         '**Accès :** nos prestataires d’envoi des notifications et des e-mails, et Apple ou Google, qui acheminent les notifications jusqu’à ton téléphone.',
       ],
     },
@@ -202,6 +202,31 @@ export const confidentialite: LegalPage = {
         '**Base légale :** nos obligations légales (notamment le règlement sur les services numériques) et notre intérêt légitime à assurer la sécurité de la communauté.',
         '**Durée :** voir le [tableau des durées](#durees). Si tu supprimes ton compte, les signalements qui te concernent et le journal des décisions restent jusqu’à leur effacement, sans lien avec un compte (le journal garde le prénom concerné).',
         '**Accès :** les modérateurs habilités de Minimoa, et les autorités si la loi l’exige. La personne signalée ne sait pas qui l’a signalée. Une personne bloquée n’est pas prévenue.',
+      ],
+    },
+
+    { h3: 'D’où tu viens, et les étapes de ton parcours', id: 'croissance' },
+    {
+      ul: [
+        '**Données :** la façon dont tu es arrivé·e sur Minimoa (le code d’un créateur, le lien « 3 mots » ou le lien de groupe ouvert, une invitation, ou rien de tout ça), lue **seulement** dans le lien que tu as ouvert avant ton inscription ou dans le code que tu as tapé (« Un code ? ») ; la personne qui t’a fait venir, s’il y en a une ; et les grandes étapes de ton parcours, une fois chacune : inscription terminée, premier lien, retour 1, 7 et 30 jours après, début d’essai et premier paiement Minimoa+.',
+        '**Ce qu’on ne fait pas :** aucune empreinte de ton appareil (ni modèle, ni adresse IP, ni identifiant publicitaire), aucun outil de mesure tiers. Les visites des pages publiques (« 3 mots », invitation, groupe, code créateur), les premiers lancements de l’app, les votes et les partages sont seulement **comptés par jour**, sans IP ni identifiant : personne ne se cache derrière ces compteurs.',
+        '**But :** savoir quels liens et quels créateurs font venir des gens qui restent, améliorer le parcours, et offrir l’objet de garde-robe « Parrain » à la personne qui en a fait venir une autre et à celle qui arrive (objet décoratif, jamais lié à un achat ni à un avis).',
+        '**Base légale :** notre intérêt légitime.',
+        '**Durée :** la source et les étapes, tant que ton compte existe. Quand tu le supprimes, la source est effacée et les étapes perdent tout lien avec toi (il ne reste qu’un nombre). Les compteurs du jour sont gardés sans limite.',
+        '**Accès :** quelques personnes autorisées de l’équipe, dans l’outil interne, en chiffres seulement. Un créateur ne voit jamais qui est arrivé avec son code.',
+      ],
+    },
+
+    { h3: 'Le quiz « Quel minimoa es-tu ? » et « Ouvre ton quartier » (site, sans compte)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz :** tes réponses servent à calculer ton résultat dans la requête ; on ne garde **que le résultat** (l’espèce, le caractère et les jauges de départ), sous un code court, et le code du résultat de la personne qui t’a défié, s’il y en a un. Aucun nom, aucune adresse, aucune IP n’y est attaché. Le code sert à retrouver ton résultat et à pré-remplir ton minimoa si tu le tapes dans l’app. Effacé au bout d’un an.',
+        '**Ouvre ton quartier :** ton adresse e-mail, le quartier choisi (dans une liste ou par code postal ; **jamais ta position**), ta langue, la date de ton accord et de ta confirmation, ton code pour inviter et, si tu es venu·e par le lien de quelqu’un, qui t’a invité·e. Tu comptes dans le compteur du quartier seulement après avoir confirmé ton adresse (double vérification). On t’écrit deux fois au plus : la confirmation, puis l’ouverture du quartier.',
+        '**But :** te prévenir de l’ouverture de ton quartier, afficher le vrai compteur (un nombre, jamais une adresse), et offrir l’objet décoratif « Fondateur » aux 3 premières personnes qui ont invité dans le quartier.',
+        '**Base légale :** ton consentement (case à cocher, jamais cochée d’avance), retirable à tout moment par le lien de désinscription présent dans chaque e-mail.',
+        '**Durée :** non confirmée, l’inscription est effacée sous 7 jours. Désinscription : l’adresse est effacée tout de suite. Après l’e-mail d’ouverture, l’adresse est effacée sous 30 jours ; il ne reste qu’une ligne anonyme (quartier et code) pour le compteur et l’objet « Fondateur ».',
+        '**Accès :** l’envoi des e-mails passe par notre prestataire d’e-mails ({{sub.email.provider}}). L’outil interne de l’équipe ne montre que des compteurs par quartier, jamais d’adresse.',
+        '**Sur le site :** pendant ta visite, le code de ton résultat est gardé dans le stockage de session de ton navigateur (effacé quand tu fermes l’onglet), pour te remontrer ton résultat. Aucun cookie.',
       ],
     },
 
@@ -334,7 +359,7 @@ export const confidentialite: LegalPage = {
           email: 'Envoi des e-mails (compte, rappel de fin d’essai, alertes de modération)',
           push: 'Envoi des notifications',
           maps: 'Fond de carte',
-          site: 'Hébergement du site blowy.app',
+          site: 'Hébergement du site minimoa.app',
         },
       },
     },
@@ -365,6 +390,8 @@ export const confidentialite: LegalPage = {
           ['Signalements traités et décisions de modération', '1 an après la clôture du dossier, plus longtemps seulement si la loi l’impose.'],
           ['Exclusion définitive', 'Une empreinte non réversible de l’identifiant Apple ou Google du compte, pendant 3 ans, pour empêcher une réinscription.'],
           ['Statistiques', 'Jours d’activité et classement interne nominatif : 40 jours. Rencontres proposées : 30 jours. Chiffres agrégés, qui ne permettent pas de t’identifier : sans limite.'],
+          ['Quiz du site et « Ouvre ton quartier »', 'Résultat du quiz : 1 an. Inscription non confirmée : 7 jours. Adresse e-mail : jusqu’à ta désinscription, ou 30 jours après l’e-mail d’ouverture du quartier.'],
+          ['Source d’arrivée et étapes du parcours', 'Tant que ton compte existe ; effacées ou rendues anonymes à sa suppression. Compteurs du jour (visites, premiers lancements, votes, partages), sans personne derrière : sans limite.'],
           ['Journaux techniques de l’app', '30 jours au plus. Les journaux de nos hébergeurs suivent leurs propres durées.'],
           ['Échanges avec l’assistance', '1 an après la clôture de la demande.'],
           ['Demandes d’exercice de tes droits', '5 ans, pour pouvoir prouver qu’on y a répondu.'],

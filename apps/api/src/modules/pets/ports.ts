@@ -75,4 +75,6 @@ export interface WordVotesRepository {
   /** Faux si cette personne a déjà voté pour cette cible. */
   add(vote: { targetUser: string; words: readonly string[]; voterHash: string; createdAt: string }): Promise<boolean>;
   count(targetUser: string): Promise<number>;
+  /** Les mots choisis, vote par vote (les 500 plus récents) : le résultat « 3 mots » de la personne, jamais qui a voté. */
+  words(targetUser: string): Promise<string[][]>;
 }

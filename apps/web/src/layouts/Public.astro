@@ -11,10 +11,13 @@ interface Props {
   noindex?: boolean;
   /** Pleine page sans carte, sans barre ni fond animé : la page dessine tout elle-même (« 3 mots »). */
   bare?: boolean;
+  /** image d'aperçu de lien (1200 × 630) et son texte alternatif */
+  ogImage?: string;
+  ogAlt?: string;
 }
-const { title, description, noindex = false, bare = false } = Astro.props;
+const { title, description, noindex = false, bare = false, ogImage, ogAlt } = Astro.props;
 ---
-<Base title={title} description={description} noindex={noindex} bodyClass="pub-body">
+<Base title={title} description={description} noindex={noindex} bodyClass="pub-body" ogImage={ogImage} ogAlt={ogAlt}>
   {
     bare ? (
       <main id="main" class="pub-bare">
@@ -42,7 +45,7 @@ const { title, description, noindex = false, bare = false } = Astro.props;
 .pub-state{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
 .pub-state[hidden]{display:none}
 .pub-pet{width:clamp(150px,42vw,220px);height:auto;align-self:center;filter:drop-shadow(0 18px 24px rgba(0,0,0,.4))}
-.pub-title{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.95;letter-spacing:.005em;font-size:clamp(38px,10.5vw,68px);overflow-wrap:anywhere;outline:none}
+.pub-title{font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:.92;letter-spacing:-.02em;font-size:clamp(34px,9vw,58px);overflow-wrap:break-word;hyphens:manual;outline:none}
 .pub-title .ln{display:block}
 .pub-title .dim{opacity:.38}
 .pub-title .acc{color:var(--lime)}
@@ -55,7 +58,7 @@ const { title, description, noindex = false, bare = false } = Astro.props;
 .pub .btn[aria-disabled="true"],.pub button.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 .pub .stores{flex-wrap:wrap}
 .pub-dl{width:100%;margin-top:10px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
-.pub-dl>b{font-family:var(--display);font-weight:400;font-size:24px;text-transform:uppercase;line-height:1}
+.pub-dl>b{font-family:var(--display);font-weight:800;font-size:24px;text-transform:uppercase;line-height:1}
 .pub-dl>p{color:var(--mute);font-size:14px}
 .spin{width:44px;height:44px;border-radius:50%;border:4px solid rgba(255,255,255,.14);border-top-color:var(--lime);animation:spin .8s linear infinite;align-self:center;margin:30px 0 4px}
 .pub-loading{align-items:center;text-align:center;padding:20px 0}

@@ -14,6 +14,8 @@ import { useBlocks } from '@/features/safety';
 import { confirmAction, goBack, useSignOut } from '@/features/session';
 import { common } from '@/locales/common';
 import { groupes } from '@/locales/groupes';
+import { croissance } from '@/locales/croissance';
+import { useMoments } from '@/features/moments';
 import { moi } from '@/locales/moi';
 import { getLocale } from '@/locales/runtime';
 
@@ -52,6 +54,7 @@ export default function Reglages() {
 
   const languageName = t.languageNames[getLocale()] ?? getLocale();
 
+  const momentsOn = useMoments((x) => x.enabled);
   // Les sections arrivent en cascade (une fois) ; les lignes s'enfoncent au toucher, l'interrupteur file en ressort.
   return (
     <ScreenMotion>
@@ -65,6 +68,14 @@ export default function Reglages() {
           { key: 'identity', title: t.rows.identity.title, subtitle: m ? moi.identite.gender[m.identity.gender] : undefined, onPress: () => router.push('/moi/identite') },
           { key: 'plus', title: t.rows.plus.title, subtitle: t.rows.plus.subtitle(!!m?.plus), onPress: () => openPlus('generic') },
           { key: 'notifications', ...t.rows.notifications, onPress: () => router.push('/moi/notifications') },
+          // Moments à partager (séries, groupes) : une carte proposée une fois ; coupé, plus rien n'est proposé.
+          {
+            key: 'moments',
+            title: croissance.settings.title,
+            subtitle: momentsOn ? croissance.settings.on : croissance.settings.off,
+            switchValue: momentsOn,
+            onSwitchChange: (on: boolean) => useMoments.getState().setEnabled(on),
+          },
         ]}
       />
       {/* Le mode discret et l'IA sont sur l'onglet Moi : pas deux fois ici. */}

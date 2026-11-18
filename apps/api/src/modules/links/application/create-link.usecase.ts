@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
+import { Growth } from '../../growth/application/growth';
 import { chatSystemText, linkCreatedEmail } from '@blowy/content';
 import { newLink } from '@blowy/domain';
 import { Notifier } from '../../../integrations/mailer/notifier';
@@ -45,6 +46,7 @@ export class CreateLink {
     @Inject(IDS) private readonly ids: Ids,
     @Inject(ENV) private readonly env: Env,
     @Inject(Audience) private readonly audience: Audience,
+    @Optional() @Inject(Growth) private readonly growth: Growth | null = null,
   ) {}
 
   async execute(input: CreateLinkInput): Promise<LinkRecord> {
@@ -87,6 +89,9 @@ export class CreateLink {
 
     await this.character.apply(input.by, 'met_new_pet');
     await this.character.apply(input.with, 'met_new_pet');
+    // Entonnoir : premier lien de chacun (une fois).
+    await this.growth?.step(input.by, 'first_link');
+    await this.growth?.step(input.with, 'first_link');
     if (input.notify) await this.sendCreatedEmail(input.notify, draft.otherOf(input.notify), draft.pair(input.notify));
     if (input.notify) {
       const by = await this.profiles.findById(input.by);

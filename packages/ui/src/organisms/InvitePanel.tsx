@@ -19,7 +19,7 @@ export interface InvitePanelProps {
   title: TitleContent;
   text: string;
   pet?: PetLook;
-  /** Lien affiché sans protocole (« blowy.app/i/CODE ») ; la fin est mise en couleur. Absent : chargement. */
+  /** Lien affiché sans protocole (« minimoa.app/i/CODE ») ; la fin est mise en couleur. Absent : chargement. */
   url?: string;
   copyLabel: string;
   /** Juste après la copie : libellé (« copié ») et coche qui se dessine à la place du pictogramme. */

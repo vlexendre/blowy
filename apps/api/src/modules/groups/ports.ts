@@ -46,6 +46,11 @@ export interface GroupsRepository {
   update(id: string, patch: GroupPatch, expectEvaluatedThrough?: Day | null): Promise<boolean>;
   /** Groupes d'habitude vivants dont un jour reste à juger (dernier jugé avant `lastClosed`), curseur sur l'id. */
   listToSettle(lastClosed: Day, afterId: string | null, limit: number): Promise<GroupRecord[]>;
+  /** Code du lien d'invitation (`minimoa.app/g/<code>`), null tant que personne ne l'a demandé. */
+  inviteCode(groupId: string): Promise<string | null>;
+  /** Pose (ou remplace) le code ; faux s'il est déjà pris par un autre groupe. */
+  setInviteCode(groupId: string, code: string): Promise<boolean>;
+  findByInviteCode(code: string): Promise<GroupRecord | null>;
 }
 
 // ── Membres ────────────────────────────────────────────────────────────────

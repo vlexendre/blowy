@@ -22,8 +22,8 @@ export const confidentialite: LegalPage = {
     {
       p: 'The data controller is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, which publishes the Minimoa app and website ([legal notice](@mentions-legales)).',
     },
-    { ul: ['For any question about your data: {{email.privacy}}.', 'Data protection officer: {{dpo.name}}.'] },
-    { p: 'This policy covers the Minimoa app and the blowy.app website. For the website’s cookies, see the [cookies page](@cookies).' },
+    { ul: ['For any question about your data: {{email.privacy}}.', 'We have not appointed a data protection officer (DPO): all your requests about your data go to {{email.privacy}}.'] },
+    { p: 'This policy covers the Minimoa app and the minimoa.app website. For the website’s cookies, see the [cookies page](@cookies).' },
 
     { h2: '2. What we use, and why', id: 'donnees' },
     {
@@ -165,9 +165,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Data:** your phone’s technical notification token, your settings for each notification type, the time you chose for the daily challenge; on iPhone, Live Activity tokens.',
-        '**Purpose:** let you know (daily challenge, new encounter, message, “your turn to write” in the evening, connection or streak at risk, proof requested, weekly review, end-of-trial reminder). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. The end-of-trial reminder is also sent by email, even if notifications are off. On iPhone, the widget and Live Activities use the same data; a Live Activity on the lock screen never shows anyone’s first name.',
-        '**Legal basis:** your consent for notifications, given through your phone’s permission (you withdraw it in your phone settings or type by type in the app); performance of the contract for emails about your account and subscription.',
-        '**Retention:** until you turn off notifications or delete your account.',
+        '**Purpose:** let you know (daily challenge, new encounter, message, “your turn to write” in the evening, connection or streak at risk, proof requested, weekly review, end-of-trial reminder; first steps during the first 7 days, news from your minimoa when you’re away and on your anniversaries, messages about your Minimoa+ subscription). Quiet hours from 10 pm to 8 am; apart from messages, 3 a day at most. The end-of-trial reminder and the emails about your subscription (welcome, failed payment, end) are also sent by email, even if notifications are off. The email after 14 days away and the single reminder one month after Minimoa+ ends are turned off with the same setting as the notification (“News from your minimoa”, “Your Minimoa+ subscription”). On iPhone, the widget and Live Activities use the same data; a Live Activity on the lock screen never shows anyone’s first name.',
+        '**Legal basis:** your consent for notifications, given through your phone’s permission (you withdraw it in your phone settings or type by type in the app); performance of the contract for emails about your account and subscription; legitimate interest for the absence email and the reminder after Minimoa+ ends (you object by turning the setting off).',
+        '**Retention:** until you turn off notifications or delete your account. The list of messages already sent (only their type and date, so the same one is never sent twice) is kept for 400 days at most.',
         '**Access:** our notification and email providers, and Apple or Google, which deliver notifications to your phone.',
       ],
     },
@@ -194,6 +194,31 @@ export const confidentialite: LegalPage = {
         '**Legal basis:** our legal obligations (in particular the Digital Services Act) and our legitimate interest in keeping the community safe.',
         '**Retention:** see the [retention table](#durees). If you delete your account, reports about you and the decision log remain until they are erased, no longer linked to any account (the log keeps the first name concerned).',
         '**Access:** authorised Minimoa moderators, and the authorities where the law requires it. The reported person does not know who reported them. A blocked person is not notified.',
+      ],
+    },
+
+    { h3: 'Where you came from, and the steps of your journey', id: 'croissance' },
+    {
+      ul: [
+        '**Data:** how you arrived on Minimoa (a creator’s code, the “3 words” link or group link you opened, an invitation, or none of these), read **only** from the link you opened before signing up or from the code you typed (“Got a code?”); the person who brought you, if any; and the main steps of your journey, once each: sign-up completed, first connection, coming back 1, 7 and 30 days later, Minimoa+ trial started and first payment.',
+        '**What we don’t do:** no fingerprinting of your device (no model, no IP address, no advertising identifier), no third-party analytics tool. Visits to public pages (“3 words”, invitation, group, creator code), first app launches, votes and shares are only **counted per day**, with no IP or identifier: there is no one behind these counters.',
+        '**Purpose:** knowing which links and creators bring people who stay, improving the journey, and giving the “Referral” wardrobe item to the person who brought someone and to the newcomer (a decorative item, never tied to a purchase or a review).',
+        '**Legal basis:** our legitimate interest.',
+        '**Retention:** the source and steps, as long as your account exists. When you delete it, the source is erased and the steps lose any link to you (only a number remains). Daily counters are kept without limit.',
+        '**Access:** a few authorized team members, in the internal tool, as figures only. A creator never sees who arrived with their code.',
+      ],
+    },
+
+    { h3: 'The “Which minimoa are you?” quiz and “Open your neighbourhood” (website, no account)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz:** your answers are used to compute your result during the request; we keep **only the result** (species, character and starting gauges) under a short code, plus the result code of the person who challenged you, if any. No name, no address, no IP is attached. The code lets you find your result again and pre-fill your minimoa if you type it in the app. Erased after one year.',
+        '**Open your neighbourhood:** your email address, the neighbourhood you picked (from a list or by postcode; **never your location**), your language, the date of your consent and confirmation, your invite code and, if you came through someone’s link, who invited you. You only count in the neighbourhood counter once you’ve confirmed your address (double opt-in). We write to you twice at most: the confirmation, then the neighbourhood opening.',
+        '**Purpose:** to tell you when your neighbourhood opens, show the real counter (a number, never an address), and give the decorative “Founder” item to the first 3 people who invited others in the neighbourhood.',
+        '**Legal basis:** your consent (a checkbox, never pre-ticked), which you can withdraw at any time with the unsubscribe link in every email.',
+        '**Retention:** if not confirmed, the sign-up is erased within 7 days. Unsubscribing erases the address at once. After the opening email, the address is erased within 30 days; only an anonymous row (neighbourhood and code) remains for the counter and the “Founder” item.',
+        '**Access:** emails are sent through our email provider ({{sub.email.provider}}). The team’s internal tool only shows counts per neighbourhood, never an address.',
+        '**On the website:** during your visit, your result code is kept in your browser’s session storage (cleared when you close the tab) to show you your result again. No cookies.',
       ],
     },
 
@@ -320,7 +345,7 @@ export const confidentialite: LegalPage = {
           email: 'Sending emails (account, end-of-trial reminder, moderation alerts)',
           push: 'Sending notifications',
           maps: 'Map tiles',
-          site: 'Hosting of the blowy.app website',
+          site: 'Hosting of the minimoa.app website',
         },
       },
     },
@@ -351,6 +376,8 @@ export const confidentialite: LegalPage = {
           ['Handled reports and moderation decisions', '1 year after the case is closed, longer only if the law requires it.'],
           ['Permanent ban', 'A non-reversible fingerprint of the account’s Apple or Google identifier, for 3 years, to prevent re-registration.'],
           ['Statistics', 'Activity days and named internal ranking: 40 days. Suggested encounters: 30 days. Aggregated figures, which cannot identify you: without limit.'],
+          ['Website quiz and “Open your neighbourhood”', 'Quiz result: 1 year. Unconfirmed sign-up: 7 days. Email address: until you unsubscribe, or 30 days after the neighbourhood opening email.'],
+          ['Arrival source and journey steps', 'As long as your account exists; erased or anonymized when it’s deleted. Daily counters (visits, first launches, votes, shares), with no one behind them: without limit.'],
           ['The app’s technical logs', '30 days at most. Our hosts’ logs follow their own retention periods.'],
           ['Exchanges with support', '1 year after the request is closed.'],
           ['Requests to exercise your rights', '5 years, so we can prove we answered.'],

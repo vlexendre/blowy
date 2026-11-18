@@ -14,13 +14,14 @@ const Schema = z.object({
   APPLE_ACCEPT_SANDBOX: z.preprocess(emptyToUndefined, z.enum(['0', '1']).default('1')),
   PLUS_PRODUCT_YEARLY: z.preprocess(emptyToUndefined, z.string().default('app.blowy.plus.yearly')),
   PLUS_PRODUCT_MONTHLY: z.preprocess(emptyToUndefined, z.string().default('app.blowy.plus.monthly')),
+  PLUS_PRODUCT_WEEKLY: z.preprocess(emptyToUndefined, z.string().default('app.blowy.plus.weekly')),
 });
 
 export interface FacturationAdminEnv {
   /** Adresses autorisées sur `/admin/*`, en minuscules. En démo locale sans liste : `admin@blowy.local`. */
   adminEmails: string[];
   apple: { bundleId: string; appAppleId: number | null; acceptSandbox: boolean };
-  plusProducts: { yearly: string; monthly: string };
+  plusProducts: { yearly: string; monthly: string; weekly: string };
 }
 
 export function loadFacturationAdminEnv(source: Record<string, string | undefined>, mode: { env: 'local' | 'production'; demo: boolean }): FacturationAdminEnv {
@@ -39,6 +40,6 @@ export function loadFacturationAdminEnv(source: Record<string, string | undefine
   return {
     adminEmails: emails.length === 0 && mode.demo ? ['admin@blowy.local'] : emails,
     apple: { bundleId: e.APPLE_BUNDLE_ID, appAppleId: e.APPLE_APP_APPLE_ID ?? null, acceptSandbox: e.APPLE_ACCEPT_SANDBOX === '1' },
-    plusProducts: { yearly: e.PLUS_PRODUCT_YEARLY, monthly: e.PLUS_PRODUCT_MONTHLY },
+    plusProducts: { yearly: e.PLUS_PRODUCT_YEARLY, monthly: e.PLUS_PRODUCT_MONTHLY, weekly: e.PLUS_PRODUCT_WEEKLY },
   };
 }

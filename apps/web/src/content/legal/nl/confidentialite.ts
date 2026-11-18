@@ -22,8 +22,8 @@ export const confidentialite: LegalPage = {
     {
       p: 'De verwerkingsverantwoordelijke is **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, uitgever van de Minimoa-app en -website ([juridische informatie](@mentions-legales)).',
     },
-    { ul: ['Voor elke vraag over je gegevens: {{email.privacy}}.', 'Functionaris voor gegevensbescherming: {{dpo.name}}.'] },
-    { p: 'Dit beleid geldt voor de Minimoa-app en de website blowy.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
+    { ul: ['Voor elke vraag over je gegevens: {{email.privacy}}.', 'We hebben geen functionaris voor gegevensbescherming (FG) aangesteld: al je verzoeken over je gegevens gaan naar {{email.privacy}}.'] },
+    { p: 'Dit beleid geldt voor de Minimoa-app en de website minimoa.app. Voor de cookies van de website, zie de [cookiepagina](@cookies).' },
 
     { h2: '2. Wat we gebruiken, en waarom', id: 'donnees' },
     {
@@ -165,9 +165,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Gegevens:** het technische meldingstoken van je telefoon, je instellingen per type melding, het gekozen tijdstip voor de uitdaging van de dag; op iPhone de tokens van live-activiteiten.',
-        '**Doel:** je op de hoogte brengen (uitdaging van de dag, nieuwe ontmoeting, bericht, “jij bent aan de beurt om te schrijven” ’s avonds, band of reeks in gevaar, gevraagd bewijs, weekoverzicht, herinnering aan het einde van de proefperiode). Stille uren van 22 tot 8 uur; buiten berichten maximaal 3 per dag. De herinnering aan het einde van de proefperiode wordt ook per e-mail verstuurd, ook als meldingen uit staan. Op iPhone gebruiken de widget en live-activiteiten dezelfde gegevens; een live-activiteit op het vergrendelscherm toont nooit iemands voornaam.',
-        '**Rechtsgrond:** je toestemming voor meldingen, gegeven via de toestemming van je telefoon (je trekt die in via de instellingen van je telefoon of per type in de app); uitvoering van de overeenkomst voor e-mails over je account en je abonnement.',
-        '**Bewaartermijn:** tot je meldingen uitzet of je account verwijdert.',
+        '**Doel:** je op de hoogte brengen (uitdaging van de dag, nieuwe ontmoeting, bericht, “jij bent aan de beurt om te schrijven” ’s avonds, band of reeks in gevaar, gevraagd bewijs, weekoverzicht, herinnering aan het einde van de proefperiode; eerste stappen in de eerste 7 dagen, nieuws van je minimoa als je weg bent en op jullie verjaardagen, berichten over je Minimoa+-abonnement). Stille uren van 22 tot 8 uur; buiten berichten maximaal 3 per dag. De herinnering aan het einde van de proefperiode en de e-mails over je abonnement (welkom, mislukte betaling, einde) worden ook per e-mail verstuurd, ook als meldingen uit staan. De e-mail na 14 dagen afwezigheid en de enige herinnering een maand na het einde van Minimoa+ zet je uit met dezelfde instelling als de melding (“Nieuws van je minimoa”, “Je Minimoa+-abonnement”). Op iPhone gebruiken de widget en live-activiteiten dezelfde gegevens; een live-activiteit op het vergrendelscherm toont nooit iemands voornaam.',
+        '**Rechtsgrond:** je toestemming voor meldingen, gegeven via de toestemming van je telefoon (je trekt die in via de instellingen van je telefoon of per type in de app); uitvoering van de overeenkomst voor e-mails over je account en je abonnement; gerechtvaardigd belang voor de afwezigheidsmail en de herinnering na het einde van Minimoa+ (je maakt bezwaar door de instelling uit te zetten).',
+        '**Bewaartermijn:** tot je meldingen uitzet of je account verwijdert. De lijst van al verstuurde berichten (alleen het type en de datum, zodat hetzelfde bericht nooit twee keer gaat) wordt maximaal 400 dagen bewaard.',
         '**Toegang:** onze dienstverleners voor het versturen van meldingen en e-mails, en Apple of Google, die de meldingen naar je telefoon brengen.',
       ],
     },
@@ -194,6 +194,31 @@ export const confidentialite: LegalPage = {
         '**Rechtsgrond:** onze wettelijke verplichtingen (met name de digitaledienstenverordening) en ons gerechtvaardigd belang om de community veilig te houden.',
         '**Bewaartermijn:** zie de [tabel met bewaartermijnen](#durees). Als je je account verwijdert, blijven de meldingen over jou en het logboek van beslissingen bestaan tot ze worden gewist, zonder koppeling aan een account (het logboek bewaart de betrokken voornaam).',
         '**Toegang:** de bevoegde moderators van Minimoa, en de autoriteiten als de wet dat vereist. De gemelde persoon weet niet wie hem heeft gemeld. Een geblokkeerde persoon krijgt geen bericht.',
+      ],
+    },
+
+    { h3: 'Waar je vandaan komt, en de stappen van je traject', id: 'croissance' },
+    {
+      ul: [
+        '**Gegevens:** hoe je bij Minimoa bent gekomen (de code van een maker, de „3 woorden”- of groepslink die je opende, een uitnodiging, of niets daarvan), **alleen** gelezen uit de link die je vóór je aanmelding opende of uit de code die je typte („Heb je een code?”); de persoon die je meenam, als die er is; en de belangrijkste stappen van je traject, elk één keer: aanmelding voltooid, eerste band, terugkomen 1, 7 en 30 dagen later, start van de proefperiode en eerste betaling voor Minimoa+.',
+        '**Wat we niet doen:** geen fingerprinting van je toestel (geen model, geen IP-adres, geen advertentie-ID), geen meettools van derden. Bezoeken aan openbare pagina’s („3 woorden”, uitnodiging, groep, makerscode), eerste keren dat de app opent, stemmen en delen worden alleen **per dag geteld**, zonder IP of ID: er zit niemand achter die tellers.',
+        '**Doel:** weten welke links en makers mensen brengen die blijven, het traject verbeteren, en het garderobe-item „Peter” geven aan wie iemand meenam en aan de nieuwkomer (een decoratief item, nooit gekoppeld aan een aankoop of een review).',
+        '**Rechtsgrond:** ons gerechtvaardigd belang.',
+        '**Bewaartermijn:** de herkomst en de stappen zolang je account bestaat. Verwijder je het, dan wordt de herkomst gewist en verliezen de stappen elke koppeling met jou (er blijft alleen een getal over). Dagtellers worden onbeperkt bewaard.',
+        '**Toegang:** een paar bevoegde teamleden, in de interne tool, alleen als cijfers. Een maker ziet nooit wie met zijn of haar code is gekomen.',
+      ],
+    },
+
+    { h3: 'De quiz „Welke minimoa ben jij?” en „Open je buurt” (website, zonder account)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz:** je antwoorden worden gebruikt om tijdens het verzoek je resultaat te berekenen; we bewaren **alleen het resultaat** (soort, karakter en startmeters) onder een korte code, plus de resultaatcode van wie je uitdaagde, als die er is. Er hangt geen naam, adres of IP aan. Met de code vind je je resultaat terug en vul je je minimoa vooraf in als je hem in de app typt. Na een jaar gewist.',
+        '**Open je buurt:** je e-mailadres, de gekozen buurt (uit een lijst of via postcode; **nooit je locatie**), je taal, de datum van je toestemming en bevestiging, je uitnodigingscode en, als je via iemands link kwam, wie je uitnodigde. Je telt pas mee in de buurtteller nadat je je adres hebt bevestigd (dubbele bevestiging). We schrijven je hooguit twee keer: de bevestiging en de opening van de buurt.',
+        '**Doel:** je laten weten wanneer je buurt opengaat, de echte teller tonen (een getal, nooit een adres) en het decoratieve voorwerp „Oprichter” geven aan de eerste 3 mensen die in de buurt uitnodigden.',
+        '**Rechtsgrond:** je toestemming (een vakje dat nooit vooraf is aangevinkt), die je op elk moment intrekt via de afmeldlink in elke e-mail.',
+        '**Bewaartermijn:** niet bevestigd: binnen 7 dagen gewist. Afmelden wist het adres meteen. Na de openingsmail wordt het adres binnen 30 dagen gewist; er blijft alleen een anonieme regel (buurt en code) over voor de teller en het voorwerp „Oprichter”.',
+        '**Toegang:** e-mails gaan via onze e-mailprovider ({{sub.email.provider}}). De interne tool van het team toont alleen tellers per buurt, nooit een adres.',
+        '**Op de website:** tijdens je bezoek wordt je resultaatcode bewaard in de sessieopslag van je browser (gewist als je het tabblad sluit), om je resultaat opnieuw te tonen. Geen cookies.',
       ],
     },
 
@@ -320,7 +345,7 @@ export const confidentialite: LegalPage = {
           email: 'Versturen van e-mails (account, herinnering aan het einde van de proefperiode, moderatiewaarschuwingen)',
           push: 'Versturen van meldingen',
           maps: 'Kaartondergrond',
-          site: 'Hosting van de website blowy.app',
+          site: 'Hosting van de website minimoa.app',
         },
       },
     },
@@ -351,6 +376,8 @@ export const confidentialite: LegalPage = {
           ['Behandelde meldingen en moderatiebeslissingen', '1 jaar na het sluiten van het dossier, alleen langer als de wet dat vereist.'],
           ['Definitieve uitsluiting', 'Een niet-omkeerbare vingerafdruk van de Apple- of Google-identificatie van het account, gedurende 3 jaar, om een nieuwe aanmelding te voorkomen.'],
           ['Statistieken', 'Activiteitsdagen en interne ranglijst met namen: 40 dagen. Voorgestelde ontmoetingen: 30 dagen. Geaggregeerde cijfers, waarmee je niet te identificeren bent: onbeperkt.'],
+          ['Websitequiz en „Open je buurt”', 'Quizresultaat: 1 jaar. Niet-bevestigde aanmelding: 7 dagen. E-mailadres: tot je je afmeldt, of 30 dagen na de openingsmail van de buurt.'],
+          ['Herkomst en stappen van je traject', 'Zolang je account bestaat; gewist of geanonimiseerd bij verwijdering. Dagtellers (bezoeken, eerste keer openen, stemmen, delen), zonder persoon erachter: onbeperkt.'],
           ['Technische logboeken van de app', 'Maximaal 30 dagen. De logboeken van onze hostingproviders volgen hun eigen termijnen.'],
           ['Contact met de klantenservice', '1 jaar na het sluiten van het verzoek.'],
           ['Verzoeken om je rechten uit te oefenen', '5 jaar, zodat we kunnen aantonen dat we hebben geantwoord.'],

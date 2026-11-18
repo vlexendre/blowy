@@ -16,3 +16,7 @@ export * from './moderation';
 export * from './area';
 export * from './review';
 export * from './groups';
+export * from './fidelite';
+export * from './growth';
+export * from './quiz';
+export * from './quartiers';

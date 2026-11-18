@@ -6,10 +6,12 @@ import { labels } from '@blowy/content';
 /** Le site est en français. */
 const { wordLabel } = labels.in('fr');
 import { api, failureOf } from '../lib/api';
+import { DEEP_LINK_SCHEME } from '../config/site';
 import { readCode } from '../lib/code';
 import { setPetImage } from '../lib/pet';
 import { common, fill, wordsPage as c } from '../content/public';
 import { fillTemplates, onRetry, showState } from './public-page';
+import { withRef } from './ref';
 
 const MAX = 3;
 const code = readCode('m');
@@ -111,6 +113,14 @@ function showSent(words: readonly string[]): void {
   if (list) list.textContent = words.map((w) => wordLabel[w] ?? w).join(', ');
   if (form) form.hidden = true;
   if (sent) sent.hidden = false;
+  // Boucle « 3 mots » : l'app déjà installée ouvre ton propre lien ; sinon, le store, et le code qui dit qui t'a fait venir.
+  const own = document.querySelector<HTMLAnchorElement>('[data-own-link]');
+  if (own) own.href = withRef(`${DEEP_LINK_SCHEME}mots`);
+  const hint = document.querySelector<HTMLElement>('[data-you-code]');
+  if (hint && code) {
+    hint.textContent = fill(c.youCode, { code: code.toUpperCase() });
+    hint.hidden = false;
+  }
 }
 
 async function load(): Promise<void> {

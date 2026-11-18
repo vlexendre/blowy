@@ -1,10 +1,13 @@
 ---
 /** Appel à télécharger l'app (boutons de store). */
 import StoreButtons from '../../molecules/StoreButtons.astro';
+import CodeBox from './CodeBox.astro';
 import { common } from '../../../content/public';
+import { growthCopy } from '../../../content/growth';
 ---
 <div class="pub-dl">
   <b>{common.downloadTitle}</b>
   <p>{common.downloadText}</p>
   <StoreButtons />
+  <CodeBox label={growthCopy.fr.ref.label} help={growthCopy.fr.ref.help} copy={growthCopy.fr.copy} box="ref" hidden />
 </div>

@@ -21,7 +21,7 @@ export const conditions: LegalPage = {
   body: [
     { h2: '1. Who we are', id: 'editeur' },
     {
-      p: 'The Minimoa app and the blowy.app website are published by **{{publisher.name}}** (“Minimoa”, “we”). Full details are in the [legal notice](@mentions-legales). To write to us: {{email.support}}.',
+      p: 'The Minimoa app and the minimoa.app website are published by **{{publisher.name}}** (“Minimoa”, “we”). Full details are in the [legal notice](@mentions-legales). To write to us: {{email.support}}.',
     },
     {
       p: 'These terms apply to any use of the app. The [community rules](@regles), the [Minimoa+ subscription terms](@abonnement) and the [privacy policy](@confidentialite) are part of them.',
@@ -162,7 +162,7 @@ export const conditions: LegalPage = {
     { h2: '14. Applicable law, disputes and mediation', id: 'litiges' },
     { p: 'These terms are governed by **French law**. If you live in another EU country, you keep the protection of the mandatory rules of your country.' },
     { p: 'If there is a problem, write to us first at {{email.support}}: we will look for an amicable solution.' },
-    { p: 'If your written complaint does not resolve things, you can go to our consumer mediator free of charge, within one year of your complaint:' },
+    { requires: ['mediator.name'], p: 'If your written complaint does not resolve things, you can go to our consumer mediator free of charge, within one year of your complaint:' },
     { ul: ['**Mediator:** {{mediator.name}}', '**Address:** {{mediator.address}}', '**Website:** {{mediator.website}}'] },
     {
       p: 'Failing agreement, the dispute goes before the competent French courts. If you are a consumer, you can also go to the court of the place where you lived when you signed up or when the event occurred.',

@@ -139,7 +139,7 @@ function Result({ profile, species, petName, count, onDone }: { profile: VisionP
   const ta = onboarding.taVision;
   const axes = profile.axes.map((a) => {
     const sureness = ta.sureness[surenessOf(a.confidence)];
-    return { key: a.axis, name: a.name, sureness, value: a.value, confidence: a.confidence, low: lowerFirst(a.lowLabel), high: lowerFirst(a.highLabel), accessibilityLabel: ta.axisA11y(a.name, a.line, sureness) };
+    return { key: a.axis, name: ta.axisQuestion(a.name), sureness, value: a.value, confidence: a.confidence, low: lowerFirst(a.lowLabel), high: lowerFirst(a.highLabel), accessibilityLabel: ta.axisA11y(a.name, a.line, sureness) };
   });
   return (
     <ScreenMotion>

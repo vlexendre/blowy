@@ -19,6 +19,8 @@ import { checkAnswers } from '../../vision/application/vision.usecases';
 import { ContentFilter } from '../../moderation/content-filter';
 import { HabitsService } from '../../rituels/application/habits.service';
 import type { OnboardedHook, Profile, ProfilesRepository } from '../ports';
+import { Growth } from '../../growth/application/growth';
+import { Codes } from '../../growth/application/codes';
 
 export interface OnboardInput {
   userId: string;
@@ -52,6 +54,8 @@ export class Onboard {
     @Inject(Bans) private readonly bans: Bans,
     @Inject(ContentFilter) private readonly filter: ContentFilter,
     @Inject(HabitsService) private readonly habits: HabitsService,
+    @Inject(Growth) private readonly growth: Growth,
+    @Inject(Codes) private readonly codes: Codes,
   ) {}
 
   async execute({ userId, email, body }: OnboardInput): Promise<void> {
@@ -115,6 +119,12 @@ export class Onboard {
     }
 
     if (body.inviteCode) await this.joinInviter(userId, body.inviteCode.trim().toUpperCase());
+    // D'où vient la personne (lien ouvert ou code tapé) et l'étape « inscrit » : jamais bloquant (docs/VIRALITE.md).
+    try {
+      if (!profile.reviewWorld) await this.growth.onboarded(userId, await this.codes.attribution(userId, { inviteCode: body.inviteCode, attribution: body.attribution }));
+    } catch (err) {
+      this.logger.warn(`source du compte non notée : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+    }
     if (!profile.welcomeSentAt) {
       const sent = await this.notifier.notify(userId, welcomeEmail(profile.locale, { displayName: profile.displayName, petName, appUrl: this.env.webUrl }), email);
       if (sent) await this.profiles.update(userId, { welcomeSentAt: this.clock.now().toISOString() });

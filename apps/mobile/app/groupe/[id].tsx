@@ -2,12 +2,14 @@
  * Un groupe (spéc. §26) : deux onglets comme un lien. « Chat » : les messages, la phrase de confidentialité de l'API en
  * tête du fil, le signalement d'un message par appui long, les événements des minimoas en lignes centrées. « Le
  * groupe » : l'état du jour de chacun (tenu, joker, pas encore), la semaine, les jokers, le réveil d'un groupe endormi,
- * la phrase de transparence, les membres, et renommer / signaler / quitter.
+ * la phrase de transparence, les membres, et renommer / signaler / quitter. « Inviter avec un lien » partage
+ * `minimoa.app/g/<code>` ; sous 3 membres, « Il manque N personnes » ; à 7 et 30 jours de série, une carte à partager
+ * (une fois, désactivable ; docs/VIRALITE.md).
  * Lien profond : `blowy://groupe/<id>` (invitation, message, vie perdue, groupe endormi, groupe « ensemble » démarré).
  */
 import { ApiError } from '@blowy/api-client';
 import type { GroupDetail, GroupMember, GroupMessage, MemberDayStatusDto } from '@blowy/contract';
-import { GROUP_NAME_MAX } from '@blowy/domain';
+import { GROUP_MOMENTS, GROUP_NAME_MAX, missingMembers } from '@blowy/domain';
 import { color } from '@blowy/tokens';
 import {
   Avatar,
@@ -45,10 +47,16 @@ import {
   useGroupMessages,
   useLeaveGroup,
   useMarkGroupRead,
+  useGroupLink,
   useRenameGroup,
+  useResetGroupLink,
   useSendGroupMessage,
+  useShareGroupInvite,
   useWakeGroup,
 } from '@/features/groups';
+import { MomentSheet, useMomentOffer } from '@/features/moments';
+import { groupUrl } from '@/core';
+import { croissance } from '@/locales/croissance';
 import { chatDayLabel, ConfirmSheet, errorText } from '@/features/links';
 import { useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
@@ -130,6 +138,7 @@ export default function GroupScreen() {
           <GroupBody group={g} onReport={setReport} onLeft={() => router.replace('/(tabs)/chats')} />
         )}
       </GroupTemplate>
+      <GroupMoment group={g} />
       <GroupReportSheet
         groupId={g.id}
         target={report}
@@ -156,6 +165,28 @@ function Refresh({ id, ...rest }: { id: string }) {
         await group.refetch();
         setRefreshing(false);
       }}
+    />
+  );
+}
+
+/** Le groupe tient 7 ou 30 jours : une carte à partager, proposée une fois (sans prénoms). */
+function GroupMoment({ group }: { group: GroupDetail }) {
+  const streak = group.status === 'active' ? group.habit?.streak : null;
+  const { step, dismiss } = useMomentOffer(`group:${group.id}`, streak, GROUP_MOMENTS);
+  const link = useGroupLink(group.id, step !== null);
+  const me = group.members.find((m) => m.me);
+  if (step === null || !link.data || !me) return null;
+  const c = croissance.moments.group;
+  const url = groupUrl(link.data.code);
+  return (
+    <MomentSheet
+      visible
+      onClose={dismiss}
+      title={c.sheetTitle(step)}
+      text={c.text}
+      message={c.message(group.name, step, url)}
+      offerNever
+      card={{ title: c.title(group.name), big: { value: String(step), unit: c.unit }, pet: me.person.pet, callout: c.callout, url, gradient: 'coral' }}
     />
   );
 }
@@ -290,6 +321,8 @@ const weekdayOf = (day: string): number => new Date(`${day}T12:00:00Z`).getUTCDa
 
 function GroupBody({ group, onReport, onLeft }: { group: GroupDetail; onReport: (t: GroupReportTarget) => void; onLeft: () => void }) {
   const me = useMe();
+  const invite = useShareGroupInvite(group);
+  const resetLink = useResetGroupLink(group.id);
   const joker = useGroupJoker(group.id);
   const wake = useWakeGroup(group.id);
   const rename = useRenameGroup(group.id);
@@ -361,9 +394,19 @@ function GroupBody({ group, onReport, onLeft }: { group: GroupDetail; onReport: 
           />
         ) : null}
         {wake.isError ? <Banner key="wakeError" tone="error" text={errorText(wake.error, t.wakeError)} /> : null}
-        {group.status === 'forming' ? (
-          <Banner key="forming" tone="info" text={[t.formingText, group.invited > 0 ? t.invited(group.invited) : null].filter(Boolean).join(' ')} />
+        {group.status === 'forming' || (group.status === 'active' && missingMembers(group.memberCount) > 0) ? (
+          <Banner
+            key="forming"
+            tone="info"
+            title={(h ? croissance.groupInvite.missing : croissance.groupInvite.missingFree)(missingMembers(group.memberCount))}
+            text={[t.formingText, group.invited > 0 ? t.invited(group.invited) : null].filter(Boolean).join(' ')}
+            actionLabel={croissance.groupInvite.cta}
+            onAction={() => void invite.share()}
+            actionBelow
+          />
         ) : null}
+        {invite.failed ? <Banner key="inviteError" tone="error" text={croissance.groupInvite.error} onClose={invite.reset} closeLabel={t.cancel} /> : null}
+        {resetLink.isSuccess ? <Banner key="linkReset" tone="success" text={croissance.groupInvite.resetDone} onClose={() => resetLink.reset()} closeLabel={t.cancel} /> : null}
 
         {h ? (
           <SettingsSection
@@ -392,6 +435,16 @@ function GroupBody({ group, onReport, onLeft }: { group: GroupDetail; onReport: 
           rows={[
             ...(group.status !== 'closed'
               ? [
+                  {
+                    key: 'invite',
+                    title: croissance.groupInvite.row,
+                    subtitle: croissance.groupInvite.rowHint,
+                    disabled: invite.busy || group.seatsLeft === 0,
+                    onPress: () => void invite.share(),
+                  },
+                  ...(group.members.some((m) => m.me && m.creator)
+                    ? [{ key: 'resetLink', title: croissance.groupInvite.reset, disabled: resetLink.isPending, onPress: () => resetLink.mutate() }]
+                    : []),
                   {
                     key: 'rename',
                     title: t.rename,

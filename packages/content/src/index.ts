@@ -14,5 +14,7 @@ export * from './v7/notifications';
 export * from './v7/rituels';
 export * from './v7/audit';
 export * from './v7/groupes';
+export * from './v7/fidelite';
+export * from './v7/quiz';
 export * from './ai-provider';
 export { contentDictionaries } from './registry';

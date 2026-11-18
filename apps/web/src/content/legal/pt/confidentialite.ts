@@ -22,8 +22,8 @@ export const confidentialite: LegalPage = {
     {
       p: 'O responsável pelo tratamento é **{{publisher.name}}**, {{publisher.legalForm}}, {{publisher.address}}, que edita a app e o site Minimoa ([aviso legal](@mentions-legales)).',
     },
-    { ul: ['Para qualquer pergunta sobre os teus dados: {{email.privacy}}.', 'Encarregado da proteção de dados: {{dpo.name}}.'] },
-    { p: 'Esta política aplica-se à app Minimoa e ao site blowy.app. Para os cookies do site, consulta a [página de cookies](@cookies).' },
+    { ul: ['Para qualquer pergunta sobre os teus dados: {{email.privacy}}.', 'Não designámos um encarregado da proteção de dados (EPD): todos os teus pedidos sobre os teus dados vão para {{email.privacy}}.'] },
+    { p: 'Esta política aplica-se à app Minimoa e ao site minimoa.app. Para os cookies do site, consulta a [página de cookies](@cookies).' },
 
     { h2: '2. O que usamos, e para quê', id: 'donnees' },
     {
@@ -165,9 +165,9 @@ export const confidentialite: LegalPage = {
     {
       ul: [
         '**Dados:** o token técnico do teu telemóvel para as notificações, as tuas definições por tipo de notificação, a hora escolhida para o desafio do dia; no iPhone, os tokens das atividades em direto.',
-        '**Finalidade:** avisar-te (desafio do dia, novo encontro, mensagem, «é a tua vez de escrever» à noite, ligação ou série em perigo, prova pedida, resumo, lembrete de fim do período experimental). Horas de silêncio das 22 h às 8 h; fora das mensagens, 3 por dia no máximo. O lembrete de fim do período experimental também é enviado por e-mail, mesmo que as notificações estejam desativadas. No iPhone, o widget e as atividades em direto usam os mesmos dados; uma atividade em direto no ecrã bloqueado nunca mostra o nome de ninguém.',
-        '**Fundamento jurídico:** o teu consentimento para as notificações, dado através da autorização do telemóvel (retiras-o nas definições do telemóvel ou tipo a tipo na app); execução do contrato para os e-mails sobre a tua conta e a tua subscrição.',
-        '**Prazo:** até desativares as notificações ou eliminares a tua conta.',
+        '**Finalidade:** avisar-te (desafio do dia, novo encontro, mensagem, «é a tua vez de escrever» à noite, ligação ou série em perigo, prova pedida, resumo, lembrete de fim do período experimental; primeiros passos nos 7 primeiros dias, notícias do teu minimoa quando estás ausente e nos vossos aniversários, mensagens da tua subscrição Minimoa+). Horas de silêncio das 22 h às 8 h; fora das mensagens, 3 por dia no máximo. O lembrete de fim do período experimental e os e-mails da tua subscrição (boas-vindas, pagamento recusado, fim) também são enviados por e-mail, mesmo que as notificações estejam desativadas. O e-mail após 14 dias de ausência e o único lembrete um mês depois do fim do Minimoa+ desativam-se com a mesma definição da notificação («Notícias do seu minimoa», «Sua assinatura do Minimoa+»). No iPhone, o widget e as atividades em direto usam os mesmos dados; uma atividade em direto no ecrã bloqueado nunca mostra o nome de ninguém.',
+        '**Fundamento jurídico:** o teu consentimento para as notificações, dado através da autorização do telemóvel (retiras-o nas definições do telemóvel ou tipo a tipo na app); execução do contrato para os e-mails sobre a tua conta e a tua subscrição; interesse legítimo para o e-mail de ausência e o lembrete após o fim do Minimoa+ (opões-te desativando a definição).',
+        '**Prazo:** até desativares as notificações ou eliminares a tua conta. A lista das mensagens já enviadas (apenas o tipo e a data, para nunca enviar duas vezes a mesma) é guardada 400 dias no máximo.',
         '**Acesso:** os nossos fornecedores de envio de notificações e de e-mails, e a Apple ou a Google, que fazem chegar as notificações ao teu telemóvel.',
       ],
     },
@@ -194,6 +194,31 @@ export const confidentialite: LegalPage = {
         '**Fundamento jurídico:** as nossas obrigações legais (nomeadamente o Regulamento dos Serviços Digitais) e o nosso interesse legítimo em garantir a segurança da comunidade.',
         '**Prazo:** ver a [tabela de prazos](#durees). Se eliminares a tua conta, as denúncias que te dizem respeito e o registo das decisões ficam até serem apagados, sem ligação a nenhuma conta (o registo guarda o nome em causa).',
         '**Acesso:** os moderadores autorizados do Minimoa e as autoridades se a lei o exigir. A pessoa denunciada não sabe quem a denunciou. Uma pessoa bloqueada não é avisada.',
+      ],
+    },
+
+    { h3: 'De onde vens, e as etapas do teu percurso', id: 'croissance' },
+    {
+      ul: [
+        '**Dados:** a forma como chegaste ao Minimoa (o código de um criador, o link de “3 palavras” ou de grupo que abriste, um convite, ou nada disso), lida **apenas** no link que abriste antes de te registares ou no código que escreveste (“Tem um código?”); a pessoa que te trouxe, se houver; e as grandes etapas do teu percurso, uma vez cada: registo concluído, primeira ligação, regresso 1, 7 e 30 dias depois, início do período experimental e primeiro pagamento Minimoa+.',
+        '**O que não fazemos:** nenhuma impressão digital do teu dispositivo (nem modelo, nem endereço IP, nem identificador publicitário), nenhuma ferramenta de medição de terceiros. As visitas às páginas públicas (“3 palavras”, convite, grupo, código de criador), os primeiros arranques da app, os votos e as partilhas são apenas **contados por dia**, sem IP nem identificador: não há ninguém por trás destes contadores.',
+        '**Finalidade:** saber que links e que criadores trazem pessoas que ficam, melhorar o percurso, e oferecer o objeto de guarda-roupa “Padrinho” a quem trouxe alguém e a quem chega (objeto decorativo, nunca ligado a uma compra nem a uma avaliação).',
+        '**Base legal:** o nosso interesse legítimo.',
+        '**Prazo:** a origem e as etapas, enquanto a tua conta existir. Quando a apagas, a origem é apagada e as etapas perdem qualquer ligação a ti (fica apenas um número). Os contadores diários são guardados sem limite.',
+        '**Acesso:** algumas pessoas autorizadas da equipa, na ferramenta interna, apenas como números. Um criador nunca vê quem chegou com o seu código.',
+      ],
+    },
+
+    { h3: 'O quiz «Qual minimoa és tu?» e «Abre o teu bairro» (site, sem conta)', id: 'quiz-quartier' },
+    {
+      ul: [
+        '**Quiz:** as tuas respostas servem para calcular o teu resultado durante o pedido; guardamos **apenas o resultado** (a espécie, o carácter e os indicadores de partida) com um código curto, e o código do resultado da pessoa que te desafiou, se houver. Nenhum nome, endereço ou IP fica associado. O código permite voltar a encontrar o teu resultado e preencher o teu minimoa se o escreveres na app. Apagado ao fim de um ano.',
+        '**Abre o teu bairro:** o teu endereço de e-mail, o bairro escolhido (numa lista ou pelo código postal; **nunca a tua localização**), a tua língua, a data do teu consentimento e da tua confirmação, o teu código para convidar e, se chegaste pelo link de alguém, quem te convidou. Só contas no contador do bairro depois de confirmares o teu endereço (dupla confirmação). Escrevemos-te duas vezes no máximo: a confirmação e a abertura do bairro.',
+        '**Finalidade:** avisar-te da abertura do teu bairro, mostrar o contador real (um número, nunca um endereço) e oferecer o objeto decorativo «Fundador» às 3 primeiras pessoas que convidaram no bairro.',
+        '**Fundamento jurídico:** o teu consentimento (caixa nunca marcada à partida), que podes retirar a qualquer momento através do link de cancelamento presente em cada e-mail.',
+        '**Prazo:** se não for confirmada, a inscrição é apagada em 7 dias. Ao cancelares, o endereço é apagado de imediato. Depois do e-mail de abertura, o endereço é apagado em 30 dias; fica apenas uma linha anónima (bairro e código) para o contador e o objeto «Fundador».',
+        '**Acesso:** os e-mails são enviados através do nosso prestador de e-mail ({{sub.email.provider}}). A ferramenta interna da equipa só mostra contadores por bairro, nunca um endereço.',
+        '**No site:** durante a tua visita, o código do teu resultado fica guardado no armazenamento de sessão do teu navegador (apagado quando fechas o separador), para te voltar a mostrar o resultado. Sem cookies.',
       ],
     },
 
@@ -320,7 +345,7 @@ export const confidentialite: LegalPage = {
           email: 'Envio de e-mails (conta, lembrete de fim do período experimental, alertas de moderação)',
           push: 'Envio de notificações',
           maps: 'Mapa de fundo',
-          site: 'Alojamento do site blowy.app',
+          site: 'Alojamento do site minimoa.app',
         },
       },
     },
@@ -351,6 +376,8 @@ export const confidentialite: LegalPage = {
           ['Denúncias tratadas e decisões de moderação', '1 ano após o encerramento do processo, mais tempo só se a lei o exigir.'],
           ['Exclusão definitiva', 'Uma impressão não reversível do identificador Apple ou Google da conta, durante 3 anos, para impedir uma nova inscrição.'],
           ['Estatísticas', 'Dias de atividade e classificação interna nominativa: 40 dias. Encontros propostos: 30 dias. Números agregados, que não permitem identificar-te: sem limite.'],
+          ['Quiz do site e «Abre o teu bairro»', 'Resultado do quiz: 1 ano. Inscrição não confirmada: 7 dias. Endereço de e-mail: até cancelares, ou 30 dias depois do e-mail de abertura do bairro.'],
+          ['Origem de chegada e etapas do percurso', 'Enquanto a tua conta existir; apagadas ou anonimizadas quando é apagada. Contadores diários (visitas, primeiros arranques, votos, partilhas), sem ninguém por trás: sem limite.'],
           ['Registos técnicos da app', '30 dias no máximo. Os registos dos nossos fornecedores de alojamento seguem os seus próprios prazos.'],
           ['Trocas com o apoio', '1 ano após o encerramento do pedido.'],
           ['Pedidos de exercício dos teus direitos', '5 anos, para podermos provar que respondemos.'],

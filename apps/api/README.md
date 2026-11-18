@@ -50,8 +50,8 @@ curl -H 'Authorization: Bearer test:11111111-1111-4111-8111-111111111111' localh
 | `SUPABASE_URL` | — | requis avec `supabase` |
 | `SUPABASE_SERVICE_ROLE_KEY` | — | clé secrète (service) ; requise avec `supabase`, jamais dans l'app |
 | `RESEND_API_KEY` | vide | vide = e-mails dans la console |
-| `MAIL_FROM` | `Minimoa <hello@blowy.app>` | expéditeur |
-| `WEB_URL` | `https://blowy.app` | liens des e-mails |
+| `MAIL_FROM` | `Minimoa <hello@minimoa.app>` | expéditeur |
+| `WEB_URL` | `https://minimoa.app` | liens des e-mails |
 | `CORS_ORIGINS` | vide | origines autorisées, séparées par des virgules |
 
 L'API refuse de démarrer si la configuration est incohérente (production + mémoire, Supabase sans URL ou clé).
@@ -196,7 +196,7 @@ des liens (vies, « lien en danger ») et relances, reports du matin, défi du j
 morts), ménage.
 
 ```bash
-curl -fsS -X POST -H "x-tick-secret: $INTERNAL_TICK_SECRET" https://api.blowy.app/internal/tick
+curl -fsS -X POST -H "x-tick-secret: $INTERNAL_TICK_SECRET" https://api.minimoa.app/internal/tick
 ```
 
 Appeler toutes les 5 minutes, depuis un planificateur gratuit :
@@ -214,7 +214,7 @@ select cron.schedule(
   '*/5 * * * *',
   $$
   select net.http_post(
-    url := 'https://api.blowy.app/internal/tick',
+    url := 'https://api.minimoa.app/internal/tick',
     headers := jsonb_build_object(
       'content-type', 'application/json',
       'x-tick-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'tick_secret')
@@ -243,7 +243,7 @@ Mise en place côté App Store : `docs/BLOWY-PLUS.md`. Appli web d'administratio
 | `APPLE_BUNDLE_ID` | Bundle iOS (défaut `app.blowy`), vérifié dans chaque transaction et notification. |
 | `APPLE_APP_APPLE_ID` | Apple ID numérique de l'app (App Store Connect → Informations sur l'app). **Requis en production** : vérifié sur les notifications de production. |
 | `APPLE_ACCEPT_SANDBOX` | `1` (défaut) : accepte les achats du bac à sable (TestFlight). `0` : les refuse. |
-| `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY` | Identifiants produit (défauts `app.blowy.plus.yearly`, `app.blowy.plus.monthly`). |
+| `PLUS_PRODUCT_YEARLY`, `PLUS_PRODUCT_MONTHLY`, `PLUS_PRODUCT_WEEKLY` | Identifiants produit (défauts `app.blowy.plus.yearly`, `app.blowy.plus.monthly`, `app.blowy.plus.weekly`). |
 
 Aucune clé secrète : les achats se vérifient avec le certificat public d'Apple, embarqué dans le code.
 

@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 
 /** Site statique (Cloudflare Pages). Les pages /m/ et /i/ appellent l'API côté navigateur. */
 export default defineConfig({
-  site: 'https://blowy.app',
+  site: 'https://minimoa.app',
   output: 'static',
   trailingSlash: 'ignore',
   build: { format: 'directory' },

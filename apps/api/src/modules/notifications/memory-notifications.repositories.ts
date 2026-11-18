@@ -46,6 +46,13 @@ export class MemoryNotificationSettingsRepository implements NotificationSetting
     return s ? { ...s, disabledKinds: [...s.disabledKinds] } : null;
   }
 
+  async forUsers(userIds: readonly string[]): Promise<NotificationSettingsRecord[]> {
+    return userIds.flatMap((id) => {
+      const s = this.db.notificationSettings.get(id);
+      return s ? [{ ...s, disabledKinds: [...s.disabledKinds] }] : [];
+    });
+  }
+
   async save(settings: NotificationSettingsRecord): Promise<void> {
     this.db.notificationSettings.set(settings.userId, { ...settings, disabledKinds: [...settings.disabledKinds] });
   }

@@ -1,5 +1,5 @@
 /**
- * Garde-robe : 76 objets dans 4 emplacements (dont la collection Hiver de Minimoa+). Un objet se gagne par une étape (soins, liens, séries…)
+ * Garde-robe : 78 objets dans 4 emplacements (dont la collection Hiver de Minimoa+). Un objet se gagne par une étape (soins, liens, séries…)
  * ou s'achète (objets « premium »). Un seul objet porté par emplacement.
  */
 export const ITEM_SLOTS = ['head', 'face', 'body', 'toy'] as const;
@@ -24,9 +24,16 @@ export interface PetStats {
   ritualStreak: number;
   /** Habitudes tenues (preuves acceptées ou « pas sûr »), toutes habitudes confondues. */
   habitsKept: number;
+  /**
+   * Parrainages (docs/VIRALITE.md) : personnes arrivées par ton invitation ou ton lien « 3 mots », plus 1 si toi-même tu
+   * es arrivé·e ainsi. Récompense cosmétique seulement, jamais liée à un achat ni à un avis.
+   */
+  referrals: number;
+  /** Quartiers fondés (un des 3 premiers inviteurs à l'ouverture, docs/VIRALITE.md) : objet « Fondateur ». */
+  founded: number;
 }
-export const ZERO_STATS: PetStats = { careDays: 0, links: 0, bestLevel: 0, bestStreak: 0, challenges: 0, words: 0, ritualStreak: 0, habitsKept: 0 };
-export const STAT_KEYS = ['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept'] as const;
+export const ZERO_STATS: PetStats = { careDays: 0, links: 0, bestLevel: 0, bestStreak: 0, challenges: 0, words: 0, ritualStreak: 0, habitsKept: 0, referrals: 0, founded: 0 };
+export const STAT_KEYS = ['careDays', 'links', 'bestLevel', 'bestStreak', 'challenges', 'words', 'ritualStreak', 'habitsKept', 'referrals', 'founded'] as const;
 export type StatKey = keyof PetStats;
 
 export type Unlock = { kind: 'start' } | { kind: 'premium' } | { kind: 'stat'; stat: StatKey; n: number };
@@ -107,6 +114,10 @@ export const ITEMS: readonly Item[] = [
   item('toy', 'cadeau', at('bestLevel', 2)),
   item('toy', 'pinceau', at('challenges', 15)),
   item('toy', 'micro', at('words', 5)),
+  // Parrainage : l'invité et la personne qui l'a fait venir (objet cosmétique, sans achat).
+  item('toy', 'parrain', at('referrals', 1)),
+  // Fondateur d'un quartier : un des 3 premiers inviteurs quand le quartier ouvre (objet cosmétique, sans achat).
+  item('toy', 'fondateur', at('founded', 1)),
   item('toy', 'manette', premium),
   item('toy', 'skate', premium),
   item('toy', 'baguette', premium),

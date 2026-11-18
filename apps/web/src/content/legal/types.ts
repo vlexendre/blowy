@@ -5,13 +5,15 @@
  * - **gras**
  * - [texte](@confidentialite#droits) : lien vers une page légale dans la même langue (ancre facultative) ;
  *   [texte](@index) : sommaire des pages légales ; [texte](https://…), [texte](tel:…) : liens directs.
- * - {{publisher.registration}} : champ de src/config/legal.ts (surligné « À COMPLÉTER » tant qu'il est vide) ;
- *   {{email.support}} s'affiche en lien mailto.
+ * - {{publisher.registration}} : champ de src/config/legal.ts ; {{email.support}} s'affiche en lien mailto.
+ *   Tant qu'un champ vaut TODO, le paragraphe, l'élément de liste ou la ligne de tableau qui le cite n'est pas affiché.
+ * - `requires: ['mediator.name']` sur un bloc : le bloc n'est affiché que si ces champs sont connus (pour une phrase
+ *   d'annonce qui n'a de sens qu'avec la liste qui suit).
  */
 import type { SubprocessorKey } from '../../config/legal';
 import type { LegalSlug, Locale } from '../../i18n/legal';
 
-export type Block =
+type BlockBody =
   /** Titre de section ; `id` stable pour les ancres (même id dans toutes les langues). */
   | { h2: string; id?: string }
   | { h3: string; id?: string }
@@ -26,6 +28,11 @@ export type Block =
   | { subprocessors: { head: [string, string, string, string]; roles: Record<SubprocessorKey, string> } }
   /** Questions dépliables. */
   | { faq: { q: string; a: string[] }[] };
+
+export type Block = BlockBody & {
+  /** Champs (clés de src/config/legal.ts) sans lesquels ce bloc n'est pas affiché. */
+  requires?: string[];
+};
 
 export interface LegalPage {
   /** Balise <title>. */

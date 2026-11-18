@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { habitById } from '@blowy/content';
-import type { CreateGroupBody, GroupAction, GroupDetail, GroupReportBody, Groups } from '@blowy/contract';
+import type { CreateGroupBody, GroupAction, GroupDetail, GroupInviteLink, GroupPreview, GroupReportBody, Groups } from '@blowy/contract';
 import {
   type Day,
   GROUP_MAX_MEMBERS,
@@ -14,10 +14,14 @@ import {
   jokerCost,
   lastClosedDay,
   memberDayStatus,
+  missingMembers,
   wakeGroup,
   addDays,
+  normalizeCode,
 } from '@blowy/domain';
 import { DomainError } from '../../../shared/errors';
+import { Audience } from '../../safety/application/audience';
+import { Growth } from '../../growth/application/growth';
 import { requestLocale } from '../../../shared/locale';
 import { LINKS } from '../../../shared/tokens';
 import type { LinksRepository } from '../../links/ports';
@@ -25,6 +29,8 @@ import { ReportDesk } from '../../moderation/report-desk';
 import { HabitsService } from '../../rituels/application/habits.service';
 import type { HabitsRepository } from '../../rituels/ports';
 import { HABITS } from '../../rituels/tokens';
+import type { GroupDaysRepository } from '../ports';
+import { GROUP_DAYS } from '../tokens';
 import { GroupPresenter } from '../interface/group.presenter';
 import type { GroupMemberRecord, GroupMessageRecord, GroupRecord } from '../ports';
 import { GroupCore, type LoadedGroup, groupError, habitStateOf } from './group-core';
@@ -52,6 +58,9 @@ export class GroupsUseCases {
     @Inject(HABITS) private readonly habits: HabitsRepository,
     @Inject(HabitsService) private readonly habitsService: HabitsService,
     @Inject(ReportDesk) private readonly desk: ReportDesk,
+    @Inject(Audience) private readonly audience: Audience,
+    @Inject(GROUP_DAYS) private readonly days: GroupDaysRepository,
+    @Inject(Growth) private readonly growth: Growth,
   ) {}
 
   async list(userId: string): Promise<Groups> {
@@ -177,7 +186,8 @@ export class GroupsUseCases {
         groupError((t) => t.habitUnknown),
       );
     const ids = [...new Set(body.memberIds.filter((id) => id !== userId))];
-    if (ids.length < 2 || ids.length > GROUP_MAX_MEMBERS - 1)
+    // Aucune invitation : le groupe se remplit avec son lien (`minimoa.app/g/<code>`).
+    if (ids.length > GROUP_MAX_MEMBERS - 1)
       throw new DomainError(
         'invalid',
         groupError((t) => t.invitees),
@@ -243,6 +253,124 @@ export class GroupsUseCases {
     await this.checkLinks(userId, ids);
     await this.sendInvitations(loaded, userId, ids);
     return this.detail(userId, groupId);
+  }
+
+  // ── Lien d'invitation (`minimoa.app/g/<code>`, docs/VIRALITE.md) ──────────
+
+  /** Le code du lien, créé à la première demande d'un membre. */
+  async inviteLink(userId: string, groupId: string): Promise<GroupInviteLink> {
+    const { group } = await this.core.asMember(groupId, userId);
+    const code = (await this.core.groups.inviteCode(groupId)) ?? (await this.freshLinkCode(groupId));
+    return { code, canReset: group.createdBy === userId };
+  }
+
+  /** Un nouveau code (le créateur seulement) : l'ancien lien ne mène plus nulle part. */
+  async resetInviteLink(userId: string, groupId: string): Promise<GroupInviteLink> {
+    const { group } = await this.core.asMember(groupId, userId);
+    if (group.createdBy !== userId)
+      throw new DomainError(
+        'forbidden',
+        groupError((t) => t.linkResetCreator),
+      );
+    return { code: await this.freshLinkCode(groupId), canReset: true };
+  }
+
+  private async freshLinkCode(groupId: string): Promise<string> {
+    for (let i = 0; i < 8; i++) {
+      const code = this.core.ids.code();
+      if (await this.core.groups.setInviteCode(groupId, code)) return code;
+    }
+    throw new Error('aucun code de groupe libre trouvé');
+  }
+
+  /** Groupe d'un lien encore valable (pas fermé, créé dans le vrai monde). */
+  private async byCode(code: string): Promise<LoadedGroup> {
+    const group = await this.core.groups.findByInviteCode(normalizeCode(code));
+    if (!group || group.status === 'closed')
+      throw new DomainError(
+        'not_found',
+        groupError((t) => t.linkGone),
+      );
+    return this.core.load(group.id);
+  }
+
+  /**
+   * Page publique d'un groupe : nom, habitude, jours tenus, nombre de membres et l'espèce de leurs minimoas. Jamais un
+   * prénom, un nom de minimoa ni une position. Une visite est comptée (sans IP).
+   */
+  async preview(code: string): Promise<GroupPreview> {
+    const loaded = await this.byCode(code);
+    const g = loaded.group;
+    // Les membres visibles du public seulement (un compte suspendu n'y est pas).
+    const visible = (await Promise.all(loaded.active.map(async (m) => (await this.audience.publiclyVisible(await this.core.profiles.findById(m.userId))) ? m.userId : null))).filter((id): id is string => id !== null);
+    if (visible.length === 0)
+      throw new DomainError(
+        'not_found',
+        groupError((t) => t.linkGone),
+      );
+    const people = await this.presenter.people(visible[0] ?? '', visible);
+    const kept = g.startedOn ? (await this.days.listBetween(g.id, g.startedOn, this.core.today())).filter((d) => d.outcome === 'kept').length : 0;
+    await this.growth.visit('g');
+    return {
+      name: g.name,
+      kind: g.kind,
+      status: g.status,
+      habitLabel: g.habitId ? (habitById(g.habitId, requestLocale())?.label ?? null) : null,
+      daysKept: kept,
+      streak: g.streak,
+      bestStreak: g.bestStreak,
+      memberCount: loaded.active.length,
+      full: loaded.active.length >= GROUP_MAX_MEMBERS,
+      missing: missingMembers(loaded.active.length),
+      species: [...people.values()].map((p) => p.pet.species),
+    };
+  }
+
+  /**
+   * Rejoindre par le lien : mêmes règles qu'une invitation (8 membres au plus, ta limite de groupes, l'habitude ajoutée
+   * dans ta limite). Bloqué avec un membre, monde de revue d'Apple : introuvable (rien ne trahit un blocage). Déjà
+   * membre : le groupe, sans rien changer. Les autres membres sont prévenus.
+   */
+  async joinByCode(userId: string, code: string): Promise<GroupDetail> {
+    const loaded = await this.byCode(code);
+    const g = loaded.group;
+    if (loaded.active.some((m) => m.userId === userId)) return this.detail(userId, g.id);
+    const me = await this.core.profile(userId);
+    const creator = g.createdBy ? await this.core.profiles.findById(g.createdBy) : null;
+    if ((me.reviewWorld ?? null) !== (creator?.reviewWorld ?? null) || !(await this.core.invitationReachable(g, loaded.active, userId)))
+      throw new DomainError(
+        'not_found',
+        groupError((t) => t.linkGone),
+      );
+    if (loaded.active.length >= GROUP_MAX_MEMBERS)
+      throw new DomainError(
+        'forbidden',
+        groupError((t) => t.full),
+      );
+    await this.checkLimit(userId);
+    if (g.habitId) await this.ensureHabit(userId, g.habitId);
+    const now = this.core.now().toISOString();
+    const row = loaded.members.find((m) => m.userId === userId);
+    await this.core.members.put({
+      groupId: g.id,
+      userId,
+      status: 'active',
+      invitedBy: row?.invitedBy ?? null,
+      joinedAt: now,
+      leftAt: null,
+      lastReadAt: now,
+      notifiedAt: null,
+      createdAt: row?.createdAt ?? now,
+    });
+    const pet = await this.petName(userId);
+    await this.core.event(g.id, 'joined', { name: me.displayName, minimoa: pet }, { userId, minimoa: true });
+    await this.core.notify(
+      loaded.active.map((m) => m.userId),
+      'group_joined',
+      { groupId: g.id, group: g.name, name: me.displayName, count: String(loaded.active.length + 1) },
+    );
+    await this.startIfReady(await this.core.load(g.id));
+    return this.detail(userId, g.id);
   }
 
   /** Démarre le groupe s'il atteint 3 membres. */

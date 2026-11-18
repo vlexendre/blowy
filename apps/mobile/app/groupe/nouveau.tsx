@@ -4,7 +4,7 @@
  * Limite atteinte : Minimoa+ (on n'arrive ici que si `canCreate`, sinon l'onglet Chats ouvre Minimoa+).
  */
 import type { GroupKind } from '@blowy/domain';
-import { GROUP_MAX_INVITES, GROUP_MIN_INVITES, GROUP_NAME_MAX } from '@blowy/domain';
+import { GROUP_MAX_INVITES, GROUP_NAME_MAX } from '@blowy/domain';
 import { Avatar, AvatarStack, Banner, Button, ListRow, PickTiles, Radio, SegmentedTabs, SettingsSection, SettingsTemplate, Skeleton, Text, TextField } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -57,7 +57,8 @@ export default function NewGroup() {
     step === 'name' ? (
       <Button label={t.next} disabled={!nameOk} onPress={() => setStep('who')} />
     ) : step === 'who' ? (
-      <Button label={t.next} disabled={picked.length < GROUP_MIN_INVITES} onPress={() => setStep('confirm')} />
+      // Personne à inviter : possible, le lien du groupe le remplira (docs/VIRALITE.md).
+      <Button label={t.next} onPress={() => setStep('confirm')} />
     ) : (
       <Button label={t.submit} loading={create.isPending} onPress={submit} />
     );
@@ -106,9 +107,13 @@ export default function NewGroup() {
         {step === 'who' ? (
           links.isPending ? (
             <Skeleton height={220} radius="lg" />
-          ) : live.length < GROUP_MIN_INVITES ? (
+          ) : live.length === 0 ? (
             <Banner tone="info" text={t.noLinks} />
           ) : (
+            <>
+            <Text size={13} muted>
+              {t.noLinks}
+            </Text>
             <SettingsSection
               title={`${t.whoLabel} · ${t.whoCount(picked.length, GROUP_MAX_INVITES)}`}
               rows={live.map((l) => {
@@ -126,6 +131,7 @@ export default function NewGroup() {
                 };
               })}
             />
+            </>
           )
         ) : null}
 

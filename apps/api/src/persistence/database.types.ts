@@ -260,6 +260,7 @@ export type Database = {
           original_transaction_id: string;
           user_id: string | null;
           product_id: string;
+          /** `yearly`, `monthly` ou `weekly` (migration 20261117140000_hebdo_fidelisation). */
           plan: string;
           status: string;
           expires_at: string | null;
@@ -386,6 +387,43 @@ export type Database = {
         'id' | 'link_id' | 'send_after' | 'vars' | 'created_at'
       >;
       push_receipts: Table<{ ticket_id: string; token: string; created_at: string }, 'created_at'>;
+      /** Migration 20261117140000_hebdo_fidelisation : messages de fidélisation déjà partis (une ligne par personne et clé). */
+      lifecycle_messages: Table<{ user_id: string; key: string; sent_at: string }, 'sent_at'>;
+      /** Croissance (20261118100000, docs/VIRALITE.md). */
+      creators: Table<{ code: string; name: string; active: boolean; created_at: string; updated_at: string }, 'active' | 'created_at' | 'updated_at'>;
+      acquisitions: Table<
+        { user_id: string; source: string; ref: string | null; referred_by: string | null; cohort_on: string; created_at: string },
+        'ref' | 'referred_by' | 'created_at'
+      >;
+      growth_events: Table<{ id: number; user_id: string | null; kind: string; source: string; cohort_on: string; created_at: string }, 'id' | 'user_id' | 'created_at'>;
+      growth_counters: Table<{ day: string; metric: string; source: string; ref: string; count: number }, 'source' | 'ref' | 'count'>;
+      /** Quiz et quartiers (20261118120000, docs/VIRALITE.md). */
+      quiz_results: Table<
+        { code: string; species: string; trait: string; second_trait: string | null; gauges: Json; ref: string | null; locale: string; created_at: string },
+        'second_trait' | 'ref' | 'locale' | 'created_at'
+      >;
+      quartier_settings: Table<{ id: boolean; threshold: number; updated_at: string }, 'id' | 'threshold' | 'updated_at'>;
+      quartiers: Table<{ zone: string; opened_at: string | null; opened_by: string | null; created_at: string }, 'opened_at' | 'opened_by' | 'created_at'>;
+      quartier_signups: Table<
+        {
+          id: string;
+          zone: string;
+          email: string | null;
+          locale: string;
+          code: string;
+          token: string | null;
+          invited_by_user: string | null;
+          invited_by_signup: string | null;
+          consent_at: string;
+          confirmed_at: string | null;
+          unsubscribed_at: string | null;
+          open_mail_sent_at: string | null;
+          user_id: string | null;
+          created_at: string;
+        },
+        'id' | 'email' | 'locale' | 'token' | 'invited_by_user' | 'invited_by_signup' | 'confirmed_at' | 'unsubscribed_at' | 'open_mail_sent_at' | 'user_id' | 'created_at'
+      >;
+      quartier_founders: Table<{ zone: string; rank: number; user_id: string | null; signup_id: string | null; created_at: string }, 'user_id' | 'signup_id' | 'created_at'>;
       tick_runs: Table<{ job: string; slot: string; started_at: string; finished_at: string | null; done: number | null }, 'started_at' | 'finished_at' | 'done'>;
       ritual_states: Table<
         {
@@ -489,8 +527,11 @@ export type Database = {
           closed_reason: string | null;
           created_at: string;
           updated_at: string;
+          /** Code du lien d'invitation `minimoa.app/g/<code>` (20261118100000), null tant que personne ne l'a demandé. */
+          invite_code: string | null;
         },
         | 'id'
+        | 'invite_code'
         | 'habit_id'
         | 'status'
         | 'created_by'
@@ -552,6 +593,7 @@ export type Database = {
       ritual_add_habits_kept: { Args: { p_user: string; p_n: number }; Returns: number };
       encounter_proposals_record: { Args: { p_day: string; p_user: string; p_proposed: number; p_score_sum: number }; Returns: undefined };
       encounter_proposals_summary: { Args: { p_day: string }; Returns: Json };
+      growth_bump: { Args: { p_day: string; p_metric: string; p_source: string; p_ref: string }; Returns: undefined };
       places_in_cells: { Args: { p_cells: string[]; p_limit: number; p_exclude: string }; Returns: Database['public']['Tables']['profile_places']['Row'][] };
       ai_record_usage: {
         Args: {

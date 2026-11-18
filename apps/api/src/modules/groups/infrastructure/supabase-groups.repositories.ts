@@ -121,6 +121,22 @@ export class SupabaseGroupsRepository implements GroupsRepository {
     check(error, 'groupes à juger');
     return (data ?? []).map(groupFromRow);
   }
+  async inviteCode(groupId: string): Promise<string | null> {
+    const { data, error } = await this.table.select('invite_code').eq('id', groupId).maybeSingle();
+    check(error, 'code du lien du groupe');
+    return data?.invite_code ?? null;
+  }
+  async setInviteCode(groupId: string, code: string): Promise<boolean> {
+    const { error } = await this.table.update({ invite_code: code }).eq('id', groupId);
+    if (isUniqueViolation(error)) return false;
+    check(error, 'code du lien du groupe');
+    return true;
+  }
+  async findByInviteCode(code: string): Promise<GroupRecord | null> {
+    const { data, error } = await this.table.select('*').eq('invite_code', code).maybeSingle();
+    check(error, 'groupe par son lien');
+    return data ? groupFromRow(data) : null;
+  }
 }
 
 const memberFromRow = (r: MemberRow): GroupMemberRecord => ({

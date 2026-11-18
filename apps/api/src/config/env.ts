@@ -19,8 +19,8 @@ const EnvSchema = z
     SUPABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
     SUPABASE_SERVICE_ROLE_KEY: optionalString,
     RESEND_API_KEY: optionalString,
-    MAIL_FROM: z.string().default('Minimoa <hello@blowy.app>'),
-    WEB_URL: z.string().url().default('https://blowy.app'),
+    MAIL_FROM: z.string().default('Minimoa <hello@minimoa.app>'),
+    WEB_URL: z.string().url().default('https://minimoa.app'),
     CORS_ORIGINS: z.string().default(''),
   })
   .superRefine((env, ctx) => {

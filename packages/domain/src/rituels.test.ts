@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { START_NEEDS, decayNeeds, needsOut, raiseSociability, shapeOf, wellbeing, careLevel, ENCOUNTER_QUOTA, SOCIABILITY_DECAY_PER_HOUR, NEED_DECAY_PER_HOUR } from './care';
+import { START_NEEDS, decayNeeds, needsOut, raiseSociability, shapeOf, wellbeing, careLevel, encounterQuota, MIN_DAILY_INTRODUCTIONS, SOCIABILITY_DECAY_PER_HOUR, NEED_DECAY_PER_HOUR } from './care';
 import { dayOf } from './days';
 import { ITEMS, ZERO_STATS, earnedItems } from './items';
 import {
@@ -52,13 +52,25 @@ describe('sociabilité et forme', () => {
     expect(careLevel({ hunger: 20, energy: 100, mood: 100 })).toBe(60);
     expect(wellbeing({ sociability: 50, hunger: 20, energy: 100, mood: 100 })).toBe(54);
   });
-  it('sans sortir, un minimoa bien nourri finit « bof » mais jamais en forme ; le quota suit la forme', () => {
+  it('sans sortir, un minimoa bien nourri finit « bof » mais jamais en forme', () => {
     const fed = { sociability: 0, hunger: 100, energy: 100, mood: 100 };
     expect(shapeOf(fed)).toBe('bof');
-    expect(ENCOUNTER_QUOTA[shapeOf(fed)]).toBe(6);
     expect(shapeOf({ ...fed, sociability: 34 })).toBe('en_forme');
     expect(shapeOf({ sociability: 0, hunger: 50, energy: 50, mood: 50 })).toBe('boude');
-    expect(ENCOUNTER_QUOTA.boude).toBe(0);
+  });
+  it('le quota de présentations suit la sociabilité seule, jamais les soins, et ne tombe jamais à 0', () => {
+    // Plus tu sors, plus il te présente de monde.
+    expect(encounterQuota({ sociability: 90 })).toBe(20);
+    expect(encounterQuota({ sociability: 50 })).toBe(8);
+    expect(encounterQuota({ sociability: 10 })).toBe(3);
+    // Il boude (tout à plat) : il présente quand même.
+    const flat = { sociability: 0, hunger: 0, energy: 0, mood: 0 };
+    expect(shapeOf(flat)).toBe('boude');
+    expect(encounterQuota(flat)).toBeGreaterThanOrEqual(MIN_DAILY_INTRODUCTIONS);
+    expect(MIN_DAILY_INTRODUCTIONS).toBeGreaterThanOrEqual(1);
+    // Faim, énergie et humeur ne changent rien.
+    expect(encounterQuota({ sociability: 70, hunger: 0, energy: 0, mood: 0 } as never)).toBe(encounterQuota({ sociability: 70 }));
+    for (let s = 0; s <= 100; s += 5) expect(encounterQuota({ sociability: s + 5 > 100 ? 100 : s + 5 })).toBeGreaterThanOrEqual(encounterQuota({ sociability: s }));
   });
   it("la sociabilité baisse seule (36 points par jour), par pas entiers de 2 h", () => {
     expect(SOCIABILITY_DECAY_PER_HOUR * 24).toBe(36);

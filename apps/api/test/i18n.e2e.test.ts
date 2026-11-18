@@ -93,7 +93,7 @@ describe('langues', () => {
  * les messages des personnes fictives et les répliques de leurs minimoas ; même si le compte a servi en français avant.
  */
 describe('monde de revue dans la langue de l’examinateur', () => {
-  const REVIEW = { email: 'review@blowy.app', code: '123456' };
+  const REVIEW = { email: 'review@minimoa.app', code: '123456' };
   let world: TestWorld;
   beforeAll(async () => {
     world = await startWorld({ REVIEW_EMAIL: REVIEW.email, REVIEW_CODE: REVIEW.code });

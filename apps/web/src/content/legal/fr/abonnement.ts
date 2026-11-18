@@ -4,12 +4,12 @@ export const abonnement: LegalPage = {
   title: "Conditions de l'abonnement Minimoa+ — Minimoa",
   heading: "Conditions de l'abonnement Minimoa+",
   description:
-    'Minimoa+ : ce qu’il contient, les offres (59,88 € par an avec 7 jours gratuits, ou 14,99 € par mois), le renouvellement automatique, la facturation par Apple, comment annuler, ce qui se passe à la fin, la rétractation et les remboursements.',
+    'Minimoa+ : ce qu’il contient, les offres (59,88 € par an avec 7 jours gratuits, 14,99 € par mois ou 2,99 € par semaine), le renouvellement automatique, la facturation par Apple, comment annuler, ce qui se passe à la fin, la rétractation et les remboursements.',
   intro: 'Ce que Minimoa+ contient, ce qu’il coûte, comment il se renouvelle, et comment l’arrêter. Sans petites lignes.',
   summary: {
     title: 'En bref',
     items: [
-      '**59,88 € par an**, avec **7 jours gratuits** au début, ou **14,99 € par mois**, sans essai.',
+      '**59,88 € par an**, avec **7 jours gratuits** au début, **14,99 € par mois** ou **2,99 € par semaine**, sans essai.',
       'L’abonnement **se renouvelle automatiquement** tant que tu ne l’annules pas.',
       'Minimoa+ s’achète sur iPhone : c’est **Apple** qui te facture, et c’est dans les réglages de ton iPhone que tu l’annules.',
       'Au 5e jour de l’essai, on te prévient **par notification et par e-mail**.',
@@ -41,6 +41,7 @@ export const abonnement: LegalPage = {
         rows: [
           ['Annuelle', '59,88 € par an, soit 4,99 € par mois', '7 jours, puis 59,88 € par an'],
           ['Mensuelle', '14,99 € par mois', 'Pas d’essai'],
+          ['Hebdomadaire', '2,99 € par semaine', 'Pas d’essai'],
         ],
       },
     },

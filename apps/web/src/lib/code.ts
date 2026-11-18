@@ -4,7 +4,7 @@
  */
 const CODE_RE = /^[A-Za-z0-9_-]{3,64}$/;
 
-export function readCode(prefix: 'm' | 'i', loc: Location = window.location): string | null {
+export function readCode(prefix: 'm' | 'i' | 'g' | 'c', loc: Location = window.location): string | null {
   const fromQuery = new URLSearchParams(loc.search).get('c');
   const parts = loc.pathname.split('/').filter(Boolean);
   const fromPath = parts[0] === prefix && parts[1] && parts[1] !== 'index.html' ? parts[1] : null;

@@ -78,7 +78,7 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   `nap` la lumière baisse, il dort, des « z » montent, il s'étire au réveil ; `cuddle` il se serre, cœurs. Refus : `no`
   (il fait non de la tête, goutte de sueur). Aussi `joy`, `wave`, `surprise`.
 - **Il sort du bas** (`PetRise`) : grand, rogné par le bord bas de l'écran, il monte, cligne des yeux ou regarde
-  autour de lui, et redescend s'y cacher ; décor sans toucher (inscription : entrée en scène, temps fort du caractère).
+  autour de lui, et redescend s'y cacher ; décor sans toucher (temps fort du caractère).
 - **Cache-cache** (`PetPeek`) : le pet sort d'un bord de l'écran (coin bas, côté, suspendu en haut), regarde,
   se cache si on le touche et ressort ailleurs. Utilisé pour : états vides, erreurs (triste), hors ligne,
   tirer pour rafraîchir (il grimpe à mesure qu'on tire), fin de liste (il sort quand on tire trop loin),

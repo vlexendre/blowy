@@ -1,5 +1,5 @@
 ---
-/** 4. Il vit dans tes chats : téléphone avec la conversation et cartes d'apps. */
+/** 7. Il vit dans tes chats : téléphone avec la conversation, et les rôles des minimoas. */
 import Sticker from '../../atoms/Sticker.astro';
 import PhoneFrame from '../../molecules/PhoneFrame.astro';
 import SectionTitle from '../../molecules/SectionTitle.astro';
@@ -10,6 +10,7 @@ const p = c.phone;
 <SnapSection section={sections.chats} panel="p-rose s-chat" light>
   <SectionTitle lines={c.title}>
     <p class="lead" data-r="up">{c.lead} <b class="hide-short">{c.leadBold}</b></p>
+    <p class="cpriv hide-short" data-r="up">{c.privacy}</p>
   </SectionTitle>
   <PhoneFrame>
     <div class="ph-h"><span class="avs"><img src="/img/nino_face.webp" alt="" /><img src="/img/suzie_face.webp" alt="" /></span><b>{p.name}</b><span class="hz">{p.status}</span></div>
@@ -31,7 +32,7 @@ const p = c.phone;
       }
       <div class="mini" data-r="msg"><img src="/img/ic_flamme.webp" alt="" />{p.mini}</div>
     </div>
-    <div class="inp"><i>+</i><span>{p.input}</span><i>🎙</i></div>
+    <div class="inp"><span>{p.input}</span><i aria-hidden="true">↑</i></div>
   </PhoneFrame>
   <div class="apps">
     {
@@ -39,8 +40,6 @@ const p = c.phone;
         <div class:list={['app', { 'hide-short': a.short }]} data-r="card">
           <span class="lbl">{a.label}</span>
           <h4>{a.title}</h4>
-          {a.big && <span class="big">{a.big}</span>}
-          {a.bar && <div class="bar"><i></i></div>}
           <p>{a.text}</p>
           <Sticker class="ico" src={`/img/${a.icon}.webp`} />
         </div>
@@ -77,11 +76,9 @@ const p = c.phone;
 .app{background:#fff;color:var(--ink);border-radius:18px;padding:10px 12px;box-shadow:0 14px 30px rgba(20,16,31,.22);position:relative}
 .app:nth-child(1){rotate:4deg}.app:nth-child(2){rotate:-3deg;margin-left:8px}.app:nth-child(3){rotate:3deg}
 .app .lbl{font-size:9px;color:rgba(20,16,31,.55)}
-.app h4{margin:2px 0 4px;font-family:var(--display);font-weight:400;font-size:clamp(15px,2.3svh,26px);line-height:1;text-transform:uppercase}
+.app h4{margin:2px 0 4px;font-family:var(--display);font-weight:800;font-size:clamp(15px,2.3svh,26px);line-height:1;text-transform:uppercase}
 .app p{font-size:11px;font-weight:600;color:var(--mute-d)}
-.app .big{font-family:var(--display);font-size:clamp(22px,3.4svh,40px);line-height:1}
-.app .bar{height:8px;border-radius:999px;background:#F0ECF7;margin:6px 0 4px;overflow:hidden}
-.app .bar i{display:block;height:100%;width:60%;border-radius:999px;background:var(--orange)}
+.cpriv{display:none;font-size:12px;font-weight:600;line-height:1.35;max-width:34em;margin-top:8px;opacity:.72}
 .app .ico{position:absolute;right:-10px;top:-12px;width:clamp(30px,4.4svh,48px)}
 @media (min-width:900px){
   .s-chat{grid-template-columns:1fr auto 1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"tx phone apps";column-gap:4vw;align-items:center}
@@ -89,6 +86,7 @@ const p = c.phone;
   .scr{font-size:13.5px}
   .m .n{font-size:11px}
   .apps{margin-left:0;max-width:300px}
+  .cpriv{display:block}
   .app{padding:14px 16px}
   .app p{font-size:13px}
   .app .lbl{font-size:10px}

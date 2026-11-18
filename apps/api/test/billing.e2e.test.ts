@@ -71,7 +71,11 @@ describe('Minimoa+', () => {
     expect(p.offers.map((o) => [o.plan, o.productId, o.billed.amountMinor, o.period, o.trialDays])).toEqual([
       ['yearly', 'app.blowy.plus.yearly', 5988, 'year', 7],
       ['monthly', 'app.blowy.plus.monthly', 1499, 'month', 0],
+      ['weekly', 'app.blowy.plus.weekly', 299, 'week', 0],
     ]);
+    // L'hebdomadaire : montant facturé et période en clair, ni équivalent mensuel ni remise (aucune comparaison avec elle).
+    expect(p.offers[2]?.labels.price.replace(/[\u00a0\u202f]/g, ' ')).toBe('2,99 € par semaine');
+    expect(p.offers[2]).toMatchObject({ perMonth: null, discountPercent: null, labels: { perMonth: null, trial: null, name: 'Abonnement hebdomadaire Minimoa+' } });
     const yearly = p.offers[0];
     // Espaces insécables (fines ou non) normalisées : seule la formulation compte ici.
     const plain = (o: Record<string, string | null> | undefined) => Object.fromEntries(Object.entries(o ?? {}).map(([k, v]) => [k, v?.replace(/[\u00a0\u202f]/g, ' ') ?? v]));

@@ -50,7 +50,7 @@ Review Information. Le reste d'App Store Connect (classement d'âge, App Privacy
 ### Railway (service de l'API), variables
 | Variable | Valeur | Note |
 |---|---|---|
-| `REVIEW_EMAIL` | une adresse à vous, par ex. `appreview@blowy.app` | une seule ; jamais publiée ailleurs que dans les notes de revue |
+| `REVIEW_EMAIL` | une adresse à vous, par ex. `appreview@minimoa.app` | une seule ; jamais publiée ailleurs que dans les notes de revue |
 | `REVIEW_CODE` | 10 caractères au moins, tirés au hasard (par ex. `openssl rand -hex 6`) | l'API refuse de démarrer en production avec moins de 10 |
 | `ADMIN_EMAILS` | adresses de l'équipe de modération | reçoivent les alertes de signalements (audit M9) |
 | `ADMIN_URL` | facultatif : adresse de l'administration | liens des alertes ; défaut `WEB_URL` + `/admin` |
@@ -158,10 +158,12 @@ SAFETY AND MODERATION
 
 SUBSCRIPTION MINIMOA+
 Me > Minimoa+, or at the end of sign-up (skippable: close button at the top right, or "Continue for free"). Yearly with
-a 1-week free trial (introductory offer) or monthly; prices and the trial are read from StoreKit. The sheet shows the
+a 1-week free trial (introductory offer), monthly, or weekly (the last two without a trial); prices and the trial are
+read from StoreKit. The yearly discount badge compares the yearly price with twelve monthly payments only. The sheet shows the
 billed price, the trial length and the date of the first payment, auto-renewal and how to cancel, "Restore
 purchases", Terms of Use and Privacy Policy. Everything outside Minimoa+ is free. Purchases are verified by our
-server; sandbox purchases are accepted. A reminder is sent on day 5 of the trial by notification and by email.
+server; sandbox purchases are accepted. A reminder is sent on day 5 of the trial by notification and by email, with the
+end date, the amount and how to cancel.
 
 LOCATION AND PRIVACY LABELS
 Location is declared as Coarse Location: the exact point is never stored (see LOCATION above).
