@@ -60,7 +60,7 @@ modules/<module>/
 Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conversation, étapes, rappel « à toi d'écrire » ; `links/minimoas` : les minimoas
 dans le chat), `encounters`, `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
-`notifications` (appareils, réglages, envoi, activités en direct), `billing` (Minimoa+), `admin` (tableaux, modération),
+`notifications` (appareils, réglages, présence, envoi, activités en direct ; règles : `docs/NOTIFICATIONS.md`), `billing` (Minimoa+), `admin` (tableaux, modération),
 `retention` (comptes inactifs, exclusions, purges), `fidelite` (premiers pas, nouvelles du minimoa pendant une absence,
 anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `growth` (codes créateurs,
 source d'arrivée, compteurs et étapes de l'entonnoir, tableau « Croissance » ; `Growth` et `Codes` globaux, docs/VIRALITE.md), `groups` (groupes, « la tenir ensemble », jours jugés ;
