@@ -1,7 +1,7 @@
 ---
 /**
- * Gabarit des pages éditoriales (villes, guides et leurs sommaires) : français seulement, sans hreflang ni bannière de
- * langue, canonique, données structurées (JSON-LD), fil d'Ariane visible, barre du haut et pied de page du site.
+ * Gabarit des pages éditoriales (villes, guides et leurs sommaires, en français ; /nl/vrienden-maken/ en néerlandais) :
+ * une seule langue par page, sans hreflang ni bannière de langue, canonique, données structurées (JSON-LD), fil d'Ariane visible, barre du haut et pied de page du site.
  * Aucune animation lourde (ni GSAP ni Lenis) : une page de lecture, rapide sur mobile.
  */
 import Base from './Base.astro';
@@ -11,6 +11,7 @@ import Breadcrumbs from '../components/molecules/Breadcrumbs.astro';
 import { SITE_URL } from '../config/site';
 import { breadcrumbJsonLd } from '../lib/editorial-render';
 import { editorialUi } from '../content/editorial/ui';
+import type { Locale } from '../i18n/site';
 
 interface Props {
   title: string;
@@ -25,19 +26,23 @@ interface Props {
   jsonLd?: readonly Record<string, unknown>[];
   /** image à précharger (illustration du haut de page) */
   preloadImage?: string;
+  /** langue de la page (français par défaut) ; pour une autre langue, ses libellés et sa locale Open Graph */
+  locale?: Locale;
+  ui?: { home: string; breadcrumbLabel: string; ogLocale: string; skipLabel: string };
 }
-const { title, description, path, ogImage, ogAlt, crumbs, jsonLd = [], preloadImage } = Astro.props;
-const trail = [{ name: editorialUi.home, path: '/' }, ...crumbs];
+const { title, description, path, ogImage, ogAlt, crumbs, jsonLd = [], preloadImage, locale = 'fr', ui } = Astro.props;
+const homePath = locale === 'fr' ? '/' : `/${locale}/`;
+const trail = [{ name: ui?.home ?? editorialUi.home, path: homePath }, ...crumbs];
 const graph = [...jsonLd, breadcrumbJsonLd(trail.map((c) => ({ name: c.name, url: new URL(c.path, SITE_URL).href })))];
 ---
-<Base title={title} description={description} canonicalPath={path} ogImage={ogImage} ogAlt={ogAlt} bodyClass="ed-body" langBanner={false} structuredData={graph}>
+<Base title={title} description={description} canonicalPath={path} ogImage={ogImage} ogAlt={ogAlt} bodyClass="ed-body" langBanner={false} structuredData={graph} lang={locale} ogLocale={ui?.ogLocale} skipLabel={ui?.skipLabel}>
   {preloadImage && <link slot="head" rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
-  <TopBar locale="fr" />
+  <TopBar locale={locale} />
   <main id="main" class="ed-main">
-    <Breadcrumbs items={trail} label={editorialUi.breadcrumbLabel} />
+    <Breadcrumbs items={trail} label={ui?.breadcrumbLabel ?? editorialUi.breadcrumbLabel} />
     <slot />
   </main>
-  <SiteFooter slot="footer" class="ed-foot" locale="fr" />
+  <SiteFooter slot="footer" class="ed-foot" locale={locale} />
 </Base>
 <style is:global>
 .ed-body{background:var(--bg)}

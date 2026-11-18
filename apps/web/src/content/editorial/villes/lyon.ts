@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const lyon: CityPage = {
   slug: 'lyon',
   name: 'Lyon',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Lyon : où rencontrer des gens',
     description: 'Rencontrer des gens à Lyon : Croix-Rousse, Guillotière, berges du Rhône, associations. Et ton minimoa qui te présente du monde près de chez toi.',

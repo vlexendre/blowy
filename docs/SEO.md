@@ -68,3 +68,8 @@ Décision proposée : rester centré sur la France (6 500 recherches/mois sur l'
 ajouter 5 pages villes francophones hors de France (Bruxelles, Liège, Genève, Lausanne, Luxembourg) et une page en
 néerlandais « vrienden maken in je buurt » pour la Flandre ; pas de pages villes ni de guides en anglais, espagnol ou
 portugais tant que ces pays ne sont pas ouverts (les landings traduites suffisent).
+
+Fait (18 novembre 2026) : `/se-faire-des-amis/bruxelles/`, `/liege/`, `/geneve/`, `/lausanne/`, `/luxembourg/`
+(section « Belgique, Suisse, Luxembourg » du sommaire ; seule Bruxelles a une zone de quartier dans `@blowy/domain`, les
+autres renvoient à `/quartier/`) et `/nl/vrienden-maken/` (néerlandais seul, canonique, sans hreflang, lien dans le
+pied de page des pages en néerlandais ; texte : `apps/web/src/content/editorial/nl/vrienden-maken.ts`).

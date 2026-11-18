@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const toulouse: CityPage = {
   slug: 'toulouse',
   name: 'Toulouse',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Toulouse : où rencontrer du monde',
     description: 'Se faire des amis à Toulouse : Carmes, Saint-Cyprien, prairie des Filtres, canal du Midi, associations. Et ton minimoa pour rencontrer des voisins.',

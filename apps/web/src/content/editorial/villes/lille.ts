@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const lille: CityPage = {
   slug: 'lille',
   name: 'Lille',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Lille : où rencontrer des gens',
     description: 'Rencontrer des gens à Lille : Wazemmes, Vieux-Lille, Citadelle, estaminets, braderie, associations. Et ton minimoa pour te présenter des voisins.',
@@ -45,7 +46,7 @@ export const lille: CityPage = {
         '**La Braderie**, le premier week-end de septembre : la ville entière dans la rue, et l’occasion parfaite pour proposer une sortie à une connaissance de la rentrée.',
         '**Les estaminets et bars de quartier** : les tables partagées et les soirées jeux de société y sont fréquentes. Viens en habitué plutôt qu’en touriste.',
         '**Les clubs sportifs et culturels** : chorales, théâtre, escalade, foot loisir. La métropole en regorge, et le forum des associations de la rentrée est l’endroit pour faire le tour.',
-        '**La Belgique à deux pas** : une excursion à Gand ou à Bruges en petit groupe soude bien plus qu’une soirée de plus en centre-ville.',
+        '**La Belgique à deux pas** : une excursion à Gand, à Bruges ou à [Bruxelles](/se-faire-des-amis/bruxelles/) en petit groupe soude bien plus qu’une soirée de plus en centre-ville.',
         'Tu restes après tes études et ton cercle a fondu ? Notre guide [se faire des amis à l’âge adulte](/guides/se-faire-des-amis-adulte/) parle justement de ce moment.',
       ],
     },
@@ -76,7 +77,7 @@ export const lille: CityPage = {
       a: 'À Wazemmes et dans le Vieux-Lille pour la vie de quartier, à la Citadelle pour le sport, dans les estaminets pour les tables partagées, et dans les associations pour les liens qui durent.',
     },
   ],
-  near: ['paris', 'strasbourg', 'rennes'],
+  near: ['bruxelles', 'paris', 'strasbourg'],
   guides: ['se-faire-des-amis-adulte', 'associations-activites-rencontrer-du-monde', 'se-faire-des-amis-timide'],
   image: { src: '/img/m/pia_rit.webp', width: 450, height: 500, alt: 'Pia, une minimoa violette à petites cornes, qui éclate de rire' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À LILLE.'], panel: 'orange' },

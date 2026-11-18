@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const marseille: CityPage = {
   slug: 'marseille',
   name: 'Marseille',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Marseille : rencontrer du monde',
     description: 'Se faire des amis à Marseille : Cours Julien, Panier, Vieux-Port, calanques. Où rencontrer des gens, et comment ouvrir ton arrondissement sur Minimoa.',

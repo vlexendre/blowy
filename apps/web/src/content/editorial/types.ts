@@ -50,13 +50,20 @@ export interface OgSpec {
   panel: 'accent' | 'violet' | 'coral' | 'rose' | 'orange' | 'night' | 'wine';
 }
 
-export const CITY_SLUGS = ['paris', 'lyon', 'bordeaux', 'toulouse', 'nantes', 'lille', 'marseille', 'rennes', 'montpellier', 'nice', 'strasbourg'] as const;
+export const CITY_SLUGS = [
+  'paris', 'lyon', 'bordeaux', 'toulouse', 'nantes', 'lille', 'marseille', 'rennes', 'montpellier', 'nice', 'strasbourg',
+  'bruxelles', 'liege', 'geneve', 'lausanne', 'luxembourg',
+] as const;
 export type CitySlug = (typeof CITY_SLUGS)[number];
+
+/** Pays d'une page ville : la France, puis les villes francophones voisines (section à part sur /se-faire-des-amis/). */
+export type CityCountry = 'fr' | 'be' | 'ch' | 'lu';
 
 export interface CityPage {
   slug: CitySlug;
   /** nom affiché (« Paris ») */
   name: string;
+  country: CityCountry;
   meta: Meta;
   h1: string;
   /** chapeau sous le titre */
@@ -67,7 +74,10 @@ export interface CityPage {
   sections: readonly Section[];
   /** ce que Minimoa change, dit pour cette ville */
   minimoa: Section;
-  /** « Ouvre ton quartier » : texte et zones de `@blowy/domain` (une seule : compteur ; plusieurs : liste) */
+  /**
+   * « Ouvre ton quartier » : texte et zones de `@blowy/domain` (une seule : compteur ; plusieurs : liste ; aucune, pour
+   * une ville sans zone : simple lien vers /quartier/, jamais de zone inventée)
+   */
   quartier: { text: string; zones: readonly string[] };
   faq: readonly Faq[];
   /** trois villes proches (maillage) */
@@ -111,4 +121,36 @@ export interface GuidePage {
   og: OgSpec;
   published: string;
   updated: string;
+}
+
+/**
+ * Page éditoriale en néerlandais pour la Flandre (/nl/vrienden-maken/) : une seule langue, canonique, sans hreflang
+ * (pas d'équivalent dans les autres langues). Mêmes règles d'écriture que les pages villes ; textes de l'interface
+ * compris, puisque le gabarit est en français.
+ */
+export interface BuurtPage {
+  path: string;
+  meta: Meta;
+  h1: string;
+  lead: string;
+  keywords: readonly string[];
+  sections: readonly Section[];
+  minimoa: Section;
+  faq: readonly Faq[];
+  image: ImageRef;
+  og: OgSpec;
+  /** alternatieve tekst van de linkpreview */
+  ogAlt: string;
+  updated: string;
+  ui: {
+    home: string;
+    breadcrumbLabel: string;
+    crumb: string;
+    faqTitle: string;
+    /** encadré de fin : quiz, quartier, landing */
+    cta: { title: string; text: string; quiz: string; quartier: string; home: string };
+    updated: string;
+    /** pied de page des pages en néerlandais */
+    footer: { label: string; link: string };
+  };
 }

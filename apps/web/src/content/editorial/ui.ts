@@ -15,15 +15,17 @@ export const editorialUi = {
     path: '/se-faire-des-amis/',
     crumb: 'Se faire des amis',
     meta: {
-      title: 'Se faire des amis dans ta ville : 11 villes',
-      description: 'Paris, Lyon, Bordeaux, Toulouse, Nantes, Lille… Où rencontrer des gens dans ta ville, comment s’y prendre, et comment ouvrir ton quartier sur Minimoa.',
+      title: 'Se faire des amis dans ta ville : 16 villes',
+      description: 'Paris, Lyon, Lille, Bruxelles, Genève, Luxembourg… Où rencontrer des gens dans ta ville, comment s’y prendre, et comment ouvrir ton quartier.',
     } satisfies Meta,
     h1: 'Se faire des amis dans ta ville',
     lead: 'Chaque ville a ses quartiers, ses rituels et ses endroits où l’on se parle plus facilement. Choisis la tienne : on te dit où commencer, sans liste de bars sponsorisés.',
     listTitle: 'Les villes',
+    /** villes francophones hors de France */
+    abroadTitle: 'Belgique, Suisse, Luxembourg',
     cardMore: 'Lire',
     otherTitle: 'Ta ville n’est pas dans la liste ?',
-    otherText: 'Minimoa ouvre quartier par quartier, partout en France. Tape ton code postal sur la page [Ouvre ton quartier](/quartier/) : à 50 inscrits, ton quartier ouvre.',
+    otherText: 'Minimoa ouvre quartier par quartier, partout en France, et l’app est aussi disponible en Belgique, en Suisse et au Luxembourg. En France, tape ton code postal sur la page [Ouvre ton quartier](/quartier/) : à 50 inscrits, ton quartier ouvre.',
     og: { lines: ['SE FAIRE', 'DES AMIS', 'DANS TA VILLE.'], panel: 'accent' } satisfies OgSpec,
     ogAlt: 'Trois minimoas qui se tapent dans la main, à côté du titre « Se faire des amis dans ta ville. »',
   },
@@ -42,6 +44,8 @@ export const editorialUi = {
     single: 'Ouvrir {zone}',
     pick: 'Choisis ton arrondissement',
     other: 'Autre quartier ou code postal',
+    /** ville sans zone : lien vers /quartier/ */
+    none: 'Voir les quartiers ouverts',
     /** nom d'un arrondissement : « Paris 11e » */
     district: (city: string, n: number) => `${city} ${n}${n === 1 ? 'er' : 'e'}`,
   },

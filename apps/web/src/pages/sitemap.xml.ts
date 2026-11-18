@@ -1,7 +1,7 @@
 /**
  * Plan du site : pages indexables uniquement (les pages de partage /m/, /i/, /g/… sont personnelles), chacune dans ses
  * cinq langues avec les liens `xhtml:link` vers les autres versions (et x-default, le français) ; les pages villes et
- * guides, en français seulement, sans alternates.
+ * guides (français) et /nl/vrienden-maken/ (néerlandais), dans une seule langue, sans alternates.
  */
 import type { APIRoute } from 'astro';
 import { LEGAL_UPDATED_ISO } from '../config/legal';
@@ -19,7 +19,7 @@ function entries(alternates: { hreflang: string; path: string }[], paths: string
 
 const pageEntries = (p: SeoPage) => entries(pageAlternates(p), LOCALES.map((l) => localePath(l, p)));
 const legalEntries = (slug?: LegalSlug) => entries(legalAlternates(slug), LEGAL_LOCALES.map((l) => legalPath(l, slug)), LEGAL_UPDATED_ISO);
-/** Pages villes et guides : français seulement, donc sans alternates. */
+/** Pages villes, guides et /nl/vrienden-maken/ : une seule langue chacune, donc sans alternates. */
 const editorialEntries = () => editorialSitemap().map((p) => `  <url>\n    <loc>${abs(p.path)}</loc>\n    <lastmod>${p.lastmod}</lastmod>\n  </url>`);
 
 export const GET: APIRoute = () => {

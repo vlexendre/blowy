@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const nice: CityPage = {
   slug: 'nice',
   name: 'Nice',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Nice : où rencontrer des gens',
     description: 'Rencontrer des gens à Nice : Vieux-Nice, cours Saleya, Promenade des Anglais, port, colline du Château. Où se faire des amis, et ouvre ton quartier.',

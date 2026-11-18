@@ -1,0 +1,61 @@
+---
+/**
+ * Page « Vrienden maken in je buurt » (néerlandais) : en-tête, sections, Minimoa, encadré de fin (quiz, quartier,
+ * landing nl) et FAQ. Textes : content/editorial/nl/vrienden-maken.ts.
+ */
+import FaqList from '../organisms/editorial/FaqList.astro';
+import type { BuurtPage } from '../../content/editorial/types';
+import { renderBlock, renderSection } from '../../lib/editorial-render';
+
+interface Props {
+  page: BuurtPage;
+}
+const { page } = Astro.props;
+const t = page.ui;
+const wide = page.image.width > page.image.height * 1.2;
+const date = new Intl.DateTimeFormat('nl-BE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${page.updated}T00:00:00Z`));
+---
+<article>
+  <header class="ed-head">
+    <h1>{page.h1}</h1>
+    <p class="ed-lead">{page.lead}</p>
+    <img class:list={['ed-art', { wide }]} src={page.image.src} alt={page.image.alt} width={page.image.width} height={page.image.height} fetchpriority="high" decoding="async" />
+  </header>
+
+  <div class="ed-prose">
+    <Fragment set:html={page.sections.map(renderSection).join('')} />
+  </div>
+
+  <section class="ed-card ed-prose ed-mm" aria-labelledby="ed-mm-title">
+    <h2 id="ed-mm-title">{page.minimoa.title}</h2>
+    <Fragment set:html={page.minimoa.blocks.map(renderBlock).join('')} />
+  </section>
+
+  <aside class="ed-card lime ed-cta" aria-labelledby="ed-cta-title">
+    <img class="ed-cta-art" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" loading="lazy" decoding="async" />
+    <div>
+      <h2 id="ed-cta-title" class="ed-cta-title">{t.cta.title}</h2>
+      <p>{t.cta.text}</p>
+      <div class="ed-actions">
+        <a class="btn k" href="/nl/quiz/">{t.cta.quiz}</a>
+        <a class="btn w" href="/nl/quartier/">{t.cta.quartier}</a>
+      </div>
+      <p class="ed-cta-home"><a class="ed-link" href="/nl/">{t.cta.home}</a></p>
+    </div>
+  </aside>
+
+  <FaqList title={t.faqTitle} faq={page.faq} />
+
+  <p class="ed-updated">{t.updated} <time datetime={page.updated}>{date}</time></p>
+</article>
+<style is:global>
+.ed-mm{max-width:none}
+.ed-mm p{max-width:44em}
+.ed-cta{display:grid;gap:12px;align-items:center;margin-top:40px}
+.ed-cta-title{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,5vw,40px);line-height:.98;letter-spacing:-.015em;margin:0 0 10px;text-wrap:balance}
+.ed-cta p{font-size:17px;line-height:1.5;max-width:34em;font-weight:600}
+.ed-cta-art{width:130px;height:auto;justify-self:start}
+.ed-card.lime .ed-cta-home .ed-link{color:var(--ink)}
+.ed-cta-home{margin-top:14px}
+@media (min-width:700px){.ed-cta{grid-template-columns:auto 1fr;gap:28px}.ed-cta-art{width:170px}}
+</style>

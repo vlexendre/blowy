@@ -1,0 +1,25 @@
+---
+/**
+ * /nl/vrienden-maken/ : page éditoriale en néerlandais pour la Flandre (docs/SEO.md §4). Une seule langue : canonique,
+ * sans hreflang. Textes : content/editorial/nl/vrienden-maken.ts.
+ */
+import Editorial from '../../../layouts/Editorial.astro';
+import BuurtBody from '../../../components/templates/BuurtBody.astro';
+import { vriendenMaken as page } from '../../../content/editorial/nl/vrienden-maken';
+import { siteText } from '../../../content/site';
+import { faqJsonLd } from '../../../lib/editorial-render';
+---
+<Editorial
+  title={page.meta.title}
+  description={page.meta.description}
+  path={page.path}
+  ogImage="/og/nl/vrienden-maken.jpg"
+  ogAlt={page.ogAlt}
+  crumbs={[{ name: page.ui.crumb, path: page.path }]}
+  jsonLd={[faqJsonLd(page.faq)]}
+  preloadImage={page.image.src}
+  locale="nl"
+  ui={{ home: page.ui.home, breadcrumbLabel: page.ui.breadcrumbLabel, ogLocale: 'nl_BE', skipLabel: siteText.nl.skip }}
+>
+  <BuurtBody page={page} />
+</Editorial>

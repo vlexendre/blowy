@@ -2,7 +2,8 @@
 /**
  * « Ouvre ton quartier » sur une page ville : une zone (ville entière) → bouton vers /quartier/<zone> et compteur réel
  * lu à l'API côté navigateur (scripts/editorial-quartier.ts, chargé quand l'encadré approche de l'écran) ; plusieurs
- * zones (arrondissements de Paris, Lyon, Marseille) → une pastille par arrondissement, sans compteur.
+ * zones (arrondissements de Paris, Lyon, Marseille) → une pastille par arrondissement, sans compteur ; aucune zone
+ * (ville sans quartier dans `@blowy/domain`) → simple lien vers /quartier/.
  */
 import { zoneById } from '@blowy/domain';
 import { editorialUi } from '../../../content/editorial/ui';
@@ -30,7 +31,11 @@ const single = zones.length === 1 ? zones[0]! : null;
   <h2 id="ed-qt-title" class="ed-qt-title">{t.title}</h2>
   <p class="ed-qt-text" set:html={inline(text)} />
   {
-    single ? (
+    zones.length === 0 ? (
+      <div class="ed-actions">
+        <a class="btn l" href="/quartier/">{t.none}</a>
+      </div>
+    ) : single ? (
       <>
         <div class="ed-qt-counter" data-ed-counter hidden aria-live="polite">
           <div class="ed-qt-bar">

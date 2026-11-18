@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const strasbourg: CityPage = {
   slug: 'strasbourg',
   name: 'Strasbourg',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Strasbourg : rencontrer des gens',
     description: 'Se faire des amis à Strasbourg : Krutenau, Petite France, Neudorf, quais, Orangerie, winstubs et associations. Où rencontrer des gens près de chez toi.',
@@ -76,7 +77,7 @@ export const strasbourg: CityPage = {
       a: 'À la Krutenau pour sortir, à l’Orangerie et le long de l’Ill pour le sport, dans les cafés-langues pour les rencontres internationales, et dans les associations de ton quartier pour les amitiés durables.',
     },
   ],
-  near: ['lille', 'lyon', 'paris'],
+  near: ['luxembourg', 'lyon', 'paris'],
   guides: ['se-faire-des-amis-nouvelle-ville', 'se-faire-des-amis-timide', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/nino_coucou.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui fait coucou' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À STRASBOURG.'], panel: 'night' },

@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const nantes: CityPage = {
   slug: 'nantes',
   name: 'Nantes',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Nantes : où rencontrer des gens',
     description: 'Se faire des amis à Nantes : île de Nantes, Bouffay, bords de l’Erdre, Talensac, associations. Où rencontrer des gens, et comment ouvrir ton quartier.',

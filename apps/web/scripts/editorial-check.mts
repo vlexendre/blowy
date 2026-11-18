@@ -1,6 +1,7 @@
 /**
  * Contrôle des pages éditoriales (content/editorial), lancé par `pnpm test` :
- * - titres ≤ 60 caractères, descriptions ≤ 155, longueur des textes (villes 600-900 mots, guides 1 200-1 800) ;
+ * - titres ≤ 60 caractères, descriptions ≤ 155, longueur des textes (villes 600-900 mots, guides 1 200-1 800, page
+ *   néerlandaise /nl/vrienden-maken/ 700-1 000) ;
  * - FAQ, villes proches, zones de quartier et liens internes valides ;
  * - contenu propre à chaque ville : deux villes ne partagent pas plus de 30 % de phrases identiques (le nom de la ville
  *   neutralisé), ni plus de 20 % de suites de 6 mots.
@@ -11,7 +12,8 @@ import { CITY_LIST, cityPath } from '../src/content/editorial/villes';
 import { GUIDE_LIST, guidePath } from '../src/content/editorial/guides';
 import { CITY_SLUGS, GUIDE_SLUGS, type CityPage } from '../src/content/editorial/types';
 import { editorialUi } from '../src/content/editorial/ui';
-import { cityTexts, cityWords, guideTexts, guideWords } from '../src/lib/editorial-pages';
+import { buurtTexts, buurtWords, cityTexts, cityWords, guideTexts, guideWords } from '../src/lib/editorial-pages';
+import { vriendenMaken } from '../src/content/editorial/nl/vrienden-maken';
 import { plain } from '../src/lib/editorial-render';
 
 const report = process.argv.includes('--report');
@@ -21,6 +23,7 @@ const fail = (msg: string) => problems.push(msg);
 const internalPaths = new Set<string>([
   '/', '/quiz/', '/quartier/', editorialUi.cities.path, editorialUi.guides.path,
   ...CITY_SLUGS.map(cityPath), ...GUIDE_SLUGS.map(guidePath),
+  '/nl/', '/nl/quiz/', '/nl/quartier/', vriendenMaken.path,
 ]);
 function checkLinks(where: string, texts: readonly string[]): void {
   for (const t of texts) {
@@ -65,8 +68,20 @@ for (const g of GUIDE_LIST) {
   if (report) console.log(`${g.slug.padEnd(44)} ${String(words).padStart(5)} mots, ${g.sources.length} sources`);
 }
 
+// ── Page néerlandaise (/nl/vrienden-maken/) ───────────────────────────────
+{
+  const p = vriendenMaken;
+  const where = 'page nl vrienden-maken';
+  checkMeta(where, p.meta.title, p.meta.description);
+  const words = buurtWords(p);
+  if (words < 700 || words > 1000) fail(`${where} : ${words} mots (attendu 700-1 000)`);
+  if (p.faq.length < 3 || p.faq.length > 4) fail(`${where} : ${p.faq.length} questions (attendu 3-4)`);
+  checkLinks(where, buurtTexts(p));
+  if (report) console.log(`nl/vrienden-maken ${String(words).padStart(5)} mots`);
+}
+
 // ── Similarité entre villes ───────────────────────────────────────────────
-const NAMES = /\b(paris|lyon|bordeaux|toulouse|nantes|lille|marseille|rennes|montpellier|nice|strasbourg|parisiens?|lyonnais|bordelais|toulousains?|nantais|lillois|marseillais|rennais|montpelliérains?|niçois|strasbourgeois)\b/giu;
+const NAMES = /\b(paris|lyon|bordeaux|toulouse|nantes|lille|marseille|rennes|montpellier|nice|strasbourg|bruxelles|liège|liege|genève|geneve|lausanne|luxembourg|parisiens?|lyonnais|bordelais|toulousains?|nantais|lillois|marseillais|rennais|montpelliérains?|niçois|strasbourgeois|bruxellois|liégeois|genevois|lausannois|luxembourgeois)\b/giu;
 const norm = (s: string) => plain(s).toLowerCase().replace(NAMES, 'X').replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
 function sentences(c: CityPage): Set<string> {
   return new Set(
@@ -105,4 +120,4 @@ if (problems.length) {
   console.error(`Pages éditoriales : ${problems.length} problème(s)\n  ${problems.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`Pages éditoriales : ${CITY_LIST.length} villes et ${GUIDE_LIST.length} guides conformes.`);
+console.log(`Pages éditoriales : ${CITY_LIST.length} villes, ${GUIDE_LIST.length} guides et la page néerlandaise conformes.`);

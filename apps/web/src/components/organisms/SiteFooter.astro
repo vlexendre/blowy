@@ -1,7 +1,7 @@
 ---
 /**
  * Pied de page : logo, liens d'aide et légaux (pages légales de la même langue), langues de la page, copyright. En
- * français, en plus : « Villes » et « Guides » (pages éditoriales, français seulement).
+ * français, en plus : « Villes » et « Guides » (pages éditoriales) ; en néerlandais : « Vrienden maken ».
  */
 import Logo from '../atoms/Logo.astro';
 import LangSwitch from '../molecules/LangSwitch.astro';
@@ -9,6 +9,7 @@ import { siteText } from '../../content/site';
 import { legalPath } from '../../i18n/legal';
 import { localePath, type Locale } from '../../i18n/site';
 import { editorialUi } from '../../content/editorial/ui';
+import { vriendenMaken } from '../../content/editorial/nl/vrienden-maken';
 
 interface Props {
   locale: Locale;
@@ -41,6 +42,13 @@ const label = Astro.props.label ?? t.label;
       <nav aria-label={editorialUi.footer.label}>
         <a href={editorialUi.cities.path}>{editorialUi.footer.cities}</a>
         <a href={editorialUi.guides.path}>{editorialUi.footer.guides}</a>
+      </nav>
+    )
+  }
+  {
+    locale === 'nl' && (
+      <nav aria-label={vriendenMaken.ui.footer.label}>
+        <a href={vriendenMaken.path}>{vriendenMaken.ui.footer.link}</a>
       </nav>
     )
   }

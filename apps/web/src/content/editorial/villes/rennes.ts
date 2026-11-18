@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const rennes: CityPage = {
   slug: 'rennes',
   name: 'Rennes',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Rennes : où rencontrer des gens',
     description: 'Rencontrer des gens à Rennes : place Sainte-Anne, marché des Lices, Thabor, bords de Vilaine, associations. Et ton minimoa pour te présenter des Rennais.',

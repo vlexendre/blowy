@@ -1,5 +1,5 @@
 ---
-/** /se-faire-des-amis/ : les onze villes. */
+/** /se-faire-des-amis/ : les villes de France, puis celles de Belgique, de Suisse et du Luxembourg. */
 import Editorial from '../../layouts/Editorial.astro';
 import LinkCards from '../../components/organisms/editorial/LinkCards.astro';
 import AppCta from '../../components/organisms/editorial/AppCta.astro';
@@ -10,7 +10,9 @@ import { SITE_URL } from '../../config/site';
 import { inline } from '../../lib/editorial-render';
 
 const t = editorialUi.cities;
-const items = CITY_LIST.map((c) => ({ href: cityPath(c.slug), title: c.name, text: c.meta.description }));
+const card = (c: (typeof CITY_LIST)[number]) => ({ href: cityPath(c.slug), title: c.name, text: c.meta.description });
+const items = CITY_LIST.filter((c) => c.country === 'fr').map(card);
+const abroad = CITY_LIST.filter((c) => c.country !== 'fr').map(card);
 const itemList = {
   '@type': 'ItemList',
   name: t.h1,
@@ -24,6 +26,7 @@ const itemList = {
     <img class="ed-art wide" src="/img/m/groupe.webp" alt="Suzie, Nino et Gaston, trois minimoas, qui se tapent dans la main" width="700" height="334" fetchpriority="high" decoding="async" />
   </header>
   <LinkCards title={t.listTitle} items={items} />
+  <LinkCards title={t.abroadTitle} items={abroad} />
   <section class="ed-card ed-prose" aria-labelledby="ed-other-title">
     <h2 id="ed-other-title">{t.otherTitle}</h2>
     <p set:html={inline(t.otherText)} />

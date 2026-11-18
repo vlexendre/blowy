@@ -5,6 +5,7 @@ const zones = Array.from({ length: 20 }, (_, i) => `paris-${i + 1}`);
 export const paris: CityPage = {
   slug: 'paris',
   name: 'Paris',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Paris : où rencontrer des gens',
     description: 'Rencontrer des gens à Paris quand on ne connaît personne : quartiers, lieux, activités, et comment ton minimoa te présente des voisins qui te ressemblent.',

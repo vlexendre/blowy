@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const bordeaux: CityPage = {
   slug: 'bordeaux',
   name: 'Bordeaux',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Bordeaux : rencontrer du monde',
     description: 'Se faire des amis à Bordeaux : quais de la Garonne, Chartrons, Saint-Michel, rive droite. Où rencontrer des gens, et ouvre ton quartier sur Minimoa.',

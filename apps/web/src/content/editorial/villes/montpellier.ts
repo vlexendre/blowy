@@ -3,6 +3,7 @@ import type { CityPage } from '../types';
 export const montpellier: CityPage = {
   slug: 'montpellier',
   name: 'Montpellier',
+  country: 'fr',
   meta: {
     title: 'Se faire des amis à Montpellier : rencontrer des gens',
     description: 'Se faire des amis à Montpellier : l’Écusson, le Peyrou, les plages, les associations. Où rencontrer des gens, et ouvre ton quartier sur Minimoa.',
