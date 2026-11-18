@@ -1,0 +1,28 @@
+---
+/** /se-faire-des-amis/<ville>/ : une page par grande ville (docs/SEO.md §3), en français seulement. */
+import Editorial from '../../layouts/Editorial.astro';
+import CityBody from '../../components/templates/CityBody.astro';
+import { CITY_LIST, cityPath } from '../../content/editorial/villes';
+import { editorialUi } from '../../content/editorial/ui';
+import type { CityPage } from '../../content/editorial/types';
+import { faqJsonLd } from '../../lib/editorial-render';
+import { ogAltFor } from '../../lib/editorial-og';
+
+export function getStaticPaths() {
+  return CITY_LIST.map((city) => ({ params: { ville: city.slug }, props: { city } }));
+}
+const { city } = Astro.props as { city: CityPage };
+const path = cityPath(city.slug);
+---
+<Editorial
+  title={city.meta.title}
+  description={city.meta.description}
+  path={path}
+  ogImage={`/og/villes/${city.slug}.jpg`}
+  ogAlt={ogAltFor(city.h1)}
+  crumbs={[{ name: editorialUi.cities.crumb, path: editorialUi.cities.path }, { name: city.name, path }]}
+  jsonLd={[faqJsonLd(city.faq)]}
+  preloadImage={city.image.src}
+>
+  <CityBody city={city} />
+</Editorial>

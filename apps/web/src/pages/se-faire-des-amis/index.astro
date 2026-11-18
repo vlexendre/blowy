@@ -1,0 +1,33 @@
+---
+/** /se-faire-des-amis/ : les onze villes. */
+import Editorial from '../../layouts/Editorial.astro';
+import LinkCards from '../../components/organisms/editorial/LinkCards.astro';
+import AppCta from '../../components/organisms/editorial/AppCta.astro';
+import { CITY_LIST, cityPath } from '../../content/editorial/villes';
+import { GUIDE_LIST, guidePath } from '../../content/editorial/guides';
+import { editorialUi } from '../../content/editorial/ui';
+import { SITE_URL } from '../../config/site';
+import { inline } from '../../lib/editorial-render';
+
+const t = editorialUi.cities;
+const items = CITY_LIST.map((c) => ({ href: cityPath(c.slug), title: c.name, text: c.meta.description }));
+const itemList = {
+  '@type': 'ItemList',
+  name: t.h1,
+  itemListElement: CITY_LIST.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.h1, url: new URL(cityPath(c.slug), SITE_URL).href })),
+};
+---
+<Editorial title={t.meta.title} description={t.meta.description} path={t.path} ogImage="/og/villes.jpg" ogAlt={t.ogAlt} crumbs={[{ name: t.crumb, path: t.path }]} jsonLd={[itemList]} preloadImage="/img/m/groupe.webp">
+  <header class="ed-head">
+    <h1>{t.h1}</h1>
+    <p class="ed-lead">{t.lead}</p>
+    <img class="ed-art wide" src="/img/m/groupe.webp" alt="Suzie, Nino et Gaston, trois minimoas, qui se tapent dans la main" width="700" height="334" fetchpriority="high" decoding="async" />
+  </header>
+  <LinkCards title={t.listTitle} items={items} />
+  <section class="ed-card ed-prose" aria-labelledby="ed-other-title">
+    <h2 id="ed-other-title">{t.otherTitle}</h2>
+    <p set:html={inline(t.otherText)} />
+  </section>
+  <LinkCards title={editorialUi.guides.h1} items={GUIDE_LIST.map((g) => ({ href: guidePath(g.slug), title: g.short }))} />
+  <AppCta />
+</Editorial>

@@ -1,0 +1,23 @@
+---
+/** Encadré de fin de page : Minimoa en une phrase, le quiz et « Ouvre ton quartier ». */
+import { editorialUi } from '../../../content/editorial/ui';
+const t = editorialUi.cta;
+---
+<aside class="ed-card lime ed-cta" aria-labelledby="ed-cta-title">
+  <img class="ed-cta-art" src="/img/m/nino_coucou.webp" alt="" width="450" height="500" loading="lazy" decoding="async" />
+  <div>
+    <h2 id="ed-cta-title" class="ed-cta-title">{t.title}</h2>
+    <p>{t.text}</p>
+    <div class="ed-actions">
+      <a class="btn k" href="/quiz/">{t.quiz}</a>
+      <a class="btn w" href="/quartier/">{t.quartier}</a>
+    </div>
+  </div>
+</aside>
+<style is:global>
+.ed-cta{display:grid;gap:12px;align-items:center;margin-top:56px}
+.ed-cta-title{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,5vw,40px);line-height:.98;letter-spacing:-.015em;margin:0 0 10px;text-wrap:balance}
+.ed-cta p{font-size:17px;line-height:1.5;max-width:34em;font-weight:600}
+.ed-cta-art{width:130px;height:auto;justify-self:start}
+@media (min-width:700px){.ed-cta{grid-template-columns:auto 1fr;gap:28px}.ed-cta-art{width:170px}}
+</style>

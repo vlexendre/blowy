@@ -6,6 +6,8 @@ Usage (depuis la racine du dépôt) :
   pnpm exec tsx apps/web/scripts/site-images/placements.mts > /tmp/minimoa-placements.json
   python3 -I apps/web/scripts/site-images/build.py /tmp/minimoa-placements.json
   python3 -I apps/web/scripts/site-images/build.py --og-locales   # seulement les aperçus traduits (og/<langue>/)
+  pnpm exec tsx apps/web/scripts/site-images/editorial-og.mts > /tmp/minimoa-og-pages.json
+  python3 -I apps/web/scripts/site-images/build.py --og-pages /tmp/minimoa-og-pages.json   # villes et guides (og/villes/, og/guides/)
 Dépendances : Pillow (webp). Sorties dans apps/web/public (fichiers versionnés).
 """
 import json
@@ -230,9 +232,32 @@ def og_locales() -> None:
     print('ok :', ', '.join(str(OG / l) for l in OG_LOCALES))
 
 
+# Aperçus des pages villes et guides (français seulement) : og/villes.jpg, og/villes/<ville>.jpg, og/guides.jpg,
+# og/guides/<guide>.jpg. Titres et fonds lus dans content/editorial (scripts/site-images/editorial-og.mts).
+def og_pages(specs_path: str) -> None:
+    arts = {
+        'trio': (row(['suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_coucou'], -0.3, [0.78, 1.0, 0.8]), (620, 60, 1180, 610)),
+        'groupe': (row(['suzie_corps_joie', 'nino_corps_check', 'gaston_corps_applaudit'], -0.18, [0.92, 1.0, 0.9]), (650, 110, 1180, 610)),
+        'duo': (row(['nino_corps_check', ImageOps.mirror(pet('pia_corps_check'))], -0.2), (650, 110, 1180, 610)),
+        'quatre': (row(['gaston_corps_pense', 'suzie_corps_joie', 'nino_corps_coucou', 'pia_corps_fier'], -0.22, [0.84, 0.9, 1.0, 0.88]), (600, 120, 1180, 610)),
+        'timide': (pet('nino_corps_timide'), (770, 80, 1150, 600)),
+        'marche': (pet('nino_corps_marche'), (770, 80, 1150, 600)),
+        'pense': (pet('nino_corps_pense'), (770, 80, 1150, 600)),
+    }
+    specs = json.loads(Path(specs_path).read_text())
+    for s in specs:
+        art, box = arts[s['art']]
+        out = OG / Path(s['out']).parent
+        og(Path(s['out']).name, s['panel'], s['lines'], 99, art, box, s['tag'], out)
+    print('ok :', len(specs), 'aperçus dans', OG)
+
+
 def main() -> None:
     if '--og-locales' in sys.argv:
         og_locales()
+        return
+    if '--og-pages' in sys.argv:
+        og_pages(sys.argv[sys.argv.index('--og-pages') + 1])
         return
     placements = json.loads(Path(sys.argv[1]).read_text()) if len(sys.argv) > 1 else []
     OUT.mkdir(parents=True, exist_ok=True)

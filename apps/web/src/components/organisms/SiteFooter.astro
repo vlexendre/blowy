@@ -1,10 +1,14 @@
 ---
-/** Pied de page : logo, liens d'aide et légaux (pages légales de la même langue), langues de la page, copyright. */
+/**
+ * Pied de page : logo, liens d'aide et légaux (pages légales de la même langue), langues de la page, copyright. En
+ * français, en plus : « Villes » et « Guides » (pages éditoriales, français seulement).
+ */
 import Logo from '../atoms/Logo.astro';
 import LangSwitch from '../molecules/LangSwitch.astro';
 import { siteText } from '../../content/site';
 import { legalPath } from '../../i18n/legal';
 import { localePath, type Locale } from '../../i18n/site';
+import { editorialUi } from '../../content/editorial/ui';
 
 interface Props {
   locale: Locale;
@@ -32,6 +36,14 @@ const label = Astro.props.label ?? t.label;
   <nav aria-label={label}>
     {links.map((l) => <a href={l.href}>{l.label}</a>)}
   </nav>
+  {
+    locale === 'fr' && (
+      <nav aria-label={editorialUi.footer.label}>
+        <a href={editorialUi.cities.path}>{editorialUi.footer.cities}</a>
+        <a href={editorialUi.guides.path}>{editorialUi.footer.guides}</a>
+      </nav>
+    )
+  }
   {langLinks && langLinks.length > 1 && <LangSwitch locale={locale} links={langLinks} variant="inline" />}
   <span>© 2026 Minimoa</span>
 </footer>

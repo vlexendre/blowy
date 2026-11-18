@@ -10,6 +10,7 @@ import type { Locale } from '../../../i18n/site';
 import { landingText } from '../../../content/landing-text';
 import { OFFERS, TRIAL_DAYS } from '@blowy/domain';
 import { formatPrice } from '@blowy/content';
+import { editorialUi } from '../../../content/editorial/ui';
 interface Props {
   locale: Locale;
 }
@@ -21,6 +22,13 @@ const items = [...c.items, { q: c.price.q, a: c.price.a(price(OFFERS.yearly.amou
 <SnapSection section={sections.faq} panel="p-night s-faq">
   <SectionTitle lines={c.title}>
     <p class="side">{c.sideBefore} <a href={`mailto:${SUPPORT_EMAIL}`}>{c.sideLink}</a>{c.sideAfter}</p>
+    {
+      locale === 'fr' && (
+        <p class="side">
+          {editorialUi.landing.before} <a href={editorialUi.cities.path}>{editorialUi.landing.cities}</a>, <a href={editorialUi.guides.path}>{editorialUi.landing.guides}</a>.
+        </p>
+      )
+    }
   </SectionTitle>
   <div class="faq" data-r="up">
     {items.map((i) => <FaqItem question={i.q} answer={i.a} />)}

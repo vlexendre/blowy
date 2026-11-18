@@ -1,0 +1,26 @@
+---
+/** Questions fréquentes d'une page éditoriale (les données structurées FAQPage sont émises par la page). */
+import type { Faq } from '../../../content/editorial/types';
+import { inline, slugify } from '../../../lib/editorial-render';
+interface Props {
+  title: string;
+  faq: readonly Faq[];
+}
+const { title, faq } = Astro.props;
+const id = slugify(title);
+---
+<section class="ed-prose ed-sec" aria-labelledby={id}>
+  <h2 id={id}>{title}</h2>
+  <div class="ed-faq">
+    {
+      faq.map((f) => (
+        <details>
+          <summary set:html={inline(f.q)} />
+          <div>
+            <p set:html={inline(f.a)} />
+          </div>
+        </details>
+      ))
+    }
+  </div>
+</section>
