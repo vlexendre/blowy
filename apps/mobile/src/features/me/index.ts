@@ -1,10 +1,11 @@
-import type { UpdateMeBody } from '@blowy/contract';
+import type { Me, UpdateMeBody } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
 import { type ComponentRef, useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Share, type View } from 'react-native';
 
-import { captureStory, keys, presentShare, shareStoryImage, useApi, usePorts } from '@/core';
+import { withUpdate } from './update';
+import { captureStory, keys, optimistic, patch, presentShare, rollback, shareStoryImage, useApi, usePorts } from '@/core';
 
 /** Ton lien « 3 mots » et ton résultat (les 3 mots les plus choisis, à partir de 3 votes). */
 export function useMyWords(enabled = true) {
@@ -22,6 +23,9 @@ export function useUpdateMe() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: UpdateMeBody) => api.me.update(body),
+    // Interrupteurs et champs de « Moi » : l'écran change à l'appui ; refusé (filtre du prénom, réseau) : il revient.
+    onMutate: (body) => optimistic(qc, [patch<Me>(keys.me, (me) => withUpdate(me, body))]),
+    onError: (_e, _body, snap) => rollback(qc, snap),
     onSuccess: (me) => qc.setQueryData(keys.me, me),
   });
 }

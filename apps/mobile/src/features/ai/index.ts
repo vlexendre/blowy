@@ -5,7 +5,7 @@
 import type { AiConsents } from '@blowy/contract';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useApi } from '@/core';
+import { optimistic, patch, rollback, useApi } from '@/core';
 
 export const aiKeys = { consents: ['me', 'ai'] as const };
 
@@ -21,6 +21,9 @@ export function useSetAiProofs() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (consent: boolean) => api.me.setAiProofs(consent),
+    // Le choix s'affiche à l'appui (l'API horodate l'accord) ; refusé : il revient.
+    onMutate: (consent) => optimistic(qc, [patch<AiConsents>(aiKeys.consents, (c) => ({ ...c, proofs: { ...c.proofs, consent } }))]),
+    onError: (_e, _c, snap) => rollback(qc, snap),
     onSuccess: (r: AiConsents) => qc.setQueryData(aiKeys.consents, r),
   });
 }

@@ -107,7 +107,7 @@ export default function Reglages() {
                   },
                 },
               ),
-            disabled: !m || updateMe.isPending,
+            disabled: !m,
           },
           // Statistiques d'usage (Amplitude, États-Unis) : coupées tant que la personne n'a pas dit oui.
           {

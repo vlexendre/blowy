@@ -327,7 +327,6 @@ export default function HabitsScreen() {
                 key={r.id}
                 title={r.label}
                 onPress={() => r.id !== edited.rhythm && update.mutate({ ref: edited.ref, rhythm: r.id })}
-                disabled={update.isPending}
                 right={edited.rhythm === r.id ? <Glyph name="check" size={18} color={color.accent} /> : undefined}
                 chevron={false}
                 accessibilityLabel={edited.rhythm === r.id ? t.rhythmA11y(r.label) : r.label}

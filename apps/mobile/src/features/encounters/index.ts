@@ -5,7 +5,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { create } from 'zustand';
 
-import { keys, useApi } from '@/core';
+import { keys, optimistic, patch, rollback, useApi } from '@/core';
 import { maybeAskForReview } from '@/features/review';
 
 /** Les rencontres : aucun temps réel ne les signale, alors elles sont relues chaque minute (saluts reçus, saluts acceptés). */
@@ -71,11 +71,10 @@ export function useWave() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (userId: string) => api.encounters.wave(userId),
-    onMutate: (userId) => {
-      qc.setQueryData<Encounters>(keys.encounters, (data) =>
-        data ? { ...data, suggestions: data.suggestions.map((s) => (s.user.id === userId ? { ...s, waved: true } : s)) } : data,
-      );
-    },
+    // « Salué » à l'appui ; refusé (plafond, personne plus montrée) : le bouton revient.
+    onMutate: (userId) =>
+      optimistic(qc, [patch<Encounters>(keys.encounters, (data) => ({ ...data, suggestions: data.suggestions.map((s) => (s.user.id === userId ? { ...s, waved: true } : s)) }))]),
+    onError: (_e, _userId, snap) => rollback(qc, snap),
     onSettled: () => {
       void qc.invalidateQueries({ queryKey: keys.encounters });
       void qc.invalidateQueries({ queryKey: keys.links });
@@ -104,7 +103,10 @@ export function useDeclineEncounter() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.encounters.decline(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: keys.encounters }),
+    // « Pas cette fois » : la carte part tout de suite ; elle revient si l'API refuse.
+    onMutate: (id) => optimistic(qc, [patch<Encounters>(keys.encounters, (data) => ({ ...data, incoming: data.incoming.filter((i) => i.id !== id) }))]),
+    onError: (_e, _id, snap) => rollback(qc, snap),
+    onSettled: () => qc.invalidateQueries({ queryKey: keys.encounters }),
   });
 }
 

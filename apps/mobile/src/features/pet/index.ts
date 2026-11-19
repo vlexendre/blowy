@@ -27,7 +27,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { keys, useApi } from '@/core';
+import { keys, optimistic, patch, rollback, useApi } from '@/core';
+
+import { cared } from './care';
+
+export { cared } from './care';
 
 /**
  * Objets tout juste gagnés : `queue` attend d'être fêtée (V6-Debloque), `fresh` garde l'étiquette « nouveau »
@@ -99,12 +103,17 @@ export function useRenamePet() {
 
 /** Les rituels (défi du jour, série, habitudes, bilans) vivent dans `@/features/rituals`. */
 
-/** S'occuper du pet : nourrir, jouer, sieste, câlin. Le résultat porte les objets tout juste débloqués. */
+/**
+ * S'occuper du pet : nourrir, jouer, sieste, câlin. Optimiste : les jauges bougent à l'appui (règle du domaine), la
+ * réponse de l'API les confirme et porte les objets tout juste débloqués ; un refus remet l'état d'avant.
+ */
 export function useCare() {
   const api = useApi();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (action: CareAction) => api.pet.care(action),
+    onMutate: (action) => optimistic(qc, [patch<PetView>(keys.pet, (v) => cared(v, action))]),
+    onError: (_e, _action, snap) => rollback(qc, snap),
     onSuccess: (view) => {
       qc.setQueryData(keys.pet, view);
       celebrate(view);

@@ -8,7 +8,7 @@ import { itemById, STREAK_MILESTONES, streakReward } from '@blowy/domain';
 import { type QueryClient, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
 
-import { keys, useApi, usePorts } from '@/core';
+import { keys, optimistic, patch, rollback, useApi, usePorts } from '@/core';
 import { useUnlocks } from '@/features/pet';
 import { maybeAskForReview } from '@/features/review';
 
@@ -122,7 +122,13 @@ export function useOuting() {
 export function useChallengeSeen() {
   const api = useApi();
   const qc = useQueryClient();
-  return useMutation({ mutationFn: api.rituals.seenChallenge, onSuccess: (r) => applyDaily(qc, r) });
+  return useMutation({
+    mutationFn: api.rituals.seenChallenge,
+    // La carte ne remonte plus, tout de suite (l'appel est silencieux).
+    onMutate: () => optimistic(qc, [patch<RitualsToday>(keys.ritualsToday, (t) => ({ ...t, challenge: { ...t.challenge, present: false } }))]),
+    onError: (_e, _v, snap) => rollback(qc, snap),
+    onSuccess: (r) => applyDaily(qc, r),
+  });
 }
 
 export function useAcceptChallenge() {
@@ -196,9 +202,27 @@ export function useAddHabit() {
   return useHabitsMutation((body: Parameters<typeof api.rituals.addHabit>[0]) => api.rituals.addHabit(body));
 }
 
+/** Rythme ou heure de la preuve : la pastille change à l'appui ; refusé, elle revient. */
 export function useUpdateHabit() {
   const api = useApi();
-  return useHabitsMutation(({ ref, ...body }: { ref: string } & Parameters<typeof api.rituals.updateHabit>[1]) => api.rituals.updateHabit(ref, body));
+  const qc = useQueryClient();
+  type Vars = { ref: string } & Parameters<typeof api.rituals.updateHabit>[1];
+  return useMutation({
+    mutationFn: ({ ref, ...body }: Vars) => api.rituals.updateHabit(ref, body),
+    onMutate: ({ ref, rhythm, proofHour }: Vars) =>
+      optimistic(qc, [
+        patch<Habits>(ritualKeys.habits, (h) => ({
+          ...h,
+          habits: h.habits.map((x) => (x.ref === ref ? { ...x, rhythm: rhythm ?? x.rhythm, proofHour: proofHour ?? x.proofHour } : x)),
+        })),
+      ]),
+    onError: (_e, _v, snap) => rollback(qc, snap),
+    onSuccess: (habits) => {
+      qc.setQueryData(ritualKeys.habits, habits);
+      void qc.invalidateQueries({ queryKey: ritualKeys.catalogue });
+      void qc.invalidateQueries({ queryKey: keys.ritualsToday });
+    },
+  });
 }
 
 export function useRemoveHabit() {
@@ -304,6 +328,9 @@ export function useReadReview() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.rituals.readReview(id),
+    // Le bilan quitte l'accueil tout de suite.
+    onMutate: (id) => optimistic(qc, [patch<RitualsToday>(keys.ritualsToday, (t) => (t.unreadReviewId === id ? { ...t, unreadReviewId: null } : t))]),
+    onError: (_e, _id, snap) => rollback(qc, snap),
     onSuccess: (review: WeeklyReview) => {
       qc.setQueryData(ritualKeys.review(review.id), review);
       const today = qc.getQueryData<RitualsToday>(keys.ritualsToday);

@@ -11,3 +11,4 @@ export { widgets } from './widgets';
 export type { ActivityToken, Dismissal, RunningActivity, WidgetFrame, WidgetSnapshot } from './widgets';
 export { appBuild, appPlatform, clientInfo } from './app-identity';
 export { useUpdateRequired } from './update-required';
+export { optimistic, patch, rollback, type Patch, type Snapshot } from './optimistic';

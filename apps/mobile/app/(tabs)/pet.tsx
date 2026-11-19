@@ -243,14 +243,13 @@ export default function PetHome() {
   // Il boude : c'est sa bulle qui le dit (plus de carte d'alerte).
   const speech = said?.text ?? (sulking ? t.sulkSpeech : idleLine);
 
-  const onCare = (action: CareAction) =>
+  // Optimiste : il croque, joue ou dort à l'appui (jauges déjà à jour) ; un refus du serveur le fait revenir.
+  const onCare = (action: CareAction) => {
+    play(action, careProp(action, careTurn));
+    setCareTurn((n) => n + 1);
+    setNeglected(false);
+    say(careLabel[action]?.done ?? '');
     care.mutate(action, {
-      onSuccess: () => {
-        play(action, careProp(action, careTurn));
-        setCareTurn((n) => n + 1);
-        setNeglected(false);
-        say(careLabel[action]?.done ?? '');
-      },
       onError: (e) => {
         // Refus du pet (besoin déjà comblé) : il le dit lui-même dans sa bulle, et fait non de la tête.
         if (e instanceof ApiError && e.code === 'already_done') {
@@ -259,6 +258,7 @@ export default function PetHome() {
         }
       },
     });
+  };
 
   const onOuting = (answer: OutingAnswer) =>
     outing.mutate(
@@ -379,7 +379,7 @@ export default function PetHome() {
                 available={careAvailable(p.needs)}
                 hot={careHot(p.needs)}
                 levels={levels}
-                busy={care.isPending ? care.variables : null}
+                busy={null}
                 onCare={onCare}
                 lure={lure}
                 carry={{ feed: careProp('feed', careTurn), play: careProp('play', careTurn), nap: careProp('nap', careTurn) }}

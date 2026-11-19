@@ -134,7 +134,11 @@ export default function RencontreScreen() {
         loading={accept.isPending}
         disabled={decline.isPending}
       />
-      <Button label={t.decline} variant="link" size="md" labelSize={15} onPress={() => decline.mutate(incoming.id, { onSuccess: back })} loading={decline.isPending} disabled={accept.isPending} />
+      <Button label={t.decline} variant="link" size="md" labelSize={15} onPress={() => {
+          // Optimiste : la rencontre quitte la liste tout de suite, on n'attend pas l'API pour revenir.
+          decline.mutate(incoming.id);
+          back();
+        }} disabled={accept.isPending} />
     </>
   ) : suggestion?.waved ? (
     <Button label={t.waved} variant="ghost" icon="check" disabled />

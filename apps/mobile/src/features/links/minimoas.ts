@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
-import { keys, useApi } from '@/core';
+import { keys, optimistic, patch, rollback, useApi } from '@/core';
 
 export const minimoasKey = (linkId: string) => [...keys.link(linkId), 'minimoas'] as const;
 export const myMinimoasKey = ['me', 'minimoas'] as const;
@@ -70,6 +70,12 @@ export function useSetReadingDefault() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (value: ChatReadingDefaultDto) => api.minimoas.setDefault(value),
+    // Le choix s'affiche à l'appui ; refusé : il revient.
+    onMutate: (value) =>
+      optimistic(qc, [
+        patch<InfiniteData<MyMinimoas>>(myMinimoasKey, (data) => ({ ...data, pages: data.pages.map((p, i) => (i === 0 ? { ...p, readingDefault: value } : p)) })),
+      ]),
+    onError: (_e, _v, snap) => rollback(qc, snap),
     onSuccess: ({ readingDefault }) =>
       qc.setQueryData<InfiniteData<MyMinimoas>>(myMinimoasKey, (data) =>
         data ? { ...data, pages: data.pages.map((p, i) => (i === 0 ? { ...p, readingDefault } : p)) } : data,
