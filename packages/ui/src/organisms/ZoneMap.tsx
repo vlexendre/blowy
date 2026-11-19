@@ -25,6 +25,8 @@ export interface ZoneMapPin {
   label: string;
   accessibilityLabel: string;
   selected?: boolean;
+  /** Présenté aujourd'hui : anneau jaune. */
+  hot?: boolean;
   onPress?: () => void;
 }
 
@@ -154,6 +156,7 @@ export function ZoneMap({ center, radiusKm, me, pins, blurred = [], land = false
                   pet={p.pet}
                   label={p.label}
                   selected={p.selected}
+                  hot={p.hot}
                   onPress={p.onPress}
                   accessibilityLabel={p.accessibilityLabel}
                   landDelay={land ? 260 + rank * 110 : null}

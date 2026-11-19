@@ -140,7 +140,17 @@ export function OnboardingTemplate({
     </View>
   );
   const heading = host ? (
-    <HostBubble {...host} />
+    kicker ? (
+      // Une ligne au-dessus de la bulle de l'hôte (« Ton chemin · Étape 1 »).
+      <View>
+        <Text variant="label" size={11} color={color.accent} style={[styles.kicker, styles.hostKicker]}>
+          {kicker}
+        </Text>
+        <HostBubble {...host} />
+      </View>
+    ) : (
+      <HostBubble {...host} />
+    )
   ) : kicker || title || text ? (
       <View style={[styles.heading, dense && styles.headingDense]}>
         {kicker ? (
@@ -199,6 +209,7 @@ const styles = StyleSheet.create({
   heading: { paddingTop: space.lg, paddingHorizontal: space.xs },
   headingDense: { paddingTop: 10, paddingHorizontal: 0 },
   kicker: { letterSpacing: 1.32 },
+  hostKicker: { marginTop: 14 },
   titleRow: { alignItems: 'flex-end', gap: space.xs },
   titlePet: { marginRight: -8, marginBottom: -12 },
   titleAfterKicker: { marginTop: 6 },

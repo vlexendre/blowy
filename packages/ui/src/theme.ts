@@ -52,6 +52,25 @@ export const extra = {
   /** Feuilles et queue de la fraise du soin « nourrir » (animation). */
   leaf: '#4CB944',
   stem: '#2F8F2A',
+  /**
+   * Ton chemin (V6-GAccueil) : étapes rondes « en relief », chacune avec l'ombre portée plus foncée de sa couleur
+   * (faite, du jour, coffre, verrouillée), le bandeau violet de la séance du jour et sa tranche.
+   */
+  relief: {
+    done: '#A8D52A',
+    doneEdge: '#6E8F12',
+    nowEdge: '#B37F00',
+    chest: '#2B2450',
+    chestEdge: '#15112A',
+    chestInk: '#C9B8FF',
+    locked: '#221E3C',
+    lockedEdge: '#0E0C1A',
+    lockedInk: '#8C86A8',
+    unit: '#7A45F0',
+    unitEdge: '#4E2AA6',
+    unitInk: '#F1EBFF',
+    path: '#2E2950',
+  },
 } as const;
 
 /** `#RRGGBB` + opacité → `rgba()`. Sert aux voiles blancs / sombres des maquettes (rgba(255,255,255,.1)…). */

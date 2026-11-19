@@ -18,6 +18,8 @@ export interface MapStickerProps {
   selected?: boolean;
   /** Toi : puce jaune et onde. */
   me?: boolean;
+  /** Présenté aujourd'hui par ton minimoa (V6-GCarte, épingles façon TripBFF) : anneau jaune autour du visage. */
+  hot?: boolean;
   onPress?: () => void;
   accessibilityLabel: string;
   /** Entrée : attente avant de se poser (ms) ; null = déjà posé (pas d'animation). */
@@ -34,7 +36,7 @@ export interface MapStickerProps {
  * prénom en puce dessous.
  * Il se pose en rebondissant, flotte doucement au repos, sautille quand on le touche. Animations réduites : posé, fixe.
  */
-export function MapSticker({ pet, label, selected, me, onPress, accessibilityLabel, landDelay = null, floatDelay = 0, size = 56, style }: MapStickerProps) {
+export function MapSticker({ pet, label, selected, me, hot, onPress, accessibilityLabel, landDelay = null, floatDelay = 0, size = 56, style }: MapStickerProps) {
   const reduced = useReducedMotion();
   const land = useSharedValue(landDelay === null ? 1 : 0);
   const o = useSharedValue(landDelay === null ? 1 : 0);
@@ -67,10 +69,12 @@ export function MapSticker({ pet, label, selected, me, onPress, accessibilityLab
   const tint = petTint[pet.species];
   const content = (
     <Animated.View style={[styles.col, body]}>
-      <View style={[styles.face, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }, selected ? styles.faceOn : null]}>
+      <View style={[styles.face, { width: size + 8, height: size + 8, borderRadius: (size + 8) / 2 }, hot ? styles.faceHot : null, selected ? styles.faceOn : null]}>
         {/* Le médaillon (tête et épaules, objets de la tête compris), cadré pareil pour les 4 espèces, habillé ou non. */}
         <PetBadge species={pet.species} outfit={pet.outfit} size={size} background={me ? color.accent : tint} roomy style={styles.badge} />
       </View>
+      {/* La pointe de l'épingle, sous le visage (blanche, jaune pour un présenté du jour). */}
+      {me ? null : <View style={[styles.tail, hot ? styles.tailHot : null]} />}
       <View style={[styles.chip, me || selected ? styles.chipOn : null]}>
         <Text variant="bodyHeavy" size={13} color={color.dark} numberOfLines={1}>
           {label}
@@ -120,8 +124,11 @@ const styles = StyleSheet.create({
   col: { alignItems: 'center', gap: space.xs },
   badge: { alignSelf: 'center' },
   face: { alignItems: 'center', justifyContent: 'center', backgroundColor: color.white, shadowColor: color.night, shadowOpacity: 0.45, shadowRadius: 8, shadowOffset: { width: 0, height: 6 } },
+  faceHot: { borderWidth: 3, borderColor: color.accentSoft, shadowColor: color.accentSoft, shadowOpacity: 0.5, shadowRadius: 6 },
+  tail: { width: 12, height: 12, marginTop: -11, backgroundColor: color.white, transform: [{ rotate: '45deg' }] },
+  tailHot: { backgroundColor: color.accentSoft },
   faceOn: { borderWidth: 3, borderColor: color.accent, transform: [{ scale: 1.1 }] },
-  chip: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, backgroundColor: color.white, maxWidth: 110, transform: [{ rotate: '-3deg' }] },
+  chip: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, backgroundColor: color.white, maxWidth: 160, transform: [{ rotate: '-3deg' }] },
   chipOn: { backgroundColor: color.accent },
   blob: { alignItems: 'center', justifyContent: 'center' },
   ring: { position: 'absolute' },

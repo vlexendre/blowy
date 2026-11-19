@@ -63,3 +63,6 @@ export { PickTiles, type PickTilesProps } from './PickTiles';
 export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
 export { ChipChoice, type ChipChoiceOption, type ChipChoiceProps } from './ChipChoice';
 export { PerkLine, type PerkLineProps } from './PerkLine';
+export { SessionBanner, type SessionBannerProps } from './SessionBanner';
+export { AnswerSlider, type AnswerSliderProps } from './AnswerSlider';
+export { SeanceBar, type SeanceBarProps } from './SeanceBar';
