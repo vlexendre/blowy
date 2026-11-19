@@ -188,13 +188,7 @@ export default function CharacterScreen() {
           {/* Ce qui le fait avancer, en tuiles sans description (la série est sur l'accueil et dans le défi). */}
           <Appear once="character:entries" delay={200}>
             <ShortcutRow>
-              <ShortcutTile
-                label={c.habits}
-                icon={<Glyph name="camera" size={22} color={color.accent} />}
-                value={hs.length ? String(hs.length) : undefined}
-                onPress={() => router.push('/pet/habitudes')}
-                accessibilityLabel={`${c.habits}, ${c.habitsText(hs.length, bestHabit)}`}
-              />
+              {/* Habitudes : hors de l'interface V1 (l'écran reste, joignable par son lien). */}
               <ShortcutTile label={c.evolution} icon={<Icon name="etoiles" size={24} />} onPress={() => router.push('/pet/evolution')} />
               <ShortcutTile label={c.reviews} icon={<Icon name="cadeau" size={24} />} onPress={() => router.push('/pet/bilans')} />
               <ShortcutTile label={c.memories} icon={<Icon name="coeurs" size={24} />} onPress={() => router.push('/pet/souvenirs')} />

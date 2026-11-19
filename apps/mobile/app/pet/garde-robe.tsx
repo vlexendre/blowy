@@ -31,15 +31,17 @@ import { wardrobe as t } from '@/locales/pet';
 import { formatDate } from '@/locales/runtime';
 
 /** Où l'on avance vers chaque étape. */
-const SHORTCUT: Record<StatKey, Href> = {
+const SHORTCUT: Record<StatKey, Href | null> = {
   careDays: '/(tabs)/pet',
   links: '/(tabs)/rencontres',
   bestLevel: '/(tabs)/chats',
   bestStreak: '/(tabs)/chats',
-  challenges: '/pet/defi',
+  // Défi du jour et habitudes : hors de l'interface V1 (Ton chemin) : pas de raccourci (l'objet se gagne encore par
+  // l'ancienne app). La série, elle, avance avec la séance du jour.
+  challenges: null,
   words: '/(tabs)/moi',
   ritualStreak: '/pet/serie',
-  habitsKept: '/pet/habitudes',
+  habitsKept: null,
   referrals: '/(tabs)/moi',
   founded: '/(tabs)/rencontres',
 };
@@ -254,8 +256,8 @@ export default function WardrobeScreen() {
                 action={
                   open.state === 'premium'
                     ? { label: t.premiumCta, onPress: toPlus }
-                    : goal
-                      ? { label: t.shortcut[goal.stat], onPress: () => go(SHORTCUT[goal.stat]) }
+                    : goal && SHORTCUT[goal.stat]
+                      ? { label: t.shortcut[goal.stat], onPress: () => go(SHORTCUT[goal.stat] as Href) }
                       : undefined
                 }
                 secondary={open.state === 'premium' ? { label: t.tryOn(p.name), onPress: tryIt } : undefined}

@@ -3,7 +3,7 @@ import { BottomTabBar, type BottomTabItem } from '@blowy/ui';
 import { Redirect, Tabs, useIsFocused } from 'expo-router';
 
 import { useEncounters } from '@/features/encounters';
-import { useGroups } from '@/features/groups';
+import { GROUPS_IN_V1, useGroups } from '@/features/groups';
 import { totalUnread, useLinks } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { useGate } from '@/features/session';
@@ -33,7 +33,8 @@ export default function TabsLayout() {
   const focused = useIsFocused();
   const items: BottomTabItem<TabKey>[] = [
     { key: 'pet', label: tabs.pet, glyph: 'heart' },
-    { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) + (groups.data?.groups.reduce((n, g) => n + g.unread, 0) ?? 0) + (groups.data?.invitations.length ?? 0) },
+    // Groupes hors de l'interface V1 (Ton chemin) : leurs non-lus ne comptent plus dans la pastille (rien à ouvrir).
+    { key: 'chats', label: tabs.chats, glyph: 'chat', badge: totalUnread(links.data) + (GROUPS_IN_V1 ? (groups.data?.groups.reduce((n, g) => n + g.unread, 0) ?? 0) + (groups.data?.invitations.length ?? 0) : 0) },
     { key: 'rencontres', label: tabs.rencontres, glyph: 'people', badge: encounters.data?.incoming.length ?? 0 },
     { key: 'moi', label: tabs.moi, glyph: 'person' },
   ];

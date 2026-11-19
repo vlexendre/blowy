@@ -13,6 +13,12 @@ import { useTrackShare } from '@/features/growth';
 import { useCopyShare } from '@/features/me';
 import { croissance } from '@/locales/croissance';
 
+/**
+ * Groupes : retirés de l'interface V1 (Ton chemin, docs/CHEMIN.md). Rien n'est supprimé (écrans, liens profonds
+ * `blowy://groupe/<id>`, serveur) ; passer à `true` les fait revenir dans les chats et la pastille de l'onglet.
+ */
+export const GROUPS_IN_V1 = false;
+
 export function useGroups() {
   const api = useApi();
   return useQuery({ queryKey: keys.groups, queryFn: api.groups.list, staleTime: 15_000 });

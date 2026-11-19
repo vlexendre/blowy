@@ -1,3 +1,8 @@
+/**
+ * Onglet Chats (V6-Chats) : en tête, « On t'a dit bonjour » (les bonjours reçus en attente, « Vous deux » quand
+ * l'explication est là, « Répondre »), puis les séries en jeu et les liens (vies, séries, niveaux). Les groupes sont
+ * retirés de l'interface V1 (`GROUPS_IN_V1`) : le code reste, l'ancien serveur aussi.
+ */
 import { color } from '@blowy/tokens';
 import type { GroupInvitation, Groups, GroupSummary } from '@blowy/contract';
 import {
@@ -7,6 +12,7 @@ import {
   EmptyState,
   GroupInviteRow,
   GroupRow,
+  HelloCard,
   IconButton,
   LinkRow,
   NudgeBanner,
@@ -24,15 +30,17 @@ import { RefreshControl, StyleSheet, View } from 'react-native';
 import { ScreenMotion } from '@/core';
 import { useEncounters, useShareInvite } from '@/features/encounters';
 import { isMyTurn, isNewLink, sortLinks, streaksWaitingOnMe, timeLabel, useLinks, usePrefetchLink } from '@/features/links';
-import { sortGroups, useAcceptGroup, useDeclineGroup, useGroups } from '@/features/groups';
+import { GROUPS_IN_V1, sortGroups, useAcceptGroup, useDeclineGroup, useGroups } from '@/features/groups';
 import { errorText } from '@/features/links';
 import { usePet } from '@/features/pet';
 import { openPlus } from '@/features/plus';
 import { chats as t } from '@/locales/chats';
 import { groupes } from '@/locales/groupes';
+import { chemin } from '@/locales/chemin';
 import { rituels } from '@/locales/rituels';
 
 const g = groupes.list;
+const h = chemin.chats;
 
 export default function ChatsScreen() {
   const router = useRouter();
@@ -82,17 +90,13 @@ export default function ChatsScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />}
     >
       {first ? (
-        <NudgeBanner
-          gradient="violet"
-          kicker={t.wavesKicker}
-          title={t.wavesTitle(petName || first.from.pet.name)}
-          text={t.wavesText(incoming.map((i) => i.from.displayName))}
-          species={first.from.pet.species}
-          mood="salut"
-          animation="bob"
-          reveal={first.id}
-          onPress={() => router.push('/rencontres')}
-          accessibilityLabel={t.wavesA11y(incoming.length)}
+        <HelloCard
+          kicker={h.helloKicker}
+          person={{ name: first.from.displayName, pet: first.from.pet, face: first.from.face, avatarUrl: first.from.avatarUrl }}
+          line={first.explanation ? h.together(first.explanation.common.slice(0, 2).map((x) => x.name).join(' · ')) : first.intro}
+          more={incoming.length > 1 ? h.more(incoming.length - 1) : null}
+          replyLabel={h.reply}
+          onReply={() => router.push(`/rencontre/${first.from.id}`)}
         />
       ) : null}
 
@@ -112,8 +116,8 @@ export default function ChatsScreen() {
         </Appear>
       ) : null}
 
-      <GroupsBlock links={liveLinks} now={now} onOpen={(id) => router.push(`/groupe/${id}`)} onCreate={() => router.push('/groupe/nouveau')} />
-      {showGroups(groups.data, liveLinks) && list.length > 0 ? <SectionHeader title={g.linksSection} /> : null}
+      {GROUPS_IN_V1 ? <GroupsBlock links={liveLinks} now={now} onOpen={(id) => router.push(`/groupe/${id}`)} onCreate={() => router.push('/groupe/nouveau')} /> : null}
+      {GROUPS_IN_V1 && showGroups(groups.data, liveLinks) && list.length > 0 ? <SectionHeader title={g.linksSection} /> : null}
 
       {links.isError && !links.data ? <Banner tone="error" title={t.errorTitle} text={links.error.message} actionLabel={t.retry} onAction={() => void links.refetch()} /> : null}
 

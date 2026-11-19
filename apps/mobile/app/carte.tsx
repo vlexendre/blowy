@@ -6,6 +6,9 @@
  * zone »), « Tu regardes ailleurs » (et « Recentrer »). La caméra montre la zone en entier entre l'en-tête et le pied
  * mesurés (`MapFrame`), et la mention légale d'Apple Plans reste au-dessus du pied.
  * Vraie carte Apple sur iPhone ; ailleurs (web, module absent), la carte dessinée (`MapLayer`).
+ * Ton chemin (V1) : épingles façon TripBFF (visage rond, pointe, « Prénom · dans ton quartier » : une distance à gros
+ * grains, jamais au mètre), anneau jaune pour les présentés du jour, « Personne ne voit où tu es exactement », et en
+ * bas « Aujourd'hui, Nino te présente » (« Vous deux : », « Dire bonjour » : le même geste que les rencontres).
  */
 import type { MapPin } from '@blowy/contract';
 import { entitlements } from '@blowy/domain';
@@ -21,6 +24,7 @@ import {
   MapTemplate,
   MapZoneBar,
   MatchWhy,
+  PersonOfDayCard,
   PillToggle,
   ScreenTemplate,
   SheetTemplate,
@@ -41,7 +45,9 @@ import { errorText } from '@/features/links';
 import { MapLayer } from '@/features/map/MapLayer';
 import { useMe } from '@/features/me';
 import { openPlus } from '@/features/plus';
+import { distanceBand, useCheminResults } from '@/features/chemin';
 import { chats as chatsText } from '@/locales/chats';
+import { chemin } from '@/locales/chemin';
 import { formatNumber } from '@/locales/runtime';
 import { carte as t, rencontres as listText } from '@/locales/rencontres';
 import { ui } from '@/locales/ui';
@@ -89,6 +95,14 @@ export default function CarteScreen() {
   }, [homeCenter?.latitude, homeCenter?.longitude, homeRadius]);
   const plus = !!m && entitlements(m.plus).mapEverywhere;
   const petName = m?.pet.name ?? chatsText.yourPet;
+  // Les présentés du jour (anneau jaune), la personne du jour de la séance d'abord.
+  const lastResult = useCheminResults((x) => (x.last ? x.results[x.last]?.result : undefined));
+  const dayPerson = lastResult?.person?.suggestion.user.id ?? null;
+  const presented = useMemo(() => {
+    const list = [...(encounters.data?.suggestions ?? [])];
+    return list.sort((a, b) => Number(b.user.id === dayPerson) - Number(a.user.id === dayPerson));
+  }, [encounters.data, dayPerson]);
+  const [showing, setShowing] = useState(0);
   const known = useMemo(() => {
     const ids = new Set<string>();
     for (const s of encounters.data?.suggestions ?? []) ids.add(s.user.id);
@@ -172,13 +186,21 @@ export default function CarteScreen() {
     setFocus((f) => f + 1);
   };
   const backHome = () => city.clear.mutate(undefined, { onSuccess: recenter });
+  const privacy = chemin.carte.privacy;
   const zoneBar = panned ? (
-    <MapZoneBar label={t.zoneAway} away note={t.privacy} actionLabel={t.recenter} actionA11y={t.recenterA11y} onAction={recenter} />
+    <MapZoneBar label={t.zoneAway} away note={privacy} actionLabel={t.recenter} actionA11y={t.recenterA11y} onAction={recenter} />
   ) : cityActive && chosen ? (
-    <MapZoneBar label={t.zoneCity(chosen.label, km)} away note={t.privacy} actionLabel={t.cityBack} onAction={backHome} actionLoading={city.clear.isPending} />
+    <MapZoneBar label={t.zoneCity(chosen.label, km)} away note={privacy} actionLabel={t.cityBack} onAction={backHome} actionLoading={city.clear.isPending} />
   ) : (
-    <MapZoneBar label={manual ? t.zoneHomeNamed(manual, km) : t.zoneHome(km)} note={t.privacy} />
+    <MapZoneBar label={manual ? t.zoneHomeNamed(manual, km) : t.zoneHome(km)} note={privacy} />
   );
+  // D'où l'on mesure la distance (à gros grains) : ton quartier, sinon le centre de la zone affichée.
+  const from = m.identity.location.zone?.center ?? zone.center;
+  const bandOf = (pos: { latitude: number; longitude: number }) => chemin.carte.band[distanceBand(from, pos)];
+  const hotIds = new Set(presented.map((x) => x.user.id));
+  // « Aujourd'hui, Nino te présente » : un présenté du jour à la fois, « Voir les autres » passe au suivant.
+  const today = presented.length > 0 ? presented[showing % presented.length] : null;
+  const todayPin = today ? pins.find((x) => x.user.id === today.user.id) : undefined;
   // Les silhouettes et leur nombre viennent du serveur : rien à zéro.
   const beyond = data.beyond.count > 0 ? data.beyond : null;
 
@@ -221,10 +243,30 @@ export default function CarteScreen() {
       {discreet.isError ? <Banner tone="error" text={listText.actionError} onClose={() => discreet.reset()} /> : null}
       {wave.isError && !isWaveLimit(wave.error) ? <Banner tone="error" text={errorText(wave.error, listText.actionError)} onClose={() => wave.reset()} /> : null}
       {card}
-      {!current && pins.length === 0 ? (
+      {!current && today ? (
+        <PersonOfDayCard
+          kicker={`${chemin.carte.sheetKicker(petName)} · ${chemin.carte.sheetCount((showing % presented.length) + 1, presented.length)}`}
+          person={{ name: today.user.displayName, pet: today.user.pet, face: today.user.face, avatarUrl: today.user.avatarUrl }}
+          line={todayPin ? bandOf(todayPin.position) : null}
+          togetherTitle={chemin.carte.together}
+          points={today.explanation.common.map((x) => x.name)}
+          helloLabel={today.waved ? chemin.fin.helloDone : chemin.fin.hello}
+          helloDone={today.waved}
+          helloLoading={wave.isPending && wave.variables === today.user.id}
+          helloDisabled={!!waveBlock && !today.waved}
+          helloNote={waveBlock}
+          onHello={() => {
+            const id = today.user.id;
+            wave.mutate(id, { onSuccess: () => markWaved(id) });
+          }}
+          secondaryLabel={presented.length > 1 ? chemin.carte.others : undefined}
+          onSecondary={presented.length > 1 ? () => setShowing((n) => n + 1) : undefined}
+        />
+      ) : null}
+      {!current && pins.length === 0 && !today ? (
         <Banner tone="info" text={t.emptyShort} actionLabel={t.emptyAction} onAction={() => router.dismissTo('/(tabs)/rencontres')} actionBelow />
       ) : null}
-      {!current ? (
+      {!current && !today ? (
         plus ? (
           // Un seul bouton en bas : revenir à sa zone se fait depuis la pilule de zone, en haut.
           <Button label={t.city} variant="glass" size="md" onPress={() => setCitySheet(true)} />
@@ -277,8 +319,9 @@ export default function CarteScreen() {
               key: p.user.id,
               position: p.position,
               pet: p.user.pet,
-              label: p.user.displayName,
-              accessibilityLabel: t.pinA11y(p.user.pet.name, p.user.displayName),
+              label: chemin.carte.pin(p.user.displayName, bandOf(p.position)),
+              hot: hotIds.has(p.user.id),
+              accessibilityLabel: hotIds.has(p.user.id) ? chemin.carte.pinA11yHot(p.user.displayName, bandOf(p.position)) : t.pinA11y(p.user.pet.name, p.user.displayName),
               selected: p.user.id === selected,
               onPress: () => setSelected((s) => (s === p.user.id ? null : p.user.id)),
             }))}

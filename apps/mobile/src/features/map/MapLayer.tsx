@@ -149,7 +149,7 @@ function NativeMap({
       ) : null}
       {pins.map((p, i) => (
         <Marker key={p.key} coordinate={p.position} anchor={{ x: 0.5, y: 0.35 }} zIndex={p.selected ? 10 : 6} onPress={p.onPress}>
-          <MapSticker pet={p.pet} label={p.label} selected={p.selected} onPress={p.onPress} accessibilityLabel={p.accessibilityLabel} floatDelay={i * 230} />
+          <MapSticker pet={p.pet} label={p.label} selected={p.selected} hot={p.hot} onPress={p.onPress} accessibilityLabel={p.accessibilityLabel} floatDelay={i * 230} />
         </Marker>
       ))}
     </MapView>
