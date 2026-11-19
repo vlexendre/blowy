@@ -216,3 +216,9 @@ export function useRefusal(thread: ThreadKey) {
   const clear = useCallback(() => useChatDrafts.getState().refuse(thread, undefined), [thread]);
   return { refusal, clear };
 }
+
+/** Déconnexion, suppression du compte : brouillons et messages pas partis sont oubliés (rien ne part sous un autre compte). */
+export function forgetChats(): void {
+  useOutboxStore.setState({ threads: {} });
+  useChatDrafts.setState({ drafts: {}, refusals: {} });
+}

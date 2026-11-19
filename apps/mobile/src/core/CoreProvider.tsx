@@ -7,11 +7,12 @@ import { common } from '@/locales/common';
 import { getLocale, onLocaleChange } from '@/locales/runtime';
 
 import { createPorts } from './adapters';
-import { clientInfo } from './app-identity';
+import { appBuild, clientInfo } from './app-identity';
 import { config } from './config';
 import './locale';
 import type { Ports, Session } from './ports';
 import { useUpdateRequired } from './update-required';
+import { forgetCache, keepCache, restoreCache } from './persist-cache';
 
 interface Core {
   ports: Ports;
@@ -22,10 +23,15 @@ interface Core {
 
 const CoreContext = createContext<Core | null>(null);
 
+/** Le cache gardé n'est relu que par le même build (formes des réponses identiques). */
+const BUILD = `${clientInfo().version ?? ''}+${appBuild ?? 0}`;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 15_000,
+      // Revenir sur un écran déjà vu dans la demi-heure : affiché tout de suite, relu derrière s'il a vieilli.
+      gcTime: 30 * 60_000,
       retry: (count, error) => (error instanceof ApiError && error.code !== 'network' ? false : count < 2),
     },
   },
@@ -169,16 +175,27 @@ export function CoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let alive = true;
-    void ports.auth.getSession().then((s) => alive && setSession(s));
+    // Les dernières données connues de cette personne sont remises avant le premier écran : jamais d'écran blanc.
+    void ports.auth.getSession().then(async (s) => {
+      if (s) await restoreCache(queryClient, s.userId, BUILD);
+      if (alive) setSession(s);
+    });
     const off = ports.auth.onChange((s) => {
       setSession(s);
-      if (!s) queryClient.clear();
+      if (!s) {
+        queryClient.clear();
+        void forgetCache();
+      }
     });
     return () => {
       alive = false;
       off();
     };
   }, [ports]);
+
+  // Le cache suit la personne connectée (gardé entre deux lancements, `persist-cache.ts`).
+  const userId = session?.userId;
+  useEffect(() => (userId ? keepCache(queryClient, userId, BUILD) : undefined), [userId]);
 
   const value = useMemo(() => ({ ports, api, session }), [ports, api, session]);
   return (

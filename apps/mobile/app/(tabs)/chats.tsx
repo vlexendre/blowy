@@ -18,12 +18,12 @@ import {
   Text,
 } from '@blowy/ui';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ScreenMotion } from '@/core';
 import { useEncounters, useShareInvite } from '@/features/encounters';
-import { isMyTurn, isNewLink, sortLinks, streaksWaitingOnMe, timeLabel, useLinks } from '@/features/links';
+import { isMyTurn, isNewLink, sortLinks, streaksWaitingOnMe, timeLabel, useLinks, usePrefetchLink } from '@/features/links';
 import { sortGroups, useAcceptGroup, useDeclineGroup, useGroups } from '@/features/groups';
 import { errorText } from '@/features/links';
 import { usePet } from '@/features/pet';
@@ -50,6 +50,18 @@ export default function ChatsScreen() {
   const petName = pet.data?.pet.name ?? '';
   const liveLinks = list.filter((l) => l.status === 'active').length;
   const now = new Date();
+  // Les chats qu'on a le plus de chances d'ouvrir (non lus, puis les premiers de la liste) : leurs messages sont lus
+  // d'avance, le chat s'ouvre déjà rempli. Au plus 3, et pas plus d'une fois par 15 s (cache).
+  const prefetch = usePrefetchLink();
+  const likely = list
+    .filter((l) => l.status === 'active')
+    .sort((a, b) => b.unread - a.unread)
+    .slice(0, 3)
+    .map((l) => l.id)
+    .join(',');
+  useEffect(() => {
+    if (likely) for (const id of likely.split(',')) prefetch(id);
+  }, [likely, prefetch]);
 
   const refresh = async () => {
     setRefreshing(true);
@@ -145,7 +157,10 @@ export default function ChatsScreen() {
               streak={l.status === 'active' ? l.streak : 0}
               streakUnit={t.streakUnit}
               turnLabel={isMyTurn(l) ? t.turn : undefined}
-              onPress={() => router.push(`/link/${l.id}`)}
+              onPress={() => {
+                prefetch(l.id);
+                router.push(`/link/${l.id}`);
+              }}
             />
             </Appear>
           ))}

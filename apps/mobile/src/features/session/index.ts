@@ -5,6 +5,7 @@ import { type Href, router } from 'expo-router';
 import { Alert, Platform } from 'react-native';
 
 import { type AuthProvider, AuthError, keys, useApi, usePorts, useSession } from '@/core';
+import { forgetChats } from '@/features/chat';
 import { usePendingInvite } from '@/features/encounters';
 import { resumeOnboarding, useDraft, useDraftHydrated } from '@/features/onboarding';
 import { common } from '@/locales/common';
@@ -81,7 +82,10 @@ export function useSignOut() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () => auth.signOut(),
-    onSuccess: () => qc.clear(),
+    onSuccess: () => {
+      qc.clear();
+      forgetChats();
+    },
   });
 }
 

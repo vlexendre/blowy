@@ -6,6 +6,7 @@ import { Platform, Share, type View } from 'react-native';
 
 import { withUpdate } from './update';
 import { captureStory, keys, optimistic, patch, presentShare, rollback, shareStoryImage, useApi, usePorts } from '@/core';
+import { forgetChats } from '@/features/chat';
 
 /** Ton lien « 3 mots » et ton résultat (les 3 mots les plus choisis, à partir de 3 votes). */
 export function useMyWords(enabled = true) {
@@ -57,7 +58,10 @@ export function useDeleteAccount() {
       await api.me.remove();
       await auth.signOut();
     },
-    onSuccess: () => qc.clear(),
+    onSuccess: () => {
+      qc.clear();
+      forgetChats();
+    },
   });
 }
 

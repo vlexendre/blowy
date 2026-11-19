@@ -107,6 +107,7 @@ src/core/                     config, ports (Auth, Api, Realtime, Media, Purchas
 src/features/<f>/             hooks react-query + logique d'écran ; index public
 src/core/optimistic.ts        mises à jour optimistes (`optimistic` / `patch` / `rollback`) : l'écran change à l'appui, l'API
                               confirme ; jamais pour un achat, une suppression de compte ou un signalement
+src/core/persist-cache.ts     cache gardé entre deux lancements (premiers écrans, page récente de 8 fils, même personne, même build, < 3 j)
 src/features/chat/            envoi optimiste des messages (liens, groupes) : file gardée sur l'appareil, clé d'idempotence
 src/locales/*.ts              textes de l'interface, par langue (`messages({ fr, en, es, pt, nl })`)
 (images des pets : packages/ui/assets/pets, registre typé dans packages/ui/src/assets/pets.ts)
