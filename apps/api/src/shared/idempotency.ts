@@ -3,21 +3,28 @@
  * exécutée qu'une fois par personne et par portée. Un réessai (réponse perdue, coupure, app relancée) rend la réponse
  * de la première exécution ; deux requêtes simultanées avec la même clé attendent la même exécution.
  *
- * Gardé dans `CACHE` (mémoire du processus, comme les autres caches : pour plusieurs instances, un adaptateur partagé
- * suffit, rien ne change ici). Une erreur n'est pas gardée : un refus (filtre, lien endormi) se rejoue tel quel, et un
+ * Gardé dans son propre cache borné (mémoire du processus, comme `CACHE` : il ne fait pas tourner les autres entrées ;
+ * pour plusieurs instances, remplacer `MemoryCache` par un adaptateur partagé, rien d'autre ne change). Une erreur n'est pas gardée : un refus (filtre, lien endormi) se rejoue tel quel, et un
  * envoi raté peut être retenté avec la même clé.
  */
 import { Inject, Injectable } from '@nestjs/common';
-import { CACHE, type Cache } from './cache';
+import { type Cache, MemoryCache } from './cache';
+import type { Clock } from './clock';
+import { CLOCK } from './tokens';
 
 /** Assez long pour couvrir un réessai après une coupure ou une relance de l'app. */
-export const IDEMPOTENCY_TTL_MS = 24 * 3_600_000;
+export const IDEMPOTENCY_TTL_MS = 12 * 3_600_000;
+/** Réponses gardées au plus (les plus anciennes partent d'abord). */
+const MAX_ENTRIES = 50_000;
 
 @Injectable()
 export class Idempotency {
   private readonly running = new Map<string, Promise<unknown>>();
+  private readonly cache: Cache;
 
-  constructor(@Inject(CACHE) private readonly cache: Cache) {}
+  constructor(@Inject(CLOCK) clock: Clock) {
+    this.cache = new MemoryCache(clock, MAX_ENTRIES);
+  }
 
   /** Exécute `run` une seule fois pour (`scope`, `key`) ; sans clé, l'exécute simplement. */
   async once<T>(scope: string, key: string | undefined, run: () => Promise<T>): Promise<T> {
