@@ -57,4 +57,20 @@ export const SOURCES = {
     label: 'Service-public.fr, « Comment se renseigner sur une association ? »',
     url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/F12104',
   },
+  meetupFree: {
+    label: 'Meetup, centre d’aide, « As a member, can I still use Meetup without subscribing to Meetup+? »',
+    url: 'https://help.meetup.com/hc/en-us/articles/43968489202061-As-a-member-can-I-still-use-Meetup-without-subscribing-to-Meetup',
+  },
+  timeleftHow: {
+    label: 'Timeleft, centre d’aide, « Comment fonctionne Timeleft ? »',
+    url: 'https://help.timeleft.com/hc/fr/articles/21421681409436-Comment-fonctionne-Timeleft',
+  },
+  timeleftStore: {
+    label: 'Timeleft, fiche de l’App Store (France), consultée en novembre 2026',
+    url: 'https://apps.apple.com/fr/app/timeleft/id6466442949',
+  },
+  bumbleBff: {
+    label: 'Bumble, centre d’aide, « Changes to Bumble For Friends and Bumble BFF Mode »',
+    url: 'https://support.bumble.com/hc/en-us/articles/30781191036317-Changes-to-Bumble-For-Friends-and-Bumble-BFF-Mode',
+  },
 } as const satisfies Record<string, Source>;

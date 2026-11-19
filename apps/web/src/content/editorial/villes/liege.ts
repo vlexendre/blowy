@@ -48,6 +48,7 @@ export const liege: CityPage = {
         '**Les clubs et les cercles** : sport, théâtre amateur, chorales, jeux de société. Liège a une vie associative très riche ; demande à ta commune ou à ta bibliothèque ce qui se passe près de chez toi.',
         '**Le Village de Noël** et les festivals d’été : la ville entière dehors, et une bonne occasion d’inviter une connaissance à prendre un péket.',
         'Tu es plutôt réservé ? Notre guide [se faire des amis quand on est timide](/guides/se-faire-des-amis-timide/) propose des petits pas qui marchent, même dans une ville aussi bavarde.',
+        'Tu fais la navette vers la capitale ou vers le Grand-Duché ? Voici où [se faire des amis à Bruxelles](/se-faire-des-amis/bruxelles/) et comment [rencontrer du monde au Luxembourg](/se-faire-des-amis/luxembourg/) quand on y passe ses semaines.',
       ],
     },
   ],
@@ -81,5 +82,5 @@ export const liege: CityPage = {
   guides: ['se-faire-des-amis-timide', 'se-faire-des-amis-adulte', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/nino_danse.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui danse' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À LIÈGE.'], panel: 'wine' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

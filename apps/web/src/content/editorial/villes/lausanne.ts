@@ -46,7 +46,8 @@ export const lausanne: CityPage = {
         '**Les sociétés locales** : gym, chœurs, fanfares, clubs de course, aviron. La Suisse est le pays des associations, et Lausanne n’y échappe pas. Une société, c’est un entraînement chaque semaine et une sortie annuelle.',
         '**Le sport en ville** : les courses populaires lausannoises attirent chaque année des milliers de coureurs. S’entraîner pour l’une d’elles en groupe soude plus qu’un apéro.',
         '**Les marchés** : le samedi et le mercredi dans le centre, entre la Riponne et la rue de Bourg. Le café qui suit est souvent le meilleur moment.',
-        'Pour choisir une activité qui te ressemble, lis notre guide [associations et activités pour rencontrer du monde](/guides/associations-activites-rencontrer-du-monde/).',
+        'Pour choisir une activité qui te ressemble, lis notre guide des [activités de groupe qui créent de vrais liens](/guides/associations-activites-rencontrer-du-monde/).',
+        'Entre Lausanne et Genève, beaucoup de gens font la navette chaque jour. Notre page pour [rencontrer du monde à Genève](/se-faire-des-amis/geneve/) te servira si tu y travailles, et celle pour [se faire des amis à Lyon](/se-faire-des-amis/lyon/) si tu gardes des attaches en France.',
       ],
     },
   ],
@@ -80,5 +81,5 @@ export const lausanne: CityPage = {
   guides: ['associations-activites-rencontrer-du-monde', 'se-faire-des-amis-adulte', 'se-faire-des-amis-timide'],
   image: { src: '/img/m/gaston_danse.webp', width: 450, height: 500, alt: 'Gaston, un minimoa orange à un seul grand œil, qui danse' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À LAUSANNE.'], panel: 'night' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

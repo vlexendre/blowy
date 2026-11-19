@@ -26,7 +26,7 @@ export const paris: CityPage = {
       title: 'Paris, une ville où tout le monde vient d’ailleurs',
       blocks: [
         'Études, premier poste, rupture, mutation : beaucoup de gens que tu croises dans le métro ne sont pas nés ici. On a l’impression que chacun a déjà sa bande, alors qu’énormément de monde cherche exactement la même chose que toi, souvent en silence.',
-        'Le piège parisien, c’est la taille. Tu vas à une soirée dans le 18e, tu t’entends bien avec quelqu’un qui habite dans le 15e, et vous ne vous revoyez jamais parce qu’il faut quarante minutes de ligne 12 pour boire un verre. Les amitiés qui tiennent sont celles qui se voient sans effort : même quartier, même ligne, mêmes habitudes.',
+        'Le piège parisien, c’est la taille. Tu t’entends bien avec quelqu’un du 15e à une soirée dans le 18e, et vous ne vous revoyez jamais : quarante minutes de ligne 12 pour boire un verre. Les amitiés qui tiennent sont celles qui se voient sans effort : même quartier, même ligne, mêmes habitudes.',
       ],
     },
     {
@@ -58,7 +58,7 @@ export const paris: CityPage = {
             '**Les grands rendez-vous** : la Fête de la musique en juin ou la Nuit blanche à l’automne transforment la ville en terrasse géante. Parfait pour sortir avec une connaissance et en rencontrer d’autres.',
           ],
         },
-        'Si tu hésites entre plusieurs pistes, notre guide sur [les associations et activités pour rencontrer du monde](/guides/associations-activites-rencontrer-du-monde/) t’aide à choisir selon ton caractère et ton emploi du temps.',
+        'Tu hésites ? Le guide des [clubs et associations où l’on se fait des amis](/guides/associations-activites-rencontrer-du-monde/) t’aide à choisir. Et si Paris te pèse, [Lille, à une heure de TGV](/se-faire-des-amis/lille/), ou [la vie rennaise](/se-faire-des-amis/rennes/) ont aussi leurs pages.',
       ],
     },
   ],
@@ -81,7 +81,7 @@ export const paris: CityPage = {
     },
     {
       q: 'Comment rencontrer des gens à Paris quand on ne connaît personne ?',
-      a: 'Choisis une activité régulière près de chez toi (un cours, un club de course, du bénévolat) et tiens-la au moins deux mois. Ajoute une sortie ponctuelle par mois, comme un café-langue. Le guide [se faire des amis dans une nouvelle ville](/guides/se-faire-des-amis-nouvelle-ville/) détaille un plan pour les premières semaines.',
+      a: 'Choisis une activité régulière près de chez toi (un cours, un club de course, du bénévolat) et tiens-la au moins deux mois. Ajoute une sortie ponctuelle par mois, comme un café-langue. Le guide pour [s’installer et se faire des amis après un déménagement](/guides/se-faire-des-amis-nouvelle-ville/) détaille un plan pour les premières semaines.',
     },
     {
       q: 'Quelles activités pour rencontrer des gens à Paris ?',
@@ -96,5 +96,5 @@ export const paris: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'se-faire-des-amis-adulte', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/groupe.webp', width: 700, height: 334, alt: 'Suzie, Nino et Gaston, trois minimoas, qui se tapent dans la main' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À PARIS.'], panel: 'accent' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

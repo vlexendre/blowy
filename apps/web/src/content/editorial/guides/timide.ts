@@ -106,7 +106,7 @@ export const timide: GuidePage = {
     {
       title: 'Un coup de pouce pour la première approche',
       blocks: [
-        'La partie la plus intimidante, c’est le premier message à un inconnu. Sur [Minimoa](/), c’est ton minimoa qui fait les présentations : il te présente des gens près de chez toi, avec trois points communs et une différence à explorer. Tu as donc un sujet de conversation tout prêt, et personne ne peut t’écrire sans ton accord. Dans la discussion, vos minimoas peuvent même briser la glace avec une question tirée de ce que vous partagez.',
+        'La partie la plus intimidante, c’est le premier message à un inconnu. Sur [Minimoa](/), c’est ton minimoa qui fait les présentations : il te présente des gens près de chez toi, avec trois points communs et une différence à explorer. Tu as donc un sujet de conversation tout prêt, et personne ne peut t’écrire sans ton accord. Dans la discussion, vos minimoas peuvent même briser la glace avec une question tirée de ce que vous partagez. D’autres applis fonctionnent autrement (événements, dîners entre inconnus) : notre tour d’horizon des [applis pour se faire des amis](/guides/application-pour-se-faire-des-amis/) t’aide à trouver celle qui convient à ta timidité.',
         'Ce n’est qu’un outil parmi d’autres : la répétition, les petits groupes et les relances restent tes meilleurs alliés.',
       ],
     },
@@ -130,5 +130,5 @@ export const timide: GuidePage = {
   image: { src: '/img/m/nino_timide.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, un peu timide' },
   og: { lines: ['TIMIDE ?', 'TU PEUX', 'TE FAIRE', 'DES AMIS.'], panel: 'rose' },
   published: '2026-11-18',
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

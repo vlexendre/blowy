@@ -47,7 +47,8 @@ export const nantes: CityPage = {
         '**Les marchés** de Talensac ou de la Petite-Hollande : y aller chaque semaine fait de toi un habitué, et les habitués se parlent.',
         '**Les jardins** : le Jardin des plantes près de la gare, et de nombreux jardins partagés de quartier où l’on jardine à plusieurs.',
         '**Le bénévolat culturel** : festivals et salles de concert cherchent régulièrement des bénévoles. Une façon de rencontrer des gens qui aiment la même musique que toi.',
-        'Pour les associations à rejoindre selon ton caractère, lis notre guide [associations et activités pour rencontrer du monde](/guides/associations-activites-rencontrer-du-monde/).',
+        'Pour les associations à rejoindre selon ton caractère, lis notre guide des [clubs et associations qui créent du lien](/guides/associations-activites-rencontrer-du-monde/).',
+        'Nantes et Rennes ne sont qu’à une centaine de kilomètres l’une de l’autre. Notre page [rencontrer des gens à Rennes](/se-faire-des-amis/rennes/) complète celle-ci, tout comme les idées pour [se faire un cercle à Bordeaux](/se-faire-des-amis/bordeaux/) si tu descends vers le sud.',
       ],
     },
   ],
@@ -81,5 +82,5 @@ export const nantes: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'associations-activites-rencontrer-du-monde', 'se-faire-des-amis-adulte'],
   image: { src: '/img/m/gaston_applaudit.webp', width: 450, height: 500, alt: 'Gaston, un minimoa orange à un seul grand œil, qui applaudit' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À NANTES.'], panel: 'violet' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };
