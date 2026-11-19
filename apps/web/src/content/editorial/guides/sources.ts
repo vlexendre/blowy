@@ -73,4 +73,16 @@ export const SOURCES = {
     label: 'Bumble, centre d’aide, « Changes to Bumble For Friends and Bumble BFF Mode »',
     url: 'https://support.bumble.com/hc/en-us/articles/30781191036317-Changes-to-Bumble-For-Friends-and-Bumble-BFF-Mode',
   },
+  fdfSolitudesPage: {
+    label: 'Fondation de France, « Isolement rural et solitude urbaine, un Français sur 4 se sent seul », étude Solitudes (15e édition, Crédoc), 20 janvier 2026',
+    url: 'https://www.fondationdefrance.org/fr/les-solitudes-en-france/etude-solitudes-2026',
+  },
+  lyonFdl2026: {
+    label: 'Ville de Lyon, « Fête des Lumières 2026 », du 5 au 8 décembre 2026',
+    url: 'https://www.lyon.fr/evenement/festival/fete-des-lumieres-2026',
+  },
+  franceFdl2026: {
+    label: 'France.fr, « Fête des Lumières à Lyon » (horaires et lieux), mis à jour le 5 novembre 2026',
+    url: 'https://www.france.fr/fr/evenement/fete-des-lumieres-lyon/',
+  },
 } as const satisfies Record<string, Source>;

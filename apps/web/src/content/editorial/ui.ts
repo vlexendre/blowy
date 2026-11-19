@@ -8,9 +8,9 @@ export const editorialUi = {
   home: 'Accueil',
   breadcrumbLabel: 'Fil d’Ariane',
   /** pied de page (français seulement) */
-  footer: { label: 'Découvrir', cities: 'Villes', guides: 'Guides' },
+  footer: { label: 'Découvrir', cities: 'Villes', guides: 'Guides', blog: 'Blog' },
   /** landing (français) : lien discret sous la FAQ */
-  landing: { before: 'Tu viens d’arriver quelque part ?', cities: 'Se faire des amis dans ta ville', guides: 'nos guides' },
+  landing: { before: 'Tu viens d’arriver quelque part ?', cities: 'Se faire des amis dans ta ville', guides: 'nos guides', blog: 'le blog' },
   cities: {
     path: '/se-faire-des-amis/',
     crumb: 'Se faire des amis',
@@ -61,6 +61,27 @@ export const editorialUi = {
     listTitle: 'Les guides',
     og: { lines: ['SE FAIRE', 'DES AMIS,', 'LE GUIDE.'], panel: 'violet' } satisfies OgSpec,
     ogAlt: 'Quatre minimoas côte à côte, à côté du titre « Se faire des amis, le guide. »',
+  },
+  blog: {
+    path: '/blog/',
+    crumb: 'Blog',
+    meta: {
+      title: 'Blog Minimoa : se faire des amis, l’actu',
+      description: 'Études, fêtes, saisons, événements dans ta ville : l’actualité vue sous l’angle des amitiés, et des idées concrètes pour rencontrer du monde.',
+    } satisfies Meta,
+    h1: 'Le blog',
+    lead: 'L’actualité vue sous un seul angle : comment elle peut t’aider à rencontrer du monde. Études sur la solitude, fêtes de quartier, saisons, événements dans ta ville, avec des idées concrètes et leurs sources.',
+    listTitle: 'Derniers articles',
+    feedTitle: 'Blog Minimoa',
+    og: { lines: ['LE BLOG', 'DES', 'AMITIÉS.'], panel: 'orange' } satisfies OgSpec,
+    ogAlt: 'Quatre minimoas côte à côte, à côté du titre « Le blog des amitiés. »',
+  },
+  post: {
+    news: 'L’actu',
+    essentielTitle: 'L’essentiel',
+    guidesTitle: 'Nos guides sur le sujet',
+    citiesTitle: 'Dans ces villes',
+    moreTitle: 'Autres articles',
   },
   guide: {
     by: 'Par',
