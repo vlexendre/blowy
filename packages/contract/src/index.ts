@@ -9,6 +9,7 @@ import { PetRoleZ } from './v7/plateforme';
 import { OnboardHabitZ, SharedHabitsZ } from './v7/rituels';
 import { AttributionZ } from './v7/croissance';
 import { SeasonalCollectionZ } from './v7/billing';
+import { CheminEmptyZ, CheminKnowsZ, CheminProgressZ, CheminQuotaZ, CheminRevelationZ, CheminStreakZ } from './v7/chemin';
 
 export const API_PREFIX = '/v1';
 
@@ -315,6 +316,40 @@ export const SuggestionZ = z.object({
 });
 export type Suggestion = z.infer<typeof SuggestionZ>;
 
+/**
+ * Ton chemin : résultat d'une séance (`POST /v1/chemin/reponses`, idempotent). La personne du jour est une des
+ * présentations du jour (même forme que dans les rencontres, `SuggestionZ`) : celle qui a le plus de réponses en
+ * commun avec la séance. Ses réponses ne sont jamais montrées : seulement des traits partagés (« Vous deux : »)
+ * et une question pour lancer la conversation.
+ */
+export const CheminPersonZ = z.object({
+  suggestion: SuggestionZ,
+  /** « Ta personne du jour ». */
+  title: z.string(),
+  /** Ce que dit le minimoa en la présentant. */
+  line: z.string(),
+  together: z.object({ title: z.string(), points: z.array(z.string()).min(1).max(3) }),
+  opener: z.object({ text: z.string(), questionId: z.string().nullable() }),
+});
+export type CheminPerson = z.infer<typeof CheminPersonZ>;
+export const CheminResultZ = z.object({
+  sessionId: Uuid,
+  /** Vrai si la séance était déjà enregistrée (réponse rejouée, rien n'a changé). */
+  alreadyRecorded: z.boolean(),
+  revelation: CheminRevelationZ,
+  progress: CheminProgressZ,
+  streak: CheminStreakZ,
+  /** Objets gagnés par un palier de série, à fêter. */
+  newItems: z.array(ItemIdZ),
+  milestone: z.number().int().nullable(),
+  quota: CheminQuotaZ,
+  knows: CheminKnowsZ,
+  person: CheminPersonZ.nullable(),
+  /** Personne à présenter : pourquoi, honnêtement (null si `person`). */
+  empty: CheminEmptyZ.nullable(),
+});
+export type CheminResult = z.infer<typeof CheminResultZ>;
+
 export const IncomingZ = z.object({
   id: Uuid,
   from: PersonZ,
@@ -524,3 +559,4 @@ export * from './v7/groupes';
 export * from './v7/croissance';
 export * from './v7/quiz';
 export * from './v7/app';
+export * from './v7/chemin';

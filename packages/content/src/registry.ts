@@ -15,6 +15,7 @@ import { rituelsText } from './v7/rituels';
 import { visionText } from './v7/vision';
 import { quizText } from './v7/quiz';
 import { seedText } from './v7/seed';
+import { cheminText } from './v7/chemin';
 import { voiceText } from './voice';
 
 export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = {
@@ -34,4 +35,5 @@ export const contentDictionaries: Readonly<Record<string, Messages<unknown>>> = 
   fidelite: fideliteText,
   quiz: quizText,
   seed: seedText,
+  chemin: cheminText,
 };

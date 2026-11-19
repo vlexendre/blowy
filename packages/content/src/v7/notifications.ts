@@ -36,7 +36,8 @@ export interface NotificationVars {
    * Variante d'un message de fidélisation (docs/FIDELISATION.md) : `people`, `people_none`, `words`, `habit`, `group`,
    * `week` (premiers pas ; les anciens `d1`… d'un report en attente sont lus avec leur ancien sujet), `absence` ou
    * `anniversary` (nouvelles du minimoa, avec `days` ou `count` en mois), `welcome`, `renewed`, `recovered`,
-   * `billing_grace`, `billing_retry`, `goodbye`, `winback` (abonnement).
+   * `billing_grace`, `billing_retry`, `goodbye`, `winback` (abonnement) ; `chemin` (défi du jour et série en danger : texte de
+   * Ton chemin, docs/CHEMIN.md).
    */
   step: string;
   /** Regroupement : autres personnes (ou événements) dans le même paquet, en chiffres ; « 0 » ou vide : aucun. */
@@ -71,7 +72,10 @@ const fr = {
   /** Paquet du matin : ajouté au texte du plus important quand d’autres nouvelles partent avec lui. */
   digestMore: (n: number): string => (n === 1 ? 'Et 1 autre nouvelle t’attend dans l’app.' : `Et ${n} autres nouvelles t’attendent dans l’app.`),
   texts: {
-    daily_challenge: { title: () => 'Ton défi du jour', body: (v) => `${v.minimoa} a préparé quelque chose pour toi.` },
+    daily_challenge: {
+      title: (v) => (v.step === 'chemin' ? 'Ta séance du jour t’attend' : 'Ton défi du jour'),
+      body: (v) => (v.step === 'chemin' ? `${v.minimoa} a 5 questions pour toi. 2 minutes.` : `${v.minimoa} a préparé quelque chose pour toi.`),
+    },
     needs_out: { title: (v) => `${v.minimoa} a envie de sortir`, body: () => 'Un tour dehors ou un mot à quelqu’un, et il repart de plus belle.' },
     new_encounter: {
       title: (v) => (many(v) ? 'Nouveaux liens' : v.step === 'invite' ? `${v.name} a accepté ton invitation` : `${v.name} t’a répondu`),
@@ -95,7 +99,7 @@ const fr = {
             : `${v.name} t’a écrit aujourd’hui. À toi avant minuit.`,
     },
     link_in_danger: { title: (v) => `Lien avec ${v.name}`, body: () => 'Votre lien s’essouffle un peu. Un petit mot suffit à le raviver.' },
-    streak_in_danger: { title: (v) => `Ta série de ${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'}`, body: () => 'Le défi du jour est encore possible ce soir.' },
+    streak_in_danger: { title: (v) => `Ta série de ${v.count} ${Number(v.count) > 1 ? 'jours' : 'jour'}`, body: (v) => (v.step === 'chemin' ? 'Ta séance du jour est encore possible ce soir.' : 'Le défi du jour est encore possible ce soir.') },
     habit_proof: { title: (v) => `${v.minimoa} voudrait voir`, body: () => 'C’est l’heure de ton habitude. Une photo ?' },
     weekly_review: { title: () => 'Ton bilan de la semaine', body: (v) => `${v.minimoa} a fait le point. Viens voir.` },
     item_unlocked: {
@@ -250,7 +254,10 @@ export const notificationTexts = defineMessages({
     yourMinimoa: 'Your minimoa',
     digestMore: (n: number): string => (n === 1 ? 'And 1 more update is waiting in the app.' : `And ${n} more updates are waiting in the app.`),
     texts: {
-      daily_challenge: { title: () => 'Your daily challenge', body: (v) => `${v.minimoa} has something for you.` },
+      daily_challenge: {
+        title: (v) => (v.step === 'chemin' ? 'Your session is waiting' : 'Your daily challenge'),
+        body: (v) => (v.step === 'chemin' ? `${v.minimoa} has 5 questions for you. 2 minutes.` : `${v.minimoa} has something for you.`),
+      },
       needs_out: { title: (v) => `${v.minimoa} wants to go out`, body: () => 'A walk outside or a word to someone, and it’s back to its old self.' },
       new_encounter: {
         title: (v) => (many(v) ? 'New links' : v.step === 'invite' ? `${v.name} accepted your invite` : `${v.name} waved back`),
@@ -274,7 +281,7 @@ export const notificationTexts = defineMessages({
               : `${v.name} wrote to you today. Your turn before midnight.`,
       },
       link_in_danger: { title: (v) => `Your link with ${v.name}`, body: () => 'Your link is running a little low. One short message is enough to perk it up.' },
-      streak_in_danger: { title: (v) => `Your ${v.count}-day streak`, body: () => 'Today’s challenge is still doable tonight.' },
+      streak_in_danger: { title: (v) => `Your ${v.count}-day streak`, body: (v) => (v.step === 'chemin' ? 'Today’s session is still doable tonight.' : 'Today’s challenge is still doable tonight.') },
       habit_proof: { title: (v) => `${v.minimoa} would like to see`, body: () => 'Time for your habit. A photo?' },
       weekly_review: { title: () => 'Your weekly review', body: (v) => `${v.minimoa} took stock. Come and see.` },
       item_unlocked: {
@@ -425,7 +432,10 @@ export const notificationTexts = defineMessages({
     yourMinimoa: 'Tu minimoa',
     digestMore: (n: number): string => (n === 1 ? 'Y 1 novedad más te espera en la app.' : `Y ${n} novedades más te esperan en la app.`),
     texts: {
-      daily_challenge: { title: () => 'Tu reto del día', body: (v) => `${v.minimoa} te ha preparado algo.` },
+      daily_challenge: {
+        title: (v) => (v.step === 'chemin' ? 'Tu sesión del día te espera' : 'Tu reto del día'),
+        body: (v) => (v.step === 'chemin' ? `${v.minimoa} tiene 5 preguntas para ti. 2 minutos.` : `${v.minimoa} te ha preparado algo.`),
+      },
       needs_out: { title: (v) => `${v.minimoa} quiere salir`, body: () => 'Una vuelta fuera o un mensaje a alguien, y recupera la chispa.' },
       new_encounter: {
         title: (v) => (many(v) ? 'Nuevos vínculos' : v.step === 'invite' ? `${v.name} aceptó tu invitación` : `${v.name} te ha respondido`),
@@ -449,7 +459,7 @@ export const notificationTexts = defineMessages({
               : `${v.name} te escribió hoy. Te toca antes de medianoche.`,
       },
       link_in_danger: { title: (v) => `Vínculo con ${v.name}`, body: () => 'Vuestro vínculo anda un poco flojo. Un mensajito basta para animarlo.' },
-      streak_in_danger: { title: (v) => `Tu racha de ${v.count} ${Number(v.count) !== 1 ? 'días' : 'día'}`, body: () => 'El reto del día aún es posible esta noche.' },
+      streak_in_danger: { title: (v) => `Tu racha de ${v.count} ${Number(v.count) !== 1 ? 'días' : 'día'}`, body: (v) => (v.step === 'chemin' ? 'Tu sesión del día aún es posible esta noche.' : 'El reto del día aún es posible esta noche.') },
       habit_proof: { title: (v) => `${v.minimoa} quiere ver algo`, body: () => 'Es la hora de tu hábito. ¿Una foto?' },
       weekly_review: { title: () => 'Tu resumen de la semana', body: (v) => `${v.minimoa} ha hecho balance. Ven a verlo.` },
       item_unlocked: {
@@ -600,7 +610,10 @@ export const notificationTexts = defineMessages({
     yourMinimoa: 'Seu minimoa',
     digestMore: (n: number): string => (n === 1 ? 'E mais 1 novidade te espera no app.' : `E mais ${n} novidades te esperam no app.`),
     texts: {
-      daily_challenge: { title: () => 'Seu desafio do dia', body: (v) => `${v.minimoa} preparou algo para você.` },
+      daily_challenge: {
+        title: (v) => (v.step === 'chemin' ? 'Sua sessão do dia está esperando' : 'Seu desafio do dia'),
+        body: (v) => (v.step === 'chemin' ? `${v.minimoa} tem 5 perguntas para você. 2 minutos.` : `${v.minimoa} preparou algo para você.`),
+      },
       needs_out: { title: (v) => `${v.minimoa} quer sair`, body: () => 'Uma volta lá fora ou uma mensagem para alguém, e ele se anima de novo.' },
       new_encounter: {
         title: (v) => (many(v) ? 'Novos vínculos' : v.step === 'invite' ? `${v.name} aceitou seu convite` : `${v.name} respondeu seu aceno`),
@@ -624,7 +637,7 @@ export const notificationTexts = defineMessages({
               : `${v.name} escreveu hoje. Sua vez, antes da meia-noite.`,
       },
       link_in_danger: { title: (v) => `Vínculo com ${v.name}`, body: () => 'O vínculo de vocês está meio parado. Uma mensagenzinha basta para animar.' },
-      streak_in_danger: { title: (v) => `Sua sequência de ${v.count} ${Number(v.count) > 1 ? 'dias' : 'dia'}`, body: () => 'Ainda dá para fazer o desafio do dia hoje à noite.' },
+      streak_in_danger: { title: (v) => `Sua sequência de ${v.count} ${Number(v.count) > 1 ? 'dias' : 'dia'}`, body: (v) => (v.step === 'chemin' ? 'Ainda dá para fazer a sessão do dia hoje à noite.' : 'Ainda dá para fazer o desafio do dia hoje à noite.') },
       habit_proof: { title: (v) => `${v.minimoa} quer ver`, body: () => 'Hora do seu hábito. Uma foto?' },
       weekly_review: { title: () => 'Seu resumo da semana', body: (v) => `${v.minimoa} fez um balanço. Venha ver.` },
       item_unlocked: {
@@ -775,7 +788,10 @@ export const notificationTexts = defineMessages({
     yourMinimoa: 'Je minimoa',
     digestMore: (n: number): string => (n === 1 ? 'En er wacht nog 1 update in de app.' : `En er wachten nog ${n} updates in de app.`),
     texts: {
-      daily_challenge: { title: () => 'Je uitdaging van de dag', body: (v) => `${v.minimoa} heeft iets voor je klaargezet.` },
+      daily_challenge: {
+        title: (v) => (v.step === 'chemin' ? 'Je sessie van vandaag wacht' : 'Je uitdaging van de dag'),
+        body: (v) => (v.step === 'chemin' ? `${v.minimoa} heeft 5 vragen voor je. 2 minuten.` : `${v.minimoa} heeft iets voor je klaargezet.`),
+      },
       needs_out: { title: (v) => `${v.minimoa} wil naar buiten`, body: () => 'Even naar buiten of iemand een berichtje sturen, en hij leeft weer op.' },
       new_encounter: {
         title: (v) => (many(v) ? 'Nieuwe banden' : v.step === 'invite' ? `${v.name} nam je uitnodiging aan` : `${v.name} zwaaide terug`),
@@ -799,7 +815,7 @@ export const notificationTexts = defineMessages({
               : `${v.name} schreef je vandaag. Jouw beurt, voor middernacht.`,
       },
       link_in_danger: { title: (v) => `Band met ${v.name}`, body: () => 'Jullie band zakt een beetje in. Eén berichtje is genoeg om hem op te vrolijken.' },
-      streak_in_danger: { title: (v) => `Je reeks van ${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'}`, body: () => 'De uitdaging van vandaag kan vanavond nog.' },
+      streak_in_danger: { title: (v) => `Je reeks van ${v.count} ${Number(v.count) === 1 ? 'dag' : 'dagen'}`, body: (v) => (v.step === 'chemin' ? 'Je sessie van vandaag kan vanavond nog.' : 'De uitdaging van vandaag kan vanavond nog.') },
       habit_proof: { title: (v) => `${v.minimoa} wil iets zien`, body: () => 'Tijd voor je gewoonte. Een foto?' },
       weekly_review: { title: () => 'Je weekoverzicht', body: (v) => `${v.minimoa} heeft de balans opgemaakt. Kom kijken.` },
       item_unlocked: {

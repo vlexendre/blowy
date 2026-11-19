@@ -17,5 +17,6 @@ export * from './v7/groupes';
 export * from './v7/fidelite';
 export * from './v7/quiz';
 export * from './v7/seed';
+export * from './v7/chemin';
 export * from './ai-provider';
 export { contentDictionaries } from './registry';

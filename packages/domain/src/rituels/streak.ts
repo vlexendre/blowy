@@ -1,7 +1,12 @@
 /**
- * La série : chaque jour où le défi du jour est fait = +1. Un jour manqué est protégé par un joker s'il en reste
- * dans la semaine de ce jour (lundi → dimanche, jours de Paris) ; sinon la série retombe à 0, le record reste.
- * Les jours manqués se rattrapent à la lecture (`settleStreak`) : aucune tâche planifiée n'est nécessaire.
+ * La série (une seule par personne) : chaque jour validé = +1. Un jour se valide par le défi du jour (app installée
+ * avant « Ton chemin ») ou par une séance de « Ton chemin » terminée (docs/CHEMIN.md). Un jour manqué est protégé par
+ * un joker (« gel » dans Ton chemin) s'il en reste dans la période de ce jour ; sinon la série retombe à 0, le record
+ * reste. Les jours manqués se rattrapent à la lecture (`settleStreak`) : aucune tâche planifiée n'est nécessaire.
+ *
+ * Deux jeux de règles (`StreakRule`) :
+ * - un nombre : règles historiques, jokers par semaine (lundi → dimanche), paliers STREAK_MILESTONES ;
+ * - `StreakRules` : période (semaine ou mois civil), gels par période et paliers (Ton chemin : CHEMIN_STREAK_MILESTONES).
  */
 import { type Day, addDays, daysBetween } from '../days';
 import { ITEMS } from '../items';
@@ -22,14 +27,46 @@ export const ZERO_STREAK: StreakState = Object.freeze({ current: 0, best: 0, las
 
 /** Paliers de la série ; chacun débloque un objet (statistique `ritualStreak`). */
 export const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100] as const;
+/**
+ * Paliers fêtés par « Ton chemin ». Les objets de 3, 14 et 60 jours restent gagnés dans la garde-robe (statistique
+ * `ritualStreak`) mais ne sont plus annoncés ; 365 n'a pas encore d'objet (à dessiner, `streakReward` rend null).
+ */
+export const CHEMIN_STREAK_MILESTONES = [7, 30, 100, 365] as const;
 
-const jokersUsedIn = (jokerDays: readonly Day[], day: Day): number => jokerDays.filter((d) => sameWeek(d, day)).length;
+export const FREEZE_PERIODS = ['week', 'month'] as const;
+export type FreezePeriod = (typeof FREEZE_PERIODS)[number];
 
-export const jokersLeft = (state: StreakState, today: Day, perWeek: number): number => Math.max(0, perWeek - jokersUsedIn(state.jokerDays, today));
+/** Règles de la série : jokers (gels) par période, et paliers fêtés. */
+export interface StreakRules {
+  period: FreezePeriod;
+  perPeriod: number;
+  milestones: readonly number[];
+}
+/** Un nombre : jokers par semaine, paliers historiques (app installée avant Ton chemin). */
+export type StreakRule = number | StreakRules;
 
-/** Oublie les jokers de plus de deux semaines. */
-const prune = (jokerDays: readonly Day[], today: Day): Day[] => {
-  const keepFrom = addDays(weekStartOf(today), -7);
+export const streakRulesOf = (rule: StreakRule): StreakRules =>
+  typeof rule === 'number' ? { period: 'week', perPeriod: rule, milestones: STREAK_MILESTONES } : rule;
+
+/** Premier jour du mois d'avant (AAAA-MM-01). */
+const previousMonthStart = (day: Day): Day => {
+  const y = Number(day.slice(0, 4));
+  const m = Number(day.slice(5, 7));
+  const [py, pm] = m === 1 ? [y - 1, 12] : [y, m - 1];
+  return `${py}-${String(pm).padStart(2, '0')}-01` as Day;
+};
+const samePeriod = (a: Day, b: Day, period: FreezePeriod): boolean => (period === 'week' ? sameWeek(a, b) : a.slice(0, 7) === b.slice(0, 7));
+
+const jokersUsedIn = (jokerDays: readonly Day[], day: Day, period: FreezePeriod): number => jokerDays.filter((d) => samePeriod(d, day, period)).length;
+
+export const jokersLeft = (state: StreakState, today: Day, rule: StreakRule): number => {
+  const r = streakRulesOf(rule);
+  return Math.max(0, r.perPeriod - jokersUsedIn(state.jokerDays, today, r.period));
+};
+
+/** Oublie les jokers de plus de deux semaines (règle par mois : ceux d'avant le mois précédent). */
+const prune = (jokerDays: readonly Day[], today: Day, period: FreezePeriod = 'week'): Day[] => {
+  const keepFrom = period === 'week' ? addDays(weekStartOf(today), -7) : previousMonthStart(today);
   return jokerDays.filter((d) => d >= keepFrom);
 };
 
@@ -39,9 +76,10 @@ const latest = (days: readonly Day[]): Day | null => (days.length === 0 ? null :
  * Rattrape les jours manqués avant `today` (aujourd'hui n'est pas encore manqué) : chacun prend un joker de sa semaine
  * s'il en reste, sinon la série retombe à 0. Idempotent.
  */
-export function settleStreak(state: StreakState, today: Day, perWeek: number): StreakState {
+export function settleStreak(state: StreakState, today: Day, rule: StreakRule): StreakState {
+  const { period, perPeriod } = streakRulesOf(rule);
   if (state.current === 0 || state.lastDoneOn === null) {
-    const jokerDays = prune(state.jokerDays, today);
+    const jokerDays = prune(state.jokerDays, today, period);
     return jokerDays.length === state.jokerDays.length ? state : { ...state, jokerDays };
   }
   const protectedAfter = latest(state.jokerDays.filter((d) => d > (state.lastDoneOn as Day)));
@@ -50,13 +88,13 @@ export function settleStreak(state: StreakState, today: Day, perWeek: number): S
   let changed = false;
   for (let d = addDays(cursor, 1); daysBetween(d, today) > 0; d = addDays(d, 1)) {
     changed = true;
-    if (jokersUsedIn(jokerDays, d) < perWeek) {
+    if (jokersUsedIn(jokerDays, d, period) < perPeriod) {
       jokerDays.push(d);
     } else {
-      return { ...state, current: 0, jokerDays: prune(jokerDays, today) };
+      return { ...state, current: 0, jokerDays: prune(jokerDays, today, period) };
     }
   }
-  const pruned = prune(jokerDays, today);
+  const pruned = prune(jokerDays, today, period);
   return changed || pruned.length !== state.jokerDays.length ? { ...state, jokerDays: pruned } : state;
 }
 
@@ -66,13 +104,13 @@ export interface CompleteResult {
   milestone: number | null;
 }
 
-/** Le défi du jour est fait : +1 (une fois par jour), après rattrapage des jours manqués. */
-export function completeStreakDay(state: StreakState, today: Day, perWeek: number): CompleteResult {
-  const settled = settleStreak(state, today, perWeek);
+/** Le jour est validé (défi du jour ou séance) : +1 (une fois par jour), après rattrapage des jours manqués. */
+export function completeStreakDay(state: StreakState, today: Day, rule: StreakRule): CompleteResult {
+  const settled = settleStreak(state, today, rule);
   if (settled.lastDoneOn === today) return { state: settled, milestone: null };
   const current = settled.current + 1;
   const best = Math.max(settled.best, current);
-  const milestone = (STREAK_MILESTONES as readonly number[]).includes(current) && current > settled.best ? current : null;
+  const milestone = streakRulesOf(rule).milestones.includes(current) && current > settled.best ? current : null;
   return { state: { ...settled, current, best, lastDoneOn: today }, milestone };
 }
 
@@ -90,9 +128,9 @@ export function streakReward(days: number): string | null {
  * après une série retombée puis repartie, on vise le premier palier au-delà du record, pas au-delà de la série en
  * cours. null quand les six sont gagnés. (`best` absent : la série en cours fait office de record.)
  */
-export function nextStreakMilestone(current: number, best: number = current): { days: number; itemId: string | null } | null {
+export function nextStreakMilestone(current: number, best: number = current, milestones: readonly number[] = STREAK_MILESTONES): { days: number; itemId: string | null } | null {
   const reach = Math.max(current, best);
-  const days = STREAK_MILESTONES.find((m) => m > reach);
+  const days = milestones.find((m) => m > reach);
   return days === undefined ? null : { days, itemId: streakReward(days) };
 }
 

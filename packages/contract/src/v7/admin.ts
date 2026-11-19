@@ -237,4 +237,22 @@ export const adminRoutes = {
   audit: () => '/admin/audit',
   suspensions: () => '/admin/suspensions',
   aiCosts: () => '/admin/ai-costs',
+  /** Ton chemin : GET tout (unités, questions, compteur du jour). */
+  chemin: () => '/admin/chemin',
+  /** POST : créer une question (brouillon). */
+  cheminQuestions: () => '/admin/chemin/questions',
+  /** PUT : modifier une question (elle repasse en brouillon si elle était relue). */
+  cheminQuestion: (id: string) => `/admin/chemin/questions/${encodeURIComponent(id)}`,
+  /** POST : changer le statut d'une question. */
+  cheminQuestionStatus: (id: string) => `/admin/chemin/questions/${encodeURIComponent(id)}/status`,
+  /** POST : créer une unité (et ses étapes). */
+  cheminUnits: () => '/admin/chemin/units',
+  /** PUT : modifier une unité et ses étapes. */
+  cheminUnit: (id: string) => `/admin/chemin/units/${encodeURIComponent(id)}`,
+  /** POST : changer le statut d'une unité (et de ses étapes). */
+  cheminUnitStatus: (id: string) => `/admin/chemin/units/${encodeURIComponent(id)}/status`,
+  /** GET : séances faites aujourd'hui. */
+  cheminStats: () => '/admin/chemin/stats',
 } as const;
+
+export * from './chemin-admin';

@@ -147,6 +147,11 @@ export const RitualsTodayZ = z.object({
   proofAsked: z.array(z.object({ habitRef: z.string().uuid(), ask: z.string() })),
   /** Dernier bilan non lu (dimanche soir), ou null. */
   unreadReviewId: z.string().uuid().nullable(),
+  /**
+   * Vrai pour une app qui a Ton chemin (build ≥ `APP_IOS_CHEMIN_BUILD`) : le défi du jour n'est plus proposé
+   * (`challenge.present` est faux) ; la série se valide par la séance du jour. Absent : ancienne API.
+   */
+  challengeRetired: z.boolean().optional(),
 });
 export type RitualsToday = z.infer<typeof RitualsTodayZ>;
 

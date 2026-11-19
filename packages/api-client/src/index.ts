@@ -4,6 +4,13 @@
  */
 import {
   ApiErrorZ,
+  // Ton chemin
+  type CheminAnswersBody,
+  CheminMapZ,
+  CheminResultZ,
+  CheminSessionResponseZ,
+  ProfilZ,
+  cheminRoutes,
   EncounterHistoryZ,
   EncountersZ,
   type ErrorCode,
@@ -332,6 +339,18 @@ export function createApiClient(opts: ApiClientOptions) {
       confirm: (token: string) => call('POST', quizRoutes.confirm(), QuartierConfirmedZ, { token }),
       unsubscribe: (token: string) => call('POST', quizRoutes.unsubscribe(), OkZ, { token }),
       mine: () => call('GET', quizRoutes.mine(), MyQuartierZ),
+    },
+    /**
+     * Ton chemin (docs/CHEMIN.md) : la carte, la séance du jour (5 questions), les réponses (idempotent par séance :
+     * révélation, avancement, série, personne du jour), et « ce que Nino sait de toi ».
+     */
+    chemin: {
+      map: () => call('GET', cheminRoutes.chemin(), CheminMapZ),
+      /** `formats` : ce que l'app sait afficher (`['choice', 'slider']`) ; sans : le build décide. */
+      session: (formats?: readonly string[]) =>
+        call('GET', cheminRoutes.cheminSession() + (formats && formats.length > 0 ? `?formats=${encodeURIComponent(formats.join(','))}` : ''), CheminSessionResponseZ),
+      answer: (body: CheminAnswersBody) => call('POST', cheminRoutes.cheminAnswers(), CheminResultZ, body),
+      profil: () => call('GET', cheminRoutes.profil(), ProfilZ),
     },
     /**
      * Rituels : sortie du jour, défi du jour, série, habitudes et preuves en photo, souvenirs privés, bilans.

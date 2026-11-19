@@ -23,3 +23,4 @@ export * from './quartiers';
 export * from './anti-spam';
 export * from './desir';
 export * from './app-version';
+export * from './chemin';

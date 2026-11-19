@@ -20,6 +20,9 @@ import {
   adminRoutes,
 } from '@blowy/contract';
 import { AdminGroupZ, groupRoutes } from '@blowy/contract';
+import { type AdminCheminQuestionBody, AdminCheminQuestionZ, AdminCheminStatsZ, type AdminCheminUnitBody, AdminCheminUnitZ, AdminCheminZ } from '@blowy/contract';
+import type { CheminStatusZ } from '@blowy/contract';
+type CheminStatus = z.infer<typeof CheminStatusZ>;
 import { AdminCreatorsZ, AdminGrowthZ, AdminQuartiersZ, growthRoutes, quizRoutes } from '@blowy/contract';
 import type { z } from 'zod';
 import { ApiError } from './index';
@@ -40,7 +43,7 @@ export function createAdminClient(opts: AdminClientOptions) {
   const doFetch = opts.fetch ?? fetch;
   const base = opts.baseUrl.replace(/\/$/, '');
 
-  async function call<S extends z.ZodType>(method: 'GET' | 'POST', path: string, schema: S, body?: unknown): Promise<z.infer<S>> {
+  async function call<S extends z.ZodType>(method: 'GET' | 'POST' | 'PUT', path: string, schema: S, body?: unknown): Promise<z.infer<S>> {
     const token = await opts.getToken();
     let res: Response;
     try {
@@ -85,6 +88,15 @@ export function createAdminClient(opts: AdminClientOptions) {
     quartiers: () => call('GET', quizRoutes.adminList(), AdminQuartiersZ),
     setQuartierThreshold: (threshold: number) => call('POST', quizRoutes.adminSettings(), AdminQuartiersZ, { threshold }),
     openQuartier: (zone: string) => call('POST', quizRoutes.adminOpen(zone), AdminQuartiersZ),
+    /** Ton chemin : unités, questions (brouillon → relue → en ligne), séances du jour. */
+    chemin: () => call('GET', adminRoutes.chemin(), AdminCheminZ),
+    cheminStats: () => call('GET', adminRoutes.cheminStats(), AdminCheminStatsZ),
+    createCheminQuestion: (body: AdminCheminQuestionBody) => call('POST', adminRoutes.cheminQuestions(), AdminCheminQuestionZ, body),
+    updateCheminQuestion: (id: string, body: AdminCheminQuestionBody) => call('PUT', adminRoutes.cheminQuestion(id), AdminCheminQuestionZ, body),
+    setCheminQuestionStatus: (id: string, status: CheminStatus) => call('POST', adminRoutes.cheminQuestionStatus(id), AdminCheminQuestionZ, { status }),
+    createCheminUnit: (body: AdminCheminUnitBody) => call('POST', adminRoutes.cheminUnits(), AdminCheminUnitZ, body),
+    updateCheminUnit: (id: string, body: AdminCheminUnitBody) => call('PUT', adminRoutes.cheminUnit(id), AdminCheminUnitZ, body),
+    setCheminUnitStatus: (id: string, status: CheminStatus) => call('POST', adminRoutes.cheminUnitStatus(id), AdminCheminUnitZ, { status }),
   };
 }
 export type AdminClient = ReturnType<typeof createAdminClient>;
