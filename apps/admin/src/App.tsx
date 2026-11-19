@@ -6,6 +6,7 @@ import { Login } from './Login';
 import { Skeleton } from './ui';
 import { Audit } from './views/Audit';
 import { Costs } from './views/Costs';
+import { Chemin } from './views/Chemin';
 import { Creators } from './views/Creators';
 import { Funnel } from './views/Funnel';
 import { Growth } from './views/Growth';
@@ -21,6 +22,7 @@ const ROUTES = [
   ['growth', 'Croissance'],
   ['creators', 'Créateurs'],
   ['quartiers', 'Quartiers'],
+  ['chemin', 'Ton chemin'],
   ['moderation', 'Modération'],
   ['audit', 'Journal'],
   ['costs', 'Coûts IA'],
@@ -128,6 +130,7 @@ function Shell({ email }: { email: string }) {
         {route === 'funnel' && <Funnel />}
         {route === 'growth' && <Growth />}
         {route === 'creators' && <Creators />}
+        {route === 'chemin' && <Chemin />}
         {route === 'quartiers' && <Quartiers />}
         {route === 'moderation' && <Moderation onCountsChange={refreshCounts} />}
         {route === 'audit' && <Audit />}

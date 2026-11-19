@@ -61,6 +61,8 @@ Modules : `me`, `pets` (soins, garde-robe), `links` (messages, série de la conv
 dans le chat), `encounters` (`WaveGuard` : on ne salue que qui l'app a montré, plafonds de coucous par jour et en attente,
 e-mails de signe plafonnés, repérage des envois en masse pour la modération ; règles `packages/domain/src/anti-spam.ts`), `invites`, `words`, `safety` (blocages, signalements ; `Audience` : qui est montré à qui),
 `vision` (test, profil, appariement, carte), `rituels` (sortie, défi du jour, série, habitudes et preuves, bilan),
+`chemin` (Ton chemin : unités, étapes, séance du jour de 5 questions, personne du jour, profil ; contenu piloté par la
+base, docs/CHEMIN.md),
 `notifications` (appareils, réglages, présence, envoi, activités en direct ; règles : `docs/NOTIFICATIONS.md`), `billing` (Minimoa+), `admin` (tableaux, modération),
 `retention` (comptes inactifs, exclusions, purges), `fidelite` (premiers pas, nouvelles du minimoa pendant une absence,
 anniversaires ; journal `lifecycle_messages` partagé avec Minimoa+, `docs/FIDELISATION.md`), `growth` (codes créateurs,
@@ -127,7 +129,8 @@ rituels (`ritual_states`, `daily_challenges`, `habits`, `habit_checks`, `ritual_
 `reports.group_id`, `reports.group_message_id`), Minimoa+ hebdomadaire et fidélisation (`subscriptions.plan` accepte
 `weekly`, `lifecycle_messages`), croissance (`groups.invite_code`, `creators`, `acquisitions`, `growth_events`,
 `growth_counters`), désir de Minimoa+ (`growth_counters` : `plus_*` par déclencheur ; `pet_items.source` = `collection` ;
-docs/DESIR.md). Compartiment privé `media` (URL signées émises par l'API).
+docs/DESIR.md), Ton chemin (`chemin_units`, `chemin_steps`, `chemin_questions`, `chemin_scenes`, `chemin_progress`,
+`chemin_sessions`, `chemin_answers`, `ritual_states.streak_rules` ; docs/CHEMIN.md). Compartiment privé `media` (URL signées émises par l'API).
 Après une migration : `database.types.ts` à la main, puis `check:schema`. Mise en production : `docs/DEPLOIEMENT-V7.md`.
 
 ## Produit

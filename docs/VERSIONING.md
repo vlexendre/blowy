@@ -31,6 +31,7 @@ pas de build : jamais bloqués.
 | `APP_IOS_LATEST_BUILD` | dernier build publié : au-dessous, bandeau | `0` (aucun bandeau) |
 | `APP_IOS_STORE_URL` | fiche App Store | `https://apps.apple.com/fr/app/minimoa/id6833895780` |
 | `APP_ANDROID_…` | les mêmes pour Android | `0`, `0`, aucune |
+| `APP_IOS_CHEMIN_BUILD` (`APP_ANDROID_…`) | premier build avec Ton chemin : défi du jour retiré (`challengeRetired`), rappel du matin de la séance (docs/CHEMIN.md) | `999999999` (inactif) |
 
 L'API refuse de démarrer si le minimum dépasse le dernier build. Le numéro de build est celui d'EAS
 (`appVersionSource: remote`, `autoIncrement`) : il se lit dans App Store Connect › TestFlight.
