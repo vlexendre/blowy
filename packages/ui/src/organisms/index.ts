@@ -1,7 +1,7 @@
 export { BottomTabBar, type BottomTabBarProps, type BottomTabItem, TAB_BAR_SPACE, useTabBarSpace } from './BottomTabBar';
 export { ChallengeCard, type ChallengeCardProps } from './ChallengeCard';
 export { ChatThread, type ChatThreadProps } from './ChatThread';
-export { Composer, type ComposerProps, type ComposerTone } from './Composer';
+export { Composer, type ComposerProps } from './Composer';
 export { EvolutionHero, type EvolutionHeroProps } from './EvolutionHero';
 export { EncountersHero, type EncountersHeroProps } from './EncountersHero';
 export { EncounterStage, type EncounterStageHandle, type EncounterStageProps } from './EncounterStage';

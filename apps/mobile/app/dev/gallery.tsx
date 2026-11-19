@@ -39,7 +39,6 @@ import {
   Chip,
   ChoiceCard,
   Composer,
-  type ComposerTone,
   DayChip,
   Divider,
   DressedPet,
@@ -412,7 +411,6 @@ function GalleryScreen() {
   const [otp, setOtp] = useState('4821');
   const [name, setName] = useState('Nino');
   const [draft, setDraft] = useState('');
-  const [tone, setTone] = useState<ComposerTone | null>('sweet');
   const [plan, setPlan] = useState<'year' | 'month'>('year');
   const [species, setSpecies] = useState<Species>('nino');
   const [answer, setAnswer] = useState<string | null>(null);
@@ -735,9 +733,6 @@ function GalleryScreen() {
               onChangeText={setDraft}
               onSend={() => setDraft('')}
               placeholder="Écris à Léa"
-              tone={tone}
-              onToneChange={setTone}
-              toneLabels={{ sweet: 'mot doux', tease: 'vanne' }}
               onAttach={noop}
             />
           </Frame>

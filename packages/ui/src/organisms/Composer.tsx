@@ -1,18 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
-import { Chip } from '../atoms/Chip';
 import { IconButton } from '../atoms/IconButton';
 import { Text } from '../atoms/Text';
 import { ease, fadeTo, springs, useReducedMotion } from '../lib/motion';
 import { layout } from '../lib/styles';
-import { Appear } from '../motion/Appear';
 import { color, motion, radius, size, space, type, veil } from '../theme';
 import { useUiStrings } from '../lib/strings';
-
-export type ComposerTone = 'sweet' | 'tease';
 
 export interface ComposerProps {
   value: string;
@@ -22,11 +18,8 @@ export interface ComposerProps {
   /** Lien fantôme ou bloqué : pas de saisie, `disabledText` à la place. */
   disabled?: boolean;
   disabledText?: string;
+  /** Envoi en cours, non optimiste : le bouton attend. Le chat envoie de façon optimiste et ne s'en sert plus. */
   sending?: boolean;
-  /** Ton choisi (« mot doux » / « vanne ») ; affiche les bascules si `toneLabels` est fourni. */
-  tone?: ComposerTone | null;
-  onToneChange?: (tone: ComposerTone | null) => void;
-  toneLabels?: Record<ComposerTone, string>;
   /** Bouton « + » (photo, défi, quiz). */
   onAttach?: () => void;
   attachLabel?: string;
@@ -41,7 +34,7 @@ const SEND = (
   </Svg>
 );
 
-/** Barre de saisie du chat : +, champ pilule, envoyer, bascules de ton. */
+/** Barre de saisie du chat : +, champ pilule, envoyer (plus de suggestions ni de bascules au-dessus du champ). */
 export function Composer({
   value,
   onChangeText,
@@ -50,15 +43,14 @@ export function Composer({
   disabled,
   disabledText,
   sending,
-  tone = null,
-  onToneChange,
-  toneLabels,
   onAttach,
   attachLabel,
   sendLabel,
   maxLength = 2000,
 }: ComposerProps) {
   const uiStrings = useUiStrings();
+  // Envoi optimiste : l'avion s'envole à chaque envoi, sans attendre le serveur (le champ reste libre).
+  const [launch, setLaunch] = useState(0);
   if (disabled) {
     return (
       <View style={[styles.wrap, styles.disabled]} accessibilityRole="text">
@@ -69,16 +61,12 @@ export function Composer({
     );
   }
   const canSend = value.trim().length > 0 && !sending;
-  const toggle = (t: ComposerTone) => onToneChange?.(tone === t ? null : t);
+  const send = () => {
+    setLaunch((n) => n + 1);
+    onSend();
+  };
   return (
     <View style={styles.wrap}>
-      {/* Bascules de ton : seulement pendant la saisie (la maquette au repos n'a que la barre). */}
-      {toneLabels && onToneChange && (value.length > 0 || tone) ? (
-        <Appear distance={8} duration={motion.fast} style={[layout.row, layout.gapSm, styles.tones]}>
-          <Chip label={toneLabels.sweet} tone="glass" selected={tone === 'sweet'} onPress={() => toggle('sweet')} />
-          <Chip label={toneLabels.tease} tone="glass" selected={tone === 'tease'} onPress={() => toggle('tease')} />
-        </Appear>
-      ) : null}
       <View style={[layout.row, layout.gapSm]}>
         {onAttach ? <IconButton glyph="plus" label={attachLabel ?? uiStrings.add} onPress={onAttach} /> : null}
         <View style={[layout.row, styles.field]}>
@@ -96,7 +84,7 @@ export function Composer({
           />
         </View>
         {/* Maquette : bouton jaune plein même champ vide ; l'envoi d'un champ vide est ignoré. */}
-        <IconButton icon={<Plane ready={canSend} sending={!!sending} />} label={sendLabel ?? uiStrings.send} variant="accent" onPress={canSend ? onSend : undefined} disabled={sending} />
+        <IconButton icon={<Plane ready={canSend} sending={!!sending} launch={launch} />} label={sendLabel ?? uiStrings.send} variant="accent" onPress={canSend ? send : undefined} disabled={sending} />
       </View>
     </View>
   );
@@ -105,9 +93,10 @@ export function Composer({
 /**
  * L'avion du bouton envoyer se transforme : au repos (champ vide) il pique du nez, un peu petit ; dès qu'on écrit,
  * il se redresse d'un « pop ». À l'envoi il s'envole en haut à droite, et un nouvel avion revient d'en bas à gauche
- * quand l'envoi est fini. Fondus seuls si animations réduites.
+ * quand l'envoi est fini (ou tout de suite après, à chaque `launch` d'un envoi optimiste). Fondus seuls si animations
+ * réduites.
  */
-function Plane({ ready, sending }: { ready: boolean; sending: boolean }) {
+function Plane({ ready, sending, launch }: { ready: boolean; sending: boolean; launch: number }) {
   const reduced = useReducedMotion();
   const pose = useSharedValue(ready ? 1 : 0);
   const pop = useSharedValue(1);
@@ -142,6 +131,14 @@ function Plane({ ready, sending }: { ready: boolean; sending: boolean }) {
       fly.value = withSequence(withDelay(motion.base, withTiming(-1, { duration: 0 })), withSpring(0, springs.pop));
     }
   }, [sending, reduced, fly, fade]);
+  useEffect(() => {
+    if (launch === 0 || flying.current) return;
+    if (reduced) {
+      fade.value = withSequence(withTiming(0.4, { duration: motion.instant }), withTiming(1, { duration: motion.fast }));
+      return;
+    }
+    fly.value = withSequence(withTiming(1, { duration: motion.fast, easing: ease.in }), withTiming(-1, { duration: 0 }), withSpring(0, springs.pop));
+  }, [launch, reduced, fly, fade]);
   const style = useAnimatedStyle(() => {
     const f = fly.value;
     const away = Math.abs(f);
@@ -162,7 +159,6 @@ const styles = StyleSheet.create({
   // Maquette : padding 6 12 26 ; le gabarit pose déjà 12 au-dessus et la zone de sécurité en dessous.
   wrap: { paddingHorizontal: space.md, gap: space.sm },
   disabled: { minHeight: size.button.lg, justifyContent: 'center', marginHorizontal: space.md, borderRadius: radius.pill, backgroundColor: veil.line },
-  tones: { paddingLeft: size.touch + space.sm },
   field: { flex: 1, minHeight: 46, borderRadius: 23, backgroundColor: veil.line, borderWidth: 1, borderColor: veil.track, paddingLeft: space.lg, paddingRight: space.xs },
   input: { flex: 1, minWidth: 0, color: color.white, fontSize: 15, lineHeight: 20, maxHeight: 120, paddingTop: 12, paddingBottom: 12 },
 });
