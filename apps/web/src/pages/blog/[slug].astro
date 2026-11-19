@@ -1,0 +1,47 @@
+---
+/** /blog/<article>/ : un article du blog (docs/SEO.md §6), en français seulement. */
+import Editorial from '../../layouts/Editorial.astro';
+import BlogBody from '../../components/templates/BlogBody.astro';
+import { BLOG_LIST, blogPath } from '../../content/editorial/blog';
+import { editorialUi } from '../../content/editorial/ui';
+import type { BlogPost } from '../../content/editorial/types';
+import { SITE_NAME, SITE_URL } from '../../config/site';
+import { faqJsonLd, plain } from '../../lib/editorial-render';
+import { ogAltFor } from '../../lib/editorial-og';
+
+export function getStaticPaths() {
+  return BLOG_LIST.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+const { post } = Astro.props as { post: BlogPost };
+const path = blogPath(post.slug);
+const url = new URL(path, SITE_URL).href;
+const og = `/og/blog/${post.slug}.jpg`;
+const article = {
+  '@type': 'BlogPosting',
+  headline: post.h1,
+  description: post.meta.description,
+  abstract: post.essentiel.map(plain).join(' '),
+  image: new URL(og, SITE_URL).href,
+  datePublished: post.published,
+  dateModified: post.updated,
+  inLanguage: 'fr-FR',
+  keywords: post.keywords.join(', '),
+  mainEntityOfPage: url,
+  isPartOf: { '@type': 'Blog', name: editorialUi.blog.feedTitle, url: new URL(editorialUi.blog.path, SITE_URL).href },
+  citation: post.sources.map((s) => s.url),
+  author: { '@type': 'Organization', name: editorialUi.guide.author, url: SITE_URL },
+  publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL, logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', SITE_URL).href } },
+};
+---
+<Editorial
+  title={post.meta.title}
+  description={post.meta.description}
+  path={path}
+  ogImage={og}
+  ogAlt={ogAltFor(post.h1)}
+  crumbs={[{ name: editorialUi.blog.crumb, path: editorialUi.blog.path }, { name: post.short, path }]}
+  jsonLd={[article, ...(post.faq.length ? [faqJsonLd(post.faq)] : [])]}
+  preloadImage={post.image.src}
+>
+  <BlogBody post={post} />
+</Editorial>

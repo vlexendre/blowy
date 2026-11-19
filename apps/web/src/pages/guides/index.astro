@@ -6,6 +6,7 @@ import AppCta from '../../components/organisms/editorial/AppCta.astro';
 import { GUIDE_LIST, guidePath } from '../../content/editorial/guides';
 import { CITY_LIST, cityPath } from '../../content/editorial/villes';
 import { editorialUi } from '../../content/editorial/ui';
+import { BLOG_LIST, blogPath } from '../../content/editorial/blog';
 import { SITE_URL } from '../../config/site';
 
 const t = editorialUi.guides;
@@ -23,5 +24,6 @@ const itemList = {
   </header>
   <LinkCards title={t.listTitle} items={GUIDE_LIST.map((g) => ({ href: guidePath(g.slug), title: g.short, text: g.meta.description }))} />
   <LinkCards title={editorialUi.cities.h1} items={CITY_LIST.map((c) => ({ href: cityPath(c.slug), title: c.name }))} />
+  {BLOG_LIST.length > 0 && <LinkCards title={editorialUi.blog.listTitle} items={BLOG_LIST.slice(0, 3).map((p) => ({ href: blogPath(p.slug), title: p.short, text: p.meta.description }))} />}
   <AppCta />
 </Editorial>

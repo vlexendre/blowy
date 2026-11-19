@@ -155,3 +155,35 @@ export interface BuurtPage {
     footer: { label: string; link: string };
   };
 }
+
+/**
+ * Article du blog (/blog/<slug>/) : une actualité (étude, fête, saison, événement d'une ville) reliée à la façon de
+ * rencontrer du monde, et toujours à Minimoa. Une publication par jour au plus ; mêmes règles d'écriture que les guides
+ * (sources vérifiées, chiffre → source). `essentiel` : 3 à 5 phrases autonomes en tête d'article, que les moteurs et les
+ * assistants peuvent citer telles quelles (GEO).
+ */
+export interface BlogPost {
+  /** minuscules, chiffres et tirets */
+  slug: string;
+  meta: Meta;
+  h1: string;
+  /** titre court (cartes, fil d'Ariane) */
+  short: string;
+  lead: string;
+  /** l'actualité de départ, en une ligne (« Fête des Lumières, Lyon, 5-8 décembre 2026 ») */
+  news: string;
+  /** « L'essentiel » : 3 à 5 phrases qui se comprennent seules */
+  essentiel: readonly string[];
+  keywords: readonly string[];
+  sections: readonly Section[];
+  faq: readonly Faq[];
+  sources: readonly Source[];
+  /** guides liés (au moins 1) */
+  guides: readonly GuideSlug[];
+  /** villes concernées (cartes en fin d'article) */
+  cities: readonly CitySlug[];
+  image: ImageRef;
+  og: OgSpec;
+  published: string;
+  updated: string;
+}

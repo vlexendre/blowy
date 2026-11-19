@@ -37,6 +37,7 @@ const graph = [...jsonLd, breadcrumbJsonLd(trail.map((c) => ({ name: c.name, url
 ---
 <Base title={title} description={description} canonicalPath={path} ogImage={ogImage} ogAlt={ogAlt} bodyClass="ed-body" langBanner={false} structuredData={graph} lang={locale} ogLocale={ui?.ogLocale} skipLabel={ui?.skipLabel}>
   {preloadImage && <link slot="head" rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+  {locale === 'fr' && <link slot="head" rel="alternate" type="application/rss+xml" title={editorialUi.blog.feedTitle} href={`${editorialUi.blog.path}rss.xml`} />}
   <TopBar locale={locale} />
   <main id="main" class="ed-main">
     <Breadcrumbs items={trail} label={ui?.breadcrumbLabel ?? editorialUi.breadcrumbLabel} />

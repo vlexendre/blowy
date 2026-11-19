@@ -83,3 +83,22 @@ SEO quand `treg` est disponible.
   se faire des amis », intention « liste » de la première page : comparaison honnête des familles d'applis) ; maillage
   contextuel (chaque ville et chaque guide cité dans le texte d'au moins 3 autres pages, ancres variées, contrôle ajouté à
   `scripts/editorial-check.mts`) ; un seul `h1` sur /quiz/ et /quartier/ (les états cachés passent en `h2`).
+
+## 6. Blog d'actualité et GEO
+
+Blog : `/blog/` (liste), `/blog/<article>/`, flux `/blog/rss.xml`. Un article part d'une actualité (étude, fête,
+saison, événement d'une ville) et la relie à la façon de rencontrer du monde, puis à Minimoa (une aide parmi d'autres).
+Ajouter un article : un fichier dans `apps/web/src/content/editorial/blog/` (type `BlogPost`), une ligne dans `POSTS` de
+`blog.ts`, son aperçu (`editorial-og.mts` puis `build.py --og-pages`). `pnpm test` contrôle : 700-1 400 mots,
+« L'essentiel » de 3 à 5 phrases, sources (chaque lien externe du texte en fait partie), au moins 3 liens internes dont
+un guide, Minimoa cité. Pas d'actualité inventée : chaque date et chaque chiffre vient d'une source officielle vérifiée.
+
+GEO (assistants et moteurs génératifs) :
+
+- `/llms.txt`, généré au build : présentation factuelle de Minimoa et liste des guides, villes et articles.
+- « L'essentiel » en tête de chaque article : phrases autonomes, datées et sourcées, faciles à citer.
+- JSON-LD `BlogPosting` (`abstract`, `citation`, `keywords`), `Blog` sur la liste, FAQPage, fil d'Ariane.
+- `robots.txt` laisse passer tous les robots (dont ceux des assistants) ; sources citées en clair en fin d'article.
+
+- 19 novembre 2026 : premier article, `/blog/fetes-fin-annee-2026-rencontrer-du-monde/` (Fête des Lumières à Lyon du
+  5 au 8 décembre 2026, marchés de Noël, étude Solitudes 2026 de la Fondation de France).

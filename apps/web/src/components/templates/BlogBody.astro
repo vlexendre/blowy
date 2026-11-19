@@ -1,0 +1,72 @@
+---
+/**
+ * Un article du blog : en-tête (actu, auteur, date, temps de lecture), « L'essentiel » (phrases citables, GEO), sections,
+ * FAQ, sources, guides et villes liés, autres articles. Textes : content/editorial/blog/<article>.ts.
+ */
+import FaqList from '../organisms/editorial/FaqList.astro';
+import LinkCards from '../organisms/editorial/LinkCards.astro';
+import AppCta from '../organisms/editorial/AppCta.astro';
+import type { BlogPost } from '../../content/editorial/types';
+import { BLOG_LIST, blogPath } from '../../content/editorial/blog';
+import { GUIDES, guidePath } from '../../content/editorial/guides';
+import { CITIES, cityPath } from '../../content/editorial/villes';
+import { editorialUi, frDate } from '../../content/editorial/ui';
+import { inline, renderSection } from '../../lib/editorial-render';
+import { blogWords } from '../../lib/editorial-pages';
+
+interface Props {
+  post: BlogPost;
+}
+const { post } = Astro.props;
+const t = editorialUi.guide;
+const p = editorialUi.post;
+const minutes = Math.max(1, Math.round(blogWords(post) / 220));
+const guides = post.guides.map((s) => ({ href: guidePath(s), title: GUIDES[s].short, text: GUIDES[s].meta.description }));
+const cities = post.cities.map((s) => ({ href: cityPath(s), title: CITIES[s].name }));
+const more = BLOG_LIST.filter((b) => b.slug !== post.slug).slice(0, 4).map((b) => ({ href: blogPath(b.slug), title: b.short, text: b.meta.description }));
+const wide = post.image.width > post.image.height * 1.2;
+---
+<article>
+  <header class="ed-head">
+    <span class="ed-kicker">{p.news}</span>
+    <h1>{post.h1}</h1>
+    <p class="ed-lead">{post.lead}</p>
+    <p class="ed-byline">
+      <span>{t.by} {t.author}</span>
+      <span>{t.published} <time datetime={post.published}>{frDate(post.published)}</time>{post.updated !== post.published && <>, {t.updated} <time datetime={post.updated}>{frDate(post.updated)}</time></>}</span>
+      <span>{t.reading(minutes)}</span>
+    </p>
+    <img class:list={['ed-art', { wide }]} src={post.image.src} alt={post.image.alt} width={post.image.width} height={post.image.height} fetchpriority="high" decoding="async" />
+  </header>
+
+  <section class="ed-prose ed-note bl-essentiel" aria-labelledby="bl-essentiel-title">
+    <h2 id="bl-essentiel-title">{p.essentielTitle}</h2>
+    <ul>
+      {post.essentiel.map((e) => <li set:html={inline(e)} />)}
+    </ul>
+  </section>
+
+  <div class="ed-prose">
+    <Fragment set:html={post.sections.map(renderSection).join('')} />
+  </div>
+
+  <FaqList title={t.faqTitle} faq={post.faq} />
+
+  <section class="ed-prose ed-sources" aria-labelledby="ed-sources-title">
+    <h2 id="ed-sources-title">{t.sourcesTitle}</h2>
+    <ol>
+      {post.sources.map((s) => <li><a href={s.url} rel="noopener">{s.label}</a></li>)}
+    </ol>
+  </section>
+
+  <AppCta />
+
+  <LinkCards title={p.guidesTitle} items={guides} />
+  {cities.length > 0 && <LinkCards title={p.citiesTitle} items={cities} />}
+  {more.length > 0 && <LinkCards title={p.moreTitle} items={[...more, { href: editorialUi.blog.path, title: editorialUi.blog.h1 }]} />}
+</article>
+<style is:global>
+.bl-essentiel{margin:0 0 8px}
+.bl-essentiel h2{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:20px;color:#fff;margin:0 0 8px}
+.bl-essentiel ul{margin:0}
+</style>

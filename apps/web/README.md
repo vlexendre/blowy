@@ -14,6 +14,9 @@ Cinq langues (fr, en, es, pt, nl) : voir « Langues » plus bas et `docs/I18N.md
 | `/quiz/`, `/quartier/` (et `/<langue>/quiz/`, `/<langue>/quartier/`) | Quiz « Quel minimoa es-tu ? », « Ouvre ton quartier » |
 | `/legal/…`, `/<langue>/legal/…` | Pages légales (le français fait foi) ; `/confidentialite`, `/conditions`, `/regles`, `/support` y redirigent |
 | `/404` | Page introuvable |
+| `/se-faire-des-amis/…`, `/guides/…` | Pages villes et guides (français), textes dans `src/content/editorial/` |
+| `/blog/`, `/blog/<article>/`, `/blog/rss.xml` | Blog d'actualité (français) : un fichier par article dans `src/content/editorial/blog/`, déclaré dans `src/content/editorial/blog.ts` |
+| `/llms.txt` | Présentation de Minimoa et plan des pages pour les assistants (GEO), généré au build |
 | `/sitemap.xml`, `/robots.txt`, `/.well-known/apple-app-site-association` | Référencement et liens universels iOS |
 
 ## Langues
