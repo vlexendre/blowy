@@ -1,5 +1,6 @@
+import { streakRuleFor } from '../../rituels/application/rituals-context';
 import { Inject, Injectable } from '@nestjs/common';
-import { type Day, SHAPES, dayOf, type Shape, VISION_AXES, VISION_BUCKETS, entitlements, settleStreak, shapeOf, visionBucketOf } from '@blowy/domain';
+import { type Day, SHAPES, dayOf, type Shape, VISION_AXES, VISION_BUCKETS, settleStreak, shapeOf, visionBucketOf } from '@blowy/domain';
 import type { Clock } from '../../../shared/clock';
 import { CLOCK, PETS, PROFILES } from '../../../shared/tokens';
 import { ENCOUNTER_PROPOSALS, type ProposalsRepository } from '../../encounters/ports';
@@ -110,7 +111,7 @@ export class LiveAdminInsights implements AdminInsights {
   private streakOf(id: string, s: Pick<Sample, 'profiles' | 'states'>, day: Day): number {
     const state = s.states.get(id);
     if (!state) return 0;
-    const perWeek = entitlements(hasPlus(s.profiles.get(id) ?? null, this.clock.now())).jokersPerWeek;
+    const perWeek = streakRuleFor(hasPlus(s.profiles.get(id) ?? null, this.clock.now()), state);
     return settleStreak(state.streak, day, perWeek).current;
   }
 

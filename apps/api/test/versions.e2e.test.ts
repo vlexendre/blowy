@@ -76,6 +76,6 @@ describe('versions de l’app', () => {
 
   it('refuse un minimum au-dessus du dernier build publié', () => {
     expect(() => loadAppVersionsEnv({ APP_IOS_MIN_SUPPORTED_BUILD: '15', APP_IOS_LATEST_BUILD: '14' })).toThrow(/dépasse/);
-    expect(loadAppVersionsEnv({}).ios).toEqual({ minSupportedBuild: 0, latestBuild: 0, storeUrl: 'https://apps.apple.com/fr/app/minimoa/id6833895780' });
+    expect(loadAppVersionsEnv({}).ios).toEqual({ minSupportedBuild: 0, latestBuild: 0, storeUrl: 'https://apps.apple.com/fr/app/minimoa/id6833895780', cheminBuild: 999_999_999 });
   });
 });

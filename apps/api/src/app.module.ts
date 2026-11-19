@@ -14,6 +14,7 @@ import { MeModule } from './modules/me/me.module';
 import { PetsModule } from './modules/pets/pets.module';
 import { SafetyModule } from './modules/safety/safety.module';
 import { RituelsModule } from './modules/rituels/rituels.module';
+import { CheminModule } from './modules/chemin/chemin.module';
 import { AiConsentsModule } from './modules/ai-consents/ai-consents.module';
 import { VisionModule } from './modules/vision/vision.module';
 import { WordsModule } from './modules/words/words.module';
@@ -51,6 +52,8 @@ export class AppModule {
         SafetyModule,
         VisionModule,
         RituelsModule,
+        // Ton chemin : 5 questions par jour, puis une personne qui a répondu comme toi (docs/CHEMIN.md).
+        CheminModule,
         AiConsentsModule,
         BillingModule,
         AdminModule.forRoot({ demo: env.demo }),

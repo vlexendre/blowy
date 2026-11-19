@@ -10,6 +10,9 @@ import { HabitsService } from './habits.service';
 import { toOutingDto } from './outing.service';
 import { ReviewsService } from './reviews.service';
 import { RitualsContext } from './rituals-context';
+import type { Env } from '../../../config/env';
+import { hasChemin } from '../../../shared/chemin-build';
+import { ENV } from '../../../shared/tokens';
 import { StreakService } from './streak.service';
 
 /**
@@ -27,12 +30,12 @@ export class TodayService {
     @Inject(HabitsService) private readonly habits: HabitsService,
     @Inject(ReviewsService) private readonly reviews: ReviewsService,
     @Inject(PetCharacter) private readonly character: PetCharacter,
+    @Inject(ENV) private readonly env: Env,
   ) {}
 
   async get(userId: string): Promise<RitualsToday> {
     const today = this.ctx.today();
     const [profile, pet] = await Promise.all([this.ctx.profile(userId), this.character.load(userId)]);
-    const perWeek = this.ctx.limitsOf(profile).jokersPerWeek;
     let state = await this.ctx.state(userId);
     if (state.lastSeenOn !== today) await this.states.upsert(userId, { lastSeenOn: today });
 
@@ -42,6 +45,9 @@ export class TodayService {
       challenge = auto.record;
       state = await this.ctx.state(userId);
     }
+    const perWeek = this.ctx.streakRuleOf(profile, state);
+    // Ton chemin remplace le défi du jour : la carte ne monte plus pour une app qui l'a (APP_IOS_CHEMIN_BUILD).
+    const retired = hasChemin(this.env.appVersions);
     const [streak, habits, unreadReviewId] = await Promise.all([
       this.streaks.view(userId, { state, perWeek, since: dayOf(new Date(profile.createdAt)) }),
       this.habits.todaySummary(userId),
@@ -50,7 +56,7 @@ export class TodayService {
     const sociability = auto ? (await this.character.load(userId)).needs.sociability : pet.needs.sociability;
     return {
       day: today,
-      challenge: toDailyDto(challenge),
+      challenge: retired ? { ...toDailyDto(challenge), present: false } : toDailyDto(challenge),
       streak,
       outing: toOutingDto(state, today),
       sociability,
@@ -58,6 +64,7 @@ export class TodayService {
       habitsDue: habits.due,
       proofAsked: habits.asked,
       unreadReviewId,
+      challengeRetired: retired,
     };
   }
 }

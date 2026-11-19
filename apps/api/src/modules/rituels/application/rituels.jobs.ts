@@ -5,7 +5,6 @@ import {
   PROOF_PHOTO_HOURS,
   addDays,
   dayOf,
-  entitlements,
   habitDay,
   needsOut,
   parisHourOf,
@@ -32,7 +31,7 @@ import type {
 } from '../ports';
 import { HABIT_CHECKS, HABITS, RITUAL_PHOTOS, RITUAL_STATES } from '../tokens';
 import { ReviewsService } from './reviews.service';
-import { RitualNotifications } from './rituals-context';
+import { RitualNotifications, streakRuleFor } from './rituals-context';
 
 /** Personnes visées par les tâches : vues dans l'app ces 14 derniers jours. */
 export const ACTIVE_DAYS = 14;
@@ -156,10 +155,12 @@ export class RituelsJobs implements TickJob {
       const profiles = new Map((await this.profiles.findByIds(page.map((s) => s.userId))).map((p) => [p.id, p]));
       let n = 0;
       for (const s of page) {
-        const perWeek = entitlements(hasPlus(profiles.get(s.userId) ?? null, now)).jokersPerWeek;
+        const perWeek = streakRuleFor(hasPlus(profiles.get(s.userId) ?? null, now), s);
         const settled = settleStreak(s.streak, today, perWeek);
         if (!streakAtRisk(settled, today)) continue;
-        await this.notifications.send(s.userId, 'streak_in_danger', rituelsNotificationVars.streakInDanger(settled.current));
+        // Ton chemin : « Ta séance du jour est encore possible ce soir. »
+        const vars = { ...rituelsNotificationVars.streakInDanger(settled.current), ...(s.streakRules === 'chemin' ? { step: 'chemin' } : {}) };
+        await this.notifications.send(s.userId, 'streak_in_danger', vars);
         n += 1;
       }
       return n;

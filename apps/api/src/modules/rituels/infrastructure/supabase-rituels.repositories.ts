@@ -36,6 +36,7 @@ interface StateRow {
   danger_notified_on: string | null;
   needs_out_notified_on: string | null;
   review_week: string | null;
+  streak_rules?: string | null;
 }
 
 const stateFromRow = (r: StateRow): RitualStateRecord => ({
@@ -49,6 +50,7 @@ const stateFromRow = (r: StateRow): RitualStateRecord => ({
   dangerNotifiedOn: r.danger_notified_on,
   needsOutNotifiedOn: r.needs_out_notified_on,
   reviewWeek: r.review_week,
+  streakRules: r.streak_rules === 'chemin' ? 'chemin' : 'weekly',
 });
 
 function statePatchRow(p: RitualStatePatch) {
@@ -64,6 +66,7 @@ function statePatchRow(p: RitualStatePatch) {
     ...(p.dangerNotifiedOn !== undefined ? { danger_notified_on: p.dangerNotifiedOn } : {}),
     ...(p.needsOutNotifiedOn !== undefined ? { needs_out_notified_on: p.needsOutNotifiedOn } : {}),
     ...(p.reviewWeek !== undefined ? { review_week: p.reviewWeek } : {}),
+    ...(p.streakRules !== undefined ? { streak_rules: p.streakRules } : {}),
   };
 }
 

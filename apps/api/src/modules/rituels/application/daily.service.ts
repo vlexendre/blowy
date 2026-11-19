@@ -212,8 +212,7 @@ export class DailyService {
     const justDone = await this.daily.markDone(userId, today, patch, now.toISOString());
     const record: DailyChallengeRecord = { ...rec, ...patch, status: 'done', doneAt: rec.doneAt ?? now.toISOString() };
     if (!justDone) return { record: (await this.daily.find(userId, today)) ?? record, newItems: [], justDone };
-    const perWeek = this.ctx.limitsOf(await this.ctx.profile(userId)).jokersPerWeek;
-    const { newItems, streak } = await this.streaks.complete(userId, today, perWeek);
+    const { newItems, streak } = await this.streaks.complete(userId, today);
     // Activité en direct du défi (démarrée par l'app) : « Défi relevé », puis retirée.
     await this.live?.endChallenge(userId, { streak: streak.current, title: dailyDefOf(rec).text.slice(0, 120) });
     // Compteur « défis relevés » de la garde-robe et petit effet sur le caractère ; une fois par jour au plus.

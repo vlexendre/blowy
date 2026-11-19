@@ -130,7 +130,8 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
       return vars.step === 'goodbye' ? 'blowy://pet' : 'blowy://moi/blowy-plus';
     case 'daily_challenge':
     case 'streak_in_danger':
-      return 'blowy://pet/defi';
+      // Ton chemin (docs/CHEMIN.md) : la séance du jour.
+      return vars.step === 'chemin' ? 'blowy://chemin' : 'blowy://pet/defi';
     case 'habit_proof':
       return 'blowy://pet/habitudes';
     case 'weekly_review':

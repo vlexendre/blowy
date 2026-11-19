@@ -28,6 +28,7 @@ import { meRepositories } from './modules/me/infrastructure/providers';
 import { petsRepositories } from './modules/pets/infrastructure/providers';
 import { safetyRepositories } from './modules/safety/infrastructure/providers';
 import { rituelsRepositories } from './modules/rituels/infrastructure/providers';
+import { cheminRepositories } from './modules/chemin/infrastructure/providers';
 import { aiConsentsRepositories } from './modules/ai-consents/infrastructure/providers';
 import { visionProviders } from './modules/vision/infrastructure/providers';
 import { billingProviders } from './modules/billing/infrastructure/providers';
@@ -85,6 +86,8 @@ export class CoreModule {
       ...encountersRepositories(env.adapters),
       ...safetyRepositories(env.adapters),
       ...rituelsRepositories(env.adapters),
+      // Ton chemin : contenu, avancement, séances, réponses (docs/CHEMIN.md).
+      ...cheminRepositories(env.adapters),
       ...aiConsentsRepositories(env.adapters),
       ...visionProviders(env.adapters),
       ...billingProviders(env.adapters),

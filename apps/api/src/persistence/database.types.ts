@@ -441,7 +441,10 @@ export type Database = {
           needs_out_notified_on: string | null;
           review_week: string | null;
           updated_at: string;
+          /** Migration 20261121100000_chemin : `weekly` (jokers par semaine) ou `chemin` (gels de Ton chemin). */
+          streak_rules: 'weekly' | 'chemin';
         },
+        | 'streak_rules'
         | 'streak_current'
         | 'streak_best'
         | 'streak_last_done_on'
@@ -582,6 +585,95 @@ export type Database = {
       together_proposals: Table<
         { id: string; user_id: string; habit_id: string; status: 'waiting' | 'matched' | 'withdrawn'; group_id: string | null; created_at: string; updated_at: string },
         'id' | 'status' | 'group_id' | 'created_at' | 'updated_at'
+      >;
+      /** Migration 20261121100000_chemin : Ton chemin (docs/CHEMIN.md). */
+      chemin_units: Table<
+        { id: string; position: number; icon: string; min_build: number; status: 'draft' | 'reviewed' | 'live'; texts: Json; created_at: string; updated_at: string },
+        'position' | 'icon' | 'min_build' | 'status' | 'texts' | 'created_at' | 'updated_at'
+      >;
+      chemin_steps: Table<
+        { id: string; unit_id: string; position: number; status: 'draft' | 'reviewed' | 'live'; texts: Json; created_at: string; updated_at: string },
+        'position' | 'status' | 'texts' | 'created_at' | 'updated_at'
+      >;
+      chemin_questions: Table<
+        {
+          id: string;
+          step_id: string | null;
+          position: number;
+          format: 'choice' | 'slider' | 'this_or_that' | 'ranking' | 'photo_choice';
+          axis: 'foyer' | 'ancrage' | 'elan' | 'rythme' | 'cap';
+          direction: number;
+          min_build: number;
+          legacy_test_id: string | null;
+          status: 'draft' | 'reviewed' | 'live';
+          texts: Json;
+          options: Json;
+          updated_by: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        'step_id' | 'position' | 'direction' | 'min_build' | 'legacy_test_id' | 'status' | 'texts' | 'options' | 'updated_by' | 'created_at' | 'updated_at'
+      >;
+      chemin_scenes: Table<
+        { id: string; kind: 'transition' | 'end'; animation: string; min_build: number; status: 'draft' | 'reviewed' | 'live'; created_at: string },
+        'min_build' | 'status' | 'created_at'
+      >;
+      chemin_progress: Table<
+        {
+          user_id: string;
+          completed_steps: string[];
+          sessions_done: number;
+          answers_count: number;
+          bonus_on: string | null;
+          bonus_reason: 'invite_signup' | 'wave_answered' | null;
+          referrals_seen: number;
+          last_build: number | null;
+          last_platform: string | null;
+          last_session_on: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        | 'completed_steps'
+        | 'sessions_done'
+        | 'answers_count'
+        | 'bonus_on'
+        | 'bonus_reason'
+        | 'referrals_seen'
+        | 'last_build'
+        | 'last_platform'
+        | 'last_session_on'
+        | 'created_at'
+        | 'updated_at'
+      >;
+      chemin_sessions: Table<
+        {
+          id: string;
+          user_id: string;
+          day: string;
+          slot: number;
+          kind: 'step' | 'review';
+          step_id: string | null;
+          questions: Json;
+          status: 'open' | 'done';
+          result: Json | null;
+          created_at: string;
+          completed_at: string | null;
+        },
+        'step_id' | 'status' | 'result' | 'created_at' | 'completed_at'
+      >;
+      chemin_answers: Table<
+        {
+          user_id: string;
+          session_id: string;
+          question_id: string;
+          option_id: string | null;
+          value: number | null;
+          axis: 'foyer' | 'ancrage' | 'elan' | 'rythme' | 'cap';
+          signal: number;
+          day: string;
+          answered_at: string;
+        },
+        'option_id' | 'value' | 'answered_at'
       >;
     };
     Views: { [_ in never]: never };

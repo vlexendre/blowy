@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { rituelsNotificationVars } from '@blowy/content';
 import {
   type Day,
+  type StreakRule,
   type StreakState,
   completeStreakDay,
   dayOf,
@@ -10,6 +11,7 @@ import {
   settleStreak,
   streakAtRisk,
   streakReward,
+  streakRulesOf,
   streakWeek,
   weekStartOf,
 } from '@blowy/domain';
@@ -32,8 +34,8 @@ export class StreakService {
   ) {}
 
   /** Série rattrapée à `today` ; enregistrée seulement si le rattrapage a changé quelque chose. */
-  async settled(state: RitualStateRecord, today: Day, perWeek: number): Promise<StreakState> {
-    const settled = settleStreak(state.streak, today, perWeek);
+  async settled(state: RitualStateRecord, today: Day, rule: StreakRule): Promise<StreakState> {
+    const settled = settleStreak(state.streak, today, rule);
     if (!sameStreak(settled, state.streak)) await this.states.upsert(state.userId, { streak: settled });
     return settled;
   }
@@ -42,29 +44,30 @@ export class StreakService {
    * Vue légère de la série (accueil, widget) : la ligne d'état, le profil et au plus 7 défis. `since` : premier jour
    * de la personne (jour de création du compte) ; les jours d'avant sont neutres dans la semaine.
    */
-  async view(userId: string, known?: { state: RitualStateRecord; perWeek: number; since: Day }): Promise<Streak> {
+  async view(userId: string, known?: { state: RitualStateRecord; perWeek: StreakRule; since: Day }): Promise<Streak> {
     const today = this.ctx.today();
     const ctx =
       known ??
       (await (async () => {
         const profile = await this.ctx.profile(userId);
-        return { state: await this.ctx.state(userId), perWeek: this.ctx.limitsOf(profile).jokersPerWeek, since: dayOf(new Date(profile.createdAt)) };
+        const state = await this.ctx.state(userId);
+        return { state, perWeek: this.ctx.streakRuleOf(profile, state), since: dayOf(new Date(profile.createdAt)) };
       })());
     const streak = await this.settled(ctx.state, today, ctx.perWeek);
     const week = await this.daily.listBetween(userId, weekStartOf(today), today);
     return this.toDto(streak, today, ctx.perWeek, new Set(week.filter((d) => d.status === 'done').map((d) => d.day)), ctx.since);
   }
 
-  toDto(streak: StreakState, today: Day, perWeek: number, doneDays: ReadonlySet<Day>, since: Day | null = null): Streak {
+  toDto(streak: StreakState, today: Day, perWeek: StreakRule, doneDays: ReadonlySet<Day>, since: Day | null = null): Streak {
     return {
       current: streak.current,
       best: streak.best,
       doneToday: streak.lastDoneOn === today,
       atRisk: streakAtRisk(streak, today),
       // Le premier palier dont l'objet n'est pas encore gagné (au-delà du record), pas celui de la série en cours.
-      nextMilestone: nextStreakMilestone(streak.current, streak.best),
+      nextMilestone: nextStreakMilestone(streak.current, streak.best, streakRulesOf(perWeek).milestones),
       jokersLeft: jokersLeft(streak, today, perWeek),
-      jokersPerWeek: perWeek,
+      jokersPerWeek: streakRulesOf(perWeek).perPeriod,
       week: streakWeek(streak, today, doneDays, since),
     };
   }
@@ -73,12 +76,13 @@ export class StreakService {
    * Le défi du jour vient d'être fait (une seule fois : l'appelant a gagné `markDone`). Rend les objets débloqués
    * par un palier franchi pour la première fois, après avoir prévenu la personne.
    */
-  async complete(userId: string, today: Day, perWeek: number): Promise<{ streak: StreakState; newItems: string[] }> {
+  async complete(userId: string, today: Day): Promise<{ streak: StreakState; newItems: string[]; milestone: number | null }> {
     const state = await this.ctx.state(userId);
-    const { state: streak, milestone } = completeStreakDay(state.streak, today, perWeek);
+    const rule = this.ctx.streakRuleOf(await this.ctx.profile(userId), state);
+    const { state: streak, milestone } = completeStreakDay(state.streak, today, rule);
     await this.states.upsert(userId, { streak });
     const reward = milestone ? streakReward(milestone) : null;
     if (reward && milestone) await this.notifications.send(userId, 'item_unlocked', rituelsNotificationVars.itemUnlocked(reward, `streak_${milestone}`));
-    return { streak, newItems: reward ? [reward] : [] };
+    return { streak, newItems: reward ? [reward] : [], milestone };
   }
 }

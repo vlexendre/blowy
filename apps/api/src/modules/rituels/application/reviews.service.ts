@@ -36,7 +36,7 @@ import type {
   WeeklyReviewsRepository,
 } from '../ports';
 import { COACH, DAILY_CHALLENGES, HABIT_CHECKS, WEEKLY_REVIEWS } from '../tokens';
-import { RitualNotifications, RitualsContext } from './rituals-context';
+import { RitualNotifications, RitualsContext, streakRuleFor } from './rituals-context';
 import { requestLocale } from '../../../shared/locale';
 
 export const REVIEWS_PAGE = 10;
@@ -122,7 +122,7 @@ export class ReviewsService {
     const locale = profile.locale ?? 'fr';
     const reviewText = rituelsText.in(locale).review;
     const kind = kindIn(locale);
-    const perWeek = entitlements(plus).jokersPerWeek;
+    const perWeek = streakRuleFor(plus, state);
     const pet = await this.pets.findByOwner(userId);
     if (!pet) return false;
 

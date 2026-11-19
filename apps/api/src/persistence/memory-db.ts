@@ -19,6 +19,7 @@ import type { ChatLinkSettingRecord } from '../modules/links/minimoas/ports';
 import type { GroupDayRecord, GroupMemberRecord, GroupMessageRecord, GroupRecord, TogetherProposalRecord } from '../modules/groups/ports';
 import type { AcquisitionRecord, CreatorRecord, GrowthEventRecord } from '../modules/growth/ports';
 import type { FounderRecord, QuizRecord, SignupRecord, ZoneRecord } from '../modules/quartiers/ports';
+import type { CheminAnswerRecord, CheminContent, CheminProgressRecord, CheminSessionRecord } from '../modules/chemin/ports';
 import type { LiveActivityTokenRecord, NotificationLogRecord, NotificationSettingsRecord, PushDeviceRecord } from '../modules/notifications/ports';
 
 export interface WordVoteRow {
@@ -140,6 +141,12 @@ export class MemoryDb {
   readonly quartierSignups = new Map<string, SignupRecord>();
   readonly quartierFounders: FounderRecord[] = [];
 
+  /** Ton chemin (docs/CHEMIN.md) : contenu (semé au premier accès par l'adaptateur mémoire), avancement, séances, réponses. */
+  cheminContent: CheminContent | null = null;
+  readonly cheminProgress = new Map<string, CheminProgressRecord>();
+  readonly cheminSessions = new Map<string, CheminSessionRecord>();
+  readonly cheminAnswers: CheminAnswerRecord[] = [];
+
   private sequence = 0;
   nextId(): string {
     this.sequence += 1;
@@ -178,6 +185,9 @@ export class MemoryDb {
     }
     removeWhere(this.dailyPhotos, (p) => p.userId === userId || linkIds.has(p.linkId));
     this.ritualStates.delete(userId);
+    this.cheminProgress.delete(userId);
+    for (const [id, c] of this.cheminSessions) if (c.userId === userId) this.cheminSessions.delete(id);
+    removeWhere(this.cheminAnswers, (a) => a.userId === userId);
     removeWhere(this.dailyChallenges, (c) => c.userId === userId);
     for (const [id, h] of this.habits) if (h.userId === userId) this.habits.delete(id);
     removeWhere(this.habitChecks, (c) => c.userId === userId);

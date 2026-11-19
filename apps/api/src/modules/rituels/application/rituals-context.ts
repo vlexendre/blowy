@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
-import { type Day, type Entitlements, dayOf, entitlements, parisHourOf } from '@blowy/domain';
+import { type Day, type Entitlements, type StreakRule, cheminStreakRules, dayOf, entitlements, parisHourOf } from '@blowy/domain';
 import { NOTIFIER, type NotificationKind, type Notifier } from '../../../integrations/push/notifier';
 import type { Clock } from '../../../shared/clock';
 import { DomainError } from '../../../shared/errors';
@@ -8,6 +8,10 @@ import { hasPlus } from '../../me/application/plus';
 import type { Profile, ProfilesRepository } from '../../me/ports';
 import { EMPTY_RITUAL_STATE, type RitualStateRecord, type RitualStatesRepository } from '../ports';
 import { RITUAL_STATES } from '../tokens';
+
+/** Règles de la série selon l'abonnement et l'état de la personne (voir `RitualsContext.streakRuleOf`). */
+export const streakRuleFor = (plus: boolean, state: Pick<RitualStateRecord, 'streakRules'> | null): StreakRule =>
+  state?.streakRules === 'chemin' ? cheminStreakRules(plus) : entitlements(plus).jokersPerWeek;
 
 /** Ce que tous les cas d'usage des rituels partagent : l'instant, le jour de Paris, la personne et ses limites. */
 @Injectable()
@@ -38,6 +42,14 @@ export class RitualsContext {
 
   limitsOf(profile: Pick<Profile, 'plusUntil'> | null): Entitlements {
     return entitlements(hasPlus(profile, this.clock.now()));
+  }
+
+  /**
+   * Règles de la série d'une personne : celles de Ton chemin (gels par mois ou par semaine, paliers 7 à 365) si elle
+   * l'a ouvert, sinon les jokers par semaine d'avant. Une seule série dans les deux cas.
+   */
+  streakRuleOf(profile: Pick<Profile, 'plusUntil'> | null, state: Pick<RitualStateRecord, 'streakRules'> | null): StreakRule {
+    return streakRuleFor(hasPlus(profile, this.clock.now()), state);
   }
 
   async state(userId: string): Promise<RitualStateRecord> {

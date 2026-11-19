@@ -3,7 +3,6 @@ import { PetsModule } from '../pets/pets.module';
 import { AiConsentsModule } from '../ai-consents/ai-consents.module';
 import { DailyService } from './application/daily.service';
 import { RitualsDailyPush } from './application/daily-push';
-import { DAILY_PUSH_SOURCE } from '../notifications/ports';
 import { HabitsService } from './application/habits.service';
 import { OutingService } from './application/outing.service';
 import { ReviewsService } from './application/reviews.service';
@@ -32,9 +31,10 @@ import { RituelsController } from './interface/rituels.controller';
     ReviewsService,
     TodayService,
     RituelsJobs,
-    // Texte du push « défi du jour » : la plateforme (NotificationJobs) l'envoie à l'heure choisie.
-    { provide: DAILY_PUSH_SOURCE, useClass: RitualsDailyPush },
+    // Texte du push « défi du jour » : repris par Ton chemin (CheminDailyPush, port DAILY_PUSH_SOURCE), qui envoie la
+    // séance du jour aux apps qui l'ont et ce texte-ci aux autres.
+    RitualsDailyPush,
   ],
-  exports: [RituelsJobs, RitualsContext, HabitsService, DailyService, StreakService, ReviewsService],
+  exports: [RituelsJobs, RitualsContext, HabitsService, DailyService, StreakService, ReviewsService, RitualsDailyPush],
 })
 export class RituelsModule {}

@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check:schema": "node scripts/check-schema.mjs",
-    "seed:test": "tsx src/demo/seed/cli.ts"
+    "seed:test": "tsx src/demo/seed/cli.ts",
+    "chemin:seed": "tsx src/modules/chemin/seed/cli.ts"
   },
   "dependencies": {
     "@blowy/content": "workspace:*",

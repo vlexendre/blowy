@@ -17,6 +17,11 @@ export interface RitualStateRecord {
   needsOutNotifiedOn: Day | null;
   /** Lundi de la dernière semaine dont le bilan a été traité. */
   reviewWeek: Day | null;
+  /**
+   * Règles de la série : `weekly` (jokers par semaine, app d'avant) ou `chemin` (gels de Ton chemin, posé à la
+   * première ouverture de Ton chemin ; docs/CHEMIN.md). Absent : `weekly`.
+   */
+  streakRules?: 'weekly' | 'chemin';
 }
 export type RitualMarker = 'dangerNotifiedOn' | 'needsOutNotifiedOn' | 'reviewWeek';
 export type RitualStatePatch = Partial<Omit<RitualStateRecord, 'userId'>>;
@@ -32,6 +37,7 @@ export const EMPTY_RITUAL_STATE = (userId: string): RitualStateRecord => ({
   dangerNotifiedOn: null,
   needsOutNotifiedOn: null,
   reviewWeek: null,
+  streakRules: 'weekly',
 });
 
 export interface RitualStatesRepository {
