@@ -462,11 +462,13 @@ describe('notifications', () => {
     expect(sentTo(token)).toHaveLength(0);
     world.clock.advanceHours(3); // 8 h à New York
     await tick();
-    expect(sentTo(token).map((m) => m.data.kind).sort()).toEqual(['message', 'waved']);
-    expect(sentTo(token).find((m) => m.data.kind === 'waved')?.title).toBe('Zoé et 1 autre t’ont fait signe');
+    // Paquet du matin : un seul push, le message en tête, les signes comptés.
+    expect(sentTo(token)).toHaveLength(1);
+    expect(sentTo(token)[0]).toMatchObject({ title: 'Zoé', body: 'Zoé t’a écrit. Et 1 autre nouvelle t’attend dans l’app.', data: { kind: 'message' } });
+    expect(db.notificationLog.filter((l) => l.userId === d.id && l.status === 'deferred')).toHaveLength(0);
     world.clock.advanceMinutes(2);
     await tick();
-    expect(sentTo(token)).toHaveLength(2);
+    expect(sentTo(token)).toHaveLength(1);
   });
 
   it('langue du profil : chaque notification dans la langue de la personne', async () => {

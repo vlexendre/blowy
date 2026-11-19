@@ -28,7 +28,9 @@ Dans l'ordre où le notifieur les applique :
 9. **Regroupement** : un report du même type et de la même conversation attend déjà → on s'y ajoute (compteurs `n`,
    `others`, personnes distinctes) au lieu d'envoyer.
 10. **Heures calmes** 22 h – 8 h locales : les types reportables partent à 8 h, regroupés (tous les messages de la nuit en
-    un seul push) ; les autres sont abandonnés. Seule exception : une échéance (`urgent`) qui tombe avant 8 h part tout
+    un seul push) ; les autres sont abandonnés. **Paquet du matin** : tout ce qui part à la même heure pour une personne
+    (messages, signes, nouveaux liens…) part en **un seul push**, le plus important en tête (priorité, puis le plus
+    ancien) avec « Et 2 autres nouvelles t'attendent dans l'app. » (`pickDigestLead`, `PushNotifier.flushDigest`). Seule exception : une échéance (`urgent`) qui tombe avant 8 h part tout
     de suite.
 11. **Rafales** (`waved`, `words_received`, `new_encounter`, `group_joined`, `item_unlocked`) : après un envoi, les
     suivants pendant 60 min attendent la fin de l'heure et partent en un seul push (« Léa et 4 autres t'ont fait signe »).
@@ -38,7 +40,13 @@ Dans l'ordre où le notifieur les applique :
 13. **Plafonds** (jour local) : 3 au total pour `social`, `ritual`, `news`, `marketing` ; par priorité : social 3,
     rituels 2, nouvelles 1, marketing 1 ; les rituels et le marketing ne prennent jamais la dernière place (gardée pour
     les gens). `direct` et `urgent` : hors plafond.
-14. **Délai par conversation** : un push de message (lien ou groupe) toutes les 5 minutes au plus.
+14. **Délai par conversation** : un push de message (lien ou groupe) toutes les 5 minutes au plus ; après 4 pushs de la
+    même conversation dans la journée, toutes les 30 minutes au plus (`conversationCooldownMinutes`). Le premier message
+    qui suit de moins de 5 minutes « Léa t'a répondu » (même lien) ne sonne pas une seconde fois.
+
+Clé d'une ligne du journal : seulement `vars.key` (celle de la décision). Un nouveau lien a une clé nulle (regroupé tous
+liens confondus) ; son lien (`link_id`) sert seulement au délai ci-dessus. Le journal est gardé 8 jours (relire une
+semaine d'envois).
 
 Puis : texte dans la langue du profil (`profiles.locale`, relue à l'envoi, y compris pour un report), lien profond,
 état compact des widgets, catégorie `minimoa_mute` (action « Ne plus recevoir ce genre », sauf type obligatoire),

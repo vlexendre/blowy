@@ -79,6 +79,56 @@ describe('notifications : logique', () => {
     expect(sentTo(nora.token)[0]?.data.linkId).toBeUndefined();
   });
 
+  it('paquet du matin : messages, signe et nouveaux liens de la nuit → un seul push à 8 h, le plus important en tête', async () => {
+    const nora = await person('Nora', { timeZone: 'America/New_York' }); // 5 h du matin à New York
+    const lea = await person('Léa', { token: null });
+    const tom = await person('Tom', { token: null });
+    await notifier.notify(nora.id, 'waved', { name: 'Tom', about: tom.id });
+    await notifier.notify(nora.id, 'new_encounter', { name: 'Léa', linkId: uuid(1), about: lea.id });
+    await notifier.notify(nora.id, 'new_encounter', { name: 'Tom', linkId: uuid(2), about: tom.id });
+    await notifier.notify(nora.id, 'message', { name: 'Léa', linkId: uuid(1), about: lea.id });
+    // Deux nouveaux liens de la nuit : un seul report (regroupés tous liens confondus).
+    expect(db.notificationLog.filter((l) => l.userId === nora.id && l.status === 'deferred')).toHaveLength(3);
+    world.clock.advanceHours(3);
+    await tick();
+    expect(sentTo(nora.token)).toHaveLength(1);
+    // Tous directs : le plus ancien en tête (les nouveaux liens), les deux autres comptés.
+    expect(sentTo(nora.token)[0]).toMatchObject({ title: 'Nouveaux liens', body: 'Léa et 1 autre t’ont répondu. Dis-leur bonjour. Et 2 autres nouvelles t’attendent dans l’app.', data: { kind: 'new_encounter', url: 'blowy://chats' } });
+    await tick();
+    expect(sentTo(nora.token)).toHaveLength(1);
+  });
+
+  it('nouveaux liens en rafale regroupés ; « t’a répondu » puis son premier message : un seul push', async () => {
+    const lou = await person('Lou');
+    const [lea, tom, ava] = [await person('Léa', { token: null }), await person('Tom', { token: null }), await person('Ava', { token: null })];
+    await notifier.notify(lou.id, 'new_encounter', { name: 'Léa', linkId: uuid(1), about: lea.id });
+    await notifier.notify(lou.id, 'message', { name: 'Léa', linkId: uuid(1), about: lea.id });
+    expect(sentTo(lou.token).map((m) => m.data.kind)).toEqual(['new_encounter']);
+    world.clock.advanceMinutes(6);
+    await notifier.notify(lou.id, 'new_encounter', { name: 'Tom', linkId: uuid(2), about: tom.id });
+    await notifier.notify(lou.id, 'new_encounter', { name: 'Ava', linkId: uuid(3), about: ava.id });
+    expect(sentTo(lou.token)).toHaveLength(1);
+    await notifier.notify(lou.id, 'message', { name: 'Léa', linkId: uuid(1), about: lea.id });
+    expect(sentTo(lou.token).map((m) => m.data.kind)).toEqual(['new_encounter', 'message']);
+    world.clock.advanceMinutes(60);
+    await tick();
+    expect(sentTo(lou.token)).toHaveLength(3);
+    expect(sentTo(lou.token)[2]).toMatchObject({ title: 'Nouveaux liens', data: { kind: 'new_encounter', url: 'blowy://chats' } });
+  });
+
+  it('conversation animée : au-delà de 4 pushs dans la journée, un toutes les 30 minutes', async () => {
+    const max = await person('Max');
+    for (let i = 0; i < 8; i++) {
+      await notifier.notify(max.id, 'message', { name: 'Léa', linkId: uuid(5) });
+      world.clock.advanceMinutes(6);
+    }
+    // 4 pushs (un toutes les 6 min), puis plus rien avant 30 min.
+    expect(sentTo(max.token)).toHaveLength(4);
+    world.clock.advanceMinutes(30);
+    await notifier.notify(max.id, 'message', { name: 'Léa', linkId: uuid(5) });
+    expect(sentTo(max.token)).toHaveLength(5);
+  });
+
   it('plafonds : 2 rappels de rituels au plus, une place gardée pour les gens ; messages et échéances passent toujours', async () => {
     const rita = await person('Rita');
     await notifier.notify(rita.id, 'daily_challenge', { minimoa: 'Nino' });

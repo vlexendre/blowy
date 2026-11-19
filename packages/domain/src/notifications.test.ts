@@ -10,6 +10,7 @@ import {
   isMandatory,
   mergeNotificationVars,
   notificationTierOf,
+  pickDigestLead,
 } from './index';
 
 /** 15 novembre 2026, 13 h à Paris. */
@@ -132,6 +133,24 @@ describe('décision', () => {
     expect(decideNotification({ ...base, kind: 'your_turn', now: evening, timeZone: 'America/New_York' })).toEqual({ action: 'skip', reason: 'window' });
   });
 
+  it('conversation animée : après 4 pushs dans la journée, un toutes les 30 minutes au plus', () => {
+    const four = ['10:00', '10:10', '10:20', '11:40'].map((t) => sent('message', `2026-11-15T${t}:00Z`, { key: 'L1' }));
+    // Dernier push il y a 20 min : passé 5 min, mais conversation animée → 30 min.
+    expect(decideNotification({ ...base, kind: 'message', key: 'L1', history: four })).toEqual({ action: 'skip', reason: 'cooldown' });
+    expect(decideNotification({ ...base, kind: 'message', key: 'L1', history: four.slice(0, 3) })).toEqual({ action: 'send' });
+    expect(decideNotification({ ...base, kind: 'message', key: 'L1', now: new Date('2026-11-15T12:11:00Z'), history: four })).toEqual({ action: 'send' });
+    // Hier ne compte pas pour « animée ».
+    const yesterday = four.map((h) => ({ ...h, localDay: '2026-11-14', at: h.at.replace('-15T', '-14T') }));
+    expect(decideNotification({ ...base, kind: 'message', key: 'L1', history: [...yesterday, sent('message', '2026-11-15T11:50:00Z', { key: 'L1' })] })).toEqual({ action: 'send' });
+  });
+
+  it('nouveau lien puis premier message de la même personne : un seul push', () => {
+    const created = sent('new_encounter', '2026-11-15T11:58:00Z', { link: 'L1' });
+    expect(decideNotification({ ...base, kind: 'message', key: 'L1', link: 'L1', history: [created] })).toEqual({ action: 'skip', reason: 'cooldown' });
+    expect(decideNotification({ ...base, kind: 'message', key: 'L2', link: 'L2', history: [created] })).toEqual({ action: 'send' });
+    expect(decideNotification({ ...base, kind: 'message', key: 'L1', link: 'L1', now: new Date('2026-11-15T12:04:00Z'), history: [created] })).toEqual({ action: 'send' });
+  });
+
   it('décroissance : rappels ralentis après 2 jours sans ouvrir, arrêtés après 3 ; les gens passent toujours', () => {
     const away = (days: number): string => new Date(DAY.getTime() - days * 86_400_000).toISOString();
     const yesterdayRitual = [sent('daily_challenge', '2026-11-14T20:00:00Z')];
@@ -145,6 +164,18 @@ describe('décision', () => {
 });
 
 describe('regroupement et canal', () => {
+  it('paquet du matin : on montre le plus important, puis le plus ancien', () => {
+    expect(pickDigestLead([])).toBe(-1);
+    expect(
+      pickDigestLead([
+        { kind: 'waved', at: '2026-11-15T22:10:00Z' },
+        { kind: 'message', at: '2026-11-15T23:10:00Z' },
+        { kind: 'new_encounter', at: '2026-11-15T22:50:00Z' },
+      ]),
+    ).toBe(2);
+    expect(pickDigestLead([{ kind: 'words_received', at: '2026-11-15T23:00:00Z' }, { kind: 'plus_account', step: 'billing_retry', at: '2026-11-15T23:30:00Z' }])).toBe(1);
+  });
+
   it('« Léa et 3 autres » : premier prénom gardé, personnes distinctes comptées', () => {
     let v: Record<string, string> = { name: 'Léa', about: 'u1' };
     for (const about of ['u2', 'u3', 'u2', 'u4']) v = mergeNotificationVars(v, { name: 'X', about });

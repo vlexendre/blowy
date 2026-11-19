@@ -59,6 +59,8 @@ const pick = (texts: Readonly<Record<string, string>>, key: string, fallback: st
 const fr = {
   /** Quand le nom du minimoa n'est pas passé. */
   yourMinimoa: 'Ton minimoa',
+  /** Paquet du matin : ajouté au texte du plus important quand d’autres nouvelles partent avec lui. */
+  digestMore: (n: number): string => (n === 1 ? 'Et 1 autre nouvelle t’attend dans l’app.' : `Et ${n} autres nouvelles t’attendent dans l’app.`),
   texts: {
     daily_challenge: { title: () => 'Ton défi du jour', body: (v) => `${v.minimoa} a préparé quelque chose pour toi.` },
     needs_out: { title: (v) => `${v.minimoa} a envie de sortir`, body: () => 'Un tour dehors ou un mot à quelqu’un, et il repart de plus belle.' },
@@ -225,6 +227,7 @@ export const notificationTexts = defineMessages({
   fr,
   en: {
     yourMinimoa: 'Your minimoa',
+    digestMore: (n: number): string => (n === 1 ? 'And 1 more update is waiting in the app.' : `And ${n} more updates are waiting in the app.`),
     texts: {
       daily_challenge: { title: () => 'Your daily challenge', body: (v) => `${v.minimoa} has something for you.` },
       needs_out: { title: (v) => `${v.minimoa} wants to go out`, body: () => 'A walk outside or a word to someone, and it’s back to its old self.' },
@@ -387,6 +390,7 @@ export const notificationTexts = defineMessages({
   },
   es: {
     yourMinimoa: 'Tu minimoa',
+    digestMore: (n: number): string => (n === 1 ? 'Y 1 novedad más te espera en la app.' : `Y ${n} novedades más te esperan en la app.`),
     texts: {
       daily_challenge: { title: () => 'Tu reto del día', body: (v) => `${v.minimoa} te ha preparado algo.` },
       needs_out: { title: (v) => `${v.minimoa} quiere salir`, body: () => 'Una vuelta fuera o un mensaje a alguien, y recupera la chispa.' },
@@ -549,6 +553,7 @@ export const notificationTexts = defineMessages({
   },
   pt: {
     yourMinimoa: 'Seu minimoa',
+    digestMore: (n: number): string => (n === 1 ? 'E mais 1 novidade te espera no app.' : `E mais ${n} novidades te esperam no app.`),
     texts: {
       daily_challenge: { title: () => 'Seu desafio do dia', body: (v) => `${v.minimoa} preparou algo para você.` },
       needs_out: { title: (v) => `${v.minimoa} quer sair`, body: () => 'Uma volta lá fora ou uma mensagem para alguém, e ele se anima de novo.' },
@@ -711,6 +716,7 @@ export const notificationTexts = defineMessages({
   },
   nl: {
     yourMinimoa: 'Je minimoa',
+    digestMore: (n: number): string => (n === 1 ? 'En er wacht nog 1 update in de app.' : `En er wachten nog ${n} updates in de app.`),
     texts: {
       daily_challenge: { title: () => 'Je uitdaging van de dag', body: (v) => `${v.minimoa} heeft iets voor je klaargezet.` },
       needs_out: { title: (v) => `${v.minimoa} wil naar buiten`, body: () => 'Even naar buiten of iemand een berichtje sturen, en hij leeft weer op.' },
@@ -902,6 +908,12 @@ export function notificationText(locale: Locale, kind: NotificationKindKey, vars
   const t = notificationTexts.in(locale).texts[kind];
   const v = notificationVars(locale, vars);
   return { title: t.title(v), body: t.body(v) };
+}
+
+/** Paquet du matin : texte du plus important, plus « Et 2 autres nouvelles t’attendent dans l’app. ». */
+export function notificationDigestText(locale: Locale, lead: NotificationText, others: number): NotificationText {
+  if (others <= 0) return lead;
+  return { title: lead.title, body: `${lead.body} ${notificationTexts.in(locale).digestMore(others)}` };
 }
 
 export const notificationKindLabel = (locale: Locale, kind: NotificationKindKey): string => notificationTexts.in(locale).kindLabels[kind] ?? kind;

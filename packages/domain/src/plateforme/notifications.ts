@@ -142,7 +142,17 @@ export const capExempt = (kind: NotificationKindKey, step?: string | null): bool
 
 /** Un push par conversation (lien ou groupe) toutes les 5 minutes au plus. */
 export const MESSAGE_PUSH_COOLDOWN_MINUTES = 5;
+/**
+ * Conversation animée : après tant de pushs de la même conversation dans la journée (locale), le délai s'allonge
+ * (`BUSY_CONVERSATION_COOLDOWN_MINUTES`). Une conversation vive ne sonne plus toutes les 5 minutes.
+ */
+export const BUSY_CONVERSATION_PUSHES = 4;
+export const BUSY_CONVERSATION_COOLDOWN_MINUTES = 30;
 const COOLDOWN_KINDS: readonly NotificationKindKey[] = ['message', 'group_message'];
+
+/** Délai (minutes) avant le prochain push d'une conversation, d'après le nombre déjà envoyés aujourd'hui pour elle. */
+export const conversationCooldownMinutes = (sentTodayForConversation: number): number =>
+  sentTodayForConversation >= BUSY_CONVERSATION_PUSHES ? BUSY_CONVERSATION_COOLDOWN_MINUTES : MESSAGE_PUSH_COOLDOWN_MINUTES;
 
 /**
  * Pendant les heures calmes : ces types sont reportés au matin (8 h) et regroupés (un seul envoi par type et par
@@ -270,6 +280,8 @@ export interface NotificationHistoryEntry {
   at: string;
   /** Report : départ prévu, ISO. */
   sendAfter: string | null;
+  /** Lien concerné (message, lien en danger, nouveau lien), même quand `key` est un paquet ; null sinon. */
+  link?: string | null;
 }
 
 export interface NotificationInput {
@@ -294,6 +306,8 @@ export interface NotificationInput {
   expiresAt?: string | null;
   /** Vrai quand on envoie un report (heures calmes ou rafale) dont l'heure est venue. */
   fromQueue?: boolean;
+  /** Lien concerné (`vars.linkId`), pour ne pas sonner deux fois pour la même personne (« t'a répondu » puis « t'a écrit »). */
+  link?: string | null;
 }
 
 export type NotificationSkipReason = 'disabled' | 'not_opted_in' | 'expired' | 'foreground' | 'window' | 'once_a_day' | 'quiet' | 'decay' | 'cap' | 'cooldown';
@@ -380,8 +394,15 @@ export function decideNotification(i: NotificationInput): NotificationDecision {
   }
 
   if (COOLDOWN_KINDS.includes(i.kind) && !i.fromQueue) {
-    const last = latest(sent.filter((h) => h.kind === i.kind && h.key === i.key));
-    if (last !== null && now - last < MESSAGE_PUSH_COOLDOWN_MINUTES * MINUTE) return { action: 'skip', reason: 'cooldown' };
+    const same = sent.filter((h) => h.kind === i.kind && h.key === i.key);
+    const todayCount = same.filter((h) => h.localDay === local.day).length;
+    const last = latest(same);
+    if (last !== null && now - last < conversationCooldownMinutes(todayCount) * MINUTE) return { action: 'skip', reason: 'cooldown' };
+    // « Léa t'a répondu » vient de partir pour ce lien : son premier message ne sonne pas une seconde fois.
+    if (i.kind === 'message' && i.link) {
+      const created = latest(sent.filter((h) => h.kind === 'new_encounter' && h.link === i.link));
+      if (created !== null && now - created < MESSAGE_PUSH_COOLDOWN_MINUTES * MINUTE) return { action: 'skip', reason: 'cooldown' };
+    }
   }
   return { action: 'send' };
 }
@@ -393,6 +414,27 @@ function latest(entries: readonly NotificationHistoryEntry[]): number | null {
     if (max === null || t > max) max = t;
   }
   return max;
+}
+
+// ── Paquet du matin ───────────────────────────────────────────────────────────
+/**
+ * Plusieurs reports d'une même personne partent au même moment (fin des heures calmes, fin d'une rafale) : un seul push.
+ * On montre le plus important (priorité, puis le plus ancien) et on compte les autres (« Et 2 autres nouvelles »).
+ * Rend l'indice du report à montrer, ou -1 pour une liste vide.
+ */
+export function pickDigestLead(entries: readonly { kind: NotificationKindKey; step?: string | null; at: string }[]): number {
+  let best = -1;
+  entries.forEach((e, idx) => {
+    if (best < 0) {
+      best = idx;
+      return;
+    }
+    const b = entries[best]!;
+    const rank = NOTIFICATION_TIERS.indexOf(notificationTierOf(e.kind, e.step));
+    const bestRank = NOTIFICATION_TIERS.indexOf(notificationTierOf(b.kind, b.step));
+    if (rank < bestRank || (rank === bestRank && e.at < b.at)) best = idx;
+  });
+  return best;
 }
 
 // ── Regroupement ──────────────────────────────────────────────────────────────

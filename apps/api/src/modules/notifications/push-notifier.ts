@@ -11,10 +11,11 @@
  */
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { PushData, WidgetState } from '@blowy/contract';
-import { notificationText } from '@blowy/content';
+import { notificationDigestText, notificationText } from '@blowy/content';
 import {
   DEFERRED_MAX_HOURS,
   type NotificationHistoryEntry,
+  type Locale,
   type NotificationKindKey,
   addDays,
   categoryOf,
@@ -22,6 +23,7 @@ import {
   localTimeOf,
   mergeNotificationVars,
   nextLocalHour,
+  pickDigestLead,
 } from '@blowy/domain';
 import type { NotificationKind, Notifier } from '../../integrations/push/notifier';
 import { PUSHER, type PushMessage, type Pusher } from '../../integrations/push/pusher';
@@ -151,6 +153,18 @@ export function widgetState(kind: NotificationKind, vars: Readonly<Record<string
   }
 }
 
+/** Push prêt à partir (décision prise, journal tenu, texte dans la langue du profil). */
+interface ReadyPush {
+  kind: NotificationKind;
+  step: string | null;
+  at: string;
+  devices: readonly PushDeviceRecord[];
+  content: Omit<PushMessage, 'to'>;
+  locale: Locale;
+  /** Activité en direct démarrée avec son alerte : rien d'autre à envoyer sur iOS. */
+  liveStarted: boolean;
+}
+
 @Injectable()
 export class PushNotifier implements Notifier {
   private readonly logger = new Logger('Push');
@@ -192,10 +206,55 @@ export class PushNotifier implements Notifier {
     }
   }
 
+  /**
+   * Plusieurs reports d'une même personne arrivés à leur heure ensemble (fin des heures calmes surtout) : chacun passe
+   * par les règles, puis un seul push part, celui du plus important avec « Et 2 autres nouvelles t'attendent ».
+   * Rend le nombre de reports partis (dans le paquet).
+   */
+  async flushDigest(entries: readonly NotificationLogRecord[]): Promise<number> {
+    const ready: ReadyPush[] = [];
+    for (const entry of entries) {
+      try {
+        if (this.clock.now().getTime() - new Date(entry.createdAt).getTime() > DEFERRED_MAX_HOURS * 3_600_000) {
+          await this.log.close(entry.id, 'dropped');
+          continue;
+        }
+        const r = await this.prepare(entry.userId, entry.kind, entry.vars ?? {}, entry);
+        if (r) ready.push(r);
+      } catch (err) {
+        this.logger.warn(`report ${entry.kind} non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+        await this.log.close(entry.id, 'dropped');
+      }
+    }
+    const lead = ready[pickDigestLead(ready)];
+    if (!lead) return 0;
+    const others = ready.filter((r) => r !== lead).length;
+    const text = notificationDigestText(lead.locale, { title: lead.content.title, body: lead.content.body }, others);
+    try {
+      await this.send({ ...lead, content: { ...lead.content, title: text.title, body: text.body } });
+    } catch (err) {
+      this.logger.warn(`paquet non envoyé : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+      return 0;
+    }
+    return ready.length;
+  }
+
   private async process(userId: string, kind: NotificationKind, input: Record<string, string>, queued: NotificationLogRecord | null): Promise<boolean> {
-    const drop = async (): Promise<false> => {
+    const ready = await this.prepare(userId, kind, input, queued);
+    return ready ? this.send(ready) : false;
+  }
+
+  private async send(ready: ReadyPush): Promise<boolean> {
+    // Activité démarrée avec son alerte : pas de seconde notification sur iOS.
+    const targets = ready.liveStarted ? ready.devices.filter((d) => d.platform !== 'ios') : ready.devices;
+    return targets.length > 0 ? this.deliver(targets, ready.content) : ready.liveStarted;
+  }
+
+  /** Décision, journal, texte : rend le push prêt à partir, ou null (rien à envoyer : abandonné, reporté, regroupé). */
+  private async prepare(userId: string, kind: NotificationKind, input: Record<string, string>, queued: NotificationLogRecord | null): Promise<ReadyPush | null> {
+    const drop = async (): Promise<null> => {
       if (queued) await this.log.close(queued.id, 'dropped');
-      return false;
+      return null;
     };
     const settings = await this.settings.resolve(userId);
     const devices = (await this.devices.forUser(userId)).filter((d) => d.kind === 'expo');
@@ -208,13 +267,15 @@ export class PushNotifier implements Notifier {
     const now = this.clock.now();
     const local = localTimeOf(now, settings.timeZone);
     const log = await this.log.forUserDays(userId, [addDays(local.day, -3), addDays(local.day, -2), addDays(local.day, -1), local.day]);
-    const keyOfRow = (l: NotificationLogRecord): string | null => l.vars?.key ?? l.linkId ?? null;
+    // La clé d'une ligne est celle que la décision a donnée (`vars.key`), jamais le lien seul : un nouveau lien est
+    // regroupé tous liens confondus (clé nulle), il ne doit pas être relu sous la clé de son lien.
+    const keyOfRow = (l: NotificationLogRecord): string | null => l.vars?.key ?? null;
     const key = queued ? keyOfRow(queued) : conversationKey(kind, input);
     const { key: _bucket, ...vars } = input;
     void _bucket;
     const history: NotificationHistoryEntry[] = log
       .filter((l) => l.id !== queued?.id)
-      .map((l) => ({ id: l.id, kind: l.kind, key: keyOfRow(l), localDay: l.localDay, status: l.status, at: l.createdAt, sendAfter: l.sendAfter }));
+      .map((l) => ({ id: l.id, kind: l.kind, key: keyOfRow(l), localDay: l.localDay, status: l.status, at: l.createdAt, sendAfter: l.sendAfter, link: l.linkId }));
     const lastOpenAt = await this.lastOpenAt(userId, devices, now);
     const decision = decideNotification({
       kind,
@@ -229,6 +290,7 @@ export class PushNotifier implements Notifier {
       foreground: await this.presence.of(userId),
       expiresAt: vars.expiresAt ?? (kind === 'trial_reminder' ? (vars.endsOn ?? null) : null),
       fromQueue: queued !== null,
+      link: vars.linkId ?? null,
     });
 
     const linkColumn = kind === 'message' || kind === 'link_in_danger' || kind === 'new_encounter' ? (vars.linkId ?? null) : null;
@@ -243,17 +305,17 @@ export class PushNotifier implements Notifier {
         vars: { ...vars, ...(decision.bucket !== null ? { key: decision.bucket } : {}) },
         createdAt: now.toISOString(),
       });
-      return false;
+      return null;
     }
     if (decision.action === 'merge') {
       const pending = log.find((l) => l.id === decision.into);
       const { key: bucket, ...prev } = pending?.vars ?? {};
       await this.log.merge(decision.into, { ...mergeNotificationVars(prev, vars), ...(bucket ? { key: bucket } : {}) });
-      return false;
+      return null;
     }
     if (decision.action === 'skip') return drop();
     if (queued) {
-      if (!(await this.log.close(queued.id, 'sent', { at: now.toISOString(), localDay: local.day }))) return false; // déjà envoyé par un autre tick
+      if (!(await this.log.close(queued.id, 'sent', { at: now.toISOString(), localDay: local.day }))) return null; // déjà envoyé par un autre tick
     } else {
       await this.log.add({ userId, kind, linkId: linkColumn, localDay: local.day, status: 'sent', sendAfter: null, vars: key ? { key } : null, createdAt: now.toISOString() });
     }
@@ -279,10 +341,8 @@ export class PushNotifier implements Notifier {
       liveStarted = await this.live.startLinkStreak(userId, { linkId: vars.linkId, otherName: vars.name ?? '', streak: Number(vars.count ?? 0) || 0, alert: text });
     }
     if (kind === 'streak_in_danger') await this.live.updateChallenge(userId, { streak: Number(vars.streak ?? vars.count ?? 0) || 0, title: null });
-    // Activité démarrée avec son alerte : pas de seconde notification sur iOS.
-    const targets = liveStarted ? devices.filter((d) => d.platform !== 'ios') : devices;
     const content: Omit<PushMessage, 'to'> = { title: text.title, body: text.body, data, ...(categoryOf(kind) ? { categoryId: MUTE_CATEGORY } : {}) };
-    return targets.length > 0 ? this.deliver(targets, content) : liveStarted;
+    return { kind, step: vars.step ?? null, at: queued?.createdAt ?? now.toISOString(), devices, content, locale: lang, liveStarted };
   }
 
   /**
