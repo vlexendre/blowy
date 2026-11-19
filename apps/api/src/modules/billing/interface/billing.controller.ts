@@ -42,7 +42,11 @@ export class BillingController {
   @HttpCode(200)
   async moment(@CurrentUser() user: AuthUser, @Body(new ZodPipe(PlusMomentBody)) body: z.infer<typeof PlusMomentBody>): Promise<PlusMomentDto> {
     // Sans `accepts` (app d'avant) : seulement les moments qu'elle connaît (défaut du domaine).
-    return { moment: await this.moments.claim(user.userId, body?.accepts?.filter(isPlusMoment)) };
+    const accepts = body?.accepts?.filter(isPlusMoment);
+    const claimed = await this.moments.claim(user.userId, accepts);
+    // `moment` garde la forme des apps d'avant ; un moment récent ne passe que par `next` (apps qui envoient `accepts`).
+    const legacy = claimed === 'first_link' || claimed === 'streak_7' ? claimed : null;
+    return body?.accepts ? { moment: legacy, next: claimed } : { moment: legacy };
   }
 
   @Get('paywall')

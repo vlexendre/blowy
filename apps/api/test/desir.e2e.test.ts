@@ -75,14 +75,14 @@ describe('Désir de Minimoa+', () => {
     const fresh = w.client();
     await old.api.me.onboard(onboardBody({ displayName: 'Ancienne' }));
     await fresh.api.me.onboard(onboardBody({ displayName: 'Nouvelle' }));
-    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null });
+    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null, next: null });
     w.clock.advanceDays(1);
-    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null });
+    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null, next: null });
     w.clock.advanceDays(1);
     expect(await old.api.plus.moment()).toEqual({ moment: null });
     // Un nom de moment inconnu du serveur (app plus récente) est ignoré, pas refusé.
-    expect(await fresh.api.plus.moment({ accepts: [...accepts, 'futur'] })).toEqual({ moment: 'second_day' });
-    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null });
+    expect(await fresh.api.plus.moment({ accepts: [...accepts, 'futur'] })).toEqual({ moment: null, next: 'second_day' });
+    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null, next: null });
   });
 
   it('vu de loin : de vraies personnes compatibles au-delà de la zone, comptées sans identité, rien avec Minimoa+', async () => {

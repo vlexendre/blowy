@@ -235,8 +235,9 @@ export function usePlusMoment(calm: boolean, plus: boolean | undefined) {
     // Le serveur a réservé le moment : la feuille s'ouvre même si l'accueil change entre-temps.
     api.plus
       .moment({ accepts: MOMENTS_ACCEPTED })
-      .then(({ moment }) => {
-        if (moment) setTimeout(() => openPlus(MOMENT_REASON[moment]), 700);
+      .then(({ moment, next }) => {
+        const m = next ?? moment;
+        if (m) setTimeout(() => openPlus(MOMENT_REASON[m]), 700);
       })
       .catch(() => undefined);
   }, [calm, plus, api]);

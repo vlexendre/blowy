@@ -12,6 +12,9 @@
  * Le serveur reçoit aussi les notifications d'Apple (`plusAppleNotifications`, appelé par Apple, pas par l'app).
  */
 import { COLLECTION_IDS, ITEM_IDS, PLANS, PLUS_MOMENTS, PLUS_PERKS, PLUS_TRIGGERS } from '@blowy/domain';
+
+/** Moments connus des apps d'avant le « deuxième jour » (forme figée de `PlusMomentZ.moment`). */
+const LEGACY_PLUS_MOMENTS_TUPLE = ['first_link', 'streak_7'] as const;
 import { z } from 'zod';
 
 const API = '/v1';
@@ -149,7 +152,15 @@ export type PlusOpenBody = z.infer<typeof PlusOpenBody>;
  * Moment clé à saluer d'une proposition Minimoa+ (première rencontre réussie, 7 jours de série), décidé et réservé par
  * le serveur : une fois par moment, jamais deux propositions fortes en moins de 3 jours. null : rien à proposer.
  */
-export const PlusMomentZ = z.object({ moment: z.enum(PLUS_MOMENTS).nullable() });
+/**
+ * `moment` : seulement les moments connus des apps d'avant (`LEGACY_PLUS_MOMENTS`), forme figée pour elles.
+ * `next` : le moment réservé, quel qu'il soit, pour les apps qui envoient `accepts` (absent sinon). Les apps
+ * récentes lisent `next ?? moment` ; une valeur nouvelle passe par `next`, jamais par `moment`.
+ */
+export const PlusMomentZ = z.object({
+  moment: z.enum(LEGACY_PLUS_MOMENTS_TUPLE).nullable(),
+  next: z.enum(PLUS_MOMENTS).nullable().optional(),
+});
 export type PlusMomentDto = z.infer<typeof PlusMomentZ>;
 
 /**
