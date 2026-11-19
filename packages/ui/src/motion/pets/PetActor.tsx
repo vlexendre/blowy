@@ -38,7 +38,7 @@ import { ease, fadeTo, springs, useMotionActive, useReducedMotion } from '../../
 import { useScrollLock } from '../../lib/scroll-lock';
 import { motion } from '../../theme';
 import { Burst } from '../Burst';
-import { isLateEvening, isNight, useSeed } from '../seed';
+import { useSeed } from '../seed';
 import type { PetLure } from './lure';
 import { Bang, SoftShadow, Strawberry, WorryDrop } from './PetProps';
 
@@ -105,8 +105,14 @@ export interface PetActorProps {
   touch?: boolean;
   /** On peut l'attraper et le lancer. Défaut faux. */
   grabbable?: boolean;
-  /** S'endort après ce délai sans toucher (ms) ; `null` : jamais. Défaut 25 s. La nuit (22 h – 7 h), il dort d'emblée. */
+  /**
+   * S'endort après ce délai sans toucher (ms) ; `null` (défaut) : jamais. Il ne dort jamais d'emblée. Quand s'endormir :
+   * `petSleep` (jamais les premières 24 h ni la nuit) ; un écran qui le laisse s'endormir montre de quoi le réveiller
+   * (`onSleepChange`, `PetStage.sleep`).
+   */
   sleepAfter?: number | null;
+  /** Il s'endort ou se réveille (pour afficher « Le réveiller » : aucun geste caché). */
+  onSleepChange?: (asleep: boolean) => void;
   /** Ombre au sol qui réagit aux sauts. Défaut vrai. */
   shadow?: boolean;
   /** Objets de la tenue cachés (en vol vers lui). */
@@ -257,7 +263,8 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
     idle = true,
     touch = true,
     grabbable = false,
-    sleepAfter = 25_000,
+    sleepAfter = null,
+    onSleepChange,
     shadow = true,
     hiddenItems,
     onTouch,
@@ -522,7 +529,6 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
   const armSleep = useCallback(() => {
     if (sleepTimer.current) clearTimeout(sleepTimer.current);
     if (sleepAfter === null || !idle) return;
-    const night = isNight();
     sleepTimer.current = setTimeout(
       () => {
         if (busy.current) return;
@@ -536,22 +542,32 @@ export const PetActor = forwardRef<PetActorHandle, PetActorProps>(function PetAc
         }
         setAsleep(true);
       },
-      night ? Math.min(sleepAfter, 8000) : sleepAfter,
+      sleepAfter,
     );
   }, [sleepAfter, idle, body, express]);
   useEffect(() => {
-    if (sleepAfter !== null && idle && isNight()) {
-      // Fin de soirée (22 h – minuit) : un grand bâillement, puis dodo ; plus tard dans la nuit, il dort déjà.
-      const yawn = body && isLateEvening();
-      if (yawn) express('baille', 1700);
-      const id = setTimeout(() => setAsleep(true), yawn ? 1800 : 600);
-      return () => clearTimeout(id);
-    }
     armSleep();
     return () => {
       if (sleepTimer.current) clearTimeout(sleepTimer.current);
     };
-  }, [armSleep, sleepAfter, idle, body, express]);
+  }, [armSleep]);
+  // Plus le droit de dormir (premier jour, nuit, repos coupé) : il se réveille doucement, sans sursaut.
+  useEffect(() => {
+    if ((sleepAfter === null || !idle) && asleepRef.current) {
+      setAsleep(false);
+      asleepRef.current = false;
+      express(null, 0);
+      if (!reduced) {
+        rot.value = withSpring(0, PLUSH);
+        sy.value = withSpring(1, PLUSH);
+      }
+    }
+  }, [sleepAfter, idle, express, reduced, rot, sy]);
+  const sleepChange = useRef(onSleepChange);
+  sleepChange.current = onSleepChange;
+  useEffect(() => {
+    sleepChange.current?.(asleep);
+  }, [asleep]);
   useEffect(() => {
     if (asleep) {
       express('dodo', 0);

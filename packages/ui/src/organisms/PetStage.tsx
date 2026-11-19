@@ -29,6 +29,27 @@ export interface PetStageAction {
   badge?: string;
 }
 
+/** Un bouton sous la bulle : ce que le pet propose (« Voir qui »), ou « Le réveiller » quand il dort. */
+export interface PetStageSpeechAction {
+  label: string;
+  onPress: () => void;
+  accessibilityLabel?: string;
+}
+
+/**
+ * Le pet peut s'endormir au repos (`after`, de `petSleep` : jamais les premières 24 h ni la nuit). Endormi, l'écran le
+ * dit : sa bulle (`speech`) et un bouton visible pour le réveiller (`wakeLabel`) ; le toucher le réveille aussi.
+ */
+export interface PetStageSleep {
+  /** Délai sans toucher avant qu'il s'endorme (ms) ; `null` : jamais. */
+  after: number | null;
+  /** Sa bulle pendant qu'il dort (« Zzz… Je fais un somme. Réveille-moi ! »). */
+  speech: string;
+  /** Bouton sous la bulle (« Le réveiller »). */
+  wakeLabel: string;
+  wakeA11y?: string;
+}
+
 export interface PetStageProps {
   /** Le pet (`Pet` du contrat accepté tel quel : nom, espèce, tenue). */
   pet: PetLook & { id?: string };
@@ -44,6 +65,10 @@ export interface PetStageProps {
   shapeA11y?: string;
   /** Ce que dit le pet (bulle sombre) ; chaque nouvelle phrase s'écrit mot à mot. */
   speech?: string;
+  /** Bouton sous la bulle : ce que propose le pet (la nuit, « Voir qui » : les présentations). */
+  speechAction?: PetStageSpeechAction | null;
+  /** Sommeil au repos, avec son réveil visible. Absent : il ne s'endort jamais. */
+  sleep?: PetStageSleep | null;
   /** Bouton blanc en haut à droite (« garde-robe »). */
   action?: PetStageAction;
   /**
@@ -106,6 +131,8 @@ export function PetStage({
   onShapePress,
   shapeA11y,
   speech,
+  speechAction,
+  sleep,
   action,
   reaction,
   reactionKey = 0,
@@ -127,6 +154,12 @@ export function PetStage({
   const reduced = useReducedMotion();
   const actor = useRef<PetActorHandle>(null);
   const [lifted, setLifted] = useState(false);
+  const [asleep, setAsleep] = useState(false);
+  const dozing = asleep && !!sleep;
+  const said = dozing ? sleep.speech : speech;
+  const button: PetStageSpeechAction | null = dozing
+    ? { label: sleep.wakeLabel, accessibilityLabel: sleep.wakeA11y, onPress: () => actor.current?.wake() }
+    : (speechAction ?? null);
   const dim = useSharedValue(0);
   const sulking = shape === 'boude';
 
@@ -169,6 +202,8 @@ export function PetStage({
           onGrabChange={setLifted}
           lure={lure}
           crest={crest}
+          sleepAfter={sleep?.after ?? null}
+          onSleepChange={setAsleep}
           onTouch={(t) => {
             onPetTouch?.(t);
             if (t === 'tap') onPetPress?.();
@@ -205,9 +240,25 @@ export function PetStage({
           </View>
         ) : null}
       </View>
-      {speech ? (
-        <View style={[styles.speech, meter ? styles.speechHigh : null]} pointerEvents="none">
-          <SpeechBubble text={speech} tone="dark" tail="left" typing />
+      {said || button ? (
+        <View style={[styles.speech, meter ? styles.speechHigh : null]} pointerEvents="box-none">
+          {said ? (
+            <View pointerEvents="none">
+              <SpeechBubble text={said} tone="dark" tail="left" typing />
+            </View>
+          ) : null}
+          {button ? (
+            <Button
+              label={button.label}
+              onPress={button.onPress}
+              accessibilityLabel={button.accessibilityLabel}
+              variant="accent"
+              size="sm"
+              labelSize={13}
+              block={false}
+              style={styles.speechAction}
+            />
+          ) : null}
         </View>
       ) : null}
       {meter ? <View style={styles.meter}>{meter}</View> : null}
@@ -277,6 +328,8 @@ const styles = StyleSheet.create({
   speech: { position: 'absolute', left: 16, top: 112, maxWidth: 168, zIndex: 2 },
   // Avec une jauge vedette en bas : la bulle remonte sous la puce de forme.
   speechHigh: { top: 98 },
+  // Bouton sous la bulle (« Voir qui », « Le réveiller ») : petit, aligné sur la queue de la bulle.
+  speechAction: { alignSelf: 'flex-start', height: 34, marginTop: 8 },
   // V6-GAccueil : jauge dans un verre sombre, à 14 du bas et 16 du bord gauche.
   meter: { position: 'absolute', left: 16, bottom: 14, width: 168, zIndex: 2 },
   // `.sq` : à 6 du bord droit, 6 sous le bas du panneau.

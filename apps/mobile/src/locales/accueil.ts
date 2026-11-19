@@ -68,6 +68,10 @@ export const accueil = messages({
     moreA11y: (pet: string): string => `Tout sur ${pet} : caractère, série, bilans, souvenirs`,
     /** Touché, le minimoa reçoit un câlin. */
     petA11yCuddle: (pet: string): string => `${pet}. Touche-le pour un câlin`,
+    /** La nuit, sa bulle propose une action concrète : voir qui est près de chez toi (les présentations). */
+    night: { line: 'Tard, hein. Tu veux voir qui est près de chez toi ?', action: 'Voir qui', actionA11y: 'Voir qui est près de chez toi' },
+    /** Il s'est endormi au repos : sa bulle le dit, et un bouton le réveille (le toucher aussi). */
+    asleep: { line: 'Zzz… Je fais un petit somme. Réveille-moi !', wake: 'Le réveiller', wakeA11y: (pet: string): string => `Réveiller ${pet}` },
   },
   en: {
     kicker: 'Today',
@@ -115,6 +119,8 @@ export const accueil = messages({
     tiles: { question: 'Question', challenge: 'Challenge', habits: 'Habits', more: 'All about it' },
     moreA11y: (pet: string): string => `All about ${pet}: personality, streak, reviews, memories`,
     petA11yCuddle: (pet: string): string => `${pet}. Tap for a cuddle`,
+    night: { line: 'Late, huh. Want to see who’s near you?', action: 'See who', actionA11y: 'See who’s near you' },
+    asleep: { line: 'Zzz… Just a little nap. Wake me up!', wake: 'Wake it up', wakeA11y: (pet: string): string => `Wake ${pet} up` },
   },
   es: {
     kicker: 'Hoy',
@@ -162,6 +168,8 @@ export const accueil = messages({
     tiles: { question: 'Pregunta', challenge: 'Reto', habits: 'Hábitos', more: 'Todo sobre él' },
     moreA11y: (pet: string): string => `Todo sobre ${pet}: carácter, racha, balances, recuerdos`,
     petA11yCuddle: (pet: string): string => `${pet}. Tócalo para darle un mimo`,
+    night: { line: 'Es tarde, ¿eh? ¿Quieres ver quién está cerca de ti?', action: 'Ver quién', actionA11y: 'Ver quién está cerca de ti' },
+    asleep: { line: 'Zzz… Echo una siestecita. ¡Despiértame!', wake: 'Despertarlo', wakeA11y: (pet: string): string => `Despertar a ${pet}` },
   },
   pt: {
     kicker: 'Hoje',
@@ -209,6 +217,8 @@ export const accueil = messages({
     tiles: { question: 'Pergunta', challenge: 'Desafio', habits: 'Hábitos', more: 'Tudo sobre ele' },
     moreA11y: (pet: string): string => `Tudo sobre ${pet}: personalidade, sequência, balanços, lembranças`,
     petA11yCuddle: (pet: string): string => `${pet}. Toque para um carinho`,
+    night: { line: 'Tarde, hein. Quer ver quem está perto de você?', action: 'Ver quem', actionA11y: 'Ver quem está perto de você' },
+    asleep: { line: 'Zzz… Tirando um cochilo. Me acorda!', wake: 'Acordá-lo', wakeA11y: (pet: string): string => `Acordar ${pet}` },
   },
   nl: {
     kicker: 'Vandaag',
@@ -256,5 +266,7 @@ export const accueil = messages({
     tiles: { question: 'Vraag', challenge: 'Uitdaging', habits: 'Gewoontes', more: 'Alles over hem' },
     moreA11y: (pet: string): string => `Alles over ${pet}: karakter, reeks, overzichten, herinneringen`,
     petA11yCuddle: (pet: string): string => `${pet}. Tik voor een knuffel`,
+    night: { line: 'Laat, hè. Wil je zien wie er bij jou in de buurt is?', action: 'Bekijk wie', actionA11y: 'Bekijk wie er bij jou in de buurt is' },
+    asleep: { line: 'Zzz… Even een dutje. Maak me wakker!', wake: 'Wakker maken', wakeA11y: (pet: string): string => `${pet} wakker maken` },
   },
 });

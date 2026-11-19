@@ -22,7 +22,8 @@ import {
 } from '@blowy/domain';
 import { useFocusEffect } from 'expo-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { type PetSleep, petSleep } from '@blowy/ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -269,18 +270,20 @@ export const HELLO_AFTER_MS = 12 * 3600_000;
 export const WELCOME_AFTER_MS = 3 * 24 * 3600_000;
 
 /**
- * Le petit moment joué à l'ouverture de l'accueil (un seul) : la nuit il dort et il boude quand il boude (rien à
- * jouer, sa pose de repos le dit) ; après plus de 3 jours d'absence il t'accueille bras ouverts, après plus de 12 h
- * il fait coucou ; sinon il arrive en marchant. `neglected` : plus de 3 jours sans ouvrir l'app (même la nuit).
+ * Le petit moment joué à l'ouverture de l'accueil (un seul) : il boude quand il boude (rien à jouer, sa pose de repos
+ * le dit) ; après plus de 3 jours d'absence il t'accueille bras ouverts ; la nuit (`night` : après son premier jour) il
+ * bâille, sans s'endormir ; après plus de 12 h il fait coucou ; sinon il arrive en marchant. `neglected` : plus de
+ * 3 jours sans ouvrir l'app (même la nuit).
  */
 export function homeEntrance(o: { last: number | null; now: number; night: boolean; sulking: boolean }): {
-  moment: 'wave' | 'welcome' | 'arrive' | null;
+  moment: 'wave' | 'welcome' | 'arrive' | 'yawn' | null;
   neglected: boolean;
 } {
   const away = o.last === null ? 0 : o.now - o.last;
   const neglected = away > WELCOME_AFTER_MS;
-  if (o.night || o.sulking) return { moment: null, neglected };
+  if (o.sulking) return { moment: null, neglected };
   if (neglected) return { moment: 'welcome', neglected };
+  if (o.night) return { moment: 'yawn', neglected };
   if (away > HELLO_AFTER_MS) return { moment: 'wave', neglected };
   return { moment: 'arrive', neglected };
 }
@@ -297,4 +300,18 @@ export function homeRest(o: { form: PetForm; needs: Record<NeedKey, number>; sul
   if (o.neglected) return 'danger';
   if (careLevel(o.needs) < SICK_BELOW) return 'malade';
   return null;
+}
+
+/**
+ * Sommeil du minimoa sur l'écran (`petSleep`, règle pure de `@blowy/ui`) avec l'heure de l'appareil, relue chaque
+ * minute : jamais endormi les premières 24 h ni la nuit ; le jour, il s'endort au repos (et l'accueil dit comment le
+ * réveiller).
+ */
+export function usePetSleep(bornAt: string | null | undefined): PetSleep {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  return petSleep({ now, bornAt });
 }

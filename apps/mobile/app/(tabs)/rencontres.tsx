@@ -40,7 +40,7 @@ import { errorText, timeLabel } from '@/features/links';
 import { AreaSheet, useFreshPosition } from '@/features/map';
 import { useMe } from '@/features/me';
 import { openPlus, usePlusPerks } from '@/features/plus';
-import { usePet } from '@/features/pet';
+import { usePet, usePetSleep } from '@/features/pet';
 import { chats as chatsText } from '@/locales/chats';
 import { quartier as quartierText } from '@/locales/quartier';
 import { carte as carteText, rencontres as t } from '@/locales/rencontres';
@@ -95,6 +95,8 @@ export default function RencontresScreen() {
   const bump = usePetBump();
 
   const myPet = pet.data?.pet;
+  // Premier jour : jamais endormi, même sur l'état vide (on y arrive depuis la bulle du soir de l'accueil).
+  const firstDay = usePetSleep(myPet?.bornAt).firstDay;
   const petName = myPet?.name ?? chatsText.yourPet;
   const incoming = encounters.data?.incoming ?? [];
   const suggestions = encounters.data?.suggestions ?? [];
@@ -272,7 +274,7 @@ export default function RencontresScreen() {
           peek
           seed={myPet?.id}
           species={myPet?.species ?? 'nino'}
-          mood="dodo"
+          mood={firstDay ? 'neutre' : 'dodo'}
           title={t.emptyTitle}
           text={t.emptyText(petName)}
           actionLabel={invite.copied ? chatsText.copied : t.emptyAction}

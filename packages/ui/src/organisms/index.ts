@@ -36,7 +36,7 @@ export { WordsShareCard, type WordsShareCardProps } from './WordsShareCard';
 export { CareBar, type CareBarProps } from './CareBar';
 export { NeedsPanel, type NeedsPanelProps } from './NeedsPanel';
 export { OutfitPreview, type OutfitPreviewHandle, type OutfitPreviewProps } from './OutfitPreview';
-export { type PetReaction, PetStage, type PetStageAction, type PetStageProps } from './PetStage';
+export { type PetReaction, PetStage, type PetStageAction, type PetStageProps, type PetStageSleep, type PetStageSpeechAction } from './PetStage';
 export { UnlockSheet, type UnlockSheetProps } from './UnlockSheet';
 export { ItemDetail, type ItemDetailProps } from './ItemDetail';
 export { UnlockToast, type UnlockToastProps } from './UnlockToast';

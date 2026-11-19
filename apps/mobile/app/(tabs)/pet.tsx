@@ -38,7 +38,6 @@ import {
   StreakCelebration,
   TabTemplate,
   formBodyPose,
-  isNight,
   useHelloWave,
   usePetLure,
 } from '@blowy/ui';
@@ -54,7 +53,7 @@ import { openLegal, useMe } from '@/features/me';
 import { usePushIntroOnce, usePushPermission } from '@/features/notifications';
 import { type PeopleToday, usePeopleToday } from '@/features/people';
 import { pendingMeetReminder, useMeetReminders } from '@/features/safety';
-import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, useUnlocks, useWardrobe } from '@/features/pet';
+import { careAvailable, careHot, homeEntrance, homeRest, pickLine, useCare, useHomeVisit, useLivePet, usePetSleep, useUnlocks, useWardrobe } from '@/features/pet';
 import { UnlockCelebration } from '@/features/pet/UnlockCelebration';
 import { WelcomeBack } from '@/features/pet/WelcomeBack';
 import { FirstWeekMoment, StreakMoment, useShareMomentPending } from '@/features/moments';
@@ -130,7 +129,10 @@ export default function PetHome() {
     },
     { seed: pet.data?.pet.id, active: focused },
   );
-  // Un moment par ouverture : il arrive en marchant, ou fait coucou après plus de 12 h (rien la nuit ni quand il boude).
+  // Sommeil : jamais les premières 24 h ni la nuit (ambiance de nuit seulement) ; endormi le jour, l'écran le dit.
+  const sleep = usePetSleep(pet.data?.pet.bornAt);
+  // Un moment par ouverture : il arrive en marchant, fait coucou après plus de 12 h, bâille la nuit (passé son premier
+  // jour) ; rien quand il boude.
   const entered = useRef(false);
   const shape = pet.data?.pet.shape;
   useEffect(() => {
@@ -138,7 +140,7 @@ export default function PetHome() {
     entered.current = true;
     const now = Date.now();
     const visit = useHomeVisit.getState();
-    const { moment, neglected: away3 } = homeEntrance({ last: visit.last, now, night: isNight(), sulking: shape === 'boude' });
+    const { moment, neglected: away3 } = homeEntrance({ last: visit.last, now, night: sleep.night && !sleep.firstDay, sulking: shape === 'boude' });
     if (visit.last !== null && now - visit.last >= WELCOME_BACK_AFTER_DAYS * 86_400_000) setWelcomeBack(true);
     visit.mark(now);
     if (away3) setNeglected(true);
@@ -240,8 +242,9 @@ export default function PetHome() {
         ? r.speechOutDone
         : pickLine(t.happy, p.needs);
   const sulking = p.shape === 'boude';
-  // Il boude : c'est sa bulle qui le dit (plus de carte d'alerte).
-  const speech = said?.text ?? (sulking ? t.sulkSpeech : idleLine);
+  // Il boude : c'est sa bulle qui le dit (plus de carte d'alerte). La nuit, il propose de voir qui est près de chez toi.
+  const nightNudge = !said && !sulking && sleep.night;
+  const speech = said?.text ?? (sulking ? t.sulkSpeech : nightNudge ? a.night.line : idleLine);
 
   // Optimiste : il croque, joue ou dort à l'appui (jauges déjà à jour) ; un refus du serveur le fait revenir.
   const onCare = (action: CareAction) => {
@@ -344,6 +347,8 @@ export default function PetHome() {
               }
               shapeA11y={sulking ? t.sulkA11y : undefined}
               speech={speech}
+              speechAction={nightNudge ? { label: a.night.action, accessibilityLabel: a.night.actionA11y, onPress: () => router.push('/(tabs)/rencontres') } : null}
+              sleep={{ after: sleep.sleepAfter, speech: a.asleep.line, wakeLabel: a.asleep.wake, wakeA11y: a.asleep.wakeA11y(p.name) }}
               action={{
                 label: t.wardrobe,
                 onPress: () => router.push('/pet/garde-robe'),
@@ -354,7 +359,7 @@ export default function PetHome() {
               reactionKey={reactionKey}
               reactionItem={reactionItem}
               mood={homeRest({ form: p.form, needs: p.needs, sulking, neglected }) ?? formBodyPose(p.form)}
-              habitat={roomy ? { photo: lastPhoto, night: isNight() } : null}
+              habitat={roomy ? { photo: lastPhoto, night: sleep.night } : null}
               petLabel={a.petA11yCuddle(p.name)}
               onPetPress={onPetPress}
               lure={lure}

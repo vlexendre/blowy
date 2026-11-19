@@ -62,8 +62,8 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   passe de l'une à l'autre en fondu-enchaîné de 130 ms au creux d'un petit rebond (fondu seul en animations réduites).
   Soins : `mange` (il croque la pomme), `joue` (il attrape la balle et la garde), `dodo`, câlin `joie` ; refus `boude` ;
   `arrive` (il entre en marchant, de profil), `check`, `think` (`pense`), `wave` (`coucou`) ; `strike(pose)` en tient une.
-  Accueil, un moment par ouverture : il arrive en marchant, ou fait coucou après plus de 12 h ; la nuit il dort, quand il
-  boude il garde les bras croisés. Réponse à la sortie : « pas encore » → il réfléchit ; sorti → il rentre en marchant
+  Accueil, un moment par ouverture : il arrive en marchant, ou fait coucou après plus de 12 h ; la nuit (passé son premier
+  jour) il bâille sans s'endormir, quand il boude il garde les bras croisés. Réponse à la sortie : « pas encore » → il réfléchit ; sorti → il rentre en marchant
   puis saute de joie.
 - **Au repos** : respiration (écrasement léger), petit saut de temps en temps, changement d'expression bref
   (les 9 émotions de chaque espèce servent à ça ; habillé, il s'exprime par le corps et de petits signes : étincelles,
@@ -90,8 +90,11 @@ premier plan. Mode d'emploi détaillé et recettes : `packages/ui/README.md` →
   par session (une chance sur deux). Uniquement sur un écran à onglets au premier plan (barre visible) et jamais par-dessus
   une feuille (`useOverlay`) : rien sur un écran poussé, l'inscription ou une modale. Les `PetPeek` liés à un état (état
   vide, hors ligne, page inconnue, lien disparu, clavier) restent tels quels : ils sont sur place (`inline`) ou suivent leur écran.
-- **Il s'endort** : 25 s sans toucher l'accueil, ou la nuit (22 h – 7 h) : il dort, des « z » montent ; un tap le
-  réveille en sursaut.
+- **Il s'endort** (règle pure `petSleep({ now, bornAt })`, `motion/sleep.ts`) : jamais les premières 24 h après sa naissance
+  ni pendant l'inscription ; jamais d'emblée ni la nuit (22 h – 7 h : seulement l'ambiance, veilleuse et bâillement ; sa
+  bulle propose « Voir qui » → Rencontres). Le jour, après 25 s sans toucher l'accueil, il dort, des « z » montent ; sa
+  bulle le dit et un bouton « Le réveiller » apparaît dessous (`PetStage sleep`) ; un tap le réveille aussi, en sursaut.
+  `PetActor` ne dort jamais par défaut (`sleepAfter` vaut `null`) : aucun geste caché sans équivalent visible.
 - **Jamais gênant** : un pet ne recouvre ni un bouton, ni un champ, ni du texte utile ; il ne capture pas les
   touches destinées à ce qu'il y a dessous (sauf sur lui-même). `PetPeek` reste hors des zones sûres (`safe` : sous
   l'en-tête, au-dessus de la barre d'onglets ou du clavier) ; par défaut seulement dans les coins bas.

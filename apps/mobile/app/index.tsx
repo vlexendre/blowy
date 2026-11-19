@@ -39,11 +39,11 @@ export default function Gate() {
     default:
       return (
         <ScreenTemplate scroll={false}>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.lg }} accessibilityLabel={common.gate.sleeping} accessible>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.lg }} accessibilityLabel={common.gate.arriving} accessible>
             {/* Le pet arrive en courant et se pose ; la navigation n'attend pas la fin. */}
             <PetEntrance species={species} size={180} />
             <Text muted center>
-              {common.gate.sleeping}
+              {common.gate.arriving}
             </Text>
           </View>
         </ScreenTemplate>

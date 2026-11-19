@@ -16,7 +16,8 @@ export const common = messages({
     copied: 'Copié ✓',
     speciesNames: { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' } satisfies Record<Species, string>,
     gate: {
-      sleeping: 'Ton minimoa se réveille…',
+      /** Écran de lancement, pendant que la session se charge : il arrive en courant (jamais « il dort »). */
+      arriving: 'Ton minimoa arrive…',
     },
     notFound: {
       title: [{ text: 'PERDU\n' }, { text: 'DANS LA NUIT.', dim: true }],
@@ -60,7 +61,7 @@ export const common = messages({
     offlineText: 'Can’t reach Minimoa. Check your connection: your minimoa is waiting.',
     copied: 'Copied ✓',
     speciesNames: { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' },
-    gate: { sleeping: 'Your minimoa is waking up…' },
+    gate: { arriving: 'Your minimoa is on its way…' },
     notFound: {
       title: [{ text: 'LOST\n' }, { text: 'IN THE NIGHT.', dim: true }],
       text: 'This page doesn’t exist. Your minimoa has no idea where we are either.',
@@ -102,7 +103,7 @@ export const common = messages({
     offlineText: 'No se puede conectar con Minimoa. Revisa tu conexión: tu minimoa te espera.',
     copied: 'Copiado ✓',
     speciesNames: { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' },
-    gate: { sleeping: 'Tu minimoa se está despertando…' },
+    gate: { arriving: 'Tu minimoa ya viene…' },
     notFound: {
       title: [{ text: 'SIN RUMBO\n' }, { text: 'EN LA NOCHE.', dim: true }],
       text: 'Esta página no existe. Tu minimoa tampoco sabe dónde estamos.',
@@ -144,7 +145,7 @@ export const common = messages({
     offlineText: 'Não foi possível acessar o Minimoa. Verifique sua conexão: seu minimoa está esperando.',
     copied: 'Copiado ✓',
     speciesNames: { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' },
-    gate: { sleeping: 'Seu minimoa está acordando…' },
+    gate: { arriving: 'Seu minimoa está chegando…' },
     notFound: {
       title: [{ text: 'SEM RUMO\n' }, { text: 'NA NOITE.', dim: true }],
       text: 'Esta página não existe. Seu minimoa também não sabe onde estamos.',
@@ -186,7 +187,7 @@ export const common = messages({
     offlineText: 'Minimoa is niet bereikbaar. Controleer je verbinding: je minimoa wacht op je.',
     copied: 'Gekopieerd ✓',
     speciesNames: { nino: 'Nino', suzie: 'Suzie', gaston: 'Gaston', pia: 'Pia' },
-    gate: { sleeping: 'Je minimoa wordt wakker…' },
+    gate: { arriving: 'Je minimoa komt eraan…' },
     notFound: {
       title: [{ text: 'VERDWAALD\n' }, { text: 'IN DE NACHT.', dim: true }],
       text: 'Deze pagina bestaat niet. Je minimoa weet ook niet waar we zijn.',
