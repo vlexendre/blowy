@@ -3,6 +3,7 @@
  * - titres ≤ 60 caractères, descriptions ≤ 155, longueur des textes (villes 600-900 mots, guides 1 200-1 800, page
  *   néerlandaise /nl/vrienden-maken/ 700-1 000) ;
  * - FAQ, villes proches, zones de quartier et liens internes valides ;
+ * - blog : longueur, « L'essentiel », sources, liens internes, Minimoa cité ;
  * - maillage : chaque ville et chaque guide est cité dans le texte d'au moins 3 autres pages, avec des ancres variées ;
  * - contenu propre à chaque ville : deux villes ne partagent pas plus de 30 % de phrases identiques (le nom de la ville
  *   neutralisé), ni plus de 20 % de suites de 6 mots.
@@ -11,9 +12,10 @@
 import { zoneById } from '@blowy/domain';
 import { CITY_LIST, cityPath } from '../src/content/editorial/villes';
 import { GUIDE_LIST, guidePath } from '../src/content/editorial/guides';
+import { BLOG_LIST, blogPath } from '../src/content/editorial/blog';
 import { CITY_SLUGS, GUIDE_SLUGS, type CityPage } from '../src/content/editorial/types';
 import { editorialUi } from '../src/content/editorial/ui';
-import { buurtTexts, buurtWords, cityTexts, cityWords, guideTexts, guideWords } from '../src/lib/editorial-pages';
+import { blogTexts, blogWords, buurtTexts, buurtWords, cityTexts, cityWords, guideTexts, guideWords } from '../src/lib/editorial-pages';
 import { vriendenMaken } from '../src/content/editorial/nl/vrienden-maken';
 import { plain } from '../src/lib/editorial-render';
 
@@ -25,6 +27,7 @@ const internalPaths = new Set<string>([
   '/', '/quiz/', '/quartier/', editorialUi.cities.path, editorialUi.guides.path,
   ...CITY_SLUGS.map(cityPath), ...GUIDE_SLUGS.map(guidePath),
   '/nl/', '/nl/quiz/', '/nl/quartier/', vriendenMaken.path,
+  editorialUi.blog.path, ...BLOG_LIST.map((p) => blogPath(p.slug)),
 ]);
 function checkLinks(where: string, texts: readonly string[]): void {
   for (const t of texts) {
@@ -81,6 +84,37 @@ for (const g of GUIDE_LIST) {
   if (report) console.log(`nl/vrienden-maken ${String(words).padStart(5)} mots`);
 }
 
+// ── Blog ──────────────────────────────────────────────────────────────────
+// Un article : 700-1 400 mots, « L'essentiel » de 3 à 5 phrases, sources vérifiées (chaque lien externe du texte en
+// fait partie), au moins 3 liens internes dans le texte (guides, villes, quartier), dont un guide, et Minimoa cité.
+{
+  const slugs = new Set<string>();
+  for (const p of BLOG_LIST) {
+    const where = `blog ${p.slug}`;
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(p.slug)) fail(`${where} : slug invalide`);
+    if (slugs.has(p.slug)) fail(`${where} : slug en double`);
+    slugs.add(p.slug);
+    checkMeta(where, p.meta.title, p.meta.description);
+    const words = blogWords(p);
+    if (words < 700 || words > 1400) fail(`${where} : ${words} mots (attendu 700-1 400)`);
+    if (p.essentiel.length < 3 || p.essentiel.length > 5) fail(`${where} : « L'essentiel » de ${p.essentiel.length} phrases (attendu 3-5)`);
+    if (p.faq.length < 2 || p.faq.length > 5) fail(`${where} : ${p.faq.length} questions (attendu 2-5)`);
+    if (p.sources.length === 0) fail(`${where} : aucune source`);
+    if (p.guides.length === 0) fail(`${where} : aucun guide lié`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.published) || p.updated < p.published) fail(`${where} : dates invalides`);
+    const texts = blogTexts(p);
+    const urls = new Set(p.sources.map((x) => x.url));
+    for (const t of texts) for (const m of t.matchAll(/\]\((https:[^)\s]+)\)/g)) if (!urls.has(m[1]!)) fail(`${where} : lien ${m[1]} absent des sources`);
+    const internal = texts.flatMap((t) => [...t.matchAll(/\]\((\/[^)\s]*)\)/g)].map((m) => m[1]!));
+    if (internal.filter((h) => h !== '/').length < 3) fail(`${where} : moins de 3 liens internes dans le texte`);
+    if (!internal.some((h) => h.startsWith('/guides/'))) fail(`${where} : aucun lien vers un guide dans le texte`);
+    if (!texts.some((t) => /minimoa/i.test(t))) fail(`${where} : Minimoa n'est pas cité`);
+    if (texts.some((t) => /\bpets?\b/i.test(t))) fail(`${where} : le mot « pet »`);
+    checkLinks(where, texts);
+    if (report) console.log(`${p.slug.padEnd(44)} ${String(words).padStart(5)} mots, ${p.sources.length} sources`);
+  }
+}
+
 // ── Maillage interne contextuel ───────────────────────────────────────────
 // Chaque ville et chaque guide reçoit au moins 3 liens dans le texte d'autres pages éditoriales, avec au moins 2 ancres
 // différentes (les cartes « villes proches » et « autres guides » ne comptent pas : ce sont des blocs, pas du texte).
@@ -90,7 +124,8 @@ for (const g of GUIDE_LIST) {
     ...CITY_LIST.map((c) => [cityPath(c.slug), cityTexts(c)] as [string, readonly string[]]),
     ...GUIDE_LIST.map((g) => [guidePath(g.slug), guideTexts(g)] as [string, readonly string[]]),
   ];
-  for (const [from, texts] of pages) {
+  const sourcesOnly: [string, readonly string[]][] = BLOG_LIST.map((p) => [blogPath(p.slug), blogTexts(p)]);
+  for (const [from, texts] of [...pages, ...sourcesOnly]) {
     for (const t of texts) {
       for (const m of t.matchAll(/\[([^\]]+)\]\((\/[^)\s]*)\)/g)) {
         if (m[2] === from) continue;
@@ -150,4 +185,4 @@ if (problems.length) {
   console.error(`Pages éditoriales : ${problems.length} problème(s)\n  ${problems.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`Pages éditoriales : ${CITY_LIST.length} villes, ${GUIDE_LIST.length} guides et la page néerlandaise conformes.`);
+console.log(`Pages éditoriales : ${CITY_LIST.length} villes, ${GUIDE_LIST.length} guides, ${BLOG_LIST.length} article(s) de blog et la page néerlandaise conformes.`);
