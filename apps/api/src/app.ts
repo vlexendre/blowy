@@ -2,10 +2,12 @@ import 'reflect-metadata';
 import type { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import { APP_HEADERS } from '@blowy/contract';
 import { AppModule } from './app.module';
 import type { Env } from './config/env';
 import type { CoreOverrides } from './core.module';
 import type { PublicUrl } from './integrations/storage/ports';
+import { withClientApp } from './shared/client-app';
 import { withRequestLocale } from './shared/locale';
 import { PUBLIC_URL } from './shared/tokens';
 
@@ -33,9 +35,12 @@ export async function createApp(env: Env, options: CreateAppOptions = {}): Promi
       next();
     });
   }
-  app.enableCors({ origin: env.corsOrigins, methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'], allowedHeaders: ['authorization', 'content-type', 'accept-language'] });
+  app.enableCors({ origin: env.corsOrigins, methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'], allowedHeaders: ['authorization', 'content-type', 'accept-language', ...Object.values(APP_HEADERS)] });
   // Langue de la requête (Accept-Language), lisible partout pendant la requête (`requestLocale()`).
   app.use(withRequestLocale);
+  // Version de l'app qui appelle (en-têtes `x-app-*`) : journalisée, lisible pendant la requête (`clientApp()`), et
+  // `426 app_update_required` sous le build minimum (docs/VERSIONING.md).
+  app.use(withClientApp(env.appVersions));
   app.enableShutdownHooks();
   await app.listen(env.port);
   if (env.port === 0) {

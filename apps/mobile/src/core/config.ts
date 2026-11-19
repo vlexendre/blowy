@@ -18,6 +18,8 @@ export const config = {
   /** Identifiant de l'app Meta (public), exigé par Instagram pour recevoir une image en story. Vide : feuille de partage du système. */
   facebookAppId: process.env.EXPO_PUBLIC_FACEBOOK_APP_ID ?? '',
   liveActivityPush: process.env.EXPO_PUBLIC_LIVE_ACTIVITY_PUSH === '1',
+  /** Fiche de Minimoa sur l'App Store (repli quand l'API ne la donne pas : `GET /v1/app/config`). */
+  appStoreUrl: 'https://apps.apple.com/fr/app/minimoa/id6833895780',
 } as const;
 
 export const inviteUrl = (code: string): string => `${config.webUrl}/i/${code}`;

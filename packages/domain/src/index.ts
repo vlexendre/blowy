@@ -22,3 +22,4 @@ export * from './quiz';
 export * from './quartiers';
 export * from './anti-spam';
 export * from './desir';
+export * from './app-version';

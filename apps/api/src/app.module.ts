@@ -7,6 +7,7 @@ import { PlateformeModule } from './integrations/plateforme/plateforme.module';
 import { DevMediaController } from './integrations/storage/dev-media.controller';
 import { EncountersModule } from './modules/encounters/encounters.module';
 import { HealthModule } from './modules/health/health.module';
+import { AppConfigModule } from './modules/app-config/app-config.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { LinksModule } from './modules/links/links.module';
 import { MeModule } from './modules/me/me.module';
@@ -39,6 +40,8 @@ export class AppModule {
         PlateformeModule.forRoot(env),
         DemoModule.forRoot(env.demo),
         HealthModule,
+        // Versions de l'app : minimum servi, dernier build publié (docs/VERSIONING.md).
+        AppConfigModule,
         MeModule,
         PetsModule,
         LinksModule,

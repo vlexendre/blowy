@@ -4,6 +4,7 @@ import { type PlateformeEnv, loadPlateformeEnv } from './plateforme.env';
 import { type FacturationAdminEnv, loadFacturationAdminEnv } from './facturation-admin.env';
 import { type AppleSignInEnv, loadAppleSignInEnv } from './apple-signin.env';
 import { type AuditEnv, loadAuditEnv } from './audit.env';
+import { type AppVersionsEnv, loadAppVersionsEnv } from './app-versions.env';
 import { hostsOf, isProductionHost, namesProductionSupabase } from './production-targets';
 
 /**
@@ -107,6 +108,8 @@ export interface Env {
   appleSignIn: AppleSignInEnv;
   /** Compte de revue d'Apple et alertes de modération (audit App Store). */
   audit: AuditEnv;
+  /** Versions de l'app servies (minimum, dernier build publié, fiche du magasin) : docs/VERSIONING.md. */
+  appVersions: AppVersionsEnv;
   /** Semis au démarrage (démo locale en mémoire seulement) ; null sinon. */
   seed: SeedBootEnv | null;
 }
@@ -150,6 +153,7 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
     facturationAdmin,
     appleSignIn: loadAppleSignInEnv(source, e.BLOWY_ADAPTERS, facturationAdmin.apple.bundleId),
     audit: loadAuditEnv(source, { env: e.BLOWY_ENV, webUrl: e.WEB_URL.replace(/\/$/, '') }),
+    appVersions: loadAppVersionsEnv(source),
     seed:
       demo && e.BLOWY_SEED_CITIES
         ? { cities: e.BLOWY_SEED_CITIES.split(','), perCity: e.BLOWY_SEED_PER_CITY ?? null, seed: e.BLOWY_SEED ?? 1, adoptNewcomers: e.BLOWY_SEED_ADOPT === '1', source }

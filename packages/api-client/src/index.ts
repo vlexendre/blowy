@@ -99,7 +99,11 @@ import {
   QuartierBoardZ,
   quizRoutes,
 } from '@blowy/contract';
+import { APP_HEADERS, type AppConfig, AppConfigZ, ERROR_CODES, appRoutes } from '@blowy/contract';
 import { z } from 'zod';
+import { type Tolerated, parseTolerant } from './tolerant';
+
+export { parseTolerant, type Tolerated } from './tolerant';
 
 export class ApiError extends Error {
   constructor(
@@ -122,6 +126,33 @@ export interface ApiClientOptions {
   /** Messages des erreurs nées dans le client (pas de réseau, réponse illisible), dans la langue de l'app. */
   messages?: { network: () => string; internal: () => string };
   fetch?: typeof fetch;
+  /**
+   * Qui appelle (docs/VERSIONING.md) : version, numéro de build natif et plateforme, envoyés en `x-app-version`,
+   * `x-app-build`, `x-app-platform` sur chaque requête. L'API refuse (426) un build sous son minimum.
+   */
+  getClientInfo?: () => ClientInfo | null;
+  /** L'API a répondu `426 app_update_required` : ce build n'est plus servi (écran « Mets à jour »). */
+  onUpdateRequired?: () => void;
+  /** Une réponse a été lue en retirant des valeurs inconnues de cette version de l'app (à journaliser). */
+  onTolerated?: (path: string, tolerated: Tolerated) => void;
+}
+
+export interface ClientInfo {
+  version?: string | null;
+  build?: string | number | null;
+  platform?: string | null;
+}
+
+const KNOWN_CODES = new Set<string>(ERROR_CODES);
+
+/** En-têtes d'identité de l'app (vides si inconnus). */
+export function clientInfoHeaders(info: ClientInfo | null | undefined): Record<string, string> {
+  if (!info) return {};
+  const out: Record<string, string> = {};
+  if (info.version) out[APP_HEADERS.version] = String(info.version);
+  if (info.build !== null && info.build !== undefined && String(info.build) !== '') out[APP_HEADERS.build] = String(info.build);
+  if (info.platform) out[APP_HEADERS.platform] = String(info.platform);
+  return out;
 }
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
@@ -141,6 +172,7 @@ export function createApiClient(opts: ApiClientOptions) {
           ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
           ...(token ? { authorization: `Bearer ${token}` } : {}),
           ...(locale ? { 'accept-language': locale } : {}),
+          ...clientInfoHeaders(opts.getClientInfo?.()),
         },
         body: body !== undefined ? JSON.stringify(body) : undefined,
       });
@@ -149,17 +181,42 @@ export function createApiClient(opts: ApiClientOptions) {
     }
     const json: unknown = await res.json().catch(() => null);
     if (!res.ok) {
-      const parsed = ApiErrorZ.safeParse(json);
-      if (parsed.success) throw new ApiError(parsed.data.error.code, parsed.data.error.message, res.status, parsed.data.error.field);
+      const error = readError(json);
+      if (error?.code === 'app_update_required') opts.onUpdateRequired?.();
+      if (error) throw new ApiError(error.code, error.message, res.status, error.field);
       throw new ApiError('internal', opts.messages?.internal() ?? 'Unexpected error.', res.status);
     }
-    return schema.parse(json);
+    // Tolérant : des valeurs ajoutées par une API plus récente que l'app sont retirées au lieu de tout refuser.
+    // Une réponse illisible malgré tout (changement cassant de l'API) devient une erreur de l'API, pas une exception
+    // de Zod : les écrans montrent leur état d'erreur avec « Réessayer » au lieu de rester bloqués.
+    let parsed: { data: z.infer<S>; tolerated: Tolerated | null };
+    try {
+      parsed = parseTolerant(schema, json);
+    } catch {
+      throw new ApiError('internal', opts.messages?.internal() ?? 'Unexpected error.', res.status);
+    }
+    if (parsed.tolerated) opts.onTolerated?.(`${method} ${path.split('?')[0]}`, parsed.tolerated);
+    return parsed.data;
+  }
+
+  /** Erreur au format du contrat ; un code inconnu de cette version (ajouté plus tard) devient `internal`, avec le message de l'API. */
+  function readError(json: unknown): { code: ErrorCode; message: string; field?: RefusedField } | null {
+    const parsed = ApiErrorZ.safeParse(json);
+    if (parsed.success) return parsed.data.error;
+    const loose = z.object({ error: z.object({ code: z.string(), message: z.string() }) }).safeParse(json);
+    if (!loose.success) return null;
+    const { code, message } = loose.data.error;
+    return { code: KNOWN_CODES.has(code) ? (code as ErrorCode) : 'internal', message };
   }
 
   const Links = z.array(LinkZ);
   const BlockedList = z.array(BlockedZ);
 
   return {
+    /** Versions de l'app (public) : minimum servi, dernier build publié, fiche du magasin. */
+    app: {
+      config: (): Promise<AppConfig> => call('GET', appRoutes.config(), AppConfigZ),
+    },
     me: {
       get: () => call('GET', routes.me(), MeZ),
       /** Inscription : prénom, date de naissance, minimoa, sexe, ce que tu cherches, accords, position et réponses au test. */

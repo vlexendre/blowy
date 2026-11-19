@@ -458,6 +458,8 @@ export const ERROR_CODES = [
   'content_refused',
   /** Trop de signes : plafond du jour atteint, ou trop de signes en attente (le message dit lequel). */
   'wave_limit',
+  /** Build de l'app trop ancien (sous `minSupportedBuild`) : HTTP 426, l'app affiche « Mets à jour Minimoa ». */
+  'app_update_required',
   'internal',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -516,3 +518,4 @@ export * from './v7/ia';
 export * from './v7/groupes';
 export * from './v7/croissance';
 export * from './v7/quiz';
+export * from './v7/app';

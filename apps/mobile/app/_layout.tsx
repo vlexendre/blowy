@@ -12,6 +12,7 @@ import { CoreProvider, LocaleRoot } from '@/core';
 import { UiStringsProvider } from '@blowy/ui';
 import { ui } from '@/locales/ui';
 import { SessionBridges } from '@/features/session';
+import { AppUpdateBridge } from '@/features/app-update';
 import { init } from '@amplitude/analytics-react-native';
 import { analyticsConsentLoaded } from '@/features/analytics';
 
@@ -74,7 +75,11 @@ export default function RootLayout() {
                   <Stack.Screen name="pet/preuve" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
                   {/* Avant la demande de notifications : plein écran, on n'en sort que par « Continuer » (HIG Privacy). */}
                   <Stack.Screen name="pet/notifications" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom', gestureEnabled: false }} />
+                  {/* Build plus servi par l'API : on n'en sort qu'après la mise à jour (docs/VERSIONING.md). */}
+                  <Stack.Screen name="mise-a-jour" options={{ gestureEnabled: false, animation: 'fade' }} />
                 </Stack>
+                {/* Écran « Mets à jour Minimoa » quand ce build n'est plus servi ; bandeau quand une version plus récente est publiée. */}
+                <AppUpdateBridge />
               </MotionHost>
             </UiStringsProvider>
           </LocaleRoot>

@@ -94,3 +94,4 @@ export {
   WornPremium,
   type WornPremiumProps,
 } from './DesireCards';
+export { UpdateBanner, type UpdateBannerProps } from './UpdateBanner';

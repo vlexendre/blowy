@@ -21,6 +21,8 @@ export default function Gate() {
       return <Redirect href={signedOutStart()} />;
     case 'suspended':
       return <Redirect href="/(onboarding)/suspendu" />;
+    case 'updateRequired':
+      return <Redirect href="/mise-a-jour" />;
     case 'needsOnboarding':
       // Un compte sans pet doit d'abord le créer ; si le brouillon est complet, on reprend à la préparation.
       return <Redirect href={resumeOnboarding()} />;

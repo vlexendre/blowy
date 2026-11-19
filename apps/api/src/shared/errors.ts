@@ -57,6 +57,7 @@ export const HTTP_STATUS: Record<ErrorCode, number> = {
   suspended: 403,
   content_refused: 422,
   wave_limit: 429,
+  app_update_required: 426,
   internal: 500,
 };
 

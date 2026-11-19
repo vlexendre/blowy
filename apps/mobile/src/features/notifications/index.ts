@@ -152,7 +152,13 @@ export function useNotificationsBridge(gate: Gate): void {
       if (handled.current.has(tap.id)) return;
       handled.current.add(tap.id);
       const parsed = PushDataZ.safeParse(tap.data);
-      if (!parsed.success) return;
+      if (!parsed.success) {
+        // Type de notification ajouté après ce build (docs/VERSIONING.md) : on suit quand même son adresse.
+        const url = (tap.data as { url?: unknown } | null)?.url;
+        const path = typeof url === 'string' ? pathFromPushUrl(url) : null;
+        if (path) router.push(path);
+        return;
+      }
       if (tap.action === MUTE_ACTION) {
         // Désinscription en un geste : toute la catégorie du type (la même ligne que dans Moi › Notifications).
         const category = categoryOf(parsed.data.kind);

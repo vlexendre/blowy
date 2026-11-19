@@ -9,7 +9,7 @@ import { usePendingInvite } from '@/features/encounters';
 import { resumeOnboarding, useDraft, useDraftHydrated } from '@/features/onboarding';
 import { common } from '@/locales/common';
 
-export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline' | 'suspended';
+export type Gate = 'loading' | 'signedOut' | 'needsOnboarding' | 'ready' | 'offline' | 'suspended' | 'updateRequired';
 
 /** Où envoyer la personne au lancement : connexion, création du minimoa, l'app, ou l'écran « compte suspendu ». */
 export function useGate(): Gate {
@@ -23,6 +23,7 @@ export function useGate(): Gate {
   if (me.isSuccess) return 'ready';
   if (me.error instanceof ApiError) {
     if (me.error.code === 'suspended') return 'suspended';
+    if (me.error.code === 'app_update_required') return 'updateRequired';
     if (me.error.code === 'not_onboarded') return 'needsOnboarding';
     if (me.error.code === 'unauthorized') return 'signedOut';
     return 'offline';

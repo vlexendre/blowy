@@ -7,9 +7,11 @@ import { common } from '@/locales/common';
 import { getLocale, onLocaleChange } from '@/locales/runtime';
 
 import { createPorts } from './adapters';
+import { clientInfo } from './app-identity';
 import { config } from './config';
 import './locale';
 import type { Ports, Session } from './ports';
+import { useUpdateRequired } from './update-required';
 
 interface Core {
   ports: Ports;
@@ -118,6 +120,13 @@ export function CoreProvider({ children }: { children: ReactNode }) {
         getToken: () => ports.auth.getToken(),
         getLocale,
         messages: { network: () => common.errors.network, internal: () => common.errors.internal },
+        // Version, build et plateforme sur chaque requête ; sous le build minimum, l'API répond 426 (docs/VERSIONING.md).
+        getClientInfo: clientInfo,
+        onUpdateRequired: () => useUpdateRequired.getState().set(true),
+        // Valeurs d'une API plus récente retirées à la lecture : signalé en développement seulement.
+        onTolerated: (path, t) => {
+          if (__DEV__) console.warn(`[api] ${path} : valeurs inconnues retirées (${t.removed.join(', ')})`);
+        },
       }),
     [ports],
   );
