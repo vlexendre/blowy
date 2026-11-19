@@ -48,7 +48,8 @@ export const bruxelles: CityPage = {
         '**Les tables de conversation** : avec autant de langues, les échanges français-néerlandais ou français-anglais sont partout, dans les bibliothèques, les centres culturels ou les cafés. Apprendre le néerlandais à Bruxelles, c’est aussi une façon de rencontrer des Bruxellois flamands.',
         '**Les centres culturels et maisons de quartier** : chaque commune a les siens, avec ateliers, chorales, potagers partagés et repas de quartier.',
         '**Les grands rendez-vous** : Plaisirs d’Hiver en fin d’année, les fêtes de quartier dès les beaux jours. Bon prétexte pour proposer une sortie à un collègue sympa.',
-        'Tu viens d’arriver et tu ne connais personne ? Notre guide [se faire des amis dans une nouvelle ville](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à démarrer, semaine après semaine.',
+        'Tu viens d’arriver et tu ne connais personne ? Notre guide pour [se faire des amis quand on débarque quelque part](/guides/se-faire-des-amis-nouvelle-ville/) t’aide à démarrer, semaine après semaine.',
+        'Lille n’est qu’à une demi-heure de train et la Wallonie est toute proche : nos pages pour [rencontrer des gens à Liège](/se-faire-des-amis/liege/) et pour [se faire des amis à Lille](/se-faire-des-amis/lille/) complètent celle-ci si tu passes d’une ville à l’autre. Et si ta commune n’a pas encore Minimoa, [inscris ton quartier bruxellois](/quartier/).',
       ],
     },
   ],
@@ -86,5 +87,5 @@ export const bruxelles: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'associations-activites-rencontrer-du-monde', 'se-faire-des-amis-adulte'],
   image: { src: '/img/m/gaston_rit.webp', width: 450, height: 500, alt: 'Gaston, un minimoa orange à un seul grand œil, qui éclate de rire' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À BRUXELLES.'], panel: 'coral' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

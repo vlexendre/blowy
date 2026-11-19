@@ -54,7 +54,7 @@ export const editorialUi = {
     crumb: 'Guides',
     meta: {
       title: 'Guides pour se faire des amis — Minimoa',
-      description: 'Se faire des amis adulte, quand on est timide, dans une nouvelle ville, quand on est seul : des guides honnêtes et concrets, avec leurs sources.',
+      description: 'Choisir une appli, se faire des amis adulte, timide, dans une nouvelle ville ou seul : des guides honnêtes et concrets, avec leurs sources.',
     } satisfies Meta,
     h1: 'Guides pour se faire des amis',
     lead: 'Des conseils concrets, des études sérieuses, zéro méthode miracle. Écrits pour les adultes qui veulent plus de monde autour d’eux, et qui ne savent pas trop par où commencer.',

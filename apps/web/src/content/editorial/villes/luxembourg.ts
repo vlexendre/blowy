@@ -46,7 +46,8 @@ export const luxembourg: CityPage = {
         '**La Schueberfouer**, de fin août à septembre : la grande fête foraine de la ville. Une soirée en groupe, et tout le monde a un souvenir commun.',
         '**La Fête nationale**, le 23 juin, et sa veille festive : la ville dans la rue, l’occasion d’inviter des voisins.',
         '**Les associations** : clubs sportifs, chorales, associations culturelles des différentes communautés, bénévolat. Le tissu associatif est dense, et beaucoup fonctionnent en plusieurs langues.',
-        'Tu viens de t’installer ? Lis notre guide [se faire des amis dans une nouvelle ville](/guides/se-faire-des-amis-nouvelle-ville/) : il explique comment passer des collègues aux amis.',
+        'Tu viens de t’installer ? Lis notre guide pour [s’installer dans une ville où l’on ne connaît personne](/guides/se-faire-des-amis-nouvelle-ville/) : il explique comment passer des collègues aux amis.',
+        'Beaucoup de gens qui travaillent au Luxembourg vivent de l’autre côté d’une frontière. Si tu es frontalier, nos pages pour [se faire des amis à Strasbourg](/se-faire-des-amis/strasbourg/) et pour [rencontrer des gens à Liège](/se-faire-des-amis/liege/) peuvent t’aider à créer des liens près de chez toi.',
       ],
     },
   ],
@@ -80,5 +81,5 @@ export const luxembourg: CityPage = {
   guides: ['se-faire-des-amis-nouvelle-ville', 'se-faire-des-amis-adulte', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/suzie_joie.webp', width: 450, height: 500, alt: 'Suzie, une minimoa rose à antennes pompons, toute joyeuse' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À LUXEMBOURG.'], panel: 'accent' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };
