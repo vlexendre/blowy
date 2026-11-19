@@ -26,6 +26,7 @@ export const plus = messages({
       collection: (until: string) => `Collection Hiver, jusqu’au ${until}.`,
       moment_first_link: 'Premier lien. Et la suite ?',
       moment_streak_7: '7 jours d’affilée. Bien joué.',
+      moment_second_day: (pet: string) => `Deux jours avec ${pet}. Voilà ce que Minimoa+ ajoute.`,
     },
     plan: { yearly: 'Annuel', monthly: 'Mensuel', weekly: 'Hebdomadaire' },
     lead: {
@@ -136,6 +137,7 @@ export const plus = messages({
       collection: (until: string) => `Winter collection, until ${until}.`,
       moment_first_link: 'First link. What’s next?',
       moment_streak_7: '7 days in a row. Nice one.',
+      moment_second_day: (pet: string) => `Two days with ${pet}. Here’s what Minimoa+ adds.`,
     },
     plan: { yearly: 'Yearly', monthly: 'Monthly', weekly: 'Weekly' },
     lead: {
@@ -229,6 +231,7 @@ export const plus = messages({
       collection: (until: string) => `Invierno, hasta el ${until}.`,
       moment_first_link: 'Primer vínculo. ¿Y ahora?',
       moment_streak_7: '7 días seguidos. ¡Bien hecho!',
+      moment_second_day: (pet: string) => `Dos días con ${pet}. Esto es lo que añade Minimoa+.`,
     },
     plan: { yearly: 'Anual', monthly: 'Mensual', weekly: 'Semanal' },
     lead: {
@@ -322,6 +325,7 @@ export const plus = messages({
       collection: (until: string) => `Coleção Inverno, até ${until}.`,
       moment_first_link: 'Primeiro vínculo. E agora?',
       moment_streak_7: '7 dias seguidos. Mandou bem.',
+      moment_second_day: (pet: string) => `Dois dias com ${pet}. Veja o que o Minimoa+ acrescenta.`,
     },
     plan: { yearly: 'Anual', monthly: 'Mensal', weekly: 'Semanal' },
     lead: {
@@ -415,6 +419,7 @@ export const plus = messages({
       collection: (until: string) => `Wintercollectie, tot ${until}.`,
       moment_first_link: 'Eerste band. En nu?',
       moment_streak_7: '7 dagen op rij. Goed zo.',
+      moment_second_day: (pet: string) => `Twee dagen met ${pet}. Dit voegt Minimoa+ toe.`,
     },
     plan: { yearly: 'Jaarlijks', monthly: 'Maandelijks', weekly: 'Wekelijks' },
     lead: {

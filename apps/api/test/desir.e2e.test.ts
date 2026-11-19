@@ -69,6 +69,22 @@ describe('Désir de Minimoa+', () => {
     expect(await b.api.plus.moment()).toEqual({ moment: 'first_link' });
   });
 
+  it('deuxième jour : seulement pour l’app qui sait l’ouvrir (l’app installée n’envoie rien et ne le reçoit jamais)', async () => {
+    const accepts = ['first_link', 'streak_7', 'second_day'];
+    const old = w.client();
+    const fresh = w.client();
+    await old.api.me.onboard(onboardBody({ displayName: 'Ancienne' }));
+    await fresh.api.me.onboard(onboardBody({ displayName: 'Nouvelle' }));
+    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null });
+    w.clock.advanceDays(1);
+    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null });
+    w.clock.advanceDays(1);
+    expect(await old.api.plus.moment()).toEqual({ moment: null });
+    // Un nom de moment inconnu du serveur (app plus récente) est ignoré, pas refusé.
+    expect(await fresh.api.plus.moment({ accepts: [...accepts, 'futur'] })).toEqual({ moment: 'second_day' });
+    expect(await fresh.api.plus.moment({ accepts })).toEqual({ moment: null });
+  });
+
   it('vu de loin : de vraies personnes compatibles au-delà de la zone, comptées sans identité, rien avec Minimoa+', async () => {
     const FARTHER = { latitude: 48.83, longitude: 2.4 };
     const me = w.client();

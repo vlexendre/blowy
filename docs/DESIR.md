@@ -84,6 +84,10 @@ faux prix de référence) ; nos documents `docs/PAYWALL.md`, `docs/FIDELISATION.
     avantage « Plus de rencontres » en tête (`moment_first_link`) ;
   - 7 jours d'affilée au défi du jour (série de 7 à 9, faite il y a 2 jours au plus) : « 7 jours d'affilée. Bien
     joué. », avantage « 3 jokers par semaine » en tête (`moment_streak_7`).
+  - deuxième jour avec son minimoa (du jour 2 au jour 4 après l'inscription, une fois ; ajouté le 19 nov. 2026 quand la
+    feuille a quitté l'inscription) : titre et avantage dans `locales/plus.ts` (`moment_second_day`). Servi seulement à
+    une app qui le demande (`POST /v1/plus/moment` avec `{ accepts: [...] }`) : l'app installée d'avant n'envoie rien et
+    ne reçoit que `first_link` ou `streak_7` (`LEGACY_PLUS_MOMENTS`), qu'elle sait lire.
 - **Quand.** Sur l'accueil, quand tout est calme : après les fêtes, le défi du jour, le « te revoilà », les cartes à
   partager (palier de série, première semaine) et la demande des notifications ; une fois par lancement, l'app demande
   `POST /v1/plus/moment`.

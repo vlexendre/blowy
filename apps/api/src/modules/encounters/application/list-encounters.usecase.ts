@@ -54,9 +54,9 @@ const FRIEND_OF_FRIEND_CAP = 100;
  * Rencontres : les coucous reçus, puis les personnes que le minimoa présente. Seules passent les personnes
  * compatibles (filtres durs de la vision et seuil de 70) : amis d'amis d'abord (où qu'ils soient), puis
  * celles de la zone de recherche, les plus compatibles d'abord. Sans position : seulement les amis d'amis.
- * Le nombre de suggestions dépend de la sociabilité seule (`encounterQuota`, plus le bonus de Minimoa+) : plus la
- * personne sort, plus il présente de monde ; jamais moins d'une par jour, même quand il boude (les soins ne bloquent
- * pas les gens). Les coucous reçus restent toujours visibles.
+ * Le plafond du jour dépend de la sociabilité seule (`encounterQuota`, plus le bonus de Minimoa+ : sortir, écrire,
+ * répondre le font monter) ; jamais moins d'une par jour, même quand il boude (les soins ne bloquent pas les gens). Le
+ * nombre réel dépend des personnes compatibles autour (et des amis d'amis). Les coucous reçus restent toujours visibles.
  */
 @Injectable()
 export class ListEncounters {
@@ -91,7 +91,16 @@ export class ListEncounters {
     }
   }
 
-  async execute(userId: string): Promise<EncountersResult> {
+  /**
+   * Personnes qui attendent la personne aujourd'hui (signes reçus et présentations du jour), sans rien noter dans les
+   * statistiques : pour le premier pas « les gens » (fidélisation), qui dit honnêtement s'il y a quelqu'un ou non.
+   */
+  async waiting(userId: string): Promise<number> {
+    const r = await this.execute(userId, { record: false });
+    return r.incoming.length + r.suggestions.length;
+  }
+
+  async execute(userId: string, opts: { record?: boolean } = {}): Promise<EncountersResult> {
     const me = await this.profiles.findById(userId);
     if (!me) throw new DomainError('not_onboarded');
     const now = this.clock.now();
@@ -170,7 +179,7 @@ export class ListEncounters {
     const nearbyOut = nearby.flatMap((m) => suggestion(m.userId, 'nearby', m.score, m));
 
     const suggestions = [...fofOut, ...nearbyOut].slice(0, quota);
-    await this.recordProposals(userId, today, suggestions, !!me.reviewWorld);
+    if (opts.record !== false) await this.recordProposals(userId, today, suggestions, !!me.reviewWorld);
     const far = seeker.plus ? null : await this.farAway(userId, nearby, new Set([...suggestions.map((s) => s.profile.id), ...myWaves]));
     const waves = await this.guard.allowance(me);
     return { incoming: incomingOut, suggestions, petShape, waves, far };

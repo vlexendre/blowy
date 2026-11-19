@@ -26,6 +26,8 @@ import {
   parisHourOf,
   pickDailyChallenge,
   presentDailyCard,
+  initialDailyStatus,
+  isSignupDay,
   proofCounts,
   reviewDue,
   reviewWeekDue,
@@ -295,6 +297,16 @@ describe('défi du jour', () => {
     expect(advanceDaily('accepted', 'seen')).toBe('accepted');
     expect(presentDailyCard('offered')).toBe(true);
     expect(presentDailyCard('seen')).toBe(false);
+  });
+  it('jour de l’inscription : défi servi comme déjà vu (rien en plein écran), proposé dès le lendemain', () => {
+    expect(isSignupDay('2026-11-19', '2026-11-19')).toBe(true);
+    expect(isSignupDay('2026-11-18', '2026-11-19')).toBe(false);
+    expect(isSignupDay(null, '2026-11-19')).toBe(false);
+    expect(initialDailyStatus('2026-11-19', '2026-11-19')).toBe('seen');
+    expect(presentDailyCard(initialDailyStatus('2026-11-19', '2026-11-19'))).toBe(false);
+    expect(initialDailyStatus('2026-11-19', '2026-11-20')).toBe('offered');
+    expect(presentDailyCard(initialDailyStatus('2026-11-19', '2026-11-20'))).toBe(true);
+    expect(initialDailyStatus(null, '2026-11-20')).toBe('offered');
   });
 });
 

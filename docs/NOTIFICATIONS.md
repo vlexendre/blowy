@@ -101,14 +101,14 @@ Q = heures calmes (R : reporté à 8 h et regroupé ; A : abandonné). Plafond :
 | `together_proposal` | proposition « la tenir ensemble » / groupe démarré | éligibles / membres | social | R | — | « Course, à plusieurs ? » | `groupe/<id>` ou `pet/habitudes` | together | non |
 | `link_in_danger` | lien à 2 vies | les deux | social | R | — | « Lien avec Léa » / « Votre lien s'essouffle un peu. Un petit mot suffit à le raviver. » | `link/<id>` | danger | non |
 | `your_turn` | le soir, l'autre a écrit aujourd'hui, pas toi (un envoi pour tous tes liens) | qui doit écrire | social | A ; 17 – 22 h locales | — | « Série avec Léa » / « 4 jours d'affilée. À toi d'écrire avant minuit. » | `link/<id>` ou `chats` | turn | non ; démarre l'activité en direct |
-| `daily_challenge` | heure choisie (8 – 21 h locales), défi pas fait | chacun | ritual | A | — | « Ton défi du jour » / « Nino a préparé quelque chose pour toi. » | `pet/defi` | challenge | non |
+| `daily_challenge` | heure choisie (8 – 21 h locales), défi pas fait, jamais le jour de la création du minimoa (`isSignupDay`) | chacun | ritual | A | — | « Ton défi du jour » / « Nino a préparé quelque chose pour toi. » | `pet/defi` | challenge | non |
 | `streak_in_danger` | le soir, défi pas fait, série en jeu | personne | ritual | A ; 17 – 22 h locales | — | « Ta série de 12 jours » / « Le défi du jour est encore possible ce soir. » | `pet/defi` | streak | non ; met à jour l'activité |
 | `habit_proof` | heure de l'habitude | personne | ritual | A | — | « Nino voudrait voir » / « C'est l'heure de ton habitude. Une photo ? » | `pet/habitudes` | proof | non |
 | `needs_out` | sociabilité basse, 10 – 21 h locales | propriétaire | ritual | A | — | « Nino a envie de sortir » | `pet` | out | non |
 | `item_unlocked` | palier de série ou d'habitudes | personne (souvent dans l'app : rien) | ritual | R | 60 min | « Nouvel objet » ; « Nouveaux objets » / « Nino a gagné : casquette, et 2 autres objets. » | `pet/garde-robe` | unlocked | non |
 | `group_life_lost` / `group_asleep` | jour du groupe jugé | membres | ritual | R | — | « « Run » perd une vie » | `groupe/<id>` | group_lives | non |
 | `weekly_review` | bilan du dimanche soir | personne | news | A | — | « Ton bilan de la semaine » | `pet/bilans` | review | non |
-| `first_steps` | J1, J2, J3, J5, J7, 11 – 20 h locales | nouveaux | news | — | — | « Nino veut savoir qui tu es » … | `mots`, `pet/habitudes`, `groupe/nouveau`, `rencontres`, `pet` | first_steps | non |
+| `first_steps` | J1, J2, J3, J5, J7, 11 – 20 h locales | nouveaux | news | — | — | « Nino a quelqu’un pour toi » (ou « Nino cherche des gens pour toi ») … | `rencontres`, `mots`, `pet/habitudes`, `groupe/nouveau`, `pet` | first_steps | non |
 | `minimoa_news` | 3, 7, 14 jours sans ouvrir ; un mois ; chaque année | absents, anciens | news | — | — | « Nino pense à toi » / « Rien ne presse. Il te garde ta place au chaud. » | `pet` | news | à 14 jours (compte rendu) |
 
 Activités en direct : « série d'un lien » démarrée avec `your_turn` (pas de seconde alerte iOS), finie au premier

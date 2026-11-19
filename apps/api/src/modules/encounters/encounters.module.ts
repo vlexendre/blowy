@@ -14,6 +14,6 @@ import { EncountersController } from './interface/encounters.controller';
   imports: [PetsModule, LinksModule, VisionModule, HabitSharingModule],
   controllers: [EncountersController],
   providers: [ListEncounters, ListEncounterHistory, Wave, AnswerEncounter, WaveGuard],
-  exports: [Wave, AnswerEncounter, WaveGuard],
+  exports: [Wave, AnswerEncounter, WaveGuard, ListEncounters],
 })
 export class EncountersModule {}

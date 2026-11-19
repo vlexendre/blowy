@@ -7,6 +7,8 @@ import {
   fideliteDayKey,
   fideliteDue,
   firstStepDue,
+  firstStepSent,
+  firstStepVariant,
   isFideliteHour,
   plusGoodbyeDue,
   plusNewsAfter,
@@ -42,16 +44,35 @@ describe('fidélisation : rétention de l’app', () => {
   });
 
   it('premiers pas : J1, J2, J3, J5, J7, sans chevauchement (rattrapage d’un jour seulement quand le suivant est loin)', () => {
-    expect(firstStepDue('2026-11-10', '2026-11-10')).toBeNull();
-    expect(firstStepDue('2026-11-10', '2026-11-11')).toBe('d1');
-    expect(firstStepDue('2026-11-10', '2026-11-12')).toBe('d2');
-    expect(firstStepDue('2026-11-10', '2026-11-13')).toBe('d3');
-    expect(firstStepDue('2026-11-10', '2026-11-14')).toBe('d3');
-    expect(firstStepDue('2026-11-10', '2026-11-15')).toBe('d5');
-    expect(firstStepDue('2026-11-10', '2026-11-16')).toBe('d5');
-    expect(firstStepDue('2026-11-10', '2026-11-17')).toBe('d7');
-    expect(firstStepDue('2026-11-10', '2026-11-18')).toBe('d7');
-    expect(firstStepDue('2026-11-10', '2026-11-19')).toBeNull();
+    const step = (today: string) => firstStepDue('2026-11-10', today)?.step ?? null;
+    expect(step('2026-11-10')).toBeNull();
+    expect(step('2026-11-11')).toBe('d1');
+    expect(step('2026-11-12')).toBe('d2');
+    expect(step('2026-11-13')).toBe('d3');
+    expect(step('2026-11-14')).toBe('d3');
+    expect(step('2026-11-15')).toBe('d5');
+    expect(step('2026-11-16')).toBe('d5');
+    expect(step('2026-11-17')).toBe('d7');
+    expect(step('2026-11-18')).toBe('d7');
+    expect(step('2026-11-19')).toBeNull();
+  });
+
+  it('premiers pas : les gens d’abord (J1), puis 3 mots, habitude, groupe, semaine', () => {
+    const topic = (today: string) => firstStepDue('2026-11-10', today)?.topic ?? null;
+    expect(['2026-11-11', '2026-11-12', '2026-11-13', '2026-11-15', '2026-11-17'].map(topic)).toEqual(['people', 'words', 'habit', 'group', 'week']);
+    // Sans personne à présenter : un texte honnête qui pousse à inviter.
+    expect(firstStepVariant('people', 2)).toBe('people');
+    expect(firstStepVariant('people', 0)).toBe('people_none');
+    expect(firstStepVariant('words', 0)).toBe('words');
+  });
+
+  it('premiers pas : une ancienne clé (ordre d’avant) compte pour son ancien sujet, jamais deux fois le même message', () => {
+    // Ancien J1 = « 3 mots » : déjà parti, le nouveau J2 (« 3 mots ») ne repart pas.
+    expect(firstStepSent('words', new Set(['first_steps:d1']))).toBe(true);
+    expect(firstStepSent('people', new Set(['first_steps:d1']))).toBe(false);
+    expect(firstStepSent('people', new Set(['first_steps:d5']))).toBe(true);
+    expect(fideliteDue({ createdOn: '2026-11-10', lastActiveOn: '2026-11-10', today: '2026-11-12', sent: new Set(['first_steps:d1']) })).toBeNull();
+    expect(fideliteDue({ createdOn: '2026-11-10', lastActiveOn: '2026-11-10', today: '2026-11-12', sent: new Set(['first_steps:people']) })).toMatchObject({ topic: 'words', key: 'first_steps:words' });
   });
 
   it('absences : 3, 7, 14 jours (avec rattrapage), rien entre deux paliers ni au-delà', () => {
@@ -78,7 +99,7 @@ describe('fidélisation : rétention de l’app', () => {
   it('une seule nouvelle par jour, jamais deux fois la même, anniversaire avant absence avant premiers pas', () => {
     const sent = new Set<string>();
     // Inscription le 10 ; le 11 : J1.
-    expect(fideliteDue({ createdOn: '2026-11-10', lastActiveOn: '2026-11-10', today: '2026-11-11', sent })).toMatchObject({ kind: 'first_steps', step: 'd1', key: 'first_steps:d1' });
+    expect(fideliteDue({ createdOn: '2026-11-10', lastActiveOn: '2026-11-10', today: '2026-11-11', sent })).toMatchObject({ kind: 'first_steps', step: 'd1', topic: 'people', key: 'first_steps:people' });
     // J3 alors qu'on n'est pas revenu depuis l'inscription : premiers pas, pas d'absence pendant la semaine d'accueil.
     expect(fideliteDue({ createdOn: '2026-11-10', lastActiveOn: '2026-11-10', today: '2026-11-13', sent })).toMatchObject({ kind: 'first_steps', step: 'd3' });
     // Déjà une nouvelle aujourd'hui : rien.

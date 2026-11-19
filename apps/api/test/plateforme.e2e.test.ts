@@ -20,6 +20,7 @@ import { EXPO_RECEIPTS_URL, EXPO_SEND_URL, ExpoPusher } from '../src/integration
 import type { MemoryPusher } from '../src/integrations/push/memory-pusher';
 import { NOTIFIER, type Notifier } from '../src/integrations/push/notifier';
 import { PUSHER } from '../src/integrations/push/pusher';
+import { DAILY_PUSH_SOURCE, type DailyPushSource } from '../src/modules/notifications/ports';
 import { MemoryDb } from '../src/persistence/memory-db';
 import { Background } from '../src/shared/background';
 import { MemoryCache } from '../src/shared/cache';
@@ -506,6 +507,12 @@ describe('notifications', () => {
   it('défi du jour à l’heure choisie, une fois par jour ; données compactes pour le widget', async () => {
     const g = world.client();
     await g.api.me.onboard(onboardBody({ displayName: 'Gil' }));
+    // Le jour de la création du minimoa, pas de rappel du défi (la première session sert aux gens).
+    expect(await world.app.get<DailyPushSource>(DAILY_PUSH_SOURCE, { strict: false }).morning(g.id, world.clock.now())).toBeNull();
+    // Minimoa créé la veille : le défi est proposé et rappelé normalement.
+    for (const pet of db.pets.values()) {
+      if (pet.ownerId === g.id) db.pets.set(pet.id, { ...pet, createdAt: new Date(Date.parse(pet.createdAt) - 86_400_000).toISOString() });
+    }
     const today = await g.api.rituals.today(); // ouverture de l'app : personne active pour les rituels
     const token = 'ExponentPushToken[gil]';
     await g.api.notifications.registerDevice({ token, platform: 'ios', timeZone: 'Europe/Paris' });

@@ -3,8 +3,9 @@
  * sort, voit du monde, salue, écrit, s'écrit chaque jour avec un lien ou tient une habitude tournée vers les autres,
  * et descend seule. Trois petits besoins (faim, énergie, humeur) se comblent avec les quatre gestes.
  * Tous vont de 0 (à plat) à 100 (comblé). Un minimoa négligé boude — il ne meurt jamais. Les soins jouent sur son
- * humeur et son caractère, jamais sur l'accès aux gens : le nombre de présentations ne dépend que de la sociabilité
- * (« plus tu sors, plus il te présente de monde »), avec au moins une présentation par jour.
+ * humeur et son caractère, jamais sur l'accès aux gens : le plafond de présentations du jour ne dépend que de la
+ * sociabilité (sortir, écrire, répondre, saluer la font monter), avec au moins une présentation par jour ; le nombre
+ * réel dépend des personnes compatibles autour (seuil de vision, `MATCH_RADIUS_KM`) et des amis d'amis.
  * Moteur pur : le temps écoulé est passé en paramètre, rattrapé à la lecture.
  */
 import type { PetEventKind } from './gauges';

@@ -152,6 +152,14 @@ export type PlusOpenBody = z.infer<typeof PlusOpenBody>;
 export const PlusMomentZ = z.object({ moment: z.enum(PLUS_MOMENTS).nullable() });
 export type PlusMomentDto = z.infer<typeof PlusMomentZ>;
 
+/**
+ * Corps facultatif de `POST /plus/moment` (19 nov. 2026) : les moments que l'app sait ouvrir. Sans corps (app d'avant),
+ * le serveur ne répond qu'un moment qu'elle connaît (`LEGACY_PLUS_MOMENTS`). Des noms libres : un nom inconnu du
+ * serveur est ignoré, jamais refusé.
+ */
+export const PlusMomentBody = z.object({ accepts: z.array(z.string().max(40)).max(20).optional() }).optional();
+export type PlusMomentBody = z.infer<typeof PlusMomentBody>;
+
 export const AppleNotificationBody = z.object({ signedPayload: z.string().min(20).max(100_000) });
 
 

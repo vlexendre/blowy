@@ -13,6 +13,7 @@ import { NOTIFIER, type Notifier } from '../src/integrations/push/notifier';
 import { BillingJobs } from '../src/modules/billing/application/billing.jobs';
 import { memoryJws } from '../src/modules/billing/infrastructure/memory-billing';
 import { FideliteJobs } from '../src/modules/fidelite/application/fidelite.jobs';
+import { deepLink } from '../src/modules/notifications/push-notifier';
 import type { MemoryDb } from '../src/persistence/memory-db';
 import { MEMORY_DB } from '../src/shared/tokens';
 import { START, type TestWorld, onboardBody, startWorld } from './helpers';
@@ -209,6 +210,24 @@ describe('Fidélisation', () => {
   });
 
   describe('nouvelles du minimoa', () => {
+    it('premiers pas : sans personne à présenter, J1 le dit honnêtement et pousse à inviter (lien vers Rencontres)', async () => {
+      const jobs = w.app.get(FideliteJobs, { strict: false });
+      const db = w.app.get<MemoryDb>(MEMORY_DB, { strict: false });
+      const { api, id } = w.client();
+      // Loin de tout le monde : personne de compatible à présenter.
+      await api.me.onboard(onboardBody({ displayName: 'Seule', location: { latitude: -45.03, longitude: 168.66 } }));
+      const created = Date.parse(db.profiles.get(id)?.createdAt ?? '');
+      const d = new Date(created + DAY);
+      d.setUTCHours(10, 0, 0, 0);
+      await jobs.runDue(d);
+      const steps = of(id, 'first_steps');
+      expect(steps.map((s) => s.vars.step)).toEqual(['people_none']);
+      const text = notificationText('fr', 'first_steps', steps[0]?.vars ?? {});
+      expect(text.title).toBe('Nino cherche des gens pour toi');
+      expect(text.body).toMatch(/Invite 2 potes/);
+      expect(deepLink('first_steps', steps[0]?.vars ?? {})).toBe('blowy://rencontres');
+    });
+
     it('premiers pas J1, J3, J5, J7 (J2 pas rattrapé), rien pendant la semaine d’accueil, absence de 14 jours avec e-mail, anniversaire d’un mois ; une par jour', async () => {
       const jobs = w.app.get(FideliteJobs, { strict: false });
       const db = w.app.get<MemoryDb>(MEMORY_DB, { strict: false });
@@ -231,8 +250,13 @@ describe('Fidélisation', () => {
 
       await jobs.runDue(at(1));
       await jobs.runDue(at(1, 10, 30));
-      expect(news().map((s) => [s.kind, s.vars.step])).toEqual([['first_steps', 'd1']]);
-      expect(notificationText('fr', 'first_steps', news()[0]?.vars ?? {}).title).toBe('Nino veut savoir qui tu es');
+      // J1 : les gens d'abord (Léa lui a fait signe : il a quelqu'un pour toi), vers Rencontres.
+      expect(news().map((s) => [s.kind, s.vars.step])).toEqual([['first_steps', 'people']]);
+      expect(notificationText('fr', 'first_steps', news()[0]?.vars ?? {})).toEqual({
+        title: 'Nino a quelqu’un pour toi',
+        body: 'Viens voir qui, et pourquoi vous allez bien ensemble.',
+      });
+      expect(deepLink('first_steps', news()[0]?.vars ?? {})).toBe('blowy://rencontres');
       // Hors du créneau de la demi-heure : rien n'est relu.
       expect(await jobs.runDue(at(3, 10, 12))).toBe(0);
       // La nuit (2 h à Paris) : rien.
@@ -241,15 +265,16 @@ describe('Fidélisation', () => {
       await jobs.runDue(at(3));
       await jobs.runDue(at(5));
       await jobs.runDue(at(7));
-      // Le jour 2 est passé sans envoi (minuteur arrêté) : J2 n'est pas rattrapé le jour 3, J3 part à sa place.
-      expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd5', 'd7']);
-      expect(notificationText('fr', 'first_steps', news()[2]?.vars ?? {}).body).toMatch(/présente/);
+      // Le jour 2 (« 3 mots ») est passé sans envoi (minuteur arrêté) : pas rattrapé le jour 3, l'habitude part à sa place.
+      expect(news().map((s) => s.vars.step)).toEqual(['people', 'habit', 'group', 'week']);
+      expect(notificationText('fr', 'first_steps', news()[2]?.vars ?? {}).body).toMatch(/groupe/);
+      expect(news().map((s) => deepLink('first_steps', s.vars))).toEqual(['blowy://rencontres', 'blowy://pet/habitudes', 'blowy://groupe/nouveau', 'blowy://pet']);
       // Jours 8 à 13 : ni premiers pas ni absence de 7 jours (semaine d'accueil).
       for (const day of [8, 9, 10, 11, 12, 13]) await jobs.runDue(at(day));
       expect(news()).toHaveLength(4);
       // 14 jours sans ouvrir l'app : nouvelle du minimoa et e-mail, avec ce qui s'est passé.
       await jobs.runDue(at(14));
-      expect(news().map((s) => s.vars.step)).toEqual(['d1', 'd3', 'd5', 'd7', 'absence']);
+      expect(news().map((s) => s.vars.step)).toEqual(['people', 'habit', 'group', 'week', 'absence']);
       expect(news()[4]?.vars.days).toBe('14');
       expect(notificationText('fr', 'minimoa_news', news()[4]?.vars ?? {}).body).toBe('Nino va bien. Tes liens ont peut-être des nouvelles pour toi.');
       const absence = mails(email).filter((m) => m.subject === 'Nino te garde ta place');

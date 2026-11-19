@@ -38,6 +38,14 @@ async function newPerson(world: TestWorld, name = 'Camille', id: string = random
   return p;
 }
 
+/** Minimoa créé la veille (le jour de l'inscription, le défi est servi comme déjà vu : `initialDailyStatus`). */
+function createdYesterday(world: TestWorld, userId: string): void {
+  const db = world.app.get<MemoryDb>(MEMORY_DB);
+  for (const pet of db.pets.values()) {
+    if (pet.ownerId === userId) db.pets.set(pet.id, { ...pet, createdAt: new Date(Date.parse(pet.createdAt) - 86_400_000).toISOString() });
+  }
+}
+
 /** Une personne dont le défi du jour (au jour courant de l'horloge) est du type voulu. */
 async function personWithChallenge(world: TestWorld, kind: DailyChallenge['kind'], name = 'Camille'): Promise<Person> {
   for (let i = 0; i < 80; i++) {
@@ -73,8 +81,18 @@ describe('rituels', () => {
   });
 
   describe('accueil et défi du jour', () => {
+    it('jour de l’inscription : le défi est là, servi comme déjà vu (rien en plein écran)', async () => {
+      const p = await newPerson(world);
+      const first = await p.api.rituals.today();
+      expect(first.challenge).toMatchObject({ status: 'seen', present: false });
+      // On peut toujours l'ouvrir depuis la tuile et l'accepter.
+      expect((await p.api.rituals.seenChallenge()).challenge).toMatchObject({ status: 'seen', present: false });
+      expect((await p.api.rituals.acceptChallenge()).challenge.status).toBe('accepted');
+    });
+
     it('la carte monte à la première ouverture, puis plus après « vu » ; le défi ne change pas de la journée', async () => {
       const p = await newPerson(world);
+      createdYesterday(world, p.id);
       const first = await p.api.rituals.today();
       expect(first.challenge).toMatchObject({ status: 'offered', present: true, day: '2026-11-11' });
       expect(first.streak).toMatchObject({ current: 0, best: 0, doneToday: false, atRisk: false, jokersLeft: 1, jokersPerWeek: 1, nextMilestone: { days: 3, itemId: 'fleurs' } });
@@ -559,7 +577,8 @@ describe('monde de démo', () => {
     try {
       const me = await newPerson(w);
       const today = await me.api.rituals.today();
-      expect(today.challenge.present).toBe(true);
+      // Jour de l'inscription : le défi est là, sans monter en plein écran.
+      expect(today.challenge).toMatchObject({ status: 'seen', present: false });
       const { reviews } = await me.api.rituals.reviews();
       expect(reviews).toHaveLength(1);
       expect(reviews[0]).toMatchObject({ weekStart: '2026-11-02', did: [reviewText.highlight.calm({ petName: 'Nino', outings: 0, habitsKept: 0, challengesDone: 0, streak: 0 })] });
