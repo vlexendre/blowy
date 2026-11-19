@@ -64,7 +64,7 @@ export const associations: GuidePage = {
             '**Le bouche-à-oreille** : demande à tes collègues, à tes voisins, à tes commerçants. Les meilleures associations sont souvent les moins visibles en ligne.',
           ],
         },
-        'Si tu vis dans une grande ville, nos pages [Se faire des amis dans ta ville](/se-faire-des-amis/) donnent des idées propres à chacune.',
+        'Si tu vis dans une grande ville, nos pages [Se faire des amis dans ta ville](/se-faire-des-amis/) donnent des idées propres à chacune : les [clubs et cercles liégeois](/se-faire-des-amis/liege/), les [tables de conversation et maisons de quartier de Bruxelles](/se-faire-des-amis/bruxelles/), les [estaminets et clubs sportifs de Lille](/se-faire-des-amis/lille/), les [winstubs et soirées d’échange linguistique à Strasbourg](/se-faire-des-amis/strasbourg/), les [sociétés locales lausannoises](/se-faire-des-amis/lausanne/) ou les [clubs nautiques et de randonnée niçois](/se-faire-des-amis/nice/).',
       ],
     },
     {
@@ -135,5 +135,5 @@ export const associations: GuidePage = {
   image: { src: '/img/m/bande_fete.webp', width: 1200, height: 421, alt: 'Nino, Suzie, Gaston et Pia, quatre minimoas, qui font la fête' },
   og: { lines: ['ASSOS ET', 'ACTIVITÉS', 'POUR SE FAIRE', 'DES AMIS.'], panel: 'orange' },
   published: '2026-11-18',
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

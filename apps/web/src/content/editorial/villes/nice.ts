@@ -49,6 +49,7 @@ export const nice: CityPage = {
         '**Le Carnaval** en février : la ville en fête pendant deux semaines. Une belle occasion de sortir en groupe.',
         '**La montagne** : les stations et les sentiers de l’arrière-pays sont tout proches. Les clubs de randonnée ou de ski organisent des sorties collectives où l’on fait connaissance pendant les trajets.',
         'Tu passes beaucoup de temps seul en dehors de la saison ? Notre guide [où rencontrer des gens quand on est seul](/guides/rencontrer-des-gens-seul/) a des idées concrètes.',
+        'Hors saison, on bouge aussi le long de la côte et vers l’ouest. Nos pages pour [rencontrer du monde à Marseille](/se-faire-des-amis/marseille/) et à [Montpellier, ville étudiante](/se-faire-des-amis/montpellier/) peuvent t’inspirer. Pour que Minimoa arrive dans ton coin de Nice, [ouvre ton quartier](/quartier/).',
       ],
     },
   ],
@@ -82,5 +83,5 @@ export const nice: CityPage = {
   guides: ['rencontrer-des-gens-seul', 'se-faire-des-amis-nouvelle-ville', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/suzie_coucou.webp', width: 450, height: 500, alt: 'Suzie, une minimoa rose à antennes pompons, qui fait coucou' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À NICE.'], panel: 'rose' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

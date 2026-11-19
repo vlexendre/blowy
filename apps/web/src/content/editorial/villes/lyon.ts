@@ -54,6 +54,7 @@ export const lyon: CityPage = {
           ],
         },
         'Ne sous-estime pas les bouchons et les tables partagées : manger côte à côte délie les langues. Pour les plus réservés, notre guide [se faire des amis quand on est timide](/guides/se-faire-des-amis-timide/) propose des façons douces de se lancer.',
+        'Lyon est aussi un carrefour. Si ton travail ou tes amis t’emmènent souvent vers la Suisse ou la Méditerranée, nos pages pour [se faire des amis à Genève](/se-faire-des-amis/geneve/) et pour [rencontrer du monde à Marseille](/se-faire-des-amis/marseille/) donnent les adresses qui comptent là-bas.',
       ],
     },
   ],
@@ -87,5 +88,5 @@ export const lyon: CityPage = {
   guides: ['se-faire-des-amis-timide', 'se-faire-des-amis-adulte', 'associations-activites-rencontrer-du-monde'],
   image: { src: '/img/m/duo_check.webp', width: 700, height: 456, alt: 'Nino et Pia, deux minimoas, qui se font un check' },
   og: { lines: ['SE FAIRE', 'DES AMIS', 'À LYON.'], panel: 'coral' },
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };

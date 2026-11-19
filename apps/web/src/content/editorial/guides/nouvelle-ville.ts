@@ -51,7 +51,7 @@ export const nouvelleVille: GuidePage = {
           ],
         },
         `Pour trouver du bénévolat près de chez toi, la plateforme publique [JeVeuxAider.gouv.fr](${S.jeVeuxAider.url}) propose des missions classées par lieu et par durée, d’une heure à un engagement régulier.`,
-        'Si tu as déménagé dans une grande ville, nos pages [Se faire des amis dans ta ville](/se-faire-des-amis/) donnent des pistes propres à chacune : quartiers, lieux, rendez-vous.',
+        'Si tu as déménagé dans une grande ville, nos pages [Se faire des amis dans ta ville](/se-faire-des-amis/) donnent des pistes propres à chacune : quartiers, lieux, rendez-vous. Quelques exemples : [s’installer à Lyon et y trouver sa bande](/se-faire-des-amis/lyon/), [arriver à Toulouse sans connaître personne](/se-faire-des-amis/toulouse/), [se faire des amis à Nantes après un déménagement](/se-faire-des-amis/nantes/), [poser ses valises à Strasbourg](/se-faire-des-amis/strasbourg/), ou, pour une mutation à l’étranger, [Genève](/se-faire-des-amis/geneve/), [Lausanne](/se-faire-des-amis/lausanne/) et [la vie de frontalier au Luxembourg](/se-faire-des-amis/luxembourg/).',
       ],
     },
     {
@@ -99,7 +99,7 @@ export const nouvelleVille: GuidePage = {
     {
       title: 'Si ça prend du temps',
       blocks: [
-        'Il est normal que les trois premiers mois soient solitaires, et que les vraies amitiés mettent un an ou plus à se former. Ce n’est pas un signe que tu t’y prends mal. Continue tes activités, relance, propose. La plupart des gens qui s’installent quelque part racontent la même chose : à un moment, sans savoir exactement quand, ils se sont rendu compte qu’ils avaient « leur bande ».',
+        'Il est normal que les trois premiers mois soient solitaires, et que les vraies amitiés mettent un an ou plus à se former. Ce n’est pas un signe que tu t’y prends mal : notre guide sur [les amitiés qui se construisent à l’âge adulte](/guides/se-faire-des-amis-adulte/) explique pourquoi ça demande du temps. Continue tes activités, relance, propose. La plupart des gens qui s’installent quelque part racontent la même chose : à un moment, sans savoir exactement quand, ils se sont rendu compte qu’ils avaient « leur bande ».',
         'Si la solitude devient lourde, n’attends pas pour en parler : à un proche, à ton médecin, ou à une ligne d’écoute. Notre guide [où rencontrer des gens quand on est seul](/guides/rencontrer-des-gens-seul/) liste des contacts utiles.',
       ],
     },
@@ -129,5 +129,5 @@ export const nouvelleVille: GuidePage = {
   image: { src: '/img/m/nino_marche.webp', width: 450, height: 500, alt: 'Nino, un minimoa vert à mèche orange, qui part en balade' },
   og: { lines: ['NOUVELLE', 'VILLE,', 'NOUVEAUX', 'AMIS.'], panel: 'coral' },
   published: '2026-11-18',
-  updated: '2026-11-18',
+  updated: '2026-11-19',
 };
