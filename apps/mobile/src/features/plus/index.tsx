@@ -1,5 +1,5 @@
 /**
- * Minimoa+ : la feuille d'offre (paywall de l'inscription, « Moi › Minimoa+ » et tous les points d'entrée de l'app via
+ * Minimoa+ : la feuille d'offre (« Moi › Minimoa+ », moments clés et tous les points d'entrée de l'app via
  * `openPlus(raison)`), les achats StoreKit vérifiés par l'API, la restauration et la synchronisation au lancement.
  *
  * Les faits viennent de l'API (`api.plus.paywall()` : offres, essai, avantages, nombre réel de personnes compatibles,
@@ -9,7 +9,7 @@
  */
 import { ApiError } from '@blowy/api-client';
 import type { Paywall, PaywallOffer, PlanDto, Subscription } from '@blowy/contract';
-import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, PLUS_TRIGGERS, type PlusPerk, collectionOfItem, type PlusTrigger, type Species, yearlyDiscountPercent } from '@blowy/domain';
+import { ITEMS, type ItemSlot, OFFERS, type Outfit, PLUS_PERKS, PLUS_TRIGGERS, type PlusMoment, type PlusPerk, collectionOfItem, type PlusTrigger, type Species, yearlyDiscountPercent } from '@blowy/domain';
 import { type IconName, PlusTemplate, type PlusHeroPose, type PlusOfferView, type PlusPerkView, SheetTemplate } from '@blowy/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -48,6 +48,7 @@ const REASON_PERK: Partial<Record<PlusReason, PlusPerk>> = {
   collection: 'premium_items',
   moment_first_link: 'more_encounters',
   moment_streak_7: 'streak_jokers',
+  moment_second_day: 'more_encounters',
 };
 
 /** Raisons dont le titre parle de l'objet touché (essayé, vu sur un autre minimoa). */
@@ -213,10 +214,18 @@ function usePlusOpened(reason: PlusReason, enabled: boolean) {
 }
 
 let momentAsked = false;
+/** Moments que cette version sait ouvrir (le serveur ne répond qu'un de ceux-là) et leur déclencheur. */
+const MOMENT_REASON: Record<PlusMoment, PlusReason> = {
+  first_link: 'moment_first_link',
+  streak_7: 'moment_streak_7',
+  second_day: 'moment_second_day',
+};
+const MOMENTS_ACCEPTED = Object.keys(MOMENT_REASON) as PlusMoment[];
 /**
- * Moment clé (premier lien, 7 jours de série) : quand l'accueil est calme, demande une fois par lancement au serveur
- * s'il y a un moment à saluer ; le serveur décide et plafonne (une fois par moment, jamais deux propositions fortes en
- * moins de 3 jours, jamais le jour de l'inscription, jamais avec Minimoa+). Alors seulement, la feuille s'ouvre.
+ * Moment clé (premier lien, 7 jours de série, deuxième jour) : quand l'accueil est calme, demande une fois par
+ * lancement au serveur s'il y a un moment à saluer ; le serveur décide et plafonne (une fois par moment, jamais deux
+ * propositions fortes en moins de 3 jours, jamais le jour de l'inscription, jamais avec Minimoa+). Alors seulement, la
+ * feuille s'ouvre. Plus de feuille à la fin de l'inscription : le « deuxième jour » la remplace.
  */
 export function usePlusMoment(calm: boolean, plus: boolean | undefined) {
   const api = useApi();
@@ -225,9 +234,9 @@ export function usePlusMoment(calm: boolean, plus: boolean | undefined) {
     momentAsked = true;
     // Le serveur a réservé le moment : la feuille s'ouvre même si l'accueil change entre-temps.
     api.plus
-      .moment()
+      .moment({ accepts: MOMENTS_ACCEPTED })
       .then(({ moment }) => {
-        if (moment) setTimeout(() => openPlus(moment === 'first_link' ? 'moment_first_link' : 'moment_streak_7'), 700);
+        if (moment) setTimeout(() => openPlus(MOMENT_REASON[moment]), 700);
       })
       .catch(() => undefined);
   }, [calm, plus, api]);

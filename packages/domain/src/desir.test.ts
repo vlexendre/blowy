@@ -62,6 +62,20 @@ describe('moments clés', () => {
     expect(plusMomentDue({ ...due, keys: new Set([plusStrongKey('2026-11-18')]) })).toBeNull();
     expect(plusMomentDue({ ...due, keys: new Set([plusStrongKey('2026-11-17')]) })).toBe('streak_7');
   });
+  it('deuxième jour : seulement pour une app qui sait l’ouvrir, du jour 2 au jour 4, une fois', () => {
+    const young = { ...base, createdOn: '2026-11-18', accepts: ['first_link', 'streak_7', 'second_day'] as const };
+    // App installée qui ne dit rien : jamais ce moment (sa réponse ne se lirait pas).
+    expect(plusMomentDue({ ...young, accepts: undefined })).toBeNull();
+    expect(plusMomentDue({ ...young, today: '2026-11-18' })).toBeNull();
+    expect(plusMomentDue({ ...young, today: '2026-11-19' })).toBeNull();
+    expect(plusMomentDue({ ...young, today: '2026-11-20' })).toBe('second_day');
+    expect(plusMomentDue({ ...young, today: '2026-11-22' })).toBe('second_day');
+    expect(plusMomentDue({ ...young, today: '2026-11-23' })).toBeNull();
+    expect(plusMomentDue({ ...young, keys: new Set([plusMomentKey('second_day')]) })).toBeNull();
+    expect(plusMomentDue({ ...young, plus: true })).toBeNull();
+    // Un premier lien tout frais passe avant.
+    expect(plusMomentDue({ ...young, links: 1, firstLinkOn: '2026-11-20' })).toBe('first_link');
+  });
 });
 
 describe('mesure par déclencheur', () => {

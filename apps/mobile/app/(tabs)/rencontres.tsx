@@ -1,4 +1,3 @@
-import { ApiError } from '@blowy/api-client';
 import type { EncounterHistoryItem, MatchExplanation } from '@blowy/contract';
 import { color } from '@blowy/tokens';
 import {
@@ -104,7 +103,6 @@ export default function RencontresScreen() {
   const actionError = (isWaveLimit(wave.error) ? null : wave.error) ?? accept.error ?? decline.error;
   const shape = encounters.data?.petShape;
   const sulking = shape === 'boude';
-  const sulkWave = wave.error instanceof ApiError && wave.error.code === 'forbidden';
   const toPet = () => router.navigate('/(tabs)/pet');
   const m = me.data;
   const noVision = m ? !m.visionTestDone : false;
@@ -169,13 +167,14 @@ export default function RencontresScreen() {
           onAction={() => void encounters.refetch()}
         />
       ) : null}
-      {shape === 'bof' || sulking ? <Banner tone="info" title={t.bofTitle(petName)} actionLabel={t.sulkAction} onAction={toPet} /> : null}
+      {/* Bouder ou être à plat ne bloque personne (le serveur présente et laisse saluer) : on le dit, les soins pour l'humeur. */}
+      {shape === 'bof' || sulking ? (
+        <Banner tone="info" title={sulking ? t.waveSulk(petName) : t.bofTitle(petName)} text={t.moodText} actionLabel={t.sulkAction} onAction={toPet} />
+      ) : null}
       {actionError ? (
         <Banner
           tone="error"
-          text={sulkWave ? t.waveSulk(petName) : errorText(actionError, t.actionError)}
-          actionLabel={sulkWave ? t.sulkAction : undefined}
-          onAction={sulkWave ? toPet : undefined}
+          text={errorText(actionError, t.actionError)}
           onClose={() => {
             wave.reset();
             accept.reset();

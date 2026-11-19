@@ -11,6 +11,7 @@ import {
   dayOf,
   fideliteDayKey,
   fideliteDue,
+  firstStepVariant,
   isFideliteHour,
   isFideliteSlot,
   localTimeOf,
@@ -19,6 +20,7 @@ import type { Env } from '../../../config/env';
 import { Notifier as MailNotifier } from '../../../integrations/mailer/notifier';
 import { NOTIFIER, type Notifier } from '../../../integrations/push/notifier';
 import { ENV, PETS } from '../../../shared/tokens';
+import { ListEncounters } from '../../encounters/application/list-encounters.usecase';
 import { NotificationSettings } from '../../notifications/notification-settings';
 import type { PetsRepository } from '../../pets/ports';
 import { Audience } from '../../safety/application/audience';
@@ -33,7 +35,7 @@ const MAX_YEARS = 10;
 
 /**
  * Nouvelles du minimoa et premiers pas (docs/FIDELISATION.md), appelés par le minuteur (`modules/tick/jobs.ts`) :
- * - J1, J3, J7 après l'inscription (habitudes, groupes, première rencontre) ;
+ * - J1, J2, J3, J5, J7 après l'inscription (les gens d'abord, puis « 3 mots », habitude, groupe, première semaine) ;
  * - 3, 7 et 14 jours sans ouvrir l'app (le minimoa qui attend, sans reproche ; e-mail à 14 jours avec ce qui s'est
  *   passé) ;
  * - un mois, puis chaque année, avec son minimoa.
@@ -56,6 +58,7 @@ export class FideliteJobs implements TickJob {
     @Inject(Audience) private readonly audience: Audience,
     @Inject(CatchUp) private readonly catchUp: CatchUp,
     @Inject(ENV) private readonly env: Env,
+    @Inject(ListEncounters) private readonly encounters: ListEncounters,
   ) {}
 
   async runDue(now: Date, deadline: number = Date.now() + 20_000): Promise<number> {
@@ -117,16 +120,26 @@ export class FideliteJobs implements TickJob {
       const at = now.toISOString();
       if (!(await this.log.claim(p.userId, fideliteDayKey(today), at))) continue;
       if (!(await this.log.claim(p.userId, message.key, at))) continue;
-      await this.notifier.notify(p.userId, message.kind, this.vars(message, petName));
+      await this.notifier.notify(p.userId, message.kind, await this.vars(p.userId, message, petName));
       if (message.email) await this.email(p, petName);
       sent += 1;
     }
     return sent;
   }
 
-  private vars(m: FideliteMessage, minimoa: string): Record<string, string> {
-    if (m.kind === 'first_steps') return { step: m.step, minimoa };
+  private async vars(userId: string, m: FideliteMessage, minimoa: string): Promise<Record<string, string>> {
+    if (m.kind === 'first_steps') return { step: firstStepVariant(m.topic, m.topic === 'people' ? await this.peopleWaiting(userId) : 0), minimoa };
     return m.step === 'absence' ? { step: 'absence', days: String(m.days), minimoa } : { step: 'anniversary', count: String(m.months), minimoa };
+  }
+
+  /** Personnes qui attendent aujourd'hui (signes reçus, présentations) ; 0 si on ne peut pas le savoir (texte honnête). */
+  private async peopleWaiting(userId: string): Promise<number> {
+    try {
+      return await this.encounters.waiting(userId);
+    } catch (err) {
+      this.logger.warn(`rencontres non lues pour le premier pas : ${err instanceof Error ? err.message : 'erreur inconnue'}`);
+      return 0;
+    }
   }
 
   /** E-mail des 14 jours : ce qui s'est passé pendant l'absence. Jamais à un compte suspendu ; ne lève jamais. */

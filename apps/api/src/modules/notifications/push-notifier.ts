@@ -11,9 +11,10 @@
  */
 import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import type { PushData, WidgetState } from '@blowy/contract';
-import { notificationDigestText, notificationText } from '@blowy/content';
+import { firstStepOf, notificationDigestText, notificationText } from '@blowy/content';
 import {
   DEFERRED_MAX_HOURS,
+  type FirstStepVariant,
   type NotificationHistoryEntry,
   type Locale,
   type NotificationKindKey,
@@ -80,6 +81,16 @@ export function conversationKey(kind: NotificationKind, vars: Readonly<Record<st
 const grouped = (vars: Readonly<Record<string, string>>): boolean => Number(vars.others) > 0 || vars.multi === '1';
 
 /** Lien profond (routes expo-router de l'app) ; `vars.path` (commençant par « / ») le remplace. */
+/** Où mène chaque premier pas (docs/FIDELISATION.md). */
+const FIRST_STEP_LINK: Record<FirstStepVariant, string> = {
+  people: 'blowy://rencontres',
+  people_none: 'blowy://rencontres',
+  words: 'blowy://mots',
+  habit: 'blowy://pet/habitudes',
+  group: 'blowy://groupe/nouveau',
+  week: 'blowy://pet',
+};
+
 export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, string>>): string {
   if (vars.path?.startsWith('/')) return `blowy:/${vars.path}`;
   switch (kind) {
@@ -110,17 +121,10 @@ export function deepLink(kind: NotificationKind, vars: Readonly<Record<string, s
     case 'together_proposal':
       return vars.groupId ? `blowy://groupe/${vars.groupId}` : 'blowy://pet/habitudes';
     case 'first_steps':
-      // J1 : le lien « 3 mots » ; J2 : les habitudes ; J3 : un groupe par lien ; J5 : les rencontres ; J7 : l'accueil
-      // (le bilan de la semaine et la carte à partager).
-      return vars.step === 'd1'
-        ? 'blowy://mots'
-        : vars.step === 'd2'
-          ? 'blowy://pet/habitudes'
-          : vars.step === 'd3'
-            ? 'blowy://groupe/nouveau'
-            : vars.step === 'd5'
-              ? 'blowy://rencontres'
-              : 'blowy://pet';
+      // J1 : les gens (Rencontres, qui dit aussi pourquoi personne et propose d'inviter) ; J2 : le lien « 3 mots » ;
+      // J3 : les habitudes ; J5 : un groupe par lien ; J7 : l'accueil (le bilan de la semaine et la carte à partager).
+      // Un ancien report (`d1`…) garde son ancien sujet (`firstStepOf`).
+      return FIRST_STEP_LINK[firstStepOf(vars.step ?? '')];
     case 'plus_account':
       // L'au revoir mène au minimoa (rien à vendre) ; le reste à la feuille Minimoa+ (état, « Gérer mon abonnement »).
       return vars.step === 'goodbye' ? 'blowy://pet' : 'blowy://moi/blowy-plus';

@@ -4,8 +4,8 @@
  * - « Vu de loin » : de vraies personnes compatibles, comptées, jamais montrées (`farSummary`).
  * - Collections saisonnières : une vraie date de fin, tenue par le serveur ; ceux qui ont eu Minimoa+ pendant la
  *   collection gardent ses objets, les autres ne peuvent plus les avoir (`COLLECTIONS`, `itemAvailable`).
- * - Moments clés : une seule proposition forte par moment (première rencontre réussie, 7 jours de série), jamais deux
- *   en moins de `STRONG_GAP_DAYS` jours, jamais le jour de l'inscription (`plusMomentDue`).
+ * - Moments clés : une seule proposition forte par moment (première rencontre réussie, 7 jours de série, deuxième jour
+ *   avec son minimoa), jamais deux en moins de `STRONG_GAP_DAYS` jours, jamais le jour de l'inscription (`plusMomentDue`).
  * - Déclencheurs : chaque ouverture de la feuille dit d'où elle vient (`PLUS_TRIGGERS`), pour mesurer la conversion.
  */
 import { type Day, daysBetween } from './days';
@@ -36,6 +36,7 @@ export const PLUS_TRIGGERS = [
   'collection',
   'moment_first_link',
   'moment_streak_7',
+  'moment_second_day',
 ] as const;
 export type PlusTrigger = (typeof PLUS_TRIGGERS)[number];
 export const isPlusTrigger = (v: unknown): v is PlusTrigger => typeof v === 'string' && (PLUS_TRIGGERS as readonly string[]).includes(v);
@@ -119,9 +120,21 @@ export function withoutUnavailable(outfit: Outfit, today: Day, kept: ReadonlySet
 
 // ── Moments clés ────────────────────────────────────────────────────────────
 
-/** Moments de valeur après lesquels Minimoa+ peut être proposé, une fois chacun. */
-export const PLUS_MOMENTS = ['first_link', 'streak_7'] as const;
+/**
+ * Moments de valeur après lesquels Minimoa+ peut être proposé, une fois chacun. `second_day` (19 nov. 2026) : la
+ * feuille ne s'ouvre plus à la fin de l'inscription ; elle peut s'ouvrir une fois au deuxième jour (jusqu'au quatrième),
+ * quand la personne a eu le temps de voir ce que l'app gratuite fait.
+ */
+export const PLUS_MOMENTS = ['first_link', 'streak_7', 'second_day'] as const;
 export type PlusMoment = (typeof PLUS_MOMENTS)[number];
+export const isPlusMoment = (v: unknown): v is PlusMoment => typeof v === 'string' && (PLUS_MOMENTS as readonly string[]).includes(v);
+/**
+ * Moments que connaît une app qui ne dit rien (versions d'avant `second_day`) : un moment inconnu ferait échouer la
+ * lecture de sa réponse. L'app dit les moments qu'elle sait ouvrir (`PlusMomentBody.accepts`).
+ */
+export const LEGACY_PLUS_MOMENTS: readonly PlusMoment[] = ['first_link', 'streak_7'];
+/** Le moment « deuxième jour » : du jour 2 au jour 2 + `MOMENT_FRESH_DAYS` après l'inscription. */
+export const SECOND_DAY = 2;
 
 /** Jours au moins entre deux propositions fortes (feuille ouverte d'elle-même). */
 export const STRONG_GAP_DAYS = 3;
@@ -148,6 +161,8 @@ export interface PlusMomentFacts {
   /** Série du défi du jour, et jour du dernier défi fait. */
   streak: number;
   streakDay: Day | null;
+  /** Moments que l'app sait ouvrir (défaut : `LEGACY_PLUS_MOMENTS`). */
+  accepts?: readonly PlusMoment[];
 }
 
 /** Dernière proposition forte (jour), d'après le journal. */
@@ -163,18 +178,29 @@ function lastStrong(keys: ReadonlySet<string>): Day | null {
 
 /**
  * Le moment à saluer d'une proposition Minimoa+ maintenant, ou null. Jamais avec Minimoa+, jamais le jour de
- * l'inscription (la feuille de l'inscription suffit), jamais deux fois le même moment, jamais moins de
+ * l'inscription (la première session sert à découvrir les gens), jamais deux fois le même moment, jamais moins de
  * `STRONG_GAP_DAYS` jours après une autre proposition forte, et seulement juste après le moment.
  */
 export function plusMomentDue(f: PlusMomentFacts): PlusMoment | null {
   if (f.plus || daysBetween(f.createdOn, f.today) < 1) return null;
+  const accepts = f.accepts ?? LEGACY_PLUS_MOMENTS;
   const last = lastStrong(f.keys);
   if (last && daysBetween(last, f.today) < STRONG_GAP_DAYS) return null;
   const fresh = (d: Day | null): boolean => d !== null && daysBetween(d, f.today) >= 0 && daysBetween(d, f.today) <= MOMENT_FRESH_DAYS;
   // Première rencontre réussie : le tout premier lien, tout récent.
-  if (!f.keys.has(plusMomentKey('first_link')) && f.links === 1 && fresh(f.firstLinkOn)) return 'first_link';
+  if (accepts.includes('first_link') && !f.keys.has(plusMomentKey('first_link')) && f.links === 1 && fresh(f.firstLinkOn)) return 'first_link';
   // Une semaine de défis d'affilée (la série est encore vivante).
-  if (!f.keys.has(plusMomentKey('streak_7')) && f.streak >= MOMENT_STREAK && f.streak < MOMENT_STREAK + MOMENT_FRESH_DAYS + 1 && fresh(f.streakDay)) return 'streak_7';
+  if (
+    accepts.includes('streak_7') &&
+    !f.keys.has(plusMomentKey('streak_7')) &&
+    f.streak >= MOMENT_STREAK &&
+    f.streak < MOMENT_STREAK + MOMENT_FRESH_DAYS + 1 &&
+    fresh(f.streakDay)
+  )
+    return 'streak_7';
+  // Deuxième jour avec son minimoa (la feuille n'est plus proposée à l'inscription) : une fois, du jour 2 au jour 4.
+  const age = daysBetween(f.createdOn, f.today);
+  if (accepts.includes('second_day') && !f.keys.has(plusMomentKey('second_day')) && age >= SECOND_DAY && age <= SECOND_DAY + MOMENT_FRESH_DAYS) return 'second_day';
   return null;
 }
 

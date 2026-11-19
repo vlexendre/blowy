@@ -106,7 +106,7 @@ const fr = {
   shapeLabel: {
     en_forme: { title: 'En pleine forme', text: 'Il sort, il voit du monde.' },
     bof: { title: 'Un peu à plat', text: 'Un soin, une sortie, et ça repart.' },
-    boude: { title: 'Il boude', text: 'Il te présente quand même quelqu’un chaque jour. Plus tu sors, plus il te présente de monde.' },
+    boude: { title: 'Il boude', text: 'Il te présente quand même du monde. Un soin, et il retrouve sa bonne humeur.' },
   } as Record<string, { title: string; text: string }>,
   slotLabel: { head: 'Tête', face: 'Visage', body: 'Tenue', toy: 'Objets' } as Record<string, string>,
   statGoalLabel: {
@@ -231,7 +231,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'Doing great', text: 'It goes out and meets people.' },
       bof: { title: 'A bit flat', text: 'A little care, an outing, and it bounces back.' },
-      boude: { title: 'It’s sulking', text: 'It still introduces you to someone every day. The more you go out, the more people it introduces.' },
+      boude: { title: 'It’s sulking', text: 'It still introduces you to people. A little care and it’s back in a good mood.' },
     },
     slotLabel: { head: 'Head', face: 'Face', body: 'Outfit', toy: 'Items' },
     statGoalLabel: {
@@ -352,7 +352,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'En plena forma', text: 'Sale y conoce gente.' },
       bof: { title: 'Un poco apagado', text: 'Un mimo, una salida, y vuelve a estar bien.' },
-      boude: { title: 'Está enfurruñado', text: 'Aun así te presenta a alguien cada día. Cuanto más sales, más gente te presenta.' },
+      boude: { title: 'Está enfurruñado', text: 'Aun así te presenta gente. Un cuidado y vuelve a estar de buen humor.' },
     },
     slotLabel: { head: 'Cabeza', face: 'Cara', body: 'Ropa', toy: 'Objetos' },
     statGoalLabel: {
@@ -473,7 +473,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'Em plena forma', text: 'Ele sai e conhece gente.' },
       bof: { title: 'Meio pra baixo', text: 'Um carinho, uma saída, e ele se anima de novo.' },
-      boude: { title: 'Está emburrado', text: 'Mesmo assim, ele te apresenta alguém todo dia. Quanto mais você sai, mais gente ele apresenta.' },
+      boude: { title: 'Está emburrado', text: 'Mesmo assim, ele te apresenta gente. Um cuidado e ele volta ao bom humor.' },
     },
     slotLabel: { head: 'Cabeça', face: 'Rosto', body: 'Roupa', toy: 'Objetos' },
     statGoalLabel: {
@@ -594,7 +594,7 @@ export const labels = defineMessages({
     shapeLabel: {
       en_forme: { title: 'In topvorm', text: 'Hij gaat op pad en ontmoet mensen.' },
       bof: { title: 'Een beetje futloos', text: 'Wat zorg, een uitje, en hij knapt weer op.' },
-      boude: { title: 'Hij mokt', text: 'Toch stelt hij je elke dag aan iemand voor. Hoe meer je eropuit gaat, hoe meer mensen hij voorstelt.' },
+      boude: { title: 'Hij mokt', text: 'Toch stelt hij je mensen voor. Een beetje zorg en hij is weer goedgehumeurd.' },
     },
     slotLabel: { head: 'Hoofd', face: 'Gezicht', body: 'Outfit', toy: 'Spullen' },
     statGoalLabel: {

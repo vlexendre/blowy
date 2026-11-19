@@ -50,7 +50,7 @@ import {
   WeeklyReviewsZ,
   ritualRoutes,
 } from '@blowy/contract';
-import { PaywallZ, type PlusOpenBody, PlusMomentZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
+import { PaywallZ, type PlusMomentBody, type PlusOpenBody, PlusMomentZ, type SubmitPurchaseBody, SubscriptionZ, billingRoutes } from '@blowy/contract';
 import { AiConsentsZ, HabitDoneResultZ, aiRoutes } from '@blowy/contract';
 import {
   type LinkMinimoasBody,
@@ -423,11 +423,14 @@ export function createApiClient(opts: ApiClientOptions) {
       submitPurchase: (body: SubmitPurchaseBody) => call('POST', billingRoutes.plusPurchases(), SubscriptionZ, body),
       /** La feuille s'est ouverte, avec son déclencheur (mesure seulement ; jamais bloquant). */
       opened: (trigger: PlusOpenBody['trigger']) => call('POST', billingRoutes.plusOpens(), OkZ, { trigger }),
-      /** Moment clé à saluer maintenant, décidé et plafonné par le serveur (null : rien). */
-      moment: () => call('POST', billingRoutes.plusMoment(), PlusMomentZ),
+      /**
+       * Moment clé à saluer maintenant, décidé et plafonné par le serveur (null : rien). `accepts` : les moments que l'app
+       * sait ouvrir (sans : ceux des versions d'avant).
+       */
+      moment: (body?: PlusMomentBody) => call('POST', billingRoutes.plusMoment(), PlusMomentZ, body),
     },
     /**
-     * Les minimoas dans le chat : accord de lecture par l'IA (à demander à la première ouverture du chat quand
+     * Les minimoas dans le chat : accord de lecture par l'IA (à demander après quelques messages échangés quand
      * `consent.mine` est null, avec `consent.text` tel quel) et coupure, par lien ; liste pour l'écran « Moi ».
      */
     minimoas: {

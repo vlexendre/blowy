@@ -64,3 +64,12 @@ export function advanceDaily(status: DailyStatus, to: DailyStatus): DailyStatus 
 
 /** La carte monte en plein écran à cette ouverture : elle n'a pas encore été vue aujourd'hui. */
 export const presentDailyCard = (status: DailyStatus): boolean => status === 'offered';
+
+/**
+ * Le jour où le minimoa est créé, la première session sert à découvrir les gens : le défi existe (tuile de l'accueil),
+ * mais il est servi comme déjà vu (rien ne monte en plein écran, l'app installée comprise : `present` est faux) et le
+ * rappel du défi ne part pas. Dès le lendemain, il est proposé normalement.
+ */
+export const isSignupDay = (petCreatedOn: Day | null, today: Day): boolean => petCreatedOn !== null && petCreatedOn === today;
+export const initialDailyStatus = (petCreatedOn: Day | null, today: Day): Extract<DailyStatus, 'offered' | 'seen'> =>
+  isSignupDay(petCreatedOn, today) ? 'seen' : 'offered';

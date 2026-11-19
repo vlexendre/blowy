@@ -12,18 +12,43 @@ import { type Day, addDays, daysBetween } from './days';
 // ── Rétention de l'app ──────────────────────────────────────────────────────
 
 /**
- * Les premiers pas, chacun mène à des gens : J1 le lien « 3 mots » (tes potes te décrivent), J2 la première habitude,
- * J3 rejoindre ou créer un groupe par son lien, J5 la première personne présentée, J7 ta première semaine (le bilan et
- * la carte à partager).
+ * Les premiers pas, chacun mène à des gens, la promesse d'abord : J1 les personnes que le minimoa a pour toi (ou, sans
+ * personne de compatible, ce qui l'aide : inviter), J2 le lien « 3 mots » (tes potes te décrivent), J3 la première
+ * habitude, J5 rejoindre ou créer un groupe par son lien, J7 ta première semaine (le bilan et la carte à partager).
+ *
+ * `topic` dit de quoi parle le message ; sa clé dans le journal est `first_steps:<topic>`. Avant le 19 nov. 2026, l'ordre
+ * était J1 « 3 mots », J2 habitude, J3 groupe, J5 les gens, avec des clés par jour (`first_steps:d1`…) : ces anciennes
+ * clés comptent pour leur ancien sujet (`LEGACY_FIRST_STEP_TOPIC`), pour que personne ne reçoive deux fois le même.
  */
 export const FIRST_STEPS = [
-  { step: 'd1', day: 1 },
-  { step: 'd2', day: 2 },
-  { step: 'd3', day: 3 },
-  { step: 'd5', day: 5 },
-  { step: 'd7', day: 7 },
+  { step: 'd1', day: 1, topic: 'people' },
+  { step: 'd2', day: 2, topic: 'words' },
+  { step: 'd3', day: 3, topic: 'habit' },
+  { step: 'd5', day: 5, topic: 'group' },
+  { step: 'd7', day: 7, topic: 'week' },
 ] as const;
 export type FirstStep = (typeof FIRST_STEPS)[number]['step'];
+export type FirstStepTopic = (typeof FIRST_STEPS)[number]['topic'];
+
+/** Sujet de chaque ancienne clé du journal (ordre d'avant le 19 nov. 2026). */
+export const LEGACY_FIRST_STEP_TOPIC: Record<FirstStep, FirstStepTopic> = { d1: 'words', d2: 'habit', d3: 'group', d5: 'people', d7: 'week' };
+
+/** Clé du journal d'un premier pas. */
+export const firstStepKey = (topic: FirstStepTopic): string => `first_steps:${topic}`;
+
+/** Un premier pas déjà parti, sous sa clé ou sous l'ancienne clé du même sujet. */
+export function firstStepSent(topic: FirstStepTopic, sent: ReadonlySet<string>): boolean {
+  if (sent.has(firstStepKey(topic))) return true;
+  return (Object.keys(LEGACY_FIRST_STEP_TOPIC) as FirstStep[]).some((d) => LEGACY_FIRST_STEP_TOPIC[d] === topic && sent.has(`first_steps:${d}`));
+}
+
+/**
+ * Ce que dit le premier pas « les gens » (J1) : quelqu'un à présenter ou un signe reçu (`people`), sinon un texte
+ * honnête qui pousse à inviter (`people_none`). Les autres sujets ne dépendent de rien.
+ */
+export type FirstStepVariant = FirstStepTopic | 'people_none';
+export const firstStepVariant = (topic: FirstStepTopic, peopleWaiting: number): FirstStepVariant =>
+  topic === 'people' && peopleWaiting <= 0 ? 'people_none' : topic;
 
 /** Absences (jours sans ouvrir l'app) qui donnent des nouvelles du minimoa. La dernière part aussi par e-mail. */
 export const ABSENCE_DAYS = [3, 7, 14] as const;
@@ -64,7 +89,7 @@ export const isFideliteSlot = (now: Date): boolean => now.getUTCMinutes() % FIDE
 export const fideliteDayKey = (localDay: Day): string => `day:${localDay}`;
 
 export type FideliteMessage =
-  | { kind: 'first_steps'; step: FirstStep; key: string; email: false }
+  | { kind: 'first_steps'; step: FirstStep; topic: FirstStepTopic; key: string; email: false }
   | { kind: 'minimoa_news'; step: 'absence'; days: AbsenceDays; key: string; email: boolean }
   | { kind: 'minimoa_news'; step: 'anniversary'; months: number; key: string; email: false };
 
@@ -102,10 +127,10 @@ export function absenceDue(lastActiveOn: Day, today: Day): AbsenceDays | null {
 }
 
 /** Premier pas dû aujourd'hui (J1, J2, J3, J5, J7 après l'inscription) ; null sinon. */
-export function firstStepDue(createdOn: Day, today: Day): FirstStep | null {
+export function firstStepDue(createdOn: Day, today: Day): (typeof FIRST_STEPS)[number] | null {
   for (let i = FIRST_STEPS.length - 1; i >= 0; i--) {
     const s = FIRST_STEPS[i];
-    if (s && within(addDays(createdOn, s.day), today, catchUpOf(i))) return s.step;
+    if (s && within(addDays(createdOn, s.day), today, catchUpOf(i))) return s;
   }
   return null;
 }
@@ -125,7 +150,9 @@ export function fideliteDue(i: { createdOn: Day; lastActiveOn: Day; today: Day; 
     candidates.push({ kind: 'minimoa_news', step: 'absence', days: absent, key: `absence:${absent}:${i.lastActiveOn}`, email: absent === LONG_ABSENCE_DAYS });
   }
   const step = firstStepDue(i.createdOn, i.today);
-  if (step !== null) candidates.push({ kind: 'first_steps', step, key: `first_steps:${step}`, email: false });
+  if (step !== null && !firstStepSent(step.topic, i.sent)) {
+    candidates.push({ kind: 'first_steps', step: step.step, topic: step.topic, key: firstStepKey(step.topic), email: false });
+  }
   return candidates.find((c) => !i.sent.has(c.key)) ?? null;
 }
 

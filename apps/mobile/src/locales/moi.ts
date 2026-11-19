@@ -208,7 +208,7 @@ export const moi = messages({
       /** Réglage par défaut des nouveaux chats. */
       defaultTitle: 'Pour mes prochains chats',
       defaults: {
-        ask: { title: 'Me demander à chaque fois', subtitle: 'À la première ouverture du chat' },
+        ask: { title: 'Me demander à chaque fois', subtitle: 'Après vos premiers messages' },
         on: { title: 'Toujours activer la lecture', subtitle: 'Il faut encore l’accord de l’autre' },
         off: { title: 'Ne jamais activer la lecture', subtitle: 'Les minimoas réagissent seulement au rythme' },
       },
@@ -438,7 +438,7 @@ export const moi = messages({
       allNote: 'For your current chats.',
       defaultTitle: 'For my next chats',
       defaults: {
-        ask: { title: 'Ask me every time', subtitle: 'When the chat first opens' },
+        ask: { title: 'Ask me every time', subtitle: 'After your first few messages' },
         on: { title: 'Always turn on reading', subtitle: 'The other person still has to agree' },
         off: { title: 'Never turn on reading', subtitle: 'The minimoas only react to the pace' },
       },
@@ -666,7 +666,7 @@ export const moi = messages({
       allNote: 'Para tus chats actuales.',
       defaultTitle: 'Para mis próximos chats',
       defaults: {
-        ask: { title: 'Preguntarme cada vez', subtitle: 'Al abrir el chat por primera vez' },
+        ask: { title: 'Preguntarme cada vez', subtitle: 'Después de vuestros primeros mensajes' },
         on: { title: 'Activar siempre la lectura', subtitle: 'Aún hace falta que la otra persona acepte' },
         off: { title: 'No activar nunca la lectura', subtitle: 'Los minimoas solo reaccionan al ritmo' },
       },
@@ -894,7 +894,7 @@ export const moi = messages({
       allNote: 'Para seus chats atuais.',
       defaultTitle: 'Para meus próximos chats',
       defaults: {
-        ask: { title: 'Perguntar toda vez', subtitle: 'Na primeira vez que o chat abrir' },
+        ask: { title: 'Perguntar toda vez', subtitle: 'Depois das primeiras mensagens' },
         on: { title: 'Sempre ativar a leitura', subtitle: 'A outra pessoa ainda precisa aceitar' },
         off: { title: 'Nunca ativar a leitura', subtitle: 'Os minimoas só reagem ao ritmo' },
       },
@@ -1122,7 +1122,7 @@ export const moi = messages({
       allNote: 'Voor je huidige chats.',
       defaultTitle: 'Voor mijn volgende chats',
       defaults: {
-        ask: { title: 'Elke keer vragen', subtitle: 'De eerste keer dat de chat opengaat' },
+        ask: { title: 'Elke keer vragen', subtitle: 'Na jullie eerste berichten' },
         on: { title: 'Meelezen altijd aanzetten', subtitle: 'De ander moet nog wel akkoord gaan' },
         off: { title: 'Meelezen nooit aanzetten', subtitle: 'De minimoas reageren alleen op het ritme' },
       },

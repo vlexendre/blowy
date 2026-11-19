@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, Inject, Logger, Post, type RawBodyRequest, Req } from '@nestjs/common';
 import type { Request } from 'express';
-import { AppleNotificationBody, type Paywall, PlusOpenBody, type PlusMomentDto, SubmitPurchaseBody, type Subscription } from '@blowy/contract';
+import { AppleNotificationBody, type Paywall, PlusMomentBody, PlusOpenBody, type PlusMomentDto, SubmitPurchaseBody, type Subscription } from '@blowy/contract';
+import { isPlusMoment } from '@blowy/domain';
 import type { z } from 'zod';
 import type { AuthUser } from '../../../integrations/auth/ports';
 import { CurrentUser, Public } from '../../../shared/auth.guard';
@@ -39,8 +40,9 @@ export class BillingController {
   /** Moment clé à saluer maintenant, décidé et réservé par le serveur (plafond : docs/DESIR.md). */
   @Post('moment')
   @HttpCode(200)
-  async moment(@CurrentUser() user: AuthUser): Promise<PlusMomentDto> {
-    return { moment: await this.moments.claim(user.userId) };
+  async moment(@CurrentUser() user: AuthUser, @Body(new ZodPipe(PlusMomentBody)) body: z.infer<typeof PlusMomentBody>): Promise<PlusMomentDto> {
+    // Sans `accepts` (app d'avant) : seulement les moments qu'elle connaît (défaut du domaine).
+    return { moment: await this.moments.claim(user.userId, body?.accepts?.filter(isPlusMoment)) };
   }
 
   @Get('paywall')

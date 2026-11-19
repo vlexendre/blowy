@@ -12,7 +12,7 @@ import type { RitualStatesRepository } from '../../rituels/ports';
 import { RITUAL_STATES } from '../../rituels/tokens';
 
 /**
- * Moments clés (docs/DESIR.md) : juste après un vrai moment de valeur (premier lien, 7 jours de série), l'app peut
+ * Moments clés (docs/DESIR.md) : juste après un vrai moment de valeur (premier lien, 7 jours de série, deuxième jour), l'app peut
  * ouvrir la feuille Minimoa+ d'elle-même, une fois par moment, jamais deux fois en moins de 3 jours, jamais le jour de
  * l'inscription, jamais avec Minimoa+ ni pour le monde de revue d'Apple. Le serveur décide et réserve (journal
  * `lifecycle_messages`) : l'app ne fait que demander.
@@ -29,7 +29,8 @@ export class PlusMoments {
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
-  async claim(userId: string): Promise<PlusMoment | null> {
+  /** `accepts` : les moments que l'app sait ouvrir (absent : ceux des apps d'avant, `LEGACY_PLUS_MOMENTS`). */
+  async claim(userId: string, accepts?: readonly PlusMoment[]): Promise<PlusMoment | null> {
     const profile = await this.profiles.findById(userId);
     if (!profile) throw new DomainError('not_onboarded');
     if (profile.reviewWorld) return null;
@@ -47,6 +48,7 @@ export class PlusMoments {
       links: alive.length,
       streak: rituals?.streak.current ?? 0,
       streakDay: rituals?.streak.lastDoneOn ?? null,
+      ...(accepts ? { accepts } : {}),
     });
     if (!moment) return null;
     // Le moment d'abord (une fois pour toujours), puis le jour (plafond) : deux appels qui se croisent n'ouvrent qu'une feuille.

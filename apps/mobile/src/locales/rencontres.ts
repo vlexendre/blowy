@@ -4,7 +4,7 @@ import { messages } from './runtime';
 
 export const rencontres = messages({
   fr: {
-    kicker: 'Cette semaine',
+    kicker: 'Aujourd’hui',
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: `${pet.toUpperCase()} A TROUVÉ\n` },
       { text: n === null ? '…' : n === 0 ? 'PERSONNE.' : `${n} ${n > 1 ? 'PERSONNES' : 'PERSONNE'}.`, dim: true },
@@ -39,7 +39,7 @@ export const rencontres = messages({
     },
     noLocation: {
       title: 'Pas de rencontres près de chez toi',
-      text: (pet: string): string => `Sans position, ${pet} ne présente que des potes de potes. Position arrondie à 300 m, jamais exacte.`,
+      text: (pet: string): string => `Sans position, ${pet} ne présente que des potes de potes. Ta position est floutée (arrondie à 300 m environ, jamais exacte) et ${pet} cherche jusqu’à 20 km autour.`,
       action: 'Activer la localisation',
       settings: 'Ouvrir les Réglages',
       denied: 'Tu as refusé la localisation : choisis ta ville à la main, ou active-la dans Réglages › Minimoa › Position.',
@@ -61,13 +61,16 @@ export const rencontres = messages({
     loadError: 'Impossible de charger les rencontres',
     retry: 'Réessayer',
     actionError: 'Ça n’a pas marché. Réessaie.',
-    /** Minimoa qui boude : il ne croise plus personne (texte : `shapeLabel.boude`). */
+    /** Minimoa qui boude (titre, `shapeLabel.boude`). */
     sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'BOUDE.', dim: true }],
     sulkAction: 'M’occuper de lui',
-    /** Salut refusé par l'API parce que le minimoa boude. */
-    waveSulk: (pet: string): string => `${pet} boude : occupe-toi de lui avant de saluer.`,
-    /** Minimoa un peu à plat (`shapeLabel.bof`). */
+    /**
+     * Bandeau quand le minimoa boude ou est un peu à plat : ça ne bloque personne (le serveur présente quand même et
+     * laisse saluer) ; les soins le gardent de bonne humeur.
+     */
+    waveSulk: (pet: string): string => `${pet} boude un peu, mais il te présente quand même du monde`,
     bofTitle: (pet: string): string => `${pet} est un peu à plat`,
+    moodText: 'Ça ne change rien aux gens qu’il te présente. Un soin, et il retrouve sa bonne humeur.',
     /** Historique : rencontres passées, acceptées ou non. */
     history: {
       title: 'Déjà présentés',
@@ -79,7 +82,7 @@ export const rencontres = messages({
     },
   },
   en: {
-    kicker: 'This week',
+    kicker: 'Today',
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: `${pet.toUpperCase()} FOUND\n` },
       { text: n === null ? '…' : n === 0 ? 'NO ONE.' : `${n} ${n === 1 ? 'PERSON' : 'PEOPLE'}.`, dim: true },
@@ -113,7 +116,7 @@ export const rencontres = messages({
     },
     noLocation: {
       title: 'No encounters near you',
-      text: (pet: string): string => `Without location, ${pet} only introduces friends of friends. Rounded to 300 m, never exact.`,
+      text: (pet: string): string => `Without location, ${pet} only introduces friends of friends. Your location is blurred (rounded to about 300 m, never exact) and ${pet} looks up to 20 km around.`,
       action: 'Turn on location',
       settings: 'Open Settings',
       denied: 'You turned down location: pick your city by hand, or turn it on in Settings › Minimoa › Location.',
@@ -134,8 +137,9 @@ export const rencontres = messages({
     actionError: 'That didn’t work. Try again.',
     sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'IS SULKING.', dim: true }],
     sulkAction: 'Take care of it',
-    waveSulk: (pet: string): string => `${pet} is sulking: take care of it before you wave.`,
+    waveSulk: (pet: string): string => `${pet} is sulking a little, but still introduces you to people`,
     bofTitle: (pet: string): string => `${pet} is a bit flat`,
+    moodText: 'It doesn’t change who it introduces you to. A little care and it’s back in a good mood.',
     history: {
       title: 'Already introduced',
       outcome: { linked: 'Linked', ended: 'Link ended', declined: 'Not this time', waiting: 'Pending' },
@@ -146,7 +150,7 @@ export const rencontres = messages({
     },
   },
   es: {
-    kicker: 'Esta semana',
+    kicker: 'Hoy',
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: n === 0 ? `${pet.toUpperCase()} NO ENCONTRÓ\n` : `${pet.toUpperCase()} ENCONTRÓ\n` },
       { text: n === null ? '…' : n === 0 ? 'A NADIE.' : `A ${n} ${n === 1 ? 'PERSONA' : 'PERSONAS'}.`, dim: true },
@@ -180,7 +184,7 @@ export const rencontres = messages({
     },
     noLocation: {
       title: 'Sin encuentros cerca de ti',
-      text: (pet: string): string => `Sin ubicación, ${pet} solo presenta a gente de tu círculo. Redondeada a 300 m, nunca exacta.`,
+      text: (pet: string): string => `Sin ubicación, ${pet} solo presenta a gente de tu círculo. Tu ubicación se difumina (redondeada a unos 300 m, nunca exacta) y ${pet} busca hasta 20 km alrededor.`,
       action: 'Activar la ubicación',
       settings: 'Abrir Ajustes',
       denied: 'Has rechazado la ubicación: elige tu ciudad a mano o actívala en Ajustes › Minimoa › Ubicación.',
@@ -201,8 +205,9 @@ export const rencontres = messages({
     actionError: 'No ha funcionado. Inténtalo de nuevo.',
     sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'ESTÁ ENFURRUÑADO.', dim: true }],
     sulkAction: 'Ocuparme de él',
-    waveSulk: (pet: string): string => `${pet} está enfurruñado: ocúpate de él antes de saludar.`,
+    waveSulk: (pet: string): string => `${pet} está un poco enfurruñado, pero aun así te presenta gente`,
     bofTitle: (pet: string): string => `${pet} está un poco apagado`,
+    moodText: 'No cambia a quién te presenta. Un cuidado y vuelve a estar de buen humor.',
     history: {
       title: 'Encuentros pasados',
       outcome: { linked: 'Con vínculo', ended: 'Vínculo cerrado', declined: 'Esta vez no', waiting: 'Pendiente' },
@@ -213,7 +218,7 @@ export const rencontres = messages({
     },
   },
   pt: {
-    kicker: 'Esta semana',
+    kicker: 'Hoje',
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: n === 0 ? `${pet.toUpperCase()} NÃO ACHOU\n` : `${pet.toUpperCase()} ACHOU\n` },
       { text: n === null ? '…' : n === 0 ? 'NINGUÉM.' : `${n} ${n === 1 ? 'PESSOA' : 'PESSOAS'}.`, dim: true },
@@ -247,7 +252,7 @@ export const rencontres = messages({
     },
     noLocation: {
       title: 'Nenhum encontro perto de você',
-      text: (pet: string): string => `Sem localização, ${pet} só apresenta amigos de amigos. Arredondada a 300 m, nunca exata.`,
+      text: (pet: string): string => `Sem localização, ${pet} só apresenta amigos de amigos. Sua localização fica borrada (arredondada para cerca de 300 m, nunca exata) e ${pet} procura até 20 km ao redor.`,
       action: 'Ativar a localização',
       settings: 'Abrir Ajustes',
       denied: 'Você recusou a localização: escolha sua cidade manualmente ou ative-a em Ajustes › Minimoa › Localização.',
@@ -268,8 +273,9 @@ export const rencontres = messages({
     actionError: 'Não deu certo. Tente de novo.',
     sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'ESTÁ EMBURRADO.', dim: true }],
     sulkAction: 'Cuidar dele',
-    waveSulk: (pet: string): string => `${pet} está emburrado: cuide dele antes de acenar.`,
+    waveSulk: (pet: string): string => `${pet} está meio emburrado, mas mesmo assim te apresenta gente`,
     bofTitle: (pet: string): string => `${pet} está meio pra baixo`,
+    moodText: 'Isso não muda quem ele te apresenta. Um cuidado e ele volta ao bom humor.',
     history: {
       title: 'Encontros passados',
       outcome: { linked: 'Com vínculo', ended: 'Vínculo encerrado', declined: 'Dessa vez não', waiting: 'Aguardando' },
@@ -280,7 +286,7 @@ export const rencontres = messages({
     },
   },
   nl: {
-    kicker: 'Deze week',
+    kicker: 'Vandaag',
     title: (pet: string, n: number | null): TitleSegment[] => [
       { text: `${pet.toUpperCase()} VOND\n` },
       { text: n === null ? '…' : n === 0 ? 'NIEMAND.' : `${n} ${n === 1 ? 'PERSOON' : 'MENSEN'}.`, dim: true },
@@ -314,7 +320,7 @@ export const rencontres = messages({
     },
     noLocation: {
       title: 'Geen ontmoetingen bij jou in de buurt',
-      text: (pet: string): string => `Zonder locatie stelt ${pet} alleen vrienden van vrienden voor. Afgerond op 300 m, nooit exact.`,
+      text: (pet: string): string => `Zonder locatie stelt ${pet} alleen vrienden van vrienden voor. Je locatie wordt vervaagd (afgerond op zo’n 300 m, nooit exact) en ${pet} zoekt tot 20 km in de omtrek.`,
       action: 'Locatie aanzetten',
       settings: 'Instellingen openen',
       denied: 'Je hebt locatie geweigerd: kies zelf je stad, of zet locatie aan via Instellingen › Minimoa › Locatie.',
@@ -335,8 +341,9 @@ export const rencontres = messages({
     actionError: 'Dat lukte niet. Probeer het opnieuw.',
     sulkTitle: (pet: string): TitleSegment[] => [{ text: `${pet.toUpperCase()}\n` }, { text: 'MOKT.', dim: true }],
     sulkAction: 'Voor hem zorgen',
-    waveSulk: (pet: string): string => `${pet} mokt: zorg eerst voor hem voordat je zwaait.`,
+    waveSulk: (pet: string): string => `${pet} mokt een beetje, maar stelt je toch mensen voor`,
     bofTitle: (pet: string): string => `${pet} is een beetje futloos`,
+    moodText: 'Dat verandert niets aan wie hij je voorstelt. Een beetje zorg en hij is weer goedgehumeurd.',
     history: {
       title: 'Eerder ontmoet',
       outcome: { linked: 'Verbonden', ended: 'Band beëindigd', declined: 'Deze keer niet', waiting: 'In afwachting' },

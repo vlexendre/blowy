@@ -6,7 +6,7 @@
  * (regroupement : « Léa et 4 autres »). Les dates et les prix sont mis en forme dans la langue de la personne.
  * Pas d'emoji, pas de fausse urgence, pas de culpabilisation.
  */
-import type { Locale, NotificationKindKey } from '@blowy/domain';
+import { FIRST_STEPS, type FirstStep, type FirstStepVariant, LEGACY_FIRST_STEP_TOPIC, type Locale, type NotificationKindKey } from '@blowy/domain';
 import { defineMessages, formatDate, formatPrice } from '../i18n/core';
 import { labels } from '../labels';
 import { habitById } from './rituels';
@@ -33,7 +33,8 @@ export interface NotificationVars {
   /** Libellé d'une habitude du catalogue (identifiant `habit`, traduit ici). */
   habit: string;
   /**
-   * Variante d'un message de fidélisation (docs/FIDELISATION.md) : `d1`, `d3`, `d7` (premiers pas), `absence` ou
+   * Variante d'un message de fidélisation (docs/FIDELISATION.md) : `people`, `people_none`, `words`, `habit`, `group`,
+   * `week` (premiers pas ; les anciens `d1`… d'un report en attente sont lus avec leur ancien sujet), `absence` ou
    * `anniversary` (nouvelles du minimoa, avec `days` ou `count` en mois), `welcome`, `renewed`, `recovered`,
    * `billing_grace`, `billing_retry`, `goodbye`, `winback` (abonnement).
    */
@@ -52,6 +53,14 @@ const many = (v: NotificationVars): boolean => Number(v.others) > 0;
 const others = (v: NotificationVars, one: string, more: string): string => `${v.others} ${Number(v.others) === 1 ? one : more}`;
 /** Personnes en tout dans le paquet. */
 const total = (v: NotificationVars): number => Number(v.others) + 1;
+
+/**
+ * Sujet d'un premier pas : `people`, `people_none`, `words`, `habit`, `group`, `week` ; une ancienne variante par jour
+ * (`d1`…, report parti avant le 19 nov. 2026) garde son ancien sujet ; inconnue : la première semaine.
+ */
+const FIRST_STEP_VARIANTS: readonly string[] = [...FIRST_STEPS.map((s) => s.topic), 'people_none'];
+export const firstStepOf = (step: string): FirstStepVariant =>
+  FIRST_STEP_VARIANTS.includes(step) ? (step as FirstStepVariant) : (LEGACY_FIRST_STEP_TOPIC[step as FirstStep] ?? 'week');
 
 /** Texte d'une variante (`v.step`), ou le repli. */
 const pick = (texts: Readonly<Record<string, string>>, key: string, fallback: string): string => texts[key] ?? fallback;
@@ -120,26 +129,38 @@ const fr = {
       body: (v) => (Number(v.count) >= 3 ? `Vous êtes ${v.count}. Dis bonjour.` : `Vous êtes ${v.count}. Encore une personne et la série démarre.`),
     },
     first_steps: {
-      title: (v) =>
-        v.step === 'd1'
-          ? `${v.minimoa} veut savoir qui tu es`
-          : v.step === 'd2'
-            ? `${v.minimoa} a une idée`
-            : v.step === 'd3'
-              ? 'À plusieurs, c’est plus simple'
-              : v.step === 'd5'
-                ? `${v.minimoa} a cherché pour toi`
-                : `Une semaine avec ${v.minimoa}`,
-      body: (v) =>
-        v.step === 'd1'
-          ? 'Envoie ton lien « 3 mots » à 3 potes : ils te décrivent, sans compte, et il te connaît mieux.'
-          : v.step === 'd2'
-            ? 'Choisis une habitude à tenir : il la suivra avec toi, et des gens près de chez toi la tiennent peut-être aussi.'
-            : v.step === 'd3'
-              ? 'Rejoins un groupe par son lien, ou crée le tien et envoie-le à 2 potes. Il démarre à 3.'
-              : v.step === 'd5'
-                ? 'Viens voir qui il te présente près de chez toi. Il te dit pourquoi ; rien ne se passe sans toi.'
-                : 'Ta première semaine est là : ce qui a bougé, et une carte à partager.',
+      title: (v) => {
+        switch (firstStepOf(v.step)) {
+          case 'people':
+            return `${v.minimoa} a quelqu’un pour toi`;
+          case 'people_none':
+            return `${v.minimoa} cherche des gens pour toi`;
+          case 'words':
+            return `${v.minimoa} veut savoir qui tu es`;
+          case 'habit':
+            return `${v.minimoa} a une idée`;
+          case 'group':
+            return 'À plusieurs, c’est plus simple';
+          case 'week':
+            return `Une semaine avec ${v.minimoa}`;
+        }
+      },
+      body: (v) => {
+        switch (firstStepOf(v.step)) {
+          case 'people':
+            return 'Viens voir qui, et pourquoi vous allez bien ensemble.';
+          case 'people_none':
+            return 'Personne de compatible près de toi pour l’instant : tu es parmi les premiers. Invite 2 potes, leurs potes suivront.';
+          case 'words':
+            return 'Envoie ton lien « 3 mots » à 3 potes : ils te décrivent, sans compte, et il te connaît mieux.';
+          case 'habit':
+            return 'Choisis une habitude à tenir : il la suivra avec toi, et des gens près de chez toi la tiennent peut-être aussi.';
+          case 'group':
+            return 'Rejoins un groupe par son lien, ou crée le tien et envoie-le à 2 potes. Il démarre à 3.';
+          case 'week':
+            return 'Ta première semaine est là : ce qui a bougé, et une carte à partager.';
+        }
+      },
     },
     minimoa_news: {
       title: (v) =>
@@ -287,26 +308,38 @@ export const notificationTexts = defineMessages({
         body: (v) => (Number(v.count) >= 3 ? `There are ${v.count} of you now. Say hi.` : `There are ${v.count} of you. One more and the streak starts.`),
       },
       first_steps: {
-        title: (v) =>
-          v.step === 'd1'
-            ? `${v.minimoa} wants to know who you are`
-            : v.step === 'd2'
-              ? `${v.minimoa} has an idea`
-              : v.step === 'd3'
-                ? 'Easier together'
-                : v.step === 'd5'
-                  ? `${v.minimoa} looked around for you`
-                  : `One week with ${v.minimoa}`,
-        body: (v) =>
-          v.step === 'd1'
-            ? 'Send your “3 words” link to 3 friends: they describe you, no account needed, and it gets to know you better.'
-            : v.step === 'd2'
-              ? 'Pick a habit to keep: it will follow along with you, and people near you might keep it too.'
-              : v.step === 'd3'
-                ? 'Join a group with its link, or start yours and send it to 2 friends. It starts at 3.'
-                : v.step === 'd5'
-                  ? 'Come see who it’s introducing you to near you. It tells you why; nothing happens without you.'
-                  : 'Your first week is here: what changed, and a card to share.',
+        title: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return `${v.minimoa} has someone for you`;
+            case 'people_none':
+              return `${v.minimoa} is looking for people for you`;
+            case 'words':
+              return `${v.minimoa} wants to know who you are`;
+            case 'habit':
+              return `${v.minimoa} has an idea`;
+            case 'group':
+              return 'Easier together';
+            case 'week':
+              return `One week with ${v.minimoa}`;
+          }
+        },
+        body: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return 'Come see who, and why you two go well together.';
+            case 'people_none':
+              return 'No one compatible near you yet: you’re among the first. Invite 2 friends, their friends will follow.';
+            case 'words':
+              return 'Send your “3 words” link to 3 friends: they describe you, no account needed, and it gets to know you better.';
+            case 'habit':
+              return 'Pick a habit to keep: it will follow along with you, and people near you might keep it too.';
+            case 'group':
+              return 'Join a group with its link, or start yours and send it to 2 friends. It starts at 3.';
+            case 'week':
+              return 'Your first week is here: what changed, and a card to share.';
+          }
+        },
       },
       minimoa_news: {
         title: (v) =>
@@ -450,26 +483,38 @@ export const notificationTexts = defineMessages({
         body: (v) => (Number(v.count) >= 3 ? `Ya sois ${v.count}. Saluda.` : `Sois ${v.count}. Una persona más y empieza la racha.`),
       },
       first_steps: {
-        title: (v) =>
-          v.step === 'd1'
-            ? `${v.minimoa} quiere saber cómo eres`
-            : v.step === 'd2'
-              ? `${v.minimoa} tiene una idea`
-              : v.step === 'd3'
-                ? 'Juntos es más fácil'
-                : v.step === 'd5'
-                  ? `${v.minimoa} ha buscado por ti`
-                  : `Una semana con ${v.minimoa}`,
-        body: (v) =>
-          v.step === 'd1'
-            ? 'Envía tu enlace «3 palabras» a 3 amistades: te describen sin cuenta, y te conoce mejor.'
-            : v.step === 'd2'
-              ? 'Elige un hábito que mantener: lo seguirá contigo, y quizá gente cerca de ti también lo mantiene.'
-              : v.step === 'd3'
-                ? 'Únete a un grupo con su enlace, o crea el tuyo y envíalo a 2 amistades. Empieza con 3.'
-                : v.step === 'd5'
-                  ? 'Ven a ver a quién te presenta cerca de ti. Te dice por qué; nada pasa sin ti.'
-                  : 'Tu primera semana ya está aquí: lo que ha cambiado, y una tarjeta para compartir.',
+        title: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return `${v.minimoa} tiene a alguien para ti`;
+            case 'people_none':
+              return `${v.minimoa} busca gente para ti`;
+            case 'words':
+              return `${v.minimoa} quiere saber cómo eres`;
+            case 'habit':
+              return `${v.minimoa} tiene una idea`;
+            case 'group':
+              return 'Juntos es más fácil';
+            case 'week':
+              return `Una semana con ${v.minimoa}`;
+          }
+        },
+        body: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return 'Ven a ver quién, y por qué os lleváis bien.';
+            case 'people_none':
+              return 'Aún no hay nadie compatible cerca de ti: estás entre los primeros. Invita a 2 amistades, sus amistades vendrán después.';
+            case 'words':
+              return 'Envía tu enlace «3 palabras» a 3 amistades: te describen sin cuenta, y te conoce mejor.';
+            case 'habit':
+              return 'Elige un hábito que mantener: lo seguirá contigo, y quizá gente cerca de ti también lo mantiene.';
+            case 'group':
+              return 'Únete a un grupo con su enlace, o crea el tuyo y envíalo a 2 amistades. Empieza con 3.';
+            case 'week':
+              return 'Tu primera semana ya está aquí: lo que ha cambiado, y una tarjeta para compartir.';
+          }
+        },
       },
       minimoa_news: {
         title: (v) =>
@@ -613,26 +658,38 @@ export const notificationTexts = defineMessages({
         body: (v) => (Number(v.count) >= 3 ? `Agora vocês são ${v.count}. Dê um oi.` : `Vocês são ${v.count}. Mais uma pessoa e a sequência começa.`),
       },
       first_steps: {
-        title: (v) =>
-          v.step === 'd1'
-            ? `${v.minimoa} quer saber quem você é`
-            : v.step === 'd2'
-              ? `${v.minimoa} teve uma ideia`
-              : v.step === 'd3'
-                ? 'Junto fica mais fácil'
-                : v.step === 'd5'
-                  ? `${v.minimoa} procurou por você`
-                  : `Uma semana com ${v.minimoa}`,
-        body: (v) =>
-          v.step === 'd1'
-            ? 'Mande seu link “3 palavras” para 3 amigos: eles te descrevem, sem conta, e ele te conhece melhor.'
-            : v.step === 'd2'
-              ? 'Escolha um hábito para manter: ele acompanha você, e talvez gente perto de você mantenha também.'
-              : v.step === 'd3'
-                ? 'Entre num grupo pelo link, ou crie o seu e mande para 2 amigos. Ele começa com 3.'
-                : v.step === 'd5'
-                  ? 'Venha ver quem ele te apresenta perto de você. Ele diz por quê; nada acontece sem você.'
-                  : 'Sua primeira semana chegou: o que mudou, e um cartão para compartilhar.',
+        title: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return `${v.minimoa} tem alguém para você`;
+            case 'people_none':
+              return `${v.minimoa} está procurando gente para você`;
+            case 'words':
+              return `${v.minimoa} quer saber quem você é`;
+            case 'habit':
+              return `${v.minimoa} teve uma ideia`;
+            case 'group':
+              return 'Junto fica mais fácil';
+            case 'week':
+              return `Uma semana com ${v.minimoa}`;
+          }
+        },
+        body: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return 'Venha ver quem, e por que vocês combinam.';
+            case 'people_none':
+              return 'Ainda não tem ninguém compatível perto de você: você está entre os primeiros. Convide 2 amigos, os amigos deles vêm depois.';
+            case 'words':
+              return 'Mande seu link “3 palavras” para 3 amigos: eles te descrevem, sem conta, e ele te conhece melhor.';
+            case 'habit':
+              return 'Escolha um hábito para manter: ele acompanha você, e talvez gente perto de você mantenha também.';
+            case 'group':
+              return 'Entre num grupo pelo link, ou crie o seu e mande para 2 amigos. Ele começa com 3.';
+            case 'week':
+              return 'Sua primeira semana chegou: o que mudou, e um cartão para compartilhar.';
+          }
+        },
       },
       minimoa_news: {
         title: (v) =>
@@ -776,26 +833,38 @@ export const notificationTexts = defineMessages({
         body: (v) => (Number(v.count) >= 3 ? `Jullie zijn nu met ${v.count}. Zeg hallo.` : `Jullie zijn met ${v.count}. Nog één persoon en de reeks begint.`),
       },
       first_steps: {
-        title: (v) =>
-          v.step === 'd1'
-            ? `${v.minimoa} wil weten wie je bent`
-            : v.step === 'd2'
-              ? `${v.minimoa} heeft een idee`
-              : v.step === 'd3'
-                ? 'Samen is makkelijker'
-                : v.step === 'd5'
-                  ? `${v.minimoa} heeft voor je gezocht`
-                  : `Een week met ${v.minimoa}`,
-        body: (v) =>
-          v.step === 'd1'
-            ? 'Stuur je “3 woorden”-link naar 3 vrienden: ze beschrijven je, zonder account, en hij leert je beter kennen.'
-            : v.step === 'd2'
-              ? 'Kies een gewoonte om vol te houden: hij volgt die met je, en mensen in je buurt houden haar misschien ook vol.'
-              : v.step === 'd3'
-                ? 'Sluit je aan bij een groep via de link, of start je eigen en stuur hem naar 2 vrienden. Hij start bij 3.'
-                : v.step === 'd5'
-                  ? 'Kom kijken aan wie hij je voorstelt in je buurt. Hij zegt waarom; niets gebeurt zonder jou.'
-                  : 'Je eerste week is er: wat er veranderde, en een kaart om te delen.',
+        title: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return `${v.minimoa} heeft iemand voor je`;
+            case 'people_none':
+              return `${v.minimoa} zoekt mensen voor je`;
+            case 'words':
+              return `${v.minimoa} wil weten wie je bent`;
+            case 'habit':
+              return `${v.minimoa} heeft een idee`;
+            case 'group':
+              return 'Samen is makkelijker';
+            case 'week':
+              return `Een week met ${v.minimoa}`;
+          }
+        },
+        body: (v) => {
+          switch (firstStepOf(v.step)) {
+            case 'people':
+              return 'Kom kijken wie, en waarom jullie goed bij elkaar passen.';
+            case 'people_none':
+              return 'Nog niemand compatibel in je buurt: je bent een van de eersten. Nodig 2 vrienden uit, hun vrienden volgen.';
+            case 'words':
+              return 'Stuur je “3 woorden”-link naar 3 vrienden: ze beschrijven je, zonder account, en hij leert je beter kennen.';
+            case 'habit':
+              return 'Kies een gewoonte om vol te houden: hij volgt die met je, en mensen in je buurt houden haar misschien ook vol.';
+            case 'group':
+              return 'Sluit je aan bij een groep via de link, of start je eigen en stuur hem naar 2 vrienden. Hij start bij 3.';
+            case 'week':
+              return 'Je eerste week is er: wat er veranderde, en een kaart om te delen.';
+          }
+        },
       },
       minimoa_news: {
         title: (v) =>

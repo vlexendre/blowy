@@ -1,4 +1,3 @@
-import { ApiError } from '@blowy/api-client';
 import { color } from '@blowy/tokens';
 import type { Person } from '@blowy/contract';
 import {
@@ -197,12 +196,8 @@ export default function RencontreScreen() {
           />
         ) : null}
         {error ? (
-          <Banner
-            tone="error"
-            text={error instanceof ApiError && error.code === 'forbidden' && error === wave.error ? listText.waveSulk(myPetName) : errorText(error, listText.actionError)}
-            actionLabel={error instanceof ApiError && error.code === 'forbidden' && error === wave.error ? listText.sulkAction : undefined}
-            onAction={() => router.dismissTo('/(tabs)/pet')}
-          />
+          // Le serveur laisse saluer même quand le minimoa boude : une erreur dit sa vraie raison (texte de l'API).
+          <Banner tone="error" text={errorText(error, listText.actionError)} />
         ) : null}
         {reported ? <Banner tone="success" text={optionsText.reportDone} onClose={() => setReported(false)} closeLabel={optionsText.close} /> : null}
       </Stack>

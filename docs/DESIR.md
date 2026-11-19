@@ -17,7 +17,7 @@ faux prix de référence) ; nos documents `docs/PAYWALL.md`, `docs/FIDELISATION.
 | Faux prix barré, remise inventée | Rien de nouveau sur les prix : la feuille reste celle de `docs/PAYWALL.md` (prix StoreKit, remise contre 12 mensualités). |
 | Culpabilisation (« ton minimoa va mourir », « tu vas perdre tes amis ») | Les titres saluent un moment (« Premier lien. Et la suite ? », « 7 jours d'affilée. Bien joué. ») ou décrivent un avantage. Aucune perte annoncée. |
 | Bloquer une fonction gratuite | Rien n'est retiré aux gratuits : répondre à un signe, saluer, la carte de sa zone, la garde-robe gagnée restent identiques. On **montre** ce que Minimoa+ ajoute. |
-| Paywall à répétition | Une seule proposition forte (feuille ouverte d'elle-même) par moment clé, jamais deux en moins de 3 jours, jamais le jour de l'inscription (la feuille de l'inscription suffit), jamais avec Minimoa+, jamais au compte de revue d'Apple. Décidé et réservé côté serveur. Les autres entrées ne s'ouvrent que sur un geste de la personne. |
+| Paywall à répétition | Une seule proposition forte (feuille ouverte d'elle-même) par moment clé, jamais deux en moins de 3 jours, jamais le jour de l'inscription (plus aucune feuille dans l'inscription depuis le 19 nov. 2026 ; les versions d'avant la montrent encore à la fin), jamais avec Minimoa+, jamais au compte de revue d'Apple. Décidé et réservé côté serveur. Les autres entrées ne s'ouvrent que sur un geste de la personne. |
 | Sortie cachée | Feuille inchangée : croix active dès l'ouverture, « Continuer gratuitement » toujours visible, tout tient sur un écran (revérifié avec les nouveaux titres, §4). |
 | Révéler une identité | « Vu de loin » ne montre ni visage, ni prénom, ni position : un nombre et des silhouettes de décor (formes génériques, pas celles des vraies personnes, et jamais plus de silhouettes que de personnes). |
 | Essai mis en avant à tort | Inchangé : un essai n'est annoncé que si StoreKit dit que la personne y a droit. |
@@ -84,6 +84,10 @@ faux prix de référence) ; nos documents `docs/PAYWALL.md`, `docs/FIDELISATION.
     avantage « Plus de rencontres » en tête (`moment_first_link`) ;
   - 7 jours d'affilée au défi du jour (série de 7 à 9, faite il y a 2 jours au plus) : « 7 jours d'affilée. Bien
     joué. », avantage « 3 jokers par semaine » en tête (`moment_streak_7`).
+  - deuxième jour avec son minimoa (du jour 2 au jour 4 après l'inscription, une fois ; ajouté le 19 nov. 2026 quand la
+    feuille a quitté l'inscription) : titre et avantage dans `locales/plus.ts` (`moment_second_day`). Servi seulement à
+    une app qui le demande (`POST /v1/plus/moment` avec `{ accepts: [...] }`) : l'app installée d'avant n'envoie rien et
+    ne reçoit que `first_link` ou `streak_7` (`LEGACY_PLUS_MOMENTS`), qu'elle sait lire.
 - **Quand.** Sur l'accueil, quand tout est calme : après les fêtes, le défi du jour, le « te revoilà », les cartes à
   partager (palier de série, première semaine) et la demande des notifications ; une fois par lancement, l'app demande
   `POST /v1/plus/moment`.
@@ -111,7 +115,7 @@ faux prix de référence) ; nos documents `docs/PAYWALL.md`, `docs/FIDELISATION.
   s'il ouvre Minimoa+ (une restauration d'un abonnement en cours ne compte pas).
 - Déclencheurs (`PLUS_TRIGGERS`) : `onboarding`, `generic`, `premium_item`, `map`, `change_city`, `habits_limit`,
   `rename`, `detailed_review`, `jokers`, `encounters`, et pour le désir `far_away`, `try_on`, `worn_by`, `collection`,
-  `moment_first_link`, `moment_streak_7`.
+  `moment_first_link`, `moment_streak_7`, `moment_second_day` (`onboarding` : versions de l'app d'avant le 19 nov. 2026).
 - Administration › Croissance › « Minimoa+ par déclencheur » (12 semaines) : ouvertures, essais, paiements, conversion
   ((essais + paiements) / ouvertures). À suivre : conversion de `far_away` et `moment_*` contre `generic` ; si un
   déclencheur fort convertit mal, le retirer plutôt que l'ouvrir plus souvent.

@@ -2,7 +2,7 @@ import { Inject, Injectable, Optional } from '@nestjs/common';
 import { LiveActivities } from '../../notifications/live-activities';
 import { DAILY_CHALLENGES as DAILY_CATALOGUE, type DailyDef, dailyById, dailyChallengesIn, type Locale, rituelsText, textOf } from '@blowy/content';
 import type { DailyChallenge } from '@blowy/contract';
-import { type DailyCandidate, type DailyStatus, type Day, advanceDaily, leastConfidentAxis, pickDailyChallenge, presentDailyCard } from '@blowy/domain';
+import { type DailyCandidate, type DailyStatus, type Day, advanceDaily, dayOf, initialDailyStatus, leastConfidentAxis, pickDailyChallenge, presentDailyCard } from '@blowy/domain';
 import { EXTENSIONS, type Storage, type UploadTicket } from '../../../integrations/storage/ports';
 import { DomainError } from '../../../shared/errors';
 import type { Ids } from '../../../shared/ids';
@@ -76,11 +76,14 @@ export class DailyService {
     @Optional() @Inject(LiveActivities) private readonly live?: LiveActivities,
   ) {}
 
-  /** Défi du jour de la personne ; choisi et enregistré au premier appel du jour. */
+  /**
+   * Défi du jour de la personne ; choisi et enregistré au premier appel du jour. Le jour de la création du minimoa, il
+   * est enregistré comme déjà vu (`initialDailyStatus`) : rien ne monte en plein écran pendant la première session.
+   */
   async ensure(userId: string, today: Day): Promise<DailyChallengeRecord> {
     const existing = await this.daily.find(userId, today);
     if (existing) return existing;
-    const [links, profile] = await Promise.all([this.links.listForUsers([userId]), this.vision.profileOf(userId)]);
+    const [links, profile, pet] = await Promise.all([this.links.listForUsers([userId]), this.vision.profileOf(userId), this.pets.findByOwner(userId)]);
     const pick = pickDailyChallenge({
       userId,
       day: today,
@@ -94,7 +97,7 @@ export class DailyService {
       challengeId: pick.id,
       kind: pick.kind,
       axis: pick.axis,
-      status: 'offered',
+      status: initialDailyStatus(pet ? dayOf(new Date(pet.createdAt)) : null, today),
       answer: null,
       photoId: null,
       seenAt: null,
