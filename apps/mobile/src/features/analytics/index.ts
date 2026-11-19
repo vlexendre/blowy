@@ -63,3 +63,13 @@ export function setAnalyticsConsent(granted: boolean): void {
 export function trackAccountCreated(): void {
   if (useAnalyticsConsent.getState().choice === 'granted') void track('Account Created');
 }
+
+/**
+ * Ton chemin (docs/CHEMIN.md) : séance commencée, séance finie, personne du jour montrée, bonjour envoyé depuis la
+ * fin de séance. Des propriétés simples (unité, nombre de réponses, créneau), jamais d'identité ni de réponse.
+ * Seulement avec l'accord.
+ */
+export type CheminEvent = 'Seance Started' | 'Seance Completed' | 'Person Of Day Shown' | 'Hello Sent From Chemin';
+export function trackChemin(event: CheminEvent, props: Record<string, string | number | boolean | null> = {}): void {
+  if (useAnalyticsConsent.getState().choice === 'granted') void track(event, props);
+}

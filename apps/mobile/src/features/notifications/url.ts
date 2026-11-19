@@ -7,7 +7,7 @@ import type { Href } from 'expo-router';
  * Adresses publiques courtes (celles qu'on partage, servies aussi par le site quand l'app n'est pas installée) :
  * /i/<code> invitation · /m/<code> 3 mots · /g/<id> groupe (membres) · /g/<code> lien d'invitation d'un groupe ·
  * /c/<code> code d'un créateur · /r/<id> rencontre · /l/<id> lien · /plus Minimoa+ · /defi défi du jour · /habitudes ·
- * /carte · /mots (ton lien « 3 mots » et ton résultat) · /quiz/<code> résultat du quiz du site · /quartier/<code> inscription
+ * /carte · /chemin (séance du jour) · /mots (ton lien « 3 mots » et ton résultat) · /quiz/<code> résultat du quiz du site · /quartier/<code> inscription
  * « Ouvre ton quartier ». `?ref=<code>` sur n'importe quel lien : code d'un créateur. Les chemins internes de l'app (`link/<id>`, `pet/…`, `groupe/<id>`…), ceux
  * des notifications, passent tels quels.
  */
@@ -40,6 +40,8 @@ const SHORT: readonly [RegExp, (id: string) => string][] = [
   [/^defi\/?$/, () => '/pet/defi'],
   [/^habitudes\/?$/, () => '/pet/habitudes'],
   [/^carte\/?$/, () => '/carte'],
+  // Rappel du matin de Ton chemin (docs/CHEMIN.md) : l'accueil, ouvert sur la séance du jour.
+  [/^chemin\/?$/, () => '/pet?chemin=1'],
 ];
 
 /** Chemin (sans « / » de tête, requête comprise) d'un lien de l'app ou du site ; null pour tout autre lien. */
@@ -83,7 +85,7 @@ export const pathFromPushUrl = appPathFromUrl;
  */
 export function needsAccount(path: string): boolean {
   const p = path.split('?')[0] ?? '';
-  return /^\/(groupe|g|mots|rencontre|link|moi|pet|carte|chats|rencontres)(\/|$)/.test(p);
+  return /^\/(groupe|g|mots|rencontre|link|moi|pet|carte|chats|rencontres|chemin)(\/|$)/.test(p);
 }
 
 /**

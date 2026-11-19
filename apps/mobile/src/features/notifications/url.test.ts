@@ -40,6 +40,7 @@ describe('appPathFromUrl : adresses courtes, deux schémas, deux domaines', () =
     ['defi', '/pet/defi'],
     ['habitudes', '/pet/habitudes'],
     ['carte', '/carte'],
+    ['chemin', '/pet?chemin=1'],
   ];
   const prefixes = ['https://minimoa.app/', 'https://www.minimoa.app/', 'minimoa://', 'blowy://', 'minimoa:///'];
   for (const [short, path] of cases) {
@@ -78,6 +79,8 @@ describe('routeIncomingUrl', () => {
   });
   it('inscription en cours : on reste sur place, chemin gardé', () => {
     expect(routeIncomingUrl('minimoa://carte', { initial: false, ready: false })).toEqual({ open: '', park: '/carte' });
+    // Rappel du matin de Ton chemin : attend la fin du démarrage, puis l'accueil sur la séance.
+    expect(routeIncomingUrl('blowy://chemin', { initial: true, ready: false })).toEqual({ open: '/', park: '/pet?chemin=1' });
   });
   it('invitation et 3 mots : l’écran gère la session lui-même', () => {
     expect(routeIncomingUrl('https://minimoa.app/i/abcd', { initial: true, ready: false })).toEqual({ open: '/i/ABCD', park: null });

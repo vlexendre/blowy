@@ -1,63 +1,49 @@
 /**
- * La série (V6-GSerie) : le chiffre, la mèche du minimoa qui brûle à sa taille, la semaine, les paliers et leurs objets,
- * les jokers et le record. Un jour manqué est dit simplement, sans reproche.
+ * La série (V6-GSerie, docs/CHEMIN.md) : une seule série, que la séance du jour de Ton chemin fait grandir (le défi
+ * du jour d'avant compte pareil). La flamme et le nombre de jours, la semaine en 7 pastilles, le gel de série
+ * (1 par mois, 1 par semaine avec Minimoa+), les paliers 7 / 30 / 100 / 365 et leur objet de garde-robe, puis
+ * « Faire ma séance du jour ». Tout vient de `GET /v1/chemin` (`streak`). Un jour manqué est dit simplement.
  */
 import { itemLabel } from '@/locales/content';
-import { entitlements, STREAK_MILESTONES, streakReward } from '@blowy/domain';
 import { color } from '@blowy/tokens';
-import {
-  Banner,
-  Button,
-  Icon,
-  type Milestone,
-  MilestoneTrack,
-  ScreenTemplate,
-  Skeleton,
-  Stack,
-  StreakHero,
-  StreakWeek,
-  TipRow,
-  type TextRun,
-} from '@blowy/ui';
+import { Banner, Button, Icon, type Milestone, MilestoneTrack, ScreenTemplate, Skeleton, Stack, StreakHero, StreakWeek, Text, TipRow } from '@blowy/ui';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import { ScreenMotion } from '@/core';
-import { useMe } from '@/features/me';
+import { hasSessionToDo, useCheminMap } from '@/features/chemin';
 import { usePet } from '@/features/pet';
-import { nextStreakItem, useRitualsToday, useStreak } from '@/features/rituals';
 import { openPlus } from '@/features/plus';
 import { goBack } from '@/features/session';
+import { chemin } from '@/locales/chemin';
 import { rituels } from '@/locales/rituels';
-import { upperFirst } from '@/locales/runtime';
 
-const t = rituels.streak;
+const t = chemin.serie;
+const days = rituels.streak;
 
 export default function StreakScreen() {
   const router = useRouter();
   const pet = usePet();
-  const streak = useStreak();
-  const today = useRitualsToday();
-  const me = useMe();
+  const map = useCheminMap();
   const [refreshing, setRefreshing] = useState(false);
   const back = () => goBack('/(tabs)/pet');
   const refresh = async () => {
     setRefreshing(true);
-    await Promise.all([streak.refetch(), today.refetch()]);
+    await Promise.all([map.refetch(), pet.refetch()]);
     setRefreshing(false);
   };
   const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={color.mute} />;
 
-  const s = streak.data ?? today.data?.streak;
+  const s = map.data?.streak;
   const p = pet.data?.pet;
   if (!s || !p) {
-    const failed = streak.isError || pet.isError;
+    const failed = map.isError || pet.isError;
     return (
       <ScreenTemplate refreshControl={refreshControl}>
         <Stack top={6}>
           {failed ? (
-            <Banner tone="error" title={t.loadError} text="" actionLabel={t.retry} onAction={() => void Promise.all([streak.refetch(), pet.refetch()])} />
+            <Banner tone="error" title={t.loadError} text="" actionLabel={t.retry} onAction={() => void Promise.all([map.refetch(), pet.refetch()])} />
           ) : (
             <>
               <Skeleton height={372} radius="xl" />
@@ -70,56 +56,50 @@ export default function StreakScreen() {
     );
   }
 
-  const c = today.data?.challenge;
-  const days = s.week.map((d, i) => {
-    const name = t.weekday(d.day);
-    return { letter: t.letters[i] ?? '', status: d.status, label: t.dayA11y[d.status](name) };
+  const week = s.week.map((d, i) => ({ letter: days.letters[i] ?? '', status: d.status, label: days.dayA11y[d.status](days.weekday(d.day)) }));
+  const doneThisWeek = s.week.filter((d) => d.status === 'done').length;
+  // Paliers de Ton chemin (7, 30, 100, 365) : gagnés, le prochain, puis les autres ; un palier sans objet : « Bientôt ».
+  const next = s.nextMilestone;
+  const milestones: Milestone[] = s.milestones.map((m) => {
+    const state: Milestone['state'] = m.reached ? 'owned' : m.days === next?.days ? 'next' : 'locked';
+    const name = m.itemId ? (itemLabel[m.itemId] ?? m.itemId) : t.milestoneSoon;
+    return { days: m.days, itemId: m.itemId, state, label: t.milestoneLabel(m.days), accessibilityLabel: t.milestoneA11y(name, m.days, state) };
   });
-  const runs: TextRun[] | undefined = c
-    ? [
-        { text: t.todayLead, color: color.mute },
-        { text: c.kindLabel, variant: 'bodyHeavy', color: color.white },
-        { text: s.doneToday ? t.todayDone(s.current) : t.todayTodo, color: color.mute },
-      ]
-    : undefined;
-
-  // Paliers : les six, gagnés (un palier se gagne une fois, quand le record le franchit), le prochain à gagner
-  // (`nextMilestone` du serveur), puis les autres.
-  const next = nextStreakItem(s);
-  const milestones: Milestone[] = STREAK_MILESTONES.map((m) => {
-    const itemId = streakReward(m);
-    const has = s.best >= m;
-    const state: Milestone['state'] = has ? 'owned' : m === next?.days ? 'next' : 'locked';
-    const name = itemId ? (itemLabel[itemId] ?? itemId) : '';
-    return { days: m, itemId, state, label: t.milestoneLabel(m), accessibilityLabel: t.milestoneA11y(name, m, state) };
-  });
-  const hint = next ? t.milestoneHint(upperFirst(itemLabel[next.itemId] ?? next.itemId), next.left) : t.milestoneAll;
-  const plus = me.data?.plus ?? false;
-  const plusJokers = entitlements(true).jokersPerWeek;
+  const plus = map.data?.plus ?? false;
   const isRecord = s.current > 0 && s.current >= s.best;
+  const todo = hasSessionToDo(map.data) && !s.doneToday;
 
   return (
     <ScreenMotion>
-      <ScreenTemplate refreshControl={refreshControl} footer={c && !s.doneToday ? <Button label={t.cta} onPress={() => router.push('/pet/defi')} /> : undefined}>
+      <ScreenTemplate refreshControl={refreshControl} footer={todo ? <Button label={t.cta} icon="play" onPress={() => router.push('/chemin/seance')} /> : undefined}>
         <Stack top={6} gap={10}>
           <StreakHero
             pet={{ species: p.species, outfit: p.outfit, name: p.name, id: p.id }}
             count={s.current}
-            title={t.title(s.current)}
-            line={s.current > 0 ? t.lineLit : t.lineOff}
-            badge={isRecord && s.current > 1 ? t.record : s.best > s.current ? t.best(s.best) : null}
+            title={[{ text: `${t.count(s.current)}\n` }, { text: t.countDim, dim: true }]}
+            line={t.line}
+            badge={isRecord && s.current > 1 ? days.record : s.best > s.current ? t.record(s.best) : null}
             record={isRecord && s.current > 1}
             low={!s.doneToday}
             onBack={back}
             backLabel={t.back}
             petLabel={p.name}
           />
-          <StreakWeek days={days} runs={runs} animateKey={s.week[0]?.day} />
-          {s.current === 0 && s.best > 0 ? <TipRow icon={<Icon name="flamme" size={26} />} text={t.reset(s.best)} /> : null}
-          <MilestoneTrack title={t.milestones} hint={hint} milestones={milestones} onceKey="streak:milestones" />
-          <TipRow icon={<Icon name="etoiles" size={26} />} disc={color.violet} lead={t.jokers(s.jokersLeft)} text={t.jokersText} />
-          {/* Sans Minimoa+ : ce qu'il change ici, en un lien discret (le seul bouton coloré reste « Voir le défi du jour »). */}
-          {!plus ? <Button label={t.jokersPlus(plusJokers)} variant="ghost" size="md" onPress={() => openPlus('jokers')} /> : null}
+          <StreakWeek days={week} runs={[{ text: `${t.week} · ${t.weekCount(doneThisWeek)}`, color: color.mute }]} animateKey={s.week[0]?.day} />
+          {s.current === 0 && s.best > 0 ? <TipRow icon={<Icon name="flamme" size={26} />} text={days.reset(s.best)} /> : null}
+          <TipRow icon={<Icon name="gel" size={26} />} disc={color.violet} lead={t.freeze(s.freezesLeft)} text={t.freezeText} />
+          {!plus ? <Button label={t.freezePlus} variant="ghost" size="md" onPress={() => openPlus('jokers')} /> : null}
+          <MilestoneTrack
+            title={t.milestones}
+            hint={next ? t.milestoneLeft(Math.max(0, next.days - s.current)) : undefined}
+            milestones={milestones}
+            onceKey="chemin:milestones"
+          />
+          {!todo && !s.doneToday ? (
+            <Text size={14} muted center>
+              {map.data?.today.line ?? ''}
+            </Text>
+          ) : null}
         </Stack>
       </ScreenTemplate>
     </ScreenMotion>

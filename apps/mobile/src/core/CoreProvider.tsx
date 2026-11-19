@@ -64,6 +64,11 @@ export const keys = {
   group: (id: string) => ['groups', id] as const,
   groupMessages: (id: string) => ['groups', id, 'messages'] as const,
   together: ['together'] as const,
+  /** Ton chemin : la carte, la séance à faire, le dernier résultat (par séance) ; le profil (« ce que Nino sait de toi »). */
+  chemin: ['chemin'] as const,
+  cheminSession: ['chemin', 'seance'] as const,
+  cheminResult: (sessionId: string) => ['chemin', 'result', sessionId] as const,
+  profil: ['profil'] as const,
 };
 
 /** Délai de regroupement des événements temps réel : un message déclenche deux événements (message et lien). */
